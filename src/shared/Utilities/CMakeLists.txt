@@ -2,10 +2,10 @@
 
 set(PATH_PREFIX Utilities)
 
-set(SRC_UTIL_FILES
+set(SRC_UTILITIES_FILES
     ${PATH_PREFIX}/Strings.cpp
     ${PATH_PREFIX}/Strings.hpp
 )
 
-source_group(Utilities FILES ${SRC_UTIL_FILES})
+source_group(Utilities FILES ${SRC_UTILITIES_FILES})
 unset(PATH_PREFIX)
