@@ -207,7 +207,7 @@ if (USE_PCH)
     <Config/Config.h>
     <LocationVector.h>
     <Utilities/Strings.hpp>
-    <Util.hpp>
+    <Utilities/Util.hpp>
     <Auth/BigNumber.h>
     <Auth/WowCrypt.hpp>
     <VMapManager2.h>

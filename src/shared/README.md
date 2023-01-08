@@ -41,7 +41,6 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2008 | FindFiles.hpp
 * 2008 | FindFiles.cpp
 * 2008 | FastQueue.h
-* 2008 | Debugging/Errors.h
 * 2008 | DynLib.hpp
 * 2008 | DynLib.cpp
 * 2008 | Database/MySQLDatabase.h
@@ -50,6 +49,7 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2008 | Database/CreateInterface.cpp
 * 2008 | CThreads.h
 * 2008 | CThreads.cpp
+* 2008 | Debugging/Errors.h
 * 2008 | Debugging/CrashHandler.h
 * 2008 | Debugging/CrashHandler.cpp
 * 2008 | Config/Config.h
@@ -167,8 +167,8 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2017 | Log.cpp
 * 2017 | Log.hpp
 * 2017 | Logging/LoggerDefines.hpp
-* 2017 | Util.cpp
-* 2017 | Util.hpp
+* 2017 | Utilities/Util.cpp
+* 2017 | Utilities/Util.hpp
 * 2017 | Auth/WowCrypt.cpp
 * 2017 | Auth/WowCrypt.hpp
 * 2020 | Database/Field.hpp

@@ -3,14 +3,14 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Util.hpp"
-#include "Utilities/Strings.hpp"
 #include <iostream>
 #include <vector>
 #include <string>
 #include <sstream>
-
 #include <fstream>
+
+#include "Utilities/Util.hpp"
+#include "Strings.hpp"
 #include "utf8.h"
 
 namespace Util

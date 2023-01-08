@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Util.hpp"
+#include "Utilities/Util.hpp"
 #include "Movement/MovementGenerator.h"
 
 class PathGenerator;

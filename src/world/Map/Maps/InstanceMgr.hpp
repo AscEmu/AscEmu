@@ -5,8 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "InstanceDefines.hpp"
-
 #include <cstdint>
 #include <ctime>
 #include <list>
@@ -14,7 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include <mutex>
 #include <unordered_map>
 
-#include "Util.hpp"
+#include "Utilities/Util.hpp"
+#include "InstanceDefines.hpp"
 
 class Group;
 class Player;

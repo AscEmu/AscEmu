@@ -32,7 +32,7 @@
 #include "Chat/ChannelMgr.hpp"
 #include "Management/AddonMgr.h"
 #include "Management/AuctionMgr.h"
-#include "Util.hpp"
+#include "Utilities/Util.hpp"
 #include "Database/DatabaseUpdater.hpp"
 #include "Packets/SmsgServerMessage.h"
 #include "OpcodeTable.hpp"

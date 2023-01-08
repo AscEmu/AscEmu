@@ -96,7 +96,7 @@ set(SRC_BASIC
     Setup.h
     # required for linker
     ../../world/Server/ServerState.cpp
-    ../../shared/Util.cpp
+    ../../shared/Utilities/Util.cpp
 )
 
 #sources - contains source files for our library.

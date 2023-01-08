@@ -23,7 +23,7 @@
 #include "WorldModel.h"
 #include "GameObjectModel.h"
 #include "Logging/Logger.hpp"
-#include "Util.hpp"
+#include "Utilities/Util.hpp"
 #include "MapTree.h"
 
 using G3D::Vector3;

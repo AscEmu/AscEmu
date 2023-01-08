@@ -69,7 +69,7 @@ if (USE_PCH)
     <ByteBuffer.h>
     <Config/Config.h>
     <Utilities/Strings.hpp>
-    <Util.hpp>
+    <Utilities/Util.hpp>
     <Auth/BigNumber.h>
     <Auth/Sha1.h>
     <Auth/WowCrypt.hpp>
