@@ -444,10 +444,8 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
         } break;
         case TYPEID_GAMEOBJECT:
         {
-#if VERSION_STRING > TBC
             // Only player gameobjects
             if (static_cast<GameObject*>(this)->getPlayerOwner() != nullptr)
-#endif
                 updateType = UPDATETYPE_CREATE_OBJECT2;
         } break;
         default:
@@ -478,10 +476,8 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
                     updateFlags |= UPDATEFLAG_TRANSPORT;
                     break;
                 default:
-#if VERSION_STRING > TBC
                     // Set update type for other gameobjects only if it's created by a player
                     if (gameObj->getPlayerOwner() != nullptr)
-#endif
                         updateType = UPDATETYPE_CREATE_OBJECT2;
                     break;
             }

@@ -4467,18 +4467,6 @@ void MySQLDataStore::loadGameobjectSpawns()
                     continue;
                 }
 
-#if VERSION_STRING == TBC
-                //\ brief: the following 3 go types crashing tbc
-                switch (gameobject_info->type)
-                {
-                    //case GAMEOBJECT_TYPE_TRANSPORT:
-                    case GAMEOBJECT_TYPE_MAP_OBJECT:
-                    case GAMEOBJECT_TYPE_MO_TRANSPORT:
-                    {
-                        continue;
-                    }
-                }
-#endif
                 MySQLStructure::GameobjectSpawn* go_spawn = new MySQLStructure::GameobjectSpawn;
                 go_spawn->id = spawnId;
                 go_spawn->entry = gameobject_entry;
