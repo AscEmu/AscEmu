@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Config/Config.h"
 #include "Auth/Sha1.h"
 #include "Server/World.h"
-#include "Util/Strings.hpp"
+#include "Utilities/Strings.hpp"
 
 LogonCommHandler& LogonCommHandler::getInstance()
 {

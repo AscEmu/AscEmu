@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Logging/Logger.hpp>
 #include <Log.hpp>
 #include <Auth/BigNumber.h>
-#include <Util/Strings.hpp>
+#include <Utilities/Strings.hpp>
 #include <Database/Database.h>
 #include "Master.hpp"
 

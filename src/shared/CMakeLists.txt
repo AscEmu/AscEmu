@@ -10,7 +10,7 @@ include(Exceptions/CMakeLists.txt)
 include(Logging/CMakeLists.txt)
 include(Network/CMakeLists.txt)
 include(Threading/CMakeLists.txt)
-include(Util/CMakeLists.txt)
+include(Utilities/CMakeLists.txt)
 
 set(sources
     ${SRC_AUTH_FILES}

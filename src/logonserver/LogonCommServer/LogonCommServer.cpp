@@ -27,7 +27,7 @@
 #include <WorldPacket.h>
 #include <Server/AccountMgr.h>
 #include <Auth/Sha1.h>
-#include <Util/Strings.hpp>
+#include <Utilities/Strings.hpp>
 #include <Server/IpBanMgr.h>
 
 LogonCommServerSocket::LogonCommServerSocket(SOCKET fd) : Socket(fd, 65536, 524288)

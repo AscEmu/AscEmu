@@ -206,7 +206,7 @@ if (USE_PCH)
     <ByteBuffer.h>
     <Config/Config.h>
     <LocationVector.h>
-    <Util/Strings.hpp>
+    <Utilities/Strings.hpp>
     <Util.hpp>
     <Auth/BigNumber.h>
     <Auth/WowCrypt.hpp>

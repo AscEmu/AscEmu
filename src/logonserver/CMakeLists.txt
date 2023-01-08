@@ -68,7 +68,7 @@ if (USE_PCH)
     <Logging/Logger.hpp>
     <ByteBuffer.h>
     <Config/Config.h>
-    <Util/Strings.hpp>
+    <Utilities/Strings.hpp>
     <Util.hpp>
     <Auth/BigNumber.h>
     <Auth/Sha1.h>
