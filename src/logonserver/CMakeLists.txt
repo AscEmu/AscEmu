@@ -70,9 +70,9 @@ if (USE_PCH)
     <Config/Config.h>
     <Utilities/Strings.hpp>
     <Utilities/Util.hpp>
-    <Auth/BigNumber.h>
-    <Auth/Sha1.h>
-    <Auth/WowCrypt.hpp>
+    <Cryptography/BigNumber.h>
+    <Cryptography/Sha1.h>
+    <Cryptography/WowCrypt.hpp>
     <Database/Database.h>
     <Network/Network.h>
     LogonConf.hpp

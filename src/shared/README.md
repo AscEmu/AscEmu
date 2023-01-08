@@ -34,12 +34,9 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2008 | Threading/LockedQueue.h
 * 2008 | Threading/ConditionVariable.h
 * 2008 | Threading/ConditionVariable.cpp
-* 2008 | Singleton.h
 * 2008 | PreallocatedQueue.h
 * 2008 | LocationVector.h
 * 2008 | FindFilesResult.hpp
-* 2008 | FindFiles.hpp
-* 2008 | FindFiles.cpp
 * 2008 | FastQueue.h
 * 2008 | DynLib.hpp
 * 2008 | DynLib.cpp
@@ -58,11 +55,10 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2008 | Utilities/CallBack.h
 * 2008 | ByteBuffer.h
 * 2008 | AuthCodes.h
-* 2008 | Auth/Sha1.cpp
-* 2008 | Auth/MD5.cpp
-* 2008 | Auth/BigNumber.cpp
-* 2008 | ascemu_getopt.cpp
-* 2007 | RC4Engine.h
+* 2008 | Cryptography/Sha1.cpp
+* 2008 | Cryptography/MD5.cpp
+* 2008 | Cryptography/BigNumber.cpp
+* 2007 | Cryptography/RC4Engine.h
 * 2007 | Network/SocketWin32.cpp
 * 2007 | Network/SocketOpsWin32.cpp
 * 2007 | Network/SocketOpsLinux.cpp
@@ -84,10 +80,9 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2007 | Network/ListenSocketFreeBSD.h
 * 2007 | Network/CircularBuffer.h
 * 2007 | Network/CircularBuffer.cpp
-* 2007 | Auth/Sha1.h
-* 2007 | Auth/MD5.h
-* 2007 | Auth/BigNumber.h
-* 2007 | ascemu_getopt.h
+* 2007 | Cryptography/Sha1.h
+* 2007 | Cryptography/MD5.h
+* 2007 | Cryptography/BigNumber.h
 * 2005 | SysInfo.hpp
 * 2005 | SysInfo.cpp
 * 2005 | PerformanceCounter.hpp
@@ -160,6 +155,13 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 ### Removed on 07 Jun 2022
 * 2014 | AscemuServerDefines.hpp
 
+### Removed on 08 Jan 2023
+* 2008 | ascemu_getopt.cpp
+* 2007 | ascemu_getopt.h
+* 2008 | Singleton.h
+* 2008 | FindFiles.hpp
+* 2008 | FindFiles.cpp
+
 ### New files
 * 2015 | Exceptions/PlayerExceptions.hpp
 * 2015 | Exceptions/Exceptions.hpp
@@ -169,8 +171,8 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2017 | Logging/LoggerDefines.hpp
 * 2017 | Utilities/Util.cpp
 * 2017 | Utilities/Util.hpp
-* 2017 | Auth/WowCrypt.cpp
-* 2017 | Auth/WowCrypt.hpp
+* 2017 | Cryptography/WowCrypt.cpp
+* 2017 | Cryptography/WowCrypt.hpp
 * 2020 | Database/Field.hpp
 * 2020 | Database/DatabaseUpdater.cpp
 * 2020 | Database/DatabaseUpdater.hpp

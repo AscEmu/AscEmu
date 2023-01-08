@@ -208,8 +208,8 @@ if (USE_PCH)
     <LocationVector.h>
     <Utilities/Strings.hpp>
     <Utilities/Util.hpp>
-    <Auth/BigNumber.h>
-    <Auth/WowCrypt.hpp>
+    <Cryptography/BigNumber.h>
+    <Cryptography/WowCrypt.hpp>
     <VMapManager2.h>
     <IVMapManager.h>
     <VMapFactory.h>

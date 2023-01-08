@@ -23,7 +23,7 @@
 
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Server/MainServerDefines.h"
-#include "Auth/Sha1.h"
+#include "Cryptography/Sha1.h"
 #include "World.h"
 #include "Management/AddonMgr.h"
 #include "Packets/SmsgPong.h"

@@ -13,7 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <openssl/sha.h>
 #include <openssl/rc4.h>
 
-#include "Auth/Sha1.h"
+#include "Cryptography/Sha1.h"
 
 class WowCrypt
 {

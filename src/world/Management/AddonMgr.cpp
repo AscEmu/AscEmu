@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Server/MainServerDefines.h"
-#include "Auth/MD5.h"
+#include "Cryptography/MD5.h"
 #include <Database/Field.hpp>
 #include <Database/Database.h>
 

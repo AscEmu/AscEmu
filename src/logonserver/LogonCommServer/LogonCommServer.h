@@ -20,7 +20,7 @@
 #ifndef __LOGON_COMM_SERVER_H
 #define __LOGON_COMM_SERVER_H
 
-#include <RC4Engine.h>
+#include "Cryptography/RC4Engine.h"
 #include "CommonTypes.hpp"
 #include "Network/Socket.h"
 #include "zlib.h"
