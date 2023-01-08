@@ -18,7 +18,7 @@
  */
 
 #include "LogonCommServer.h"
-#include "LogonCommDefines.h"
+#include "Cryptography/LogonCommDefines.h"
 #include <Logging/Log.hpp>
 #include <Logging/Logger.hpp>
 #include <Realm/RealmManager.hpp>

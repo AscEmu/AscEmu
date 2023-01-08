@@ -6,6 +6,9 @@ set(SRC_CRYPTOGRAPHY_FILES
     ${PATH_PREFIX}/AuthCodes.h
     ${PATH_PREFIX}/BigNumber.cpp
     ${PATH_PREFIX}/BigNumber.h
+    ${PATH_PREFIX}/crc32.cpp
+    ${PATH_PREFIX}/crc32.h
+    ${PATH_PREFIX}/LogonCommDefines.h
     ${PATH_PREFIX}/MD5.cpp
     ${PATH_PREFIX}/MD5.h
     ${PATH_PREFIX}/RC4Engine.h

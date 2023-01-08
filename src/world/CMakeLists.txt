@@ -214,7 +214,7 @@ if (USE_PCH)
     <IVMapManager.h>
     <VMapFactory.h>
     <GameObjectModel.h>
-    <LogonCommDefines.h>
+    <Cryptography/LogonCommDefines.h>
     WorldConf.h
     Chat/ChatDefines.hpp
     Chat/CommandTableStorage.hpp

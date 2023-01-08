@@ -24,7 +24,6 @@ set(sources
     ${SRC_THREADING_FILES}
     ${SRC_UTILITIES_FILES}
 
-    crc32.cpp
     CThreads.cpp
     DynLib.cpp
     LocationVector.cpp
@@ -33,7 +32,6 @@ set(sources
 )
 
 set(headers
-    AuthCodes.h
     ByteBuffer.h
     ByteConverter.h
     CircularQueue.h
@@ -42,12 +40,10 @@ set(headers
     CommonHelpers.hpp
     CommonTypes.hpp
 
-    crc32.h
     CThreads.h
     DynLib.hpp
     FastQueue.h
     LocationVector.h
-    LogonCommDefines.h
     PerformanceCounter.hpp
     PreallocatedQueue.h
     SysInfo.hpp

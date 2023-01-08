@@ -30,7 +30,7 @@
 #include <zlib.h>
 
 #include "Server/World.h"
-#include "LogonCommDefines.h"
+#include "Cryptography/LogonCommDefines.h"
 
 LogonCommClientSocket::LogonCommClientSocket(SOCKET fd) : Socket(fd, 724288, 262444)
 {
