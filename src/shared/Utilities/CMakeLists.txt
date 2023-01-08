@@ -3,6 +3,7 @@
 set(PATH_PREFIX Utilities)
 
 set(SRC_UTILITIES_FILES
+    ${PATH_PREFIX}/CallBack.h
     ${PATH_PREFIX}/Strings.cpp
     ${PATH_PREFIX}/Strings.hpp
     ${PATH_PREFIX}/Util.cpp
