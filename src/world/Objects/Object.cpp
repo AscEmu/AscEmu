@@ -444,8 +444,10 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
         } break;
         case TYPEID_GAMEOBJECT:
         {
+#if VERSION_STRING > TBC
             // Only player gameobjects
             if (static_cast<GameObject*>(this)->getPlayerOwner() != nullptr)
+#endif
                 updateType = UPDATETYPE_CREATE_OBJECT2;
         } break;
         default:
@@ -476,8 +478,10 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
                     updateFlags |= UPDATEFLAG_TRANSPORT;
                     break;
                 default:
+#if VERSION_STRING > TBC
                     // Set update type for other gameobjects only if it's created by a player
                     if (gameObj->getPlayerOwner() != nullptr)
+#endif
                         updateType = UPDATETYPE_CREATE_OBJECT2;
                     break;
             }
@@ -3096,6 +3100,7 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
 
     *data << uint8_t(block_count);
     data->append(updateMask->GetMask(), block_count * 4);
+
     for (uint32_t idx = 0; idx < values_count; ++idx)
     {
         if (updateMask->GetBit(idx))
@@ -4166,7 +4171,7 @@ void Object::SendAIReaction(uint32 reaction)
 
 void Object::SendDestroyObject()
 {
-    sendMessageToSet(AscEmu::Packets::SmsgDestroyObject(getGuid()).serialise().get(), false);
+    sendMessageToSet(SmsgDestroyObject(getGuid()).serialise().get(), false);
 }
 
 bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float & outz, bool sloppypath)

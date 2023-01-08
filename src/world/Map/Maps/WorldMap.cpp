@@ -1296,6 +1296,11 @@ void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteB
                     {
                         if (!*buf)
                             *buf = new ByteBuffer(2500);
+#if VERSION_STRING == TBC
+                        //Zyres: we need to destroy the object first before sending the data again. This is a hackfix for gobj not visible after getting outofrange
+                        if (curObj->isGameObject())
+                            plObj->sendDestroyObjectPacket(curObj->getGuid());
+#endif
 
                         count = curObj->buildCreateUpdateBlockForPlayer(*buf, plObj);
                         plObj->getUpdateMgr().pushCreationData(*buf, count);

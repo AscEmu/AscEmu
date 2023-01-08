@@ -3321,6 +3321,7 @@ void Player::initVisibleUpdateBits()
 #else
     Player::m_visibleUpdateMask.SetCount(getSizeOfStructure(WoWPlayer));
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, guid));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, guid) + 1);
 #if VERSION_STRING < Cata
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWObject, type));
 #else
@@ -3406,6 +3407,15 @@ void Player::initVisibleUpdateBits()
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, base_mana));
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, field_bytes_2));
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, aura_state));
+
+#if VERSION_STRING == TBC
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWGameObject, display_id));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWGameObject, flags));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWGameObject, state));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWGameObject, level));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWGameObject, art_kit));
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWGameObject, animation_progress));
+#endif
 
     for (uint16_t i = 0; i < EQUIPMENT_SLOT_END; ++i)
     {

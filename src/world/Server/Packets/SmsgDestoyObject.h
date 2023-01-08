@@ -21,7 +21,7 @@ namespace AscEmu::Packets
         }
 
         SmsgDestroyObject(uint64_t guid) : 
-        ManagedPacket(SMSG_DESTROY_OBJECT, 9),
+        ManagedPacket(SMSG_DESTROY_OBJECT, 8),
             guid(guid)
         {
         }
