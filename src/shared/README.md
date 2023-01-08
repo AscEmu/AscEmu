@@ -89,8 +89,8 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2005 | PerformanceCounter.cpp
 * 2005 | Database/MySQLDatabase.cpp
 * 2005 | CircularQueue.h
-* 1996 | crc32.h
-* 1996 | crc32.cpp
+* 1996 | Cryptography/crc32.h
+* 1996 | Cryptography/crc32.cpp
 
 ### Ready to remove
 
@@ -178,3 +178,5 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2020 | Database/DatabaseUpdater.hpp
 * 2021 | Database/DatabaseCommon.hpp
 * 2022 | AEVersion.hpp
+* 2023 | Cryptography/LogonCommDefines.h
+* 2023 | ByteConverter.h
