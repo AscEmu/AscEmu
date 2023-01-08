@@ -139,9 +139,8 @@ bool handleServerInfoCommand(BaseConsole* baseConsole, int /*argumentCount*/, st
         baseConsole->Write("======================================================================\r\n");
         baseConsole->Write("Server Information: \r\n");
         baseConsole->Write("======================================================================\r\n");
-        baseConsole->Write("Server Revision: AscEmu %s-%s-%s (www.ascemu.org)\r\n", CONFIG, AE_PLATFORM, AE_ARCHITECTURE);
-        baseConsole->Write("Build hash: %s\r\n", BUILD_HASH_STR);
-        baseConsole->Write("Server Uptime: %s\r\n", sWorld.getWorldUptimeString().c_str());
+        baseConsole->Write("Info: AscEmu %s/%s-%s-%s (www.ascemu.org)\r\n", BUILD_HASH_STR, CONFIG, AE_PLATFORM, AE_ARCHITECTURE);
+        baseConsole->Write("Uptime: %s\r\n", sWorld.getWorldUptimeString().c_str());
         baseConsole->Write("Current Players: %d (%d GMs, %d queued)\r\n", clientsNum, gmCount, 0);
         baseConsole->Write("Active Thread Count: %u\r\n", ThreadPool.GetActiveThreadCount());
         baseConsole->Write("Free Thread Count: %u\r\n", ThreadPool.GetFreeThreadCount());
