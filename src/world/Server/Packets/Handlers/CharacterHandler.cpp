@@ -574,12 +574,11 @@ void WorldSession::sendServerStats()
 {
     if (worldConfig.server.sendStatsOnJoin)
     {
-        _player->broadcastMessage("Server Revision: %sAscEmu-%s-%s %s(www.ascemu.org)", MSG_COLOR_WHITE, AE_PLATFORM, AE_ARCHITECTURE, MSG_COLOR_SEXBLUE);
-        _player->broadcastMessage("Build hash: %s%s", MSG_COLOR_SEXBLUE, BUILD_HASH_STR);
+        _player->broadcastMessage("Info: %sAscEmu %s/%s-%s-%s %s(www.ascemu.org)", MSG_COLOR_WHITE, BUILD_HASH_STR, CONFIG, AE_PLATFORM, AE_ARCHITECTURE, MSG_COLOR_SEXBLUE);
         _player->broadcastMessage("Online Players: %s%u |rPeak: %s%u|r Accepted Connections: %s%u", MSG_COLOR_SEXBLUE, 
                                    static_cast<uint32_t>(sWorld.getSessionCount()), MSG_COLOR_SEXBLUE, sWorld.getPeakSessionCount(), MSG_COLOR_SEXBLUE, sWorld.getAcceptedConnections());
-        
-        _player->broadcastMessage("Server Uptime: |r%s", sWorld.getWorldUptimeString().c_str());
+
+        _player->broadcastMessage("Uptime: |r%s", sWorld.getWorldUptimeString().c_str());
     }
 }
 
@@ -686,9 +685,9 @@ void WorldSession::fullLogin(Player* player)
 
     initGMMyMaster();
 
-    sendServerStats();
-
     sendMOTD();
+
+    sendServerStats();
 
 #if VERSION_STRING == Mop
     std::string timeZone = "Etc/UTC";
