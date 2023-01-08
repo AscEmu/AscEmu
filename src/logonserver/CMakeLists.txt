@@ -64,7 +64,7 @@ if (USE_PCH)
     <CommonDefines.hpp>
     <Common.hpp>
     <WorldPacket.h>
-    <Log.hpp>
+    <Logging/Log.hpp>
     <Logging/Logger.hpp>
     <ByteBuffer.h>
     <Config/Config.h>

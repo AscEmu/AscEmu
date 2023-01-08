@@ -201,7 +201,7 @@ if (USE_PCH)
     <Common.hpp>
     <Config/Config.h>
     <WorldPacket.h>
-    <Log.hpp>
+    <Logging/Log.hpp>
     <Logging/Logger.hpp>
     <ByteBuffer.h>
     <Config/Config.h>

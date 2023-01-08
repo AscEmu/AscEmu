@@ -9,7 +9,7 @@
 #ifndef SOCKET_DEFINES_H
 #define SOCKET_DEFINES_H
 
-#include "Log.hpp"
+#include "Logging/Log.hpp"
 #include <cstring>
 
 /* Implementation Selection */

@@ -164,8 +164,8 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2015 | Exceptions/PlayerExceptions.hpp
 * 2015 | Exceptions/Exceptions.hpp
 * 2017 | Common.hpp
-* 2017 | Log.cpp
-* 2017 | Log.hpp
+* 2017 | Logging/Log.cpp
+* 2017 | Logging/Log.hpp
 * 2017 | Logging/LoggerDefines.hpp
 * 2017 | Utilities/Util.cpp
 * 2017 | Utilities/Util.hpp

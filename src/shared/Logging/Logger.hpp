@@ -7,8 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Common.hpp"
 #include "Config/Config.h"
-#include "MessageType.hpp"
-#include "Severity.hpp"
+#include "LoggerDefines.hpp"
 
 namespace AscEmu::Logging
 {

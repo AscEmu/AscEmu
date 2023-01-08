@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "TicketMgr.hpp"
-#include "Log.hpp"
+#include "Logging/Log.hpp"
 #include "Storage/MySQLDataStore.hpp"
 
 TicketMgr& TicketMgr::getInstance()

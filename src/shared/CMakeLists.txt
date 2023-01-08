@@ -28,7 +28,6 @@ set(sources
     CThreads.cpp
     DynLib.cpp
     LocationVector.cpp
-    Log.cpp
     PerformanceCounter.cpp
     SysInfo.cpp
 )
@@ -57,8 +56,6 @@ set(headers
     WorldPacket.h
     WoWGuid.h
     Common.hpp
-    Log.hpp
-
     FactoryHolder.h
     ObjectRegistry.h
 )

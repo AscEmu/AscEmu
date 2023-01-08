@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "AccountMgr.h"
 #include <Logging/Logger.hpp>
-#include <Log.hpp>
+#include <Logging/Log.hpp>
 #include <Auth/BigNumber.h>
 #include <Utilities/Strings.hpp>
 #include <Database/Database.h>
