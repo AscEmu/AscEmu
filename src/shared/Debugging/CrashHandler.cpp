@@ -20,7 +20,7 @@
 
 #include "git_version.h"
 
-#include "CrashHandler.h"
+#include "Debugging/CrashHandler.h"
 #include "Logging/Logger.hpp"
 
 void OutputCrashLogLine(const char* format, ...)

@@ -22,7 +22,7 @@ set(sources
     ${SRC_THREADING_FILES}
     ${SRC_UTIL_FILES}
 
-    CrashHandler.cpp
+    Debugging/CrashHandler.cpp
     crc32.cpp
     CThreads.cpp
     DynLib.cpp
@@ -43,7 +43,7 @@ set(headers
     CommonDefines.hpp
     CommonHelpers.hpp
     CommonTypes.hpp
-    CrashHandler.h
+    Debugging/CrashHandler.h
     crc32.h
     CThreads.h
     DynLib.hpp

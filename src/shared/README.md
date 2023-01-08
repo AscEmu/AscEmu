@@ -50,8 +50,8 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2008 | Database/CreateInterface.cpp
 * 2008 | CThreads.h
 * 2008 | CThreads.cpp
-* 2008 | CrashHandler.h
-* 2008 | CrashHandler.cpp
+* 2008 | Debugging/CrashHandler.h
+* 2008 | Debugging/CrashHandler.cpp
 * 2008 | Config/Config.h
 * 2008 | Config/Config.cpp
 * 2008 | Common.Legacy.h
