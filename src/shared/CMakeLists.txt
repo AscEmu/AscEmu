@@ -47,7 +47,7 @@ set(headers
     crc32.h
     CThreads.h
     DynLib.hpp
-    Errors.h
+    Debugging/Errors.h
     FastQueue.h
     LocationVector.h
     LogonCommDefines.h

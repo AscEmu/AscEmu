@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "WaypointMovementGenerator.h"
 #include "Objects/Units/Creatures/Creature.h"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Movement/MovementDefines.h"
 #include "Movement/Spline/MoveSpline.h"

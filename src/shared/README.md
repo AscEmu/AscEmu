@@ -41,7 +41,7 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2008 | FindFiles.hpp
 * 2008 | FindFiles.cpp
 * 2008 | FastQueue.h
-* 2008 | Errors.h
+* 2008 | Debugging/Errors.h
 * 2008 | DynLib.hpp
 * 2008 | DynLib.cpp
 * 2008 | Database/MySQLDatabase.h
