@@ -3145,12 +3145,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                     if (getSpellInfo()->getEffect(i) == SPELL_EFFECT_ENERGIZE)
                     {
                         // Check if the spell has valid power type
-                        if (getSpellInfo()->getEffectMiscValue(i) < 0
-#if VERSION_STRING <= TBC
-                            || getSpellInfo()->getEffectMiscValue(i) > POWER_TYPE_HAPPINESS)
-#else
-                            || getSpellInfo()->getEffectMiscValue(i) > POWER_TYPE_RUNIC_POWER)
-#endif
+                        if (getSpellInfo()->getEffectMiscValue(i) < 0 || getSpellInfo()->getEffectMiscValue(i) >= TOTAL_PLAYER_POWER_TYPES)
                         {
                             errorMessage = SPELL_FAILED_ALREADY_AT_FULL_POWER;
                             continue;

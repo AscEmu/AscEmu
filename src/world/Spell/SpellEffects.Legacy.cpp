@@ -5979,7 +5979,7 @@ void Spell::SpellEffectRestorePowerPct(uint8_t effectIndex)
         return;
 
     auto power_type = static_cast<PowerType>(getSpellInfo()->getEffectMiscValue(effectIndex));
-    if (power_type > POWER_TYPE_HAPPINESS)
+    if (power_type >= TOTAL_PLAYER_POWER_TYPES)
     {
         sLogger.failure("Unhandled power type %u in %s, report this line to devs.", power_type, __FUNCTION__);
         return;
