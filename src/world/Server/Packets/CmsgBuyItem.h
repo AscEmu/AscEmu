@@ -27,7 +27,7 @@ namespace AscEmu::Packets
         }
 
         CmsgBuyItem(uint64_t sourceGuid, uint32_t itemEntry, int32_t slot, uint8_t amount) :
-            ManagedPacket(CMSG_BUY_ITEM, 14),
+            ManagedPacket(CMSG_BUY_ITEM, 13),
             sourceGuid(sourceGuid),
             itemEntry(itemEntry),
             slot(slot),
@@ -53,7 +53,7 @@ namespace AscEmu::Packets
 #endif
 
 #if VERSION_STRING <= TBC
-            packet >> rawGuid >> itemEntry >> slot >> amount;
+            packet >> rawGuid >> itemEntry >> amount;
 #endif
             sourceGuid.Init(rawGuid);
             return true;
