@@ -66,12 +66,15 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
     }
 
     //\ todo: handle this in creature AI...
-    if (u_caster != nullptr && u_caster->isCreature() || u_caster->isMoving())
+    if (u_caster != nullptr)
     {
-        if (u_caster->hasUnitStateFlag(UNIT_STATE_FLEEING))
+        if (u_caster->isCreature() || u_caster->isMoving())
         {
-            u_caster->addGarbageSpell(this);
-            return SPELL_FAILED_NOT_READY;
+            if (u_caster->hasUnitStateFlag(UNIT_STATE_FLEEING))
+            {
+                u_caster->addGarbageSpell(this);
+                return SPELL_FAILED_NOT_READY;
+            }
         }
     }
 
@@ -4936,6 +4939,7 @@ void Spell::sendSpellGo()
         data << i_caster->GetNewGUID();
     else
         data << m_caster->GetNewGUID();
+
     data << m_caster->GetNewGUID();
 
 #if VERSION_STRING >= WotLK
@@ -4960,6 +4964,7 @@ void Spell::sendSpellGo()
         data << uint64_t(uniqueTarget.first);
     }
 
+#if VERSION_STRING >= WotLK
     // Add missed targets
     if (castFlags & SPELL_PACKET_FLAGS_EXTRA_MESSAGE)
     {
@@ -4973,9 +4978,16 @@ void Spell::sendSpellGo()
 
     m_targets.write(data);
 
-#if VERSION_STRING >= WotLK
+
     if (castFlags & SPELL_PACKET_FLAGS_POWER_UPDATE && u_caster != nullptr)
         data << uint32_t(u_caster->getPower(getSpellInfo()->getPowerType()));
+#else
+    data << uint8_t(missedTargets.size());
+
+    if (castFlags & SPELL_PACKET_FLAGS_EXTRA_MESSAGE)
+        writeSpellMissedTargets(&data);
+
+    m_targets.write(data);
 #endif
 
     if (castFlags & SPELL_PACKET_FLAGS_RANGED)
@@ -5002,11 +5014,11 @@ void Spell::sendSpellGo()
         data << float(m_missilePitch);
         data << uint32_t(m_missileTravelTime);
     }
-#endif
 
     // Some spells require this
     if (m_targets.hasDestination())
         data << uint8_t(0);
+#endif
 
     m_caster->sendMessageToSet(&data, true);
 #endif
@@ -5181,13 +5193,15 @@ void Spell::writeProjectileDataToPacket(WorldPacket *data)
             if (entryId == 0)
                 continue;
 
-#if VERSION_STRING < WotLK
-            //\ todo: fix for classic and tbc
             // hackfixing Rough Arrow for projectile
             ammoItem = sMySQLStore.getItemProperties(2512);
-#else
+
             // Get the item data from DBC files
+#if VERSION_STRING > TBC
             const auto itemDBC = sItemStore.LookupEntry(entryId);
+#else
+            const auto itemDBC = sMySQLStore.getItemProperties(entryId);
+#endif
             if (itemDBC == nullptr || itemDBC->Class != ITEM_CLASS_WEAPON)
                 continue;
 
@@ -5208,7 +5222,6 @@ void Spell::writeProjectileDataToPacket(WorldPacket *data)
                 default:
                     break;
             }
-#endif
 
             // No need to continue if ammo has been found
             if (ammoItem != nullptr)
@@ -5222,11 +5235,13 @@ void Spell::writeProjectileDataToPacket(WorldPacket *data)
         *data << uint32_t(ammoItem->DisplayInfoID);
         *data << uint32_t(ammoItem->InventoryType);
     }
+#if VERSION_STRING > TBC
     else
     {
         *data << uint32_t(0);
         *data << uint32_t(0);
     }
+#endif
 }
 
 void Spell::writeSpellMissedTargets(WorldPacket *data)
