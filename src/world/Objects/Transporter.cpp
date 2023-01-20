@@ -315,9 +315,9 @@ Creature* Transporter::createNPCPassenger(MySQLStructure::CreatureSpawn* data)
     pCreature->obj_movement_info.addMovementFlag(MOVEFLAG_TRANSPORT);
 
     // Equipment
-    pCreature->setVirtualItemSlotId(MELEE, sMySQLStore.getItemDisplayIdForEntry(creature_properties->itemslot_1));
-    pCreature->setVirtualItemSlotId(OFFHAND, sMySQLStore.getItemDisplayIdForEntry(creature_properties->itemslot_2));
-    pCreature->setVirtualItemSlotId(RANGED, sMySQLStore.getItemDisplayIdForEntry(creature_properties->itemslot_3));
+    pCreature->setVirtualItemSlotId(MELEE, creature_properties->itemslot_1);
+    pCreature->setVirtualItemSlotId(OFFHAND, creature_properties->itemslot_2);
+    pCreature->setVirtualItemSlotId(RANGED, creature_properties->itemslot_3);
 
     if (data->emote_state)
         pCreature->setEmoteState(data->emote_state);

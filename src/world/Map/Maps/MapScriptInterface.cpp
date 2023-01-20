@@ -124,10 +124,6 @@ Creature* MapScriptInterface::spawnCreature(uint32_t Entry, LocationVector pos, 
     spawn->Item2SlotEntry = creature_properties->itemslot_2;
     spawn->Item3SlotEntry = creature_properties->itemslot_3;
 
-    spawn->Item1SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(spawn->Item1SlotEntry);
-    spawn->Item2SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(spawn->Item2SlotEntry);
-    spawn->Item3SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(spawn->Item3SlotEntry);
-
     spawn->CanFly = 0;
     spawn->phase = phase;
 

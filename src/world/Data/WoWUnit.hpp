@@ -32,6 +32,20 @@ union
 {
     struct
     {
+        uint8_t itemClass;
+        uint8_t itemSubClass;
+        int8_t unk0;
+        uint8_t material;
+        uint8_t inventoryType;
+        uint8_t sheath;
+    } fields;
+    uint64_t raw;
+} typedef unit_virtual_item_info;
+
+union
+{
+    struct
+    {
         uint8_t stand_state;
         uint8_t pet_talent_points; // 0 for non pet creature
         uint8_t stand_state_flag;
@@ -54,7 +68,6 @@ union
 
 #if VERSION_STRING == Classic
 #define WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT 3
-#define WOWUNIT_VIRTUAL_ITEM_INFO_COUNT 6
 #define WOWUNIT_AURA_COUNT 48
 #define WOWUNIT_AURA_FLAGS_COUNT 6
 #define WOWUNIT_AURA_LEVELS_COUNT 12
@@ -90,8 +103,8 @@ struct WoWUnit : WoWObject
     uint32_t level;
     uint32_t faction_template;
     field_bytes_0_union field_bytes_0;
-    uint32_t virtual_item_slot_display[WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT];    //0 = melee, 1 = offhand, 2 = ranged
-    uint32_t virtual_item_info[WOWUNIT_VIRTUAL_ITEM_INFO_COUNT];
+    uint32_t virtual_item_slot_display[WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT];       //0 = melee, 1 = offhand, 2 = ranged
+    unit_virtual_item_info virtual_item_info[WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT]; //0 = melee, 1 = offhand, 2 = ranged
     uint32_t unit_flags;
     uint32_t aura[WOWUNIT_AURA_COUNT];
     uint32_t aura_flags[WOWUNIT_AURA_FLAGS_COUNT];
@@ -139,7 +152,6 @@ struct WoWUnit : WoWObject
 };
 #elif VERSION_STRING == TBC
 #define WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT 3
-#define WOWUNIT_VIRTUAL_ITEM_INFO_COUNT 6
 #define WOWUNIT_AURA_COUNT 56
 #define WOWUNIT_AURA_FLAGS_COUNT 14
 #define WOWUNIT_AURA_LEVELS_COUNT 14
@@ -177,8 +189,8 @@ struct WoWUnit : WoWObject
     uint32_t level;
     uint32_t faction_template;
     field_bytes_0_union field_bytes_0;
-    uint32_t virtual_item_slot_display[WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT];    //0 = melee, 1 = offhand, 2 = ranged
-    uint32_t virtual_item_info[WOWUNIT_VIRTUAL_ITEM_INFO_COUNT];
+    uint32_t virtual_item_slot_display[WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT];       //0 = melee, 1 = offhand, 2 = ranged
+    unit_virtual_item_info virtual_item_info[WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT]; //0 = melee, 1 = offhand, 2 = ranged
     uint32_t unit_flags;
     uint32_t unit_flags_2;
     uint32_t aura[WOWUNIT_AURA_COUNT];

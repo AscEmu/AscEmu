@@ -6220,6 +6220,7 @@ void Aura::SpellAuraMirrorImage2(AuraEffectModifier* /*aurEff*/, bool apply)
             if (item != nullptr)
                 m_target->setVirtualItemSlotId(OFFHAND, item->getItemProperties()->ItemId);
         }
+#if VERSION_STRING >= WotLK
         else if (getCaster()->isCreatureOrPlayer())
         {
             auto unit = static_cast<Unit*>(getCaster());
@@ -6227,5 +6228,6 @@ void Aura::SpellAuraMirrorImage2(AuraEffectModifier* /*aurEff*/, bool apply)
             m_target->setVirtualItemSlotId(OFFHAND, unit->getVirtualItemSlotId(OFFHAND));
             m_target->setVirtualItemSlotId(RANGED, unit->getVirtualItemSlotId(RANGED));
         }
+#endif
     }
 }

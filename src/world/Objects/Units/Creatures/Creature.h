@@ -104,6 +104,11 @@ public:
     float_t getMaxWanderDistance() const;
     void setMaxWanderDistance(float_t dist);
 
+#if VERSION_STRING < WotLK
+    uint32_t getVirtualItemEntry(uint8_t slot) const;
+    void setVirtualItemEntry(uint8_t slot, uint32_t itemId);
+#endif
+
     std::vector<CreatureItem>* getSellItems();
 
     uint32_t getWaypointPath() const { return _waypointPathId; }
@@ -145,6 +150,12 @@ public:
 
     bool isDungeonBoss() { return (GetCreatureProperties()->extra_a9_flags & 0x10000000) != 0; }
 
+private:
+#if VERSION_STRING < WotLK
+    uint32_t m_virtualItemEntry[TOTAL_WEAPON_DAMAGE_TYPES] = { 0 };
+#endif
+
+public:
  //AGPL Starts
 
         bool teleport(const LocationVector& vec, WorldMap* map);

@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Unit.hpp"
 
-#include "Data/WoWUnit.hpp"
 #include "Management/Battleground/Battleground.hpp"
 #include "Management/HonorHandler.h"
 #include "Movement/Spline/MovementPacketBuilder.h"
@@ -49,6 +48,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.h"
 #include "Creatures/CreatureGroups.h"
 #include "Objects/DynamicObject.h"
+#include "Objects/ItemDefines.hpp"
 #include "Server/Packets/SmsgAttackSwingBadFacing.h"
 #include "Server/Packets/SmsgSpellDamageShield.h"
 #include "Server/Script/CreatureAIScript.h"
@@ -938,12 +938,118 @@ void Unit::setLevel(uint32_t level)
 uint32_t Unit::getFactionTemplate() const { return unitData()->faction_template; }
 void Unit::setFactionTemplate(uint32_t id) { write(unitData()->faction_template, id); }
 
+#if VERSION_STRING >= WotLK
 uint32_t Unit::getVirtualItemSlotId(uint8_t slot) const { return unitData()->virtual_item_slot_display[slot]; }
-void Unit::setVirtualItemSlotId(uint8_t slot, uint32_t item_id) { write(unitData()->virtual_item_slot_display[slot], item_id); }
+#else
+uint32_t Unit::getVirtualItemDisplayId(uint8_t slot) const { return unitData()->virtual_item_slot_display[slot]; }
+#endif
+void Unit::setVirtualItemSlotId(uint8_t slot, uint32_t item_id)
+{
+    if (item_id == 0)
+    {
+        write(unitData()->virtual_item_slot_display[slot], 0U);
+#if VERSION_STRING < WotLK
+        setVirtualItemInfo(slot, 0);
+
+        if (isCreature())
+            dynamic_cast<Creature*>(this)->setVirtualItemEntry(slot, 0);
+#endif
+        return;
+    }
+
+#if VERSION_STRING >= WotLK
+    const auto itemDbc = sItemStore.LookupEntry(item_id);
+    if (itemDbc == nullptr
+        || !(itemDbc->Class == ITEM_CLASS_WEAPON
+        || (itemDbc->Class == ITEM_CLASS_ARMOR && itemDbc->SubClass == ITEM_SUBCLASS_ARMOR_SHIELD)
+        || itemDbc->InventoryType == INVTYPE_HOLDABLE))
+        return;
+
+    write(unitData()->virtual_item_slot_display[slot], item_id);
+#else
+    unit_virtual_item_info virtualItemInfo{};
+
+    uint32_t displayId = 0;
+    virtualItemInfo.fields.itemClass = 0;
+    virtualItemInfo.fields.itemSubClass = 0;
+    // Seems to be always -1
+    virtualItemInfo.fields.unk0 = -1;
+    virtualItemInfo.fields.material = 0;
+    virtualItemInfo.fields.inventoryType = 0;
+    virtualItemInfo.fields.sheath = 0;
+    if (const auto itemProperties = sMySQLStore.getItemProperties(item_id))
+    {
+        displayId = itemProperties->DisplayInfoID;
+        virtualItemInfo.fields.itemClass = static_cast<uint8_t>(itemProperties->Class);
+        virtualItemInfo.fields.itemSubClass = static_cast<uint8_t>(itemProperties->SubClass);
+        virtualItemInfo.fields.material = static_cast<uint8_t>(itemProperties->LockMaterial);
+        virtualItemInfo.fields.inventoryType = static_cast<uint8_t>(itemProperties->InventoryType);
+        virtualItemInfo.fields.sheath = static_cast<uint8_t>(itemProperties->SheathID);
+    }
+    else if (const auto itemDbc = sItemStore.LookupEntry(item_id))
+    {
+        displayId = itemDbc->DisplayId;
+        virtualItemInfo.fields.inventoryType = static_cast<uint8_t>(itemDbc->InventoryType);
+        virtualItemInfo.fields.sheath = static_cast<uint8_t>(itemDbc->Sheath);
+
+        // Following values do not exist in dbcs and must be "hackfixed"
+        virtualItemInfo.fields.material = ITEM_MATERIAL_METAL;
+        switch (virtualItemInfo.fields.inventoryType)
+        {
+            case INVTYPE_WEAPON:
+            case INVTYPE_WEAPONMAINHAND:
+            case INVTYPE_WEAPONOFFHAND:
+                virtualItemInfo.fields.itemClass = ITEM_CLASS_WEAPON;
+                virtualItemInfo.fields.itemSubClass = ITEM_SUBCLASS_WEAPON_SWORD;
+                break;
+            case INVTYPE_SHIELD:
+                virtualItemInfo.fields.itemClass = ITEM_CLASS_ARMOR;
+                virtualItemInfo.fields.itemSubClass = ITEM_SUBCLASS_ARMOR_SHIELD;
+                break;
+            case INVTYPE_RANGED:
+                virtualItemInfo.fields.itemClass = ITEM_CLASS_WEAPON;
+                virtualItemInfo.fields.itemSubClass = ITEM_SUBCLASS_WEAPON_BOW;
+                break;
+            case INVTYPE_RANGEDRIGHT:
+                virtualItemInfo.fields.itemClass = ITEM_CLASS_WEAPON;
+                virtualItemInfo.fields.itemSubClass = ITEM_SUBCLASS_WEAPON_GUN;
+                break;
+            case INVTYPE_2HWEAPON:
+                virtualItemInfo.fields.itemClass = ITEM_CLASS_WEAPON;
+                if (virtualItemInfo.fields.sheath == ITEM_SHEATH_STAFF)
+                    virtualItemInfo.fields.itemSubClass = ITEM_SUBCLASS_WEAPON_STAFF;
+                else
+                    virtualItemInfo.fields.itemSubClass = ITEM_SUBCLASS_WEAPON_TWOHAND_SWORD;
+                break;
+            case INVTYPE_HOLDABLE:
+                virtualItemInfo.fields.itemClass = ITEM_CLASS_MISCELLANEOUS;
+                virtualItemInfo.fields.itemSubClass = ITEM_SUBCLASS_MISC_JUNK;
+                break;
+            case INVTYPE_THROWN:
+                virtualItemInfo.fields.itemClass = ITEM_CLASS_WEAPON;
+                virtualItemInfo.fields.itemSubClass = ITEM_SUBCLASS_WEAPON_THROWN;
+                break;
+            default:
+                return;
+        }
+    }
+    else
+    {
+        return;
+    }
+
+    if (isCreature())
+        dynamic_cast<Creature*>(this)->setVirtualItemEntry(slot, item_id);
+
+    write(unitData()->virtual_item_slot_display[slot], displayId);
+    setVirtualItemInfo(slot, virtualItemInfo.raw);
+#endif
+}
 
 #if VERSION_STRING < WotLK
-uint32_t Unit::getVirtualItemInfo(uint8_t offset) const { return unitData()->virtual_item_info[offset]; }
-void Unit::setVirtualItemInfo(uint8_t offset, uint32_t item_info) { write(unitData()->virtual_item_info[offset], item_info); }
+uint64_t Unit::getVirtualItemInfo(uint8_t slot) const { return unitData()->virtual_item_info[slot].raw; }
+unit_virtual_item_info Unit::getVirtualItemInfoFields(uint8_t slot) const { return unitData()->virtual_item_info[slot]; }
+void Unit::setVirtualItemInfo(uint8_t slot, uint64_t item_info) { write(unitData()->virtual_item_info[slot].raw, item_info); }
 #endif
 
 uint32_t Unit::getUnitFlags() const { return unitData()->unit_flags; }

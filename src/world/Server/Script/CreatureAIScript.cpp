@@ -927,7 +927,11 @@ void CreatureAIScript::_setWieldWeapon(bool setWieldWeapon)
 
 void CreatureAIScript::_setDisplayWeapon(bool setMainHand, bool setOffHand)
 {
+#if VERSION_STRING < WotLK
+    _setDisplayWeaponIds(setMainHand ? _creature->getVirtualItemEntry(MELEE) : 0, setOffHand ? _creature->getVirtualItemEntry(OFFHAND) : 0);
+#else
     _setDisplayWeaponIds(setMainHand ? _creature->getVirtualItemSlotId(MELEE) : 0, setOffHand ? _creature->getVirtualItemSlotId(OFFHAND) : 0);
+#endif
 }
 
 void CreatureAIScript::_setDisplayWeaponIds(uint32_t itemId1, uint32_t itemId2)

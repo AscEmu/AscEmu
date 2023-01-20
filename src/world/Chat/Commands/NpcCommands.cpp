@@ -489,9 +489,15 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     //////////////////////////////////////////////////////////////////////////////////////////
     // equipment
     GreenSystemMessage(m_session, "Equipment ============================");
-    GreenSystemMessage(m_session, "-- Melee: %u (displayid)", creature_target->getVirtualItemSlotId(MELEE));
-    GreenSystemMessage(m_session, "-- Offhand: %u (displayid)", creature_target->getVirtualItemSlotId(OFFHAND));
-    GreenSystemMessage(m_session, "-- Ranged: %u (displayid)", creature_target->getVirtualItemSlotId(RANGED));
+#if VERSION_STRING < WotLK
+    GreenSystemMessage(m_session, "-- Melee: %u", creature_target->getVirtualItemEntry(MELEE));
+    GreenSystemMessage(m_session, "-- Offhand: %u", creature_target->getVirtualItemEntry(OFFHAND));
+    GreenSystemMessage(m_session, "-- Ranged: %u", creature_target->getVirtualItemEntry(RANGED));
+#else
+    GreenSystemMessage(m_session, "-- Melee: %u", creature_target->getVirtualItemSlotId(MELEE));
+    GreenSystemMessage(m_session, "-- Offhand: %u", creature_target->getVirtualItemSlotId(OFFHAND));
+    GreenSystemMessage(m_session, "-- Ranged: %u", creature_target->getVirtualItemSlotId(RANGED));
+#endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // transport
@@ -738,9 +744,6 @@ bool ChatHandler::HandleNpcSpawnCommand(const char* args, WorldSession* m_sessio
     creature_spawn->Item2SlotEntry = creature_properties->itemslot_2;
     creature_spawn->Item3SlotEntry = creature_properties->itemslot_3;
 
-    creature_spawn->Item1SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(creature_spawn->Item1SlotEntry);
-    creature_spawn->Item2SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(creature_spawn->Item2SlotEntry);
-    creature_spawn->Item3SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(creature_spawn->Item3SlotEntry);
     creature_spawn->CanFly = 0;
     creature_spawn->phase = m_session->GetPlayer()->GetPhase();
     creature_spawn->waypoint_id = 0;
@@ -1050,27 +1053,33 @@ bool ChatHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_ses
         return true;
     }
 
+#if VERSION_STRING < WotLK
+    const auto previousValue = creature_target->getVirtualItemEntry(equipment_slot);
+#else
+    const auto previousValue = creature_target->getVirtualItemSlotId(equipment_slot);
+#endif
+
     switch (equipment_slot)
     {
         case MELEE:
         {
             creature_target->m_spawn->Item1SlotEntry = item_id;
-            GreenSystemMessage(m_session, "Melee slot successfull changed from %u to %u for Creature %s", creature_target->getVirtualItemSlotId(equipment_slot), item_entry->DisplayId, creature_target->GetCreatureProperties()->Name.c_str());
-            sGMLog.writefromsession(m_session, "changed melee slot from %u to %u for creature spawn %u", creature_target->getVirtualItemSlotId(equipment_slot), item_entry->DisplayId, creature_target->spawnid);
+            GreenSystemMessage(m_session, "Melee slot successfull changed from %u to %u for Creature %s", previousValue, item_id, creature_target->GetCreatureProperties()->Name.c_str());
+            sGMLog.writefromsession(m_session, "changed melee slot from %u to %u for creature spawn %u", previousValue, item_id, creature_target->spawnid);
             break;
         }
         case OFFHAND:
         {
             creature_target->m_spawn->Item2SlotEntry = item_id;
-            GreenSystemMessage(m_session, "Offhand slot successfull changed from %u to %u for Creature %s", creature_target->getVirtualItemSlotId(equipment_slot), item_entry->DisplayId, creature_target->GetCreatureProperties()->Name.c_str());
-            sGMLog.writefromsession(m_session, "changed offhand slot from %u to %u for creature spawn %u", creature_target->getVirtualItemSlotId(equipment_slot), item_entry->DisplayId, creature_target->spawnid);
+            GreenSystemMessage(m_session, "Offhand slot successfull changed from %u to %u for Creature %s", previousValue, item_id, creature_target->GetCreatureProperties()->Name.c_str());
+            sGMLog.writefromsession(m_session, "changed offhand slot from %u to %u for creature spawn %u", previousValue, item_id, creature_target->spawnid);
             break;
         }
         case RANGED:
         {
             creature_target->m_spawn->Item3SlotEntry = item_id;
-            GreenSystemMessage(m_session, "Ranged slot successfull changed from %u to %u for Creature %s", creature_target->getVirtualItemSlotId(equipment_slot), item_entry->DisplayId, creature_target->GetCreatureProperties()->Name.c_str());
-            sGMLog.writefromsession(m_session, "changed ranged slot from %u to %u for creature spawn %u", creature_target->getVirtualItemSlotId(equipment_slot), item_entry->DisplayId, creature_target->spawnid);
+            GreenSystemMessage(m_session, "Ranged slot successfull changed from %u to %u for Creature %s", previousValue, item_id, creature_target->GetCreatureProperties()->Name.c_str());
+            sGMLog.writefromsession(m_session, "changed ranged slot from %u to %u for creature spawn %u", previousValue, item_id, creature_target->spawnid);
             break;
         }
         default:
@@ -1080,7 +1089,7 @@ bool ChatHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_ses
         }
     }
 
-    creature_target->setVirtualItemSlotId(equipment_slot, item_entry->DisplayId);
+    creature_target->setVirtualItemSlotId(equipment_slot, item_id);
     creature_target->SaveToDB();
     return true;
 }
