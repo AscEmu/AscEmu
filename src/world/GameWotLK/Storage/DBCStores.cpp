@@ -239,7 +239,7 @@ bool LoadDBCs()
         for (uint32_t i = 0; i < sMapDifficultyStore.GetNumRows(); ++i)
         {
             if (auto entry = sMapDifficultyStore.LookupEntry(i))
-                sMapDifficultyMap[Util::MAKE_PAIR32(entry->MapID, entry->Difficulty)] = DBC::Structures::MapDifficulty(entry->RaidDuration, entry->MaxPlayers, entry->Message[0] != '\0');
+                sMapDifficultyMap[Util::MAKE_PAIR32(static_cast<uint16_t>(entry->MapID), static_cast<uint16_t>(entry->Difficulty))] = DBC::Structures::MapDifficulty(entry->RaidDuration, entry->MaxPlayers, entry->Message[0] != '\0');
         }
     }
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sHolidaysStore, dbc_path, "Holidays.dbc");       //loaded but not used
@@ -332,7 +332,7 @@ DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 roo
 
 DBC::Structures::MapDifficulty const* getMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties difficulty)
 {
-    MapDifficultyMap::const_iterator itr = sMapDifficultyMap.find(Util::MAKE_PAIR32(mapId, difficulty));
+    MapDifficultyMap::const_iterator itr = sMapDifficultyMap.find(Util::MAKE_PAIR32(static_cast<uint16_t>(mapId), static_cast<uint16_t>(difficulty)));
     return itr != sMapDifficultyMap.end() ? &itr->second : nullptr;
 }
 

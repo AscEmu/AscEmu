@@ -1978,7 +1978,7 @@ void Player::indoorCheckUpdate(uint32_t time)
                 // this is duplicated check, but some mount auras comes w/o this flag set, maybe due to spellfixes.cpp line:663
                 dismount();
 
-                for (uint32_t x = AuraSlots::POSITIVE_SLOT_START; x < AuraSlots::POSITIVE_SLOT_END; ++x)
+                for (uint16_t x = AuraSlots::POSITIVE_SLOT_START; x < AuraSlots::POSITIVE_SLOT_END; ++x)
                 {
                     auto* const aur = getAuraWithAuraSlot(x);
                     if (aur && aur->getSpellInfo()->getAttributes() & ATTRIBUTES_ONLY_OUTDOORS)
@@ -6785,8 +6785,8 @@ void Player::removeTempItemEnchantsOnArena()
                 Container* bag = static_cast<Container*>(item);
                 for (uint32_t ci = 0; ci < bag->getItemProperties()->ContainerSlots; ++ci)
                 {
-                    if (item = bag->GetItem(static_cast<int16_t>(ci)))
-                        item->removeAllEnchantments(true);
+                    if (auto* const bagItem = bag->GetItem(static_cast<int16_t>(ci)))
+                        bagItem->removeAllEnchantments(true);
                 }
             }
         }
@@ -7088,7 +7088,7 @@ void Player::applyItemMods(Item* item, int16_t slot, bool apply, bool justBroked
 
     if (!apply)
     {
-        for (uint32_t posIndex = AuraSlots::POSITIVE_SLOT_START; posIndex < AuraSlots::POSITIVE_SLOT_END; ++posIndex)
+        for (uint16_t posIndex = AuraSlots::POSITIVE_SLOT_START; posIndex < AuraSlots::POSITIVE_SLOT_END; ++posIndex)
         {
             if (auto* const m_aura = this->getAuraWithAuraSlot(posIndex))
                 if (m_aura->m_castedItemId && m_aura->m_castedItemId == itemProperties->ItemId)
@@ -10905,23 +10905,23 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
         {
             uint8_t slottype = LOOT_SLOT_TYPE_ALLOW_LOOT;
 
-            LootItem& item = pLoot->quest_items[qi->index];
-            if (!qi->is_looted && !item.is_looted && item.allowedForPlayer(this))
+            LootItem& questItem = pLoot->quest_items[qi->index];
+            if (!qi->is_looted && !questItem.is_looted && questItem.allowedForPlayer(this))
             {
                 data << uint8_t(pLoot->items.size() + (qi - q_list->begin()));
-                data << uint32_t(item.itemproto->ItemId);
-                data << uint32_t(item.count);  //nr of items of this type
-                data << uint32_t(item.itemproto->DisplayInfoID);
+                data << uint32_t(questItem.itemproto->ItemId);
+                data << uint32_t(questItem.count);  //nr of items of this type
+                data << uint32_t(questItem.itemproto->DisplayInfoID);
 
-                if (item.iRandomSuffix)
+                if (questItem.iRandomSuffix)
                 {
-                    data << uint32_t(Item::generateRandomSuffixFactor(item.itemproto));
-                    data << uint32_t(-int32_t(item.iRandomSuffix->id));
+                    data << uint32_t(Item::generateRandomSuffixFactor(questItem.itemproto));
+                    data << uint32_t(-int32_t(questItem.iRandomSuffix->id));
                 }
-                else if (item.iRandomProperty)
+                else if (questItem.iRandomProperty)
                 {
                     data << uint32_t(0);
-                    data << uint32_t(item.iRandomProperty->ID);
+                    data << uint32_t(questItem.iRandomProperty->ID);
                 }
                 else
                 {
@@ -10947,23 +10947,23 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
         {
             uint8_t slottype = LOOT_SLOT_TYPE_ALLOW_LOOT;
 
-            LootItem& item = pLoot->items[fi->index];
-            if (!fi->is_looted && !item.is_looted && item.allowedForPlayer(this))
+            LootItem& ffaItem = pLoot->items[fi->index];
+            if (!fi->is_looted && !ffaItem.is_looted && ffaItem.allowedForPlayer(this))
             {
                 data << uint8_t(fi->index);
-                data << uint32_t(item.itemproto->ItemId);
-                data << uint32_t(item.count);  //nr of items of this type
-                data << uint32_t(item.itemproto->DisplayInfoID);
+                data << uint32_t(ffaItem.itemproto->ItemId);
+                data << uint32_t(ffaItem.count);  //nr of items of this type
+                data << uint32_t(ffaItem.itemproto->DisplayInfoID);
 
-                if (item.iRandomSuffix)
+                if (ffaItem.iRandomSuffix)
                 {
-                    data << uint32_t(Item::generateRandomSuffixFactor(item.itemproto));
-                    data << uint32_t(-int32_t(item.iRandomSuffix->id));
+                    data << uint32_t(Item::generateRandomSuffixFactor(ffaItem.itemproto));
+                    data << uint32_t(-int32_t(ffaItem.iRandomSuffix->id));
                 }
-                else if (item.iRandomProperty)
+                else if (ffaItem.iRandomProperty)
                 {
                     data << uint32_t(0);
-                    data << uint32_t(item.iRandomProperty->ID);
+                    data << uint32_t(ffaItem.iRandomProperty->ID);
                 }
                 else
                 {
@@ -11693,7 +11693,7 @@ void Player::handleSobering()
 {
     m_drunkTimer = 0;
 
-    setDrunkValue((m_serversideDrunkValue <= 256) ? 0 : (m_serversideDrunkValue - 256));
+    setDrunkValue((m_serversideDrunkValue <= 256) ? 0U : static_cast<uint8_t>(m_serversideDrunkValue - 256));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -14877,28 +14877,27 @@ void Player::updateChanceFields()
 void Player::updateAttackSpeed()
 {
     uint32_t speed = 2000;
-    Item* itemWeapon;
 
     if (getShapeShiftForm() == FORM_CAT)
         speed = 1000;
     else if (getShapeShiftForm() == FORM_BEAR || getShapeShiftForm() == FORM_DIREBEAR)
         speed = 2500;
     else if (!m_isDisarmed)
-        if (itemWeapon = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND))
+        if (const auto* itemWeapon = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND))
             speed = itemWeapon->getItemProperties()->Delay;
 
     setBaseAttackTime(MELEE, static_cast<uint32_t>(static_cast<float>(speed) / (getAttackSpeedModifier(MELEE) * (1.0f + calcRating(CR_HASTE_MELEE) / 100.0f))));
 
-    itemWeapon = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-    if (itemWeapon && itemWeapon->getItemProperties()->Class == ITEM_CLASS_WEAPON)
+    const auto* offhandWeapon = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+    if (offhandWeapon && offhandWeapon->getItemProperties()->Class == ITEM_CLASS_WEAPON)
     {
-        speed = itemWeapon->getItemProperties()->Delay;
+        speed = offhandWeapon->getItemProperties()->Delay;
         setBaseAttackTime(OFFHAND, static_cast<uint32_t>(static_cast<float>(speed) / (getAttackSpeedModifier(OFFHAND) * (1.0f + calcRating(CR_HASTE_MELEE) / 100.0f))));
     }
 
-    if (itemWeapon = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED))
+    if (const auto* rangedWeapon = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED))
     {
-        speed = itemWeapon->getItemProperties()->Delay;
+        speed = rangedWeapon->getItemProperties()->Delay;
         setBaseAttackTime(RANGED, static_cast<uint32_t>(static_cast<float>(speed) / (getAttackSpeedModifier(RANGED) * (1.0f + calcRating(CR_HASTE_RANGED) / 100.0f))));
     }
 }
@@ -16028,7 +16027,7 @@ void Player::saveAuras(std::stringstream& ss)
 {
     ss << "'";
     uint32_t charges = 0;
-    uint32_t prevX = 0;
+    uint16_t prevX = 0;
 
     // save all auras why only just positive?
     for (uint16_t x = AuraSlots::REMOVABLE_SLOT_START; x < AuraSlots::REMOVABLE_SLOT_END; x++)
@@ -16239,7 +16238,8 @@ void Player::calculateDamage()
     // Offhand END
     // Ranged
     cr = 0;
-    if ((item = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED)))
+    item = getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+    if (item)
     {
         damageMod = 1;
         for (std::map<uint32_t, WeaponModifier>::iterator weaponMod = m_damageDone.begin(); weaponMod != m_damageDone.end(); ++weaponMod)

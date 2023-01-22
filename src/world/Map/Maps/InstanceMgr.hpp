@@ -123,7 +123,7 @@ public:
 
         InstResetEvent() : type(0), difficulty(InstanceDifficulty::Difficulties::DUNGEON_NORMAL), mapid(0), instanceId(0) { }
         InstResetEvent(uint8_t t, uint32_t _mapid, InstanceDifficulty::Difficulties d, uint16_t _instanceid)
-            : type(t), difficulty(d), mapid(_mapid), instanceId(_instanceid) { }
+            : type(t), difficulty(d), mapid(static_cast<uint16_t>(_mapid)), instanceId(_instanceid) { }
         bool operator==(InstResetEvent const& e) const { return e.instanceId == instanceId; }
     };
     typedef std::multimap<time_t, InstResetEvent> ResetTimeQueue;

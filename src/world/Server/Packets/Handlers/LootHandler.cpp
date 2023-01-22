@@ -460,11 +460,11 @@ void WorldSession::doLootRelease(WoWGuid lguid)
     }
     else if (lguid.isPlayer())
     {
-        if (auto player = sObjectMgr.GetPlayer(lguid.getGuidLow()))
+        if (auto lootablePlayer = sObjectMgr.GetPlayer(lguid.getGuidLow()))
         {
-            player->m_lootableOnCorpse = false;
-            player->loot.items.clear();
-            player->removeDynamicFlags(U_DYN_FLAG_LOOTABLE);
+            lootablePlayer->m_lootableOnCorpse = false;
+            lootablePlayer->loot.items.clear();
+            lootablePlayer->removeDynamicFlags(U_DYN_FLAG_LOOTABLE);
         }
     }
     else

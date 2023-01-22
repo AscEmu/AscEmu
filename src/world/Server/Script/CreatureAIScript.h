@@ -129,7 +129,7 @@ public:
     virtual void StringFunctionCall(int) {}
 
     // Used in AIInterface to make a Creatures Attack Only in certain conditions
-    virtual bool canAttackTarget(Unit* target) { return true; }
+    virtual bool canAttackTarget(Unit* /*target*/) { return true; }
 
     // Summon
     virtual void onSummonedCreature(Creature* /*summon*/) {}    // We summoned a Creature

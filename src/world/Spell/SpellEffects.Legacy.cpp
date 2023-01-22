@@ -3807,7 +3807,7 @@ void Spell::SpellEffectDispel(uint8_t effectIndex) // Dispel
     std::list< uint32 > dispelledSpells;
     bool finish = false;
 
-    for (uint32 x = start; x < end; x++)
+    for (uint16_t x = start; x < end; x++)
     {
         if (auto* const aur = unitTarget->getAuraWithAuraSlot(x))
         {
@@ -3996,7 +3996,7 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
 
         LocationVector pos = { posx, posy, pz, u_caster->GetOrientation() };
         QuaternionData rot = QuaternionData::fromEulerAnglesZYX(u_caster->GetOrientation(), 0.f, 0.f);
-        GameObject* go = u_caster->getWorldMap()->createGameObject(entry);
+        go = u_caster->getWorldMap()->createGameObject(entry);
         if (!go->create(entry, map, u_caster->GetPhase(), pos, rot, GO_STATE_CLOSED))
         {
             delete go;
@@ -5852,7 +5852,7 @@ void Spell::SpellEffectSpellSteal(uint8_t /*effectIndex*/)
 
     std::list< uint32 > stealedSpells;
 
-    for (uint32 x = start; x < end; x++)
+    for (auto x = start; x < end; x++)
     {
         if (auto* const aur = unitTarget->getAuraWithAuraSlot(x))
         {
@@ -5999,7 +5999,7 @@ void Spell::SpellEffectTriggerSpellWithValue(uint8_t effectIndex)
 
     Spell* sp = sSpellMgr.newSpell(m_caster, TriggeredSpell, true, nullptr);
 
-    for (uint32 x = 0; x < 3; x++)
+    for (uint8_t x = 0; x < 3; x++)
     {
         if (effectIndex == x)
             sp->forced_basepoints.set(x, damage);  //prayer of mending should inherit heal bonus ?

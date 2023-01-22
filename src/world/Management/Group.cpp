@@ -493,7 +493,7 @@ void Group::RemovePlayer(CachedCharacterInfo* info)
         }
 
         //Remove some party auras.
-        for (uint32 i = AuraSlots::POSITIVE_SLOT_START; i < AuraSlots::POSITIVE_SLOT_END; i++)
+        for (uint16_t i = AuraSlots::POSITIVE_SLOT_START; i < AuraSlots::POSITIVE_SLOT_END; i++)
         {
             auto* const aur = pPlayer->getAuraWithAuraSlot(i);
             if (aur && aur->m_areaAura)
@@ -918,7 +918,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     {
         uint64 auramask = pPlayer->getAuraUpdateMaskForRaid();
         *data << uint64(auramask);
-        for (uint32 i = 0; i < 64; ++i)
+        for (uint8_t i = 0; i < 64; ++i)
         {
             if (auramask & (uint64(1) << i))
             {
@@ -1010,7 +1010,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
         {
             uint64 auramask = pet->getAuraUpdateMaskForRaid();
             *data << uint64(auramask);
-            for (uint32 i = 0; i < 64; ++i)
+            for (uint8_t i = 0; i < 64; ++i)
             {
                 if (auramask & (uint64(1) << i))
                 {
