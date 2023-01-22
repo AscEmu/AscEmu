@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "UpdateManager.hpp"
 #include <cstdint>
 #include <vector>
+#include "Map/Maps/WorldMap.hpp"
 #include "Objects/Units/Players/Player.hpp"
 
 UpdateManager::UpdateManager(Player* owner, size_t compressionThreshold, size_t creationBufferInitialSize, size_t updateBufferInitialSize, size_t outOfRangeIdsInitialSize)

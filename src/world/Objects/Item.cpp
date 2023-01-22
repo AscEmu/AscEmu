@@ -4,14 +4,17 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Container.h"
-#include "Data/WoWItem.hpp"
 #include "Item.hpp"
 #include "Map/Management/MapMgrDefines.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Definitions.h"
 #include "Server/Packets/SmsgEnchantmentLog.h"
 #include "Server/Packets/SmsgItemEnchantmentTimeUpdate.h"
 #include "Server/Packets/SmsgItemTimeUpdate.h"
+#include "Storage/MySQLDataStore.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
+#include "Spell/SpellMgr.hpp"
+#include "Util/Strings.hpp"
 
 using namespace AscEmu::Packets;
 

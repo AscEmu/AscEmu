@@ -7,8 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Spline.h"
 #include "MoveSplineInitArgs.h"
+#include "Objects/Units/UnitDefines.hpp"
 #include <G3D/Vector3.h>
-
 #include "LocationVector.h"
 
 namespace MovementMgr {

@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChannelMgr.hpp"
 #include "Macros/CorpseMacros.hpp"
 #include "Macros/ScriptMacros.hpp"
+#include "Management/Faction.h"
 #include "Management/HonorHandler.h"
 #include "Management/Battleground/Battleground.hpp"
 #include "Management/Guild/GuildMgr.hpp"
