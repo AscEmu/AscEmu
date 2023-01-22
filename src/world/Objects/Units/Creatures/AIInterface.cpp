@@ -1157,10 +1157,6 @@ bool AIInterface::doInitialAttack(Unit* target, bool isMelee)
         getUnit()->emote(EMOTE_ONESHOT_NONE);
     }
 
-    // delay offhand weapon attack by 50% of the base attack time
-    if (getUnit()->canDualWield())
-        getUnit()->setAttackTimer(OFFHAND, std::max(getUnit()->getAttackTimer(OFFHAND), getUnit()->getAttackTimer(MELEE) + uint32_t(Util::calculatePct(getUnit()->getBaseAttackTime(OFFHAND), 50))));
-
     if (isMelee)
         getUnit()->smsg_AttackStart(target);
 
@@ -1363,11 +1359,18 @@ void AIInterface::handleAgentMelee()
             {
                 getUnit()->resetAttackTimer(MELEE);
                 if (getUnit()->getOnMeleeSpell() != 0)
-                {
                     getUnit()->castOnMeleeSpell();
-                }
                 else
                     getUnit()->strike(getCurrentTarget(), MELEE, NULL, 0, 0, 0, false, false);
+
+                if (getUnit()->canDualWield())
+                {
+                    // NPCs always seem to wait 50% of attack timer before doing attack on other hand
+                    const auto halfAttackSpeed = static_cast<uint32_t>(getUnit()->getBaseAttackTime(OFFHAND) * getUnit()->getAttackSpeedModifier(OFFHAND) * 0.5f);
+                    const auto msTime = Util::getMSTime();
+                    if (getUnit()->getAttackTimer(OFFHAND) < msTime || (getUnit()->getAttackTimer(OFFHAND) - msTime) < halfAttackSpeed)
+                        getUnit()->setAttackTimer(OFFHAND, halfAttackSpeed);
+                }
             }
 
             // Offhand
@@ -1375,6 +1378,12 @@ void AIInterface::handleAgentMelee()
             {
                 getUnit()->resetAttackTimer(OFFHAND);
                 getUnit()->strike(getCurrentTarget(), OFFHAND, NULL, 0, 0, 0, false, false);
+
+                // NPCs always seem to wait 50% of attack timer before doing attack on other hand
+                const auto halfAttackSpeed = static_cast<uint32_t>(getUnit()->getBaseAttackTime(MELEE) * getUnit()->getAttackSpeedModifier(MELEE) * 0.5f);
+                const auto msTime = Util::getMSTime();
+                if (getUnit()->getAttackTimer(MELEE) < msTime || (getUnit()->getAttackTimer(MELEE) - msTime) < halfAttackSpeed)
+                    getUnit()->setAttackTimer(MELEE, halfAttackSpeed);
             }
         }
     }

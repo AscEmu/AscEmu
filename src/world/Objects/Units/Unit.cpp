@@ -945,15 +945,41 @@ uint32_t Unit::getVirtualItemDisplayId(uint8_t slot) const { return unitData()->
 #endif
 void Unit::setVirtualItemSlotId(uint8_t slot, uint32_t item_id)
 {
+    const auto isProperOffhandWeapon = [](uint32_t itemClass, uint32_t itemSubClass) -> bool
+    {
+        if (itemClass != ITEM_CLASS_WEAPON)
+            return false;
+
+        switch (itemSubClass)
+        {
+            case ITEM_SUBCLASS_WEAPON_BOW:
+            case ITEM_SUBCLASS_WEAPON_GUN:
+            case ITEM_SUBCLASS_WEAPON_THROWN:
+            case ITEM_SUBCLASS_WEAPON_CROSSBOW:
+            case ITEM_SUBCLASS_WEAPON_WAND:
+                return false;
+            default:
+                break;
+        }
+
+        return true;
+    };
+
     if (item_id == 0)
     {
         write(unitData()->virtual_item_slot_display[slot], 0U);
 #if VERSION_STRING < WotLK
         setVirtualItemInfo(slot, 0);
+#endif
 
         if (isCreature())
+        {
+#if VERSION_STRING < WotLK
             dynamic_cast<Creature*>(this)->setVirtualItemEntry(slot, 0);
 #endif
+            if (slot == OFFHAND)
+                dynamic_cast<Creature*>(this)->toggleDualwield(false);
+        }
         return;
     }
 
@@ -964,6 +990,9 @@ void Unit::setVirtualItemSlotId(uint8_t slot, uint32_t item_id)
         || (itemDbc->Class == ITEM_CLASS_ARMOR && itemDbc->SubClass == ITEM_SUBCLASS_ARMOR_SHIELD)
         || itemDbc->InventoryType == INVTYPE_HOLDABLE))
         return;
+
+    if (isCreature() && slot == OFFHAND)
+        dynamic_cast<Creature*>(this)->toggleDualwield(isProperOffhandWeapon(itemDbc->Class, itemDbc->SubClass));
 
     write(unitData()->virtual_item_slot_display[slot], item_id);
 #else
@@ -1039,7 +1068,11 @@ void Unit::setVirtualItemSlotId(uint8_t slot, uint32_t item_id)
     }
 
     if (isCreature())
+    {
         dynamic_cast<Creature*>(this)->setVirtualItemEntry(slot, item_id);
+        if (slot == OFFHAND)
+            dynamic_cast<Creature*>(this)->toggleDualwield(isProperOffhandWeapon(virtualItemInfo.fields.itemClass, virtualItemInfo.fields.itemSubClass));
+    }
 
     write(unitData()->virtual_item_slot_display[slot], displayId);
     setVirtualItemInfo(slot, virtualItemInfo.raw);
@@ -10277,6 +10310,9 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 self_skill = std::max(self_skill, (static_cast<int32_t>(pVictim->getLevel()) + 3) * 5);    //used max to avoid situation when lowlvl hits boss.
         }
         crit = 5.0f;        //will be modified later
+
+        if (dmg.weaponType == OFFHAND)
+            hit_status |= HITSTATUS_DUALWIELD;
     }
     //////////////////////////////////////////////////////////////////////////////////////////
     //Special Chances Base Calculation

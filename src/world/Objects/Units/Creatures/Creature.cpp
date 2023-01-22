@@ -310,6 +310,24 @@ void Creature::setVirtualItemEntry(uint8_t slot, uint32_t itemId)
 }
 #endif
 
+void Creature::toggleDualwield(bool enable)
+{
+    setDualWield(enable);
+    if (enable)
+    {
+        setBaseAttackTime(OFFHAND, getBaseAttackTime(MELEE));
+        // Creatures deal 50% damage on offhand hits
+        setMinOffhandDamage(getMinDamage() * 0.5f);
+        setMaxOffhandDamage(getMaxDamage() * 0.5f);
+    }
+    else
+    {
+        setBaseAttackTime(OFFHAND, 0);
+        setMinOffhandDamage(0.0f);
+        setMaxOffhandDamage(0.0f);
+    }
+}
+
 std::vector<CreatureItem>* Creature::getSellItems()
 {
     return m_SellItems;

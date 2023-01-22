@@ -108,6 +108,7 @@ public:
     uint32_t getVirtualItemEntry(uint8_t slot) const;
     void setVirtualItemEntry(uint8_t slot, uint32_t itemId);
 #endif
+    void toggleDualwield(bool);
 
     std::vector<CreatureItem>* getSellItems();
 
