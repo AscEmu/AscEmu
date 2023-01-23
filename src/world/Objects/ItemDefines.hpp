@@ -410,6 +410,29 @@ enum Item_Subclass
     ITEM_SUBCLASS_MISC_JUNK                 = 0,
 };
 
+enum Item_Sheaths : uint8_t
+{
+    ITEM_SHEATH_NONE                    = 0,
+    ITEM_SHEATH_TWO_HANDED_WEAPON       = 1,
+    ITEM_SHEATH_STAFF                   = 2,
+    ITEM_SHEATH_ONE_HANDED_WEAPON       = 3,
+    ITEM_SHEATH_SHIELD                  = 4,
+    ITEM_SHEATH_ENCHANTER_ROD           = 5,
+    ITEM_SHEATH_OFF_HAND                = 6,
+};
+
+enum Item_Materials : uint8_t
+{
+    ITEM_MATERIAL_METAL                 = 1,
+    ITEM_MATERIAL_WOOD                  = 2,
+    ITEM_MATERIAL_LIQUID                = 3,
+    ITEM_MATERIAL_JEWELRY               = 4,
+    ITEM_MATERIAL_CHAIN                 = 5,
+    ITEM_MATERIAL_PLATE                 = 6,
+    ITEM_MATERIAL_CLOTH                 = 7,
+    ITEM_MATERIAL_LEATHER               = 8,
+};
+
 enum ITEM_QUALITY
 {
     ITEM_QUALITY_POOR_GREY              = 0,

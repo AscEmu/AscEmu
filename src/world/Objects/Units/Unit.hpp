@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "CombatHandler.hpp"
+#include "Data/WoWUnit.hpp"
 #include "Management/LootMgr.h"
 #include "Macros/UnitMacros.hpp"
 #include "Movement/AbstractFollower.h"
@@ -263,12 +264,19 @@ public:
         setServersideFaction();
     }
 
+#if VERSION_STRING >= WotLK
+    // Returns item entry in wotlk and above
     uint32_t getVirtualItemSlotId(uint8_t slot) const;
+#else
+    // Returns item display id in classic and tbc
+    uint32_t getVirtualItemDisplayId(uint8_t slot) const;
+#endif
     void setVirtualItemSlotId(uint8_t slot, uint32_t item_id);
 
 #if VERSION_STRING < WotLK
-    uint32_t getVirtualItemInfo(uint8_t offset) const;
-    void setVirtualItemInfo(uint8_t offset, uint32_t item_info);
+    uint64_t getVirtualItemInfo(uint8_t slot) const;
+    unit_virtual_item_info getVirtualItemInfoFields(uint8_t slot) const;
+    void setVirtualItemInfo(uint8_t slot, uint64_t item_info);
 #endif
 
     uint32_t getUnitFlags() const;

@@ -505,45 +505,6 @@ ItemProperties const* MySQLDataStore::getItemProperties(uint32_t entry)
     return nullptr;
 }
 
-//\ brief: On versions lower than wotlk our db includes the item entry instead of the displayid.
-//         In wotlk and newer the database includes the displayid since no more additional data is required for creature equipment.
-// Actually this is item entry id on all versions but wotlk and newer clients can get the display id by themselves from entry id - Appled
-uint32_t const MySQLDataStore::getItemDisplayIdForEntry(uint32_t entry)
-{
-    if (entry != 0)
-    {
-#if VERSION_STRING == TBC
-        // get display id for equipped item entry
-        uint32_t dbcDisplay = 0;
-        uint32_t mysqlDisplay = 0;
-
-        if (const auto ItemDBC = sItemStore.LookupEntry(entry))
-            dbcDisplay = ItemDBC->DisplayId;
-
-        if (const auto itemProperties = getItemProperties(entry))
-            mysqlDisplay = itemProperties->DisplayInfoID;
-
-        if (mysqlDisplay != 0 && mysqlDisplay != dbcDisplay)
-        {
-            if (const auto itemDisplayInfo = sItemDisplayInfoStore.LookupEntry(mysqlDisplay))
-                return mysqlDisplay;
-        }
-
-        if (dbcDisplay != 0)
-        {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Item entry %u not available in item_properties or has an invalid displayId! Using dbcDisplayId %u!", entry, dbcDisplay);
-            return dbcDisplay;
-        }
-
-        sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Invalid item entry %u is not in item_properties table or in Item.dbc! Please create a item_properties entry to return a valid displayId", entry);
-#else
-        return entry;
-#endif
-    }
-
-    return 0;
-}
-
 std::string MySQLDataStore::getItemLinkByProto(ItemProperties const* iProto, uint32_t language/* = 0*/)
 {
     char buffer[256];
@@ -2408,20 +2369,23 @@ void MySQLDataStore::loadCreatureInitialEquipmentTable()
             continue;
         }
 
-        if (sMySQLStore.getItemProperties(fields[1].GetUInt32()))
-            const_cast<CreatureProperties*>(creature_properties)->itemslot_1 = sMySQLStore.getItemDisplayIdForEntry(fields[1].GetUInt32());
+        uint32_t itemId = fields[1].GetUInt32();
+        if (sMySQLStore.getItemProperties(itemId) || sItemStore.LookupEntry(itemId))
+            const_cast<CreatureProperties*>(creature_properties)->itemslot_1 = itemId;
         else
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_1 %u for creature %u", fields[1].GetUInt32(), entry);
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_1 %u for creature %u", itemId, entry);
 
-        if (sMySQLStore.getItemProperties(fields[2].GetUInt32()))
-            const_cast<CreatureProperties*>(creature_properties)->itemslot_2 = sMySQLStore.getItemDisplayIdForEntry(fields[2].GetUInt32());
+        itemId = fields[2].GetUInt32();
+        if (sMySQLStore.getItemProperties(itemId) || sItemStore.LookupEntry(itemId))
+            const_cast<CreatureProperties*>(creature_properties)->itemslot_2 = itemId;
         else
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_2 %u for creature %u", fields[2].GetUInt32(), entry);
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_2 %u for creature %u", itemId, entry);
 
-        if (sMySQLStore.getItemProperties(fields[3].GetUInt32()))
-            const_cast<CreatureProperties*>(creature_properties)->itemslot_3 = sMySQLStore.getItemDisplayIdForEntry(fields[3].GetUInt32());
+        itemId = fields[3].GetUInt32();
+        if (sMySQLStore.getItemProperties(itemId) || sItemStore.LookupEntry(itemId))
+            const_cast<CreatureProperties*>(creature_properties)->itemslot_3 = itemId;
         else
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_3 %u for creature %u", fields[3].GetUInt32(), entry);
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_3 %u for creature %u", itemId, entry);
 
         ++initial_equipment_count;
 
@@ -4403,10 +4367,6 @@ void MySQLDataStore::loadCreatureSpawns()
                 cspawn->Item1SlotEntry = fields[24].GetUInt32();
                 cspawn->Item2SlotEntry = fields[25].GetUInt32();
                 cspawn->Item3SlotEntry = fields[26].GetUInt32();
-
-                cspawn->Item1SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(cspawn->Item1SlotEntry);
-                cspawn->Item2SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(cspawn->Item2SlotEntry);
-                cspawn->Item3SlotDisplay = sMySQLStore.getItemDisplayIdForEntry(cspawn->Item3SlotEntry);
 
                 cspawn->CanFly = fields[27].GetUInt32();
 

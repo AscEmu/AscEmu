@@ -292,6 +292,42 @@ void Creature::setMaxWanderDistance(float_t dist)
     m_wanderDistance = dist;
 }
 
+#if VERSION_STRING < WotLK
+uint32_t Creature::getVirtualItemEntry(uint8_t slot) const
+{
+    if (slot >= TOTAL_WEAPON_DAMAGE_TYPES)
+        return 0;
+
+    return m_virtualItemEntry[slot];
+}
+
+void Creature::setVirtualItemEntry(uint8_t slot, uint32_t itemId)
+{
+    if (slot >= TOTAL_WEAPON_DAMAGE_TYPES)
+        return;
+
+    m_virtualItemEntry[slot] = itemId;
+}
+#endif
+
+void Creature::toggleDualwield(bool enable)
+{
+    setDualWield(enable);
+    if (enable)
+    {
+        setBaseAttackTime(OFFHAND, getBaseAttackTime(MELEE));
+        // Creatures deal 50% damage on offhand hits
+        setMinOffhandDamage(getMinDamage() * 0.5f);
+        setMaxOffhandDamage(getMaxDamage() * 0.5f);
+    }
+    else
+    {
+        setBaseAttackTime(OFFHAND, 0);
+        setMinOffhandDamage(0.0f);
+        setMaxOffhandDamage(0.0f);
+    }
+}
+
 std::vector<CreatureItem>* Creature::getSellItems()
 {
     return m_SellItems;
@@ -791,13 +827,15 @@ void Creature::SaveToDB()
         m_spawn->channel_spell = 0;
         m_spawn->MountedDisplayID = getMountDisplayId();
 
-        m_spawn->Item1SlotEntry = 0;
-        m_spawn->Item2SlotEntry = 0;
-        m_spawn->Item3SlotEntry = 0;
-
-        m_spawn->Item1SlotDisplay = getVirtualItemSlotId(MELEE);
-        m_spawn->Item2SlotDisplay = getVirtualItemSlotId(OFFHAND);
-        m_spawn->Item3SlotDisplay = getVirtualItemSlotId(RANGED);
+#if VERSION_STRING < WotLK
+        m_spawn->Item1SlotEntry = getVirtualItemEntry(MELEE);
+        m_spawn->Item2SlotEntry = getVirtualItemEntry(OFFHAND);
+        m_spawn->Item3SlotEntry = getVirtualItemEntry(RANGED);
+#else
+        m_spawn->Item1SlotEntry = getVirtualItemSlotId(MELEE);
+        m_spawn->Item2SlotEntry = getVirtualItemSlotId(OFFHAND);
+        m_spawn->Item3SlotEntry = getVirtualItemSlotId(RANGED);
+#endif
 
         if (IsFlying())
             m_spawn->CanFly = 1;
@@ -1526,19 +1564,9 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     setMinRangedDamage(creature_properties->RangedMinDamage);
     setMaxRangedDamage(creature_properties->RangedMaxDamage);
 
-    setVirtualItemSlotId(MELEE, spawn->Item1SlotDisplay);
-    setVirtualItemSlotId(OFFHAND, spawn->Item2SlotDisplay);
-    setVirtualItemSlotId(RANGED, spawn->Item3SlotDisplay);
-
-#if VERSION_STRING < WotLK
-    setVirtualItemInfo(0, 0);
-    setVirtualItemInfo(1, 0);
-    setVirtualItemInfo(2, 0);
-
-    setVirtualItemInfo(3, 0);
-    setVirtualItemInfo(4, 0);
-    setVirtualItemInfo(5, 0);
-#endif
+    setVirtualItemSlotId(MELEE, spawn->Item1SlotEntry);
+    setVirtualItemSlotId(OFFHAND, spawn->Item2SlotEntry);
+    setVirtualItemSlotId(RANGED, spawn->Item3SlotEntry);
 
     setFaction(spawn->factionid);
     setUnitFlags(spawn->flags);

@@ -197,9 +197,6 @@ void Summon::unSummon()
         if (getCreatedBySpellId() != 0)
             getSummonerUnit()->removeAllAurasById(getCreatedBySpellId());
 
-        if (getPlayerOwner() != nullptr)
-            getPlayerOwner()->sendDestroyObjectPacket(getGuid());
-
         // Clear Our Summon Slot
         if (m_Properties)
         {
@@ -243,6 +240,9 @@ void Summon::OnPushToWorld()
 
 void Summon::OnPreRemoveFromWorld()
 {
+    if (getPlayerOwner() != nullptr)
+        getPlayerOwner()->sendDestroyObjectPacket(getGuid());
+
     // Make sure unit is unsummoned properly before removing from world
     if (m_summonerGuid)
         unSummon();

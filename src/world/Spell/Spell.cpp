@@ -2872,7 +2872,11 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     }
 
                     // Check if creature is even wielding a weapon
+#if VERSION_STRING < WotLK
+                    if (target->getVirtualItemDisplayId(MELEE) == 0)
+#else
                     if (target->getVirtualItemSlotId(MELEE) == 0)
+#endif
                         return SPELL_FAILED_TARGET_NO_WEAPONS;
                 }
             } break;
@@ -5189,19 +5193,17 @@ void Spell::writeProjectileDataToPacket(WorldPacket *data)
         // Need to loop through all weapon slots because NPCs can have the ranged weapon in main hand
         for (uint8_t i = 0; i <= RANGED; ++i)
         {
+#if VERSION_STRING > TBC
             const auto entryId = u_caster->getVirtualItemSlotId(i);
+#else
+            const auto entryId = dynamic_cast<Creature*>(u_caster)->getVirtualItemEntry(i);
+#endif
             if (entryId == 0)
                 continue;
 
-            // hackfixing Rough Arrow for projectile
-            ammoItem = sMySQLStore.getItemProperties(2512);
-
-            // Get the item data from DBC files
 #if VERSION_STRING > TBC
+            // Get the item data from DBC files
             const auto itemDBC = sItemStore.LookupEntry(entryId);
-#else
-            const auto itemDBC = sMySQLStore.getItemProperties(entryId);
-#endif
             if (itemDBC == nullptr || itemDBC->Class != ITEM_CLASS_WEAPON)
                 continue;
 
@@ -5222,6 +5224,30 @@ void Spell::writeProjectileDataToPacket(WorldPacket *data)
                 default:
                     break;
             }
+#else
+            // Get the item data from unitdata
+            const auto itemData = u_caster->getVirtualItemInfoFields(i);
+            if (itemData.fields.itemClass != ITEM_CLASS_WEAPON)
+                continue;
+
+            switch (itemData.fields.itemSubClass)
+            {
+                case ITEM_SUBCLASS_WEAPON_BOW:
+                case ITEM_SUBCLASS_WEAPON_CROSSBOW:
+                    // Use Rough Arrow for bows
+                    ammoItem = sMySQLStore.getItemProperties(2512);
+                    break;
+                case ITEM_SUBCLASS_WEAPON_GUN:
+                    // Use Light Shot for guns
+                    ammoItem = sMySQLStore.getItemProperties(2516);
+                    break;
+                case ITEM_SUBCLASS_WEAPON_THROWN:
+                    ammoItem = sMySQLStore.getItemProperties(entryId);
+                    break;
+                default:
+                    break;
+            }
+#endif
 
             // No need to continue if ammo has been found
             if (ammoItem != nullptr)

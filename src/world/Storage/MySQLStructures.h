@@ -161,10 +161,6 @@ namespace MySQLStructure
         uint32_t Item2SlotEntry;
         uint32_t Item3SlotEntry;
 
-        uint32_t Item1SlotDisplay;
-        uint32_t Item2SlotDisplay;
-        uint32_t Item3SlotDisplay;
-
         uint32_t CanFly;
         uint32_t phase;
         //event_entry
