@@ -206,7 +206,7 @@ bool ChatHandler::HandleNpcComeCommand(const char* /*args*/, WorldSession* m_ses
 }
 
 //.npc delete
-bool ChatHandler::HandleNpcDeleteCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleNpcDeleteCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
@@ -1000,7 +1000,7 @@ bool ChatHandler::HandleNpcShowTimersCommand(const char* /*args*/, WorldSession*
 //////////////////////////////////////////////////////////////////////////////////////////
 // .npc set commands
 //.npc set canfly
-bool ChatHandler::HandleNpcSetCanFlyCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleNpcSetCanFlyCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)

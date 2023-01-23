@@ -201,7 +201,7 @@ void Arena::OnAddPlayer(Player* plr)
     plr->m_deathVision = true;
 
     // remove all buffs (exclude talents, include flasks)
-    for (uint32 x = AuraSlots::REMOVABLE_SLOT_START; x < AuraSlots::REMOVABLE_SLOT_END; x++)
+    for (uint16_t x = AuraSlots::REMOVABLE_SLOT_START; x < AuraSlots::REMOVABLE_SLOT_END; x++)
     {
         if (auto* const aur = plr->getAuraWithAuraSlot(x))
         {

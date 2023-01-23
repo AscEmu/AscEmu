@@ -30,11 +30,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/ProcFlags.hpp"
 #include "Spell/Definitions/SpellCastTargetFlags.hpp"
 #include "Spell/Definitions/SpellDamageType.hpp"
+#include "Spell/Definitions/SpellEffects.hpp"
 #include "Spell/Definitions/SpellIsFlags.hpp"
 #include "Spell/Definitions/SpellMechanics.hpp"
 #include "Spell/Definitions/SpellTypes.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellMgr.hpp"
+#include "Spell/SpellTarget.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Creatures/Vehicle.h"
@@ -4951,7 +4953,7 @@ void Unit::removeAllAurasByAuraInterruptFlag(uint32_t auraInterruptFlag, uint32_
     }
 }
 
-void Unit::removeAllAurasByAuraEffect(AuraEffect effect, uint32_t skipSpell/* = 0*/, bool removeOnlyEffect/* = false*/, uint64_t casterGuid/* = 0*/, AuraRemoveMode /*mode*//* = AURA_REMOVE_BY_SERVER*/)
+void Unit::removeAllAurasByAuraEffect(AuraEffect effect, uint32_t skipSpell/* = 0*/, bool removeOnlyEffect/* = false*/, uint64_t casterGuid/* = 0*/, AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
 {
     if (!hasAuraWithAuraEffect(effect))
         return;
@@ -4972,7 +4974,7 @@ void Unit::removeAllAurasByAuraEffect(AuraEffect effect, uint32_t skipSpell/* = 
         if (removeOnlyEffect)
             aur->removeAuraEffect(aurEff->getEffectIndex());
         else
-            aur->removeAura();
+            aur->removeAura(mode);
     }
 }
 
@@ -6738,7 +6740,7 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
             const auto summons = dynamic_cast<Player*>(victim)->getSummons();
             for (const auto& pet : summons)
             {
-                if (pet->getAIInterface()->getReactState() != PET_STATE_PASSIVE)
+                if (pet->getAIInterface()->getReactState() != REACT_PASSIVE)
                 {
                     // Start Combat
                     pet->getAIInterface()->onHostileAction(this);
@@ -7451,7 +7453,7 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
             const auto summons = dynamic_cast<Player*>(this)->getSummons();
             for (const auto& pet : summons)
             {
-                if (pet->getAIInterface()->getReactState() != PET_STATE_PASSIVE)
+                if (pet->getAIInterface()->getReactState() != REACT_PASSIVE)
                 {
                     // Start Combat
                     // todo: handle this in pet system
@@ -7893,7 +7895,6 @@ void Unit::handleSpellClick(Unit* clicker, int8_t seatId /*= -1*/)
 
             Unit* caster = (clickPair.castFlags & NPC_CLICK_CAST_CASTER_CLICKER) ? clicker : this;
             Unit* target = (clickPair.castFlags & NPC_CLICK_CAST_TARGET_CLICKER) ? clicker : this;
-            auto* const unitOwner = getUnitOwner();
 
             SpellInfo const* spellEntry = sSpellMgr.getSpellInfo(clickPair.spellId);
 

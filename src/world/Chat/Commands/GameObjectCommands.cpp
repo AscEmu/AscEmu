@@ -316,7 +316,7 @@ bool ChatHandler::HandleGOInfoCommand(const char* /*args*/, WorldSession* m_sess
 }
 
 //.gobject movehere
-bool ChatHandler::HandleGOMoveHereCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleGOMoveHereCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto gameobject = m_session->GetPlayer()->getSelectedGo();
     if (gameobject == nullptr)

@@ -1767,7 +1767,7 @@ Summon* WorldMap::summonCreature(uint32_t entry, LocationVector pos, DBC::Struct
     }
 
     summon->Load(cp, summonerUnit, pos, duration, spellId);
-    summon->setPhase(phase);
+    summon->setPhase(PHASE_SET, phase);
     summon->PushToWorld(this);
 
     // Delay this a bit to make sure its Spawned

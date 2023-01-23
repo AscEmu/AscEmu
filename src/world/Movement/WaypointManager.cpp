@@ -5,11 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "WaypointManager.h"
 #include "Util.hpp"
-#include "Database/Database.h"
 #include "Logging/Logger.hpp"
 #include "Server/MainServerDefines.h"
+#include "Storage/MySQLDataStore.hpp"
 #include "Objects/MovementInfo.h"
-
 
 void WaypointMgr::load()
 {

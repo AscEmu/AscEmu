@@ -2612,7 +2612,7 @@ void Creature::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
         // Master Looting Ninja Checker
         if (worldConfig.player.deactivateMasterLootNinja)
         {
-            Player* looter = sObjectMgr.GetPlayer(static_cast<uint32_t>(this->getTaggerGuid()));
+            looter = sObjectMgr.GetPlayer(static_cast<uint32_t>(this->getTaggerGuid()));
             if (looter && looter->getGroup() && looter->getGroup()->GetMethod() == PARTY_LOOT_MASTER_LOOTER)
             {
                 uint16_t lootThreshold = looter->getGroup()->GetThreshold();

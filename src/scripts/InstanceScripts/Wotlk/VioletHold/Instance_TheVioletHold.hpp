@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "Setup.h"
+
 LocationVector const DefenseSystemLocation = { 1888.146f, 803.382f,  58.60389f, 3.071779f };
 
 LocationVector const CyanigosaSpawnLocation = { 1922.109f, 804.4493f, 52.49254f, 3.176499f };

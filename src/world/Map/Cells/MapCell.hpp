@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/BaseMap.hpp"
 
 class Object;
-class BaseMap;
+class WorldMap;
 
 class SERVER_DECL MapCell
 {

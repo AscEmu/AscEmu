@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "CommonTypes.hpp"
 
+#include <math.h>
 #include <vector>
 
 class Aura;

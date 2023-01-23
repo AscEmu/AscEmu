@@ -4,14 +4,17 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Container.h"
-#include "Data/WoWItem.hpp"
 #include "Item.hpp"
 #include "Map/Management/MapMgrDefines.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Definitions.h"
 #include "Server/Packets/SmsgEnchantmentLog.h"
 #include "Server/Packets/SmsgItemEnchantmentTimeUpdate.h"
 #include "Server/Packets/SmsgItemTimeUpdate.h"
+#include "Storage/MySQLDataStore.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
+#include "Spell/SpellMgr.hpp"
+#include "Util/Strings.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -674,9 +677,9 @@ void Item::applyRandomProperties(bool apply)
                     auto slot = hasEnchantmentReturnSlot(item_random_properties->spells[k]);
                     if (slot < 0)
                     {
-                        EnchantmentSlot slot = PROP_ENCHANTMENT_SLOT_2;
-                        if (_findFreeRandomEnchantmentSlot(&slot, RandomEnchantmentType::PROPERTY))
-                            addEnchantment(item_random_properties->spells[k], slot, 0, true);
+                        EnchantmentSlot newSlot = PROP_ENCHANTMENT_SLOT_2;
+                        if (_findFreeRandomEnchantmentSlot(&newSlot, RandomEnchantmentType::PROPERTY))
+                            addEnchantment(item_random_properties->spells[k], newSlot, 0, true);
                     }
                     else if (apply)
                     {
@@ -702,9 +705,9 @@ void Item::applyRandomProperties(bool apply)
                     auto slot = hasEnchantmentReturnSlot(spell_item_enchant->Id);
                     if (slot < 0)
                     {
-                        EnchantmentSlot slot = PROP_ENCHANTMENT_SLOT_0;
-                        if (_findFreeRandomEnchantmentSlot(&slot, RandomEnchantmentType::SUFFIX))
-                            addEnchantment(item_random_suffix->enchantments[k], slot, 0, true, item_random_suffix->prefixes[k]);
+                        EnchantmentSlot newSlot = PROP_ENCHANTMENT_SLOT_0;
+                        if (_findFreeRandomEnchantmentSlot(&newSlot, RandomEnchantmentType::SUFFIX))
+                            addEnchantment(item_random_suffix->enchantments[k], newSlot, 0, true, item_random_suffix->prefixes[k]);
                     }
                     else if (apply)
                     {

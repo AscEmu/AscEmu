@@ -24,6 +24,7 @@
 #include "Objects/ItemDefines.hpp"
 #include "Common.hpp"
 
+#include <cstdint>
 #include <list>
 #include <mutex>
 
@@ -78,7 +79,7 @@ struct VoidStorageItem
     uint32_t itemSuffixFactor;
 };
 
-enum EquipmentSlots                                         // 19 slots
+enum EquipmentSlots : uint8_t                                      // 19 slots
 {
     EQUIPMENT_SLOT_START        = 0,
     EQUIPMENT_SLOT_HEAD         = 0,

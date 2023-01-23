@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "CommonTypes.hpp"
+#include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
 #include "Objects/Units/UnitDefines.hpp"
 
 #include <vector>
@@ -13,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 class Summon;
 class TotemSummon;
+class Unit;
 
 // There are 3 types of summons
 // - Combat pet : this is a controllable pet. Hunter pets and warlock minions for example.

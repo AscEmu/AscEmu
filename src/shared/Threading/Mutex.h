@@ -22,6 +22,12 @@
 
 #include "CommonTypes.hpp"
 
+#ifdef WIN32
+#include <Windows.h>
+#else
+#include <pthread.h>
+#endif
+
 class SERVER_DECL Mutex
 {
     public:
