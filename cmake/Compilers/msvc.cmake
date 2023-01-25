@@ -1,7 +1,7 @@
 # Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 
-# MSVC >= 19.29
-set(MSVC_SUPPORTS_VERSION 19.29.30140.0)
+# MSVC >= 19.34
+set(MSVC_SUPPORTS_VERSION 19.34.31937.0)
 
 if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS MSVC_SUPPORTS_VERSION)
     message(FATAL_ERROR "AscEmu requires version ${MSVC_SUPPORTS_VERSION} to build but found ${CMAKE_CXX_COMPILER_VERSION}")

@@ -1,7 +1,7 @@
 # Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 
-# GCC >= 9.0.0
-set(GCC_SUPPORTS_VERSION 9.0.0)
+# GCC >= 10.0.0
+set(GCC_SUPPORTS_VERSION 10.0.0)
 
 if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS GCC_SUPPORTS_VERSION)
     message(FATAL_ERROR "AscEmu requires version ${GCC_SUPPORTS_VERSION} to build but found ${CMAKE_CXX_COMPILER_VERSION}")
