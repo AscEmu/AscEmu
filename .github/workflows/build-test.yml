@@ -2,11 +2,8 @@ name: AscEmu CI
 
 on:
   push:
-    branches: [ master, develop ]
   pull_request:
-    branches: [ develop ]
 jobs:
-
   Classic:
     runs-on: ubuntu-latest
     steps:
@@ -26,7 +23,6 @@ jobs:
         mkdir ascemu_build_сlassic
         cmake -DCMAKE_INSTALL_PREFIX=~/ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=1 -DASCEMU_VERSION=Classic
         make -j 4 && make install
-
   TBC:
     runs-on: ubuntu-latest
     steps:
