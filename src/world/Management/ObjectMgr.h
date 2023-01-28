@@ -127,18 +127,22 @@ struct TrainerSpell
 // oh a trainer look it is here and not in Unit/Creature/whatever file ;)
 struct Trainer
 {
-    uint32 SpellCount;
+    uint32_t SpellCount;
     std::vector<TrainerSpell> Spells;
     char* UIMessage;
     uint16_t RequiredSkill;
-    uint32 RequiredSkillLine;
-    uint32 RequiredClass;
-    uint32 RequiredRace;
-    uint32 RequiredRepFaction;
-    uint32 RequiredRepValue;
-    uint32 TrainerType;
-    uint32 Can_Train_Gossip_TextId;
-    uint32 Cannot_Train_GossipTextId;
+    uint32_t RequiredSkillLine;
+    uint32_t RequiredClass;
+    uint32_t RequiredRace;
+    uint32_t RequiredRepFaction;
+    uint32_t RequiredRepValue;
+    uint32_t TrainerType;
+    uint32_t Can_Train_Gossip_TextId;
+    uint32_t Cannot_Train_GossipTextId;
+    uint32_t spellset_id;
+    uint32_t can_train_max_level;
+    uint32_t can_train_min_skill_value;
+    uint32_t can_train_max_skill_value;
 };
 
 // isn't it part of player info? hmmmmm....

@@ -1269,168 +1269,178 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* object, Player* p
     }
 }
 
-//MIT
 void ObjectMgr::loadTrainers()
 {
-    auto* const result = sMySQLStore.getWorldDBQuery("SELECT * FROM trainer_defs");
-
-    if (result == nullptr)
-        return;
-
-    do
+    if (auto* const trainerResult = sMySQLStore.getWorldDBQuery("SELECT * FROM trainer_properties WHERE build <= %u;", VERSION_STRING))
     {
-        auto* const fields = result->Fetch();
-        const auto entry = fields[0].GetUInt32();
-
-        Trainer* tr = new Trainer;
-        tr->RequiredSkill = fields[1].GetUInt16();
-        tr->RequiredSkillLine = fields[2].GetUInt32();
-        tr->RequiredClass = fields[3].GetUInt32();
-        tr->RequiredRace = fields[4].GetUInt32();
-        tr->RequiredRepFaction = fields[5].GetUInt32();
-        tr->RequiredRepValue = fields[6].GetUInt32();
-        tr->TrainerType = fields[7].GetUInt32();
-        tr->Can_Train_Gossip_TextId = fields[9].GetUInt32();
-        tr->Cannot_Train_GossipTextId = fields[10].GetUInt32();
-
-        if (!tr->Can_Train_Gossip_TextId)
-            tr->Can_Train_Gossip_TextId = 1;
-        if (!tr->Cannot_Train_GossipTextId)
-            tr->Cannot_Train_GossipTextId = 1;
-
-        const char* temp = fields[8].GetString();
-        size_t len = strlen(temp);
-        if (len)
-        {
-            tr->UIMessage = new char[len + 1];
-            strcpy(tr->UIMessage, temp);
-            tr->UIMessage[len] = 0;
-        }
-        else
-        {
-            tr->UIMessage = new char[strlen(NormalTalkMessage) + 1];
-            strcpy(tr->UIMessage, NormalTalkMessage);
-            tr->UIMessage[strlen(NormalTalkMessage)] = 0;
-        }
-
-        // Now load the spells
-        auto* const result2 = sMySQLStore.getWorldDBQuery("SELECT * FROM trainer_spells where entry='%u'", entry);
-        if (result2 == nullptr)
-        {
-            sLogger.debug("LoadTrainers : Trainer with no spells, entry %u.", entry);
-            if (tr->UIMessage != NormalTalkMessage)
-                delete[] tr->UIMessage;
-
-            delete tr;
-            continue;
-        }
-
-        if (result2->GetFieldCount() != 9 + 1)
-        {
-            sLogger.failure("trainer_spells table format is invalid. Please update your database.");
-            delete tr;
-            delete result;
-            delete result2;
-            return;
-        }
-
         do
         {
-            auto* const fields2 = result2->Fetch();
-            TrainerSpell ts;
-            auto abrt = false;
-            auto castSpellID = fields2[1].GetUInt32();
-            auto learnSpellID = fields2[2].GetUInt32();
+            auto* const fields = trainerResult->Fetch();
+            const auto entry = fields[0].GetUInt32();
 
-            if (castSpellID != 0)
+            Trainer* trainer = new Trainer;
+            trainer->RequiredSkill = fields[2].GetUInt16();
+            trainer->RequiredSkillLine = fields[3].GetUInt32();
+            trainer->RequiredClass = fields[4].GetUInt32();
+            trainer->RequiredRace = fields[5].GetUInt32();
+            trainer->RequiredRepFaction = fields[6].GetUInt32();
+            trainer->RequiredRepValue = fields[7].GetUInt32();
+            trainer->TrainerType = fields[8].GetUInt32();
+            trainer->Can_Train_Gossip_TextId = fields[10].GetUInt32();
+            trainer->Cannot_Train_GossipTextId = fields[11].GetUInt32();
+            trainer->spellset_id = fields[12].GetUInt32();
+            trainer->can_train_max_level = fields[13].GetUInt32();
+            trainer->can_train_min_skill_value = fields[14].GetUInt32();
+            trainer->can_train_max_skill_value = fields[15].GetUInt32();
+
+            if (!trainer->Can_Train_Gossip_TextId)
+                trainer->Can_Train_Gossip_TextId = 1;
+            if (!trainer->Cannot_Train_GossipTextId)
+                trainer->Cannot_Train_GossipTextId = 1;
+
+            const char* temp = fields[9].GetString();
+            size_t len = strlen(temp);
+            if (len)
             {
-                ts.castSpell = sSpellMgr.getSpellInfo(castSpellID);
-                if (ts.castSpell != nullptr)
-                {
-                    // Check that the castable spell has learn spell effect
-                    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                    {
-                        if (ts.castSpell->getEffect(i) == SPELL_EFFECT_LEARN_SPELL)
-                        {
-                            ts.castRealSpell = sSpellMgr.getSpellInfo(ts.castSpell->getEffectTriggerSpell(i));
-                            if (ts.castRealSpell == nullptr)
-                            {
-                                sLogger.failure("LoadTrainers : Trainer %u contains cast spell %u that is non-teaching", entry, castSpellID);
-                                abrt = true;
-                            }
+                trainer->UIMessage = new char[len + 1];
+                strcpy(trainer->UIMessage, temp);
+                trainer->UIMessage[len] = 0;
+            }
+            else
+            {
+                trainer->UIMessage = new char[strlen(NormalTalkMessage) + 1];
+                strcpy(trainer->UIMessage, NormalTalkMessage);
+                trainer->UIMessage[strlen(NormalTalkMessage)] = 0;
+            }
 
-                            break;
+            // Now load the spells
+            auto* const spellSetResult = sMySQLStore.getWorldDBQuery("SELECT * FROM trainer_properties_spellset WHERE id=%u AND min_build <= %u AND max_build >= %u;", trainer->spellset_id, VERSION_STRING, VERSION_STRING);
+            if (spellSetResult == nullptr)
+            {
+                sLogger.debug("LoadTrainers : trainer_properties_spellset does not include id %u.", trainer->spellset_id);
+                if (trainer->UIMessage != NormalTalkMessage)
+                    delete[] trainer->UIMessage;
+
+                delete trainer;
+                continue;
+            }
+
+            do
+            {
+                auto* const fields2 = spellSetResult->Fetch();
+
+                // check spell requirement for non static spell definitions
+                if (fields2[11].GetUInt32() == 0)
+                {
+                    // trainer has max level to train, skip all spells higher.
+                    if (trainer->can_train_max_level)
+                        if (trainer->can_train_max_level < fields2[9].GetUInt32())
+                            continue;
+
+                    // trainer has min_skill_value, skip all spells lower
+                    if (trainer->can_train_min_skill_value)
+                        if (trainer->can_train_min_skill_value < fields2[8].GetUInt32())
+                            continue;
+
+                    // trainer has max_skill_value, skip all spells higher
+                    if (trainer->can_train_max_skill_value)
+                        if (trainer->can_train_max_skill_value > fields2[8].GetUInt32())
+                            continue;
+                }
+
+                auto castSpellID = fields2[3].GetUInt32();
+                auto learnSpellID = fields2[4].GetUInt32();
+
+                TrainerSpell ts;
+                auto abrt = false;
+                if (castSpellID != 0)
+                {
+                    ts.castSpell = sSpellMgr.getSpellInfo(castSpellID);
+                    if (ts.castSpell != nullptr)
+                    {
+                        // Check that the castable spell has learn spell effect
+                        for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                        {
+                            if (ts.castSpell->getEffect(i) == SPELL_EFFECT_LEARN_SPELL)
+                            {
+                                ts.castRealSpell = sSpellMgr.getSpellInfo(ts.castSpell->getEffectTriggerSpell(i));
+                                if (ts.castRealSpell == nullptr)
+                                {
+                                    sLogger.failure("LoadTrainers : Trainer %u contains cast spell %u that is non-teaching", entry, castSpellID);
+                                    abrt = true;
+                                }
+
+                                break;
+                            }
                         }
+                    }
+
+                    if (abrt)
+                        continue;
+                }
+
+                if (learnSpellID != 0)
+                    ts.learnSpell = sSpellMgr.getSpellInfo(learnSpellID);
+
+                if (ts.castSpell == nullptr && ts.learnSpell == nullptr)
+
+                    continue;
+
+                if (ts.castSpell != nullptr && ts.castRealSpell == nullptr)
+                    continue;
+
+                ts.cost = fields2[5].GetUInt32();
+                ts.requiredSpell[0] = fields2[6].GetUInt32();
+                ts.requiredSkillLine = fields2[7].GetUInt16();
+                ts.requiredSkillLineValue = fields2[8].GetUInt32();
+                ts.requiredLevel = fields2[9].GetUInt32();
+                ts.deleteSpell = fields2[10].GetUInt32();
+
+                // Check if spell teaches a primary profession skill
+                if (ts.requiredSkillLine == 0 && ts.castRealSpell != nullptr)
+                    ts.isPrimaryProfession = ts.castRealSpell->isPrimaryProfession();
+
+                // Add all required spells
+                const auto spellInfo = ts.castRealSpell != nullptr ? ts.castSpell : ts.learnSpell;
+                const auto requiredSpells = sSpellMgr.getSpellsRequiredForSpellBounds(spellInfo->getId());
+                for (auto itr = requiredSpells.first; itr != requiredSpells.second; ++itr)
+                {
+                    for (uint8_t i = 0; i < 3; ++i)
+                    {
+                        if (ts.requiredSpell[i] == itr->second)
+                            break;
+
+                        if (ts.requiredSpell[i] != 0)
+                            continue;
+
+                        ts.requiredSpell[i] = itr->second;
+                        break;
                     }
                 }
 
-                if (abrt)
-                    continue;
-            }
+                trainer->Spells.push_back(ts);
+            } while (spellSetResult->NextRow());
+            delete spellSetResult;
 
-            if (learnSpellID != 0)
-                ts.learnSpell = sSpellMgr.getSpellInfo(learnSpellID);
+            trainer->SpellCount = static_cast<uint32_t>(trainer->Spells.size());
 
-            if (ts.castSpell == nullptr && ts.learnSpell == nullptr)
+            // and now we insert it to our lookup table
+            if (trainer->SpellCount == 0)
             {
-                // Trainer spell entry has invalid spells, skip this entry
+                if (trainer->UIMessage != NormalTalkMessage)
+                    delete[] trainer->UIMessage;
+                delete trainer;
                 continue;
             }
 
-            if (ts.castSpell != nullptr && ts.castRealSpell == nullptr)
-                continue;
+            mTrainers.insert(TrainerMap::value_type(entry, trainer));
+        } while (trainerResult->NextRow());
 
-            ts.cost = fields2[3].GetUInt32();
-            ts.requiredSpell[0] = fields2[4].GetUInt32();
-            ts.requiredSkillLine = fields2[5].GetUInt16();
-            ts.requiredSkillLineValue = fields2[6].GetUInt32();
-            ts.requiredLevel = fields2[7].GetUInt32();
-            ts.deleteSpell = fields2[8].GetUInt32();
-
-            // Check if spell teaches a primary profession skill
-            if (ts.requiredSkillLine == 0 && ts.castRealSpell != nullptr)
-                ts.isPrimaryProfession = ts.castRealSpell->isPrimaryProfession();
-
-            // Add all required spells
-            const auto spellInfo = ts.castRealSpell != nullptr ? ts.castSpell : ts.learnSpell;
-            const auto requiredSpells = sSpellMgr.getSpellsRequiredForSpellBounds(spellInfo->getId());
-            for (auto itr = requiredSpells.first; itr != requiredSpells.second; ++itr)
-            {
-                for (uint8_t i = 0; i < 3; ++i)
-                {
-                    if (ts.requiredSpell[i] == itr->second)
-                        break;
-
-                    if (ts.requiredSpell[i] != 0)
-                        continue;
-
-                    ts.requiredSpell[i] = itr->second;
-                    break;
-                }
-            }
-
-            tr->Spells.push_back(ts);
-        } while (result2->NextRow());
-        delete result2;
-
-        tr->SpellCount = static_cast<uint32_t>(tr->Spells.size());
-
-        // and now we insert it to our lookup table
-        if (tr->SpellCount == 0)
-        {
-            if (tr->UIMessage != NormalTalkMessage)
-                delete[] tr->UIMessage;
-            delete tr;
-            continue;
-        }
-
-        mTrainers.insert(TrainerMap::value_type(entry, tr));
+        delete trainerResult;
+        sLogger.info("ObjectMgr : %u trainers loaded.", static_cast<uint32_t>(mTrainers.size()));
     }
-    while (result->NextRow());
-
-    delete result;
-    sLogger.info("ObjectMgr : %u trainers loaded.", static_cast<uint32_t>(mTrainers.size()));
 }
+//MIT
 
 Trainer* ObjectMgr::GetTrainer(uint32 Entry)
 {
