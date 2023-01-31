@@ -1339,12 +1339,12 @@ void ObjectMgr::loadTrainers()
 
                     // trainer has min_skill_value, skip all spells lower
                     if (trainer->can_train_min_skill_value)
-                        if (trainer->can_train_min_skill_value < fields2[8].GetUInt32())
+                        if (fields2[8].GetUInt32() < trainer->can_train_min_skill_value)
                             continue;
 
                     // trainer has max_skill_value, skip all spells higher
                     if (trainer->can_train_max_skill_value)
-                        if (trainer->can_train_max_skill_value > fields2[8].GetUInt32())
+                        if (fields2[8].GetUInt32() > trainer->can_train_max_skill_value)
                             continue;
                 }
 
