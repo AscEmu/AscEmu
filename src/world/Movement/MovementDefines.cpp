@@ -3,14 +3,14 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#define CONTACT_DISTANCE 0.5f
+#include <Common.hpp>
 
 #include "MovementDefines.h"
 #include "LocationVector.h"
-
-#include <algorithm>
-
+#include "Logging/Logger.hpp"
 #include "Objects/MovementInfo.h"
+
+#define CONTACT_DISTANCE 0.5f
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // ChaseRange

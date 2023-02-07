@@ -20,17 +20,17 @@
 #ifndef _BIH_H
 #define _BIH_H
 
-#include "G3D/Vector3.h"
-#include "G3D/Ray.h"
-#include "G3D/AABox.h"
-
-#include "Common.hpp"
+#include <Common.hpp>
 
 #include <stdexcept>
 #include <vector>
 #include <algorithm>
 #include <limits>
 #include <cmath>
+
+#include "G3D/Vector3.h"
+#include "G3D/Ray.h"
+#include "G3D/AABox.h"
 
 #define MAX_STACK_SIZE 64
 
