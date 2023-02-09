@@ -43,24 +43,10 @@ target_link_libraries(${PROJECT_NAME} world)
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH} )
 
+# generate precompiled header.
 if (USE_PCH)
-    target_precompile_headers(${PROJECT_NAME}
-    PRIVATE
-    Setup.h
-    <Objects/Item.hpp>
-    <Management/ItemInterface.h>
-    <Map/Management/MapMgr.hpp>
-    <Management/Faction.h>
-    <Spell/Spell.h>
-    <Spell/SpellMgr.hpp>
-    <Spell/SpellAuras.h>
-    <Spell/Definitions/ProcFlags.hpp>
-    <Spell/Definitions/SpellEffects.hpp>
-    <Spell/Definitions/PowerType.hpp>
-    <Server/Script/CreatureAIScript.h>
-    <Server/Script/ScriptMgr.h>
-    <Objects/Units/Creatures/Pet.h>
-)
+    message(STATUS "Generate PCH for ${PROJECT_NAME}")
+    target_precompile_headers(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchSpellHandlers.hpp)
 endif ()
 
 unset(sources)

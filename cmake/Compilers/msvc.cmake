@@ -21,25 +21,21 @@ add_definitions(-D_USE_MATH_DEFINES)
 add_definitions(-DNOMINMAX)
 
 # set defines for MSVC
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std:c++20 /EHa /MP /bigobj")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++20 /EHa /MP /bigobj")
+add_compile_options(/std:c++20 /EHa /MP /bigobj)
 
 # set build platform specific settings (x86/x64)
 if (NOT IS_64BIT)
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE")
+    add_link_options(/LARGEADDRESSAWARE)
 endif ()
 
 if (TREAT_WARNINGS_AS_ERRORS)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /WX")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX")
+    add_compile_options(/WX)
 endif ()
 
 # enable/disable warnings
 # dll warning 4251 disabled by default.
 if (BUILD_WITH_WARNINGS)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W3 /wd4251 /wd4820 /wd4062 /wd4061 /wd5045")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /wd4251 /wd4820 /wd4062 /wd4061 /wd5045")
+    add_compile_options(/W3 /wd4251 /wd4820 /wd4062 /wd4061 /wd5045)
 else ()
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W0")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0")
+    add_compile_options(/W0)
 endif ()
