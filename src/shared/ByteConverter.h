@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include <Common.hpp>
-#include <algorithm>
 
 namespace ByteConverter
 {
