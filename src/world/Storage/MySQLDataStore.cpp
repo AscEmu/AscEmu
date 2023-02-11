@@ -55,8 +55,21 @@ void MySQLDataStore::loadAdditionalTableConfig()
                     additionTableStream >> target_table;
 
                     if (!additional_table.empty() || !target_table.empty())
+                    {
                         if (myTable.mainTable == target_table)
-                            myTable.tableVector.push_back(additional_table);
+                        {
+                            if (QueryResult* result = WorldDatabase.Query("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = \"%s\" AND table_name = \"%s\"", WorldDatabase.GetDatabaseName().c_str(), additional_table.c_str()))
+                            {
+                                Field* fields = result->Fetch();
+
+                                uint32_t count = fields[0].GetUInt32();
+                                if (fields[0].GetUInt32())
+                                    myTable.tableVector.push_back(additional_table);
+                                else
+                                    sLogger.info("MySQLDataLoads : Additional table `%s` defined in world.conf does not exist!", additional_table.c_str());
+                            }
+                        }
+                    }
                 }
             }
         }
