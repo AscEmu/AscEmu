@@ -1855,7 +1855,7 @@ GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, LocationVector 
 
 GameObject* WorldMap::getGameObject(uint32_t guid)
 {
-    if (guid > m_GOHighGuid)
+    if (guid == 0 || guid > m_GOHighGuid)
         return nullptr;
 
     return m_GameObjectStorage[guid];
