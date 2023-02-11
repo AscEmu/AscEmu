@@ -110,7 +110,7 @@ bool ChatHandler::HandleNpcAppearCommand(const char* /*_*/, WorldSession* sessio
 //.npc addtrainerspell
 bool ChatHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession* m_session)
 {
-    auto creature_target = GetSelectedCreature(m_session, true);
+    /*auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
         return true;
 
@@ -159,7 +159,7 @@ bool ChatHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession
     SystemMessage(m_session, "Added spell %s (%u) to trainer %s (%u).", learn_spell->getName().c_str(), learn_spell->getId(), creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
     sGMLog.writefromsession(m_session, "added spell  %s (%u) to trainer %s (%u)", learn_spell->getName().c_str(), learn_spell->getId(), creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
     WorldDatabase.Execute("REPLACE INTO trainer_spells VALUES(%u, %u, %u, %u, %u, %u, %u, %u, %u, %u)",
-        creature_target->getEntry(), 0, learn_spell->getId(), cost, reqspell, 0, 0, reqlevel, delspell, 0);
+        creature_target->getEntry(), 0, learn_spell->getId(), cost, reqspell, 0, 0, reqlevel, delspell, 0);*/
 
     return true;
 }

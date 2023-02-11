@@ -138,7 +138,7 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
         return;
 
     TrainerSpell const* trainerSpell = nullptr;
-    for (const auto& itr : trainer->Spells)
+    for (const auto& itr : sObjectMgr.getTrainserSpellSetById(trainer->spellset_id))
     {
         if ((itr.castSpell && itr.castSpell->getId() == srlPacket.spellId) ||
             (itr.learnSpell && itr.learnSpell->getId() == srlPacket.spellId))
@@ -405,7 +405,7 @@ void WorldSession::sendTrainerList(Creature* creature)
         uiMessage = trainer->UIMessage;
 
     const size_t size = 8 + 4 + 4 + 4 + uiMessage.size()
-        + (trainer->Spells.size() * (4 + 1 + 4 + 4 + 4 + 1 + 4 + 4 + 4 + 4 + 4));
+        + (sObjectMgr.getTrainserSpellSetById(trainer->spellset_id).size() * (4 + 1 + 4 + 4 + 4 + 1 + 4 + 4 + 4 + 4 + 4));
     WorldPacket data(SMSG_TRAINER_LIST, size);
 
     data << creature->getGuid();
@@ -416,10 +416,10 @@ void WorldSession::sendTrainerList(Creature* creature)
 #endif
 
     size_t count_p = data.wpos();
-    data << uint32_t(trainer->Spells.size());
+    data << uint32_t(sObjectMgr.getTrainserSpellSetById(trainer->spellset_id).size());
 
     uint32_t count = 0;
-    for (const auto& spellItr : trainer->Spells)
+    for (const auto& spellItr : sObjectMgr.getTrainserSpellSetById(trainer->spellset_id))
     {
         auto* const trainerSpell = &spellItr;
 
@@ -429,6 +429,24 @@ void WorldSession::sendTrainerList(Creature* creature)
 
         if (!_player->isSpellFitByClassAndRace(spellInfo->getId()))
             continue;
+
+        if (spellItr.isStatic == 0)
+        {
+            // trainer has max level to train, skip all spells higher.
+            if (trainer->can_train_max_level)
+                if (spellItr.requiredLevel > trainer->can_train_max_level)
+                    continue;
+
+            // trainer has min_skill_value, skip all spells lower
+            if (trainer->can_train_min_skill_value)
+                if (spellItr.requiredSkillLineValue < trainer->can_train_min_skill_value)
+                    continue;
+
+            // trainer has max_skill_value, skip all spells higher
+            if (trainer->can_train_max_skill_value)
+                if (spellItr.requiredSkillLineValue > trainer->can_train_max_skill_value)
+                    continue;
+        }
 
         data << uint32_t(spellInfo->getId());
         data << uint8_t(trainerGetSpellStatus(trainerSpell));
@@ -481,6 +499,8 @@ void WorldSession::sendTrainerList(Creature* creature)
 
     data.put<uint32_t>(count_p, count);
     data << uiMessage;
+
+    sLogger.info("SendTrainerList : %u TrainerSpells in list", count);
 
     SendPacket(&data);
 }
