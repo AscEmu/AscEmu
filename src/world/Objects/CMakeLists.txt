@@ -10,6 +10,7 @@ set(SRC_OBJECTS_FILES
     ${PATH_PREFIX}/GameObject.cpp
     ${PATH_PREFIX}/GameObject.h
     ${PATH_PREFIX}/GameObjectDefines.hpp
+    ${PATH_PREFIX}/GameObjectProperties.hpp
     ${PATH_PREFIX}/Item.cpp
     ${PATH_PREFIX}/Item.hpp
     ${PATH_PREFIX}/ItemDefines.hpp
