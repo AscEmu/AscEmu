@@ -49,7 +49,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgMoveKnockBack.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Creatures/CreatureGroups.h"
-#include "Objects/DynamicObject.h"
+#include "Objects/DynamicObject.hpp"
 #include "Objects/ItemDefines.hpp"
 #include "Server/Packets/SmsgAttackSwingBadFacing.h"
 #include "Server/Packets/SmsgSpellDamageShield.h"
@@ -325,7 +325,7 @@ void Unit::RemoveFromWorld(bool free_guid)
 #endif
 
     if (m_dynamicObject != nullptr)
-        m_dynamicObject->Remove();
+        m_dynamicObject->remove();
 
     for (unsigned int& m_ObjectSlot : m_objectSlots)
     {

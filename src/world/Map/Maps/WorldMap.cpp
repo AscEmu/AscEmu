@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "WorldMap.hpp"
-#include "Objects/DynamicObject.h"
+#include "Objects/DynamicObject.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Creatures/Summons/Summon.h"
 #include "Objects/Units/Unit.hpp"
@@ -336,7 +336,7 @@ void WorldMap::update(uint32_t t_diff)
         {
             DynamicObject* o = itr->second;
             ++itr;
-            o->UpdateTargets();
+            o->updateTargets();
         }
 
         m_lastDynamicUpdateTimer = msTime;

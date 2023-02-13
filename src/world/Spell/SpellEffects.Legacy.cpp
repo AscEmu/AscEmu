@@ -24,7 +24,7 @@
 #include "MMapFactory.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Creatures/Summons/Summon.h"
-#include "Objects/DynamicObject.h"
+#include "Objects/DynamicObject.hpp"
 #include "Macros/ScriptMacros.hpp"
 #include "Management/HonorHandler.h"
 #include "Objects/Item.hpp"
@@ -2744,8 +2744,7 @@ void Spell::SpellEffectPersistentAA(uint8_t effectIndex) // Persistent Area Aura
     if (g_caster != nullptr && g_caster->getUnitOwner() && !unitTarget)
     {
         Unit* caster = g_caster->getUnitOwner();
-        dynObj->Create(caster, this, g_caster->GetPositionX(), g_caster->GetPositionY(),
-                       g_caster->GetPositionZ(), dur, r, DYNAMIC_OBJECT_AREA_SPELL);
+        dynObj->create(caster, this, g_caster->GetPosition(), dur, r, DYNAMIC_OBJECT_AREA_SPELL);
         m_AreaAura = true;
         return;
     }
@@ -2754,51 +2753,48 @@ void Spell::SpellEffectPersistentAA(uint8_t effectIndex) // Persistent Area Aura
     {
         case TARGET_FLAG_SELF:
         {
-            dynObj->Create(u_caster, this, m_caster->GetPositionX(),
-                           m_caster->GetPositionY(), m_caster->GetPositionZ(), dur, r, DYNAMIC_OBJECT_AREA_SPELL);
+            dynObj->create(u_caster, this, m_caster->GetPosition(), dur, r, DYNAMIC_OBJECT_AREA_SPELL);
         }
         break;
         case TARGET_FLAG_UNIT:
         {
             if (!unitTarget || !unitTarget->isAlive())
             {
-                dynObj->Remove();
+                dynObj->remove();
                 return;
             }
 
-            dynObj->Create(u_caster, this, unitTarget->GetPositionX(), unitTarget->GetPositionY(), unitTarget->GetPositionZ(),
-                           dur, r, DYNAMIC_OBJECT_AREA_SPELL);
+            dynObj->create(u_caster, this, unitTarget->GetPosition(), dur, r, DYNAMIC_OBJECT_AREA_SPELL);
         }
         break;
         case TARGET_FLAG_OBJECT:
         {
             if (!unitTarget || !unitTarget->isAlive())
             {
-                dynObj->Remove();
+                dynObj->remove();
                 return;
             }
 
-            dynObj->Create(u_caster, this, unitTarget->GetPositionX(), unitTarget->GetPositionY(), unitTarget->GetPositionZ(),
-                           dur, r, DYNAMIC_OBJECT_AREA_SPELL);
+            dynObj->create(u_caster, this, unitTarget->GetPosition(), dur, r, DYNAMIC_OBJECT_AREA_SPELL);
         }
         break;
         case TARGET_FLAG_SOURCE_LOCATION:
         {
             auto source = m_targets.getSource();
-            dynObj->Create(u_caster, this, source.x, source.y, source.z, dur, r, DYNAMIC_OBJECT_AREA_SPELL);
+            dynObj->create(u_caster, this, source, dur, r, DYNAMIC_OBJECT_AREA_SPELL);
         }
         break;
         case TARGET_FLAG_DEST_LOCATION:
         {
             auto destination = m_targets.getDestination();
             if (u_caster != nullptr)
-                dynObj->Create(u_caster, this, destination.x, destination.y, destination.z, dur, r, DYNAMIC_OBJECT_AREA_SPELL);
+                dynObj->create(u_caster, this, destination, dur, r, DYNAMIC_OBJECT_AREA_SPELL);
             else if (g_caster != nullptr)
-                dynObj->Create(g_caster->getUnitOwner(), this, destination.x, destination.y, destination.z, dur, r, DYNAMIC_OBJECT_AREA_SPELL);
+                dynObj->create(g_caster->getUnitOwner(), this, destination, dur, r, DYNAMIC_OBJECT_AREA_SPELL);
         }
         break;
         default:
-            dynObj->Remove();
+            dynObj->remove();
             return;
     }
 
@@ -4564,7 +4560,7 @@ void Spell::SpellEffectAddFarsight(uint8_t effectIndex) // Add Farsight
     }
 
     DynamicObject* dynObj = p_caster->getWorldMap()->createDynamicObject();
-    dynObj->Create(u_caster, this, lv, static_cast<uint32_t>(getDuration()), getEffectRadius(effectIndex), DYNAMIC_OBJECT_FARSIGHT_FOCUS);
+    dynObj->create(u_caster, this, lv, static_cast<uint32_t>(getDuration()), getEffectRadius(effectIndex), DYNAMIC_OBJECT_FARSIGHT_FOCUS);
     dynObj->SetInstanceID(p_caster->GetInstanceID());
     p_caster->setFarsightGuid(dynObj->getGuid());
 

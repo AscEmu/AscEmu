@@ -29,7 +29,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/TaxiMgr.h"
 #include "Management/WeatherMgr.hpp"
 #include "Objects/Container.h"
-#include "Objects/DynamicObject.h"
+#include "Objects/DynamicObject.hpp"
 #include "Server/Opcodes.hpp"
 #include "Server/Packets/MsgTalentWipeConfirm.h"
 #include "Server/Packets/SmsgPetUnlearnConfirm.h"
@@ -7170,7 +7170,7 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t /*spellId*/)
                     if (!dynamicObject)
                         continue;
 
-                    dynamicObject->Remove();
+                    dynamicObject->remove();
                 }
             }
 

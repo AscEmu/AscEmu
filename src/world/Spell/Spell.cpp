@@ -34,7 +34,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/MapScriptInterface.h"
-#include "Objects/DynamicObject.h"
+#include "Objects/DynamicObject.hpp"
 #include "Management/Faction.h"
 #include "Objects/GameObject.h"
 #include "Management/ObjectMgr.h"
@@ -1248,7 +1248,7 @@ void Spell::cancel()
                     {
                         const auto dynObj = getUnitCaster()->getWorldMapDynamicObject(getUnitCaster()->getChannelObjectGuid());
                         if (dynObj != nullptr)
-                            dynObj->Remove();
+                            dynObj->remove();
                     }
 
                     if (getPlayerCaster() != nullptr && getPlayerCaster()->getSummonedObject() != nullptr)
@@ -4360,7 +4360,7 @@ void Spell::sendChannelUpdate(const uint32_t time, const uint32_t diff/* = 0*/)
 
             const auto dynamicObject = u_caster->getWorldMapDynamicObject(WoWGuid::getGuidLowPartFromUInt64(channelGuid));
             if (dynamicObject != nullptr)
-                dynamicObject->Remove();
+                dynamicObject->remove();
 
             u_caster->setChannelObjectGuid(0);
             u_caster->setChannelSpellId(0);

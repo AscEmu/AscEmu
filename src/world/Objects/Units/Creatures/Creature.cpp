@@ -3,7 +3,7 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Objects/DynamicObject.h"
+#include "Objects/DynamicObject.hpp"
 #include "Management/AuctionMgr.h"
 #include "Management/QuestMgr.h"
 #include "Management/Quest.h"
@@ -2523,7 +2523,7 @@ void Creature::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
                     if (!dObj)
                         return;
 
-                    dObj->Remove();
+                    dObj->remove();
                 }
             }
 
