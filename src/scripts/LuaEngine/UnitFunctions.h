@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Creatures/Summons/Summon.h"
 #include "Objects/Item.hpp"
-#include "Objects/Container.h"
+#include "Objects/Container.hpp"
 #include "Map/AreaBoundary.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Objects/Units/Stats.h"
@@ -1204,9 +1204,9 @@ public:
 
                 for (uint8_t bslot = 0; bslot != bag->getSlotCount(); bslot++)
                 {
-                    if (bag->GetItem(bslot) && bag->GetItem(bslot)->getEntry() == entry)
+                    if (bag->getItem(bslot) && bag->getItem(bslot)->getEntry() == entry)
                     {
-                        PUSH_ITEM(L, bag->GetItem(bslot));
+                        PUSH_ITEM(L, bag->getItem(bslot));
                         return 1;
                     }
                 }
@@ -4126,7 +4126,7 @@ public:
                     pContainer = dynamic_cast< Container* >(pItem);
                     for (j = 0; j < pContainer->getItemProperties()->ContainerSlots; ++j)
                     {
-                        pItem = pContainer->GetItem(j);
+                        pItem = pContainer->getItem(j);
                         if (pItem != nullptr)
                         {
                             pItem->setDurabilityToMax();

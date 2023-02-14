@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Management/HonorHandler.h"
 #include "Objects/Item.hpp"
-#include "Objects/Container.h"
+#include "Objects/Container.hpp"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
@@ -1320,7 +1320,7 @@ bool ChatHandler::HandleCharSetItemsRepairedCommand(const char* /*args*/, WorldS
                 auto item_container = static_cast<Container*>(player_item);
                 for (uint32 j = 0; j < item_container->getItemProperties()->ContainerSlots; ++j)
                 {
-                    player_item = item_container->GetItem(static_cast<uint16>(j));
+                    player_item = item_container->getItem(static_cast<uint16>(j));
                     if (player_item != nullptr)
                     {
                         player_item->setDurabilityToMax();

@@ -28,7 +28,7 @@
 #include "Macros/ScriptMacros.hpp"
 #include "Management/HonorHandler.h"
 #include "Objects/Item.hpp"
-#include "Objects/Container.h"
+#include "Objects/Container.hpp"
 #include "Management/TaxiMgr.h"
 #include "Management/ItemInterface.h"
 #include "Management/ItemProperties.hpp"
@@ -6225,7 +6225,7 @@ void Spell::SpellEffectDurabilityDamage(uint8_t effectIndex)
                     pContainer = static_cast< Container* >(pItem);
                     for (j = 0; j < pContainer->getItemProperties()->ContainerSlots; ++j)
                     {
-                        pItem = pContainer->GetItem(static_cast<uint16>(j));
+                        pItem = pContainer->getItem(static_cast<uint16>(j));
                         if (pItem != nullptr)
                         {
                             uint32 maxdur = pItem->getMaxDurability();
@@ -6318,7 +6318,7 @@ void Spell::SpellEffectDurabilityDamagePCT(uint8_t effectIndex)
                     pContainer = static_cast< Container* >(pItem);
                     for (j = 0; j < pContainer->getItemProperties()->ContainerSlots; ++j)
                     {
-                        pItem = pContainer->GetItem(static_cast<uint16>(j));
+                        pItem = pContainer->getItem(static_cast<uint16>(j));
                         if (pItem != nullptr)
                         {
                             uint32 maxdur = pItem->getMaxDurability();

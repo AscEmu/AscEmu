@@ -3,7 +3,7 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Container.h"
+#include "Container.hpp"
 #include "Item.hpp"
 #include "Map/Management/MapMgrDefines.hpp"
 #include "Objects/Units/Players/Player.hpp"
@@ -1432,7 +1432,7 @@ void Item::deleteFromDB()
     {
         for (uint32_t i = 0; i < m_itemProperties->ContainerSlots; ++i)
         {
-            if (dynamic_cast<Container*>(this)->GetItem(static_cast<int16_t>(i)) != nullptr)
+            if (dynamic_cast<Container*>(this)->getItem(static_cast<int16_t>(i)) != nullptr)
                 return;
         }
     }

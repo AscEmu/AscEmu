@@ -4,7 +4,7 @@ set(PATH_PREFIX Objects)
 
 set(SRC_OBJECTS_FILES
     ${PATH_PREFIX}/Container.cpp
-    ${PATH_PREFIX}/Container.h
+    ${PATH_PREFIX}/Container.hpp
     ${PATH_PREFIX}/DynamicObject.cpp
     ${PATH_PREFIX}/DynamicObject.hpp
     ${PATH_PREFIX}/GameObject.cpp

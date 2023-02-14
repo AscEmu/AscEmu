@@ -34,7 +34,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Creatures/Pet.h"
-#include "Objects/Container.h"
+#include "Objects/Container.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Server/Packets/CmsgListInventory.h"
 #include "Server/Packets/SmsgBuyItem.h"
@@ -947,7 +947,7 @@ void WorldSession::handleSplitOpcode(WorldPacket& recvPacket)
                 {
                     Container* container = _player->getItemInterface()->GetContainer(srlPacket.destInventorySlot);
                     if (container != nullptr)
-                        DstSlot = container->FindFreeSlot();
+                        DstSlot = container->findFreeSlot();
                 }
                 else
                 {
@@ -1063,7 +1063,7 @@ void WorldSession::handleSwapInvItemOpcode(WorldPacket& recvPacket)
     if (srcItem->isContainer())
     {
         //source has items and dst is a backpack or bank
-        if (dynamic_cast<Container*>(srcItem)->HasItems())
+        if (dynamic_cast<Container*>(srcItem)->hasItems())
             if (!_player->getItemInterface()->IsBagSlot(srlPacket.destSlot))
             {
                 _player->getItemInterface()->buildInventoryChangeError(srcItem, dstItem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
@@ -1075,7 +1075,7 @@ void WorldSession::handleSwapInvItemOpcode(WorldPacket& recvPacket)
             //source is a bag and dst slot is a bag inventory and has items
             if (dstItem->isContainer())
             {
-                if (dynamic_cast<Container*>(dstItem)->HasItems() && !_player->getItemInterface()->IsBagSlot(srlPacket.srcSlot))
+                if (dynamic_cast<Container*>(dstItem)->hasItems() && !_player->getItemInterface()->IsBagSlot(srlPacket.srcSlot))
                 {
                     _player->getItemInterface()->buildInventoryChangeError(srcItem, dstItem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
                     return;
@@ -1154,7 +1154,7 @@ void WorldSession::handleDestroyItemOpcode(WorldPacket& recvPacket)
         {
             if (const auto itemContainer = dynamic_cast<Container*>(srcItem))
             {
-                if (itemContainer->HasItems())
+                if (itemContainer->hasItems())
                 {
                     _player->getItemInterface()->buildInventoryChangeError(srcItem, nullptr, INV_ERR_CAN_ONLY_DO_WITH_EMPTY_BAGS);
                     return;
@@ -1894,7 +1894,7 @@ void WorldSession::handleSellItemOpcode(WorldPacket& recvPacket)
 
     ItemProperties const* it = item->getItemProperties();
 
-    if (item->isContainer() && dynamic_cast<Container*>(item)->HasItems())
+    if (item->isContainer() && dynamic_cast<Container*>(item)->hasItems())
     {
         sendSellItem(srlPacket.vendorGuid.getRawGuid(), srlPacket.itemGuid, 6);
         return;
@@ -2038,7 +2038,7 @@ void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)
             }
 
             bagslot = static_cast<int8_t>(_player->getItemInterface()->GetBagSlotByGuid(srlPacket.bagGuid));
-            slot = c->FindFreeSlot();
+            slot = c->findFreeSlot();
         }
         else
             slot = _player->getItemInterface()->FindFreeBackPackSlot();
@@ -2243,7 +2243,7 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
         {
             if (Item* bag = _player->getItemInterface()->GetInventoryItem(slotResult.ContainerSlot))
             {
-                if (!dynamic_cast<Container*>(bag)->AddItem(slotResult.Slot, item))
+                if (!dynamic_cast<Container*>(bag)->addItem(slotResult.Slot, item))
                 {
                     item->deleteMe();
                 }
@@ -2479,7 +2479,7 @@ void WorldSession::handleAutoStoreBagItemOpcode(WorldPacket& recvPacket)
     if (srcitem)
     {
         //src containers cant be moved if they have items inside
-        if (srcitem->isContainer() && dynamic_cast<Container*>(srcitem)->HasItems())
+        if (srcitem->isContainer() && dynamic_cast<Container*>(srcitem)->hasItems())
         {
             _player->getItemInterface()->buildInventoryChangeError(srcitem, nullptr, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
             return;
@@ -2531,7 +2531,7 @@ void WorldSession::handleAutoStoreBagItemOpcode(WorldPacket& recvPacket)
                 //dstitem exists, detect if its a container
                 if (dstitem->isContainer())
                 {
-                    NewSlot = dynamic_cast<Container*>(dstitem)->FindFreeSlot();
+                    NewSlot = dynamic_cast<Container*>(dstitem)->findFreeSlot();
                     if (NewSlot == ITEM_NO_SLOT_AVAILABLE)
                     {
                         _player->getItemInterface()->buildInventoryChangeError(srcitem, nullptr, INV_ERR_BAG_FULL);
@@ -2619,7 +2619,7 @@ void WorldSession::handleRepairItemOpcode(WorldPacket& recvPacket)
                     {
                         for (uint32_t j = 0; j < pContainer->getItemProperties()->ContainerSlots; ++j)
                         {
-                            pItem = pContainer->GetItem(static_cast<int16_t>(j));
+                            pItem = pContainer->getItem(static_cast<int16_t>(j));
                             if (pItem != nullptr)
                                 pItem->repairItem(_player, srlPacket.isInGuild, &totalcost);
                         }   

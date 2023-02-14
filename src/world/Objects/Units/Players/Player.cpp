@@ -28,7 +28,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ObjectMgr.h"
 #include "Management/TaxiMgr.h"
 #include "Management/WeatherMgr.hpp"
-#include "Objects/Container.h"
+#include "Objects/Container.hpp"
 #include "Objects/DynamicObject.hpp"
 #include "Server/Opcodes.hpp"
 #include "Server/Packets/MsgTalentWipeConfirm.h"
@@ -6793,7 +6793,7 @@ void Player::removeTempItemEnchantsOnArena()
                 Container* bag = static_cast<Container*>(item);
                 for (uint32_t ci = 0; ci < bag->getItemProperties()->ContainerSlots; ++ci)
                 {
-                    if (auto* const bagItem = bag->GetItem(static_cast<int16_t>(ci)))
+                    if (auto* const bagItem = bag->getItem(static_cast<int16_t>(ci)))
                         bagItem->removeAllEnchantments(true);
                 }
             }
@@ -15534,7 +15534,7 @@ void Player::addItemsToWorld()
             {
                 for (uint32_t containerSlot = 0; containerSlot < inventoryItem->getItemProperties()->ContainerSlots; ++containerSlot)
                 {
-                    if (Item* item = (static_cast<Container*>(inventoryItem))->GetItem(static_cast<int16_t>(containerSlot)))
+                    if (Item* item = (static_cast<Container*>(inventoryItem))->getItem(static_cast<int16_t>(containerSlot)))
                         item->PushToWorld(m_WorldMap);
                 }
             }
@@ -15562,7 +15562,7 @@ void Player::addItemsToWorld()
             {
                 for (uint32_t containerSlot = 0; containerSlot < inventoryItem->getItemProperties()->ContainerSlots; ++containerSlot)
                 {
-                    if (Item* item = (static_cast<Container*>(inventoryItem))->GetItem(static_cast<int16_t>(containerSlot)))
+                    if (Item* item = (static_cast<Container*>(inventoryItem))->getItem(static_cast<int16_t>(containerSlot)))
                         item->PushToWorld(m_WorldMap);
                 }
             }
@@ -15591,7 +15591,7 @@ void Player::removeItemsFromWorld()
             {
                 for (uint32_t containerSlot = 0; containerSlot < inventoryItem->getItemProperties()->ContainerSlots; ++containerSlot)
                 {
-                    Item* item = (static_cast<Container*>(inventoryItem))->GetItem(static_cast<int16_t>(containerSlot));
+                    Item* item = (static_cast<Container*>(inventoryItem))->getItem(static_cast<int16_t>(containerSlot));
                     if (item && item->IsInWorld())
                         item->removeFromWorld();
                 }

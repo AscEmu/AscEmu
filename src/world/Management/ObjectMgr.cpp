@@ -21,7 +21,7 @@
 
 
 #include "Management/QuestLogEntry.hpp"
-#include "Objects/Container.h"
+#include "Objects/Container.hpp"
 #include "Exceptions/Exceptions.hpp"
 #include "Objects/Units/Stats.h"
 #include "Management/ArenaTeam.hpp"
@@ -991,7 +991,7 @@ Item* ObjectMgr::CreateItem(uint32 entry, Player* owner)
     if (proto->InventoryType == INVTYPE_BAG)
     {
         Container* pContainer = new Container(HIGHGUID_TYPE_CONTAINER, GenerateLowGuid(HIGHGUID_TYPE_CONTAINER));
-        pContainer->Create(entry, owner);
+        pContainer->create(entry, owner);
         pContainer->setStackCount(1);
         return pContainer;
     }
@@ -1028,7 +1028,7 @@ Item* ObjectMgr::LoadItem(uint32 lowguid)
         if (pProto->InventoryType == INVTYPE_BAG)
         {
             Container* pContainer = new Container(HIGHGUID_TYPE_CONTAINER, lowguid);
-            pContainer->LoadFromDB(result->Fetch());
+            pContainer->loadFromDB(result->Fetch());
             pReturn = pContainer;
         }
         else
