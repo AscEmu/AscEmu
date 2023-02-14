@@ -14,13 +14,13 @@ set(SRC_OBJECTS_FILES
     ${PATH_PREFIX}/Item.cpp
     ${PATH_PREFIX}/Item.hpp
     ${PATH_PREFIX}/ItemDefines.hpp
-    ${PATH_PREFIX}/MovementDefines.h
-    ${PATH_PREFIX}/MovementInfo.h
+    ${PATH_PREFIX}/MovementDefines.hpp
+    ${PATH_PREFIX}/MovementInfo.hpp
     ${PATH_PREFIX}/Object.cpp
-    ${PATH_PREFIX}/Object.h
+    ${PATH_PREFIX}/Object.hpp
+    ${PATH_PREFIX}/ObjectDefines.hpp
     ${PATH_PREFIX}/Transporter.cpp
-    ${PATH_PREFIX}/Transporter.h
-    ${PATH_PREFIX}/ObjectDefines.h
+    ${PATH_PREFIX}/Transporter.hpp
 )
 
 source_group(Objects FILES ${SRC_OBJECTS_FILES})

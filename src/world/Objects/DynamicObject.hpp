@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Object.h"
+#include "Object.hpp"
 #include "Units/Unit.hpp"
 #include "Data/WoWDynamicObject.hpp"
 #include "Server/UpdateFieldInclude.h"

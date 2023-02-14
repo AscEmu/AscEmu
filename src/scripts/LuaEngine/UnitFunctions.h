@@ -23,7 +23,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Faction.h"
 #include "Spell/SpellAuras.h"
 #include "Server/WorldSession.h"
-#include "Objects/Object.h"
+#include "Objects/Object.hpp"
 #include "LuaGlobal.h"
 #include <Spell/Definitions/PowerType.hpp>
 #include <Map/Maps/MapScriptInterface.h>

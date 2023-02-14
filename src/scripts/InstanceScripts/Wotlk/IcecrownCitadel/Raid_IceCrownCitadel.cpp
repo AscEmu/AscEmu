@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Summons/Summon.h"
 #include <Management/ObjectMgr.h>
 #include <Management/TransporterHandler.h>
-#include <Objects/Transporter.h>
+#include <Objects/Transporter.hpp>
 #include "Movement/MovementGenerators/PointMovementGenerator.h"
 #include "Server/Script/CreatureAIScript.h"
 

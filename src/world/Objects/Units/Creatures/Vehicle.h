@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Objects/Transporter.h"
+#include "Objects/Transporter.hpp"
 #include <array>
 
 #ifdef FT_VEHICLES

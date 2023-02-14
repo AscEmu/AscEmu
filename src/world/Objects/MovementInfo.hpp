@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Data/Flags.hpp"
 #include "WorldPacket.h"
-#include "MovementDefines.h"
+#include "MovementDefines.hpp"
 #include "LocationVector.h"
 #include "CommonDefines.hpp"
 #include "Macros/MapsMacros.hpp"

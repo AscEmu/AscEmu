@@ -232,10 +232,10 @@ if (USE_PCH)
     Objects/GameObject.h
     Objects/Item.hpp
     Objects/ItemDefines.hpp
-    Objects/MovementDefines.h
-    Objects/MovementInfo.h
-    Objects/Object.h
-    Objects/ObjectDefines.h
+    Objects/MovementDefines.hpp
+    Objects/MovementInfo.hpp
+    Objects/Object.hpp
+    Objects/ObjectDefines.hpp
     Objects/Units/Creatures/Creature.h
     Objects/Units/Creatures/CreatureDefines.hpp
     Objects/Units/Players/Player.hpp

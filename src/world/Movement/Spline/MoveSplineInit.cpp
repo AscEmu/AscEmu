@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MoveSpline.h"
 #include "MovementPacketBuilder.h"
 #include <Objects/Units/Unit.hpp>
-#include <Objects/Transporter.h>
+#include <Objects/Transporter.hpp>
 #include "WorldPacket.h"
 #include "Movement/PathGenerator.h"
 

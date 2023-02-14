@@ -19,7 +19,7 @@
  */
 
 
-#include "Objects/Object.h"
+#include "Objects/Object.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Objects/Units/Unit.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"

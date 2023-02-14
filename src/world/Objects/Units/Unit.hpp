@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/LootMgr.h"
 #include "Macros/UnitMacros.hpp"
 #include "Movement/AbstractFollower.h"
-#include "Objects/Object.h"
+#include "Objects/Object.hpp"
 #include "Objects/Units/Creatures/Summons/SummonHandler.h"
 #include "Spell/Definitions/AuraEffects.hpp"
 #include "Spell/Definitions/AuraSlots.hpp"

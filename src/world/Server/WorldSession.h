@@ -35,7 +35,7 @@
 #endif
 
 #include <string>
-#include "Objects/MovementInfo.h"
+#include "Objects/MovementInfo.hpp"
 #include "Logging/Logger.hpp"
 #include "CallBack.h"
 

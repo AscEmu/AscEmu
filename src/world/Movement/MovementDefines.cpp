@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MovementDefines.h"
 #include "LocationVector.h"
 #include "Logging/Logger.hpp"
-#include "Objects/MovementInfo.h"
+#include "Objects/MovementInfo.hpp"
 
 #define CONTACT_DISTANCE 0.5f
 
