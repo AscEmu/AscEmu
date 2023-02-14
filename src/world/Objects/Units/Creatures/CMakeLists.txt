@@ -8,7 +8,7 @@ set(SRC_UNITS_CREATURES_FILES
     ${PATH_PREFIX}/AIInterface.cpp 
     ${PATH_PREFIX}/AIInterface.h
     ${PATH_PREFIX}/Corpse.cpp
-    ${PATH_PREFIX}/Corpse.h
+    ${PATH_PREFIX}/Corpse.hpp
     ${PATH_PREFIX}/Creature.cpp
     ${PATH_PREFIX}/Creature.h
     ${PATH_PREFIX}/CreatureDefines.hpp

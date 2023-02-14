@@ -561,7 +561,7 @@ Corpse* ObjectMgr::LoadCorpse(uint32 guid)
         return nullptr;
     }
 
-    pCorpse->SetLoadedFromDB(true);
+    pCorpse->setLoadedFromDB(true);
     pCorpse->SetInstanceID(fields[8].GetUInt32());
     pCorpse->AddToWorld();
 
@@ -601,7 +601,7 @@ void ObjectMgr::DelinkPlayerCorpses(Player* pOwner)
     Corpse* c = this->GetCorpseByOwner(pOwner->getGuidLow());
     if (!c)
         return;
-    sEventMgr.AddEvent(c, &Corpse::Delink, EVENT_CORPSE_SPAWN_BONES, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(c, &Corpse::delink, EVENT_CORPSE_SPAWN_BONES, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     CorpseAddEventDespawn(c);
 }
 

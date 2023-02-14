@@ -1138,7 +1138,7 @@ void WorldSession::handleCorpseReclaimOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (time(nullptr) < corpse->GetDeathClock() + CORPSE_RECLAIM_TIME)
+    if (time(nullptr) < corpse->getDeathClock() + CORPSE_RECLAIM_TIME)
     {
         SendPacket(SmsgResurrectFailed(1).serialise().get());
         return;

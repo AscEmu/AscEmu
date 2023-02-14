@@ -5445,13 +5445,13 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
         corpse->setFlags(CORPSE_FLAG_BONE | CORPSE_FLAG_UNK1);
 
         // remove owner association
-        corpse->SetOwner(0);
-        corpse->SetCorpseState(CORPSE_STATE_BONES);
+        corpse->setOwnerNotifyMap(0);
+        corpse->setCorpseState(CORPSE_STATE_BONES);
 
         // send loot
         p_caster->sendLoot(corpse->getGuid(), LOOT_SKINNING, corpse->GetMapId());
 
-        corpse->DeleteFromDB();
+        corpse->deleteFromDB();
         sObjectMgr.CorpseAddEventDespawn(corpse);
     }
 }

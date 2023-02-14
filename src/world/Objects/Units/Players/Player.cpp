@@ -7338,7 +7338,7 @@ void Player::createCorpse()
 
     Corpse* corpse = sObjectMgr.CreateCorpse();
     corpse->SetInstanceID(GetInstanceID());
-    corpse->Create(this, GetMapId(), GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
+    corpse->create(this, GetMapId(), GetPosition());
 
     corpse->SetZoneId(GetZoneId());
 
@@ -7386,7 +7386,7 @@ void Player::createCorpse()
         }
     }
 
-    corpse->SaveToDB();
+    corpse->saveToDB();
 }
 
 void Player::spawnCorpseBody()
@@ -7418,12 +7418,12 @@ void Player::spawnCorpseBones()
 
     if (Corpse* corpse = sObjectMgr.GetCorpseByOwner(getGuidLow()))
     {
-        if (corpse->IsInWorld() && corpse->GetCorpseState() == CORPSE_STATE_BODY)
+        if (corpse->IsInWorld() && corpse->getCorpseState() == CORPSE_STATE_BODY)
         {
             if (corpse->GetInstanceID() != GetInstanceID())
-                sEventMgr.AddEvent(corpse, &Corpse::SpawnBones, EVENT_CORPSE_SPAWN_BONES, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                sEventMgr.AddEvent(corpse, &Corpse::spawnBones, EVENT_CORPSE_SPAWN_BONES, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
             else
-                corpse->SpawnBones();
+                corpse->spawnBones();
         }
     }
 }
@@ -7436,7 +7436,7 @@ void Player::repopRequest()
     if (m_corpseData.instanceId != 0)
     {
         if (auto corpse = sObjectMgr.GetCorpseByOwner(getGuidLow()))
-            corpse->ResetDeathClock();
+            corpse->resetDeathClock();
 
         resurrect();
         repopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
@@ -7498,7 +7498,7 @@ void Player::repopRequest()
 
         if (m_corpseData.instanceId != 0)
             if (auto corpse = sObjectMgr.GetCorpseByOwner(getGuidLow()))
-                corpse->ResetDeathClock();
+                corpse->resetDeathClock();
 
         m_session->SendPacket(SmsgDeathReleaseLoc(m_mapId, m_position).serialise().get());
         m_session->SendPacket(SmsgCorpseReclaimDelay(CORPSE_RECLAIM_TIME_MS).serialise().get());
@@ -15738,7 +15738,7 @@ void Player::completeLoading()
         if (getCorpseInstanceId() != 0)
         {
             if (Corpse* corpse = sObjectMgr.GetCorpseByOwner(getGuidLow()))
-                corpse->ResetDeathClock();
+                corpse->resetDeathClock();
 
             getSession()->SendPacket(SmsgCorpseReclaimDelay(CORPSE_RECLAIM_TIME_MS).serialise().get());
         }

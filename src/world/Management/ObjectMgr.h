@@ -26,7 +26,7 @@
 #include "Management/Group.h"
 #include "Management/Tickets/TicketMgr.hpp"
 #include "Movement/MovementManager.h"
-#include "Objects/Units/Creatures/Corpse.h"
+#include "Objects/Units/Creatures/Corpse.hpp"
 #include "Objects/Units/Creatures/CreatureDefines.hpp"
 #include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
 #include "Objects/Units/Players/Player.hpp"

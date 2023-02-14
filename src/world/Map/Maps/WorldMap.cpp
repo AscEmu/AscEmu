@@ -416,7 +416,7 @@ void WorldMap::update(uint32_t t_diff)
                 if (pCorpse->getWorldMap() != this)
                     break;
 
-                pCorpse->Despawn();
+                pCorpse->despawn();
             }
             break;
         }
