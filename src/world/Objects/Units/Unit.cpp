@@ -82,7 +82,7 @@ Unit::Unit() :
     // Zyres: initialise here because multiversion differences
     std::fill_n(m_pctPowerRegenModifier, TOTAL_PLAYER_POWER_TYPES, 1.0f);
 
-    m_summonInterface->Init(this);
+    m_summonInterface->setUnitOwner(this);
     m_aiInterface->Init(this);
     getThreatManager().initialize();
 }

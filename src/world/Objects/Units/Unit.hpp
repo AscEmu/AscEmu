@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Macros/UnitMacros.hpp"
 #include "Movement/AbstractFollower.h"
 #include "Objects/Object.hpp"
-#include "Objects/Units/Creatures/Summons/SummonHandler.h"
+#include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 #include "Spell/Definitions/AuraEffects.hpp"
 #include "Spell/Definitions/AuraSlots.hpp"
 #include "Spell/Definitions/AuraStates.hpp"

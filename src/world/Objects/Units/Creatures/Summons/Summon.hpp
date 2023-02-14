@@ -17,7 +17,7 @@ public:
     Summon(uint64_t guid, DBC::Structures::SummonPropertiesEntry const* properties);
     ~Summon();
 
-    virtual void Load(CreatureProperties const* creatureProperties, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellId);
+    virtual void load(CreatureProperties const* creatureProperties, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellId);
 
     virtual void unSummon();
 
@@ -74,7 +74,7 @@ public:
     GuardianSummon(uint64_t GUID, DBC::Structures::SummonPropertiesEntry const* properties);
     ~GuardianSummon();
 
-    void Load(CreatureProperties const* properties_, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellid) override;
+    void load(CreatureProperties const* properties_, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellid) override;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -86,7 +86,7 @@ public:
     CompanionSummon(uint64_t GUID, DBC::Structures::SummonPropertiesEntry const* properties);
     ~CompanionSummon();
 
-    void Load(CreatureProperties const* properties_, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellid) override;
+    void load(CreatureProperties const* properties_, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellid) override;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -98,7 +98,7 @@ public:
     PossessedSummon(uint64_t GUID, DBC::Structures::SummonPropertiesEntry const* properties);
     ~PossessedSummon();
 
-    void Load(CreatureProperties const* properties_, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellid) override;
+    void load(CreatureProperties const* properties_, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellid) override;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -110,7 +110,7 @@ public:
     WildSummon(uint64_t GUID, DBC::Structures::SummonPropertiesEntry const* properties);
     ~WildSummon();
 
-    void Load(CreatureProperties const* properties_, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellid) override;
+    void load(CreatureProperties const* properties_, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellid) override;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -121,7 +121,7 @@ public:
     TotemSummon(uint64_t guid, DBC::Structures::SummonPropertiesEntry const* properties);
     ~TotemSummon();
 
-    void Load(CreatureProperties const* properties_, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellId) override;
+    void load(CreatureProperties const* properties_, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellId) override;
 
     void unSummon() override;
 
@@ -139,5 +139,5 @@ public:
     //\brief: Sets up the spells the totem will cast. This code was almost directly copied
     //        from SpellEffects.cpp, it requires further refactoring!
     //        For example totems should cast like other units..
-    void SetupSpells();
+    void setupSpells();
 };

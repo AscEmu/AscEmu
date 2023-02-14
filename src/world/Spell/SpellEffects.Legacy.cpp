@@ -23,7 +23,7 @@
 #include "Management/QuestLogEntry.hpp"
 #include "MMapFactory.h"
 #include "Objects/Units/Creatures/Creature.h"
-#include "Objects/Units/Creatures/Summons/Summon.h"
+#include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Objects/DynamicObject.hpp"
 #include "Macros/ScriptMacros.hpp"
 #include "Management/HonorHandler.h"

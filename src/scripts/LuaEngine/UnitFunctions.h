@@ -6,10 +6,10 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Objects/Units/Unit.hpp"
-#include "Objects/Units/Creatures/Summons/SummonHandler.h"
+#include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 #include "Objects/Units/Creatures/Vehicle.h"
 #include "Objects/Units/Creatures/Creature.h"
-#include "Objects/Units/Creatures/Summons/Summon.h"
+#include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Objects/Item.hpp"
 #include "Objects/Container.hpp"
 #include "Map/AreaBoundary.hpp"
@@ -2943,7 +2943,7 @@ public:
         if (guardian == nullptr)
             return 0;
 
-        guardian->Load(cp, ptr, v, 0, 0);
+        guardian->load(cp, ptr, v, 0, 0);
         guardian->PushToWorld(ptr->getWorldMap());
 
         PUSH_UNIT(L, guardian);

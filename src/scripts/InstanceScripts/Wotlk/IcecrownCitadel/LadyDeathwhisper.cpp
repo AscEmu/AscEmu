@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "LadyDeathwhisper.hpp"
 #include "Management/Faction.h"
-#include "Objects/Units/Creatures/Summons/Summon.h"
+#include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include <Management/ObjectMgr.h>
 #include <Management/TransporterHandler.h>
 #include <Objects/Transporter.hpp>

@@ -3,9 +3,9 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "SummonHandler.h"
+#include "SummonHandler.hpp"
 
-#include "Objects/Units/Creatures/Summons/Summon.h"
+#include "Objects/Units/Creatures/Summons/Summon.hpp"
 
 SummonHandler::SummonHandler()
 {
@@ -16,11 +16,6 @@ SummonHandler::SummonHandler()
 SummonHandler::~SummonHandler()
 {
     removeAllSummons();
-}
-
-void SummonHandler::Init(Unit* owner)
-{
-    m_Owner = owner;
 }
 
 void SummonHandler::removeAllSummons(bool totemsOnly/* = false*/)
@@ -151,4 +146,9 @@ void SummonHandler::getTotemSpellIds(std::vector<uint32_t>& spellIds)
             }
         }
     }
+}
+
+void SummonHandler::setUnitOwner(Unit* owner)
+{
+    m_Owner = owner;
 }

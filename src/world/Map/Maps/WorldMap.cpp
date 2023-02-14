@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldMap.hpp"
 #include "Objects/DynamicObject.hpp"
 #include "Objects/Units/Creatures/Pet.h"
-#include "Objects/Units/Creatures/Summons/Summon.h"
+#include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Objects/Units/Unit.hpp"
 #include "VMapFactory.h"
 #include "MMapFactory.h"
@@ -1766,7 +1766,7 @@ Summon* WorldMap::summonCreature(uint32_t entry, LocationVector pos, DBC::Struct
         return nullptr;
     }
 
-    summon->Load(cp, summonerUnit, pos, duration, spellId);
+    summon->load(cp, summonerUnit, pos, duration, spellId);
     summon->setPhase(PHASE_SET, phase);
     summon->PushToWorld(this);
 
