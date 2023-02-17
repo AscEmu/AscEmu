@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <Common.hpp>
 #include <G3D/Vector3.h>
+#include "Objects/Transporter.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Macros/ScriptMacros.hpp"
 #include "Map/Management/MapMgr.hpp"
@@ -299,7 +300,7 @@ Creature* Transporter::createNPCPassenger(MySQLStructure::CreatureSpawn* data)
     pCreature->SetTransport(this);
     pCreature->obj_movement_info.setTransportData(this->getGuid(), x, y, z, o, 0, 0);
 
-    CalculatePassengerPosition(x, y, z, &o);
+    calculatePassengerPosition(x, y, z, &o);
     pCreature->SetPosition(x, y, z, o);
     pCreature->SetSpawnLocation(x, y, z, o);
     pCreature->SetTransportHomePosition(pCreature->obj_movement_info.transport_position);
@@ -352,7 +353,7 @@ GameObject* Transporter::createGOPassenger(MySQLStructure::GameobjectSpawn* data
     pGameobject->SetTransport(this);
     pGameobject->obj_movement_info.setTransportData(this->getGuid(), x, y, z, o, 0, 0);
 
-    CalculatePassengerPosition(x, y, z, &o);
+    calculatePassengerPosition(x, y, z, &o);
     pGameobject->SetPosition(x, y, z, o);
 
     pGameobject->setAnimationProgress(255);
@@ -440,7 +441,7 @@ void Transporter::UpdatePassengerPositions(PassengerSet& passengers)
 
         float x, y, z, o;
         passenger->obj_movement_info.transport_position.getPosition(x, y, z, o);
-        CalculatePassengerPosition(x, y, z, &o);
+        calculatePassengerPosition(x, y, z, &o);
         switch (passenger->getObjectTypeId())
         {
             case TYPEID_PLAYER:
@@ -456,7 +457,7 @@ void Transporter::UpdatePassengerPositions(PassengerSet& passengers)
                 Creature* creature = static_cast<Creature*>(passenger);
                 creature->SetPosition(x, y, z, o, false);
                 creature->GetTransportHomePosition(x, y, z, o);
-                CalculatePassengerPosition(x, y, z, &o);
+                calculatePassengerPosition(x, y, z, &o);
                 creature->SetSpawnLocation(x, y, z, o);
                 break;
             }
@@ -488,7 +489,7 @@ void Transporter::UpdatePlayerPositions(PassengerSet& passengers)
 
         float x, y, z, o;
         passenger->obj_movement_info.transport_position.getPosition(x, y, z, o);
-        CalculatePassengerPosition(x, y, z, &o);
+        calculatePassengerPosition(x, y, z, &o);
         switch (passenger->getObjectTypeId())
         {
         case TYPEID_PLAYER:

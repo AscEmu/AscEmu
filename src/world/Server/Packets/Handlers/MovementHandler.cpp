@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/MovementPacket.h"
 #include "Server/WorldSession.h"
 #include "Objects/Units/Players/Player.hpp"
-#include "Objects/Units/Creatures/Vehicle.h"
+#include "Objects/Units/Creatures/Vehicle.hpp"
 #include "Map/Cells/CellHandlerDefines.hpp"
 #include "Objects/GameObject.h"
 #include "Server/MainServerDefines.h"
@@ -22,6 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Pet.h"
 #include "Server/OpcodeTable.hpp"
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
+#include "Objects/Transporter.hpp"
 
 using namespace AscEmu::Packets;
 

@@ -18,7 +18,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include "FastQueue.h"
 #include "Threading/Mutex.h"
 #include "WorldPacket.h"
@@ -37,6 +36,7 @@
 #include "OpcodeTable.hpp"
 #include "Packets/SmsgMessageChat.h"
 #include "Script/ScriptMgr.h"
+#include "Objects/Transporter.hpp"
 
 using namespace AscEmu::Packets;
 

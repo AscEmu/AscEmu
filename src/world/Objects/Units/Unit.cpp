@@ -38,7 +38,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellTarget.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Creatures/Pet.h"
-#include "Objects/Units/Creatures/Vehicle.h"
+#include "Objects/Units/Creatures/Vehicle.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Movement/Spline/MoveSpline.h"
 #include "Movement/Spline/MoveSplineInit.h"
@@ -56,6 +56,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/CreatureAIScript.h"
 #include "Spell/Definitions/SpellLog.hpp"
 #include "Spell/Definitions/SpellSchoolConversionTable.hpp"
+#include "Objects/Transporter.hpp"
 
 #if VERSION_STRING <= TBC
 #include "Server/Packets/SmsgUpdateAuraDuration.h"
@@ -3090,11 +3091,11 @@ void Unit::updateSplinePosition()
 #ifdef FT_VEHICLES
         if (TransportBase* vehicle = getVehicle())
         {
-            vehicle->CalculatePassengerPosition(loc.x, loc.y, loc.z, &loc.orientation);
+            vehicle->calculatePassengerPosition(loc.x, loc.y, loc.z, &loc.orientation);
         }
         else if (TransportBase* transport = GetTransport())
         {
-            transport->CalculatePassengerPosition(loc.x, loc.y, loc.z, &loc.orientation);
+            transport->calculatePassengerPosition(loc.x, loc.y, loc.z, &loc.orientation);
         }
         else
         {
@@ -3103,7 +3104,7 @@ void Unit::updateSplinePosition()
 #else
         if (TransportBase* transport = GetTransport())
         {
-            transport->CalculatePassengerPosition(loc.x, loc.y, loc.z, &loc.orientation);
+            transport->calculatePassengerPosition(loc.x, loc.y, loc.z, &loc.orientation);
         }
         else
         {
@@ -8235,10 +8236,10 @@ void Unit::exitVehicle(LocationVector const* exitPosition)
         // Change exit position based on seat entry addon data
         if (seatAddon)
         {
-            if (seatAddon->ExitParameter == VehicleExitParameters::Offset)
-                pos.ChangeCoordsOffset({ seatAddon->ExitParameterX, seatAddon->ExitParameterY, seatAddon->ExitParameterZ, seatAddon->ExitParameterO });
-            else if (seatAddon->ExitParameter == VehicleExitParameters::Destination)
-                pos.ChangeCoords({ seatAddon->ExitParameterX, seatAddon->ExitParameterY, seatAddon->ExitParameterZ, seatAddon->ExitParameterO });
+            if (seatAddon->exitParameter == VehicleExitParameters::Offset)
+                pos.ChangeCoordsOffset(seatAddon->exitLocation);
+            else if (seatAddon->exitParameter == VehicleExitParameters::Destination)
+                pos.ChangeCoords(seatAddon->exitLocation);
         }
     }
 

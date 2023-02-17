@@ -31,7 +31,7 @@
 #include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
-#include "Objects/Units/Creatures/Vehicle.h"
+#include "Objects/Units/Creatures/Vehicle.hpp"
 #include "Server/Script/SimpleEventScript.hpp"
 #include "Spell/Spell.h"
 #include "Spell/SpellTargetConstraint.hpp"

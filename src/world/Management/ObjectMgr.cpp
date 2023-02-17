@@ -2457,7 +2457,7 @@ void ObjectMgr::loadVehicleSeatAddon()
             float exitO = fields[5].GetFloat();
             uint8_t exitParam = fields[6].GetUInt8();
 
-            _vehicleSeatAddonStore[seatID] = VehicleSeatAddon(orientation, exitX, exitY, exitZ, exitO, exitParam);
+            _vehicleSeatAddonStore[seatID] = VehicleSeatAddon(orientation, { exitX, exitY, exitZ, exitO }, exitParam);
 
         } while (result->NextRow());
 

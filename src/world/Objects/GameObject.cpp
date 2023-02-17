@@ -40,6 +40,7 @@
 #include "GameObjectModel.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Server/Definitions.h"
+#include "Objects/Transporter.hpp"
 
 // MIT
 

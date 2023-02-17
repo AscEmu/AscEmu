@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "MoveSplineInit.h"
 #include <Objects/Units/Creatures/Creature.h>
-#include <Objects/Units/Creatures/Vehicle.h>
+#include <Objects/Units/Creatures/Vehicle.hpp>
 #include "MoveSpline.h"
 #include "MovementPacketBuilder.h"
 #include <Objects/Units/Unit.hpp>
@@ -284,16 +284,16 @@ Vector3 TransportPathTransform::operator()(Vector3 input)
 #ifdef FT_VEHICLES
         if (TransportBase* vehicle = _owner->getVehicle())
         {
-            vehicle->CalculatePassengerOffset(input.x, input.y, input.z);
+            vehicle->calculatePassengerOffset(input.x, input.y, input.z);
         }
         else if (TransportBase* transport = _owner->GetTransport())
         {
-            transport->CalculatePassengerOffset(input.x, input.y, input.z);
+            transport->calculatePassengerOffset(input.x, input.y, input.z);
         }
 #else 
         if (TransportBase* transport = _owner->GetTransport())
         {
-            transport->CalculatePassengerOffset(input.x, input.y, input.z);
+            transport->calculatePassengerOffset(input.x, input.y, input.z);
         }
 #endif
     }

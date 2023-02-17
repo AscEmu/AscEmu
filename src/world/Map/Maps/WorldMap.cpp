@@ -24,7 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Area/AreaManagementGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "CrashHandler.h"
-
+#include "Objects/Transporter.hpp"
 #include <ctime>
 
 using namespace AscEmu::Packets;

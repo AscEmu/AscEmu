@@ -58,6 +58,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgLogoutCancelAck.h"
 #include "Server/Packets/SmsgMotd.h"
 #include "Server/Script/ScriptMgr.h"
+#include "Objects/Transporter.hpp"
 
 using namespace AscEmu::Packets;
 
