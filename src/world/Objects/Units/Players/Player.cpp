@@ -28,8 +28,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ObjectMgr.h"
 #include "Management/TaxiMgr.h"
 #include "Management/WeatherMgr.hpp"
-#include "Objects/Container.h"
-#include "Objects/DynamicObject.h"
+#include "Objects/Container.hpp"
+#include "Objects/DynamicObject.hpp"
 #include "Server/Opcodes.hpp"
 #include "Server/Packets/MsgTalentWipeConfirm.h"
 #include "Server/Packets/SmsgPetUnlearnConfirm.h"
@@ -130,6 +130,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/WorldStrings.h"
 #include "Util/Strings.hpp"
+#include "Objects/Transporter.hpp"
 
 using namespace AscEmu::Packets;
 using namespace MapManagement::AreaManagement;
@@ -6793,7 +6794,7 @@ void Player::removeTempItemEnchantsOnArena()
                 Container* bag = static_cast<Container*>(item);
                 for (uint32_t ci = 0; ci < bag->getItemProperties()->ContainerSlots; ++ci)
                 {
-                    if (auto* const bagItem = bag->GetItem(static_cast<int16_t>(ci)))
+                    if (auto* const bagItem = bag->getItem(static_cast<int16_t>(ci)))
                         bagItem->removeAllEnchantments(true);
                 }
             }
@@ -7170,7 +7171,7 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t /*spellId*/)
                     if (!dynamicObject)
                         continue;
 
-                    dynamicObject->Remove();
+                    dynamicObject->remove();
                 }
             }
 
@@ -7338,7 +7339,7 @@ void Player::createCorpse()
 
     Corpse* corpse = sObjectMgr.CreateCorpse();
     corpse->SetInstanceID(GetInstanceID());
-    corpse->Create(this, GetMapId(), GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
+    corpse->create(this, GetMapId(), GetPosition());
 
     corpse->SetZoneId(GetZoneId());
 
@@ -7386,7 +7387,7 @@ void Player::createCorpse()
         }
     }
 
-    corpse->SaveToDB();
+    corpse->saveToDB();
 }
 
 void Player::spawnCorpseBody()
@@ -7418,12 +7419,12 @@ void Player::spawnCorpseBones()
 
     if (Corpse* corpse = sObjectMgr.GetCorpseByOwner(getGuidLow()))
     {
-        if (corpse->IsInWorld() && corpse->GetCorpseState() == CORPSE_STATE_BODY)
+        if (corpse->IsInWorld() && corpse->getCorpseState() == CORPSE_STATE_BODY)
         {
             if (corpse->GetInstanceID() != GetInstanceID())
-                sEventMgr.AddEvent(corpse, &Corpse::SpawnBones, EVENT_CORPSE_SPAWN_BONES, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                sEventMgr.AddEvent(corpse, &Corpse::spawnBones, EVENT_CORPSE_SPAWN_BONES, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
             else
-                corpse->SpawnBones();
+                corpse->spawnBones();
         }
     }
 }
@@ -7436,7 +7437,7 @@ void Player::repopRequest()
     if (m_corpseData.instanceId != 0)
     {
         if (auto corpse = sObjectMgr.GetCorpseByOwner(getGuidLow()))
-            corpse->ResetDeathClock();
+            corpse->resetDeathClock();
 
         resurrect();
         repopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
@@ -7498,7 +7499,7 @@ void Player::repopRequest()
 
         if (m_corpseData.instanceId != 0)
             if (auto corpse = sObjectMgr.GetCorpseByOwner(getGuidLow()))
-                corpse->ResetDeathClock();
+                corpse->resetDeathClock();
 
         m_session->SendPacket(SmsgDeathReleaseLoc(m_mapId, m_position).serialise().get());
         m_session->SendPacket(SmsgCorpseReclaimDelay(CORPSE_RECLAIM_TIME_MS).serialise().get());
@@ -15534,7 +15535,7 @@ void Player::addItemsToWorld()
             {
                 for (uint32_t containerSlot = 0; containerSlot < inventoryItem->getItemProperties()->ContainerSlots; ++containerSlot)
                 {
-                    if (Item* item = (static_cast<Container*>(inventoryItem))->GetItem(static_cast<int16_t>(containerSlot)))
+                    if (Item* item = (static_cast<Container*>(inventoryItem))->getItem(static_cast<int16_t>(containerSlot)))
                         item->PushToWorld(m_WorldMap);
                 }
             }
@@ -15562,7 +15563,7 @@ void Player::addItemsToWorld()
             {
                 for (uint32_t containerSlot = 0; containerSlot < inventoryItem->getItemProperties()->ContainerSlots; ++containerSlot)
                 {
-                    if (Item* item = (static_cast<Container*>(inventoryItem))->GetItem(static_cast<int16_t>(containerSlot)))
+                    if (Item* item = (static_cast<Container*>(inventoryItem))->getItem(static_cast<int16_t>(containerSlot)))
                         item->PushToWorld(m_WorldMap);
                 }
             }
@@ -15591,7 +15592,7 @@ void Player::removeItemsFromWorld()
             {
                 for (uint32_t containerSlot = 0; containerSlot < inventoryItem->getItemProperties()->ContainerSlots; ++containerSlot)
                 {
-                    Item* item = (static_cast<Container*>(inventoryItem))->GetItem(static_cast<int16_t>(containerSlot));
+                    Item* item = (static_cast<Container*>(inventoryItem))->getItem(static_cast<int16_t>(containerSlot));
                     if (item && item->IsInWorld())
                         item->removeFromWorld();
                 }
@@ -15738,7 +15739,7 @@ void Player::completeLoading()
         if (getCorpseInstanceId() != 0)
         {
             if (Corpse* corpse = sObjectMgr.GetCorpseByOwner(getGuidLow()))
-                corpse->ResetDeathClock();
+                corpse->resetDeathClock();
 
             getSession()->SendPacket(SmsgCorpseReclaimDelay(CORPSE_RECLAIM_TIME_MS).serialise().get());
         }

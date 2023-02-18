@@ -6,12 +6,12 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Objects/Units/Unit.hpp"
-#include "Objects/Units/Creatures/Summons/SummonHandler.h"
-#include "Objects/Units/Creatures/Vehicle.h"
+#include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
+#include "Objects/Units/Creatures/Vehicle.hpp"
 #include "Objects/Units/Creatures/Creature.h"
-#include "Objects/Units/Creatures/Summons/Summon.h"
+#include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Objects/Item.hpp"
-#include "Objects/Container.h"
+#include "Objects/Container.hpp"
 #include "Map/AreaBoundary.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Objects/Units/Stats.h"
@@ -23,7 +23,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Faction.h"
 #include "Spell/SpellAuras.h"
 #include "Server/WorldSession.h"
-#include "Objects/Object.h"
+#include "Objects/Object.hpp"
 #include "LuaGlobal.h"
 #include <Spell/Definitions/PowerType.hpp>
 #include <Map/Maps/MapScriptInterface.h>
@@ -1204,9 +1204,9 @@ public:
 
                 for (uint8_t bslot = 0; bslot != bag->getSlotCount(); bslot++)
                 {
-                    if (bag->GetItem(bslot) && bag->GetItem(bslot)->getEntry() == entry)
+                    if (bag->getItem(bslot) && bag->getItem(bslot)->getEntry() == entry)
                     {
-                        PUSH_ITEM(L, bag->GetItem(bslot));
+                        PUSH_ITEM(L, bag->getItem(bslot));
                         return 1;
                     }
                 }
@@ -2943,7 +2943,7 @@ public:
         if (guardian == nullptr)
             return 0;
 
-        guardian->Load(cp, ptr, v, 0, 0);
+        guardian->load(cp, ptr, v, 0, 0);
         guardian->PushToWorld(ptr->getWorldMap());
 
         PUSH_UNIT(L, guardian);
@@ -4126,7 +4126,7 @@ public:
                     pContainer = dynamic_cast< Container* >(pItem);
                     for (j = 0; j < pContainer->getItemProperties()->ContainerSlots; ++j)
                     {
-                        pItem = pContainer->GetItem(j);
+                        pItem = pContainer->getItem(j);
                         if (pItem != nullptr)
                         {
                             pItem->setDurabilityToMax();

@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/UnitDefines.hpp"
 #include "Map/Maps/BaseMap.hpp"
 #include "Objects/Units/Unit.hpp"
-#include "Objects/Object.h"
+#include "Objects/Object.hpp"
 #include "Management/Group.h"
 #include "Movement/MovementDefines.h"
 #include "Server/UpdateFieldInclude.h"

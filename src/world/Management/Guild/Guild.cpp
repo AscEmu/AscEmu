@@ -372,7 +372,7 @@ void Guild::handleRoster(WorldSession* session)
         memberData.WriteByteSeq(guid[4]);
         memberData << uint8_t(0);
         memberData.WriteByteSeq(guid[1]);
-        memberData << float(member->isOnline() ? 0.0f : float(::time(nullptr) - member->getLogoutTime()) / DAY);
+        memberData << float(member->isOnline() ? 0.0f : float(::time(nullptr) - member->getLogoutTime()) / static_cast<uint64_t>(DAY));
 
         if (offNoteLength)
         {

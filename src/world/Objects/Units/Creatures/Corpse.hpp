@@ -5,9 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Objects/Object.h"
-#include "Management/LootMgr.h"
+#include "Objects/Object.hpp"
 #include "Data/WoWCorpse.hpp"
+#include "Management/LootMgr.h"
 #include "Server/UpdateFieldInclude.h"
 
 enum CORPSE_STATE
@@ -28,16 +28,39 @@ enum CorpseFlags
 };
 
 struct WoWCorpse;
+
 class SERVER_DECL Corpse : public Object
 {
 public:
-
     Corpse(uint32_t high, uint32_t low);
     ~Corpse();
 
-private:
+    void create(Player* owner, uint32_t mapid, LocationVector lv);
+    void setCorpseDataFromDbString(std::string dbString);
+    void saveToDB();
+    void deleteFromDB();
+
+    void setLoadedFromDB(bool value);
+    bool getLoadedFromDB();
+
+    void setCorpseState(uint32_t state);
+    uint32_t getCorpseState();
+
+    void setOwnerNotifyMap(uint64_t guid);
+    
+    Loot loot;
+    void generateLoot();
+
+    void despawn();
+    void spawnBones();
+    void delink();
+
+    void resetDeathClock();
+    time_t getDeathClock();
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // WoWData
+private:
     const WoWCorpse* corpseData() const { return reinterpret_cast<WoWCorpse*>(wow_data); }
 
 public:
@@ -94,39 +117,10 @@ public:
     uint32_t getDynamicFlags() const;
     void setDynamicFlags(uint32_t flags);
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // Misc
-    void setCorpseDataFromDbString(std::string dbString);
+protected:
+    uint32_t m_state = CORPSE_STATE_BODY;
+    time_t m_time = 0;
+    bool _loadedfromdb = false;
 
-// AGPL Start
-
-        void Create(Player* owner, uint32 mapid, float x, float y, float z, float ang);
-
-        void SaveToDB();
-        void DeleteFromDB();
-        inline void SetCorpseState(uint32 state) { m_state = state; }
-        inline uint32 GetCorpseState() { return m_state; }
-        void Despawn();
-
-        inline void SetLoadedFromDB(bool value) { _loadedfromdb = value; }
-        inline bool GetLoadedFromDB(void) { return _loadedfromdb; }
-        Loot loot;
-        void generateLoot();
-
-        void SpawnBones();
-        void Delink();
-
-        void ResetDeathClock() { m_time = time(NULL); }
-        time_t GetDeathClock() { return m_time; }
-
-        //Easy functions
-        void SetOwner(uint64 guid);
-
-
-    private:
-
-        uint32 m_state = CORPSE_STATE_BODY;
-        time_t m_time = 0;
-        uint32 _fields[getSizeOfStructure(WoWCorpse)];
-        bool _loadedfromdb = false;
+    uint32_t _fields[getSizeOfStructure(WoWCorpse)];
 };

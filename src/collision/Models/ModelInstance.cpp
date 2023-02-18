@@ -17,6 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <Common.hpp>
+
 #include "ModelInstance.h"
 #include "WorldModel.h"
 #include "MapTree.h"

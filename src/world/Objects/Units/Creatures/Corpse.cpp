@@ -5,18 +5,15 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Server/MainServerDefines.h"
 #include "Map/Cells/MapCell.hpp"
-#include "Corpse.h"
+#include "Corpse.hpp"
 #include "Management/ObjectMgr.h"
 #include "Data/WoWCorpse.hpp"
 #include "Util/Strings.hpp"
 
 Corpse::Corpse(uint32_t high, uint32_t low)
 {
-    //////////////////////////////////////////////////////////////////////////
     m_objectType |= TYPE_CORPSE;
     m_objectTypeId = TYPEID_CORPSE;
-    m_valuesCount = getSizeOfStructure(WoWCorpse);
-    //////////////////////////////////////////////////////////////////////////
 
 #if VERSION_STRING == Classic
     m_updateFlag = (UPDATEFLAG_ALL | UPDATEFLAG_HAS_POSITION);
@@ -34,9 +31,8 @@ Corpse::Corpse(uint32_t high, uint32_t low)
     m_updateFlag = UPDATEFLAG_HAS_POSITION;
 #endif
 
-    //\todo Why is there a pointer to the same thing in a derived class? ToDo: sort this out..
+    m_valuesCount = getSizeOfStructure(WoWCorpse);
     m_uint32Values = _fields;
-
     memset(m_uint32Values, 0, (getSizeOfStructure(WoWCorpse)) * sizeof(uint32_t));
     m_updateMask.SetCount(getSizeOfStructure(WoWCorpse));
 
@@ -54,9 +50,154 @@ Corpse::~Corpse()
     sObjectMgr.RemoveCorpse(this);
 }
 
+void Corpse::create(Player* owner, uint32_t mapid, LocationVector lv)
+{
+    Object::_Create(mapid, lv.x, lv.y, lv.z, lv.o);
+
+    setOwnerNotifyMap(owner->getGuid());
+}
+
+void Corpse::setCorpseDataFromDbString(std::string dbString)
+{
+    std::string seperator = " ";
+    auto dataVector = AscEmu::Util::Strings::split(dbString, seperator);
+
+    uint8_t countPosition = 0;
+    uint8_t itemOffset = 6;
+    for (auto stringValue : dataVector)
+    {
+        switch (countPosition)
+        {
+            case 0: setGuid(std::stoull(stringValue)); break;
+            case 1: setOType(std::stoul(stringValue)); break;
+            case 2: setEntry(std::stoul(stringValue)); break;
+            case 3: setScale(std::stof(stringValue)); break;
+
+            case 4: setOwnerGuid(std::stoull(stringValue)); break;
+            case 5: setDisplayId(std::stoul(stringValue)); break;
+
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+            case 11:
+            case 12:
+            case 13:
+            case 14:
+            case 15:
+            case 16:
+            case 17:
+            case 18:
+            case 19:
+            case 20:
+            case 21:
+            case 22:
+            case 23:
+            case 24:
+                setItem(countPosition - itemOffset, std::stoul(stringValue));
+                break;
+
+            case 25: setBytes1(std::stoul(stringValue)); break;
+            case 26: setBytes2(std::stoul(stringValue)); break;
+            case 27: setFlags(std::stoul(stringValue)); break;
+            case 28: setDynamicFlags(std::stoul(stringValue)); break;
+        }
+        ++countPosition;
+    }
+}
+
+void Corpse::saveToDB()
+{
+    std::stringstream ss;
+    ss.rdbuf()->str("");
+    ss << "REPLACE INTO corpses (guid, positionx, positiony, positionz, orientation, zoneId, mapId, data, instanceid) VALUES ("
+        << getGuidLow()
+        << ", '"
+        << GetPositionX()
+        << "', '" << GetPositionY()
+        << "', '" << GetPositionZ()
+        << "', '" << GetOrientation()
+        << "', '" << GetZoneId()
+        << "', '" << GetMapId()
+
+        << "', '";
+    ss << getGuid() << " " << getOType() << " " << getEntry() << " " << getScale() << " ";
+    ss << getOwnerGuid() << " " << getDisplayId() << " ";
+
+    for (uint8_t i = 0; i < WOWCORPSE_ITEM_COUNT; ++i)
+        ss << getItem(i) << " ";
+
+    ss << getBytes1() << " " << getBytes2() << " " << getFlags() << " " << getDynamicFlags() << " ";
+
+    ss << "', " << GetInstanceID() << ")";
+
+    CharacterDatabase.Execute(ss.str().c_str());
+}
+
+void Corpse::deleteFromDB()
+{
+    std::stringstream ss;
+    ss << "DELETE FROM corpses WHERE guid=" << getGuidLow();
+
+    CharacterDatabase.Execute(ss.str().c_str());
+}
+
+void Corpse::setLoadedFromDB(bool value) { _loadedfromdb = value; }
+bool Corpse::getLoadedFromDB(void) { return _loadedfromdb; }
+
+void Corpse::setCorpseState(uint32_t state) { m_state = state; }
+uint32_t Corpse::getCorpseState() { return m_state; }
+
+void Corpse::setOwnerNotifyMap(uint64_t guid)
+{
+    setOwnerGuid(guid);
+
+    if (guid == 0)
+    {
+        if (MapCell* mapCell = GetMapCell())
+            mapCell->corpseGoneIdle(this);
+    }
+}
+
+void Corpse::generateLoot()
+{
+    loot.gold = Util::getRandomUInt(50, 150);
+}
+
+void Corpse::despawn()
+{
+    if (this->IsInWorld())
+        RemoveFromWorld(false);
+}
+
+void Corpse::spawnBones()
+{
+    setFlags(CORPSE_FLAG_BONE | CORPSE_FLAG_UNK1);
+    setOwnerNotifyMap(0);
+
+    for (uint8_t i = 0; i < EQUIPMENT_SLOT_END; ++i)
+        if (getItem(i))
+            setItem(i, 0);
+
+    deleteFromDB();
+    sObjectMgr.CorpseAddEventDespawn(this);
+    setCorpseState(CORPSE_STATE_BONES);
+}
+
+void Corpse::delink()
+{
+    setFlags(CORPSE_FLAG_BONE | CORPSE_FLAG_UNK1);
+    setOwnerNotifyMap(0);
+    setCorpseState(CORPSE_STATE_BONES);
+    deleteFromDB();
+}
+
+void Corpse::resetDeathClock() { m_time = time(nullptr); }
+time_t Corpse::getDeathClock() { return m_time; }
+
  //////////////////////////////////////////////////////////////////////////////////////////
  // WoWData
-
 uint64_t Corpse::getOwnerGuid() const { return corpseData()->owner_guid; }
 void Corpse::setOwnerGuid(uint64_t guid) { write(corpseData()->owner_guid, guid); }
 
@@ -106,155 +247,3 @@ void Corpse::setFlags(uint32_t flags) { write(corpseData()->corpse_flags, flags)
 
 uint32_t Corpse::getDynamicFlags() const { return corpseData()->dynamic_flags; }
 void Corpse::setDynamicFlags(uint32_t flags) { write(corpseData()->dynamic_flags, flags); }
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// Misc
-void Corpse::setCorpseDataFromDbString(std::string dbString)
-{
-    std::string seperator = " ";
-    auto dataVector = AscEmu::Util::Strings::split(dbString, seperator);
-
-    //char const achievement_format[] = "luif";
-    uint8_t countPosition = 0;
-    uint8_t itemOffset = 6;
-    for (auto stringValue : dataVector)
-    {
-        switch (countPosition)
-        {
-            case 0: setGuid(std::stoull(stringValue)); break;
-            case 1: setOType(std::stoul(stringValue)); break;
-            case 2: setEntry(std::stoul(stringValue)); break;
-            case 3: setScale(std::stof(stringValue)); break;
-
-            case 4: setOwnerGuid(std::stoull(stringValue)); break;
-            case 5: setDisplayId(std::stoul(stringValue)); break;
-            
-            case 6:
-            case 7:
-            case 8:
-            case 9:
-            case 10:
-            case 11:
-            case 12:
-            case 13:
-            case 14:
-            case 15:
-            case 16:
-            case 17:
-            case 18:
-            case 19:
-            case 20:
-            case 21:
-            case 22:
-            case 23:
-            case 24:
-                setItem(countPosition - itemOffset, std::stoul(stringValue));
-            break;
-
-            case 25: setBytes1(std::stoul(stringValue)); break;
-            case 26: setBytes2(std::stoul(stringValue)); break;
-            case 27: setFlags(std::stoul(stringValue)); break;
-            case 28: setDynamicFlags(std::stoul(stringValue)); break;
-        }
-        ++countPosition;
-    }
-}
-
- // AGPL Start
-
-void Corpse::Create(Player* owner, uint32 mapid, float x, float y, float z, float ang)
-{
-    Object::_Create(mapid, x, y, z, ang);
-
-    SetOwner(owner->getGuid());
-    _loadedfromdb = false;  // can't be created from db ;)
-}
-
-void Corpse::SaveToDB()
-{
-    //save corpse to DB
-    std::stringstream ss;
-    ss << "DELETE FROM corpses WHERE guid = " << getGuidLow();
-    CharacterDatabase.Execute(ss.str().c_str());
-
-    ss.rdbuf()->str("");
-    ss << "INSERT INTO corpses (guid, positionx, positiony, positionz, orientation, zoneId, mapId, data, instanceid) VALUES ("
-        << getGuidLow()
-        << ", '" 
-        << GetPositionX() 
-        << "', '" << GetPositionY() 
-        << "', '" << GetPositionZ() 
-        << "', '" << GetOrientation() 
-        << "', '" << GetZoneId() 
-        << "', '" << GetMapId()
-
-        << "', '";
-    ss << getGuid() << " " << getOType() << " " << getEntry() << " " << getScale() << " ";
-    ss << getOwnerGuid() << " " << getDisplayId() << " ";
-
-    for (uint8_t i = 0; i < WOWCORPSE_ITEM_COUNT; ++i)
-        ss << getItem(i) << " ";
-
-    ss << getBytes1() << " " << getBytes2() << " " << getFlags() << " " << getDynamicFlags() << " ";
-
-    ss << "', " << GetInstanceID() << ")";
-
-    CharacterDatabase.Execute(ss.str().c_str());
-}
-
-void Corpse::DeleteFromDB()
-{
-    //delete corpse from db when its not needed anymore
-    char sql[256];
-
-    snprintf(sql, 256, "DELETE FROM corpses WHERE guid=%u", getGuidLow());
-    CharacterDatabase.Execute(sql);
-}
-
-void Corpse::Despawn()
-{
-    if (this->IsInWorld())
-    {
-        RemoveFromWorld(false);
-    }
-}
-
-void Corpse::generateLoot()
-{
-    loot.gold = Util::getRandomUInt(50, 150); // between 50c and 1.5s, need to fix this!
-}
-
-void Corpse::SpawnBones()
-{
-    setFlags(CORPSE_FLAG_BONE | CORPSE_FLAG_UNK1);
-    SetOwner(0); // remove corpse owner association
-    //remove item association
-    for (uint8 i = 0; i < EQUIPMENT_SLOT_END; i++)
-    {
-        if (getItem(i))
-            setItem(i, 0);
-    }
-    DeleteFromDB();
-    sObjectMgr.CorpseAddEventDespawn(this);
-    SetCorpseState(CORPSE_STATE_BONES);
-}
-
-void Corpse::Delink()
-{
-    setFlags(CORPSE_FLAG_BONE | CORPSE_FLAG_UNK1);
-    SetOwner(0);
-    SetCorpseState(CORPSE_STATE_BONES);
-    DeleteFromDB();
-}
-
-void Corpse::SetOwner(uint64 guid)
-{
-    setOwnerGuid(guid);
-    if (guid == 0)
-    {
-        //notify the MapCell that the Corpse has no more an owner so the MapCell can go idle (if there's nothing else)
-        MapCell* cell = GetMapCell();
-        if (cell != NULL)
-            cell->corpseGoneIdle(this);
-    }
-}

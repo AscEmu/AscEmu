@@ -8,8 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include "WorldPacket.h"
-#include "Objects/MovementDefines.h"
-#include "Objects/MovementInfo.h"
+#include "Objects/MovementDefines.hpp"
+#include "Objects/MovementInfo.hpp"
 
 namespace AscEmu::Packets
 {

@@ -21,7 +21,7 @@
 
 
 #include "Objects/Units/Creatures/Creature.h"
-#include "Objects/Units/Creatures/Summons/Summon.h"
+#include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Objects/Item.hpp"
 #include "Management/ItemInterface.h"
 #include "Objects/Units/Stats.h"

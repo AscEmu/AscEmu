@@ -26,12 +26,12 @@
 #include "Management/Group.h"
 #include "Management/Tickets/TicketMgr.hpp"
 #include "Movement/MovementManager.h"
-#include "Objects/Units/Creatures/Corpse.h"
+#include "Objects/Units/Creatures/Corpse.hpp"
 #include "Objects/Units/Creatures/CreatureDefines.hpp"
 #include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
-#include "Objects/Units/Creatures/Vehicle.h"
+#include "Objects/Units/Creatures/Vehicle.hpp"
 #include "Server/Script/SimpleEventScript.hpp"
 #include "Spell/Spell.h"
 #include "Spell/SpellTargetConstraint.hpp"
@@ -113,6 +113,7 @@ struct TrainerSpell
     uint32_t requiredSkillLineValue;
     bool isPrimaryProfession;
     uint32_t cost;
+    uint32_t isStatic;
 
     static uint8_t getMaxRequiredSpellCount()
     {
@@ -124,11 +125,12 @@ struct TrainerSpell
     }
 };
 
+
+
 // oh a trainer look it is here and not in Unit/Creature/whatever file ;)
 struct Trainer
 {
     uint32_t SpellCount;
-    std::vector<TrainerSpell> Spells;
     char* UIMessage;
     uint16_t RequiredSkill;
     uint32_t RequiredSkillLine;
@@ -215,6 +217,8 @@ public:
     void generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId = 0);
     void generateDatabaseGossipOptionAndSubMenu(Object* object, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId);
 
+    void loadTrainerSpellSets();
+    std::vector<TrainerSpell> getTrainserSpellSetById(uint32_t id);
     void loadTrainers();
 
     // Preload CreatureDisplayInfoStore and CreatureModelDataStore to avoid DBC lookup calls
@@ -244,6 +248,8 @@ public:
 
         typedef std::map<uint32, uint32>                                                            PetSpellCooldownMap;
         typedef std::multimap <uint32, uint32>                                                      BCEntryStorage;
+
+        typedef std::unordered_map<uint32_t, std::vector<TrainerSpell>*> TrainerSpellSetContainer;
 
         Player* GetPlayer(const char* name, bool caseSensitive = true);
         Player* GetPlayer(uint32 guid);
@@ -493,6 +499,7 @@ public:
         /// Map of all vendor goods
         VendorMap mVendors;
 
+        TrainerSpellSetContainer m_trainerSpellSet;
         TrainerMap mTrainers;
         LevelInfoMap mLevelInfo;
         PetSpellCooldownMap mPetSpellCooldowns;

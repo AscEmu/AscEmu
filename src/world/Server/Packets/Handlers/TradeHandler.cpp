@@ -19,7 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/UnitDefines.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Management/ObjectMgr.h"
-#include "Objects/Container.h"
+#include "Objects/Container.hpp"
 #include "Management/ItemInterface.h"
 #include "Spell/SpellMgr.hpp"
 
@@ -256,7 +256,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
             if (tradeItem->isContainer())
             {
                 const auto container = dynamic_cast<Container*>(tradeItem);
-                if (container != nullptr && container->HasItems())
+                if (container != nullptr && container->hasItems())
                 {
                     _player->cancelTrade(true);
                     return;
@@ -277,7 +277,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
             if (tradeItem->isContainer())
             {
                 const auto container = dynamic_cast<Container*>(tradeItem);
-                if (container != nullptr && container->HasItems())
+                if (container != nullptr && container->hasItems())
                 {
                     tradeTarget->cancelTrade(true);
                     return;
@@ -527,7 +527,7 @@ void WorldSession::handleSetTradeItem(WorldPacket& recvPacket)
     if (tradeItem->isContainer())
     {
         const auto container = dynamic_cast<Container*>(tradeItem);
-        if (container != nullptr && container->HasItems())
+        if (container != nullptr && container->hasItems())
         {
             _player->getItemInterface()->buildInventoryChangeError(tradeItem, nullptr, INV_ERR_CAN_ONLY_DO_WITH_EMPTY_BAGS);
             return;

@@ -21,7 +21,7 @@
 
 
 #include "Management/QuestLogEntry.hpp"
-#include "Objects/Container.h"
+#include "Objects/Container.hpp"
 #include "Exceptions/Exceptions.hpp"
 #include "Objects/Units/Stats.h"
 #include "Management/ArenaTeam.hpp"
@@ -38,7 +38,7 @@
 #include "Management/TaxiMgr.h"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Movement/MovementManager.h"
-#include "Objects/Units/Creatures/Summons/Summon.h"
+#include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Util/Strings.hpp"
 #if VERSION_STRING < Cata
 #include "Management/Guild/Guild.hpp"
@@ -78,6 +78,12 @@ void ObjectMgr::finalize()
 
     sLogger.info("ObjectMgr : Deleting Vendors...");
     for (VendorMap::iterator i = mVendors.begin(); i != mVendors.end(); ++i)
+    {
+        delete i->second;
+    }
+
+    sLogger.info("ObjectMgr : Deleting TrainserSpellSets...");
+    for (auto i = m_trainerSpellSet.begin(); i != m_trainerSpellSet.end(); ++i)
     {
         delete i->second;
     }
@@ -555,7 +561,7 @@ Corpse* ObjectMgr::LoadCorpse(uint32 guid)
         return nullptr;
     }
 
-    pCorpse->SetLoadedFromDB(true);
+    pCorpse->setLoadedFromDB(true);
     pCorpse->SetInstanceID(fields[8].GetUInt32());
     pCorpse->AddToWorld();
 
@@ -595,7 +601,7 @@ void ObjectMgr::DelinkPlayerCorpses(Player* pOwner)
     Corpse* c = this->GetCorpseByOwner(pOwner->getGuidLow());
     if (!c)
         return;
-    sEventMgr.AddEvent(c, &Corpse::Delink, EVENT_CORPSE_SPAWN_BONES, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(c, &Corpse::delink, EVENT_CORPSE_SPAWN_BONES, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     CorpseAddEventDespawn(c);
 }
 
@@ -985,7 +991,7 @@ Item* ObjectMgr::CreateItem(uint32 entry, Player* owner)
     if (proto->InventoryType == INVTYPE_BAG)
     {
         Container* pContainer = new Container(HIGHGUID_TYPE_CONTAINER, GenerateLowGuid(HIGHGUID_TYPE_CONTAINER));
-        pContainer->Create(entry, owner);
+        pContainer->create(entry, owner);
         pContainer->setStackCount(1);
         return pContainer;
     }
@@ -1022,7 +1028,7 @@ Item* ObjectMgr::LoadItem(uint32 lowguid)
         if (pProto->InventoryType == INVTYPE_BAG)
         {
             Container* pContainer = new Container(HIGHGUID_TYPE_CONTAINER, lowguid);
-            pContainer->LoadFromDB(result->Fetch());
+            pContainer->loadFromDB(result->Fetch());
             pReturn = pContainer;
         }
         else
@@ -1269,6 +1275,118 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* object, Player* p
     }
 }
 
+void ObjectMgr::loadTrainerSpellSets()
+{
+    auto* const spellSetResult = sMySQLStore.getWorldDBQuery("SELECT * FROM trainer_properties_spellset WHERE min_build <= %u AND max_build >= %u;", VERSION_STRING, VERSION_STRING);
+    if (spellSetResult != nullptr)
+    {
+        std::unordered_map<uint32_t, std::vector<TrainerSpell>*>::const_iterator itr;
+        std::vector<TrainerSpell> *trainerSpells;
+
+        do
+        {
+            Field* fields = spellSetResult->Fetch();
+
+            itr = m_trainerSpellSet.find(fields[0].GetUInt32());
+
+            if (itr == m_trainerSpellSet.end())
+            {
+                trainerSpells = new std::vector<TrainerSpell>;
+                m_trainerSpellSet[fields[0].GetUInt32()] = trainerSpells;
+            }
+            else
+            {
+                trainerSpells = itr->second;
+            }
+
+            auto* const fields2 = spellSetResult->Fetch();
+
+            auto castSpellID = fields2[3].GetUInt32();
+            auto learnSpellID = fields2[4].GetUInt32();
+
+            TrainerSpell ts;
+            auto abrt = false;
+            if (castSpellID != 0)
+            {
+                ts.castSpell = sSpellMgr.getSpellInfo(castSpellID);
+                if (ts.castSpell != nullptr)
+                {
+                    // Check that the castable spell has learn spell effect
+                    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                    {
+                        if (ts.castSpell->getEffect(i) == SPELL_EFFECT_LEARN_SPELL)
+                        {
+                            ts.castRealSpell = sSpellMgr.getSpellInfo(ts.castSpell->getEffectTriggerSpell(i));
+                            if (ts.castRealSpell == nullptr)
+                            {
+                                sLogger.failure("LoadTrainers : TrainerSpellSet %u contains cast spell %u that is non-teaching", fields[0].GetUInt32(), castSpellID);
+                                abrt = true;
+                            }
+
+                            break;
+                        }
+                    }
+                }
+
+                if (abrt)
+                    continue;
+            }
+
+            if (learnSpellID != 0)
+                ts.learnSpell = sSpellMgr.getSpellInfo(learnSpellID);
+
+            if (ts.castSpell == nullptr && ts.learnSpell == nullptr)
+                continue;
+
+            if (ts.castSpell != nullptr && ts.castRealSpell == nullptr)
+                continue;
+
+            ts.cost = fields2[5].GetUInt32();
+            ts.requiredSpell[0] = fields2[6].GetUInt32();
+            ts.requiredSkillLine = fields2[7].GetUInt16();
+            ts.requiredSkillLineValue = fields2[8].GetUInt32();
+            ts.requiredLevel = fields2[9].GetUInt32();
+            ts.deleteSpell = fields2[10].GetUInt32();
+            ts.isStatic = fields2[11].GetUInt32();
+
+            // Check if spell teaches a primary profession skill
+            if (ts.requiredSkillLine == 0 && ts.castRealSpell != nullptr)
+                ts.isPrimaryProfession = ts.castRealSpell->isPrimaryProfession();
+
+            // Add all required spells
+            const auto spellInfo = ts.castRealSpell != nullptr ? ts.castSpell : ts.learnSpell;
+            const auto requiredSpells = sSpellMgr.getSpellsRequiredForSpellBounds(spellInfo->getId());
+            for (auto itr = requiredSpells.first; itr != requiredSpells.second; ++itr)
+            {
+                for (uint8_t i = 0; i < 3; ++i)
+                {
+                    if (ts.requiredSpell[i] == itr->second)
+                        break;
+
+                    if (ts.requiredSpell[i] != 0)
+                        continue;
+
+                    ts.requiredSpell[i] = itr->second;
+                    break;
+                }
+            }
+
+            trainerSpells->push_back(ts);
+        } while (spellSetResult->NextRow());
+
+        sLogger.info("LoadTrainers : %u TrainerSpellSet loaded", static_cast<uint32_t>(m_trainerSpellSet.size()));
+    }
+}
+
+std::vector<TrainerSpell> ObjectMgr::getTrainserSpellSetById(uint32_t id)
+{
+        auto itr = m_trainerSpellSet.find(id);
+        if (itr == m_trainerSpellSet.end())
+            return {};
+        else
+            return *itr->second;
+}
+
 void ObjectMgr::loadTrainers()
 {
     if (auto* const trainerResult = sMySQLStore.getWorldDBQuery("SELECT * FROM trainer_properties WHERE build <= %u;", VERSION_STRING))
@@ -1313,116 +1431,7 @@ void ObjectMgr::loadTrainers()
                 trainer->UIMessage[strlen(NormalTalkMessage)] = 0;
             }
 
-            // Now load the spells
-            auto* const spellSetResult = sMySQLStore.getWorldDBQuery("SELECT * FROM trainer_properties_spellset WHERE id=%u AND min_build <= %u AND max_build >= %u;", trainer->spellset_id, VERSION_STRING, VERSION_STRING);
-            if (spellSetResult == nullptr)
-            {
-                sLogger.debug("LoadTrainers : trainer_properties_spellset does not include id %u.", trainer->spellset_id);
-                if (trainer->UIMessage != NormalTalkMessage)
-                    delete[] trainer->UIMessage;
-
-                delete trainer;
-                continue;
-            }
-
-            do
-            {
-                auto* const fields2 = spellSetResult->Fetch();
-
-                // check spell requirement for non static spell definitions
-                if (fields2[11].GetUInt32() == 0)
-                {
-                    // trainer has max level to train, skip all spells higher.
-                    if (trainer->can_train_max_level)
-                        if (fields2[9].GetUInt32() > trainer->can_train_max_level)
-                            continue;
-
-                    // trainer has min_skill_value, skip all spells lower
-                    if (trainer->can_train_min_skill_value)
-                        if (fields2[8].GetUInt32() < trainer->can_train_min_skill_value)
-                            continue;
-
-                    // trainer has max_skill_value, skip all spells higher
-                    if (trainer->can_train_max_skill_value)
-                        if (fields2[8].GetUInt32() > trainer->can_train_max_skill_value)
-                            continue;
-                }
-
-                auto castSpellID = fields2[3].GetUInt32();
-                auto learnSpellID = fields2[4].GetUInt32();
-
-                TrainerSpell ts;
-                auto abrt = false;
-                if (castSpellID != 0)
-                {
-                    ts.castSpell = sSpellMgr.getSpellInfo(castSpellID);
-                    if (ts.castSpell != nullptr)
-                    {
-                        // Check that the castable spell has learn spell effect
-                        for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                        {
-                            if (ts.castSpell->getEffect(i) == SPELL_EFFECT_LEARN_SPELL)
-                            {
-                                ts.castRealSpell = sSpellMgr.getSpellInfo(ts.castSpell->getEffectTriggerSpell(i));
-                                if (ts.castRealSpell == nullptr)
-                                {
-                                    sLogger.failure("LoadTrainers : Trainer %u contains cast spell %u that is non-teaching", entry, castSpellID);
-                                    abrt = true;
-                                }
-
-                                break;
-                            }
-                        }
-                    }
-
-                    if (abrt)
-                        continue;
-                }
-
-                if (learnSpellID != 0)
-                    ts.learnSpell = sSpellMgr.getSpellInfo(learnSpellID);
-
-                if (ts.castSpell == nullptr && ts.learnSpell == nullptr)
-
-                    continue;
-
-                if (ts.castSpell != nullptr && ts.castRealSpell == nullptr)
-                    continue;
-
-                ts.cost = fields2[5].GetUInt32();
-                ts.requiredSpell[0] = fields2[6].GetUInt32();
-                ts.requiredSkillLine = fields2[7].GetUInt16();
-                ts.requiredSkillLineValue = fields2[8].GetUInt32();
-                ts.requiredLevel = fields2[9].GetUInt32();
-                ts.deleteSpell = fields2[10].GetUInt32();
-
-                // Check if spell teaches a primary profession skill
-                if (ts.requiredSkillLine == 0 && ts.castRealSpell != nullptr)
-                    ts.isPrimaryProfession = ts.castRealSpell->isPrimaryProfession();
-
-                // Add all required spells
-                const auto spellInfo = ts.castRealSpell != nullptr ? ts.castSpell : ts.learnSpell;
-                const auto requiredSpells = sSpellMgr.getSpellsRequiredForSpellBounds(spellInfo->getId());
-                for (auto itr = requiredSpells.first; itr != requiredSpells.second; ++itr)
-                {
-                    for (uint8_t i = 0; i < 3; ++i)
-                    {
-                        if (ts.requiredSpell[i] == itr->second)
-                            break;
-
-                        if (ts.requiredSpell[i] != 0)
-                            continue;
-
-                        ts.requiredSpell[i] = itr->second;
-                        break;
-                    }
-                }
-
-                trainer->Spells.push_back(ts);
-            } while (spellSetResult->NextRow());
-            delete spellSetResult;
-
-            trainer->SpellCount = static_cast<uint32_t>(trainer->Spells.size());
+            trainer->SpellCount = static_cast<uint32_t>(getTrainserSpellSetById(trainer->spellset_id).size());
 
             // and now we insert it to our lookup table
             if (trainer->SpellCount == 0)
@@ -2448,7 +2457,7 @@ void ObjectMgr::loadVehicleSeatAddon()
             float exitO = fields[5].GetFloat();
             uint8_t exitParam = fields[6].GetUInt8();
 
-            _vehicleSeatAddonStore[seatID] = VehicleSeatAddon(orientation, exitX, exitY, exitZ, exitO, exitParam);
+            _vehicleSeatAddonStore[seatID] = VehicleSeatAddon(orientation, { exitX, exitY, exitZ, exitO }, exitParam);
 
         } while (result->NextRow());
 

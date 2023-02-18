@@ -4,9 +4,9 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "WorldMap.hpp"
-#include "Objects/DynamicObject.h"
+#include "Objects/DynamicObject.hpp"
 #include "Objects/Units/Creatures/Pet.h"
-#include "Objects/Units/Creatures/Summons/Summon.h"
+#include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Objects/Units/Unit.hpp"
 #include "VMapFactory.h"
 #include "MMapFactory.h"
@@ -24,7 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Area/AreaManagementGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "CrashHandler.h"
-
+#include "Objects/Transporter.hpp"
 #include <ctime>
 
 using namespace AscEmu::Packets;
@@ -336,7 +336,7 @@ void WorldMap::update(uint32_t t_diff)
         {
             DynamicObject* o = itr->second;
             ++itr;
-            o->UpdateTargets();
+            o->updateTargets();
         }
 
         m_lastDynamicUpdateTimer = msTime;
@@ -416,7 +416,7 @@ void WorldMap::update(uint32_t t_diff)
                 if (pCorpse->getWorldMap() != this)
                     break;
 
-                pCorpse->Despawn();
+                pCorpse->despawn();
             }
             break;
         }
@@ -1766,7 +1766,7 @@ Summon* WorldMap::summonCreature(uint32_t entry, LocationVector pos, DBC::Struct
         return nullptr;
     }
 
-    summon->Load(cp, summonerUnit, pos, duration, spellId);
+    summon->load(cp, summonerUnit, pos, duration, spellId);
     summon->setPhase(PHASE_SET, phase);
     summon->PushToWorld(this);
 
@@ -1855,7 +1855,7 @@ GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, LocationVector 
 
 GameObject* WorldMap::getGameObject(uint32_t guid)
 {
-    if (guid > m_GOHighGuid)
+    if (guid == 0 || guid > m_GOHighGuid)
         return nullptr;
 
     return m_GameObjectStorage[guid];

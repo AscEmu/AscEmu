@@ -17,7 +17,7 @@
  */
 
 #include "Setup.h"
-#include "Objects/Units/Creatures/Summons/Summon.h"
+#include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Objects/Item.hpp"
 #include "Management/ItemInterface.h"
 #include "Map/Management/MapMgr.hpp"

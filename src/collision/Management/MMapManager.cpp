@@ -17,9 +17,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <Common.hpp>
+
 #include "MMapManager.h"
 #include "MapDefines.h"
-
 #include "Errors.h"
 #include "Logging/Logger.hpp"
 #include "Server/World.h"

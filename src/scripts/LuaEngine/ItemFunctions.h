@@ -21,7 +21,7 @@
 #define ITEMFUNCTIONS_H
 
 #include "Objects/Item.hpp"
-#include "Objects/Container.h"
+#include "Objects/Container.hpp"
 #include "Management/ItemInterface.h"
 #include "Server/MainServerDefines.h"
 
@@ -408,7 +408,7 @@ namespace luaItem
         int cnt = 0;
         for (int16_t i = 0; i < TotalSlots; i++)
         {
-            Item* item = pCont->GetItem(i);
+            Item* item = pCont->getItem(i);
             if (item)
             {
                 if (item->getEntry() == itemid && item->m_wrappedItemId == 0)

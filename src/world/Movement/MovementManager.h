@@ -5,8 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Objects/Object.h"
-#include "MovementDefines.h"
+#include "Objects/Object.hpp"
+#include "Movement/MovementDefines.h"
 #include "MovementGenerator.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Unit.hpp"

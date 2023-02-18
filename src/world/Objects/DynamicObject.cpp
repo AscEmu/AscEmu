@@ -1,26 +1,9 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-
-#include "Objects/DynamicObject.h"
+#include "Objects/DynamicObject.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Management/Faction.h"
 #include "Spell/SpellMgr.hpp"
@@ -31,7 +14,204 @@
 #include "Data/WoWDynamicObject.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 
-// MIT Start
+
+DynamicObject::DynamicObject(uint32_t high, uint32_t low)
+{
+    m_objectType |= TYPE_DYNAMICOBJECT;
+    m_objectTypeId = TYPEID_DYNAMICOBJECT;
+
+#if VERSION_STRING == Classic
+    m_updateFlag = (UPDATEFLAG_ALL | UPDATEFLAG_HAS_POSITION);
+#endif
+#if VERSION_STRING == TBC
+    m_updateFlag = (UPDATEFLAG_LOWGUID | UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION);
+#endif
+#if VERSION_STRING == WotLK
+    m_updateFlag = (UPDATEFLAG_LOWGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_POSITION);
+#endif
+#if VERSION_STRING == Cata
+    m_updateFlag = UPDATEFLAG_POSITION;
+#endif
+#if VERSION_STRING == Mop
+    m_updateFlag = UPDATEFLAG_HAS_POSITION;
+#endif
+
+    m_valuesCount = getSizeOfStructure(WoWDynamicObject);
+    m_uint32Values = _fields;
+    memset(m_uint32Values, 0, (getSizeOfStructure(WoWDynamicObject)) * sizeof(uint32_t));
+    m_updateMask.SetCount(getSizeOfStructure(WoWDynamicObject));
+
+    setOType(TYPE_DYNAMICOBJECT | TYPE_OBJECT);
+    setGuid(low, high);
+
+    setScale(1.0f);
+}
+
+DynamicObject::~DynamicObject()
+{
+    if (m_unitCaster && m_unitCaster->m_dynamicObject == this)
+        m_unitCaster->m_dynamicObject = nullptr;
+}
+
+void DynamicObject::create(Unit* caster, Spell* spell, LocationVector lv, uint32_t duration, float radius, uint32_t type)
+{
+    Object::_Create(caster->GetMapId(), lv.x, lv.y, lv.z, lv.o);
+
+    if (spell->g_caster)
+        m_parentSpell = spell;
+
+    if (spell->p_caster == nullptr)
+    {
+        if (caster->isPlayer())
+            m_playerCaster = static_cast<Player*>(caster);
+    }
+    else
+    {
+        m_playerCaster = spell->p_caster;
+    }
+
+    m_spellInfo = spell->getSpellInfo();
+
+    setEntry(m_spellInfo->getId());
+    setScale(1.0f);
+
+    setCasterGuid(caster->getGuid());
+
+    setDynamicType(static_cast<uint8_t>(type));
+
+    setSpellId(m_spellInfo->getId());
+    setRadius(radius);
+
+#if VERSION_STRING > Classic
+    setCastTime(Util::getMSTime());
+#endif
+
+    setDynamicX(lv.x);
+    setDynamicY(lv.y);
+    setDynamicZ(lv.z);
+    setDynamicO(lv.o);
+
+    m_aliveDuration = duration;
+    m_unitCaster = caster;
+    m_factionTemplate = caster->m_factionTemplate;
+    m_factionEntry = caster->m_factionEntry;
+    m_phase = caster->GetPhase();
+
+    if (spell->g_caster)
+        PushToWorld(spell->g_caster->getWorldMap());
+    else
+        PushToWorld(caster->getWorldMap());
+
+    if (caster->m_dynamicObject != nullptr)
+        caster->m_dynamicObject->remove();
+
+    caster->m_dynamicObject = this;
+
+    updateTargets();
+}
+
+void DynamicObject::updateTargets()
+{
+    if (m_aliveDuration == 0)
+        return;
+
+    if (m_aliveDuration >= 100)
+    {
+        float radius = getRadius() * getRadius();
+
+        for (const auto& itr : getInRangeObjectsSet())
+        {
+            Object* object = itr;
+            if (!object || !object->isCreatureOrPlayer() || !static_cast<Unit*>(object)->isAlive())
+                continue;
+
+            Unit* target = static_cast<Unit*>(object);
+
+            if (!isAttackable(m_unitCaster, target, !(m_spellInfo->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
+                continue;
+
+            // skip units already hit, their range will be tested later
+            if (m_targets.find(target->getGuid()) != m_targets.end())
+                continue;
+
+            if (getDistanceSq(target) <= radius)
+            {
+                Aura* aura = sSpellMgr.newAura(m_spellInfo, m_aliveDuration, m_unitCaster, target, true);
+                for (uint8_t i = 0; i < 3; ++i)
+                {
+                    if (m_spellInfo->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
+                    {
+                        aura->addAuraEffect(static_cast<AuraEffect>(m_spellInfo->getEffectApplyAuraName(i)),
+                            m_spellInfo->getEffectBasePoints(i) + 1, m_spellInfo->getEffectMiscValue(i), 1.0f, false, i);
+                    }
+                }
+
+                target->addAura(aura);
+
+                m_targets.insert(target->getGuid());
+            }
+        }
+
+        for (auto jtr = m_targets.begin(); jtr != m_targets.end();)
+        {
+            Unit* target = getWorldMap() ? getWorldMap()->getUnit(*jtr) : nullptr;
+
+            auto jtr2 = jtr;
+            ++jtr;
+
+            if (target && getDistanceSq(target) > radius)
+            {
+                target->removeAllAurasById(m_spellInfo->getId());
+                m_targets.erase(jtr2);
+            }
+        }
+
+        m_aliveDuration -= 100;
+    }
+    else
+    {
+        m_aliveDuration = 0;
+    }
+
+    if (m_aliveDuration == 0)
+        remove();
+}
+
+void DynamicObject::onRemoveInRangeObject(Object* pObj)
+{
+    if (pObj->isCreatureOrPlayer())
+        m_targets.erase(pObj->getGuid());
+
+    Object::onRemoveInRangeObject(pObj);
+}
+
+void DynamicObject::remove()
+{
+    if (!IsInWorld())
+    {
+        delete this;
+        return;
+    }
+
+    for (auto const targetGuid : m_targets)
+    {
+        if (Unit* target = m_WorldMap->getUnit(targetGuid))
+            target->removeAllAurasById(m_spellInfo->getId());
+    }
+
+    sendGameobjectDespawnAnim();
+
+    if (IsInWorld())
+        RemoveFromWorld(true);
+
+    if (m_unitCaster && m_spellInfo->getChannelInterruptFlags() != 0)
+    {
+        m_unitCaster->setChannelObjectGuid(0);
+        m_unitCaster->setChannelSpellId(0);
+    }
+
+    delete this;
+}
 
  //////////////////////////////////////////////////////////////////////////////////////////
  // WoWData
@@ -91,244 +271,3 @@ void DynamicObject::setDynamicO(float o)
 uint32_t DynamicObject::getCastTime() const { return dynamicObjectData()->cast_time; }
 void DynamicObject::setCastTime(uint32_t time) { write(dynamicObjectData()->cast_time, time); }
 #endif
-
- //////////////////////////////////////////////////////////////////////////////////////////
- // Misc
-void DynamicObject::Create(Unit* caster, Spell* spell, LocationVector lv, uint32 duration, float radius, uint32 type)
-{
-    Create(caster, spell, lv.x, lv.y, lv.z, duration, radius, type);
-}
-
-// MIT End
-
-DynamicObject::DynamicObject(uint32 high, uint32 low)
-{
-    m_objectType |= TYPE_DYNAMICOBJECT;
-    m_objectTypeId = TYPEID_DYNAMICOBJECT;
-
-#if VERSION_STRING == Classic
-    m_updateFlag = (UPDATEFLAG_ALL | UPDATEFLAG_HAS_POSITION);
-#endif
-#if VERSION_STRING == TBC
-    m_updateFlag = (UPDATEFLAG_LOWGUID | UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION);
-#endif
-#if VERSION_STRING == WotLK
-    m_updateFlag = (UPDATEFLAG_LOWGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_POSITION);
-#endif
-#if VERSION_STRING == Cata
-    m_updateFlag = UPDATEFLAG_POSITION;
-#endif
-#if VERSION_STRING == Mop
-    m_updateFlag = UPDATEFLAG_HAS_POSITION;
-#endif
-
-    m_valuesCount = getSizeOfStructure(WoWDynamicObject);
-    m_uint32Values = _fields;
-    memset(m_uint32Values, 0, (getSizeOfStructure(WoWDynamicObject))*sizeof(uint32));
-    m_updateMask.SetCount(getSizeOfStructure(WoWDynamicObject));
-    setOType(TYPE_DYNAMICOBJECT | TYPE_OBJECT);
-
-    setGuid(low, high);
-
-    setScale(1.0f);
-
-
-    m_parentSpell = nullptr;
-    m_aliveDuration = 0;
-    u_caster = nullptr;
-    m_spellProto = nullptr;
-    p_caster = nullptr;
-}
-
-DynamicObject::~DynamicObject()
-{
-    if (u_caster != nullptr && u_caster->m_dynamicObject == this)
-        u_caster->m_dynamicObject = nullptr;
-}
-
-void DynamicObject::Create(Unit* caster, Spell* pSpell, float x, float y, float z, uint32 duration, float radius, uint32 type)
-{
-    Object::_Create(caster->GetMapId(), x, y, z, 0);
-    if (pSpell->g_caster)
-    {
-        m_parentSpell = pSpell;
-    }
-    if (pSpell->p_caster == nullptr)
-    {
-        // try to find player caster here
-        if (caster->isPlayer())
-            p_caster = static_cast< Player* >(caster);
-    }
-    else
-        p_caster = pSpell->p_caster;
-
-    m_spellProto = pSpell->getSpellInfo();
-    setEntry(m_spellProto->getId());
-    setScale(1.0f);
-
-    setCasterGuid(caster->getGuid());
-
-    setDynamicType(static_cast<uint8_t>(type));
-
-    setSpellId(m_spellProto->getId());
-    setRadius(radius);
-
-#if VERSION_STRING > Classic
-    setCastTime(Util::getMSTime());
-#endif
-
-    setDynamicX(x);
-    setDynamicY(y);
-    setDynamicZ(z);
-    setDynamicO(0.f);
-
-    m_aliveDuration = duration;
-    u_caster = caster;
-    m_factionTemplate = caster->m_factionTemplate;
-    m_factionEntry = caster->m_factionEntry;
-    m_phase = caster->GetPhase();
-
-    if (pSpell->g_caster)
-        PushToWorld(pSpell->g_caster->getWorldMap());
-    else
-        PushToWorld(caster->getWorldMap());
-
-    if (caster->m_dynamicObject != nullptr)
-    {
-        //expires
-        caster->m_dynamicObject->Remove();
-    }
-    caster->m_dynamicObject = this;
-
-    //sEventMgr.AddEvent(this, &DynamicObject::UpdateTargets, EVENT_DYNAMICOBJECT_UPDATE, 100, 0,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-    UpdateTargets();
-}
-
-void DynamicObject::addToInRangeObjects(Object* pObj)
-{
-    Object::addToInRangeObjects(pObj);
-}
-
-void DynamicObject::onRemoveInRangeObject(Object* pObj)
-{
-    if (pObj->isCreatureOrPlayer())
-    {
-        targets.erase(pObj->getGuid());
-    }
-    Object::onRemoveInRangeObject(pObj);
-}
-
-void DynamicObject::UpdateTargets()
-{
-    if (m_aliveDuration == 0)
-        return;
-
-    if (m_aliveDuration >= 100)
-    {
-        Unit* target;
-        Aura* pAura;
-
-        float radius = getRadius() * getRadius();
-
-        // Looking for targets in the Object set
-        for (const auto& itr : getInRangeObjectsSet())
-        {
-            Object* o = itr;
-            if (!o || !o->isCreatureOrPlayer() || !static_cast< Unit* >(o)->isAlive())
-                continue;
-
-            target = static_cast<Unit*>(o);
-
-            if (!isAttackable(u_caster, target, !(m_spellProto->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
-                continue;
-
-            // skip units already hit, their range will be tested later
-            if (targets.find(target->getGuid()) != targets.end())
-                continue;
-
-            if (getDistanceSq(target) <= radius)
-            {
-                pAura = sSpellMgr.newAura(m_spellProto, m_aliveDuration, u_caster, target, true);
-                for (uint8 i = 0; i < 3; ++i)
-                {
-                    if (m_spellProto->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
-                    {
-                        pAura->addAuraEffect(static_cast<AuraEffect>(m_spellProto->getEffectApplyAuraName(i)),
-                                      m_spellProto->getEffectBasePoints(i) + 1, m_spellProto->getEffectMiscValue(i), 1.0f, false, i);
-                    }
-                }
-                target->addAura(pAura);
-
-                // add to target list
-                targets.insert(target->getGuid());
-            }
-        }
-
-
-        // loop the targets, check the range of all of them
-        DynamicObjectList::iterator jtr = targets.begin();
-        DynamicObjectList::iterator jtr2;
-        DynamicObjectList::iterator jend = targets.end();
-
-        while (jtr != jend)
-        {
-            target = getWorldMap() ? getWorldMap()->getUnit(*jtr) : nullptr;
-            jtr2 = jtr;
-            ++jtr;
-
-            if ((target != nullptr) && (getDistanceSq(target) > radius))
-            {
-                target->removeAllAurasById(m_spellProto->getId());
-                targets.erase(jtr2);
-            }
-        }
-
-        m_aliveDuration -= 100;
-    }
-    else
-    {
-        m_aliveDuration = 0;
-    }
-
-    if (m_aliveDuration == 0)
-    {
-        Remove();
-    }
-}
-
-void DynamicObject::Remove()
-{
-    // remove aura from all targets
-    Unit* target;
-
-    if (!IsInWorld())
-    {
-        delete this;
-        return;
-    }
-
-    for (std::set< uint64 >::iterator itr = targets.begin(); itr != targets.end(); ++itr)
-    {
-
-        uint64 TargetGUID = *itr;
-
-        target = m_WorldMap->getUnit(TargetGUID);
-
-        if (target != nullptr)
-            target->removeAllAurasById(m_spellProto->getId());
-    }
-
-    //\todo: Despawn animation only for GOs? Zyres.
-    sendGameobjectDespawnAnim();
-
-    if (IsInWorld())
-        RemoveFromWorld(true);
-
-    if (u_caster != nullptr && m_spellProto->getChannelInterruptFlags() != 0)
-    {
-        u_caster->setChannelObjectGuid(0);
-        u_caster->setChannelSpellId(0);
-    }
-
-    delete this;
-}

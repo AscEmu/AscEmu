@@ -3,10 +3,10 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
 #include "Chat/ChatHandler.hpp"
 #include "Exceptions/Exceptions.hpp"
 #include "Storage/MySQLDataStore.hpp"
+#include "Objects/Transporter.hpp"
 
 bool ChatHandler::HandleGetTransporterTime(const char* /*args*/, WorldSession* m_session)
 {

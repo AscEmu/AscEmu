@@ -21,7 +21,7 @@
 
 #include "Creature.h"
 #include "Objects/Units/Unit.hpp"
-#include "Objects/DynamicObject.h"
+#include "Objects/DynamicObject.hpp"
 #include "Management/HonorHandler.h"
 #include "Objects/Units/Stats.h"
 #include "Management/Battleground/Battleground.hpp"
@@ -2189,7 +2189,7 @@ void Pet::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
                     if (!dObj)
                         return;
 
-                    dObj->Remove();
+                    dObj->remove();
                 }
             }
 

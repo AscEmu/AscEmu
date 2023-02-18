@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/Spline/MoveSpline.h"
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Management/ObjectMgr.h"
-#include "Objects/Transporter.h"
+#include "Objects/Transporter.hpp"
 #include "Movement/WaypointManager.h"
 
 WaypointMovementGenerator<Creature>::WaypointMovementGenerator(uint32_t pathId, bool repeating) : _nextMoveTime(0), _pathId(pathId), _repeating(repeating), _loadedFromDB(true)
@@ -280,7 +280,7 @@ void WaypointMovementGenerator<Creature>::startMove(Creature* owner, bool relaun
                 {
                     o -= trans->GetOrientation();
                     owner->SetTransportHomePosition(x, y, z, o);
-                    trans->CalculatePassengerPosition(x, y, z, &o);
+                    trans->calculatePassengerPosition(x, y, z, &o);
                     owner->SetSpawnLocation(x, y, z, o);
                 }
                 // else if (vehicle) - this should never happen, vehicle offsets are const

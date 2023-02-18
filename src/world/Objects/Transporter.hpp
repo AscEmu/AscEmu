@@ -16,10 +16,10 @@ protected:
 
 public:
     // This method transforms supplied transport offsets into global coordinates
-    virtual void CalculatePassengerPosition(float& x, float& y, float& z, float* o = nullptr) const = 0;
+    virtual void calculatePassengerPosition(float& x, float& y, float& z, float* o = nullptr) const = 0;
 
     // This method transforms supplied global coordinates into local offsets
-    virtual void CalculatePassengerOffset(float& x, float& y, float& z, float* o = nullptr) const = 0;
+    virtual void calculatePassengerOffset(float& x, float& y, float& z, float* o = nullptr) const = 0;
 
 protected:
     static void CalculatePassengerPosition(float& x, float& y, float& z, float* o, float transX, float transY, float transZ, float transO)
@@ -90,13 +90,13 @@ public:
     void removeFromMap();
 
     // This method transforms supplied transport offsets into global coordinates
-    void CalculatePassengerPosition(float& x, float& y, float& z, float* o = nullptr) const override
+    void calculatePassengerPosition(float& x, float& y, float& z, float* o = nullptr) const override
     {
         TransportBase::CalculatePassengerPosition(x, y, z, o, GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
     }
 
     // This method transforms supplied global coordinates into local offsets
-    void CalculatePassengerOffset(float& x, float& y, float& z, float* o = nullptr) const override
+    void calculatePassengerOffset(float& x, float& y, float& z, float* o = nullptr) const override
     {
         TransportBase::CalculatePassengerOffset(x, y, z, o, GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
     }

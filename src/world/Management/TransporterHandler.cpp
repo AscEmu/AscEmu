@@ -3,12 +3,12 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include <Movement/Spline/Spline.h>
 #include <Movement/Spline/MoveSplineInitArgs.h>
 #include "Server/Definitions.h"
+#include "Objects/Transporter.hpp"
 
 using namespace AscEmu::Packets;
 

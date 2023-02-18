@@ -943,6 +943,7 @@ void World::loadMySQLTablesByTask()
     sObjectMgr.LoadInstanceEncounters();
     sObjectMgr.LoadCreatureTimedEmotes();
     sObjectMgr.LoadVendors();
+    sObjectMgr.loadTrainerSpellSets();
     sObjectMgr.loadTrainers();
     sObjectMgr.LoadPetSpellCooldowns();
     sObjectMgr.LoadGuildCharters();

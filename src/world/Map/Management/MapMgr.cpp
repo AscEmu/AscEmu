@@ -3,12 +3,12 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Objects/DynamicObject.h"
+#include "Objects/DynamicObject.hpp"
 #include "Map/Cells/CellHandler.hpp"
 #include "Management/WorldStatesHandler.h"
 #include "Objects/Item.hpp"
 #include "Map/Area/AreaStorage.hpp"
-#include "Objects/Units/Creatures/Summons/Summon.h"
+#include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Objects/Units/Unit.hpp"
 #include "VMapFactory.h"
 #include "MMapFactory.h"

@@ -3,6 +3,7 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#ifdef FT_VEHICLES
 
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
@@ -16,7 +17,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Pet.h"
 #include "Macros/ScriptMacros.hpp"
 
-#ifdef FT_VEHICLES
 
 Vehicle::Vehicle(Unit* unit, DBC::Structures::VehicleEntry const* vehInfo, uint32_t creatureEntry) :
     usableSeatNum(0), _owner(unit), _vehicleInfo(vehInfo), _creatureEntry(creatureEntry), _status(STATUS_NONE), _lastShootPos()
@@ -444,7 +444,7 @@ void Vehicle::relocatePassengers()
             {
                 float px, py, pz, po;
                 passenger->obj_movement_info.transport_position.getPosition(px, py, pz, po);
-                CalculatePassengerPosition(px, py, pz, &po);
+                calculatePassengerPosition(px, py, pz, &po);
                 seatRelocation.emplace_back(passenger, LocationVector(px, py, pz, po));
             }
         }
@@ -564,7 +564,7 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
 
     passenger->sendPacket(AscEmu::Packets::SmsgControlVehicle().serialise().get());
 
-    float o = veSeatAddon ? veSeatAddon->SeatOrientationOffset : 0.f;
+    float o = veSeatAddon ? veSeatAddon->seatOrientationOffset : 0.f;
     float x = veSeat->attachmentOffsetX;
     float y = veSeat->attachmentOffsetY;
     float z = veSeat->attachmentOffsetZ;

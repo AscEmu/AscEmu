@@ -105,8 +105,8 @@
 
 // Include all threading files
 #include <cassert>
-#include "Threading/LegacyThreading.h"
 
+#include "Threading/LegacyThreading.h"
 #include "Threading/ConditionVariable.h"
 
 #if COMPILER == COMPILER_MICROSOFT

@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Logging/Logger.hpp"
 #include "Server/MainServerDefines.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Objects/MovementInfo.h"
+#include "Objects/MovementInfo.hpp"
 
 void WaypointMgr::load()
 {

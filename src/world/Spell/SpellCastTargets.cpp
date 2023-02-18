@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Definitions/SpellCastTargetFlags.hpp"
 #include "SpellCastTargets.hpp"
-
+#include "Objects/Transporter.hpp"
 #include "Management/ObjectMgr.h"
 #include <Server/WorldSocket.h>
 
@@ -118,7 +118,7 @@ void SpellCastTargets::read(WorldPacket& data, uint64_t caster)
 
         if (transporter)
         {
-            transporter->CalculatePassengerPosition(lv.x, lv.y, lv.z);
+            transporter->calculatePassengerPosition(lv.x, lv.y, lv.z);
         }
 
         setDestination(lv);

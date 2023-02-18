@@ -23,7 +23,7 @@
 #include "Definitions/AuraEffects.hpp"
 #include "Definitions/AuraRemoveMode.hpp"
 #include "Objects/Item.hpp"
-#include "Objects/Object.h"
+#include "Objects/Object.hpp"
 #include "Server/EventableObject.h"
 #include "Objects/Units/Unit.hpp"
 

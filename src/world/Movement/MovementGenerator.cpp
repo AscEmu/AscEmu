@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MovementGenerator.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "MovementGenerators/IdleMovementGenerator.h"
-#include "MovementDefines.h"
+#include "Movement/MovementDefines.h"
 #include "PathGenerator.h"
 #include "MovementGenerators/RandomMovementGenerator.h"
 #include "Objects/Units/Creatures/AIInterface.h"

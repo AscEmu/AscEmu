@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "ObjectDefines.h"
+#include "ObjectDefines.hpp"
 #include "Server/UpdateMask.h"
 #include "CommonTypes.hpp"
 #include "Server/EventableObject.h"
@@ -27,12 +27,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldPacket.h"
 #include "Units/Creatures/CreatureDefines.hpp"
 #include "Data/WoWObject.hpp"
-#include "MovementInfo.h"
+#include "MovementInfo.hpp"
 #include "Spell/Definitions/ProcFlags.hpp"
 #include "Spell/Definitions/School.hpp"
 #include "Units/UnitDefines.hpp"
 #include "Units/Creatures/Summons/SummonDefines.hpp"
-#include "ObjectDefines.h"
+#include "ObjectDefines.hpp"
 
 struct WoWObject;
 class SpellInfo;

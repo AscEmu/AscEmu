@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Objects/Units/Creatures/Creature.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Objects/Units/Creatures/Summons/Summon.h"
+#include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Spell/SpellAuras.h"
@@ -23,7 +23,7 @@ Summon::Summon(uint64_t guid, DBC::Structures::SummonPropertiesEntry const* prop
 
 Summon::~Summon() {}
 
-void Summon::Load(CreatureProperties const* creatureProperties, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellId)
+void Summon::load(CreatureProperties const* creatureProperties, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellId)
 {
     Creature::Load(creatureProperties, position.x, position.y, position.z, position.o);
 
@@ -304,9 +304,9 @@ Player* Summon::getPlayerOwner()
 GuardianSummon::GuardianSummon(uint64_t GUID, DBC::Structures::SummonPropertiesEntry const* properties) : Summon(GUID, properties) {}
 GuardianSummon::~GuardianSummon() {}
 
-void GuardianSummon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationVector& position, uint32_t duration, uint32_t spellid)
+void GuardianSummon::load(CreatureProperties const* properties_, Unit* pOwner, LocationVector& position, uint32_t duration, uint32_t spellid)
 {
-    Summon::Load(properties_, pOwner, position, duration, spellid);
+    Summon::load(properties_, pOwner, position, duration, spellid);
 
     // Summoner
     if (pOwner)
@@ -336,9 +336,9 @@ void GuardianSummon::Load(CreatureProperties const* properties_, Unit* pOwner, L
 CompanionSummon::CompanionSummon(uint64_t GUID, DBC::Structures::SummonPropertiesEntry const* properties) : Summon(GUID, properties) {}
 CompanionSummon::~CompanionSummon() {}
 
-void CompanionSummon::Load(CreatureProperties const* properties_, Unit* companionOwner, LocationVector& position, uint32_t duration, uint32_t spellid)
+void CompanionSummon::load(CreatureProperties const* properties_, Unit* companionOwner, LocationVector& position, uint32_t duration, uint32_t spellid)
 {
-    Summon::Load(properties_, companionOwner, position, duration, spellid);
+    Summon::load(properties_, companionOwner, position, duration, spellid);
 
     // Summoner
     if (companionOwner)
@@ -366,9 +366,9 @@ void CompanionSummon::Load(CreatureProperties const* properties_, Unit* companio
 PossessedSummon::PossessedSummon(uint64_t GUID, DBC::Structures::SummonPropertiesEntry const* properties) : Summon(GUID, properties) {}
 PossessedSummon::~PossessedSummon() {}
 
-void PossessedSummon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationVector& position, uint32_t duration, uint32_t spellid)
+void PossessedSummon::load(CreatureProperties const* properties_, Unit* pOwner, LocationVector& position, uint32_t duration, uint32_t spellid)
 {
-    Summon::Load(properties_, pOwner, position, duration, spellid);
+    Summon::load(properties_, pOwner, position, duration, spellid);
 
     // Summoner
     if (pOwner)
@@ -388,9 +388,9 @@ void PossessedSummon::Load(CreatureProperties const* properties_, Unit* pOwner, 
 WildSummon::WildSummon(uint64_t GUID, DBC::Structures::SummonPropertiesEntry const* properties) : Summon(GUID, properties) {}
 WildSummon::~WildSummon() {}
 
-void WildSummon::Load(CreatureProperties const* properties_, Unit* pOwner, LocationVector& position, uint32_t duration, uint32_t spellid)
+void WildSummon::load(CreatureProperties const* properties_, Unit* pOwner, LocationVector& position, uint32_t duration, uint32_t spellid)
 {
-    Summon::Load(properties_, pOwner, position, duration, spellid);
+    Summon::load(properties_, pOwner, position, duration, spellid);
 
     // Summoner
     if (pOwner)
@@ -413,9 +413,9 @@ TotemSummon::TotemSummon(uint64_t guid, DBC::Structures::SummonPropertiesEntry c
 
 TotemSummon::~TotemSummon() {}
 
-void TotemSummon::Load(CreatureProperties const* creatureProperties, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellId)
+void TotemSummon::load(CreatureProperties const* creatureProperties, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellId)
 {
-    Summon::Load(creatureProperties, unitOwner, position, duration, spellId);
+    Summon::load(creatureProperties, unitOwner, position, duration, spellId);
 
     // Summoner
     if (unitOwner)
@@ -482,7 +482,7 @@ void TotemSummon::OnPushToWorld()
 {
     Summon::OnPushToWorld();
 
-    SetupSpells();
+    setupSpells();
 }
 
 bool TotemSummon::isTotem() const { return true; }
@@ -499,7 +499,7 @@ void TotemSummon::die(Unit* /*pAttacker*/, uint32_t /*damage*/, uint32_t /*spell
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Misc
-void TotemSummon::SetupSpells()
+void TotemSummon::setupSpells()
 {
     if (getUnitOwner() == nullptr)
         return;

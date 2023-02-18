@@ -58,6 +58,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgLogoutCancelAck.h"
 #include "Server/Packets/SmsgMotd.h"
 #include "Server/Script/ScriptMgr.h"
+#include "Objects/Transporter.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -1138,7 +1139,7 @@ void WorldSession::handleCorpseReclaimOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (time(nullptr) < corpse->GetDeathClock() + CORPSE_RECLAIM_TIME)
+    if (time(nullptr) < corpse->getDeathClock() + CORPSE_RECLAIM_TIME)
     {
         SendPacket(SmsgResurrectFailed(1).serialise().get());
         return;
