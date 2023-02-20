@@ -37,6 +37,11 @@ include(Spell/CMakeLists.txt)
 include(Spell/Customization/CMakeLists.txt)
 include(Spell/Definitions/CMakeLists.txt)
 include(Storage/CMakeLists.txt)
+include(Storage/DBC/CMakeLists.txt)
+include(Objects/Units/CMakeLists.txt)
+include(Objects/Units/Creatures/CMakeLists.txt)
+include(Objects/Units/Players/CMakeLists.txt)
+include(Objects/Units/Creatures/Summons/CMakeLists.txt)
 
 if ("${ASCEMU_VERSION}" STREQUAL "Cata")
     include(Storage/DB2/CMakeLists.txt)
@@ -45,12 +50,6 @@ endif ()
 if ("${ASCEMU_VERSION}" STREQUAL "Mop")
     include(Storage/DB2/CMakeLists.txt)
 endif ()
-
-include(Storage/DBC/CMakeLists.txt)
-include(Objects/Units/CMakeLists.txt)
-include(Objects/Units/Creatures/CMakeLists.txt)
-include(Objects/Units/Players/CMakeLists.txt)
-include(Objects/Units/Creatures/Summons/CMakeLists.txt)
 
 if (WIN32)
     set(SRC_WORLD_PROJECT ${SRC_WORLD_PROJECT} ${CMAKE_CURRENT_SOURCE_DIR}/resources.rc)
@@ -183,86 +182,8 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/WorldConf.h.in ${CMAKE_CURRENT_SOURCE
 target_link_libraries(${PROJECT_NAME} shared g3dlite Detour Recast ${PCRE_LIBRARIES})
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
 
+# generate precompiled header.
 if (USE_PCH)
     message(STATUS "Generate PCH for ${PROJECT_NAME}")
-
-    target_precompile_headers(${PROJECT_NAME}
-    PRIVATE
-    <string>
-    <map>
-    <vector>
-    <array>
-    <set>
-    <cstdio>
-    <cstdlib>
-    <cstring>
-    <CommonDefines.hpp>
-    <CommonTypes.hpp>
-    <Common.hpp>
-    <Config/Config.h>
-    <WorldPacket.h>
-    <Log.hpp>
-    <Logging/Logger.hpp>
-    <ByteBuffer.h>
-    <Config/Config.h>
-    <LocationVector.h>
-    <Util/Strings.hpp>
-    <Util.hpp>
-    <Auth/BigNumber.h>
-    <Auth/WowCrypt.hpp>
-    <VMapManager2.h>
-    <IVMapManager.h>
-    <VMapFactory.h>
-    <GameObjectModel.h>
-    <LogonCommDefines.h>
-    WorldConf.h
-    Chat/ChatDefines.hpp
-    Chat/CommandTableStorage.hpp
-    Chat/ChatHandler.hpp
-    Macros/ScriptMacros.hpp
-    Management/Faction.h
-    Management/ItemInterface.h
-    Management/QuestLogEntry.hpp
-    Map/Area/AreaStorage.hpp
-    Map/Management/MapMgr.hpp
-    Movement/Spline/Spline.h
-    Movement/Spline/SplineImpl.h
-    Movement/Spline/MoveSpline.h
-    Movement/Spline/MoveSplineInit.h
-    Objects/GameObject.h
-    Objects/Item.hpp
-    Objects/ItemDefines.hpp
-    Objects/MovementDefines.hpp
-    Objects/MovementInfo.hpp
-    Objects/Object.hpp
-    Objects/ObjectDefines.hpp
-    Objects/Units/Creatures/Creature.h
-    Objects/Units/Creatures/CreatureDefines.hpp
-    Objects/Units/Players/Player.hpp
-    Objects/Units/Unit.hpp
-    Objects/Units/UnitDefines.hpp
-    Server/Definitions.h
-    Server/EventableObject.h
-    Server/LogonCommClient/LogonCommHandler.h
-    Server/LogonCommClient/LogonCommClient.h
-    Server/Opcodes.hpp
-    Server/Packets/SmsgMessageChat.h
-    Server/Script/ScriptMgr.h
-    Server/WorldConfig.h
-    Server/WorldSession.h
-    Server/WorldSocket.h
-    Spell/Definitions/SpellEffects.hpp
-    Spell/Spell.h
-    Spell/SpellAuras.h
-    Spell/SpellInfo.hpp
-    Spell/SpellMgr.hpp
-    Spell/SpellProc.hpp
-    Spell/SpellScript.hpp
-    Spell/SpellTarget.h
-    Storage/MySQLDataStore.hpp
-    Objects/Units/Players/Player.hpp
-    Objects/Units/Unit.hpp
-    Management/ObjectMgr.h
-)
-
+    target_precompile_headers(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchWorld.hpp)
 endif ()

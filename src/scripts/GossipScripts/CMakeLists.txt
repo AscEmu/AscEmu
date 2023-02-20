@@ -43,16 +43,10 @@ target_link_libraries(${PROJECT_NAME} world)
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
 
+# generate precompiled header.
 if (USE_PCH)
-    target_precompile_headers(${PROJECT_NAME}
-    PRIVATE
-    <Management/Gossip/GossipScript.hpp>
-    <Objects/GameObject.h>
-    <Server/Script/ScriptMgr.h>
-    <Storage/MySQLDataStore.hpp>
-    <Management/Gossip/GossipMenu.hpp>
-    Setup.h
-)
+    message(STATUS "Generate PCH for ${PROJECT_NAME}")
+    target_precompile_headers(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchGossipScripts.hpp)
 endif ()
 
 unset(sources)

@@ -83,19 +83,10 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFre
     target_link_libraries(${PROJECT_NAME} c++experimental)
 endif ()
 
+# generate precompiled header.
 if (USE_PCH)
-    target_precompile_headers(${PROJECT_NAME}
-    PRIVATE
-    <iostream>
-    <list>
-    <vector>
-    <map>
-    <sstream>
-    <string>
-    <atomic>
-    Common.hpp
-    Util.hpp
-)
+    message(STATUS "Generate PCH for ${PROJECT_NAME}")
+    target_precompile_headers(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchShared.hpp)
 endif ()
 
 unset(sources)

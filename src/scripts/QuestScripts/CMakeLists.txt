@@ -90,20 +90,10 @@ target_link_libraries(${PROJECT_NAME} world)
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
 
+# generate precompiled header.
 if (USE_PCH)
-    target_precompile_headers(${PROJECT_NAME}
-    PRIVATE
-    Setup.h
-    <Management/TaxiMgr.h>
-    <Server/Script/CreatureAIScript.h>
-    <Objects/Units/Creatures/AIInterface.h>
-    <Objects/Item.hpp>
-    <Map/Management/MapMgr.hpp>
-    <Map/Maps/MapScriptInterface.h>
-    <Management/ItemInterface.h>
-    <Storage/MySQLDataStore.hpp>
-    <Management/QuestLogEntry.hpp>
-)
+    message(STATUS "Generate PCH for ${PROJECT_NAME}")
+    target_precompile_headers(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchQuestScripts.hpp)
 endif ()
 
 unset(sources)

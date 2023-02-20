@@ -61,20 +61,10 @@ target_link_libraries(${PROJECT_NAME} world)
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
 
+# generate precompiled header.
 if (USE_PCH)
-    target_precompile_headers(${PROJECT_NAME}
-    PRIVATE 
-    <Chat/ChatDefines.hpp>
-    <Management/HonorHandler.h>
-    <Management/QuestLogEntry.hpp>
-    <Management/WorldStates.h>
-    <Map/Management/MapMgr.hpp>
-    <Objects/GameObject.h>
-    <Server/MainServerDefines.h>
-    <Server/Packets/SmsgMessageChat.h>
-    <Spell/SpellMgr.hpp>
-    <Storage/MySQLDataStore.hpp>
-)
+    message(STATUS "Generate PCH for ${PROJECT_NAME}")
+    target_precompile_headers(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchBattleGrounds.hpp)
 endif ()
 
 unset(sources)

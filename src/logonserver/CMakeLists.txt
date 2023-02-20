@@ -52,36 +52,10 @@ target_link_libraries(${PROJECT_NAME} shared ${MYSQL_LIBRARIES} ${ZLIB_LIBRARIES
 # provide make install rules.
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
 
+# generate precompiled header.
 if (USE_PCH)
-    target_precompile_headers(${PROJECT_NAME}
-    PRIVATE
-    <iostream>
-    <list>
-    <vector>
-    <map>
-    <sstream>
-    <string>
-    <CommonDefines.hpp>
-    <Common.hpp>
-    <WorldPacket.h>
-    <Log.hpp>
-    <Logging/Logger.hpp>
-    <ByteBuffer.h>
-    <Config/Config.h>
-    <Util/Strings.hpp>
-    <Util.hpp>
-    <Auth/BigNumber.h>
-    <Auth/Sha1.h>
-    <Auth/WowCrypt.hpp>
-    <Database/Database.h>
-    <Network/Network.h>
-    LogonConf.hpp
-    Console/LogonConsole.h
-    Realm/RealmManager.hpp
-    Server/IpBanMgr.h
-    Server/LogonServerDefines.hpp
-    Server/Master.hpp
-)
+    message(STATUS "Generate PCH for ${PROJECT_NAME}")
+    target_precompile_headers(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchLogon.hpp)
 endif ()
 
 unset(sources)
