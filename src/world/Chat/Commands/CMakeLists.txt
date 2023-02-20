@@ -10,7 +10,6 @@ set(SRC_COMMAND_FILES
     ${PATH_PREFIX}/BGCommands.cpp
     ${PATH_PREFIX}/CharacterCommands.cpp
     ${PATH_PREFIX}/CheatCommands.cpp
-    ${PATH_PREFIX}/debugcmds.cpp
     ${PATH_PREFIX}/DebugCommands.cpp
     ${PATH_PREFIX}/GameEventMgrCommands.cpp
     ${PATH_PREFIX}/GameMasterCommands.cpp
