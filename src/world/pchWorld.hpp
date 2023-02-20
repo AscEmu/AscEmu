@@ -49,10 +49,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Objects/GameObject.h>
 #include <Objects/Item.hpp>
 #include <Objects/ItemDefines.hpp>
-#include <Objects/MovementDefines.h>
-#include <Objects/MovementInfo.h>
-#include <Objects/Object.h>
-#include <Objects/ObjectDefines.h>
+#include <Objects/MovementDefines.hpp>
+#include <Objects/MovementInfo.hpp>
+#include <Objects/Object.hpp>
+#include <Objects/ObjectDefines.hpp>
 #include <Objects/Units/Creatures/Creature.h>
 #include <Objects/Units/Creatures/CreatureDefines.hpp>
 #include <Objects/Units/Players/Player.hpp>
