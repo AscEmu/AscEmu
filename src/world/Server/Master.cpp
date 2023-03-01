@@ -41,9 +41,6 @@
 #include "Script/ScriptMgr.h"
 #include "Spell/SpellMgr.hpp"
 
-std::string LogFileName;
-bool bLogChat;
-
 volatile bool Master::m_stopEvent = false;
 
 // Database defines.
@@ -59,7 +56,7 @@ ConfigMgr Config;
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20220415-00_account_instance_times";
-static const char* REQUIRED_WORLD_DB_VERSION = "20230211_00_trainer_properties";
+static const char* REQUIRED_WORLD_DB_VERSION = "20230301-01_creature_spawns";
 
 void Master::_OnSignal(int s)
 {

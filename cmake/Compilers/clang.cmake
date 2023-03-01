@@ -11,6 +11,7 @@ endif ()
 
 message(STATUS "Applying settings for ${CMAKE_CXX_COMPILER}")
 
+# check support for unordered_map/set
 add_definitions(-DHAS_CXX0X)
 
 # apply base flags

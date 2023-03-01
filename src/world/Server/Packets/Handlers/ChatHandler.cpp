@@ -36,9 +36,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
-extern std::string LogFileName;
-extern bool bLogChat;
-
 bool WorldSession::isSessionMuted()
 {
     if (m_muted && m_muted >= static_cast<uint32_t>(UNIXTIME))
