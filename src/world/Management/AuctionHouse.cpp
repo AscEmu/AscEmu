@@ -208,7 +208,6 @@ void AuctionHouse::removeAuction(Auction* auction)
             sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, auctionHouseEntryDbc->id, auction->ownerGuid, subject, "", 0, 0, auction->auctionItem->getGuid(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
         }
         break;
-
         case AUCTION_REMOVE_WON:
         {
             // ItemEntry:0:1

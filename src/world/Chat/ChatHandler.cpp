@@ -329,13 +329,13 @@ const char* ChatHandler::GetRaidDifficultyString(uint8 diff)
     switch (diff)
     {
         case InstanceDifficulty::RAID_10MAN_NORMAL:
-            return "normal 10men";
+            return "normal 10man";
         case InstanceDifficulty::RAID_25MAN_NORMAL:
-            return "normal 25men";
+            return "normal 25man";
         case InstanceDifficulty::RAID_10MAN_HEROIC:
-            return "heroic 10men";
+            return "heroic 10man";
         case InstanceDifficulty::RAID_25MAN_HEROIC:
-            return "heroic 25men";
+            return "heroic 25man";
         default:
             return "unknown";
     }
