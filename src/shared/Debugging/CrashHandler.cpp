@@ -354,4 +354,3 @@ int __cdecl HandleCrash(PEXCEPTION_POINTERS pExceptPtrs)
     return EXCEPTION_CONTINUE_SEARCH;
 }
 #endif
-
