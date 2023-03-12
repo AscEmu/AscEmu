@@ -24,7 +24,7 @@
 #include "Storage/DB2/DB2Structures.h"
 #endif
 #include "Spell/Definitions/School.hpp"
-#include "Util.hpp"
+#include "Utilities/Util.hpp"
 #include "Server/Master.h"
 #include "Macros/CreatureMacros.hpp"
 

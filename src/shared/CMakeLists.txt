@@ -31,7 +31,6 @@ set(sources
     Log.cpp
     PerformanceCounter.cpp
     SysInfo.cpp
-    Util.cpp
 )
 
 set(headers
@@ -58,7 +57,6 @@ set(headers
     WoWGuid.h
     Common.hpp
     Log.hpp
-    Util.hpp
     FactoryHolder.h
     ObjectRegistry.h
 )

@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <Common.hpp>
 #include <Threading/AEThreadPool.h>
-#include "Util.hpp"
+#include "Utilities/Util.hpp"
 #include "Database/DatabaseUpdater.hpp"
 #include "Logon.h"
 #include "IpBanMgr.h"

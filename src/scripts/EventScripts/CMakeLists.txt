@@ -41,7 +41,7 @@ set(sources
     Setup.cpp
     # required for linker
     ../../world/Server/ServerState.cpp
-    ../../shared/Util.cpp
+    ../../shared/Utilities/Util.cpp
 )
 
 set(headers

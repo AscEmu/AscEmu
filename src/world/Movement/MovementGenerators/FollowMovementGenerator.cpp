@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Movement/PathGenerator.h"
 #include "Objects/Units/Unit.hpp"
-#include "Util.hpp"
+#include "Utilities/Util.hpp"
 
 static void doMovementInform(Unit* owner, Unit* target)
 {

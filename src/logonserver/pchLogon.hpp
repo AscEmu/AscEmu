@@ -19,7 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <ByteBuffer.h>
 #include <Config/Config.h>
 #include <Utilities/Strings.hpp>
-#include <Util.hpp>
+#include <Utilities/Util.hpp>
 #include <Auth/BigNumber.h>
 #include <Auth/Sha1.h>
 #include <Auth/WowCrypt.hpp>

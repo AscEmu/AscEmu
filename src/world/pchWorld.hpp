@@ -24,7 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Config/Config.h>
 #include <LocationVector.h>
 #include <Utilities/Strings.hpp>
-#include <Util.hpp>
+#include <Utilities/Util.hpp>
 #include <Auth/BigNumber.h>
 #include <Auth/WowCrypt.hpp>
 #include <VMapManager2.h>

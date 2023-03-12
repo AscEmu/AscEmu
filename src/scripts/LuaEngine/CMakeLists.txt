@@ -17,7 +17,7 @@ set(SRCS
     # required for linker
     ../../world/Server/ServerState.cpp
     ../../world/Spell/SpellCastTargets.cpp
-    ../../shared/Util.cpp
+    ../../shared/Utilities/Util.cpp
 )
 
 set(HEADERS

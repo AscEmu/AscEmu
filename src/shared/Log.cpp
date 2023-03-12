@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Log.hpp"
 #include "Logging/Logger.hpp"
-#include "Util.hpp"
+#include "Utilities/Util.hpp"
 #include "Config/Config.h"
 
 #include <iostream>

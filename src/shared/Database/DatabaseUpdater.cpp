@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Database.h"
 #include "Field.hpp"
 #include <Common.hpp>
-#include <Util.hpp>
+#include <Utilities/Util.hpp>
 #include <iostream>
 
 void DatabaseUpdater::initBaseIfNeeded(const std::string& dbName, const std::string& dbBaseType, Database& dbPointer)
