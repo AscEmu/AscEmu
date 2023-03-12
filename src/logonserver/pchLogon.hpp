@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <CommonDefines.hpp>
 #include <Common.hpp>
 #include <WorldPacket.h>
-#include <Log.hpp>
+#include <Logging/Log.hpp>
 #include <Logging/Logger.hpp>
 #include <ByteBuffer.h>
 #include <Config/Config.h>

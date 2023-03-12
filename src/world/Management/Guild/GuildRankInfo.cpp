@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "GuildRankInfo.hpp"
 #include "GuildBankRightsAndSlots.hpp"
-#include "Log.hpp"
+#include "Logging/Log.hpp"
 #include "Database/Database.h"
 #include "Logging/Logger.hpp"
 #include "Server/MainServerDefines.h"

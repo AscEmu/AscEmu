@@ -56,7 +56,7 @@ set(headers
     WorldPacket.h
     WoWGuid.h
     Common.hpp
-    Log.hpp
+    Logging/Log.hpp
     FactoryHolder.h
     ObjectRegistry.h
 )

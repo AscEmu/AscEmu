@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Logging/Logger.hpp>
 #include <Database/Database.h>
 #include "Server/Master.hpp"
-#include <Log.hpp>
+#include <Logging/Log.hpp>
 
 IpBanMgr& IpBanMgr::getInstance()
 {
