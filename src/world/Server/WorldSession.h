@@ -21,6 +21,8 @@
 #ifndef WORLDSESSION_H
 #define WORLDSESSION_H
 
+#include <string>
+
 #include <Threading/Mutex.h>
 #include "Server/Opcodes.hpp"
 #include "Management/Quest.h"
@@ -34,10 +36,9 @@
     struct AddonEntry;
 #endif
 
-#include <string>
 #include "Objects/MovementInfo.hpp"
 #include "Logging/Logger.hpp"
-#include "CallBack.h"
+#include "Utilities/CallBack.h"
 
 class Player;
 class WorldPacket;
