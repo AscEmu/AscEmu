@@ -4,7 +4,7 @@ set(PATH_PREFIX Logging)
 
 set(SRC_LOGGING_FILES
     ${PATH_PREFIX}/Log.cpp
-    ${PATH_PREFIX}/Logging/Log.hpp
+    ${PATH_PREFIX}/Log.hpp
     ${PATH_PREFIX}/LoggerDefines.hpp
     ${PATH_PREFIX}/Logger.cpp
     ${PATH_PREFIX}/Logger.hpp
