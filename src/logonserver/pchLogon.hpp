@@ -18,7 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Logging/Logger.hpp>
 #include <ByteBuffer.h>
 #include <Config/Config.h>
-#include <Util/Strings.hpp>
+#include <Utilities/Strings.hpp>
 #include <Util.hpp>
 #include <Auth/BigNumber.h>
 #include <Auth/Sha1.h>

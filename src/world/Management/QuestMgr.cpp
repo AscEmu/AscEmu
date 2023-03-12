@@ -38,7 +38,7 @@
 #include "Server/Packets/SmsgQuestupdateFailed.h"
 #include "Server/Packets/SmsgQuestgiverQuestFailed.h"
 #include "Storage/WorldStrings.h"
-#include "Util/Strings.hpp"
+#include "Utilities/Strings.hpp"
 #include "Server/Script/CreatureAIScript.h"
 
 using namespace AscEmu::Packets;

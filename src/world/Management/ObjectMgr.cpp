@@ -39,7 +39,7 @@
 #include "Management/LFG/LFGMgr.hpp"
 #include "Movement/MovementManager.h"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
-#include "Util/Strings.hpp"
+#include "Utilities/Strings.hpp"
 #if VERSION_STRING < Cata
 #include "Management/Guild/Guild.hpp"
 #endif

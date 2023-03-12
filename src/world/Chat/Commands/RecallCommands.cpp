@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Management/ObjectMgr.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Util/Strings.hpp"
+#include "Utilities/Strings.hpp"
 
 
 //.recall port

@@ -23,7 +23,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <ByteBuffer.h>
 #include <Config/Config.h>
 #include <LocationVector.h>
-#include <Util/Strings.hpp>
+#include <Utilities/Strings.hpp>
 #include <Util.hpp>
 #include <Auth/BigNumber.h>
 #include <Auth/WowCrypt.hpp>

@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellClickInfo.hpp"
 #include "Server/MainServerDefines.h"
 #include "Spell/SpellMgr.hpp"
-#include "Util/Strings.hpp"
+#include "Utilities/Strings.hpp"
 #include <regex>
 
 SERVER_DECL std::vector<MySQLAdditionalTable> MySQLAdditionalTables;

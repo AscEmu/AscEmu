@@ -34,7 +34,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/CharacterErrors.h"
 #include "AuthCodes.h"
 #include "Server/Script/ScriptMgr.h"
-#include "Util/Strings.hpp"
+#include "Utilities/Strings.hpp"
 
 
 using namespace AscEmu::Packets;

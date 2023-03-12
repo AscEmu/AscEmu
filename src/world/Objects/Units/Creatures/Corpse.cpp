@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Corpse.hpp"
 #include "Management/ObjectMgr.h"
 #include "Data/WoWCorpse.hpp"
-#include "Util/Strings.hpp"
+#include "Utilities/Strings.hpp"
 
 Corpse::Corpse(uint32_t high, uint32_t low)
 {
