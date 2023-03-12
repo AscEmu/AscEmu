@@ -26,7 +26,7 @@
 #include <G3D/BoundsTrait.h>
 #include <G3D/PositionTrait.h>
 
-#include "Errors.h"
+#include "Debugging/Errors.h"
 
 template<class Node>
 struct NodeCreator{

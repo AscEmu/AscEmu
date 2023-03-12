@@ -22,7 +22,7 @@ set(sources
     ${SRC_LOGGING_FILES}
     ${SRC_NETWORK_FILES}
     ${SRC_THREADING_FILES}
-    ${SRC_UTIL_FILES}
+    ${SRC_UTILITIES_FILES}
 
     crc32.cpp
     CThreads.cpp
@@ -47,7 +47,6 @@ set(headers
     crc32.h
     CThreads.h
     DynLib.hpp
-    Errors.h
     FastQueue.h
     LocationVector.h
     LogonCommDefines.h

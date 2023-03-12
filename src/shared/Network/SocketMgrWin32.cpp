@@ -9,7 +9,7 @@
 #include "Network.h"
 #ifdef CONFIG_USE_IOCP
 
-#include <CrashHandler.h>
+#include "Debugging/CrashHandler.h"
 
 SocketMgr& SocketMgr::getInstance()
 {
@@ -85,7 +85,7 @@ void HandleReadComplete(Socket* s, uint32 len)
             s->SetupReadEvent();
         }
         else
-            s->Delete();      // Queue deletion.
+            s->Delete(); // Queue deletion.
     }
 }
 
@@ -94,13 +94,13 @@ void HandleWriteComplete(Socket* s, uint32 len)
     if(!s->IsDeleted())
     {
         s->m_writeEvent.Unmark();
-        s->BurstBegin();                    // Lock
+        s->BurstBegin(); // Lock
         s->writeBuffer.Remove(len);
         if(s->writeBuffer.GetContiguiousBytes() > 0)
             s->WriteCallback();
         else
             s->DecSendLock();
-        s->BurstEnd();                      // Unlock
+        s->BurstEnd(); // Unlock
     }
 }
 

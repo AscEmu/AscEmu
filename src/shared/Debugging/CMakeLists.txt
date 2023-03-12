@@ -5,6 +5,7 @@ set(PATH_PREFIX Debugging)
 set(SRC_DEBUGGING_FILES
     ${PATH_PREFIX}/CrashHandler.cpp
     ${PATH_PREFIX}/CrashHandler.h
+    ${PATH_PREFIX}/Errors.h
 )
 
 source_group(Debugging FILES ${SRC_DEBUGGING_FILES})

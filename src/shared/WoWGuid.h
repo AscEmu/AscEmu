@@ -22,7 +22,7 @@
 #define _WOWGUID_H
 
 #include "CommonTypes.hpp"
-#include "Errors.h"
+#include "Debugging/Errors.h"
 
 #define BitCount1(x) ((x) & 1)
 #define BitCount2(x) ( BitCount1(x) + BitCount1((x)>>1) )
