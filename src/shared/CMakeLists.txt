@@ -6,6 +6,7 @@ project(shared CXX)
 include(Auth/CMakeLists.txt)
 include(Config/CMakeLists.txt)
 include(Database/CMakeLists.txt)
+include(Debugging/CMakeLists.txt)
 include(Exceptions/CMakeLists.txt)
 include(Logging/CMakeLists.txt)
 include(Network/CMakeLists.txt)
@@ -16,13 +17,13 @@ set(sources
     ${SRC_AUTH_FILES}
     ${SRC_CONFIG_FILES}
     ${SRC_DATABASE_FILES}
+    ${SRC_DEBUGGING_FILES}
     ${SRC_EXCEPTIONS_FILES}
     ${SRC_LOGGING_FILES}
     ${SRC_NETWORK_FILES}
     ${SRC_THREADING_FILES}
     ${SRC_UTIL_FILES}
 
-    CrashHandler.cpp
     crc32.cpp
     CThreads.cpp
     DynLib.cpp
@@ -43,7 +44,6 @@ set(headers
     CommonDefines.hpp
     CommonHelpers.hpp
     CommonTypes.hpp
-    CrashHandler.h
     crc32.h
     CThreads.h
     DynLib.hpp

@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/MainServerDefines.h"
 #include "GameEvent.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "CrashHandler.h"
+#include "Debugging/CrashHandler.h"
 
 GameEventMgr& GameEventMgr::getInstance()
 {
