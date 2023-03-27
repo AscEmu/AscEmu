@@ -1,8 +1,8 @@
 # Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 
-set(PATH_PREFIX Auth)
+set(PATH_PREFIX Cryptography)
 
-set(SRC_AUTH_FILES
+set(SRC_CRYPTOGRAPHY_FILES
     ${PATH_PREFIX}/BigNumber.cpp
     ${PATH_PREFIX}/BigNumber.h
     ${PATH_PREFIX}/MD5.cpp
@@ -13,5 +13,5 @@ set(SRC_AUTH_FILES
     ${PATH_PREFIX}/WowCrypt.hpp
 )
 
-source_group(Auth FILES ${SRC_AUTH_FILES})
+source_group(Cryptography FILES ${SRC_CRYPTOGRAPHY_FILES})
 unset(PATH_PREFIX)

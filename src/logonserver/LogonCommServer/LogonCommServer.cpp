@@ -28,7 +28,7 @@
 #include <Network/Socket.h>
 #include <WorldPacket.h>
 #include <Server/AccountMgr.h>
-#include <Auth/Sha1.h>
+#include <Cryptography/Sha1.h>
 #include <Utilities/Strings.hpp>
 #include <Server/IpBanMgr.h>
 

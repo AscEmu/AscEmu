@@ -3,7 +3,7 @@
 # set up our project name
 project(shared CXX)
 
-include(Auth/CMakeLists.txt)
+include(Cryptography/CMakeLists.txt)
 include(Config/CMakeLists.txt)
 include(Database/CMakeLists.txt)
 include(Debugging/CMakeLists.txt)
@@ -14,7 +14,7 @@ include(Threading/CMakeLists.txt)
 include(Utilities/CMakeLists.txt)
 
 set(sources
-    ${SRC_AUTH_FILES}
+    ${SRC_CRYPTOGRAPHY_FILES}
     ${SRC_CONFIG_FILES}
     ${SRC_DATABASE_FILES}
     ${SRC_DEBUGGING_FILES}

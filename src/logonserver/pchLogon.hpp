@@ -20,9 +20,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Config/Config.h>
 #include <Utilities/Strings.hpp>
 #include <Utilities/Util.hpp>
-#include <Auth/BigNumber.h>
-#include <Auth/Sha1.h>
-#include <Auth/WowCrypt.hpp>
+#include <Cryptography/BigNumber.h>
+#include <Cryptography/Sha1.h>
+#include <Cryptography/WowCrypt.hpp>
 #include <Database/Database.h>
 #include <Network/Network.h>
 #include "LogonConf.hpp"

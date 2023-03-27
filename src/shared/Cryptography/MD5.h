@@ -15,42 +15,33 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
-#ifndef _AUTH_SHA1_H
-#define _AUTH_SHA1_H
+#ifndef _MD5_H
+#define _MD5_H
 
 #include <cstdlib>
+#include <openssl/md5.h>
 #include "Common.hpp"
-#include <openssl/sha.h>
-#include "Auth/BigNumber.h"
 
-class Sha1Hash
+class MD5Hash
 {
-    public:
+public:
+    MD5Hash();
+    ~MD5Hash() = default;
 
-        Sha1Hash();
-        ~Sha1Hash() = default;
+    void UpdateData(const uint8* dta, int len);
+    void UpdateData(const std::string & str);
 
-        void UpdateFinalizeBigNumbers(BigNumber* bn0, ...);
-        void UpdateBigNumbers(BigNumber* bn0, ...);
+    void Initialize();
+    void Finalize();
 
-        void UpdateData(const uint8* dta, int len);
-        void UpdateData(const std::string & str);
+    uint8* GetDigest(void) { return mDigest; };
+    int GetLength(void) { return MD5_DIGEST_LENGTH; };
 
-        void Initialize();
-        void Finalize();
-
-        uint8* GetDigest(void) { return mDigest; };
-        int GetLength(void) { return SHA_DIGEST_LENGTH; };
-
-        BigNumber GetBigNumber();
-
-    private:
-
-        SHA_CTX mC;
-        uint8 mDigest[SHA_DIGEST_LENGTH];
+private:
+    MD5_CTX mC;
+    uint8 mDigest[MD5_DIGEST_LENGTH];
 };
 
-#endif
+#endif      //_MD5_H

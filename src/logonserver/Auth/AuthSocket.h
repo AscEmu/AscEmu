@@ -23,8 +23,8 @@
 #include "AuthStructs.h"
 #include "CommonTypes.hpp"
 #include "Network/Socket.h"
-#include "Auth/Sha1.h"
-#include "Auth/BigNumber.h"
+#include "Cryptography/Sha1.h"
+#include "Cryptography/BigNumber.h"
 #include "Server/AccountMgr.h"
 #include "LogonCommServer/LogonCommServer.h"
 

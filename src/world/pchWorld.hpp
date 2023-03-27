@@ -25,8 +25,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include <LocationVector.h>
 #include <Utilities/Strings.hpp>
 #include <Utilities/Util.hpp>
-#include <Auth/BigNumber.h>
-#include <Auth/WowCrypt.hpp>
+#include <Cryptography/BigNumber.h>
+#include <Cryptography/WowCrypt.hpp>
 #include <VMapManager2.h>
 #include <IVMapManager.h>
 #include <VMapFactory.h>
