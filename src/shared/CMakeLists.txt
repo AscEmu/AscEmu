@@ -24,7 +24,6 @@ set(sources
     ${SRC_THREADING_FILES}
     ${SRC_UTILITIES_FILES}
 
-    crc32.cpp
     CThreads.cpp
     DynLib.cpp
     LocationVector.cpp
@@ -40,7 +39,6 @@ set(headers
     CommonDefines.hpp
     CommonHelpers.hpp
     CommonTypes.hpp
-    crc32.h
     CThreads.h
     DynLib.hpp
     FastQueue.h

@@ -7,8 +7,8 @@ Functions for computing 32-bit CRC.
 */
 
 /*
- * $Id: crc32.h,v 1.1.1.1 1996/02/18 21:38:11 ylo Exp $
- * $Log: crc32.h,v $
+ * $Id: Cryptography/crc32.h,v 1.1.1.1 1996/02/18 21:38:11 ylo Exp $
+ * $Log: Cryptography/crc32.h,v $
  * Revision 1.1.1.1  1996/02/18 21:38:11  ylo
  *     Imported ssh-1.2.13.
  *

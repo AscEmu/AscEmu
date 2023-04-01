@@ -19,8 +19,7 @@
  *
  */
 
-
-#include "crc32.h"
+#include "Cryptography/crc32.h"
 #include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Server/World.h"
 #include "Spell/Definitions/SpellModifierType.hpp"
