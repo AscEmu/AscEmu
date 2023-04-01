@@ -3,6 +3,7 @@
 set(PATH_PREFIX Cryptography)
 
 set(SRC_CRYPTOGRAPHY_FILES
+    ${PATH_PREFIX}/AuthCodes.h
     ${PATH_PREFIX}/BigNumber.cpp
     ${PATH_PREFIX}/BigNumber.h
     ${PATH_PREFIX}/MD5.cpp

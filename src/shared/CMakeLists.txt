@@ -33,7 +33,6 @@ set(sources
 )
 
 set(headers
-    AuthCodes.h
     ByteBuffer.h
     ByteConverter.h
     CircularQueue.h
