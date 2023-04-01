@@ -210,17 +210,14 @@ void echo(const char* format, ...)
 
 void CStackWalker::OnSymInit(LPCSTR /*szSearchPath*/, DWORD /*symOptions*/, LPCSTR /*szUserName*/)
 {
-
 }
 
 void CStackWalker::OnLoadModule(LPCSTR /*img*/, LPCSTR /*mod*/, DWORD64 /*baseAddr*/, DWORD /*size*/, DWORD /*result*/, LPCSTR /*symType*/, LPCSTR /*pdbName*/, ULONGLONG /*fileVersion*/)
 {
-
 }
 
 void CStackWalker::OnDbgHelpErr(LPCSTR /*szFuncName*/, DWORD /*gle*/, DWORD64 /*addr*/)
 {
-
 }
 
 void CStackWalker::OnCallstackEntry(CallstackEntryType eType, CallstackEntry & entry)
@@ -267,7 +264,6 @@ void CStackWalker::OnOutput(LPCSTR szText)
 }
 
 bool died = false;
-
 
 int __cdecl HandleCrash(PEXCEPTION_POINTERS pExceptPtrs)
 {

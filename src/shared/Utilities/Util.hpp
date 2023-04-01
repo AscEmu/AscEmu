@@ -242,13 +242,12 @@ struct SmallTimeTracker
 {
     int32_t mExpireTime;
 
-    public:
+public:
+    SmallTimeTracker(uint32_t expired = 0) : mExpireTime(static_cast<int32_t>(expired)) {}
 
-        SmallTimeTracker(uint32_t expired = 0) : mExpireTime(static_cast<int32_t>(expired)) {}
+    void updateTimer(uint32_t diffTime) { mExpireTime -= diffTime; }
+    void resetInterval(uint32_t intervalTime) { mExpireTime = static_cast<int32_t>(intervalTime); }
 
-        void updateTimer(uint32_t diffTime) { mExpireTime -= diffTime; }
-        void resetInterval(uint32_t intervalTime) { mExpireTime = static_cast<int32_t>(intervalTime); }
-
-        int32_t getExpireTime() const { return mExpireTime; }
-        bool isTimePassed() const { return mExpireTime <= 0; }
+    int32_t getExpireTime() const { return mExpireTime; }
+    bool isTimePassed() const { return mExpireTime <= 0; }
 };
