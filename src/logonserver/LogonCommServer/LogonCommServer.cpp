@@ -18,7 +18,7 @@
  */
 
 #include "LogonCommServer.h"
-#include "LogonCommDefines.h"
+#include "Cryptography/LogonCommDefines.h"
 
 #include <Common.hpp>
 #include <Logging/Log.hpp>

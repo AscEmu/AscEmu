@@ -43,7 +43,6 @@ set(headers
     DynLib.hpp
     FastQueue.h
     LocationVector.h
-    LogonCommDefines.h
     PerformanceCounter.hpp
     PreallocatedQueue.h
     RC4Engine.h
