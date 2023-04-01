@@ -15,6 +15,7 @@ set(SRC_CRYPTOGRAPHY_FILES
     ${PATH_PREFIX}/Sha1.h
     ${PATH_PREFIX}/WowCrypt.cpp
     ${PATH_PREFIX}/WowCrypt.hpp
+    ${PATH_PREFIX}/RC4Engine.h
 )
 
 source_group(Cryptography FILES ${SRC_CRYPTOGRAPHY_FILES})

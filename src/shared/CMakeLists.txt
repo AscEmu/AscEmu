@@ -45,7 +45,6 @@ set(headers
     LocationVector.h
     PerformanceCounter.hpp
     PreallocatedQueue.h
-    RC4Engine.h
     SysInfo.hpp
     WorldPacket.h
     WoWGuid.h

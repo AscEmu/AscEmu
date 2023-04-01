@@ -26,7 +26,7 @@
 #include "Network/Socket.h"
 #include "Cryptography/LogonCommDefines.h"
 #include <Logging/Log.hpp>
-#include <RC4Engine.h>
+#include <Cryptography/RC4Engine.h>
 
 class LogonCommClientSocket : public Socket
 {
