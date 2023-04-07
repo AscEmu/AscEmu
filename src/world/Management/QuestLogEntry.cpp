@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 
-#include "Log.hpp"
+#include "Logging/Log.hpp"
 #include "QuestLogEntry.hpp"
 #include "Server/WorldSession.h"
 #include "Server/MainServerDefines.h"

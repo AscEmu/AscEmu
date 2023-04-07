@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/MovementDefines.h"
 #include "Movement/MovementGenerator.h"
 #include "LocationVector.h"
-#include "Util.hpp"
+#include "Utilities/Util.hpp"
 
 class PathGenerator;
 class Unit;

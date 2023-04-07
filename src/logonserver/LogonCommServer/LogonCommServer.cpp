@@ -18,18 +18,18 @@
  */
 
 #include "LogonCommServer.h"
-#include "LogonCommDefines.h"
+#include "Cryptography/LogonCommDefines.h"
 
 #include <Common.hpp>
-#include <Log.hpp>
+#include <Logging/Log.hpp>
 #include <Logging/Logger.hpp>
 #include <Realm/RealmManager.hpp>
 #include <Server/Master.hpp>
 #include <Network/Socket.h>
 #include <WorldPacket.h>
 #include <Server/AccountMgr.h>
-#include <Auth/Sha1.h>
-#include <Util/Strings.hpp>
+#include <Cryptography/Sha1.h>
+#include <Utilities/Strings.hpp>
 #include <Server/IpBanMgr.h>
 
 LogonCommServerSocket::LogonCommServerSocket(SOCKET fd) : Socket(fd, 65536, 524288)

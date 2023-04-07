@@ -22,7 +22,7 @@
 
 #include "Logging/Logger.hpp"
 #include "RegularGrid.h"
-#include "Util.hpp"
+#include "Utilities/Util.hpp"
 #include "GameObjectModel.h"
 #include "MapTree.h"
 #include "ModelInstance.h"

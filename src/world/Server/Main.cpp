@@ -24,7 +24,7 @@
 #ifndef WIN32
 #include <sys/resource.h>
 #endif
-#include "CrashHandler.h"
+#include "Debugging/CrashHandler.h"
 #include "ServerState.h"
 
 #ifndef WIN32

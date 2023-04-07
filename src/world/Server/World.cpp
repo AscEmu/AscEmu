@@ -19,7 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChannelMgr.hpp"
 #include "WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
-#include <CrashHandler.h>
+#include "Debugging/CrashHandler.h"
 #include "Server/MainServerDefines.h"
 //#include "Config/Config.h"
 //#include "Map/MapCell.hpp"

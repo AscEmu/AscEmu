@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Server/Console/BaseConsole.h"
 #include "Server/Console/ConsoleThread.h"
-#include "Log.hpp"
+#include "Logging/Log.hpp"
 
 #include <iostream>
 

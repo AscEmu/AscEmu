@@ -19,7 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/Spec.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Objects/Units/Creatures/Pet.h"
-#include "Util/Strings.hpp"
+#include "Utilities/Strings.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Map/Maps/InstanceMap.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"

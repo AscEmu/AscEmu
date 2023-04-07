@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "DB2Stores.h"
-#include "Log.hpp"
+#include "Logging/Log.hpp"
 
 #include "DB2Structures.h"
 #include "../DBC/DBCGlobals.hpp"

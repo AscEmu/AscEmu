@@ -24,24 +24,21 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2008 | WoWGuid.h
 * 2008 | WorldPacket.h
 * 2008 | Threading/ThreadStarter.h
-* 2008 | Threading/ThreadPool.h
-* 2008 | Threading/ThreadPool.cpp
-* 2008 | Threading/Threading.h
-* 2008 | Threading/Threading.h
+* 2008 | Threading/LegacyThreadPool.h
+* 2008 | Threading/LegacyThreadPool.cpp
+* 2008 | Threading/LegacyThreadBase.h
+* 2008 | Threading/LegacyThreading.h
 * 2008 | Threading/Queue.h
 * 2008 | Threading/Mutex.h
 * 2008 | Threading/Mutex.cpp
 * 2008 | Threading/LockedQueue.h
 * 2008 | Threading/ConditionVariable.h
 * 2008 | Threading/ConditionVariable.cpp
-* 2008 | Singleton.h
 * 2008 | PreallocatedQueue.h
+* 2008 | LocationVector.cpp
 * 2008 | LocationVector.h
 * 2008 | FindFilesResult.hpp
-* 2008 | FindFiles.hpp
-* 2008 | FindFiles.cpp
 * 2008 | FastQueue.h
-* 2008 | Errors.h
 * 2008 | DynLib.hpp
 * 2008 | DynLib.cpp
 * 2008 | Database/MySQLDatabase.h
@@ -50,19 +47,19 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2008 | Database/CreateInterface.cpp
 * 2008 | CThreads.h
 * 2008 | CThreads.cpp
-* 2008 | CrashHandler.h
-* 2008 | CrashHandler.cpp
+* 2008 | Debugging/Errors.h
+* 2008 | Debugging/CrashHandler.h
+* 2008 | Debugging/CrashHandler.cpp
 * 2008 | Config/Config.h
 * 2008 | Config/Config.cpp
 * 2008 | Common.Legacy.h
-* 2008 | CallBack.h
+* 2008 | Utilities/CallBack.h
 * 2008 | ByteBuffer.h
-* 2008 | AuthCodes.h
-* 2008 | Auth/Sha1.cpp
-* 2008 | Auth/MD5.cpp
-* 2008 | Auth/BigNumber.cpp
-* 2008 | ascemu_getopt.cpp
-* 2007 | RC4Engine.h
+* 2008 | Cryptography/AuthCodes.h
+* 2008 | Cryptography/Sha1.cpp
+* 2008 | Cryptography/MD5.cpp
+* 2008 | Cryptography/BigNumber.cpp
+* 2007 | Cryptography/RC4Engine.h
 * 2007 | Network/SocketWin32.cpp
 * 2007 | Network/SocketOpsWin32.cpp
 * 2007 | Network/SocketOpsLinux.cpp
@@ -84,18 +81,19 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2007 | Network/ListenSocketFreeBSD.h
 * 2007 | Network/CircularBuffer.h
 * 2007 | Network/CircularBuffer.cpp
-* 2007 | Auth/Sha1.h
-* 2007 | Auth/MD5.h
-* 2007 | Auth/BigNumber.h
-* 2007 | ascemu_getopt.h
+* 2007 | Cryptography/Sha1.h
+* 2007 | Cryptography/MD5.h
+* 2007 | Cryptography/BigNumber.h
 * 2005 | SysInfo.hpp
 * 2005 | SysInfo.cpp
 * 2005 | PerformanceCounter.hpp
 * 2005 | PerformanceCounter.cpp
 * 2005 | Database/MySQLDatabase.cpp
 * 2005 | CircularQueue.h
-* 1996 | crc32.h
-* 1996 | crc32.cpp
+* 2005 | StackWalker.h
+* 2005 | StackWalker.cpp
+* 1996 | Cryptography/crc32.h
+* 1996 | Cryptography/crc32.cpp
 
 ### Ready to remove
 
@@ -138,8 +136,6 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2001 | MapFile.cpp
 * 2001 | StackTrace.h
 * 2001 | StackTrace.cpp
-* 2005 | StackWalker.h
-* 2005 | StackWalker.cpp
 
 ### Removed on 29 Jan 2021
 * 2001 | TextFile.h
@@ -160,19 +156,42 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 ### Removed on 07 Jun 2022
 * 2014 | AscemuServerDefines.hpp
 
+### Removed on 08 Jan 2023
+* 2008 | ascemu_getopt.cpp
+* 2007 | ascemu_getopt.h
+* 2008 | Singleton.h
+* 2008 | FindFiles.hpp
+* 2008 | FindFiles.cpp
+
 ### New files
 * 2015 | Exceptions/PlayerExceptions.hpp
 * 2015 | Exceptions/Exceptions.hpp
 * 2017 | Common.hpp
-* 2017 | Log.cpp
-* 2017 | Log.hpp
+* 2017 | Logging/Log.cpp
+* 2017 | Logging/Log.hpp
 * 2017 | Logging/LoggerDefines.hpp
-* 2017 | Util.cpp
-* 2017 | Util.hpp
-* 2017 | Auth/WowCrypt.cpp
-* 2017 | Auth/WowCrypt.hpp
+* 2017 | Utilities/Util.cpp
+* 2017 | Utilities/Util.hpp
+* 2017 | Cryptography/WowCrypt.cpp
+* 2017 | Cryptography/WowCrypt.hpp
 * 2020 | Database/Field.hpp
 * 2020 | Database/DatabaseUpdater.cpp
 * 2020 | Database/DatabaseUpdater.hpp
 * 2021 | Database/DatabaseCommon.hpp
 * 2022 | AEVersion.hpp
+* 2023 | Cryptography/LogonCommDefines.h
+* 2023 | ByteConverter.h
+* 2023 | Logging/Logger.cpp
+* 2023 | Logging/Logger.hpp
+* 2023 | Logging/MessageType.hpp
+* 2023 | Logging/Severity.hpp
+* 2023 | Threading/AEThread.cpp
+* 2023 | Threading/AEThread.h
+* 2023 | Threading/AEThreadPool.cpp
+* 2023 | Threading/AEThreadPool.h
+* 2023 | Threading/ThreadState.h
+* 2023 | Utilities/Strings.cpp
+* 2023 | Utilities/Strings.hpp
+* 2023 | FactoryHolder.h
+* 2023 | ObjectRegistry.h
+* 2023 | pchShared.hpp

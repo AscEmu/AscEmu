@@ -23,26 +23,26 @@ class WorldPacketLog
 
     Mutex mPacketLogMutex;
 
-    private:
-        WorldPacketLog() = default;
-        ~WorldPacketLog() = default;
+private:
+    WorldPacketLog() = default;
+    ~WorldPacketLog() = default;
 
-    public:
-        static WorldPacketLog& getInstance();
-        void initialize();
-        void finalize();
+public:
+    static WorldPacketLog& getInstance();
+    void initialize();
+    void finalize();
 
-        WorldPacketLog(WorldPacketLog&&) = delete;
-        WorldPacketLog(WorldPacketLog const&) = delete;
-        WorldPacketLog& operator=(WorldPacketLog&&) = delete;
-        WorldPacketLog& operator=(WorldPacketLog const&) = delete;
+    WorldPacketLog(WorldPacketLog&&) = delete;
+    WorldPacketLog(WorldPacketLog const&) = delete;
+    WorldPacketLog& operator=(WorldPacketLog&&) = delete;
+    WorldPacketLog& operator=(WorldPacketLog const&) = delete;
 
-        void initWorldPacketLog(bool enableLog);
-        void enablePacketLog();
-        void disablePacketLog();
+    void initWorldPacketLog(bool enableLog);
+    void enablePacketLog();
+    void disablePacketLog();
 
-        // WorldSocket.cpp
-        void logPacket(uint32_t len, uint16_t opcode, const uint8_t* data, uint8_t direction, uint32_t accountid = 0);
+    // WorldSocket.cpp
+    void logPacket(uint32_t len, uint16_t opcode, const uint8_t* data, uint8_t direction, uint32_t accountid = 0);
 };
 #define sWorldPacketLog WorldPacketLog::getInstance()
 

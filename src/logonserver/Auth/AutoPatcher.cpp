@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <Auth/MD5.h>
+#include <Cryptography/MD5.h>
 #include "Auth/AutoPatcher.h"
 
 #ifndef WIN32

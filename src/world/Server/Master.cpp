@@ -33,13 +33,17 @@
 #include "Chat/ChannelMgr.hpp"
 #include "Management/AddonMgr.h"
 #include "Management/AuctionMgr.h"
-#include "Util.hpp"
+#include "Utilities/Util.hpp"
 #include "Database/DatabaseUpdater.hpp"
 #include "Packets/SmsgServerMessage.h"
 #include "OpcodeTable.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Script/ScriptMgr.h"
 #include "Spell/SpellMgr.hpp"
+
+// DB version
+static const char* REQUIRED_CHAR_DB_VERSION = "20220415-00_account_instance_times";
+static const char* REQUIRED_WORLD_DB_VERSION = "20230301-01_creature_spawns";
 
 volatile bool Master::m_stopEvent = false;
 
@@ -53,10 +57,6 @@ SERVER_DECL SessionLog* Anticheat_Log;
 SERVER_DECL SessionLog* Player_Log;
 
 ConfigMgr Config;
-
-// DB version
-static const char* REQUIRED_CHAR_DB_VERSION = "20220415-00_account_instance_times";
-static const char* REQUIRED_WORLD_DB_VERSION = "20230301-01_creature_spawns";
 
 void Master::_OnSignal(int s)
 {

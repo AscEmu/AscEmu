@@ -23,7 +23,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgDefenseMessage.h"
 #include "Map/Area/AreaManagementGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
-#include "CrashHandler.h"
+#include "Debugging/CrashHandler.h"
 #include "Objects/Transporter.hpp"
 #include <ctime>
 
