@@ -38,7 +38,7 @@ public:
 
     void OnCreaturePushToWorld(Creature* /*pCreature*/) override;
     void OnGameObjectPushToWorld(GameObject* /*pGameObject*/) override;
-    void OnEncounterStateChange(uint32_t /*entry*/, uint32_t /*state*/ ) override;
+    void OnEncounterStateChange(uint32_t /*entry*/, uint32_t /*state*/) override;
     void OnSpawnGroupKilled(uint32_t /*groupId*/) override;
 
 protected:

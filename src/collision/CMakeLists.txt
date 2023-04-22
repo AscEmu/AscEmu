@@ -1,19 +1,19 @@
 # Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 
-# set up our project name
+# set up our project name.
 project(collision CXX)
 
-file(GLOB sources_Management Management/*.cpp Management/*.h)
-file(GLOB sources_Maps Maps/*.cpp Maps/*.h)
-file(GLOB sources_Models Models/*.cpp Models/*.h)
-file(GLOB sources_localdir *.cpp *.h)
+file(GLOB SRC_MANAGEMENT Management/*.cpp Management/*.h)
+file(GLOB SRC_MAPS Maps/*.cpp Maps/*.h)
+file(GLOB SRC_MODELS Models/*.cpp Models/*.h)
+file(GLOB SRC_LOCAL_DIR *.cpp *.h)
 
-set(COLLISION_STAT_SRCS
-    ${COLLISION_STAT_SRCS}
-    ${sources_Management}
-    ${sources_Maps}
-    ${sources_Models}
-    ${sources_localdir}
+set(COLLISION_SRCS
+    ${COLLISION_SRCS}
+    ${SRC_MANAGEMENT}
+    ${SRC_MAPS}
+    ${SRC_MODELS}
+    ${SRC_LOCAL_DIR}
 )
 
 include_directories(
@@ -30,7 +30,7 @@ include_directories(
     ${ZLIB_INCLUDE_DIRS}
 )
 
-add_library(collision STATIC ${COLLISION_STAT_SRCS})
+add_library(${PROJECT_NAME} STATIC ${COLLISION_SRCS})
 target_link_libraries(collision g3dlite shared)
 
 # generate precompiled header.

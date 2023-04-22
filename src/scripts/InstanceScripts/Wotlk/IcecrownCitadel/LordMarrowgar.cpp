@@ -600,7 +600,7 @@ bool ColdflameDamage::CanBeAppliedOn(Unit* target, Spell* spell)
     if (target->hasAurasWithId(SPELL_IMPALED))
         return false;
 
-    if (target->GetDistance2dSq(spell->getUnitCaster()) > static_cast<float>(spell->getSpellInfo()->getEffectRadiusIndex(EFF_INDEX_0)) )
+    if (target->GetDistance2dSq(spell->getUnitCaster()) > static_cast<float>(spell->getSpellInfo()->getEffectRadiusIndex(EFF_INDEX_0)))
         return false;
 
     return true;

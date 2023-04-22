@@ -7,6 +7,7 @@
  */
 
 #include "Network.h"
+
 #ifdef CONFIG_USE_KQUEUE
 
 void SocketMgr::AddSocket(Socket* s)

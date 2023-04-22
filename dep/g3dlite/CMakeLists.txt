@@ -1,9 +1,9 @@
 # Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 
-# set up our project name
+# set up our project name.
 project(g3dlite CXX)
 
-set(sources
+set(SRC_G3DLITE
     AABox.cpp
     Any.cpp
     AnyTableReader.cpp
@@ -54,11 +54,9 @@ include_directories(
     ${ZLIB_INCLUDE_DIRS}
 )
 
-add_library(${PROJECT_NAME} STATIC ${sources})
+add_library(${PROJECT_NAME} STATIC ${SRC_G3DLITE})
 
 target_link_libraries(${PROJECT_NAME} 
     ${ZLIB_LIBRARIES}
     ${CMAKE_THREAD_LIBS_INIT}
 )
-
-unset(sources)

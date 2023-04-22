@@ -1,4 +1,5 @@
 # Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
+include_guard(GLOBAL)
 
 if (NOT USE_PCH)
     set(ASCEMU_COMMENT_PCH //)

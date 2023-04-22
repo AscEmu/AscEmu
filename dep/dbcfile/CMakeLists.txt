@@ -1,9 +1,9 @@
 # Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 
-# set up our project name
+# set up our project name.
 project(dbcfile CXX)
 
-set(sources
+set(SRC_DBCFILE
     dbcfile.cpp
 )
 
@@ -13,7 +13,5 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_library(${PROJECT_NAME} STATIC ${sources})
+add_library(${PROJECT_NAME} STATIC ${SRC_DBCFILE})
 target_link_libraries( ${PROJECT_NAME} loadlib libmpq)
-
-unset(sources)

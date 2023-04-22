@@ -7,6 +7,7 @@
  */
 
 #include "Network.h"
+
 #ifdef CONFIG_USE_EPOLL
 
 void Socket::PostEvent(uint32 events)

@@ -26,6 +26,3 @@ elseif ((CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFr
 else ()
     list(APPEND SRC_NETWORK_FILES ${sources} ${PATH_PREFIX}/SocketMgrLinux.cpp ${PATH_PREFIX}/SocketLinux.cpp ${PATH_PREFIX}/SocketOpsLinux.cpp)
 endif ()
-
-source_group(Network FILES ${SRC_NETWORK_FILES})
-unset(PATH_PREFIX)

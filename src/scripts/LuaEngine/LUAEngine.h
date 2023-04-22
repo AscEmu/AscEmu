@@ -401,7 +401,7 @@ public:
     }
         /*int getPendingThread(lua_State * threadtosearch) {
             set<lua_State*>::iterator itr = m_pendingThreads.find(threadtosearch);
-            return (itr == m_pendingThreads.end() )? nullptr : (*itr);
+            return (itr == m_pendingThreads.end())? nullptr : (*itr);
             }*/
     LuaGossip* getUnitGossipInterface(uint32_t id)
     {

@@ -8,6 +8,7 @@
 
 #include "CommonTypes.hpp"
 #include "Network.h"
+
 #ifdef CONFIG_USE_IOCP
 
 void Socket::WriteCallback()

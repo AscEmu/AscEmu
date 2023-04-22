@@ -41,7 +41,7 @@ public:
                     textid = 20005;
                 else
                 {
-                    //pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Make good use of this knowledge." );
+                    //pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Make good use of this knowledge.");
                     textid = 20006;
                     dynamic_cast<Creature*>(pObject)->castSpell(plr, 39099, true);
                     plr->modCoinage(-600);
@@ -107,7 +107,7 @@ public:
                     textid = 20005;
                 else
                 {
-                    //pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Make good use of this knowledge." );
+                    //pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Make good use of this knowledge.");
                     textid = 20006;
                     dynamic_cast<Creature*>(pObject)->castSpell(plr, 39097, true);
                     plr->modCoinage(-600);
@@ -170,7 +170,7 @@ public:
                     textid = 20005;
                 else
                 {
-                    //pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Make good use of this knowledge." );
+                    //pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Make good use of this knowledge.");
                     textid = 20006;
                     dynamic_cast<Creature*>(pObject)->castSpell(plr, 39098, true);
                     plr->modCoinage(-600);

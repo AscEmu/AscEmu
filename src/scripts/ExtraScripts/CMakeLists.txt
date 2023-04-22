@@ -1,23 +1,24 @@
 # Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 
-if (NOT BUILD_EXTRASCRIPTS )
+if (NOT BUILD_EXTRASCRIPTS)
     message("\tExtraScripts was skipped because BUILD_EXTRASCRIPTS is unchecked.")
     return()
-endif (NOT BUILD_EXTRASCRIPTS)
+endif ()
 
-# set up our project name
+# set up our project name.
 project(ExtraScripts CXX)
 
-# sources - contains source files for our library.
-set(sources
-    Setup.cpp
-    NeutralGuards.cpp
-    # required for linker
+file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
+
+# required for linker.
+set(SRC_EXTRASCRIPTS
     ../../world/Server/ServerState.cpp
 )
 
-set(headers
-    Setup.h
+set(EXTRASCRIPTS_SRCS
+    ${EXTRASCRIPTS_SRCS}
+    ${SRC_EXTRASCRIPTS}
+    ${SRC_LOCAL_DIR}
 )
 
 include_directories(
@@ -34,7 +35,8 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${ZLIB_INCLUDE_DIRS}
 )
-add_library(${PROJECT_NAME} SHARED ${sources} ${headers})
+
+add_library(${PROJECT_NAME} SHARED ${EXTRASCRIPTS_SRCS})
 
 target_link_libraries(${PROJECT_NAME} world)
 
@@ -45,6 +47,3 @@ if (USE_PCH)
     message(STATUS "Generate PCH for ${PROJECT_NAME}")
     target_precompile_headers(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchExtraScripts.hpp)
 endif ()
-
-unset(sources)
-unset(headers)

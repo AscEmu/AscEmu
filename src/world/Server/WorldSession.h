@@ -965,11 +965,11 @@ protected:
 #endif
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        // VoiceChatHandler.Legacy.cpp
+        // VoiceChatHandler.cpp
         // Zyres: this feature will be not implemented in the near future!
-        //void HandleEnableMicrophoneOpcode(WorldPacket& recvPacket);
-        //void HandleVoiceChatQueryOpcode(WorldPacket& recvPacket);
-        //void HandleChannelVoiceQueryOpcode(WorldPacket& recvPacket);
+        //void handleEnableMicrophoneOpcode(WorldPacket& recvPacket);
+        //void handleChannelVoiceQueryOpcode(WorldPacket& recvPacket);
+        //void handleVoiceChatQueryOpcode(WorldPacket& recvPacket);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // OtherFiles

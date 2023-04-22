@@ -1,4 +1,5 @@
 # Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
+include_guard(GLOBAL)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 20)
