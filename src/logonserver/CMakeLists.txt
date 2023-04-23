@@ -10,6 +10,10 @@ file(GLOB SRC_REALM_FILES Realm/*.cpp Realm/*.h Realm/*.hpp)
 file(GLOB SRC_SERVER_FILES Server/*.cpp Server/*.h Server/*.hpp)
 file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
 
+if (WIN32)
+    set(SRC_LOGON_PROJECT ${SRC_LOGON_PROJECT} ${CMAKE_CURRENT_SOURCE_DIR}/resources.rc)
+endif ()
+
 set(LOGON_SRCS
     ${SRC_AUTH_FILES}
     ${SRC_CONSOLE_FILES}
@@ -46,10 +50,6 @@ if (APPLE)
     target_link_libraries(${PROJECT_NAME} c++)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFreeBSD")
     target_link_libraries(${PROJECT_NAME} c++experimental)
-endif ()
-
-if (WIN32)
-    set(SRC_LOGON_PROJECT ${SRC_LOGON_PROJECT} ${CMAKE_CURRENT_SOURCE_DIR}/resources.rc)
 endif ()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/LogonConf.hpp.in ${CMAKE_CURRENT_SOURCE_DIR}/LogonConf.hpp)
