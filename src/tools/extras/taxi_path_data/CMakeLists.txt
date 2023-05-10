@@ -1,9 +1,9 @@
 # Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 
-file(GLOB taxi_path_data_sources *.cpp *.h)
+file(GLOB TAXI_PATH_DATA_SOURCES *.cpp *.h)
 
-set(taxi_path_SRCS
-    ${taxi_path_data_sources}
+set(SRC_TAXI_PATH_DATA
+    ${TAXI_PATH_DATA_SOURCES}
 )
 
 if (NOT WIN32 AND NOT IS_64BIT)
@@ -14,6 +14,6 @@ include_directories(
     ${LOADLIB_PATH}
 )
 
-add_executable(taxi_path_data ${taxi_path_SRCS})
+add_executable(taxi_path_data ${SRC_TAXI_PATH_DATA})
 target_link_libraries(taxi_path_data ${ZLIB_LIBRARIES})
 install(TARGETS taxi_path_data RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})

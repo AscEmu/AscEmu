@@ -1,9 +1,9 @@
 # Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 
-# set up our project name
+# set up our project name.
 project(bzip2 C)
 
-set(sources
+set(SRC_BZIP2
     blocksort.c
     bzlib.c
     compress.c
@@ -14,9 +14,7 @@ set(sources
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-add_library(${PROJECT_NAME} STATIC ${sources})
+add_library(${PROJECT_NAME} STATIC ${SRC_BZIP2})
 target_link_libraries(${PROJECT_NAME})
 set(BZIP2_LIBRARIES ${PROJECT_NAME} CACHE INTERNAL "Bzip2 libraries." FORCE)
 set(BZIP2_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "Bzip2 include dirs." FORCE)
-
-unset(sources)

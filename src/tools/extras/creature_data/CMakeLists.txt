@@ -1,9 +1,9 @@
 # Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 
-file(GLOB creature_data_sources *.cpp *.h)
+file(GLOB CREATURE_DATA_SOURCES *.cpp *.h)
 
-set(creature_SRCS
-    ${creature_data_sources}
+set(SRC_CREATURE_DATA
+    ${CREATURE_DATA_SOURCES}
 )
 
 if (NOT WIN32 AND NOT IS_64BIT)
@@ -17,6 +17,6 @@ include_directories(
     ${LOADLIB_PATH}
 )
 
-add_executable(creature_data ${creature_SRCS})
+add_executable(creature_data ${SRC_CREATURE_DATA})
 target_link_libraries(creature_data dbcfile ${ZLIB_LIBRARIES})
 install(TARGETS creature_data RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})

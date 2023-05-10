@@ -84,6 +84,8 @@
 
 #include "StackWalker.h"
 
+#if defined(_MSC_VER) // AscEmu changes
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <tchar.h>
@@ -1538,3 +1540,5 @@ void StackWalker::OnOutput(LPCSTR buffer)
 {
   OutputDebugStringA(buffer);
 }
+
+#endif // AscEmu changes

@@ -55,8 +55,8 @@ public:
     void HookGenerateLoot(Player* plr, Object* pOCorpse) override;
     void HookOnUnitKill(Player* plr, Unit* pVictim) override;
     void HookOnUnitDied(Unit* victim) override;
-    bool HookSlowLockOpen(GameObject* go, Player* player, Spell* spell ) override;
-    bool HookQuickLockOpen(GameObject* go, Player* player, Spell* spell ) override;
+    bool HookSlowLockOpen(GameObject* go, Player* player, Spell* spell) override;
+    bool HookQuickLockOpen(GameObject* go, Player* player, Spell* spell) override;
     void HookOnPlayerDeath(Player* plr) override;
     void HookOnMount(Player* plr) override;
     bool HookHandleRepop(Player* plr) override;

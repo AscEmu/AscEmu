@@ -1,4 +1,5 @@
 # Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
+include_guard(GLOBAL)
 
 # mark variables as advanced to not get them in gui
 mark_as_advanced(

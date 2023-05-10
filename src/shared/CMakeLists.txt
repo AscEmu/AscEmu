@@ -1,21 +1,25 @@
 # Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 
-# set up our project name
+# set up our project name.
 project(shared CXX)
 
-include(Cryptography/CMakeLists.txt)
-include(Config/CMakeLists.txt)
-include(Database/CMakeLists.txt)
-include(Debugging/CMakeLists.txt)
-include(Exceptions/CMakeLists.txt)
-include(Logging/CMakeLists.txt)
-include(Network/CMakeLists.txt)
-include(Threading/CMakeLists.txt)
-include(Utilities/CMakeLists.txt)
+file(GLOB SRC_CONFIG_FILES Config/*.cpp Config/*.h Config/*.hpp)
+file(GLOB SRC_CRYPTOGRAPHY_FILES Cryptography/*.cpp Cryptography/*.h Cryptography/*.hpp)
+file(GLOB SRC_DATABASE_FILES Database/*.cpp Database/*.h Database/*.hpp)
+file(GLOB SRC_DEBUGGING_FILES Debugging/*.cpp Debugging/*.h Debugging/*.hpp)
+file(GLOB SRC_EXCEPTIONS_FILES Exceptions/*.cpp Exceptions/*.h Exceptions/*.hpp)
+file(GLOB SRC_LOGGING_FILES Logging/*.cpp Logging/*.h Logging/*.hpp)
 
-set(sources
-    ${SRC_CRYPTOGRAPHY_FILES}
+include(Network/CMakeLists.txt) # SCH: coming soon
+
+file(GLOB SRC_THREADING_FILES Threading/*.cpp Threading/*.h Threading/*.hpp)
+file(GLOB SRC_UTILITIES_FILES Utilities/*.cpp Utilities/*.h Utilities/*.hpp)
+file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
+
+set(SHARED_SRCS
+    ${SHARED_SRCS}
     ${SRC_CONFIG_FILES}
+    ${SRC_CRYPTOGRAPHY_FILES}
     ${SRC_DATABASE_FILES}
     ${SRC_DEBUGGING_FILES}
     ${SRC_EXCEPTIONS_FILES}
@@ -23,34 +27,7 @@ set(sources
     ${SRC_NETWORK_FILES}
     ${SRC_THREADING_FILES}
     ${SRC_UTILITIES_FILES}
-
-    CThreads.cpp
-    DynLib.cpp
-    LocationVector.cpp
-    PerformanceCounter.cpp
-    SysInfo.cpp
-)
-
-set(headers
-    ByteBuffer.h
-    ByteConverter.h
-    CircularQueue.h
-    Common.Legacy.h
-    CommonDefines.hpp
-    CommonHelpers.hpp
-    CommonTypes.hpp
-    CThreads.h
-    DynLib.hpp
-    FastQueue.h
-    LocationVector.h
-    PerformanceCounter.hpp
-    PreallocatedQueue.h
-    SysInfo.hpp
-    WorldPacket.h
-    WoWGuid.h
-    Common.hpp
-    FactoryHolder.h
-    ObjectRegistry.h
+    ${SRC_LOCAL_DIR}
 )
 
 include_directories(
@@ -61,7 +38,18 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/dep/utf8cpp
 )
 
-add_library(${PROJECT_NAME} STATIC ${sources} ${headers})
+# source group.
+source_group(Config FILES ${SRC_CONFIG_FILES})
+source_group(Cryptography FILES ${SRC_CRYPTOGRAPHY_FILES})
+source_group(Database FILES ${SRC_DATABASE_FILES})
+source_group(Debugging FILES ${SRC_DEBUGGING_FILES})
+source_group(Exceptions FILES ${SRC_EXCEPTIONS_FILES})
+source_group(Logging FILES ${SRC_LOGGING_FILES})
+source_group(Network FILES ${SRC_NETWORK_FILES})
+source_group(Threading FILES ${SRC_THREADING_FILES})
+source_group(Utilities FILES ${SRC_UTILITIES_FILES})
+
+add_library(${PROJECT_NAME} STATIC ${SHARED_SRCS})
 target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${MYSQL_LIBRARY} ${OPENSSL_LIBRARIES} ${EXTRA_LIBS})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Common.hpp.in ${CMAKE_CURRENT_SOURCE_DIR}/Common.hpp)
@@ -78,6 +66,3 @@ if (USE_PCH)
     message(STATUS "Generate PCH for ${PROJECT_NAME}")
     target_precompile_headers(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchShared.hpp)
 endif ()
-
-unset(sources)
-unset(headers)

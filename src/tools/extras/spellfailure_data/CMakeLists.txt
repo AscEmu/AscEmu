@@ -1,11 +1,11 @@
 # Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 
-file(GLOB spellfailure_data_sources *.cpp)
+file(GLOB SPELLFAILURE_DATA_SOURCES *.cpp)
 
-set(spellfailure_SRCS
-    ${spellfailure_data_sources}
+set(SRC_SPELLFAILURE_DATA
+    ${SPELLFAILURE_DATA_SOURCES}
 )
 
-add_executable(spellfailure_data ${spellfailure_SRCS})
+add_executable(spellfailure_data ${SRC_SPELLFAILURE_DATA})
 target_link_libraries(spellfailure_data ${ZLIB_LIBRARIES})
 install(TARGETS spellfailure_data RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})

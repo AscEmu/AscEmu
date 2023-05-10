@@ -1,4 +1,5 @@
 # Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
+include_guard(GLOBAL)
 
 # get architecture type and set architecture identifier
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)

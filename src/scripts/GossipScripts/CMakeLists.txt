@@ -1,26 +1,24 @@
 # Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 
-if (NOT BUILD_GOSSIPSCRIPTS )
+if (NOT BUILD_GOSSIPSCRIPTS)
     message("\tGossipScripts was skipped because BUILD_GOSSIPSCRIPTS is unchecked.")
     return()
-endif (NOT BUILD_GOSSIPSCRIPTS)
+endif ()
 
-# set up our project name
+# set up our project name.
 project(GossipScripts CXX)
 
-# sources - contains source files for our library.
-set(sources
-    Gossip_Dalaran.cpp
-    Gossip_Innkeepers.cpp
-    Gossip_Trainer.cpp
-    Gossip_Moonglade.cpp
-    Setup.cpp
-    # required for linker
+file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
+
+# required for linker.
+set(SRC_GOSSIPSCRIPTS
     ../../world/Server/ServerState.cpp
 )
 
-set(headers
-   Setup.h
+set(GOSSIPSCRIPTS_SRCS
+    ${GOSSIPSCRIPTS_SRCS}
+    ${SRC_GOSSIPSCRIPTS}
+    ${SRC_LOCAL_DIR}
 )
 
 include_directories(
@@ -37,7 +35,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${ZLIB_INCLUDE_DIRS}
 )
-add_library(${PROJECT_NAME} SHARED ${sources} ${headers})
+add_library(${PROJECT_NAME} SHARED ${GOSSIPSCRIPTS_SRCS})
 
 target_link_libraries(${PROJECT_NAME} world)
 
@@ -48,6 +46,3 @@ if (USE_PCH)
     message(STATUS "Generate PCH for ${PROJECT_NAME}")
     target_precompile_headers(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchGossipScripts.hpp)
 endif ()
-
-unset(sources)
-unset(headers)

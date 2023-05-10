@@ -9,6 +9,7 @@
 
 #ifndef _LISTENSOCKET_H
 #define _LISTENSOCKET_H
+
 #ifdef CONFIG_USE_EPOLL
 
 #include "SocketDefines.h"
@@ -16,7 +17,6 @@
 
 class ListenSocketBase
 {
-
     public:
         virtual ~ListenSocketBase() {}
         virtual void OnAccept() = 0;

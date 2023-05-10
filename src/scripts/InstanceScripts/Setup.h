@@ -49,7 +49,7 @@ void SetupMagistersTerrace(ScriptMgr* mgr);
 void SetupManaTombs(ScriptMgr* mgr);
 void SetupOldHillsbradFoothills(ScriptMgr* mgr);
 void SetupSethekkHalls(ScriptMgr* mgr);
-void SetupShadowLabyrinth(ScriptMgr* mgr);
+// void SetupShadowLabyrinth(ScriptMgr* mgr);
 void SetupTheMechanar(ScriptMgr* mgr);
 void SetupTheShatteredHalls(ScriptMgr* mgr);
 void SetupTheSlavePens(ScriptMgr* mgr);

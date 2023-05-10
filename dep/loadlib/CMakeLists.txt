@@ -1,8 +1,8 @@
 # Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 
-# set up our project name
+# set up our project name.
 project(loadlib CXX)
-file(GLOB loadlib_source *cpp *.h)
+file(GLOB SRC_LOADLIB *cpp *.h)
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/dep/libmpq/libmpq
@@ -10,7 +10,5 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_library(${PROJECT_NAME} STATIC ${loadlib_source})
+add_library(${PROJECT_NAME} STATIC ${SRC_LOADLIB})
 target_link_libraries(${PROJECT_NAME} libmpq)
-
-unset(loadlib_source)

@@ -276,7 +276,6 @@ int __cdecl HandleCrash(PEXCEPTION_POINTERS pExceptPtrs)
         }
         __except(HandleCrash(GetExceptionInformation()), EXCEPTION_CONTINUE_EXECUTION)
         {
-
         }
     }
 
