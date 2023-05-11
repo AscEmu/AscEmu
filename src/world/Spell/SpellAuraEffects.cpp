@@ -4,13 +4,12 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "SpellAuras.h"
-
 #include "Definitions/SpellFamily.hpp"
 #include "Definitions/SpellIsFlags.hpp"
 #include "Definitions/SpellTypes.hpp"
 #include "SpellMgr.hpp"
 #include "Management/ItemInterface.h"
-
+#include "Storage/DBC/DBCStores.h"
 #include "Management/ObjectMgr.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Storage/MySQLDataStore.hpp"

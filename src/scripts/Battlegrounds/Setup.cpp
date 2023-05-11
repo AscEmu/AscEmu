@@ -18,7 +18,6 @@
  */
 
 #include "Setup.h"
-#include "Server/Script/ScriptSetup.h"
 #include "AlteracValley/AlteracValley.h"
 #include "ArathiBasin/ArathiBasin.h"
 #include "CircleOfBlood/CircleOfBlood.h"

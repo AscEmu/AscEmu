@@ -5,11 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <limits>
+#include <vector>
+
 #include "MovementTypedefs.h"
 #include "Debugging/Errors.h"
 #include <G3D/Vector3.h>
-#include <limits>
-#include <vector>
 
 namespace MovementMgr {
 

@@ -16,7 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Setup.h"
+#include "Objects/GameObject.h"
+#include "Server/Script/ScriptMgr.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // The Gifts of Loken

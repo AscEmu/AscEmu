@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Common.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
-#include "Spell/SpellDefines.hpp"
 
 struct WMOAreaTableTripple
 {
@@ -790,24 +789,24 @@ namespace DBC::Structures
         uint32_t zone;                                              // 2 if 0 then it's zone, else it's zone id of this area
         uint32_t explore_flag;                                      // 3, main index
         uint32_t flags;                                             // 4, unknown value but 312 for all cities
-        uint32 SoundProviderPref;                                   // 5
-        uint32 SoundProviderPrefUnderwater;                         // 6
-        uint32 AmbienceID;                                          // 7
-        uint32 ZoneMusic;                                           // 8
-        uint32 IntroSound;                                          // 9 // 5-9 unused
+        uint32_t SoundProviderPref;                                 // 5
+        uint32_t SoundProviderPrefUnderwater;                       // 6
+        uint32_t AmbienceID;                                        // 7
+        uint32_t ZoneMusic;                                         // 8
+        uint32_t IntroSound;                                        // 9 // 5-9 unused
         int32_t area_level;                                         // 10
         char* area_name;                                            // 11
         uint32_t team;                                              // 12
         uint32_t liquid_type_override[4];                           // 13-16 liquid override by type
         float MinElevation;                                         // 17
         float AmbientMultiplier;                                    // 18 client only?
-        uint32 LightID;                                             // 19
-        uint32 MountFlags;                                          // 20
-        uint32 UwIntroSound;                                        // 21 4.0.0
-        uint32 UwZoneMusic;                                         // 22 4.0.0
-        uint32 UwAmbience;                                          // 23 4.0.0
-        uint32 World_pvp_ID;                                        // 24
-        int32 PvpCombatWorldStateID;                                // 25- worldStateId4
+        uint32_t LightID;                                           // 19
+        uint32_t MountFlags;                                        // 20
+        uint32_t UwIntroSound;                                      // 21 4.0.0
+        uint32_t UwZoneMusic;                                       // 22 4.0.0
+        uint32_t UwAmbience;                                        // 23 4.0.0
+        uint32_t World_pvp_ID;                                      // 24
+        int32_t PvpCombatWorldStateID;                              // 25- worldStateId4
     };
 
     struct AreaTriggerEntry

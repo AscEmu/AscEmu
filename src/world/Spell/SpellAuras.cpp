@@ -4,7 +4,6 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "SpellAuras.h"
-
 #include "Definitions/SpellCastTargetFlags.hpp"
 #include "Definitions/SpellFamily.hpp"
 #include "Definitions/SpellIsFlags.hpp"
@@ -12,7 +11,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellTypes.hpp"
 #include "SpellMgr.hpp"
 #include "Definitions/SpellEffects.hpp"
-
 #include "Server/Script/ScriptMgr.h"
 
 extern pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS];

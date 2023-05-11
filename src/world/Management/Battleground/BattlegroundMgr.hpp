@@ -22,7 +22,6 @@ typedef Battleground* (*ArenaFactoryMethod)(BattlegroundMap* mgr, uint32_t iid, 
 
 class SERVER_DECL BattlegroundManager : public EventableObject
 {
-
     BattlegroundManager() = default;
     ~BattlegroundManager() = default;
 

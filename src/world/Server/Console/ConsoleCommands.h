@@ -5,8 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Server/Console/BaseConsole.h"
 #include <string>
+
+#include "Server/Console/BaseConsole.h"
 
 bool handleSendChatAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient);
 bool handleBanAccountCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient);

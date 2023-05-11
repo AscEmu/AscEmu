@@ -5,10 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "../shared/ByteConverter.h"
-#include "Common.hpp"
-#include "../DBC/DBCGlobals.hpp"
 #include <cassert>
+
+#include "ByteConverter.h"
+#include "Common.hpp"
+#include "Storage/DBC/DBCGlobals.hpp"
 
 namespace DB2
 {

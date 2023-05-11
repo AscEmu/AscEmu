@@ -20,6 +20,7 @@
  */
 
 #include <cstdint>
+
 #include <Network/Network.h>
 #include <Config/Config.h>
 #include "BaseConsole.h"

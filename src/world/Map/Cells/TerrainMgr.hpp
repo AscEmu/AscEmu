@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Threading/Mutex.h"
 #include <Server/World.h>
-#include <Macros/MapsMacros.hpp>
 #include "Movement/MovementDefines.h"
 
 namespace G3D { class Plane; }

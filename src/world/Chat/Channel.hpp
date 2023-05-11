@@ -5,13 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "CommonTypes.hpp"
-#include "ChannelDefines.hpp"
-
-#include <cstdint>
 #include <map>
 #include <mutex>
 #include <set>
+
+#include "CommonTypes.hpp"
+#include "ChannelDefines.hpp"
 
 class CachedCharacterInfo;
 class Player;

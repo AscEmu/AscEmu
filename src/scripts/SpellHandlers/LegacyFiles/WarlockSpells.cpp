@@ -24,7 +24,6 @@
 #include "Spell/SpellAuras.h"
 #include <Spell/Definitions/PowerType.hpp>
 #include <Objects/Units/Creatures/Pet.h>
-
 #include "Management/ItemInterface.h"
 
 //////////////////////////////////////////////////////////////

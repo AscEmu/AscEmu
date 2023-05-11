@@ -19,13 +19,12 @@
  *
  */
 
-
+#include "Storage/DBC/DBCStores.h"
 #include "Management/QuestLogEntry.hpp"
 #include "MMapFactory.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Objects/DynamicObject.hpp"
-#include "Macros/ScriptMacros.hpp"
 #include "Management/HonorHandler.h"
 #include "Objects/Item.hpp"
 #include "Objects/Container.hpp"
@@ -49,7 +48,6 @@
 #include "Definitions/AuraInterruptFlags.hpp"
 #include "Definitions/ChannelInterruptFlags.hpp"
 #include "Definitions/PreventionType.hpp"
-#include "Definitions/SpellRanged.hpp"
 #include "Definitions/LockTypes.hpp"
 #include "Definitions/SpellIsFlags.hpp"
 #include "Definitions/TeleportEffectCustomFlags.hpp"

@@ -19,7 +19,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Setup.h"
+#include "Map/Maps/WorldMap.hpp"
+#include "Objects/Units/Creatures/AIInterface.h"
+#include "Server/Script/ScriptMgr.h"
+#include "Spell/SpellMgr.hpp"
+#include "Storage/MySQLDataStore.hpp"
 
 class Quest_JourneytoUndercity : public QuestScript
 {

@@ -20,12 +20,12 @@
 
 #include "Server/MainServerDefines.h"
 #include "Server/Master.h"
+#include "Debugging/CrashHandler.h"
+#include "ServerState.h"
 
 #ifndef WIN32
 #include <sys/resource.h>
 #endif
-#include "Debugging/CrashHandler.h"
-#include "ServerState.h"
 
 #ifndef WIN32
 int unix_main(int argc, char** argv)
@@ -45,7 +45,7 @@ int unix_main(int argc, char** argv)
     else
         exit(0);
 
-    return 0;// shouldn't be reached
+    return 0; // shouldn't be reached
 }
 
 #else

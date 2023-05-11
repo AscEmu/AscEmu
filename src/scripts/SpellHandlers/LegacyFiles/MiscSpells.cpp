@@ -25,8 +25,11 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/MapScriptInterface.h"
+#include "Server/Master.h"
 #include "Spell/SpellAuras.h"
+#include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
+#include "Storage/DBC/DBCStores.h"
 
 enum
 {

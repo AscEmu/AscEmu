@@ -4,17 +4,19 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "SpellMgr.hpp"
-
-#include "Definitions/SpellEffectTarget.hpp"
 #include "Spell/Definitions/AuraEffects.hpp"
 #include "Spell/Definitions/SpellDamageType.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Spell/Definitions/SpellFamily.hpp"
-
 #include "Map/Area/AreaStorage.hpp"
 #include "Server/Definitions.h"
+#include "Server/MainServerDefines.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/DBC/DBCStores.h"
+
+#if VERSION_STRING < WotLK
+#include "Definitions/SpellEffectTarget.hpp"
+#endif
 
 bool SpellArea::fitsToRequirements(Player* player, uint32_t newZone, uint32_t newArea) const
 {

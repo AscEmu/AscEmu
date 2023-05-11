@@ -5,20 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "WorldConf.h"
-
-#if VERSION_STRING == Classic
-#include "GameClassic/Storage/DBCStructures.h"
-#elif VERSION_STRING == TBC
-#include "GameTBC/Storage/DBCStructures.h"
-#elif VERSION_STRING == WotLK
-#elif VERSION_STRING == Cata
-#include "GameCata/Storage/DBCStructures.h"
-#elif VERSION_STRING == Mop
-#include "GameMop/Storage/DBCStructures.h"
-#endif
-
 #include <cstdint>
+
+#include "WorldConf.h"
+#include "Storage/DBC/DBCStructures.hpp"
 
 struct DamageProc
 {

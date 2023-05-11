@@ -12,7 +12,6 @@ class WorldSession;
 class ChatCommand
 {
 public:
-
     const char* Name;
 
     char CommandGroup;

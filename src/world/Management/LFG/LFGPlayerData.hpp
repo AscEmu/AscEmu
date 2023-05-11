@@ -5,8 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Management/LFG/LFGGroupData.hpp"
 #include <string>
+
+#include "Management/LFG/LFGGroupData.hpp"
 
 /// Stores all lfg data needed about the player.
 class LfgPlayerData

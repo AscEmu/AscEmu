@@ -5,12 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Chat/ChatDefines.hpp"
-#include "Chat/CommandTableStorage.hpp"
+#include "ChatDefines.hpp"
+#include "ChatCommand.hpp"
 #include "Management/SkillNameMgr.h"
-#include "Objects/Units/Creatures/Creature.h"
-#include "Objects/Units/Players/Player.hpp"
-#include "Objects/Units/Unit.hpp"
+#include "Management/ItemProperties.hpp"
 
 class WorldSession;
 class Player;

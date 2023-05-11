@@ -7,10 +7,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include <G3D/Vector3.h>
 #include "Objects/Transporter.hpp"
 #include "Storage/MySQLDataStore.hpp"
-#include "Macros/ScriptMacros.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Server/Packets/SmsgTransferPending.h"
-#include <Movement/Spline/Spline.h>
+#include "Movement/Spline/Spline.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Server/Definitions.h"
 

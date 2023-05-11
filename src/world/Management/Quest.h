@@ -20,12 +20,12 @@
 
 #pragma once
 
+#include <set>
+#include <string>
+
 #define DEFINE_QUEST_REPEATABLE 1
 #define DEFINE_QUEST_REPEATABLE_DAILY 2
 #define MAX_REQUIRED_QUEST_ITEM 6
-
-#include <set>
-#include <string>
 
 class QuestScript;
 

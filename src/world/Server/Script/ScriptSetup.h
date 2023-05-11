@@ -21,12 +21,9 @@
 #ifndef SCRIPTSETUP_H
 #define SCRIPTSETUP_H
 
-#include "CommonTypes.hpp"
-
 #ifdef SCRIPTLIB
 
 #include <git_version.h>
-
 
 extern "C" SCRIPT_DECL const char* _exp_get_version()
 {

@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "GruulTheDragonKiller.hpp"
 #include "Server/Script/CreatureAIScript.h"
+#include "Raid_GruulsLair.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Boss: Gruul the Dragonkiller

@@ -19,7 +19,6 @@
  *
  */
 
-
 #include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
 #include "Chat/ChatHandler.hpp"

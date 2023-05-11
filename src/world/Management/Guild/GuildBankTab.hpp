@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Macros/GuildMacros.hpp"
 #include "Objects/Item.hpp"
 
-
 class GuildBankTab
 {
     public:

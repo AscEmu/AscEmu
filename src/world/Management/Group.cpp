@@ -18,7 +18,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include "Chat/ChatHandler.hpp"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Server/MainServerDefines.h"

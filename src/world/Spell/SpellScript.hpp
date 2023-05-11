@@ -5,14 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <vector>
+
+#include "CommonTypes.hpp"
 #include "Definitions/AuraRemoveMode.hpp"
 #include "Definitions/ProcFlags.hpp"
 #include "Definitions/SpellFailure.hpp"
-
-#include "CommonTypes.hpp"
-
-#include <math.h>
-#include <vector>
 
 class Aura;
 class Object;

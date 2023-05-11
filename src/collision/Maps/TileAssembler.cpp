@@ -17,17 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <Common.hpp>
-
-#include "TileAssembler.h"
-#include "MapTree.h"
-#include "BoundingIntervalHierarchy.h"
-#include "VMapDefinitions.h"
-
 #include <set>
 #include <iomanip>
 #include <sstream>
 #include <filesystem>
+
+#include <Common.hpp>
+#include "TileAssembler.h"
+#include "MapTree.h"
+#include "BoundingIntervalHierarchy.h"
+#include "VMapDefinitions.h"
 
 using G3D::Vector3;
 using G3D::AABox;

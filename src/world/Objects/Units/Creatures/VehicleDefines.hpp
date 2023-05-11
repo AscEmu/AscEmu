@@ -5,9 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <array>
-#include "Storage/DBC/DBCStructures.hpp"
-
 enum VehicleStatus
 {
     STATUS_NONE                     = 0,

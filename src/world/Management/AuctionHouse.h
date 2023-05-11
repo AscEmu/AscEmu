@@ -5,8 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Storage/DBC/DBCStructures.hpp"
 #include "WorldConf.h"
+#include "Storage/DBC/DBCStructures.hpp"
 #include "Objects/Item.hpp"
 
 namespace AscEmu::Packets

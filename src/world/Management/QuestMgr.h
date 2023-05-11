@@ -21,13 +21,13 @@
 #ifndef QUESTMGR_H
 #define QUESTMGR_H
 
-#include "QuestDefines.hpp"
-#include "CommonTypes.hpp"
-#include "Management/Gossip/GossipMenu.hpp"
-
 #include <vector>
 #include <unordered_map>
 #include <list>
+
+#include "QuestDefines.hpp"
+#include "CommonTypes.hpp"
+#include "Management/Gossip/GossipMenu.hpp"
 
 struct QuestProperties;
 

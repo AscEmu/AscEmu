@@ -5,9 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Storage/DBC/DBCStructures.hpp"
-#include "CommonTypes.hpp"
 #include <mutex>
+#include <vector>
+
+#include "Channel.hpp"
+#include "Storage/DBC/DBCStructures.hpp"
 
 class SERVER_DECL ChannelMgr
 {

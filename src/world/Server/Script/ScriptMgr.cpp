@@ -19,26 +19,26 @@
  *
  */
 
-
-
-#include "WorldConf.h"
-#include "Management/GameEvent.h"
-#include "Objects/Item.hpp"
-#include "Storage/MySQLDataStore.hpp"
-#include <git_version.h>
-
 #include <fstream>
-#include "Map/Management/MapMgr.hpp"
-#include "Spell/SpellAuras.h"
-#include "Spell/SpellMgr.hpp"
-#include "Management/ObjectMgr.h"
+
+#include <git_version.h>
 #include "ScriptMgr.h"
-#include "Map/Maps/MapScriptInterface.h"
 #include "Common.hpp"
 #include "CreatureAIScript.h"
+#include "WorldConf.h"
+#include "Management/GameEvent.h"
+#include "Management/ObjectMgr.h"
 #include "Management/LFG/LFGMgr.hpp"
+#include "Map/Management/MapMgr.hpp"
+#include "Map/Maps/MapScriptInterface.h"
+#include "Objects/Item.hpp"
+#include "Server/MainServerDefines.h"
 #include "Server/Packets/SmsgUpdateInstanceEncounterUnit.h"
+#include "Spell/SpellAuras.h"
+#include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
+#include "Storage/MySQLDataStore.hpp"
+#include "Storage/DBC/DBCStores.h"
 
 using namespace AscEmu::Packets;
 

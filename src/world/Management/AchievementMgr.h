@@ -14,7 +14,6 @@ class QueryBuffer;
 struct AchievementEntry;
 struct AchievementCriteriaEntry;
 
-
 enum AchievementRewardTypes
 {
     ACHIEVEMENT_REWARDTYPE_NONE     = 0,

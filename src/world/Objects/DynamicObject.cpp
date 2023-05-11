@@ -14,7 +14,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Data/WoWDynamicObject.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 
-
 DynamicObject::DynamicObject(uint32_t high, uint32_t low)
 {
     m_objectType |= TYPE_DYNAMICOBJECT;

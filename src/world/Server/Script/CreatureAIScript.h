@@ -7,13 +7,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "CommonTypes.hpp"
 #include "Spell/SpellMgr.hpp"
-#include "Chat/ChatDefines.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "ScriptMgr.h"
 #include "ScriptEvent.hpp"
-#include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/InstanceMap.hpp"
 #include "Movement/WaypointDefines.h"
 

@@ -20,7 +20,6 @@
 #pragma once
 
 #include "CommonTypes.hpp"
-#include <cstdint>
 
 class Player;
 

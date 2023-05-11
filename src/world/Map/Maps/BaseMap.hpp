@@ -5,9 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "DynamicTree.h"
 #include "Map/Cells/TerrainMgr.hpp"
-
 #include "Storage/MySQLStructures.h"
 #include "Storage/DBC/DBCStructures.hpp"
 

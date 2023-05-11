@@ -19,10 +19,9 @@
  *
  */
 
-
+#include "Storage/DBC/DBCStores.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Objects/Container.hpp"
-#include "Exceptions/Exceptions.hpp"
 #include "Objects/Units/Stats.h"
 #include "Management/ArenaTeam.hpp"
 #include "Storage/MySQLDataStore.hpp"
@@ -40,6 +39,7 @@
 #include "Movement/MovementManager.h"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Utilities/Strings.hpp"
+
 #if VERSION_STRING < Cata
 #include "Management/Guild/Guild.hpp"
 #endif

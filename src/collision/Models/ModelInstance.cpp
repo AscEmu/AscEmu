@@ -18,7 +18,6 @@
  */
 
 #include <Common.hpp>
-
 #include "ModelInstance.h"
 #include "WorldModel.h"
 #include "MapTree.h"

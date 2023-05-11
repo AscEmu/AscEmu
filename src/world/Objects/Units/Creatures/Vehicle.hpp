@@ -5,11 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#ifdef FT_VEHICLES
-
 #include "Objects/Transporter.hpp"
 #include "VehicleDefines.hpp"
-#include <array>
+
+#ifdef FT_VEHICLES
 
 class Unit;
 

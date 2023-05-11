@@ -7,10 +7,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Objects/ObjectDefines.hpp"
 #include "Objects/Object.hpp"
+#include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Units/Creatures/Creature.h"
-
 #include "Map/Cells/MapCell.hpp"
-#include "Map/Maps/WorldMap.hpp"
+#include "WorldMap.hpp"
 
 class GameObject;
 class Creature;

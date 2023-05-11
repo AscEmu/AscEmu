@@ -5,8 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <WorldConf.h>
 #include <stddef.h>
+
+#include <WorldConf.h>
 
 #define getOffsetForStructuredField(s,m) static_cast<uint32_t>(offsetof(s,m) / 4)
 

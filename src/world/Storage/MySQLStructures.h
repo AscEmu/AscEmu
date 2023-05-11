@@ -5,15 +5,14 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <cstdint>
+#include <string>
+
 #include "Macros/CreatureMacros.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Map/SpawnGroups.hpp"
 #include "Objects/ObjectDefines.hpp"
-#include <cstdint>
-#include <string>
 #include "LocationVector.h"
-#include <G3D/Box.h>
-#include <G3D/CoordinateFrame.h>
 #include <G3D/Quat.h>
 
 // related to table areatriggers

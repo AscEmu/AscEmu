@@ -3,7 +3,6 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
 #include "Logging/Log.hpp"
 #include "QuestLogEntry.hpp"
 #include "Server/WorldSession.h"
@@ -11,7 +10,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Database/Database.h"
 #include "Management/ItemInterface.h"
 #include "QuestMgr.h"
-
 
 QuestLogEntry::QuestLogEntry(QuestProperties const* questProperties, Player* player, uint8_t slot) : m_slot(slot), m_questProperties(questProperties), m_player(player)
 {

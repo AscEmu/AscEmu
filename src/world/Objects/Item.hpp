@@ -8,7 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ItemDefines.hpp"
 #include "Management/ItemProperties.hpp"
 #include "Objects/Object.hpp"
-#include "WorldConf.h"
 #include "Management/LootMgr.h"
 #include "Data/WoWItem.hpp"
 #include "Server/UpdateFieldInclude.h"

@@ -5,6 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <array>
+#include <list>
+#include <optional>
+
 #include "CombatHandler.hpp"
 #include "Data/WoWUnit.hpp"
 #include "Management/LootMgr.h"
@@ -28,10 +32,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLStructures.h"
 #include "ThreatHandler.h"
 #include "UnitDefines.hpp"
-
-#include <array>
-#include <list>
-#include <optional>
 
 struct DamageSplitTarget;
 template <class T>

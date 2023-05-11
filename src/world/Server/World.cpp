@@ -3,26 +3,20 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
-
 #include "WorldConf.h"
 #include "Management/AddonMgr.h"
 #include "Management/AuctionMgr.h"
 #include "Management/CalendarMgr.hpp"
-#include "Objects/Item.hpp"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Management/WordFilter.h"
 #include "Management/WeatherMgr.hpp"
 #include "Management/TaxiMgr.h"
 #include "Management/ItemInterface.h"
-#include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
 #include "WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Debugging/CrashHandler.h"
 #include "Server/MainServerDefines.h"
-//#include "Config/Config.h"
-//#include "Map/MapCell.hpp"
 #include "Storage/DayWatcherThread.h"
 #include "BroadcastMgr.h"
 #include "Spell/SpellMgr.hpp"
@@ -34,10 +28,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatHandler.hpp"
 #include "Management/GameEventMgr.h"
 #include "Objects/Units/Creatures/CreatureGroups.h"
+#include "Objects/Units/Creatures/AIInterface.h"
 #include "Movement/WaypointManager.h"
 #include "Packets/SmsgMessageChat.h"
 #include "Map/Management/MapMgr.hpp"
-
+#include "Chat/CommandTableStorage.hpp"
 #include "VMapFactory.h"
 #include "VMapManager2.h"
 

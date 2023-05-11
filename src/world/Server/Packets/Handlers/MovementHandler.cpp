@@ -14,7 +14,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/MainServerDefines.h"
 #include "Server/Warden/SpeedDetector.h"
 #include "Management/ObjectMgr.h"
-#include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/CmsgWorldTeleport.h"
 #include "Server/Packets/SmsgMountspecialAnim.h"
 #include "Server/Packets/MsgMoveTeleportAck.h"

@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "SummonHandler.hpp"
-
+#include "Map/Maps/WorldMap.hpp"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
 
 SummonHandler::SummonHandler()

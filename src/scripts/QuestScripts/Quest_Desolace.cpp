@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Setup.h"
+#include "Management/QuestLogEntry.hpp"
 #include "Server/Script/CreatureAIScript.h"
 
 class Dalinda_Malem : public CreatureAIScript

@@ -5,9 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
 #include <string>
 #include <list>
+
 #include "CommonTypes.hpp"
 
 struct GM_Ticket

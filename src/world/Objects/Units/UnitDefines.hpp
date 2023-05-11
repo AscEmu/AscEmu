@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "CommonTypes.hpp"
 #include "LocationVector.h"
-#include "WorldConf.h"
 
 // Do NOT extend the list, simply replace an unused value
 enum SpellImmunityMask : uint32_t

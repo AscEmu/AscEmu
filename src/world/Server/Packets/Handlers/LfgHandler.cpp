@@ -3,9 +3,8 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
-#include "Management/LFG/LFGMgr.hpp"
-#include "Common.hpp"
+#include "Storage/DBC/DBCStores.h"
+#include "Management/LFG/LFGMgr.hpp" 
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/CmsgSetLfgComment.h"
 #include "Server/Packets/SmsgLfgUpdateSearch.h"

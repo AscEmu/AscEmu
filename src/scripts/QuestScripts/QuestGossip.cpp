@@ -19,7 +19,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Setup.h"
+#include "Management/QuestMgr.h"
+#include "Management/Gossip/GossipDefines.hpp"
+#include "Management/Gossip/GossipScript.hpp"
+#include "Objects/Units/Players/Player.hpp"
+#include "Server/Script/ScriptMgr.h"
+#include "Spell/SpellMgr.hpp"
+#include "Storage/MySQLDataStore.hpp"
 
 enum
 {

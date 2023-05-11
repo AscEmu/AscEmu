@@ -3,11 +3,11 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Storage/DBC/DBCStores.h"
 #include "Server/Packets/CmsgAreatrigger.h"
 #include "Server/WorldSession.h"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Management/Group.h"
-#include "Management/ItemInterface.h"
 #include "Management/QuestMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"

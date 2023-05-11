@@ -18,15 +18,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Management/HonorHandler.h"
 #include "Management/Battleground/Battleground.hpp"
 #include "Management/Arenas.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
-#include <Spell/Definitions/AuraInterruptFlags.hpp>
-
+#include "Spell/Definitions/AuraInterruptFlags.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Server/Packets/SmsgPlaySound.h"

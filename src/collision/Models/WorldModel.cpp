@@ -18,7 +18,6 @@
  */
 
 #include <Common.hpp>
-
 #include "WorldModel.h"
 #include "VMapDefinitions.h"
 #include "MapTree.h"

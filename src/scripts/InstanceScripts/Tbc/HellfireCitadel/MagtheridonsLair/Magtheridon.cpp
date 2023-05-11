@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Magtheridon.hpp"
+#include "Raid_Magtheridons_Lair.hpp"
 #include "Management/Faction.h"
 #include "Server/Script/CreatureAIScript.h"
 

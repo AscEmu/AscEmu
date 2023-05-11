@@ -3,15 +3,8 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
-
 #include "Guild.hpp"
 #include "GuildMgr.hpp"
-
-#if VERSION_STRING >= Cata
-#include "Management/Guild/GuildFinderMgr.hpp"
-#endif
-
 #include "GuildBankEventLog.hpp"
 #include "GuildEventLog.hpp"
 #include "GuildNewsLog.hpp"
@@ -27,6 +20,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Server/Definitions.h"
+
+#if VERSION_STRING >= Cata
+#include "Management/Guild/GuildFinderMgr.hpp"
+#endif
 
 #if VERSION_STRING >= Cata
 #include "Server/Packets/SmsgGuildBankMoneyWithdrawn.h"

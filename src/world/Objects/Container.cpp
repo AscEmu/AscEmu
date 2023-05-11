@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Data/WoWContainer.hpp"
 
-
 Container::Container(uint32_t high, uint32_t low) : Item()
 {
     m_objectType |= TYPE_ITEM | TYPE_CONTAINER;

@@ -19,7 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Setup.h"
+#include "Map/Maps/MapScriptInterface.h"
 #include "Server/Script/CreatureAIScript.h"
 
 class Quest_The_Ring_of_Blood_The_Final_Challenge : public QuestScript

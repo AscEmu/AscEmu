@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "DBCStructures.h"
-#include "../world/Storage/DBC/DBCGlobals.hpp"
+#include "Storage/DBC/DBCGlobals.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "WorldConf.h"
 

@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
+#include "Storage/DBC/DBCStores.h"
 #include "Objects/Object.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Objects/Units/Unit.hpp"

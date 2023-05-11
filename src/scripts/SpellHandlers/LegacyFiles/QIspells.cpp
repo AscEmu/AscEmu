@@ -19,7 +19,6 @@
 
 #include "Setup.h"
 #include "Objects/Units/Creatures/AIInterface.h"
-#include "Objects/Item.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
@@ -27,8 +26,8 @@
 #include "Map/Maps/MapScriptInterface.h"
 #include "Spell/SpellAuras.h"
 #include <Objects/Units/Creatures/Pet.h>
-//#include "Movement/Spline/MoveSpline.h"
 #include "Movement/Spline/MoveSplineInit.h"
+#include "Server/Master.h"
 
 enum
 {

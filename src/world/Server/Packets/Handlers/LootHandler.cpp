@@ -3,7 +3,6 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
 #include "Server/Packets/CmsgLoot.h"
 #include "Server/Packets/SmsgLootMoneyNotify.h"
 #include "Server/Packets/SmsgLootMasterList.h"
@@ -13,16 +12,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgLootMasterGive.h"
 #include "Server/WorldSession.h"
 #include "Objects/GameObject.h"
-#include "Macros/ScriptMacros.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "WoWGuid.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Management/ItemInterface.h"
 #include "Management/ObjectMgr.h"
-#include "Server/Definitions.h"
-#include "Server/Packets/SmsgLootRemoved.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Spell/Definitions/LockTypes.hpp"
 #include "Spell/Spell.Legacy.h"
 
 using namespace AscEmu::Packets;

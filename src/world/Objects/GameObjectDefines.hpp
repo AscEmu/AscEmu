@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "Management/TransporterHandler.h"
+
 enum LootState : uint8_t
 {
     GO_NOT_READY                = 0,

@@ -3,7 +3,9 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-//
+#include <algorithm>
+#include <iterator>
+
 #include "MovementManager.h"
 #include "Objects/Units/Unit.hpp"
 #include "AbstractFollower.h"
@@ -15,10 +17,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 #include "PathGenerator.h"
 #include "WaypointDefines.h"
-#include <algorithm>
-#include <iterator>
-
-
 #include "Map/Management/MapMgr.hpp"
 #include "MovementGenerators/ChaseMovementGenerator.h"
 #include "MovementGenerators/ConfusedMovementGenerator.h"
@@ -32,6 +30,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MovementGenerators/RandomMovementGenerator.h"
 #include "MovementGenerators/SplineChainMovementGenerator.h"
 #include "MovementGenerators/WaypointMovementGenerator.h"
+#include "Objects/Units/Creatures/AIInterface.h"
 
 namespace FactorySelector
 {

@@ -3,13 +3,11 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
 #include "Server/Packets/CmsgClearTradeItem.h"
 #include "Server/Packets/CmsgInitiateTrade.h"
 #include "Server/Packets/SmsgTradeStatus.h"
 #include "Server/Packets/CmsgSetTradeGold.h"
 #include "Server/Packets/CmsgSetTradeItem.h"
-
 #include "Server/MainServerDefines.h"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
@@ -18,7 +16,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Objects/Units/UnitDefines.hpp"
 #include "Map/Management/MapMgr.hpp"
-#include "Management/ObjectMgr.h"
 #include "Objects/Container.hpp"
 #include "Management/ItemInterface.h"
 #include "Spell/SpellMgr.hpp"

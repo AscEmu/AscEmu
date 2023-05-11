@@ -19,7 +19,6 @@
  *
  */
 
-
 #include "Objects/Item.hpp"
 #include "Management/ItemInterface.h"
 #include "Objects/Units/Players/PlayerClasses.hpp"
@@ -27,6 +26,7 @@
 #include "SpellMgr.hpp"
 #include "SpellAuras.h"
 #include "Definitions/ProcFlags.hpp"
+#include "Storage/DBC/DBCStores.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Warrior ProcScripts

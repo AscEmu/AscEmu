@@ -3,14 +3,12 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "WorldPacket.h"
 #include "Server/WorldSession.h"
-#include "Server/Script/ScriptMgr.h"
-#include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Players/Player.hpp"
-#include <list>
-#include <vector>
-#include <utility>
+
+// Cata
+#include "Objects/Units/Creatures/Creature.h"
+#include "Management/ObjectMgr.h"
 
 using namespace AscEmu::Packets;
 

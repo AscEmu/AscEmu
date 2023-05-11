@@ -27,10 +27,11 @@
 #include "Server/WorldSession.h"
 #include "Chat/ChatDefines.hpp"
 #include "WarsongGulchDefinitions.h"
+#include "Map/Maps/BattleGroundMap.hpp"
+#include "Server/Master.h"
 
 WarsongGulch::WarsongGulch(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : Battleground(mgr, id, lgroup, t)
 {
-
     m_zoneId = 3277;
     m_scores[0] = m_scores[1] = 0;
     m_time_left = TIME_LEFT;

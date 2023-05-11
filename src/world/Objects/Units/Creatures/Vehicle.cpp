@@ -3,8 +3,6 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifdef FT_VEHICLES
-
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellAuras.h"
@@ -14,9 +12,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/MovementManager.h"
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Storage/DBC/DBCStructures.hpp"
-#include "Pet.h"
-#include "Macros/ScriptMacros.hpp"
+#include "Storage/DBC/DBCStores.h"
 
+#ifdef FT_VEHICLES
 
 Vehicle::Vehicle(Unit* unit, DBC::Structures::VehicleEntry const* vehInfo, uint32_t creatureEntry) :
     usableSeatNum(0), _owner(unit), _vehicleInfo(vehInfo), _creatureEntry(creatureEntry), _status(STATUS_NONE), _lastShootPos()

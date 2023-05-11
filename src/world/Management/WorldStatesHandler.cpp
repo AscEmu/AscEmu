@@ -18,7 +18,6 @@
  *
  */
 
-
 #include "WorldStatesHandler.h"
 #include "Server/World.h"
 #include "Management/ObjectMgr.h"

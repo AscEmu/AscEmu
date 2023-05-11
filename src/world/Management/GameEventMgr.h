@@ -5,12 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Threading/AEThread.h"
 #include <set>
 #include <map>
 #include <ctime>
 #include <string>
+
 #include "CommonTypes.hpp"
+#include "Threading/AEThread.h"
 
 class GameEvent;
 

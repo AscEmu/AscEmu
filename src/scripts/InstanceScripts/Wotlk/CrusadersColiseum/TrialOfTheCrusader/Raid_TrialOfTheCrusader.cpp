@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Raid_TrialOfTheCrusader.h"
-#include <Objects/Units/Creatures/Pet.h>
 
 class TrialOfTheCrusaderInstanceScript : public InstanceScript
 {

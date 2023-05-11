@@ -3,6 +3,7 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include <random>
 
 #include "Storage/DBC/DBCStores.h"
 #include "Objects/Item.hpp"
@@ -21,7 +22,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Creature.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Management/ObjectMgr.h"
-#include <random>
 
 using namespace AscEmu::Packets;
 

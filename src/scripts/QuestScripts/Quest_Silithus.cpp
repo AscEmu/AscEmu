@@ -18,7 +18,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Setup.h"
+#include "Management/QuestLogEntry.hpp"
+#include "Map/Maps/WorldMap.hpp"
+#include "Objects/Units/Players/Player.hpp"
+#include "Server/Script/ScriptMgr.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // quest #8304 - Dearest Natalia

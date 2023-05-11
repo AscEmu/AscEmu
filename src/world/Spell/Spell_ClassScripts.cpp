@@ -19,7 +19,6 @@
  *
  */
 
-
 #include "Map/Management/MapMgr.hpp"
 #include "Management/Faction.h"
 #include "Spell/SpellMgr.hpp"

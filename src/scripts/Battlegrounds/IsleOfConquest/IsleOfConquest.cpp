@@ -20,6 +20,8 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Management/WorldStates.h"
 #include "Map/Management/MapMgr.hpp"
+#include "Map/Maps/BattleGroundMap.hpp"
+#include "Server/Master.h"
 
 // gameobject faction
 static uint32_t g_gameObjectFactions[IOC_NUM_CONTROL_POINTS] =
@@ -287,7 +289,6 @@ static uint32_t cptogy[IOC_NUM_CONTROL_POINTS] =
     IOC_GY_ALLIANCE_KEEP,
     IOC_GY_HORDE_KEEP
 };
-
 
 IsleOfConquest::IsleOfConquest(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : Battleground(mgr, id, lgroup, t)
 {

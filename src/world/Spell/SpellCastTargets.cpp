@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "SpellCastTargets.hpp"
 #include "Objects/Transporter.hpp"
 #include "Management/ObjectMgr.h"
-#include <Server/WorldSocket.h>
+#include "Server/WorldSocket.h"
 
 void SpellCastTargets::reset()
 {

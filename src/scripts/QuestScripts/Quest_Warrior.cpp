@@ -18,7 +18,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Setup.h"
+#include "Management/QuestLogEntry.hpp"
+#include "Map/Maps/MapScriptInterface.h"
+#include "Movement/Spline/MoveSplineInit.h"
+#include "Movement/Spline/MoveSplineInitArgs.h"
 #include "Server/Script/CreatureAIScript.h"
 
 LocationVector const WaypointTheSummoning[] =

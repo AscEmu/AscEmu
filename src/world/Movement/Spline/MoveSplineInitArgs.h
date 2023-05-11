@@ -5,8 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "MoveSplineFlag.h"
 #include <vector>
+
+#include "MoveSplineFlag.h"
 
 class Unit;
 

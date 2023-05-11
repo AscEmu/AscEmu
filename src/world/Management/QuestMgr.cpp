@@ -19,7 +19,8 @@
  *
  */
 
-
+#include "Storage/DBC/DBCStores.h"
+#include "Logging/Log.hpp"
 #include "Objects/Item.hpp"
 #include "QuestLogEntry.hpp"
 #include "Management/ItemInterface.h"

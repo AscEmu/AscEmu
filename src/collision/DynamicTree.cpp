@@ -19,7 +19,6 @@
 
 #include "DynamicTree.h"
 #include "BoundingIntervalHierarchyWrapper.h"
-
 #include "Logging/Logger.hpp"
 #include "RegularGrid.h"
 #include "Utilities/Util.hpp"

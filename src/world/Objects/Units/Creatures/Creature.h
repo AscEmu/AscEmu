@@ -27,7 +27,6 @@ enum MovementGeneratorType : uint8_t;
 
 uint8 get_byte(uint32 buffer, uint32 index);
 
-
 class SERVER_DECL Creature : public Unit
 {
 public:

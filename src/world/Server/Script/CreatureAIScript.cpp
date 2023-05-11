@@ -3,17 +3,15 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
-
 #include "CreatureAIScript.h"
-#include "Storage/MySQLDataStore.hpp"
-#include "Map/Maps/InstanceDefines.hpp"
-#include "Map/Management/MapMgr.hpp"
-#include "Map/Maps/MapScriptInterface.h"
 #include "Management/Faction.h"
-#include "Spell/Definitions/PowerType.hpp"
-#include "Movement/Spline/MoveSplineInit.h"
+#include "Map/Management/MapMgr.hpp"
+#include "Map/Maps/InstanceDefines.hpp"
+#include "Map/Maps/MapScriptInterface.h"
 #include "Movement/WaypointManager.h"
+#include "Movement/Spline/MoveSplineInit.h"
+#include "Spell/Definitions/PowerType.hpp"
+#include "Storage/MySQLDataStore.hpp"
 
 void SummonList::summon(Creature const* summon)
 {

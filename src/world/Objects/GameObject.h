@@ -22,10 +22,8 @@
 #define GAMEOBJECT_H
 
 #include "Management/QuestMgr.h"
-#include "Management/TransporterHandler.h"
 #include "Data/WoWGameObject.hpp"
 #include "Map/Maps/BaseMap.hpp"
-#include "WorldConf.h"
 #include "GameObjectDefines.hpp"
 #include "GameObjectProperties.hpp"
 

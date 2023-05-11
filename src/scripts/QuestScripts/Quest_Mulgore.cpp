@@ -3,11 +3,7 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Setup.h"
 #include "Objects/Units/Creatures/AIInterface.h"
-#include "Objects/Item.hpp"
-#include "Map/Management/MapMgr.hpp"
-#include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
 #include <Management/QuestLogEntry.hpp>
 #include "Map/Maps/MapScriptInterface.h"

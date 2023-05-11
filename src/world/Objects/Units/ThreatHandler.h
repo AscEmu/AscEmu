@@ -5,12 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-
-#include "Objects/Object.hpp"
-#include "CommonTypes.hpp"
 #include <array>
 #include <vector>
 #include <list>
+
+#include "Objects/Object.hpp"
+#include "CommonTypes.hpp"
 
 class Creature;
 class Unit;

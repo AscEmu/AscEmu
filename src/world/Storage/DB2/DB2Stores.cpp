@@ -3,14 +3,13 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include <map>
+
 #include "DB2Stores.h"
 #include "Logging/Log.hpp"
-
 #include "DB2Structures.h"
-#include "../DBC/DBCGlobals.hpp"
-#include "world/Server/World.h"
-
-#include <map>
+#include "Storage/DBC/DBCGlobals.hpp"
+#include "Server/World.h"
 
 SERVER_DECL DB2Storage <DB2::Structures::ItemEntry>                    sItemStore(DB2::Structures::item_entry_format);
 SERVER_DECL DB2Storage <DB2::Structures::ItemCurrencyCostEntry>        sItemCurrencyCostStore(DB2::Structures::item_currency_cost_format);

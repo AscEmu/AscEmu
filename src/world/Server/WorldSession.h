@@ -29,16 +29,17 @@
 #include "FastQueue.h"
 #include "Server/CharacterErrors.h"
 #include "Objects/Units/Players/PlayerDefines.hpp"
-#include "Management/ItemInterface.h"
-#if VERSION_STRING >= Cata
-    #include "Management/AddonMgr.h"
-    #include "Objects/Units/Players/Player.hpp"
-    struct AddonEntry;
-#endif
-
+#include "Data/Flags.hpp"
 #include "Objects/MovementInfo.hpp"
 #include "Logging/Logger.hpp"
 #include "Utilities/CallBack.h"
+
+#if VERSION_STRING >= Cata
+    #include "Management/AddonMgr.h"
+    #include "Management/ItemInterface.h"
+    #include "Objects/Units/Players/Player.hpp"
+    struct AddonEntry;
+#endif
 
 class Player;
 class WorldPacket;
@@ -54,7 +55,7 @@ template<class T, class LOCK>
 class FastQueue;
 class Mutex;
 
-struct LfgUpdateData;       // forward declare
+struct LfgUpdateData; // forward declare
 struct LfgJoinResultData;
 struct LfgPlayerBoot;
 struct LfgProposal;

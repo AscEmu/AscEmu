@@ -5,10 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <iostream>
+
 #include "DBCStorage.hpp"
 #include "DBCLoader.hpp"
-#include "Logging/Log.hpp"
-#include <iostream>
 
 namespace DBC
 {

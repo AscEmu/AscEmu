@@ -3,19 +3,15 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
-
 #include "Management/ArenaTeam.hpp"
 #include "Server/MainServerDefines.h"
 #include "Management/ObjectMgr.h"
 #include "DayWatcherThread.h"
-
 #include "Chat/ChatHandler.hpp"
 
 using AscEmu::Threading::AEThread;
 using std::chrono::milliseconds;
 using std::make_unique;
-
 
 DayWatcherThread::DayWatcherThread()
 {
