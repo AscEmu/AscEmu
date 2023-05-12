@@ -50,7 +50,11 @@ int32_t MoveSplineInit::Launch()
     MoveSpline& move_spline = *unit->movespline;
 
     // Elevators also use MOVEFLAG_TRANSPORT but we do not keep track of their position changes
+#if VERSION_STRING <= WotLK
     bool transport = unit->hasUnitMovementFlag(MOVEFLAG_TRANSPORT) && unit->getTransGuid();
+#else
+    bool transport = unit->getTransGuid() != 0;
+#endif
     Location real_position;
     // there is a big chance that current position is unknown if current state is not finalized, need compute it
     // this also allows CalculatePath spline position and update map position in much greater intervals
@@ -148,7 +152,12 @@ void MoveSplineInit::Stop()
     if (move_spline.Finalized())
         return;
 
+#if VERSION_STRING <= WotLK
     bool transport = unit->hasUnitMovementFlag(MOVEFLAG_TRANSPORT) && unit->getTransGuid();
+#else
+    bool transport = unit->getTransGuid() != 0;
+#endif
+
     Location loc;
     if (move_spline.onTransport == transport)
     {

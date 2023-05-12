@@ -239,7 +239,9 @@ void Transporter::AddPassenger(Player* passenger)
     if (_passengers.insert(passenger).second)
     {
         passenger->SetTransport(this);
+#if VERSION_STRING <= WotLK
         passenger->obj_movement_info.addMovementFlag(MOVEFLAG_TRANSPORT);
+#endif
         passenger->obj_movement_info.transport_guid = getGuid();
         if (passenger->isPlayer())
         {
@@ -271,7 +273,9 @@ void Transporter::RemovePassenger(Object* passenger)
     if (erased || _staticPassengers.erase(passenger))
     {
         passenger->SetTransport(nullptr);
+#if VERSION_STRING <= WotLK
         passenger->obj_movement_info.removeMovementFlag(MOVEFLAG_TRANSPORT);
+#endif
         passenger->obj_movement_info.clearTransportData();
         if (passenger->isPlayer())
         {
@@ -313,8 +317,10 @@ Creature* Transporter::createNPCPassenger(MySQLStructure::CreatureSpawn* data)
 
     // AddToWorld
     pCreature->AddToWorld(map);
+#if VERSION_STRING <= WotLK
     pCreature->setUnitMovementFlags(MOVEFLAG_TRANSPORT);
     pCreature->obj_movement_info.addMovementFlag(MOVEFLAG_TRANSPORT);
+#endif
 
     // Equipment
     pCreature->setVirtualItemSlotId(MELEE, creature_properties->itemslot_1);

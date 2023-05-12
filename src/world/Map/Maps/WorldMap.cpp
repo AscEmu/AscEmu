@@ -2521,8 +2521,13 @@ float WorldMap::getUpdateDistance(Object* curObj, Object* obj, Player* plObj)
     static float no_distance = 0.0f;
 
     // unlimited distance for people on same boat
+#if VERSION_STRING < Cata
     if (curObj->isPlayer() && obj->isPlayer() && plObj != nullptr && plObj->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT) && plObj->obj_movement_info.transport_guid == curObj->obj_movement_info.transport_guid)
         return no_distance;
+#else
+    if (curObj->isPlayer() && obj->isPlayer() && plObj != nullptr && plObj->obj_movement_info.transport_guid == curObj->obj_movement_info.transport_guid)
+        return no_distance;
+#endif
     // unlimited distance for transporters (only up to 2 cells +/- anyway.)
     if (curObj->GetTypeFromGUID() == HIGHGUID_TYPE_TRANSPORTER)
         return no_distance;

@@ -146,8 +146,13 @@ bool WaypointMovementGenerator<Creature>::doUpdate(Creature* owner, uint32_t dif
     if (!owner->movespline->Finalized())
     {
         // set home position at place (every MotionMaster::UpdateMotion)
+#if VERSION_STRING <= WotLK
         if (!owner->hasUnitMovementFlag(MOVEFLAG_TRANSPORT) || owner->getTransGuid())
             owner->SetSpawnLocation(owner->GetPosition());
+#else
+        if (owner->getTransGuid())
+            owner->SetSpawnLocation(owner->GetPosition());
+#endif
 
         // relaunch movement if its speed has changed
         if (hasFlag(MOVEMENTGENERATOR_FLAG_SPEED_UPDATE_PENDING))
@@ -252,7 +257,11 @@ void WaypointMovementGenerator<Creature>::startMove(Creature* owner, bool relaun
         return;
     }
 
+#if VERSION_STRING <= WotLK
     bool const transportPath = owner->hasUnitMovementFlag(MOVEFLAG_TRANSPORT) && owner->getTransGuid();
+#else
+    bool const transportPath = owner->GetTransport() != nullptr;
+#endif
 
     if (hasFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED) && hasFlag(MOVEMENTGENERATOR_FLAG_INITIALIZED))
     {
