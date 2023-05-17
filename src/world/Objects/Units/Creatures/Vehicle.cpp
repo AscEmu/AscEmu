@@ -228,8 +228,10 @@ void Vehicle::loadAccessory(uint32_t entry, int8_t seatId, bool minion, uint8_t 
     accessory->setFaction(getBase()->getFactionTemplate());
     accessory->PushToWorld(getBase()->getWorldMap());
 
+#if VERSION_STRING <= WotLK
     accessory->obj_movement_info.addMovementFlag(MOVEFLAG_TRANSPORT);
     accessory->addUnitMovementFlag(MOVEFLAG_TRANSPORT);
+#endif
 
     if (minion)
         accessory->addUnitStateFlag(UNIT_STATE_ACCESSORY);
@@ -406,7 +408,9 @@ Vehicle* Vehicle::removePassenger(Unit* unit)
     {
         if (!getBase()->GetTransport())
         {
+#if VERSION_STRING <= WotLK
             unit->removeUnitMovementFlag(MOVEFLAG_TRANSPORT);
+#endif
             unit->obj_movement_info.clearTransportData();
         }
         else
@@ -569,7 +573,9 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
     float y = veSeat->attachmentOffsetY;
     float z = veSeat->attachmentOffsetZ;
 
+#if VERSION_STRING <= WotLK
     passenger->addUnitMovementFlag(MOVEFLAG_TRANSPORT);
+#endif
     passenger->obj_movement_info.transport_position.changeCoords(x, y, z, o);
     passenger->obj_movement_info.transport_time = 0;
     passenger->obj_movement_info.transport_seat = Seat->first;

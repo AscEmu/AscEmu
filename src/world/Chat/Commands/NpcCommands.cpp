@@ -504,10 +504,12 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     if (auto transporter = creature_target->GetTransport())
     {
         SystemMessage(m_session, "Creature is on Transporter!");
+#if VERSION_STRING < Cata
         if (creature_target->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT))
             SystemMessage(m_session, "Creature has MovementFlag MOVEFLAG_TRANSPORT");
         else
             SystemMessage(m_session, "!!!!!!!!! NO MovementFlag MOVEFLAG_TRANSPORT !!!!!!!!!!!!");
+#endif
     }
 
     if (sScriptMgr.has_creature_script(creature_target->getEntry()))

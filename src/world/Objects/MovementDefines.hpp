@@ -199,7 +199,6 @@ enum MovementFlags
     MOVEFLAG_FEATHER_FALL           = 0x08000000,
     MOVEFLAG_HOVER                  = 0x10000000,
     MOVEFLAG_NO_COLLISION           = 0x20000000,
-    MOVEFLAG_TRANSPORT              = 0x40000000,
 
     // Masks
     MOVEFLAG_MOVING_MASK =

@@ -71,6 +71,7 @@ void RotateMovementGenerator::reset(Unit* owner)
     initialize(owner);
 }
 
+#if VERSION_STRING <= WotLK
 bool RotateMovementGenerator::update(Unit* owner, uint32_t diff)
 {
     if (!owner)
@@ -107,6 +108,24 @@ bool RotateMovementGenerator::update(Unit* owner, uint32_t diff)
 
     return true;
 }
+#else
+bool RotateMovementGenerator::update(Unit* owner, uint32_t diff)
+{
+    float angle = owner->GetOrientation();
+    angle += (float(diff) * static_cast<float>(M_PI * 2) / _maxDuration) * (_direction == ROTATE_DIRECTION_LEFT ? 1.0f : -1.0f);
+    angle = G3D::wrap(angle, 0.0f, float(G3D::twoPi()));
+
+    owner->SetOrientation(angle);   // UpdateSplinePosition does not set orientation with UNIT_STATE_ROTATING
+    owner->setFacingTo(angle);      // Send spline movement to clients
+
+    if (_duration > diff)
+        _duration -= diff;
+    else
+        return false;
+
+    return true;
+}
+#endif
 
 void RotateMovementGenerator::deactivate(Unit*)
 {
@@ -136,6 +155,7 @@ DistractMovementGenerator::DistractMovementGenerator(uint32_t timer, float orien
     BaseUnitState = UNIT_STATE_DISTRACTED;
 }
 
+#if VERSION_STRING <= WotLK
 void DistractMovementGenerator::initialize(Unit* owner)
 {
     removeFlag(MOVEMENTGENERATOR_FLAG_INITIALIZATION_PENDING | MOVEMENTGENERATOR_FLAG_DEACTIVATED);
@@ -152,6 +172,16 @@ void DistractMovementGenerator::initialize(Unit* owner)
     init.SetFacing(_orientation);
     init.Launch();
 }
+#else
+void DistractMovementGenerator::initialize(Unit* owner)
+{
+    // Distracted creatures stand up if not standing
+    if (!owner->getStandState())
+        owner->setStandState(STANDSTATE_STAND);
+
+    owner->addUnitStateFlag(UNIT_STATE_DISTRACTED);
+}
+#endif
 
 void DistractMovementGenerator::reset(Unit* owner)
 {

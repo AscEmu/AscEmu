@@ -257,6 +257,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
     //////////////////////////////////////////////////////////////////////////////////////////
     /// Transport position
+#if VERSION_STRING <= WotLK
     if (movementInfo.hasMovementFlag(MOVEFLAG_TRANSPORT))
     {
         // if we boarded a transport, add us to it
@@ -332,6 +333,74 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
         mover->GetTransport()->RemovePassenger(mover);
         movementInfo.clearTransportData();
     }
+#else
+    if (mover->isPlayer())
+    {
+        // if we boarded a transport, add us to it
+        if (movementInfo.transport_guid)
+        {
+            if (!mover->GetTransport())
+            {
+                if (Transporter* transport = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(movementInfo.transport_guid)))
+                {
+                    transport->AddPassenger(mover->ToPlayer());
+
+                    /* set variables */
+                    mover->obj_movement_info.transport_time = sessionMovementInfo.transport_time;
+                    mover->obj_movement_info.transport_position.x = sessionMovementInfo.transport_position.x;
+                    mover->obj_movement_info.transport_position.y = sessionMovementInfo.transport_position.y;
+                    mover->obj_movement_info.transport_position.z = sessionMovementInfo.transport_position.z;
+                    mover->obj_movement_info.transport_position.o = sessionMovementInfo.transport_position.o;
+                }
+            }
+            else if (mover->GetTransport()->getGuid() != movementInfo.transport_guid)
+            {
+                mover->GetTransport()->RemovePassenger(mover);
+                if (Transporter* transport = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(movementInfo.transport_guid)))
+                {
+                    transport->AddPassenger(mover->ToPlayer());
+
+                    /* set variables */
+                    mover->obj_movement_info.transport_time = sessionMovementInfo.transport_time;
+                    mover->obj_movement_info.transport_position.x = sessionMovementInfo.transport_position.x;
+                    mover->obj_movement_info.transport_position.y = sessionMovementInfo.transport_position.y;
+                    mover->obj_movement_info.transport_position.z = sessionMovementInfo.transport_position.z;
+                    mover->obj_movement_info.transport_position.o = sessionMovementInfo.transport_position.o;
+                }
+                else
+                {
+                    movementInfo.clearTransportData();
+                    mover->obj_movement_info.clearTransportData();
+                }
+            }
+            else
+            {
+                /* set variables */
+                mover->obj_movement_info.transport_time = sessionMovementInfo.transport_time;
+                mover->obj_movement_info.transport_seat = movementInfo.transport_seat;
+                mover->obj_movement_info.transport_position.x = sessionMovementInfo.transport_position.x;
+                mover->obj_movement_info.transport_position.y = sessionMovementInfo.transport_position.y;
+                mover->obj_movement_info.transport_position.z = sessionMovementInfo.transport_position.z;
+                mover->obj_movement_info.transport_position.o = sessionMovementInfo.transport_position.o;
+            }
+
+            // Transports like Elevators
+            if (!mover->GetTransport() && !mover->getVehicle())
+            {
+                GameObject* go = mover->getWorldMapGameObject(movementInfo.transport_guid);
+                if (!go || go->getGoType() != GAMEOBJECT_TYPE_TRANSPORT)
+                    movementInfo.transport_guid = 0;
+            }
+        }
+        else if (mover && mover->GetTransport())
+        {
+            // if we were on a transport, leave
+            mover->GetTransport()->RemovePassenger(mover);
+            movementInfo.clearTransportData();
+            mover->obj_movement_info.clearTransportData();
+        }
+    }
+#endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
     /// Breathing & Underwaterstate

@@ -1646,7 +1646,7 @@ void WorldSession::handleRepopRequestOpcode(WorldPacket& /*recvPacket*/)
     if (_player->getDeathState() != JUST_DIED)
         return;
 
-    if (_player->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT))
+    if (_player->getTransGuid())
     {
         auto transport = _player->GetTransport();
         if (transport != nullptr)

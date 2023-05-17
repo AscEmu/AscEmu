@@ -1830,7 +1830,7 @@ void Unit::setFacingTo(float ori, bool force)
     MovementMgr::MoveSplineInit init(this);
     init.MoveTo(GetPositionX(), GetPositionY(), GetPositionZ(), false);
 
-    if (hasUnitMovementFlag(MOVEFLAG_TRANSPORT) /*&& GetTransGUID()*/)
+    if (getTransGuid())
         init.DisableTransportPathTransformations(); // It makes no sense to target global orientation
     init.SetFacing(ori);
 
