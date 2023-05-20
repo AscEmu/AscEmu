@@ -138,12 +138,15 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
         return;
 
     TrainerSpell const* trainerSpell = nullptr;
-    for (const auto& itr : sObjectMgr.getTrainserSpellSetById(trainer->spellset_id))
+    std::vector<TrainerSpell>::const_iterator itr;
+    std::vector<TrainerSpell> its = sObjectMgr.getTrainserSpellSetById(trainer->spellset_id);
+
+    for (itr = its.begin(); itr != its.end(); itr++)
     {
-        if ((itr.castSpell && itr.castSpell->getId() == srlPacket.spellId) ||
-            (itr.learnSpell && itr.learnSpell->getId() == srlPacket.spellId))
+        if ((itr->castSpell && itr->castSpell->getId() == srlPacket.spellId) ||
+            (itr->learnSpell && itr->learnSpell->getId() == srlPacket.spellId))
         {
-            trainerSpell = &itr;
+            trainerSpell = &(*itr);
             break;
         }
     }
