@@ -5,8 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "CommonTypes.hpp"
 #include <optional>
+
+#include "CommonTypes.hpp"
 
 //! Optional helper class to wrap optional values within.
 template <class T>

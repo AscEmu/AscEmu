@@ -18,7 +18,6 @@
  *
  */
 
-
 #include "Management/EquipmentSetMgr.h"
 #include "Server/MainServerDefines.h"
 #include "Database/Field.hpp"

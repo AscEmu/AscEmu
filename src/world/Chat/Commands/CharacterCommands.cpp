@@ -3,15 +3,12 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
-
 #include "Management/HonorHandler.h"
 #include "Objects/Item.hpp"
 #include "Objects/Container.hpp"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
-#include "Map/Maps/InstanceDefines.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellAuras.h"
 #include "Chat/ChatHandler.hpp"
@@ -22,7 +19,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Strings.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Map/Maps/InstanceMap.hpp"
-#include "Map/Maps/BattleGroundMap.hpp"
 
 //.character clearcooldowns
 bool ChatHandler::HandleCharClearCooldownsCommand(const char* /*args*/, WorldSession* m_session)

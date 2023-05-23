@@ -16,19 +16,19 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
+#include <set>
+#include <map>
+#include <zlib.h>
+
+#include "Utilities/Util.hpp"
 #include "CommonTypes.hpp"
 #include "LogonCommClient.h"
 #include "LogonCommHandler.h"
 #include "WorldPacket.h"
 #include "Database/Database.h"
 #include "Server/MainServerDefines.h"
-#include <set>
-#include <map>
-#include <zlib.h>
-
 #include "Server/World.h"
 #include "Cryptography/LogonCommDefines.h"
 

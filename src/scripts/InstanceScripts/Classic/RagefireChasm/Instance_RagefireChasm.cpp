@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Instance_RagefireChasm.h"
+#include "Map/Maps/MapScriptInterface.h"
 #include "Server/Script/CreatureAIScript.h"
 
 class RagefireChasmInstanceScript : public InstanceScript

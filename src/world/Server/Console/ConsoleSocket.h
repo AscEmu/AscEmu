@@ -10,7 +10,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Network/Network.h"
 #include "BaseConsole.h"
 
-
 namespace ConsoleDefines
 {
     const uint32_t localBuffer = 2048;

@@ -3,6 +3,8 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include <ctime>
+
 #include "WorldMap.hpp"
 #include "Objects/DynamicObject.hpp"
 #include "Objects/Units/Creatures/Pet.h"
@@ -25,7 +27,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Area/AreaStorage.hpp"
 #include "Debugging/CrashHandler.h"
 #include "Objects/Transporter.hpp"
-#include <ctime>
+#include "Server/MainServerDefines.h"
+#include "Spell/Definitions/SummonControlTypes.hpp"
+#include "Storage/DBC/DBCStores.h"
 
 using namespace AscEmu::Packets;
 using namespace AscEmu::Threading;

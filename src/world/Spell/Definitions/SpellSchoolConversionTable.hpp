@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #pragma once
+
 #include "School.hpp"
 
 // converting schools for 2.4.0 client

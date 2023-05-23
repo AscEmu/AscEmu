@@ -4,7 +4,6 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
-#include "Instance_TheVioletHold.hpp"
 #include "Cyangosa.hpp"
 #include "Erekem.hpp"
 #include "Ichron.hpp"
@@ -16,7 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Portal_Elite.hpp"
 #include "Portal_Intro.hpp"
 #include "AzureSaboteur.hpp"
-
+#include "Instance_TheVioletHold.hpp"
 #include "Movement/MovementGenerators/PointMovementGenerator.h"
 #include "Server/Script/CreatureAIScript.h"
 

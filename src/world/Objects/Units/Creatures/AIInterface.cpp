@@ -3,14 +3,16 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#ifndef UNIX
+#include <cmath>
+#endif
+
 #include "VMapFactory.h"
-#include "VMapManager2.h"
 #include "MMapManager.h"
 #include "MMapFactory.h"
 #include "Objects/Units/Stats.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
-#include "Macros/ScriptMacros.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Management/Faction.h"
 #include "Spell/SpellMgr.hpp"
@@ -23,7 +25,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Pet.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Management/ObjectMgr.h"
-#include "Server/Packets/Movement/CreatureMovement.h"
 #include "Map/AreaBoundary.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Movement/WaypointManager.h"
@@ -32,10 +33,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Definitions.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Objects/Units/Creatures/CreatureGroups.h"
-
-#ifndef UNIX
-#include <cmath>
-#endif
+#include "Storage/DBC/DBCStores.h"
 
 // Random and guessed values for Internal Spell cast chance
 float spellChanceModifierDispell[12] =

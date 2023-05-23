@@ -16,7 +16,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include "Server/MainServerDefines.h"
 #include "Management/ObjectMgr.h"
 #include "Server/Packets/SmsgReceivedMail.h"

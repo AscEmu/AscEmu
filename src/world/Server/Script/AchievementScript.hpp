@@ -5,10 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "CommonTypes.hpp"
 #include "WorldConf.h"
-
-#include <cstdint>
+#include "CommonTypes.hpp"
 
 #ifdef FT_ACHIEVEMENTS
 

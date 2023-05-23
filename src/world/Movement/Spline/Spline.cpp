@@ -3,9 +3,10 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include <sstream>
+
 #include <Common.hpp>
 #include "Spline.h"
-#include <sstream>
 #include <G3D/Matrix4.h>
 
 namespace MovementMgr {

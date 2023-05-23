@@ -21,8 +21,8 @@
 #ifndef UPDATEMASK_H
 #define UPDATEMASK_H
 
-#include "Debugging/Errors.h"
 #include <cstring>
+
 #include "CommonTypes.hpp"
 
 class UpdateMask

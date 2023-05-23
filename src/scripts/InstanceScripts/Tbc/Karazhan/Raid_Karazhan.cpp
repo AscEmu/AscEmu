@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Raid_Karazhan.h"
 #include "Management/Faction.h"
 #include <Spell/Definitions/PowerType.hpp>
+#include "Map/Maps/MapScriptInterface.h"
 #include "Server/Script/CreatureAIScript.h"
 
 class KarazhanInstanceScript : public InstanceScript

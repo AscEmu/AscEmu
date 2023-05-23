@@ -5,18 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Map/Cells/MapCell.hpp"
-#include "Map/Cells/CellHandler.hpp"
-#include "Management/WorldStatesHandler.h"
 #include "MapDefines.h"
-#include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
-#include "Server/EventableObject.h"
 #include "Storage/DBC/DBCStructures.hpp"
-
 #include "Map/Maps/BaseMap.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Map/Maps/InstanceMap.hpp"
-#include "Map/Maps/BattleGroundMap.hpp"
 #include "InstanceNumberGen.hpp"
 
 class Player;

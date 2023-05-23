@@ -5,10 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <list>
+
 #include "LFG.hpp"
 #include "Server/Definitions.h"
-#include <list>
 #include "Server/EventableObject.h"
+#include "Utilities/Util.hpp"
 
 class LfgGroupData;
 class LfgPlayerData;

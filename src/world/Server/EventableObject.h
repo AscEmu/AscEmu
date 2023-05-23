@@ -21,10 +21,10 @@
 #ifndef EVENTABLEOBJECT_H
 #define EVENTABLEOBJECT_H
 
-#include "EventMgr.h"
-#include <Utilities/Util.hpp>
 #include <list>
 #include <set>
+
+#include "EventMgr.h"
 
 class EventableObjectHolder;
 

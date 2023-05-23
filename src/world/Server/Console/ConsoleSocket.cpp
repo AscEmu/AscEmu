@@ -3,15 +3,11 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
-
 #include "ConsoleSocket.h"
 #include "ConsoleAuthMgr.h"
 #include "BaseConsole.h"
-
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Network/Network.h"
-
 
 ConsoleSocket::ConsoleSocket(SOCKET iFd) :
     Socket(iFd, 10000, 1000),

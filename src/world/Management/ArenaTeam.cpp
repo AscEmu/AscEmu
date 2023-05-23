@@ -6,9 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ArenaTeam.hpp"
 #include "Server/MainServerDefines.h"
 #include "Server/WorldSession.h"
-#include "Chat/ChatHandler.hpp"
 #include "Management/ObjectMgr.h"
-#include "Server/Packets/SmsgArenaTeamStats.h"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 

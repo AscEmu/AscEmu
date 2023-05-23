@@ -3,7 +3,6 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
 #include "Chat/ChatHandler.hpp"
 #include "Server/WorldSession.h"
 #include "Spell/Definitions/SpellFailure.hpp"
@@ -13,7 +12,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/CreatureAIScript.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/ThreatHandler.h"
-#include <Spell/Definitions/SpellCastTargetFlags.hpp>
+#include "Spell/Definitions/SpellCastTargetFlags.hpp"
+#include "VMapFactory.h"
+#include "Map/Area/AreaStorage.hpp"
+#include "Movement/Spline/MoveSplineInit.h"
+#include "Server/MainServerDefines.h"
 #include "Server/Packets/SmsgMoveKnockBack.h"
 
 bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldSession* session)

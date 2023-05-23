@@ -5,20 +5,17 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <string>
+
 #include "Chat/ChatDefines.hpp"
 #include "Server/WorldSession.h"
-
 #include "Management/Guild/GuildDefinitions.hpp"
 #include "GuildEmblemInfo.hpp"
 #include "GuildBankRightsAndSlots.hpp"
 #include "GuildLogHolder.hpp"
 #include "GuildRankInfo.hpp"
 #include "GuildBankTab.hpp"
-
-#include <string>
-
 #include "Macros/GuildMacros.hpp"
-
 
 class Player;
 class EmblemInfo;
@@ -30,7 +27,6 @@ typedef std::set<uint8_t> SlotIds;
 class SERVER_DECL Guild
 {
 protected:
-
     uint32_t m_id;
     std::string m_name;
     uint64_t m_leaderGuid;

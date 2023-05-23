@@ -10,8 +10,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/InstanceMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
-#include "Server/Packets/CmsgMessageChat.h"
-#include "Map/Maps/WorldMap.hpp"
 
 class BaseMap;
 

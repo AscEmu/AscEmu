@@ -21,6 +21,10 @@
 #ifndef OBJECTMGR_H
 #define OBJECTMGR_H
 
+#include <string>
+
+#include "AchievementMgr.h"
+#include "Spell/Spell.h"
 #include "Management/ArenaTeam.hpp"
 #include "Management/Charter.hpp"
 #include "Management/Group.h"
@@ -28,20 +32,16 @@
 #include "Movement/MovementManager.h"
 #include "Objects/Units/Creatures/Corpse.hpp"
 #include "Objects/Units/Creatures/CreatureDefines.hpp"
-#include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Objects/Units/Creatures/Vehicle.hpp"
 #include "Server/Script/SimpleEventScript.hpp"
-#include "Spell/Spell.h"
-#include "Spell/SpellTargetConstraint.hpp"
 #include "Storage/DBC/DBCStructures.hpp"
+
 #if VERSION_STRING >= Cata
     #include "Storage/DB2/DB2Stores.h"
     #include "Storage/DB2/DB2Structures.h"
 #endif
-
-#include <string>
 
 class SpellInfo;
 

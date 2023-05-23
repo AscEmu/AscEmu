@@ -114,6 +114,7 @@
     #define I64FMTD "%I64u"
     #define SI64FMTD "%I64d"
     #define atoll __atoi64
+    #define stricmp _stricmp
 #else
     #define stricmp strcasecmp
     #define strnicmp strncasecmp

@@ -24,6 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ArenaTeam.hpp"
 #include "LuaMacros.h"
 #include "LuaHelpers.h"
+#include "Server/Master.h"
 #include "Server/Script/CreatureAIScript.h"
 
 ScriptMgr* m_scriptMgr = nullptr;

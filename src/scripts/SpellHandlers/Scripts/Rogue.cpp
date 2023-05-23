@@ -4,8 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
-
 #include "Spell/Definitions/SpellFamily.hpp"
+#include "Storage/DBC/DBCStores.h"
 
 enum RogueSpells
 {

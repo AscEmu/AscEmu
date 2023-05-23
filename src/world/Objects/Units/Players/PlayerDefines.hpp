@@ -5,13 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Macros/ItemMacros.hpp"
-#include "Macros/PlayerMacros.hpp"
-#include "Management/Skill.hpp"
-#include "Map/Maps/InstanceDefines.hpp"
-#include <WorldConf.h>
-#include <CommonTypes.hpp>
-
 #include <ctime>
 #include <string>
 #include <map>
@@ -19,6 +12,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include <mutex>
 #include <set>
 #include <list>
+
+#include "Macros/ItemMacros.hpp"
+#include "Macros/PlayerMacros.hpp"
+#include "Management/Skill.hpp"
+#include <WorldConf.h>
+#include <CommonTypes.hpp>
 
 class Player;
 class Item;

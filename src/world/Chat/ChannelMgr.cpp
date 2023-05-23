@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Channel.hpp"
 #include "ChannelMgr.hpp"
-
 #include "Map/Area/AreaManagementGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "Objects/Units/Players/Player.hpp"

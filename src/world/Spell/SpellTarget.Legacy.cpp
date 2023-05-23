@@ -18,8 +18,6 @@
  *
  */
 
-
-#include "VMapFactory.h"
 #include "VMapManager2.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Management/Faction.h"
@@ -29,6 +27,8 @@
 #include "Server/World.h"
 #include "Definitions/SpellCastTargetFlags.hpp"
 #include "Definitions/SpellDidHitResult.hpp"
+#include "Objects/Units/Creatures/AIInterface.h"
+#include "Storage/DBC/DBCStores.h"
 #include "Objects/Units/Creatures/Pet.h"
 
  // APGL End

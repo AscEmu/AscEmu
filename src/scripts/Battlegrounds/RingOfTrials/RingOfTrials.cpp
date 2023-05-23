@@ -19,6 +19,7 @@
 
 #include "RingOfTrials.h"
 #include "Map/Management/MapMgr.hpp"
+#include "Map/Maps/BattleGroundMap.hpp"
 #include "Objects/GameObject.h"
 
 RingOfTrials::RingOfTrials(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t, uint32_t players_per_side) :

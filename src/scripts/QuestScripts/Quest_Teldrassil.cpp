@@ -17,7 +17,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Setup.h"
+#include "Chat/ChatDefines.hpp"
+#include "Management/QuestLogEntry.hpp"
+#include "Objects/Units/Unit.hpp"
+#include "Server/EventMgr.h"
 
 class Zenn_Foulhoof : public QuestScript
 {

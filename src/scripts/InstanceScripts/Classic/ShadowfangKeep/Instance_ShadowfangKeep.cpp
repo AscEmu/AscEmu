@@ -5,8 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Instance_ShadowfangKeep.h"
+#include "Map/Maps/MapScriptInterface.h"
 #include "Server/Script/CreatureAIScript.h"
-
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/PowerType.hpp"
 

@@ -3,7 +3,7 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
+#include "Storage/DBC/DBCStores.h"
 #include "Server/Packets/CmsgDismissCritter.h"
 #include "Server/Packets/CmsgPetLearnTalent.h"
 #include "Server/Packets/CmsgPetCancelAura.h"
@@ -29,6 +29,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellFailure.hpp"
 #include "Server/Packets/SmsgPetLearnedSpell.h"
 #include "Objects/Units/ThreatHandler.h"
+#include "Objects/Units/Creatures/AIInterface.h"
 
 using namespace AscEmu::Packets;
 

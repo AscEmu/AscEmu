@@ -12,6 +12,6 @@ enum SummonControlTypes
     SUMMON_CONTROL_TYPE_PET       = 2,
     SUMMON_CONTROL_TYPE_POSSESSED = 3,
     SUMMON_CONTROL_TYPE_VEHICLE   = 4,
-    SUMMON_CATEGORY_UNK = 5  // as of patch 3.3.5a only Bone Spike in Icecrown Citadel
-                                 // uses this category
+    SUMMON_CATEGORY_UNK = 5             // as of patch 3.3.5a only Bone Spike in Icecrown Citadel
+                                        // uses this category
 };

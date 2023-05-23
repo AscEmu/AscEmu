@@ -20,7 +20,6 @@
 #include "LFG.hpp"
 #include "LFGGroupData.hpp"
 
-
 LfgGroupData::LfgGroupData() :
     m_State(LFG_STATE_NONE),
     m_OldState(LFG_STATE_NONE),

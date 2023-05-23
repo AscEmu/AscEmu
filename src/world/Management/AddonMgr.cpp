@@ -3,16 +3,15 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
-#include "AddonMgr.h"
-
 #include <zlib.h>
 
+#include "AddonMgr.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Server/MainServerDefines.h"
 #include "Cryptography/MD5.h"
-#include <Database/Field.hpp>
-#include <Database/Database.h>
+#include "Database/Field.hpp"
+#include "Database/Database.h"
+#include "Storage/DBC/DBCStores.h"
 
 //#define DEBUG_PRINT_ADDON_PACKET            // Prints out Received addon packet when char logging in
 

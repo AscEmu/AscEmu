@@ -18,7 +18,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include "Management/ItemInterface.h"
 #include "Management/Arenas.h"
 #include "Management/ArenaTeam.hpp"
@@ -89,7 +88,6 @@ Arena::Arena(WorldMap* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_p
             break;
         default:
             break;
-
     }
 }
 

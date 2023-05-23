@@ -5,8 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Charter.hpp"
 #include "Management/ObjectMgr.h"
-
-#include "shared/Database/Field.hpp"
+#include "Server/MainServerDefines.h"
+#include "Database/Field.hpp"
 
 Charter::Charter(Field* fields)
 {

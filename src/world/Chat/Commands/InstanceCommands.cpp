@@ -19,7 +19,6 @@
  *
  */
 
-
 #include "Server/MainServerDefines.h"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Map/Management/MapMgr.hpp"

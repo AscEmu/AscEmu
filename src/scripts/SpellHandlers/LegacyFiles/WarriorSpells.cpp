@@ -22,6 +22,7 @@
 #include "Server/Script/ScriptMgr.h"
 #include "Spell/Definitions/ProcFlags.hpp"
 #include <Spell/Definitions/PowerType.hpp>
+#include "Spell/SpellMgr.hpp"
 
 bool Execute(uint8_t effectIndex, Spell* pSpell)
 {

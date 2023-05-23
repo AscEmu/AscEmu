@@ -19,6 +19,7 @@
  *
  */
 
+#include "Pet.h"
 #include "Creature.h"
 #include "Objects/Units/Unit.hpp"
 #include "Objects/DynamicObject.hpp"
@@ -29,11 +30,11 @@
 #include "Storage/MySQLStructures.h"
 #include "Server/MainServerDefines.h"
 #include "Map/Management/MapMgr.hpp"
+#include "Map/Maps/BattleGroundMap.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/Definitions/SpellEffectTarget.hpp"
-#include "Pet.h"
-
+#include "Storage/DBC/DBCStores.h"
 #include "Server/Packets/SmsgPetActionFeedback.h"
 #include "Server/Packets/SmsgPetLearnedSpell.h"
 #include "Server/Packets/SmsgPetUnlearnedSpell.h"

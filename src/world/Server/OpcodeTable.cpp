@@ -8,6 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 //          use or work with this file unless you are able to understand what is
 //          happening here ;)
 
+#include <iostream>
+
 #include "OpcodeTable.hpp"
 
 OpcodeTables& OpcodeTables::getInstance()

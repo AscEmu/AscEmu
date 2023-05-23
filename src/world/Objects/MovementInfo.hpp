@@ -5,14 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Data/Flags.hpp"
 #include "WorldPacket.h"
 #include "MovementDefines.hpp"
 #include "LocationVector.h"
 #include "CommonDefines.hpp"
-#include "Macros/MapsMacros.hpp"
 #include "Map/Cells/CellHandlerDefines.hpp"
-
 
 struct MovementInfo
 {

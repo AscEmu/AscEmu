@@ -5,12 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <set>
+#include <string>
+
 #include "EventableObject.h"
 #include "WorldSession.h"
 #include "WorldConfig.h"
-
-#include <set>
-#include <string>
 
 // Values based on ServerMessages.dbc
 enum ServerMessageType

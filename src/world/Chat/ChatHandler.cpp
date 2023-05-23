@@ -3,15 +3,14 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
+#include "Server/World.h"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Exceptions/PlayerExceptions.hpp"
-#include "Objects/Item.hpp"
 #include "Management/ItemInterface.h"
 #include "ChatHandler.hpp"
+#include "CommandTableStorage.hpp"
 #include "Server/WorldSession.h"
-#include "Server/World.h"
 #include "Server/Packets/SmsgMessageChat.h"
 
 using namespace AscEmu::Packets;

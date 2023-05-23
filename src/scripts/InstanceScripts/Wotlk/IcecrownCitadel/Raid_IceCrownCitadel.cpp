@@ -4,12 +4,10 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Raid_IceCrownCitadel.hpp"
-
 #include "LordMarrowgar.hpp"
 #include "LadyDeathwhisper.hpp"
 #include "GunshipBattle.hpp"
 #include "Saurfang.hpp"
-
 #include "Management/Faction.h"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include <Management/ObjectMgr.h>

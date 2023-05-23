@@ -5,10 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Movement/Spline/SplineChain.h"
-#include "Movement/MovementGenerator.h"
 #include <vector>
 
+#include "Movement/Spline/SplineChain.h"
+#include "Movement/MovementGenerator.h"
 #include "Movement/MovementDefines.h"
 
 class Unit;

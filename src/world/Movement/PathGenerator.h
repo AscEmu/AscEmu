@@ -10,7 +10,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "DetourNavMeshQuery.h"
 #include "Movement/Spline/MoveSplineInitArgs.h"
 #include <G3D/Vector3.h>
-
 #include "Macros/AIInterfaceMacros.hpp"
 
 class Unit;

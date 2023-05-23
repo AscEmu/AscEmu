@@ -5,9 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <WorldConf.h>
-
 #include <cstdint>
+
+#include <WorldConf.h>
 
 enum SpellCastResult : uint8_t
 {

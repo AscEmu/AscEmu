@@ -3,13 +3,10 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "SpellProc.hpp"
-
-#include "Definitions/ProcFlags.hpp"
 #include "SpellMgr.hpp"
-
+#include "SpellProc.hpp"
+#include "Definitions/ProcFlags.hpp"
 #include "Server/Script/ScriptMgr.h"
-
 
 void SpellProc::init(Object* /*obj*/) { }
 

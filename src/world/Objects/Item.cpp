@@ -3,11 +3,13 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Container.hpp"
 #include "Item.hpp"
-#include "Map/Management/MapMgrDefines.hpp"
+#include "Container.hpp"
+#include "Map/Maps/WorldMap.hpp"
+#include "Storage/DBC/DBCStores.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Definitions.h"
+#include "Server/MainServerDefines.h"
 #include "Server/Packets/SmsgEnchantmentLog.h"
 #include "Server/Packets/SmsgItemEnchantmentTimeUpdate.h"
 #include "Server/Packets/SmsgItemTimeUpdate.h"

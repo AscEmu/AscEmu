@@ -18,7 +18,6 @@
  */
 
 #include <Common.hpp>
-
 #include "MMapManager.h"
 #include "MapDefines.h"
 #include "Debugging/Errors.h"

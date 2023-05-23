@@ -19,7 +19,6 @@
  *
  */
 
-
 #include "EventMgr.h"
 
 EventMgr& EventMgr::getInstance()

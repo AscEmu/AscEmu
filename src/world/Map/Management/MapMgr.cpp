@@ -3,25 +3,18 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "WoWGuid.h"
+#include "MapMgr.hpp"
 #include "Objects/DynamicObject.hpp"
-#include "Map/Cells/CellHandler.hpp"
-#include "Management/WorldStatesHandler.h"
-#include "Objects/Item.hpp"
 #include "Map/Area/AreaStorage.hpp"
-#include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Objects/Units/Unit.hpp"
 #include "VMapFactory.h"
 #include "MMapFactory.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Macros/ScriptMacros.hpp"
-#include "MapMgr.hpp"
-#include "Map/Maps/MapScriptInterface.h"
+#include "Storage/DBC/DBCStores.h"
 #include "Objects/Units/Creatures/Pet.h"
-#include "Server/Packets/SmsgUpdateWorldState.h"
-#include "Server/Packets/SmsgDefenseMessage.h"
 #include "Server/Script/ScriptMgr.h"
-
-#include "shared/WoWGuid.h"
+#include "Map/Maps/BattleGroundMap.hpp"
 
 using namespace AscEmu::Packets;
 

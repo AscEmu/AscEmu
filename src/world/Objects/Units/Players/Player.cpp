@@ -3,18 +3,16 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Common.hpp"
-#include "Player.hpp"
-
 #include <zlib.h>
 
+#include "Common.hpp"
+#include "Player.hpp"
 #include "Chat/ChatDefines.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Data/WoWPlayer.hpp"
 #include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
 #include "Macros/CorpseMacros.hpp"
-#include "Macros/ScriptMacros.hpp"
 #include "Management/Faction.h"
 #include "Management/HonorHandler.h"
 #include "Management/Battleground/Battleground.hpp"
@@ -29,6 +27,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ObjectMgr.h"
 #include "Management/TaxiMgr.h"
 #include "Management/WeatherMgr.hpp"
+#include "Map/Maps/BattleGroundMap.hpp"
 #include "Objects/Container.hpp"
 #include "Objects/DynamicObject.hpp"
 #include "Server/Opcodes.hpp"
@@ -132,6 +131,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WorldStrings.h"
 #include "Utilities/Strings.hpp"
 #include "Objects/Transporter.hpp"
+#include "Server/MainServerDefines.h"
 
 using namespace AscEmu::Packets;
 using namespace MapManagement::AreaManagement;

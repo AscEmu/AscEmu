@@ -21,18 +21,19 @@
 
 #pragma once
 
-#include "Management/Gossip/GossipScript.hpp"
-#include "Management/GameEventMgr.h"
-#include "Objects/Units/Unit.hpp"
+#include "ScriptEvent.hpp"
 #include "Management/ArenaTeam.hpp"
+#include "Management/GameEventMgr.h"
+#include "Management/Gossip/GossipScript.hpp"
 #include "Map/Maps/InstanceMap.hpp"
-#include "Server/Script/AchievementScript.hpp"
+#include "Objects/Units/Unit.hpp"
+#include "Objects/Units/Creatures/AIInterface.h"
 #include "Server/ServerState.h"
 #include "Server/World.h"
-#include "Spell/Definitions/ProcFlags.hpp"
+#include "Server/Script/AchievementScript.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellScript.hpp"
-#include "ScriptEvent.hpp"
+#include "Spell/Definitions/ProcFlags.hpp"
 
 class Channel;
 enum EncounterCreditType : uint8_t;

@@ -4,11 +4,13 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include <Common.hpp>
-
 #include "MovementDefines.h"
 #include "LocationVector.h"
-#include "Logging/Logger.hpp"
 #include "Objects/MovementInfo.hpp"
+
+#if VERSION_STRING >= Cata
+#include "Logging/Logger.hpp"
+#endif
 
 #define CONTACT_DISTANCE 0.5f
 

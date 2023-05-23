@@ -11,7 +11,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MySQLStructures.h"
 #include "Objects/GameObject.h"
 
-
 //Zyres: Define base tables
 struct MySQLAdditionalTable
 {

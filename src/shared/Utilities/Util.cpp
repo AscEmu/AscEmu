@@ -4,7 +4,6 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include <iostream>
-#include <vector>
 #include <string>
 #include <sstream>
 #include <fstream>

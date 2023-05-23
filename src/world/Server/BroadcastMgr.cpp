@@ -3,15 +3,12 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
-
 #include <cstdint>
 
 #include "BroadcastMgr.h"
 #include "World.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
-
 #include "Logging/Log.hpp"
 
 using AscEmu::Threading::AEThread;

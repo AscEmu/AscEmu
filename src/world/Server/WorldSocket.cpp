@@ -18,9 +18,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
 // Class WorldSocket - Main network code functions, handles
 // reading/writing of all packets.
 
+#include "Utilities/Util.hpp"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Server/MainServerDefines.h"
 #include "Cryptography/Sha1.h"

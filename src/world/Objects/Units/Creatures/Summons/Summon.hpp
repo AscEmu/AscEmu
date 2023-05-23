@@ -7,9 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Unit.hpp"
-#include "Objects/Object.hpp"
-#include "SummonDefines.hpp"
-#include "Spell/Definitions/SummonControlTypes.hpp"
 
 class SERVER_DECL Summon : public Creature
 {

@@ -20,15 +20,15 @@
 
 #pragma once
 
+#include <cstdint>
+#include <set>
+
 #include "Definitions/AuraEffects.hpp"
 #include "Definitions/AuraRemoveMode.hpp"
 #include "Objects/Item.hpp"
 #include "Objects/Object.hpp"
 #include "Server/EventableObject.h"
 #include "Objects/Units/Unit.hpp"
-
-#include <cstdint>
-#include <set>
 
 enum AURA_INTERNAL_USAGE_FLAGS
 {

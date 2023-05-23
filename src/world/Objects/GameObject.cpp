@@ -38,6 +38,7 @@
 #include "Server/Script/ScriptMgr.h"
 #include "Map/Maps/MapScriptInterface.h"
 #include "GameObjectModel.h"
+#include "Storage/DBC/DBCStores.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Server/Definitions.h"
 #include "Objects/Transporter.hpp"

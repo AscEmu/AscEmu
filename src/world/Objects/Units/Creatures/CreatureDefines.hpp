@@ -18,18 +18,17 @@
 
 #pragma once
 
+#include <ctime>
+
 #include "CommonTypes.hpp"
 #include "Storage/DBC/DBCStructures.hpp"
+#include "Spell/Definitions/School.hpp"
+#include "Utilities/Util.hpp"
+#include "Macros/CreatureMacros.hpp"
+
 #if VERSION_STRING >= Cata
 #include "Storage/DB2/DB2Structures.h"
 #endif
-#include "Spell/Definitions/School.hpp"
-#include "Utilities/Util.hpp"
-#include "Server/Master.h"
-#include "Macros/CreatureMacros.hpp"
-
-#include <cstdint>
-#include <ctime>
 
 struct AI_Spell;
 

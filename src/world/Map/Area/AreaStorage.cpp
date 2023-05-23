@@ -3,14 +3,13 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
 #include "AreaStorage.hpp"
 #include "VMapFactory.h"
 #include "VMapManager2.h"
 #include "MMapFactory.h"
-#include "Management/ArenaTeam.hpp"
 #include "Macros/MapsMacros.hpp"
 #include "AreaManagementGlobals.hpp"
+#include "Storage/DBC/DBCStores.h"
 
 namespace MapManagement::AreaManagement
 {

@@ -3,13 +3,14 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include <regex>
 
 #include "Storage/MySQLDataStore.hpp"
 #include "Spell/SpellClickInfo.hpp"
 #include "Server/MainServerDefines.h"
 #include "Spell/SpellMgr.hpp"
 #include "Utilities/Strings.hpp"
-#include <regex>
+#include "Storage/DBC/DBCStores.h"
 
 SERVER_DECL std::vector<MySQLAdditionalTable> MySQLAdditionalTables;
 

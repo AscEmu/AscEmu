@@ -5,10 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "Common.hpp"
 #include "WaypointDefines.h"
-#include "CommonTypes.hpp"
-
-#include <unordered_map>
 
 class SERVER_DECL WaypointMgr
 {

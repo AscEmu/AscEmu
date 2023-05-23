@@ -5,8 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Raid_GruulsLair.hpp"
-
 enum MaulgarPhases
 {
     PHASE_1                         = 1,

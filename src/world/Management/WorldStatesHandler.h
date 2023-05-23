@@ -20,9 +20,10 @@
 #ifndef WORLDSTATEHANDLER_H
 #define WORLDSTATEHANDLER_H
 
+#include <unordered_map>
+
 #include "WorldPacket.h"
 #include "Storage/MySQLStructures.h"
-#include <unordered_map>
 
 struct WorldState;
 

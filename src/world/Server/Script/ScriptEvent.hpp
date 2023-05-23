@@ -5,8 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
 #include <map>
+
+#include "CommonTypes.hpp"
 
 struct scriptEvent
 {
@@ -16,7 +17,7 @@ struct scriptEvent
 
 class SERVER_DECL scriptEventMap
 {
-    typedef std::multimap< uint32_t, scriptEvent> eventMap;
+    typedef std::multimap<uint32_t, scriptEvent> eventMap;
 
 public:
     scriptEventMap() : bossPhase(0) {}

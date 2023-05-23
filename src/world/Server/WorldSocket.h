@@ -21,13 +21,13 @@
 #ifndef WORLDSOCKET_H
 #define WORLDSOCKET_H
 
+#include <string>
+
 #include "FastQueue.h"
 #include "Cryptography/WowCrypt.hpp"
 #include "WorldPacket.h"
 #include "Network/Network.h"
 #include "WorldConf.h"
-
-#include <string>
 
 #define WORLDSOCKET_SENDBUF_SIZE 131078
 #define WORLDSOCKET_RECVBUF_SIZE 16384

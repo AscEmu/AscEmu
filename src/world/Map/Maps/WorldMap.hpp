@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Cells/CellHandler.hpp"

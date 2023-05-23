@@ -5,12 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Logging/Logger.hpp"
-#include <iostream>
-#include <chrono>
-#include <map>
 #include <vector>
 #include <queue>
+
+#include "Logging/Logger.hpp"
 
 template<typename T>
 class custom_priority_queue_ascend : public std::priority_queue<T, std::vector<T>, std::greater<int32_t>>

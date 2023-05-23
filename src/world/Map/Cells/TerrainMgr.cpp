@@ -4,13 +4,10 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include <WorldConf.h>
-#include "Map/Area/AreaManagementGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
-#include "VMapFactory.h"
-#include "IVMapManager.h"
 #include "G3D/Plane.h"
 #include "TerrainMgr.hpp"
-
+#include "Storage/DBC/DBCStores.h"
 #include "Logging/Logger.hpp"
 
 static uint16_t const holetab_h[4] = { 0x1111, 0x2222, 0x4444, 0x8888 };

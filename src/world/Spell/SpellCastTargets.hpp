@@ -5,12 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-// shared
-#include <LocationVector.h>
-#include <WorldPacket.h>
-
 #include <cstdint>
 #include <string>
+
+#include <LocationVector.h>
+#include <WorldPacket.h>
 
 class SpellCastTargets
 {

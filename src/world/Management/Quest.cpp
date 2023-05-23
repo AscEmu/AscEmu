@@ -19,7 +19,6 @@
  *
  */
 
-
 #include "Storage/MySQLDataStore.hpp"
 #include "Quest.h"
 

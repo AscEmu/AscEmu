@@ -5,8 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Instance_HellfireRamparts.hpp"
-
 const float VazrudenMiddle[3] = { -1406.5f, 1746.5f, 81.2f };
 
 const float VazrudenRing[2][3] =

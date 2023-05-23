@@ -5,11 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "CommonTypes.hpp"
-#include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
-#include "Objects/Units/UnitDefines.hpp"
 #include <vector>
-#include <set>
+
+#include "CommonTypes.hpp"
+#include "SummonDefines.hpp"
 
 class Summon;
 class TotemSummon;

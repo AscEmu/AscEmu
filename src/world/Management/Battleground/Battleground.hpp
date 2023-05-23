@@ -5,13 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <mutex>
+#include <atomic>
+
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Objects/Units/Unit.hpp"
 #include "Spell/Spell.h"
 #include "Objects/Object.hpp"
-#include <mutex>
-#include <atomic>
-
 
 /// \brief Base class for battleground scripts (see: AlteracValley, ArathiBasin, EyeOfTheStorm, IsleOfConquest, WarsongGulch)
 class SERVER_DECL Battleground : public EventableObject

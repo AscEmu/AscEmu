@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellIsFlags.hpp"
 #include "SpellAuras.h"
 #include "SpellTarget.h"
-
+#include "Storage/DBC/DBCStores.h"
 #include "Management/Skill.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Units/Players/Player.hpp"

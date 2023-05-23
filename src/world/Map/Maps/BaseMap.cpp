@@ -3,15 +3,11 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Map/Cells/CellHandlerDefines.hpp"
 #include "Storage/MySQLDataStore.hpp"
-#include "Map/Cells/TerrainMgr.hpp"
-
-#include "VMapFactory.h"
-#include "VMapManager2.h"
 #include "MMapManager.h"
 #include "MMapFactory.h"
-
-#include "Map/Cells/CellHandlerDefines.hpp"
+#include "Map/Cells/CellHandler.hpp"
 
 BaseMap::BaseMap(uint32_t mapId, MySQLStructure::MapInfo const* mapInfo, DBC::Structures::MapEntry const* mapEntry) :
         _mapEntry(mapEntry), _mapInfo(mapInfo), _mapId(mapId)

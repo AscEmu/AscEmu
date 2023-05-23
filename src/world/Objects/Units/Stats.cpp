@@ -19,13 +19,11 @@
  *
  */
 
-
 #include "Objects/Item.hpp"
 #include "Objects/Units/Stats.h"
 #include "Creatures/Creature.h"
 #include "Creatures/Pet.h"
 #include "Server/World.h"
-#include <scripts/Battlegrounds/AlteracValley/AlteracValley.h>
 #include "WorldConf.h"
 #include "Management/ItemInterface.h"
 #include "Spell/Definitions/SpellEffects.hpp"

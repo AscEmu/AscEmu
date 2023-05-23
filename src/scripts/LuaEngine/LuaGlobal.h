@@ -6,9 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include <memory>
-#include <Management/Gossip/GossipScript.hpp>
+
 #include <Server/Script/ScriptMgr.h>
-#include "WoWGuid.h"
 #include "Management/Gossip/GossipMenu.hpp"
 
 class LuaEngine;

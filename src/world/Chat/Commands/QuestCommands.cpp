@@ -19,7 +19,6 @@
  *
  */
 
-
 #include "Chat/ChatHandler.hpp"
 #include "Objects/Item.hpp"
 #include "Management/QuestLogEntry.hpp"

@@ -19,7 +19,6 @@
  */
 
 #include <Common.hpp>
-
 #include "WorldConf.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Storage/MySQLDataStore.hpp"

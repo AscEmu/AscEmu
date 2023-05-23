@@ -3,7 +3,6 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
 #include "Server/WorldSession.h"
 #include "Server/Packets/CmsgSetFactionAtWar.h"
 #include "Server/Packets/CmsgSetFactionInactive.h"
@@ -18,7 +17,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgCharRename.h"
 #include "Management/ObjectMgr.h"
 #include "Server/MainServerDefines.h"
-#include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/SmsgCharCreate.h"
 #include "Server/Packets/CmsgCharCreate.h"
@@ -33,9 +31,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Guild/GuildMgr.hpp"
 #include "Server/CharacterErrors.h"
 #include "Cryptography/AuthCodes.h"
+#include "Storage/DBC/DBCStores.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Utilities/Strings.hpp"
-
 
 using namespace AscEmu::Packets;
 

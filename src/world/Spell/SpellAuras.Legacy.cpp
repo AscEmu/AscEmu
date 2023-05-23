@@ -19,7 +19,6 @@
  *
  */
 
-
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Objects/Item.hpp"
@@ -41,7 +40,6 @@
 #include "Definitions/PowerType.hpp"
 #include "Definitions/SpellEffects.hpp"
 #include "Objects/Units/Creatures/Pet.h"
-#include "Server/Packets/SmsgUpdateAuraDuration.h"
 #include "Server/Packets/MsgChannelUpdate.h"
 #include "Server/Packets/SmsgPlayerVehicleData.h"
 #include "Server/Packets/SmsgSetForceReactions.h"

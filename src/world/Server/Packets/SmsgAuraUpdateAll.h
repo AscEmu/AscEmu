@@ -9,6 +9,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 
+#if VERSION_STRING >= Mop
+#include "Spell/SpellAuras.h"
+#endif
+
 namespace AscEmu::Packets
 {
     class SmsgAuraUpdateAll : public ManagedPacket

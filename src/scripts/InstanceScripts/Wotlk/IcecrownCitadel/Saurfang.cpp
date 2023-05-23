@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Faction.h"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include <Management/ObjectMgr.h>
+#include "Map/Maps/MapScriptInterface.h"
 #include "Movement/MovementGenerators/PointMovementGenerator.h"
 #include "Server/Script/CreatureAIScript.h"
 

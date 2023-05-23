@@ -18,7 +18,6 @@
  */
 
 #include <Common.hpp>
-
 #include "VMapFactory.h"
 #include "VMapManager2.h"
 #include "VMapDefinitions.h"

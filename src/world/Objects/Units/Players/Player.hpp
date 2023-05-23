@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <mutex>
+
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Objects/Units/Stats.h"
 #include "Management/QuestDefines.hpp"
@@ -16,15 +18,14 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Unit.hpp" 
 #include "Storage/MySQLStructures.h"
 #include "Macros/PlayerMacros.hpp"
-#include "Objects/Units/Creatures/AIInterface.h" //?? what?
 #include "WorldConf.h"
 #include "Management/AuctionHouse.h"
 #include "Management/Guild/Guild.hpp"
 #include "Management/ObjectUpdates/UpdateManager.hpp"
 #include "Data/WoWPlayer.hpp"
-#include <mutex>
-
 #include "TradeData.hpp"
+#include "Logging/Log.hpp"
+#include "Management/ItemInterface.h"
 #include "Map/Maps/InstanceDefines.hpp"
 
 class ArenaTeam;
@@ -71,10 +72,10 @@ typedef std::unordered_map<uint32_t, time_t> InstanceTimeMap;
 // 4. Check out the members (there are duplicats)
 // 5. Get rid of legacy files (Player.Legacy.cpp)
 struct WoWPlayer;
+
 class SERVER_DECL Player : public Unit
 {
 public:
-
     friend class WorldSession;
     friend class Pet;
 
@@ -100,7 +101,6 @@ public:
 private:
     const WoWPlayer* playerData() const { return reinterpret_cast<WoWPlayer*>(wow_data); }
 public:
-
     //////////////////////////////////////////////////////////////////////////////////////////
     // Data
     uint64_t getDuelArbiter() const;

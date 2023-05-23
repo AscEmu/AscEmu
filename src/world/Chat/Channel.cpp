@@ -5,9 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Channel.hpp"
 #include "ChannelMgr.hpp"
-
 #include "ChatDefines.hpp"
-#include "Map/Area/AreaManagementGlobals.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
@@ -15,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgChannelList.h"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "WorldPacket.h"
+#include "Storage/DBC/DBCStores.h"
 
 using namespace AscEmu::Packets;
 

@@ -4,7 +4,6 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Management/WordFilter.h"
-
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 

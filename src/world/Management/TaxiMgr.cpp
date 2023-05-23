@@ -19,7 +19,7 @@
  *
  */
 
-
+#include "Storage/DBC/DBCStores.h"
 #include "Management/TaxiMgr.h"
 #include "Server/Opcodes.hpp"
 #include "Objects/Units/Players/Player.hpp"

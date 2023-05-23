@@ -17,11 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Setup.h"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Item.hpp"
-#include "Map/Management/MapMgr.hpp"
-#include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
 #include <Management/QuestLogEntry.hpp>
 #include "Map/Maps/MapScriptInterface.h"

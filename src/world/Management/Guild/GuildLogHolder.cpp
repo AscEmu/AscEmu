@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "GuildLog.hpp"
 #include "GuildLogHolder.hpp"
-
 #include "Macros/GuildMacros.hpp"
 #include "Management/Guild/GuildDefinitions.hpp"
 

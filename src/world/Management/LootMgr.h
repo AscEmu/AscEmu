@@ -5,17 +5,18 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <map>
+#include <vector>
+#include <set>
+
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Objects/Units/Creatures/CreatureDefines.hpp"
 #include "Server/EventableObject.h"
 #include "Storage/DBC/DBCStructures.hpp"
+
 #if VERSION_STRING >= Cata
 #include "Storage/DB2/DB2Structures.h"
 #endif
-
-#include <map>
-#include <vector>
-#include <set>
 
 struct ItemProperties;
 class Player;

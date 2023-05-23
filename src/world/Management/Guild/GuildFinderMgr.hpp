@@ -7,11 +7,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #if VERSION_STRING >= Cata
 
-#include "Objects/Units/Players/PlayerDefines.hpp"
-#include "Management/Guild/Guild.hpp"
 #include <string>
 #include <map>
 #include <vector>
+
+#include "Objects/Units/Players/PlayerDefines.hpp"
+#include "Management/Guild/Guild.hpp"
 
 enum GuildFinderOptionsInterest
 {

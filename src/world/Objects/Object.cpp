@@ -23,7 +23,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellMechanics.hpp"
 #include "Spell/Definitions/SpellState.hpp"
 #include <Spell/Definitions/AuraInterruptFlags.hpp>
-#include "Chat/ChatHandler.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Units/Creatures/CreatureDefines.hpp"
@@ -35,6 +34,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgAiReaction.h"
 #include "Movement/PathGenerator.h"
 #include "Movement/Spline/MovementPacketBuilder.h"
+
+#if VERSION_STRING >= Cata
+#include "Server/OpcodeTable.hpp"
+#endif
 
 using namespace AscEmu::Packets;
 

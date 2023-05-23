@@ -3,11 +3,11 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Server/MainServerDefines.h"
 #include "Server/Master.h"
 #include "Config/Config.h"
+#include "Cryptography/LogonCommDefines.h"
 #include "Cryptography/Sha1.h"
 #include "Server/World.h"
 #include "Utilities/Strings.hpp"

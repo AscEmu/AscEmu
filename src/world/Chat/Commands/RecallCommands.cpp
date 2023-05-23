@@ -3,14 +3,12 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
 #include "Server/MainServerDefines.h"
 #include "Chat/ChatHandler.hpp"
 #include "Server/WorldSession.h"
 #include "Management/ObjectMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Utilities/Strings.hpp"
-
 
 //.recall port
 bool ChatHandler::HandleRecallGoCommand(const char* args, WorldSession* m_session)

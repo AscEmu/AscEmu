@@ -11,11 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Macros/AIInterfaceMacros.hpp"
 #include "Objects/Units/Creatures/CreatureDefines.hpp"
 #include "Server/Script/ScriptEvent.hpp"
-#include "Movement/WaypointDefines.h"
 #include "Chat/ChatDefines.hpp"
-#include "Storage/DBC/DBCStores.h"
-
-#include <G3D/Vector3.h>
 
 inline bool inRangeYZX(const float* v1, const float* v2, const float r, const float h)
 {

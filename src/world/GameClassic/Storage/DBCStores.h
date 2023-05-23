@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 typedef std::map<uint32_t, DBC::Structures::MapDifficulty> MapDifficultyMap;
 
 #if VERSION_STRING == Classic
-#include "../world/Storage/DBC/DBCGlobals.hpp"
+#include "Storage/DBC/DBCGlobals.hpp"
 #include "Server/Definitions.h"
 
 inline float GetRadius(DBC::Structures::SpellRadiusEntry const* radius)

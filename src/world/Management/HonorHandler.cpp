@@ -19,7 +19,6 @@
  *
  */
 
-
 #include "Management/HonorHandler.h"
 #include "Objects/Item.hpp"
 #include "Management/ItemInterface.h"
@@ -28,7 +27,6 @@
 #include "Management/ObjectMgr.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Spell/SpellMgr.hpp"
-
 
 void HonorHandler::AddHonorPointsToPlayer(Player* pPlayer, uint32 uAmount)
 {

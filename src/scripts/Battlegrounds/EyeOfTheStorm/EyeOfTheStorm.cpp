@@ -23,6 +23,8 @@
 #include "Management/WorldStates.h"
 #include "Server/MainServerDefines.h"
 #include "Map/Management/MapMgr.hpp"
+#include "Map/Maps/BattleGroundMap.hpp"
+#include "Server/Master.h"
 #include "Spell/SpellMgr.hpp"
 
 static float EOTSBuffCoordinates[4][4] =
@@ -427,7 +429,6 @@ void EyeOfTheStorm::HookFlagDrop(Player* plr, GameObject* /*obj*/)
 
 void EyeOfTheStorm::HookFlagStand(Player* /*plr*/, GameObject* /*obj*/)
 {
-
 }
 
 bool EyeOfTheStorm::HookSlowLockOpen(GameObject* /*pGo*/, Player* pPlayer, Spell* /*pSpell*/)

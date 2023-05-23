@@ -5,17 +5,17 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Objects/Object.hpp"
-#include "Movement/MovementDefines.h"
-#include "MovementGenerator.h"
-#include "Objects/Units/Creatures/Creature.h"
-#include "Objects/Units/Unit.hpp"
-
 #include <deque>
 #include <functional>
 #include <set>
 #include <unordered_map>
 #include <vector>
+
+#include "Objects/Object.hpp"
+#include "Movement/MovementDefines.h"
+#include "MovementGenerator.h"
+#include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Unit.hpp"
 
 class PathGenerator;
 class Unit;

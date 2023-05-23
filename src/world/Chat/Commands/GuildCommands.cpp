@@ -3,11 +3,9 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
 #include "Server/MainServerDefines.h"
 #include "Chat/ChatHandler.hpp"
 #include "Management/ObjectMgr.h"
-
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/Guild/Guild.hpp"
 

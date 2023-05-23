@@ -18,10 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include "Management/AuctionHouse.h"
 #include "Management/AuctionMgr.h"
-
 #include "Logging/Logger.hpp"
 #include "Server/MainServerDefines.h"
 

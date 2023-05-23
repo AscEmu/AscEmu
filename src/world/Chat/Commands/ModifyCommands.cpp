@@ -3,12 +3,11 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
 #include "Chat/ChatHandler.hpp"
 #include "Management/ObjectMgr.h"
-#include <world/Spell/Definitions/PowerType.hpp>
-#include <world/Objects/Units/Stats.h>
-
+#include "Spell/Definitions/PowerType.hpp"
+#include "Objects/Units/Stats.h"
+#include "Server/MainServerDefines.h"
 
 //.modify hp
 bool ChatHandler::HandleModifyHp(const char* args, WorldSession* session)

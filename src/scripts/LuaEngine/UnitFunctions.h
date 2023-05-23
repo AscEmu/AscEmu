@@ -28,7 +28,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Spell/Definitions/PowerType.hpp>
 #include <Map/Maps/MapScriptInterface.h>
 #include <Objects/Units/Creatures/Pet.h>
-
+#include "Storage/DBC/DBCStores.h"
 #include "Management/ItemInterface.h"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/WeatherMgr.hpp"
