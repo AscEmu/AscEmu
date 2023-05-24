@@ -4,6 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
+#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptSetup.h"
 
 extern "C" SCRIPT_DECL void _exp_set_serverstate_singleton(ServerState* state)
 {

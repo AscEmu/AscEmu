@@ -5,17 +5,15 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <Objects/Units/Unit.hpp>
-#include <Objects/Item.hpp>
-#include <Management/TaxiMgr.h>
+#include "Management/TaxiMgr.h"
+#include "Objects/Item.hpp"
+#include "Objects/Units/Unit.hpp"
 
 extern "C"
 {
 #include <lua/lua.h>
 #include <lua/lauxlib.h>
 }
-
-#include <string>
 
 class LuaHelpers
 {

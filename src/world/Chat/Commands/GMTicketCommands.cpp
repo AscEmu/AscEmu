@@ -22,11 +22,11 @@
 #include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
 #include "Chat/ChatHandler.hpp"
-#include "Server/World.h"
 #include "Management/ObjectMgr.h"
+#include "Management/Tickets/TicketMgr.hpp"
+#include "Server/World.h"
 #include "Server/Packets/SmsgGmTicketDeleteTicket.h"
 #include "Server/Packets/SmsgGmTicketStatusUpdate.h"
-#include "Management/Tickets/TicketMgr.hpp"
 
 using namespace AscEmu::Packets;
 

@@ -53,12 +53,10 @@ class SERVER_DECL CommandTableStorage
     ChatCommand* GetReloadCommandTable(const char* name);
 
 private:
-
     CommandTableStorage() = default;
     ~CommandTableStorage() = default;
 
 public:
-
     static CommandTableStorage& getInstance();
 
     CommandTableStorage(CommandTableStorage&&) = delete;

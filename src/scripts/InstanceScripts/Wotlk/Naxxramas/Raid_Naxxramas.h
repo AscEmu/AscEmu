@@ -19,11 +19,8 @@
 
 #pragma once
 
-#include "Management/Faction.h"
-#include "Management/ObjectMgr.h"
+#include "Setup.h"
 #include "Objects/Units/Creatures/Pet.h"
-#include "Map/Maps/MapScriptInterface.h"
-#include "Server/Script/CreatureAIScript.h"
 
 class GrandWidowFaerlinaAI;
 class AnubRekhanAI;

@@ -4,9 +4,9 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Chat/ChatHandler.hpp"
+#include "Spell/SpellMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
-#include "Spell/SpellMgr.hpp"
 #include "Utilities/Strings.hpp"
 
 //.lookup achievement

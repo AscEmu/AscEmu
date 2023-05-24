@@ -1,13 +1,24 @@
 # Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 
-file(GLOB Recast_SRCS Source/*.cpp Include/*.h)
+# set up our project name.
+project(Recast CXX)
+
+file(GLOB SRC_RECAST Source/*.cpp Include/*.h)
+
+set(RECAST_SRCS
+    ${SRC_RECAST}
+)
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/Include
     ${ZLIB_INCLUDE_DIRS}
 )
 
-add_library(Recast STATIC ${Recast_SRCS})
-target_link_libraries(Recast ${ZLIB_LIBRARIES})
+add_library(${PROJECT_NAME} STATIC ${RECAST_SRCS})
 
-unset(Recast_SRCS)
+# include library dependencies.
+target_link_libraries(${PROJECT_NAME}
+  PUBLIC
+    ${ZLIB_LIBRARIES}
+)
+

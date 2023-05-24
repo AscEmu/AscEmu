@@ -102,7 +102,6 @@ set(SRC_INSTANCESCRIPTS
 )
 
 set(INSTANCESCRIPTS_SRCS
-    ${INSTANCESCRIPTS_SRCS}
     ${SRC_INSTANCESCRIPTS}
     ${SRC_CLASSIC_SCRIPTS_FILES}
     ${SRC_CLASSIC_BLACKFATHOM_SCRIPTS_FILES}
@@ -185,7 +184,6 @@ set(INSTANCESCRIPTS_SRCS
 
 include_directories(
     ${OPENSSL_INCLUDE_DIR}
-    ${PCRE_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
     ${CMAKE_SOURCE_DIR}/src/collision
     ${CMAKE_SOURCE_DIR}/src/collision/Management
@@ -282,7 +280,11 @@ source_group(Cata FILES ${SRC_CATA_SCRIPTS_FILES})
 
 add_library(${PROJECT_NAME} SHARED ${INSTANCESCRIPTS_SRCS})
 
-target_link_libraries(${PROJECT_NAME} world)
+# include library dependencies.
+target_link_libraries(${PROJECT_NAME}
+  PUBLIC
+    world
+)
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
 

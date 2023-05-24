@@ -4,7 +4,6 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Ichron.hpp"
-#include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Movement/MovementGenerators/PointMovementGenerator.h"
 #include "Server/Script/CreatureAIScript.h"
 

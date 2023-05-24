@@ -17,11 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Setup.h"
 #include "RuinsOfLordaeron.h"
-#include "Map/Management/MapMgr.hpp"
-#include "Map/Maps/BattleGroundMap.hpp"
-#include "Objects/GameObject.h"
-#include "Server/Master.h"
 
 RuinsOfLordaeron::RuinsOfLordaeron(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t, uint32_t players_per_side) :
     Arena(mgr, id, lgroup, t, players_per_side)

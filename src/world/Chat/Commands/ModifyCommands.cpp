@@ -5,9 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Chat/ChatHandler.hpp"
 #include "Management/ObjectMgr.h"
-#include "Spell/Definitions/PowerType.hpp"
 #include "Objects/Units/Stats.h"
 #include "Server/MainServerDefines.h"
+#include "Spell/Definitions/PowerType.hpp"
 
 //.modify hp
 bool ChatHandler::HandleModifyHp(const char* args, WorldSession* session)

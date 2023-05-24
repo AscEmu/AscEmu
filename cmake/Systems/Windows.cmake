@@ -7,7 +7,8 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX "C:/AscEmu" CACHE PATH "Install path prefix" FORCE)
 endif ()
 
-include(${CMAKE_SOURCE_DIR}/cmake/Modules/FindMySQL.cmake)
+find_package(MySQL)
+find_package(OpenSSL)
 
 # needed for socket stuff and crash handler
 set(EXTRA_LIBS 

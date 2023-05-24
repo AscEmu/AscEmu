@@ -18,13 +18,12 @@
  */
 
 #include "Setup.h"
-#include "Objects/Item.hpp"
 #include "Management/ItemInterface.h"
-#include "Spell/SpellAuras.h"
+#include "Objects/Item.hpp"
 #include "Server/Script/ScriptMgr.h"
+#include "Spell/SpellAuras.h"
+#include "Spell/Definitions/PowerType.hpp"
 #include "Spell/Definitions/ProcFlags.hpp"
-#include <Spell/Definitions/PowerType.hpp>
-#include "Spell/SpellMgr.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Spell Defs

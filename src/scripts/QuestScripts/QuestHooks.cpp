@@ -18,13 +18,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Setup.h"
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // On quest accept
-
-#include "Management/QuestLogEntry.hpp"
-#include "Map/Maps/MapScriptInterface.h"
-#include "Server/Script/CreatureAIScript.h"
-#include "Server/Script/ScriptMgr.h"
 
 void Hanazua(Player* pPlayer, Object* pObject)
 {

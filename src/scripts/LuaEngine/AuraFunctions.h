@@ -20,6 +20,8 @@
 #ifndef LUA_AURA_H
 #define LUA_AURA_H
 
+#include "SpellFunctions.h"
+
 namespace LuaAura
 {
     int GetObjectType(lua_State* L, Aura* aura)

@@ -11,9 +11,9 @@ This file is released under the MIT license. See README-MIT for more information
  */
 
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
-#include "Setup.h"
 #include "Instance_OldHillsbradFoothills.h"
-#include "Management/QuestLogEntry.hpp"
+
+#include "Setup.h"
 #include "Management/WorldStates.h"
 
 class OldHilsbradInstance : public InstanceScript

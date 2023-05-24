@@ -63,13 +63,8 @@
  unique numbering, instead of a shared pool.
 */
 
+#include "Setup.h"
 #include "StrandOfTheAncient.h"
-#include "Management/WorldStates.h"
-#include "Map/Management/MapMgr.hpp"
-#include "Objects/GameObject.h"
-#include "Chat/ChatDefines.hpp"
-#include "Map/Maps/BattleGroundMap.hpp"
-#include "Server/Master.h"
 
 const float sotaTitanRelic[4] = { 836.5f, -108.8f, 120.59f, 0.0f };
 

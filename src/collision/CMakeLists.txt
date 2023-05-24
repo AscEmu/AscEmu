@@ -9,7 +9,6 @@ file(GLOB SRC_MODELS Models/*.cpp Models/*.h)
 file(GLOB SRC_LOCAL_DIR *.cpp *.h)
 
 set(COLLISION_SRCS
-    ${COLLISION_SRCS}
     ${SRC_MANAGEMENT}
     ${SRC_MAPS}
     ${SRC_MODELS}
@@ -31,7 +30,13 @@ include_directories(
 )
 
 add_library(${PROJECT_NAME} STATIC ${COLLISION_SRCS})
-target_link_libraries(collision g3dlite shared)
+
+# include library dependencies.
+target_link_libraries(${PROJECT_NAME}
+  PUBLIC
+    g3dlite
+    shared
+)
 
 # generate precompiled header.
 if (USE_PCH)

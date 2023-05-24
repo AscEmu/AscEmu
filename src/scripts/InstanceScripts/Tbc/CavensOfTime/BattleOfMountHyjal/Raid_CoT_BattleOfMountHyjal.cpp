@@ -3,10 +3,9 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Setup.h"
 #include "Raid_CoT_BattleOfMountHyjal.h"
-#include "Management/Faction.h"
-#include "Server/Script/CreatureAIScript.h"
+
+#include "Setup.h"
 
 class MountHyjalScript : public InstanceScript
 {

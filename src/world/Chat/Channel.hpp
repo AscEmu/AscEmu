@@ -9,8 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include <mutex>
 #include <set>
 
-#include "CommonTypes.hpp"
 #include "ChannelDefines.hpp"
+#include "CommonTypes.hpp"
 
 class CachedCharacterInfo;
 class Player;

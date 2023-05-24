@@ -21,6 +21,8 @@
 #ifndef SCRIPTSETUP_H
 #define SCRIPTSETUP_H
 
+#include "CommonTypes.hpp"
+
 #ifdef SCRIPTLIB
 
 #include <git_version.h>

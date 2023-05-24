@@ -19,8 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Management/QuestLogEntry.hpp"
-#include "Server/Script/CreatureAIScript.h"
+#include "Setup.h"
 
 class RingoDeadNPC : public CreatureAIScript
 {

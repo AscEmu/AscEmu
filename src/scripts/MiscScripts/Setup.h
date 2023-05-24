@@ -5,7 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "Server/Script/ScriptMgr.h"
 #include "Management/QuestLogEntry.hpp"
+#include "Map/Maps/MapScriptInterface.h"
+#include "Server/MainServerDefines.h"
+#include "Server/Master.h"
+#include "Server/Script/CreatureAIScript.h"
 
 void SetupGoHandlers(ScriptMgr* mgr);
 void SetupQDGoHandlers(ScriptMgr* mgr);

@@ -38,7 +38,7 @@ include_directories(
 source_group(logon FILES ${SRC_LOGON_PROJECT})
 source_group(Auth FILES ${SRC_AUTH_FILES})
 source_group(Console FILES ${SRC_CONSOLE_FILES})
-source_group(LogonCommServer FILES ${SRC__LOGON_COMM_SERVER_FILES})
+source_group(LogonCommServer FILES ${SRC_LOGON_COMM_SERVER_FILES})
 source_group(Realm FILES ${SRC_REALM_FILES})
 source_group(Server FILES ${SRC_SERVER_FILES})
 
@@ -54,8 +54,14 @@ endif ()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/LogonConf.hpp.in ${CMAKE_CURRENT_SOURCE_DIR}/LogonConf.hpp)
 
-# link our shared lib.
-target_link_libraries(${PROJECT_NAME} shared ${MYSQL_LIBRARIES} ${ZLIB_LIBRARIES} ${PCRE_LIBRARIES})
+# include library dependencies.
+target_link_libraries(${PROJECT_NAME}
+  PUBLIC
+    shared
+    ${MYSQL_LIBRARIES}
+    ${ZLIB_LIBRARIES}
+    ${PCRE_LIBRARIES}
+)
 
 # provide make install rules.
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)

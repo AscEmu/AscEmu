@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-
 enum
 {
     //CN_SHADOWSWORD_ASSASSIN = 25484,

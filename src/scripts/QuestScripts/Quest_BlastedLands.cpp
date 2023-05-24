@@ -18,13 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Management/Gossip/GossipDefines.hpp"
-#include "Management/Gossip/GossipMenu.hpp"
-#include "Management/Gossip/GossipScript.hpp"
-#include "Map/Maps/MapScriptInterface.h"
-#include "Server/Script/ScriptMgr.h"
-#include "Map/Maps/WorldMap.hpp"
-#include "Objects/Object.hpp"
+#include "Setup.h"
 
 class HeroesofOld : public QuestScript
 {

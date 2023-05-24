@@ -3,29 +3,17 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "LUAEngine.h"
+#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptSetup.h"
+
 #ifdef __APPLE__
 #undef check
 #endif
 
-#include <Objects/GameObject.h>
-#include <Management/Guild/Guild.hpp>
-#include <Spell/Spell.h>
-#include <Objects/Units/Creatures/Creature.h>
-#include "LUAEngine.h"
-#include "Map/Management/MapMgr.hpp"
-#include "Server/Script/ScriptSetup.h"
-#include <WorldConf.h>
-
 #ifndef _WIN32
 #include <dirent.h>
 #endif
-#include "Management/QuestLogEntry.hpp"
-#include "Objects/Item.hpp"
-#include "Management/ArenaTeam.hpp"
-#include "LuaMacros.h"
-#include "LuaHelpers.h"
-#include "Server/Master.h"
-#include "Server/Script/CreatureAIScript.h"
 
 ScriptMgr* m_scriptMgr = nullptr;
 
@@ -3213,6 +3201,5 @@ void LuaEngine::ResumeLuaThread(int ref)
 }
 
 //I know its not a good idea to do it like that BUT it is the easiest way. I will make it better in steps:
-#include "LUAFunctions.h"
 #include "FunctionTables.h"
-
+#include "LUAFunctions.h"

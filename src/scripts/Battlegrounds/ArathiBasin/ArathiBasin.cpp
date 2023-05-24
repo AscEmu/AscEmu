@@ -17,16 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Setup.h"
 #include "ArathiBasin.h"
-#include "Management/HonorHandler.h"
-#include "Storage/MySQLDataStore.hpp"
-#include "Management/QuestLogEntry.hpp"
-#include "Management/WorldStates.h"
-#include "Server/MainServerDefines.h"
-#include "Map/Management/MapMgr.hpp"
-#include "Map/Maps/BattleGroundMap.hpp"
-#include "Server/Master.h"
-#include "Spell/SpellMgr.hpp"
 
 uint32_t buffentries[3] = { 180380, 180362, 180146 };
 

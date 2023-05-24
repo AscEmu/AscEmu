@@ -5,11 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Chat/ChatHandler.hpp"
 #include "Management/Battleground/Battleground.hpp"
-#include "Server/LogonCommClient/LogonCommHandler.h"
-#include "Storage/MySQLDataStore.hpp"
-#include "Server/MainServerDefines.h"
 #include "Map/Management/MapMgr.hpp"
+#include "Server/MainServerDefines.h"
+#include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Spell/SpellMgr.hpp"
+#include "Storage/MySQLDataStore.hpp"
 
 //.mount
 bool ChatHandler::HandleMountCommand(const char* args, WorldSession* m_session)

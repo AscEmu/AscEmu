@@ -4,8 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Chat/ChatHandler.hpp"
-#include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
+#include "Storage/MySQLDataStore.hpp"
 
 #ifdef FT_VEHICLES
 //.vehicle ejectpassenger

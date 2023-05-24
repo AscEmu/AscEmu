@@ -3,12 +3,12 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Server/MainServerDefines.h"
-#include "Spell/SpellMgr.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Management/ObjectMgr.h"
-#include "Spell/Definitions/SpellEffects.hpp"
+#include "Server/MainServerDefines.h"
 #include "Spell/SpellAuras.h"
+#include "Spell/SpellMgr.hpp"
+#include "Spell/Definitions/SpellEffects.hpp"
 
 //.admin castall
 bool ChatHandler::HandleAdminCastAllCommand(const char* args, WorldSession* m_session)

@@ -18,11 +18,9 @@
  */
 
 #include "Setup.h"
-#include "Spell/SpellAuras.h"
 #include "Server/Script/ScriptMgr.h"
-#include "Spell/Definitions/ProcFlags.hpp"
-#include <Spell/Definitions/PowerType.hpp>
-#include "Spell/SpellMgr.hpp"
+#include "Spell/SpellAuras.h"
+#include "Spell/Definitions/PowerType.hpp"
 
 bool Execute(uint8_t effectIndex, Spell* pSpell)
 {

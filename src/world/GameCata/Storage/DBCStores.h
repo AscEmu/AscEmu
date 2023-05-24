@@ -6,9 +6,9 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "DBCStructures.h"
-#include "Storage/DBC/DBCGlobals.hpp"
-#include "Map/Maps/InstanceDefines.hpp"
 #include "WorldConf.h"
+#include "Map/Maps/InstanceDefines.hpp"
+#include "Storage/DBC/DBCGlobals.hpp"
 
 typedef std::map<uint32_t, DBC::Structures::MapDifficulty> MapDifficultyMap;
 
@@ -155,7 +155,6 @@ DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 roo
 extern SERVER_DECL MapDifficultyMap sMapDifficultyMap;
 DBC::Structures::MapDifficulty const* getMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties difficulty);
 DBC::Structures::MapDifficulty const* getDownscaledMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties& difficulty);
-
 
 std::string generateName(uint32 type = 0);
 

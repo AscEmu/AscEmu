@@ -3,10 +3,10 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Server/MainServerDefines.h"
-#include "ChatCommand.hpp"
 #include "CommandTableStorage.hpp"
+#include "ChatCommand.hpp"
 #include "ChatHandler.hpp"
+#include "Server/MainServerDefines.h"
 
 CommandTableStorage& CommandTableStorage::getInstance()
 {
@@ -553,7 +553,7 @@ void CommandTableStorage::Init()
         { "return",             'n', &ChatHandler::HandleNpcReturnCommand,              "Returns NPC to spawnpoint.",                       nullptr },
         { "respawn",            'n', &ChatHandler::HandleNpcRespawnCommand,             "Respawns a dead NPC from its corpse.",             nullptr },
         { "say",                'n', &ChatHandler::HandleNpcSayCommand,                 "Makes selected NPC say <text>.",                   nullptr },
-        { "select",             'n', &ChatHandler::HandleNpcSelectCommand,              "Selects closest NPC",                               nullptr },
+        { "select",             'n', &ChatHandler::HandleNpcSelectCommand,              "Selects closest NPC",                              nullptr },
         { "set",                '0', nullptr,                                           "",                                      NPCSetCommandTable},
         { "spawn",              'n', &ChatHandler::HandleNpcSpawnCommand,               "Spawns NPC of entry <id>",                         nullptr },
         { "showtimers",         'm', &ChatHandler::HandleNpcShowTimersCommand,          "Shows timers for selected creature",               nullptr },

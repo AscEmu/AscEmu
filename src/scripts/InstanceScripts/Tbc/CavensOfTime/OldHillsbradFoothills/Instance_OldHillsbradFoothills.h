@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "LocationVector.h"
+
 static LocationVector Fires[] =
 {
     { 2160.68f, 235.382f, 53.8946f, 3.55550f },

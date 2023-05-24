@@ -5,6 +5,7 @@ find_package(OpenSSL 1.0 REQUIRED COMPONENTS Crypto SSL)
 add_library(openssl INTERFACE)
 
 target_link_libraries(openssl
-    INTERFACE
+  INTERFACE
     OpenSSL::Crypto
-    OpenSSL::SSL)
+    OpenSSL::SSL
+)

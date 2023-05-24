@@ -4,8 +4,6 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Cyangosa.hpp"
-#include "Objects/Units/Creatures/Summons/Summon.hpp"
-#include "Server/Script/CreatureAIScript.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //  Moragg AI

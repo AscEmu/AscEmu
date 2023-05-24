@@ -1,6 +1,9 @@
 # Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 include_guard(GLOBAL)
 
+# correctly switches from -std=gnu++2a to -std=c++2a.
+set(CXX_EXTENSIONS OFF)
+
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 20)
 

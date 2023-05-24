@@ -18,13 +18,12 @@
  */
 
 #include "Setup.h"
-#include "Map/Management/MapMgr.hpp"
 #include "Management/Faction.h"
-#include "Spell/SpellAuras.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Server/Opcodes.hpp"
 #include "Server/Script/ScriptMgr.h"
-#include <Spell/Definitions/DispelType.hpp>
-#include "Spell/SpellMgr.hpp"
+#include "Spell/SpellAuras.h"
+#include "Spell/Definitions/DispelType.hpp"
 
 enum
 {

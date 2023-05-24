@@ -17,18 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Setup.h"
 #include "WarsongGulch.h"
-#include "Management/HonorHandler.h"
-#include "Management/WorldStates.h"
-#include "Server/MainServerDefines.h"
-#include "Map/Management/MapMgr.hpp"
-#include "Spell/SpellMgr.hpp"
-#include "Objects/GameObject.h"
-#include "Server/WorldSession.h"
-#include "Chat/ChatDefines.hpp"
-#include "WarsongGulchDefinitions.h"
-#include "Map/Maps/BattleGroundMap.hpp"
-#include "Server/Master.h"
 
 WarsongGulch::WarsongGulch(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : Battleground(mgr, id, lgroup, t)
 {

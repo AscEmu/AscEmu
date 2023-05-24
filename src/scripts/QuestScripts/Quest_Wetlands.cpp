@@ -18,11 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cstdint>
-
-#include "Server/Script/ScriptMgr.h"
-#include "Spell/Spell.Legacy.h"
-#include "Utilities/Util.hpp"
+#include "Setup.h"
 
 enum
 {

@@ -3,10 +3,9 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Setup.h"
 #include "Xevozz.hpp"
-#include "Objects/Units/Creatures/Summons/Summon.hpp"
-#include "Movement/MovementGenerators/PointMovementGenerator.h"
-#include "Server/Script/CreatureAIScript.h"
+#include "Instance_TheVioletHold.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //  Xevozz AI

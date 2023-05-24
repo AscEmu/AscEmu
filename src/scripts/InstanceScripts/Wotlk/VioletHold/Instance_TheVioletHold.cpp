@@ -3,21 +3,20 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Setup.h"
+#include "Instance_TheVioletHold.hpp"
+#include "AzureSaboteur.hpp"
 #include "Cyangosa.hpp"
 #include "Erekem.hpp"
 #include "Ichron.hpp"
 #include "Lavanthor.hpp"
 #include "Moragg.hpp"
-#include "Xevozz.hpp"
-#include "Zuramat.hpp"
 #include "Portal_Common.hpp"
 #include "Portal_Elite.hpp"
 #include "Portal_Intro.hpp"
-#include "AzureSaboteur.hpp"
-#include "Instance_TheVioletHold.hpp"
-#include "Movement/MovementGenerators/PointMovementGenerator.h"
-#include "Server/Script/CreatureAIScript.h"
+#include "Setup.h"
+#include "Xevozz.hpp"
+#include "Zuramat.hpp"
+
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // TheVioletHold Instance

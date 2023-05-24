@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "LocationVector.h"
+
 enum
 {
     SP_SCALDING_WATER = 37284, // This "dot" is supposed to tick whenever you get in the water, it doesnt tick anymore after u kill lurker.

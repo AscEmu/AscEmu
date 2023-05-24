@@ -19,8 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Objects/Units/Players/Player.hpp"
-#include "Server/Script/CreatureAIScript.h"
+#include "Setup.h"
 
 // Chieftain Oomooroo
 class ChieftainOomoorooQAI : public CreatureAIScript

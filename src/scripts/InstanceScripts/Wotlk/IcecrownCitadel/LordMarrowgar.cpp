@@ -3,12 +3,9 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Raid_IceCrownCitadel.hpp"
 #include "LordMarrowgar.hpp"
-#include "Management/Faction.h"
-#include "Objects/Units/Creatures/Summons/Summon.hpp"
-#include <Management/ObjectMgr.h>
 #include "Movement/MovementGenerators/PointMovementGenerator.h"
-#include "Server/Script/CreatureAIScript.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Boss: Lord Marrowgar

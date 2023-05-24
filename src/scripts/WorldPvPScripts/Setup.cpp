@@ -1,6 +1,8 @@
-#include <StdAfx.h>
+#include "Setup.h"
+#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptSetup.h"
+
 #define SKIP_ALLOCATOR_SHARING 1
-#include <ScriptSetup.h>
 
 void SetupPvPTerokkarForest(ScriptMgr* mgr);
 void SetupPvPHellfirePeninsula(ScriptMgr* mgr);

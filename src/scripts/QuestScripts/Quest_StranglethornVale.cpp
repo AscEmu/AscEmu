@@ -18,9 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Map/Maps/MapScriptInterface.h"
-#include "Movement/Spline/MoveSpline.h"
-#include "Server/Script/CreatureAIScript.h"
+#include "Setup.h"
 
 enum
 {

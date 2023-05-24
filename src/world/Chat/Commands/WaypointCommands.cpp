@@ -3,12 +3,12 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Map/Management/MapMgr.hpp"
 #include "Chat/ChatHandler.hpp"
-#include "Server/WorldSession.h"
+#include "Map/Management/MapMgr.hpp"
 #include "Movement/WaypointManager.h"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Server/MainServerDefines.h"
+#include "Server/WorldSession.h"
 
 //.waypoint add
 bool ChatHandler::HandleWayPointAddCommand(const char* args, WorldSession* m_session)
@@ -142,6 +142,7 @@ bool ChatHandler::HandleWayPointDeleteAllCommand(const char* /*args*/, WorldSess
     sWaypointMgr->deleteAllWayPoints(creature_target->getWaypointPath());
     return true;
 }
+
 //.waypoint hide
 bool ChatHandler::HandleWayPointHideCommand(const char* /*args*/, WorldSession* m_session)
 {

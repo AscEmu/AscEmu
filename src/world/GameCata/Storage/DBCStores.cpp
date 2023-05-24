@@ -4,12 +4,12 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Storage/DBC/DBCStores.h"
-#include "Storage/DBC/DBCGlobals.hpp"
-#include "Map/Area/AreaStorage.hpp"
 #include "WorldConf.h"
+#include "Map/Area/AreaStorage.hpp"
+#include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Server/World.h"
 #include "Spell/SpellAuras.h"
-#include "Objects/Units/Players/PlayerDefines.hpp"
+#include "Storage/DBC/DBCGlobals.hpp"
 
 #if VERSION_STRING == Cata
 typedef std::map<WMOAreaTableTripple, DBC::Structures::WMOAreaTableEntry const*> WMOAreaInfoByTripple;

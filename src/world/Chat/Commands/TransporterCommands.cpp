@@ -4,9 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Chat/ChatHandler.hpp"
-#include "Exceptions/Exceptions.hpp"
-#include "Storage/MySQLDataStore.hpp"
 #include "Objects/Transporter.hpp"
+#include "Storage/MySQLDataStore.hpp"
 
 bool ChatHandler::HandleGetTransporterTime(const char* /*args*/, WorldSession* m_session)
 {
