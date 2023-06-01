@@ -3,14 +3,8 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Setup.h"
 #include "AlteracValley.h"
-#include "Management/HonorHandler.h"
-#include "Storage/MySQLDataStore.hpp"
-#include "Management/WorldStates.h"
-#include "Map/Management/MapMgr.hpp"
-#include "Map/Maps/BattleGroundMap.hpp"
-#include "Server/Master.h"
-#include "Server/Packets/SmsgMessageChat.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Fire Locations

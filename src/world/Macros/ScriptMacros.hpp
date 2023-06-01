@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // Pre-made TargetTypes
 #define Target_Self TargetType()

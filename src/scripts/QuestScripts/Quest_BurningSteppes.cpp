@@ -16,11 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cstdint>
-
-#include "Management/QuestLogEntry.hpp"
-#include "Objects/Units/Players/Player.hpp"
-#include "Server/Script/ScriptMgr.h"
+#include "Setup.h"
 
 class TabletOfTheSeven : public QuestScript
 {

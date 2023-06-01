@@ -5,8 +5,8 @@ project(world CXX)
 
 file(GLOB SRC_CHAT_FILES Chat/*.cpp Chat/*.h Chat/*.hpp)
 file(GLOB SRC_COMMAND_FILES Chat/Commands/*.cpp Chat/Commands/*.h Chat/Commands/*.hpp)
+file(GLOB SRC_DATA_FILES Data/*.cpp Data/*.h Data/*.hpp)
 
-include(Data/CMakeLists.txt) # SCH: coming soon
 include(Game${ASCEMU_VERSION}/Storage/CMakeLists.txt) # SCH: coming soon
 
 file(GLOB SRC_MACROS_FILES Macros/*.cpp Macros/*.h Macros/*.hpp)
@@ -110,26 +110,13 @@ set(WORLD_SRCS
     ${SRC_UNITS_PLAYERS_FILES}
     ${SRC_UNITS_SUMMONS_FILES}
     ${SRC_WORLD_PROJECT}
-
-    # required for linker
-    ../collision/Management/VMapFactory.cpp
-    ../collision/Management/VMapManager2.cpp
-    ../collision/Management/MMapFactory.cpp
-    ../collision/Management/MMapManager.cpp
-    ../collision/Models/ModelInstance.cpp
-    ../collision/Models/WorldModel.cpp
-    ../collision/Models/GameObjectModel.cpp
-    ../collision/Maps/MapTree.cpp
-    ../collision/Maps/TileAssembler.cpp
-    ../collision/DynamicTree.cpp
-    ../collision/BoundingIntervalHierarchy.cpp
 )
 
 if ("${ASCEMU_VERSION}" STREQUAL "Mop" OR "${ASCEMU_VERSION}" STREQUAL "Cata")
     set(WORLD_SRCS
         ${WORLD_SRCS}
         ${SRC_STORAGE_DB2_FILES}
-    )
+)
 endif ()
 
 include_directories(
@@ -204,15 +191,23 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFre
 endif ()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS TRUE)
-add_dependencies(${PROJECT_NAME} shared g3dlite Detour Recast)
 
-if (BUILD_ASCEMUSCRIPTS AND BUILD_LUAENGINE)
-    add_dependencies(${PROJECT_NAME} lualib)
-endif ()
+add_dependencies(${PROJECT_NAME} shared g3dlite Detour Recast)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/WorldConf.h.in ${CMAKE_CURRENT_SOURCE_DIR}/WorldConf.h)
 
-target_link_libraries(${PROJECT_NAME} shared g3dlite Detour Recast ${PCRE_LIBRARIES})
+# include library dependencies.
+target_link_libraries(${PROJECT_NAME}
+  PUBLIC
+    shared
+    lualib
+    collision
+    g3dlite
+    Detour
+    Recast
+    ${PCRE_LIBRARIES}
+)
+
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
 
 # generate precompiled header.

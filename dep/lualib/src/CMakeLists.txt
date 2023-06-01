@@ -1,16 +1,17 @@
 # Angle bracket includes
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
+# set up our project name.
 project(lualib C)
 
-add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-
-file(GLOB lua_headers
+file(GLOB LUALIB_HEADERS
     "lua/*.h"
 )
 
-file(GLOB lua_sources
+file(GLOB LUALIB_SOURCES
     "lua/*.c"
 )
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
 # lua static library
-add_library (${PROJECT_NAME} STATIC ${lua_sources})
+add_library (${PROJECT_NAME} STATIC ${LUALIB_SOURCES})

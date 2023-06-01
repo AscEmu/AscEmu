@@ -18,17 +18,15 @@
  */
 
 #include "Setup.h"
+#include "Management/ItemInterface.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/Skill.hpp"
-#include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.hpp"
-#include "Storage/MySQLDataStore.hpp"
-#include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Server/Master.h"
 #include "Spell/SpellAuras.h"
-#include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
+#include "Storage/MySQLDataStore.hpp"
 #include "Storage/DBC/DBCStores.h"
 
 enum

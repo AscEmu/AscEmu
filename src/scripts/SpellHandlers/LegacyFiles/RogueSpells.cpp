@@ -18,14 +18,13 @@
  */
 
 #include "Setup.h"
-#include "Objects/Item.hpp"
 #include "Management/ItemInterface.h"
 #include "Map/Management/MapMgr.hpp"
-#include "Spell/SpellAuras.h"
+#include "Objects/Item.hpp"
 #include "Server/Script/ScriptMgr.h"
-#include <Spell/Definitions/SpellIsFlags.hpp>
-#include <Spell/Definitions/SpellMechanics.hpp>
-#include "Spell/SpellMgr.hpp"
+#include "Spell/SpellAuras.h"
+#include "Spell/Definitions/SpellIsFlags.hpp"
+#include "Spell/Definitions/SpellMechanics.hpp"
 
 //Alice : Correct formula for Rogue - Preparation
 

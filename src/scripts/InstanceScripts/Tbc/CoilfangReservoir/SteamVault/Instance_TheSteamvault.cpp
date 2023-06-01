@@ -5,8 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Instance_TheSteamvault.h"
-#include "Management/Faction.h"
-#include "Server/Script/CreatureAIScript.h"
 
 class TheSteamvaultInstanceScript : public InstanceScript
 {

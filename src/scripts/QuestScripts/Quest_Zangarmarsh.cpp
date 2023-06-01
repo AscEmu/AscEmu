@@ -19,14 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cstdint>
-
-#include "Management/Gossip/GossipDefines.hpp"
-#include "Management/Gossip/GossipMenu.hpp"
-#include "Management/Gossip/GossipScript.hpp"
-#include "Objects/Units/Creatures/Creature.h"
-#include "Objects/Units/Players/Player.hpp"
-#include "Server/Script/ScriptMgr.h"
+#include "Setup.h"
 
 class AncientMarks : public GossipScript
 {

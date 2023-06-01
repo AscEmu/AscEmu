@@ -5,6 +5,15 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "AuraFunctions.h"
+#include "GameobjectFunctions.h"
+#include "ItemFunctions.h"
+#include "LuaSqlApi.h"
+#include "PacketFunctions.h"
+#include "SpellFunctions.h"
+#include "TaxiFunctions.h"
+#include "UnitFunctions.h"
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Script function tables
 

@@ -50,7 +50,16 @@ source_group(Threading FILES ${SRC_THREADING_FILES})
 source_group(Utilities FILES ${SRC_UTILITIES_FILES})
 
 add_library(${PROJECT_NAME} STATIC ${SHARED_SRCS})
-target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${MYSQL_LIBRARY} ${OPENSSL_LIBRARIES} ${EXTRA_LIBS})
+
+# include library dependencies.
+target_link_libraries(${PROJECT_NAME}
+  PUBLIC
+    ${ZLIB_LIBRARIES}
+    ${CMAKE_THREAD_LIBS_INIT}
+    ${MYSQL_LIBRARY}
+    ${OPENSSL_LIBRARIES}
+    ${EXTRA_LIBS}
+)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Common.hpp.in ${CMAKE_CURRENT_SOURCE_DIR}/Common.hpp)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/AEVersion.hpp.in ${CMAKE_CURRENT_SOURCE_DIR}/AEVersion.hpp)

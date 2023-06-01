@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Omor.hpp"
 #include "Map/AreaBoundary.hpp"
-#include "Server/Script/CreatureAIScript.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Boss: Omor The Unscarred

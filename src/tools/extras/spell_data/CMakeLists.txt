@@ -1,9 +1,12 @@
 # Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 
-file(GLOB SPELL_DATA_SOURCES *.cpp *.h)
+# set up our project name.
+project(spell_data CXX)
 
-set(SRC_SPELL_DATA
-    ${SPELL_DATA_SOURCES}
+file(GLOB SRC_SPELL_DATA *.cpp *.h)
+
+set(SPELL_DATA_SRCS
+    ${SRC_SPELL_DATA}
 )
 
 if (NOT WIN32 AND NOT IS_64BIT)
@@ -14,6 +17,12 @@ include_directories(
     ${LOADLIB_PATH}
 )
 
-add_executable(spell_data ${SRC_SPELL_DATA})
-target_link_libraries(spell_data ${ZLIB_LIBRARIES})
-install(TARGETS spell_data RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})
+add_executable(${PROJECT_NAME} ${SPELL_DATA_SRCS})
+
+# include library dependencies.
+target_link_libraries(${PROJECT_NAME}
+  PUBLIC
+    ${ZLIB_LIBRARIES}
+)
+
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})

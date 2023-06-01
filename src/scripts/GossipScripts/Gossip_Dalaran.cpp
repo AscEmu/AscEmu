@@ -4,9 +4,6 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
-#include "Management/Gossip/GossipScript.hpp"
-#include "Objects/GameObject.h"
-#include "Server/Script/ScriptMgr.h"
 
 enum UnorderedEntrys
 {

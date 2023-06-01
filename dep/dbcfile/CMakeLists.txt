@@ -14,4 +14,10 @@ include_directories(
 )
 
 add_library(${PROJECT_NAME} STATIC ${SRC_DBCFILE})
-target_link_libraries( ${PROJECT_NAME} loadlib libmpq)
+
+# include library dependencies.
+target_link_libraries(${PROJECT_NAME}
+  PUBLIC
+    loadlib
+    libmpq
+)

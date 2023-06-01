@@ -19,11 +19,11 @@
  *
  */
 
-#include "Server/MainServerDefines.h"
-#include "Map/Maps/InstanceDefines.hpp"
-#include "Map/Management/MapMgr.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Management/ObjectMgr.h"
+#include "Map/Management/MapMgr.hpp"
+#include "Map/Maps/InstanceDefines.hpp"
+#include "Server/MainServerDefines.h"
 #include "Server/Packets/SmsgInstanceReset.h"
 #include "Server/Script/ScriptMgr.h"
 

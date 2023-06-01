@@ -1,11 +1,12 @@
 # Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 
-# set up project name
+# set up our project name.
 project(vmap4_extractor CXX)
-file(GLOB source *.cpp *.h)
 
-set(source
-    ${source}
+file(GLOB SRC_VMAPS_EXTRACTOR *.cpp *.h)
+
+set(VMAPS_EXTRACTOR_SRCS
+    ${SRC_VMAPS_EXTRACTOR}
 )
 
 if (UNIX AND NOT IS_64BIT)
@@ -20,9 +21,14 @@ include_directories(
     ${ZLIB_INCLUDE_DIRS}
 )
 
-add_executable(${PROJECT_NAME} ${source})
-target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES} ${BZIP2_LIBRARIES} storm)
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})
+add_executable(${PROJECT_NAME} ${VMAPS_EXTRACTOR_SRCS})
 
-unset(sources)
-unset(headers)
+# include library dependencies.
+target_link_libraries(${PROJECT_NAME}
+  PUBLIC
+    storm
+    ${BZIP2_LIBRARIES}
+    ${ZLIB_LIBRARIES}
+)
+
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})

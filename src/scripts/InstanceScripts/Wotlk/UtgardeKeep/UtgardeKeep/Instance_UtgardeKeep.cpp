@@ -4,9 +4,9 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 // \todo Ingvar the Plunderer - Ressurection Event, Fix despawn(i think all bosses), Add sound ID's
-#include "Setup.h"
 #include "Instance_UtgardeKeep.h"
-#include "Server/Script/CreatureAIScript.h"
+
+#include "Setup.h"
 
 class UtgardeKeepScript : public InstanceScript
 {

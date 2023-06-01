@@ -7,9 +7,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdio>
 
-#include "Threading/Mutex.h"
-#include <Server/World.h>
 #include "Movement/MovementDefines.h"
+#include "Server/World.h"
+#include "Threading/Mutex.h"
 
 namespace G3D { class Plane; }
 namespace VMAP

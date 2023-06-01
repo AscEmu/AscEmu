@@ -6,9 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Raid_Magtheridons_Lair.hpp"
 #include "Magtheridon.hpp"
-#include "Management/Faction.h"
-#include "Map/Maps/MapScriptInterface.h"
-#include "Server/Script/CreatureAIScript.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Magtheridons Lair Instance

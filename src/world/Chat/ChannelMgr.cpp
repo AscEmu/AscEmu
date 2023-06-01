@@ -3,8 +3,8 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Channel.hpp"
 #include "ChannelMgr.hpp"
+#include "Channel.hpp"
 #include "Map/Area/AreaManagementGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "Objects/Units/Players/Player.hpp"

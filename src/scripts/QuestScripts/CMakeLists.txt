@@ -16,14 +16,12 @@ set(SRC_QUESTSCRIPTS
 )
 
 set(QUESTSCRIPTS_SRCS
-    ${QUESTSCRIPTS_SRCS}
     ${SRC_QUESTSCRIPTS}
     ${SRC_LOCAL_DIR}
 )
 
 include_directories(
     ${OPENSSL_INCLUDE_DIR}
-    ${PCRE_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
     ${CMAKE_SOURCE_DIR}/src/collision
     ${CMAKE_SOURCE_DIR}/src/collision/Management
@@ -35,9 +33,14 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${ZLIB_INCLUDE_DIRS}
 )
+
 add_library(${PROJECT_NAME} SHARED ${QUESTSCRIPTS_SRCS})
 
-target_link_libraries(${PROJECT_NAME} world)
+# include library dependencies.
+target_link_libraries(${PROJECT_NAME}
+  PUBLIC
+    world
+)
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
 

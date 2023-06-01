@@ -18,9 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Server/Script/CreatureAIScript.h"
-#include "Management/QuestLogEntry.hpp"
-#include "Server/Script/ScriptMgr.h"
+#include "Setup.h"
 
 class Professor_Phizzlethorpe : public CreatureAIScript
 {

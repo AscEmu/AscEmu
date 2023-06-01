@@ -20,12 +20,12 @@
  */
 
 #include "Chat/ChatHandler.hpp"
-#include "Objects/Item.hpp"
-#include "Management/QuestLogEntry.hpp"
 #include "Management/ItemInterface.h"
-#include "Storage/MySQLDataStore.hpp"
-#include "Server/MainServerDefines.h"
+#include "Management/QuestLogEntry.hpp"
 #include "Map/Management/MapMgr.hpp"
+#include "Objects/Item.hpp"
+#include "Server/MainServerDefines.h"
+#include "Storage/MySQLDataStore.hpp"
 
 class ChatHandler;
 

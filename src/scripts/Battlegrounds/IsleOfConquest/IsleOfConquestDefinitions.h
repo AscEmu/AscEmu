@@ -5,6 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#ifdef FT_VEHICLES
+#include "Objects/Units/Creatures/Vehicle.hpp"
+#endif
+
 enum
 {
     IOC_NUM_CONTROL_POINTS = 7,

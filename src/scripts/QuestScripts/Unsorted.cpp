@@ -19,8 +19,6 @@
  */
 
 #include "Setup.h"
-#include "Map/Maps/MapScriptInterface.h"
-#include "Server/Script/CreatureAIScript.h"
 
 // QUEST_CLUCK         3861
 // ITEM_CHICKEN_FEED   11109

@@ -1,5 +1,6 @@
 # Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 
+# set up our project name.
 project(SpellHandlers CXX)
 
 include(Scripts/CMakeLists.txt)
@@ -37,9 +38,14 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/dep/utf8cpp
 )
 add_library(${PROJECT_NAME} SHARED ${sources} ${headers})
+
 add_definitions(-DSCRIPTLIB -DSKIP_ALLOCATOR_SHARING)
 
-target_link_libraries(${PROJECT_NAME} world)
+# include library dependencies.
+target_link_libraries(${PROJECT_NAME}
+  PUBLIC
+    world
+)
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH} )
 

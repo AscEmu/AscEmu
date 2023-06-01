@@ -19,8 +19,8 @@
 
 #include "Setup.h"
 #include "Management/Faction.h"
-#include "Spell/SpellAuras.h"
 #include "Server/Script/ScriptMgr.h"
+#include "Spell/SpellAuras.h"
 
 bool Starfall(uint8_t effectIndex, Spell* pSpell)
 {

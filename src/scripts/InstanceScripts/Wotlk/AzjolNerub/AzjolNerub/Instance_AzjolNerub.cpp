@@ -5,9 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 // \ todo Finish Kritkhir Encounter, needs more blizzlike | Anuburak | Add's AI and trash
 
-#include "Setup.h"
 #include "Instance_AzjolNerub.h"
-#include "Server/Script/CreatureAIScript.h"
+
+#include "Setup.h"
 
 class AzjolNerubInstanceScript : public InstanceScript
 {

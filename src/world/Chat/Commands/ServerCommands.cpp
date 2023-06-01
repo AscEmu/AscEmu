@@ -5,12 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Chat/ChatHandler.hpp"
 #include "Chat/CommandTableStorage.hpp"
-#include "Server/WorldSocket.h"
-#include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include "Server/Master.h"
+#include "Server/WorldSocket.h"
 #include "Server/Packets/SmsgServerMessage.h"
 #include "Server/Script/ScriptMgr.h"
+#include "Storage/MySQLDataStore.hpp"
 
 //.server info
 bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_session)

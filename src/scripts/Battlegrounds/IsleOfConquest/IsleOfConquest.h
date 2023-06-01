@@ -5,8 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Management/Battleground/Battleground.hpp"
-#include "Objects/Units/Creatures/Vehicle.hpp"
 #include "IsleOfConquestDefinitions.h"
 
 class IsleOfConquest : public Battleground

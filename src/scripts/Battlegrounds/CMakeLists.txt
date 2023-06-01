@@ -55,7 +55,6 @@ include_directories(
 )
 
 # source group.
-source_group(Battlegrounds FILES ${SRC_BATTLEGROUNDS})
 source_group(AlteracValley FILES ${SRC_ALTERAC_VALLEY})
 source_group(ArathiBasin FILES ${SRC_ARATHI_BASIN})
 source_group(CircleOfBlood FILES ${SRC_CIRCLE_OF_BLOOD})
@@ -70,7 +69,11 @@ source_group(WarsongGulch FILES ${SRC_WARSONG_GULCH})
 
 add_library(${PROJECT_NAME} SHARED ${BATTLEGROUNDS_SRCS})
 
-target_link_libraries(${PROJECT_NAME} world)
+# include library dependencies.
+target_link_libraries(${PROJECT_NAME}
+  PUBLIC
+    world
+)
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
 

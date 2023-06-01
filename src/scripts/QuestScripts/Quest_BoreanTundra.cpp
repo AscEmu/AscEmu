@@ -16,10 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Management/QuestLogEntry.hpp"
-#include "Map/Maps/MapScriptInterface.h"
-#include "Server/Script/CreatureAIScript.h"
-#include "Server/Script/ScriptMgr.h"
+#include "Setup.h"
 
 enum 
 {

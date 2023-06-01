@@ -3,11 +3,9 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Setup.h"
 #include "LadyDeathwhisper.hpp"
-#include "Management/Faction.h"
-#include "Objects/Units/Creatures/Summons/Summon.hpp"
-#include <Management/ObjectMgr.h>
-#include "Server/Script/CreatureAIScript.h"
+#include "Raid_IceCrownCitadel.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Boss: Lady Deathwhisper

@@ -3,25 +3,8 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "GameobjectFunctions.h"
-#include "LuaMacros.h"
-#include <Objects/GameObject.h>
-#include <Map/Management/MapMgr.hpp>
-#include "LuaGlobal.h"
 #include "LUAEngine.h"
-#include <Map/Maps/MapScriptInterface.h>
-#include <Objects/Units/Creatures/Creature.h>
-#include <Storage/MySQLDataStore.hpp>
-#include <Spell/SpellMgr.hpp>
-#include <Server/MainServerDefines.h>
-#include "LuaHelpers.h"
-#include "Management/WeatherMgr.hpp"
-#include "Server/Master.h"
-
-extern "C"
-{
-    #include <lua/lauxlib.h>
-}
+#include "GameobjectFunctions.h"
 
 int LuaGameObject::GossipCreateMenu(lua_State* L, GameObject* ptr)
 {

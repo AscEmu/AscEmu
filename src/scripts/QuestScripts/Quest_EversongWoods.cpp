@@ -17,12 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Objects/Units/Creatures/AIInterface.h"
-#include "Objects/Item.hpp"
-#include "Storage/MySQLDataStore.hpp"
-#include <Management/QuestLogEntry.hpp>
-#include "Map/Maps/MapScriptInterface.h"
-#include "Server/Script/CreatureAIScript.h"
+#include "Setup.h"
 
 enum
 {

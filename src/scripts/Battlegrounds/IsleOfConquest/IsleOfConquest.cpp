@@ -16,12 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Setup.h"
 #include "IsleOfConquest.h"
-#include "Storage/MySQLDataStore.hpp"
-#include "Management/WorldStates.h"
-#include "Map/Management/MapMgr.hpp"
-#include "Map/Maps/BattleGroundMap.hpp"
-#include "Server/Master.h"
 
 // gameobject faction
 static uint32_t g_gameObjectFactions[IOC_NUM_CONTROL_POINTS] =

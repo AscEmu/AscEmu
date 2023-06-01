@@ -18,8 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Server/Script/ScriptMgr.h"
-#include "Spell/SpellMgr.hpp"
+#include "Setup.h"
 
 class Veronia : public GossipScript
 {

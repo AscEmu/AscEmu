@@ -41,7 +41,11 @@ include_directories(
 
 add_library(${PROJECT_NAME} SHARED ${EVENTSCRIPTS_SRCS})
 
-target_link_libraries(${PROJECT_NAME} world)
+# include library dependencies.
+target_link_libraries(${PROJECT_NAME}
+  PUBLIC
+    world
+)
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
 

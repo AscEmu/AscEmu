@@ -4,9 +4,9 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 // \todo Last boss needs to be finished
-#include "Setup.h"
 #include "Instance_Nexus.h"
-#include "Server/Script/CreatureAIScript.h"
+
+#include "Setup.h"
 
 class AnomalusAI : public CreatureAIScript
 {

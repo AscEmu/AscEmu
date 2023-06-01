@@ -5,9 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Raid_GruulsLair.hpp"
-#include "HighKingMaulgar.hpp"
 #include "GruulTheDragonKiller.hpp"
-#include "Server/Script/CreatureAIScript.h"
+#include "HighKingMaulgar.hpp"
 
 GruulsLairInstanceScript::GruulsLairInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr)
 {

@@ -4,17 +4,11 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Raid_IceCrownCitadel.hpp"
-#include "LordMarrowgar.hpp"
-#include "LadyDeathwhisper.hpp"
+
 #include "GunshipBattle.hpp"
+#include "LadyDeathwhisper.hpp"
+#include "LordMarrowgar.hpp"
 #include "Saurfang.hpp"
-#include "Management/Faction.h"
-#include "Objects/Units/Creatures/Summons/Summon.hpp"
-#include <Management/ObjectMgr.h>
-#include <Management/TransporterHandler.h>
-#include <Objects/Transporter.hpp>
-#include "Movement/MovementGenerators/PointMovementGenerator.h"
-#include "Server/Script/CreatureAIScript.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //ICC zone: 4812

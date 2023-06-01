@@ -4,8 +4,6 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
-#include "Map/Maps/MapScriptInterface.h"
-#include "Server/Script/CreatureAIScript.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Explosive Sheep (Summoned by ItemID: 4384)

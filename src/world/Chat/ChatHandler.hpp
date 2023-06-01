@@ -5,10 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "ChatDefines.hpp"
 #include "ChatCommand.hpp"
-#include "Management/SkillNameMgr.h"
+#include "ChatDefines.hpp"
 #include "Management/ItemProperties.hpp"
+#include "Management/SkillNameMgr.h"
 
 class WorldSession;
 class Player;
