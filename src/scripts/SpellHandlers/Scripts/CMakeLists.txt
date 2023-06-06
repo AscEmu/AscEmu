@@ -21,4 +21,5 @@ set(SRC_SPELL_SCRIPTS_FILES
 )
 
 source_group(Scripts FILES ${SRC_SPELL_SCRIPTS_FILES})
+
 unset(PATH_PREFIX)

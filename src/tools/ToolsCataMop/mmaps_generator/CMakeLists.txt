@@ -13,7 +13,6 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
     ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Recast/Include
     ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
-    ${PCRE_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/src/shared
     ${CMAKE_SOURCE_DIR}/src/collision
     ${CMAKE_SOURCE_DIR}/src/collision/Management
@@ -33,7 +32,8 @@ target_link_libraries(${PROJECT_NAME}
     collision
     Detour
     Recast
-    ${PCRE_LIBRARIES}
 )
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})
+
+unset(MMAPS_EXTRACTOR_SRCS)

@@ -6,9 +6,6 @@ project(world CXX)
 file(GLOB SRC_CHAT_FILES Chat/*.cpp Chat/*.h Chat/*.hpp)
 file(GLOB SRC_COMMAND_FILES Chat/Commands/*.cpp Chat/Commands/*.h Chat/Commands/*.hpp)
 file(GLOB SRC_DATA_FILES Data/*.cpp Data/*.h Data/*.hpp)
-
-include(Game${ASCEMU_VERSION}/Storage/CMakeLists.txt) # SCH: coming soon
-
 file(GLOB SRC_MACROS_FILES Macros/*.cpp Macros/*.h Macros/*.hpp)
 file(GLOB SRC_MANAGEMENT_FILES Management/*.cpp Management/*.h Management/*.hpp)
 file(GLOB SRC_MANAGEMENT_BATTLEGROUND_FILES Management/Battleground/*.cpp Management/Battleground/*.h Management/Battleground/*.hpp)
@@ -43,39 +40,32 @@ file(GLOB SRC_SPELL_CUSTOM_FILES Spell/Customization/*.cpp Spell/Customization/*
 file(GLOB SRC_SPELL_DEFINITIONS_FILES Spell/Definitions/*.cpp Spell/Definitions/*.h Spell/Definitions/*.hpp)
 file(GLOB SRC_STORAGE_FILES Storage/*.cpp Storage/*.h Storage/*.hpp)
 file(GLOB SRC_STORAGE_DBC_FILES Storage/DBC/*.cpp Storage/DBC/*.h Storage/DBC/*.hpp)
+file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
 
-if ("${ASCEMU_VERSION}" STREQUAL "Mop" OR "${ASCEMU_VERSION}" STREQUAL "Cata")
+# version-specific includes.
+if ("${ASCEMU_VERSION}" STREQUAL "Classic")
+    file(GLOB SRC_GAMECLASSIC_STORAGE_FILES GameClassic/Storage/*.cpp GameClassic/Storage/*.h GameClassic/Storage/*.hpp)
+elseif ("${ASCEMU_VERSION}" STREQUAL "TBC")
+    file(GLOB SRC_GAMEBC_STORAGE_FILES GameTBC/Storage/*.cpp GameTBC/Storage/*.h GameTBC/Storage/*.hpp)
+elseif ("${ASCEMU_VERSION}" STREQUAL "WotLK")
+    file(GLOB SRC_GAMELK_STORAGE_FILES GameWotLK/Storage/*.cpp GameWotLK/Storage/*.h GameWotLK/Storage/*.hpp)
+elseif ("${ASCEMU_VERSION}" STREQUAL "Cata")
+    file(GLOB SRC_GAMECATA_STORAGE_FILES GameCata/Storage/*.cpp GameCata/Storage/*.h GameCata/Storage/*.hpp)
+    file(GLOB SRC_STORAGE_DB2_FILES Storage/DB2/*.cpp Storage/DB2/*.h Storage/DB2/*.hpp)
+elseif ("${ASCEMU_VERSION}" STREQUAL "Mop")
+    file(GLOB SRC_GAMEMOP_STORAGE_FILES GameMop/Storage/*.cpp GameMop/Storage/*.h GameMop/Storage/*.hpp)
     file(GLOB SRC_STORAGE_DB2_FILES Storage/DB2/*.cpp Storage/DB2/*.h Storage/DB2/*.hpp)
 endif ()
 
 if (WIN32)
-    set(SRC_WORLD_PROJECT ${SRC_WORLD_PROJECT} ${CMAKE_CURRENT_SOURCE_DIR}/resources.rc)
+    set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/resources.rc")
 endif ()
 
 set(WORLD_SRCS
-    ${WORLD_SRCS}
-    ${SRC_GAMECLASSIC_FILES}
-    ${SRC_GAMECLASSIC_STORAGE_FILES}
-   
-    ${SRC_GAMEBC_FILES}
-    ${SRC_GAMEBC_STORAGE_FILES}
-   
-    ${SRC_GAMELK_FILES}
-    ${SRC_GAMELK_STORAGE_FILES}
-
-    ${SRC_GAMECATA_FILES}
-    ${SRC_GAMECATA_MANAGEMENT_FILES}
-    ${SRC_GAMECATA_STORAGE_FILES}
-   
-    ${SRC_GAMEMOP_FILES}
-    ${SRC_GAMEMOP_MANAGEMENT_FILES}
-    ${SRC_GAMEMOP_STORAGE_FILES}
-
-    ${SRC_MACROS_FILES}
     ${SRC_CHAT_FILES}
     ${SRC_COMMAND_FILES}
     ${SRC_DATA_FILES}
-
+    ${SRC_MACROS_FILES}
     ${SRC_MANAGEMENT_FILES}
     ${SRC_MANAGEMENT_BATTLEGROUND_FILES}
     ${SRC_MANAGEMENT_GOSSIP_FILES}
@@ -89,39 +79,61 @@ set(WORLD_SRCS
     ${SRC_MAP_MANAGEMENT_FILES}
     ${SRC_MAP_MAPS_FILES}
     ${SRC_MOVEMENT_FILES}
-    ${SRC_MOVEMENT_SPLINE_FILES}
     ${SRC_MOVEMENT_MOVEMENTGENERATOR_FILES}
+    ${SRC_MOVEMENT_SPLINE_FILES}
     ${SRC_OBJECTS_FILES}
+    ${SRC_UNITS_FILES}
+    ${SRC_UNITS_CREATURES_FILES}
+    ${SRC_UNITS_SUMMONS_FILES}
+    ${SRC_UNITS_PLAYERS_FILES}
+    ${SRC_SERVER_FILES}
+    ${SRC_SERVER_CONSOLE_FILES}   
+    ${SRC_LOGON_COMMUNICATION_CLIENT_FILES}
     ${SRC_PACKET_FILES}
     ${SRC_PACKET_HANDLER_FILES}
     ${SRC_PACKET_MOVEMENT_FILES}
-    ${SRC_SERVER_FILES}
-    ${SRC_SERVER_CONSOLE_FILES}
     ${SRC_SERVER_SCRIPT_FILES}
     ${SRC_SERVER_WARDEN_FILES}
-    ${SRC_LOGON_COMMUNICATION_CLIENT_FILES}
     ${SRC_SPELL_FILES}
     ${SRC_SPELL_CUSTOM_FILES}
     ${SRC_SPELL_DEFINITIONS_FILES}
     ${SRC_STORAGE_FILES}
     ${SRC_STORAGE_DBC_FILES}
-    ${SRC_UNITS_FILES}
-    ${SRC_UNITS_CREATURES_FILES}
-    ${SRC_UNITS_PLAYERS_FILES}
-    ${SRC_UNITS_SUMMONS_FILES}
-    ${SRC_WORLD_PROJECT}
+    ${SRC_LOCAL_DIR}
 )
 
-if ("${ASCEMU_VERSION}" STREQUAL "Mop" OR "${ASCEMU_VERSION}" STREQUAL "Cata")
-    set(WORLD_SRCS
-        ${WORLD_SRCS}
-        ${SRC_STORAGE_DB2_FILES}
+# version-specific includes.
+if ("${ASCEMU_VERSION}" STREQUAL "Classic")
+set(WORLD_SRCS
+    ${WORLD_SRCS}
+    ${SRC_GAMECLASSIC_STORAGE_FILES}
+)
+elseif ("${ASCEMU_VERSION}" STREQUAL "TBC")
+set(WORLD_SRCS
+    ${WORLD_SRCS}
+    ${SRC_GAMEBC_STORAGE_FILES}
+)
+elseif ("${ASCEMU_VERSION}" STREQUAL "WotLK")
+set(WORLD_SRCS
+    ${WORLD_SRCS}
+    ${SRC_GAMELK_STORAGE_FILES}
+)
+elseif ("${ASCEMU_VERSION}" STREQUAL "Cata")
+set(WORLD_SRCS
+    ${WORLD_SRCS}
+    ${SRC_GAMECATA_STORAGE_FILES}
+    ${SRC_STORAGE_DB2_FILES}
+)
+elseif ("${ASCEMU_VERSION}" STREQUAL "Mop")
+set(WORLD_SRCS
+    ${WORLD_SRCS}
+    ${SRC_GAMEMOP_STORAGE_FILES}
+    ${SRC_STORAGE_DB2_FILES}
 )
 endif ()
 
 include_directories(
     ${OPENSSL_INCLUDE_DIR}
-    ${PCRE_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
     ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Recast/Include
     ${CMAKE_SOURCE_DIR}/src/collision
@@ -137,8 +149,6 @@ include_directories(
 )
 
 # source group.
-source_group(world FILES ${SRC_WORLD_PROJECT})
-
 source_group(Chat FILES ${SRC_CHAT_FILES})
 source_group(Chat\\Commands FILES ${SRC_COMMAND_FILES})
 source_group(Data FILES ${SRC_DATA_FILES})
@@ -176,9 +186,23 @@ source_group(Spell\\Customization FILES ${SRC_SPELL_CUSTOM_FILES})
 source_group(Spell\\Definitions FILES ${SRC_SPELL_DEFINITIONS_FILES})
 source_group(Storage FILES ${SRC_STORAGE_FILES})
 source_group(Storage\\DBC FILES ${SRC_STORAGE_DBC_FILES})
-source_group(Storage\\DB2 FILES ${SRC_STORAGE_DB2_FILES})
 
-add_executable(${PROJECT_NAME} ${WORLD_SRCS})
+# version-specific includes.
+if ("${ASCEMU_VERSION}" STREQUAL "Classic")
+source_group(GameClassic\\Storage FILES ${SRC_GAMECLASSIC_STORAGE_FILES})
+elseif ("${ASCEMU_VERSION}" STREQUAL "TBC")
+source_group(GameTBC\\Storage FILES ${SRC_GAMEBC_STORAGE_FILES})
+elseif ("${ASCEMU_VERSION}" STREQUAL "WotLK")
+source_group(GameWotLK\\Storage FILES ${SRC_GAMELK_STORAGE_FILES})
+elseif ("${ASCEMU_VERSION}" STREQUAL "Cata")
+source_group(GameCata\\Storage FILES ${SRC_GAMECATA_STORAGE_FILES})
+source_group(Storage\\DB2 FILES ${SRC_STORAGE_DB2_FILES})
+elseif ("${ASCEMU_VERSION}" STREQUAL "Mop")
+source_group(GameMop\\Storage FILES ${SRC_GAMEMOP_STORAGE_FILES})
+source_group(Storage\\DB2 FILES ${SRC_STORAGE_DB2_FILES})
+endif ()
+
+add_executable(${PROJECT_NAME} ${WORLD_SRCS} ${APP_ICON_RESOURCE_WINDOWS})
 
 if (WIN32 AND NOT USE_PCH)
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/INCREMENTAL:NO")
@@ -205,13 +229,14 @@ target_link_libraries(${PROJECT_NAME}
     g3dlite
     Detour
     Recast
-    ${PCRE_LIBRARIES}
 )
-
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
 
 # generate precompiled header.
 if (USE_PCH)
     message(STATUS "Generate PCH for ${PROJECT_NAME}")
     target_precompile_headers(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchWorld.hpp)
 endif ()
+
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
+
+unset(WORLD_SRCS)

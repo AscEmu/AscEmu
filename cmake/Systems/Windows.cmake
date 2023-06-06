@@ -11,22 +11,20 @@ find_package(MySQL)
 find_package(OpenSSL)
 
 # needed for socket stuff and crash handler
-set(EXTRA_LIBS 
-    ${EXTRA_LIBS}
+set(EXTRA_LIBS
     ws2_32.lib
     dbghelp.lib
 )
-
-# install libraries for windows build (libmysql.dll)
-install(FILES ${INSTALLED_DEPENDENCIES} DESTINATION .)
-
-# check for db update files
-set(PATH_DB_FILES ${CMAKE_SOURCE_DIR}/sql/)
-
-set(INSTALL_DB_FILES ${PATH_DB_FILES})
 
 if (MSVC)
     include(${CMAKE_SOURCE_DIR}/cmake/Compilers/msvc.cmake)
 else ()
     message(FATAL_ERROR "Compiler is not supported")
 endif ()
+
+# check for db update files
+set(PATH_DB_FILES ${CMAKE_SOURCE_DIR}/sql/)
+set(INSTALL_DB_FILES ${PATH_DB_FILES})
+
+# install libraries for windows build (libmysql.dll)
+install(FILES ${MYSQL_DLL} DESTINATION .)

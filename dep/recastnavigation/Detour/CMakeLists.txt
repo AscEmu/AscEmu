@@ -21,3 +21,5 @@ target_link_libraries(${PROJECT_NAME}
   PUBLIC
     ${ZLIB_LIBRARIES}
 )
+
+unset(SRC_DETOUR)

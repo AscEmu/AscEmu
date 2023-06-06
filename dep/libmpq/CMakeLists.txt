@@ -35,3 +35,5 @@ target_link_libraries(${PROJECT_NAME}
     ${ZLIB_LIBRARIES}
     ${BZIP2_LIBRARIES}
 )
+
+unset(LIBMPQ_SRCS)

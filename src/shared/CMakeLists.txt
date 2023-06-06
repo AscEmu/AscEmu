@@ -17,7 +17,6 @@ file(GLOB SRC_UTILITIES_FILES Utilities/*.cpp Utilities/*.h Utilities/*.hpp)
 file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
 
 set(SHARED_SRCS
-    ${SHARED_SRCS}
     ${SRC_CONFIG_FILES}
     ${SRC_CRYPTOGRAPHY_FILES}
     ${SRC_DATABASE_FILES}
@@ -55,7 +54,6 @@ add_library(${PROJECT_NAME} STATIC ${SHARED_SRCS})
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
     ${ZLIB_LIBRARIES}
-    ${CMAKE_THREAD_LIBS_INIT}
     ${MYSQL_LIBRARY}
     ${OPENSSL_LIBRARIES}
     ${EXTRA_LIBS}
@@ -75,3 +73,5 @@ if (USE_PCH)
     message(STATUS "Generate PCH for ${PROJECT_NAME}")
     target_precompile_headers(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchShared.hpp)
 endif ()
+
+unset(SHARED_SRCS)

@@ -22,3 +22,4 @@ target_link_libraries(${PROJECT_NAME}
     ${ZLIB_LIBRARIES}
 )
 
+unset(RECAST_SRCS)
