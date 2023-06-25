@@ -8,7 +8,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CXX_EXTENSIONS OFF)
 
 # set runtime binary where all compiled (before install) binary will compiled in
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin/lib)
+
+# we have our own custom modules and dep modules that we use. This tells cmakes where to find them.
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules ${CMAKE_MODULE_PATH})
 
 # set build type on unix if it wasn't defined by user
 if (UNIX)
@@ -28,18 +36,14 @@ set(CMAKE_SKIP_BUILD_RPATH FALSE)
 set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-# we have our own custom modules and dep modules that we use. This tells cmakes where to find them.
-list(APPEND CMAKE_MODULE_PATH 
-    ${CMAKE_SOURCE_DIR}/cmake/Modules)
-
 # get git information
-include(cmake/Modules/AEGitRevision.cmake)
+include(${CMAKE_MODULE_PATH}/AEGitRevision.cmake)
 
 # apply options settings
-include(cmake/Modules/AEConfigureFiles.cmake)
+include(${CMAKE_MODULE_PATH}/AEConfigureFiles.cmake)
 
 # get architecture type and set architecture identifier
-include(cmake/Modules/AEConfigureArch.cmake)
+include(${CMAKE_MODULE_PATH}/AEConfigureArch.cmake)
 
 # default definitions
 # -DPREFIX=\"${ASCEMU_SCRIPTLIB_PATH}\"
