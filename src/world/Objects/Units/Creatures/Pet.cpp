@@ -305,8 +305,6 @@ uint32 Pet::GetAutoCastTypeForSpell(SpellInfo const* ent)
         case 47986:
         case 48001:
         case 48002:
-            return AUTOCAST_EVENT_NONE;
-            break;
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Hunter Pet Spells
@@ -370,31 +368,22 @@ uint32 Pet::GetAutoCastTypeForSpell(SpellInfo const* ent)
             return AUTOCAST_EVENT_NONE;
             break;
 
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // Mage Pet Spells
-
-        //SPELL_HASH_WATERBOLT              // Waterbolt
-        case 31707:
-        case 72898:
-            return AUTOCAST_EVENT_ATTACK;
-            break;
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // Shaman Pet Spells
-
-        //SPELL_HASH_SPIRIT_HUNT
+        //SPELL_HASH_SPIRIT_HUNT // Shaman Pet Spells
         case 58877:
         case 58879:
             return AUTOCAST_EVENT_ON_SPAWN;
             break;
-        //SPELL_HASH_TWIN_HOWL
+        //SPELL_HASH_WATERBOLT // Mage Pet Spells
+        case 31707:
+        case 72898:
+        //SPELL_HASH_TWIN_HOWL // Shaman Pet Spells
         case 58857:
         // SPELL_HASH_BASH
         case 5211:
         case 6798:
         case 8983:
         case 25515:
-        case 43612:
+        //case 43612: Zyres already defined on line 145 (AUTOCAST_EVENT_ON_SPAWN) @appled
         case 57094:
         case 58861:
             return AUTOCAST_EVENT_ATTACK;
@@ -1720,6 +1709,8 @@ void Pet::ApplySummonLevelAbilities()
         case 11859: // Doomguard
         case 89:    // Infernal
         case PET_FELGUARD:
+        case 26125: // Risen Ally
+        case 27893: // Rune Weapon
             stat_index = 4;
             break;
         case PET_WATER_ELEMENTAL:
@@ -1728,16 +1719,8 @@ void Pet::ApplySummonLevelAbilities()
             m_aiInterface->setMeleeDisabled(true);
             break;
         case SHADOWFIEND:
-            stat_index = 5;
-            break;
-        case 26125: // Risen Ally
-            stat_index = 4;
-            break;
         case 29264: // Spirit Wolf
             stat_index = 5;
-            break;
-        case 27893: // Rune Weapon
-            stat_index = 4;
             break;
     }
     if (getEntry() == 89)

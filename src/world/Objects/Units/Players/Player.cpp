@@ -6708,7 +6708,7 @@ void Player::calculateHeirloomBonus(ItemProperties const* proto, int16_t slot, b
             float maxDamage = proto->Damage[i].Max;
 
             // If set dpsMod in ScalingStatValue use it for min (70% from average), max (130% from average) damage
-            if (ssvrow && i == 0) // scaling stats only for first damage
+            if (i == 0) // scaling stats only for first damage
             {
                 int32_t extraDPS = ssvrow->getDPSMod(proto->ScalingStatsFlag);
                 if (extraDPS)

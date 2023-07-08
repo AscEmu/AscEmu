@@ -3016,7 +3016,7 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
 
             if (killed)
             {
-                if (unitMapMgr && unitMapMgr->getScript())
+                if (unitMapMgr->getScript())
                     unitMapMgr->getScript()->OnSpawnGroupKilled(spawnGroupData->groupId);
             }
         }
