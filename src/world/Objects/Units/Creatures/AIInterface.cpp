@@ -2093,6 +2093,9 @@ bool AIInterface::isValidAssistTarget(Unit* target)
     if (getUnit() == target)
         return true;
 
+    if (target == nullptr)
+        return false;
+
     // can't assist unattackable units
     if (target->hasUnitStateFlag(UNIT_STATE_UNATTACKABLE))
         return false;
@@ -2111,7 +2114,7 @@ bool AIInterface::isValidAssistTarget(Unit* target)
 
 #ifdef FT_VEHICLES
     // can't assist own vehicle or passenger
-    if (target && getUnit()->getVehicle())
+    if (getUnit()->getVehicle())
     {
         if (getUnit()->isOnVehicle(target))
             return false;
@@ -2434,8 +2437,9 @@ void AIInterface::justEnteredCombat(Unit* pUnit)
 {
     if (!isEngaged() && getUnit()->getThreatManager().canHaveThreatList())
         engagementStart(pUnit);
-    else // maybe add more here this part down is for petAI
-        engagementStart(pUnit);
+    // Zyres: this looks pretty wrong - fix it if needed otherwise everything sill start engagement @aaron02
+    // else // maybe add more here this part down is for petAI
+    //    engagementStart(pUnit);
 }
 
 void AIInterface::engagementStart(Unit* target)

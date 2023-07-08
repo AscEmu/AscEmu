@@ -11409,11 +11409,11 @@ Standing Player::getReputationRankFromStanding(int32_t value)
 
 void Player::setFactionAtWar(uint32_t faction, bool set)
 {
-    FactionReputation* factionReputation = m_reputationByListId[faction];
-    if (!factionReputation)
+    if (faction >= 128)
         return;
 
-    if (faction >= 128)
+    FactionReputation* factionReputation = m_reputationByListId[faction];
+    if (!factionReputation)
         return;
 
     if (getReputationRankFromStanding(factionReputation->standing) <= STANDING_HOSTILE && !set)

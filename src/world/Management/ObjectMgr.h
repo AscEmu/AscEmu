@@ -94,7 +94,7 @@ struct TrainerSpell
 {
     TrainerSpell() : castSpell(nullptr), castRealSpell(nullptr), learnSpell(nullptr), deleteSpell(0),
         requiredLevel(0), requiredSkillLine(0), requiredSkillLineValue(0), isPrimaryProfession(false),
-        cost(0)
+        cost(0), isStatic(0)
     {
         for (uint8_t i = 0; i < 3; ++i)
             requiredSpell[i] = 0;
