@@ -14459,7 +14459,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
             uint8_t rank = (uint8_t)atol(start);
             start = end + 1;
 
-            m_specs[s].talents.insert(std::pair<uint32_t, uint8_t>(talentid, rank));
+            m_specs[s].talents.emplace(std::pair<uint32_t, uint8_t>(talentid, rank));
         }
     }
 #else

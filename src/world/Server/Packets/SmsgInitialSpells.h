@@ -97,7 +97,7 @@ namespace AscEmu::Packets
 
             packet << uint16_t(spell_cooldowns.size());
 
-            for (auto cd : spell_cooldowns)
+            for (auto &cd : spell_cooldowns)
             {
 #if VERSION_STRING <= TBC
                 packet << uint16_t(cd.spell_id);

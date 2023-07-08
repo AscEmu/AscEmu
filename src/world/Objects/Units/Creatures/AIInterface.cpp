@@ -1529,7 +1529,7 @@ void AIInterface::handleAgentFlee(uint32_t p_time)
     getUnit()->setControlled(true, UNIT_STATE_FLEEING);
 
     std::string msg = "%s attempts to run away in fear!";
-    getUnit()->sendChatMessage(CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, msg.c_str());
+    getUnit()->sendChatMessage(CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, msg);
 
     // On Flee Scripts
     for (auto onFleeScript : onFleeScripts)
@@ -3378,7 +3378,7 @@ bool AIInterface::activateShowWayPoints(Player* player, bool /*showBackwards*/)
 
     mShowWayPoints = true;
 
-    for (auto wayPoint : mWayPointMap->nodes)
+    for (auto &wayPoint : mWayPointMap->nodes)
     {
         Creature* targetCreature = static_cast<Creature*>(getUnit());
 
@@ -3426,7 +3426,7 @@ bool AIInterface::hideWayPoints(Player* player)
 
     mShowWayPoints = false;
 
-    for (auto wayPoint : mWayPointMap->nodes)
+    for (auto &wayPoint : mWayPointMap->nodes)
     {
         uint64_t guid = ((uint64_t)HIGHGUID_TYPE_WAYPOINT << 32) | wayPoint.id;
         WoWGuid wowguid(guid);
@@ -3733,7 +3733,7 @@ void CreatureAISpells::addDBEmote(uint32_t textId)
 void CreatureAISpells::addEmote(std::string pText, uint8_t pType, uint32_t pSoundId)
 {
     if (!pText.empty() || pSoundId)
-        mAISpellEmote.push_back(AISpellEmotes(pText, pType, pSoundId));
+        mAISpellEmote.emplace_back(AISpellEmotes(pText, pType, pSoundId));
 }
 
 void CreatureAISpells::sendRandomEmote(Unit* creatureAI)
@@ -3743,7 +3743,7 @@ void CreatureAISpells::sendRandomEmote(Unit* creatureAI)
         sLogger.debug("AISpellEmotes::sendRandomEmote() : called");
 
         uint32_t randomUInt = (mAISpellEmote.size() > 1) ? Util::getRandomUInt(static_cast<uint32_t>(mAISpellEmote.size() - 1)) : 0;
-        creatureAI->sendChatMessage(mAISpellEmote[randomUInt].mType, LANG_UNIVERSAL, mAISpellEmote[randomUInt].mText.c_str());
+        creatureAI->sendChatMessage(mAISpellEmote[randomUInt].mType, LANG_UNIVERSAL, mAISpellEmote[randomUInt].mText);
 
         if (mAISpellEmote[randomUInt].mSoundId != 0)
             creatureAI->PlaySoundToSet(mAISpellEmote[randomUInt].mSoundId);
@@ -3846,7 +3846,7 @@ void CreatureAISpells::sendAnnouncement(Unit* pUnit)
     {
         sLogger.debug("AISpellEmotes::sendAnnouncement() : called");
 
-        pUnit->sendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, mAnnouncement.c_str());
+        pUnit->sendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, mAnnouncement);
     }
 }
 
