@@ -712,8 +712,26 @@ void MySQLDataStore::loadCreaturePropertiesTable()
             creatureProperties.attackSchool = SCHOOL_NORMAL;
         }
 
-        creatureProperties.MinDamage = fields[28].GetFloat();
-        creatureProperties.MaxDamage = fields[29].GetFloat();
+        if (fields[28].GetUInt32() != 0)
+        {
+            creatureProperties.MinDamage = fields[28].GetFloat();
+        }
+        else
+        {
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_properties` mindamage = 0 is not a valid value! Default set to 5 for entry: %u.", entry);
+            creatureProperties.MinDamage = 5;
+        }
+
+        if (fields[29].GetUInt32() != 0 || fields[29].GetUInt32() > creatureProperties.MinDamage)
+        {
+            creatureProperties.MaxDamage = fields[26].GetUInt32();
+        }
+        else
+        {
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_properties` maxdamage = 0 or is lower than mindamage! Default set to mindamage + 5 for entry: %u.", entry);
+            creatureProperties.MaxDamage = creatureProperties.MinDamage + 5;
+        }
+
         creatureProperties.CanRanged = fields[30].GetUInt32();
         creatureProperties.RangedAttackTime = fields[31].GetUInt32();
         creatureProperties.RangedMinDamage = fields[32].GetFloat();
