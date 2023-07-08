@@ -587,7 +587,11 @@ LootItem::LootItem(LootStoreItem const& li)
     itemId = li.itemId;
     itemproto = li.itemproto;
     count = Util::getRandomUInt(li.mincount, li.maxcount);
-    iRandomProperty = sLootMgr.GetRandomProperties(itemproto);
+    if (iRandomProperty = sLootMgr.GetRandomProperties(itemproto))
+        is_ffa = itemproto->Flags & ITEM_FLAG_FREE_FOR_ALL;
+    else
+        is_ffa = false;
+
     iRandomSuffix = sLootMgr.GetRandomSuffix(itemproto);
 
     roll = nullptr;
@@ -595,7 +599,6 @@ LootItem::LootItem(LootStoreItem const& li)
     is_passed = false;
     is_looted = false;
     is_blocked = false;
-    is_ffa = itemproto && itemproto->Flags & ITEM_FLAG_FREE_FOR_ALL;
     is_underthreshold = false;
     needs_quest = li.needs_quest;
 }

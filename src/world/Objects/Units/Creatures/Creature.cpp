@@ -661,17 +661,12 @@ void Creature::Update(unsigned long time_passed)
         {
             if (m_respawnTime <= now)
                 respawn();
-        }
-            break;
+        } break;
         case CORPSE:
         {
-            if (m_deathState != CORPSE)
-                break;
-
             if (m_corpseRemoveTime <= now)
                 OnRemoveCorpse();
-        }
-            break;
+        } break;
         default:
             break;
     }
@@ -1993,17 +1988,16 @@ void Creature::OnPushToWorld()
     if (m_spawn)
     {
         if (m_spawn->channel_target_creature)
-        {
             sEventMgr.AddEvent(this, &Creature::ChannelLinkUpCreature, m_spawn->channel_target_creature, EVENT_CREATURE_CHANNEL_LINKUP, 1000, 5, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);    // only 5 attempts
-        }
 
         if (m_spawn->channel_target_go)
-        {
             sEventMgr.AddEvent(this, &Creature::ChannelLinkUpGO, m_spawn->channel_target_go, EVENT_CREATURE_CHANNEL_LINKUP, 1000, 5, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);    // only 5 attempts
-        }
     }
 
-    m_aiInterface->m_is_in_instance = (!m_WorldMap->getBaseMap()->getMapInfo()->isNonInstanceMap()) ? true : false;
+    if (m_WorldMap)
+        m_aiInterface->m_is_in_instance = (!m_WorldMap->getBaseMap()->getMapInfo()->isNonInstanceMap()) ? true : false;
+    else
+        m_aiInterface->m_is_in_instance = false;
 
     if (this->HasItems())
     {
@@ -2022,9 +2016,7 @@ void Creature::OnPushToWorld()
     if (mEvent != nullptr)
     {
         if (mEvent->mEventScript != nullptr)
-        {
             mEvent->mEventScript->OnCreaturePushToWorld(mEvent, this);
-        }
     }
 
     if (m_WorldMap && m_WorldMap->getScript())

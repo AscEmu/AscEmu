@@ -417,22 +417,30 @@ void TotemSummon::load(CreatureProperties const* creatureProperties, Unit* unitO
 {
     Summon::load(creatureProperties, unitOwner, position, duration, spellId);
 
+    const MySQLStructure::TotemDisplayIds* displayIds = nullptr;
+
     // Summoner
     if (unitOwner)
     {
         setCreatedByGuid(unitOwner->getGuid());
         setSummonedByGuid(unitOwner->getGuid());
         setFaction(unitOwner->getFactionTemplate());
+
+        displayIds = sMySQLStore.getTotemDisplayId(unitOwner->getRace(), creature_properties->Male_DisplayID);
+
+        setLevel(unitOwner->getLevel());
+    }
+    else
+    {
+        setLevel(1);
     }
 
     uint32_t displayId;
-    const auto displayIds = sMySQLStore.getTotemDisplayId(unitOwner->getRace(), creature_properties->Male_DisplayID);
     if (displayIds != nullptr)
         displayId = displayIds->race_specific_id;
     else
         displayId = creature_properties->Male_DisplayID;
 
-    setLevel(unitOwner->getLevel());
     setRace(0);
     setClass(1); // Creature class warrior
     setGender(GENDER_NONE);
@@ -446,21 +454,24 @@ void TotemSummon::load(CreatureProperties const* creatureProperties, Unit* unitO
     setModCastSpeed(1.0f);
     setDynamicFlags(0);
 
-    for (uint8_t school = 0; school < TOTAL_SPELL_SCHOOLS; school++)
+    if (unitOwner)
     {
-        ModDamageDone[school] = unitOwner->GetDamageDoneMod(school);
-        m_healDoneMod[school] = unitOwner->m_healDoneMod[school];
-    }
+        for (uint8_t school = 0; school < TOTAL_SPELL_SCHOOLS; school++)
+        {
+            ModDamageDone[school] = unitOwner->GetDamageDoneMod(school);
+            m_healDoneMod[school] = unitOwner->m_healDoneMod[school];
+        }
 
-    m_aiInterface->Init(this, unitOwner);
+        m_aiInterface->Init(this, unitOwner);
 
-    setAItoUse(false);
+        setAItoUse(false);
 
-    if (unitOwner != nullptr && unitOwner->isPlayer())
-    {
-        uint32_t slot = m_Properties->Slot;
-        if (slot >= SUMMON_SLOT_TOTEM_FIRE && slot < SUMMON_SLOT_MINIPET)
-            dynamic_cast<Player*>(unitOwner)->sendTotemCreatedPacket(static_cast<uint8_t>(slot - SUMMON_SLOT_TOTEM_FIRE), getGuid(), getTimeLeft(), getCreatedBySpellId());
+        if (unitOwner->isPlayer())
+        {
+            uint32_t slot = m_Properties->Slot;
+            if (slot >= SUMMON_SLOT_TOTEM_FIRE && slot < SUMMON_SLOT_MINIPET)
+                dynamic_cast<Player*>(unitOwner)->sendTotemCreatedPacket(static_cast<uint8_t>(slot - SUMMON_SLOT_TOTEM_FIRE), getGuid(), getTimeLeft(), getCreatedBySpellId());
+        }
     }
 }
 
