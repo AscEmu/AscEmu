@@ -2960,75 +2960,72 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
     InstanceMap* pInstance = nullptr;
     auto unitMapMgr = m_Unit->getWorldMap();
     if (unitMapMgr)
-        pInstance = m_Unit->getWorldMap()->getInstance();
-
-    if (unitMapMgr
-        && m_Unit->isCreature()
-        && !m_Unit->isPet()
-        && pInstance)
     {
-        Creature* pCreature = static_cast<Creature*>(m_Unit);
+        pInstance = unitMapMgr->getInstance();
 
-        if (pInstance->isRaidOrHeroicDungeon())
+        if (m_Unit->isCreature() && !m_Unit->isPet() && pInstance)
         {
-            if (pCreature->isDungeonBoss())
-                pInstance->permBindAllPlayers();
-        }
-        else
-        {
-            // the reset time is set but not added to the scheduler
-            // until the players leave the instance
-            const auto now = Util::getTimeNow();
-            time_t resettime = now + 2 * HOUR;
-            if (InstanceSaved* save = sInstanceMgr.getInstanceSave(pCreature->GetInstanceID()))
-                if (save->getResetTime() < resettime)
-                    save->setResetTime(resettime);
-        }
+            Creature* pCreature = static_cast<Creature*>(m_Unit);
 
-        if (m_Unit->getWorldMap() && m_Unit->getWorldMap()->getScript())
-        {
-            // Set Instance Data
-            // set encounter state to Performed
-            uint32_t i = 0;
-            for (const auto boss : m_Unit->getWorldMap()->getScript()->getBosses())
+            if (pInstance->isRaidOrHeroicDungeon())
             {
-                if (m_Unit->getEntry() == boss.entry)
+                if (pCreature->isDungeonBoss())
+                    pInstance->permBindAllPlayers();
+            }
+            else
+            {
+                // the reset time is set but not added to the scheduler
+                // until the players leave the instance
+                const auto now = Util::getTimeNow();
+                time_t resettime = now + 2 * HOUR;
+                if (InstanceSaved* save = sInstanceMgr.getInstanceSave(pCreature->GetInstanceID()))
+                    if (save->getResetTime() < resettime)
+                        save->setResetTime(resettime);
+            }
+
+            if (unitMapMgr->getScript())
+            {
+                // Set Instance Data
+                // set encounter state to Performed
+                uint32_t i = 0;
+                for (const auto boss : unitMapMgr->getScript()->getBosses())
                 {
-                    if (m_Unit->getWorldMap() && m_Unit->getWorldMap()->getScript())
-                        m_Unit->getWorldMap()->getScript()->setBossState(i, Performed);
+                    if (m_Unit->getEntry() == boss.entry)
+                    {
+                        if (unitMapMgr->getScript())
+                            unitMapMgr->getScript()->setBossState(i, Performed);
+                    }
+                    i++;
                 }
-                i++;
+            }
+
+            // Killed Group checks
+            auto spawnGroupData = sMySQLStore.getSpawnGroupDataBySpawn(pCreature->spawnid);
+
+            // Spawn Group Handling
+            if (spawnGroupData && spawnGroupData->groupId)
+            {
+                bool killed = true;
+                for (auto spawns : spawnGroupData->spawns)
+                {
+                    if (!unitMapMgr->getRespawnInfo(SPAWN_TYPE_CREATURE, spawns.first))
+                        killed = false;
+                }
+
+                if (killed)
+                {
+                    if (unitMapMgr->getScript())
+                        unitMapMgr->getScript()->OnSpawnGroupKilled(spawnGroupData->groupId);
+                }
             }
         }
-        
-        // Killed Group checks
-        auto spawnGroupData = sMySQLStore.getSpawnGroupDataBySpawn(pCreature->spawnid);
 
-        // Spawn Group Handling
-        if (spawnGroupData && spawnGroupData->groupId)
+        if (unitMapMgr->getBaseMap()->getMapInfo() && unitMapMgr->getBaseMap()->getMapInfo()->isRaid())
         {
-            bool killed = true;
-            for (auto spawns : spawnGroupData->spawns)
+            if (m_Unit->isCreature())
             {
-                if (!unitMapMgr->getRespawnInfo(SPAWN_TYPE_CREATURE, spawns.first))
-                    killed = false;
-            }
-
-            if (killed)
-            {
-                if (unitMapMgr->getScript())
-                    unitMapMgr->getScript()->OnSpawnGroupKilled(spawnGroupData->groupId);
-            }
-        }
-    }
-
-    if (unitMapMgr && unitMapMgr->getBaseMap()->getMapInfo() && unitMapMgr->getBaseMap()->getMapInfo()->isRaid())
-    {
-        if (m_Unit->isCreature())
-        {
-            if (dynamic_cast<Creature*>(m_Unit)->GetCreatureProperties()->Rank == 3)
-            {
-                unitMapMgr->removeCombatInProgress(m_Unit->getGuid());
+                if (dynamic_cast<Creature*>(m_Unit)->GetCreatureProperties()->Rank == 3)
+                    unitMapMgr->removeCombatInProgress(m_Unit->getGuid());
             }
         }
     }

@@ -11923,14 +11923,14 @@ void Player::cancelDuel()
     m_duelPlayer->m_duelState = DUEL_STATE_FINISHED;
     m_duelState = DUEL_STATE_FINISHED;
 
-    m_duelPlayer->m_duelPlayer = nullptr;
-    m_duelPlayer = nullptr;
-
     m_duelPlayer->setDuelTeam(0);
     setDuelTeam(0);
 
     m_duelPlayer->m_duelCountdownTimer = 0;
     m_duelCountdownTimer = 0;
+
+    m_duelPlayer->m_duelPlayer = nullptr;
+    m_duelPlayer = nullptr;
 
     for (const auto& summonedPet : getSummons())
     {
