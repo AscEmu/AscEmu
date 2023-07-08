@@ -8673,10 +8673,8 @@ void Player::acceptQuest(uint64_t guid, uint32_t quest_id)
     sQuestMgr.OnQuestAccepted(this, questProperties, qst_giver);
 
     // Hook to Creature Script
-    if (qst_giver && qst_giver->ToCreature() && qst_giver->ToCreature()->GetScript())
-    {
+    if (qst_giver->ToCreature() && qst_giver->ToCreature()->GetScript())
         qst_giver->ToCreature()->GetScript()->onQuestAccept(this, questProperties);
-    }
 
     sLogger.debug("WORLD: Added new QLE.");
     sHookInterface.OnQuestAccept(this, questProperties, qst_giver);
@@ -8908,17 +8906,19 @@ void Player::updateNearbyQuestGameObjects()
         if (obj == nullptr || !obj->isGameObject() || obj->isTransporter())
             continue;
 
-        const auto gameobject = dynamic_cast<GameObject*>(obj);
-        const auto gobProperties = gameobject->GetGameObjectProperties();
-
-        // Update dynamic flags for gameobjects with quests or item loot
-        if (gameobject->isQuestGiver() || !gobProperties->itemMap.empty() || !gobProperties->goMap.empty())
+        if (const auto gameobject = dynamic_cast<GameObject*>(obj))
         {
+            const auto gobProperties = gameobject->GetGameObjectProperties();
+
+            // Update dynamic flags for gameobjects with quests or item loot
+            if (gameobject->isQuestGiver() || !gobProperties->itemMap.empty() || !gobProperties->goMap.empty())
+            {
 #if VERSION_STRING < Mop
-            gameobject->forceBuildUpdateValueForField(getOffsetForStructuredField(WoWGameObject, dynamic), this);
+                gameobject->forceBuildUpdateValueForField(getOffsetForStructuredField(WoWGameObject, dynamic), this);
 #else
-            gameobject->forceBuildUpdateValueForField(getOffsetForStructuredField(WoWObject, dynamic_field), this);
+                gameobject->forceBuildUpdateValueForField(getOffsetForStructuredField(WoWObject, dynamic_field), this);
 #endif
+            }
         }
     }
 }
@@ -10031,7 +10031,7 @@ void Player::sendUpdateDataToSet(ByteBuffer* groupBuf, ByteBuffer* nonGroupBuf, 
             for (const auto& object : getInRangePlayersSet())
             {
                 if (Player* player = static_cast<Player*>(object))
-                    if (player && player->getGroup() && getGroup() && player->getGroup()->GetID() == getGroup()->GetID())
+                    if (player->getGroup() && getGroup() && player->getGroup()->GetID() == getGroup()->GetID())
                         player->getUpdateMgr().pushUpdateData(groupBuf, 1);
             }
         }
@@ -11452,17 +11452,19 @@ void Player::updateInrangeSetsBasedOnReputation()
         if (!object->isCreatureOrPlayer())
             continue;
 
-        const auto unit = dynamic_cast<Unit*>(object);
-        if (unit->m_factionEntry == nullptr || unit->m_factionEntry->RepListId < 0)
-            continue;
+        if (const auto unit = dynamic_cast<Unit*>(object))
+        {
+            if (unit->m_factionEntry == nullptr || unit->m_factionEntry->RepListId < 0)
+                continue;
 
-        bool isHostile = isHostileBasedOnReputation(unit->m_factionEntry);
-        bool currentHostileObject = isObjectInInRangeOppositeFactionSet(unit);
+            bool isHostile = isHostileBasedOnReputation(unit->m_factionEntry);
+            bool currentHostileObject = isObjectInInRangeOppositeFactionSet(unit);
 
-        if (isHostile && !currentHostileObject)
-            addInRangeOppositeFaction(unit);
-        else if (!isHostile && currentHostileObject)
-            addInRangeOppositeFaction(unit);
+            if (isHostile && !currentHostileObject)
+                addInRangeOppositeFaction(unit);
+            else if (!isHostile && currentHostileObject)
+                addInRangeOppositeFaction(unit);
+        }
     }
 }
 
