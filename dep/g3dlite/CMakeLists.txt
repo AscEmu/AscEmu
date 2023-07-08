@@ -60,5 +60,6 @@ add_library(${PROJECT_NAME} STATIC ${SRC_G3DLITE})
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
     ${ZLIB_LIBRARIES}
-    ${CMAKE_THREAD_LIBS_INIT}
 )
+
+unset(SRC_G3DLITE)

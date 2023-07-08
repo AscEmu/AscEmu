@@ -21,3 +21,5 @@ target_link_libraries(${PROJECT_NAME}
     loadlib
     libmpq
 )
+
+unset(SRC_DBCFILE)

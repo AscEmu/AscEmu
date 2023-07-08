@@ -149,9 +149,7 @@ void WorldSession::sendCalendarRaidLockoutUpdated(InstanceSaved const* save)
     if (!save)
         return;
 
-    WoWGuid guid = _player->getGuid();
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_CALENDAR_RAID_LOCKOUT_UPDATED [%s] Map: %u, Difficulty %u",
-        guid, save->getMapId(), save->getDifficulty());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_CALENDAR_RAID_LOCKOUT_UPDATED [%u] Map: %u, Difficulty %u", _player->getGuid(), save->getMapId(), save->getDifficulty());
 
     const auto now = Util::getTimeNow();
     time_t currTime = now;

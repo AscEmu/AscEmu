@@ -23,7 +23,6 @@ set(SRC_BATTLEGROUNDS
 )
 
 set(BATTLEGROUNDS_SRCS
-    ${BATTLEGROUNDS_SRCS}
     ${SRC_ALTERAC_VALLEY}
     ${SRC_ARATHI_BASIN}
     ${SRC_CIRCLE_OF_BLOOD}
@@ -41,7 +40,6 @@ set(BATTLEGROUNDS_SRCS
 
 include_directories(
     ${OPENSSL_INCLUDE_DIR}
-    ${PCRE_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
     ${CMAKE_SOURCE_DIR}/src/collision
     ${CMAKE_SOURCE_DIR}/src/collision/Management
@@ -75,10 +73,12 @@ target_link_libraries(${PROJECT_NAME}
     world
 )
 
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
-
 # generate precompiled header.
 if (USE_PCH)
     message(STATUS "Generate PCH for ${PROJECT_NAME}")
     target_precompile_headers(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchBattleGrounds.hpp)
 endif ()
+
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
+
+unset(BATTLEGROUNDS_SRCS)

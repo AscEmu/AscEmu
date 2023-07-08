@@ -22,3 +22,5 @@ target_link_libraries(${PROJECT_NAME}
   PUBLIC
     libmpq
 )
+
+unset(LOADLIB_SRCS)

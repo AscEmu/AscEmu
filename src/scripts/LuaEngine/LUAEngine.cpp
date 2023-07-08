@@ -116,8 +116,7 @@ void LuaEngine::LoadScripts()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// FUNCTION CALL METHODS
-
+// Function call methods
 void LuaEngine::BeginCall(uint16_t fReference)
 {
     lua_settop(lu, 0); //stack should be empty
@@ -157,8 +156,7 @@ void LuaEngine::EndCall(uint8_t res)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// PUSH METHODS
-
+// Push methods
 void LuaEngine::PushUnit(Object* unit, lua_State* L)
 {
     Unit* pUnit = nullptr;
@@ -250,10 +248,8 @@ void LuaEngine::PushAura(Aura* aura, lua_State* L)
     else
         ArcLuna<Aura>::push(L, aura);
 }
-
-/*******************************************************************************
-END PUSH METHODS
-*******************************************************************************/
+// End push methods
+//////////////////////////////////////////////////////////////////////////////////////////
 
 void LuaEngine::HyperCallFunction(const char* FuncName, int ref)  //hyper as in hypersniper :3
 {

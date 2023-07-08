@@ -1,10 +1,6 @@
 # Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 include_guard(GLOBAL)
 
-if (NOT USE_PCH)
-    set(ASCEMU_COMMENT_PCH //)
-endif ()
-
 set(ASCEMU_CONFIGSFILE_PATH "configs" CACHE PATH "The directory for AscEmu configs.")
 
 set(ASCEMU_SCRIPTLIB_PATH "modules" CACHE PATH "The directory for AscEmu modules.")

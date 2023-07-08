@@ -3,30 +3,11 @@ cmake_minimum_required(VERSION 3.16.3)
 
 project(Ascemu)
 
-# set runtime binary where all compiled (before install) binary will compiled in
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
-# set build type on unix if it wasn't defined by user
-if (UNIX)
-    if (NOT CMAKE_BUILD_TYPE)
-        message(STATUS "Build configuration was not detected, setting to \"Release\"")
-        set(CMAKE_BUILD_TYPE "Release")
-    else ()
-        message(STATUS "Detected ${CMAKE_BUILD_TYPE} configuration")
-    endif ()
-
-    if (CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFreeBSD")
-        set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -lc++experimental")
-    elseif (APPLE)
-        set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -lc++")
-    endif ()
-endif ()
-
 # cmake options
-include(${CMAKE_SOURCE_DIR}/cmake/Options.cmake)
+include(cmake/Options.cmake)
 
 # perform system tasks
-include(${CMAKE_SOURCE_DIR}/cmake/CheckSystem.cmake)
+include(cmake/CheckSystem.cmake)
 
 # add dependecies
 add_subdirectory(dep)
