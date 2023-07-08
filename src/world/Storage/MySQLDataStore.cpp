@@ -674,7 +674,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
         }
         else
         {
-            sLogger.failure("Table `creature_properties` MinHealth = 0 is not a valid value! Default set to 1 for entry: %u.", entry);
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_properties` MinHealth = 0 is not a valid value! Default set to 1 for entry: %u.", entry);
             creatureProperties.MinHealth = 1;
         }
 
@@ -684,21 +684,31 @@ void MySQLDataStore::loadCreaturePropertiesTable()
         }
         else
         {
-            sLogger.failure("Table `creature_properties` MaxHealth = 0 is not a valid value! Default set to 1 for entry: %u.", entry);
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_properties` MaxHealth = 0 is not a valid value! Default set to 1 for entry: %u.", entry);
             creatureProperties.MaxHealth = 1;
         }
 
         creatureProperties.Mana = fields[23].GetUInt32();
         creatureProperties.Scale = fields[24].GetFloat();
         creatureProperties.NPCFLags = fields[25].GetUInt32();
-        creatureProperties.AttackTime = fields[26].GetUInt32();
+
+        if (fields[26].GetUInt32() != 0)
+        {
+            creatureProperties.AttackTime = fields[26].GetUInt32();
+        }
+        else
+        {
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_properties` attacktime = 0 is not a valid value! Default set to 2000 for entry: %u.", entry);
+            creatureProperties.AttackTime = 2000;
+        }
+
         if (fields[27].GetUInt8() <= SCHOOL_ARCANE)
         {
             creatureProperties.attackSchool = fields[27].GetUInt8();
         }
         else
         {
-            sLogger.failure("Table `creature_properties` AttackType: %u is not a valid value! Default set to 0 for entry: %u.", fields[10].GetUInt32(), entry);
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_properties` AttackType: %u is not a valid value! Default set to 0 for entry: %u.", fields[10].GetUInt32(), entry);
             creatureProperties.attackSchool = SCHOOL_NORMAL;
         }
 
