@@ -3,15 +3,12 @@ version: 2.1
 jobs:
   "Classic":
     docker:
-      - image: "cimg/base:2022.03"
+      - image: "cimg/base:2023.06"
     steps:
       - checkout
       - run:
           name: Installing SUDO
           command: 'sudo apt-get update && sudo apt-get install -y && sudo rm -rf /var/lib/apt/lists/*'
-#      - run:
-#          name: Installing GCC
-#          command: 'sudo apt-get update && sudo apt-get install -y gcc-9 g++'
       - run:
           name: Install CMAKE
           command: 'sudo apt-get update && sudo apt-get install -y cmake'
@@ -41,15 +38,12 @@ jobs:
             cd ..
   "TBC":
     docker:
-      - image: "cimg/base:2022.03"
+      - image: "cimg/base:2023.06"
     steps:
       - checkout
       - run:
           name: Installing SUDO
           command: 'sudo apt-get update && sudo apt-get install -y && sudo rm -rf /var/lib/apt/lists/*'
-#      - run:
-#          name: Installing GCC
-#          command: 'sudo apt-get update && sudo apt-get install -y gcc-9 g++'
       - run:
           name: Install CMAKE
           command: 'sudo apt-get update && sudo apt-get install -y cmake'
@@ -80,15 +74,12 @@ jobs:
             
   "WotLK":
     docker:
-      - image: "cimg/base:2022.03"
+      - image: "cimg/base:2023.06"
     steps:
       - checkout
       - run:
           name: Installing SUDO
           command: 'sudo apt-get update && sudo apt-get install -y && sudo rm -rf /var/lib/apt/lists/*'
-#      - run:
-#          name: Installing GCC
-#          command: 'sudo apt-get update && sudo apt-get install -y gcc-9 g++'
       - run:
           name: Install CMAKE
           command: 'sudo apt-get update && sudo apt-get install -y cmake'
@@ -119,15 +110,12 @@ jobs:
             
   "Cata":
     docker:
-      - image: "cimg/base:2022.03"
+      - image: "cimg/base:2023.06"
     steps:
       - checkout
       - run:
           name: Installing SUDO
           command: 'sudo apt-get update && sudo apt-get install -y && sudo rm -rf /var/lib/apt/lists/*'
-#      - run:
-#          name: Installing GCC
-#          command: 'sudo apt-get update && sudo apt-get install -y gcc-9 g++'
       - run:
           name: Install CMAKE
           command: 'sudo apt-get update && sudo apt-get install -y cmake'
@@ -158,15 +146,12 @@ jobs:
             
   "Mop":
     docker:
-      - image: "cimg/base:2022.03"
+      - image: "cimg/base:2023.06"
     steps:
       - checkout
       - run:
           name: Installing SUDO
           command: 'sudo apt-get update && sudo apt-get install -y && sudo rm -rf /var/lib/apt/lists/*'
-#      - run:
-#          name: Installing GCC
-#          command: 'sudo apt-get update && sudo apt-get install -y gcc-9 g++'
       - run:
           name: Install CMAKE
           command: 'sudo apt-get update && sudo apt-get install -y cmake'
