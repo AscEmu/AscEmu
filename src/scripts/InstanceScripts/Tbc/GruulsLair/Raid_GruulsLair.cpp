@@ -195,8 +195,6 @@ void GruulsLairInstanceScript::setLocalData(uint32_t type, uint32_t data)
 /// Creature: Lair Brute
 LairBruteAI::LairBruteAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
-    addAISpell(SPELL_CLEAVE, 20.0f, TARGET_ATTACKING, 0, 15);
-    addAISpell(SPELL_MORTALSTRIKE, 8.0f, TARGET_ATTACKING, 0, 20);
     addAISpell(SPELL_CHARGE, 7.0f, TARGET_ATTACKING, 0, 35);
 }
 
@@ -217,30 +215,6 @@ void LairBruteAI::OnCastSpell(uint32_t spellId)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-/// Creature: Gronn Priest
-GronnPriestAI::GronnPriestAI(Creature* pCreature) : CreatureAIScript(pCreature)
-{
-    addAISpell(SPELL_PSYCHICSCREAM, 8.0f, TARGET_SELF, 0, 20);
-
-    auto renew = addAISpell(SPELL_RENEW, 8.0f, TARGET_RANDOM_FRIEND, 0, 25);
-    renew->setMinMaxDistance(0.0f, 100.0f);
-
-    auto heal = addAISpell(SPELL_HEAL_GP, 8.0f, TARGET_RANDOM_FRIEND, 2, 30);
-    heal->setMinMaxDistance(0.0f, 100.0f);
-}
-
-CreatureAIScript* GronnPriestAI::Create(Creature* pCreature) { return new GronnPriestAI(pCreature); }
-
-//////////////////////////////////////////////////////////////////////////////////////////
-/// Creature: Wild Fell Stalker
-WildFelStalkerAI::WildFelStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
-{
-    addAISpell(SPELL_WILD_BITE, 10.0f, TARGET_ATTACKING, 0, 10);
-}
-
-CreatureAIScript* WildFelStalkerAI::Create(Creature* pCreature) { return new WildFelStalkerAI(pCreature); }
-
 void SetupGruulsLair(ScriptMgr* mgr)
 {
     // Instance
@@ -253,8 +227,6 @@ void SetupGruulsLair(ScriptMgr* mgr)
 
     // Creatures
     mgr->register_creature_script(NPC_LAIR_BRUTE, &LairBruteAI::Create);
-    mgr->register_creature_script(NPC_GRONN_PRIEST, &GronnPriestAI::Create);
-    mgr->register_creature_script(NPC_WILD_FEL_STALKER, &WildFelStalkerAI::Create);
 
     // Boss
     mgr->register_creature_script(NPC_KIGGLER_THE_CRAZED, &KigglerTheCrazedAI::Create);

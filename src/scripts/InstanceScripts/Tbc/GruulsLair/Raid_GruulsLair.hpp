@@ -137,21 +137,3 @@ public:
 
     void OnCastSpell(uint32_t spellId) override;
 };
-
-//////////////////////////////////////////////////////////////////////////////////////////
-/// Creature: Gronn Priest
-class GronnPriestAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* pCreature);
-    explicit GronnPriestAI(Creature* pCreature);
-};
-
-//////////////////////////////////////////////////////////////////////////////////////////
-/// Creature: Wild Fell Stalker
-class WildFelStalkerAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c);
-    explicit WildFelStalkerAI(Creature* pCreature);
-};
