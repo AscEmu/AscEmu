@@ -44,7 +44,7 @@ bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldS
 
     //prepare new table for dump
     char my_table[1400];
-    sprintf(my_table, "CREATE TABLE `creature_ai_scripts_%s` (`min_build` int NOT NULL DEFAULT '12340',`max_build` int NOT NULL DEFAULT '12340',`entry` int unsigned NOT NULL,\
+    sprintf(my_table, "CREATE TABLE `creature_ai_scripts_%s` (`min_build` int NOT NULL DEFAULT '8606',`max_build` int NOT NULL DEFAULT '12340',`entry` int unsigned NOT NULL,\
             `difficulty` tinyint unsigned NOT NULL DEFAULT '0',`phase` tinyint unsigned NOT NULL DEFAULT '0',`event` tinyint unsigned NOT NULL DEFAULT '0',`action` tinyint unsigned NOT NULL DEFAULT '0',\
             `maxCount` tinyint unsigned NOT NULL DEFAULT '0',`chance` float unsigned NOT NULL DEFAULT '1',`spell` int unsigned NOT NULL DEFAULT '0',`spell_type` int NOT NULL DEFAULT '0',`triggered` tinyint(1) NOT NULL DEFAULT '0',\
             `target` tinyint NOT NULL DEFAULT '0',`cooldownMin` int NOT NULL DEFAULT '0',`cooldownMax` int unsigned NOT NULL DEFAULT '0',`minHealth` float NOT NULL DEFAULT '0',\

@@ -139,127 +139,6 @@ public:
     }
 };
 
-class RageWinterchillAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new RageWinterchillAI(c); }
-    explicit RageWinterchillAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        auto frostbold = addAISpell(FROSTBOLT, 8.0f, TARGET_RANDOM_SINGLE, 0, 10, false, true);
-        frostbold->setAttackStopTimer(1000);
-        frostbold->setMinMaxDistance(0.0f, 80.0f);
-
-        auto deathAndDecay = addAISpell(DEATCH_AND_DECAY, 3.0f, TARGET_RANDOM_SINGLE, 0, 30);
-        deathAndDecay->setAttackStopTimer(1000);
-        deathAndDecay->setMinMaxDistance(0.0f, 30.0f);
-
-        auto frostNova = addAISpell(FROST_NOVA, 5.0f, TARGET_RANDOM_SINGLE, 0, 15, false, true);
-        frostNova->setAttackStopTimer(1000);
-        frostNova->setMinMaxDistance(0.0f, 45.0f);
-
-        auto frostArmor = addAISpell(FROST_ARMOR, 5.0f, TARGET_SELF, 0, 10, false, true);
-        frostArmor->setAttackStopTimer(1000);
-        frostArmor->setMinMaxDistance(0.0f, 45.0f);
-
-        addEmoteForEvent(Event_OnCombatStart, 1590);    // The Legion's final conquest has begun! Once again the subjugation of this world is within our grasp. Let
-        addEmoteForEvent(Event_OnTargetDied, 1586);     // Crumble and rot!
-        addEmoteForEvent(Event_OnTargetDied, 1587);     // Ashes to ashes, dust to dust
-        addEmoteForEvent(Event_OnTargetDied, 1584);     // All life must perish!
-        addEmoteForEvent(Event_OnTargetDied, 1585);     // Victory to the Legion!
-        addEmoteForEvent(Event_OnDied, 1583);           // You have won this battle, but not... the...war
-    }
-};
-
-class AnetheronAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new AnetheronAI(c); }
-    explicit AnetheronAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        auto vampiricAura = addAISpell(VAMPIRIC_AURA, 8.0f, TARGET_SELF, 0, 8, false, true);
-        vampiricAura->setAttackStopTimer(1000);
-
-        auto inferno = addAISpell(INFERNO, 6.0f, TARGET_RANDOM_DESTINATION, 0, 30);
-        inferno->setAttackStopTimer(1000);
-        inferno->setMinMaxDistance(0.0f, 60.0f);
-        inferno->addEmote("Hit he, no time for a slow death", CHAT_MSG_MONSTER_YELL, 11039);
-
-        auto sleep = addAISpell(SLEEP, 5.0f, TARGET_RANDOM_SINGLE, 0, 7, false, true);
-        sleep->setAttackStopTimer(3000);
-        sleep->setMinMaxDistance(0.0f, 30.0f);
-
-        auto berserk = addAISpell(BERSERK, 5.0f, TARGET_SELF, 0, 600, false, true);
-        berserk->setAttackStopTimer(3000);
-        berserk->setMinMaxDistance(0.0f, 30.0f);
-
-        addEmoteForEvent(Event_OnCombatStart, 1569);    // You are defenders of a doomed world. Flee here and perhaps you will prolong your pathetic lives!
-        addEmoteForEvent(Event_OnTargetDied, 1560);     // Your hopes are lost.
-        addEmoteForEvent(Event_OnTargetDied, 1561);     // Scream for me.
-        addEmoteForEvent(Event_OnTargetDied, 1565);     // You look tired
-        addEmoteForEvent(Event_OnDied, 1559);           // The clock... is still...ticking.
-    }
-};
-
-class KazrogalAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new KazrogalAI(c); }
-    explicit KazrogalAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        auto cleave = addAISpell(K_CLEAVE, 8.0f, TARGET_ATTACKING, 0, 10, false, true);
-        cleave->setAttackStopTimer(1000);
-
-        auto warStomp = addAISpell(WAR_STOMP, 6.0f, TARGET_VARIOUS, 0, 15, false, true);
-        warStomp->setAttackStopTimer(1000);
-
-        auto markOfKazrogal = addAISpell(MARK_OF_KAZROGAL, 4.0f, TARGET_VARIOUS, 0, 25, false, true);
-        markOfKazrogal->setAttackStopTimer(2000);
-
-        auto markOfKazrogal2 = addAISpell(MARK_OF_KAZROGAL2, 4.0f, TARGET_VARIOUS, 0, 25, false, true);
-        markOfKazrogal2->setAttackStopTimer(2000);
-
-        addEmoteForEvent(Event_OnCombatStart, 1582);     // Cry for mercy! Your meaningless lives will soon be forfeit.
-        addEmoteForEvent(Event_OnTargetDied, 1580);     // Your death will be a painful one.
-        addEmoteForEvent(Event_OnTargetDied, 1581);     // You... are marked
-        addEmoteForEvent(Event_OnTargetDied, 1578);     // You... are nothing!
-        addEmoteForEvent(Event_OnTargetDied, 1579);     // Miserable nuisance!
-    }
-
-    void OnDied(Unit* /*mKiller*/) override
-    {
-        //\todo move this to db
-        getCreature()->sendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "hahahahaa aahaah");
-        getCreature()->PlaySoundToSet(11018);
-    }
-};
-
-class AzgalorAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new AzgalorAI(c); }
-    explicit AzgalorAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        auto cleave = addAISpell(CLEAVE, 8.0f, TARGET_ATTACKING, 0, 10, false, true);
-        cleave->setAttackStopTimer(3000);
-
-        auto rainOfFire = addAISpell(RAIN_OF_FIRE, 7.0f, TARGET_RANDOM_DESTINATION, 0, 15, false, true);
-        rainOfFire->setAttackStopTimer(1000);
-        rainOfFire->setMinMaxDistance(0.0f, 40.0f);
-
-        auto howlOfAzgalor = addAISpell(HOWL_OF_AZGALOR, 5.0f, TARGET_VARIOUS, 0, 15, false, true);
-        howlOfAzgalor->setAttackStopTimer(2000);
-
-        auto doom = addAISpell(DOOM, 15.0f, TARGET_RANDOM_SINGLE, 0, 45, false, true);
-        doom->setAttackStopTimer(1000);
-        doom->setMinMaxDistance(0.0f, 50.0f);
-
-        addEmoteForEvent(Event_OnCombatStart, 1576);    // Abandon all hope! The legion has returned to finish what was begun so many years ago. This time there will be no escape!
-        addEmoteForEvent(Event_OnTargetDied, 1571);     // Reesh, hokta!
-        addEmoteForEvent(Event_OnTargetDied, 1573);     // No one is going to save you!
-        addEmoteForEvent(Event_OnTargetDied, 1572);     // Don't fight it
-        addEmoteForEvent(Event_OnDied, 1570);           // Your time is almost... up!
-    }
-};
 
 class ArchimondeTriggerAI : public CreatureAIScript
 {
@@ -400,36 +279,6 @@ protected:
     uint32_t DirChange;
 };
 
-/* * Doomfire - Leaves a trail of fire on the ground, which does 2400 fire
-        damage per second (occasionally feared people run into these and die) */
-
-class ArchimondeAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new ArchimondeAI(c); }
-    explicit ArchimondeAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        auto airBurst = addAISpell(AIR_BURST, 5.0f, TARGET_ATTACKING, 0, 25, false, true);
-        airBurst->setAttackStopTimer(1000);
-
-        auto gripOfTheLegion = addAISpell(GRIP_OF_THE_LEGION, 5.0f, TARGET_RANDOM_SINGLE, 0, 25, false, true);
-        gripOfTheLegion->setAttackStopTimer(1000);
-        gripOfTheLegion->setMinMaxDistance(0.0f, 60.0f);
-
-        auto doomfireStrike = addAISpell(DOOMFIRE_STRIKE, 7.0f, TARGET_VARIOUS, 0, 25, false, true);
-        doomfireStrike->setAttackStopTimer(2000);
-
-        auto fear = addAISpell(FEAR, 2.0f, TARGET_VARIOUS, 0, 40, false, true);
-        fear->setAttackStopTimer(2000);
-
-        addEmoteForEvent(Event_OnCombatStart, 1591);    // Your resistance is insignificant.
-        addEmoteForEvent(Event_OnTargetDied, 1597);     // Your soul will languish for eternity.
-        addEmoteForEvent(Event_OnTargetDied, 1596);     // All creation will be devoured!
-        addEmoteForEvent(Event_OnTargetDied, 1598);     // I am the coming of the end!
-        addEmoteForEvent(Event_OnDied, 1600);           // No, it cannot be! Nooo!
-    }
-};
-
 void SetupBattleOfMountHyjal(ScriptMgr* mgr)
 {
     mgr->register_instance_script(MAP_HYJALPAST, &MountHyjalScript::Create);
@@ -440,11 +289,6 @@ void SetupBattleOfMountHyjal(ScriptMgr* mgr)
     mgr->register_creature_gossip(CN_THRALL, new ThrallGS());
     mgr->register_creature_script(CN_THRALL, &ThrallAI::Create);
 
-    mgr->register_creature_script(CN_RAGE_WINTERCHILL, &RageWinterchillAI::Create);
-    mgr->register_creature_script(CN_ANETHERON, &AnetheronAI::Create);
-    mgr->register_creature_script(CN_KAZROGAL, &KazrogalAI::Create);
-    mgr->register_creature_script(CN_AZGALOR, &AzgalorAI::Create);
     mgr->register_creature_script(CN_ARCHIMONDE_CHANNEL_TRIGGER, &ArchimondeTriggerAI::Create);
     mgr->register_creature_script(CN_DOOMFIRE, &DoomfireAI::Create);
-    mgr->register_creature_script(CN_ARCHIMONDE, &ArchimondeAI::Create);
 }
