@@ -315,29 +315,6 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////
 // Beast AIs
 
-class DragonTurtleAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new DragonTurtleAI(c); }
-    explicit DragonTurtleAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(DRAGON_TRUTLE_SHELL_SHIELD, 10.0f, TARGET_SELF, 0, 25);
-        addAISpell(DRAGON_TURTLE_WATER_SPIT, 8.0f, TARGET_ATTACKING, 3, 20);
-    }
-};
-
-class LeviathanAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new LeviathanAI(c); }
-    explicit LeviathanAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(LEVIATHAN_DEBILITATING_SPRAY, 8.0f, TARGET_RANDOM_SINGLE, 3, 20);
-        addAISpell(LEVIATHAN_POISON_SPIT, 8.0f, TARGET_RANDOM_SINGLE, 3, 25);
-        addAISpell(LEVIATHAN_TAIL_SWEEP, 7.0f, TARGET_SELF, 0, 30);
-    }
-};
-
 class MutantWarHoundAI : public CreatureAIScript
 {
 public:
@@ -351,81 +328,10 @@ public:
     }
 };
 
-class ShadowmoonRidingHoundAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new ShadowmoonRidingHoundAI(c); }
-    explicit ShadowmoonRidingHoundAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(SHADOWMOON_RIDING_HOUND_CARNIVOROUS_BITE, 10.0f, TARGET_ATTACKING, 0, 20);
-        addAISpell(SHADOWMOON_RIDING_HOUND_CHARGE, 8.0f, TARGET_RANDOM_SINGLE, 0, 35);
-        addAISpell(SHADOWMOON_RIDING_HOUND_ENRAGE, 6.0f, TARGET_SELF, 0, 40);
-    }
-};
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Demon AIs
 
-class SisterOfPleasureAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new SisterOfPleasureAI(c); }
-    explicit SisterOfPleasureAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(SISTER_OF_PLEASURE_GREATER_HEAL, 10.0f, TARGET_RANDOM_FRIEND, 2, 45);
-        addAISpell(SISTER_OF_PLEASURE_HOLY_NOVA, 10.0f, TARGET_SELF, 0, 20);
-        addAISpell(SISTER_OF_PLEASURE_SHARED_BONDS, 5.0f, TARGET_ATTACKING, 0, 25);
-        addAISpell(SISTER_OF_PLEASURE_SHELL_OF_LIFE, 7.0f, TARGET_SELF, 1, 45);
-    }
-};
-
-class SisterOfPainAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new SisterOfPainAI(c); }
-    explicit SisterOfPainAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(SISTER_OF_PAIN_LASH_OF_PAIN, 10.0f, TARGET_ATTACKING, 0, 25);
-        addAISpell(SISTER_OF_PAIN_PAINFUL_RAGE, 5.0f, TARGET_SELF, 0, 60);
-        addAISpell(SISTER_OF_PAIN_SHADOW_WORD_PAIN, 10.0f, TARGET_RANDOM_SINGLE, 0, 25);
-        addAISpell(SISTER_OF_PAIN_SHARED_BONDS, 5.0f, TARGET_ATTACKING, 0, 25);
-        addAISpell(SISTER_OF_PAIN_SHELL_OF_PAIN, 7.0f, TARGET_SELF, 1, 45);
-    }
-};
-
-class PriestessOfDementiaAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new PriestessOfDementiaAI(c); }
-    explicit PriestessOfDementiaAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(PRIESTESS_OF_DEMENTIA_CONFUSION, 8.0f, TARGET_SELF, 0, 30);
-        addAISpell(PRIESTESS_OF_DEMENTIA_DEMENTIA, 5.0f, TARGET_SELF, 0, 60);
-    }
-};
-
-class PriestessOfDelightAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new PriestessOfDelightAI(c); }
-    explicit PriestessOfDelightAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(PRIESTESS_OF_DELIGHT_CURSE_OF_VITALITY, 10.0f, TARGET_RANDOM_SINGLE, 0, 30);
-    }
-};
-
-class IllidariNightlordAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new IllidariNightlordAI(c); }
-    explicit IllidariNightlordAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(ILLIDARI_NIGHTLORD_SUMMON_SHADOWFIENDS, 7.0f, TARGET_SELF, 0, 45);            // does it work?
-        addAISpell(ILLIDARI_NIGHTLORD_SHADOW_INFERNO, 10.0f, TARGET_SELF, 0, 25);
-        addAISpell(ILLIDARI_NIGHTLORD_FEAR, 7.0f, TARGET_SELF, 1, 30);
-        addAISpell(ILLIDARI_NIGHTLORD_CURSE_OF_MENDING, 8.0f, TARGET_RANDOM_SINGLE, 2, 35);
-    }
-};
 
 class IllidariHeartseekerAI : public CreatureAIScript
 {
@@ -433,16 +339,6 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new IllidariHeartseekerAI(c); }
     explicit IllidariHeartseekerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        auto bleakheart = addAISpell(ILLIDARI_HEARTSEEKER_CURSE_OF_THE_BLEAKHEART, 8.0f, TARGET_RANDOM_SINGLE, 0, 40);
-        bleakheart->setMinMaxDistance(0.0f, 30.0f);
-
-        mRapidShot = addAISpell(ILLIDARI_HEARTSEEKER_RAPID_SHOT, 7.0f, TARGET_SELF, 8, 0);
-
-        auto shoot = addAISpell(ILLIDARI_HEARTSEEKER_SHOOT, 80.0f, TARGET_ATTACKING, 0, 2);
-        shoot->setMinMaxDistance(0.0f, 30.0f);
-
-        auto shot = addAISpell(ILLIDARI_HEARTSEEKER_SKELETON_SHOT, 7.0f, TARGET_RANDOM_SINGLE, 0, 25);
-        shot->setMinMaxDistance(0.0f, 30.0f);
     }
 
     void OnCombatStart(Unit* pTarget) override
@@ -466,111 +362,13 @@ public:
             }
         }
     }
-
-    CreatureAISpells* mRapidShot;
-};
-
-class IllidariFearbringerAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new IllidariFearbringerAI(c); }
-    explicit IllidariFearbringerAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(ILLIDARI_FEARBRINGER_ILLIDARI_FLAMES, 8.0f, TARGET_ATTACKING, 2, 25);
-        addAISpell(ILLIDARI_FEARBRINGER_RAIN_OF_CHAOS, 7.0f, TARGET_RANDOM_DESTINATION, 0, 35);
-        addAISpell(ILLIDARI_FEARBRINGER_WAR_STOMP, 8.0f, TARGET_SELF, 0, 35);
-    }
-};
-
-class IllidariDefilerAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new IllidariDefilerAI(c); }
-    explicit IllidariDefilerAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(ILLIDARI_DEFILER_BANISH, 8.0f, TARGET_RANDOM_SINGLE, 1, 30);
-        addAISpell(ILLIDARI_DEFILER_CURSE_OF_AGONY, 7.0f, TARGET_RANDOM_SINGLE, 0, 45);
-        addAISpell(ILLIDARI_DEFILER_FEL_IMMOLATE, 8.0f, TARGET_RANDOM_SINGLE, 2, 25);
-        addAISpell(ILLIDARI_DEFILER_RAIN_OF_CHAOS, 7.0f, TARGET_RANDOM_DESTINATION, 6, 35);
-    }
-};
-
-class IllidariCenturionAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new IllidariCenturionAI(c); }
-    explicit IllidariCenturionAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(ILLIDARI_CENTURION_CLEAVE, 10.0f, TARGET_ATTACKING, 0, 20);
-        addAISpell(ILLIDARI_CENTURION_SONIC_STRIKE, 8.0f, TARGET_SELF, 0, 35);
-    }
-};
-
-class IllidariBoneslicerAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new IllidariBoneslicerAI(c); }
-    explicit IllidariBoneslicerAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(ILLIDARI_BONESLICER_CLOAK_OF_SHADOWS, 8.0f, TARGET_SELF, 0, 25);
-        addAISpell(ILLIDARI_BONESLICER_GOUGE, 7.0f, TARGET_ATTACKING);
-        addAISpell(ILLIDARI_BONESLICER_SHADOWSTEP, 7.0f, TARGET_ATTACKING, 0, 30);
-    }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Humanoid AIs
-class AshtongueBattlelordAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new AshtongueBattlelordAI(c); }
-    explicit AshtongueBattlelordAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(ASHTONGUE_BATTLELORD_CLEAVE, 10.0f, TARGET_ATTACKING, 0, 15);
-        addAISpell(ASHTONGUE_BATTLELORD_CONCUSSION_BLOW, 8.0f, TARGET_ATTACKING, 0, 30);
-        addAISpell(ASHTONGUE_BATTLELORD_CONCUSSIVE_THROW, 8.0f, TARGET_RANDOM_SINGLE, 0, 25);
-        addAISpell(ASHTONGUE_BATTLELORD_ENRAGE, 4.0f, TARGET_SELF, 0, 50);
-    }
-};
 
-class AshtongueDefenderAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new AshtongueDefenderAI(c); }
-    explicit AshtongueDefenderAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(ASHTONGUE_DEFENDER_DEBILITATING_STRIKE, 10.0f, TARGET_ATTACKING, 0, 20);
-        addAISpell(ASHTONGUE_DEFENDER_SHIELD_BASH, 7.0f, TARGET_ATTACKING, 0, 25);
-    }
-};
+//\ todo Add Totem AIs to AshtonMystic
 
-class AshtongueElementalistAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new AshtongueElementalistAI(c); }
-    explicit AshtongueElementalistAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(ASHTONGUE_ELEMENTALIST_LIGHTNING_BOLT, 8.0f, TARGET_ATTACKING, 1, 20);
-        addAISpell(ASHTONGUE_ELEMENTALIST_RAID_OF_FIRE, 6.0f, TARGET_RANDOM_DESTINATION, 0, 25);
-    }
-};
-
-//\ todo Add Totem AIs
-class AshtongueMysticAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new AshtongueMysticAI(c); }
-    explicit AshtongueMysticAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(ASHTONGUE_MYSTIC_BLOODLUST, 5.0f, TARGET_SELF, 0, 45);
-        addAISpell(ASHTONGUE_MYSTIC_CHAIN_HEAL, 6.0f, TARGET_RANDOM_FRIEND, 3, 35);
-        addAISpell(ASHTONGUE_MYSTIC_CYCLONE_TOTEM, 7.0f, TARGET_SELF, 0, 35);
-        addAISpell(ASHTONGUE_MYSTIC_FLAME_SHOCK, 8.0f, TARGET_ATTACKING, 0, 25);
-        addAISpell(ASHTONGUE_MYSTIC_FROST_SHOCK, 8.0f, TARGET_ATTACKING, 0, 25);
-        addAISpell(ASHTONGUE_MYSTIC_SEARING_TOTEM, 7.0f, TARGET_SELF, 0, 35);
-        addAISpell(ASHTONGUE_MYSTIC_SUMMON_WINDFURY_TOTEM, 7.0f, TARGET_SELF, 0, 35);
-    }
-};
 
 class AshtonguePrimalistAI : public CreatureAIScript
 {
@@ -578,10 +376,6 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new AshtonguePrimalistAI(c); }
     explicit AshtonguePrimalistAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        addAISpell(ASHTONGUE_PRIMALIST_MULTISHOT, 8.0f, TARGET_ATTACKING, 0, 40);
-        addAISpell(ASHTONGUE_PRIMALIST_SHOOT, 80.0f, TARGET_ATTACKING, 0, 1);
-        addAISpell(ASHTONGUE_PRIMALIST_SWEEPING_WING_CLIP, 8.0f, TARGET_ATTACKING, 0, 15, false, true);
-        addAISpell(ASHTONGUE_PRIMALIST_WYVERN_STRING, 7.0f, TARGET_RANDOM_SINGLE, 0, 25);
     }
 
     void OnCombatStart(Unit* pTarget) override
@@ -604,34 +398,6 @@ public:
                 setRooted(true);
             }
         }
-    }
-};
-
-class AshtongueRogueAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new AshtongueRogueAI(c); }
-    explicit AshtongueRogueAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(ASHTONGUE_ROGUE_DEBILITATING_POISON, 7.0f, TARGET_ATTACKING, 0, 30);
-        addAISpell(ASHTONGUE_ROGUE_EVISCERATE, 10.0f, TARGET_ATTACKING, 0, 15);
-    }
-};
-
-class AshtongueSpiritbinderAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new AshtongueSpiritbinderAI(c); }
-    explicit AshtongueSpiritbinderAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(ASHTONGUE_SPIRITBINDER_CHAIN_HEAL, 7.0f, TARGET_RANDOM_FRIEND, 1, 25);
-
-        if (!_isHeroic())    // Guessed
-            addAISpell(ASHTONGUE_SPIRITBINDER_SPIRIT_HEAL, 7.0f, TARGET_SELF, 0, 25);
-        else
-            addAISpell(ASHTONGUE_SPIRITBINDER_SPIRIT_HEAL2, 7.0f, TARGET_SELF, 0, 25);
-
-        addAISpell(ASHTONGUE_SPIRITBINDER_SPIRIT_MEND, 8.0f, TARGET_RANDOM_FRIEND, 0, 25);
     }
 };
 
@@ -642,249 +408,13 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new AshtongueStalkerAI(c); }
     explicit AshtongueStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        addAISpell(ASHTONGUE_STALKER_BLIND, 7.0f, TARGET_RANDOM_SINGLE, 1, 25);
-        addAISpell(ASHTONGUE_STALKER_INSTANT_POISON, 10.0f, TARGET_ATTACKING, 0, 20);
-        addAISpell(ASHTONGUE_STALKER_MINDNUMBING_POISON, 8.0f, TARGET_RANDOM_SINGLE, 0, 20);
         _applyAura(ASHTONGUE_STALKER_STEATH);
     }
 
     void OnCombatStop(Unit* /*pTarget*/) override
     {
         if (isAlive())
-        {
             _applyAura(ASHTONGUE_STALKER_STEATH);
-        }
-    }
-};
-
-class AshtongueStormcallerAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new AshtongueStormcallerAI(c); }
-    explicit AshtongueStormcallerAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(ASHTONGUE_STORMCALLER_CHAIN_LIGHTNING, 7.0f, TARGET_ATTACKING, 3, 35);
-        addAISpell(ASHTONGUE_STORMCALLER_LIGHTNING_BOLT, 10.0f, TARGET_ATTACKING, 2, 20);
-        addAISpell(ASHTONGUE_STORMCALLER_LIGHTNING_SHIELD, 10.0f, TARGET_SELF, 0, 50);
-    }
-};
-
-class BonechewerBehemothAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new BonechewerBehemothAI(c); }
-    explicit BonechewerBehemothAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        pCharge = addAISpell(BONECHEWER_BEHEMOTH_BEHEMOTH_CHARGE, 0.0f, TARGET_ATTACKING, 0, 20);
-        addAISpell(BONECHEWER_BEHEMOTH_ENRAGE, 5.0f, TARGET_SELF, 0, 45);
-        addAISpell(BONECHEWER_BEHEMOTH_FEL_STOMP, 7.0f, TARGET_SELF, 0, 30);
-        addAISpell(BONECHEWER_BEHEMOTH_FIERY_COMET, 6.0f, TARGET_RANDOM_DESTINATION, 1, 30);
-        addAISpell(BONECHEWER_BEHEMOTH_METEOR, 5.0f, TARGET_RANDOM_DESTINATION, 2, 40);
-    }
-
-    void OnCombatStart(Unit* /*pTarget*/) override
-    {
-        if (pCharge != nullptr)
-        {
-            _castAISpell(pCharge);
-        }
-    }
-
-    CreatureAISpells* pCharge;
-};
-
-class BonechewerBladeFuryAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new BonechewerBladeFuryAI(c); }
-    explicit BonechewerBladeFuryAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(BONECHEWER_BLADE_FURY_WHIRLWIND, 7.0f, TARGET_ATTACKING, 8, 40);
-    }
-};
-
-class BonechewerBloodProphetAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new BonechewerBloodProphetAI(c); }
-    explicit BonechewerBloodProphetAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(BONECHEWER_BLOOD_PROPHET_BLOOD_DRAIN, 6.0f, TARGET_ATTACKING, 5, 30);
-        addAISpell(BONECHEWER_BLOOD_PROPHET_BLOODBOLT, 7.0f, TARGET_RANDOM_SINGLE, 2, 25);
-        addAISpell(BONECHEWER_BLOOD_PROPHET_ENRAGE, 5.0f, TARGET_SELF, 0, 50);
-
-        if (_isHeroic())
-            addAISpell(BONECHEWER_BLOOD_PROPHET_PROPHECY_OF_BLOOD, 10.0f, TARGET_RANDOM_SINGLE, 0, 30);
-        else
-            addAISpell(BONECHEWER_BLOOD_PROPHET_PROPHECY_OF_BLOOD2, 10.0f, TARGET_RANDOM_SINGLE, 0, 30);
-    }
-};
-
-class BonechewerBrawlerAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new BonechewerBrawlerAI(c); }
-    explicit BonechewerBrawlerAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(BONECHEWER_BRAWLER_FRENZY, 7.0f, TARGET_SELF, 0, 30);
-    }
-};
-
-class BonechewerCombatantAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new BonechewerCombatantAI(c); }
-    explicit BonechewerCombatantAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(BONECHEWER_COMBATANT_FRENZY, 7.0f, TARGET_SELF, 0, 45);
-    }
-};
-
-class BonechewerShieldDiscipleAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new BonechewerShieldDiscipleAI(c); }
-    explicit BonechewerShieldDiscipleAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        pIntervene = addAISpell(BONECHEWER_SHIELD_DISCIPLE_INTERVENE, 0.0f, TARGET_ATTACKING, 0, 20);
-        addAISpell(BONECHEWER_SHIELD_DISCIPLE_SHIELD_BASH, 8.0f, TARGET_ATTACKING, 0, 25);
-        addAISpell(BONECHEWER_SHIELD_DISCIPLE_SHIELD_WALL, 8.0f, TARGET_SELF, 0, 35);
-        addAISpell(BONECHEWER_SHIELD_DISCIPLE_THROW_SHIELD, 7.0f, TARGET_RANDOM_SINGLE, 0, 30);
-    }
-
-    void OnCombatStart(Unit* /*pTarget*/) override
-    {
-        if (pIntervene != nullptr)
-        {
-            _castAISpell(pIntervene);
-        }
-    }
-
-    CreatureAISpells* pIntervene;
-};
-
-class BonechewerSpectatorAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new BonechewerSpectatorAI(c); }
-    explicit BonechewerSpectatorAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        pCharge = addAISpell(BONECHEWER_SPECTATOR_CHARGE, 0.0f, TARGET_ATTACKING, 0, 20);
-        addAISpell(BONECHEWER_SPECTATOR_CLEAVE, 10.0f, TARGET_ATTACKING, 0, 25);
-        addAISpell(BONECHEWER_SPECTATOR_MORTAL_WOUND, 7.0f, TARGET_ATTACKING, 0, 15);
-        addAISpell(BONECHEWER_SPECTATOR_STRIKE, 10.0f, TARGET_ATTACKING, 0, 10);
-        addAISpell(BONECHEWER_SPECTATOR_SUNDER_ARMOR, 7.0f, TARGET_ATTACKING, 0, 20);
-    }
-
-    void OnCombatStart(Unit* /*pTarget*/) override
-    {
-        if (pCharge != nullptr)
-        {
-            _castAISpell(pCharge);
-        }
-    }
-
-    CreatureAISpells* pCharge;
-};
-
-class BonechewerTaskmasterAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new BonechewerTaskmasterAI(c); }
-    explicit BonechewerTaskmasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(BONECHEWER_TASKMASTER_DISGRUNTLED, 5.0f, TARGET_SELF, 0, 45);
-        addAISpell(BONECHEWER_TASKMASTER_FURY, 8.0f, TARGET_SELF, 0, 15);
-    }
-};
-
-class BonechewerWorkerAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new BonechewerWorkerAI(c); }
-    explicit BonechewerWorkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(BONECHEWER_WORKER_THROW_PICK, 8.0f, TARGET_RANDOM_SINGLE, 0, 15);
-    }
-};
-
-class CharmingCourtesanAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new CharmingCourtesanAI(c); }
-    explicit CharmingCourtesanAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(CHARMING_COURTESAN_INFATUATION, 7.0f, TARGET_RANDOM_SINGLE, 20, 40);
-        addAISpell(CHARMING_COURTESAN_POISONOUS_THROW, 8.0f, TARGET_RANDOM_SINGLE, 0, 20);
-    }
-};
-
-class CoilskarGeneralAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new CoilskarGeneralAI(c); }
-    explicit CoilskarGeneralAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(COILSKAR_GENERAL_BOOMING_VOICE, 7.0f, TARGET_SELF, 0, 35);
-        addAISpell(COILSKAR_GENERAL_FREE_FRIEND, 7.0f, TARGET_RANDOM_FRIEND, 0, 20);
-    }
-};
-
-//\todo Is it Ranged unit throwing spears all the time?
-class CoilskarHarpoonerAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new CoilskarHarpoonerAI(c); }
-    explicit CoilskarHarpoonerAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        pMark = addAISpell(COILSKAR_HARPOONER_HARPOONERS_MARK, 7.0f, TARGET_RANDOM_SINGLE, 0, 35);
-        addAISpell(COILSKAR_HARPOONER_HOOKED_NET, 7.0f, TARGET_RANDOM_SINGLE, 0, 25);
-        addAISpell(COILSKAR_HARPOONER_SPEAR_THROW, 8.0f, TARGET_ATTACKING, 0, 15);
-    }
-
-    void OnCombatStart(Unit* /*pTarget*/) override
-    {
-        if (pMark != nullptr)
-        {
-            _castAISpell(pMark);
-        }
-    }
-
-    CreatureAISpells* pMark;
-};
-
-class CoilskarSeacallerAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new CoilskarSeacallerAI(c); }
-    explicit CoilskarSeacallerAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(COILSKAR_SEACALLER_FORKED_LIGHTNING, 8.0f, TARGET_SELF, 2, 20);
-        addAISpell(COILSKAR_SEACALLER_HURRICANE, 8.0f, TARGET_RANDOM_DESTINATION, 20, 35);
-        addAISpell(COILSKAR_SEACALLER_SUMMON_GEYSER, 7.0f, TARGET_RANDOM_SINGLE, 2, 25);
-    }
-};
-
-class CoilskarSoothsayerAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new CoilskarSoothsayerAI(c); }
-    explicit CoilskarSoothsayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(COILSKAR_SOOTHSAYER_HOLY_NOVA, 10.0f, TARGET_SELF, 0, 20);
-        addAISpell(COILSKAR_SOOTHSAYER_RESTORATION, 8.0f, TARGET_RANDOM_FRIEND, 2, 35);
-    }
-};
-
-class CoilskarWranglerAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new CoilskarWranglerAI(c); }
-    explicit CoilskarWranglerAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(COILSKAR_WRANGLER_CLEAVE, 10.0f, TARGET_ATTACKING, 0, 20);
-        addAISpell(COILSKAR_WRANGLER_ELECTRIC_SPUR, 8.0f, TARGET_SELF, 3, 45);
-        addAISpell(COILSKAR_WRANGLER_LIGHTNING_PROD, 8.0f, TARGET_RANDOM_SINGLE, 3, 25);
     }
 };
 
@@ -956,18 +486,6 @@ public:
     }
 };
 
-class DragonmawWyrmcallerAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new DragonmawWyrmcallerAI(c); }
-    explicit DragonmawWyrmcallerAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(DRAGONMAW_WYRMCALLER_CLEAVE, 10.0f, TARGET_ATTACKING, 0, 15);
-        addAISpell(DRAGONMAW_WYRMCALLER_FIXATE, 7.0f, TARGET_RANDOM_SINGLE, 0, 20);
-        addAISpell(DRAGONMAW_WYRMCALLER_JAB, 8.0f, TARGET_ATTACKING, 0, 25);
-    }
-};
-
 class EnslavedServantAI : public CreatureAIScript
 {
 public:
@@ -995,16 +513,6 @@ public:
     }
 
     int32_t mHealthResetTimer;
-};
-
-class HandOfGorefiendAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new HandOfGorefiendAI(c); }
-    explicit HandOfGorefiendAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(HAND_OF_GOREFIEND_FRENZY, 6.0f, TARGET_SELF, 0, 45);
-    }
 };
 
 //\todo Mechanics are guessed. I'm also not sure if it's not typical caster unit
@@ -1070,18 +578,6 @@ public:
     }
 };
 
-class IllidariBloodLordAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new IllidariBloodLordAI(c); }
-    explicit IllidariBloodLordAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(ILLIDARI_BLOOD_LORD_DIVINE_SHIELD, 8.0f, TARGET_SELF, 0, 30);
-        addAISpell(ILLIDARI_BLOOD_LORD_HAMMER_OF_JUSTICE, 9.0f, TARGET_ATTACKING, 0, 20);
-        addAISpell(ILLIDARI_BLOOD_LORD_JUDGEMENT_OF_COMMAND, 8.0f, TARGET_ATTACKING, 0, 25);
-    }
-};
-
 //\todo Should be summoned by Priestess of Dementia
 class ImageOfDementiaAI : public CreatureAIScript
 {
@@ -1096,28 +592,6 @@ public:
     {
         if (spellId == IMAGE_OF_DEMENTIA_WHRILWIND)
             despawn(25000);
-    }
-};
-
-class ShadowmoonBloodMageAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new ShadowmoonBloodMageAI(c); }
-    explicit ShadowmoonBloodMageAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(SHADOWMOON_BLOOD_MAGE_BLOOD_SIPHON, 8.0f, TARGET_SELF, 0, 35);
-        addAISpell(SHADOWMOON_BLOOD_MAGE_BLOOD_BOLT, 9.0f, TARGET_RANDOM_SINGLE, 3, 25);
-    }
-};
-
-class ShadowmoonChampionAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new ShadowmoonChampionAI(c); }
-    explicit ShadowmoonChampionAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(SHADOWMOON_CHAMPION_CHAOTIC_LIGHT, 8.0f, TARGET_ATTACKING, 0, 25);
-        addAISpell(SHADOWMOON_CHAMPION_WHIRLING_BLADE, 8.0f, TARGET_RANDOM_SINGLE, 1, 30);    // I must check its mechanics
     }
 };
 
@@ -1173,14 +647,6 @@ public:
     }
 };
 
-//\todo No entry in my DB, but AI may stay :)?
-class ShadowmoonFallenAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new ShadowmoonFallenAI(c); }
-    explicit ShadowmoonFallenAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
-};
-
 class ShadowmoonHoundmasterAI : public CreatureAIScript
 {
 public:
@@ -1216,26 +682,6 @@ public:
                 setRooted(true);
             }
         }
-    }
-};
-
-class ShadowmoonReaverAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new ShadowmoonReaverAI(c); }
-    explicit ShadowmoonReaverAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(SHADOWMOON_REAVER_SPELL_ABSORPTION, 8.0f, TARGET_SELF, 0, 35);
-    }
-};
-
-class ShadowmoonSoldierAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new ShadowmoonSoldierAI(c); }
-    explicit ShadowmoonSoldierAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(SHADOWMOON_SOLDIER_STRIKE, 10.0f, TARGET_ATTACKING, 0, 15);
     }
 };
 
@@ -1311,27 +757,6 @@ public:
     }
 };
 
-class SpellboundAttendantAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new SpellboundAttendantAI(c); }
-    explicit SpellboundAttendantAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(SPELLBOUND_ATTENDANT_KICK, 9.0f, TARGET_ATTACKING, 0, 25);
-        addAISpell(SPELLBOUND_ATTENDANT_SLEEP, 8.0f, TARGET_RANDOM_SINGLE, 1, 25);
-    }
-};
-
-class TempleConcubineAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new TempleConcubineAI(c); }
-    explicit TempleConcubineAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(TEMPLE_CONCUBINE_LOVE_TAP, 9.0f, TARGET_ATTACKING, 0, 25);
-        addAISpell(TEMPLE_CONCUBINE_POLYMORPH, 7.0f, TARGET_RANDOM_SINGLE, 1, 25);
-    }
-};
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Elemental AIs
@@ -1356,26 +781,6 @@ public:
     CreatureAISpells* mStormBlink;
 };
 
-class AqueousSurgerAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new AqueousSurgerAI(c); }
-    explicit AqueousSurgerAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(AQUEOUS_SURGER_POISON_BOLT_VOLLEY, 7.0f, TARGET_SELF, 0, 20);
-    }
-};
-
-class AqueousSpawnAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new AqueousSpawnAI(c); }
-    explicit AqueousSpawnAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(AQUEOUS_SPAWN_MERGE, 7.0f, TARGET_SELF, 11, 45);
-        addAISpell(AQUEOUS_SPAWN_SLUDGE_NOVA, 8.0f, TARGET_RANDOM_SINGLE, 3, 20);
-    }
-};
 
 class AqueousLordAI : public CreatureAIScript
 {
@@ -1405,29 +810,6 @@ public:
     uint32_t mAqueousTimerId;
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////
-// Mechanical AIs
-class PromenadeSentinelAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new PromenadeSentinelAI(c); }
-    explicit PromenadeSentinelAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(PROMENADE_SENTINEL_L5_ARCANE_CHARGE, 8.0f, TARGET_RANDOM_SINGLE, 3, 35);
-    }
-};
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// Uncategorized AIs
-class AngeredSoulFragmentAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new AngeredSoulFragmentAI(c); }
-    explicit AngeredSoulFragmentAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(ANGERED_SOUL_FRAGMENT_ANGER, 10.0f, TARGET_SELF, 3, 25);
-    }
-};
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Undead AIs
@@ -1459,52 +841,6 @@ public:
         {
             _applyAura(HUNGERING_SOUL_FRAGMENT_CONSUMING_STRIKES);
         }
-    }
-};
-
-class ShadowyConstructAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new ShadowyConstructAI(c); }
-    explicit ShadowyConstructAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(SHADOWY_CONSTRUCT_ATROPHY, 10.0f, TARGET_ATTACKING, 0, 45);
-    }
-};
-
-class SufferingSoulFragmentAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new SufferingSoulFragmentAI(c); }
-    explicit SufferingSoulFragmentAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(SUFFERING_SOUL_FRAGMENT_SOUL_BLAST, 8.0f, TARGET_SELF, 2, 30);
-    }
-};
-
-//\todo Teron Gorefiend transforms random player into it with those abilities, but AI might be handy too (too overpowered?) - cannot check (no npc in DB)
-class VangefulSpiritAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new VangefulSpiritAI(c); }
-    explicit VangefulSpiritAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(VANGEFUL_SPIRIT_SPIRIT_CHAINS, 8.0f, TARGET_SELF, 0, 25);
-        addAISpell(VANGEFUL_SPIRIT_SPIRIT_LANCE, 6.0f, TARGET_RANDOM_SINGLE, 0, 35);
-        addAISpell(VANGEFUL_SPIRIT_SPIRIT_SHIELD, 6.0f, TARGET_SELF, 0, 50);
-        addAISpell(VANGEFUL_SPIRIT_SPIRIT_STRIKE, 9.0f, TARGET_ATTACKING, 0, 15);
-        addAISpell(VANGEFUL_SPIRIT_SPIRIT_VOLLEY, 4.0f, TARGET_SELF, 0, 40);
-    }
-};
-
-class WrathboneFlayerAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new WrathboneFlayerAI(c); }
-    explicit WrathboneFlayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(WRATHBONE_FLAYER_CLEAVE, 10.0f, TARGET_ATTACKING, 0, 15);
-        addAISpell(WRATHBONE_FLAYER_IGNORED, 7.0f, TARGET_ATTACKING, 0, 25);
     }
 };
 
@@ -5308,76 +4644,26 @@ void SetupBlackTemple(ScriptMgr* mgr)
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Mobs
-    mgr->register_creature_script(CN_DRAGON_TURTLE, &DragonTurtleAI::Create);
-    mgr->register_creature_script(CN_LEVIATHAN, &LeviathanAI::Create);
+
     mgr->register_creature_script(CN_MUTANT_WAR_HOUND, &MutantWarHoundAI::Create);
-    mgr->register_creature_script(CN_SHADOWMOON_RIDING_HOUND, &ShadowmoonRidingHoundAI::Create);
-    mgr->register_creature_script(CN_SISTER_OF_PLEASURE, &SisterOfPleasureAI::Create);
-    mgr->register_creature_script(CN_SISTER_OF_PAIN, &SisterOfPainAI::Create);
-    mgr->register_creature_script(CN_PRIESTESS_OF_DEMENTIA, &PriestessOfDementiaAI::Create);
-    mgr->register_creature_script(CN_PRIESTESS_OF_DELIGHT, &PriestessOfDelightAI::Create);
-    mgr->register_creature_script(CN_ILLIDARI_NIGHTLORD, &IllidariNightlordAI::Create);
     mgr->register_creature_script(CN_ILLIDARI_HEARTSEEKER, &IllidariHeartseekerAI::Create);
-    mgr->register_creature_script(CN_ILLIDARI_FEARBRINGER, &IllidariFearbringerAI::Create);
-    mgr->register_creature_script(CN_ILLIDARI_DEFILER, &IllidariDefilerAI::Create);
-    mgr->register_creature_script(CN_ILLIDARI_CENTURION, &IllidariCenturionAI::Create);
-    mgr->register_creature_script(CN_ILLIDARI_BONESLICER, &IllidariBoneslicerAI::Create);
-    mgr->register_creature_script(CN_ASHTONGUE_BATTLELORD, &AshtongueBattlelordAI::Create);
-    mgr->register_creature_script(CN_ASHTONGUE_DEFENDER, &AshtongueDefenderAI::Create);
-    mgr->register_creature_script(CN_ASHTONGUE_ELEMENTALIST, &AshtongueElementalistAI::Create);
-    mgr->register_creature_script(CN_ASHTONGUE_MYSTIC, &AshtongueMysticAI::Create);
     mgr->register_creature_script(CN_ASHTONGUE_PRIMALIST, &AshtonguePrimalistAI::Create);
-    mgr->register_creature_script(CN_ASHTONGUE_ROGUE, &AshtongueRogueAI::Create);
-    mgr->register_creature_script(CN_ASHTONGUE_SPIRITBINDER, &AshtongueSpiritbinderAI::Create);
     mgr->register_creature_script(CN_ASHTONGUE_STALKER, &AshtongueStalkerAI::Create);
-    mgr->register_creature_script(CN_ASHTONGUE_STORMCALLER, &AshtongueStormcallerAI::Create);
-    mgr->register_creature_script(CN_BONECHEWER_BEHEMOTH, &BonechewerBehemothAI::Create);
-    mgr->register_creature_script(CN_BONECHEWER_BLADE_FURY, &BonechewerBladeFuryAI::Create);
-    mgr->register_creature_script(CN_BONECHEWER_BLOOD_PROPHET, &BonechewerBloodProphetAI::Create);
-    mgr->register_creature_script(CN_BONECHEWER_BRAWLER, &BonechewerBrawlerAI::Create);
-    mgr->register_creature_script(CN_BONECHEWER_COMBATANT, &BonechewerCombatantAI::Create);
-    mgr->register_creature_script(CN_BONECHEWER_SHIELD_DISCIPLE, &BonechewerShieldDiscipleAI::Create);
-    mgr->register_creature_script(CN_BONECHEWER_SPECTATOR, &BonechewerSpectatorAI::Create);
-    mgr->register_creature_script(CN_BONECHEWER_TASKMASTER, &BonechewerTaskmasterAI::Create);
-    mgr->register_creature_script(CN_BONECHEWER_WORKER, &BonechewerWorkerAI::Create);
-    mgr->register_creature_script(CN_CHARMING_COURTESAN, &CharmingCourtesanAI::Create);
-    mgr->register_creature_script(CN_COILSKAR_GENERAL, &CoilskarGeneralAI::Create);
-    mgr->register_creature_script(CN_COILSKAR_HARPOONER, &CoilskarHarpoonerAI::Create);
-    mgr->register_creature_script(CN_COILSKAR_SEACALLER, &CoilskarSeacallerAI::Create);
-    mgr->register_creature_script(CN_COILSKAR_SOOTHSAYER, &CoilskarSoothsayerAI::Create);
-    mgr->register_creature_script(CN_COILSKAR_WRANGLER, &CoilskarWranglerAI::Create);
     mgr->register_creature_script(CN_DRAGONMAW_SKY_STALKER, &DragonmawSkyStalkerAI::Create);
     mgr->register_creature_script(CN_DRAGONMAW_WIND_REAVER, &DragonmawWindReaverAI::Create);
-    mgr->register_creature_script(CN_DRAGONMAW_WYRMCALLER, &DragonmawWyrmcallerAI::Create);
     mgr->register_creature_script(CN_ENSLAVED_SERVANT, &EnslavedServantAI::Create);
-    mgr->register_creature_script(CN_HAND_OF_GOREFIEND, &HandOfGorefiendAI::Create);
     mgr->register_creature_script(CN_ILLIDARI_ARCHON, &IllidariArchonAI::Create);
     mgr->register_creature_script(CN_ILLIDARI_ASSASSIN, &IllidariAssassinAI::Create);
     mgr->register_creature_script(CN_ILLIDARI_BATTLEMAGE, &IllidariBattlemageAI::Create);
-    mgr->register_creature_script(CN_ILLIDARI_BLOOD_LORD, &IllidariBloodLordAI::Create);
     mgr->register_creature_script(CN_IMAGE_OF_DEMENTIA, &ImageOfDementiaAI::Create);
-    mgr->register_creature_script(CN_SHADOWMOON_BLOOD_MAGE, &ShadowmoonBloodMageAI::Create);
-    mgr->register_creature_script(CN_SHADOWMOON_CHAMPION, &ShadowmoonChampionAI::Create);
     mgr->register_creature_script(CN_SHADOWMOON_DEATHSHAPER, &ShadowmoonDeathshaperAI::Create);
-    mgr->register_creature_script(CN_SHADOWMOON_FALLEN, &ShadowmoonFallenAI::Create);
     mgr->register_creature_script(CN_SHADOWMOON_HOUNDMASTER, &ShadowmoonHoundmasterAI::Create);
-    mgr->register_creature_script(CN_SHADOWMOON_REAVER, &ShadowmoonReaverAI::Create);
-    mgr->register_creature_script(CN_SHADOWMOON_SOLDIER, &ShadowmoonSoldierAI::Create);
     mgr->register_creature_script(CN_SHADOWMOON_WEAPON_MASTER, &ShadowmoonWeaponMasterAI::Create);
-    mgr->register_creature_script(CN_SPELLBOUND_ATTENDANT, &SpellboundAttendantAI::Create);
-    mgr->register_creature_script(CN_TEMPLE_CONCUBINE, &TempleConcubineAI::Create);
     mgr->register_creature_script(CN_STORM_FURY, &StormFuryAI::Create);
-    mgr->register_creature_script(CN_AQUEOUS_SURGER, &AqueousSurgerAI::Create);
-    mgr->register_creature_script(CN_AQUEOUS_SPAWN, &AqueousSpawnAI::Create);
     mgr->register_creature_script(CN_AQUEOUS_LORD, &AqueousLordAI::Create);
-    mgr->register_creature_script(CN_PROMENADE_SENTINEL, &PromenadeSentinelAI::Create);
-    mgr->register_creature_script(CN_ANGERED_SOUL_FRAGMENT, &AngeredSoulFragmentAI::Create);
     mgr->register_creature_script(CN_ENSLAVED_SOUL, &EnslavedSoulAI::Create);
     mgr->register_creature_script(CN_HUNGERING_SOUL_FRAGMENT, &HungeringSoulFragmentAI::Create);
-    mgr->register_creature_script(CN_SHADOWY_CONSTRUCT, &ShadowyConstructAI::Create);
-    mgr->register_creature_script(CN_SUFFERING_SOUL_FRAGMENT, &SufferingSoulFragmentAI::Create);
-    mgr->register_creature_script(CN_VANGEFUL_SPIRIT, &VangefulSpiritAI::Create);
-    mgr->register_creature_script(CN_WRATHBONE_FLAYER, &WrathboneFlayerAI::Create);
+
 
     //Bosses
     //mgr->register_creature_script(CN_SUPREMUS, &SupremusAI::Create);
