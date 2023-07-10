@@ -5375,6 +5375,10 @@ void Spell::SpellEffectAttackMe(uint8_t /*effectIndex*/)
         mgr.addThreat(u_caster, 20.0f, nullptr, false, false);
         // Set threat equal to highest threat currently on target
         mgr.matchUnitThreatToHighestThreat(u_caster);
+
+        // Call on AIInterface
+        if (unitTarget->getAIInterface())
+            unitTarget->getAIInterface()->eventOnTaunt(u_caster);
     }
 }
 

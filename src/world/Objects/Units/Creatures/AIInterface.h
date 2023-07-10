@@ -44,7 +44,8 @@ enum AI_SCRIPT_EVENT_TYPES
     onCallForHelp       = 6,
     onRandomWaypoint    = 7,
     onDamageTaken       = 8,
-    onFlee              = 9
+    onFlee              = 9,
+    onTaunt             = 10
 };
 
 enum AI_SCRIPT_ACTION_TYPES
@@ -64,6 +65,8 @@ struct AI_SCRIPT_SENDMESSAGES
     uint32_t count;
     uint32_t maxCount;
 };
+
+typedef std::vector<std::shared_ptr<AI_SCRIPT_SENDMESSAGES>> definedEmoteVector;
 
 enum ReactStates : uint8_t
 {
@@ -323,6 +326,9 @@ public:
     void selectCurrentAgent(Unit* target, uint32_t spellid);
     void initializeSpells();
 
+    void addSpellFromDatabase(std::vector<MySQLStructure::CreatureAIScripts> scripts);
+    void addEmoteFromDatabase(std::vector<MySQLStructure::CreatureAIScripts> scripts, definedEmoteVector& emoteVector);
+
     void setCannotReachTarget(bool cannotReach);
     bool canNotReachTarget() const { return m_cannotReachTarget; }
 
@@ -476,6 +482,7 @@ public:
     void eventDamageTaken(Unit* pUnit, uint32_t misc1);
     void eventLeaveCombat(Unit* pUnit, uint32_t misc1);
     void eventEnterCombat(Unit* pUnit, uint32_t misc1);
+    void eventOnTaunt(Unit* pUnit);
     void eventOnLoad();
     void eventChangeFaction(Unit* ForceAttackersToHateThisInstead = NULL);    /// we have to tell our current enemies to stop attacking us, we should also forget about our targets
     void eventOnTargetDied(Object* pKiller);
@@ -540,9 +547,9 @@ public:
     std::vector<MySQLStructure::CreatureAIScripts> onRandomWaypointScripts;
     std::vector<MySQLStructure::CreatureAIScripts> onDamageTakenScripts;
     std::vector<MySQLStructure::CreatureAIScripts> onFleeScripts;
+    std::vector<MySQLStructure::CreatureAIScripts> onTauntScripts;
 
 private:
-    typedef std::vector<std::shared_ptr<AI_SCRIPT_SENDMESSAGES>> definedEmoteVector;
     definedEmoteVector mEmotesOnLoad;
     definedEmoteVector mEmotesOnCombatStart;
     definedEmoteVector mEmotesOnLeaveCombat;
@@ -552,6 +559,7 @@ private:
     definedEmoteVector mEmotesOnDamageTaken;
     definedEmoteVector mEmotesOnCallForHelp;
     definedEmoteVector mEmotesOnFlee;
+    definedEmoteVector mEmotesOnTaunt;
     definedEmoteVector mEmotesOnRandomWaypoint;
 
 public:

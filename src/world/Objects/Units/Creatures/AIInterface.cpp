@@ -127,6 +127,7 @@ AIInterface::AIInterface()
     onDamageTakenScripts.clear();
     onRandomWaypointScripts.clear();
     onFleeScripts.clear();
+    onTauntScripts.clear();
 
     mEmotesOnLoad.clear();
     mEmotesOnCombatStart.clear();
@@ -166,6 +167,7 @@ AIInterface::~AIInterface()
     onDamageTakenScripts.clear();
     onRandomWaypointScripts.clear();
     onFleeScripts.clear();
+    onTauntScripts.clear();
 
     mEmotesOnLoad.clear();
     mEmotesOnCombatStart.clear();
@@ -207,6 +209,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
     onDamageTakenScripts.clear();
     onRandomWaypointScripts.clear();
     onFleeScripts.clear();
+    onTauntScripts.clear();
 
     mEmotesOnLoad.clear();
     mEmotesOnCombatStart.clear();
@@ -224,9 +227,6 @@ void AIInterface::initialiseScripts(uint32_t entry)
 
     auto scripts = sMySQLStore.getCreatureAiScripts(entry);
 
-    uint32_t spellcountOnCombatStart = 1;
-    uint32_t spellcountOnAIUpdate = 1;
-
     for (auto aiScripts : *scripts)
     {
         uint8_t eventId = aiScripts.event;
@@ -237,286 +237,156 @@ void AIInterface::initialiseScripts(uint32_t entry)
 
         switch (eventId)
         {
-        case onLoad:
-        {
-            onLoadScripts.push_back(aiScripts);
-
-            if (aiScripts.action == actionSendMessage)
+            case onLoad:
             {
-                std::shared_ptr<AI_SCRIPT_SENDMESSAGES> message = std::make_shared<AI_SCRIPT_SENDMESSAGES>();
-
-                message->textId = aiScripts.textId;
-                message->canche = aiScripts.chance;
-                message->phase = aiScripts.phase;
-                message->healthPrecent = aiScripts.maxHealth;
-                message->maxCount = aiScripts.maxCount;
-
-                mEmotesOnLoad.push_back(std::move(message));
-            }
-        }
-            break;
-        case onEnterCombat:
-        {
-            onCombatStartScripts.push_back(aiScripts);
-            if (aiScripts.spellId)
-                ++spellcountOnCombatStart;
-
-            if (aiScripts.action == actionSendMessage)
+                onLoadScripts.push_back(aiScripts);
+            } break;
+            case onEnterCombat:
             {
-                std::shared_ptr<AI_SCRIPT_SENDMESSAGES> message = std::make_shared<AI_SCRIPT_SENDMESSAGES>();
-
-                message->textId = aiScripts.textId;
-                message->canche = aiScripts.chance;
-                message->phase = aiScripts.phase;
-                message->healthPrecent = aiScripts.maxHealth;
-                message->maxCount = aiScripts.maxCount;
-
-                mEmotesOnCombatStart.push_back(std::move(message));
-            }
-        }
-            break;
-        case onLeaveCombat:
-        {
-            onLeaveCombatScripts.push_back(aiScripts);
-
-            if (aiScripts.action == actionSendMessage)
+                onCombatStartScripts.push_back(aiScripts);
+            } break;
+            case onLeaveCombat:
             {
-                std::shared_ptr<AI_SCRIPT_SENDMESSAGES> message = std::make_shared<AI_SCRIPT_SENDMESSAGES>();
-
-                message->textId = aiScripts.textId;
-                message->canche = aiScripts.chance;
-                message->phase = aiScripts.phase;
-                message->healthPrecent = aiScripts.maxHealth;
-                message->maxCount = aiScripts.maxCount;
-
-                mEmotesOnLeaveCombat.push_back(std::move(message));
-            }
-        }
-            break;
-        case onDied:
-        {
-            onDiedScripts.push_back(aiScripts);
-
-            if (aiScripts.action == actionSendMessage)
+                onLeaveCombatScripts.push_back(aiScripts);
+            } break;
+            case onDied:
             {
-                std::shared_ptr<AI_SCRIPT_SENDMESSAGES> message = std::make_shared<AI_SCRIPT_SENDMESSAGES>();
-
-                message->textId = aiScripts.textId;
-                message->canche = aiScripts.chance;
-                message->phase = aiScripts.phase;
-                message->healthPrecent = aiScripts.maxHealth;
-                message->maxCount = aiScripts.maxCount;
-
-                mEmotesOnDied.push_back(std::move(message));
-            }
-        }
-            break;
-        case onTargetDied:
-        {
-            onKilledScripts.push_back(aiScripts);
-
-            if (aiScripts.action == actionSendMessage)
+                onDiedScripts.push_back(aiScripts);
+            } break;
+            case onTargetDied:
             {
-                std::shared_ptr<AI_SCRIPT_SENDMESSAGES> message = std::make_shared<AI_SCRIPT_SENDMESSAGES>();
-
-                message->textId = aiScripts.textId;
-                message->canche = aiScripts.chance;
-                message->phase = aiScripts.phase;
-                message->healthPrecent = aiScripts.maxHealth;
-                message->maxCount = aiScripts.maxCount;
-
-                mEmotesOnTargetDied.push_back(std::move(message));
-            }
-        }
-            break;
-        case onAIUpdate:
-        {
-            onAIUpdateScripts.push_back(aiScripts);
-            if (aiScripts.spellId)
-                ++spellcountOnAIUpdate;
-
-            if (aiScripts.action == actionSendMessage)
+                onKilledScripts.push_back(aiScripts);
+            } break;
+            case onAIUpdate:
             {
-                std::shared_ptr<AI_SCRIPT_SENDMESSAGES> message = std::make_shared<AI_SCRIPT_SENDMESSAGES>();
-
-                message->textId = aiScripts.textId;
-                message->canche = aiScripts.chance;
-                message->phase = aiScripts.phase;
-                message->healthPrecent = aiScripts.maxHealth;
-                message->maxCount = aiScripts.maxCount;
-
-                mEmotesOnAIUpdate.push_back(std::move(message));
-            }
-        }
-            break;
-        case onCallForHelp:
-        {
-            onCallForHelpScripts.push_back(aiScripts);
-            setCanCallForHelp(true);
-            m_CallForHelpHealth = aiScripts.maxHealth;
-
-            if (aiScripts.action == actionSendMessage)
+                onAIUpdateScripts.push_back(aiScripts);
+            } break;
+            case onCallForHelp:
             {
-                std::shared_ptr<AI_SCRIPT_SENDMESSAGES> message = std::make_shared<AI_SCRIPT_SENDMESSAGES>();
-
-                message->textId = aiScripts.textId;
-                message->canche = aiScripts.chance;
-                message->phase = aiScripts.phase;
-                message->healthPrecent = aiScripts.maxHealth;
-                message->maxCount = aiScripts.maxCount;
-
-                mEmotesOnCallForHelp.push_back(std::move(message));
-            }
-        }
-            break;
-        case onRandomWaypoint:
-        {
-            onRandomWaypointScripts.push_back(aiScripts);
-
-            if (aiScripts.action == actionSendMessage)
+                onCallForHelpScripts.push_back(aiScripts);
+                setCanCallForHelp(true);
+                m_CallForHelpHealth = aiScripts.maxHealth;
+            } break;
+            case onRandomWaypoint:
             {
-                std::shared_ptr<AI_SCRIPT_SENDMESSAGES> message = std::make_shared<AI_SCRIPT_SENDMESSAGES>();
-
-                message->textId = aiScripts.textId;
-                message->canche = aiScripts.chance;
-                message->phase = aiScripts.phase;
-                message->healthPrecent = aiScripts.maxHealth;
-                message->maxCount = aiScripts.maxCount;
-
-                mEmotesOnRandomWaypoint.push_back(std::move(message));
-            }
-        }
-            break;
-        case onDamageTaken:
-        {
-            onDamageTakenScripts.push_back(aiScripts);
-
-            if (aiScripts.action == actionSendMessage)
+                onRandomWaypointScripts.push_back(aiScripts);
+            } break;
+            case onDamageTaken:
             {
-                std::shared_ptr<AI_SCRIPT_SENDMESSAGES> message = std::make_shared<AI_SCRIPT_SENDMESSAGES>();
-
-                message->textId = aiScripts.textId;
-                message->canche = aiScripts.chance;
-                message->phase = aiScripts.phase;
-                message->healthPrecent = aiScripts.maxHealth;
-                message->maxCount = aiScripts.maxCount;
-
-                mEmotesOnDamageTaken.push_back(std::move(message));
-            }
-        }
-            break;
-        case onFlee:
-        {
-            onFleeScripts.push_back(aiScripts);
-            setCanFlee(true);
-            m_FleeHealth = aiScripts.maxHealth;
-
-            if (aiScripts.action == actionSendMessage)
+                onDamageTakenScripts.push_back(aiScripts);
+            } break;
+            case onFlee:
             {
-                std::shared_ptr<AI_SCRIPT_SENDMESSAGES> message = std::make_shared<AI_SCRIPT_SENDMESSAGES>();
+                onFleeScripts.push_back(aiScripts);
+                setCanFlee(true);
+                m_FleeHealth = aiScripts.maxHealth;
 
-                message->textId = aiScripts.textId;
-                message->canche = aiScripts.chance;
-                message->phase = aiScripts.phase;
-                message->healthPrecent = aiScripts.maxHealth;
-                message->maxCount = aiScripts.maxCount;
-
-                mEmotesOnFlee.push_back(std::move(message));
-            }
-
-            // Incase we want a custom Flee Timer
-            if (aiScripts.misc1)
-                m_FleeDuration = aiScripts.misc1;
-            else
-                m_FleeDuration = 10000;
-        }
-            break;
-        default:
-            sLogger.debugFlag(AscEmu::Logging::LF_SCRIPT_MGR, "unhandled event with eventId %u", eventId);
-        }
-    }
-
-    // On Combat Start
-    for (auto onCombatStartScript : onCombatStartScripts)
-    {
-        if (onCombatStartScript.action == actionSpell)
-        {
-            const auto spellInfo = sSpellMgr.getSpellInfo(onCombatStartScript.spellId);
-            float castChance;
-
-            if (spellInfo != nullptr)
-            {
-                if (onCombatStartScript.chance)
-                    castChance = onCombatStartScript.chance;
+                // Incase we want a custom Flee Timer
+                if (aiScripts.misc1)
+                    m_FleeDuration = aiScripts.misc1;
                 else
-                    castChance = ((75.0f / static_cast<float_t>(spellcountOnCombatStart)) * spellChanceModifierDispell[spellInfo->getDispelType()] * spellChanceModifierType[onCombatStartScript.spell_type]);
-
-                sLogger.debug("spell %u chance %f", onCombatStartScript.spellId, castChance);
-
-                uint32_t spellCooldown = Util::getRandomUInt(onCombatStartScript.cooldownMin, onCombatStartScript.cooldownMax);
-                if (spellCooldown == 0)
-                    spellCooldown = spellInfo->getSpellDefaultDuration(nullptr);
-
-                // Create AI Spell
-                CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, onCombatStartScript.target, spellInfo->getSpellDefaultDuration(nullptr), spellCooldown, false, onCombatStartScript.triggered);
-                newAISpell->addDBEmote(onCombatStartScript.textId);
-                newAISpell->setMaxCastCount(onCombatStartScript.maxCount);
-                newAISpell->scriptType = onCombatStartScript.event;
-                newAISpell->spell_type = AI_SpellType(onCombatStartScript.spell_type);
-                newAISpell->fromDB = true;
-
-                // Ready add to our List
-                if (!hasAISpell(onCombatStartScript.spellId))
-                    mCreatureAISpells.push_back(newAISpell);
-            }
-            else
-                sLogger.debug("Tried to Register Creature AI Spell without a valid Spell Id %u", onCombatStartScript.spellId);
-        }
-    }
-
-    // On AI Update
-    for (auto onAIUpdateScript : onAIUpdateScripts)
-    {
-        if (onAIUpdateScript.action == actionSpell)
-        {
-            const auto spellInfo = sSpellMgr.getSpellInfo(onAIUpdateScript.spellId);
-            float castChance;
-
-            if (spellInfo != nullptr)
+                    m_FleeDuration = 10000;
+            } break;
+            case onTaunt:
             {
-                if (onAIUpdateScript.chance)
-                    castChance = onAIUpdateScript.chance;
-                else
-                    castChance = ((75.0f / static_cast<float_t>(spellcountOnAIUpdate)) * spellChanceModifierDispell[spellInfo->getDispelType()] * spellChanceModifierType[onAIUpdateScript.spell_type]);
-
-                sLogger.debug("spell %u chance %f", onAIUpdateScript.spellId, castChance);
-
-                uint32_t spellCooldown = Util::getRandomUInt(onAIUpdateScript.cooldownMin, onAIUpdateScript.cooldownMax);
-                if (spellCooldown == 0)
-                    spellCooldown = spellInfo->getSpellDefaultDuration(nullptr);
-
-                // Create AI Spell
-                CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, onAIUpdateScript.target, spellInfo->getSpellDefaultDuration(nullptr), spellCooldown, false, onAIUpdateScript.triggered);
-                newAISpell->addDBEmote(onAIUpdateScript.textId);
-                newAISpell->setMaxCastCount(onAIUpdateScript.maxCount);
-                newAISpell->scriptType = onAIUpdateScript.event;
-                newAISpell->spell_type = AI_SpellType(onAIUpdateScript.spell_type);
-                newAISpell->fromDB = true;
-
-                if (onAIUpdateScript.maxHealth)
-                    newAISpell->setMinMaxPercentHp(onAIUpdateScript.minHealth, onAIUpdateScript.maxHealth);
-
-                // Ready add to our List
-                if (!hasAISpell(onAIUpdateScript.spellId))
-                    mCreatureAISpells.push_back(newAISpell);
-            }
-            else
-                sLogger.debug("Tried to Register Creature AI Spell without a valid Spell Id %u", onAIUpdateScript.spellId);
+                onTauntScripts.push_back(aiScripts);
+            } break;
+            default:
+                sLogger.debugFlag(AscEmu::Logging::LF_SCRIPT_MGR, "unhandled event with eventId %u", eventId);
         }
     }
 
-    if (mEmotesOnCombatStart.size())
-        sLogger.debug("Creature with Entry %u has %i emotes on CombatStart", mEmotesOnCombatStart.size(), getUnit()->getEntry());
+    // Populate Spells
+    addSpellFromDatabase(onLoadScripts);
+    addSpellFromDatabase(onCombatStartScripts);
+    addSpellFromDatabase(onLeaveCombatScripts);
+    addSpellFromDatabase(onAIUpdateScripts);
+    addSpellFromDatabase(onTauntScripts);
+    addSpellFromDatabase(onDiedScripts);
+    addSpellFromDatabase(onKilledScripts);
+    addSpellFromDatabase(onCallForHelpScripts);
+    addSpellFromDatabase(onDamageTakenScripts);
+    addSpellFromDatabase(onFleeScripts);
+
+    // Populate Emotes
+    addEmoteFromDatabase(onLoadScripts, mEmotesOnLoad);
+    addEmoteFromDatabase(onCombatStartScripts, mEmotesOnCombatStart);
+    addEmoteFromDatabase(onLeaveCombatScripts, mEmotesOnLeaveCombat);
+    addEmoteFromDatabase(onDiedScripts, mEmotesOnDied);
+    addEmoteFromDatabase(onKilledScripts, mEmotesOnTargetDied);
+    addEmoteFromDatabase(onAIUpdateScripts, mEmotesOnAIUpdate);
+    addEmoteFromDatabase(onCallForHelpScripts, mEmotesOnCallForHelp);
+    addEmoteFromDatabase(onRandomWaypointScripts, mEmotesOnRandomWaypoint);
+    addEmoteFromDatabase(onDamageTakenScripts, mEmotesOnDamageTaken);
+    addEmoteFromDatabase(onFleeScripts, mEmotesOnFlee);
+    addEmoteFromDatabase(onTauntScripts, mEmotesOnTaunt);
+}
+
+void AIInterface::addEmoteFromDatabase(std::vector<MySQLStructure::CreatureAIScripts> scripts, definedEmoteVector& emoteVector)
+{
+    for (auto script : scripts)
+    {
+        if (script.action == actionSendMessage)
+        {
+            std::shared_ptr<AI_SCRIPT_SENDMESSAGES> message = std::make_shared<AI_SCRIPT_SENDMESSAGES>();
+
+            message->textId = script.textId;
+            message->canche = script.chance;
+            message->phase = script.phase;
+            message->healthPrecent = script.maxHealth;
+            message->maxCount = script.maxCount;
+
+            emoteVector.push_back(std::move(message));
+        }
+    }
+}
+
+void AIInterface::addSpellFromDatabase(std::vector<MySQLStructure::CreatureAIScripts> script)
+{
+    uint8_t spellCounter = 0;
+
+    // Spell Counting for Automated Canche Calculation when needed
+    for (auto spell : script)
+        if (spell.spellId)
+            spellCounter++;
+
+    // Add the Spells into our AISpells Array
+    for (auto spell : script)
+    {
+        const auto spellInfo = sSpellMgr.getSpellInfo(spell.spellId);
+        float castChance;
+
+        if (spellInfo != nullptr)
+        {
+            if (spell.chance)
+                castChance = spell.chance;
+            else
+                castChance = ((75.0f / static_cast<float_t>(spellCounter)) * spellChanceModifierDispell[spellInfo->getDispelType()] * spellChanceModifierType[spell.spell_type]);
+
+            sLogger.debugFlag(AscEmu::Logging::DebugFlags::LF_SPELL, "spell %u chance %f", spell.spellId, castChance);
+
+            uint32_t spellCooldown = Util::getRandomUInt(spell.cooldownMin, spell.cooldownMax);
+            if (spellCooldown == 0)
+                spellCooldown = spellInfo->getSpellDefaultDuration(nullptr);
+
+            // Create AI Spell
+            CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, spell.target, spellInfo->getSpellDefaultDuration(nullptr), spellCooldown, false, spell.triggered);
+            newAISpell->addDBEmote(spell.textId);
+            newAISpell->setMaxCastCount(spell.maxCount);
+            newAISpell->scriptType = spell.event;
+            newAISpell->spell_type = AI_SpellType(spell.spell_type);
+            newAISpell->fromDB = true;
+
+            if (spell.maxHealth)
+                newAISpell->setMinMaxPercentHp(spell.minHealth, spell.maxHealth);
+
+            // Ready add to our List
+            if (!hasAISpell(spell.spellId))
+                mCreatureAISpells.push_back(newAISpell);
+        }
+        else
+            sLogger.debug("Tried to Register Creature AI Spell without a valid Spell Id %u", spell.spellId);
+    }
 }
 
 Unit* AIInterface::getUnit() const
@@ -2933,7 +2803,16 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
         // Died Scripts
         for (auto onDiedScript : onDiedScripts)
         {
-            // Placeholder for further actions
+            switch (onDiedScript.action)
+            {
+                case actionSpell:
+                {
+                    castAISpell(onDiedScript.spellId);
+                }
+                break;
+                default:
+                    break;
+            }
         }
 
         // Send a Chatmessage from our AI Scripts
@@ -3096,6 +2975,48 @@ void AIInterface::eventOnTargetDied(Object* /*pKiller*/)
 
     // Send a Chatmessage from our AI Scripts
     sendStoredText(mEmotesOnTargetDied, nullptr);
+}
+
+void AIInterface::eventOnTaunt(Unit* pUnit)
+{
+    for (auto onTauntScript : onTauntScripts)
+    {
+        switch (onTauntScript.action)
+        {
+            case actionSpell:
+            {
+                castAISpell(onTauntScript.spellId);
+            } break;
+
+            case actionPhaseChange:
+            {
+                if (onTauntScript.phase > 0 || onTauntScript.phase == internalPhase)
+                {
+                    if (float(getUnit()->getHealthPct()) <= onTauntScript.maxHealth && onTauntScript.maxCount)
+                    {
+                        internalPhase = static_cast<uint8_t>(onTauntScript.misc1);
+
+                        onTauntScript.maxCount = onTauntScript.maxCount - 1U;
+
+                        MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(onTauntScript.textId);
+                        if (npcScriptText != nullptr)
+                        {
+                            getUnit()->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text);
+
+                            if (npcScriptText->sound != 0)
+                                getUnit()->PlaySoundToSet(npcScriptText->sound);
+                        }
+                    }
+                }
+            } break;
+
+            default:
+                break;
+        }
+    }
+
+    // Send a Chatmessage from our AI Scripts
+    sendStoredText(mEmotesOnTaunt, pUnit);
 }
 
 void AIInterface::setCannotReachTarget(bool cannotReach)
