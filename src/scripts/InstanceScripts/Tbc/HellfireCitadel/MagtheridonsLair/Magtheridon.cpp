@@ -231,7 +231,6 @@ void SoulTransfer::filterEffectTargets(Spell* spell, uint8_t /*effectIndex*/, st
     // Hackfix shouldnt only cast on Channelers
     effectTargets->clear();
 
-    std::vector<Player*> players;
     for (const auto& itr : spell->getUnitCaster()->getInRangeObjectsSet())
     {
         float distance = spell->getUnitCaster()->CalcDistance(itr);

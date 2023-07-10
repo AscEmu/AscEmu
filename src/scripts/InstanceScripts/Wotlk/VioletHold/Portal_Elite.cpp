@@ -13,6 +13,7 @@ ElitePortalAI::ElitePortalAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
     // Instance Script
     mInstance = getInstanceScript();
+    portalLocation = 0;
 }
 
 CreatureAIScript* ElitePortalAI::Create(Creature* pCreature) { return new ElitePortalAI(pCreature); }

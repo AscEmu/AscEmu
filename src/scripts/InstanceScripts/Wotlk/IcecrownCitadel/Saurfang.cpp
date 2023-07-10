@@ -1227,7 +1227,6 @@ void GripOfAgony::filterEffectTargets(Spell* spell, uint8_t effectIndex, std::ve
     // Hackfix shouldnt cast on self
     effectTargets->clear();
 
-    std::vector<Player*> players;
     for (const auto& itr : spell->getUnitCaster()->getInRangeObjectsSet())
     {
         float distance = spell->getUnitCaster()->CalcDistance(itr);

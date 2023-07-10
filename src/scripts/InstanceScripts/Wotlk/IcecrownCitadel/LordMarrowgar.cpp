@@ -20,6 +20,7 @@ LordMarrowgarAI::LordMarrowgarAI(Creature* pCreature) : CreatureAIScript(pCreatu
     boneSlice = false;
     boneStormtarget = nullptr;
     coldflameLastPos = getCreature()->GetPosition();
+    coldflameTarget = 0;
 
     // Scripted Spells not autocastet
     boneSliceSpell = addAISpell(SPELL_BONE_SLICE, 0.0f, TARGET_ATTACKING);
@@ -582,7 +583,6 @@ void ColdflameDamage::filterEffectTargets(Spell* spell, uint8_t effectIndex, std
 
     effectTargets->clear();
 
-    std::vector<Player*> players;
     for (const auto& itr : spell->getUnitCaster()->getInRangePlayersSet())
     {
         auto target = static_cast<Player*>(itr);

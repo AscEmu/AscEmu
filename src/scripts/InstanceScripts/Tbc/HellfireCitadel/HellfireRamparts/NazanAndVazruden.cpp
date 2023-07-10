@@ -104,15 +104,11 @@ VazrudenAI::VazrudenAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
     // Normal
     if (!_isHeroic())
-    {
         m_RenevgeSpell = addAISpell(SPELL_REVENGE, 30.0f, TARGET_SELF, 0, 5);
-    }
-
-    // Heroic
-    if (_isHeroic())
-    {
+    else
         m_RenevgeSpell = addAISpell(SPELL_REVENGE_H, 30.0f, TARGET_SELF, 0, 5);
-    }
+
+    m_ConeOfFireSpell = 0;
 
     // Emotes
     addEmoteForEvent(Event_OnCombatStart, VAZRUDEN_AGGRO1);

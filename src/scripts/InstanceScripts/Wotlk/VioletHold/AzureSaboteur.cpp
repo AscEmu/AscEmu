@@ -17,6 +17,8 @@ AzureSaboteurAI::AzureSaboteurAI(Creature* pCreature) : CreatureAIScript(pCreatu
 
     getCreature()->getAIInterface()->setImmuneToNPC(true);
     getCreature()->getAIInterface()->setImmuneToPC(true);
+
+    mbossId = 0;
 }
 
 CreatureAIScript* AzureSaboteurAI::Create(Creature* pCreature) { return new AzureSaboteurAI(pCreature); }

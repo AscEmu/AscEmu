@@ -13,6 +13,7 @@ IntroPortalAI::IntroPortalAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
     // Instance Script
     mInstance = getInstanceScript();
+    portalLocation = 0;
 }
 
 CreatureAIScript* IntroPortalAI::Create(Creature* pCreature) { return new IntroPortalAI(pCreature); }

@@ -12,6 +12,7 @@ CommonPortalAI::CommonPortalAI(Creature* pCreature) : CreatureAIScript(pCreature
 {
     // Instance Script
     mInstance = getInstanceScript();
+    portalLocation = 0;
 }
 
 CreatureAIScript* CommonPortalAI::Create(Creature* pCreature) { return new CommonPortalAI(pCreature); }

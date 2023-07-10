@@ -37,6 +37,9 @@ LadyDeathwhisperAI::LadyDeathwhisperAI(Creature* pCreature) : CreatureAIScript(p
     darkEmpowermentSpell            = addAISpell(SPELL_DARK_EMPOWERMENT_T, 0.0f, TARGET_CUSTOM);
     darkEmpowermentSpell->mIsTriggered = true;
     darkEmpowermentSpell->addDBEmote(SAY_LADY_EMPOWERMENT);
+
+    waveCounter = 0;
+    nextVengefulShadeTargetGUID = 0;
           
 
     // Messages
