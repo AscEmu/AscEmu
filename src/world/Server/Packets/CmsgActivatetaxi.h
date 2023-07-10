@@ -16,18 +16,17 @@ namespace AscEmu::Packets
     {
     public:
         uint64_t guid;
-        uint32_t srcNode;
-        uint32_t destNode;
+        std::vector<uint32_t> nodes;
 
-        CmsgActivatetaxi() : CmsgActivatetaxi(0, 0, 0)
+        CmsgActivatetaxi() : CmsgActivatetaxi(0, {0, 0})
         {
+            nodes.resize(2);
         }
 
-        CmsgActivatetaxi(uint64_t guid, uint32_t srcNode, uint32_t destNode) :
+        CmsgActivatetaxi(uint64_t guid, std::vector<uint32_t> nodes) :
             ManagedPacket(CMSG_ACTIVATETAXI, 8 + 4 + 4),
             guid(guid),
-            srcNode(srcNode),
-            destNode(destNode)
+            nodes(nodes)
         {
         }
 
@@ -39,7 +38,7 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> guid >> srcNode >> destNode;
+            packet >> guid >> nodes[0] >> nodes[1];
             return true;
         }
     };

@@ -2386,7 +2386,7 @@ void Unit::handleFall(MovementInfo const& movementInfo)
         {
             if (isPlayer())
             {
-                dynamic_cast<Player*>(this)->getAchievementMgr().UpdateAchievementCriteria(
+                dynamic_cast<Player*>(this)->updateAchievementCriteria(
                     ACHIEVEMENT_CRITERIA_TYPE_FALL_WITHOUT_DYING,
                     falldistance,
                     dynamic_cast<Player*>(this)->getDrunkStateByValue(dynamic_cast<Player*>(this)->getServersideDrunkValue()),
@@ -3068,9 +3068,10 @@ void Unit::updateSplineMovement(uint32_t t_diff)
     if (arrived)
     {
         disableSpline();
-
+#if VERSION_STRING >= WotLK
         if (movespline->HasAnimation())
             setAnimationFlags(movespline->GetAnimationTier());
+#endif
     }
 
     updateSplinePosition();
@@ -6972,7 +6973,7 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
             {
                 plrOwner->onKillUnitReputation(this, false);
 #ifdef FT_ACHIEVEMENTS
-                plrOwner->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLING_BLOW, attacker->GetMapId(), 0, 0);
+                plrOwner->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLING_BLOW, attacker->GetMapId(), 0, 0);
 #endif
             }
 
@@ -6982,8 +6983,8 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
                 if (isPlayer())
                 {
 #ifdef FT_ACHIEVEMENTS
-                    plrOwner->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, plrOwner->getAreaId(), 1, 0);
-                    plrOwner->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL, 1, 0, 0);
+                    plrOwner->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, plrOwner->getAreaId(), 1, 0);
+                    plrOwner->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL, 1, 0, 0);
 #endif
                     HonorHandler::OnPlayerKilled(plrOwner, dynamic_cast<Player*>(this));
                 }
@@ -7098,8 +7099,8 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
                         }
                         else
                         {
-                            tagger->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, getEntry(), 1, 0);
-                            tagger->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
+                            tagger->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, getEntry(), 1, 0);
+                            tagger->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
                         }
 #endif
                     }
@@ -7110,8 +7111,8 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
             {
                 if (auto* const plrOwner = attacker->getPlayerOwnerOrSelf())
                 {
-                    plrOwner->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, getEntry(), 1, 0);
-                    plrOwner->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
+                    plrOwner->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, getEntry(), 1, 0);
+                    plrOwner->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, getGuidHigh(), getGuidLow(), 0);
                 }
             }
 #endif
@@ -7801,7 +7802,7 @@ MovementGeneratorType Unit::getDefaultMovementType() const
     return IDLE_MOTION_TYPE;
 }
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 DBC::Structures::MountCapabilityEntry const* Unit::getMountCapability(uint32_t mountType)
 {
     if (!mountType)

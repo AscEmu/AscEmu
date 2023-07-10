@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLStructures.h"
 #include "Macros/PlayerMacros.hpp"
 #include "WorldConf.h"
+#include "Management/TaxiMgr.h"
 #include "Management/AuctionHouse.h"
 #include "Management/Guild/Guild.hpp"
 #include "Management/ObjectUpdates/UpdateManager.hpp"
@@ -506,6 +507,7 @@ public:
     uint32_t getMountVehicleId() const;
     void setMountVehicleId(uint32_t id);
 
+    void mount(uint32_t mount, uint32_t vehicleId = 0, uint32_t creatureEntry = 0);
     void dismount();
 
     void handleAuraInterruptForMovementFlags(MovementInfo const& movement_info);
@@ -704,6 +706,8 @@ public:
 
     void setEnteringToWorld();
 
+    Creature* getCreatureWhenICanInteract(WoWGuid const& guid, uint32_t npcflagmask);
+
     UpdateManager& getUpdateMgr();
 
 private:
@@ -794,6 +798,7 @@ public:
     void sendAvailSpells(DBC::Structures::SpellShapeshiftFormEntry const* shapeshiftFormEntry, bool active);
 
     bool isInFeralForm();
+    bool isInDisallowedMountForm() const;
 
     //Spells variables
     StrikeSpellMap m_onStrikeSpells;
@@ -1535,40 +1540,19 @@ private:
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // Taxi
-public:   
-    TaxiPath* getTaxiPath() const;
-    void setTaxiPath(TaxiPath* path);
+public:
+    TaxiPath m_taxi;
+#if VERSION_STRING > WotLK
+    void initTaxiNodesForLevel();
+#endif
+    bool activateTaxiPathTo(std::vector<uint32_t> const& nodes, Creature* npc = nullptr, uint32_t spellid = 0);
+    bool activateTaxiPathTo(uint32_t taxi_path_id, uint32_t spellid = 0);
+    bool activateTaxiPathTo(uint32_t taxi_path_id, Creature* npc);
+    void cleanupAfterTaxiFlight();
+    void continueTaxiFlight() const;
+    void sendTaxiNodeStatusMultiple();
 
-    void loadTaxiMask(const char* data);
-    const uint32_t& getTaxiMask(uint32_t index) const;
-    void setTaxiMask(uint32_t index, uint32_t value);
-
-    void setTaxiPosition();
-    void unsetTaxiPosition();
-
-    bool isOnTaxi() const;
-    void setOnTaxi(bool state);
-
-    void startTaxiPath(TaxiPath* path, uint32_t modelid, uint32_t start_node);
-    void skipTaxiPathNodesToEnd(TaxiPath* path);
-    void dismountAfterTaxiPath(uint32_t money, float x, float y, float z);
-    void interpolateTaxiPosition();
-
-    void eventTeleportTaxi(uint32_t mapId, float x, float y, float z);
-
-private:
-    TaxiPath* m_currentTaxiPath = nullptr;
-
-    uint32_t m_taxiMountDisplayId = 0;
-    uint32_t m_lastTaxiNode = 0;
-    uint32_t m_taxiMapChangeNode = 0;
-    uint32_t m_taxiRideTime = 0;
-    uint32_t m_taxiMask[DBC_TAXI_MASK_SIZE];
-
-    LocationVector m_taxiPosition = { 0, 0, 0 };
-
-    bool m_isOnTaxi = false;
-    std::vector<TaxiPath*> m_taxiPaths;
+    bool isInFlight()  const { return hasUnitStateFlag(UNIT_STATE_IN_FLIGHT); }
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // Loot
@@ -1808,6 +1792,7 @@ public:
     void tagUnit(Object* object);
 
 #if VERSION_STRING > TBC
+    void updateAchievementCriteria(AchievementCriteriaTypes type, uint64_t miscValue1 = 0, uint64_t miscValue2 = 0, uint64_t miscValue3 = 0, Unit* unit = nullptr);
     AchievementMgr& getAchievementMgr();
 #endif
 

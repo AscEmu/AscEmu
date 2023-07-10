@@ -1953,7 +1953,7 @@ uint8 Spell::CanCast(bool /*tolerate*/)
         /**
          * On taxi check
          */
-        if (!p_caster->isOnTaxi())
+        if (!p_caster->m_taxi.empty())
         {
             if (getSpellInfo()->getId() == 33836 || getSpellInfo()->getId() == 45072 || getSpellInfo()->getId() == 45115 || getSpellInfo()->getId() == 31958)
                 return SPELL_FAILED_NOT_HERE;

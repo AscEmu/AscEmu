@@ -1325,6 +1325,26 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
     }
 }
 
+bool AchievementMgr::isGroupCriteriaType(AchievementCriteriaTypes type) const
+{
+    switch (type)
+    {
+        case ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE:
+        case ACHIEVEMENT_CRITERIA_TYPE_WIN_BG:
+        case ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET:         // NYI
+        case ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_ARENA:
+        case ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET2:        // NYI
+#if VERSION_STRING > WotLK
+        case ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_BATTLEGROUND:  // NYI
+#endif
+            return true;
+        default:
+            break;
+    }
+
+    return false;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 /// \return True if the criteria has been completed otherwise false (error...)
 bool AchievementMgr::IsCompletedCriteria(DBC::Structures::AchievementCriteriaEntry const* achievementCriteria)

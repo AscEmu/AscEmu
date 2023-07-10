@@ -386,17 +386,6 @@ namespace luaGlobalFunctions
         return 0;
     }
 
-    static int GetTaxiPath(lua_State* L)
-    {
-        uint32_t path = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        TaxiPath* tp = sTaxiMgr.GetTaxiPath(path);
-        if (tp != NULL)
-            PUSH_TAXIPATH(L, tp);
-        else
-            lua_pushnil(L);
-        return 1;
-    }
-
     static int SetDBCSpellVar(lua_State* L)
     {
         uint32_t entry = static_cast<uint32_t>(luaL_checkinteger(L, 1));
@@ -749,7 +738,6 @@ void RegisterGlobalFunctions(lua_State* L)
     lua_register(L, "GetPlayersInMap", &luaGlobalFunctions::GetPlayersInMap);
     lua_register(L, "GetPlayersInZone", &luaGlobalFunctions::GetPlayersInZone);
     lua_register(L, "SendMail", &luaGlobalFunctions::SendMail);
-    lua_register(L, "GetTaxiPath", &luaGlobalFunctions::GetTaxiPath);
     lua_register(L, "SetDBCSpellVar", &luaGlobalFunctions::SetDBCSpellVar);
     lua_register(L, "GetDBCSpellVar", &luaGlobalFunctions::GetDBCSpellVar);
     //Lua's bit instructions

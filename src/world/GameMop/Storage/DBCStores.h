@@ -6,11 +6,15 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "DBCStructures.h"
+#include "Management/TaxiMgr.h"
 #include "Storage/DBC/DBCGlobals.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "WorldConf.h"
 
 typedef std::map<uint32_t, DBC::Structures::MapDifficulty> MapDifficultyMap;
+
+typedef std::vector<DBC::Structures::TaxiPathNodeEntry const*> TaxiPathNodeList;
+typedef std::vector<TaxiPathNodeList> TaxiPathNodesByPath;
 
 #if VERSION_STRING == Mop
 inline float GetRadius(DBC::Structures::SpellRadiusEntry const* radius)
@@ -35,6 +39,9 @@ inline uint32 GetDuration(DBC::Structures::SpellDurationEntry const* dur)
 }
 
 DBC::Structures::SpellEffectEntry const* GetSpellEffectEntry(uint32 spellId, uint8_t effect);
+
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::MountCapabilityEntry> sMountCapabilityStore;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::MountTypeEntry> sMountTypeStore;
 
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::WorldMapOverlayEntry> sWorldMapOverlayStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AchievementEntry> sAchievementStore;
@@ -152,6 +159,10 @@ DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 roo
 extern SERVER_DECL MapDifficultyMap sMapDifficultyMap;
 DBC::Structures::MapDifficulty const* getMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties difficulty);
 DBC::Structures::MapDifficulty const* getDownscaledMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties& difficulty);
+
+// Taxi
+extern SERVER_DECL TaxiPathSetBySource sTaxiPathSetBySource;
+extern SERVER_DECL TaxiPathNodesByPath sTaxiPathNodesByPath;
 
 std::string generateName(uint32 type = 0);
 

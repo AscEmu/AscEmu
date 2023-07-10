@@ -3125,54 +3125,58 @@ void Aura::SpellAuraMounted(AuraEffectModifier* aurEff, bool apply)
 
     if (apply)
     {
+        uint32_t creatureEntry = aurEff->getEffectMiscValue();
+        uint32_t displayId = 0;
+        uint32_t vehicleId = 0;
 
         mPositive = true;
-
-        //p_target->AdvanceSkillLine(762); // advance riding skill
 
         if (p_target->getBattleground())
             p_target->getBattleground()->HookOnMount(p_target);
 
         p_target->dismount();
 
-        m_target->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_MOUNT);
-
-        CreatureProperties const* ci = sMySQLStore.getCreatureProperties(aurEff->getEffectMiscValue());
-        if (ci == nullptr)
-            return;
-
-        uint32 displayId = ci->Male_DisplayID;
-        if (!displayId)
-            return;
-
-        p_target->setMountSpellId(m_spellInfo->getId());
-        p_target->m_flyingAura = 0;
-        m_target->setMountDisplayId(displayId);
-        //m_target->addUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
-
         if (p_target->getShapeShiftForm() && !(p_target->getShapeShiftForm() & (FORM_BATTLESTANCE | FORM_DEFENSIVESTANCE | FORM_BERSERKERSTANCE)))
             p_target->removeAllAurasByAuraEffect(SPELL_AURA_MOD_SHAPESHIFT);
 
-        p_target->dismissActivePets();
-        p_target->addUnitFlags(UNIT_FLAG_MOUNT);
-        p_target->setMountVehicleId(ci->vehicleid);
-
-        if (p_target->isOnVehicle())
+        // Festive Holiday Mount
+        if (p_target->hasAurasWithId(62061))
         {
-#if VERSION_STRING > TBC
-            if (p_target->createVehicleKit(ci->vehicleid, ci->Id))
-            {
-                // Send other players that we are a vehicle
-                p_target->sendMessageToSet(SmsgPlayerVehicleData(p_target->GetNewGUID(), p_target->getMountVehicleId()).serialise().get(), true);
-                p_target->sendPacket(SmsgControlVehicle().serialise().get());
-
-                // mounts can also have accessories
-                p_target->getVehicleKit()->initialize();
-                p_target->getVehicleKit()->loadAllAccessories(false);
-            }
+#if VERSION_STRING >= TBC
+            if (getSpellInfo()->hasEffectApplyAuraName(SPELL_AURA_ENABLE_FLIGHT2))
+                creatureEntry = 24906;
+            else
 #endif
+                creatureEntry = 15665;
         }
 
+        if (CreatureProperties const* creatureInfo = sMySQLStore.getCreatureProperties(creatureEntry))
+        {
+            displayId = creatureInfo->Male_DisplayID;
+
+            vehicleId = creatureInfo->vehicleid;
+
+            //some spell has one aura of mount and one of vehicle
+            for (uint32 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                if (getSpellInfo()->getEffect(i) == SPELL_EFFECT_SUMMON
+                    && getSpellInfo()->getEffectMiscValue(i) == aurEff->getEffectMiscValue())
+                    displayId = 0;
+        }
+        
+        p_target->setMountSpellId(m_spellInfo->getId());
+        p_target->m_flyingAura = 0;
+
+        p_target->mount(displayId, vehicleId, creatureEntry);
+
+#if VERSION_STRING > WotLK
+        uint32_t amount = 0;
+        if (DBC::Structures::MountCapabilityEntry const* mountCapability = m_target->getMountCapability(uint32(getSpellInfo()->getEffectMiscValueB(0))))
+            amount = mountCapability->id;
+
+        // cast speed aura
+        if (DBC::Structures::MountCapabilityEntry const* mountCapability = sMountCapabilityStore.LookupEntry(amount))
+            p_target->castSpell(p_target, mountCapability->speedModSpell, true);
+#endif
     }
     else
     {
@@ -3198,6 +3202,15 @@ void Aura::SpellAuraMounted(AuraEffectModifier* aurEff, bool apply)
         //if we had pet then respawn
         p_target->spawnActivePet();
         p_target->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_DISMOUNT);
+#if VERSION_STRING > WotLK
+        uint32_t amount = 0;
+        if (DBC::Structures::MountCapabilityEntry const* mountCapability = m_target->getMountCapability(uint32(getSpellInfo()->getEffectMiscValueB(0))))
+            amount = mountCapability->id;
+
+        // remove speed aura
+        if (DBC::Structures::MountCapabilityEntry const* mountCapability = sMountCapabilityStore.LookupEntry(amount))
+            p_target->removeAllAurasById(mountCapability->speedModSpell);
+#endif
     }
 }
 

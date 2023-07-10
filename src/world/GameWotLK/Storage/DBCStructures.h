@@ -56,6 +56,7 @@ namespace DBC::Structures
         char const chr_classes_format[] = "nxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxixii";
         char const chr_races_format[] = "niixiixixxxxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxi";
         char const creature_display_info_format[] = "nixifxxxxxxxxxxx";
+        char const creature_display_info_extra_format[] = "diixxxxxxxxxxxxxxxxxx";
         char const creature_model_Data_format[] = "nisxfxxxxxxxxxxffxxxxxxxxxxx";
         char const creature_family_format[] = "nfifiiiiixssssssssssssssssxx";
         char const creature_spell_data_format[] = "niiiiiiii";
@@ -720,6 +721,21 @@ namespace DBC::Structures
         //uint32_t ParticleColorID;                                 // 13
         //uint32_t CreatureGeosetData;                              // 14
         //uint32_t ObjectEffectPackageID;                           // 15
+    };
+
+    struct CreatureDisplayInfoExtraEntry
+    {
+        //uint32_t ID;                                            // 0
+        uint32_t Race;                                            // 1
+        uint32_t DisplaySexID;                                    // 2
+        //uint32_t SkinID;                                        // 3
+        //uint32_t FaceID;                                        // 4
+        //uint32_t HairStyleID;                                   // 5
+        //uint32_t HairColorID;                                   // 6
+        //uint32_t FacialHairID;                                  // 7
+        //uint32_t NPCItemDisplay[11];                            // 8-18
+        //uint32_t Flags;                                         // 19
+        //char const* BakeName;                                 // 20
     };
 
     enum CreatureModelDataFlags
@@ -1592,8 +1608,7 @@ namespace DBC::Structures
         float z;                                                    // 4
         char* name[16];                                             // 5-21
         //uint32_t nameflags;                                       // 22
-        uint32_t horde_mount;                                       // 23
-        uint32_t alliance_mount;                                    // 24
+        uint32_t mountCreatureID[2];                                // 23-24
     };
 
     struct TaxiPathEntry
@@ -1607,8 +1622,8 @@ namespace DBC::Structures
     struct TaxiPathNodeEntry
     {
         uint32_t id;                                                // 0
-        uint32_t path;                                              // 1
-        uint32_t seq;                                               // 2 nodeIndex
+        uint32_t pathId;                                            // 1
+        uint32_t NodeIndex;                                         // 2 nodeIndex
         uint32_t mapid;                                             // 3
         float x;                                                    // 4
         float y;                                                    // 5

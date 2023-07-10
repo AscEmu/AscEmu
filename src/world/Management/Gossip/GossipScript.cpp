@@ -164,6 +164,8 @@ void GossipFlightMaster::onHello(Object* object, Player* player)
 
         GossipMenu menu(object->getGuid(), gossipTextId, player->getSession()->language);
 
+        player->getSession()->sendLearnNewTaxiNode(creature);
+
         menu.addItem(GOSSIP_ICON_FLIGHTMASTER, FLIGHTMASTER, 1);
 
         sQuestMgr.FillQuestMenu(creature, player, menu);
@@ -175,7 +177,7 @@ void GossipFlightMaster::onHello(Object* object, Player* player)
 void GossipFlightMaster::onSelectOption(Object* object, Player* player, uint32_t /*Id*/, const char* /*EnteredCode*/, uint32_t /*gossipId*/)
 {
     if (const auto creature = dynamic_cast<Creature*>(object))
-        player->getSession()->sendTaxiList(creature);
+        player->getSession()->sendTaxiMenu(creature);
 }
 
 void GossipAuctioneer::onHello(Object* object, Player* player)

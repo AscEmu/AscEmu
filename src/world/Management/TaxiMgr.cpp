@@ -1,382 +1,464 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "Storage/DBC/DBCStores.h"
 #include "Management/TaxiMgr.h"
 #include "Server/Opcodes.hpp"
 #include "Objects/Units/Players/Player.hpp"
+#include "Server/MainServerDefines.h"
 
-void TaxiPath::ComputeLen()
+#include <charconv>
+#include <string_view>
+#include <cstdint>
+
+#include "Server/Definitions.h"
+#include "Utilities/Strings.hpp"
+
+TaxiMask sTaxiNodesMask;
+TaxiMask sOldContinentsNodesMask;
+TaxiMask sHordeTaxiNodesMask;
+TaxiMask sAllianceTaxiNodesMask;
+TaxiMask sDeathKnightTaxiNodesMask;
+
+uint32_t TeamForRace(uint8_t race)
 {
-    m_length1 = 0;
-    m_length2 = 0;
-    m_map1 = 0;
-    m_map2 = 0;
-    float* curptr = &m_length1;
-
-    if (m_pathNodes.empty())
-        return;
-
-    auto itr = m_pathNodes.begin();
-
-    float x = itr->second->x;
-    float y = itr->second->y;
-    float z = itr->second->z;
-    uint32_t curmap = itr->second->mapid;
-    m_map1 = curmap;
-
-    ++itr;
-
-    while (itr != m_pathNodes.end())
+    if (DBC::Structures::ChrRacesEntry const* rEntry = sChrRacesStore.LookupEntry(race))
     {
-        if (itr->second->mapid != curmap)
+        switch (rEntry->team_id)
         {
-            curptr = &m_length2;
-            m_map2 = itr->second->mapid;
-            curmap = itr->second->mapid;
+            case 1: return TEAM_HORDE;
+            case 7: return TEAM_ALLIANCE;
         }
-
-        *curptr += std::sqrt((itr->second->x - x) * (itr->second->x - x) +
-                        (itr->second->y - y) * (itr->second->y - y) +
-                        (itr->second->z - z) * (itr->second->z - z));
-
-        x = itr->second->x;
-        y = itr->second->y;
-        z = itr->second->z;
-        ++itr;
     }
+
+    return TEAM_ALLIANCE;
 }
 
-void TaxiPath::SetPosForTime(float & x, float & y, float & z, uint32_t time, uint32_t* lastNode, uint32_t mapid)
+TaxiPath::TaxiPath()
+{ 
+    memset(m_taximask, 0, sizeof(m_taximask));
+}
+
+#if VERSION_STRING > WotLK
+void TaxiPath::initTaxiNodesForLevel(uint32_t race, uint32_t chrClass, uint8_t level)
 {
-    if (!time)
-        return;
-
-    float length;
-    if (mapid == m_map1)
-        length = m_length1;
-    else
-        length = m_length2;
-
-    float traveledLen = (time / (length * TAXI_TRAVEL_SPEED)) * length;
-
-    x = 0;
-    y = 0;
-    z = 0;
-
-    if (m_pathNodes.empty())
-        return;
-
-    auto itr = m_pathNodes.begin();
-
-    float nx = 0.0f;
-    float ny = 0.0f;
-    float nz = 0.0f;
-    bool set = false;
-    uint32_t nodecounter = 0;
-
-    while (itr != m_pathNodes.end())
+    // class specific initial known nodes
+    switch (chrClass)
     {
-        if (itr->second->mapid != mapid)
+        case DEATHKNIGHT:
         {
-            ++itr;
-            ++nodecounter;
-            continue;
+            for (uint8_t i = 0; i < TaxiMaskSize; ++i)
+                m_taximask[i] |= sOldContinentsNodesMask[i];
+            break;
         }
+    }
+    
+    uint32_t team = TeamForRace(race);
 
-        if (!set)
+    // Patch 4.2: players will now unlock all taxi nodes within the recommended level range of the player
+    for (uint32_t i = 0; i < sTaxiNodesStore.GetNumRows(); ++i)
+    {
+        if (DBC::Structures::TaxiNodesEntry const* itr = sTaxiNodesStore.LookupEntry(i))
         {
-            nx = itr->second->x;
-            ny = itr->second->y;
-            nz = itr->second->z;
-            set = true;
-            continue;
+            // Skip scripted and debug nodes
+            if (itr->flags == TAXI_NODE_FLAG_SCRIPT)
+                continue;
+
+            // Skip nodes that are restricted the player's opposite faction
+            if ((!(itr->flags & TAXI_NODE_FLAG_ALLIANCE_RESTRICTED) && team == TEAM_ALLIANCE)
+                || (!(itr->flags & TAXI_NODE_FLAG_HORDE_RESTRICTED) && team == TEAM_HORDE))
+                continue;
+
+            if (sTaxiMgr.isTaxiNodeUnlockedFor(itr->id, level))
+                setTaximaskNode(itr->id);
         }
+    }
 
-        auto len = static_cast<uint32_t>(std::sqrt((itr->second->x - nx) * (itr->second->x - nx) +
-            (itr->second->y - ny) * (itr->second->y - ny) +
-            (itr->second->z - nz) * (itr->second->z - nz)));
+    // New continent starting masks (It will be accessible only at new map)
+    switch (team)
+    {
+        case TEAM_ALLIANCE:
+            setTaximaskNode(100); // Honor Hold
+            setTaximaskNode(245); // Valiance Keep
+            break;
+        case TEAM_HORDE:
+            setTaximaskNode(99); // Thrallmar
+            setTaximaskNode(257); // Warsong Hold
+            break;
+        default:
+            break;
+    }
+}
+#endif
 
-        if (len >= traveledLen)
+std::vector<std::string_view> tokenize(std::string_view str, char sep, bool keepEmpty)
+{
+    std::vector<std::string_view> tokens;
+
+    size_t start = 0;
+    for (size_t end = str.find(sep); end != std::string_view::npos; end = str.find(sep, start))
+    {
+        if (keepEmpty || (start < end))
+            tokens.push_back(str.substr(start, end - start));
+        start = end + 1;
+    }
+
+    if (keepEmpty || (start < str.length()))
+        tokens.push_back(str.substr(start));
+
+    return tokens;
+}
+
+std::optional<uint32_t> to_uint(const std::string_view& input)
+{
+    int out;
+    const std::from_chars_result result = std::from_chars(input.data(), input.data() + input.size(), out);
+    if (result.ec == std::errc::invalid_argument || result.ec == std::errc::result_out_of_range)
+    {
+        return std::nullopt;
+    }
+    return out;
+}
+
+void TaxiPath::loadTaxiMask(std::string const& data)
+{
+    std::vector<std::string_view> tokens = tokenize(data, ' ', false);
+    for (uint8_t index = 0; (index < TaxiMaskSize) && (index < tokens.size()); ++index)
+    {
+        if (Optional<uint32_t> mask = to_uint(tokens[index]))
         {
-            x = (itr->second->x - nx) * (traveledLen / len) + nx;
-            y = (itr->second->y - ny) * (traveledLen / len) + ny;
-            z = (itr->second->z - nz) * (traveledLen / len) + nz;
-            *lastNode = nodecounter;
-            return;
+            // load and set bits only for existing taxi nodes
+            m_taximask[index] = sTaxiNodesMask[index] & *mask;
         }
         else
         {
-            traveledLen -= len;
+            m_taximask[index] = 0;
         }
-
-        nx = itr->second->x;
-        ny = itr->second->y;
-        nz = itr->second->z;
-        ++itr;
-        ++nodecounter;
     }
-
-    x = nx;
-    y = ny;
-    z = nz;
 }
 
-TaxiPathNode* TaxiPath::GetPathNode(uint32_t i)
+void TaxiPath::appendTaximaskTo(ByteBuffer& data, bool all)
 {
-    if (m_pathNodes.find(i) == m_pathNodes.end())
-        return nullptr;
 
-    return m_pathNodes.find(i)->second;
-}
+#if VERSION_STRING > WotLK
+    data << uint32_t(TaxiMaskSize);
+#endif
 
-void TaxiPath::SendMoveForTime(Player* riding, Player* to, uint32_t time)
-{
-    if (!time)
-        return;
-
-    float length;
-    uint32_t mapid = riding->GetMapId();
-    if (mapid == m_map1)
-        length = m_length1;
+    if (all)
+    {
+        for (uint8_t i = 0; i < TaxiMaskSize; ++i)
+            data << uint8_t(sTaxiNodesMask[i]);              // all existing nodes
+    }
     else
-        length = m_length2;
-
-    float traveledLen = (time / (length * TAXI_TRAVEL_SPEED)) * length;
-
-    if (m_pathNodes.empty())
-        return;
-
-    auto itr = m_pathNodes.begin();
-
-    float nx = 0.0f;
-    float ny = 0.0f;
-    float nz = 0.0f;
-    bool set = false;
-    uint32_t nodecounter = 1;
-
-    while (itr != m_pathNodes.end())
     {
-        if (itr->second->mapid != mapid)
-        {
-            ++itr;
-            ++nodecounter;
-            continue;
-        }
-
-        if (!set)
-        {
-            nx = itr->second->x;
-            ny = itr->second->y;
-            nz = itr->second->z;
-            set = true;
-            continue;
-        }
-
-        auto len = static_cast<uint32_t>(std::sqrt((itr->second->x - nx) * (itr->second->x - nx) +
-            (itr->second->y - ny) * (itr->second->y - ny) +
-            (itr->second->z - nz) * (itr->second->z - nz)));
-
-        if (len >= traveledLen)
-        {
-            // todo: variables are initialized but not referenced -Appled
-
-            //float x = (itr->second->x - nx) * (traveledLen / len) + nx;
-            //float y = (itr->second->y - ny) * (traveledLen / len) + ny;
-            //float z = (itr->second->z - nz) * (traveledLen / len) + nz;
-            break;
-        }
-
-        traveledLen -= len;
-
-        nx = itr->second->x;
-        ny = itr->second->y;
-        nz = itr->second->z;
-        ++itr;
+        for (uint8_t i = 0; i < TaxiMaskSize; ++i)
+            data << uint8_t(m_taximask[i]);                  // known nodes
     }
-
-    if (itr == m_pathNodes.end())
-        return;
-
-    auto* data = new WorldPacket(SMSG_MONSTER_MOVE, 2000);
-
-    *data << riding->GetNewGUID();
-    *data << uint8_t(0);                  //VLack: usual uint8 after new style guid
-    *data << riding->GetPositionX();
-    *data << riding->GetPositionY();
-    *data << riding->GetPositionZ();
-    *data << Util::getMSTime();
-    *data << uint8_t(0);
-    *data << uint32_t(0x00003000);
-    *data << uint32_t(uint32_t((length * TAXI_TRAVEL_SPEED) - time));
-    *data << uint32_t(nodecounter);
-    size_t pos = data->wpos();
-    *data << nx;
-    *data << ny;
-    *data << nz;
-
-    while (itr != m_pathNodes.end())
-    {
-        TaxiPathNode* pn = itr->second;
-        if (pn->mapid != mapid)
-            break;
-
-        *data << pn->x;
-        *data << pn->y;
-        *data << pn->z;
-        ++itr;
-        ++nodecounter;
-    }
-
-    *reinterpret_cast<uint32_t*>(&(data->contents()[pos])) = nodecounter;
-    to->getUpdateMgr().queueDelayedPacket(data);
 }
 
-void TaxiMgr::_LoadTaxiNodes()
+bool TaxiPath::loadTaxiDestinationsFromString(std::string const& values, uint32_t team)
 {
-    for (uint32_t i = 0; i < sTaxiNodesStore.GetNumRows(); i++)
-    {
-        auto taxiNodes = sTaxiNodesStore.LookupEntry(i);
-        if (taxiNodes)
-        {
-            auto* n = new TaxiNode;
-            n->id = taxiNodes->id;
-            n->mapid = taxiNodes->mapid;
-            n->allianceMount = taxiNodes->alliance_mount;
-            n->hordeMount = taxiNodes->horde_mount;
-            n->x = taxiNodes->x;
-            n->y = taxiNodes->y;
-            n->z = taxiNodes->z;
+    clearTaxiDestinations();
 
-            this->m_taxiNodes.insert(std::map<uint32, TaxiNode*>::value_type(n->id, n));
-        }
+    std::vector<std::string_view> tokens = tokenize(values, ' ', false);
+    auto itr = tokens.begin();
+    for (auto itr : tokens)
+    {
+        if (Optional<uint32_t> node = to_uint(itr))
+            addTaxiDestination(*node);
+        else
+            return false;
     }
 
-    ///\todo load mounts
+    if (m_TaxiDestinations.empty())
+        return true;
+
+    // Check integrity
+    if (m_TaxiDestinations.size() < 2)
+        return false;
+
+    for (size_t i = 1; i < m_TaxiDestinations.size(); ++i)
+    {
+        uint32_t cost;
+        uint32_t path;
+        sTaxiMgr.getTaxiPath(m_TaxiDestinations[i - 1], m_TaxiDestinations[i], path, cost);
+        if (!path)
+            return false;
+    }
+
+    // can't load taxi path without mount set (quest taxi path?)
+    if (!sTaxiMgr.getTaxiMountDisplayId(getTaxiSource(), team, true))
+        return false;
+
+    return true;
 }
 
-void TaxiMgr::_LoadTaxiPaths()
+std::string TaxiPath::saveTaxiDestinationsToString()
 {
-    for (uint32_t i = 0; i < sTaxiPathStore.GetNumRows(); i++)
-    {
-        auto taxiPath = sTaxiPathStore.LookupEntry(i);
-        if (taxiPath)
-        {
-            auto* p = new TaxiPath;
-            p->m_from = taxiPath->from;
-            p->m_to = taxiPath->to;
-            p->m_id = taxiPath->id;
-            p->m_price = taxiPath->price;
+    if (m_TaxiDestinations.empty())
+        return "";
 
-            //Load Nodes
-            for (uint32_t j = 0; j < sTaxiPathNodeStore.GetNumRows(); j++)
+    std::ostringstream ss;
+
+    for (size_t i = 0; i < m_TaxiDestinations.size(); ++i)
+    {
+        ss << m_TaxiDestinations[i] << ' ';
+    }
+
+    return ss.str();
+}
+
+uint32_t TaxiPath::getCurrentTaxiPath() const
+{
+    if (m_TaxiDestinations.size() < 2)
+        return 0;
+
+    uint32_t path;
+    uint32_t cost;
+
+    sTaxiMgr.getTaxiPath(m_TaxiDestinations[0], m_TaxiDestinations[1], path, cost);
+
+    return path;
+}
+
+std::ostringstream& operator<<(std::ostringstream& ss, TaxiPath const& taxi)
+{
+    for (uint8_t i = 0; i < TaxiMaskSize; ++i)
+        ss << uint32_t(taxi.m_taximask[i]) << ' ';
+    return ss;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Taxi Mgr
+uint32_t TaxiMgr::getNearestTaxiNode(float x, float y, float z, uint32_t mapid, uint32_t team)
+{
+    bool found = false;
+    float dist = 10000;
+    uint32_t id = 0;
+
+    for (uint32_t i = 1; i < sTaxiNodesStore.GetNumRows(); ++i)
+    {
+        DBC::Structures::TaxiNodesEntry const* node = sTaxiNodesStore.LookupEntry(i);
+
+        if (!node || node->mapid != mapid || (!node->mountCreatureID[team == TEAM_ALLIANCE ? 1 : 0] && node->mountCreatureID[0] != 32981)) // dk flight
+            continue;
+
+        uint8_t  field = (uint8_t)((i - 1) / 8);
+        uint32_t submask = 1 << ((i - 1) % 8);
+
+        // skip not taxi network nodes
+        if ((sTaxiNodesMask[field] & submask) == 0)
+            continue;
+
+        float dist2 = (node->x - x) * (node->x - x) + (node->y - y) * (node->y - y) + (node->z - z) * (node->z - z);
+        if (found)
+        {
+            if (dist2 < dist)
             {
-                auto taxiPathNode = sTaxiPathNodeStore.LookupEntry(j);
-                if (taxiPathNode)
+                dist = dist2;
+                id = i;
+            }
+        }
+        else
+        {
+            found = true;
+            dist = dist2;
+            id = i;
+        }
+    }
+
+    return id;
+}
+
+void TaxiMgr::getTaxiPath(uint32_t source, uint32_t destination, uint32_t& path, uint32_t& cost)
+{
+    TaxiPathSetBySource::iterator src_i = sTaxiPathSetBySource.find(source);
+    if (src_i == sTaxiPathSetBySource.end())
+    {
+        path = 0;
+        cost = 0;
+        return;
+    }
+
+    TaxiPathSetForSource& pathSet = src_i->second;
+
+    TaxiPathSetForSource::iterator dest_i = pathSet.find(destination);
+    if (dest_i == pathSet.end())
+    {
+        path = 0;
+        cost = 0;
+        return;
+    }
+
+    cost = dest_i->second.price;
+    path = dest_i->second.ID;
+}
+
+uint32_t TaxiMgr::getTaxiMountDisplayId(uint32_t id, uint32_t team, bool allowed_alt_team /* = false */)
+{
+    uint32_t mount_id = 0;
+
+    // select mount creature id
+    DBC::Structures::TaxiNodesEntry const* node = sTaxiNodesStore.LookupEntry(id);
+    if (node)
+    {
+        uint32_t mount_entry = 0;
+        if (team == TEAM_ALLIANCE)
+            mount_entry = node->mountCreatureID[1];
+        else
+            mount_entry = node->mountCreatureID[0];
+
+        // Fix for Alliance not being able to use Acherus taxi
+        // only one mount type for both sides
+        if (mount_entry == 0 && allowed_alt_team)
+        {
+            // Simply reverse the selection. At least one team in theory should have a valid mount ID to choose.
+            mount_entry = team == TEAM_ALLIANCE ? node->mountCreatureID[0] : node->mountCreatureID[1];
+        }
+
+        CreatureProperties const* mount_info = sMySQLStore.getCreatureProperties(mount_entry);
+        if (mount_info)
+        {
+            mount_id = mount_info->getRandomModelId();
+            if (!mount_id)
+            {
+                sLogger.failure("TaxiMgr:::No displayid found for the taxi mount with the entry %u! Can't load it!", mount_entry);
+                return 0;
+            }
+        }
+    }
+
+    return mount_id;
+}
+
+void TaxiMgr::loadTaxiNodeLevelData()
+{
+    auto oldMSTime = Util::TimeNow();
+
+    //                                               0            1
+    QueryResult* result = WorldDatabase.Query("SELECT TaxiNodeId, `Level` FROM taxi_level_data ORDER BY TaxiNodeId ASC");
+
+    if (!result)
+    {
+        sLogger.info("TaxiMgr:: Loaded 0 taxi node level definitions. DB table `taxi_level_data` is empty.");
+        return;
+    }
+
+    uint32_t count = 0;
+    do
+    {
+        Field* fields = result->Fetch();
+
+        uint32_t taxiNodeId = fields[0].GetUInt16();
+        uint8_t level = fields[1].GetUInt8();
+
+        DBC::Structures::TaxiNodesEntry const* node = sTaxiNodesStore.LookupEntry(taxiNodeId);
+
+        if (!node)
+        {
+            sLogger.failure("TaxiMgr:: Table `taxi_level_data` has data for nonexistent taxi node (ID: %u), skipped", taxiNodeId);
+            continue;
+        };
+
+        _taxiNodeLevelDataStore.emplace(taxiNodeId, level);
+
+        ++count;
+    } while (result->NextRow());
+
+    sLogger.info("TaxiMgr:: Loaded %u taxi node level definitions in %u ms", count, Util::GetTimeDifferenceToNow(oldMSTime));
+}
+
+bool TaxiMgr::isTaxiNodeUnlockedFor(uint32_t taxiNodeId, uint8_t level) const
+{
+    TaxiNodeLevelDataContainer::const_iterator itr = _taxiNodeLevelDataStore.find(taxiNodeId);
+    if (itr != _taxiNodeLevelDataStore.end())
+        return itr->second <= level;
+
+    return false;
+}
+
+void TaxiMgr::initialize()
+{
+#if VERSION_STRING > WotLK
+    loadTaxiNodeLevelData();
+#endif
+
+    // Initialize global taxinodes mask
+    // include existed nodes that have at least single not spell base (scripted) path
+    std::set<uint32> spellPaths;
+
+#if VERSION_STRING > WotLK
+    for (uint32_t i = 0; i < sSpellEffectStore.GetNumRows(); ++i)
+    {
+        if (DBC::Structures::SpellEffectEntry const* sInfo = sSpellEffectStore.LookupEntry(i))
+        {
+            if (sInfo->Effect == SPELL_EFFECT_START_TAXI)
+                spellPaths.insert(sInfo->EffectMiscValue);
+        }
+    }
+#else
+    for (uint32_t i = 0; i < sSpellStore.GetNumRows(); ++i)
+    {
+        if (DBC::Structures::SpellEntry const* sInfo = sSpellStore.LookupEntry(i))
+        {
+            for (uint8_t j = 0; j < MAX_SPELL_EFFECTS; ++j)
+            {
+                if (sInfo->Effect[j] == SPELL_EFFECT_START_TAXI)
+                    spellPaths.insert(sInfo->EffectMiscValue[j]);
+            }
+        }
+    }
+#endif
+
+    memset(sTaxiNodesMask, 0, sizeof(sTaxiNodesMask));
+    memset(sOldContinentsNodesMask, 0, sizeof(sOldContinentsNodesMask));
+    memset(sHordeTaxiNodesMask, 0, sizeof(sHordeTaxiNodesMask));
+    memset(sAllianceTaxiNodesMask, 0, sizeof(sAllianceTaxiNodesMask));
+    memset(sDeathKnightTaxiNodesMask, 0, sizeof(sDeathKnightTaxiNodesMask));
+    for (uint32_t i = 1; i < sTaxiNodesStore.GetNumRows(); ++i)
+    {
+        DBC::Structures::TaxiNodesEntry const* node = sTaxiNodesStore.LookupEntry(i);
+        if (!node)
+            continue;
+
+        TaxiPathSetBySource::const_iterator src_i = sTaxiPathSetBySource.find(i);
+        if (src_i != sTaxiPathSetBySource.end() && !src_i->second.empty())
+        {
+            bool ok = false;
+            for (TaxiPathSetForSource::const_iterator dest_i = src_i->second.begin(); dest_i != src_i->second.end(); ++dest_i)
+            {
+                // not spell path
+                if (spellPaths.find(dest_i->second.ID) == spellPaths.end())
                 {
-                    if (taxiPathNode->path == p->m_id)
-                    {
-                        auto* pn = new TaxiPathNode;
-                        pn->x = taxiPathNode->x;
-                        pn->y = taxiPathNode->y;
-                        pn->z = taxiPathNode->z;
-                        pn->mapid = taxiPathNode->mapid;
-                        p->AddPathNode(taxiPathNode->seq, pn);
-                    }
+                    ok = true;
+                    break;
                 }
             }
-            p->ComputeLen();
-            this->m_taxiPaths.insert(std::map<uint32, TaxiPath*>::value_type(p->m_id, p));
+
+            if (!ok)
+                continue;
         }
+
+        // valid taxi network node
+        uint8_t  field = (uint8_t)((i - 1) / 8);
+        uint32_t submask = 1 << ((i - 1) % 8);
+
+        sTaxiNodesMask[field] |= submask;
+        if (node->mountCreatureID[0] && node->mountCreatureID[0] != 32981)
+            sHordeTaxiNodesMask[field] |= submask;
+        if (node->mountCreatureID[1] && node->mountCreatureID[1] != 32981)
+            sAllianceTaxiNodesMask[field] |= submask;
+        if (node->mountCreatureID[0] == 32981 || node->mountCreatureID[1] == 32981)
+            sDeathKnightTaxiNodesMask[field] |= submask;
+
+        // old continent node (+ nodes virtually at old continents, check explicitly to avoid loading map files for zone info)
+        if (node->mapid < 2 || i == 82 || i == 83 || i == 93 || i == 94)
+            sOldContinentsNodesMask[field] |= submask;
+
+        // fix DK node at Ebon Hold and Shadow Vault flight master
+        if (i == 315 || i == 333)
+            ((DBC::Structures::TaxiNodesEntry*)node)->mountCreatureID[1] = 32981;
     }
-}
-
-TaxiPath* TaxiMgr::GetTaxiPath(uint32_t path)
-{
-    auto itr = this->m_taxiPaths.find(path);
-    if (itr == m_taxiPaths.end())
-        return nullptr;
-    
-    return itr->second;
-}
-
-TaxiPath* TaxiMgr::GetTaxiPath(uint32_t from, uint32_t to)
-{
-    for (auto& taxiPath : m_taxiPaths)
-        if (taxiPath.second->m_to == to && taxiPath.second->m_from == from)
-            return taxiPath.second;
-
-    return nullptr;
-}
-
-TaxiNode* TaxiMgr::GetTaxiNode(uint32_t node)
-{
-    auto itr = this->m_taxiNodes.find(node);
-
-    if (itr == m_taxiNodes.end())
-        return nullptr;
-
-    return itr->second;
-}
-
-//MIT
-uint32_t TaxiMgr::getNearestNodeForPlayer(Player* player)
-{
-    return GetNearestTaxiNode(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId());
-}
-
-uint32_t TaxiMgr::GetNearestTaxiNode(float x, float y, float z, uint32_t mapid)
-{
-    uint32_t nearest = 0;
-    float distance = -1;
-
-    for (auto& taxiNode : m_taxiNodes)
-    {
-        if (taxiNode.second->mapid == mapid)
-        {
-            float nx = taxiNode.second->x - x;
-            float ny = taxiNode.second->y - y;
-            float nz = taxiNode.second->z - z;
-            float nd = nx * nx + ny * ny + nz * nz;
-            if (nd < distance || distance < 0)
-            {
-                distance = nd;
-                nearest = taxiNode.second->id;
-            }
-        }
-    }
-    return nearest;
-}
-
-bool TaxiMgr::GetGlobalTaxiNodeMask(uint32_t /*curloc*/, uint32_t* mask)
-{
-    for (auto& taxiPath : m_taxiPaths)
-    {
-        /*if (itr->second->from == curloc)
-        {*/
-        auto field = (taxiPath.second->m_to - 1) / 32;
-        if (field >= DBC_TAXI_MASK_SIZE) // The DBC can contain negative TO values??? That'll be 255 here (because we store everything unsigned), skip them!
-            continue;
-        mask[field] |= 1 << ((taxiPath.second->m_to - 1) % 32);
-        //}
-    }
-    return true;
 }

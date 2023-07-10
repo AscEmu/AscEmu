@@ -313,6 +313,7 @@ public:
     uint32_t GetCompletedAchievementsCount() const;
     uint32_t GetCriteriaProgressCount();
     time_t GetCompletedTime(DBC::Structures::AchievementEntry const* achievement);
+    bool isGroupCriteriaType(AchievementCriteriaTypes type) const;
     Player* GetPlayer() { return m_player; }
 
 private:

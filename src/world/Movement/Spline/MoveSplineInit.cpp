@@ -82,14 +82,15 @@ int32_t MoveSplineInit::Launch()
     args.initialOrientation = real_position.orientation;
     move_spline.onTransport = transport;
 
-#if VERSION_STRING <= WotLK
+#if VERSION_STRING == WotLK
     args.flags.enter_cycle = args.flags.cyclic;
-    args.flags.EnableCatmullRom(); // with this set pathfinding works fine // aaron02
 #endif
 
     uint32_t moveFlags = unit->obj_movement_info.getMovementFlags();
-
-#if VERSION_STRING <= WotLK
+#if VERSION_STRING <= TBC
+    moveFlags |= MOVEFLAG_SPLINE_ENABLED;
+    moveFlags = (moveFlags & ~(MOVEFLAG_MOVE_BACKWARD)) | MOVEFLAG_MOVE_FORWARD;
+#elif VERSION_STRING == WotLK
     moveFlags |= MOVEFLAG_SPLINE_ENABLED;
 
     if (!args.flags.backward)
@@ -114,13 +115,16 @@ int32_t MoveSplineInit::Launch()
             moveFlagsForSpeed &= ~MOVEFLAG_WALK;
 
         args.velocity = unit->getSpeedRate(SelectSpeedType(moveFlagsForSpeed), true);
+
         if (unit->isCreature())
             if (unit->getAIInterface()->alreadyCalledForHelp())
                 args.velocity *= 0.66f;
     }
 
+#if VERSION_STRING > TBC
     // limit the speed in the same way the client does
     args.velocity = std::min(args.velocity, args.flags.catmullrom || args.flags.flying ? 50.0f : std::max(28.0f, unit->getSpeedRate(TYPE_RUN,  true) * 4.0f));
+#endif
 
     if (!args.Validate(unit))
         return 0;
@@ -198,9 +202,21 @@ void MoveSplineInit::Stop()
     unit->sendMessageToSet(&data, true);
 }
 
+#if VERSION_STRING <= TBC
 MoveSplineInit::MoveSplineInit(Unit* m) : unit(m)
 {
-#if VERSION_STRING <= WotLK
+    args.splineId = splineIdGen.NewId();
+    // Elevators also use MOVEFLAG_TRANSPORT but we do not keep track of their position changes
+    args.TransformForTransport = unit->hasUnitMovementFlag(MOVEFLAG_TRANSPORT) && unit->getTransGuid();
+    // mix existing state into new
+    args.walk = unit->hasUnitMovementFlag(MOVEFLAG_WALK);
+    args.flags.flying = unit->obj_movement_info.hasMovementFlag(MOVEFLAG_FLYING_MASK);
+}
+#endif
+
+#if VERSION_STRING == WotLK
+MoveSplineInit::MoveSplineInit(Unit* m) : unit(m)
+{
     args.splineId = splineIdGen.NewId();
     // Elevators also use MOVEFLAG_TRANSPORT but we do not keep track of their position changes
     args.TransformForTransport = unit->hasUnitMovementFlag(MOVEFLAG_TRANSPORT) && unit->getTransGuid();
@@ -208,7 +224,12 @@ MoveSplineInit::MoveSplineInit(Unit* m) : unit(m)
     args.flags.canswim = unit->canSwim();
     args.walk = unit->hasUnitMovementFlag(MOVEFLAG_WALK);
     args.flags.flying = unit->obj_movement_info.hasMovementFlag(MOVEFLAG_FLYING_MASK);
-#else
+}
+#endif
+
+#if VERSION_STRING >= Cata
+MoveSplineInit::MoveSplineInit(Unit* m) : unit(m)
+{
     args.splineId = splineIdGen.NewId();
     // Elevators also use MOVEMENTFLAG_ONTRANSPORT but we do not keep track of their position changes
     args.TransformForTransport = unit->getTransGuid() != 0;
@@ -216,8 +237,8 @@ MoveSplineInit::MoveSplineInit(Unit* m) : unit(m)
     args.flags.walkmode = unit->obj_movement_info.hasMovementFlag(MOVEFLAG_WALK);
     args.flags.flying = unit->obj_movement_info.hasMovementFlag(MOVEFLAG_FLYING_MASK);
     args.flags.smoothGroundPath = true; // enabled by default, CatmullRom mode or client config "pathSmoothing" will disable this
-#endif
 }
+#endif
 
 MoveSplineInit::~MoveSplineInit() = default;
 

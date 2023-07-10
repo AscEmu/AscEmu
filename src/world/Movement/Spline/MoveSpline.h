@@ -118,8 +118,10 @@ public:
     Vector3 CurrentDestination() const { return Initialized() ? spline.getPoint(point_Idx + 1) : Vector3(); }
     int32_t currentPathIdx() const;
 
+#if VERSION_STRING >= WotLK
     bool HasAnimation() const { return splineflags.animation; }
     AnimationTier GetAnimationTier() const { return static_cast<AnimationTier>(splineflags.animTier); }
+#endif
 
     bool onTransport;
     std::string ToString() const;

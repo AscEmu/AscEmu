@@ -24,21 +24,21 @@
 
 namespace LuaTaxi
 {
-    int CreateTaxi(lua_State* L, TaxiPath* /*tp*/)
+    /*int CreateTaxi(lua_State* L, TaxiPath* tp)
     {
         TaxiPath* ntp = new TaxiPath();
         PUSH_TAXIPATH(L, ntp);
         return 1;
-    }
+    }*/
 
-    int GetNodeCount(lua_State* L, TaxiPath* tp)
+    /*int GetNodeCount(lua_State* L, TaxiPath* tp)
     {
         if (!tp) return 0;
-        lua_pushinteger(L, tp->GetNodeCount());
+        lua_pushinteger(L, tp->getPath().size());
         return 1;
-    }
-
-    int AddPathNode(lua_State* L, TaxiPath* tp)
+    }*/
+    
+    /*int AddPathNode(lua_State* L, TaxiPath* tp)
     {
         if (!tp) return 0;
         uint32_t mapid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
@@ -54,7 +54,7 @@ namespace LuaTaxi
         tpn->z = z;
         tp->AddPathNode(index, tpn);
         return 0;
-    }
+    }*/
 
     /*int GetNodeX(lua_State * L, TaxiPath * tp)
     {
@@ -104,12 +104,12 @@ namespace LuaTaxi
     return 1;
     }*/
 
-    int GetId(lua_State* L, TaxiPath* tp)
+    /*int GetId(lua_State* L, TaxiPath* tp)
     {
         if (!tp) return 0;
-        lua_pushinteger(L, tp->GetID());
+        lua_pushinteger(L, tp->getCurrentTaxiPath());
         return 1;
-    }
+    }*/
 
     int GetObjectType(lua_State* L, TaxiPath* tp)
     {

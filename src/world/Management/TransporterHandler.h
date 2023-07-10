@@ -23,9 +23,6 @@ typedef std::unordered_map<uint32_t, Transporter*>          TransporterMap;
 typedef std::unordered_map<uint32_t, TransporterSet>        TransporterInstancedMap;
 typedef std::unordered_map<uint32_t, std::set<uint32_t>>    TransportInstanceMap;
 
-typedef std::vector<DBC::Structures::TaxiPathNodeEntry const*> TaxiPathNodeList;
-typedef std::vector<TaxiPathNodeList> TaxiPathNodesByPath;
-
 typedef std::map<uint32_t, DBC::Structures::TransportAnimationEntry const*> TransportPathContainer;
 #if VERSION_STRING >= WotLK
 typedef std::map<uint32_t, DBC::Structures::TransportRotationEntry const*> TransportPathRotationContainer;

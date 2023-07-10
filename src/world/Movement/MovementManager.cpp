@@ -30,6 +30,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MovementGenerators/RandomMovementGenerator.h"
 #include "MovementGenerators/SplineChainMovementGenerator.h"
 #include "MovementGenerators/WaypointMovementGenerator.h"
+#include "MovementGenerators/FlightPathMovementGenerator.h"
 #include "Objects/Units/Creatures/AIInterface.h"
 
 namespace FactorySelector
@@ -665,7 +666,9 @@ void MovementManager::moveLand(uint32_t id, LocationVector const& pos, Optional<
 {
     MovementMgr::MoveSplineInit init(_owner);
     init.MoveTo(positionToVector3(pos), false);
+#if VERSION_STRING >= WotLK
     init.SetAnimation(AnimationTier::Ground);
+#endif
     if (velocity)
         init.SetVelocity(*velocity);
     add(new GenericMovementGenerator(std::move(init), EFFECT_MOTION_TYPE, id));
@@ -675,7 +678,9 @@ void MovementManager::moveTakeoff(uint32_t id, LocationVector const& pos, Option
 {
     MovementMgr::MoveSplineInit init(_owner);
     init.MoveTo(positionToVector3(pos), false);
+#if VERSION_STRING >= WotLK
     init.SetAnimation(AnimationTier::Hover);
+#endif
     if (velocity)
         init.SetVelocity(*velocity);
     add(new GenericMovementGenerator(std::move(init), EFFECT_MOTION_TYPE, id));
@@ -732,7 +737,9 @@ void MovementManager::moveKnockbackFrom(float srcX, float srcY, float speedXY, f
     MovementMgr::MoveSplineInit init(_owner);
     init.MoveTo(dest.getPositionX(), dest.getPositionY(), dest.getPositionZ(), false);
     init.SetParabolic(max_height, 0);
+#if VERSION_STRING >= WotLK
     init.SetOrientationFixed(true);
+#endif
     init.SetVelocity(speedXY);
 
     GenericMovementGenerator* movement = new GenericMovementGenerator(std::move(init), EFFECT_MOTION_TYPE, 0);
@@ -819,7 +826,9 @@ void MovementManager::moveCirclePath(float x, float y, float z, float radius, bo
     {
         init.SetFly();
         init.SetCyclic();
+#if VERSION_STRING >= WotLK
         init.SetAnimation(AnimationTier::Hover);
+#endif
     }
     else
     {
@@ -841,7 +850,9 @@ void MovementManager::moveSmoothPath(uint32_t pointId, LocationVector const* pat
         });
 
     init.MovebyPath(path);
+#if VERSION_STRING >= WotLK
     init.SetSmooth();
+#endif
     init.SetWalk(walk);
 
     // This code is not correct
@@ -935,6 +946,31 @@ void MovementManager::moveSeekAssistanceDistract(uint32_t time)
     if (_owner->getObjectTypeId() == TYPEID_UNIT)
     {
         add(new AssistanceDistractMovementGenerator(time, _owner->GetOrientation()));
+    }
+}
+
+void MovementManager::moveTaxiFlight(uint32_t path, uint32_t pathnode)
+{
+    if (_owner->getObjectTypeId() == TYPEID_PLAYER)
+    {
+        if (path < sTaxiPathNodesByPath.size())
+        {
+            bool hasExisting = hasMovementGenerator([](MovementGenerator const* gen) { return gen->getMovementGeneratorType() == FLIGHT_MOTION_TYPE; });
+            if (hasExisting)
+            {
+                sLogger.failure("MoveTaxiFlight:: %s already has a Flightpath Movement Generator", _owner->ToPlayer()->getName().c_str());
+                return;
+            }
+
+            sLogger.debug("MoveTaxiFlight:: %s taxi to (Path %u node %u).", _owner->ToPlayer()->getName().c_str(), path, pathnode);
+            FlightPathMovementGenerator* movement = new FlightPathMovementGenerator(pathnode);
+            movement->loadPath(_owner->ToPlayer());
+            add(movement);
+        }
+        else
+        {
+            sLogger.failure("MoveTaxiFlight:: %s attempted taxi to (non-existing Path %u node %u).", _owner->ToPlayer()->getName().c_str(), path, pathnode);
+        }
     }
 }
 

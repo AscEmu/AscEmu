@@ -326,7 +326,7 @@ public:
     void PushItem(Object* item, lua_State* L = nullptr);
     void PushGuid(uint64_t guid, lua_State* L = nullptr);
     void PushPacket(WorldPacket* packet, lua_State* L = nullptr);
-    void PushTaxiPath(TaxiPath* tp, lua_State* L = nullptr);
+    void PushTaxiPath(TaxiPath tp, lua_State* L = nullptr);
     void PushSpell(Spell* sp, lua_State* L = nullptr);
     void PushSqlField(Field* field, lua_State* L = nullptr);
     void PushSqlResult(QueryResult* res, lua_State* L = nullptr);

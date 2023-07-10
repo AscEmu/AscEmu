@@ -18,10 +18,6 @@ namespace AscEmu::Packets
         uint32_t nearestNode;
         std::array<uint32_t, DBC_TAXI_MASK_SIZE> taxiMask;
 
-        SmsgShowTaxiNodes() : SmsgShowTaxiNodes(0, 0, {0})
-        {
-        }
-
         SmsgShowTaxiNodes(uint64_t guid, uint32_t nearestNode, std::array<uint32_t, DBC_TAXI_MASK_SIZE> taxiMask) :
             ManagedPacket(SMSG_SHOWTAXINODES, 0),
             guid(guid),

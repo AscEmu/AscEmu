@@ -15,7 +15,111 @@ namespace MovementMgr {
 class MoveSplineFlag
 {
 public:
-#if VERSION_STRING <= WotLK
+#if VERSION_STRING <= TBC
+    enum eFlags
+    {
+        None                    = 0x00000000,
+        Done                    = 0x00000001,
+        Falling                 = 0x00000002, // Affects elevation computation
+        Unknown3                = 0x00000004,
+        Unknown4                = 0x00000008,
+        Unknown5                = 0x00000010,
+        Unknown6                = 0x00000020,
+        Unknown7                = 0x00000040,
+        Unknown8                = 0x00000080,
+        Runmode                 = 0x00000100,
+        Flying                  = 0x00000200, // Smooth movement(Catmullrom interpolation mode), flying animation
+        No_Spline               = 0x00000400,
+        Unknown12               = 0x00000800,
+        Unknown13               = 0x00001000,
+        Unknown14               = 0x00002000,
+        Unknown15               = 0x00004000,
+        Unknown16               = 0x00008000,
+        Final_Point             = 0x00010000,
+        Final_Target            = 0x00020000,
+        Final_Angle             = 0x00040000,
+        Unknown20               = 0x00080000,
+        Cyclic                  = 0x00100000,
+        Enter_Cycle             = 0x00200000, // Everytimes appears with cyclic flag in monster move packet, erases first spline vertex after first cycle done
+        Frozen                  = 0x00400000, // Will never arrive
+        Unknown24               = 0x00800000,
+        Unknown25               = 0x01000000,
+        Unknown26               = 0x02000000,
+        Unknown27               = 0x04000000,
+        Unknown28               = 0x08000000,
+        Unknown29               = 0x10000000,
+        Unknown30               = 0x20000000,
+        Unknown31               = 0x40000000,
+        Unknown32               = 0x80000000,
+
+        // Masks
+        Mask_Final_Facing = Final_Point | Final_Target | Final_Angle,
+        // flags that shouldn't be appended into SMSG_MONSTER_MOVE\SMSG_MONSTER_MOVE_TRANSPORT packet, should be more probably
+        Mask_No_Monster_Move = Mask_Final_Facing | Done,
+        // CatmullRom interpolation mode used
+        Mask_CatmullRom = Flying
+    };
+
+    inline uint32_t& raw() { return (uint32_t&)*this; }
+    inline uint32_t const& raw() const { return (uint32_t const&)*this; }
+
+    MoveSplineFlag() { raw() = 0; }
+    MoveSplineFlag(uint32_t f) { raw() = f; }
+
+    // Constant interface
+    bool isSmooth() const { return (raw() & Mask_CatmullRom) != 0; }
+    bool isLinear() const { return !isSmooth(); }
+    bool isFacing() const { return (raw() & Mask_Final_Facing) != 0; }
+
+    bool hasAllFlags(uint32_t f) const { return (raw() & f) == f; }
+    bool hasFlag(uint32_t f) const { return (raw() & f) != 0; }
+    uint32_t operator & (uint32_t f) const { return (raw() & f); }
+    uint32_t operator | (uint32_t f) const { return (raw() | f); }
+    std::string ToString() const;
+
+    // Not constant interface
+    void operator &= (uint32_t f) { raw() &= f; }
+    void operator |= (uint32_t f) { raw() |= f; }
+
+    void EnableFalling() { raw() = (raw() & ~(Flying)) | Falling; }
+    void EnableFlying() { raw() = (raw() & ~(Falling)) | Flying; }
+    void EnableFacingPoint() { raw() = (raw() & ~Mask_Final_Facing) | Final_Point; }
+    void EnableFacingAngle() { raw() = (raw() & ~Mask_Final_Facing) | Final_Angle; }
+    void EnableFacingTarget() { raw() = (raw() & ~Mask_Final_Facing) | Final_Target; }
+
+    bool done                   : 1;
+    bool falling                : 1;
+    bool unknown3               : 1;
+    bool unknown4               : 1;
+    bool unknown5               : 1;
+    bool unknown6               : 1;
+    bool unknown7               : 1;
+    bool unknown8               : 1;
+    bool runmode                : 1;
+    bool flying                 : 1;
+    bool no_spline              : 1;
+    bool unknown12              : 1;
+    bool unknown13              : 1;
+    bool unknown14              : 1;
+    bool unknown15              : 1;
+    bool unknown16              : 1;
+    bool final_point            : 1;
+    bool final_target           : 1;
+    bool final_angle            : 1;
+    bool unknown20              : 1;
+    bool cyclic                 : 1;
+    bool enter_cycle            : 1;
+    bool frozen                 : 1;
+    bool unknown24              : 1;
+    bool unknown25              : 1;
+    bool unknown26              : 1;
+    bool unknown27              : 1;
+    bool unknown28              : 1;
+    bool unknown29              : 1;
+    bool unknown30              : 1;
+    bool unknown31              : 1;
+    bool unknown32              : 1;
+#elif VERSION_STRING == WotLK
     enum eFlags
     {
         None                    = 0x00000000,
@@ -115,7 +219,7 @@ public:
     bool unknown11           : 1;
     bool unknown12           : 1;
     bool unknown13           : 1;
-#else
+#elif VERSION_STRING >= Cata
     enum eFlags
     {
         None                    = 0x00000000,

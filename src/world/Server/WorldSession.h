@@ -925,7 +925,11 @@ protected:
         //////////////////////////////////////////////////////////////////////////////////////////
         // TaxiHandler.cpp
     public:
-        void sendTaxiList(Creature* creature);
+        void sendTaxiStatus(WoWGuid guid);
+        void sendTaxiMenu(Creature* unit);
+        void sendDoFlight(uint32_t mountDisplayId, uint32_t path, uint32_t pathNode = 0);
+        bool sendLearnNewTaxiNode(Creature* unit);
+        void sendDiscoverNewTaxiNode(uint32_t nodeid);
 
     protected:
         void handleTaxiNodeStatusQueryOpcode(WorldPacket& recvPacket);
@@ -933,6 +937,7 @@ protected:
         void handleEnabletaxiOpcode(WorldPacket& recvPacket);
         void handleActivateTaxiOpcode(WorldPacket& recvPacket);
         void handleMultipleActivateTaxiOpcode(WorldPacket& recvPacket);
+        void handleMoveSplineDoneOpcode(WorldPacket& recvPacket);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // TradeHandler.cpp

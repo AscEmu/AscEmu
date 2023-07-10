@@ -49,9 +49,11 @@ public:
     // can't be combined with final animation
     void SetParabolic(float amplitude, float start_time);
 
+#if VERSION_STRING >= WotLK
     // Plays animation after movement done
     // can't be combined with parabolic movement
     void SetAnimation(AnimationTier anim);
+#endif
 
     // Adds final facing animation
     // sets unit's facing to specified point/angle after all path done
@@ -73,6 +75,31 @@ public:
     // Needed for waypoint movement where path splitten into parts
     void SetFirstPointId(int32_t pointId) { args.path_Idx_offset = pointId; }
 
+#if VERSION_STRING >= Cata
+    // Enables CatmullRom spline interpolation mode(makes path smooth)
+    // if not enabled linear spline mode will be choosen. Disabled by default
+    void SetSmooth();
+    // Waypoints in packets will be sent without compression
+    void SetUncompressed();
+    // Enables CatmullRom spline interpolation mode, enables flying animation. Disabled by default
+    void SetFly();
+    // Enables walk mode. Disabled by default
+    void SetWalk(bool enable);
+    // Makes movement cyclic. Disabled by default
+    void SetCyclic();
+    // Enables falling mode. Disabled by default
+    void SetFall();
+    // Enters transport. Disabled by default
+    void SetTransportEnter();
+    // Exits transport. Disabled by default
+    void SetTransportExit();
+    // Inverses unit model orientation. Disabled by default
+    void SetBackward();
+    // Fixes unit's model rotation. Disabled by default
+    void SetOrientationFixed(bool enable);
+    // Inverses unit model orientation. Disabled by default
+    void SetOrientationInversed();
+#elif VERSION_STRING >= WotLK
     // Enables CatmullRom spline interpolation mode(makes path smooth)
     // if not enabled linear spline mode will be choosen. Disabled by default
     void SetSmooth();
@@ -92,12 +119,15 @@ public:
     void SetBackward();
     // Fixes unit's model rotation. Disabled by default
     void SetOrientationFixed(bool enable);
-
-#if VERSION_STRING > WotLK
-    // Waypoints in packets will be sent without compression
-    void SetUncompressed();
-    // Inverses unit model orientation. Disabled by default
-    void SetOrientationInversed();
+#else
+    // Enables CatmullRom spline interpolation mode, enables flying animation. Disabled by default
+    void SetFly();
+    // Enables walk mode. Disabled by default
+    void SetWalk(bool enable);
+    // Makes movement cyclic. Disabled by default
+    void SetCyclic();
+    // Enables falling mode. Disabled by default
+    void SetFall();
 #endif
 
     // Sets the velocity (in case you want to have custom movement velocity)
@@ -116,7 +146,7 @@ protected:
     Unit*  unit;
 };
 
-#if VERSION_STRING > WotLK
+#if VERSION_STRING >= Cata
 inline void MoveSplineInit::SetFly() { args.flags.EnableFlying(); }
 inline void MoveSplineInit::SetWalk(bool enable) { args.flags.walkmode = enable; }
 inline void MoveSplineInit::SetSmooth() { args.flags.EnableCatmullRom(); }
@@ -128,7 +158,7 @@ inline void MoveSplineInit::SetOrientationInversed() { args.flags.orientationInv
 inline void MoveSplineInit::SetTransportEnter() { args.flags.EnableTransportEnter(); }
 inline void MoveSplineInit::SetTransportExit() { args.flags.EnableTransportExit(); }
 inline void MoveSplineInit::SetOrientationFixed(bool enable) { args.flags.orientationFixed = enable; }
-#else
+#elif VERSION_STRING == WotLK
 inline void MoveSplineInit::SetFly() { args.flags.EnableFlying(); }
 inline void MoveSplineInit::SetWalk(bool enable) { args.walk = enable; }
 inline void MoveSplineInit::SetSmooth() { args.flags.EnableCatmullRom(); }
@@ -139,6 +169,12 @@ inline void MoveSplineInit::SetBackward() { args.flags.backward = true; }
 inline void MoveSplineInit::SetTransportEnter() { args.flags.EnableTransportEnter(); }
 inline void MoveSplineInit::SetTransportExit() { args.flags.EnableTransportExit(); }
 inline void MoveSplineInit::SetOrientationFixed(bool enable) { args.flags.orientationFixed = enable; }
+#else
+inline void MoveSplineInit::SetFly() { args.flags.EnableFlying(); }
+inline void MoveSplineInit::SetWalk(bool enable) { args.walk = enable; }
+inline void MoveSplineInit::SetCyclic() { args.flags.cyclic = true; }
+inline void MoveSplineInit::SetFall() { args.flags.EnableFalling(); }
+inline void MoveSplineInit::SetVelocity(float vel) { args.velocity = vel; args.HasVelocity = true; }
 #endif
 
 
@@ -146,14 +182,18 @@ inline void MoveSplineInit::SetParabolic(float amplitude, float time_shift)
 {
     args.time_perc = time_shift;
     args.parabolic_amplitude = amplitude;
+#if VERSION_STRING >= WotLK
     args.flags.EnableParabolic();
+#endif
 }
 
+#if VERSION_STRING >= WotLK
 inline void MoveSplineInit::SetAnimation(AnimationTier anim)
 {
     args.time_perc = 0.f;
     args.flags.EnableAnimation(static_cast<uint8_t>(anim));
 }
+#endif
 
 inline void MoveSplineInit::DisableTransportPathTransformations() { args.TransformForTransport = false; }
 

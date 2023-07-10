@@ -5738,46 +5738,15 @@ void Spell::SpellEffectDummyMelee(uint8_t /*effectIndex*/)   // Normalized Weapo
     isTargetDamageInfoSet = true;
 }
 
-void Spell::SpellEffectStartTaxi(uint8_t /*effectIndex*/)
+void Spell::SpellEffectStartTaxi(uint8_t effectIndex)
 {
     if (!playerTarget || !playerTarget->isAlive() || !u_caster)
         return;
 
-    if (playerTarget->hasUnitFlags(UNIT_FLAG_LOCK_PLAYER))
+    if (!unitTarget || unitTarget->getObjectTypeId() != TYPEID_PLAYER)
         return;
 
-    TaxiPath* taxipath = sTaxiMgr.GetTaxiPath(getSpellInfo()->getEffectMiscValue(0));
-
-    if (!taxipath)
-        return;
-
-    TaxiNode* taxinode = sTaxiMgr.GetTaxiNode(taxipath->getSourceNode());
-
-    if (!taxinode)
-        return;
-
-    uint32 modelid = 0;
-
-    if (playerTarget->isTeamHorde())
-    {
-        CreatureProperties const* ci = sMySQLStore.getCreatureProperties(taxinode->hordeMount);
-        if (!ci)
-            return;
-        modelid = ci->Male_DisplayID;
-        if (!modelid)
-            return;
-    }
-    else
-    {
-        CreatureProperties const* ci = sMySQLStore.getCreatureProperties(taxinode->allianceMount);
-        if (!ci)
-            return;
-        modelid = ci->Male_DisplayID;
-        if (!modelid)
-            return;
-    }
-
-    playerTarget->startTaxiPath(taxipath, modelid, 0);
+    unitTarget->ToPlayer()->activateTaxiPathTo(m_spellInfo->getEffectMiscValue(effectIndex), m_spellInfo->getId());
 }
 
 void Spell::SpellEffectPlayerPull(uint8_t /*effectIndex*/)
@@ -6036,18 +6005,10 @@ void Spell::SpellEffectTeachTaxiPath(uint8_t effectIndex)
     if (!playerTarget || !getSpellInfo()->getEffectTriggerSpell(effectIndex))
         return;
 
-    uint8 field = (uint8)((getSpellInfo()->getEffectTriggerSpell(effectIndex) - 1) / 32);
-    uint32 submask = 1 << ((getSpellInfo()->getEffectTriggerSpell(effectIndex) - 1) % 32);
-
-    // Check for known nodes
-    if (!(playerTarget->getTaxiMask(field) & submask))
+    uint32_t nodeid = m_spellInfo->getEffectMiscValue(effectIndex);
+    if (sTaxiNodesStore.LookupEntry(nodeid))
     {
-        playerTarget->setTaxiMask(field, (submask | playerTarget->getTaxiMask(field)));
-
-        playerTarget->sendPacket(SmsgNewTaxiPath().serialise().get());
-
-        //Send packet
-        playerTarget->getSession()->SendPacket(SmsgTaxinodeStatus(0, 1).serialise().get());
+        playerTarget->getSession()->sendDiscoverNewTaxiNode(nodeid);
     }
 }
 

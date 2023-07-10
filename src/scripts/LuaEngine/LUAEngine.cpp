@@ -209,12 +209,12 @@ void LuaEngine::PushPacket(WorldPacket* pack, lua_State* L)
         ArcLuna<WorldPacket>::push(L, pack, true);
 }
 
-void LuaEngine::PushTaxiPath(TaxiPath* tp, lua_State* L)
+void LuaEngine::PushTaxiPath(TaxiPath tp, lua_State* L)
 {
     if (L == nullptr)
-        ArcLuna<TaxiPath>::push(lu, tp, true);
+        ArcLuna<TaxiPath>::push(lu, &tp, true);
     else
-        ArcLuna<TaxiPath>::push(L, tp, true);
+        ArcLuna<TaxiPath>::push(L, &tp, true);
 }
 
 void LuaEngine::PushSpell(Spell* sp, lua_State* L)

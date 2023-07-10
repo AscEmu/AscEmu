@@ -1059,8 +1059,8 @@ void Spell::finish(bool successful)
                     auto* const targetPlayer = getUnitCaster()->getWorldMapPlayer(target.first);
                     if (targetPlayer != nullptr)
                     {
-                        targetPlayer->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET, getSpellInfo()->getId(), 0, 0, getCaster());
-                        targetPlayer->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET2, getSpellInfo()->getId(), 0, 0, getCaster());
+                        targetPlayer->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET, getSpellInfo()->getId(), 0, 0, u_caster);
+                        targetPlayer->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET2, getSpellInfo()->getId(), 0, 0, u_caster);
                     }
                 }
 #endif
@@ -1080,7 +1080,8 @@ void Spell::finish(bool successful)
                 if (uniqueHittedTargets.size() == 1)
                     spellTarget = getPlayerCaster()->getWorldMapObject(uniqueHittedTargets.front().first);
 
-                getPlayerCaster()->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2, getSpellInfo()->getId(), 0, 0, spellTarget);
+                if (spellTarget->isCreatureOrPlayer())
+                    getPlayerCaster()->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2, getSpellInfo()->getId(), 0, 0, spellTarget->ToUnit());
 #endif
             }
         }
@@ -1859,7 +1860,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
 
                 // Do not allow spell casts on players when they are on a taxi
                 // unless it's a summoning spell
-                if (targetPlayer->isOnTaxi() && !getSpellInfo()->hasEffect(SPELL_EFFECT_SUMMON_PLAYER))
+                if (!targetPlayer->m_taxi.empty() && !getSpellInfo()->hasEffect(SPELL_EFFECT_SUMMON_PLAYER))
                     return SPELL_FAILED_BAD_TARGETS;
             }
             else if (getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_TARGET_ONLY_PLAYERS)
@@ -1988,7 +1989,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         // but skip triggered and passive spells
         if ((p_caster->hasUnitFlags(UNIT_FLAG_MOUNT) || p_caster->hasUnitFlags(UNIT_FLAG_MOUNTED_TAXI)) && !m_triggeredSpell && !getSpellInfo()->isPassive())
         {
-            if (p_caster->isOnTaxi())
+            if (p_caster->m_taxi.empty())
             {
                 return SPELL_FAILED_NOT_ON_TAXI;
             }

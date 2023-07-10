@@ -53,6 +53,7 @@ namespace DBC::Structures
         char const chr_classes_format[] = "nxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxix";
         char const chr_races_format[] = "niixiixixxxxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxi";
         char const creature_display_info_format[] = "nixifxxxxxxxxx";
+        char const creature_display_info_extra_format[] = "diixxxxxxxxxxxxxxxxxx";
         char const creature_model_Data_format[] = "nisxfxxxxxxxxxxffxxxxxxx";
         char const creature_family_format[] = "nfifiiiissssssssssssssssxx";
         char const creature_spell_data_format[] = "niiiiiiii";
@@ -248,6 +249,32 @@ namespace DBC::Structures
         uint32_t ExtendedDisplayInfoID;                             // 3
         float CreatureModelScale;                                   // 4
                                                                     // 5 - 15 unk
+    };
+
+    //from LK, not sure it's bc format too
+    struct CreatureDisplayInfoExtraEntry
+    {
+        //uint32 Id;                                            // 0
+        uint32 Race;                                            // 1
+        uint32 DisplaySexID;                                    // 2
+        //uint32 SkinColor;                                     // 3
+        //uint32 FaceType;                                      // 4
+        //uint32 HairType;                                      // 5
+        //uint32 HairStyle;                                     // 6
+        //uint32 FacialHair;                                    // 7
+        //uint32 HelmDisplayId;                                 // 8
+        //uint32 ShoulderDisplayId;                             // 9
+        //uint32 ShirtDisplayId;                                // 10
+        //uint32 ChestDisplayId;                                // 11
+        //uint32 BeltDisplayId;                                 // 12
+        //uint32 LegsDisplayId;                                 // 13
+        //uint32 BootsDisplayId;                                // 14
+        //uint32 WristDisplayId;                                // 15
+        //uint32 GlovesDisplayId;                               // 16
+        //uint32 TabardDisplayId;                               // 17
+        //uint32 CloakDisplayId;                                // 18
+        //uint32 CanEquip;                                      // 19
+        //char const* Texture;                                  // 20
     };
 
     enum CreatureModelDataFlags
@@ -887,8 +914,7 @@ namespace DBC::Structures
         float z;                                                    // 4
         char* name[16];                                             // 5-21
         //uint32_t nameflags;                                       // 22
-        uint32_t horde_mount;                                       // 23
-        uint32_t alliance_mount;                                    // 24
+        uint32_t mountCreatureID[2];                                // 23-24
     };
 
     struct TaxiPathEntry
@@ -902,8 +928,8 @@ namespace DBC::Structures
     struct TaxiPathNodeEntry
     {
         uint32_t id;                                                // 0
-        uint32_t path;                                              // 1
-        uint32_t seq;                                               // 2 nodeIndex
+        uint32_t pathId;                                            // 1
+        uint32_t NodeIndex;                                         // 2 nodeIndex
         uint32_t mapid;                                             // 3
         float x;                                                    // 4
         float y;                                                    // 5

@@ -148,6 +148,12 @@ enum Targets
     TARGET_127                                  = 127,
 };
 
+enum MountFlags
+{
+    MOUNT_FLAG_CAN_PITCH                        = 0x4, // client checks MOVEMENTFLAG2_FULL_SPEED_PITCHING
+    MOUNT_FLAG_CAN_SWIM                         = 0x8, // client checks MOVEMENTFLAG_SWIMMING
+};
+
 struct DBCPosition3D
 {
     float X;
@@ -183,7 +189,7 @@ namespace DBC::Structures
         char const char_titles_format[] = "nxsxix";
         char const chat_channels_format[] = "iixsx";
         char const chr_classes_format[] = "nixsxxxixiiiixxxxx";
-        char const chr_races_format[] = "nxixiixixxxxixsxxxxxxxxxxxxxxxxxxxxx";
+        char const chr_races_format[] = "niixiixixxxxixsxxxxxxxxxxxxxxxxxxxxx";
         char const chr_classes_xpower_types_format[]="nii";
         //char const cinematic_sequences_format[]="nxxxxxxxxx"; new
         char const creature_display_info_format[]="nixxfxxxxxxxxxxxxxxx";
@@ -238,8 +244,8 @@ namespace DBC::Structures
         char const mail_template_format[] = "nss";  //nxs
         char const map_format[] = "nxixxsixxixiffxiixi";
         char const map_difficulty_entry_format[] = "diisiix";
-        //char const mount_capability_format[] = "niiiiiii"; new
-        //char const mount_type_format[] = "niiiiiiiiiiiiiiiiiiiiiiii"; new
+        char const mount_capability_format[] = "niiiiiii";
+        char const mount_type_format[] = "niiiiiiiiiiiiiiiiiiiiiiii";
         //char const movie_entry_format[] = "nxxx"; new
         char const name_gen_format[] = "nsii";
         char const num_talents_at_level_format[] = "df";
@@ -882,7 +888,7 @@ namespace DBC::Structures
     struct ChrRacesEntry
     {
         uint32_t race_id;                                           // 0
-        //uint32_t flags;                                           // 1
+        uint32_t flags;                                             // 1
         uint32_t faction_id;                                        // 2
         //uint32_t unk1;                                            // 3
         uint32_t model_male;                                        // 4
@@ -2023,9 +2029,8 @@ namespace DBC::Structures
         float y;                                                    // 3
         float z;                                                    // 4
         char* name;                                                 // 5
-        uint32_t horde_mount;                                       // 6
-        uint32_t alliance_mount;                                    // 7
-        uint32_t flags;
+        uint32_t mountCreatureID[2];                                // 6-7
+        uint32_t flags;                                             // 8
     };
 
     struct TaxiPathEntry
@@ -2039,8 +2044,8 @@ namespace DBC::Structures
     struct TaxiPathNodeEntry
     {
         //uint32_t id;                                              // 0
-        uint32_t path;                                              // 1
-        uint32_t seq;                                               // 2 nodeIndex
+        uint32_t pathId;                                            // 1
+        uint32_t NodeIndex;                                         // 2 nodeIndex
         uint32_t mapid;                                             // 3
         float x;                                                    // 4
         float y;                                                    // 5
@@ -2249,6 +2254,26 @@ namespace DBC::Structures
                     VEHICLE_SEAT_FLAG_B_USABLE_FORCED_3 | VEHICLE_SEAT_FLAG_B_USABLE_FORCED_4));
         }
         bool isEjectable() const { return hasFlag(VEHICLE_SEAT_FLAG_B_EJECTABLE); }
+    };
+
+    struct MountCapabilityEntry
+    {
+        uint32_t  id;                                               // 0 index
+        uint32_t  flag;                                             // 1 some flag
+        uint32_t  reqRidingSkill;                                   // 2 skill level of riding required
+        uint32_t  reqArea;                                          // 3 required Area
+        uint32_t  reqAura;                                          // 4 required Aura
+        uint32_t  reqSpell;                                         // 5 spell that has to be known to you
+        uint32_t  speedModSpell;                                    // 6 spell to cast to apply mount speed effects
+        uint32_t  reqMap;                                           // 7 map where this is applicable
+    };
+
+    #define MAX_MOUNT_CAPABILITIES 24
+    struct MountTypeEntry
+    {
+        uint32_t id;                                                // 0 index
+        uint32_t capabilities[MAX_MOUNT_CAPABILITIES];              // 1-17 capability ids from MountCapability.dbc
+        //uint32_t  empty[7];                                       // 18-24 empty. maybe continues capabilities
     };
 
     struct WMOAreaTableEntry

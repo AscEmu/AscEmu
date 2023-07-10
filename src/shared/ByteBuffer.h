@@ -80,6 +80,15 @@ public:
             append(reinterpret_cast<uint8_t *>(&value), sizeof(value));
         }
 
+        void appendPackXYZ(float x, float y, float z)
+        {
+            uint32_t packed = 0;
+            packed |= ((int)(x / 0.25f) & 0x7FF);
+            packed |= ((int)(y / 0.25f) & 0x7FF) << 11;
+            packed |= ((int)(z / 0.25f) & 0x3FF) << 22;
+            *this << packed;
+        }
+
         void flushBits()
         {
             if (_bitpos == 8)

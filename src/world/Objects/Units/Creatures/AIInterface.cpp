@@ -3344,12 +3344,14 @@ void AIInterface::setWayPointToMove(uint32_t waypointId)
 
     switch (waypoint.moveType)
     {
+#if VERSION_STRING >= WotLK
     case WAYPOINT_MOVE_TYPE_LAND:
         init.SetAnimation(AnimationTier::Ground);
         break;
     case WAYPOINT_MOVE_TYPE_TAKEOFF:
         init.SetAnimation(AnimationTier::Hover);
         break;
+#endif
     case WAYPOINT_MOVE_TYPE_RUN:
         init.SetWalk(false);
         break;

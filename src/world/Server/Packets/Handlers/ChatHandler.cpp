@@ -443,7 +443,7 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
         _player->sendMessageToSet(SmsgTextEmote(nameLength, unitName, srlPacket.text_emote, _player->getGuid(), srlPacket.unk).serialise().get(), true);
 
 #if VERSION_STRING > TBC
-        _player->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, srlPacket.text_emote, 0, 0);
+        _player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, srlPacket.text_emote, 0, 0);
 #endif
         sQuestMgr.OnPlayerEmote(_player, srlPacket.text_emote, srlPacket.guid);
     }
@@ -534,7 +534,7 @@ void WorldSession::handleEmoteOpcode(WorldPacket& recvPacket)
     _player->emote(static_cast<EmoteType>(srlPacket.emote));
 
 #if VERSION_STRING > TBC
-    _player->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, srlPacket.emote, 0, 0);
+    _player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, srlPacket.emote, 0, 0);
 #endif
 
     uint64_t guid = _player->getGuid();

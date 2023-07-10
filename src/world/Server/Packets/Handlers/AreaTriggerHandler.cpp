@@ -140,8 +140,11 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
             if (_player->isTransferPending())
                 break;
 
-            _player->setMapEntryPoint(areaTrigger->mapId);
-            _player->safeTeleport(areaTrigger->mapId, 0, LocationVector(areaTrigger->x, areaTrigger->y, areaTrigger->z, areaTrigger->o));
+            if (_player->m_taxi.empty())
+            {
+                _player->setMapEntryPoint(areaTrigger->mapId);
+                _player->safeTeleport(areaTrigger->mapId, 0, LocationVector(areaTrigger->x, areaTrigger->y, areaTrigger->z, areaTrigger->o));
+            }
         } break;
         case ATTYPE_QUESTTRIGGER:
         {
@@ -154,7 +157,7 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
         } break;
         case ATTYPE_TELEPORT:
         {
-            if (!_player->isTransferPending())
+            if (!_player->isTransferPending() && _player->m_taxi.empty())
             {
                 _player->setMapEntryPoint(areaTrigger->mapId);
                 _player->safeTeleport(areaTrigger->mapId, 0, LocationVector(areaTrigger->x, areaTrigger->y, areaTrigger->z, areaTrigger->o));

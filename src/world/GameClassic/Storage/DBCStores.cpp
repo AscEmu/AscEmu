@@ -36,11 +36,14 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::CharTitlesEntry> sCharTitlesStore(D
 SERVER_DECL DBC::DBCStorage<DBC::Structures::ChatChannelsEntry> sChatChannelsStore(DBC::Structures::chat_channels_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GtCombatRatingsEntry> sGtCombatRatingsStore(DBC::Structures::gt_combat_ratings_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureDisplayInfoEntry> sCreatureDisplayInfoStore(DBC::Structures::creature_display_info_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureDisplayInfoExtraEntry> sCreatureDisplayInfoExtraStore(DBC::Structures::creature_display_info_extra_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureModelDataEntry> sCreatureModelDataStore(DBC::Structures::creature_model_Data_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureSpellDataEntry> sCreatureSpellDataStore(DBC::Structures::creature_spell_data_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureFamilyEntry> sCreatureFamilyStore(DBC::Structures::creature_family_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::TaxiNodesEntry> sTaxiNodesStore(DBC::Structures::taxi_nodes_format);
+TaxiPathSetBySource sTaxiPathSetBySource;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::TaxiPathEntry> sTaxiPathStore(DBC::Structures::taxi_path_format);
+TaxiPathNodesByPath sTaxiPathNodesByPath;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::TaxiPathNodeEntry> sTaxiPathNodeStore(DBC::Structures::taxi_path_node_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::TransportAnimationEntry> sTransportAnimationStore(DBC::Structures::transport_animation_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::DurabilityCostsEntry> sDurabilityCostsStore(DBC::Structures::durability_costs_format);
@@ -214,8 +217,46 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTaxiNodesStore, dbc_path, "TaxiNodes.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTaxiPathStore, dbc_path, "TaxiPath.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTaxiPathNodeStore, dbc_path, "TaxiPathNode.dbc");
+    {
+        for (uint32_t i = 1; i < sTaxiPathStore.GetNumRows(); ++i)
+        {
+            if (DBC::Structures::TaxiPathEntry const* entry = sTaxiPathStore.LookupEntry(i))
+            {
+                sTaxiPathSetBySource[entry->from][entry->to] = TaxiPathBySourceAndDestination(entry->id, entry->price);
+            }
+        }
+
+        uint32_t pathCount = sTaxiPathStore.GetNumRows();
+
+        // Calculate path nodes count
+        std::vector<uint32_t> pathLength;
+        pathLength.resize(pathCount);                           // 0 and some other indexes not used
+        for (uint32_t i = 0; i < sTaxiPathNodeStore.GetNumRows(); ++i)
+        {
+            if (DBC::Structures::TaxiPathNodeEntry const* entry = sTaxiPathNodeStore.LookupEntry(i))
+            {
+                if (pathLength[entry->pathId] < entry->NodeIndex + 1)
+                    pathLength[entry->pathId] = entry->NodeIndex + 1;
+            }
+        }
+
+        // Set path length
+        sTaxiPathNodesByPath.resize(pathCount);                 // 0 and some other indexes not used
+        for (uint32 i = 1; i < sTaxiPathNodesByPath.size(); ++i)
+            sTaxiPathNodesByPath[i].resize(pathLength[i]);
+
+        // fill data
+        for (uint32_t i = 0; i < sTaxiPathNodeStore.GetNumRows(); ++i)
+        {
+            if (DBC::Structures::TaxiPathNodeEntry const* entry = sTaxiPathNodeStore.LookupEntry(i))
+            {
+                sTaxiPathNodesByPath[entry->pathId][entry->NodeIndex] = entry;
+            }
+        }
+    }
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTransportAnimationStore, dbc_path, "TransportAnimation.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sCreatureDisplayInfoStore, dbc_path, "CreatureDisplayInfo.dbc");
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sCreatureDisplayInfoExtraStore, dbc_path, "CreatureDisplayInfoExtra.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sCreatureModelDataStore, dbc_path, "CreatureModelData.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sCreatureSpellDataStore, dbc_path, "CreatureSpellData.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sCreatureFamilyStore, dbc_path, "CreatureFamily.dbc");

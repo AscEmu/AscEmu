@@ -29,7 +29,7 @@ public:
         Creature* pCreature = pObject->isCreature() ? static_cast<Creature*>(pObject) : NULL;
         if (pCreature == NULL)
             return;
-        plr->startTaxiPath(sTaxiMgr.GetTaxiPath(315), 479, 0);     // Hippogryph
+        plr->activateTaxiPathTo(315, pCreature);     // Hippogryph
     }
 
     void destroy() override { delete this; }
@@ -59,7 +59,7 @@ public:
         Creature* pCreature = pObject->isCreature() ? static_cast<Creature*>(pObject) : NULL;
         if (pCreature == NULL)
             return;
-        plr->startTaxiPath(sTaxiMgr.GetTaxiPath(316), 295, 0);     // Wyvern
+        plr->activateTaxiPathTo(316, pCreature);     // Wyvern
     }
 
     void destroy() override { delete this; }

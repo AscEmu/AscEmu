@@ -4778,9 +4778,8 @@ public:
         }
 
         Player* plr = dynamic_cast<Player*>(ptr);
-        TaxiPath* tp = CHECK_TAXIPATH(L, 1);
-        uint32_t mount_id = static_cast<uint32_t>(luaL_checkinteger(L, 2));
-        plr->startTaxiPath(tp, mount_id, 0);
+        uint32_t pathId = static_cast<uint32_t>(luaL_checkinteger(L, 1));
+        plr->activateTaxiPathTo(pathId, ptr->ToCreature());
         return 0;
     }
 
@@ -4791,7 +4790,7 @@ public:
             return 0;
         }
 
-        lua_pushboolean(L, dynamic_cast<Player*>(ptr)->isOnTaxi() ? 1 : 0);
+        lua_pushboolean(L, dynamic_cast<Player*>(ptr)->m_taxi.empty() ? 1 : 0);
         return 1;
     }
 
@@ -4802,7 +4801,7 @@ public:
             return 0;
         }
 
-        PUSH_TAXIPATH(L, dynamic_cast<Player*>(ptr)->getTaxiPath());
+        PUSH_TAXIPATH(L, dynamic_cast<Player*>(ptr)->m_taxi);
         return 1;
     }
 
