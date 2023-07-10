@@ -7802,7 +7802,7 @@ MovementGeneratorType Unit::getDefaultMovementType() const
     return IDLE_MOTION_TYPE;
 }
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
 DBC::Structures::MountCapabilityEntry const* Unit::getMountCapability(uint32_t mountType)
 {
     if (!mountType)

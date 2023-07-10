@@ -1271,7 +1271,7 @@ public:
 
     uint32_t m_canMove = 0; //Zyres: set true in Spell::finish check for false in AIInterface::selectCurrentAgent
 
-#if VERSION_STRING == Cata
+#if VERSION_STRING >= Cata
     DBC::Structures::MountCapabilityEntry const* getMountCapability(uint32_t mountType);
 #endif
     void setOnMeleeSpell(uint32_t spellId, uint8_t ecn = 0) { m_meleeSpell = spellId; m_meleeSpell_ecn = ecn; }

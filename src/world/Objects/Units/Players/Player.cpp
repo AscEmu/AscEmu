@@ -16487,7 +16487,7 @@ Creature* Player::getCreatureWhenICanInteract(WoWGuid const& guid, uint32_t npcf
     if (isHostile(this, creature))
         return nullptr;
 
-    // not too far, taken from CGGameUI::SetInteractTarget
+    // not too far
     if (!creature->IsWithinDistInMap(this, creature->getCombatReach() + 4.0f))
         return nullptr;
 
