@@ -42,7 +42,7 @@
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20230710-00_characters_taxi";
-static const char* REQUIRED_WORLD_DB_VERSION = "20230710-00_taxi_level_data";
+static const char* REQUIRED_WORLD_DB_VERSION = "20230710-01_hardcoded_ai_scripts";
 
 volatile bool Master::m_stopEvent = false;
 

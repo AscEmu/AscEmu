@@ -195,26 +195,8 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new Priestess_DelrissaAI(c); }
     explicit Priestess_DelrissaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        auto dispelMagic = addAISpell(PRIESTESS_DELRISSA_DISPEL_MAGIC, 35.0f, TARGET_RANDOM_FRIEND, 0, 5);
-        dispelMagic->setMinMaxDistance(0.0f, 30.0f);
-
-        auto flashHeal = addAISpell(PRIESTESS_DELRISSA_FLASH_HEAL, 40.0f, TARGET_RANDOM_FRIEND, 2, 7);
-        flashHeal->setMinMaxDistance(0.0f, 40.0f);
-
-        auto shadowwordPain = addAISpell(PRIESTESS_DELRISSA_SHADOWWORD_PAIN, 45.0f, TARGET_RANDOM_SINGLE, 0, 18);
-        shadowwordPain->setMinMaxDistance(0.0f, 30.0f);
-
-        auto powerwordShield = addAISpell(PRIESTESS_DELRISSA_POWERWORD_SHIELD, 32.0f, TARGET_RANDOM_FRIEND, 0, 15);
-        powerwordShield->setMinMaxDistance(0.0f, 40.0f);
-
-        auto renew = addAISpell(PRIESTESS_DELRISSA_RENEW, 30.0f, TARGET_RANDOM_FRIEND, 0, 18);
-        renew->setMinMaxDistance(0.0f, 40.0f);
-
         mClearHateList = _addTimer(15000);
         mKilledPlayers = 0;
-
-        addEmoteForEvent(Event_OnCombatStart, 3022);     // Annihilate them.
-        addEmoteForEvent(Event_OnDied, 3032);     // Not what I had... planned.
     }
 
     void OnTargetDied(Unit* pTarget) override
@@ -232,13 +214,10 @@ public:
             sendDBChatMessage(3029);     // Not really much of a "group" anymore, is it?
         else if (mKilledPlayers == 4)
             sendDBChatMessage(3030);     // One is such a lonely number.
-        else if (mKilledPlayers == 5)
-            sendDBChatMessage(3031);     // It's been a kick, really.  
     }
 
     void OnCombatStop(Unit* /*pTarget*/) override
     {
-        sendDBChatMessage(3031);     // It's been a kick, really.
         mKilledPlayers = 0;
     }
 
@@ -256,227 +235,6 @@ protected:
     int32_t mClearHateList;
 };
 
-class KaganiNightstrikeAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new KaganiNightstrikeAI(c); }
-    explicit KaganiNightstrikeAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        auto kidneyShot = addAISpell(KAGANI_KIDNEY_SHOT, 80.0f, TARGET_ATTACKING, 0, 25);
-        kidneyShot->setMinMaxDistance(0.0f, 30.0f);
-
-        auto gouge = addAISpell(KAGANI_GOUGE, 20.0f, TARGET_ATTACKING, 0, 18);
-        gouge->setMinMaxDistance(0.0f, 30.0f);
-
-        auto eviscerate = addAISpell(KAGANI_EVISCERATE, 8.0f, TARGET_ATTACKING, 0, 45);
-        eviscerate->setMinMaxDistance(0.0f, 30.0f);
-    }
-};
-
-class EllrysDuskhallowAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new EllrysDuskhallowAI(c); }
-    explicit EllrysDuskhallowAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(ELLRYS_IMMOLATE, 75.0f, TARGET_ATTACKING, 2, 15);
-
-        auto shadowBolt = addAISpell(ELLRYS_SHADOWBOLT, 75.0f, TARGET_RANDOM_SINGLE, 3, 5);
-        shadowBolt->setMinMaxDistance(0.0f, 40.0f);
-
-        auto curseOfAgony = addAISpell(ELLRYS_CURSE_OF_AGONY, 75.0f, TARGET_RANDOM_SINGLE, 0, 4);
-        curseOfAgony->setMinMaxDistance(0.0f, 30.0f);
-
-        auto fear = addAISpell(ELLRYS_FEAR, 75.0f, TARGET_RANDOM_SINGLE, 2, 9);
-        fear->setMinMaxDistance(0.0f, 20.0f);
-    }
-};
-
-class EramasBrightblazeAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new EramasBrightblazeAI(c); }
-    explicit EramasBrightblazeAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(ERAMAS_KNOCKDOWN, 25.0f, TARGET_ATTACKING, 0, 5);
-        addAISpell(ERAMAS_SNAP_KICK, 40.0f, TARGET_VARIOUS, 0, 2);
-    }
-};
-
-class YazzaiAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new YazzaiAI(c); }
-    explicit YazzaiAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        auto polymorph = addAISpell(YAZZAI_POLYMORPH, 30.0f, TARGET_RANDOM_SINGLE, 2, 16);
-        polymorph->setMinMaxDistance(8.0f, 30.0f);
-
-        addAISpell(YAZZAI_ICE_BLOCK, 20.0f, TARGET_SELF, 0, 300);
-        auto blizzard = addAISpell(YAZZAI_BLIZZARD, 25.0f, TARGET_RANDOM_SINGLE, 0, 20);
-        blizzard->setMinMaxDistance(8.0f, 30.0f);
-
-        addAISpell(YAZZAI_CONE_OF_COLD, 10.0f, TARGET_SELF, 0, 19);
-        auto frostBolt = addAISpell(YAZZAI_FROSTBOLT, 80.0f, TARGET_RANDOM_SINGLE, 3, 14);
-        frostBolt->setMinMaxDistance(8.0f, 40.0f);
-    }
-};
-
-class WarlordSalarisAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new WarlordSalarisAI(c); }
-    explicit WarlordSalarisAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        auto intercept = addAISpell(SALARIS_INTERCEPT, 25.0f, TARGET_RANDOM_SINGLE, 0, 8);
-        intercept->setMinMaxDistance(8.0f, 25.0f);
-
-        addAISpell(SALARIS_DISARM, 100.0f, TARGET_ATTACKING, 0, 60);
-
-        addAISpell(SALARIS_PIERCING_HOWL, 22.0f, TARGET_SELF, 0, 17);
-
-        auto shout = addAISpell(SALARIS_FRIGHTENING_SHOUT, 30.0f, TARGET_RANDOM_SINGLE, 0, 9);
-        shout->setMinMaxDistance(0.0f, 10.0f);
-
-        addAISpell(SALARIS_HAMSTRING, 10.0f, TARGET_ATTACKING, 0, 20);
-        addAISpell(SALARIS_MORTAL_STRIKE, 100.0f, TARGET_ATTACKING, 0, 6);
-    }
-};
-
-class GaraxxasAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new GaraxxasAI(c); }
-    explicit GaraxxasAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        auto aimedShot = addAISpell(GARAXXAS_AIMED_SHOT, 90.0f, TARGET_RANDOM_SINGLE, 3, 6);
-        aimedShot->setMinMaxDistance(5.0f, 35.0f);
-
-        auto shoot = addAISpell(GARAXXAS_SHOOT, 90.0f, TARGET_RANDOM_SINGLE, 3, 5);
-        shoot->setMinMaxDistance(5.0f, 30.0f);
-
-        auto concussivShot = addAISpell(GARAXXAS_CONCUSSIV_SHOT, 40.0f, TARGET_RANDOM_SINGLE, 0, 8);
-        concussivShot->setMinMaxDistance(5.0f, 35.0f);
-
-        auto multiShot = addAISpell(GARAXXAS_MULTI_SHOT, 25.0f, TARGET_RANDOM_SINGLE, 0, 12);
-        multiShot->setMinMaxDistance(5.0f, 30.0f);
-
-        addAISpell(GARAXXAS_WING_CLIP, 30.0f, TARGET_ATTACKING, 0, 9);
-    }
-};
-
-class ApokoAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new ApokoAI(c); }
-    explicit ApokoAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        auto frostShock = addAISpell(APOKO_FROST_SHOCK, 40.0f, TARGET_RANDOM_SINGLE, 0, 8);
-        frostShock->setMinMaxDistance(0.0f, 20.0f);
-
-        auto healingWave = addAISpell(APOKO_LESSER_HEALING_WAVE, 50.0f, TARGET_RANDOM_FRIEND, 2, 10);
-        healingWave->setMinMaxDistance(0.0f, 40.0f);
-
-        auto purge = addAISpell(APOKO_PURGE, 20.0f, TARGET_RANDOM_SINGLE, 0, 40);
-        purge->setMinMaxDistance(0.0f, 30.0f);
-    }
-};
-
-class ZelfanAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new ZelfanAI(c); }
-    explicit ZelfanAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(ZELFAN_GOBLIN_DRAGON_GUN, 90.0f, TARGET_ATTACKING, 0, 15);
-        addAISpell(ZELFAN_HIGH_EXPLOSIV_SHEEP, 90.0f, TARGET_SELF, 2, 80);
-
-        auto rocketLaunch = addAISpell(ZELFAN_ROCKET_LAUNCH, 99.0f, TARGET_RANDOM_SINGLE, 4, 60);
-        rocketLaunch->setMinMaxDistance(0.0f, 45.0f);
-    }
-};
-
-// Trash mobs
-
-class CoilskarWitchAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new CoilskarWitchAI(c); }
-    explicit CoilskarWitchAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(COILSKAR_WITCH_FORKED_LIGHTNING, 60.0f, TARGET_ATTACKING, 2, 12);
-
-        auto frostArrow = addAISpell(COILSKAR_WITCH_FROST_ARROW, 15.0f, TARGET_RANDOM_SINGLE, 0, 16);
-        frostArrow->setMinMaxDistance(0.0f, 40.0f);
-
-        addAISpell(COILSKAR_WITCH_MANA_SHIELD, 6.0f, TARGET_SELF, 0, 40);
-
-        auto witchShoot = addAISpell(COILSKAR_WITCH_SHOOT, 75.0f, TARGET_RANDOM_SINGLE, 2, 4);
-        witchShoot->setMinMaxDistance(5.0f, 30.0f);
-    }
-};
-
-class SisterOfTormentAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new SisterOfTormentAI(c); }
-    explicit SisterOfTormentAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(SISTER_OF_TORMENT_LASH_OF_PAIN, 60.0f, TARGET_ATTACKING, 0, 8);
-
-        auto deadlyEmbracy = addAISpell(SISTER_OF_TORMENT_DEADLY_EMBRACE, 20.0f, TARGET_RANDOM_SINGLE, 2, 16);
-        deadlyEmbracy->setMinMaxDistance(0.0f, 20.0f);
-    }
-};
-
-class SunbladeBloodKnightAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new SunbladeBloodKnightAI(c); }
-    explicit SunbladeBloodKnightAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(BLOOD_KNIGHT_JUDGEMENT_OF_WRATH, 20.0f, TARGET_ATTACKING, 0, 30);
-        addAISpell(BLOOD_KNIGHT_SEAL_OF_WRATH, 99.0f, TARGET_SELF, 0, 30);
-
-        auto holyLight = addAISpell(BLOOD_KNIGHT_HOLY_LIGHT, 10.0f, TARGET_SELF, 2, 30);
-        holyLight->setMinMaxDistance(0.0f, 40.0f);
-    }
-};
-
-class SunbladeImpAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new SunbladeImpAI(c); }
-    explicit SunbladeImpAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(IMP_FIREBOLT, 100.0f, TARGET_ATTACKING, 2, 3);
-    }
-};
-
-class SunbladeMageGuardAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new SunbladeMageGuardAI(c); }
-    explicit SunbladeMageGuardAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(MAGE_GUARD_GLAVE_THROW, 60.0f, TARGET_ATTACKING, 0, 25);
-
-        auto magicDampening = addAISpell(MAGE_GUARD_MAGIC_DAMPENING_FIELD, 20.0f, TARGET_RANDOM_SINGLE, 1, 35);
-        magicDampening->setMinMaxDistance(0.0f, 20.0f);
-    }
-};
-
-class SunbladeMagisterAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new SunbladeMagisterAI(c); }
-    explicit SunbladeMagisterAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        addAISpell(MAGISTER_FROSTBOLT, 65.0f, TARGET_ATTACKING, 2, 4);
-        addAISpell(MAGISTER_ARCANE_NOVA, 12.0f, TARGET_SELF, 2, 40);
-    }
-};
-
 void SetupMagistersTerrace(ScriptMgr* mgr)
 {
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -488,23 +246,4 @@ void SetupMagistersTerrace(ScriptMgr* mgr)
     mgr->register_creature_script(BOSS_SELIN_FIREHEART, &SelinFireheartAI::Create);
     mgr->register_creature_script(BOSS_VEXALLUS, &VexallusAI::Create);
     mgr->register_creature_script(BOSS_PRIEST_DELRISSA, &Priestess_DelrissaAI::Create);
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // Priestess Delrissa Encounter Creature AI
-    mgr->register_creature_script(CN_KAGANI_NIGHTSTRIKE, &KaganiNightstrikeAI::Create);
-    mgr->register_creature_script(CN_ELLRYS_DUSKHALLOW, &EllrysDuskhallowAI::Create);
-    mgr->register_creature_script(CN_ERAMAS_BRIGHTBLAZE, &EramasBrightblazeAI::Create);
-    mgr->register_creature_script(CN_YAZZAI, &YazzaiAI::Create);
-    mgr->register_creature_script(CN_WARLORD_SALARIS, &WarlordSalarisAI::Create);
-    mgr->register_creature_script(CN_GARAXXAS, &GaraxxasAI::Create);
-    mgr->register_creature_script(CN_APOKO, &ApokoAI::Create);
-    mgr->register_creature_script(CN_ZELFAN, &ZelfanAI::Create);
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    //  Trash Mobs
-    mgr->register_creature_script(CN_COILSKAR_WITCH, &CoilskarWitchAI::Create);
-    mgr->register_creature_script(CN_SISTER_OF_TORMENT, &SisterOfTormentAI::Create);
-    mgr->register_creature_script(CN_SB_IMP, &SunbladeImpAI::Create);
-    mgr->register_creature_script(CN_SB_MAGE_GUARD, &SunbladeMageGuardAI::Create);
-    mgr->register_creature_script(CN_SB_MAGISTER, &SunbladeMagisterAI::Create);
 }
