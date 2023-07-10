@@ -47,6 +47,7 @@ enum MovementGeneratorType : uint8_t
     CONFUSED_MOTION_TYPE            = 4,     // ConfusedMovementGenerator.h
     CHASE_MOTION_TYPE               = 5,     // ChaseMovementGenerator.h
     HOME_MOTION_TYPE                = 6,     // HomeMovementGenerator.h
+    FLIGHT_MOTION_TYPE              = 7,     // FlightPathMovementGenerator.h
     POINT_MOTION_TYPE               = 8,     // PointMovementGenerator.h
     FLEEING_MOTION_TYPE             = 9,     // FleeingMovementGenerator.h
     DISTRACT_MOTION_TYPE            = 10,    // IdleMovementGenerator.h

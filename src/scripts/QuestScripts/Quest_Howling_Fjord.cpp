@@ -107,14 +107,13 @@ public:
 
                 if (pCreature->getEntry() == 23859)
                 {
-                    TaxiPath* path = sTaxiMgr.GetTaxiPath(745);
-                    plr->startTaxiPath(path, 17759, 0);
+                    plr->activateTaxiPathTo(745, pCreature);
                 }
                 break;
             }
             case 2:
             {
-                plr->getSession()->sendTaxiList(pCreature);
+                plr->getSession()->sendTaxiMenu(pCreature);
                 break;
             }
         }

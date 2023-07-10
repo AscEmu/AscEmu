@@ -188,7 +188,7 @@ namespace DBC::Structures
         char const char_titles_format[] = "nxsxix";
         char const chat_channels_format[] = "iixsx";
         char const chr_classes_format[] = "nixsxxxixiiiii";
-        char const chr_races_format[] = "nxixiixixxxxixsxxxxxixxx";
+        char const chr_races_format[] = "niixiixixxxxixsxxxxxixxx";
         char const chr_classes_xpower_types_format[]="nii";
         //char const cinematic_sequences_format[]="nxxxxxxxxx"; new
         char const creature_display_info_format[]="nixifxxxxxxxxxxxx";
@@ -295,7 +295,7 @@ namespace DBC::Structures
         char const talent_format[] = "niiiiiiiiixxixxxxxx";
         char const talent_tab_format[] = "nxxiiixxiii";
         char const talent_tree_primary_spells_format[] = "iiix";
-        char const taxi_nodes_format[] = "nifffsiixxx";
+        char const taxi_nodes_format[] = "nifffsiiixx";
         char const taxi_path_format[] = "niii";
         char const taxi_path_node_format[] = "diiifffiiii";
         char const totem_category_entry_format[] = "nxii";
@@ -925,7 +925,7 @@ namespace DBC::Structures
     struct ChrRacesEntry
     {
         uint32_t race_id;                                           // 0
-        //uint32_t flags;                                           // 1
+        uint32_t flags;                                             // 1
         uint32_t faction_id;                                        // 2
         //uint32_t unk1;                                            // 3
         uint32_t model_male;                                        // 4
@@ -2060,8 +2060,8 @@ namespace DBC::Structures
         float y;                                                    // 3
         float z;                                                    // 4
         char* name;                                                 // 5
-        uint32_t horde_mount;                                       // 6
-        uint32_t alliance_mount;                                    // 7
+        uint32_t mountCreatureID[2];                                // 6-7
+        uint32_t flags;                                             // 8
     };
 
     struct TaxiPathEntry
@@ -2075,8 +2075,8 @@ namespace DBC::Structures
     struct TaxiPathNodeEntry
     {
         //uint32_t id;                                              // 0
-        uint32_t path;                                              // 1
-        uint32_t seq;                                               // 2 nodeIndex
+        uint32_t pathId;                                            // 1
+        uint32_t NodeIndex;                                         // 2 nodeIndex
         uint32_t mapid;                                             // 3
         float x;                                                    // 4
         float y;                                                    // 5

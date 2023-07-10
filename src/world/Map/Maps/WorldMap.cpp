@@ -304,12 +304,15 @@ void WorldMap::update(uint32_t t_diff)
 
     // Update Creatures
     {
+        auto diffTime = msTime - m_lastCreatureUpdateTimer;
         for (auto itr = activeCreatures.cbegin(); itr != activeCreatures.cend();)
         {
             Creature* ptr = *itr;
             ++itr;
-            ptr->Update(t_diff);
+            ptr->Update(diffTime);
         }
+
+        m_lastCreatureUpdateTimer = msTime;
     }
 
     // Update Pets
@@ -324,12 +327,15 @@ void WorldMap::update(uint32_t t_diff)
 
     // Update Players
     {
+        auto diffTime = msTime - m_lastPlayerUpdateTimer;
         for (auto itr = m_PlayerStorage.cbegin(); itr != m_PlayerStorage.cend();)
         {
             Player* ptr = itr->second;
             ++itr;
-            ptr->Update(t_diff);
+            ptr->Update(diffTime);
         }
+
+        m_lastPlayerUpdateTimer = msTime;
     }
 
     // Dynamic objects are updated every 100ms

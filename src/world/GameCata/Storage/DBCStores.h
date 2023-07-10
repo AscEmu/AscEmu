@@ -6,11 +6,15 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "DBCStructures.h"
+#include "Management/TaxiMgr.h"
 #include "WorldConf.h"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Storage/DBC/DBCGlobals.hpp"
 
 typedef std::map<uint32_t, DBC::Structures::MapDifficulty> MapDifficultyMap;
+
+typedef std::vector<DBC::Structures::TaxiPathNodeEntry const*> TaxiPathNodeList;
+typedef std::vector<TaxiPathNodeList> TaxiPathNodesByPath;
 
 #if VERSION_STRING == Cata
 inline float GetRadius(DBC::Structures::SpellRadiusEntry const* radius)
@@ -155,6 +159,10 @@ DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 roo
 extern SERVER_DECL MapDifficultyMap sMapDifficultyMap;
 DBC::Structures::MapDifficulty const* getMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties difficulty);
 DBC::Structures::MapDifficulty const* getDownscaledMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties& difficulty);
+
+// Taxi
+extern SERVER_DECL TaxiPathSetBySource sTaxiPathSetBySource;
+extern SERVER_DECL TaxiPathNodesByPath sTaxiPathNodesByPath;
 
 std::string generateName(uint32 type = 0);
 

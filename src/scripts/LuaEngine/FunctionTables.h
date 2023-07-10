@@ -657,14 +657,15 @@ RegType<WorldPacket> LuaPacketMethods[] =
 
 RegType<TaxiPath> LuaTaxiMethods[] =
 {
-    { "CreateTaxi", &LuaTaxi::CreateTaxi },
-    { "GetNodeCount", &LuaTaxi::GetNodeCount },
-    { "AddPathNode", &LuaTaxi::AddPathNode },
+    // todo aaron02 add these back when i have more spare time :)
+    //{ "CreateTaxi", &LuaTaxi::CreateTaxi },
+    //{ "GetNodeCount", &LuaTaxi::GetNodeCount },
+    //{ "AddPathNode", &LuaTaxi::AddPathNode },
     //{ "GetNodeX", &LuaTaxi::GetNodeX },
     //{ "GetNodeY", &LuaTaxi::GetNodeY },
     //{ "GetNodeZ", &LuaTaxi::GetNodeZ },
     //{ "GetNodeMapId", &LuaTaxi::GetNodeMapId },
-    { "GetId", &LuaTaxi::GetId },
+    //{ "GetId", &LuaTaxi::GetId },
     { "GetObjectType", &LuaTaxi::GetObjectType},
     {nullptr, nullptr},
 };

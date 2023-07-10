@@ -111,9 +111,6 @@ void World::finalize()
     sLogger.info("WeatherMgr : ~WeatherMgr()");
     sWeatherMgr.finalize();
 
-    sLogger.info("TaxiMgr : ~TaxiMgr()");
-    sTaxiMgr.finalize();
-
 #if VERSION_STRING >= Cata
     // todo: shouldn't this be deleted also on other versions?
     sLogger.info("GuildMgr", "~GuildMgr()");

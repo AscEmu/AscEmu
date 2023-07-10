@@ -172,6 +172,7 @@ public:
     void moveFall(uint32_t id = 0);
     void moveSeekAssistance(float x, float y, float z);
     void moveSeekAssistanceDistract(uint32_t timer);
+    void moveTaxiFlight(uint32_t path, uint32_t pathnode);
     void moveDistract(uint32_t time, float orientation);
     void movePath(uint32_t pathId, bool repeatable);
     void movePath(WaypointPath& path, bool repeatable);

@@ -178,7 +178,7 @@ bool FillTransporterPathVector(uint32_t PathID, TransportPath & Path)
         if (pathnode == nullptr)
             continue;
 
-        if (pathnode->path == PathID)
+        if (pathnode->pathId == PathID)
         {
             Path[i].mapid = pathnode->mapid;
             Path[i].x = pathnode->x;

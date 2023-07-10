@@ -47,8 +47,8 @@ public:
     {
         if (plr->hasQuestInQuestLog(12670) || plr->hasQuestFinished(12670))
         {
-            if (TaxiPath* path = sTaxiMgr.GetTaxiPath(pObject->getEntry() == 29488 ? 1053 : 1054))
-                plr->startTaxiPath(path, 26308, 0);
+            if (uint32_t path = pObject->getEntry() == 29488 ? 1053 : 1054)
+                plr->activateTaxiPathTo(path, pObject->ToCreature());
         }
     }
 };

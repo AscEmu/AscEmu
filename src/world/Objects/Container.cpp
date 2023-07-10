@@ -171,7 +171,7 @@ void Container::forceCreationUpdate(Item* item)
     }
 
 #if VERSION_STRING > TBC
-    m_owner->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM, item->getItemProperties()->ItemId, item->getStackCount(), 0);
+    m_owner->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM, item->getItemProperties()->ItemId, item->getStackCount(), 0);
 #endif
 }
 

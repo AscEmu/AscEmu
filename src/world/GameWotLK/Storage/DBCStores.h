@@ -8,8 +8,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "DBCStructures.h"
 #include "WorldConf.h"
 #include "Map/Maps/InstanceDefines.hpp"
+#include "Management/TaxiMgr.h"
 
 typedef std::map<uint32_t, DBC::Structures::MapDifficulty> MapDifficultyMap;
+
+typedef std::vector<DBC::Structures::TaxiPathNodeEntry const*> TaxiPathNodeList;
+typedef std::vector<TaxiPathNodeList> TaxiPathNodesByPath;
 
 #if VERSION_STRING == WotLK
 
@@ -73,6 +77,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AuctionHouseEntry> sAuctionH
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TalentEntry> sTalentStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TalentTabEntry> sTalentTabStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureDisplayInfoEntry> sCreatureDisplayInfoStore;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureDisplayInfoExtraEntry> sCreatureDisplayInfoExtraStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureModelDataEntry> sCreatureModelDataStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureSpellDataEntry> sCreatureSpellDataStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureFamilyEntry> sCreatureFamilyStore;
@@ -125,6 +130,10 @@ DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 roo
 extern SERVER_DECL MapDifficultyMap sMapDifficultyMap;
 DBC::Structures::MapDifficulty const* getMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties difficulty);
 DBC::Structures::MapDifficulty const* getDownscaledMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties& difficulty);
+
+// Taxi
+extern SERVER_DECL TaxiPathSetBySource sTaxiPathSetBySource;
+extern SERVER_DECL TaxiPathNodesByPath sTaxiPathNodesByPath;
 
 std::string generateName(uint32 type = 0);
 

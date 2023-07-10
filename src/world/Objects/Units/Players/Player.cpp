@@ -31,6 +31,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Container.hpp"
 #include "Objects/DynamicObject.hpp"
 #include "Server/Opcodes.hpp"
+#include "Server/Packets/SmsgActivatetaxireply.h"
+#include "Server/Packets/SmsgTaxinodeStatus.h"
 #include "Server/Packets/MsgTalentWipeConfirm.h"
 #include "Server/Packets/SmsgPetUnlearnConfirm.h"
 #include "Server/Packets/MsgSetDungeonDifficulty.h"
@@ -53,6 +55,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgLoginVerifyWorld.h"
 #include "Server/Packets/SmsgMountResult.h"
 #include "Server/Packets/SmsgDismountResult.h"
+#include "Server/Packets/SmsgControlVehicle.h"
+#include "Server/Packets/SmsgPlayerVehicleData.h"
 #include "Server/Packets/SmsgLogXpGain.h"
 #include "Server/Packets/SmsgCastFailed.h"
 #include "Server/Packets/SmsgLevelupInfo.h"
@@ -131,6 +135,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WorldStrings.h"
 #include "Utilities/Strings.hpp"
 #include "Objects/Transporter.hpp"
+#include "Movement/MovementGenerators/FlightPathMovementGenerator.h"
 #include "Server/MainServerDefines.h"
 
 using namespace AscEmu::Packets;
@@ -547,16 +552,6 @@ void Player::OnPushToWorld()
     m_enteringWorld = false;
     m_teleportState = 0;
 
-    if (isOnTaxi())
-    {
-        if (m_taxiMapChangeNode != 0)
-            m_lastTaxiNode = m_taxiMapChangeNode;
-
-        startTaxiPath(getTaxiPath(), getMountDisplayId(), m_lastTaxiNode);
-
-        m_taxiMapChangeNode = 0;
-    }
-
     // can only fly in outlands or northrend (northrend requires cold weather flying)
     if (m_flyingAura && ((m_mapId != 530) && (m_mapId != 571 || !hasSpell(54197) && getDeathState() == ALIVE)))
     {
@@ -664,6 +659,8 @@ void Player::OnPushToWorld()
     sendPacket(&data);
 
 #endif
+
+    continueTaxiFlight();
 }
 
 void Player::removeFromWorld()
@@ -713,9 +710,6 @@ void Player::removeFromWorld()
         removeItemsFromWorld();
         Unit::RemoveFromWorld(false);
     }
-
-    if (isOnTaxi())
-        event_RemoveEvents(EVENT_PLAYER_TAXI_INTERPOLATE);
 
     m_changingMaps = true;
     m_playerInfo->lastOnline = UNIXTIME; // don't destroy conjured items yet
@@ -1443,7 +1437,7 @@ void Player::resendSpeed()
 }
 bool Player::isMoving() const { return m_isMoving; }
 
-bool Player::isMounted() const { return m_mountSpellId ? true : false; }
+bool Player::isMounted() const { return hasUnitFlags(UNIT_FLAG_MOUNT); }
 uint32_t Player::getMountSpellId() const { return m_mountSpellId; }
 void Player::setMountSpellId(uint32_t id) { m_mountSpellId = id; }
 
@@ -1451,13 +1445,90 @@ bool Player::isOnVehicle() const { return m_mountVehicleId ? true : false; }
 uint32_t Player::getMountVehicleId() const { return m_mountVehicleId; }
 void Player::setMountVehicleId(uint32_t id) { m_mountVehicleId = id; }
 
+void Player::mount(uint32_t mount, uint32_t VehicleId, uint32_t creatureEntry)
+{
+    if (mount)
+        setMountDisplayId(mount);
+
+    setUnitFlags(UNIT_FLAG_MOUNT);
+
+#if VERSION_STRING > TBC
+    // mount as a vehicle
+    if (VehicleId)
+    {
+        if (createVehicleKit(VehicleId, creatureEntry))
+        {
+            // Send others that we now have a vehicle
+            sendMessageToSet(SmsgPlayerVehicleData(WoWGuid(getGuid()), VehicleId).serialise().get(), true);
+            sendPacket(SmsgControlVehicle().serialise().get());
+
+            // mounts can also have accessories
+            getVehicleKit()->initialize();
+            getVehicleKit()->loadAllAccessories(false);
+        }
+    }
+#endif
+    // unsummon pet
+    dismissActivePets();
+
+    // if we have charmed npc, stun him also (everywhere)
+    if (Unit* charm = getWorldMapUnit(getCharmGuid()))
+        if (charm->getObjectTypeId() == TYPEID_UNIT)
+            charm->setUnitFlags(UNIT_FLAG_STUNNED);
+
+    ByteBuffer guidData;
+    guidData << GetNewGUID();
+
+    WorldPacket data(SMSG_MOVE_SET_COLLISION_HGT, guidData.size() + 4 + 4);
+    data.append(guidData);
+    data << uint32_t(Util::getTimeNow());   // Packet counter
+    data << getCollisionHeight();
+    sendPacket(&data);
+
+    removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_MOUNT);
+}
+
 void Player::dismount()
 {
+    setMountDisplayId(0);
+    removeUnitFlags(UNIT_FLAG_MOUNT);
+
+    WorldPacket data(SMSG_DISMOUNT, 8);
+    data << GetNewGUID();
+    sendMessageToSet(&data, true);
+
+#if VERSION_STRING >= WotLK
+    // dismount as a vehicle
+    if (isPlayer() && getVehicleKit())
+    {
+        // Send other players that we are no longer a vehicle
+        sendMessageToSet(SmsgPlayerVehicleData().serialise().get(), true);
+        // Remove vehicle from player
+        removeVehicleKit();
+    }
+#endif
+
+    removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_MOUNT);
+
+    // if we have charmed npc, remove stun also
+    if (Unit* charm = getWorldMapUnit(getCharmGuid()))
+        if (charm->getObjectTypeId() == TYPEID_UNIT && charm->hasUnitFlags(UNIT_FLAG_STUNNED) && !charm->hasUnitStateFlag(UNIT_STATE_STUNNED))
+            charm->removeUnitFlags(UNIT_FLAG_STUNNED);
+
     if (m_mountSpellId != 0)
     {
         removeAllAurasById(m_mountSpellId);
         m_mountSpellId = 0;
     }
+
+    ByteBuffer guidData;
+    guidData << GetNewGUID();
+
+    data.Initialize(SMSG_MOVE_SET_COLLISION_HGT, guidData.size() + 4 + 4);
+    data.append(guidData);
+    data << uint32_t(Util::getTimeNow());   // Packet counter
+    data << getCollisionHeight();
+    sendPacket(&data);
 }
 
 void Player::handleAuraInterruptForMovementFlags(MovementInfo const& movementInfo)
@@ -1742,17 +1813,9 @@ bool Player::safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVec
 
     speedCheatDelay(10000);
 
-    if (isOnTaxi())
+    if (m_taxi.getCurrentTaxiPath())
     {
         sEventMgr.RemoveEvents(this, EVENT_PLAYER_TELEPORT);
-
-        sEventMgr.RemoveEvents(this, EVENT_PLAYER_TAXI_DISMOUNT);
-        sEventMgr.RemoveEvents(this, EVENT_PLAYER_TAXI_INTERPOLATE);
-
-        setOnTaxi(false);
-        setTaxiPath(nullptr);
-        unsetTaxiPosition();
-        m_taxiRideTime = 0;
         setMountDisplayId(0);
 
         removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
@@ -1979,7 +2042,8 @@ void Player::indoorCheckUpdate(uint32_t time)
             if (!AreaStorage::IsOutdoor(m_mapId, m_position.x, m_position.y, m_position.z))
             {
                 // this is duplicated check, but some mount auras comes w/o this flag set, maybe due to spellfixes.cpp line:663
-                dismount();
+                if (isMounted() && !m_taxi.getCurrentTaxiPath())
+                    dismount();
 
                 for (uint16_t x = AuraSlots::POSITIVE_SLOT_START; x < AuraSlots::POSITIVE_SLOT_END; ++x)
                 {
@@ -2225,7 +2289,7 @@ void Player::eventExploration()
                 applyPlayerRestState(false);
         }
 
-        if (!(currFields & val) && !isOnTaxi() && !obj_movement_info.transport_guid)
+        if (!(currFields & val) && !m_taxi.getCurrentTaxiPath() && !obj_movement_info.transport_guid)
         {
             setExploredZone(offset, currFields | val);
 
@@ -2233,7 +2297,7 @@ void Player::eventExploration()
             explore_xp *= float2int32(worldConfig.getFloatRate(RATE_EXPLOREXP));
 
 #if VERSION_STRING > TBC
-            getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA);
+            updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA, getAreaId());
 #endif
 
             if (getLevel() < getMaxLevel() && explore_xp > 0)
@@ -2675,6 +2739,10 @@ void Player::applyLevelInfo(uint32_t newLevel)
             m_levelInfo->Stat[STAT_SPIRIT] - previousLevelInfo->Stat[STAT_SPIRIT]);
     }
 
+#if VERSION_STRING > WotLK
+    initTaxiNodesForLevel();
+#endif
+
     updateSkillMaximumValues();
 
     if (newLevel > previousLevel || m_firstLogin)
@@ -2686,7 +2754,7 @@ void Player::applyLevelInfo(uint32_t newLevel)
 
 #if VERSION_STRING >= WotLK
     updateGlyphs();
-    getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL);
+    updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL);
 #endif
 
     if (m_firstLogin)
@@ -3984,11 +4052,11 @@ void Player::addSpell(uint32_t spellId, uint16_t fromSkill/* = 0*/)
         return;
 
 #if VERSION_STRING > TBC
-    m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SPELL, spellId, 1, 0);
+    updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SPELL, spellId, 1, 0);
     if (spellInfo->getMechanicsType() == MECHANIC_MOUNTED) // Mounts
     {
         // miscvalue1==777 for mounts, 778 for pets
-        m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_NUMBER_OF_MOUNTS, 777, 0, 0);
+        updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_NUMBER_OF_MOUNTS, 777, 0, 0);
     }
     else if (spellInfo->getEffect(0) == SPELL_EFFECT_SUMMON) // Companion pet?
     {
@@ -3998,7 +4066,7 @@ void Player::addSpell(uint32_t spellId, uint16_t fromSkill/* = 0*/)
         const auto creatureEntry = spellInfo->getEffectMiscValue(0);
         auto creatureProperties = sMySQLStore.getCreatureProperties(creatureEntry);
         if (creatureProperties != nullptr && creatureProperties->Type == UNIT_TYPE_NONCOMBAT_PET)
-            m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_NUMBER_OF_MOUNTS, 778, 0, 0);
+            updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_NUMBER_OF_MOUNTS, 778, 0, 0);
     }
 #endif
 }
@@ -4202,6 +4270,48 @@ bool Player::isInFeralForm()
     // Fight forms that do not use player's weapon
     return (s == FORM_BEAR || s == FORM_DIREBEAR || s == FORM_CAT);     //Shady: actually ghostwolf form doesn't use weapon too.
 }
+
+#if VERSION_STRING >= TBC
+bool Player::isInDisallowedMountForm() const
+{
+    if (ShapeshiftForm form = ShapeshiftForm(getShapeShiftForm()))
+    {
+        DBC::Structures::SpellShapeshiftFormEntry const* shapeshift = sSpellShapeshiftFormStore.LookupEntry(form);
+        if (!shapeshift)
+            return true;
+
+        if (!(shapeshift->Flags & 0x1))
+            return true;
+    }
+
+    if (getDisplayId() == getNativeDisplayId())
+        return false;
+
+    DBC::Structures::CreatureDisplayInfoEntry const* display = sCreatureDisplayInfoStore.LookupEntry(getDisplayId());
+    if (!display)
+        return true;
+
+    DBC::Structures::CreatureDisplayInfoExtraEntry const* displayExtra = sCreatureDisplayInfoExtraStore.LookupEntry(display->ExtendedDisplayInfoID);
+    if (!displayExtra)
+        return true;
+
+    DBC::Structures::CreatureModelDataEntry const* model = sCreatureModelDataStore.LookupEntry(display->ModelID);
+    DBC::Structures::ChrRacesEntry const* race = sChrRacesStore.LookupEntry(displayExtra->Race);
+
+    if (model && !(model->Flags & 0x80))
+        if (race && !(race->flags & 0x4))
+            return true;
+
+    return false;
+}
+#else
+bool Player::isInDisallowedMountForm() const
+{
+    ShapeshiftForm form = ShapeshiftForm(getShapeShiftForm());
+    return form != FORM_NORMAL && form != FORM_BATTLESTANCE && form != FORM_BERSERKERSTANCE && form != FORM_DEFENSIVESTANCE &&
+        form != FORM_SHADOW && form != FORM_STEALTH;
+}
+#endif
 
 void Player::updateAutoRepeatSpell()
 {
@@ -4798,8 +4908,8 @@ void Player::advanceSkillLine(uint16_t skillLine, uint16_t amount/* = 1*/)
     sHookInterface.OnAdvanceSkillLine(this, skillLine, itr->second.CurrentValue);
 
 #ifdef FT_ACHIEVEMENTS
-    getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, skillLine, skillStep, 0);
-    getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, skillLine, itr->second.CurrentValue, 0);
+    updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, skillLine, skillStep);
+    updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, skillLine, itr->second.CurrentValue);
 #endif
 
     learnSkillSpells(skillLine, itr->second.CurrentValue);
@@ -4867,8 +4977,8 @@ void Player::addSkillLine(uint16_t skillLine, uint16_t currentValue, uint16_t ma
             learnSkillSpells(skillLine, curVal);
 
 #ifdef FT_ACHIEVEMENTS
-        getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, skillLine, skillStep, 0);
-        getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, skillLine, currentValue, 0);
+        updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, skillLine, skillStep, 0);
+        updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, skillLine, currentValue, 0);
 #endif
     };
 
@@ -5152,7 +5262,7 @@ void Player::modifySkillMaximum(uint16_t skillLine, uint16_t maxValue)
         }
 
 #ifdef FT_ACHIEVEMENTS
-        getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, skillLine, skillStep, 0);
+        updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, skillLine, skillStep, 0);
 #endif
 
         // Current skill value did not change
@@ -5162,7 +5272,7 @@ void Player::modifySkillMaximum(uint16_t skillLine, uint16_t maxValue)
         sHookInterface.OnAdvanceSkillLine(this, skillLine, itr->second.CurrentValue);
 
 #ifdef FT_ACHIEVEMENTS
-        getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, skillLine, itr->second.CurrentValue, 0);
+        updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, skillLine, itr->second.CurrentValue, 0);
 #endif
 
         learnSkillSpells(skillLine, itr->second.CurrentValue);
@@ -7143,13 +7253,13 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t /*spellId*/)
 #if VERSION_STRING > TBC
     if (isPlayer())
     {
-        getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DEATH, 1, 0, 0);
-        getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DEATH_AT_MAP, GetMapId(), 1, 0);
+        updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DEATH, 1, 0, 0);
+        updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DEATH_AT_MAP, GetMapId(), 1, 0);
 
         if (unitAttacker->isPlayer())
-            getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_PLAYER, 1, 0, 0);
+            updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_PLAYER, 1, 0, 0);
         else if (unitAttacker->isCreature())
-            getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_CREATURE, 1, 0, 0);
+            updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_CREATURE, 1, 0, 0);
     }
 #endif
 
@@ -10351,304 +10461,269 @@ VoidStorageItem* Player::getVoidStorageItem(uint64_t id, uint8_t& slot) const
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // Taxi
-TaxiPath* Player::getTaxiPath() const { return m_currentTaxiPath; }
-void Player::setTaxiPath(TaxiPath* path) { m_currentTaxiPath = path; }
-
-void Player::loadTaxiMask(const char* data)
+bool Player::activateTaxiPathTo(std::vector<uint32_t> const& nodes, Creature* npc /*= nullptr*/, uint32_t spellid /*= 0*/)
 {
-    std::vector<std::string> tokens = AscEmu::Util::Strings::split(data, " ");
+    if (nodes.size() < 2)
+        return false;
 
-    uint8_t index;
-    std::vector<std::string>::iterator iter;
-
-    for (iter = tokens.begin(), index = 0; index < DBC_TAXI_MASK_SIZE && iter != tokens.end(); ++iter, ++index)
-        m_taxiMask[index] = atol((*iter).c_str());
-}
-
-const uint32_t& Player::getTaxiMask(uint32_t index) const { return m_taxiMask[index]; }
-void Player::setTaxiMask(uint32_t index, uint32_t value) { m_taxiMask[index] = value; }
-
-void Player::setTaxiPosition() { m_taxiPosition = m_position; }
-void Player::unsetTaxiPosition() { m_taxiPosition = { 0, 0, 0 }; }
-
-bool Player::isOnTaxi() const { return m_isOnTaxi; }
-void Player::setOnTaxi(bool state) { m_isOnTaxi = state; }
-
-void Player::startTaxiPath(TaxiPath* path, uint32_t modelid, uint32_t start_node)
-{
-    int32_t mapchangeid = -1;
-    float mapchangex = 0.0f, mapchangey = 0.0f, mapchangez = 0.0f;
-    uint32_t cn = m_taxiMapChangeNode;
-
-    m_taxiMapChangeNode = 0;
-
-    dismount();
-
-#ifdef FT_VEHICLES
-    callExitVehicle();
-#endif
-
-    //also remove morph spells
-    if (getDisplayId() != getNativeDisplayId())
+    // not let cheating with start flight in time of logout process || while in combat || has type state: stunned || has type state: root
+    if (getSession()->IsLoggingOut() || isInCombat() || hasUnitStateFlag(UNIT_STATE_STUNNED) || hasUnitStateFlag(UNIT_STATE_ROOTED))
     {
-        removeAllAurasByAuraEffect(SPELL_AURA_TRANSFORM);
-        removeAllAurasByAuraEffect(SPELL_AURA_MOD_SHAPESHIFT);
+        getSession()->SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_TaxiPlayerBusy).serialise().get());
+        return false;
     }
 
-    dismissActivePets();
+    if (hasUnitFlags(UNIT_FLAG_LOCK_PLAYER))
+        return false;
 
-    setMountDisplayId(modelid);
-    addUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
-    addUnitFlags(UNIT_FLAG_LOCK_PLAYER);
-
-    setTaxiPath(path);
-    setTaxiPosition();
-    setOnTaxi(true);
-    m_taxiRideTime = Util::getMSTime();
-
-    //uint32_t traveltime = uint32_t(path->getLength() * TAXI_TRAVEL_SPEED); // 36.7407
-    float traveldist = 0;
-
-    float lastx = 0, lasty = 0, lastz = 0;
-    TaxiPathNode* firstNode = path->GetPathNode(start_node);
-    uint32_t add_time = 0;
-
-    // temporary workaround for taximodes with changing map
-    if (path->GetID() == 766 || path->GetID() == 767 || path->GetID() == 771 || path->GetID() == 772)
+    // taximaster case
+    if (npc)
     {
-        skipTaxiPathNodesToEnd(path);
-        return;
-    }
-
-    if (start_node)
-    {
-        TaxiPathNode* pn = path->GetPathNode(0);
-        float dist = 0;
-        lastx = pn->x;
-        lasty = pn->y;
-        lastz = pn->z;
-        for (uint32_t i = 1; i <= start_node; ++i)
+        // not let cheating with start flight mounted
+        if (isMounted())
         {
-            pn = path->GetPathNode(i);
-            if (!pn)
-            {
-                skipTaxiPathNodesToEnd(path);
-                return;
-            }
-
-            dist += CalcDistance(lastx, lasty, lastz, pn->x, pn->y, pn->z);
-            lastx = pn->x;
-            lasty = pn->y;
-            lastz = pn->z;
-        }
-        add_time = uint32_t(dist * TAXI_TRAVEL_SPEED);
-        lastx = lasty = lastz = 0;
-    }
-
-    size_t endn = path->GetNodeCount();
-    if (!m_taxiPaths.empty())
-        endn -= 2;
-
-    for (uint32_t i = start_node; i < endn; ++i)
-    {
-        TaxiPathNode* pn = path->GetPathNode(i);
-
-        // temporary workaround for taximodes with changing map
-        if (!pn || path->GetID() == 766 || path->GetID() == 767 || path->GetID() == 771 || path->GetID() == 772)
-        {
-            skipTaxiPathNodesToEnd(path);
-            return;
+            getSession()->SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_TaxiPlayerAlreadyMounted).serialise().get());
+            return false;
         }
 
-        if (pn->mapid != m_mapId)
+        if (isInDisallowedMountForm())
         {
-            endn = (i - 1);
-            m_taxiMapChangeNode = i;
-
-            mapchangeid = (int32_t)pn->mapid;
-            mapchangex = pn->x;
-            mapchangey = pn->y;
-            mapchangez = pn->z;
-            break;
-        }
-
-        if (!lastx || !lasty || !lastz)
-        {
-            lastx = pn->x;
-            lasty = pn->y;
-            lastz = pn->z;
-        }
-        else
-        {
-            float dist = CalcDistance(lastx, lasty, lastz, pn->x, pn->y, pn->z);
-            traveldist += dist;
-            lastx = pn->x;
-            lasty = pn->y;
-            lastz = pn->z;
+            getSession()->SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_TaxiPlayerShapeshifted).serialise().get());;
+            return false;
         }
     }
-
-    uint32_t traveltime = uint32_t(traveldist * TAXI_TRAVEL_SPEED);
-
-    if (start_node > endn || (endn - start_node) > 200)
-        return;
-
-    WorldPacket data(SMSG_MONSTER_MOVE, 38 + ((endn - start_node) * 12));
-    data << GetNewGUID();
-    data << uint8_t(0); //VLack: it seems we have a 1 byte stuff after the new GUID
-    data << firstNode->x;
-    data << firstNode->y;
-    data << firstNode->z;
-    data << m_taxiRideTime;
-    data << uint8_t(0);
-#if VERSION_STRING >= Cata
-    data << uint32_t(0x0C008400);
-#else
-    data << uint32_t(0x00003000);
-#endif
-    data << uint32_t(traveltime);
-
-    if (!cn)
-        m_taxiRideTime -= add_time;
-
-    data << uint32_t(endn - start_node);
-
-    for (uint32_t i = start_node; i < endn; i++)
-    {
-        TaxiPathNode* pn = path->GetPathNode(i);
-        if (!pn)
-        {
-            skipTaxiPathNodesToEnd(path);
-            return;
-        }
-
-        data << pn->x;
-        data << pn->y;
-        data << pn->z;
-    }
-
-    sendMessageToSet(&data, true);
-
-    sEventMgr.AddEvent(this, &Player::interpolateTaxiPosition,
-        EVENT_PLAYER_TAXI_INTERPOLATE, 900, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-
-    if (mapchangeid < 0)
-    {
-        TaxiPathNode* pn = path->GetPathNode((uint32_t)path->GetNodeCount() - 1);
-        sEventMgr.AddEvent(this, &Player::dismountAfterTaxiPath, path->getPrice(),
-            pn->x, pn->y, pn->z, EVENT_PLAYER_TAXI_DISMOUNT, traveltime, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-    }
+    // cast case or scripted call case
     else
     {
-        sEventMgr.AddEvent(this, &Player::eventTeleportTaxi, (uint32_t)mapchangeid, 
-            mapchangex, mapchangey, mapchangez, EVENT_PLAYER_TELEPORT, traveltime, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        removeAllAurasByAuraEffect(SPELL_AURA_MOUNTED);
+
+        if (isInDisallowedMountForm())
+            removeAllAurasByAuraEffect(SPELL_AURA_MOD_SHAPESHIFT);
+
+        if (Spell* spell = getCurrentSpell(CURRENT_GENERIC_SPELL))
+            if (spell->getSpellInfo()->getId() != spellid)
+                interruptSpell(CURRENT_GENERIC_SPELL, false);
+
+        interruptSpell(CURRENT_AUTOREPEAT_SPELL, false);
+
+        if (Spell* spell = getCurrentSpell(CURRENT_CHANNELED_SPELL))
+            if (spell->getSpellInfo()->getId() != spellid)
+                interruptSpell(CURRENT_CHANNELED_SPELL, true);
     }
+
+    uint32_t sourcenode = nodes[0];
+
+    // starting node too far away (cheat?)
+    DBC::Structures::TaxiNodesEntry const* node = sTaxiNodesStore.LookupEntry(sourcenode);
+    if (!node)
+    {
+        getSession()->SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_NoDirectPath).serialise().get());
+        return false;
+    }
+
+    // Prepare to flight start now
+#if VERSION_STRING > TBC
+    exitVehicle();
+#endif
+
+    // stop trade (client cancel trade at taxi map open but cheating tools can be used for reopen it)
+    cancelTrade(true);
+
+    // clean not finished taxi path if any
+    m_taxi.clearTaxiDestinations();
+
+    // 0 element current node
+    m_taxi.addTaxiDestination(sourcenode);
+
+    // fill destinations path tail
+    uint32_t sourcepath = 0;
+    uint32_t totalcost = 0;
+    uint32_t firstcost = 0;
+
+    uint32_t prevnode = sourcenode;
+    uint32_t lastnode;
+
+    for (uint32_t i = 1; i < nodes.size(); ++i)
+    {
+        uint32_t path, cost;
+
+        lastnode = nodes[i];
+        sTaxiMgr.getTaxiPath(prevnode, lastnode, path, cost);
+
+        if (!path)
+        {
+            m_taxi.clearTaxiDestinations();
+            return false;
+        }
+
+        totalcost += cost;
+        if (i == 1)
+            firstcost = cost;
+
+        if (prevnode == sourcenode)
+            sourcepath = path;
+
+        m_taxi.addTaxiDestination(lastnode);
+
+        prevnode = lastnode;
+    }
+
+    // get mount model (in case non taximaster (npc == nullptr) allow more wide lookup)
+    uint32_t mount_display_id = sTaxiMgr.getTaxiMountDisplayId(sourcenode, GetTeam(), npc == nullptr || (sourcenode == 315 && getClass() == DEATHKNIGHT));
+
+    // in spell case allow 0 model
+    if ((mount_display_id == 0 && spellid == 0) || sourcepath == 0)
+    {
+        getSession()->SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_UnspecificError).serialise().get());
+        m_taxi.clearTaxiDestinations();
+        return false;
+    }
+
+    uint64_t money = getCoinage();
+
+    if (npc)
+    {
+        // Disocunting todo
+        float discount = 1.0f;
+        totalcost = uint32_t(ceil(totalcost * discount));
+        firstcost = uint32_t(round(firstcost * discount));
+    }
+
+    if (money < totalcost)
+    {
+        getSession()->SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_NotEnoughMoney).serialise().get());
+        m_taxi.clearTaxiDestinations();
+        return false;
+    }
+
+    //Checks and preparations done, DO FLIGHT
+#if VERSION_STRING > TBC
+    updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_FLIGHT_PATHS_TAKEN, 1);
+#endif
+
+    // prevent stealth flight
+    modCoinage(-(int64_t)firstcost);
+#if VERSION_STRING > TBC
+    updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GOLD_SPENT_FOR_TRAVELLING, firstcost);
+#endif
+    getSession()->SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_Ok).serialise().get());
+    getSession()->sendDoFlight(mount_display_id, sourcepath);
+    return true;
 }
 
-void Player::skipTaxiPathNodesToEnd(TaxiPath* path)
+bool Player::activateTaxiPathTo(uint32_t taxi_path_id, uint32_t spellid /*= 0*/)
 {
-    // this should *always* be safe in case it cant build your position on the path!
-    TaxiPathNode* pathnode = path->GetPathNode((uint32_t)path->GetNodeCount() - 1);
-    if (!pathnode)
+    DBC::Structures::TaxiPathEntry const* entry = sTaxiPathStore.LookupEntry(taxi_path_id);
+    if (!entry)
+        return false;
+
+    std::vector<uint32> nodes;
+
+    nodes.resize(2);
+    nodes[0] = entry->from;
+    nodes[1] = entry->to;
+
+    return activateTaxiPathTo(nodes, nullptr, spellid);
+}
+
+bool Player::activateTaxiPathTo(uint32_t taxi_path_id, Creature* npc)
+{
+    DBC::Structures::TaxiPathEntry const* entry = sTaxiPathStore.LookupEntry(taxi_path_id);
+    if (!entry)
+        return false;
+
+    std::vector<uint32> nodes;
+
+    nodes.resize(2);
+    nodes[0] = entry->from;
+    nodes[1] = entry->to;
+
+    return activateTaxiPathTo(nodes, npc);
+}
+
+void Player::cleanupAfterTaxiFlight()
+{
+    m_taxi.clearTaxiDestinations();        // not destinations, clear source node
+    dismount();
+    removeUnitFlags(UNIT_FLAG_LOCK_PLAYER | UNIT_FLAG_MOUNTED_TAXI);
+}
+
+void Player::continueTaxiFlight() const
+{
+    uint32_t sourceNode = m_taxi.getTaxiSource();
+    if (!sourceNode)
         return;
 
-    modCoinage(-(int32_t)path->getPrice());
-
-    setOnTaxi(false);
-    setTaxiPath(nullptr);
-    unsetTaxiPosition();
-    m_taxiRideTime = 0;
-
-    setMountDisplayId(0);
-    removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
-    removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
-
-    setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);
-
-    safeTeleport(pathnode->mapid, 0, LocationVector(pathnode->x, pathnode->y, pathnode->z));
-
-    // Start next path if any remaining
-    if (m_taxiPaths.size())
-    {
-        TaxiPath* p = *m_taxiPaths.begin();
-        m_taxiPaths.erase(m_taxiPaths.begin());
-        startTaxiPath(p, m_taxiMountDisplayId, 0);
-    }
-}
-
-void Player::dismountAfterTaxiPath(uint32_t money, float x, float y, float z)
-{
-    if (money)
-        modCoinage(-(int32_t)money);
-
-    if (money > 0 && m_fallDisabledUntil < time(nullptr) + 5)
-        m_fallDisabledUntil = time(nullptr) + 5; //VLack: If the ride wasn't free, the player shouldn't die after arrival because of fall damage... So we'll disable it for 5 seconds.
-
-    SetPosition(x, y, z, GetOrientation(), true);
-    if (m_taxiPaths.empty())
-        setOnTaxi(false);
-
-    setTaxiPath(nullptr);
-    unsetTaxiPosition();
-    m_taxiRideTime = 0;
-
-    setMountDisplayId(0);
-    removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
-    removeUnitFlags(UNIT_FLAG_LOCK_PLAYER);
-
-    setSpeedRate(TYPE_RUN, getSpeedRate(TYPE_RUN, true), true);
-
-    sEventMgr.RemoveEvents(this, EVENT_PLAYER_TAXI_INTERPOLATE);
-
-    // Save to database on dismount
-    saveToDB(false);
-
-    // If we have multiple "trips" to do, "jump" on the next one :p
-    if (m_taxiPaths.size())
-    {
-        TaxiPath* p = *m_taxiPaths.begin();
-        m_taxiPaths.erase(m_taxiPaths.begin());
-        startTaxiPath(p, m_taxiMountDisplayId, 0);
-    }
-}
-
-void Player::interpolateTaxiPosition()
-{
-    if (!m_currentTaxiPath || m_WorldMap == nullptr) return;
-
-    float x = 0.0f;
-    float y = 0.0f;
-    float z = 0.0f;
-
-    uint32_t ntime = Util::getMSTime();
-
-    if (ntime > m_taxiRideTime)
-        m_currentTaxiPath->SetPosForTime(x, y, z, ntime - m_taxiRideTime, &m_lastTaxiNode, m_mapId);
-    /*else
-        m_currentTaxiPath->SetPosForTime(x, y, z, m_taxiRideTime - ntime, &m_lastTaxiNode);*/
-
-    if (x < Map::Terrain::_minX || x > Map::Terrain::_maxX || y < Map::Terrain::_minY || y > Map::Terrain::_maxX)
+    uint32_t mountDisplayId = sTaxiMgr.getTaxiMountDisplayId(sourceNode, getTeam(), true);
+    if (!mountDisplayId)
         return;
 
-    SetPosition(x, y, z, 0);
-}
+    uint32_t path = m_taxi.getCurrentTaxiPath();
 
-void Player::eventTeleportTaxi(uint32_t mapId, float x, float y, float z)
-{
-    if (mapId == 530 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_01))
+    // search appropriate start path node
+    uint32_t startNode = m_taxi.nodeAfterTeleport;
+
+    TaxiPathNodeList const& nodeList = sTaxiPathNodesByPath[path];
+
+    float distPrev;
+    float distNext = getExactDistSq(nodeList[0]->x, nodeList[0]->y, nodeList[0]->z);
+
+    for (uint32_t i = 1; i < nodeList.size(); ++i)
     {
-        WorldPacket msg(CMSG_SERVER_BROADCAST, 50);
-        msg << uint32_t(3);
-        msg << getSession()->LocalizedWorldSrv(SS_MUST_HAVE_BC);
-        msg << uint8_t(0);
-        m_session->SendPacket(&msg);
+        DBC::Structures::TaxiPathNodeEntry const* node = nodeList[i];
+        DBC::Structures::TaxiPathNodeEntry const* prevNode = nodeList[i - 1];
 
-        repopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
-        return;
+        // skip nodes at another map
+        if (node->mapid != GetMapId())
+            continue;
+
+        distPrev = distNext;
+
+        distNext = getExactDistSq(node->x, node->y, node->z);
+
+        float distNodes =
+            (node->x - prevNode->x) * (node->x - prevNode->x) +
+            (node->y - prevNode->y) * (node->y - prevNode->y) +
+            (node->z - prevNode->z) * (node->z - prevNode->z);
+
+        if (distNext + distPrev < distNodes)
+        {
+            startNode = i;
+            break;
+        }
     }
-    _Relocate(mapId, LocationVector(x, y, z), (mapId == GetMapId() ? false : true), true, 0);
-    forceZoneUpdate();
+
+    getSession()->sendDoFlight(mountDisplayId, path, startNode);
 }
+
+void Player::sendTaxiNodeStatusMultiple()
+{
+    for (const auto itr : getInRangeObjectsSet())
+    {
+        if (!itr->isCreature())
+            continue;
+
+        Creature* creature = itr->ToCreature();
+        if (!creature || isHostile(creature, this))
+            continue;
+
+        if (!(creature->getNpcFlags() & UNIT_NPC_FLAG_FLIGHTMASTER))
+            continue;
+
+        uint32 nearestNode = sTaxiMgr.getNearestTaxiNode(creature->GetPositionX(), creature->GetPositionY(), creature->GetPositionZ(), creature->GetMapId(), GetTeam());
+        if (!nearestNode)
+            continue;
+
+        getSession()->SendPacket(SmsgTaxinodeStatus(creature->getGuid(), uint8_t(m_taxi.isTaximaskNodeKnown(nearestNode) ? 1 : 2)).serialise().get());
+    }
+}
+
+#if VERSION_STRING > WotLK
+void Player::initTaxiNodesForLevel()
+{
+    m_taxi.initTaxiNodesForLevel(getRace(), getClass(), getLevel());
+}
+#endif
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // Loot
@@ -11134,7 +11209,9 @@ Item* Player::storeItem(LootItem const* lootItem)
             sendItemPushResultPacket(false, true, true, slotResult.ContainerSlot, slotResult.Slot, lootItem->count, newItem->getEntry(), newItem->getPropertySeed(), newItem->getRandomPropertiesId(), newItem->getStackCount());
             sQuestMgr.OnPlayerItemPickup(this, newItem);
 #if VERSION_STRING > TBC
-            getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, newItem->getEntry(), 1, 0);
+            updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, newItem->getEntry(), lootItem->count, 0);
+            updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_TYPE, newItem->getEntry(), lootItem->count, 0);
+            updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_EPIC_ITEM, newItem->getEntry(), lootItem->count);
 #endif
         }
         else
@@ -11166,7 +11243,7 @@ Item* Player::storeItem(LootItem const* lootItem)
         sendItemPushResultPacket(false, true, true, slotResult.ContainerSlot, slotResult.Slot, lootItem->count, add->getEntry(), add->getPropertySeed(), add->getRandomPropertiesId(), add->getStackCount());
         sQuestMgr.OnPlayerItemPickup(this, add);
 #if VERSION_STRING > TBC
-        getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, add->getEntry(), 1, 0);
+        updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, add->getEntry(), 1, 0);
 #endif
         return add;
     }
@@ -11258,9 +11335,9 @@ void Player::setFactionStanding(uint32_t faction, int32_t value)
 
 #if VERSION_STRING > TBC
         if (reputation->second->standing >= 42000)
-            m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, 1, 0, 0);
+            updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, 1, 0, 0);
 
-        m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->ID, reputation->second->standing, 0);
+        updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->ID, reputation->second->standing, 0);
 #endif
 
         updateInrangeSetsBasedOnReputation();
@@ -11273,16 +11350,16 @@ void Player::setFactionStanding(uint32_t faction, int32_t value)
 
 #if VERSION_STRING > TBC
             if (reputation->second->standing - newValue >= exaltedReputation)
-                m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, -1, 0, 0);
+               updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, -1, 0, 0);
             else if (newValue >= exaltedReputation)
-                m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, 1, 0, 0);
+                updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, 1, 0, 0);
 #endif
 
             reputation->second->standing = newValue;
             updateInrangeSetsBasedOnReputation();
 
 #if VERSION_STRING > TBC
-            m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->ID, value, 0);
+            updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->ID, value, 0);
 #endif
 
         }
@@ -11342,9 +11419,9 @@ void Player::modFactionStanding(uint32_t faction, int32_t value)
 
 #if VERSION_STRING > TBC
         if (itr->second->standing >= 42000)
-            m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, 1, 0, 0);
+            updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, 1, 0, 0);
 
-        m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->ID, itr->second->standing, 0);
+        updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->ID, itr->second->standing, 0);
 #endif
 
         updateInrangeSetsBasedOnReputation();
@@ -11361,11 +11438,11 @@ void Player::modFactionStanding(uint32_t faction, int32_t value)
             updateInrangeSetsBasedOnReputation();
 
 #if VERSION_STRING > TBC
-            m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->ID, itr->second->standing, 0);
+            updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, factionEntry->ID, itr->second->standing, 0);
             if (itr->second->standing >= exaltedReputation) 
-                m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, 1, 0, 0);
+                updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, 1, 0, 0);
             else if (itr->second->standing - newValue >= exaltedReputation)
-                m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, -1, 0, 0);
+                updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, -1, 0, 0);
 #endif
 
         }
@@ -13343,9 +13420,6 @@ void Player::eventAttackStop()
 
 void Player::eventDeath()
 {
-    if (m_isOnTaxi)
-        sEventMgr.RemoveEvents(this, EVENT_PLAYER_TAXI_DISMOUNT);
-
     if (!IS_INSTANCE(GetMapId()) && !sEventMgr.HasEvent(this, EVENT_PLAYER_FORCED_RESURRECT)) //Should never be true
         sEventMgr.AddEvent(this, &Player::repopRequest, EVENT_PLAYER_FORCED_RESURRECT, forcedResurrectInterval, 1, 0); //in case he forgets to release spirit (afk or something)
 
@@ -13670,8 +13744,11 @@ void Player::saveToDB(bool newCharacter /* =false */)
 
     // taxi mask
     ss << "'";
-    for (uint32_t i = 0; i < DBC_TAXI_MASK_SIZE; i++)
-        ss << m_taxiMask[i] << " ";
+
+    std::ostringstream staxi;
+    staxi << m_taxi;
+    ss << staxi.str();
+
     ss << "', ";
 
     ss << m_banned << ", '" << CharacterDatabase.EscapeString(m_banreason) << "', " << uint32_t(UNIXTIME) << ", ";
@@ -13698,11 +13775,16 @@ void Player::saveToDB(bool newCharacter /* =false */)
 
     ss << getBGEntryMapId() << ", " << getBGEntryPosition().x << ", " << getBGEntryPosition().y << ", " << getBGEntryPosition().z << ", " << getBGEntryPosition().o << ", " << getBGEntryInstanceId() << ", ";
 
-    // taxi
-    if (m_isOnTaxi && m_currentTaxiPath)
-        ss << m_currentTaxiPath->GetID() << ", " << m_lastTaxiNode << ", " << getMountDisplayId() << ", ";
+    // taxi destination
+    ss << "'";
+    ss << m_taxi.saveTaxiDestinationsToString();
+    ss << "', ";
+
+    // last node
+    if (FlightPathMovementGenerator* flight = dynamic_cast<FlightPathMovementGenerator*>(getMovementManager()->getCurrentMovementGenerator()))
+        ss << flight->getCurrentNode() << ", ";
     else
-        ss << "0, 0, 0" << ", ";
+        ss << uint32_t(0) << ", ";
 
     const auto transport = this->GetTransport();
     if (!transport)
@@ -13978,7 +14060,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
         return;
     }
 
-    const uint32_t fieldcount = 96;
+    const uint32_t fieldcount = 95;
     if (result->GetFieldCount() != fieldcount)
     {
         sLogger.failure("Expected %u fields from the database, but received %u!  You may need to update your character database.", fieldcount, uint32_t(result->GetFieldCount()));
@@ -14185,7 +14267,12 @@ void Player::loadFromDBProc(QueryResultVector& results)
         }
     }
 
-    loadTaxiMask(field[32].GetString());
+    // Load Taxis From Database
+    m_taxi.loadTaxiMask(field[32].GetString());
+
+#if VERSION_STRING > WotLK
+    initTaxiNodesForLevel();
+#endif
 
     m_banned = field[33].GetUInt32();      //Character ban
     m_banreason = field[34].GetString();
@@ -14233,25 +14320,14 @@ void Player::loadFromDBProc(QueryResultVector& results)
 
     setBGEntryPoint(field[55].GetFloat(), field[56].GetFloat(), field[57].GetFloat(), field[58].GetFloat(), field[54].GetUInt32(), field[59].GetUInt32());
 
-    uint32_t taxipath = field[60].GetUInt32();
-    TaxiPath* path = nullptr;
-    if (taxipath)
-    {
-        path = sTaxiMgr.GetTaxiPath(taxipath);
-        m_lastTaxiNode = field[61].GetUInt32();
-        if (path)
-        {
-            setMountDisplayId(field[62].GetUInt32());
-            setTaxiPath(path);
-            m_isOnTaxi = true;
-        }
-    }
+    std::string taxi_nodes = field[60].GetString();
+    uint32_t taxi_currentNode = field[61].GetInt32();
 
-    uint32_t transportGuid = field[63].GetUInt32();
-    float transportX = field[64].GetFloat();
-    float transportY = field[65].GetFloat();
-    float transportZ = field[66].GetFloat();
-    float transportO = field[67].GetFloat();
+    uint32_t transportGuid = field[62].GetUInt32();
+    float transportX = field[63].GetFloat();
+    float transportY = field[64].GetFloat();
+    float transportZ = field[65].GetFloat();
+    float transportO = field[66].GetFloat();
 
     if (transportGuid != 0)
         obj_movement_info.setTransportData(transportGuid, transportX, transportY, transportZ, transportO, 0, 0);
@@ -14271,7 +14347,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
 #if VERSION_STRING > TBC
     for (uint8_t s = 0; s < MAX_SPEC_COUNT; ++s)
     {
-        start = (char*)field[68 + s].GetString();
+        start = (char*)field[67 + s].GetString();
         Counter = 0;
         while (Counter < PLAYER_ACTION_BUTTON_COUNT)
         {
@@ -14304,7 +14380,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
     {
         auto& spec = m_spec;
 
-        start = (char*)field[68].GetString();
+        start = (char*)field[67].GetString();
         Counter = 0;
         while (Counter < PLAYER_ACTION_BUTTON_COUNT)
         {
@@ -14343,7 +14419,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Parse saved buffs
-    std::istringstream savedPlayerBuffsStream(field[70].GetString());
+    std::istringstream savedPlayerBuffsStream(field[69].GetString());
     std::string auraId, auraDuration, auraPositivValue, auraCharges;
 
     while (std::getline(savedPlayerBuffsStream, auraId, ','))
@@ -14365,7 +14441,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
 
     // Load saved finished quests
 
-    start = (char*)field[71].GetString();
+    start = (char*)field[70].GetString();
     while (true)
     {
         end = strchr(start, ',');
@@ -14382,7 +14458,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
         start = end + 1;
     }
 
-    start = (char*)field[72].GetString();
+    start = (char*)field[71].GetString();
     while (true)
     {
         end = strchr(start, ',');
@@ -14392,14 +14468,14 @@ void Player::loadFromDBProc(QueryResultVector& results)
         start = end + 1;
     }
 
-    m_honorRolloverTime = field[73].GetUInt32();
-    m_killsToday = field[74].GetUInt32();
-    m_killsYesterday = field[75].GetUInt32();
-    m_killsLifetime = field[76].GetUInt32();
+    m_honorRolloverTime = field[72].GetUInt32();
+    m_killsToday = field[73].GetUInt32();
+    m_killsYesterday = field[74].GetUInt32();
+    m_killsLifetime = field[75].GetUInt32();
 
-    m_honorToday = field[77].GetUInt32();
-    m_honorYesterday = field[78].GetUInt32();
-    m_honorPoints = field[79].GetUInt32();
+    m_honorToday = field[76].GetUInt32();
+    m_honorYesterday = field[77].GetUInt32();
+    m_honorPoints = field[78].GetUInt32();
     if (m_honorPoints > worldConfig.limit.maxHonorPoints)
     {
         std::stringstream dmgLog;
@@ -14426,12 +14502,12 @@ void Player::loadFromDBProc(QueryResultVector& results)
     else
         soberFactor = 1 - timediff / 900;
 
-    setServersideDrunkValue(uint16_t(soberFactor * field[80].GetUInt32()));
+    setServersideDrunkValue(uint16_t(soberFactor * field[79].GetUInt32()));
 
 #if VERSION_STRING > TBC
     for (uint8_t s = 0; s < MAX_SPEC_COUNT; ++s)
     {
-        start = (char*)field[81 + 2 * s].GetString();
+        start = (char*)field[80 + 2 * s].GetString();
         uint8_t glyphid = 0;
         while (glyphid < GLYPHS_COUNT)
         {
@@ -14444,7 +14520,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
         }
 
         //Load talents for spec
-        start = (char*)field[82 + 2 * s].GetString();
+        start = (char*)field[81 + 2 * s].GetString();
         while (end != nullptr)
         {
             end = strchr(start, ',');
@@ -14469,7 +14545,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
         auto& spec = m_spec;
 
         //Load talents for spec	
-        start = (char*)field[82].GetString();  // talents1
+        start = (char*)field[81].GetString();  // talents1
         while (end != nullptr)
         {
             end = strchr(start, ',');
@@ -14491,12 +14567,12 @@ void Player::loadFromDBProc(QueryResultVector& results)
     }
 #endif
 
-    m_talentSpecsCount = field[85].GetUInt8();
-    m_talentActiveSpec = field[86].GetUInt8();
+    m_talentSpecsCount = field[84].GetUInt8();
+    m_talentActiveSpec = field[85].GetUInt8();
 
 #if VERSION_STRING > TBC
     {
-        if (auto talentPoints = field[87].GetString())
+        if (auto talentPoints = field[86].GetString())
         {
             uint32_t tps[2] = { 0,0 };
 
@@ -14513,7 +14589,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
     }
 #else
     {
-        if (auto talentPoints = field[87].GetString())
+        if (auto talentPoints = field[86].GetString())
         {
             uint32_t tps[2] = { 0,0 };
 
@@ -14529,33 +14605,33 @@ void Player::loadFromDBProc(QueryResultVector& results)
 #endif
 
 #if VERSION_STRING >= Cata
-    m_FirstTalentTreeLock = field[88].GetUInt32(); // Load First Set Talent Tree
+    m_FirstTalentTreeLock = field[87].GetUInt32(); // Load First Set Talent Tree
 #endif
 
-    m_phase = field[89].GetUInt32(); //Load the player's last phase
+    m_phase = field[88].GetUInt32(); //Load the player's last phase
 
-    uint32_t xpfield = field[90].GetUInt32();
+    uint32_t xpfield = field[89].GetUInt32();
 
     if (xpfield == 0)
         m_isXpGainAllowed = false;
     else
         m_isXpGainAllowed = true;
 
-    //field[87].GetString();    //skipping data
+    //field[90].GetString();    //skipping data
 
-    if (field[92].GetUInt32() == 1)
+    if (field[91].GetUInt32() == 1)
         m_resetTalents = true;
     else
         m_resetTalents = false;
 
     // Load player's RGB daily data
-    if (field[93].GetUInt32() == 1)
+    if (field[92].GetUInt32() == 1)
         m_hasWonRbgToday = true;
     else
         m_hasWonRbgToday = false;
 
-    m_dungeonDifficulty = field[94].GetUInt8();
-    m_raidDifficulty = field[95].GetUInt8();
+    m_dungeonDifficulty = field[93].GetUInt8();
+    m_raidDifficulty = field[94].GetUInt8();
 
     HonorHandler::RecalculateHonorFields(this);
 
@@ -14674,6 +14750,32 @@ void Player::loadFromDBProc(QueryResultVector& results)
         }
     }
 #endif
+
+    // Continue Our Taxi Path
+    if (!taxi_nodes.empty())
+    {
+        // Not finish taxi flight path
+        if (!m_taxi.loadTaxiDestinationsFromString(taxi_nodes, GetTeam()))
+        {
+            // problems with taxi path loading
+            DBC::Structures::TaxiNodesEntry const* nodeEntry = nullptr;
+            if (uint32_t node_id = m_taxi.getTaxiSource())
+                nodeEntry = sTaxiNodesStore.LookupEntry(node_id);
+
+            if (!nodeEntry) // don't know taxi start node, teleport to homebind
+            {
+                safeTeleport(getBindMapId(), 0, getBindPosition());
+            }
+            else // has start node, teleport to it
+            {
+                safeTeleport(nodeEntry->mapid, 0, LocationVector(nodeEntry->x, nodeEntry->y, nodeEntry->z, 0.0f));
+            }
+            m_taxi.clearTaxiDestinations();
+        }
+        
+        m_taxi.setNodeAfterTeleport(taxi_currentNode);
+        // flight will started later
+    }
 
     auto timeToNow = Util::GetTimeDifferenceToNow(startTime);
     sLogger.info("Time for playerloading: %u ms", static_cast<uint32_t>(timeToNow));
@@ -15159,14 +15261,6 @@ void Player::updateStats()
 
 void Player::addToInRangeObjects(Object* object)
 {
-    if (m_currentTaxiPath && object->isPlayer())
-    {
-        uint32_t ntime = Util::getMSTime();
-
-        if (ntime > m_taxiRideTime)
-            m_currentTaxiPath->SendMoveForTime(this, static_cast<Player*>(object), ntime - m_taxiRideTime);
-    }
-
     Unit::addToInRangeObjects(object);
 }
 
@@ -16337,4 +16431,65 @@ uint32_t Player::getMainMeleeDamage(uint32_t attackPowerOverride)
 
     result = attackPowerBonus * speed;
     return float2int32(result);
+}
+
+#if VERSION_STRING > TBC
+void Player::updateAchievementCriteria(AchievementCriteriaTypes type, uint64_t miscValue1 /*= 0*/, uint64_t miscValue2 /*= 0*/, uint64_t miscValue3 /*= 0*/, Unit* unit /*= nullptr*/)
+{
+    m_achievementMgr.UpdateAchievementCriteria(type, miscValue1, miscValue2, miscValue3, unit);
+    Guild* guild = sGuildMgr.getGuildById(getGuildId());
+    if (!guild)
+        return;
+
+    // Update only individual achievement criteria here, otherwise we may get multiple updates
+    // from a single boss kill
+    if (m_achievementMgr.isGroupCriteriaType(type))
+        return;
+
+    // ToDo Cata Has Guild Achievements
+    //guild->updateAchievementCriteria(type, miscValue1, miscValue2, miscValue3, unit, this);
+}
+#endif
+
+Creature* Player::getCreatureWhenICanInteract(WoWGuid const& guid, uint32_t npcflagmask)
+{
+    // unit checks
+    if (!guid)
+        return nullptr;
+
+    if (!IsInWorld())
+        return nullptr;
+
+    if (isInFlight())
+        return nullptr;
+
+    Creature* creature = getWorldMapCreature(guid.getRawGuid());
+    if (!creature)
+        return nullptr;
+
+    // Deathstate checks
+    if (!isAlive() && !(creature->GetCreatureProperties()->typeFlags & CREATURE_FLAG1_GHOST))
+        return nullptr;
+
+    // alive or spirit healer
+    if (!creature->isAlive() && !(creature->GetCreatureProperties()->typeFlags & CREATURE_FLAG1S_DEAD_INTERACT))
+        return nullptr;
+
+    // appropriate npc type
+    if (npcflagmask && !(creature->getNpcFlags() & npcflagmask))
+        return nullptr;
+
+    // not allow interaction under control, but allow with own pets
+    if (creature->getCharmGuid())
+        return nullptr;
+
+    // not unfriendly/hostile
+    if (isHostile(this, creature))
+        return nullptr;
+
+    // not too far, taken from CGGameUI::SetInteractTarget
+    if (!creature->IsWithinDistInMap(this, creature->getCombatReach() + 4.0f))
+        return nullptr;
+
+    return creature;
 }

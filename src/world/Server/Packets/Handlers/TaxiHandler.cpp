@@ -15,54 +15,95 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgActivatetaxi.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Server/Packets/SmsgNewTaxiPath.h"
+#include "Movement/MovementGenerators/FlightPathMovementGenerator.h"
 
 using namespace AscEmu::Packets;
 
-void WorldSession::sendTaxiList(Creature* creature)
+void WorldSession::sendTaxiStatus(WoWGuid guid)
 {
-    uint32_t tmpTaxiNodeMask[DBC_TAXI_MASK_SIZE];
+    Player* const player = GetPlayer();
+    Creature* unit = player->getWorldMapCreature(guid.getRawGuid());
+    if (!unit || isHostile(unit, player) || !unit->isTaxi())
+    {
+        sLogger.failure("WorldSession::sendTaxiStatus Creature with guid - " I64FMT " not found.", guid);
+        return;
+    }
 
-    uint32_t nearestNode = sTaxiMgr.getNearestNodeForPlayer(_player);
-    if (nearestNode == 0)
+    // find taxi node
+    uint32 nearest = sTaxiMgr.getNearestTaxiNode(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ(), unit->GetMapId(), player->GetTeam());
+    if (!nearest)
         return;
 
-    const auto field = static_cast<uint8_t>((nearestNode - 1) / 32);
-    const uint32_t subMask = 1 << ((nearestNode - 1) % 32);
-
-    if (!(_player->getTaxiMask(field) & subMask) && !_player->m_cheats.hasTaxiCheat)
-    {
-        _player->setTaxiMask(field, (subMask | _player->getTaxiMask(field)));
-
-        SendPacket(SmsgNewTaxiPath().serialise().get());
-
-        SendPacket(SmsgTaxinodeStatus(creature->getGuid(), 1).serialise().get());
-    }
-
-    memset(tmpTaxiNodeMask, 0, sizeof(tmpTaxiNodeMask));
-    sTaxiMgr.GetGlobalTaxiNodeMask(nearestNode, tmpTaxiNodeMask);
-    tmpTaxiNodeMask[field] |= 1 << ((nearestNode - 1) % 32);
-
-    if (!_player->m_cheats.hasTaxiCheat)
-    {
-        for (uint32_t i = 0; i < DBC_TAXI_MASK_SIZE; ++i)
-            tmpTaxiNodeMask[i] &= _player->getTaxiMask(i);
-    }
-
-    std::array<uint32_t, DBC_TAXI_MASK_SIZE> taxiMask{};
-    std::copy(std::begin(tmpTaxiNodeMask), std::end(tmpTaxiNodeMask), std::begin(taxiMask));
-
-    SendPacket(SmsgShowTaxiNodes(creature->getGuid(), nearestNode, taxiMask).serialise().get());
+    uint8_t status = player->m_taxi.isTaximaskNodeKnown(nearest) ? 1 : 2;
+    SendPacket(SmsgTaxinodeStatus(guid.getRawGuid(), status).serialise().get());
 }
 
-uint8_t isTaximaskKnown(Player* player, uint32_t nearestNode)
+void WorldSession::sendTaxiMenu(Creature* unit)
 {
-    const auto field = static_cast<uint8_t>((nearestNode - 1) / 32);
-    const uint32_t submask = 1 << ((nearestNode - 1) % 32);
+    // find current node
+    uint32_t nearestNode = sTaxiMgr.getNearestTaxiNode(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ(), unit->GetMapId(), GetPlayer()->GetTeam());
+    if (!nearestNode)
+        return;
 
-    if ((player->getTaxiMask(field) & submask) != submask)
-        return 0;
+    bool lastTaxiCheaterState = GetPlayer()->m_cheats.hasTaxiCheat;
+    if (unit->getEntry() == 29480)
+        GetPlayer()->m_cheats.hasTaxiCheat = true; // Grimwing in Ebon Hold, special case. NOTE: Not perfect, Zul'Aman should not be included according to WoWhead, and I think taxicheat includes it.
 
-    return 1;
+    WorldPacket data(SMSG_SHOWTAXINODES, (4 + 8 + 4 + 8 * 4));
+    data << uint32_t(1);
+    data << uint64_t(unit->getGuid());
+    data << uint32_t(nearestNode);
+    GetPlayer()->m_taxi.appendTaximaskTo(data, GetPlayer()->m_cheats.hasTaxiCheat);
+    SendPacket(&data);
+
+    GetPlayer()->m_cheats.hasTaxiCheat = lastTaxiCheaterState;
+}
+
+void WorldSession::sendDoFlight(uint32_t mountDisplayId, uint32_t path, uint32_t pathNode)
+{
+    TaxiPathNodeList const& nodes = sTaxiPathNodesByPath[path];
+    if (nodes.size() < pathNode)
+    {
+        sLogger.failure("Taxi cannot be Started PathId %u contains %u nodes but Startnode was set to %u", path, nodes.size(), pathNode);
+        return;
+    }
+
+    // remove fake death
+    if (GetPlayer()->hasUnitStateFlag(UNIT_STATE_DIED))
+        GetPlayer()->removeAllAurasByAuraEffect(SPELL_AURA_FEIGN_DEATH);
+
+    if (mountDisplayId)
+        GetPlayer()->mount(mountDisplayId);
+
+    GetPlayer()->m_taxi.setNodeAfterTeleport(0);
+    GetPlayer()->getMovementManager()->moveTaxiFlight(path, pathNode);
+}
+
+bool WorldSession::sendLearnNewTaxiNode(Creature* unit)
+{
+    // find current node
+    uint32 curloc = sTaxiMgr.getNearestTaxiNode(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ(), unit->GetMapId(), GetPlayer()->GetTeam());
+
+    if (curloc == 0)
+        return true;
+
+    if (GetPlayer()->m_taxi.setTaximaskNode(curloc))
+    {
+        SendPacket(SmsgNewTaxiPath().serialise().get());
+        SendPacket(SmsgTaxinodeStatus(unit->getGuid(), 1).serialise().get());
+
+        return true;
+    }
+    else
+        return false;
+}
+
+void WorldSession::sendDiscoverNewTaxiNode(uint32_t nodeid)
+{
+    if (GetPlayer()->m_taxi.setTaximaskNode(nodeid))
+    {
+        GetPlayer()->sendPacket(SmsgNewTaxiPath().serialise().get());
+    }
 }
 
 void WorldSession::handleTaxiNodeStatusQueryOpcode(WorldPacket& recvPacket)
@@ -73,12 +114,7 @@ void WorldSession::handleTaxiNodeStatusQueryOpcode(WorldPacket& recvPacket)
 
     sLogger.debug("WORLD: Received CMSG_TAXINODE_STATUS_QUERY");
 
-    const auto nearestNode = sTaxiMgr.getNearestNodeForPlayer(_player);
-    if (!nearestNode)
-        return;
-
-    uint8_t status = isTaximaskKnown(_player, nearestNode);
-    SendPacket(SmsgTaxinodeStatus(srlPacket.guid, status).serialise().get());
+    sendTaxiStatus(WoWGuid(srlPacket.guid));
 }
 
 void WorldSession::handleTaxiQueryAvaibleNodesOpcode(WorldPacket& recvPacket)
@@ -89,8 +125,24 @@ void WorldSession::handleTaxiQueryAvaibleNodesOpcode(WorldPacket& recvPacket)
 
     sLogger.debug("WORLD: Received CMSG_TAXIQUERYAVAILABLENODES");
 
-    if (const auto creature = _player->getWorldMap()->getCreature(srlPacket.creatureGuid.getGuidLowPart()))
-        sendTaxiList(creature);
+    // cheating checks
+    Creature* unit = GetPlayer()->getCreatureWhenICanInteract(WoWGuid(srlPacket.creatureGuid), UNIT_NPC_FLAG_FLIGHTMASTER);
+    if (!unit)
+    {
+        SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_TaxiTooFarAway).serialise().get());
+        return;
+    }
+
+    // remove fake death
+    if (GetPlayer()->hasUnitStateFlag(UNIT_STATE_DIED))
+        GetPlayer()->removeAllAurasByAuraEffect(SPELL_AURA_FEIGN_DEATH);
+
+    // unknown taxi node case
+    if (sendLearnNewTaxiNode(unit))
+        return;
+
+    // known taxi node case
+    sendTaxiMenu(unit);
 }
 
 void WorldSession::handleEnabletaxiOpcode(WorldPacket& recvPacket)
@@ -102,27 +154,21 @@ void WorldSession::handleEnabletaxiOpcode(WorldPacket& recvPacket)
 
     sLogger.debug("WORLD: Received CMSG_ENABLETAXI");
 
-    if (const auto creature = _player->getWorldMap()->getCreature(srlPacket.creatureGuid.getGuidLowPart()))
-        sendTaxiList(creature);
+    // cheating checks
+    Creature* unit = GetPlayer()->getCreatureWhenICanInteract(srlPacket.creatureGuid, UNIT_NPC_FLAG_FLIGHTMASTER);
+    if (!unit)
+    {
+        SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_TaxiTooFarAway).serialise().get());
+        return;
+    }
+
+    // unknown taxi node case
+    if (sendLearnNewTaxiNode(unit))
+        return;
+
+    // known taxi node case
+    sendTaxiMenu(unit);
 #endif
-}
-
-uint32_t getMountForNode(Player* player, TaxiNode* taxiNode)
-{
-    if (player->isTeamHorde())
-    {
-        const auto creatureProperties = sMySQLStore.getCreatureProperties(taxiNode->hordeMount);
-        if (creatureProperties != nullptr)
-            return creatureProperties->Male_DisplayID;
-    }
-    else
-    {
-        const auto creatureProperties = sMySQLStore.getCreatureProperties(taxiNode->allianceMount);
-        if (creatureProperties != nullptr)
-            return creatureProperties->Male_DisplayID;
-    }
-
-    return 6852;
 }
 
 void WorldSession::handleActivateTaxiOpcode(WorldPacket& recvPacket)
@@ -133,47 +179,27 @@ void WorldSession::handleActivateTaxiOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ACTIVATETAXI");
 
-    if (_player->hasUnitFlags(UNIT_FLAG_LOCK_PLAYER))
-        return;
-
-    const auto taxiPath = sTaxiMgr.GetTaxiPath(srlPacket.srcNode, srlPacket.destNode);
-    const auto taxiNode = sTaxiMgr.GetTaxiNode(srlPacket.srcNode);
-
-    if (taxiNode == nullptr || taxiPath == nullptr)
-        return;
-
-    const uint32_t currentNode = taxiNode->id;
-    const auto field = static_cast<uint8_t>((currentNode - 1) / 32);
-    const uint32_t subMask = 1 << ((currentNode - 1) % 32);
-
-    if ((_player->getTaxiMask(field) & subMask) != subMask)
+    Creature* npc = GetPlayer()->getCreatureWhenICanInteract(srlPacket.guid, UNIT_NPC_FLAG_FLIGHTMASTER);
+    if (!npc)
     {
-        SendPacket(SmsgActivatetaxireply(TaxiNodeError::UnspecificError).serialise().get());
+        SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_TaxiTooFarAway).serialise().get());
         return;
     }
 
-    if (!taxiPath->GetNodeCount())
+    if (!GetPlayer()->m_cheats.hasTaxiCheat)
     {
-        SendPacket(SmsgActivatetaxireply(TaxiNodeError::NoDirectPath).serialise().get());
-        return;
+        if (!GetPlayer()->m_taxi.isTaximaskNodeKnown(srlPacket.nodes[0]) || !GetPlayer()->m_taxi.isTaximaskNodeKnown(srlPacket.nodes[1]))
+        {
+            SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_TaxiNotVisited).serialise().get());
+            return;
+        }
     }
-
-    if (!_player->hasEnoughCoinage(taxiPath->getPrice()))
-    {
-        SendPacket(SmsgActivatetaxireply(TaxiNodeError::NotEnoughMoney).serialise().get());
-        return;
-    }
-
-    SendPacket(SmsgActivatetaxireply(TaxiNodeError::Ok).serialise().get());
 
     // interrupt all casts
     for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
         _player->interruptSpellWithSpellType(CurrentSpellType(i));
 
-    const uint32_t modelId = getMountForNode(_player, taxiNode);
-    _player->m_taxiMountDisplayId = modelId;
-
-    _player->startTaxiPath(taxiPath, modelId, 0);
+    GetPlayer()->activateTaxiPathTo(srlPacket.nodes, npc);
 }
 
 void WorldSession::handleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
@@ -184,69 +210,67 @@ void WorldSession::handleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ACTIVATETAXIEXPRESS");
 
-    if (_player->hasUnitFlags(UNIT_FLAG_LOCK_PLAYER))
-        return;
-
-    const auto taxiNode = sTaxiMgr.GetTaxiNode(srlPacket.pathParts[0]);
-    if (taxiNode == nullptr)
+    Creature* npc = GetPlayer()->getCreatureWhenICanInteract(srlPacket.guid, UNIT_NPC_FLAG_FLIGHTMASTER);
+    if (!npc)
     {
-        SendPacket(SmsgActivatetaxireply(TaxiNodeError::UnspecificError).serialise().get());
+        SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_TaxiTooFarAway).serialise().get());
         return;
     }
+    std::vector<uint32_t> nodes;
 
-    const auto taxiPath = sTaxiMgr.GetTaxiPath(srlPacket.pathParts[0], srlPacket.pathParts[1]);
-    if (taxiPath == nullptr || !taxiPath->GetNodeCount())
+    for (uint32_t i = 0; i < srlPacket.nodeCount; ++i)
     {
-        SendPacket(SmsgActivatetaxireply(TaxiNodeError::NoDirectPath).serialise().get());
-        return;
-    }
-
-    const uint32_t currentNode = taxiNode->id;
-    const auto field = static_cast<uint8_t>((currentNode - 1) / 32);
-    const uint32_t subMask = 1 << ((currentNode - 1) % 32);
-
-    if ((_player->getTaxiMask(field) & subMask) != subMask)
-    {
-        SendPacket(SmsgActivatetaxireply(TaxiNodeError::UnspecificError).serialise().get());
-        return;
-    }
-
-    if (taxiPath->GetID() == 766 || taxiPath->GetID() == 767 || taxiPath->GetID() == 771 || taxiPath->GetID() == 772)
-    {
-        SendPacket(SmsgActivatetaxireply(TaxiNodeError::NoDirectPath).serialise().get());
-        return;
-    }
-
-    uint32_t totalCost = taxiPath->getPrice();
-    for (uint32_t i = 2; i < srlPacket.nodeCount; ++i)
-    {
-        const auto additionalTaxiPath = sTaxiMgr.GetTaxiPath(srlPacket.pathParts[i - 1], srlPacket.pathParts[i]);
-        if (additionalTaxiPath == nullptr)
+        if (!GetPlayer()->m_taxi.isTaximaskNodeKnown(srlPacket.pathParts[i]) && !GetPlayer()->m_cheats.hasTaxiCheat)
+        {
+            SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_TaxiNotVisited).serialise().get());
             return;
+        }
 
-        totalCost += additionalTaxiPath->getPrice();
+        nodes.push_back(srlPacket.pathParts[i]);
     }
 
-    if (!_player->hasEnoughCoinage(totalCost))
-    {
-        SendPacket(SmsgActivatetaxireply(TaxiNodeError::NotEnoughMoney).serialise().get());
+    if (nodes.empty())
         return;
-    }
 
-    const uint32_t modelId = getMountForNode(_player, taxiNode);
-    _player->m_taxiMountDisplayId = modelId;
+    GetPlayer()->activateTaxiPathTo(nodes, npc);
+}
 
-    SendPacket(SmsgActivatetaxireply(TaxiNodeError::Ok).serialise().get());
+void WorldSession::handleMoveSplineDoneOpcode(WorldPacket& recvData)
+{
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "WORLD: Received CMSG_MOVE_SPLINE_DONE");
 
-    // build path list
-    for (uint32_t i = 2; i < srlPacket.nodeCount; ++i)
+    WoWGuid guid;
+    recvData >> guid;
+
+    MovementInfo movementInfo;  // used only for proper packet read
+    movementInfo.readMovementInfo(recvData, recvData.GetOpcode());
+
+    recvData.read_skip<uint32_t>();   // spline id
+
+    uint32_t curDest = GetPlayer()->m_taxi.getTaxiDestination();
+    if (curDest)
     {
-        const auto additionalTaxiPath = sTaxiMgr.GetTaxiPath(srlPacket.pathParts[i - 1], srlPacket.pathParts[i]);
-        if (additionalTaxiPath == nullptr)
-            return;
+        DBC::Structures::TaxiNodesEntry const* curDestNode = sTaxiNodesStore.LookupEntry(curDest);
 
-        _player->m_taxiPaths.push_back(additionalTaxiPath);
+        // far teleport case
+        if (curDestNode && curDestNode->mapid != GetPlayer()->GetMapId() && GetPlayer()->getMovementManager()->getCurrentMovementGeneratorType() == FLIGHT_MOTION_TYPE)
+        {
+            if (FlightPathMovementGenerator* flight = dynamic_cast<FlightPathMovementGenerator*>(GetPlayer()->getMovementManager()->getCurrentMovementGenerator()))
+            {
+                // short preparations to continue flight
+                flight->setCurrentNodeAfterTeleport();
+                DBC::Structures::TaxiPathNodeEntry const* node = flight->getPath()[flight->getCurrentNode()];
+                flight->skipCurrentNode();
+
+                GetPlayer()->m_taxi.setNodeAfterTeleport(node->NodeIndex);
+                GetPlayer()->safeTeleport(curDestNode->mapid, 0, LocationVector(node->x, node->y, node->z, GetPlayer()->GetOrientation()));
+            }
+        }
     }
 
-    _player->startTaxiPath(taxiPath, modelId, 0);
+    // at this point only 1 node is expected (final destination)
+    if (GetPlayer()->m_taxi.getPath().size() != 1)
+        return;
+
+    GetPlayer()->cleanupAfterTaxiFlight();
 }

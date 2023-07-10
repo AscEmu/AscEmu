@@ -41,8 +41,8 @@
 #include "Spell/SpellMgr.hpp"
 
 // DB version
-static const char* REQUIRED_CHAR_DB_VERSION = "20220415-00_account_instance_times";
-static const char* REQUIRED_WORLD_DB_VERSION = "20230709-02_hardcoded_ai_scripts";
+static const char* REQUIRED_CHAR_DB_VERSION = "20230710-00_characters_taxi";
+static const char* REQUIRED_WORLD_DB_VERSION = "20230710-00_taxi_level_data";
 
 volatile bool Master::m_stopEvent = false;
 

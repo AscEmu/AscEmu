@@ -382,6 +382,8 @@ void WorldSession::LogoutPlayer(bool Save)
         // ;)
         _player->dismount();
 
+        _player->cleanupAfterTaxiFlight();
+
         _player->removeAllAuras();
         if (_player->IsInWorld())
             _player->removeFromWorld();
@@ -975,6 +977,7 @@ void WorldSession::loadHandlers() // Classic
     WorldPacketHandlers[CMSG_NPC_TEXT_QUERY].handler = &WorldSession::handleNpcTextQueryOpcode;
     WorldPacketHandlers[CMSG_BINDER_ACTIVATE].handler = &WorldSession::handleBinderActivateOpcode;
     WorldPacketHandlers[CMSG_ACTIVATETAXIEXPRESS].handler = &WorldSession::handleMultipleActivateTaxiOpcode;
+    WorldPacketHandlers[CMSG_MOVE_SPLINE_DONE].handler = &WorldSession::handleMoveSplineDoneOpcode;
     // Item / Vendors
     WorldPacketHandlers[CMSG_SWAP_INV_ITEM].handler = &WorldSession::handleSwapInvItemOpcode;
     WorldPacketHandlers[CMSG_SWAP_ITEM].handler = &WorldSession::handleSwapItemOpcode;
@@ -1507,6 +1510,7 @@ void WorldSession::loadHandlers() // TBC
     WorldPacketHandlers[CMSG_NPC_TEXT_QUERY].handler = &WorldSession::handleNpcTextQueryOpcode;
     WorldPacketHandlers[CMSG_BINDER_ACTIVATE].handler = &WorldSession::handleBinderActivateOpcode;
     WorldPacketHandlers[CMSG_ACTIVATETAXIEXPRESS].handler = &WorldSession::handleMultipleActivateTaxiOpcode;
+    WorldPacketHandlers[CMSG_MOVE_SPLINE_DONE].handler = &WorldSession::handleMoveSplineDoneOpcode;
     // Item / Vendors
     WorldPacketHandlers[CMSG_SWAP_INV_ITEM].handler = &WorldSession::handleSwapInvItemOpcode;
     WorldPacketHandlers[CMSG_SWAP_ITEM].handler = &WorldSession::handleSwapItemOpcode;
@@ -2043,6 +2047,7 @@ void WorldSession::loadHandlers() // WotLK
     WorldPacketHandlers[CMSG_NPC_TEXT_QUERY].handler = &WorldSession::handleNpcTextQueryOpcode;
     WorldPacketHandlers[CMSG_BINDER_ACTIVATE].handler = &WorldSession::handleBinderActivateOpcode;
     WorldPacketHandlers[CMSG_ACTIVATETAXIEXPRESS].handler = &WorldSession::handleMultipleActivateTaxiOpcode;
+    WorldPacketHandlers[CMSG_MOVE_SPLINE_DONE].handler = &WorldSession::handleMoveSplineDoneOpcode;
     // Item / Vendors
     WorldPacketHandlers[CMSG_SWAP_INV_ITEM].handler = &WorldSession::handleSwapInvItemOpcode;
     WorldPacketHandlers[CMSG_SWAP_ITEM].handler = &WorldSession::handleSwapItemOpcode;
@@ -2615,6 +2620,7 @@ void WorldSession::loadHandlers() // Cata
     WorldPacketHandlers[CMSG_NPC_TEXT_QUERY].handler = &WorldSession::handleNpcTextQueryOpcode;
     WorldPacketHandlers[CMSG_BINDER_ACTIVATE].handler = &WorldSession::handleBinderActivateOpcode;
     WorldPacketHandlers[CMSG_ACTIVATETAXIEXPRESS].handler = &WorldSession::handleMultipleActivateTaxiOpcode;
+    WorldPacketHandlers[CMSG_MOVE_SPLINE_DONE].handler = &WorldSession::handleMoveSplineDoneOpcode;
 
     // Item / Vendors
     WorldPacketHandlers[CMSG_SWAP_INV_ITEM].handler = &WorldSession::handleSwapInvItemOpcode;
@@ -3229,6 +3235,7 @@ void WorldSession::loadHandlers() // Mop
     WorldPacketHandlers[CMSG_NPC_TEXT_QUERY].handler = &WorldSession::handleNpcTextQueryOpcode;
     WorldPacketHandlers[CMSG_BINDER_ACTIVATE].handler = &WorldSession::handleBinderActivateOpcode;
     //WorldPacketHandlers[CMSG_ACTIVATETAXIEXPRESS].handler = &WorldSession::handleMultipleActivateTaxiOpcode;
+    //WorldPacketHandlers[CMSG_MOVE_SPLINE_DONE].handler = &WorldSession::handleMoveSplineDoneOpcode;
 
     // Item / Vendors
     WorldPacketHandlers[CMSG_SWAP_INV_ITEM].handler = &WorldSession::handleSwapInvItemOpcode;

@@ -107,7 +107,7 @@ void WriteLinearPath(Spline<int32_t> const& spline, ByteBuffer& data)
         for (uint32_t i = 1; i < last_idx; ++i)
         {
             offset = middle - real_path[i];
-            data << LocationVector(offset.x, offset.y, offset.z);
+            data.appendPackXYZ(offset.x, offset.y, offset.z);
         }
     }
 }
