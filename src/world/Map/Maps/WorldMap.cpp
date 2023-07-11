@@ -2898,14 +2898,23 @@ void WorldMap::getFullTerrainStatusForPosition(uint32_t phaseMask, float x, floa
 
         if (liquidType && liquidType < 21 && areaEntry)
         {
-            uint32 overrideLiquid = areaEntry->liquid_type_override[liquidFlagType];
+#if VERSION_STRING > Classic
+            uint32_t overrideLiquid = areaEntry->liquid_type_override[liquidFlagType];
             if (!overrideLiquid && areaEntry->zone)
             {
                 DBC::Structures::AreaTableEntry const* zoneEntry = sAreaStore.LookupEntry(areaEntry->zone);
                 if (zoneEntry)
                     overrideLiquid = zoneEntry->liquid_type_override[liquidFlagType];
             }
-
+#else
+            uint32_t overrideLiquid = areaEntry->liquid_type_override;
+            if(!overrideLiquid && areaEntry->zone)
+            {
+                DBC::Structures::AreaTableEntry const* zoneEntry = sAreaStore.LookupEntry(areaEntry->zone);
+                if (zoneEntry)
+                    overrideLiquid = zoneEntry->liquid_type_override;
+            }
+#endif
             if (DBC::Structures::LiquidTypeEntry const* overrideData = sLiquidTypeStore.LookupEntry(overrideLiquid))
             {
                 liquidType = overrideLiquid;

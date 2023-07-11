@@ -7815,8 +7815,8 @@ DBC::Structures::MountCapabilityEntry const* Unit::getMountCapability(uint32_t m
     uint32_t zoneId = 0;
     uint32_t areaId = 0;
 
-    if (GetZoneId())
-        zoneId = GetZoneId();
+    if (getZoneId())
+        zoneId = getZoneId();
 
     if (GetArea())
         areaId = GetArea()->id;

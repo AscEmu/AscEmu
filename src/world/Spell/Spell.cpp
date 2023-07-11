@@ -3092,7 +3092,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
 
 #if VERSION_STRING < WotLK
         // Check zone
-        if (itemProperties->ZoneNameID > 0 && itemProperties->ZoneNameID != p_caster->GetZoneId())
+        if (itemProperties->ZoneNameID > 0 && itemProperties->ZoneNameID != p_caster->getZoneId())
             return SPELL_FAILED_NOT_HERE;
         // Check map
         if (itemProperties->MapID > 0 && itemProperties->MapID != p_caster->GetMapId())
