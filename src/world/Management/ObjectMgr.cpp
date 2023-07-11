@@ -552,7 +552,7 @@ Corpse* ObjectMgr::LoadCorpse(uint32 guid)
     Field* fields = result->Fetch();
     Corpse* pCorpse = new Corpse(HIGHGUID_TYPE_CORPSE, fields[0].GetUInt32());
     pCorpse->SetPosition(fields[1].GetFloat(), fields[2].GetFloat(), fields[3].GetFloat(), fields[4].GetFloat());
-    pCorpse->SetZoneId(fields[5].GetUInt32());
+    pCorpse->setZoneId(fields[5].GetUInt32());
     pCorpse->SetMapId(fields[6].GetUInt32());
     pCorpse->setCorpseDataFromDbString(fields[7].GetString());
     if (pCorpse->getDisplayId() == 0)
@@ -1055,7 +1055,7 @@ void ObjectMgr::LoadCorpses(WorldMap* mgr)
             Field* fields = result->Fetch();
             Corpse* pCorpse = new Corpse(HIGHGUID_TYPE_CORPSE, fields[0].GetUInt32());
             pCorpse->SetPosition(fields[1].GetFloat(), fields[2].GetFloat(), fields[3].GetFloat(), fields[4].GetFloat());
-            pCorpse->SetZoneId(fields[5].GetUInt32());
+            pCorpse->setZoneId(fields[5].GetUInt32());
             pCorpse->SetMapId(fields[6].GetUInt32());
             pCorpse->SetInstanceID(fields[7].GetUInt32());
             pCorpse->setCorpseDataFromDbString(fields[8].GetString());

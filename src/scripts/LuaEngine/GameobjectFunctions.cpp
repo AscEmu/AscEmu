@@ -288,7 +288,7 @@ int LuaGameObject::GetZoneId(lua_State* L, GameObject* ptr)
         return 1;
     }
 
-    lua_pushinteger(L, ptr->GetZoneId());
+    lua_pushinteger(L, ptr->getZoneId());
     return 1;
 }
 

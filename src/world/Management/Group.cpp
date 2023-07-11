@@ -905,7 +905,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
         *data << uint16(pPlayer->getLevel());
 
     if (mask & GROUP_UPDATE_FLAG_ZONE)
-        *data << uint16(pPlayer->GetZoneId());
+        *data << uint16(pPlayer->getZoneId());
 
     if (mask & GROUP_UPDATE_FLAG_POSITION)
     {

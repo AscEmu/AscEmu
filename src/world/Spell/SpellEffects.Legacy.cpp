@@ -2360,7 +2360,7 @@ void Spell::SpellEffectBind(uint8_t effectIndex)
         return;
 
     WorldPacket data(45);
-    uint32 areaid = playerTarget->GetZoneId();
+    uint32 areaid = playerTarget->getZoneId();
     uint32 mapid = playerTarget->GetMapId();
     if (getSpellInfo()->getEffectMiscValue(effectIndex))
     {
@@ -2962,7 +2962,7 @@ void Spell::SpellEffectSummonWild(uint8_t effectIndex)  // Summon Wild
         if (Creature* p = m_caster->getWorldMap()->createCreature(cr_entry))
         {
             p->Load(properties, tempx, tempy, z);
-            p->SetZoneId(m_caster->GetZoneId());
+            p->setZoneId(m_caster->getZoneId());
 
             if (p->GetCreatureProperties()->Faction == 35)
             {
@@ -4768,7 +4768,7 @@ void Spell::SpellEffectSummonPlayer(uint8_t /*effectIndex*/)
     if (m_caster->getWorldMap()->getBaseMap()->getMapInfo() && playerTarget->getLevel() < m_caster->getWorldMap()->getBaseMap()->getMapInfo()->minlevel)    // we need some blizzlike message that player needs level xx - feel free to add it ;)
         return;
 
-    playerTarget->sendSummonRequest(m_caster->getGuidLow(), m_caster->GetZoneId(), m_caster->GetMapId(), m_caster->GetInstanceID(), m_caster->GetPosition());
+    playerTarget->sendSummonRequest(m_caster->getGuidLow(), m_caster->getZoneId(), m_caster->GetMapId(), m_caster->GetInstanceID(), m_caster->GetPosition());
 }
 
 void Spell::SpellEffectActivateObject(uint8_t effectIndex) // Activate Object

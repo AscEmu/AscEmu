@@ -662,8 +662,12 @@ void AIInterface::castAISpell(CreatureAISpells* aiSpell)
         if (aiSpell->getTargetFunction() != nullptr)
         {
             mCurrentSpellTarget = aiSpell->getTargetFunction();
-            mLastCastedSpell = aiSpell;
-            getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+
+            if (mCurrentSpellTarget)
+            {
+                mLastCastedSpell = aiSpell;
+                getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+            }
         }
     }
     default:
@@ -3929,7 +3933,7 @@ void AIInterface::UpdateAISpells()
                     continue;
 
                 // hp range
-                if (!AISpell->isHpInPercentRange(getUnit()->getHealthPct()))
+                if (!AISpell->isHpInPercentRange(getUnit()->getHealthPct()) && AISpell->mTargetType != TARGET_RANDOM_FRIEND)
                     continue;
 
                 // Check if spell requires current target
@@ -4010,8 +4014,12 @@ void AIInterface::UpdateAISpells()
                     if (usedSpell->getTargetFunction() != nullptr)
                     {
                         mCurrentSpellTarget = usedSpell->getTargetFunction();
-                        mLastCastedSpell = usedSpell;
-                        getUnit()->castSpell(mCurrentSpellTarget, usedSpell->mSpellInfo, usedSpell->mIsTriggered);
+
+                        if (mCurrentSpellTarget)
+                        {
+                            mLastCastedSpell = usedSpell;
+                            getUnit()->castSpell(mCurrentSpellTarget, usedSpell->mSpellInfo, usedSpell->mIsTriggered);
+                        }
                     }
                 }
                 default:

@@ -1934,7 +1934,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         {
             auto areaEntry = p_caster->GetArea();
             if (areaEntry == nullptr)
-                areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(p_caster->GetZoneId());
+                areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(p_caster->getZoneId());
             if (areaEntry == nullptr)
                 return SPELL_FAILED_NOT_HERE;
 
@@ -3099,7 +3099,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
             return SPELL_FAILED_NOT_HERE;
 #else
         // Check zone
-        if (itemProperties->ZoneNameID > 0 && itemProperties->ZoneNameID != p_caster->GetZoneId())
+        if (itemProperties->ZoneNameID > 0 && itemProperties->ZoneNameID != p_caster->getZoneId())
             return SPELL_FAILED_INCORRECT_AREA;
         // Check map
         if (itemProperties->MapID > 0 && itemProperties->MapID != p_caster->GetMapId())

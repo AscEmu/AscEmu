@@ -118,7 +118,7 @@ void Corpse::saveToDB()
         << "', '" << GetPositionY()
         << "', '" << GetPositionZ()
         << "', '" << GetOrientation()
-        << "', '" << GetZoneId()
+        << "', '" << getZoneId()
         << "', '" << GetMapId()
 
         << "', '";

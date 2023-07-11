@@ -1026,7 +1026,7 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
         for (SpellAreaForAreaMap::const_iterator itr = saBounds.first; itr != saBounds.second; ++itr)
         {
             const auto spellArea = itr->second;
-            if (spellArea->autoCast && spellArea->fitsToRequirements(plr, plr->GetZoneId(), plr->getAreaId()))
+            if (spellArea->autoCast && spellArea->fitsToRequirements(plr, plr->getZoneId(), plr->getAreaId()))
                 if (!plr->hasAurasWithId(spellArea->spellId))
                     plr->castSpell(plr, spellArea->spellId, true);
         }

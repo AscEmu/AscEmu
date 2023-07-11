@@ -122,7 +122,7 @@ void WeatherMgr::loadFromDB()
 
 void WeatherMgr::sendWeather(Player* plr)
 {
-    auto zoneWeatherItr = m_zoneWeathers.find(plr->GetZoneId());
+    auto zoneWeatherItr = m_zoneWeathers.find(plr->getZoneId());
     if (zoneWeatherItr == m_zoneWeathers.end())
     {
         plr->getSession()->SendPacket(AscEmu::Packets::SmsgWeather(0, 0, 0).serialise().get());

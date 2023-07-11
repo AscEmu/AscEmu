@@ -261,6 +261,9 @@ bool ChatHandler::HandlePositionCommand(const char* /*args*/, WorldSession* sess
     SystemMessage(session, "posY: %f", pos.y);
     SystemMessage(session, "posZ: %f", pos.z);
     SystemMessage(session, "posO: %f", pos.o);
+
+    SystemMessage(session, "Outdoor: %u", selected_unit->isOutdoors());
+    SystemMessage(session, "posZ_floor: %f", selected_unit->getFloorZ());
     return true;
 }
 
@@ -1161,7 +1164,7 @@ bool ChatHandler::HandleInitWorldStatesCommand(const char* /*args*/, WorldSessio
 {
     Player* p = session->GetPlayer();
 
-    uint32 zone = p->GetZoneId();
+    uint32 zone = p->getZoneId();
     if (zone == 0)
         zone = p->getAreaId();
 
@@ -1177,7 +1180,7 @@ bool ChatHandler::HandleClearWorldStatesCommand(const char* /*args*/, WorldSessi
 {
     Player* p = session->GetPlayer();
 
-    uint32 zone = p->GetZoneId();
+    uint32 zone = p->getZoneId();
     if (zone == 0)
         zone = p->getAreaId();
 
@@ -1186,7 +1189,7 @@ bool ChatHandler::HandleClearWorldStatesCommand(const char* /*args*/, WorldSessi
     WorldPacket data(SMSG_INIT_WORLD_STATES, 16);
 
     data << uint32(p->GetMapId());
-    data << uint32(p->GetZoneId());
+    data << uint32(p->getZoneId());
     data << uint32(p->getAreaId());
     data << uint16(0);
 

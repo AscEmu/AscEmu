@@ -3321,6 +3321,8 @@ bool Object::SetPosition(const LocationVector & v, [[maybe_unused]]bool allowPor
         m_WorldMap->changeObjectLocation(this);
     }
 
+    updatePositionData();
+
     return result;
 }
 
@@ -3375,11 +3377,36 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
         }
 #endif
 
+        updatePositionData();
+
         return result;
     }
 
     sLogger.failure("Object::SetPosition one of the position values in NaN, returning false!");
     return false;
+}
+
+void Object::updatePositionData()
+{
+    if (!IsInWorld())
+        return;
+
+    PositionFullTerrainStatus data;
+    getWorldMap()->getFullTerrainStatusForPosition(GetPhase(), GetPositionX(), GetPositionY(), GetPositionZ(), data, MAP_ALL_LIQUIDS, getCollisionHeight());
+
+    if (DBC::Structures::AreaTableEntry const* area = sAreaStore.LookupEntry(data.areaId))
+    {
+        if (area->zone == 0 && m_zoneId != area->id)
+            m_zoneId = area->id;
+        else if (area->zone != 0 && m_zoneId != area->zone)
+            m_zoneId = area->zone;
+
+        m_areaId = area->id;
+    }
+
+    m_outdoors = data.outdoors;
+    m_staticFloorZ = data.floorZ;
+    m_liquidStatus = data.liquidStatus;
 }
 
 void Object::setUpdateBits(UpdateMask* updateMask, Player* /*target*/) const
@@ -3457,6 +3484,8 @@ void Object::PushToWorld(WorldMap* mgr)
 
     // correct incorrect instance id's
     m_inQueue = false;
+
+    updatePositionData();
 
     event_Relocate();
 
@@ -3901,7 +3930,7 @@ void Object::deactivate(WorldMap* mgr)
     Active = false;
 }
 
-void Object::SetZoneId(uint32 newZone)
+void Object::setZoneId(uint32 newZone)
 {
     m_zoneId = newZone;
 

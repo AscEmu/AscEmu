@@ -7009,7 +7009,7 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
                     team = TEAM_ALLIANCE;
 
                 const auto area = GetArea();
-                sWorld.sendZoneUnderAttackMessage(area != nullptr ? area->id : attacker->GetZoneId(), team);
+                sWorld.sendZoneUnderAttackMessage(area != nullptr ? area->id : attacker->getZoneId(), team);
             }
         }
 

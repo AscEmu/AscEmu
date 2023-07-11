@@ -1981,7 +1981,7 @@ void WorldMap::sendPvPCaptureMessage(int32_t ZoneMask, uint32_t ZoneId, const ch
         Player* plr = itr->second;
         ++itr;
 
-        if ((ZoneMask != ZONE_MASK_ALL && plr->GetZoneId() != static_cast<uint32_t>(ZoneMask)))
+        if ((ZoneMask != ZONE_MASK_ALL && plr->getZoneId() != static_cast<uint32_t>(ZoneMask)))
             continue;
 
         plr->getSession()->SendPacket(SmsgDefenseMessage(ZoneId, msgbuf).serialise().get());
@@ -2005,7 +2005,7 @@ void WorldMap::sendPacketToPlayersInZone(uint32_t zone, WorldPacket* packet) con
     {
         Player* p = itr.second;
 
-        if ((p->getSession() != nullptr) && (p->GetZoneId() == zone))
+        if ((p->getSession() != nullptr) && (p->getZoneId() == zone))
             p->getSession()->SendPacket(packet);
     }
 }
@@ -2798,6 +2798,150 @@ ZLiquidStatus WorldMap::getLiquidStatus(uint32_t phaseMask, LocationVector pos, 
         }
     }
     return result;
+}
+
+void WorldMap::getFullTerrainStatusForPosition(uint32_t phaseMask, float x, float y, float z, PositionFullTerrainStatus& data, uint8_t reqLiquidType, float collisionHeight) const
+{
+    if (!getTerrain())
+        return;
+
+    VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager();
+    VMAP::AreaAndLiquidData vmapData;
+    VMAP::AreaAndLiquidData dynData;
+    VMAP::AreaAndLiquidData* wmoData = nullptr;
+
+    TerrainTile* gmap = getTerrain()->getTile(x, y);
+
+    vmgr->getAreaAndLiquidData(getBaseMap()->getMapId(), x, y, z, reqLiquidType, vmapData);
+    _dynamicTree.getAreaAndLiquidData(x, y, z, phaseMask, reqLiquidType, dynData);
+
+    uint32 gridAreaId = 0;
+    float gridMapHeight = INVALID_HEIGHT;
+    if (gmap)
+    {
+        gridAreaId = gmap->m_map.getArea(x, y);
+        gridMapHeight = gmap->m_map.getHeight(x, y);
+    }
+
+    bool useGridLiquid = true;
+
+    // floor is the height we are closer to (but only if above)
+    data.floorZ = VMAP_INVALID_HEIGHT;
+    if (gridMapHeight > INVALID_HEIGHT && G3D::fuzzyGe(z, gridMapHeight - GROUND_HEIGHT_TOLERANCE))
+        data.floorZ = gridMapHeight;
+    if (vmapData.floorZ > VMAP_INVALID_HEIGHT &&
+        G3D::fuzzyGe(z, vmapData.floorZ - GROUND_HEIGHT_TOLERANCE) &&
+        (G3D::fuzzyLt(z, gridMapHeight - GROUND_HEIGHT_TOLERANCE) || vmapData.floorZ > gridMapHeight))
+    {
+        data.floorZ = vmapData.floorZ;
+        wmoData = &vmapData;
+    }
+    // NOTE: Objects will not detect a case when a wmo providing area/liquid despawns from under them
+    // but this is fine as these kind of objects are not meant to be spawned and despawned a lot
+    // example: Lich King platform
+    if (dynData.floorZ > VMAP_INVALID_HEIGHT &&
+        G3D::fuzzyGe(z, dynData.floorZ - GROUND_HEIGHT_TOLERANCE) &&
+        (G3D::fuzzyLt(z, gridMapHeight - GROUND_HEIGHT_TOLERANCE) || dynData.floorZ > gridMapHeight) &&
+        (G3D::fuzzyLt(z, vmapData.floorZ - GROUND_HEIGHT_TOLERANCE) || dynData.floorZ > vmapData.floorZ))
+    {
+        data.floorZ = dynData.floorZ;
+        wmoData = &dynData;
+    }
+
+    if (wmoData)
+    {
+        if (wmoData->areaInfo)
+        {
+            data.areaInfo.emplace(wmoData->areaInfo->adtId, wmoData->areaInfo->rootId, wmoData->areaInfo->groupId, wmoData->areaInfo->mogpFlags);
+            // wmo found
+            DBC::Structures::WMOAreaTableEntry const* wmoEntry = GetWMOAreaTableEntryByTriple(wmoData->areaInfo->rootId, wmoData->areaInfo->adtId, wmoData->areaInfo->groupId);
+            data.outdoors = (wmoData->areaInfo->mogpFlags & 0x8) != 0;
+            if (wmoEntry)
+            {
+                data.areaId = wmoEntry->areaId;
+                if (wmoEntry->flags & 4)
+                    data.outdoors = true;
+                else if (wmoEntry->flags & 2)
+                    data.outdoors = false;
+            }
+
+            if (!data.areaId)
+                data.areaId = gridAreaId;
+
+            useGridLiquid = !isInWMOInterior(wmoData->areaInfo->mogpFlags);
+        }
+    }
+    else
+    {
+        data.outdoors = true;
+        data.areaId = gridAreaId;
+        if (DBC::Structures::AreaTableEntry const* areaEntry = sAreaStore.LookupEntry(data.areaId))
+            data.outdoors = (areaEntry->flags & (MapManagement::AreaManagement::AreaFlags::AREA_FLAG_INSIDE | MapManagement::AreaManagement::AreaFlags::AREA_FLAG_OUTSIDE)) != MapManagement::AreaManagement::AreaFlags::AREA_FLAG_INSIDE;
+    }
+
+    if (!data.areaId)
+        data.areaId = getBaseMap()->getMapEntry()->linked_zone;
+
+    DBC::Structures::AreaTableEntry const* areaEntry = sAreaStore.LookupEntry(data.areaId);
+
+    // liquid processing
+    data.liquidStatus = LIQUID_MAP_NO_WATER;
+    if (wmoData && wmoData->liquidInfo && wmoData->liquidInfo->level > wmoData->floorZ)
+    {
+        uint32 liquidType = wmoData->liquidInfo->type;
+        if (getBaseMap()->getMapId() == 530 && liquidType == 2) // gotta love blizzard hacks
+            liquidType = 15;
+
+        uint32 liquidFlagType = 0;
+        if (DBC::Structures::LiquidTypeEntry const* liquidData = sLiquidTypeStore.LookupEntry(liquidType))
+            liquidFlagType = liquidData->Type;
+
+        if (liquidType && liquidType < 21 && areaEntry)
+        {
+            uint32 overrideLiquid = areaEntry->liquid_type_override[liquidFlagType];
+            if (!overrideLiquid && areaEntry->zone)
+            {
+                DBC::Structures::AreaTableEntry const* zoneEntry = sAreaStore.LookupEntry(areaEntry->zone);
+                if (zoneEntry)
+                    overrideLiquid = zoneEntry->liquid_type_override[liquidFlagType];
+            }
+
+            if (DBC::Structures::LiquidTypeEntry const* overrideData = sLiquidTypeStore.LookupEntry(overrideLiquid))
+            {
+                liquidType = overrideLiquid;
+                liquidFlagType = overrideData->Type;
+            }
+        }
+
+        data.liquidInfo.emplace();
+        data.liquidInfo->level = wmoData->liquidInfo->level;
+        data.liquidInfo->depth_level = wmoData->floorZ;
+        data.liquidInfo->entry = liquidType;
+        data.liquidInfo->type_flags = 1 << liquidFlagType;
+
+        float delta = wmoData->liquidInfo->level - z;
+        if (delta > collisionHeight)
+            data.liquidStatus = LIQUID_MAP_UNDER_WATER;
+        else if (delta > 0.0f)
+            data.liquidStatus = LIQUID_MAP_IN_WATER;
+        else if (delta > -0.1f)
+            data.liquidStatus = LIQUID_MAP_WATER_WALK;
+        else
+            data.liquidStatus = LIQUID_MAP_ABOVE_WATER;
+    }
+    // look up liquid data from grid map
+    if (gmap && useGridLiquid)
+    {
+        LiquidData gridMapLiquid;
+        ZLiquidStatus gridMapStatus = gmap->m_map.getLiquidStatus(LocationVector(x, y, z), reqLiquidType, &gridMapLiquid, collisionHeight);
+        if (gridMapStatus != LIQUID_MAP_NO_WATER && (!wmoData || gridMapLiquid.level > wmoData->floorZ))
+        {
+            if (getBaseMap()->getMapId() == 530 && gridMapLiquid.entry == 2)
+                gridMapLiquid.entry = 15;
+            data.liquidInfo = gridMapLiquid;
+            data.liquidStatus = gridMapStatus;
+        }
+    }
 }
 
 float WorldMap::getWaterLevel(float x, float y)

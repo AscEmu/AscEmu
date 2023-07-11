@@ -618,7 +618,7 @@ void World::sendZoneMessage(WorldPacket* worldPacket, uint32_t zoneId, WorldSess
     {
         if (activeSessions->second->GetPlayer() && activeSessions->second->GetPlayer()->IsInWorld() && activeSessions->second != sendToSelf)
         {
-            if (activeSessions->second->GetPlayer()->GetZoneId() == zoneId)
+            if (activeSessions->second->GetPlayer()->getZoneId() == zoneId)
                 activeSessions->second->SendPacket(worldPacket);
         }
     }

@@ -429,6 +429,8 @@ bool SpellInfo::isNegativeAura() const
         case 72293:
         // Deathbringer Saurfang - Rune of Blood
         case 72410:
+        // Lady Deathwhisper trash - Darkreckoning
+        case 69483:
             // These should be negative
             return true;
         default:

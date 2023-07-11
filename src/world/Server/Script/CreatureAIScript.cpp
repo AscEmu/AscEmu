@@ -356,6 +356,11 @@ void CreatureAIScript::setRooted(bool set)
     _creature->setControlled(set, UNIT_STATE_ROOTED);
 }
 
+void CreatureAIScript::setDisableGravity(bool set)
+{
+    _creature->setMoveDisableGravity(set);
+}
+
 void CreatureAIScript::setFlyMode(bool fly)
 {
     if (fly && !_creature->IsFlying())
@@ -560,6 +565,11 @@ bool CreatureAIScript::hasWaypoints(uint32_t pathId)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // combat setup
+void CreatureAIScript::setImmuneToAll(bool apply)
+{
+    _creature->getAIInterface()->setImmuneToPC(apply);
+    _creature->getAIInterface()->setImmuneToNPC(apply);
+}
 
 bool CreatureAIScript::canEnterCombat()
 {
@@ -1386,6 +1396,10 @@ bool CreatureAIScript::isValidUnitTarget(Object* pObject, TargetFilter pFilter, 
         return false;
 
     if (pObject->GetInstanceID() != getCreature()->GetInstanceID())
+        return false;
+
+    // dont add Targets in another Room or Floor
+    if (!pObject->IsWithinLOSInMap(getCreature()))
         return false;
 
     Unit* UnitTarget = static_cast<Unit*>(pObject);

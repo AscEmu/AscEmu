@@ -58,7 +58,7 @@ namespace AscEmu::Packets
                 packet << uint16_t(player->getPower(player->getPowerType()));
                 packet << uint16_t(player->getMaxPower(player->getPowerType()));
                 packet << uint16_t(player->getLevel());
-                packet << uint16_t(player->GetZoneId());
+                packet << uint16_t(player->getZoneId());
                 packet << uint16_t(player->GetPositionX());
                 packet << uint16_t(player->GetPositionY());
 

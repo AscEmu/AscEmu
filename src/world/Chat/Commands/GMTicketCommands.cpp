@@ -59,7 +59,7 @@ bool ChatHandler::HandleGMTicketListCommand(const char* /*args*/, WorldSession* 
         uint32 zone = 0;
         if (plr->IsInWorld())
         {
-            zone = plr->GetZoneId();
+            zone = plr->getZoneId();
         }
         ss << "GmTicket 0," << (*itr)->name << "," << (*itr)->level << ",0," << zone;
         chn->say(cplr, ss.str(), cplr, true);

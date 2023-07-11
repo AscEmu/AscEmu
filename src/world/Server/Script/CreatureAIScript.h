@@ -206,6 +206,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // movement
     void setRooted(bool set);
+    void setDisableGravity(bool set);
     bool isRooted();
 
     void setFlyMode(bool fly);
@@ -245,6 +246,7 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // combat setup
 public:
+    void setImmuneToAll(bool apply);
     bool canEnterCombat();
     void setCanEnterCombat(bool enterCombat);
     bool _isInCombat();
