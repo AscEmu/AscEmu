@@ -489,7 +489,7 @@ public:
 
     // Update
     void Update(unsigned long time_passed);
-    void UpdateAgent(unsigned long time_passed);
+    void updateAIScript(unsigned long time_passed);
     void updateTargets(unsigned long time_passed);
 
     // Attacking

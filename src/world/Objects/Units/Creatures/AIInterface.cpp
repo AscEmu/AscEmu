@@ -525,6 +525,9 @@ void AIInterface::Update(unsigned long time_passed)
         if (!updateTarget())
             return;
 
+        // Update Database AI Scripts
+        updateAIScript(time_passed);
+
         // Cast a Spell,Do Ranged or simply Melee
         if (m_Unit->isTotem())
             updateTotem(time_passed);
@@ -543,7 +546,7 @@ void AIInterface::Update(unsigned long time_passed)
     updateEmotes(time_passed);
 }
 
-void AIInterface::UpdateAgent(unsigned long time_passed)
+void AIInterface::updateAIScript(unsigned long time_passed)
 {
     mSpellWaitTimer.updateTimer(time_passed);
 
