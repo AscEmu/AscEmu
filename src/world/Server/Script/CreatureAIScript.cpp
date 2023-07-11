@@ -209,8 +209,8 @@ void CreatureAIScript::_internalAIUpdate(unsigned long time_passed)
 void CreatureAIScript::_internalOnScriptPhaseChange()
 {
     sLogger.debug("CreatureAIScript::_internalOnScriptPhaseChange() called");
-
-    getCreature()->GetScript()->OnScriptPhaseChange(getScriptPhase());
+    if (getCreature()->GetScript())
+        getCreature()->GetScript()->OnScriptPhaseChange(getScriptPhase());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -238,7 +238,7 @@ Creature* CreatureAIScript::getNearestCreature(uint32_t entry)
 
 Creature* CreatureAIScript::getNearestCreature(float posX, float posY, float posZ, uint32_t entry)
 {
-    if (_creature->getWorldMap()->getInterface() == nullptr)
+    if (_creature->getWorldMap() == nullptr || _creature->getWorldMap()->getInterface() == nullptr)
         return nullptr;
 
     return _creature->getWorldMap()->getInterface()->getCreatureNearestCoords(posX, posY, posZ, entry);

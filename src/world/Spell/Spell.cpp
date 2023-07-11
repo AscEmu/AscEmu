@@ -1080,7 +1080,7 @@ void Spell::finish(bool successful)
                 if (uniqueHittedTargets.size() == 1)
                     spellTarget = getPlayerCaster()->getWorldMapObject(uniqueHittedTargets.front().first);
 
-                if (spellTarget->isCreatureOrPlayer())
+                if (spellTarget && spellTarget->isCreatureOrPlayer())
                     getPlayerCaster()->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2, getSpellInfo()->getId(), 0, 0, spellTarget->ToUnit());
 #endif
             }
