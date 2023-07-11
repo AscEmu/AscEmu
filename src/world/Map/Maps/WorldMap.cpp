@@ -2825,7 +2825,7 @@ void WorldMap::getFullTerrainStatusForPosition(uint32_t phaseMask, float x, floa
 
     bool useGridLiquid = true;
 
-    // floor is the height we are closer to (but only if above)
+    // floorZ is the height we are closer to example we stand on an wmo
     data.floorZ = VMAP_INVALID_HEIGHT;
     if (gridMapHeight > INVALID_HEIGHT && G3D::fuzzyGe(z, gridMapHeight - GROUND_HEIGHT_TOLERANCE))
         data.floorZ = gridMapHeight;
@@ -2836,8 +2836,8 @@ void WorldMap::getFullTerrainStatusForPosition(uint32_t phaseMask, float x, floa
         data.floorZ = vmapData.floorZ;
         wmoData = &vmapData;
     }
-    // NOTE: Objects will not detect a case when a wmo providing area/liquid despawns from under them
-    // but this is fine as these kind of objects are not meant to be spawned and despawned a lot
+
+    // When spawning and despawning Wmos the provided area/liquid from beneath them wont get detected properly
     // example: Lich King platform
     if (dynData.floorZ > VMAP_INVALID_HEIGHT &&
         G3D::fuzzyGe(z, dynData.floorZ - GROUND_HEIGHT_TOLERANCE) &&
