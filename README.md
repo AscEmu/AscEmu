@@ -82,3 +82,7 @@ HowTo install - detailed guides on our wiki.
 [CodefactorUrl]: https://www.codefactor.io/repository/github/ascemu/ascemu
 [OpenhubUrl]: https://www.openhub.net/p/AscEmu
 <!-- Undercover:end:community -->
+
+## Special Thanks
+* [JetBrains - For supporting OpenSource Projects](https://www.jetbrains.com/)
+* [PVS-Studio - For supporting OpenSource Projects](https://pvs-studio.com/en/)
