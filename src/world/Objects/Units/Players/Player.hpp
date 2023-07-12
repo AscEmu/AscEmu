@@ -512,9 +512,6 @@ public:
 
     void handleAuraInterruptForMovementFlags(MovementInfo const& movement_info);
 
-    uint32_t getAreaId() const;
-    void setAreaId(uint32_t area);
-
     bool isInCity() const;
 
     void handleBreathing(MovementInfo const& movement_info, WorldSession* session);
@@ -564,8 +561,6 @@ protected:
 
     uint32_t m_mountSpellId = 0;
     uint32_t m_mountVehicleId = 0;
-
-    uint32_t m_areaId = 0;
 
     float m_noseLevel = .0f;
 

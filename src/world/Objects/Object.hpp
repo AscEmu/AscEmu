@@ -53,6 +53,7 @@ class Spell;
 class Aura;
 class UpdateMask;
 class EventableObject;
+enum ZLiquidStatus : uint32_t;
 
 #define MAX_INTERACTION_RANGE 5.0f
 float const DEFAULT_COLLISION_HEIGHT = 2.03128f; // Most common value in dbc
@@ -370,6 +371,8 @@ public:
         void BuildFieldUpdatePacket(Player* Target, uint32 Index, uint32 Value);
         void BuildFieldUpdatePacket(ByteBuffer* buf, uint32 Index, uint32 Value);
 
+        void updatePositionData();
+
         bool SetPosition(float newX, float newY, float newZ, float newOrientation, bool allowPorting = false);
         bool SetPosition(const LocationVector & v, bool allowPorting = false);
 
@@ -484,10 +487,15 @@ public:
         DynamicObject* getWorldMapDynamicObject(const uint64_t & guid);
 
         void SetMapId(uint32 newMap) { m_mapId = newMap; }
-        void SetZoneId(uint32 newZone);
+        void setZoneId(uint32 newZone);
+        void setAreaId(uint32_t area) { m_areaId = area; }
 
         uint32 GetMapId() const { return m_mapId; }
-        const uint32 & GetZoneId() const { return m_zoneId; }
+        const uint32_t & getZoneId() const { return m_zoneId; }
+        const uint32_t & getAreaId() const { return m_areaId; }
+
+        bool isOutdoors() const { return m_outdoors; }
+        ZLiquidStatus getLiquidStatus() const { return m_liquidStatus; }
 
         void SetNewGuid(uint32 Guid)
         {
@@ -726,12 +734,17 @@ public:
         //update flag
         uint16 m_updateFlag;
 
+        // indoorcheck
+        bool m_outdoors;
+        ZLiquidStatus m_liquidStatus;
+
         float m_staticFloorZ = -100000.0f;
 
         // Zone id.
-        uint32 m_zoneId = 0;
+        uint32_t m_zoneId = 0;
+        uint32_t m_areaId = 0;
         // Continent/map id.
-        uint32 m_mapId = MAPID_NOT_IN_WORLD;
+        uint32_t m_mapId = MAPID_NOT_IN_WORLD;
         // Map manager
         WorldMap* m_WorldMap = nullptr;
         // Current map cell row and column

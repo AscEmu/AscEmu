@@ -7009,7 +7009,7 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
                     team = TEAM_ALLIANCE;
 
                 const auto area = GetArea();
-                sWorld.sendZoneUnderAttackMessage(area != nullptr ? area->id : attacker->GetZoneId(), team);
+                sWorld.sendZoneUnderAttackMessage(area != nullptr ? area->id : attacker->getZoneId(), team);
             }
         }
 
@@ -7815,8 +7815,8 @@ DBC::Structures::MountCapabilityEntry const* Unit::getMountCapability(uint32_t m
     uint32_t zoneId = 0;
     uint32_t areaId = 0;
 
-    if (GetZoneId())
-        zoneId = GetZoneId();
+    if (getZoneId())
+        zoneId = getZoneId();
 
     if (GetArea())
         areaId = GetArea()->id;

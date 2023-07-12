@@ -1549,9 +1549,6 @@ void Player::handleAuraInterruptForMovementFlags(MovementInfo const& movementInf
     removeAllAurasByAuraInterruptFlag(auraInterruptFlags);
 }
 
-uint32_t Player::getAreaId() const { return m_areaId; }
-void Player::setAreaId(uint32_t area) { m_areaId = area; }
-
 bool Player::isInCity() const
 {
     if (const auto at = GetArea())
@@ -2039,7 +2036,7 @@ void Player::indoorCheckUpdate(uint32_t time)
     {
         if (time >= m_indoorCheckTimer)
         {
-            if (!AreaStorage::IsOutdoor(m_mapId, m_position.x, m_position.y, m_position.z))
+            if (!isOutdoors())
             {
                 // this is duplicated check, but some mount auras comes w/o this flag set, maybe due to spellfixes.cpp line:663
                 if (isMounted() && !m_taxi.getCurrentTaxiPath())
@@ -2114,7 +2111,7 @@ void Player::zoneUpdate(uint32_t zoneId)
     uint32_t oldzone = m_zoneId;
     if (m_zoneId != zoneId)
     {
-        SetZoneId(zoneId);
+        setZoneId(zoneId);
         removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_LEAVE_AREA);
     }
 
@@ -2475,7 +2472,7 @@ bool Player::create(CharCreate& charCreateContent)
 #endif
 
     m_mapId = m_playerCreateInfo->mapId;
-    SetZoneId(m_playerCreateInfo->zoneId);
+    setZoneId(m_playerCreateInfo->zoneId);
     m_position.ChangeCoords({ m_playerCreateInfo->positionX, m_playerCreateInfo->positionY, m_playerCreateInfo->positionZ, m_playerCreateInfo->orientation });
 
     setBindPoint(m_playerCreateInfo->positionX, m_playerCreateInfo->positionY, m_playerCreateInfo->positionZ, m_playerCreateInfo->orientation, m_playerCreateInfo->mapId, m_playerCreateInfo->zoneId);
@@ -4365,7 +4362,7 @@ bool Player::canUseFlyingMountHere()
     auto areaEntry = GetArea();
     if (areaEntry == nullptr)
         // If area is null, try finding any area from the zone with zone id
-        areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(GetZoneId());
+        areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(getZoneId());
     if (areaEntry == nullptr)
         return false;
 
@@ -4377,7 +4374,7 @@ bool Player::canUseFlyingMountHere()
     auto mapId = GetMapId();
     if (mapId == 530 || mapId == 571)
     {
-        const auto worldMapEntry = sWorldMapAreaStore.LookupEntry(GetZoneId());
+        const auto worldMapEntry = sWorldMapAreaStore.LookupEntry(getZoneId());
         if (worldMapEntry != nullptr)
             mapId = worldMapEntry->continentMapId >= 0 ? worldMapEntry->continentMapId : worldMapEntry->mapId;
     }
@@ -7452,7 +7449,7 @@ void Player::createCorpse()
     corpse->SetInstanceID(GetInstanceID());
     corpse->create(this, GetMapId(), GetPosition());
 
-    corpse->SetZoneId(GetZoneId());
+    corpse->setZoneId(getZoneId());
 
     corpse->setRace(getRace());
     corpse->setSkinColor(getSkinColor());
@@ -7977,7 +7974,7 @@ void Player::leftChannel(Channel* channel)
 
 void Player::updateChannels()
 {
-    auto areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(GetZoneId());
+    auto areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(getZoneId());
 
 #if VERSION_STRING < WotLK
     // TODO: verify if this is needed anymore in < wotlk
@@ -8774,7 +8771,7 @@ void Player::acceptQuest(uint64_t guid, uint32_t quest_id)
     {
         for (auto itr = saBounds.first; itr != saBounds.second; ++itr)
         {
-            if (itr->second->autoCast && itr->second->fitsToRequirements(this, GetZoneId(), getAreaId()))
+            if (itr->second->autoCast && itr->second->fitsToRequirements(this, getZoneId(), getAreaId()))
                 if (!hasAurasWithId(itr->second->spellId))
                     castSpell(this, itr->second->spellId, true);
         }
@@ -9123,7 +9120,7 @@ void Player::addToFriendList(std::string name, std::string note)
         if (targetPlayer->getSession())
         {
             m_session->SendPacket(SmsgFriendStatus(FRIEND_ADDED_ONLINE, targetPlayer->getGuidLow(), note, 1,
-                targetPlayer->GetZoneId(), targetPlayer->getLevel(), targetPlayer->getClass()).serialise().get());
+                targetPlayer->getZoneId(), targetPlayer->getLevel(), targetPlayer->getClass()).serialise().get());
         }
         else
         {
@@ -9233,7 +9230,7 @@ void Player::sendFriendLists(uint32_t flags)
             if (auto* plr = sObjectMgr.GetPlayer(friends.friendGuid))
             {
                 friendListMember.isOnline = 1;
-                friendListMember.zoneId = plr->GetZoneId();
+                friendListMember.zoneId = plr->getZoneId();
                 friendListMember.level = plr->getLevel();
                 friendListMember.playerClass = plr->getClass();
             }
@@ -9449,7 +9446,7 @@ void Player::setLoginPosition()
         m_position.ChangeCoords({ position_x, position_y, position_z, orientation });
         m_mapId = mapId;
 
-        setBindPoint(GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation(), GetMapId(), GetZoneId());
+        setBindPoint(GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation(), GetMapId(), getZoneId());
     }
     else
     {
@@ -9477,7 +9474,7 @@ void Player::setPlayerInfoIfNeeded()
         playerInfo->name = name;
         playerInfo->lastLevel = getLevel();
         playerInfo->lastOnline = UNIXTIME;
-        playerInfo->lastZone = GetZoneId();
+        playerInfo->lastZone = getZoneId();
         playerInfo->race = getRace();
         playerInfo->team = getTeam();
         playerInfo->guildRank = GUILD_RANK_NONE;
@@ -14223,7 +14220,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
 
     m_mapId = field[30].GetUInt32();
     m_zoneId = field[31].GetUInt32();
-    SetZoneId(m_zoneId);
+    setZoneId(m_zoneId);
 
     // Initialize 'normal' fields
     setScale(1.0f);

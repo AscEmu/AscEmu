@@ -95,6 +95,49 @@ enum Spells
     SPELL_BERSERK                               = 26662,
     SPELL_BERSERK2                              = 47008,
 
+    //----------LOWER SPIRE----------//
+    // Nerubar broodkeeper
+    SPELL_WEB_BEAM                              = 69887,
+    SPELL_CRYPT_SCARABS                         = 70965,
+    SPELL_WEB_WRAP                              = 70980,
+    SPELL_DARK_MENDING                          = 71020,
+
+    //Servant of the Throne
+    SPELL_GLACIALBLAST                          = 71029,
+
+    //Ancient Skeletal Soldier
+    SPELL_SHIELDBASH                            = 70964,
+
+    //Deathbound Ward
+    SPELL_DISRUPTINGSHOUT                       = 71022,
+    SPELL_SABERLASH                             = 71021,
+
+    //Deathspeaker Attendant
+    SPELL_SHADOWBOLT                            = 69387,
+    SPELL_SHADOWNOVA_10N                        = 69355,
+    SPELL_SHADOWNOVA_25N                        = 71106,
+
+    //Deathspeaker Disciple
+    SPELL_DARKBLESSING                          = 69391,
+    SPELL_SHADOWBOLT2                           = 69387,
+    SPELL_SHADOWMEND_10N                        = 69389,
+    SPELL_SHADOWMEND_25N                        = 71107,
+
+    //Deathspeaker High Priest
+    SPELL_AURAOFDARKNESS                        = 69491,
+    SPELL_DARKRECKONING                         = 69483,
+    SPELL_DARKRECKONING_EFFECT                  = 69482,
+
+    //Deathspeaker Servant
+    SPELL_CHAOSBOLT_10N                         = 69576,
+    SPELL_CHAOSBOLT_25N                         = 71108,
+    SPELL_CONSUMINGSHADOWS                      = 69405,
+    SPELL_CURSEOFAGONY_10N                      = 69404,
+    SPELL_CURSEOFAGONY_25N                      = 71112,
+
+    //Deathspeaker Zealot
+    SPELL_SHADOWCLEAVE                          = 69492,
+
     // Lord Marrowgar
     SPELL_BONE_SLICE                            = 69055,
     SPELL_BONE_STORM                            = 69076,
@@ -162,6 +205,7 @@ enum Spells
     SPELL_SHATTERING_THROW                      = 65940,
     SPELL_SUNDER_ARMOR                          = 65936,
 
+    //----------UPPER SPIRE----------//
     // Rotting Frost Giant
     SPELL_DEATH_PLAGUE                          = 72879,
     SPELL_DEATH_PLAGUE_AURA                     = 72865,
@@ -356,6 +400,46 @@ enum Spells
     SPELL_TELEPORT_TO_ENEMY_SHIP                = 70104,
     SPELL_BATTLE_EXPERIENCE                     = 71201,
     SPELL_ADDS_BERSERK                          = 72525,
+
+    // Empowering Blood Orb
+    SPELL_EMPOWERED_BLOOD_2                     = 70232,
+    SPELL_EMPOWERED_BLOOD_3                     = 70304,
+    SPELL_EMPOWERED_BLOOD_4                     = 70320,
+    SPELL_ORB_CONTROLLER_ACTIVE                 = 70293,
+
+    // Darkfallen Generic
+    SPELL_BLOOD_ORB_VISUAL                      = 72099,
+    SPELL_SIPHON_ESSENCE                        = 70299,
+
+    // Darkfallen Blood Knight
+    SPELL_VAMPIRIC_AURA                         = 71736,
+    SPELL_BLOOD_MIRROR                          = 70450,
+    SPELL_BLOOD_MIRROR_2                        = 70451,
+    SPELL_BLOOD_MIRROR_DAMAGE_SHARE             = 70445,
+    SPELL_UNHOLY_STRIKE                         = 70437,
+
+    // Darkfallen Noble
+    SPELL_SHADOW_BOLT_2                         = 72960,
+    SPELL_CHAINS_OF_SHADOW                      = 72960,
+
+    // Darkfallen Archmage
+    SPELL_FIREBALL                              = 70409,
+    SPELL_AMPLIFY_MAGIC                         = 70408,
+    SPELL_BLAST_WAVE                            = 70407,
+    SPELL_POLYMORPH_ALLY                        = 72106,
+    SPELL_POLYMORPH                             = 70410,
+
+    // Darkfallen Advisor
+    SPELL_LICH_SLAP                             = 72057,
+    SPELL_SHROUD_OF_SPELL_WARDING               = 72066,
+
+    // Vampiric Fiend
+    SPELL_DISEASE_CLOUD                         = 41290,
+    SPELL_LEECHING_ROOT                         = 70671,
+
+    // Darkfallen Tactician
+    SPELL_SHADOWSTEP                            = 70431,
+    SPELL_BLOOD_SAP                             = 70432
 };
 
 enum IceCrownCitadelGOs
@@ -477,6 +561,17 @@ enum IceCrownCitadelNpcEntrys
     NPC_INTRO_LICH_KING                         = 37181,
     NPC_INTRO_TIRION                            = 37119,
     NPC_INTRO_BOLVAR                            = 37183,
+
+    // Trash
+    NPC_SERVANT_OF_THE_THRONE                   = 36724,
+    NPC_NERUBAR_BROODKEEPER                     = 36725,
+    NPC_ANCIENT_SKELETAL_SOLDIER                = 37012,
+    NPC_DEATHBOUND_WARD                         = 37007,
+    NPC_DEATHSPEAKER_ATTENDANT                  = 36811,
+    NPC_DEATHSPEAKER_DISCIPLE                   = 36807,
+    NPC_DEATHSPEAKER_ZEALOT                     = 36808,
+    NPC_DEATHSPEAKER_HIGH_PRIEST                = 36829,
+    NPC_DEATHSPEAKER_SERVANT                    = 36805,
 
     // Lord Marrowgar
     NPC_COLDFLAME                               = 36672,
@@ -647,6 +742,8 @@ enum IceCrownCitadelAreaTriggers
     ICC_ENTRANCE                                = 5736,
     ICC_LORD_MARROWGAR_ENTRANCE                 = 5732,
     ICC_LADY_DEATHWHISPER_ENTRANCE              = 5709,
+    ICC_BROODKEEPER1                            = 5611,
+    ICC_BROODKEEPER2                            = 5612,
     ICC_DRAGON_ALLIANCE                         = 5628,
     ICC_DRAGON_HORDE                            = 5630,
 };
@@ -693,6 +790,12 @@ enum EventsIccIntro
     EVENT_INTRO32 = 1092, // Suarfang
     EVENT_INTRO33 = 1093,
     EVENT_INTRO34 = 1094,
+};
+
+enum TrashActions
+{
+    // Nerub'ar Broodkeeper event
+    ACTION_NERUBAR_FALL                         = 1
 };
 
 enum EventsMarrowgar
@@ -829,8 +932,11 @@ enum DeprogrammingData
 
 enum AdditionalData
 {
+    // Achievements
     DATA_BONED_ACHIEVEMENT                      = 1,
-    DATA_TEAM_IN_INSTANCE                       = 3,
+
+    // Trash
+    DATA_NERUBAR_BROODKEEPER_EVENT              = 2,
 
     // Gunship
     DATA_BEEN_WAITING_ACHIEVEMENT               = 4,
@@ -843,6 +949,7 @@ enum AdditionalData
     DATA_ORGRIMMAR_HAMMER_BOSS                  = 11,
     DATA_GB_HIGH_OVERLORD_SAURFANG              = 12,
     DATA_GB_MURADIN_BRONZEBEARD                 = 13,
+
     ITEM_GOBLIN_ROCKET_PACK                     = 49278,
 
     // Deathbringer Suarfang
@@ -1380,6 +1487,7 @@ public:
     explicit IceCrownCitadelScript(WorldMap* pMapMgr);
     static InstanceScript* Create(WorldMap* pMapMgr);
 
+    void setLocalData(uint32_t /*type*/, uint32_t /*data*/) override;
     uint32_t getLocalData(uint32_t type) const;
     Creature* getLocalCreatureData(uint32_t type) const;
 
@@ -1412,6 +1520,7 @@ protected:
     uint32_t HighlordEntranceGUID;
     uint32_t LichKingEntranceGUID;
     uint32_t BolvarEntranceGUID;
+    std::array<std::vector<uint32_t>, 2> nerubarBroodkeepersGUIDs;
 
     // Marrowgar
     uint32_t LordMarrowgarGUID;
@@ -1458,6 +1567,99 @@ public:
     ~ICCTeleporterAI();
 
     void OnActivate(Player* player) override;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Servant Of The Throne
+class ServantOfTheThroneAI : public CreatureAIScript
+{
+public:
+    static CreatureAIScript* Create(Creature* pCreature);
+    explicit ServantOfTheThroneAI(Creature* pCreature);
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Ancient Skeletal Soldier
+class AncientSkeletalSoldierAI : public CreatureAIScript
+{
+public:
+    static CreatureAIScript* Create(Creature* pCreature);
+    explicit AncientSkeletalSoldierAI(Creature* pCreature);
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Death Bound Ward
+class DeathBoundWardAI : public CreatureAIScript
+{
+public:
+    static CreatureAIScript* Create(Creature* pCreature);
+    explicit DeathBoundWardAI(Creature* pCreature);
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Nerubar Broodkeeper
+class NerubarBroodkeeperAI : public CreatureAIScript
+{
+public:
+    static CreatureAIScript* Create(Creature* pCreature);
+    explicit NerubarBroodkeeperAI(Creature* pCreature);
+
+    void OnLoad() override;
+
+    void DoAction(int32_t const action) override;
+
+    void OnReachWP(uint32_t /*type*/, uint32_t /*id*/) override;
+
+protected:
+    CreatureAISpells* webBeam = nullptr;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// 
+class DeathspeakerAttendantAI : public CreatureAIScript
+{
+public:
+    static CreatureAIScript* Create(Creature* pCreature);
+    explicit DeathspeakerAttendantAI(Creature* pCreature);
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// 
+class DeathspeakerDiscipleAI : public CreatureAIScript
+{
+public:
+    static CreatureAIScript* Create(Creature* pCreature);
+    explicit DeathspeakerDiscipleAI(Creature* pCreature);
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// 
+class DeathspeakerZealotAI : public CreatureAIScript
+{
+public:
+    static CreatureAIScript* Create(Creature* pCreature);
+    explicit DeathspeakerZealotAI(Creature* pCreature);
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// 
+class DeathspeakerHighPriestAI : public CreatureAIScript
+{
+public:
+    static CreatureAIScript* Create(Creature* pCreature);
+    explicit DeathspeakerHighPriestAI(Creature* pCreature);
+
+protected:
+    CreatureAISpells* spellDarkReck = nullptr;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// 
+class DeathspeakerServantAI : public CreatureAIScript
+{
+public:
+    static CreatureAIScript* Create(Creature* pCreature);
+    explicit DeathspeakerServantAI(Creature* pCreature);
 };
 
 void SetupICC(ScriptMgr* mgr);

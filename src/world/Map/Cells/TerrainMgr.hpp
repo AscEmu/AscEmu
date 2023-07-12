@@ -95,6 +95,26 @@ struct LiquidData
     float  depth_level;
 };
 
+struct PositionFullTerrainStatus
+{
+    struct AreaInfo
+    {
+        AreaInfo(int32_t _adtId, int32_t _rootId, int32_t _groupId, uint32_t _flags) : adtId(_adtId), rootId(_rootId), groupId(_groupId), mogpFlags(_flags) { }
+        int32_t const adtId;
+        int32_t const rootId;
+        int32_t const groupId;
+        uint32_t const mogpFlags;
+    };
+
+    PositionFullTerrainStatus() : areaId(0), floorZ(0.0f), outdoors(true), liquidStatus(LIQUID_MAP_NO_WATER) { }
+    uint32_t areaId;
+    float floorZ;
+    bool outdoors;
+    ZLiquidStatus liquidStatus;
+    Optional<AreaInfo> areaInfo;
+    Optional<LiquidData> liquidInfo;
+};
+
 class TileMap
 {
 public:

@@ -149,7 +149,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
             add = false;
             for (uint32_t i = 0; i < srlPacket.zone_count; ++i)
             {
-                if (srlPacket.zones[i] == plr->GetZoneId())
+                if (srlPacket.zones[i] == plr->getZoneId())
                 {
                     add = true;
                     break;
@@ -193,7 +193,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
         data << uint32_t(plr->getClass());
         data << uint32_t(plr->getRace());
         data << plr->getGender();
-        data << uint32_t(plr->GetZoneId());
+        data << uint32_t(plr->getZoneId());
         ++sent_count;
     }
     sObjectMgr._playerslock.unlock();
@@ -738,7 +738,7 @@ void WorldSession::handleZoneupdate(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (_player->GetZoneId() == srlPacket.zoneId)
+    if (_player->getZoneId() == srlPacket.zoneId)
         return;
 
     sWeatherMgr.sendWeather(_player);

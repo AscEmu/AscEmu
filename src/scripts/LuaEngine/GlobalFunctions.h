@@ -357,7 +357,7 @@ namespace luaGlobalFunctions
 
         for (std::unordered_map<uint32_t, Player*>::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
         {
-            if ((*itr).second->GetZoneId() == zoneid)
+            if ((*itr).second->getZoneId() == zoneid)
             {
                 count++;
                 Player* ret = (*itr).second;

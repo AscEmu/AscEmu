@@ -37,6 +37,9 @@ IceCrownCitadelScript::IceCrownCitadelScript(WorldMap* pMapMgr) : InstanceScript
     LichKingEntranceGUID = 0;
     BolvarEntranceGUID = 0;
 
+    nerubarBroodkeepersGUIDs[0] = { 0, 0 };
+    nerubarBroodkeepersGUIDs[1] = { 0, 0 };
+
     // Lord Marrowgar
     LordMarrowgarGUID = 0;
     MarrowgarIcewall1GUID = 0;
@@ -67,6 +70,27 @@ IceCrownCitadelScript::IceCrownCitadelScript(WorldMap* pMapMgr) : InstanceScript
 }
 
 InstanceScript* IceCrownCitadelScript::Create(WorldMap* pMapMgr) { return new IceCrownCitadelScript(pMapMgr); }
+
+void IceCrownCitadelScript::setLocalData(uint32_t type, uint32_t data)
+{
+    switch (type)
+    {
+        case DATA_BONED_ACHIEVEMENT:
+        {
+            bonedAchievement = data ? true : false;
+        } break;
+        case DATA_NERUBAR_BROODKEEPER_EVENT:
+        {
+            uint8_t group = (data == ICC_BROODKEEPER1) ? 0 : 1;
+
+            for (uint32_t guid : nerubarBroodkeepersGUIDs[group])
+            {
+                if (Creature* nerubar = GetCreatureByGuid(guid))
+                    nerubar->GetScript()->DoAction(ACTION_NERUBAR_FALL);
+            }
+        } break;
+    }
+}
 
 uint32_t IceCrownCitadelScript::getLocalData(uint32_t type) const
 {
@@ -168,6 +192,13 @@ void IceCrownCitadelScript::OnCreaturePushToWorld(Creature* pCreature)
         case NPC_INTRO_BOLVAR:
         {
             BolvarEntranceGUID = guid.getGuidLowPart();
+            break;
+        }
+            // Broodkeepers
+        case NPC_NERUBAR_BROODKEEPER:
+        {
+            uint8_t group = (pCreature->GetPositionX() > -230.0f) ? 0 : 1;
+            nerubarBroodkeepersGUIDs[group].emplace_back(guid.getGuidLowPart());
             break;
         }
             // Lord Marrowgar
@@ -444,6 +475,11 @@ void IceCrownCitadelScript::OnAreaTrigger(Player* /*pPlayer*/, uint32 pAreaId)
                 getLocalCreatureData(CN_LADY_DEATHWHISPER)->GetScript()->DoAction(ACTION_LADY_INTRO_START);
             break;
         }
+        case ICC_BROODKEEPER1:
+        case ICC_BROODKEEPER2:
+        {
+            setLocalData(DATA_NERUBAR_BROODKEEPER_EVENT, pAreaId);
+        } break;
         case ICC_DRAGON_ALLIANCE:
         {
             break;
@@ -876,6 +912,145 @@ void ICCTeleporterAI::OnActivate(Player* player)
     gossip.onHello(_gameobject, player);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Servant Of The Throne
+ServantOfTheThroneAI::ServantOfTheThroneAI(Creature* pCreature) : CreatureAIScript(pCreature)
+{
+    addAISpell(SPELL_GLACIALBLAST, 50.0f, TARGET_ATTACKING, 0, 8);
+}
+
+CreatureAIScript* ServantOfTheThroneAI::Create(Creature* pCreature) { return new ServantOfTheThroneAI(pCreature); }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Ancient Skeletal Soldier
+AncientSkeletalSoldierAI::AncientSkeletalSoldierAI(Creature* pCreature) : CreatureAIScript(pCreature)
+{
+    addAISpell(SPELL_SHIELDBASH, 75.0f, TARGET_ATTACKING, 0, 8);
+}
+
+CreatureAIScript* AncientSkeletalSoldierAI::Create(Creature* pCreature) { return new AncientSkeletalSoldierAI(pCreature); }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Death Bound Ward
+DeathBoundWardAI::DeathBoundWardAI(Creature* pCreature) : CreatureAIScript(pCreature)
+{
+    addAISpell(SPELL_DISRUPTINGSHOUT, 50.0f, TARGET_SELF, 0, 8);
+    addAISpell(SPELL_SABERLASH, 50.0f, TARGET_ATTACKING, 0, 8, false, true);
+}
+
+CreatureAIScript* DeathBoundWardAI::Create(Creature* pCreature) { return new DeathBoundWardAI(pCreature); }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Nerubar Broodkeeper
+NerubarBroodkeeperAI::NerubarBroodkeeperAI(Creature* pCreature) : CreatureAIScript(pCreature)
+{
+    webBeam = addAISpell(SPELL_WEB_BEAM, 0.0f, TARGET_SELF, 0, 0);
+    addAISpell(SPELL_CRYPT_SCARABS, 33.0f, TARGET_ATTACKING, 0, 1);
+
+    auto mending = addAISpell(SPELL_DARK_MENDING, 15.0f, TARGET_RANDOM_FRIEND, 0, 3);
+    mending->setMinMaxDistance(0.0f, 40.0f);
+    mending->setMinMaxPercentHp(1.0f, 75.0f);
+
+    auto webWrap = addAISpell(SPELL_WEB_WRAP, 33.0f, TARGET_RANDOM_SINGLE, 0, 16);
+    webWrap->setMinMaxDistance(0.0f, 40.0f);
+}
+
+CreatureAIScript* NerubarBroodkeeperAI::Create(Creature* pCreature) { return new NerubarBroodkeeperAI(pCreature); }
+
+void NerubarBroodkeeperAI::OnLoad()
+{
+    setDisableGravity(true);
+    setImmuneToAll(true);
+    getCreature()->setEmoteState(EMOTE_STATE_CUSTOM_SPELL_03);
+}
+
+void NerubarBroodkeeperAI::DoAction(int32_t const action)
+{
+    if (action != ACTION_NERUBAR_FALL)
+        return;
+
+    _castAISpell(webBeam);
+
+    float x, y, z;
+    getCreature()->getPosition(x, y);
+    z = getCreature()->getFloorZ();
+    getCreature()->SetSpawnLocation(x, y, z, getCreature()->GetOrientation());
+
+    getCreature()->getMovementManager()->moveLand(POINT_LAND, LocationVector(x, y, z));
+    getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
+}
+
+void NerubarBroodkeeperAI::OnReachWP(uint32_t type, uint32_t id)
+{
+    if (type == EFFECT_MOTION_TYPE && id == POINT_LAND)
+    {
+        setImmuneToAll(false);
+        setDisableGravity(false);
+
+        // Hackfix shouldnt be needed :/
+        getCreature()->interruptSpell(SPELL_WEB_BEAM);
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// 
+DeathspeakerAttendantAI::DeathspeakerAttendantAI(Creature* pCreature) : CreatureAIScript(pCreature)
+{
+    addAISpell(SPELL_SHADOWBOLT, 50.0f, TARGET_RANDOM_SINGLE, 0, 8);
+    addAISpell(RAID_MODE(SPELL_SHADOWNOVA_10N, SPELL_SHADOWNOVA_25N, SPELL_SHADOWNOVA_10N, SPELL_SHADOWNOVA_25N), 50.0f, TARGET_VARIOUS, 0, 17);
+}
+
+CreatureAIScript* DeathspeakerAttendantAI::Create(Creature* pCreature) { return new DeathspeakerAttendantAI(pCreature); }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// 
+DeathspeakerDiscipleAI::DeathspeakerDiscipleAI(Creature* pCreature) : CreatureAIScript(pCreature)
+{
+    addAISpell(SPELL_DARKBLESSING, 33.0f, 20, [this]() { return getBestUnitTarget(TargetFilter_WoundedFriendlyLowestHealthInRange, 0.0f, 30.0f); });
+    addAISpell(SPELL_SHADOWBOLT2, 33.0f, 8, [this]() { return getBestUnitTarget(TargetFilter_None); });
+    addAISpell(RAID_MODE(SPELL_SHADOWMEND_10N, SPELL_SHADOWMEND_25N, SPELL_SHADOWMEND_10N, SPELL_SHADOWMEND_25N), 33.0f, 25, [this]() { return getBestUnitTarget(TargetFilter_WoundedFriendlyLowestHealthInRange, 0.0f, 40.0f); });
+}
+
+CreatureAIScript* DeathspeakerDiscipleAI::Create(Creature* pCreature) { return new DeathspeakerDiscipleAI(pCreature); }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// 
+DeathspeakerZealotAI::DeathspeakerZealotAI(Creature* pCreature) : CreatureAIScript(pCreature)
+{
+    addAISpell(SPELL_SHADOWCLEAVE, 75.0f, 8, [this]() { return getBestUnitTarget(TargetFilter_Current); });
+}
+
+CreatureAIScript* DeathspeakerZealotAI::Create(Creature* pCreature) { return new DeathspeakerZealotAI(pCreature); }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// 
+DeathspeakerHighPriestAI::DeathspeakerHighPriestAI(Creature* pCreature) : CreatureAIScript(pCreature)
+{
+    spellDarkReck = addAISpell(SPELL_DARKRECKONING_EFFECT, 100.0f, TARGET_CUSTOM, 0, 19);
+    addAISpell(SPELL_DARKRECKONING, 75.0f, 10,
+        [this]()
+        {
+            Unit* target = getBestUnitTarget(TargetFilter_NotCurrent);
+            spellDarkReck->setCustomTarget(target);
+            return target;
+        });
+}
+
+CreatureAIScript* DeathspeakerHighPriestAI::Create(Creature* pCreature) { return new DeathspeakerHighPriestAI(pCreature); }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// 
+DeathspeakerServantAI::DeathspeakerServantAI(Creature* pCreature) : CreatureAIScript(pCreature)
+{
+    addAISpell(RAID_MODE(SPELL_CHAOSBOLT_10N, SPELL_CHAOSBOLT_25N, SPELL_CHAOSBOLT_10N, SPELL_CHAOSBOLT_25N), 33.0f, 15, [this]() { return getBestUnitTarget(TargetFilter_None); });
+    addAISpell(SPELL_CONSUMINGSHADOWS, 33.0f, 13, [this]() { return getBestUnitTarget(TargetFilter_None); });
+    addAISpell(RAID_MODE(SPELL_CURSEOFAGONY_10N, SPELL_CURSEOFAGONY_25N, SPELL_CURSEOFAGONY_10N, SPELL_CURSEOFAGONY_25N), 33.0f, 17, [this]() { return getBestUnitTarget(TargetFilter_None); });
+}
+
+CreatureAIScript* DeathspeakerServantAI::Create(Creature* pCreature) { return new DeathspeakerServantAI(pCreature); }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Instance Setup
 void SetupICC(ScriptMgr* mgr)
 {
     //Instance
@@ -896,6 +1071,17 @@ void SetupICC(ScriptMgr* mgr)
 
     mgr->register_gameobject_script(GO_TELE_5, &ICCTeleporterAI::Create);
     mgr->register_go_gossip(GO_TELE_5, new ICCTeleporterGossip());
+
+    // Trash
+    mgr->register_creature_script(NPC_SERVANT_OF_THE_THRONE, &ServantOfTheThroneAI::Create);
+    mgr->register_creature_script(NPC_ANCIENT_SKELETAL_SOLDIER, &AncientSkeletalSoldierAI::Create);
+    mgr->register_creature_script(NPC_DEATHBOUND_WARD, &DeathBoundWardAI::Create);
+    mgr->register_creature_script(NPC_NERUBAR_BROODKEEPER, &NerubarBroodkeeperAI::Create);
+    mgr->register_creature_script(NPC_DEATHSPEAKER_ATTENDANT, &DeathspeakerAttendantAI::Create);
+    mgr->register_creature_script(NPC_DEATHSPEAKER_DISCIPLE, &DeathspeakerDiscipleAI::Create);
+    mgr->register_creature_script(NPC_DEATHSPEAKER_ZEALOT, &DeathspeakerZealotAI::Create);
+    mgr->register_creature_script(NPC_DEATHSPEAKER_HIGH_PRIEST, &DeathspeakerHighPriestAI::Create);
+    mgr->register_creature_script(NPC_DEATHSPEAKER_SERVANT, &DeathspeakerServantAI::Create);
 
     //Bosses
     mgr->register_creature_script(CN_LORD_MARROWGAR, &LordMarrowgarAI::Create);

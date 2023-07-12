@@ -2593,7 +2593,7 @@ void Guild::GuildMember::setStats(Player* player)
     mName = player->getName();
     mLevel = static_cast<uint8_t>(player->getLevel());
     mClass = player->getClass();
-    mZoneId = player->GetZoneId();
+    mZoneId = player->getZoneId();
     mAccountId = player->getSession()->GetAccountId();
     mAchievementPoints = 0;
 }
@@ -2701,7 +2701,7 @@ bool Guild::GuildMember::loadGuildMembersFromDB(Field* fields, Field* fields2)
     if (!mZoneId)
     {
         sLogger.failure("Player (GUID: %u) has broken zone-data", WoWGuid::getGuidLowPartFromUInt64(mGuid));
-        mZoneId = sObjectMgr.GetPlayer(WoWGuid::getGuidLowPartFromUInt64(mGuid))->GetZoneId();
+        mZoneId = sObjectMgr.GetPlayer(WoWGuid::getGuidLowPartFromUInt64(mGuid))->getZoneId();
     }
 
     resetFlags();

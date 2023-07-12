@@ -268,7 +268,7 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
                 for (auto groupMemberPlayerInfo : subGroup->getGroupMembers())
                 {
                     if (Player* loggedInPlayer = sObjectMgr.GetPlayer(groupMemberPlayerInfo->guid))
-                        if (loggedInPlayer->GetZoneId() == _player->GetZoneId() && _player->GetInstanceID() == loggedInPlayer->GetInstanceID())
+                        if (loggedInPlayer->getZoneId() == _player->getZoneId() && _player->GetInstanceID() == loggedInPlayer->GetInstanceID())
                             groupMembers.push_back(loggedInPlayer);
                 }
             }
@@ -333,7 +333,7 @@ void WorldSession::handleLootOpcode(WorldPacket& recvPacket)
                         for (auto groupMemberPlayerInfo : subGroup->getGroupMembers())
                         {
                             if (Player* loggedInPlayer = sObjectMgr.GetPlayer(groupMemberPlayerInfo->guid))
-                                if (_player->GetZoneId() == loggedInPlayer->GetZoneId())
+                                if (_player->getZoneId() == loggedInPlayer->getZoneId())
                                     onlineGroupMembers.push_back(loggedInPlayer->getGuid());
                         }
                     }

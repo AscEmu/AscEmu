@@ -328,7 +328,7 @@ void WorldSession::sendInnkeeperBind(Creature* creature)
     {
         SendPacket(SmsgGossipComplete().serialise().get());
 
-        SendPacket(SmsgBinderConfirm(creature->getGuid(), _player->GetZoneId()).serialise().get());
+        SendPacket(SmsgBinderConfirm(creature->getGuid(), _player->getZoneId()).serialise().get());
 
         _player->m_hasBindDialogOpen = true;
         return;

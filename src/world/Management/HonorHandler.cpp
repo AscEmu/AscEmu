@@ -193,14 +193,14 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                         }
                     }
                 }
-                if (pAffectedPlayer->GetZoneId() == 3518)
+                if (pAffectedPlayer->getZoneId() == 3518)
                 {
                     // Add Halaa Battle Token
                     SpellInfo const* pvp_token_spell = sSpellMgr.getSpellInfo(pAffectedPlayer->isTeamHorde() ? 33004 : 33005);
                     pAffectedPlayer->castSpell(pAffectedPlayer, pvp_token_spell, true);
                 }
                 // If we are in Hellfire Peninsula <http://www.wowwiki.com/Hellfire_Peninsula#World_PvP_-_Hellfire_Fortifications>
-                if (pAffectedPlayer->GetZoneId() == 3483)
+                if (pAffectedPlayer->getZoneId() == 3483)
                 {
                     // Hellfire Horde Controlled Towers
                     /*if (pAffectedPlayer->getWorldMap()->GetWorldState(2478) != 3 && pAffectedPlayer->getTeam() == TEAM_HORDE)

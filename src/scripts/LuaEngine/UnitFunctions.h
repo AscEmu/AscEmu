@@ -2199,7 +2199,7 @@ public:
         if (!ptr)
             return 0;
 
-        lua_pushinteger(L, (ptr->GetZoneId()));
+        lua_pushinteger(L, (ptr->getZoneId()));
         return 1;
     }
 
@@ -3064,7 +3064,7 @@ public:
                 {
                     if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itr)->guid))
                     {
-                        if (loggedInPlayer->GetZoneId() == _player->GetZoneId() && _player->GetInstanceID() == loggedInPlayer->GetInstanceID())
+                        if (loggedInPlayer->getZoneId() == _player->getZoneId() && _player->GetInstanceID() == loggedInPlayer->GetInstanceID())
                         {
                             count++;
                             lua_pushinteger(L, count);
