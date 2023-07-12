@@ -98,7 +98,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Server/Definitions.h>
 #include <Server/EventableObject.h>
 #include <Server/Opcodes.hpp>
-#include <Server/Serverstate.h>
+#include <Server/ServerState.h>
 #include <Server/WorldConfig.h>
 #include <Server/WorldSession.h>
 #include <Server/WorldSocket.h>
