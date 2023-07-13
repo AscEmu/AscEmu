@@ -25,7 +25,7 @@ void WorldSession::sendTaxiStatus(WoWGuid guid)
     Creature* unit = player->getWorldMapCreature(guid.getRawGuid());
     if (!unit || isHostile(unit, player) || !unit->isTaxi())
     {
-        sLogger.failure("WorldSession::sendTaxiStatus Creature with guid - " I64FMT " not found.", guid);
+        sLogger.failure("WorldSession::sendTaxiStatus Creature with guid - " I64FMT " not found.", player->getGuid());
         return;
     }
 
