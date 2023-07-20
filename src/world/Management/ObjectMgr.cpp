@@ -184,11 +184,9 @@ void ObjectMgr::finalize()
         for (DungeonEncounterList::iterator encounterItr = itr->second.begin(); encounterItr != itr->second.end(); ++encounterItr)
             delete *encounterItr;
 
-    sLogger.info("ObjectMgr : Deleting Arena Teams...");
-    for (std::unordered_map<uint32, ArenaTeam*>::iterator itr = m_arenaTeams.begin(); itr != m_arenaTeams.end(); ++itr)
-    {
-        delete(*itr).second;
-    }
+    sLogger.info("ObjectMgr : Clearing Arena Teams...");
+    m_arenaTeams.clear();
+
 #ifdef FT_VEHICLES
     sLogger.info("ObjectMgr : Cleaning up vehicle accessories...");
     _vehicleAccessoryStore.clear();
@@ -210,7 +208,173 @@ void ObjectMgr::finalize()
     mEventScriptMaps.clear();
     mSpellEffectMaps.clear();
 }
+//////////////////////////////////////////////////////////////////////////////////////////
+// Arena Team
+void ObjectMgr::loadArenaTeams()
+{
+    QueryResult* result = CharacterDatabase.Query("SELECT * FROM arenateams");
+    if (result != nullptr)
+    {
+        if (result->GetFieldCount() != 22)
+        {
+            sLogger.failure("arenateams table format is invalid. Please update your database.");
+            return;
+        }
+        do
+        {
+            const std::shared_ptr<ArenaTeam> team = std::make_shared<ArenaTeam>(result->Fetch());
+            addArenaTeam(team);
+            if (team->m_id > static_cast<uint32_t>(m_hiArenaTeamId.load()))
+                m_hiArenaTeamId = static_cast<uint32_t>(team->m_id);
 
+        } while (result->NextRow());
+        delete result;
+    }
+
+    updateArenaTeamRankings();
+}
+
+void ObjectMgr::addArenaTeam(std::shared_ptr<ArenaTeam> _arenaTeam)
+{
+    std::lock_guard guard(m_arenaTeamLock);
+    m_arenaTeams[_arenaTeam->m_id] = _arenaTeam;
+    m_arenaTeamMap[_arenaTeam->m_type].insert(std::make_pair(_arenaTeam->m_id, _arenaTeam));
+}
+
+void ObjectMgr::removeArenaTeam(std::shared_ptr<ArenaTeam> _arenaTeam)
+{
+    std::lock_guard guard(m_arenaTeamLock);
+    m_arenaTeams.erase(_arenaTeam->m_id);
+    m_arenaTeamMap[_arenaTeam->m_type].erase(_arenaTeam->m_id);
+}
+
+std::shared_ptr<ArenaTeam> ObjectMgr::getArenaTeamByName(std::string& _name, uint32_t /*type*/)
+{
+    std::lock_guard guard(m_arenaTeamLock);
+    for (auto& arenaTeam : m_arenaTeams)
+        if (arenaTeam.second->m_name == _name)
+            return arenaTeam.second;
+
+    return nullptr;
+}
+
+std::shared_ptr<ArenaTeam> ObjectMgr::getArenaTeamById(uint32_t _id)
+{
+    std::lock_guard guard(m_arenaTeamLock);
+    const auto arenaTeam = m_arenaTeams.find(_id);
+    return arenaTeam == m_arenaTeams.end() ? nullptr : arenaTeam->second;
+}
+
+std::shared_ptr<ArenaTeam> ObjectMgr::getArenaTeamByGuid(uint32_t _guid, uint32_t _type)
+{
+    std::lock_guard guard(m_arenaTeamLock);
+    for (auto& arenaTeam : m_arenaTeamMap[_type])
+    {
+        if (arenaTeam.second->isMember(_guid))
+            return arenaTeam.second;
+    }
+    return nullptr;
+}
+
+class ArenaSorter
+{
+public:
+
+    bool operator()(std::shared_ptr<ArenaTeam> const& _arenaTeamA, std::shared_ptr<ArenaTeam> const& _arenaTeamB) const
+    {
+        return (_arenaTeamA->m_stats.rating > _arenaTeamB->m_stats.rating);
+    }
+
+    bool operator()(std::shared_ptr<ArenaTeam>& _arenaTeamA, std::shared_ptr<ArenaTeam>& _arenaTeamB) const
+    {
+        return (_arenaTeamA->m_stats.rating > _arenaTeamB->m_stats.rating);
+    }
+};
+
+void ObjectMgr::updateArenaTeamRankings()
+{
+    std::lock_guard guard(m_arenaTeamLock);
+    for (auto& arenaTeams : m_arenaTeamMap)
+    {
+        std::vector<std::shared_ptr<ArenaTeam>> ranking;
+        ranking.reserve(arenaTeams.size());
+
+        for (auto& arenaTeamPair : arenaTeams)
+            ranking.push_back(arenaTeamPair.second);
+
+        std::ranges::sort(ranking, ArenaSorter());
+        uint32_t rank = 1;
+
+        for (const auto& arenaTeam : ranking)
+        {
+            if (arenaTeam->m_stats.ranking != rank)
+            {
+                arenaTeam->m_stats.ranking = rank;
+                arenaTeam->saveToDB();
+            }
+
+            ++rank;
+        }
+    }
+}
+
+void ObjectMgr::updateArenaTeamWeekly()
+{
+    std::lock_guard guard(m_arenaTeamLock);
+    for (auto& arenaTeams : m_arenaTeamMap)
+    {
+        for (const auto& arenaTeamPair : arenaTeams)
+        {
+            if (const std::shared_ptr<ArenaTeam> arenaTeam = arenaTeamPair.second)
+            {
+                arenaTeam->m_stats.played_week = 0;
+                arenaTeam->m_stats.won_week = 0;
+
+                for (uint32_t j = 0; j < arenaTeam->m_memberCount; ++j)
+                {
+                    arenaTeam->m_members[j].Played_ThisWeek = 0;
+                    arenaTeam->m_members[j].Won_ThisWeek = 0;
+                }
+
+                arenaTeam->saveToDB();
+            }
+        }
+    }
+}
+
+void ObjectMgr::resetArenaTeamRatings()
+{
+    std::lock_guard guard(m_arenaTeamLock);
+    for (auto& arenaTeams : m_arenaTeamMap)
+    {
+        for (auto& arenaTeamPair : arenaTeams)
+        {
+            if (const std::shared_ptr<ArenaTeam> arenaTeam = arenaTeamPair.second)
+            {
+                arenaTeam->m_stats.played_season = 0;
+                arenaTeam->m_stats.played_week = 0;
+                arenaTeam->m_stats.won_season = 0;
+                arenaTeam->m_stats.won_week = 0;
+                arenaTeam->m_stats.rating = 1500;
+
+                for (uint32_t j = 0; j < arenaTeam->m_memberCount; ++j)
+                {
+                    arenaTeam->m_members[j].Played_ThisSeason = 0;
+                    arenaTeam->m_members[j].Played_ThisWeek = 0;
+                    arenaTeam->m_members[j].Won_ThisSeason = 0;
+                    arenaTeam->m_members[j].Won_ThisWeek = 0;
+                    arenaTeam->m_members[j].PersonalRating = 1500;
+                }
+                arenaTeam->saveToDB();
+            }
+        }
+    }
+
+    updateArenaTeamRankings();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Misc
 void ObjectMgr::loadCreatureDisplayInfo()
 {
     for (uint32_t i = 0; i < sCreatureDisplayInfoStore.GetNumRows(); ++i)
@@ -2152,184 +2316,6 @@ void ObjectMgr::loadGroupInstances()
     delete result;
 
     sLogger.info("Loaded %u group-instance saves", count);
-}
-
-void ObjectMgr::LoadArenaTeams()
-{
-    QueryResult* result = CharacterDatabase.Query("SELECT * FROM arenateams");
-    if (result != nullptr)
-    {
-        if (result->GetFieldCount() != 22)
-        {
-            sLogger.failure("arenateams table format is invalid. Please update your database.");
-            return;
-        }
-        do
-        {
-            ArenaTeam* team = new ArenaTeam(result->Fetch());
-            AddArenaTeam(team);
-            if (team->m_id > uint32(m_hiArenaTeamId.load()))
-                m_hiArenaTeamId = uint32(team->m_id);
-
-        }
-        while (result->NextRow());
-        delete result;
-    }
-
-    /* update the ranking */
-    UpdateArenaTeamRankings();
-}
-
-ArenaTeam* ObjectMgr::GetArenaTeamByGuid(uint32 guid, uint32 Type)
-{
-    m_arenaTeamLock.Acquire();
-    for (std::unordered_map<uint32, ArenaTeam*>::iterator itr = m_arenaTeamMap[Type].begin(); itr != m_arenaTeamMap[Type].end(); ++itr)
-    {
-        if (itr->second->isMember(guid))
-        {
-            m_arenaTeamLock.Release();
-            return itr->second;
-        }
-    }
-    m_arenaTeamLock.Release();
-    return nullptr;
-}
-
-ArenaTeam* ObjectMgr::GetArenaTeamById(uint32 id)
-{
-    std::unordered_map<uint32, ArenaTeam*>::iterator itr;
-    m_arenaTeamLock.Acquire();
-    itr = m_arenaTeams.find(id);
-    m_arenaTeamLock.Release();
-    return (itr == m_arenaTeams.end()) ? nullptr : itr->second;
-}
-
-ArenaTeam* ObjectMgr::GetArenaTeamByName(std::string & name, uint32 /*Type*/)
-{
-    m_arenaTeamLock.Acquire();
-    for (std::unordered_map<uint32, ArenaTeam*>::iterator itr = m_arenaTeams.begin(); itr != m_arenaTeams.end(); ++itr)
-    {
-        if (!strnicmp(itr->second->m_name.c_str(), name.c_str(), name.size()))
-        {
-            m_arenaTeamLock.Release();
-            return itr->second;
-        }
-    }
-    m_arenaTeamLock.Release();
-    return nullptr;
-}
-
-void ObjectMgr::RemoveArenaTeam(ArenaTeam* team)
-{
-    m_arenaTeamLock.Acquire();
-    m_arenaTeams.erase(team->m_id);
-    m_arenaTeamMap[team->m_type].erase(team->m_id);
-    m_arenaTeamLock.Release();
-}
-
-void ObjectMgr::AddArenaTeam(ArenaTeam* team)
-{
-    m_arenaTeamLock.Acquire();
-    m_arenaTeams[team->m_id] = team;
-    m_arenaTeamMap[team->m_type].insert(std::make_pair(team->m_id, team));
-    m_arenaTeamLock.Release();
-}
-
-class ArenaSorter
-{
-    public:
-
-        bool operator()(ArenaTeam* const & a, ArenaTeam* const & b)
-        {
-            return (a->m_stats.rating > b->m_stats.rating);
-        }
-
-        bool operator()(ArenaTeam*& a, ArenaTeam*& b)
-        {
-            return (a->m_stats.rating > b->m_stats.rating);
-        }
-};
-
-void ObjectMgr::UpdateArenaTeamRankings()
-{
-    m_arenaTeamLock.Acquire();
-    for (uint8 i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
-    {
-        std::vector<ArenaTeam*> ranking;
-
-        for (std::unordered_map<uint32, ArenaTeam*>::iterator itr = m_arenaTeamMap[i].begin(); itr != m_arenaTeamMap[i].end(); ++itr)
-            ranking.push_back(itr->second);
-
-        std::sort(ranking.begin(), ranking.end(), ArenaSorter());
-        uint32 rank = 1;
-        for (std::vector<ArenaTeam*>::iterator itr = ranking.begin(); itr != ranking.end(); ++itr)
-        {
-            if ((*itr)->m_stats.ranking != rank)
-            {
-                (*itr)->m_stats.ranking = rank;
-                (*itr)->saveToDB();
-            }
-            ++rank;
-        }
-    }
-    m_arenaTeamLock.Release();
-}
-
-void ObjectMgr::ResetArenaTeamRatings()
-{
-    m_arenaTeamLock.Acquire();
-    for (uint8 i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
-    {
-        for (std::unordered_map<uint32, ArenaTeam*>::iterator itr = m_arenaTeamMap[i].begin(); itr != m_arenaTeamMap[i].end(); ++itr)
-        {
-            ArenaTeam* team = itr->second;
-            if (team)
-            {
-                team->m_stats.played_season = 0;
-                team->m_stats.played_week = 0;
-                team->m_stats.won_season = 0;
-                team->m_stats.won_week = 0;
-                team->m_stats.rating = 1500;
-                for (uint32 j = 0; j < team->m_memberCount; ++j)
-                {
-                    team->m_members[j].Played_ThisSeason = 0;
-                    team->m_members[j].Played_ThisWeek = 0;
-                    team->m_members[j].Won_ThisSeason = 0;
-                    team->m_members[j].Won_ThisWeek = 0;
-                    team->m_members[j].PersonalRating = 1500;
-                }
-                team->saveToDB();
-            }
-        }
-    }
-    m_arenaTeamLock.Release();
-
-    UpdateArenaTeamRankings();
-}
-
-void ObjectMgr::UpdateArenaTeamWeekly()
-{
-    // reset weekly matches count for all teams and all members
-    m_arenaTeamLock.Acquire();
-    for (uint8 i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
-    {
-        for (std::unordered_map<uint32, ArenaTeam*>::iterator itr = m_arenaTeamMap[i].begin(); itr != m_arenaTeamMap[i].end(); ++itr)
-        {
-            ArenaTeam* team = itr->second;
-            if (team)
-            {
-                team->m_stats.played_week = 0;
-                team->m_stats.won_week = 0;
-                for (uint32 j = 0; j < team->m_memberCount; ++j)
-                {
-                    team->m_members[j].Played_ThisWeek = 0;
-                    team->m_members[j].Won_ThisWeek = 0;
-                }
-                team->saveToDB();
-            }
-        }
-    }
-    m_arenaTeamLock.Release();
 }
 
 void ObjectMgr::ResetDailies()

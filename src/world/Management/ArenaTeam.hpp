@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "CommonTypes.hpp"
 
@@ -59,7 +60,7 @@ struct ArenaTeamStats
     uint32_t ranking;
 };
 
-class SERVER_DECL ArenaTeam
+class SERVER_DECL ArenaTeam : public std::enable_shared_from_this<ArenaTeam>
 {
 public:
     ArenaTeam(uint8_t type, uint32_t Id);

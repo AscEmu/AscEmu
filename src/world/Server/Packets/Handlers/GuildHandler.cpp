@@ -694,7 +694,7 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
             return;
         }
 
-        const auto arenaTeam = new ArenaTeam(type, sObjectMgr.GenerateArenaTeamId());
+        auto arenaTeam = std::make_shared<ArenaTeam>(type, sObjectMgr.GenerateArenaTeamId());
         arenaTeam->m_name = charter->GuildName;
         arenaTeam->m_emblem.emblemColour = srlPacket.iconColor;
         arenaTeam->m_emblem.emblemStyle = srlPacket.icon;
@@ -704,8 +704,8 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
         arenaTeam->m_leader = _player->getGuidLow();
         arenaTeam->m_stats.rating = 1500;
 
-        sObjectMgr.AddArenaTeam(arenaTeam);
-        sObjectMgr.UpdateArenaTeamRankings();
+        sObjectMgr.addArenaTeam(arenaTeam);
+        sObjectMgr.updateArenaTeamRankings();
         arenaTeam->addMember(_player->m_playerInfo);
 
         for (uint32_t i = 0; i < charter->SignatureCount; ++i)
@@ -756,7 +756,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
             return;
         }
 
-        ArenaTeam* arenaTeam = sObjectMgr.GetArenaTeamByName(srlPacket.name, arena_type);
+        std::shared_ptr<ArenaTeam> arenaTeam = sObjectMgr.getArenaTeamByName(srlPacket.name, arena_type);
         if (arenaTeam != nullptr)
         {
             sChatHandler.SystemMessage(this, _player->getSession()->LocalizedWorldSrv(ServerString::SS_PETITION_NAME_ALREADY_USED));

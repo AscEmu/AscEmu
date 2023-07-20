@@ -33,18 +33,18 @@ uint8 ChatHandler::GetArenaTeamInternalType(uint32 type, WorldSession* m_session
 
 bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_session)
 {
-    uint32 team_type;
-    char team_name[1000];
+    uint32_t teamType;
+    char teamName[1000];
 
     auto player = GetSelectedPlayer(m_session, true, true);
-    if (sscanf(args, "%u %[^\n]", &team_type, team_name) != 2)
+    if (sscanf(args, "%u %[^\n]", &teamType, teamName) != 2)
     {
         SystemMessage(m_session, "Invalid syntax. Usage: .arena createteam <type> <name>");
         return true;
     }
 
-    uint8 internal_type = GetArenaTeamInternalType(team_type, m_session);
-    if (internal_type == 10)
+    uint8_t internalType = GetArenaTeamInternalType(teamType, m_session);
+    if (internalType == 10)
         return true;
 
     if (player == nullptr)
@@ -53,25 +53,25 @@ bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_sessio
         return true;
     }
 
-    if (player->isInArenaTeam(internal_type))
+    if (player->isInArenaTeam(internalType))
     {
         RedSystemMessage(m_session, "Player: %s is already in an arena team of that type!", player->getName().c_str());
         return true;
     }
 
-    auto arena_team = new ArenaTeam(uint32(internal_type), sObjectMgr.GenerateArenaTeamId());
-    arena_team->m_emblem.emblemStyle = 22;
-    arena_team->m_emblem.emblemColour = 4292133532UL;
-    arena_team->m_emblem.borderColour = 4294931722UL;
-    arena_team->m_emblem.borderStyle = 1;
-    arena_team->m_emblem.backgroundColour = 4284906803UL;
-    arena_team->m_leader = player->getGuidLow();
-    arena_team->m_name = std::string(team_name);
-    arena_team->addMember(player->getPlayerInfo());
+    auto arenaTeam = std::make_shared<ArenaTeam>(internalType, sObjectMgr.GenerateArenaTeamId());
+    arenaTeam->m_emblem.emblemStyle = 22;
+    arenaTeam->m_emblem.emblemColour = 4292133532UL;
+    arenaTeam->m_emblem.borderColour = 4294931722UL;
+    arenaTeam->m_emblem.borderStyle = 1;
+    arenaTeam->m_emblem.backgroundColour = 4284906803UL;
+    arenaTeam->m_leader = player->getGuidLow();
+    arenaTeam->m_name = std::string(teamName);
+    arenaTeam->addMember(player->getPlayerInfo());
 
-    sObjectMgr.AddArenaTeam(arena_team);
+    sObjectMgr.addArenaTeam(arenaTeam);
 
-    GreenSystemMessage(m_session, "Arena team created for Player: %s Type: %u", player->getName().c_str(), team_type);
+    GreenSystemMessage(m_session, "Arena team created for Player: %s Type: %u", player->getName().c_str(), teamType);
 
     return true;
 }
@@ -113,7 +113,7 @@ bool ChatHandler::HandleArenaSetTeamLeader(const char* args, WorldSession* m_ses
 
 bool ChatHandler::HandleArenaTeamResetAllRatings(const char* /*args*/, WorldSession* /*m_session*/)
 {
-    sObjectMgr.ResetArenaTeamRatings();
+    sObjectMgr.resetArenaTeamRatings();
 
     return true;
 }

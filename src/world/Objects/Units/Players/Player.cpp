@@ -8057,15 +8057,15 @@ void Player::removeAllChannels()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // ArenaTeam
-void Player::setArenaTeam(uint8_t type, ArenaTeam* arenaTeam) { m_arenaTeams[type] = arenaTeam; }
-ArenaTeam* Player::getArenaTeam(uint8_t type) { return m_arenaTeams[type]; }
+void Player::setArenaTeam(uint8_t type, std::shared_ptr<ArenaTeam> arenaTeam) { m_arenaTeams[type] = arenaTeam; }
+std::shared_ptr<ArenaTeam> Player::getArenaTeam(uint8_t type) { return m_arenaTeams[type]; }
 
 bool Player::isInArenaTeam(uint8_t type) const { return m_arenaTeams[type] != nullptr; }
 void Player::initialiseArenaTeam()
 {
     for (uint8_t i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
     {
-        m_arenaTeams[i] = sObjectMgr.GetArenaTeamByGuid(getGuidLow(), i);
+        m_arenaTeams[i] = sObjectMgr.getArenaTeamByGuid(getGuidLow(), i);
         if (m_arenaTeams[i] != nullptr)
         {
 #if VERSION_STRING != Classic

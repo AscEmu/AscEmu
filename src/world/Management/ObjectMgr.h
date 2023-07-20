@@ -214,6 +214,29 @@ public:
     ObjectMgr& operator=(ObjectMgr&&) = delete;
     ObjectMgr& operator=(ObjectMgr const&) = delete;
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Arena Team
+    void loadArenaTeams();
+
+    void addArenaTeam(std::shared_ptr<ArenaTeam> _arenaTeam);
+    void removeArenaTeam(std::shared_ptr<ArenaTeam> _arenaTeam);
+
+    std::shared_ptr<ArenaTeam> getArenaTeamByName(std::string& _name, uint32_t _type);
+    std::shared_ptr<ArenaTeam> getArenaTeamById(uint32_t _id);
+    std::shared_ptr<ArenaTeam> getArenaTeamByGuid(uint32_t _guid, uint32_t _type);
+
+    void updateArenaTeamRankings();
+    void updateArenaTeamWeekly();
+    void resetArenaTeamRatings();
+
+private:
+    std::unordered_map<uint32_t, std::shared_ptr<ArenaTeam>> m_arenaTeams;
+    std::unordered_map<uint32_t, std::shared_ptr<ArenaTeam>> m_arenaTeamMap[3];
+    std::mutex m_arenaTeamLock;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Misc
+public:
     void generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId = 0);
     void generateDatabaseGossipOptionAndSubMenu(Object* object, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId);
 
@@ -363,21 +386,6 @@ public:
         Charter* GetCharterByName(std::string & charter_name, CharterTypes Type);
         Charter* GetCharterByItemGuid(uint64 guid);
         Charter* GetCharterByGuid(uint64 playerguid, CharterTypes type);
-
-        ArenaTeam* GetArenaTeamByName(std::string & name, uint32 Type);
-        ArenaTeam* GetArenaTeamById(uint32 id);
-        ArenaTeam* GetArenaTeamByGuid(uint32 guid, uint32 Type);
-        void UpdateArenaTeamRankings();
-        void UpdateArenaTeamWeekly();
-        void ResetArenaTeamRatings();
-        void LoadArenaTeams();
-
-        std::unordered_map<uint32, ArenaTeam*> m_arenaTeamMap[3];
-        std::unordered_map<uint32, ArenaTeam*> m_arenaTeams;
-
-        void RemoveArenaTeam(ArenaTeam* team);
-        void AddArenaTeam(ArenaTeam* team);
-        Mutex m_arenaTeamLock;
 
         bool HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim);
         void LoadInstanceReputationModifiers();

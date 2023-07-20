@@ -320,7 +320,7 @@ uint8_t WorldSession::deleteCharacter(WoWGuid guid)
 
         for (uint8_t i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
         {
-            const auto arenaTeam = sObjectMgr.GetArenaTeamByGuid(guid.getGuidLow(), i);
+            const auto arenaTeam = sObjectMgr.getArenaTeamByGuid(guid.getGuidLow(), i);
             if (arenaTeam != nullptr && arenaTeam->m_leader == guid.getGuidLow())
                 return E_CHAR_DELETE_FAILED_ARENA_CAPTAIN;
 

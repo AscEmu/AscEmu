@@ -206,22 +206,21 @@ void DayWatcherThread::update_arena()
             // are we in any arena teams?
             for (uint8_t i = 0; i < 3; ++i)
             {
-                ArenaTeam* team = sObjectMgr.GetArenaTeamByGuid(guid, i);
-                if (team != nullptr)
+                if (const auto arenaTeam = sObjectMgr.getArenaTeamByGuid(guid, i))
                 {
-                    const auto arenaTeamMember = team->getMemberByGuid(guid);
-                    if (arenaTeamMember == nullptr || team->m_stats.played_week < 10 || arenaTeamMember->Played_ThisWeek * 100 / team->m_stats.played_week < 30)
+                    const auto arenaTeamMember = arenaTeam->getMemberByGuid(guid);
+                    if (arenaTeamMember == nullptr || arenaTeam->m_stats.played_week < 10 || arenaTeamMember->Played_ThisWeek * 100 / arenaTeam->m_stats.played_week < 30)
                         continue;
 
-                    const double arenaStatsRating = team->m_stats.rating;
-                    double anrenaPoints;
+                    const double arenaStatsRating = arenaTeam->m_stats.rating;
+                    double arenaPoints;
 
                     if (arenaStatsRating <= 510.0)
                         continue;
 
                     if (arenaStatsRating > 510.0 && arenaStatsRating <= 1500.0)        // 510 < X <= 1500"
                     {
-                        anrenaPoints = 0.22 * arenaStatsRating + 14.0;
+                        arenaPoints = 0.22 * arenaStatsRating + 14.0;
                     }
                     else
                     {
@@ -230,26 +229,26 @@ void DayWatcherThread::update_arena()
                         divisor *= 1639.28;
                         divisor += 1.0;
 
-                        anrenaPoints = 1511.26 / divisor;
+                        arenaPoints = 1511.26 / divisor;
                     }
 
-                    if (team->m_type == ARENA_TEAM_TYPE_2V2)
+                    if (arenaTeam->m_type == ARENA_TEAM_TYPE_2V2)
                     {
-                        anrenaPoints *= 0.76;
-                        anrenaPoints *= worldConfig.getFloatRate(RATE_ARENAPOINTMULTIPLIER2X);
+                        arenaPoints *= 0.76;
+                        arenaPoints *= worldConfig.getFloatRate(RATE_ARENAPOINTMULTIPLIER2X);
                     }
-                    else if (team->m_type == ARENA_TEAM_TYPE_3V3)
+                    else if (arenaTeam->m_type == ARENA_TEAM_TYPE_3V3)
                     {
-                        anrenaPoints *= 0.88;
-                        anrenaPoints *= worldConfig.getFloatRate(RATE_ARENAPOINTMULTIPLIER3X);
+                        arenaPoints *= 0.88;
+                        arenaPoints *= worldConfig.getFloatRate(RATE_ARENAPOINTMULTIPLIER3X);
                     }
                     else
                     {
-                        anrenaPoints *= worldConfig.getFloatRate(RATE_ARENAPOINTMULTIPLIER5X);
+                        arenaPoints *= worldConfig.getFloatRate(RATE_ARENAPOINTMULTIPLIER5X);
                     }
 
-                    if (anrenaPoints > 1.0)
-                        arenapointsPerTeam[i] += long2int32(double(ceil(anrenaPoints)));
+                    if (arenaPoints > 1.0)
+                        arenapointsPerTeam[i] += long2int32(double(ceil(arenaPoints)));
                 }
             }
 
@@ -276,7 +275,7 @@ void DayWatcherThread::update_arena()
         delete result;
     }
 
-    sObjectMgr.UpdateArenaTeamWeekly();
+    sObjectMgr.updateArenaTeamWeekly();
 
     m_lastArenaTime = UNIXTIME;
     dupe_tm_pointer(localtime(&m_lastArenaTime), &m_localLastArenaTime);

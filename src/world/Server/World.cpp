@@ -944,7 +944,7 @@ void World::loadMySQLTablesByTask()
     sObjectMgr.LoadReputationModifiers();
     sObjectMgr.LoadGroups();
     sObjectMgr.loadGroupInstances();
-    sObjectMgr.LoadArenaTeams();
+    sObjectMgr.loadArenaTeams();
 #ifdef FT_VEHICLES
     sObjectMgr.LoadVehicleAccessories();
     sObjectMgr.loadVehicleSeatAddon();

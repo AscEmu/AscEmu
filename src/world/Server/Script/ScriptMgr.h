@@ -111,7 +111,7 @@ typedef bool(*ItemScript)(Item* pItem, Player* pPlayer);
 typedef void(*tOnQuestCancel)(Player* pPlayer, QuestProperties const* pQuest);
 typedef void(*tOnQuestFinished)(Player* pPlayer, QuestProperties const* pQuest, Object* pQuestGiver);
 typedef void(*tOnHonorableKill)(Player* pPlayer, Player* pKilled);
-typedef void(*tOnArenaFinish)(Player* pPlayer, ArenaTeam* pTeam, bool victory, bool rated);
+typedef void(*tOnArenaFinish)(Player* pPlayer, std::shared_ptr<ArenaTeam> pTeam, bool victory, bool rated);
 typedef void(*tOnObjectLoot)(Player* pPlayer, Object* pTarget, uint32 Money, uint32 ItemId);
 typedef void(*tOnAreaTrigger)(Player* pPlayer, uint32 areaTrigger);
 typedef void(*tOnPostLevelUp)(Player* pPlayer);
@@ -874,7 +874,7 @@ class SERVER_DECL HookInterface
         void OnQuestCancelled(Player* pPlayer, QuestProperties const* pQuest);
         void OnQuestFinished(Player* pPlayer, QuestProperties const* pQuest, Object* pQuestGiver);
         void OnHonorableKill(Player* pPlayer, Player* pKilled);
-        void OnArenaFinish(Player* pPlayer, ArenaTeam* pTeam, bool victory, bool rated);
+        void OnArenaFinish(Player* pPlayer, std::shared_ptr<ArenaTeam> pTeam, bool victory, bool rated);
         void OnObjectLoot(Player* pPlayer, Object* pTarget, uint32 Money, uint32 ItemId);
         void OnAreaTrigger(Player* pPlayer, uint32 areaTrigger);
         void OnPostLevelUp(Player* pPlayer);

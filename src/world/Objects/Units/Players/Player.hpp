@@ -1263,8 +1263,8 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Arena
 public:
-    void setArenaTeam(uint8_t type, ArenaTeam* arenaTeam);
-    ArenaTeam* getArenaTeam(uint8_t type);
+    void setArenaTeam(uint8_t type, std::shared_ptr<ArenaTeam> arenaTeam);
+    std::shared_ptr<ArenaTeam> getArenaTeam(uint8_t type);
 
     bool isInArenaTeam(uint8_t type) const;
     void initialiseArenaTeam();
@@ -1278,7 +1278,7 @@ public:
     uint32_t getInviteArenaTeamId() const;
 
 private:
-    ArenaTeam* m_arenaTeams[NUM_ARENA_TEAM_TYPES] = {nullptr};
+    std::shared_ptr<ArenaTeam> m_arenaTeams[NUM_ARENA_TEAM_TYPES] = {nullptr};
     uint32_t m_arenaPoints = 0;
     uint32_t m_inviteArenaTeamId = 0;
 

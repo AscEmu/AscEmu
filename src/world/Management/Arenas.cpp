@@ -163,7 +163,7 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
         }
     }
 
-    sObjectMgr.UpdateArenaTeamRankings();
+    sObjectMgr.updateArenaTeamRankings();
 
     m_nextPvPUpdateTime = 0;
     updatePvPData();

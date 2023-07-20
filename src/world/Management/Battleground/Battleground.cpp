@@ -143,7 +143,7 @@ void Battleground::buildPvPUpdateDataPacket(WorldPacket* data)
         else
         {
             /* Grab some arena teams */
-            ArenaTeam** teams = dynamic_cast< Arena* >(this)->GetTeams();
+            std::shared_ptr<ArenaTeam>* teams = dynamic_cast< Arena* >(this)->GetTeams();
 
             if (teams[0])
             {
