@@ -31,11 +31,11 @@ public:
     void loadConfigSettings();
     void setSeperatedChannels(bool enabled);
 
-    Channel* getOrCreateChannel(std::string name, Player const* player, uint32_t typeId);
-    void removeChannel(Channel* channel);
+    std::shared_ptr<Channel> getOrCreateChannel(std::string name, Player const* player, uint32_t typeId);
+    void removeChannel(std::shared_ptr<Channel> channel);
 
-    Channel* getChannel(std::string name, Player const* player) const;
-    Channel* getChannel(std::string name, uint32_t team) const;
+    std::shared_ptr<Channel> getChannel(std::string name, Player const* player) const;
+    std::shared_ptr<Channel> getChannel(std::string name, uint32_t team) const;
 
     bool canPlayerJoinDefaultChannel(Player const* player, DBC::Structures::AreaTableEntry const* areaEntry, DBC::Structures::ChatChannelsEntry const* channelDbc) const;
     std::string generateChannelName(DBC::Structures::ChatChannelsEntry const* channelDbc, DBC::Structures::AreaTableEntry const* areaEntry) const;
@@ -44,7 +44,7 @@ public:
     std::vector<std::string> m_minimumChannel;
 
 private:
-    typedef std::map<std::string, Channel*> ChannelList;
+    typedef std::map<std::string, std::shared_ptr<Channel>> ChannelList;
     ChannelList m_channelList[2];
 
     bool m_seperateChannels = false;

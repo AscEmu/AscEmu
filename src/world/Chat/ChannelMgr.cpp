@@ -29,18 +29,13 @@ void ChannelMgr::initialize()
 void ChannelMgr::finalize()
 {
     for (uint8 i = 0; i < 2; ++i)
-    {
-        for (auto& channelList : this->m_channelList[i])
-            delete channelList.second;
-
         m_channelList[i].clear();
-    }
 }
 
 void ChannelMgr::loadConfigSettings()
 {
-    auto bannedChannels = worldConfig.chat.bannedChannels;
-    auto minimumLevel = worldConfig.chat.minimumTalkLevel;
+    const auto bannedChannels = worldConfig.chat.bannedChannels;
+    const auto minimumLevel = worldConfig.chat.minimumTalkLevel;
 
     std::lock_guard<std::mutex> guard(m_mutexConfig);
 
@@ -53,7 +48,7 @@ void ChannelMgr::setSeperatedChannels(bool enabled)
     m_seperateChannels = enabled;
 }
 
-Channel* ChannelMgr::getOrCreateChannel(std::string name, Player const* player, uint32_t typeId)
+std::shared_ptr<Channel> ChannelMgr::getOrCreateChannel(std::string name, Player const* player, uint32_t typeId)
 {
     auto channelList = &m_channelList[0];
     if (m_seperateChannels && player && name != worldConfig.getGmClientChannelName())
@@ -75,14 +70,14 @@ Channel* ChannelMgr::getOrCreateChannel(std::string name, Player const* player, 
             return nullptr;
     }
 
-    auto channel = new Channel(name, (m_seperateChannels && player) ? player->getTeam() : TEAM_ALLIANCE, typeId);
+    auto channel = std::make_shared<Channel>(name, (m_seperateChannels && player) ? player->getTeam() : TEAM_ALLIANCE, typeId);
 
     channelList->insert(make_pair(channel->getChannelName(), channel));
 
     return channel;
 }
 
-void ChannelMgr::removeChannel(Channel* channel)
+void ChannelMgr::removeChannel(std::shared_ptr<Channel> channel)
 {
     if (!channel)
         return;
@@ -98,14 +93,12 @@ void ChannelMgr::removeChannel(Channel* channel)
         if (channelListMember->second == channel)
         {
             channelList->erase(channelListMember);
-            delete channel;
-
             return;
         }
     }
 }
 
-Channel* ChannelMgr::getChannel(std::string name, Player const* player) const
+std::shared_ptr<Channel> ChannelMgr::getChannel(std::string name, Player const* player) const
 {
     auto channelList = &m_channelList[0];
     if (m_seperateChannels && player && name != worldConfig.getGmClientChannelName())
@@ -122,7 +115,7 @@ Channel* ChannelMgr::getChannel(std::string name, Player const* player) const
     return nullptr;
 }
 
-Channel* ChannelMgr::getChannel(std::string name, uint32_t team) const
+std::shared_ptr<Channel> ChannelMgr::getChannel(std::string name, uint32_t team) const
 {
     auto channelList = &m_channelList[0];
     if (m_seperateChannels && name != worldConfig.getGmClientChannelName())

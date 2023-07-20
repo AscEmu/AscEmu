@@ -5541,7 +5541,7 @@ public:
         if (!channelName)
             return 0;
 
-        Channel* channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
+        std::shared_ptr<Channel> channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
         // Channels: "General", "Trade", "LocalDefense", "GuildRecruitment", "LookingForGroup", (or any custom channel)
         if (channel->hasMember(dynamic_cast<Player*>(ptr)))
             lua_pushboolean(L, 1);
@@ -5559,7 +5559,7 @@ public:
         }
 
         const char* channelName = luaL_checkstring(L, 1);
-        Channel* channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
+        std::shared_ptr<Channel> channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
         if (!channel)
             return 0;
 
@@ -5581,7 +5581,7 @@ public:
         }
 
         const char* channelName = luaL_checkstring(L, 1);
-        Channel* channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
+        std::shared_ptr<Channel> channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
         if (!channelName || !channel || !channel->hasMember(dynamic_cast<Player*>(ptr)))
             return 0;
 
@@ -5599,7 +5599,7 @@ public:
 
         const char* currentName = luaL_checkstring(L, 1);
         const char* newName = luaL_checkstring(L, 2);
-        Channel* channel = sChannelMgr.getChannel(currentName, dynamic_cast<Player*>(ptr));
+        std::shared_ptr<Channel> channel = sChannelMgr.getChannel(currentName, dynamic_cast<Player*>(ptr));
         if (!currentName || !newName || !channel || channel->getChannelName() == newName)
             return 0;
 
@@ -5616,7 +5616,7 @@ public:
 
         const char* channelName = luaL_checkstring(L, 1);
         const char* password = luaL_checkstring(L, 2);
-        Channel* channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
+        std::shared_ptr<Channel> channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
         if (!password || !channel || channel->getChannelPassword() == password)
             return 0;
 
@@ -5632,7 +5632,7 @@ public:
         }
 
         const char* channelName = luaL_checkstring(L, 1);
-        Channel* channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
+        std::shared_ptr<Channel> channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
         if (!channel)
             return 0;
 
@@ -5650,7 +5650,7 @@ public:
 
         const char* channelName = luaL_checkstring(L, 1);
         Player* player = dynamic_cast<Player*>(ptr);
-        Channel* channel = sChannelMgr.getChannel(channelName, player);
+        std::shared_ptr<Channel> channel = sChannelMgr.getChannel(channelName, player);
         if (!channel)
             return 0;
 
@@ -5667,7 +5667,7 @@ public:
 
         const char* channelName = luaL_checkstring(L, 1);
         Player* player = dynamic_cast<Player*>(ptr);
-        Channel* channel = sChannelMgr.getChannel(channelName, player);
+        std::shared_ptr<Channel> channel = sChannelMgr.getChannel(channelName, player);
         if (!channel)
             return 0;
 
@@ -5684,7 +5684,7 @@ public:
 
         const char* channelName = luaL_checkstring(L, 1);
         Player* player = dynamic_cast<Player*>(ptr);
-        Channel* channel = sChannelMgr.getChannel(channelName, player);
+        std::shared_ptr<Channel> channel = sChannelMgr.getChannel(channelName, player);
         if (!channel)
             return 0;
 

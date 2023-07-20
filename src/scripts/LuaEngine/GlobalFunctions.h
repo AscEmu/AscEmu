@@ -613,7 +613,7 @@ namespace luaGlobalFunctions
         WorldPacket* pack = CHECK_PACKET(L, 1);
         const char* channelName = luaL_checkstring(L, 2);
         uint32_t team = CHECK_ULONG(L, 3);
-        Channel* channel = sChannelMgr.getChannel(channelName, team);
+        std::shared_ptr<Channel> channel = sChannelMgr.getChannel(channelName, team);
         if (!channel || !pack)
             return 0;
 

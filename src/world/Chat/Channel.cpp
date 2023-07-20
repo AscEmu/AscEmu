@@ -64,7 +64,7 @@ Channel::~Channel()
     std::lock_guard<std::mutex> guard(m_mutexChannel);
 
     for (const auto& member : m_members)
-        member.first->leftChannel(this);
+        member.first->leftChannel(shared_from_this());
 }
 
 std::string Channel::getChannelName() const { return m_channelName; }
@@ -126,7 +126,7 @@ void Channel::attemptJoin(Player* plr, std::string password, bool skipCheck/* = 
     m_members.insert(std::make_pair(plr, memberFlags));
     m_mutexChannel.unlock();
 
-    plr->joinedChannel(this);
+    plr->joinedChannel(shared_from_this());
 
     // Announce player join to other members in channel
     if (m_announcePlayers)
@@ -152,7 +152,7 @@ void Channel::leaveChannel(Player* plr, bool sendPacket/* = true*/)
     m_members.erase(itr);
     m_mutexChannel.unlock();
 
-    plr->leftChannel(this);
+    plr->leftChannel(shared_from_this());
 
     // If player is channel owner, find new owner for channel
     if (memberFlags & CHANNEL_MEMBER_FLAG_OWNER)
@@ -168,7 +168,7 @@ void Channel::leaveChannel(Player* plr, bool sendPacket/* = true*/)
 
     // If channel is now empty, delete it
     if (m_members.empty())
-        sChannelMgr.removeChannel(this);
+        sChannelMgr.removeChannel(shared_from_this());
 }
 
 size_t Channel::getMemberCount() const

@@ -18,9 +18,10 @@ class WorldPacket;
 
 typedef std::map<Player*, uint8_t> MemberMap;
 
-class SERVER_DECL Channel
+class SERVER_DECL Channel : public std::enable_shared_from_this<Channel>
 {
 public:
+
     // Custom channels don't use channel id
     Channel(std::string name, uint8_t team, uint32_t channelId = 0);
     ~Channel();

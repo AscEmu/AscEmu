@@ -7954,7 +7954,7 @@ LocationVector Player::getLastGroupPosition() const { return m_lastGroupPosition
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Channels
-void Player::joinedChannel(Channel* channel)
+void Player::joinedChannel(std::shared_ptr<Channel> channel)
 {
     if (channel == nullptr)
         return;
@@ -7963,7 +7963,7 @@ void Player::joinedChannel(Channel* channel)
     m_channels.insert(channel);
 }
 
-void Player::leftChannel(Channel* channel)
+void Player::leftChannel(std::shared_ptr<Channel> channel)
 {
     if (channel == nullptr)
         return;
@@ -7993,10 +7993,10 @@ void Player::updateChannels()
         if (channelDbc == nullptr)
             continue;
 
-        Channel* oldChannel = nullptr;
+        std::shared_ptr<Channel> oldChannel = nullptr;
 
         m_mutexChannel.lock();
-        for (const auto& _channel : m_channels)
+        for (auto _channel : m_channels)
         {
             if (_channel->getChannelId() == i)
             {
@@ -8009,9 +8009,9 @@ void Player::updateChannels()
 
         if (sChannelMgr.canPlayerJoinDefaultChannel(this, areaEntry, channelDbc))
         {
-            const auto channelName = sChannelMgr.generateChannelName(channelDbc, areaEntry);
+            auto channelName = sChannelMgr.generateChannelName(channelDbc, areaEntry);
 
-            auto* const newChannel = sChannelMgr.getOrCreateChannel(channelName, this, channelDbc->id);
+            auto newChannel = sChannelMgr.getOrCreateChannel(channelName, this, channelDbc->id);
             if (newChannel == nullptr)
             {
                 // should not happen
@@ -8039,7 +8039,7 @@ void Player::updateChannels()
 
 void Player::removeAllChannels()
 {
-    std::set<Channel*> removeList;
+    std::set<std::shared_ptr<Channel>> removeList;
     m_mutexChannel.lock();
 
     for (const auto& channel : m_channels)

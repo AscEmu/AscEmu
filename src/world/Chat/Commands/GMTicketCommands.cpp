@@ -36,7 +36,7 @@ bool ChatHandler::HandleGMTicketListCommand(const char* /*args*/, WorldSession* 
 {
     Player* cplr = m_session->GetPlayer();
 
-    Channel* chn = sChannelMgr.getChannel(worldConfig.getGmClientChannelName(), cplr);
+    std::shared_ptr<Channel> chn = sChannelMgr.getChannel(worldConfig.getGmClientChannelName(), cplr);
     if (!chn)
         return false;
 
@@ -74,7 +74,7 @@ bool ChatHandler::HandleGMTicketGetByIdCommand(const char* args, WorldSession* m
         return false;
 
     Player* cplr = m_session->GetPlayer();
-    Channel* chn = sChannelMgr.getChannel(worldConfig.getGmClientChannelName(), cplr);
+    std::shared_ptr<Channel> chn = sChannelMgr.getChannel(worldConfig.getGmClientChannelName(), cplr);
     if (!chn)
         return false;
 
@@ -128,7 +128,7 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
         return false;
 
     Player* cplr = m_session->GetPlayer();
-    Channel* chn = sChannelMgr.getChannel(worldConfig.getGmClientChannelName(), cplr);
+    std::shared_ptr<Channel> chn = sChannelMgr.getChannel(worldConfig.getGmClientChannelName(), cplr);
     if (!chn)
         return false;
 

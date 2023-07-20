@@ -338,8 +338,8 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
         } break;
         case CHAT_MSG_CHANNEL:
         {
-            if (auto* const channel = sChannelMgr.getChannel(srlPacket.destination, _player))
-                channel->say(_player, srlPacket.message.c_str(), nullptr, false);
+            if (auto channel = sChannelMgr.getChannel(srlPacket.destination, _player))
+                channel->say(_player, srlPacket.message, nullptr, false);
 
         } break;
         case CHAT_MSG_AFK:

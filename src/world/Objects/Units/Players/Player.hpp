@@ -1250,14 +1250,14 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Channels
 public:
-    void joinedChannel(Channel* channel);
-    void leftChannel(Channel* channel);
+    void joinedChannel(std::shared_ptr<Channel> channel);
+    void leftChannel(std::shared_ptr<Channel> channel);
 
     void updateChannels();
     void removeAllChannels();
 
 private:
-    std::set<Channel*> m_channels;
+    std::set<std::shared_ptr<Channel>> m_channels;
     mutable std::mutex m_mutexChannel;
 
     //////////////////////////////////////////////////////////////////////////////////////////
