@@ -1795,7 +1795,7 @@ public:
     void sendWorldStateUpdate(uint32_t worldState, uint32_t value);
 
     bool canBuyAt(MySQLStructure::VendorRestrictions const* vendor);
-    bool canTrainAt(Trainer* trainer);
+    bool canTrainAt(std::shared_ptr<Trainer> trainer);
 
     void sendCinematicCamera(uint32_t id);
 

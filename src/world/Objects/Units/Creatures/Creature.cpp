@@ -1360,7 +1360,7 @@ void Creature::SetCreatureProperties(CreatureProperties const* cp)
     creature_properties = cp;
 }
 
-Trainer* Creature::GetTrainer()
+std::shared_ptr<Trainer> Creature::GetTrainer()
 {
     return mTrainer;
 }
@@ -1610,7 +1610,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
         _LoadQuests();
 
     if (isTrainer() || isProfessionTrainer())
-        mTrainer = sObjectMgr.GetTrainer(getEntry());
+        mTrainer = sObjectMgr.getTrainer(getEntry());
 
     if (isAuctioneer())
         auctionHouse = sAuctionMgr.GetAuctionHouse(getEntry());
@@ -1845,7 +1845,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
         _LoadQuests();
 
     if (isTrainer() || isProfessionTrainer())
-        mTrainer = sObjectMgr.GetTrainer(getEntry());
+        mTrainer = sObjectMgr.getTrainer(getEntry());
 
     if (isAuctioneer())
         auctionHouse = sAuctionMgr.GetAuctionHouse(getEntry());

@@ -10201,7 +10201,7 @@ bool Player::canBuyAt(MySQLStructure::VendorRestrictions const* vendor)
     return true;
 }
 
-bool Player::canTrainAt(Trainer* trainer)
+bool Player::canTrainAt(std::shared_ptr<Trainer> trainer)
 {
     if (!trainer)
         return false;

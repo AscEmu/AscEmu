@@ -949,7 +949,7 @@ void World::loadMySQLTablesByTask()
     sObjectMgr.LoadVehicleAccessories();
     sObjectMgr.loadVehicleSeatAddon();
 #endif
-    sObjectMgr.LoadWorldStateTemplates();
+    sObjectMgr.loadWorldStateTemplates();
 
 #if VERSION_STRING > TBC
     sObjectMgr.loadAchievementRewards();

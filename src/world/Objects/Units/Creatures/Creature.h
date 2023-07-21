@@ -316,7 +316,7 @@ public:
         CreatureProperties const* GetCreatureProperties();
         void SetCreatureProperties(CreatureProperties const* creature_properties);
 
-        Trainer* GetTrainer();
+        std::shared_ptr<Trainer> GetTrainer();
 
         DBC::Structures::CreatureFamilyEntry const* myFamily = nullptr;
 
@@ -376,7 +376,7 @@ public:
 
         CreatureAIScript* _myScriptClass = nullptr;
         bool m_limbostate = false;
-        Trainer* mTrainer = nullptr;
+        std::shared_ptr<Trainer> mTrainer = nullptr;
 
         // Movement
         MovementGeneratorType m_defaultMovementType = IDLE_MOTION_TYPE;

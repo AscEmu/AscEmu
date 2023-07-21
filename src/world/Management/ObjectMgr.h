@@ -86,8 +86,7 @@ struct DungeonEncounter
 };
 #endif
 
-typedef std::list<DungeonEncounter const*> DungeonEncounterList;
-typedef std::unordered_map<uint32_t, DungeonEncounterList> DungeonEncounterContainer;
+typedef std::list<std::shared_ptr<DungeonEncounter>> DungeonEncounterList;
 
 //it seems trainerspells should be part of trainer files ;)
 struct TrainerSpell
@@ -287,9 +286,9 @@ public:
     void loadAchievementRewards();
     void loadCompletedAchievements();
 
-    AchievementReward const* getAchievementReward(uint32_t entry, uint8_t gender);
+    AchievementReward const* getAchievementReward(uint32_t _entry, uint8_t _gender);
 
-    AchievementCriteriaEntryList const& getAchievementCriteriaByType(AchievementCriteriaTypes type);
+    AchievementCriteriaEntryList const& getAchievementCriteriaByType(AchievementCriteriaTypes _type);
 
     void addCompletedAchievement(uint32_t _achievementId);
     std::set<uint32_t> getAllCompleteAchievements();
@@ -309,12 +308,14 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
 public:
-    void generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId = 0);
-    void generateDatabaseGossipOptionAndSubMenu(Object* object, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId);
+    void generateDatabaseGossipMenu(Object* _object, uint32_t _gossipMenuId, Player* _player, uint32_t _forcedTextId = 0);
+    void generateDatabaseGossipOptionAndSubMenu(Object* _object, Player* _player, uint32_t _gossipItemId, uint32_t _gossipMenuId);
 
     void loadTrainerSpellSets();
-    std::vector<TrainerSpell> getTrainserSpellSetById(uint32_t id);
+    std::vector<TrainerSpell> getTrainerSpellSetById(uint32_t _id);
+
     void loadTrainers();
+    std::shared_ptr<Trainer> getTrainer(uint32_t _entry);
 
     // Preload CreatureDisplayInfoStore and CreatureModelDataStore to avoid DBC lookup calls
     void loadCreatureDisplayInfo();
@@ -324,6 +325,31 @@ public:
 
     GameObject* createGameObjectByGuid(uint32_t id, uint32_t guid);
 
+    DungeonEncounterList const* getDungeonEncounterList(uint32_t _mapId, uint8_t _difficulty);
+
+    void loadCreatureMovementOverrides();
+    void checkCreatureMovement(uint32_t _id, CreatureMovementData& _creatureMovement);
+
+    CreatureMovementData const* getCreatureMovementOverride(uint32_t _spawnId) const;
+
+    void loadWorldStateTemplates();
+    std::multimap<uint32_t, WorldState>* getWorldStatesForMap(uint32_t map) const;
+
+private:
+    std::unordered_map<uint32_t, std::vector<TrainerSpell>*> m_trainerSpellSet;
+
+    std::unordered_map<uint32_t, std::shared_ptr<Trainer>> m_trainers;
+
+    std::unordered_map<uint32_t, CreatureDisplayInfoData> m_creatureDisplayInfoData;
+
+    std::unordered_map<uint32_t, DungeonEncounterList>  m_dungeonEncounterStore;
+
+    std::unordered_map<uint32_t, CreatureMovementData> m_creatureMovementOverrides;
+
+    std::map<uint32_t, std::multimap<uint32_t, WorldState>*> m_worldstateTemplates;
+
+public:
+
         void LoadCreatureTimedEmotes();
 
         TimedEmoteList* GetTimedEmoteList(uint32 spawnid);
@@ -331,23 +357,17 @@ public:
         // Set typedef's
         typedef std::unordered_map<uint32, Group*>                                                  GroupMap;
         typedef std::unordered_map<uint32, std::vector<CreatureItem>*>                              VendorMap;
-        typedef std::unordered_map<uint32, Trainer*>                                                TrainerMap;
         typedef std::unordered_map<uint32, ReputationModifier*>                                     ReputationModMap;
-        
 
         // Map typedef's
         typedef std::map<uint32, LevelInfo*>                                                        LevelMap;
         typedef std::map<std::pair<uint32, uint32>, LevelMap*>                                      LevelInfoMap;
-
         typedef std::map<uint32, uint32>                                                            PetSpellCooldownMap;
         typedef std::multimap <uint32, uint32>                                                      BCEntryStorage;
-
-        typedef std::unordered_map<uint32_t, std::vector<TrainerSpell>*> TrainerSpellSetContainer;
 
         Player* GetPlayer(const char* name, bool caseSensitive = true);
         Player* GetPlayer(uint32 guid);
 
-        
         Mutex m_creatureSetMutex;
 
         Item* CreateItem(uint32 entry, Player* owner);
@@ -397,8 +417,6 @@ public:
         uint64_t generateVoidStorageItemId();
 #endif
 
-        Trainer* GetTrainer(uint32 Entry);
-
         LevelInfo* GetLevelInfo(uint32 Race, uint32 Class, uint32 Level);
         void GenerateLevelUpInfo();
 
@@ -410,42 +428,9 @@ public:
         uint32 GenerateCreatureSpawnID();
         uint32 GenerateGameObjectSpawnID();
 
-        
-
         bool HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim);
         void LoadInstanceReputationModifiers();
         void LoadInstanceEncounters();
-
-        void loadCreatureMovementOverrides();
-        void checkCreatureMovement(uint32_t id, CreatureMovementData& creatureMovement);
-
-        CreatureMovementData const* getCreatureMovementOverride(uint32_t spawnId) const
-        {
-            auto itr = _creatureMovementOverrides.find(spawnId);
-            if (itr != _creatureMovementOverrides.end())
-                return &itr->second;
-            return NULL;
-        }
-
-#if VERSION_STRING >= WotLK
-        DungeonEncounterList const* GetDungeonEncounterList(uint32_t mapId, uint8_t difficulty)
-        {
-            std::unordered_map<uint32_t, DungeonEncounterList>::const_iterator itr = _dungeonEncounterStore.find(uint32(uint16(mapId) | (uint32(difficulty) << 16)));
-            if (itr != _dungeonEncounterStore.end())
-                return &itr->second;
-            return NULL;
-        }
-#endif
-
-#if VERSION_STRING <= TBC
-        DungeonEncounterList const* GetDungeonEncounterList(uint32_t mapId, uint8 difficulty = 0)
-        {
-            std::unordered_map<uint32_t, DungeonEncounterList>::const_iterator itr = _dungeonEncounterStore.find(mapId);
-            if (itr != _dungeonEncounterStore.end())
-                return &itr->second;
-            return NULL;
-        }
-#endif
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Event Scripts
@@ -456,7 +441,6 @@ public:
         bool CheckforDummySpellScripts(Player* plr, uint32 data_1);
         void EventScriptsUpdate(Player* plr, uint32 next_event);
         //////////////////////////////////////////////////////////////////////////////////////////
-
 
 #ifdef FT_VEHICLES
         void LoadVehicleAccessories();
@@ -473,19 +457,11 @@ public:
         }
 #endif
 
-        void LoadWorldStateTemplates();
-        std::multimap< uint32, WorldState >* GetWorldStatesForMap(uint32 map) const;
-
     private:
-
         EventScriptMaps mEventScriptMaps;
         SpellEffectMaps mSpellEffectMaps;
-        DungeonEncounterContainer _dungeonEncounterStore;
-        std::unordered_map<uint32_t, CreatureMovementData> _creatureMovementOverrides;
-        std::unordered_map<uint32_t, CreatureDisplayInfoData> _creatureDisplayInfoData;
 
     protected:
-
         // highest GUIDs, used for creating new objects
         std::atomic<unsigned long> m_hiItemGuid;
         std::atomic<unsigned long> m_hiGroupId;
@@ -519,8 +495,6 @@ public:
         /// Map of all vendor goods
         VendorMap mVendors;
 
-        TrainerSpellSetContainer m_trainerSpellSet;
-        TrainerMap mTrainers;
         LevelInfoMap mLevelInfo;
         PetSpellCooldownMap mPetSpellCooldowns;
 
@@ -528,7 +502,6 @@ public:
         VehicleAccessoryContainer _vehicleAccessoryStore;
         VehicleSeatAddonContainer _vehicleSeatAddonStore;
 #endif
-        std::map< uint32, std::multimap<uint32, WorldState>* > worldstate_templates;
 };
 
 #define sObjectMgr ObjectMgr::getInstance()

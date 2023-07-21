@@ -140,7 +140,7 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
 
     TrainerSpell const* trainerSpell = nullptr;
     std::vector<TrainerSpell>::const_iterator itr;
-    std::vector<TrainerSpell> its = sObjectMgr.getTrainserSpellSetById(trainer->spellset_id);
+    std::vector<TrainerSpell> its = sObjectMgr.getTrainerSpellSetById(trainer->spellset_id);
 
     for (itr = its.begin(); itr != its.end(); itr++)
     {
@@ -409,7 +409,7 @@ void WorldSession::sendTrainerList(Creature* creature)
         uiMessage = trainer->UIMessage;
 
     const size_t size = 8 + 4 + 4 + 4 + uiMessage.size()
-        + (sObjectMgr.getTrainserSpellSetById(trainer->spellset_id).size() * (4 + 1 + 4 + 4 + 4 + 1 + 4 + 4 + 4 + 4 + 4));
+        + (sObjectMgr.getTrainerSpellSetById(trainer->spellset_id).size() * (4 + 1 + 4 + 4 + 4 + 1 + 4 + 4 + 4 + 4 + 4));
     WorldPacket data(SMSG_TRAINER_LIST, size);
 
     data << creature->getGuid();
@@ -420,10 +420,10 @@ void WorldSession::sendTrainerList(Creature* creature)
 #endif
 
     size_t count_p = data.wpos();
-    data << uint32_t(sObjectMgr.getTrainserSpellSetById(trainer->spellset_id).size());
+    data << uint32_t(sObjectMgr.getTrainerSpellSetById(trainer->spellset_id).size());
 
     uint32_t count = 0;
-    for (const auto& spellItr : sObjectMgr.getTrainserSpellSetById(trainer->spellset_id))
+    for (const auto& spellItr : sObjectMgr.getTrainerSpellSetById(trainer->spellset_id))
     {
         auto* const trainerSpell = &spellItr;
 

@@ -90,14 +90,14 @@ void ObjectMgr::finalize()
         delete i->second;
     }
 
-    sLogger.info("ObjectMgr : Deleting Trainers...");
-    for (TrainerMap::iterator i = mTrainers.begin(); i != mTrainers.end(); ++i)
+    sLogger.info("ObjectMgr : Deleting Trainers UIMessages...");
+    for (auto trainerPair : m_trainers)
     {
-        Trainer* t = i->second;
-        if (t->UIMessage && t->UIMessage != (char*)NormalTalkMessage)
-            delete[] t->UIMessage;
-        delete t;
+        auto trainer = trainerPair.second;
+        if (trainer->UIMessage && trainer->UIMessage != (char*)NormalTalkMessage)
+            delete[] trainer->UIMessage;
     }
+    m_trainers.clear();
 
     sLogger.info("ObjectMgr : Deleting Level Information...");
     for (LevelInfoMap::iterator i = mLevelInfo.begin(); i != mLevelInfo.end(); ++i)
@@ -175,10 +175,8 @@ void ObjectMgr::finalize()
 
     m_cachedCharacterInfo.clear();
 
-    sLogger.info("ObjectMgr : Deleting Boss Information...");
-    for (DungeonEncounterContainer::iterator itr = _dungeonEncounterStore.begin(); itr != _dungeonEncounterStore.end(); ++itr)
-        for (DungeonEncounterList::iterator encounterItr = itr->second.begin(); encounterItr != itr->second.end(); ++encounterItr)
-            delete *encounterItr;
+    sLogger.info("ObjectMgr : Clearing Boss Information...");
+    m_dungeonEncounterStore.clear();
 
     sLogger.info("ObjectMgr : Clearing Arena Teams...");
     m_arenaTeams.clear();
@@ -190,15 +188,15 @@ void ObjectMgr::finalize()
 #endif
 
     sLogger.info("ObjectMgr : Cleaning up worldstate templates...");
-    for (std::map< uint32, std::multimap< uint32, WorldState >* >::iterator itr = worldstate_templates.begin(); itr != worldstate_templates.end(); ++itr)
+    for (std::map< uint32, std::multimap< uint32, WorldState >* >::iterator itr = m_worldstateTemplates.begin(); itr != m_worldstateTemplates.end(); ++itr)
     {
         itr->second->clear();
         delete itr->second;
     }
 
-    worldstate_templates.clear();
+    m_worldstateTemplates.clear();
 
-    _creatureDisplayInfoData.clear();
+    m_creatureDisplayInfoData.clear();
 
     sLogger.info("ObjectMgr : Clearing up event scripts...");
     mEventScriptMaps.clear();
@@ -833,20 +831,20 @@ void ObjectMgr::loadCompletedAchievements()
     delete result;
 }
 
-AchievementReward const* ObjectMgr::getAchievementReward(uint32_t entry, uint8_t gender)
+AchievementReward const* ObjectMgr::getAchievementReward(uint32_t _entry, uint8_t _gender)
 {
-    AchievementRewardsMapBounds bounds = m_achievementRewards.equal_range(entry);
+    AchievementRewardsMapBounds bounds = m_achievementRewards.equal_range(_entry);
     for (AchievementRewardsMap::const_iterator iter = bounds.first; iter != bounds.second; ++iter)
     {
-        if (iter->second.gender == 2 || iter->second.gender == gender)
+        if (iter->second.gender == 2 || iter->second.gender == _gender)
             return &iter->second;
     }
     return nullptr;
 }
 
-AchievementCriteriaEntryList const& ObjectMgr::getAchievementCriteriaByType(AchievementCriteriaTypes type)
+AchievementCriteriaEntryList const& ObjectMgr::getAchievementCriteriaByType(AchievementCriteriaTypes _type)
 {
-    return m_AchievementCriteriasByType[type];
+    return m_AchievementCriteriasByType[_type];
 }
 
 void ObjectMgr::addCompletedAchievement(uint32_t _achievementId)
@@ -862,16 +860,16 @@ std::set<uint32_t> ObjectMgr::getAllCompleteAchievements()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Misc
-void ObjectMgr::generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId /*= 0*/)
+void ObjectMgr::generateDatabaseGossipMenu(Object* _object, uint32_t _gossipMenuId, Player* _player, uint32_t _forcedTextId /*= 0*/)
 {
     uint32_t textId = 2;
 
-    if (forcedTextId == 0)
+    if (_forcedTextId == 0)
     {
         auto gossipMenuTextStore = sMySQLStore.getGossipMenuInitTextId();
         for (auto& initItr : *gossipMenuTextStore)
         {
-            if (initItr.first == gossipMenuId)
+            if (initItr.first == _gossipMenuId)
             {
                 textId = initItr.second.textId;
                 break;
@@ -880,15 +878,15 @@ void ObjectMgr::generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId
     }
     else
     {
-        textId = forcedTextId;
+        textId = _forcedTextId;
     }
 
-    GossipMenu menu(object->getGuid(), textId, player->getSession()->language, gossipMenuId);
+    GossipMenu menu(_object->getGuid(), textId, _player->getSession()->language, _gossipMenuId);
 
-    sQuestMgr.FillQuestMenu(dynamic_cast<Creature*>(object), player, menu);
+    sQuestMgr.FillQuestMenu(dynamic_cast<Creature*>(_object), _player, menu);
 
     typedef MySQLDataStore::GossipMenuItemsContainer::iterator GossipMenuItemsIterator;
-    std::pair<GossipMenuItemsIterator, GossipMenuItemsIterator> gossipEqualRange = sMySQLStore._gossipMenuItemsStores.equal_range(gossipMenuId);
+    std::pair<GossipMenuItemsIterator, GossipMenuItemsIterator> gossipEqualRange = sMySQLStore._gossipMenuItemsStores.equal_range(_gossipMenuId);
     for (GossipMenuItemsIterator itr = gossipEqualRange.first; itr != gossipEqualRange.second; ++itr)
     {
         // check requirements
@@ -898,24 +896,24 @@ void ObjectMgr::generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId
         // 3 = canGainXP
         // 4 = canNotGainXP
 
-        if (itr->first == gossipMenuId)
+        if (itr->first == _gossipMenuId)
         {
             auto& gossipMenuItem = itr->second;
-            if (gossipMenuItem.requirementType == 1 && !player->hasQuestInQuestLog(gossipMenuItem.requirementData))
+            if (gossipMenuItem.requirementType == 1 && !_player->hasQuestInQuestLog(gossipMenuItem.requirementData))
                 continue;
 
             if (gossipMenuItem.requirementType == 3)
             {
-                if (player->canGainXp())
-                    menu.addItem(gossipMenuItem.icon, gossipMenuItem.menuOptionText, gossipMenuItem.itemOrder, "", gossipMenuItem.onChooseData, player->getSession()->LocalizedGossipOption(gossipMenuItem.onChooseData2));
+                if (_player->canGainXp())
+                    menu.addItem(gossipMenuItem.icon, gossipMenuItem.menuOptionText, gossipMenuItem.itemOrder, "", gossipMenuItem.onChooseData, _player->getSession()->LocalizedGossipOption(gossipMenuItem.onChooseData2));
 
                 continue;
             }
 
             if (gossipMenuItem.requirementType == 4)
             {
-                if (!player->canGainXp())
-                    menu.addItem(gossipMenuItem.icon, gossipMenuItem.menuOptionText, gossipMenuItem.itemOrder, "", gossipMenuItem.onChooseData, player->getSession()->LocalizedGossipOption(gossipMenuItem.onChooseData2));
+                if (!_player->canGainXp())
+                    menu.addItem(gossipMenuItem.icon, gossipMenuItem.menuOptionText, gossipMenuItem.itemOrder, "", gossipMenuItem.onChooseData, _player->getSession()->LocalizedGossipOption(gossipMenuItem.onChooseData2));
 
                 continue;
             }
@@ -924,20 +922,20 @@ void ObjectMgr::generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId
         }
     }
 
-    menu.sendGossipPacket(player);
+    menu.sendGossipPacket(_player);
 }
 
-void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* object, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId)
+void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* _object, Player* _player, uint32_t _gossipItemId, uint32_t _gossipMenuId)
 {
-    sLogger.debug("GossipId: %u  gossipItemId: %u", gossipMenuId, gossipItemId);
+    sLogger.debug("GossipId: %u  gossipItemId: %u", _gossipMenuId, _gossipItemId);
 
     // bool openSubMenu = true;
 
     typedef MySQLDataStore::GossipMenuItemsContainer::iterator GossipMenuItemsIterator;
-    std::pair<GossipMenuItemsIterator, GossipMenuItemsIterator> gossipEqualRange = sMySQLStore._gossipMenuItemsStores.equal_range(gossipMenuId);
+    std::pair<GossipMenuItemsIterator, GossipMenuItemsIterator> gossipEqualRange = sMySQLStore._gossipMenuItemsStores.equal_range(_gossipMenuId);
     for (GossipMenuItemsIterator itr = gossipEqualRange.first; itr != gossipEqualRange.second; ++itr)
     {
-        if (itr->second.itemOrder == gossipItemId)
+        if (itr->second.itemOrder == _gossipItemId)
         {
             // onChooseAction
             // 0 = None
@@ -954,18 +952,18 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* object, Player* p
             {
             case 1:
             {
-                generateDatabaseGossipMenu(object, itr->second.nextGossipMenu, player, itr->second.nextGossipMenuText);
+                generateDatabaseGossipMenu(_object, itr->second.nextGossipMenu, _player, itr->second.nextGossipMenuText);
 
                 if (itr->second.onChooseData != 0)
-                    player->sendPoiById(itr->second.onChooseData);
+                    _player->sendPoiById(itr->second.onChooseData);
 
             } break;
             case 2:
             {
                 if (itr->second.onChooseData != 0)
                 {
-                    player->castSpell(player, sSpellMgr.getSpellInfo(itr->second.onChooseData), true);
-                    GossipMenu::senGossipComplete(player);
+                    _player->castSpell(_player, sSpellMgr.getSpellInfo(itr->second.onChooseData), true);
+                    GossipMenu::senGossipComplete(_player);
                 }
 
             } break;
@@ -973,10 +971,10 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* object, Player* p
             {
                 if (itr->second.onChooseData != 0)
                 {
-                    if (object->isCreature())
-                        player->getSession()->sendTaxiMenu(object->ToCreature());
+                    if (_object->isCreature())
+                        _player->getSession()->sendTaxiMenu(_object->ToCreature());
 
-                    GossipMenu::senGossipComplete(player);
+                    GossipMenu::senGossipComplete(_player);
                 }
 
             } break;
@@ -984,32 +982,32 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* object, Player* p
             {
                 if (itr->second.onChooseData != 0)
                 {
-                    if (player->getFactionStanding(itr->second.onChooseData) >= static_cast<int32_t>(itr->second.onChooseData2))
-                        player->castSpell(player, sSpellMgr.getSpellInfo(itr->second.onChooseData3), true);
+                    if (_player->getFactionStanding(itr->second.onChooseData) >= static_cast<int32_t>(itr->second.onChooseData2))
+                        _player->castSpell(_player, sSpellMgr.getSpellInfo(itr->second.onChooseData3), true);
                     else
-                        player->broadcastMessage(player->getSession()->LocalizedWorldSrv(itr->second.onChooseData4));
+                        _player->broadcastMessage(_player->getSession()->LocalizedWorldSrv(itr->second.onChooseData4));
 
-                    GossipMenu::senGossipComplete(player);
+                    GossipMenu::senGossipComplete(_player);
                 }
 
             } break;
             case 5:
             {
-                GossipMenu::senGossipComplete(player);
+                GossipMenu::senGossipComplete(_player);
 
             } break;
             case 6:
             {
-                if (player->hasEnoughCoinage(itr->second.onChooseData))
+                if (_player->hasEnoughCoinage(itr->second.onChooseData))
                 {
-                    player->modCoinage(-static_cast<int32_t>(itr->second.onChooseData));
-                    player->toggleXpGain();
-                    GossipMenu::senGossipComplete(player);
+                    _player->modCoinage(-static_cast<int32_t>(itr->second.onChooseData));
+                    _player->toggleXpGain();
+                    GossipMenu::senGossipComplete(_player);
                 }
             } break;
             default: // action 0
             {
-                generateDatabaseGossipMenu(object, itr->second.nextGossipMenu, player, itr->second.nextGossipMenuText);
+                generateDatabaseGossipMenu(_object, itr->second.nextGossipMenu, _player, itr->second.nextGossipMenuText);
             } break;
             }
         }
@@ -1119,13 +1117,13 @@ void ObjectMgr::loadTrainerSpellSets()
     }
 }
 
-std::vector<TrainerSpell> ObjectMgr::getTrainserSpellSetById(uint32_t id)
+std::vector<TrainerSpell> ObjectMgr::getTrainerSpellSetById(uint32_t _id)
 {
-    auto itr = m_trainerSpellSet.find(id);
+    auto itr = m_trainerSpellSet.find(_id);
     if (itr == m_trainerSpellSet.end())
         return {};
-    else
-        return *itr->second;
+
+    return *itr->second;
 }
 
 void ObjectMgr::loadTrainers()
@@ -1137,7 +1135,7 @@ void ObjectMgr::loadTrainers()
             auto* const fields = trainerResult->Fetch();
             const auto entry = fields[0].GetUInt32();
 
-            Trainer* trainer = new Trainer;
+            std::shared_ptr<Trainer> trainer = std::make_shared<Trainer>();
             trainer->RequiredSkill = fields[2].GetUInt16();
             trainer->RequiredSkillLine = fields[3].GetUInt32();
             trainer->RequiredClass = fields[4].GetUInt32();
@@ -1172,23 +1170,31 @@ void ObjectMgr::loadTrainers()
                 trainer->UIMessage[strlen(NormalTalkMessage)] = 0;
             }
 
-            trainer->SpellCount = static_cast<uint32_t>(getTrainserSpellSetById(trainer->spellset_id).size());
+            trainer->SpellCount = static_cast<uint32_t>(getTrainerSpellSetById(trainer->spellset_id).size());
 
             // and now we insert it to our lookup table
             if (trainer->SpellCount == 0)
             {
                 if (trainer->UIMessage != NormalTalkMessage)
                     delete[] trainer->UIMessage;
-                delete trainer;
                 continue;
             }
 
-            mTrainers.insert(TrainerMap::value_type(entry, trainer));
+            m_trainers.insert(std::pair(entry, trainer));
         } while (trainerResult->NextRow());
 
         delete trainerResult;
-        sLogger.info("ObjectMgr : %u trainers loaded.", static_cast<uint32_t>(mTrainers.size()));
+        sLogger.info("ObjectMgr : %u trainers loaded.", static_cast<uint32_t>(m_trainers.size()));
     }
+}
+
+std::shared_ptr<Trainer> ObjectMgr::getTrainer(uint32_t _entry)
+{
+    const auto iter = m_trainers.find(_entry);
+    if (iter == m_trainers.end())
+        return nullptr;
+
+    return iter->second;
 }
 
 void ObjectMgr::loadCreatureDisplayInfo()
@@ -1211,14 +1217,14 @@ void ObjectMgr::loadCreatureDisplayInfo()
                 data.isModelInvisibleStalker = true;
         }
 
-        _creatureDisplayInfoData.insert(std::make_pair(displayInfoEntry->ID, data));
+        m_creatureDisplayInfoData.insert(std::make_pair(displayInfoEntry->ID, data));
     }
 }
 
 CreatureDisplayInfoData const* ObjectMgr::getCreatureDisplayInfoData(uint32_t displayId) const
 {
-    const auto itr = _creatureDisplayInfoData.find(displayId);
-    if (itr == _creatureDisplayInfoData.cend())
+    const auto itr = m_creatureDisplayInfoData.find(displayId);
+    if (itr == m_creatureDisplayInfoData.cend())
         return nullptr;
 
     return &itr->second;
@@ -1352,6 +1358,136 @@ GameObject* ObjectMgr::createGameObjectByGuid(uint32_t id, uint32_t guid)
     gameObject->SetGameObjectProperties(gameobjectProperties);
 
     return gameObject;
+}
+
+DungeonEncounterList const* ObjectMgr::getDungeonEncounterList(uint32_t _mapId, uint8_t _difficulty)
+{
+#if VERSION_STRING >= WotLK
+    std::unordered_map<uint32_t, DungeonEncounterList>::const_iterator itr = m_dungeonEncounterStore.find(uint32_t(uint16_t(_mapId) | (uint32_t(_difficulty) << 16)));
+#else
+    std::unordered_map<uint32_t, DungeonEncounterList>::const_iterator itr = _dungeonEncounterStore.find(_mapId);
+#endif
+    if (itr != m_dungeonEncounterStore.end())
+        return &itr->second;
+    return nullptr;
+}
+
+void ObjectMgr::loadCreatureMovementOverrides()
+{
+    const auto startTime = Util::TimeNow();
+    uint32_t count = 0;
+
+    m_creatureMovementOverrides.clear();
+
+    QueryResult* result = WorldDatabase.Query("SELECT SpawnId, Ground, Swim, Flight, Rooted, Chase, Random from creature_movement_override");
+    if (!result)
+    {
+        sLogger.info("loadCreatureMovementOverrides : Loaded 0 creature movement overrides. DB table `creature_movement_override` is empty!");
+        return;
+    }
+
+    do
+    {
+        Field* fields = result->Fetch();
+        uint32_t spawnId = fields[0].GetUInt32();
+
+        QueryResult* spawnResult = WorldDatabase.Query("SELECT * FROM creature_spawns WHERE id = %u", spawnId);
+        if (spawnResult == nullptr)
+        {
+            sLogger.failure("Creature (SpawnId: %u) does not exist but has a record in `creature_movement_override`", spawnId);
+            delete spawnResult;
+            continue;
+        }
+
+        CreatureMovementData& movement = m_creatureMovementOverrides[spawnId];
+        movement.Ground = static_cast<CreatureGroundMovementType>(fields[1].GetUInt8());
+        movement.Swim = fields[2].GetBool();
+        movement.Flight = static_cast<CreatureFlightMovementType>(fields[3].GetUInt8());
+        movement.Rooted = fields[4].GetBool();
+        movement.Chase = static_cast<CreatureChaseMovementType>(fields[5].GetUInt8());
+        movement.Random = static_cast<CreatureRandomMovementType>(fields[6].GetUInt8());
+
+        checkCreatureMovement(spawnId, movement);
+        ++count;
+
+    } while (result->NextRow());
+
+    delete result;
+
+    sLogger.info("ObjectMgr :  Loaded %u movement overrides in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
+
+void ObjectMgr::checkCreatureMovement(uint32_t /*id*/, CreatureMovementData& _creatureMovement)
+{
+    if (_creatureMovement.Ground >= CreatureGroundMovementType::Max)
+        _creatureMovement.Ground = CreatureGroundMovementType::Run;
+
+    if (_creatureMovement.Flight >= CreatureFlightMovementType::Max)
+        _creatureMovement.Flight = CreatureFlightMovementType::None;
+
+    if (_creatureMovement.Chase >= CreatureChaseMovementType::Max)
+        _creatureMovement.Chase = CreatureChaseMovementType::Run;
+
+    if (_creatureMovement.Random >= CreatureRandomMovementType::Max)
+        _creatureMovement.Random = CreatureRandomMovementType::Walk;
+}
+
+CreatureMovementData const* ObjectMgr::getCreatureMovementOverride(uint32_t _spawnId) const
+{
+    const auto itr = m_creatureMovementOverrides.find(_spawnId);
+    if (itr != m_creatureMovementOverrides.end())
+        return &itr->second;
+    return nullptr;
+}
+
+void ObjectMgr::loadWorldStateTemplates()
+{
+    QueryResult* result = WorldDatabase.QueryNA("SELECT DISTINCT map FROM worldstate_templates ORDER BY map;");
+    if (result == nullptr)
+        return;
+
+    do
+    {
+        Field* field = result->Fetch();
+        uint32_t mapId = field[0].GetUInt32();
+
+        m_worldstateTemplates.insert(std::make_pair(mapId, new std::multimap<uint32_t, WorldState>()));
+
+    } while (result->NextRow());
+
+    delete result;
+
+    result = WorldDatabase.QueryNA("SELECT map, zone, field, value FROM worldstate_templates;");
+    if (result == nullptr)
+        return;
+
+    do
+    {
+        Field* field = result->Fetch();
+        WorldState worldState;
+
+        uint32_t mapId = field[0].GetUInt32();
+        uint32_t zone = field[1].GetUInt32();
+        worldState.field = field[2].GetUInt32();
+        worldState.value = field[3].GetUInt32();
+
+        auto itr = m_worldstateTemplates.find(mapId);
+        if (itr == m_worldstateTemplates.end())
+            continue;
+
+        itr->second->insert(std::make_pair(zone, worldState));
+
+    } while (result->NextRow());
+
+    delete result;
+}
+
+std::multimap<uint32, WorldState>* ObjectMgr::getWorldStatesForMap(uint32 map) const
+{
+    const auto itr = m_worldstateTemplates.find(map);
+    if (itr == m_worldstateTemplates.end())
+        return nullptr;
+    return itr->second;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1701,15 +1837,6 @@ Item* ObjectMgr::LoadItem(uint32 lowguid)
     }
 
     return pReturn;
-}
-
-Trainer* ObjectMgr::GetTrainer(uint32 Entry)
-{
-    TrainerMap::iterator iter = mTrainers.find(Entry);
-    if (iter == mTrainers.end())
-        return nullptr;
-
-    return iter->second;
 }
 
 void ObjectMgr::GenerateLevelUpInfo()
@@ -2414,57 +2541,6 @@ VehicleAccessoryList const* ObjectMgr::getVehicleAccessories(Vehicle* vehicle)
     return nullptr;
 }
 #endif
-void ObjectMgr::LoadWorldStateTemplates()
-{
-    QueryResult* result = WorldDatabase.QueryNA("SELECT DISTINCT map FROM worldstate_templates ORDER BY map;");
-    if (result == nullptr)
-        return;
-
-    do
-    {
-        Field* row = result->Fetch();
-        uint32 mapid = row[0].GetUInt32();
-
-        worldstate_templates.insert(std::make_pair(mapid, new std::multimap< uint32, WorldState >()));
-
-    } while (result->NextRow());
-
-    delete result;
-
-    result = WorldDatabase.QueryNA("SELECT map, zone, field, value FROM worldstate_templates;");
-    if (result == nullptr)
-        return;
-
-    do
-    {
-        Field* row = result->Fetch();
-        WorldState ws;
-
-        uint32 mapid = row[0].GetUInt32();
-        uint32 zone = row[1].GetUInt32();
-        ws.field = row[2].GetUInt32();
-        ws.value = row[3].GetUInt32();
-
-        std::map< uint32, std::multimap< uint32, WorldState >* >::iterator itr = worldstate_templates.find(mapid);
-        if (itr == worldstate_templates.end())
-            continue;
-
-        itr->second->insert(std::make_pair(zone, ws));
-
-    } while (result->NextRow());
-
-    delete result;
-}
-
-std::multimap< uint32, WorldState >* ObjectMgr::GetWorldStatesForMap(uint32 map) const
-{
-    std::map< uint32, std::multimap< uint32, WorldState >* >::const_iterator itr = worldstate_templates.find(map);
-
-    if (itr == worldstate_templates.end())
-        return nullptr;
-    else
-        return itr->second;
-}
 
 void ObjectMgr::LoadEventScripts()
 {
@@ -2754,80 +2830,15 @@ void ObjectMgr::LoadInstanceEncounters()
 
 #if VERSION_STRING <= TBC
         DungeonEncounterList& encounters = _dungeonEncounterStore[mapId];
-        encounters.push_back(new DungeonEncounter(EncounterCreditType(creditType), creditEntry));
+        encounters.push_back(std::make_shared<DungeonEncounter>(EncounterCreditType(creditType), creditEntry));
 #else
-        DungeonEncounterList& encounters = _dungeonEncounterStore[static_cast<int32_t>(static_cast<uint16_t>(dungeonEncounter->mapId) | (static_cast<uint32_t>(dungeonEncounter->difficulty) << 16))];
-        encounters.push_back(new DungeonEncounter(dungeonEncounter, EncounterCreditType(creditType), creditEntry, lastEncounterDungeon));
+        DungeonEncounterList& encounters = m_dungeonEncounterStore[static_cast<int32_t>(static_cast<uint16_t>(dungeonEncounter->mapId) | (static_cast<uint32_t>(dungeonEncounter->difficulty) << 16))];
+        encounters.push_back(std::make_shared<DungeonEncounter>(dungeonEncounter, EncounterCreditType(creditType), creditEntry, lastEncounterDungeon));
 #endif
         ++count;
     } while (result->NextRow());
 
     sLogger.info("ObjectMgr : Loaded %u instance encounters in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
-}
-
-void ObjectMgr::loadCreatureMovementOverrides()
-{
-    const auto startTime = Util::TimeNow();
-    uint32_t count = 0;
-
-    _creatureMovementOverrides.clear();
-
-    QueryResult* result = WorldDatabase.Query("SELECT SpawnId, Ground, Swim, Flight, Rooted, Chase, Random from creature_movement_override");
-
-    if (!result)
-    {
-        sLogger.info("loadCreatureMovementOverrides : Loaded 0 creature movement overrides. DB table `creature_movement_override` is empty!");
-        return;
-    }
-
-    do
-    {
-        Field* fields = result->Fetch();
-        uint32_t spawnId = fields[0].GetUInt32();
-
-        QueryResult* spawnResult = WorldDatabase.Query("SELECT * FROM creature_spawns WHERE id = %u", spawnId);
-        if (spawnResult == nullptr)
-        {
-            sLogger.failure("Creature (SpawnId: %u) does not exist but has a record in `creature_movement_override`", spawnId);
-            continue;
-        }
-
-        CreatureMovementData& movement = _creatureMovementOverrides[spawnId];
-        movement.Ground = static_cast<CreatureGroundMovementType>(fields[1].GetUInt8());
-        movement.Swim = fields[2].GetBool();
-        movement.Flight = static_cast<CreatureFlightMovementType>(fields[3].GetUInt8());
-        movement.Rooted = fields[4].GetBool();
-        movement.Chase = static_cast<CreatureChaseMovementType>(fields[5].GetUInt8());
-        movement.Random = static_cast<CreatureRandomMovementType>(fields[6].GetUInt8());
-
-        checkCreatureMovement(spawnId, movement);
-        ++count;
-    } while (result->NextRow());
-
-    sLogger.info("ObjectMgr :  Loaded %u movement overrides in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
-}
-
-void ObjectMgr::checkCreatureMovement(uint32_t /*id*/, CreatureMovementData& creatureMovement)
-{
-    if (creatureMovement.Ground >= CreatureGroundMovementType::Max)
-    {
-        creatureMovement.Ground = CreatureGroundMovementType::Run;
-    }
-
-    if (creatureMovement.Flight >= CreatureFlightMovementType::Max)
-    {
-        creatureMovement.Flight = CreatureFlightMovementType::None;
-    }
-
-    if (creatureMovement.Chase >= CreatureChaseMovementType::Max)
-    {
-        creatureMovement.Chase = CreatureChaseMovementType::Run;
-    }
-
-    if (creatureMovement.Random >= CreatureRandomMovementType::Max)
-    {
-        creatureMovement.Random = CreatureRandomMovementType::Walk;
-    }
 }
 
 #if VERSION_STRING > WotLK

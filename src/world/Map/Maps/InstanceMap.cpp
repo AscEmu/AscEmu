@@ -270,7 +270,7 @@ void InstanceMap::createInstanceData(bool load)
     if (getScript() == nullptr)
         return;
 
-    auto const& encounters = sObjectMgr.GetDungeonEncounterList(getBaseMap()->getMapId(), getDifficulty());
+    auto const& encounters = sObjectMgr.getDungeonEncounterList(getBaseMap()->getMapId(), getDifficulty());
 
     uint32_t bossNumber = static_cast<uint32_t>(encounters->size());
 

@@ -87,7 +87,7 @@ void WorldMap::initialize()
 
     // load corpses
     sObjectMgr.loadCorpsesForInstance(this);
-    worldstateshandler.InitWorldStates(sObjectMgr.GetWorldStatesForMap(getBaseMap()->getMapId()));
+    worldstateshandler.InitWorldStates(sObjectMgr.getWorldStatesForMap(getBaseMap()->getMapId()));
     worldstateshandler.setObserver(this);
 }
 

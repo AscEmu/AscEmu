@@ -1045,12 +1045,12 @@ GameObject* InstanceScript::getGameObjectFromData(uint32_t type)
 // encounters
 void InstanceScript::generateBossDataState()
 {
-    const auto* encounters = sObjectMgr.GetDungeonEncounterList(getWorldMap()->getBaseMap()->getMapId(), getWorldMap()->getDifficulty());
+    const auto* encounters = sObjectMgr.getDungeonEncounterList(getWorldMap()->getBaseMap()->getMapId(), getWorldMap()->getDifficulty());
     uint32_t i = 0;
 
     for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr, ++i)
     {
-        DungeonEncounter const* encounter = *itr;
+        const auto encounter = *itr;
 
         BossInfo* bossInfo = &bosses[i];
         bossInfo->entry = encounter->creditEntry;
@@ -1123,12 +1123,12 @@ void InstanceScript::loadSavedInstanceData(char const* data)
 
 void InstanceScript::readSaveDataBossStates(std::istringstream& data)
 {
-    const auto* encounters = sObjectMgr.GetDungeonEncounterList(getWorldMap()->getBaseMap()->getMapId(), getWorldMap()->getDifficulty());
+    const auto* encounters = sObjectMgr.getDungeonEncounterList(getWorldMap()->getBaseMap()->getMapId(), getWorldMap()->getDifficulty());
     size_t i = 0;
 
     for (DungeonEncounterList::const_iterator itr = encounters->begin(); itr != encounters->end(); ++itr, ++i)
     {
-        DungeonEncounter const* encounter = *itr;
+        const auto encounter = *itr;
 
         BossInfo* bossInfo = &bosses[i];
         bossInfo->entry = encounter->creditEntry;
@@ -1168,7 +1168,7 @@ std::string InstanceScript::getSaveData()
 #if VERSION_STRING >= WotLK
 void InstanceScript::updateEncounterState(EncounterCreditType type, uint32_t creditEntry)
 {
-    DungeonEncounterList const* encounters = sObjectMgr.GetDungeonEncounterList(mInstance->getBaseMap()->getMapId(), mInstance->getDifficulty());
+    DungeonEncounterList const* encounters = sObjectMgr.getDungeonEncounterList(mInstance->getBaseMap()->getMapId(), mInstance->getDifficulty());
     if (!encounters)
         return;
 
