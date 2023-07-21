@@ -619,7 +619,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
     {
         selectedGUID = GetPlayer()->getTargetGuid();
     }
-    AchievementCriteriaEntryList const & achievementCriteriaList = sObjectMgr.GetAchievementCriteriaByType(type);
+    AchievementCriteriaEntryList const & achievementCriteriaList = sObjectMgr.getAchievementCriteriaByType(type);
     for (AchievementCriteriaEntryList::const_iterator i = achievementCriteriaList.begin(); i != achievementCriteriaList.end(); ++i)
     {
         DBC::Structures::AchievementCriteriaEntry const* achievementCriteria = (*i);
@@ -1212,7 +1212,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
     if (m_player->getSession()->HasGMPermissions() && worldConfig.gm.disableAchievements)
         return;
 
-    AchievementCriteriaEntryList const & achievementCriteriaList = sObjectMgr.GetAchievementCriteriaByType(type);
+    AchievementCriteriaEntryList const & achievementCriteriaList = sObjectMgr.getAchievementCriteriaByType(type);
     for (AchievementCriteriaEntryList::const_iterator i = achievementCriteriaList.begin(); i != achievementCriteriaList.end(); ++i)
     {
         DBC::Structures::AchievementCriteriaEntry const* achievementCriteria = (*i);
@@ -1364,7 +1364,7 @@ bool AchievementMgr::IsCompletedCriteria(DBC::Structures::AchievementCriteriaEnt
 
     if (achievement->flags & (ACHIEVEMENT_FLAG_REALM_FIRST_REACH | ACHIEVEMENT_FLAG_REALM_FIRST_KILL))
     {
-        if (sObjectMgr.allCompletedAchievements.find(achievement->ID) != sObjectMgr.allCompletedAchievements.end())
+        if (sObjectMgr.getAllCompleteAchievements().find(achievement->ID) != sObjectMgr.getAllCompleteAchievements().end())
         {
             return false;
         }
@@ -1621,7 +1621,7 @@ void AchievementMgr::CompletedAchievement(DBC::Structures::AchievementEntry cons
     }
     m_completedAchievements[achievement->ID] = time(nullptr);
 
-    sObjectMgr.allCompletedAchievements.insert(achievement->ID);
+    sObjectMgr.addCompletedAchievement(achievement->ID);
     UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_ACHIEVEMENT);
 
     // check for reward
@@ -1976,7 +1976,7 @@ void AchievementMgr::GiveAchievementReward(DBC::Structures::AchievementEntry con
     {
         return;
     }
-    AchievementReward const * Reward = sObjectMgr.GetAchievementReward(entry->ID, GetPlayer()->getGender());
+    AchievementReward const * Reward = sObjectMgr.getAchievementReward(entry->ID, GetPlayer()->getGender());
 
     if (!Reward)
         return;

@@ -66,7 +66,7 @@ struct CriteriaProgress
 
 struct AchievementReward
 {
-    uint32_t gender;
+    uint8_t gender;
     uint32_t titel_A;
     uint32_t titel_H;
     uint32_t itemId;
@@ -80,6 +80,7 @@ typedef std::unordered_map<uint32_t, time_t> CompletedAchievementMap;
 typedef std::multimap<uint32_t, AchievementReward> AchievementRewardsMap;
 typedef std::pair<AchievementRewardsMap::const_iterator, AchievementRewardsMap::const_iterator> AchievementRewardsMapBounds;
 typedef std::set<uint32_t> AchievementSet;
+typedef std::list<DBC::Structures::AchievementCriteriaEntry const*> AchievementCriteriaEntryList;
 
 class Player;
 class WorldPacket;

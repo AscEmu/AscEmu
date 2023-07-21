@@ -736,7 +736,7 @@ bool World::setInitialWorldSettings()
 
 #if VERSION_STRING > TBC
     sLogger.info("World : Starting Achievement System...");
-    sObjectMgr.LoadAchievementCriteriaList();
+    sObjectMgr.loadAchievementCriteriaList();
 #endif
 
     sLogger.info("World : Starting Transport System...");
@@ -952,7 +952,7 @@ void World::loadMySQLTablesByTask()
     sObjectMgr.LoadWorldStateTemplates();
 
 #if VERSION_STRING > TBC
-    sObjectMgr.LoadAchievementRewards();
+    sObjectMgr.loadAchievementRewards();
 #endif
 
     sLootMgr.loadAndGenerateLoot(0);

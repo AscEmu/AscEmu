@@ -190,10 +190,6 @@ struct InstanceReputationModifier
 
 typedef std::unordered_map<uint32, Player*> PlayerStorageMap;
 
-#if VERSION_STRING > TBC
-typedef std::list<DBC::Structures::AchievementCriteriaEntry const*> AchievementCriteriaEntryList;
-#endif
-
 // finally we are here, the base class of this file ;)
 //MIT
 class SERVER_DECL ObjectMgr : public EventableObject
@@ -284,6 +280,33 @@ private:
     std::mutex m_corpseLock;
 
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Achievement - todo: We have an AchievementMgr for that stuff... why here?
+#if VERSION_STRING > TBC
+public:
+    void loadAchievementCriteriaList();
+    void loadAchievementRewards();
+    void loadCompletedAchievements();
+
+    AchievementReward const* getAchievementReward(uint32_t entry, uint8_t gender);
+
+    AchievementCriteriaEntryList const& getAchievementCriteriaByType(AchievementCriteriaTypes type);
+
+    void addCompletedAchievement(uint32_t _achievementId);
+    std::set<uint32_t> getAllCompleteAchievements();
+
+private:
+    AchievementRewardsMap m_achievementRewards;
+
+    AchievementCriteriaEntryList m_AchievementCriteriasByType[ACHIEVEMENT_CRITERIA_TYPE_TOTAL];
+
+#if VERSION_STRING > WotLK
+    AchievementCriteriaEntryList m_GuildAchievementCriteriasByType[ACHIEVEMENT_CRITERIA_TYPE_TOTAL];
+#endif
+
+    std::set<uint32_t> m_allCompletedAchievements;
+#endif
+
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
 public:
     void generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId = 0);
@@ -356,24 +379,6 @@ public:
 
         void AddPlayer(Player* p); //add it to global storage
         void RemovePlayer(Player* p);
-
-        // Serialization
-#if VERSION_STRING > TBC
-        void LoadCompletedAchievements();
-        AchievementRewardsMap AchievementRewards;
-        AchievementReward const * GetAchievementReward(uint32 entry, uint8 gender)
-        {
-            AchievementRewardsMapBounds bounds = AchievementRewards.equal_range(entry);
-            for (AchievementRewardsMap::const_iterator iter = bounds.first; iter != bounds.second; ++iter)
-            {
-                if (iter->second.gender == 2 || uint8(iter->second.gender) == gender)
-                    return &iter->second;
-            }
-            return NULL;
-        }
-
-        void LoadAchievementRewards();
-#endif
 
         void LoadVendors();
         void ReloadVendors();
@@ -452,11 +457,6 @@ public:
         void EventScriptsUpdate(Player* plr, uint32 next_event);
         //////////////////////////////////////////////////////////////////////////////////////////
 
-#if VERSION_STRING > TBC
-        void LoadAchievementCriteriaList();
-        AchievementCriteriaEntryList const & GetAchievementCriteriaByType(AchievementCriteriaTypes type);
-        std::set<uint32> allCompletedAchievements;
-#endif
 
 #ifdef FT_VEHICLES
         void LoadVehicleAccessories();
@@ -523,12 +523,7 @@ public:
         TrainerMap mTrainers;
         LevelInfoMap mLevelInfo;
         PetSpellCooldownMap mPetSpellCooldowns;
-#if VERSION_STRING > TBC
-        AchievementCriteriaEntryList m_AchievementCriteriasByType[ACHIEVEMENT_CRITERIA_TYPE_TOTAL];
-#endif
-#if VERSION_STRING > WotLK
-        AchievementCriteriaEntryList m_GuildAchievementCriteriasByType[ACHIEVEMENT_CRITERIA_TYPE_TOTAL];
-#endif
+
 #ifdef FT_VEHICLES
         VehicleAccessoryContainer _vehicleAccessoryStore;
         VehicleSeatAddonContainer _vehicleSeatAddonStore;

@@ -680,6 +680,187 @@ void ObjectMgr::delinkCorpseForPlayer(const Player* _player)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// Achievement
+#if VERSION_STRING > TBC
+void ObjectMgr::loadAchievementCriteriaList()
+{
+    for (uint32 rowId = 0; rowId < sAchievementCriteriaStore.GetNumRows(); ++rowId)
+    {
+        auto criteria = sAchievementCriteriaStore.LookupEntry(rowId);
+        if (!criteria)
+            continue;
+
+#if VERSION_STRING > WotLK
+        auto achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
+        if (achievement && achievement->flags & ACHIEVEMENT_FLAG_GUILD)
+            m_GuildAchievementCriteriasByType[criteria->requiredType].push_back(criteria);
+        else
+#endif
+            m_AchievementCriteriasByType[criteria->requiredType].push_back(criteria);
+    }
+}
+
+void ObjectMgr::loadAchievementRewards()
+{
+    m_achievementRewards.clear();
+
+    QueryResult* result = WorldDatabase.Query("SELECT entry, gender, title_A, title_H, item, sender, subject, text FROM achievement_reward");
+
+    if (!result)
+    {
+        sLogger.info("Loaded 0 achievement rewards. DB table `achievement_reward` is empty.");
+        return;
+    }
+
+    uint32 count = 0;
+
+    do
+    {
+        Field* fields = result->Fetch();
+        uint32 entry = fields[0].GetUInt32();
+
+        if (!sAchievementStore.LookupEntry(entry))
+        {
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : Achievement reward entry %u has wrong achievement, ignore", entry);
+            continue;
+        }
+
+        AchievementReward reward;
+        reward.gender = fields[1].GetUInt8();
+        reward.titel_A = fields[2].GetUInt32();
+        reward.titel_H = fields[3].GetUInt32();
+        reward.itemId = fields[4].GetUInt32();
+        reward.sender = fields[5].GetUInt32();
+        reward.subject = fields[6].GetString() ? fields[6].GetString() : "";
+        reward.text = fields[7].GetString() ? fields[7].GetString() : "";
+
+        if (reward.gender > 2)
+            sLogger.debug("ObjectMgr : achievement reward %u has wrong gender %u.", entry, static_cast<uint32_t>(reward.gender));
+
+        bool dup = false;
+        AchievementRewardsMapBounds bounds = m_achievementRewards.equal_range(entry);
+        for (AchievementRewardsMap::const_iterator iter = bounds.first; iter != bounds.second; ++iter)
+        {
+            if (iter->second.gender == 2 || reward.gender == 2)
+            {
+                dup = true;
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : Achievement reward %u must have single GENDER_NONE (%u), ignore duplicate case", 2, entry);
+                break;
+            }
+        }
+
+        if (dup)
+            continue;
+
+        // must be title or mail at least
+        if (!reward.titel_A && !reward.titel_H && !reward.sender)
+        {
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have title or item reward data, ignore.", entry);
+            continue;
+        }
+
+        if (reward.titel_A)
+        {
+            auto const* char_title_entry = sCharTitlesStore.LookupEntry(reward.titel_A);
+            if (!char_title_entry)
+            {
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid title id (%u) in `title_A`, set to 0", entry, reward.titel_A);
+                reward.titel_A = 0;
+            }
+        }
+
+        if (reward.titel_H)
+        {
+            auto const* char_title_entry = sCharTitlesStore.LookupEntry(reward.titel_H);
+            if (!char_title_entry)
+            {
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid title id (%u) in `title_A`, set to 0", entry, reward.titel_H);
+                reward.titel_H = 0;
+            }
+        }
+
+        //check mail data before item for report including wrong item case
+        if (reward.sender)
+        {
+            if (!sMySQLStore.getCreatureProperties(reward.sender))
+            {
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid creature entry %u as sender, mail reward skipped.", entry, reward.sender);
+                reward.sender = 0;
+            }
+        }
+        else
+        {
+            if (reward.itemId)
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have sender data but have item reward, item will not rewarded", entry);
+
+            if (!reward.subject.empty())
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have sender data but have mail subject.", entry);
+
+            if (!reward.text.empty())
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have sender data but have mail text.", entry);
+        }
+
+        if (reward.itemId == 0)
+        {
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid item id %u, reward mail will be without item.", entry, reward.itemId);
+        }
+
+        m_achievementRewards.insert(AchievementRewardsMap::value_type(entry, reward));
+        ++count;
+
+    } while (result->NextRow());
+
+    delete result;
+
+    sLogger.info("ObjectMgr : Loaded %u achievement rewards", count);
+}
+
+void ObjectMgr::loadCompletedAchievements()
+{
+    QueryResult* result = CharacterDatabase.Query("SELECT achievement FROM character_achievement GROUP BY achievement");
+
+    if (!result)
+    {
+        sLogger.failure("Query failed: SELECT achievement FROM character_achievement");
+        return;
+    }
+
+    do
+    {
+        Field* fields = result->Fetch();
+        m_allCompletedAchievements.insert(fields[0].GetUInt32());
+    } while (result->NextRow());
+    delete result;
+}
+
+AchievementReward const* ObjectMgr::getAchievementReward(uint32_t entry, uint8_t gender)
+{
+    AchievementRewardsMapBounds bounds = m_achievementRewards.equal_range(entry);
+    for (AchievementRewardsMap::const_iterator iter = bounds.first; iter != bounds.second; ++iter)
+    {
+        if (iter->second.gender == 2 || iter->second.gender == gender)
+            return &iter->second;
+    }
+    return nullptr;
+}
+
+AchievementCriteriaEntryList const& ObjectMgr::getAchievementCriteriaByType(AchievementCriteriaTypes type)
+{
+    return m_AchievementCriteriasByType[type];
+}
+
+void ObjectMgr::addCompletedAchievement(uint32_t _achievementId)
+{
+    m_allCompletedAchievements.insert(_achievementId);
+}
+
+std::set<uint32_t> ObjectMgr::getAllCompleteAchievements()
+{
+    return m_allCompletedAchievements;
+}
+#endif
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Misc
 void ObjectMgr::generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId /*= 0*/)
 {
@@ -1201,145 +1382,6 @@ Group* ObjectMgr::GetGroupById(uint32 id)
     return nullptr;
 }
 
-#if VERSION_STRING > TBC
-void ObjectMgr::LoadCompletedAchievements()
-{
-    QueryResult* result = CharacterDatabase.Query("SELECT achievement FROM character_achievement GROUP BY achievement");
-
-    if (!result)
-    {
-        sLogger.failure("Query failed: SELECT achievement FROM character_achievement");
-        return;
-    }
-
-    do
-    {
-        Field* fields = result->Fetch();
-        allCompletedAchievements.insert(fields[0].GetUInt32());
-    }
-    while (result->NextRow());
-    delete result;
-}
-#endif
-
-#if VERSION_STRING > TBC
-void ObjectMgr::LoadAchievementRewards()
-{
-    AchievementRewards.clear();                           // need for reload case
-
-    QueryResult* result = WorldDatabase.Query("SELECT entry, gender, title_A, title_H, item, sender, subject, text FROM achievement_reward");
-
-    if (!result)
-    {
-        sLogger.info("Loaded 0 achievement rewards. DB table `achievement_reward` is empty.");
-        return;
-    }
-
-    uint32 count = 0;
-
-    do
-    {
-        Field* fields = result->Fetch();
-        uint32 entry = fields[0].GetUInt32();
-
-        if (!sAchievementStore.LookupEntry(entry))
-        {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : Achievement reward entry %u has wrong achievement, ignore", entry);
-            continue;
-        }
-
-        AchievementReward reward;
-        reward.gender = fields[1].GetUInt32();
-        reward.titel_A = fields[2].GetUInt32();
-        reward.titel_H = fields[3].GetUInt32();
-        reward.itemId = fields[4].GetUInt32();
-        reward.sender = fields[5].GetUInt32();
-        reward.subject = fields[6].GetString() ? fields[6].GetString() : "";
-        reward.text = fields[7].GetString() ? fields[7].GetString() : "";
-
-        if (reward.gender > 2)
-            sLogger.debug("ObjectMgr : achievement reward %u has wrong gender %u.", entry, reward.gender);
-
-        bool dup = false;
-        AchievementRewardsMapBounds bounds = AchievementRewards.equal_range(entry);
-        for (AchievementRewardsMap::const_iterator iter = bounds.first; iter != bounds.second; ++iter)
-        {
-            if (iter->second.gender == 2 || reward.gender == 2)
-            {
-                dup = true;
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : Achievement reward %u must have single GENDER_NONE (%u), ignore duplicate case", 2, entry);
-                break;
-            }
-        }
-
-        if (dup)
-            continue;
-
-        // must be title or mail at least
-        if (!reward.titel_A && !reward.titel_H && !reward.sender)
-        {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have title or item reward data, ignore.", entry);
-            continue;
-        }
-
-        if (reward.titel_A)
-        {
-            auto const* char_title_entry = sCharTitlesStore.LookupEntry(reward.titel_A);
-            if (!char_title_entry)
-            {
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid title id (%u) in `title_A`, set to 0", entry, reward.titel_A);
-                reward.titel_A = 0;
-            }
-        }
-
-        if (reward.titel_H)
-        {
-            auto const* char_title_entry = sCharTitlesStore.LookupEntry(reward.titel_H);
-            if (!char_title_entry)
-            {
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid title id (%u) in `title_A`, set to 0", entry, reward.titel_H);
-                reward.titel_H = 0;
-            }
-        }
-
-        //check mail data before item for report including wrong item case
-        if (reward.sender)
-        {
-            if (!sMySQLStore.getCreatureProperties(reward.sender))
-            {
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid creature entry %u as sender, mail reward skipped.", entry, reward.sender);
-                reward.sender = 0;
-            }
-        }
-        else
-        {
-            if (reward.itemId)
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have sender data but have item reward, item will not rewarded", entry);
-
-            if (!reward.subject.empty())
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have sender data but have mail subject.", entry);
-
-            if (!reward.text.empty())
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have sender data but have mail text.", entry);
-        }
-
-        if (reward.itemId == 0)
-        {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid item id %u, reward mail will be without item.", entry, reward.itemId);
-        }
-
-        AchievementRewards.insert(AchievementRewardsMap::value_type(entry, reward));
-        ++count;
-
-    }
-    while (result->NextRow());
-
-    delete result;
-
-    sLogger.info("ObjectMgr : Loaded %u achievement rewards", count);
-}
-#endif
-
 void ObjectMgr::SetHighestGuids()
 {
     QueryResult* result = CharacterDatabase.Query("SELECT MAX(guid) FROM characters");
@@ -1660,31 +1702,6 @@ Item* ObjectMgr::LoadItem(uint32 lowguid)
 
     return pReturn;
 }
-
-#if VERSION_STRING > TBC
-AchievementCriteriaEntryList const & ObjectMgr::GetAchievementCriteriaByType(AchievementCriteriaTypes type)
-{
-    return m_AchievementCriteriasByType[type];
-}
-
-void ObjectMgr::LoadAchievementCriteriaList()
-{
-    for (uint32 rowId = 0; rowId < sAchievementCriteriaStore.GetNumRows(); ++rowId)
-    {
-        auto criteria = sAchievementCriteriaStore.LookupEntry(rowId);
-        if (!criteria)
-            continue;
-
-#if VERSION_STRING > WotLK
-        auto achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
-        if (achievement && achievement->flags & ACHIEVEMENT_FLAG_GUILD)
-            m_GuildAchievementCriteriasByType[criteria->requiredType].push_back(criteria);
-        else
-#endif
-            m_AchievementCriteriasByType[criteria->requiredType].push_back(criteria);
-    }
-}
-#endif
 
 Trainer* ObjectMgr::GetTrainer(uint32 Entry)
 {
