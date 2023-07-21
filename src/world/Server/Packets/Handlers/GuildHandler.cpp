@@ -1492,7 +1492,7 @@ void WorldSession::handleGuildFinderGetRecruits(WorldPacket& recvPacket)
         MembershipRequest request = *itr;
         WoWGuid playerGuid(request.getPlayerGUID(), 0, HIGHGUID_TYPE_PLAYER);
 
-        CachedCharacterInfo* info = sObjectMgr.GetPlayerInfo(request.getPlayerGUID());
+        std::shared_ptr<CachedCharacterInfo> info = sObjectMgr.getCachedCharacterInfo(request.getPlayerGUID())
         std::string name = info->name;
 
         data.writeBits(request.getComment().size(), 11);
