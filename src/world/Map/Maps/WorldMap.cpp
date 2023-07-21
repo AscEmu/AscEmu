@@ -86,7 +86,7 @@ void WorldMap::initialize()
         getScript()->OnLoad();
 
     // load corpses
-    sObjectMgr.LoadCorpses(this);
+    sObjectMgr.loadCorpsesForInstance(this);
     worldstateshandler.InitWorldStates(sObjectMgr.GetWorldStatesForMap(getBaseMap()->getMapId()));
     worldstateshandler.setObserver(this);
 }
@@ -421,7 +421,7 @@ void WorldMap::update(uint32_t t_diff)
                 break;
 
             _corpseDespawnTimes.pop();
-            if (Corpse* pCorpse = sObjectMgr.GetCorpse(static_cast<uint32_t>(next.guid)))
+            if (std::shared_ptr<Corpse> pCorpse = sObjectMgr.getCorpseByGuid(static_cast<uint32_t>(next.guid)))
             {
                 if (pCorpse->getWorldMap() != this)
                     break;

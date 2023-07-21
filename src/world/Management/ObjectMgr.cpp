@@ -74,7 +74,7 @@ void ObjectMgr::initialize()
 void ObjectMgr::finalize()
 {
     sLogger.info("ObjectMgr : Deleting Corpses...");
-    CorpseCollectorUnload();
+    unloadCorpseCollector();
 
     sLogger.info("ObjectMgr : Deleting Vendors...");
     for (VendorMap::iterator i = mVendors.begin(); i != mVendors.end(); ++i)
@@ -461,6 +461,124 @@ std::shared_ptr<Charter> ObjectMgr::getCharterByItemGuid(const uint64_t _itemGui
     }
 
     return nullptr;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Corpse
+void ObjectMgr::loadCorpsesForInstance(WorldMap* _worldMap) const
+{
+    if (QueryResult* result = CharacterDatabase.Query("SELECT * FROM corpses WHERE instanceid = %u", _worldMap->getInstanceId()))
+    {
+        do
+        {
+            Field* fields = result->Fetch();
+            const auto corpse = std::make_shared<Corpse>(HIGHGUID_TYPE_CORPSE, fields[0].GetUInt32());
+            corpse->SetPosition(fields[1].GetFloat(), fields[2].GetFloat(), fields[3].GetFloat(), fields[4].GetFloat());
+            corpse->setZoneId(fields[5].GetUInt32());
+            corpse->SetMapId(fields[6].GetUInt32());
+            corpse->SetInstanceID(fields[7].GetUInt32());
+            corpse->setCorpseDataFromDbString(fields[8].GetString());
+
+            if (corpse->getDisplayId() == 0)
+                continue;
+
+            corpse->PushToWorld(_worldMap);
+        } while (result->NextRow());
+
+        delete result;
+    }
+}
+
+std::shared_ptr<Corpse> ObjectMgr::loadCorpseByGuid(const uint32_t _corpseGuid) const
+{
+    if (QueryResult* result = CharacterDatabase.Query("SELECT * FROM corpses WHERE guid =%u ", _corpseGuid))
+    {
+        Field* field = result->Fetch();
+        const auto corpse = std::make_shared<Corpse>(HIGHGUID_TYPE_CORPSE, field[0].GetUInt32());
+        corpse->SetPosition(field[1].GetFloat(), field[2].GetFloat(), field[3].GetFloat(), field[4].GetFloat());
+        corpse->setZoneId(field[5].GetUInt32());
+        corpse->SetMapId(field[6].GetUInt32());
+        corpse->setCorpseDataFromDbString(field[7].GetString());
+
+        if (corpse->getDisplayId() == 0)
+            return nullptr;
+
+        corpse->setLoadedFromDB(true);
+        corpse->SetInstanceID(field[8].GetUInt32());
+        corpse->AddToWorld();
+
+        delete result;
+        return corpse;
+    }
+
+    return nullptr;
+}
+
+std::shared_ptr<Corpse> ObjectMgr::createCorpse()
+{
+    uint32_t corpseGuid = ++m_hiCorpseGuid;
+    return std::make_shared<Corpse>(HIGHGUID_TYPE_CORPSE, corpseGuid);
+}
+
+void ObjectMgr::addCorpse(const std::shared_ptr<Corpse>& _corpse)
+{
+    std::lock_guard guard(m_corpseLock);
+    m_corpses[_corpse->getGuidLow()] = _corpse;
+}
+
+void ObjectMgr::removeCorpse(const std::shared_ptr<Corpse>& _corpse)
+{
+    std::lock_guard guard(m_corpseLock);
+    m_corpses.erase(_corpse->getGuidLow());
+}
+
+std::shared_ptr<Corpse> ObjectMgr::getCorpseByGuid(uint32_t _corpseGuid)
+{
+    std::lock_guard guard(m_corpseLock);
+    const auto corpsePair = m_corpses.find(_corpseGuid);
+    return corpsePair != m_corpses.end() ? corpsePair->second : nullptr;
+}
+
+std::shared_ptr<Corpse> ObjectMgr::getCorpseByOwner(const uint32_t _playerGuid)
+{
+    std::lock_guard guard(m_corpseLock);
+    for (const auto& corpsePair : m_corpses)
+    {
+        WoWGuid wowGuid;
+        wowGuid.Init(corpsePair.second->getOwnerGuid());
+
+        if (wowGuid.getGuidLowPart() == _playerGuid)
+            return corpsePair.second;
+    }
+
+    return nullptr;
+}
+
+void ObjectMgr::unloadCorpseCollector()
+{
+    std::lock_guard guard(m_corpseLock);
+    for (const auto& corpsePair : m_corpses)
+    {
+        const auto corpse = corpsePair.second;
+        if (corpse->IsInWorld())
+            corpse->RemoveFromWorld(false);
+    }
+    m_corpses.clear();
+}
+
+void ObjectMgr::addCorpseDespawnTime(const std::shared_ptr<Corpse>& _corpse)
+{
+    if (_corpse->IsInWorld())
+        _corpse->getWorldMap()->addCorpseDespawn(_corpse->getGuid(), 600000);
+}
+
+void ObjectMgr::delinkCorpseForPlayer(const Player* _player)
+{
+    if (const auto corpse = getCorpseByOwner(_player->getGuidLow()))
+    {
+        corpse->delink();
+        addCorpseDespawnTime(corpse);
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1125,69 +1243,6 @@ void ObjectMgr::LoadCompletedAchievements()
 }
 #endif
 
-Corpse* ObjectMgr::LoadCorpse(uint32 guid)
-{
-    QueryResult* result = CharacterDatabase.Query("SELECT * FROM corpses WHERE guid =%u ", guid);
-
-    if (result == nullptr)
-        return nullptr;
-
-    Field* fields = result->Fetch();
-    Corpse* pCorpse = new Corpse(HIGHGUID_TYPE_CORPSE, fields[0].GetUInt32());
-    pCorpse->SetPosition(fields[1].GetFloat(), fields[2].GetFloat(), fields[3].GetFloat(), fields[4].GetFloat());
-    pCorpse->setZoneId(fields[5].GetUInt32());
-    pCorpse->SetMapId(fields[6].GetUInt32());
-    pCorpse->setCorpseDataFromDbString(fields[7].GetString());
-    if (pCorpse->getDisplayId() == 0)
-    {
-        delete pCorpse;
-        return nullptr;
-    }
-
-    pCorpse->setLoadedFromDB(true);
-    pCorpse->SetInstanceID(fields[8].GetUInt32());
-    pCorpse->AddToWorld();
-
-    delete result;
-
-    return pCorpse;
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////
-/// Live corpse retreival.
-/// comments: I use the same tricky method to start from the last corpse instead of the first
-//////////////////////////////////////////////////////////////////////////////////////////
-Corpse* ObjectMgr::GetCorpseByOwner(uint32 ownerguid)
-{
-    Corpse* rv = nullptr;
-    _corpseslock.Acquire();
-    for (CorpseMap::const_iterator itr = m_corpses.begin(); itr != m_corpses.end(); ++itr)
-    {
-        WoWGuid wowGuid;
-        wowGuid.Init(itr->second->getOwnerGuid());
-
-        if (wowGuid.getGuidLowPart() == ownerguid)
-        {
-            rv = itr->second;
-            break;
-        }
-    }
-    _corpseslock.Release();
-
-    return rv;
-}
-
-void ObjectMgr::DelinkPlayerCorpses(Player* pOwner)
-{
-    //dupe protection agaisnt crashs
-    Corpse* c = this->GetCorpseByOwner(pOwner->getGuidLow());
-    if (!c)
-        return;
-    sEventMgr.AddEvent(c, &Corpse::delink, EVENT_CORPSE_SPAWN_BONES, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-    CorpseAddEventDespawn(c);
-}
-
 #if VERSION_STRING > TBC
 void ObjectMgr::LoadAchievementRewards()
 {
@@ -1627,35 +1682,6 @@ Item* ObjectMgr::LoadItem(uint32 lowguid)
     return pReturn;
 }
 
-void ObjectMgr::LoadCorpses(WorldMap* mgr)
-{
-    QueryResult* result = CharacterDatabase.Query("SELECT * FROM corpses WHERE instanceid = %u", mgr->getInstanceId());
-
-    if (result)
-    {
-        do
-        {
-            Field* fields = result->Fetch();
-            Corpse* pCorpse = new Corpse(HIGHGUID_TYPE_CORPSE, fields[0].GetUInt32());
-            pCorpse->SetPosition(fields[1].GetFloat(), fields[2].GetFloat(), fields[3].GetFloat(), fields[4].GetFloat());
-            pCorpse->setZoneId(fields[5].GetUInt32());
-            pCorpse->SetMapId(fields[6].GetUInt32());
-            pCorpse->SetInstanceID(fields[7].GetUInt32());
-            pCorpse->setCorpseDataFromDbString(fields[8].GetString());
-            if (pCorpse->getDisplayId() == 0)
-            {
-                delete pCorpse;
-                continue;
-            }
-
-            pCorpse->PushToWorld(mgr);
-        }
-        while (result->NextRow());
-
-        delete result;
-    }
-}
-
 #if VERSION_STRING > TBC
 AchievementCriteriaEntryList const & ObjectMgr::GetAchievementCriteriaByType(AchievementCriteriaTypes type)
 {
@@ -1680,29 +1706,6 @@ void ObjectMgr::LoadAchievementCriteriaList()
     }
 }
 #endif
-
-void ObjectMgr::CorpseAddEventDespawn(Corpse* pCorpse)
-{
-    if (!pCorpse->IsInWorld())
-        delete pCorpse;
-    else
-        pCorpse->getWorldMap()->addCorpseDespawn(pCorpse->getGuid(), 600000);
-}
-
-void ObjectMgr::CorpseCollectorUnload()
-{
-    CorpseMap::const_iterator itr;
-    _corpseslock.Acquire();
-    for (itr = m_corpses.begin(); itr != m_corpses.end(); ++itr)
-    {
-        Corpse* c = itr->second;
-        if (c->IsInWorld())
-            c->RemoveFromWorld(false);
-        delete c;
-    }
-    m_corpses.clear();
-    _corpseslock.Release();
-}
 
 Trainer* ObjectMgr::GetTrainer(uint32 Entry)
 {
@@ -2069,38 +2072,6 @@ void ObjectMgr::RemovePlayer(Player* p)
     std::lock_guard<std::mutex> guard(_playerslock);
 
     _players.erase(p->getGuidLow());
-}
-
-Corpse* ObjectMgr::CreateCorpse()
-{
-    uint32 guid;
-    guid = ++m_hiCorpseGuid;
-
-    return new Corpse(HIGHGUID_TYPE_CORPSE, guid);
-}
-
-void ObjectMgr::AddCorpse(Corpse* p) //add it to global storage
-{
-    _corpseslock.Acquire();
-    m_corpses[p->getGuidLow()] = p;
-    _corpseslock.Release();
-}
-
-void ObjectMgr::RemoveCorpse(Corpse* p)
-{
-    _corpseslock.Acquire();
-    m_corpses.erase(p->getGuidLow());
-    _corpseslock.Release();
-}
-
-Corpse* ObjectMgr::GetCorpse(uint32 corpseguid)
-{
-    Corpse* rv = nullptr;
-    _corpseslock.Acquire();
-    CorpseMap::const_iterator itr = m_corpses.find(corpseguid);
-    rv = (itr != m_corpses.end()) ? itr->second : 0;
-    _corpseslock.Release();
-    return rv;
 }
 
 void ObjectMgr::LoadReputationModifierTable(const char* tablename, ReputationModMap* dmap)

@@ -251,6 +251,27 @@ private:
     std::mutex m_charterLock;
 
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Corpse
+public:
+    void loadCorpsesForInstance(WorldMap* _worldMap) const;
+    std::shared_ptr<Corpse> loadCorpseByGuid(uint32_t _corpseGuid) const;
+    std::shared_ptr<Corpse> createCorpse();
+
+    void addCorpse(const std::shared_ptr<Corpse>&);
+    void removeCorpse(const std::shared_ptr<Corpse>&);
+
+    std::shared_ptr<Corpse> getCorpseByGuid(uint32_t _corpseGuid);
+    std::shared_ptr<Corpse> getCorpseByOwner(uint32_t _playerGuid);
+
+    void unloadCorpseCollector();
+    void addCorpseDespawnTime(const std::shared_ptr<Corpse>& _corpse);
+    void delinkCorpseForPlayer(const Player* _player);
+
+private:
+    std::unordered_map<uint32_t, std::shared_ptr<Corpse>> m_corpses;
+    std::mutex m_corpseLock;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
 public:
     void generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId = 0);
@@ -277,7 +298,7 @@ public:
         typedef std::unordered_map<uint32, std::vector<CreatureItem>*>                              VendorMap;
         typedef std::unordered_map<uint32, Trainer*>                                                TrainerMap;
         typedef std::unordered_map<uint32, ReputationModifier*>                                     ReputationModMap;
-        typedef std::unordered_map<uint32, Corpse*>                                                 CorpseMap;
+        
 
         // Map typedef's
         typedef std::map<uint32, LevelInfo*>                                                        LevelMap;
@@ -291,8 +312,7 @@ public:
         Player* GetPlayer(const char* name, bool caseSensitive = true);
         Player* GetPlayer(uint32 guid);
 
-        CorpseMap m_corpses;
-        Mutex _corpseslock;
+        
         Mutex m_creatureSetMutex;
 
         Item* CreateItem(uint32 entry, Player* owner);
@@ -316,16 +336,6 @@ public:
         CachedCharacterInfo* GetPlayerInfoByName(std::string name);
         void RenamePlayerInfo(CachedCharacterInfo* pn, std::string oldname, std::string newname);
         void DeletePlayerInfo(uint32 guid);
-
-        //Corpse Stuff
-        Corpse* GetCorpseByOwner(uint32 ownerguid);
-        void CorpseCollectorUnload();
-        void CorpseAddEventDespawn(Corpse* pCorpse);
-        void DelinkPlayerCorpses(Player* pOwner);
-        Corpse* CreateCorpse();
-        void AddCorpse(Corpse*);
-        void RemoveCorpse(Corpse*);
-        Corpse* GetCorpse(uint32 corpseguid);
 
         //Vendors
         std::vector<CreatureItem> *GetVendorList(uint32 entry);
@@ -361,8 +371,6 @@ public:
 #endif
         void LoadPlayersInfo();
 
-        Corpse* LoadCorpse(uint32 guid);
-        void LoadCorpses(WorldMap* mgr);
         void LoadVendors();
         void ReloadVendors();
 

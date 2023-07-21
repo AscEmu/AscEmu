@@ -7437,7 +7437,7 @@ bool Player::isAllowedToCreateCorpse() const
 
 void Player::createCorpse()
 {
-    sObjectMgr.DelinkPlayerCorpses(this);
+    sObjectMgr.delinkCorpseForPlayer(this);
 
     if (!isAllowedToCreateCorpse())
     {
@@ -7445,7 +7445,7 @@ void Player::createCorpse()
         return;
     }
 
-    Corpse* corpse = sObjectMgr.CreateCorpse();
+    const auto corpse = sObjectMgr.createCorpse();
     corpse->SetInstanceID(GetInstanceID());
     corpse->create(this, GetMapId(), GetPosition());
 
@@ -7500,7 +7500,7 @@ void Player::createCorpse()
 
 void Player::spawnCorpseBody()
 {
-    if (Corpse* corpse = sObjectMgr.GetCorpseByOwner(this->getGuidLow()))
+    if (const auto corpse = sObjectMgr.getCorpseByOwner(this->getGuidLow()))
     {
         if (!corpse->IsInWorld())
         {
@@ -7525,15 +7525,10 @@ void Player::spawnCorpseBones()
 {
     setCorpseData({ 0, 0, 0, 0 }, 0);
 
-    if (Corpse* corpse = sObjectMgr.GetCorpseByOwner(getGuidLow()))
+    if (const auto corpse = sObjectMgr.getCorpseByOwner(getGuidLow()))
     {
         if (corpse->IsInWorld() && corpse->getCorpseState() == CORPSE_STATE_BODY)
-        {
-            if (corpse->GetInstanceID() != GetInstanceID())
-                sEventMgr.AddEvent(corpse, &Corpse::spawnBones, EVENT_CORPSE_SPAWN_BONES, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-            else
-                corpse->spawnBones();
-        }
+            corpse->spawnBones();
     }
 }
 
@@ -7544,7 +7539,7 @@ void Player::repopRequest()
 
     if (m_corpseData.instanceId != 0)
     {
-        if (auto corpse = sObjectMgr.GetCorpseByOwner(getGuidLow()))
+        if (const auto corpse = sObjectMgr.getCorpseByOwner(getGuidLow()))
             corpse->resetDeathClock();
 
         resurrect();
@@ -7606,7 +7601,7 @@ void Player::repopRequest()
         spawnCorpseBody();
 
         if (m_corpseData.instanceId != 0)
-            if (auto corpse = sObjectMgr.GetCorpseByOwner(getGuidLow()))
+            if (const auto corpse = sObjectMgr.getCorpseByOwner(getGuidLow()))
                 corpse->resetDeathClock();
 
         m_session->SendPacket(SmsgDeathReleaseLoc(m_mapId, m_position).serialise().get());
@@ -10090,7 +10085,11 @@ bool Player::isAtGroupRewardDistance(Object* pRewardSource)
     if (!pRewardSource)
         return false;
 
-    Object* player = sObjectMgr.GetCorpseByOwner(getGuidLow());
+    Object* player = nullptr;
+    const auto corpse = sObjectMgr.getCorpseByOwner(getGuidLow());
+    if (corpse)
+        player = sObjectMgr.GetPlayer(corpse->getOwnerGuid());
+
     if (!player || isAlive())
         player = this;
 
@@ -10831,12 +10830,11 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
     }
     else if (wowGuid.isCorpse())
     {
-        Corpse* pCorpse = sObjectMgr.GetCorpse((uint32_t)guid);
-        if (!pCorpse)
-            return;
-
-        pLoot = &pCorpse->loot;
-        m_currentLoot = pCorpse->getGuid();
+        if (const auto corpse = sObjectMgr.getCorpseByGuid(static_cast<uint32_t>(guid)))
+        {
+            pLoot = &corpse->loot;
+            m_currentLoot = corpse->getGuid();
+        }
     }
     else if (wowGuid.isItem())
     {
@@ -14698,10 +14696,8 @@ void Player::loadFromDBProc(QueryResultVector& results)
 
     if (!isAlive())
     {
-        if (Corpse* corpse = sObjectMgr.GetCorpseByOwner(getGuidLow()))
-        {
+        if (const auto corpse = sObjectMgr.getCorpseByOwner(getGuidLow()))
             setCorpseData(corpse->GetPosition(), corpse->GetInstanceID());
-        }
     }
 
 #if VERSION_STRING > Classic
@@ -15817,22 +15813,17 @@ void Player::completeLoading()
     }
     else if (hasPlayerFlags(PLAYER_FLAG_DEATH_WORLD_ENABLE))
     {
-        Corpse* corpse = sObjectMgr.GetCorpseByOwner(getGuidLow());
-        if (corpse == nullptr)
-        {
-            sEventMgr.AddEvent(this, &Player::repopAtGraveyard, GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId(), EVENT_PLAYER_CHECKFORCHEATS, 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-        }
-        else
-        {
+        if (const auto corpse = sObjectMgr.getCorpseByOwner(getGuidLow()))
             setDeathState(CORPSE);
-        }
+        else
+            sEventMgr.AddEvent(this, &Player::repopAtGraveyard, GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId(), EVENT_PLAYER_CHECKFORCHEATS, 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 
     if (isDead())
     {
         if (getCorpseInstanceId() != 0)
         {
-            if (Corpse* corpse = sObjectMgr.GetCorpseByOwner(getGuidLow()))
+            if (const auto corpse = sObjectMgr.getCorpseByOwner(getGuidLow()))
                 corpse->resetDeathClock();
 
             getSession()->SendPacket(SmsgCorpseReclaimDelay(CORPSE_RECLAIM_TIME_MS).serialise().get());

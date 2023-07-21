@@ -1628,7 +1628,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         if (target->isCorpse())
         {
             // Player can't cast spells on corpses with bones only left
-            const auto targetCorpse = sObjectMgr.GetCorpseByOwner(target->getGuidLow());
+            const auto targetCorpse = sObjectMgr.getCorpseByOwner(target->getGuidLow());
             if (targetCorpse == nullptr || !targetCorpse->IsInWorld() || targetCorpse->getCorpseState() == CORPSE_STATE_BONES)
                 return SPELL_FAILED_BAD_TARGETS;
         }
@@ -5815,7 +5815,7 @@ void Spell::_updateTargetPointers(const uint64_t targetGuid)
                     gameObjTarget = getCaster()->getWorldMap()->getGameObject(wowGuid.getGuidLowPart());
                     break;
                 case HighGuid::Corpse:
-                    corpseTarget = sObjectMgr.GetCorpse(wowGuid.getGuidLowPart());
+                    corpseTarget = sObjectMgr.getCorpseByGuid(wowGuid.getGuidLowPart());
                     break;
                 default:
                     sLogger.failure("Spell::_updateTargetPointers : Invalid object type for spell target (low guid %u) in spell %u", wowGuid.getGuidLowPart(), getSpellInfo()->getId());

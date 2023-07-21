@@ -330,7 +330,7 @@ uint8_t WorldSession::deleteCharacter(WoWGuid guid)
 
         CharacterDatabase.WaitExecute("DELETE FROM characters WHERE guid = %u", guid.getGuidLow());
 
-        const auto corpse = sObjectMgr.GetCorpseByOwner(guid.getGuidLow());
+        const auto corpse = sObjectMgr.getCorpseByOwner(guid.getGuidLow());
         if (corpse)
             CharacterDatabase.Execute("DELETE FROM corpses WHERE guid = %u", corpse->getGuidLow());
 

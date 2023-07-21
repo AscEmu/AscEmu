@@ -42,12 +42,12 @@ Corpse::Corpse(uint32_t high, uint32_t low)
     setScale(1);
 
     if (high != 0)
-        sObjectMgr.AddCorpse(this);
+        sObjectMgr.addCorpse(shared_from_this());
 }
 
 Corpse::~Corpse()
 {
-    sObjectMgr.RemoveCorpse(this);
+    sObjectMgr.removeCorpse(shared_from_this());
 }
 
 void Corpse::create(Player* owner, uint32_t mapid, LocationVector lv)
@@ -181,7 +181,7 @@ void Corpse::spawnBones()
             setItem(i, 0);
 
     deleteFromDB();
-    sObjectMgr.CorpseAddEventDespawn(this);
+    sObjectMgr.addCorpseDespawnTime(shared_from_this());
     setCorpseState(CORPSE_STATE_BONES);
 }
 
@@ -189,6 +189,7 @@ void Corpse::delink()
 {
     setFlags(CORPSE_FLAG_BONE | CORPSE_FLAG_UNK1);
     setOwnerNotifyMap(0);
+
     setCorpseState(CORPSE_STATE_BONES);
     deleteFromDB();
 }

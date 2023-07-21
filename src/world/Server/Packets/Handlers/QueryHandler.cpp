@@ -179,7 +179,7 @@ void WorldSession::handleItemNameQueryOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleCorpseQueryOpcode(WorldPacket& /*recvPacket*/)
 {
-    const auto corpse = sObjectMgr.GetCorpseByOwner(_player->getGuidLow());
+    const auto corpse = sObjectMgr.getCorpseByOwner(_player->getGuidLow());
     if (corpse == nullptr)
         return;
 

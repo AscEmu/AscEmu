@@ -180,7 +180,7 @@ Loot* WorldSession::getMoneyLootFromHighGuidType(WoWGuid wowGuid)
         }
         case HighGuid::Corpse:
         {
-            if (auto corpse = sObjectMgr.GetCorpse(wowGuid.getGuidLowPart()))
+            if (auto corpse = sObjectMgr.getCorpseByGuid(wowGuid.getGuidLowPart()))
                 return &corpse->loot;
 
             return nullptr;
@@ -423,7 +423,7 @@ void WorldSession::doLootRelease(WoWGuid lguid)
     }
     else if (lguid.isCorpse())        // ONLY remove insignia at BG
     {
-        Corpse* corpse = sObjectMgr.GetCorpse(lguid.getGuidLow());
+        std::shared_ptr<Corpse> corpse = sObjectMgr.getCorpseByGuid(lguid.getGuidLow());
         if (!corpse || !corpse->IsWithinDistInMap(_player, 5.0f))
             return;
 

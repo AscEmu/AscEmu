@@ -2980,7 +2980,7 @@ GameObject* Spell::GetGameObjectTarget() const
     return gameObjTarget;
 }
 
-Corpse* Spell::GetCorpseTarget() const
+std::shared_ptr<Corpse> Spell::GetCorpseTarget() const
 {
     return corpseTarget;
 }

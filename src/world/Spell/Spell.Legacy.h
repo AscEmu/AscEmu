@@ -184,7 +184,7 @@ class SERVER_DECL Spell
         Item* itemTarget = nullptr;
         GameObject* gameObjTarget = nullptr;
         Player* playerTarget = nullptr;
-        Corpse* corpseTarget = nullptr;
+        std::shared_ptr<Corpse> corpseTarget = nullptr;
 
     public:
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -634,7 +634,7 @@ class SERVER_DECL Spell
         Unit* GetUnitTarget() const;
         Player* GetPlayerTarget() const;
         GameObject* GetGameObjectTarget() const;
-        Corpse* GetCorpseTarget() const;
+        std::shared_ptr<Corpse> GetCorpseTarget() const;
 
         uint32 chaindamage;
 

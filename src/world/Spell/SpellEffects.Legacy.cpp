@@ -5384,15 +5384,15 @@ void Spell::SpellEffectAttackMe(uint8_t /*effectIndex*/)
 
 void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
 {
-    Corpse* corpse = nullptr;
+    std::shared_ptr<Corpse> corpse = nullptr;
     if (!playerTarget)
     {
         // means we're "skinning" a corpse
-        corpse = sObjectMgr.GetCorpse((uint32)m_targets.getUnitTarget());  // hacky
+        corpse = sObjectMgr.getCorpseByGuid((uint32)m_targets.getUnitTarget());  // hacky
     }
     else if (playerTarget->getDeathState() == CORPSE)   // repopped while we were casting
     {
-        corpse = sObjectMgr.GetCorpse(playerTarget->getGuidLow());
+        corpse = sObjectMgr.getCorpseByGuid(playerTarget->getGuidLow());
     }
 
     if (p_caster == nullptr)
@@ -5454,7 +5454,7 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
         p_caster->sendLoot(corpse->getGuid(), LOOT_SKINNING, corpse->GetMapId());
 
         corpse->deleteFromDB();
-        sObjectMgr.CorpseAddEventDespawn(corpse);
+        sObjectMgr.addCorpseDespawnTime(corpse);
     }
 }
 

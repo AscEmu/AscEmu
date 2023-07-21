@@ -1120,7 +1120,7 @@ void WorldSession::handleCorpseReclaimOpcode(WorldPacket& recvPacket)
     if (srlPacket.guid.getRawGuid() == 0)
         return;
 
-    auto corpse = sObjectMgr.GetCorpse(srlPacket.guid.getGuidLow());
+    auto corpse = sObjectMgr.getCorpseByGuid(srlPacket.guid.getGuidLow());
     if (corpse == nullptr)
         return;
 
