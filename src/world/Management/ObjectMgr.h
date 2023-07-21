@@ -268,8 +268,6 @@ public:
 
     GameObject* createGameObjectByGuid(uint32_t id, uint32_t guid);
 
-    //MIT END
-
         void LoadCreatureTimedEmotes();
 
         TimedEmoteList* GetTimedEmoteList(uint32 spawnid);

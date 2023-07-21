@@ -465,6 +465,335 @@ std::shared_ptr<Charter> ObjectMgr::getCharterByItemGuid(const uint64_t _itemGui
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Misc
+void ObjectMgr::generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId /*= 0*/)
+{
+    uint32_t textId = 2;
+
+    if (forcedTextId == 0)
+    {
+        auto gossipMenuTextStore = sMySQLStore.getGossipMenuInitTextId();
+        for (auto& initItr : *gossipMenuTextStore)
+        {
+            if (initItr.first == gossipMenuId)
+            {
+                textId = initItr.second.textId;
+                break;
+            }
+        }
+    }
+    else
+    {
+        textId = forcedTextId;
+    }
+
+    GossipMenu menu(object->getGuid(), textId, player->getSession()->language, gossipMenuId);
+
+    sQuestMgr.FillQuestMenu(dynamic_cast<Creature*>(object), player, menu);
+
+    typedef MySQLDataStore::GossipMenuItemsContainer::iterator GossipMenuItemsIterator;
+    std::pair<GossipMenuItemsIterator, GossipMenuItemsIterator> gossipEqualRange = sMySQLStore._gossipMenuItemsStores.equal_range(gossipMenuId);
+    for (GossipMenuItemsIterator itr = gossipEqualRange.first; itr != gossipEqualRange.second; ++itr)
+    {
+        // check requirements
+        // 0 = none
+        // 1 = has(active)Quest
+        // 2 = has(finished)Quest
+        // 3 = canGainXP
+        // 4 = canNotGainXP
+
+        if (itr->first == gossipMenuId)
+        {
+            auto& gossipMenuItem = itr->second;
+            if (gossipMenuItem.requirementType == 1 && !player->hasQuestInQuestLog(gossipMenuItem.requirementData))
+                continue;
+
+            if (gossipMenuItem.requirementType == 3)
+            {
+                if (player->canGainXp())
+                    menu.addItem(gossipMenuItem.icon, gossipMenuItem.menuOptionText, gossipMenuItem.itemOrder, "", gossipMenuItem.onChooseData, player->getSession()->LocalizedGossipOption(gossipMenuItem.onChooseData2));
+
+                continue;
+            }
+
+            if (gossipMenuItem.requirementType == 4)
+            {
+                if (!player->canGainXp())
+                    menu.addItem(gossipMenuItem.icon, gossipMenuItem.menuOptionText, gossipMenuItem.itemOrder, "", gossipMenuItem.onChooseData, player->getSession()->LocalizedGossipOption(gossipMenuItem.onChooseData2));
+
+                continue;
+            }
+
+            menu.addItem(gossipMenuItem.icon, gossipMenuItem.menuOptionText, gossipMenuItem.itemOrder);
+        }
+    }
+
+    menu.sendGossipPacket(player);
+}
+
+void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* object, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId)
+{
+    sLogger.debug("GossipId: %u  gossipItemId: %u", gossipMenuId, gossipItemId);
+
+    // bool openSubMenu = true;
+
+    typedef MySQLDataStore::GossipMenuItemsContainer::iterator GossipMenuItemsIterator;
+    std::pair<GossipMenuItemsIterator, GossipMenuItemsIterator> gossipEqualRange = sMySQLStore._gossipMenuItemsStores.equal_range(gossipMenuId);
+    for (GossipMenuItemsIterator itr = gossipEqualRange.first; itr != gossipEqualRange.second; ++itr)
+    {
+        if (itr->second.itemOrder == gossipItemId)
+        {
+            // onChooseAction
+            // 0 = None
+            // 1 = sendPoiById (on_choose_data = poiId)
+            // 2 = castSpell (on_choose_data = spellId)
+            // 3 = sendTaxi (on_choose_data = taxiId, on_choose_data2 = modelId)
+            // 4 = required standing (on_choose_data = factionId, on_choose_data2 = standing, on_choose_data3 = broadcastTextId)
+            // 5 = close window
+            // 6 = toggleXPGain
+
+            // onChooseData
+            // depending on Action...
+            switch (itr->second.onChooseAction)
+            {
+            case 1:
+            {
+                generateDatabaseGossipMenu(object, itr->second.nextGossipMenu, player, itr->second.nextGossipMenuText);
+
+                if (itr->second.onChooseData != 0)
+                    player->sendPoiById(itr->second.onChooseData);
+
+            } break;
+            case 2:
+            {
+                if (itr->second.onChooseData != 0)
+                {
+                    player->castSpell(player, sSpellMgr.getSpellInfo(itr->second.onChooseData), true);
+                    GossipMenu::senGossipComplete(player);
+                }
+
+            } break;
+            case 3:
+            {
+                if (itr->second.onChooseData != 0)
+                {
+                    if (object->isCreature())
+                        player->getSession()->sendTaxiMenu(object->ToCreature());
+
+                    GossipMenu::senGossipComplete(player);
+                }
+
+            } break;
+            case 4:
+            {
+                if (itr->second.onChooseData != 0)
+                {
+                    if (player->getFactionStanding(itr->second.onChooseData) >= static_cast<int32_t>(itr->second.onChooseData2))
+                        player->castSpell(player, sSpellMgr.getSpellInfo(itr->second.onChooseData3), true);
+                    else
+                        player->broadcastMessage(player->getSession()->LocalizedWorldSrv(itr->second.onChooseData4));
+
+                    GossipMenu::senGossipComplete(player);
+                }
+
+            } break;
+            case 5:
+            {
+                GossipMenu::senGossipComplete(player);
+
+            } break;
+            case 6:
+            {
+                if (player->hasEnoughCoinage(itr->second.onChooseData))
+                {
+                    player->modCoinage(-static_cast<int32_t>(itr->second.onChooseData));
+                    player->toggleXpGain();
+                    GossipMenu::senGossipComplete(player);
+                }
+            } break;
+            default: // action 0
+            {
+                generateDatabaseGossipMenu(object, itr->second.nextGossipMenu, player, itr->second.nextGossipMenuText);
+            } break;
+            }
+        }
+    }
+}
+
+void ObjectMgr::loadTrainerSpellSets()
+{
+    auto* const spellSetResult = sMySQLStore.getWorldDBQuery("SELECT * FROM trainer_properties_spellset WHERE min_build <= %u AND max_build >= %u;", VERSION_STRING, VERSION_STRING);
+    if (spellSetResult != nullptr)
+    {
+        std::unordered_map<uint32_t, std::vector<TrainerSpell>*>::const_iterator itr;
+        std::vector<TrainerSpell>* trainerSpells;
+
+        do
+        {
+            Field* fields = spellSetResult->Fetch();
+
+            itr = m_trainerSpellSet.find(fields[0].GetUInt32());
+
+            if (itr == m_trainerSpellSet.end())
+            {
+                trainerSpells = new std::vector<TrainerSpell>;
+                m_trainerSpellSet[fields[0].GetUInt32()] = trainerSpells;
+            }
+            else
+            {
+                trainerSpells = itr->second;
+            }
+
+            auto* const fields2 = spellSetResult->Fetch();
+
+            auto castSpellID = fields2[3].GetUInt32();
+            auto learnSpellID = fields2[4].GetUInt32();
+
+            TrainerSpell ts;
+            auto abrt = false;
+            if (castSpellID != 0)
+            {
+                ts.castSpell = sSpellMgr.getSpellInfo(castSpellID);
+                if (ts.castSpell != nullptr)
+                {
+                    // Check that the castable spell has learn spell effect
+                    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                    {
+                        if (ts.castSpell->getEffect(i) == SPELL_EFFECT_LEARN_SPELL)
+                        {
+                            ts.castRealSpell = sSpellMgr.getSpellInfo(ts.castSpell->getEffectTriggerSpell(i));
+                            if (ts.castRealSpell == nullptr)
+                            {
+                                sLogger.failure("LoadTrainers : TrainerSpellSet %u contains cast spell %u that is non-teaching", fields[0].GetUInt32(), castSpellID);
+                                abrt = true;
+                            }
+
+                            break;
+                        }
+                    }
+                }
+
+                if (abrt)
+                    continue;
+            }
+
+            if (learnSpellID != 0)
+                ts.learnSpell = sSpellMgr.getSpellInfo(learnSpellID);
+
+            if (ts.castSpell == nullptr && ts.learnSpell == nullptr)
+                continue;
+
+            if (ts.castSpell != nullptr && ts.castRealSpell == nullptr)
+                continue;
+
+            ts.cost = fields2[5].GetUInt32();
+            ts.requiredSpell[0] = fields2[6].GetUInt32();
+            ts.requiredSkillLine = fields2[7].GetUInt16();
+            ts.requiredSkillLineValue = fields2[8].GetUInt32();
+            ts.requiredLevel = fields2[9].GetUInt32();
+            ts.deleteSpell = fields2[10].GetUInt32();
+            ts.isStatic = fields2[11].GetUInt32();
+
+            // Check if spell teaches a primary profession skill
+            if (ts.requiredSkillLine == 0 && ts.castRealSpell != nullptr)
+                ts.isPrimaryProfession = ts.castRealSpell->isPrimaryProfession();
+
+            // Add all required spells
+            const auto spellInfo = ts.castRealSpell != nullptr ? ts.castSpell : ts.learnSpell;
+            const auto requiredSpells = sSpellMgr.getSpellsRequiredForSpellBounds(spellInfo->getId());
+            for (auto itr = requiredSpells.first; itr != requiredSpells.second; ++itr)
+            {
+                for (uint8_t i = 0; i < 3; ++i)
+                {
+                    if (ts.requiredSpell[i] == itr->second)
+                        break;
+
+                    if (ts.requiredSpell[i] != 0)
+                        continue;
+
+                    ts.requiredSpell[i] = itr->second;
+                    break;
+                }
+            }
+
+            trainerSpells->push_back(ts);
+        } while (spellSetResult->NextRow());
+
+        sLogger.info("LoadTrainers : %u TrainerSpellSet loaded", static_cast<uint32_t>(m_trainerSpellSet.size()));
+    }
+}
+
+std::vector<TrainerSpell> ObjectMgr::getTrainserSpellSetById(uint32_t id)
+{
+    auto itr = m_trainerSpellSet.find(id);
+    if (itr == m_trainerSpellSet.end())
+        return {};
+    else
+        return *itr->second;
+}
+
+void ObjectMgr::loadTrainers()
+{
+    if (auto* const trainerResult = sMySQLStore.getWorldDBQuery("SELECT * FROM trainer_properties WHERE build <= %u;", VERSION_STRING))
+    {
+        do
+        {
+            auto* const fields = trainerResult->Fetch();
+            const auto entry = fields[0].GetUInt32();
+
+            Trainer* trainer = new Trainer;
+            trainer->RequiredSkill = fields[2].GetUInt16();
+            trainer->RequiredSkillLine = fields[3].GetUInt32();
+            trainer->RequiredClass = fields[4].GetUInt32();
+            trainer->RequiredRace = fields[5].GetUInt32();
+            trainer->RequiredRepFaction = fields[6].GetUInt32();
+            trainer->RequiredRepValue = fields[7].GetUInt32();
+            trainer->TrainerType = fields[8].GetUInt32();
+            trainer->Can_Train_Gossip_TextId = fields[10].GetUInt32();
+            trainer->Cannot_Train_GossipTextId = fields[11].GetUInt32();
+            trainer->spellset_id = fields[12].GetUInt32();
+            trainer->can_train_max_level = fields[13].GetUInt32();
+            trainer->can_train_min_skill_value = fields[14].GetUInt32();
+            trainer->can_train_max_skill_value = fields[15].GetUInt32();
+
+            if (!trainer->Can_Train_Gossip_TextId)
+                trainer->Can_Train_Gossip_TextId = 1;
+            if (!trainer->Cannot_Train_GossipTextId)
+                trainer->Cannot_Train_GossipTextId = 1;
+
+            const char* temp = fields[9].GetString();
+            size_t len = strlen(temp);
+            if (len)
+            {
+                trainer->UIMessage = new char[len + 1];
+                strcpy(trainer->UIMessage, temp);
+                trainer->UIMessage[len] = 0;
+            }
+            else
+            {
+                trainer->UIMessage = new char[strlen(NormalTalkMessage) + 1];
+                strcpy(trainer->UIMessage, NormalTalkMessage);
+                trainer->UIMessage[strlen(NormalTalkMessage)] = 0;
+            }
+
+            trainer->SpellCount = static_cast<uint32_t>(getTrainserSpellSetById(trainer->spellset_id).size());
+
+            // and now we insert it to our lookup table
+            if (trainer->SpellCount == 0)
+            {
+                if (trainer->UIMessage != NormalTalkMessage)
+                    delete[] trainer->UIMessage;
+                delete trainer;
+                continue;
+            }
+
+            mTrainers.insert(TrainerMap::value_type(entry, trainer));
+        } while (trainerResult->NextRow());
+
+        delete trainerResult;
+        sLogger.info("ObjectMgr : %u trainers loaded.", static_cast<uint32_t>(mTrainers.size()));
+    }
+}
+
 void ObjectMgr::loadCreatureDisplayInfo()
 {
     for (uint32_t i = 0; i < sCreatureDisplayInfoStore.GetNumRows(); ++i)
@@ -1374,338 +1703,6 @@ void ObjectMgr::CorpseCollectorUnload()
     m_corpses.clear();
     _corpseslock.Release();
 }
-
-//MIT
-void ObjectMgr::generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId /*= 0*/)
-{
-    uint32_t textId = 2;
-
-    if (forcedTextId == 0)
-    {
-        auto gossipMenuTextStore = sMySQLStore.getGossipMenuInitTextId();
-        for (auto &initItr : *gossipMenuTextStore)
-        {
-            if (initItr.first == gossipMenuId)
-            {
-                textId = initItr.second.textId;
-                break;
-            }
-        }
-    }
-    else
-    {
-        textId = forcedTextId;
-    }
-
-    GossipMenu menu(object->getGuid(), textId, player->getSession()->language, gossipMenuId);
-
-    sQuestMgr.FillQuestMenu(dynamic_cast<Creature*>(object), player, menu);
-
-    typedef MySQLDataStore::GossipMenuItemsContainer::iterator GossipMenuItemsIterator;
-    std::pair<GossipMenuItemsIterator, GossipMenuItemsIterator> gossipEqualRange = sMySQLStore._gossipMenuItemsStores.equal_range(gossipMenuId);
-    for (GossipMenuItemsIterator itr = gossipEqualRange.first; itr != gossipEqualRange.second; ++itr)
-    {
-        // check requirements
-        // 0 = none
-        // 1 = has(active)Quest
-        // 2 = has(finished)Quest
-        // 3 = canGainXP
-        // 4 = canNotGainXP
-
-        if (itr->first == gossipMenuId)
-        {
-            auto& gossipMenuItem = itr->second;
-            if (gossipMenuItem.requirementType == 1 && !player->hasQuestInQuestLog(gossipMenuItem.requirementData))
-                continue;
-
-            if (gossipMenuItem.requirementType == 3)
-            {
-                if (player->canGainXp())
-                    menu.addItem(gossipMenuItem.icon, gossipMenuItem.menuOptionText, gossipMenuItem.itemOrder, "", gossipMenuItem.onChooseData, player->getSession()->LocalizedGossipOption(gossipMenuItem.onChooseData2));
-                
-                continue;
-            }
-
-            if (gossipMenuItem.requirementType == 4)
-            {
-                if (!player->canGainXp())
-                    menu.addItem(gossipMenuItem.icon, gossipMenuItem.menuOptionText, gossipMenuItem.itemOrder, "", gossipMenuItem.onChooseData, player->getSession()->LocalizedGossipOption(gossipMenuItem.onChooseData2));
-                
-                continue;
-            }
-
-            menu.addItem(gossipMenuItem.icon, gossipMenuItem.menuOptionText, gossipMenuItem.itemOrder);
-        }
-    }
-
-    menu.sendGossipPacket(player);
-}
-
-//MIT
-void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* object, Player* player, uint32_t gossipItemId, uint32_t gossipMenuId)
-{
-    sLogger.debug("GossipId: %u  gossipItemId: %u", gossipMenuId, gossipItemId);
-
-    // bool openSubMenu = true;
-
-    typedef MySQLDataStore::GossipMenuItemsContainer::iterator GossipMenuItemsIterator;
-    std::pair<GossipMenuItemsIterator, GossipMenuItemsIterator> gossipEqualRange = sMySQLStore._gossipMenuItemsStores.equal_range(gossipMenuId);
-    for (GossipMenuItemsIterator itr = gossipEqualRange.first; itr != gossipEqualRange.second; ++itr)
-    {
-        if (itr->second.itemOrder == gossipItemId)
-        {
-            // onChooseAction
-            // 0 = None
-            // 1 = sendPoiById (on_choose_data = poiId)
-            // 2 = castSpell (on_choose_data = spellId)
-            // 3 = sendTaxi (on_choose_data = taxiId, on_choose_data2 = modelId)
-            // 4 = required standing (on_choose_data = factionId, on_choose_data2 = standing, on_choose_data3 = broadcastTextId)
-            // 5 = close window
-            // 6 = toggleXPGain
-
-            // onChooseData
-            // depending on Action...
-            switch (itr->second.onChooseAction)
-            {
-                case 1:
-                {
-                    generateDatabaseGossipMenu(object, itr->second.nextGossipMenu, player, itr->second.nextGossipMenuText);
-
-                    if (itr->second.onChooseData != 0)
-                        player->sendPoiById(itr->second.onChooseData);
-
-                } break;
-                case 2:
-                {
-                    if (itr->second.onChooseData != 0)
-                    {
-                        player->castSpell(player, sSpellMgr.getSpellInfo(itr->second.onChooseData), true);
-                        GossipMenu::senGossipComplete(player);
-                    }
-
-                } break;
-                case 3:
-                {
-                    if (itr->second.onChooseData != 0)
-                    {
-                        if (object->isCreature())
-                            player->getSession()->sendTaxiMenu(object->ToCreature());
-
-                        GossipMenu::senGossipComplete(player);
-                    }
-
-                } break;
-                case 4:
-                {
-                    if (itr->second.onChooseData != 0)
-                    {
-                        if (player->getFactionStanding(itr->second.onChooseData) >= static_cast<int32_t>(itr->second.onChooseData2))
-                            player->castSpell(player, sSpellMgr.getSpellInfo(itr->second.onChooseData3), true);
-                        else
-                            player->broadcastMessage(player->getSession()->LocalizedWorldSrv(itr->second.onChooseData4));
-                        
-                        GossipMenu::senGossipComplete(player);
-                    }
-
-                } break;
-                case 5:
-                {
-                    GossipMenu::senGossipComplete(player);
-
-                } break;
-                case 6:
-                {
-                    if (player->hasEnoughCoinage(itr->second.onChooseData))
-                    {
-                        player->modCoinage(-static_cast<int32_t>(itr->second.onChooseData));
-                        player->toggleXpGain();
-                        GossipMenu::senGossipComplete(player);
-                    }
-                } break;
-                default: // action 0
-                {
-                    generateDatabaseGossipMenu(object, itr->second.nextGossipMenu, player, itr->second.nextGossipMenuText);
-                } break;
-            }
-        }
-    }
-}
-
-void ObjectMgr::loadTrainerSpellSets()
-{
-    auto* const spellSetResult = sMySQLStore.getWorldDBQuery("SELECT * FROM trainer_properties_spellset WHERE min_build <= %u AND max_build >= %u;", VERSION_STRING, VERSION_STRING);
-    if (spellSetResult != nullptr)
-    {
-        std::unordered_map<uint32_t, std::vector<TrainerSpell>*>::const_iterator itr;
-        std::vector<TrainerSpell> *trainerSpells;
-
-        do
-        {
-            Field* fields = spellSetResult->Fetch();
-
-            itr = m_trainerSpellSet.find(fields[0].GetUInt32());
-
-            if (itr == m_trainerSpellSet.end())
-            {
-                trainerSpells = new std::vector<TrainerSpell>;
-                m_trainerSpellSet[fields[0].GetUInt32()] = trainerSpells;
-            }
-            else
-            {
-                trainerSpells = itr->second;
-            }
-
-            auto* const fields2 = spellSetResult->Fetch();
-
-            auto castSpellID = fields2[3].GetUInt32();
-            auto learnSpellID = fields2[4].GetUInt32();
-
-            TrainerSpell ts;
-            auto abrt = false;
-            if (castSpellID != 0)
-            {
-                ts.castSpell = sSpellMgr.getSpellInfo(castSpellID);
-                if (ts.castSpell != nullptr)
-                {
-                    // Check that the castable spell has learn spell effect
-                    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                    {
-                        if (ts.castSpell->getEffect(i) == SPELL_EFFECT_LEARN_SPELL)
-                        {
-                            ts.castRealSpell = sSpellMgr.getSpellInfo(ts.castSpell->getEffectTriggerSpell(i));
-                            if (ts.castRealSpell == nullptr)
-                            {
-                                sLogger.failure("LoadTrainers : TrainerSpellSet %u contains cast spell %u that is non-teaching", fields[0].GetUInt32(), castSpellID);
-                                abrt = true;
-                            }
-
-                            break;
-                        }
-                    }
-                }
-
-                if (abrt)
-                    continue;
-            }
-
-            if (learnSpellID != 0)
-                ts.learnSpell = sSpellMgr.getSpellInfo(learnSpellID);
-
-            if (ts.castSpell == nullptr && ts.learnSpell == nullptr)
-                continue;
-
-            if (ts.castSpell != nullptr && ts.castRealSpell == nullptr)
-                continue;
-
-            ts.cost = fields2[5].GetUInt32();
-            ts.requiredSpell[0] = fields2[6].GetUInt32();
-            ts.requiredSkillLine = fields2[7].GetUInt16();
-            ts.requiredSkillLineValue = fields2[8].GetUInt32();
-            ts.requiredLevel = fields2[9].GetUInt32();
-            ts.deleteSpell = fields2[10].GetUInt32();
-            ts.isStatic = fields2[11].GetUInt32();
-
-            // Check if spell teaches a primary profession skill
-            if (ts.requiredSkillLine == 0 && ts.castRealSpell != nullptr)
-                ts.isPrimaryProfession = ts.castRealSpell->isPrimaryProfession();
-
-            // Add all required spells
-            const auto spellInfo = ts.castRealSpell != nullptr ? ts.castSpell : ts.learnSpell;
-            const auto requiredSpells = sSpellMgr.getSpellsRequiredForSpellBounds(spellInfo->getId());
-            for (auto itr = requiredSpells.first; itr != requiredSpells.second; ++itr)
-            {
-                for (uint8_t i = 0; i < 3; ++i)
-                {
-                    if (ts.requiredSpell[i] == itr->second)
-                        break;
-
-                    if (ts.requiredSpell[i] != 0)
-                        continue;
-
-                    ts.requiredSpell[i] = itr->second;
-                    break;
-                }
-            }
-
-            trainerSpells->push_back(ts);
-        } while (spellSetResult->NextRow());
-
-        sLogger.info("LoadTrainers : %u TrainerSpellSet loaded", static_cast<uint32_t>(m_trainerSpellSet.size()));
-    }
-}
-
-std::vector<TrainerSpell> ObjectMgr::getTrainserSpellSetById(uint32_t id)
-{
-        auto itr = m_trainerSpellSet.find(id);
-        if (itr == m_trainerSpellSet.end())
-            return {};
-        else
-            return *itr->second;
-}
-
-void ObjectMgr::loadTrainers()
-{
-    if (auto* const trainerResult = sMySQLStore.getWorldDBQuery("SELECT * FROM trainer_properties WHERE build <= %u;", VERSION_STRING))
-    {
-        do
-        {
-            auto* const fields = trainerResult->Fetch();
-            const auto entry = fields[0].GetUInt32();
-
-            Trainer* trainer = new Trainer;
-            trainer->RequiredSkill = fields[2].GetUInt16();
-            trainer->RequiredSkillLine = fields[3].GetUInt32();
-            trainer->RequiredClass = fields[4].GetUInt32();
-            trainer->RequiredRace = fields[5].GetUInt32();
-            trainer->RequiredRepFaction = fields[6].GetUInt32();
-            trainer->RequiredRepValue = fields[7].GetUInt32();
-            trainer->TrainerType = fields[8].GetUInt32();
-            trainer->Can_Train_Gossip_TextId = fields[10].GetUInt32();
-            trainer->Cannot_Train_GossipTextId = fields[11].GetUInt32();
-            trainer->spellset_id = fields[12].GetUInt32();
-            trainer->can_train_max_level = fields[13].GetUInt32();
-            trainer->can_train_min_skill_value = fields[14].GetUInt32();
-            trainer->can_train_max_skill_value = fields[15].GetUInt32();
-
-            if (!trainer->Can_Train_Gossip_TextId)
-                trainer->Can_Train_Gossip_TextId = 1;
-            if (!trainer->Cannot_Train_GossipTextId)
-                trainer->Cannot_Train_GossipTextId = 1;
-
-            const char* temp = fields[9].GetString();
-            size_t len = strlen(temp);
-            if (len)
-            {
-                trainer->UIMessage = new char[len + 1];
-                strcpy(trainer->UIMessage, temp);
-                trainer->UIMessage[len] = 0;
-            }
-            else
-            {
-                trainer->UIMessage = new char[strlen(NormalTalkMessage) + 1];
-                strcpy(trainer->UIMessage, NormalTalkMessage);
-                trainer->UIMessage[strlen(NormalTalkMessage)] = 0;
-            }
-
-            trainer->SpellCount = static_cast<uint32_t>(getTrainserSpellSetById(trainer->spellset_id).size());
-
-            // and now we insert it to our lookup table
-            if (trainer->SpellCount == 0)
-            {
-                if (trainer->UIMessage != NormalTalkMessage)
-                    delete[] trainer->UIMessage;
-                delete trainer;
-                continue;
-            }
-
-            mTrainers.insert(TrainerMap::value_type(entry, trainer));
-        } while (trainerResult->NextRow());
-
-        delete trainerResult;
-        sLogger.info("ObjectMgr : %u trainers loaded.", static_cast<uint32_t>(mTrainers.size()));
-    }
-}
-//MIT
 
 Trainer* ObjectMgr::GetTrainer(uint32 Entry)
 {
