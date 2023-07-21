@@ -139,7 +139,7 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
 
             for (std::set<uint32>::iterator itr = m_players2[i].begin(); itr != m_players2[i].end(); ++itr)
             {
-                CachedCharacterInfo* info = sObjectMgr.GetPlayerInfo(*itr);
+                std::shared_ptr<CachedCharacterInfo> info = sObjectMgr.getCachedCharacterInfo(*itr);
                 if (info)
                 {
                     ArenaTeamMember* tp = m_teams[i]->getMember(info);

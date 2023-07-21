@@ -784,15 +784,10 @@ bool Loot::fillLoot(uint32_t lootId, LootTemplateMap const& tempelateStore, Play
         {
             if (group->GetSubGroup(i) != nullptr)
             {
-                for (auto itr = group->GetSubGroup(i)->GetGroupMembersBegin(); itr != group->GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
+                for (const auto& itr : group->GetSubGroup(i)->getGroupMembers())
                 {
-                    if ((*itr) != nullptr)
-                    {
-                        if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itr)->guid))
-                        {
-                            fillNotNormalLootFor(loggedInPlayer, loggedInPlayer->isAtGroupRewardDistance(lootOwner));
-                        }
-                    }
+                    if (Player* loggedInPlayer = sObjectMgr.GetPlayer(itr->guid))
+                        fillNotNormalLootFor(loggedInPlayer, loggedInPlayer->isAtGroupRewardDistance(lootOwner));
                 }
             }
         }

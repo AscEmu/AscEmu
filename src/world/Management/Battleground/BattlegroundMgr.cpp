@@ -925,8 +925,8 @@ void BattlegroundManager::removeGroupFromQueues(Group* group)
         }
     }
 
-    for (GroupMembersSet::iterator itr = group->GetSubGroup(0)->GetGroupMembersBegin(); itr != group->GetSubGroup(0)->GetGroupMembersEnd(); ++itr)
-        if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itr)->guid))
+    for (const auto itr : group->GetSubGroup(0)->getGroupMembers())
+        if (Player* loggedInPlayer = sObjectMgr.GetPlayer(itr->guid))
             sendBattlefieldStatus(loggedInPlayer, BattlegroundDef::STATUS_NOFLAGS, 0, 0, 0, 0, 0);
 
 }
@@ -1182,14 +1182,13 @@ void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battle
             return;
         }
 
-        GroupMembersSet::iterator itx;
         if (!ratedMatch)
         {
             // add all players normally.. bleh ;P
             pGroup->Lock();
-            for (itx = pGroup->GetSubGroup(0)->GetGroupMembersBegin(); itx != pGroup->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
+            for (const auto itx : pGroup->GetSubGroup(0)->getGroupMembers())
             {
-                if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itx)->guid))
+                if (Player* loggedInPlayer = sObjectMgr.GetPlayer(itx->guid))
                     if (!loggedInPlayer->isQueuedForBg() && !loggedInPlayer->getBattleground())
                         handleArenaJoin(loggedInPlayer->getSession(), battlegroundType, 0, 0);
             }
@@ -1228,7 +1227,7 @@ void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battle
         }
 
         pGroup->Lock();
-        for (itx = pGroup->GetSubGroup(0)->GetGroupMembersBegin(); itx != pGroup->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
+        for (const auto itx : pGroup->GetSubGroup(0)->getGroupMembers())
         {
             if (maxplayers == 0)
             {
@@ -1237,14 +1236,14 @@ void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battle
                 return;
             }
 
-            if ((*itx)->lastLevel < PLAYER_ARENA_MIN_LEVEL)
+            if (itx->lastLevel < PLAYER_ARENA_MIN_LEVEL)
             {
                 session->SystemMessage(session->LocalizedWorldSrv(SS_SORRY_SOME_OF_PARTY_MEMBERS_ARE_NOT_LVL_70));
                 pGroup->Unlock();
                 return;
             }
 
-            if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itx)->guid))
+            if (Player* loggedInPlayer = sObjectMgr.GetPlayer(itx->guid))
             {
                 if (loggedInPlayer->getBattleground() || loggedInPlayer->isQueuedForBg())
                 {
@@ -1266,9 +1265,9 @@ void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battle
             }
         }
 
-        for (itx = pGroup->GetSubGroup(0)->GetGroupMembersBegin(); itx != pGroup->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
+        for (const auto itx : pGroup->GetSubGroup(0)->getGroupMembers())
         {
-            if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itx)->guid))
+            if (Player* loggedInPlayer = sObjectMgr.GetPlayer(itx->guid))
             {
                 sendBattlefieldStatus(loggedInPlayer, BattlegroundDef::STATUS_INQUEUE, battlegroundType, 0, 0, 0, 1);
                 loggedInPlayer->setIsQueuedForBg(true);

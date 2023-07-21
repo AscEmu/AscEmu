@@ -2687,9 +2687,9 @@ void AIInterface::initGroupThreat(Unit* target)
         pGroup->Lock();
         for (uint32_t i = 0; i < pGroup->GetSubGroupCount(); i++)
         {
-            for (GroupMembersSet::iterator itr = pGroup->GetSubGroup(i)->GetGroupMembersBegin(); itr != pGroup->GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
+            for (const auto& itr : pGroup->GetSubGroup(i)->getGroupMembers())
             {
-                Player* pGroupGuy = sObjectMgr.GetPlayer((*itr)->guid);
+                Player* pGroupGuy = sObjectMgr.GetPlayer(itr->guid);
                 if (pGroupGuy && pGroupGuy->isAlive() && m_Unit->getWorldMap() == pGroupGuy->getWorldMap() && pGroupGuy->getDistanceSq(target) <= 40 * 40) //50 yards for now. lets see if it works
                 {
                     m_Unit->getThreatManager().addThreat(pGroupGuy, 0.0f, nullptr, true, true);

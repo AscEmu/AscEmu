@@ -145,7 +145,7 @@ using namespace InstanceDifficulty;
 CachedCharacterInfo::~CachedCharacterInfo()
 {
     if (m_Group != nullptr)
-        m_Group->RemovePlayer(this);
+        m_Group->RemovePlayer(shared_from_this());
 }
 
 Player::Player(uint32_t guid) :
@@ -2866,7 +2866,7 @@ void Player::toggleDnd()
 
 uint32_t* Player::getPlayedTime() { return m_playedTime; }
 
-CachedCharacterInfo* Player::getPlayerInfo() const { return m_playerInfo; }
+std::shared_ptr<CachedCharacterInfo> Player::getPlayerInfo() const { return m_playerInfo; }
 
 void Player::changeLooks(uint64_t guid, uint8_t gender, uint8_t skin, uint8_t face, uint8_t hairStyle, uint8_t hairColor, uint8_t facialHair)
 {
@@ -9457,10 +9457,10 @@ void Player::setLoginPosition()
 
 void Player::setPlayerInfoIfNeeded()
 {
-    auto playerInfo = sObjectMgr.GetPlayerInfo(getGuidLow());
+    auto playerInfo = sObjectMgr.getCachedCharacterInfo(getGuidLow());
     if (playerInfo == nullptr)
     {
-        playerInfo = new CachedCharacterInfo;
+        playerInfo = std::make_shared<CachedCharacterInfo>();
         playerInfo->cl = getClass();
         playerInfo->gender = getGender();
         playerInfo->guid = getGuidLow();
@@ -9476,7 +9476,7 @@ void Player::setPlayerInfoIfNeeded()
         playerInfo->m_Group = nullptr;
         playerInfo->subGroup = 0;
 
-        sObjectMgr.AddPlayerInfo(playerInfo);
+        sObjectMgr.addCachedCharacterInfo(playerInfo);
     }
 
     m_playerInfo = playerInfo;

@@ -948,10 +948,7 @@ struct PlayerCreateInfo
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // CachedCharacterInfo
-//\todo: It is mostly used to handle offline player data for groups, somehow it is used to
-// determine if a player is online or not.
-
-class SERVER_DECL CachedCharacterInfo
+class SERVER_DECL CachedCharacterInfo : std::enable_shared_from_this<CachedCharacterInfo>
 {
 public:
 

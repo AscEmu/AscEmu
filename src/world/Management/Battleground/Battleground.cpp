@@ -69,12 +69,8 @@ Battleground::~Battleground()
     {
         for (uint32_t j = 0; j < m_group->GetSubGroupCount(); ++j)
         {
-            for (auto itr = m_group->GetSubGroup(j)->GetGroupMembersBegin(); itr != m_group->GetSubGroup(j)->GetGroupMembersEnd();)
-            {
-                CachedCharacterInfo* inf = (*itr);
-                ++itr;
-                m_group->RemovePlayer(inf);
-            }
+            for (const auto itr : m_group->GetSubGroup(j)->getGroupMembers())
+                m_group->RemovePlayer(itr);
         }
         delete m_group;
     }

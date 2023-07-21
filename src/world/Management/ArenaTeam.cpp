@@ -77,7 +77,7 @@ ArenaTeam::ArenaTeam(Field* field)
                          &m_members[i].Played_ThisSeason, &m_members[i].Won_ThisSeason, &m_members[i].PersonalRating);
         if (ret >= 5)
         {
-            m_members[i].Info = sObjectMgr.GetPlayerInfo(guid);
+            m_members[i].Info = sObjectMgr.getCachedCharacterInfo(guid);
             if (m_members[i].Info)
                 ++m_memberCount;
 
@@ -152,7 +152,7 @@ void ArenaTeam::saveToDB()
 
 void ArenaTeam::destroy()
 {
-    std::vector<CachedCharacterInfo*> toDestroyMembers;
+    std::vector<std::shared_ptr<CachedCharacterInfo>> toDestroyMembers;
     toDestroyMembers.reserve(m_memberCount);
 
     char buffer[1024];
@@ -185,7 +185,7 @@ void ArenaTeam::sendPacket(WorldPacket* data) const
     }
 }
 
-ArenaTeamMember* ArenaTeam::getMember(CachedCharacterInfo* cachedCharInfo) const
+ArenaTeamMember* ArenaTeam::getMember(std::shared_ptr<CachedCharacterInfo> cachedCharInfo) const
 {
     for (uint32_t i = 0; i < m_memberCount; ++i)
     {
@@ -205,7 +205,7 @@ ArenaTeamMember* ArenaTeam::getMemberByGuid(uint32_t lowGuid) const
     return nullptr;
 }
 
-bool ArenaTeam::addMember(CachedCharacterInfo* cachedCharInfo)
+bool ArenaTeam::addMember(std::shared_ptr<CachedCharacterInfo> cachedCharInfo)
 {
     if (!cachedCharInfo)
         return false;
@@ -234,7 +234,7 @@ bool ArenaTeam::addMember(CachedCharacterInfo* cachedCharInfo)
     return true;
 }
 
-bool ArenaTeam::removeMember(CachedCharacterInfo* cachedCharInfo)
+bool ArenaTeam::removeMember(std::shared_ptr<CachedCharacterInfo> cachedCharInfo)
 {
     if (!cachedCharInfo)
         return false;
@@ -293,7 +293,7 @@ bool ArenaTeam::isMember(uint32_t lowGuid) const
     return false;
 }
 
-void ArenaTeam::setLeader(CachedCharacterInfo* cachedCharInfo)
+void ArenaTeam::setLeader(std::shared_ptr<CachedCharacterInfo> cachedCharInfo)
 {
     if (cachedCharInfo)
     {

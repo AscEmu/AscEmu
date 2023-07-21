@@ -19,6 +19,8 @@
  *
  */
 
+#include <utility>
+
 #include "Storage/DBC/DBCStores.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Objects/Container.hpp"
@@ -167,12 +169,11 @@ void ObjectMgr::finalize()
         }
     }
 
-    sLogger.info("ObjectMgr : Deleting Player Information...");
-    for (std::unordered_map<uint32, CachedCharacterInfo*>::iterator itr = m_playersinfo.begin(); itr != m_playersinfo.end(); ++itr)
-    {
-        itr->second->m_Group = nullptr;
-        delete itr->second;
-    }
+    sLogger.info("ObjectMgr : Clearing Player Information...");
+    for (auto& itr : m_cachedCharacterInfo)
+        itr.second->m_Group = nullptr;
+
+    m_cachedCharacterInfo.clear();
 
     sLogger.info("ObjectMgr : Deleting Boss Information...");
     for (DungeonEncounterContainer::iterator itr = _dungeonEncounterStore.begin(); itr != _dungeonEncounterStore.end(); ++itr)
@@ -461,6 +462,103 @@ std::shared_ptr<Charter> ObjectMgr::getCharterByItemGuid(const uint64_t _itemGui
     }
 
     return nullptr;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// CachedCharacterInfo
+void ObjectMgr::loadCharacters()
+{
+    QueryResult* result = CharacterDatabase.Query("SELECT guid, name, race, class, level, gender, zoneid, timestamp, acct FROM characters");
+    if (result)
+    {
+        do
+        {
+            Field* fields = result->Fetch();
+            const auto cachedCharacterInfo = std::make_shared<CachedCharacterInfo>();
+            cachedCharacterInfo->guid = fields[0].GetUInt32();
+
+            std::string characterNameDB = fields[1].GetString();
+            AscEmu::Util::Strings::capitalize(characterNameDB);
+
+            cachedCharacterInfo->name = characterNameDB;
+            cachedCharacterInfo->race = fields[2].GetUInt8();
+            cachedCharacterInfo->cl = fields[3].GetUInt8();
+            cachedCharacterInfo->lastLevel = fields[4].GetUInt32();
+            cachedCharacterInfo->gender = fields[5].GetUInt8();
+            cachedCharacterInfo->lastZone = fields[6].GetUInt32();
+            cachedCharacterInfo->lastOnline = fields[7].GetUInt32();
+            cachedCharacterInfo->acct = fields[8].GetUInt32();
+            cachedCharacterInfo->m_Group = nullptr;
+            cachedCharacterInfo->subGroup = 0;
+            cachedCharacterInfo->m_guild = 0;
+            cachedCharacterInfo->guildRank = GUILD_RANK_NONE;
+            cachedCharacterInfo->team = getSideByRace(cachedCharacterInfo->race);
+
+            m_cachedCharacterInfo[cachedCharacterInfo->guid] = cachedCharacterInfo;
+
+        } while (result->NextRow());
+        delete result;
+    }
+    sLogger.info("ObjectMgr : %u players loaded.", static_cast<uint32_t>(m_cachedCharacterInfo.size()));
+}
+
+void ObjectMgr::addCachedCharacterInfo(const std::shared_ptr<CachedCharacterInfo>& _characterInfo)
+{
+    std::lock_guard guard(m_cachedCharacterLock);
+    m_cachedCharacterInfo[_characterInfo->guid] = _characterInfo;
+}
+
+std::shared_ptr<CachedCharacterInfo> ObjectMgr::getCachedCharacterInfo(uint32_t _playerGuid)
+{
+    std::lock_guard guard(m_cachedCharacterLock);
+
+    const auto characterPair = m_cachedCharacterInfo.find(_playerGuid);
+    if (characterPair != m_cachedCharacterInfo.end())
+        return characterPair->second;
+
+    return nullptr;
+}
+
+std::shared_ptr<CachedCharacterInfo> ObjectMgr::getCachedCharacterInfoByName(std::string _playerName)
+{
+    std::string searchName = std::string(std::move(_playerName));
+    AscEmu::Util::Strings::toLowerCase(searchName);
+
+    std::lock_guard guard(m_cachedCharacterLock);
+
+    for (const auto characterPair : m_cachedCharacterInfo)
+    {
+        std::string characterName = characterPair.second->name;
+        AscEmu::Util::Strings::toLowerCase(characterName);
+        if (characterName == searchName)
+            return characterPair.second;
+    }
+
+    return nullptr;
+}
+
+void ObjectMgr::updateCachedCharacterInfoName(const std::shared_ptr<CachedCharacterInfo>& _characterInfo, const std::string& _newName)
+{
+    std::lock_guard guard(m_cachedCharacterLock);
+
+    for (const auto& characterPair : m_cachedCharacterInfo)
+        if (_characterInfo == characterPair.second)
+            characterPair.second->name = _newName;
+}
+
+void ObjectMgr::deleteCachedCharacterInfo(const uint32_t _playerGuid)
+{
+    std::lock_guard guard(m_cachedCharacterLock);
+
+    const auto characterPair = m_cachedCharacterInfo.find(_playerGuid);
+    if (characterPair == m_cachedCharacterInfo.end())
+        return;
+
+    const auto characterInfo = characterPair->second;
+    if (characterInfo->m_Group)
+        characterInfo->m_Group->RemovePlayer(characterInfo);
+
+    m_cachedCharacterInfo.erase(characterPair);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1099,125 +1197,6 @@ Group* ObjectMgr::GetGroupById(uint32 id)
     GroupMap::iterator itr = m_groups.find(id);
     if (itr != m_groups.end())
         return itr->second;
-
-    return nullptr;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// Player names
-void ObjectMgr::DeletePlayerInfo(uint32 guid)
-{
-    std::lock_guard<std::mutex> guard(playernamelock);
-
-    std::unordered_map<uint32, CachedCharacterInfo*>::iterator i = m_playersinfo.find(guid);
-    if (i == m_playersinfo.end())
-        return;
-
-    CachedCharacterInfo* pl = i->second;
-    if (pl->m_Group)
-        pl->m_Group->RemovePlayer(pl);
-
-    std::string pnam = pl->name;
-    AscEmu::Util::Strings::toLowerCase(pnam);
-    PlayerNameStringIndexMap::iterator i2 = m_playersInfoByName.find(pnam);
-    if (i2 != m_playersInfoByName.end() && i2->second == pl)
-    {
-        m_playersInfoByName.erase(i2);
-    }
-
-    delete i->second;
-    m_playersinfo.erase(i);
-}
-
-CachedCharacterInfo* ObjectMgr::GetPlayerInfo(uint32 guid)
-{
-    std::lock_guard<std::mutex> guard(playernamelock);
-
-    std::unordered_map<uint32, CachedCharacterInfo*>::iterator i = m_playersinfo.find(guid);
-    if (i != m_playersinfo.end())
-        return i->second;
-
-    return nullptr;
-}
-
-void ObjectMgr::AddPlayerInfo(CachedCharacterInfo* pn)
-{
-    std::lock_guard<std::mutex> guard(playernamelock);
-
-    m_playersinfo[pn->guid] = pn;
-
-    std::string pnam = pn->name;
-    AscEmu::Util::Strings::toLowerCase(pnam);
-    m_playersInfoByName[pnam] = pn;
-}
-
-void ObjectMgr::RenamePlayerInfo(CachedCharacterInfo* pn, std::string oldname, std::string newname)
-{
-    std::lock_guard<std::mutex> guard(playernamelock);
-
-    std::string oldn = oldname;
-    AscEmu::Util::Strings::toLowerCase(oldn);
-
-    PlayerNameStringIndexMap::iterator itr = m_playersInfoByName.find(oldn);
-    if (itr != m_playersInfoByName.end() && itr->second == pn)
-    {
-        std::string newn = newname;
-        AscEmu::Util::Strings::toLowerCase(newn);
-        m_playersInfoByName.erase(itr);
-        m_playersInfoByName[newn] = pn;
-    }
-}
-
-void ObjectMgr::LoadPlayersInfo()
-{
-    QueryResult* result = CharacterDatabase.Query("SELECT guid, name, race, class, level, gender, zoneid, timestamp, acct FROM characters");
-    if (result)
-    {
-        do
-        {
-            Field* fields = result->Fetch();
-            CachedCharacterInfo* pn = new CachedCharacterInfo;
-            pn->guid = fields[0].GetUInt32();
-            std::string dbName = fields[1].GetString();
-            AscEmu::Util::Strings::capitalize(dbName);
-            pn->name = dbName;
-            pn->race = fields[2].GetUInt8();
-            pn->cl = fields[3].GetUInt8();
-            pn->lastLevel = fields[4].GetUInt32();
-            pn->gender = fields[5].GetUInt8();
-            pn->lastZone = fields[6].GetUInt32();
-            pn->lastOnline = fields[7].GetUInt32();
-            pn->acct = fields[8].GetUInt32();
-            pn->m_Group = nullptr;
-            pn->subGroup = 0;
-            pn->m_guild = 0;
-            pn->guildRank = GUILD_RANK_NONE;
-            pn->team = getSideByRace(pn->race);
-
-            std::string lpn = pn->name;
-            AscEmu::Util::Strings::toLowerCase(lpn);
-            m_playersInfoByName[lpn] = pn;
-
-            //this is startup -> no need in lock -> don't use addplayerinfo
-            m_playersinfo[pn->guid] = pn;
-
-        }
-        while (result->NextRow());
-        delete result;
-    }
-    sLogger.info("ObjectMgr : %u players loaded.", static_cast<uint32_t>(m_playersinfo.size()));
-}
-
-CachedCharacterInfo* ObjectMgr::GetPlayerInfoByName(std::string name)
-{
-    std::string lpn = std::string(name);
-    AscEmu::Util::Strings::toLowerCase(lpn);
-
-    std::lock_guard<std::mutex> guard(playernamelock);
-
-    PlayerNameStringIndexMap::iterator i = m_playersInfoByName.find(lpn);
-    if (i != m_playersInfoByName.end())
-        return i->second;
 
     return nullptr;
 }

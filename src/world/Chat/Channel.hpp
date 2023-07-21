@@ -44,7 +44,7 @@ public:
 
     void invitePlayer(Player* plr, Player* new_player);
     void kickOrBanPlayer(Player* plr, Player* die_player, bool ban);
-    void unBanPlayer(Player* plr, CachedCharacterInfo const* bplr);
+    void unBanPlayer(Player* plr, std::shared_ptr<CachedCharacterInfo> bplr);
 
     void moderateChannel(Player* plr);
     void giveModerator(Player* plr, Player* new_player);

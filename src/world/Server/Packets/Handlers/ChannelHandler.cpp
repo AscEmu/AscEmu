@@ -205,7 +205,7 @@ void WorldSession::handleChannelUnban(WorldPacket& recvPacket)
         return;
 
     const auto channel = sChannelMgr.getChannel(srlPacket.name, _player);
-    const auto playerInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.unbanName);
+    const auto playerInfo = sObjectMgr.getCachedCharacterInfoByName(srlPacket.unbanName);
     if (channel && playerInfo)
         channel->unBanPlayer(_player, playerInfo);
 }

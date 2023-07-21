@@ -32,7 +32,7 @@ void WorldSession::handleNameQueryOpcode(WorldPacket& recvData)
         return;
     }
 
-    const auto info = sObjectMgr.GetPlayerInfo(srlPacket.guid.getGuidLow());
+    const auto info = sObjectMgr.getCachedCharacterInfo(srlPacket.guid.getGuidLow());
     if (!info)
         return;
 

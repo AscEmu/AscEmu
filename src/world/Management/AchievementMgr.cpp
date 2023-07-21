@@ -494,19 +494,16 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
         if (Group* grp = GetPlayer()->getGroup())
         {
             // grp->SendPacketToAll(&cdata);
-            uint8_t i = 0;
             grp->Lock();
-            for (GroupMembersSet::iterator groupItr; i < grp->GetSubGroupCount(); ++i)
+            for (uint8_t i = 0; i < grp->GetSubGroupCount(); ++i)
             {
                 SubGroup* sg = grp->GetSubGroup(i);
                 if (sg == nullptr)
                     continue;
 
-                groupItr = sg->GetGroupMembersBegin();
-                GroupMembersSet::iterator groupItrLast = sg->GetGroupMembersEnd();
-                for (; groupItr != groupItrLast; ++groupItr)
+                for (const auto groupItr : sg->getGroupMembers())
                 {
-                    if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*groupItr)->guid))
+                    if (Player* loggedInPlayer = sObjectMgr.GetPlayer(groupItr->guid))
                     {
                         if (loggedInPlayer->getSession())
                         {
@@ -514,7 +511,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
                             alreadySent = false;
                             for (guidIndex = 0; guidIndex < guidCount; ++guidIndex)
                             {
-                                if (guidList[guidIndex] == (*groupItr)->guid)
+                                if (guidList[guidIndex] == groupItr->guid)
                                 {
                                     alreadySent = true;
                                     guidIndex = guidCount;
@@ -524,7 +521,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
                             if (!alreadySent)
                             {
                                 loggedInPlayer->getSession()->SendPacket(SmsgMessageChat(CHAT_MSG_ACHIEVEMENT, LANG_UNIVERSAL, 0, msg, GetPlayer()->getGuid(), "", GetPlayer()->getGuid(), "", achievement->ID).serialise().get());
-                                guidList[guidCount++] = (*groupItr)->guid;
+                                guidList[guidCount++] = groupItr->guid;
                             }
                         }
                     }

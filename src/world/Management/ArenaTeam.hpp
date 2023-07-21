@@ -33,7 +33,7 @@ struct ArenaTeamPacketList
 
 struct ArenaTeamMember
 {
-    CachedCharacterInfo* Info;
+    std::shared_ptr<CachedCharacterInfo> Info;
     uint32_t Played_ThisWeek;
     uint32_t Won_ThisWeek;
     uint32_t Played_ThisSeason;
@@ -72,16 +72,16 @@ public:
     void destroy();
     void sendPacket(WorldPacket* data) const;
 
-    ArenaTeamMember* getMember(CachedCharacterInfo* cachedCharInfo) const;
+    ArenaTeamMember* getMember(std::shared_ptr<CachedCharacterInfo> cachedCharInfo) const;
     ArenaTeamMember* getMemberByGuid(uint32_t lowGuid) const;
-    bool addMember(CachedCharacterInfo* cachedCharInfo);
-    bool removeMember(CachedCharacterInfo* cachedCharInfo);
+    bool addMember(std::shared_ptr<CachedCharacterInfo> cachedCharInfo);
+    bool removeMember(std::shared_ptr<CachedCharacterInfo> cachedCharInfo);
 
     uint32_t getPlayersPerTeam() const;
 
     bool isMember(uint32_t lowGuid) const;
 
-    void setLeader(CachedCharacterInfo* cachedCharInfo);
+    void setLeader(std::shared_ptr<CachedCharacterInfo> cachedCharInfo);
 
     std::vector<ArenaTeamPacketList> getRoosterMembers() const;
 

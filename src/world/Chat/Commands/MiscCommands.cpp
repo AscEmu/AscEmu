@@ -869,7 +869,7 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession* m_session)
     }
     else
     {
-        CachedCharacterInfo* pinfo = sObjectMgr.GetPlayerInfoByName(args);
+        std::shared_ptr<CachedCharacterInfo> pinfo = sObjectMgr.getCachedCharacterInfoByName(args);
         if (!pinfo)
         {
             char buf[256];
@@ -1193,7 +1193,7 @@ bool ChatHandler::HandleBanCharacterCommand(const char* args, WorldSession* m_se
         return false;
 
     char* pCharacter = (char*)args;
-    CachedCharacterInfo* pInfo = NULL;
+    std::shared_ptr<CachedCharacterInfo> pInfo = NULL;
     char* pReason;
     char* pDuration;
     uint32_t BanTime = 0;
@@ -1208,7 +1208,7 @@ bool ChatHandler::HandleBanCharacterCommand(const char* args, WorldSession* m_se
     Player* pPlayer = sObjectMgr.GetPlayer(pCharacter, false);
     if (pPlayer == NULL)
     {
-        pInfo = sObjectMgr.GetPlayerInfoByName(pCharacter);
+        pInfo = sObjectMgr.getCachedCharacterInfoByName(pCharacter);
         if (pInfo == NULL)
         {
             SystemMessage(m_session, "Player not found.");

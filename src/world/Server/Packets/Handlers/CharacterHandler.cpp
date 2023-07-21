@@ -105,7 +105,7 @@ void WorldSession::handleCharFactionOrRaceChange(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto playerInfoPacket = sObjectMgr.GetPlayerInfo(srlPacket.guid.getGuidLow());
+    const auto playerInfoPacket = sObjectMgr.getCachedCharacterInfo(srlPacket.guid.getGuidLow());
     if (playerInfoPacket == nullptr)
     {
         SendPacket(SmsgCharFactionChange(E_CHAR_CREATE_ERROR).serialise().get());
@@ -154,7 +154,7 @@ void WorldSession::handleCharFactionOrRaceChange(WorldPacket& recvPacket)
         }
     }
 
-    const auto playerInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.charCreate.name);
+    const auto playerInfo = sObjectMgr.getCachedCharacterInfoByName(srlPacket.charCreate.name);
     if (playerInfo != nullptr && playerInfo->guid != srlPacket.guid.getGuidLow())
     {
         SendPacket(SmsgCharFactionChange(E_CHAR_CREATE_NAME_IN_USE).serialise().get());
@@ -166,8 +166,11 @@ void WorldSession::handleCharFactionOrRaceChange(WorldPacket& recvPacket)
 
     std::string newname = srlPacket.charCreate.name;
     AscEmu::Util::Strings::capitalize(newname);
+    std::string oldName = playerInfoPacket->name;
 
-    sObjectMgr.RenamePlayerInfo(playerInfoPacket, playerInfoPacket->name, newname);
+    sObjectMgr.updateCachedCharacterInfoName(playerInfoPacket, newname);
+
+    _player->setName(newname);
 
     CharacterDatabase.Execute("UPDATE `characters` set name = '%s', login_flags = %u, race = %u WHERE guid = %u",
         newname.c_str(), newflags, static_cast<uint32_t>(srlPacket.charCreate._race), srlPacket.guid.getGuidLow());
@@ -202,7 +205,7 @@ void WorldSession::handleCharRenameOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto playerInfo = sObjectMgr.GetPlayerInfo(srlPacket.guid.getGuidLow());
+    const auto playerInfo = sObjectMgr.getCachedCharacterInfo(srlPacket.guid.getGuidLow());
     if (playerInfo == nullptr)
         return;
 
@@ -229,7 +232,7 @@ void WorldSession::handleCharRenameOpcode(WorldPacket& recvPacket)
         }
     }
 
-    if (sObjectMgr.GetPlayerInfoByName(srlPacket.name) != nullptr)
+    if (sObjectMgr.getCachedCharacterInfoByName(srlPacket.name) != nullptr)
     {
         SendPacket(SmsgCharRename(srlPacket.size, E_CHAR_CREATE_NAME_IN_USE, srlPacket.guid, srlPacket.name).serialise().get());
         return;
@@ -237,11 +240,12 @@ void WorldSession::handleCharRenameOpcode(WorldPacket& recvPacket)
 
     std::string newName = srlPacket.name;
     AscEmu::Util::Strings::capitalize(newName);
-    sObjectMgr.RenamePlayerInfo(playerInfo, playerInfo->name, newName);
+    std::string oldName = playerInfo->name;
+    sObjectMgr.updateCachedCharacterInfoName(playerInfo, newName);
 
-    sPlrLog.writefromsession(this, "renamed character %s, %u (guid), to %s.", playerInfo->name.c_str(), playerInfo->guid, newName.c_str());
+    _player->setName(newName);
 
-    playerInfo->name = newName;
+    sPlrLog.writefromsession(this, "renamed character %s, %u (guid), to %s.", oldName.c_str(), playerInfo->guid, newName.c_str());
 
     CharacterDatabase.WaitExecute("UPDATE characters SET name = '%s' WHERE guid = %u",
         newName.c_str(), srlPacket.guid.getGuidLow());
@@ -289,7 +293,7 @@ void WorldSession::loadPlayerFromDBProc(QueryResultVector& results)
 
 uint8_t WorldSession::deleteCharacter(WoWGuid guid)
 {
-    const auto playerInfo = sObjectMgr.GetPlayerInfo(guid.getGuidLow());
+    const auto playerInfo = sObjectMgr.getCachedCharacterInfo(guid.getGuidLow());
     if (playerInfo != nullptr && sObjectMgr.GetPlayer(playerInfo->guid) == nullptr)
     {
         QueryResult* result = CharacterDatabase.Query("SELECT name FROM characters WHERE guid = %u AND acct = %u", guid.getGuidLow(), _accountId);
@@ -356,7 +360,7 @@ uint8_t WorldSession::deleteCharacter(WoWGuid guid)
         CharacterDatabase.Execute("DELETE FROM playerreputations WHERE guid = %u", guid.getGuidLow());
         CharacterDatabase.Execute("DELETE FROM playerskills WHERE GUID = %u", guid.getGuidLow());
 
-        sObjectMgr.DeletePlayerInfo(guid.getGuidLow());
+        sObjectMgr.deleteCachedCharacterInfo(guid.getGuidLow());
         return E_CHAR_DELETE_SUCCESS;
     }
     return E_CHAR_DELETE_FAILED;
@@ -382,7 +386,7 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (sObjectMgr.GetPlayerInfoByName(srlPacket.createStruct.name) != nullptr)
+    if (sObjectMgr.getCachedCharacterInfoByName(srlPacket.createStruct.name) != nullptr)
     {
         SendPacket(SmsgCharCreate(E_CHAR_CREATE_NAME_IN_USE).serialise().get());
         return;
@@ -473,7 +477,7 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
 
     newPlayer->saveToDB(true);
 
-    const auto playerInfo = new CachedCharacterInfo;
+    const auto playerInfo = std::make_shared<CachedCharacterInfo>();
     playerInfo->guid = newPlayer->getGuidLow();
     std::string name = newPlayer->getName();
     AscEmu::Util::Strings::capitalize(name);
@@ -489,7 +493,7 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     playerInfo->guildRank = GUILD_RANK_NONE;
     playerInfo->lastOnline = UNIXTIME;
 
-    sObjectMgr.AddPlayerInfo(playerInfo);
+    sObjectMgr.addCachedCharacterInfo(playerInfo);
 
     newPlayer->m_isReadyToBeRemoved = true;
     delete newPlayer;
@@ -524,7 +528,7 @@ void WorldSession::handleCharCustomizeLooksOpcode(WorldPacket& recvPacket)
         }
     }
 
-    const auto playerInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.createStruct.name);
+    const auto playerInfo = sObjectMgr.getCachedCharacterInfoByName(srlPacket.createStruct.name);
     if (playerInfo != nullptr && playerInfo->guid != srlPacket.guid.getGuidLow())
     {
         SendPacket(SmsgCharCustomize(E_CHAR_CREATE_NAME_IN_USE).serialise().get());

@@ -299,7 +299,7 @@ void Channel::kickOrBanPlayer(Player* plr, Player* die_player, bool ban)
     die_player->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_YOULEFT, m_channelName, 0, 0, m_channelId).serialise().get());
 }
 
-void Channel::unBanPlayer(Player* plr, CachedCharacterInfo const* bplr)
+void Channel::unBanPlayer(Player* plr, std::shared_ptr<CachedCharacterInfo> bplr)
 {
     m_mutexChannel.lock();
 

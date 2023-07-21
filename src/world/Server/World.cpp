@@ -923,7 +923,7 @@ void World::loadMySQLTablesByTask()
 
 
     sObjectMgr.GenerateLevelUpInfo();
-    sObjectMgr.LoadPlayersInfo();
+    sObjectMgr.loadCharacters();
 
     sMySQLStore.loadCreatureSpawns();
     sMySQLStore.loadGameobjectSpawns();

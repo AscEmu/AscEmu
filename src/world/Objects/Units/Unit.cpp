@@ -7036,11 +7036,11 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
                     {
                         if (tagger->getGroup()->GetSubGroup(i) != nullptr)
                         {
-                            for (auto itr = tagger->getGroup()->GetSubGroup(i)->GetGroupMembersBegin(); itr != tagger->getGroup()->GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
+                            for (auto itr : tagger->getGroup()->GetSubGroup(i)->getGroupMembers())
                             {
-                                if ((*itr) != nullptr)
+                                if (itr != nullptr)
                                 {
-                                    if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itr)->guid))
+                                    if (Player* loggedInPlayer = sObjectMgr.GetPlayer(itr->guid))
                                     {
                                         if (ToCreature()->HasLootForPlayer(loggedInPlayer))
                                             loggedInPlayer->sendLootUpdate(this);
@@ -9022,9 +9022,9 @@ void Unit::removeReflect(uint32_t spellId, bool apply)
                 for (uint32_t subGroupNumber = 0; subGroupNumber < group->GetSubGroupCount(); ++subGroupNumber)
                 {
                     SubGroup* subGroup = group->GetSubGroup(subGroupNumber);
-                    for (auto subGroupMember = subGroup->GetGroupMembersBegin(); subGroupMember != subGroup->GetGroupMembersEnd() && targets > 0; ++subGroupMember)
+                    for (auto subGroupMember : subGroup->getGroupMembers())
                     {
-                        Player* member = sObjectMgr.GetPlayer((*subGroupMember)->guid);
+                        Player* member = sObjectMgr.GetPlayer(subGroupMember->guid);
                         if (member == nullptr || member == player || !member->IsInWorld() || !member->isAlive() || member->hasAurasWithId(59725))
                             continue;
 
@@ -9048,9 +9048,9 @@ void Unit::removeReflect(uint32_t spellId, bool apply)
             group->Lock();
             for (uint32_t subGroupNumber = 0; subGroupNumber < group->GetSubGroupCount(); ++subGroupNumber)
             {
-                for (auto subgroupMember = group->GetSubGroup(subGroupNumber)->GetGroupMembersBegin(); subgroupMember != group->GetSubGroup(subGroupNumber)->GetGroupMembersEnd(); ++subgroupMember)
+                for (auto subgroupMember : group->GetSubGroup(subGroupNumber)->getGroupMembers())
                 {
-                    Player* playerMember = sObjectMgr.GetPlayer((*subgroupMember)->guid);
+                    Player* playerMember = sObjectMgr.GetPlayer(subgroupMember->guid);
                     if (playerMember == nullptr)
                         continue;
 
@@ -9116,9 +9116,9 @@ void Unit::giveGroupXP(Unit* unitVictim, Player* playerInGroup)
     group->Lock();
     for (uint32_t i = 0; i < group->GetSubGroupCount(); ++i)
     {
-        for (auto subGroupMember = group->GetSubGroup(i)->GetGroupMembersBegin(); subGroupMember != group->GetSubGroup(i)->GetGroupMembersEnd(); ++subGroupMember)
+        for (auto subGroupMember : group->GetSubGroup(i)->getGroupMembers())
         {
-            Player* player = sObjectMgr.GetPlayer((*subGroupMember)->guid);
+            Player* player = sObjectMgr.GetPlayer(subGroupMember->guid);
             if (player && player->isAlive() && unitVictim->getWorldMap() == player->getWorldMap() && player->getDistanceSq(unitVictim) < 100 * 100)
             {
                 activePlayerList[activePlayerCount] = player;

@@ -784,7 +784,7 @@ void WorldSession::handleGroupChangeSubGroup(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto playerInfo = sObjectMgr.GetPlayerInfoByName(srlPacket.name);
+    const auto playerInfo = sObjectMgr.getCachedCharacterInfoByName(srlPacket.name);
     if (playerInfo == nullptr || playerInfo->m_Group == nullptr)
         return;
 
@@ -812,7 +812,7 @@ void WorldSession::handleGroupAssistantLeader(WorldPacket& recvPacket)
 
     if (srlPacket.isActivated)
     {
-        const auto playerInfo = sObjectMgr.GetPlayerInfo(srlPacket.guid.getGuidLow());
+        const auto playerInfo = sObjectMgr.getCachedCharacterInfo(srlPacket.guid.getGuidLow());
         if (playerInfo == nullptr)
         {
             group->SetAssistantLeader(nullptr);
@@ -841,10 +841,10 @@ void WorldSession::handleGroupPromote(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    CachedCharacterInfo* playerInfo = nullptr;
+    std::shared_ptr<CachedCharacterInfo> playerInfo = nullptr;
 
     if (srlPacket.isActivated)
-        playerInfo = sObjectMgr.GetPlayerInfo(srlPacket.guid.getGuidLow());
+        playerInfo = sObjectMgr.getCachedCharacterInfo(srlPacket.guid.getGuidLow());
 
     if (srlPacket.promoteType == 1)
         group->SetMainAssist(playerInfo);

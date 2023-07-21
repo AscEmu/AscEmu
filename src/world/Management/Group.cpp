@@ -84,13 +84,13 @@ Group::~Group()
     sObjectMgr.RemoveGroup(this);
 }
 
-void SubGroup::RemovePlayer(CachedCharacterInfo* info)
+void SubGroup::RemovePlayer(std::shared_ptr<CachedCharacterInfo> info)
 {
     m_GroupMembers.erase(info);
     info->subGroup = -1;
 }
 
-bool SubGroup::AddPlayer(CachedCharacterInfo* info)
+bool SubGroup::AddPlayer(std::shared_ptr<CachedCharacterInfo> info)
 {
     if (IsFull())
         return false;
@@ -102,17 +102,12 @@ bool SubGroup::AddPlayer(CachedCharacterInfo* info)
 
 bool SubGroup::HasMember(uint32 guid)
 {
-    for (GroupMembersSet::iterator itr = m_GroupMembers.begin(); itr != m_GroupMembers.end(); ++itr)
-        if ((*itr) != NULL)
-            if ((*itr)->guid == guid)
+    for (const auto itr : m_GroupMembers)
+        if (itr != nullptr)
+            if (itr->guid == guid)
                 return true;
 
     return false;
-}
-
-GroupMembersSet& SubGroup::getGroupMembers()
-{
-    return m_GroupMembers;
 }
 
 SubGroup* Group::FindFreeSubGroup()
@@ -124,7 +119,7 @@ SubGroup* Group::FindFreeSubGroup()
     return NULL;
 }
 
-bool Group::AddMember(CachedCharacterInfo* info, int32 subgroupid/* =-1 */)
+bool Group::AddMember(std::shared_ptr<CachedCharacterInfo> info, int32 subgroupid/* =-1 */)
 {
     if (info)
     {
@@ -227,26 +222,22 @@ void Group::Update()
     {
         if (SubGroup* sg1 = m_SubGroups[i])
         {
-            for (GroupMembersSet::iterator itr1 = sg1->GetGroupMembersBegin(); itr1 != sg1->GetGroupMembersEnd(); ++itr1)
+            for (const auto characterInfo : sg1->getGroupMembers())
             {
-                // should never happen but just in case
-                if (*itr1 == nullptr)
-                    continue;
-
-                /* skip offline players */
-                if (!sObjectMgr.GetPlayer((*itr1)->guid))
+                // skip offline players
+                if (!sObjectMgr.GetPlayer(characterInfo->guid))
                     continue;
 
                 WorldPacket data(SMSG_GROUP_LIST, (50 + (m_MemberCount * 20)));
                 data << uint8(m_GroupType);
-                data << uint8((*itr1)->subGroup);
+                data << uint8(characterInfo->subGroup);
 
                 uint8 flags = 0;
-                if ((*itr1) == m_assistantLeader)
+                if (characterInfo == m_assistantLeader)
                     flags |= 1;
-                if ((*itr1) == m_mainTank)
+                if (characterInfo == m_mainTank)
                     flags |= 2;
-                if ((*itr1) == m_mainAssist)
+                if (characterInfo == m_mainAssist)
                     flags |= 4;
                 data << uint8(flags);
 
@@ -272,36 +263,36 @@ void Group::Update()
                 {
                     if (SubGroup* sg2 = m_SubGroups[j])
                     {
-                        for (GroupMembersSet::iterator itr2 = sg2->GetGroupMembersBegin(); itr2 != sg2->GetGroupMembersEnd(); ++itr2)
+                        for (const auto characterInfo2 : sg2->getGroupMembers())
                         {
-                            if (*itr1 == *itr2)   // skip self
+                            if (characterInfo == characterInfo2)   // skip self
                                 continue;
 
                             // should never happen but just in case
-                            if (*itr2 == nullptr)
+                            if (characterInfo2 == nullptr)
                                 continue;
 
-                            Player* plr = sObjectMgr.GetPlayer((*itr2)->guid);
-                            data << (plr ? plr->getName().c_str() : (*itr2)->name.c_str());
+                            Player* plr = sObjectMgr.GetPlayer(characterInfo2->guid);
+                            data << (plr ? plr->getName().c_str() : characterInfo2->name.c_str());
                             if(plr)
                                 data << plr->getGuid();
                             else
-                                data << (*itr2)->guid << uint32(0); // highguid
+                                data << characterInfo2->guid << uint32(0); // highguid
 
-                            if (sObjectMgr.GetPlayer((*itr2)->guid))
+                            if (sObjectMgr.GetPlayer(characterInfo2->guid))
                                 data << uint8(1);
                             else
                                 data << uint8(0);
 
-                            data << uint8((*itr2)->subGroup);
+                            data << uint8(characterInfo2->subGroup);
 
                             flags = 0;
 
-                            if ((*itr2) == m_assistantLeader)
+                            if (characterInfo2 == m_assistantLeader)
                                 flags |= 1;
-                            if ((*itr2) == m_mainTank)
+                            if (characterInfo2 == m_mainTank)
                                 flags |= 2;
-                            if ((*itr2) == m_mainAssist)
+                            if (characterInfo2 == m_mainAssist)
                                 flags |= 4;
 
                             data << uint8(flags);
@@ -327,11 +318,11 @@ void Group::Update()
                 data << uint8(m_raiddifficulty);
                 data << uint8(0);   // 3.3 - unk
 
-                if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itr1)->guid))
-                if (!loggedInPlayer->IsInWorld())
-                    loggedInPlayer->copyAndSendDelayedPacket(&data);
-                else
-                    loggedInPlayer->getSession()->SendPacket(&data);
+                if (Player* loggedInPlayer = sObjectMgr.GetPlayer(characterInfo->guid))
+                    if (!loggedInPlayer->IsInWorld())
+                        loggedInPlayer->copyAndSendDelayedPacket(&data);
+                    else
+                        loggedInPlayer->getSession()->SendPacket(&data);
             }
         }
     }
@@ -372,7 +363,7 @@ void Group::Disband()
 
 void SubGroup::Disband()
 {
-    for (GroupMembersSet::iterator itr = m_GroupMembers.begin(); itr != m_GroupMembers.end();)
+    for (std::set<std::shared_ptr<CachedCharacterInfo>>::iterator itr = m_GroupMembers.begin(); itr != m_GroupMembers.end();)
     {
         if (*itr)
         {
@@ -410,11 +401,11 @@ Player* Group::FindFirstPlayer()
     {
         if (m_SubGroups[i])
         {
-            for (GroupMembersSet::iterator itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr)
+            for (const auto itr : m_SubGroups[i]->getGroupMembers())
             {
-                if (*itr)
+                if (itr)
                 {
-                    if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itr)->guid))
+                    if (Player* loggedInPlayer = sObjectMgr.GetPlayer(itr->guid))
                     {
                         m_groupLock.Release();
                         return loggedInPlayer;
@@ -428,7 +419,7 @@ Player* Group::FindFirstPlayer()
     return nullptr;
 }
 
-void Group::RemovePlayer(CachedCharacterInfo* info)
+void Group::RemovePlayer(std::shared_ptr<CachedCharacterInfo> info)
 {
     if (info == nullptr)
         return;
@@ -615,7 +606,7 @@ bool Group::HasMember(Player* pPlayer)
     if (!pPlayer)
         return false;
 
-    GroupMembersSet::iterator itr;
+    std::set<std::shared_ptr<CachedCharacterInfo>>::iterator itr;
     m_groupLock.Acquire();
 
     for (uint8 i = 0; i < m_SubGroupCount; i++)
@@ -634,9 +625,9 @@ bool Group::HasMember(Player* pPlayer)
     return false;
 }
 
-bool Group::HasMember(CachedCharacterInfo* info)
+bool Group::HasMember(std::shared_ptr<CachedCharacterInfo> info)
 {
-    GroupMembersSet::iterator itr;
+    std::set<std::shared_ptr<CachedCharacterInfo>>::iterator itr;
     uint8 i = 0;
 
     m_groupLock.Acquire();
@@ -654,7 +645,7 @@ bool Group::HasMember(CachedCharacterInfo* info)
     return false;
 }
 
-void Group::MovePlayer(CachedCharacterInfo* info, uint8 subgroup)
+void Group::MovePlayer(std::shared_ptr<CachedCharacterInfo> info, uint8 subgroup)
 {
     if (subgroup >= m_SubGroupCount)
         return;
@@ -713,7 +704,7 @@ void Group::SendNullUpdate(Player* pPlayer)
 
 void Group::LoadFromDB(Field* fields)
 {
-#define LOAD_ASSISTANT(__i, __d) g = fields[__i].GetUInt32(); if (g != 0) { __d = sObjectMgr.GetPlayerInfo(g); }
+#define LOAD_ASSISTANT(__i, __d) g = fields[__i].GetUInt32(); if (g != 0) { __d = sObjectMgr.getCachedCharacterInfo(g); }
 
     m_groupLock.Acquire();
 
@@ -748,7 +739,7 @@ void Group::LoadFromDB(Field* fields)
             if (guid == 0)
                 continue;
 
-            CachedCharacterInfo* inf = sObjectMgr.GetPlayerInfo(guid);
+            std::shared_ptr<CachedCharacterInfo> inf = sObjectMgr.getCachedCharacterInfo(guid);
             if (inf == NULL)
                 continue;
 
@@ -823,9 +814,10 @@ void Group::SaveToDB()
         uint8 j = 0;
 
         // For each member in the group, while membercount is less than 5 (guard clause), add their ID to query
-        for (GroupMembersSet::iterator itr = m_SubGroups[i]->GetGroupMembersBegin(); j < 5 && itr != m_SubGroups[i]->GetGroupMembersEnd(); ++j, ++itr)
+        for (const auto itr : m_SubGroups[i]->getGroupMembers())
         {
-            ss << (*itr)->guid << ",";
+            ss << itr->guid << ",";
+            ++j;
         }
 
         // Add 0 to query until we reach 5 (fill empty slots)
@@ -1031,11 +1023,9 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
             if (m_SubGroups[i] == nullptr)
                 continue;
 
-            for (GroupMembersSet::iterator itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd();)
+            for (const auto itr : m_SubGroups[i]->getGroupMembers())
             {
-                Player* plr = sObjectMgr.GetPlayer((*itr)->guid);
-                ++itr;
-
+                Player* plr = sObjectMgr.GetPlayer(itr->guid);
                 if (plr && plr != pPlayer)
                 {
                     if (plr->GetDistance2dSq(pPlayer) > dist)
@@ -1070,10 +1060,10 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
         if (m_SubGroups[i] == nullptr)
             continue;
 
-        for (GroupMembersSet::iterator itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr)
+        for (const auto itr : m_SubGroups[i]->getGroupMembers())
         {
             WorldPacket data(150);
-            Player* plr = sObjectMgr.GetPlayer((*itr)->guid);
+            Player* plr = sObjectMgr.GetPlayer(itr->guid);
             if (!plr || plr == pPlayer)
                 continue;
 
@@ -1152,7 +1142,7 @@ Group* Group::Create()
     return new Group(true);
 }
 
-void Group::SetMainAssist(CachedCharacterInfo* pMember)
+void Group::SetMainAssist(std::shared_ptr<CachedCharacterInfo> pMember)
 {
     if (m_mainAssist == pMember)
         return;
@@ -1162,7 +1152,7 @@ void Group::SetMainAssist(CachedCharacterInfo* pMember)
     Update();
 }
 
-void Group::SetMainTank(CachedCharacterInfo* pMember)
+void Group::SetMainTank(std::shared_ptr<CachedCharacterInfo> pMember)
 {
     if (m_mainTank == pMember)
         return;
@@ -1172,7 +1162,7 @@ void Group::SetMainTank(CachedCharacterInfo* pMember)
     Update();
 }
 
-void Group::SetAssistantLeader(CachedCharacterInfo* pMember)
+void Group::SetAssistantLeader(std::shared_ptr<CachedCharacterInfo> pMember)
 {
     if (m_assistantLeader == pMember)
         return;
@@ -1350,9 +1340,9 @@ void Group::SetDungeonDifficulty(uint8 diff)
     Lock();
     for (uint32 i = 0; i < GetSubGroupCount(); ++i)
     {
-        for (GroupMembersSet::iterator itr = GetSubGroup(i)->GetGroupMembersBegin(); itr != GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
+        for (const auto itr : GetSubGroup(i)->getGroupMembers())
         {
-            if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itr)->guid))
+            if (Player* loggedInPlayer = sObjectMgr.GetPlayer(itr->guid))
             {
                 loggedInPlayer->setDungeonDifficulty(diff);
                 loggedInPlayer->sendDungeonDifficultyPacket();
@@ -1370,9 +1360,9 @@ void Group::SetRaidDifficulty(uint8 diff)
 
     for (uint32 i = 0; i < GetSubGroupCount(); ++i)
     {
-        for (GroupMembersSet::iterator itr = GetSubGroup(i)->GetGroupMembersBegin(); itr != GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
+        for (const auto itr : GetSubGroup(i)->getGroupMembers())
         {
-            if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itr)->guid))
+            if (Player* loggedInPlayer = sObjectMgr.GetPlayer(itr->guid))
             {
                 loggedInPlayer->setRaidDifficulty(diff);
                 loggedInPlayer->sendRaidDifficultyPacket();
@@ -1413,11 +1403,9 @@ void Group::SendLootUpdates(Object* o)
                 for (uint32 Index = 0; Index < GetSubGroupCount(); ++Index)
                 {
                     SubGroup* sGrp = GetSubGroup(Index);
-                    GroupMembersSet::iterator itr2 = sGrp->GetGroupMembersBegin();
-
-                    for (; itr2 != sGrp->GetGroupMembersEnd(); ++itr2)
+                    for (const auto itr2 : sGrp->getGroupMembers())
                     {
-                        if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itr2)->guid))
+                        if (Player* loggedInPlayer = sObjectMgr.GetPlayer(itr2->guid))
                             if (loggedInPlayer->isVisibleObject(o->getGuid()))       // Save updates for non-existent creatures
                                 loggedInPlayer->getUpdateMgr().pushUpdateData(&buf, 1);
                     }
@@ -1512,9 +1500,8 @@ void Group::sendGroupLoot(Loot* loot, Object* object, Player* /*plr*/, uint32_t 
             Lock();
             for (uint32_t i = 0; i < GetSubGroupCount(); ++i)
             {
-                for (GroupMembersSet::iterator itr2 = GetSubGroup(i)->GetGroupMembersBegin(); itr2 != GetSubGroup(i)->GetGroupMembersEnd(); ++itr2)
+                for (const auto pinfo : GetSubGroup(i)->getGroupMembers())
                 {
-                    CachedCharacterInfo* pinfo = *itr2;
                     if (Player* loggedInPlayer = sObjectMgr.GetPlayer(pinfo->guid))
                     {
                         if (loggedInPlayer->getItemInterface()->CanReceiveItem(item->itemproto, item->count) == 0)
@@ -1548,10 +1535,10 @@ Player* Group::GetRandomPlayerInRangeButSkip(Player* plr, float range, Player* p
         if (s_grp == nullptr)
             continue;
 
-        for (GroupMembersSet::iterator itr = s_grp->GetGroupMembersBegin(); itr != s_grp->GetGroupMembersEnd(); ++itr)
+        for (const auto itr : s_grp->getGroupMembers())
         {
             // Skip NULLs and not alive players
-            Player* loggedInPlayer = sObjectMgr.GetPlayer((*itr)->guid);
+            Player* loggedInPlayer = sObjectMgr.GetPlayer(itr->guid);
             if (!(loggedInPlayer && loggedInPlayer->isAlive()))
                 continue;
 
@@ -1588,11 +1575,9 @@ void Group::UpdateAchievementCriteriaForInrange(Object* o, AchievementCriteriaTy
     for (uint32 Index = 0; Index < GetSubGroupCount(); ++Index)
     {
         SubGroup* sGrp = GetSubGroup(Index);
-        GroupMembersSet::iterator itr2 = sGrp->GetGroupMembersBegin();
-
-        for (; itr2 != sGrp->GetGroupMembersEnd(); ++itr2)
+        for (const auto itr2 : sGrp->getGroupMembers())
         {
-            if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itr2)->guid))
+            if (Player* loggedInPlayer = sObjectMgr.GetPlayer(itr2->guid))
                 if (loggedInPlayer->isVisibleObject(o->getGuid()))
                     loggedInPlayer->updateAchievementCriteria(type, miscvalue1, miscvalue2, time);
         }
@@ -1610,12 +1595,12 @@ void Group::teleport(WorldSession* m_session)
     {
         if (SubGroup* sg1 = m_SubGroups[i])
         {
-            for (GroupMembersSet::iterator itr1 = sg1->GetGroupMembersBegin(); itr1 != sg1->GetGroupMembersEnd(); ++itr1)
+            for (const auto itr1 : sg1->getGroupMembers())
             {
-                if ((*itr1) == nullptr)
+                if (itr1 == nullptr)
                     continue;
 
-                Player* member = sObjectMgr.GetPlayer((*itr1)->guid);
+                Player* member = sObjectMgr.GetPlayer(itr1->guid);
                 if (member == nullptr || !member->IsInWorld())
                     continue;
 
@@ -1655,11 +1640,9 @@ void Group::GoOffline(Player* p)
             if (m_SubGroups[i] == nullptr)
                 continue;
 
-            for (GroupMembersSet::iterator itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd();)
+            for (const auto itr : m_SubGroups[i]->getGroupMembers())
             {
-                Player* plr = sObjectMgr.GetPlayer((*itr)->guid);
-                ++itr;
-
+                Player* plr = sObjectMgr.GetPlayer(itr->guid);
                 if (plr && plr != p)
                     plr->sendPacket(&data);
             }
@@ -1695,11 +1678,11 @@ void Group::updateLooterGuid(Object* pLootedObject)
         break;
     }
 
-    CachedCharacterInfo* oldLooter = GetLooter();
+    std::shared_ptr<CachedCharacterInfo> oldLooter = GetLooter();
     if (!oldLooter)
         oldLooter = GetLeader();
 
-    CachedCharacterInfo* pNewLooter = nullptr;
+    std::shared_ptr<CachedCharacterInfo> pNewLooter = nullptr;
 
     m_groupLock.Acquire();
     for (uint8_t i = 0; i < m_SubGroupCount; i++)

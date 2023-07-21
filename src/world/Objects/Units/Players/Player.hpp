@@ -640,7 +640,7 @@ public:
 
     uint32_t* getPlayedTime();
 
-    CachedCharacterInfo* getPlayerInfo() const;
+    std::shared_ptr<CachedCharacterInfo> getPlayerInfo() const;
 
     static void changeLooks(uint64_t guid, uint8_t gender, uint8_t skin, uint8_t face, uint8_t hairStyle, uint8_t hairColor, uint8_t facialHair);
     static void changeLanguage(uint64_t guid, uint8_t race);
@@ -670,7 +670,7 @@ private:
     uint32_t m_onlineTime = static_cast<uint32_t>(UNIXTIME);
     uint32_t m_timeLogoff = 0;
 
-    CachedCharacterInfo* m_playerInfo = nullptr;
+    std::shared_ptr<CachedCharacterInfo> m_playerInfo = nullptr;
 
 protected:
     PlayerCreateInfo const* m_playerCreateInfo = nullptr;

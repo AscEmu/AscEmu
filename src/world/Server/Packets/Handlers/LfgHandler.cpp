@@ -426,10 +426,9 @@ void WorldSession::sendLfgUpdateProposal(uint32_t proposalId, const LfgProposal*
         // Select a player inside to be get completed encounters from
         if (grp)
         {
-            GroupMembersSet::iterator itx;
-            for (itx = grp->GetSubGroup(0)->GetGroupMembersBegin(); itx != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
+            for (const auto cachedCharacterInfo : grp->GetSubGroup(0)->getGroupMembers())
             {
-                Player* groupMember = sObjectMgr.GetPlayer((*itx)->guid);
+                Player* groupMember = sObjectMgr.GetPlayer(cachedCharacterInfo->guid);
                 if (groupMember && groupMember->GetMapId() == uint32_t(dungeon->map))
                 {
                     if (InstanceScript* instance = groupMember->getWorldMap()->getScript())

@@ -501,10 +501,9 @@ void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDung
             player->getSession()->sendLfgJoinResult(joinData); // Default value of joinData.result = LFG_JOIN_OK
             if (grp)
             {
-                GroupMembersSet::iterator itx;
-                for (itx = grp->GetSubGroup(0)->GetGroupMembersBegin(); itx != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
+                for (const auto& itx : grp->GetSubGroup(0)->getGroupMembers())
                 {
-                    if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itx)->guid))
+                    if (Player* loggedInPlayer = sObjectMgr.GetPlayer(itx->guid))
                         loggedInPlayer->getSession()->sendLfgUpdateParty(updateData);
                 }
 
@@ -542,10 +541,9 @@ void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDung
         else
         {
             uint8 memberCount = 0;
-            GroupMembersSet::iterator itx;
-            for (itx = grp->GetSubGroup(0)->GetGroupMembersBegin(); itx != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
+            for (const auto& itx : grp->GetSubGroup(0)->getGroupMembers())
             {
-                if (Player* plrg = sObjectMgr.GetPlayer((*itx)->guid))
+                if (Player* plrg = sObjectMgr.GetPlayer(itx->guid))
                 {
                     if (joinData.result == LFG_JOIN_OK)
                     {
@@ -666,10 +664,9 @@ void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDung
         SetState(gguid, LFG_STATE_ROLECHECK);
         // Send update to player
         LfgUpdateData updateData = LfgUpdateData(LFG_UPDATETYPE_JOIN_PROPOSAL, dungeons, comment);
-        GroupMembersSet::iterator itx;
-        for (itx = grp->GetSubGroup(0)->GetGroupMembersBegin(); itx != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
+        for (const auto& itx : grp->GetSubGroup(0)->getGroupMembers())
         {
-            if (Player* plrg = sObjectMgr.GetPlayer((*itx)->guid))
+            if (Player* plrg = sObjectMgr.GetPlayer(itx->guid))
             {
                 uint64 pguid = plrg->getGuid();
                 plrg->getSession()->sendLfgUpdateParty(updateData);
@@ -743,10 +740,9 @@ void LfgMgr::Leave(Player* player, Group* grp /* = NULL*/)
             if (grp)
             {
                 RestoreState(guid);
-                GroupMembersSet::iterator itx;
-                for (itx = grp->GetSubGroup(0)->GetGroupMembersBegin(); itx != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
+                for (const auto& itx : grp->GetSubGroup(0)->getGroupMembers())
                 {
-                    if (Player* plrg = sObjectMgr.GetPlayer((*itx)->guid))
+                    if (Player* plrg = sObjectMgr.GetPlayer(itx->guid))
                     {
                         plrg->getSession()->sendLfgUpdateParty(updateData);
                         uint64 pguid = plrg->getGuid();
@@ -1663,10 +1659,9 @@ void LfgMgr::InitBoot(Group* grp, uint64 kicker, uint64 victim, std::string reas
     PlayerSet players;
 
     // Set votes
-    GroupMembersSet::iterator itx;
-    for (itx = grp->GetSubGroup(0)->GetGroupMembersBegin(); itx != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
+    for (const auto itx : grp->GetSubGroup(0)->getGroupMembers())
     {
-        if (Player* plrg = sObjectMgr.GetPlayer((*itx)->guid))
+        if (Player* plrg = sObjectMgr.GetPlayer(itx->guid))
         {
             uint64 guid = plrg->getGuid();
             SetState(guid, LFG_STATE_BOOT);
@@ -1810,10 +1805,9 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
             if (!fromOpcode)
             {
                 // Select a player inside to be teleported to
-                GroupMembersSet::iterator itx;
-                for (itx = grp->GetSubGroup(0)->GetGroupMembersBegin(); itx != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
+                for (const auto itx : grp->GetSubGroup(0)->getGroupMembers())
                 {
-                    Player* plrg = sObjectMgr.GetPlayer((*itx)->guid);
+                    Player* plrg = sObjectMgr.GetPlayer(itx->guid);
                     if (plrg && plrg != player && plrg->GetMapId() == uint32(dungeon->map))
                     {
                         mapid = plrg->GetMapId();

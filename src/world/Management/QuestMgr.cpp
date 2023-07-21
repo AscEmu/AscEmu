@@ -1280,9 +1280,9 @@ void QuestMgr::_OnPlayerKill(Player* plr, uint32 entry, bool IsGroupKill)
                 pGroup->Lock();
                 for (uint32 k = 0; k < pGroup->GetSubGroupCount(); k++)
                 {
-                    for (auto gitr = pGroup->GetSubGroup(k)->GetGroupMembersBegin(); gitr != pGroup->GetSubGroup(k)->GetGroupMembersEnd(); ++gitr)
+                    for (const auto& gitr : pGroup->GetSubGroup(k)->getGroupMembers())
                     {
-                        Player* gplr = sObjectMgr.GetPlayer((*gitr)->guid);
+                        Player* gplr = sObjectMgr.GetPlayer(gitr->guid);
                         if (gplr && gplr != plr && plr->isInRange(gplr, 300) && gplr->hasQuestMob(entry)) // don't double kills also don't give kills to party members at another side of the world
                         {
                             for (uint8 i = 0; i < 25; ++i)

@@ -194,8 +194,6 @@ typedef std::unordered_map<uint32, Player*> PlayerStorageMap;
 typedef std::list<DBC::Structures::AchievementCriteriaEntry const*> AchievementCriteriaEntryList;
 #endif
 
-typedef std::unordered_map<std::string, CachedCharacterInfo*> PlayerNameStringIndexMap;
-
 // finally we are here, the base class of this file ;)
 //MIT
 class SERVER_DECL ObjectMgr : public EventableObject
@@ -247,8 +245,22 @@ public:
     std::shared_ptr<Charter> getCharterByItemGuid(uint64_t _guid);
 
 private:
-    std::unordered_map<uint32, std::shared_ptr<Charter>> m_charters[NUM_CHARTER_TYPES];
+    std::unordered_map<uint32_t, std::shared_ptr<Charter>> m_charters[NUM_CHARTER_TYPES];
     std::mutex m_charterLock;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // CachedCharacterInfo
+public:
+    void loadCharacters();
+    void addCachedCharacterInfo(const std::shared_ptr<CachedCharacterInfo>& _characterInfo);
+    std::shared_ptr<CachedCharacterInfo> getCachedCharacterInfo(uint32_t _playerGuid);
+    std::shared_ptr<CachedCharacterInfo> getCachedCharacterInfoByName(std::string _playerName);
+    void updateCachedCharacterInfoName(const std::shared_ptr<CachedCharacterInfo>& _characterInfo, const std::string& _newName);
+    void deleteCachedCharacterInfo(uint32_t _playerGuid);
+
+private:
+    std::unordered_map<uint32_t, std::shared_ptr<CachedCharacterInfo>> m_cachedCharacterInfo;
+    std::mutex m_cachedCharacterLock;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Corpse
@@ -330,13 +342,6 @@ public:
         void LoadGroups();
         void loadGroupInstances();
 
-        // player names
-        void AddPlayerInfo(CachedCharacterInfo* pn);
-        CachedCharacterInfo* GetPlayerInfo(uint32 guid);
-        CachedCharacterInfo* GetPlayerInfoByName(std::string name);
-        void RenamePlayerInfo(CachedCharacterInfo* pn, std::string oldname, std::string newname);
-        void DeletePlayerInfo(uint32 guid);
-
         //Vendors
         std::vector<CreatureItem> *GetVendorList(uint32 entry);
         void SetVendorList(uint32 Entry, std::vector<CreatureItem>* list_);
@@ -369,7 +374,6 @@ public:
 
         void LoadAchievementRewards();
 #endif
-        void LoadPlayersInfo();
 
         void LoadVendors();
         void ReloadVendors();
@@ -482,8 +486,6 @@ public:
 
     protected:
 
-        std::mutex playernamelock;
-
         // highest GUIDs, used for creating new objects
         std::atomic<unsigned long> m_hiItemGuid;
         std::atomic<unsigned long> m_hiGroupId;
@@ -507,9 +509,6 @@ public:
         std::unordered_map<uint32, InstanceReputationModifier*> m_reputation_instance;
 
         std::set<uint32> m_disabled_spells;
-
-        std::unordered_map<uint32, CachedCharacterInfo*> m_playersinfo;
-        PlayerNameStringIndexMap m_playersInfoByName;
 
         std::unordered_map<uint32, TimedEmoteList*> m_timedemotes;       /// stored by spawnid
 

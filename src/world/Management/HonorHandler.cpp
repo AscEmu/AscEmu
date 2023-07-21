@@ -145,13 +145,14 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                     for (uint32 i = 0; i < groups; i++)
                     {
                         SubGroup* sg = pGroup->GetSubGroup(i);
-                        if (!sg) continue;
+                        if (!sg)
+                            continue;
 
-                        for (GroupMembersSet::iterator itr2 = sg->GetGroupMembersBegin(); itr2 != sg->GetGroupMembersEnd(); ++itr2)
+                        for (const auto itr2 : sg->getGroupMembers())
                         {
-                            CachedCharacterInfo* pi = (*itr2);
-                            Player* gm = sObjectMgr.GetPlayer(pi->guid);
-                            if (!gm) continue;
+                            Player* gm = sObjectMgr.GetPlayer(itr2->guid);
+                            if (!gm)
+                                continue;
 
                             if (gm->isInRange(pVictim, 100.0f))
                                 contributors.insert(gm);

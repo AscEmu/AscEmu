@@ -893,9 +893,9 @@ void WorldSession::handlePushQuestToPartyOpcode(WorldPacket& recvPacket)
             if (sgr)
             {
                 _player->getGroup()->Lock();
-                for (GroupMembersSet::iterator itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
+                for (const auto cachedCharacterInfo : sgr->getGroupMembers())
                 {
-                    Player* pPlayer = sObjectMgr.GetPlayer((*itr)->guid);
+                    Player* pPlayer = sObjectMgr.GetPlayer(cachedCharacterInfo->guid);
                     if (pPlayer && pPlayer->getGuid() != pguid)
                     {
                         _player->getSession()->SendPacket(MsgQuestPushResult(pPlayer->getGuid(), 0, QUEST_SHARE_MSG_SHARING_QUEST).serialise().get());

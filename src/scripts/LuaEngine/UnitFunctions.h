@@ -3060,9 +3060,9 @@ public:
             for (uint32_t i = 0; i < party->GetSubGroupCount(); i++)
             {
                 SubGroup* sgrp = party->GetSubGroup(i);
-                for (GroupMembersSet::iterator itr = sgrp->GetGroupMembersBegin(); itr != sgrp->GetGroupMembersEnd(); ++itr)
+                for (const auto itr : sgrp->getGroupMembers())
                 {
-                    if (Player* loggedInPlayer = sObjectMgr.GetPlayer((*itr)->guid))
+                    if (Player* loggedInPlayer = sObjectMgr.GetPlayer(itr->guid))
                     {
                         if (loggedInPlayer->getZoneId() == _player->getZoneId() && _player->GetInstanceID() == loggedInPlayer->GetInstanceID())
                         {
