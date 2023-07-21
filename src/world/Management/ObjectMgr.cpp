@@ -123,14 +123,9 @@ void ObjectMgr::finalize()
         delete i->second;
     }
 
-    sLogger.info("ObjectMgr : Deleting Charters...");
-    for (uint8 i = 0; i < NUM_CHARTER_TYPES; ++i)
-    {
-        for (std::unordered_map<uint32, Charter*>::iterator itr = m_charters[i].begin(); itr != m_charters[i].end(); ++itr)
-        {
-            delete itr->second;
-        }
-    }
+    sLogger.info("ObjectMgr : Clearing Charters...");
+    for (auto& charter : m_charters)
+        charter.clear();
 
     sLogger.info("ObjectMgr : Deleting Reputation Tables...");
     for (ReputationModMap::iterator itr = m_reputation_creature.begin(); itr != m_reputation_creature.end(); ++itr)
@@ -371,6 +366,101 @@ void ObjectMgr::resetArenaTeamRatings()
     }
 
     updateArenaTeamRankings();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Charter
+void ObjectMgr::loadCharters()
+{
+    m_hiCharterId = 0;
+
+    if (QueryResult* result = CharacterDatabase.Query("SELECT * FROM charters"))
+    {
+        do
+        {
+            auto charter = std::make_shared<Charter>(result->Fetch());
+            m_charters[charter->getCharterType()].insert(std::make_pair(charter->getId(), charter));
+            if (charter->getId() > static_cast<int64_t>(m_hiCharterId.load()))
+                m_hiCharterId = charter->getId();
+
+        } while (result->NextRow());
+
+        delete result;
+    }
+    sLogger.info("ObjectMgr : %u charters loaded.", static_cast<uint32_t>(m_charters[0].size()));
+}
+
+void ObjectMgr::removeCharter(const std::shared_ptr<Charter>& _charter)
+{
+    if (_charter)
+    {
+        if (_charter->getCharterType() >= NUM_CHARTER_TYPES)
+        {
+            sLogger.debug("ObjectMgr : Charter %u cannot be destroyed as type %u is not a valid type.", _charter->getId(), static_cast<uint32_t>(_charter->getCharterType()));
+            return;
+        }
+
+        std::lock_guard guard(m_charterLock);
+        m_charters[_charter->getCharterType()].erase(_charter->getId());
+    }
+}
+
+std::shared_ptr<Charter> ObjectMgr::createCharter(uint32_t _leaderGuid, CharterTypes _type)
+{
+    uint32_t charterId = ++m_hiCharterId;
+    auto charter = std::make_shared<Charter>(charterId, _leaderGuid, _type);
+
+    std::lock_guard guard(m_charterLock);
+    m_charters[charter->getCharterType()].insert(std::make_pair(charter->getId(), charter));
+
+    return charter;
+}
+
+std::shared_ptr<Charter> ObjectMgr::getCharterByName(const std::string& _charterName, const CharterTypes _type)
+{
+    std::lock_guard guard(m_charterLock);
+
+    for (auto& charterPair : m_charters[_type])
+        if (charterPair.second->getGuildName() == _charterName)
+            return charterPair.second;
+
+    return nullptr;
+}
+
+std::shared_ptr<Charter> ObjectMgr::getCharter(const uint32_t _charterId, const CharterTypes _type)
+{
+    std::lock_guard guard(m_charterLock);
+    const auto charterPair = m_charters[_type].find(_charterId);
+    return charterPair == m_charters[_type].end() ? nullptr : charterPair->second;
+}
+
+std::shared_ptr<Charter> ObjectMgr::getCharterByGuid(const uint64_t _playerGuid, const CharterTypes _type)
+{
+    std::lock_guard guard(m_charterLock);
+    for (auto& charterPair : m_charters[_type])
+    {
+        if (_playerGuid == charterPair.second->getLeaderGuid())
+            return charterPair.second;
+
+        for (const uint32_t playerGuid : charterPair.second->getSignatures())
+            if (playerGuid == _playerGuid)
+                return charterPair.second;
+    }
+
+    return nullptr;
+}
+
+std::shared_ptr<Charter> ObjectMgr::getCharterByItemGuid(const uint64_t _itemGuid)
+{
+    std::lock_guard guard(m_charterLock);
+    for (auto& charterType : m_charters)
+    {
+        for (auto& charterPair : charterType)
+            if (charterPair.second->getItemGuid() == _itemGuid)
+                return charterPair.second;
+    }
+
+    return nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -2014,107 +2104,6 @@ Corpse* ObjectMgr::GetCorpse(uint32 corpseguid)
     rv = (itr != m_corpses.end()) ? itr->second : 0;
     _corpseslock.Release();
     return rv;
-}
-
-void ObjectMgr::LoadGuildCharters()
-{
-    m_hiCharterId = 0;
-    QueryResult* result = CharacterDatabase.Query("SELECT * FROM charters");
-    if (!result)
-        return;
-    do
-    {
-        Charter* c = new Charter(result->Fetch());
-        m_charters[c->CharterType].insert(std::make_pair(c->GetID(), c));
-        if (c->GetID() > int64(m_hiCharterId.load()))
-            m_hiCharterId = c->GetID();
-    }
-    while (result->NextRow());
-    delete result;
-    sLogger.info("ObjectMgr : %u charters loaded.", static_cast<uint32_t>(m_charters[0].size()));
-}
-
-Charter* ObjectMgr::GetCharter(uint32 CharterId, CharterTypes Type)
-{
-    std::lock_guard<std::mutex> guard(m_charterLock);
-
-    std::unordered_map<uint32, Charter*>::iterator itr = m_charters[Type].find(CharterId);
-    return (itr == m_charters[Type].end()) ? nullptr : itr->second;
-}
-
-Charter* ObjectMgr::CreateCharter(uint32 LeaderGuid, CharterTypes Type)
-{
-    uint32 charterid = 0;
-    charterid = ++m_hiCharterId;
-
-    Charter* c = new Charter(charterid, LeaderGuid, Type);
-    m_charters[c->CharterType].insert(std::make_pair(c->GetID(), c));
-
-    return c;
-}
-
-Charter* ObjectMgr::GetCharterByItemGuid(uint64 guid)
-{
-    std::lock_guard<std::mutex> guard(m_charterLock);
-
-    for (uint8 i = 0; i < NUM_CHARTER_TYPES; ++i)
-    {
-        for (std::unordered_map<uint32, Charter*>::iterator itr = m_charters[i].begin(); itr != m_charters[i].end(); ++itr)
-        {
-            if (itr->second->ItemGuid == guid)
-                return itr->second;
-        }
-    }
-
-    return nullptr;
-}
-
-Charter* ObjectMgr::GetCharterByGuid(uint64 playerguid, CharterTypes type)
-{
-    std::lock_guard<std::mutex> guard(m_charterLock);
-
-    for (std::unordered_map<uint32, Charter*>::iterator itr = m_charters[type].begin(); itr != m_charters[type].end(); ++itr)
-    {
-        if (playerguid == itr->second->LeaderGuid)
-            return itr->second;
-
-        for (uint32 j = 0; j < itr->second->SignatureCount; ++j)
-        {
-            if (itr->second->Signatures[j] == playerguid)
-                return itr->second;
-        }
-    }
-
-    return nullptr;
-}
-
-Charter* ObjectMgr::GetCharterByName(std::string & charter_name, CharterTypes Type)
-{
-    std::lock_guard<std::mutex> guard(m_charterLock);
-
-    for (std::unordered_map<uint32, Charter*>::iterator itr = m_charters[Type].begin(); itr != m_charters[Type].end(); ++itr)
-    {
-        if (itr->second->GuildName == charter_name)
-            return itr->second;
-    }
-
-    return nullptr;
-}
-
-void ObjectMgr::RemoveCharter(Charter* c)
-{
-    if (c == nullptr)
-        return;
-
-    if (c->CharterType >= NUM_CHARTER_TYPES)
-    {
-        sLogger.debug("ObjectMgr : Charter %u cannot be destroyed as type %u is not a sane type value.", c->CharterId, c->CharterType);
-        return;
-    }
-
-    std::lock_guard<std::mutex> guard(m_charterLock);
-
-    m_charters[c->CharterType].erase(c->CharterId);
 }
 
 void ObjectMgr::LoadReputationModifierTable(const char* tablename, ReputationModMap* dmap)

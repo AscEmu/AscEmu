@@ -938,7 +938,7 @@ void World::loadMySQLTablesByTask()
     sObjectMgr.loadTrainerSpellSets();
     sObjectMgr.loadTrainers();
     sObjectMgr.LoadPetSpellCooldowns();
-    sObjectMgr.LoadGuildCharters();
+    sObjectMgr.loadCharters();
     sTicketMgr.loadGMTickets();
     sObjectMgr.SetHighestGuids();
     sObjectMgr.LoadReputationModifiers();

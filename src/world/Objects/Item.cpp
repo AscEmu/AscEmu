@@ -1202,6 +1202,31 @@ int32_t Item::getReforgableStat(ItemModType statType) const
 }
 #endif
 
+uint8_t Item::getCharterTypeForEntry() const
+{
+    uint8_t charterType;
+    switch (getEntry())
+    {
+        case CharterEntry::Guild:
+            charterType = CHARTER_TYPE_GUILD;
+            break;
+        case CharterEntry::TwoOnTwo:
+            charterType = CHARTER_TYPE_ARENA_2V2;
+            break;
+        case CharterEntry::ThreeOnThree:
+            charterType = CHARTER_TYPE_ARENA_3V3;
+            break;
+        case CharterEntry::FiveOnFive:
+            charterType = CHARTER_TYPE_ARENA_5V5;
+            break;
+        default:
+            charterType = NUM_CHARTER_TYPES;
+            break;
+    }
+
+    return charterType;
+}
+
 void Item::loadFromDB(Field* fields, Player* plr, bool light)
 {
     uint32_t itemid = fields[2].GetUInt32();
@@ -1292,40 +1317,14 @@ void Item::loadFromDB(Field* fields, Player* plr, bool light)
     applyRandomProperties(false);
 
     // Charter stuff
-    if (getEntry() == CharterEntry::Guild)
+    const uint8_t charterType = getCharterTypeForEntry();
+    if (charterType < NUM_CHARTER_TYPES)
     {
         addFlags(ITEM_FLAG_SOULBOUND);
         setStackCount(1);
         setPropertySeed(57813883);
-        if (plr != nullptr && plr->getCharter(CHARTER_TYPE_GUILD))
-            setEnchantmentId(0, plr->getCharter(CHARTER_TYPE_GUILD)->GetID());
-    }
-
-    if (getEntry() == CharterEntry::TwoOnTwo)
-    {
-        addFlags(ITEM_FLAG_SOULBOUND);
-        setStackCount(1);
-        setPropertySeed(57813883);
-        if (plr != nullptr && plr->getCharter(CHARTER_TYPE_ARENA_2V2))
-            setEnchantmentId(0, plr->getCharter(CHARTER_TYPE_ARENA_2V2)->GetID());
-    }
-
-    if (getEntry() == CharterEntry::ThreeOnThree)
-    {
-        addFlags(ITEM_FLAG_SOULBOUND);
-        setStackCount(1);
-        setPropertySeed(57813883);
-        if (plr != nullptr && plr->getCharter(CHARTER_TYPE_ARENA_3V3))
-            setEnchantmentId(0, plr->getCharter(CHARTER_TYPE_ARENA_3V3)->GetID());
-    }
-
-    if (getEntry() == CharterEntry::FiveOnFive)
-    {
-        addFlags(ITEM_FLAG_SOULBOUND);
-        setStackCount(1);
-        setPropertySeed(57813883);
-        if (plr != nullptr && plr->getCharter(CHARTER_TYPE_ARENA_5V5))
-            setEnchantmentId(0, plr->getCharter(CHARTER_TYPE_ARENA_5V5)->GetID());
+        if (plr && plr->getCharter(charterType))
+            setEnchantmentId(0, plr->getCharter(charterType)->getId());
     }
 }
 

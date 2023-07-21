@@ -1168,40 +1168,13 @@ void WorldSession::handleDestroyItemOpcode(WorldPacket& recvPacket)
             return;
         }
 
-        if (srcItem->getItemProperties()->ItemId == CharterEntry::Guild)
+        const uint8_t charterType = srcItem->getCharterTypeForEntry();
+        if (charterType < NUM_CHARTER_TYPES)
         {
-            Charter* gc = _player->m_charters[CHARTER_TYPE_GUILD];
-            if (gc)
-                gc->Destroy();
+            if (auto const charter = _player->m_charters[charterType])
+                charter->destroy();
 
-            _player->m_charters[CHARTER_TYPE_GUILD] = nullptr;
-        }
-
-        if (srcItem->getItemProperties()->ItemId == CharterEntry::TwoOnTwo)
-        {
-            Charter* gc = _player->m_charters[CHARTER_TYPE_ARENA_2V2];
-            if (gc)
-                gc->Destroy();
-
-            _player->m_charters[CHARTER_TYPE_ARENA_2V2] = nullptr;
-        }
-
-        if (srcItem->getItemProperties()->ItemId == CharterEntry::FiveOnFive)
-        {
-            Charter* gc = _player->m_charters[CHARTER_TYPE_ARENA_5V5];
-            if (gc)
-                gc->Destroy();
-
-            _player->m_charters[CHARTER_TYPE_ARENA_5V5] = nullptr;
-        }
-
-        if (srcItem->getItemProperties()->ItemId == CharterEntry::ThreeOnThree)
-        {
-            Charter* gc = _player->m_charters[CHARTER_TYPE_ARENA_3V3];
-            if (gc)
-                gc->Destroy();
-
-            _player->m_charters[CHARTER_TYPE_ARENA_3V3] = nullptr;
+            _player->m_charters[charterType] = nullptr;
         }
 
         Item* pItem = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(srlPacket.srcInventorySlot, srlPacket.srcSlot, false);

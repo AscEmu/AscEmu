@@ -292,8 +292,7 @@ uint8_t WorldSession::deleteCharacter(WoWGuid guid)
     const auto playerInfo = sObjectMgr.GetPlayerInfo(guid.getGuidLow());
     if (playerInfo != nullptr && sObjectMgr.GetPlayer(playerInfo->guid) == nullptr)
     {
-        QueryResult* result = CharacterDatabase.Query("SELECT name FROM characters WHERE guid = %u AND acct = %u",
-            guid.getGuidLow(), _accountId);
+        QueryResult* result = CharacterDatabase.Query("SELECT name FROM characters WHERE guid = %u AND acct = %u", guid.getGuidLow(), _accountId);
         if (!result)
             return E_CHAR_DELETE_FAILED;
 
@@ -312,9 +311,8 @@ uint8_t WorldSession::deleteCharacter(WoWGuid guid)
 
         for (uint8_t i = 0; i < NUM_CHARTER_TYPES; ++i)
         {
-            const auto charter = sObjectMgr.GetCharterByGuid(guid, static_cast<CharterTypes>(i));
-            if (charter != nullptr)
-                charter->RemoveSignature(guid.getGuidLow());
+            if (const auto charter = sObjectMgr.getCharterByGuid(guid, static_cast<CharterTypes>(i)))
+                charter->removeSignature(guid.getGuidLow());
         }
 
 

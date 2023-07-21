@@ -44,8 +44,7 @@ bool ChatHandler::HandleGuildCreateCommand(const char* args, WorldSession* m_ses
     }
 
     Charter tempCharter(0, selected_player->getGuidLow(), CHARTER_TYPE_GUILD);
-    tempCharter.SignatureCount = 0;
-    tempCharter.GuildName = std::string(args);
+    tempCharter.setGuildName(std::string(args));
 
     Guild* guild = new Guild;
     if (!guild->create(selected_player, std::string(args)))

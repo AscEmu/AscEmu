@@ -504,9 +504,9 @@ void WorldSession::handleCharterShowSignatures(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Charter* charter = sObjectMgr.GetCharterByItemGuid(srlPacket.itemGuid))
-        _player->getSession()->SendPacket(SmsgPetitionShowSignatures(srlPacket.itemGuid, charter->GetLeader(), charter->GetID(), static_cast<uint8_t>(charter->SignatureCount),
-            charter->Slots, charter->Signatures).serialise().get());
+    if (const auto charter = sObjectMgr.getCharterByItemGuid(srlPacket.itemGuid))
+        _player->getSession()->SendPacket(SmsgPetitionShowSignatures(srlPacket.itemGuid, charter->getLeaderGuid(), charter->getId(), charter->getSignatureCount(),
+            charter->getAvailableSlots(), charter->getSignatures()).serialise().get());
 }
 
 void WorldSession::handleCharterOffer(WorldPacket& recvPacket)
@@ -516,7 +516,7 @@ void WorldSession::handleCharterOffer(WorldPacket& recvPacket)
         return;
 
     Player* pTarget = _player->getWorldMap()->getPlayer(srlPacket.playerGuid.getGuidLow());
-    Charter* pCharter = sObjectMgr.GetCharterByItemGuid(srlPacket.itemGuid);
+    const auto pCharter = sObjectMgr.getCharterByItemGuid(srlPacket.itemGuid);
     if (pCharter == nullptr)
     {
         SendNotification(_player->getSession()->LocalizedWorldSrv(ServerString::SS_ITEM_NOT_FOUND));
@@ -535,8 +535,8 @@ void WorldSession::handleCharterOffer(WorldPacket& recvPacket)
         return;
     }
 
-    pTarget->getSession()->SendPacket(SmsgPetitionShowSignatures(srlPacket.itemGuid, pCharter->GetLeader(), pCharter->GetID(), static_cast<uint8_t>(pCharter->SignatureCount),
-        pCharter->Slots, pCharter->Signatures).serialise().get());
+    pTarget->getSession()->SendPacket(SmsgPetitionShowSignatures(srlPacket.itemGuid, pCharter->getLeaderGuid(), pCharter->getId(), pCharter->getSignatureCount(),
+        pCharter->getAvailableSlots(), pCharter->getSignatures()).serialise().get());
 }
 
 namespace PetitionSignResult
@@ -554,11 +554,11 @@ void WorldSession::handleCharterSign(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Charter* charter = sObjectMgr.GetCharterByItemGuid(srlPacket.itemGuid))
+    if (const auto charter = sObjectMgr.getCharterByItemGuid(srlPacket.itemGuid))
     {
-        for (uint32_t i = 0; i < charter->SignatureCount; ++i)
+        for (const uint32_t playerGuid : charter->getSignatures())
         {
-            if (charter->Signatures[i] == _player->getGuid())
+            if (playerGuid == _player->getGuid())
             {
                 SendNotification(_player->getSession()->LocalizedWorldSrv(ServerString::SS_ALREADY_SIGNED_CHARTER));
                 SendPacket(SmsgPetitionSignResult(srlPacket.itemGuid, _player->getGuid(), PetitionSignResult::AlreadySigned).serialise().get());
@@ -566,20 +566,20 @@ void WorldSession::handleCharterSign(WorldPacket& recvPacket)
             }
         }
 
-        if (charter->IsFull())
+        if (charter->isFull())
             return;
 
-        charter->AddSignature(_player->getGuidLow());
-        charter->SaveToDB();
-        _player->m_charters[charter->CharterType] = charter;
+        charter->addSignature(_player->getGuidLow());
+        charter->saveToDB();
+        _player->m_charters[charter->getCharterType()] = charter;
         _player->saveToDB(false);
 
-        Player* player = _player->getWorldMap()->getPlayer(charter->GetLeader());
+        Player* player = _player->getWorldMap()->getPlayer(charter->getLeaderGuid());
         if (player == nullptr)
             return;
 
         player->sendPacket(SmsgPetitionSignResult(srlPacket.itemGuid, _player->getGuid(), PetitionSignResult::OK).serialise().get());
-        SendPacket(SmsgPetitionSignResult(srlPacket.itemGuid, uint64_t(charter->GetLeader()), PetitionSignResult::OK).serialise().get());
+        SendPacket(SmsgPetitionSignResult(srlPacket.itemGuid, uint64_t(charter->getLeaderGuid()), PetitionSignResult::OK).serialise().get());
     }
 }
 
@@ -589,11 +589,11 @@ void WorldSession::handleCharterDecline(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    Charter* charter = sObjectMgr.GetCharterByItemGuid(srlPacket.itemGuid);
+    auto const charter = sObjectMgr.getCharterByItemGuid(srlPacket.itemGuid);
     if (charter == nullptr)
         return;
 
-    Player* player = sObjectMgr.GetPlayer(charter->GetLeader());
+    Player* player = sObjectMgr.GetPlayer(charter->getLeaderGuid());
     if (player)
         player->getSession()->SendPacket(MsgPetitionDecline(_player->getGuid()).serialise().get());
 }
@@ -604,12 +604,12 @@ void WorldSession::handleCharterRename(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    Charter* charter1 = sObjectMgr.GetCharterByItemGuid(srlPacket.itemGuid);
+    auto const charter1 = sObjectMgr.getCharterByItemGuid(srlPacket.itemGuid);
     if (charter1 == nullptr)
         return;
 
     Guild* guild = sGuildMgr.getGuildByName(srlPacket.name);
-    Charter* charter = sObjectMgr.GetCharterByName(srlPacket.name, static_cast<CharterTypes>(charter1->CharterType));
+    auto charter = sObjectMgr.getCharterByName(srlPacket.name, static_cast<CharterTypes>(charter1->getCharterType()));
     if (charter || guild)
     {
         SendNotification("That name is in use by another guild.");
@@ -617,8 +617,8 @@ void WorldSession::handleCharterRename(WorldPacket& recvPacket)
     }
 
     charter = charter1;
-    charter->GuildName = srlPacket.name;
-    charter->SaveToDB();
+    charter->setGuildName(srlPacket.name);
+    charter->saveToDB();
 
     SendPacket(MsgPetitionRename(srlPacket.itemGuid, srlPacket.name).serialise().get());
 }
@@ -629,31 +629,31 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto charter = sObjectMgr.GetCharterByItemGuid(srlPacket.itemGuid);
+    const auto charter = sObjectMgr.getCharterByItemGuid(srlPacket.itemGuid);
     if (charter == nullptr)
         return;
 
-    if (charter->CharterType == CHARTER_TYPE_GUILD)
+    if (charter->getCharterType() == CHARTER_TYPE_GUILD)
     {
         const auto playerCharter = _player->m_charters[CHARTER_TYPE_GUILD];
         if (playerCharter == nullptr)
             return;
 
-        if (playerCharter->SignatureCount < playerCharter->GetNumberOfSlotsByType() && worldConfig.guild.requireAllSignatures && !_player->getSession()->HasGMPermissions())
+        if (playerCharter->getSignatureCount() < playerCharter->getNumberOfAvailableSlots() && worldConfig.guild.requireAllSignatures && !_player->getSession()->HasGMPermissions())
         {
             Guild::sendTurnInPetitionResult(this, PETITION_ERROR_NEED_MORE_SIGNATURES);
             return;
         }
 
         const auto guild = new Guild;
-        if (!guild->create(_player, playerCharter->GuildName))
+        if (!guild->create(_player, playerCharter->getGuildName()))
         {
             delete guild;
             return;
         }
 
         _player->m_charters[CHARTER_TYPE_GUILD] = nullptr;
-        playerCharter->Destroy();
+        playerCharter->destroy();
 
         _player->getItemInterface()->RemoveItemAmt(CharterEntry::Guild, 1);
         sHookInterface.OnGuildCreate(_player, guild);
@@ -662,7 +662,7 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
     {
         uint8_t type;
 
-        switch (charter->CharterType)
+        switch (charter->getCharterType())
         {
             case CHARTER_TYPE_ARENA_2V2:
                 type = ARENA_TEAM_TYPE_2V2;
@@ -677,17 +677,17 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
                 break;
 
             default:
-                SendNotification("Internal Error");
+                SendNotification("Chartertype not allowed for Arena");
                 return;
         }
 
-        if (_player->getArenaTeam(charter->CharterType - 1U) != nullptr)
+        if (_player->getArenaTeam(charter->getCharterType() - 1U) != nullptr)
         {
             sChatHandler.SystemMessage(this, LocalizedWorldSrv(ServerString::SS_ALREADY_ARENA_TEAM));
             return;
         }
 
-        if (charter->SignatureCount < charter->GetNumberOfSlotsByType() && !_player->getSession()->HasGMPermissions())
+        if (charter->getSignatureCount() < charter->getNumberOfAvailableSlots() && !_player->getSession()->HasGMPermissions())
         {
             ///\ todo: missing correct error message for arena charters
             Guild::sendTurnInPetitionResult(this, PETITION_ERROR_NEED_MORE_SIGNATURES);
@@ -695,7 +695,7 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
         }
 
         auto arenaTeam = std::make_shared<ArenaTeam>(type, sObjectMgr.GenerateArenaTeamId());
-        arenaTeam->m_name = charter->GuildName;
+        arenaTeam->m_name = charter->getGuildName();
         arenaTeam->m_emblem.emblemColour = srlPacket.iconColor;
         arenaTeam->m_emblem.emblemStyle = srlPacket.icon;
         arenaTeam->m_emblem.borderColour = srlPacket.borderColor;
@@ -708,13 +708,13 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
         sObjectMgr.updateArenaTeamRankings();
         arenaTeam->addMember(_player->m_playerInfo);
 
-        for (uint32_t i = 0; i < charter->SignatureCount; ++i)
-            if (CachedCharacterInfo* info = sObjectMgr.GetPlayerInfo(charter->Signatures[i]))
+        for (uint32_t playerGuid : charter->getSignatures())
+            if (CachedCharacterInfo* info = sObjectMgr.GetPlayerInfo(playerGuid))
                 arenaTeam->addMember(info);
 
         _player->getItemInterface()->SafeFullRemoveItemByGuid(srlPacket.itemGuid);
-        _player->m_charters[charter->CharterType] = nullptr;
-        charter->Destroy();
+        _player->m_charters[charter->getCharterType()] = nullptr;
+        charter->destroy();
     }
 
     Guild::sendTurnInPetitionResult(this, PETITION_ERROR_OK);
@@ -726,9 +726,9 @@ void WorldSession::handleCharterQuery(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Charter* charter = sObjectMgr.GetCharterByItemGuid(srlPacket.itemGuid))
-        SendPacket(SmsgPetitionQueryResponse(srlPacket.charterId, static_cast<uint64>(charter->LeaderGuid),
-            charter->GuildName, charter->CharterType, charter->Slots).serialise().get());
+    if (auto const charter = sObjectMgr.getCharterByItemGuid(srlPacket.itemGuid))
+        SendPacket(SmsgPetitionQueryResponse(srlPacket.charterId, charter->getLeaderGuid(),
+            charter->getGuildName(), charter->getCharterType(), charter->getAvailableSlots()).serialise().get());
 }
 
 void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
@@ -763,7 +763,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
             return;
         }
 
-        if (sObjectMgr.GetCharterByName(srlPacket.name, static_cast<CharterTypes>(srlPacket.arenaIndex)))
+        if (sObjectMgr.getCharterByName(srlPacket.name, static_cast<CharterTypes>(srlPacket.arenaIndex)))
         {
             sChatHandler.SystemMessage(this, _player->getSession()->LocalizedWorldSrv(ServerString::SS_PETITION_NAME_ALREADY_USED));
             return;
@@ -810,27 +810,27 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
         {
             Item* item = sObjectMgr.CreateItem(item_ids[arena_type], _player);
 
-            Charter* charter = sObjectMgr.CreateCharter(_player->getGuidLow(), static_cast<CharterTypes>(srlPacket.arenaIndex));
+            auto const charter = sObjectMgr.createCharter(_player->getGuidLow(), static_cast<CharterTypes>(srlPacket.arenaIndex));
             if (item == nullptr || charter == nullptr)
                 return;
 
-            charter->GuildName = srlPacket.name;
-            charter->ItemGuid = item->getGuid();
+            charter->setGuildName(srlPacket.name);
+            charter->setItemGuid(item->getGuid());
 
-            charter->PetitionSignerCount = srlPacket.signerCount;
+            charter->m_petitionSignerCount = srlPacket.signerCount;
 
             item->setStackCount(1);
             item->addFlags(ITEM_FLAG_SOULBOUND);
-            item->setEnchantmentId(0, charter->GetID());
+            item->setEnchantmentId(0, charter->getId());
             item->setPropertySeed(57813883);
             if (!_player->getItemInterface()->AddItemToFreeSlot(item))
             {
-                charter->Destroy();
+                charter->destroy();
                 item->deleteMe();
                 return;
             }
 
-            charter->SaveToDB();
+            charter->saveToDB();
 
             _player->sendItemPushResultPacket(false, true, false, _player->getItemInterface()->LastSearchItemBagSlot(),
                 _player->getItemInterface()->LastSearchItemSlot(), 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
@@ -849,7 +849,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
         }
 
         Guild* guild = sGuildMgr.getGuildByName(srlPacket.name);
-        Charter* charter = sObjectMgr.GetCharterByName(srlPacket.name, CHARTER_TYPE_GUILD);
+        auto const charter = sObjectMgr.getCharterByName(srlPacket.name, CHARTER_TYPE_GUILD);
         if (guild != nullptr || charter != nullptr)
         {
             SendNotification(_player->getSession()->LocalizedWorldSrv(ServerString::SS_GUILD_NAME_ALREADY_IN_USE));
@@ -884,27 +884,27 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
 
             Item* item = sObjectMgr.CreateItem(CharterEntry::Guild, _player);
 
-            Charter* guildCharter = sObjectMgr.CreateCharter(_player->getGuidLow(), CHARTER_TYPE_GUILD);
+            auto const guildCharter = sObjectMgr.createCharter(_player->getGuidLow(), CHARTER_TYPE_GUILD);
             if (item == nullptr || guildCharter == nullptr)
                 return;
 
-            guildCharter->GuildName = srlPacket.name;
-            guildCharter->ItemGuid = item->getGuid();
+            guildCharter->setGuildName(srlPacket.name);
+            guildCharter->setItemGuid(item->getGuid());
 
-            guildCharter->PetitionSignerCount = srlPacket.signerCount;
+            guildCharter->m_petitionSignerCount = srlPacket.signerCount;
 
             item->setStackCount(1);
             item->addFlags(ITEM_FLAG_SOULBOUND);
-            item->setEnchantmentId(0, guildCharter->GetID());
+            item->setEnchantmentId(0, guildCharter->getId());
             item->setPropertySeed(57813883);
             if (!_player->getItemInterface()->AddItemToFreeSlot(item))
             {
-                guildCharter->Destroy();
+                guildCharter->destroy();
                 item->deleteMe();
                 return;
             }
 
-            guildCharter->SaveToDB();
+            guildCharter->saveToDB();
 
             _player->sendItemPushResultPacket(false, true, false, _player->getItemInterface()->LastSearchItemBagSlot(),
                 _player->getItemInterface()->LastSearchItemSlot(), 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());

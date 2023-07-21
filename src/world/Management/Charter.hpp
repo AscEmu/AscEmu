@@ -6,74 +6,51 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include <cstdint>
-#include <cstring>
-
-#include "Objects/Units/Players/PlayerDefines.hpp"
 
 class Field;
 
-class Charter
+class Charter : public std::enable_shared_from_this<Charter>
 {
 public:
+    Charter(Field* _field);
+    Charter(uint32_t _id, uint32_t _leaderGuid, uint8_t _type);
+    ~Charter();
 
-    uint32_t GetNumberOfSlotsByType()
-    {
-        switch (CharterType)
-        {
-        case CHARTER_TYPE_GUILD:
-            return 9;
+    void saveToDB();
+    void destroy();
 
-        case CHARTER_TYPE_ARENA_2V2:
-            return 1;
+    uint32_t getLeaderGuid() const;
 
-        case CHARTER_TYPE_ARENA_3V3:
-            return 2;
+    uint32_t getId() const;
 
-        case CHARTER_TYPE_ARENA_5V5:
-            return 4;
+    uint8_t getCharterType() const;
 
-        default:
-            return 9;
-        }
-    }
+    std::string getGuildName();
+    void setGuildName(const std::string& _guildName);
 
-    uint32_t SignatureCount;
-    uint32_t* Signatures;
-    uint8_t CharterType;
-    uint32_t Slots;
-    uint32_t LeaderGuid;
-    uint64_t ItemGuid;
-    uint32_t CharterId;
-    std::string GuildName;
+    uint64_t getItemGuid() const;
+    void setItemGuid(uint64_t _itemGuid);
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // Developer Fields
-    uint32_t PetitionSignerCount;
+    uint8_t getNumberOfAvailableSlots() const;
+    bool isFull() const;
+    uint8_t getAvailableSlots() const;
 
-    Charter(Field* fields);
-    Charter(uint32_t id, uint32_t leader, uint8_t type) : CharterType(type), LeaderGuid(leader), CharterId(id)
-    {
-        SignatureCount = 0;
-        ItemGuid = 0;
-        Slots = GetNumberOfSlotsByType();
-        Signatures = new uint32_t[Slots];
-        memset(Signatures, 0, sizeof(uint32_t) * Slots);
-        PetitionSignerCount = 0;
-    }
+    void addSignature(uint32_t _playerGuid);
+    void removeSignature(uint32_t _playerGuid);
+    uint8_t getSignatureCount() const;
+    std::vector<uint32_t> getSignatures();
 
-    ~Charter()
-    {
-        delete[] Signatures;
-    }
+    uint32_t m_petitionSignerCount = 0;
 
-    void SaveToDB();
-    void Destroy();         // When item is deleted.
+private:
+    uint32_t m_charterId = 0;
+    uint8_t m_charterType = 0;
 
-    void AddSignature(uint32_t PlayerGuid);
-    void RemoveSignature(uint32_t PlayerGuid);
+    uint32_t m_leaderGuid = 0;
+    std::string m_guildName;
+    uint64_t m_itemGuid = 0;
 
-    uint32_t GetLeader() { return LeaderGuid; }
-    uint32_t GetID() { return CharterId; }
+    uint8_t m_availableSlots = 0;
 
-    bool IsFull() { return (SignatureCount == Slots); }
+    std::vector<uint32_t> m_signatures;
 };

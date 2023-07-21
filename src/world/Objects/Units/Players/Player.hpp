@@ -1188,13 +1188,13 @@ private:
     // Charter
 public:
     void unsetCharter(uint8_t charterType);
-    Charter* getCharter(uint8_t charterType);
+    std::shared_ptr<Charter> getCharter(uint8_t charterType);
 
-    bool canSignCharter(Charter* charter, Player* requester);
+    bool canSignCharter(std::shared_ptr<Charter> charter, Player* requester);
     void initialiseCharters();
 
 private:
-    Charter* m_charters[NUM_CHARTER_TYPES] = {nullptr};
+    std::shared_ptr<Charter> m_charters[NUM_CHARTER_TYPES] = {nullptr};
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Guild

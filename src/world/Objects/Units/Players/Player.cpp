@@ -7830,20 +7830,20 @@ int32_t Player::getBGEntryInstanceId() const { return m_bgEntryData.instanceId; 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Charter
 void Player::unsetCharter(uint8_t charterType) { m_charters[charterType] = nullptr; }
-Charter* Player::getCharter(uint8_t charterType) { return m_charters[charterType]; }
+std::shared_ptr<Charter> Player::getCharter(uint8_t charterType) { return m_charters[charterType]; }
 
-bool Player::canSignCharter(Charter* charter, Player* requester)
+bool Player::canSignCharter(std::shared_ptr<Charter> charter, Player* requester)
 {
     if (charter == nullptr || requester == nullptr)
         return false;
 
-    if (charter->CharterType >= CHARTER_TYPE_ARENA_2V2 && getArenaTeam(charter->CharterType - 1U) != nullptr)
+    if (charter->getCharterType() >= CHARTER_TYPE_ARENA_2V2 && getArenaTeam(charter->getCharterType() - 1U) != nullptr)
         return false;
 
-    if (charter->CharterType == CHARTER_TYPE_GUILD && isInGuild())
+    if (charter->getCharterType() == CHARTER_TYPE_GUILD && isInGuild())
         return false;
 
-    if (m_charters[charter->CharterType] || requester->getTeam() != getTeam() || this == requester)
+    if (m_charters[charter->getCharterType()] || requester->getTeam() != getTeam() || this == requester)
         return false;
 
     return true;
@@ -7852,7 +7852,7 @@ bool Player::canSignCharter(Charter* charter, Player* requester)
 void Player::initialiseCharters()
 {
     for (uint8_t i = 0; i < NUM_CHARTER_TYPES; ++i)
-        m_charters[i] = sObjectMgr.GetCharterByGuid(getGuid(), static_cast<CharterTypes>(i));
+        m_charters[i] = sObjectMgr.getCharterByGuid(getGuid(), static_cast<CharterTypes>(i));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

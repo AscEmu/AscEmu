@@ -7,100 +7,111 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ObjectMgr.h"
 #include "Server/MainServerDefines.h"
 #include "Database/Field.hpp"
+#include "Objects/Units/Players/PlayerDefines.hpp"
 
-Charter::Charter(Field* fields)
+Charter::Charter(Field* _field)
 {
-    uint32_t f = 0;
-    CharterId = fields[f++].GetUInt32();
-    CharterType = fields[f++].GetUInt8();
-    LeaderGuid = fields[f++].GetUInt32();
-    GuildName = fields[f++].GetString();
-    ItemGuid = fields[f++].GetUInt64();
-    SignatureCount = 0;
-    Slots = GetNumberOfSlotsByType();
-    Signatures = new uint32_t[Slots];
+    m_charterId = _field[0].GetUInt32();
+    m_charterType = _field[1].GetUInt8();
+    m_leaderGuid = _field[2].GetUInt32();
+    m_guildName = _field[3].GetString();
+    m_itemGuid = _field[4].GetUInt64();
 
-    for (uint32_t i = 0; i < Slots; ++i)
+    m_availableSlots = getNumberOfAvailableSlots();
+
+    for (uint8_t i = 0; i < m_availableSlots; ++i)
     {
-        Signatures[i] = fields[f++].GetUInt32();
-        if (Signatures[i])
-            ++SignatureCount;
-    }
+        constexpr uint8_t fieldOffset = 5;
 
-    PetitionSignerCount = 0;
-}
-
-void Charter::AddSignature(uint32_t PlayerGuid)
-{
-    if (SignatureCount >= Slots)
-        return;
-
-    ++SignatureCount;
-    uint32_t i = 0;
-    for (; i < Slots; ++i)
-    {
-        if (Signatures[i] == 0)
-        {
-            Signatures[i] = PlayerGuid;
-            break;
-        }
+        if (uint32_t playerGuid = _field[i + fieldOffset].GetUInt32())
+            m_signatures.push_back(playerGuid);
     }
 }
 
-void Charter::RemoveSignature(uint32_t PlayerGuid)
+Charter::Charter(uint32_t _id, uint32_t _leaderGuid, uint8_t _type) : m_charterId(_id), m_charterType(_type), m_leaderGuid(_leaderGuid)
 {
-    for (uint32_t i = 0; i < Slots; ++i)
-    {
-        if (Signatures[i] == PlayerGuid)
-        {
-            Signatures[i] = 0;
-            --SignatureCount;
-            SaveToDB();
-            break;
-        }
-    }
+    m_availableSlots = getNumberOfAvailableSlots();
 }
 
-void Charter::Destroy()
+Charter::~Charter() = default;
+
+void Charter::saveToDB()
 {
-    sObjectMgr.RemoveCharter(this);
+    CharacterDatabase.Execute("DELETE FROM charters WHERE charterId = %u;", m_charterId);
 
-    CharacterDatabase.Execute("DELETE FROM charters WHERE charterId = %u", CharterId);
-
-    for (uint32_t i = 0; i < Slots; ++i)
-    {
-        if (!Signatures[i])
-            continue;
-
-        Player* p = sObjectMgr.GetPlayer(Signatures[i]);
-        if (p != nullptr)
-            p->unsetCharter(CharterType);
-    }
-
-    delete this;
-}
-
-void Charter::SaveToDB()
-{
     std::stringstream ss;
-    uint32_t i;
+    ss << "INSERT INTO charters VALUES(" << m_charterId << "," << m_charterType << "," << m_leaderGuid << ",'" << m_guildName << "'," << m_itemGuid;
 
-    ss << "DELETE FROM charters WHERE charterId = ";
-    ss << CharterId;
-    ss << ";";
+    for (const auto playerGuid : m_signatures)
+        ss << "," << playerGuid;
 
-    CharacterDatabase.Execute(ss.str().c_str());
-
-    ss.rdbuf()->str("");
-
-    ss << "INSERT INTO charters VALUES(" << CharterId << "," << CharterType << "," << LeaderGuid << ",'" << GuildName << "'," << ItemGuid;
-
-    for (i = 0; i < Slots; ++i)
-        ss << "," << Signatures[i];
-
-    for (; i < 9; ++i)
+    for (uint8_t i = getSignatureCount(); i < 9; ++i)
         ss << ",0";
 
     ss << ")";
     CharacterDatabase.Execute(ss.str().c_str());
 }
+
+void Charter::destroy()
+{
+    sObjectMgr.removeCharter(shared_from_this());
+
+    CharacterDatabase.Execute("DELETE FROM charters WHERE charterId = %u", m_charterId);
+
+    for (const auto playerGuid : m_signatures)
+    {
+        if (Player* player = sObjectMgr.GetPlayer(playerGuid))
+            player->unsetCharter(m_charterType);
+    }
+
+    delete this;
+}
+
+uint32_t Charter::getLeaderGuid() const { return m_leaderGuid; }
+
+uint32_t Charter::getId() const { return m_charterId; }
+
+uint8_t Charter::getCharterType() const { return m_charterType; }
+
+std::string Charter::getGuildName() { return m_guildName; }
+void Charter::setGuildName(const std::string& _guildName) { m_guildName = _guildName; }
+
+uint64_t Charter::getItemGuid() const { return m_itemGuid; }
+void Charter::setItemGuid(const uint64_t _itemGuid) { m_itemGuid = _itemGuid; }
+
+uint8_t Charter::getNumberOfAvailableSlots() const
+{
+    switch (m_charterType)
+    {
+        case CHARTER_TYPE_GUILD:
+            return 9;
+        case CHARTER_TYPE_ARENA_2V2:
+            return 1;
+        case CHARTER_TYPE_ARENA_3V3:
+            return 2;
+        case CHARTER_TYPE_ARENA_5V5:
+            return 4;
+        default:
+            return 9;
+    }
+}
+bool Charter::isFull() const { return m_signatures.size() == m_availableSlots; }
+uint8_t Charter::getAvailableSlots() const { return m_availableSlots; }
+
+void Charter::addSignature(uint32_t _playerGuid)
+{
+    if (m_signatures.size() >= m_availableSlots)
+        return;
+
+    m_signatures.push_back(_playerGuid);
+}
+
+void Charter::removeSignature(uint32_t _playerGuid)
+{
+    std::erase(m_signatures, _playerGuid);
+
+    saveToDB();
+}
+
+uint8_t Charter::getSignatureCount() const { return m_signatures.size(); }
+std::vector<uint32_t> Charter::getSignatures() { return m_signatures; }

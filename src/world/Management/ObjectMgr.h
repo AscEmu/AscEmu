@@ -235,6 +235,22 @@ private:
     std::mutex m_arenaTeamLock;
 
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Charter
+public:
+    void loadCharters();
+    void removeCharter(const std::shared_ptr<Charter>&);
+    std::shared_ptr<Charter> createCharter(uint32_t _leaderGuid, CharterTypes _type);
+
+    std::shared_ptr<Charter> getCharterByName(const std::string& _charterName, CharterTypes _type);
+    std::shared_ptr<Charter> getCharter(uint32_t _charterId, CharterTypes _type);
+    std::shared_ptr<Charter> getCharterByGuid(uint64_t _playerguid, CharterTypes _type);
+    std::shared_ptr<Charter> getCharterByItemGuid(uint64_t _guid);
+
+private:
+    std::unordered_map<uint32, std::shared_ptr<Charter>> m_charters[NUM_CHARTER_TYPES];
+    std::mutex m_charterLock;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
 public:
     void generateDatabaseGossipMenu(Object* object, uint32_t gossipMenuId, Player* player, uint32_t forcedTextId = 0);
@@ -379,13 +395,7 @@ public:
         uint32 GenerateCreatureSpawnID();
         uint32 GenerateGameObjectSpawnID();
 
-        Charter* CreateCharter(uint32 LeaderGuid, CharterTypes Type);
-        Charter* GetCharter(uint32 CharterId, CharterTypes Type);
-        void RemoveCharter(Charter*);
-        void LoadGuildCharters();
-        Charter* GetCharterByName(std::string & charter_name, CharterTypes Type);
-        Charter* GetCharterByItemGuid(uint64 guid);
-        Charter* GetCharterByGuid(uint64 playerguid, CharterTypes type);
+        
 
         bool HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim);
         void LoadInstanceReputationModifiers();
@@ -485,13 +495,10 @@ public:
 #if VERSION_STRING > WotLK
         std::atomic<unsigned long> m_voidItemId;
 #endif
-        std::mutex m_charterLock;
 
         ReputationModMap m_reputation_faction;
         ReputationModMap m_reputation_creature;
         std::unordered_map<uint32, InstanceReputationModifier*> m_reputation_instance;
-
-        std::unordered_map<uint32, Charter*> m_charters[NUM_CHARTER_TYPES];
 
         std::set<uint32> m_disabled_spells;
 

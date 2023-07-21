@@ -19,13 +19,13 @@ namespace AscEmu::Packets
         uint32_t chartId;
         uint8_t signatureCount;
         uint32_t petitionSlots;
-        uint32_t* signatures;
+        std::vector<uint32_t> signatures;
 
         SmsgPetitionShowSignatures() : SmsgPetitionShowSignatures(0, 0, 0, 0, 0, { 0 })
         {
         }
 
-        SmsgPetitionShowSignatures(uint64_t itemGuid, uint64_t leaderGuid, uint32_t chartId, uint8_t signatureCount, uint32_t petitionSlots, uint32_t* signatures) :
+        SmsgPetitionShowSignatures(uint64_t itemGuid, uint64_t leaderGuid, uint32_t chartId, uint8_t signatureCount, uint32_t petitionSlots, std::vector<uint32_t> signatures) :
             ManagedPacket(SMSG_PETITION_SHOW_SIGNATURES, 0),
             itemGuid(itemGuid),
             leaderGuid(leaderGuid),
@@ -45,12 +45,12 @@ namespace AscEmu::Packets
             packet << leaderGuid;
             packet << chartId;
             packet << signatureCount;
-            for (uint32_t j = 0; j < petitionSlots; ++j)
+            for (auto const signature : signatures)
             {
-                if (signatures[j] == 0)
+                if (signature == 0)
                     continue;
 
-                packet << signatures[j];
+                packet << signature;
                 packet << uint32_t(1);
             }
             packet << uint8_t(0);

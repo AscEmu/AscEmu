@@ -206,6 +206,7 @@ public:
     bool isInBag() const;
     bool isEquipped() const;
     bool isTradeableWith(Player* player);
+    uint8_t getCharterTypeForEntry() const;
 
     int32_t getReforgableStat(ItemModType statType) const;
     static bool canTransmogrifyItemWithItem(Item const* transmogrified, Item const* transmogrifier);
