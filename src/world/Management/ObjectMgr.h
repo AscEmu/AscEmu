@@ -177,14 +177,14 @@ struct InstanceReputationMod
 struct ReputationModifier
 {
     uint32 entry;
-    std::vector<ReputationMod> mods;
+    std::vector<std::shared_ptr<ReputationMod>> mods;
 };
 
 // reputation/instance
 struct InstanceReputationModifier
 {
     uint32 mapid;
-    std::vector<InstanceReputationMod> mods;
+    std::vector<std::shared_ptr<InstanceReputationMod>> mods;
 };
 
 typedef std::unordered_map<uint32, Player*> PlayerStorageMap;
@@ -279,6 +279,17 @@ private:
     std::mutex m_corpseLock;
 
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Vendors
+public:
+    void loadVendors();
+
+    std::vector<CreatureItem>* getVendorList(uint32_t _entry);
+    void setVendorList(uint32_t _entry, std::vector<CreatureItem>* _list);
+
+private:
+    std::unordered_map<uint32_t, std::vector<CreatureItem>*> m_vendors;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Achievement - todo: We have an AchievementMgr for that stuff... why here?
 #if VERSION_STRING > TBC
 public:
@@ -306,6 +317,22 @@ private:
 #endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Reputation Mods
+public:
+    typedef std::unordered_map<uint32_t, std::shared_ptr<ReputationModifier>> ReputationModMap;
+    void loadReputationModifiers();
+    void loadReputationModifierTable(const char* _tableName, ReputationModMap& _reputationModMap);
+    void loadInstanceReputationModifiers();
+
+    std::shared_ptr<ReputationModifier> getReputationModifier(uint32_t _entry, uint32_t _factionId);
+    bool handleInstanceReputationModifiers(Player* _player, Unit* _unitVictim);
+
+private:
+    ReputationModMap m_reputationFaction;
+    ReputationModMap m_reputationCreature;
+    std::unordered_map<uint32_t, std::shared_ptr<InstanceReputationModifier>> m_reputationInstance;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
 public:
     void generateDatabaseGossipMenu(Object* _object, uint32_t _gossipMenuId, Player* _player, uint32_t _forcedTextId = 0);
@@ -319,22 +346,24 @@ public:
 
     // Preload CreatureDisplayInfoStore and CreatureModelDataStore to avoid DBC lookup calls
     void loadCreatureDisplayInfo();
-    CreatureDisplayInfoData const* getCreatureDisplayInfoData(uint32_t displayId) const;
+    CreatureDisplayInfoData const* getCreatureDisplayInfoData(uint32_t _displayId) const;
 
-    Player* createPlayerByGuid(uint8_t _class, uint32_t guid);
+    Player* createPlayerByGuid(uint8_t _class, uint32_t _guid);
 
-    GameObject* createGameObjectByGuid(uint32_t id, uint32_t guid);
+    GameObject* createGameObjectByGuid(uint32_t _id, uint32_t _guid);
 
     void loadInstanceEncounters();
     DungeonEncounterList const* getDungeonEncounterList(uint32_t _mapId, uint8_t _difficulty);
 
     void loadCreatureMovementOverrides();
     void checkCreatureMovement(uint32_t _id, CreatureMovementData& _creatureMovement);
-
     CreatureMovementData const* getCreatureMovementOverride(uint32_t _spawnId) const;
 
     void loadWorldStateTemplates();
-    std::multimap<uint32_t, WorldState>* getWorldStatesForMap(uint32_t map) const;
+    std::multimap<uint32_t, WorldState>* getWorldStatesForMap(uint32_t _map) const;
+
+    void loadCreatureTimedEmotes();
+    TimedEmoteList* getTimedEmoteList(uint32_t _spawnId);
 
 private:
     std::unordered_map<uint32_t, std::vector<TrainerSpell>*> m_trainerSpellSet;
@@ -349,18 +378,11 @@ private:
 
     std::map<uint32_t, std::multimap<uint32_t, WorldState>*> m_worldstateTemplates;
 
+    std::unordered_map<uint32_t, TimedEmoteList*> m_timedEmotes;
+
 public:
 
-        void LoadCreatureTimedEmotes();
-
-        TimedEmoteList* GetTimedEmoteList(uint32 spawnid);
-
-        // Set typedef's
         typedef std::unordered_map<uint32, Group*>                                                  GroupMap;
-        typedef std::unordered_map<uint32, std::vector<CreatureItem>*>                              VendorMap;
-        typedef std::unordered_map<uint32, ReputationModifier*>                                     ReputationModMap;
-
-        // Map typedef's
         typedef std::map<uint32, LevelInfo*>                                                        LevelMap;
         typedef std::map<std::pair<uint32, uint32>, LevelMap*>                                      LevelInfoMap;
         typedef std::map<uint32, uint32>                                                            PetSpellCooldownMap;
@@ -386,10 +408,6 @@ public:
         void LoadGroups();
         void loadGroupInstances();
 
-        //Vendors
-        std::vector<CreatureItem> *GetVendorList(uint32 entry);
-        void SetVendorList(uint32 Entry, std::vector<CreatureItem>* list_);
-
         Pet* CreatePet(uint32 entry);
 
         uint32 GenerateArenaTeamId();
@@ -400,13 +418,6 @@ public:
 
         void AddPlayer(Player* p); //add it to global storage
         void RemovePlayer(Player* p);
-
-        void LoadVendors();
-        void ReloadVendors();
-
-        void LoadReputationModifierTable(const char* tablename, ReputationModMap* dmap);
-        void LoadReputationModifiers();
-        ReputationModifier* GetReputationModifier(uint32 entry_id, uint32 faction_id);
 
         void SetHighestGuids();
         uint32 GenerateLowGuid(uint32 guidhigh);
@@ -428,9 +439,6 @@ public:
 
         uint32 GenerateCreatureSpawnID();
         uint32 GenerateGameObjectSpawnID();
-
-        bool HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim);
-        void LoadInstanceReputationModifiers();
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Event Scripts
@@ -480,20 +488,9 @@ public:
         std::atomic<unsigned long> m_voidItemId;
 #endif
 
-        ReputationModMap m_reputation_faction;
-        ReputationModMap m_reputation_creature;
-        std::unordered_map<uint32, InstanceReputationModifier*> m_reputation_instance;
-
-        std::set<uint32> m_disabled_spells;
-
-        std::unordered_map<uint32, TimedEmoteList*> m_timedemotes;       /// stored by spawnid
-
         // Group List
         std::mutex m_groupLock;
         GroupMap m_groups;
-
-        /// Map of all vendor goods
-        VendorMap mVendors;
 
         LevelInfoMap mLevelInfo;
         PetSpellCooldownMap mPetSpellCooldowns;

@@ -933,15 +933,15 @@ void World::loadMySQLTablesByTask()
     sMySQLStore.loadCreatureGroupSpawns();
 
     sObjectMgr.loadInstanceEncounters();
-    sObjectMgr.LoadCreatureTimedEmotes();
-    sObjectMgr.LoadVendors();
+    sObjectMgr.loadCreatureTimedEmotes();
+    sObjectMgr.loadVendors();
     sObjectMgr.loadTrainerSpellSets();
     sObjectMgr.loadTrainers();
     sObjectMgr.LoadPetSpellCooldowns();
     sObjectMgr.loadCharters();
     sTicketMgr.loadGMTickets();
     sObjectMgr.SetHighestGuids();
-    sObjectMgr.LoadReputationModifiers();
+    sObjectMgr.loadReputationModifiers();
     sObjectMgr.LoadGroups();
     sObjectMgr.loadGroupInstances();
     sObjectMgr.loadArenaTeams();

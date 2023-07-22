@@ -681,7 +681,7 @@ protected:
 protected:
     bool canEnterCombat;
 
-    std::list<spawn_timed_emotes*>::iterator next_timed_emote;
+    std::list<SpawnTimedEmotes*>::iterator next_timed_emote;
     uint32_t timed_emote_expire;
 
     bool m_cannotReachTarget;

@@ -217,7 +217,7 @@ namespace luaGlobalFunctions
         }
         else if (!stricmp(TableName, "vendors"))
         {
-            sObjectMgr.ReloadVendors();
+            sObjectMgr.loadVendors();
         }
         else
         {

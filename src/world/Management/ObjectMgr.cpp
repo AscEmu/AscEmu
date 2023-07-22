@@ -79,16 +79,12 @@ void ObjectMgr::finalize()
     unloadCorpseCollector();
 
     sLogger.info("ObjectMgr : Deleting Vendors...");
-    for (VendorMap::iterator i = mVendors.begin(); i != mVendors.end(); ++i)
-    {
-        delete i->second;
-    }
+    for (auto& vendor : m_vendors)
+        delete vendor.second;
 
     sLogger.info("ObjectMgr : Deleting TrainserSpellSets...");
-    for (auto i = m_trainerSpellSet.begin(); i != m_trainerSpellSet.end(); ++i)
-    {
-        delete i->second;
-    }
+    for (auto& trainerSpellSet : m_trainerSpellSet)
+        delete trainerSpellSet.second;
 
     sLogger.info("ObjectMgr : Deleting Trainers UIMessages...");
     for (auto trainerPair : m_trainers)
@@ -113,7 +109,7 @@ void ObjectMgr::finalize()
     }
 
     sLogger.info("ObjectMgr : Deleting timed emote Cache...");
-    for (std::unordered_map<uint32, TimedEmoteList*>::iterator i = m_timedemotes.begin(); i != m_timedemotes.end(); ++i)
+    for (std::unordered_map<uint32, TimedEmoteList*>::iterator i = m_timedEmotes.begin(); i != m_timedEmotes.end(); ++i)
     {
         for (TimedEmoteList::iterator i2 = i->second->begin(); i2 != i->second->end(); ++i2)
             if ((*i2))
@@ -129,26 +125,10 @@ void ObjectMgr::finalize()
     for (auto& charter : m_charters)
         charter.clear();
 
-    sLogger.info("ObjectMgr : Deleting Reputation Tables...");
-    for (ReputationModMap::iterator itr = m_reputation_creature.begin(); itr != m_reputation_creature.end(); ++itr)
-    {
-        ReputationModifier* mod = itr->second;
-        mod->mods.clear();
-        delete mod;
-    }
-    for (ReputationModMap::iterator itr = m_reputation_faction.begin(); itr != m_reputation_faction.end(); ++itr)
-    {
-        ReputationModifier* mod = itr->second;
-        mod->mods.clear();
-        delete mod;
-    }
-
-    for (std::unordered_map<uint32, InstanceReputationModifier*>::iterator itr = this->m_reputation_instance.begin(); itr != this->m_reputation_instance.end(); ++itr)
-    {
-        InstanceReputationModifier* mod = itr->second;
-        mod->mods.clear();
-        delete mod;
-    }
+    sLogger.info("ObjectMgr : Clearing Reputation Tables...");
+    m_reputationFaction.clear();
+    m_reputationCreature.clear();
+    m_reputationInstance.clear();
 
     sLogger.info("ObjectMgr : Deleting Groups...");
     for (GroupMap::iterator itr = m_groups.begin(); itr != m_groups.end();)
@@ -678,6 +658,84 @@ void ObjectMgr::delinkCorpseForPlayer(const Player* _player)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// Vendors
+void ObjectMgr::loadVendors()
+{
+    m_vendors.clear();
+
+    QueryResult* result = sMySQLStore.getWorldDBQuery("SELECT * FROM vendors");
+    if (result != nullptr)
+    {
+        std::unordered_map<uint32, std::vector<CreatureItem>*>::const_iterator itr;
+        std::vector<CreatureItem>* items;
+
+        if (result->GetFieldCount() < 6 + 1)
+        {
+            sLogger.failure("Invalid format in vendors (%u/6) columns, not enough data to proceed.", result->GetFieldCount());
+            delete result;
+            return;
+        }
+        else if (result->GetFieldCount() > 6 + 1)
+        {
+            sLogger.failure("Invalid format in vendors (%u/6) columns, loading anyway because we have enough data", result->GetFieldCount());
+        }
+
+#if VERSION_STRING < Cata
+        DBC::Structures::ItemExtendedCostEntry const* item_extended_cost = nullptr;
+#else
+        DB2::Structures::ItemExtendedCostEntry const* item_extended_cost = nullptr;
+#endif
+        do
+        {
+            Field* fields = result->Fetch();
+
+            itr = m_vendors.find(fields[0].GetUInt32());
+
+            if (itr == m_vendors.end())
+            {
+                items = new std::vector < CreatureItem >;
+                m_vendors[fields[0].GetUInt32()] = items;
+            }
+            else
+            {
+                items = itr->second;
+            }
+
+            CreatureItem itm;
+            itm.itemid = fields[1].GetUInt32();
+            itm.amount = fields[2].GetUInt32();
+            itm.available_amount = fields[3].GetUInt32();
+            itm.max_amount = fields[3].GetUInt32();
+            itm.incrtime = fields[4].GetUInt32();
+            if (fields[5].GetUInt32() > 0)
+            {
+                item_extended_cost = sItemExtendedCostStore.LookupEntry(fields[5].GetUInt32());
+                if (item_extended_cost == nullptr)
+                    sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "LoadVendors : Extendedcost for item %u references nonexistent EC %u", fields[1].GetUInt32(), fields[5].GetUInt32());
+            }
+            else
+                item_extended_cost = nullptr;
+
+            itm.extended_cost = item_extended_cost;
+            items->push_back(itm);
+        } while (result->NextRow());
+
+        delete result;
+    }
+    sLogger.info("ObjectMgr : %u vendors loaded.", static_cast<uint32_t>(m_vendors.size()));
+}
+
+std::vector<CreatureItem>* ObjectMgr::getVendorList(uint32_t _entry)
+{
+    return m_vendors[_entry];
+}
+
+void ObjectMgr::setVendorList(uint32_t _entry, std::vector<CreatureItem>* _list)
+{
+    m_vendors[_entry] = _list;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Achievement
 #if VERSION_STRING > TBC
 void ObjectMgr::loadAchievementCriteriaList()
@@ -857,6 +915,143 @@ std::set<uint32_t> ObjectMgr::getAllCompleteAchievements()
     return m_allCompletedAchievements;
 }
 #endif
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Reputation Mods
+void ObjectMgr::loadReputationModifiers()
+{
+    loadReputationModifierTable("reputation_creature_onkill", m_reputationCreature);
+    loadReputationModifierTable("reputation_faction_onkill", m_reputationFaction);
+    loadInstanceReputationModifiers();
+}
+
+void ObjectMgr::loadReputationModifierTable(const char* _tableName, ReputationModMap& _reputationModMap)
+{
+    QueryResult* result = WorldDatabase.Query("SELECT * FROM %s", _tableName);
+    if (result)
+    {
+        do
+        {
+            auto reputationMod = std::make_shared<ReputationMod>();
+            reputationMod->faction[TEAM_ALLIANCE] = result->Fetch()[1].GetUInt32();
+            reputationMod->faction[TEAM_HORDE] = result->Fetch()[2].GetUInt32();
+            reputationMod->value = result->Fetch()[3].GetInt32();
+            reputationMod->replimit = result->Fetch()[4].GetUInt32();
+
+            auto itr = _reputationModMap.find(result->Fetch()[0].GetUInt32());
+            if (itr == _reputationModMap.end())
+            {
+                auto modifier = std::make_shared<ReputationModifier>();
+                modifier->entry = result->Fetch()[0].GetUInt32();
+
+                modifier->mods.push_back(reputationMod);
+
+                _reputationModMap.insert(std::pair(result->Fetch()[0].GetUInt32(), modifier));
+            }
+            else
+            {
+                itr->second->mods.push_back(reputationMod);
+            }
+
+        } while (result->NextRow());
+        delete result;
+    }
+    sLogger.info("ObjectMgr : %u reputation modifiers on %s.", static_cast<uint32_t>(_reputationModMap.size()), _tableName);
+}
+
+void ObjectMgr::loadInstanceReputationModifiers()
+{
+    QueryResult* result = WorldDatabase.Query("SELECT * FROM reputation_instance_onkill");
+    if (!result)
+        return;
+    do
+    {
+        Field* field = result->Fetch();
+
+        auto reputationMod = std::make_shared<InstanceReputationMod>();
+        reputationMod->mapid = field[0].GetUInt32();
+        reputationMod->mob_rep_reward = field[1].GetInt32();
+        reputationMod->mob_rep_limit = field[2].GetUInt32();
+        reputationMod->boss_rep_reward = field[3].GetInt32();
+        reputationMod->boss_rep_limit = field[4].GetUInt32();
+        reputationMod->faction[TEAM_ALLIANCE] = field[5].GetUInt32();
+        reputationMod->faction[TEAM_HORDE] = field[6].GetUInt32();
+
+        auto itr = m_reputationInstance.find(reputationMod->mapid);
+        if (itr == m_reputationInstance.end())
+        {
+            auto modifier = std::make_shared<InstanceReputationModifier>();
+            modifier->mapid = reputationMod->mapid;
+            modifier->mods.push_back(reputationMod);
+            m_reputationInstance.insert(std::make_pair(modifier->mapid, modifier));
+        }
+        else
+        {
+            itr->second->mods.push_back(reputationMod);
+        }
+
+    } while (result->NextRow());
+    delete result;
+
+    sLogger.info("ObjectMgr : %u instance reputation modifiers loaded.", static_cast<uint32_t>(m_reputationInstance.size()));
+}
+
+std::shared_ptr<ReputationModifier> ObjectMgr::getReputationModifier(uint32_t _entry, uint32_t _factionId)
+{
+    auto reputationPair = m_reputationCreature.find(_entry);
+    if (reputationPair != m_reputationCreature.end())
+        return reputationPair->second;
+
+    reputationPair = m_reputationFaction.find(_factionId);
+    if (reputationPair != m_reputationFaction.end())
+        return reputationPair->second;
+
+    return nullptr;
+}
+
+bool ObjectMgr::handleInstanceReputationModifiers(Player* _player, Unit* _unitVictim)
+{
+    const uint32_t team = _player->getTeam();
+
+    if (!_unitVictim->isCreature())
+        return false;
+
+    const auto itr = m_reputationInstance.find(_unitVictim->GetMapId());
+    if (itr == m_reputationInstance.end())
+        return false;
+
+    bool isBoss = false;
+    if (dynamic_cast<Creature*>(_unitVictim)->GetCreatureProperties()->isBoss)
+        isBoss = true;
+
+    int32_t repLimit;
+    int32_t value;
+
+    for (const auto& instanceRepMod : itr->second->mods)
+    {
+        if (!instanceRepMod->faction[team])
+            continue;
+
+        if (isBoss)
+        {
+            value = instanceRepMod->boss_rep_reward;
+            repLimit = instanceRepMod->boss_rep_limit;
+        }
+        else
+        {
+            value = instanceRepMod->mob_rep_reward;
+            repLimit = instanceRepMod->mob_rep_limit;
+        }
+
+        if (!value || (repLimit && _player->getFactionStanding(instanceRepMod->faction[team]) >= repLimit))
+            continue;
+
+        value = float2int32(value * worldConfig.getFloatRate(RATE_KILLREPUTATION));
+        _player->modFactionStanding(instanceRepMod->faction[team], value);
+    }
+
+    return true;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Misc
@@ -1221,57 +1416,57 @@ void ObjectMgr::loadCreatureDisplayInfo()
     }
 }
 
-CreatureDisplayInfoData const* ObjectMgr::getCreatureDisplayInfoData(uint32_t displayId) const
+CreatureDisplayInfoData const* ObjectMgr::getCreatureDisplayInfoData(uint32_t _displayId) const
 {
-    const auto itr = m_creatureDisplayInfoData.find(displayId);
+    const auto itr = m_creatureDisplayInfoData.find(_displayId);
     if (itr == m_creatureDisplayInfoData.cend())
         return nullptr;
 
     return &itr->second;
 }
 
-Player* ObjectMgr::createPlayerByGuid(uint8_t _class, uint32_t guid)
+Player* ObjectMgr::createPlayerByGuid(uint8_t _class, uint32_t _guid)
 {
     Player* player;
 
     switch (_class)
     {
         case WARRIOR:
-            player = new Warrior(guid);
+            player = new Warrior(_guid);
             break;
         case PALADIN:
-            player = new Paladin(guid);
+            player = new Paladin(_guid);
             break;
         case HUNTER:
-            player = new Hunter(guid);
+            player = new Hunter(_guid);
             break;
         case ROGUE:
-            player = new Rogue(guid);
+            player = new Rogue(_guid);
             break;
         case PRIEST:
-            player = new Priest(guid);
+            player = new Priest(_guid);
             break;
 #if VERSION_STRING > TBC
         case DEATHKNIGHT:
-            player = new DeathKnight(guid);
+            player = new DeathKnight(_guid);
             break;
 #endif
         case SHAMAN:
-            player = new Shaman(guid);
+            player = new Shaman(_guid);
             break;
         case MAGE:
-            player = new Mage(guid);
+            player = new Mage(_guid);
             break;
         case WARLOCK:
-            player = new Warlock(guid);
+            player = new Warlock(_guid);
             break;
 #if VERSION_STRING > Cata
         case MONK:
-            player = new Monk(guid);
+            player = new Monk(_guid);
             break;
 #endif
         case DRUID:
-            player = new Druid(guid);
+            player = new Druid(_guid);
             break;
         default:
             player = nullptr;
@@ -1281,15 +1476,15 @@ Player* ObjectMgr::createPlayerByGuid(uint8_t _class, uint32_t guid)
     return player;
 }
 
-GameObject* ObjectMgr::createGameObjectByGuid(uint32_t id, uint32_t guid)
+GameObject* ObjectMgr::createGameObjectByGuid(uint32_t _id, uint32_t _guid)
 {
-    GameObjectProperties const* gameobjectProperties = sMySQLStore.getGameObjectProperties(id);
+    GameObjectProperties const* gameobjectProperties = sMySQLStore.getGameObjectProperties(_id);
     if (gameobjectProperties == nullptr)
         return nullptr;
 
     GameObject* gameObject;
 
-    const uint64_t createdGuid = uint64_t((uint64_t(HIGHGUID_TYPE_GAMEOBJECT) << 32) | guid);
+    const uint64_t createdGuid = uint64_t((uint64_t(HIGHGUID_TYPE_GAMEOBJECT) << 32) | _guid);
 
     switch (gameobjectProperties->type)
     {
@@ -1592,12 +1787,66 @@ void ObjectMgr::loadWorldStateTemplates()
     delete result;
 }
 
-std::multimap<uint32, WorldState>* ObjectMgr::getWorldStatesForMap(uint32 map) const
+std::multimap<uint32, WorldState>* ObjectMgr::getWorldStatesForMap(uint32 _map) const
 {
-    const auto itr = m_worldstateTemplates.find(map);
+    const auto itr = m_worldstateTemplates.find(_map);
     if (itr == m_worldstateTemplates.end())
         return nullptr;
     return itr->second;
+}
+
+void ObjectMgr::loadCreatureTimedEmotes()
+{
+    QueryResult* result = WorldDatabase.Query("SELECT * FROM creature_timed_emotes order by rowid asc");
+    if (!result)return;
+
+    do
+    {
+        Field* field = result->Fetch();
+        auto* timedEmotes = new SpawnTimedEmotes;
+        timedEmotes->type = field[2].GetUInt8();
+        timedEmotes->value = field[3].GetUInt32();
+        char* str = (char*)field[4].GetString();
+        if (str)
+        {
+            uint32_t length = static_cast<uint32_t>(strlen(str));
+            timedEmotes->msg = new char[length + 1];
+            memcpy(timedEmotes->msg, str, length + 1);
+        }
+        else
+        {
+            timedEmotes->msg = nullptr;
+        }
+
+        timedEmotes->msg_type = field[5].GetUInt8();
+        timedEmotes->msg_lang = field[6].GetUInt8();
+        timedEmotes->expire_after = field[7].GetUInt32();
+
+        uint32_t spawnid = field[0].GetUInt32();
+        auto timedEmotePair = m_timedEmotes.find(spawnid);
+        if (timedEmotePair == m_timedEmotes.end())
+        {
+            TimedEmoteList* emoteList = new TimedEmoteList;
+            emoteList->push_back(timedEmotes);
+            m_timedEmotes[spawnid] = emoteList;
+        }
+        else
+        {
+            timedEmotePair->second->push_back(timedEmotes);
+        }
+    } while (result->NextRow());
+
+    sLogger.info("ObjectMgr : %u timed emotes cached.", result->GetRowCount());
+    delete result;
+}
+
+TimedEmoteList* ObjectMgr::getTimedEmoteList(uint32_t _spawnId)
+{
+    auto timedEmotesPair = m_timedEmotes.find(_spawnId);
+    if (timedEmotesPair != m_timedEmotes.end())
+        return timedEmotesPair->second;
+
+     return nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1809,82 +2058,6 @@ Player* ObjectMgr::GetPlayer(uint32 guid)
 
     PlayerStorageMap::const_iterator itr = _players.find(guid);
     return (itr != _players.end()) ? itr->second : nullptr;
-}
-
-void ObjectMgr::LoadVendors()
-{
-    QueryResult* result = sMySQLStore.getWorldDBQuery("SELECT * FROM vendors");
-    if (result != nullptr)
-    {
-        std::unordered_map<uint32, std::vector<CreatureItem>*>::const_iterator itr;
-        std::vector<CreatureItem> *items;
-
-        if (result->GetFieldCount() < 6 + 1)
-        {
-            sLogger.failure("Invalid format in vendors (%u/6) columns, not enough data to proceed.", result->GetFieldCount());
-            delete result;
-            return;
-        }
-        else if (result->GetFieldCount() > 6 + 1)
-        {
-            sLogger.failure("Invalid format in vendors (%u/6) columns, loading anyway because we have enough data", result->GetFieldCount());
-        }
-
-#if VERSION_STRING < Cata
-        DBC::Structures::ItemExtendedCostEntry const* item_extended_cost = nullptr;
-#else
-        DB2::Structures::ItemExtendedCostEntry const* item_extended_cost = nullptr;
-#endif
-        do
-        {
-            Field* fields = result->Fetch();
-
-            itr = mVendors.find(fields[0].GetUInt32());
-
-            if (itr == mVendors.end())
-            {
-                items = new std::vector < CreatureItem > ;
-                mVendors[fields[0].GetUInt32()] = items;
-            }
-            else
-            {
-                items = itr->second;
-            }
-
-            CreatureItem itm;
-            itm.itemid = fields[1].GetUInt32();
-            itm.amount = fields[2].GetUInt32();
-            itm.available_amount = fields[3].GetUInt32();
-            itm.max_amount = fields[3].GetUInt32();
-            itm.incrtime = fields[4].GetUInt32();
-            if (fields[5].GetUInt32() > 0)
-            {
-                item_extended_cost = sItemExtendedCostStore.LookupEntry(fields[5].GetUInt32());
-                if (item_extended_cost == nullptr)
-                    sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "LoadVendors : Extendedcost for item %u references nonexistent EC %u", fields[1].GetUInt32(), fields[5].GetUInt32());
-            }
-            else
-                item_extended_cost = nullptr;
-
-            itm.extended_cost = item_extended_cost;
-            items->push_back(itm);
-        }
-        while (result->NextRow());
-
-        delete result;
-    }
-    sLogger.info("ObjectMgr : %u vendors loaded.", static_cast<uint32_t>(mVendors.size()));
-}
-
-void ObjectMgr::ReloadVendors()
-{
-    mVendors.clear();
-    LoadVendors();
-}
-
-std::vector<CreatureItem>* ObjectMgr::GetVendorList(uint32 entry)
-{
-    return mVendors[entry];
 }
 
 Item* ObjectMgr::CreateItem(uint32 entry, Player* owner)
@@ -2219,66 +2392,6 @@ uint32 ObjectMgr::GetPetSpellCooldown(uint32 SpellId)
         return sp->getCategoryRecoveryTime();
 }
 
-void ObjectMgr::SetVendorList(uint32 Entry, std::vector<CreatureItem>* list_)
-{
-    mVendors[Entry] = list_;
-}
-
-void ObjectMgr::LoadCreatureTimedEmotes()
-{
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM creature_timed_emotes order by rowid asc");
-    if (!result)return;
-
-    do
-    {
-        Field* fields = result->Fetch();
-        spawn_timed_emotes* te = new spawn_timed_emotes;
-        te->type = fields[2].GetUInt8();
-        te->value = fields[3].GetUInt32();
-        char* str = (char*)fields[4].GetString();
-        if (str)
-        {
-            uint32 len = (int)strlen(str);
-            te->msg = new char[len + 1];
-            memcpy(te->msg, str, len + 1);
-        }
-        else te->msg = nullptr;
-        te->msg_type = static_cast<uint8>(fields[5].GetUInt32());
-        te->msg_lang = static_cast<uint8>(fields[6].GetUInt32());
-        te->expire_after = fields[7].GetUInt32();
-
-        std::unordered_map<uint32, TimedEmoteList*>::const_iterator i;
-        uint32 spawnid = fields[0].GetUInt32();
-        i = m_timedemotes.find(spawnid);
-        if (i == m_timedemotes.end())
-        {
-            TimedEmoteList* m = new TimedEmoteList;
-            m->push_back(te);
-            m_timedemotes[spawnid] = m;
-        }
-        else
-        {
-            i->second->push_back(te);
-        }
-    }
-    while (result->NextRow());
-
-    sLogger.info("ObjectMgr : %u timed emotes cached.", result->GetRowCount());
-    delete result;
-}
-
-TimedEmoteList* ObjectMgr::GetTimedEmoteList(uint32 spawnid)
-{
-    std::unordered_map<uint32, TimedEmoteList*>::const_iterator i;
-    i = m_timedemotes.find(spawnid);
-    if (i != m_timedemotes.end())
-    {
-        TimedEmoteList* m = i->second;
-        return m;
-    }
-    else return nullptr;
-}
-
 Pet* ObjectMgr::CreatePet(uint32 entry)
 {
     uint32 guid;
@@ -2305,143 +2418,6 @@ void ObjectMgr::RemovePlayer(Player* p)
     std::lock_guard<std::mutex> guard(_playerslock);
 
     _players.erase(p->getGuidLow());
-}
-
-void ObjectMgr::LoadReputationModifierTable(const char* tablename, ReputationModMap* dmap)
-{
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM %s", tablename);
-
-    if (result)
-    {
-        do
-        {
-            ReputationMod mod;
-            mod.faction[TEAM_ALLIANCE] = result->Fetch()[1].GetUInt32();
-            mod.faction[TEAM_HORDE] = result->Fetch()[2].GetUInt32();
-            mod.value = result->Fetch()[3].GetInt32();
-            mod.replimit = result->Fetch()[4].GetUInt32();
-
-            ReputationModMap::iterator itr = dmap->find(result->Fetch()[0].GetUInt32());
-            if (itr == dmap->end())
-            {
-                ReputationModifier* modifier = new ReputationModifier;
-                modifier->entry = result->Fetch()[0].GetUInt32();
-                modifier->mods.push_back(mod);
-                dmap->insert(ReputationModMap::value_type(result->Fetch()[0].GetUInt32(), modifier));
-            }
-            else
-            {
-                itr->second->mods.push_back(mod);
-            }
-        }
-        while (result->NextRow());
-        delete result;
-    }
-    sLogger.info("ObjectMgr : %u reputation modifiers on %s.", static_cast<uint32_t>(dmap->size()), tablename);
-}
-
-void ObjectMgr::LoadReputationModifiers()
-{
-    LoadReputationModifierTable("reputation_creature_onkill", &m_reputation_creature);
-    LoadReputationModifierTable("reputation_faction_onkill", &m_reputation_faction);
-    LoadInstanceReputationModifiers();
-}
-
-ReputationModifier* ObjectMgr::GetReputationModifier(uint32 entry_id, uint32 faction_id)
-{
-    // first, try fetching from the creature table (by faction is a fallback)
-    ReputationModMap::iterator itr = m_reputation_creature.find(entry_id);
-    if (itr != m_reputation_creature.end())
-        return itr->second;
-
-    // fetch from the faction table
-    itr = m_reputation_faction.find(faction_id);
-    if (itr != m_reputation_faction.end())
-        return itr->second;
-
-    // no data. fallback to default -5 value.
-    return nullptr;
-}
-
-void ObjectMgr::LoadInstanceReputationModifiers()
-{
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM reputation_instance_onkill");
-    if (!result)
-        return;
-    do
-    {
-        Field* fields = result->Fetch();
-        InstanceReputationMod mod;
-        mod.mapid = fields[0].GetUInt32();
-        mod.mob_rep_reward = fields[1].GetInt32();
-        mod.mob_rep_limit = fields[2].GetUInt32();
-        mod.boss_rep_reward = fields[3].GetInt32();
-        mod.boss_rep_limit = fields[4].GetUInt32();
-        mod.faction[TEAM_ALLIANCE] = fields[5].GetUInt32();
-        mod.faction[TEAM_HORDE] = fields[6].GetUInt32();
-
-        std::unordered_map<uint32, InstanceReputationModifier*>::iterator itr = m_reputation_instance.find(mod.mapid);
-        if (itr == m_reputation_instance.end())
-        {
-            InstanceReputationModifier* m = new InstanceReputationModifier;
-            m->mapid = mod.mapid;
-            m->mods.push_back(mod);
-            m_reputation_instance.insert(std::make_pair(m->mapid, m));
-        }
-        else
-            itr->second->mods.push_back(mod);
-
-    }
-    while (result->NextRow());
-    delete result;
-
-    sLogger.info("ObjectMgr : %u instance reputation modifiers loaded.", static_cast<uint32_t>(m_reputation_instance.size()));
-}
-
-bool ObjectMgr::HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim)
-{
-    uint32 team = pPlayer->getTeam();
-
-    if (!pVictim->isCreature())
-        return false;
-
-    std::unordered_map<uint32, InstanceReputationModifier*>::iterator itr = m_reputation_instance.find(pVictim->GetMapId());
-    if (itr == m_reputation_instance.end())
-        return false;
-
-    bool is_boss = false;
-    if (static_cast< Creature* >(pVictim)->GetCreatureProperties()->isBoss)
-        is_boss = true;
-
-    // Apply the bonuses as normal.
-    int32 replimit;
-    int32 value;
-
-    for (std::vector<InstanceReputationMod>::iterator i = itr->second->mods.begin(); i != itr->second->mods.end(); ++i)
-    {
-        if (!(*i).faction[team])
-            continue;
-
-        if (is_boss)
-        {
-            value = i->boss_rep_reward;
-            replimit = i->boss_rep_limit;
-        }
-        else
-        {
-            value = i->mob_rep_reward;
-            replimit = i->mob_rep_limit;
-        }
-
-        if (!value || (replimit && pPlayer->getFactionStanding(i->faction[team]) >= replimit))
-            continue;
-
-        //value *= sWorld.getRate(RATE_KILLREPUTATION);
-        value = float2int32(value * worldConfig.getFloatRate(RATE_KILLREPUTATION));
-        pPlayer->modFactionStanding(i->faction[team], value);
-    }
-
-    return true;
 }
 
 void ObjectMgr::LoadGroups()

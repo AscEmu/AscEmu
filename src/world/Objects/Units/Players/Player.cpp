@@ -11567,25 +11567,25 @@ void Player::onKillUnitReputation(Unit* unit, bool innerLoop)
     }
 
     const uint32_t team = getTeam();
-    ReputationModifier* modifier = sObjectMgr.GetReputationModifier(unit->getEntry(), unit->m_factionEntry->ID);
+    auto modifier = sObjectMgr.getReputationModifier(unit->getEntry(), unit->m_factionEntry->ID);
     if (modifier != nullptr)
     {
         for (auto& mod : modifier->mods)
         {
-            if (!mod.faction[team])
+            if (!mod->faction[team])
                 continue;
 
             if (!IS_INSTANCE(GetMapId()) || (IS_INSTANCE(GetMapId()) && this->m_dungeonDifficulty != InstanceDifficulty::DUNGEON_HEROIC))
-                if (mod.replimit)
-                    if (getFactionStanding(mod.faction[team]) >= static_cast<int32_t>(mod.replimit))
+                if (mod->replimit)
+                    if (getFactionStanding(mod->faction[team]) >= static_cast<int32_t>(mod->replimit))
                         continue;
 
-            modFactionStanding(mod.faction[team], float2int32(mod.value * worldConfig.getFloatRate(RATE_KILLREPUTATION)));
+            modFactionStanding(mod->faction[team], float2int32(mod->value * worldConfig.getFloatRate(RATE_KILLREPUTATION)));
         }
     }
     else
     {
-        if (IS_INSTANCE(GetMapId()) && sObjectMgr.HandleInstanceReputationModifiers(this, unit))
+        if (IS_INSTANCE(GetMapId()) && sObjectMgr.handleInstanceReputationModifiers(this, unit))
             return;
 
         if (unit->m_factionEntry->RepListId < 0)

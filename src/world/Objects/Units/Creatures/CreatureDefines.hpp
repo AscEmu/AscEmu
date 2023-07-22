@@ -145,16 +145,16 @@ enum VendorRestrictionFlag
     RESTRICTION_CHECK_MOUNT_VENDOR  = 0x01      /// this one check for race, if race dont match checks for reputation
 };
 
-struct spawn_timed_emotes
+struct SpawnTimedEmotes
 {
-    uint8 type;             //1 standstate, 2 emotestate, 3 emoteoneshot
-    uint32 value;           //get yar list elsewhere
-    char* msg;              //maybe we wish to say smething while changing emote state
-    uint8 msg_type;         //yell ? say ?
-    uint8 msg_lang;         //yell ? say ?
-    uint32 expire_after;    //going to nex faze in
+    uint8_t type;             // 1 standstate, 2 emotestate, 3 emoteoneshot
+    uint32_t value;           // get yar list elsewhere
+    char* msg;                // maybe we wish to say something while changing emote state
+    uint8_t msg_type;         // yell ? say ?
+    uint8_t msg_lang;         // yell ? say ?
+    uint32_t expire_after;    // going to nex faze in
 };
-typedef std::list<spawn_timed_emotes*> TimedEmoteList;
+typedef std::list<SpawnTimedEmotes*> TimedEmoteList;
 
 
 enum MONSTER_SAY_EVENTS

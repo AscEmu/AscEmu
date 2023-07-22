@@ -1381,7 +1381,7 @@ void Creature::AddVendorItem(uint32 itemid, uint32 amount, DB2::Structures::Item
     if (!m_SellItems)
     {
         m_SellItems = new std::vector < CreatureItem > ;
-        sObjectMgr.SetVendorList(getEntry(), m_SellItems);
+        sObjectMgr.setVendorList(getEntry(), m_SellItems);
     }
     m_SellItems->push_back(ci);
 }
@@ -1575,7 +1575,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     // set position
     m_position.ChangeCoords({ spawn->x, spawn->y, spawn->z, spawn->o });
     m_spawnLocation.ChangeCoords({ spawn->x, spawn->y, spawn->z, spawn->o });
-    m_aiInterface->timed_emotes = sObjectMgr.GetTimedEmoteList(spawn->id);
+    m_aiInterface->timed_emotes = sObjectMgr.getTimedEmoteList(spawn->id);
 
     // not a neutral creature
     if (!(m_factionEntry != nullptr && m_factionEntry->RepListId == -1 && m_factionTemplate->HostileMask == 0 && m_factionTemplate->FriendlyMask == 0))
@@ -1604,7 +1604,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     setNpcFlags(creature_properties->NPCFLags);
 
     if (isVendor())
-        m_SellItems = sObjectMgr.GetVendorList(getEntry());
+        m_SellItems = sObjectMgr.getVendorList(getEntry());
 
     if (isQuestGiver())
         _LoadQuests();
@@ -1839,7 +1839,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     setNpcFlags(creature_properties->NPCFLags);
 
     if (isVendor())
-        m_SellItems = sObjectMgr.GetVendorList(getEntry());
+        m_SellItems = sObjectMgr.getVendorList(getEntry());
 
     if (isQuestGiver())
         _LoadQuests();
