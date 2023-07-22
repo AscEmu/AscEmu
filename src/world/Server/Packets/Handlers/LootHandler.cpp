@@ -255,16 +255,16 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
     }
     else
     {
-        if (Group* party = _player->getGroup())
+        if (const auto group = _player->getGroup())
         {
             std::vector<Player*> groupMembers;
 
-            groupMembers.reserve(party->MemberCount());
+            groupMembers.reserve(group->MemberCount());
 
-            party->getLock().Acquire();
-            for (uint32_t i = 0; i < party->GetSubGroupCount(); i++)
+            group->getLock().Acquire();
+            for (uint32_t i = 0; i < group->GetSubGroupCount(); i++)
             {
-                auto subGroup = party->GetSubGroup(i);
+                auto subGroup = group->GetSubGroup(i);
                 for (auto groupMemberPlayerInfo : subGroup->getGroupMembers())
                 {
                     if (Player* loggedInPlayer = sObjectMgr.GetPlayer(groupMemberPlayerInfo->guid))
@@ -272,7 +272,7 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
                             groupMembers.push_back(loggedInPlayer);
                 }
             }
-            party->getLock().Release();
+            group->getLock().Release();
 
             if (groupMembers.empty())
                 return;

@@ -22,13 +22,13 @@ namespace AscEmu::Packets
         uint64_t playerGuid;
         uint8_t icon;
         uint64_t guid;
-        Group* group;
+        std::shared_ptr<Group> group;
 
         MsgRaidTargetUpdate() : MsgRaidTargetUpdate(0, 0, 0, 0, nullptr)
         {
         }
 
-        MsgRaidTargetUpdate(uint8_t option, uint64_t playerGuid, uint8_t icon, uint64_t guid, Group* group) :
+        MsgRaidTargetUpdate(uint8_t option, uint64_t playerGuid, uint8_t icon, uint64_t guid, std::shared_ptr<Group> group) :
             ManagedPacket(MSG_RAID_TARGET_UPDATE, 0),
             option(option),
             playerGuid(playerGuid),

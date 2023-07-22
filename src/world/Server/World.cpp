@@ -942,7 +942,7 @@ void World::loadMySQLTablesByTask()
     sTicketMgr.loadGMTickets();
     sObjectMgr.SetHighestGuids();
     sObjectMgr.loadReputationModifiers();
-    sObjectMgr.LoadGroups();
+    sObjectMgr.loadGroups();
     sObjectMgr.loadGroupInstances();
     sObjectMgr.loadArenaTeams();
 #ifdef FT_VEHICLES

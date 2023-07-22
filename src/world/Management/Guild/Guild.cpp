@@ -927,7 +927,7 @@ void Guild::handleDisband(WorldSession* session)
 void Guild::handleGuildPartyRequest(WorldSession* session)
 {
     Player* player = session->GetPlayer();
-    Group* group = player->getGroup();
+    auto group = player->getGroup();
 
     if (!isMember(player->getGuid()) || !group)
         return;

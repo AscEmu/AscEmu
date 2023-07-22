@@ -268,7 +268,7 @@ public:
         float GetHappinessDmgMod() { return 0.25f * static_cast<float>(GetHappinessState()) + 0.5f; };
         bool IsBeingDeleted() { return ScheduledForDeletion; }
 
-        Group* getGroup();
+        std::shared_ptr<Group> getGroup();
 
         void die(Unit* pAttacker, uint32 damage, uint32 spellid);
 

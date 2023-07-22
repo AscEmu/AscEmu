@@ -2124,7 +2124,7 @@ uint32 Pet::GetUntrainCost()
     return reset_cost;
 }
 
-Group* Pet::getGroup()
+std::shared_ptr<Group> Pet::getGroup()
 {
     if (m_Owner)
         return m_Owner->getGroup();

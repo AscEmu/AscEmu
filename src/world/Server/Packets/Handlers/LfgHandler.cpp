@@ -399,13 +399,13 @@ void WorldSession::sendLfgUpdateProposal(uint32_t proposalId, const LfgProposal*
     bool isSameDungeon = false;
     bool isContinue = false;
 
-    Group* grp = dLowGuid ? sObjectMgr.GetGroupById(dLowGuid) : nullptr;
+    const auto group = dLowGuid ? sObjectMgr.getGroupById(dLowGuid) : nullptr;
     uint32_t completedEncounters = 0;
-    if (grp)
+    if (group)
     {
-        uint64_t gguid = grp->GetGUID();
-        isContinue = grp->isLFGGroup() && sLfgMgr.GetState(gguid) != LFG_STATE_FINISHED_DUNGEON;
-        isSameDungeon = _player->getGroup() == grp && isContinue;
+        uint64_t gguid = group->GetGUID();
+        isContinue = group->isLFGGroup() && sLfgMgr.GetState(gguid) != LFG_STATE_FINISHED_DUNGEON;
+        isSameDungeon = _player->getGroup() == group && isContinue;
     }
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_LFG_PROPOSAL_UPDATE %u state: %u", _player->getGuid(), pProp->state);
@@ -424,9 +424,9 @@ void WorldSession::sendLfgUpdateProposal(uint32_t proposalId, const LfgProposal*
         dungeonId = dungeon->Entry();
 
         // Select a player inside to be get completed encounters from
-        if (grp)
+        if (group)
         {
-            for (const auto cachedCharacterInfo : grp->GetSubGroup(0)->getGroupMembers())
+            for (const auto cachedCharacterInfo : group->GetSubGroup(0)->getGroupMembers())
             {
                 Player* groupMember = sObjectMgr.GetPlayer(cachedCharacterInfo->guid);
                 if (groupMember && groupMember->GetMapId() == uint32_t(dungeon->map))
@@ -537,13 +537,13 @@ void WorldSession::handleLfgJoinOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleLfgLeaveOpcode(WorldPacket& /*recvPacket*/)
 {
-    Group* grp = _player->getGroup();
+    const auto group = _player->getGroup();
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LFG_LEAVE %lld in group: %u", _player->getGuid(), grp ? 1 : 0);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LFG_LEAVE %lld in group: %u", _player->getGuid(), group ? 1 : 0);
 
     // Check cheating - only leader can leave the queue
-    if (!grp || grp->GetLeader()->guid == _player->getGuid())
-        sLfgMgr.Leave(_player, grp);
+    if (!group || group->GetLeader()->guid == _player->getGuid())
+        sLfgMgr.Leave(_player, group);
 }
 
 void WorldSession::handleLfgSearchOpcode(WorldPacket& recvPacket)
@@ -584,7 +584,7 @@ void WorldSession::handleLfgSetRolesOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (Group* grp = _player->getGroup())
+    if (auto grp = _player->getGroup())
     {
         sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LFG_SET_ROLES: Group %lld, Player %lld, Roles: %u",
             grp->GetGUID(), _player->getGuid(), srlPacket.roles);
@@ -702,7 +702,7 @@ void WorldSession::handleLfgPartyLockInfoRequestOpcode(WorldPacket& /*recvPacket
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LFD_PARTY_LOCK_INFO_REQUEST guid %lld", guid);
 
-    Group* grp = _player->getGroup();
+    auto grp = _player->getGroup();
     if (!grp)
         return;
 

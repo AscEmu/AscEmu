@@ -3046,20 +3046,18 @@ public:
     static int GetGroupPlayers(lua_State* L, Unit* ptr)
     {
         if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
-        {
             return 0;
-        }
 
         Player* _player = dynamic_cast<Player*>(ptr);
-        Group* party = _player->getGroup();
+        
         uint32_t count = 0;
         lua_newtable(L);
-        if (party)
+        if (const auto group = _player->getGroup())
         {
-            party->getLock().Acquire();
-            for (uint32_t i = 0; i < party->GetSubGroupCount(); i++)
+            group->getLock().Acquire();
+            for (uint32_t i = 0; i < group->GetSubGroupCount(); i++)
             {
-                SubGroup* sgrp = party->GetSubGroup(i);
+                SubGroup* sgrp = group->GetSubGroup(i);
                 for (const auto itr : sgrp->getGroupMembers())
                 {
                     if (Player* loggedInPlayer = sObjectMgr.GetPlayer(itr->guid))
@@ -3074,7 +3072,7 @@ public:
                     }
                 }
             }
-            party->getLock().Release();
+            group->getLock().Release();
         }
         return 1;
     }
@@ -4987,12 +4985,10 @@ public:
     static int GetGroupType(lua_State* L, Unit* ptr)
     {
         if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
-        {
             return 0;
-        }
 
         Player* plr = dynamic_cast<Player*>(ptr);
-        if (Group* group = plr->getGroup())
+        if (const auto group = plr->getGroup())
             lua_pushinteger(L, group->getGroupType());
         else
             lua_pushnil(L);

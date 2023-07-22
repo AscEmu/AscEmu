@@ -386,7 +386,7 @@ void BattlegroundManager::eventQueueUpdate()
     this->eventQueueUpdate(false);
 }
 
-uint32_t BattlegroundManager::getArenaGroupQInfo(Group* group, uint8_t type, uint32_t* averageRating)
+uint32_t BattlegroundManager::getArenaGroupQInfo(std::shared_ptr<Group> group, uint8_t type, uint32_t* averageRating)
 {
     uint32_t count = 0;
     uint32_t rating = 0;
@@ -422,7 +422,7 @@ uint32_t BattlegroundManager::getArenaGroupQInfo(Group* group, uint8_t type, uin
     return arenaTeam->m_id;
 }
 
-void BattlegroundManager::addGroupToArena(Battleground* battleground, Group* group, uint32_t team)
+void BattlegroundManager::addGroupToArena(Battleground* battleground, std::shared_ptr<Group> group, uint32_t team)
 {
     if (group == nullptr || group->GetLeader() == nullptr)
         return;
@@ -449,7 +449,7 @@ void BattlegroundManager::addGroupToArena(Battleground* battleground, Group* gro
     }
 }
 
-int BattlegroundManager::createArenaType(uint8_t type, Group* group1, Group* group2)
+int BattlegroundManager::createArenaType(uint8_t type, std::shared_ptr<Group> group1, std::shared_ptr<Group> group2)
 {
     const auto arena = dynamic_cast<Arena*>(createInstance(type, BattlegroundDef::LEVEL_GROUP_70));
     if (arena == nullptr)
@@ -789,7 +789,7 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
     }
 
     // Handle paired arena team joining
-    Group* group1, *group2;
+    std::shared_ptr<Group> group1, group2;
     uint32_t teamids[2] = { 0, 0 };
     uint32_t avgRating[2] = { 0, 0 };
     uint32_t n;
@@ -815,7 +815,7 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
                 return;
             }
 
-            group1 = sObjectMgr.GetGroupById(*itz);
+            group1 = sObjectMgr.getGroupById(*itz);
             if (group1 == nullptr)
                 continue;
 
@@ -833,7 +833,7 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
             std::list<uint32_t> possibleGroups;
             for (itz = m_queuedGroups[i].begin(); itz != m_queuedGroups[i].end(); ++itz)
             {
-                group2 = sObjectMgr.GetGroupById(*itz);
+                group2 = sObjectMgr.getGroupById(*itz);
                 if (group2)
                 {
                     teamids[1] = getArenaGroupQInfo(group2, i, &avgRating[1]);
@@ -858,7 +858,7 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
                     return;
                 }
 
-                group2 = sObjectMgr.GetGroupById(*itz);
+                group2 = sObjectMgr.getGroupById(*itz);
                 if (group2)
                 {
                     if (createArenaType(i, group1, group2) == -1) return;
@@ -904,14 +904,14 @@ void BattlegroundManager::removePlayerFromQueues(Player* player)
 
     sendBattlefieldStatus(player, BattlegroundDef::STATUS_NOFLAGS, 0, 0, 0, 0, 0);
 
-    if (Group* group = player->getGroup())
+    if (auto group = player->getGroup())
     {
         sLogger.debug("Player %u removed whilst in a group. Removing players group %u from queue", player->getGuidLow(), group->GetID());
         removeGroupFromQueues(group);
     }
 }
 
-void BattlegroundManager::removeGroupFromQueues(Group* group)
+void BattlegroundManager::removeGroupFromQueues(std::shared_ptr<Group> group)
 {
     std::lock_guard queueLock(m_queueLock);
     for (uint32_t i = BattlegroundDef::TYPE_ARENA_2V2; i < BattlegroundDef::TYPE_ARENA_5V5 + 1; ++i)
@@ -1168,15 +1168,15 @@ void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battle
     if (asGroup && session->GetPlayer()->getGroup() == nullptr)
         return;
 
-    Group* pGroup = session->GetPlayer()->getGroup();
+    const auto group = session->GetPlayer()->getGroup();
     if (asGroup)
     {
-        if (pGroup->GetSubGroupCount() != 1)
+        if (group->GetSubGroupCount() != 1)
         {
             session->SystemMessage(session->LocalizedWorldSrv(SS_SORRY_RAID_GROUPS_JOINING_BG_ARE_UNSUPPORTED));
             return;
         }
-        if (pGroup->GetLeader() != session->GetPlayer()->getPlayerInfo())
+        if (group->GetLeader() != session->GetPlayer()->getPlayerInfo())
         {
             session->SystemMessage(session->LocalizedWorldSrv(SS_MUST_BE_PARTY_LEADER_TO_ADD_GROUP_AN_ARENA));
             return;
@@ -1185,15 +1185,15 @@ void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battle
         if (!ratedMatch)
         {
             // add all players normally.. bleh ;P
-            pGroup->Lock();
-            for (const auto itx : pGroup->GetSubGroup(0)->getGroupMembers())
+            group->Lock();
+            for (const auto itx : group->GetSubGroup(0)->getGroupMembers())
             {
                 if (Player* loggedInPlayer = sObjectMgr.GetPlayer(itx->guid))
                     if (!loggedInPlayer->isQueuedForBg() && !loggedInPlayer->getBattleground())
                         handleArenaJoin(loggedInPlayer->getSession(), battlegroundType, 0, 0);
             }
 
-            pGroup->Unlock();
+            group->Unlock();
             return;
         }
 
@@ -1219,27 +1219,27 @@ void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battle
                 break;
         }
 
-        Player* loggedInLeader = sObjectMgr.GetPlayer(pGroup->GetLeader()->guid);
+        Player* loggedInLeader = sObjectMgr.GetPlayer(group->GetLeader()->guid);
         if (loggedInLeader && loggedInLeader->getArenaTeam(type) == nullptr)
         {
             session->SendPacket(SmsgArenaError(0, static_cast<uint8_t>(maxplayers)).serialise().get());
             return;
         }
 
-        pGroup->Lock();
-        for (const auto itx : pGroup->GetSubGroup(0)->getGroupMembers())
+        group->Lock();
+        for (const auto itx : group->GetSubGroup(0)->getGroupMembers())
         {
             if (maxplayers == 0)
             {
                 session->SystemMessage(session->LocalizedWorldSrv(SS_TOO_MANY_PLAYERS_PARTY_TO_JOIN_OF_ARENA));
-                pGroup->Unlock();
+                group->Unlock();
                 return;
             }
 
             if (itx->lastLevel < PLAYER_ARENA_MIN_LEVEL)
             {
                 session->SystemMessage(session->LocalizedWorldSrv(SS_SORRY_SOME_OF_PARTY_MEMBERS_ARE_NOT_LVL_70));
-                pGroup->Unlock();
+                group->Unlock();
                 return;
             }
 
@@ -1249,7 +1249,7 @@ void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battle
                 {
                     session->SystemMessage(session->LocalizedWorldSrv(
                         SS_ONE_OR_MORE_OF_PARTY_MEMBERS_ARE_ALREADY_QUEUED_OR_INSIDE_BG));
-                    pGroup->Unlock();
+                    group->Unlock();
                     return;
                 }
 
@@ -1257,7 +1257,7 @@ void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battle
                 {
                     session->SystemMessage(session->LocalizedWorldSrv(
                         SS_ONE_OR_MORE_OF_YOUR_PARTY_MEMBERS_ARE_NOT_MEMBERS_OF_YOUR_TEAM));
-                    pGroup->Unlock();
+                    group->Unlock();
                     return;
                 }
 
@@ -1265,7 +1265,7 @@ void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battle
             }
         }
 
-        for (const auto itx : pGroup->GetSubGroup(0)->getGroupMembers())
+        for (const auto itx : group->GetSubGroup(0)->getGroupMembers())
         {
             if (Player* loggedInPlayer = sObjectMgr.GetPlayer(itx->guid))
             {
@@ -1280,11 +1280,11 @@ void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battle
             }
         }
 
-        pGroup->Unlock();
+        group->Unlock();
 
         std::lock_guard queueLock(m_queueLock);
-        m_queuedGroups[battlegroundType].push_back(pGroup->GetID());
-        sLogger.info("BattlegroundMgr : Group %u is now in battleground queue for arena type %u", pGroup->GetID(), battlegroundType);
+        m_queuedGroups[battlegroundType].push_back(group->GetID());
+        sLogger.info("BattlegroundMgr : Group %u is now in battleground queue for arena type %u", group->GetID(), battlegroundType);
 
         // send the battleground status packet
 

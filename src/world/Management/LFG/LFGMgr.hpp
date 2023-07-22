@@ -271,7 +271,7 @@ class LfgMgr : EventableObject
 
         // Queue
         void Join(Player* player, uint8 roles, const LfgDungeonSet& dungeons, const std::string& comment);
-        void Leave(Player* player, Group* grp = NULL);
+        void Leave(Player* player, std::shared_ptr<Group> _group = nullptr);
 
         // Role Check
         void UpdateRoleCheck(uint64 gguid, uint64 guid = 0, uint8 roles = ROLE_NONE);

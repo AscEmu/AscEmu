@@ -52,7 +52,7 @@ void WorldSession::handleGroupInviteResponseOpcode(WorldPacket& recvPacket)
         group_inviter->setGroupInviterId(0);
         _player->setGroupInviterId(0);
 
-        Group* group = group_inviter->getGroup();
+        auto group = group_inviter->getGroup();
         if (group != nullptr)
         {
             group->AddMember(_player->m_playerInfo);
@@ -62,7 +62,7 @@ void WorldSession::handleGroupInviteResponseOpcode(WorldPacket& recvPacket)
         else
         {
             // Added into ObjectMgr, should not leak memory
-            group = new Group(true);
+            group = std::make_shared<Group>(true);
             group->m_difficulty = group_inviter->m_dungeonDifficulty;
             group->AddMember(group_inviter->m_playerInfo);
             group->AddMember(_player->m_playerInfo);
@@ -177,7 +177,7 @@ void WorldSession::handleGroupSetRolesOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleGroupRequestJoinUpdatesOpcode(WorldPacket& /*recvPacket*/)
 {
-    Group* group = _player->getGroup();
+    auto group = _player->getGroup();
     if (group != nullptr)
     {
         WorldPacket data(SMSG_REAL_GROUP_UPDATE, 13);
@@ -190,7 +190,7 @@ void WorldSession::handleGroupRequestJoinUpdatesOpcode(WorldPacket& /*recvPacket
 
 void WorldSession::handleGroupRoleCheckBeginOpcode(WorldPacket& recvPacket)
 {
-    Group* group = _player->getGroup();
+    auto group = _player->getGroup();
     if (!group)
         return;
 
@@ -280,7 +280,7 @@ void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    Group* group = _player->getGroup();
+    auto group = _player->getGroup();
     if (group != nullptr)
     {
         if (group->IsFull())
@@ -515,8 +515,7 @@ void WorldSession::handleGroupAcceptOpcode(WorldPacket& /*recvPacket*/)
     auto group = player->getGroup();
     if (group == nullptr)
     {
-        // Added into ObjectMgr, should not leak memory
-        group = new Group(true);
+        group = std::make_shared<Group>(true);
         group->AddMember(player->getPlayerInfo());
         group->AddMember(_player->getPlayerInfo());
         group->m_difficulty = player->m_dungeonDifficulty;

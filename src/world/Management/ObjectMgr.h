@@ -332,6 +332,22 @@ private:
     ReputationModMap m_reputationCreature;
     std::unordered_map<uint32_t, std::shared_ptr<InstanceReputationModifier>> m_reputationInstance;
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Group
+public:
+    void loadGroups();
+    void loadGroupInstances();
+
+    void addGroup(std::shared_ptr<Group> _group);
+    void removeGroup(std::shared_ptr<Group> _group);
+
+    std::shared_ptr<Group> getGroupByLeader(Player* _player);
+    std::shared_ptr<Group> getGroupById(uint32_t _id);
+
+private:
+    std::mutex m_groupLock;
+    std::unordered_map<uint32_t, std::shared_ptr<Group>> m_groups;
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
 public:
@@ -382,7 +398,7 @@ private:
 
 public:
 
-        typedef std::unordered_map<uint32, Group*>                                                  GroupMap;
+        
         typedef std::map<uint32, LevelInfo*>                                                        LevelMap;
         typedef std::map<std::pair<uint32, uint32>, LevelMap*>                                      LevelInfoMap;
         typedef std::map<uint32, uint32>                                                            PetSpellCooldownMap;
@@ -396,17 +412,8 @@ public:
         Item* CreateItem(uint32 entry, Player* owner);
         Item* LoadItem(uint32 lowguid);
 
-        // Groups
-        Group* GetGroupByLeader(Player* pPlayer);
-        Group* GetGroupById(uint32 id);
-
         uint32 GenerateGroupId();
         uint32 GenerateGuildId();
-
-        void AddGroup(Group* group);
-        void RemoveGroup(Group* group);
-        void LoadGroups();
-        void loadGroupInstances();
 
         Pet* CreatePet(uint32 entry);
 
@@ -487,10 +494,6 @@ public:
 #if VERSION_STRING > WotLK
         std::atomic<unsigned long> m_voidItemId;
 #endif
-
-        // Group List
-        std::mutex m_groupLock;
-        GroupMap m_groups;
 
         LevelInfoMap mLevelInfo;
         PetSpellCooldownMap mPetSpellCooldowns;

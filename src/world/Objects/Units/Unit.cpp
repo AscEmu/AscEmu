@@ -9010,7 +9010,7 @@ void Unit::removeReflect(uint32_t spellId, bool apply)
         if (hasAurasWithId(improvedSpellReflection))
         {
             const auto player = dynamic_cast<Player*>(this);
-            if (Group* group = player->getGroup())
+            if (auto group = player->getGroup())
             {
                 int32_t targets = 0;
                 if (player->hasAurasWithId(59088))
@@ -9043,7 +9043,7 @@ void Unit::removeReflect(uint32_t spellId, bool apply)
     if (!apply && spellId == 59725 && isPlayer())
     {
         const auto player = dynamic_cast<Player*>(this);
-        if (Group* group = player->getGroup())
+        if (auto group = player->getGroup())
         {
             group->Lock();
             for (uint32_t subGroupNumber = 0; subGroupNumber < group->GetSubGroupCount(); ++subGroupNumber)
@@ -9104,7 +9104,7 @@ void Unit::giveGroupXP(Unit* unitVictim, Player* playerInGroup)
     if (!playerInGroup || !unitVictim || !playerInGroup->isInGroup())
         return;
 
-    Group* group = playerInGroup->getGroup();
+    auto group = playerInGroup->getGroup();
     if (!group)
         return;
 

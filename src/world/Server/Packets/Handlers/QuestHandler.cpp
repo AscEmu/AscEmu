@@ -883,16 +883,14 @@ void WorldSession::handlePushQuestToPartyOpcode(WorldPacket& recvPacket)
     QuestProperties const* pQuest = sMySQLStore.getQuestProperties(srlPacket.questId);
     if (pQuest)
     {
-        Group* pGroup = _player->getGroup();
-        if (pGroup)
+        if (auto group = _player->getGroup())
         {
             uint32_t pguid = _player->getGuidLow();
-            SubGroup* sgr = _player->getGroup() ?
-                _player->getGroup()->GetSubGroup(_player->getSubGroupSlot()) : 0;
+            SubGroup* sgr = group ? group->GetSubGroup(_player->getSubGroupSlot()) : nullptr;
 
             if (sgr)
             {
-                _player->getGroup()->Lock();
+                group->Lock();
                 for (const auto cachedCharacterInfo : sgr->getGroupMembers())
                 {
                     Player* pPlayer = sObjectMgr.GetPlayer(cachedCharacterInfo->guid);
@@ -941,7 +939,7 @@ void WorldSession::handlePushQuestToPartyOpcode(WorldPacket& recvPacket)
                         pPlayer->getSession()->SendPacket(&data);
                     }
                 }
-                _player->getGroup()->Unlock();
+                group->Unlock();
             }
         }
     }

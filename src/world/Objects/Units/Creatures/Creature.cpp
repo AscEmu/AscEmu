@@ -2289,31 +2289,34 @@ bool Creature::HasLootForPlayer(Player* plr)
     if (loot.isLooted()) // nothing to loot or everything looted.
         return false;
 
-    Group* thisGroup = plr->getGroup();
-    if (!thisGroup)
-        return  (getTaggerGuid() == plr->getGuid());
-
-    switch (thisGroup->GetMethod())
+    if (const auto group = plr->getGroup())
     {
-        case PARTY_LOOT_FREE_FOR_ALL:
-            return true;
-        case PARTY_LOOT_ROUND_ROBIN:
-        case PARTY_LOOT_MASTER_LOOTER:
-            // only loot if the player is Plunder Master or Round Robbin Player
-            if (loot.roundRobinPlayer == 0 || loot.roundRobinPlayer == plr->getGuid())
+        switch (group->GetMethod())
+        {
+            case PARTY_LOOT_FREE_FOR_ALL:
                 return true;
-            // or when it has Personal loot
-            return loot.hasItemFor(plr);
-        case PARTY_LOOT_GROUP:
-        case PARTY_LOOT_NEED_BEFORE_GREED:
-            // only loot when no Round Robbin or is Round Robber 
-            if (loot.roundRobinPlayer == 0 || loot.roundRobinPlayer == plr->getGuid())
-                return true;
-            // or if Items is under Group Threshold research this also grey items are under threshold which means free loot ?
-            if (loot.hasOverThresholdItem())
-                return true;
-            // or when it has Personal loot
-            return loot.hasItemFor(plr);
+            case PARTY_LOOT_ROUND_ROBIN:
+            case PARTY_LOOT_MASTER_LOOTER:
+                // only loot if the player is Plunder Master or Round Robbin Player
+                if (loot.roundRobinPlayer == 0 || loot.roundRobinPlayer == plr->getGuid())
+                    return true;
+                // or when it has Personal loot
+                return loot.hasItemFor(plr);
+            case PARTY_LOOT_GROUP:
+            case PARTY_LOOT_NEED_BEFORE_GREED:
+                // only loot when no Round Robbin or is Round Robber 
+                if (loot.roundRobinPlayer == 0 || loot.roundRobinPlayer == plr->getGuid())
+                    return true;
+                // or if Items is under Group Threshold research this also grey items are under threshold which means free loot ?
+                if (loot.hasOverThresholdItem())
+                    return true;
+                // or when it has Personal loot
+                return loot.hasItemFor(plr);
+        }
+    }
+    else
+    {
+        return getTaggerGuid() == plr->getGuid();
     }
 
     return false;
@@ -2594,7 +2597,7 @@ void Creature::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     // Setup Loot and Round Robin Player in group case
     if (looter)
     {
-        if (Group* group = looter->getGroup())
+        if (const auto group = looter->getGroup())
         {
             if (group->GetLooter())
             {

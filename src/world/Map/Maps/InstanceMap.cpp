@@ -100,7 +100,7 @@ void InstanceMap::permBindAllPlayers()
 #endif
 
             // if group leader is in instance, group also gets bound
-            if (Group* group = player->getGroup())
+            if (const auto group = player->getGroup())
                 if (group->GetLeader()->guid == player->getGuidLow())
                     group->bindToInstance(save, true);
         }
@@ -114,7 +114,7 @@ bool InstanceMap::addPlayerToMap(Player* player)
 
     if (getBaseMap()->isDungeon())
     {
-        Group* group = player->getGroup();
+        const auto group = player->getGroup();
 
         // increase Instance Hourly Limit
         if (!group || !group->isLFGGroup())

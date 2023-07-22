@@ -479,7 +479,7 @@ public:
         if (aura == nullptr)
             return true;
 
-        Unit* caster = static_cast<Player*>(aura->getCaster());
+        Unit* caster = dynamic_cast<Unit*>(aura->getCaster());
         if (caster == nullptr)
         {
             getProcOwner()->removeAllAurasById(getSpell()->getId());
@@ -496,18 +496,19 @@ public:
         if (count <= 1)
             return true;
 
-        Player* plr = static_cast<Player*>(getProcOwner());
-        Group* grp = plr->getGroup();
+        if (getProcOwner()->isPlayer())
+        {
+            Player* playerOwner = dynamic_cast<Player*>(getProcOwner());
 
-        if (grp == nullptr)
-            return true;
+            if (const auto group = playerOwner->getGroup())
+            {
+                Player* playerRandom = group->GetRandomPlayerInRangeButSkip(playerOwner, 40.0f, playerOwner);
+                getProcOwner()->removeAllAurasById(getSpell()->getId());
 
-        Player* new_plr = grp->GetRandomPlayerInRangeButSkip(plr, 40.0f, plr);
-
-        getProcOwner()->removeAllAurasById(getSpell()->getId());
-
-        if (new_plr != nullptr)
-            caster->castSpell(new_plr, getSpell(), forcedBasePoints, count - 1, true);
+                if (playerRandom)
+                    caster->castSpell(playerRandom, getSpell(), forcedBasePoints, count - 1, true);
+            }
+        }
 
         return true;
     }

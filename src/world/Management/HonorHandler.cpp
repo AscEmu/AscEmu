@@ -140,11 +140,11 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
 
                 if (added && plr->getGroup())
                 {
-                    Group* pGroup = plr->getGroup();
-                    uint32 groups = pGroup->GetSubGroupCount();
+                    const auto group = plr->getGroup();
+                    uint32 groups = group->GetSubGroupCount();
                     for (uint32 i = 0; i < groups; i++)
                     {
-                        SubGroup* sg = pGroup->GetSubGroup(i);
+                        SubGroup* sg = group->GetSubGroup(i);
                         if (!sg)
                             continue;
 

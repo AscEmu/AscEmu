@@ -470,8 +470,7 @@ void WorldSession::handleDungeonDifficultyOpcode(WorldPacket& recvPacket)
     if (map && map->getBaseMap()->isDungeon())
         return;
 
-    Group* group = _player->getGroup();
-    if (group)
+    if (const auto group = _player->getGroup())
     {
         if (_player->isGroupLeader())
         {
@@ -506,8 +505,7 @@ void WorldSession::handleRaidDifficultyOpcode(WorldPacket& recvPacket)
     if (InstanceDifficulty::Difficulties(srlPacket.difficulty) == _player->getRaidDifficulty())
         return;
 
-    Group* group = _player->getGroup();
-    if (group)
+    if (const auto group = _player->getGroup())
     {
         if (_player->isGroupLeader())
         {
@@ -703,7 +701,7 @@ void WorldSession::handleToggleCloakOpcode(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleResetInstanceOpcode(WorldPacket& /*recvPacket*/)
 {
-    if (Group* group = _player->getGroup())
+    if (const auto group = _player->getGroup())
     {
         if (group->GetLeader()->guid == _player->getGuidLow())
             group->resetInstances(INSTANCE_RESET_ALL, false, _player);

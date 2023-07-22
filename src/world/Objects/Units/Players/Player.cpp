@@ -7876,7 +7876,7 @@ bool Player::isAlreadyInvitedToGroup() const { return m_grouIdpInviterId != 0; }
 
 bool Player::isInGroup() const { return m_playerInfo && m_playerInfo->m_Group; }
 
-Group* Player::getGroup() { return m_playerInfo ? m_playerInfo->m_Group : nullptr; }
+std::shared_ptr<Group> Player::getGroup() { return m_playerInfo ? m_playerInfo->m_Group : nullptr; }
 bool Player::isGroupLeader() const
 {
     if (m_playerInfo->m_Group != nullptr)
@@ -7927,7 +7927,7 @@ void Player::sendUpdateToOutOfRangeGroupMembers()
     if (m_groupUpdateFlags == GROUP_UPDATE_FLAG_NONE)
         return;
 
-    if (Group* group = getGroup())
+    if (auto group = getGroup())
         group->UpdateOutOfRangePlayer(this, true, nullptr);
 
     m_groupUpdateFlags = GROUP_UPDATE_FLAG_NONE;
@@ -10795,7 +10795,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
             {
                 pLoot->clear();
 
-                Group* group = getGroup();
+                auto group = getGroup();
                 bool groupRules = (group && go->GetGameObjectProperties()->type == GAMEOBJECT_TYPE_CHEST && go->GetGameObjectProperties()->chest.group_loot_rules);
 
                 // check current RR player and get next if necessary
@@ -11548,7 +11548,7 @@ void Player::onKillUnitReputation(Unit* unit, bool innerLoop)
     if (!unit->isCreature() || unit->isPet() || unit->isCritter())
         return;
 
-    if (Group* m_Group = getGroup())
+    if (auto m_Group = getGroup())
     {
         if (!innerLoop)
         {
@@ -12380,7 +12380,7 @@ void Player::loadBoundInstances()
     for (uint8_t i = 0; i < InstanceDifficulty::MAX_DIFFICULTY; ++i)
         m_boundInstances[i].clear();
 
-    Group* group = getGroup();
+    auto group = getGroup();
 
     //                                             0          1    2           3            4          5
     auto result = CharacterDatabase.Query("SELECT id, permanent, map, difficulty, extendState, resettime FROM character_instance LEFT JOIN instance ON instance = id WHERE guid =  %u", getGuidLow());
@@ -12470,7 +12470,7 @@ InstanceSaved* Player::getInstanceSave(uint32_t mapId, bool isRaid)
     InstancePlayerBind* pBind = getBoundInstance(mapId, getDifficulty(isRaid));
     InstanceSaved* pSave = pBind ? pBind->save : nullptr;
     if (!pBind || !pBind->perm)
-        if (Group* group = getGroup())
+        if (auto group = getGroup())
             if (InstanceGroupBind* groupBind = group->getBoundInstance(getDifficulty(isRaid), mapId))
                 pSave = groupBind->save;
 
@@ -15744,7 +15744,7 @@ void Player::buildFlagUpdateForNonGroupSet(uint32_t index, uint32_t flag)
     {
         if (inRangeObject && inRangeObject->isPlayer())
         {
-            Group* group = static_cast<Player*>(inRangeObject)->getGroup();
+            auto group = static_cast<Player*>(inRangeObject)->getGroup();
             if (!group && group != getGroup())
             {
                 BuildFieldUpdatePacket(static_cast<Player*>(inRangeObject), index, flag);

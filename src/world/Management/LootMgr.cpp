@@ -774,7 +774,7 @@ bool Loot::fillLoot(uint32_t lootId, LootTemplateMap const& tempelateStore, Play
     tempelate->generateLoot(*this, lootMode);
 
     // If Player is in a Group add Personal loot to them
-    Group* group = lootOwner->getGroup();
+    const auto group = lootOwner->getGroup();
     if (!personal && group)
     {
         // Player allowed to Loot this Round

@@ -2680,14 +2680,14 @@ void AIInterface::instanceCombatProgress(bool activate)
 
 void AIInterface::initGroupThreat(Unit* target)
 {
-    if (target->isPlayer() && static_cast<Player*>(target)->isInGroup())
+    if (target->isPlayer() && dynamic_cast<Player*>(target)->isInGroup())
     {
-        Group* pGroup = static_cast<Player*>(target)->getGroup();
+        const auto group = dynamic_cast<Player*>(target)->getGroup();
 
-        pGroup->Lock();
-        for (uint32_t i = 0; i < pGroup->GetSubGroupCount(); i++)
+        group->Lock();
+        for (uint32_t i = 0; i < group->GetSubGroupCount(); i++)
         {
-            for (const auto& itr : pGroup->GetSubGroup(i)->getGroupMembers())
+            for (const auto& itr : group->GetSubGroup(i)->getGroupMembers())
             {
                 Player* pGroupGuy = sObjectMgr.GetPlayer(itr->guid);
                 if (pGroupGuy && pGroupGuy->isAlive() && m_Unit->getWorldMap() == pGroupGuy->getWorldMap() && pGroupGuy->getDistanceSq(target) <= 40 * 40) //50 yards for now. lets see if it works
@@ -2696,7 +2696,7 @@ void AIInterface::initGroupThreat(Unit* target)
                 }
             }
         }
-        pGroup->Unlock();
+        group->Unlock();
     }
 }
 

@@ -248,12 +248,9 @@ WorldMap* MapMgr::createInstanceForPlayer(uint32_t mapId, Player* player, uint32
                 return map;
             }
 
-            InstanceGroupBind* groupBind = nullptr;
-            Group* group = player->getGroup();
-            if (group)
+            if (const auto group = player->getGroup())
             {
-                groupBind = group->getBoundInstance(baseMap);
-                if (groupBind)
+                if (const InstanceGroupBind* groupBind = group->getBoundInstance(baseMap))
                 {
                     // solo instance saves should be reset when entering a group's instance
                     player->unbindInstance(baseMap->getMapId(), player->getDifficulty(baseMap->isRaid()));
@@ -460,7 +457,7 @@ EnterState MapMgr::canPlayerEnter(uint32_t mapid, uint32_t minLevel, Player* pla
     if (!mapInfo->isNonInstanceMap() && player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC && player->getLevel() < mapInfo->minlevel_heroic)
         return CANNOT_ENTER_MIN_LEVEL_HC;
 
-    Group* group = player->getGroup();
+    const auto group = player->getGroup();
     if (entry->isRaid()) // can only enter in a raid group
         if ((!group || !group->isRaidGroup()) && !player->m_cheats.hasTriggerpassCheat)
             return CANNOT_ENTER_NOT_IN_RAID;

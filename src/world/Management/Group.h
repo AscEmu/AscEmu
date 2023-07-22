@@ -145,7 +145,7 @@ protected:
 };
 
 class Arena;
-class SERVER_DECL Group
+class SERVER_DECL Group : public std::enable_shared_from_this<Group>
 {
 public:
     friend class SubGroup;

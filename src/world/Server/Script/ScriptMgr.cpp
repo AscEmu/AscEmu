@@ -1189,13 +1189,13 @@ void InstanceScript::updateEncounterState(EncounterCreditType type, uint32_t cre
 
     if (dungeonId)
     {
-        for (auto const& ref : mInstance->getPlayers())
+        for (auto const& playersPair : mInstance->getPlayers())
         {
-            if (Player* player = ref.second)
+            if (Player* player = playersPair.second)
             {
-                if (Group* grp = player->getGroup())
+                if (const auto group = player->getGroup())
                 {
-                    if (grp->isLFGGroup())
+                    if (group->isLFGGroup())
                     {
                         sLfgMgr.RewardDungeonDoneFor(dungeonId, player);
                         return;

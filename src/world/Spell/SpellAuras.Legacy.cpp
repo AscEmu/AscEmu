@@ -342,16 +342,15 @@ void Aura::EventUpdateRaidAA(AuraEffectModifier* /*aurEff*/, float r)
     }
     else
     {
-        Group* g = owner->getGroup();
+        const auto group = owner->getGroup();
 
-        g->Lock();
-        uint32 subgroups = g->GetSubGroupCount();
+        group->Lock();
 
-        for (uint32 i = 0; i < subgroups; i++)
+        for (uint32 i = 0; i < group->GetSubGroupCount(); i++)
         {
-            SubGroup* sg = g->GetSubGroup(i);
+            SubGroup* sg = group->GetSubGroup(i);
 
-            for (const auto cachedCharacterInfo : sg->getGroupMembers())
+            for (const auto& cachedCharacterInfo : sg->getGroupMembers())
             {
                 Player* op = sObjectMgr.GetPlayer(cachedCharacterInfo->guid);
 
@@ -377,7 +376,7 @@ void Aura::EventUpdateRaidAA(AuraEffectModifier* /*aurEff*/, float r)
             }
         }
 
-        g->Unlock();
+        group->Unlock();
     }
 
     // Check for targets that should be no longer affected

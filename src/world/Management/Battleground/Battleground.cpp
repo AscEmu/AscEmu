@@ -39,7 +39,7 @@ Battleground::Battleground(WorldMap* worldMap, uint32_t id, uint32_t levelGroup,
 
     for (auto& m_group : m_groups)
     {
-        m_group = new Group(true);
+        m_group = std::make_shared<Group>(true);
         m_group->m_disbandOnNoMembers = false;
         m_group->ExpandToRaid();
     }
@@ -72,7 +72,6 @@ Battleground::~Battleground()
             for (const auto itr : m_group->GetSubGroup(j)->getGroupMembers())
                 m_group->RemovePlayer(itr);
         }
-        delete m_group;
     }
 
     m_resurrectMap.clear();

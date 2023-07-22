@@ -233,7 +233,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
             // Use correct type for group/raid leader
             if (srlPacket.type == CHAT_MSG_PARTY || srlPacket.type == CHAT_MSG_RAID)
             {
-                if (auto* const group = _player->getGroup())
+                if (auto const group = _player->getGroup())
                     if (group->GetLeader() == _player->getPlayerInfo())
                         srlPacket.type = srlPacket.type == CHAT_MSG_PARTY ? CHAT_MSG_PARTY_LEADER : CHAT_MSG_RAID_LEADER;
             }
@@ -241,7 +241,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
 
             const auto send_packet = SmsgMessageChat(static_cast<uint8_t>(srlPacket.type), messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise();
 
-            if (auto* const group = _player->getGroup())
+            if (auto const group = _player->getGroup())
             {
                 if (srlPacket.type == CHAT_MSG_PARTY || srlPacket.type == CHAT_MSG_PARTY_LEADER && group->isRaid())
                 {
@@ -360,7 +360,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
 
 #if VERSION_STRING >= Cata
             // Use correct type for group leader
-            if (auto* const group = _player->getGroup())
+            if (auto const group = _player->getGroup())
                 if (group->GetLeader() == _player->getPlayerInfo())
                     srlPacket.type = CHAT_MSG_BATTLEGROUND_LEADER;
 #endif

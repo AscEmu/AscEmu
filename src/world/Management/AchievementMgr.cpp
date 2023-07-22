@@ -491,13 +491,13 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
         bool alreadySent;
 
         // Send Achievement message to group members
-        if (Group* grp = GetPlayer()->getGroup())
+        if (const auto group = GetPlayer()->getGroup())
         {
             // grp->SendPacketToAll(&cdata);
-            grp->Lock();
-            for (uint8_t i = 0; i < grp->GetSubGroupCount(); ++i)
+            group->Lock();
+            for (uint8_t i = 0; i < group->GetSubGroupCount(); ++i)
             {
-                SubGroup* sg = grp->GetSubGroup(i);
+                SubGroup* sg = group->GetSubGroup(i);
                 if (sg == nullptr)
                     continue;
 
@@ -527,7 +527,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
                     }
                 }
             }
-            grp->Unlock();
+            group->Unlock();
         }
 
         // Send Achievement message to nearby players

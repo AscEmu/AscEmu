@@ -131,21 +131,17 @@ void ObjectMgr::finalize()
     m_reputationInstance.clear();
 
     sLogger.info("ObjectMgr : Deleting Groups...");
-    for (GroupMap::iterator itr = m_groups.begin(); itr != m_groups.end();)
+    for (const auto groupPair : m_groups)
     {
-        Group* pGroup = itr->second;
-        ++itr;
-        if (pGroup != nullptr)
+        auto group = groupPair.second;
+        if (group != nullptr)
         {
-            for (uint32 i = 0; i < pGroup->GetSubGroupCount(); ++i)
+            for (uint32 i = 0; i < group->GetSubGroupCount(); ++i)
             {
-                SubGroup* pSubGroup = pGroup->GetSubGroup(i);
+                SubGroup* pSubGroup = group->GetSubGroup(i);
                 if (pSubGroup != nullptr)
-                {
                     pSubGroup->Disband();
-                }
             }
-            delete pGroup;
         }
     }
 
@@ -1054,6 +1050,104 @@ bool ObjectMgr::handleInstanceReputationModifiers(Player* _player, Unit* _unitVi
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// Group
+void ObjectMgr::loadGroups()
+{
+    QueryResult* result = CharacterDatabase.Query("SELECT * FROM `groups`");
+    if (result)
+    {
+        if (result->GetFieldCount() != 52)
+        {
+            sLogger.failure("groups table format is invalid. Please update your database.");
+            return;
+        }
+        do
+        {
+            const auto group = std::make_shared<Group>(false);
+            group->LoadFromDB(result->Fetch());
+        } while (result->NextRow());
+        delete result;
+    }
+
+    sLogger.info("ObjectMgr : %u groups loaded.", static_cast<uint32_t>(this->m_groups.size()));
+}
+
+void ObjectMgr::loadGroupInstances()
+{
+    CharacterDatabase.Execute("DELETE FROM group_instance WHERE guid NOT IN (SELECT guid FROM `groups`)");
+
+    QueryResult* result = CharacterDatabase.Query("SELECT gi.guid, i.map, gi.instance, gi.permanent, i.difficulty, i.resettime, (SELECT COUNT(1) FROM character_instance ci LEFT JOIN `groups` g ON ci.guid = g.group1member1 WHERE ci.instance = gi.instance AND ci.permanent = 1 LIMIT 1) FROM group_instance gi LEFT JOIN instance i ON gi.instance = i.id ORDER BY guid");
+    if (!result)
+    {
+        sLogger.info("Loaded 0 group-instance saves. DB table `group_instance` is empty!");
+        return;
+    }
+
+    uint32_t count = 0;
+    do
+    {
+        Field* fields = result->Fetch();
+        std::shared_ptr<Group> group = sObjectMgr.getGroupById(fields[0].GetUInt32());
+
+        DBC::Structures::MapEntry const* mapEntry = sMapStore.LookupEntry(fields[1].GetUInt16());
+        if (!mapEntry || !mapEntry->isDungeon())
+        {
+            sLogger.failure("Incorrect entry in group_instance table : no dungeon map %d", fields[1].GetUInt16());
+            continue;
+        }
+
+        uint32_t diff = fields[4].GetUInt8();
+        if (diff >= static_cast<uint32_t>(mapEntry->isRaid() ? InstanceDifficulty::Difficulties::MAX_RAID_DIFFICULTY : InstanceDifficulty::Difficulties::MAX_DUNGEON_DIFFICULTY))
+        {
+            sLogger.failure("Wrong dungeon difficulty use in group_instance table: %d", diff + 1);
+            diff = 0;                                   // default for both difficaly types
+        }
+
+        InstanceSaved* save = sInstanceMgr.addInstanceSave(mapEntry->id, fields[2].GetUInt32(), InstanceDifficulty::Difficulties(diff), time_t(fields[5].GetUInt64()), fields[6].GetUInt64() == 0, true);
+        group->bindToInstance(save, fields[3].GetBool(), true);
+        ++count;
+    } while (result->NextRow());
+    delete result;
+
+    sLogger.info("Loaded %u group-instance saves", count);
+}
+
+void ObjectMgr::addGroup(std::shared_ptr<Group> _group)
+{
+    std::lock_guard guard(m_groupLock);
+    m_groups.insert(std::make_pair(_group->GetID(), _group));
+}
+
+void ObjectMgr::removeGroup(std::shared_ptr<Group> _group)
+{
+    std::lock_guard guard(m_groupLock);
+    m_groups.erase(_group->GetID());
+}
+
+std::shared_ptr<Group> ObjectMgr::getGroupByLeader(Player* pPlayer)
+{
+    std::lock_guard guard(m_groupLock);
+
+    for (auto& m_group : m_groups)
+        if (m_group.second->GetLeader() == pPlayer->getPlayerInfo())
+            return m_group.second;
+
+    return nullptr;
+}
+
+std::shared_ptr<Group> ObjectMgr::getGroupById(uint32_t _id)
+{
+    std::lock_guard guard(m_groupLock);
+
+    const auto itr = m_groups.find(_id);
+    if (itr != m_groups.end())
+        return itr->second;
+
+    return nullptr;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Misc
 void ObjectMgr::generateDatabaseGossipMenu(Object* _object, uint32_t _gossipMenuId, Player* _player, uint32_t _forcedTextId /*= 0*/)
 {
@@ -1849,34 +1943,6 @@ TimedEmoteList* ObjectMgr::getTimedEmoteList(uint32_t _spawnId)
      return nullptr;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-// Groups
-Group* ObjectMgr::GetGroupByLeader(Player* pPlayer)
-{
-    std::lock_guard<std::mutex> guard(m_groupLock);
-
-    for (GroupMap::iterator itr = m_groups.begin(); itr != m_groups.end(); ++itr)
-    {
-        if (itr->second->GetLeader() == pPlayer->getPlayerInfo())
-        {
-            return itr->second;
-        }
-    }
-
-    return nullptr;
-}
-
-Group* ObjectMgr::GetGroupById(uint32 id)
-{
-    std::lock_guard<std::mutex> guard(m_groupLock);
-
-    GroupMap::iterator itr = m_groups.find(id);
-    if (itr != m_groups.end())
-        return itr->second;
-
-    return nullptr;
-}
-
 void ObjectMgr::SetHighestGuids()
 {
     QueryResult* result = CharacterDatabase.Query("SELECT MAX(guid) FROM characters");
@@ -2420,70 +2486,6 @@ void ObjectMgr::RemovePlayer(Player* p)
     _players.erase(p->getGuidLow());
 }
 
-void ObjectMgr::LoadGroups()
-{
-    QueryResult* result = CharacterDatabase.Query("SELECT * FROM `groups`");
-    if (result)
-    {
-        if (result->GetFieldCount() != 52)
-        {
-            sLogger.failure("groups table format is invalid. Please update your database.");
-            return;
-        }
-        do
-        {
-            Group* g = new Group(false);
-            g->LoadFromDB(result->Fetch());
-        }
-        while (result->NextRow());
-        delete result;
-    }
-
-    sLogger.info("ObjectMgr : %u groups loaded.", static_cast<uint32_t>(this->m_groups.size()));
-}
-
-void ObjectMgr::loadGroupInstances()
-{
-    // Delete Invalid Instances
-    CharacterDatabase.Execute("DELETE FROM group_instance WHERE guid NOT IN (SELECT guid FROM `groups`)");
-
-    QueryResult* result = CharacterDatabase.Query("SELECT gi.guid, i.map, gi.instance, gi.permanent, i.difficulty, i.resettime, (SELECT COUNT(1) FROM character_instance ci LEFT JOIN `groups` g ON ci.guid = g.group1member1 WHERE ci.instance = gi.instance AND ci.permanent = 1 LIMIT 1) FROM group_instance gi LEFT JOIN instance i ON gi.instance = i.id ORDER BY guid");
-    if (!result)
-    {
-        sLogger.info("Loaded 0 group-instance saves. DB table `group_instance` is empty!");
-        return;
-    }
-
-    uint32_t count = 0;
-    do
-    {
-        Field* fields = result->Fetch();
-        Group* group = sObjectMgr.GetGroupById(fields[0].GetUInt32());
-
-        DBC::Structures::MapEntry const* mapEntry = sMapStore.LookupEntry(fields[1].GetUInt16());
-        if (!mapEntry || !mapEntry->isDungeon())
-        {
-            sLogger.failure("Incorrect entry in group_instance table : no dungeon map %d", fields[1].GetUInt16());
-            continue;
-        }
-
-        uint32_t diff = fields[4].GetUInt8();
-        if (diff >= static_cast<uint32_t>(mapEntry->isRaid() ? InstanceDifficulty::Difficulties::MAX_RAID_DIFFICULTY : InstanceDifficulty::Difficulties::MAX_DUNGEON_DIFFICULTY))
-        {
-            sLogger.failure("Wrong dungeon difficulty use in group_instance table: %d", diff + 1);
-            diff = 0;                                   // default for both difficaly types
-        }
-
-        InstanceSaved* save = sInstanceMgr.addInstanceSave(mapEntry->id, fields[2].GetUInt32(), InstanceDifficulty::Difficulties(diff), time_t(fields[5].GetUInt64()), fields[6].GetUInt64() == 0, true);
-        group->bindToInstance(save, fields[3].GetBool(), true);
-        ++count;
-    } 
-    while (result->NextRow());
-    delete result;
-
-    sLogger.info("Loaded %u group-instance saves", count);
-}
-
 void ObjectMgr::ResetDailies()
 {
     std::lock_guard<std::mutex> guard(_playerslock);
@@ -2517,18 +2519,6 @@ uint32 ObjectMgr::GenerateGuildId()
     r = ++m_hiGuildId;
 
     return r;
-}
-
-void ObjectMgr::AddGroup(Group* group)
-{
-    std::lock_guard<std::mutex> guard(m_groupLock);
-    m_groups.insert(std::make_pair(group->GetID(), group));
-}
-
-void ObjectMgr::RemoveGroup(Group* group)
-{
-    std::lock_guard<std::mutex> guard(m_groupLock);
-    m_groups.erase(group->GetID());
 }
 
 uint32 ObjectMgr::GenerateCreatureSpawnID()

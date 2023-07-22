@@ -1219,7 +1219,7 @@ public:
 
     bool isInGroup() const;
 
-    Group* getGroup();
+    std::shared_ptr<Group> getGroup();
     bool isGroupLeader() const;
 
     int8_t getSubGroupSlot() const;
