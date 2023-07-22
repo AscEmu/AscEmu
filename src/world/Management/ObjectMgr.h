@@ -325,6 +325,7 @@ public:
 
     GameObject* createGameObjectByGuid(uint32_t id, uint32_t guid);
 
+    void loadInstanceEncounters();
     DungeonEncounterList const* getDungeonEncounterList(uint32_t _mapId, uint8_t _difficulty);
 
     void loadCreatureMovementOverrides();
@@ -430,7 +431,6 @@ public:
 
         bool HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim);
         void LoadInstanceReputationModifiers();
-        void LoadInstanceEncounters();
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Event Scripts

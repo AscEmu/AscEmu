@@ -932,7 +932,7 @@ void World::loadMySQLTablesByTask()
 
     sMySQLStore.loadCreatureGroupSpawns();
 
-    sObjectMgr.LoadInstanceEncounters();
+    sObjectMgr.loadInstanceEncounters();
     sObjectMgr.LoadCreatureTimedEmotes();
     sObjectMgr.LoadVendors();
     sObjectMgr.loadTrainerSpellSets();
