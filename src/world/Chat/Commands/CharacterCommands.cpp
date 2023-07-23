@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatHandler.hpp"
 #include "Management/HonorHandler.h"
 #include "Management/ItemInterface.h"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/InstanceMap.hpp"
 #include "Map/Maps/WorldMap.hpp"
@@ -706,7 +706,7 @@ bool ChatHandler::HandleCharAddItemSetCommand(const char* args, WorldSession* m_
         if (it->ItemSet != setid)
             continue;
 
-        auto item = sObjectMgr.CreateItem(it->ItemId, m_session->GetPlayer());
+        auto item = sObjectMgr.createItem(it->ItemId, m_session->GetPlayer());
         if (item == nullptr)
             continue;
 
@@ -1454,7 +1454,7 @@ bool ChatHandler::HandleCharSetNameCommand(const char* args, WorldSession* m_ses
 
     sObjectMgr.updateCachedCharacterInfoName(pi, new_name);
 
-    Player* plr = sObjectMgr.GetPlayer(pi->guid);
+    Player* plr = sObjectMgr.getPlayer(pi->guid);
     if (plr != nullptr)
     {
         plr->setName(new_name);
@@ -1694,7 +1694,7 @@ bool ChatHandler::HandleCharSetForceRenameCommand(const char* args, WorldSession
         return true;
     }
 
-    Player* plr = sObjectMgr.GetPlayer(pi->guid);
+    Player* plr = sObjectMgr.getPlayer(pi->guid);
     if (plr == nullptr)
     {
         CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_FORCED_RENAME, pi->guid);
@@ -1727,7 +1727,7 @@ bool ChatHandler::HandleCharSetCustomizeCommand(const char* args, WorldSession* 
         return true;
     }
 
-    Player* plr = sObjectMgr.GetPlayer(pi->guid);
+    Player* plr = sObjectMgr.getPlayer(pi->guid);
     if (plr == nullptr)
     {
         CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_CUSTOMIZE_LOOKS, pi->guid);
@@ -1759,7 +1759,7 @@ bool ChatHandler::HandleCharSetFactionChangeCommand(const char* args, WorldSessi
         return true;
     }
 
-    Player* plr = sObjectMgr.GetPlayer(pi->guid);
+    Player* plr = sObjectMgr.getPlayer(pi->guid);
     if (plr == nullptr)
     {
         CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_CUSTOMIZE_FACTION, pi->guid);
@@ -1791,7 +1791,7 @@ bool ChatHandler::HandleCharSetRaceChangeCommand(const char* args, WorldSession*
         return true;
     }
 
-    Player* plr = sObjectMgr.GetPlayer(pi->guid);
+    Player* plr = sObjectMgr.getPlayer(pi->guid);
     if (plr == nullptr)
     {
         CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_CUSTOMIZE_RACE, pi->guid);

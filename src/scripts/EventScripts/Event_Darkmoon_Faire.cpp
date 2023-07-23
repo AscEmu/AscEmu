@@ -54,7 +54,7 @@ public:
 
     void AIUpdate() override
     {
-        auto CurrentPlayer = sObjectMgr.GetPlayer(mPlayerGuid);
+        auto CurrentPlayer = sObjectMgr.getPlayer(mPlayerGuid);
         if (CurrentPlayer == nullptr)
         {
             RemoveAIUpdateEvent();
@@ -565,7 +565,7 @@ public:
                 }
                 else
                 {
-                    auto item = sObjectMgr.CreateItem(19422, plr);
+                    auto item = sObjectMgr.createItem(19422, plr);
                     if (item == nullptr)
                         return;
 

@@ -13,7 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObject.h"
 #include "Server/MainServerDefines.h"
 #include "Server/Warden/SpeedDetector.h"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Server/Packets/CmsgWorldTeleport.h"
 #include "Server/Packets/SmsgMountspecialAnim.h"
 #include "Server/Packets/MsgMoveTeleportAck.h"

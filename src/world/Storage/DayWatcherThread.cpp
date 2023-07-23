@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Management/ArenaTeam.hpp"
 #include "Server/MainServerDefines.h"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "DayWatcherThread.h"
 #include "Chat/ChatHandler.hpp"
 
@@ -179,7 +179,7 @@ void DayWatcherThread::update_daily()
     CharacterDatabase.WaitExecute("UPDATE characters SET finisheddailies = ''");
     CharacterDatabase.WaitExecute("UPDATE characters SET rbg_daily = '0'");     // Reset RBG
 
-    sObjectMgr.ResetDailies();
+    sObjectMgr.resetDailies();
     m_lastDailyTime = UNIXTIME;
     dupe_tm_pointer(localtime(&m_lastDailyTime), &m_localLastDailyTime);
     m_updateDBSettings = true;
@@ -259,7 +259,7 @@ void DayWatcherThread::update_arena()
 
             if (orig_arenapoints != arenapoints)
             {
-                auto player = sObjectMgr.GetPlayer(guid);
+                auto player = sObjectMgr.getPlayer(guid);
                 if (player != nullptr)
                 {
                     player->addArenaPoints(arenapoints, false);

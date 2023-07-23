@@ -486,7 +486,7 @@ void Spell::spellEffectDummy(uint8_t effectIndex)
     if (scriptResult == SpellScriptCheckDummy::DUMMY_OK)
         return;
 
-    if (sObjectMgr.CheckforDummySpellScripts(static_cast<Player*>(u_caster), m_spellInfo->getId()))
+    if (sObjectMgr.checkForDummySpellScripts(static_cast<Player*>(u_caster), m_spellInfo->getId()))
         return;
 
     if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->getId(), effectIndex, this))
@@ -2439,7 +2439,7 @@ void Spell::SpellEffectResurrect(uint8_t effectIndex) // Resurrect (Flat)
         WoWGuid wowGuid;
         wowGuid.Init(corpseTarget->getOwnerGuid());
 
-        playerTarget = sObjectMgr.GetPlayer(wowGuid.getGuidLowPart());
+        playerTarget = sObjectMgr.getPlayer(wowGuid.getGuidLowPart());
         if (!playerTarget) return;
     }
 
@@ -3055,12 +3055,11 @@ void Spell::SpellEffectSummonTemporaryPet(uint32 /*i*/, DBC::Structures::SummonP
         v.x += x;
         v.y += y;
 
-        Pet* pet = sObjectMgr.CreatePet(properties_->Id);
+        const auto pet = sObjectMgr.createPet(properties_->Id);
 
         if (!pet->CreateAsSummon(properties_->Id, ci, nullptr, p_caster, m_spellInfo, 1, static_cast<uint32_t>(getDuration()), &v, false))
         {
             pet->DeleteMe();
-            pet = nullptr;
             break;
         }
 
@@ -3625,7 +3624,7 @@ void Spell::SpellEffectTransformItem(uint8_t effectIndex)
 
     i_caster = nullptr;
 
-    Item* it = sObjectMgr.CreateItem(itemid, owner);
+    Item* it = sObjectMgr.createItem(itemid, owner);
     if (!it) return;
 
     it->setDurability(dur);
@@ -4077,7 +4076,7 @@ void Spell::SpellEffectEnchantItem(uint8_t effectIndex) // Enchant Item Permanen
             return;
         }
 
-        Item* pItem = sObjectMgr.CreateItem(itemid, p_caster);
+        Item* pItem = sObjectMgr.createItem(itemid, p_caster);
         if (pItem == nullptr)
             return;
 
@@ -4159,11 +4158,10 @@ void Spell::SpellEffectTameCreature(uint8_t /*effectIndex*/)
 
     // Remove target
     tame->getAIInterface()->handleEvent(EVENT_LEAVECOMBAT, p_caster, 0);
-    Pet* pPet = sObjectMgr.CreatePet(tame->getEntry());
-    if (!pPet->CreateAsSummon(tame->getEntry(), tame->GetCreatureProperties(), tame, p_caster, nullptr, 2, 0))
+    const auto pet = sObjectMgr.createPet(tame->getEntry());
+    if (!pet->CreateAsSummon(tame->getEntry(), tame->GetCreatureProperties(), tame, p_caster, nullptr, 2, 0))
     {
-        pPet->DeleteMe();//CreateAsSummon() returns false if an error occurred.
-        pPet = nullptr;
+        pet->DeleteMe();//CreateAsSummon() returns false if an error occurred.
     }
     tame->Despawn(0, tame->GetCreatureProperties()->RespawnTime);
 }
@@ -4229,11 +4227,10 @@ void Spell::SpellEffectSummonPet(uint8_t effectIndex) //summon - pet
             p_caster->removeAllAurasById(35701);
         }
 
-        Pet* summon = sObjectMgr.CreatePet(getSpellInfo()->getEffectMiscValue(effectIndex));
-        if (!summon->CreateAsSummon(getSpellInfo()->getEffectMiscValue(effectIndex), ci, nullptr, p_caster, getSpellInfo(), 2, 0))
+        const auto pet = sObjectMgr.createPet(getSpellInfo()->getEffectMiscValue(effectIndex));
+        if (!pet->CreateAsSummon(getSpellInfo()->getEffectMiscValue(effectIndex), ci, nullptr, p_caster, getSpellInfo(), 2, 0))
         {
-            summon->DeleteMe();//CreateAsSummon() returns false if an error occurred.
-            summon = nullptr;
+            pet->DeleteMe();//CreateAsSummon() returns false if an error occurred.
         }
     }
 }
@@ -5342,7 +5339,7 @@ void Spell::SpellEffectResurrectNew(uint8_t effectIndex)
         WoWGuid wowGuid;
         wowGuid.Init(corpseTarget->getOwnerGuid());
 
-        playerTarget = sObjectMgr.GetPlayer(wowGuid.getGuidLowPart());
+        playerTarget = sObjectMgr.getPlayer(wowGuid.getGuidLowPart());
         if (!playerTarget) return;
     }
 
@@ -5431,7 +5428,7 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
         WoWGuid wowGuid;
         wowGuid.Init(corpse->getOwnerGuid());
 
-        Player* owner = sObjectMgr.GetPlayer(wowGuid.getGuidLowPart());
+        Player* owner = sObjectMgr.getPlayer(wowGuid.getGuidLowPart());
         if (owner)
         {
             if (!owner->getBattleground())
@@ -5995,11 +5992,10 @@ void Spell::SpellEffectCreatePet(uint8_t effectIndex)
     CreatureProperties const* ci = sMySQLStore.getCreatureProperties(getSpellInfo()->getEffectMiscValue(effectIndex));
     if (ci)
     {
-        Pet* pPet = sObjectMgr.CreatePet(getSpellInfo()->getEffectMiscValue(effectIndex));
-        if (!pPet->CreateAsSummon(getSpellInfo()->getEffectMiscValue(effectIndex), ci, nullptr, playerTarget, getSpellInfo(), 1, 0))
+        const auto pet = sObjectMgr.createPet(getSpellInfo()->getEffectMiscValue(effectIndex));
+        if (!pet->CreateAsSummon(getSpellInfo()->getEffectMiscValue(effectIndex), ci, nullptr, playerTarget, getSpellInfo(), 1, 0))
         {
-            pPet->DeleteMe();//CreateAsSummon() returns false if an error occurred.
-            pPet = nullptr;
+            pet->DeleteMe();//CreateAsSummon() returns false if an error occurred.
         }
     }
 }

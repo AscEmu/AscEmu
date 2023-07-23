@@ -17,7 +17,7 @@
  */
 
 #include "Server/MainServerDefines.h"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Server/Packets/SmsgReceivedMail.h"
 
 MailSystem& MailSystem::getInstance()
@@ -33,9 +33,9 @@ void MailSystem::StartMailSystem()
 MailError MailSystem::DeliverMessage(uint64 recipent, MailMessage* message)
 {
     // assign a new id
-    message->message_id = sObjectMgr.GenerateMailID();
+    message->message_id = sObjectMgr.generateMailId();
 
-    Player* plr = sObjectMgr.GetPlayer((uint32)recipent);
+    Player* plr = sObjectMgr.getPlayer((uint32)recipent);
     if (plr != NULL)
     {
         plr->m_mailBox.AddMessage(message);

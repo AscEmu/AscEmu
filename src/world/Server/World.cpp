@@ -218,11 +218,10 @@ void World::updateAllTrafficTotals()
     mLastTotalTrafficInKB = mTotalTrafficInKB;
     mLastTotalTrafficOutKB = mTotalTrafficOutKB;
 
-    sObjectMgr._playerslock.lock();
-
-    for (auto playerStorage = sObjectMgr._players.begin(); playerStorage != sObjectMgr._players.end(); ++playerStorage)
+    std::lock_guard guard(sObjectMgr.m_playerLock);
+    for (const auto playerStorage : sObjectMgr.getPlayerStorage())
     {
-        WorldSocket* socket = playerStorage->second->getSession()->GetSocket();
+        WorldSocket* socket = playerStorage.second->getSession()->GetSocket();
         if (!socket || !socket->IsConnected() || socket->IsDeleted())
             continue;
 
@@ -234,8 +233,6 @@ void World::updateAllTrafficTotals()
 
     mTotalTrafficInKB += (trafficIn / 1024.0);
     mTotalTrafficOutKB += (trafficOut / 1024.0);
-
-    sObjectMgr._playerslock.unlock();
 }
 
 void World::setTotalTraffic(double* totalin, double* totalout)
@@ -937,16 +934,16 @@ void World::loadMySQLTablesByTask()
     sObjectMgr.loadVendors();
     sObjectMgr.loadTrainerSpellSets();
     sObjectMgr.loadTrainers();
-    sObjectMgr.LoadPetSpellCooldowns();
+    sObjectMgr.loadPetSpellCooldowns();
     sObjectMgr.loadCharters();
     sTicketMgr.loadGMTickets();
-    sObjectMgr.SetHighestGuids();
+    sObjectMgr.setHighestGuids();
     sObjectMgr.loadReputationModifiers();
     sObjectMgr.loadGroups();
     sObjectMgr.loadGroupInstances();
     sObjectMgr.loadArenaTeams();
 #ifdef FT_VEHICLES
-    sObjectMgr.LoadVehicleAccessories();
+    sObjectMgr.loadVehicleAccessories();
     sObjectMgr.loadVehicleSeatAddon();
 #endif
     sObjectMgr.loadWorldStateTemplates();
@@ -963,7 +960,7 @@ void World::loadMySQLTablesByTask()
     sLootMgr.loadAndGenerateLoot(5);
 
     sQuestMgr.LoadExtraQuestStuff();
-    sObjectMgr.LoadEventScripts();
+    sObjectMgr.loadEventScripts();
     sWeatherMgr.loadFromDB();
     sAddonMgr.LoadFromDB();
     sGameEventMgr.LoadFromDB();
@@ -1003,11 +1000,10 @@ void World::saveAllPlayersToDb()
 
     uint32_t count = 0;
 
-    sObjectMgr._playerslock.lock();
-
-    for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
+    std::lock_guard guard(sObjectMgr.m_playerLock);
+    for (const auto playerPair : sObjectMgr.getPlayerStorage())
     {
-        auto player = itr->second;
+        Player* player = playerPair.second;
         if (player->getSession())
         {
             const auto startTime = Util::TimeNow();
@@ -1017,7 +1013,6 @@ void World::saveAllPlayersToDb()
         }
     }
 
-    sObjectMgr._playerslock.unlock();
     sLogger.info("Saved %u players.", count);
 }
 

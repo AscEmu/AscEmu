@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "GuildFinderMgr.hpp"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/Guild/Guild.hpp"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Server/MainServerDefines.h"
 #include "Storage/DBC/DBCStores.h"
 
@@ -117,7 +117,7 @@ void GuildFinderMgr::addMembershipRequest(uint32_t guildGuid, MembershipRequest 
         request.getGuildId(), request.getPlayerGUID(), request.getAvailability(), request.getClassRoles(),
         request.getInterests(), request.getComment().c_str(),request.getSubmitTime());
   
-    if (Player* player = sObjectMgr.GetPlayer(request.getPlayerGUID()))
+    if (Player* player = sObjectMgr.getPlayer(request.getPlayerGUID()))
     {
         sendMembershipRequestListUpdate(*player);
     }
@@ -177,7 +177,7 @@ void GuildFinderMgr::removeMembershipRequest(uint32_t playerId, uint32_t guildId
 
     _membershipRequestStore[guildId].erase(itr);
 
-    if (Player* player = sObjectMgr.GetPlayer(playerId))
+    if (Player* player = sObjectMgr.getPlayer(playerId))
     {
         sendMembershipRequestListUpdate(*player);
     }
@@ -296,7 +296,7 @@ void GuildFinderMgr::deleteGuild(uint32_t guildId)
 
         CharacterDatabase.Execute("DELETE FROM guild_finder_guild_settings WHERE guildId = %u", itr->getGuildId());
 
-        if (Player* player = sObjectMgr.GetPlayer(applicant))
+        if (Player* player = sObjectMgr.getPlayer(applicant))
         {
             sendMembershipRequestListUpdate(*player);
         }
@@ -316,7 +316,7 @@ void GuildFinderMgr::deleteGuild(uint32_t guildId)
 void GuildFinderMgr::sendApplicantListUpdate(Guild& guild)
 {
     WorldPacket data(SMSG_LF_GUILD_APPLICANT_LIST_UPDATED, 0);
-    if (Player* player = sObjectMgr.GetPlayer(WoWGuid::getGuidLowPartFromUInt64(guild.getLeaderGUID())))
+    if (Player* player = sObjectMgr.getPlayer(WoWGuid::getGuidLowPartFromUInt64(guild.getLeaderGUID())))
     {
         player->sendMessageToSet(&data, false);
     }

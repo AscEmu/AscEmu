@@ -16,7 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 #include "Management/Battleground/Battleground.hpp"
 #include "Map/Management/MapMgr.hpp"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 
 #if VERSION_STRING >= Cata
@@ -166,11 +166,11 @@ void WorldSession::handleBattlegroundPlayerPositionsOpcode(WorldPacket& /*recvPa
 
     uint32_t flagHolders = 0;
 
-    const auto alliancePlayer = sObjectMgr.GetPlayer(static_cast<uint32_t>(Battleground->GetFlagHolderGUID(TEAM_ALLIANCE)));
+    const auto alliancePlayer = sObjectMgr.getPlayer(static_cast<uint32_t>(Battleground->GetFlagHolderGUID(TEAM_ALLIANCE)));
     if (alliancePlayer)
         ++flagHolders;
 
-    const auto hordePlayer = sObjectMgr.GetPlayer(static_cast<uint32_t>(Battleground->GetFlagHolderGUID(TEAM_HORDE)));
+    const auto hordePlayer = sObjectMgr.getPlayer(static_cast<uint32_t>(Battleground->GetFlagHolderGUID(TEAM_HORDE)));
     if (hordePlayer)
         ++flagHolders;
 

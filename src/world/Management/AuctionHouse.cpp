@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemInterface.h"
 #include "Server/MainServerDefines.h"
 #include "Map/Management/MapMgr.hpp"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Server/Packets/SmsgAuctionBidderNotification.h"
 #include "Server/Packets/SmsgAuctionOwnerNotification.h"
 #include "Server/Packets/SmsgAuctionOwnerListResult.h"
@@ -119,7 +119,7 @@ void AuctionHouse::loadAuctionsFromDB()
         auto auction = new Auction;
         auction->Id = fields[0].GetUInt32();
 
-        Item* pItem = sObjectMgr.LoadItem(fields[2].GetUInt32());
+        Item* pItem = sObjectMgr.loadItem(fields[2].GetUInt32());
         if (!pItem)
         {
             CharacterDatabase.Execute("DELETE FROM auctions WHERE auctionId=%u", auction->Id);
@@ -248,7 +248,7 @@ void AuctionHouse::removeAuction(Auction* auction)
             {
                 snprintf(subject, 100, "%u:0:5", auction->auctionItem->getEntry());
                 const auto cut = float2int32(cutPercent * static_cast<float_t>(auction->highestBid));
-                Player* plr = sObjectMgr.GetPlayer(auction->ownerGuid.getGuidLow());
+                Player* plr = sObjectMgr.getPlayer(auction->ownerGuid.getGuidLow());
                 if (cut && plr && plr->hasEnoughCoinage(static_cast<uint32_t>(cut)))
                     plr->modCoinage(-cut);
 
@@ -371,7 +371,7 @@ void AuctionHouse::sendBidListPacket(Player* player, WorldPacket* /*packet*/)
 
 void AuctionHouse::sendAuctionBuyOutNotificationPacket(Auction* auction)
 {
-    Player* bidder = sObjectMgr.GetPlayer(auction->highestBidderGuid.getGuidLow());
+    Player* bidder = sObjectMgr.getPlayer(auction->highestBidderGuid.getGuidLow());
     if (bidder && bidder->IsInWorld())
     {
         auto outbid = (auction->highestBid / 100) * 5;
@@ -381,7 +381,7 @@ void AuctionHouse::sendAuctionBuyOutNotificationPacket(Auction* auction)
         bidder->getSession()->SendPacket(SmsgAuctionBidderNotification(getId(), auction->Id, auction->highestBidderGuid, 0, outbid, auction->auctionItem->getEntry()).serialise().get());
     }
 
-    Player* owner = sObjectMgr.GetPlayer(auction->ownerGuid.getGuidLow());
+    Player* owner = sObjectMgr.getPlayer(auction->ownerGuid.getGuidLow());
     if (owner && owner->IsInWorld())
     {
         owner->getSession()->SendPacket(SmsgAuctionOwnerNotification(auction->Id, auction->highestBid, auction->auctionItem->getEntry()).serialise().get());
@@ -390,7 +390,7 @@ void AuctionHouse::sendAuctionBuyOutNotificationPacket(Auction* auction)
 
 void AuctionHouse::sendAuctionOutBidNotificationPacket(Auction* auction, uint64_t newBidder, uint32_t newHighestBid)
 {
-    Player* bidder = sObjectMgr.GetPlayer(auction->highestBidderGuid.getGuidLow());
+    Player* bidder = sObjectMgr.getPlayer(auction->highestBidderGuid.getGuidLow());
     if (bidder && bidder->IsInWorld())
     {
         auto outbid = (auction->highestBid / 100) * 5;

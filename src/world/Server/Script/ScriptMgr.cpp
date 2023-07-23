@@ -27,7 +27,7 @@
 #include "CreatureAIScript.h"
 #include "WorldConf.h"
 #include "Management/GameEvent.h"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/MapScriptInterface.h"

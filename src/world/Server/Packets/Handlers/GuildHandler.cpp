@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgGuildCommandResult.h"
 #include "Server/Packets/CmsgGuildInvite.h"
 #include "Management/Guild/GuildMgr.hpp"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Server/Packets/MsgSaveGuildEmblem.h"
 #include "Server/Packets/CmsgGuildBankBuyTab.h"
 #include "Server/Packets/MsgGuildBankLogQuery.h"
@@ -593,7 +593,7 @@ void WorldSession::handleCharterDecline(WorldPacket& recvPacket)
     if (charter == nullptr)
         return;
 
-    Player* player = sObjectMgr.GetPlayer(charter->getLeaderGuid());
+    Player* player = sObjectMgr.getPlayer(charter->getLeaderGuid());
     if (player)
         player->getSession()->SendPacket(MsgPetitionDecline(_player->getGuid()).serialise().get());
 }
@@ -694,7 +694,7 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
             return;
         }
 
-        auto arenaTeam = std::make_shared<ArenaTeam>(type, sObjectMgr.GenerateArenaTeamId());
+        auto arenaTeam = std::make_shared<ArenaTeam>(type, sObjectMgr.generateArenaTeamId());
         arenaTeam->m_name = charter->getGuildName();
         arenaTeam->m_emblem.emblemColour = srlPacket.iconColor;
         arenaTeam->m_emblem.emblemStyle = srlPacket.icon;
@@ -808,7 +808,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
         }
         else
         {
-            Item* item = sObjectMgr.CreateItem(item_ids[arena_type], _player);
+            Item* item = sObjectMgr.createItem(item_ids[arena_type], _player);
 
             auto const charter = sObjectMgr.createCharter(_player->getGuidLow(), static_cast<CharterTypes>(srlPacket.arenaIndex));
             if (item == nullptr || charter == nullptr)
@@ -882,7 +882,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
         {
             _player->sendPlayObjectSoundPacket(srlPacket.creatureGuid, 6594);
 
-            Item* item = sObjectMgr.CreateItem(CharterEntry::Guild, _player);
+            Item* item = sObjectMgr.createItem(CharterEntry::Guild, _player);
 
             auto const guildCharter = sObjectMgr.createCharter(_player->getGuidLow(), CHARTER_TYPE_GUILD);
             if (item == nullptr || guildCharter == nullptr)

@@ -21,7 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObject.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Server/Script/CreatureAIScript.h"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -786,7 +786,7 @@ bool Loot::fillLoot(uint32_t lootId, LootTemplateMap const& tempelateStore, Play
             {
                 for (const auto& itr : group->GetSubGroup(i)->getGroupMembers())
                 {
-                    if (Player* loggedInPlayer = sObjectMgr.GetPlayer(itr->guid))
+                    if (Player* loggedInPlayer = sObjectMgr.getPlayer(itr->guid))
                         fillNotNormalLootFor(loggedInPlayer, loggedInPlayer->isAtGroupRewardDistance(lootOwner));
                 }
             }
@@ -1080,7 +1080,7 @@ void Loot::itemRemoved(uint8_t lootIndex)
     // notify all players that are looting this that the item was removed
     for (auto playerGuid : PlayersLooting)
     {
-        if (Player* player = sObjectMgr.GetPlayer(playerGuid))
+        if (Player* player = sObjectMgr.getPlayer(playerGuid))
             player->getSession()->SendPacket(SmsgLootRemoved(lootIndex).serialise().get());
         else
             removeLooter(playerGuid);
@@ -1092,7 +1092,7 @@ void Loot::moneyRemoved()
     // notify all players that are looting this that the money was removed
     for (auto playerGuid : PlayersLooting)
     {
-        if (Player* player = sObjectMgr.GetPlayer(playerGuid))
+        if (Player* player = sObjectMgr.getPlayer(playerGuid))
         {
             WorldPacket data(SMSG_LOOT_CLEAR_MONEY, 0);
             player->getSession()->SendPacket(&data);

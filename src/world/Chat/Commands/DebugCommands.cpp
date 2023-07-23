@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "VMapFactory.h"
 #include "Chat/ChatHandler.hpp"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Management/WeatherMgr.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "Movement/Spline/MoveSplineInit.h"
@@ -66,7 +66,7 @@ bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldS
         auto creature_spawn = new MySQLStructure::CreatureSpawn;
         uint8 gender = creature_properties->generateRandomDisplayIdAndReturnGender(&creature_spawn->displayid);
         creature_spawn->entry = entry;
-        creature_spawn->id = sObjectMgr.GenerateCreatureSpawnID();
+        creature_spawn->id = sObjectMgr.generateCreatureSpawnId();
         creature_spawn->movetype = 0;
         creature_spawn->x = session->GetPlayer()->GetPositionX();
         creature_spawn->y = session->GetPlayer()->GetPositionY();

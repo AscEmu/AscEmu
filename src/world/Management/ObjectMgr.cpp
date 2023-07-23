@@ -1,26 +1,9 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include <utility>
-
 #include "Storage/DBC/DBCStores.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Objects/Container.hpp"
@@ -104,7 +87,7 @@ void ObjectMgr::finalize()
     m_levelInfo.clear();
 
     sLogger.info("ObjectMgr : Deleting timed emote Cache...");
-    for (std::unordered_map<uint32, TimedEmoteList*>::iterator i = m_timedEmotes.begin(); i != m_timedEmotes.end(); ++i)
+    for (std::unordered_map<uint32_t, TimedEmoteList*>::iterator i = m_timedEmotes.begin(); i != m_timedEmotes.end(); ++i)
     {
         for (TimedEmoteList::iterator i2 = i->second->begin(); i2 != i->second->end(); ++i2)
             if ((*i2))
@@ -131,7 +114,7 @@ void ObjectMgr::finalize()
         auto group = groupPair.second;
         if (group != nullptr)
         {
-            for (uint32 i = 0; i < group->GetSubGroupCount(); ++i)
+            for (uint32_t i = 0; i < group->GetSubGroupCount(); ++i)
             {
                 SubGroup* pSubGroup = group->GetSubGroup(i);
                 if (pSubGroup != nullptr)
@@ -154,12 +137,12 @@ void ObjectMgr::finalize()
 
 #ifdef FT_VEHICLES
     sLogger.info("ObjectMgr : Cleaning up vehicle accessories...");
-    _vehicleAccessoryStore.clear();
-    _vehicleSeatAddonStore.clear();
+    m_vehicleAccessoryStore.clear();
+    m_vehicleSeatAddonStore.clear();
 #endif
 
     sLogger.info("ObjectMgr : Cleaning up worldstate templates...");
-    for (std::map< uint32, std::multimap< uint32, WorldState >* >::iterator itr = m_worldstateTemplates.begin(); itr != m_worldstateTemplates.end(); ++itr)
+    for (std::map< uint32_t, std::multimap< uint32_t, WorldState >* >::iterator itr = m_worldstateTemplates.begin(); itr != m_worldstateTemplates.end(); ++itr)
     {
         itr->second->clear();
         delete itr->second;
@@ -170,8 +153,8 @@ void ObjectMgr::finalize()
     m_creatureDisplayInfoData.clear();
 
     sLogger.info("ObjectMgr : Clearing up event scripts...");
-    mEventScriptMaps.clear();
-    mSpellEffectMaps.clear();
+    m_eventScriptMaps.clear();
+    m_spellEffectMaps.clear();
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 // Arena Team
@@ -657,7 +640,7 @@ void ObjectMgr::loadVendors()
     QueryResult* result = sMySQLStore.getWorldDBQuery("SELECT * FROM vendors");
     if (result != nullptr)
     {
-        std::unordered_map<uint32, std::vector<CreatureItem>*>::const_iterator itr;
+        std::unordered_map<uint32_t, std::vector<CreatureItem>*>::const_iterator itr;
         std::vector<CreatureItem>* items;
 
         if (result->GetFieldCount() < 6 + 1)
@@ -731,7 +714,7 @@ void ObjectMgr::setVendorList(uint32_t _entry, std::vector<CreatureItem>* _list)
 #if VERSION_STRING > TBC
 void ObjectMgr::loadAchievementCriteriaList()
 {
-    for (uint32 rowId = 0; rowId < sAchievementCriteriaStore.GetNumRows(); ++rowId)
+    for (uint32_t rowId = 0; rowId < sAchievementCriteriaStore.GetNumRows(); ++rowId)
     {
         auto criteria = sAchievementCriteriaStore.LookupEntry(rowId);
         if (!criteria)
@@ -759,12 +742,12 @@ void ObjectMgr::loadAchievementRewards()
         return;
     }
 
-    uint32 count = 0;
+    uint32_t count = 0;
 
     do
     {
         Field* fields = result->Fetch();
-        uint32 entry = fields[0].GetUInt32();
+        uint32_t entry = fields[0].GetUInt32();
 
         if (!sAchievementStore.LookupEntry(entry))
         {
@@ -1110,6 +1093,12 @@ void ObjectMgr::loadGroupInstances()
     sLogger.info("Loaded %u group-instance saves", count);
 }
 
+uint32_t ObjectMgr::generateGroupId()
+{
+    uint32_t groupId = ++m_hiGroupId;
+    return groupId;
+}
+
 void ObjectMgr::addGroup(std::shared_ptr<Group> _group)
 {
     std::lock_guard guard(m_groupLock);
@@ -1144,6 +1133,380 @@ std::shared_ptr<Group> ObjectMgr::getGroupById(uint32_t _id)
     return nullptr;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Player
+Player* ObjectMgr::createPlayer(uint8_t _class)
+{
+    const uint32_t guid = ++m_hiPlayerGuid;
+    return createPlayerByGuid(_class, guid);
+}
+
+Player* ObjectMgr::createPlayerByGuid(uint8_t _class, uint32_t _guid)
+{
+    Player* player;
+
+    switch (_class)
+    {
+        case WARRIOR:
+            player = new Warrior(_guid);
+            break;
+        case PALADIN:
+            player = new Paladin(_guid);
+            break;
+        case HUNTER:
+            player = new Hunter(_guid);
+            break;
+        case ROGUE:
+            player = new Rogue(_guid);
+            break;
+        case PRIEST:
+            player = new Priest(_guid);
+            break;
+#if VERSION_STRING > TBC
+        case DEATHKNIGHT:
+            player = new DeathKnight(_guid);
+            break;
+#endif
+        case SHAMAN:
+            player = new Shaman(_guid);
+            break;
+        case MAGE:
+            player = new Mage(_guid);
+            break;
+        case WARLOCK:
+            player = new Warlock(_guid);
+            break;
+#if VERSION_STRING > Cata
+        case MONK:
+            player = new Monk(_guid);
+            break;
+#endif
+        case DRUID:
+            player = new Druid(_guid);
+            break;
+        default:
+            player = nullptr;
+            break;
+    }
+
+    return player;
+}
+
+Player* ObjectMgr::getPlayer(const char* _name, bool _caseSensitive)
+{
+    std::lock_guard guard(m_playerLock);
+
+    for (const auto player : m_players)
+    {
+        std::string searchName = _name;
+        std::string availableName = player.second->getName();
+
+        if (!_caseSensitive)
+        {
+            AscEmu::Util::Strings::toLowerCase(searchName);
+            AscEmu::Util::Strings::toLowerCase(availableName);
+        }
+
+        if (availableName == searchName)
+            return player.second;
+    }
+
+    return nullptr;
+}
+
+Player* ObjectMgr::getPlayer(uint32_t guid)
+{
+    std::lock_guard guard(m_playerLock);
+
+    const auto playerPair = m_players.find(guid);
+    return playerPair != m_players.end() ? playerPair->second : nullptr;
+}
+
+void ObjectMgr::addPlayer(Player* _player)
+{
+    std::lock_guard guard(m_playerLock);
+    m_players[_player->getGuidLow()] = _player;
+}
+
+void ObjectMgr::removePlayer(Player* _player)
+{
+    std::lock_guard guard(m_playerLock);
+    m_players.erase(_player->getGuidLow());
+}
+
+void ObjectMgr::resetDailies()
+{
+    std::lock_guard guard(m_playerLock);
+
+    for (const auto playerPair : m_players)
+        if (Player* player = playerPair.second)
+            player->resetFinishedDailies();
+}
+
+std::unordered_map<uint32_t, Player*> ObjectMgr::getPlayerStorage()
+{
+    return m_players;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Vehicle
+#ifdef FT_VEHICLES
+void ObjectMgr::loadVehicleAccessories()
+{
+    m_vehicleAccessoryStore.clear();
+
+    QueryResult* result = WorldDatabase.Query("SELECT entry, accessory_entry, seat_id , minion, summontype, summontimer FROM vehicle_accessories;");
+    if (result != nullptr)
+    {
+        do
+        {
+            Field* fields = result->Fetch();
+
+            uint32_t entry = fields[0].GetUInt32();
+            uint32_t accessory = fields[1].GetUInt32();
+            int8_t seatId = fields[2].GetInt8();
+            bool isMinion = fields[3].GetBool();
+            uint8_t summonType = fields[4].GetUInt8();
+            uint32_t summonTimer = fields[5].GetUInt32();
+
+            if (!sMySQLStore.getCreatureProperties(entry))
+            {
+                sLogger.failure("Table `vehicle_accessories`: creature template entry %u does not exist.", entry);
+                continue;
+            }
+
+            if (!sMySQLStore.getCreatureProperties(accessory))
+            {
+                sLogger.failure("Table `vehicle_accessories`: Accessory %u does not exist.", accessory);
+                continue;
+            }
+
+            const auto spellClickInfoStore = sMySQLStore.getSpellClickSpellsStore();
+            if (!spellClickInfoStore->contains(entry))
+            {
+                sLogger.failure("Table `vehicle_accessories`: creature template entry %u has no data in npc_spellclick_spells", entry);
+                continue;
+            }
+
+            m_vehicleAccessoryStore[entry].push_back(VehicleAccessory(accessory, seatId, isMinion, summonType, summonTimer));
+
+        } while (result->NextRow());
+
+        delete result;
+    }
+}
+
+VehicleAccessoryList const* ObjectMgr::getVehicleAccessories(uint32_t _entry)
+{
+    const auto vehicleAccessoriesPair = m_vehicleAccessoryStore.find(_entry);
+    if (vehicleAccessoriesPair != m_vehicleAccessoryStore.end())
+        return &vehicleAccessoriesPair->second;
+
+    return nullptr;
+}
+
+void ObjectMgr::loadVehicleSeatAddon()
+{
+    m_vehicleSeatAddonStore.clear();
+
+    QueryResult* result = WorldDatabase.Query("SELECT SeatEntry, SeatOrientation, ExitParamX , ExitParamY, ExitParamZ, ExitParamO, ExitParamValue FROM vehicle_seat_addon;");
+    if (result != nullptr)
+    {
+        do
+        {
+            Field* fields = result->Fetch();
+
+            uint32_t seatID = fields[0].GetUInt32();
+            float orientation = fields[1].GetFloat();
+            float exitX = fields[2].GetFloat();
+            float exitY = fields[3].GetFloat();
+            float exitZ = fields[4].GetFloat();
+            float exitO = fields[5].GetFloat();
+            uint8_t exitParam = fields[6].GetUInt8();
+
+            m_vehicleSeatAddonStore[seatID] = VehicleSeatAddon(orientation, { exitX, exitY, exitZ, exitO }, exitParam);
+
+        } while (result->NextRow());
+
+        delete result;
+    }
+}
+
+VehicleSeatAddon const* ObjectMgr::getVehicleSeatAddon(uint32_t _seatId) const
+{
+    const auto vehicleSeatAddonPair = m_vehicleSeatAddonStore.find(_seatId);
+    if (vehicleSeatAddonPair != m_vehicleSeatAddonStore.end())
+        return &vehicleSeatAddonPair->second;
+
+    return nullptr;
+}
+#endif
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// EventScripts
+void ObjectMgr::loadEventScripts()
+{
+    sLogger.info("ObjectMgr : Loading Event Scripts...");
+
+    bool success = false;
+    const char* eventScriptsQuery = "SELECT `event_id`, `function`, `script_type`, `data_1`, `data_2`, `data_3`, `data_4`, `data_5`, `x`, `y`, `z`, `o`, `delay`, `next_event` FROM `event_scripts` WHERE `event_id` > 0 ORDER BY `event_id`";
+    const auto result = WorldDatabase.Query(&success, eventScriptsQuery);
+
+    if (!success)
+    {
+        sLogger.debug("LoadEventScripts : Failed on Loading Queries from event_scripts.");
+        return;
+    }
+
+    if (!result)
+    {
+        sLogger.debug("LoadEventScripts : Loaded 0 event_scripts. DB table `event_scripts` is empty.");
+        delete result;
+        return;
+    }
+
+    uint32_t count = 0;
+    do
+    {
+        Field* fields = result->Fetch();
+
+        uint32_t event_id = fields[0].GetUInt32();
+        SimpleEventScript eventscript;
+        eventscript.eventId = event_id;
+        eventscript.function = static_cast<ScriptCommands>(fields[1].GetUInt8());
+        eventscript.scripttype = static_cast<EasyScriptTypes>(fields[2].GetUInt8());
+        eventscript.data_1 = fields[3].GetUInt32();
+        eventscript.data_2 = fields[4].GetUInt32();
+        eventscript.data_3 = fields[5].GetUInt32();
+        eventscript.data_4 = fields[6].GetUInt32();
+        eventscript.data_5 = fields[7].GetUInt32();
+        eventscript.x = fields[8].GetUInt32();
+        eventscript.y = fields[9].GetUInt32();
+        eventscript.z = fields[10].GetUInt32();
+        eventscript.o = fields[11].GetUInt32();
+        eventscript.delay = fields[12].GetUInt32();
+        eventscript.nextevent = fields[13].GetUInt32();
+
+        SimpleEventScript* SimpleEventScript = &m_eventScriptMaps.insert(EventScriptMaps::value_type(event_id, eventscript))->second;
+
+        // for search by spellid ( data_1 is spell id )
+        if (eventscript.data_1 && eventscript.scripttype == EasyScriptTypes::SCRIPT_TYPE_SPELL_EFFECT)
+            m_spellEffectMaps.insert(SpellEffectMaps::value_type(eventscript.data_1, SimpleEventScript));
+
+        ++count;
+
+    } while (result->NextRow());
+
+    delete result;
+
+    sLogger.info("ObjectMgr : Loaded event_scripts for %u events...", count);
+}
+
+EventScriptBounds ObjectMgr::getEventScripts(uint32_t _eventId) const
+{
+    return EventScriptBounds(m_eventScriptMaps.lower_bound(_eventId), m_eventScriptMaps.upper_bound(_eventId));
+}
+
+SpellEffectMapBounds ObjectMgr::getSpellEffectBounds(uint32_t _data1) const
+{
+    return SpellEffectMapBounds(m_spellEffectMaps.lower_bound(_data1), m_spellEffectMaps.upper_bound(_data1));
+}
+
+bool ObjectMgr::checkForScripts(Player* _player, uint32_t _eventId)
+{
+    const EventScriptBounds eventScript = sObjectMgr.getEventScripts(_eventId);
+    if (eventScript.first == eventScript.second)
+        return false;
+
+    for (auto itr = eventScript.first; itr != eventScript.second; ++itr)
+        sEventMgr.AddEvent(this, &ObjectMgr::eventScriptsUpdate, _player, itr->second.eventId, EVENT_EVENT_SCRIPTS, itr->second.delay, 1, 0);
+
+    return true;
+}
+
+bool ObjectMgr::checkForDummySpellScripts(Player* _player, uint32_t _data1)
+{
+    const SpellEffectMapBounds eventScript = sObjectMgr.getSpellEffectBounds(_data1);
+    if (eventScript.first == eventScript.second)
+        return false;
+
+    for (auto itr = eventScript.first; itr != eventScript.second; ++itr)
+        sEventMgr.AddEvent(this, &ObjectMgr::eventScriptsUpdate, _player, itr->second->eventId, EVENT_EVENT_SCRIPTS, itr->second->delay, 1, 0);
+
+    return true;
+}
+
+void ObjectMgr::eventScriptsUpdate(Player* _player, uint32_t _nextEvent)
+{
+    const EventScriptBounds eventScript = sObjectMgr.getEventScripts(_nextEvent);
+
+    for (auto itr = eventScript.first; itr != eventScript.second; ++itr)
+    {
+        if (itr->second.scripttype == EasyScriptTypes::SCRIPT_TYPE_SPELL_EFFECT || itr->second.scripttype == EasyScriptTypes::SCRIPT_TYPE_DUMMY)
+        {
+            switch (itr->second.function)
+            {
+                case ScriptCommands::SCRIPT_COMMAND_RESPAWN_GAMEOBJECT:
+                {
+                    Object* target = _player->getWorldMap()->getInterface()->getGameObjectNearestCoords(_player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), itr->second.data_1);
+                    if (target == nullptr)
+                        return;
+
+                    dynamic_cast<GameObject*>(target)->despawn(1000, itr->second.data_2);
+                } break;
+                case ScriptCommands::SCRIPT_COMMAND_KILL_CREDIT:
+                {
+                    if (auto* questLog = _player->getQuestLogByQuestId(itr->second.data_2))
+                    {
+                        if (questLog->getQuestProperties()->required_mob_or_go[itr->second.data_5] >= 0)
+                        {
+                            const uint32_t requiredMob = questLog->getQuestProperties()->required_mob_or_go[itr->second.data_5];
+                            const auto index = static_cast<uint8_t>(itr->second.data_5);
+                            if (questLog->getMobCountByIndex(index) < requiredMob)
+                            {
+                                questLog->setMobCountForIndex(index, questLog->getMobCountByIndex(index) + 1);
+                                questLog->sendUpdateAddKill(index);
+                                questLog->updatePlayerFields();
+                            }
+                        }
+                    }
+                } break;
+                default:
+                    break;
+            }
+        }
+
+        if (itr->second.scripttype == EasyScriptTypes::SCRIPT_TYPE_GAMEOBJECT || itr->second.scripttype == EasyScriptTypes::SCRIPT_TYPE_DUMMY)
+        {
+            switch (itr->second.function)
+            {
+                case ScriptCommands::SCRIPT_COMMAND_ACTIVATE_OBJECT:
+                {
+                    GameObject* gameObject;
+                    MapScriptInterface* mapScript = _player->getWorldMap()->getInterface();
+                    if ((itr->second.x || itr->second.y || itr->second.z) == 0)
+                        gameObject = mapScript->getGameObjectNearestCoords(_player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), itr->second.data_1);
+                    else
+                        gameObject = mapScript->getGameObjectNearestCoords(static_cast<float>(itr->second.x), static_cast<float>(itr->second.y), static_cast<float>(itr->second.z), itr->second.data_1);
+
+                    if (gameObject == nullptr)
+                        return;
+
+                    if (gameObject->getState() != GO_STATE_OPEN)
+                        gameObject->setState(GO_STATE_OPEN);
+                    else
+                        gameObject->setState(GO_STATE_CLOSED);
+
+                } break;
+                default:
+                    break;
+            }
+        }
+
+        if (itr->second.nextevent != 0)
+            sObjectMgr.checkForScripts(_player, itr->second.nextevent);
+    }
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Misc
@@ -1517,57 +1880,6 @@ CreatureDisplayInfoData const* ObjectMgr::getCreatureDisplayInfoData(uint32_t _d
     return &itr->second;
 }
 
-Player* ObjectMgr::createPlayerByGuid(uint8_t _class, uint32_t _guid)
-{
-    Player* player;
-
-    switch (_class)
-    {
-        case WARRIOR:
-            player = new Warrior(_guid);
-            break;
-        case PALADIN:
-            player = new Paladin(_guid);
-            break;
-        case HUNTER:
-            player = new Hunter(_guid);
-            break;
-        case ROGUE:
-            player = new Rogue(_guid);
-            break;
-        case PRIEST:
-            player = new Priest(_guid);
-            break;
-#if VERSION_STRING > TBC
-        case DEATHKNIGHT:
-            player = new DeathKnight(_guid);
-            break;
-#endif
-        case SHAMAN:
-            player = new Shaman(_guid);
-            break;
-        case MAGE:
-            player = new Mage(_guid);
-            break;
-        case WARLOCK:
-            player = new Warlock(_guid);
-            break;
-#if VERSION_STRING > Cata
-        case MONK:
-            player = new Monk(_guid);
-            break;
-#endif
-        case DRUID:
-            player = new Druid(_guid);
-            break;
-        default:
-            player = nullptr;
-            break;
-    }
-
-    return player;
-}
-
 GameObject* ObjectMgr::createGameObjectByGuid(uint32_t _id, uint32_t _guid)
 {
     GameObjectProperties const* gameobjectProperties = sMySQLStore.getGameObjectProperties(_id);
@@ -1879,7 +2191,7 @@ void ObjectMgr::loadWorldStateTemplates()
     delete result;
 }
 
-std::multimap<uint32, WorldState>* ObjectMgr::getWorldStatesForMap(uint32 _map) const
+std::multimap<uint32_t, WorldState>* ObjectMgr::getWorldStatesForMap(uint32_t _map) const
 {
     const auto itr = m_worldstateTemplates.find(_map);
     if (itr == m_worldstateTemplates.end())
@@ -2158,7 +2470,114 @@ std::shared_ptr<LevelInfo> ObjectMgr::getLevelInfo(uint32_t _race, uint32_t _cla
     return nullptr;
 }
 
-void ObjectMgr::SetHighestGuids()
+std::shared_ptr<Pet> ObjectMgr::createPet(uint32_t _entry)
+{
+    const uint32_t guid = ++m_hiPetGuid;
+    return std::make_shared<Pet>(WoWGuid(guid, _entry, HIGHGUID_TYPE_PET));
+}
+
+void ObjectMgr::loadPetSpellCooldowns()
+{
+    for (uint32_t i = 0; i < sCreatureSpellDataStore.GetNumRows(); ++i)
+    {
+        const auto cretureSpellData = sCreatureSpellDataStore.LookupEntry(i);
+
+        for (uint8_t j = 0; j < 3; ++j)
+        {
+            if (cretureSpellData == nullptr)
+                continue;
+
+            uint32_t spellId = cretureSpellData->Spells[j];
+            uint32_t cooldown = cretureSpellData->Cooldowns[j] * 10;
+
+            if (spellId != 0)
+            {
+                auto petCooldownPair = m_petSpellCooldowns.find(spellId);
+                if (petCooldownPair == m_petSpellCooldowns.end())
+                {
+                    if (cooldown)
+                        m_petSpellCooldowns.insert(std::make_pair(spellId, cooldown));
+                }
+            }
+        }
+    }
+}
+
+uint32_t ObjectMgr::getPetSpellCooldown(uint32_t _spellId)
+{
+    const auto petCooldownPair = m_petSpellCooldowns.find(_spellId);
+    if (petCooldownPair != m_petSpellCooldowns.end())
+        return petCooldownPair->second;
+
+    if (const auto spellInfo = sSpellMgr.getSpellInfo(_spellId))
+    {
+        if (spellInfo->getRecoveryTime() > spellInfo->getCategoryRecoveryTime())
+            return spellInfo->getRecoveryTime();
+        return spellInfo->getCategoryRecoveryTime();
+    }
+
+    return 0;
+}
+
+Item* ObjectMgr::loadItem(uint32_t _lowGuid)
+{
+    QueryResult* result = CharacterDatabase.Query("SELECT * FROM playeritems WHERE guid = %u", _lowGuid);
+    Item* item = nullptr;
+    if (result)
+    {
+        if (const auto itemProperties = sMySQLStore.getItemProperties(result->Fetch()[2].GetUInt32()))
+        {
+            if (itemProperties->InventoryType == INVTYPE_BAG)
+            {
+                Container* container = new Container(HIGHGUID_TYPE_CONTAINER, _lowGuid);
+                container->loadFromDB(result->Fetch());
+                item = container;
+            }
+            else
+            {
+                item = new Item;
+                item->init(HIGHGUID_TYPE_ITEM, _lowGuid);
+                item->loadFromDB(result->Fetch(), nullptr, false);
+            }
+        }
+
+        delete result;
+    }
+
+    return item;
+}
+
+Item* ObjectMgr::createItem(uint32_t _entry, Player* _playerOwner)
+{
+    ItemProperties const* itemProperties = sMySQLStore.getItemProperties(_entry);
+    if (itemProperties == nullptr)
+        return nullptr;
+
+    if (itemProperties->InventoryType == INVTYPE_BAG)
+    {
+        Container* container = new Container(HIGHGUID_TYPE_CONTAINER, generateLowGuid(HIGHGUID_TYPE_CONTAINER));
+        container->create(_entry, _playerOwner);
+        container->setStackCount(1);
+        return container;
+    }
+
+    Item* item = new Item;
+    item->init(HIGHGUID_TYPE_ITEM, generateLowGuid(HIGHGUID_TYPE_ITEM));
+    item->create(_entry, _playerOwner);
+    item->setStackCount(1);
+
+#if VERSION_STRING > TBC
+    if (_playerOwner != nullptr)
+    {
+        const uint32_t* playedTime = _playerOwner->getPlayedTime();
+        item->setCreatePlayedTime(playedTime[1]);
+    }
+#endif
+
+    return item;
+}
+
+void ObjectMgr::setHighestGuids()
 {
     QueryResult* result = CharacterDatabase.Query("SELECT MAX(guid) FROM characters");
     if (result)
@@ -2226,21 +2645,21 @@ void ObjectMgr::SetHighestGuids()
     result = CharacterDatabase.Query("SELECT MAX(UID) FROM playerbugreports");
     if (result != nullptr)
     {
-        m_reportID = uint32(result->Fetch()[0].GetUInt64() + 1);
+        m_reportID = result->Fetch()[0].GetUInt32() + 1;
         delete result;
     }
 
     result = CharacterDatabase.Query("SELECT MAX(message_id) FROM mailbox");
     if (result)
     {
-        m_mailid = uint32(result->Fetch()[0].GetUInt64() + 1);
+        m_mailid = result->Fetch()[0].GetUInt32() + 1;
         delete result;
     }
 
     result = CharacterDatabase.Query("SELECT MAX(setGUID) FROM equipmentsets");
     if (result != nullptr)
     {
-        m_setGUID = uint32(result->Fetch()[0].GetUInt32() + 1);
+        m_setGUID = result->Fetch()[0].GetUInt32() + 1;
         delete result;
     }
 
@@ -2261,540 +2680,33 @@ void ObjectMgr::SetHighestGuids()
     sLogger.info("ObjectMgr : HighGuid(GROUP) = %lu", m_hiGroupId.load());
     sLogger.info("ObjectMgr : HighGuid(CHARTER) = %lu", m_hiCharterId.load());
     sLogger.info("ObjectMgr : HighGuid(GUILD) = %lu", m_hiGuildId.load());
-    sLogger.info("ObjectMgr : HighGuid(BUGREPORT) = %u", uint32(m_reportID.load() - 1));
-    sLogger.info("ObjectMgr : HighGuid(MAIL) = %u", uint32(m_mailid.load()));
-    sLogger.info("ObjectMgr : HighGuid(EQUIPMENTSET) = %u", uint32(m_setGUID.load() - 1));
+    sLogger.info("ObjectMgr : HighGuid(BUGREPORT) = %lu", m_reportID.load() - 1);
+    sLogger.info("ObjectMgr : HighGuid(MAIL) = %lu", m_mailid.load());
+    sLogger.info("ObjectMgr : HighGuid(EQUIPMENTSET) = %lu", m_setGUID.load() - 1);
 }
 
-uint32 ObjectMgr::GenerateReportID()
+uint32_t ObjectMgr::generateReportId() { return ++m_reportID; }
+uint32_t ObjectMgr::generateEquipmentSetId() { return ++m_setGUID; }
+uint32_t ObjectMgr::generateMailId() { return ++m_mailid; }
+uint32_t ObjectMgr::generateLowGuid(uint32_t _guidHigh)
 {
-    return ++m_reportID;
-}
-
-uint32 ObjectMgr::GenerateEquipmentSetID()
-{
-    return ++m_setGUID;
-}
-
-uint32 ObjectMgr::GenerateMailID()
-{
-    return ++m_mailid;
-}
-
-uint32 ObjectMgr::GenerateLowGuid(uint32 guidhigh)
-{
-    uint32 ret;
-
-    switch (guidhigh)
+    switch (_guidHigh)
     {
-    case HIGHGUID_TYPE_PLAYER:
-        ret = ++m_hiPlayerGuid;
-        break;
-    case HIGHGUID_TYPE_ITEM:
-    case HIGHGUID_TYPE_CONTAINER:
-        ret = ++m_hiItemGuid;
-        break;
-    default:
-        sLogger.failure("ObjectMgr::GenerateLowGuid tried to generate low guid gor non player/item, return 0!");
-        ret = 0;
-        break;
-    }
-
-    return ret;
-}
-
-Player* ObjectMgr::GetPlayer(const char* name, bool caseSensitive)
-{
-    std::lock_guard<std::mutex> guard(_playerslock);
-
-    if (!caseSensitive)
-    {
-        std::string strName = name;
-        AscEmu::Util::Strings::toLowerCase(strName);
-        for (PlayerStorageMap::const_iterator itr = _players.begin(); itr != _players.end(); ++itr)
-        {
-            if (!stricmp(itr->second->getName().c_str(), strName.c_str()))
-            {
-                return itr->second;
-            }
-        }
-    }
-    else
-    {
-        for (PlayerStorageMap::const_iterator itr = _players.begin(); itr != _players.end(); ++itr)
-        {
-            if (!strcmp(itr->second->getName().c_str(), name))
-            {
-                return itr->second;
-            }
-        }
-    }
-
-    return nullptr;
-}
-
-Player* ObjectMgr::GetPlayer(uint32 guid)
-{
-    std::lock_guard<std::mutex> guard(_playerslock);
-
-    PlayerStorageMap::const_iterator itr = _players.find(guid);
-    return (itr != _players.end()) ? itr->second : nullptr;
-}
-
-Item* ObjectMgr::CreateItem(uint32 entry, Player* owner)
-{
-    ItemProperties const* proto = sMySQLStore.getItemProperties(entry);
-    if (proto ==nullptr)
-        return nullptr;
-
-    if (proto->InventoryType == INVTYPE_BAG)
-    {
-        Container* pContainer = new Container(HIGHGUID_TYPE_CONTAINER, GenerateLowGuid(HIGHGUID_TYPE_CONTAINER));
-        pContainer->create(entry, owner);
-        pContainer->setStackCount(1);
-        return pContainer;
-    }
-    else
-    {
-        Item* pItem = new Item;
-        pItem->init(HIGHGUID_TYPE_ITEM, GenerateLowGuid(HIGHGUID_TYPE_ITEM));
-        pItem->create(entry, owner);
-        pItem->setStackCount(1);
-
-#if VERSION_STRING > TBC
-        if (owner != nullptr)
-        {
-            uint32* played = owner->getPlayedTime();
-            pItem->setCreatePlayedTime(played[1]);
-        }
-#endif
-
-        return pItem;
+        case HIGHGUID_TYPE_PLAYER:
+            return ++m_hiPlayerGuid;
+        case HIGHGUID_TYPE_ITEM:
+        case HIGHGUID_TYPE_CONTAINER:
+            return ++m_hiItemGuid;
+        default:
+            sLogger.failure("ObjectMgr::GenerateLowGuid tried to generate low guid gor non player/item, return 0!");
+            return 0;
     }
 }
 
-Item* ObjectMgr::LoadItem(uint32 lowguid)
-{
-    QueryResult* result = CharacterDatabase.Query("SELECT * FROM playeritems WHERE guid = %u", lowguid);
-    Item* pReturn = nullptr;
-
-    if (result)
-    {
-        ItemProperties const* pProto = sMySQLStore.getItemProperties(result->Fetch()[2].GetUInt32());
-        if (!pProto)
-            return nullptr;
-
-        if (pProto->InventoryType == INVTYPE_BAG)
-        {
-            Container* pContainer = new Container(HIGHGUID_TYPE_CONTAINER, lowguid);
-            pContainer->loadFromDB(result->Fetch());
-            pReturn = pContainer;
-        }
-        else
-        {
-            Item* pItem = new Item;
-            pItem->init(HIGHGUID_TYPE_ITEM, lowguid);
-            pItem->loadFromDB(result->Fetch(), nullptr, false);
-            pReturn = pItem;
-        }
-        delete result;
-    }
-
-    return pReturn;
-}
-
-void ObjectMgr::LoadPetSpellCooldowns()
-{
-    for (uint32 i = 0; i < sCreatureSpellDataStore.GetNumRows(); ++i)
-    {
-        auto creture_spell_data = sCreatureSpellDataStore.LookupEntry(i);
-
-        for (uint8 j = 0; j < 3; ++j)
-        {
-            if (creture_spell_data == nullptr)
-                continue;
-
-            uint32 SpellId = creture_spell_data->Spells[j];
-            uint32 Cooldown = creture_spell_data->Cooldowns[j] * 10;
-
-            if (SpellId != 0)
-            {
-                PetSpellCooldownMap::iterator itr = mPetSpellCooldowns.find(SpellId);
-                if (itr == mPetSpellCooldowns.end())
-                {
-                    if (Cooldown)
-                        mPetSpellCooldowns.insert(std::make_pair(SpellId, Cooldown));
-                }
-            }
-        }
-    }
-}
-
-uint32 ObjectMgr::GetPetSpellCooldown(uint32 SpellId)
-{
-    PetSpellCooldownMap::iterator itr = mPetSpellCooldowns.find(SpellId);
-    if (itr != mPetSpellCooldowns.end())
-        return itr->second;
-
-    SpellInfo const* sp = sSpellMgr.getSpellInfo(SpellId);
-    if (sp->getRecoveryTime() > sp->getCategoryRecoveryTime())
-        return sp->getRecoveryTime();
-    else
-        return sp->getCategoryRecoveryTime();
-}
-
-Pet* ObjectMgr::CreatePet(uint32 entry)
-{
-    uint32 guid;
-    guid = ++m_hiPetGuid;
-    return new Pet(WoWGuid(guid, entry, HIGHGUID_TYPE_PET));
-}
-
-Player* ObjectMgr::CreatePlayer(uint8 _class)
-{
-    uint32_t guid= ++m_hiPlayerGuid;
-
-    return createPlayerByGuid(_class, guid);
-}
-
-void ObjectMgr::AddPlayer(Player* p)
-{
-    std::lock_guard<std::mutex> guard(_playerslock);
-
-    _players[p->getGuidLow()] = p;
-}
-
-void ObjectMgr::RemovePlayer(Player* p)
-{
-    std::lock_guard<std::mutex> guard(_playerslock);
-
-    _players.erase(p->getGuidLow());
-}
-
-void ObjectMgr::ResetDailies()
-{
-    std::lock_guard<std::mutex> guard(_playerslock);
-
-    for (auto itr : _players)
-    {
-        if (Player* pPlayer = itr.second)
-            pPlayer->resetFinishedDailies();
-    }
-}
-
-uint32 ObjectMgr::GenerateArenaTeamId()
-{
-    uint32 ret;
-    ret = ++m_hiArenaTeamId;
-
-    return ret;
-}
-
-uint32 ObjectMgr::GenerateGroupId()
-{
-    uint32 r;
-    r = ++m_hiGroupId;
-
-    return r;
-}
-
-uint32 ObjectMgr::GenerateGuildId()
-{
-    uint32 r;
-    r = ++m_hiGuildId;
-
-    return r;
-}
-
-uint32 ObjectMgr::GenerateCreatureSpawnID()
-{
-    uint32 r;
-    r = ++m_hiCreatureSpawnId;
-
-    return r;
-}
-
-uint32 ObjectMgr::GenerateGameObjectSpawnID()
-{
-    uint32 r;
-    r = ++m_hiGameObjectSpawnId;
-
-    return r;
-}
-#ifdef FT_VEHICLES
-void ObjectMgr::LoadVehicleAccessories()
-{
-    _vehicleAccessoryStore.clear();
-
-    QueryResult* result = WorldDatabase.Query("SELECT entry, accessory_entry, seat_id , minion, summontype, summontimer FROM vehicle_accessories;");
-    if (result != nullptr)
-    {
-        do
-        {
-            Field* fields = result->Fetch();
-
-            uint32_t entry = fields[0].GetUInt32();
-            uint32_t accessory = fields[1].GetUInt32();
-            int8_t seatId = fields[2].GetInt8();
-            bool isMinion = fields[3].GetBool();
-            uint8_t summonType = fields[4].GetUInt8();
-            uint32_t summonTimer = fields[5].GetUInt32();
-
-            if (!sMySQLStore.getCreatureProperties(entry))
-            {
-                sLogger.failure("Table `vehicle_accessories`: creature template entry %u does not exist.", entry);
-                continue;
-            }
-
-            if (!sMySQLStore.getCreatureProperties(accessory))
-            {
-                sLogger.failure("Table `vehicle_accessories`: Accessory %u does not exist.", accessory);
-                continue;
-            }
-
-            auto _spellClickInfoStore = sMySQLStore.getSpellClickSpellsStore();
-            if (_spellClickInfoStore->find(entry) == _spellClickInfoStore->end())
-            {
-                sLogger.failure("Table `vehicle_accessories`: creature template entry %u has no data in npc_spellclick_spells", entry);
-                continue;
-            }
-
-            _vehicleAccessoryStore[entry].push_back(VehicleAccessory(accessory, seatId, isMinion, summonType, summonTimer));
-
-        } while (result->NextRow());
-
-        delete result;
-    }
-}
-
-void ObjectMgr::loadVehicleSeatAddon()
-{
-    _vehicleSeatAddonStore.clear();
-
-    QueryResult* result = WorldDatabase.Query("SELECT SeatEntry, SeatOrientation, ExitParamX , ExitParamY, ExitParamZ, ExitParamO, ExitParamValue FROM vehicle_seat_addon;");
-    if (result != nullptr)
-    {
-        do
-        {
-            Field* fields = result->Fetch();
-
-            uint32_t seatID = fields[0].GetUInt32();
-            float orientation = fields[1].GetFloat();
-            float exitX = fields[2].GetFloat();
-            float exitY = fields[3].GetFloat();
-            float exitZ = fields[4].GetFloat();
-            float exitO = fields[5].GetFloat();
-            uint8_t exitParam = fields[6].GetUInt8();
-
-            _vehicleSeatAddonStore[seatID] = VehicleSeatAddon(orientation, { exitX, exitY, exitZ, exitO }, exitParam);
-
-        } while (result->NextRow());
-
-        delete result;
-    }
-}
-
-VehicleAccessoryList const* ObjectMgr::getVehicleAccessories(Vehicle* vehicle)
-{
-    VehicleAccessoryContainer::const_iterator itr = _vehicleAccessoryStore.find(vehicle->getEntry());
-    if (itr != _vehicleAccessoryStore.end())
-        return &itr->second;
-    return nullptr;
-}
-#endif
-
-void ObjectMgr::LoadEventScripts()
-{
-    sLogger.info("ObjectMgr : Loading Event Scripts...");
-
-    bool success = false;
-    const char* eventScriptsQuery = "SELECT `event_id`, `function`, `script_type`, `data_1`, `data_2`, `data_3`, `data_4`, `data_5`, `x`, `y`, `z`, `o`, `delay`, `next_event` FROM `event_scripts` WHERE `event_id` > 0 ORDER BY `event_id`";
-    auto result = WorldDatabase.Query(&success, eventScriptsQuery);
-
-    if (!success)
-    {
-        sLogger.debug("LoadEventScripts : Failed on Loading Queries from event_scripts.");
-        return;
-    }
-    else
-    {
-        if (!result)
-        {
-            sLogger.debug("LoadEventScripts : Loaded 0 event_scripts. DB table `event_scripts` is empty.");
-            return;
-        }
-    }
-
-    uint32 count = 0;
-    do
-    {
-        Field* fields = result->Fetch();
-
-        uint32 event_id = fields[0].GetUInt32();
-        SimpleEventScript eventscript;
-
-        eventscript.eventId     = event_id;
-        eventscript.function    = static_cast<uint8>(ScriptCommands(fields[1].GetUInt8()));
-        eventscript.scripttype  = static_cast<uint8>(EasyScriptTypes(fields[2].GetUInt8()));
-        eventscript.data_1      = fields[3].GetUInt32();
-        eventscript.data_2      = fields[4].GetUInt32();
-        eventscript.data_3      = fields[5].GetUInt32();
-        eventscript.data_4      = fields[6].GetUInt32();
-        eventscript.data_5      = fields[7].GetUInt32();
-        eventscript.x           = fields[8].GetUInt32();
-        eventscript.y           = fields[9].GetUInt32();
-        eventscript.z           = fields[10].GetUInt32();
-        eventscript.o           = fields[11].GetUInt32();
-        eventscript.delay       = fields[12].GetUInt32();
-        eventscript.nextevent   = fields[13].GetUInt32();
-
-        SimpleEventScript* SimpleEventScript = &mEventScriptMaps.insert(EventScriptMaps::value_type(event_id, eventscript))->second;
-
-        // for search by spellid ( data_1 is spell id )
-        if (eventscript.data_1 && eventscript.scripttype == static_cast<uint8>(EasyScriptTypes::SCRIPT_TYPE_SPELL_EFFECT))
-            mSpellEffectMaps.insert(SpellEffectMaps::value_type(eventscript.data_1, SimpleEventScript));
-
-
-        ++count;
-
-    } while (result->NextRow());
-
-    delete result;
-
-    sLogger.info("ObjectMgr : Loaded event_scripts for %u events...", count);
-}
-
-EventScriptBounds ObjectMgr::GetEventScripts(uint32 event_id) const
-{
-    return EventScriptBounds(mEventScriptMaps.lower_bound(event_id), mEventScriptMaps.upper_bound(event_id));
-}
-
-SpellEffectMapBounds ObjectMgr::GetSpellEffectBounds(uint32 data_1) const
-{
-    return SpellEffectMapBounds(mSpellEffectMaps.lower_bound(data_1), mSpellEffectMaps.upper_bound(data_1));
-}
-
-bool ObjectMgr::CheckforScripts(Player* plr, uint32 event_id)
-{
-    EventScriptBounds EventScript = sObjectMgr.GetEventScripts(event_id);
-    if (EventScript.first == EventScript.second)
-        return false;
-
-    for (EventScriptMaps::const_iterator itr = EventScript.first; itr != EventScript.second; ++itr)
-    {
-        sEventMgr.AddEvent(this, &ObjectMgr::EventScriptsUpdate, plr, itr->second.eventId, EVENT_EVENT_SCRIPTS, itr->second.delay, 1, 0);
-    }
-
-    return true;
-}
-
-bool ObjectMgr::CheckforDummySpellScripts(Player* plr, uint32 data_1)
-{
-    SpellEffectMapBounds EventScript = sObjectMgr.GetSpellEffectBounds(data_1);
-    if (EventScript.first == EventScript.second)
-        return false;
-
-    for (SpellEffectMaps::const_iterator itr = EventScript.first; itr != EventScript.second; ++itr)
-    {
-        sEventMgr.AddEvent(this, &ObjectMgr::EventScriptsUpdate, plr, itr->second->eventId, EVENT_EVENT_SCRIPTS, itr->second->delay, 1, 0);
-    }
-
-    return true;
-}
-
-void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
-{
-    EventScriptBounds EventScript = sObjectMgr.GetEventScripts(next_event);
-
-    for (EventScriptMaps::const_iterator itr = EventScript.first; itr != EventScript.second; ++itr)
-    {
-        if (itr->second.scripttype == static_cast<uint8>(EasyScriptTypes::SCRIPT_TYPE_SPELL_EFFECT) || itr->second.scripttype == static_cast<uint8>(EasyScriptTypes::SCRIPT_TYPE_DUMMY))
-        {
-            switch (itr->second.function)
-            {
-            case static_cast<uint8>(ScriptCommands::SCRIPT_COMMAND_RESPAWN_GAMEOBJECT):
-            {
-                Object* target = plr->getWorldMap()->getInterface()->getGameObjectNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), itr->second.data_1);
-                if (target == nullptr)
-                    return;
-
-                static_cast<GameObject*>(target)->despawn(1000, itr->second.data_2);
-
-                break;
-            }
-
-            case static_cast<uint8>(ScriptCommands::SCRIPT_COMMAND_KILL_CREDIT):
-            {
-                if (auto* questLog = plr->getQuestLogByQuestId(itr->second.data_2))
-                {
-                    if (questLog->getQuestProperties()->required_mob_or_go[itr->second.data_5] >= 0)
-                    {
-                        uint32 required_mob = static_cast<uint32>(questLog->getQuestProperties()->required_mob_or_go[itr->second.data_5]);
-                        const auto index = static_cast<uint8_t>(itr->second.data_5);
-                        if (questLog->getMobCountByIndex(index) < required_mob)
-                        {
-                            questLog->setMobCountForIndex(index, questLog->getMobCountByIndex(index) + 1);
-                            questLog->sendUpdateAddKill(index);
-                            questLog->updatePlayerFields();
-                        }
-                    }
-                }
-                break;
-            }
-            }
-        }
-
-        if (itr->second.scripttype == static_cast<uint8>(EasyScriptTypes::SCRIPT_TYPE_GAMEOBJECT) || itr->second.scripttype == static_cast<uint8>(EasyScriptTypes::SCRIPT_TYPE_DUMMY))
-        {
-            switch (itr->second.function)
-            {
-            case static_cast<uint8>(ScriptCommands::SCRIPT_COMMAND_ACTIVATE_OBJECT):
-            {
-                if ((itr->second.x || itr->second.y || itr->second.z) == 0)
-                {
-                    Object* target = plr->getWorldMap()->getInterface()->getGameObjectNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), itr->second.data_1);
-                    if (target == nullptr)
-                        return;
-
-                    if (static_cast<GameObject*>(target)->getState() != GO_STATE_OPEN)
-                    {
-                        static_cast<GameObject*>(target)->setState(GO_STATE_OPEN);
-                    }
-                    else
-                    {
-                        static_cast<GameObject*>(target)->setState(GO_STATE_CLOSED);
-                    }
-                }
-                else
-                {
-                    Object* target = plr->getWorldMap()->getInterface()->getGameObjectNearestCoords(float(itr->second.x), float(itr->second.y), float(itr->second.z), itr->second.data_1);
-                    if (target == nullptr)
-                        return;
-
-                    if (static_cast<GameObject*>(target)->getState() != GO_STATE_OPEN)
-                    {
-                        static_cast<GameObject*>(target)->setState(GO_STATE_OPEN);
-                    }
-                    else
-                    {
-                        static_cast<GameObject*>(target)->setState(GO_STATE_CLOSED);
-                    }
-                }
-            }
-            break;
-            }
-        }
-
-        if (itr->second.nextevent != 0)
-        {
-            sObjectMgr.CheckforScripts(plr, itr->second.nextevent);
-        }
-    }
-}
-
+uint32_t ObjectMgr::generateArenaTeamId() { return ++m_hiArenaTeamId; }
+uint32_t ObjectMgr::generateGuildId() { return ++m_hiGuildId; }
+uint32_t ObjectMgr::generateCreatureSpawnId() { return ++m_hiCreatureSpawnId; }
+uint32_t ObjectMgr::generateGameObjectSpawnId() { return ++m_hiGameObjectSpawnId; }
 #if VERSION_STRING > WotLK
-uint64_t ObjectMgr::generateVoidStorageItemId()
-{
-    return ++m_voidItemId;
-}
+uint64_t ObjectMgr::generateVoidStorageItemId() { return ++m_voidItemId; }
 #endif

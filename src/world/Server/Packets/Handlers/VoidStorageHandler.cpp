@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 // Cata
 #include "Objects/Units/Creatures/Creature.h"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -364,7 +364,7 @@ void WorldSession::handleVoidStorageTransfer(WorldPacket& recvData)
             continue;
         }
 
-        Item* item = sObjectMgr.CreateItem(itemVS->itemEntry, player);
+        Item* item = sObjectMgr.createItem(itemVS->itemEntry, player);
 
         AddItemResult msg = player->getItemInterface()->AddItemToFreeSlot(item);
         if (msg != ADD_ITEM_RESULT_OK)

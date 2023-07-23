@@ -15,7 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgPlayerLogin.h"
 #include "Server/Packets/CmsgCharRename.h"
 #include "Server/Packets/SmsgCharRename.h"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Server/MainServerDefines.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/SmsgCharCreate.h"
@@ -187,7 +187,7 @@ void WorldSession::handlePlayerLoginOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_PLAYER_LOGIN %u (guidLow)", srlPacket.guid.getGuidLow());
 
-    if (sObjectMgr.GetPlayer(srlPacket.guid.getGuidLow()) != nullptr || m_loggingInPlayer || _player)
+    if (sObjectMgr.getPlayer(srlPacket.guid.getGuidLow()) != nullptr || m_loggingInPlayer || _player)
     {
         SendPacket(SmsgCharacterLoginFailed(E_CHAR_LOGIN_DUPLICATE_CHARACTER).serialise().get());
         return;
@@ -294,7 +294,7 @@ void WorldSession::loadPlayerFromDBProc(QueryResultVector& results)
 uint8_t WorldSession::deleteCharacter(WoWGuid guid)
 {
     const auto playerInfo = sObjectMgr.getCachedCharacterInfo(guid.getGuidLow());
-    if (playerInfo != nullptr && sObjectMgr.GetPlayer(playerInfo->guid) == nullptr)
+    if (playerInfo != nullptr && sObjectMgr.getPlayer(playerInfo->guid) == nullptr)
     {
         QueryResult* result = CharacterDatabase.Query("SELECT name FROM characters WHERE guid = %u AND acct = %u", guid.getGuidLow(), _accountId);
         if (!result)
@@ -429,7 +429,7 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
         }
     }
 
-    const auto newPlayer = sObjectMgr.CreatePlayer(srlPacket.createStruct._class);
+    const auto newPlayer = sObjectMgr.createPlayer(srlPacket.createStruct._class);
     newPlayer->setSession(this);
 
     if (!newPlayer->create(srlPacket.createStruct))
@@ -743,7 +743,7 @@ void WorldSession::fullLogin(Player* player)
 
     sHookInterface.OnFullLogin(player);
 
-    sObjectMgr.AddPlayer(player);
+    sObjectMgr.addPlayer(player);
 }
 
 void WorldSession::handleDeclinedPlayerNameOpcode(WorldPacket& recvPacket)

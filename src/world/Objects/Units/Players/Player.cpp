@@ -24,7 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Area/AreaStorage.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Objects/GameObject.h"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Management/TaxiMgr.h"
 #include "Management/WeatherMgr.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
@@ -199,7 +199,7 @@ Player::~Player()
     if (!m_isReadyToBeRemoved)
     {
         sLogger.failure("Player deleted from non-logout player!");
-        sObjectMgr.RemovePlayer(this);
+        sObjectMgr.removePlayer(this);
     }
 
     if (m_session)
@@ -212,7 +212,7 @@ Player::~Player()
     if (m_TradeData != nullptr)
         cancelTrade(false);
 
-    if (Player* inviterPlayer = sObjectMgr.GetPlayer(getGroupInviterId()))
+    if (Player* inviterPlayer = sObjectMgr.getPlayer(getGroupInviterId()))
         inviterPlayer->setGroupInviterId(0);
 
     dismissActivePets();
@@ -2582,7 +2582,7 @@ bool Player::create(CharCreate& charCreateContent)
                 continue;
             }
 
-            auto item = sObjectMgr.CreateItem(itemId, this);
+            auto item = sObjectMgr.createItem(itemId, this);
             if (item)
             {
                 item->setStackCount(1);
@@ -2626,7 +2626,7 @@ bool Player::create(CharCreate& charCreateContent)
     {
         if ((*is).id != 0)
         {
-            auto item = sObjectMgr.CreateItem((*is).id, this);
+            auto item = sObjectMgr.createItem((*is).id, this);
             if (item)
             {
                 item->setStackCount((*is).amount);
@@ -8730,7 +8730,7 @@ void Player::acceptQuest(uint64_t guid, uint32_t quest_id)
     {
         if (receive_item)
         {
-            if (Item* item = sObjectMgr.CreateItem(receive_item, this))
+            if (Item* item = sObjectMgr.createItem(receive_item, this))
             {
                 if (!getItemInterface()->AddItemToFreeSlot(item))
                 {
@@ -8750,7 +8750,7 @@ void Player::acceptQuest(uint64_t guid, uint32_t quest_id)
     {
         if (!qst_giver->isItem() || (qst_giver->getEntry() != questProperties->srcitem))
         {
-            if (Item* item = sObjectMgr.CreateItem(questProperties->srcitem, this))
+            if (Item* item = sObjectMgr.createItem(questProperties->srcitem, this))
             {
                 item->setStackCount(questProperties->srcitemcount ? questProperties->srcitemcount : 1);
                 if (!getItemInterface()->AddItemToFreeSlot(item))
@@ -9085,7 +9085,7 @@ void Player::loadIgnoreList()
 
 void Player::addToFriendList(std::string name, std::string note)
 {
-    if (auto* targetPlayer = sObjectMgr.GetPlayer(name.c_str()))
+    if (auto* targetPlayer = sObjectMgr.getPlayer(name.c_str()))
     {
         // we can not add us ;)
         if (targetPlayer->getGuidLow() == getGuidLow())
@@ -9192,7 +9192,7 @@ void Player::sendFriendStatus(bool comesOnline)
     {
         for (auto friendedGuids : m_socialFriendedByGuids)
         {
-            if (auto* targetPlayer = sObjectMgr.GetPlayer(friendedGuids))
+            if (auto* targetPlayer = sObjectMgr.getPlayer(friendedGuids))
             {
                 if (targetPlayer->getSession())
                 {
@@ -9222,7 +9222,7 @@ void Player::sendFriendLists(uint32_t flags)
             friendListMember.flag = 0x01;
             friendListMember.note = friends.note;
 
-            if (auto* plr = sObjectMgr.GetPlayer(friends.friendGuid))
+            if (auto* plr = sObjectMgr.getPlayer(friends.friendGuid))
             {
                 friendListMember.isOnline = 1;
                 friendListMember.zoneId = plr->getZoneId();
@@ -9268,7 +9268,7 @@ void Player::sendFriendLists(uint32_t flags)
 
 void Player::addToIgnoreList(std::string name)
 {
-    if (auto* targetPlayer = sObjectMgr.GetPlayer(name.c_str()))
+    if (auto* targetPlayer = sObjectMgr.getPlayer(name.c_str()))
     {
         // we can not add us ;)
         if (targetPlayer->getGuidLow() == getGuidLow())
@@ -10088,7 +10088,7 @@ bool Player::isAtGroupRewardDistance(Object* pRewardSource)
     Object* player = nullptr;
     const auto corpse = sObjectMgr.getCorpseByOwner(getGuidLow());
     if (corpse)
-        player = sObjectMgr.GetPlayer(corpse->getOwnerGuid());
+        player = sObjectMgr.getPlayer(corpse->getOwnerGuid());
 
     if (!player || isAlive())
         player = this;
@@ -10312,7 +10312,7 @@ void Player::loadVoidStorage()
             continue;
         }
 
-        if (!sObjectMgr.GetPlayer(creatorGuid))
+        if (!sObjectMgr.getPlayer(creatorGuid))
         {
             sLogger.debug("Player::loadVoidStorage - Player (GUID: %u, name: %s) has an item with an invalid creator guid, set to 0 (item id: %I64u, entry: %u, creatorGuid: %u).", getGuidLow(), getName().c_str(), itemId, itemEntry, creatorGuid);
             creatorGuid = 0;
@@ -11181,7 +11181,7 @@ Item* Player::storeItem(LootItem const* lootItem)
     if (add == nullptr)
     {
         // Create the Item
-        auto newItem = sObjectMgr.CreateItem(lootItem->itemId, this);
+        auto newItem = sObjectMgr.createItem(lootItem->itemId, this);
         if (newItem == nullptr)
             return nullptr;
 
@@ -11556,7 +11556,7 @@ void Player::onKillUnitReputation(Unit* unit, bool innerLoop)
 
             for (uint32_t i = 0; i < m_Group->GetSubGroupCount(); ++i)
                 for (auto groupMember : m_Group->GetSubGroup(i)->getGroupMembers())
-                    if (auto player = sObjectMgr.GetPlayer(groupMember->guid))
+                    if (auto player = sObjectMgr.getPlayer(groupMember->guid))
                         if (player->isInRange(this, 100.0f))
                             player->onKillUnitReputation(unit, true);
 
@@ -12255,7 +12255,7 @@ void Player::spawnPet(uint32_t petId)
         return;
     }
 
-    Pet* pet = sObjectMgr.CreatePet(itr->second->entry);
+    const auto pet = sObjectMgr.createPet(itr->second->entry);
     pet->LoadFromDB(this, itr->second);
 
     if (this->isPvpFlagSet())

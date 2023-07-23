@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Chat/ChatHandler.hpp"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Server/MainServerDefines.h"
 #include "Server/WorldSession.h"
 #include "Server/Packets/SmsgGmTicketDeleteTicket.h"
@@ -147,7 +147,7 @@ bool ChatHandler::HandleTicketCloseCommand(const char* args, WorldSession* m_ses
 
     sTicketMgr.closeTicket(gm_ticket->guid);
 
-    Player* ticketOwner = sObjectMgr.GetPlayer(playerGuid);
+    Player* ticketOwner = sObjectMgr.getPlayer(playerGuid);
 
     if (ticketOwner != nullptr)
     {

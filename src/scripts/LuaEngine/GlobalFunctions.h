@@ -119,7 +119,7 @@ namespace luaGlobalFunctions
     static int GetPlayer(lua_State* L)
     {
         const char* plName = luaL_checkstring(L, 1);
-        Player* plr = sObjectMgr.GetPlayer(plName);
+        Player* plr = sObjectMgr.getPlayer(plName);
         if (plr)
         {
             if (plr->IsInWorld())
@@ -261,17 +261,16 @@ namespace luaGlobalFunctions
         uint32_t count = 0;
 
         lua_newtable(L);
-        sObjectMgr._playerslock.lock();
-
-        for (std::unordered_map<uint32_t, Player*>::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
+        std::lock_guard guard(sObjectMgr.m_playerLock);
+        for (const auto playerPair : sObjectMgr.getPlayerStorage())
         {
+            Player* player = playerPair.second;
             count++;
-            Player* ret = (*itr).second;
             lua_pushinteger(L, count);
-            PUSH_UNIT(L, (static_cast<Unit*>(ret)));
+            PUSH_UNIT(L, (static_cast<Unit*>(player)));
             lua_rawset(L, -3);
         }
-        sObjectMgr._playerslock.unlock();
+        sObjectMgr.m_playerLock.unlock();
         return 1;
     }
 
@@ -353,20 +352,18 @@ namespace luaGlobalFunctions
         uint32_t count = 0;
         lua_newtable(L);
         uint32_t zoneid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        sObjectMgr._playerslock.lock();
-
-        for (std::unordered_map<uint32_t, Player*>::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
+        std::lock_guard guard(sObjectMgr.m_playerLock);
+        for (const auto playerPair : sObjectMgr.getPlayerStorage())
         {
-            if ((*itr).second->getZoneId() == zoneid)
+            Player* player = playerPair.second;
+            if (player->getZoneId() == zoneid)
             {
                 count++;
-                Player* ret = (*itr).second;
                 lua_pushinteger(L, count);
-                PUSH_UNIT(L, (static_cast<Unit*>(ret)));
+                PUSH_UNIT(L, (static_cast<Unit*>(player)));
                 lua_rawset(L, -3);
             }
         }
-        sObjectMgr._playerslock.unlock();
         return 1;
     }
 

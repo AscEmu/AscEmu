@@ -527,7 +527,7 @@ void WorldMap::removeAllPlayers()
 {
     if (getPlayerCount())
     {
-        for (PlayerStorageMap::iterator itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end();)
+        for (auto itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end();)
         {
             Player* player = itr->second;
             ++itr;
@@ -1830,7 +1830,7 @@ GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, LocationVector 
     GameObject* go = createGameObject(entryID);
 
     // Setup game object
-    go->create(entryID, this, go->GetPhase(), pos, QuaternionData(), GO_STATE_CLOSED, sObjectMgr.GenerateGameObjectSpawnID());
+    go->create(entryID, this, go->GetPhase(), pos, QuaternionData(), GO_STATE_CLOSED, sObjectMgr.generateGameObjectSpawnId());
     go->setScale(scale);
     go->InitAI();
     go->PushToWorld(this);

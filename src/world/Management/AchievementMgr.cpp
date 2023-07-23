@@ -653,7 +653,7 @@ void AchievementMgr::updateAchievementCriteria(AchievementCriteriaTypes _type, i
                     } break;
                     case 247: // Make Love, Not Warcraft
                     {
-                        Player* pTarget = sObjectMgr.GetPlayer(static_cast<uint32_t>(selectedGUID));
+                        Player* pTarget = sObjectMgr.getPlayer(static_cast<uint32_t>(selectedGUID));
                         if (pTarget && pTarget->isDead() && isHostile(pTarget, getPlayer()))
                             updateCriteriaProgress(achievementCriteria, 1);
                     }
@@ -1705,7 +1705,7 @@ void AchievementMgr::giveAchievementReward(DBC::Structures::AchievementEntry con
         std::string messageBody = Reward->text;
 
         //Create Item
-        Item* item = sObjectMgr.CreateItem(Reward->itemId, getPlayer());
+        Item* item = sObjectMgr.createItem(Reward->itemId, getPlayer());
 
         if (Reward->itemId == 0)
         {
@@ -1778,7 +1778,7 @@ void AchievementMgr::sendAchievementEarned(DBC::Structures::AchievementEntry con
 
                 for (const auto groupItr : sg->getGroupMembers())
                 {
-                    if (Player* loggedInPlayer = sObjectMgr.GetPlayer(groupItr->guid))
+                    if (Player* loggedInPlayer = sObjectMgr.getPlayer(groupItr->guid))
                     {
                         if (loggedInPlayer->getSession())
                         {

@@ -1,29 +1,11 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-#ifndef OBJECTMGR_H
-#define OBJECTMGR_H
+#pragma once
 
 #include <string>
-
-#include "AchievementMgr.h"
 #include "Spell/Spell.h"
 #include "Management/ArenaTeam.hpp"
 #include "Management/Charter.hpp"
@@ -36,7 +18,11 @@
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Objects/Units/Creatures/Vehicle.hpp"
 #include "Server/Script/SimpleEventScript.hpp"
-#include "Storage/DBC/DBCStructures.hpp"
+
+#if VERSION_STRING >= WotLK
+    #include "AchievementMgr.h"
+    #include "Storage/DBC/DBCStructures.hpp"
+#endif
 
 #if VERSION_STRING >= Cata
     #include "Storage/DB2/DB2Stores.h"
@@ -47,17 +33,10 @@ class SpellInfo;
 
 struct WorldState
 {
-    uint32 field;
-    uint32 value;
-
-    WorldState()
-    {
-        field = 0;
-        value = 0;
-    }
+    uint32_t field = 0;
+    uint32_t value = 0;
 };
 
-// this has nothing to do with object management ;)
 enum EncounterCreditType : uint8_t
 {
     ENCOUNTER_CREDIT_KILL_CREATURE  = 0,
@@ -124,8 +103,6 @@ struct TrainerSpell
     }
 };
 
-
-
 // oh a trainer look it is here and not in Unit/Creature/whatever file ;)
 struct Trainer
 {
@@ -157,43 +134,39 @@ struct LevelInfo
 //player too?!?
 struct ReputationMod
 {
-    uint32 faction[2];
-    int32 value;
-    uint32 replimit;
+    uint32_t faction[2];
+    int32_t value;
+    uint32_t replimit;
 };
 
 // reputation/instance
 struct InstanceReputationMod
 {
-    uint32 mapid;
-    uint32 mob_rep_reward;
-    uint32 mob_rep_limit;
-    uint32 boss_rep_reward;
-    uint32 boss_rep_limit;
-    uint32 faction[2];
+    uint32_t mapid;
+    uint32_t mob_rep_reward;
+    uint32_t mob_rep_limit;
+    uint32_t boss_rep_reward;
+    uint32_t boss_rep_limit;
+    uint32_t faction[2];
 };
 
 // reputation/instance
 struct ReputationModifier
 {
-    uint32 entry;
+    uint32_t entry;
     std::vector<std::shared_ptr<ReputationMod>> mods;
 };
 
 // reputation/instance
 struct InstanceReputationModifier
 {
-    uint32 mapid;
+    uint32_t mapid;
     std::vector<std::shared_ptr<InstanceReputationMod>> mods;
 };
 
-typedef std::unordered_map<uint32, Player*> PlayerStorageMap;
 
-// finally we are here, the base class of this file ;)
-//MIT
 class SERVER_DECL ObjectMgr : public EventableObject
 {
-private:
     ObjectMgr() = default;
     ~ObjectMgr() = default;
 
@@ -332,11 +305,13 @@ private:
     ReputationModMap m_reputationCreature;
     std::unordered_map<uint32_t, std::shared_ptr<InstanceReputationModifier>> m_reputationInstance;
 
-//////////////////////////////////////////////////////////////////////////////////////////
-// Group
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Group
 public:
     void loadGroups();
     void loadGroupInstances();
+
+    uint32_t generateGroupId();
 
     void addGroup(std::shared_ptr<Group> _group);
     void removeGroup(std::shared_ptr<Group> _group);
@@ -347,6 +322,55 @@ public:
 private:
     std::mutex m_groupLock;
     std::unordered_map<uint32_t, std::shared_ptr<Group>> m_groups;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Player
+public:
+    Player* createPlayer(uint8_t _class);
+    Player* createPlayerByGuid(uint8_t _class, uint32_t _guid);
+
+    Player* getPlayer(const char* _name, bool _caseSensitive = true);
+    Player* getPlayer(uint32_t guid);
+
+    void addPlayer(Player* _player);
+    void removePlayer(Player* _player);
+
+    void resetDailies();
+
+    std::unordered_map<uint32_t, Player*> getPlayerStorage();
+
+    std::mutex m_playerLock;
+
+private:
+    std::unordered_map<uint32_t, Player*> m_players;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Vehicle
+#ifdef FT_VEHICLES
+public:
+    void loadVehicleAccessories();
+    VehicleAccessoryList const* getVehicleAccessories(uint32_t _entry);
+
+    void loadVehicleSeatAddon();
+    VehicleSeatAddon const* getVehicleSeatAddon(uint32_t _seatId) const;
+
+private:
+    VehicleAccessoryContainer m_vehicleAccessoryStore;
+    VehicleSeatAddonContainer m_vehicleSeatAddonStore;
+#endif
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // EventScripts
+public:
+    void loadEventScripts();
+    EventScriptBounds getEventScripts(uint32_t _eventId) const;
+    SpellEffectMapBounds getSpellEffectBounds(uint32_t _data1) const;
+    bool checkForScripts(Player* _player, uint32_t _eventId);
+    bool checkForDummySpellScripts(Player* _player, uint32_t _data1);
+    void eventScriptsUpdate(Player* _player, uint32_t _nextEvent);
+
+private:
+    EventScriptMaps m_eventScriptMaps;
+    SpellEffectMaps m_spellEffectMaps;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
@@ -363,8 +387,6 @@ public:
     // Preload CreatureDisplayInfoStore and CreatureModelDataStore to avoid DBC lookup calls
     void loadCreatureDisplayInfo();
     CreatureDisplayInfoData const* getCreatureDisplayInfoData(uint32_t _displayId) const;
-
-    Player* createPlayerByGuid(uint8_t _class, uint32_t _guid);
 
     GameObject* createGameObjectByGuid(uint32_t _id, uint32_t _guid);
 
@@ -384,100 +406,43 @@ public:
     void generateLevelUpInfo();
     std::shared_ptr<LevelInfo> getLevelInfo(uint32_t _race, uint32_t _class, uint32_t _level);
 
+    std::shared_ptr<Pet> createPet(uint32_t _entry);
+    void loadPetSpellCooldowns();
+    uint32_t getPetSpellCooldown(uint32_t _spellId);
+
+    Item* loadItem(uint32_t _lowGuid);
+    Item* createItem(uint32_t _entry, Player* _playerOwner);
+
+    void setHighestGuids();
+    uint32_t generateReportId();
+    uint32_t generateEquipmentSetId();
+    uint32_t generateMailId();
+    uint32_t generateLowGuid(uint32_t _guidHigh);
+    uint32_t generateArenaTeamId();
+    uint32_t generateGuildId();
+    uint32_t generateCreatureSpawnId();
+    uint32_t generateGameObjectSpawnId();
+#if VERSION_STRING > WotLK
+    uint64_t generateVoidStorageItemId();
+#endif
+
+
 private:
     std::unordered_map<uint32_t, std::vector<TrainerSpell>*> m_trainerSpellSet;
-
     std::unordered_map<uint32_t, std::shared_ptr<Trainer>> m_trainers;
-
     std::unordered_map<uint32_t, CreatureDisplayInfoData> m_creatureDisplayInfoData;
-
     std::unordered_map<uint32_t, DungeonEncounterList>  m_dungeonEncounterStore;
-
     std::unordered_map<uint32_t, CreatureMovementData> m_creatureMovementOverrides;
-
     std::map<uint32_t, std::multimap<uint32_t, WorldState>*> m_worldstateTemplates;
-
     std::unordered_map<uint32_t, TimedEmoteList*> m_timedEmotes;
 
     typedef std::map<uint32_t, std::shared_ptr<LevelInfo>> LevelMap;
     typedef std::map<std::pair<uint32_t, uint32_t>, std::shared_ptr<LevelMap>> LevelInfoMap;
     LevelInfoMap m_levelInfo;
 
-public:
-        typedef std::map<uint32, uint32>                                                            PetSpellCooldownMap;
-        typedef std::multimap <uint32, uint32>                                                      BCEntryStorage;
+    std::map<uint32_t, uint32_t> m_petSpellCooldowns;
 
-        Player* GetPlayer(const char* name, bool caseSensitive = true);
-        Player* GetPlayer(uint32 guid);
-
-        Mutex m_creatureSetMutex;
-
-        Item* CreateItem(uint32 entry, Player* owner);
-        Item* LoadItem(uint32 lowguid);
-
-        uint32 GenerateGroupId();
-        uint32 GenerateGuildId();
-
-        Pet* CreatePet(uint32 entry);
-
-        uint32 GenerateArenaTeamId();
-
-        Player* CreatePlayer(uint8 _class);
-        PlayerStorageMap _players;
-        std::mutex _playerslock;
-
-        void AddPlayer(Player* p); //add it to global storage
-        void RemovePlayer(Player* p);
-
-        void SetHighestGuids();
-        uint32 GenerateLowGuid(uint32 guidhigh);
-        uint32 GenerateMailID();
-        uint32 GenerateReportID();
-        uint32 GenerateEquipmentSetID();
-
-#if VERSION_STRING > WotLK
-        uint64_t generateVoidStorageItemId();
-#endif
-
-        uint32 GetPetSpellCooldown(uint32 SpellId);
-        void LoadPetSpellCooldowns();
-
-        void ResetDailies();
-
-        uint32 GenerateCreatureSpawnID();
-        uint32 GenerateGameObjectSpawnID();
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // Event Scripts
-        void LoadEventScripts();
-        EventScriptBounds GetEventScripts(uint32 event_id) const;
-        SpellEffectMapBounds GetSpellEffectBounds(uint32 data_1) const;
-        bool CheckforScripts(Player* plr, uint32 event_id);
-        bool CheckforDummySpellScripts(Player* plr, uint32 data_1);
-        void EventScriptsUpdate(Player* plr, uint32 next_event);
-        //////////////////////////////////////////////////////////////////////////////////////////
-
-#ifdef FT_VEHICLES
-        void LoadVehicleAccessories();
-        VehicleAccessoryList const* getVehicleAccessories(Vehicle* vehicle);
-        void loadVehicleSeatAddon();
-
-        VehicleSeatAddon const* getVehicleSeatAddon(uint32 seatId) const
-        {
-            VehicleSeatAddonContainer::const_iterator itr = _vehicleSeatAddonStore.find(seatId);
-            if (itr == _vehicleSeatAddonStore.end())
-                return nullptr;
-
-            return &itr->second;
-        }
-#endif
-
-    private:
-        EventScriptMaps mEventScriptMaps;
-        SpellEffectMaps mSpellEffectMaps;
-
-    protected:
-        // highest GUIDs, used for creating new objects
+protected:
         std::atomic<unsigned long> m_hiItemGuid;
         std::atomic<unsigned long> m_hiGroupId;
         std::atomic<unsigned long> m_hiCharterId;
@@ -495,14 +460,6 @@ public:
         std::atomic<unsigned long> m_voidItemId;
 #endif
 
-        PetSpellCooldownMap mPetSpellCooldowns;
-
-#ifdef FT_VEHICLES
-        VehicleAccessoryContainer _vehicleAccessoryStore;
-        VehicleSeatAddonContainer _vehicleSeatAddonStore;
-#endif
 };
 
 #define sObjectMgr ObjectMgr::getInstance()
-
-#endif // OBJECTMGR_H

@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/MainServerDefines.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Chat/ChatHandler.hpp"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
 #include "Server/Packets/SmsgArenaError.h"
 #include "Server/Packets/CmsgBattlemasterJoin.h"
@@ -339,7 +339,7 @@ void BattlegroundManager::handleGetBattlegroundQueueCommand(WorldSession* sessio
                 for (auto it3 = m_queuedPlayers[_bgType][_levelGroup].begin(); it3 != m_queuedPlayers[_bgType][_levelGroup].end();)
                 {
                     auto it4 = it3++;
-                    Player* plr = sObjectMgr.GetPlayer(*it4);
+                    Player* plr = sObjectMgr.getPlayer(*it4);
                     if (!plr || plr->getLevelGrouping() != _levelGroup)
                         continue;
 
@@ -394,7 +394,7 @@ uint32_t BattlegroundManager::getArenaGroupQInfo(std::shared_ptr<Group> group, u
     if (group == nullptr || group->GetLeader() == nullptr)
         return 0;
 
-    Player* leader = sObjectMgr.GetPlayer(group->GetLeader()->guid);
+    Player* leader = sObjectMgr.getPlayer(group->GetLeader()->guid);
     if (leader == nullptr)
         return 0;
 
@@ -404,7 +404,7 @@ uint32_t BattlegroundManager::getArenaGroupQInfo(std::shared_ptr<Group> group, u
 
     for (const auto groupMember : group->GetSubGroup(0)->getGroupMembers())
     {
-        if (Player* member = sObjectMgr.GetPlayer(groupMember->guid))
+        if (Player* member = sObjectMgr.getPlayer(groupMember->guid))
         {
             if (arenaTeam == member->getArenaTeam(type - BattlegroundDef::TYPE_ARENA_2V2))
             {
@@ -427,7 +427,7 @@ void BattlegroundManager::addGroupToArena(Battleground* battleground, std::share
     if (group == nullptr || group->GetLeader() == nullptr)
         return;
 
-    Player* playerLeader = sObjectMgr.GetPlayer(group->GetLeader()->guid);
+    Player* playerLeader = sObjectMgr.getPlayer(group->GetLeader()->guid);
     if (playerLeader == nullptr)
         return;
 
@@ -437,7 +437,7 @@ void BattlegroundManager::addGroupToArena(Battleground* battleground, std::share
 
     for (const auto groupMember : group->GetSubGroup(0)->getGroupMembers())
     {
-        playerLeader = sObjectMgr.GetPlayer(groupMember->guid);
+        playerLeader = sObjectMgr.getPlayer(groupMember->guid);
         if (playerLeader && arenaTeam == playerLeader->getArenaTeam(static_cast<uint8_t>(battleground->getType() - BattlegroundDef::TYPE_ARENA_2V2)))
         {
             if (battleground->hasFreeSlots(team, battleground->getType()))
@@ -471,7 +471,7 @@ void BattlegroundManager::addPlayerToBg(Battleground* battleground, std::deque<u
     const uint32_t playerGuid = *playerVec->begin();
     playerVec->pop_front();
 
-    if (Player* player = sObjectMgr.GetPlayer(playerGuid))
+    if (Player* player = sObjectMgr.getPlayer(playerGuid))
     {
         if (battleground->CanPlayerJoin(player, battleground->getType()))
         {
@@ -497,7 +497,7 @@ void BattlegroundManager::addPlayerToBgTeam(Battleground* battleground, std::deq
         const uint32_t playerGuid = *playerVec->begin();
         playerVec->pop_front();
 
-        if (Player* player = sObjectMgr.GetPlayer(playerGuid))
+        if (Player* player = sObjectMgr.getPlayer(playerGuid))
         {
             player->setBgTeam(team);
             battleground->addPlayer(player, team);
@@ -544,7 +544,7 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
             {
                 it4 = it3++;
                 playerGuid = *it4;
-                player = sObjectMgr.GetPlayer(playerGuid);
+                player = sObjectMgr.getPlayer(playerGuid);
 
                 // Player has left the game or switched level group since queuing (by leveling for example)
                 if (!player || player->getLevelGrouping() != _levelGroup)
@@ -615,7 +615,7 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
                         {
                             playerGuid = *tempPlayerVec[factionMap[team]].begin();
                             tempPlayerVec[factionMap[team]].pop_front();
-                            player = sObjectMgr.GetPlayer(playerGuid);
+                            player = sObjectMgr.getPlayer(playerGuid);
                             if (player)
                             {
                                 player->setBgTeam(team);
@@ -714,7 +714,7 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
                             playerGuid = teams[localeTeam].front();
                             teams[localeTeam].pop();
 
-                            player = sObjectMgr.GetPlayer(playerGuid);
+                            player = sObjectMgr.getPlayer(playerGuid);
                             if (player == nullptr)
                                 continue;
 
@@ -926,7 +926,7 @@ void BattlegroundManager::removeGroupFromQueues(std::shared_ptr<Group> group)
     }
 
     for (const auto itr : group->GetSubGroup(0)->getGroupMembers())
-        if (Player* loggedInPlayer = sObjectMgr.GetPlayer(itr->guid))
+        if (Player* loggedInPlayer = sObjectMgr.getPlayer(itr->guid))
             sendBattlefieldStatus(loggedInPlayer, BattlegroundDef::STATUS_NOFLAGS, 0, 0, 0, 0, 0);
 
 }
@@ -1135,7 +1135,7 @@ void BattlegroundManager::deleteBattleground(Battleground* battleground)
     {
         std::list<uint32_t>::iterator it2 = itr++;
 
-        if (Player* plr = sObjectMgr.GetPlayer(*it2))
+        if (Player* plr = sObjectMgr.getPlayer(*it2))
         {
             if (plr->getQueuedBgInstanceId() == battleground->getId())
             {
@@ -1188,7 +1188,7 @@ void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battle
             group->Lock();
             for (const auto itx : group->GetSubGroup(0)->getGroupMembers())
             {
-                if (Player* loggedInPlayer = sObjectMgr.GetPlayer(itx->guid))
+                if (Player* loggedInPlayer = sObjectMgr.getPlayer(itx->guid))
                     if (!loggedInPlayer->isQueuedForBg() && !loggedInPlayer->getBattleground())
                         handleArenaJoin(loggedInPlayer->getSession(), battlegroundType, 0, 0);
             }
@@ -1219,7 +1219,7 @@ void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battle
                 break;
         }
 
-        Player* loggedInLeader = sObjectMgr.GetPlayer(group->GetLeader()->guid);
+        Player* loggedInLeader = sObjectMgr.getPlayer(group->GetLeader()->guid);
         if (loggedInLeader && loggedInLeader->getArenaTeam(type) == nullptr)
         {
             session->SendPacket(SmsgArenaError(0, static_cast<uint8_t>(maxplayers)).serialise().get());
@@ -1243,7 +1243,7 @@ void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battle
                 return;
             }
 
-            if (Player* loggedInPlayer = sObjectMgr.GetPlayer(itx->guid))
+            if (Player* loggedInPlayer = sObjectMgr.getPlayer(itx->guid))
             {
                 if (loggedInPlayer->getBattleground() || loggedInPlayer->isQueuedForBg())
                 {
@@ -1267,7 +1267,7 @@ void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battle
 
         for (const auto itx : group->GetSubGroup(0)->getGroupMembers())
         {
-            if (Player* loggedInPlayer = sObjectMgr.GetPlayer(itx->guid))
+            if (Player* loggedInPlayer = sObjectMgr.getPlayer(itx->guid))
             {
                 sendBattlefieldStatus(loggedInPlayer, BattlegroundDef::STATUS_INQUEUE, battlegroundType, 0, 0, 0, 1);
                 loggedInPlayer->setIsQueuedForBg(true);

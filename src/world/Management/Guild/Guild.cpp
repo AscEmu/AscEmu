@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "GuildNewsLog.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Server/MainServerDefines.h"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Management/ItemInterface.h"
 #include "Server/Packets/SmsgGuildCommandResult.h"
@@ -57,7 +57,7 @@ void Guild::sendGuildCommandResult(WorldSession* session, uint32_t guildCommand,
 
 void Guild::sendGuildInvitePacket(WorldSession* session, std::string invitedName)
 {
-    const auto invitedPlayer = sObjectMgr.GetPlayer(invitedName.c_str(), false);
+    const auto invitedPlayer = sObjectMgr.getPlayer(invitedName.c_str(), false);
     const auto guild = session->GetPlayer()->getGuild();
 
     if (invitedPlayer == nullptr)
@@ -658,7 +658,7 @@ void Guild::handleAcceptMember(WorldSession* session)
     if (player == nullptr)
         return;
 
-    Player* leader = sObjectMgr.GetPlayer(WoWGuid::getGuidLowPartFromUInt64(getLeaderGUID()));
+    Player* leader = sObjectMgr.getPlayer(WoWGuid::getGuidLowPartFromUInt64(getLeaderGUID()));
     if (leader == nullptr)
         return;
 
@@ -1435,7 +1435,7 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
     WoWGuid wGuid;
     wGuid.Init(guid);
 
-    Player* player = sObjectMgr.GetPlayer(wGuid.getGuidLowPart());
+    Player* player = sObjectMgr.getPlayer(wGuid.getGuidLowPart());
     if (player)
     {
         if (player->getGuildId() != 0)
@@ -1512,7 +1512,7 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
 void Guild::deleteMember(uint64_t guid, bool isDisbanding, bool /*isKicked*/)
 {
     uint32_t lowguid = WoWGuid::getGuidLowPartFromUInt64(guid);
-    Player* player = sObjectMgr.GetPlayer(lowguid);
+    Player* player = sObjectMgr.getPlayer(lowguid);
 
     if (m_leaderGuid == guid && !isDisbanding)
     {
@@ -1909,7 +1909,7 @@ void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool /*withConten
             if (!memberHasTabRights(itr->second->getGUID(), tabId, GB_RIGHT_VIEW_TAB))
                 continue;
 
-            Player* player =  sObjectMgr.GetPlayer(itr->second->getName().c_str(), true);
+            Player* player =  sObjectMgr.getPlayer(itr->second->getName().c_str(), true);
             if (!player)
                 continue;
 
@@ -2290,7 +2290,7 @@ void Guild::swapItems(Player* player, uint8_t tabId, uint8_t slotId, uint8_t des
         pItem2->setCreatorGuid(0);
         pItem2->saveToDB(0, 0, true, nullptr);
 
-        pItem = sObjectMgr.CreateItem(pItem2->getEntry(), player);
+        pItem = sObjectMgr.createItem(pItem2->getEntry(), player);
         if (pItem == nullptr)
             return;
 
@@ -2339,7 +2339,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
 
         if (splitedAmount && pSourceItem->getStackCount() > splitedAmount)
         {
-            pSourceItem = sObjectMgr.CreateItem(pSourceItem2->getEntry(), player);
+            pSourceItem = sObjectMgr.createItem(pSourceItem2->getEntry(), player);
             if (pSourceItem == nullptr)
                 return;
 
@@ -2365,7 +2365,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
                 pSourceItem2->modStackCount(-static_cast<int32_t>(splitedAmount));
                 pSourceItem2->saveToDB(0, 0, true, nullptr);
 
-                pDestItem = sObjectMgr.CreateItem(pSourceItem2->getEntry(), player);
+                pDestItem = sObjectMgr.createItem(pSourceItem2->getEntry(), player);
                 if (pDestItem == nullptr)
                     return;
 
@@ -2454,7 +2454,7 @@ void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots, bool sendAllSlo
         if (!memberHasTabRights(itr->second->getGUID(), tabId, GB_RIGHT_VIEW_TAB))
             continue;
 
-        Player* player = sObjectMgr.GetPlayer(itr->second->getName().c_str(), true);
+        Player* player = sObjectMgr.getPlayer(itr->second->getName().c_str(), true);
         if (!player)
             continue;
 
@@ -2701,7 +2701,7 @@ bool Guild::GuildMember::loadGuildMembersFromDB(Field* fields, Field* fields2)
     if (!mZoneId)
     {
         sLogger.failure("Player (GUID: %u) has broken zone-data", WoWGuid::getGuidLowPartFromUInt64(mGuid));
-        mZoneId = sObjectMgr.GetPlayer(WoWGuid::getGuidLowPartFromUInt64(mGuid))->getZoneId();
+        mZoneId = sObjectMgr.getPlayer(WoWGuid::getGuidLowPartFromUInt64(mGuid))->getZoneId();
     }
 
     resetFlags();
@@ -2809,7 +2809,7 @@ void Guild::GuildMember::changeRank(uint8_t newRank)
 {
     mRankId = newRank;
 
-    if (Player* player = sObjectMgr.GetPlayer(WoWGuid::getGuidLowPartFromUInt64(mGuid)))
+    if (Player* player = sObjectMgr.getPlayer(WoWGuid::getGuidLowPartFromUInt64(mGuid)))
         player->setGuildRank(newRank);
 
     CharacterDatabase.Execute("UPDATE guild_members SET guildRank = '%u' WHERE playerid = %u", static_cast<uint32_t>(newRank), WoWGuid::getGuidLowPartFromUInt64(mGuid));
@@ -2867,5 +2867,5 @@ int32_t Guild::GuildMember::getBankWithdrawValue(uint8_t tabId) const
 
 Player* Guild::GuildMember::getPlayerByGuid(uint64_t m_guid)
 {
-    return sObjectMgr.GetPlayer(WoWGuid::getGuidLowPartFromUInt64(m_guid));
+    return sObjectMgr.getPlayer(WoWGuid::getGuidLowPartFromUInt64(m_guid));
 }

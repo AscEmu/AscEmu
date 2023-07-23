@@ -255,7 +255,7 @@ void WorldSession::sendLfgRoleCheckUpdate(const LfgRoleCheck* pRoleCheck)
         WoWGuid wowGuid;
         wowGuid.Init(guid);
 
-        Player* player = sObjectMgr.GetPlayer(wowGuid.getGuidLowPart());
+        Player* player = sObjectMgr.getPlayer(wowGuid.getGuidLowPart());
         data << uint8_t(player ? player->getLevel() : 0);    // Level
 
         for (const auto rolePair : pRoleCheck->roles)
@@ -272,7 +272,7 @@ void WorldSession::sendLfgRoleCheckUpdate(const LfgRoleCheck* pRoleCheck)
             data << uint8_t(roles > 0);                      // Ready
             data << uint32_t(roles);                         // Roles
 
-            player = sObjectMgr.GetPlayer(guidItr.getGuidLowPart());
+            player = sObjectMgr.getPlayer(guidItr.getGuidLowPart());
             data << uint8_t(player ? player->getLevel() : 0);     // Level
         }
     }
@@ -428,7 +428,7 @@ void WorldSession::sendLfgUpdateProposal(uint32_t proposalId, const LfgProposal*
         {
             for (const auto cachedCharacterInfo : group->GetSubGroup(0)->getGroupMembers())
             {
-                Player* groupMember = sObjectMgr.GetPlayer(cachedCharacterInfo->guid);
+                Player* groupMember = sObjectMgr.getPlayer(cachedCharacterInfo->guid);
                 if (groupMember && groupMember->GetMapId() == uint32_t(dungeon->map))
                 {
                     if (InstanceScript* instance = groupMember->getWorldMap()->getScript())
@@ -710,7 +710,7 @@ void WorldSession::handleLfgPartyLockInfoRequestOpcode(WorldPacket& /*recvPacket
     LfgLockPartyMap lockMap;
     for (auto groupPlayerInfo : grp->GetSubGroup(0)->getGroupMembers())
     {
-        Player* plrg = sObjectMgr.GetPlayer(groupPlayerInfo->guid);
+        Player* plrg = sObjectMgr.getPlayer(groupPlayerInfo->guid);
         if (!plrg)
             continue;
 

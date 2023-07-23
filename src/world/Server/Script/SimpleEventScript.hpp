@@ -5,12 +5,15 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+enum class EasyScriptTypes : uint8_t;
+enum class ScriptCommands : uint8_t;
+
 //\note: used for db scripts table event_scripts
 struct SimpleEventScript
 {
     uint32_t eventId;
-    uint8_t function;
-    uint8_t scripttype;
+    ScriptCommands function;
+    EasyScriptTypes scripttype;
     uint32_t data_1;
     uint32_t data_2;
     uint32_t data_3;

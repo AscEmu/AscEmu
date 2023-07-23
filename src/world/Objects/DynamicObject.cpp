@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellAuras.h"
 #include "Spell/Spell.Legacy.h"
 #include "Spell/Definitions/SpellIsFlags.hpp"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Data/WoWDynamicObject.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 

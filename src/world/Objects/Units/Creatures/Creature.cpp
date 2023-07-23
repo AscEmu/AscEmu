@@ -19,7 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Pet.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/MySQLStructures.h"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
 #include "Server/Script/CreatureAIScript.h"
 #include "Objects/Units/Creatures/CreatureGroups.h"
@@ -804,7 +804,7 @@ void Creature::SaveToDB()
     {
         m_spawn = new MySQLStructure::CreatureSpawn;
         m_spawn->entry = getEntry();
-        m_spawn->id = spawnid = sObjectMgr.GenerateCreatureSpawnID();
+        m_spawn->id = spawnid = sObjectMgr.generateCreatureSpawnId();
         m_spawn->movetype = getDefaultMovementType();
         m_spawn->displayid = getDisplayId();
         m_spawn->x = m_position.x;
@@ -1104,7 +1104,7 @@ void Creature::EnslaveExpire()
 
     uint64 charmer = getCharmedByGuid();
 
-    Player* caster = sObjectMgr.GetPlayer(WoWGuid::getGuidLowPartFromUInt64(charmer));
+    Player* caster = sObjectMgr.getPlayer(WoWGuid::getGuidLowPartFromUInt64(charmer));
     if (caster)
     {
         caster->setCharmGuid(0);
@@ -2602,7 +2602,7 @@ void Creature::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
             if (group->GetLooter())
             {
                 // just incase he is not online
-                looter = sObjectMgr.GetPlayer(group->GetLooter()->guid);
+                looter = sObjectMgr.getPlayer(group->GetLooter()->guid);
                 if (looter)
                 {
                     setTaggerGuid(looter->getGuid()); // set Tagger to the allowed looter.
@@ -2637,7 +2637,7 @@ void Creature::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
         // Master Looting Ninja Checker
         if (worldConfig.player.deactivateMasterLootNinja)
         {
-            looter = sObjectMgr.GetPlayer(static_cast<uint32_t>(this->getTaggerGuid()));
+            looter = sObjectMgr.getPlayer(static_cast<uint32_t>(this->getTaggerGuid()));
             if (looter && looter->getGroup() && looter->getGroup()->GetMethod() == PARTY_LOOT_MASTER_LOOTER)
             {
                 uint16_t lootThreshold = looter->getGroup()->GetThreshold();

@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Charter.hpp"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Server/MainServerDefines.h"
 #include "Database/Field.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
@@ -60,7 +60,7 @@ void Charter::destroy()
 
     for (const auto playerGuid : m_signatures)
     {
-        if (Player* player = sObjectMgr.GetPlayer(playerGuid))
+        if (Player* player = sObjectMgr.getPlayer(playerGuid))
             player->unsetCharter(m_charterType);
     }
 

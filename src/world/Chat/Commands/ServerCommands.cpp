@@ -19,28 +19,24 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_
     uint16 online_count = 0;
     float latency_avg = 0;
 
-    sObjectMgr._playerslock.lock();
-    for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
+    std::lock_guard guard(sObjectMgr.m_playerLock);
+    for (const auto playerPair : sObjectMgr.getPlayerStorage())
     {
-        if (itr->second->getSession())
+        Player* player = playerPair.second;
+        if (player->getSession())
         {
             online_count++;
-            latency_avg += itr->second->getSession()->GetLatency();
-            if (itr->second->getSession()->GetPermissionCount())
+            latency_avg += player->getSession()->GetLatency();
+            if (player->getSession()->GetPermissionCount())
             {
                 if (!worldConfig.gm.listOnlyActiveGms)
-                {
                     online_gm++;
-                }
                 else
-                {
-                    if (itr->second->isGMFlagSet())
+                    if (player->isGMFlagSet())
                         online_gm++;
-                }
             }
         }
     }
-    sObjectMgr._playerslock.unlock();
 
     uint32 active_sessions = uint32(sWorld.getSessionCount());
 
@@ -93,7 +89,7 @@ bool ChatHandler::HandleServerSaveCommand(const char* args, WorldSession* m_sess
     }
     else
     {
-        player_target = sObjectMgr.GetPlayer(args, false);
+        player_target = sObjectMgr.getPlayer(args, false);
         if (player_target == nullptr)
         {
             RedSystemMessage(m_session, "A player with name %s is not online / does not exist!", args);
@@ -121,17 +117,16 @@ bool ChatHandler::HandleServerSaveAllCommand(const char* /*args*/, WorldSession*
     auto start_time = Util::TimeNow();
     uint32 online_count = 0;
 
-    sObjectMgr._playerslock.lock();
-    for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
+    std::lock_guard guard(sObjectMgr.m_playerLock);
+    for (const auto playerPair : sObjectMgr.getPlayerStorage())
     {
-        if (itr->second->getSession())
+        Player* player = playerPair.second;
+        if (player->getSession())
         {
-            itr->second->saveToDB(false);
+            player->saveToDB(false);
             online_count++;
         }
     }
-
-    sObjectMgr._playerslock.unlock();
 
     std::stringstream teamAnnounce;
     teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->getName().c_str() << "|h[";

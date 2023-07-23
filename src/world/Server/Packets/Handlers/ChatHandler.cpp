@@ -13,7 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.h"
 #include "Chat/ChatHandler.hpp"
 #include "Objects/Units/Players/Player.hpp"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Server/Packets/CmsgMessageChat.h"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Packets/SmsgChatPlayerNotFound.h"
@@ -249,7 +249,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
                     {
                         group->Lock();
                         for (auto group_member : subgroup->getGroupMembers())
-                            if (Player* loggedInPlayer = sObjectMgr.GetPlayer(group_member->guid))
+                            if (Player* loggedInPlayer = sObjectMgr.getPlayer(group_member->guid))
                                 loggedInPlayer->sendPacket(send_packet.get());
                         group->Unlock();
                     }
@@ -262,7 +262,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
                         {
                             group->Lock();
                             for (auto group_member : sub_group->getGroupMembers())
-                                if (Player* loggedInPlayer = sObjectMgr.GetPlayer(group_member->guid))
+                                if (Player* loggedInPlayer = sObjectMgr.getPlayer(group_member->guid))
                                     loggedInPlayer->sendPacket(send_packet.get());
                             group->Unlock();
                         }
@@ -291,7 +291,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
         } break;
         case CHAT_MSG_WHISPER:
         {
-            if (auto* const playerTarget = sObjectMgr.GetPlayer(srlPacket.destination.c_str(), false))
+            if (auto* const playerTarget = sObjectMgr.getPlayer(srlPacket.destination.c_str(), false))
             {
                 const auto target_is_our_faction = _player->getInitialTeam() == playerTarget->getInitialTeam();
                 const auto target_is_gm_flagged = playerTarget->hasPlayerFlags(PLAYER_FLAG_GM);
@@ -561,7 +561,7 @@ void WorldSession::handleChatIgnoredOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto player = sObjectMgr.GetPlayer(srlPacket.guid.getGuidLow());
+    const auto player = sObjectMgr.getPlayer(srlPacket.guid.getGuidLow());
     if (player == nullptr || player->getSession() == nullptr)
         return;
 

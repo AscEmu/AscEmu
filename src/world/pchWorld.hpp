@@ -53,7 +53,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Macros/UnitMacros.hpp"
 #include "Management/Faction.h"
 #include "Management/ItemInterface.h"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Management/QuestLogEntry.hpp"
 #include "Map/Area/AreaManagementGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"

@@ -841,7 +841,7 @@ AI_Spell* Pet::CreateAISpell(SpellInfo const* info)
     sp->Misc2 = 0;
     sp->procChance = 0;
     sp->spell = info;
-    sp->cooldown = sObjectMgr.GetPetSpellCooldown(info->getId());
+    sp->cooldown = sObjectMgr.getPetSpellCooldown(info->getId());
     if (sp->cooldown == 0)
         sp->cooldown = info->getRecoveryTime();          //still 0 ?
 

@@ -267,7 +267,7 @@ void WorldSession::LogoutPlayer(bool Save)
     {
         _player->setFaction(_player->getInitialFactionId());
 
-        sObjectMgr.RemovePlayer(_player);
+        sObjectMgr.removePlayer(_player);
         _player->m_isReadyToBeRemoved = true;
 
         sHookInterface.OnLogout(pPlayer);

@@ -4638,7 +4638,7 @@ GameObject* Object::summonGameObject(uint32_t entryID, LocationVector pos, Quate
         return nullptr;
 
     GameObject* go = map->createGameObject(entryID);
-    if (!go->create(entryID, map, GetPhase(), pos, rot, GO_STATE_CLOSED, sObjectMgr.GenerateGameObjectSpawnID()))
+    if (!go->create(entryID, map, GetPhase(), pos, rot, GO_STATE_CLOSED, sObjectMgr.generateGameObjectSpawnId()))
     {
         delete go;
         return nullptr;

@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Chat/ChatHandler.hpp"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Server/MainServerDefines.h"
 #include "Server/WorldSession.h"
 #include "Storage/MySQLDataStore.hpp"
@@ -151,7 +151,7 @@ bool ChatHandler::HandleRecallPortPlayerCommand(const char* args, WorldSession* 
     if (sscanf(args, "%s %s", playerName, location) != 2)
         return false;
 
-    Player* player = sObjectMgr.GetPlayer(playerName, false);
+    Player* player = sObjectMgr.getPlayer(playerName, false);
     if (!player)
         return false;
 

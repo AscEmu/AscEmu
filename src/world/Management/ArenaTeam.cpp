@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ArenaTeam.hpp"
 #include "Server/MainServerDefines.h"
 #include "Server/WorldSession.h"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 
@@ -179,7 +179,7 @@ void ArenaTeam::sendPacket(WorldPacket* data) const
     {
         if (m_members[i].Info)
         {
-            if (Player* loggedInPlayer = sObjectMgr.GetPlayer(m_members[i].Info->guid))
+            if (Player* loggedInPlayer = sObjectMgr.getPlayer(m_members[i].Info->guid))
                 loggedInPlayer->getSession()->SendPacket(data);
         }
     }
@@ -210,7 +210,7 @@ bool ArenaTeam::addMember(std::shared_ptr<CachedCharacterInfo> cachedCharInfo)
     if (!cachedCharInfo)
         return false;
 
-    if (Player* loggedInPlayer = sObjectMgr.GetPlayer(cachedCharInfo->guid))
+    if (Player* loggedInPlayer = sObjectMgr.getPlayer(cachedCharInfo->guid))
     {
         if (m_memberCount >= m_slots)
             return false;
@@ -251,7 +251,7 @@ bool ArenaTeam::removeMember(std::shared_ptr<CachedCharacterInfo> cachedCharInfo
             saveToDB();
 
 #if VERSION_STRING != Classic
-            if (Player* loggedInPlayer = sObjectMgr.GetPlayer(cachedCharInfo->guid))
+            if (Player* loggedInPlayer = sObjectMgr.getPlayer(cachedCharInfo->guid))
             {
                 loggedInPlayer->setArenaTeamId(m_type, 0);
                 loggedInPlayer->setArenaTeam(m_type, nullptr);
@@ -310,7 +310,7 @@ void ArenaTeam::setLeader(std::shared_ptr<CachedCharacterInfo> cachedCharInfo)
         {
             if (m_members[i].Info)
             {
-                if (Player* loggedInPlayer = sObjectMgr.GetPlayer(m_members[i].Info->guid))
+                if (Player* loggedInPlayer = sObjectMgr.getPlayer(m_members[i].Info->guid))
                 {
                     if (m_members[i].Info == cachedCharInfo)
                         loggedInPlayer->setArenaTeamMemberRank(m_type, 0);
@@ -334,7 +334,7 @@ std::vector<ArenaTeamPacketList> ArenaTeam::getRoosterMembers() const
             ArenaTeamPacketList arenaTeamListMember;
 
             arenaTeamListMember.guid = playerInfo->guid;
-            arenaTeamListMember.isLoggedIn = sObjectMgr.GetPlayer(playerInfo->guid) ? 1 : 0;
+            arenaTeamListMember.isLoggedIn = sObjectMgr.getPlayer(playerInfo->guid) ? 1 : 0;
             arenaTeamListMember.name = playerInfo->name;
             arenaTeamListMember.isLeader = m_members[i].Info->guid == m_leader ? 0 : 1;
             arenaTeamListMember.lastLevel = static_cast<uint8_t>(playerInfo->lastLevel);

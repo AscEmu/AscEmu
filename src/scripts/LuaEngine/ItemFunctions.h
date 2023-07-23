@@ -449,7 +449,7 @@ namespace luaItem
     {
         uint32_t id = CHECK_ULONG(L, 1);
         uint32_t stackcount = CHECK_ULONG(L, 2);
-        Item* pItem = sObjectMgr.CreateItem(id, NULL);
+        Item* pItem = sObjectMgr.createItem(id, NULL);
         if (!pItem)
         {
             lua_pushnil(L);

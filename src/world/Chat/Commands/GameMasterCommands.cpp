@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Chat/ChatHandler.hpp"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Server/MainServerDefines.h"
 #include "Server/WorldSession.h"
 
@@ -50,7 +50,7 @@ bool ChatHandler::HandleGMAllowWhispersCommand(const char* args, WorldSession* m
         return true;
     }
 
-    const auto playerTarget = sObjectMgr.GetPlayer(args, false);
+    const auto playerTarget = sObjectMgr.getPlayer(args, false);
     if (playerTarget == nullptr)
     {
         RedSystemMessage(m_session, "Player %s not found.", args);
@@ -95,7 +95,7 @@ bool ChatHandler::HandleGMBlockWhispersCommand(const char* args, WorldSession* m
         return true;
     }
 
-    auto playerTarget = sObjectMgr.GetPlayer(args, false);
+    auto playerTarget = sObjectMgr.getPlayer(args, false);
     if (playerTarget == nullptr)
     {
         RedSystemMessage(m_session, "Player %s not found.", args);
@@ -144,10 +144,11 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
 
     bool is_gamemaster = m_session->GetPermissionCount() != 0;
 
-    sObjectMgr._playerslock.lock();
-    for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
+    std::lock_guard guard(sObjectMgr.m_playerLock);
+    for (const auto playerPair : sObjectMgr.getPlayerStorage())
     {
-        if (itr->second->getSession()->GetPermissionCount())
+        Player* player = playerPair.second;
+        if (player->getSession()->GetPermissionCount())
         {
             if (!worldConfig.gm.listOnlyActiveGms)
             {
@@ -155,23 +156,23 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
                     GreenSystemMessage(m_session, "The following GMs are on this server:");
 
                 if (worldConfig.gm.hidePermissions && !is_gamemaster)
-                    SystemMessage(m_session, " - %s", itr->second->getName().c_str());
+                    SystemMessage(m_session, " - %s", player->getName().c_str());
                 else
-                    SystemMessage(m_session, " - %s [%s]", itr->second->getName().c_str(), itr->second->getSession()->GetPermissions());
+                    SystemMessage(m_session, " - %s [%s]", player->getName().c_str(), player->getSession()->GetPermissions());
 
                 print_headline = false;
             }
-            else if (worldConfig.gm.listOnlyActiveGms && itr->second->isGMFlagSet())
+            else if (worldConfig.gm.listOnlyActiveGms && player->isGMFlagSet())
             {
-                if (itr->second->isGMFlagSet())
+                if (player->isGMFlagSet())
                 {
                     if (print_headline)
                         GreenSystemMessage(m_session, "The following GMs are active on this server:");
 
                     if (worldConfig.gm.hidePermissions && !is_gamemaster)
-                        SystemMessage(m_session, " - %s", itr->second->getName().c_str());
+                        SystemMessage(m_session, " - %s", player->getName().c_str());
                     else
-                        SystemMessage(m_session, " - %s [%s]", itr->second->getName().c_str(), itr->second->getSession()->GetPermissions());
+                        SystemMessage(m_session, " - %s [%s]", player->getName().c_str(), player->getSession()->GetPermissions());
 
                     print_headline = false;
                 }
@@ -183,7 +184,6 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
             }
         }
     }
-    sObjectMgr._playerslock.unlock();
 
     if (print_headline)
     {

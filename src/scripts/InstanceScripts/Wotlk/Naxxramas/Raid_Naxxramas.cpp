@@ -193,7 +193,7 @@ void WebWrapAI::OnDied(Unit* /*pKiller*/)
     // Slower, but safer
     if (mPlayerGuid != 0)
     {
-        Player* PlayerPtr = sObjectMgr.GetPlayer(static_cast<uint32_t>(mPlayerGuid));
+        Player* PlayerPtr = sObjectMgr.getPlayer(static_cast<uint32_t>(mPlayerGuid));
         if (PlayerPtr != NULL && PlayerPtr->hasAurasWithId(MAEXXNA_WEB_WRAP))
         {
             PlayerPtr->removeAllAurasById(MAEXXNA_WEB_WRAP);
@@ -208,7 +208,7 @@ void WebWrapAI::AIUpdate()
 {
     if (mPlayerGuid != 0)
     {
-        Player* PlayerPtr = sObjectMgr.GetPlayer(static_cast<uint32_t>(mPlayerGuid));
+        Player* PlayerPtr = sObjectMgr.getPlayer(static_cast<uint32_t>(mPlayerGuid));
         if (PlayerPtr == NULL || !PlayerPtr->isAlive() || !PlayerPtr->hasAurasWithId(MAEXXNA_WEB_WRAP))
         {
             mPlayerGuid = 0;
@@ -222,7 +222,7 @@ void WebWrapAI::Destroy()
 {
     if (mPlayerGuid != 0)
     {
-        Player* PlayerPtr = sObjectMgr.GetPlayer(static_cast<uint32_t>(mPlayerGuid));
+        Player* PlayerPtr = sObjectMgr.getPlayer(static_cast<uint32_t>(mPlayerGuid));
         if (PlayerPtr != NULL && PlayerPtr->hasAurasWithId(MAEXXNA_WEB_WRAP))
         {
             PlayerPtr->removeAllAurasById(MAEXXNA_WEB_WRAP);

@@ -16,7 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WoWGuid.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Management/ItemInterface.h"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Server/Script/CreatureAIScript.h"
 #include "Spell/Spell.Legacy.h"
 
@@ -267,7 +267,7 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
                 auto subGroup = group->GetSubGroup(i);
                 for (auto groupMemberPlayerInfo : subGroup->getGroupMembers())
                 {
-                    if (Player* loggedInPlayer = sObjectMgr.GetPlayer(groupMemberPlayerInfo->guid))
+                    if (Player* loggedInPlayer = sObjectMgr.getPlayer(groupMemberPlayerInfo->guid))
                         if (loggedInPlayer->getZoneId() == _player->getZoneId() && _player->GetInstanceID() == loggedInPlayer->GetInstanceID())
                             groupMembers.push_back(loggedInPlayer);
                 }
@@ -332,7 +332,7 @@ void WorldSession::handleLootOpcode(WorldPacket& recvPacket)
                     {
                         for (auto groupMemberPlayerInfo : subGroup->getGroupMembers())
                         {
-                            if (Player* loggedInPlayer = sObjectMgr.GetPlayer(groupMemberPlayerInfo->guid))
+                            if (Player* loggedInPlayer = sObjectMgr.getPlayer(groupMemberPlayerInfo->guid))
                                 if (_player->getZoneId() == loggedInPlayer->getZoneId())
                                     onlineGroupMembers.push_back(loggedInPlayer->getGuid());
                         }
@@ -455,7 +455,7 @@ void WorldSession::doLootRelease(WoWGuid lguid)
     }
     else if (lguid.isPlayer())
     {
-        if (auto lootablePlayer = sObjectMgr.GetPlayer(lguid.getGuidLow()))
+        if (auto lootablePlayer = sObjectMgr.getPlayer(lguid.getGuidLow()))
         {
             lootablePlayer->m_lootableOnCorpse = false;
             lootablePlayer->loot.items.clear();

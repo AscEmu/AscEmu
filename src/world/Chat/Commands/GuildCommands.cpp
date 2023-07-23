@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Chat/ChatHandler.hpp"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Management/Guild/Guild.hpp"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Server/MainServerDefines.h"

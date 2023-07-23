@@ -2134,7 +2134,7 @@ void GameObject_Ritual::onUse(Player* player)
             if (info == nullptr)
                 return;
 
-            Player* target = sObjectMgr.GetPlayer(static_cast<uint32_t>(GetRitual()->GetTargetGUID()));
+            Player* target = sObjectMgr.getPlayer(static_cast<uint32_t>(GetRitual()->GetTargetGUID()));
             if (target == nullptr || !target->IsInWorld())
                 return;
 
@@ -2259,7 +2259,7 @@ void GameObject_Meetingstone::onUse(Player* player)
         return;
 
     // Use selection
-    Player* pPlayer = sObjectMgr.GetPlayer(static_cast<uint32>(player->getTargetGuid()));
+    Player* pPlayer = sObjectMgr.getPlayer(static_cast<uint32>(player->getTargetGuid()));
     if (pPlayer == nullptr)
         return;
 

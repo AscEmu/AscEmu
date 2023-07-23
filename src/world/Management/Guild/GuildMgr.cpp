@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/DBC/DBCStores.h"
 #include "GuildMgr.hpp"
 #include "Guild.hpp"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Server/MainServerDefines.h"
 #include "Utilities/Strings.hpp"
 
@@ -402,7 +402,7 @@ void GuildMgr::loadGuildDataFromDB()
 
 uint32_t GuildMgr::getNextGuildId()
 {
-    return sObjectMgr.GenerateGuildId();
+    return sObjectMgr.generateGuildId();
 }
 
 // Guild collection

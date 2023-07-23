@@ -97,25 +97,25 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
     data.SetOpcode(SMSG_WHO);
     data << uint64_t(0);
 
-    sObjectMgr._playerslock.lock();
-    PlayerStorageMap::const_iterator iend = sObjectMgr._players.end();
-    PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin();
-    while (itr != iend && sent_count < 49)
+    sObjectMgr.m_playerLock.lock();
+    PlayerStorageMap::const_iterator iend = sObjectMgr.getPlayerStorage().end();
+    auto playerPair = sObjectMgr.getPlayerStorage().begin();
+    while (playerPair != iend && sent_count < 49)
     {
-        Player* plr = itr->second;
-        ++itr;
+        const Player* player = playerPair->second;
+        ++playerPair;
 
-        if (!plr->getSession() || !plr->IsInWorld())
+        if (!player->getSession() || !player->IsInWorld())
             continue;
 
         if (!worldConfig.gm.showGmInWhoList && !HasGMPermissions())
         {
-            if (plr->getSession()->HasGMPermissions())
+            if (player->getSession()->HasGMPermissions())
                 continue;
         }
 
         // Team check
-        if (!HasGMPermissions() && plr->getTeam() != team && !plr->getSession()->HasGMPermissions() && !worldConfig.player.isInterfactionMiscEnabled)
+        if (!HasGMPermissions() && player->getTeam() != team && !player->getSession()->HasGMPermissions() && !worldConfig.player.isInterfactionMiscEnabled)
             continue;
 
         ++total_count;
@@ -124,13 +124,13 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
         bool add = true;
 
         // Chat name
-        if (cname && srlPacket.player_name.compare(plr->getName()) != 0)
+        if (cname && srlPacket.player_name.compare(player->getName()) != 0)
             continue;
 
         // Guild name
         if (gname)
         {
-            if (!plr->getGuild() || srlPacket.guild_name.compare(plr->getGuild()->getName()) != 0)
+            if (!player->getGuild() || srlPacket.guild_name.compare(player->getGuild()->getName()) != 0)
                 continue;
         }
 
@@ -138,7 +138,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
         if (srlPacket.min_level && srlPacket.max_level)
         {
             // skip players outside of level range
-            if (plr->getLevel() < srlPacket.min_level || plr->getLevel() > srlPacket.max_level)
+            if (player->getLevel() < srlPacket.min_level || player->getLevel() > srlPacket.max_level)
                 continue;
         }
 
@@ -149,7 +149,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
             add = false;
             for (uint32_t i = 0; i < srlPacket.zone_count; ++i)
             {
-                if (srlPacket.zones[i] == plr->getZoneId())
+                if (srlPacket.zones[i] == player->getZoneId())
                 {
                     add = true;
                     break;
@@ -157,7 +157,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
             }
         }
 
-        if (!((srlPacket.class_mask >> 1) & plr->getClassMask()) || !((srlPacket.race_mask >> 1) & plr->getRaceMask()))
+        if (!((srlPacket.class_mask >> 1) & player->getClassMask()) || !((srlPacket.race_mask >> 1) & player->getRaceMask()))
             add = false;
 
         // skip players that fail zone check
@@ -170,7 +170,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
             add = false;
             for (uint32_t i = 0; i < srlPacket.name_count; ++i)
             {
-                if (!strnicmp(srlPacket.names[i].c_str(), plr->getName().c_str(), srlPacket.names[i].length()))
+                if (!strnicmp(srlPacket.names[i].c_str(), player->getName().c_str(), srlPacket.names[i].length()))
                 {
                     add = true;
                     break;
@@ -182,21 +182,21 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
             continue;
 
         // if we're here, it means we've passed all tests
-        data << plr->getName().c_str();
+        data << player->getName().c_str();
 
-        if (plr->m_playerInfo->m_guild)
-            data << sGuildMgr.getGuildById(plr->m_playerInfo->m_guild)->getName().c_str();
+        if (player->m_playerInfo->m_guild)
+            data << sGuildMgr.getGuildById(player->m_playerInfo->m_guild)->getName().c_str();
         else
             data << uint8_t(0);
 
-        data << plr->getLevel();
-        data << uint32_t(plr->getClass());
-        data << uint32_t(plr->getRace());
-        data << plr->getGender();
-        data << uint32_t(plr->getZoneId());
+        data << player->getLevel();
+        data << uint32_t(player->getClass());
+        data << uint32_t(player->getRace());
+        data << player->getGender();
+        data << uint32_t(player->getZoneId());
         ++sent_count;
     }
-    sObjectMgr._playerslock.unlock();
+    sObjectMgr.m_playerLock.unlock();
     data.wpos(0);
     data << sent_count;
     data << sent_count;
@@ -755,7 +755,7 @@ void WorldSession::handleResurrectResponse(WorldPacket& recvPacket)
 
     auto player = _player->getWorldMap()->getPlayer(srlPacket.guid.getGuidLow());
     if (player == nullptr)
-        player = sObjectMgr.GetPlayer(srlPacket.guid.getGuidLow());
+        player = sObjectMgr.getPlayer(srlPacket.guid.getGuidLow());
 
     if (player == nullptr)
         return;
@@ -924,7 +924,7 @@ void WorldSession::handleBugOpcode(WorldPacket& recv_data)
 
     uint64_t accountId = GetAccountId();
     uint32_t timeStamp = uint32(UNIXTIME);
-    uint32_t reportId = sObjectMgr.GenerateReportID();
+    uint32_t reportId = sObjectMgr.generateReportId();
 
     std::stringstream ss;
 
@@ -958,7 +958,7 @@ void WorldSession::handleBugOpcode(WorldPacket& recv_data)
 
     uint64_t accountId = GetAccountId();
     uint32_t timeStamp = uint32_t(UNIXTIME);
-    uint32_t reportId = sObjectMgr.GenerateReportID();
+    uint32_t reportId = sObjectMgr.generateReportId();
 
     std::stringstream ss;
 
@@ -994,7 +994,7 @@ void WorldSession::handleSuggestionOpcode(WorldPacket& recvPacket)
 
     uint64_t accountId = GetAccountId();
     uint32_t timeStamp = uint32_t(UNIXTIME);
-    uint32_t reportId = sObjectMgr.GenerateReportID();
+    uint32_t reportId = sObjectMgr.generateReportId();
 
     std::stringstream ss;
 
@@ -1831,7 +1831,7 @@ void WorldSession::handleGameObjectUse(WorldPacket& recvPacket)
     //////////////////////////////////////////////////////////////////////////////////////////
     //\brief: the following lines are handled in gobj class
 
-    sObjectMgr.CheckforScripts(_player, gameObjectProperties->raw.parameter_9);
+    sObjectMgr.checkForScripts(_player, gameObjectProperties->raw.parameter_9);
 
     if (gameObject->GetScript())
         gameObject->GetScript()->OnActivate(_player);

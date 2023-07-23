@@ -187,7 +187,7 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
                     {
                         if (receive_item)
                         {
-                            Item* item = sObjectMgr.CreateItem(receive_item, player);
+                            Item* item = sObjectMgr.createItem(receive_item, player);
                             if (item == nullptr)
                                 return false;
 
@@ -198,7 +198,7 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
 
                     if (questProperties->srcitem && questProperties->srcitem != questProperties->receive_items[0])
                     {
-                        Item* item = sObjectMgr.CreateItem(questProperties->srcitem, player);
+                        Item* item = sObjectMgr.createItem(questProperties->srcitem, player);
                         if (item)
                         {
                             item->setStackCount(questProperties->srcitemcount ? questProperties->srcitemcount : 1);
@@ -381,7 +381,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                             }
                             else
                             {
-                                auto* item = sObjectMgr.CreateItem(qst->reward_item[i], plr);
+                                auto* item = sObjectMgr.createItem(qst->reward_item[i], plr);
                                 if (item)
                                 {
                                     item->setStackCount(uint32(qst->reward_itemcount[i]));
@@ -420,7 +420,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                         }
                         else
                         {
-                            auto item = sObjectMgr.CreateItem(qst->reward_choiceitem[reward_slot], plr);
+                            auto item = sObjectMgr.createItem(qst->reward_choiceitem[reward_slot], plr);
                             if (item)
                             {
                                 item->setStackCount(uint32(qst->reward_choiceitemcount[reward_slot]));

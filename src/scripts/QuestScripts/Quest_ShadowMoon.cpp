@@ -357,7 +357,7 @@ void FlanisSwiftwing_Gossip::onHello(Object* pObject, Player* plr)
 
 void FlanisSwiftwing_Gossip::onSelectOption(Object* /*pObject*/, Player* Plr, uint32_t /*Id*/, const char* /*Code*/, uint32_t /*gossipId*/)
 {
-    Item* item = sObjectMgr.CreateItem(30658, Plr);
+    Item* item = sObjectMgr.createItem(30658, Plr);
     if (item == nullptr)
         return;
 

@@ -20,7 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Management/MapMgr.hpp"
 #include "Management/AuctionMgr.h"
 #include "Server/MainServerDefines.h"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Server/Packets/CmsgGossipSelectOption.h"
 #include "Server/Packets/CmsgGossipHello.h"
 #include "Management/ItemInterface.h"

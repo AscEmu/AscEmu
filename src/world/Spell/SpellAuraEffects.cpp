@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "SpellMgr.hpp"
 #include "Management/ItemInterface.h"
 #include "Storage/DBC/DBCStores.h"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Server/Script/ScriptMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Creatures/Pet.h"

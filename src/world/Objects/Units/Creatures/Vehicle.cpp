@@ -199,7 +199,7 @@ void Vehicle::loadAllAccessories(bool evading)
     if (getBase()->getObjectTypeId() == TYPEID_PLAYER || !evading)
         removeAllPassengers();
 
-    VehicleAccessoryList const* accessories = sObjectMgr.getVehicleAccessories(this);
+    VehicleAccessoryList const* accessories = sObjectMgr.getVehicleAccessories(_creatureEntry);
     if (!accessories)
         return;
 

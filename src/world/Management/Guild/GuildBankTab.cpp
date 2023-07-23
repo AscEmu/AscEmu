@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "GuildBankTab.hpp"
 #include "Server/MainServerDefines.h"
 #include "Objects/Item.hpp"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 
 #if VERSION_STRING < Cata
 #include "Server/Packets/MsgQueryGuildBankText.h"
@@ -33,7 +33,7 @@ bool GuildBankTab::loadGuildBankTabItemFromDB(Field* fields)
 {
     uint8_t slotId = fields[2].GetUInt8();
 
-    Item* pItem = sObjectMgr.LoadItem(fields[3].GetUInt32());
+    Item* pItem = sObjectMgr.loadItem(fields[3].GetUInt32());
     if (pItem == nullptr)
     {
         CharacterDatabase.Execute("DELETE FROM guild_bank_items WHERE itemGuid = %u AND guildId = %u AND tabId = %u",

@@ -144,7 +144,7 @@ void WorldSession::handleMailCreateTextItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    auto item = sObjectMgr.CreateItem(8383, _player);
+    auto item = sObjectMgr.createItem(8383, _player);
     if (item == nullptr)
         return;
 
@@ -284,7 +284,7 @@ void WorldSession::handleGetMailOpcode(WorldPacket& /*recvPacket*/)
         {
             for (auto itemEntry : message.second.items)
             {
-                const auto item = sObjectMgr.LoadItem(itemEntry);
+                const auto item = sObjectMgr.loadItem(itemEntry);
                 if (item == nullptr)
                     continue;
 
@@ -352,7 +352,7 @@ void WorldSession::handleTakeItemOpcode(WorldPacket& recvPacket)
         }
     }
 
-    auto item = sObjectMgr.LoadItem(srlPacket.lowGuid);
+    auto item = sObjectMgr.loadItem(srlPacket.lowGuid);
     if (item == nullptr)
     {
         SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_INTERNAL_ERROR).serialise().get());

@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Master.h"
 #include "Cryptography/crc32.h"
 #include "Server/World.h"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Server/Script/ScriptMgr.h"
 
 bool handleSendChatAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool /*isWebClient*/)
@@ -116,18 +116,18 @@ bool handleServerInfoCommand(BaseConsole* baseConsole, int /*argumentCount*/, st
     int onlineCount = 0;
     int avgLatency = 0;
 
-    sObjectMgr._playerslock.lock();
-    for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
+    std::lock_guard guard(sObjectMgr.m_playerLock);
+    for (const auto playerPair : sObjectMgr.getPlayerStorage())
     {
-        if (itr->second->getSession())
+        const Player* player = playerPair.second;
+        if (player->getSession())
         {
             onlineCount++;
-            avgLatency += itr->second->getSession()->GetLatency();
-            if (itr->second->getSession()->GetPermissionCount())
+            avgLatency += player->getSession()->GetLatency();
+            if (player->getSession()->GetPermissionCount())
                 gmCount++;
         }
     }
-    sObjectMgr._playerslock.unlock();
 
     if (isWebClient)
     {
@@ -163,16 +163,16 @@ bool handleOnlineGmsCommand(BaseConsole* baseConsole, int /*argumentCount*/, std
     baseConsole->Write("| %21s | %15s | % 03s                                                |\r\n", "Name", "Permissions", "Latency");
     baseConsole->Write("======================================================================\r\n");
 
-    sObjectMgr._playerslock.lock();
-    for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
+    std::lock_guard guard(sObjectMgr.m_playerLock);
+    for (const auto playerPair : sObjectMgr.getPlayerStorage())
     {
-        if (itr->second->getSession()->GetPermissionCount())
+        const Player* player = playerPair.second;
+        if (player->getSession()->GetPermissionCount())
         {
-            baseConsole->Write("| %21s | %15s | %03u ms |\r\n", itr->second->getName().c_str(), itr->second->getSession()->GetPermissions(),
-                itr->second->getSession()->GetLatency());
+            baseConsole->Write("| %21s | %15s | %03u ms |\r\n", player->getName().c_str(), player->getSession()->GetPermissions(),
+                player->getSession()->GetLatency());
         }
     }
-    sObjectMgr._playerslock.unlock();
 
     baseConsole->Write("======================================================================\r\n\r\n");
 
@@ -194,7 +194,7 @@ bool handleKickPlayerCommand(BaseConsole* baseConsole, int argumentCount, std::s
     if (characterName.empty())
         return false;
 
-    Player* player = sObjectMgr.GetPlayer(characterName.c_str());
+    Player* player = sObjectMgr.getPlayer(characterName.c_str());
     if (player == nullptr)
     {
         baseConsole->Write("Could not find player, %s.\r\n", characterName.c_str());
@@ -237,13 +237,13 @@ bool handleListOnlinePlayersCommand(BaseConsole* baseConsole, int /*argumentCoun
     baseConsole->Write("| %21s | %15s | % 03s                  |\r\n", "Name", "Level", "Latency");
     baseConsole->Write("======================================================================\r\n");
 
-    sObjectMgr._playerslock.lock();
-    for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
+    std::lock_guard guard(sObjectMgr.m_playerLock);
+    for (const auto playerPair : sObjectMgr.getPlayerStorage())
     {
-        baseConsole->Write("| %21s | %15u | %03u ms                   |\r\n", itr->second->getName().c_str(), itr->second->getSession()->GetPlayer()->getLevel(),
-            itr->second->getSession()->GetLatency());
+        const Player* player = playerPair.second;
+        baseConsole->Write("| %21s | %15u | %03u ms                   |\r\n", player->getName().c_str(), player->getSession()->GetPlayer()->getLevel(),
+            player->getSession()->GetLatency());
     }
-    sObjectMgr._playerslock.unlock();
 
     baseConsole->Write("======================================================================\r\n\r\n");
     return true;
@@ -254,7 +254,7 @@ bool handlePlayerInfoCommand(BaseConsole* baseConsole, int argumentCount, std::s
     if (argumentCount > 0 && consoleInput.empty())
         return false;
 
-    Player* player = sObjectMgr.GetPlayer(consoleInput.c_str());
+    Player* player = sObjectMgr.getPlayer(consoleInput.c_str());
     if (player == nullptr)
     {
         baseConsole->Write("Player not found.\r\n");
@@ -281,13 +281,13 @@ bool handleShutDownServerCommand(BaseConsole* baseConsole, int /*argumentCount*/
 
     if (consoleInput.empty())
     {
-        sObjectMgr._playerslock.lock();
-        for (PlayerStorageMap::const_iterator itr = sObjectMgr._players.begin(); itr != sObjectMgr._players.end(); ++itr)
+        std::lock_guard guard(sObjectMgr.m_playerLock);
+        for (const auto playerPair : sObjectMgr.getPlayerStorage())
         {
-            if (itr->second->getSession())
-                itr->second->saveToDB(false);
+            Player* player = playerPair.second;
+            if (player->getSession())
+                player->saveToDB(false);
         }
-        sObjectMgr._playerslock.unlock();
 
         exit(0);
     }
@@ -352,7 +352,7 @@ bool handleWhisperCommand(BaseConsole* baseConsole, int argumentCount, std::stri
     if (whisperMessage.empty())
         return false;
 
-    Player* player = sObjectMgr.GetPlayer(characterName.c_str());
+    Player* player = sObjectMgr.getPlayer(characterName.c_str());
     if (player == nullptr)
     {
         baseConsole->Write("Could not find player, %s.\r\n", characterName.c_str());
@@ -384,7 +384,7 @@ bool handleRevivePlayerCommand(BaseConsole* baseConsole, int argumentCount, std:
     if (argumentCount > 0 && consoleInput.empty())
         return false;
 
-    Player* player = sObjectMgr.GetPlayer(consoleInput.c_str(), false);
+    Player* player = sObjectMgr.getPlayer(consoleInput.c_str(), false);
     if (player == nullptr)
     {
         baseConsole->Write("Could not find player %s.\r\n", consoleInput.c_str());

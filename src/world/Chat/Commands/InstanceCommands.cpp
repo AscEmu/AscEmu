@@ -20,7 +20,7 @@
  */
 
 #include "Chat/ChatHandler.hpp"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Server/MainServerDefines.h"
@@ -204,7 +204,7 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
     if (argc == 1)
         plr = GetSelectedPlayer(m_session, true, true);
     else
-        plr = sObjectMgr.GetPlayer(playername, false);
+        plr = sObjectMgr.getPlayer(playername, false);
 
     if (!plr)
     {
@@ -246,7 +246,7 @@ bool ChatHandler::HandleResetAllInstancesCommand(const char* args, WorldSession*
 
     if (is_name_set)
     {
-        player = sObjectMgr.GetPlayer(args, false);
+        player = sObjectMgr.getPlayer(args, false);
         if (player == nullptr)
         {
             RedSystemMessage(m_session, "Player %s is not online or does not exist!", args);

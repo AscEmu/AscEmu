@@ -22,7 +22,7 @@
 #include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
 #include "Chat/ChatHandler.hpp"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Management/Tickets/TicketMgr.hpp"
 #include "Server/World.h"
 #include "Server/Packets/SmsgGmTicketDeleteTicket.h"
@@ -47,7 +47,7 @@ bool ChatHandler::HandleGMTicketListCommand(const char* /*args*/, WorldSession* 
         if ((*itr)->deleted)
             continue;
 
-        Player* plr = sObjectMgr.GetPlayer((uint32)(*itr)->playerGuid);
+        Player* plr = sObjectMgr.getPlayer((uint32)(*itr)->playerGuid);
 
         if (plr == NULL)
             continue;
@@ -78,7 +78,7 @@ bool ChatHandler::HandleGMTicketGetByIdCommand(const char* args, WorldSession* m
     if (!chn)
         return false;
 
-    Player* plr = sObjectMgr.GetPlayer(args, false);
+    Player* plr = sObjectMgr.getPlayer(args, false);
     if (plr == NULL)
     {
         RedSystemMessage(m_session, "Player not found.");
@@ -132,7 +132,7 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
     if (!chn)
         return false;
 
-    Player* plr = sObjectMgr.GetPlayer(args, true);
+    Player* plr = sObjectMgr.getPlayer(args, true);
     if (plr == NULL)
     {
         RedSystemMessage(m_session, "Player not found.");

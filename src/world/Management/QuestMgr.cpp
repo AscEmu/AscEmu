@@ -1282,7 +1282,7 @@ void QuestMgr::_OnPlayerKill(Player* plr, uint32 entry, bool IsGroupKill)
                 {
                     for (const auto& gitr : group->GetSubGroup(k)->getGroupMembers())
                     {
-                        Player* gplr = sObjectMgr.GetPlayer(gitr->guid);
+                        Player* gplr = sObjectMgr.getPlayer(gitr->guid);
                         if (gplr && gplr != plr && plr->isInRange(gplr, 300) && gplr->hasQuestMob(entry)) // don't double kills also don't give kills to party members at another side of the world
                         {
                             for (uint8 i = 0; i < 25; ++i)
@@ -1598,7 +1598,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                         }
                         else
                         {
-                            auto item = sObjectMgr.CreateItem(qst->reward_item[i], plr);
+                            auto item = sObjectMgr.createItem(qst->reward_item[i], plr);
                             if (!item)
                                 return;
 
@@ -1636,7 +1636,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                     }
                     else
                     {
-                        auto item = sObjectMgr.CreateItem(qst->reward_choiceitem[reward_slot], plr);
+                        auto item = sObjectMgr.createItem(qst->reward_choiceitem[reward_slot], plr);
                         if (!item)
                             return;
 
@@ -1710,7 +1710,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                         }
                         else
                         {
-                            auto item = sObjectMgr.CreateItem(qst->reward_item[i], plr);
+                            auto item = sObjectMgr.createItem(qst->reward_item[i], plr);
                             if (!item)
                                 return;
 
@@ -1748,7 +1748,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                     }
                     else
                     {
-                        auto item = sObjectMgr.CreateItem(qst->reward_choiceitem[reward_slot], plr);
+                        auto item = sObjectMgr.createItem(qst->reward_choiceitem[reward_slot], plr);
                         if (!item)
                             return;
 
@@ -1862,7 +1862,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
             if (qst->MailSendItem != 0)
             {
                 // the way it's done in World::PollMailboxInsertQueue
-                Item* pItem = sObjectMgr.CreateItem(qst->MailSendItem, NULL);
+                Item* pItem = sObjectMgr.createItem(qst->MailSendItem, NULL);
                 if (pItem != NULL)
                 {
                     pItem->setStackCount(1);

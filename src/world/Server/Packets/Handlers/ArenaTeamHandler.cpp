@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Server/WorldSession.h"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Server/Packets/MsgInspectArenaTeams.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Server/Packets/CmsgArenaTeamQuery.h"
@@ -53,7 +53,7 @@ void WorldSession::handleArenaTeamAddMemberOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    auto player = sObjectMgr.GetPlayer(srlPacket.playerName.c_str(), false);
+    auto player = sObjectMgr.getPlayer(srlPacket.playerName.c_str(), false);
     if (player == nullptr)
     {
         SystemMessage("Player `%s` is non-existent or not online.", srlPacket.playerName.c_str());
@@ -198,7 +198,7 @@ void WorldSession::handleArenaTeamInviteDenyOpcode(WorldPacket& /*recvPacket*/)
     if (team == nullptr)
         return;
 
-    if (const auto player = sObjectMgr.GetPlayer(team->m_leader))
+    if (const auto player = sObjectMgr.getPlayer(team->m_leader))
         player->getSession()->SystemMessage("%s denied your arena team invitation for %s.", _player->getName().c_str(), team->m_name.c_str());
 }
 

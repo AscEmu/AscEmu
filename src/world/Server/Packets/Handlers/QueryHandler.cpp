@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgGameobjectQueryResponse.h"
 #include "Server/Packets/SmsgQueryTimeResponse.h"
 #include "Logging/Log.hpp"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/CmsgCreatureQuery.h"
 #include "Server/Packets/SmsgCreatureQueryResponse.h"
@@ -94,7 +94,7 @@ void WorldSession::handleAchievmentQueryOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    auto player = sObjectMgr.GetPlayer(srlPacket.guid.getGuidLow());
+    auto player = sObjectMgr.getPlayer(srlPacket.guid.getGuidLow());
     if (player == nullptr)
         return;
 

@@ -24,7 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/PowerType.hpp"
 #include "Pet.h"
 #include "Spell/Definitions/SpellEffects.hpp"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Map/AreaBoundary.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Movement/WaypointManager.h"
@@ -2689,7 +2689,7 @@ void AIInterface::initGroupThreat(Unit* target)
         {
             for (const auto& itr : group->GetSubGroup(i)->getGroupMembers())
             {
-                Player* pGroupGuy = sObjectMgr.GetPlayer(itr->guid);
+                Player* pGroupGuy = sObjectMgr.getPlayer(itr->guid);
                 if (pGroupGuy && pGroupGuy->isAlive() && m_Unit->getWorldMap() == pGroupGuy->getWorldMap() && pGroupGuy->getDistanceSq(target) <= 40 * 40) //50 yards for now. lets see if it works
                 {
                     m_Unit->getThreatManager().addThreat(pGroupGuy, 0.0f, nullptr, true, true);

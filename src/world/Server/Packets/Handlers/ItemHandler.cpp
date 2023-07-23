@@ -930,7 +930,7 @@ void WorldSession::handleSplitOpcode(WorldPacket& recvPacket)
         {
             inventoryItem1->modStackCount(-srlPacket.itemCount);
 
-            inventoryItem2 = sObjectMgr.CreateItem(inventoryItem1->getEntry(), _player);
+            inventoryItem2 = sObjectMgr.createItem(inventoryItem1->getEntry(), _player);
             if (inventoryItem2 == nullptr)
                 return;
 
@@ -2060,7 +2060,7 @@ void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)
     }
     else
     {
-        pItem = sObjectMgr.CreateItem(it->ItemId, _player);
+        pItem = sObjectMgr.createItem(it->ItemId, _player);
         if (pItem)
         {
             pItem->setStackCount(count_per_stack);
@@ -2184,7 +2184,7 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
 
     if (!addItem)
     {
-        Item* item = sObjectMgr.CreateItem(creature_item.itemid, _player);
+        Item* item = sObjectMgr.createItem(creature_item.itemid, _player);
         if (!item)
         {
             _player->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_DONT_OWN_THAT_ITEM);
@@ -3108,7 +3108,7 @@ void WorldSession::handleEquipmentSetSave(WorldPacket& data)
     uint32_t setGUID = guid.getGuidLowPart();
 
     if (setGUID == 0)
-        setGUID = sObjectMgr.GenerateEquipmentSetID();
+        setGUID = sObjectMgr.generateEquipmentSetId();
 
     auto equipmentSet = new Arcemu::EquipmentSet();
 

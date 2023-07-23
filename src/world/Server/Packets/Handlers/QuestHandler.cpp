@@ -330,7 +330,7 @@ void WorldSession::handleQuestPushResultOpcode(WorldPacket& recvPacket)
 
     if (_player->getQuestSharerByDbId())
     {
-        const auto questSharerPlayer = sObjectMgr.GetPlayer(_player->getQuestSharerByDbId());
+        const auto questSharerPlayer = sObjectMgr.getPlayer(_player->getQuestSharerByDbId());
         if (questSharerPlayer)
         {
             const uint64_t guid = recvPacket.size() >= 13 ? _player->getGuid() : srlPacket.giverGuid;
@@ -893,7 +893,7 @@ void WorldSession::handlePushQuestToPartyOpcode(WorldPacket& recvPacket)
                 group->Lock();
                 for (const auto cachedCharacterInfo : sgr->getGroupMembers())
                 {
-                    Player* pPlayer = sObjectMgr.GetPlayer(cachedCharacterInfo->guid);
+                    Player* pPlayer = sObjectMgr.getPlayer(cachedCharacterInfo->guid);
                     if (pPlayer && pPlayer->getGuid() != pguid)
                     {
                         _player->getSession()->SendPacket(MsgQuestPushResult(pPlayer->getGuid(), 0, QUEST_SHARE_MSG_SHARING_QUEST).serialise().get());

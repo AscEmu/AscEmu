@@ -791,7 +791,7 @@ void Battleground::close()
         {
             guid = *it2;
             ++it2;
-            plr = sObjectMgr.GetPlayer(guid);
+            plr = sObjectMgr.getPlayer(guid);
 
             if (plr)
                 removePendingPlayer(plr);

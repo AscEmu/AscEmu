@@ -236,7 +236,7 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
 
     if (is_name_set)
     {
-        auto named_player = sObjectMgr.GetPlayer(args, false);
+        auto named_player = sObjectMgr.getPlayer(args, false);
         if (named_player == nullptr)
         {
             RedSystemMessage(m_session, "Player %s is not online or does not exist!", args);
@@ -305,7 +305,7 @@ bool ChatHandler::HandleReviveCommand(const char* args, WorldSession* m_session)
 {
     Player* reviveTarget = nullptr;
     if (*args)
-        reviveTarget = sObjectMgr.GetPlayer(args, false);
+        reviveTarget = sObjectMgr.getPlayer(args, false);
     else
         reviveTarget = GetSelectedPlayer(m_session, false, true);
 
@@ -398,7 +398,7 @@ bool ChatHandler::HandleKickByNameCommand(const char* args, WorldSession* m_sess
     }
 
     char* player_name = strtok((char*)args, " ");
-    auto player_target = sObjectMgr.GetPlayer(player_name, false);
+    auto player_target = sObjectMgr.getPlayer(player_name, false);
     if (player_target != nullptr)
     {
         char* reason = strtok(NULL, "\n");
@@ -443,7 +443,7 @@ bool ChatHandler::HandleKKickBySessionCommand(const char* args, WorldSession* m_
     }
 
     char* player_name = strtok((char*)args, " ");
-    auto player_target = sObjectMgr.GetPlayer(player_name, false);
+    auto player_target = sObjectMgr.getPlayer(player_name, false);
     if (player_target != nullptr)
     {
         if (!m_session->CanUseCommand('z') && player_target->getSession()->CanUseCommand('z'))
@@ -759,7 +759,7 @@ bool ChatHandler::HandleAppearCommand(const char* args, WorldSession* m_session)
     if (!*args)
         return false;
 
-    Player* chr = sObjectMgr.GetPlayer(args, false);
+    Player* chr = sObjectMgr.getPlayer(args, false);
     if (chr)
     {
         if (!m_session->CanUseCommand('z') && chr->isAppearingDisabled())
@@ -835,7 +835,7 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession* m_session)
     if (!*args)
         return false;
 
-    Player* chr = sObjectMgr.GetPlayer(args, false);
+    Player* chr = sObjectMgr.getPlayer(args, false);
     if (chr)
     {
 
@@ -930,7 +930,7 @@ bool ChatHandler::HandlePlayerInfo(const char* args, WorldSession* m_session)
     Player* plr;
     if (strlen(args) >= 4)
     {
-        plr = sObjectMgr.GetPlayer(args, false);
+        plr = sObjectMgr.getPlayer(args, false);
         if (!plr)
         {
             RedSystemMessage(m_session, "Unable to locate player %s.", args);
@@ -1088,7 +1088,7 @@ bool ChatHandler::HandleUnBanCharacterCommand(const char* args, WorldSession* m_
         return true;
     }
 
-    Player* pPlayer = sObjectMgr.GetPlayer(Character, false);
+    Player* pPlayer = sObjectMgr.getPlayer(Character, false);
     if (pPlayer != nullptr)
     {
         GreenSystemMessage(m_session, "Unbanned player %s ingame.", pPlayer->getName().c_str());
@@ -1205,7 +1205,7 @@ bool ChatHandler::HandleBanCharacterCommand(const char* args, WorldSession* m_se
             return false;
     }
 
-    Player* pPlayer = sObjectMgr.GetPlayer(pCharacter, false);
+    Player* pPlayer = sObjectMgr.getPlayer(pCharacter, false);
     if (pPlayer == NULL)
     {
         pInfo = sObjectMgr.getCachedCharacterInfoByName(pCharacter);
@@ -1273,7 +1273,7 @@ bool ChatHandler::HandleBanAllCommand(const char* args, WorldSession* m_session)
             return false;
     }
 
-    pBanned = sObjectMgr.GetPlayer(pCharacter, false);
+    pBanned = sObjectMgr.getPlayer(pCharacter, false);
     if (!pBanned || !pBanned->IsInWorld())
     {
         RedSystemMessage(m_session, "Player \'%s\' is not online or does not exists!", pCharacter);

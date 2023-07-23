@@ -243,7 +243,7 @@ void Aura::EventUpdateGroupAA(AuraEffectModifier* /*aurEff*/, float r)
         SubGroup* sg = owner->getGroup()->GetSubGroup(owner->getSubGroupSlot());
         for (const auto cachedCharacterInfo : sg->getGroupMembers())
         {
-            Player* op = sObjectMgr.GetPlayer(cachedCharacterInfo->guid);
+            Player* op = sObjectMgr.getPlayer(cachedCharacterInfo->guid);
 
             if (op == nullptr)
                 continue;
@@ -352,7 +352,7 @@ void Aura::EventUpdateRaidAA(AuraEffectModifier* /*aurEff*/, float r)
 
             for (const auto& cachedCharacterInfo : sg->getGroupMembers())
             {
-                Player* op = sObjectMgr.GetPlayer(cachedCharacterInfo->guid);
+                Player* op = sObjectMgr.getPlayer(cachedCharacterInfo->guid);
 
                 if (op == nullptr)
                     continue;
@@ -3473,7 +3473,7 @@ void Aura::SpellAuraChannelDeathItem(AuraEffectModifier* aurEff, bool apply)
                 ItemProperties const* proto = sMySQLStore.getItemProperties(itemid);
                 if (pCaster->getItemInterface()->CalculateFreeSlots(proto) > 0)
                 {
-                    Item* item = sObjectMgr.CreateItem(itemid, pCaster);
+                    Item* item = sObjectMgr.createItem(itemid, pCaster);
                     if (!item)
                         return;
 

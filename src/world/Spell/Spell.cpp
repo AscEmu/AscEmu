@@ -36,7 +36,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/DynamicObject.hpp"
 #include "Management/Faction.h"
 #include "Objects/GameObject.h"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Server/Definitions.h"
 #include "Server/Packets/SmsgCancelCombat.h"
 #include "Server/Packets/MsgChannelUpdate.h"

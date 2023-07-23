@@ -24,7 +24,7 @@
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.hpp"
 #include "Server/World.h"
-#include "Management/ObjectMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Server/Script/ScriptMgr.h"
 #include "Spell/SpellMgr.hpp"
 
@@ -150,7 +150,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
 
                         for (const auto itr2 : sg->getGroupMembers())
                         {
-                            Player* gm = sObjectMgr.GetPlayer(itr2->guid);
+                            Player* gm = sObjectMgr.getPlayer(itr2->guid);
                             if (!gm)
                                 continue;
 
@@ -185,7 +185,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                     const auto PvPTokenID = worldConfig.player.pvpTokenId;
                     if (PvPTokenID > 0)
                     {
-                        Item* PvPTokenItem = sObjectMgr.CreateItem(PvPTokenID, pAffectedPlayer);
+                        Item* PvPTokenItem = sObjectMgr.createItem(PvPTokenID, pAffectedPlayer);
                         if (PvPTokenItem)
                         {
                             PvPTokenItem->addFlags(ITEM_FLAG_SOULBOUND);

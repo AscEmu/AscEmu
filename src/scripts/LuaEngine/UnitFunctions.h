@@ -873,7 +873,7 @@ public:
         auto item_add = player->getItemInterface()->FindItemLessMax(id, count, false);
         if (item_add == nullptr)
         {
-            item_add = sObjectMgr.CreateItem(id, player);
+            item_add = sObjectMgr.createItem(id, player);
             if (item_add == nullptr)
                 return 0;
 
@@ -1506,7 +1506,7 @@ public:
             {
                 if (questProperties->receive_items[i])
                 {
-                    Item* item = sObjectMgr.CreateItem(questProperties->receive_items[i], player);
+                    Item* item = sObjectMgr.createItem(questProperties->receive_items[i], player);
                     if (item == nullptr)
                         return false;
 
@@ -1517,7 +1517,7 @@ public:
 
             if (questProperties->srcitem && questProperties->srcitem != questProperties->receive_items[0])
             {
-                Item* item = sObjectMgr.CreateItem(questProperties->srcitem, player);
+                Item* item = sObjectMgr.createItem(questProperties->srcitem, player);
                 if (item)
                 {
                     item->setStackCount(questProperties->srcitemcount ? questProperties->srcitemcount : 1);
@@ -3060,7 +3060,7 @@ public:
                 SubGroup* sgrp = group->GetSubGroup(i);
                 for (const auto itr : sgrp->getGroupMembers())
                 {
-                    if (Player* loggedInPlayer = sObjectMgr.GetPlayer(itr->guid))
+                    if (Player* loggedInPlayer = sObjectMgr.getPlayer(itr->guid))
                     {
                         if (loggedInPlayer->getZoneId() == _player->getZoneId() && _player->GetInstanceID() == loggedInPlayer->GetInstanceID())
                         {
@@ -3137,7 +3137,7 @@ public:
 
         Player* plr = dynamic_cast<Player*>(ptr);
         if (plr->getGroup())
-            PUSH_UNIT(L, sObjectMgr.GetPlayer(plr->getGroup()->GetLeader()->guid));
+            PUSH_UNIT(L, sObjectMgr.getPlayer(plr->getGroup()->GetLeader()->guid));
         return 1;
     }
 
@@ -5489,7 +5489,7 @@ public:
         Guild* pGuild = dynamic_cast<Player*>(ptr)->getGuild();
         if (pGuild != nullptr)
         {
-            Player* plr = sObjectMgr.GetPlayer(uint32_t(pGuild->getLeaderGUID()));
+            Player* plr = sObjectMgr.getPlayer(uint32_t(pGuild->getLeaderGUID()));
             if (plr != nullptr)
                 lua_pushstring(L, plr->getName().c_str());
             else
