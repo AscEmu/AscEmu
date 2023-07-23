@@ -29,8 +29,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Guild/Guild.hpp"
 #endif
 
-const char* NormalTalkMessage = "DMSG";
-
 ObjectMgr& ObjectMgr::getInstance()
 {
     static ObjectMgr mInstance;
@@ -39,20 +37,6 @@ ObjectMgr& ObjectMgr::getInstance()
 
 void ObjectMgr::initialize()
 {
-    m_hiItemGuid = 0;
-    m_hiGroupId = 0;
-    m_mailid = 0;
-    m_reportID = 0;
-    m_setGUID = 0;
-    m_hiCorpseGuid = 0;
-    m_hiGuildId = 0;
-    m_hiPetGuid = 0;
-    m_hiArenaTeamId = 0;
-    m_hiPlayerGuid = 1;
-#if VERSION_STRING > WotLK
-    m_voidItemId = 1;
-#endif
-
     loadCreatureDisplayInfo();
 }
 
@@ -61,43 +45,23 @@ void ObjectMgr::finalize()
     sLogger.info("ObjectMgr : Deleting Corpses...");
     unloadCorpseCollector();
 
-    sLogger.info("ObjectMgr : Deleting Vendors...");
-    for (auto& vendor : m_vendors)
-        delete vendor.second;
+    sLogger.info("ObjectMgr : Clearing Vendors...");
+    m_vendors.clear();
 
-    sLogger.info("ObjectMgr : Deleting TrainserSpellSets...");
-    for (auto& trainerSpellSet : m_trainerSpellSet)
-        delete trainerSpellSet.second;
+    sLogger.info("ObjectMgr : Clearing TrainerSpellSets...");
+    m_trainerSpellSet.clear();
 
-    sLogger.info("ObjectMgr : Deleting Trainers UIMessages...");
-    for (auto trainerPair : m_trainers)
-    {
-        auto trainer = trainerPair.second;
-        if (trainer->UIMessage && trainer->UIMessage != (char*)NormalTalkMessage)
-            delete[] trainer->UIMessage;
-    }
+    sLogger.info("ObjectMgr : Clearing Trainers...");
     m_trainers.clear();
 
-    sLogger.info("ObjectMgr : Clearinging Level Information...");
+    sLogger.info("ObjectMgr : Clearing Level Information...");
     for (const auto levelInfoPair : m_levelInfo)
-    {
-        const auto levelMapP = levelInfoPair.second;
-        levelMapP->clear();
-    }
+        levelInfoPair.second->clear();
+
     m_levelInfo.clear();
 
-    sLogger.info("ObjectMgr : Deleting timed emote Cache...");
-    for (std::unordered_map<uint32_t, TimedEmoteList*>::iterator i = m_timedEmotes.begin(); i != m_timedEmotes.end(); ++i)
-    {
-        for (TimedEmoteList::iterator i2 = i->second->begin(); i2 != i->second->end(); ++i2)
-            if ((*i2))
-            {
-                delete[](*i2)->msg;
-                delete(*i2);
-            }
-
-        delete i->second;
-    }
+    sLogger.info("ObjectMgr : Clearing timed emote Cache...");
+    m_timedEmotes.clear();
 
     sLogger.info("ObjectMgr : Clearing Charters...");
     for (auto& charter : m_charters)
@@ -124,9 +88,6 @@ void ObjectMgr::finalize()
     }
 
     sLogger.info("ObjectMgr : Clearing Player Information...");
-    for (auto& itr : m_cachedCharacterInfo)
-        itr.second->m_Group = nullptr;
-
     m_cachedCharacterInfo.clear();
 
     sLogger.info("ObjectMgr : Clearing Boss Information...");
@@ -142,12 +103,6 @@ void ObjectMgr::finalize()
 #endif
 
     sLogger.info("ObjectMgr : Cleaning up worldstate templates...");
-    for (std::map< uint32_t, std::multimap< uint32_t, WorldState >* >::iterator itr = m_worldstateTemplates.begin(); itr != m_worldstateTemplates.end(); ++itr)
-    {
-        itr->second->clear();
-        delete itr->second;
-    }
-
     m_worldstateTemplates.clear();
 
     m_creatureDisplayInfoData.clear();
@@ -640,8 +595,7 @@ void ObjectMgr::loadVendors()
     QueryResult* result = sMySQLStore.getWorldDBQuery("SELECT * FROM vendors");
     if (result != nullptr)
     {
-        std::unordered_map<uint32_t, std::vector<CreatureItem>*>::const_iterator itr;
-        std::vector<CreatureItem>* items;
+        std::shared_ptr<std::vector<CreatureItem>> items;
 
         if (result->GetFieldCount() < 6 + 1)
         {
@@ -649,7 +603,8 @@ void ObjectMgr::loadVendors()
             delete result;
             return;
         }
-        else if (result->GetFieldCount() > 6 + 1)
+
+        if (result->GetFieldCount() > 6 + 1)
         {
             sLogger.failure("Invalid format in vendors (%u/6) columns, loading anyway because we have enough data", result->GetFieldCount());
         }
@@ -663,11 +618,10 @@ void ObjectMgr::loadVendors()
         {
             Field* fields = result->Fetch();
 
-            itr = m_vendors.find(fields[0].GetUInt32());
-
+            auto itr = m_vendors.find(fields[0].GetUInt32());
             if (itr == m_vendors.end())
             {
-                items = new std::vector < CreatureItem >;
+                items = std::make_shared<std::vector<CreatureItem>>();
                 m_vendors[fields[0].GetUInt32()] = items;
             }
             else
@@ -687,8 +641,6 @@ void ObjectMgr::loadVendors()
                 if (item_extended_cost == nullptr)
                     sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "LoadVendors : Extendedcost for item %u references nonexistent EC %u", fields[1].GetUInt32(), fields[5].GetUInt32());
             }
-            else
-                item_extended_cost = nullptr;
 
             itm.extended_cost = item_extended_cost;
             items->push_back(itm);
@@ -699,12 +651,12 @@ void ObjectMgr::loadVendors()
     sLogger.info("ObjectMgr : %u vendors loaded.", static_cast<uint32_t>(m_vendors.size()));
 }
 
-std::vector<CreatureItem>* ObjectMgr::getVendorList(uint32_t _entry)
+std::shared_ptr<std::vector<CreatureItem>> ObjectMgr::getVendorList(uint32_t _entry)
 {
     return m_vendors[_entry];
 }
 
-void ObjectMgr::setVendorList(uint32_t _entry, std::vector<CreatureItem>* _list)
+void ObjectMgr::setVendorList(uint32_t _entry, std::shared_ptr<std::vector<CreatureItem>> _list)
 {
     m_vendors[_entry] = _list;
 }
@@ -1669,23 +1621,22 @@ void ObjectMgr::loadTrainerSpellSets()
     auto* const spellSetResult = sMySQLStore.getWorldDBQuery("SELECT * FROM trainer_properties_spellset WHERE min_build <= %u AND max_build >= %u;", VERSION_STRING, VERSION_STRING);
     if (spellSetResult != nullptr)
     {
-        std::unordered_map<uint32_t, std::vector<TrainerSpell>*>::const_iterator itr;
-        std::vector<TrainerSpell>* trainerSpells;
+        std::shared_ptr<std::vector<TrainerSpell>> trainerSpells;
 
         do
         {
             Field* fields = spellSetResult->Fetch();
 
-            itr = m_trainerSpellSet.find(fields[0].GetUInt32());
+            auto spellSetPair = m_trainerSpellSet.find(fields[0].GetUInt32());
 
-            if (itr == m_trainerSpellSet.end())
+            if (spellSetPair == m_trainerSpellSet.end())
             {
-                trainerSpells = new std::vector<TrainerSpell>;
+                trainerSpells = std::make_shared<std::vector<TrainerSpell>>();
                 m_trainerSpellSet[fields[0].GetUInt32()] = trainerSpells;
             }
             else
             {
-                trainerSpells = itr->second;
+                trainerSpells = spellSetPair->second;
             }
 
             auto* const fields2 = spellSetResult->Fetch();
@@ -1767,17 +1718,19 @@ void ObjectMgr::loadTrainerSpellSets()
     }
 }
 
-std::vector<TrainerSpell> ObjectMgr::getTrainerSpellSetById(uint32_t _id)
+std::shared_ptr<std::vector<TrainerSpell>> ObjectMgr::getTrainerSpellSetById(uint32_t _id)
 {
     auto itr = m_trainerSpellSet.find(_id);
     if (itr == m_trainerSpellSet.end())
         return {};
 
-    return *itr->second;
+    return itr->second;
 }
 
 void ObjectMgr::loadTrainers()
 {
+    std::string normalTalkMessage = "DMSG";
+
     if (auto* const trainerResult = sMySQLStore.getWorldDBQuery("SELECT * FROM trainer_properties WHERE build <= %u;", VERSION_STRING))
     {
         do
@@ -1805,28 +1758,20 @@ void ObjectMgr::loadTrainers()
             if (!trainer->Cannot_Train_GossipTextId)
                 trainer->Cannot_Train_GossipTextId = 1;
 
-            const char* temp = fields[9].GetString();
-            size_t len = strlen(temp);
-            if (len)
-            {
-                trainer->UIMessage = new char[len + 1];
-                strcpy(trainer->UIMessage, temp);
-                trainer->UIMessage[len] = 0;
-            }
+            std::string temp = fields[9].GetString();
+            if (temp.length())
+                trainer->UIMessage = temp;
             else
-            {
-                trainer->UIMessage = new char[strlen(NormalTalkMessage) + 1];
-                strcpy(trainer->UIMessage, NormalTalkMessage);
-                trainer->UIMessage[strlen(NormalTalkMessage)] = 0;
-            }
+                trainer->UIMessage = normalTalkMessage;
 
-            trainer->SpellCount = static_cast<uint32_t>(getTrainerSpellSetById(trainer->spellset_id).size());
+            trainer->SpellCount = static_cast<uint32_t>(getTrainerSpellSetById(trainer->spellset_id)->size());
 
             // and now we insert it to our lookup table
             if (trainer->SpellCount == 0)
             {
-                if (trainer->UIMessage != NormalTalkMessage)
-                    delete[] trainer->UIMessage;
+                if (trainer->UIMessage != normalTalkMessage)
+                    trainer->UIMessage.clear();
+
                 continue;
             }
 
@@ -2160,7 +2105,7 @@ void ObjectMgr::loadWorldStateTemplates()
         Field* field = result->Fetch();
         uint32_t mapId = field[0].GetUInt32();
 
-        m_worldstateTemplates.insert(std::make_pair(mapId, new std::multimap<uint32_t, WorldState>()));
+        m_worldstateTemplates.insert(std::make_pair(mapId, std::make_shared<WorldStateMap>()));
 
     } while (result->NextRow());
 
@@ -2191,7 +2136,7 @@ void ObjectMgr::loadWorldStateTemplates()
     delete result;
 }
 
-std::multimap<uint32_t, WorldState>* ObjectMgr::getWorldStatesForMap(uint32_t _map) const
+std::shared_ptr<WorldStateMap> ObjectMgr::getWorldStatesForMap(uint32_t _map) const
 {
     const auto itr = m_worldstateTemplates.find(_map);
     if (itr == m_worldstateTemplates.end())
@@ -2202,51 +2147,45 @@ std::multimap<uint32_t, WorldState>* ObjectMgr::getWorldStatesForMap(uint32_t _m
 void ObjectMgr::loadCreatureTimedEmotes()
 {
     QueryResult* result = WorldDatabase.Query("SELECT * FROM creature_timed_emotes order by rowid asc");
-    if (!result)return;
+    if (!result)
+        return;
 
+    uint32_t count = 0;
     do
     {
         Field* field = result->Fetch();
-        auto* timedEmotes = new SpawnTimedEmotes;
+        auto timedEmotes = std::make_shared<SpawnTimedEmotes>();
         timedEmotes->type = field[2].GetUInt8();
         timedEmotes->value = field[3].GetUInt32();
-        char* str = (char*)field[4].GetString();
-        if (str)
-        {
-            uint32_t length = static_cast<uint32_t>(strlen(str));
-            timedEmotes->msg = new char[length + 1];
-            memcpy(timedEmotes->msg, str, length + 1);
-        }
-        else
-        {
-            timedEmotes->msg = nullptr;
-        }
-
+        timedEmotes->msg = field[4].GetString();
         timedEmotes->msg_type = field[5].GetUInt8();
         timedEmotes->msg_lang = field[6].GetUInt8();
         timedEmotes->expire_after = field[7].GetUInt32();
 
-        uint32_t spawnid = field[0].GetUInt32();
-        auto timedEmotePair = m_timedEmotes.find(spawnid);
+        uint32_t spawnId = field[0].GetUInt32();
+
+        auto timedEmotePair = m_timedEmotes.find(spawnId);
         if (timedEmotePair == m_timedEmotes.end())
         {
-            TimedEmoteList* emoteList = new TimedEmoteList;
+            std::shared_ptr<TimedEmoteList> emoteList = std::make_shared<TimedEmoteList>();
             emoteList->push_back(timedEmotes);
-            m_timedEmotes[spawnid] = emoteList;
+            m_timedEmotes[spawnId] = emoteList;
         }
         else
         {
             timedEmotePair->second->push_back(timedEmotes);
         }
+
+        ++count;
     } while (result->NextRow());
 
-    sLogger.info("ObjectMgr : %u timed emotes cached.", result->GetRowCount());
+    sLogger.info("ObjectMgr : %u timed emotes cached.", count);
     delete result;
 }
 
-TimedEmoteList* ObjectMgr::getTimedEmoteList(uint32_t _spawnId)
+std::shared_ptr<TimedEmoteList> ObjectMgr::getTimedEmoteList(uint32_t _spawnId)
 {
-    auto timedEmotesPair = m_timedEmotes.find(_spawnId);
+    const auto timedEmotesPair = m_timedEmotes.find(_spawnId);
     if (timedEmotesPair != m_timedEmotes.end())
         return timedEmotesPair->second;
 
@@ -2645,21 +2584,21 @@ void ObjectMgr::setHighestGuids()
     result = CharacterDatabase.Query("SELECT MAX(UID) FROM playerbugreports");
     if (result != nullptr)
     {
-        m_reportID = result->Fetch()[0].GetUInt32() + 1;
+        m_reportId = result->Fetch()[0].GetUInt32() + 1;
         delete result;
     }
 
     result = CharacterDatabase.Query("SELECT MAX(message_id) FROM mailbox");
     if (result)
     {
-        m_mailid = result->Fetch()[0].GetUInt32() + 1;
+        m_mailId = result->Fetch()[0].GetUInt32() + 1;
         delete result;
     }
 
     result = CharacterDatabase.Query("SELECT MAX(setGUID) FROM equipmentsets");
     if (result != nullptr)
     {
-        m_setGUID = result->Fetch()[0].GetUInt32() + 1;
+        m_setGuid = result->Fetch()[0].GetUInt32() + 1;
         delete result;
     }
 
@@ -2680,14 +2619,14 @@ void ObjectMgr::setHighestGuids()
     sLogger.info("ObjectMgr : HighGuid(GROUP) = %lu", m_hiGroupId.load());
     sLogger.info("ObjectMgr : HighGuid(CHARTER) = %lu", m_hiCharterId.load());
     sLogger.info("ObjectMgr : HighGuid(GUILD) = %lu", m_hiGuildId.load());
-    sLogger.info("ObjectMgr : HighGuid(BUGREPORT) = %lu", m_reportID.load() - 1);
-    sLogger.info("ObjectMgr : HighGuid(MAIL) = %lu", m_mailid.load());
-    sLogger.info("ObjectMgr : HighGuid(EQUIPMENTSET) = %lu", m_setGUID.load() - 1);
+    sLogger.info("ObjectMgr : HighGuid(BUGREPORT) = %lu", m_reportId.load() - 1);
+    sLogger.info("ObjectMgr : HighGuid(MAIL) = %lu", m_mailId.load());
+    sLogger.info("ObjectMgr : HighGuid(EQUIPMENTSET) = %lu", m_setGuid.load() - 1);
 }
 
-uint32_t ObjectMgr::generateReportId() { return ++m_reportID; }
-uint32_t ObjectMgr::generateEquipmentSetId() { return ++m_setGUID; }
-uint32_t ObjectMgr::generateMailId() { return ++m_mailid; }
+uint32_t ObjectMgr::generateReportId() { return ++m_reportId; }
+uint32_t ObjectMgr::generateEquipmentSetId() { return ++m_setGuid; }
+uint32_t ObjectMgr::generateMailId() { return ++m_mailId; }
 uint32_t ObjectMgr::generateLowGuid(uint32_t _guidHigh)
 {
     switch (_guidHigh)

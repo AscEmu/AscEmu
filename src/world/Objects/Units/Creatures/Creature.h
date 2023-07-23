@@ -109,7 +109,7 @@ public:
 #endif
     void toggleDualwield(bool);
 
-    std::vector<CreatureItem>* getSellItems();
+    std::shared_ptr<std::vector<CreatureItem>> getSellItems();
 
     uint32_t getWaypointPath() const { return _waypointPathId; }
     void loadPath(uint32_t pathid) { _waypointPathId = pathid; }
@@ -382,7 +382,7 @@ public:
         MovementGeneratorType m_defaultMovementType = IDLE_MOTION_TYPE;
 
         // Vendor data
-        std::vector<CreatureItem>* m_SellItems = nullptr;
+        std::shared_ptr<std::vector<CreatureItem>> m_SellItems = nullptr;
 
         // Taxi data
         uint32 mTaxiNode = 0;

@@ -445,7 +445,7 @@ public:
 
     void updateEmotes(unsigned long time_passed);
     void eventAiInterfaceParamsetFinish();
-    TimedEmoteList* timed_emotes;
+    std::shared_ptr<TimedEmoteList> timed_emotes;
 
     bool moveTo(float x, float y, float z, float o = 0.0f, bool running = false);
     void calcDestinationAndMove(Unit* target, float dist);
@@ -681,7 +681,7 @@ protected:
 protected:
     bool canEnterCombat;
 
-    std::list<SpawnTimedEmotes*>::iterator next_timed_emote;
+    std::list<std::shared_ptr<SpawnTimedEmotes>>::iterator next_timed_emote;
     uint32_t timed_emote_expire;
 
     bool m_cannotReachTarget;

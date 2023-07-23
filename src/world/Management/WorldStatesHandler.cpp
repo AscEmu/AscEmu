@@ -82,9 +82,9 @@ void WorldStatesHandler::BuildInitWorldStatesForZone(uint32 zone, uint32 area, W
 #endif
 }
 
-void WorldStatesHandler::InitWorldStates(std::multimap< uint32, WorldState > *states)
+void WorldStatesHandler::InitWorldStates(std::shared_ptr<WorldStateMap> states)
 {
-    if (states == NULL)
+    if (states == nullptr)
         return;
 
     for (std::multimap< uint32, WorldState >::iterator itr = states->begin(); itr != states->end(); ++itr)

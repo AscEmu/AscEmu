@@ -139,15 +139,15 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
         return;
 
     TrainerSpell const* trainerSpell = nullptr;
-    std::vector<TrainerSpell>::const_iterator itr;
-    std::vector<TrainerSpell> its = sObjectMgr.getTrainerSpellSetById(trainer->spellset_id);
 
-    for (itr = its.begin(); itr != its.end(); itr++)
+    auto its = sObjectMgr.getTrainerSpellSetById(trainer->spellset_id);
+
+    for (auto& itr : *its)
     {
-        if ((itr->castSpell && itr->castSpell->getId() == srlPacket.spellId) ||
-            (itr->learnSpell && itr->learnSpell->getId() == srlPacket.spellId))
+        if ((itr.castSpell && itr.castSpell->getId() == srlPacket.spellId) ||
+            (itr.learnSpell && itr.learnSpell->getId() == srlPacket.spellId))
         {
-            trainerSpell = &(*itr);
+            trainerSpell = &itr;
             break;
         }
     }
@@ -403,13 +403,13 @@ void WorldSession::sendTrainerList(Creature* creature)
     }
 
     std::string uiMessage;
-    if (stricmp(trainer->UIMessage, "DMSG") == 0)
+    if (trainer->UIMessage == "DMSG")
         uiMessage = _player->getSession()->LocalizedWorldSrv(ServerString::SS_WHAT_CAN_I_TEACH_YOU);
     else
         uiMessage = trainer->UIMessage;
 
     const size_t size = 8 + 4 + 4 + 4 + uiMessage.size()
-        + (sObjectMgr.getTrainerSpellSetById(trainer->spellset_id).size() * (4 + 1 + 4 + 4 + 4 + 1 + 4 + 4 + 4 + 4 + 4));
+        + (sObjectMgr.getTrainerSpellSetById(trainer->spellset_id)->size() * (4 + 1 + 4 + 4 + 4 + 1 + 4 + 4 + 4 + 4 + 4));
     WorldPacket data(SMSG_TRAINER_LIST, size);
 
     data << creature->getGuid();
@@ -420,14 +420,17 @@ void WorldSession::sendTrainerList(Creature* creature)
 #endif
 
     size_t count_p = data.wpos();
-    data << uint32_t(sObjectMgr.getTrainerSpellSetById(trainer->spellset_id).size());
+    data << uint32_t(sObjectMgr.getTrainerSpellSetById(trainer->spellset_id)->size());
 
     uint32_t count = 0;
-    for (const auto& spellItr : sObjectMgr.getTrainerSpellSetById(trainer->spellset_id))
-    {
-        auto* const trainerSpell = &spellItr;
 
-        const auto spellInfo = trainerSpell->castRealSpell != nullptr ? trainerSpell->castSpell : trainerSpell->learnSpell;
+    auto its = sObjectMgr.getTrainerSpellSetById(trainer->spellset_id);
+
+    for (auto& spellItr : *sObjectMgr.getTrainerSpellSetById(trainer->spellset_id))
+    {
+        auto trainerSpell = spellItr;
+
+        const auto spellInfo = trainerSpell.castRealSpell != nullptr ? trainerSpell.castSpell : trainerSpell.learnSpell;
         if (spellInfo == nullptr)
             continue;
 
@@ -453,20 +456,20 @@ void WorldSession::sendTrainerList(Creature* creature)
         }
 
         data << uint32_t(spellInfo->getId());
-        data << uint8_t(trainerGetSpellStatus(trainerSpell));
-        data << uint32_t(trainerSpell->cost);
+        data << uint8_t(trainerGetSpellStatus(&trainerSpell));
+        data << uint32_t(trainerSpell.cost);
 #if VERSION_STRING < Cata
         data << uint32_t(0); // Unk
-        data << uint32_t(trainerSpell->isPrimaryProfession);
+        data << uint32_t(trainerSpell.isPrimaryProfession);
 #endif
-        data << uint8_t(trainerSpell->requiredLevel);
-        data << uint32_t(trainerSpell->requiredSkillLine);
-        data << uint32_t(trainerSpell->requiredSkillLineValue);
+        data << uint8_t(trainerSpell.requiredLevel);
+        data << uint32_t(trainerSpell.requiredSkillLine);
+        data << uint32_t(trainerSpell.requiredSkillLineValue);
 
         // Get the required spells to learn this spell
         uint8_t requiredSpellCount = 0;
         const auto maxRequiredCount = TrainerSpell::getMaxRequiredSpellCount();
-        for (const auto requiredSpell : trainerSpell->requiredSpell)
+        for (const auto requiredSpell : trainerSpell.requiredSpell)
         {
             if (requiredSpell == 0)
                 continue;

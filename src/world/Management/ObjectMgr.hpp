@@ -36,6 +36,7 @@ struct WorldState
     uint32_t field = 0;
     uint32_t value = 0;
 };
+typedef std::multimap<uint32_t, WorldState> WorldStateMap;
 
 enum EncounterCreditType : uint8_t
 {
@@ -107,7 +108,7 @@ struct TrainerSpell
 struct Trainer
 {
     uint32_t SpellCount;
-    char* UIMessage;
+    std::string UIMessage;
     uint16_t RequiredSkill;
     uint32_t RequiredSkillLine;
     uint32_t RequiredClass;
@@ -256,11 +257,11 @@ private:
 public:
     void loadVendors();
 
-    std::vector<CreatureItem>* getVendorList(uint32_t _entry);
-    void setVendorList(uint32_t _entry, std::vector<CreatureItem>* _list);
+    std::shared_ptr<std::vector<CreatureItem>> getVendorList(uint32_t _entry);
+    void setVendorList(uint32_t _entry, std::shared_ptr<std::vector<CreatureItem>> _list);
 
 private:
-    std::unordered_map<uint32_t, std::vector<CreatureItem>*> m_vendors;
+    std::unordered_map<uint32_t, std::shared_ptr<std::vector<CreatureItem>>> m_vendors;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Achievement - global achievement information
@@ -379,7 +380,7 @@ public:
     void generateDatabaseGossipOptionAndSubMenu(Object* _object, Player* _player, uint32_t _gossipItemId, uint32_t _gossipMenuId);
 
     void loadTrainerSpellSets();
-    std::vector<TrainerSpell> getTrainerSpellSetById(uint32_t _id);
+    std::shared_ptr<std::vector<TrainerSpell>> getTrainerSpellSetById(uint32_t _id);
 
     void loadTrainers();
     std::shared_ptr<Trainer> getTrainer(uint32_t _entry);
@@ -398,10 +399,10 @@ public:
     CreatureMovementData const* getCreatureMovementOverride(uint32_t _spawnId) const;
 
     void loadWorldStateTemplates();
-    std::multimap<uint32_t, WorldState>* getWorldStatesForMap(uint32_t _map) const;
+    std::shared_ptr<WorldStateMap> getWorldStatesForMap(uint32_t _map) const;
 
     void loadCreatureTimedEmotes();
-    TimedEmoteList* getTimedEmoteList(uint32_t _spawnId);
+    std::shared_ptr<TimedEmoteList> getTimedEmoteList(uint32_t _spawnId);
 
     void generateLevelUpInfo();
     std::shared_ptr<LevelInfo> getLevelInfo(uint32_t _race, uint32_t _class, uint32_t _level);
@@ -428,13 +429,13 @@ public:
 
 
 private:
-    std::unordered_map<uint32_t, std::vector<TrainerSpell>*> m_trainerSpellSet;
+    std::unordered_map<uint32_t, std::shared_ptr<std::vector<TrainerSpell>>> m_trainerSpellSet;
     std::unordered_map<uint32_t, std::shared_ptr<Trainer>> m_trainers;
     std::unordered_map<uint32_t, CreatureDisplayInfoData> m_creatureDisplayInfoData;
     std::unordered_map<uint32_t, DungeonEncounterList>  m_dungeonEncounterStore;
     std::unordered_map<uint32_t, CreatureMovementData> m_creatureMovementOverrides;
-    std::map<uint32_t, std::multimap<uint32_t, WorldState>*> m_worldstateTemplates;
-    std::unordered_map<uint32_t, TimedEmoteList*> m_timedEmotes;
+    std::map<uint32_t, std::shared_ptr<WorldStateMap>> m_worldstateTemplates;
+    std::unordered_map<uint32_t, std::shared_ptr<TimedEmoteList>> m_timedEmotes;
 
     typedef std::map<uint32_t, std::shared_ptr<LevelInfo>> LevelMap;
     typedef std::map<std::pair<uint32_t, uint32_t>, std::shared_ptr<LevelMap>> LevelInfoMap;
@@ -443,21 +444,21 @@ private:
     std::map<uint32_t, uint32_t> m_petSpellCooldowns;
 
 protected:
-        std::atomic<unsigned long> m_hiItemGuid;
-        std::atomic<unsigned long> m_hiGroupId;
-        std::atomic<unsigned long> m_hiCharterId;
+        std::atomic<unsigned long> m_hiItemGuid = 0;
+        std::atomic<unsigned long> m_hiGroupId = 0;
+        std::atomic<unsigned long> m_hiCharterId = 0;
         std::atomic<unsigned long> m_hiCreatureSpawnId;
         std::atomic<unsigned long> m_hiGameObjectSpawnId;
-        std::atomic<unsigned long> m_mailid;
-        std::atomic<unsigned long> m_reportID;
-        std::atomic<unsigned long> m_setGUID;
-        std::atomic<unsigned long> m_hiCorpseGuid;
-        std::atomic<unsigned long> m_hiGuildId;
-        std::atomic<unsigned long> m_hiPetGuid;
-        std::atomic<unsigned long> m_hiArenaTeamId;
-        std::atomic<unsigned long> m_hiPlayerGuid;
+        std::atomic<unsigned long> m_mailId = 0;
+        std::atomic<unsigned long> m_reportId = 0;
+        std::atomic<unsigned long> m_setGuid = 0;
+        std::atomic<unsigned long> m_hiCorpseGuid = 0;
+        std::atomic<unsigned long> m_hiGuildId = 0;
+        std::atomic<unsigned long> m_hiPetGuid = 0;
+        std::atomic<unsigned long> m_hiArenaTeamId = 0;
+        std::atomic<unsigned long> m_hiPlayerGuid = 1;
 #if VERSION_STRING > WotLK
-        std::atomic<unsigned long> m_voidItemId;
+        std::atomic<unsigned long> m_voidItemId = 1;
 #endif
 
 };

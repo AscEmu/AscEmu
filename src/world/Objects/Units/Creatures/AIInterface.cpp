@@ -798,8 +798,8 @@ void AIInterface::updateEmotes(unsigned long time_passed)
                 m_Unit->emote((EmoteType)(*next_timed_emote)->value);           // Animation
             }
 
-            if ((*next_timed_emote)->msg)
-                m_Unit->sendChatMessage((*next_timed_emote)->msg_type, (*next_timed_emote)->msg_lang, (*next_timed_emote)->msg);
+            if ((*next_timed_emote)->msg.length())
+                m_Unit->sendChatMessage((*next_timed_emote)->msg_type, (*next_timed_emote)->msg_lang, (*next_timed_emote)->msg.c_str());
 
             timed_emote_expire = (*next_timed_emote)->expire_after; //should we keep lost time ? I think not
             ++next_timed_emote;

@@ -149,12 +149,12 @@ struct SpawnTimedEmotes
 {
     uint8_t type;             // 1 standstate, 2 emotestate, 3 emoteoneshot
     uint32_t value;           // get yar list elsewhere
-    char* msg;                // maybe we wish to say something while changing emote state
+    std::string msg;          // maybe we wish to say something while changing emote state
     uint8_t msg_type;         // yell ? say ?
     uint8_t msg_lang;         // yell ? say ?
     uint32_t expire_after;    // going to nex faze in
 };
-typedef std::list<SpawnTimedEmotes*> TimedEmoteList;
+typedef std::list<std::shared_ptr<SpawnTimedEmotes>> TimedEmoteList;
 
 
 enum MONSTER_SAY_EVENTS

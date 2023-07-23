@@ -87,7 +87,7 @@ class SERVER_DECL WorldStatesHandler
         ///
         /// \return none
         ////////////////////////////////////////////////////////////////////////////////////////////
-        void InitWorldStates(std::multimap<uint32, WorldState> *states);
+        void InitWorldStates(std::shared_ptr<WorldStateMap> states);
 
         void setObserver(WorldStatesObserver* pObserver){ this->observer = pObserver; }
 
