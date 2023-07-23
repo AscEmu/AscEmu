@@ -13951,7 +13951,7 @@ void Player::saveToDB(bool newCharacter /* =false */)
     }
     m_nextSave = Util::getMSTime() + worldConfig.getIntRate(INTRATE_SAVE);
 #if VERSION_STRING > TBC
-    m_achievementMgr.SaveToDB(buf);
+    m_achievementMgr.saveToDb(buf);
 #endif
 
     if (buf)
@@ -14132,7 +14132,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
 
 #if VERSION_STRING > TBC
     // load achievements before anything else otherwise skills would complete achievements already in the DB, leading to duplicate achievements and criterias(like achievement=126).
-    m_achievementMgr.LoadFromDB(results[PlayerQuery::Achievements].result, results[PlayerQuery::AchievementProgress].result);
+    m_achievementMgr.loadFromDb(results[PlayerQuery::Achievements].result, results[PlayerQuery::AchievementProgress].result);
 #endif
 
     setInitialPlayerData();
@@ -14688,7 +14688,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
 #if VERSION_STRING > TBC
     // update achievements before adding player to World, otherwise we'll get a nice race condition.
     //move CheckAllAchievementCriteria() after FullLogin(this) and i'll cut your b***s.
-    m_achievementMgr.CheckAllAchievementCriteria();
+    m_achievementMgr.updateAllAchievementCriteria();
 #endif
 
     m_session->fullLogin(this);
@@ -16424,7 +16424,7 @@ uint32_t Player::getMainMeleeDamage(uint32_t attackPowerOverride)
 #if VERSION_STRING > TBC
 void Player::updateAchievementCriteria(AchievementCriteriaTypes type, uint64_t miscValue1 /*= 0*/, uint64_t miscValue2 /*= 0*/, uint64_t miscValue3 /*= 0*/, Unit* unit /*= nullptr*/)
 {
-    m_achievementMgr.UpdateAchievementCriteria(type, miscValue1, miscValue2, miscValue3, unit);
+    m_achievementMgr.updateAchievementCriteria(type, miscValue1, miscValue2, miscValue3, unit);
     Guild* guild = sGuildMgr.getGuildById(getGuildId());
     if (!guild)
         return;

@@ -1247,7 +1247,7 @@ bool ChatHandler::HandleCharSetAllExploredCommand(const char* /*args*/, WorldSes
     }
 
 #if VERSION_STRING > TBC
-    player_target->getAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA); // update
+    player_target->getAchievementMgr().updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA); // update
 #endif
     return true;
 }

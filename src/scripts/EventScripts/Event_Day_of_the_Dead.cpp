@@ -34,9 +34,9 @@ void Catrina(Player* pPlayer, Unit* pUnit)
     }
 
 #if VERSION_STRING > TBC
-    if (pPlayer->getAchievementMgr().HasCompleted(ACHIEVEMRNT_DEAD_MANS_PARTY) == false)
+    if (pPlayer->getAchievementMgr().hasCompleted(ACHIEVEMRNT_DEAD_MANS_PARTY) == false)
     {
-        pPlayer->getAchievementMgr().GMCompleteAchievement(NULL, ACHIEVEMRNT_DEAD_MANS_PARTY);
+        pPlayer->getAchievementMgr().gmCompleteAchievement(NULL, ACHIEVEMRNT_DEAD_MANS_PARTY);
     }
 #endif
 }

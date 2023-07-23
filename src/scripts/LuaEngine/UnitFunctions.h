@@ -5912,7 +5912,7 @@ public:
 #if VERSION_STRING > TBC
         int32_t achievementID = static_cast<int32_t>(luaL_checkinteger(L, 1));
         Player* plr = dynamic_cast<Player*>(ptr);
-        if(plr->getAchievementMgr().GMCompleteAchievement(nullptr, achievementID))
+        if(plr->getAchievementMgr().gmCompleteAchievement(nullptr, achievementID))
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -5929,7 +5929,7 @@ public:
 
 #if VERSION_STRING > TBC
         int32_t achievementID = static_cast<int32_t>(luaL_checkinteger(L, 1));
-        dynamic_cast<Player*>(ptr)->getAchievementMgr().GMResetAchievement(achievementID);
+        dynamic_cast<Player*>(ptr)->getAchievementMgr().gmResetAchievement(achievementID);
 #endif
         return 0;
     }
@@ -5943,7 +5943,7 @@ public:
 
 #if VERSION_STRING > TBC
         uint32_t achievementID = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        lua_pushboolean(L, dynamic_cast<Player*>(ptr)->getAchievementMgr().HasCompleted(achievementID) ? 1 : 0);
+        lua_pushboolean(L, dynamic_cast<Player*>(ptr)->getAchievementMgr().hasCompleted(achievementID) ? 1 : 0);
 #endif
         return 1;
     }

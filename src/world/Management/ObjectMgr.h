@@ -290,7 +290,7 @@ private:
     std::unordered_map<uint32_t, std::vector<CreatureItem>*> m_vendors;
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // Achievement - todo: We have an AchievementMgr for that stuff... why here?
+    // Achievement - global achievement information
 #if VERSION_STRING > TBC
 public:
     void loadAchievementCriteriaList();
