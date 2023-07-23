@@ -1364,10 +1364,8 @@ bool AchievementMgr::IsCompletedCriteria(DBC::Structures::AchievementCriteriaEnt
 
     if (achievement->flags & (ACHIEVEMENT_FLAG_REALM_FIRST_REACH | ACHIEVEMENT_FLAG_REALM_FIRST_KILL))
     {
-        if (sObjectMgr.getAllCompleteAchievements().find(achievement->ID) != sObjectMgr.getAllCompleteAchievements().end())
-        {
+        if (sObjectMgr.isInCompletedAchievements(achievement->ID))
             return false;
-        }
     }
 
     CriteriaProgressMap::iterator itr = m_criteriaProgress.find(achievementCriteria->ID);

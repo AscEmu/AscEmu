@@ -302,7 +302,7 @@ public:
     AchievementCriteriaEntryList const& getAchievementCriteriaByType(AchievementCriteriaTypes _type);
 
     void addCompletedAchievement(uint32_t _achievementId);
-    std::set<uint32_t> getAllCompleteAchievements();
+    bool isInCompletedAchievements(uint32_t _achievementId);
 
 private:
     AchievementRewardsMap m_achievementRewards;

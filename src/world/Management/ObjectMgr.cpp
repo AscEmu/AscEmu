@@ -901,9 +901,12 @@ void ObjectMgr::addCompletedAchievement(uint32_t _achievementId)
     m_allCompletedAchievements.insert(_achievementId);
 }
 
-std::set<uint32_t> ObjectMgr::getAllCompleteAchievements()
+bool ObjectMgr::isInCompletedAchievements(uint32_t _achievementId)
 {
-    return m_allCompletedAchievements;
+    auto const achievementItr = m_allCompletedAchievements.find(_achievementId);
+    if (achievementItr != m_allCompletedAchievements.end())
+        return true;
+    return false;
 }
 #endif
 
