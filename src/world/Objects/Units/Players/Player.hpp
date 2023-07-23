@@ -648,7 +648,7 @@ public:
     void sendInitialLogonPackets();
 
 private:
-    LevelInfo* m_levelInfo = nullptr;
+    std::shared_ptr<LevelInfo> m_levelInfo = nullptr;
 
     DBC::Structures::ChrRacesEntry const* m_dbcRace = nullptr;
     DBC::Structures::ChrClassesEntry const* m_dbcClass = nullptr;

@@ -2691,7 +2691,7 @@ void Player::applyLevelInfo(uint32_t newLevel)
     {
         const auto previousLevelInfo = m_levelInfo;
 
-        m_levelInfo = sObjectMgr.GetLevelInfo(getRace(), getClass(), newLevel);
+        m_levelInfo = sObjectMgr.getLevelInfo(getRace(), getClass(), newLevel);
         if (m_levelInfo == nullptr)
             return;
 
@@ -12089,7 +12089,7 @@ void Player::giveXp(uint32_t xp, const uint64_t& guid, bool allowBonus)
     while (newXp >= nextLevelXp && newXp > 0)
     {
         ++level;
-        if (sObjectMgr.GetLevelInfo(getRace(), getClass(), level))
+        if (sObjectMgr.getLevelInfo(getRace(), getClass(), level))
         {
             newXp -= nextLevelXp;
             nextLevelXp = sMySQLStore.getPlayerXPForLevel(level);
@@ -14121,7 +14121,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
     setLevel(field[7].GetUInt32());
 
     // obtain level/stats information
-    m_levelInfo = sObjectMgr.GetLevelInfo(getRace(), getClass(), getLevel());
+    m_levelInfo = sObjectMgr.getLevelInfo(getRace(), getClass(), getLevel());
 
     if (!m_levelInfo)
     {
@@ -15108,14 +15108,14 @@ void Player::updateStats()
     setAttackPower(attackPower);
     setRangedAttackPower(rangedAttackPower);
 
-    LevelInfo* levelInfo = sObjectMgr.GetLevelInfo(this->getRace(), this->getClass(), lev);
+    std::shared_ptr<LevelInfo> levelInfo = sObjectMgr.getLevelInfo(this->getRace(), this->getClass(), lev);
     if (levelInfo != nullptr)
     {
         hpdelta = levelInfo->Stat[2] * 10;
         manadelta = levelInfo->Stat[3] * 15;
     }
 
-    levelInfo = sObjectMgr.GetLevelInfo(this->getRace(), this->getClass(), 1);
+    levelInfo = sObjectMgr.getLevelInfo(this->getRace(), this->getClass(), 1);
     if (levelInfo != nullptr)
     {
         hpdelta -= levelInfo->Stat[2] * 10;

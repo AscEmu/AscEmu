@@ -73,7 +73,7 @@ bool ChatHandler::HandleCharLevelUpCommand(const char* args, WorldSession* m_ses
     if (levels > worldConfig.player.playerLevelCap)
         levels = worldConfig.player.playerLevelCap;
 
-    auto level_info = sObjectMgr.GetLevelInfo(player_target->getRace(), player_target->getClass(), levels);
+    auto level_info = sObjectMgr.getLevelInfo(player_target->getRace(), player_target->getClass(), levels);
     if (level_info == nullptr)
     {
         RedSystemMessage(m_session, "No LevelInfo for Leve: %u, Race: %u, Class: %u", levels, player_target->getRace(), player_target->getClass());
@@ -1369,7 +1369,7 @@ bool ChatHandler::HandleCharSetLevelCommand(const char* args, WorldSession* m_se
         return true;
     }
 
-    auto level_info = sObjectMgr.GetLevelInfo(player_target->getRace(), player_target->getClass(), new_level);
+    auto level_info = sObjectMgr.getLevelInfo(player_target->getRace(), player_target->getClass(), new_level);
     if (level_info == nullptr)
     {
         RedSystemMessage(m_session, "Level information not found in table playercreateinfo!");

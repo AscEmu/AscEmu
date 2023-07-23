@@ -149,9 +149,9 @@ struct Trainer
 // isn't it part of player info? hmmmmm....
 struct LevelInfo
 {
-    uint32 HP;
-    uint32 Mana;
-    uint32 Stat[5];
+    uint32_t HP;
+    uint32_t Mana;
+    uint32_t Stat[5];
 };
 
 //player too?!?
@@ -381,6 +381,9 @@ public:
     void loadCreatureTimedEmotes();
     TimedEmoteList* getTimedEmoteList(uint32_t _spawnId);
 
+    void generateLevelUpInfo();
+    std::shared_ptr<LevelInfo> getLevelInfo(uint32_t _race, uint32_t _class, uint32_t _level);
+
 private:
     std::unordered_map<uint32_t, std::vector<TrainerSpell>*> m_trainerSpellSet;
 
@@ -396,11 +399,11 @@ private:
 
     std::unordered_map<uint32_t, TimedEmoteList*> m_timedEmotes;
 
-public:
+    typedef std::map<uint32_t, std::shared_ptr<LevelInfo>> LevelMap;
+    typedef std::map<std::pair<uint32_t, uint32_t>, std::shared_ptr<LevelMap>> LevelInfoMap;
+    LevelInfoMap m_levelInfo;
 
-        
-        typedef std::map<uint32, LevelInfo*>                                                        LevelMap;
-        typedef std::map<std::pair<uint32, uint32>, LevelMap*>                                      LevelInfoMap;
+public:
         typedef std::map<uint32, uint32>                                                            PetSpellCooldownMap;
         typedef std::multimap <uint32, uint32>                                                      BCEntryStorage;
 
@@ -435,9 +438,6 @@ public:
 #if VERSION_STRING > WotLK
         uint64_t generateVoidStorageItemId();
 #endif
-
-        LevelInfo* GetLevelInfo(uint32 Race, uint32 Class, uint32 Level);
-        void GenerateLevelUpInfo();
 
         uint32 GetPetSpellCooldown(uint32 SpellId);
         void LoadPetSpellCooldowns();
@@ -495,7 +495,6 @@ public:
         std::atomic<unsigned long> m_voidItemId;
 #endif
 
-        LevelInfoMap mLevelInfo;
         PetSpellCooldownMap mPetSpellCooldowns;
 
 #ifdef FT_VEHICLES
