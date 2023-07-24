@@ -272,7 +272,6 @@ public:
     void loadCompletedAchievements();
 
     AchievementReward const* getAchievementReward(uint32_t _entry, uint8_t _gender);
-
     AchievementCriteriaEntryList const& getAchievementCriteriaByType(AchievementCriteriaTypes _type);
 
     void addCompletedAchievement(uint32_t _achievementId);
@@ -280,9 +279,7 @@ public:
 
 private:
     AchievementRewardsMap m_achievementRewards;
-
     AchievementCriteriaEntryList m_AchievementCriteriasByType[ACHIEVEMENT_CRITERIA_TYPE_TOTAL];
-
 #if VERSION_STRING > WotLK
     AchievementCriteriaEntryList m_GuildAchievementCriteriasByType[ACHIEVEMENT_CRITERIA_TYPE_TOTAL];
 #endif
@@ -427,7 +424,6 @@ public:
     uint64_t generateVoidStorageItemId();
 #endif
 
-
 private:
     std::unordered_map<uint32_t, std::shared_ptr<std::vector<TrainerSpell>>> m_trainerSpellSet;
     std::unordered_map<uint32_t, std::shared_ptr<Trainer>> m_trainers;
@@ -444,23 +440,22 @@ private:
     std::map<uint32_t, uint32_t> m_petSpellCooldowns;
 
 protected:
-        std::atomic<unsigned long> m_hiItemGuid = 0;
-        std::atomic<unsigned long> m_hiGroupId = 0;
-        std::atomic<unsigned long> m_hiCharterId = 0;
-        std::atomic<unsigned long> m_hiCreatureSpawnId;
-        std::atomic<unsigned long> m_hiGameObjectSpawnId;
-        std::atomic<unsigned long> m_mailId = 0;
-        std::atomic<unsigned long> m_reportId = 0;
-        std::atomic<unsigned long> m_setGuid = 0;
-        std::atomic<unsigned long> m_hiCorpseGuid = 0;
-        std::atomic<unsigned long> m_hiGuildId = 0;
-        std::atomic<unsigned long> m_hiPetGuid = 0;
-        std::atomic<unsigned long> m_hiArenaTeamId = 0;
-        std::atomic<unsigned long> m_hiPlayerGuid = 1;
+    std::atomic<unsigned long> m_hiItemGuid = 0;
+    std::atomic<unsigned long> m_hiGroupId = 0;
+    std::atomic<unsigned long> m_hiCharterId = 0;
+    std::atomic<unsigned long> m_hiCreatureSpawnId;
+    std::atomic<unsigned long> m_hiGameObjectSpawnId;
+    std::atomic<unsigned long> m_mailId = 0;
+    std::atomic<unsigned long> m_reportId = 0;
+    std::atomic<unsigned long> m_setGuid = 0;
+    std::atomic<unsigned long> m_hiCorpseGuid = 0;
+    std::atomic<unsigned long> m_hiGuildId = 0;
+    std::atomic<unsigned long> m_hiPetGuid = 0;
+    std::atomic<unsigned long> m_hiArenaTeamId = 0;
+    std::atomic<unsigned long> m_hiPlayerGuid = 1;
 #if VERSION_STRING > WotLK
-        std::atomic<unsigned long> m_voidItemId = 1;
+    std::atomic<unsigned long> m_voidItemId = 1;
 #endif
-
 };
 
 #define sObjectMgr ObjectMgr::getInstance()

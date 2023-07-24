@@ -498,8 +498,8 @@ void WorldSession::sendTrainerList(Creature* creature)
         }
 
 #if VERSION_STRING >= Cata
-        data << uint32_t(trainerSpell->isPrimaryProfession && _player->getFreePrimaryProfessionPoints() != 0);
-        data << uint32_t(trainerSpell->isPrimaryProfession);
+        data << uint32_t(trainerSpell.isPrimaryProfession && _player->getFreePrimaryProfessionPoints() != 0);
+        data << uint32_t(trainerSpell.isPrimaryProfession);
 #endif
         ++count;
     }
