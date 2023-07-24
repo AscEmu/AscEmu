@@ -16,7 +16,6 @@ add_definitions(-DHAS_CXX0X)
 
 # apply base flags (optimization level 2)
 add_compile_options(-O2)
-add_compile_options(-H)
 
 if (IS_64BIT)
     add_compile_options(-fPIC)
