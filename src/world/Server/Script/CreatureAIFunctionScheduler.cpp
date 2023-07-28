@@ -178,9 +178,6 @@ void CreatureAIFunctionScheduler::update(unsigned long time_passed)
     if (!mCreatureAIFunctions.size())
         return;
 
-    // Roll the Dice :)
-    float rolled = Util::getRandomFloat(100.0f);
-
     // Shuffle Around our Functions to randomize them
     // example when 2 functions have 2 seconds timer the first one always executes before the second one...
     // could lead to unexpected behaviour when u rely on the execution order
@@ -211,6 +208,9 @@ void CreatureAIFunctionScheduler::update(unsigned long time_passed)
     for (;functions_iterator != mCreatureAIFunctions.end();)
     {
         auto function = *functions_iterator;
+
+        // Roll the Dice :)
+        float rolled = Util::getRandomFloat(100.0f);
 
         // When the Function is Currently Disabled skip.
         if (!function->isEnabled())
