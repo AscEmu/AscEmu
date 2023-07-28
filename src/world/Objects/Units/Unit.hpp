@@ -1112,6 +1112,10 @@ public:
     void handleSpellClick(Unit* clicker);
 #endif
 
+    bool isMounted() const { return hasUnitFlags(UNIT_FLAG_MOUNT); }
+    void mount(uint32_t mount, uint32_t vehicleId = 0, uint32_t creatureEntry = 0);
+    void dismount();
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Unit Owner
 public:

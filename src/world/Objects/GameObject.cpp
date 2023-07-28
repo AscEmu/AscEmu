@@ -876,7 +876,7 @@ void GameObject::Update(unsigned long time_passed)
                         {
                             if (radius > itr->getDistance(this->GetPosition()))
                             {
-                                if (itr->isCreatureOrPlayer() && isAttackable(this, itr, false))
+                                if (itr->isCreatureOrPlayer() && isAttackable(this, itr))
                                     target = itr->ToUnit();
                             }
                         }
@@ -1394,6 +1394,9 @@ void GameObject_Door::_internalUpdateOnState(unsigned long /*timeDiff*/)
 {
     switch (m_lootState)
     {
+        case GO_NOT_READY:
+            m_lootState = GO_READY;
+        break;
         case GO_READY:
             // We need to open doors if they are closed (add there another condition if this code breaks some usage, but it need to be here for battlegrounds)
             if (getState() != GO_STATE_CLOSED)
@@ -1454,6 +1457,9 @@ void GameObject_Button::_internalUpdateOnState(unsigned long /*timeDiff*/)
 {
     switch (m_lootState)
     {
+        case GO_NOT_READY:
+            m_lootState = GO_READY;
+            break;
         case GO_READY:
             // We need to open doors if they are closed (add there another condition if this code breaks some usage, but it need to be here for battlegrounds)
             if (getState() != GO_STATE_CLOSED)
@@ -1845,6 +1851,9 @@ void GameObject_Goober::_internalUpdateOnState(unsigned long /*timeDiff*/)
 {
     switch (m_lootState)
     {
+        case GO_NOT_READY:
+            m_lootState = GO_READY;
+            break;
         case GO_ACTIVATED:
             if (Util::getMSTime() >= m_cooldownTime)
             {
@@ -2424,10 +2433,6 @@ void GameObject_Destructible::Damage(uint32_t damage, uint64_t AttackerGUID, uin
         // Instant destruction
         hitpoints = 0;
 
-        setFlags(GO_FLAG_DESTROYED);
-        removeFlags(GO_FLAG_DAMAGED);
-        setDisplayId(gameobject_properties->destructible_building.destroyed_display_id);   // destroyed display id
-
         if (GetScript())
             GetScript()->OnDestroyed();
     }
@@ -2436,34 +2441,31 @@ void GameObject_Destructible::Damage(uint32_t damage, uint64_t AttackerGUID, uin
         // Simply damaging
         hitpoints -= damage;
 
-        if (!hasFlags(GO_FLAG_DAMAGED))
-        {
-            // Intact  ->  Damaged
-
-            // Are we below the intact-damaged transition treshold?
-            if (hitpoints <= (maxhitpoints - gameobject_properties->destructible_building.intact_num_hits))
-            {
-                setFlags(GO_FLAG_DAMAGED);
-                setDisplayId(gameobject_properties->destructible_building.damaged_display_id); // damaged display id
-            }
-        }
-        else
-        {
-            if (hitpoints == 0)
-            {
-                removeFlags(GO_FLAG_DAMAGED);
-                setFlags(GO_FLAG_DESTROYED);
-                setDisplayId(gameobject_properties->destructible_building.destroyed_display_id);
-            }
-        }
-
         if (GetScript())
             GetScript()->OnDamaged(damage);
     }
 
+    // Health Bar
     uint8_t animprogress = static_cast<uint8_t>(std::round(hitpoints / float(maxhitpoints)) * 255);
     setAnimationProgress(animprogress);
+
+    // Send Packet
     SendDamagePacket(damage, AttackerGUID, ControllerGUID, SpellID);
+    
+    GameObjectDestructibleState newState = GetDestructibleState();
+
+    if (!hitpoints)
+        newState = GO_DESTRUCTIBLE_DESTROYED;
+    else if (hitpoints <= gameobject_properties->destructible_building.damaged_num_hits)
+        newState = GO_DESTRUCTIBLE_DAMAGED;
+    else if (hitpoints == maxhitpoints)
+        newState = GO_DESTRUCTIBLE_INTACT;
+
+    if (newState == GetDestructibleState())
+        return;
+
+    // Visuals
+    setDestructibleState(newState, false);
 }
 
 void GameObject_Destructible::SendDamagePacket(uint32_t damage, uint64_t AttackerGUID, uint64_t ControllerGUID, uint32_t SpellID)
@@ -2479,4 +2481,61 @@ void GameObject_Destructible::Rebuild()
     setDisplayId(gameobject_properties->display_id);
     maxhitpoints = gameobject_properties->destructible_building.intact_num_hits + gameobject_properties->destructible_building.damaged_num_hits;
     hitpoints = maxhitpoints;
+}
+
+void GameObject_Destructible::setDestructibleState(GameObjectDestructibleState state, bool setHealth /*= false*/)
+{
+    switch (state)
+    {
+        case GO_DESTRUCTIBLE_INTACT:
+        {
+            removeFlags(GO_FLAG_DAMAGED | GO_FLAG_DESTROYED);
+            setDisplayId(gameobject_properties->display_id);
+
+            if (setHealth)
+            {
+                hitpoints = maxhitpoints;
+                setAnimationProgress(255);
+            }
+            enableCollision(true);
+        } break;
+        case GO_DESTRUCTIBLE_DAMAGED:
+        {
+            removeFlags(GO_FLAG_DESTROYED);
+            setFlags(GO_FLAG_DAMAGED);
+            setDisplayId(gameobject_properties->destructible_building.damaged_display_id);
+
+            if (setHealth)
+            {
+                hitpoints = gameobject_properties->destructible_building.damaged_num_hits;
+                setAnimationProgress(static_cast<uint8_t>(std::round(hitpoints / float(maxhitpoints)) * 255));
+            }
+        } break;
+        case GO_DESTRUCTIBLE_DESTROYED:
+        {
+            removeFlags(GO_FLAG_DAMAGED);
+            setFlags(GO_FLAG_DESTROYED);
+            setDisplayId(gameobject_properties->destructible_building.destroyed_display_id);
+
+            if (setHealth)
+            {
+                hitpoints = 0;
+                setAnimationProgress(0);
+            }
+            enableCollision(false);
+        } break;
+        case GO_DESTRUCTIBLE_REBUILDING:
+        {
+            removeFlags(GO_FLAG_DAMAGED | GO_FLAG_DESTROYED);
+            setDisplayId(gameobject_properties->display_id);
+
+            // restores to full health
+            if (setHealth)
+            {
+                hitpoints = maxhitpoints;
+                setAnimationProgress(255);
+            }
+            enableCollision(true);
+        } break;
+    }
 }

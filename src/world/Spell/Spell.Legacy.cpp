@@ -312,7 +312,7 @@ void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float s
         {
             if (u_caster != nullptr)
             {
-                if (isAttackable(u_caster, itr, !(getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
+                if (isAttackable(u_caster, itr, getSpellInfo()))
                 {
                     did_hit_result = static_cast<SpellDidHitResult>(DidHit(i, static_cast<Unit*>(itr)));
                     if (did_hit_result != SPELL_DID_HIT_SUCCESS)
@@ -327,7 +327,7 @@ void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float s
                 if (g_caster && g_caster->getCreatedByGuid() && g_caster->getUnitOwner())
                 {
                     //trap, check not to attack owner and friendly
-                    if (isAttackable(g_caster->getUnitOwner(), itr, !(getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
+                    if (isAttackable(g_caster->getUnitOwner(), itr, getSpellInfo()))
                         SafeAddTarget(tmpMap, itr->getGuid());
                 }
                 else
@@ -394,7 +394,7 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
 
                 if (u_caster != nullptr)
                 {
-                    if (isAttackable(u_caster, itr, !(getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
+                    if (isAttackable(u_caster, itr, getSpellInfo()))
                     {
                         did_hit_result = static_cast<SpellDidHitResult>(DidHit(i, static_cast<Unit*>(itr)));
                         if (did_hit_result == SPELL_DID_HIT_SUCCESS)
@@ -408,7 +408,7 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
                     if (g_caster != nullptr && g_caster->getCreatedByGuid() && g_caster->getUnitOwner() != nullptr)
                     {
                         //trap, check not to attack owner and friendly
-                        if (isAttackable(g_caster->getUnitOwner(), itr, !(getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
+                        if (isAttackable(g_caster->getUnitOwner(), itr, getSpellInfo()))
                             SafeAddTarget(tmpMap, itr->getGuid());
                     }
                     else
@@ -521,7 +521,7 @@ uint64 Spell::GetSinglePossibleEnemy(uint32 i, float prange)
         {
             if (u_caster != nullptr)
             {
-                if (isAttackable(u_caster, itr, !(getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)) && DidHit(i, static_cast<Unit*>(itr)) == SPELL_DID_HIT_SUCCESS)
+                if (isAttackable(u_caster, itr, getSpellInfo()) && DidHit(i, static_cast<Unit*>(itr)) == SPELL_DID_HIT_SUCCESS)
                 {
                     return itr->getGuid();
                 }
@@ -531,7 +531,7 @@ uint64 Spell::GetSinglePossibleEnemy(uint32 i, float prange)
                 if (g_caster && g_caster->getCreatedByGuid() && g_caster->getUnitOwner())
                 {
                     //trap, check not to attack owner and friendly
-                    if (isAttackable(g_caster->getUnitOwner(), itr, !(getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
+                    if (isAttackable(g_caster->getUnitOwner(), itr, getSpellInfo()))
                     {
                         return itr->getGuid();
                     }

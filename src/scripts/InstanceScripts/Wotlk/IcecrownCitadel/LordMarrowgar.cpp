@@ -35,6 +35,8 @@ LordMarrowgarAI::LordMarrowgarAI(Creature* pCreature) : CreatureAIScript(pCreatu
     berserkSpell->addDBEmote(SAY_MARR_BERSERK);                  // THE MASTER'S RAGE COURSES THROUGH ME!
     berserkSpell->mIsTriggered = true;
 
+    _setRangedDisabled(true);
+
     // Messages
     addEmoteForEvent(Event_OnCombatStart, SAY_MARR_AGGRO);     // The Scourge will wash over this world as a swarm of death and destruction!
     addEmoteForEvent(Event_OnTargetDied, SAY_MARR_KILL_1);      // More bones for the offering!

@@ -126,7 +126,7 @@ void DynamicObject::updateTargets()
 
             Unit* target = static_cast<Unit*>(object);
 
-            if (!isAttackable(m_unitCaster, target, !(m_spellInfo->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
+            if (!isAttackable(m_unitCaster, target, m_spellInfo))
                 continue;
 
             // skip units already hit, their range will be tested later

@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/DBC/DBCStructures.hpp"
 #include "Definitions/AuraEffects.hpp"
 #include "Definitions/PowerType.hpp"
+#include "SpellDefines.hpp"
 #include "SpellScript.hpp"
 #include "CommonTypes.hpp"
 #include "Logging/Logger.hpp"
@@ -110,6 +111,8 @@ public:
     bool isPrimaryProfession() const;
     bool isPrimaryProfessionSkill(uint32_t skill_id) const;
 
+    bool isAllowingDeadTarget() const;
+
     bool isDeathPersistent() const;
     bool isChanneled() const;
     bool isRangedAutoRepeat() const;
@@ -146,6 +149,16 @@ public:
     uint32_t getAttributesExH() const { return AttributesExH; }
     uint32_t getAttributesExI() const { return AttributesExI; }
     uint32_t getAttributesExJ() const { return AttributesExJ; }
+
+    inline bool hasAttribute(SpellAttributes attribute) const { return !!(Attributes & attribute); }
+    inline bool hasAttribute(SpellAttributesEx attribute) const { return !!(AttributesEx & attribute); }
+    inline bool hasAttribute(SpellAttributesExB attribute) const { return !!(AttributesExB & attribute); }
+    inline bool hasAttribute(SpellAttributesExC attribute) const { return !!(AttributesExC & attribute); }
+    inline bool hasAttribute(SpellAttributesExD attribute) const { return !!(AttributesExD & attribute); }
+    inline bool hasAttribute(SpellAttributesExE attribute) const { return !!(AttributesExE & attribute); }
+    inline bool hasAttribute(SpellAttributesExF attribute) const { return !!(AttributesExF & attribute); }
+    inline bool hasAttribute(SpellAttributesExG attribute) const { return !!(AttributesExG & attribute); }
+
     uint32_t getRequiredShapeShift() const { return Shapeshifts; }
     uint32_t getShapeshiftExclude() const { return ShapeshiftsExcluded; }
     uint32_t getTargets() const { return Targets; } // not used!

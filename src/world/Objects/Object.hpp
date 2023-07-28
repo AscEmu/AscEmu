@@ -54,6 +54,7 @@ class Aura;
 class UpdateMask;
 class EventableObject;
 enum ZLiquidStatus : uint32_t;
+enum Standing : uint8_t;
 
 #define MAX_INTERACTION_RANGE 5.0f
 float const DEFAULT_COLLISION_HEIGHT = 2.03128f; // Most common value in dbc
@@ -347,6 +348,8 @@ public:
     // Returns player charmer, player owner or self
     virtual Player* getPlayerOwnerOrSelf();
 
+    Player* getAffectingPlayer();
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
 
@@ -564,6 +567,7 @@ public:
         LocationVector getHitSpherePointFor(LocationVector const& dest);
         void getHitSpherePointFor(LocationVector const& dest, float& x, float& y, float& z) const;
         LocationVector getHitSpherePointFor(LocationVector const& dest) const;
+        void updateGroundPositionZ(float x, float y, float& z);
         void updateAllowedPositionZ(float x, float y, float &z, float* groundZ = nullptr);
         float getMapWaterOrGroundLevel(float x, float y, float z, float* ground = nullptr);
         float getFloorZ();
@@ -657,7 +661,7 @@ public:
 
         uint32 m_phase = 1;         // This stores the phase, if two objects have the same bit set, then they can see each other. The default phase is 0x1.
 
-    uint32 GetPhase() const { return m_phase; }
+        uint32 GetPhase() const { return m_phase; }
         virtual void Phase(uint8 command = PHASE_SET, uint32 newphase = 1);
 
         // SpellLog packets just to keep the code cleaner and better to read
@@ -670,7 +674,16 @@ public:
         DBC::Structures::FactionTemplateEntry const* m_factionTemplate = nullptr;
         DBC::Structures::FactionEntry const* m_factionEntry = nullptr;
 
+        Standing getEnemyReaction(Object* target);
+        Standing getFactionReaction(DBC::Structures::FactionTemplateEntry const* factionTemplateEntry, Object* target);
+
+        bool isHostileTo(Object* target);
+        bool IsHostileToPlayers();
+        bool isFriendlyTo(Object* target);
         bool isNeutralToAll() const;
+
+        bool isValidTarget(Object* target, SpellInfo const* bySpell = nullptr);       // used for findTarget
+        bool isValidAssistTarget(Unit* target, SpellInfo const* bySpell = nullptr); // used for Escorts
 
         void SetInstanceID(int32 instance) { m_instanceId = instance; }
         int32 GetInstanceID() { return m_instanceId; }

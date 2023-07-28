@@ -254,6 +254,7 @@ public:
     virtual void removeAllPlayers();
 
     // Creatures
+    CreatureSet::iterator creature_iterator;
     uint32_t m_CreatureHighGuid = 0;
     Creature* createCreature(uint32_t entry);
     Creature* createAndSpawnCreature(uint32_t pEntry, LocationVector pos);
@@ -269,6 +270,7 @@ public:
     Pet* getPet(uint32_t guid);
 
     // GameObject
+    ActiveGameObjectSet::iterator gameObject_iterator;
     uint32_t m_GOHighGuid = 0;
     GameObject* createGameObject(uint32_t entry);
     GameObject* createAndSpawnGameObject(uint32_t entryID, LocationVector pos, float scale = 1.0f, uint32_t spawnTime = 0);

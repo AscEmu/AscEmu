@@ -77,6 +77,26 @@ Player* Aura::GetPlayerCaster()
     }
 }
 
+Unit* Aura::GetUnitTarget()
+{
+    if (m_target && m_target->getWorldMap())
+    {
+        return m_target;
+    }
+    
+    return nullptr;
+}
+
+Player* Aura::GetPlayerTarget()
+{
+    if (p_target && p_target->getWorldMap())
+    {
+        return p_target;
+    }
+
+    return nullptr;
+}
+
 Unit* Aura::GetUnitCaster()
 {
     if (m_casterGuid == m_target->getGuid())
@@ -1084,7 +1104,7 @@ void Aura::SpellAuraModTaunt(AuraEffectModifier* /*aurEff*/, bool /*apply*/)
 {
     Unit* m_caster = GetUnitCaster();
 
-    if (!m_caster || !m_caster->isAlive() || !m_target->isAlive() || !m_caster->getThreatManager().canHaveThreatList())
+    if (!m_caster || !m_caster->isAlive() || !m_target->isAlive() || !m_target->getThreatManager().canHaveThreatList())
         return;
 
     mPositive = false;
@@ -4411,17 +4431,10 @@ void Aura::SpellAuraForceReaction(AuraEffectModifier* aurEff, bool apply)
     if (p_target == nullptr)
         return;
 
-    if (apply)
-    {
-        std::map<uint32, uint32>::iterator itr = p_target->m_forcedReactions.find(aurEff->getEffectMiscValue());
-        if (itr != p_target->m_forcedReactions.end())
-            itr->second = aurEff->getEffectDamage();
-        else
-            p_target->m_forcedReactions.insert(std::make_pair(aurEff->getEffectMiscValue(), aurEff->getEffectDamage()));
-    }
-    else
-        p_target->m_forcedReactions.erase(aurEff->getEffectMiscValue());
+    uint32_t factionId = aurEff->getEffectMiscValue();
+    Standing factionRank = Standing(aurEff->getEffectDamage());
 
+    p_target->applyForcedReaction(factionId, factionRank, apply);
     p_target->getSession()->SendPacket(SmsgSetForceReactions(p_target->m_forcedReactions).serialise().get());
 }
 

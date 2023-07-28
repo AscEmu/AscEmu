@@ -72,7 +72,7 @@ file(GLOB SRC_WOTLK_COTCULLINGOFSTRAT_SCRIPTS_FILES Wotlk/CavernsOfTime/*.cpp Wo
 file(GLOB SRC_WOTLK_OBSIDUANSANCTUM_SCRIPTS_FILES Wotlk/ChamberOfAspects/ObsidianSanctum/*.cpp Wotlk/ChamberOfAspects/ObsidianSanctum/*.h)
 file(GLOB SRC_WOTLK_RUBYSANCTUM_SCRIPTS_FILES Wotlk/ChamberOfAspects/RubySanctum/*.cpp Wotlk/ChamberOfAspects/RubySanctum/*.h)
 file(GLOB SRC_WOTLK_TRIALOFCHAMPION_SCRIPTS_FILES Wotlk/CrusadersColiseum/TrialOfTheChampion/*.cpp Wotlk/CrusadersColiseum/TrialOfTheChampion/*.h)
-file(GLOB SRC_WOTLK_TRIALOFCRUSADER_SCRIPTS_FILES Wotlk/CrusadersColiseum/TrialOfTheCrusader/*.cpp Wotlk/CrusadersColiseum/TrialOfTheCrusader/*.h)
+file(GLOB SRC_WOTLK_TRIALOFCRUSADER_SCRIPTS_FILES Wotlk/CrusadersColiseum/TrialOfTheCrusader/*.cpp Wotlk/CrusadersColiseum/TrialOfTheCrusader/*.h Wotlk/CrusadersColiseum/TrialOfTheCrusader/*.hpp)
 file(GLOB SRC_WOTLK_DRAKTHARON_SCRIPTS_FILES Wotlk/DraktharonKeep/*.cpp Wotlk/DraktharonKeep/*.h)
 file(GLOB SRC_WOTLK_FORGEOFSOULS_SCRIPTS_FILES Wotlk/FrozenHalls/ForgeOfSouls/*.cpp Wotlk/FrozenHalls/ForgeOfSouls/*.h)
 file(GLOB SRC_WOTLK_HALLSOFREFLECTION_SCRIPTS_FILES Wotlk/FrozenHalls/HallsOfReflection/*.cpp Wotlk/FrozenHalls/HallsOfReflection/*.h)

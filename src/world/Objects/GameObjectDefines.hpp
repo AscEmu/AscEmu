@@ -31,6 +31,14 @@ enum GameObject_Flags
     GO_FLAG_DESTROYED           = 0x400
 };
 
+enum GameObjectDestructibleState
+{
+    GO_DESTRUCTIBLE_INTACT      = 0,
+    GO_DESTRUCTIBLE_DAMAGED     = 1,
+    GO_DESTRUCTIBLE_DESTROYED   = 2,
+    GO_DESTRUCTIBLE_REBUILDING  = 3
+};
+
 // TODO: move these under proper Gameobject subclasses
 struct GameObjectValue
 {

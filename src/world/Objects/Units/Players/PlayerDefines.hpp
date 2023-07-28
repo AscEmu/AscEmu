@@ -258,7 +258,7 @@ Unfriendly          3,000     Cannot buy, sell or interact.
 Hostile             3,000     You will always be attacked on sight
 Hated               36,000
 */
-enum Standing
+enum Standing : uint8_t
 {
     STANDING_HATED,
     STANDING_HOSTILE,

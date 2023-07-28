@@ -59,26 +59,6 @@ bool ThreatReference::shouldBeOffline() const
     if (!_owner->getAIInterface()->isTargetAcceptable(_victim) || !_owner->getAIInterface()->canOwnerAttackUnit(_victim))
         return true;
 
-    if (!_victim)
-        return true;
-
-    if (!_victim->isAlive())
-        return true;
-
-    if (!_victim->isInAccessiblePlaceFor(_owner))
-        return true;
-
-    // we cannot attack in evade mode
-    if (_owner->isInEvadeMode())
-        return true;
-
-    // or if enemy is in evade mode
-    if (_victim->getObjectTypeId() == TYPEID_UNIT && _victim->ToCreature()->isInEvadeMode())
-        return true;
-
-    if (_victim == _owner)
-        return true;
-
     if (!flagsAllowFighting(_owner, _victim) || !flagsAllowFighting(_victim, _owner))
         return true;
 

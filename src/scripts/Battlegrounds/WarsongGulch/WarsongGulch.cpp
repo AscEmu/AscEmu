@@ -309,7 +309,7 @@ void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
         return;
     }
 
-    std::map<uint32_t, uint32_t>::iterator itr = plr->m_forcedReactions.find(1059);
+    std::map<uint32_t, Standing>::iterator itr = plr->m_forcedReactions.find(1059);
     if (itr != plr->m_forcedReactions.end())
     {
         return;
@@ -381,7 +381,7 @@ void WarsongGulch::HookFlagStand(Player* plr, GameObject* obj)
         return;
     }
 
-    std::map<uint32_t, uint32_t>::iterator itr = plr->m_forcedReactions.find(1059);
+    std::map<uint32_t, Standing>::iterator itr = plr->m_forcedReactions.find(1059);
     if (itr != plr->m_forcedReactions.end())
     {
         return;

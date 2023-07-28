@@ -21,6 +21,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgSpellHealLog.h"
 #include "Server/Packets/SmsgSpellOrDamageImmune.h"
 #include "Server/Packets/SmsgStandstateUpdate.h"
+#include "Server/Packets/SmsgControlVehicle.h"
+#include "Server/Packets/SmsgPlayerVehicleData.h"
 #include "Server/Opcodes.hpp"
 #include "Server/WorldSession.h"
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
@@ -82,6 +84,8 @@ Unit::Unit() :
 
     // Zyres: initialise here because multiversion differences
     std::fill_n(m_pctPowerRegenModifier, TOTAL_PLAYER_POWER_TYPES, 1.0f);
+
+    m_lastAiInterfaceUpdateTime = Util::getMSTime();
 
     m_summonInterface->setUnitOwner(this);
     m_aiInterface->Init(this);
@@ -268,8 +272,6 @@ void Unit::Update(unsigned long time_passed)
         }
         getThreatManager().update(time_passed);
         getCombatHandler().updateCombat(msTime);
-        updateSplineMovement(time_passed);
-        getMovementManager()->update(time_passed);
 
         if (m_diminishActive)
         {
@@ -303,13 +305,20 @@ void Unit::Update(unsigned long time_passed)
         // so make sure they are removed when unit is dead
         if (getAuraState() != 0)
             setAuraState(0);
+
+        if (m_aiInterface != nullptr)
+            m_lastAiInterfaceUpdateTime = msTime;
     }
+
+    updateSplineMovement(time_passed);
+    getMovementManager()->update(time_passed);
 }
 
 void Unit::RemoveFromWorld(bool free_guid)
 {
 #ifdef FT_VEHICLES
-    removeVehicleKit();
+    if (isVehicle())
+        removeVehicleKit();
 #endif
     removeAllFollowers();
 
@@ -8311,6 +8320,100 @@ void Unit::handleSpellClick(Unit* clicker)
     }
 }
 #endif
+
+void Unit::mount(uint32_t mount, uint32_t VehicleId, uint32_t creatureEntry)
+{
+    if (mount)
+        setMountDisplayId(mount);
+
+    setUnitFlags(UNIT_FLAG_MOUNT);
+
+    if (Player* player = ToPlayer())
+    {
+#if VERSION_STRING > TBC
+        // mount as a vehicle
+        if (VehicleId)
+        {
+            if (createVehicleKit(VehicleId, creatureEntry))
+            {
+                // Send others that we now have a vehicle
+                sendMessageToSet(SmsgPlayerVehicleData(WoWGuid(getGuid()), VehicleId).serialise().get(), true);
+                sendPacket(SmsgControlVehicle().serialise().get());
+
+                // mounts can also have accessories
+                getVehicleKit()->initialize();
+                getVehicleKit()->loadAllAccessories(false);
+            }
+        }
+#endif
+        // unsummon pet
+        player->dismissActivePets();
+
+        // if we have charmed npc, stun him also (everywhere)
+        if (Unit* charm = getWorldMapUnit(getCharmGuid()))
+            if (charm->getObjectTypeId() == TYPEID_UNIT)
+                charm->setUnitFlags(UNIT_FLAG_STUNNED);
+
+        ByteBuffer guidData;
+        guidData << GetNewGUID();
+
+        WorldPacket data(SMSG_MOVE_SET_COLLISION_HGT, guidData.size() + 4 + 4);
+        data.append(guidData);
+        data << uint32_t(Util::getTimeNow());   // Packet counter
+        data << getCollisionHeight();
+        sendPacket(&data);
+    }
+
+    removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_MOUNT);
+}
+
+void Unit::dismount()
+{
+    if (!isMounted())
+        return;
+
+    setMountDisplayId(0);
+    removeUnitFlags(UNIT_FLAG_MOUNT);
+
+    if (Player* player = ToPlayer())
+    {
+        ByteBuffer guidData;
+        guidData << GetNewGUID();
+        WorldPacket data(SMSG_MOVE_SET_COLLISION_HGT, guidData.size() + 4 + 4);
+        data.append(guidData);
+        data << uint32_t(Util::getTimeNow());   // Packet counter
+        data << getCollisionHeight();
+        sendPacket(&data);
+
+        if (player->getMountSpellId() != 0)
+        {
+            removeAllAurasById(player->getMountSpellId());
+            player->setMountSpellId(0);
+        }
+    }
+
+    WorldPacket data(SMSG_DISMOUNT, 8);
+    data << GetNewGUID();
+    sendMessageToSet(&data, true);
+
+#if VERSION_STRING >= WotLK
+    // dismount as a vehicle
+    if (isPlayer() && getVehicleKit())
+    {
+        // Send other players that we are no longer a vehicle
+        sendMessageToSet(SmsgPlayerVehicleData().serialise().get(), true);
+        // Remove vehicle from player
+        removeVehicleKit();
+    }
+#endif
+
+    removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_MOUNT);
+
+    // if we have charmed npc, remove stun also
+    if (Unit* charm = getWorldMapUnit(getCharmGuid()))
+        if (charm->getObjectTypeId() == TYPEID_UNIT && charm->hasUnitFlags(UNIT_FLAG_STUNNED) && !charm->hasUnitStateFlag(UNIT_STATE_STUNNED))
+            charm->removeUnitFlags(UNIT_FLAG_STUNNED);
+}
 
 // Returns collisionheight of the unit. If it is 0, it returns DEFAULT_COLLISION_HEIGHT.
 float Unit::getCollisionHeight() const

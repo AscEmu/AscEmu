@@ -257,7 +257,7 @@ bool DeathCoil(uint8_t /*effectIndex*/, Spell* s)
     int32_t dmg = s->damage;
 
     SpellForcedBasePoints forcedBasePoints;
-    if (isAttackable(s->getPlayerCaster(), unitTarget, false))
+    if (isAttackable(s->getPlayerCaster(), unitTarget))
     {
         forcedBasePoints.set(EFF_INDEX_0, dmg);
         s->getPlayerCaster()->castSpell(unitTarget, 47632, forcedBasePoints, true);

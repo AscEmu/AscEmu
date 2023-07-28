@@ -861,21 +861,21 @@ void MovementManager::moveSmoothPath(uint32_t pointId, LocationVector const* pat
     add(new GenericMovementGenerator(std::move(init), EFFECT_MOTION_TYPE, pointId));
 }
 
-void MovementManager::moveAlongSplineChain(uint32_t /*pointId*/, uint16_t /*dbChainId*/, bool /*walk*/)
+void MovementManager::moveAlongSplineChain(uint32_t pointId, uint16_t dbChainId, bool walk)
 {
     Creature* owner = _owner->ToCreature();
     if (!owner)
     {
         return;
     }
-    // todo
-    /* 
-    std::vector<SplineChainLink> const* chain = GetSplineChain(owner, dbChainId);
+
+    std::vector<SplineChainLink> const* chain = sMySQLStore.getSplineChain(owner, dbChainId);
     if (!chain)
     {
         return;
     }
-    MoveAlongSplineChain(pointId, *chain, walk);*/
+
+    moveAlongSplineChain(pointId, *chain, walk);
 }
 
 void MovementManager::moveAlongSplineChain(uint32_t pointId, std::vector<SplineChainLink> const& chain, bool walk)
@@ -914,13 +914,12 @@ void MovementManager::moveFall(uint32_t id/* = 0*/)
     if (_owner->getObjectTypeId() == TYPEID_PLAYER)
         return;
 
-    auto posY = _owner->GetPositionY();
 #if VERSION_STRING >= WotLK
-    posY += _owner->getHoverHeight();
+    tz += _owner->getHoverHeight();
 #endif
 
     MovementMgr::MoveSplineInit init(_owner);
-    init.MoveTo(_owner->GetPositionX(), posY, _owner->GetPositionZ(), false);
+    init.MoveTo(_owner->GetPositionX(), _owner->GetPositionY(), tz, false);
     init.SetFall();
 
     GenericMovementGenerator* movement = new GenericMovementGenerator(std::move(init), EFFECT_MOTION_TYPE, id);

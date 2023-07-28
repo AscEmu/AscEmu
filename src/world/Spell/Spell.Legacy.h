@@ -210,6 +210,9 @@ class SERVER_DECL Spell
         int32_t getDuration();
         float_t getEffectRadius(uint8_t effectIndex);
 
+        LocationVector getDestination() { return m_targets.getDestination(); }
+        LocationVector getSource() { return m_targets.getSource(); }
+
         // used by spells that should have dynamic variables in spellentry
         // seems to be used only by LuaEngine -Appled
         SpellInfo const* m_spellInfo_override = nullptr;

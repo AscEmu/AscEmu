@@ -1755,7 +1755,7 @@ void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
         {
             /* try to get a selection */
             unitTarget = m_caster->getWorldMap()->getUnit(m_targets.getUnitTarget());
-            if ((!unitTarget) || !isAttackable(p_caster, unitTarget, !(getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)) || (unitTarget->CalcDistance(p_caster) > 28.0f))
+            if ((!unitTarget) || !isAttackable(p_caster, unitTarget, getSpellInfo()) || (unitTarget->CalcDistance(p_caster) > 28.0f))
             {
                 return;
             }

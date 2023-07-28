@@ -55,8 +55,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgLoginVerifyWorld.h"
 #include "Server/Packets/SmsgMountResult.h"
 #include "Server/Packets/SmsgDismountResult.h"
-#include "Server/Packets/SmsgControlVehicle.h"
-#include "Server/Packets/SmsgPlayerVehicleData.h"
 #include "Server/Packets/SmsgLogXpGain.h"
 #include "Server/Packets/SmsgCastFailed.h"
 #include "Server/Packets/SmsgLevelupInfo.h"
@@ -1437,99 +1435,12 @@ void Player::resendSpeed()
 }
 bool Player::isMoving() const { return m_isMoving; }
 
-bool Player::isMounted() const { return hasUnitFlags(UNIT_FLAG_MOUNT); }
 uint32_t Player::getMountSpellId() const { return m_mountSpellId; }
 void Player::setMountSpellId(uint32_t id) { m_mountSpellId = id; }
 
 bool Player::isOnVehicle() const { return m_mountVehicleId ? true : false; }
 uint32_t Player::getMountVehicleId() const { return m_mountVehicleId; }
 void Player::setMountVehicleId(uint32_t id) { m_mountVehicleId = id; }
-
-void Player::mount(uint32_t mount, uint32_t VehicleId, uint32_t creatureEntry)
-{
-    if (mount)
-        setMountDisplayId(mount);
-
-    setUnitFlags(UNIT_FLAG_MOUNT);
-
-#if VERSION_STRING > TBC
-    // mount as a vehicle
-    if (VehicleId)
-    {
-        if (createVehicleKit(VehicleId, creatureEntry))
-        {
-            // Send others that we now have a vehicle
-            sendMessageToSet(SmsgPlayerVehicleData(WoWGuid(getGuid()), VehicleId).serialise().get(), true);
-            sendPacket(SmsgControlVehicle().serialise().get());
-
-            // mounts can also have accessories
-            getVehicleKit()->initialize();
-            getVehicleKit()->loadAllAccessories(false);
-        }
-    }
-#endif
-    // unsummon pet
-    dismissActivePets();
-
-    // if we have charmed npc, stun him also (everywhere)
-    if (Unit* charm = getWorldMapUnit(getCharmGuid()))
-        if (charm->getObjectTypeId() == TYPEID_UNIT)
-            charm->setUnitFlags(UNIT_FLAG_STUNNED);
-
-    ByteBuffer guidData;
-    guidData << GetNewGUID();
-
-    WorldPacket data(SMSG_MOVE_SET_COLLISION_HGT, guidData.size() + 4 + 4);
-    data.append(guidData);
-    data << uint32_t(Util::getTimeNow());   // Packet counter
-    data << getCollisionHeight();
-    sendPacket(&data);
-
-    removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_MOUNT);
-}
-
-void Player::dismount()
-{
-    setMountDisplayId(0);
-    removeUnitFlags(UNIT_FLAG_MOUNT);
-
-    WorldPacket data(SMSG_DISMOUNT, 8);
-    data << GetNewGUID();
-    sendMessageToSet(&data, true);
-
-#if VERSION_STRING >= WotLK
-    // dismount as a vehicle
-    if (isPlayer() && getVehicleKit())
-    {
-        // Send other players that we are no longer a vehicle
-        sendMessageToSet(SmsgPlayerVehicleData().serialise().get(), true);
-        // Remove vehicle from player
-        removeVehicleKit();
-    }
-#endif
-
-    removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_MOUNT);
-
-    // if we have charmed npc, remove stun also
-    if (Unit* charm = getWorldMapUnit(getCharmGuid()))
-        if (charm->getObjectTypeId() == TYPEID_UNIT && charm->hasUnitFlags(UNIT_FLAG_STUNNED) && !charm->hasUnitStateFlag(UNIT_STATE_STUNNED))
-            charm->removeUnitFlags(UNIT_FLAG_STUNNED);
-
-    if (m_mountSpellId != 0)
-    {
-        removeAllAurasById(m_mountSpellId);
-        m_mountSpellId = 0;
-    }
-
-    ByteBuffer guidData;
-    guidData << GetNewGUID();
-
-    data.Initialize(SMSG_MOVE_SET_COLLISION_HGT, guidData.size() + 4 + 4);
-    data.append(guidData);
-    data << uint32_t(Util::getTimeNow());   // Packet counter
-    data << getCollisionHeight();
-    sendPacket(&data);
-}
 
 void Player::handleAuraInterruptForMovementFlags(MovementInfo const& movementInfo)
 {
@@ -11479,6 +11390,20 @@ Standing Player::getReputationRankFromStanding(int32_t value)
     return STANDING_HATED;
 }
 
+void Player::applyForcedReaction(uint32 faction_id, Standing rank, bool apply)
+{
+    if (apply)
+        m_forcedReactions[faction_id] = rank;
+    else
+        m_forcedReactions.erase(faction_id);
+}
+
+Standing const* Player::getForcedReputationRank(DBC::Structures::FactionTemplateEntry const* factionTemplateEntry) const
+{
+    const auto itr = m_forcedReactions.find(factionTemplateEntry->Faction);
+    return itr != m_forcedReactions.end() ? &itr->second : nullptr;
+}
+
 void Player::setFactionAtWar(uint32_t faction, bool set)
 {
     if (faction >= 128)
@@ -11496,6 +11421,20 @@ void Player::setFactionAtWar(uint32_t faction, bool set)
 
     if (SetFlagAtWar(factionReputation->flag, set))
         updateInrangeSetsBasedOnReputation();
+}
+
+bool Player::isFactionAtWar(DBC::Structures::FactionEntry const* factionEntry) const
+{
+    if (!factionEntry)
+        return false;
+
+    FactionReputation const* factionState = m_reputationByListId[factionEntry->RepListId];
+    if (factionState == nullptr)
+        return false;
+
+        return AtWar(factionState->flag);
+
+    return false;
 }
 
 bool Player::isHostileBasedOnReputation(DBC::Structures::FactionEntry const* factionEntry)

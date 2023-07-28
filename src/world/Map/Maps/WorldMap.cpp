@@ -164,7 +164,9 @@ WorldMap::~WorldMap()
     Sessions.clear();
 
     activeCreatures.clear();
+    creature_iterator = activeCreatures.begin();
     activeGameObjects.clear();
+    gameObject_iterator = activeGameObjects.begin();
     _sqlids_creatures.clear();
     _sqlids_gameobjects.clear();
     _reusable_guids_creature.clear();
@@ -305,10 +307,11 @@ void WorldMap::update(uint32_t t_diff)
     // Update Creatures
     {
         auto diffTime = msTime - m_lastCreatureUpdateTimer;
-        for (auto itr = activeCreatures.cbegin(); itr != activeCreatures.cend();)
+        creature_iterator = activeCreatures.begin();
+        for (; creature_iterator != activeCreatures.end();)
         {
-            Creature* ptr = *itr;
-            ++itr;
+            Creature* ptr = *creature_iterator;
+            ++creature_iterator;
             ptr->Update(diffTime);
         }
 
@@ -356,10 +359,11 @@ void WorldMap::update(uint32_t t_diff)
     diffTime = msTime - m_lastGameObjectUpdateTimer;
     if (diffTime >= 200)
     {
-        for (auto itr = activeGameObjects.cbegin(); itr != activeGameObjects.cend();)
+        gameObject_iterator = activeGameObjects.begin();
+        for (; gameObject_iterator != activeGameObjects.end();)
         {
-            GameObject* gameobject = *itr;
-            ++itr;
+            GameObject* gameobject = *gameObject_iterator;
+            ++gameObject_iterator;
             if (gameobject != nullptr)
                 gameobject->Update(diffTime);
         }
@@ -667,6 +671,10 @@ void WorldMap::PushObject(Object* obj)
 
         //Add to the cell's object list
         objCell->addObject(obj);
+
+        // Add Object
+        if (getScript())
+            getScript()->addObject(obj);
 
         obj->SetMapCell(objCell);
         //Add to the mapmanager's object list
@@ -1779,6 +1787,8 @@ Summon* WorldMap::summonCreature(uint32_t entry, LocationVector pos, DBC::Struct
     summon->load(cp, summonerUnit, pos, duration, spellId);
     summon->setPhase(PHASE_SET, phase);
     summon->PushToWorld(this);
+    // This is needed to CastSpells or Move Right at Spawn
+    updateObjects();
 
     // Delay this a bit to make sure its Spawned
     sEventMgr.AddEvent(static_cast<Creature*>(summon), &Creature::InitSummon, static_cast<Object*>(summonerUnit), EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -3089,11 +3099,21 @@ void WorldMap::removeObjectFromActiveSet(Object* obj)
     switch (obj->getObjectTypeId())
     {
         case TYPEID_UNIT:
+        {
+            // Prevent Deletion of Current Update Iterator
+            if (creature_iterator != activeCreatures.end() && (*creature_iterator)->getGuid() == obj->getGuid())
+                ++creature_iterator;
+
             activeCreatures.erase(static_cast<Creature*>(obj));
-            break;
+        } break;
         case TYPEID_GAMEOBJECT:
+        {
+            // Prevent Deletion of Current Update Iterator
+            if (gameObject_iterator != activeGameObjects.end() && (*gameObject_iterator)->getGuid() == obj->getGuid())
+                ++gameObject_iterator;
+
             activeGameObjects.erase(static_cast<GameObject*>(obj));
-            break;
+        } break;
     }
 }
 
