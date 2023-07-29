@@ -857,7 +857,7 @@ void CreatureAIScript::setZoneWideCombat(Creature* creature)
         creature = getCreature();
 
     WorldMap* map = creature->getWorldMap();
-    if (map && map->getBaseMap() && !map->getBaseMap()->isDungeon())
+    if (!map || !map->getBaseMap() || !map->getBaseMap()->isDungeon())
         return;
 
     if (!map->hasPlayers())

@@ -25,7 +25,7 @@
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Units/Players/Player.hpp"
 
-inline bool canBeginCombat(Unit* objA, Unit* objB)
+bool canBeginCombat(Unit* objA, Unit* objB)
 {
     if (objA == objB)
         return false;
