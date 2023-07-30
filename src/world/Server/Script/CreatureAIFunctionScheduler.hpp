@@ -60,7 +60,6 @@ public:
 
     // Container
     typedef std::vector< std::shared_ptr<CreatureAIFunction>> CreatureAIFunctionsArray;
-    CreatureAIFunctionsArray::iterator functions_iterator;
 
     // Storage for Functions ready to get Executed
     CreatureAIFunctionsArray mCreatureAIFunctions;

@@ -7,10 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CreatureAIFunction.hpp"
 #include "CreatureAIScript.h"
 
-CreatureAIFunctionScheduler::CreatureAIFunctionScheduler(CreatureAIScript* script) : mOwner(script)
-{
-    functions_iterator = mCreatureAIFunctions.begin();
-}
+CreatureAIFunctionScheduler::CreatureAIFunctionScheduler(CreatureAIScript* script) : mOwner(script) { }
 
 CreatureAIFunctionScheduler::~CreatureAIFunctionScheduler()
 {
@@ -167,142 +164,78 @@ void CreatureAIFunctionScheduler::disableFunction(CreatureAIFunc functionToDisab
 
 void CreatureAIFunctionScheduler::update(unsigned long time_passed)
 {
-    // Copy All Functions in our Scheduler
-    if (mCreatureAIFunctionsTemporary.size())
-        mCreatureAIFunctions.insert(mCreatureAIFunctions.end(), mCreatureAIFunctionsTemporary.begin(), mCreatureAIFunctionsTemporary.end());
+    // Copy all temporary functions to the scheduler
+    mCreatureAIFunctions.insert(mCreatureAIFunctions.end(), mCreatureAIFunctionsTemporary.begin(), mCreatureAIFunctionsTemporary.end());
+    mCreatureAIFunctionsTemporary.clear(); // Empty temporary function vector
 
-    // Empty Temp Function Vector
-    mCreatureAIFunctionsTemporary.clear();
-
-    // Nothing here so skip
     if (!mCreatureAIFunctions.size())
-        return;
+        return; // Nothing to do, so skip
 
-    // Shuffle Around our Functions to randomize them
-    // example when 2 functions have 2 seconds timer the first one always executes before the second one...
-    // could lead to unexpected behaviour when u rely on the execution order
-    if (mCreatureAIFunctions.size())
-    {
-        for (uint16_t i = 0; i < mCreatureAIFunctions.size() - 1; ++i)
-        {
-            const auto j = i + rand() % (mCreatureAIFunctions.size() - i);
-            std::swap(mCreatureAIFunctions[i], mCreatureAIFunctions[j]);
-        }
-    }
+    // Randomize the order of functions
+    // Warning when 2 functions have 2 seconds timer the first always would executes before the second one...
+    // Randomizing the order could lead to unexpected behaviour when u rely on the order of insertion
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(mCreatureAIFunctions.begin(), mCreatureAIFunctions.end(), g);
 
-    // Delete Exceeded Functions
-    for (auto it = mCreatureAIFunctions.begin(); it != mCreatureAIFunctions.end();)
-    {
-        auto function = *it;
-        
-        if (function->mGarbage)
-        {
-            it = mCreatureAIFunctions.erase(it);
-            continue;
-        }
-        ++it;
-    }
+    // Delete functions marked for removal
+    mCreatureAIFunctions.erase(std::remove_if(mCreatureAIFunctions.begin(), mCreatureAIFunctions.end(), [](const auto& function) {
+        return function->mGarbage;
+        }), mCreatureAIFunctions.end());
 
-    // Lets find us a Function to Execute
-    functions_iterator = mCreatureAIFunctions.begin();
-    for (;functions_iterator != mCreatureAIFunctions.end();)
+    for (auto functions_iterator = mCreatureAIFunctions.begin(); functions_iterator != mCreatureAIFunctions.end(); ++functions_iterator)
     {
         auto function = *functions_iterator;
 
         // Roll the Dice :)
         float rolled = Util::getRandomFloat(100.0f);
 
-        // When the Function is Currently Disabled skip.
         if (!function->isEnabled())
-        {
-            ++functions_iterator;
-            continue;
-        }
+            continue; // Function is currently disabled, skip
 
-        // When the Function Only should Execute in Combat
         if (function->getCombatUsage() && !mOwner->_isInCombat())
-        {
-            ++functions_iterator;
-            continue;
-        }
+            continue; // Function should only execute in combat, but not in combat now, skip
 
-        // When the execution should happen in other Phase not proceed
-        // is bound to a specific phase (all greater than 0)
         if (!function->isAvailableForScriptPhase(mOwner->getScriptPhase()))
-        {
-            ++functions_iterator;
-            continue;
-        }
+            continue; // Execution should happen in another phase, skip
 
-        // When Chance is 0 and a cooldowntimer is set we assume it should execute always
-        // Manual events are always without timers by now
         if (!function->getInitialCooldown().count() && !function->isChanceMeet(0.0f))
-        {
-            ++functions_iterator;
-            continue;
-        }
+            continue; // Chance is 0 and no cooldown timer, assume it should execute always, but it didn't meet the chance, skip
 
-        // When no Uses are left break
         if (!function->usesLeft())
         {
-            // Flag us Ready to be Removed
-            function->mGarbage = true;
-
-            ++functions_iterator;
+            function->mGarbage = true; // No uses left, mark for removal
             continue;
         }
 
-        // When not in Hp Range dont do anything
         if (!function->isHpInPercentRange(mOwner->_getHealthPercent()))
-        {
-            ++functions_iterator;
-            continue;
-        }
+            continue; // Not in HP range, skip
 
         // We are a Spell Function so lets do some cheks dependant on that
         if (function->getFunctionArgs().getSpellId())
         {
-            // do not proceed when we are Casting
-            if (mOwner->_isCasting())
-            {
-                ++functions_iterator;
-                continue;
-            }
-
-            // do not cast any spell while stunned/feared/silenced/charmed/confused
             if (mOwner->getCreature()->hasUnitStateFlag(UNIT_STATE_STUNNED | UNIT_STATE_FLEEING | UNIT_STATE_IN_FLIGHT | UNIT_STATE_CHARMED | UNIT_STATE_CONFUSED))
-            {
-                ++functions_iterator;
-                continue;
-            }
+                continue; // do not cast any spell while stunned/feared/silenced/charmed/confused
 
+            if (mOwner->_isCasting())
+                continue; // Creature is casting, skip
+
+            // Check if creature can cast the spell based on required Mana/Power
             auto mSpellInfo = sSpellMgr.getSpellInfo(function->getFunctionArgs().getSpellId());
-
-            // check if creature has Mana/Power required to cast
             if (mSpellInfo->getPowerType() == POWER_TYPE_MANA)
             {
                 if (mSpellInfo->getManaCost() > mOwner->getCreature()->getPower(POWER_TYPE_MANA))
-                {
-                    ++functions_iterator;
-                    continue;
-                }
+                    continue; // Not enough Mana, skip
             }
-            
-            if (mSpellInfo->getPowerType() == POWER_TYPE_FOCUS)
+            else if (mSpellInfo->getPowerType() == POWER_TYPE_FOCUS)
             {
                 if (mSpellInfo->getManaCost() > mOwner->getCreature()->getPower(POWER_TYPE_FOCUS))
-                {
-                    ++functions_iterator;
-                    continue;
-                }
+                    continue; // Not enough Focus, skip
             }
 
-            // aura stacking only cast the spells when its under the specified amount
+            // Aura stacking: Only cast the spell when it's under the specified amount
             if (mOwner->getCreature()->getAuraCountForId(mSpellInfo->getId()) >= function->getFunctionArgs().getMaxStackCount())
-            {
-                ++functions_iterator;
-                continue;
-            }
+                continue; // Aura stack count reached, skip
         }
 
         // Casting Should be Possible reduce Timers
@@ -313,31 +246,24 @@ void CreatureAIFunctionScheduler::update(unsigned long time_passed)
         {
             if (function->getFunction())
             {
-                // If we are not Lucky just try again in 1.5s
+                // If the chance is not met, try again in 1.5 seconds
                 if (!function->isChanceMeet(rolled))
                 {
                     function->setCooldownTimer(1500ms);
-                    ++functions_iterator;
                     continue;
                 }
 
-                // Add One usage
-                function->increaseCount();
-
                 // Execute the Function
+                function->increaseCount();
                 function->getFunction()(function);
 
-                // Reset Our CooldownTimer
+                // Reset the cooldown timer
                 if (function->getFunctionArgs().getSpellId() && function->getFunctionArgs().getUseSpellCD())
                     function->setCooldownTimer(function->getSpellCooldown());
                 else
                     function->setCooldownTimer(function->getInitialCooldown());
-
-                ++functions_iterator;
-                continue;
             }
         }
-        ++functions_iterator;
     }
 }
 
