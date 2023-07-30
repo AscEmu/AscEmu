@@ -91,7 +91,7 @@ void SummonList::doAction(int32_t action, StorageType const& summons)
 }
 
 CreatureAIScript::CreatureAIScript(Creature* creature) : mScriptPhase(0), summons(creature), mCreatureTimerCount(0), mAIUpdateFrequency(defaultUpdateFrequency),
-isIdleEmoteEnabled(false), idleEmoteTimerId(0), idleEmoteTimeMin(0), idleEmoteTimeMax(0), _creature(creature), linkedCreatureAI(nullptr), mCreatureAIScheduler(new CreatureAIFunctionScheduler(this))
+isIdleEmoteEnabled(false), idleEmoteTimerId(0), idleEmoteTimeMin(0), idleEmoteTimeMax(0), _creature(creature), linkedCreatureAI(nullptr), mCreatureAIScheduler(std::make_shared<CreatureAIFunctionScheduler>(this))
 {
     mCreatureTimerIds.clear();
     mCreatureTimer.clear();
@@ -393,22 +393,22 @@ uint8_t CreatureAIScript::getAIAgent()
 
 void CreatureAIScript::setReactState(ReactStates st)
 {
-    getCreature()->getAIInterface()->setReactState(st);
+    _creature->getAIInterface()->setReactState(st);
 }
 
 ReactStates CreatureAIScript::getReactState()
 {
-    return getCreature()->getAIInterface()->getReactState();
+    return _creature->getAIInterface()->getReactState();
 }
 
 void CreatureAIScript::attackStart(Unit* target)
 {
-    getCreature()->getAIInterface()->attackStart(target);
+    _creature->getAIInterface()->attackStart(target);
 }
 
 void CreatureAIScript::attackStop()
 {
-    getCreature()->getAIInterface()->attackStop();
+    _creature->getAIInterface()->attackStop();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -462,12 +462,12 @@ void CreatureAIScript::moveAlongSplineChain(uint32_t pointId, uint16_t dbChainId
 
 void CreatureAIScript::movePoint(uint32_t id, LocationVector const& pos, bool generatePath/* = true*/, Optional<float> finalOrient/* = {}*/)
 {
-    getCreature()->getMovementManager()->movePoint(id, pos, generatePath, finalOrient);
+    getMovementManager()->movePoint(id, pos, generatePath, finalOrient);
 }
 
 void CreatureAIScript::movePoint(uint32_t id, float x, float y, float z, bool generatePath, Optional<float> finalOrient)
 {
-    getCreature()->getMovementManager()->movePoint(id, x, y, z, generatePath, finalOrient);
+    getMovementManager()->movePoint(id, x, y, z, generatePath, finalOrient);
 }
 
 void CreatureAIScript::moveTo(float posX, float posY, float posZ, bool setRun /*= true*/)
@@ -545,43 +545,43 @@ void CreatureAIScript::stopMovement()
 
 void CreatureAIScript::setUnitFlags(uint32_t flags)
 {
-    getCreature()->setUnitFlags(flags);
+    _creature->setUnitFlags(flags);
 }
 
 void CreatureAIScript::addUnitFlags(uint32_t flags)
 {
-    getCreature()->addUnitFlags(flags);
+    _creature->addUnitFlags(flags);
 }
 
 void CreatureAIScript::removeUnitFlags(uint32_t flags)
 {
-    getCreature()->removeUnitFlags(flags);
+    _creature->removeUnitFlags(flags);
 }
 
 bool CreatureAIScript::hasUnitFlags(uint32_t flags)
 {
-    return getCreature()->hasUnitFlags(flags);
+    return _creature->hasUnitFlags(flags);
 }
 
 #if VERSION_STRING > Classic
 void CreatureAIScript::setUnitFlags2(uint32_t flags)
 {
-    getCreature()->setUnitFlags2(flags);
+    _creature->setUnitFlags2(flags);
 }
 
 void CreatureAIScript::addUnitFlags2(uint32_t flags)
 {
-    getCreature()->addUnitFlags2(flags);
+    _creature->addUnitFlags2(flags);
 }
 
 void CreatureAIScript::removeUnitFlags2(uint32_t flags)
 {
-    getCreature()->removeUnitFlags2(flags);
+    _creature->removeUnitFlags2(flags);
 }
 
 bool CreatureAIScript::hasUnitFlags2(uint32_t flags)
 {
-    return getCreature()->hasUnitFlags2(flags);;
+    return _creature->hasUnitFlags2(flags);;
 }
 #endif
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -789,13 +789,15 @@ bool CreatureAIScript::_isTargetingDisabled()
 
 void CreatureAIScript::addThreat(Unit* victim, float amount, Unit* instingator)
 {
+    // no target to add threath return
     if (!victim)
         return;
-
+    
+    // when instingator is nullpte we asume we meant ourself
     if (!instingator)
-        victim = instingator;
+        instingator = _creature;
 
-    getCreature()->getThreatManager().addThreat(victim, amount, nullptr, true, true);
+    instingator->getThreatManager().addThreat(victim, amount, nullptr, true, true);
 }
 
 void CreatureAIScript::_clearHateList()
@@ -825,10 +827,9 @@ void CreatureAIScript::_regenerateHealth()
 
 bool CreatureAIScript::hasBreakableByDamageAuraType(AuraEffect type, uint32_t excludeAura)
 {
-    AuraEffectList const& auras = getCreature()->getAuraEffectList(type);
-    for (AuraEffectList::const_iterator itr = auras.begin(); itr != auras.end(); ++itr)
-        if ((!excludeAura || excludeAura != (*itr)->getAura()->getSpellInfo()->getId()) && //Avoid self interrupt of channeled Crowd Control spells like Seduction
-            ((*itr)->getAura()->getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN))
+    for (auto&& aura : _creature->getAuraEffectList(type))
+        if ((!excludeAura || excludeAura != aura->getAura()->getSpellInfo()->getId()) && //Avoid self interrupt of channeled Crowd Control spells like Seduction
+            (aura->getAura()->getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN))
             return true;
     return false;
 }
@@ -854,7 +855,7 @@ bool CreatureAIScript::_isCasting()
 void CreatureAIScript::setZoneWideCombat(Creature* creature)
 {
     if (!creature)
-        creature = getCreature();
+        creature = _creature;
 
     WorldMap* map = creature->getWorldMap();
     if (!map || !map->getBaseMap() || !map->getBaseMap()->isDungeon())
@@ -1407,7 +1408,7 @@ void CreatureAIScript::_castAISpell(CreatureAISpells* aiSpell)
         return;
     }
 
-    getCreature()->getAIInterface()->castAISpell(aiSpell);
+    _creature->getAIInterface()->castAISpell(aiSpell);
 }
 
 void CreatureAIScript::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
@@ -1418,17 +1419,17 @@ void CreatureAIScript::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
         return;
     }
 
-    getCreature()->getAIInterface()->castSpellOnRandomTarget(AiSpell);
+    _creature->getAIInterface()->castSpellOnRandomTarget(AiSpell);
 }
 
 void CreatureAIScript::castSpell(Unit* target, uint32_t spellId, bool triggered)
 {
-    getCreature()->castSpell(target, spellId, triggered);
+    _creature->castSpell(target, spellId, triggered);
 }
 
 void CreatureAIScript::castSpellOnVictim(uint32_t spellId, bool triggered)
 {
-    if (Unit* victim = getCreature()->getAIInterface()->getCurrentTarget())
+    if (Unit* victim = _creature->getAIInterface()->getCurrentTarget())
         castSpell(victim, spellId, triggered);
 }
 
@@ -1539,7 +1540,7 @@ void CreatureAIScript::addEmoteForEvent(uint32_t eventType, uint32_t scriptTextI
 
 void CreatureAIScript::addEmoteForEventByIndex(uint32_t eventType, uint32_t scriptTextId)
 {
-    auto text = sMySQLStore.getNpcScriptTextById(getCreature()->getEntry(), scriptTextId);
+    auto text = sMySQLStore.getNpcScriptTextById(_creature->getEntry(), scriptTextId);
 
     if (text)
         addEmoteForEvent(eventType, text->id);

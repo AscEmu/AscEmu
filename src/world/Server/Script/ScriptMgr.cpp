@@ -934,7 +934,7 @@ InstanceScript::InstanceScript(WorldMap* pMapMgr) : mInstance(pMapMgr), mSpawnsC
 }
 #if VERSION_STRING > TBC
 // Update Achievement Criteria for all players in instance
-void InstanceScript::updateAchievementCriteria(AchievementCriteriaTypes type, uint32 miscValue1 /*= 0*/, uint32 miscValue2 /*= 0*/, Unit* unit /*= nullptr*/)
+void InstanceScript::updateAchievementCriteria(AchievementCriteriaTypes type, uint32_t miscValue1 /*= 0*/, uint32_t miscValue2 /*= 0*/, Unit* unit /*= nullptr*/)
 {
     if (!getInstance()->getPlayerCount())
         return;

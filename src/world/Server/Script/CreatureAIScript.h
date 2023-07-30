@@ -404,7 +404,7 @@ public:
     //Premade Emote
     virtual void CreatureAIFunc_Emote(CreatureAIFunc pThis);
 
-    CreatureAIFunctionScheduler* mCreatureAIScheduler;
+    std::shared_ptr<CreatureAIFunctionScheduler> mCreatureAIScheduler;
 
     void executeFunctionFromScheduler(CreatureAIFunc functionToExec);
     void cancelFunctionFromScheduler(CreatureAIFunc functionToExec);
