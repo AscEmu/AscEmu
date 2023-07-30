@@ -10,11 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///  Champion Controller
-ChampionControllerAI::ChampionControllerAI(Creature* pCreature) : CreatureAIScript(pCreature)
-{
-
-}
-
+ChampionControllerAI::ChampionControllerAI(Creature* pCreature) : CreatureAIScript(pCreature) { }
 CreatureAIScript* ChampionControllerAI::Create(Creature* pCreature) { return new ChampionControllerAI(pCreature); }
 
 void ChampionControllerAI::InitOrReset()
@@ -350,10 +346,7 @@ void FactionChampionsAI::removeCC(CreatureAIFunc pThis)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Druid AI
-DruidAI::DruidAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype)
-{
-
-}
+DruidAI::DruidAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype) { }
 
 CreatureAIScript* DruidAI::Create(Creature* pCreature) { return new DruidAI(pCreature, champions::AI_HEALER); }
 
@@ -400,10 +393,7 @@ void DruidAI::InitOrReset()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Shaman AI
-ShamanAI::ShamanAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype)
-{
-
-}
+ShamanAI::ShamanAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype) { }
 
 CreatureAIScript* ShamanAI::Create(Creature* pCreature) { return new ShamanAI(pCreature, champions::AI_HEALER); }
 
@@ -454,10 +444,7 @@ void ShamanAI::InitOrReset()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Paladin AI
-PaladinAI::PaladinAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype)
-{
-
-}
+PaladinAI::PaladinAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype) { }
 
 CreatureAIScript* PaladinAI::Create(Creature* pCreature) { return new PaladinAI(pCreature, champions::AI_HEALER); }
 
@@ -502,10 +489,7 @@ void PaladinAI::InitOrReset()
     addAISpell(mHammerOfJusticeInfo, DoLoopScheduler(5s, 15s, 33.0f));
 }
 
-PriestAI::PriestAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype)
-{
-
-}
+PriestAI::PriestAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype) { }
 
 CreatureAIScript* PriestAI::Create(Creature* pCreature) { return new PriestAI(pCreature, champions::AI_HEALER); }
 
@@ -554,10 +538,7 @@ void PriestAI::InitOrReset()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Shadow Priest AI
-ShadowPriestAI::ShadowPriestAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype)
-{
-
-}
+ShadowPriestAI::ShadowPriestAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype) { }
 
 CreatureAIScript* ShadowPriestAI::Create(Creature* pCreature) { return new ShadowPriestAI(pCreature, champions::AI_RANGED); }
 
@@ -612,10 +593,7 @@ void ShadowPriestAI::InitOrReset()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Warlock AI
-WarlockAI::WarlockAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype)
-{
-
-}
+WarlockAI::WarlockAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype) { }
 
 CreatureAIScript* WarlockAI::Create(Creature* pCreature) { return new WarlockAI(pCreature, champions::AI_RANGED); }
 
@@ -666,10 +644,7 @@ void WarlockAI::OnCombatStart(Unit* _target)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Mage AI
-MageAI::MageAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype)
-{
-
-}
+MageAI::MageAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype) { }
 
 CreatureAIScript* MageAI::Create(Creature* pCreature) { return new MageAI(pCreature, champions::AI_RANGED); }
 
@@ -731,10 +706,7 @@ void MageAI::InitOrReset()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Hunter AI
-HunterAI::HunterAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype)
-{
-
-}
+HunterAI::HunterAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype) { }
 
 CreatureAIScript* HunterAI::Create(Creature* pCreature) { return new HunterAI(pCreature, champions::AI_RANGED); }
 
@@ -786,10 +758,7 @@ void HunterAI::OnCombatStart(Unit* _target)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Boomkin AI
-BoomkinAI::BoomkinAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype)
-{
-
-}
+BoomkinAI::BoomkinAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype) { }
 
 CreatureAIScript* BoomkinAI::Create(Creature* pCreature) { return new BoomkinAI(pCreature, champions::AI_RANGED); }
 
@@ -840,10 +809,7 @@ void BoomkinAI::InitOrReset()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Warrior AI
-WarriorAI::WarriorAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype)
-{
-
-}
+WarriorAI::WarriorAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype) { }
 
 CreatureAIScript* WarriorAI::Create(Creature* pCreature) { return new WarriorAI(pCreature, champions::AI_MELEE); }
 
@@ -904,10 +870,7 @@ void WarriorAI::InitOrReset()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// DK AI
-DKAI::DKAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype)
-{
-
-}
+DKAI::DKAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype) { }
 
 CreatureAIScript* DKAI::Create(Creature* pCreature) { return new DKAI(pCreature, champions::AI_MELEE); }
 
@@ -950,10 +913,7 @@ void DKAI::InitOrReset()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Rogue AI
-RogueAI::RogueAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype)
-{
-
-}
+RogueAI::RogueAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype) { }
 
 CreatureAIScript* RogueAI::Create(Creature* pCreature) { return new RogueAI(pCreature, champions::AI_MELEE); }
 
@@ -1100,10 +1060,7 @@ void EnhancerAI::deployTotems()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Retri AI
-RetriAI::RetriAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype)
-{
-
-}
+RetriAI::RetriAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype) { }
 
 CreatureAIScript* RetriAI::Create(Creature* pCreature) { return new RetriAI(pCreature, champions::AI_MELEE); }
 
@@ -1174,10 +1131,7 @@ void RetriAI::OnCombatStart(Unit* _target)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// PetWarlock AI
-PetWarlockAI::PetWarlockAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype)
-{
-
-}
+PetWarlockAI::PetWarlockAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype) { }
 
 CreatureAIScript* PetWarlockAI::Create(Creature* pCreature) { return new PetWarlockAI(pCreature, champions::AI_PET); }
 
@@ -1196,10 +1150,7 @@ void PetWarlockAI::InitOrReset()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// PetHunter AI
-PetHunterAI::PetHunterAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype)
-{
-
-}
+PetHunterAI::PetHunterAI(Creature* pCreature, uint8_t aitype) : FactionChampionsAI(pCreature, aitype) { }
 
 CreatureAIScript* PetHunterAI::Create(Creature* pCreature) { return new PetHunterAI(pCreature, champions::AI_PET); }
 

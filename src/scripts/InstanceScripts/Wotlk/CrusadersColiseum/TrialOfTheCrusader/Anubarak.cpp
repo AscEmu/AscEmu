@@ -260,10 +260,7 @@ void AnubarakAI::summonScarabs(CreatureAIFunc pThis)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///  SwarmScrab
-SwarmScrabAI::SwarmScrabAI(Creature* pCreature) : CreatureAIScript(pCreature)
-{
-
-}
+SwarmScrabAI::SwarmScrabAI(Creature* pCreature) : CreatureAIScript(pCreature) { }
 
 CreatureAIScript* SwarmScrabAI::Create(Creature* pCreature) { return new SwarmScrabAI(pCreature); }
 

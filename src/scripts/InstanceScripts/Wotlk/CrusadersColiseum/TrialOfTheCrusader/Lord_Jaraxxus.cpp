@@ -297,10 +297,7 @@ void FrizzlebangAI::lastTalk(CreatureAIFunc pThis)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Portal
-PortalAI::PortalAI(Creature* pCreature) : CreatureAIScript(pCreature)
-{
-
-}
+PortalAI::PortalAI(Creature* pCreature) : CreatureAIScript(pCreature) { }
 
 CreatureAIScript* PortalAI::Create(Creature* pCreature) { return new PortalAI(pCreature); }
 
@@ -330,10 +327,7 @@ void PortalAI::portalOpening(CreatureAIFunc pThis)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Legion Flame
-LegionFlameAI::LegionFlameAI(Creature* pCreature) : CreatureAIScript(pCreature)
-{
-
-}
+LegionFlameAI::LegionFlameAI(Creature* pCreature) : CreatureAIScript(pCreature) { }
 
 CreatureAIScript* LegionFlameAI::Create(Creature* pCreature) { return new LegionFlameAI(pCreature); }
 
@@ -352,10 +346,7 @@ void LegionFlameAI::OnCombatStop(Unit* /*_target*/)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Infernal Volcano
-InfernalVolcanoAI::InfernalVolcanoAI(Creature* pCreature) : CreatureAIScript(pCreature)
-{
-
-}
+InfernalVolcanoAI::InfernalVolcanoAI(Creature* pCreature) : CreatureAIScript(pCreature) { }
 
 CreatureAIScript* InfernalVolcanoAI::Create(Creature* pCreature) { return new InfernalVolcanoAI(pCreature); }
 
@@ -379,10 +370,7 @@ void InfernalVolcanoAI::OnCombatStop(Unit* /*_target*/)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Fel Infernal
-FelInfernalAI::FelInfernalAI(Creature* pCreature) : CreatureAIScript(pCreature)
-{
-
-}
+FelInfernalAI::FelInfernalAI(Creature* pCreature) : CreatureAIScript(pCreature) { }
 
 CreatureAIScript* FelInfernalAI::Create(Creature* pCreature) { return new FelInfernalAI(pCreature); }
 
@@ -408,10 +396,7 @@ void FelInfernalAI::felStreak(CreatureAIFunc pThis)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Nether Portal
-NetherPortalAI::NetherPortalAI(Creature* pCreature) : CreatureAIScript(pCreature)
-{
-
-}
+NetherPortalAI::NetherPortalAI(Creature* pCreature) : CreatureAIScript(pCreature) { }
 
 CreatureAIScript* NetherPortalAI::Create(Creature* pCreature) { return new NetherPortalAI(pCreature); }
 

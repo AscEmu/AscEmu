@@ -10,10 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///  Combat Stalker
-CombatStalkerAI::CombatStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
-{
-
-}
+CombatStalkerAI::CombatStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature) { }
 
 CreatureAIScript* CombatStalkerAI::Create(Creature* pCreature) { return new CombatStalkerAI(pCreature); }
 
@@ -691,10 +688,7 @@ void DreadscaleAI::emerge(CreatureAIFunc pThis)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///  Acidmaw
-AcidmawAI::AcidmawAI(Creature* pCreature) : NorthrendBeastsAI(pCreature)
-{
-    
-}
+AcidmawAI::AcidmawAI(Creature* pCreature) : NorthrendBeastsAI(pCreature) { }
 
 CreatureAIScript* AcidmawAI::Create(Creature* pCreature) { return new AcidmawAI(pCreature); }
 
@@ -900,10 +894,7 @@ void AcidmawAI::emerge(CreatureAIFunc pThis)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///  Slime Pool
-SlimePoolAI::SlimePoolAI(Creature* pCreature) : CreatureAIScript(pCreature)
-{
-
-}
+SlimePoolAI::SlimePoolAI(Creature* pCreature) : CreatureAIScript(pCreature) { }
 
 CreatureAIScript* SlimePoolAI::Create(Creature* pCreature) { return new SlimePoolAI(pCreature); }
 

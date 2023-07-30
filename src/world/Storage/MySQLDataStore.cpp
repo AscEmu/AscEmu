@@ -4837,7 +4837,6 @@ void MySQLDataStore::loadCreatureSplineChains()
         if (splineId == 0)
             ++chainCount;
         ++splineCount;
-
     } while (resultMeta->NextRow());
 
     delete resultMeta;

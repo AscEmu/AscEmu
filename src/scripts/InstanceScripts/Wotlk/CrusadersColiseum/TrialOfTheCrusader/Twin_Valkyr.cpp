@@ -286,10 +286,7 @@ void FjolaAI::generateStageSequence()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///  Eydis Darkbane
-EydisAI::EydisAI(Creature* pCreature) : TwinsAI(pCreature)
-{
-
-}
+EydisAI::EydisAI(Creature* pCreature) : TwinsAI(pCreature) { }
 
 CreatureAIScript* EydisAI::Create(Creature* pCreature) { return new EydisAI(pCreature); }
 
@@ -390,10 +387,7 @@ void UnleashedBallAI::OnReachWP(uint32_t type, uint32_t id)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Unleashed Dark
-UnleashedDarkAI::UnleashedDarkAI(Creature* pCreature) : UnleashedBallAI(pCreature)
-{
-
-}
+UnleashedDarkAI::UnleashedDarkAI(Creature* pCreature) : UnleashedBallAI(pCreature) { }
 
 CreatureAIScript* UnleashedDarkAI::Create(Creature* pCreature) { return new UnleashedDarkAI(pCreature); }
 
@@ -417,10 +411,7 @@ void UnleashedDarkAI::AIUpdate(unsigned long time_passed)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Unleashed Light
-UnleashedLightAI::UnleashedLightAI(Creature* pCreature) : UnleashedBallAI(pCreature)
-{
-
-}
+UnleashedLightAI::UnleashedLightAI(Creature* pCreature) : UnleashedBallAI(pCreature) { }
 
 CreatureAIScript* UnleashedLightAI::Create(Creature* pCreature) { return new UnleashedLightAI(pCreature); }
 

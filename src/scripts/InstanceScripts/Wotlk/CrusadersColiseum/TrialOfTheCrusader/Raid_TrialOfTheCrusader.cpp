@@ -504,10 +504,7 @@ void BarretGossip::onSelectOption(Object* pObject, Player* pPlayer, uint32_t Id,
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///  Barrett Ramsey
-BarretAI::BarretAI(Creature* pCreature) : CreatureAIScript(pCreature)
-{
-    
-}
+BarretAI::BarretAI(Creature* pCreature) : CreatureAIScript(pCreature) { }
 
 CreatureAIScript* BarretAI::Create(Creature* pCreature) { return new BarretAI(pCreature); }
 
@@ -852,10 +849,7 @@ void TirionAI::handleBarrettSummon(CreatureAIFunc pThis)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///  Garrosh
-GaroshAI::GaroshAI(Creature* pCreature) : CreatureAIScript(pCreature)
-{
-
-}
+GaroshAI::GaroshAI(Creature* pCreature) : CreatureAIScript(pCreature) { }
 
 CreatureAIScript* GaroshAI::Create(Creature* pCreature) { return new GaroshAI(pCreature); }
 
@@ -896,10 +890,7 @@ void GaroshAI::DoAction(int32_t action)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///  Varian
-VarianAI::VarianAI(Creature* pCreature) : CreatureAIScript(pCreature)
-{
-
-}
+VarianAI::VarianAI(Creature* pCreature) : CreatureAIScript(pCreature) { }
 
 CreatureAIScript* VarianAI::Create(Creature* pCreature) { return new VarianAI(pCreature); }
 
@@ -940,10 +931,7 @@ void VarianAI::DoAction(int32_t action)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///  LichKing
-LichKingAI::LichKingAI(Creature* pCreature) : CreatureAIScript(pCreature)
-{
-
-}
+LichKingAI::LichKingAI(Creature* pCreature) : CreatureAIScript(pCreature) { }
 
 CreatureAIScript* LichKingAI::Create(Creature* pCreature) { return new LichKingAI(pCreature); }
 
