@@ -932,7 +932,18 @@ InstanceScript::InstanceScript(WorldMap* pMapMgr) : mInstance(pMapMgr), mSpawnsC
     Difficulty = pMapMgr->getDifficulty();
     registerUpdateEvent();
 }
+#if VERSION_STRING > TBC
+// Update Achievement Criteria for all players in instance
+void InstanceScript::updateAchievementCriteria(AchievementCriteriaTypes type, uint32_t miscValue1 /*= 0*/, uint32_t miscValue2 /*= 0*/, Unit* unit /*= nullptr*/)
+{
+    if (!getInstance()->getPlayerCount())
+        return;
 
+    for (const auto& itr : getInstance()->getPlayers())
+        if (Player* player = itr.second)
+            player->updateAchievementCriteria(type, miscValue1, miscValue2, 0, unit);
+}
+#endif
 // MIT start
 //////////////////////////////////////////////////////////////////////////////////////////
 // data
@@ -1203,6 +1214,32 @@ void InstanceScript::updateEncounterState(EncounterCreditType type, uint32_t cre
                 }
             }
         }
+    }
+}
+
+void InstanceScript::useDoorOrButton(GameObject* pGameObject, uint32_t withRestoreTime, bool useAlternativeState)
+{
+    if (!pGameObject)
+        return;
+
+    if (pGameObject->getGoType() == GAMEOBJECT_TYPE_DOOR || pGameObject->getGoType() == GAMEOBJECT_TYPE_BUTTON)
+    {
+        if (pGameObject->getLootState() == GO_READY)
+            pGameObject->useDoorOrButton(withRestoreTime, useAlternativeState);
+        else if (pGameObject->getLootState() == GO_ACTIVATED)
+            pGameObject->resetDoorOrButton();
+    }
+}
+
+void InstanceScript::closeDoorOrButton(GameObject* pGameObject)
+{
+    if (!pGameObject)
+        return;
+
+    if (pGameObject->getGoType() == GAMEOBJECT_TYPE_DOOR || pGameObject->getGoType() == GAMEOBJECT_TYPE_BUTTON)
+    {
+        if (pGameObject->getLootState() == GO_ACTIVATED)
+            pGameObject->resetDoorOrButton();
     }
 }
 

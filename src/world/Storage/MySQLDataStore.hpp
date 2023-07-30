@@ -10,6 +10,30 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/TeleportCoords.hpp"
 #include "MySQLStructures.h"
 #include "Objects/GameObject.h"
+#include "Movement/Spline/SplineChain.h"
+
+struct SplineChainLink;
+
+typedef std::pair<uint32_t, uint16_t> ChainKeyType;
+// Custom Functions to make par a keyvariable in an unordered map
+struct ChainKeyTypeHash
+{
+    std::size_t operator()(const ChainKeyType& key) const
+    {
+        std::size_t hash = std::hash<uint32_t>{}(key.first);
+        hash ^= std::hash<uint16_t>{}(key.second) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+        return hash;
+    }
+};
+// Custom Functions to make par a keyvariable in an unordered map
+struct ChainKeyTypeEqual
+{
+    bool operator()(const ChainKeyType& lhs, const ChainKeyType& rhs) const
+    {
+        return lhs.first == rhs.first && lhs.second == rhs.second;
+    }
+};
+
 
 //Zyres: Define base tables
 struct MySQLAdditionalTable
@@ -54,11 +78,14 @@ public:
     typedef std::unordered_map<uint32_t, SpawnGroupTemplateData> SpawnGroupDataContainer;
     typedef std::multimap<uint32_t, SpawnGroupTemplateData*> SpawnGroupLinkContainer;
 
+    typedef std::unordered_map<ChainKeyType, std::vector<SplineChainLink>, ChainKeyTypeHash, ChainKeyTypeEqual> SplineChainContainer;
+
     typedef std::unordered_map<uint32_t, MySQLStructure::CreatureDifficulty> CreatureDifficultyContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::DisplayBoundingBoxes> DisplayBoundingBoxesContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::VendorRestrictions> VendorRestrictionContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::NpcGossipText> NpcGossipTextContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::NpcScriptText> NpcScriptTextContainer;
+    typedef std::unordered_map<uint32_t, std::vector<MySQLStructure::NpcScriptText>> NpcScriptTextByIdContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::GossipMenuOption> GossipMenuOptionContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::Graveyards> GraveyardsContainer;
     typedef std::unordered_map<uint32_t, TeleportCoords> TeleportCoordsContainer;
@@ -156,6 +183,9 @@ public:
     MySQLStructure::NpcScriptText const* getNpcScriptText(uint32_t entry);
     NpcScriptTextContainer const* getNpcScriptTextStore() { return &_npcScriptTextStore; }
 
+    MySQLStructure::NpcScriptText const* getNpcScriptTextById(uint32_t entry, uint8_t index);
+    NpcScriptTextByIdContainer const* getNpcScriptTextStoreById() { return &_npcScriptTextStoreById; }
+
     MySQLStructure::GossipMenuOption const* getGossipMenuOption(uint32_t entry);
     GossipMenuOptionContainer const* getGossipMenuOptionStore() { return &_gossipMenuOptionStore; }
 
@@ -214,6 +244,9 @@ public:
     SpawnGroupTemplateData* getSpawnGroupDataBySpawn(uint32_t spawnId);
     SpawnGroupTemplateData* getSpawnGroupDataByGroup(uint32_t groupId);
     std::vector<Creature*> const getSpawnGroupDataByBoss(uint32_t bossId);
+
+    std::vector<SplineChainLink> const* getSplineChain(uint32_t entry, uint16_t chainId) const;
+    std::vector<SplineChainLink> const* getSplineChain(Creature const* pCreature, uint16_t id) const;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // locales
@@ -278,6 +311,8 @@ public:
 
     void loadSpawnGroupIds();
     void loadCreatureGroupSpawns();
+
+    void loadCreatureSplineChains();
 
     void loadNpcTextTable();
     void loadNpcScriptTextTable();
@@ -364,12 +399,16 @@ public:
     SpawnGroupDataContainer _spawnGroupDataStore;
     SpawnGroupLinkContainer _spawnGroupMapStore;
 
+    // Spline Chains
+    SplineChainContainer _splineChainsStore;
+
     AIScriptsMap _creatureAIScriptStore;
     CreatureDifficultyContainer _creatureDifficultyStore;
     DisplayBoundingBoxesContainer _displayBoundingBoxesStore;
     VendorRestrictionContainer _vendorRestrictionsStore;
     NpcGossipTextContainer _npcGossipTextStore;
     NpcScriptTextContainer _npcScriptTextStore;
+    NpcScriptTextByIdContainer _npcScriptTextStoreById;
     GossipMenuOptionContainer _gossipMenuOptionStore;
     GraveyardsContainer _graveyardsStore;
     TeleportCoordsContainer _teleportCoordsStore;

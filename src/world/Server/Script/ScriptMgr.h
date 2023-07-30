@@ -690,6 +690,11 @@ class SERVER_DECL InstanceScript
         virtual void TransporterEvents(Transporter* /*transport*/, uint32_t /*eventId*/) {}
         uint8_t Difficulty;
 
+#if VERSION_STRING > TBC
+        // Update Achievement Criteria for all players in instance
+        void updateAchievementCriteria(AchievementCriteriaTypes type, uint32_t miscValue1 = 0, uint32_t miscValue2 = 0, Unit* unit = nullptr);
+#endif
+
         void setZoneMusic(uint32_t zoneId, uint32_t musicId)
         {
             WorldPacket data(SMSG_PLAY_MUSIC, 4);
@@ -715,6 +720,9 @@ class SERVER_DECL InstanceScript
 
         void saveToDB();
         void updateEncounterState(EncounterCreditType type, uint32_t creditEntry);
+
+        void useDoorOrButton(GameObject* pGameObject, uint32_t withRestoreTime = 0, bool useAlternativeState = false);
+        void closeDoorOrButton(GameObject* pGameObject);
 
         // Checks encounter state
         void updateEncountersStateForCreature(uint32_t creditEntry, uint8_t difficulty);

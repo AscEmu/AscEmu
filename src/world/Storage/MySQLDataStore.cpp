@@ -1754,6 +1754,9 @@ void MySQLDataStore::loadNpcScriptTextTable()
         npcScriptText.sound = fields[9].GetUInt32();
         npcScriptText.broadcast_id = fields[10].GetUInt32();
 
+        // Store Sorted by CreatureId with a vector of all Texts for that creature
+        _npcScriptTextStoreById[npcScriptText.creature_entry].push_back(npcScriptText);
+
         ++npc_script_text_count;
     } while (npc_script_text_result->NextRow());
 
@@ -1767,6 +1770,25 @@ MySQLStructure::NpcScriptText const* MySQLDataStore::getNpcScriptText(uint32_t e
     NpcScriptTextContainer::const_iterator itr = _npcScriptTextStore.find(entry);
     if (itr != _npcScriptTextStore.end())
         return &(itr->second);
+
+    return nullptr;
+}
+
+MySQLStructure::NpcScriptText const* MySQLDataStore::getNpcScriptTextById(uint32_t entry, uint8_t index)
+{
+    if (!entry)
+        return nullptr;
+
+    NpcScriptTextByIdContainer::const_iterator list = _npcScriptTextStoreById.find(entry);
+    if (list != _npcScriptTextStoreById.end())
+    {
+        std::vector<MySQLStructure::NpcScriptText> const& textList = list->second;
+        for (auto text : textList)
+        {
+            if (text.text_id == index)
+                return &text;
+        }
+    }
 
     return nullptr;
 }
@@ -4768,4 +4790,101 @@ std::vector<Creature*> const MySQLDataStore::getSpawnGroupDataByBoss(uint32_t bo
     }
 
     return data;
+}
+
+void MySQLDataStore::loadCreatureSplineChains()
+{
+    auto startTime = Util::TimeNow();
+
+    _splineChainsStore.clear();
+
+    QueryResult* resultMeta = WorldDatabase.Query("SELECT entry, chainId, splineId, expectedDuration, msUntilNext, velocity FROM script_spline_chain_meta ORDER BY entry asc, chainId asc, splineId asc");
+    if (resultMeta == nullptr)
+    {
+        sLogger.info("MySQLDataLoads : Table `script_spline_chain_meta` is empty!");
+        return;
+    }
+
+    QueryResult* resultWp = WorldDatabase.Query("SELECT entry, chainId, splineId, wpId, x, y, z FROM script_spline_chain_waypoints ORDER BY entry asc, chainId asc, splineId asc, wpId asc");
+    if (resultMeta == nullptr)
+    {
+        sLogger.info("MySQLDataLoads : Table `script_spline_chain_waypoints` is empty!");
+        return;
+    }
+
+    uint32_t chainCount = 0;
+    uint32_t splineCount = 0;
+    uint32_t wpCount = 0;
+    do
+    {
+        Field* fieldsMeta = resultMeta->Fetch();
+        uint32_t entry = fieldsMeta[0].GetUInt32();
+        uint16_t chainId = fieldsMeta[1].GetUInt16();
+        uint8_t splineId = fieldsMeta[2].GetUInt8();
+        std::vector<SplineChainLink>& chain = _splineChainsStore[{entry, chainId}];
+
+        if (splineId != chain.size())
+        {
+            sLogger.warning("Creature #%u: Chain %u has orphaned spline %u, skipped.", entry, chainId, splineId);
+            continue;
+        }
+
+        uint32_t expectedDuration = fieldsMeta[3].GetUInt32();
+        uint32_t msUntilNext = fieldsMeta[4].GetUInt32();
+        float velocity = fieldsMeta[5].GetFloat();
+        chain.emplace_back(expectedDuration, msUntilNext, velocity);
+
+        if (splineId == 0)
+            ++chainCount;
+        ++splineCount;
+    } while (resultMeta->NextRow());
+
+    delete resultMeta;
+
+    do
+    {
+        Field* fieldsWP = resultWp->Fetch();
+        uint32_t entry = fieldsWP[0].GetUInt32();
+        uint16_t chainId = fieldsWP[1].GetUInt16();
+        uint8_t splineId = fieldsWP[2].GetUInt8(), wpId = fieldsWP[3].GetUInt8();
+        float posX = fieldsWP[4].GetFloat(), posY = fieldsWP[5].GetFloat(), posZ = fieldsWP[6].GetFloat();
+        auto it = _splineChainsStore.find({ entry,chainId });
+        if (it == _splineChainsStore.end())
+        {
+            sLogger.warning("Creature #%u has waypoint data for spline chain %u. No such chain exists - entry skipped.", entry, chainId);
+            continue;
+        }
+        std::vector<SplineChainLink>& chain = it->second;
+        if (splineId >= chain.size())
+        {
+            sLogger.warning("Creature #%u has waypoint data for spline (%u,%u). The specified chain does not have a spline with this index - entry skipped.", entry, chainId, splineId);
+            continue;
+        }
+        SplineChainLink& spline = chain[splineId];
+        if (wpId != spline.Points.size())
+        {
+            sLogger.warning("Creature #%u has orphaned waypoint data in spline (%u,%u) at index %u. Skipped.", entry, chainId, splineId, wpId);
+            continue;
+        }
+        spline.Points.emplace_back(posX, posY, posZ);
+        ++wpCount;
+    } while (resultWp->NextRow());
+
+    delete resultWp;
+
+    sLogger.info("MySQLDataLoads : Loaded spline chain data for %u chains, consisting of %u splines with %u waypoints in %u ms!", chainCount, splineCount, wpCount, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
+
+std::vector<SplineChainLink> const* MySQLDataStore::getSplineChain(uint32_t entry, uint16_t chainId) const
+{
+    auto it = _splineChainsStore.find({ entry, chainId });
+    if (it == _splineChainsStore.end())
+        return nullptr;
+
+    return &it->second;
+}
+
+std::vector<SplineChainLink> const* MySQLDataStore::getSplineChain(Creature const* pCreature, uint16_t id) const
+{
+    return getSplineChain(pCreature->getEntry(), id);
 }

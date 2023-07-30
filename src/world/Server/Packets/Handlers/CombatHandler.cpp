@@ -26,7 +26,7 @@ void WorldSession::handleAttackSwingOpcode(WorldPacket& recvPacket)
     if (unitTarget == nullptr)
         return;
 
-    if (!isAttackable(_player, unitTarget, false) || unitTarget->isDead())
+    if (!isAttackable(_player, unitTarget) || unitTarget->isDead())
         return;
 
     _player->smsg_AttackStart(unitTarget);

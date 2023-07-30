@@ -18,7 +18,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 Vehicle::Vehicle(Unit* unit, DBC::Structures::VehicleEntry const* vehInfo, uint32_t creatureEntry) :
     usableSeatNum(0), _owner(unit), _vehicleInfo(vehInfo), _creatureEntry(creatureEntry), _status(STATUS_NONE), _lastShootPos()
-{}
+{
+    initialize();
+}
 
 Vehicle::~Vehicle()
 {
@@ -53,7 +55,7 @@ void Vehicle::deactivate()
 {
     if (_status == STATUS_DEACTIVATED && !getBase()->hasUnitStateFlag(UNIT_STATE_ACCESSORY))
     {
-        sLogger.failure("Vehicle %s attempts to deactivate, but already has STATUS_DEACTIVATED! ", getBase()->getGuid());
+        sLogger.failure("Vehicle " I64FMT " attempts to deactivate, but already has STATUS_DEACTIVATED! ", getBase()->getGuid());
         return;
     }
 

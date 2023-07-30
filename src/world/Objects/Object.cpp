@@ -1728,6 +1728,17 @@ Unit* Object::getUnitOwnerOrSelf() { return getUnitOwner(); }
 Player* Object::getPlayerOwner() { return nullptr; }
 Player* Object::getPlayerOwnerOrSelf() { return getPlayerOwner(); }
 
+Player* Object::getAffectingPlayer()
+{
+    if (!getUnitOwner())
+        return ToPlayer();
+
+    if (Unit* owner = getPlayerOwner())
+        return owner->getPlayerOwnerOrSelf();
+
+    return nullptr;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Misc
 void Object::sendGameobjectDespawnAnim()
@@ -3857,6 +3868,173 @@ uint32 Object::getServersideFaction()
     return m_factionTemplate->Faction;
 }
 
+Standing Object::getEnemyReaction(Object* target)
+{
+    // always friendly to self
+    if (this == target)
+        return Standing::STANDING_FRIENDLY;
+
+    // always friendly to charmer or owner
+    if (getUnitOwnerOrSelf() == target->getUnitOwnerOrSelf())
+        return Standing::STANDING_FRIENDLY;
+
+    Player* selfPlayerOwner = getAffectingPlayer();
+    Player* targetPlayerOwner = target->getAffectingPlayer();
+
+    // check forced reputation
+    // which could be applied by spell auras
+    if (selfPlayerOwner)
+    {
+        if (DBC::Structures::FactionTemplateEntry const* targetFactionTemplateEntry = target->m_factionTemplate)
+            if (Standing const* repRank = selfPlayerOwner->getForcedReputationRank(targetFactionTemplateEntry))
+                return *repRank;
+    }
+    else if (targetPlayerOwner)
+    {
+        if (DBC::Structures::FactionTemplateEntry const* selfFactionTemplateEntry = m_factionTemplate)
+            if (Standing const* repRank = targetPlayerOwner->getForcedReputationRank(selfFactionTemplateEntry))
+                return *repRank;
+    }
+
+    Unit* unit = ToUnit() ? ToUnit() : selfPlayerOwner;
+    Unit* targetUnit = target->ToUnit() ? target->ToUnit() : targetPlayerOwner;
+    if (unit && unit->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
+    {
+        if (targetUnit && targetUnit->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
+        {
+            if (selfPlayerOwner && targetPlayerOwner)
+            {
+                // always friendly to other unit controlled by player, or to the player himself
+                if (selfPlayerOwner == targetPlayerOwner)
+                    return STANDING_FRIENDLY;
+
+                // Sanctuary
+                if (selfPlayerOwner->isSanctuaryFlagSet())
+                    return STANDING_FRIENDLY;
+
+                // Duelling
+                if ((selfPlayerOwner->getDuelPlayer() == targetPlayerOwner) && (selfPlayerOwner->getDuelState() == DUEL_STATE_STARTED))
+                    return STANDING_HOSTILE;
+
+                // Same Group
+                if (selfPlayerOwner->getGroup() && selfPlayerOwner->getGroup() == targetPlayerOwner->getGroup())
+                    return STANDING_FRIENDLY;
+            }
+
+            // check Free for all PVP
+            if (unit->isFfaPvpFlagSet() && targetUnit->isFfaPvpFlagSet())
+                return STANDING_HOSTILE;
+
+            if (selfPlayerOwner)
+            {
+                if (DBC::Structures::FactionTemplateEntry const* targetFactionTemplateEntry = targetUnit->m_factionTemplate)
+                {
+                    if (Standing const* repRank = selfPlayerOwner->getForcedReputationRank(targetFactionTemplateEntry))
+                        return *repRank;
+
+#if VERSION_STRING > Classic
+                    if (!selfPlayerOwner->hasUnitFlags2(UNIT_FLAG2_UNK2))
+                    {
+                        if (DBC::Structures::FactionEntry const* targetFactionEntry = sFactionStore.LookupEntry(targetFactionTemplateEntry->Faction))
+                        {
+                            if (targetFactionEntry->canHaveReputation())
+                            {
+                                // check contested flags
+                                if ((targetUnit->m_factionTemplate->FactionGroup & FACTION_TEMPLATE_FLAG_CONTESTED_GUARD) &&
+                                    selfPlayerOwner->hasPlayerFlags(PLAYER_FLAG_PVP_GUARD_ATTACKABLE))
+                                    return STANDING_HOSTILE;
+
+                                // if faction has reputation its reaction depends on our war state
+                                if (selfPlayerOwner->isFactionAtWar(targetUnit->m_factionEntry))
+                                    return STANDING_HOSTILE;
+
+                                return STANDING_FRIENDLY;
+                            }
+                        }
+                    }
+#endif
+                }
+            }
+        }
+    }
+
+    // do checks dependant only on our faction
+    return getFactionReaction(m_factionTemplate, target);
+}
+
+Standing Object::getFactionReaction(DBC::Structures::FactionTemplateEntry const* factionTemplateEntry, Object* target)
+{
+    // always neutral when no template entry found
+    if (!factionTemplateEntry)
+        return STANDING_NEUTRAL;
+
+    DBC::Structures::FactionTemplateEntry const* targetFactionTemplateEntry = target->m_factionTemplate;
+    if (!targetFactionTemplateEntry)
+        return STANDING_NEUTRAL;
+
+    if (Player* targetPlayerOwner = target->getAffectingPlayer())
+    {
+        // check contested flags
+        if ((factionTemplateEntry->FactionGroup & FACTION_TEMPLATE_FLAG_CONTESTED_GUARD) &&
+            targetPlayerOwner->hasPlayerFlags(PLAYER_FLAG_PVP_GUARD_ATTACKABLE))
+            return STANDING_HOSTILE;
+
+        if (Standing const* repRank = targetPlayerOwner->getForcedReputationRank(factionTemplateEntry))
+            return *repRank;
+
+#if VERSION_STRING > Classic
+        if (target->ToUnit() && !target->ToUnit()->hasUnitFlags2(UNIT_FLAG2_UNK2))
+#else
+        if (target->ToUnit())
+#endif
+        {
+            if (DBC::Structures::FactionEntry const* factionEntry = sFactionStore.LookupEntry(factionTemplateEntry->Faction))
+            {
+                if (factionEntry->canHaveReputation())
+                {
+                    Standing repRank = targetPlayerOwner->getFactionStandingRank(factionEntry->ID);
+                    if (targetPlayerOwner->isFactionAtWar(factionEntry))
+                        repRank = std::min(STANDING_NEUTRAL, repRank);
+                        return repRank;
+                }
+            }
+        }
+    }
+
+    // common faction based check
+    if (factionTemplateEntry->isHostileTo(*targetFactionTemplateEntry))
+        return STANDING_HOSTILE;
+    if (factionTemplateEntry->isFriendlyTo(*targetFactionTemplateEntry))
+        return STANDING_FRIENDLY;
+    if (targetFactionTemplateEntry->isFriendlyTo(*factionTemplateEntry))
+        return STANDING_FRIENDLY;
+    if (factionTemplateEntry->FactionGroup & FACTION_TEMPLATE_FLAG_HOSTILE_BY_DEFAULT)
+        return STANDING_HOSTILE;
+    // neutral by default
+    return STANDING_NEUTRAL;
+}
+
+bool Object::isHostileTo(Object* target)
+{
+    return getEnemyReaction(target) <= Standing::STANDING_HOSTILE;
+}
+
+bool Object::IsHostileToPlayers()
+{
+    if (!m_factionTemplate->Faction)
+        return false;
+
+    if (m_factionEntry && m_factionEntry->RepListId >= 0)
+        return false;
+
+    return m_factionTemplate->isHostileToPlayers();
+}
+
+bool Object::isFriendlyTo(Object* target)
+{
+    return getEnemyReaction(target) >= Standing::STANDING_FRIENDLY;
+}
+
 bool Object::isNeutralToAll() const
 {
     DBC::Structures::FactionTemplateEntry const* my_faction = m_factionTemplate;
@@ -3868,6 +4046,267 @@ bool Object::isNeutralToAll() const
         return false;
 
     return my_faction->isNeutralToAll();
+}
+
+bool Object::isValidTarget(Object* target, SpellInfo const* bySpell)
+{
+    if (!this)
+        return false;
+
+    if (!target)
+        return false;
+
+    // some positive spells can be casted at hostile target
+    bool isPositiveSpell = bySpell && !bySpell->isNegativeAura();
+
+    // can't attack self (spells can, attribute check)
+    if (!bySpell && this == target)
+        return false;
+
+    // can't attack unattackable units
+    Unit* unitTarget = target->ToUnit();
+    if (unitTarget && unitTarget->hasUnitStateFlag(UNIT_STATE_UNATTACKABLE))
+        return false;
+
+    // can't attack GMs
+    if (target->isPlayer() && target->ToPlayer()->isGMFlagSet())
+        return false;
+
+    // Creature should not attack permanently invisible units
+    Unit* unit = ToUnit();
+    if (unit)
+    {
+        // can't attack invisible
+        if (!bySpell || !bySpell->hasAttribute(ATTRIBUTESEXF_CAN_TARGET_INVISIBLE))
+        {
+            if (unit->getInvisibilityLevel(INVIS_FLAG_NEVER_VISIBLE) > 0)
+                return false;
+
+            // can't attack invisible
+            if (!unit->canSee(target))
+                return false;
+        }
+    }
+
+    // can't attack dead
+    if ((!bySpell || !bySpell->isAllowingDeadTarget()) && unitTarget && !unitTarget->isAlive())
+        return false;
+
+    // can't attack untargetable
+    if ((!bySpell || !bySpell->hasAttribute(ATTRIBUTESEXF_UNK26)) && unitTarget && unitTarget->hasUnitFlags(UNIT_FLAG_NOT_SELECTABLE))
+        return false;
+
+    if (Player const* playerAttacker = ToPlayer())
+    {
+        if (playerAttacker->hasPlayerFlags(PLAYER_FLAG_UNK3))
+            return false;
+    }
+
+    // check flags
+    if (unitTarget && unitTarget->hasUnitFlags(UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_MOUNTED_TAXI | UNIT_FLAG_IGNORE_CREATURE_COMBAT | UNIT_FLAG_ALIVE))
+        return false;
+
+    Unit* unitOrOwner = unit;
+    GameObject* go = ToGameObject();
+    if (go && go->getGoType() == GAMEOBJECT_TYPE_TRAP)
+        unitOrOwner = static_cast<GameObject_Trap*>(go)->getUnitOwner();
+
+    // ignore immunity flags when assisting
+    if (unitOrOwner && unitTarget && !(isPositiveSpell && bySpell->hasAttribute(ATTRIBUTESEXF_UNK5)))
+    {
+        if (!unitOrOwner->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) && unitTarget->getAIInterface()->isImmuneToNPC())
+            return false;
+
+        if (!unitTarget->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) && unitOrOwner->getAIInterface()->isImmuneToNPC())
+            return false;
+
+        if (unitOrOwner->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) && unitTarget->getAIInterface()->isImmuneToPC())
+            return false;
+
+        if (unitTarget->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) && unitOrOwner->getAIInterface()->isImmuneToPC())
+            return false;
+    }
+
+    // Creature Vs Creature
+    if (unit&& !unit->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) && unitTarget && !unitTarget->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
+        return isHostileTo(unitTarget) || unitTarget->isHostileTo(this);
+
+    // Traps without owner or with NPC owner versus Creature case - can attack to creature only when one of them is hostile
+    if (go && go->getGoType() == GAMEOBJECT_TYPE_TRAP)
+    {
+        Unit const* goOwner = static_cast<GameObject_Trap*>(go)->getUnitOwner();
+        if (!goOwner || !goOwner->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
+            if (unitTarget && !unitTarget->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
+                return isHostileTo(unitTarget) || unitTarget->isHostileTo(this);
+    }
+
+    // Player vs Player, Player vs Creature, Creature vs Player case
+    // can't attack friendly targets
+    if (isFriendlyTo(target) || target->isFriendlyTo(this))
+        return false;
+
+    Player* playerAffectingAttacker = unit && unit->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) ? getAffectingPlayer() : go ? getAffectingPlayer() : nullptr;
+    Player* playerAffectingTarget = unitTarget && unitTarget->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) ? unitTarget->getAffectingPlayer() : nullptr;
+
+    // Not all neutral creatures can be attacked (even some unfriendly faction does not react aggresive to you, like Sporaggar)
+    if ((playerAffectingAttacker && !playerAffectingTarget) || (!playerAffectingAttacker && playerAffectingTarget))
+    {
+        Player* player = playerAffectingAttacker ? playerAffectingAttacker : playerAffectingTarget;
+
+        if (Unit* creature = playerAffectingAttacker ? unitTarget : unit)
+        {
+            if (creature->getAIInterface()->isGuard() && player->hasPlayerFlags(PLAYER_FLAG_PVP_GUARD_ATTACKABLE))
+                return true;
+
+            if (DBC::Structures::FactionTemplateEntry const* factionTemplate = creature->m_factionTemplate)
+            {
+                if (!(player->getForcedReputationRank(factionTemplate)))
+                    if (DBC::Structures::FactionEntry const* factionEntry = sFactionStore.LookupEntry(factionTemplate->Faction))
+                        if (player->isHostileBasedOnReputation(factionEntry))
+                            return false;
+            }
+        }
+    }
+
+    Creature* creatureAttacker = ToCreature();
+    if (creatureAttacker && (creatureAttacker->GetCreatureProperties()->typeFlags & CREATURE_FLAG1_PARTY_MEMBER))
+        return false;
+
+    if (playerAffectingAttacker && playerAffectingTarget)
+        if (playerAffectingAttacker->getDuelPlayer() == playerAffectingTarget && playerAffectingAttacker->getDuelState() == DUEL_STATE_STARTED)
+            return true;
+
+    // PvP case - can't attack when attacker or target are in sanctuary
+    if (unitTarget && unitTarget->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) && unitOrOwner && unitOrOwner->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) && (unitTarget->isSanctuaryFlagSet() || unitOrOwner->isSanctuaryFlagSet()))
+        return false;
+
+    // additional checks - only PvP case
+    if (playerAffectingAttacker && playerAffectingTarget)
+    {
+        if (playerAffectingTarget->isPvpFlagSet())
+            return true;
+
+        if (playerAffectingAttacker->isFfaPvpFlagSet() && playerAffectingTarget->isFfaPvpFlagSet())
+            return true;
+    }
+
+    return true;
+}
+
+bool Object::isValidAssistTarget(Unit* target, SpellInfo const* bySpell)
+{
+    // can assist to self
+    if (this == target)
+        return true;
+
+    // some positive spells can be casted at hostile target
+    bool isNegativeSpell = bySpell && bySpell->isNegativeAura();
+
+    // can assist to self
+    if (target == nullptr)
+        return false;
+
+    // can't assist unattackable units
+    Unit* unitTarget = target->ToUnit();
+    if (unitTarget && unitTarget->hasUnitStateFlag(UNIT_STATE_UNATTACKABLE))
+        return false;
+
+    // can't assist GMs
+    if (target->isPlayer() && target->ToPlayer()->isGMFlagSet())
+        return false;
+
+    // Creature should not assist permanently invisible units
+    if (target->getInvisibilityLevel(INVIS_FLAG_NEVER_VISIBLE) > 0)
+        return false;
+
+    Unit* unit = ToUnit();
+#ifdef FT_VEHICLES
+    // can't assist own vehicle or passenger
+    if (unit && unitTarget && unit->getVehicle())
+    {
+        if (unit->isOnVehicle(target))
+            return false;
+
+        if (unit->getVehicleBase()->isOnVehicle(unitTarget))
+            return false;
+    }
+#endif
+
+    // can't assist invisible
+    if (!bySpell || !bySpell->hasAttribute(ATTRIBUTESEXF_CAN_TARGET_INVISIBLE))
+    {
+        if (unit->getInvisibilityLevel(INVIS_FLAG_NEVER_VISIBLE) > 0)
+            return false;
+
+        // can't attack invisible
+        if (!unit->canSee(target))
+            return false;
+    }
+
+    // can't assist dead
+    if ((!bySpell || !bySpell->isAllowingDeadTarget()) && unitTarget && !unitTarget->isAlive())
+        return false;
+
+    // can't assist untargetable
+    if ((!bySpell || !bySpell->hasAttribute(ATTRIBUTESEXF_UNK26)) && unitTarget && unitTarget->hasUnitFlags(UNIT_FLAG_NOT_SELECTABLE))
+        return false;
+
+    // check flags for negative spells
+    if (isNegativeSpell && unitTarget && unitTarget->hasUnitFlags(UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_MOUNTED_TAXI | UNIT_FLAG_IGNORE_CREATURE_COMBAT | UNIT_FLAG_ALIVE))
+        return false;
+
+
+    if (isNegativeSpell || !bySpell || !bySpell->hasAttribute(ATTRIBUTESEXF_UNK5))
+    {
+        if (unit && unit->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
+        {
+            if (unitTarget->getAIInterface()->isImmuneToPC())
+                return false;
+        }
+        else
+        {
+            if (unitTarget->getAIInterface()->isImmuneToNPC())
+                return false;
+        }
+    }
+
+    // can't assist non-friendly targets
+    if (getEnemyReaction(target) < STANDING_NEUTRAL && target->getEnemyReaction(this) < STANDING_NEUTRAL && (!ToCreature() || !(ToCreature()->GetCreatureProperties()->typeFlags & CREATURE_FLAG1_PARTY_MEMBER)))
+        return false;
+
+    // PvP case
+    if (unitTarget && unitTarget->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
+    {
+        if (unit && unit->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
+        {
+            Player const* selfPlayerOwner = getAffectingPlayer();
+            Player const* targetPlayerOwner = unitTarget->getAffectingPlayer();
+            if (selfPlayerOwner && targetPlayerOwner)
+            {
+                // can't assist player which is dueling someone
+                if (selfPlayerOwner != targetPlayerOwner && targetPlayerOwner->getDuelPlayer())
+                    return false;
+            }
+            // can't assist player in ffa_pvp zone from outside
+            if (unitTarget->isFfaPvpFlagSet() && !unit->isFfaPvpFlagSet())
+                return false;
+
+            // can't assist player out of sanctuary from sanctuary if has pvp enabled
+            if (unitTarget->isPvpFlagSet())
+                if (unit->isSanctuaryFlagSet() && !unitTarget->isSanctuaryFlagSet())
+                    return false;
+        }
+    }
+    // PvC case - player can assist creature only if has specific type flags
+    else if (unit && unit->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
+    {
+        if (!bySpell || !bySpell->hasAttribute(ATTRIBUTESEXF_UNK5))
+            if (!target->isPvpFlagSet())
+                if (Creature* creatureTarget = target->ToCreature())
+                    return ((creatureTarget->GetCreatureProperties()->typeFlags & CREATURE_FLAG1_PARTY_MEMBER) || (creatureTarget->GetCreatureProperties()->typeFlags & CREATURE_FLAG1_AID_PLAYERS));
+    }
+
+    return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -4382,6 +4821,17 @@ LocationVector Object::getHitSpherePointFor(LocationVector const& dest) const
     G3D::Vector3 contactPoint = vThis + (vObj - vThis).directionOrZero() * std::min(dest.getExactDist(GetPosition()), getCombatReach());
 
     return LocationVector(contactPoint.x, contactPoint.y, contactPoint.z, getAbsoluteAngle(contactPoint.x, contactPoint.y));
+}
+
+void Object::updateGroundPositionZ(float x, float y, float& z)
+{
+    float new_z = getMapHeight(LocationVector(x, y, z));
+    if (new_z > INVALID_HEIGHT)
+#if VERSION_STRING > TBC
+        z = new_z + (ToUnit() ? ToUnit()->getHoverHeight() : 0.0f);
+#else
+        z = new_z;
+#endif
 }
 
 void Object::updateAllowedPositionZ(float x, float y, float &z, float* groundZ)

@@ -22,11 +22,12 @@
 #define FACTION_H
 
 #include "Objects/Object.hpp"
+#include "Objects/Units/Unit.hpp"
 
-SERVER_DECL bool isHostile(Object* objA, Object* objB);                                 /// B is hostile for A?
-SERVER_DECL bool isAttackable(Object* objA, Object* objB, bool CheckStealth = true);    /// A can attack B?
-SERVER_DECL bool isCombatSupport(Object* objA, Object* objB);                           /// B combat supports A?;
-SERVER_DECL bool isAlliance(Object* objA);                                              /// A is alliance?
+inline bool isHostile(Object* objA, Object* objB) { return objA->isHostileTo(objB); }
+inline bool isFriendly(Object* objA, Object* objB) { return objA->isFriendlyTo(objB); }
+inline bool isAttackable(Object* objA, Object* objB, SpellInfo const* bySpell = nullptr) { return objA->isValidTarget(objB, bySpell); }
+SERVER_DECL bool canBeginCombat(Unit* objA, Unit* objB);
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// \note bool isNeutral    - Tells if 2 Objects are neutral to each others based on their faction.
@@ -38,13 +39,7 @@ SERVER_DECL bool isAlliance(Object* objA);                                      
 ///
 //////////////////////////////////////////////////////////////////////////////////////////
 SERVER_DECL bool isNeutral(Object* a, Object* b);
-
-inline bool isFriendly(Object* objA, Object* objB)              /// B is friendly to A if its not hostile
-{
-    if (!(objA->m_phase & objB->m_phase))                       /// We have to return prematurely, because isHostile would return false (phase difference!!!), and it would result in a true return value here.
-        return false;                                           /// We must do this, as it affects AoE spell targets, thus required for them to function properly (so you won't heal out of phase friends...).
-    return !isAttackable(objA, objB, false);
-}
+SERVER_DECL bool isAlliance(Object* objA);
 
 inline bool isSameFaction(Object* objA, Object* objB)
 {

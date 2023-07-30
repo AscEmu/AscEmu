@@ -15,7 +15,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/InstanceMap.hpp"
 #include "Movement/WaypointDefines.h"
 
+#include "CreatureAIFunctionScheduler.hpp"
+#include "CreatureAIFunction.hpp"
+#include "AIUtils.hpp"
+
 class Creature;
+struct FilterArgs;
 
 class SERVER_DECL SummonList
 {
@@ -79,12 +84,30 @@ public:
         _storage.remove_if(predicate);
     }
 
+    void DoActionForEntry(int32_t info, uint32_t entry)
+    {
+        StorageType listCopy = _storage;
+        for (const auto& element : _storage)
+        {
+            if (Creature* creature = _creature->getWorldMapCreature(element))
+            {
+                if (creature->getEntry() == entry) {
+                    listCopy.push_back(element);
+                }
+            }
+        }
+
+        doAction(info, listCopy);
+    }
+
     void removeNotExisting();
     bool hasEntry(uint32_t entry) const;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // basic
 private:
+    void doAction(int32_t action, StorageType const& summons);
+
     Creature* _creature;
     StorageType _storage;
 };
@@ -125,9 +148,13 @@ public:
     virtual void AIUpdate(unsigned long /*time_passed*/) {}
     virtual void OnEmote(Player* /*_player*/, EmoteType /*_emote*/) {}
     virtual void StringFunctionCall(int) {}
+    virtual void InitOrReset() {}
 
     // Used in AIInterface to make a Creatures Attack Only in certain conditions
     virtual bool canAttackTarget(Unit* /*target*/) { return true; }
+
+    // when returning true original function from AIInterface gets skipped
+    virtual bool onAttackStart(Unit* /*target*/) { return false; }
 
     // Summon
     virtual void onSummonedCreature(Creature* /*summon*/) {}    // We summoned a Creature
@@ -198,18 +225,39 @@ public:
 
     bool isAlive();
 
+    void setSpeedRate(UnitSpeedType mtype, float rate, bool current);
+    float getSpeedRate(UnitSpeedType type, bool current);
+
+    void useDoorOrButton(GameObject* pGameObject, uint32_t withRestoreTime = 0, bool useAlternativeState = false);
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // AIAgent
     void setAIAgent(AI_Agent agent);
     uint8_t getAIAgent();
 
+    void setReactState(ReactStates st);
+    ReactStates getReactState();
+
+    void attackStart(Unit* target);
+    void attackStop();
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // movement
+    void setControlled(bool apply, UnitStates state) { getCreature()->setControlled(apply, state); }
     void setRooted(bool set);
     void setDisableGravity(bool set);
     bool isRooted();
 
     void setFlyMode(bool fly);
+
+    MovementManager* getMovementManager() { return getCreature()->getMovementManager(); }
+
+    void moveChase(Unit* target, Optional<ChaseRange> dist = 0.0f, Optional<ChaseAngle> angle = 0.0f);
+    void moveJump(LocationVector const& pos, float speedXY, float speedZ, uint32_t id = EVENT_JUMP, bool hasOrientation = false);
+    void moveCharge(float x, float y, float z, float speed = SPEED_CHARGE, uint32_t id = EVENT_CHARGE, bool generatePath = false);
+    void moveAlongSplineChain(uint32_t pointId, uint16_t dbChainId, bool walk);
+    void movePoint(uint32_t id, LocationVector const& pos, bool generatePath = true, Optional<float> finalOrient = {});
+    void movePoint(uint32_t id, float x, float y, float z, bool generatePath = true, Optional<float> finalOrient = {});
 
     // single point movement
     void moveTo(float posX, float posY, float posZ, bool setRun = true);
@@ -218,6 +266,20 @@ public:
     void moveToUnit(Unit* unit);
     void moveToSpawn();
     void stopMovement();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Flags
+    void setUnitFlags(uint32_t flags);
+    void addUnitFlags(uint32_t flags);
+    void removeUnitFlags(uint32_t flags);
+    bool hasUnitFlags(uint32_t flags);
+
+#if VERSION_STRING > Classic
+    void setUnitFlags2(uint32_t flags);
+    void addUnitFlags2(uint32_t flags);
+    void removeUnitFlags2(uint32_t flags);
+    bool hasUnitFlags2(uint32_t flags);
+#endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // wp movement
@@ -246,6 +308,8 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // combat setup
 public:
+    void setImmuneToPC(bool apply);
+    void setImmuneToNPC(bool apply);
     void setImmuneToAll(bool apply);
     bool canEnterCombat();
     void setCanEnterCombat(bool enterCombat);
@@ -261,13 +325,18 @@ public:
     void _setTargetingDisabled(bool disable);
     bool _isTargetingDisabled();
 
+    void addThreat(Unit* victim, float amount, Unit* instingator = nullptr);
     void _clearHateList();
     void _wipeHateList();
     int32_t _getHealthPercent();
     int32_t _getManaPercent();
     void _regenerateHealth();
 
+    bool hasBreakableByDamageAuraType(AuraEffect type, uint32_t excludeAura = 0);
+    bool hasBreakableByDamageCrowdControlAura(Unit* excludeCasterChannel = nullptr);
+
     bool _isCasting();
+    void setZoneWideCombat(Creature* creature = nullptr);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // script phase
@@ -286,7 +355,7 @@ public:
      // \brief: 
 protected:
     scriptEventMap scriptEvents;
-    SummonList summons;    
+    SummonList summons;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // timers
@@ -323,6 +392,45 @@ public:
     void displayCreatureTimerList(Player* player);
 
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Creature AI Functions
+public:
+    
+    //Premade Spell Function
+    virtual void CreatureAIFunc_CastSpell(CreatureAIFunc pThis);
+
+    //Premade Message Function
+    virtual void CreatureAIFunc_SendMessage(CreatureAIFunc pThis);
+
+    //Premade Emote
+    virtual void CreatureAIFunc_Emote(CreatureAIFunc pThis);
+
+    std::shared_ptr<CreatureAIFunctionScheduler> mCreatureAIScheduler;
+
+    void executeFunctionFromScheduler(CreatureAIFunc functionToExec);
+    void cancelFunctionFromScheduler(CreatureAIFunc functionToExec);
+    void enableFunctionFromScheduler(CreatureAIFunc functionToEnable);
+    void disableFunctionFromScheduler(CreatureAIFunc functionToDisable);
+    void removeAllFunctionsFromScheduler();
+    void resetAllFunctionsFromScheduler();
+    void delayAllFunctions(Milliseconds time);
+    void repeatFunctionFromScheduler(CreatureAIFunc& functionToExec, Milliseconds newTimer = {});
+
+    // Spells
+    CreatureAIFunc addAISpell(FunctionArgs funcArgs, SchedulerArgs const& pScheduler = {});
+    // Custom Code
+    template<typename T>
+    CreatureAIFunc addAIFunction(void (T::* memberFunction)(CreatureAIFunc), SchedulerArgs const& schedulerArgs)
+    {
+        return mCreatureAIScheduler->addAIFunction([mThis = static_cast<T*>(this), memberFunction](CreatureAIFunc pThis) { (mThis->*memberFunction)(pThis); }, schedulerArgs);
+    }
+
+    CreatureAIFunc addAIFunction(Function pFunction, SchedulerArgs const& pScheduler = {});
+    // Messages
+    CreatureAIFunc addMessage(FunctionArgs funcArgs, SchedulerArgs const& pScheduler = {});
+    // Emote
+    CreatureAIFunc addEmote(FunctionArgs funcArgs, SchedulerArgs const& pScheduler = {});
+
+    //////////////////////////////////////////////////////////////////////////////////////////
     // ai upodate frequency
 private:
     uint32_t mAIUpdateFrequency;
@@ -348,7 +456,7 @@ public:
     void _setDisplayId(uint32_t displayId);
     void _setWieldWeapon(bool setWieldWeapon);
     void _setDisplayWeapon(bool setMainHand, bool setOffHand);
-    void _setDisplayWeaponIds(uint32_t itemId1, uint32_t itemId2);
+    void _setDisplayWeaponIds(uint32_t itemId1, uint32_t itemId2 = 0, uint32_t itemId3 = 0);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // spell
@@ -364,6 +472,7 @@ public:
     void _applyAura(uint32_t spellId);
     void _removeAura(uint32_t spellId);
     void _removeAllAuras();
+    bool hasAura(uint32_t spellId);
 
     void _removeAuraOnPlayers(uint32_t spellId);
     void _castOnInrangePlayers(uint32_t spellId, bool triggered = false);
@@ -377,6 +486,12 @@ public:
 
     // only for internal use
     void castSpellOnRandomTarget(CreatureAISpells* AiSpell);
+
+    // Spell helpers
+    void castSpell(Unit* target, uint32_t spellId, bool triggered = false);
+    void castSpellOnSelf(uint32_t spellId, bool triggered = false) { castSpell(_creature, spellId, triggered); }
+    void castSpellOnVictim(uint32_t spellId, bool triggered = false);
+    void castSpellAOE(uint32_t spellId, bool triggered = false) { castSpell(nullptr, spellId, triggered); }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // gameobject
@@ -405,10 +520,11 @@ private:
 public:
     void sendChatMessage(uint8_t type, uint32_t soundId, std::string text);
     void sendDBChatMessage(uint32_t textId, Unit* target = nullptr);
-
+    void sendDBChatMessageByIndex(uint32_t textId, Unit* target = nullptr);
     void sendRandomDBChatMessage(std::vector<uint32_t> emoteVector, Unit* target);
 
     void addEmoteForEvent(uint32_t eventType, uint32_t scriptTextId);
+    void addEmoteForEventByIndex(uint32_t eventType, uint32_t scriptTextId);
 
     void sendAnnouncement(std::string stringAnnounce);
 
@@ -483,9 +599,12 @@ public:
     // target
     Unit* getBestPlayerTarget(TargetFilter pFilter = TargetFilter_None, float pMinRange = 0.0f, float pMaxRange = 0.0f, int32_t auraId = 0);
     Unit* getBestUnitTarget(TargetFilter pFilter = TargetFilter_None, float pMinRange = 0.0f, float pMaxRange = 0.0f, int32_t auraid = 0);
+    Unit* selectUnitTarget(FilterArgs const& args = { });
+
+    // Filters
     Unit* getBestTargetInArray(UnitArray& pTargetArray, TargetFilter pFilter);
     Unit* getNearestTargetInArray(UnitArray& pTargetArray);
     Unit* getSecondMostHatedTargetInArray(UnitArray& pTargetArray);
     Unit* getLowestHealthTargetInArray(UnitArray& pTargetArray);
-    bool isValidUnitTarget(Object* pObject, TargetFilter pFilter, float pMinRange = 0.0f, float pMaxRange = 0.0f, int32_t auraId = 0);
+    bool isValidUnitTarget(Object* pObject, TargetFilter pFilter, FilterArgs args);
 };

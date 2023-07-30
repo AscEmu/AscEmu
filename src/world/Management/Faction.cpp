@@ -25,233 +25,46 @@
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Units/Players/Player.hpp"
 
+bool canBeginCombat(Unit* objA, Unit* objB)
+{
+    if (objA == objB)
+        return false;
+    // ...the two units need to be in the world
+    if (!objA->IsInWorld() || !objB->IsInWorld())
+        return false;
+    // ...the two units need to both be alive
+    if (!objA->isAlive() || !objB->isAlive())
+        return false;
+    // ...the two units need to be on the same map
+    if (objA->getWorldMap() != objB->getWorldMap())
+        return false;
+    // ...the two units need to be in the same phase
+    if (objA->GetPhase() != objB->GetPhase())
+        return false;
+    if (objA->hasUnitStateFlag(UNIT_STATE_EVADING) || objB->hasUnitStateFlag(UNIT_STATE_EVADING))
+        return false;
+    if (objA->hasUnitStateFlag(UNIT_STATE_IN_FLIGHT) || objB->hasUnitStateFlag(UNIT_STATE_IN_FLIGHT))
+        return false;
+    // ... both units must not be ignoring combat
+    if (objA->getAIInterface()->isCombatDisabled() || objB->getAIInterface()->isCombatDisabled())
+        return false;
+    if (objA->isFriendlyTo(objB) || objB->isFriendlyTo(objA))
+        return false;
+    Player* playerA = objA->getUnitOwnerOrSelf() ? objA->getUnitOwnerOrSelf()->ToPlayer() : nullptr;
+    Player* playerB = objB->getUnitOwnerOrSelf() ? objB->getUnitOwnerOrSelf()->ToPlayer() : nullptr;
+    // ...neither of the two units must be (owned by) a player with .gm on
+    if ((playerA && playerA->isGMFlagSet()) || (playerB && playerB->isGMFlagSet()))
+        return false;
+
+    return true;
+}
+
 bool isNeutral(Object* a, Object* b)
 {
     if ((a->m_factionTemplate->HostileMask & b->m_factionTemplate->Mask) == 0 && (a->m_factionTemplate->FriendlyMask & b->m_factionTemplate->Mask) == 0)
         return true;
 
     return false;
-}
-
-SERVER_DECL bool isHostile(Object* objA, Object* objB)
-{
-    if ((objA == NULL) || (objB == NULL))
-        return false;
-
-    bool hostile = false;
-
-    if (!objA->IsInWorld() || !objB->IsInWorld())
-        return false;
-
-    if (objA == objB)
-        return false;   // can't attack self.. this causes problems with buffs if we don't have it :p
-
-    if (objA->isCorpse() || objB->isCorpse())
-        return false;
-
-    if ((objA->m_phase & objB->m_phase) == 0)     //What you can't see, can't be hostile!
-        return false;
-
-    if (objA->isPlayer() && static_cast<Player*>(objA)->hasPlayerFlags(PLAYER_FLAG_PVP_GUARD_ATTACKABLE) && objB->isCreature() && reinterpret_cast<Unit*>(objB)->getAIInterface()->isGuard())
-        return true;
-
-    if (objB->isPlayer() && static_cast<Player*>(objB)->hasPlayerFlags(PLAYER_FLAG_PVP_GUARD_ATTACKABLE) && objA->isCreature() && reinterpret_cast<Unit*>(objA)->getAIInterface()->isGuard())
-        return true;
-
-    if (objB->isCreatureOrPlayer() && static_cast<Unit*>(objB)->hasUnitFlags(UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_IGNORE_CREATURE_COMBAT | UNIT_FLAG_IGNORE_PLAYER_COMBAT | UNIT_FLAG_ALIVE))
-        return false;
-
-    if (!objB->m_factionTemplate || !objA->m_factionTemplate)
-        return false;
-
-    uint32 faction = objB->m_factionTemplate->Mask;
-    uint32 host = objA->m_factionTemplate->HostileMask;
-
-    if ((faction & host) != 0)
-        hostile = true;
-
-    faction = objA->m_factionTemplate->Mask;
-    host = objB->m_factionTemplate->HostileMask;
-
-    if ((faction & host) != 0)
-        hostile = true;
-
-    // check friend/enemy list
-    for (uint8 i = 0; i < 4; i++)
-    {
-        if (objA->m_factionTemplate->EnemyFactions[i] == objB->m_factionTemplate->Faction)
-        {
-            hostile = true;
-            break;
-        }
-
-        if (objA->m_factionTemplate->FriendlyFactions[i] == objB->m_factionTemplate->Faction)
-        {
-            hostile = false;
-            break;
-        }
-    }
-
-    // Reputation System Checks
-    if (objA->isPlayer() && !objB->isPlayer())
-        if (objB->m_factionEntry->RepListId >= 0)
-            hostile = reinterpret_cast< Player* >(objA)->isHostileBasedOnReputation(objB->m_factionEntry);
-
-    if (objB->isPlayer() && !objA->isPlayer())
-        if (objA->m_factionEntry->RepListId >= 0)
-            hostile = reinterpret_cast< Player* >(objB)->isHostileBasedOnReputation(objA->m_factionEntry);
-
-    // PvP Flag System Checks
-    // We check this after the normal isHostile test, that way if we're
-    // on the opposite team we'll already know :p
-    if ((objA->getPlayerOwnerOrSelf() != NULL) && (objB->getPlayerOwnerOrSelf() != NULL))
-    {
-        Player* a = objA->getPlayerOwnerOrSelf();
-        Player* b = objB->getPlayerOwnerOrSelf();
-
-        auto atA = a->GetArea();
-        auto atB = b->GetArea();
-
-        if (((atA && atA->flags & 0x800) != 0) || ((atB && atB->flags & 0x800) != 0))
-            return false;
-
-        if (hostile)
-        {
-            if (!b->isSanctuaryFlagSet() && (b->isPvpFlagSet() || b->isFfaPvpFlagSet()))
-                return true;
-            else
-                return false;
-        }
-
-    }
-
-    return hostile;
-}
-
-/// Where we check if we object A can attack object B. This is used in many feature's
-/// Including the spell class and the player class.
-SERVER_DECL bool isAttackable(Object* objA, Object* objB, bool CheckStealth)
-{
-    if ((objA == NULL) || (objB == NULL))
-        return false;
-
-    if (!objA->IsInWorld() || !objB->IsInWorld())
-        return false;
-
-    if (objA == objB)
-        return false;   // can't attack self.. this causes problems with buffs if we don't have it :p
-
-    if ((objA->m_phase & objB->m_phase) == 0)     //What you can't see, you can't attack either...
-        return false;
-
-    if (objA->isCorpse() || objB->isCorpse())
-        return false;
-
-    // Checks for untouchable, unattackable
-    if (objA->isCreatureOrPlayer() && static_cast<Unit*>(objA)->hasUnitFlags(UNIT_FLAG_MOUNTED_TAXI | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_DEAD))
-        return false;
-
-    if (objB->isCreatureOrPlayer())
-    {
-        if (static_cast<Unit*>(objB)->hasUnitFlags(UNIT_FLAG_MOUNTED_TAXI | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_DEAD))
-            return false;
-
-        /// added by Zack :
-        /// we cannot attack shealthed units. Maybe checked in other places too ?
-        /// !! warning, this presumes that objA is attacking ObjB
-        /// Capt: Added the possibility to disregard this (regarding the spell class)
-        if (static_cast< Unit* >(objB)->isStealthed() && CheckStealth)
-            return false;
-    }
-
-    if ((objA->getPlayerOwnerOrSelf() != NULL) && (objB->getPlayerOwnerOrSelf() != NULL))
-    {
-        Player* a = objA->getPlayerOwnerOrSelf();
-        Player* b = objB->getPlayerOwnerOrSelf();
-
-        if ((a->getDuelPlayer() == b) && (a->getDuelState() == DUEL_STATE_STARTED))
-            return true;
-
-        if (b->isSanctuaryFlagSet())
-            return false;
-
-        //players in same group should not attack each other. Required for arenas with mixed groups
-        if (a->getGroup() && a->getGroup() == b->getGroup())
-            return false;
-
-        if (a->isFfaPvpFlagSet() && b->isFfaPvpFlagSet())
-            return true;
-    }
-
-    if (objA->m_factionTemplate == nullptr || objB->m_factionTemplate == nullptr)     // no faction, no kill (added because spell_caster gos should summon a trap instead of casting the spell directly.)
-        return false;
-
-    if (objA->m_factionTemplate == objB->m_factionTemplate)    // same faction can't kill each other unless in ffa pvp/duel
-        return false;
-
-    // Neutral Creature Check
-    if (objA->isPlayer() || objA->isPet())
-    {
-
-        if ((objB->m_factionEntry->RepListId == -1) && (objB->m_factionTemplate->HostileMask == 0) && (objB->m_factionTemplate->FriendlyMask == 0))
-            return true;
-    }
-    else if (objB->isPlayer() || objB->isPet())
-    {
-        if ((objA->m_factionEntry->RepListId == -1) && (objA->m_factionTemplate->HostileMask == 0) && (objA->m_factionTemplate->FriendlyMask == 0))
-            return true;
-    }
-
-    bool attackable = isHostile(objA, objB);   // B is attackable if its hostile for A
-
-    return attackable;
-}
-
-bool isCombatSupport(Object* objA, Object* objB)// B combat supports A?
-{
-    if (!objA || !objB)
-        return false;
-
-    if (objA->isCorpse())
-        return false;
-
-    if (objB->isCorpse())
-        return false;
-
-    if (!objA->isCreature() || !objB->isCreature()) return false;    // cebernic: lowchance crashfix.
-    // also if it's not a unit, it shouldn't support combat anyways.
-
-    if (objA->isPet() || objB->isPet())   // fixes an issue where horde pets would chain aggro horde guards and vice versa for alliance.
-        return false;
-
-    if (!(objA->m_phase & objB->m_phase))   //What you can't see, you can't support either...
-        return false;
-
-    bool combatSupport = false;
-
-    uint32 fSupport = objB->m_factionTemplate->FriendlyMask;
-    uint32 myFaction = objA->m_factionTemplate->Mask;
-
-    if (myFaction & fSupport)
-    {
-        combatSupport = true;
-    }
-    // check friend/enemy list
-    for (uint8 i = 0; i < 4; i++)
-    {
-        if (objB->m_factionTemplate->EnemyFactions[i] == objA->m_factionTemplate->Faction)
-        {
-            combatSupport = false;
-            break;
-        }
-        if (objB->m_factionTemplate->FriendlyFactions[i] == objA->m_factionTemplate->Faction)
-        {
-            combatSupport = true;
-            break;
-        }
-    }
-
-    return combatSupport;
 }
 
 bool isAlliance(Object* objA)// A is alliance?

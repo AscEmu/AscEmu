@@ -271,6 +271,8 @@ void InstanceMap::createInstanceData(bool load)
         return;
 
     auto const& encounters = sObjectMgr.getDungeonEncounterList(getBaseMap()->getMapId(), getDifficulty());
+    if (!encounters)
+        return;
 
     uint32_t bossNumber = static_cast<uint32_t>(encounters->size());
 

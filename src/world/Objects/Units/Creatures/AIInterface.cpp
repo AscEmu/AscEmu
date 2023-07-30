@@ -415,23 +415,27 @@ void AIInterface::handleEvent(uint32_t event, Unit* pUnit, uint32_t misc1)
 
 bool AIInterface::canUnitEvade(unsigned long time_passed)
 {
-    // if we dont have a Valid target go in Evade Mode
-    if (!getCurrentTarget() && !getUnit()->isInEvadeMode())
+    // Only Evade when we are not in a Raid
+    if (!getUnit()->getWorldMap()->getBaseMap()->isRaid())
     {
-        m_noTargetTimer.updateTimer(time_passed);
-        if (m_noTargetTimer.isTimePassed())
+        // if we dont have a Valid target go in Evade Mode
+        if (!getCurrentTarget() && !getUnit()->isInEvadeMode())
         {
-            m_noTargetTimer.resetInterval(4000);
-            return true;
+            m_noTargetTimer.updateTimer(time_passed);
+            if (m_noTargetTimer.isTimePassed())
+            {
+                m_noTargetTimer.resetInterval(4000);
+                return true;
+            }
         }
-    }
 
-    // if we cannot reach the Target go in Evade Mode
-    if (canNotReachTarget() && !getUnit()->isInEvadeMode())
-    {
-        m_cannotReachTimer.updateTimer(time_passed);
-        if (m_cannotReachTimer.isTimePassed())
-            return true;
+        // if we cannot reach the Target go in Evade Mode
+        if (canNotReachTarget() && !getUnit()->isInEvadeMode())
+        {
+            m_cannotReachTimer.updateTimer(time_passed);
+            if (m_cannotReachTimer.isTimePassed())
+                return true;
+        }
     }
 
     // periodic check to see if the creature has passed an evade boundary
@@ -483,6 +487,8 @@ void AIInterface::enterEvadeMode()
     // Reset it here instead of engagementOver so it's not called on unit death
     m_Unit->setTaggerGuid(0);
     setCurrentTarget(nullptr);
+    m_Unit->getThreatManager().removeMeFromThreatLists();
+    m_Unit->getThreatManager().clearAllThreat();
 
     if (m_Unit->isAlive())
     {
@@ -728,15 +734,15 @@ void AIInterface::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
 
         for (const auto& inRangeObject : getUnit()->getInRangeObjectsSet())
         {
-            if (((isTargetRandFriend && isFriendly(getUnit(), inRangeObject))
-                || (!isTargetRandFriend && isHostile(getUnit(), inRangeObject) && inRangeObject != getUnit())) && inRangeObject->isCreatureOrPlayer())
+            if (((isTargetRandFriend && getUnit()->isFriendlyTo(inRangeObject))
+                || (!isTargetRandFriend && getUnit()->isHostileTo(inRangeObject) && inRangeObject != getUnit())) && inRangeObject->isCreatureOrPlayer())
             {
                 Unit* inRangeTarget = static_cast<Unit*>(inRangeObject);
 
                 if (
                     inRangeTarget->isAlive() && AiSpell->isDistanceInRange(getUnit()->GetDistance2dSq(inRangeTarget))
                     && ((AiSpell->isHpInPercentRange(inRangeTarget->getHealthPct()) && isTargetRandFriend)
-                        || (getUnit()->getThreatManager().getThreat(inRangeTarget) > 0 && isHostile(getUnit(), inRangeTarget))))
+                        || (getUnit()->getThreatManager().getThreat(inRangeTarget) > 0 && getUnit()->isHostileTo(inRangeTarget))))
                 {
                     possibleUnitTargets.push_back(inRangeTarget);
                 }
@@ -926,6 +932,10 @@ bool AIInterface::updateTarget()
 
 void AIInterface::attackStart(Unit* target)
 {
+    if (getUnit()->ToCreature() && getUnit()->ToCreature()->GetScript())
+        if (getUnit()->ToCreature()->GetScript()->onAttackStart(target))
+            return;
+
     if (target && doInitialAttack(target, true))
     {
         // Clear distracted state on attacking
@@ -1081,6 +1091,7 @@ Unit* AIInterface::selectTarget()
         return nullptr;
     }
 
+    // enter in evade mode in other case
     enterEvadeMode();
 
     return nullptr;
@@ -1096,12 +1107,11 @@ bool AIInterface::isTargetAcceptable(Unit* target)
 
     // if the target cannot be attacked, the target is not acceptable
 #ifdef FT_VEHICLES
-    if (isFriendly(getUnit(), target)
-        || !target->getAIInterface()->isTargetableForAttack(false)
+    if (getUnit()->isFriendlyTo(target) || !target->getAIInterface()->isTargetableForAttack(false)
         || (getUnit()->getVehicle() && (getUnit()->isOnVehicle(target) || getUnit()->getVehicle()->getBase()->isOnVehicle(target))))
         return false;
 #else
-    if (isFriendly(getUnit(), target) || !target->getAIInterface()->isTargetableForAttack(false))
+    if (getUnit()->isFriendlyTo(target) || !target->getAIInterface()->isTargetableForAttack(false))
         return false;
 #endif
 
@@ -1117,7 +1127,7 @@ bool AIInterface::isTargetAcceptable(Unit* target)
     }
 
     // if I'm already fighting target, or I'm hostile towards the target, the target is acceptable
-    if (isEngagedBy(target) || isHostile(getUnit(), target))
+    if (isEngagedBy(target) || getUnit()->isHostileTo(target))
         return true;
 
     // if the target's victim is not friendly, or the target is friendly, the target is not acceptable
@@ -1578,15 +1588,12 @@ bool AIInterface::canAssistTo(Unit* u, Unit* enemy, bool checkfaction /*= true*/
     }
     else
     {
-        if (!isFriendly(getUnit(), u))
+        if (!getUnit()->isFriendlyTo(u))
             return false;
     }
 
     // skip non hostile to caster enemy creatures
-    if (!isHostile(getUnit(), enemy))
-        return false;
-
-    if (isFriendly(getUnit(), enemy))
+    if (!getUnit()->isHostileTo(enemy))
         return false;
 
     return true;
@@ -1630,19 +1637,19 @@ void AIInterface::selectCurrentAgent(Unit* target, uint32_t spellid)
             {
                 setCurrentAgent(AI_Agent(m_nextSpell->agent));
             }
-            else
+            else if (!isMeleeDisabled())
             {
                 setCurrentAgent(AGENT_MELEE);
             }
         }
-        else
+        else if (!isMeleeDisabled())
         {
             setCurrentAgent(AGENT_MELEE);
         }
 
         if (getCurrentAgent() == AGENT_RANGED || getCurrentAgent() == AGENT_MELEE)
         {
-            if (m_canRangedAttack)
+            if (m_canRangedAttack && !isRangedDisabled())
             {
                 setCurrentAgent(AGENT_MELEE);
                 if (target->isPlayer())
@@ -1658,7 +1665,7 @@ void AIInterface::selectCurrentAgent(Unit* target, uint32_t spellid)
                     setCurrentAgent(AGENT_RANGED);
                 }
             }
-            else
+            else if (!isMeleeDisabled())
             {
                 setCurrentAgent(AGENT_MELEE);
             }
@@ -1825,7 +1832,7 @@ bool AIInterface::canOwnerAttackUnit(Unit* pUnit)
     if (!pUnit->IsInWorld())
         return false;
 
-    if (!isValidTarget(pUnit))
+    if (!getUnit()->isValidTarget(pUnit))
         return false;
 
     if (!pUnit->isInAccessiblePlaceFor(getUnit()->ToCreature()))
@@ -1843,6 +1850,15 @@ bool AIInterface::canOwnerAttackUnit(Unit* pUnit)
 
     if (pUnit->ToCreature() && pUnit->ToCreature()->isInEvadeMode())
         return false;
+
+    if (!getUnit()->isCharmed())
+    {
+        if (getUnit()->getWorldMap()->getBaseMap()->isDungeon())
+            return true;
+
+        if (!(getUnit()->ToCreature()->GetCreatureProperties()->typeFlags & CREATURE_FLAG1_BOSS) != 0 || getUnit()->hasAuraWithAuraEffect(SPELL_AURA_MOD_TAUNT))
+            return true;
+    }
 
     // Map Visibility Range but not more than the Distance of 2 Cells
     float distance = std::min<float>(getUnit()->getWorldMap()->getVisibilityRange(), Map::Cell::cellSize * 2);
@@ -1863,199 +1879,6 @@ bool AIInterface::canOwnerAttackUnit(Unit* pUnit)
         else
             return pUnit->isInDist(getUnit()->GetSpawnPosition(), distance);
     }
-}
-
-bool AIInterface::isValidTarget(Unit* target)
-{
-    // can't attack unattackable units
-    if (target->hasUnitStateFlag(UNIT_STATE_UNATTACKABLE))
-        return false;
-
-    // can't attack GMs
-    if (target->isPlayer() && target->ToPlayer()->isGMFlagSet())
-        return false;
-
-    // Creature should not attack permanently invisible units
-    if (target->getInvisibilityLevel(INVIS_FLAG_NEVER_VISIBLE) > 0)
-        return false;
-
-    // can't attack invisible
-    if (!getUnit()->canSee(target))
-        return false;
-
-    // can't attack dead
-    if (!target->isAlive())
-        return false;
-
-    // can't attack untargetable
-    if (target->hasUnitFlags(UNIT_FLAG_NOT_SELECTABLE))
-        return false;
-
-    // check flags
-    if (target->hasUnitFlags(UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_MOUNTED_TAXI | UNIT_FLAG_IGNORE_CREATURE_COMBAT | UNIT_FLAG_ALIVE))
-        return false;
-
-    // ignore immunity flags when assisting
-    if (!getUnit()->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) && target->getAIInterface()->isImmuneToNPC())
-        return false;
-
-    if (!target->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) && getUnit()->getAIInterface()->isImmuneToNPC())
-        return false;
-
-    if (getUnit()->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) && target->getAIInterface()->isImmuneToPC())
-        return false;
-
-    if (target->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) && getUnit()->getAIInterface()->isImmuneToPC())
-        return false;
-
-    // Creature Vs Creature
-    if (!getUnit()->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) && !target->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
-        return isHostile(getUnit(), target) || isHostile(target, getUnit());
-
-    // Player vs Player, Player vs Creature, Creature vs Player case
-    // can't attack friendly targets
-    if (isFriendly(getUnit(), target) || isFriendly(target, getUnit()))
-        return false;
-
-    Player* playerAffectingAttacker = getUnit()->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) ? getUnit()->getPlayerOwnerOrSelf() : nullptr;
-    Player* playerAffectingTarget = target->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) ? target->getPlayerOwnerOrSelf() : nullptr;
-
-    // Not all neutral creatures can be attacked (even some unfriendly faction does not react aggresive to you, like Sporaggar)
-    if ((playerAffectingAttacker && !playerAffectingTarget) || (!playerAffectingAttacker && playerAffectingTarget))
-    {
-        Player* player = playerAffectingAttacker ? playerAffectingAttacker : playerAffectingTarget;
-
-        if (Unit* creature = playerAffectingAttacker ? target : getUnit())
-        {
-            if (creature->getAIInterface()->isGuard() && player->hasPlayerFlags(PLAYER_FLAG_PVP_GUARD_ATTACKABLE))
-                return true;
-
-            if (DBC::Structures::FactionTemplateEntry const* factionTemplate = creature->m_factionTemplate)
-            {
-                if (DBC::Structures::FactionEntry const* factionEntry = sFactionStore.LookupEntry(factionTemplate->Faction))
-                    if (player->isHostileBasedOnReputation(factionEntry))
-                        return false;
-            }
-        }
-    }
-
-    Creature* creatureAttacker = getUnit()->ToCreature();
-    if (creatureAttacker && (creatureAttacker->GetCreatureProperties()->typeFlags & CREATURE_FLAG1_PARTY_MEMBER))
-        return false;
-
-    if (playerAffectingAttacker && playerAffectingTarget)
-        if (playerAffectingAttacker->getDuelPlayer() == playerAffectingTarget && playerAffectingAttacker->getDuelState() == DUEL_STATE_STARTED)
-            return true;
-
-    // PvP case - can't attack when attacker or target are in sanctuary
-    if (target->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) && getUnit()->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) && (target->isSanctuaryFlagSet() || getUnit()->isSanctuaryFlagSet()))
-        return false;
-
-    // additional checks - only PvP case
-    if (playerAffectingAttacker && playerAffectingTarget)
-    {
-        if (playerAffectingTarget->isPvpFlagSet())
-            return true;
-
-        if (playerAffectingAttacker->isFfaPvpFlagSet() && playerAffectingTarget->isFfaPvpFlagSet())
-            return true;
-    }
-
-    return true;
-}
-
-bool AIInterface::isValidAssistTarget(Unit* target)
-{
-    // can assist to self
-    if (getUnit() == target)
-        return true;
-
-    if (target == nullptr)
-        return false;
-
-    // can't assist unattackable units
-    if (target->hasUnitStateFlag(UNIT_STATE_UNATTACKABLE))
-        return false;
-
-    // can't assist GMs
-    if (target->isPlayer() && target->ToPlayer()->isGMFlagSet())
-        return false;
-
-    // Creature should not assist permanently invisible units
-    if (target->getInvisibilityLevel(INVIS_FLAG_NEVER_VISIBLE) > 0)
-        return false;
-
-    // can't assist invisible
-    if (!getUnit()->canSee(target))
-        return false;
-
-#ifdef FT_VEHICLES
-    // can't assist own vehicle or passenger
-    if (getUnit()->getVehicle())
-    {
-        if (getUnit()->isOnVehicle(target))
-            return false;
-
-        if (getUnit()->getVehicleBase()->isOnVehicle(target))
-            return false;
-    }
-#endif
-
-    // can't attack dead
-    if (!target->isAlive())
-        return false;
-
-    // can't attack untargetable
-    if (target->hasUnitFlags(UNIT_FLAG_NOT_SELECTABLE))
-        return false;
-
-    if (getUnit()->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
-    {
-        if (target->getAIInterface()->isImmuneToPC())
-            return false;
-    }
-    else
-    {
-        if (target->getAIInterface()->isImmuneToNPC())
-            return false;
-    }
-
-    // can't assist non-friendly targets
-    if (!isFriendly(getUnit(), target))
-        return false;
-
-    // PvP case
-    if (target->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
-    {
-        if (getUnit()->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
-        {
-            Player const* selfPlayerOwner = getUnit()->getPlayerOwnerOrSelf();
-            Player const* targetPlayerOwner = target->getPlayerOwnerOrSelf();
-            if (selfPlayerOwner && targetPlayerOwner)
-            {
-                // can't assist player which is dueling someone
-                if (selfPlayerOwner != targetPlayerOwner && targetPlayerOwner->getDuelPlayer())
-                    return false;
-            }
-            // can't assist player in ffa_pvp zone from outside
-            if (target->isFfaPvpFlagSet() && !getUnit()->isFfaPvpFlagSet())
-                return false;
-
-            // can't assist player out of sanctuary from sanctuary if has pvp enabled
-            if (target->isPvpFlagSet())
-                if (getUnit()->isSanctuaryFlagSet() && !target->isSanctuaryFlagSet())
-                    return false;
-        }
-    }
-    // PvC case - player can assist creature only if has specific type flags
-    else if (getUnit()->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
-    {
-        if (!target->isPvpFlagSet())
-            if (Creature* creatureTarget = target->ToCreature())
-                return ((creatureTarget->GetCreatureProperties()->typeFlags & CREATURE_FLAG1_PARTY_MEMBER) || (creatureTarget->GetCreatureProperties()->typeFlags & CREATURE_FLAG1_AID_PLAYERS));
-    }
-
-    return true;
 }
 
 float AIInterface::calcCombatRange(Unit* target, bool ranged)
@@ -2224,7 +2047,7 @@ void AIInterface::updateTotem(uint32_t p_time)
                 (!m_Unit->getWorldMap()->getUnit(nextTarget->getGuid()) ||
                     !nextTarget->isAlive() ||
                     !(m_Unit->isInRange(nextTarget->GetPosition(), pSpell->getSpellInfo()->custom_base_range_or_radius_sqr)) ||
-                    !isAttackable(m_Unit, nextTarget, !(pSpell->getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED))
+                    !isAttackable(m_Unit, nextTarget, pSpell->getSpellInfo())
                     )
                 )
             {
@@ -2334,6 +2157,10 @@ void AIInterface::engagementStart(Unit* target)
 
 void AIInterface::atEngagementStart(Unit* target)
 {
+    // dismount if mounted
+    if (m_Unit->isCreature() && !(static_cast<Creature*>(m_Unit)->GetCreatureProperties()->typeFlags & CREATURE_FLAG1_FIGHT_MOUNTED))
+        m_Unit->dismount();
+
     // make AI group attack
     if (auto group = sMySQLStore.getSpawnGroupDataBySpawn(getUnit()->ToCreature()->getSpawnId()))
     {
@@ -2640,10 +2467,6 @@ void AIInterface::eventEnterCombat(Unit* pUnit, uint32_t /*misc1*/)
     // Stop the emote - change to fight emote
     m_Unit->setEmoteState(EMOTE_STATE_READY1H);
 
-    // dismount if mounted
-    if (m_Unit->isCreature() && !(static_cast<Creature*>(m_Unit)->GetCreatureProperties()->typeFlags & CREATURE_FLAG1_FIGHT_MOUNTED))
-        m_Unit->setMountDisplayId(0);
-
     // Instance Combat
     instanceCombatProgress(true);
 
@@ -2789,6 +2612,7 @@ void AIInterface::eventLeaveCombat(Unit* /*pUnit*/, uint32_t /*misc1*/)
     {
         dynamic_cast<Creature*>(m_Unit)->GetScript()->_internalOnCombatStop();
         dynamic_cast<Creature*>(m_Unit)->GetScript()->OnCombatStop(getUnit());
+        dynamic_cast<Creature*>(m_Unit)->GetScript()->InitOrReset();
     }
 }
 
@@ -4212,7 +4036,7 @@ bool AIInterface::isValidUnitTarget(Object* pObject, TargetFilter pFilter, float
             if (!UnitTarget->getCombatHandler().isInCombat())
                 return false; // not-in-combat targets if friendly
 
-            if (isHostile(getUnit(), UnitTarget) || getUnit()->getThreatManager().getThreat(UnitTarget) > 0)
+            if (getUnit()->isHostileTo(UnitTarget) || getUnit()->getThreatManager().getThreat(UnitTarget) > 0)
                 return false;
         }
 

@@ -67,16 +67,21 @@ void AuraEffectModifier::applyEffect(bool apply, bool skipScriptCheck/* = false*
 
     mActive = apply;
 
-    if (skipScriptCheck)
+    if (getAura())
     {
-        (*getAura().*SpellAuraHandler[getAuraEffectType()])(this, apply);
+        if (skipScriptCheck)
+        {
+            (*getAura().*SpellAuraHandler[getAuraEffectType()])(this, apply);
+        }
+        else
+        {
+            const auto scriptResult = sScriptMgr.callScriptedAuraBeforeAuraEffect(getAura(), this, apply);
+            if (scriptResult != SpellScriptExecuteState::EXECUTE_PREVENT)
+                (*getAura().*SpellAuraHandler[getAuraEffectType()])(this, apply);
+        }
     }
     else
-    {
-        const auto scriptResult = sScriptMgr.callScriptedAuraBeforeAuraEffect(getAura(), this, apply);
-        if (scriptResult != SpellScriptExecuteState::EXECUTE_PREVENT)
-            (*getAura().*SpellAuraHandler[getAuraEffectType()])(this, apply);
-    }
+        sLogger.failure("AuraEffectModifier::applyEffect fatal Error invalid Aura!");
 }
 
 void AuraEffectModifier::setAura(Aura* aur) { mAura = aur; }

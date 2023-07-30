@@ -11,7 +11,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/WaypointManager.h"
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Spell/Definitions/PowerType.hpp"
+#include "Spell/Definitions/AuraInterruptFlags.hpp"
 #include "Storage/MySQLDataStore.hpp"
+#include "Objects/Units/Creatures/Pet.h"
 
 void SummonList::summon(Creature const* summon)
 {
@@ -78,8 +80,18 @@ bool SummonList::hasEntry(uint32_t entry) const
     return false;
 }
 
+void SummonList::doAction(int32_t action, StorageType const& summons)
+{
+    for (uint64_t const& guid : _storage)
+    {
+        Creature* summon = _creature->getWorldMapCreature(guid);
+        if (summon && summon->GetScript())
+            summon->GetScript()->DoAction(action);
+    }
+}
+
 CreatureAIScript::CreatureAIScript(Creature* creature) : mScriptPhase(0), summons(creature), mCreatureTimerCount(0), mAIUpdateFrequency(defaultUpdateFrequency),
-isIdleEmoteEnabled(false), idleEmoteTimerId(0), idleEmoteTimeMin(0), idleEmoteTimeMax(0), _creature(creature), linkedCreatureAI(nullptr)
+isIdleEmoteEnabled(false), idleEmoteTimerId(0), idleEmoteTimeMin(0), idleEmoteTimeMax(0), _creature(creature), linkedCreatureAI(nullptr), mCreatureAIScheduler(std::make_shared<CreatureAIFunctionScheduler>(this))
 {
     mCreatureTimerIds.clear();
     mCreatureTimer.clear();
@@ -115,6 +127,7 @@ void CreatureAIScript::_internalOnDied(Unit* killer)
 
     // Reset Events
     scriptEvents.resetEvents();
+    mCreatureAIScheduler->resetEvents();
 
     // Remove Summons
     summons.despawnAll();
@@ -162,6 +175,8 @@ void CreatureAIScript::_internalOnCombatStop()
     setAIAgent(AGENT_NULL);
     RemoveAIUpdateEvent();
 
+    mCreatureAIScheduler->resetEvents();
+    scriptEvents.resetEvents();
     resetScriptPhase();
     enableOnIdleEmote(true);
 }
@@ -169,6 +184,9 @@ void CreatureAIScript::_internalOnCombatStop()
 void CreatureAIScript::_internalAIUpdate(unsigned long time_passed)
 {
     //sLogger.debug("CreatureAIScript::_internalAIUpdate() called");
+
+    // New AI Function Scheduler
+    mCreatureAIScheduler->update(time_passed);
 
     updateAITimers(time_passed);
     AIUpdate(time_passed);
@@ -336,6 +354,30 @@ bool CreatureAIScript::isAlive()
     return _creature->isAlive();
 }
 
+void CreatureAIScript::setSpeedRate(UnitSpeedType mtype, float rate, bool current)
+{
+    getCreature()->setSpeedRate(mtype, rate, current);
+}
+
+float CreatureAIScript::getSpeedRate(UnitSpeedType type, bool current)
+{
+    return getCreature()->getSpeedRate(type, current);
+}
+
+void CreatureAIScript::useDoorOrButton(GameObject* pGameObject, uint32_t withRestoreTime, bool useAlternativeState)
+{
+    if (!pGameObject)
+        return;
+
+    if (pGameObject->getGoType() == GAMEOBJECT_TYPE_DOOR || pGameObject->getGoType() == GAMEOBJECT_TYPE_BUTTON)
+    {
+        if (pGameObject->getLootState() == GO_READY)
+            pGameObject->useDoorOrButton(withRestoreTime, useAlternativeState);
+        else if (pGameObject->getLootState() == GO_ACTIVATED)
+            pGameObject->resetDoorOrButton();
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // AIAgent
 void CreatureAIScript::setAIAgent(AI_Agent agent)
@@ -347,6 +389,26 @@ void CreatureAIScript::setAIAgent(AI_Agent agent)
 uint8_t CreatureAIScript::getAIAgent()
 {
     return _creature->getAIInterface()->getCurrentAgent();
+}
+
+void CreatureAIScript::setReactState(ReactStates st)
+{
+    _creature->getAIInterface()->setReactState(st);
+}
+
+ReactStates CreatureAIScript::getReactState()
+{
+    return _creature->getAIInterface()->getReactState();
+}
+
+void CreatureAIScript::attackStart(Unit* target)
+{
+    _creature->getAIInterface()->attackStart(target);
+}
+
+void CreatureAIScript::attackStop()
+{
+    _creature->getAIInterface()->attackStop();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -376,6 +438,36 @@ void CreatureAIScript::setFlyMode(bool fly)
 bool CreatureAIScript::isRooted()
 {
     return _creature->isRooted();
+}
+
+void CreatureAIScript::moveChase(Unit* target, Optional<ChaseRange> dist, Optional<ChaseAngle> angle)
+{
+    getMovementManager()->moveChase(target, dist, angle);
+}
+
+void CreatureAIScript::moveJump(LocationVector const& pos, float speedXY, float speedZ, uint32_t id /*= EVENT_JUMP*/, bool hasOrientation /*= false*/)
+{
+    getMovementManager()->moveJump(pos, speedXY, speedZ, id, hasOrientation);
+}
+
+void CreatureAIScript::moveCharge(float x, float y, float z, float speed /*= SPEED_CHARGE*/, uint32_t id /*= EVENT_CHARGE*/, bool generatePath /*= false*/)
+{
+    getMovementManager()->moveCharge(x, y, z, speed, id, generatePath);
+}
+
+void CreatureAIScript::moveAlongSplineChain(uint32_t pointId, uint16_t dbChainId, bool walk)
+{
+    getMovementManager()->moveAlongSplineChain(pointId, dbChainId, walk);
+}
+
+void CreatureAIScript::movePoint(uint32_t id, LocationVector const& pos, bool generatePath/* = true*/, Optional<float> finalOrient/* = {}*/)
+{
+    getMovementManager()->movePoint(id, pos, generatePath, finalOrient);
+}
+
+void CreatureAIScript::movePoint(uint32_t id, float x, float y, float z, bool generatePath, Optional<float> finalOrient)
+{
+    getMovementManager()->movePoint(id, x, y, z, generatePath, finalOrient);
 }
 
 void CreatureAIScript::moveTo(float posX, float posY, float posZ, bool setRun /*= true*/)
@@ -448,6 +540,50 @@ void CreatureAIScript::stopMovement()
     _creature->stopMoving();
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Flags
+
+void CreatureAIScript::setUnitFlags(uint32_t flags)
+{
+    _creature->setUnitFlags(flags);
+}
+
+void CreatureAIScript::addUnitFlags(uint32_t flags)
+{
+    _creature->addUnitFlags(flags);
+}
+
+void CreatureAIScript::removeUnitFlags(uint32_t flags)
+{
+    _creature->removeUnitFlags(flags);
+}
+
+bool CreatureAIScript::hasUnitFlags(uint32_t flags)
+{
+    return _creature->hasUnitFlags(flags);
+}
+
+#if VERSION_STRING > Classic
+void CreatureAIScript::setUnitFlags2(uint32_t flags)
+{
+    _creature->setUnitFlags2(flags);
+}
+
+void CreatureAIScript::addUnitFlags2(uint32_t flags)
+{
+    _creature->addUnitFlags2(flags);
+}
+
+void CreatureAIScript::removeUnitFlags2(uint32_t flags)
+{
+    _creature->removeUnitFlags2(flags);
+}
+
+bool CreatureAIScript::hasUnitFlags2(uint32_t flags)
+{
+    return _creature->hasUnitFlags2(flags);;
+}
+#endif
 //////////////////////////////////////////////////////////////////////////////////////////
 // wp movement
 void CreatureAIScript::loadCustomWaypoins(uint32_t pathid)
@@ -563,6 +699,16 @@ bool CreatureAIScript::hasWaypoints(uint32_t pathId)
     return false;
 }
 
+void CreatureAIScript::setImmuneToPC(bool apply)
+{
+    _creature->getAIInterface()->setImmuneToPC(apply);
+}
+
+void CreatureAIScript::setImmuneToNPC(bool apply)
+{
+    _creature->getAIInterface()->setImmuneToNPC(apply);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // combat setup
 void CreatureAIScript::setImmuneToAll(bool apply)
@@ -641,6 +787,19 @@ bool CreatureAIScript::_isTargetingDisabled()
     return _creature->getAIInterface()->isTargetingDisabled();
 }
 
+void CreatureAIScript::addThreat(Unit* victim, float amount, Unit* instingator)
+{
+    // no target to add threath return
+    if (!victim)
+        return;
+    
+    // when instingator is nullpte we asume we meant ourself
+    if (!instingator)
+        instingator = _creature;
+
+    instingator->getThreatManager().addThreat(victim, amount, nullptr, true, true);
+}
+
 void CreatureAIScript::_clearHateList()
 {
     _creature->getThreatManager().resetAllThreat();
@@ -666,9 +825,63 @@ void CreatureAIScript::_regenerateHealth()
     _creature->RegenerateHealth();
 }
 
+bool CreatureAIScript::hasBreakableByDamageAuraType(AuraEffect type, uint32_t excludeAura)
+{
+    for (auto&& aura : _creature->getAuraEffectList(type))
+        if ((!excludeAura || excludeAura != aura->getAura()->getSpellInfo()->getId()) && //Avoid self interrupt of channeled Crowd Control spells like Seduction
+            (aura->getAura()->getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN))
+            return true;
+    return false;
+}
+
+bool CreatureAIScript::hasBreakableByDamageCrowdControlAura(Unit* excludeCasterChannel)
+{
+    uint32_t excludeAura = 0;
+    if (Spell* currentChanneledSpell = excludeCasterChannel ? excludeCasterChannel->getCurrentSpell(CURRENT_CHANNELED_SPELL) : nullptr)
+        excludeAura = currentChanneledSpell->getSpellInfo()->getId(); //Avoid self interrupt of channeled Crowd Control spells like Seduction
+
+    return (hasBreakableByDamageAuraType(SPELL_AURA_MOD_CONFUSE, excludeAura)
+        || hasBreakableByDamageAuraType(SPELL_AURA_MOD_FEAR, excludeAura)
+        || hasBreakableByDamageAuraType(SPELL_AURA_MOD_STUN, excludeAura)
+        || hasBreakableByDamageAuraType(SPELL_AURA_MOD_ROOT, excludeAura)
+        || hasBreakableByDamageAuraType(SPELL_AURA_TRANSFORM, excludeAura));
+}
+
 bool CreatureAIScript::_isCasting()
 {
     return _creature->isCastingSpell();
+}
+
+void CreatureAIScript::setZoneWideCombat(Creature* creature)
+{
+    if (!creature)
+        creature = _creature;
+
+    WorldMap* map = creature->getWorldMap();
+    if (!map || !map->getBaseMap() || !map->getBaseMap()->isDungeon())
+        return;
+
+    if (!map->hasPlayers())
+        return;
+
+    for (auto player : map->getPlayers())
+    {
+        if (Player* plr = player.second)
+        {
+            if (!plr->isAlive() || !canBeginCombat(creature, plr))
+                continue;
+
+            creature->getAIInterface()->onHostileAction(plr);
+
+            for (auto pet : plr->getSummons())
+                creature->getAIInterface()->onHostileAction(pet->ToCreature());
+
+#ifdef FT_VEHICLES
+            if (Unit* vehicle = plr->getVehicleBase())
+                creature->getAIInterface()->onHostileAction(vehicle);
+#endif
+        }
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -944,14 +1157,162 @@ void CreatureAIScript::_setDisplayWeapon(bool setMainHand, bool setOffHand)
 #endif
 }
 
-void CreatureAIScript::_setDisplayWeaponIds(uint32_t itemId1, uint32_t itemId2)
+void CreatureAIScript::_setDisplayWeaponIds(uint32_t itemId1, uint32_t itemId2, uint32_t itemId3)
 {
     _creature->setVirtualItemSlotId(MELEE, itemId1);
     _creature->setVirtualItemSlotId(OFFHAND, itemId2);
+    _creature->setVirtualItemSlotId(RANGED, itemId3);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // spell
+
+void CreatureAIScript::executeFunctionFromScheduler(CreatureAIFunc functionToExec)
+{
+    mCreatureAIScheduler->executeFunction(functionToExec);
+}
+
+void CreatureAIScript::cancelFunctionFromScheduler(CreatureAIFunc functionToExec)
+{
+    mCreatureAIScheduler->cancelFunction(functionToExec);
+}
+
+void CreatureAIScript::enableFunctionFromScheduler(CreatureAIFunc functionToEnable)
+{
+    mCreatureAIScheduler->enableFunction(functionToEnable);
+}
+
+void CreatureAIScript::disableFunctionFromScheduler(CreatureAIFunc functionToDisable)
+{
+    mCreatureAIScheduler->disableFunction(functionToDisable);
+}
+
+void CreatureAIScript::removeAllFunctionsFromScheduler()
+{
+    mCreatureAIScheduler->removeAll();
+}
+
+void CreatureAIScript::resetAllFunctionsFromScheduler()
+{
+    mCreatureAIScheduler->resetEvents();
+}
+
+void CreatureAIScript::delayAllFunctions(Milliseconds time)
+{
+    mCreatureAIScheduler->delayAllEvents(time);
+}
+
+void CreatureAIScript::repeatFunctionFromScheduler(CreatureAIFunc& functionToExec, Milliseconds newTimer)
+{
+    mCreatureAIScheduler->repeatFunctionFromScheduler(functionToExec, newTimer);
+}
+
+CreatureAIFunc CreatureAIScript::addAISpell(FunctionArgs funcArgs, SchedulerArgs const& pScheduler)
+{
+    return mCreatureAIScheduler->addAISpell(funcArgs, pScheduler);
+}
+
+CreatureAIFunc CreatureAIScript::addAIFunction(Function pFunction, SchedulerArgs const& pScheduler)
+{
+    return mCreatureAIScheduler->addAIFunction(pFunction, pScheduler);
+}
+
+CreatureAIFunc CreatureAIScript::addMessage(FunctionArgs funcArgs, SchedulerArgs const& pScheduler)
+{
+    return mCreatureAIScheduler->addMessage(funcArgs, pScheduler);
+}
+
+CreatureAIFunc CreatureAIScript::addEmote(FunctionArgs funcArgs, SchedulerArgs const& pScheduler)
+{
+    return mCreatureAIScheduler->addEmote(funcArgs, pScheduler);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Premade Spell Function
+void CreatureAIScript::CreatureAIFunc_CastSpell(CreatureAIFunc pThis)
+{
+    auto sharedFunc = pThis.lock();
+    if (sharedFunc)
+    {
+        // Setup Filters
+        FilterArgs mTargetFilters = sharedFunc->getFunctionArgs().getTargetFilters();
+
+        // Get a Spelltarget
+        Unit* target = selectUnitTarget(mTargetFilters);
+
+        // Only Cast Spell when our Target is Valid
+        if (target || mTargetFilters.hasFilter(TargetFilter_AOE))
+        {
+            uint32_t spellId = sharedFunc->getFunctionArgs().getSpellId();
+            bool triggered = sharedFunc->getFunctionArgs().isTriggered();
+
+            // Cast Spell      
+            if (mTargetFilters.hasFilter(TargetFilter_AOE))
+                castSpellAOE(spellId, triggered);
+            else
+                castSpell(target, spellId, triggered);
+
+            // send announcements on casttime beginn
+            if (!sharedFunc->getFunctionArgs().getAnnouncement().empty())
+            {
+                sendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, sharedFunc->getFunctionArgs().getAnnouncement());
+            }
+
+            // Add Message On CastTimer Ended Slot MessageSlot::SLOT_DEFAULT
+            if (sharedFunc->getFunctionArgs().getAIMessages(MessageSlot::SLOT_DEFAULT).size())
+            {
+                Message message;
+                for (const auto text : sharedFunc->getFunctionArgs().getAIMessages(MessageSlot::SLOT_DEFAULT))
+                    message.addDBMessage(text.messageId, MessageSlot::SLOT_DEFAULT, text.useTarget);
+
+                addMessage(message, DoOnceScheduler(sharedFunc->getCastTimer()));
+            }
+
+            // Add Message On CastTimer Ended Slot MessageSlot::SLOT_BONUS
+            if (sharedFunc->getFunctionArgs().getAIMessages(MessageSlot::SLOT_BONUS).size())
+            {
+                Message message;
+                for (const auto text : sharedFunc->getFunctionArgs().getAIMessages(MessageSlot::SLOT_BONUS))
+                    message.addDBMessage(text.messageId, MessageSlot::SLOT_BONUS, text.useTarget);
+
+                addMessage(message, DoOnceScheduler(sharedFunc->getCastTimer()));
+            }
+        }
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Premade Message Function
+void CreatureAIScript::CreatureAIFunc_SendMessage(CreatureAIFunc pThis)
+{
+    auto sharedFunc = pThis.lock();
+    if (sharedFunc)
+    {
+        AIMessagesArray mEmotes = sharedFunc->getFunctionArgs().getAIMessages();
+
+        Unit* target = sharedFunc->getFunctionArgs().getMessageTarget();
+        if (!mEmotes.empty())
+        {
+            // Send Random Stores Message
+            uint32_t randomUInt = (mEmotes.size() > 1) ? Util::getRandomUInt(static_cast<uint32_t>(mEmotes.size() - 1)) : 0;
+            sendDBChatMessageByIndex(mEmotes[randomUInt].messageId, mEmotes[randomUInt].useTarget ? target : nullptr);
+        }
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Premade Emote
+void CreatureAIScript::CreatureAIFunc_Emote(CreatureAIFunc pThis)
+{
+    auto sharedFunc = pThis.lock();
+    if (sharedFunc)
+    {
+        if (sharedFunc->getFunctionArgs().useEmoteState())
+            getCreature()->setEmoteState(sharedFunc->getFunctionArgs().getEmote());
+        else
+            getCreature()->emote(sharedFunc->getFunctionArgs().getEmote());
+    }
+}
 
 CreatureAISpells* CreatureAIScript::addAISpell(uint32_t spellId, float castChance, uint32_t targetType, uint32_t duration /*= 0*/, uint32_t cooldown /*= 0*/, bool forceRemove /*= false*/, bool isTriggered /*= false*/, bool heroicOnly /*=false*/)
 {
@@ -1003,6 +1364,11 @@ void CreatureAIScript::_removeAllAuras()
     _creature->removeAllAuras();
 }
 
+bool CreatureAIScript::hasAura(uint32_t spellId)
+{
+    return _creature->hasAurasWithId(spellId);
+}
+
 void CreatureAIScript::_removeAuraOnPlayers(uint32_t spellId)
 {
     for (auto object : _creature->getInRangePlayersSet())
@@ -1042,7 +1408,7 @@ void CreatureAIScript::_castAISpell(CreatureAISpells* aiSpell)
         return;
     }
 
-    getCreature()->getAIInterface()->castAISpell(aiSpell);
+    _creature->getAIInterface()->castAISpell(aiSpell);
 }
 
 void CreatureAIScript::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
@@ -1053,7 +1419,18 @@ void CreatureAIScript::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
         return;
     }
 
-    getCreature()->getAIInterface()->castSpellOnRandomTarget(AiSpell);
+    _creature->getAIInterface()->castSpellOnRandomTarget(AiSpell);
+}
+
+void CreatureAIScript::castSpell(Unit* target, uint32_t spellId, bool triggered)
+{
+    _creature->castSpell(target, spellId, triggered);
+}
+
+void CreatureAIScript::castSpellOnVictim(uint32_t spellId, bool triggered)
+{
+    if (Unit* victim = _creature->getAIInterface()->getCurrentTarget())
+        castSpell(victim, spellId, triggered);
 }
 
 void CreatureAIScript::_setTargetToChannel(Unit* target, uint32_t spellId)
@@ -1113,6 +1490,11 @@ void CreatureAIScript::sendDBChatMessage(uint32_t textId, Unit* target/* = nullp
     _creature->SendScriptTextChatMessage(textId, target);
 }
 
+void CreatureAIScript::sendDBChatMessageByIndex(uint32_t textId, Unit* target/* = nullptr*/)
+{
+    _creature->SendScriptTextChatMessageByIndex(textId, target);
+}
+
 void CreatureAIScript::sendRandomDBChatMessage(std::vector<uint32_t> emoteVector, Unit* target)
 {
     if (!emoteVector.empty())
@@ -1154,6 +1536,16 @@ void CreatureAIScript::addEmoteForEvent(uint32_t eventType, uint32_t scriptTextI
     {
         sLogger.debug("CreatureAIScript::addEmoteForEvent : id: %u is not available in table npc_script_text!", scriptTextId);
     }
+}
+
+void CreatureAIScript::addEmoteForEventByIndex(uint32_t eventType, uint32_t scriptTextId)
+{
+    auto text = sMySQLStore.getNpcScriptTextById(_creature->getEntry(), scriptTextId);
+
+    if (text)
+        addEmoteForEvent(eventType, text->id);
+    else
+        sLogger.failure("CreatureAIScript::addEmoteForEventByIndex: Invalid textId");
 }
 
 void CreatureAIScript::sendAnnouncement(std::string stringAnnounce)
@@ -1257,7 +1649,7 @@ Unit* CreatureAIScript::getBestPlayerTarget(TargetFilter pTargetFilter, float pM
     UnitArray TargetArray;
     for (const auto& PlayerIter : getCreature()->getInRangePlayersSet())
     {
-        if (PlayerIter && isValidUnitTarget(PlayerIter, pTargetFilter, pMinRange, pMaxRange, auraId))
+        if (PlayerIter && isValidUnitTarget(PlayerIter, pTargetFilter, FilterArgs(pTargetFilter, pMinRange, pMaxRange, auraId)))
             TargetArray.push_back(static_cast<Unit*>(PlayerIter));
     }
 
@@ -1268,27 +1660,88 @@ Unit* CreatureAIScript::getBestUnitTarget(TargetFilter pTargetFilter, float pMin
 {
     //potential target list
     UnitArray TargetArray;
+    if (pTargetFilter & TargetFilter_AOE)
+    {
+        return nullptr;
+    }
+
+    if (pTargetFilter & TargetFilter_Self)
+    {
+        if (isValidUnitTarget(getCreature(), pTargetFilter, FilterArgs(pTargetFilter, pMinRange, pMaxRange, auraId)))
+            TargetArray.push_back(getCreature());
+    }
+
     if (pTargetFilter & TargetFilter_Friendly)
     {
         for (const auto& ObjectIter : getCreature()->getInRangeObjectsSet())
         {
-            if (ObjectIter && isValidUnitTarget(ObjectIter, pTargetFilter, pMinRange, pMaxRange, auraId))
+            if (ObjectIter && isValidUnitTarget(ObjectIter, pTargetFilter, FilterArgs(pTargetFilter, pMinRange, pMaxRange, auraId)))
                 TargetArray.push_back(static_cast<Unit*>(ObjectIter));
         }
 
-        if (isValidUnitTarget(getCreature(), pTargetFilter, 0.0f, 0.0f, auraId))
+        if (isValidUnitTarget(getCreature(), pTargetFilter, FilterArgs(pTargetFilter, 0.0f, 0.0f, auraId)))
             TargetArray.push_back(getCreature());    //add self as possible friendly target
     }
     else
     {
         for (const auto& ObjectIter : getCreature()->getInRangeOppositeFactionSet())
         {
-            if (ObjectIter && isValidUnitTarget(ObjectIter, pTargetFilter, pMinRange, pMaxRange, auraId))
+            if (ObjectIter && isValidUnitTarget(ObjectIter, pTargetFilter, FilterArgs(pTargetFilter, pMinRange, pMaxRange, auraId)))
                 TargetArray.push_back(static_cast<Unit*>(ObjectIter));
         }
     }
 
     return getBestTargetInArray(TargetArray, pTargetFilter);
+}
+
+Unit* CreatureAIScript::selectUnitTarget(FilterArgs const& args)
+{
+    //potential target list
+    UnitArray TargetArray;
+
+    if (args.hasFilter(TargetFilter_AOE))
+    {
+        return nullptr;
+    }
+
+    if (args.hasFilter(TargetFilter_Self))
+    {
+        if (isValidUnitTarget(getCreature(), args.getTargetFilter(), args))
+            TargetArray.push_back(getCreature());
+    }
+
+    if (args.hasFilter(TargetFilter_Friendly))
+    {
+        for (const auto& ObjectIter : getCreature()->getInRangeObjectsSet())
+        {
+            if (ObjectIter && isValidUnitTarget(ObjectIter, args.getTargetFilter(), args))
+                TargetArray.push_back(static_cast<Unit*>(ObjectIter));
+        }
+
+        if (isValidUnitTarget(getCreature(), args.getTargetFilter(), args))
+            TargetArray.push_back(getCreature());    //add self as possible friendly target
+    }
+    else
+    {
+        if (args.hasFilter(TargetFilter_Player))
+        {
+            for (const auto& PlayerIter : getCreature()->getInRangePlayersSet())
+            {
+                if (PlayerIter && isValidUnitTarget(PlayerIter, args.getTargetFilter(), args))
+                    TargetArray.push_back(static_cast<Unit*>(PlayerIter));
+            }
+        }
+        else
+        {
+            for (const auto& ObjectIter : getCreature()->getInRangeOppositeFactionSet())
+            {
+                if (ObjectIter && isValidUnitTarget(ObjectIter, args.getTargetFilter(), args))
+                    TargetArray.push_back(static_cast<Unit*>(ObjectIter));
+            }
+        }
+    }
+
+    return getBestTargetInArray(TargetArray, args.getTargetFilter());
 }
 
 Unit* CreatureAIScript::getBestTargetInArray(UnitArray & pTargetArray, TargetFilter pTargetFilter)
@@ -1370,7 +1823,7 @@ Unit* CreatureAIScript::getLowestHealthTargetInArray(UnitArray& pTargetArray)
     Unit* TargetUnit = nullptr;
 
     uint32_t health = 0;
-    uint32_t lowestHealth = 0;
+    uint32_t lowestHealth = 100;
 
     for (const auto& UnitIter : pTargetArray)
     {
@@ -1378,7 +1831,7 @@ Unit* CreatureAIScript::getLowestHealthTargetInArray(UnitArray& pTargetArray)
         {
             TargetUnit = static_cast<Unit*>(UnitIter);
 
-            health = static_cast<uint32_t>(getCreature()->getHealth());
+            health = static_cast<uint32_t>(getCreature()->getHealthPct());
             if (health < lowestHealth)
             {
                 lowestUnit = TargetUnit;
@@ -1390,7 +1843,7 @@ Unit* CreatureAIScript::getLowestHealthTargetInArray(UnitArray& pTargetArray)
     return lowestUnit;
 }
 
-bool CreatureAIScript::isValidUnitTarget(Object* pObject, TargetFilter pFilter, float pMinRange, float pMaxRange, int32_t auraId)
+bool CreatureAIScript::isValidUnitTarget(Object* pObject, TargetFilter pFilter, FilterArgs args)
 {
     if (!pObject->isCreatureOrPlayer())
         return false;
@@ -1419,14 +1872,14 @@ bool CreatureAIScript::isValidUnitTarget(Object* pObject, TargetFilter pFilter, 
         return false;
 
     // Required Aura
-    if (auraId > 0)
+    if (args.getAuraId() > 0)
     {
-        if (!UnitTarget->hasAurasWithId(abs(auraId)))
+        if (!UnitTarget->hasAurasWithId(abs(args.getAuraId())))
             return false;
     }
     else
     {
-        if (UnitTarget->hasAurasWithId(abs(auraId)))
+        if (UnitTarget->hasAurasWithId(abs(args.getAuraId())))
             return false;
     }
 
@@ -1450,15 +1903,25 @@ bool CreatureAIScript::isValidUnitTarget(Object* pObject, TargetFilter pFilter, 
             return false;
 
         // targets not in strict range if requested
-        if ((pFilter & TargetFilter_InRangeOnly) && (pMinRange > 0 || pMaxRange > 0))
+        if ((pFilter & TargetFilter_InRangeOnly) && (args.getMinRange() > 0 || args.getMaxRange() > 0))
         {
             float Range = getRangeToObject(UnitTarget);
-            if (pMinRange > 0 && Range < pMinRange)
+            if (args.getMinRange() > 0 && Range < args.getMinRange())
                 return false;
 
-            if (pMaxRange > 0 && Range > pMaxRange)
+            if (args.getMaxRange() > 0 && Range > args.getMaxRange())
                 return false;
         }
+
+        // target is not in health range if requested
+        if ((pFilter & TargetFilter_Health) && !(UnitTarget->getHealthPct() >= args.getMinHPRange() && UnitTarget->getHealthPct() <= args.getMaxHPRange()))
+            return false;
+
+        if ((pFilter & TargetFilter_Caster) && UnitTarget->getPowerType() != POWER_TYPE_MANA)
+            return false;
+
+        if ((pFilter & TargetFilter_Casting) && !UnitTarget->isCastingSpell())
+            return false;
 
         // targets not in Line Of Sight if requested
         if ((~pFilter & TargetFilter_IgnoreLineOfSight) && !getCreature()->IsWithinLOSInMap(UnitTarget))

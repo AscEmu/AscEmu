@@ -1886,6 +1886,11 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
 
     setPowerType(POWER_TYPE_MANA);
 
+    // Equipment
+    setVirtualItemSlotId(MELEE, creature_properties->itemslot_1);
+    setVirtualItemSlotId(OFFHAND, creature_properties->itemslot_2);
+    setVirtualItemSlotId(RANGED, creature_properties->itemslot_3);
+
     /*  // Dont was Used in old AIInterface left the code here if needed at other Date
     if (creature_properties->guardtype == GUARDTYPE_CITY)
         getAIInterface()->setGuard(true);
@@ -1983,7 +1988,10 @@ void Creature::OnPushToWorld()
     Unit::OnPushToWorld();
 
     if (_myScriptClass)
+    {
         _myScriptClass->OnLoad();
+        _myScriptClass->InitOrReset();
+    }
 
     if (m_spawn)
     {
@@ -2485,7 +2493,6 @@ void Creature::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 {
 #ifdef FT_VEHICLES
     // Exit Vehicle
-    removeVehicleKit();
     callExitVehicle();
 #endif
 
@@ -2696,6 +2703,16 @@ void Creature::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 void Creature::SendScriptTextChatMessage(uint32 textid, Unit* target/* = target*/)
 {
     SendCreatureChatMessageInRange(this, textid, target);
+}
+
+void Creature::SendScriptTextChatMessageByIndex(uint32 textid, Unit* target/* = target*/)
+{
+    auto text = sMySQLStore.getNpcScriptTextById(getEntry(), textid);
+
+    if (text)
+        SendCreatureChatMessageInRange(this, text->id, target);
+    else
+        sLogger.failure("Creature::SendScriptTextChatMessageByIndex: Invalid textId");
 }
 
 void Creature::SendTimedScriptTextChatMessage(uint32 textid, uint32 delay, Unit* target/* = nullptr*/)

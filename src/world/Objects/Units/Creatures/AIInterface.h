@@ -282,6 +282,12 @@ enum TargetFilter
     TargetFilter_IgnoreLineOfSight = 1 << 10,           // 1024
     TargetFilter_Current = 1 << 11,                     // 2048
     TargetFilter_LowestHealth = 1 << 12,                // 4096
+    TargetFilter_Health = 1 << 13,                      // 8192
+    TargetFilter_AOE = 1 << 14,                         // 16348 - not really a Filter just no Target for AOE spells
+    TargetFilter_Self = 1 << 15,                        // 32768 - mostlikely return ourself unless we set aura filtering and we dont have it
+    TargetFilter_Caster = 1 << 16,                      // 65536 - Mana Based Class
+    TargetFilter_Casting = 1 << 17,                     // 131072 - Target is Casting currently
+    TargetFilter_Player = 1 << 18,                      // 262144 - Players Only
 
     // Predefined filters
     TargetFilter_ClosestFriendly = TargetFilter_Closest | TargetFilter_Friendly,                // 3
@@ -289,8 +295,11 @@ enum TargetFilter
     TargetFilter_WoundedFriendly = TargetFilter_Wounded | TargetFilter_Friendly,                // 10
     TargetFilter_FriendlyCorpse = TargetFilter_Corpse | TargetFilter_Friendly,                  // 66
     TargetFilter_ClosestFriendlyCorpse = TargetFilter_Closest | TargetFilter_FriendlyCorpse,    // 67
+    TargetFilter_CurrentInRangeOnly = TargetFilter_Current | TargetFilter_InRangeOnly,          // 2304
     TargetFilter_WoundedFriendlyLowestHealth = TargetFilter_Wounded | TargetFilter_Friendly | TargetFilter_LowestHealth, // 4106
-    TargetFilter_WoundedFriendlyLowestHealthInRange = TargetFilter_Wounded | TargetFilter_Friendly | TargetFilter_LowestHealth | TargetFilter_InRangeOnly // 4362
+    TargetFilter_WoundedFriendlyLowestHealthInRange = TargetFilter_Wounded | TargetFilter_Friendly | TargetFilter_LowestHealth | TargetFilter_InRangeOnly, // 4362
+    TargetFilter_CasterWhileCasting = TargetFilter_Casting | TargetFilter_Caster, // 196608
+    TargetFilter_SelfBelowHealth = TargetFilter_Self | TargetFilter_Health  // 40960
 };
 
 struct AI_Spell
@@ -508,8 +517,6 @@ public:
 
     bool canStartAttack(Unit* target, bool force);
     bool canOwnerAttackUnit(Unit* pUnit);
-    bool isValidTarget(Unit* target);       // used for findTarget
-    bool isValidAssistTarget(Unit* target); // used for Escorts
     
     Unit* findTarget();
     void updateAgent(uint32_t p_time);

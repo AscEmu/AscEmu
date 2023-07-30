@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellEffectTarget.hpp"
 #include "Definitions/SpellFamily.hpp"
 #include "Definitions/SpellIsFlags.hpp"
+#include "Definitions/SpellCastTargetFlags.hpp"
 #include "SpellAuras.h"
 #include "SpellTarget.h"
 #include "Storage/DBC/DBCStores.h"
@@ -431,6 +432,8 @@ bool SpellInfo::isNegativeAura() const
         case 72410:
         // Lady Deathwhisper trash - Darkreckoning
         case 69483:
+        // Trial Of Champion - Dreadscale and Acidmaw - Burning Bile
+        case 66869:
             // These should be negative
             return true;
         default:
@@ -972,6 +975,11 @@ bool SpellInfo::isPrimaryProfessionSkill(uint32_t skill_id) const
     }
 
     return false;
+}
+
+bool SpellInfo::isAllowingDeadTarget() const
+{
+    return hasAttribute(ATTRIBUTESEXB_CAN_BE_CASTED_ON_DEAD_TARGET) || Targets & (SpellCastTargetFlags::TARGET_FLAG_CORPSE | SpellCastTargetFlags::TARGET_FLAG_CORPSE2 | SpellCastTargetFlags::TARGET_FLAG_UNIT_CORPSE);
 }
 
 bool SpellInfo::isDeathPersistent() const

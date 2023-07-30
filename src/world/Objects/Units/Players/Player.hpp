@@ -499,16 +499,12 @@ public:
 
     bool isMoving() const;
 
-    bool isMounted() const;
     uint32_t getMountSpellId() const;
     void setMountSpellId(uint32_t id);
 
     bool isOnVehicle() const;
     uint32_t getMountVehicleId() const;
     void setMountVehicleId(uint32_t id);
-
-    void mount(uint32_t mount, uint32_t vehicleId = 0, uint32_t creatureEntry = 0);
-    void dismount();
 
     void handleAuraInterruptForMovementFlags(MovementInfo const& movement_info);
 
@@ -1581,7 +1577,11 @@ public:
     Standing getFactionStandingRank(uint32_t faction);
     static Standing getReputationRankFromStanding(int32_t value);
 
+    void applyForcedReaction(uint32 faction_id, Standing rank, bool apply);
+    Standing const* getForcedReputationRank(DBC::Structures::FactionTemplateEntry const* factionTemplateEntry) const;
+
     void setFactionAtWar(uint32_t faction, bool set);
+    bool isFactionAtWar(DBC::Structures::FactionEntry const* factionEntry) const;
 
     bool isHostileBasedOnReputation(DBC::Structures::FactionEntry const* factionEntry);
     void updateInrangeSetsBasedOnReputation();
@@ -2138,7 +2138,7 @@ public:
 
     void addDeletedSpell(uint32_t id) { m_deletedSpells.insert(id); }
 
-    std::map<uint32_t, uint32_t> m_forcedReactions;
+    std::map<uint32_t, Standing> m_forcedReactions;
 
     bool m_passOnLoot = false;
     uint32_t m_tradeSequence;

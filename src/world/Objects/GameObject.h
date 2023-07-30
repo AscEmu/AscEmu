@@ -788,6 +788,15 @@ class SERVER_DECL GameObject_Destructible : public GameObject
         void Damage(uint32_t damage, uint64_t AttackerGUID, uint64_t ControllerGUID, uint32_t SpellID);
 
         void Rebuild();
+        void setDestructibleState(GameObjectDestructibleState state, bool setHealth = false);
+        GameObjectDestructibleState GetDestructibleState() const
+        {
+            if (hasFlags(GO_FLAG_DESTROYED))
+                return GO_DESTRUCTIBLE_DESTROYED;
+            if (hasFlags(GO_FLAG_DAMAGED))
+                return GO_DESTRUCTIBLE_DAMAGED;
+            return GO_DESTRUCTIBLE_INTACT;
+        }
 
         uint32_t GetHP() { return hitpoints; }
         void setHP(uint32_t hp) { hitpoints = hp; }

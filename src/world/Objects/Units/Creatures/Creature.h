@@ -265,6 +265,7 @@ public:
         LocationVector m_transportHomePosition;
 
         void SendScriptTextChatMessage(uint32 textid, Unit* target = nullptr);
+        void SendScriptTextChatMessageByIndex(uint32 textid, Unit* target = nullptr);
         void SendTimedScriptTextChatMessage(uint32 textid, uint32 delay = 0, Unit* target = nullptr);
 
         // Serialization
