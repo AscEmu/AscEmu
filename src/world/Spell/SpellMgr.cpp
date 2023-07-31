@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Definitions.h"
 #include "Server/MainServerDefines.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 
 #if VERSION_STRING < WotLK
 #include "Definitions/SpellEffectTarget.hpp"

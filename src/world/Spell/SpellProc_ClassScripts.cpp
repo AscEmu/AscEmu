@@ -26,7 +26,7 @@
 #include "SpellMgr.hpp"
 #include "SpellAuras.h"
 #include "Definitions/ProcFlags.hpp"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Warrior ProcScripts

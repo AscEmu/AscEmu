@@ -3,7 +3,7 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "DBCStores.h"
+#include "DBCStores.hpp"
 #include "WorldConf.h"
 #include "Server/World.h"
 

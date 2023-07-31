@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "InstanceMgr.hpp"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Server/Definitions.h"

@@ -25,8 +25,8 @@ This file is released under the MIT license. See README-MIT for more information
 #endif
 
 #if VERSION_STRING >= Cata
-    #include "Storage/DB2/DB2Stores.h"
-    #include "Storage/DB2/DB2Structures.h"
+    #include "Storage/DB2/DB2Stores.hpp"
+    #include "Storage/DB2/DB2Structures.hpp"
 #endif
 
 class SpellInfo;

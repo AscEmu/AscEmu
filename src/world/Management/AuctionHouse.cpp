@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Management/AuctionHouse.h"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 #include "Objects/Item.hpp"
 #include "Management/ItemInterface.h"
 #include "Server/MainServerDefines.h"

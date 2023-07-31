@@ -19,7 +19,7 @@
  *
  */
 
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 #include "Management/QuestLogEntry.hpp"
 #include "MMapFactory.h"
 #include "Objects/Units/Creatures/Creature.h"

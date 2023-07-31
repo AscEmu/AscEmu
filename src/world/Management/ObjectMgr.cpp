@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include <utility>
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 #include "Management/QuestLogEntry.hpp"
 #include "Objects/Container.hpp"
 #include "Objects/Units/Stats.h"

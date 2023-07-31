@@ -25,7 +25,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellPacketFlags.hpp"
 #include "Definitions/SpellState.hpp"
 #include "Definitions/SpellRanged.hpp"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 #include "Management/Battleground/Battleground.hpp"
 #include "Management/ItemInterface.h"
 #include "Map/Area/AreaManagementGlobals.hpp"

@@ -26,7 +26,7 @@
 #include "Spell/Definitions/SpellDamageType.hpp"
 #include "Spell/Definitions/CastInterruptFlags.hpp"
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 #include "Spell/Definitions/SpellRanged.hpp"
 #include "Spell/Definitions/DispelType.hpp"
 #include "Spell/Definitions/SpellMechanics.hpp"

@@ -27,7 +27,7 @@
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/MySQLDataStore.hpp"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 
 enum
 {

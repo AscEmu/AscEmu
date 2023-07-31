@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/MainServerDefines.h"
 #include "Spell/SpellMgr.hpp"
 #include "Utilities/Strings.hpp"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 
 SERVER_DECL std::vector<MySQLAdditionalTable> MySQLAdditionalTables;
 

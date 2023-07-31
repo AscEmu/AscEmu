@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/MovementManager.h"
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Storage/DBC/DBCStructures.hpp"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 
 #ifdef FT_VEHICLES
 

@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Item.hpp"
 #include "Container.hpp"
 #include "Map/Maps/WorldMap.hpp"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Definitions.h"
 #include "Server/MainServerDefines.h"

@@ -28,7 +28,7 @@
 #include "Definitions/SpellCastTargetFlags.hpp"
 #include "Definitions/SpellDidHitResult.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 
  // APGL End

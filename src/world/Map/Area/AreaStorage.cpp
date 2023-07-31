@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MMapFactory.h"
 #include "Macros/MapsMacros.hpp"
 #include "AreaManagementGlobals.hpp"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 
 namespace MapManagement::AreaManagement
 {

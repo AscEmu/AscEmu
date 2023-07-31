@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "VMapFactory.h"
 #include "MMapFactory.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Map/Maps/BattleGroundMap.hpp"

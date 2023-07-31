@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Units/Unit.hpp"
 #include "Units/Creatures/Summons/Summon.hpp"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/QuestMgr.h"
 #include "Server/EventableObject.h"

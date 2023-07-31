@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Cryptography/MD5.h"
 #include "Database/Field.hpp"
 #include "Database/Database.h"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 
 //#define DEBUG_PRINT_ADDON_PACKET            // Prints out Received addon packet when char logging in
 

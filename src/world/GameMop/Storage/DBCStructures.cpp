@@ -4,8 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Common.hpp"
-#include "DBCStructures.h"
-#include "Storage/DBC/DBCStores.h"
+#include "DBCStructures.hpp"
+#include "Storage/DBC/DBCStores.hpp"
 #include "Spell/Definitions/SpellFamily.hpp"
 
 DBC::Structures::SpellAuraOptionsEntry const* DBC::Structures::SpellEntry::GetSpellAuraOptions() const

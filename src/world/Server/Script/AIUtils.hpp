@@ -17,7 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptEvent.hpp"
 #include "Movement/WaypointDefines.h"
 #include "Chat/ChatDefines.hpp"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 #include <G3D/Vector3.h>
 #include <chrono>
 #include <random>

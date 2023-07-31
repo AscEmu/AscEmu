@@ -29,7 +29,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Transporter.hpp"
 #include "Server/MainServerDefines.h"
 #include "Spell/Definitions/SummonControlTypes.hpp"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 
 using namespace AscEmu::Packets;
 using namespace AscEmu::Threading;

@@ -33,7 +33,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Definitions.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Objects/Units/Creatures/CreatureGroups.h"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 
 // Random and guessed values for Internal Spell cast chance
 float spellChanceModifierDispell[12] =

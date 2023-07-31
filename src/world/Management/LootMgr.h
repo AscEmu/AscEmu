@@ -15,7 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/DBC/DBCStructures.hpp"
 
 #if VERSION_STRING >= Cata
-#include "Storage/DB2/DB2Structures.h"
+#include "Storage/DB2/DB2Structures.hpp"
 #endif
 
 struct ItemProperties;

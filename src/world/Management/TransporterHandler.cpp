@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Movement/Spline/MoveSplineInitArgs.h>
 #include "Server/Definitions.h"
 #include "Objects/Transporter.hpp"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 
 using namespace AscEmu::Packets;
 

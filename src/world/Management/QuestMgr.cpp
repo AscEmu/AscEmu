@@ -19,7 +19,7 @@
  *
  */
 
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 #include "Logging/Log.hpp"
 #include "Objects/Item.hpp"
 #include "QuestLogEntry.hpp"

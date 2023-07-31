@@ -20,7 +20,7 @@
 #ifndef SKILLNAMEMGR_H
 #define SKILLNAMEMGR_H
 
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 #include "Server/World.h"
 
 enum SpellTreeName

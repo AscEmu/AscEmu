@@ -8,21 +8,21 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldConf.h"
 
 #ifdef AE_CLASSIC
-#include <GameClassic/Storage/DBCStructures.h>
+#include <GameClassic/Storage/DBCStructures.hpp>
 #endif
 
 #ifdef AE_TBC
-#include <GameTBC/Storage/DBCStructures.h>
+#include <GameTBC/Storage/DBCStructures.hpp>
 #endif
 
 #ifdef AE_WOTLK
-#include <GameWotLK/Storage/DBCStructures.h>
+#include <GameWotLK/Storage/DBCStructures.hpp>
 #endif
 
 #ifdef AE_CATA
-#include <GameCata/Storage/DBCStructures.h>
+#include <GameCata/Storage/DBCStructures.hpp>
 #endif
 
 #ifdef AE_MOP
-#include <GameMop/Storage/DBCStructures.h>
+#include <GameMop/Storage/DBCStructures.hpp>
 #endif

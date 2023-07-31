@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Area/AreaStorage.hpp"
 #include "G3D/Plane.h"
 #include "TerrainMgr.hpp"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 #include "Logging/Logger.hpp"
 
 static uint16_t const holetab_h[4] = { 0x1111, 0x2222, 0x4444, 0x8888 };

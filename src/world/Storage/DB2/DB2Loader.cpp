@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdlib>
 #include <cstring>
 
-#include "DB2Loader.h"
+#include "DB2Loader.hpp"
 #include "Storage/DBC/DBCGlobals.hpp"
 
 DB2::DB2FileLoader::DB2FileLoader()

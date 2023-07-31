@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "AchievementMgr.h"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 #include "Objects/Item.hpp"
 #include "Objects/Units/Stats.h"
 #include "Server/WorldSocket.h"

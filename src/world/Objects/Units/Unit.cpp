@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Unit.hpp"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 #include "Management/Battleground/Battleground.hpp"
 #include "Management/HonorHandler.h"
 #include "Movement/Spline/MovementPacketBuilder.h"

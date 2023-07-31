@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 #include "InstanceMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"

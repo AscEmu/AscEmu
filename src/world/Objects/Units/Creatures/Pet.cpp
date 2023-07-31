@@ -34,7 +34,7 @@
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/Definitions/SpellEffectTarget.hpp"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 #include "Server/Packets/SmsgPetActionFeedback.h"
 #include "Server/Packets/SmsgPetLearnedSpell.h"
 #include "Server/Packets/SmsgPetUnlearnedSpell.h"

@@ -6,8 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Common.hpp"
-#include "DB2Storage.h"
-#include "DB2Structures.h"
+#include "DB2Storage.hpp"
+#include "DB2Structures.hpp"
 
 #include <list>
 

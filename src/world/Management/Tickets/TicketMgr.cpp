@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "TicketMgr.hpp"
 #include "Server/MainServerDefines.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 
 TicketMgr& TicketMgr::getInstance()
 {

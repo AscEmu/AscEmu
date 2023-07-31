@@ -24,7 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/CreatureAIScript.h"
 #include "Objects/Units/Creatures/CreatureGroups.h"
 #include "Server/Definitions.h"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 
 using namespace AscEmu::Packets;
 

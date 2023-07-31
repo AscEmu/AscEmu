@@ -5,9 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <map>
 
-#include "DB2Stores.h"
+#include "DB2Stores.hpp"
 #include "Logging/Log.hpp"
-#include "DB2Structures.h"
+#include "DB2Structures.hpp"
 #include "Storage/DBC/DBCGlobals.hpp"
 #include "Server/World.h"
 

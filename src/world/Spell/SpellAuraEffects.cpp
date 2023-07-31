@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellTypes.hpp"
 #include "SpellMgr.hpp"
 #include "Management/ItemInterface.h"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Server/Script/ScriptMgr.h"
 #include "Storage/MySQLDataStore.hpp"

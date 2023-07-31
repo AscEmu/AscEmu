@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Guild/Guild.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Server/MainServerDefines.h"
-#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.hpp"
 
 GuildFinderMgr& GuildFinderMgr::getInstance()
 {
