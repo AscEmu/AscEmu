@@ -125,7 +125,7 @@ namespace DBC
                 ASSERT(false && "Attempted to load DBC files that do not have field types that match what is in the core. Check DBC\\DBCStructures.hpp or your DBC files.");
                 break;
             default:
-                ASSERT(false && "Unknown field format character in DBC\\DBCStructures.hpp - %s", dbc_format[x]);
+                ASSERT(false && "Unknown field format character in DBC\\DBCStructures.hpp");
                 break;
             }
         }
