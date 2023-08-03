@@ -22,6 +22,11 @@ namespace DBC
             m_index_table.as_t = NULL;
         }
 
+        DBCStorage() : m_row_count(0), m_field_count(0), m_data_table(NULL)
+        {
+            m_index_table.as_t = NULL;
+        }
+
         ~DBCStorage()
         {
             this->Clear();
@@ -47,6 +52,11 @@ namespace DBC
         uint32 GetNumRows() const
         {
             return m_row_count;
+        }
+
+        void SetFormat(const char* _format)
+        {
+            m_format = _format;
         }
 
         char const* GetFormat() const

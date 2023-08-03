@@ -87,6 +87,28 @@ namespace DBC
     void LoadDBC(uint32_t& /*available_dbc_locales*/, StoreProblemList& errors, DBC::DBCStorage<T>& storage, std::string const& dbc_path,
       std::string const& dbc_filename,std::string const* custom_format = NULL, std::string const* /*custom_index_name*/ = NULL)
     {
+        if (DBC::DBCLoader::hasFormat(dbc_filename))
+        {
+            std::string format = DBC::DBCLoader::GetFormat(dbc_filename);
+            char* writable = new char[format.size() + 1];
+            std::copy(format.begin(), format.end(), writable);
+            writable[format.size()] = '\0'; // don't forget the terminating 0
+
+
+            storage.SetFormat(writable);
+        }
+
+        if (DBC::DBCLoader::GetFormatRecordSize(storage.GetFormat()) == NULL)
+        {
+            std::ostringstream stream;
+            stream << "DBCLoader:: no format found for " << dbc_filename << " and version:  " << VERSION_STRING << "\n";
+            std::string buf = stream.str();
+            errors.push_back(buf);
+
+            std::cout << stream.str() << "\n";
+            return;
+        }
+
         ASSERT(DBC::DBCLoader::GetFormatRecordSize(storage.GetFormat()) == sizeof(T));
 
         std::string dbc_file_path = dbc_path + dbc_filename;

@@ -166,7 +166,7 @@ std::string ChannelMgr::generateChannelName(DBC::Structures::ChatChannelsEntry c
 #if VERSION_STRING < Cata
     char* channelNameDbc = channelDbc->name_pattern[sWorld.getDbcLocaleLanguageId()];
 #else
-    char* channelNameDbc = channelDbc->name_pattern;
+    char* channelNameDbc = channelDbc->name_pattern[0];
 #endif
 
     if (channelDbc->flags & CHANNEL_DBC_GLOBAL || !(channelDbc->flags & CHANNEL_DBC_HAS_ZONENAME))
@@ -180,7 +180,7 @@ std::string ChannelMgr::generateChannelName(DBC::Structures::ChatChannelsEntry c
 #if VERSION_STRING < Cata
         defaultAreaName = defaultArea->area_name[sWorld.getDbcLocaleLanguageId()];
 #else
-        defaultAreaName = defaultArea->area_name;
+        defaultAreaName = defaultArea->area_name[0];
 #endif
     }
 

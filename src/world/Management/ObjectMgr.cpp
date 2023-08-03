@@ -1943,7 +1943,7 @@ void ObjectMgr::loadInstanceEncounters()
 #if VERSION_STRING == WotLK
         dungeonEncounterName = dungeonEncounter->encounterName[sWorld.getDbcLocaleLanguageId()];
 #else
-        dungeonEncounterName = dungeonEncounter->encounterName;
+        dungeonEncounterName = dungeonEncounter->encounterName[0];
 #endif
 #endif
 

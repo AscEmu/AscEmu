@@ -43,17 +43,9 @@ file(GLOB SRC_STORAGE_DBC_FILES Storage/DBC/*.cpp Storage/DBC/*.h Storage/DBC/*.
 file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
 
 # version-specific includes.
-if ("${ASCEMU_VERSION}" STREQUAL "Classic")
-    file(GLOB SRC_GAMECLASSIC_STORAGE_FILES GameClassic/Storage/*.cpp GameClassic/Storage/*.h GameClassic/Storage/*.hpp)
-elseif ("${ASCEMU_VERSION}" STREQUAL "TBC")
-    file(GLOB SRC_GAMEBC_STORAGE_FILES GameTBC/Storage/*.cpp GameTBC/Storage/*.h GameTBC/Storage/*.hpp)
-elseif ("${ASCEMU_VERSION}" STREQUAL "WotLK")
-    file(GLOB SRC_GAMELK_STORAGE_FILES GameWotLK/Storage/*.cpp GameWotLK/Storage/*.h GameWotLK/Storage/*.hpp)
-elseif ("${ASCEMU_VERSION}" STREQUAL "Cata")
-    file(GLOB SRC_GAMECATA_STORAGE_FILES GameCata/Storage/*.cpp GameCata/Storage/*.h GameCata/Storage/*.hpp)
+if ("${ASCEMU_VERSION}" STREQUAL "Cata")
     file(GLOB SRC_STORAGE_DB2_FILES Storage/DB2/*.cpp Storage/DB2/*.h Storage/DB2/*.hpp)
 elseif ("${ASCEMU_VERSION}" STREQUAL "Mop")
-    file(GLOB SRC_GAMEMOP_STORAGE_FILES GameMop/Storage/*.cpp GameMop/Storage/*.h GameMop/Storage/*.hpp)
     file(GLOB SRC_STORAGE_DB2_FILES Storage/DB2/*.cpp Storage/DB2/*.h Storage/DB2/*.hpp)
 endif ()
 
@@ -103,31 +95,14 @@ set(WORLD_SRCS
 )
 
 # version-specific includes.
-if ("${ASCEMU_VERSION}" STREQUAL "Classic")
+if ("${ASCEMU_VERSION}" STREQUAL "Cata")
 set(WORLD_SRCS
     ${WORLD_SRCS}
-    ${SRC_GAMECLASSIC_STORAGE_FILES}
-)
-elseif ("${ASCEMU_VERSION}" STREQUAL "TBC")
-set(WORLD_SRCS
-    ${WORLD_SRCS}
-    ${SRC_GAMEBC_STORAGE_FILES}
-)
-elseif ("${ASCEMU_VERSION}" STREQUAL "WotLK")
-set(WORLD_SRCS
-    ${WORLD_SRCS}
-    ${SRC_GAMELK_STORAGE_FILES}
-)
-elseif ("${ASCEMU_VERSION}" STREQUAL "Cata")
-set(WORLD_SRCS
-    ${WORLD_SRCS}
-    ${SRC_GAMECATA_STORAGE_FILES}
     ${SRC_STORAGE_DB2_FILES}
 )
 elseif ("${ASCEMU_VERSION}" STREQUAL "Mop")
 set(WORLD_SRCS
     ${WORLD_SRCS}
-    ${SRC_GAMEMOP_STORAGE_FILES}
     ${SRC_STORAGE_DB2_FILES}
 )
 endif ()
@@ -188,17 +163,9 @@ source_group(Storage FILES ${SRC_STORAGE_FILES})
 source_group(Storage\\DBC FILES ${SRC_STORAGE_DBC_FILES})
 
 # version-specific includes.
-if ("${ASCEMU_VERSION}" STREQUAL "Classic")
-source_group(GameClassic\\Storage FILES ${SRC_GAMECLASSIC_STORAGE_FILES})
-elseif ("${ASCEMU_VERSION}" STREQUAL "TBC")
-source_group(GameTBC\\Storage FILES ${SRC_GAMEBC_STORAGE_FILES})
-elseif ("${ASCEMU_VERSION}" STREQUAL "WotLK")
-source_group(GameWotLK\\Storage FILES ${SRC_GAMELK_STORAGE_FILES})
-elseif ("${ASCEMU_VERSION}" STREQUAL "Cata")
-source_group(GameCata\\Storage FILES ${SRC_GAMECATA_STORAGE_FILES})
+if ("${ASCEMU_VERSION}" STREQUAL "Cata")
 source_group(Storage\\DB2 FILES ${SRC_STORAGE_DB2_FILES})
 elseif ("${ASCEMU_VERSION}" STREQUAL "Mop")
-source_group(GameMop\\Storage FILES ${SRC_GAMEMOP_STORAGE_FILES})
 source_group(Storage\\DB2 FILES ${SRC_STORAGE_DB2_FILES})
 endif ()
 

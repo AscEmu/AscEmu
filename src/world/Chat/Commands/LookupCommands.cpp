@@ -95,7 +95,7 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
 #if VERSION_STRING < Cata
                     y = std::string(achievement->name[sWorld.getDbcLocaleLanguageId()]);
 #else
-                    y = std::string(achievement->name);
+                    y = std::string(achievement->name[0]);
 #endif
                     AscEmu::Util::Strings::toLowerCase(y);
                     foundmatch = AscEmu::Util::Strings::contains(x, y);
@@ -105,7 +105,7 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
 #if VERSION_STRING < Cata
                     y = std::string(achievement->description[sWorld.getDbcLocaleLanguageId()]);
 #else
-                    y = std::string(achievement->description);
+                    y = std::string(achievement->description[0]);
 #endif
                     AscEmu::Util::Strings::toLowerCase(y);
                     foundmatch = AscEmu::Util::Strings::contains(x, y);
@@ -115,7 +115,7 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
 #if VERSION_STRING < Cata
                     y = std::string(achievement->rewardName[sWorld.getDbcLocaleLanguageId()]);
 #else
-                    y = std::string(achievement->rewardName);
+                    y = std::string(achievement->rewardName[0]);
 #endif
                     AscEmu::Util::Strings::toLowerCase(y);
                     foundmatch = AscEmu::Util::Strings::contains(x, y);
@@ -152,7 +152,7 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
 #if VERSION_STRING < Cata
                 recout += achievement->name[sWorld.getDbcLocaleLanguageId()];
 #else
-                recout += achievement->name;
+                recout += achievement->name[0];
 #endif
                 if (!lookupreward)
                 {
@@ -164,7 +164,7 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
 #if VERSION_STRING < Cata
                     recout += achievement->rewardName[sWorld.getDbcLocaleLanguageId()];
 #else
-                    recout += achievement->rewardName;
+                    recout += achievement->rewardName[0];
 #endif
                     recout += "|r";
                 }
@@ -195,7 +195,7 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
 #if VERSION_STRING < Cata
                 y = std::string(criteria->name[sWorld.getDbcLocaleLanguageId()]);
 #else
-                y = std::string(criteria->name);
+                y = std::string(criteria->name[0]);
 #endif
                 AscEmu::Util::Strings::toLowerCase(y);
                 if (AscEmu::Util::Strings::contains(x, y) == false)
@@ -212,7 +212,7 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
 #if VERSION_STRING < Cata
                 recout += criteria->name[sWorld.getDbcLocaleLanguageId()];
 #else
-                recout += criteria->name;
+                recout += criteria->name[0];
 #endif
                 strm.str("");
                 auto achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
@@ -244,7 +244,7 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
 #if VERSION_STRING < Cata
                     recout += achievement->name[sWorld.getDbcLocaleLanguageId()];
 #else
-                    recout += achievement->name;
+                    recout += achievement->name[0];
 #endif
                     if (!lookupreward)
                     {
@@ -256,7 +256,7 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
 #if VERSION_STRING < Cata
                         recout += achievement->rewardName[sWorld.getDbcLocaleLanguageId()];
 #else
-                        recout += achievement->rewardName;
+                        recout += achievement->rewardName[0];
 #endif
                         recout += "|r";
                     }
@@ -363,7 +363,7 @@ bool ChatHandler::HandleLookupFactionCommand(const char* args, WorldSession* m_s
 #if VERSION_STRING < Cata
             std::string y = std::string(faction->Name[sWorld.getDbcLocaleLanguageId()]);
 #else
-            std::string y = std::string(faction->Name);
+            std::string y = std::string(faction->Name[0]);
 #endif
             AscEmu::Util::Strings::toLowerCase(y);
             if (AscEmu::Util::Strings::contains(x, y))
@@ -371,7 +371,7 @@ bool ChatHandler::HandleLookupFactionCommand(const char* args, WorldSession* m_s
 #if VERSION_STRING < Cata
                 SendHighlightedName(m_session, "Faction", faction->Name[sWorld.getDbcLocaleLanguageId()], y, x, faction->ID);
 #else
-                SendHighlightedName(m_session, "Faction", faction->Name, y, x, faction->ID);
+                SendHighlightedName(m_session, "Faction", faction->Name[0], y, x, faction->ID);
 #endif
                 ++count;
                 if (count == 25)
@@ -654,7 +654,7 @@ bool ChatHandler::HandleLookupSkillCommand(const char* args, WorldSession* m_ses
 #if VERSION_STRING < Cata
         std::string y = std::string(skill_line->Name[sWorld.getDbcLocaleLanguageId()]);
 #else
-        std::string y = std::string(skill_line->Name);
+        std::string y = std::string(skill_line->Name[0]);
 #endif
         AscEmu::Util::Strings::toLowerCase(y);
         if (AscEmu::Util::Strings::contains(x, y))
@@ -662,7 +662,7 @@ bool ChatHandler::HandleLookupSkillCommand(const char* args, WorldSession* m_ses
 #if VERSION_STRING < Cata
             SendHighlightedName(m_session, "Skill", skill_line->Name[sWorld.getDbcLocaleLanguageId()], y, x, skill_line->id);
 #else
-            SendHighlightedName(m_session, "Skill", skill_line->Name, y, x, skill_line->id);
+            SendHighlightedName(m_session, "Skill", skill_line->Name[0], y, x, skill_line->id);
 #endif
             ++count;
             if (count == 25)

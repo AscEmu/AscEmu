@@ -92,7 +92,7 @@ class SkillNameMgr
 #if VERSION_STRING < Cata
                 char* SkillName = skill_line->Name[sWorld.getDbcLocaleLanguageId()];
 #else
-                char* SkillName = skill_line->Name;
+                char* SkillName = skill_line->Name[0];
 #endif
 
                 SkillNames[SkillID] = new char [strlen(SkillName) + 1];

@@ -49,6 +49,47 @@ namespace DBC
         return 0;
     }
 
+    int DBCLoader::getVersionIdForAEVersion()
+    {
+        switch (VERSION_STRING)
+        {
+            case Classic:
+                return 0;
+            case TBC:
+                return 1;
+            case WotLK:
+                return 2;
+            case Cata:
+                return 3;
+            case Mop:
+                return 4;
+            default:
+                return 0;
+        }
+    }
+
+    bool DBCLoader::hasFormat(std::string _dbcFile)
+    {
+        for (auto formats : dbcFieldDefines)
+            if (formats.first == _dbcFile)
+                return true;
+        return false;
+    }
+
+    std::string DBCLoader::GetFormat(std::string _dbcFile)
+    {
+        for (auto formats : dbcFieldDefines)
+        {
+            if (formats.first == _dbcFile)
+            {
+                std::string format = formats.second.format[getVersionIdForAEVersion()];
+                return format;
+            }
+        }
+
+        return "";
+    }
+
     uint32_t DBCLoader::GetFormatRecordSize(const char* dbc_format, int32_t* index_pos /* = NULL */)
     {
         uint32_t record_size = 0;
@@ -84,7 +125,7 @@ namespace DBC
                 ASSERT(false && "Attempted to load DBC files that do not have field types that match what is in the core. Check DBC\\DBCStructures.hpp or your DBC files.");
                 break;
             default:
-                ASSERT(false && "Unknown field format character in DBC\\DBCStructures.hpp");
+                ASSERT(false && "Unknown field format character in DBC\\DBCStructures.hpp - %s", dbc_format[x]);
                 break;
             }
         }
