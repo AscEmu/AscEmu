@@ -724,7 +724,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
 
         if (fields[29].GetUInt32() != 0 || fields[29].GetUInt32() > creatureProperties.MinDamage)
         {
-            creatureProperties.MaxDamage = fields[26].GetUInt32();
+            creatureProperties.MaxDamage = fields[29].GetUInt32();
         }
         else
         {
