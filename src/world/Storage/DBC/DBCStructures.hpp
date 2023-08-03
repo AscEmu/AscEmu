@@ -309,7 +309,7 @@ static std::map<std::string, MultiversionFormatTable> dbcFieldDefines =
     {
         "GemProperties.dbc",
         {
-            "nixxi"/*Classic*/,
+            ""/*Classic*/,
             "nixxi"/*BC*/,
             "nixxi"/*WotLK*/,
             "nixxix"/*Cata*/,
@@ -2292,6 +2292,7 @@ namespace DBC::Structures
 #endif
     };
 
+#if VERSION_STRING > Classic
     struct GemPropertiesEntry
     {
         uint32_t Entry;                                             // 0
@@ -2300,6 +2301,7 @@ namespace DBC::Structures
         //uint32_t unk2;                                            // 3 bool
         uint32_t SocketMask;                                        // 4
     };
+#endif
 
 #if VERSION_STRING >= WotLK
     struct GlyphPropertiesEntry
