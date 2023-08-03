@@ -8,10 +8,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Storage/DBC/DBCGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
-
 #if VERSION_STRING >= Cata
-#include "Objects/Units/Players/PlayerDefines.hpp"
-#include "Spell/SpellAuras.h"
+    #include "Objects/Units/Players/PlayerDefines.hpp"
+    #include "Spell/SpellAuras.h"
 #endif
 
 typedef std::map<WMOAreaTableTripple, DBC::Structures::WMOAreaTableEntry const*> WMOAreaInfoByTripple;
@@ -60,8 +59,6 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::GameObjectDisplayInfoEntry> sGameOb
 SERVER_DECL DBC::DBCStorage<DBC::Structures::EmotesTextEntry> sEmotesTextStore;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellItemEnchantmentEntry> sSpellItemEnchantmentStore;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GemPropertiesEntry> sGemPropertiesStore;
-
-
 
 SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemRandomSuffixEntry> sItemRandomSuffixStore;
 
@@ -416,29 +413,6 @@ bool LoadDBCs()
 
     return true;
 }
-
-DBC::Structures::CharStartOutfitEntry const* getStartOutfitByRaceClass(uint8_t race, uint8_t class_, uint8_t gender)
-{
-    const auto itr = sCharStartOutfitMap.find(race | (class_ << 8) | (gender << 16));
-    if (itr != sCharStartOutfitMap.end())
-        return itr->second;
-
-    return nullptr;
-}
-
-DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 root_id, int32 adt_id, int32 group_id)
-{
-    auto iter = sWMOAreaInfoByTripple.find(WMOAreaTableTripple(root_id, adt_id, group_id));
-    if (iter == sWMOAreaInfoByTripple.end())
-        return nullptr;
-    return iter->second;
-}
-
-DBC::Structures::MapDifficulty const* getMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties difficulty)
-{
-    MapDifficultyMap::const_iterator itr = sMapDifficultyMap.find(Util::MAKE_PAIR32(mapId, difficulty));
-    return itr != sMapDifficultyMap.end() ? &itr->second : nullptr;
-}
 #endif
 
 #ifdef AE_TBC
@@ -656,30 +630,6 @@ bool LoadDBCs()
 
     return true;
 }
-
-DBC::Structures::CharStartOutfitEntry const* getStartOutfitByRaceClass(uint8_t race, uint8_t class_, uint8_t gender)
-{
-    const auto itr = sCharStartOutfitMap.find(race | (class_ << 8) | (gender << 16));
-    if (itr != sCharStartOutfitMap.end())
-        return itr->second;
-
-    return nullptr;
-}
-
-DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 root_id, int32 adt_id, int32 group_id)
-{
-    auto iter = sWMOAreaInfoByTripple.find(WMOAreaTableTripple(root_id, adt_id, group_id));
-    if (iter == sWMOAreaInfoByTripple.end())
-        return nullptr;
-    return iter->second;
-}
-
-DBC::Structures::MapDifficulty const* getMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties difficulty)
-{
-    MapDifficultyMap::const_iterator itr = sMapDifficultyMap.find(Util::MAKE_PAIR32(mapId, difficulty));
-    return itr != sMapDifficultyMap.end() ? &itr->second : nullptr;
-}
-
 #endif
 
 #ifdef AE_WOTLK
@@ -926,54 +876,6 @@ bool LoadDBCs()
 
     return true;
 }
-
-DBC::Structures::CharStartOutfitEntry const* getStartOutfitByRaceClass(uint8_t race, uint8_t class_, uint8_t gender)
-{
-    const auto itr = sCharStartOutfitMap.find(race | (class_ << 8) | (gender << 16));
-    if (itr != sCharStartOutfitMap.end())
-        return itr->second;
-
-    return nullptr;
-}
-
-DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 root_id, int32 adt_id, int32 group_id)
-{
-    auto iter = sWMOAreaInfoByTripple.find(WMOAreaTableTripple(root_id, adt_id, group_id));
-    if (iter == sWMOAreaInfoByTripple.end())
-        return nullptr;
-    return iter->second;
-}
-
-DBC::Structures::MapDifficulty const* getMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties difficulty)
-{
-    MapDifficultyMap::const_iterator itr = sMapDifficultyMap.find(Util::MAKE_PAIR32(static_cast<uint16_t>(mapId), static_cast<uint16_t>(difficulty)));
-    return itr != sMapDifficultyMap.end() ? &itr->second : nullptr;
-}
-
-DBC::Structures::MapDifficulty const* getDownscaledMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties& difficulty)
-{
-    uint32_t tmpDiff = difficulty;
-    DBC::Structures::MapDifficulty const* mapDiff = getMapDifficultyData(mapId, InstanceDifficulty::Difficulties(tmpDiff));
-    if (!mapDiff)
-    {
-        if (tmpDiff > 1) // heroic, downscale to normal
-            tmpDiff -= 2;
-        else
-            tmpDiff -= 1;   // any non-normal mode for raids like tbc (only one mode)
-
-        // pull new data
-        mapDiff = getMapDifficultyData(mapId, InstanceDifficulty::Difficulties(tmpDiff)); // we are 10 normal or 25 normal
-        if (!mapDiff)
-        {
-            tmpDiff -= 1;
-            mapDiff = getMapDifficultyData(mapId, InstanceDifficulty::Difficulties(tmpDiff)); // 10 normal
-        }
-    }
-
-    difficulty = InstanceDifficulty::Difficulties(tmpDiff);
-    return mapDiff;
-}
-
 #endif
 
 #ifdef AE_CATA
@@ -1281,67 +1183,6 @@ bool LoadDBCs()
     }
 
     return true;
-}
-
-DBC::Structures::CharStartOutfitEntry const* getStartOutfitByRaceClass(uint8_t race, uint8_t class_, uint8_t gender)
-{
-    const auto itr = sCharStartOutfitMap.find(race | (class_ << 8) | (gender << 16));
-    if (itr != sCharStartOutfitMap.end())
-        return itr->second;
-
-    return nullptr;
-}
-
-DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 root_id, int32 adt_id, int32 group_id)
-{
-    auto iter = sWMOAreaInfoByTripple.find(WMOAreaTableTripple(root_id, adt_id, group_id));
-    if (iter == sWMOAreaInfoByTripple.end())
-        return nullptr;
-    return iter->second;
-}
-
-DBC::Structures::SpellEffectEntry const* GetSpellEffectEntry(uint32 spellId, uint8_t effect)
-{
-    DBC::Structures::SpellEffectMap::const_iterator itr = sSpellEffectMap.find(spellId);
-    if (itr == sSpellEffectMap.end())
-        return nullptr;
-
-    return itr->second.effects[effect];
-}
-
-DBC::Structures::MapDifficulty const* getMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties difficulty)
-{
-    MapDifficultyMap::const_iterator itr = sMapDifficultyMap.find(Util::MAKE_PAIR32(mapId, difficulty));
-    return itr != sMapDifficultyMap.end() ? &itr->second : nullptr;
-}
-
-DBC::Structures::MapDifficulty const* getDownscaledMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties& difficulty)
-{
-    uint32_t tmpDiff = difficulty;
-    DBC::Structures::MapDifficulty const* mapDiff = getMapDifficultyData(mapId, InstanceDifficulty::Difficulties(tmpDiff));
-    if (!mapDiff)
-    {
-        if (tmpDiff > 1) // heroic, downscale to normal
-            tmpDiff -= 2;
-        else
-            tmpDiff -= 1;   // any non-normal mode for raids like tbc (only one mode)
-
-        // pull new data
-        mapDiff = getMapDifficultyData(mapId, InstanceDifficulty::Difficulties(tmpDiff)); // we are 10 normal or 25 normal
-        if (!mapDiff)
-        {
-            tmpDiff -= 1;
-            mapDiff = getMapDifficultyData(mapId, InstanceDifficulty::Difficulties(tmpDiff)); // 10 normal
-        }
-    }
-
-    difficulty = InstanceDifficulty::Difficulties(tmpDiff);
-    return mapDiff;
-}
-
-uint8_t getPowerIndexByClass(uint8_t playerClass, uint8_t powerType)
-{
-    return powerIndexByClass[playerClass][powerType];
 }
 #endif
 
@@ -1651,25 +1492,11 @@ bool LoadDBCs()
 
     return true;
 }
+#endif
 
-DBC::Structures::CharStartOutfitEntry const* getStartOutfitByRaceClass(uint8_t race, uint8_t class_, uint8_t gender)
-{
-    const auto itr = sCharStartOutfitMap.find(race | (class_ << 8) | (gender << 16));
-    if (itr != sCharStartOutfitMap.end())
-        return itr->second;
 
-    return nullptr;
-}
-
-DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 root_id, int32 adt_id, int32 group_id)
-{
-    auto iter = sWMOAreaInfoByTripple.find(WMOAreaTableTripple(root_id, adt_id, group_id));
-    if (iter == sWMOAreaInfoByTripple.end())
-        return nullptr;
-    return iter->second;
-}
-
-DBC::Structures::SpellEffectEntry const* GetSpellEffectEntry(uint32 spellId, uint8_t effect)
+#if VERSION_STRING >= Cata
+DBC::Structures::SpellEffectEntry const* GetSpellEffectEntry(uint32_t spellId, uint8_t effect)
 {
     DBC::Structures::SpellEffectMap::const_iterator itr = sSpellEffectMap.find(spellId);
     if (itr == sSpellEffectMap.end())
@@ -1678,12 +1505,13 @@ DBC::Structures::SpellEffectEntry const* GetSpellEffectEntry(uint32 spellId, uin
     return itr->second.effects[effect];
 }
 
-DBC::Structures::MapDifficulty const* getMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties difficulty)
+uint8_t getPowerIndexByClass(uint8_t playerClass, uint8_t powerType)
 {
-    MapDifficultyMap::const_iterator itr = sMapDifficultyMap.find(Util::MAKE_PAIR32(mapId, difficulty));
-    return itr != sMapDifficultyMap.end() ? &itr->second : nullptr;
+    return powerIndexByClass[playerClass][powerType];
 }
+#endif
 
+#if VERSION_STRING >= WotLK
 DBC::Structures::MapDifficulty const* getDownscaledMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties& difficulty)
 {
     uint32_t tmpDiff = difficulty;
@@ -1707,12 +1535,30 @@ DBC::Structures::MapDifficulty const* getDownscaledMapDifficultyData(uint32_t ma
     difficulty = InstanceDifficulty::Difficulties(tmpDiff);
     return mapDiff;
 }
-
-uint8_t getPowerIndexByClass(uint8_t playerClass, uint8_t powerType)
-{
-    return powerIndexByClass[playerClass][powerType];
-}
 #endif
+
+DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32_t root_id, int32_t adt_id, int32_t group_id)
+{
+    auto iter = sWMOAreaInfoByTripple.find(WMOAreaTableTripple(root_id, adt_id, group_id));
+    if (iter == sWMOAreaInfoByTripple.end())
+        return nullptr;
+    return iter->second;
+}
+
+DBC::Structures::CharStartOutfitEntry const* getStartOutfitByRaceClass(uint8_t race, uint8_t class_, uint8_t gender)
+{
+    const auto itr = sCharStartOutfitMap.find(race | (class_ << 8) | (gender << 16));
+    if (itr != sCharStartOutfitMap.end())
+        return itr->second;
+
+    return nullptr;
+}
+
+DBC::Structures::MapDifficulty const* getMapDifficultyData(uint32_t mapId, InstanceDifficulty::Difficulties difficulty)
+{
+    MapDifficultyMap::const_iterator itr = sMapDifficultyMap.find(Util::MAKE_PAIR32(mapId, difficulty));
+    return itr != sMapDifficultyMap.end() ? &itr->second : nullptr;
+}
 
 std::string generateName(uint32_t type)
 {

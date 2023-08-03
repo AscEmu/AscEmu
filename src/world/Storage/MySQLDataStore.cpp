@@ -722,9 +722,9 @@ void MySQLDataStore::loadCreaturePropertiesTable()
             creatureProperties.MinDamage = 5;
         }
 
-        if (fields[29].GetUInt32() != 0 || fields[29].GetUInt32() > creatureProperties.MinDamage)
+        if (fields[29].GetUInt32() != 0 || fields[29].GetFloat() > creatureProperties.MinDamage)
         {
-            creatureProperties.MaxDamage = fields[29].GetUInt32();
+            creatureProperties.MaxDamage = fields[29].GetFloat();
         }
         else
         {
