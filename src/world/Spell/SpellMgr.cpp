@@ -609,13 +609,14 @@ void SpellMgr::loadSpellInfoData()
             spellInfo.setManaPerSecondPerLevel(dbcSpellEntry->GetSpellPower()->manaPerSecondPerLevel);
         }
 
-        // Data from SpellReagents.dbc
-        if (dbcSpellEntry->SpellReagentsId && dbcSpellEntry->GetSpellReagents() != nullptr)
+        // Data from SpellReagents.db2
+        if (dbcSpellEntry->SpellReagentsId && sSpellReagentsStore.LookupEntry(dbcSpellEntry->SpellReagentsId) != nullptr)
         {
             for (uint8_t j = 0; j < MAX_SPELL_REAGENTS; ++j)
             {
-                spellInfo.setReagent(dbcSpellEntry->GetSpellReagents()->Reagent[j], j);
-                spellInfo.setReagentCount(dbcSpellEntry->GetSpellReagents()->ReagentCount[j], j);
+                const auto spellReagent = sSpellReagentsStore.LookupEntry(dbcSpellEntry->SpellReagentsId);
+                spellInfo.setReagent(spellReagent->Reagent[j], j);
+                spellInfo.setReagentCount(spellReagent->ReagentCount[j], j);
             }
         }
 

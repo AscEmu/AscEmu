@@ -15,4 +15,8 @@ extern SERVER_DECL DB2Storage<DB2::Structures::ItemEntry>                    sIt
 extern SERVER_DECL DB2Storage<DB2::Structures::ItemCurrencyCostEntry>        sItemCurrencyCostStore;
 extern SERVER_DECL DB2Storage<DB2::Structures::ItemExtendedCostEntry>        sItemExtendedCostStore;
 
+#if VERSION_STRING == Mop
+extern SERVER_DECL DB2Storage <DB2::Structures::SpellReagentsEntry>          sSpellReagentsStore;
+#endif
+
 void LoadDB2Stores();

@@ -18,6 +18,7 @@ namespace DB2::Structures
         const char item_entry_format[] = "niiiiiii";
         const char item_currency_cost_format[] = "di";
         const char item_extended_cost_format[] = "niiiiiiiiiiiiiixiiiiiiiiiixxxxx";
+        const char spell_reagents_format[] = "diiiiiiiiiiiiiiiiii";
     }
 
     struct ItemEntry
@@ -52,4 +53,13 @@ namespace DB2::Structures
         uint32_t reqcurrcount[5];         // 21-25
         //uint32_t unkunk[5];             // 26-30
     };
+
+#if VERSION_STRING == Mop
+    struct SpellReagentsEntry
+    {
+        //uint32_t Id;                    // 0
+        int32_t Reagent[8];               // 54-61
+        uint32_t ReagentCount[10];        // 62-69
+    };
+#endif
 }

@@ -15,6 +15,10 @@ SERVER_DECL DB2Storage <DB2::Structures::ItemEntry>                    sItemStor
 SERVER_DECL DB2Storage <DB2::Structures::ItemCurrencyCostEntry>        sItemCurrencyCostStore(DB2::Structures::item_currency_cost_format);
 SERVER_DECL DB2Storage <DB2::Structures::ItemExtendedCostEntry>        sItemExtendedCostStore(DB2::Structures::item_extended_cost_format);
 
+#if VERSION_STRING == Mop
+SERVER_DECL DB2Storage <DB2::Structures::SpellReagentsEntry>        sSpellReagentsStore(DB2::Structures::spell_reagents_format);
+#endif
+
 typedef std::list<std::string> StoreProblemList1;
 uint32_t DB2_Count = 0;
 
@@ -77,6 +81,10 @@ void LoadDB2Stores()
     LoadDB2(availableDb2Locales, bad_db2_files, sItemStore, db2Path, "Item.db2");
     LoadDB2(availableDb2Locales, bad_db2_files, sItemCurrencyCostStore, db2Path, "ItemCurrencyCost.db2");
     LoadDB2(availableDb2Locales, bad_db2_files, sItemExtendedCostStore, db2Path, "ItemExtendedCost.db2");
+
+#if VERSION_STRING == Mop
+    LoadDB2(availableDb2Locales, bad_db2_files, sItemExtendedCostStore, db2Path, "SpellReagents.db2");
+#endif
 
     if (bad_db2_files.size() >= DB2_Count)
     {

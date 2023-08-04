@@ -203,7 +203,7 @@ static std::map<std::string, MultiversionFormatTable> dbcFieldDefines =
             "nisxfxxxxxxxxxxffxxxxxxx"/*BC*/,
             "nisxfxxxxxxxxxxffxxxxxxxxxxx"/*WotLK*/,
             "nisxxxxxxxxxxxxffxxxxxxxxxxxxxx"/*Cata*/,
-            "nisxxxxxxxxxxxxffxxxxxxxxxxxxxx"/*Mop*/
+            "nisxxxxxxxxxxxxffxxxxxxxxxxxxxxxxx"/*Mop*/
         }
     },
     {
@@ -349,7 +349,7 @@ static std::map<std::string, MultiversionFormatTable> dbcFieldDefines =
     {
         "gtChanceToMeleeCrit.dbc",
         {
-            "f"/*Classic*/,
+            ""/*Classic*/,
             "f"/*BC*/,
             "f"/*WotLK*/,
             "xf"/*Cata*/,
@@ -359,7 +359,7 @@ static std::map<std::string, MultiversionFormatTable> dbcFieldDefines =
     {
         "gtChanceToMeleeCritBase.dbc",
         {
-            "f"/*Classic*/,
+            ""/*Classic*/,
             "f"/*BC*/,
             "f"/*WotLK*/,
             "xf"/*Cata*/,
@@ -369,7 +369,7 @@ static std::map<std::string, MultiversionFormatTable> dbcFieldDefines =
     {
         "gtChanceToSpellCrit.dbc",
         {
-            "f"/*Classic*/,
+            ""/*Classic*/,
             "f"/*BC*/,
             "f"/*WotLK*/,
             "xf"/*Cata*/,
@@ -379,7 +379,7 @@ static std::map<std::string, MultiversionFormatTable> dbcFieldDefines =
     {
         "gtChanceToSpellCritBase.dbc",
         {
-            "f"/*Classic*/,
+            ""/*Classic*/,
             "f"/*BC*/,
             "f"/*WotLK*/,
             "xf"/*Cata*/,
@@ -389,7 +389,7 @@ static std::map<std::string, MultiversionFormatTable> dbcFieldDefines =
     {
         "gtCombatRatings.dbc",
         {
-            "f"/*Classic*/,
+            ""/*Classic*/,
             "f"/*BC*/,
             "f"/*WotLK*/,
             "xf"/*Cata*/,
@@ -399,7 +399,7 @@ static std::map<std::string, MultiversionFormatTable> dbcFieldDefines =
     {
         "gtOCTRegenHP.dbc",
         {
-            "f"/*Classic*/,
+            ""/*Classic*/,
             "f"/*BC*/,
             "f"/*WotLK*/,
             ""/*Cata*/,
@@ -409,7 +409,7 @@ static std::map<std::string, MultiversionFormatTable> dbcFieldDefines =
     {
         "gtOCTRegenMP.dbc",
         {
-            "f"/*Classic*/,
+            ""/*Classic*/,
             "f"/*BC*/,
             "f"/*WotLK*/,
             "df"/*Cata*/,
@@ -449,7 +449,7 @@ static std::map<std::string, MultiversionFormatTable> dbcFieldDefines =
     {
         "gtRegenHPPerSpt.dbc",
         {
-            "f"/*Classic*/,
+            ""/*Classic*/,
             "f"/*BC*/,
             "f"/*WotLK*/,
             "xf"/*Cata*/,
@@ -459,7 +459,7 @@ static std::map<std::string, MultiversionFormatTable> dbcFieldDefines =
     {
         "gtRegenMPPerSpt.dbc",
         {
-            "f"/*Classic*/,
+            ""/*Classic*/,
             "f"/*BC*/,
             "f"/*WotLK*/,
             "xf"/*Cata*/,
@@ -489,7 +489,7 @@ static std::map<std::string, MultiversionFormatTable> dbcFieldDefines =
     {
         "Item.dbc",
         {
-            "niii"/*Classic*/,
+            ""/*Classic*/,
             "niii"/*BC*/,
             "niiiiiii"/*WotLK*/,
             ""/*Cata - DB2*/,
@@ -509,7 +509,7 @@ static std::map<std::string, MultiversionFormatTable> dbcFieldDefines =
     {
         "ItemExtendedCost.dbc",
         {
-            "niiiiiiiiiiiii"/*Classic*/,
+            ""/*Classic*/,
             "niiiiiiiiiiiii"/*BC*/,
             "niiiiiiiiiiiiiix"/*WotLK*/,
             ""/*Cata - DB2*/,
@@ -539,7 +539,7 @@ static std::map<std::string, MultiversionFormatTable> dbcFieldDefines =
     {
         "ItemRandomSuffix.dbc",
         {
-            "nssssssssxxiiiiii"/*Classic*/,
+            ""/*Classic*/,
             "nssssssssssssssssxxiiiiii"/*BC*/,
             "nssssssssssssssssxxiiixxiiixx"/*WotLK*/,
             "nsxiiiiiiiiii"/*Cata*/,
@@ -963,7 +963,7 @@ static std::map<std::string, MultiversionFormatTable> dbcFieldDefines =
             ""/*BC*/,
             ""/*WotLK*/,
             "diiiiiiiiiiiiiiii"/*Cata*/,
-            "diiiiiiiiiiiiiiiixx"/*Mop*/
+            ""/*Mop DB2*/
         }
     },
     {
@@ -1009,7 +1009,7 @@ static std::map<std::string, MultiversionFormatTable> dbcFieldDefines =
     {
         "SummonProperties.dbc",
         {
-            "niiiii"/*Classic*/,
+            ""/*Classic*/,
             "niiiii"/*BC*/,
             "niiiii"/*WotLK*/,
             "niiiii"/*Cata*/,
@@ -2620,6 +2620,32 @@ namespace DBC::Structures
         bool isBattlegroundOrArena() const { return map_type == MAP_BATTLEGROUND; }
         bool isWorldMap() const { return map_type == MAP_COMMON; }
 
+        uint32_t getAddon() const
+        {
+#ifdef AE_CLASSIC
+            const uint32_t addon = 0;
+#endif
+            return addon;
+        }
+
+#if VERSION_STRING <= TBC
+        uint32_t getResetTimeNormal() const
+        {
+#ifdef AE_CLASSIC
+            const uint32_t reset_raid_time = 604800;
+#endif
+            return reset_raid_time;
+        }
+
+        uint32_t getResetTimeHeroic() const
+        {
+#ifdef AE_CLASSIC
+            const uint32_t reset_heroic_tim = 0;
+#endif
+            return reset_heroic_tim;
+        }
+#endif
+
 #if VERSION_STRING >= TBC
         bool getEntrancePos(int32_t& mapid, float& x, float& y) const
         {
@@ -3048,6 +3074,7 @@ namespace DBC::Structures
 #endif
     };
 
+#if VERSION_STRING < Mop
     // SpellReagents.dbc
     struct SpellReagentsEntry
     {
@@ -3055,6 +3082,7 @@ namespace DBC::Structures
         int32_t Reagent[MAX_SPELL_REAGENTS];                        // 54-61
         uint32_t ReagentCount[MAX_SPELL_REAGENTS];                // 62-69
     };
+#endif
 
     // SpellScaling.dbc
     struct SpellScalingEntry
@@ -4108,7 +4136,7 @@ namespace DBC::Structures
         SpellInterruptsEntry const* GetSpellInterrupts() const;
         SpellLevelsEntry const* GetSpellLevels() const;
         SpellPowerEntry const* GetSpellPower() const;
-        SpellReagentsEntry const* GetSpellReagents() const;
+        //SpellReagentsEntry const* GetSpellReagents() const;
         SpellScalingEntry const* GetSpellScaling() const;
         SpellShapeshiftEntry const* GetSpellShapeshift() const;
         SpellTargetRestrictionsEntry const* GetSpellTargetRestrictions() const;

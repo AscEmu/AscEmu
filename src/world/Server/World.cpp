@@ -789,7 +789,7 @@ bool World::loadDbcDb2Stores()
 #endif
 
     sLogger.info("World : Loading DBC files...");
-    if (!LoadDBCs())
+    if (!loadDBCs())
     {
         sLogger.fatal("One or more of the DBC files are missing.", "These are absolutely necessary for the server to function.", "The server will not start without them.", "");
         return false;
