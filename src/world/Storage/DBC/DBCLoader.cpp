@@ -362,7 +362,7 @@ namespace DBC
         return true;
     }
 
-    char* DBCLoader::AutoProduceData(const char* dbc_format, uint32_t& record_count, char**& index_table, uint32_t sql_record_count, uint32_t sql_highest_index, char *& sql_data_table)
+    char* DBCLoader::AutoProduceData(const char* dbc_format, uint32_t& record_count, char**& index_table)
     {
         if (strlen(dbc_format) != m_field_count) return NULL;
 
@@ -382,11 +382,6 @@ namespace DBC
                 }
             }
 
-            if (sql_highest_index > max_index)
-            {
-                max_index = sql_highest_index;
-            }
-
             ++max_index;
             record_count = max_index;
             index_table = new char*[max_index];
@@ -394,11 +389,11 @@ namespace DBC
         }
         else
         {
-            record_count = m_record_count + sql_record_count;
-            index_table = new char*[m_record_count + sql_record_count];
+            record_count = m_record_count;
+            index_table = new char*[m_record_count];
         }
 
-        char* data_table = new char[(m_record_count + sql_record_count) * record_size];
+        char* data_table = new char[(m_record_count) * record_size];
         uint32_t offset = 0;
 
         for (uint32_t y = 0; y < m_record_count; ++y)
@@ -448,7 +443,6 @@ namespace DBC
             }
         }
 
-        sql_data_table = data_table + offset;
         return data_table;
     }
 

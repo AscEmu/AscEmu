@@ -124,13 +124,8 @@ namespace DBC
         }
 
         ++g_dbc_file_count;
-        DBC::SQL::SqlDbc* sql = NULL;
-        if (custom_format)
-        {
-            assert(false && "SqlDbc not yet implemented");
-        }
 
-        if (!storage.Load(dbc_file_path.c_str(), sql))
+        if (!storage.Load(dbc_file_path.c_str()))
         {
             // We failed to load the dbc, so work out if it's incompatible or just doesn't exist
             if (auto file = fopen(dbc_file_path.c_str(), "rb"))
@@ -152,7 +147,5 @@ namespace DBC
                 errors.push_back(dbc_file_path);
             }
         }
-
-        delete sql;
     }
 }

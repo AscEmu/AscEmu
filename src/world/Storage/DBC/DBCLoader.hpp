@@ -54,7 +54,7 @@ namespace DBC
 
         bool IsLoaded();
 
-        char* AutoProduceData(const char* dbc_format, uint32_t& record_count, char**& index_table, uint32_t sql_record_count, uint32_t sql_highest_index, char *& sql_data_table);
+        char* AutoProduceData(const char* dbc_format, uint32_t& record_count, char**& index_table);
         char* AutoProduceStrings(const char* dbc_format, char* data_table);
         static int getVersionIdForAEVersion();
         static bool hasFormat(std::string _dbcFile);

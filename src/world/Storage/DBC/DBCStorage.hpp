@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Common.hpp"
-#include "DBCSQL.hpp"
 #include "DBCLoader.hpp"
 
 namespace DBC
@@ -69,7 +68,7 @@ namespace DBC
             return m_field_count;
         }
 
-        bool Load(char const* dbc_filename, DBC::SQL::SqlDbc* sql)
+        bool Load(char const* dbc_filename)
         {
             DBC::DBCLoader dbc_loader;
 
@@ -85,20 +84,11 @@ namespace DBC
                 if (!dbc_loader.LoadDB2(dbc_filename, m_format))
                     return false;
 
-            uint32 sql_record_count = 0;
-            uint32 sql_highest_index = 0;
-            // SQL not yet implemented
-            //auto result = 0;
-            // Load data from SQL
-            if (sql)
-            {
-                assert(false && "SqlDbc not yet implemented");
-            }
 
-            char* sql_data_table = NULL;
+
             m_field_count = dbc_loader.GetNumColumns();
 
-            m_data_table = reinterpret_cast<T*>(dbc_loader.AutoProduceData(m_format, m_row_count, m_index_table.as_char, sql_record_count, sql_highest_index, sql_data_table));
+            m_data_table = reinterpret_cast<T*>(dbc_loader.AutoProduceData(m_format, m_row_count, m_index_table.as_char));
 
             m_string_pool_list.push_back(dbc_loader.AutoProduceStrings(m_format, reinterpret_cast<char*>(m_data_table)));
 
