@@ -42,13 +42,6 @@ file(GLOB SRC_STORAGE_FILES Storage/*.cpp Storage/*.h Storage/*.hpp)
 file(GLOB SRC_STORAGE_DBC_FILES Storage/DBC/*.cpp Storage/DBC/*.h Storage/DBC/*.hpp)
 file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
 
-# version-specific includes.
-if ("${ASCEMU_VERSION}" STREQUAL "Cata")
-    file(GLOB SRC_STORAGE_DB2_FILES Storage/DB2/*.cpp Storage/DB2/*.h Storage/DB2/*.hpp)
-elseif ("${ASCEMU_VERSION}" STREQUAL "Mop")
-    file(GLOB SRC_STORAGE_DB2_FILES Storage/DB2/*.cpp Storage/DB2/*.h Storage/DB2/*.hpp)
-endif ()
-
 if (WIN32)
     set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/resources.rc")
 endif ()
@@ -93,19 +86,6 @@ set(WORLD_SRCS
     ${SRC_STORAGE_DBC_FILES}
     ${SRC_LOCAL_DIR}
 )
-
-# version-specific includes.
-if ("${ASCEMU_VERSION}" STREQUAL "Cata")
-set(WORLD_SRCS
-    ${WORLD_SRCS}
-    ${SRC_STORAGE_DB2_FILES}
-)
-elseif ("${ASCEMU_VERSION}" STREQUAL "Mop")
-set(WORLD_SRCS
-    ${WORLD_SRCS}
-    ${SRC_STORAGE_DB2_FILES}
-)
-endif ()
 
 include_directories(
     ${OPENSSL_INCLUDE_DIR}
@@ -161,13 +141,6 @@ source_group(Spell\\Customization FILES ${SRC_SPELL_CUSTOM_FILES})
 source_group(Spell\\Definitions FILES ${SRC_SPELL_DEFINITIONS_FILES})
 source_group(Storage FILES ${SRC_STORAGE_FILES})
 source_group(Storage\\DBC FILES ${SRC_STORAGE_DBC_FILES})
-
-# version-specific includes.
-if ("${ASCEMU_VERSION}" STREQUAL "Cata")
-source_group(Storage\\DB2 FILES ${SRC_STORAGE_DB2_FILES})
-elseif ("${ASCEMU_VERSION}" STREQUAL "Mop")
-source_group(Storage\\DB2 FILES ${SRC_STORAGE_DB2_FILES})
-endif ()
 
 add_executable(${PROJECT_NAME} ${WORLD_SRCS} ${APP_ICON_RESOURCE_WINDOWS})
 

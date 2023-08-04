@@ -775,12 +775,7 @@ void WorldSession::handleItemRefundRequestOpcode(WorldPacket& recvPacket)
 
     uint32_t error = 1;
 
-    
-#if VERSION_STRING < Cata
     DBC::Structures::ItemExtendedCostEntry const* itemExtendedCostEntry = nullptr;
-#else
-    DB2::Structures::ItemExtendedCostEntry const* itemExtendedCostEntry = nullptr;
-#endif
     ItemProperties const* itemProperties = nullptr;
 
     auto item = _player->getItemInterface()->GetItemByGUID(srlPacket.itemGuid);

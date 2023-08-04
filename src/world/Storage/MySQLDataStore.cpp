@@ -2567,7 +2567,7 @@ void MySQLDataStore::loadPlayerCreateInfoItems()
 #if VERSION_STRING < Cata
         auto player_item = sMySQLStore.getItemProperties(item_id);
 #else
-        DB2::Structures::ItemEntry const* player_item = sItemStore.LookupEntry(item_id);
+        DBC::Structures::ItemEntry const* player_item = sItemStore.LookupEntry(item_id);
 #endif
         if (player_item == nullptr)
         {

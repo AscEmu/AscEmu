@@ -102,11 +102,11 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::SummonPropertiesEntry> sSummonPrope
 SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleEntry> sVehicleStore; // todo: available for versions > WotLK
 SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleSeatEntry> sVehicleSeatStore; // todo: available for versions > WotLK
 
+SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemEntry> sItemStore; // todo: available for versions > Classic
+SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemExtendedCostEntry> sItemExtendedCostStore; // todo: available for versions > Classic
 #if VERSION_STRING < Cata
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GtOCTRegenHPEntry> sGtOCTRegenHPStore; // todo: available for versions > Classic
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GtRegenHPPerSptEntry> sGtRegenHPPerSptStore; // todo: available for versions > Classic
-SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemEntry> sItemStore; // todo: available for versions > Classic
-SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemExtendedCostEntry> sItemExtendedCostStore; // todo: available for versions > Classic
 SERVER_DECL DBC::DBCStorage<DBC::Structures::StableSlotPrices> sStableSlotPricesStore;
 #endif
 
@@ -165,6 +165,7 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::GtOCTClassCombatRatingScalarEntry> 
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GuildPerkSpellsEntry> sGuildPerkSpellsStore;
 
 SERVER_DECL DBC::DBCStorage<DBC::Structures::EmotesEntry> sEmotesStore;
+SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemCurrencyCostEntry> sItemCurrencyCostStore;
 
 SERVER_DECL DBC::DBCStorage<DBC::Structures::MountCapabilityEntry> sMountCapabilityStore;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::MountTypeEntry> sMountTypeStore;
@@ -189,9 +190,7 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellInterruptsEntry> sSpellInterru
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellLevelsEntry> sSpellLevelsStore;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellPowerEntry> sSpellPowerStore;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellScalingEntry> sSpellScalingStore;
-#if VERSION_STRING < Mop
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellReagentsEntry> sSpellReagentsStore;
-#endif
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellShapeshiftEntry> sSpellShapeshiftStore;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellTargetRestrictionsEntry> sSpellTargetRestrictionsStore;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellTotemsEntry> sSpellTotemsStore;
@@ -495,6 +494,9 @@ bool loadDBCs()
         DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGtRegenHPPerSptStore, dbc_path, "gtRegenHPPerSpt.dbc");
         DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sItemStore, dbc_path, "Item.dbc");
         DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sItemExtendedCostStore, dbc_path, "ItemExtendedCost.dbc");
+    #else
+        DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sItemStore, dbc_path, "Item.db2");
+        DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sItemExtendedCostStore, dbc_path, "ItemExtendedCost.db2");
     #endif
 
     #if VERSION_STRING < Mop
@@ -576,6 +578,10 @@ bool loadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGtOCTClassCombatRatingScalarStore, dbc_path, "gtOCTClassCombatRatingScalar.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGuildPerkSpellsStore, dbc_path, "GuildPerkSpells.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sEmotesStore, dbc_path, "Emotes.dbc");
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sItemCurrencyCostStore, dbc_path, "ItemCurrencyCost.db2");
+    {
+        sLogger.debug("Loaded %u rows from ItemCurrencyCost.db2", sItemCurrencyCostStore.GetNumRows());
+    }
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sMountCapabilityStore, dbc_path, "MountCapability.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sMountTypeStore, dbc_path, "MountType.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sPhaseStore, dbc_path, "Phase.dbc");
@@ -623,7 +629,9 @@ bool loadDBCs()
     #if VERSION_STRING < Mop
         DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sNumTalentsAtLevel, dbc_path, "NumTalentsAtLevel.dbc");
         DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTalentTreePrimarySpellsStore, dbc_path, "TalentTreePrimarySpells.dbc");
-        DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellReagentsStore, dbc_path, "SpellReagents.dbc"); // db2 on 548
+        DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellReagentsStore, dbc_path, "SpellReagents.dbc");
+    #else
+        DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellReagentsStore, dbc_path, "SpellReagents.db2");
     #endif
 #endif
 

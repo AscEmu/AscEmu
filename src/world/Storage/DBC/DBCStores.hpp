@@ -100,11 +100,13 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SummonPropertiesEntry> sSumm
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleEntry> sVehicleStore; // todo: available for versions > WotLK
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleSeatEntry> sVehicleSeatStore; // todo: available for versions > WotLK
 
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemEntry> sItemStore; // todo: available for versions > Classic
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemExtendedCostEntry> sItemExtendedCostStore; // todo: available for versions > Classic
+
 #if VERSION_STRING < Cata
     extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtOCTRegenHPEntry> sGtOCTRegenHPStore; // todo: available for versions > Classic
     extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtRegenHPPerSptEntry> sGtRegenHPPerSptStore; // todo: available for versions > Classic
-    extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemEntry> sItemStore; // todo: available for versions > Classic
-    extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemExtendedCostEntry> sItemExtendedCostStore; // todo: available for versions > Classic
+
     extern SERVER_DECL DBC::DBCStorage<DBC::Structures::StableSlotPrices> sStableSlotPricesStore;
 #endif
 
@@ -148,6 +150,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleSeatEntry> sVehicleSe
     extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtOCTClassCombatRatingScalarEntry> sGtOCTClassCombatRatingScalarStore;
     extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GuildPerkSpellsEntry> sGuildPerkSpellsStore;
     extern SERVER_DECL DBC::DBCStorage<DBC::Structures::EmotesEntry> sEmotesStore;
+    extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemCurrencyCostEntry> sItemCurrencyCostStore;
     extern SERVER_DECL DBC::DBCStorage<DBC::Structures::MountCapabilityEntry> sMountCapabilityStore;
     extern SERVER_DECL DBC::DBCStorage<DBC::Structures::MountTypeEntry> sMountTypeStore;
     extern SERVER_DECL DBC::DBCStorage<DBC::Structures::NumTalentsAtLevel> sNumTalentsAtLevel;
@@ -169,9 +172,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleSeatEntry> sVehicleSe
     extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellTargetRestrictionsEntry> sSpellTargetRestrictionsStore;
     extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellTotemsEntry> sSpellTotemsStore;
     extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TalentTreePrimarySpells> sTalentTreePrimarySpellsStore;
-    #if VERSION_STRING < Mop
-        extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellReagentsEntry> sSpellReagentsStore;
-    #endif
+    extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellReagentsEntry> sSpellReagentsStore;
 #endif
 
 #ifdef AE_CATA

@@ -70,17 +70,24 @@ namespace DBC
 
     bool DBCLoader::hasFormat(std::string _dbcFile)
     {
+        std::string fileName = _dbcFile;
+        fileName.replace(fileName.size() - 1, 1, "c");
+
         for (auto formats : dbcFieldDefines)
-            if (formats.first == _dbcFile)
+            if (formats.first == _dbcFile || formats.first == fileName)
                 return true;
+
         return false;
     }
 
     std::string DBCLoader::GetFormat(std::string _dbcFile)
     {
+        std::string fileName = _dbcFile;
+        fileName.replace(fileName.size() - 1, 1, "c");
+
         for (auto formats : dbcFieldDefines)
         {
-            if (formats.first == _dbcFile)
+            if (formats.first == _dbcFile || formats.first == fileName)
             {
                 std::string format = formats.second.format[getVersionIdForAEVersion()];
                 return format;
@@ -153,42 +160,42 @@ namespace DBC
             return false;
         }
 
-        /* Number of records */
+        // Signature
         if (fread(&header, 4, 1, file) != 1)
         {
             fclose(file);
             return false;
         }
 
-        /* 'WDBC' magic string */
+        // 'WDBC' magic string
         if (header != 0x43424457)
         {
             fclose(file);
             return false;
         }
 
-        /* Number of records */
+        // Number of records
         if (fread(&m_record_count, 4, 1, file) != 1)
         {
             fclose(file);
             return false;
         }
 
-        /* Number of fields */
+        // Number of fields
         if (fread(&m_field_count, 4, 1, file) != 1)
         {
             fclose(file);
             return false;
         }
 
-        /* Size of an individual record */
+        // Size of an individual record
         if (fread(&m_record_size, 4, 1, file) != 1)
         {
             fclose(file);
             return false;
         }
 
-        /* String size */
+        // String size
         if (fread(&m_string_size, 4, 1, file) != 1)
         {
             fclose(file);
@@ -201,16 +208,144 @@ namespace DBC
         for (uint32_t i = 1; i < m_field_count; ++i)
         {
             m_fields_offset[i] = m_fields_offset[i - 1];
-            /* Byte fields */
+            // Byte fields
             if (dbc_format[i - 1] == 'b' || dbc_format[i - 1] == 'X')
             {
                 m_fields_offset[i] += sizeof(uint8_t);
             }
-            /* 4 byte fields (int32_t, float, strings) */
+            // 4 byte fields (int32_t, float, strings)
             else
             {
                 m_fields_offset[i] += sizeof(uint32_t);
             }
+        }
+
+        m_data = new unsigned char[m_record_size * m_record_count + m_string_size];
+        m_string_table = m_data + m_record_size * m_record_count;
+
+        if (fread(m_data, m_record_size * m_record_count + m_string_size, 1, file) != 1)
+        {
+            fclose(file);
+            return false;
+        }
+
+        fclose(file);
+        return true;
+    }
+
+    bool DBCLoader::LoadDB2(const char* dbc_filename, const char* dbc_format)
+    {
+        uint32_t header = 48;
+        if (m_data)
+        {
+            delete[] m_data;
+            m_data = NULL;
+        }
+
+        auto file = fopen(dbc_filename, "rb");
+        if (!file)
+            return false;
+
+        // Signature
+        if (fread(&header, 4, 1, file) != 1)
+        {
+            fclose(file);
+            return false;
+        }
+
+        //'WDB2'
+        if (header != 0x32424457)
+        {
+            fclose(file);
+            return false;
+        }
+
+        // Number of records
+        if (fread(&m_record_count, 4, 1, file) != 1)
+        {
+            fclose(file);
+            return false;
+        }
+
+        // Number of fields
+        if (fread(&m_field_count, 4, 1, file) != 1)
+        {
+            fclose(file);
+            return false;
+        }
+
+        // Size of a record
+        if (fread(&m_record_size, 4, 1, file) != 1)
+        {
+            fclose(file);
+            return false;
+        }
+
+        // String size
+        if (fread(&m_string_size, 4, 1, file) != 1)
+        {
+            fclose(file);
+            return false;
+        }
+
+        // Table hash
+        if (fread(&m_tableHash, 4, 1, file) != 1)
+        {
+            fclose(file);
+            return false;
+        }
+
+        // Build
+        if (fread(&m_build, 4, 1, file) != 1)
+        {
+            fclose(file);
+            return false;
+        }
+
+        // Unknown WDB2
+        if (fread(&m_unk1, 4, 1, file) != 1)
+        {
+            fclose(file);
+            return false;
+        }
+
+        // Unknown WDB2
+        if (fread(&m_unk2, 4, 1, file) != 1)
+        {
+            fclose(file);
+            return false;
+        }
+
+        // Unknown WDB2
+        if (fread(&m_unk3, 4, 1, file) != 1)
+        {
+            fclose(file);
+            return false;
+        }
+
+        // Locales
+        if (fread(&m_locale, 4, 1, file) != 1)
+        {
+            fclose(file);
+            return false;
+        }
+
+        // Unknown WDB2
+        if (fread(&m_unk5, 4, 1, file) != 1)
+        {
+            fclose(file);
+            return false;
+        }
+
+        m_fields_offset = new uint32_t[m_field_count];
+        m_fields_offset[0] = 0;
+        for (uint32_t i = 1; i < m_field_count; i++)
+        {
+            m_fields_offset[i] = m_fields_offset[i - 1];
+            if (dbc_format[i - 1] == 'b' || dbc_format[i - 1] == 'X') // byte fields
+                m_fields_offset[i] += 1;
+            else                                // 4 byte fields (int32/float/strings)
+                m_fields_offset[i] += 4;
         }
 
         m_data = new unsigned char[m_record_size * m_record_count + m_string_size];

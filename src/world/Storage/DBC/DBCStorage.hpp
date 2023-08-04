@@ -72,11 +72,18 @@ namespace DBC
         bool Load(char const* dbc_filename, DBC::SQL::SqlDbc* sql)
         {
             DBC::DBCLoader dbc_loader;
+
+            std::string fileSuffix = dbc_filename;
+            fileSuffix = fileSuffix.substr(fileSuffix.size() - 4);
+
             // Only continue if load is successful
-            if (!dbc_loader.Load(dbc_filename, m_format))
-            {
-                return false;
-            }
+            if (fileSuffix == ".dbc")
+                if (!dbc_loader.Load(dbc_filename, m_format))
+                    return false;
+
+            if (fileSuffix == ".db2")
+                if (!dbc_loader.LoadDB2(dbc_filename, m_format))
+                    return false;
 
             uint32 sql_record_count = 0;
             uint32 sql_highest_index = 0;

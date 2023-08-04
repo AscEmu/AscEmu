@@ -26,10 +26,6 @@
 #include "Utilities/Util.hpp"
 #include "Macros/CreatureMacros.hpp"
 
-#if VERSION_STRING >= Cata
-#include "Storage/DB2/DB2Structures.hpp"
-#endif
-
 struct AI_Spell;
 
 const uint8 creatureMaxProtoSpells = 8;
@@ -124,11 +120,7 @@ struct CreatureItem
     uint32 available_amount;
     uint32 max_amount;
     uint32 incrtime;
-#if VERSION_STRING < Cata
     DBC::Structures::ItemExtendedCostEntry const* extended_cost;
-#else
-    DB2::Structures::ItemExtendedCostEntry const* extended_cost;
-#endif
 };
 
 enum CreatureAISpellFlags

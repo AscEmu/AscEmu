@@ -492,8 +492,18 @@ static std::map<std::string, MultiversionFormatTable> dbcFieldDefines =
             ""/*Classic*/,
             "niii"/*BC*/,
             "niiiiiii"/*WotLK*/,
-            ""/*Cata - DB2*/,
-            ""/*Mop - DB2*/
+            "niiiiiii"/*Cata - DB2*/,
+            "niiiiiii"/*Mop - DB2*/
+        }
+    },
+    {
+        "ItemCurrencyCost.db2",
+        {
+            ""/*Classic*/,
+            ""/*BC*/,
+            ""/*WotLK*/,
+            "di"/*Cata - DB2*/,
+            "di"/*Mop - DB2*/
         }
     },
     {
@@ -502,8 +512,8 @@ static std::map<std::string, MultiversionFormatTable> dbcFieldDefines =
             ""/*Classic*/,
             "nxxxxxxxxxxixxxxxxxxxxxxx"/*BC*/,
             ""/*WotLK*/,
-            ""/*Cata - DB2*/,
-            ""/*Mop - DB2*/
+            ""/*Cata*/,
+            ""/*Mop*/
         }
     },
     {
@@ -512,8 +522,8 @@ static std::map<std::string, MultiversionFormatTable> dbcFieldDefines =
             ""/*Classic*/,
             "niiiiiiiiiiiii"/*BC*/,
             "niiiiiiiiiiiiiix"/*WotLK*/,
-            ""/*Cata - DB2*/,
-            ""/*Mop - DB2*/
+            "niiiiiiiiiiiiiixiiiiiiiiiixxxxx"/*Cata - DB2*/,
+            "niiiiiiiiiiiiiixiiiiiiiiiixxxxx"/*Mop - DB2*/
         }
     },
     {
@@ -963,7 +973,7 @@ static std::map<std::string, MultiversionFormatTable> dbcFieldDefines =
             ""/*BC*/,
             ""/*WotLK*/,
             "diiiiiiiiiiiiiiii"/*Cata*/,
-            ""/*Mop DB2*/
+            "diiiiiiiiiiiiiiiiii"/*Mop DB2*/
         }
     },
     {
@@ -2422,7 +2432,6 @@ namespace DBC::Structures
     };
 #endif
 
-#if VERSION_STRING <= WotLK
     struct ItemEntry
     {
         uint32_t ID;                                                // 0
@@ -2436,6 +2445,13 @@ namespace DBC::Structures
         uint32_t InventoryType;                                     // 2
         uint32_t Sheath;                                            // 3
     };
+
+#if VERSION_STRING >= Cata
+    struct ItemCurrencyCostEntry
+    {
+        //uint32_t id;                                              // 0
+        uint32_t itemid;                                            // 1
+    };
 #endif
 
 #if VERSION_STRING == TBC
@@ -2446,20 +2462,23 @@ namespace DBC::Structures
     };
 #endif
 
-#if VERSION_STRING <= WotLK
     struct ItemExtendedCostEntry
     {
         uint32_t costid;                                            // 0
         uint32_t honor_points;                                      // 1
         uint32_t arena_points;                                      // 2
-#if VERSION_STRING == WotLK
+#if VERSION_STRING >= WotLK
         uint32_t arena_slot;                                        // 3
 #endif
         uint32_t item[5];                                           // 4-8
         uint32_t count[5];                                          // 9-13
         uint32_t personalrating;                                    // 14
-    };
+#if VERSION_STRING >= Cata
+        uint32_t reqcur[5];                                         // 16-20
+        uint32_t reqcurrcount[5];                                   // 21-25
+        //uint32_t unkunk[5];                                       // 26-30
 #endif
+    };
 
 #if VERSION_STRING >= WotLK
     struct ItemLimitCategoryEntry
@@ -3074,15 +3093,17 @@ namespace DBC::Structures
 #endif
     };
 
-#if VERSION_STRING < Mop
-    // SpellReagents.dbc
     struct SpellReagentsEntry
     {
         //uint32_t Id;                                              // 0
         int32_t Reagent[MAX_SPELL_REAGENTS];                        // 54-61
-        uint32_t ReagentCount[MAX_SPELL_REAGENTS];                // 62-69
-    };
+#if VERSION_STRING == Cata
+        uint32_t ReagentCount[MAX_SPELL_REAGENTS];                  // 62-69
+#else
+        uint32_t ReagentCount[10];                                  // 62-69
 #endif
+    };
+
 
     // SpellScaling.dbc
     struct SpellScalingEntry

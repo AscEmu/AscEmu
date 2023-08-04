@@ -784,10 +784,6 @@ void World::resetCharacterLoginBannState()
 
 bool World::loadDbcDb2Stores()
 {
-#if VERSION_STRING >= Cata
-    LoadDB2Stores();
-#endif
-
     sLogger.info("World : Loading DBC files...");
     if (!loadDBCs())
     {

@@ -609,11 +609,9 @@ void ObjectMgr::loadVendors()
             sLogger.failure("Invalid format in vendors (%u/6) columns, loading anyway because we have enough data", result->GetFieldCount());
         }
 
-#if VERSION_STRING < Cata
+
         DBC::Structures::ItemExtendedCostEntry const* item_extended_cost = nullptr;
-#else
-        DB2::Structures::ItemExtendedCostEntry const* item_extended_cost = nullptr;
-#endif
+
         do
         {
             Field* fields = result->Fetch();

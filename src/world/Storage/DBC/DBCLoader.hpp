@@ -35,6 +35,16 @@ namespace DBC
         unsigned char* m_data;
         unsigned char* m_string_table;
 
+        //db2 fields
+        uint32_t m_tableHash;
+        uint32_t m_build;
+
+        int m_unk1;
+        int m_unk2;
+        int m_unk3;
+        int m_locale;
+        int m_unk5;
+
     public:
         DBC::DBCRecord GetRecord(size_t record_id) const;
         uint32_t GetNumRows() const;
@@ -51,6 +61,7 @@ namespace DBC
         static std::string GetFormat(std::string _dbcFile);
         static uint32_t GetFormatRecordSize(const char* dbc_format, int32* index_pos = NULL);
         bool Load(const char* dbc_filename, const char* dbc_format);
+        bool LoadDB2(const char* dbc_filename, const char* dbc_format);
 
         DBCLoader();
         ~DBCLoader();

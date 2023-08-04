@@ -1365,11 +1365,7 @@ std::shared_ptr<Trainer> Creature::GetTrainer()
     return mTrainer;
 }
 
-#if VERSION_STRING < Cata
 void Creature::AddVendorItem(uint32 itemid, uint32 amount, DBC::Structures::ItemExtendedCostEntry const* ec)
-#else
-void Creature::AddVendorItem(uint32 itemid, uint32 amount, DB2::Structures::ItemExtendedCostEntry const* ec)
-#endif
 {
     CreatureItem ci;
     ci.amount = amount;
@@ -2397,11 +2393,7 @@ void Creature::GetSellItemByItemId(uint32 itemid, CreatureItem& ci)
     ci.itemid = 0;
 }
 
-#if VERSION_STRING < Cata
 DBC::Structures::ItemExtendedCostEntry const* Creature::GetItemExtendedCostByItemId(uint32 itemid)
-#else
-DB2::Structures::ItemExtendedCostEntry const* Creature::GetItemExtendedCostByItemId(uint32 itemid)
-#endif
 {
     for (auto itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
     {
