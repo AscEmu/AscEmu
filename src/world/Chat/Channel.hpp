@@ -18,7 +18,7 @@ class WorldPacket;
 
 typedef std::map<Player*, uint8_t> MemberMap;
 
-class SERVER_DECL Channel : public std::enable_shared_from_this<Channel>
+class SERVER_DECL Channel
 {
 public:
 
