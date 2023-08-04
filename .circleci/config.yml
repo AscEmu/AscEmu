@@ -4,7 +4,6 @@ jobs:
   "Classic":
     docker:
       - image: "cimg/base:2023.06"
-    resource_class: xlarge
     steps:
       - checkout
       - run:
@@ -40,7 +39,6 @@ jobs:
   "TBC":
     docker:
       - image: "cimg/base:2023.06"
-    resource_class: xlarge
     steps:
       - checkout
       - run:
@@ -77,7 +75,6 @@ jobs:
   "WotLK":
     docker:
       - image: "cimg/base:2023.06"
-    resource_class: xlarge
     steps:
       - checkout
       - run:
@@ -114,7 +111,6 @@ jobs:
   "Cata":
     docker:
       - image: "cimg/base:2023.06"
-    resource_class: xlarge
     steps:
       - checkout
       - run:
@@ -151,7 +147,6 @@ jobs:
   "Mop":
     docker:
       - image: "cimg/base:2023.06"
-    resource_class: xlarge
     steps:
       - checkout
       - run:
