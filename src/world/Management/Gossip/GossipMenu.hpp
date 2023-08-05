@@ -5,12 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-#include <string>
-
 #include "GossipDefines.hpp"
 #include "Management/Quest.h"
 #include "Objects/Units/Players/Player.hpp"
+
+#include <cstdint>
+#include <string>
 
 class SERVER_DECL GossipMenu
 {

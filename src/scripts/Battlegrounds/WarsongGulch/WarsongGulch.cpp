@@ -20,7 +20,12 @@
 #include "Setup.h"
 #include "WarsongGulch.h"
 
+#include "Management/HonorHandler.h"
+#include "Management/WorldStates.h"
+#include "Map/Maps/BattleGroundMap.hpp"
+#include "Server/Master.h"
 #include "Server/WorldSessionLog.hpp"
+#include "Spell/SpellMgr.hpp"
 
 WarsongGulch::WarsongGulch(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : Battleground(mgr, id, lgroup, t)
 {

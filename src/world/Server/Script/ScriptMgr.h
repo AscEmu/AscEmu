@@ -29,7 +29,6 @@
 #include "Objects/Units/Unit.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Server/ServerState.h"
-#include "Server/World.h"
 #include "Server/Script/AchievementScript.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellScript.hpp"

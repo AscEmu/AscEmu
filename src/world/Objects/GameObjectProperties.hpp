@@ -5,12 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "GameObjectDefines.hpp"
+#include "Management/Quest.h"
+
 #include <map>
 #include <string>
 #include <unordered_map>
-
-#include <Management/Quest.h>
-#include "GameObjectDefines.hpp"
 
 typedef std::unordered_map<QuestProperties const*, uint32_t> GameObjectGOMap;
 typedef std::unordered_map<QuestProperties const*, std::map<uint32_t, uint32_t>> GameObjectItemMap;

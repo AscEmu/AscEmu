@@ -5,15 +5,16 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "Utilities/Util.hpp"
+#include "InstanceDefines.hpp"
+#include "CommonTypes.hpp"
+
 #include <cstdint>
 #include <ctime>
 #include <list>
 #include <map>
 #include <mutex>
 #include <unordered_map>
-
-#include "Utilities/Util.hpp"
-#include "InstanceDefines.hpp"
 
 class Group;
 class Player;

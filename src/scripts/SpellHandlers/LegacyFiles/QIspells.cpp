@@ -25,6 +25,7 @@
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Server/Master.h"
 #include "Spell/SpellAuras.h"
+#include "Spell/SpellMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 
 enum

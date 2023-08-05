@@ -356,7 +356,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                     if (qst->reward_replimit && (plr->getFactionStanding(fact) >= (int32)qst->reward_replimit))
                         continue;
 
-                    amt = float2int32(amt * worldConfig.getFloatRate(RATE_QUESTREPUTATION));
+                    amt = Util::float2int32(amt * worldConfig.getFloatRate(RATE_QUESTREPUTATION));
                     plr->modFactionStanding(fact, amt);
                 }
             }

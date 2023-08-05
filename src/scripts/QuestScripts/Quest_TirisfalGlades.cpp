@@ -19,6 +19,8 @@
  */
 
 #include "Setup.h"
+#include "Map/Maps/MapScriptInterface.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class TheDormantShade : public QuestScript
 {

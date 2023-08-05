@@ -20,6 +20,7 @@
  */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class RingoDeadNPC : public CreatureAIScript
 {

@@ -5,8 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <string>
-
 #include "Chat/ChatDefines.hpp"
 #include "Server/WorldSession.h"
 #include "Management/Guild/GuildDefinitions.hpp"
@@ -16,6 +14,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "GuildRankInfo.hpp"
 #include "GuildBankTab.hpp"
 #include "Macros/GuildMacros.hpp"
+
+#include <string>
 
 class Player;
 class EmblemInfo;

@@ -20,6 +20,7 @@
  */
 
 #include "Setup.h"
+#include "Spell/SpellMgr.hpp"
 
 enum
 {

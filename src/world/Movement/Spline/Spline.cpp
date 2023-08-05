@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <sstream>
 
-#include <Common.hpp>
 #include "Spline.h"
 #include <G3D/Matrix4.h>
 

@@ -8,8 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Area/AreaManagementGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "Objects/Units/Players/Player.hpp"
-#include "Server/World.h"
-#include "Server/WorldSession.h"
 #include "Server/Packets/SmsgChannelNotify.h"
 #include "Utilities/Strings.hpp"
 

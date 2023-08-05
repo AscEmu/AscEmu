@@ -19,6 +19,10 @@
  */
 
 #include "Setup.h"
+#include "Map/Maps/MapScriptInterface.h"
+#include "Movement/Spline/MoveSpline.h"
+#include "Server/Script/CreatureAIScript.h"
+#include "Spell/SpellMgr.hpp"
 
 enum
 {

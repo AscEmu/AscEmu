@@ -5,10 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
 #include "InstanceDefines.hpp"
 #include "WorldMap.hpp"
+
+#include <cstdint>
 
 class SERVER_DECL InstanceMap : public WorldMap
 {

@@ -5,5 +5,5 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <Setup.h>
-#include <Server/Script/CreatureAIScript.h>
+#include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"

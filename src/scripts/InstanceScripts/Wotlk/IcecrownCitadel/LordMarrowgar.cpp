@@ -430,7 +430,7 @@ SpellScriptEffectDamage BoneStormDamage::doCalculateEffect(Spell* spell, uint8_t
     if (distance <= 5.0f)
         distance = 1.0f;
 
-    *dmg = float2int32(*dmg / distance);
+    *dmg = Util::float2int32(*dmg / distance);
     return SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
 }
 
@@ -623,7 +623,7 @@ SpellScriptEffectDamage BoneSlice::doCalculateEffect(Spell* spell, uint8_t effIn
     if (!targetCount)
         return SpellScriptEffectDamage::DAMAGE_DEFAULT;
     
-    *dmg = float2int32(*dmg / (float)targetCount);
+    *dmg = Util::float2int32(*dmg / (float)targetCount);
     return SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
 }
 

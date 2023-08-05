@@ -220,7 +220,7 @@ void AuctionHouse::removeAuction(Auction* auction)
             sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, auctionHouseEntryDbc->id, auction->highestBidderGuid, subject, body, 0, 0, auction->auctionItem->getGuid(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
 
             // Send a mail to the owner with his cut of the price.
-            const auto auction_cut = float2int32(cutPercent * static_cast<float_t>(auction->highestBid));
+            const auto auction_cut = Util::float2int32(cutPercent * static_cast<float_t>(auction->highestBid));
             auto amount = auction->highestBid - auction_cut + auction->depositAmount;
 
             // ItemEntry:0:2
@@ -247,7 +247,7 @@ void AuctionHouse::removeAuction(Auction* auction)
             if (auction->auctionItem)
             {
                 snprintf(subject, 100, "%u:0:5", auction->auctionItem->getEntry());
-                const auto cut = float2int32(cutPercent * static_cast<float_t>(auction->highestBid));
+                const auto cut = Util::float2int32(cutPercent * static_cast<float_t>(auction->highestBid));
                 Player* plr = sObjectMgr.getPlayer(auction->ownerGuid.getGuidLow());
                 if (cut && plr && plr->hasEnoughCoinage(static_cast<uint32_t>(cut)))
                     plr->modCoinage(-cut);

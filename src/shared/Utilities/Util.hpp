@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Common.hpp"
 #include <algorithm>
 #include <chrono>
 #include <iomanip>
@@ -13,6 +12,14 @@ This file is released under the MIT license. See README-MIT for more information
 #include <map>
 #include <random>
 #include <utility>
+
+namespace std
+{
+    namespace filesystem
+    {
+        class path;
+    }
+}
 
 namespace Util
 {
@@ -94,6 +101,12 @@ namespace Util
     inline uint32_t MAKE_PAIR32(uint16_t l, uint16_t h)
     {
         return uint32_t(l | (uint32_t(h) << 16));
+    }
+
+    // Narrowing
+    inline int32_t float2int32(float value)
+    {
+        return static_cast<int32_t>(std::round(value));
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -197,7 +210,7 @@ namespace Util
     std::map<uint32_t, std::string> getDirectoryContent(const std::string& pathName, const std::string& specialSuffix = "", bool withPath = false);
 
     /*! \brief Reads the file into a string based on the given path. */
-    std::string readFileIntoString(fs::path path);
+    std::string readFileIntoString(std::filesystem::path path);
 
     /*! \brief Returns the first 8 chars of the file name as major version. */
     uint32_t readMajorVersionFromString(const std::string& fileName);

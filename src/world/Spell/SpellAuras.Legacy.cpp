@@ -4818,7 +4818,7 @@ void Aura::SpellAuraIncreaseSpellDamageByAttribute(AuraEffectModifier* aurEff, b
             {
                 if (apply)
                 {
-                    aurEff->setEffectFixedDamage(float2int32(((float)val / 100) * m_target->getStat(stat)));
+                    aurEff->setEffectFixedDamage(Util::float2int32(((float)val / 100) * m_target->getStat(stat)));
                     p_target->modModDamageDonePositive(x, aurEff->getEffectFixedDamage());
                 }
                 else
@@ -4888,7 +4888,7 @@ void Aura::SpellAuraIncreaseHealingByAttribute(AuraEffectModifier* aurEff, bool 
         p_target->updateChanceFields();
         if (apply)
         {
-            aurEff->setEffectFixedDamage(float2int32(((float)val / 100.0f) * p_target->getStat(stat)));
+            aurEff->setEffectFixedDamage(Util::float2int32(((float)val / 100.0f) * p_target->getStat(stat)));
             p_target->modModHealingDone(aurEff->getEffectFixedDamage());
         }
         else
@@ -4963,7 +4963,7 @@ void Aura::SpellAuraModHealingDone(AuraEffectModifier* aurEff, bool apply)
 
     uint32 player_class = m_target->getClass();
     if (player_class == DRUID || player_class == PALADIN || player_class == SHAMAN || player_class == PRIEST)
-        val = float2int32(val * 1.88f);
+        val = Util::float2int32(val * 1.88f);
 
     for (uint8 x = 0; x < TOTAL_SPELL_SCHOOLS; x++)
     {
@@ -5114,7 +5114,7 @@ void Aura::SpellAuraIncreaseArmorByPctInt(AuraEffectModifier* aurEff, bool apply
 {
     uint32 i_Int = m_target->getStat(STAT_INTELLECT);
 
-    int32 amt = float2int32(i_Int * ((float)aurEff->getEffectDamage() / 100.0f));
+    int32 amt = Util::float2int32(i_Int * ((float)aurEff->getEffectDamage() / 100.0f));
     amt *= (!apply) ? -1 : 1;
 
     for (uint8_t x = 0; x < TOTAL_SPELL_SCHOOLS; x++)

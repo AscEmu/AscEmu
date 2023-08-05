@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <vector>
 
-#include <Common.hpp>
+#include "CommonTypes.hpp"
 #include "Opcodes.hpp"
 #include "WorldConf.h"
 

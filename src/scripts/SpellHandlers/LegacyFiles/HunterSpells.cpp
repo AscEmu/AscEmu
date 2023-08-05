@@ -137,7 +137,7 @@ bool ExplosiveShot(uint8_t effectIndex, Aura* a, bool apply)
     Unit* m_target = a->getOwner();
 
     int32_t dmg = a->getEffectDamage(effectIndex);
-    dmg += float2int32(m_target->getRangedAttackPower() * 0.16f);
+    dmg += Util::float2int32(m_target->getRangedAttackPower() * 0.16f);
 
     //\ todo: fix me
     //a->EventPeriodicDamage(&a->getAuraEffect(effectIndex), dmg);

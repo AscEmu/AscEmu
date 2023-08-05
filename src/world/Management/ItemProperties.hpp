@@ -5,12 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-#include <string>
-
-#include "Common.hpp"
 #include "Macros/ItemMacros.hpp"
 #include "Objects/ItemDefines.hpp"
+#include "Utilities/Util.hpp"
+
+#include <cstdint>
+#include <string>
 
 class Spell;
 
@@ -135,7 +135,7 @@ struct ItemProperties
         int32_t cost = BuyPrice;
 
         if (factionStanding && factionStanding <= 8)
-            cost = float2int32(ceilf(BuyPrice * pricemod[factionStanding]));
+            cost = Util::float2int32(ceilf(BuyPrice * pricemod[factionStanding]));
 
         return cost * count;
     }

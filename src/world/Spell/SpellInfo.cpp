@@ -1077,7 +1077,7 @@ int32_t SpellInfo::calculateEffectValue(uint8_t effIndex, Unit* unitCaster/* = n
         else
             diff += unitCaster->getLevel();
 
-        diff = float2int32(diff * basePointsPerLevel);
+        diff = Util::float2int32(diff * basePointsPerLevel);
         // Should not happen but just in case do not make total value negative
         if (diff > 0)
             basePoints += diff;

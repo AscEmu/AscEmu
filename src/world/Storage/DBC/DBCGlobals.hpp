@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <filesystem>
 #include <iostream>
 
 #include "DBCStorage.hpp"
@@ -116,7 +117,7 @@ namespace DBC
         // find first available locale
         for (auto locales : fullLocaleNameList)
         {
-            if (fs::is_directory(dbc_path + locales.name + "/"))
+            if (std::filesystem::is_directory(dbc_path + locales.name + "/"))
             {
                 dbc_file_path = dbc_path + locales.name + "/" + dbc_filename;
                 break;

@@ -1797,7 +1797,7 @@ void Spell::DetermineSkillUp()
             chance = 100.0f;
     }
     if (Util::checkChance(chance * worldConfig.getFloatRate(RATE_SKILLCHANCE)))
-        p_caster->advanceSkillLine(skillLine, static_cast<uint16_t>(float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE))));
+        p_caster->advanceSkillLine(skillLine, static_cast<uint16_t>(Util::float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE))));
 }
 
 bool Spell::IsAspect()
@@ -2274,7 +2274,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                     if (it)
                     {
                         float weapondmg = Util::getRandomFloat(1) * (it->getItemProperties()->Damage[0].Max - it->getItemProperties()->Damage[0].Min) + it->getItemProperties()->Damage[0].Min;
-                        value += float2int32(getSpellInfo()->getEffectBasePoints(0) + weapondmg / (it->getItemProperties()->Delay / 1000.0f) * 2.8f);
+                        value += Util::float2int32(getSpellInfo()->getEffectBasePoints(0) + weapondmg / (it->getItemProperties()->Delay / 1000.0f) * 2.8f);
                     }
                 }
                 if (target && target->isDazed())
@@ -2339,11 +2339,11 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                     {
                         float avgwepdmg = (it->getItemProperties()->Damage[0].Min + it->getItemProperties()->Damage[0].Max) * 0.5f;
                         float wepspd = (it->getItemProperties()->Delay * 0.001f);
-                        int32 dmg = float2int32((avgwepdmg)+p_caster->getCalculatedAttackPower() / 14 * wepspd);
+                        int32 dmg = Util::float2int32((avgwepdmg)+p_caster->getCalculatedAttackPower() / 14 * wepspd);
 
                         if (target && target->getHealthPct() > 75)
                         {
-                            dmg = float2int32(dmg + dmg * 0.35f);
+                            dmg = Util::float2int32(dmg + dmg * 0.35f);
                         }
 
                         value += dmg / 5;
@@ -2374,7 +2374,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                 if (mainHand != nullptr)
                 {
                     float avgWeaponDmg = (mainHand->getItemProperties()->Damage[0].Max + mainHand->getItemProperties()->Damage[0].Min) / 2;
-                    value += float2int32((getSpellInfo()->calculateEffectValue(0)) + avgWeaponDmg);
+                    value += Util::float2int32((getSpellInfo()->calculateEffectValue(0)) + avgWeaponDmg);
                 }
             }
         } break;
@@ -2464,9 +2464,9 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
             {
                 float ap = float(u_caster->getCalculatedAttackPower());
                 if (i == 0)
-                    value += float2int32(ceilf(ap * 0.01f)); // / 100
+                    value += Util::float2int32(ceilf(ap * 0.01f)); // / 100
                 else if (i == 1)
-                    value += float2int32(ap * 0.06f);
+                    value += Util::float2int32(ap * 0.06f);
             }
         } break;
 
@@ -2535,7 +2535,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         case 71926:
         {
             if (p_caster != nullptr)
-                value += float2int32(p_caster->getCalculatedAttackPower() * 0.01f * p_caster->getComboPoints());
+                value += Util::float2int32(p_caster->getCalculatedAttackPower() * 0.01f * p_caster->getComboPoints());
         } break;
 
         // SPELL_HASH_MONGOOSE_BITE:
@@ -2564,7 +2564,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         {
             // ${$AP*0.06+$m1} damage.
             if (u_caster != nullptr)
-                value += float2int32(u_caster->getCalculatedAttackPower() * 0.06f);
+                value += Util::float2int32(u_caster->getCalculatedAttackPower() * 0.06f);
         } break;
 
         // SPELL_HASH_HAMMER_OF_THE_RIGHTEOUS:
@@ -2578,7 +2578,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         {
             if (p_caster != nullptr)
                 //4x 1h weapon-dps ->  4*(mindmg+maxdmg)/speed/2 = 2*(mindmg+maxdmg)/speed
-                value = float2int32((p_caster->getMinDamage() + p_caster->getMaxDamage()) / (float(p_caster->getBaseAttackTime(MELEE)) / 1000.0f)) << 1;
+                value = Util::float2int32((p_caster->getMinDamage() + p_caster->getMaxDamage()) / (float(p_caster->getBaseAttackTime(MELEE)) / 1000.0f)) << 1;
         } break;
 
         // SPELL_HASH_BACKSTAB:  // Egari: spell 31220 is interfering with combopoints
@@ -2745,7 +2745,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
             {
                 if (p_caster != nullptr && i == 0)
                     //Heal is increased by 6%
-                    value = float2int32(value * 1.06f);
+                    value = Util::float2int32(value * 1.06f);
                 break;
             }
             case 57669: //Replenishment
@@ -2826,7 +2826,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                     case 72329:
                     case 72330:
                         if (getSpellInfo()->getEffectApplyAuraName(static_cast<uint8_t>(i)) == SPELL_AURA_PERIODIC_DAMAGE)
-                            value += float2int32(u_caster->getCalculatedAttackPower() * 0.03f);
+                            value += Util::float2int32(u_caster->getCalculatedAttackPower() * 0.03f);
                         break;
                     // SPELL_HASH_INSTANT_POISON_IX:
                     case 57965:
@@ -2859,7 +2859,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                     case 41189:
                     case 59242:
                         if (getSpellInfo()->getEffect(static_cast<uint8_t>(i)) == SPELL_EFFECT_SCHOOL_DAMAGE)
-                            value += float2int32(u_caster->getCalculatedAttackPower() * 0.10f);
+                            value += Util::float2int32(u_caster->getCalculatedAttackPower() * 0.10f);
                         break;
                     // SPELL_HASH_WOUND_POISON_VII:
                     case 57975:
@@ -2889,7 +2889,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                     case 54074:
                     case 65962:
                         if (getSpellInfo()->getEffect(static_cast<uint8_t>(i)) == SPELL_EFFECT_SCHOOL_DAMAGE)
-                            value += float2int32(u_caster->getCalculatedAttackPower() * 0.04f);
+                            value += Util::float2int32(u_caster->getCalculatedAttackPower() * 0.04f);
                         break;
                 }
             }
@@ -3013,7 +3013,7 @@ void Spell::DetermineSkillUp(uint16_t skillid, uint32 targetlevel, uint32 multip
 
     if (Util::checkChance((chance * worldConfig.getFloatRate(RATE_SKILLCHANCE)) * multiplicator))
     {
-        p_caster->advanceSkillLine(skillid, static_cast<uint16_t>(float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE))));
+        p_caster->advanceSkillLine(skillid, static_cast<uint16_t>(Util::float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE))));
 
         uint32 value = p_caster->getSkillLineCurrent(skillid, true);
         uint32 spellid = 0;
@@ -3135,7 +3135,7 @@ void Spell::DetermineSkillUp(uint16_t skillid)
             chance = 100.0f;
 
         if (Util::checkChance(chance * worldConfig.getFloatRate(RATE_SKILLCHANCE)))
-            p_caster->advanceSkillLine(skillid, static_cast<uint16_t>(float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE))));
+            p_caster->advanceSkillLine(skillid, static_cast<uint16_t>(Util::float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE))));
     }
 }
 

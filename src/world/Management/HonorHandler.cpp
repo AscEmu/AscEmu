@@ -42,11 +42,11 @@ int32 HonorHandler::CalculateHonorPointsForKill(uint32 playerLevel, uint32 victi
 
     if (kLevel > 5 && kLevel < 40)
     {
-        kGrey = kLevel - 5 - float2int32(std::floor(((float)kLevel) / 10.0f));
+        kGrey = kLevel - 5 - Util::float2int32(std::floor(((float)kLevel) / 10.0f));
     }
     else
     {
-        kGrey = kLevel - 1 - float2int32(std::floor(((float)kLevel) / 5.0f));
+        kGrey = kLevel - 1 - Util::float2int32(std::floor(((float)kLevel) / 5.0f));
     }
 
     if (vLevel <= kGrey)
@@ -54,7 +54,7 @@ int32 HonorHandler::CalculateHonorPointsForKill(uint32 playerLevel, uint32 victi
 
     float honor_points = -0.53177f + 0.59357f * exp((kLevel + 23.54042f) / 26.07859f);
     honor_points *= sWorld.settings.getFloatRate(RATE_HONOR);
-    return float2int32(honor_points);
+    return Util::float2int32(honor_points);
 }
 
 void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)

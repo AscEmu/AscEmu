@@ -20,6 +20,7 @@
  */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 // Chieftain Oomooroo
 class ChieftainOomoorooQAI : public CreatureAIScript

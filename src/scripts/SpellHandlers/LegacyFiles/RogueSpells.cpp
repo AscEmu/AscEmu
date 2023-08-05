@@ -23,6 +23,7 @@
 #include "Objects/Item.hpp"
 #include "Server/Script/ScriptMgr.h"
 #include "Spell/SpellAuras.h"
+#include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/SpellIsFlags.hpp"
 #include "Spell/Definitions/SpellMechanics.hpp"
 

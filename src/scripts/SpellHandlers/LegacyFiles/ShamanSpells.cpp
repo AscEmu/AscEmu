@@ -22,6 +22,7 @@
 #include "Objects/Item.hpp"
 #include "Server/Script/ScriptMgr.h"
 #include "Spell/SpellAuras.h"
+#include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/Definitions/ProcFlags.hpp"
 

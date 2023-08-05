@@ -5,13 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <Chat/ChatDefines.hpp>
-#include <Management/HonorHandler.h>
-#include <Management/QuestLogEntry.hpp>
-#include <Management/WorldStates.h>
-#include <Map/Management/MapMgr.hpp>
-#include <Objects/GameObject.h>
-#include <Server/DatabaseDefinition.hpp>
-#include <Server/Packets/SmsgMessageChat.h>
-#include <Spell/SpellMgr.hpp>
-#include <Storage/MySQLDataStore.hpp>
+#include "Management/HonorHandler.h"
+#include "Management/WorldStates.h"
+#include "Map/Maps/BattleGroundMap.hpp"
+#include "Server/Master.h"
+#include "Server/WorldSessionLog.hpp"
+#include "Spell/SpellMgr.hpp"

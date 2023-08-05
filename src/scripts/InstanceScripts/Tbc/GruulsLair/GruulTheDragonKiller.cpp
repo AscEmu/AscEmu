@@ -140,7 +140,7 @@ SpellScriptEffectDamage ShatterDamage::doCalculateEffect(Spell* spell, uint8_t e
     if (distance < 1.0f)
         distance = 1.0f;
 
-    *dmg = float2int32(*dmg * ((radius - distance) / radius));
+    *dmg = Util::float2int32(*dmg * ((radius - distance) / radius));
 
     return SpellScriptEffectDamage::DAMAGE_FULL_RECALCULATION;
 }

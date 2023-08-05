@@ -19,6 +19,7 @@
  */
 
 #include "Setup.h"
+#include "Spell/SpellMgr.hpp"
 
 class Veronia : public GossipScript
 {

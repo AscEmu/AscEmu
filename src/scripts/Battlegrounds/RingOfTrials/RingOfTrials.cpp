@@ -20,6 +20,8 @@
 #include "Setup.h"
 #include "RingOfTrials.h"
 
+#include "Map/Maps/BattleGroundMap.hpp"
+
 RingOfTrials::RingOfTrials(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t, uint32_t players_per_side) :
     Arena(mgr, id, lgroup, t, players_per_side)
 {}

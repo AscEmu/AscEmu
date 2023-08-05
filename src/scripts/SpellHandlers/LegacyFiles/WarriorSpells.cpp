@@ -20,6 +20,7 @@
 #include "Setup.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Spell/SpellAuras.h"
+#include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 
 bool Execute(uint8_t effectIndex, Spell* pSpell)

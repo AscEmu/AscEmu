@@ -6,6 +6,14 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "AlteracValley.h"
 
+#include "Management/HonorHandler.h"
+#include "Management/WorldStates.h"
+#include "Map/Maps/BattleGroundMap.hpp"
+#include "Map/Maps/WorldMap.hpp"
+#include "Server/Master.h"
+#include "Server/Packets/SmsgMessageChat.h"
+#include "Storage/MySQLDataStore.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Fire Locations
 
@@ -1308,7 +1316,7 @@ void AlteracValley::HookGenerateLoot(Player* plr, Object* pCorpse)
     gold *= worldConfig.getFloatRate(RATE_MONEY);
 
     // set it
-    static_cast<Corpse*>(pCorpse)->loot.gold = float2int32(gold);
+    static_cast<Corpse*>(pCorpse)->loot.gold = Util::float2int32(gold);
 }
 
 void AlteracValley::EventUpdateResources()

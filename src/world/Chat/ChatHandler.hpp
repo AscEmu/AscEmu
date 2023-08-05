@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemProperties.hpp"
 #include "Management/SkillNameMgr.h"
 
+class Creature;
 class WorldSession;
 class Player;
 class Unit;

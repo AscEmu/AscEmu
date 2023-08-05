@@ -32,7 +32,7 @@ This file is released under the MIT license. See README-MIT for more information
 #define DBC_PLAYER_ITEMS 23 // INVENTORY_SLOT_BAG_END
 
 /// -
-#define RANDOM_SUFFIX_MAGIC_CALCULATION(__suffix, __scale) float2int32(float(__suffix) * float(__scale) / 10000.0f);
+#define RANDOM_SUFFIX_MAGIC_CALCULATION(__suffix, __scale) Util::float2int32(float(__suffix) * float(__scale) / 10000.0f);
 
 /// -
 #define INVENTORY_KEYRING_START     86 // InventoryKeyRingSlots

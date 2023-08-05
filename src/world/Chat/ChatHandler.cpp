@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemInterface.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
-#include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Server/Packets/SmsgMessageChat.h"
 

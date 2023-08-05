@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Instance_ScarletMonastery.h"
 
 #include "Setup.h"
+#include "Map/Maps/MapScriptInterface.h"
 
 class ScarletMonasteryInstanceScript : public InstanceScript
 {

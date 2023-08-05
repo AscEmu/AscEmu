@@ -575,14 +575,14 @@ void Spell::castMe(const bool doReCheck)
             if (getSpellInfo()->getPowerType() == POWER_TYPE_ENERGY && getSpellInfo()->hasEffect(SPELL_EFFECT_ADD_COMBO_POINTS) &&
                 (targetMissed || targetDodged || targetParried))
             {
-                const auto refundCost = float2int32(getPowerCost() * 0.82f);
+                const auto refundCost = Util::float2int32(getPowerCost() * 0.82f);
                 p_caster->modPower(POWER_TYPE_ENERGY, refundCost);
             }
             // Druids and warriors are refunded for 82% of the rage cost on dodge or parry
             else if (getSpellInfo()->getPowerType() == POWER_TYPE_RAGE &&
                 (targetDodged || targetParried))
             {
-                const auto refundCost = float2int32(getPowerCost() * 0.82f);
+                const auto refundCost = Util::float2int32(getPowerCost() * 0.82f);
                 p_caster->modPower(POWER_TYPE_RAGE, refundCost);
             }
 
@@ -633,7 +633,7 @@ void Spell::handleHittedTarget(const uint64_t targetGuid, uint8_t effIndex)
         // Add travel time to aura
         auto itr = m_pendingAuras.find(targetGuid);
         if (itr != m_pendingAuras.end())
-            itr->second.travelTime = float2int32(travelTime);
+            itr->second.travelTime = Util::float2int32(travelTime);
 
         return;
     }
@@ -647,7 +647,7 @@ void Spell::handleHittedTarget(const uint64_t targetGuid, uint8_t effIndex)
         HitSpellEffect hitEffect;
         hitEffect.damage = effDamage;
         hitEffect.effIndex = effIndex;
-        hitEffect.travelTime = float2int32(travelTime);
+        hitEffect.travelTime = Util::float2int32(travelTime);
 
         m_hitEffects.insert(std::make_pair(targetGuid, hitEffect));
     }
@@ -821,7 +821,7 @@ void Spell::handleMissedTarget(SpellTargetMod const missedTarget)
                     HitSpellEffect hitEffect;
                     hitEffect.damage = calculateEffect(i);
                     hitEffect.effIndex = i;
-                    hitEffect.travelTime = float2int32(travelTime);
+                    hitEffect.travelTime = Util::float2int32(travelTime);
 
                     m_hitEffects.insert(std::make_pair(guid, hitEffect));
                 }
@@ -832,7 +832,7 @@ void Spell::handleMissedTarget(SpellTargetMod const missedTarget)
             // Spell was not reflected and it did not hit target
             MissSpellEffect missEffect;
             missEffect.missInfo = missedTarget;
-            missEffect.travelTime = float2int32(travelTime);
+            missEffect.travelTime = Util::float2int32(travelTime);
 
             m_missEffects.insert(std::make_pair(missedTarget.targetGuid, missEffect));
         }

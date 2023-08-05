@@ -429,7 +429,7 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
     uint32 xp = 0;
     if (plr->getLevel() < plr->getMaxLevel())
     {
-        xp = float2int32(GenerateQuestXP(plr, qst) * worldConfig.getFloatRate(RATE_QUESTXP));
+        xp = Util::float2int32(GenerateQuestXP(plr, qst) * worldConfig.getFloatRate(RATE_QUESTXP));
     }
     *data << uint32(xp); //VLack: The quest will give you this amount of XP
 
@@ -1004,7 +1004,7 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
     }
     else
     {
-        xp = float2int32(GenerateQuestXP(plr, qst) * worldConfig.getFloatRate(RATE_QUESTXP));
+        xp = Util::float2int32(GenerateQuestXP(plr, qst) * worldConfig.getFloatRate(RATE_QUESTXP));
         plr->giveXp(xp, 0, false);
     }
 
@@ -1490,7 +1490,7 @@ void QuestMgr::GiveQuestRewardReputation(Player* plr, QuestProperties const* qst
     for (uint8 z = 0; z < 6; ++z)
     {
         uint32 fact = 19;   // default to 19 if no factiondbc
-        int32 amt = float2int32(GenerateQuestXP(plr, qst) * 0.1f);      // guess
+        int32 amt = Util::float2int32(GenerateQuestXP(plr, qst) * 0.1f);      // guess
         if (!qst->reward_repfaction[z])
         {
             if (z >= 1)
@@ -1514,7 +1514,7 @@ void QuestMgr::GiveQuestRewardReputation(Player* plr, QuestProperties const* qst
             if (plr->getFactionStanding(fact) >= (int32)qst->reward_replimit)
                 continue;
 
-        amt = float2int32(amt * worldConfig.getFloatRate(RATE_QUESTREPUTATION));     // reputation rewards
+        amt = Util::float2int32(amt * worldConfig.getFloatRate(RATE_QUESTREPUTATION));     // reputation rewards
         plr->modFactionStanding(fact, amt);
     }
 }

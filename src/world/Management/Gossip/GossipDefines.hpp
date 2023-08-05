@@ -7,8 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <string>
 
-#include "CommonTypes.hpp"
-
 struct GossipItem
 {
     GossipItem(uint8_t _icon, std::string _text, uint32_t _textId, bool _isCoded = false, uint32_t _boxMoney = 0, std::string _boxMessage = "") :
@@ -37,15 +35,15 @@ struct GossipQuestItem
 // used for db loading
 struct GossipMenuItem
 {
-    uint32 Id;
-    uint32 IntId;
-    uint8 Icon;
-    uint8 Extra;
+    uint32_t Id;
+    uint32_t IntId;
+    uint8_t Icon;
+    uint8_t Extra;
     std::string Text;
-    uint32 m_gSender;
-    uint32 m_gAction;
+    uint32_t m_gSender;
+    uint32_t m_gAction;
     std::string m_gBoxMessage;
-    uint32 m_gBoxMoney;
+    uint32_t m_gBoxMoney;
 };
 
 enum GossipIcons

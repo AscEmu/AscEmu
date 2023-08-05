@@ -5,9 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "WorldConf.h"
+
 #ifdef FT_VEHICLES
 #include "Objects/Units/Creatures/Vehicle.hpp"
 #endif
+#include "Objects/Units/Creatures/Creature.h"
 
 enum
 {

@@ -18,13 +18,14 @@
 
 #pragma once
 
-#include <ctime>
-
 #include "CommonTypes.hpp"
 #include "Storage/DBC/DBCStructures.hpp"
 #include "Spell/Definitions/School.hpp"
 #include "Utilities/Util.hpp"
 #include "Macros/CreatureMacros.hpp"
+
+#include <ctime>
+#include <list>
 
 struct AI_Spell;
 

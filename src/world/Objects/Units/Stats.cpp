@@ -845,7 +845,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
                 result *= ((static_cast<Player*>(pAttacker)->m_outStealthDamageBonusPct) / 100.0f) + 1.0f;
         }
 
-        return float2int32(result);
+        return Util::float2int32(result);
     }
 
     return 0;

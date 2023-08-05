@@ -19,6 +19,7 @@
  */
 
 #include "Setup.h"
+#include "Map/Maps/MapScriptInterface.h"
 
 class HeroesofOld : public QuestScript
 {

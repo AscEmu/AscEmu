@@ -66,6 +66,10 @@
 #include "Setup.h"
 #include "StrandOfTheAncient.h"
 
+#include "Management/WorldStates.h"
+#include "Map/Maps/BattleGroundMap.hpp"
+#include "Server/Master.h"
+
 const float sotaTitanRelic[4] = { 836.5f, -108.8f, 120.59f, 0.0f };
 
 const uint32_t GateGOIds[6] =

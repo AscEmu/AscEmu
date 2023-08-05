@@ -2203,7 +2203,7 @@ void Player::eventExploration()
             setExploredZone(offset, currFields | val);
 
             uint32_t explore_xp = areaTableEntry->area_level * 10;
-            explore_xp *= float2int32(worldConfig.getFloatRate(RATE_EXPLOREXP));
+            explore_xp *= Util::float2int32(worldConfig.getFloatRate(RATE_EXPLOREXP));
 
 #if VERSION_STRING > TBC
             updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA, getAreaId());
@@ -7069,7 +7069,7 @@ void Player::applyItemMods(Item* item, int16_t slot, bool apply, bool justBroked
                 {
                     // Calculate proc chance equivalent of 1 PPM
                     // On average 'chance on hit' effects on items seem to have 1 proc-per-minute
-                    const auto procChance = float2int32((item->getItemProperties()->Delay * 0.001f / 60.0f) * 100.0f);
+                    const auto procChance = Util::float2int32((item->getItemProperties()->Delay * 0.001f / 60.0f) * 100.0f);
                     switch (slot)
                     {
                         // 'Chance on hit' in main hand should only proc from main hand hits
@@ -11520,7 +11520,7 @@ void Player::onKillUnitReputation(Unit* unit, bool innerLoop)
                     if (getFactionStanding(mod->faction[team]) >= static_cast<int32_t>(mod->replimit))
                         continue;
 
-            modFactionStanding(mod->faction[team], float2int32(mod->value * worldConfig.getFloatRate(RATE_KILLREPUTATION)));
+            modFactionStanding(mod->faction[team], Util::float2int32(mod->value * worldConfig.getFloatRate(RATE_KILLREPUTATION)));
         }
     }
     else
@@ -12899,7 +12899,7 @@ uint32_t Player::getBlockDamageReduction()
     if (block_multiplier < 1.0f)
         block_multiplier = 1.0f;
 
-    return float2int32((item->getItemProperties()->Block + this->m_modBlockValueFromSpells + this->getCombatRating(CR_BLOCK) + this->getStat(STAT_STRENGTH) / 2.0f - 1.0f) * block_multiplier);
+    return Util::float2int32((item->getItemProperties()->Block + this->m_modBlockValueFromSpells + this->getCombatRating(CR_BLOCK) + this->getStat(STAT_STRENGTH) / 2.0f - 1.0f) * block_multiplier);
 }
 
 void Player::applyFeralAttackPower(bool apply, Item* item)
@@ -14976,7 +14976,7 @@ void Player::updateStats()
             if (getShapeShiftForm() == FORM_MOONKIN)
             {
                 //(Strength x 2) + (Character Level x 1.5) - 20
-                attackPower += float2int32(static_cast<float>(lev) * 1.5f);
+                attackPower += Util::float2int32(static_cast<float>(lev) * 1.5f);
             }
             if (getShapeShiftForm() == FORM_CAT)
             {
@@ -15165,7 +15165,7 @@ void Player::updateStats()
         if (block_multiplier < 1.0f)
             block_multiplier = 1.0f;
 
-        int32_t blockable_damage = float2int32((itemShield->getItemProperties()->Block + m_modBlockValueFromSpells + getCombatRating(CR_BLOCK) + (str / 2.0f) - 1.0f) * block_multiplier);
+        int32_t blockable_damage = Util::float2int32((itemShield->getItemProperties()->Block + m_modBlockValueFromSpells + getCombatRating(CR_BLOCK) + (str / 2.0f) - 1.0f) * block_multiplier);
 #if VERSION_STRING != Classic
         setShieldBlock(blockable_damage);
 #endif
@@ -15435,13 +15435,13 @@ void Player::regenerateHealth(bool inCombat)
             if (amt <= 1.0f)//this fixes regen like 0.98
                 currentHealth++;
             else
-                currentHealth += float2int32(amt);
+                currentHealth += Util::float2int32(amt);
 
             setHealth((currentHealth >= maxHealth) ? maxHealth : currentHealth);
         }
         else
         {
-            dealDamage(this, float2int32(-amt), 0);
+            dealDamage(this, Util::float2int32(-amt), 0);
         }
     }
 }
@@ -16348,7 +16348,7 @@ uint32_t Player::getMainMeleeDamage(uint32_t attackPowerOverride)
         else
             result = attackPowerBonus * 2500.0f;
 
-        return float2int32(result);
+        return Util::float2int32(result);
     }
 
     // no druid shapeShift
@@ -16358,7 +16358,7 @@ uint32_t Player::getMainMeleeDamage(uint32_t attackPowerOverride)
         speed = item->getItemProperties()->Delay;
 
     result = attackPowerBonus * speed;
-    return float2int32(result);
+    return Util::float2int32(result);
 }
 
 #if VERSION_STRING > TBC

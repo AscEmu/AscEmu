@@ -21,7 +21,7 @@ AnubarakAI::AnubarakAI(Creature* pCreature) : CreatureAIScript(pCreature)
     sphereGuids.resize(6);
 
     // Events
-    addEmoteForEventByIndex(Event_OnCombatStart, anubarak::SAY_AGGRO);
+    addEmoteForEventByIndex(CreatureAIScript::Event_OnCombatStart, anubarak::SAY_AGGRO);
     addEmoteForEventByIndex(Event_OnTargetDied, anubarak::SAY_KILL_PLAYER);
     addEmoteForEventByIndex(Event_OnDied, anubarak::SAY_DEATH);
 }

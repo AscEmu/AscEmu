@@ -20,7 +20,13 @@
 #include "Setup.h"
 #include "EyeOfTheStorm.h"
 
+#include "CommonDefines.hpp"
+#include "Management/HonorHandler.h"
+#include "Management/WorldStates.h"
+#include "Map/Maps/BattleGroundMap.hpp"
+#include "Server/Master.h"
 #include "Server/WorldSessionLog.hpp"
+#include "Spell/SpellMgr.hpp"
 
 static float EOTSBuffCoordinates[4][4] =
 {

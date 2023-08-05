@@ -143,26 +143,6 @@ static inline uint32 int32abs2uint32(const int value)
     return (uint32)(value ^ (value >> 31)) - (value >> 31);
 }
 
-// Fastest Method of float2int32
-static inline int float2int32(const float value)
-{
-#if !defined(_WIN64) && COMPILER == COMPILER_MICROSOFT && !defined(USING_BIG_ENDIAN)
-    int i;
-    __asm
-    {
-        fld value
-        frndint
-        fistp i
-    }
-    return i;
-#else
-    union { int asInt[2]; double asDouble; } n;
-    n.asDouble = value + 6755399441055744.0;
-
-    return n.asInt [0];
-#endif
-}
-
 // Fastest Method of long2int32
 static inline int long2int32(const double value)
 {

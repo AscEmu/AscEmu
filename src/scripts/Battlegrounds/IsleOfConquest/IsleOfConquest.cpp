@@ -19,6 +19,10 @@
 #include "Setup.h"
 #include "IsleOfConquest.h"
 
+#include "Management/WorldStates.h"
+#include "Map/Maps/BattleGroundMap.hpp"
+#include "Server/Master.h"
+
 // gameobject faction
 static uint32_t g_gameObjectFactions[IOC_NUM_CONTROL_POINTS] =
 {

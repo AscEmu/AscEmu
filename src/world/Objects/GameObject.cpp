@@ -1966,7 +1966,7 @@ void GameObject_FishingNode::onUse(Player* player)
             int32_t roll = Util::getRandomInt(1, 100);
 
             // Advance
-            player->advanceSkillLine(SKILL_FISHING, static_cast<uint16_t>(float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE))));
+            player->advanceSkillLine(SKILL_FISHING, static_cast<uint16_t>(Util::float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE))));
 
             GameObject_FishingHole* school = nullptr;
             GameObject* fishingPool = getWorldMap()->getInterface()->findNearestGoWithType(this, GAMEOBJECT_TYPE_FISHINGHOLE);;

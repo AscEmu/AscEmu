@@ -6,6 +6,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "DalaranSewers.h"
 
+#include "Map/Maps/BattleGroundMap.hpp"
+#include "Server/Master.h"
+
 DalaranSewers::DalaranSewers(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t, uint32_t players_per_side) :
     Arena(mgr, id, lgroup, t, players_per_side)
 {}

@@ -973,7 +973,7 @@ bool ObjectMgr::handleInstanceReputationModifiers(Player* _player, Unit* _unitVi
         if (!value || (repLimit && _player->getFactionStanding(instanceRepMod->faction[team]) >= repLimit))
             continue;
 
-        value = float2int32(value * worldConfig.getFloatRate(RATE_KILLREPUTATION));
+        value = Util::float2int32(value * worldConfig.getFloatRate(RATE_KILLREPUTATION));
         _player->modFactionStanding(instanceRepMod->faction[team], value);
     }
 

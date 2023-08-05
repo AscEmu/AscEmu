@@ -8,7 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ChatDefines.hpp"
 #include "WorldPacket.h"
 #include "Objects/Units/Players/Player.hpp"
-#include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Server/Packets/SmsgChannelList.h"
 #include "Server/Packets/SmsgChannelNotify.h"

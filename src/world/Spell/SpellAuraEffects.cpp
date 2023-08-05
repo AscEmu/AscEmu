@@ -944,7 +944,7 @@ void Aura::spellAuraEffectPeriodicDamage(AuraEffectModifier* aurEff, bool apply)
                 auto c = GetUnitCaster();
                 if (c != nullptr && c->isPlayer())
                 {
-                    aurEff->setEffectDamage(float2int32(static_cast<Player*>(c)->m_castedAmount[SCHOOL_FIRE] * parentsp->getEffectBasePoints(0) / 100.0f));
+                    aurEff->setEffectDamage(Util::float2int32(static_cast<Player*>(c)->m_castedAmount[SCHOOL_FIRE] * parentsp->getEffectBasePoints(0) / 100.0f));
                 }
                 else if (c != nullptr)
                 {

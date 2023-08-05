@@ -3,12 +3,12 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include <iostream>
+#include "Util.hpp"
+#include "Common.hpp"
+#include <filesystem>
 #include <string>
 #include <sstream>
 #include <fstream>
-
-#include "Util.hpp"
 #include "Strings.hpp"
 #include "utf8.h"
 
@@ -443,7 +443,7 @@ namespace Util
         std::map<uint32_t, std::string> directoryContentMap;
 
         uint32_t count = 0;
-        for (auto& p : fs::recursive_directory_iterator(pathName))
+        for (auto& p : std::filesystem::recursive_directory_iterator(pathName))
         {
             const std::string filePathName = p.path().string();
 
@@ -474,11 +474,11 @@ namespace Util
         return directoryContentMap;
     }
 
-    std::string readFileIntoString(fs::path path)
+    std::string readFileIntoString(std::filesystem::path path)
     {
         std::ifstream fileStream{ path };
 
-        auto const fileSize = static_cast<unsigned int>(fs::file_size(path));
+        auto const fileSize = static_cast<unsigned int>(std::filesystem::file_size(path));
 
         std::string fileString(fileSize, ' ');
 

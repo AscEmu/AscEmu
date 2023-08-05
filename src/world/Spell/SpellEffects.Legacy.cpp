@@ -1037,8 +1037,8 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case 71116:
             {
                 if (u_caster)
-                    dmg += float2int32(u_caster->getCalculatedRangedAttackPower() * 0.15f);
-                dmg = float2int32(dmg * (0.9f + Util::getRandomFloat(0.2f)));      // randomized damage
+                    dmg += Util::float2int32(u_caster->getCalculatedRangedAttackPower() * 0.15f);
+                dmg = Util::float2int32(dmg * (0.9f + Util::getRandomFloat(0.2f)));      // randomized damage
 
                 if (p_caster != nullptr)
                 {
@@ -1086,7 +1086,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case 60019:
             {
                 if (u_caster)
-                    dmg = (getSpellInfo()->calculateEffectValue(0)) + float2int32(u_caster->getCalculatedAttackPower() * 0.12f);
+                    dmg = (getSpellInfo()->calculateEffectValue(0)) + Util::float2int32(u_caster->getCalculatedAttackPower() * 0.12f);
             } break;
 
             // SPELL_HASH_SHOCKWAVE:      // Shockwave
@@ -1194,7 +1194,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                 {
                     uint32 sph = p_caster->getModDamageDonePositive(SCHOOL_HOLY);
                     int32 ap = p_caster->getCalculatedAttackPower();
-                    dmg += float2int32((0.15f * sph) + (0.15f * ap));
+                    dmg += Util::float2int32((0.15f * sph) + (0.15f * ap));
                     if (unitTarget && unitTarget->isCreature())
                     {
                         uint32 type = static_cast<Creature*>(unitTarget)->GetCreatureProperties()->Type;
@@ -1213,9 +1213,9 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
 #if VERSION_STRING != Classic
                     Item* it = p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
                     if (it && it->getItemProperties() && it->getItemProperties()->InventoryType == INVTYPE_SHIELD)
-                        dmg = float2int32(1.3f * p_caster->getShieldBlock());
+                        dmg = Util::float2int32(1.3f * p_caster->getShieldBlock());
 #else
-                    dmg += float2int32(1.30f * p_caster->getCombatRating(CR_BLOCK) + getSpellInfo()->getEffectBasePoints(0));
+                    dmg += Util::float2int32(1.30f * p_caster->getCombatRating(CR_BLOCK) + getSpellInfo()->getEffectBasePoints(0));
 #endif
                 }
             } break;
@@ -1279,7 +1279,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                         float block_multiplier = (100.0f + p_caster->m_modBlockAbsorbValue) / 100.0f;
                         if (block_multiplier < 1.0f)block_multiplier = 1.0f;
 
-                        int32 blockable_damage = float2int32((it->getItemProperties()->Block + p_caster->m_modBlockValueFromSpells + p_caster->getCombatRating(CR_BLOCK) + ((p_caster->getStat(STAT_STRENGTH) / 2.0f) - 1.0f)) * block_multiplier);
+                        int32 blockable_damage = Util::float2int32((it->getItemProperties()->Block + p_caster->m_modBlockValueFromSpells + p_caster->getCombatRating(CR_BLOCK) + ((p_caster->getStat(STAT_STRENGTH) / 2.0f) - 1.0f)) * block_multiplier);
 
                         /*
                         3.2.0:
@@ -1398,7 +1398,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             case 67573:
             {
                 if (u_caster)
-                    dmg = float2int32(u_caster->getCalculatedAttackPower() * 0.12f);
+                    dmg = Util::float2int32(u_caster->getCalculatedAttackPower() * 0.12f);
             } break;
 
             case 5308:
@@ -1612,7 +1612,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                     else
                         ammodmg = 0;
 
-                    dmg = float2int32(ammodmg + bowdmg) + stundmg;
+                    dmg = Util::float2int32(ammodmg + bowdmg) + stundmg;
                 }
 #endif
             }break;
@@ -1977,7 +1977,7 @@ void Spell::SpellEffectPowerDrain(uint8_t effectIndex)  // Power Drain
             return;
 
         // Resilience - reduces the effect of mana drains by (CalcRating*2)%.
-        damage = float2int32(damage * (1 - ((static_cast< Player* >(unitTarget)->calcRating(CR_CRIT_TAKEN_SPELL) * 2) / 100.0f)));
+        damage = Util::float2int32(damage * (1 - ((static_cast< Player* >(unitTarget)->calcRating(CR_CRIT_TAKEN_SPELL) * 2) / 100.0f)));
     }
     uint32 amt = damage + ((u_caster->GetDamageDoneMod(getSpellInfo()->getFirstSchoolFromSchoolMask()) * 80) / 100);
     if (amt > curPower)
@@ -2154,7 +2154,7 @@ void Spell::SpellEffectHeal(uint8_t effectIndex) // Heal
                 uint32 val = mPlayer->getPower(POWER_TYPE_RAGE);
                 if (val > 100)
                     val = 100;
-                uint32 HpPerPoint = float2int32((mPlayer->getMaxHealth() * 0.003f));   //0.3% of hp per point of rage
+                uint32 HpPerPoint = Util::float2int32((mPlayer->getMaxHealth() * 0.003f));   //0.3% of hp per point of rage
                 uint32 healAmt = HpPerPoint * (val / 10); //1 point of rage = 0.3% of max hp
                 mPlayer->modPower(POWER_TYPE_RAGE, -1 * val);
 
@@ -3212,13 +3212,13 @@ void Spell::SpellEffectEnergize(uint8_t effectIndex) // Energize
             break;
         case 57669:
         {
-            modEnergy = float2int32(0.01f * unitTarget->getBaseMana());
+            modEnergy = Util::float2int32(0.01f * unitTarget->getBaseMana());
         }
         break;
         case 31930:
         {
             if (u_caster)
-                modEnergy = float2int32(0.25f * unitTarget->getBaseMana());
+                modEnergy = Util::float2int32(0.25f * unitTarget->getBaseMana());
         }
         break;
         case 2687: // Improved Bloodrage, dirty fix
@@ -4335,7 +4335,7 @@ void Spell::SpellEffectPowerBurn(uint8_t effectIndex) // power burn
             return;
 
         // Resilience - reduces the effect of mana drains by (CalcRating*2)%.
-        damage = float2int32(damage * (1 - ((static_cast< Player* >(unitTarget)->calcRating(CR_CRIT_TAKEN_SPELL) * 2) / 100.0f)));
+        damage = Util::float2int32(damage * (1 - ((static_cast< Player* >(unitTarget)->calcRating(CR_CRIT_TAKEN_SPELL) * 2) / 100.0f)));
     }
     int32 mult = damage;
     damage = mult * unitTarget->getMaxPower(POWER_TYPE_MANA) / 100;
@@ -4537,7 +4537,7 @@ void Spell::SpellEffectPickpocket(uint8_t /*effectIndex*/) // pickpocket
     sLootMgr.fillPickpocketingLoot(p_caster, &unitTarget->loot, unitTarget->getEntry(), 0);
 
     uint32 _rank = static_cast< Creature* >(unitTarget)->GetCreatureProperties()->Rank;
-    unitTarget->loot.gold = float2int32((_rank + 1) * unitTarget->getLevel() * (Util::getRandomUInt(5) + 1) * worldConfig.getFloatRate(RATE_MONEY));
+    unitTarget->loot.gold = Util::float2int32((_rank + 1) * unitTarget->getLevel() * (Util::getRandomUInt(5) + 1) * worldConfig.getFloatRate(RATE_MONEY));
 
     p_caster->sendLoot(unitTarget->getGuid(), LOOT_PICKPOCKETING, unitTarget->GetMapId());
     target->SetPickPocketed(true);
@@ -5078,7 +5078,7 @@ void Spell::SpellEffectDisenchant(uint8_t /*effectIndex*/)
     {
         if (Util::checkChance(100.0f - skill * 0.75f))
         {
-            auto SkillUp = static_cast<uint16_t>(float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE)));
+            auto SkillUp = static_cast<uint16_t>(Util::float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE)));
             if (skill + SkillUp > 60)
                 SkillUp = 60 - skill;
 
@@ -6114,7 +6114,7 @@ void Spell::SpellEffectRestoreHealthPct(uint8_t /*effectIndex*/)
     if (unitTarget == nullptr || !unitTarget->isAlive())
         return;
 
-    unitTarget->addSimpleHealingBatchEvent(float2int32(damage * unitTarget->getMaxHealth() / 100.0f), u_caster, pSpellId != 0 ? sSpellMgr.getSpellInfo(pSpellId) : getSpellInfo());
+    unitTarget->addSimpleHealingBatchEvent(Util::float2int32(damage * unitTarget->getMaxHealth() / 100.0f), u_caster, pSpellId != 0 ? sSpellMgr.getSpellInfo(pSpellId) : getSpellInfo());
 }
 
 void Spell::SpellEffectLearnSpec(uint8_t /*effectIndex*/)

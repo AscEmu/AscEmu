@@ -482,7 +482,7 @@ void Item::applyEnchantmentBonus(EnchantmentSlot slot, bool apply)
                     {
                         if (Entry->spell[c] != 0)
                         {
-                            const auto procChance = Entry->min[c] == 0 ? float2int32(static_cast<float>(getItemProperties()->Delay) * 0.001f / 60.0f * 100.0f) : Entry->min[c];
+                            const auto procChance = Entry->min[c] == 0 ? Util::float2int32(static_cast<float>(getItemProperties()->Delay) * 0.001f / 60.0f * 100.0f) : Entry->min[c];
                             switch (m_owner->getItemInterface()->GetInventorySlotByGuid(getGuid()))
                             {
                                 case EQUIPMENT_SLOT_MAINHAND:

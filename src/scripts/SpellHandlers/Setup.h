@@ -17,13 +17,9 @@
 
 #pragma once
 
-#include <cstdint>
-
 #include "WorldConf.h"
 #include "Server/Script/ScriptMgr.h"
-#include "Map/Maps/InstanceDefines.hpp"
-#include "Spell/SpellMgr.hpp"
-#include "Storage/MySQLDataStore.hpp"
+
 
 // Class spell handlers
 #if VERSION_STRING >= WotLK

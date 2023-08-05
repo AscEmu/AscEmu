@@ -23,6 +23,7 @@
 #include "Server/Opcodes.hpp"
 #include "Server/Script/ScriptMgr.h"
 #include "Spell/SpellAuras.h"
+#include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/DispelType.hpp"
 
 enum

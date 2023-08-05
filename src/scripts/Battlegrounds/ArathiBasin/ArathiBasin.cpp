@@ -20,7 +20,15 @@
 #include "Setup.h"
 #include "ArathiBasin.h"
 
+#include "Management/HonorHandler.h"
+#include "Management/QuestLogEntry.hpp"
+#include "Management/WorldStates.h"
+#include "Map/Maps/BattleGroundMap.hpp"
+#include "Map/Maps/WorldMap.hpp"
+#include "Server/Master.h"
 #include "Server/WorldSessionLog.hpp"
+#include "Spell/SpellMgr.hpp"
+#include "Storage/MySQLDataStore.hpp"
 
 uint32_t buffentries[3] = { 180380, 180362, 180146 };
 
