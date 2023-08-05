@@ -7,8 +7,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Movement/MovementGenerator.h"
 #include "PathMovementBase.h"
+#include "Movement/MovementDefines.h"
+#include "Objects/Units/UnitDefines.hpp"
+#include "Storage/DBC/DBCStores.hpp"
 #include "Utilities/Util.hpp"
 
+class Player;
 class Creature;
 class Unit;
 

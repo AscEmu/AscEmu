@@ -21,6 +21,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include <G3D/Vector3.h>
 #include <chrono>
 #include <random>
+#include "Objects/Units/Creatures/AIInterface.h"
+
 
 /// Makes std::chrono_literals globally available.
 using namespace std::chrono_literals;

@@ -14,6 +14,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 
 #include "Server/Definitions.h"
+#include "Spell/Definitions/SpellEffects.hpp"
+#include "Storage/MySQLDataStore.hpp"
 #include "Utilities/Strings.hpp"
 
 TaxiMask sTaxiNodesMask;

@@ -4,7 +4,11 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "DBCLoader.hpp"
+#include <cassert>
+
+#include "AEVersion.hpp"
 #include "WDBFormat.hpp"
+#include "Debugging/Errors.h"
 
 namespace DBC
 {

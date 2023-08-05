@@ -22,6 +22,7 @@
 
 #include <unordered_map>
 
+#include "ObjectMgr.hpp"
 #include "WorldPacket.h"
 #include "Storage/MySQLStructures.h"
 

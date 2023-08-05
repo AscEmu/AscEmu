@@ -6,6 +6,9 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include <cstdint>
+#include <memory>
+#include <string>
+#include <vector>
 
 class Field;
 

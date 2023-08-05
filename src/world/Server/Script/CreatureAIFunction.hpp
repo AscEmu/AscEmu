@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <functional>
 #include "AIUtils.hpp"
+#include "Spell/SpellMgr.hpp"
 
 class SERVER_DECL CreatureAIFunction
 {

@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <string>
+
 #include "DBCRecord.hpp"
 
 namespace DBC
@@ -59,7 +61,7 @@ namespace DBC
         static int getVersionIdForAEVersion();
         static bool hasFormat(std::string _dbcFile);
         static std::string GetFormat(std::string _dbcFile);
-        static uint32_t GetFormatRecordSize(const char* dbc_format, int32* index_pos = NULL);
+        static uint32_t GetFormatRecordSize(const char* dbc_format, int32_t* index_pos = NULL);
         bool Load(const char* dbc_filename, const char* dbc_format);
         bool LoadDB2(const char* dbc_filename, const char* dbc_format);
 

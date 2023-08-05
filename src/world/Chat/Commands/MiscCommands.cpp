@@ -540,7 +540,7 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
 #if VERSION_STRING < Cata
     auto out_area_name = at->area_name[sWorld.getDbcLocaleLanguageId()];
 #else
-    auto out_area_name = at->area_name;
+    auto out_area_name = at->area_name[0];
 #endif
 
     snprintf((char*)buf, 400, "|cff00ff00Current Position: |cffffffffMap: |cff00ff00%d |cffffffffZone: |cff00ff00%u |cffffffffArea: |cff00ff00%u |cffffffffPhase: |cff00ff00%u |cffffffffX: |cff00ff00%f |cffffffffY: |cff00ff00%f |cffffffffZ: |cff00ff00%f |cffffffffOrientation: |cff00ff00%f |cffffffffArea Name: |cff00ff00%s |r",

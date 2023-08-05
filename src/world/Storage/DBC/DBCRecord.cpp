@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "DBCRecord.hpp"
 
+#include <cassert>
+
 namespace DBC
 {
     DBCRecord::DBCRecord(unsigned char* offset) : m_offset(offset)
@@ -26,7 +28,7 @@ namespace DBC
         return val;
     }
 
-    uint8 DBCRecord::GetUInt8(size_t field, uint32_t field_count, const uint32_t field_offset) const
+    uint8_t DBCRecord::GetUInt8(size_t field, uint32_t field_count, const uint32_t field_offset) const
     {
         assert(field < field_count);
         return *(m_offset + field_offset);

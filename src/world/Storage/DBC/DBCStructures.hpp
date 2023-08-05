@@ -7,7 +7,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "WorldConf.h"
 #include "Map/Maps/InstanceDefines.hpp"
+#include "CommonTypes.hpp"
 #include <cstring>
+#include <map>
+#include <set>
 
 enum FactionTemplateFlags
 {

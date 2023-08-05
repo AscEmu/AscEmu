@@ -4,7 +4,6 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "DBCStructures.hpp"
-#include "Common.hpp"
 #include "Spell/Definitions/SpellFamily.hpp"
 #include "DBCStores.hpp"
 
