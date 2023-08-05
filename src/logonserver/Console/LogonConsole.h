@@ -20,7 +20,6 @@
 #ifndef __LOGONCONSOLE_H
 #define __LOGONCONSOLE_H
 
-#include "Common.hpp"
 #include "CThreads.h"
 #include <Threading/AEThread.h>
 
@@ -94,7 +93,7 @@ class LogonConsole
         void AccountSetPassword(char* str);
         void AccountChangePassword(char* str);
 
-        void checkAccountName(std::string name, uint8 type);
+        void checkAccountName(std::string name, uint8_t type);
 };
 
 #define sLogonConsole LogonConsole::getInstance()

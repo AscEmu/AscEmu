@@ -5,9 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Common.hpp"
+#include "CommonTypes.hpp"
 #include "Logging/LoggerDefines.hpp"
-#include "Config/Config.h"
 
 class WorldPacket;
 

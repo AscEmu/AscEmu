@@ -5,7 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Common.hpp"
+#include <map>
+#include <string>
+#include "CommonTypes.hpp"
 
 class SERVER_DECL ConfigFile
 {

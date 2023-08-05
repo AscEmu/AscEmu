@@ -27,7 +27,7 @@
 #include "EquipmentSetMgr.h"
 #include "ItemProperties.hpp"
 #include "Objects/ItemDefines.hpp"
-#include "Common.hpp"
+#include "CommonTypes.hpp"
 
 class Creature;
 

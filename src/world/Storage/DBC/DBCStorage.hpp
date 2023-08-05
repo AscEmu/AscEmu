@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Common.hpp"
 #include "DBCLoader.hpp"
 
 namespace DBC
@@ -31,7 +30,7 @@ namespace DBC
             this->Clear();
         }
 
-        T const* LookupEntry(uint32 id) const
+        T const* LookupEntry(uint32_t id) const
         {
             if (id >= m_row_count)
             {
@@ -41,14 +40,14 @@ namespace DBC
             return m_index_table.as_t[id];
         }
 
-        T const* AssertEntry(uint32 id) const
+        T const* AssertEntry(uint32_t id) const
         {
             T const* entry = LookupEntry(id);
             ASSERT(entry);
             return entry;
         }
 
-        uint32 GetNumRows() const
+        uint32_t GetNumRows() const
         {
             return m_row_count;
         }
@@ -63,7 +62,7 @@ namespace DBC
             return m_format;
         }
 
-        uint32 GetFieldCount() const
+        uint32_t GetFieldCount() const
         {
             return m_field_count;
         }
@@ -133,8 +132,8 @@ namespace DBC
 
     private:
         char const* m_format;
-        uint32 m_row_count;
-        uint32 m_field_count;
+        uint32_t m_row_count;
+        uint32_t m_field_count;
 
         union
         {

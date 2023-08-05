@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <zlib.h>
 
-#include "Common.hpp"
+#include "CommonTypes.hpp"
 #include "Player.hpp"
 #include "Chat/ChatDefines.hpp"
 #include "Chat/ChatHandler.hpp"

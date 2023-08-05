@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Strings.hpp"
+#include <sstream>
 
 namespace AscEmu::Util::Strings
 {

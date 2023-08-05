@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <chrono>
 #include <iomanip>
 #include <iostream>
+#include <map>
 #include <random>
 #include <utility>
 

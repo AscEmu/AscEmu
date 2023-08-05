@@ -44,7 +44,7 @@ typedef std::function<void(CreatureAIFunc)> Function;
 struct SERVER_DECL FilterArgs
 {
 public:
-    FilterArgs() {}
+    FilterArgs() = default;
     FilterArgs(TargetFilter filter) { addFilter(filter); }
     FilterArgs(TargetFilter filter, float pMinRange, float pMaxRange, int32_t auraId = 0) : minRange(pMinRange), maxRange(pMaxRange), auraId(auraId) { addFilter(filter); }
     FilterArgs(TargetFilter filter, float pMinRange, float pMaxRange, float pMinHealth, float pMaxHealth, int32_t auraId = 0) : minRange(pMinRange), maxRange(pMaxRange), minHPRange(pMinHealth), maxHPRange(pMaxHealth), auraId(auraId) { addFilter(filter); }

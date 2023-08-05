@@ -23,6 +23,7 @@
 #define _C_THREADS_H
 
 #include "Threading/LegacyThreadBase.h"
+#include "CommonTypes.hpp"
 #include <atomic>
 
 class MapMgr;

@@ -410,7 +410,7 @@ void LogonConsole::AccountChangePassword(char* str)
     std::cout << "Account password changed." << std::endl;
 }
 
-void LogonConsole::checkAccountName(std::string name, uint8 type)
+void LogonConsole::checkAccountName(std::string name, uint8_t type)
 {
     std::string aname(name);
 

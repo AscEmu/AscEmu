@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Common.hpp"
+#include "CommonTypes.hpp"
 #include "Logging/Logger.hpp"
 #include "CThreads.h"
 #include "Database/Field.hpp"

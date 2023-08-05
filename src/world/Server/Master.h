@@ -7,7 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <iostream>
 
-#include "Common.hpp"
+#include "CommonTypes.hpp"
+#include <cstdarg>
 
 class SERVER_DECL Master
 {

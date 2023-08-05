@@ -20,6 +20,7 @@
 #ifndef _CRASH_HANDLER_H
 #define _CRASH_HANDLER_H
 
+#include <cstdint>
 #include "Common.hpp"
 
 bool HookCrashReporter(bool logon);

@@ -23,7 +23,7 @@
 
 #include <git_version.h>
 #include "ScriptMgr.h"
-#include "Common.hpp"
+#include "CommonTypes.hpp"
 #include "CreatureAIScript.h"
 #include "WorldConf.h"
 #include "Management/GameEvent.h"
