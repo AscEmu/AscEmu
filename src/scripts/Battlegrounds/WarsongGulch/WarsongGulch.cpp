@@ -20,6 +20,8 @@
 #include "Setup.h"
 #include "WarsongGulch.h"
 
+#include "Server/WorldSessionLog.hpp"
+
 WarsongGulch::WarsongGulch(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : Battleground(mgr, id, lgroup, t)
 {
     m_zoneId = 3277;

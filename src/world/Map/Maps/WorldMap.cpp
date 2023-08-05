@@ -27,7 +27,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Area/AreaStorage.hpp"
 #include "Debugging/CrashHandler.h"
 #include "Objects/Transporter.hpp"
-#include "Server/MainServerDefines.h"
+#include "Server/DatabaseDefinition.hpp"
 #include "Spell/Definitions/SummonControlTypes.hpp"
 #include "Storage/DBC/DBCStores.hpp"
 

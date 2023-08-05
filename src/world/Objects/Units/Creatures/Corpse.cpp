@@ -3,11 +3,11 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Server/MainServerDefines.h"
 #include "Map/Cells/MapCell.hpp"
 #include "Corpse.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Data/WoWCorpse.hpp"
+#include "Server/DatabaseDefinition.hpp"
 #include "Utilities/Strings.hpp"
 
 Corpse::Corpse(uint32_t high, uint32_t low)

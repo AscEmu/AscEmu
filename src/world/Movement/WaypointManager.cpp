@@ -6,9 +6,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WaypointManager.h"
 #include "Utilities/Util.hpp"
 #include "Logging/Logger.hpp"
-#include "Server/MainServerDefines.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/MovementInfo.hpp"
+#include "Server/DatabaseDefinition.hpp"
 
 void WaypointMgr::load()
 {

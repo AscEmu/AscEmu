@@ -19,9 +19,9 @@
  */
 
 #include "Server/Warden/SpeedDetector.h"
-#include "Server/MainServerDefines.h"
 #include "Server/World.h"
 #include "Objects/Units/Players/Player.hpp"
+#include "Server/WorldSessionLog.hpp"
 
 SpeedCheatDetector::SpeedCheatDetector()
 {

@@ -23,13 +23,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Management/MapMgr.hpp"
 #include "Movement/MovementDefines.h"
 #include "Movement/MovementManager.h"
-#include "Server/MainServerDefines.h"
 #include "Objects/Units/Creatures/Vehicle.hpp"
 #include "Management/Faction.h"
 #include "Spell/Definitions/SpellFailure.hpp"
 #include "Server/Packets/SmsgPetLearnedSpell.h"
 #include "Objects/Units/ThreatHandler.h"
 #include "Objects/Units/Creatures/AIInterface.h"
+#include "Server/DatabaseDefinition.hpp"
 
 using namespace AscEmu::Packets;
 

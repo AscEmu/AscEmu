@@ -6,10 +6,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "GuildLog.hpp"
 #include "GuildBankEventLog.hpp"
 #include "WoWGuid.h"
-#include "Server/MainServerDefines.h"
+#include "Server/DatabaseDefinition.hpp"
+
 
 GuildBankEventLogEntry::GuildBankEventLogEntry(uint32_t guildId, uint32_t guid, GuildBankEventLogTypes eventType, uint8_t tabId, uint32_t playerGuid,
-    uint64_t itemOrMoney, uint16_t itemStackCount, uint8_t destTabId) :
+                                               uint64_t itemOrMoney, uint16_t itemStackCount, uint8_t destTabId) :
     GuildLogEntry(guildId, guid), mEventType(eventType), mBankTabId(tabId), mPlayerGuid(playerGuid), mItemOrMoney(itemOrMoney),
     mItemStackCount(itemStackCount), mDestTabId(destTabId)
 {

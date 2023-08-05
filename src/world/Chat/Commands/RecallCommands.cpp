@@ -5,8 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Chat/ChatHandler.hpp"
 #include "Management/ObjectMgr.hpp"
-#include "Server/MainServerDefines.h"
+#include "Server/DatabaseDefinition.hpp"
 #include "Server/WorldSession.h"
+#include "Server/WorldSessionLog.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Utilities/Strings.hpp"
 

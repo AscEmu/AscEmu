@@ -6,6 +6,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "LUAEngine.h"
 #include "GameobjectFunctions.h"
 
+#include "LuaMacros.h"
+#include "Management/WeatherMgr.hpp"
+#include "Server/DatabaseDefinition.hpp"
+
 int LuaGameObject::GossipCreateMenu(lua_State* L, GameObject* ptr)
 {
     int text_id = static_cast<int>(luaL_checkinteger(L, 1));

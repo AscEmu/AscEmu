@@ -7,13 +7,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/TaxiMgr.h"
 #include "Server/Opcodes.hpp"
 #include "Objects/Units/Players/Player.hpp"
-#include "Server/MainServerDefines.h"
 
 #include <charconv>
 #include <string_view>
 #include <cstdint>
 
-#include "Server/Definitions.h"
+#include "Server/DatabaseDefinition.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Utilities/Strings.hpp"

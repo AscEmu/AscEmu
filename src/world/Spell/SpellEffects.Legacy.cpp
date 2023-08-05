@@ -36,7 +36,6 @@
 #include "Management/Battleground/Battleground.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Players/PlayerClasses.hpp"
-#include "Server/MainServerDefines.h"
 #include "Map/Area/AreaStorage.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Management/Faction.h"
@@ -75,6 +74,7 @@
 #include "VMapFactory.h"
 #include "VMapManager2.h"
 #include "Server/Definitions.h"
+#include "Server/WorldSessionLog.hpp"
 
 using namespace AscEmu::Packets;
 

@@ -6,10 +6,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Logging/Log.hpp"
 #include "QuestLogEntry.hpp"
 #include "Server/WorldSession.h"
-#include "Server/MainServerDefines.h"
-#include "Database/Database.h"
 #include "Management/ItemInterface.h"
 #include "QuestMgr.h"
+#include "Server/DatabaseDefinition.hpp"
 
 QuestLogEntry::QuestLogEntry(QuestProperties const* questProperties, Player* player, uint8_t slot) : m_slot(slot), m_questProperties(questProperties), m_player(player)
 {

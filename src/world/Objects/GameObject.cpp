@@ -21,7 +21,6 @@
 
 #include "Management/GameEvent.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Server/MainServerDefines.h"
 #include <G3D/Quat.h>
 #include "Map/Cells/MapCell.hpp"
 #include "Management/Faction.h"
@@ -42,6 +41,7 @@
 #include "Management/QuestLogEntry.hpp"
 #include "Server/Definitions.h"
 #include "Objects/Transporter.hpp"
+#include "Server/DatabaseDefinition.hpp"
 
 // MIT
 

@@ -4,9 +4,9 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Management/ObjectMgr.hpp"
-#include "Server/MainServerDefines.h"
 #include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
+#include "Server/DatabaseDefinition.hpp"
 #include "Server/Packets/CmsgGmTicketCreate.h"
 #include "Server/Packets/SmsgGmTicketCreate.h"
 #include "Server/Packets/CmsgGmTicketUpdateText.h"

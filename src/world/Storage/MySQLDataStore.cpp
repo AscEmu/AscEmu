@@ -6,8 +6,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include <regex>
 
 #include "Storage/MySQLDataStore.hpp"
+
+#include "Server/DatabaseDefinition.hpp"
 #include "Spell/SpellClickInfo.hpp"
-#include "Server/MainServerDefines.h"
 #include "Spell/SpellMgr.hpp"
 #include "Utilities/Strings.hpp"
 #include "Storage/DBC/DBCStores.hpp"

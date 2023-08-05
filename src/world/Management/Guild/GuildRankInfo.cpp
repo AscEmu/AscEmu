@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Logging/Log.hpp"
 #include "Database/Database.h"
 #include "Logging/Logger.hpp"
-#include "Server/MainServerDefines.h"
+#include "Server/DatabaseDefinition.hpp"
 
 GuildRankInfo::GuildRankInfo() : mGuildId(0), mRankId(GUILD_RANK_NONE), mRights(GR_RIGHT_EMPTY), mBankMoneyPerDay(0)
 {

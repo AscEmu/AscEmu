@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CommandTableStorage.hpp"
 #include "ChatCommand.hpp"
 #include "ChatHandler.hpp"
-#include "Server/MainServerDefines.h"
+#include "Server/DatabaseDefinition.hpp"
 
 CommandTableStorage& CommandTableStorage::getInstance()
 {

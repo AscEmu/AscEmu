@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "AIInterface.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Movement/MovementManager.h"
-#include "Server/MainServerDefines.h"
+#include "Server/DatabaseDefinition.hpp"
 
 #define MAX_DESYNC 5.0f
 

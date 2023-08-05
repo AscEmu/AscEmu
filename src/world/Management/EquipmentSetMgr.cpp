@@ -19,12 +19,12 @@
  */
 
 #include "Management/EquipmentSetMgr.h"
-#include "Server/MainServerDefines.h"
 #include "Database/Field.hpp"
 #include "Database/Database.h"
 #include "WoWGuid.h"
 #include "WorldPacket.h"
 #include "Logging/Logger.hpp"
+#include "Server/DatabaseDefinition.hpp"
 
 namespace Arcemu
 {

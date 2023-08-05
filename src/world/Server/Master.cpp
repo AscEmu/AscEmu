@@ -24,8 +24,10 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "WorldRunnable.h"
 #include "Server/Console/ConsoleThread.h"
-#include "Server/MainServerDefines.h"
 #include "Server/Master.h"
+
+#include "ConfigMgr.hpp"
+#include "DatabaseDefinition.hpp"
 #include "Server/BroadcastMgr.h"
 #include "Storage/DayWatcherThread.h"
 #include "Chat/Channel.hpp"

@@ -5,8 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Management/GameEvent.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Server/MainServerDefines.h"
 #include "Map/Management/MapMgr.hpp"
+#include "Server/DatabaseDefinition.hpp"
 #include "Server/Script/ScriptMgr.h"
 
 void GameEvent::CreateNPCs()

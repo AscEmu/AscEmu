@@ -12,7 +12,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Battleground/Battleground.hpp"
 #include "Objects/Units/Stats.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Server/MainServerDefines.h"
 #include "Map/Cells/MapCell.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Spell/Definitions/PowerType.hpp"
@@ -23,6 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/BattleGroundMap.hpp"
 #include "Server/Script/CreatureAIScript.h"
 #include "Objects/Units/Creatures/CreatureGroups.h"
+#include "Server/DatabaseDefinition.hpp"
 #include "Server/Definitions.h"
 #include "Storage/DBC/DBCStores.hpp"
 

@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "LuaGlobal.h"
+#include "LuaMacros.h"
 #include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
 #include "Management/Faction.h"
@@ -24,7 +25,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Creatures/Vehicle.hpp"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
-#include "Server/MainServerDefines.h"
+#include "Server/DatabaseDefinition.hpp"
 #include "Server/WorldSession.h"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Spell/SpellAuras.h"

@@ -4,9 +4,9 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "CalendarMgr.hpp"
-#include "Server/MainServerDefines.h"
 #include "Database/Database.h"
 #include "Logging/Logger.hpp"
+#include "Server/DatabaseDefinition.hpp"
 
 CalendarMgr& CalendarMgr::getInstance()
 {

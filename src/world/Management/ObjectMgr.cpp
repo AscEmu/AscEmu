@@ -12,7 +12,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Objects/Units/Players/PlayerClasses.hpp"
-#include "Server/MainServerDefines.h"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/MapScriptInterface.h"
@@ -23,6 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/LFG/LFGMgr.hpp"
 #include "Movement/MovementManager.h"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
+#include "Server/DatabaseDefinition.hpp"
 #include "Utilities/Strings.hpp"
 
 #if VERSION_STRING < Cata

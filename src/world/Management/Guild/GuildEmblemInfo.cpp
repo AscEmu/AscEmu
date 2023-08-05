@@ -4,8 +4,10 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "GuildEmblemInfo.hpp"
+
+#include "Server/DatabaseDefinition.hpp"
 #include "Database/Database.h"
-#include "Server/MainServerDefines.h"
+
 
 EmblemInfo::EmblemInfo() : mStyle(0), mColor(0), mBorderStyle(0), mBorderColor(0), mBackgroundColor(0)
 {

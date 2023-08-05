@@ -9,24 +9,16 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "LuaGlobal.h"
 #include "LuaHelpers.h"
-#include "WorldConf.h"
-#include "LuaMacros.h"
-#include "Management/ArenaTeam.hpp"
 #include "Management/QuestLogEntry.hpp"
-#include "Management/Guild/Guild.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Objects/GameObject.h"
 #include "Objects/Item.hpp"
 #include "Server/Master.h"
 #include "Spell/Spell.h"
-#include "Objects/Units/Creatures/Creature.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Server/EventMgr.h"
-#include "Management/WeatherMgr.hpp"
 #include "Map/Maps/MapScriptInterface.h"
-#include "Server/MainServerDefines.h"
 #include "Spell/SpellMgr.hpp"
-#include "Storage/MySQLDataStore.hpp"
 
 #ifdef DEBUG
 #define LUA_USE_APICHECK

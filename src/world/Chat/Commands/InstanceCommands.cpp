@@ -23,7 +23,7 @@
 #include "Management/ObjectMgr.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
-#include "Server/MainServerDefines.h"
+#include "Server/WorldSessionLog.hpp"
 #include "Server/Packets/SmsgInstanceReset.h"
 #include "Server/Script/ScriptMgr.h"
 

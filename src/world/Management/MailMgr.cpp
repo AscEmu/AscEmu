@@ -16,8 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Server/MainServerDefines.h"
 #include "Management/ObjectMgr.hpp"
+#include "Server/DatabaseDefinition.hpp"
 #include "Server/Packets/SmsgReceivedMail.h"
 
 MailSystem& MailSystem::getInstance()

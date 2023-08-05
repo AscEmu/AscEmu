@@ -18,7 +18,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Server/MainServerDefines.h"
 #include "Server/Master.h"
 #include "Debugging/CrashHandler.h"
 #include "ServerState.h"

@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Management/WorldStates.h>
 #include <Map/Management/MapMgr.hpp>
 #include <Objects/GameObject.h>
-#include <Server/MainServerDefines.h>
+#include <Server/DatabaseDefinition.hpp>
 #include <Server/Packets/SmsgMessageChat.h>
 #include <Spell/SpellMgr.hpp>
 #include <Storage/MySQLDataStore.hpp>

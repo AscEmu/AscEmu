@@ -7,10 +7,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/DBC/DBCStores.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
+#include "Server/DatabaseDefinition.hpp"
 #include "Server/Definitions.h"
-#include "Server/MainServerDefines.h"
 #include "Server/Script/ScriptMgr.h"
-#include "Utilities/Strings.hpp"
 
 InstanceMap::InstanceMap(BaseMap* baseMap, uint32_t id, uint32_t expiry, uint32_t InstanceId, uint8_t SpawnMode, PlayerTeam InstanceTeam)
     : WorldMap(baseMap, id, expiry, InstanceId, SpawnMode), instanceTeam(InstanceTeam)

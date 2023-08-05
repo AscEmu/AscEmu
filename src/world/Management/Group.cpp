@@ -20,11 +20,11 @@
 
 #include "Chat/ChatHandler.hpp"
 #include "Management/LFG/LFGMgr.hpp"
-#include "Server/MainServerDefines.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellAuras.h"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Creatures/Pet.h"
+#include "Server/DatabaseDefinition.hpp"
 #include "Server/Packets/SmsgPartyCommandResult.h"
 #include "Server/Packets/SmsgGroupSetLeader.h"
 #include "Server/Packets/SmsgGroupDestroyed.h"

@@ -4,11 +4,11 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Management/ArenaTeam.hpp"
-#include "Server/MainServerDefines.h"
 #include "Server/WorldSession.h"
 #include "Management/ObjectMgr.hpp"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Objects/Units/Players/PlayerDefines.hpp"
+#include "Server/DatabaseDefinition.hpp"
 
 using namespace AscEmu::Packets;
 

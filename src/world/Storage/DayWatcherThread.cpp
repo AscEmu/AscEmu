@@ -4,10 +4,10 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Management/ArenaTeam.hpp"
-#include "Server/MainServerDefines.h"
 #include "Management/ObjectMgr.hpp"
 #include "DayWatcherThread.h"
 #include "Chat/ChatHandler.hpp"
+#include "Server/DatabaseDefinition.hpp"
 
 using AscEmu::Threading::AEThread;
 using std::chrono::milliseconds;

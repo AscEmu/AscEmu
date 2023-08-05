@@ -5,9 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Charter.hpp"
 #include "Management/ObjectMgr.hpp"
-#include "Server/MainServerDefines.h"
 #include "Database/Field.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
+#include "Server/DatabaseDefinition.hpp"
 
 Charter::Charter(Field* _field)
 {

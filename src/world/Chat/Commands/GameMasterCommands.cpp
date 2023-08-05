@@ -5,8 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Chat/ChatHandler.hpp"
 #include "Management/ObjectMgr.hpp"
-#include "Server/MainServerDefines.h"
 #include "Server/WorldSession.h"
+#include "Server/WorldSessionLog.hpp"
 
 //.gm active
 bool ChatHandler::HandleGMActiveCommand(const char* args, WorldSession* m_session)

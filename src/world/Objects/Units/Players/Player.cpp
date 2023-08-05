@@ -134,7 +134,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Strings.hpp"
 #include "Objects/Transporter.hpp"
 #include "Movement/MovementGenerators/FlightPathMovementGenerator.h"
-#include "Server/MainServerDefines.h"
+#include "Server/DatabaseDefinition.hpp"
+#include "Server/WorldSessionLog.hpp"
 
 using namespace AscEmu::Packets;
 using namespace MapManagement::AreaManagement;

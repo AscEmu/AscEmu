@@ -32,7 +32,7 @@
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Objects/Item.hpp"
-#include "Server/MainServerDefines.h"
+#include "Server/DatabaseDefinition.hpp"
 #include "Server/Packets/SmsgUpdateInstanceEncounterUnit.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellMgr.hpp"

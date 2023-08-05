@@ -6,8 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "GuildLog.hpp"
 #include "GuildNewsLog.hpp"
 #include "WoWGuid.h"
-#include "Server/MainServerDefines.h"
 #include "Objects/Object.hpp"
+#include "Server/DatabaseDefinition.hpp"
 
 GuildNewsLogEntry::GuildNewsLogEntry(uint32_t guildId, uint32_t guid, GuildNews type, uint32_t playerGuid, uint32_t flags, uint32_t value) :
     GuildLogEntry(guildId, guid), mType(type), mPlayerGuid(playerGuid), mFlags(flags), mValue(value)

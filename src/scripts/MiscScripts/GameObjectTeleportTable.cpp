@@ -4,6 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
+#include "Server/DatabaseDefinition.hpp"
+#include "Server/Master.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //\brief This script will add support for an SQL table called gameobject_teleports.

@@ -21,7 +21,7 @@
 #include "Management/AuctionHouse.h"
 #include "Management/AuctionMgr.h"
 #include "Logging/Logger.hpp"
-#include "Server/MainServerDefines.h"
+#include "Server/DatabaseDefinition.hpp"
 
 AuctionMgr& AuctionMgr::getInstance()
 {

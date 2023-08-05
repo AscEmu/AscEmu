@@ -20,6 +20,8 @@
 #include "Setup.h"
 #include "ArathiBasin.h"
 
+#include "Server/WorldSessionLog.hpp"
+
 uint32_t buffentries[3] = { 180380, 180362, 180146 };
 
 static float GraveyardLocations[AB_NUM_CONTROL_POINTS][3] =

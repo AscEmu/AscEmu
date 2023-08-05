@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Chat/ChatHandler.hpp"
 #include "Objects/Units/Creatures/Pet.h"
-#include "Server/MainServerDefines.h"
+#include "Server/WorldSessionLog.hpp"
 #include "Storage/MySQLDataStore.hpp"
 
 //.pet create

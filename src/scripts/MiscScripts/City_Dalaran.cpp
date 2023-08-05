@@ -4,6 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
+#include "Spell/SpellMgr.hpp"
 
 // Alliance guard
 // Cast spell 54028 on horde player if he is in the alliance area

@@ -20,6 +20,8 @@
 #include "Setup.h"
 #include "EyeOfTheStorm.h"
 
+#include "Server/WorldSessionLog.hpp"
+
 static float EOTSBuffCoordinates[4][4] =
 {
     { 2050.54f, 1372.66f, 1194.56f, 1.67f },  // BE Tower

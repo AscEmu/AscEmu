@@ -7,10 +7,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "AddonMgr.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
-#include "Server/MainServerDefines.h"
 #include "Cryptography/MD5.h"
 #include "Database/Field.hpp"
 #include "Database/Database.h"
+#include "Server/DatabaseDefinition.hpp"
 #include "Storage/DBC/DBCStores.hpp"
 
 //#define DEBUG_PRINT_ADDON_PACKET            // Prints out Received addon packet when char logging in

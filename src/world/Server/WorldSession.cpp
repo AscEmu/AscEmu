@@ -18,6 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "DatabaseDefinition.hpp"
 #include "FastQueue.h"
 #include "Threading/Mutex.h"
 #include "WorldPacket.h"
@@ -27,7 +28,6 @@
 #include "Management/Battleground/Battleground.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
-#include "Server/MainServerDefines.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "WorldSocket.h"

@@ -11,7 +11,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Vehicle.hpp"
 #include "Map/Cells/CellHandlerDefines.hpp"
 #include "Objects/GameObject.h"
-#include "Server/MainServerDefines.h"
 #include "Server/Warden/SpeedDetector.h"
 #include "Management/ObjectMgr.hpp"
 #include "Server/Packets/CmsgWorldTeleport.h"
@@ -22,6 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/OpcodeTable.hpp"
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
 #include "Objects/Transporter.hpp"
+#include "Server/WorldSessionLog.hpp"
 
 using namespace AscEmu::Packets;
 

@@ -9,8 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Item.hpp"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Server/MainServerDefines.h"
-#include "Macros/ScriptMacros.hpp"
 #include "Server/WorldConfig.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Server/Packets/SmsgLootRemoved.h"
@@ -22,6 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Creature.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Management/ObjectMgr.hpp"
+#include "Server/DatabaseDefinition.hpp"
 
 using namespace AscEmu::Packets;
 

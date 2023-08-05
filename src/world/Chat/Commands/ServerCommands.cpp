@@ -5,8 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Chat/ChatHandler.hpp"
 #include "Chat/CommandTableStorage.hpp"
-#include "Server/MainServerDefines.h"
+#include "Server/DatabaseDefinition.hpp"
 #include "Server/Master.h"
+#include "Server/WorldSessionLog.hpp"
 #include "Server/WorldSocket.h"
 #include "Server/Packets/SmsgServerMessage.h"
 #include "Server/Script/ScriptMgr.h"

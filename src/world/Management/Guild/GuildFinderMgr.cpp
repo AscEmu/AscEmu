@@ -3,13 +3,13 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Server/DatabaseDefinition.hpp"
 #if VERSION_STRING >= Cata
 
 #include "GuildFinderMgr.hpp"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/Guild/Guild.hpp"
 #include "Management/ObjectMgr.hpp"
-#include "Server/MainServerDefines.h"
 #include "Storage/DBC/DBCStores.hpp"
 
 GuildFinderMgr& GuildFinderMgr::getInstance()

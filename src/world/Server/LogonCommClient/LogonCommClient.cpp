@@ -28,9 +28,11 @@
 #include "LogonCommHandler.h"
 #include "WorldPacket.h"
 #include "Database/Database.h"
-#include "Server/MainServerDefines.h"
 #include "Server/World.h"
 #include "Cryptography/LogonCommDefines.h"
+#include "Server/ConfigMgr.hpp"
+#include "Server/DatabaseDefinition.hpp"
+#include "Server/WorldSessionLog.hpp"
 
 LogonCommClientSocket::LogonCommClientSocket(SOCKET fd) : Socket(fd, 724288, 262444)
 {

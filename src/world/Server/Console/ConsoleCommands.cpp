@@ -7,11 +7,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include <git_version.h>
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Server/Console/BaseConsole.h"
-#include "Server/MainServerDefines.h"
 #include "Server/Master.h"
 #include "Cryptography/crc32.h"
 #include "Server/World.h"
 #include "Management/ObjectMgr.hpp"
+#include "Server/DatabaseDefinition.hpp"
 #include "Server/Script/ScriptMgr.h"
 
 bool handleSendChatAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool /*isWebClient*/)

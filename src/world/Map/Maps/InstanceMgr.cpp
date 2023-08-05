@@ -9,8 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "InstanceMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
+#include "Server/DatabaseDefinition.hpp"
 #include "Server/Definitions.h"
-#include "Server/MainServerDefines.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Utilities/Strings.hpp"
 

@@ -17,7 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/GameObject.h"
 #include "Objects/Units/Creatures/Vehicle.hpp"
-#include "Server/MainServerDefines.h"
+#include "Server/DatabaseDefinition.hpp"
 #include "Server/Master.h"
 #include "Server/WorldSession.h"
 #include "Server/Packets/SmsgMessageChat.h"

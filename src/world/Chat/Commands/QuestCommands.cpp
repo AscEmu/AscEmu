@@ -24,7 +24,8 @@
 #include "Management/QuestLogEntry.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Objects/Item.hpp"
-#include "Server/MainServerDefines.h"
+#include "Server/DatabaseDefinition.hpp"
+#include "Server/WorldSessionLog.hpp"
 #include "Storage/MySQLDataStore.hpp"
 
 class ChatHandler;

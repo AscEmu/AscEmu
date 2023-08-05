@@ -6,8 +6,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include <utility>
 
 #include "WorldConfig.h"
+
+#include "ConfigMgr.hpp"
 #include "WorldConf.h"
-#include "Server/MainServerDefines.h"
 #include "Config/Config.h"
 #include "Map/Cells/MapCell.hpp"
 #include "Logging/Logger.hpp"

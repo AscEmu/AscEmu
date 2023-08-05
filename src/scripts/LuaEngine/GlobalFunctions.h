@@ -28,7 +28,7 @@
 #include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
-#include "Server/MainServerDefines.h"
+#include "Server/DatabaseDefinition.hpp"
 #include "Management/Guild/Guild.hpp"
 
 #define ENGINE_NAME "ALE" // You should check in your scripts that GetLuaEngine() == "ALE"

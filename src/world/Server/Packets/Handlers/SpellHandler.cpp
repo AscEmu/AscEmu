@@ -6,12 +6,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatHandler.hpp"
 #include "Management/Battleground/Battleground.hpp"
 #include "Map/Management/MapMgr.hpp"
-#include "Server/MainServerDefines.h"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/SpellAuras.h"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
+#include "Server/WorldSessionLog.hpp"
 #include "Server/Packets/CmsgCastSpell.h"
 #include "Server/Packets/CmsgPetCastSpell.h"
 
