@@ -12,14 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <map>
 #include <random>
 #include <utility>
-
-namespace std
-{
-    namespace filesystem
-    {
-        class path;
-    }
-}
+#include <filesystem>
 
 namespace Util
 {

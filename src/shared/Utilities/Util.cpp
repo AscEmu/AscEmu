@@ -5,11 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Util.hpp"
 #include "Common.hpp"
-#include <filesystem>
+#include "Strings.hpp"
 #include <string>
 #include <sstream>
 #include <fstream>
-#include "Strings.hpp"
 #include "utf8.h"
 
 namespace Util
