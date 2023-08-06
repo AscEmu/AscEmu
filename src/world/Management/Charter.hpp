@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 class Field;
 
-class Charter : public std::enable_shared_from_this<Charter>
+class Charter
 {
 public:
     Charter(Field* _field);

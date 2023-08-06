@@ -907,28 +907,30 @@ void BattlegroundManager::removePlayerFromQueues(Player* player)
     if (auto group = player->getGroup())
     {
         sLogger.debug("Player %u removed whilst in a group. Removing players group %u from queue", player->getGuidLow(), group->GetID());
-        removeGroupFromQueues(group);
+        removeGroupFromQueues(group->GetID());
     }
 }
 
-void BattlegroundManager::removeGroupFromQueues(std::shared_ptr<Group> group)
+void BattlegroundManager::removeGroupFromQueues(uint32_t groupId)
 {
-    std::lock_guard queueLock(m_queueLock);
-    for (uint32_t i = BattlegroundDef::TYPE_ARENA_2V2; i < BattlegroundDef::TYPE_ARENA_5V5 + 1; ++i)
+    if (auto group = sObjectMgr.getGroupById(groupId))
     {
-        for (std::list<uint32_t>::iterator itr = m_queuedGroups[i].begin(); itr != m_queuedGroups[i].end();)
+        std::lock_guard queueLock(m_queueLock);
+        for (uint32_t i = BattlegroundDef::TYPE_ARENA_2V2; i < BattlegroundDef::TYPE_ARENA_5V5 + 1; ++i)
         {
-            if (*itr == group->GetID())
-                itr = m_queuedGroups[i].erase(itr);
-            else
-                ++itr;
+            for (std::list<uint32_t>::iterator itr = m_queuedGroups[i].begin(); itr != m_queuedGroups[i].end();)
+            {
+                if (*itr == groupId)
+                    itr = m_queuedGroups[i].erase(itr);
+                else
+                    ++itr;
+            }
         }
+
+        for (const auto itr : group->GetSubGroup(0)->getGroupMembers())
+            if (Player* loggedInPlayer = sObjectMgr.getPlayer(itr->guid))
+                sendBattlefieldStatus(loggedInPlayer, BattlegroundDef::STATUS_NOFLAGS, 0, 0, 0, 0, 0);
     }
-
-    for (const auto itr : group->GetSubGroup(0)->getGroupMembers())
-        if (Player* loggedInPlayer = sObjectMgr.getPlayer(itr->guid))
-            sendBattlefieldStatus(loggedInPlayer, BattlegroundDef::STATUS_NOFLAGS, 0, 0, 0, 0, 0);
-
 }
 
 

@@ -999,6 +999,7 @@ void ObjectMgr::loadGroups()
         do
         {
             const auto group = std::make_shared<Group>(false);
+            sObjectMgr.addGroup(group);
             group->LoadFromDB(result->Fetch());
         } while (result->NextRow());
         delete result;
@@ -1059,10 +1060,10 @@ void ObjectMgr::addGroup(std::shared_ptr<Group> _group)
     m_groups.insert(std::make_pair(_group->GetID(), _group));
 }
 
-void ObjectMgr::removeGroup(std::shared_ptr<Group> _group)
+void ObjectMgr::removeGroup(uint32_t _groupId)
 {
     std::lock_guard guard(m_groupLock);
-    m_groups.erase(_group->GetID());
+    m_groups.erase(_groupId);
 }
 
 std::shared_ptr<Group> ObjectMgr::getGroupByLeader(Player* pPlayer)

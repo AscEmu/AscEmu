@@ -654,6 +654,7 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
 
         _player->m_charters[CHARTER_TYPE_GUILD] = nullptr;
         playerCharter->destroy();
+        sObjectMgr.removeCharter(playerCharter);
 
         _player->getItemInterface()->RemoveItemAmt(CharterEntry::Guild, 1);
         sHookInterface.OnGuildCreate(_player, guild);
@@ -704,17 +705,33 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
         arenaTeam->m_leader = _player->getGuidLow();
         arenaTeam->m_stats.rating = 1500;
 
-        sObjectMgr.addArenaTeam(arenaTeam);
-        sObjectMgr.updateArenaTeamRankings();
-        arenaTeam->addMember(_player->m_playerInfo);
+        if (arenaTeam->addMember(_player->m_playerInfo))
+        {
+            // set up the leader
+            _player->setArenaTeam(arenaTeam->m_type, arenaTeam);
 
-        for (uint32_t playerGuid : charter->getSignatures())
-            if (std::shared_ptr<CachedCharacterInfo> info = sObjectMgr.getCachedCharacterInfo(playerGuid))
-                arenaTeam->addMember(info);
+            sObjectMgr.addArenaTeam(arenaTeam);
+            sObjectMgr.updateArenaTeamRankings();
 
-        _player->getItemInterface()->SafeFullRemoveItemByGuid(srlPacket.itemGuid);
-        _player->m_charters[charter->getCharterType()] = nullptr;
-        charter->destroy();
+            // set up the members
+            for (const uint32_t playerGuid : charter->getSignatures())
+            {
+                if (const auto info = sObjectMgr.getCachedCharacterInfo(playerGuid))
+                {
+                    if (arenaTeam->addMember(info))
+                    {
+                        if (const auto arenaMember = sObjectMgr.getPlayer(playerGuid))
+                            arenaMember->setArenaTeam(arenaTeam->m_type, arenaTeam);
+                    }
+                }
+            }
+
+            _player->getItemInterface()->SafeFullRemoveItemByGuid(srlPacket.itemGuid);
+            _player->m_charters[charter->getCharterType()] = nullptr;
+            charter->destroy();
+            sObjectMgr.removeCharter(charter);
+        }
+        
     }
 
     Guild::sendTurnInPetitionResult(this, PETITION_ERROR_OK);
@@ -826,6 +843,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
             if (!_player->getItemInterface()->AddItemToFreeSlot(item))
             {
                 charter->destroy();
+                sObjectMgr.removeCharter(charter);
                 item->deleteMe();
                 return;
             }
@@ -900,6 +918,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
             if (!_player->getItemInterface()->AddItemToFreeSlot(item))
             {
                 guildCharter->destroy();
+                sObjectMgr.removeCharter(guildCharter);
                 item->deleteMe();
                 return;
             }

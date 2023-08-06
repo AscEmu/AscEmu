@@ -307,7 +307,7 @@ public:
     uint32_t generateGroupId();
 
     void addGroup(std::shared_ptr<Group> _group);
-    void removeGroup(std::shared_ptr<Group> _group);
+    void removeGroup(uint32_t _groupId);
 
     std::shared_ptr<Group> getGroupByLeader(Player* _player);
     std::shared_ptr<Group> getGroupById(uint32_t _id);

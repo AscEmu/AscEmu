@@ -1167,7 +1167,10 @@ void WorldSession::handleDestroyItemOpcode(WorldPacket& recvPacket)
         if (charterType < NUM_CHARTER_TYPES)
         {
             if (auto const charter = _player->m_charters[charterType])
+            {
                 charter->destroy();
+                sObjectMgr.removeCharter(charter);
+            }
 
             _player->m_charters[charterType] = nullptr;
         }

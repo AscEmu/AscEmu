@@ -175,6 +175,8 @@ void WorldSession::handleArenaTeamInviteAcceptOpcode(WorldPacket& /*recvPacket*/
 
     if (arenaTeam->addMember(_player->m_playerInfo))
     {
+        _player->setArenaTeam(arenaTeam->m_type, arenaTeam);
+
         char buffer[1024];
         snprintf(buffer, 1024, "%s joined the arena team, '%s'.", _player->getName().c_str(), arenaTeam->m_name.c_str());
 
@@ -224,6 +226,7 @@ void WorldSession::handleArenaTeamLeaveOpcode(WorldPacket& recvPacket)
     if (arenaTeam->m_leader == _player->getGuidLow() && arenaTeam->m_memberCount == 1)
     {
         arenaTeam->destroy();
+        sObjectMgr.removeArenaTeam(arenaTeam);
         return;
     }
 
@@ -270,6 +273,7 @@ void WorldSession::handleArenaTeamDisbandOpcode(WorldPacket& recvPacket)
     }
 
     arenaTeam->destroy();
+    sObjectMgr.removeArenaTeam(arenaTeam);
 }
 
 void WorldSession::handleArenaTeamPromoteOpcode(WorldPacket& recvPacket)

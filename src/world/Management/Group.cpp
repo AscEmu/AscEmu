@@ -52,7 +52,6 @@ Group::Group(bool Assign)
     if (Assign)
     {
         m_Id = sObjectMgr.generateGroupId();
-        sObjectMgr.addGroup(shared_from_this());
         m_guid = WoWGuid(m_Id, 0, HIGHGUID_TYPE_GROUP).getRawGuid();
     }
     else
@@ -76,12 +75,11 @@ Group::~Group()
 {
     for (uint32 j = 0; j < m_SubGroupCount; ++j)
     {
-        SubGroup* sub = GetSubGroup(j);
-        if (sub)
+        if (SubGroup* sub = GetSubGroup(j))
             delete sub;
     }
 
-    sObjectMgr.removeGroup(shared_from_this());
+    sObjectMgr.removeGroup(m_Id);
 }
 
 void SubGroup::RemovePlayer(std::shared_ptr<CachedCharacterInfo> info)
@@ -129,7 +127,7 @@ bool Group::AddMember(std::shared_ptr<CachedCharacterInfo> info, int32 subgroupi
         if (m_isqueued)
         {
             m_isqueued = false;
-            sBattlegroundManager.removeGroupFromQueues(shared_from_this());
+            sBattlegroundManager.removeGroupFromQueues(m_Id);
         }
 
         if (!IsFull())
@@ -146,13 +144,13 @@ bool Group::AddMember(std::shared_ptr<CachedCharacterInfo> info, int32 subgroupi
                 if (pPlayer != NULL)
                     sEventMgr.AddEvent(pPlayer, &Player::eventGroupFullUpdate, EVENT_PLAYER_UPDATE, 1500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-                if (info->m_Group && info->m_Group != shared_from_this())
+                if (info->m_Group && info->m_Group->GetID() != m_Id)
                     info->m_Group->RemovePlayer(info);
 
                 if (m_Leader == NULL && pPlayer)
                     m_Leader = info;
 
-                info->m_Group = shared_from_this();
+                info->m_Group = sObjectMgr.getGroupById(m_Id);
                 info->subGroup = (int8)subgroup->GetID();
 
                 ++m_MemberCount;
@@ -347,7 +345,7 @@ void Group::Disband()
 
         SendPacketToAll(SmsgMessageChat(SystemMessagePacket("A change was made to your group. Removing the arena queue.")).serialise().get());
 
-        sBattlegroundManager.removeGroupFromQueues(shared_from_this());
+        sBattlegroundManager.removeGroupFromQueues(m_Id);
     }
 
     for (uint8 i = 0; i < m_SubGroupCount; i++)
@@ -430,7 +428,7 @@ void Group::RemovePlayer(std::shared_ptr<CachedCharacterInfo> info)
     if (m_isqueued)
     {
         m_isqueued = false;
-        sBattlegroundManager.removeGroupFromQueues(shared_from_this());
+        sBattlegroundManager.removeGroupFromQueues(m_Id);
     }
 
     SubGroup* sg = nullptr;
@@ -539,7 +537,7 @@ void Group::ExpandToRaid()
 
         SendPacketToAll(SmsgMessageChat(SystemMessagePacket("A change was made to your group. Removing the arena queue.")).serialise().get());
 
-        sBattlegroundManager.removeGroupFromQueues(shared_from_this());
+        sBattlegroundManager.removeGroupFromQueues(m_Id);
     }
 
     // Very simple ;)
@@ -712,8 +710,6 @@ void Group::LoadFromDB(Field* fields)
     m_updateblock = true;
 
     m_Id = fields[0].GetUInt32();
-
-    sObjectMgr.addGroup(shared_from_this());
 
     m_GroupType = fields[1].GetUInt8();
     m_SubGroupCount = fields[2].GetUInt8();

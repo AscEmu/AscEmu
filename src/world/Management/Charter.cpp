@@ -54,8 +54,6 @@ void Charter::saveToDB()
 
 void Charter::destroy()
 {
-    sObjectMgr.removeCharter(shared_from_this());
-
     CharacterDatabase.Execute("DELETE FROM charters WHERE charterId = %u", m_charterId);
 
     for (const auto playerGuid : m_signatures)

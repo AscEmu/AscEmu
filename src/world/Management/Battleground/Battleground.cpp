@@ -37,11 +37,12 @@ Battleground::Battleground(WorldMap* worldMap, uint32_t id, uint32_t levelGroup,
 {
     sEventMgr.AddEvent(this, &Battleground::eventResurrectPlayers, EVENT_BATTLEGROUND_QUEUE_UPDATE, 30000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-    for (auto& m_group : m_groups)
+    for (auto& group : m_groups)
     {
-        m_group = std::make_shared<Group>(true);
-        m_group->m_disbandOnNoMembers = false;
-        m_group->ExpandToRaid();
+        group = std::make_shared<Group>(true);
+        sObjectMgr.addGroup(group);
+        group->m_disbandOnNoMembers = false;
+        group->ExpandToRaid();
     }
 
     m_honorPerKill = HonorHandler::CalculateHonorPointsForKill(m_levelGroup * 10, m_levelGroup * 10);

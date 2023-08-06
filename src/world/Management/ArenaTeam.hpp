@@ -60,7 +60,7 @@ struct ArenaTeamStats
     uint32_t ranking;
 };
 
-class SERVER_DECL ArenaTeam : public std::enable_shared_from_this<ArenaTeam>
+class SERVER_DECL ArenaTeam
 {
 public:
     ArenaTeam(uint8_t type, uint32_t Id);

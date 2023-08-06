@@ -144,7 +144,7 @@ using namespace InstanceDifficulty;
 CachedCharacterInfo::~CachedCharacterInfo()
 {
     if (m_Group != nullptr)
-        m_Group->RemovePlayer(shared_from_this());
+        m_Group->RemovePlayer(sObjectMgr.getCachedCharacterInfo(guid));
 }
 
 Player::Player(uint32_t guid) :
@@ -7967,7 +7967,13 @@ void Player::removeAllChannels()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // ArenaTeam
-void Player::setArenaTeam(uint8_t type, std::shared_ptr<ArenaTeam> arenaTeam) { m_arenaTeams[type] = arenaTeam; }
+void Player::setArenaTeam(uint8_t type, std::shared_ptr<ArenaTeam> arenaTeam)
+{
+    m_arenaTeams[type] = arenaTeam;
+
+    if (arenaTeam)
+        getSession()->SystemMessage("You are now a member of the arena team'%s'.", arenaTeam->m_name.c_str());
+}
 std::shared_ptr<ArenaTeam> Player::getArenaTeam(uint8_t type) { return m_arenaTeams[type]; }
 
 bool Player::isInArenaTeam(uint8_t type) const { return m_arenaTeams[type] != nullptr; }

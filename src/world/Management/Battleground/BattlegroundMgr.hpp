@@ -50,7 +50,7 @@ public:
     void eventQueueUpdate(bool forceStart);
 
     void removePlayerFromQueues(Player* player);
-    void removeGroupFromQueues(std::shared_ptr<Group> group);
+    void removeGroupFromQueues(uint32_t  group);
 
     Battleground* createInstance(uint32_t type, uint32_t levelGroup);
 

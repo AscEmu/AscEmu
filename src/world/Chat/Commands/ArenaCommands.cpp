@@ -67,11 +67,14 @@ bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_sessio
     arenaTeam->m_emblem.backgroundColour = 4284906803UL;
     arenaTeam->m_leader = player->getGuidLow();
     arenaTeam->m_name = std::string(teamName);
-    arenaTeam->addMember(player->getPlayerInfo());
 
-    sObjectMgr.addArenaTeam(arenaTeam);
+    if (arenaTeam->addMember(player->getPlayerInfo()))
+    {
+        player->setArenaTeam(arenaTeam->m_type, arenaTeam);
+        sObjectMgr.addArenaTeam(arenaTeam);
 
-    GreenSystemMessage(m_session, "Arena team created for Player: %s Type: %u", player->getName().c_str(), teamType);
+        GreenSystemMessage(m_session, "Arena team created for Player: %s Type: %u", player->getName().c_str(), teamType);
+    }
 
     return true;
 }

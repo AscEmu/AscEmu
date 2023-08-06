@@ -1448,6 +1448,7 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
             if (!grp)
             {
                 grp = std::make_shared<Group>(true);
+                sObjectMgr.addGroup(grp);
                 grp->m_disbandOnNoMembers = false;
                 grp->ExpandToLFG();
 

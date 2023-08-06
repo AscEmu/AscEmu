@@ -947,7 +947,7 @@ struct PlayerCreateInfo
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // CachedCharacterInfo
-class SERVER_DECL CachedCharacterInfo : std::enable_shared_from_this<CachedCharacterInfo>
+class SERVER_DECL CachedCharacterInfo
 {
 public:
 

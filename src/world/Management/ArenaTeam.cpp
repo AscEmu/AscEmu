@@ -169,7 +169,6 @@ void ArenaTeam::destroy()
     for (auto& itr : toDestroyMembers)
         removeMember(itr);
 
-    sObjectMgr.removeArenaTeam(shared_from_this());
     delete this;
 }
 
@@ -223,11 +222,6 @@ bool ArenaTeam::addMember(std::shared_ptr<CachedCharacterInfo> cachedCharInfo)
 #if VERSION_STRING != Classic
         loggedInPlayer->setArenaTeamId(m_type, m_id);
         loggedInPlayer->setArenaTeamMemberRank(m_type, 1);
-
-        loggedInPlayer->setArenaTeam(m_type, shared_from_this());
-
-        loggedInPlayer->getSession()->SystemMessage("You are now a member of the arena team, '%s'.", m_name.c_str());
-
 #endif
     }
 
