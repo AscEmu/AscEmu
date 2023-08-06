@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Instance_OldHillsbradFoothills.h"
 
 #include "Setup.h"
+#include "Management/QuestLogEntry.hpp"
 #include "Management/WorldStates.h"
 
 class OldHilsbradInstance : public InstanceScript

@@ -11,6 +11,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgChannelNotify.h"
 #include "Utilities/Strings.hpp"
 
+#if VERSION_STRING < Cata
+#include "Server/World.h"
+#endif
+
 using namespace AscEmu::Packets;
 
 ChannelMgr& ChannelMgr::getInstance()

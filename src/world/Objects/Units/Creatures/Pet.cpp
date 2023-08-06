@@ -41,6 +41,10 @@
 #include "Server/Script/CreatureAIScript.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 
+#if VERSION_STRING < Cata
+#include "Server/World.h"
+#endif
+
 //MIT START
 
 Pet::Pet(uint64_t guid) : Creature(guid)

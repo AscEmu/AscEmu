@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Chat/ChatHandler.hpp"
 #include "Management/Battleground/Battleground.hpp"
+#include "Management/Battleground/BattlegroundMgr.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSession.h"
 #include "Storage/WorldStrings.h"
 

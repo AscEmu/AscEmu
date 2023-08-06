@@ -18,6 +18,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellEffectTarget.hpp"
 #endif
 
+#if VERSION_STRING < Cata
+#include "Server/World.h"
+#endif
+
 bool SpellArea::fitsToRequirements(Player* player, uint32_t newZone, uint32_t newArea) const
 {
     if (gender != GENDER_NONE)

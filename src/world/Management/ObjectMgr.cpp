@@ -27,6 +27,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #if VERSION_STRING < Cata
 #include "Management/Guild/Guild.hpp"
+#include "Server/World.h"
 #endif
 
 ObjectMgr& ObjectMgr::getInstance()

@@ -9,6 +9,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLStructures.h"
 #include "Utilities/Strings.hpp"
 
+#if VERSION_STRING < Cata
+#include "Server/World.h"
+#endif
+
 //.lookup achievement
 //////////////////////////////////////////////////////////////////////////////////////////
 //Handles .lookup achievement

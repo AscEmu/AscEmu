@@ -22,6 +22,10 @@
 
 #include "Storage/DBC/DBCStores.hpp"
 
+#if VERSION_STRING < Cata
+#include "Server/World.h"
+#endif
+
 enum SpellTreeName
 {
     SPELLTREE_MAGE_ARCANE               = 237,

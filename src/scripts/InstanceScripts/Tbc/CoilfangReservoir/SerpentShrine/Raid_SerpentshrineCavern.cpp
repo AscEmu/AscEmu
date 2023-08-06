@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Management/Faction.h"
+#include "Map/Maps/MapScriptInterface.h"
 
 class HydrossTheUnstableAI : public CreatureAIScript
 {
