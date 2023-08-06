@@ -5,11 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "WDBRecord.hpp"
+
 #include <string>
 
-#include "DBCRecord.hpp"
-
-namespace DBC
+namespace WDB
 {
     enum DbcFieldFormat
     {
@@ -26,8 +26,31 @@ namespace DBC
         FT_SQL_ABSENT = 'a'                                       // Used in sql format to mark column absent in sql dbc
     };
 
-    class DBCLoader
+    class WDBLoader
     {
+    public:
+        WDBLoader();
+        ~WDBLoader();
+
+        WDBLoader(WDBLoader const& right) = delete;
+        WDBLoader& operator=(WDBLoader const& right) = delete;
+
+        bool load(const char* _dbcFilename, const char* _dbcFormat);
+        bool loadDb2(const char* _dbcFilename, const char* _dbcFormat);
+
+        char* autoProduceData(const char* _dbcFormat, uint32_t& _recordCount, char**& _indexTable);
+        char* autoProduceStrings(const char* _dbcFormat, char* _dataTable);
+        static int getVersionIdForAEVersion();
+        static bool hasFormat(std::string _dbcFile);
+        static std::string getFormat(std::string _dbcFile);
+        static uint32_t getFormatRecordSize(const char* _dbcFormat, int32_t* _indexPos = NULL);
+
+        WDB::WDBRecord getRecord(size_t record_id) const;
+        uint32_t getNumRows() const;
+        uint32_t getRowSize() const;
+        uint32_t getNumColumns() const;
+        uint32_t getOffset(size_t _id) const;
+
     protected:
         uint32_t m_record_size;
         uint32_t m_record_count;
@@ -38,37 +61,13 @@ namespace DBC
         unsigned char* m_string_table;
 
         //db2 fields
-        uint32_t m_tableHash;
-        uint32_t m_build;
+        uint32_t m_tableHash{};
+        uint32_t m_build{};
 
-        int m_unk1;
-        int m_unk2;
-        int m_unk3;
-        int m_locale;
-        int m_unk5;
-
-    public:
-        DBC::DBCRecord GetRecord(size_t record_id) const;
-        uint32_t GetNumRows() const;
-        uint32_t GetRowSize() const;
-        uint32_t GetNumColumns() const;
-        uint32_t GetOffset(size_t id) const;
-
-        bool IsLoaded();
-
-        char* AutoProduceData(const char* dbc_format, uint32_t& record_count, char**& index_table);
-        char* AutoProduceStrings(const char* dbc_format, char* data_table);
-        static int getVersionIdForAEVersion();
-        static bool hasFormat(std::string _dbcFile);
-        static std::string GetFormat(std::string _dbcFile);
-        static uint32_t GetFormatRecordSize(const char* dbc_format, int32_t* index_pos = NULL);
-        bool Load(const char* dbc_filename, const char* dbc_format);
-        bool LoadDB2(const char* dbc_filename, const char* dbc_format);
-
-        DBCLoader();
-        ~DBCLoader();
-
-        DBCLoader(DBCLoader const& right) = delete;
-        DBCLoader& operator=(DBCLoader const& right) = delete;
+        int m_unk1{};
+        int m_unk2{};
+        int m_unk3{};
+        int m_locale{};
+        int m_unk5{};
     };
 }

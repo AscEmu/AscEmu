@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/Definitions.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 
 #if VERSION_STRING < WotLK
 #include "Definitions/SpellEffectTarget.hpp"
@@ -313,9 +313,9 @@ SpellSkillMapBounds SpellMgr::getSkillEntryForSpellBounds(uint32_t spellId) cons
     return mSpellSkillsMap.equal_range(spellId);
 }
 
-DBC::Structures::SkillLineAbilityEntry const* SpellMgr::getFirstSkillEntryForSpell(uint32_t spellId, Player const* forPlayer/* = nullptr*/) const
+WDB::Structures::SkillLineAbilityEntry const* SpellMgr::getFirstSkillEntryForSpell(uint32_t spellId, Player const* forPlayer/* = nullptr*/) const
 {
-    DBC::Structures::SkillLineAbilityEntry const* skillLineAbility = nullptr;
+    WDB::Structures::SkillLineAbilityEntry const* skillLineAbility = nullptr;
 
     const auto spellSkillBounds = getSkillEntryForSpellBounds(spellId);
     for (auto spellSkillItr = spellSkillBounds.first; spellSkillItr != spellSkillBounds.second; ++spellSkillItr)
@@ -396,7 +396,7 @@ bool SpellMgr::checkLocation(SpellInfo const* spellInfo, uint32_t zone_id, uint3
             return false;
 #elif VERSION_STRING >= WotLK
         auto found = false;
-        auto areaGroup = sAreaGroupStore.LookupEntry(requireAreaId);
+        auto areaGroup = sAreaGroupStore.lookupEntry(requireAreaId);
         while (areaGroup != nullptr)
         {
             for (uint8_t i = 0; i < 6; ++i)
@@ -409,7 +409,7 @@ bool SpellMgr::checkLocation(SpellInfo const* spellInfo, uint32_t zone_id, uint3
                 break;
 
             // Try next group
-            areaGroup = sAreaGroupStore.LookupEntry(areaGroup->next_group);
+            areaGroup = sAreaGroupStore.lookupEntry(areaGroup->next_group);
         }
 
         if (!found)
@@ -446,7 +446,7 @@ SpellInfo const* SpellMgr::getSpellInfoByDifficulty([[maybe_unused]]const uint32
     // it will also be useful for tbc since the dbc file does not exist there
     // Classic has no different difficulties so this will always return nullptr there
 #if VERSION_STRING >= WotLK
-    const auto spellDifficulty = sSpellDifficultyStore.LookupEntry(spellDifficultyId);
+    const auto spellDifficulty = sSpellDifficultyStore.lookupEntry(spellDifficultyId);
     if (spellDifficulty == nullptr)
         return nullptr;
 
@@ -470,7 +470,7 @@ void SpellMgr::loadSpellInfoData()
 #if VERSION_STRING == Mop
     for (uint32_t i = 0; i < MAX_SPELL_ID; ++i)
     {
-        const auto dbcSpellEntry = sSpellStore.LookupEntry(i);
+        const auto dbcSpellEntry = sSpellStore.lookupEntry(i);
         if (dbcSpellEntry == nullptr)
             continue;
 
@@ -614,11 +614,11 @@ void SpellMgr::loadSpellInfoData()
         }
 
         // Data from SpellReagents.db2
-        if (dbcSpellEntry->SpellReagentsId && sSpellReagentsStore.LookupEntry(dbcSpellEntry->SpellReagentsId) != nullptr)
+        if (dbcSpellEntry->SpellReagentsId && sSpellReagentsStore.lookupEntry(dbcSpellEntry->SpellReagentsId) != nullptr)
         {
             for (uint8_t j = 0; j < MAX_SPELL_REAGENTS; ++j)
             {
-                const auto spellReagent = sSpellReagentsStore.LookupEntry(dbcSpellEntry->SpellReagentsId);
+                const auto spellReagent = sSpellReagentsStore.lookupEntry(dbcSpellEntry->SpellReagentsId);
                 spellInfo.setReagent(spellReagent->Reagent[j], j);
                 spellInfo.setReagentCount(spellReagent->ReagentCount[j], j);
             }
@@ -686,7 +686,7 @@ void SpellMgr::loadSpellInfoData()
 #else
     for (uint32_t i = 0; i < MAX_SPELL_ID; ++i)
     {
-        const auto dbcSpellEntry = sSpellStore.LookupEntry(i);
+        const auto dbcSpellEntry = sSpellStore.lookupEntry(i);
         if (dbcSpellEntry == nullptr)
             continue;
 
@@ -1031,9 +1031,9 @@ void SpellMgr::loadSkillLineAbilityMap()
     mSpellSkillsMap.clear();
 
     uint32_t count = 0;
-    for (uint32_t i = 0; i < sSkillLineAbilityStore.GetNumRows(); ++i)
+    for (uint32_t i = 0; i < sSkillLineAbilityStore.getNumRows(); ++i)
     {
-        const auto skillAbilityEntry = sSkillLineAbilityStore.LookupEntry(i);
+        const auto skillAbilityEntry = sSkillLineAbilityStore.lookupEntry(i);
         if (skillAbilityEntry == nullptr)
             continue;
 
@@ -1611,7 +1611,7 @@ void SpellMgr::loadSpellDisabled()
 
 void SpellMgr::setSpellCoefficient(SpellInfo* sp)
 {
-    const auto baseDuration = float(GetDuration(sSpellDurationStore.LookupEntry(sp->getDurationIndex())));
+    const auto baseDuration = float(GetDuration(sSpellDurationStore.lookupEntry(sp->getDurationIndex())));
 #if VERSION_STRING <= TBC
     const auto isOverTimeSpell = sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE) || sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_HEAL);
 #endif
@@ -1767,7 +1767,7 @@ void SpellMgr::setSpellCoefficient(SpellInfo* sp)
     };
 
     // Calculate base spell coefficient
-    auto spellCastTime = float(GetCastTime(sSpellCastTimesStore.LookupEntry(sp->getCastingTimeIndex())));
+    auto spellCastTime = float(GetCastTime(sSpellCastTimesStore.lookupEntry(sp->getCastingTimeIndex())));
     if (spellCastTime < 1500)
         spellCastTime = 1500;
 #if VERSION_STRING == Classic

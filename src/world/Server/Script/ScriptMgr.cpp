@@ -19,13 +19,11 @@
  *
  */
 
-#include <fstream>
-
-#include <git_version.h>
+#include "AEVersion.hpp"
+#include "WorldConf.h"
 #include "ScriptMgr.h"
 #include "CommonTypes.hpp"
 #include "CreatureAIScript.h"
-#include "WorldConf.h"
 #include "Management/GameEvent.h"
 #include "Management/ObjectMgr.hpp"
 #include "Management/LFG/LFGMgr.hpp"
@@ -38,7 +36,11 @@
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/MySQLDataStore.hpp"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
+
+#include <fstream>
+
+#include <git_version.h>
 
 using namespace AscEmu::Packets;
 
@@ -302,7 +304,7 @@ AchievementCriteriaScript* ScriptMgr::getAchievementCriteriaScript(uint32_t crit
 
 void ScriptMgr::register_achievement_criteria_script(uint32_t criteriaId, AchievementCriteriaScript* acs)
 {
-    const auto criteriaEntry = sAchievementCriteriaStore.LookupEntry(criteriaId);
+    const auto criteriaEntry = sAchievementCriteriaStore.lookupEntry(criteriaId);
     if (criteriaEntry == nullptr)
     {
         sLogger.failure("ScriptMgr tried to register a script for achievement criteria id %u but criteria does not exist!", criteriaId);

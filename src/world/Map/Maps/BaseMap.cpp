@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MMapFactory.h"
 #include "Map/Cells/CellHandler.hpp"
 
-BaseMap::BaseMap(uint32_t mapId, MySQLStructure::MapInfo const* mapInfo, DBC::Structures::MapEntry const* mapEntry) :
+BaseMap::BaseMap(uint32_t mapId, MySQLStructure::MapInfo const* mapInfo, WDB::Structures::MapEntry const* mapEntry) :
         _mapEntry(mapEntry), _mapInfo(mapInfo), _mapId(mapId)
 {
     memset(spawns, 0, sizeof(CellSpawns*) * Map::Cell::_sizeX);

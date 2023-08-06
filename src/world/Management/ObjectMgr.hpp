@@ -21,7 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #if VERSION_STRING >= WotLK
     #include "AchievementMgr.h"
-    #include "Storage/DBC/DBCStructures.hpp"
+    #include "Storage/WDB/WDBStructures.hpp"
 #endif
 
 class SpellInfo;
@@ -42,10 +42,10 @@ enum EncounterCreditType : uint8_t
 #if VERSION_STRING >= WotLK
 struct DungeonEncounter
 {
-    DungeonEncounter(DBC::Structures::DungeonEncounterEntry const* _dbcEntry, EncounterCreditType _creditType, uint32_t _creditEntry, uint32_t _lastEncounterDungeon)
+    DungeonEncounter(WDB::Structures::DungeonEncounterEntry const* _dbcEntry, EncounterCreditType _creditType, uint32_t _creditEntry, uint32_t _lastEncounterDungeon)
         : dbcEntry(_dbcEntry), creditType(_creditType), creditEntry(_creditEntry), lastEncounterDungeon(_lastEncounterDungeon) { }
 
-    DBC::Structures::DungeonEncounterEntry const* dbcEntry;
+    WDB::Structures::DungeonEncounterEntry const* dbcEntry;
     EncounterCreditType creditType;
     uint32_t creditEntry;
     uint32_t lastEncounterDungeon;

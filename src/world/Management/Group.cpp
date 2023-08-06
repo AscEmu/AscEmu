@@ -1185,7 +1185,7 @@ void Group::resetInstances(uint8_t method, bool isRaid, Player* SendMsgTo)
     for (BoundInstancesMap::iterator itr = m_boundInstances[diff].begin(); itr != m_boundInstances[diff].end();)
     {
         InstanceSaved* instanceSave = itr->second.save;
-        DBC::Structures::MapEntry const* entry = sMapStore.LookupEntry(itr->first);
+        WDB::Structures::MapEntry const* entry = sMapStore.lookupEntry(itr->first);
         if (!entry || entry->isRaid() != isRaid || (!instanceSave->canReset() && method != INSTANCE_RESET_GROUP_DISBAND))
         {
             ++itr;
@@ -1250,7 +1250,7 @@ void Group::resetInstances(uint8_t method, bool isRaid, Player* SendMsgTo)
 InstanceGroupBind* Group::getBoundInstance(Player* player)
 {
     uint32_t mapid = player->GetMapId();
-    DBC::Structures::MapEntry const* mapEntry = sMapStore.LookupEntry(mapid);
+    WDB::Structures::MapEntry const* mapEntry = sMapStore.lookupEntry(mapid);
     return getBoundInstance(mapEntry);
 }
 
@@ -1261,7 +1261,7 @@ InstanceGroupBind* Group::getBoundInstance(BaseMap* aMap)
     return getBoundInstance(difficulty, aMap->getMapId());
 }
 
-InstanceGroupBind* Group::getBoundInstance(DBC::Structures::MapEntry const* mapEntry)
+InstanceGroupBind* Group::getBoundInstance(WDB::Structures::MapEntry const* mapEntry)
 {
     if (!mapEntry || !mapEntry->isDungeon())
         return nullptr;

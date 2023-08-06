@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "PathMovementBase.h"
 #include "Movement/MovementDefines.h"
 #include "Objects/Units/UnitDefines.hpp"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Utilities/Util.hpp"
 
 class Player;
@@ -47,7 +47,7 @@ public:
     void setCurrentNodeAfterTeleport();
     void skipCurrentNode() { ++_currentNode; }
     void setToLastNode() { _currentNode = _path.size() - 1; }
-    void doEventIfAny(Player* player, DBC::Structures::TaxiPathNodeEntry const* node, bool departure);
+    void doEventIfAny(Player* player, WDB::Structures::TaxiPathNodeEntry const* node, bool departure);
 
     bool getResetPos(Player*, float& x, float& y, float& z);
 

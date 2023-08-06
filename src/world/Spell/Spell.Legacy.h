@@ -326,12 +326,12 @@ class SERVER_DECL Spell
         void spellEffectPersistentAA(uint8_t effectIndex);
         void spellEffectSummon(uint8_t effectIndex);
         void spellEffectSummonWild(uint8_t effectIndex);
-        void spellEffectSummonGuardian(uint8_t effectIndex, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
-        void spellEffectSummonTemporaryPet(uint8_t effectIndex, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
-        void spellEffectSummonTotem(uint8_t effectIndex, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties, LocationVector& v);
-        void spellEffectSummonPossessed(uint8_t effectIndex, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
-        void spellEffectSummonCompanion(uint8_t effectIndex, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
-        void spellEffectSummonVehicle(uint8_t effectIndex, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
+        void spellEffectSummonGuardian(uint8_t effectIndex, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
+        void spellEffectSummonTemporaryPet(uint8_t effectIndex, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
+        void spellEffectSummonTotem(uint8_t effectIndex, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties, LocationVector& v);
+        void spellEffectSummonPossessed(uint8_t effectIndex, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
+        void spellEffectSummonCompanion(uint8_t effectIndex, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
+        void spellEffectSummonVehicle(uint8_t effectIndex, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
         void spellEffectLeap(uint8_t effectIndex);
         void spellEffectEnergize(uint8_t effectIndex);
         void spellEffectWeaponDmgPerc(uint8_t effectIndex);
@@ -530,11 +530,11 @@ class SERVER_DECL Spell
 
         virtual void SpellEffectSummon(uint8_t effectIndex);
         void SpellEffectSummonWild(uint8_t effectIndex);
-        void SpellEffectSummonGuardian(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v);
-        void SpellEffectSummonTemporaryPet(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v);
-        void SpellEffectSummonPossessed(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v);
-        void SpellEffectSummonCompanion(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v);
-        void SpellEffectSummonVehicle(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v);
+        void SpellEffectSummonGuardian(uint32 i, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v);
+        void SpellEffectSummonTemporaryPet(uint32 i, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v);
+        void SpellEffectSummonPossessed(uint32 i, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v);
+        void SpellEffectSummonCompanion(uint32 i, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v);
+        void SpellEffectSummonVehicle(uint32 i, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v);
         void SpellEffectLeap(uint8_t effectIndex);
         void SpellEffectEnergize(uint8_t effectIndex);
         void SpellEffectWeaponDmgPerc(uint8_t effectIndex);

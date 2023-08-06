@@ -223,7 +223,7 @@ void WorldSession::handleLeaveVehicle(WorldPacket& /*recvPacket*/)
 {
     if (Vehicle* vehicle = GetPlayer()->getVehicle())
     {
-        if (DBC::Structures::VehicleSeatEntry const* seat = vehicle->getSeatForPassenger(GetPlayer()))
+        if (WDB::Structures::VehicleSeatEntry const* seat = vehicle->getSeatForPassenger(GetPlayer()))
         {
             if (seat->canEnterOrExit())
                 GetPlayer()->callExitVehicle();

@@ -19,7 +19,7 @@
  *
  */
 
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Management/QuestLogEntry.hpp"
 #include "MMapFactory.h"
 #include "Objects/Units/Creatures/Creature.h"
@@ -504,7 +504,7 @@ void Spell::spellEffectHealthLeech(uint8_t effIndex)
     isTargetDamageInfoSet = true;
 }
 
-void Spell::spellEffectSummonTotem(uint8_t /*effIndex*/, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties, LocationVector& v)
+void Spell::spellEffectSummonTotem(uint8_t /*effIndex*/, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties, LocationVector& v)
 {
     if (u_caster == nullptr)
         return;
@@ -547,7 +547,7 @@ void Spell::spellEffectWeapon(uint8_t /*effectIndex*/)
     if (skillLineAbility != nullptr)
         skillId = static_cast<uint16_t>(skillLineAbility->skilline);
 
-    const auto skillLine = sSkillLineStore.LookupEntry(skillId);
+    const auto skillLine = sSkillLineStore.lookupEntry(skillId);
     if (skillLine == nullptr)
         return;
 
@@ -585,7 +585,7 @@ void Spell::spellEffectSkillStep(uint8_t effectIndex)
         skillId = SKILL_LOCKPICKING;
 #endif
 
-    const auto skillLine = sSkillLineStore.LookupEntry(skillId);
+    const auto skillLine = sSkillLineStore.lookupEntry(skillId);
     if (skillLine == nullptr)
         return;
 
@@ -1843,7 +1843,7 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
                 case 30069:
                 case 30070:
                 {
-                    const auto motherSpellDuration = sSpellDurationStore.LookupEntry(ProcedOnSpell->getDurationIndex());
+                    const auto motherSpellDuration = sSpellDurationStore.lookupEntry(ProcedOnSpell->getDurationIndex());
                     if (motherSpellDuration != nullptr)
                     {
                         if (motherSpellDuration->Duration3 > 0)
@@ -2810,7 +2810,7 @@ void Spell::SpellEffectSummon(uint8_t effectIndex)
 {
     uint32 summonpropid = m_spellInfo->getEffectMiscValueB(effectIndex);
 
-    auto summon_properties = sSummonPropertiesStore.LookupEntry(summonpropid);
+    auto summon_properties = sSummonPropertiesStore.lookupEntry(summonpropid);
     if (summon_properties == nullptr)
     {
         sLogger.failure("No SummonPropertiesEntry for Spell %u (%s)", m_spellInfo->getId(), m_spellInfo->getName().c_str());
@@ -2994,7 +2994,7 @@ void Spell::SpellEffectSummonWild(uint8_t effectIndex)  // Summon Wild
     }
 }
 
-void Spell::SpellEffectSummonGuardian(uint32 /*i*/, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
+void Spell::SpellEffectSummonGuardian(uint32 /*i*/, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
 {
     if (u_caster == nullptr)
         return;
@@ -3024,7 +3024,7 @@ void Spell::SpellEffectSummonGuardian(uint32 /*i*/, DBC::Structures::SummonPrope
     }
 }
 
-void Spell::SpellEffectSummonTemporaryPet(uint32 /*i*/, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
+void Spell::SpellEffectSummonTemporaryPet(uint32 /*i*/, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
 {
     if (p_caster == nullptr)
         return;
@@ -3068,7 +3068,7 @@ void Spell::SpellEffectSummonTemporaryPet(uint32 /*i*/, DBC::Structures::SummonP
     }
 }
 
-void Spell::SpellEffectSummonPossessed(uint32 /*i*/, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
+void Spell::SpellEffectSummonPossessed(uint32 /*i*/, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
 {
     if (p_caster == nullptr)
         return;
@@ -3086,7 +3086,7 @@ void Spell::SpellEffectSummonPossessed(uint32 /*i*/, DBC::Structures::SummonProp
     p_caster->possess(s, 1000);
 }
 
-void Spell::SpellEffectSummonCompanion(uint32 /*i*/, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
+void Spell::SpellEffectSummonCompanion(uint32 /*i*/, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
 {
     if (u_caster == nullptr)
         return;
@@ -3119,7 +3119,7 @@ void Spell::SpellEffectSummonCompanion(uint32 /*i*/, DBC::Structures::SummonProp
 #endif
 }
 
-void Spell::SpellEffectSummonVehicle(uint32 /*i*/, DBC::Structures::SummonPropertiesEntry const* /*spe*/, CreatureProperties const* properties_, LocationVector& v)
+void Spell::SpellEffectSummonVehicle(uint32 /*i*/, WDB::Structures::SummonPropertiesEntry const* /*spe*/, CreatureProperties const* properties_, LocationVector& v)
 {
     if (u_caster == nullptr)
         return;
@@ -3396,7 +3396,7 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
                 if (!itemTarget->m_isLocked)
                     return;
 
-                auto lock = sLockStore.LookupEntry(itemTarget->getItemProperties()->LockId);
+                auto lock = sLockStore.lookupEntry(itemTarget->getItemProperties()->LockId);
                 if (!lock)
                     return;
 
@@ -3418,7 +3418,7 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
                 if (gameObjTarget->getState() == 0)
                     return;
 
-                auto lock = sLockStore.LookupEntry(gameobject_info->raw.parameter_0);
+                auto lock = sLockStore.lookupEntry(gameobject_info->raw.parameter_0);
                 if (lock == nullptr)
                     return;
 
@@ -4087,7 +4087,7 @@ void Spell::SpellEffectEnchantItem(uint8_t effectIndex) // Enchant Item Permanen
         return;
     }
 
-    auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(getSpellInfo()->getEffectMiscValue(effectIndex));
+    auto spell_item_enchant = sSpellItemEnchantmentStore.lookupEntry(getSpellInfo()->getEffectMiscValue(effectIndex));
 
     if (!spell_item_enchant)
     {
@@ -4132,7 +4132,7 @@ void Spell::SpellEffectEnchantItemTemporary(uint8_t effectIndex)  // Enchant Ite
         return;
     }
 
-    auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(EnchantmentID);
+    auto spell_item_enchant = sSpellItemEnchantmentStore.lookupEntry(EnchantmentID);
     if (spell_item_enchant == nullptr)
     {
         sLogger.failure("Invalid enchantment entry %u for Spell %u", EnchantmentID, getSpellInfo()->getId());
@@ -4573,7 +4573,7 @@ void Spell::SpellEffectUseGlyph(uint8_t effectIndex)
 
     const auto glyphSlot = static_cast<uint16_t>(m_glyphslot);
     uint32 glyph_new = m_spellInfo->getEffectMiscValue(effectIndex);
-    auto glyph_prop_new = sGlyphPropertiesStore.LookupEntry(glyph_new);
+    auto glyph_prop_new = sGlyphPropertiesStore.lookupEntry(glyph_new);
     if (!glyph_prop_new)
         return;
 
@@ -4593,13 +4593,13 @@ void Spell::SpellEffectUseGlyph(uint8_t effectIndex)
         }
         else
         {
-            auto glyph_prop_old = sGlyphPropertiesStore.LookupEntry(glyph_old);
+            auto glyph_prop_old = sGlyphPropertiesStore.lookupEntry(glyph_old);
             if (glyph_prop_old)
                 p_caster->removeAllAurasById(glyph_prop_old->SpellID);
         }
     }
 
-    auto glyph_slot = sGlyphSlotStore.LookupEntry(p_caster->getGlyphSlot(glyphSlot));
+    auto glyph_slot = sGlyphSlotStore.lookupEntry(p_caster->getGlyphSlot(glyphSlot));
     if (glyph_slot)
     {
         if (glyph_slot->Type != glyph_prop_new->Type)
@@ -4864,7 +4864,7 @@ void Spell::SpellEffectEnchantHeldItem(uint8_t effectIndex)
             break;
     }
 
-    auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(getSpellInfo()->getEffectMiscValue(effectIndex));
+    auto spell_item_enchant = sSpellItemEnchantmentStore.lookupEntry(getSpellInfo()->getEffectMiscValue(effectIndex));
 
     if (!spell_item_enchant)
     {
@@ -6006,7 +6006,7 @@ void Spell::SpellEffectTeachTaxiPath(uint8_t effectIndex)
         return;
 
     uint32_t nodeid = m_spellInfo->getEffectMiscValue(effectIndex);
-    if (sTaxiNodesStore.LookupEntry(nodeid))
+    if (sTaxiNodesStore.lookupEntry(nodeid))
     {
         playerTarget->getSession()->sendDiscoverNewTaxiNode(nodeid);
     }
@@ -6028,7 +6028,7 @@ void Spell::SpellEffectEnchantItemPrismatic(uint8_t effectIndex)
     if (!itemTarget || !p_caster)
         return;
 
-    auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(m_spellInfo->getEffectMiscValue(effectIndex));
+    auto spell_item_enchant = sSpellItemEnchantmentStore.lookupEntry(m_spellInfo->getEffectMiscValue(effectIndex));
 
     if (!spell_item_enchant)
     {

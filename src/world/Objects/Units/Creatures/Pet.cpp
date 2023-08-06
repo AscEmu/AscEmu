@@ -34,7 +34,7 @@
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/Definitions/SpellEffectTarget.hpp"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Server/Packets/SmsgPetActionFeedback.h"
 #include "Server/Packets/SmsgPetLearnedSpell.h"
 #include "Server/Packets/SmsgPetUnlearnedSpell.h"
@@ -436,7 +436,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
     m_phase = m_Owner->GetPhase();
     m_PetNumber = m_Owner->getFreePetNumber();
     creature_properties = ci;
-    myFamily = sCreatureFamilyStore.LookupEntry(ci->Family);
+    myFamily = sCreatureFamilyStore.lookupEntry(ci->Family);
 
     float x, y, z;
     if (Vec)
@@ -728,14 +728,14 @@ void Pet::SendTalentsToOwner()
     size_t pos = data.wpos();
     data << uint8(0);                   // Amount of known talents (will be filled later)
 
-    DBC::Structures::CreatureFamilyEntry const* cfe = sCreatureFamilyStore.LookupEntry(GetCreatureProperties()->Family);
+    WDB::Structures::CreatureFamilyEntry const* cfe = sCreatureFamilyStore.lookupEntry(GetCreatureProperties()->Family);
     if (!cfe || static_cast<int32>(cfe->talenttree) < 0)
         return;
 
     // go through talent trees
     for (uint32 tte_id = PET_TALENT_TREE_START; tte_id <= PET_TALENT_TREE_END; tte_id++)
     {
-        auto talent_tab = sTalentTabStore.LookupEntry(tte_id);
+        auto talent_tab = sTalentTabStore.lookupEntry(tte_id);
         if (talent_tab == nullptr)
             continue;
 
@@ -743,10 +743,10 @@ void Pet::SendTalentsToOwner()
         if (!(talent_tab->PetTalentMask & (1 << cfe->talenttree)))
             continue;
 
-        for (uint32 t_id = 1; t_id < sTalentStore.GetNumRows(); t_id++)
+        for (uint32 t_id = 1; t_id < sTalentStore.getNumRows(); t_id++)
         {
             // get talent entries for our talent tree
-            auto talent = sTalentStore.LookupEntry(t_id);
+            auto talent = sTalentStore.lookupEntry(t_id);
             if (talent == nullptr)
                 continue;
 
@@ -886,7 +886,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     if (creature_properties == nullptr)
         return;
 
-    myFamily = sCreatureFamilyStore.LookupEntry(creature_properties->Family);
+    myFamily = sCreatureFamilyStore.lookupEntry(creature_properties->Family);
 
     Create(owner->GetMapId(), owner->GetPositionX() + 2, owner->GetPositionY() + 2, owner->GetPositionZ(), owner->GetOrientation());
 
@@ -1047,7 +1047,7 @@ void Pet::InitializeMe(bool first)
     setPetNumber(GetUIdFromGUID());
     setPetNameTimestamp(static_cast<uint32_t>(UNIXTIME));
 
-    myFamily = sCreatureFamilyStore.LookupEntry(creature_properties->Family);
+    myFamily = sCreatureFamilyStore.lookupEntry(creature_properties->Family);
 
     SetPetDiet();
     setServersideFaction();
@@ -1312,7 +1312,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
 
     if (creature_properties->spelldataid != 0)
     {
-        const auto creature_spell_data = sCreatureSpellDataStore.LookupEntry(creature_properties->spelldataid);
+        const auto creature_spell_data = sCreatureSpellDataStore.lookupEntry(creature_properties->spelldataid);
 
         for (uint8 i = 0; i < 3; ++i)
         {
@@ -1354,7 +1354,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
     }
 
     // Get Creature family from DB (table creature_names, field family), load the skill line from CreatureFamily.dbc for use with SkillLineAbiliby.dbc entry
-    DBC::Structures::CreatureFamilyEntry const* f = sCreatureFamilyStore.LookupEntry(GetCreatureProperties()->Family);
+    WDB::Structures::CreatureFamilyEntry const* f = sCreatureFamilyStore.lookupEntry(GetCreatureProperties()->Family);
     if (f)
     {
         s = f->skilline;
@@ -1364,9 +1364,9 @@ void Pet::UpdateSpellList(bool showLearnSpells)
 
     if (s || s2)
     {
-        for (uint32 idx = 0; idx < sSkillLineAbilityStore.GetNumRows(); ++idx)
+        for (uint32 idx = 0; idx < sSkillLineAbilityStore.getNumRows(); ++idx)
         {
-            const auto skill_line_ability = sSkillLineAbilityStore.LookupEntry(idx);
+            const auto skill_line_ability = sSkillLineAbilityStore.lookupEntry(idx);
             if (skill_line_ability == nullptr)
                 continue;
 
@@ -1591,9 +1591,9 @@ void Pet::SetDefaultActionbar()
 void Pet::WipeTalents()
 {
 #if VERSION_STRING < Mop
-    for (uint32 i = 0; i < sTalentStore.GetNumRows(); i++)
+    for (uint32 i = 0; i < sTalentStore.getNumRows(); i++)
     {
-        auto talent = sTalentStore.LookupEntry(i);
+        auto talent = sTalentStore.lookupEntry(i);
         if (talent == nullptr)
             continue;
 

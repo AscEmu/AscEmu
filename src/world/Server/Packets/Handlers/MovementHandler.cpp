@@ -443,7 +443,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     {
         if (auto const* seat = vehicle->getSeatForPassenger(mover))
         {
-            if (seat->flags & DBC::Structures::VehicleSeatFlags::VEHICLE_SEAT_FLAG_ALLOW_TURNING)
+            if (seat->flags & WDB::Structures::VehicleSeatFlags::VEHICLE_SEAT_FLAG_ALLOW_TURNING)
             {
                 if (movementInfo.position.getOrientation() != mover->GetOrientation())
                 {

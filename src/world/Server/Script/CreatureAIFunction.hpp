@@ -23,7 +23,7 @@ public:
         // Set CastTime and SpellDefault CD when its a Spell
         if (const auto spellInfo = sSpellMgr.getSpellInfo(functionArgs.getSpellId()))
         {
-            uint32_t castTime = GetCastTime(sSpellCastTimesStore.LookupEntry(spellInfo->getCastingTimeIndex())) ? GetCastTime(sSpellCastTimesStore.LookupEntry(spellInfo->getCastingTimeIndex())) : 500;
+            uint32_t castTime = GetCastTime(sSpellCastTimesStore.lookupEntry(spellInfo->getCastingTimeIndex())) ? GetCastTime(sSpellCastTimesStore.lookupEntry(spellInfo->getCastingTimeIndex())) : 500;
             setCastTimer(Milliseconds(castTime));
 
             // Set RecoveryTimer

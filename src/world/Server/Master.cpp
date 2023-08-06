@@ -19,6 +19,7 @@
  */
 
 #include "WorldConf.h"
+#include "AEVersion.hpp"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "WorldRunnable.h"

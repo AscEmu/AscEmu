@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include <utility>
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Management/QuestLogEntry.hpp"
 #include "Objects/Container.hpp"
 #include "Objects/Units/Stats.h"
@@ -611,7 +611,7 @@ void ObjectMgr::loadVendors()
         }
 
 
-        DBC::Structures::ItemExtendedCostEntry const* item_extended_cost = nullptr;
+        WDB::Structures::ItemExtendedCostEntry const* item_extended_cost = nullptr;
 
         do
         {
@@ -636,7 +636,7 @@ void ObjectMgr::loadVendors()
             itm.incrtime = fields[4].GetUInt32();
             if (fields[5].GetUInt32() > 0)
             {
-                item_extended_cost = sItemExtendedCostStore.LookupEntry(fields[5].GetUInt32());
+                item_extended_cost = sItemExtendedCostStore.lookupEntry(fields[5].GetUInt32());
                 if (item_extended_cost == nullptr)
                     sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "LoadVendors : Extendedcost for item %u references nonexistent EC %u", fields[1].GetUInt32(), fields[5].GetUInt32());
             }
@@ -665,14 +665,14 @@ void ObjectMgr::setVendorList(uint32_t _entry, std::shared_ptr<std::vector<Creat
 #if VERSION_STRING > TBC
 void ObjectMgr::loadAchievementCriteriaList()
 {
-    for (uint32_t rowId = 0; rowId < sAchievementCriteriaStore.GetNumRows(); ++rowId)
+    for (uint32_t rowId = 0; rowId < sAchievementCriteriaStore.getNumRows(); ++rowId)
     {
-        auto criteria = sAchievementCriteriaStore.LookupEntry(rowId);
+        auto criteria = sAchievementCriteriaStore.lookupEntry(rowId);
         if (!criteria)
             continue;
 
 #if VERSION_STRING > WotLK
-        auto achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
+        auto achievement = sAchievementStore.lookupEntry(criteria->referredAchievement);
         if (achievement && achievement->flags & ACHIEVEMENT_FLAG_GUILD)
             m_GuildAchievementCriteriasByType[criteria->requiredType].push_back(criteria);
         else
@@ -700,7 +700,7 @@ void ObjectMgr::loadAchievementRewards()
         Field* fields = result->Fetch();
         uint32_t entry = fields[0].GetUInt32();
 
-        if (!sAchievementStore.LookupEntry(entry))
+        if (!sAchievementStore.lookupEntry(entry))
         {
             sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : Achievement reward entry %u has wrong achievement, ignore", entry);
             continue;
@@ -742,7 +742,7 @@ void ObjectMgr::loadAchievementRewards()
 
         if (reward.titel_A)
         {
-            auto const* char_title_entry = sCharTitlesStore.LookupEntry(reward.titel_A);
+            auto const* char_title_entry = sCharTitlesStore.lookupEntry(reward.titel_A);
             if (!char_title_entry)
             {
                 sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid title id (%u) in `title_A`, set to 0", entry, reward.titel_A);
@@ -752,7 +752,7 @@ void ObjectMgr::loadAchievementRewards()
 
         if (reward.titel_H)
         {
-            auto const* char_title_entry = sCharTitlesStore.LookupEntry(reward.titel_H);
+            auto const* char_title_entry = sCharTitlesStore.lookupEntry(reward.titel_H);
             if (!char_title_entry)
             {
                 sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid title id (%u) in `title_A`, set to 0", entry, reward.titel_H);
@@ -1021,7 +1021,7 @@ void ObjectMgr::loadGroupInstances()
         Field* fields = result->Fetch();
         std::shared_ptr<Group> group = sObjectMgr.getGroupById(fields[0].GetUInt32());
 
-        DBC::Structures::MapEntry const* mapEntry = sMapStore.LookupEntry(fields[1].GetUInt16());
+        WDB::Structures::MapEntry const* mapEntry = sMapStore.lookupEntry(fields[1].GetUInt16());
         if (!mapEntry || !mapEntry->isDungeon())
         {
             sLogger.failure("Incorrect entry in group_instance table : no dungeon map %d", fields[1].GetUInt16());
@@ -1793,9 +1793,9 @@ std::shared_ptr<Trainer> ObjectMgr::getTrainer(uint32_t _entry)
 
 void ObjectMgr::loadCreatureDisplayInfo()
 {
-    for (uint32_t i = 0; i < sCreatureDisplayInfoStore.GetNumRows(); ++i)
+    for (uint32_t i = 0; i < sCreatureDisplayInfoStore.getNumRows(); ++i)
     {
-        const auto* const displayInfoEntry = sCreatureDisplayInfoStore.LookupEntry(i);
+        const auto* const displayInfoEntry = sCreatureDisplayInfoStore.lookupEntry(i);
         if (displayInfoEntry == nullptr)
             continue;
 
@@ -1804,7 +1804,7 @@ void ObjectMgr::loadCreatureDisplayInfo()
         data.modelId = displayInfoEntry->ModelID;
         data.extendedDisplayInfoId = displayInfoEntry->ExtendedDisplayInfoID;
         data.creatureModelScale = displayInfoEntry->CreatureModelScale;
-        data.modelInfo = sCreatureModelDataStore.LookupEntry(data.modelId);
+        data.modelInfo = sCreatureModelDataStore.lookupEntry(data.modelId);
         if (data.modelInfo != nullptr)
         {
             if (strstr(data.modelInfo->ModelName, "InvisibleStalker"))
@@ -1916,7 +1916,7 @@ void ObjectMgr::loadInstanceEncounters()
     }
 
 #if VERSION_STRING >= WotLK
-    std::map<uint32_t, DBC::Structures::DungeonEncounterEntry const*> dungeonLastBosses;
+    std::map<uint32_t, WDB::Structures::DungeonEncounterEntry const*> dungeonLastBosses;
 #endif
 
     uint32_t count = 0;
@@ -1932,7 +1932,7 @@ void ObjectMgr::loadInstanceEncounters()
 #if VERSION_STRING <= TBC
         auto mapId = fields[5].GetUInt32();
 #else
-        const auto dungeonEncounter = sDungeonEncounterStore.LookupEntry(entry);
+        const auto dungeonEncounter = sDungeonEncounterStore.lookupEntry(entry);
         if (dungeonEncounter == nullptr)
         {
             sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `instance_encounters` has an invalid encounter id %u, skipped!", entry);
@@ -2416,9 +2416,9 @@ std::shared_ptr<Pet> ObjectMgr::createPet(uint32_t _entry)
 
 void ObjectMgr::loadPetSpellCooldowns()
 {
-    for (uint32_t i = 0; i < sCreatureSpellDataStore.GetNumRows(); ++i)
+    for (uint32_t i = 0; i < sCreatureSpellDataStore.getNumRows(); ++i)
     {
-        const auto cretureSpellData = sCreatureSpellDataStore.LookupEntry(i);
+        const auto cretureSpellData = sCreatureSpellDataStore.lookupEntry(i);
 
         for (uint8_t j = 0; j < 3; ++j)
         {

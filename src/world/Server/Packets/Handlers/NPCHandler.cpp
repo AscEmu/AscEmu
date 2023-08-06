@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Data/Flags.hpp"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Server/Packets/ManagedPacket.h"
 #include "Server/WorldSession.h"
 #include "Server/Packets/MsgTabardvendorActivate.h"
@@ -690,7 +690,7 @@ void WorldSession::handleBuyBankSlotOpcode(WorldPacket& recvPacket)
     }
 
     const uint8_t slots = _player->getBankSlots() + 1U;
-    const auto bank_bag_slot_prices = sBankBagSlotPricesStore.LookupEntry(slots);
+    const auto bank_bag_slot_prices = sBankBagSlotPricesStore.lookupEntry(slots);
     if (bank_bag_slot_prices == nullptr)
     {
         SendPacket(SmsgBuyBankSlotResult(BankslotError::TooMany).serialise().get());

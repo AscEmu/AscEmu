@@ -214,7 +214,7 @@ bool ChatHandler::HandleGoTriggerCommand(const char* args, WorldSession* m_sessi
         return true;
     }
 
-    auto area_trigger_entry = sAreaTriggerStore.LookupEntry(trigger_id);
+    auto area_trigger_entry = sAreaTriggerStore.lookupEntry(trigger_id);
     if (area_trigger_entry == nullptr)
     {
         RedSystemMessage(m_session, "Could not find trigger %s", args);

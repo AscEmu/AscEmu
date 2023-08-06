@@ -251,7 +251,7 @@ void WorldSession::handleMoveSplineDoneOpcode(WorldPacket& recvData)
     uint32_t curDest = GetPlayer()->m_taxi.getTaxiDestination();
     if (curDest)
     {
-        DBC::Structures::TaxiNodesEntry const* curDestNode = sTaxiNodesStore.LookupEntry(curDest);
+        WDB::Structures::TaxiNodesEntry const* curDestNode = sTaxiNodesStore.lookupEntry(curDest);
 
         // far teleport case
         if (curDestNode && curDestNode->mapid != GetPlayer()->GetMapId() && GetPlayer()->getMovementManager()->getCurrentMovementGeneratorType() == FLIGHT_MOTION_TYPE)
@@ -260,7 +260,7 @@ void WorldSession::handleMoveSplineDoneOpcode(WorldPacket& recvData)
             {
                 // short preparations to continue flight
                 flight->setCurrentNodeAfterTeleport();
-                DBC::Structures::TaxiPathNodeEntry const* node = flight->getPath()[flight->getCurrentNode()];
+                WDB::Structures::TaxiPathNodeEntry const* node = flight->getPath()[flight->getCurrentNode()];
                 flight->skipCurrentNode();
 
                 GetPlayer()->m_taxi.setNodeAfterTeleport(node->NodeIndex);

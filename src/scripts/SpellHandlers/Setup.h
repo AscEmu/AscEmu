@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "WorldConf.h"
+#include "AEVersion.hpp"
 #include "Server/Script/ScriptMgr.h"
 
 

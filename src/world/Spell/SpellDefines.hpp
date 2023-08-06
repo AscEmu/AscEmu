@@ -7,9 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 
-#include "WorldConf.h"
-#include "Storage/DBC/DBCStructures.hpp"
-
 struct DamageProc
 {
     uint32_t m_spellId;

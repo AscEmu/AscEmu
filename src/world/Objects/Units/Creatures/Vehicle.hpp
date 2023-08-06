@@ -15,7 +15,7 @@ class Unit;
 class SERVER_DECL Vehicle : public TransportBase
 {
 public:
-    Vehicle(Unit* unit, DBC::Structures::VehicleEntry const* vehInfo, uint32_t creatureEntry);
+    Vehicle(Unit* unit, WDB::Structures::VehicleEntry const* vehInfo, uint32_t creatureEntry);
     ~Vehicle();
 
     void initialize();
@@ -24,7 +24,7 @@ public:
     void loadAccessory(uint32_t entry, int8_t seatId, bool minion, uint8_t type, uint32_t summonTime);
 
     Unit* getBase() const { return _owner; }
-    DBC::Structures::VehicleEntry const* getVehicleInfo() const { return _vehicleInfo; }
+    WDB::Structures::VehicleEntry const* getVehicleInfo() const { return _vehicleInfo; }
     uint32_t getEntry() const { return _creatureEntry; }
 
     bool hasEmptySeat(int8_t seatId) const;
@@ -47,7 +47,7 @@ public:
 
     SeatMap Seats;
 
-    DBC::Structures::VehicleSeatEntry const* getSeatForPassenger(Unit const* passenger) const;
+    WDB::Structures::VehicleSeatEntry const* getSeatForPassenger(Unit const* passenger) const;
     int8_t getSeatForNumberPassenger(Unit const* passenger) const;
 
     bool hasVehicleFlags(uint32_t flags) { return getVehicleInfo()->flags & flags; }
@@ -79,7 +79,7 @@ private:
     }
 
     Unit* _owner;
-    DBC::Structures::VehicleEntry const* _vehicleInfo;
+    WDB::Structures::VehicleEntry const* _vehicleInfo;
     std::set<WoWGuid> _vehiclePlayers;
 
     uint32_t _creatureEntry;

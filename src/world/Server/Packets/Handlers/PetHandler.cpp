@@ -3,7 +3,7 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Server/Packets/CmsgDismissCritter.h"
 #include "Server/Packets/CmsgPetLearnTalent.h"
 #include "Server/Packets/CmsgPetCancelAura.h"
@@ -310,7 +310,7 @@ void WorldSession::handleBuyStableSlot(WorldPacket& /*recvPacket*/)
     uint32_t stable_cost = 0;
 
 #if VERSION_STRING < Cata
-    const auto stableSlotPrices = sStableSlotPricesStore.LookupEntry(_player->getStableSlotCount() + 1);
+    const auto stableSlotPrices = sStableSlotPricesStore.lookupEntry(_player->getStableSlotCount() + 1);
 
     if (stableSlotPrices != nullptr)
         stable_cost = stableSlotPrices->Price;
@@ -484,13 +484,13 @@ void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
     if (pet->getPetTalentPoints() < 1)
         return;
 
-    const auto talent = sTalentStore.LookupEntry(srlPacket.talentId);
+    const auto talent = sTalentStore.lookupEntry(srlPacket.talentId);
     if (talent == nullptr)
         return;
 
     if (talent->DependsOn > 0)
     {
-        const auto depends_talent = sTalentStore.LookupEntry(talent->DependsOn);
+        const auto depends_talent = sTalentStore.lookupEntry(talent->DependsOn);
         if (depends_talent == nullptr)
             return;
 
@@ -546,13 +546,13 @@ void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
     if (pet->getPetTalentPoints() < 1)
         return;
 
-    const auto talentEntry = sTalentStore.LookupEntry(srlPacket.talentId);
+    const auto talentEntry = sTalentStore.lookupEntry(srlPacket.talentId);
     if (talentEntry == nullptr)
         return;
 
     if (talentEntry->DependsOn > 0)
     {
-        DBC::Structures::TalentEntry const* depends_talent = sTalentStore.LookupEntry(talentEntry->DependsOn);
+        WDB::Structures::TalentEntry const* depends_talent = sTalentStore.lookupEntry(talentEntry->DependsOn);
         if (depends_talent == nullptr)
             return;
 

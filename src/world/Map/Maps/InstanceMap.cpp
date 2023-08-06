@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "InstanceMgr.hpp"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Server/DatabaseDefinition.hpp"
@@ -359,7 +359,7 @@ bool InstanceMap::hasPermBoundPlayers()
 
 uint32_t InstanceMap::getMaxPlayers()
 {
-    DBC::Structures::MapDifficulty const* mapDiff = getMapDifficulty();
+    WDB::Structures::MapDifficulty const* mapDiff = getMapDifficulty();
     if (mapDiff && mapDiff->maxPlayers)
         return mapDiff->maxPlayers;
 

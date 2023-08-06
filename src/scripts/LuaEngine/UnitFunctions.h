@@ -31,7 +31,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Storage/MySQLDataStore.hpp"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 
 class LuaUnit
 {
@@ -4655,7 +4655,7 @@ public:
         uint32_t amount = (uint32_t)luaL_checknumber(L, 2);
         uint32_t costid = (uint32_t)luaL_checknumber(L, 3);
 
-        auto item_extended_cost = (costid > 0) ? sItemExtendedCostStore.LookupEntry(costid) : nullptr;
+        auto item_extended_cost = (costid > 0) ? sItemExtendedCostStore.lookupEntry(costid) : nullptr;
         if (itemid && amount)
             ctr->AddVendorItem(itemid, amount, item_extended_cost);
 

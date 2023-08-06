@@ -39,7 +39,7 @@ file(GLOB SRC_SPELL_FILES Spell/*.cpp Spell/*.h Spell/*.hpp)
 file(GLOB SRC_SPELL_CUSTOM_FILES Spell/Customization/*.cpp Spell/Customization/*.h Spell/Customization/*.hpp)
 file(GLOB SRC_SPELL_DEFINITIONS_FILES Spell/Definitions/*.cpp Spell/Definitions/*.h Spell/Definitions/*.hpp)
 file(GLOB SRC_STORAGE_FILES Storage/*.cpp Storage/*.h Storage/*.hpp)
-file(GLOB SRC_STORAGE_DBC_FILES Storage/DBC/*.cpp Storage/DBC/*.h Storage/DBC/*.hpp)
+file(GLOB SRC_STORAGE_WDB_FILES Storage/WDB/*.cpp Storage/WDB/*.h Storage/WDB/*.hpp)
 file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
 
 if (WIN32)
@@ -83,7 +83,7 @@ set(WORLD_SRCS
     ${SRC_SPELL_CUSTOM_FILES}
     ${SRC_SPELL_DEFINITIONS_FILES}
     ${SRC_STORAGE_FILES}
-    ${SRC_STORAGE_DBC_FILES}
+    ${SRC_STORAGE_WDB_FILES}
     ${SRC_LOCAL_DIR}
 )
 
@@ -140,7 +140,7 @@ source_group(Spell FILES ${SRC_SPELL_FILES})
 source_group(Spell\\Customization FILES ${SRC_SPELL_CUSTOM_FILES})
 source_group(Spell\\Definitions FILES ${SRC_SPELL_DEFINITIONS_FILES})
 source_group(Storage FILES ${SRC_STORAGE_FILES})
-source_group(Storage\\DBC FILES ${SRC_STORAGE_DBC_FILES})
+source_group(Storage\\WDB FILES ${SRC_STORAGE_WDB_FILES})
 
 add_executable(${PROJECT_NAME} ${WORLD_SRCS} ${APP_ICON_RESOURCE_WINDOWS})
 

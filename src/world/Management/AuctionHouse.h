@@ -5,8 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "WorldConf.h"
-#include "Storage/DBC/DBCStructures.hpp"
+#include "AEVersion.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 #include "Objects/Item.hpp"
 
 namespace AscEmu::Packets
@@ -168,7 +168,7 @@ private:
     Mutex removalLock;
     std::list<Auction*> removalList;
 
-    DBC::Structures::AuctionHouseEntry const* auctionHouseEntryDbc;
+    WDB::Structures::AuctionHouseEntry const* auctionHouseEntryDbc;
 
 public:
     float cutPercent;

@@ -65,7 +65,7 @@ struct VehicleSeatAddon
 struct VehicleSeat
 {
 public:
-    explicit VehicleSeat(DBC::Structures::VehicleSeatEntry const* seatInfo, VehicleSeatAddon const* seatAddon) : _seatInfo(seatInfo), _seatAddon(seatAddon)
+    explicit VehicleSeat(WDB::Structures::VehicleSeatEntry const* seatInfo, VehicleSeatAddon const* seatAddon) : _seatInfo(seatInfo), _seatAddon(seatAddon)
     {
         _passenger.reset();
     }
@@ -78,7 +78,7 @@ public:
             return true;
     }
 
-    DBC::Structures::VehicleSeatEntry const* _seatInfo;
+    WDB::Structures::VehicleSeatEntry const* _seatInfo;
     VehicleSeatAddon const* _seatAddon;
     PassengerInfo _passenger;
 };

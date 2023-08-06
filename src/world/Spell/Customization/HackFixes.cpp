@@ -26,7 +26,7 @@
 #include "Spell/Definitions/SpellDamageType.hpp"
 #include "Spell/Definitions/CastInterruptFlags.hpp"
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Spell/Definitions/SpellRanged.hpp"
 #include "Spell/Definitions/DispelType.hpp"
 #include "Spell/Definitions/SpellMechanics.hpp"
@@ -656,8 +656,8 @@ void SpellMgr::applyHackFixes()
 
         sp->custom_NameHash = 0;
 
-        float radius = std::max(::GetRadius(sSpellRadiusStore.LookupEntry(sp->getEffectRadiusIndex(0))), ::GetRadius(sSpellRadiusStore.LookupEntry(sp->getEffectRadiusIndex(1))));
-        radius = std::max(::GetRadius(sSpellRadiusStore.LookupEntry(sp->getEffectRadiusIndex(2))), radius);
+        float radius = std::max(::GetRadius(sSpellRadiusStore.lookupEntry(sp->getEffectRadiusIndex(0))), ::GetRadius(sSpellRadiusStore.lookupEntry(sp->getEffectRadiusIndex(1))));
+        radius = std::max(::GetRadius(sSpellRadiusStore.lookupEntry(sp->getEffectRadiusIndex(2))), radius);
         radius = std::max(sp->getMaxRange(), radius);
         sp->custom_base_range_or_radius_sqr = radius * radius;
 
@@ -1061,11 +1061,11 @@ void SpellMgr::applyHackFixes()
             case 71160: // Plague Stench (Stinky)
             case 71161: // Plague Stench (Stinky)
             case 71123: // Decimate (Stinky & Precious)
-                sp->setEffectRadiusIndex(sSpellRadiusStore.LookupEntry(12) ? sSpellRadiusStore.LookupEntry(12)->ID : 0, 0); // 100yd
+                sp->setEffectRadiusIndex(sSpellRadiusStore.lookupEntry(12) ? sSpellRadiusStore.lookupEntry(12)->ID : 0, 0); // 100yd
                 break;
             case 69055: // Saber Lash (Lord Marrowgar)
             case 70814: // Saber Lash (Lord Marrowgar)
-                sp->setEffectRadiusIndex(sSpellRadiusStore.LookupEntry(14) ? sSpellRadiusStore.LookupEntry(14)->ID : 0, 0); // 8yd
+                sp->setEffectRadiusIndex(sSpellRadiusStore.lookupEntry(14) ? sSpellRadiusStore.lookupEntry(14)->ID : 0, 0); // 8yd
                 break;
             default:
                 break;

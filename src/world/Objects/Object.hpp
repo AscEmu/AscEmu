@@ -17,7 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WoWGuid.h"
 #include <LocationVector.h>
 #include "Storage/MySQLStructures.h"
-#include "Storage/DBC/DBCStructures.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 #include "CommonDefines.hpp"
 #include "WorldPacket.h"
 #include "Units/Creatures/CreatureDefines.hpp"
@@ -393,7 +393,7 @@ public:
         const float & GetSpawnO() const { return m_spawnLocation.o; }
         LocationVector GetSpawnPosition() const { return m_spawnLocation; }
 
-        ::DBC::Structures::AreaTableEntry const* GetArea() const;
+        ::WDB::Structures::AreaTableEntry const* GetArea() const;
 
         void getPosition(float &x, float &y) const { x = GetPositionX(); y = GetPositionY(); }
         void getPosition(float &x, float &y, float &z) const { getPosition(x, y); z = GetPositionZ(); }
@@ -671,11 +671,11 @@ public:
         void setServersideFaction();
         uint32 getServersideFaction();
 
-        DBC::Structures::FactionTemplateEntry const* m_factionTemplate = nullptr;
-        DBC::Structures::FactionEntry const* m_factionEntry = nullptr;
+        WDB::Structures::FactionTemplateEntry const* m_factionTemplate = nullptr;
+        WDB::Structures::FactionEntry const* m_factionEntry = nullptr;
 
         Standing getEnemyReaction(Object* target);
-        Standing getFactionReaction(DBC::Structures::FactionTemplateEntry const* factionTemplateEntry, Object* target);
+        Standing getFactionReaction(WDB::Structures::FactionTemplateEntry const* factionTemplateEntry, Object* target);
 
         bool isHostileTo(Object* target);
         bool IsHostileToPlayers();

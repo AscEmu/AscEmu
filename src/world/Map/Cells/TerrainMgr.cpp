@@ -3,11 +3,11 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include <WorldConf.h>
+#include "AEVersion.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "G3D/Plane.h"
 #include "TerrainMgr.hpp"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Logging/Logger.hpp"
 
 static uint16_t const holetab_h[4] = { 0x1111, 0x2222, 0x4444, 0x8888 };
@@ -488,13 +488,13 @@ ZLiquidStatus TileMap::getLiquidStatus(LocationVector pos, uint8_t ReqLiquidType
     int idx = (x_int >> 3) * 16 + (y_int >> 3);
     uint8_t type = m_liquidFlags ? m_liquidFlags[idx] : m_liquidGlobalFlags;
     uint32_t entry = m_liquidEntry ? m_liquidEntry[idx] : m_liquidGlobalEntry;
-    if (DBC::Structures::LiquidTypeEntry const* liquidEntry = sLiquidTypeStore.LookupEntry(entry))
+    if (WDB::Structures::LiquidTypeEntry const* liquidEntry = sLiquidTypeStore.lookupEntry(entry))
     {
         type &= MAP_LIQUID_TYPE_DARK_WATER;
         uint32_t liqTypeIdx = liquidEntry->Type;
         if (entry < 21)
         {
-            if (DBC::Structures::AreaTableEntry const* area = sAreaStore.LookupEntry(getArea(pos.x, pos.y)))
+            if (WDB::Structures::AreaTableEntry const* area = sAreaStore.lookupEntry(getArea(pos.x, pos.y)))
             {
 #if VERSION_STRING > Classic
                 uint32_t overrideLiquid = area->liquid_type_override[liquidEntry->Type];
@@ -508,7 +508,7 @@ ZLiquidStatus TileMap::getLiquidStatus(LocationVector pos, uint8_t ReqLiquidType
                 uint32_t overrideLiquid = 0;
 #endif
 
-                if (DBC::Structures::LiquidTypeEntry const* liq = sLiquidTypeStore.LookupEntry(overrideLiquid))
+                if (WDB::Structures::LiquidTypeEntry const* liq = sLiquidTypeStore.lookupEntry(overrideLiquid))
                 {
                     entry = overrideLiquid;
                     liqTypeIdx = liq->Type;

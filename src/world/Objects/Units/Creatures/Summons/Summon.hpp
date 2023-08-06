@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 class SERVER_DECL Summon : public Creature
 {
 public:
-    Summon(uint64_t guid, DBC::Structures::SummonPropertiesEntry const* properties);
+    Summon(uint64_t guid, WDB::Structures::SummonPropertiesEntry const* properties);
     ~Summon();
 
     virtual void load(CreatureProperties const* creatureProperties, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellId);
@@ -50,7 +50,7 @@ public:
     uint64_t getSummonerGuid() const { return m_summonerGuid; }
 
     // Summon Information from DBC, when this is nullptr its mostly an Scripted Summon
-    DBC::Structures::SummonPropertiesEntry const* const m_Properties;
+    WDB::Structures::SummonPropertiesEntry const* const m_Properties;
 
 private:
     Unit* getSummonerUnit();
@@ -68,7 +68,7 @@ private:
 class GuardianSummon : public Summon
 {
 public:
-    GuardianSummon(uint64_t GUID, DBC::Structures::SummonPropertiesEntry const* properties);
+    GuardianSummon(uint64_t GUID, WDB::Structures::SummonPropertiesEntry const* properties);
     ~GuardianSummon();
 
     void load(CreatureProperties const* properties_, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellid) override;
@@ -80,7 +80,7 @@ public:
 class CompanionSummon : public Summon
 {
 public:
-    CompanionSummon(uint64_t GUID, DBC::Structures::SummonPropertiesEntry const* properties);
+    CompanionSummon(uint64_t GUID, WDB::Structures::SummonPropertiesEntry const* properties);
     ~CompanionSummon();
 
     void load(CreatureProperties const* properties_, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellid) override;
@@ -92,7 +92,7 @@ public:
 class PossessedSummon : public Summon
 {
 public:
-    PossessedSummon(uint64_t GUID, DBC::Structures::SummonPropertiesEntry const* properties);
+    PossessedSummon(uint64_t GUID, WDB::Structures::SummonPropertiesEntry const* properties);
     ~PossessedSummon();
 
     void load(CreatureProperties const* properties_, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellid) override;
@@ -104,7 +104,7 @@ public:
 class WildSummon : public Summon
 {
 public:
-    WildSummon(uint64_t GUID, DBC::Structures::SummonPropertiesEntry const* properties);
+    WildSummon(uint64_t GUID, WDB::Structures::SummonPropertiesEntry const* properties);
     ~WildSummon();
 
     void load(CreatureProperties const* properties_, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellid) override;
@@ -115,7 +115,7 @@ public:
 class TotemSummon : public Summon
 {
 public:
-    TotemSummon(uint64_t guid, DBC::Structures::SummonPropertiesEntry const* properties);
+    TotemSummon(uint64_t guid, WDB::Structures::SummonPropertiesEntry const* properties);
     ~TotemSummon();
 
     void load(CreatureProperties const* properties_, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellId) override;

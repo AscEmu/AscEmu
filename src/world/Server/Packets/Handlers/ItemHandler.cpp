@@ -395,7 +395,7 @@ void WorldSession::sendRefundInfo(uint64_t GUID)
         if (RefundEntry.first == 0 || RefundEntry.second == 0)
             return;
 
-        auto item_extended_cost = sItemExtendedCostStore.LookupEntry(RefundEntry.second);
+        auto item_extended_cost = sItemExtendedCostStore.lookupEntry(RefundEntry.second);
         if (item_extended_cost == nullptr)
             return;
 
@@ -444,7 +444,7 @@ void WorldSession::sendRefundInfo(uint64_t guid)
         if (refundEntryPair.first == 0 || refundEntryPair.second == 0)
             return;
 
-        auto itemExtendedCostEntry = sItemExtendedCostStore.LookupEntry(refundEntryPair.second);
+        auto itemExtendedCostEntry = sItemExtendedCostStore.lookupEntry(refundEntryPair.second);
         if (itemExtendedCostEntry == nullptr)
             return;
 
@@ -717,7 +717,7 @@ void WorldSession::handleReforgeItemOpcode(WorldPacket& recvData)
         return;
     }
     
-    DBC::Structures::ItemReforgeEntry const* stats = sItemReforgeStore.LookupEntry(reforgeEntry);
+    WDB::Structures::ItemReforgeEntry const* stats = sItemReforgeStore.lookupEntry(reforgeEntry);
     if (!stats)
     {
         sLogger.debug("handleReforgeItemOpcode - Player (Guid: %u Name: %s) tried to reforge an item with invalid reforge entry (%u).", player->getGuidLow(), player->getName().c_str(), reforgeEntry);
@@ -775,7 +775,7 @@ void WorldSession::handleItemRefundRequestOpcode(WorldPacket& recvPacket)
 
     uint32_t error = 1;
 
-    DBC::Structures::ItemExtendedCostEntry const* itemExtendedCostEntry = nullptr;
+    WDB::Structures::ItemExtendedCostEntry const* itemExtendedCostEntry = nullptr;
     ItemProperties const* itemProperties = nullptr;
 
     auto item = _player->getItemInterface()->GetItemByGUID(srlPacket.itemGuid);
@@ -790,7 +790,7 @@ void WorldSession::handleItemRefundRequestOpcode(WorldPacket& recvPacket)
             {
                 uint32_t* played = _player->getPlayedTime();
                 if (played[1] < refundEntry.first + 60 * 60 * 2)
-                    itemExtendedCostEntry = sItemExtendedCostStore.LookupEntry(refundEntry.second);
+                    itemExtendedCostEntry = sItemExtendedCostStore.lookupEntry(refundEntry.second);
             }
 
             if (itemExtendedCostEntry != nullptr)
@@ -2743,8 +2743,8 @@ void WorldSession::handleInsertGemOpcode(WorldPacket& recvPacket)
     }
 
     bool ColorMatch = true;
-    DBC::Structures::GemPropertiesEntry const* gem_properties;
-    DBC::Structures::SpellItemEnchantmentEntry const* spell_item_enchant;
+    WDB::Structures::GemPropertiesEntry const* gem_properties;
+    WDB::Structures::SpellItemEnchantmentEntry const* spell_item_enchant;
 
     for (uint8_t i = 0; i < TargetItem->getSocketSlotCount(); ++i)
     {
@@ -2761,7 +2761,7 @@ void WorldSession::handleInsertGemOpcode(WorldPacket& recvPacket)
             if (ip == nullptr)
                 gem_properties = nullptr;
             else
-                gem_properties = sGemPropertiesStore.LookupEntry(ip->GemProperties);
+                gem_properties = sGemPropertiesStore.lookupEntry(ip->GemProperties);
 
             // Skip checks for enchanting/blacksmithing prismatic socket slots
             // Also skip check if this gem is about to be replaced
@@ -2822,7 +2822,7 @@ void WorldSession::handleInsertGemOpcode(WorldPacket& recvPacket)
 #if VERSION_STRING > TBC
                 if (ip->ItemLimitCategory)
                 {
-                    auto item_limit_category = sItemLimitCategoryStore.LookupEntry(ip->ItemLimitCategory);
+                    auto item_limit_category = sItemLimitCategoryStore.lookupEntry(ip->ItemLimitCategory);
                     if (item_limit_category != nullptr
                         && itemi->GetEquippedCountByItemLimit(ip->ItemLimitCategory) >= item_limit_category->maxAmount)
                     {
@@ -2837,7 +2837,7 @@ void WorldSession::handleInsertGemOpcode(WorldPacket& recvPacket)
             if (!it)
                 return; //someone sending hacked packets to crash server
 
-            gem_properties = sGemPropertiesStore.LookupEntry(it->getItemProperties()->GemProperties);
+            gem_properties = sGemPropertiesStore.lookupEntry(it->getItemProperties()->GemProperties);
             it->deleteMe();
 
             if (!gem_properties)
@@ -2868,7 +2868,7 @@ void WorldSession::handleInsertGemOpcode(WorldPacket& recvPacket)
                     FilledSlots++;
             }
 
-            spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(gem_properties->EnchantmentID);
+            spell_item_enchant = sSpellItemEnchantmentStore.lookupEntry(gem_properties->EnchantmentID);
             if (spell_item_enchant != nullptr)
                 TargetItem->addEnchantment(gem_properties->EnchantmentID, enchantmentSlot, 0);
         }
@@ -2882,7 +2882,7 @@ void WorldSession::handleInsertGemOpcode(WorldPacket& recvPacket)
             if (TargetItem->hasEnchantment(TargetItem->getItemProperties()->SocketBonus))
                 return;
 
-            spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(TargetItem->getItemProperties()->SocketBonus);
+            spell_item_enchant = sSpellItemEnchantmentStore.lookupEntry(TargetItem->getItemProperties()->SocketBonus);
             if (spell_item_enchant != nullptr)
                 TargetItem->addEnchantment(TargetItem->getItemProperties()->SocketBonus, BONUS_ENCHANTMENT_SLOT, 0);
         }

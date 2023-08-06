@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Item.hpp"
 #include "Container.hpp"
 #include "Map/Maps/WorldMap.hpp"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/Definitions.h"
@@ -270,7 +270,7 @@ bool Item::addEnchantment(uint32_t enchantmentId, EnchantmentSlot slot, uint32_t
 {
     m_isDirty = true;
 
-    DBC::Structures::SpellItemEnchantmentEntry const* Enchantment = nullptr;
+    WDB::Structures::SpellItemEnchantmentEntry const* Enchantment = nullptr;
 #if VERSION_STRING >= Cata
     switch (slot)
     {
@@ -278,7 +278,7 @@ bool Item::addEnchantment(uint32_t enchantmentId, EnchantmentSlot slot, uint32_t
         case TRANSMOGRIFY_ENCHANTMENT_SLOT:
         case REFORGE_ENCHANTMENT_SLOT:
         {
-            auto custom_enchant = new DBC::Structures::SpellItemEnchantmentEntry();
+            auto custom_enchant = new WDB::Structures::SpellItemEnchantmentEntry();
             custom_enchant->Id = enchantmentId;
 
             Enchantment = custom_enchant;
@@ -287,7 +287,7 @@ bool Item::addEnchantment(uint32_t enchantmentId, EnchantmentSlot slot, uint32_t
         default:
         {
 #endif
-            const auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchantmentId);
+            const auto spell_item_enchant = sSpellItemEnchantmentStore.lookupEntry(enchantmentId);
             if (spell_item_enchant == nullptr)
                 return false;
 
@@ -417,7 +417,7 @@ void Item::removeSocketBonusEnchant()
     }
 }
 
-void Item::removeRelatedEnchants(DBC::Structures::SpellItemEnchantmentEntry const* newEnchant)
+void Item::removeRelatedEnchants(WDB::Structures::SpellItemEnchantmentEntry const* newEnchant)
 {
     for (EnchantmentMap::iterator itr = m_enchantments.begin(); itr != m_enchantments.end();)
     {
@@ -436,7 +436,7 @@ void Item::applyEnchantmentBonus(EnchantmentSlot slot, bool apply)
     if (enchantment == m_enchantments.end())
         return;
 
-    DBC::Structures::SpellItemEnchantmentEntry const* Entry = enchantment->second.Enchantment;
+    WDB::Structures::SpellItemEnchantmentEntry const* Entry = enchantment->second.Enchantment;
     const uint32_t RandomSuffixAmount = enchantment->second.RandomSuffix;
 
     if (enchantment->second.BonusApplied == apply)
@@ -664,7 +664,7 @@ void Item::applyRandomProperties(bool apply)
     {
         if (static_cast<int32_t>(getRandomPropertiesId()) > 0)
         {
-            auto item_random_properties = sItemRandomPropertiesStore.LookupEntry(getRandomPropertiesId());
+            auto item_random_properties = sItemRandomPropertiesStore.lookupEntry(getRandomPropertiesId());
             for (uint8_t k = 0; k < 3; k++)
             {
                 if (item_random_properties == nullptr)
@@ -672,7 +672,7 @@ void Item::applyRandomProperties(bool apply)
 
                 if (item_random_properties->spells[k] != 0)
                 {
-                    auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(item_random_properties->spells[k]);
+                    auto spell_item_enchant = sSpellItemEnchantmentStore.lookupEntry(item_random_properties->spells[k]);
                     if (spell_item_enchant == nullptr)
                         continue;
 
@@ -692,7 +692,7 @@ void Item::applyRandomProperties(bool apply)
         }
         else
         {
-            auto item_random_suffix = sItemRandomSuffixStore.LookupEntry(abs(int(getRandomPropertiesId())));
+            auto item_random_suffix = sItemRandomSuffixStore.lookupEntry(abs(int(getRandomPropertiesId())));
             for (uint8_t k = 0; k < 3; ++k)
             {
                 if (item_random_suffix == nullptr)
@@ -700,7 +700,7 @@ void Item::applyRandomProperties(bool apply)
 
                 if (item_random_suffix->enchantments[k] != 0)
                 {
-                    auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(item_random_suffix->enchantments[k]);
+                    auto spell_item_enchant = sSpellItemEnchantmentStore.lookupEntry(item_random_suffix->enchantments[k]);
                     if (spell_item_enchant == nullptr)
                         continue;
 
@@ -856,7 +856,7 @@ uint32_t Item::countGemsWithLimitId(uint32_t limitId)
 #endif
 }
 
-bool Item::isGemRelated(DBC::Structures::SpellItemEnchantmentEntry const* enchantment)
+bool Item::isGemRelated(WDB::Structures::SpellItemEnchantmentEntry const* enchantment)
 {
 #if VERSION_STRING > Classic
     if (getItemProperties()->SocketBonus == enchantment->Id)
@@ -909,14 +909,14 @@ bool Item::repairItem(Player* player, bool isGuildMoney, int32_t* repairCost /*=
 
 uint32_t Item::repairItemCost()
 {
-    auto durability_costs = sDurabilityCostsStore.LookupEntry(m_itemProperties->ItemLevel);
+    auto durability_costs = sDurabilityCostsStore.lookupEntry(m_itemProperties->ItemLevel);
     if (durability_costs == nullptr)
     {
         sLogger.failure("Repair: Unknown item level (%u)", durability_costs);
         return 0;
     }
 
-    auto durability_quality = sDurabilityQualityStore.LookupEntry((m_itemProperties->Quality + 1) * 2);
+    auto durability_quality = sDurabilityQualityStore.lookupEntry((m_itemProperties->Quality + 1) * 2);
     if (durability_quality == nullptr)
     {
         sLogger.failure("Repair: Unknown item quality (%u)", durability_quality);
@@ -1171,12 +1171,12 @@ int32_t Item::getReforgableStat(ItemModType statType) const
 
     if (randomPropId < 0)
     {
-        DBC::Structures::ItemRandomSuffixEntry const* randomSuffix = sItemRandomSuffixStore.LookupEntry(-randomPropId);
+        WDB::Structures::ItemRandomSuffixEntry const* randomSuffix = sItemRandomSuffixStore.lookupEntry(-randomPropId);
         if (!randomSuffix)
             return 0;
 
         for (uint32_t e = PROP_ENCHANTMENT_SLOT_0; e <= PROP_ENCHANTMENT_SLOT_4; ++e)
-            if (DBC::Structures::SpellItemEnchantmentEntry const* enchant = sSpellItemEnchantmentStore.LookupEntry(getEnchantmentId(EnchantmentSlot(e))))
+            if (WDB::Structures::SpellItemEnchantmentEntry const* enchant = sSpellItemEnchantmentStore.lookupEntry(getEnchantmentId(EnchantmentSlot(e))))
                 for (uint8_t f = 0; f < MAX_ITEM_ENCHANTMENT_EFFECTS; ++f)
                     if (enchant->type[f] == ITEM_ENCHANTMENT_TYPE_STAT && ItemModType(enchant->spell[f]) == statType)
                         for (uint8_t k = 0; k < 5; ++k)
@@ -1185,12 +1185,12 @@ int32_t Item::getReforgableStat(ItemModType statType) const
     }
     else
     {
-        DBC::Structures::ItemRandomPropertiesEntry const* randomProp = sItemRandomPropertiesStore.LookupEntry(randomPropId);
+        WDB::Structures::ItemRandomPropertiesEntry const* randomProp = sItemRandomPropertiesStore.lookupEntry(randomPropId);
         if (!randomProp)
             return 0;
 
         for (uint32_t e = PROP_ENCHANTMENT_SLOT_0; e <= PROP_ENCHANTMENT_SLOT_4; ++e)
-            if (DBC::Structures::SpellItemEnchantmentEntry const* enchant = sSpellItemEnchantmentStore.LookupEntry(getEnchantmentId(EnchantmentSlot(e))))
+            if (WDB::Structures::SpellItemEnchantmentEntry const* enchant = sSpellItemEnchantmentStore.lookupEntry(getEnchantmentId(EnchantmentSlot(e))))
                 for (uint8_t f = 0; f < MAX_ITEM_ENCHANTMENT_EFFECTS; ++f)
                     if (enchant->type[f] == ITEM_ENCHANTMENT_TYPE_STAT && ItemModType(enchant->spell[f]) == statType)
                         for (uint8_t k = 0; k < MAX_ITEM_ENCHANTMENT_EFFECTS; ++k)

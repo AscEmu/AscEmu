@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "MapDefines.h"
-#include "Storage/DBC/DBCStructures.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 #include "Map/Maps/BaseMap.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Map/Maps/InstanceMap.hpp"

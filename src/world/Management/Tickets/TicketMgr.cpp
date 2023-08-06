@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Server/DatabaseDefinition.hpp"
 #include "Storage/MySQLDataStore.hpp"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 
 TicketMgr& TicketMgr::getInstance()
 {

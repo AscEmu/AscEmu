@@ -3,7 +3,7 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Objects/Item.hpp"
 #include "Management/WeatherMgr.hpp"
 #include "Management/ItemInterface.h"
@@ -635,7 +635,7 @@ void WorldSession::handleOpenItemOpcode(WorldPacket& recvPacket)
     }
 
     uint32_t removeLockItems[LOCK_NUM_CASES] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-    const auto lockEntry = sLockStore.LookupEntry(item->getItemProperties()->LockId);
+    const auto lockEntry = sLockStore.lookupEntry(item->getItemProperties()->LockId);
     if (lockEntry)
     {
         for (uint8_t lockCase = 0; lockCase < LOCK_NUM_CASES; ++lockCase)
@@ -1545,7 +1545,7 @@ void WorldSession::handleRemoveGlyph(WorldPacket& recvPacket)
     if (glyphId == 0)
         return;
 
-    const auto glyphPropertiesEntry = sGlyphPropertiesStore.LookupEntry(glyphId);
+    const auto glyphPropertiesEntry = sGlyphPropertiesStore.lookupEntry(glyphId);
     if (!glyphPropertiesEntry)
         return;
 
@@ -1582,7 +1582,7 @@ void WorldSession::handleBarberShopResult(WorldPacket& recvPacket)
 
     uint32_t cost = 0;
 
-    const auto barberShopHair = sBarberShopStyleStore.LookupEntry(srlPacket.hair);
+    const auto barberShopHair = sBarberShopStyleStore.lookupEntry(srlPacket.hair);
     if (!barberShopHair)
         return;
 
@@ -1590,13 +1590,13 @@ void WorldSession::handleBarberShopResult(WorldPacket& recvPacket)
 
     const auto newHairColor = srlPacket.hairColor;
 
-    const auto barberShopFacial = sBarberShopStyleStore.LookupEntry(srlPacket.facialHairOrPiercing);
+    const auto barberShopFacial = sBarberShopStyleStore.lookupEntry(srlPacket.facialHairOrPiercing);
     if (!barberShopFacial)
         return;
 
     const auto newFacial = barberShopFacial->hair_id;
 
-    const auto barberShopSkinColor = sBarberShopStyleStore.LookupEntry(srlPacket.skinColor);
+    const auto barberShopSkinColor = sBarberShopStyleStore.lookupEntry(srlPacket.skinColor);
     if (barberShopSkinColor && barberShopSkinColor->race != _player->getRace())
         return;
 
@@ -1604,7 +1604,7 @@ void WorldSession::handleBarberShopResult(WorldPacket& recvPacket)
     if (level >= 100)
         level = 100;
 
-    const auto gtBarberShopCostBaseEntry = sBarberShopCostBaseStore.LookupEntry(level - 1);
+    const auto gtBarberShopCostBaseEntry = sBarberShopCostBaseStore.lookupEntry(level - 1);
     if (!gtBarberShopCostBaseEntry)
         return;
 
@@ -1911,9 +1911,9 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
         for (uint8_t i = 0; i < 3; ++i)
         {
             const uint32_t talentTabId = talentTabIds[i];
-            for (uint32_t j = 0; j < sTalentStore.GetNumRows(); ++j)
+            for (uint32_t j = 0; j < sTalentStore.getNumRows(); ++j)
             {
-                const auto talentInfo = sTalentStore.LookupEntry(j);
+                const auto talentInfo = sTalentStore.lookupEntry(j);
                 if (talentInfo == nullptr)
                     continue;
 

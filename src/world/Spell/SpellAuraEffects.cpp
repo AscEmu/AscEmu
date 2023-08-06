@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellTypes.hpp"
 #include "SpellMgr.hpp"
 #include "Management/ItemInterface.h"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Server/Script/ScriptMgr.h"
 #include "Storage/MySQLDataStore.hpp"
@@ -1223,7 +1223,7 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
         }
     }
 
-    const auto shapeshiftForm = sSpellShapeshiftFormStore.LookupEntry(static_cast<uint32_t>(aurEff->getEffectMiscValue()));
+    const auto shapeshiftForm = sSpellShapeshiftFormStore.lookupEntry(static_cast<uint32_t>(aurEff->getEffectMiscValue()));
     if (shapeshiftForm == nullptr)
         return;
 

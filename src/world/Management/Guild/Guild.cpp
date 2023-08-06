@@ -1113,9 +1113,9 @@ void Guild::sendLoginInfo(WorldSession* session)
     if (worldConfig.guild.levelingEnabled == false)
         return;
 
-    for (uint32_t i = 0; i < sGuildPerkSpellsStore.GetNumRows(); ++i)
+    for (uint32_t i = 0; i < sGuildPerkSpellsStore.getNumRows(); ++i)
     {
-        if (DBC::Structures::GuildPerkSpellsEntry const* entry = sGuildPerkSpellsStore.LookupEntry(i))
+        if (WDB::Structures::GuildPerkSpellsEntry const* entry = sGuildPerkSpellsStore.lookupEntry(i))
         {
             if (entry->Level <= getLevel())
                 player->addSpell(entry->SpellId);
@@ -1556,9 +1556,9 @@ void Guild::deleteMember(uint64_t guid, bool isDisbanding, bool /*isKicked*/)
 #if VERSION_STRING >= Cata
         player->setGuildLevel(0);
 
-        for (uint32_t i = 0; i < sGuildPerkSpellsStore.GetNumRows(); ++i)
+        for (uint32_t i = 0; i < sGuildPerkSpellsStore.getNumRows(); ++i)
         {
-            if (DBC::Structures::GuildPerkSpellsEntry const* entry = sGuildPerkSpellsStore.LookupEntry(i))
+            if (WDB::Structures::GuildPerkSpellsEntry const* entry = sGuildPerkSpellsStore.lookupEntry(i))
             {
                 if (entry->Level <= getLevel())
                 {
@@ -2122,9 +2122,9 @@ void Guild::giveXP(uint32_t xp, Player* source)
         ++m_level;
 
         std::vector<uint32_t> perksToLearn;
-        for (uint32_t i = 0; i < sGuildPerkSpellsStore.GetNumRows(); ++i)
+        for (uint32_t i = 0; i < sGuildPerkSpellsStore.getNumRows(); ++i)
         {
-            if (DBC::Structures::GuildPerkSpellsEntry const* entry = sGuildPerkSpellsStore.LookupEntry(i))
+            if (WDB::Structures::GuildPerkSpellsEntry const* entry = sGuildPerkSpellsStore.lookupEntry(i))
             {
                 if (entry->Level > oldLevel && entry->Level <= getLevel())
                 {

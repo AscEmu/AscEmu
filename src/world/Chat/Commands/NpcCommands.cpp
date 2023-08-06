@@ -868,8 +868,8 @@ bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* 
     if (pcostid)
         costid = atoi(pcostid);
 
-    auto item_extended_cost = (costid > 0) ? sItemExtendedCostStore.LookupEntry(costid) : nullptr;
-    if (costid > 0 && sItemExtendedCostStore.LookupEntry(costid) == nullptr)
+    auto item_extended_cost = (costid > 0) ? sItemExtendedCostStore.lookupEntry(costid) : nullptr;
+    if (costid > 0 && sItemExtendedCostStore.lookupEntry(costid) == nullptr)
     {
         SystemMessage(m_session, "You've entered invalid extended cost id.");
         return true;
@@ -1049,7 +1049,7 @@ bool ChatHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_ses
     if (creature_target == nullptr)
         return true;
 
-    auto item_entry = sItemStore.LookupEntry(item_id);
+    auto item_entry = sItemStore.lookupEntry(item_id);
     if (item_entry == nullptr)
     {
         RedSystemMessage(m_session, "Item ID: %u is not a valid item!", item_id);

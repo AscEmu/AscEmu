@@ -3,10 +3,8 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include <utility>
-
 #include "WorldConfig.h"
-
+#include "AEVersion.hpp"
 #include "ConfigMgr.hpp"
 #include "WorldConf.h"
 #include "Config/Config.h"
@@ -14,6 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Logging/Logger.hpp"
 #include "Macros/MapsMacros.hpp"
 #include "Macros/PlayerMacros.hpp"
+
+#include <utility>
 
 WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
 {

@@ -3,7 +3,7 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "WorldConf.h"
+#include "AEVersion.hpp"
 #include "Management/AddonMgr.h"
 #include "Management/AuctionMgr.h"
 #include "Management/CalendarMgr.hpp"
@@ -798,7 +798,7 @@ bool World::loadDbcDb2Stores()
 void World::loadDbcLocaleLanguage()
 {
     // Read names from warrior class in ChrClasses DBC file to get used locale language
-    const auto warr = sChrClassesStore.LookupEntry(1);
+    const auto warr = sChrClassesStore.lookupEntry(1);
 #if VERSION_STRING == Classic
     for (uint8_t i = 0; i < 8; ++i)
 #else

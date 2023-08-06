@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Management/AuctionHouse.h"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Objects/Item.hpp"
 #include "Management/ItemInterface.h"
 #include "Map/Management/MapMgr.hpp"
@@ -86,7 +86,7 @@ uint64_t Auction::getAuctionOutBid() const
 
 AuctionHouse::AuctionHouse(uint32_t id)
 {
-    auctionHouseEntryDbc = sAuctionHouseStore.LookupEntry(id);
+    auctionHouseEntryDbc = sAuctionHouseStore.lookupEntry(id);
     if (auctionHouseEntryDbc)
     {
         cutPercent = static_cast<float_t>(auctionHouseEntryDbc->tax) / 100.0f;

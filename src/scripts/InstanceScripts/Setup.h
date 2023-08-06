@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Server/Script/ScriptMgr.h"
 #include "Server/Script/CreatureAIScript.h"
+#include "AEVersion.hpp"
 
 //Classic
 void SetupBlackfathomDeeps(ScriptMgr* mgr);

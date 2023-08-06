@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <random>
 
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Objects/Item.hpp"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
@@ -230,7 +230,7 @@ void LootMgr::loadLootProp()
             uint32_t id = result->Fetch()[0].GetUInt32();
             uint32_t eid = result->Fetch()[1].GetUInt32();
             float ch = result->Fetch()[2].GetFloat();
-            auto item_random_properties = sItemRandomPropertiesStore.LookupEntry(eid);
+            auto item_random_properties = sItemRandomPropertiesStore.lookupEntry(eid);
             if (item_random_properties == nullptr)
             {
                 sLogger.failure("RandomProp group %u references non-existent randomprop %u.", id, eid);
@@ -261,7 +261,7 @@ void LootMgr::loadLootProp()
             uint32_t id = result->Fetch()[0].GetUInt32();
             uint32_t eid = result->Fetch()[1].GetUInt32();
             float ch = result->Fetch()[2].GetFloat();
-            auto item_random_suffix = sItemRandomSuffixStore.LookupEntry(eid);
+            auto item_random_suffix = sItemRandomSuffixStore.lookupEntry(eid);
             if (item_random_suffix == nullptr)
             {
                 sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "RandomSuffix group %u references non-existent randomsuffix %u.", id, eid);
@@ -342,7 +342,7 @@ void LootMgr::loadLootTables(const char* szTableName, LootTemplateMap* LootTable
     delete result;
 }
 
-DBC::Structures::ItemRandomPropertiesEntry const* LootMgr::GetRandomProperties(ItemProperties const* proto)
+WDB::Structures::ItemRandomPropertiesEntry const* LootMgr::GetRandomProperties(ItemProperties const* proto)
 {
     if (proto->RandomPropId == 0)
         return nullptr;
@@ -351,10 +351,10 @@ DBC::Structures::ItemRandomPropertiesEntry const* LootMgr::GetRandomProperties(I
     if (itr == _randomprops.end())
         return nullptr;
 
-    return RandomChoiceVector<DBC::Structures::ItemRandomPropertiesEntry const>(itr->second);
+    return RandomChoiceVector<WDB::Structures::ItemRandomPropertiesEntry const>(itr->second);
 }
 
-DBC::Structures::ItemRandomSuffixEntry const* LootMgr::GetRandomSuffix(ItemProperties const* proto)
+WDB::Structures::ItemRandomSuffixEntry const* LootMgr::GetRandomSuffix(ItemProperties const* proto)
 {
     if (proto->RandomSuffixId == 0)
         return nullptr;
@@ -363,7 +363,7 @@ DBC::Structures::ItemRandomSuffixEntry const* LootMgr::GetRandomSuffix(ItemPrope
     if (itr == _randomsuffix.end())
         return nullptr;
 
-    return RandomChoiceVector<DBC::Structures::ItemRandomSuffixEntry const>(itr->second);
+    return RandomChoiceVector<WDB::Structures::ItemRandomSuffixEntry const>(itr->second);
 }
 
 

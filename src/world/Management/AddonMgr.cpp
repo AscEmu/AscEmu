@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Database/Field.hpp"
 #include "Database/Database.h"
 #include "Server/DatabaseDefinition.hpp"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 
 //#define DEBUG_PRINT_ADDON_PACKET            // Prints out Received addon packet when char logging in
 
@@ -355,7 +355,7 @@ void AddonMgr::LoadFromDB()
     if (clientAddonsResult)
     {
         uint32_t bannedAddonsCount = 0;
-        uint32_t dbcMaxBannedAddon = sBannedAddOnsStore.GetNumRows();
+        uint32_t dbcMaxBannedAddon = sBannedAddOnsStore.getNumRows();
 
         do
         {

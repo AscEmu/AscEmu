@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Movement/Spline/MoveSplineInitArgs.h>
 #include "Server/Definitions.h"
 #include "Objects/Transporter.hpp"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -117,7 +117,7 @@ Transporter* TransportHandler::createTransport(uint32_t entry, WorldMap* map /*=
 
     addTransport(trans);
 
-    if (const auto mapEntry = sMapStore.LookupEntry(mapId))
+    if (const auto mapEntry = sMapStore.lookupEntry(mapId))
     {
         if (mapEntry->instanceable() != tInfo->inInstance)
         {
@@ -169,12 +169,12 @@ void TransportHandler::removeInstancedTransport(Transporter* transport, uint32_t
 bool FillTransporterPathVector(uint32_t PathID, TransportPath & Path)
 {
     // Store dbc values into current Path array
-    Path.resize(sTaxiPathNodeStore.GetNumRows());
+    Path.resize(sTaxiPathNodeStore.getNumRows());
 
     uint32_t i = 0;
-    for (uint32_t j = 0; j < sTaxiPathNodeStore.GetNumRows(); ++j)
+    for (uint32_t j = 0; j < sTaxiPathNodeStore.getNumRows(); ++j)
     {
-        auto pathnode = sTaxiPathNodeStore.LookupEntry(j);
+        auto pathnode = sTaxiPathNodeStore.lookupEntry(j);
         if (pathnode == nullptr)
             continue;
 
@@ -295,7 +295,7 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
     {
         for (std::set<uint32_t>::const_iterator itr = transport->mapsUsed.begin(); itr != transport->mapsUsed.end(); ++itr)
         {
-            if (const auto map = sMapStore.LookupEntry(*itr))
+            if (const auto map = sMapStore.lookupEntry(*itr))
             {
                 if (map->instanceable())
                 {
@@ -309,7 +309,7 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
     }
     else
     {
-        if (const auto map = sMapStore.LookupEntry(*transport->mapsUsed.begin()))
+        if (const auto map = sMapStore.lookupEntry(*transport->mapsUsed.begin()))
             transport->inInstance = map->instanceable();
     }
 
@@ -531,18 +531,18 @@ void TransportHandler::addTransport(Transporter* transport)
 
 void TransportHandler::loadTransportAnimationAndRotation()
 {
-    for (uint32_t i = 0; i < sTransportAnimationStore.GetNumRows(); ++i)
-        if (const auto anim = sTransportAnimationStore.LookupEntry(i))
+    for (uint32_t i = 0; i < sTransportAnimationStore.getNumRows(); ++i)
+        if (const auto anim = sTransportAnimationStore.lookupEntry(i))
             addPathNodeToTransport(anim->TransportID, anim->TimeIndex, anim);
 
 #if VERSION_STRING >= WotLK
-    for (uint32_t i = 0; i < sTransportRotationStore.GetNumRows(); ++i)
-        if (const auto rot = sTransportRotationStore.LookupEntry(i))
+    for (uint32_t i = 0; i < sTransportRotationStore.getNumRows(); ++i)
+        if (const auto rot = sTransportRotationStore.lookupEntry(i))
             addPathRotationToTransport(rot->GameObjectsID, rot->TimeIndex, rot);
 #endif
 }
 
-void TransportHandler::addPathNodeToTransport(uint32_t transportEntry, uint32_t timeSeg, DBC::Structures::TransportAnimationEntry const* node)
+void TransportHandler::addPathNodeToTransport(uint32_t transportEntry, uint32_t timeSeg, WDB::Structures::TransportAnimationEntry const* node)
 {
     TransportAnimation& animNode = _transportAnimations[transportEntry];
     if (animNode.TotalTime < timeSeg)
@@ -552,13 +552,13 @@ void TransportHandler::addPathNodeToTransport(uint32_t transportEntry, uint32_t 
 }
 
 #if VERSION_STRING >= WotLK
-void TransportHandler::addPathRotationToTransport(uint32_t transportEntry, uint32_t timeSeg, DBC::Structures::TransportRotationEntry const* node)
+void TransportHandler::addPathRotationToTransport(uint32_t transportEntry, uint32_t timeSeg, WDB::Structures::TransportRotationEntry const* node)
 {
     _transportAnimations[transportEntry].Rotations[timeSeg] = node;
 }
 #endif
 
-DBC::Structures::TransportAnimationEntry const* TransportAnimation::getAnimNode(uint32_t time) const
+WDB::Structures::TransportAnimationEntry const* TransportAnimation::getAnimNode(uint32_t time) const
 {
     auto itr = Path.lower_bound(time);
     if (itr != Path.end())
@@ -568,7 +568,7 @@ DBC::Structures::TransportAnimationEntry const* TransportAnimation::getAnimNode(
 }
 
 #if VERSION_STRING >= WotLK
-DBC::Structures::TransportRotationEntry const* TransportAnimation::getAnimRotation(uint32_t time) const
+WDB::Structures::TransportRotationEntry const* TransportAnimation::getAnimRotation(uint32_t time) const
 {
     auto itr = Rotations.lower_bound(time);
     if (itr != Rotations.end())

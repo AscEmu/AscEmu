@@ -11,12 +11,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/CreatureAIScript.h"
 #include "Movement/MovementManager.h"
 #include "Movement/Spline/MoveSplineInit.h"
-#include "Storage/DBC/DBCStructures.hpp"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 
 #ifdef FT_VEHICLES
 
-Vehicle::Vehicle(Unit* unit, DBC::Structures::VehicleEntry const* vehInfo, uint32_t creatureEntry) :
+Vehicle::Vehicle(Unit* unit, WDB::Structures::VehicleEntry const* vehInfo, uint32_t creatureEntry) :
     usableSeatNum(0), _owner(unit), _vehicleInfo(vehInfo), _creatureEntry(creatureEntry), _status(STATUS_NONE), _lastShootPos()
 {
     initialize();
@@ -72,7 +72,7 @@ void Vehicle::initSeats()
     for (uint8_t i = 0; i < MAX_VEHICLE_SEATS; ++i)
     {
         if (uint32_t seatId = _vehicleInfo->seatID[i])
-            if (auto veSeat = sVehicleSeatStore.LookupEntry(seatId))
+            if (auto veSeat = sVehicleSeatStore.lookupEntry(seatId))
             {
                 VehicleSeatAddon const* addon = sObjectMgr.getVehicleSeatAddon(seatId);
                 Seats.insert(std::make_pair(i, VehicleSeat(veSeat, addon)));
@@ -374,12 +374,12 @@ Vehicle* Vehicle::removePassenger(Unit* unit)
     if (seat->second._seatInfo->canEnterOrExit() && ++usableSeatNum)
         getBase()->setNpcFlags((getBase()->getObjectTypeId() == TYPEID_PLAYER ? UNIT_NPC_FLAG_PLAYER_VEHICLE : UNIT_NPC_FLAG_SPELLCLICK));
 
-    if (seat->second._seatInfo->flags & DBC::Structures::VehicleSeatFlags::VEHICLE_SEAT_FLAG_PASSENGER_NOT_SELECTABLE && !seat->second._passenger.isUnselectable)
+    if (seat->second._seatInfo->flags & WDB::Structures::VehicleSeatFlags::VEHICLE_SEAT_FLAG_PASSENGER_NOT_SELECTABLE && !seat->second._passenger.isUnselectable)
         unit->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
 
     seat->second._passenger.reset();
 
-    if (getBase()->getObjectTypeId() == TYPEID_UNIT && unit->getObjectTypeId() == TYPEID_PLAYER && seat->second._seatInfo->flags & DBC::Structures::VehicleSeatFlags::VEHICLE_SEAT_FLAG_CAN_CONTROL)
+    if (getBase()->getObjectTypeId() == TYPEID_UNIT && unit->getObjectTypeId() == TYPEID_PLAYER && seat->second._seatInfo->flags & WDB::Structures::VehicleSeatFlags::VEHICLE_SEAT_FLAG_CAN_CONTROL)
     {
         unit->setCharmGuid(0);
         getBase()->setCharmedByGuid(0);
@@ -476,7 +476,7 @@ bool Vehicle::isControllableVehicle() const
     return false;
 }
 
-DBC::Structures::VehicleSeatEntry const* Vehicle::getSeatForPassenger(Unit const* passenger) const
+WDB::Structures::VehicleSeatEntry const* Vehicle::getSeatForPassenger(Unit const* passenger) const
 {
     for (SeatMap::const_iterator itr = Seats.begin(); itr != Seats.end(); ++itr)
         if (itr->second._passenger.guid == passenger->getGuid())
@@ -547,7 +547,7 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
 
     passenger->removeAllAurasByAuraEffect(SPELL_AURA_MOUNTED);
 
-    DBC::Structures::VehicleSeatEntry const* veSeat = Seat->second._seatInfo;
+    WDB::Structures::VehicleSeatEntry const* veSeat = Seat->second._seatInfo;
     VehicleSeatAddon const* veSeatAddon = Seat->second._seatAddon;
 
     Player* player = passenger->ToPlayer();
@@ -556,14 +556,14 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
         WorldPacket data(SMSG_ON_CANCEL_EXPECTED_RIDE_VEHICLE_AURA, 0);
         player->sendPacket(&data);
 
-        if (!veSeat->hasFlag(DBC::Structures::VehicleSeatFlagsB::VEHICLE_SEAT_FLAG_B_KEEP_PET))
+        if (!veSeat->hasFlag(WDB::Structures::VehicleSeatFlagsB::VEHICLE_SEAT_FLAG_B_KEEP_PET))
         {
             // Unsummon Pets
             player->dismissActivePets();
         }
     }
 
-    if (veSeat->hasFlag(DBC::Structures::VehicleSeatFlags::VEHICLE_SEAT_FLAG_PASSENGER_NOT_SELECTABLE))
+    if (veSeat->hasFlag(WDB::Structures::VehicleSeatFlags::VEHICLE_SEAT_FLAG_PASSENGER_NOT_SELECTABLE))
         passenger->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
 
     passenger->sendPacket(AscEmu::Packets::SmsgControlVehicle().serialise().get());
@@ -588,7 +588,7 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
 
     // handles SMSG_CLIENT_CONTROL
     if (getBase()->getObjectTypeId() == TYPEID_UNIT && passenger->getObjectTypeId() == TYPEID_PLAYER &&
-        veSeat->hasFlag(DBC::Structures::VehicleSeatFlags::VEHICLE_SEAT_FLAG_CAN_CONTROL))
+        veSeat->hasFlag(WDB::Structures::VehicleSeatFlags::VEHICLE_SEAT_FLAG_CAN_CONTROL))
     {
         passenger->sendPacket(AscEmu::Packets::SmsgControlVehicle().serialise().get());
         static_cast<Player*>(passenger)->setFarsightGuid(getBase()->getGuid());

@@ -10,11 +10,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <vector>
-
-#include "CommonTypes.hpp"
 #include "Opcodes.hpp"
-#include "WorldConf.h"
+#include "AEVersion.hpp"
+#include "CommonTypes.hpp"
+
+#include <vector>
 
 class SERVER_DECL OpcodeTables
 {

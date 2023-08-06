@@ -81,11 +81,11 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
     if (lookupname || lookupdesc || lookupreward)
     {
         std::set<uint32> foundList;
-        j = sAchievementStore.GetNumRows();
+        j = sAchievementStore.getNumRows();
         bool foundmatch;
         for (i = 0; i < j && numFound < 25; ++i)
         {
-            auto achievement = sAchievementStore.LookupEntry(i);
+            auto achievement = sAchievementStore.lookupEntry(i);
             if (achievement)
             {
                 if (foundList.find(achievement->ID) != foundList.end())
@@ -185,10 +185,10 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
     if (lookupcriteria && numFound < 25)
     {
         std::set<uint32> foundList;
-        j = sAchievementCriteriaStore.GetNumRows();
+        j = sAchievementCriteriaStore.getNumRows();
         for (i = 0; i < j && numFound < 25; ++i)
         {
-            auto criteria = sAchievementCriteriaStore.LookupEntry(i);
+            auto criteria = sAchievementCriteriaStore.lookupEntry(i);
             if (criteria)
             {
                 if (foundList.find(criteria->ID) != foundList.end())
@@ -219,7 +219,7 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
                 recout += criteria->name[0];
 #endif
                 strm.str("");
-                auto achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
+                auto achievement = sAchievementStore.lookupEntry(criteria->referredAchievement);
                 if (achievement)
                 {
                     // create achievement link
@@ -359,9 +359,9 @@ bool ChatHandler::HandleLookupFactionCommand(const char* args, WorldSession* m_s
     GreenSystemMessage(m_session, "Starting search of faction `%s`...", x.c_str());
     auto startTime = Util::TimeNow();
     uint32 count = 0;
-    for (uint32 index = 0; index < sFactionStore.GetNumRows(); ++index)
+    for (uint32 index = 0; index < sFactionStore.getNumRows(); ++index)
     {
-        DBC::Structures::FactionEntry const* faction = sFactionStore.LookupEntry(index);
+        WDB::Structures::FactionEntry const* faction = sFactionStore.lookupEntry(index);
         if (faction != nullptr)
         {
 #if VERSION_STRING < Cata
@@ -649,9 +649,9 @@ bool ChatHandler::HandleLookupSkillCommand(const char* args, WorldSession* m_ses
     GreenSystemMessage(m_session, "Starting search of skill `%s`...", x.c_str());
     auto startTime = Util::TimeNow();
     uint32 count = 0;
-    for (uint32 index = 0; index < sSkillLineStore.GetNumRows(); ++index)
+    for (uint32 index = 0; index < sSkillLineStore.getNumRows(); ++index)
     {
-        auto skill_line = sSkillLineStore.LookupEntry(index);
+        auto skill_line = sSkillLineStore.lookupEntry(index);
         if (skill_line == nullptr)
             continue;
 

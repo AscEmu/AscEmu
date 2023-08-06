@@ -5,10 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "AEVersion.hpp"
+
 #include <string>
 #include <cstdint>
-
-#include "WorldConf.h"
 
 namespace CharterEntry
 {

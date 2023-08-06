@@ -15,7 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 
-Summon::Summon(uint64_t guid, DBC::Structures::SummonPropertiesEntry const* properties) : Creature(guid), m_Properties(properties)
+Summon::Summon(uint64_t guid, WDB::Structures::SummonPropertiesEntry const* properties) : Creature(guid), m_Properties(properties)
 {
     // Override initialization from Creature class
     getThreatManager().initialize();
@@ -301,7 +301,7 @@ Player* Summon::getPlayerOwner()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-GuardianSummon::GuardianSummon(uint64_t GUID, DBC::Structures::SummonPropertiesEntry const* properties) : Summon(GUID, properties) {}
+GuardianSummon::GuardianSummon(uint64_t GUID, WDB::Structures::SummonPropertiesEntry const* properties) : Summon(GUID, properties) {}
 GuardianSummon::~GuardianSummon() {}
 
 void GuardianSummon::load(CreatureProperties const* properties_, Unit* pOwner, LocationVector& position, uint32_t duration, uint32_t spellid)
@@ -333,7 +333,7 @@ void GuardianSummon::load(CreatureProperties const* properties_, Unit* pOwner, L
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-CompanionSummon::CompanionSummon(uint64_t GUID, DBC::Structures::SummonPropertiesEntry const* properties) : Summon(GUID, properties) {}
+CompanionSummon::CompanionSummon(uint64_t GUID, WDB::Structures::SummonPropertiesEntry const* properties) : Summon(GUID, properties) {}
 CompanionSummon::~CompanionSummon() {}
 
 void CompanionSummon::load(CreatureProperties const* properties_, Unit* companionOwner, LocationVector& position, uint32_t duration, uint32_t spellid)
@@ -363,7 +363,7 @@ void CompanionSummon::load(CreatureProperties const* properties_, Unit* companio
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-PossessedSummon::PossessedSummon(uint64_t GUID, DBC::Structures::SummonPropertiesEntry const* properties) : Summon(GUID, properties) {}
+PossessedSummon::PossessedSummon(uint64_t GUID, WDB::Structures::SummonPropertiesEntry const* properties) : Summon(GUID, properties) {}
 PossessedSummon::~PossessedSummon() {}
 
 void PossessedSummon::load(CreatureProperties const* properties_, Unit* pOwner, LocationVector& position, uint32_t duration, uint32_t spellid)
@@ -385,7 +385,7 @@ void PossessedSummon::load(CreatureProperties const* properties_, Unit* pOwner, 
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-WildSummon::WildSummon(uint64_t GUID, DBC::Structures::SummonPropertiesEntry const* properties) : Summon(GUID, properties) {}
+WildSummon::WildSummon(uint64_t GUID, WDB::Structures::SummonPropertiesEntry const* properties) : Summon(GUID, properties) {}
 WildSummon::~WildSummon() {}
 
 void WildSummon::load(CreatureProperties const* properties_, Unit* pOwner, LocationVector& position, uint32_t duration, uint32_t spellid)
@@ -405,7 +405,7 @@ void WildSummon::load(CreatureProperties const* properties_, Unit* pOwner, Locat
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-TotemSummon::TotemSummon(uint64_t guid, DBC::Structures::SummonPropertiesEntry const* properties) : Summon(guid, properties)
+TotemSummon::TotemSummon(uint64_t guid, WDB::Structures::SummonPropertiesEntry const* properties) : Summon(guid, properties)
 {
     // Override initialization from Summon class
     getThreatManager().initialize();

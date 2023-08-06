@@ -20,7 +20,7 @@
 #ifndef SKILLNAMEMGR_H
 #define SKILLNAMEMGR_H
 
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 
 #if VERSION_STRING < Cata
 #include "Server/World.h"
@@ -79,15 +79,15 @@ class SkillNameMgr
         SkillNameMgr()
         {
             /// This will become the size of the skill name lookup table
-            maxskill = sSkillLineStore.GetNumRows();
+            maxskill = sSkillLineStore.getNumRows();
 
             /// SkillNames = (char **) malloc(maxskill * sizeof(char *));
             SkillNames = new char * [maxskill + 1]; //(+1, arrays count from 0.. not 1.)
             memset(SkillNames, 0, (maxskill + 1) * sizeof(char*));
 
-            for (uint32 i = 0; i < sSkillLineStore.GetNumRows(); ++i)
+            for (uint32 i = 0; i < sSkillLineStore.getNumRows(); ++i)
             {
-                auto skill_line = sSkillLineStore.LookupEntry(i);
+                auto skill_line = sSkillLineStore.lookupEntry(i);
                 if (skill_line == nullptr)
                     continue;
 

@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Units/Unit.hpp"
 #include "Units/Creatures/Summons/Summon.hpp"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/QuestMgr.h"
 #include "Server/EventableObject.h"
@@ -1749,7 +1749,7 @@ void Object::sendGameobjectDespawnAnim()
 //////////////////////////////////////////////////////////////////////////////////////////
 // AGPL Starts
 
-::DBC::Structures::AreaTableEntry const* Object::GetArea() const
+::WDB::Structures::AreaTableEntry const* Object::GetArea() const
 {
     if (!IsInWorld())
         return nullptr;
@@ -3405,7 +3405,7 @@ void Object::updatePositionData()
     PositionFullTerrainStatus data;
     getWorldMap()->getFullTerrainStatusForPosition(GetPhase(), GetPositionX(), GetPositionY(), GetPositionZ(), data, MAP_ALL_LIQUIDS, getCollisionHeight());
 
-    if (DBC::Structures::AreaTableEntry const* area = sAreaStore.LookupEntry(data.areaId))
+    if (WDB::Structures::AreaTableEntry const* area = sAreaStore.lookupEntry(data.areaId))
     {
         if (area->zone == 0 && m_zoneId != area->id)
             m_zoneId = area->id;
@@ -3829,18 +3829,18 @@ bool Object::isInRange(Object* target, float range)
 
 void Object::setServersideFaction()
 {
-    DBC::Structures::FactionTemplateEntry const* faction_template = nullptr;
+    WDB::Structures::FactionTemplateEntry const* faction_template = nullptr;
 
     if (isCreatureOrPlayer())
     {
-        faction_template = sFactionTemplateStore.LookupEntry(static_cast<Unit*>(this)->getFactionTemplate());
+        faction_template = sFactionTemplateStore.lookupEntry(static_cast<Unit*>(this)->getFactionTemplate());
         if (faction_template == nullptr)
             sLogger.failure("Unit does not have a valid faction. Faction: %u set to Entry: %u", static_cast<Unit*>(this)->getFactionTemplate(), getEntry());
     }
     else if (isGameObject())
     {
         uint32 go_faction_id = static_cast<GameObject*>(this)->getFactionTemplate();
-        faction_template = sFactionTemplateStore.LookupEntry(go_faction_id);
+        faction_template = sFactionTemplateStore.lookupEntry(go_faction_id);
         if (go_faction_id != 0)         // faction = 0 means it has no faction.
         {
             if (faction_template == nullptr)
@@ -3854,12 +3854,12 @@ void Object::setServersideFaction()
     m_factionTemplate = faction_template;
     if (m_factionTemplate == nullptr)
     {
-        m_factionTemplate = sFactionTemplateStore.LookupEntry(0);
-        m_factionEntry = sFactionStore.LookupEntry(0);
+        m_factionTemplate = sFactionTemplateStore.lookupEntry(0);
+        m_factionEntry = sFactionStore.lookupEntry(0);
     }
     else
     {
-        m_factionEntry = sFactionStore.LookupEntry(m_factionTemplate->Faction);
+        m_factionEntry = sFactionStore.lookupEntry(m_factionTemplate->Faction);
     }
 }
 
@@ -3885,13 +3885,13 @@ Standing Object::getEnemyReaction(Object* target)
     // which could be applied by spell auras
     if (selfPlayerOwner)
     {
-        if (DBC::Structures::FactionTemplateEntry const* targetFactionTemplateEntry = target->m_factionTemplate)
+        if (WDB::Structures::FactionTemplateEntry const* targetFactionTemplateEntry = target->m_factionTemplate)
             if (Standing const* repRank = selfPlayerOwner->getForcedReputationRank(targetFactionTemplateEntry))
                 return *repRank;
     }
     else if (targetPlayerOwner)
     {
-        if (DBC::Structures::FactionTemplateEntry const* selfFactionTemplateEntry = m_factionTemplate)
+        if (WDB::Structures::FactionTemplateEntry const* selfFactionTemplateEntry = m_factionTemplate)
             if (Standing const* repRank = targetPlayerOwner->getForcedReputationRank(selfFactionTemplateEntry))
                 return *repRank;
     }
@@ -3927,7 +3927,7 @@ Standing Object::getEnemyReaction(Object* target)
 
             if (selfPlayerOwner)
             {
-                if (DBC::Structures::FactionTemplateEntry const* targetFactionTemplateEntry = targetUnit->m_factionTemplate)
+                if (WDB::Structures::FactionTemplateEntry const* targetFactionTemplateEntry = targetUnit->m_factionTemplate)
                 {
                     if (Standing const* repRank = selfPlayerOwner->getForcedReputationRank(targetFactionTemplateEntry))
                         return *repRank;
@@ -3935,7 +3935,7 @@ Standing Object::getEnemyReaction(Object* target)
 #if VERSION_STRING > Classic
                     if (!selfPlayerOwner->hasUnitFlags2(UNIT_FLAG2_UNK2))
                     {
-                        if (DBC::Structures::FactionEntry const* targetFactionEntry = sFactionStore.LookupEntry(targetFactionTemplateEntry->Faction))
+                        if (WDB::Structures::FactionEntry const* targetFactionEntry = sFactionStore.lookupEntry(targetFactionTemplateEntry->Faction))
                         {
                             if (targetFactionEntry->canHaveReputation())
                             {
@@ -3962,13 +3962,13 @@ Standing Object::getEnemyReaction(Object* target)
     return getFactionReaction(m_factionTemplate, target);
 }
 
-Standing Object::getFactionReaction(DBC::Structures::FactionTemplateEntry const* factionTemplateEntry, Object* target)
+Standing Object::getFactionReaction(WDB::Structures::FactionTemplateEntry const* factionTemplateEntry, Object* target)
 {
     // always neutral when no template entry found
     if (!factionTemplateEntry)
         return STANDING_NEUTRAL;
 
-    DBC::Structures::FactionTemplateEntry const* targetFactionTemplateEntry = target->m_factionTemplate;
+    WDB::Structures::FactionTemplateEntry const* targetFactionTemplateEntry = target->m_factionTemplate;
     if (!targetFactionTemplateEntry)
         return STANDING_NEUTRAL;
 
@@ -3988,7 +3988,7 @@ Standing Object::getFactionReaction(DBC::Structures::FactionTemplateEntry const*
         if (target->ToUnit())
 #endif
         {
-            if (DBC::Structures::FactionEntry const* factionEntry = sFactionStore.LookupEntry(factionTemplateEntry->Faction))
+            if (WDB::Structures::FactionEntry const* factionEntry = sFactionStore.lookupEntry(factionTemplateEntry->Faction))
             {
                 if (factionEntry->canHaveReputation())
                 {
@@ -4037,11 +4037,11 @@ bool Object::isFriendlyTo(Object* target)
 
 bool Object::isNeutralToAll() const
 {
-    DBC::Structures::FactionTemplateEntry const* my_faction = m_factionTemplate;
+    WDB::Structures::FactionTemplateEntry const* my_faction = m_factionTemplate;
     if (!my_faction->Faction)
         return true;
 
-    DBC::Structures::FactionEntry const* raw_faction = sFactionStore.LookupEntry(my_faction->Faction);
+    WDB::Structures::FactionEntry const* raw_faction = sFactionStore.lookupEntry(my_faction->Faction);
     if (raw_faction && raw_faction->RepListId >= 0)
         return false;
 
@@ -4158,10 +4158,10 @@ bool Object::isValidTarget(Object* target, SpellInfo const* bySpell)
             if (creature->getAIInterface()->isGuard() && player->hasPlayerFlags(PLAYER_FLAG_PVP_GUARD_ATTACKABLE))
                 return true;
 
-            if (DBC::Structures::FactionTemplateEntry const* factionTemplate = creature->m_factionTemplate)
+            if (WDB::Structures::FactionTemplateEntry const* factionTemplate = creature->m_factionTemplate)
             {
                 if (!(player->getForcedReputationRank(factionTemplate)))
-                    if (DBC::Structures::FactionEntry const* factionEntry = sFactionStore.LookupEntry(factionTemplate->Faction))
+                    if (WDB::Structures::FactionEntry const* factionEntry = sFactionStore.lookupEntry(factionTemplate->Faction))
                         if (player->isHostileBasedOnReputation(factionEntry))
                             return false;
             }

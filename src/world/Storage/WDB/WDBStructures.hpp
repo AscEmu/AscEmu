@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "WorldConf.h"
+#include "AEVersion.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "CommonTypes.hpp"
 #include <cstring>
@@ -189,7 +189,7 @@ enum MapTypes
     MAP_ARENA           = 4  // arena
 };
 
-namespace DBC::Structures
+namespace WDB::Structures
 {
 #if VERSION_STRING <= Classic
     #define NAME_PATTERN 8

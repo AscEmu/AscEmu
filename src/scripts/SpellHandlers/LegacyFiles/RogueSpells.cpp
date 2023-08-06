@@ -66,7 +66,7 @@ bool Shiv(uint8_t /*effectIndex*/, Spell* pSpell)
     EnchantmentInstance* ench = it->getEnchantment(TEMP_ENCHANTMENT_SLOT);
     if (ench)
     {
-        DBC::Structures::SpellItemEnchantmentEntry const* Entry = ench->Enchantment;
+        WDB::Structures::SpellItemEnchantmentEntry const* Entry = ench->Enchantment;
         for (uint8_t c = 0; c < 3; c++)
         {
             if (Entry->type[c] && Entry->spell[c])

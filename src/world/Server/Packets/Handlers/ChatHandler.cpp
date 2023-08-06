@@ -416,7 +416,7 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
         nameLength = static_cast<uint32_t>(unitName.length() + 1);
     }
 
-    if (const auto emoteTextEntry = sEmotesTextStore.LookupEntry(srlPacket.text_emote))
+    if (const auto emoteTextEntry = sEmotesTextStore.lookupEntry(srlPacket.text_emote))
     {
         sHookInterface.OnEmote(_player, emoteTextEntry->textid, unit);
         if (unit)
@@ -485,7 +485,7 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
         }
     }
 
-    DBC::Structures::EmotesTextEntry const* emoteTextEntry = sEmotesTextStore.LookupEntry(srlPacket.text_emote);
+    WDB::Structures::EmotesTextEntry const* emoteTextEntry = sEmotesTextStore.lookupEntry(srlPacket.text_emote);
     if (emoteTextEntry == nullptr)
         return;
 

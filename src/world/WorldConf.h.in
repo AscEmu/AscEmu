@@ -5,58 +5,5 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "AEVersion.hpp"
-
 #define CONFDIR "@ASCEMU_CONFIGSFILE_PATH@"
 #define PREFIX "@ASCEMU_SCRIPTLIB_PATH@"
-
-#if VERSION_STRING == Classic
-    #define AE_CLASSIC
-    #define VERSION 1, 12, 1
-#elif VERSION_STRING == TBC
-    #define AE_TBC
-    #define VERSION 2, 4, 3
-#elif VERSION_STRING == WotLK
-    #define AE_WOTLK
-    #define VERSION 3, 3, 5
-#elif VERSION_STRING == Cata
-    #define AE_CATA
-    #define VERSION 4, 3, 4
-#elif VERSION_STRING == Mop
-    #define AE_MOP
-    #define VERSION 5, 4, 8
-#endif
-
-#if VERSION_STRING == Classic
-    #define BUILD_VERSION 5875
-#elif VERSION_STRING == TBC
-    #define BUILD_VERSION 8606
-#elif VERSION_STRING == WotLK
-    #define BUILD_VERSION 12340
-#elif VERSION_STRING == Cata
-    #define BUILD_VERSION 15595
-#elif VERSION_STRING == Mop
-    #define BUILD_VERSION 18414
-#endif
-
-#if VERSION_STRING >= Classic
-    #define GM_TICKET_MY_MASTER_COMPATIBLE
-#endif
-
-#if VERSION_STRING >= TBC
-    #define FT_FLYING
-#endif
-
-#if VERSION_STRING >= WotLK
-    #define FT_ACHIEVEMENTS
-    #define FT_DEATH_KNIGHT
-    #define FT_DUAL_SPEC
-    #define FT_DUNGEON_FINDER
-    #define FT_GLYPHS
-    #define FT_VEHICLES
-#endif
-
-#if VERSION_STRING >= Cata
-    #define FT_TRANSMOG
-    #define FT_LFR
-#endif

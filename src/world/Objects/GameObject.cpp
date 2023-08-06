@@ -37,7 +37,7 @@
 #include "Server/Script/ScriptMgr.h"
 #include "Map/Maps/MapScriptInterface.h"
 #include "GameObjectModel.h"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Management/QuestLogEntry.hpp"
 #include "Server/Definitions.h"
 #include "Objects/Transporter.hpp"
@@ -1301,7 +1301,7 @@ void GameObject::onRemoveInRangeObject(Object* pObj)
 uint32_t GameObject::GetGOReqSkill()
 {
     // Here we check the SpellFocus table against the dbcs
-    auto lock = sLockStore.LookupEntry(GetGameObjectProperties()->raw.parameter_0);
+    auto lock = sLockStore.lookupEntry(GetGameObjectProperties()->raw.parameter_0);
     if (!lock)
         return 0;
 

@@ -19,7 +19,7 @@
 #pragma once
 
 #include "CommonTypes.hpp"
-#include "Storage/DBC/DBCStructures.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 #include "Spell/Definitions/School.hpp"
 #include "Utilities/Util.hpp"
 #include "Macros/CreatureMacros.hpp"
@@ -101,7 +101,7 @@ struct CreatureDisplayInfoData
     uint32_t extendedDisplayInfoId = 0;
     float_t creatureModelScale = 0.0f;
     bool isModelInvisibleStalker = false;
-    DBC::Structures::CreatureModelDataEntry const* modelInfo = nullptr;
+    WDB::Structures::CreatureModelDataEntry const* modelInfo = nullptr;
 };
 
 // MIT End
@@ -121,7 +121,7 @@ struct CreatureItem
     uint32 available_amount;
     uint32 max_amount;
     uint32 incrtime;
-    DBC::Structures::ItemExtendedCostEntry const* extended_cost;
+    WDB::Structures::ItemExtendedCostEntry const* extended_cost;
 };
 
 enum CreatureAISpellFlags

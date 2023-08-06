@@ -1,4 +1,5 @@
 #include "WorldConf.h"
+#include "AEVersion.hpp"
 #include "../shared/git_version.h"
 
 IDI_APPICON ICON DISCARDABLE "icon.ico"

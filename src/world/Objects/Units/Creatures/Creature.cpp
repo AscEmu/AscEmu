@@ -24,7 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/CreatureGroups.h"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/Definitions.h"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -1365,7 +1365,7 @@ std::shared_ptr<Trainer> Creature::GetTrainer()
     return mTrainer;
 }
 
-void Creature::AddVendorItem(uint32 itemid, uint32 amount, DBC::Structures::ItemExtendedCostEntry const* ec)
+void Creature::AddVendorItem(uint32 itemid, uint32 amount, WDB::Structures::ItemExtendedCostEntry const* ec)
 {
     CreatureItem ci;
     ci.amount = amount;
@@ -1647,7 +1647,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
 
     //////////////AI
 
-    myFamily = sCreatureFamilyStore.LookupEntry(creature_properties->Family);
+    myFamily = sCreatureFamilyStore.lookupEntry(creature_properties->Family);
 
 
     //HACK!
@@ -1868,7 +1868,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
 
     //////////////AI
 
-    myFamily = sCreatureFamilyStore.LookupEntry(creature_properties->Family);
+    myFamily = sCreatureFamilyStore.lookupEntry(creature_properties->Family);
 
 
     // \todo remove this HACK! already included few lines above
@@ -2227,7 +2227,7 @@ void Creature::SetLimboState(bool set)
     m_limbostate = set;
 }
 
-uint32 Creature::GetLineByFamily(DBC::Structures::CreatureFamilyEntry const* family)
+uint32 Creature::GetLineByFamily(WDB::Structures::CreatureFamilyEntry const* family)
 {
     return family->skilline ? family->skilline : 0;
 }
@@ -2393,7 +2393,7 @@ void Creature::GetSellItemByItemId(uint32 itemid, CreatureItem& ci)
     ci.itemid = 0;
 }
 
-DBC::Structures::ItemExtendedCostEntry const* Creature::GetItemExtendedCostByItemId(uint32 itemid)
+WDB::Structures::ItemExtendedCostEntry const* Creature::GetItemExtendedCostByItemId(uint32 itemid)
 {
     for (auto itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
     {

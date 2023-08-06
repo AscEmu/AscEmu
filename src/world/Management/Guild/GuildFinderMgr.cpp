@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/Guild/Guild.hpp"
 #include "Management/ObjectMgr.hpp"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 
 GuildFinderMgr& GuildFinderMgr::getInstance()
 {
@@ -56,7 +56,7 @@ void GuildFinderMgr::loadGuildSettingsFromDB()
         std::string comment = fields[6].GetString();
 
         PlayerTeam guildTeam = TEAM_ALLIANCE;
-        if (auto raceEntry = sChrRacesStore.LookupEntry(fields[7].GetUInt8()))
+        if (auto raceEntry = sChrRacesStore.lookupEntry(fields[7].GetUInt8()))
         {
             if (raceEntry->team_id == 1)
             {

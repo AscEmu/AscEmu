@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Objects/Units/Creatures/CreatureDefines.hpp"
 #include "Server/EventableObject.h"
-#include "Storage/DBC/DBCStructures.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 struct ItemProperties;
 class Player;
@@ -88,8 +88,8 @@ class LootRoll : public EventableObject
         WorldMap* _mgr;
 };
 
-typedef std::vector<std::pair<DBC::Structures::ItemRandomPropertiesEntry const*, float>> RandomPropertyVector;
-typedef std::vector<std::pair<DBC::Structures::ItemRandomSuffixEntry const*, float>> RandomSuffixVector;
+typedef std::vector<std::pair<WDB::Structures::ItemRandomPropertiesEntry const*, float>> RandomPropertyVector;
+typedef std::vector<std::pair<WDB::Structures::ItemRandomSuffixEntry const*, float>> RandomSuffixVector;
 
 struct LootStoreItem
 {
@@ -116,8 +116,8 @@ struct LootItem
     uint32_t itemId;                                                    // LootItem entry
     ItemProperties const* itemproto;                                    // LootItem itemproperties
     uint8_t count;                                                      // LootItem count
-    DBC::Structures::ItemRandomPropertiesEntry const* iRandomProperty;  // LootItem randomProperty
-    DBC::Structures::ItemRandomSuffixEntry const* iRandomSuffix;        // LootItem randomSuffix
+    WDB::Structures::ItemRandomPropertiesEntry const* iRandomProperty;  // LootItem randomProperty
+    WDB::Structures::ItemRandomSuffixEntry const* iRandomSuffix;        // LootItem randomSuffix
 
     LootRoll* roll;                                                     // Lootitem roll ongoing
 
@@ -256,8 +256,8 @@ class SERVER_DECL LootMgr
         void loadAndGenerateLoot(uint8_t type);
         void addLoot(Loot* loot, uint32_t itemid, std::vector<float> chance, uint32_t mincount, uint32_t maxcount, uint8_t lootDifficulty);
 
-        DBC::Structures::ItemRandomPropertiesEntry const* GetRandomProperties(ItemProperties const* proto);
-        DBC::Structures::ItemRandomSuffixEntry const* GetRandomSuffix(ItemProperties const* proto);
+        WDB::Structures::ItemRandomPropertiesEntry const* GetRandomProperties(ItemProperties const* proto);
+        WDB::Structures::ItemRandomSuffixEntry const* GetRandomSuffix(ItemProperties const* proto);
 
         LootTemplateMap CreatureLoot;
         LootTemplateMap FishingLoot;

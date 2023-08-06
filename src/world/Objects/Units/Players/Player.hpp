@@ -18,7 +18,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Unit.hpp" 
 #include "Storage/MySQLStructures.h"
 #include "Macros/PlayerMacros.hpp"
-#include "WorldConf.h"
 #include "Management/TaxiMgr.h"
 #include "Management/AuctionHouse.h"
 #include "Management/Guild/Guild.hpp"
@@ -28,6 +27,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Logging/Log.hpp"
 #include "Management/ItemInterface.h"
 #include "Map/Maps/InstanceDefines.hpp"
+#include "AEVersion.hpp"
 
 class ArenaTeam;
 struct CharCreate;
@@ -576,7 +576,7 @@ public:
     void zoneUpdate(uint32_t zoneId);
     void forceZoneUpdate();
 
-    bool hasAreaExplored(DBC::Structures::AreaTableEntry const*);
+    bool hasAreaExplored(WDB::Structures::AreaTableEntry const*);
     bool hasOverlayUncovered(uint32_t overlayId);
     void eventExploration();
 
@@ -590,8 +590,8 @@ private:
 public:
     bool create(CharCreate& charCreateContent);
 
-    DBC::Structures::ChrRacesEntry const* getDbcRaceEntry();
-    DBC::Structures::ChrClassesEntry const* getDbcClassEntry();
+    WDB::Structures::ChrRacesEntry const* getDbcRaceEntry();
+    WDB::Structures::ChrClassesEntry const* getDbcClassEntry();
 
     std::string getName() const;
     void setName(std::string name);
@@ -646,8 +646,8 @@ public:
 private:
     std::shared_ptr<LevelInfo> m_levelInfo = nullptr;
 
-    DBC::Structures::ChrRacesEntry const* m_dbcRace = nullptr;
-    DBC::Structures::ChrClassesEntry const* m_dbcClass = nullptr;
+    WDB::Structures::ChrRacesEntry const* m_dbcRace = nullptr;
+    WDB::Structures::ChrClassesEntry const* m_dbcClass = nullptr;
 
     uint32_t m_loadHealth = 0;
     uint32_t m_loadMana = 0;
@@ -786,7 +786,7 @@ public:
 
     void addShapeShiftSpell(uint32_t spellId);
     void removeShapeShiftSpell(uint32_t spellId);
-    void sendAvailSpells(DBC::Structures::SpellShapeshiftFormEntry const* shapeshiftFormEntry, bool active);
+    void sendAvailSpells(WDB::Structures::SpellShapeshiftFormEntry const* shapeshiftFormEntry, bool active);
 
     bool isInFeralForm();
     bool isInDisallowedMountForm() const;
@@ -895,8 +895,8 @@ private:
     bool m_canDualWield2H = false;
 
     // Skills
-    void _verifySkillValues(DBC::Structures::SkillLineEntry const* skillEntry, uint16_t* currentValue, uint16_t* maxValue, uint16_t* skillStep, bool* requireUpdate);
-    void _verifySkillValues(DBC::Structures::SkillLineEntry const* skillEntry, uint16_t* currentValue, uint16_t* maxValue, uint16_t* skillStep);
+    void _verifySkillValues(WDB::Structures::SkillLineEntry const* skillEntry, uint16_t* currentValue, uint16_t* maxValue, uint16_t* skillStep, bool* requireUpdate);
+    void _verifySkillValues(WDB::Structures::SkillLineEntry const* skillEntry, uint16_t* currentValue, uint16_t* maxValue, uint16_t* skillStep);
     void _updateSkillFieldOnValueChange(const PlayerSkillFieldPosition fieldPosition, uint16_t skillStep, uint16_t currentValue, uint16_t maxValue);
     void _updateSkillBonusFields(const PlayerSkillFieldPosition fieldPosition, uint16_t tempBonus, uint16_t permBonus);
     SkillMap m_skills;
@@ -1050,8 +1050,8 @@ public:
 
 #if VERSION_STRING > TBC
     void calculateHeirloomBonus(ItemProperties const* proto, int16_t slot, bool apply);
-    DBC::Structures::ScalingStatDistributionEntry const* getScalingStatDistributionFor(ItemProperties const& itemProto) const;
-    DBC::Structures::ScalingStatValuesEntry const* getScalingStatValuesFor(ItemProperties const& itemProto) const;
+    WDB::Structures::ScalingStatDistributionEntry const* getScalingStatDistributionFor(ItemProperties const& itemProto) const;
+    WDB::Structures::ScalingStatValuesEntry const* getScalingStatValuesFor(ItemProperties const& itemProto) const;
 #endif
 
     // Player's item storage
@@ -1578,20 +1578,20 @@ public:
     static Standing getReputationRankFromStanding(int32_t value);
 
     void applyForcedReaction(uint32 faction_id, Standing rank, bool apply);
-    Standing const* getForcedReputationRank(DBC::Structures::FactionTemplateEntry const* factionTemplateEntry) const;
+    Standing const* getForcedReputationRank(WDB::Structures::FactionTemplateEntry const* factionTemplateEntry) const;
 
     void setFactionAtWar(uint32_t faction, bool set);
-    bool isFactionAtWar(DBC::Structures::FactionEntry const* factionEntry) const;
+    bool isFactionAtWar(WDB::Structures::FactionEntry const* factionEntry) const;
 
-    bool isHostileBasedOnReputation(DBC::Structures::FactionEntry const* factionEntry);
+    bool isHostileBasedOnReputation(WDB::Structures::FactionEntry const* factionEntry);
     void updateInrangeSetsBasedOnReputation();
 
     void onKillUnitReputation(Unit* unit, bool innerLoop);
-    void onTalkReputation(DBC::Structures::FactionEntry const* factionEntry);
+    void onTalkReputation(WDB::Structures::FactionEntry const* factionEntry);
     
     void setFactionInactive(uint32_t faction, bool set);
-    bool addNewFaction(DBC::Structures::FactionEntry const* factionEntry, int32_t standing, bool base);
-    void onModStanding(DBC::Structures::FactionEntry const* factionEntry, FactionReputation* reputation);
+    bool addNewFaction(WDB::Structures::FactionEntry const* factionEntry, int32_t standing, bool base);
+    void onModStanding(WDB::Structures::FactionEntry const* factionEntry, FactionReputation* reputation);
     uint32_t getExaltedCount();
 
     void sendSmsgInitialFactions();

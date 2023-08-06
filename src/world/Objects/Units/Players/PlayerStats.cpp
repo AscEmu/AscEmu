@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Player.hpp"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Objects/Units/Stats.h"
 
 //\ brief: This file includes all (rewritten and confirmed) stat calculations for players
@@ -75,10 +75,10 @@ void Player::updateManaRegeneration()
 
     // Get base mana regeneration value from DBC
     const auto index = (getClass() - 1) * DBC_STAT_LEVEL_CAP + playerLevel - 1;
-    const auto manaPerSpiritDBC = sGtRegenMPPerSptStore.LookupEntry(index);
+    const auto manaPerSpiritDBC = sGtRegenMPPerSptStore.lookupEntry(index);
     //\ todo: gtOCTRegenMP.dbc seems to have base mana regen values for all classes (i.e 0.25 for paladin 1-80lvl on wotlk)
     //\ how is it used in calculations?
-    //const auto baseManaRegen = sGtOCTRegenMPStore.LookupEntry(index);
+    //const auto baseManaRegen = sGtOCTRegenMPStore.lookupEntry(index);
 
     float_t baseRegen = 0.0f;
     if (manaPerSpiritDBC != nullptr)
@@ -114,10 +114,10 @@ void Player::updateManaRegeneration()
 
     // Get base mana regeneration value from DBC
     const auto index = (getClass() - 1) * DBC_STAT_LEVEL_CAP + playerLevel - 1;
-    const auto manaPerSpiritDBC = sGtRegenMPPerSptStore.LookupEntry(index);
+    const auto manaPerSpiritDBC = sGtRegenMPPerSptStore.lookupEntry(index);
     //\ todo: gtOCTRegenMP.dbc seems to have base mana regen values for all classes (i.e 0.25 for paladin 1-80lvl on wotlk)
     //\ how is it used in calculations?
-    //const auto baseManaRegen = sGtOCTRegenMPStore.LookupEntry(index);
+    //const auto baseManaRegen = sGtOCTRegenMPStore.lookupEntry(index);
 
     float_t baseRegen = 0.0f;
     if (manaPerSpiritDBC != nullptr)
@@ -153,10 +153,10 @@ void Player::updateManaRegeneration()
 
     // Get base mana regeneration value from DBC
     const auto index = (getClass() - 1) * DBC_STAT_LEVEL_CAP + playerLevel - 1;
-    const auto manaPerSpiritDBC = sGtRegenMPPerSptStore.LookupEntry(index);
+    const auto manaPerSpiritDBC = sGtRegenMPPerSptStore.lookupEntry(index);
     //\ todo: gtOCTRegenMP.dbc seems to have base mana regen values for all classes (i.e 0.25 for paladin 1-80lvl on wotlk)
     //\ how is it used in calculations?
-    //const auto baseManaRegen = sGtOCTRegenMPStore.LookupEntry(index);
+    //const auto baseManaRegen = sGtOCTRegenMPStore.lookupEntry(index);
 
     float_t baseRegen = 0.0f;
     if (manaPerSpiritDBC != nullptr)
@@ -186,10 +186,10 @@ void Player::updateManaRegeneration()
 
     // Get base mana regeneration value from DBC
     const auto index = (getClass() - 1) * DBC_STAT_LEVEL_CAP + playerLevel - 1;
-    const auto manaPerSpiritDBC = sGtRegenMPPerSptStore.LookupEntry(index);
+    const auto manaPerSpiritDBC = sGtRegenMPPerSptStore.lookupEntry(index);
     //\ todo: gtOCTRegenMP.dbc seems to have base mana regen values for all classes (i.e 0.25 for paladin 1-80lvl on wotlk)
     //\ how is it used in calculations?
-    //const auto baseManaRegen = sGtOCTRegenMPStore.LookupEntry(index);
+    //const auto baseManaRegen = sGtOCTRegenMPStore.lookupEntry(index);
 
     float_t baseRegen = 0.0f;
     if (manaPerSpiritDBC != nullptr)

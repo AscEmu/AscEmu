@@ -5,8 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Storage/DBC/DBCStorage.hpp"
-#include "Storage/DBC/DBCStructures.hpp"
+#include "..\..\Storage\WDB\WDBContainer.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 #include "Map/Maps/WorldMap.hpp"
 
 namespace MapManagement::AreaManagement
@@ -21,25 +21,25 @@ namespace MapManagement::AreaManagement
     {
     protected:
 
-        static DBC::DBCStorage<DBC::Structures::AreaTableEntry>* m_storage;
+        static WDB::WDBContainer<WDB::Structures::AreaTableEntry>* m_storage;
         static MapEntryPair m_map_storage;
         static AreaFlagByAreaID m_area_flag_by_id_collection;
         static AreaFlagByMapID m_area_flag_by_map_id_collection;
 
     public:
 
-        static void Initialise(DBC::DBCStorage<DBC::Structures::AreaTableEntry>* dbc_storage);
+        static void Initialise(WDB::WDBContainer<WDB::Structures::AreaTableEntry>* dbc_storage);
         static MapEntryPair* GetMapCollection();
 
-        static DBC::DBCStorage<DBC::Structures::AreaTableEntry>* GetStorage();
+        static WDB::WDBContainer<WDB::Structures::AreaTableEntry>* GetStorage();
 
         /* Get Area */
-        //static DBC::Structures::AreaTableEntry const* GetAreaByPosition(uint32 map_id, float x, float y, float z);
-        //static DBC::Structures::AreaTableEntry const* GetAreaByFlagAndMapId(uint32 area_flag, uint32 map_id);
-        static DBC::Structures::AreaTableEntry const* GetAreaById(uint32 area_id);
-        static DBC::Structures::AreaTableEntry const* GetAreaByFlag(uint32 area_flag);
-        static DBC::Structures::AreaTableEntry const* GetAreaByMapId(uint32 map_id);
-        static DBC::Structures::AreaTableEntry const* getExactArea(WorldMap* worldMap, LocationVector pos, uint32_t phaseMask);
+        //static WDB::Structures::AreaTableEntry const* GetAreaByPosition(uint32 map_id, float x, float y, float z);
+        //static WDB::Structures::AreaTableEntry const* GetAreaByFlagAndMapId(uint32 area_flag, uint32 map_id);
+        static WDB::Structures::AreaTableEntry const* GetAreaById(uint32 area_id);
+        static WDB::Structures::AreaTableEntry const* GetAreaByFlag(uint32 area_flag);
+        static WDB::Structures::AreaTableEntry const* GetAreaByMapId(uint32 map_id);
+        static WDB::Structures::AreaTableEntry const* getExactArea(WorldMap* worldMap, LocationVector pos, uint32_t phaseMask);
 
         /* Get Flag */
         static int32 GetFlagById(uint32 area_id);
@@ -54,7 +54,7 @@ namespace MapManagement::AreaManagement
 
         /* Misc */
         static bool IsOutdoor(uint32 mapId, float x, float y, float z);
-        static bool IsOutdoorWMO(uint32 mogpFlags, int32 /*adtId*/, int32 /*rootId*/, int32 /*groupId*/, DBC::Structures::WMOAreaTableEntry const* wmoEntry, DBC::Structures::AreaTableEntry const* atEntry);
+        static bool IsOutdoorWMO(uint32 mogpFlags, int32 /*adtId*/, int32 /*rootId*/, int32 /*groupId*/, WDB::Structures::WMOAreaTableEntry const* wmoEntry, WDB::Structures::AreaTableEntry const* atEntry);
         
         static const uint32 GetFlagByPosition(uint32 area_flag_without_adt_id, uint32_t tileMapHeight, bool have_area_info, uint32 mogp_flags, int32 adt_id, int32 root_id, int32 group_id, uint32 map_id, float x, float y, float z, bool* _out_is_outdoors = nullptr);
     };

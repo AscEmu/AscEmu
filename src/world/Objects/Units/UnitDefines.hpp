@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "CommonTypes.hpp"
+#include "AEVersion.hpp"
 #include "LocationVector.h"
 
 // Do NOT extend the list, simply replace an unused value

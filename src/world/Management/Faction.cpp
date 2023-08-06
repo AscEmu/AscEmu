@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Objects/Object.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Objects/Units/Unit.hpp"
@@ -69,8 +69,8 @@ bool isNeutral(Object* a, Object* b)
 
 bool isAlliance(Object* objA)// A is alliance?
 {
-    DBC::Structures::FactionTemplateEntry const* m_sw_faction = sFactionTemplateStore.LookupEntry(11);
-    DBC::Structures::FactionEntry const* m_sw_factionDBC = sFactionStore.LookupEntry(72);
+    WDB::Structures::FactionTemplateEntry const* m_sw_faction = sFactionTemplateStore.lookupEntry(11);
+    WDB::Structures::FactionEntry const* m_sw_factionDBC = sFactionStore.lookupEntry(72);
     if (!objA)          // || objA->m_factionEntry == NULL || objA->m_factionTemplate == NULL
         return true;
 

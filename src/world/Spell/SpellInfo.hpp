@@ -5,16 +5,16 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <string>
-
-#include "WorldConf.h"
-#include "Storage/DBC/DBCStructures.hpp"
+#include "AEVersion.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 #include "Definitions/AuraEffects.hpp"
 #include "Definitions/PowerType.hpp"
 #include "SpellDefines.hpp"
 #include "SpellScript.hpp"
 #include "CommonTypes.hpp"
 #include "Logging/Logger.hpp"
+
+#include <string>
 
 class Item;
 class Player;

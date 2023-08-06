@@ -41,7 +41,7 @@ bool ItemInterface::hasItemForTotemCategory(uint32_t totemCategory)
 #if VERSION_STRING == Classic
     return false;
 #else
-    const auto spellTotemCategory = sTotemCategoryStore.LookupEntry(totemCategory);
+    const auto spellTotemCategory = sTotemCategoryStore.lookupEntry(totemCategory);
     if (spellTotemCategory == nullptr)
         return false;
 
@@ -53,7 +53,7 @@ bool ItemInterface::hasItemForTotemCategory(uint32_t totemCategory)
         // Item has no totem category
         if (item->getItemProperties()->TotemCategory == 0)
             return false;
-        const auto itemTotemCategory = sTotemCategoryStore.LookupEntry(item->getItemProperties()->TotemCategory);
+        const auto itemTotemCategory = sTotemCategoryStore.lookupEntry(item->getItemProperties()->TotemCategory);
         // Item has invalid totem category
         if (itemTotemCategory == nullptr)
             return false;
@@ -2186,7 +2186,7 @@ int8 ItemInterface::CanEquipItemInSlot2(int8 DstInvSlot, int8 slot, Item* item, 
                     if (ip->ItemLimitCategory > 0)
                     {
                         uint32 LimitId = ip->ItemLimitCategory;
-                        auto item_limit_category = sItemLimitCategoryStore.LookupEntry(LimitId);
+                        auto item_limit_category = sItemLimitCategoryStore.lookupEntry(LimitId);
                         if (item_limit_category)
                         {
                             uint32 gemCount = 0;
@@ -2700,7 +2700,7 @@ int8 ItemInterface::CanReceiveItem(ItemProperties const* item, uint32 amount)
 #if VERSION_STRING > TBC
     if (item->ItemLimitCategory > 0)
     {
-        auto item_limit_category = sItemLimitCategoryStore.LookupEntry(item->ItemLimitCategory);
+        auto item_limit_category = sItemLimitCategoryStore.lookupEntry(item->ItemLimitCategory);
         if (item_limit_category && !(item_limit_category->equippedFlag & ILFLAG_EQUIP_ONLY))
         {
             uint32 count = GetItemCountByLimitId(item_limit_category->Id, false);
@@ -2790,7 +2790,7 @@ int8 ItemInterface::CanAffordItem(ItemProperties const* item, uint32 amount, Cre
 
     if (item->RequiredFaction)
     {
-        DBC::Structures::FactionEntry const* factdbc = sFactionStore.LookupEntry(item->RequiredFaction);
+        WDB::Structures::FactionEntry const* factdbc = sFactionStore.lookupEntry(item->RequiredFaction);
         if (!factdbc || factdbc->RepListId < 0)
             return INV_ERR_OK;
 

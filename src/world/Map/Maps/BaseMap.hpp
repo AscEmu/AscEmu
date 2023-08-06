@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Map/Cells/TerrainMgr.hpp"
 #include "Storage/MySQLStructures.h"
-#include "Storage/DBC/DBCStructures.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 typedef std::vector<MySQLStructure::CreatureSpawn*> CreatureSpawnList;
 typedef std::vector<MySQLStructure::GameobjectSpawn*> GameobjectSpawnList;
@@ -29,14 +29,14 @@ enum LineOfSightChecks : uint8_t
 class SERVER_DECL BaseMap
 {
 public:
-    BaseMap(uint32_t mapid, MySQLStructure::MapInfo const* inf, DBC::Structures::MapEntry const*);
+    BaseMap(uint32_t mapid, MySQLStructure::MapInfo const* inf, WDB::Structures::MapEntry const*);
     ~BaseMap();
 
     std::string getMapName();
     MySQLStructure::MapInfo const* getMapInfo() const { return _mapInfo; }
 
     // MapEntry
-    DBC::Structures::MapEntry const* getMapEntry() const { return _mapEntry; }
+    WDB::Structures::MapEntry const* getMapEntry() const { return _mapEntry; }
     uint32_t getMapId() const;
     bool instanceable() const;
     bool isDungeon() const;
@@ -59,7 +59,7 @@ public:
     CellSpawns areaWideSpawns;
 
 private:
-    DBC::Structures::MapEntry const* _mapEntry = nullptr;
+    WDB::Structures::MapEntry const* _mapEntry = nullptr;
     MySQLStructure::MapInfo const* _mapInfo = nullptr;
     uint32_t _mapId;
    

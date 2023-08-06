@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <WorldConf.h>
+#include "AEVersion.hpp"
 #include "Objects/Units/Unit.hpp"
 
 #if VERSION_STRING > TBC
@@ -79,7 +79,7 @@ typedef std::unordered_map<uint32_t, time_t> CompletedAchievementMap;
 typedef std::multimap<uint32_t, AchievementReward> AchievementRewardsMap;
 typedef std::pair<AchievementRewardsMap::const_iterator, AchievementRewardsMap::const_iterator> AchievementRewardsMapBounds;
 typedef std::set<uint32_t> AchievementSet;
-typedef std::list<DBC::Structures::AchievementCriteriaEntry const*> AchievementCriteriaEntryList;
+typedef std::list<WDB::Structures::AchievementCriteriaEntry const*> AchievementCriteriaEntryList;
 
 class Player;
 class WorldPacket;
@@ -290,8 +290,8 @@ public:
     void loadFromDb(QueryResult* _achievementResult, QueryResult* _criteriaResult);
     void saveToDb(QueryBuffer* _buffer);
 
-    bool canCompleteCriteria(DBC::Structures::AchievementCriteriaEntry const* _achievementCriteria, AchievementCriteriaTypes _type, Player* _player) const;
-    bool canCompleteCriteria(DBC::Structures::AchievementCriteriaEntry const* _achievementCriteria, AchievementCriteriaTypes _type, int32_t _miscValue1, int32_t _miscValue2, Player* _player) const;
+    bool canCompleteCriteria(WDB::Structures::AchievementCriteriaEntry const* _achievementCriteria, AchievementCriteriaTypes _type, Player* _player) const;
+    bool canCompleteCriteria(WDB::Structures::AchievementCriteriaEntry const* _achievementCriteria, AchievementCriteriaTypes _type, int32_t _miscValue1, int32_t _miscValue2, Player* _player) const;
 
     void updateAllAchievementCriteria();
 
@@ -313,29 +313,29 @@ public:
     bool gmCompleteAchievement(WorldSession* _gmSession, uint32_t _achievementId, bool _finishAll = false);
     void gmResetAchievement(uint32_t _achievementId, bool _finishAll = false);
 
-    time_t getCompletedTime(DBC::Structures::AchievementEntry const* _achievement);
+    time_t getCompletedTime(WDB::Structures::AchievementEntry const* _achievement);
     uint32_t getCompletedAchievementsCount() const;
     bool hasCompleted(uint32_t _achievementId) const;
 
     Player* getPlayer() const;
 
 private:
-    void completedAchievement(DBC::Structures::AchievementEntry const* _entry);
+    void completedAchievement(WDB::Structures::AchievementEntry const* _entry);
     bool showCompletedAchievement(uint32_t _achievementId, const Player* _player);
 
-    void giveAchievementReward(DBC::Structures::AchievementEntry const* _entry);
-    void sendAchievementEarned(DBC::Structures::AchievementEntry const* _entry);
+    void giveAchievementReward(WDB::Structures::AchievementEntry const* _entry);
+    void sendAchievementEarned(WDB::Structures::AchievementEntry const* _entry);
 
-    AchievementCompletionState getAchievementCompletionState(DBC::Structures::AchievementEntry const* _entry);
+    AchievementCompletionState getAchievementCompletionState(WDB::Structures::AchievementEntry const* _entry);
 
     bool canSendAchievementProgress(const CriteriaProgress* _criteriaProgress);
     bool canSaveAchievementProgressToDB(const CriteriaProgress* _criteriaProgress);
     void sendCriteriaUpdate(const CriteriaProgress* _criteriaProgress);
-    void setCriteriaProgress(DBC::Structures::AchievementCriteriaEntry const* _entry, int32_t _newValue, bool _relative = false);
-    void updateCriteriaProgress(DBC::Structures::AchievementCriteriaEntry const* _entry, int32_t _updateByValue);
+    void setCriteriaProgress(WDB::Structures::AchievementCriteriaEntry const* _entry, int32_t _newValue, bool _relative = false);
+    void updateCriteriaProgress(WDB::Structures::AchievementCriteriaEntry const* _entry, int32_t _updateByValue);
 
-    void completedCriteria(DBC::Structures::AchievementCriteriaEntry const* _entry);
-    bool isCompletedCriteria(DBC::Structures::AchievementCriteriaEntry const* _entry);
+    void completedCriteria(WDB::Structures::AchievementCriteriaEntry const* _entry);
+    bool isCompletedCriteria(WDB::Structures::AchievementCriteriaEntry const* _entry);
 
     std::mutex m_lock;
     Player* m_player;

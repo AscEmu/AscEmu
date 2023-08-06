@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellCastTargetFlags.hpp"
 #include "SpellAuras.h"
 #include "SpellTarget.h"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Management/Skill.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Units/Players/Player.hpp"
@@ -560,7 +560,7 @@ bool SpellInfo::isNegativeAura() const
 
 uint32_t SpellInfo::getSpellDefaultDuration(Unit const* caster) const
 {
-    const auto spell_duration = sSpellDurationStore.LookupEntry(DurationIndex);
+    const auto spell_duration = sSpellDurationStore.lookupEntry(DurationIndex);
     if (spell_duration == nullptr)
         return 0;
 
@@ -804,7 +804,7 @@ uint32_t SpellInfo::getRequiredTargetMaskForEffect(uint8_t effectIndex, bool get
     // Remove explicit object target masks if spell has no max range
     if (getExplicitMask)
     {
-        const auto rangeEntry = sSpellRangeStore.LookupEntry(getRangeIndex());
+        const auto rangeEntry = sSpellRangeStore.lookupEntry(getRangeIndex());
         if (rangeEntry != nullptr)
         {
 #if VERSION_STRING >= WotLK
@@ -968,7 +968,7 @@ bool SpellInfo::isPrimaryProfession() const
 
 bool SpellInfo::isPrimaryProfessionSkill(uint32_t skill_id) const
 {
-    if (const auto skill_line = sSkillLineStore.LookupEntry(skill_id))
+    if (const auto skill_line = sSkillLineStore.lookupEntry(skill_id))
     {
         if (skill_line && skill_line->type == SKILL_TYPE_PROFESSION)
             return true;
@@ -1019,7 +1019,7 @@ int32_t SpellInfo::calculateEffectValue(uint8_t effIndex, Unit* unitCaster/* = n
     // Random suffix value calculation
     if (itemCaster != nullptr && static_cast<int32_t>(itemCaster->getRandomPropertiesId()) < 0)
     {
-        const auto randomSuffix = sItemRandomSuffixStore.LookupEntry(std::abs(static_cast<int32_t>(itemCaster->getRandomPropertiesId())));
+        const auto randomSuffix = sItemRandomSuffixStore.lookupEntry(std::abs(static_cast<int32_t>(itemCaster->getRandomPropertiesId())));
         if (randomSuffix != nullptr)
         {
             auto faulty = false;
@@ -1028,7 +1028,7 @@ int32_t SpellInfo::calculateEffectValue(uint8_t effIndex, Unit* unitCaster/* = n
                 if (randomSuffix->enchantments[i] == 0)
                     continue;
 
-                const auto spellItemEnchant = sSpellItemEnchantmentStore.LookupEntry(randomSuffix->enchantments[i]);
+                const auto spellItemEnchant = sSpellItemEnchantmentStore.lookupEntry(randomSuffix->enchantments[i]);
                 if (spellItemEnchant == nullptr)
                     continue;
 
@@ -1186,7 +1186,7 @@ bool SpellInfo::isTriggerSpellCastedByCaster(SpellInfo const* triggeringSpell) c
 
 float_t SpellInfo::getMinRange([[maybe_unused]]bool friendly/* = false*/) const
 {
-    const auto* const rangeEntry = sSpellRangeStore.LookupEntry(getRangeIndex());
+    const auto* const rangeEntry = sSpellRangeStore.lookupEntry(getRangeIndex());
     if (rangeEntry == nullptr)
         return 0.0f;
 
@@ -1200,7 +1200,7 @@ float_t SpellInfo::getMinRange([[maybe_unused]]bool friendly/* = false*/) const
 
 float_t SpellInfo::getMaxRange([[maybe_unused]]bool friendly/* = false*/, Object* caster/* = nullptr*/, Spell* spell/* = nullptr*/) const
 {
-    const auto* const rangeEntry = sSpellRangeStore.LookupEntry(getRangeIndex());
+    const auto* const rangeEntry = sSpellRangeStore.lookupEntry(getRangeIndex());
     if (rangeEntry == nullptr)
         return 0.0f;
 

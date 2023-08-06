@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include "AEVersion.hpp"
 #include "CommonDefines.hpp"
 #include "CommonTypes.hpp"
 #include "Config/Config.h"

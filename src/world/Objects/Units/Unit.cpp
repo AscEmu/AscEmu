@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Unit.hpp"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Management/Battleground/Battleground.hpp"
 #include "Management/HonorHandler.h"
 #include "Movement/Spline/MovementPacketBuilder.h"
@@ -996,7 +996,7 @@ void Unit::setVirtualItemSlotId(uint8_t slot, uint32_t item_id)
     }
 
 #if VERSION_STRING >= WotLK
-    const auto itemDbc = sItemStore.LookupEntry(item_id);
+    const auto itemDbc = sItemStore.lookupEntry(item_id);
     if (itemDbc == nullptr
         || !(itemDbc->Class == ITEM_CLASS_WEAPON
         || (itemDbc->Class == ITEM_CLASS_ARMOR && itemDbc->SubClass == ITEM_SUBCLASS_ARMOR_SHIELD)
@@ -1027,7 +1027,7 @@ void Unit::setVirtualItemSlotId(uint8_t slot, uint32_t item_id)
         virtualItemInfo.fields.inventoryType = static_cast<uint8_t>(itemProperties->InventoryType);
         virtualItemInfo.fields.sheath = static_cast<uint8_t>(itemProperties->SheathID);
     }
-    else if (const auto itemDbc = sItemStore.LookupEntry(item_id))
+    else if (const auto itemDbc = sItemStore.lookupEntry(item_id))
     {
         displayId = itemDbc->DisplayId;
         virtualItemInfo.fields.inventoryType = static_cast<uint8_t>(itemDbc->InventoryType);
@@ -7812,12 +7812,12 @@ MovementGeneratorType Unit::getDefaultMovementType() const
 }
 
 #if VERSION_STRING >= Cata
-DBC::Structures::MountCapabilityEntry const* Unit::getMountCapability(uint32_t mountType)
+WDB::Structures::MountCapabilityEntry const* Unit::getMountCapability(uint32_t mountType)
 {
     if (!mountType)
         return nullptr;
 
-    auto const* mountTypeEntry = sMountTypeStore.LookupEntry(mountType);
+    auto const* mountTypeEntry = sMountTypeStore.lookupEntry(mountType);
     if (!mountTypeEntry)
         return nullptr;
 
@@ -7836,7 +7836,7 @@ DBC::Structures::MountCapabilityEntry const* Unit::getMountCapability(uint32_t m
 
     for (uint32_t i = MAX_MOUNT_CAPABILITIES; i > 0; --i)
     {
-        auto const* mountCapability = sMountCapabilityStore.LookupEntry(mountTypeEntry->capabilities[i - 1]);
+        auto const* mountCapability = sMountCapabilityStore.lookupEntry(mountTypeEntry->capabilities[i - 1]);
         if (!mountCapability)
             continue;
 
@@ -7973,7 +7973,7 @@ bool Unit::isLootable()
 #ifdef FT_VEHICLES
 bool Unit::createVehicleKit(uint32_t id, uint32_t creatureEntry)
 {
-    auto vehInfo = sVehicleStore.LookupEntry(id);
+    auto vehInfo = sVehicleStore.lookupEntry(id);
     if (!vehInfo)
         return false;
 
@@ -11592,7 +11592,7 @@ uint32_t Unit::handleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
                 {
 #if VERSION_STRING > Classic
                     // Get shapeshift form's attack speed
-                    const auto form = sSpellShapeshiftFormStore.LookupEntry(plr->getShapeShiftForm());
+                    const auto form = sSpellShapeshiftFormStore.lookupEntry(plr->getShapeShiftForm());
                     if (form != nullptr && form->AttackSpeed != 0)
                         weaponSpeed = form->AttackSpeed;
 #endif
@@ -12252,7 +12252,7 @@ uint32_t Unit::handleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
                 if (!(CastingSpell->getSchoolMask() & SCHOOL_MASK_FIRE))
                     continue;
                 const auto spellInfo = sSpellMgr.getSpellInfo(spellId);   //we already modified this spell on server loading so it must exist
-                auto spell_duration = sSpellDurationStore.LookupEntry(spellInfo->getDurationIndex());
+                auto spell_duration = sSpellDurationStore.lookupEntry(spellInfo->getDurationIndex());
                 uint32_t tickcount = GetDuration(spell_duration) / spellInfo->getEffectAmplitude(0);
 
                 if (ospinfo)
@@ -14927,7 +14927,7 @@ uint32_t Unit::handleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
                 }
 
                 const auto spellInfo = sSpellMgr.getSpellInfo(54203);
-                auto spell_duration = sSpellDurationStore.LookupEntry(spellInfo->getDurationIndex());
+                auto spell_duration = sSpellDurationStore.lookupEntry(spellInfo->getDurationIndex());
                 uint32_t tickcount = GetDuration(spell_duration) / spellInfo->getEffectAmplitude(0);
                 if (ospinfo)
                     spell_proc->setOverrideEffectDamage(0, ospinfo->getEffectBasePoints(0) * damageInfo.realDamage / (100 * tickcount));

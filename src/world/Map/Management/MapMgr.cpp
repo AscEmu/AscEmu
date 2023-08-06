@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "VMapFactory.h"
 #include "MMapFactory.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Map/Maps/BattleGroundMap.hpp"
@@ -129,7 +129,7 @@ void MapMgr::createBaseMap(uint32_t mapId)
         std::scoped_lock<std::mutex> lock(m_mapsLock);
 
         // Only Create Valid Maps
-        const auto mapEntry = sMapStore.LookupEntry(mapId);
+        const auto mapEntry = sMapStore.lookupEntry(mapId);
         if (mapEntry == nullptr)
             return;
 
@@ -298,7 +298,7 @@ InstanceMap* MapMgr::createInstance(uint32_t mapId, uint32_t InstanceId, Instanc
     }
 
     // make sure we have a valid map id
-    DBC::Structures::MapEntry const* entry = sMapStore.LookupEntry(mapId);
+    WDB::Structures::MapEntry const* entry = sMapStore.lookupEntry(mapId);
     if (!entry)
     {
         sLogger.failure("MapMgr::createInstance: no entry for map %u", mapId);
@@ -399,7 +399,7 @@ WorldMap* MapMgr::createMap(uint32_t mapId, Player* player, uint32_t instanceId)
 
 EnterState MapMgr::canPlayerEnter(uint32_t mapid, uint32_t minLevel, Player* player, bool loginCheck)
 {
-    DBC::Structures::MapEntry const* entry = sMapStore.LookupEntry(mapid);
+    WDB::Structures::MapEntry const* entry = sMapStore.lookupEntry(mapid);
     if (!entry)
         return CANNOT_ENTER_NO_ENTRY;
 
@@ -415,7 +415,7 @@ EnterState MapMgr::canPlayerEnter(uint32_t mapid, uint32_t minLevel, Player* pla
 
 #if VERSION_STRING > TBC
     // Get the highest available difficulty if current setting is higher than the instance allows
-    DBC::Structures::MapDifficulty const* mapDiff = getDownscaledMapDifficultyData(entry->id, targetDifficulty);
+    WDB::Structures::MapDifficulty const* mapDiff = getDownscaledMapDifficultyData(entry->id, targetDifficulty);
     if (!mapDiff)
         return CANNOT_ENTER_DIFFICULTY_UNAVAILABLE;
 #endif

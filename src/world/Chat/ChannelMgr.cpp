@@ -134,7 +134,7 @@ std::shared_ptr<Channel> ChannelMgr::getChannel(std::string name, uint32_t team)
     return nullptr;
 }
 
-bool ChannelMgr::canPlayerJoinDefaultChannel(Player const* player, DBC::Structures::AreaTableEntry const* areaEntry, DBC::Structures::ChatChannelsEntry const* channelDbc) const
+bool ChannelMgr::canPlayerJoinDefaultChannel(Player const* player, WDB::Structures::AreaTableEntry const* areaEntry, WDB::Structures::ChatChannelsEntry const* channelDbc) const
 {
     if (player == nullptr || channelDbc == nullptr)
         return false;
@@ -163,7 +163,7 @@ bool ChannelMgr::canPlayerJoinDefaultChannel(Player const* player, DBC::Structur
     return true;
 }
 
-std::string ChannelMgr::generateChannelName(DBC::Structures::ChatChannelsEntry const* channelDbc, DBC::Structures::AreaTableEntry const* areaEntry) const
+std::string ChannelMgr::generateChannelName(WDB::Structures::ChatChannelsEntry const* channelDbc, WDB::Structures::AreaTableEntry const* areaEntry) const
 {
 #if VERSION_STRING < Cata
     char* channelNameDbc = channelDbc->name_pattern[sWorld.getDbcLocaleLanguageId()];

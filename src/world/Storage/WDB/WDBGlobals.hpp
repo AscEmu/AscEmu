@@ -5,13 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "WDBContainer.hpp"
+#include "WDBLoader.hpp"
+
 #include <filesystem>
 #include <iostream>
 
-#include "DBCStorage.hpp"
-#include "DBCLoader.hpp"
-
-namespace DBC
+namespace WDB
 {
     enum LocaleConstant
     {
@@ -85,57 +85,57 @@ namespace DBC
     typedef std::list<std::string> StoreProblemList;
 
     template <class T>
-    void LoadDBC(uint32_t& /*available_dbc_locales*/, StoreProblemList& errors, DBC::DBCStorage<T>& storage, std::string const& dbc_path,
-      std::string const& dbc_filename,std::string const* custom_format = NULL, std::string const* /*custom_index_name*/ = NULL)
+    void loadWDBFile(uint32_t& /*available_dbc_locales*/, StoreProblemList& _errors, WDB::WDBContainer<T>& _storage, std::string const& _dbcPath,
+      std::string const& _dbcFilename,std::string const* _customFormat = nullptr, std::string const* /*custom_index_name*/ = nullptr)
     {
-        if (DBC::DBCLoader::hasFormat(dbc_filename))
+        if (WDB::WDBLoader::hasFormat(_dbcFilename))
         {
-            std::string format = DBC::DBCLoader::GetFormat(dbc_filename);
+            std::string format = WDB::WDBLoader::getFormat(_dbcFilename);
             char* writable = new char[format.size() + 1];
             std::copy(format.begin(), format.end(), writable);
             writable[format.size()] = '\0'; // don't forget the terminating 0
 
 
-            storage.SetFormat(writable);
+            _storage.setFormat(writable);
         }
 
-        if (DBC::DBCLoader::GetFormatRecordSize(storage.GetFormat()) == NULL)
+        if (WDB::WDBLoader::getFormatRecordSize(_storage.getFormat()) == NULL)
         {
             std::ostringstream stream;
-            stream << "DBCLoader:: no format found for " << dbc_filename << " and version:  " << VERSION_STRING << "\n";
+            stream << "DBCLoader:: no format found for " << _dbcFilename << " and version:  " << VERSION_STRING << "\n";
             std::string buf = stream.str();
-            errors.push_back(buf);
+            _errors.push_back(buf);
 
             std::cout << stream.str() << "\n";
             return;
         }
 
-        ASSERT(DBC::DBCLoader::GetFormatRecordSize(storage.GetFormat()) == sizeof(T));
+        ASSERT(WDB::WDBLoader::getFormatRecordSize(_storage.getFormat()) == sizeof(T));
 
-        std::string dbc_file_path = dbc_path + dbc_filename;
+        std::string dbc_file_path = _dbcPath + _dbcFilename;
 
         // find first available locale
         for (auto locales : fullLocaleNameList)
         {
-            if (std::filesystem::is_directory(dbc_path + locales.name + "/"))
+            if (std::filesystem::is_directory(_dbcPath + locales.name + "/"))
             {
-                dbc_file_path = dbc_path + locales.name + "/" + dbc_filename;
+                dbc_file_path = _dbcPath + locales.name + "/" + _dbcFilename;
                 break;
             }
         }
 
         ++g_dbc_file_count;
 
-        if (!storage.Load(dbc_file_path.c_str()))
+        if (!_storage.load(dbc_file_path.c_str()))
         {
             // We failed to load the dbc, so work out if it's incompatible or just doesn't exist
             if (auto file = fopen(dbc_file_path.c_str(), "rb"))
             {
                 std::ostringstream stream;
-                stream << dbc_file_path << " exists, and has " << storage.GetFieldCount() << " field(s) (expected " << strlen(storage.GetFormat())
+                stream << dbc_file_path << " exists, and has " << _storage.getFieldCount() << " field(s) (expected " << strlen(_storage.getFormat())
                     << "). Extracted file might be from wrong client version or a database-update has been forgotten.";
                 std::string buf = stream.str();
-                errors.push_back(buf);
+                _errors.push_back(buf);
 
                 std::cout << stream.str() << "\n";
 
@@ -145,7 +145,7 @@ namespace DBC
             {
                 std::cout << dbc_file_path << " does not exist" << "\n";
 
-                errors.push_back(dbc_file_path);
+                _errors.push_back(dbc_file_path);
             }
         }
     }

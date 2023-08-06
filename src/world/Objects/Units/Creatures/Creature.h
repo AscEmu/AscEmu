@@ -194,7 +194,7 @@ public:
 
         void GetSellItemByItemId(uint32 itemid, CreatureItem& ci);
 
-        DBC::Structures::ItemExtendedCostEntry const* GetItemExtendedCostByItemId(uint32 itemid);
+        WDB::Structures::ItemExtendedCostEntry const* GetItemExtendedCostByItemId(uint32 itemid);
 
         std::vector<CreatureItem>::iterator GetSellItemBegin();
 
@@ -203,7 +203,7 @@ public:
         size_t GetSellItemCount();
 
         void RemoveVendorItem(uint32 itemid);
-        void AddVendorItem(uint32 itemid, uint32 amount, DBC::Structures::ItemExtendedCostEntry const* ec);
+        void AddVendorItem(uint32 itemid, uint32 amount, WDB::Structures::ItemExtendedCostEntry const* ec);
         void ModAvItemAmount(uint32 itemid, uint32 value);
         void UpdateItemAmount(uint32 itemid);
 
@@ -311,7 +311,7 @@ public:
 
         std::shared_ptr<Trainer> GetTrainer();
 
-        DBC::Structures::CreatureFamilyEntry const* myFamily = nullptr;
+        WDB::Structures::CreatureFamilyEntry const* myFamily = nullptr;
 
         bool IsExotic();
         bool isCritter() override;
@@ -342,7 +342,7 @@ public:
         bool IsInLimboState();
 
         void SetLimboState(bool set);
-    static uint32 GetLineByFamily(DBC::Structures::CreatureFamilyEntry const* family);
+    static uint32 GetLineByFamily(WDB::Structures::CreatureFamilyEntry const* family);
         void RemoveLimboState(Unit* healer);
 
         MapCell* m_respawnCell = nullptr;

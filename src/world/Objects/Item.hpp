@@ -17,7 +17,7 @@ class Container;
 struct EnchantmentInstance
 {
     // Durations for temporary enchantments are stored in ItemInterface and WoWItem data
-    DBC::Structures::SpellItemEnchantmentEntry const* Enchantment;
+    WDB::Structures::SpellItemEnchantmentEntry const* Enchantment;
     bool BonusApplied;
     EnchantmentSlot Slot;
     bool RemoveAtLogout;
@@ -118,7 +118,7 @@ public:
     void removeAllEnchantments(bool onlyTemporary);
     void removeSocketBonusEnchant();
 
-    void removeRelatedEnchants(DBC::Structures::SpellItemEnchantmentEntry const* newEnchant);
+    void removeRelatedEnchants(WDB::Structures::SpellItemEnchantmentEntry const* newEnchant);
     void applyEnchantmentBonus(EnchantmentSlot slot, bool apply);
     void sendEnchantTimeUpdate(uint32_t slot, uint32_t duration);
 
@@ -149,7 +149,7 @@ public:
 #endif
 
     uint32_t countGemsWithLimitId(uint32_t Limit);
-    bool isGemRelated(DBC::Structures::SpellItemEnchantmentEntry const* enchantment);
+    bool isGemRelated(WDB::Structures::SpellItemEnchantmentEntry const* enchantment);
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////

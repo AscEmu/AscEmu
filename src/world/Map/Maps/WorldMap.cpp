@@ -29,7 +29,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Transporter.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Spell/Definitions/SummonControlTypes.hpp"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 
 using namespace AscEmu::Packets;
 using namespace AscEmu::Threading;
@@ -1705,7 +1705,7 @@ Pet* WorldMap::getPet(uint32_t guid)
     return itr != m_PetStorage.end() ? itr->second : nullptr;
 }
 
-Summon* WorldMap::summonCreature(uint32_t entry, LocationVector pos, DBC::Structures::SummonPropertiesEntry const* properties /*= nullptr*/, uint32_t duration /*= 0*/, Object* summoner /*= nullptr*/, uint32_t spellId /*= 0*/)
+Summon* WorldMap::summonCreature(uint32_t entry, LocationVector pos, WDB::Structures::SummonPropertiesEntry const* properties /*= nullptr*/, uint32_t duration /*= 0*/, Object* summoner /*= nullptr*/, uint32_t spellId /*= 0*/)
 {
     // Generate a new Guid
     uint64_t guid = generateCreatureGuid(entry, false);
@@ -2577,7 +2577,7 @@ bool WorldMap::isRegularDifficulty()
     return getDifficulty() == InstanceDifficulty::Difficulties::DUNGEON_NORMAL;
 }
 
-DBC::Structures::MapDifficulty const* WorldMap::getMapDifficulty()
+WDB::Structures::MapDifficulty const* WorldMap::getMapDifficulty()
 {
     return getMapDifficultyData(getBaseMap()->getMapId(), getDifficulty());
 }
@@ -2665,7 +2665,7 @@ uint32_t WorldMap::getAreaId(uint32_t phaseMask, LocationVector const& pos)
     if (hasVmapArea && G3D::fuzzyGe(pos.z, vmapZ - GROUND_HEIGHT_TOLERANCE) && (G3D::fuzzyLt(pos.z, gridMapHeight - GROUND_HEIGHT_TOLERANCE) || vmapZ > gridMapHeight))
     {
         // wmo found
-        if (DBC::Structures::WMOAreaTableEntry const* wmoEntry = GetWMOAreaTableEntryByTriple(rootId, adtId, groupId))
+        if (WDB::Structures::WMOAreaTableEntry const* wmoEntry = GetWMOAreaTableEntryByTriple(rootId, adtId, groupId))
             areaId = wmoEntry->areaId;
 
         if (!areaId)
@@ -2733,7 +2733,7 @@ ZLiquidStatus WorldMap::getLiquidStatus(uint32_t phaseMask, LocationVector pos, 
                     liquid_type = 15;
 
                 uint32_t liquidFlagType = 0;
-                if (DBC::Structures::LiquidTypeEntry const* liq = sLiquidTypeStore.LookupEntry(liquid_type))
+                if (WDB::Structures::LiquidTypeEntry const* liq = sLiquidTypeStore.lookupEntry(liquid_type))
                     liquidFlagType = liq->Type;
 
                 if (liquid_type && liquid_type < 21)
@@ -2758,7 +2758,7 @@ ZLiquidStatus WorldMap::getLiquidStatus(uint32_t phaseMask, LocationVector pos, 
                         }
 #endif
 
-                        if (DBC::Structures::LiquidTypeEntry const* liq = sLiquidTypeStore.LookupEntry(overrideLiquid))
+                        if (WDB::Structures::LiquidTypeEntry const* liq = sLiquidTypeStore.lookupEntry(overrideLiquid))
                         {
                             liquid_type = overrideLiquid;
                             liquidFlagType = liq->Type;
@@ -2864,7 +2864,7 @@ void WorldMap::getFullTerrainStatusForPosition(uint32_t phaseMask, float x, floa
         {
             data.areaInfo.emplace(wmoData->areaInfo->adtId, wmoData->areaInfo->rootId, wmoData->areaInfo->groupId, wmoData->areaInfo->mogpFlags);
             // wmo found
-            DBC::Structures::WMOAreaTableEntry const* wmoEntry = GetWMOAreaTableEntryByTriple(wmoData->areaInfo->rootId, wmoData->areaInfo->adtId, wmoData->areaInfo->groupId);
+            WDB::Structures::WMOAreaTableEntry const* wmoEntry = GetWMOAreaTableEntryByTriple(wmoData->areaInfo->rootId, wmoData->areaInfo->adtId, wmoData->areaInfo->groupId);
             data.outdoors = (wmoData->areaInfo->mogpFlags & 0x8) != 0;
             if (wmoEntry)
             {
@@ -2885,14 +2885,14 @@ void WorldMap::getFullTerrainStatusForPosition(uint32_t phaseMask, float x, floa
     {
         data.outdoors = true;
         data.areaId = gridAreaId;
-        if (DBC::Structures::AreaTableEntry const* areaEntry = sAreaStore.LookupEntry(data.areaId))
+        if (WDB::Structures::AreaTableEntry const* areaEntry = sAreaStore.lookupEntry(data.areaId))
             data.outdoors = (areaEntry->flags & (MapManagement::AreaManagement::AreaFlags::AREA_FLAG_INSIDE | MapManagement::AreaManagement::AreaFlags::AREA_FLAG_OUTSIDE)) != MapManagement::AreaManagement::AreaFlags::AREA_FLAG_INSIDE;
     }
 
     if (!data.areaId)
         data.areaId = getBaseMap()->getMapEntry()->linked_zone;
 
-    DBC::Structures::AreaTableEntry const* areaEntry = sAreaStore.LookupEntry(data.areaId);
+    WDB::Structures::AreaTableEntry const* areaEntry = sAreaStore.lookupEntry(data.areaId);
 
     // liquid processing
     data.liquidStatus = LIQUID_MAP_NO_WATER;
@@ -2903,7 +2903,7 @@ void WorldMap::getFullTerrainStatusForPosition(uint32_t phaseMask, float x, floa
             liquidType = 15;
 
         uint32 liquidFlagType = 0;
-        if (DBC::Structures::LiquidTypeEntry const* liquidData = sLiquidTypeStore.LookupEntry(liquidType))
+        if (WDB::Structures::LiquidTypeEntry const* liquidData = sLiquidTypeStore.lookupEntry(liquidType))
             liquidFlagType = liquidData->Type;
 
         if (liquidType && liquidType < 21 && areaEntry)
@@ -2912,7 +2912,7 @@ void WorldMap::getFullTerrainStatusForPosition(uint32_t phaseMask, float x, floa
             uint32_t overrideLiquid = areaEntry->liquid_type_override[liquidFlagType];
             if (!overrideLiquid && areaEntry->zone)
             {
-                DBC::Structures::AreaTableEntry const* zoneEntry = sAreaStore.LookupEntry(areaEntry->zone);
+                WDB::Structures::AreaTableEntry const* zoneEntry = sAreaStore.lookupEntry(areaEntry->zone);
                 if (zoneEntry)
                     overrideLiquid = zoneEntry->liquid_type_override[liquidFlagType];
             }
@@ -2920,12 +2920,12 @@ void WorldMap::getFullTerrainStatusForPosition(uint32_t phaseMask, float x, floa
             uint32_t overrideLiquid = areaEntry->liquid_type_override;
             if(!overrideLiquid && areaEntry->zone)
             {
-                DBC::Structures::AreaTableEntry const* zoneEntry = sAreaStore.LookupEntry(areaEntry->zone);
+                WDB::Structures::AreaTableEntry const* zoneEntry = sAreaStore.lookupEntry(areaEntry->zone);
                 if (zoneEntry)
                     overrideLiquid = zoneEntry->liquid_type_override;
             }
 #endif
-            if (DBC::Structures::LiquidTypeEntry const* overrideData = sLiquidTypeStore.LookupEntry(overrideLiquid))
+            if (WDB::Structures::LiquidTypeEntry const* overrideData = sLiquidTypeStore.lookupEntry(overrideLiquid))
             {
                 liquidType = overrideLiquid;
                 liquidFlagType = overrideData->Type;

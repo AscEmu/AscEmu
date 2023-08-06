@@ -28,7 +28,7 @@ uint32_t FlightPathMovementGenerator::getPathAtMapEnd() const
     return _path.size();
 }
 
-bool isNodeIncludedInShortenedPath(DBC::Structures::TaxiPathNodeEntry const* path1, DBC::Structures::TaxiPathNodeEntry const* path2)
+bool isNodeIncludedInShortenedPath(WDB::Structures::TaxiPathNodeEntry const* path1, WDB::Structures::TaxiPathNodeEntry const* path2)
 {
     return path1->mapid != path2->mapid || std::pow(path1->x - path2->x, 2) + std::pow(path1->y - path2->y, 2) > (40.0f * 40.0f);
 }
@@ -47,8 +47,8 @@ void FlightPathMovementGenerator::loadPath(Player* player)
         TaxiPathNodeList const& nodes = sTaxiPathNodesByPath[path];
         if (!nodes.empty())
         {
-            DBC::Structures::TaxiPathNodeEntry const* start = nodes[0];
-            DBC::Structures::TaxiPathNodeEntry const* end = nodes[nodes.size() - 1];
+            WDB::Structures::TaxiPathNodeEntry const* start = nodes[0];
+            WDB::Structures::TaxiPathNodeEntry const* end = nodes[nodes.size() - 1];
             bool passedPreviousSegmentProximityCheck = false;
             for (uint32 i = 0; i < nodes.size(); ++i)
             {
@@ -198,7 +198,7 @@ void FlightPathMovementGenerator::setCurrentNodeAfterTeleport()
     }
 }
 
-void FlightPathMovementGenerator::doEventIfAny(Player* player, DBC::Structures::TaxiPathNodeEntry const* node, bool departure)
+void FlightPathMovementGenerator::doEventIfAny(Player* player, WDB::Structures::TaxiPathNodeEntry const* node, bool departure)
 {
 #if VERSION_STRING >= TBC
     if (uint32 eventid = departure ? node->departureEventID : node->arivalEventID)
@@ -210,7 +210,7 @@ void FlightPathMovementGenerator::doEventIfAny(Player* player, DBC::Structures::
 
 bool FlightPathMovementGenerator::getResetPos(Player*, float& x, float& y, float& z)
 {
-    DBC::Structures::TaxiPathNodeEntry const* node = _path[_currentNode];
+    WDB::Structures::TaxiPathNodeEntry const* node = _path[_currentNode];
     x = node->x;
     y = node->y;
     z = node->z;

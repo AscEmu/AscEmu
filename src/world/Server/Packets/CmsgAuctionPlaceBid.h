@@ -5,11 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdint>
-
+#include "AEVersion.hpp"
 #include "ManagedPacket.h"
 #include "WorldPacket.h"
-#include "WorldConf.h"
+
+#include <cstdint>
 
 namespace AscEmu::Packets
 {

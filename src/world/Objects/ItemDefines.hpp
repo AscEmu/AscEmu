@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 
-#include "WorldConf.h"
+#include "AEVersion.hpp"
 
 enum ItemQualities : uint8_t
 {

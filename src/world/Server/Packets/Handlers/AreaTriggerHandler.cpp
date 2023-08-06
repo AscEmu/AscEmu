@@ -3,7 +3,7 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Server/Packets/CmsgAreatrigger.h"
 #include "Server/WorldSession.h"
 #include "Map/Maps/InstanceDefines.hpp"
@@ -32,7 +32,7 @@ void WorldSession::handleAreaTriggerOpcode(WorldPacket& recvPacket)
 
     sQuestMgr.OnPlayerExploreArea(_player, srlPacket.triggerId);
 
-    const auto areaTriggerEntry = sAreaTriggerStore.LookupEntry(srlPacket.triggerId);
+    const auto areaTriggerEntry = sAreaTriggerStore.lookupEntry(srlPacket.triggerId);
     if (areaTriggerEntry == nullptr)
     {
         sLogger.debug("%u is not part of AreaTrigger.dbc", srlPacket.triggerId);

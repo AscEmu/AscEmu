@@ -47,7 +47,7 @@
 #include "Server/Packets/SmsgCancelCombat.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Objects/Units/ThreatHandler.h"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -3189,11 +3189,11 @@ void Aura::SpellAuraMounted(AuraEffectModifier* aurEff, bool apply)
 
 #if VERSION_STRING > WotLK
         uint32_t amount = 0;
-        if (DBC::Structures::MountCapabilityEntry const* mountCapability = m_target->getMountCapability(uint32(getSpellInfo()->getEffectMiscValueB(0))))
+        if (WDB::Structures::MountCapabilityEntry const* mountCapability = m_target->getMountCapability(uint32(getSpellInfo()->getEffectMiscValueB(0))))
             amount = mountCapability->id;
 
         // cast speed aura
-        if (DBC::Structures::MountCapabilityEntry const* mountCapability = sMountCapabilityStore.LookupEntry(amount))
+        if (WDB::Structures::MountCapabilityEntry const* mountCapability = sMountCapabilityStore.lookupEntry(amount))
             p_target->castSpell(p_target, mountCapability->speedModSpell, true);
 #endif
     }
@@ -3223,11 +3223,11 @@ void Aura::SpellAuraMounted(AuraEffectModifier* aurEff, bool apply)
         p_target->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_DISMOUNT);
 #if VERSION_STRING > WotLK
         uint32_t amount = 0;
-        if (DBC::Structures::MountCapabilityEntry const* mountCapability = m_target->getMountCapability(uint32(getSpellInfo()->getEffectMiscValueB(0))))
+        if (WDB::Structures::MountCapabilityEntry const* mountCapability = m_target->getMountCapability(uint32(getSpellInfo()->getEffectMiscValueB(0))))
             amount = mountCapability->id;
 
         // remove speed aura
-        if (DBC::Structures::MountCapabilityEntry const* mountCapability = sMountCapabilityStore.LookupEntry(amount))
+        if (WDB::Structures::MountCapabilityEntry const* mountCapability = sMountCapabilityStore.lookupEntry(amount))
             p_target->removeAllAurasById(mountCapability->speedModSpell);
 #endif
     }

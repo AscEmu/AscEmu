@@ -23,9 +23,9 @@ typedef std::unordered_map<uint32_t, Transporter*>          TransporterMap;
 typedef std::unordered_map<uint32_t, TransporterSet>        TransporterInstancedMap;
 typedef std::unordered_map<uint32_t, std::set<uint32_t>>    TransportInstanceMap;
 
-typedef std::map<uint32_t, DBC::Structures::TransportAnimationEntry const*> TransportPathContainer;
+typedef std::map<uint32_t, WDB::Structures::TransportAnimationEntry const*> TransportPathContainer;
 #if VERSION_STRING >= WotLK
-typedef std::map<uint32_t, DBC::Structures::TransportRotationEntry const*> TransportPathRotationContainer;
+typedef std::map<uint32_t, WDB::Structures::TransportRotationEntry const*> TransportPathRotationContainer;
 #endif
 
 struct PathNode
@@ -125,9 +125,9 @@ struct SERVER_DECL TransportAnimation
 #endif
     uint32_t TotalTime;
 
-    DBC::Structures::TransportAnimationEntry const* getAnimNode(uint32_t time) const;
+    WDB::Structures::TransportAnimationEntry const* getAnimNode(uint32_t time) const;
 #if VERSION_STRING >= WotLK
-    DBC::Structures::TransportRotationEntry const* getAnimRotation(uint32_t time) const;
+    WDB::Structures::TransportRotationEntry const* getAnimRotation(uint32_t time) const;
 #endif
 };
 
@@ -168,9 +168,9 @@ private:
     TransportHandler(TransportHandler const&) = delete;
     TransportHandler& operator=(TransportHandler const&) = delete;
 
-    void addPathNodeToTransport(uint32_t transportEntry, uint32_t timeSeg, DBC::Structures::TransportAnimationEntry const* node);
+    void addPathNodeToTransport(uint32_t transportEntry, uint32_t timeSeg, WDB::Structures::TransportAnimationEntry const* node);
 #if VERSION_STRING >= WotLK
-    void addPathRotationToTransport(uint32_t transportEntry, uint32_t timeSeg, DBC::Structures::TransportRotationEntry const* node);
+    void addPathRotationToTransport(uint32_t transportEntry, uint32_t timeSeg, WDB::Structures::TransportRotationEntry const* node);
 #endif
 
     // Container storing transport animations

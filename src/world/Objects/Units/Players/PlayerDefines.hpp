@@ -5,6 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "Macros/ItemMacros.hpp"
+#include "Macros/PlayerMacros.hpp"
+#include "Management/Skill.hpp"
+#include "CommonTypes.hpp"
+
 #include <ctime>
 #include <string>
 #include <map>
@@ -13,16 +18,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include <set>
 #include <list>
 
-#include "Macros/ItemMacros.hpp"
-#include "Macros/PlayerMacros.hpp"
-#include "Management/Skill.hpp"
-#include <WorldConf.h>
-#include <CommonTypes.hpp>
-
 class Player;
 class Item;
 
-namespace DBC::Structures
+namespace WDB::Structures
 {
     struct SkillLineEntry;
 }
@@ -1044,7 +1043,7 @@ struct PlayerSkillFieldPosition
 
 struct PlayerSkill
 {
-    DBC::Structures::SkillLineEntry const* Skill = nullptr;
+    WDB::Structures::SkillLineEntry const* Skill = nullptr;
 
     uint16_t CurrentValue = 0;
     uint16_t MaximumValue = 0;

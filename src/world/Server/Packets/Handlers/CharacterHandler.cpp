@@ -32,7 +32,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Cryptography/AuthCodes.h"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/WorldSessionLog.hpp"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Server/Script/ScriptMgr.h"
 #include "Utilities/Strings.hpp"
 
@@ -911,7 +911,7 @@ void WorldSession::characterEnumProc(QueryResult* result)
                                     // Only Display Perm Enchants on Weapons
                                     if ((item_slot == EQUIPMENT_SLOT_MAINHAND || item_slot == EQUIPMENT_SLOT_OFFHAND) && enchslot == PERM_ENCHANTMENT_SLOT)
                                     {
-                                        const auto spellItemEnchantmentEntry = sSpellItemEnchantmentStore.LookupEntry(enchant_id);
+                                        const auto spellItemEnchantmentEntry = sSpellItemEnchantmentStore.lookupEntry(enchant_id);
                                         if (spellItemEnchantmentEntry != nullptr)
                                             charEnum.player_items[item_slot].enchantmentId = spellItemEnchantmentEntry->visual;
                                     }

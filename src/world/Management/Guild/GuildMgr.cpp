@@ -3,7 +3,7 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "GuildMgr.hpp"
 #include "Guild.hpp"
 #include "Management/ObjectMgr.hpp"
@@ -499,7 +499,7 @@ void GuildMgr::loadGuildRewardsFromDB()
         reward.price = fields[3].GetUInt64();
         reward.achievementId = fields[4].GetUInt32();
 
-        if (!sItemStore.LookupEntry(reward.entry))
+        if (!sItemStore.lookupEntry(reward.entry))
         {
             sLogger.failure("Guild rewards constains not existing item entry %u", reward.entry);
             continue;

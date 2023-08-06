@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "DynamicTree.h"
 #include "Map/Cells/TerrainMgr.hpp"
 #include "Threading/AEThread.h"
-#include "Storage/DBC/DBCStructures.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 template <typename T>
 class CellHandler;
@@ -198,7 +198,7 @@ public:
     // Difficulty
     InstanceDifficulty::Difficulties getDifficulty() const { return InstanceDifficulty::Difficulties(getSpawnMode()); }
     bool isRegularDifficulty();
-    DBC::Structures::MapDifficulty const* getMapDifficulty();
+    WDB::Structures::MapDifficulty const* getMapDifficulty();
 
     // Area and Zone Management
     bool getAreaInfo(uint32_t phaseMask, LocationVector pos, uint32_t& mogpflags, int32_t& adtId, int32_t& rootId, int32_t& groupId);
@@ -286,7 +286,7 @@ public:
     DynamicObject* getDynamicObject(uint32_t guid);
 
     // Summons
-    Summon* summonCreature(uint32_t entry, LocationVector pos, DBC::Structures::SummonPropertiesEntry const* = nullptr, uint32_t duration = 0, Object* summoner = nullptr, uint32_t spellId = 0);
+    Summon* summonCreature(uint32_t entry, LocationVector pos, WDB::Structures::SummonPropertiesEntry const* = nullptr, uint32_t duration = 0, Object* summoner = nullptr, uint32_t spellId = 0);
 
     // Transports
     bool addToMapMgr(Transporter* obj);

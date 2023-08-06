@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "InstanceMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
@@ -95,7 +95,7 @@ void InstanceSaved::deleteFromDB()
 time_t InstanceSaved::getResetTimeForDB()
 {
     // only save the reset time for normal instances
-    DBC::Structures::MapEntry const* entry = sMapStore.LookupEntry(getMapId());
+    WDB::Structures::MapEntry const* entry = sMapStore.lookupEntry(getMapId());
     if (!entry || entry->map_type == MAP_RAID || getDifficulty() == InstanceDifficulty::Difficulties::DUNGEON_HEROIC)
         return 0;
     else
@@ -225,7 +225,7 @@ void InstanceMgr::loadResetTimes()
             InstanceDifficulty::Difficulties difficulty = InstanceDifficulty::Difficulties(fields[1].GetUInt8());
             uint64_t oldresettime = fields[2].GetUInt64();
 
-            DBC::Structures::MapDifficulty const* mapDiff = getMapDifficultyData(mapid, difficulty);
+            WDB::Structures::MapDifficulty const* mapDiff = getMapDifficultyData(mapid, difficulty);
             if (!mapDiff)
             {
                 CharacterDatabase.Execute("DELETE FROM instance_reset WHERE mapid = %u AND difficulty = %u", uint16_t(mapid), uint8_t(difficulty));
@@ -254,7 +254,7 @@ void InstanceMgr::loadResetTimes()
 
         auto mapid = map.MapPairParts.mapid;
         InstanceDifficulty::Difficulties difficulty = InstanceDifficulty::Difficulties(map.MapPairParts.difficulty);
-        DBC::Structures::MapDifficulty const* mapDiff = &itr->second;
+        WDB::Structures::MapDifficulty const* mapDiff = &itr->second;
         if (!mapDiff->resetTime)
             continue;
 
@@ -410,7 +410,7 @@ void InstanceMgr::resetInstance(uint32_t mapid, uint32_t instanceId)
 void InstanceMgr::resetOrWarnAll(uint32_t mapid, InstanceDifficulty::Difficulties difficulty, bool warn, time_t resetTime)
 {
     // global reset for all instances of the given map
-    DBC::Structures::MapEntry const* mapEntry = sMapStore.LookupEntry(mapid);
+    WDB::Structures::MapEntry const* mapEntry = sMapStore.lookupEntry(mapid);
     if (!mapEntry->instanceable())
         return;
 
@@ -476,7 +476,7 @@ InstanceSaved* InstanceMgr::addInstanceSave(uint32_t mapId, uint32_t instanceId,
     if (InstanceSaved* old_save = getInstanceSave(instanceId))
         return old_save;
 
-    DBC::Structures::MapEntry const* entry = sMapStore.LookupEntry(mapId);
+    WDB::Structures::MapEntry const* entry = sMapStore.lookupEntry(mapId);
     if (!entry)
     {
         sLogger.failure("InstanceMgr::addInstanceSave: wrong mapid = %d, instanceid = %d!", mapId, instanceId);
@@ -598,7 +598,7 @@ void InstanceMgr::addResetEvent(bool add, time_t time, InstResetEvent event)
 
 time_t InstanceMgr::getSubsequentResetTime(uint32_t mapid, InstanceDifficulty::Difficulties difficulty, time_t resetTime) const
 {
-    DBC::Structures::MapDifficulty const* mapDiff = getMapDifficultyData(mapid, difficulty);
+    WDB::Structures::MapDifficulty const* mapDiff = getMapDifficultyData(mapid, difficulty);
     if (!mapDiff || !mapDiff->resetTime)
     {
         sLogger.failure("InstanceMgr::getSubsequentResetTime: not valid difficulty or no reset delay for map %u", mapid);

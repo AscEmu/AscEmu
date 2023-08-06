@@ -19,7 +19,7 @@
  *
  */
 
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Logging/Log.hpp"
 #include "Objects/Item.hpp"
 #include "QuestLogEntry.hpp"
@@ -1847,7 +1847,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
 
     if (qst->MailTemplateId != 0)
     {
-        auto mail_template = sMailTemplateStore.LookupEntry(qst->MailTemplateId);
+        auto mail_template = sMailTemplateStore.lookupEntry(qst->MailTemplateId);
         if (mail_template != nullptr)
         {
             uint8 mailType = MAIL_TYPE_NORMAL;
@@ -2080,7 +2080,7 @@ uint32 QuestMgr::GenerateQuestXP(Player* plr, QuestProperties const* qst)
         }
 
 #if VERSION_STRING > TBC
-        if (const auto pXPData = sQuestXPStore.LookupEntry(baseLevel))
+        if (const auto pXPData = sQuestXPStore.lookupEntry(baseLevel))
         {
             uint32 rawXP = xpMultiplier * pXPData->xpIndex[qst->RewXPId] / 10;
 

@@ -20,7 +20,7 @@
 #ifndef GLOBALFUNCTIONS_H
 #define GLOBALFUNCTIONS_H
 
-#include "WorldConf.h"
+#include "AEVersion.hpp"
 #include "LUAEngine.h"
 #include "git_version.h"
 #include "Chat/CommandTableStorage.hpp"

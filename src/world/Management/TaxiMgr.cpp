@@ -3,7 +3,7 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Management/TaxiMgr.h"
 #include "Server/Opcodes.hpp"
 #include "Objects/Units/Players/Player.hpp"
@@ -25,7 +25,7 @@ TaxiMask sDeathKnightTaxiNodesMask;
 
 uint32_t TeamForRace(uint8_t race)
 {
-    if (DBC::Structures::ChrRacesEntry const* rEntry = sChrRacesStore.LookupEntry(race))
+    if (WDB::Structures::ChrRacesEntry const* rEntry = sChrRacesStore.lookupEntry(race))
     {
         switch (rEntry->team_id)
         {
@@ -59,9 +59,9 @@ void TaxiPath::initTaxiNodesForLevel(uint32_t race, uint32_t chrClass, uint8_t l
     uint32_t team = TeamForRace(race);
 
     // Patch 4.2: players will now unlock all taxi nodes within the recommended level range of the player
-    for (uint32_t i = 0; i < sTaxiNodesStore.GetNumRows(); ++i)
+    for (uint32_t i = 0; i < sTaxiNodesStore.getNumRows(); ++i)
     {
-        if (DBC::Structures::TaxiNodesEntry const* itr = sTaxiNodesStore.LookupEntry(i))
+        if (WDB::Structures::TaxiNodesEntry const* itr = sTaxiNodesStore.lookupEntry(i))
         {
             // Skip scripted and debug nodes
             if (itr->flags == TAXI_NODE_FLAG_SCRIPT)
@@ -239,9 +239,9 @@ uint32_t TaxiMgr::getNearestTaxiNode(float x, float y, float z, uint32_t mapid, 
     float dist = 10000;
     uint32_t id = 0;
 
-    for (uint32_t i = 1; i < sTaxiNodesStore.GetNumRows(); ++i)
+    for (uint32_t i = 1; i < sTaxiNodesStore.getNumRows(); ++i)
     {
-        DBC::Structures::TaxiNodesEntry const* node = sTaxiNodesStore.LookupEntry(i);
+        WDB::Structures::TaxiNodesEntry const* node = sTaxiNodesStore.lookupEntry(i);
 
         if (!node || node->mapid != mapid || (!node->mountCreatureID[team == TEAM_ALLIANCE ? 1 : 0] && node->mountCreatureID[0] != 32981)) // dk flight
             continue;
@@ -302,7 +302,7 @@ uint32_t TaxiMgr::getTaxiMountDisplayId(uint32_t id, uint32_t team, bool allowed
     uint32_t mount_id = 0;
 
     // select mount creature id
-    DBC::Structures::TaxiNodesEntry const* node = sTaxiNodesStore.LookupEntry(id);
+    WDB::Structures::TaxiNodesEntry const* node = sTaxiNodesStore.lookupEntry(id);
     if (node)
     {
         uint32_t mount_entry = 0;
@@ -355,7 +355,7 @@ void TaxiMgr::loadTaxiNodeLevelData()
         uint32_t taxiNodeId = fields[0].GetUInt16();
         uint8_t level = fields[1].GetUInt8();
 
-        DBC::Structures::TaxiNodesEntry const* node = sTaxiNodesStore.LookupEntry(taxiNodeId);
+        WDB::Structures::TaxiNodesEntry const* node = sTaxiNodesStore.lookupEntry(taxiNodeId);
 
         if (!node)
         {
@@ -391,18 +391,18 @@ void TaxiMgr::initialize()
     std::set<uint32> spellPaths;
 
 #if VERSION_STRING > WotLK
-    for (uint32_t i = 0; i < sSpellEffectStore.GetNumRows(); ++i)
+    for (uint32_t i = 0; i < sSpellEffectStore.getNumRows(); ++i)
     {
-        if (DBC::Structures::SpellEffectEntry const* sInfo = sSpellEffectStore.LookupEntry(i))
+        if (WDB::Structures::SpellEffectEntry const* sInfo = sSpellEffectStore.lookupEntry(i))
         {
             if (sInfo->Effect == SPELL_EFFECT_START_TAXI)
                 spellPaths.insert(sInfo->EffectMiscValue);
         }
     }
 #else
-    for (uint32_t i = 0; i < sSpellStore.GetNumRows(); ++i)
+    for (uint32_t i = 0; i < sSpellStore.getNumRows(); ++i)
     {
-        if (DBC::Structures::SpellEntry const* sInfo = sSpellStore.LookupEntry(i))
+        if (WDB::Structures::SpellEntry const* sInfo = sSpellStore.lookupEntry(i))
         {
             for (uint8_t j = 0; j < MAX_SPELL_EFFECTS; ++j)
             {
@@ -418,9 +418,9 @@ void TaxiMgr::initialize()
     memset(sHordeTaxiNodesMask, 0, sizeof(sHordeTaxiNodesMask));
     memset(sAllianceTaxiNodesMask, 0, sizeof(sAllianceTaxiNodesMask));
     memset(sDeathKnightTaxiNodesMask, 0, sizeof(sDeathKnightTaxiNodesMask));
-    for (uint32_t i = 1; i < sTaxiNodesStore.GetNumRows(); ++i)
+    for (uint32_t i = 1; i < sTaxiNodesStore.getNumRows(); ++i)
     {
-        DBC::Structures::TaxiNodesEntry const* node = sTaxiNodesStore.LookupEntry(i);
+        WDB::Structures::TaxiNodesEntry const* node = sTaxiNodesStore.lookupEntry(i);
         if (!node)
             continue;
 
@@ -460,6 +460,6 @@ void TaxiMgr::initialize()
 
         // fix DK node at Ebon Hold and Shadow Vault flight master
         if (i == 315 || i == 333)
-            ((DBC::Structures::TaxiNodesEntry*)node)->mountCreatureID[1] = 32981;
+            ((WDB::Structures::TaxiNodesEntry*)node)->mountCreatureID[1] = 32981;
     }
 }

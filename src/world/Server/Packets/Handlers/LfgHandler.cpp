@@ -3,7 +3,7 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Management/LFG/LFGMgr.hpp" 
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/CmsgSetLfgComment.h"
@@ -236,7 +236,7 @@ void WorldSession::sendLfgRoleCheckUpdate(const LfgRoleCheck* pRoleCheck)
     {
         for (auto dungeonEntry : dungeons)
         {
-            auto dungeon = sLFGDungeonStore.LookupEntry(dungeonEntry);
+            auto dungeon = sLFGDungeonStore.lookupEntry(dungeonEntry);
             data << uint32_t(dungeon ? dungeon->Entry() : 0);
         }
     }
@@ -419,7 +419,7 @@ void WorldSession::sendLfgUpdateProposal(uint32_t proposalId, const LfgProposal*
     }
 
 #if VERSION_STRING < Cata
-    if (DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(dungeonId))
+    if (WDB::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.lookupEntry(dungeonId))
     {
         dungeonId = dungeon->Entry();
 
@@ -618,9 +618,9 @@ void WorldSession::handleLfgPlayerLockInfoRequestOpcode(WorldPacket& /*recvPacke
 
 #if VERSION_STRING < Cata
     uint8_t expansion = static_cast<uint8_t>(_player->getSession()->GetFlags());
-    for (uint32_t i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
+    for (uint32_t i = 0; i < sLFGDungeonStore.getNumRows(); ++i)
     {
-        DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(i);
+        WDB::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.lookupEntry(i);
         if (dungeon && dungeon->type == LFG_TYPE_RANDOM && dungeon->expansion <= expansion && dungeon->minlevel <= level && level <= dungeon->maxlevel)
             randomDungeons.insert(dungeon->Entry());
 

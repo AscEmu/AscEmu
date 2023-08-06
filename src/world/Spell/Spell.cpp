@@ -25,7 +25,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellPacketFlags.hpp"
 #include "Definitions/SpellState.hpp"
 #include "Definitions/SpellRanged.hpp"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Management/Battleground/Battleground.hpp"
 #include "Management/ItemInterface.h"
 #include "Map/Area/AreaManagementGlobals.hpp"
@@ -124,7 +124,7 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
     m_castTime = 0;
     if (!(m_triggeredByAura != nullptr || m_triggeredSpell && (getSpellInfo()->getManaCost() > 0 || getSpellInfo()->getManaCostPercentage() > 0)))
     {
-        m_castTime = static_cast<int32_t>(GetCastTime(sSpellCastTimesStore.LookupEntry(getSpellInfo()->getCastingTimeIndex())));
+        m_castTime = static_cast<int32_t>(GetCastTime(sSpellCastTimesStore.lookupEntry(getSpellInfo()->getCastingTimeIndex())));
         if (m_castTime > 0 && u_caster != nullptr)
         {
             // Apply cast time modifiers
@@ -1767,7 +1767,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     }
 
                     // All good so far, check creature's family
-                    const auto creatureFamily = sCreatureFamilyStore.LookupEntry(creatureTarget->GetCreatureProperties()->Family);
+                    const auto creatureFamily = sCreatureFamilyStore.lookupEntry(creatureTarget->GetCreatureProperties()->Family);
                     if (creatureFamily == nullptr || creatureFamily->tameable == 0)
                     {
                         SendTameFailure(PETTAME_NOTTAMEABLE);
@@ -1947,7 +1947,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             }
 #elif VERSION_STRING >= WotLK
             auto found = false;
-            auto areaGroup = sAreaGroupStore.LookupEntry(requireAreaId);
+            auto areaGroup = sAreaGroupStore.lookupEntry(requireAreaId);
             while (areaGroup != nullptr)
             {
                 for (const auto& i : areaGroup->AreaId)
@@ -1967,7 +1967,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (found || areaGroup->next_group == 0)
                     break;
 
-                areaGroup = sAreaGroupStore.LookupEntry(areaGroup->next_group);
+                areaGroup = sAreaGroupStore.lookupEntry(areaGroup->next_group);
             }
 
             if (!found)
@@ -2103,7 +2103,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
     {
         // Search for target constraint from within spell's max range
         float_t range = 0.0f;
-        const auto rangeEntry = sSpellRangeStore.LookupEntry(getSpellInfo()->getRangeIndex());
+        const auto rangeEntry = sSpellRangeStore.lookupEntry(getSpellInfo()->getRangeIndex());
         if (rangeEntry != nullptr)
             range = rangeEntry->maxRange;
 
@@ -2350,7 +2350,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (lockId == 0)
                     break;
 
-                const auto lockInfo = sLockStore.LookupEntry(lockId);
+                const auto lockInfo = sLockStore.lookupEntry(lockId);
                 if (lockInfo == nullptr)
                     return SPELL_FAILED_BAD_TARGETS;
 
@@ -2529,7 +2529,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     return SPELL_FAILED_SPELL_UNAVAILABLE;
 
                 const auto glyphId = static_cast<uint32_t>(getSpellInfo()->getEffectMiscValue(i));
-                const auto glyphEntry = sGlyphPropertiesStore.LookupEntry(glyphId);
+                const auto glyphEntry = sGlyphPropertiesStore.lookupEntry(glyphId);
                 if (glyphEntry == nullptr)
                     return SPELL_FAILED_INVALID_GLYPH;
 
@@ -3185,7 +3185,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
         // Check if item can be used while in shapeshift form
         if (p_caster->getShapeShiftForm() != FORM_NORMAL)
         {
-            const auto shapeShift = sSpellShapeshiftFormStore.LookupEntry(p_caster->getShapeShiftForm());
+            const auto shapeShift = sSpellShapeshiftFormStore.lookupEntry(p_caster->getShapeShiftForm());
             if (shapeShift != nullptr && !(shapeShift->Flags & 1))
             {
                 if (!(i_caster->getItemProperties()->Flags & ITEM_FLAG_SHAPESHIFT_OK))
@@ -3599,7 +3599,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                     }
                 }
 
-                const auto enchantEntry = sSpellItemEnchantmentStore.LookupEntry(static_cast<uint32_t>(getSpellInfo()->getEffectMiscValue(i)));
+                const auto enchantEntry = sSpellItemEnchantmentStore.lookupEntry(static_cast<uint32_t>(getSpellInfo()->getEffectMiscValue(i)));
                 if (enchantEntry == nullptr)
                 {
                     sLogger.failure("Spell::checkItems: Spell entry %u has no valid enchantment (%u)", getSpellInfo()->getId(), getSpellInfo()->getEffectMiscValue(i));
@@ -3665,7 +3665,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                 if (targetItem == nullptr)
                     return SPELL_FAILED_ITEM_NOT_FOUND;
 
-                const auto enchantmentEntry = sSpellItemEnchantmentStore.LookupEntry(static_cast<uint32_t>(getSpellInfo()->getEffectMiscValue(i)));
+                const auto enchantmentEntry = sSpellItemEnchantmentStore.lookupEntry(static_cast<uint32_t>(getSpellInfo()->getEffectMiscValue(i)));
                 if (enchantmentEntry == nullptr)
                 {
                     sLogger.failure("Spell::checkItems: Spell entry %u has no valid enchantment (%u)", getSpellInfo()->getId(), getSpellInfo()->getEffectMiscValue(i));
@@ -4053,7 +4053,7 @@ SpellCastResult Spell::checkCasterState() const
 
 SpellCastResult Spell::checkRange(const bool secondCheck)
 {
-    const auto rangeEntry = sSpellRangeStore.LookupEntry(getSpellInfo()->getRangeIndex());
+    const auto rangeEntry = sSpellRangeStore.lookupEntry(getSpellInfo()->getRangeIndex());
     if (rangeEntry == nullptr)
         return SPELL_CAST_SUCCESS;
 
@@ -4197,7 +4197,7 @@ SpellCastResult Spell::checkRunes(bool takeRunes)
         if (!p_caster->isClassDeathKnight())
             return SPELL_FAILED_NO_POWER;
 
-        const auto spellRuneCost = sSpellRuneCostStore.LookupEntry(getSpellInfo()->getRuneCostID());
+        const auto spellRuneCost = sSpellRuneCostStore.lookupEntry(getSpellInfo()->getRuneCostID());
         if (spellRuneCost != nullptr && (spellRuneCost->bloodRuneCost > 0 || spellRuneCost->frostRuneCost > 0 || spellRuneCost->unholyRuneCost > 0))
         {
             uint32_t runeCost[3];
@@ -4246,7 +4246,7 @@ SpellCastResult Spell::checkShapeshift(SpellInfo const* spellInfo, const uint32_
 #if VERSION_STRING < Mop
     // No need to check requirements for talents that learn spells
     uint8_t talentRank = 0;
-    const auto talentInfo = sTalentStore.LookupEntry(spellInfo->getId());
+    const auto talentInfo = sTalentStore.lookupEntry(spellInfo->getId());
     if (talentInfo != nullptr)
     {
         for (uint8_t i = 0; i < 5; ++i)
@@ -4273,7 +4273,7 @@ SpellCastResult Spell::checkShapeshift(SpellInfo const* spellInfo, const uint32_
     auto actAsShifted = false;
     if (stanceMask > FORM_NORMAL)
     {
-        auto shapeShift = sSpellShapeshiftFormStore.LookupEntry(shapeshiftForm);
+        auto shapeShift = sSpellShapeshiftFormStore.lookupEntry(shapeshiftForm);
         if (shapeShift == nullptr)
         {
             sLogger.failure("Spell::checkShapeshift: Caster has unknown shapeshift form %u", shapeshiftForm);
@@ -5084,7 +5084,7 @@ void Spell::sendCastResult(Player* caster, uint8_t castCount, SpellCastResult re
                 parameter1 = getSpellInfo()->getRequiresAreaId();
 #elif VERSION_STRING >= WotLK
                 // Send the first area id from areagroup to player
-                auto areaGroup = sAreaGroupStore.LookupEntry(static_cast<uint32_t>(getSpellInfo()->getRequiresAreaId()));
+                auto areaGroup = sAreaGroupStore.lookupEntry(static_cast<uint32_t>(getSpellInfo()->getRequiresAreaId()));
                 for (const auto& areaId : areaGroup->AreaId)
                 {
                     if (areaId != 0)
@@ -5203,7 +5203,7 @@ void Spell::writeProjectileDataToPacket(WorldPacket *data)
 
 #if VERSION_STRING > TBC
             // Get the item data from DBC files
-            const auto itemDBC = sItemStore.LookupEntry(entryId);
+            const auto itemDBC = sItemStore.lookupEntry(entryId);
             if (itemDBC == nullptr || itemDBC->Class != ITEM_CLASS_WEAPON)
                 continue;
 
@@ -5512,7 +5512,7 @@ int32_t Spell::getDuration()
         return m_duration;
     }
 
-    const auto spellDuration = sSpellDurationStore.LookupEntry(getSpellInfo()->getDurationIndex());
+    const auto spellDuration = sSpellDurationStore.lookupEntry(getSpellInfo()->getDurationIndex());
     if (spellDuration == nullptr)
     {
         m_duration = -1;
@@ -5564,7 +5564,7 @@ float_t Spell::getEffectRadius(uint8_t effectIndex)
         return m_effectRadius[effectIndex];
 
     m_isEffectRadiusSet[effectIndex] = true;
-    m_effectRadius[effectIndex] = ::GetRadius(sSpellRadiusStore.LookupEntry(getSpellInfo()->getEffectRadiusIndex(effectIndex)));
+    m_effectRadius[effectIndex] = ::GetRadius(sSpellRadiusStore.lookupEntry(getSpellInfo()->getEffectRadiusIndex(effectIndex)));
 
     // If spell has no effect radius set, use spell range instead
     // but skip for effect target 87. Otherwise some teleport spells like ICC teleports will target
@@ -5572,7 +5572,7 @@ float_t Spell::getEffectRadius(uint8_t effectIndex)
     if (G3D::fuzzyEq(m_effectRadius[effectIndex], 0.f) &&
         getSpellInfo()->getEffectImplicitTargetA(effectIndex) != EFF_TARGET_AREA_DESTINATION && getSpellInfo()->getEffectImplicitTargetB(effectIndex) != EFF_TARGET_AREA_DESTINATION)
     {
-        const auto rangeEntry = sSpellRangeStore.LookupEntry(getSpellInfo()->getRangeIndex());
+        const auto rangeEntry = sSpellRangeStore.lookupEntry(getSpellInfo()->getRangeIndex());
         if (rangeEntry != nullptr)
         {
 #if VERSION_STRING < WotLK

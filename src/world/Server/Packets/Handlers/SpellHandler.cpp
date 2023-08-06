@@ -280,7 +280,7 @@ void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
             Creature* petCreature = dynamic_cast<Creature*>(petUnit);
             if (petCreature->GetCreatureProperties()->spelldataid != 0)
             {
-                if (const auto creatureSpellData = sCreatureSpellDataStore.LookupEntry(petCreature->GetCreatureProperties()->spelldataid))
+                if (const auto creatureSpellData = sCreatureSpellDataStore.lookupEntry(petCreature->GetCreatureProperties()->spelldataid))
                 {
                     for (uint8_t i = 0; i < 3; ++i)
                     {

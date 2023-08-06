@@ -1748,7 +1748,7 @@ void Spell::TriggerSpell()
 if (TriggerSpellId != 0)
 {
 // check for spell id
-SpellEntry *spellInfo = sSpellStore.LookupEntry(TriggerSpellId);
+SpellEntry *spellInfo = sSpellStore.lookupEntry(TriggerSpellId);
 
 if (!spellInfo)
 {

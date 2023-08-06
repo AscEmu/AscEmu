@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <WorldConf.h>
+#include "AEVersion.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Map/Maps/InstanceMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"
@@ -237,7 +237,7 @@ public:
     void unbindInstance(uint32_t mapid, uint8_t difficulty, bool unload = false);
     InstanceGroupBind* getBoundInstance(Player* player);
     InstanceGroupBind* getBoundInstance(BaseMap* aMap);
-    InstanceGroupBind* getBoundInstance(DBC::Structures::MapEntry const* mapEntry);
+    InstanceGroupBind* getBoundInstance(WDB::Structures::MapEntry const* mapEntry);
     InstanceGroupBind* getBoundInstance(InstanceDifficulty::Difficulties difficulty, uint32_t mapId);
     BoundInstancesMap& getBoundInstances(InstanceDifficulty::Difficulties difficulty);
 

@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Spell/Definitions/SpellFamily.hpp"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 
 enum RogueSpells
 {
@@ -72,7 +72,7 @@ public:
 
         // Recalculate duration for aura per 5 combo points
         uint32_t maxDuration = 0;
-        const auto durEntry = sSpellDurationStore.LookupEntry(sliceAura->getSpellInfo()->getDurationIndex());
+        const auto durEntry = sSpellDurationStore.lookupEntry(sliceAura->getSpellInfo()->getDurationIndex());
         if (durEntry != nullptr)
             maxDuration = durEntry->Duration3;
 

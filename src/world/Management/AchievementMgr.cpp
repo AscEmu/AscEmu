@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "AchievementMgr.h"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Objects/Item.hpp"
 #include "Objects/Units/Stats.h"
 #include "Server/WorldSocket.h"
@@ -172,7 +172,7 @@ void AchievementMgr::saveToDb(QueryBuffer* _buffer)
     }
 }
 
-bool AchievementMgr::canCompleteCriteria(DBC::Structures::AchievementCriteriaEntry const* _achievementCriteria, AchievementCriteriaTypes _type, Player* _player) const
+bool AchievementMgr::canCompleteCriteria(WDB::Structures::AchievementCriteriaEntry const* _achievementCriteria, AchievementCriteriaTypes _type, Player* _player) const
 {
     switch (_type)
     {
@@ -203,7 +203,7 @@ bool AchievementMgr::canCompleteCriteria(DBC::Structures::AchievementCriteriaEnt
     return false;
 }
 
-bool AchievementMgr::canCompleteCriteria(DBC::Structures::AchievementCriteriaEntry const* _achievementCriteria, AchievementCriteriaTypes _type, int32_t _miscValue1, int32_t /*miscValue2*/, Player* _player) const
+bool AchievementMgr::canCompleteCriteria(WDB::Structures::AchievementCriteriaEntry const* _achievementCriteria, AchievementCriteriaTypes _type, int32_t _miscValue1, int32_t /*miscValue2*/, Player* _player) const
 {
     switch (_type)
     {
@@ -310,7 +310,7 @@ void AchievementMgr::updateAchievementCriteria(AchievementCriteriaTypes _type, i
         if (achievementCriteria->groupFlag & ACHIEVEMENT_CRITERIA_GROUP_NOT_IN_GROUP && getPlayer()->getGroup())
             continue;
 
-        const auto achievement = sAchievementStore.LookupEntry(achievementCriteria->referredAchievement);
+        const auto achievement = sAchievementStore.lookupEntry(achievementCriteria->referredAchievement);
         if (!achievement)
             continue;
 
@@ -861,7 +861,7 @@ void AchievementMgr::updateAchievementCriteria(AchievementCriteriaTypes _type)
     AchievementCriteriaEntryList const & achievementCriteriaList = sObjectMgr.getAchievementCriteriaByType(_type);
     for (auto achievementCriteria : achievementCriteriaList)
     {
-        const auto achievement = sAchievementStore.LookupEntry(achievementCriteria->referredAchievement);
+        const auto achievement = sAchievementStore.lookupEntry(achievementCriteria->referredAchievement);
         if (!achievement  //|| IsCompletedCriteria(achievementCriteria)
             || (achievement->flags & ACHIEVEMENT_FLAG_COUNTER)
             || (achievement->factionFlag == ACHIEVEMENT_FACTION_FLAG_HORDE && !m_player->isTeamHorde())
@@ -968,7 +968,7 @@ void AchievementMgr::updateAchievementCriteria(AchievementCriteriaTypes _type)
 
 bool AchievementMgr::updateAchievementCriteria(Player* _player, int32_t _criteriaId, uint32_t _count)
 {
-    const auto criteria = sAchievementCriteriaStore.LookupEntry(_criteriaId);
+    const auto criteria = sAchievementCriteriaStore.lookupEntry(_criteriaId);
     if (!criteria)
     {
         sLogger.debug("Achievement ID %u is Invalid", _criteriaId);
@@ -979,7 +979,7 @@ bool AchievementMgr::updateAchievementCriteria(Player* _player, int32_t _criteri
         sLogger.debug("Achievement criteria %lu already completed.", _criteriaId);
         return false;
     }
-    auto* achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
+    auto* achievement = sAchievementStore.lookupEntry(criteria->referredAchievement);
     if (!achievement)
     {
         // achievement not found
@@ -1020,7 +1020,7 @@ uint32_t AchievementMgr::getCriteriaProgressCount()
     uint32_t criteriapc = 0;
     for (auto iterCriteriaProgress : m_criteriaProgress)
     {
-        //AchievementEntry const *achievement = dbcAchievementStore.LookupEntry(iterCriteriaProgress.second->id);
+        //AchievementEntry const *achievement = dbcAchievementStore.lookupEntry(iterCriteriaProgress.second->id);
         if (canSendAchievementProgress(iterCriteriaProgress.second))
             ++criteriapc;
     }
@@ -1055,10 +1055,10 @@ bool AchievementMgr::gmCompleteCriteria(WorldSession* _gmSession, uint32_t _crit
 {
     if (_finishAll)
     {
-        uint32_t nr = sAchievementCriteriaStore.GetNumRows();
+        uint32_t nr = sAchievementCriteriaStore.getNumRows();
         for (uint32_t i = 0, j = 0; j < nr; ++i)
         {
-            DBC::Structures::AchievementCriteriaEntry const* crt = sAchievementCriteriaStore.LookupEntry(i);
+            WDB::Structures::AchievementCriteriaEntry const* crt = sAchievementCriteriaStore.lookupEntry(i);
             if (crt == nullptr)
             {
                 sLogger.failure("Achievement Criteria %lu entry not found.", i);
@@ -1075,7 +1075,7 @@ bool AchievementMgr::gmCompleteCriteria(WorldSession* _gmSession, uint32_t _crit
         return true;
     }
 
-    const auto criteria = sAchievementCriteriaStore.LookupEntry(_criteriaId);
+    const auto criteria = sAchievementCriteriaStore.lookupEntry(_criteriaId);
     if (!criteria)
     {
         _gmSession->SystemMessage("Achievement criteria %d not found.", _criteriaId);
@@ -1088,7 +1088,7 @@ bool AchievementMgr::gmCompleteCriteria(WorldSession* _gmSession, uint32_t _crit
         return false;
     }
 
-    const auto achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
+    const auto achievement = sAchievementStore.lookupEntry(criteria->referredAchievement);
     if (!achievement)
     {
         // achievement not found
@@ -1162,8 +1162,8 @@ void AchievementMgr::sendAllAchievementData(Player* _player)
     uint32_t packetSize = 18 + (static_cast<uint32_t>(m_completedAchievements.size()) * 8) + (getCriteriaProgressCount() * 36);
     bool doneCompleted = false;
     bool doneProgress = false;
-    DBC::Structures::AchievementCriteriaEntry const* acEntry;
-    DBC::Structures::AchievementEntry const* achievement;
+    WDB::Structures::AchievementCriteriaEntry const* acEntry;
+    WDB::Structures::AchievementEntry const* achievement;
 
     WorldPacket data;
     if (packetSize < 0x8000)
@@ -1211,12 +1211,12 @@ void AchievementMgr::sendAllAchievementData(Player* _player)
         data << int32_t(-1);
         for (; progressIter != m_criteriaProgress.end() && !packetFull; ++progressIter)
         {
-            acEntry = sAchievementCriteriaStore.LookupEntry(progressIter->first);
+            acEntry = sAchievementCriteriaStore.lookupEntry(progressIter->first);
             if (!acEntry)
             {
                 continue;
             }
-            achievement = sAchievementStore.LookupEntry(acEntry->referredAchievement);
+            achievement = sAchievementStore.lookupEntry(acEntry->referredAchievement);
             if (!achievement)
             {
                 continue;
@@ -1274,7 +1274,7 @@ struct VisibleAchievementPred
 {
     bool operator()(CompletedAchievementMap::value_type const& completedAchievementPair)
     {
-        auto achievement = sAchievementStore.LookupEntry(completedAchievementPair.first);
+        auto achievement = sAchievementStore.lookupEntry(completedAchievementPair.first);
         return achievement && !(achievement->flags & ACHIEVEMENT_FLAG_HIDDEN);
     }
 };
@@ -1295,11 +1295,11 @@ void AchievementMgr::sendAllAchievementData(Player* _player)
 
     for (auto progressIter : m_criteriaProgress)
     {
-        DBC::Structures::AchievementCriteriaEntry const* acEntry = sAchievementCriteriaStore.LookupEntry(progressIter.first);
+        WDB::Structures::AchievementCriteriaEntry const* acEntry = sAchievementCriteriaStore.lookupEntry(progressIter.first);
         if (!acEntry)
             continue;
 
-        if (!sAchievementStore.LookupEntry(acEntry->referredAchievement))
+        if (!sAchievementStore.lookupEntry(acEntry->referredAchievement))
             continue;
 
         counter = uint64_t(progressIter.second->counter);
@@ -1390,11 +1390,11 @@ void AchievementMgr::sendRespondInspectAchievements(Player* _player)
 
     for (auto progressIter : m_criteriaProgress)
     {
-        DBC::Structures::AchievementCriteriaEntry const* acEntry = sAchievementCriteriaStore.LookupEntry(progressIter.first);
+        WDB::Structures::AchievementCriteriaEntry const* acEntry = sAchievementCriteriaStore.lookupEntry(progressIter.first);
         if (!acEntry)
             continue;
 
-        if (!sAchievementStore.LookupEntry(acEntry->referredAchievement))
+        if (!sAchievementStore.lookupEntry(acEntry->referredAchievement))
             continue;
 
         counter = uint64_t(progressIter.second->counter);
@@ -1475,11 +1475,11 @@ bool AchievementMgr::gmCompleteAchievement(WorldSession* _gmSession, uint32_t _a
 {
     if (_finishAll)
     {
-        uint32_t nr = sAchievementStore.GetNumRows();
+        uint32_t nr = sAchievementStore.getNumRows();
 
         for (uint32_t i = 0; i < nr; ++i)
         {
-            auto achievementEntry = sAchievementStore.LookupEntry(i);
+            auto achievementEntry = sAchievementStore.lookupEntry(i);
             if (achievementEntry == nullptr)
             {
                 m_player->getSession()->SystemMessage("Achievement %u entry not found.", i);
@@ -1507,7 +1507,7 @@ bool AchievementMgr::gmCompleteAchievement(WorldSession* _gmSession, uint32_t _a
         return false;
     }
 
-    const auto achievement = sAchievementStore.LookupEntry(_achievementId);
+    const auto achievement = sAchievementStore.lookupEntry(_achievementId);
     if (!achievement)
     {
         _gmSession->SystemMessage("Achievement %d entry not found.", _achievementId);
@@ -1546,7 +1546,7 @@ void AchievementMgr::gmResetAchievement(uint32_t _achievementId, bool _finishAll
     }
 }
 
-time_t AchievementMgr::getCompletedTime(DBC::Structures::AchievementEntry const* _achievement)
+time_t AchievementMgr::getCompletedTime(WDB::Structures::AchievementEntry const* _achievement)
 {
     auto iter = m_completedAchievements.find(_achievement->ID);
     if (iter != m_completedAchievements.end())
@@ -1568,7 +1568,7 @@ Player* AchievementMgr::getPlayer() const { return m_player; }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Completes the achievement for the player.
-void AchievementMgr::completedAchievement(DBC::Structures::AchievementEntry const* achievement)
+void AchievementMgr::completedAchievement(WDB::Structures::AchievementEntry const* achievement)
 {
     if (achievement->flags & ACHIEVEMENT_FLAG_COUNTER || m_completedAchievements.find(achievement->ID) != m_completedAchievements.end())
         return;
@@ -1659,7 +1659,7 @@ bool AchievementMgr::showCompletedAchievement(uint32_t _achievementId, const Pla
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Gives reward to player for completing the achievement.
-void AchievementMgr::giveAchievementReward(DBC::Structures::AchievementEntry const* _entry)
+void AchievementMgr::giveAchievementReward(WDB::Structures::AchievementEntry const* _entry)
 {
     if (_entry == nullptr || isCharacterLoading)
         return;
@@ -1674,7 +1674,7 @@ void AchievementMgr::giveAchievementReward(DBC::Structures::AchievementEntry con
     {
         if (Reward->titel_A)
         {
-            auto char_title = sCharTitlesStore.LookupEntry(Reward->titel_A);
+            auto char_title = sCharTitlesStore.lookupEntry(Reward->titel_A);
             if (char_title)
                 getPlayer()->setKnownPvPTitle(static_cast<RankTitles>(char_title->bit_index), true);
         }
@@ -1683,7 +1683,7 @@ void AchievementMgr::giveAchievementReward(DBC::Structures::AchievementEntry con
     {
         if (Reward->titel_H)
         {
-            auto char_title = sCharTitlesStore.LookupEntry(Reward->titel_H);
+            auto char_title = sCharTitlesStore.lookupEntry(Reward->titel_H);
             if (char_title)
                 getPlayer()->setKnownPvPTitle(static_cast<RankTitles>(char_title->bit_index), true);
         }
@@ -1737,7 +1737,7 @@ void AchievementMgr::giveAchievementReward(DBC::Structures::AchievementEntry con
 /// Realm first! achievements get sent to all players currently online.
 /// All other achievements get sent to all of the achieving player's guild members,
 /// group members, and other in-range players
-void AchievementMgr::sendAchievementEarned(DBC::Structures::AchievementEntry const* _entry)
+void AchievementMgr::sendAchievementEarned(WDB::Structures::AchievementEntry const* _entry)
 {
     if (_entry == nullptr || isCharacterLoading)
         return;
@@ -1860,16 +1860,16 @@ void AchievementMgr::sendAchievementEarned(DBC::Structures::AchievementEntry con
 /// \brief ACHIEVEMENT_COMPLETED_COMPLETED_STORED: has been completed and stored already.
 /// ACHIVEMENT_COMPLETED_COMPLETED_NOT_STORED: has been completed but not stored yet.
 /// ACHIEVEMENT_COMPLETED_NONE: has not been completed yet
-AchievementCompletionState AchievementMgr::getAchievementCompletionState(DBC::Structures::AchievementEntry const* _entry)
+AchievementCompletionState AchievementMgr::getAchievementCompletionState(WDB::Structures::AchievementEntry const* _entry)
 {
     if (m_completedAchievements.contains(_entry->ID))
         return ACHIEVEMENT_COMPLETED_COMPLETED_STORED;
 
     uint32_t completedCount = 0;
     bool foundOutstanding = false;
-    for (uint32_t rowId = 0; rowId < sAchievementCriteriaStore.GetNumRows(); ++rowId)
+    for (uint32_t rowId = 0; rowId < sAchievementCriteriaStore.getNumRows(); ++rowId)
     {
-        const auto criteria = sAchievementCriteriaStore.LookupEntry(rowId);
+        const auto criteria = sAchievementCriteriaStore.lookupEntry(rowId);
         if (criteria == nullptr || criteria->referredAchievement != _entry->ID)
             continue;
 
@@ -1904,7 +1904,7 @@ bool AchievementMgr::canSendAchievementProgress(const CriteriaProgress* _criteri
     if (_criteriaProgress == nullptr || _criteriaProgress->counter <= 0)
         return false;
 
-    const auto acEntry = sAchievementCriteriaStore.LookupEntry(_criteriaProgress->id);
+    const auto acEntry = sAchievementCriteriaStore.lookupEntry(_criteriaProgress->id);
     if (!acEntry)
         return false;
 
@@ -1929,7 +1929,7 @@ bool AchievementMgr::canSaveAchievementProgressToDB(const CriteriaProgress* _cri
     if (_criteriaProgress->counter <= 0)
         return false;
 
-    auto achievement = sAchievementCriteriaStore.LookupEntry(_criteriaProgress->id);
+    auto achievement = sAchievementCriteriaStore.lookupEntry(_criteriaProgress->id);
     if (achievement == nullptr)
         return false;
 
@@ -1969,7 +1969,7 @@ void AchievementMgr::sendCriteriaUpdate(const CriteriaProgress* _criteriaProgres
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Sets progress of the achievement criteria.
 /// \brief If relative argument is true, this behaves the same as UpdateCriteriaProgress
-void AchievementMgr::setCriteriaProgress(DBC::Structures::AchievementCriteriaEntry const* _entry, int32_t _newValue, bool /*relative*/)
+void AchievementMgr::setCriteriaProgress(WDB::Structures::AchievementCriteriaEntry const* _entry, int32_t _newValue, bool /*relative*/)
 {
     CriteriaProgress* progress;
 
@@ -1998,7 +1998,7 @@ void AchievementMgr::setCriteriaProgress(DBC::Structures::AchievementCriteriaEnt
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Updates progress of the achievement criteria.
 /// \brief updateByValue is added to the current progress counter
-void AchievementMgr::updateCriteriaProgress(DBC::Structures::AchievementCriteriaEntry const* _entry, int32_t _updateByValue)
+void AchievementMgr::updateCriteriaProgress(WDB::Structures::AchievementCriteriaEntry const* _entry, int32_t _updateByValue)
 {
     CriteriaProgress* progress;
 
@@ -2023,12 +2023,12 @@ void AchievementMgr::updateCriteriaProgress(DBC::Structures::AchievementCriteria
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// If achievement criteria has been completed, checks whether to complete the achievement too.
-void AchievementMgr::completedCriteria(DBC::Structures::AchievementCriteriaEntry const* criteria)
+void AchievementMgr::completedCriteria(WDB::Structures::AchievementCriteriaEntry const* criteria)
 {
     if (!isCompletedCriteria(criteria))
         return;
 
-    const auto achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
+    const auto achievement = sAchievementStore.lookupEntry(criteria->referredAchievement);
     if (achievement == nullptr)
         return;
 
@@ -2038,12 +2038,12 @@ void AchievementMgr::completedCriteria(DBC::Structures::AchievementCriteriaEntry
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// \return True if the criteria has been completed otherwise false (error...)
-bool AchievementMgr::isCompletedCriteria(DBC::Structures::AchievementCriteriaEntry const* achievementCriteria)
+bool AchievementMgr::isCompletedCriteria(WDB::Structures::AchievementCriteriaEntry const* achievementCriteria)
 {
     if (!achievementCriteria)
         return false;
 
-    const auto achievement = sAchievementStore.LookupEntry(achievementCriteria->referredAchievement);
+    const auto achievement = sAchievementStore.lookupEntry(achievementCriteria->referredAchievement);
     if (achievement == nullptr)
         return false;
 

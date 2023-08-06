@@ -33,7 +33,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Definitions.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Objects/Units/Creatures/CreatureGroups.h"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 
 // Random and guessed values for Internal Spell cast chance
 float spellChanceModifierDispell[12] =
@@ -1385,7 +1385,7 @@ void AIInterface::handleAgentSpell(uint32_t spellId)
                 sLogger.failure("AI Agents: Targettype of AI agent spell %u for creature %u not set", spellInfo->getId(), static_cast<Creature*>(getUnit())->GetCreatureProperties()->Id);
         }
     }
-    uint32_t casttime = (GetCastTime(sSpellCastTimesStore.LookupEntry(AIspell->spell->getCastingTimeIndex())) ? GetCastTime(sSpellCastTimesStore.LookupEntry(AIspell->spell->getCastingTimeIndex())) : 500);
+    uint32_t casttime = (GetCastTime(sSpellCastTimesStore.lookupEntry(AIspell->spell->getCastingTimeIndex())) ? GetCastTime(sSpellCastTimesStore.lookupEntry(AIspell->spell->getCastingTimeIndex())) : 500);
     const auto cooldown = static_cast<int32_t>(AIspell->cooldown ? AIspell->cooldown : 500);
     // Delay all Spells by our casttime
     spellEvents.delayAllEvents(casttime, AGENT_SPELL);
@@ -3853,7 +3853,7 @@ void AIInterface::UpdateAISpells()
             // send announcements on casttime beginn
             usedSpell->sendAnnouncement(getUnit());
 
-            uint32_t casttime = (GetCastTime(sSpellCastTimesStore.LookupEntry(usedSpell->mSpellInfo->getCastingTimeIndex())) ? GetCastTime(sSpellCastTimesStore.LookupEntry(usedSpell->mSpellInfo->getCastingTimeIndex())) : 500);
+            uint32_t casttime = (GetCastTime(sSpellCastTimesStore.lookupEntry(usedSpell->mSpellInfo->getCastingTimeIndex())) ? GetCastTime(sSpellCastTimesStore.lookupEntry(usedSpell->mSpellInfo->getCastingTimeIndex())) : 500);
 
             // reset cast wait timer
             mSpellWaitTimer.resetInterval(casttime);

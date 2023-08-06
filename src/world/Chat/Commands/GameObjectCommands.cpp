@@ -624,7 +624,7 @@ bool ChatHandler::HandleGOSetFactionCommand(const char* args, WorldSession* m_se
         return true;
     }
 
-    auto faction_template = sFactionTemplateStore.LookupEntry(go_faction);
+    auto faction_template = sFactionTemplateStore.lookupEntry(go_faction);
     if (faction_template == nullptr)
     {
         RedSystemMessage(m_session, "The entered faction is invalid! Use a valid faction id.");

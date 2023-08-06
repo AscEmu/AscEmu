@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellClickInfo.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Utilities/Strings.hpp"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 
 SERVER_DECL std::vector<MySQLAdditionalTable> MySQLAdditionalTables;
 
@@ -786,7 +786,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
         // process creature spells from creaturespelldata.dbc
         if (creatureProperties.spelldataid != 0)
         {
-            auto creature_spell_data = sCreatureSpellDataStore.LookupEntry(creatureProperties.spelldataid);
+            auto creature_spell_data = sCreatureSpellDataStore.lookupEntry(creatureProperties.spelldataid);
             for (uint8_t i = 0; i < 3; i++)
             {
                 if (creature_spell_data == nullptr)
@@ -1105,7 +1105,7 @@ void MySQLDataStore::loadGameObjectSpawnsOverrideTable()
         gameObjectOverride.faction = fields[2].GetUInt16();
         gameObjectOverride.flags = fields[3].GetUInt32();
 
-        if (gameObjectOverride.faction && !sFactionTemplateStore.LookupEntry(gameObjectOverride.faction))
+        if (gameObjectOverride.faction && !sFactionTemplateStore.lookupEntry(gameObjectOverride.faction))
             sLogger.failure("GameObject (SpawnId: %u) has invalid faction (%u) defined in `gameobject_spawns_overrides`.", spawnId, gameObjectOverride.faction);
 
         ++count;
@@ -2435,19 +2435,19 @@ void MySQLDataStore::loadCreatureInitialEquipmentTable()
         }
 
         uint32_t itemId = fields[1].GetUInt32();
-        if (sMySQLStore.getItemProperties(itemId) || sItemStore.LookupEntry(itemId))
+        if (sMySQLStore.getItemProperties(itemId) || sItemStore.lookupEntry(itemId))
             const_cast<CreatureProperties*>(creature_properties)->itemslot_1 = itemId;
         else
             sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_1 %u for creature %u", itemId, entry);
 
         itemId = fields[2].GetUInt32();
-        if (sMySQLStore.getItemProperties(itemId) || sItemStore.LookupEntry(itemId))
+        if (sMySQLStore.getItemProperties(itemId) || sItemStore.lookupEntry(itemId))
             const_cast<CreatureProperties*>(creature_properties)->itemslot_2 = itemId;
         else
             sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_2 %u for creature %u", itemId, entry);
 
         itemId = fields[3].GetUInt32();
-        if (sMySQLStore.getItemProperties(itemId) || sItemStore.LookupEntry(itemId))
+        if (sMySQLStore.getItemProperties(itemId) || sItemStore.lookupEntry(itemId))
             const_cast<CreatureProperties*>(creature_properties)->itemslot_3 = itemId;
         else
             sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_3 %u for creature %u", itemId, entry);
@@ -2568,7 +2568,7 @@ void MySQLDataStore::loadPlayerCreateInfoItems()
 #if VERSION_STRING < Cata
         auto player_item = sMySQLStore.getItemProperties(item_id);
 #else
-        DBC::Structures::ItemEntry const* player_item = sItemStore.LookupEntry(item_id);
+        WDB::Structures::ItemEntry const* player_item = sItemStore.lookupEntry(item_id);
 #endif
         if (player_item == nullptr)
         {
@@ -2619,7 +2619,7 @@ void MySQLDataStore::loadPlayerCreateInfoSkills()
         uint32_t classMask = fields[1].GetUInt32();
         auto skill_id = fields[2].GetUInt16();
 
-        auto player_skill = sSkillLineStore.LookupEntry(skill_id);
+        auto player_skill = sSkillLineStore.lookupEntry(skill_id);
         if (player_skill == nullptr)
         {
             sLogger.failure("Table `playercreateinfo_skills` includes invalid skill id %u", skill_id);
@@ -2679,7 +2679,7 @@ void MySQLDataStore::loadPlayerCreateInfoSpellLearn()
         uint32_t classMask = fields[1].GetUInt32();
         uint32_t spell_id = fields[2].GetUInt32();
 
-        auto player_spell = sSpellStore.LookupEntry(spell_id);
+        auto player_spell = sSpellStore.lookupEntry(spell_id);
         if (player_spell == nullptr)
         {
             sLogger.failure("Table `playercreateinfo_spell_learn` includes invalid spell %u", spell_id);
@@ -2735,7 +2735,7 @@ void MySQLDataStore::loadPlayerCreateInfoSpellCast()
         uint32_t classMask = fields[1].GetUInt32();
         uint32_t spell_id = fields[2].GetUInt32();
 
-        auto player_spell = sSpellStore.LookupEntry(spell_id);
+        auto player_spell = sSpellStore.lookupEntry(spell_id);
         if (player_spell == nullptr)
         {
             sLogger.failure("Table `playercreateinfo_spell_cast` includes invalid spell %u", spell_id);
@@ -2815,12 +2815,12 @@ void MySQLDataStore::loadPlayerCreateInfoLevelstats()
     //Zyres: load required and missing levelstats
     for (uint8_t _race = 0; _race < DBC_NUM_RACES; ++_race)
     {
-        if (!sChrRacesStore.LookupEntry(_race))
+        if (!sChrRacesStore.lookupEntry(_race))
             continue;
 
         for (uint8_t _class = 0; _class < MAX_PLAYER_CLASSES; ++_class)
         {
-            if (!sChrClassesStore.LookupEntry(_class))
+            if (!sChrClassesStore.lookupEntry(_class))
                 continue;
 
             auto info = _playerCreateInfoStoreNew[_race][_class];
@@ -2891,8 +2891,8 @@ void MySQLDataStore::loadPlayerCreateInfoClassLevelstats()
             if (getPlayerClassLevelStats(level, player_class))
                 continue;
 
-            DBC::Structures::GtOCTBaseHPByClassEntry const* hp = sGtOCTBaseHPByClassStore.LookupEntry((player_class - 1) * DBC_STAT_LEVEL_CAP + level - 1);
-            DBC::Structures::GtOCTBaseMPByClassEntry const* mp = sGtOCTBaseMPByClassStore.LookupEntry((player_class - 1) * DBC_STAT_LEVEL_CAP + level - 1);
+            WDB::Structures::GtOCTBaseHPByClassEntry const* hp = sGtOCTBaseHPByClassStore.lookupEntry((player_class - 1) * DBC_STAT_LEVEL_CAP + level - 1);
+            WDB::Structures::GtOCTBaseMPByClassEntry const* mp = sGtOCTBaseMPByClassStore.lookupEntry((player_class - 1) * DBC_STAT_LEVEL_CAP + level - 1);
 
             if (hp && mp)
             {
@@ -3232,14 +3232,14 @@ void MySQLDataStore::loadAreaTriggerTable()
         areaTrigger.requiredHonorRank = fields[9].GetUInt32();
         areaTrigger.requiredLevel = fields[10].GetUInt32();
 
-        DBC::Structures::AreaTriggerEntry const* area_trigger_entry = sAreaTriggerStore.LookupEntry(areaTrigger.id);
+        WDB::Structures::AreaTriggerEntry const* area_trigger_entry = sAreaTriggerStore.lookupEntry(areaTrigger.id);
         if (!area_trigger_entry)
         {
             sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "AreaTrigger : Area trigger (ID:%u) does not exist in `AreaTrigger.dbc`.", areaTrigger.id);
             continue;
         }
 
-        DBC::Structures::MapEntry const* map_entry = sMapStore.LookupEntry(areaTrigger.mapId);
+        WDB::Structures::MapEntry const* map_entry = sMapStore.lookupEntry(areaTrigger.mapId);
         if (!map_entry)
         {
             sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "AreaTrigger : Area trigger (ID:%u) target map (ID: %u) does not exist in `Map.dbc`.", areaTrigger.id, areaTrigger.mapId);
@@ -3277,7 +3277,7 @@ MySQLStructure::AreaTrigger const* MySQLDataStore::getMapEntranceTrigger(uint32_
     {
         if (itr->second.mapId == mapId)
         {
-            DBC::Structures::AreaTriggerEntry const* area_trigger_entry = sAreaTriggerStore.LookupEntry(itr->first);
+            WDB::Structures::AreaTriggerEntry const* area_trigger_entry = sAreaTriggerStore.lookupEntry(itr->first);
             if (area_trigger_entry)
                 return &itr->second;
         }
@@ -3290,7 +3290,7 @@ MySQLStructure::AreaTrigger const* MySQLDataStore::getMapGoBackTrigger(uint32_t 
 {
     bool useParentDbValue = false;
     uint32_t parentId = 0;
-    DBC::Structures::MapEntry const* mapEntry = sMapStore.LookupEntry(mapId);
+    WDB::Structures::MapEntry const* mapEntry = sMapStore.lookupEntry(mapId);
     if (!mapEntry || mapEntry->parent_map < 0)
         return nullptr;
 
@@ -3310,7 +3310,7 @@ MySQLStructure::AreaTrigger const* MySQLDataStore::getMapGoBackTrigger(uint32_t 
     {
         if ((!useParentDbValue && itr->second.mapId == entrance_map) || (useParentDbValue && itr->second.mapId == parentId))
         {
-            DBC::Structures::AreaTriggerEntry const* atEntry = sAreaTriggerStore.LookupEntry(itr->first);
+            WDB::Structures::AreaTriggerEntry const* atEntry = sAreaTriggerStore.lookupEntry(itr->first);
             if (atEntry && atEntry->mapid == mapId)
                 return &itr->second;
         }
@@ -3342,7 +3342,7 @@ MySQLStructure::AreaTrigger const* MySQLDataStore::getMapGoBackTrigger(uint32_t 
     {
         if ((!useParentDbValue && itr->second.mapId == entrance_map) || (useParentDbValue && itr->second.mapId == parentId))
         {
-            DBC::Structures::AreaTriggerEntry const* atEntry = sAreaTriggerStore.LookupEntry(itr->first);
+            WDB::Structures::AreaTriggerEntry const* atEntry = sAreaTriggerStore.lookupEntry(itr->first);
             if (atEntry && atEntry->mapid == mapId)
                 return &itr->second;
         }

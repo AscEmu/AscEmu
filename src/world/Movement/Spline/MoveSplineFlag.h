@@ -5,10 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <string>
-
+#include "AEVersion.hpp"
 #include "MovementTypedefs.h"
-#include "WorldConf.h"
+
+#include <string>
 
 namespace MovementMgr {
 #pragma pack(push, 1)

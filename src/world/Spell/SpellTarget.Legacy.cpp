@@ -28,7 +28,7 @@
 #include "Definitions/SpellCastTargetFlags.hpp"
 #include "Definitions/SpellDidHitResult.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 
  // APGL End
@@ -466,7 +466,7 @@ bool Spell::AddTarget(uint32 i, uint32 TargetType, Object* obj)
     }
 
     //final checks, require line of sight unless range/radius is 50000 yards
-    auto spell_range = sSpellRangeStore.LookupEntry(m_spellInfo->getRangeIndex());
+    auto spell_range = sSpellRangeStore.lookupEntry(m_spellInfo->getRangeIndex());
     if (spell_range != nullptr)
     {
         if (worldConfig.terrainCollision.isCollisionEnabled && spell_range->maxRange < 50000 && getEffectRadius(i) < 50000 && !obj->isItem())

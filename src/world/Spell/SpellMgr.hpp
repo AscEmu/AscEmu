@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "SpellAuras.h"
 #include "SpellInfo.hpp"
 #include "SpellTargetConstraint.hpp"
-#include "Storage/DBC/DBCStructures.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 #include "Definitions/SpellMechanics.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 
@@ -35,8 +35,8 @@ typedef Aura* (*AuraScriptLinker)(SpellInfo* proto, int32 duration, Object* cast
 
 typedef std::multimap<uint32_t, uint32_t> SpellRequiredMap;
 typedef std::multimap<uint32_t, uint32_t> SpellsRequiringSpellMap;
-typedef std::multimap<uint32_t, DBC::Structures::SkillLineAbilityEntry const*> SkillLineAbilityMap;
-typedef std::unordered_multimap<uint32_t, DBC::Structures::SkillLineAbilityEntry const*> SpellSkillMap;
+typedef std::multimap<uint32_t, WDB::Structures::SkillLineAbilityEntry const*> SkillLineAbilityMap;
+typedef std::unordered_multimap<uint32_t, WDB::Structures::SkillLineAbilityEntry const*> SpellSkillMap;
 typedef std::pair<SpellRequiredMap::const_iterator, SpellRequiredMap::const_iterator> SpellRequiredMapBounds;
 typedef std::pair<SpellsRequiringSpellMap::const_iterator, SpellsRequiringSpellMap::const_iterator> SpellsRequiringSpellMapBounds;
 typedef std::pair<SkillLineAbilityMap::const_iterator, SkillLineAbilityMap::const_iterator> SkillLineAbilityMapBounds;
@@ -99,7 +99,7 @@ public:
     // Skills
     SpellSkillMapBounds getSkillEntryForSpellBounds(uint32_t spellId) const;
     // Use forPlayer if you want to see if skill ability entry fits for player
-    DBC::Structures::SkillLineAbilityEntry const* getFirstSkillEntryForSpell(uint32_t spellId, Player const* forPlayer = nullptr) const;
+    WDB::Structures::SkillLineAbilityEntry const* getFirstSkillEntryForSpell(uint32_t spellId, Player const* forPlayer = nullptr) const;
     SkillLineAbilityMapBounds getSkillLineAbilityMapBounds(uint32_t skillId) const;
 
     SpellTargetConstraint* getSpellTargetConstraintForSpell(uint32_t spellId) const;

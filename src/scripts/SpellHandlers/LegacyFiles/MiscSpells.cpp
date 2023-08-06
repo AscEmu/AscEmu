@@ -28,7 +28,7 @@
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/MySQLDataStore.hpp"
-#include "Storage/DBC/DBCStores.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 
 enum
 {
@@ -201,9 +201,9 @@ bool NorthRendInscriptionResearch(uint8_t /*effectIndex*/, Spell* s)
         std::vector<uint32_t> discoverableGlyphs;
 
         // how many of these are the right type (minor/major) of glyph, and learnable by the player
-        for (uint32_t idx = 0; idx < sSkillLineAbilityStore.GetNumRows(); ++idx)
+        for (uint32_t idx = 0; idx < sSkillLineAbilityStore.getNumRows(); ++idx)
         {
-            auto skill_line_ability = sSkillLineAbilityStore.LookupEntry(idx);
+            auto skill_line_ability = sSkillLineAbilityStore.lookupEntry(idx);
             if (skill_line_ability == nullptr)
                 continue;
 
@@ -219,7 +219,7 @@ bool NorthRendInscriptionResearch(uint8_t /*effectIndex*/, Spell* s)
                         if (se2 && se2->getEffect(0) == SPELL_EFFECT_USE_GLYPH)
                         {
 #if VERSION_STRING > TBC
-                            auto glyph_properties = sGlyphPropertiesStore.LookupEntry(se2->getEffectMiscValue(0));
+                            auto glyph_properties = sGlyphPropertiesStore.lookupEntry(se2->getEffectMiscValue(0));
                             if (glyph_properties)
                             {
                                 if (glyph_properties->Type == glyphType)

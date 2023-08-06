@@ -1465,7 +1465,7 @@ bool Player::isInCity() const
 {
     if (const auto at = GetArea())
     {
-        ::DBC::Structures::AreaTableEntry const* zt = nullptr;
+        ::WDB::Structures::AreaTableEntry const* zt = nullptr;
         if (at->zone)
             zt = MapManagement::AreaManagement::AreaStorage::GetAreaById(at->zone);
 
@@ -1910,7 +1910,7 @@ void Player::sendTeleportAckPacket(LocationVector position)
 
 void Player::onWorldPortAck()
 {
-    DBC::Structures::MapEntry const* mEntry = sMapStore.LookupEntry(GetMapId());
+    WDB::Structures::MapEntry const* mEntry = sMapStore.lookupEntry(GetMapId());
     //only resurrect if player is porting to a instance portal
     if (mEntry->isDungeon() && isDead())
         resurrect();
@@ -1919,7 +1919,7 @@ void Player::onWorldPortAck()
     {
         // check if this instance has a reset time and send it to player if so
         InstanceDifficulty::Difficulties diff = getDifficulty(mEntry->isRaid());
-        if (DBC::Structures::MapDifficulty const* mapDiff = getMapDifficultyData(mEntry->id, diff))
+        if (WDB::Structures::MapDifficulty const* mapDiff = getMapDifficultyData(mEntry->id, diff))
         {
             if (mapDiff->resetTime)
             {
@@ -1994,9 +1994,9 @@ void Player::setPhase(uint8_t command, uint32_t newPhase)
 
         uint32_t phaseFlags = 0;
 
-        for (uint32_t i = 0; i < sPhaseStore.GetNumRows(); ++i)
+        for (uint32_t i = 0; i < sPhaseStore.getNumRows(); ++i)
         {
-            if (DBC::Structures::PhaseEntry const* phase = sPhaseStore.LookupEntry(i))
+            if (WDB::Structures::PhaseEntry const* phase = sPhaseStore.lookupEntry(i))
             {
                 if (phase->PhaseShift == newPhase)
                 {
@@ -2086,7 +2086,7 @@ void Player::forceZoneUpdate()
     }
 }
 
-bool Player::hasAreaExplored(::DBC::Structures::AreaTableEntry const* areaTableEntry)
+bool Player::hasAreaExplored(::WDB::Structures::AreaTableEntry const* areaTableEntry)
 {
     if (areaTableEntry)
     {
@@ -2103,7 +2103,7 @@ bool Player::hasAreaExplored(::DBC::Structures::AreaTableEntry const* areaTableE
 
 bool Player::hasOverlayUncovered(uint32_t overlayId)
 {
-    if (auto overlay = sWorldMapOverlayStore.LookupEntry(overlayId))
+    if (auto overlay = sWorldMapOverlayStore.lookupEntry(overlayId))
     {
         if (overlay->areaID && hasAreaExplored(AreaStorage::GetAreaById(overlay->areaID)))
             return true;
@@ -2393,8 +2393,8 @@ bool Player::create(CharCreate& charCreateContent)
     m_restState = 0;
 
     // set race dbc
-    m_dbcRace = sChrRacesStore.LookupEntry(charCreateContent._race);
-    m_dbcClass = sChrClassesStore.LookupEntry(charCreateContent._class);
+    m_dbcRace = sChrRacesStore.lookupEntry(charCreateContent._race);
+    m_dbcClass = sChrClassesStore.lookupEntry(charCreateContent._class);
     if (!m_dbcRace || !m_dbcClass)
     {
         // information not found
@@ -2417,7 +2417,7 @@ bool Player::create(CharCreate& charCreateContent)
     else
         sLogger.failure("No class levelstatd found!");
 
-    if (const auto raceEntry = sChrRacesStore.LookupEntry(charCreateContent._race))
+    if (const auto raceEntry = sChrRacesStore.lookupEntry(charCreateContent._race))
         setFaction(raceEntry->faction_id);
     else
         setFaction(0);
@@ -2504,7 +2504,7 @@ bool Player::create(CharCreate& charCreateContent)
                 //shitty db lets check for dbc/db2 values
                 if (itemProperties->InventoryType == 0)
                 {
-                    if (const auto itemDB2Properties = sItemStore.LookupEntry(itemId))
+                    if (const auto itemDB2Properties = sItemStore.lookupEntry(itemId))
                         itemSlot = getItemInterface()->GetItemSlotByType(itemDB2Properties->InventoryType);
                 }
                 else
@@ -2562,8 +2562,8 @@ bool Player::create(CharCreate& charCreateContent)
     return true;
 }
 
-DBC::Structures::ChrRacesEntry const* Player::getDbcRaceEntry() { return m_dbcRace; };
-DBC::Structures::ChrClassesEntry const* Player::getDbcClassEntry() { return m_dbcClass; };
+WDB::Structures::ChrRacesEntry const* Player::getDbcRaceEntry() { return m_dbcRace; };
+WDB::Structures::ChrClassesEntry const* Player::getDbcClassEntry() { return m_dbcClass; };
 
 std::string Player::getName() const { return m_name; }
 void Player::setName(std::string name) { m_name = name; }
@@ -2573,7 +2573,7 @@ void Player::setLoginFlag(uint32_t flag) { m_loginFlag = flag; }
 
 void Player::setInitialDisplayIds(uint8_t gender, uint8_t race)
 {
-    if (const auto raceEntry = sChrRacesStore.LookupEntry(race))
+    if (const auto raceEntry = sChrRacesStore.lookupEntry(race))
     {
         switch (gender)
         {
@@ -3814,7 +3814,7 @@ bool Player::loadReputations(QueryResult* result)
         const auto basestanding = field[2].GetInt32();
         const auto standing = field[3].GetInt32();
 
-        const auto faction = sFactionStore.LookupEntry(id);
+        const auto faction = sFactionStore.lookupEntry(id);
         if (faction == nullptr || faction->RepListId < 0)
             continue;
 
@@ -3845,7 +3845,7 @@ void Player::setInitialPlayerProfessions()
     for (uint16_t skillId = SKILL_SWORDS; skillId != SKILL_DIREHORN; ++skillId)
 #endif
     {
-        const auto skillLine = sSkillLineStore.LookupEntry(skillId);
+        const auto skillLine = sSkillLineStore.lookupEntry(skillId);
         if (skillLine == nullptr)
             continue;
 
@@ -4132,7 +4132,7 @@ void Player::removeShapeShiftSpell(uint32_t spellId)
     removeAllAurasById(spellId);
 }
 
-void Player::sendAvailSpells(DBC::Structures::SpellShapeshiftFormEntry const* shapeshiftFormEntry, bool active)
+void Player::sendAvailSpells(WDB::Structures::SpellShapeshiftFormEntry const* shapeshiftFormEntry, bool active)
 {
     if (active)
     {
@@ -4185,7 +4185,7 @@ bool Player::isInDisallowedMountForm() const
 {
     if (ShapeshiftForm form = ShapeshiftForm(getShapeShiftForm()))
     {
-        DBC::Structures::SpellShapeshiftFormEntry const* shapeshift = sSpellShapeshiftFormStore.LookupEntry(form);
+        WDB::Structures::SpellShapeshiftFormEntry const* shapeshift = sSpellShapeshiftFormStore.lookupEntry(form);
         if (!shapeshift)
             return true;
 
@@ -4196,16 +4196,16 @@ bool Player::isInDisallowedMountForm() const
     if (getDisplayId() == getNativeDisplayId())
         return false;
 
-    DBC::Structures::CreatureDisplayInfoEntry const* display = sCreatureDisplayInfoStore.LookupEntry(getDisplayId());
+    WDB::Structures::CreatureDisplayInfoEntry const* display = sCreatureDisplayInfoStore.lookupEntry(getDisplayId());
     if (!display)
         return true;
 
-    DBC::Structures::CreatureDisplayInfoExtraEntry const* displayExtra = sCreatureDisplayInfoExtraStore.LookupEntry(display->ExtendedDisplayInfoID);
+    WDB::Structures::CreatureDisplayInfoExtraEntry const* displayExtra = sCreatureDisplayInfoExtraStore.lookupEntry(display->ExtendedDisplayInfoID);
     if (!displayExtra)
         return true;
 
-    DBC::Structures::CreatureModelDataEntry const* model = sCreatureModelDataStore.LookupEntry(display->ModelID);
-    DBC::Structures::ChrRacesEntry const* race = sChrRacesStore.LookupEntry(displayExtra->Race);
+    WDB::Structures::CreatureModelDataEntry const* model = sCreatureModelDataStore.lookupEntry(display->ModelID);
+    WDB::Structures::ChrRacesEntry const* race = sChrRacesStore.lookupEntry(displayExtra->Race);
 
     if (model && !(model->Flags & 0x80))
         if (race && !(race->flags & 0x4))
@@ -4286,7 +4286,7 @@ bool Player::canUseFlyingMountHere()
     auto mapId = GetMapId();
     if (mapId == 530 || mapId == 571)
     {
-        const auto worldMapEntry = sWorldMapAreaStore.LookupEntry(getZoneId());
+        const auto worldMapEntry = sWorldMapAreaStore.lookupEntry(getZoneId());
         if (worldMapEntry != nullptr)
             mapId = worldMapEntry->continentMapId >= 0 ? worldMapEntry->continentMapId : worldMapEntry->mapId;
     }
@@ -4829,7 +4829,7 @@ void Player::addSkillLine(uint16_t skillLine, uint16_t currentValue, uint16_t ma
     if (skillLine == 0)
         return;
 
-    const auto skillEntry = sSkillLineStore.LookupEntry(skillLine);
+    const auto skillEntry = sSkillLineStore.lookupEntry(skillLine);
     if (skillEntry == nullptr)
         return;
 
@@ -5027,7 +5027,7 @@ void Player::learnInitialSkills()
         if (skill.skillid == 0)
             continue;
 
-        const auto skillLine = sSkillLineStore.LookupEntry(skill.skillid);
+        const auto skillLine = sSkillLineStore.lookupEntry(skill.skillid);
         if (skillLine == nullptr)
             continue;
 
@@ -5045,9 +5045,9 @@ void Player::learnSkillSpells(uint16_t skillLine, uint16_t currentValue)
     const auto raceMask = getRaceMask();
     const auto classMask = getClassMask();
 
-    for (uint32_t i = 0; i < sSkillLineAbilityStore.GetNumRows(); ++i)
+    for (uint32_t i = 0; i < sSkillLineAbilityStore.getNumRows(); ++i)
     {
-        const auto skillEntry = sSkillLineAbilityStore.LookupEntry(i);
+        const auto skillEntry = sSkillLineAbilityStore.lookupEntry(i);
         if (skillEntry == nullptr || skillEntry->skilline != skillLine)
             continue;
 
@@ -5103,9 +5103,9 @@ void Player::learnSkillSpells(uint16_t skillLine, uint16_t currentValue)
         {
             // Player can learn this spell, now check if player has previous rank of this spell
             uint32_t removeSpellId = 0;
-            for (uint32_t j = 0; j < sSkillLineAbilityStore.GetNumRows(); ++j)
+            for (uint32_t j = 0; j < sSkillLineAbilityStore.getNumRows(); ++j)
             {
-                const auto previousSkillEntry = sSkillLineAbilityStore.LookupEntry(j);
+                const auto previousSkillEntry = sSkillLineAbilityStore.lookupEntry(j);
                 if (previousSkillEntry == nullptr)
                     continue;
 
@@ -5267,9 +5267,9 @@ void Player::removeSkillLine(uint16_t skillLine)
 
 void Player::removeSkillSpells(uint16_t skillLine)
 {
-    for (uint32_t i = 0; i < sSkillLineAbilityStore.GetNumRows(); ++i)
+    for (uint32_t i = 0; i < sSkillLineAbilityStore.getNumRows(); ++i)
     {
-        const auto skillEntry = sSkillLineAbilityStore.LookupEntry(i);
+        const auto skillEntry = sSkillLineAbilityStore.lookupEntry(i);
         if (skillEntry == nullptr || skillEntry->skilline != skillLine)
             continue;
 
@@ -5363,7 +5363,7 @@ void Player::applyItemProficienciesFromSpell(SpellInfo const* spellInfo, bool ap
     if (skill_line_ability != nullptr)
         skillId = static_cast<uint16_t>(skill_line_ability->skilline);
 
-    const auto skill_line = sSkillLineStore.LookupEntry(skillId);
+    const auto skill_line = sSkillLineStore.lookupEntry(skillId);
     if (skill_line == nullptr)
         return;
 
@@ -5408,9 +5408,9 @@ void Player::applyItemProficienciesFromSpell(SpellInfo const* spellInfo, bool ap
 void Player::updateGlyphs()
 {
 #if VERSION_STRING == WotLK
-    for (uint32_t i = 0; i < sGlyphSlotStore.GetNumRows(); ++i)
+    for (uint32_t i = 0; i < sGlyphSlotStore.getNumRows(); ++i)
     {
-        const auto glyphSlot = sGlyphSlotStore.LookupEntry(i);
+        const auto glyphSlot = sGlyphSlotStore.lookupEntry(i);
         if (glyphSlot == nullptr)
             continue;
 
@@ -5419,9 +5419,9 @@ void Player::updateGlyphs()
     }
 #else
     uint16_t slot = 0;
-    for (uint32_t i = 0; i < sGlyphSlotStore.GetNumRows(); ++i)
+    for (uint32_t i = 0; i < sGlyphSlotStore.getNumRows(); ++i)
     {
-        const auto glyphSlot = sGlyphSlotStore.LookupEntry(i);
+        const auto glyphSlot = sGlyphSlotStore.lookupEntry(i);
         if (glyphSlot != nullptr)
             setGlyphSlot(slot++, glyphSlot->Id);
     }
@@ -5531,7 +5531,7 @@ void Player::clearComboPoints()
     updateComboPoints();
 }
 
-void Player::_verifySkillValues(DBC::Structures::SkillLineEntry const* skillEntry, uint16_t* currentValue, uint16_t* maxValue, uint16_t* skillStep, bool* requireUpdate)
+void Player::_verifySkillValues(WDB::Structures::SkillLineEntry const* skillEntry, uint16_t* currentValue, uint16_t* maxValue, uint16_t* skillStep, bool* requireUpdate)
 {
     auto level_bound_skill = skillEntry->type == SKILL_TYPE_WEAPON && skillEntry->id != SKILL_DUAL_WIELD;
 #if VERSION_STRING <= WotLK
@@ -5608,7 +5608,7 @@ void Player::_verifySkillValues(DBC::Structures::SkillLineEntry const* skillEntr
         *skillStep = 0;
 }
 
-void Player::_verifySkillValues(DBC::Structures::SkillLineEntry const* skillEntry, uint16_t* currentValue, uint16_t* maxValue, uint16_t* skillStep)
+void Player::_verifySkillValues(WDB::Structures::SkillLineEntry const* skillEntry, uint16_t* currentValue, uint16_t* maxValue, uint16_t* skillStep)
 {
     auto requireUpdate = false;
     _verifySkillValues(skillEntry, currentValue, maxValue, skillStep, &requireUpdate);
@@ -5655,7 +5655,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     if (talentRank > 4)
         return;
 
-    auto talentInfo = sTalentStore.LookupEntry(talentId);
+    auto talentInfo = sTalentStore.lookupEntry(talentId);
     if (talentInfo == nullptr)
         return;
 #if VERSION_STRING < Mop
@@ -5674,7 +5674,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     }
 
     // Check if talent tree is for player's class
-    auto talentTreeInfo = sTalentTabStore.LookupEntry(talentInfo->TalentTree);
+    auto talentTreeInfo = sTalentTabStore.lookupEntry(talentInfo->TalentTree);
     if (talentTreeInfo == nullptr || !(getClassMask() & talentTreeInfo->ClassMask))
         return;
 
@@ -5697,7 +5697,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     // Check if talent requires another talent
     if (talentInfo->DependsOn > 0)
     {
-        auto dependsOnTalent = sTalentStore.LookupEntry(talentInfo->DependsOn);
+        auto dependsOnTalent = sTalentStore.lookupEntry(talentInfo->DependsOn);
         if (dependsOnTalent != nullptr)
         {
             auto hasEnoughRank = false;
@@ -5731,7 +5731,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
         // Loop through player's talents
         for (const auto talent : getActiveSpec().talents)
         {
-            auto tmpTalent = sTalentStore.LookupEntry(talent.first);
+            auto tmpTalent = sTalentStore.lookupEntry(talent.first);
             if (tmpTalent == nullptr)
                 continue;
             // Skip talents from other trees
@@ -5862,7 +5862,7 @@ void Player::resetTalents()
     // Loop through player's talents
     for (const auto talent : getActiveSpec().talents)
     {
-        auto tmpTalent = sTalentStore.LookupEntry(talent.first);
+        auto tmpTalent = sTalentStore.lookupEntry(talent.first);
         if (tmpTalent == nullptr)
             continue;
         removeTalent(tmpTalent->RankID[talent.second]);
@@ -5959,7 +5959,7 @@ void Player::setInitialTalentPoints(bool talentsResetted /*= false*/)
     // Calculate initial talent points based on level
     uint32_t talentPoints = 0;
 #if VERSION_STRING >= Cata
-    auto talentPointsAtLevel = sNumTalentsAtLevel.LookupEntry(getLevel());
+    auto talentPointsAtLevel = sNumTalentsAtLevel.lookupEntry(getLevel());
     if (talentPointsAtLevel != nullptr)
         talentPoints = static_cast<uint32_t>(talentPointsAtLevel->talentPoints);
 #else
@@ -5977,7 +5977,7 @@ void Player::setInitialTalentPoints(bool talentsResetted /*= false*/)
             // the player has completed the DK starting quest chain and normal calculation can be used.
             uint32_t dkTalentPoints = 0;
 #if VERSION_STRING >= Cata
-            auto dkBaseTalentPoints = sNumTalentsAtLevel.LookupEntry(55);
+            auto dkBaseTalentPoints = sNumTalentsAtLevel.lookupEntry(55);
             if (dkBaseTalentPoints != nullptr)
                 dkTalentPoints = getLevel() < 55 ? 0 : talentPoints - static_cast<uint32_t>(dkBaseTalentPoints->talentPoints);
 #else
@@ -6148,7 +6148,7 @@ void Player::activateTalentSpec([[maybe_unused]]uint8_t specId)
     // Remove old glyphs
     for (uint8_t i = 0; i < GLYPHS_COUNT; ++i)
     {
-        auto glyphProperties = sGlyphPropertiesStore.LookupEntry(m_specs[oldSpec].glyphs[i]);
+        auto glyphProperties = sGlyphPropertiesStore.lookupEntry(m_specs[oldSpec].glyphs[i]);
         if (glyphProperties != nullptr)
             removeAllAurasById(glyphProperties->SpellID);
     }
@@ -6156,7 +6156,7 @@ void Player::activateTalentSpec([[maybe_unused]]uint8_t specId)
     // Remove old talents and move them to deleted spells
     for (const auto itr : m_specs[oldSpec].talents)
     {
-        auto talentInfo = sTalentStore.LookupEntry(itr.first);
+        auto talentInfo = sTalentStore.lookupEntry(itr.first);
         if (talentInfo != nullptr)
             removeTalent(talentInfo->RankID[itr.second], true);
     }
@@ -6164,7 +6164,7 @@ void Player::activateTalentSpec([[maybe_unused]]uint8_t specId)
     // Add new glyphs
     for (uint8_t i = 0; i < GLYPHS_COUNT; ++i)
     {
-        auto glyphProperties = sGlyphPropertiesStore.LookupEntry(m_specs[m_talentActiveSpec].glyphs[i]);
+        auto glyphProperties = sGlyphPropertiesStore.lookupEntry(m_specs[m_talentActiveSpec].glyphs[i]);
         if (glyphProperties != nullptr)
             castSpell(this, glyphProperties->SpellID, true);
     }
@@ -6172,7 +6172,7 @@ void Player::activateTalentSpec([[maybe_unused]]uint8_t specId)
     // Add new talents
     for (const auto itr : m_specs[m_talentActiveSpec].talents)
     {
-        auto talentInfo = sTalentStore.LookupEntry(itr.first);
+        auto talentInfo = sTalentStore.lookupEntry(itr.first);
         if (talentInfo == nullptr)
             continue;
         auto spellInfo = sSpellMgr.getSpellInfo(talentInfo->RankID[itr.second]);
@@ -6527,8 +6527,8 @@ bool Player::hasItem(uint32_t itemId, uint32_t amount /*= 1*/, bool checkBankAls
 #if VERSION_STRING == WotLK
 void Player::calculateHeirloomBonus(ItemProperties const* proto, int16_t slot, bool apply)
 {
-    DBC::Structures::ScalingStatDistributionEntry const* ssd = getScalingStatDistributionFor(*proto);
-    DBC::Structures::ScalingStatValuesEntry const* ssvrow = getScalingStatValuesFor(*proto);
+    WDB::Structures::ScalingStatDistributionEntry const* ssd = getScalingStatDistributionFor(*proto);
+    WDB::Structures::ScalingStatValuesEntry const* ssvrow = getScalingStatValuesFor(*proto);
 
     if (!ssd || !ssvrow)
         return;
@@ -6769,26 +6769,26 @@ void Player::calculateHeirloomBonus(ItemProperties const* proto, int16_t slot, b
 #endif
 
 #if VERSION_STRING > TBC
-DBC::Structures::ScalingStatDistributionEntry const* Player::getScalingStatDistributionFor(ItemProperties const& itemProto) const
+WDB::Structures::ScalingStatDistributionEntry const* Player::getScalingStatDistributionFor(ItemProperties const& itemProto) const
 {
     if (!itemProto.ScalingStatsEntry)
         return nullptr;
 
-    return sScalingStatDistributionStore.LookupEntry(itemProto.ScalingStatsEntry);
+    return sScalingStatDistributionStore.lookupEntry(itemProto.ScalingStatsEntry);
 }
 
-DBC::Structures::ScalingStatValuesEntry const* Player::getScalingStatValuesFor(ItemProperties const& itemProto) const
+WDB::Structures::ScalingStatValuesEntry const* Player::getScalingStatValuesFor(ItemProperties const& itemProto) const
 {
     if (!itemProto.ScalingStatsFlag)
         return nullptr;
 
-    DBC::Structures::ScalingStatDistributionEntry const* ssd = getScalingStatDistributionFor(itemProto);
+    WDB::Structures::ScalingStatDistributionEntry const* ssd = getScalingStatDistributionFor(itemProto);
     if (!ssd)
         return nullptr;
 
     // req. check at equip, but allow use for extended range if range limit max level, set proper level
     uint32_t const ssd_level = std::min(uint32_t(getLevel()), ssd->maxlevel);
-    return sScalingStatValuesStore.LookupEntry(ssd_level);
+    return sScalingStatValuesStore.lookupEntry(ssd_level);
 }
 #endif
 
@@ -6869,7 +6869,7 @@ void Player::applyItemMods(Item* item, int16_t slot, bool apply, bool justBroked
 
     if (setId != 0)
     {
-        if (auto itemSetEntry = sItemSetStore.LookupEntry(setId))
+        if (auto itemSetEntry = sItemSetStore.lookupEntry(setId))
         {
             bool isItemSetCreatedNew = false;
             ItemSet* itemSet = nullptr;
@@ -7894,9 +7894,9 @@ void Player::updateChannels()
 #endif
 
     // Update only default channels
-    for (uint8_t i = 0; i < sChatChannelsStore.GetNumRows(); ++i)
+    for (uint8_t i = 0; i < sChatChannelsStore.getNumRows(); ++i)
     {
-        const auto channelDbc = sChatChannelsStore.LookupEntry(i);
+        const auto channelDbc = sChatChannelsStore.lookupEntry(i);
         if (channelDbc == nullptr)
             continue;
 
@@ -9418,15 +9418,15 @@ void Player::sendCinematicOnFirstLogin()
     if (m_firstLogin && !worldConfig.player.skipCinematics)
     {
 #if VERSION_STRING > TBC
-        if (const auto charEntry = sChrClassesStore.LookupEntry(getClass()))
+        if (const auto charEntry = sChrClassesStore.lookupEntry(getClass()))
         {
             if (charEntry->cinematic_id != 0)
                 sendPacket(SmsgTriggerCinematic(charEntry->cinematic_id).serialise().get());
-            else if (const auto raceEntry = sChrRacesStore.LookupEntry(getRace()))
+            else if (const auto raceEntry = sChrRacesStore.lookupEntry(getRace()))
                 sendPacket(SmsgTriggerCinematic(raceEntry->cinematic_id).serialise().get());
         }
 #else
-        if (const auto raceEntry = sChrRacesStore.LookupEntry(getRace()))
+        if (const auto raceEntry = sChrRacesStore.lookupEntry(getRace()))
             sendPacket(SmsgTriggerCinematic(raceEntry->cinematic_id).serialise().get());
 #endif
     }
@@ -9782,7 +9782,7 @@ void Player::applyReforgeEnchantment(Item* item, bool apply)
     if (!item)
         return;
 
-    DBC::Structures::ItemReforgeEntry const* reforge = sItemReforgeStore.LookupEntry(item->getEnchantmentId(REFORGE_ENCHANTMENT_SLOT));
+    WDB::Structures::ItemReforgeEntry const* reforge = sItemReforgeStore.lookupEntry(item->getEnchantmentId(REFORGE_ENCHANTMENT_SLOT));
     if (!reforge)
         return;
 
@@ -10422,7 +10422,7 @@ bool Player::activateTaxiPathTo(std::vector<uint32_t> const& nodes, Creature* np
     uint32_t sourcenode = nodes[0];
 
     // starting node too far away (cheat?)
-    DBC::Structures::TaxiNodesEntry const* node = sTaxiNodesStore.LookupEntry(sourcenode);
+    WDB::Structures::TaxiNodesEntry const* node = sTaxiNodesStore.lookupEntry(sourcenode);
     if (!node)
     {
         getSession()->SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_NoDirectPath).serialise().get());
@@ -10521,7 +10521,7 @@ bool Player::activateTaxiPathTo(std::vector<uint32_t> const& nodes, Creature* np
 
 bool Player::activateTaxiPathTo(uint32_t taxi_path_id, uint32_t spellid /*= 0*/)
 {
-    DBC::Structures::TaxiPathEntry const* entry = sTaxiPathStore.LookupEntry(taxi_path_id);
+    WDB::Structures::TaxiPathEntry const* entry = sTaxiPathStore.lookupEntry(taxi_path_id);
     if (!entry)
         return false;
 
@@ -10536,7 +10536,7 @@ bool Player::activateTaxiPathTo(uint32_t taxi_path_id, uint32_t spellid /*= 0*/)
 
 bool Player::activateTaxiPathTo(uint32_t taxi_path_id, Creature* npc)
 {
-    DBC::Structures::TaxiPathEntry const* entry = sTaxiPathStore.LookupEntry(taxi_path_id);
+    WDB::Structures::TaxiPathEntry const* entry = sTaxiPathStore.lookupEntry(taxi_path_id);
     if (!entry)
         return false;
 
@@ -10578,8 +10578,8 @@ void Player::continueTaxiFlight() const
 
     for (uint32_t i = 1; i < nodeList.size(); ++i)
     {
-        DBC::Structures::TaxiPathNodeEntry const* node = nodeList[i];
-        DBC::Structures::TaxiPathNodeEntry const* prevNode = nodeList[i - 1];
+        WDB::Structures::TaxiPathNodeEntry const* node = nodeList[i];
+        WDB::Structures::TaxiPathNodeEntry const* prevNode = nodeList[i - 1];
 
         // skip nodes at another map
         if (node->mapid != GetMapId())
@@ -11218,7 +11218,7 @@ inline bool RankChangedFlat(int32_t Standing, int32_t NewStanding)
 
 void Player::setFactionStanding(uint32_t faction, int32_t value)
 {
-    DBC::Structures::FactionEntry const* factionEntry = sFactionStore.LookupEntry(faction);
+    WDB::Structures::FactionEntry const* factionEntry = sFactionStore.lookupEntry(faction);
     if (!factionEntry || factionEntry->RepListId < 0)
         return;
 
@@ -11297,7 +11297,7 @@ int32_t Player::getBaseFactionStanding(uint32_t faction)
 
 void Player::modFactionStanding(uint32_t faction, int32_t value)
 {
-    DBC::Structures::FactionEntry const* factionEntry = sFactionStore.LookupEntry(faction);
+    WDB::Structures::FactionEntry const* factionEntry = sFactionStore.lookupEntry(faction);
     if (factionEntry == nullptr || factionEntry->RepListId < 0)
         return;
 
@@ -11399,7 +11399,7 @@ void Player::applyForcedReaction(uint32 faction_id, Standing rank, bool apply)
         m_forcedReactions.erase(faction_id);
 }
 
-Standing const* Player::getForcedReputationRank(DBC::Structures::FactionTemplateEntry const* factionTemplateEntry) const
+Standing const* Player::getForcedReputationRank(WDB::Structures::FactionTemplateEntry const* factionTemplateEntry) const
 {
     const auto itr = m_forcedReactions.find(factionTemplateEntry->Faction);
     return itr != m_forcedReactions.end() ? &itr->second : nullptr;
@@ -11424,7 +11424,7 @@ void Player::setFactionAtWar(uint32_t faction, bool set)
         updateInrangeSetsBasedOnReputation();
 }
 
-bool Player::isFactionAtWar(DBC::Structures::FactionEntry const* factionEntry) const
+bool Player::isFactionAtWar(WDB::Structures::FactionEntry const* factionEntry) const
 {
     if (!factionEntry)
         return false;
@@ -11438,7 +11438,7 @@ bool Player::isFactionAtWar(DBC::Structures::FactionEntry const* factionEntry) c
     return false;
 }
 
-bool Player::isHostileBasedOnReputation(DBC::Structures::FactionEntry const* factionEntry)
+bool Player::isHostileBasedOnReputation(WDB::Structures::FactionEntry const* factionEntry)
 {
     if (!factionEntry)
         return false;
@@ -11536,7 +11536,7 @@ void Player::onKillUnitReputation(Unit* unit, bool innerLoop)
     }
 }
 
-void Player::onTalkReputation(DBC::Structures::FactionEntry const* factionEntry)
+void Player::onTalkReputation(WDB::Structures::FactionEntry const* factionEntry)
 {
     if (!factionEntry || factionEntry->RepListId < 0)
         return;
@@ -11556,7 +11556,7 @@ void Player::setFactionInactive(uint32_t faction, bool /*set*/)
         return;
 }
 
-bool Player::addNewFaction(DBC::Structures::FactionEntry const* factionEntry, int32_t standing, bool base)
+bool Player::addNewFaction(WDB::Structures::FactionEntry const* factionEntry, int32_t standing, bool base)
 {
     if (!factionEntry || factionEntry->RepListId < 0)
         return false;
@@ -11581,7 +11581,7 @@ bool Player::addNewFaction(DBC::Structures::FactionEntry const* factionEntry, in
     return false;
 }
 
-void Player::onModStanding(DBC::Structures::FactionEntry const* factionEntry, FactionReputation* reputation)
+void Player::onModStanding(WDB::Structures::FactionEntry const* factionEntry, FactionReputation* reputation)
 {
     if (!factionEntry || !reputation)
         return;
@@ -11653,16 +11653,16 @@ void Player::sendSmsgInitialFactions()
 
 void Player::initialiseReputation()
 {
-    for (uint32_t i = 0; i < sFactionStore.GetNumRows(); ++i)
+    for (uint32_t i = 0; i < sFactionStore.getNumRows(); ++i)
     {
-        DBC::Structures::FactionEntry const* factionEntry = sFactionStore.LookupEntry(i);
+        WDB::Structures::FactionEntry const* factionEntry = sFactionStore.lookupEntry(i);
         addNewFaction(factionEntry, 0, true);
     }
 }
 
 uint32_t Player::getInitialFactionId()
 {
-    if (const auto raceEntry = sChrRacesStore.LookupEntry(getRace()))
+    if (const auto raceEntry = sChrRacesStore.lookupEntry(getRace()))
         return raceEntry->faction_id;
 
     return 0;
@@ -12339,7 +12339,7 @@ void Player::loadBoundInstances()
             time_t resetTime = time_t(fields[5].GetUInt64());
             bool deleteInstance = false;
 
-            DBC::Structures::MapEntry const* mapEntry = sMapStore.LookupEntry(mapId);
+            WDB::Structures::MapEntry const* mapEntry = sMapStore.lookupEntry(mapId);
 #if VERSION_STRING > WotLK
             std::string mapname = mapEntry ? mapEntry->map_name[0] : "Unknown";
 #else
@@ -12360,7 +12360,7 @@ void Player::loadBoundInstances()
             }
             else
             {
-                DBC::Structures::MapDifficulty const* mapDiff = getMapDifficultyData(mapId, InstanceDifficulty::Difficulties(difficulty));
+                WDB::Structures::MapDifficulty const* mapDiff = getMapDifficultyData(mapId, InstanceDifficulty::Difficulties(difficulty));
                 if (!mapDiff)
                 {
                     sLogger.failure("entities.player", "Player::loadBoundInstances: player '%s' (%s) has bind to not existed difficulty %d instance for map %u (%s)",
@@ -12641,7 +12641,7 @@ void Player::resetInstances(uint8_t method, bool isRaid)
     for (BoundInstancesMap::iterator itr = m_boundInstances[diff].begin(); itr != m_boundInstances[diff].end();)
     {
         InstanceSaved* p = itr->second.save;
-        DBC::Structures::MapEntry const* entry = sMapStore.LookupEntry(itr->first);
+        WDB::Structures::MapEntry const* entry = sMapStore.lookupEntry(itr->first);
         if (!entry || entry->isRaid() != isRaid || !p->canReset())
         {
             ++itr;
@@ -12820,7 +12820,7 @@ void Player::calcExpertise()
 void Player::updateKnownCurrencies(uint32_t itemId, bool apply)
 {
 #if VERSION_STRING == WotLK
-    if (auto const* currency_type_entry = sCurrencyTypesStore.LookupEntry(itemId))
+    if (auto const* currency_type_entry = sCurrencyTypesStore.lookupEntry(itemId))
     {
         if (apply)
         {
@@ -14028,8 +14028,8 @@ void Player::loadFromDBProc(QueryResultVector& results)
     uint32_t cfaction = field[6].GetUInt32();
 
     // set race dbc
-    m_dbcRace = sChrRacesStore.LookupEntry(getRace());
-    m_dbcClass = sChrClassesStore.LookupEntry(getClass());
+    m_dbcRace = sChrRacesStore.lookupEntry(getRace());
+    m_dbcClass = sChrClassesStore.lookupEntry(getClass());
     if (!m_dbcClass || !m_dbcRace)
     {
         // bad character
@@ -14174,7 +14174,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
 
     eventModelChange();
 
-    if (const auto raceEntry = sChrRacesStore.LookupEntry(getRace()))
+    if (const auto raceEntry = sChrRacesStore.lookupEntry(getRace()))
         setFaction(raceEntry->faction_id);
     else
         setFaction(0);
@@ -14691,9 +14691,9 @@ void Player::loadFromDBProc(QueryResultVector& results)
         if (!m_taxi.loadTaxiDestinationsFromString(taxi_nodes, GetTeam()))
         {
             // problems with taxi path loading
-            DBC::Structures::TaxiNodesEntry const* nodeEntry = nullptr;
+            WDB::Structures::TaxiNodesEntry const* nodeEntry = nullptr;
             if (uint32_t node_id = m_taxi.getTaxiSource())
-                nodeEntry = sTaxiNodesStore.LookupEntry(node_id);
+                nodeEntry = sTaxiNodesStore.lookupEntry(node_id);
 
             if (!nodeEntry) // don't know taxi start node, teleport to homebind
             {
@@ -14786,8 +14786,8 @@ float Player::getDodgeChance()
         level = worldConfig.player.playerGeneratedInformationByLevelCap;
 
     // Base dodge + dodge from agility
-    auto baseCrit = sGtChanceToMeleeCritBaseStore.LookupEntry(playerClass - 1);
-    auto critPerAgi = sGtChanceToMeleeCritStore.LookupEntry(level - 1 + (playerClass - 1) * 100);
+    auto baseCrit = sGtChanceToMeleeCritBaseStore.lookupEntry(playerClass - 1);
+    auto critPerAgi = sGtChanceToMeleeCritStore.lookupEntry(level - 1 + (playerClass - 1) * 100);
     uint32_t agi = getStat(STAT_AGILITY);
 
     float tmp = 100.0f * (baseCrit->val + agi * critPerAgi->val);
@@ -14866,11 +14866,11 @@ void Player::updateChances()
     setParryPercentage(tmp);
 
     // Critical
-    auto baseCrit = sGtChanceToMeleeCritBaseStore.LookupEntry(playerClass - 1);
+    auto baseCrit = sGtChanceToMeleeCritBaseStore.lookupEntry(playerClass - 1);
 
-    auto CritPerAgi = sGtChanceToMeleeCritStore.LookupEntry(playerLevel - 1 + (playerClass - 1) * 100);
+    auto CritPerAgi = sGtChanceToMeleeCritStore.lookupEntry(playerLevel - 1 + (playerClass - 1) * 100);
     if (CritPerAgi == nullptr)
-        CritPerAgi = sGtChanceToMeleeCritStore.LookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
+        CritPerAgi = sGtChanceToMeleeCritStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
 
     tmp = 100 * (baseCrit->val + getStat(STAT_AGILITY) * CritPerAgi->val);
 
@@ -14899,11 +14899,11 @@ void Player::updateChances()
     float rcr = tmp + calcRating(CR_CRIT_RANGED) + ranged_bonus;
     setRangedCritPercentage(std::min(rcr, 95.0f));
 
-    auto SpellCritBase = sGtChanceToSpellCritBaseStore.LookupEntry(playerClass - 1);
+    auto SpellCritBase = sGtChanceToSpellCritBaseStore.lookupEntry(playerClass - 1);
 
-    auto SpellCritPerInt = sGtChanceToSpellCritStore.LookupEntry(playerLevel - 1 + (playerClass - 1) * 100);
+    auto SpellCritPerInt = sGtChanceToSpellCritStore.lookupEntry(playerLevel - 1 + (playerClass - 1) * 100);
     if (SpellCritPerInt == nullptr)
-        SpellCritPerInt = sGtChanceToSpellCritStore.LookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
+        SpellCritPerInt = sGtChanceToSpellCritStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (playerClass - 1) * 100);
 
     m_spellCritPercentage = 100 * (SpellCritBase->val + getStat(STAT_INTELLECT) * SpellCritPerInt->val) +
         this->getSpellCritFromSpell() +
@@ -15379,13 +15379,13 @@ void Player::regenerateHealth(bool inCombat)
         return;
 
 #if VERSION_STRING < Cata
-    auto HPRegenBase = sGtRegenHPPerSptStore.LookupEntry(getLevel() - 1 + (getClass() - 1) * 100);
+    auto HPRegenBase = sGtRegenHPPerSptStore.lookupEntry(getLevel() - 1 + (getClass() - 1) * 100);
     if (HPRegenBase == nullptr)
-        HPRegenBase = sGtRegenHPPerSptStore.LookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (getClass() - 1) * 100);
+        HPRegenBase = sGtRegenHPPerSptStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (getClass() - 1) * 100);
 
-    auto HPRegen = sGtOCTRegenHPStore.LookupEntry(getLevel() - 1 + (getClass() - 1) * 100);
+    auto HPRegen = sGtOCTRegenHPStore.lookupEntry(getLevel() - 1 + (getClass() - 1) * 100);
     if (HPRegen == nullptr)
-        HPRegen = sGtOCTRegenHPStore.LookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (getClass() - 1) * 100);
+        HPRegen = sGtOCTRegenHPStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (getClass() - 1) * 100);
 #endif
 
     uint32_t basespirit = getStat(STAT_SPIRIT);
@@ -15671,7 +15671,7 @@ float Player::calcRating(PlayerCombatRating index)
 
     uint32_t rating = getCombatRating(index);
 
-    DBC::Structures::GtCombatRatingsEntry const* combatRatingsEntry = sGtCombatRatingsStore.LookupEntry(index * 100 + level - 1);
+    WDB::Structures::GtCombatRatingsEntry const* combatRatingsEntry = sGtCombatRatingsStore.lookupEntry(index * 100 + level - 1);
     if (combatRatingsEntry == nullptr)
         return float(rating);
 
@@ -15801,7 +15801,7 @@ void Player::completeLoading()
     // add glyphs
     for (uint8_t j = 0; j < GLYPHS_COUNT; ++j)
     {
-        auto glyph_properties = sGlyphPropertiesStore.LookupEntry(m_specs[m_talentActiveSpec].glyphs[j]);
+        auto glyph_properties = sGlyphPropertiesStore.lookupEntry(m_specs[m_talentActiveSpec].glyphs[j]);
         if (glyph_properties == nullptr)
             continue;
 
