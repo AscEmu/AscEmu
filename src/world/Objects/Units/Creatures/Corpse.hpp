@@ -29,7 +29,7 @@ enum CorpseFlags
 
 struct WoWCorpse;
 
-class SERVER_DECL Corpse : public Object, public std::enable_shared_from_this<Corpse>
+class SERVER_DECL Corpse : public Object
 {
 public:
     Corpse(uint32_t high, uint32_t low);

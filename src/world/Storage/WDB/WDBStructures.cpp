@@ -64,7 +64,7 @@ WDB::Structures::SpellPowerEntry const* WDB::Structures::SpellEntry::GetSpellPow
 #if VERSION_STRING == Cata
     return SpellPowerId ? sSpellPowerStore.lookupEntry(SpellPowerId) : nullptr;
 #else
-    return sSpellPowerStore.LookupEntry(Id);
+    return sSpellPowerStore.lookupEntry(Id);
 #endif
 }
 
@@ -98,7 +98,7 @@ WDB::Structures::SpellTotemsEntry const* WDB::Structures::SpellEntry::GetSpellTo
 #if VERSION_STRING == Mop
 WDB::Structures::SpellMiscEntry const* WDB::Structures::SpellEntry::GetSpellMisc() const
 {
-    return SpellTotemsId ? sSpellMiscStore.LookupEntry(SpellMiscId) : nullptr;
+    return SpellTotemsId ? sSpellMiscStore.lookupEntry(SpellMiscId) : nullptr;
 }
 #endif
 

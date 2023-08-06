@@ -523,7 +523,10 @@ std::shared_ptr<Corpse> ObjectMgr::loadCorpseByGuid(const uint32_t _corpseGuid) 
 std::shared_ptr<Corpse> ObjectMgr::createCorpse()
 {
     uint32_t corpseGuid = ++m_hiCorpseGuid;
-    return std::make_shared<Corpse>(HIGHGUID_TYPE_CORPSE, corpseGuid);
+    auto corpse = std::make_shared<Corpse>(HIGHGUID_TYPE_CORPSE, corpseGuid);
+    addCorpse(corpse);
+
+    return corpse;
 }
 
 void ObjectMgr::addCorpse(const std::shared_ptr<Corpse>& _corpse)

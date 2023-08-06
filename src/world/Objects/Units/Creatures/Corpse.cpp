@@ -40,14 +40,10 @@ Corpse::Corpse(uint32_t high, uint32_t low)
     setGuid(low, high);
 
     setScale(1);
-
-    if (high != 0)
-        sObjectMgr.addCorpse(shared_from_this());
 }
 
 Corpse::~Corpse()
 {
-    sObjectMgr.removeCorpse(shared_from_this());
 }
 
 void Corpse::create(Player* owner, uint32_t mapid, LocationVector lv)
@@ -181,7 +177,6 @@ void Corpse::spawnBones()
             setItem(i, 0);
 
     deleteFromDB();
-    sObjectMgr.addCorpseDespawnTime(shared_from_this());
     setCorpseState(CORPSE_STATE_BONES);
 }
 

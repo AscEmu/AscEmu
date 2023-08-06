@@ -7440,7 +7440,10 @@ void Player::spawnCorpseBones()
     if (const auto corpse = sObjectMgr.getCorpseByOwner(getGuidLow()))
     {
         if (corpse->IsInWorld() && corpse->getCorpseState() == CORPSE_STATE_BODY)
+        {
             corpse->spawnBones();
+            sObjectMgr.addCorpseDespawnTime(corpse);
+        }
     }
 }
 
