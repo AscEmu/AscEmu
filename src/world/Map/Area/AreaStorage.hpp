@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "..\..\Storage\WDB\WDBContainer.hpp"
+#include "Storage/WDB/WDBContainer.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Map/Maps/WorldMap.hpp"
 

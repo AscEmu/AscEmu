@@ -260,9 +260,9 @@ bool loadDBCs()
     {
 #if VERSION_STRING <= TBC
         // classic & BC has no MapDifficulty.dbc so generate that data
-        for (uint32_t i = 0; i < sMapStore.GetNumRows(); ++i)
+        for (uint32_t i = 0; i < sMapStore.getNumRows(); ++i)
         {
-            if (auto entry = sMapStore.LookupEntry(i))
+            if (auto entry = sMapStore.lookupEntry(i))
             {
                 uint32_t maxPlayers;
                 if (entry->getAddon() < 1)
