@@ -25,7 +25,10 @@
 #include "Management/LFG/LFGGroupData.hpp"
 #include "Management/LFG/LFGPlayerData.hpp"
 #include "Management/ItemInterface.h"
+#include "Management/QuestMgr.h"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/World.h"
+#include "Server/WorldSession.h"
 
 uint32 LfgDungeonTypes[MAX_DUNGEONS];
 

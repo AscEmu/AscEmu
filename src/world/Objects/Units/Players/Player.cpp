@@ -25,6 +25,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Management/MapMgr.hpp"
 #include "Objects/GameObject.h"
 #include "Management/ObjectMgr.hpp"
+#include "Management/QuestMgr.h"
 #include "Management/TaxiMgr.h"
 #include "Management/WeatherMgr.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
@@ -134,6 +135,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Strings.hpp"
 #include "Objects/Transporter.hpp"
 #include "Movement/MovementGenerators/FlightPathMovementGenerator.h"
+#include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/WorldSessionLog.hpp"
 

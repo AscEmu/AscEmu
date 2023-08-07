@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Creatures/AIInterface.h"
 #include "Creatures/Creature.h"
 #include "Map/Management/MapMgr.hpp"
+#include "Server/Opcodes.hpp"
 #include "Spell/SpellAuras.h"
 
 void ThreatReference::addThreat(float amount)

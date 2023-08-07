@@ -22,6 +22,7 @@
 #include "Chat/ChatHandler.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/QuestLogEntry.hpp"
+#include "Management/QuestMgr.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Objects/Item.hpp"
 #include "Server/DatabaseDefinition.hpp"

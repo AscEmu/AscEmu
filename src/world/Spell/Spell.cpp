@@ -37,6 +37,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Faction.h"
 #include "Objects/GameObject.h"
 #include "Management/ObjectMgr.hpp"
+#include "Management/QuestMgr.h"
 #include "Server/Definitions.h"
 #include "Server/Packets/SmsgCancelCombat.h"
 #include "Server/Packets/MsgChannelUpdate.h"
@@ -47,6 +48,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Objects/Units/UnitDefines.hpp"
+#include "Server/World.h"
+#include "Server/WorldSession.h"
 #include "Utilities/Util.hpp"
 
 using namespace AscEmu::Packets;

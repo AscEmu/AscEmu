@@ -26,6 +26,7 @@
 #include "Definitions/SpellSchoolConversionTable.hpp"
 #include "Definitions/DispelType.hpp"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
+#include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
  // Mage Scripts

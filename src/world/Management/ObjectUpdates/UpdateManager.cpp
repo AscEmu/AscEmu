@@ -9,6 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "UpdateManager.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/Units/Players/Player.hpp"
+#include "Server/Opcodes.hpp"
+#include "Server/WorldSession.h"
 
 UpdateManager::UpdateManager(Player* owner, size_t compressionThreshold, size_t creationBufferInitialSize, size_t updateBufferInitialSize, size_t outOfRangeIdsInitialSize)
     : 

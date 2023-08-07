@@ -4,6 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "GuildBankRightsAndSlots.hpp"
+
+#include "GuildDefinitions.hpp"
 #include "Macros/GuildMacros.hpp"
 
 GuildBankRightsAndSlots::GuildBankRightsAndSlots() : mTabId(UNDEFINED_GUILD_TAB), mRights(0), mSlots(0)

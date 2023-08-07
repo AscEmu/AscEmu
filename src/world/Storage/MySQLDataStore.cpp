@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Chat/ChatDefines.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/World.h"
 #include "Spell/SpellClickInfo.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Utilities/Strings.hpp"

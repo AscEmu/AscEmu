@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "zlib.h"
+#include "Management/QuestMgr.h"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellMgr.hpp"
@@ -59,6 +60,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.h"
 #include "Objects/Transporter.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/World.h"
+#include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
 
 using namespace AscEmu::Packets;

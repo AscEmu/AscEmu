@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "TerrainMgr.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Logging/Logger.hpp"
+#include "Server/World.h"
 
 static uint16_t const holetab_h[4] = { 0x1111, 0x2222, 0x4444, 0x8888 };
 static uint16_t const holetab_v[4] = { 0x000F, 0x00F0, 0x0F00, 0xF000 };
@@ -578,6 +579,15 @@ TerrainTile::TerrainTile(TerrainHolder* parent, uint32_t mapid, int32_t x, int32
     m_tx = x;
     m_ty = y;
     ++m_refs;
+}
+
+void TerrainTile::Load()
+{
+    char filename[1024];
+
+    // Normal map stuff
+    sprintf(filename, "%smaps/%04u_%02u_%02u.map", sWorld.settings.server.dataDir.c_str(), m_mapid, m_tx, m_ty);
+    m_map.load(filename);
 }
 
 TerrainHolder::TerrainHolder(uint32_t mapid)

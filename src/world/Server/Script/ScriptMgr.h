@@ -694,12 +694,7 @@ class SERVER_DECL InstanceScript
         void updateAchievementCriteria(AchievementCriteriaTypes type, uint32_t miscValue1 = 0, uint32_t miscValue2 = 0, Unit* unit = nullptr);
 #endif
 
-        void setZoneMusic(uint32_t zoneId, uint32_t musicId)
-        {
-            WorldPacket data(SMSG_PLAY_MUSIC, 4);
-            data << uint32_t(musicId);
-            sWorld.sendZoneMessage(&data, zoneId);
-        }
+        void setZoneMusic(uint32_t zoneId, uint32_t musicId);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // encounters

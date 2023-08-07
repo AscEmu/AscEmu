@@ -33,6 +33,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Definitions.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Objects/Units/Creatures/CreatureGroups.h"
+#include "Server/World.h"
 #include "Storage/WDB/WDBStores.hpp"
 
 // Random and guessed values for Internal Spell cast chance
@@ -3460,6 +3461,42 @@ uint32 AIInterface::fixupCorridor(dtPolyRef* path, const uint32 npath, const uin
     }
 
     return req + size;
+}
+
+CreatureAISpells::CreatureAISpells(SpellInfo const* spellInfo, float castChance, uint32_t targetType, uint32_t duration, uint32_t cooldown, bool forceRemove, bool isTriggered)
+{
+    mSpellInfo = spellInfo;
+    mCastChance = castChance;
+    mTargetType = targetType;
+    mDuration = duration;
+
+    mCooldown = cooldown;
+    mForceRemoveAura = forceRemove;
+    mIsTriggered = isTriggered;
+
+    mMaxStackCount = 1;
+    mCastCount = 0;
+    mMaxCount = 0;
+
+    scriptType = onAIUpdate;
+
+    mMinPositionRangeToCast = 0.0f;
+    mMaxPositionRangeToCast = 0.0f;
+
+    mMinHpRangeToCast = 0;
+    mMaxHpRangeToCast = 100;
+
+    spell_type = STYPE_NULL;
+
+    if (mSpellInfo != nullptr)
+    {
+        mMinPositionRangeToCast = mSpellInfo->getMinRange();
+        mMaxPositionRangeToCast = mSpellInfo->getMaxRange();
+    }
+
+    mAttackStopTimer = 0;
+
+    mCustomTargetCreature = nullptr;
 }
 
 void CreatureAISpells::setdurationTimer(uint32_t durationTimer)

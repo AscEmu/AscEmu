@@ -73,7 +73,12 @@
 #include "Server/Script/CreatureAIScript.h"
 #include "VMapFactory.h"
 #include "VMapManager2.h"
+#include "Management/QuestMgr.h"
+#include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
+#include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 #include "Server/Definitions.h"
+#include "Server/World.h"
+#include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
 
 using namespace AscEmu::Packets;

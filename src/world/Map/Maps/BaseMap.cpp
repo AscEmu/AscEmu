@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MMapManager.h"
 #include "MMapFactory.h"
 #include "Map/Cells/CellHandler.hpp"
+#include "Map/Management/MapMgr.hpp"
 
 BaseMap::BaseMap(uint32_t mapId, MySQLStructure::MapInfo const* mapInfo, WDB::Structures::MapEntry const* mapEntry) :
         _mapEntry(mapEntry), _mapInfo(mapInfo), _mapId(mapId)

@@ -20,14 +20,14 @@
 
 #pragma once
 
-#include <cstdint>
-#include <list>
-#include <mutex>
-
 #include "EquipmentSetMgr.h"
 #include "ItemProperties.hpp"
 #include "Objects/ItemDefines.hpp"
 #include "CommonTypes.hpp"
+
+#include <cstdint>
+#include <list>
+#include <mutex>
 
 class Creature;
 

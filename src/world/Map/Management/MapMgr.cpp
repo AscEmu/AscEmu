@@ -15,6 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Pet.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Map/Maps/BattleGroundMap.hpp"
+#include "Server/World.h"
 
 using namespace AscEmu::Packets;
 

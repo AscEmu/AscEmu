@@ -16,11 +16,15 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgLootRollWon.h"
 #include "Server/Packets/SmsgLootRoll.h"
 #include "LootMgr.h"
+
+#include "LootDefines.hpp"
 #include "Objects/GameObject.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Management/ObjectMgr.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/World.h"
+#include "Server/WorldSession.h"
 
 using namespace AscEmu::Packets;
 

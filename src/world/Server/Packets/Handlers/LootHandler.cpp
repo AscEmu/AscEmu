@@ -17,6 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Creature.h"
 #include "Management/ItemInterface.h"
 #include "Management/ObjectMgr.hpp"
+#include "Server/World.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Spell/Spell.Legacy.h"
 

@@ -4,6 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Objects/DynamicObject.hpp"
+
+#include "Data/Flags.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Management/Faction.h"
 #include "Spell/SpellMgr.hpp"

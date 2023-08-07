@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/Opcodes.hpp"
 #if VERSION_STRING >= Cata
 
 #include "GuildFinderMgr.hpp"

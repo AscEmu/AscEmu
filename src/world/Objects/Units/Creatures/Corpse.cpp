@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Map/Cells/MapCell.hpp"
 #include "Corpse.hpp"
+
+#include "Data/Flags.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Data/WoWCorpse.hpp"
 #include "Server/DatabaseDefinition.hpp"

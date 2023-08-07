@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Server/DatabaseDefinition.hpp"
 #include "Database/Database.h"
+#include "WorldPacket.h"
 
 
 EmblemInfo::EmblemInfo() : mStyle(0), mColor(0), mBorderStyle(0), mBorderColor(0), mBackgroundColor(0)

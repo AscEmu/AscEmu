@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Management/MapMgr.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/WorldSession.h"
 #include "Server/Packets/SmsgAuctionBidderNotification.h"
 #include "Server/Packets/SmsgAuctionOwnerNotification.h"
 #include "Server/Packets/SmsgAuctionOwnerListResult.h"

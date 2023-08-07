@@ -5,8 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Database/Field.hpp"
 #include "Macros/GuildMacros.hpp"
+
+class Item;
+class WorldSession;
 
 class GuildBankTab
 {

@@ -23,6 +23,8 @@
 #include "ItemProperties.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Management/ItemInterface.h"
+
+#include "QuestMgr.h"
 #include "Chat/ChatHandler.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/SmsgInventoryChangeFailure.h"

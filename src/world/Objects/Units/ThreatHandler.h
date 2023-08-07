@@ -5,13 +5,15 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "CommonTypes.hpp"
+#include "Spell/Definitions/School.hpp"
+
 #include <array>
 #include <vector>
 #include <list>
+#include <unordered_map>
 
-#include "Objects/Object.hpp"
-#include "CommonTypes.hpp"
-
+class Spell;
 class Creature;
 class Unit;
 class SpellInfo;

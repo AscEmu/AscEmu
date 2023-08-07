@@ -27,7 +27,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Area/AreaStorage.hpp"
 #include "Debugging/CrashHandler.h"
 #include "Objects/Transporter.hpp"
+#include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/World.h"
+#include "Server/WorldSession.h"
 #include "Spell/Definitions/SummonControlTypes.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 

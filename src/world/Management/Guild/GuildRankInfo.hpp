@@ -5,11 +5,14 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Management/Guild/GuildDefinitions.hpp"
 #include "GuildBankRightsAndSlots.hpp"
-#include "Database/Field.hpp"
 #include "Macros/GuildMacros.hpp"
 
+#include <cstdint>
+#include <string>
+
+class Field;
+class GuildBankRightsAndSlots;
 class Guild;
 
 class GuildRankInfo

@@ -47,6 +47,7 @@
 #include "Server/Packets/SmsgCancelCombat.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Objects/Units/ThreatHandler.h"
+#include "Server/WorldSession.h"
 #include "Storage/WDB/WDBStores.hpp"
 
 using namespace AscEmu::Packets;

@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Management/MapMgr.hpp"
 #include "Management/Faction.h"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/World.h"
 #include "Spell/Definitions/SpellMechanics.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"

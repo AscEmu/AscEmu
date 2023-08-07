@@ -22,7 +22,11 @@
 #ifndef STATS_H
 #define STATS_H
 
-#include "Objects/Units/Unit.hpp"
+#include "CommonTypes.hpp"
+#include <cstdint>
+
+class Unit;
+class SpellInfo;
 
 enum Stats
 {
@@ -42,11 +46,11 @@ SERVER_DECL bool isGrayLevel(uint32_t attackerLevel, uint32_t victimLevel);
 // MIT End
 // APGL Start
 
-SERVER_DECL uint32 getConColor(uint16 AttackerLvl, uint16 VictimLvl);
-SERVER_DECL uint32 CalculateXpToGive(Unit* pVictim, Unit* pAttacker);
-SERVER_DECL uint32 CalculateStat(uint16 level, double a3, double a2, double a1, double a0);
-SERVER_DECL uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type, const uint32* spellgroup, SpellInfo const* ability);
-SERVER_DECL uint32 GainStat(uint16 level, uint8 playerclass, uint8 Stat);
+SERVER_DECL uint32_t getConColor(uint16_t AttackerLvl, uint16_t VictimLvl);
+SERVER_DECL uint32_t CalculateXpToGive(Unit* pVictim, Unit* pAttacker);
+SERVER_DECL uint32_t CalculateStat(uint16_t level, double a3, double a2, double a1, double a0);
+SERVER_DECL uint32_t CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32_t weapon_damage_type, const uint32_t* spellgroup, SpellInfo const* ability);
+SERVER_DECL uint32_t GainStat(uint16_t level, uint8_t playerclass, uint8_t Stat);
 SERVER_DECL bool isEven(int num);
 
 #endif      //STATS_H

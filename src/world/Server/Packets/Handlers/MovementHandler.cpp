@@ -21,6 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/OpcodeTable.hpp"
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
 #include "Objects/Transporter.hpp"
+#include "Server/World.h"
 #include "Server/WorldSessionLog.hpp"
 
 using namespace AscEmu::Packets;

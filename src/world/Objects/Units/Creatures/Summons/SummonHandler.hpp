@@ -5,10 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <vector>
-
 #include "CommonTypes.hpp"
 #include "SummonDefines.hpp"
+
+#include <vector>
 
 class Summon;
 class TotemSummon;

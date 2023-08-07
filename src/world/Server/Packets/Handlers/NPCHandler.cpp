@@ -23,6 +23,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgGossipSelectOption.h"
 #include "Server/Packets/CmsgGossipHello.h"
 #include "Management/ItemInterface.h"
+#include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Gossip/GossipScript.hpp"
 #include "Server/Packets/SmsgBinderConfirm.h"
 #include "Server/Packets/CmsgTrainerList.h"

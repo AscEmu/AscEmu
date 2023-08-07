@@ -19,16 +19,20 @@
  *
  */
 
+#include "QuestMgr.h"
+
 #include "Storage/WDB/WDBStores.hpp"
 #include "Logging/Log.hpp"
 #include "Objects/Item.hpp"
 #include "QuestLogEntry.hpp"
+#include "Gossip/GossipMenu.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/QuestDefines.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/World.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellMgr.hpp"
 #include "Server/Packets/MsgQuestPushResult.h"
@@ -107,7 +111,7 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, QuestProperties const* qst, bool s
 {
     uint32 status;
 
-    if (!sQuestMgr.IsQuestRepeatable(qst) && !sQuestMgr.IsQuestDaily(qst))
+    if (!IsQuestRepeatable(qst) && !IsQuestDaily(qst))
         status = QuestStatus::Available;
     else
     {
@@ -139,7 +143,7 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, QuestProperties const* qst, bool s
         if (plr->getFactionStanding(qst->required_rep_faction) < (int32)qst->required_rep_value)
             return QuestStatus::NotAvailable;
 
-    if (plr->hasQuestFinished(qst->id) && !sQuestMgr.IsQuestRepeatable(qst) && !sQuestMgr.IsQuestDaily(qst))
+    if (plr->hasQuestFinished(qst->id) && !IsQuestRepeatable(qst) && !IsQuestDaily(qst))
         return QuestStatus::NotAvailable;
 
     // dont display quests we already have
@@ -1090,11 +1094,11 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
         return;
     }
 
-    *data << uint8(sQuestMgr.ActiveQuestsCount(qst_giver, plr));
+    *data << uint8(ActiveQuestsCount(qst_giver, plr));
 
     for (it = st; it != ed; ++it)
     {
-        status = sQuestMgr.CalcQuestStatus(qst_giver, plr, *it);
+        status = CalcQuestStatus(qst_giver, plr, *it);
         if (status >= QuestStatus::AvailableChat)
         {
             if (tmp_map.find((*it)->qst->id) == tmp_map.end())
@@ -1103,7 +1107,7 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
                 MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest((*it)->qst->id, language) : nullptr;
 
                 *data << (*it)->qst->id;
-                /**data << sQuestMgr.CalcQuestStatus(qst_giver, plr, *it);
+                /**data << CalcQuestStatus(qst_giver, plr, *it);
                 *data << uint32(0);*/
 
                 const auto questProp = (*it)->qst;
@@ -1905,58 +1909,135 @@ void QuestMgr::LoadGOQuests(GameObject* go)
 
 QuestRelationList* QuestMgr::GetGOQuestList(uint32 entryid)
 {
-    std::unordered_map<uint32, QuestRelationList* > &olist = _GetList<GameObject>();
-    std::unordered_map<uint32, QuestRelationList* >::iterator itr = olist.find(entryid);
-    return (itr == olist.end()) ? 0 : itr->second;
+    std::unordered_map<uint32, QuestRelationList*> &olist = m_obj_quests;
+    const auto itr = olist.find(entryid);
+    return itr == olist.end() ? nullptr : itr->second;
 }
 
 QuestRelationList* QuestMgr::GetCreatureQuestList(uint32 entryid)
 {
-    std::unordered_map<uint32, std::list<QuestRelation*>* > &olist = _GetList<Creature>();
-    std::unordered_map<uint32, QuestRelationList* >::iterator itr = olist.find(entryid);
-    return (itr == olist.end()) ? 0 : itr->second;
+    std::unordered_map<uint32, std::list<QuestRelation*>*> &olist = m_npc_quests;
+    const auto itr = olist.find(entryid);
+    return itr == olist.end() ? nullptr : itr->second;
 }
 
-template <class T> void QuestMgr::_AddQuest(uint32 entryid, QuestProperties const* qst, uint8 type)
+void QuestMgr::addCreatureQuest(uint32_t _entry, const QuestProperties* _questProp, uint8_t _type)
 {
-    std::unordered_map<uint32, std::list<QuestRelation*>* > &olist = _GetList<T>();
-    std::list<QuestRelation*>* nlist;
-    QuestRelation* ptr = NULL;
+    std::unordered_map<uint32_t, std::list<QuestRelation*>*>& questRelationMap = m_npc_quests;
+    std::list<QuestRelation*>* questRelationList;
+    QuestRelation* questRelation = nullptr;
 
-    if (olist.find(entryid) == olist.end())
+    if (!questRelationMap.contains(_entry))
     {
-        nlist = new std::list < QuestRelation* > ;
-
-        olist.insert(std::unordered_map<uint32, std::list<QuestRelation*>* >::value_type(entryid, nlist));
+        questRelationList = new std::list<QuestRelation*>;
+        questRelationMap.insert(std::unordered_map<uint32_t, std::list<QuestRelation*>*>::value_type(_entry, questRelationList));
     }
     else
     {
-        nlist = olist.find(entryid)->second;
+        questRelationList = questRelationMap.find(_entry)->second;
     }
 
-    std::list<QuestRelation*>::iterator it;
-    for (it = nlist->begin(); it != nlist->end(); ++it)
+    for (const auto& relation : *questRelationList)
     {
-        if ((*it)->qst == qst)
+        if (relation->qst == _questProp)
         {
-            ptr = (*it);
+            questRelation = relation;
             break;
         }
     }
 
-    if (ptr == NULL)
+    if (questRelation == nullptr)
     {
-        ptr = new QuestRelation;
-        ptr->qst = qst;
-        ptr->type = type;
+        questRelation = new QuestRelation;
+        questRelation->qst = _questProp;
+        questRelation->type = _type;
 
-        nlist->push_back(ptr);
+        questRelationList->push_back(questRelation);
     }
     else
     {
-        ptr->type |= type;
+        questRelation->type |= _type;
     }
 }
+void QuestMgr::addGameObjectQuest(uint32_t _entry, const QuestProperties* _questProp, uint8_t _type)
+{
+    std::unordered_map<uint32_t, std::list<QuestRelation*>* >& questRelationMap = m_obj_quests;
+    std::list<QuestRelation*>* questRelationList;
+    QuestRelation* questRelation = nullptr;
+
+    if (!questRelationMap.contains(_entry))
+    {
+        questRelationList = new std::list <QuestRelation*>;
+        questRelationMap.insert(std::unordered_map<uint32_t, std::list<QuestRelation*>*>::value_type(_entry, questRelationList));
+    }
+    else
+    {
+        questRelationList = questRelationMap.find(_entry)->second;
+    }
+
+    for (const auto& relation : *questRelationList)
+    {
+        if (relation->qst == _questProp)
+        {
+            questRelation = relation;
+            break;
+        }
+    }
+
+    if (questRelation == nullptr)
+    {
+        questRelation = new QuestRelation;
+        questRelation->qst = _questProp;
+        questRelation->type = _type;
+
+        questRelationList->push_back(questRelation);
+    }
+    else
+    {
+        questRelation->type |= _type;
+    }
+}
+
+//template <class T> void QuestMgr::_AddQuest(uint32 entryid, QuestProperties const* qst, uint8 type)
+//{
+//    std::unordered_map<uint32, std::list<QuestRelation*>* > &olist = _GetList<T>();
+//    std::list<QuestRelation*>* nlist;
+//    QuestRelation* ptr = NULL;
+//
+//    if (olist.find(entryid) == olist.end())
+//    {
+//        nlist = new std::list < QuestRelation* > ;
+//
+//        olist.insert(std::unordered_map<uint32, std::list<QuestRelation*>* >::value_type(entryid, nlist));
+//    }
+//    else
+//    {
+//        nlist = olist.find(entryid)->second;
+//    }
+//
+//    std::list<QuestRelation*>::iterator it;
+//    for (it = nlist->begin(); it != nlist->end(); ++it)
+//    {
+//        if ((*it)->qst == qst)
+//        {
+//            ptr = (*it);
+//            break;
+//        }
+//    }
+//
+//    if (ptr == NULL)
+//    {
+//        ptr = new QuestRelation;
+//        ptr->qst = qst;
+//        ptr->type = type;
+//
+//        nlist->push_back(ptr);
+//    }
+//    else
+//    {
+//        ptr->type |= type;
+//    }
+//}
 
 // Zyres: not used 2022/03/06
 //void QuestMgr::_CleanLine(std::string* str)
@@ -2193,7 +2274,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
             return false;
     }
 
-    uint32 questCount = sQuestMgr.ActiveQuestsCount(qst_giver, plr);
+    uint32 questCount = ActiveQuestsCount(qst_giver, plr);
 
     if (questCount == 0)
     {
@@ -2246,17 +2327,17 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
         }
 
         for (itr = q_begin; itr != q_end; ++itr)
-            if (sQuestMgr.CalcQuestStatus(qst_giver, plr, *itr) >= QuestStatus::AvailableChat)
+            if (CalcQuestStatus(qst_giver, plr, *itr) >= QuestStatus::AvailableChat)
                 break;
 
-        if (sQuestMgr.CalcStatus(qst_giver, plr) < QuestStatus::AvailableChat)
+        if (CalcStatus(qst_giver, plr) < QuestStatus::AvailableChat)
             return false;
 
-        uint32 status = sQuestMgr.CalcStatus(qst_giver, plr);
+        uint32 status = CalcStatus(qst_giver, plr);
 
         if ((status == QuestStatus::Available) || (status == QuestStatus::Repeatable) || (status == QuestStatus::AvailableChat))
         {
-            sQuestMgr.BuildQuestDetails(&data, (*itr)->qst, qst_giver, 1, plr->getSession()->language, plr); // 1 because we have 1 quest, and we want goodbye to function
+            BuildQuestDetails(&data, (*itr)->qst, qst_giver, 1, plr->getSession()->language, plr); // 1 because we have 1 quest, and we want goodbye to function
             plr->getSession()->SendPacket(&data);
             sLogger.debug("WORLD: Sent SMSG_QUESTGIVER_QUEST_DETAILS.");
 
@@ -2265,21 +2346,21 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
         }
         else if (status == QuestStatus::Finished)
         {
-            sQuestMgr.BuildOfferReward(&data, (*itr)->qst, qst_giver, 1, plr->getSession()->language, plr);
+            BuildOfferReward(&data, (*itr)->qst, qst_giver, 1, plr->getSession()->language, plr);
             plr->getSession()->SendPacket(&data);
             //ss
             sLogger.debug("WORLD: Sent SMSG_QUESTGIVER_OFFER_REWARD.");
         }
         else if (status == QuestStatus::NotFinished)
         {
-            sQuestMgr.BuildRequestItems(&data, (*itr)->qst, qst_giver, status, plr->getSession()->language);
+            BuildRequestItems(&data, (*itr)->qst, qst_giver, status, plr->getSession()->language);
             plr->getSession()->SendPacket(&data);
             sLogger.debug("WORLD: Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
         }
     }
     else
     {
-        sQuestMgr.BuildQuestList(&data, qst_giver, plr, plr->getSession()->language);
+        BuildQuestList(&data, qst_giver, plr, plr->getSession()->language);
         plr->getSession()->SendPacket(&data);
         sLogger.debug("WORLD: Sent SMSG_QUESTGIVER_QUEST_LIST.");
     }
@@ -2505,7 +2586,7 @@ void QuestMgr::LoadExtraQuestStuff()
     }
 
     // load creature starters
-    uint32 creature, quest;
+    uint32 entry, quest;
     QueryResult* pResult = nullptr;
 
     pResult = sMySQLStore.getWorldDBQuery("SELECT * FROM creature_quest_starter WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
@@ -2514,18 +2595,14 @@ void QuestMgr::LoadExtraQuestStuff()
         do
         {
             Field* data = pResult->Fetch();
-            creature = data[0].GetUInt32();
+            entry = data[0].GetUInt32();
             quest = data[1].GetUInt32();
 
-            auto qst = sMySQLStore.getQuestProperties(quest);
-            if (qst == nullptr)
-            {
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add starter to npc %d for non-existent quest %u in table creature_quest_starter.", creature, quest);
-            }
+            if (auto qst = sMySQLStore.getQuestProperties(quest))
+                addCreatureQuest(entry, qst, 1);  // 1 = starter
             else
-            {
-                _AddQuest<Creature>(creature, qst, 1);  // 1 = starter
-            }
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add starter to npc %d for non-existent quest %u in table creature_quest_starter.", entry, quest);
+
         } while (pResult->NextRow());
         delete pResult;
     }
@@ -2536,18 +2613,14 @@ void QuestMgr::LoadExtraQuestStuff()
         do
         {
             Field* data = pResult->Fetch();
-            creature = data[0].GetUInt32();
+            entry = data[0].GetUInt32();
             quest = data[1].GetUInt32();
 
-            auto qst = sMySQLStore.getQuestProperties(quest);
-            if (qst == nullptr)
-            {
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add finisher to npc %d for non-existent quest %u in table creature_quest_finisher.", creature, quest);
-            }
+            if (auto qst = sMySQLStore.getQuestProperties(quest))
+                addCreatureQuest(entry, qst, 2);  // 2 = finisher
             else
-            {
-                _AddQuest<Creature>(creature, qst, 2);  // 2 = finisher
-            }
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add finisher to npc %d for non-existent quest %u in table creature_quest_finisher.", entry, quest);
+
         } while (pResult->NextRow());
         delete pResult;
     }
@@ -2558,18 +2631,14 @@ void QuestMgr::LoadExtraQuestStuff()
         do
         {
             Field* data = pResult->Fetch();
-            creature = data[0].GetUInt32();
+            entry = data[0].GetUInt32();
             quest = data[1].GetUInt32();
 
-            auto qst = sMySQLStore.getQuestProperties(quest);
-            if (qst == nullptr)
-            {
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add starter to go %d for non-existent quest %u in table gameobject_quest_starter.", creature, quest);
-            }
+            if (auto qst = sMySQLStore.getQuestProperties(quest))
+                addGameObjectQuest(entry, qst, 1);  // 1 = starter
             else
-            {
-                _AddQuest<GameObject>(creature, qst, 1);  // 1 = starter
-            }
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add starter to go %d for non-existent quest %u in table gameobject_quest_starter.", entry, quest);
+
         } while (pResult->NextRow());
         delete pResult;
     }
@@ -2580,18 +2649,15 @@ void QuestMgr::LoadExtraQuestStuff()
         do
         {
             Field* data = pResult->Fetch();
-            creature = data[0].GetUInt32();
+            entry = data[0].GetUInt32();
             quest = data[1].GetUInt32();
 
             auto qst = sMySQLStore.getQuestProperties(quest);
-            if (qst == nullptr)
-            {
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add finisher to go %d for non-existent quest %u in table gameobject_quest_finisher.", creature, quest);
-            }
+            if (auto qst = sMySQLStore.getQuestProperties(quest))
+                addGameObjectQuest(entry, qst, 2);  // 2 = finish
             else
-            {
-                _AddQuest<GameObject>(creature, qst, 2);  // 2 = finish
-            }
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add finisher to go %d for non-existent quest %u in table gameobject_quest_finisher.", entry, quest);
+
         } while (pResult->NextRow());
         delete pResult;
     }
@@ -2635,7 +2701,6 @@ void QuestMgr::LoadExtraQuestStuff()
 
         do
         {
-
             Field* fields = result->Fetch();
 
             uint32 questId = fields[0].GetUInt32();
@@ -2648,11 +2713,9 @@ void QuestMgr::LoadExtraQuestStuff()
             uint32 unk4 = fields[7].GetUInt32();
 
             QuestPOI POI(poiId, objIndex, mapId, mapAreaId, floorId, unk3, unk4);
-
             m_QuestPOIMap[questId].push_back(POI);
 
             count++;
-
         }
         while (result->NextRow());
 
@@ -2660,16 +2723,12 @@ void QuestMgr::LoadExtraQuestStuff()
 
         sLogger.info("QuestMgr : Point Of Interest (POI) data loaded for %u quests.", count);
 
-
-
         QueryResult* points = WorldDatabase.Query("SELECT questId, poiId, x, y FROM quest_poi_points");
         if (points != NULL)
         {
             count = 0;
-
             do
             {
-
                 Field* pointFields = points->Fetch();
 
                 uint32 questId = pointFields[0].GetUInt32();
@@ -2681,26 +2740,21 @@ void QuestMgr::LoadExtraQuestStuff()
 
                 for (QuestPOIVector::iterator itr = vect.begin(); itr != vect.end(); ++itr)
                 {
-
                     if (itr->PoiId != poiId)
                         continue;
 
                     QuestPOIPoint point(x, y);
-
                     itr->points.push_back(point);
-
                     break;
                 }
 
                 count++;
-
             }
             while (points->NextRow());
 
             delete points;
             sLogger.info("QuestMgr : %u quest Point Of Interest points loaded.", count);
         }
-
     }
 }
 
@@ -2715,7 +2769,6 @@ void QuestMgr::AddItemQuestAssociation(uint32 itemId, QuestProperties const* qst
     {
         // not found. Create a new entry and QuestAssociationList
         tempList = new std::list < QuestAssociation* > ;
-
         associationList.insert(std::unordered_map<uint32, std::list<QuestAssociation*>* >::value_type(itemId, tempList));
     }
     else
@@ -2756,16 +2809,12 @@ void QuestMgr::AddItemQuestAssociation(uint32 itemId, QuestProperties const* qst
 
 QuestAssociationList* QuestMgr::GetQuestAssociationListForItemId(uint32 itemId)
 {
-    std::unordered_map<uint32, QuestAssociationList* > &associationList = GetQuestAssociationList();
-    std::unordered_map<uint32, QuestAssociationList* >::iterator itr = associationList.find(itemId);
+    std::unordered_map<uint32, QuestAssociationList*> &associationList = GetQuestAssociationList();
+    const auto itr = associationList.find(itemId);
     if (itr == associationList.end())
-    {
-        return 0;
-    }
-    else
-    {
-        return itr->second;
-    }
+        return nullptr;
+
+    return itr->second;
 }
 
 void QuestMgr::OnPlayerEmote(Player* plr, uint32 emoteid, uint64 & victimguid)
@@ -2882,7 +2931,7 @@ void QuestMgr::FillQuestMenu(Creature* giver, Player* plr, GossipMenu & menu)
     {
         for (std::list<QuestRelation*>::iterator itr = giver->QuestsBegin(); itr != giver->QuestsEnd(); ++itr)
         {
-            uint32 status = sQuestMgr.CalcQuestStatus(giver, plr, *itr);
+            uint32 status = CalcQuestStatus(giver, plr, *itr);
             if (status >= QuestStatus::AvailableChat)
             {
                 const auto questProp = (*itr)->qst;

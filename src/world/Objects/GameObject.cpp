@@ -19,13 +19,18 @@
  *
  */
 
+#include "GameObject.h"
+#include "GameObjectModel.h"
+#include "Data/WoWGameObject.hpp"
+
 #include "Management/GameEvent.h"
 #include "Storage/MySQLDataStore.hpp"
 #include <G3D/Quat.h>
+
+#include "Data/Flags.hpp"
 #include "Map/Cells/MapCell.hpp"
 #include "Management/Faction.h"
 #include "Spell/SpellMgr.hpp"
-#include "Data/WoWGameObject.hpp"
 #include "Management/Battleground/Battleground.hpp"
 #include "Server/Packets/SmsgGameobjectCustomAnim.h"
 #include "Server/Packets/SmsgGameobjectPagetext.h"
@@ -36,12 +41,13 @@
 #include "Server/Packets/SmsgDestructibleBuildingDamage.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Map/Maps/MapScriptInterface.h"
-#include "GameObjectModel.h"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Management/QuestLogEntry.hpp"
 #include "Server/Definitions.h"
 #include "Objects/Transporter.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Management/QuestMgr.h"
+#include "Server/World.h"
 
 // MIT
 
@@ -1490,6 +1496,17 @@ void GameObject_QuestGiver::InitAI()
     GameObject::InitAI();
 }
 
+bool GameObject_QuestGiver::HasQuests()
+{
+    if (m_quests == NULL)
+        return false;
+
+    if (m_quests->size() == 0)
+        return false;
+
+    return true;
+}
+
 void GameObject_QuestGiver::onUse(Player* player)
 {
     GameObject::onUse(player);
@@ -1499,6 +1516,16 @@ void GameObject_QuestGiver::onUse(Player* player)
 
     if (HasQuests())
         sQuestMgr.OnActivateQuestGiver(this, player);
+}
+
+uint32 GameObject_QuestGiver::NumOfQuests()
+{
+    return static_cast<uint32>(m_quests->size());
+}
+
+void GameObject_QuestGiver::AddQuest(QuestRelation* Q)
+{
+    m_quests->push_back(Q);
 }
 
 void GameObject_QuestGiver::DeleteQuest(QuestRelation* Q)
@@ -1544,6 +1571,28 @@ uint16 GameObject_QuestGiver::GetQuestRelation(uint32_t quest_id)
 
     return quest_relation;
 }
+
+std::list<QuestRelation*>::iterator GameObject_QuestGiver::QuestsBegin()
+{
+    return m_quests->begin();
+}
+
+std::list<QuestRelation*>::iterator GameObject_QuestGiver::QuestsEnd()
+{
+    return m_quests->end();
+}
+
+void GameObject_QuestGiver::SetQuestList(std::list<QuestRelation*>* qst_lst)
+{
+    m_quests = qst_lst;
+}
+
+std::list<QuestRelation*>& GameObject_QuestGiver::getQuestList() const
+{
+    return *m_quests;
+}
+
+void GameObject_QuestGiver::LoadQuests() { sQuestMgr.LoadGOQuests(this); }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Chest

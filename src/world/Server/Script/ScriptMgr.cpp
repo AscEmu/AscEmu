@@ -42,6 +42,8 @@
 
 #include <git_version.h>
 
+#include "Server/World.h"
+
 using namespace AscEmu::Packets;
 
 // APGL End
@@ -946,6 +948,13 @@ void InstanceScript::updateAchievementCriteria(AchievementCriteriaTypes type, ui
             player->updateAchievementCriteria(type, miscValue1, miscValue2, 0, unit);
 }
 #endif
+
+void InstanceScript::setZoneMusic(uint32_t zoneId, uint32_t musicId)
+{
+    WorldPacket data(SMSG_PLAY_MUSIC, 4);
+    data << uint32_t(musicId);
+    sWorld.sendZoneMessage(&data, zoneId);
+}
 // MIT start
 //////////////////////////////////////////////////////////////////////////////////////////
 // data

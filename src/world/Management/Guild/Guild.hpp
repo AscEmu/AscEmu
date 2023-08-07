@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Server/WorldSession.h"
 #include "Management/Guild/GuildDefinitions.hpp"
 #include "GuildEmblemInfo.hpp"
 #include "GuildBankRightsAndSlots.hpp"
@@ -15,7 +14,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Macros/GuildMacros.hpp"
 
 #include <string>
+#include <set>
 
+class WorldSession;
 class Player;
 class EmblemInfo;
 

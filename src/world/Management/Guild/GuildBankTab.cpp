@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Item.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/WorldSession.h"
 
 #if VERSION_STRING < Cata
 #include "Server/Packets/MsgQueryGuildBankText.h"

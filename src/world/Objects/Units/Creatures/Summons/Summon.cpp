@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Creature.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
+
+#include "SummonHandler.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Spell/SpellAuras.h"

@@ -5,11 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstdio>
-
 #include "Movement/MovementDefines.h"
-#include "Server/World.h"
+#include "CellHandlerDefines.hpp"
 #include "Threading/Mutex.h"
+#include "LocationVector.h"
+
+#include <cstdio>
+#include <atomic>
 
 namespace G3D { class Plane; }
 namespace VMAP
@@ -199,14 +201,7 @@ public:
     void AddRef() { ++m_refs; }
     void DecRef() { if (--m_refs == 0) delete this; }
 
-    void Load()
-    {
-        char filename[1024];
-
-        // Normal map stuff
-        sprintf(filename, "%smaps/%04u_%02u_%02u.map", sWorld.settings.server.dataDir.c_str(), m_mapid, m_tx, m_ty);
-        m_map.load(filename);
-    }
+    void Load();
 };
 
 class TerrainHolder

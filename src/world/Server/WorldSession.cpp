@@ -18,6 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "WorldSession.h"
+
 #include "DatabaseDefinition.hpp"
 #include "FastQueue.h"
 #include "Threading/Mutex.h"
@@ -34,9 +36,11 @@
 #include "Packets/SmsgNotification.h"
 #include "Packets/SmsgLogoutComplete.h"
 #include "OpcodeTable.hpp"
+#include "World.h"
 #include "Packets/SmsgMessageChat.h"
 #include "Script/ScriptMgr.h"
 #include "Objects/Transporter.hpp"
+#include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 
 using namespace AscEmu::Packets;
 

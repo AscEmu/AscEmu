@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
+#include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
 #include "Server/WorldSessionLog.hpp"
 #include "Server/Packets/CmsgCastSpell.h"
 #include "Server/Packets/CmsgPetCastSpell.h"

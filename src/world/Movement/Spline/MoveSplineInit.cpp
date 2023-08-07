@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Transporter.hpp"
 #include "WorldPacket.h"
 #include "Movement/PathGenerator.h"
+#include "Server/Opcodes.hpp"
 
 namespace MovementMgr {
 

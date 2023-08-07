@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 class WorldSession;
 class WorldPacket;
 class Battleground;
+class BattlegroundMap;
 class Player;
 class Group;
 class Corpse;

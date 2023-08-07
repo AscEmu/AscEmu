@@ -31,6 +31,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/CharacterErrors.h"
 #include "Cryptography/AuthCodes.h"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/World.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Server/Script/ScriptMgr.h"

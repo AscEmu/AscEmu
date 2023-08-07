@@ -20,11 +20,12 @@
 #ifndef _LOCATIONVECTOR_H
 #define _LOCATIONVECTOR_H
 
+#include "CommonTypes.hpp"
+#include "CommonDefines.hpp"
+
 #include <math.h>
 #include <string>
 #include <cmath>
-#include "CommonTypes.hpp"
-#include "CommonDefines.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Location vector class (X, Y, Z, O)

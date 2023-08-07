@@ -130,42 +130,7 @@ enum AISpellTargetType
 class SERVER_DECL CreatureAISpells
 {
 public:
-    CreatureAISpells(SpellInfo const* spellInfo, float castChance, uint32_t targetType, uint32_t duration, uint32_t cooldown, bool forceRemove, bool isTriggered)
-    {
-        mSpellInfo = spellInfo;
-        mCastChance = castChance;
-        mTargetType = targetType;
-        mDuration = duration;
-
-        mCooldown = cooldown;
-        mForceRemoveAura = forceRemove;
-        mIsTriggered = isTriggered;
-
-        mMaxStackCount = 1;
-        mCastCount = 0;
-        mMaxCount = 0;
-
-        scriptType = onAIUpdate;
-
-        mMinPositionRangeToCast = 0.0f;
-        mMaxPositionRangeToCast = 0.0f;
-
-        mMinHpRangeToCast = 0;
-        mMaxHpRangeToCast = 100;
-
-        spell_type = STYPE_NULL;
-
-        if (mSpellInfo != nullptr)
-        {
-            mMinPositionRangeToCast = mSpellInfo->getMinRange();
-            mMaxPositionRangeToCast = mSpellInfo->getMaxRange();
-        }
-
-        mAttackStopTimer = 0;
-
-        mCustomTargetCreature = nullptr;
-    }
-
+    CreatureAISpells(SpellInfo const* spellInfo, float castChance, uint32_t targetType, uint32_t duration, uint32_t cooldown, bool forceRemove, bool isTriggered);
     ~CreatureAISpells() = default;
 
     SpellInfo const* mSpellInfo;

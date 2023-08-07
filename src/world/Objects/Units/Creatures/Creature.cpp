@@ -24,7 +24,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/CreatureGroups.h"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/Definitions.h"
+#include "Server/Opcodes.hpp"
+#include "Server/World.h"
 #include "Storage/WDB/WDBStores.hpp"
+#include "Summons/SummonHandler.hpp"
 
 using namespace AscEmu::Packets;
 

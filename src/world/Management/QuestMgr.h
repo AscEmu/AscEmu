@@ -21,15 +21,21 @@
 #ifndef QUESTMGR_H
 #define QUESTMGR_H
 
+#include "QuestDefines.hpp"
+#include "Management/Quest.h"
+#include "CommonTypes.hpp"
+
 #include <vector>
 #include <unordered_map>
 #include <list>
 
-#include "QuestDefines.hpp"
-#include "CommonTypes.hpp"
-#include "Management/Gossip/GossipMenu.hpp"
-
+class Creature;
+class GameObject;
+class Object;
+class Player;
 struct QuestProperties;
+class WorldPacket;
+class GossipMenu;
 
 struct QuestRelation
 {
@@ -159,6 +165,10 @@ public:
 
         QuestRelationList* GetCreatureQuestList(uint32 entryid);
         QuestRelationList* GetGOQuestList(uint32 entryid);
+
+        void addCreatureQuest(uint32_t _entry, const QuestProperties* _questProp, uint8_t _type);
+        void addGameObjectQuest(uint32_t _entry, const QuestProperties* _questProp, uint8_t _type);
+
         QuestAssociationList* GetQuestAssociationListForItemId(uint32 itemId);
         uint32 GetGameObjectLootQuest(uint32 GO_Entry);
         void SetGameObjectLootQuest(uint32 GO_Entry, uint32 Item_Entry);
@@ -219,9 +229,11 @@ public:
 
         std::unordered_map<uint32, uint32> m_ObjectLootQuestList;
 
-        template <class T> void _AddQuest(uint32 entryid, QuestProperties const* qst, uint8 type);
+        /*template <class T>
+        void _AddQuest(uint32 entryid, QuestProperties const* qst, uint8 type);*/
 
-        template <class T> std::unordered_map<uint32, std::list<QuestRelation*>* >& _GetList();
+        /*template <class T>
+        std::unordered_map<uint32, std::list<QuestRelation*>* >& _GetList();*/
 
         void AddItemQuestAssociation(uint32 itemId, QuestProperties const* qst, uint8 item_count);
 
@@ -231,12 +243,12 @@ public:
         //void _CleanLine(std::string* str);
 };
 
-template<> inline std::unordered_map<uint32, std::list<QuestRelation*>* >& QuestMgr::_GetList<Creature>()
-{ return m_npc_quests; }
-template<> inline std::unordered_map<uint32, std::list<QuestRelation*>* >& QuestMgr::_GetList<GameObject>()
-{ return m_obj_quests; }
-template<> inline std::unordered_map<uint32, std::list<QuestRelation*>* >& QuestMgr::_GetList<Item>()
-{ return m_itm_quests; }
+//template<> inline std::unordered_map<uint32, std::list<QuestRelation*>* >& QuestMgr::_GetList<Creature>()
+//{ return m_npc_quests; }
+//template<> inline std::unordered_map<uint32, std::list<QuestRelation*>* >& QuestMgr::_GetList<GameObject>()
+//{ return m_obj_quests; }
+//template<> inline std::unordered_map<uint32, std::list<QuestRelation*>* >& QuestMgr::_GetList<Item>()
+//{ return m_itm_quests; }
 
 
 #define sQuestMgr QuestMgr::getInstance()

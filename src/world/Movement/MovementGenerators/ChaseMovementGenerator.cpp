@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Movement/PathGenerator.h"
 #include "Objects/Units/Unit.hpp"
+#include "Server/World.h"
 #include "Utilities/Util.hpp"
 
 static bool hasLostTarget(Unit* owner, Unit* target)

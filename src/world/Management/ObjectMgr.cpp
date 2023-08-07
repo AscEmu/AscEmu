@@ -4,6 +4,9 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include <utility>
+
+#include "QuestMgr.h"
+#include "Gossip/GossipMenu.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Management/QuestLogEntry.hpp"
 #include "Objects/Container.hpp"

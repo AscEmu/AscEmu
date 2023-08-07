@@ -7,6 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Guild.hpp"
 
+#include <unordered_map>
+
 class SERVER_DECL GuildMgr
 {
     private:

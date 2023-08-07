@@ -5,17 +5,16 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <array>
-#include <list>
-#include <optional>
-
-#include "CombatHandler.hpp"
-#include "Data/WoWUnit.hpp"
-#include "Management/LootMgr.h"
-#include "Macros/UnitMacros.hpp"
-#include "Movement/AbstractFollower.h"
 #include "Objects/Object.hpp"
-#include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
+#include "UnitDefines.hpp"
+#include "Macros/UnitMacros.hpp"
+#include "Data/WoWUnit.hpp"
+#include "ThreatHandler.h"
+#include "CombatHandler.hpp"
+
+#include "Storage/MySQLStructures.h"
+#include "Management/LootMgr.h"
+
 #include "Spell/Definitions/AuraEffects.hpp"
 #include "Spell/Definitions/AuraSlots.hpp"
 #include "Spell/Definitions/AuraStates.hpp"
@@ -29,10 +28,15 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellCastTargets.hpp"
 #include "Spell/SpellDefines.hpp"
 #include "Spell/SpellProc.hpp"
-#include "Storage/MySQLStructures.h"
-#include "ThreatHandler.h"
-#include "UnitDefines.hpp"
 
+#include <array>
+#include <list>
+#include <optional>
+
+
+struct AbstractFollower;
+enum SummonSlot : uint8_t;
+class SummonHandler;
 struct DamageSplitTarget;
 template <class T>
 using Optional = std::optional<T>;

@@ -21,17 +21,21 @@
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
 
-#include "Management/QuestMgr.h"
+#include "Object.hpp"
 #include "Data/WoWGameObject.hpp"
 #include "Map/Maps/BaseMap.hpp"
 #include "GameObjectDefines.hpp"
 #include "GameObjectProperties.hpp"
+#include "Management/LootDefines.hpp"
+#include "Management/LootMgr.h"
+#include "Server/UpdateFieldInclude.h"
 
 class Player;
 class GameObjectAIScript;
 class GameObjectModel;
 struct WoWGameObject;
 class GameEvent;
+struct QuestRelation;
 
 class SERVER_DECL GameObject : public Object
 {
@@ -361,28 +365,13 @@ class GameObject_QuestGiver : public GameObject
 
         void InitAI();
 
-        bool HasQuests()
-        {
-            if (m_quests == NULL)
-                return false;
-
-            if (m_quests->size() == 0)
-                return false;
-
-            return true;
-        }
+        bool HasQuests();
 
         void onUse(Player* player) override;
 
-        uint32 NumOfQuests()
-        {
-            return static_cast<uint32>(m_quests->size());
-        }
+        uint32 NumOfQuests();
 
-        void AddQuest(QuestRelation* Q)
-        {
-            m_quests->push_back(Q);
-        }
+        void AddQuest(QuestRelation* Q);
 
         void DeleteQuest(QuestRelation* Q);
 
@@ -402,37 +391,25 @@ class GameObject_QuestGiver : public GameObject
         //////////////////////////////////////////////////////////////////////////////////////////
         // Returns an iterator to the GO's QuestRelation list beginning
         // \return an iterator to the QuestRelation list's beginning
-        std::list<QuestRelation*>::iterator QuestsBegin()
-        {
-            return m_quests->begin();
-        };
+        std::list<QuestRelation*>::iterator QuestsBegin();
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Returns an iterator to the GO's QuestRelation list end
         // \return an iterator to the QuestRelation list's end
-        std::list<QuestRelation*>::iterator QuestsEnd()
-        {
-            return m_quests->end();
-        };
+        std::list<QuestRelation*>::iterator QuestsEnd();
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Initializes the QuestRelation list with another
         // \param std::list< QuestRelation* >* qst_lst  -  pointer to the other list
-        void SetQuestList(std::list<QuestRelation*>* qst_lst)
-        {
-            m_quests = qst_lst;
-        };
+        void SetQuestList(std::list<QuestRelation*>* qst_lst);
 
-        std::list<QuestRelation*>& getQuestList() const
-        {
-            return *m_quests;
-        }
+        std::list<QuestRelation*>& getQuestList() const;
 
     private:
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Loads the QuestRelations from QuestMgr for this GO
-        void LoadQuests() { sQuestMgr.LoadGOQuests(this); }
+        void LoadQuests();
 
         std::list<QuestRelation*>* m_quests;
 

@@ -51,6 +51,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgMoveKnockBack.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Creatures/CreatureGroups.h"
+#include "Creatures/Summons/SummonHandler.hpp"
+#include "Management/QuestMgr.h"
+#include "Movement/AbstractFollower.h"
 #include "Objects/DynamicObject.hpp"
 #include "Objects/ItemDefines.hpp"
 #include "Server/Packets/SmsgAttackSwingBadFacing.h"
@@ -59,6 +62,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellLog.hpp"
 #include "Spell/Definitions/SpellSchoolConversionTable.hpp"
 #include "Objects/Transporter.hpp"
+#include "Server/World.h"
 
 #if VERSION_STRING <= TBC
 #include "Server/Packets/SmsgUpdateAuraDuration.h"

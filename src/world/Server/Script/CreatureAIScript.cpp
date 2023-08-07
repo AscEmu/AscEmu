@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Creatures/Pet.h"
+#include "Server/Opcodes.hpp"
 
 void SummonList::summon(Creature const* summon)
 {

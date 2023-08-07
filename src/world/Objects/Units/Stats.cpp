@@ -19,14 +19,15 @@
  *
  */
 
+#include "Objects/Units/Stats.h"
 #include "AEVersion.hpp"
 #include "Objects/Item.hpp"
-#include "Objects/Units/Stats.h"
 #include "Creatures/Creature.h"
 #include "Creatures/Pet.h"
 #include "Server/World.h"
 #include "Management/ItemInterface.h"
 #include "Spell/Definitions/SpellEffects.hpp"
+#include "Objects/Units/Unit.hpp"
 
 // APGL End
 // MIT Start
@@ -62,7 +63,7 @@ bool isGrayLevel(uint32_t attackerLevel, uint32_t victimLevel)
 // MIT End
 // APGL Start
 
-uint32 getConColor(uint16 AttackerLvl, uint16 VictimLvl)
+uint32_t getConColor(uint16_t AttackerLvl, uint16_t VictimLvl)
 {
 #if VERSION_STRING == Classic
     const uint32 grayLevel[DBC_PLAYER_LEVEL_CAP + 1] =
@@ -92,7 +93,7 @@ uint32 getConColor(uint16 AttackerLvl, uint16 VictimLvl)
 #endif
 
 #if VERSION_STRING == WotLK
-    const uint32 grayLevel[DBC_PLAYER_LEVEL_CAP + 1] =
+    const uint32_t grayLevel[DBC_PLAYER_LEVEL_CAP + 1] =
     {
         0,                                          //0
         0, 0, 0, 0, 0, 0, 1, 2, 3, 4,               //1-10
@@ -107,7 +108,7 @@ uint32 getConColor(uint16 AttackerLvl, uint16 VictimLvl)
 #endif
 
 #if VERSION_STRING == Cata
-    const uint32 grayLevel[DBC_PLAYER_LEVEL_CAP + 1] =
+    const uint32_t grayLevel[DBC_PLAYER_LEVEL_CAP + 1] =
     {
         0,                                          //0
         0, 0, 0, 0, 0, 0, 1, 2, 3, 4,               //1-10
@@ -180,7 +181,7 @@ uint32 getConColor(uint16 AttackerLvl, uint16 VictimLvl)
     }
 }
 
-uint32 CalculateXpToGive(Unit* pVictim, Unit* pAttacker)
+uint32_t CalculateXpToGive(Unit* pVictim, Unit* pAttacker)
 {
     if (pVictim->isPlayer())
         return 0;
@@ -196,17 +197,17 @@ uint32 CalculateXpToGive(Unit* pVictim, Unit* pAttacker)
     if (victimI->Type == UNIT_TYPE_CRITTER)
         return 0;
 
-    uint32 VictimLvl = pVictim->getLevel();
-    uint32 AttackerLvl = pAttacker->getLevel();
+    uint32_t VictimLvl = pVictim->getLevel();
+    uint32_t AttackerLvl = pAttacker->getLevel();
 
     if (pAttacker->isPet() && static_cast< Pet* >(pAttacker)->getPlayerOwner())
     {
         // based on: http://www.wowwiki.com/Talk:Formulas:Mob_XP#Hunter.27s_pet_XP (2008/01/12)
-        uint32 ownerLvl = static_cast< Pet* >(pAttacker)->getPlayerOwner()->getLevel();
+        uint32_t ownerLvl = static_cast< Pet* >(pAttacker)->getPlayerOwner()->getLevel();
         VictimLvl += ownerLvl - AttackerLvl;
         AttackerLvl = ownerLvl;
     }
-    else if ((int32)VictimLvl - (int32)AttackerLvl > 10) // not wowwikilike but more balanced
+    else if ((int32_t)VictimLvl - (int32_t)AttackerLvl > 10) // not wowwikilike but more balanced
         return 0;
 
     float zd = 5;
@@ -341,10 +342,10 @@ uint32 CalculateXpToGive(Unit* pVictim, Unit* pAttacker)
             break;
     }
 
-    return (uint32)xp;
+    return (uint32_t)xp;
 }
 
-uint32 CalculateStat(uint16 level, double a3, double a2, double a1, double a0)
+uint32_t CalculateStat(uint16_t level, double a3, double a2, double a1, double a0)
 {
     int result1;
     int result2;
@@ -360,9 +361,9 @@ uint32 CalculateStat(uint16 level, double a3, double a2, double a1, double a0)
 }
 
 //Partialy taken from WoWWoW Source
-uint32 GainStat(uint16 level, uint8 playerclass, uint8 Stat)
+uint32_t GainStat(uint16_t level, uint8_t playerclass, uint8_t Stat)
 {
-    uint32 gain = 0;
+    uint32_t gain = 0;
     switch (playerclass)
     {
         case WARRIOR:
@@ -615,7 +616,7 @@ uint32 GainStat(uint16 level, uint8 playerclass, uint8 Stat)
     return gain;
 }
 
-uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type, const uint32* /*spellgroup*/, SpellInfo const* ability)   // spellid is used only for 2-3 spells, that have AP bonus
+uint32_t CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32_t weapon_damage_type, const uint32_t* /*spellgroup*/, SpellInfo const* ability)   // spellid is used only for 2-3 spells, that have AP bonus
 {
     ///\todo Some awesome formula to determine how much damage to deal consider this is melee damage weapon_damage_type: 0 = melee, 1 = offhand(dualwield), 2 = ranged
 
@@ -694,7 +695,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
 
         if (!pVictim->isPlayer())
         {
-            uint32 creatType = static_cast<Creature*>(pVictim)->GetCreatureProperties()->Type;
+            uint32_t creatType = static_cast<Creature*>(pVictim)->GetCreatureProperties()->Type;
             ap += (float)pAttacker->m_creatureRangedAttackPowerMod[creatType];
 
             if (pAttacker->isPlayer())
@@ -736,7 +737,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
         {
             if (static_cast< Player* >(pAttacker)->isInFeralForm())
             {
-                uint8 ss = pAttacker->getShapeShiftForm();
+                uint8_t ss = pAttacker->getShapeShiftForm();
 
                 if (ss == FORM_CAT)
                     wspeed = 1000.0;
@@ -758,7 +759,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
 
         if (!pVictim->isPlayer())
         {
-            uint32 creatType = static_cast<Creature*>(pVictim)->GetCreatureProperties()->Type;
+            uint32_t creatType = static_cast<Creature*>(pVictim)->GetCreatureProperties()->Type;
             ap += (float)pAttacker->m_creatureAttackPowerMod[creatType];
 
             if (pAttacker->isPlayer())
@@ -813,7 +814,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
         {
             if (static_cast< Player* >(pAttacker)->isInFeralForm())
             {
-                uint8 ss = pAttacker->getShapeShiftForm();
+                uint8_t ss = pAttacker->getShapeShiftForm();
 
                 if (ss == FORM_CAT)
                     wspeed = 1000.0;
@@ -839,7 +840,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
     {
         if (pAttacker->isPlayer() && static_cast<Player*>(pAttacker)->m_outStealthDamageBonusTimer)
         {
-            if ((uint32)UNIXTIME >= static_cast<Player*>(pAttacker)->m_outStealthDamageBonusTimer)
+            if ((uint32_t)UNIXTIME >= static_cast<Player*>(pAttacker)->m_outStealthDamageBonusTimer)
                 static_cast<Player*>(pAttacker)->m_outStealthDamageBonusTimer = 0;
             else
                 result *= ((static_cast<Player*>(pAttacker)->m_outStealthDamageBonusPct) / 100.0f) + 1.0f;

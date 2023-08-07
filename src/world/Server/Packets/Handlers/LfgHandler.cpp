@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Storage/WDB/WDBStores.hpp"
 #include "Management/LFG/LFGMgr.hpp" 
+#include "Server/WorldSession.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/CmsgSetLfgComment.h"
 #include "Server/Packets/SmsgLfgUpdateSearch.h"
