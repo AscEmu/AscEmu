@@ -20,6 +20,8 @@
 #include "Setup.h"
 #include "Management/ItemInterface.h"
 #include "Objects/Item.hpp"
+#include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
+#include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 #include "Server/Script/ScriptMgr.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellMgr.hpp"

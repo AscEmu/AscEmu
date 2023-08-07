@@ -17,7 +17,10 @@
  */
 
 #include "Setup.h"
+#include "Management/QuestMgr.h"
+#include "Management/Gossip/GossipMenu.hpp"
 #include "Map/Maps/MapScriptInterface.h"
+#include "Server/WorldSession.h"
 #include "Server/Script/CreatureAIScript.h"
 
 enum 

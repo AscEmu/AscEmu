@@ -20,6 +20,9 @@
  */
 
 #include "Setup.h"
+#include "Management/QuestMgr.h"
+#include "Management/Gossip/GossipMenu.hpp"
+#include "Server/WorldSession.h"
 #include "Spell/SpellMgr.hpp"
 
 enum

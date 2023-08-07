@@ -26,6 +26,8 @@
 #include "Map/Management/MapMgr.hpp"
 #include "Objects/Item.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/World.h"
+#include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Storage/MySQLDataStore.hpp"
 

@@ -30,6 +30,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Management/Guild/Guild.hpp"
+#include "Server/World.h"
 
 #define ENGINE_NAME "ALE" // You should check in your scripts that GetLuaEngine() == "ALE"
 

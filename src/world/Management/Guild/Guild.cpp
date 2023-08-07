@@ -20,6 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Server/Definitions.h"
+#include "Server/World.h"
 
 #if VERSION_STRING >= Cata
 #include "Management/Guild/GuildFinderMgr.hpp"

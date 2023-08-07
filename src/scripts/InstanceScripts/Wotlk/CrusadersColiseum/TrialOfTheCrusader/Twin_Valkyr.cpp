@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Raid_TrialOfTheCrusader.hpp"
 #include "Twin_Valkyr.hpp"
+
+#include "Management/Gossip/GossipMenu.hpp"
 #include "Map/AreaBoundary.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////

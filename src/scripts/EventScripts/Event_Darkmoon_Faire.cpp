@@ -6,7 +6,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Event_Darkmoon_Faire.h"
 
 #include "Setup.h"
+#include "Management/Gossip/GossipMenu.hpp"
 #include "Server/Master.h"
+#include "Server/WorldSession.h"
 #include "Server/Script/CreatureAIScript.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////

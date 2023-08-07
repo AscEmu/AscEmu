@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Instance_HallsOfReflection.h"
 
 #include "Setup.h"
+#include "Management/Gossip/GossipMenu.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Halls of Reflection

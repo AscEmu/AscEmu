@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Xevozz.hpp"
 #include "Zuramat.hpp"
+#include "Management/Gossip/GossipMenu.hpp"
 
 
 //////////////////////////////////////////////////////////////////////////////////////////

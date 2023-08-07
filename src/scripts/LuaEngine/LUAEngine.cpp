@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "LUAEngine.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Server/Script/ScriptSetup.h"
+#include "Server/World.h"
 #include "LuaMacros.h"
 
 #ifdef __APPLE__

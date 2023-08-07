@@ -26,6 +26,7 @@
 #include "Map/Management/MapMgr.hpp"
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
 #include "Chat/ChatHandler.hpp"
+#include "Server/WorldSession.h"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Server/Packets/SmsgPlaySound.h"
 #include "Server/Packets/SmsgBattlegroundPlayerLeft.h"

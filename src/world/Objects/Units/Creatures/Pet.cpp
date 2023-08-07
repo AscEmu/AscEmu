@@ -31,6 +31,8 @@
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/World.h"
+#include "Server/WorldSession.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/Definitions/SpellEffectTarget.hpp"

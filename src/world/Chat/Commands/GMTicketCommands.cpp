@@ -24,6 +24,8 @@
 #include "Chat/ChatHandler.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Management/Tickets/TicketMgr.hpp"
+#include "Server/World.h"
+#include "Server/WorldSession.h"
 #include "Server/Packets/SmsgGmTicketDeleteTicket.h"
 #include "Server/Packets/SmsgGmTicketStatusUpdate.h"
 

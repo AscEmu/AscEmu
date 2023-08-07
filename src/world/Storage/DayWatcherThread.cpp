@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "DayWatcherThread.h"
 #include "Chat/ChatHandler.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/World.h"
 
 using AscEmu::Threading::AEThread;
 using std::chrono::milliseconds;

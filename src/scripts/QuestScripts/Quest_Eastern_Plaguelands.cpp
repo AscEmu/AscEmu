@@ -20,6 +20,7 @@
  */
 
 #include "Setup.h"
+#include "Management/Gossip/GossipMenu.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Server/Script/CreatureAIScript.h"
 

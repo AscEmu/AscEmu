@@ -20,6 +20,8 @@
  */
 
 #include "Setup.h"
+#include "Management/Gossip/GossipMenu.hpp"
+#include "Server/WorldSession.h"
 #include "Server/Script/CreatureAIScript.h"
 
 enum

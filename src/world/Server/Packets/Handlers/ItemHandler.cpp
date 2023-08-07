@@ -37,6 +37,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Container.hpp"
 #include "Map/Management/MapMgr.hpp"
+#include "Server/World.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Server/Packets/CmsgListInventory.h"
 #include "Server/Packets/SmsgBuyItem.h"

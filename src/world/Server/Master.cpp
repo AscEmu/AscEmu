@@ -38,6 +38,7 @@
 #include "Database/DatabaseUpdater.hpp"
 #include "Packets/SmsgServerMessage.h"
 #include "OpcodeTable.hpp"
+#include "World.h"
 #include "Chat/ChatHandler.hpp"
 #include "Script/ScriptMgr.h"
 #include "Spell/SpellMgr.hpp"

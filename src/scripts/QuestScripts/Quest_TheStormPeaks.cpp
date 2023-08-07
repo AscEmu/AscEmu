@@ -17,6 +17,8 @@
  */
 
 #include "Setup.h"
+#include "Management/Gossip/GossipMenu.hpp"
+#include "Server/WorldSession.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // The Gifts of Loken

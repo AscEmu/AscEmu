@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Saurfang.hpp"
 #include "Raid_IceCrownCitadel.hpp"
+#include "Management/Gossip/GossipMenu.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////

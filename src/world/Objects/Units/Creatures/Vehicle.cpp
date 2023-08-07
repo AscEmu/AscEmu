@@ -639,4 +639,18 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
 
     return true;
 }
+
+    void Vehicle::calculatePassengerPosition(float& x, float& y, float& z, float* o)
+    {
+        TransportBase::CalculatePassengerPosition(x, y, z, o,
+            getBase()->GetPositionX(), getBase()->GetPositionY(),
+            getBase()->GetPositionZ(), getBase()->GetOrientation());
+    }
+
+    void Vehicle::calculatePassengerOffset(float& x, float& y, float& z, float* o)
+    {
+        TransportBase::CalculatePassengerOffset(x, y, z, o,
+            getBase()->GetPositionX(), getBase()->GetPositionY(),
+            getBase()->GetPositionZ(), getBase()->GetOrientation());
+    }
 #endif

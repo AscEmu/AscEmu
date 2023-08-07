@@ -64,19 +64,9 @@ private:
 
     bool tryAddPassenger(Unit* passenger, SeatMap::iterator& Seat);
 
-    void calculatePassengerPosition(float& x, float& y, float& z, float* o) const override
-    {
-        TransportBase::CalculatePassengerPosition(x, y, z, o,
-            getBase()->GetPositionX(), getBase()->GetPositionY(),
-            getBase()->GetPositionZ(), getBase()->GetOrientation());
-    }
+    void calculatePassengerPosition(float& x, float& y, float& z, float* o) override;
 
-    void calculatePassengerOffset(float& x, float& y, float& z, float* o) const override
-    {
-        TransportBase::CalculatePassengerOffset(x, y, z, o,
-            getBase()->GetPositionX(), getBase()->GetPositionY(),
-            getBase()->GetPositionZ(), getBase()->GetOrientation());
-    }
+    void calculatePassengerOffset(float& x, float& y, float& z, float* o) override;
 
     Unit* _owner;
     WDB::Structures::VehicleEntry const* _vehicleInfo;

@@ -8,6 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Guild/Guild.hpp"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/World.h"
+#include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
 
 //.guild create

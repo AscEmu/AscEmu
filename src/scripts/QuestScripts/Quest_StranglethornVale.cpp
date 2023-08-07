@@ -19,8 +19,10 @@
  */
 
 #include "Setup.h"
+#include "Management/Gossip/GossipMenu.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Movement/Spline/MoveSpline.h"
+#include "Server/WorldSession.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Spell/SpellMgr.hpp"
 

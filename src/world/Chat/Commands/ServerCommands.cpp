@@ -7,6 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/CommandTableStorage.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/Master.h"
+#include "Server/World.h"
+#include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Server/WorldSocket.h"
 #include "Server/Packets/SmsgServerMessage.h"

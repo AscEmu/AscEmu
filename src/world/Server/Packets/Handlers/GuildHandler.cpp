@@ -41,6 +41,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgPetitionBuy.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "scripts/InstanceScripts/Setup.h"
+#include "Server/World.h"
+#include "Server/WorldSession.h"
 #include "Storage/WorldStrings.h"
 
 #if VERSION_STRING < Cata

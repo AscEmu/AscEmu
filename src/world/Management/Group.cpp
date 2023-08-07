@@ -25,6 +25,7 @@
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/WorldSession.h"
 #include "Server/Packets/SmsgPartyCommandResult.h"
 #include "Server/Packets/SmsgGroupSetLeader.h"
 #include "Server/Packets/SmsgGroupDestroyed.h"

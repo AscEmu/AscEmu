@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatHandler.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Stats.h"
+#include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 

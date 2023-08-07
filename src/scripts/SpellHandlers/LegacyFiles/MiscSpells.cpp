@@ -24,6 +24,7 @@
 #include "Management/Battleground/Battleground.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Server/Master.h"
+#include "Server/World.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"

@@ -26,6 +26,7 @@
 
 #include "QuestMgr.h"
 #include "Chat/ChatHandler.hpp"
+#include "Server/WorldSession.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/SmsgInventoryChangeFailure.h"
 

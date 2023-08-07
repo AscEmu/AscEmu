@@ -19,6 +19,8 @@
  */
 
 #include "Setup.h"
+#include "Management/Gossip/GossipMenu.hpp"
+#include "Server/WorldSession.h"
 #include "Spell/SpellMgr.hpp"
 
 class Veronia : public GossipScript

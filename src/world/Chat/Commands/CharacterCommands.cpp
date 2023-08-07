@@ -14,6 +14,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Item.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/World.h"
+#include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/Spec.hpp"

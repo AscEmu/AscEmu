@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/BattleGroundMap.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Server/Master.h"
+#include "Server/World.h"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Storage/MySQLDataStore.hpp"
 

@@ -19,6 +19,9 @@
  */
 
 #include "Setup.h"
+#include "Management/QuestMgr.h"
+#include "Management/Gossip/GossipMenu.hpp"
+#include "Server/WorldSession.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // quest #8304 - Dearest Natalia

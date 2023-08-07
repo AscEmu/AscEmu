@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatHandler.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Storage/MySQLDataStore.hpp"
 

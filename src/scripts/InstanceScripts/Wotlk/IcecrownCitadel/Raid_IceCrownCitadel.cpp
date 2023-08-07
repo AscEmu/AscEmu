@@ -9,6 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "LadyDeathwhisper.hpp"
 #include "LordMarrowgar.hpp"
 #include "Saurfang.hpp"
+#include "Management/Gossip/GossipMenu.hpp"
+#include "Server/WorldSession.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //ICC zone: 4812

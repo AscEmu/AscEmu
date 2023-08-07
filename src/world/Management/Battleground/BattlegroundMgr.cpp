@@ -11,6 +11,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatHandler.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
+#include "Server/World.h"
+#include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Server/Packets/SmsgArenaError.h"
 #include "Server/Packets/CmsgBattlemasterJoin.h"

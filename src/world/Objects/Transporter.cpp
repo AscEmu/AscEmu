@@ -570,6 +570,16 @@ void Transporter::removeFromMap()
     _delayedMapRemove = true;
 }
 
+void Transporter::calculatePassengerPosition(float& x, float& y, float& z, float* o)
+{
+    TransportBase::CalculatePassengerPosition(x, y, z, o, GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
+}
+
+void Transporter::calculatePassengerOffset(float& x, float& y, float& z, float* o)
+{
+    TransportBase::CalculatePassengerOffset(x, y, z, o, GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
+}
+
 bool Transporter::TeleportTransport(uint32_t newMapid, float x, float y, float z, float o)
 {
     WorldMap* oldMap = getWorldMap();

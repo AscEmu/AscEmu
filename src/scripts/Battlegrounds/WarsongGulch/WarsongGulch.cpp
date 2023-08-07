@@ -25,6 +25,7 @@
 #include "Management/WorldStates.h"
 #include "Map/Maps/BattleGroundMap.hpp"
 #include "Server/Master.h"
+#include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Spell/SpellMgr.hpp"
 
