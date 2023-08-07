@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <Common.hpp>
 #include "ModelInstance.h"
 #include "WorldModel.h"
 #include "MapTree.h"
@@ -154,9 +153,9 @@ namespace VMAP
 
     bool ModelSpawn::readFromFile(FILE* rf, ModelSpawn &spawn)
     {
-        uint32 nameLen;
+        uint32_t nameLen;
         size_t check = 0;
-        check += fread(&spawn.flags, sizeof(uint32), 1, rf);
+        check += fread(&spawn.flags, sizeof(uint32_t), 1, rf);
         // EoF?
         if (!check)
         {
@@ -164,8 +163,8 @@ namespace VMAP
                 std::cout << "Error reading ModelSpawn!\n";
             return false;
         }
-        check += fread(&spawn.adtId, sizeof(uint16), 1, rf);
-        check += fread(&spawn.ID, sizeof(uint32), 1, rf);
+        check += fread(&spawn.adtId, sizeof(uint16_t), 1, rf);
+        check += fread(&spawn.ID, sizeof(uint32_t), 1, rf);
         check += fread(&spawn.iPos, sizeof(float), 3, rf);
         check += fread(&spawn.iRot, sizeof(float), 3, rf);
         check += fread(&spawn.iScale, sizeof(float), 1, rf);
@@ -177,8 +176,8 @@ namespace VMAP
             check += fread(&bHigh, sizeof(float), 3, rf);
             spawn.iBound = G3D::AABox(bLow, bHigh);
         }
-        check += fread(&nameLen, sizeof(uint32), 1, rf);
-        if (check != uint32(has_bound ? 17 : 11))
+        check += fread(&nameLen, sizeof(uint32_t), 1, rf);
+        if (check != uint32_t(has_bound ? 17 : 11))
         {
             std::cout << "Error reading ModelSpawn!\n";
             return false;
@@ -202,9 +201,9 @@ namespace VMAP
     bool ModelSpawn::writeToFile(FILE* wf, const ModelSpawn &spawn)
     {
         size_t check = 0;
-        check += fwrite(&spawn.flags, sizeof(uint32), 1, wf);
-        check += fwrite(&spawn.adtId, sizeof(uint16), 1, wf);
-        check += fwrite(&spawn.ID, sizeof(uint32), 1, wf);
+        check += fwrite(&spawn.flags, sizeof(uint32_t), 1, wf);
+        check += fwrite(&spawn.adtId, sizeof(uint16_t), 1, wf);
+        check += fwrite(&spawn.ID, sizeof(uint32_t), 1, wf);
         check += fwrite(&spawn.iPos, sizeof(float), 3, wf);
         check += fwrite(&spawn.iRot, sizeof(float), 3, wf);
         check += fwrite(&spawn.iScale, sizeof(float), 1, wf);
@@ -214,9 +213,9 @@ namespace VMAP
             check += fwrite(&spawn.iBound.low(), sizeof(float), 3, wf);
             check += fwrite(&spawn.iBound.high(), sizeof(float), 3, wf);
         }
-        uint32 nameLen = static_cast<uint32>(spawn.name.length());
-        check += fwrite(&nameLen, sizeof(uint32), 1, wf);
-        if (check != uint32(has_bound ? 17 : 11))
+        uint32_t nameLen = static_cast<uint32_t>(spawn.name.length());
+        check += fwrite(&nameLen, sizeof(uint32_t), 1, wf);
+        if (check != uint32_t(has_bound ? 17 : 11))
             return false;
         check = fwrite(spawn.name.c_str(), sizeof(char), nameLen, wf);
         if (check != nameLen)

@@ -132,6 +132,8 @@ void World::finalize()
     sLogger.info("OpcodeTables : finalize()");
     sOpcodeTables.finalize();
 
+    broadcastMgr.reset();
+
     delete mEventableObjectHolder;
 
     for (std::list<SpellInfo const*>::iterator itr = dummySpellList.begin(); itr != dummySpellList.end(); ++itr)

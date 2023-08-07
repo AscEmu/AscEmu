@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Storage/MySQLDataStore.hpp"
 
+#include "Chat/ChatDefines.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Spell/SpellClickInfo.hpp"
 #include "Spell/SpellMgr.hpp"

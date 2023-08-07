@@ -3,8 +3,8 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include <Common.hpp>
-#include <Threading/AEThreadPool.h>
+#include "Common.hpp"
+#include "Threading/AEThreadPool.h"
 #include "Utilities/Util.hpp"
 #include "Database/DatabaseUpdater.hpp"
 #include "Logon.h"
@@ -18,15 +18,14 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Network/Network.h>
 #include "Console/LogonConsole.h"
 #include "LogonConf.hpp"
-#include <Utilities/Strings.hpp>
+#include "Database/Database.h"
+#include "Utilities/Strings.hpp"
 
 using std::chrono::milliseconds;
 
 // Database impl
 Database* sLogonSQL;
 std::atomic<bool> mrunning(true);
-Mutex _authSocketLock;
-std::set<AuthSocket*> _authSockets;
 
 ConfigMgr Config;
 
@@ -92,8 +91,8 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
     sRealmManager.initialize(300); // time in seconds
 
     // Load conf settings..
-    clientMinBuild = 5875;
-    clientMaxBuild = 15595;
+    m_clientMinBuild = 5875;
+    m_clientMaxBuild = 15595;
 
     ThreadPool.ExecuteTask(new LogonConsoleThread);
 
@@ -191,9 +190,9 @@ void OnCrash(bool /*Terminate*/)
 
 void MasterLogon::CheckForDeadSockets()
 {
-    _authSocketLock.Acquire();
+    std::lock_guard guard(m_authSocketLock);
     time_t t = time(nullptr);
-    for (auto itr = _authSockets.begin(); itr != _authSockets.end();)
+    for (auto itr = m_authSockets.begin(); itr != m_authSockets.end();)
     {
         auto it2 = itr;
         auto s = (*it2);
@@ -202,12 +201,11 @@ void MasterLogon::CheckForDeadSockets()
         time_t diff = t - s->GetLastRecv();
         if (diff > 300)           // More than 5mins
         {
-            _authSockets.erase(it2);
+            m_authSockets.erase(it2);
             s->removedFromSet = true;
             s->Disconnect();
         }
     }
-    _authSocketLock.Release();
 }
 
 void MasterLogon::PrintBanner()
@@ -230,6 +228,18 @@ void MasterLogon::WritePidFile()
         fprintf(pidFile, "%u", static_cast<unsigned int>(pid));
         fclose(pidFile);
     }
+}
+
+void MasterLogon::addAuthSocket(AuthSocket* _authSocket)
+{
+    std::lock_guard guard(m_authSocketLock);
+    m_authSockets.insert(_authSocket);
+}
+
+void MasterLogon::removeAuthSocket(AuthSocket* _authSocket)
+{
+    std::lock_guard guard(m_authSocketLock);
+    m_authSockets.erase(_authSocket);
 }
 
 void MasterLogon::_HookSignals()

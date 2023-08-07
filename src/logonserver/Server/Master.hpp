@@ -5,18 +5,14 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "LogonServerDefines.hpp"
-#include <Common.Legacy.h>
 #include "Database/Database.h"
+
+class AuthSocket;
 
 extern Database* sLogonSQL;
 
 extern std::atomic<bool> mrunning;
-class AuthSocket;
-extern std::set<AuthSocket*> _authSockets;
-extern Mutex _authSocketLock;
 
-class MasterLogon;
 class MasterLogon
 {
 private:
@@ -46,8 +42,11 @@ public:
     void PrintBanner();
     void WritePidFile();
 
-    uint32 clientMinBuild;
-    uint32 clientMaxBuild;
+    uint32_t m_clientMinBuild;
+    uint32_t m_clientMaxBuild;
+
+    void addAuthSocket(AuthSocket* _authSocket);
+    void removeAuthSocket(AuthSocket* _authSocket);
 
 private:
     void _HookSignals();
@@ -55,6 +54,9 @@ private:
 
     static void _OnSignal(int s);
     bool m_stopEvent;
+
+    std::set<AuthSocket*> m_authSockets;
+    std::mutex m_authSocketLock;
 };
 
 #define sMasterLogon MasterLogon::getInstance()

@@ -17,11 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <iostream>
-#include <iomanip>
-#include <string>
-#include <sstream>
-
 #include "VMapManager2.h"
 #include "MapTree.h"
 #include "ModelInstance.h"
@@ -29,6 +24,11 @@
 #include <G3D/Vector3.h>
 #include "Logging/Logger.hpp"
 #include "Debugging/Errors.h"
+
+#include <iostream>
+#include <iomanip>
+#include <string>
+#include <sstream>
 
 using G3D::Vector3;
 
@@ -53,10 +53,10 @@ namespace VMAP
         }
     }
 
-    void VMapManager2::InitializeThreadUnsafe(const std::vector<uint32>& mapIds)
+    void VMapManager2::InitializeThreadUnsafe(const std::vector<uint32_t>& mapIds)
     {
         // the caller must pass the list of all mapIds that will be used in the VMapManager2 lifetime
-        for (const uint32& mapId : mapIds)
+        for (const uint32_t& mapId : mapIds)
             iInstanceMapTrees.insert(InstanceTreeMap::value_type(mapId, nullptr));
 
         thread_safe_environment = false;
@@ -97,7 +97,7 @@ namespace VMAP
         return result;
     }
 
-    InstanceTreeMap::const_iterator VMapManager2::GetMapTree(uint32 mapId) const
+    InstanceTreeMap::const_iterator VMapManager2::GetMapTree(uint32_t mapId) const
     {
         // return the iterator if found or end() if not found/NULL
         InstanceTreeMap::const_iterator itr = iInstanceMapTrees.find(mapId);
@@ -108,7 +108,7 @@ namespace VMAP
     }
 
     // load one tile (internal use only)
-    bool VMapManager2::_loadMap(uint32 mapId, const std::string& basePath, uint32 tileX, uint32 tileY)
+    bool VMapManager2::_loadMap(uint32_t mapId, const std::string& basePath, uint32_t tileX, uint32_t tileY)
     {
         InstanceTreeMap::iterator instanceTree = iInstanceMapTrees.find(mapId);
         if (instanceTree == iInstanceMapTrees.end())
@@ -237,7 +237,7 @@ namespace VMAP
         return VMAP_INVALID_HEIGHT_VALUE;
     }
 
-    bool VMapManager2::getAreaInfo(unsigned int mapId, float x, float y, float& z, uint32& flags, int32& adtId, int32& rootId, int32& groupId) const
+    bool VMapManager2::getAreaInfo(unsigned int mapId, float x, float y, float& z, uint32_t& flags, int32_t& adtId, int32_t& rootId, int32_t& groupId) const
     {
         if (!IsVMAPDisabledForPtr(mapId, VMAP_DISABLE_AREAFLAG))
         {

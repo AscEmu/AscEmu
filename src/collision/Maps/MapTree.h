@@ -20,7 +20,6 @@
 #ifndef _MAPTREE_H
 #define _MAPTREE_H
 
-#include "Common.hpp"
 #include "BoundingIntervalHierarchy.h"
 #include <unordered_map>
 
@@ -41,14 +40,14 @@ namespace VMAP
 
     class StaticMapTree
     {
-        typedef std::unordered_map<uint32, bool> loadedTileMap;
-        typedef std::unordered_map<uint32, uint32> loadedSpawnMap;
+        typedef std::unordered_map<uint32_t, bool> loadedTileMap;
+        typedef std::unordered_map<uint32_t, uint32_t> loadedSpawnMap;
         private:
-            uint32 iMapID;
+            uint32_t iMapID;
             bool iIsTiled;
             BIH iTree;
             ModelInstance* iTreeValues; // the tree entries
-            uint32 iNTreeValues;
+            uint32_t iNTreeValues;
 
             // Store all the map tile idents that are loaded for that map
             // some maps are not splitted into tiles and we have to make sure, not removing the map before all tiles are removed
@@ -62,27 +61,27 @@ namespace VMAP
             bool getIntersectionTime(const G3D::Ray& pRay, float &pMaxDist, bool pStopAtFirstHit) const;
             //bool containsLoadedMapTile(unsigned int pTileIdent) const { return(iLoadedMapTiles.containsKey(pTileIdent)); }
         public:
-            static std::string getTileFileName(uint32 mapID, uint32 tileX, uint32 tileY);
-            static uint32 packTileID(uint32 tileX, uint32 tileY) { return tileX<<16 | tileY; }
-            static void unpackTileID(uint32 ID, uint32 &tileX, uint32 &tileY) { tileX = ID>>16; tileY = ID&0xFF; }
-            static bool CanLoadMap(const std::string &basePath, uint32 mapID, uint32 tileX, uint32 tileY);
+            static std::string getTileFileName(uint32_t mapID, uint32_t tileX, uint32_t tileY);
+            static uint32_t packTileID(uint32_t tileX, uint32_t tileY) { return tileX<<16 | tileY; }
+            static void unpackTileID(uint32_t ID, uint32_t &tileX, uint32_t &tileY) { tileX = ID>>16; tileY = ID&0xFF; }
+            static bool CanLoadMap(const std::string &basePath, uint32_t mapID, uint32_t tileX, uint32_t tileY);
 
-            StaticMapTree(uint32 mapID, const std::string &basePath);
+            StaticMapTree(uint32_t mapID, const std::string &basePath);
             ~StaticMapTree();
 
             bool isInLineOfSight(const G3D::Vector3& pos1, const G3D::Vector3& pos2) const;
             bool getObjectHitPos(const G3D::Vector3& pos1, const G3D::Vector3& pos2, G3D::Vector3& pResultHitPos, float pModifyDist) const;
             float getHeight(const G3D::Vector3& pPos, float maxSearchDist) const;
-            bool getAreaInfo(G3D::Vector3 &pos, uint32 &flags, int32 &adtId, int32 &rootId, int32 &groupId) const;
+            bool getAreaInfo(G3D::Vector3 &pos, uint32_t &flags, int32_t &adtId, int32_t &rootId, int32_t &groupId) const;
             bool GetLocationInfo(const G3D::Vector3 &pos, LocationInfo &info) const;
 
             bool InitMap(const std::string &fname, VMapManager2* vm);
             void UnloadMap(VMapManager2* vm);
-            bool LoadMapTile(uint32 tileX, uint32 tileY, VMapManager2* vm);
-            void UnloadMapTile(uint32 tileX, uint32 tileY, VMapManager2* vm);
+            bool LoadMapTile(uint32_t tileX, uint32_t tileY, VMapManager2* vm);
+            void UnloadMapTile(uint32_t tileX, uint32_t tileY, VMapManager2* vm);
             bool isTiled() const { return iIsTiled; }
             uint32_t numLoadedTiles() const { return static_cast<uint32_t>(iLoadedTiles.size()); }
-            void getModelInstances(ModelInstance* &models, uint32 &count);
+            void getModelInstances(ModelInstance* &models, uint32_t &count);
 
         private:
             StaticMapTree(StaticMapTree const& right) = delete;
@@ -95,10 +94,10 @@ namespace VMAP
             rootId(0), groupId(0) { }
         bool result;
         float ground_Z;
-        uint32 flags;
-        int32 adtId;
-        int32 rootId;
-        int32 groupId;
+        uint32_t flags;
+        int32_t adtId;
+        int32_t rootId;
+        int32_t groupId;
     };
 }                                                           // VMAP
 

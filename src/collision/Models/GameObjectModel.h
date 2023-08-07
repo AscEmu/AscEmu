@@ -26,7 +26,6 @@
 #include <G3D/Ray.h>
 
 #include "MapTree.h"
-#include "Common.hpp"
 #include <memory>
 
 namespace VMAP
@@ -41,8 +40,8 @@ class GameObjectModelOwnerBase
 {
 public:
     virtual bool IsSpawned() const { return false; }
-    virtual uint32 GetDisplayId() const { return 0; }
-    virtual uint32 GetPhaseMask() const { return 0; }
+    virtual uint32_t GetDisplayId() const { return 0; }
+    virtual uint32_t GetPhaseMask() const { return 0; }
     virtual G3D::Vector3 GetPosition() const { return G3D::Vector3::zero(); }
     virtual float GetOrientation() const { return 0.0f; }
     virtual float GetScale() const { return 1.0f; }

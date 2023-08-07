@@ -19,10 +19,10 @@
 
 #include "BoundingIntervalHierarchy.h"
 
-void BIH::buildHierarchy(std::vector<uint32> &tempTree, buildData &dat, BuildStats &stats)
+void BIH::buildHierarchy(std::vector<uint32_t> &tempTree, buildData &dat, BuildStats &stats)
 {
     // create space for the first node
-    tempTree.push_back(uint32(3 << 30)); // dummy leaf
+    tempTree.push_back(uint32_t(3 << 30)); // dummy leaf
     tempTree.insert(tempTree.end(), 2, 0);
     //tempTree.add(0);
 
@@ -33,7 +33,7 @@ void BIH::buildHierarchy(std::vector<uint32> &tempTree, buildData &dat, BuildSta
     subdivide(0, dat.numPrims - 1, tempTree, dat, gridBox, nodeBox, 0, 1, stats);
 }
 
-void BIH::subdivide(int left, int right, std::vector<uint32> &tempTree, buildData &dat, AABound &gridBox, AABound &nodeBox, int nodeIndex, int depth, BuildStats &stats)
+void BIH::subdivide(int left, int right, std::vector<uint32_t> &tempTree, buildData &dat, AABound &gridBox, AABound &nodeBox, int nodeIndex, int depth, BuildStats &stats)
 {
     if ((right - left + 1) <= dat.maxPrims || depth >= MAX_STACK_SIZE)
     {
@@ -241,33 +241,33 @@ void BIH::subdivide(int left, int right, std::vector<uint32> &tempTree, buildDat
 
 bool BIH::writeToFile(FILE* wf) const
 {
-    uint32 treeSize = static_cast<uint32>(tree.size());
+    uint32_t treeSize = static_cast<uint32_t>(tree.size());
     size_t check = 0;
     check += fwrite(&bounds.low(), sizeof(float), 3, wf);
     check += fwrite(&bounds.high(), sizeof(float), 3, wf);
-    check += fwrite(&treeSize, sizeof(uint32), 1, wf);
-    check += fwrite(&tree[0], sizeof(uint32), treeSize, wf);
-    uint32 count = static_cast<uint32>(objects.size());
-    check += fwrite(&count, sizeof(uint32), 1, wf);
-    check += fwrite(&objects[0], sizeof(uint32), count, wf);
+    check += fwrite(&treeSize, sizeof(uint32_t), 1, wf);
+    check += fwrite(&tree[0], sizeof(uint32_t), treeSize, wf);
+    uint32_t count = static_cast<uint32_t>(objects.size());
+    check += fwrite(&count, sizeof(uint32_t), 1, wf);
+    check += fwrite(&objects[0], sizeof(uint32_t), count, wf);
     return (check == (3 + 3 + 2 + treeSize + count));
 }
 
 bool BIH::readFromFile(FILE* rf)
 {
-    uint32 treeSize;
+    uint32_t treeSize;
     G3D::Vector3 lo, hi;
-    uint32 check = 0, count = 0;
-    check += static_cast<uint32>(fread(&lo, sizeof(float), 3, rf));
-    check += static_cast<uint32>(fread(&hi, sizeof(float), 3, rf));
+    uint32_t check = 0, count = 0;
+    check += static_cast<uint32_t>(fread(&lo, sizeof(float), 3, rf));
+    check += static_cast<uint32_t>(fread(&hi, sizeof(float), 3, rf));
     bounds = G3D::AABox(lo, hi);
-    check += static_cast<uint32>(fread(&treeSize, sizeof(uint32), 1, rf));
+    check += static_cast<uint32_t>(fread(&treeSize, sizeof(uint32_t), 1, rf));
     tree.resize(treeSize);
-    check += static_cast<uint32>(fread(&tree[0], sizeof(uint32), treeSize, rf));
-    check += static_cast<uint32>(fread(&count, sizeof(uint32), 1, rf));
-    objects.resize(count); // = new uint32[nObjects];
-    check += static_cast<uint32>(fread(&objects[0], sizeof(uint32), count, rf));
-    return (uint64(check) == uint64(3 + 3 + 1 + 1 + uint64(treeSize) + uint64(count)));
+    check += static_cast<uint32_t>(fread(&tree[0], sizeof(uint32_t), treeSize, rf));
+    check += static_cast<uint32_t>(fread(&count, sizeof(uint32_t), 1, rf));
+    objects.resize(count); // = new uint32_t[nObjects];
+    check += static_cast<uint32_t>(fread(&objects[0], sizeof(uint32_t), count, rf));
+    return (uint64_t(check) == uint64_t(3 + 3 + 1 + 1 + uint64_t(treeSize) + uint64_t(count)));
 }
 
 void BIH::BuildStats::updateLeaf(int depth, int n)

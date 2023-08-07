@@ -2147,6 +2147,10 @@ public:
     uint32_t m_outStealthDamageBonusPeriod = 0;
     uint32_t m_outStealthDamageBonusTimer = 0;
 
+    //helper for InstanceCommands
+    void displayDataStateList();
+    void displayTimerList();
+    void displayCreatureSetForEntry(uint32_t _creatureEntry);
 
     uint32_t checkDamageLimits(uint32_t damage, uint32_t spellId);
 

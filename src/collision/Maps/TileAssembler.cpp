@@ -17,16 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <set>
-#include <iomanip>
-#include <sstream>
-#include <filesystem>
-
-#include <Common.hpp>
 #include "TileAssembler.h"
 #include "MapTree.h"
 #include "BoundingIntervalHierarchy.h"
 #include "VMapDefinitions.h"
+
+#include <set>
+#include <iomanip>
+#include <sstream>
+#include <filesystem>
 
 using G3D::Vector3;
 using G3D::AABox;
@@ -42,7 +41,7 @@ template<> struct BoundsTrait<VMAP::ModelSpawn*>
 
 namespace VMAP
 {
-    bool readChunk(FILE* rf, char *dest, const char *compare, uint32 len)
+    bool readChunk(FILE* rf, char *dest, const char *compare, uint32_t len)
     {
         if (fread(dest, sizeof(char), len, rf) != len)
         {
@@ -121,10 +120,10 @@ namespace VMAP
             }
 
             // ===> possibly move this code to StaticMapTree class
-            std::map<uint32, uint32> modelNodeIdx;
-            for (uint32 i = 0; i < mapSpawns.size(); ++i)
+            std::map<uint32_t, uint32_t> modelNodeIdx;
+            for (uint32_t i = 0; i < mapSpawns.size(); ++i)
             {
-                modelNodeIdx.insert(pair<uint32, uint32>(mapSpawns[i]->ID, i));
+                modelNodeIdx.insert(pair<uint32_t, uint32_t>(mapSpawns[i]->ID, i));
             }
 
             // write map tree file
@@ -144,7 +143,7 @@ namespace VMAP
                 success = false;
             }
 
-            uint32 globalTileID = StaticMapTree::packTileID(65, 65);
+            uint32_t globalTileID = StaticMapTree::packTileID(65, 65);
             pair<TileMap::iterator, TileMap::iterator> globalRange = map_iter->second->TileEntries.equal_range(globalTileID);
             char isTiled = globalRange.first == globalRange.second; // only maps without terrain (tiles) have global WMO
             if (success && fwrite(&isTiled, sizeof(char), 1, mapfile) != 1)
@@ -193,7 +192,7 @@ namespace VMAP
                 std::stringstream tilefilename;
                 tilefilename.fill('0');
                 tilefilename << iDestDir << '/' << std::setw(4) << map_iter->first << '_';
-                uint32 x, y;
+                uint32_t x, y;
                 StaticMapTree::unpackTileID(tile->first, x, y);
                 tilefilename << std::setw(2) << x << '_' << std::setw(2) << y << ".vmtile";
                 if (FILE* tilefile = fopen(tilefilename.str().c_str(), "wb"))
@@ -205,13 +204,13 @@ namespace VMAP
                     }
 
                     // write number of tile spawns
-                    if (success && fwrite(&nSpawns, sizeof(uint32), 1, tilefile) != 1)
+                    if (success && fwrite(&nSpawns, sizeof(uint32_t), 1, tilefile) != 1)
                     {
                         success = false;
                     }
 
                     // write tile spawns
-                    for (uint32 s = 0; s < nSpawns; ++s)
+                    for (uint32_t s = 0; s < nSpawns; ++s)
                     {
                         if (s)
                         {
@@ -221,9 +220,9 @@ namespace VMAP
                         const ModelSpawn &spawn2 = map_iter->second->UniqueEntries[tile->second];
                         success = success && ModelSpawn::writeToFile(tilefile, spawn2);
                         // MapTree nodes to update when loading tile:
-                        std::map<uint32, uint32>::iterator nIdx = modelNodeIdx.find(spawn2.ID);
+                        std::map<uint32_t, uint32_t>::iterator nIdx = modelNodeIdx.find(spawn2.ID);
 
-                        if (success && fwrite(&nIdx->second, sizeof(uint32), 1, tilefile) != 1)
+                        if (success && fwrite(&nIdx->second, sizeof(uint32_t), 1, tilefile) != 1)
                         {
                             success = false;
                         }
@@ -268,7 +267,7 @@ namespace VMAP
             return false;
         }
         printf("Read coordinate mapping...\n");
-        uint32 mapID, tileX, tileY = 0;
+        uint32_t mapID, tileX, tileY = 0;
         size_t check;
         G3D::Vector3 v1, v2;
         ModelSpawn spawn;
@@ -276,19 +275,19 @@ namespace VMAP
         {
             check = 0;
             // read mapID, tileX, tileY, Flags, adtID, ID, Pos, Rot, Scale, Bound_lo, Bound_hi, name
-            check += fread(&mapID, sizeof(uint32), 1, dirf);
+            check += fread(&mapID, sizeof(uint32_t), 1, dirf);
             if (check == 0) // EoF...
             {
                 break;
             }
 
-            check += fread(&tileX, sizeof(uint32), 1, dirf);
+            check += fread(&tileX, sizeof(uint32_t), 1, dirf);
             if (check == 0)
             {
                 printf("Read tileX ends with an invalid check value of 0..\n");
             }
 
-            check += fread(&tileY, sizeof(uint32), 1, dirf);
+            check += fread(&tileY, sizeof(uint32_t), 1, dirf);
             if (check == 0)
             {
                 printf("Read tileY ends with an invalid check value of 0..\n");
@@ -311,8 +310,8 @@ namespace VMAP
                 current = (*map_iter).second;
             }
 
-            current->UniqueEntries.emplace(pair<uint32, ModelSpawn>(spawn.ID, spawn));
-            current->TileEntries.emplace(pair<uint32, uint32>(StaticMapTree::packTileID(tileX, tileY), spawn.ID));
+            current->UniqueEntries.emplace(pair<uint32_t, ModelSpawn>(spawn.ID, spawn));
+            current->TileEntries.emplace(pair<uint32_t, uint32_t>(StaticMapTree::packTileID(tileX, tileY), spawn.ID));
         }
         bool success = (ferror(dirf) == 0);
         fclose(dirf);
@@ -345,7 +344,7 @@ namespace VMAP
         AABox modelBound;
         bool boundEmpty = true;
 
-        for (uint32 g = 0; g < groups; ++g) // should be only one for M2 files...
+        for (uint32_t g = 0; g < groups; ++g) // should be only one for M2 files...
         {
             std::vector<Vector3>& vertices = raw_model.groupsArray[g].vertexArray;
 
@@ -356,7 +355,7 @@ namespace VMAP
             }
 
             size_t nvectors = vertices.size();
-            for (uint32 i = 0; i < nvectors; ++i)
+            for (uint32_t i = 0; i < nvectors; ++i)
             {
                 Vector3 v = modelPosition.transform(vertices[i]);
 
@@ -409,7 +408,7 @@ namespace VMAP
             std::vector<GroupModel> groupsArray;
 
             size_t groups = raw_model.groupsArray.size();
-            for (uint32 g = 0; g < groups; ++g)
+            for (uint32_t g = 0; g < groups; ++g)
             {
                 GroupModel_Raw& raw_group = raw_model.groupsArray[g];
                 groupsArray.emplace_back(GroupModel(raw_group.mogpflags, raw_group.GroupWMOID, raw_group.bounds ));
@@ -526,8 +525,8 @@ namespace VMAP
         int blocksize;
         int readOperation = 0;
 
-        READ_OR_RETURN(&mogpflags, sizeof(uint32));
-        READ_OR_RETURN(&GroupWMOID, sizeof(uint32));
+        READ_OR_RETURN(&mogpflags, sizeof(uint32_t));
+        READ_OR_RETURN(&GroupWMOID, sizeof(uint32_t));
 
 
         Vector3 vec1, vec2;
@@ -536,33 +535,33 @@ namespace VMAP
         READ_OR_RETURN(&vec2, sizeof(Vector3));
         bounds.set(vec1, vec2);
 
-        READ_OR_RETURN(&liquidflags, sizeof(uint32));
+        READ_OR_RETURN(&liquidflags, sizeof(uint32_t));
 
         // will this ever be used? what is it good for anyway??
-        uint32 branches;
+        uint32_t branches;
         READ_OR_RETURN(&blockId, 4);
         CMP_OR_RETURN(blockId, "GRP ");
         READ_OR_RETURN(&blocksize, sizeof(int));
-        READ_OR_RETURN(&branches, sizeof(uint32));
-        for (uint32 b=0; b<branches; ++b)
+        READ_OR_RETURN(&branches, sizeof(uint32_t));
+        for (uint32_t b=0; b<branches; ++b)
         {
-            uint32 indexes;
+            uint32_t indexes;
             // indexes for each branch (not used jet)
-            READ_OR_RETURN(&indexes, sizeof(uint32));
+            READ_OR_RETURN(&indexes, sizeof(uint32_t));
         }
 
         // ---- indexes
         READ_OR_RETURN(&blockId, 4);
         CMP_OR_RETURN(blockId, "INDX");
         READ_OR_RETURN(&blocksize, sizeof(int));
-        uint32 nindexes;
-        READ_OR_RETURN(&nindexes, sizeof(uint32));
+        uint32_t nindexes;
+        READ_OR_RETURN(&nindexes, sizeof(uint32_t));
         if (nindexes >0)
         {
-            uint16 *indexarray = new uint16[nindexes];
-            READ_OR_RETURN_WITH_DELETE(indexarray, nindexes*sizeof(uint16));
+            uint16_t *indexarray = new uint16_t[nindexes];
+            READ_OR_RETURN_WITH_DELETE(indexarray, nindexes*sizeof(uint16_t));
             triangles.reserve(nindexes / 3);
-            for (uint32 i = 0; i < nindexes; i += 3)
+            for (uint32_t i = 0; i < nindexes; i += 3)
             {
                 triangles.push_back(MeshTriangle(indexarray[i], indexarray[i + 1], indexarray[i + 2]));
             }
@@ -574,14 +573,14 @@ namespace VMAP
         READ_OR_RETURN(&blockId, 4);
         CMP_OR_RETURN(blockId, "VERT");
         READ_OR_RETURN(&blocksize, sizeof(int));
-        uint32 nvectors;
-        READ_OR_RETURN(&nvectors, sizeof(uint32));
+        uint32_t nvectors;
+        READ_OR_RETURN(&nvectors, sizeof(uint32_t));
 
         if (nvectors >0)
         {
             float *vectorarray = new float[nvectors*3];
             READ_OR_RETURN_WITH_DELETE(vectorarray, nvectors*sizeof(float)*3);
-            for (uint32 i = 0; i < nvectors; ++i)
+            for (uint32_t i = 0; i < nvectors; ++i)
             {
                 vertexArray.push_back(Vector3(vectorarray + 3 * i));
             }
@@ -602,7 +601,7 @@ namespace VMAP
             READ_OR_RETURN(&blocksize, sizeof(int));
             READ_OR_RETURN(&hlq, sizeof(WMOLiquidHeader));
             liquid = new WmoLiquid(hlq.xtiles, hlq.ytiles, Vector3(hlq.pos_x, hlq.pos_y, hlq.pos_z), hlq.type);
-            uint32 size = hlq.xverts*hlq.yverts;
+            uint32_t size = hlq.xverts*hlq.yverts;
             READ_OR_RETURN(liquid->GetHeightStorage(), size*sizeof(float));
             size = hlq.xtiles*hlq.ytiles;
             READ_OR_RETURN(liquid->GetFlagsStorage(), size);
@@ -636,16 +635,16 @@ namespace VMAP
         CMP_OR_RETURN(ident, RAW_VMAP_MAGIC);
 
         // we have to read one int. This is needed during the export and we have to skip it here
-        uint32 tempNVectors;
+        uint32_t tempNVectors;
         READ_OR_RETURN(&tempNVectors, sizeof(tempNVectors));
 
-        uint32 groups;
-        READ_OR_RETURN(&groups, sizeof(uint32));
-        READ_OR_RETURN(&RootWMOID, sizeof(uint32));
+        uint32_t groups;
+        READ_OR_RETURN(&groups, sizeof(uint32_t));
+        READ_OR_RETURN(&RootWMOID, sizeof(uint32_t));
 
         groupsArray.resize(groups);
         bool succeed = true;
-        for (uint32 g = 0; g < groups && succeed; ++g)
+        for (uint32_t g = 0; g < groups && succeed; ++g)
         {
             succeed = groupsArray[g].Read(rf);
         }

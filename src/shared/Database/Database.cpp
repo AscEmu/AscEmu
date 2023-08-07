@@ -27,6 +27,8 @@
 
 #include "DatabaseCommon.hpp"
 #include "Utilities/Util.hpp"
+#include "Utilities/CallBack.h"
+
 #include <string>
 #include <vector>
 

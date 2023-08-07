@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Chat/ChatDefines.hpp"
 #include "Server/WorldSession.h"
 #include "Management/Guild/GuildDefinitions.hpp"
 #include "GuildEmblemInfo.hpp"
@@ -244,7 +243,7 @@ public:
     bool loadBankItemFromDB(Field* fields);
     bool validate();
 
-    void broadcastToGuild(WorldSession* session, bool officerOnly, std::string const& msg, uint32_t language = LANG_UNIVERSAL) const;
+    void broadcastToGuild(WorldSession* session, bool officerOnly, std::string const& msg, uint32_t language = 0) const;
     void broadcastAddonToGuild(WorldSession* session, bool officerOnly, std::string const& msg, std::string const& prefix) const;
     void broadcastPacketToRank(WorldPacket* packet, uint8_t rankId) const;
     void broadcastPacket(WorldPacket* packet) const;

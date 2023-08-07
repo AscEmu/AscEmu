@@ -22,7 +22,6 @@
 
 #include <string>
 #include <optional>
-#include "Common.hpp"
 
  //! Optional helper class to wrap optional values within.
 template <class T>

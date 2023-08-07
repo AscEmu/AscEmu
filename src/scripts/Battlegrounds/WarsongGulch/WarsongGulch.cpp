@@ -20,6 +20,7 @@
 #include "Setup.h"
 #include "WarsongGulch.h"
 
+#include "Chat/ChatDefines.hpp"
 #include "Management/HonorHandler.h"
 #include "Management/WorldStates.h"
 #include "Map/Maps/BattleGroundMap.hpp"

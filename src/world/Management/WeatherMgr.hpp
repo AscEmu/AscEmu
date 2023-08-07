@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Server/EventableObject.h"
 
+class Player;
 class WeatherInfo;
 
 class SERVER_DECL WeatherMgr

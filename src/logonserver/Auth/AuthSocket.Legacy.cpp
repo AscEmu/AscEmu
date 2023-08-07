@@ -51,9 +51,6 @@ AuthSocket::AuthSocket(SOCKET fd) : Socket(fd, 32768, 4096)
     removedFromSet = false;
     m_patch = nullptr;
     m_patchJob = nullptr;
-    _authSocketLock.Acquire();
-    _authSockets.insert(this);
-    _authSocketLock.Release();
     m_challenge.cmd = 0;
     m_challenge.error = 0;
     m_challenge.size = 0;
@@ -64,6 +61,8 @@ AuthSocket::AuthSocket(SOCKET fd) : Socket(fd, 32768, 4096)
     m_challenge.timezone_bias = 0;
     m_challenge.ip = 0;
     m_challenge.I_len = 0;
+
+    sMasterLogon.addAuthSocket(this);
 }
 
 AuthSocket::~AuthSocket()
@@ -75,9 +74,7 @@ void AuthSocket::OnDisconnect()
 {
     if (!removedFromSet)
     {
-        _authSocketLock.Acquire();
-        _authSockets.erase(this);
-        _authSocketLock.Release();
+        sMasterLogon.removeAuthSocket(this);
     }
 
     if (m_patchJob)
@@ -605,7 +602,7 @@ void AuthSocket::HandleReconnectChallenge()
     readBuffer.Read(&m_challenge, full_size + 4);
 
     // Check client build.
-    if (m_challenge.build > sMasterLogon.clientMaxBuild || m_challenge.build < sMasterLogon.clientMinBuild)
+    if (m_challenge.build > sMasterLogon.m_clientMaxBuild || m_challenge.build < sMasterLogon.m_clientMinBuild)
     {
         SendChallengeError(CE_WRONG_BUILD_NUMBER);
         return;

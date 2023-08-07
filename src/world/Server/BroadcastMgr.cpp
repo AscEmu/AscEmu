@@ -37,7 +37,11 @@ BroadcastMgr::BroadcastMgr()
     this->threadInit();
 }
 
-BroadcastMgr::~BroadcastMgr() { m_thread->killAndJoin(); }
+BroadcastMgr::~BroadcastMgr()
+{
+    sLogger.info("BroadcastMgr: ~BroadcastMgr()");
+    m_thread->killAndJoin();
+}
 
 void BroadcastMgr::sendBroadcast()
 {

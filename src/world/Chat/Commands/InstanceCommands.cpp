@@ -25,7 +25,6 @@
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Server/WorldSessionLog.hpp"
 #include "Server/Packets/SmsgInstanceReset.h"
-#include "Server/Script/ScriptMgr.h"
 
 using namespace AscEmu::Packets;
 
@@ -68,11 +67,8 @@ bool ChatHandler::HandleCountCreaturesCommand(const char* args, WorldSession* m_
     if (sscanf(args, "%u", &entry) != 1)
         return false;
 
-    WorldMap* instance = sMapMgr.findInstanceMap(plr->GetInstanceID());
-    if (instance == nullptr)
-        return true;
+    plr->displayCreatureSetForEntry(entry);
 
-    instance->getScript()->getCreatureSetForEntry(entry, true, plr);
     return true;
 }
 
@@ -167,7 +163,7 @@ bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m
     SendMultilineMessage(m_session, ss.str().c_str());
 
     if (instance != nullptr && instance->getScript() != nullptr)
-        instance->getScript()->displayDataStateList(plr);
+        plr->displayDataStateList();
     else
         plr->broadcastMessage("NO INSTANCE SCRIPT FOUND NO BOSS DATA AVAILABLE");
 
@@ -307,14 +303,7 @@ bool ChatHandler::HandleShowTimersCommand(const char* /*args*/, WorldSession* m_
     if (player == nullptr)
         return true;
 
-    uint32_t instanceId = player->GetInstanceID();
-    if (instanceId == 0)
-        return true;
-
-    InstanceMap* instance = sMapMgr.findInstanceMap(instanceId);
-
-    if (instance && instance->getScript() != nullptr)
-        instance->getScript()->displayTimerList(player);
+    player->displayTimerList();
 
     return true;
 }

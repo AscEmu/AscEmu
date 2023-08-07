@@ -5,10 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "ManagedPacket.h"
+#include "Chat/ChatDefines.hpp"
+
 #include <cstdint>
 #include <utility>
-
-#include "ManagedPacket.h"
 
 namespace AscEmu::Packets
 {

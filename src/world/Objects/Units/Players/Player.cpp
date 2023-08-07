@@ -12863,6 +12863,26 @@ void Player::handleSpellLoot(uint32_t itemId)
     }
 }
 
+void Player::displayDataStateList()
+{
+    if (InstanceMap* instance = sMapMgr.findInstanceMap(GetInstanceID()))
+        if (instance->getScript())
+            instance->getScript()->displayDataStateList(this);
+}
+
+void Player::displayTimerList()
+{
+    if (InstanceMap* instance = sMapMgr.findInstanceMap(GetInstanceID()))
+        if (instance->getScript())
+            instance->getScript()->displayTimerList(this);
+}
+void Player::displayCreatureSetForEntry(uint32_t _creatureEntry)
+{
+    if (InstanceMap* instance = sMapMgr.findInstanceMap(GetInstanceID()))
+        if (instance->getScript())
+            instance->getScript()->getCreatureSetForEntry(_creatureEntry, true, this);
+}
+
 uint32_t Player::checkDamageLimits(uint32_t damage, uint32_t spellId)
 {
     std::stringstream dmglog;

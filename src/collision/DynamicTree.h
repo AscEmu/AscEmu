@@ -20,7 +20,7 @@
 #ifndef _DYNTREE_H
 #define _DYNTREE_H
 
-#include "Common.hpp"
+#include <cstdint>
 
 namespace G3D
 {

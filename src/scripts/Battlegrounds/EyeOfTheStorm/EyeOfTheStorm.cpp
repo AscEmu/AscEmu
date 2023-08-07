@@ -21,6 +21,7 @@
 #include "EyeOfTheStorm.h"
 
 #include "CommonDefines.hpp"
+#include "Chat/ChatDefines.hpp"
 #include "Management/HonorHandler.h"
 #include "Management/WorldStates.h"
 #include "Map/Maps/BattleGroundMap.hpp"

@@ -20,13 +20,11 @@
 #ifndef _DATABASE_H
 #define _DATABASE_H
 
-#include <string>
-
-#include "CThreads.h"
 #include "Field.hpp"
-#include <Threading/Queue.h>
-#include <Utilities/CallBack.h>
+#include "Threading/Queue.h"
 #include "Threading/AEThread.h"
+
+#include <string>
 
 class QueryResult;
 class QueryThread;
