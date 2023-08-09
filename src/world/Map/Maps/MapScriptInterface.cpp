@@ -17,7 +17,7 @@ MapScriptInterface::~MapScriptInterface()
     m_worldMap.ScriptInterface = nullptr;
 }
 
-inline GameObject* MapScriptInterface::getGameObjectNearestCoords(float x, float y, float z/* = 0.0f*/, uint32_t Entry/* = 0*/)
+GameObject* MapScriptInterface::getGameObjectNearestCoords(float x, float y, float z/* = 0.0f*/, uint32_t Entry/* = 0*/)
 {
     MapCell* pCell = m_worldMap.getCell(m_worldMap.getPosX(x), m_worldMap.getPosY(y));
     if (pCell == nullptr)
@@ -44,7 +44,7 @@ inline GameObject* MapScriptInterface::getGameObjectNearestCoords(float x, float
     return ClosestObject;
 }
 
-inline Creature* MapScriptInterface::getCreatureNearestCoords(float x, float y, float z/* = 0.0f*/, uint32_t Entry/* = 0*/)
+Creature* MapScriptInterface::getCreatureNearestCoords(float x, float y, float z/* = 0.0f*/, uint32_t Entry/* = 0*/)
 {
     MapCell* pCell = m_worldMap.getCell(m_worldMap.getPosX(x), m_worldMap.getPosY(y));
     if (pCell == nullptr)
@@ -71,7 +71,7 @@ inline Creature* MapScriptInterface::getCreatureNearestCoords(float x, float y, 
     return ClosestObject;
 }
 
-inline GameObject* MapScriptInterface::findNearestGoWithType(Object* o, uint32_t type)
+GameObject* MapScriptInterface::findNearestGoWithType(Object* o, uint32_t type)
 {
     GameObject* go = nullptr;
     float r = FLT_MAX;
@@ -102,7 +102,7 @@ inline GameObject* MapScriptInterface::findNearestGoWithType(Object* o, uint32_t
     return go;
 }
 
-inline Creature* MapScriptInterface::findNearestCreature(Object* pObject, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
+Creature* MapScriptInterface::findNearestCreature(Object* pObject, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
 {
     MapCell* pCell = m_worldMap.getCell(m_worldMap.getPosX(pObject->GetPositionX()), m_worldMap.getPosY(pObject->GetPositionY()));
     if (pCell == nullptr)
@@ -131,7 +131,7 @@ inline Creature* MapScriptInterface::findNearestCreature(Object* pObject, uint32
     return target;
 }
 
-inline void MapScriptInterface::getCreatureListWithEntryInRange(Creature* pCreature, std::list<Creature*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
+void MapScriptInterface::getCreatureListWithEntryInRange(Creature* pCreature, std::list<Creature*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
 {
     float CurrentDist = 0;
 
@@ -146,7 +146,7 @@ inline void MapScriptInterface::getCreatureListWithEntryInRange(Creature* pCreat
     }
 }
 
-inline Creature* MapScriptInterface::getNearestAssistCreatureInCell(Creature* pCreature, Unit* enemy, float range /*= 250.0f*/) const
+Creature* MapScriptInterface::getNearestAssistCreatureInCell(Creature* pCreature, Unit* enemy, float range /*= 250.0f*/) const
 {
     MapCell* pCell = m_worldMap.getCell(m_worldMap.getPosX(pCreature->GetPositionX()), m_worldMap.getPosY(pCreature->GetPositionY()));
     if (pCell == nullptr)
@@ -175,7 +175,7 @@ inline Creature* MapScriptInterface::getNearestAssistCreatureInCell(Creature* pC
     return nullptr;
 }
 
-inline void MapScriptInterface::getGameObjectListWithEntryInRange(Creature* pCreature, std::list<GameObject*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
+void MapScriptInterface::getGameObjectListWithEntryInRange(Creature* pCreature, std::list<GameObject*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
 {
     float CurrentDist = 0;
 
@@ -190,7 +190,7 @@ inline void MapScriptInterface::getGameObjectListWithEntryInRange(Creature* pCre
     }
 }
 
-inline GameObject* MapScriptInterface::findNearestGameObject(Object* pObject, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
+GameObject* MapScriptInterface::findNearestGameObject(Object* pObject, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
 {
     MapCell* pCell = m_worldMap.getCell(m_worldMap.getPosX(pObject->GetPositionX()), m_worldMap.getPosY(pObject->GetPositionY()));
     if (pCell == nullptr)
@@ -219,7 +219,7 @@ inline GameObject* MapScriptInterface::findNearestGameObject(Object* pObject, ui
     return target;
 }
 
-inline Player* MapScriptInterface::getPlayerNearestCoords(float x, float y, float z/* = 0.0f*/, uint32_t Entry/* = 0*/)
+Player* MapScriptInterface::getPlayerNearestCoords(float x, float y, float z/* = 0.0f*/, uint32_t Entry/* = 0*/)
 {
     MapCell* pCell = m_worldMap.getCell(m_worldMap.getPosX(x), m_worldMap.getPosY(y));
     if (pCell == nullptr)
