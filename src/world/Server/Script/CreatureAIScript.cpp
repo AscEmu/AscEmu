@@ -16,81 +16,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Pet.h"
 #include "Server/Opcodes.hpp"
 
-void SummonList::summon(Creature const* summon)
-{
-    _storage.push_back(summon->getGuid());
-}
-
-void SummonList::despawn(Creature const* summon)
-{
-    _storage.remove(summon->getGuid());
-}
-
-void SummonList::despawnEntry(uint32_t entry)
-{
-    for (StorageType::iterator i = _storage.begin(); i != _storage.end();)
-    {
-        Creature* summon = _creature->getWorldMapCreature(*i);
-        if (!summon)
-        {
-            i = _storage.erase(i);
-        }
-        else if (summon->getEntry() == entry)
-        {
-            i = _storage.erase(i);
-            summon->Despawn(1000, 0);
-        }
-        else
-        {
-            ++i;
-        }
-    }
-}
-
-void SummonList::despawnAll()
-{
-    while (!_storage.empty())
-    {
-        Creature* summon = _creature->getWorldMapCreature(_storage.front());
-        _storage.pop_front();
-        if (summon)
-            summon->Despawn(1000, 0);
-    }
-}
-
-void SummonList::removeNotExisting()
-{
-    for (StorageType::iterator i = _storage.begin(); i != _storage.end();)
-    {
-        if (_creature->getWorldMapCreature(*i))
-            ++i;
-        else
-            i = _storage.erase(i);
-    }
-}
-
-bool SummonList::hasEntry(uint32_t entry) const
-{
-    for (uint64_t const& guid : _storage)
-    {
-        Creature* summon = _creature->getWorldMapCreature(guid);
-        if (summon && summon->getEntry() == entry)
-            return true;
-    }
-
-    return false;
-}
-
-void SummonList::doAction(int32_t action, StorageType const& summons)
-{
-    for (uint64_t const& guid : _storage)
-    {
-        Creature* summon = _creature->getWorldMapCreature(guid);
-        if (summon && summon->GetScript())
-            summon->GetScript()->DoAction(action);
-    }
-}
-
 CreatureAIScript::CreatureAIScript(Creature* creature) : mScriptPhase(0), summons(creature), mCreatureTimerCount(0), mAIUpdateFrequency(defaultUpdateFrequency),
 isIdleEmoteEnabled(false), idleEmoteTimerId(0), idleEmoteTimeMin(0), idleEmoteTimeMax(0), _creature(creature), linkedCreatureAI(nullptr), mCreatureAIScheduler(std::make_shared<CreatureAIFunctionScheduler>(this))
 {
@@ -1317,7 +1242,7 @@ void CreatureAIScript::CreatureAIFunc_Emote(CreatureAIFunc pThis)
 
 CreatureAISpells* CreatureAIScript::addAISpell(uint32_t spellId, float castChance, uint32_t targetType, uint32_t duration /*= 0*/, uint32_t cooldown /*= 0*/, bool forceRemove /*= false*/, bool isTriggered /*= false*/, bool heroicOnly /*=false*/)
 {
-    if (heroicOnly && !_isHeroic())
+    if (heroicOnly && !isHeroic())
         return nullptr;
 
     auto aiSpell = getCreature()->getAIInterface()->addAISpell(spellId, castChance, targetType, duration, cooldown, forceRemove, isTriggered);
@@ -1331,7 +1256,7 @@ CreatureAISpells* CreatureAIScript::addAISpell(uint32_t spellId, float castChanc
 // Example [this]() { return getBestPlayerTarget(TargetFilter_Closest); }
 CreatureAISpells* CreatureAIScript::addAISpell(uint32_t spellId, float castChance, uint32_t cooldown, std::function<Unit* ()> func, bool isTriggered /*= false*/, bool heroicOnly /*= false*/)
 {
-    if (heroicOnly && !_isHeroic())
+    if (heroicOnly && !isHeroic())
         return nullptr;
 
     auto aiSpell = getCreature()->getAIInterface()->addAISpell(spellId, castChance, TARGET_FUNCTION, 0, cooldown, false, isTriggered);
@@ -1614,13 +1539,35 @@ InstanceScript* CreatureAIScript::getInstanceScript()
     return (mapMgr) ? mapMgr->getScript() : nullptr;
 }
 
-bool CreatureAIScript::_isHeroic()
+bool CreatureAIScript::isHeroic()
 {
     WorldMap* mapMgr = _creature->getWorldMap();
     if (mapMgr == nullptr || mapMgr->getDifficulty() != InstanceDifficulty::DUNGEON_HEROIC)
         return false;
 
     return true;
+}
+
+unsigned CreatureAIScript::getRaidModeValue(const unsigned& normal10, const unsigned& normal25, const unsigned& heroic10, const unsigned& heroic25) const
+{
+    if (_creature->getWorldMap()->getInstance())
+    {
+        switch (_creature->getWorldMap()->getDifficulty())
+        {
+            case InstanceDifficulty::RAID_10MAN_NORMAL:
+                return normal10;
+            case InstanceDifficulty::RAID_25MAN_NORMAL:
+                return normal25;
+            case InstanceDifficulty::RAID_10MAN_HEROIC:
+                return heroic10;
+            case InstanceDifficulty::RAID_25MAN_HEROIC:
+                return heroic25;
+            default:
+                break;
+        }
+    }
+
+    return normal10;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

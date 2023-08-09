@@ -18,6 +18,9 @@
  */
 
 #include "Setup.h"
+#include "Common.hpp"
+
+#include "Server/ServerState.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Server/Script/ScriptSetup.h"
 

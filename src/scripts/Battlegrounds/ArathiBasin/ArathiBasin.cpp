@@ -20,6 +20,7 @@
 #include "Setup.h"
 #include "ArathiBasin.h"
 
+#include "Chat/ChatDefines.hpp"
 #include "Management/HonorHandler.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/WorldStates.h"

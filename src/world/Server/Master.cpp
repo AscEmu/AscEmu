@@ -40,6 +40,7 @@
 #include "OpcodeTable.hpp"
 #include "World.h"
 #include "Chat/ChatHandler.hpp"
+#include "Management/GameEventMgr.h"
 #include "Script/ScriptMgr.h"
 #include "Spell/SpellMgr.hpp"
 

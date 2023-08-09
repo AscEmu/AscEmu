@@ -27,6 +27,7 @@
 #include "RingOfTrials/RingOfTrials.h"
 #include "RingOfValor/RingOfValor.h"
 #include "RuinsOfLordaeron/RuinsOfLordaeron.h"
+#include "Server/ServerState.h"
 #include "StrandOfTheAncient/StrandOfTheAncient.h"
 #include "WarsongGulch/WarsongGulch.h"
 #include "Server/Script/ScriptMgr.h"

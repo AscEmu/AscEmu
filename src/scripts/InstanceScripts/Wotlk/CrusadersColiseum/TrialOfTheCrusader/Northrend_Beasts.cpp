@@ -20,7 +20,7 @@ void CombatStalkerAI::OnLoad()
     setReactState(REACT_PASSIVE);
 
     // The Encounter we are Currently Facing Should go Berserk
-    addAIFunction(&CombatStalkerAI::Berserk, DoOnceScheduler(_isHeroic() ? 9min : 15min));
+    addAIFunction(&CombatStalkerAI::Berserk, DoOnceScheduler(isHeroic() ? 9min : 15min));
 }
 
 void CombatStalkerAI::DoAction(int32_t action)
@@ -108,7 +108,7 @@ void NorthrendBeastsAI::OnCombatStart(Unit* _target)
     getInstanceScript()->sendUnitEncounter(EncounterFrameEngage, getCreature());
     handleEncounterProgress();
 
-    if (_isHeroic())
+    if (isHeroic())
         handleWithHeroicEvents();
 }
 

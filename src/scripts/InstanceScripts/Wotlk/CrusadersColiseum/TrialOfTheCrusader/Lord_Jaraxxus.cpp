@@ -130,7 +130,7 @@ void JaraxxusAI::OnCastSpell(uint32_t spellId)
 {
     if (spellId == jaraxxus::SPELL_NETHER_POWER)
         if (Aura* aura = getCreature()->getAuraWithId(jaraxxus::SPELL_NETHER_POWER))
-            aura->refreshOrModifyStack(false, RAID_MODE(5, 10, 5, 10));
+            aura->refreshOrModifyStack(false, getRaidModeValue(5, 10, 5, 10));
 }
 
 void JaraxxusAI::DoAction(int32_t action)
@@ -358,7 +358,7 @@ void InfernalVolcanoAI::OnLoad()
     setReactState(REACT_PASSIVE);
     castSpellOnSelf(jaraxxus::SPELL_INFERNAL_ERUPTION_EFFECT, true);
 
-    if (_isHeroic())
+    if (isHeroic())
         removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
 }
 
@@ -410,7 +410,7 @@ void NetherPortalAI::OnLoad()
 
     addAISpell(SpellDesc(jaraxxus::SPELL_NETHER_PORTAL_EFFECT, FilterArgs(TargetFilter_Self), false), DoOnceScheduler(1s));
 
-    if (_isHeroic())
+    if (isHeroic())
         removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
 }
 
@@ -455,7 +455,7 @@ void MistressOfPainAI::OnCombatStart(Unit* /*_target*/)
     DoLoopScheduler mMistressKissArgs;
     mMistressKissArgs.setInitialCooldown(15s);
     mMistressKissArgs.setChance(33.0f);
-    if (_isHeroic())
+    if (isHeroic())
         addAISpell(SpellDesc(jaraxxus::SPELL_MISTRESS_KISS, FilterArgs(TargetFilter_Self), false), mMistressKissArgs);
 }
 

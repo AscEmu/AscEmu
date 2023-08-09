@@ -19,6 +19,7 @@
  */
 
 #include "Setup.h"
+#include "Spell/Spell.h"
 
 enum
 {

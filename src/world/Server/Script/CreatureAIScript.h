@@ -18,99 +18,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CreatureAIFunctionScheduler.hpp"
 #include "CreatureAIFunction.hpp"
 #include "AIUtils.hpp"
+#include "CreatureAISummonList.hpp"
 
 class Creature;
 struct FilterArgs;
-
-class SERVER_DECL SummonList
-{
-public:
-    typedef std::list<uint64_t> StorageType;
-    typedef StorageType::iterator iterator;
-    typedef StorageType::const_iterator const_iterator;
-    typedef StorageType::size_type size_type;
-    typedef StorageType::value_type value_type;
-
-    explicit SummonList(Creature* creature) : _creature(creature) { }
-
-    iterator begin()
-    {
-        return _storage.begin();
-    }
-
-    const_iterator begin() const
-    {
-        return _storage.begin();
-    }
-
-    iterator end()
-    {
-        return _storage.end();
-    }
-
-    const_iterator end() const
-    {
-        return _storage.end();
-    }
-
-    iterator erase(iterator i)
-    {
-        return _storage.erase(i);
-    }
-
-    bool empty() const
-    {
-        return _storage.empty();
-    }
-
-    size_type size() const
-    {
-        return _storage.size();
-    }
-
-    void clear()
-    {
-        _storage.clear();
-    }
-
-    void summon(Creature const* summon);
-    void despawn(Creature const* summon);
-    void despawnEntry(uint32_t entry);
-    void despawnAll();
-
-    template <typename T>
-    void despawnIf(T const& predicate)
-    {
-        _storage.remove_if(predicate);
-    }
-
-    void DoActionForEntry(int32_t info, uint32_t entry)
-    {
-        StorageType listCopy = _storage;
-        for (const auto& element : _storage)
-        {
-            if (Creature* creature = _creature->getWorldMapCreature(element))
-            {
-                if (creature->getEntry() == entry) {
-                    listCopy.push_back(element);
-                }
-            }
-        }
-
-        doAction(info, listCopy);
-    }
-
-    void removeNotExisting();
-    bool hasEntry(uint32_t entry) const;
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // basic
-private:
-    void doAction(int32_t action, StorageType const& summons);
-
-    Creature* _creature;
-    StorageType _storage;
-};
 
 class SERVER_DECL CreatureAIScript
 {
@@ -560,30 +471,9 @@ public:
     // instance
     InstanceScript* getInstanceScript();
 
-    bool _isHeroic();
+    bool isHeroic();
 
-    template<class T> inline
-        const T& RAID_MODE(const T& normal10, const T& normal25, const T& heroic10, const T& heroic25) const
-    {
-        if (_creature->getWorldMap()->getInstance())
-        {
-            switch (_creature->getWorldMap()->getDifficulty())
-            {
-            case InstanceDifficulty::RAID_10MAN_NORMAL:
-                return normal10;
-            case InstanceDifficulty::RAID_25MAN_NORMAL:
-                return normal25;
-            case InstanceDifficulty::RAID_10MAN_HEROIC:
-                return heroic10;
-            case InstanceDifficulty::RAID_25MAN_HEROIC:
-                return heroic25;
-            default:
-                break;
-            }
-        }
-
-        return normal10;
-    }
+    unsigned getRaidModeValue(const unsigned& normal10, const unsigned& normal25, const unsigned& heroic10, const unsigned& heroic25) const;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // linked creature AI scripts

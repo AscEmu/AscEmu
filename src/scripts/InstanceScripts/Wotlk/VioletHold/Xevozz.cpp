@@ -60,7 +60,7 @@ void XevozzAI::AIUpdate(unsigned long time_passed)
 
                 scriptEvents.addEvent(1, Util::getRandomUInt(45000, 50000));
 
-                if (_isHeroic())
+                if (isHeroic())
                     scriptEvents.addEvent(2, 2500);
             } break;
             case 2:

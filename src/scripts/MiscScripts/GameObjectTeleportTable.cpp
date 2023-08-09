@@ -4,8 +4,11 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
+#include "Objects/GameObject.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/Master.h"
+#include "Server/Script/GameObjectAIScript.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //\brief This script will add support for an SQL table called gameobject_teleports.

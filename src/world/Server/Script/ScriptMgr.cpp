@@ -42,6 +42,8 @@
 
 #include <git_version.h>
 
+#include "AchievementScript.hpp"
+#include "Server/ServerState.h"
 #include "Server/World.h"
 
 using namespace AscEmu::Packets;
@@ -642,14 +644,12 @@ CreatureAIScript* ScriptMgr::getCreatureAIScript(Creature* pCreature) const
 
 void ScriptMgr::register_creature_script(uint32 entry, exp_create_creature_ai callback)
 {
-    m_creaturesMutex.Acquire();
+    std::lock_guard lock(m_creaturesMutex);
 
     if (_creatures.find(entry) != _creatures.end())
         sLogger.debug("ScriptMgr tried to register a script for Creature ID: %u but this creature has already one!", entry);
 
     _creatures.insert(CreatureCreateMap::value_type(entry, callback));
-
-    m_creaturesMutex.Release();
 }
 
 void ScriptMgr::register_gameobject_script(uint32 entry, exp_create_gameobject_ai callback)
@@ -809,10 +809,8 @@ CreatureAIScript* ScriptMgr::CreateAIScriptClassForEntry(Creature* pCreature)
 {
     uint32 entry = pCreature->getEntry();
 
-    m_creaturesMutex.Acquire();
+    std::lock_guard lock(m_creaturesMutex);
     CreatureCreateMap::iterator itr = _creatures.find(entry);
-    m_creaturesMutex.Release();
-
     if (itr == _creatures.end())
         return NULL;
 
@@ -891,43 +889,6 @@ TargetType::TargetType(uint32_t pTargetGen, TargetFilter pTargetFilter, uint32_t
     mTargetNumber[1] = pMaxTargetNumber;
 }
 
-/* GameObjectAI Stuff */
-
-GameObjectAIScript::GameObjectAIScript(GameObject* goinstance) : _gameobject(goinstance)
-{
-}
-
-void GameObjectAIScript::ModifyAIUpdateEvent(uint32_t newfrequency)
-{
-    sEventMgr.ModifyEventTimeAndTimeLeft(_gameobject, EVENT_SCRIPT_UPDATE_EVENT, newfrequency);
-}
-
-void GameObjectAIScript::RemoveAIUpdateEvent()
-{
-    sEventMgr.RemoveEvents(_gameobject, EVENT_SCRIPT_UPDATE_EVENT);
-}
-
-void GameObjectAIScript::RegisterAIUpdateEvent(uint32_t frequency)
-{
-    sEventMgr.AddEvent(_gameobject, &GameObject::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, frequency, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// instance
-InstanceScript* GameObjectAIScript::getInstanceScript()
-{
-    WorldMap* mapMgr = _gameobject->getWorldMap();
-    return (mapMgr) ? mapMgr->getScript() : nullptr;
-}
-
-bool GameObjectAIScript::_isHeroic()
-{
-    WorldMap* mapMgr = _gameobject->getWorldMap();
-    if (mapMgr == nullptr || mapMgr->getDifficulty() != InstanceDifficulty::DUNGEON_HEROIC)
-        return false;
-
-    return true;
-}
 
 /* InstanceAI Stuff */
 
@@ -955,6 +916,11 @@ void InstanceScript::setZoneMusic(uint32_t zoneId, uint32_t musicId)
     data << uint32_t(musicId);
     sWorld.sendZoneMessage(&data, zoneId);
 }
+
+WorldMap* InstanceScript::getWorldMap() { return mInstance; }
+InstanceMap* InstanceScript::getInstance() { return mInstance->getInstance(); }
+uint8_t InstanceScript::GetDifficulty() { return Difficulty; }
+
 // MIT start
 //////////////////////////////////////////////////////////////////////////////////////////
 // data

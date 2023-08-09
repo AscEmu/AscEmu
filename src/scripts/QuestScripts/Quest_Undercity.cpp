@@ -20,7 +20,9 @@
  */
 
 #include "Setup.h"
+#include "Map/Maps/WorldMap.hpp"
 #include "Spell/SpellMgr.hpp"
+#include "Storage/MySQLDataStore.hpp"
 
 class Quest_JourneytoUndercity : public QuestScript
 {

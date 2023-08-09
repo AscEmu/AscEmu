@@ -193,7 +193,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new Volkhan(c); }
     explicit Volkhan(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        if (_isHeroic())
+        if (isHeroic())
         {
             addAISpell(59529, 15.0f, TARGET_RANDOM_FRIEND, 2, 15);
             mStomp = addAISpell(59529, 0.0f, TARGET_SELF, 3, 0);
@@ -293,7 +293,7 @@ public:
             if (itr && itr->isCreature() && itr->getEntry() == CN_BRITTLE_GOLEM)
             {
                 Creature* pCreature = static_cast<Creature*>(itr);
-                if (_isHeroic())
+                if (isHeroic())
                     pCreature->castSpell(pCreature, 59527, true);
                 else
                     pCreature->castSpell(pCreature, 52429, true);
@@ -320,7 +320,7 @@ public:
     {
         addAISpell(SPELL_BLAST_WAVE, 25.0f, TARGET_SELF, 0, 20);
 
-        if (_isHeroic())
+        if (isHeroic())
             addAISpell(59530, 15.0f, TARGET_ATTACKING, 0, 15);
         else
             addAISpell(52433, 15.0f, TARGET_ATTACKING, 0, 15);
@@ -363,7 +363,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new IonarAI(c); }
     explicit IonarAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        if (_isHeroic())
+        if (isHeroic())
         {
             addAISpell(59800, 20.0f, TARGET_RANDOM_SINGLE, 2, 5);
             addAISpell(59795, 15.0f, TARGET_RANDOM_SINGLE, 0, 12);
@@ -388,7 +388,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new LokenAI(c); }
     explicit LokenAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        if (_isHeroic())
+        if (isHeroic())
             mNova = addAISpell(59835, 0.0f, TARGET_SELF, 4, 0);
         else
             mNova = addAISpell(52960, 0.0f, TARGET_SELF, 4, 0);
@@ -417,7 +417,7 @@ public:
     {
         mSpeech = 1;
 
-        if (_isHeroic())
+        if (isHeroic())
             _applyAura(59836);
         else
             _applyAura(52961);

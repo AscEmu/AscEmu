@@ -999,7 +999,7 @@ void NerubarBroodkeeperAI::OnReachWP(uint32_t type, uint32_t id)
 DeathspeakerAttendantAI::DeathspeakerAttendantAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
     addAISpell(SPELL_SHADOWBOLT, 50.0f, TARGET_RANDOM_SINGLE, 0, 8);
-    addAISpell(RAID_MODE(SPELL_SHADOWNOVA_10N, SPELL_SHADOWNOVA_25N, SPELL_SHADOWNOVA_10N, SPELL_SHADOWNOVA_25N), 50.0f, TARGET_VARIOUS, 0, 17);
+    addAISpell(getRaidModeValue(SPELL_SHADOWNOVA_10N, SPELL_SHADOWNOVA_25N, SPELL_SHADOWNOVA_10N, SPELL_SHADOWNOVA_25N), 50.0f, TARGET_VARIOUS, 0, 17);
 }
 
 CreatureAIScript* DeathspeakerAttendantAI::Create(Creature* pCreature) { return new DeathspeakerAttendantAI(pCreature); }
@@ -1010,7 +1010,7 @@ DeathspeakerDiscipleAI::DeathspeakerDiscipleAI(Creature* pCreature) : CreatureAI
 {
     addAISpell(SPELL_DARKBLESSING, 33.0f, 20, [this]() { return getBestUnitTarget(TargetFilter_WoundedFriendlyLowestHealthInRange, 0.0f, 30.0f); });
     addAISpell(SPELL_SHADOWBOLT2, 33.0f, 8, [this]() { return getBestUnitTarget(TargetFilter_None); });
-    addAISpell(RAID_MODE(SPELL_SHADOWMEND_10N, SPELL_SHADOWMEND_25N, SPELL_SHADOWMEND_10N, SPELL_SHADOWMEND_25N), 33.0f, 25, [this]() { return getBestUnitTarget(TargetFilter_WoundedFriendlyLowestHealthInRange, 0.0f, 40.0f); });
+    addAISpell(getRaidModeValue(SPELL_SHADOWMEND_10N, SPELL_SHADOWMEND_25N, SPELL_SHADOWMEND_10N, SPELL_SHADOWMEND_25N), 33.0f, 25, [this]() { return getBestUnitTarget(TargetFilter_WoundedFriendlyLowestHealthInRange, 0.0f, 40.0f); });
 }
 
 CreatureAIScript* DeathspeakerDiscipleAI::Create(Creature* pCreature) { return new DeathspeakerDiscipleAI(pCreature); }
@@ -1044,9 +1044,9 @@ CreatureAIScript* DeathspeakerHighPriestAI::Create(Creature* pCreature) { return
 /// 
 DeathspeakerServantAI::DeathspeakerServantAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
-    addAISpell(RAID_MODE(SPELL_CHAOSBOLT_10N, SPELL_CHAOSBOLT_25N, SPELL_CHAOSBOLT_10N, SPELL_CHAOSBOLT_25N), 33.0f, 15, [this]() { return getBestUnitTarget(TargetFilter_None); });
+    addAISpell(getRaidModeValue(SPELL_CHAOSBOLT_10N, SPELL_CHAOSBOLT_25N, SPELL_CHAOSBOLT_10N, SPELL_CHAOSBOLT_25N), 33.0f, 15, [this]() { return getBestUnitTarget(TargetFilter_None); });
     addAISpell(SPELL_CONSUMINGSHADOWS, 33.0f, 13, [this]() { return getBestUnitTarget(TargetFilter_None); });
-    addAISpell(RAID_MODE(SPELL_CURSEOFAGONY_10N, SPELL_CURSEOFAGONY_25N, SPELL_CURSEOFAGONY_10N, SPELL_CURSEOFAGONY_25N), 33.0f, 17, [this]() { return getBestUnitTarget(TargetFilter_None); });
+    addAISpell(getRaidModeValue(SPELL_CURSEOFAGONY_10N, SPELL_CURSEOFAGONY_25N, SPELL_CURSEOFAGONY_10N, SPELL_CURSEOFAGONY_25N), 33.0f, 17, [this]() { return getBestUnitTarget(TargetFilter_None); });
 }
 
 CreatureAIScript* DeathspeakerServantAI::Create(Creature* pCreature) { return new DeathspeakerServantAI(pCreature); }

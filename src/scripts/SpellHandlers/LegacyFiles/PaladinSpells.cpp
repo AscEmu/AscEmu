@@ -19,8 +19,11 @@
 
 #include "Setup.h"
 #include "Management/Faction.h"
+#include "Map/Maps/WorldMap.hpp"
+#include "Objects/Units/Creatures/AIInterface.h"
 #include "Server/Master.h"
 #include "Server/Script/ScriptMgr.h"
+#include "Spell/Spell.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/PowerType.hpp"
 

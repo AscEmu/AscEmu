@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.h"
 #include "Unit.hpp"
 #include "UnitDefines.hpp"
+#include "Creatures/AIInterface.h"
 
 CombatHandler::CombatHandler(Unit* owner) : m_owner(owner)
 {}

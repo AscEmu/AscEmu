@@ -25,6 +25,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
+#include "Server/Script/GameObjectAIScript.hpp"
 
 using namespace AscEmu::Packets;
 

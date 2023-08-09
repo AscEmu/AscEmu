@@ -19,6 +19,7 @@
 
 #include "Setup.h"
 #include "Server/Script/ScriptMgr.h"
+#include "Spell/Spell.h"
 #include "Spell/SpellAuras.h"
 
 bool Cold_Snap(uint8_t /*effectIndex*/, Spell* pSpell)

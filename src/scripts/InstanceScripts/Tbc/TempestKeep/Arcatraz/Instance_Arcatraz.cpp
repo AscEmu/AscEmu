@@ -29,7 +29,7 @@ public:
         SpeechTimer = 0;
         VoidTimer = 0;
 
-        if (!_isHeroic())
+        if (!isHeroic())
             addAISpell(SHADOW_NOVA, 15.0f, TARGET_SELF, 2, 15);
         else
             addAISpell(SHADOW_NOVA_H, 15.0f, TARGET_SELF, 2, 15);
@@ -151,7 +151,7 @@ public:
     {
         // M4ksiu: I'm not sure if it should be cast once, on start
         uint32_t SpellId = CONSUMPTION;
-        if (_isHeroic())
+        if (isHeroic())
             SpellId = CONSUMPTION_H;
 
         getCreature()->castSpell(getCreature(), SpellId, true);
@@ -177,7 +177,7 @@ public:
         healTemp->addEmote("That is much better.", CHAT_MSG_MONSTER_YELL, 11091);
         healTemp->addEmote("Ah, just what I needed.", CHAT_MSG_MONSTER_YELL, 11092);
 
-        if (_isHeroic())
+        if (isHeroic())
             addAISpell(SHADOW_WAVE, 8.0f, TARGET_ATTACKING);
 
         addEmoteForEvent(Event_OnCombatStart, 7368);    // It is unwise to anger me!

@@ -34,7 +34,7 @@ public:
     {
         addAISpell(SF_DRAINLIFE, 8.0f, TARGET_RANDOM_SINGLE, 0, 35);
 
-        if (_isHeroic())
+        if (isHeroic())
             addAISpell(SF_DRAINMANA, 8.0f, TARGET_RANDOM_SINGLE, 0, 35);
 
         ManaRage = sSpellMgr.getSpellInfo(FC_MANARAGE);

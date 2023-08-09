@@ -22,6 +22,7 @@
 #include "Setup.h"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Objects/Units/Creatures/Pet.h"
+#include "Server/Script/GameObjectAIScript.hpp"
 
 class GrandWidowFaerlinaAI;
 class AnubRekhanAI;

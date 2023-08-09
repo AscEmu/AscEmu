@@ -84,7 +84,7 @@ namespace anubarak
         SPELL_SPIKE_TELE            = 66170
     };
 
-#define SPELL_PERMAFROST_HELPER RAID_MODE<uint32_t>(66193, 67855, 67856, 67857)
+#define SPELL_PERMAFROST_HELPER getRaidModeValue(66193, 67855, 67856, 67857)
 
     enum SummonActions
     {

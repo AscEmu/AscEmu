@@ -5,6 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Management/Gossip/GossipMenu.hpp"
+#include "Objects/Object.hpp"
+#include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Players/Player.hpp"
 
 class MasterHammersmith : public GossipScript
 {

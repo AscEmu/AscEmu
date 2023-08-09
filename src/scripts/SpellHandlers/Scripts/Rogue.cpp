@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
+#include "Spell/SpellAuras.h"
 #include "Spell/Definitions/SpellFamily.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 

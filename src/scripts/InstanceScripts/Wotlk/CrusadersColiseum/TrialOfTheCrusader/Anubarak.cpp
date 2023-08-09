@@ -79,14 +79,14 @@ void AnubarakAI::OnCombatStart(Unit* target)
     addAIFunction(&AnubarakAI::submerge, DoOnceScheduler(80s, 100.0f, { anubarak::PHASE_MELEE }));
     addAISpell(SpellDesc(anubarak::SPELL_BERSERK, FilterArgs(TargetFilter_Self), false), DoLoopScheduler(10min, 100.0f));
 
-    if (_isHeroic())
+    if (isHeroic())
         addAIFunction([this](CreatureAIFunc pThis)
             {
                 summons.DoActionForEntry(anubarak::ACTION_SHADOW_STRIKE, anubarak::NPC_BURROWER);
                 repeatFunctionFromScheduler(pThis, 30s);
             }, DoOnceScheduler(10s, 33.0f, { anubarak::PHASE_MELEE }));
 
-    if (!_isHeroic())
+    if (!isHeroic())
         addAIFunction(&AnubarakAI::summonFrostSphere, DoOnceScheduler(20s, 33.0f));
 
     removeUnitFlags(UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);

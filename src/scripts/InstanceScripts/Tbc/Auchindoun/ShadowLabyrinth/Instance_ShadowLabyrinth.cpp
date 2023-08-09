@@ -369,7 +369,7 @@ public:
         resonance->setAttackStopTimer(1000);
         resonanceTimerId = 0;
 
-        if (getCreature()->getWorldMap() != NULL && !_isHeroic() && getCreature()->getHealthPct() >= 41)
+        if (getCreature()->getWorldMap() != NULL && !isHeroic() && getCreature()->getHealthPct() >= 41)
         {
             getCreature()->setHealthPct(40);
         }
@@ -381,7 +381,7 @@ public:
     {
         SonicBoomTimerId = _addTimer(5000);
 
-        if (getCreature()->getWorldMap() != NULL && !_isHeroic() && getCreature()->getHealthPct() >= 41)
+        if (getCreature()->getWorldMap() != NULL && !isHeroic() && getCreature()->getHealthPct() >= 41)
         {
             getCreature()->setHealthPct(40);
         }
@@ -390,7 +390,7 @@ public:
 
     void OnCombatStop(Unit* /*mTarget*/) override
     {
-        if (getCreature()->getWorldMap() != NULL && !_isHeroic() && getCreature()->getHealthPct() >= 41)
+        if (getCreature()->getWorldMap() != NULL && !isHeroic() && getCreature()->getHealthPct() >= 41)
         {
             getCreature()->setHealthPct(40);
         }

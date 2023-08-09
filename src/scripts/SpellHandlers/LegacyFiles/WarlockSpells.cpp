@@ -25,6 +25,7 @@
 #include <Spell/Definitions/PowerType.hpp>
 #include <Objects/Units/Creatures/Pet.h>
 #include "Management/ItemInterface.h"
+#include "Objects/Units/Creatures/AIInterface.h"
 
 //////////////////////////////////////////////////////////////
  //bool SoulLinkParent( uint32_t i, Spell *s )

@@ -23,7 +23,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new KrikthirAI(c); }
     explicit KrikthirAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        if (!_isHeroic())
+        if (!isHeroic())
         {
             addAISpell(KRIKTHIR_CURSEOFFATIGUE, 100.0f, TARGET_SELF, 0, 10);
 
@@ -72,7 +72,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new HadronoxAI(c); }
     explicit HadronoxAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        if (!_isHeroic())
+        if (!isHeroic())
         {
             addAISpell(HADRONOX_WEBGRAB, 22.0f, TARGET_RANDOM_SINGLE, 0, 14);
 

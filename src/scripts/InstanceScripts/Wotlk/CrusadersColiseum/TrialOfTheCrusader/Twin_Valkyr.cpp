@@ -71,12 +71,12 @@ void TwinsAI::OnCombatStart(Unit*)
     SpellDesc mBerserkInfo(twins::SPELL_BERSERK, FilterArgs(TargetFilter_Self), false);
     mBerserkInfo.setUseSpellCD(true);
     mBerserkInfo.addDBMessage(twins::SAY_BERSERK);
-    addAISpell(mBerserkInfo, DoLoopScheduler(_isHeroic() ? 6min : 8min, 100.0f));
+    addAISpell(mBerserkInfo, DoLoopScheduler(isHeroic() ? 6min : 8min, 100.0f));
 
     SpellDesc mTwinSpikeInfo(SpikeSpellId, FilterArgs(TargetFilter_Current), false);
     addAISpell(mTwinSpikeInfo, DoLoopScheduler(20s, 100.0f));
 
-    if (_isHeroic())
+    if (isHeroic())
     {
         SpellDesc mTouchInfo(TouchSpellId, FilterArgs(TargetFilter_InRangeOnly, 0.0f, 200.0f, OtherEssenceSpellId), false);
         addAISpell(mTouchInfo, DoLoopScheduler(10s, 20s, 33.0f));
@@ -159,10 +159,10 @@ void TwinsAI::handleRemoveAuras()
     {
         if (Player* pPlayer = itr.second)
         {
-            pPlayer->removeAllAurasById(RAID_MODE<uint32>(65686, 67222, 67223, 67224));
-            pPlayer->removeAllAurasById(RAID_MODE<uint32>(67590, 67602, 67603, 67604));
-            pPlayer->removeAllAurasById(RAID_MODE<uint32>(65684, 67176, 67177, 67178));
-            pPlayer->removeAllAurasById(RAID_MODE<uint32>(67590, 67602, 67603, 67604));
+            pPlayer->removeAllAurasById(getRaidModeValue(65686, 67222, 67223, 67224));
+            pPlayer->removeAllAurasById(getRaidModeValue(67590, 67602, 67603, 67604));
+            pPlayer->removeAllAurasById(getRaidModeValue(65684, 67176, 67177, 67178));
+            pPlayer->removeAllAurasById(getRaidModeValue(67590, 67602, 67603, 67604));
         }
     }
 }
@@ -195,7 +195,7 @@ void FjolaAI::InitOrReset()
     Weapon                  = twins::EQUIP_MAIN_1;
     AuraState               = 22;
     MyEmphatySpellId        = twins::SPELL_TWIN_EMPATHY_DARK;
-    OtherEssenceSpellId     = RAID_MODE<uint32>(65684, 67176, 67177, 67178);
+    OtherEssenceSpellId     = getRaidModeValue(65684, 67176, 67177, 67178);
     SurgeSpellId            = twins::SPELL_LIGHT_SURGE;
     VortexSpellId           = twins::SPELL_LIGHT_VORTEX;
     ShieldSpellId           = twins::SPELL_LIGHT_SHIELD;
@@ -299,7 +299,7 @@ void EydisAI::InitOrReset()
     Weapon                  = twins::EQUIP_MAIN_2;
     AuraState               = 19;
     MyEmphatySpellId        = twins::SPELL_TWIN_EMPATHY_LIGHT;
-    OtherEssenceSpellId     = RAID_MODE<uint32_t>(65686, 67222, 67223, 67224);
+    OtherEssenceSpellId     = getRaidModeValue(65686, 67222, 67223, 67224);
     SurgeSpellId            = twins::SPELL_DARK_SURGE;
     VortexSpellId           = twins::SPELL_DARK_VORTEX;
     ShieldSpellId           = twins::SPELL_DARK_SHIELD;
@@ -399,7 +399,7 @@ void UnleashedDarkAI::AIUpdate(unsigned long time_passed)
     {
         if (selectUnitTarget(FilterArgs(TargetFilter(TargetFilter_InRangeOnly | TargetFilter_Player), 0.0f, 3.0f)))
         {
-            castSpellAOE(RAID_MODE<uint32_t>(65808, 67172, 67173, 67174));
+            castSpellAOE(getRaidModeValue(65808, 67172, 67173, 67174));
             getMovementManager()->moveIdle();
             despawn(1000, 0);
         }
@@ -423,7 +423,7 @@ void UnleashedLightAI::AIUpdate(unsigned long time_passed)
     {
         if (selectUnitTarget(FilterArgs(TargetFilter(TargetFilter_InRangeOnly | TargetFilter_Player), 0.0f, 3.0f)))
         {
-            castSpellAOE(RAID_MODE<uint32_t>(65795, 67238, 67239, 67240));
+            castSpellAOE(getRaidModeValue(65795, 67238, 67239, 67240));
             getMovementManager()->moveIdle();
             despawn(1000, 0);
         }

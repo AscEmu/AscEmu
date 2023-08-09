@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Server/WorldSession.h"
+#include "Server/Script/GameObjectAIScript.hpp"
 
 class RagefireChasmInstanceScript : public InstanceScript
 {

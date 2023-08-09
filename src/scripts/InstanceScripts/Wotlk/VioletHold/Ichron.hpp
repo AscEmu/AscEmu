@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Instance_TheVioletHold.hpp"
+#include "Server/Script/AchievementScript.hpp"
 
 namespace Ichron
 {

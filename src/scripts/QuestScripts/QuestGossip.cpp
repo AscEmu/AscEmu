@@ -24,6 +24,7 @@
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Server/WorldSession.h"
 #include "Spell/SpellMgr.hpp"
+#include "Storage/MySQLDataStore.hpp"
 
 enum
 {

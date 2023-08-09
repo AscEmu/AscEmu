@@ -18,7 +18,7 @@ WatchkeeperGargolmarAI::WatchkeeperGargolmarAI(Creature* pCreature) : CreatureAI
     mOverpower = addAISpell(SPELL_OVERPOWER, 10.0f, TARGET_ATTACKING, 0, 5);
     mRetaliation = addAISpell(SPELL_RETALIATION, 0.0f, TARGET_SELF);
 
-    if (_isHeroic())
+    if (isHeroic())
         mMortalWound = addAISpell(SPELL_MORTAL_WOUND_H, 15.0f, TARGET_ATTACKING, 0, 12);
     else
         mMortalWound = addAISpell(SPELL_MORTAL_WOUND, 15.0f, TARGET_ATTACKING, 0, 12);

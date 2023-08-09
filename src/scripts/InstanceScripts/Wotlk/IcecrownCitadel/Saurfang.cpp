@@ -762,7 +762,7 @@ DeathbringerSaurfangAI::DeathbringerSaurfangAI(Creature* pCreature) : CreatureAI
     BerserkSpell->addDBEmote(SAY_DEATHBRINGER_BERSERK);
     BerserkSpell->setAvailableForScriptPhase({ PHASE_COMBAT });
 
-    if (_isHeroic())
+    if (isHeroic())
     {
         BerserkSpell->mCooldown = 480000;
         BerserkSpell->setCooldownTimer(480000);
@@ -933,7 +933,7 @@ void DeathbringerSaurfangAI::AIUpdate(unsigned long time_passed)
 
                 scriptEvents.addEvent(EVENT_SUMMON_BLOOD_BEAST_SE, 40000,PHASE_COMBAT);
 
-                if (_isHeroic())
+                if (isHeroic())
                     scriptEvents.addEvent(EVENT_SCENT_OF_BLOOD_SE, 10000, PHASE_COMBAT);
                 break;
             }
@@ -1121,7 +1121,7 @@ void DeathbringerSaurfangAI::OnSpellHitTarget(Object* target, SpellInfo const* i
 uint32_t DeathbringerSaurfangAI::GetCreatureData(uint32_t type) const
 {
     if (type == DATA_MADE_A_MESS && _dead)
-        if (_markedTargetGuids.size() < RAID_MODE<uint32_t>(3, 5, 3, 5))
+        if (_markedTargetGuids.size() < getRaidModeValue(3, 5, 3, 5))
             return 1;
 
     return 0;

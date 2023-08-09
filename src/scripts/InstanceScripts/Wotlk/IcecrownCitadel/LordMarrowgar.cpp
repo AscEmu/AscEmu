@@ -14,7 +14,7 @@ LordMarrowgarAI::LordMarrowgarAI(Creature* pCreature) : CreatureAIScript(pCreatu
     // Instance Script
     mInstance = getInstanceScript();
 
-    boneStormDuration = RAID_MODE<uint32_t>(20000, 30000, 20000, 30000);
+    boneStormDuration = getRaidModeValue(20000, 30000, 20000, 30000);
     baseSpeed = pCreature->getSpeedRate(TYPE_RUN, false);
     introDone = false;
     boneSlice = false;
@@ -95,7 +95,7 @@ void LordMarrowgarAI::AIUpdate(unsigned long time_passed)
         {
             case EVENT_BONE_SPIKE_GRAVEYARD:
             {
-                if (_isHeroic() || !getCreature()->hasAurasWithId(SPELL_BONE_STORM))
+                if (isHeroic() || !getCreature()->hasAurasWithId(SPELL_BONE_STORM))
                     _castAISpell(boneSpikeGraveyardSpell);
 
                 scriptEvents.addEvent(EVENT_BONE_SPIKE_GRAVEYARD, Util::getRandomInt(15000, 20000));
@@ -165,7 +165,7 @@ void LordMarrowgarAI::AIUpdate(unsigned long time_passed)
                 scriptEvents.removeEvent(EVENT_BONE_STORM_MOVE);
                 scriptEvents.addEvent(EVENT_ENABLE_BONE_SLICE, 10000);
 
-                if (!_isHeroic())
+                if (!isHeroic())
                     scriptEvents.addEvent(EVENT_BONE_SPIKE_GRAVEYARD, Util::getRandomInt(15000, 20000));
                 break;
             }
@@ -413,7 +413,7 @@ void BoneStorm::onAuraCreate(Aura* aur)
     // set duration here
     int32_t duration = 20000;
     if (aur->GetUnitCaster()->isCreature())
-        duration = static_cast<Creature*>(aur->GetUnitCaster())->GetScript()->RAID_MODE<uint32_t>(20000, 30000, 20000, 30000);
+        duration = static_cast<Creature*>(aur->GetUnitCaster())->GetScript()->getRaidModeValue(20000, 30000, 20000, 30000);
 
     aur->setNewMaxDuration(duration, false);
 }

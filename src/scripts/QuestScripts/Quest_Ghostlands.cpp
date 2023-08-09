@@ -22,6 +22,7 @@
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Server/WorldSession.h"
 #include "Server/Script/CreatureAIScript.h"
+#include "Server/Script/GameObjectAIScript.hpp"
 
 class Prisoner12 : public GossipScript
 {

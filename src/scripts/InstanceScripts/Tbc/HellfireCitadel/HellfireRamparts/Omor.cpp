@@ -22,7 +22,7 @@ OmorTheUnscarredAI::OmorTheUnscarredAI(Creature* pCreature) : CreatureAIScript(p
     m_SummonSpell->addDBEmote(SPELL_SUMMON_FIENDISH_HOUND);
 
     // Normal
-    if (!_isHeroic())
+    if (!isHeroic())
     {
         m_ShadowBoltSpell = addAISpell(SPELL_SHADOW_BOLT, 8.0f, TARGET_RANDOM_SINGLE, 3, 15, false, true);
         m_ShadowBoltSpell->setMinMaxDistance(10.0f, 60.0f);
@@ -33,7 +33,7 @@ OmorTheUnscarredAI::OmorTheUnscarredAI(Creature* pCreature) : CreatureAIScript(p
     }
 
     // Heroic
-    if (_isHeroic())
+    if (isHeroic())
     {
         m_ShadowBoltSpell = addAISpell(SPELL_SHADOW_BOLT_H, 8.0f, TARGET_RANDOM_SINGLE, 3, 15, false, true);
         m_ShadowBoltSpell->setMinMaxDistance(10.0f, 60.0f);

@@ -22,6 +22,7 @@
 #include "Setup.h"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Server/WorldSession.h"
+#include "Objects/Units/Creatures/Creature.h"
 
 class AncientMarks : public GossipScript
 {

@@ -830,7 +830,7 @@ void TirionAI::summonLickKing(CreatureAIFunc pThis)
 
 void TirionAI::handleBarrettSummon(CreatureAIFunc pThis)
 {
-    if (_isHeroic() && mInstance->getBossState(DATA_NORTHREND_BEASTS) != EncounterStates::Performed)
+    if (isHeroic() && mInstance->getBossState(DATA_NORTHREND_BEASTS) != EncounterStates::Performed)
         summonCreature(NPC_BARRETT_BEASTS_HC, BarretSpawnPosition);
     else if (mInstance->getBossState(DATA_NORTHREND_BEASTS) != EncounterStates::Performed)
         summonCreature(NPC_BARRETT_BEASTS, BarretSpawnPosition);

@@ -8,6 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptSetup.h"
 #include "Server/World.h"
 #include "LuaMacros.h"
+#include "Server/ServerState.h"
+#include "Server/Script/GameObjectAIScript.hpp"
 
 #ifdef __APPLE__
 #undef check

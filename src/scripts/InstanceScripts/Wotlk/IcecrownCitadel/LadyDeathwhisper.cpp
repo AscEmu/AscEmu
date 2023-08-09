@@ -14,7 +14,7 @@ LadyDeathwhisperAI::LadyDeathwhisperAI(Creature* pCreature) : CreatureAIScript(p
     // Instance Script
     mInstance = getInstanceScript();
    
-    dominateMindCount = RAID_MODE<uint8_t>(0, 1, 1, 3);
+    dominateMindCount = static_cast<uint8_t>(getRaidModeValue(0, 1, 1, 3));
     introDone = false;
 
     // Scripted Spells not autocastet
@@ -119,7 +119,7 @@ void LadyDeathwhisperAI::DoAction(int32_t const action)
             scriptEvents.addEvent(EVENT_P2_TOUCH_OF_INSIGNIFICANCE, Util::getRandomUInt(6000, 9000), PHASE_TWO);
             scriptEvents.addEvent(EVENT_P2_SUMMON_SHADE, Util::getRandomUInt(12000, 15000), PHASE_TWO);
             // on heroic mode Lady Deathwhisper is immune to taunt effects in phase 2 and continues summoning adds
-            if (_isHeroic())
+            if (isHeroic())
             {
                 ///\todo Add SpellImmunities
                 scriptEvents.addEvent(EVENT_P2_SUMMON_WAVE, 45000, PHASE_TWO);
@@ -215,7 +215,7 @@ void LadyDeathwhisperAI::AIUpdate(unsigned long time_passed)
             case EVENT_P1_SUMMON_WAVE:
             {
                 SummonWavePhaseOne();
-                scriptEvents.addEvent(EVENT_P1_SUMMON_WAVE, _isHeroic() ? 45000 : 60000, PHASE_ONE);
+                scriptEvents.addEvent(EVENT_P1_SUMMON_WAVE, isHeroic() ? 45000 : 60000, PHASE_ONE);
                 break;
             }
             case EVENT_P1_SHADOW_BOLT:

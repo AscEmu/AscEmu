@@ -22,6 +22,7 @@
 #include "Map/Maps/MapScriptInterface.h"
 #include "Server/WorldSession.h"
 #include "Server/Script/CreatureAIScript.h"
+#include "Server/Script/GameObjectAIScript.hpp"
 
 class ScryingOrb : public GameObjectAIScript
 {

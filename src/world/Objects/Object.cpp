@@ -38,6 +38,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/Spline/MovementPacketBuilder.h"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
+#include "Units/Creatures/AIInterface.h"
 
 #if VERSION_STRING >= Cata
 #include "Server/OpcodeTable.hpp"

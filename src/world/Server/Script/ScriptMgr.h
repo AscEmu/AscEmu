@@ -22,22 +22,50 @@
 #pragma once
 
 #include "ScriptEvent.hpp"
-#include "Management/ArenaTeam.hpp"
-#include "Management/GameEventMgr.h"
+#include "AEVersion.hpp"
 #include "Management/Gossip/GossipScript.hpp"
-#include "Map/Maps/InstanceMap.hpp"
-#include "Objects/Units/Unit.hpp"
-#include "Objects/Units/Creatures/AIInterface.h"
-#include "Server/ServerState.h"
-#include "Server/Script/AchievementScript.hpp"
-#include "Spell/SpellAuras.h"
-#include "Spell/SpellScript.hpp"
-#include "Spell/Definitions/ProcFlags.hpp"
+#include "Map/Maps/InstanceDefines.hpp"
+#include "Spell/SpellScriptDefines.hpp"
 
+#include <memory>
+#include <mutex>
+#include <set>
+#include <unordered_map>
+
+
+class InstanceMap;
+class Transporter;
+struct DamageInfo;
+enum SpellProcFlags : uint32_t;
+class SpellProc;
+struct AuraEffectModifier;
+enum AuraRemoveMode : uint8_t;
+class SpellScript;
+enum AchievementCriteriaTypes : uint8_t;
+enum SpellCastResult : uint8_t;
+
+
+namespace Arcemu
+{
+    class DynLib;
+}
+
+class WorldMap;
+class Aura;
+class ArenaTeam;
+class Spell;
+class SpellInfo;
+class Unit;
+class WorldSession;
+class AchievementCriteriaScript;
+class ServerState;
 class Channel;
 enum EncounterCreditType : uint8_t;
 class Guild;
 struct QuestProperties;
+enum GameEventState : uint8_t;
+enum TargetFilter : uint32_t;
+
 
 enum ServerHookEvents
 {
@@ -372,7 +400,7 @@ public:
 
         InstanceCreateMap mInstances;
         CreatureCreateMap _creatures;
-        Mutex m_creaturesMutex;
+        std::mutex m_creaturesMutex;
         GameObjectCreateMap _gameobjects;
         HandleDummyAuraMap _auras;
         HandleDummySpellMap _spells;
@@ -435,7 +463,7 @@ typedef std::pair<RangeStatus, float> RangeStatusPair;
 class SERVER_DECL TargetType
 {
 public:
-    TargetType(uint32_t pTargetGen = TargetGen_Self, TargetFilter pTargetFilter = TargetFilter_None, uint32_t pMinTargetNumber = 0, uint32_t pMaxTargetNumber = 0);
+    TargetType(uint32_t pTargetGen = TargetGen_Self, TargetFilter pTargetFilter = TargetFilter(0) /*TargetFilter_None*/, uint32_t pMinTargetNumber = 0, uint32_t pMaxTargetNumber = 0);
     ~TargetType() = default;
 
     uint32_t mTargetGenerator;      // Defines what kind of target should we try to find
@@ -484,67 +512,6 @@ class SERVER_DECL EventScript
         void RegisterUpdateEvent(uint32 pFrequency);
         void ModifyUpdateEvent(uint32 pNewFrequency);
         void RemoveUpdateEvent();
-};
-
-class SERVER_DECL GameObjectAIScript
-{
-    public:
-
-        GameObjectAIScript(GameObject* goinstance);
-        virtual ~GameObjectAIScript() {}
-
-        virtual void OnCreate() {}
-        virtual void OnSpawn() {}
-        virtual void OnDespawn() {}
-        virtual void OnLootTaken(Player* /*pLooter*/, ItemProperties const* /*pItemInfo*/) {}
-        virtual void OnActivate(Player* /*pPlayer*/) {}
-        virtual void OnDamaged(uint32 /*damage*/){}
-        virtual void OnDestroyed(){}
-        virtual void AIUpdate() {}
-        virtual void Destroy() { delete this; }
-
-        // Data sharing between scripts
-        virtual void setGameObjectData(uint32 /*type*/) {}
-        virtual uint32 getGameObjectData(uint32 /*type*/) const { return 0; }
-        virtual void setGuidData(uint32 /*guidType*/, uint64 /*guidData*/) {}
-        virtual uint64 getGuidData(uint32 /*guidType*/) const { return 0; }
-
-        void RegisterAIUpdateEvent(uint32 frequency);
-        void ModifyAIUpdateEvent(uint32 newfrequency);
-        void RemoveAIUpdateEvent();
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // instance
-        InstanceScript* getInstanceScript();
-
-        bool _isHeroic();
-
-        template<class T> inline
-        const T& RAID_MODE(const T& normal10, const T& normal25, const T& heroic10, const T& heroic25) const
-        {
-            if (_gameobject->getWorldMap()->getInstance())
-            {
-                switch (_gameobject->getWorldMap()->getDifficulty())
-                {
-                case InstanceDifficulty::RAID_10MAN_NORMAL:
-                    return normal10;
-                case InstanceDifficulty::RAID_25MAN_NORMAL:
-                    return normal25;
-                case InstanceDifficulty::RAID_10MAN_HEROIC:
-                    return heroic10;
-                case InstanceDifficulty::RAID_25MAN_HEROIC:
-                    return heroic25;
-                default:
-                    break;
-                }
-            }
-
-            return normal10;
-        }
-
-    protected:
-
-        GameObject* _gameobject;
 };
 
 class SERVER_DECL QuestScript
@@ -664,9 +631,9 @@ class SERVER_DECL InstanceScript
         virtual void Destroy() {}
 
         // Something to return Instance's MapMgr
-        WorldMap* getWorldMap() { return mInstance; }
-        InstanceMap* getInstance() { return mInstance->getInstance(); }
-        uint8_t GetDifficulty() { return Difficulty; }
+        WorldMap* getWorldMap();
+        InstanceMap* getInstance();
+        uint8_t GetDifficulty();
 
         // MIT start
         //////////////////////////////////////////////////////////////////////////////////////////

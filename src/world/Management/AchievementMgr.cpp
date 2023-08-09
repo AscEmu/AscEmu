@@ -4,6 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "AchievementMgr.h"
+
+#include "Macros/AIInterfaceMacros.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Objects/Item.hpp"
 #include "Objects/Units/Stats.h"

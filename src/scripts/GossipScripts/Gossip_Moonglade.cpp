@@ -5,6 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Management/Gossip/GossipMenu.hpp"
+#include "Objects/Object.hpp"
+#include "Objects/Units/Players/Player.hpp"
+#include "Objects/Units/Players/PlayerDefines.hpp"
+#include "Objects/Units/Creatures/Creature.h"
 
 class SilvaFilnaveth_Gossip : public GossipScript
 {

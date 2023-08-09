@@ -21,6 +21,7 @@
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
+#include "Server/Script/GameObjectAIScript.hpp"
 
 class RingoDeadNPC : public CreatureAIScript
 {

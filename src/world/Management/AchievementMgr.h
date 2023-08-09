@@ -104,7 +104,7 @@ enum AchievementCriteriaCondition
     ACHIEVEMENT_CRITERIA_CONDITION_UNK3      = 13, ///< #13# unk
 };
 
-enum AchievementCriteriaTypes
+enum AchievementCriteriaTypes : uint8_t
 {
     ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE                     = 0,    ///< #0# Kill creature x
     ACHIEVEMENT_CRITERIA_TYPE_WIN_BG                            = 1,    ///< #1# Win battleground

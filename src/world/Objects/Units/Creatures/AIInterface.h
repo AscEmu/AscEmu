@@ -230,7 +230,7 @@ const uint32_t AISPELL_ANY_DIFFICULTY = 4;
 typedef std::set<Unit*> AssistTargetSet;
 typedef std::vector<Unit*> UnitArray;
 
-enum TargetFilter
+enum TargetFilter : uint32_t
 {
     // Standard filters
     TargetFilter_None = 0,                              // 0

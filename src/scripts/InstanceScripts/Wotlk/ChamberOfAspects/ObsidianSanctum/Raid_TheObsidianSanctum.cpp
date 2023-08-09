@@ -153,7 +153,7 @@ public:
         addAISpell(SARTHARION_CLEAVE, 24.0f, TARGET_ATTACKING, 0, 8);
 
         CreatureAISpells* mFlame = nullptr;
-        if (_isHeroic())
+        if (isHeroic())
         {
             mFlame = addAISpell(58956, 18.0f, TARGET_SELF, 2, 16);
             addAISpell(58957, 40.0f, TARGET_SELF, 0, 12);

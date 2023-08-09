@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ObjectMgr.hpp"
 #include "Server/World.h"
 #include "Server/Script/CreatureAIScript.h"
+#include "Server/Script/GameObjectAIScript.hpp"
 #include "Spell/Spell.Legacy.h"
 
 using namespace AscEmu::Packets;

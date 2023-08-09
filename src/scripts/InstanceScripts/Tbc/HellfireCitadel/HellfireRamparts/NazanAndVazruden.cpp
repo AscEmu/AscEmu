@@ -19,7 +19,7 @@ NazanAI::NazanAI(Creature* pCreature) : CreatureAIScript(pCreature)
     m_ConeOfFireSpell->setAvailableForScriptPhase({ GROUND_PHASE });
 
     // Heroic
-    if (_isHeroic())
+    if (isHeroic())
     {
         m_BelowingRoarSpell = addAISpell(SPELL_BELLOWING_ROAR, 8.0f, TARGET_SELF, 0, 12);
         m_BelowingRoarSpell->setAvailableForScriptPhase({ GROUND_PHASE });
@@ -89,7 +89,7 @@ void NazanAI::onSummonedCreature(Creature* summon)
     {
         summon->setFaction(getCreature()->getFactionTemplate());
 
-        if (!_isHeroic())
+        if (!isHeroic())
             summon->castSpell(nullptr, SPELL_SUMMON_LIQUID_FIRE);
         else
             summon->castSpell(nullptr, SPELL_SUMMON_LIQUID_FIRE_H);
@@ -103,7 +103,7 @@ void NazanAI::onSummonedCreature(Creature* summon)
 VazrudenAI::VazrudenAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
     // Normal
-    if (!_isHeroic())
+    if (!isHeroic())
         m_RenevgeSpell = addAISpell(SPELL_REVENGE, 30.0f, TARGET_SELF, 0, 5);
     else
         m_RenevgeSpell = addAISpell(SPELL_REVENGE_H, 30.0f, TARGET_SELF, 0, 5);

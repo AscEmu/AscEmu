@@ -16,7 +16,7 @@ public:
     {
         mInstance = getInstanceScript();
 
-        if (_isHeroic())
+        if (isHeroic())
             addAISpell(SPARK_HC, 80.0f, TARGET_RANDOM_SINGLE, 0, 3);
         else
             addAISpell(SPARK, 80.0f, TARGET_RANDOM_SINGLE, 0, 3);
@@ -33,7 +33,7 @@ public:
     {
         mSummon = 0;
         mRift = false;
-        mSummonTimer = _addTimer(_isHeroic() ? 14000 : 18000);   // check heroic
+        mSummonTimer = _addTimer(isHeroic() ? 14000 : 18000);   // check heroic
     }
 
     void AIUpdate() override
@@ -47,7 +47,7 @@ public:
         if (_isTimerFinished(mSummonTimer) && mRift == false)
         {
             SummonRift(false);
-            _resetTimer(mSummonTimer, _isHeroic() ? 14000 : 18000);
+            _resetTimer(mSummonTimer, isHeroic() ? 14000 : 18000);
         }
 
         if (mRift == true && (getLinkedCreatureAIScript() == NULL || !getLinkedCreatureAIScript()->isAlive()))
@@ -169,7 +169,7 @@ public:
     {
         mInstance = getInstanceScript();
 
-        if (_isHeroic())
+        if (isHeroic())
         {
             addAISpell(ICE_NOVA_HC, 25.0f, TARGET_SELF, 2, 15);
             addAISpell(FIREBOMB_HC, 35.0f, TARGET_RANDOM_SINGLE, 2, 5);
@@ -241,7 +241,7 @@ public:
             _removeAura(60191);
             setRooted(false);
             mPhaseRepeat = 1;
-            setScriptPhase(_isHeroic() ? 1 : 3);   //3 disables p2
+            setScriptPhase(isHeroic() ? 1 : 3);   //3 disables p2
         }
     }
 
@@ -295,7 +295,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new TelestraFireAI(c); }
     explicit TelestraFireAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        if (_isHeroic())
+        if (isHeroic())
         {
             addAISpell(FIRE_BLAST_HC, 30.0f, TARGET_RANDOM_SINGLE, 0, 14);
             addAISpell(SCORCH_HC, 100.0f, TARGET_ATTACKING, 1, 3);
@@ -314,7 +314,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new TelestraFrostAI(c); }
     explicit TelestraFrostAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        if (_isHeroic())
+        if (isHeroic())
         {
             addAISpell(BLIZZARD_HC, 20.0f, TARGET_RANDOM_DESTINATION, 0, 20);
             addAISpell(ICE_BARB_HC, 25.0f, TARGET_RANDOM_SINGLE, 1, 6);
@@ -346,7 +346,7 @@ public:
     {
         mInstance = getInstanceScript();
 
-        if (_isHeroic())
+        if (isHeroic())
             addAISpell(TRAMPLE_H, 30.0f, TARGET_ATTACKING, 0, 9);
         else
             addAISpell(TRAMPLE, 30.0f, TARGET_ATTACKING, 0, 9);
@@ -424,7 +424,7 @@ public:
         }
         else if (m_part == 5)
         {
-            if (_isHeroic())
+            if (isHeroic())
             {
                 getCreature()->castSpell(getCreature(), sSpellMgr.getSpellInfo(SPELL_CRYSTAL_SPIKE_H), true);
             }
@@ -446,7 +446,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new KeristraszaAI(c); }
     explicit KeristraszaAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        if (_isHeroic())
+        if (isHeroic())
             addAISpell(CRYSTALFIRE_BREATH_HC, 30.0f, TARGET_SELF, 1, 14);
         else
             addAISpell(CRYSTALFIRE_BREATH, 30.0f, TARGET_SELF, 1, 14);

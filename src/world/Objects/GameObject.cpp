@@ -48,6 +48,7 @@
 #include "Server/DatabaseDefinition.hpp"
 #include "Management/QuestMgr.h"
 #include "Server/World.h"
+#include "Server/Script/GameObjectAIScript.hpp"
 
 // MIT
 
@@ -1257,6 +1258,8 @@ void GameObject::CallScriptUpdate()
     else
         sLogger.failure("GameObject::CallScriptUpdate tries to call, but go %u has no valid script (nullptr)", this->getEntry());
 }
+
+GameObjectAIScript* GameObject::GetScript() { return myScript; }
 
 void GameObject::OnPushToWorld()
 {

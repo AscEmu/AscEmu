@@ -218,7 +218,7 @@ public:
 
         void CallScriptUpdate();
 
-        GameObjectAIScript* GetScript() { return myScript; }
+        GameObjectAIScript* GetScript();
 
         void OnPushToWorld();
         void onRemoveInRangeObject(Object* pObj);

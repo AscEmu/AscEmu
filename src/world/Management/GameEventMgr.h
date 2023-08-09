@@ -15,7 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 class GameEvent;
 
-enum GameEventState
+enum GameEventState : uint8_t
 {
     GAMEEVENT_INACTIVE          = 0,    // Event not active
     GAMEEVENT_ACTIVE            = 1,    // Event active

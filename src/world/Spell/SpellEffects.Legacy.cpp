@@ -80,6 +80,7 @@
 #include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
+#include "Server/Script/GameObjectAIScript.hpp"
 
 using namespace AscEmu::Packets;
 

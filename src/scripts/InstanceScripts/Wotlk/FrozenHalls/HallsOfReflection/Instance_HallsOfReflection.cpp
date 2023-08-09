@@ -151,7 +151,7 @@ public:
     {
         CreatureAISpells* spellWell = nullptr;
         CreatureAISpells* corruptFlesh = nullptr;
-        if (_isHeroic() == false)
+        if (isHeroic() == false)
         {
             addAISpell(N_SPELL_OBLITERATE, 45.0f, TARGET_ATTACKING, 0, 30); // Timer may be off on this.
             spellWell = addAISpell(N_SPELL_WELL, 60.0f, TARGET_RANDOM_SINGLE, 0, 13);
@@ -180,7 +180,7 @@ public:
 
     void OnLoad() override
     {
-        if (_isHeroic() == true) // HEROIC MODE
+        if (isHeroic() == true) // HEROIC MODE
         {
             getCreature()->setMaxHealth(903227); // SET HP CAUSE ARCEMU DONT SUPPORT HEROIC MODES!
             getCreature()->setHealth(903227); //SET HP CAUSE ARCEMU DONT SUPPORT HEROIC MODES!
@@ -195,7 +195,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new Falric(c); }
     explicit Falric(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        if (_isHeroic() == false)
+        if (isHeroic() == false)
         {
             addAISpell(N_SPELL_QSTRIKE, 45.0f, TARGET_ATTACKING, 0, 23);
             addAISpell(N_SPELL_IMPEND, 60.0f, TARGET_ATTACKING, 0, 9);

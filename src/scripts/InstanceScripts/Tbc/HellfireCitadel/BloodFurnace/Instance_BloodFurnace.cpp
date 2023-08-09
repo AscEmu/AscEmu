@@ -73,7 +73,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new KelidanTheBreakerAI(c); }
     explicit KelidanTheBreakerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        if (_isHeroic())
+        if (isHeroic())
         {
             mShadowBoltVolley = addAISpell(KELIDAN_SHADOW_BOLT_VOLLEY_H, 25.0f, TARGET_SELF, 0, 6);
             mFireNova = addAISpell(KELIDAN_FIRE_NOVA_H, 15.0f, TARGET_ATTACKING, 0, 12);
@@ -110,7 +110,7 @@ public:
         {
             if (_isTimerFinished(mBurningNovaTimerId))
             {
-                if (_isHeroic())
+                if (isHeroic())
                     _castAISpell(mVortex);
 
                 _castAISpell(mBurningNova);

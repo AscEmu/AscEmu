@@ -18,6 +18,7 @@
  */
 
 #include "Setup.h"
+#include "Map/Maps/WorldMap.hpp"
 
 class Zenn_Foulhoof : public QuestScript
 {

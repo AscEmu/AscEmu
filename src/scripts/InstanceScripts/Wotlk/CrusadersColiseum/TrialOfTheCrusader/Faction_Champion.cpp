@@ -219,7 +219,7 @@ void FactionChampionsAI::InitOrReset()
 
     addAIFunction(&FactionChampionsAI::update, DoLoopScheduler(4s, false));
 
-    if (_isHeroic() && (mAIType != champions::AI_PET))
+    if (isHeroic() && (mAIType != champions::AI_PET))
         addAIFunction(&FactionChampionsAI::removeCC, DoOnceScheduler(5s));
 }
 

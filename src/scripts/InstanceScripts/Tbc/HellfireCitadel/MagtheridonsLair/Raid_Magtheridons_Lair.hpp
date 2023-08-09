@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #pragma once
+#include "Server/Script/GameObjectAIScript.hpp"
 
 // Channelers Coords is list of spawn points of all 5 channelers casting spell on Magtheridon
 static LocationVector Channelers[] =

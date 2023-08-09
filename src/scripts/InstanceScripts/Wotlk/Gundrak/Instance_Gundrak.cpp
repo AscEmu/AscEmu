@@ -231,7 +231,7 @@ public:
     explicit SladranAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         CreatureAISpells* sdPoisonNova = nullptr;
-        if (_isHeroic())
+        if (isHeroic())
         {
             addAISpell(59840, 25.0f, TARGET_ATTACKING, 0, 6);
             addAISpell(59839, 18.0f, TARGET_RANDOM_SINGLE, 2, 8);
@@ -264,7 +264,7 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new GalDarahAI(c); }
     explicit GalDarahAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        if (_isHeroic())
+        if (isHeroic())
             addAISpell(59824, 20.0f, TARGET_SELF, 0, 12);
         else
             addAISpell(55250, 20.0f, TARGET_SELF, 0, 12);

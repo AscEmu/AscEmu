@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "Server/Script/AchievementScript.hpp"
+
 namespace Zuramat
 {
     enum Spells
