@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Management/Faction.h"
 #include "Map/Maps/MapScriptInterface.h"
+#include "Objects/GameObjectProperties.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"
 
 class HydrossTheUnstableAI : public CreatureAIScript

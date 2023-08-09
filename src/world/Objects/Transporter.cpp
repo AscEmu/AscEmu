@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <G3D/Vector3.h>
 #include "Objects/Transporter.hpp"
 
+#include "GameObjectProperties.hpp"
 #include "Data/Flags.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"

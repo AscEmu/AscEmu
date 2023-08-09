@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSessionLog.hpp"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Objects/GameObjectProperties.hpp"
 
 bool ChatHandler::HandleAccountCreate(const char* args, WorldSession* m_session)
 {

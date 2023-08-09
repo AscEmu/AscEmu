@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Debugging/CrashHandler.h"
 #include "Server/DatabaseDefinition.hpp"
+#include "Objects/GameObjectProperties.hpp"
 
 GameEventMgr& GameEventMgr::getInstance()
 {

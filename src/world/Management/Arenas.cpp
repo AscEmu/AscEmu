@@ -26,6 +26,7 @@
 #include "Spell/SpellAuras.h"
 #include "Objects/GameObject.h"
 #include "Management/ObjectMgr.hpp"
+#include "Objects/GameObjectProperties.hpp"
 #include "Server/Script/ScriptMgr.h"
 #include "Spell/SpellMgr.hpp"
 

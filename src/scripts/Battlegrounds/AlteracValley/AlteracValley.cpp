@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/WorldStates.h"
 #include "Map/Maps/BattleGroundMap.hpp"
 #include "Map/Maps/WorldMap.hpp"
+#include "Objects/GameObjectProperties.hpp"
 #include "Server/Master.h"
 #include "Server/World.h"
 #include "Server/Packets/SmsgMessageChat.h"

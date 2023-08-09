@@ -24,6 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellState.hpp"
 #include <Spell/Definitions/AuraInterruptFlags.hpp>
 
+#include "GameObjectProperties.hpp"
 #include "Data/Flags.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/SpellMgr.hpp"

@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include "Objects/GameObject.h"
+#include "Objects/GameObjectProperties.hpp"
 
 namespace AscEmu::Packets
 {

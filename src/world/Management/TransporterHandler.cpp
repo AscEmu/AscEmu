@@ -7,6 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Management/MapMgr.hpp"
 #include <Movement/Spline/Spline.h>
 #include <Movement/Spline/MoveSplineInitArgs.h>
+
+#include "Objects/GameObjectProperties.hpp"
 #include "Server/Definitions.h"
 #include "Objects/Transporter.hpp"
 #include "Storage/WDB/WDBStores.hpp"
@@ -496,11 +498,11 @@ float TransportHandler::normalizeOrientation(float o)
 
 Transporter* TransportHandler::getTransporter(uint32_t guid)
 {
+    std::lock_guard lock(_TransportLock);
+
     Transporter* rv = nullptr;
-    _TransportLock.Acquire();
     auto itr = _Transporters.find(guid);
     rv = (itr != _Transporters.end()) ? itr->second : 0;
-    _TransportLock.Release();
     return rv;
 }
 
@@ -524,9 +526,9 @@ TransportAnimation const* TransportHandler::getTransportAnimInfo(uint32_t entry)
 
 void TransportHandler::addTransport(Transporter* transport)
 {
-    _TransportLock.Acquire();
+    std::lock_guard lock(_TransportLock);
+
     _Transporters[transport->GetUIdFromGUID()] = transport;
-    _TransportLock.Release();
 }
 
 void TransportHandler::loadTransportAnimationAndRotation()

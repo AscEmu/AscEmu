@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 
 #include "Chat/ChatDefines.hpp"
+#include "Objects/GameObjectProperties.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"
 #include "Spell/SpellClickInfo.hpp"
@@ -1042,6 +1043,8 @@ GameObjectProperties const* MySQLDataStore::getGameObjectProperties(uint32_t ent
     return nullptr;
 }
 
+MySQLDataStore::GameObjectPropertiesContainer const* MySQLDataStore::getGameObjectPropertiesStore() { return &_gameobjectPropertiesStore; }
+
 void MySQLDataStore::loadGameObjectSpawnsExtraTable()
 {
     auto startTime = Util::TimeNow();
@@ -1363,6 +1366,8 @@ QuestProperties const* MySQLDataStore::getQuestProperties(uint32_t entry)
 
     return nullptr;
 }
+
+MySQLDataStore::QuestPropertiesContainer const* MySQLDataStore::getQuestPropertiesStore() { return &_questPropertiesStore; }
 
 void MySQLDataStore::loadGameObjectQuestItemBindingTable()
 {

@@ -24,6 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/TaxiMgr.h"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Movement/MovementManager.h"
+#include "Objects/GameObjectProperties.hpp"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"

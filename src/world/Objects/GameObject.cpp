@@ -27,6 +27,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include <G3D/Quat.h>
 
+#include "GameObjectProperties.hpp"
 #include "Data/Flags.hpp"
 #include "Map/Cells/MapCell.hpp"
 #include "Management/Faction.h"
@@ -151,6 +152,9 @@ void GameObject::setParentRotation(QuaternionData const& rotation)
     write(gameObjectData()->rotation[2], rotation.z);
     write(gameObjectData()->rotation[3], rotation.w);
 }
+
+QuaternionData const& GameObject::getLocalRotation() const { return m_localRotation; }
+int64_t GameObject::getPackedLocalRotation() const { return m_packedRotation; }
 
 #if VERSION_STRING < WotLK
 uint32_t GameObject::getDynamicFlags() const { return gameObjectData()->dynamic; }
@@ -701,6 +705,9 @@ void GameObject::enableCollision(bool enable)
     m_model->enable(enable ? GetPhase() : 0);
 }
 
+Transporter* GameObject::ToTransport() { if (GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT) return reinterpret_cast<Transporter*>(this); return nullptr; }
+Transporter const* GameObject::ToTransport() const { if (GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT) return reinterpret_cast<Transporter const*>(this); return nullptr; }
+
 uint32_t GameObject::getTransportPeriod() const
 {
     if (getGoType() != GAMEOBJECT_TYPE_TRANSPORT)
@@ -746,6 +753,8 @@ void GameObject::updateModelPosition()
         getWorldMap()->insertGameObjectModel(*m_model);
     }
 }
+
+GameObjectValue const* GameObject::getGOValue() const { return &m_goValue; }
 
 void GameObject::updateModel()
 {
@@ -1149,6 +1158,18 @@ void GameObject::triggerLinkedGameObject(uint32_t trapEntry, Unit* target)
         trapGO->CastSpell(target->getGuid(), trapSpell->getId());
 }
 
+void GameObject::setOwnerGuid(uint64_t owner)
+{
+    // Owner already found and different than expected owner - remove object from old owner
+    if (owner && getCreatedByGuid() && getCreatedByGuid() != owner)
+        return;
+
+    m_spawnedByDefault = false; // all object with owner is despawned after delay
+    setCreatedByGuid(owner);
+}
+
+LootState GameObject::getLootState() const { return m_lootState; }
+
 GameObject* GameObject::getLinkedTrap()
 {
     return getWorldMapGameObject(m_linkedTrap);
@@ -1208,6 +1229,8 @@ GameObjectProperties const* GameObject::GetGameObjectProperties() const
 {
     return gameobject_properties;
 }
+
+void GameObject::SetGameObjectProperties(GameObjectProperties const* go_prop) { gameobject_properties = go_prop; }
 
 void GameObject::SaveToFile(std::stringstream & name)
 {
@@ -1355,6 +1378,18 @@ void GameObject::sendGameobjectCustomAnim(uint32_t anim)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Lootable
+uint16_t GameObject_Lootable::getLootMode() const { return m_LootMode; }
+bool GameObject_Lootable::hasLootMode(uint16_t lootMode) const { return (m_LootMode & lootMode) != 0; }
+void GameObject_Lootable::setLootMode(uint16_t lootMode) { m_LootMode = lootMode; }
+void GameObject_Lootable::addLootMode(uint16_t lootMode) { m_LootMode |= lootMode; }
+void GameObject_Lootable::removeLootMode(uint16_t lootMode) { m_LootMode &= ~lootMode; }
+void GameObject_Lootable::resetLootMode() { m_LootMode = LOOT_MODE_DEFAULT; }
+void GameObject_Lootable::setLootGenerationTime() { m_lootGenerationTime = static_cast<uint32_t>(Util::getTimeNow()); }
+uint32_t GameObject_Lootable::getLootGenerationTime() const { return m_lootGenerationTime; }
+
+time_t GameObject_Lootable::getRestockTime() const { return m_restockTime; }
+void GameObject_Lootable::setRestockTime(time_t time) { m_restockTime = time; }
+
 void GameObject_Lootable::getFishLoot(Player* loot_owner, bool getJunk/* = false*/)
 {
     loot.clear();

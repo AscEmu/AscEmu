@@ -10,6 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/TeleportCoords.hpp"
 #include "MySQLStructures.h"
 #include "Movement/Spline/SplineChain.h"
+#include "Objects/GameObjectProperties.hpp"
+#include "Management/Quest.h"
 
 struct SplineChainLink;
 
@@ -159,13 +161,13 @@ public:
     CreaturePropertiesMovement const* getCreaturePropertiesMovement(uint32_t entry);
 
     GameObjectProperties const* getGameObjectProperties(uint32_t entry);
-    GameObjectPropertiesContainer const* getGameObjectPropertiesStore() { return &_gameobjectPropertiesStore; }
+    GameObjectPropertiesContainer const* getGameObjectPropertiesStore();
 
     MySQLStructure::GameObjectSpawnExtra const* getGameObjectExtra(uint32_t lowguid) const;
     MySQLStructure::GameObjectSpawnOverrides const* getGameObjectOverride(uint32_t lowguid) const;
 
     QuestProperties const* getQuestProperties(uint32_t entry);
-    QuestPropertiesContainer const* getQuestPropertiesStore() { return &_questPropertiesStore; }
+    QuestPropertiesContainer const* getQuestPropertiesStore();
 
     uint32_t getCreatureDifficulty(uint32_t entry, uint8_t difficulty_type);
     CreatureDifficultyContainer const* getCreatureDifficultyStore() { return &_creatureDifficultyStore; }

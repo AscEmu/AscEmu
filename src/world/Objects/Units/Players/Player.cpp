@@ -135,6 +135,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Strings.hpp"
 #include "Objects/Transporter.hpp"
 #include "Movement/MovementGenerators/FlightPathMovementGenerator.h"
+#include "Objects/GameObjectProperties.hpp"
 #include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/WorldSessionLog.hpp"

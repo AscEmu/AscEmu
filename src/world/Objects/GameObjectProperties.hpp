@@ -6,14 +6,12 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "GameObjectDefines.hpp"
-#include "Management/Quest.h"
 
 #include <map>
 #include <string>
 #include <unordered_map>
 
-typedef std::unordered_map<QuestProperties const*, uint32_t> GameObjectGOMap;
-typedef std::unordered_map<QuestProperties const*, std::map<uint32_t, uint32_t>> GameObjectItemMap;
+struct QuestProperties;
 
 struct GameObjectProperties
 {
@@ -369,9 +367,9 @@ struct GameObjectProperties
 
     // Quests
     // <quest, requirement_count>
-    GameObjectGOMap goMap;
+    std::unordered_map<QuestProperties const*, uint32_t>  goMap;
     // <quest, [<item, item_count>]>
-    GameObjectItemMap itemMap;
+    std::unordered_map<QuestProperties const*, std::map<uint32_t, uint32_t>> itemMap;
 
     uint32_t getLootId() const
     {

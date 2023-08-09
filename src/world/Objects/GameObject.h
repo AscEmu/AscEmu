@@ -23,13 +23,17 @@
 
 #include "Object.hpp"
 #include "Data/WoWGameObject.hpp"
-#include "Map/Maps/BaseMap.hpp"
+//#include "Map/Maps/BaseMap.hpp"
+//#include "GameObjectProperties.hpp"
 #include "GameObjectDefines.hpp"
-#include "GameObjectProperties.hpp"
 #include "Management/LootDefines.hpp"
 #include "Management/LootMgr.h"
 #include "Server/UpdateFieldInclude.h"
 
+struct QuestProperties;
+struct GameObjectProperties;
+struct GameObjectValue;
+enum LootState : uint8_t;
 class Player;
 class GameObjectAIScript;
 class GameObjectModel;
@@ -91,36 +95,28 @@ public:
     void resetDoorOrButton();
     void triggerLinkedGameObject(uint32_t trapEntry, Unit* target);
 
-    void setOwnerGuid(uint64_t owner)
-    {
-        // Owner already found and different than expected owner - remove object from old owner
-        if (owner && getCreatedByGuid() && getCreatedByGuid() != owner)
-            return;
+    void setOwnerGuid(uint64_t owner);
 
-        m_spawnedByDefault = false; // all object with owner is despawned after delay
-        setCreatedByGuid(owner);
-    }
-
-    LootState getLootState() const { return m_lootState; }
+    LootState getLootState() const;
     void setLootState(LootState state, Unit* unit = nullptr);
 
     void setLocalRotationAngles(float z_rot, float y_rot, float x_rot);
     void setLocalRotation(float qx, float qy, float qz, float qw);
     void setParentRotation(QuaternionData const& rotation);
-    QuaternionData const& getLocalRotation() const { return m_localRotation; }
-    int64_t getPackedLocalRotation() const { return m_packedRotation; }
+    QuaternionData const& getLocalRotation() const;
+    int64_t getPackedLocalRotation() const;
     QuaternionData getWorldRotation() const;
 
     void enableCollision(bool enable);
     GameObjectModel* m_model = nullptr;
 
-    Transporter* ToTransport() { if (GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT) return reinterpret_cast<Transporter*>(this); else return nullptr; }
-    Transporter const* ToTransport() const { if (GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT) return reinterpret_cast<Transporter const*>(this); else return nullptr; }
+    Transporter* ToTransport();
+    Transporter const* ToTransport() const;
     void updateModelPosition();
 
     MySQLStructure::GameobjectSpawn* m_spawn = nullptr;
 
-    GameObjectValue const* getGOValue() const { return &m_goValue; }
+    GameObjectValue const* getGOValue() const;
 
 private:
 
@@ -200,7 +196,7 @@ public:
     GameEvent* mEvent = nullptr;
 
     GameObjectProperties const* GetGameObjectProperties() const;
-        void SetGameObjectProperties(GameObjectProperties const* go_prop) { gameobject_properties = go_prop; }
+        void SetGameObjectProperties(GameObjectProperties const* go_prop);
 
         virtual bool IsLootable() { return false; }
 
@@ -293,17 +289,17 @@ class GameObject_Lootable : public GameObject
 
         virtual bool HasLoot() = 0;
 
-        uint16_t getLootMode() const { return m_LootMode; }
-        bool hasLootMode(uint16_t lootMode) const { return (m_LootMode & lootMode) != 0; }
-        void setLootMode(uint16_t lootMode) { m_LootMode = lootMode; }
-        void addLootMode(uint16_t lootMode) { m_LootMode |= lootMode; }
-        void removeLootMode(uint16_t lootMode) { m_LootMode &= ~lootMode; }
-        void resetLootMode() { m_LootMode = LOOT_MODE_DEFAULT; }
-        void setLootGenerationTime() { m_lootGenerationTime = static_cast<uint32_t>(Util::getTimeNow()); }
-        uint32_t getLootGenerationTime() const { return m_lootGenerationTime; }
+        uint16_t getLootMode() const;
+        bool hasLootMode(uint16_t lootMode) const;
+        void setLootMode(uint16_t lootMode);
+        void addLootMode(uint16_t lootMode);
+        void removeLootMode(uint16_t lootMode);
+        void resetLootMode();
+        void setLootGenerationTime();
+        uint32_t getLootGenerationTime() const;
 
-        time_t getRestockTime() const { return m_restockTime; }
-        void setRestockTime(time_t time) { m_restockTime = time; }
+        time_t getRestockTime() const;
+        void setRestockTime(time_t time);
 
         void getFishLoot(Player* loot_owner, bool getJunk = false);
 

@@ -5,10 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <mutex>
+
 struct KeyFrame;
 struct TransportTemplate;
 struct GameObjectProperties;
 class Transporter;
+class WorldMap;
 
 namespace MovementMgr
 {
@@ -160,7 +163,7 @@ public:
     TransportTemplate const* getTransportTemplate(uint32_t entry) const;
     TransportAnimation const* getTransportAnimInfo(uint32_t entry) const;
 
-    Mutex _TransportLock;
+    std::mutex _TransportLock;
 
 private:
     TransportHandler() = default;
