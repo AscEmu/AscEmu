@@ -7,12 +7,15 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "CommonTypes.hpp"
 #include "Player.hpp"
+
+#include "TradeData.hpp"
 #include "Chat/ChatDefines.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Data/WoWPlayer.hpp"
 #include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
 #include "Macros/CorpseMacros.hpp"
+#include "Management/AuctionHouse.h"
 #include "Management/Faction.h"
 #include "Management/HonorHandler.h"
 #include "Management/Battleground/Battleground.hpp"

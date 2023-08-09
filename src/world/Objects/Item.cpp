@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Item.hpp"
 #include "Container.hpp"
 #include "Data/Flags.hpp"
+#include "Management/ItemInterface.h"
+#include "Management/Guild/Guild.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Objects/Units/Players/Player.hpp"

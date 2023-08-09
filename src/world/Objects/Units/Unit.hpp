@@ -25,8 +25,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellMechanics.hpp"
 #include "Spell/Definitions/SpellModifierType.hpp"
 #include "Spell/Definitions/SpellTypes.hpp"
-#include "Spell/SpellCastTargets.hpp"
-#include "Spell/SpellDefines.hpp"
 #include "Spell/SpellProc.hpp"
 
 #include <array>
@@ -34,6 +32,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <optional>
 
 
+class SpellCastTargets;
 struct AbstractFollower;
 enum SummonSlot : uint8_t;
 class SummonHandler;

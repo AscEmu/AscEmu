@@ -21,6 +21,8 @@
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Management/HonorHandler.h"
 #include "Management/Battleground/Battleground.hpp"
+
+#include "BattlegroundMgr.hpp"
 #include "Management/Arenas.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"

@@ -70,6 +70,7 @@
 #include "Management/WorldStates.h"
 #include "Map/Maps/BattleGroundMap.hpp"
 #include "Server/Master.h"
+#include "Management/Battleground/BattlegroundDefines.hpp"
 
 const float sotaTitanRelic[4] = { 836.5f, -108.8f, 120.59f, 0.0f };
 

@@ -31,6 +31,7 @@
 #include "Server/WorldSessionLog.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
+#include "Management/Battleground/BattlegroundDefines.hpp"
 
 uint32_t buffentries[3] = { 180380, 180362, 180146 };
 

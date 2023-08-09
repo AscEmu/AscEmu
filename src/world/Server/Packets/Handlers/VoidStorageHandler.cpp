@@ -7,10 +7,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 
 // Cata
+#include "Macros/GuildMacros.hpp"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Management/ObjectMgr.hpp"
+#include "Objects/Item.hpp"
 
-using namespace AscEmu::Packets;
 
 #if VERSION_STRING >= Cata
 

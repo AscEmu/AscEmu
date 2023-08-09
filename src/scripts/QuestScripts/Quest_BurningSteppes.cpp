@@ -17,6 +17,7 @@
  */
 
 #include "Setup.h"
+#include "Management/ItemInterface.h"
 
 class TabletOfTheSeven : public QuestScript
 {

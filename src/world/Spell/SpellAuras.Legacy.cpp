@@ -50,6 +50,7 @@
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Server/WorldSession.h"
 #include "Storage/WDB/WDBStores.hpp"
+#include "Management/Battleground/BattlegroundDefines.hpp"
 
 using namespace AscEmu::Packets;
 

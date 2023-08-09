@@ -18,6 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Management/ItemInterface.h"
+#include "Objects/Item.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Definitions.h"

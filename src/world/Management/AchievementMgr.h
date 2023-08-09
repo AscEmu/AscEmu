@@ -6,9 +6,30 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "AEVersion.hpp"
-#include "Objects/Units/Unit.hpp"
+#include "CommonTypes.hpp"
+
+#include <cstdint>
+#include <ctime>
+#include <map>
+#include <mutex>
+#include <set>
+#include <string>
+#include <unordered_map>
 
 #if VERSION_STRING > TBC
+
+class WorldSession;
+class Object;
+class QueryResult;
+
+namespace WDB
+{
+    namespace Structures
+    {
+        struct AchievementEntry;
+        struct AchievementCriteriaEntry;
+    }
+}
 
 class QueryBuffer;
 struct AchievementEntry;

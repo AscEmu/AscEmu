@@ -29,6 +29,7 @@
 #include "Server/Master.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Spell/SpellMgr.hpp"
+#include "Management/Battleground/BattlegroundDefines.hpp"
 
 static float EOTSBuffCoordinates[4][4] =
 {

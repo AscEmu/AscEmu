@@ -4,9 +4,11 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
+#include "Management/ItemInterface.h"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/GameObject.h"
+#include "Objects/Item.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Server/Master.h"
 #include "Server/Script/GameObjectAIScript.hpp"

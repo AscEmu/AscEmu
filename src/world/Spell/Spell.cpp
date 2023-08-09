@@ -48,6 +48,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Objects/Units/UnitDefines.hpp"
+#include "Objects/Units/Players/TradeData.hpp"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Utilities/Util.hpp"

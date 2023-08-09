@@ -5,9 +5,31 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "AEVersion.hpp"
+
 #include <cstdint>
 
-#include "AEVersion.hpp"
+const uint8_t INVALID_BACKPACK_SLOT = 0xFF;
+
+#define VOID_STORAGE_UNLOCK       100*GOLD
+#define VOID_STORAGE_STORE_ITEM   25*GOLD
+#define VOID_STORAGE_MAX_DEPOSIT  9
+#define VOID_STORAGE_MAX_WITHDRAW 9
+#define VOID_STORAGE_MAX_SLOT     80
+
+enum VoidTransferError
+{
+    VOID_TRANSFER_ERROR_NO_ERROR                = 0,
+    VOID_TRANSFER_ERROR_INTERNAL_ERROR_1        = 1,
+    VOID_TRANSFER_ERROR_INTERNAL_ERROR_2        = 2,
+    VOID_TRANSFER_ERROR_FULL                    = 3,
+    VOID_TRANSFER_ERROR_INTERNAL_ERROR_3        = 4,
+    VOID_TRANSFER_ERROR_INTERNAL_ERROR_4        = 5,
+    VOID_TRANSFER_ERROR_NOT_ENOUGH_MONEY        = 6,
+    VOID_TRANSFER_ERROR_INVENTORY_FULL          = 7,
+    VOID_TRANSFER_ERROR_INTERNAL_ERROR_5        = 8,
+    VOID_TRANSFER_ERROR_TRANSFER_UNKNOWN        = 9,
+};
 
 enum ItemQualities : uint8_t
 {
@@ -32,6 +54,138 @@ enum ItemEnchantmentType : uint8_t
     ITEM_ENCHANTMENT_TYPE_TOTEM             = 6,
     ITEM_ENCHANTMENT_TYPE_USE_SPELL         = 7,
     ITEM_ENCHANTMENT_TYPE_PRISMATIC_SOCKET  = 8
+};
+
+enum EquipmentSlots : uint8_t                                      // 19 slots
+{
+    EQUIPMENT_SLOT_START        = 0,
+    EQUIPMENT_SLOT_HEAD         = 0,
+    EQUIPMENT_SLOT_NECK         = 1,
+    EQUIPMENT_SLOT_SHOULDERS    = 2,
+    EQUIPMENT_SLOT_BODY         = 3,
+    EQUIPMENT_SLOT_CHEST        = 4,
+    EQUIPMENT_SLOT_WAIST        = 5,
+    EQUIPMENT_SLOT_LEGS         = 6,
+    EQUIPMENT_SLOT_FEET         = 7,
+    EQUIPMENT_SLOT_WRISTS       = 8,
+    EQUIPMENT_SLOT_HANDS        = 9,
+    EQUIPMENT_SLOT_FINGER1      = 10,
+    EQUIPMENT_SLOT_FINGER2      = 11,
+    EQUIPMENT_SLOT_TRINKET1     = 12,
+    EQUIPMENT_SLOT_TRINKET2     = 13,
+    EQUIPMENT_SLOT_BACK         = 14,
+    EQUIPMENT_SLOT_MAINHAND     = 15,
+    EQUIPMENT_SLOT_OFFHAND      = 16,
+    EQUIPMENT_SLOT_RANGED       = 17,
+    EQUIPMENT_SLOT_TABARD       = 18,
+    EQUIPMENT_SLOT_END          = 19
+};
+
+enum InventorySlots                                         // 4 slots
+{
+    INVENTORY_SLOT_BAG_START    = 19,
+    INVENTORY_SLOT_BAG_1        = 19,
+    INVENTORY_SLOT_BAG_2        = 20,
+    INVENTORY_SLOT_BAG_3        = 21,
+    INVENTORY_SLOT_BAG_4        = 22,
+    INVENTORY_SLOT_BAG_END      = 23
+};
+
+enum InventoryPackSlots                                     // 16 slots
+{
+    INVENTORY_SLOT_ITEM_START   = 23,
+    INVENTORY_SLOT_ITEM_1       = 23,
+    INVENTORY_SLOT_ITEM_2       = 24,
+    INVENTORY_SLOT_ITEM_3       = 25,
+    INVENTORY_SLOT_ITEM_4       = 26,
+    INVENTORY_SLOT_ITEM_5       = 27,
+    INVENTORY_SLOT_ITEM_6       = 28,
+    INVENTORY_SLOT_ITEM_7       = 29,
+    INVENTORY_SLOT_ITEM_8       = 30,
+    INVENTORY_SLOT_ITEM_9       = 31,
+    INVENTORY_SLOT_ITEM_10      = 32,
+    INVENTORY_SLOT_ITEM_11      = 33,
+    INVENTORY_SLOT_ITEM_12      = 34,
+    INVENTORY_SLOT_ITEM_13      = 35,
+    INVENTORY_SLOT_ITEM_14      = 36,
+    INVENTORY_SLOT_ITEM_15      = 37,
+    INVENTORY_SLOT_ITEM_16      = 38,
+    INVENTORY_SLOT_ITEM_END     = 39
+};
+
+enum BankItemSlots                                          // 28 slots
+{
+    BANK_SLOT_ITEM_START        = 39,
+    BANK_SLOT_ITEM_1            = 39,
+    BANK_SLOT_ITEM_2            = 40,
+    BANK_SLOT_ITEM_3            = 41,
+    BANK_SLOT_ITEM_4            = 42,
+    BANK_SLOT_ITEM_5            = 43,
+    BANK_SLOT_ITEM_6            = 44,
+    BANK_SLOT_ITEM_7            = 45,
+    BANK_SLOT_ITEM_8            = 46,
+    BANK_SLOT_ITEM_9            = 47,
+    BANK_SLOT_ITEM_10           = 48,
+    BANK_SLOT_ITEM_11           = 49,
+    BANK_SLOT_ITEM_12           = 50,
+    BANK_SLOT_ITEM_13           = 51,
+    BANK_SLOT_ITEM_14           = 52,
+    BANK_SLOT_ITEM_15           = 53,
+    BANK_SLOT_ITEM_16           = 54,
+    BANK_SLOT_ITEM_17           = 55,
+    BANK_SLOT_ITEM_18           = 56,
+    BANK_SLOT_ITEM_19           = 57,
+    BANK_SLOT_ITEM_20           = 58,
+    BANK_SLOT_ITEM_21           = 59,
+    BANK_SLOT_ITEM_22           = 60,
+    BANK_SLOT_ITEM_23           = 61,
+    BANK_SLOT_ITEM_24           = 62,
+    BANK_SLOT_ITEM_25           = 63,
+    BANK_SLOT_ITEM_26           = 64,
+    BANK_SLOT_ITEM_27           = 65,
+    BANK_SLOT_ITEM_28           = 66,
+    BANK_SLOT_ITEM_END          = 67
+};
+
+enum BankBagSlots                                           // 7 slots
+{
+    BANK_SLOT_BAG_START         = 67,
+    BANK_SLOT_BAG_1             = 67,
+    BANK_SLOT_BAG_2             = 68,
+    BANK_SLOT_BAG_3             = 69,
+    BANK_SLOT_BAG_4             = 70,
+    BANK_SLOT_BAG_5             = 71,
+    BANK_SLOT_BAG_6             = 72,
+    BANK_SLOT_BAG_7             = 73,
+    BANK_SLOT_BAG_END           = 74
+};
+
+enum BuyBackSlots                                           // 12 slots
+{
+    // stored in m_buybackitems
+    BUYBACK_SLOT_START          = 74,
+    BUYBACK_SLOT_1              = 74,
+    BUYBACK_SLOT_2              = 75,
+    BUYBACK_SLOT_3              = 76,
+    BUYBACK_SLOT_4              = 77,
+    BUYBACK_SLOT_5              = 78,
+    BUYBACK_SLOT_6              = 79,
+    BUYBACK_SLOT_7              = 80,
+    BUYBACK_SLOT_8              = 81,
+    BUYBACK_SLOT_9              = 82,
+    BUYBACK_SLOT_10             = 83,
+    BUYBACK_SLOT_11             = 84,
+    BUYBACK_SLOT_12             = 85,
+    BUYBACK_SLOT_END            = 86,
+    MAX_BUYBACK_SLOT            = 13
+};
+
+// sanity checking
+enum AddItemResult
+{
+    ADD_ITEM_RESULT_ERROR           = 0,
+    ADD_ITEM_RESULT_OK              = 1,
+    ADD_ITEM_RESULT_DUPLICATED      = 2
 };
 
 // -1 from client enchantment slot number

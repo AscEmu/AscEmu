@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObjectProperties.hpp"
 #include "Server/ServerState.h"
 #include "Server/Script/GameObjectAIScript.hpp"
+#include "Management/Guild/Guild.hpp"
 
 #ifdef __APPLE__
 #undef check

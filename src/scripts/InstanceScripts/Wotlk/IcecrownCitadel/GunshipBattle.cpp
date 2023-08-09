@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "GunshipBattle.hpp"
 #include "Raid_IceCrownCitadel.hpp"
+#include "Management/ItemInterface.h"
 #include "Management/Gossip/GossipMenu.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////

@@ -24,6 +24,7 @@
 #include "DalaranSewers/DalaranSewers.h"
 #include "EyeOfTheStorm/EyeOfTheStorm.h"
 #include "IsleOfConquest/IsleOfConquest.h"
+#include "Management/Battleground/BattlegroundMgr.hpp"
 #include "RingOfTrials/RingOfTrials.h"
 #include "RingOfValor/RingOfValor.h"
 #include "RuinsOfLordaeron/RuinsOfLordaeron.h"
