@@ -47,6 +47,7 @@
 #include "Objects/Transporter.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Management/QuestMgr.h"
+#include "Map/Maps/WorldMap.hpp"
 #include "Server/World.h"
 #include "Server/Script/GameObjectAIScript.hpp"
 

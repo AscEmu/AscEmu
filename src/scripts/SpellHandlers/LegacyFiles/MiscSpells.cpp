@@ -23,6 +23,8 @@
 #include "Management/Skill.hpp"
 #include "Management/Battleground/Battleground.hpp"
 #include "Map/Maps/MapScriptInterface.h"
+#include "Map/Maps/WorldMap.hpp"
+#include "Objects/Units/Creatures/AIInterface.h"
 #include "Server/Master.h"
 #include "Server/World.h"
 #include "Spell/SpellAuras.h"

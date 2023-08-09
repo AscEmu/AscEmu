@@ -31,7 +31,8 @@
 #include <mutex>
 #include <set>
 #include <unordered_map>
-
+#include <vector>
+#include <list>
 
 class InstanceMap;
 class Transporter;
@@ -234,7 +235,7 @@ public:
     void callScriptedAuraOnRefreshOrGainNewStack(Aura* aur, uint32_t newStackCount, uint32_t oldStackCount);
     SpellScriptExecuteState callScriptedAuraBeforeAuraEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) const;
     SpellScriptCheckDummy callScriptedAuraOnDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) const;
-    SpellScriptExecuteState callScriptedAuraOnPeriodicTick(Aura* aur, AuraEffectModifier* aurEff, float_t* damage) const;
+    SpellScriptExecuteState callScriptedAuraOnPeriodicTick(Aura* aur, AuraEffectModifier* aurEff, float* damage) const;
 
     // Spell proc script hooks
     void callScriptedSpellProcCreate(SpellProc* spellProc, Object* obj);
@@ -672,12 +673,12 @@ class SERVER_DECL InstanceScript
         void sendUnitEncounter(uint32_t type, Unit* unit = nullptr, uint8_t value_a = 0, uint8_t value_b = 0);
 
         virtual bool setBossState(uint32_t id, EncounterStates state);
-        std::vector<BossInfo> getBosses() { return bosses; }
-        EncounterStates getBossState(uint32_t id) const { return id < bosses.size() ? bosses[id].state : InvalidState; }
+        std::vector<BossInfo> getBosses();
+        EncounterStates getBossState(uint32_t id) const;
         //used for debug
         std::string getDataStateString(uint8_t state);
 
-        uint32_t getEncounterCount() const { return static_cast<uint32_t>(bosses.size()); }
+        uint32_t getEncounterCount() const;
 
         void saveToDB();
         void updateEncounterState(EncounterCreditType type, uint32_t creditEntry);

@@ -16,11 +16,13 @@
  */
 
 #include "Setup.h"
+#include "Chat/ChatDefines.hpp"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/Skill.hpp"
 #include "Management/ItemInterface.h"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Management/Faction.h"
+#include "Map/Maps/WorldMap.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellMgr.hpp"
 

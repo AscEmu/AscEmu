@@ -1083,6 +1083,11 @@ bool InstanceScript::setBossState(uint32_t id, EncounterStates state)
     }
     return false;
 }
+std::vector<BossInfo> InstanceScript::getBosses() { return bosses; }
+
+EncounterStates InstanceScript::getBossState(uint32_t id) const { return id < bosses.size() ? bosses[id].state : InvalidState; }
+
+uint32_t InstanceScript::getEncounterCount() const { return static_cast<uint32_t>(bosses.size()); }
 
 void InstanceScript::saveToDB()
 {

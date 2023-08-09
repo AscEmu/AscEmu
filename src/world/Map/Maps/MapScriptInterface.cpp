@@ -3,8 +3,11 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Storage/MySQLDataStore.hpp"
+
 #include "MapScriptInterface.h"
+
+#include "WorldMap.hpp"
+#include "Objects/Units/Creatures/AIInterface.h"
 
 MapScriptInterface::MapScriptInterface(WorldMap& mgr) : m_worldMap(mgr)
 {}
@@ -12,6 +15,235 @@ MapScriptInterface::MapScriptInterface(WorldMap& mgr) : m_worldMap(mgr)
 MapScriptInterface::~MapScriptInterface()
 {
     m_worldMap.ScriptInterface = nullptr;
+}
+
+inline GameObject* MapScriptInterface::getGameObjectNearestCoords(float x, float y, float z/* = 0.0f*/, uint32_t Entry/* = 0*/)
+{
+    MapCell* pCell = m_worldMap.getCell(m_worldMap.getPosX(x), m_worldMap.getPosY(y));
+    if (pCell == nullptr)
+        return 0;
+
+    GameObject* ClosestObject = nullptr;
+    float ClosestDist = 999999.0f;
+    float CurrentDist = 0;
+
+    ObjectSet::const_iterator iter = pCell->Begin();
+    for (; iter != pCell->End(); ++iter)
+    {
+        CurrentDist = (*iter)->CalcDistance(x, y, (z != 0.0f ? z : (*iter)->GetPositionZ()));
+        if (CurrentDist < ClosestDist && (*iter)->getObjectTypeId() == TYPEID_GAMEOBJECT)
+        {
+            if ((Entry && (*iter)->getEntry() == Entry) || !Entry)
+            {
+                ClosestDist = CurrentDist;
+                ClosestObject = ((GameObject*)(*iter));
+            }
+        }
+    }
+
+    return ClosestObject;
+}
+
+inline Creature* MapScriptInterface::getCreatureNearestCoords(float x, float y, float z/* = 0.0f*/, uint32_t Entry/* = 0*/)
+{
+    MapCell* pCell = m_worldMap.getCell(m_worldMap.getPosX(x), m_worldMap.getPosY(y));
+    if (pCell == nullptr)
+        return 0;
+
+    Creature* ClosestObject = nullptr;
+    float ClosestDist = 999999.0f;
+    float CurrentDist = 0;
+
+    ObjectSet::const_iterator iter = pCell->Begin();
+    for (; iter != pCell->End(); ++iter)
+    {
+        CurrentDist = (*iter)->CalcDistance(x, y, (z != 0.0f ? z : (*iter)->GetPositionZ()));
+        if (CurrentDist < ClosestDist && (*iter)->getObjectTypeId() == TYPEID_UNIT)
+        {
+            if ((Entry && (*iter)->getEntry() == Entry) || !Entry)
+            {
+                ClosestDist = CurrentDist;
+                ClosestObject = ((Creature*)(*iter));
+            }
+        }
+    }
+
+    return ClosestObject;
+}
+
+inline GameObject* MapScriptInterface::findNearestGoWithType(Object* o, uint32_t type)
+{
+    GameObject* go = nullptr;
+    float r = FLT_MAX;
+
+    for (const auto& itr : o->getInRangeObjectsSet())
+    {
+        Object* iro = itr;
+        if (!iro || !iro->isGameObject())
+            continue;
+
+        GameObject* irgo = static_cast<GameObject*>(iro);
+
+        if (irgo->getGoType() != type)
+            continue;
+
+        if ((irgo->GetPhase() & o->GetPhase()) == 0)
+            continue;
+
+        float range = o->getDistanceSq(iro);
+
+        if (range < r)
+        {
+            r = range;
+            go = irgo;
+        }
+    }
+
+    return go;
+}
+
+inline Creature* MapScriptInterface::findNearestCreature(Object* pObject, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
+{
+    MapCell* pCell = m_worldMap.getCell(m_worldMap.getPosX(pObject->GetPositionX()), m_worldMap.getPosY(pObject->GetPositionY()));
+    if (pCell == nullptr)
+        return nullptr;
+
+    float CurrentDist = 0;
+    float r = FLT_MAX;
+    Creature* target = nullptr;
+
+    ObjectSet::const_iterator iter = pCell->Begin();
+    for (; iter != pCell->End(); ++iter)
+    {
+        if ((*iter)->isCreature() && (*iter)->getEntry() == entry)
+        {
+            CurrentDist = (*iter)->CalcDistance(pObject);
+            if (CurrentDist <= maxSearchRange)
+            {
+                if (CurrentDist < r)
+                {
+                    r = CurrentDist;
+                    target = static_cast<Creature*>((*iter));
+                }
+            }
+        }
+    }
+    return target;
+}
+
+inline void MapScriptInterface::getCreatureListWithEntryInRange(Creature* pCreature, std::list<Creature*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
+{
+    float CurrentDist = 0;
+
+    for (auto const& target : m_worldMap.activeCreatures)
+    {
+        if (target->isCreature() && target->getEntry() == entry)
+        {
+            CurrentDist = target->CalcDistance(pCreature);
+            if (CurrentDist <= maxSearchRange)
+                container.push_back(target);
+        }
+    }
+}
+
+inline Creature* MapScriptInterface::getNearestAssistCreatureInCell(Creature* pCreature, Unit* enemy, float range /*= 250.0f*/) const
+{
+    MapCell* pCell = m_worldMap.getCell(m_worldMap.getPosX(pCreature->GetPositionX()), m_worldMap.getPosY(pCreature->GetPositionY()));
+    if (pCell == nullptr)
+        return nullptr;
+
+    float CurrentDist = 0;
+    ObjectSet::const_iterator iter = pCell->Begin();
+    for (; iter != pCell->End(); ++iter)
+    {
+        if ((*iter)->isCreature())
+        {
+            Creature* helper = (*iter)->ToCreature();
+            if (pCreature != helper)
+            {
+                CurrentDist = (*iter)->CalcDistance(pCreature);
+                if (CurrentDist <= range)
+                {
+                    if (helper->getAIInterface()->canAssistTo(pCreature, enemy))
+                    {
+                        return helper;
+                    }
+                }
+            }
+        }
+    }
+    return nullptr;
+}
+
+inline void MapScriptInterface::getGameObjectListWithEntryInRange(Creature* pCreature, std::list<GameObject*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
+{
+    float CurrentDist = 0;
+
+    for (auto const& target : m_worldMap.activeGameObjects)
+    {
+        if (target->isGameObject() && target->getEntry() == entry)
+        {
+            CurrentDist = target->CalcDistance(pCreature);
+            if (CurrentDist <= maxSearchRange)
+                container.push_back(target);
+        }
+    }
+}
+
+inline GameObject* MapScriptInterface::findNearestGameObject(Object* pObject, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
+{
+    MapCell* pCell = m_worldMap.getCell(m_worldMap.getPosX(pObject->GetPositionX()), m_worldMap.getPosY(pObject->GetPositionY()));
+    if (pCell == nullptr)
+        return nullptr;
+
+    float CurrentDist = 0;
+    float r = FLT_MAX;
+    GameObject* target = nullptr;
+
+    ObjectSet::const_iterator iter = pCell->Begin();
+    for (; iter != pCell->End(); ++iter)
+    {
+        if ((*iter)->isGameObject() && (*iter)->getEntry() == entry)
+        {
+            CurrentDist = (*iter)->CalcDistance(pObject);
+            if (CurrentDist <= maxSearchRange)
+            {
+                if (CurrentDist < r)
+                {
+                    r = CurrentDist;
+                    target = static_cast<GameObject*>((*iter));
+                }
+            }
+        }
+    }
+    return target;
+}
+
+inline Player* MapScriptInterface::getPlayerNearestCoords(float x, float y, float z/* = 0.0f*/, uint32_t Entry/* = 0*/)
+{
+    MapCell* pCell = m_worldMap.getCell(m_worldMap.getPosX(x), m_worldMap.getPosY(y));
+    if (pCell == nullptr)
+        return 0;
+
+    Player* ClosestObject = nullptr;
+    float ClosestDist = 999999.0f;
+    float CurrentDist = 0;
+
+    ObjectSet::const_iterator iter = pCell->Begin();
+    for (; iter != pCell->End(); ++iter)
+    {
+        CurrentDist = (*iter)->CalcDistance(x, y, (z != 0.0f ? z : (*iter)->GetPositionZ()));
+        if (CurrentDist < ClosestDist && (*iter)->getObjectTypeId() == TYPEID_PLAYER)
+        {
+            if ((Entry && (*iter)->getEntry() == Entry) || !Entry)
+            {
+                ClosestDist = CurrentDist;
+                ClosestObject = ((Player*)(*iter));
+            }
+        }
+    }
+
+    return ClosestObject;
 }
 
 uint32_t MapScriptInterface::getPlayerCountInRadius(float x, float y, float z /* = 0.0f */, float radius /* = 5.0f */)

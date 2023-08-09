@@ -21,6 +21,7 @@
 #include "Setup.h"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Map/Maps/MapScriptInterface.h"
+#include "Map/Maps/WorldMap.hpp"
 
 class HeroesofOld : public QuestScript
 {
