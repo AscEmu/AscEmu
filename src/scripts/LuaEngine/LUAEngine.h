@@ -9,16 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "LuaGlobal.h"
 #include "LuaHelpers.h"
-#include "Management/QuestLogEntry.hpp"
-#include "Map/Management/MapMgr.hpp"
-#include "Objects/GameObject.h"
-#include "Objects/Item.hpp"
-#include "Server/Master.h"
-#include "Spell/Spell.h"
-#include "Server/Script/CreatureAIScript.h"
-#include "Server/EventMgr.h"
-#include "Map/Maps/MapScriptInterface.h"
-#include "Spell/SpellMgr.hpp"
+#include "Server/Script/ScriptMgr.h"
+
 
 #ifdef DEBUG
 #define LUA_USE_APICHECK

@@ -20,12 +20,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemProperties.hpp"
 #include "Management/TaxiMgr.h"
 #include "Server/UpdateFieldInclude.h"
+#include "Map/Maps/InstanceMgr.hpp"
 
 struct VoidStorageItem;
 class TradeData;
 class ItemInterface;
 struct Auction;
-struct InstancePlayerBind;
 enum AchievementCriteriaTypes : uint8_t;
 class ArenaTeam;
 struct CharCreate;

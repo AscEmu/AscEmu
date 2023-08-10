@@ -12,6 +12,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/ServerState.h"
 #include "Server/Script/GameObjectAIScript.hpp"
 #include "Management/Guild/Guild.hpp"
+#include "Server/Master.h"
+#include "Objects/Units/Players/Player.hpp"
+#include "Objects/GameObject.h"
+#include "Management/ArenaTeam.hpp"
+#include "Server/Script/CreatureAIScript.h"
+#include "Management/QuestLogEntry.hpp"
+#include "Map/Management/MapMgr.hpp"
 
 #ifdef __APPLE__
 #undef check
