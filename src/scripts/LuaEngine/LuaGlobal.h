@@ -9,8 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <memory>
 #include <vector>
 
-#include "Server/Script/ScriptMgr.h"
-
 class GossipMenu;
 class LuaEngine;
 
@@ -25,7 +23,7 @@ public:
 
     GossipMenu* m_menu;
     std::vector<uint32_t> m_onLoadInfo;
-    std::vector<uint16_t> EventAsToFuncName[NUM_SERVER_HOOKS];
+    std::vector<uint16_t> EventAsToFuncName[33]; //NUM_SERVER_HOOKS
     std::map<uint32_t, uint16_t> m_luaDummySpells;
 
     std::unique_ptr<LuaEngine>& luaEngine();
