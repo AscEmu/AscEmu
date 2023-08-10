@@ -5,11 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <map>
 #include <memory>
+#include <vector>
 
-#include "Management/Gossip/GossipMenu.hpp"
 #include "Server/Script/ScriptMgr.h"
 
+class GossipMenu;
 class LuaEngine;
 
 class LuaGlobal

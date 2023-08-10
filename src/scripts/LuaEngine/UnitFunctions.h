@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemInterface.h"
 #include "Management/QuestMgr.h"
 #include "Management/WeatherMgr.hpp"
+#include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Map/AreaBoundary.hpp"
 #include "Map/Management/MapMgr.hpp"

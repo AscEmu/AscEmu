@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "LuaMacros.h"
 #include "Management/WeatherMgr.hpp"
+#include "Management/Gossip/GossipMenu.hpp"
 #include "Objects/GameObjectProperties.hpp"
 #include "Server/DatabaseDefinition.hpp"
 

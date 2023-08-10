@@ -23,6 +23,7 @@
 #include "Objects/Item.hpp"
 #include "Objects/Container.hpp"
 #include "Management/ItemInterface.h"
+#include "Management/Gossip/GossipMenu.hpp"
 #include "Server/DatabaseDefinition.hpp"
 
 namespace luaItem
