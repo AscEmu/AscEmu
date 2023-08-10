@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Management/Faction.h"
+#include "Map/Maps/WorldMap.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"
 #include "Spell/Definitions/SpellMechanics.hpp"

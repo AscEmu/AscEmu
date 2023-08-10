@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Creature.h"
 #include "AIInterface.h"
 #include "Map/Management/MapMgr.hpp"
+#include "Map/Maps/WorldMap.hpp"
 #include "Movement/MovementManager.h"
 #include "Server/DatabaseDefinition.hpp"
 

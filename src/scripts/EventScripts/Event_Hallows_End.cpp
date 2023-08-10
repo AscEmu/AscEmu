@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Master.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Server/Script/GameObjectAIScript.hpp"
+#include "Storage/MySQLDataStore.hpp"
 
 enum
 {

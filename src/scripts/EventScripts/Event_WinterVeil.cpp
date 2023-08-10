@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Server/Master.h"
 #include "Server/Script/GameObjectAIScript.hpp"
+#include "Storage/MySQLDataStore.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //\details <b>Winter Veil</b>\n

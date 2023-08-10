@@ -38,6 +38,7 @@
 #include "OpcodeTable.hpp"
 #include "World.h"
 #include "Management/Battleground/BattlegroundMgr.hpp"
+#include "Map/Maps/WorldMap.hpp"
 #include "Packets/SmsgMessageChat.h"
 #include "Script/ScriptMgr.h"
 #include "Objects/Transporter.hpp"

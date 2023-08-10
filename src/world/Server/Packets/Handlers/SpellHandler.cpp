@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatHandler.hpp"
 #include "Management/Battleground/Battleground.hpp"
 #include "Map/Management/MapMgr.hpp"
+#include "Map/Maps/WorldMap.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/SpellAuras.h"
 #include "Objects/Units/Creatures/Pet.h"

@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Management/MapMgr.hpp"
 #include "Storage/WorldStrings.h"
 #include "Management/Battleground/Battleground.hpp"
+#include "Map/Maps/WorldMap.hpp"
 #include "Server/Script/ScriptMgr.h"
 #include "Server/Packets/SmsgTransferAborted.h"
 #include "Server/Packets/SmsgRaidGroupOnly.h"

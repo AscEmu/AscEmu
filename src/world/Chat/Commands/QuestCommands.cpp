@@ -24,6 +24,7 @@
 #include "Management/QuestLogEntry.hpp"
 #include "Management/QuestMgr.h"
 #include "Map/Management/MapMgr.hpp"
+#include "Map/Maps/WorldMap.hpp"
 #include "Objects/Item.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"

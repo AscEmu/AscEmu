@@ -25,6 +25,7 @@
 #include "Objects/GameObjectProperties.hpp"
 #include "Server/Master.h"
 #include "Management/Battleground/BattlegroundDefines.hpp"
+#include "Storage/MySQLDataStore.hpp"
 
 // gameobject faction
 static uint32_t g_gameObjectFactions[IOC_NUM_CONTROL_POINTS] =

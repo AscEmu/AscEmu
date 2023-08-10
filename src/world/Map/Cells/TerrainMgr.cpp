@@ -637,13 +637,11 @@ TerrainTile* TerrainHolder::getTile(float x, float y)
 
 TerrainTile* TerrainHolder::getTile(int32_t tx, int32_t ty)
 {
-    m_lock[tx][ty].Acquire();
+    std::lock_guard lock(m_lock[tx][ty]);
 
     TerrainTile* terrain_tile = m_tiles[tx][ty];
     if (terrain_tile != nullptr)
         terrain_tile->AddRef();
-
-    m_lock[tx][ty].Release();
 
     return terrain_tile;
 }
@@ -657,7 +655,7 @@ void TerrainHolder::loadTile(float x, float y)
 
 void TerrainHolder::loadTile(int32_t tx, int32_t ty)
 {
-    m_lock[tx][ty].Acquire();
+    std::lock_guard lock(m_lock[tx][ty]);
 
     ++m_tilerefs[tx][ty];
     if (m_tiles[tx][ty] == nullptr)
@@ -665,8 +663,6 @@ void TerrainHolder::loadTile(int32_t tx, int32_t ty)
         m_tiles[tx][ty] = new TerrainTile(this, m_mapid, tx, ty);
         m_tiles[tx][ty]->Load();
     }
-
-    m_lock[tx][ty].Release();
 }
 
 void TerrainHolder::unloadTile(float x, float y)
@@ -678,26 +674,17 @@ void TerrainHolder::unloadTile(float x, float y)
 
 void TerrainHolder::unloadTile(int32_t tx, int32_t ty)
 {
-    m_lock[tx][ty].Acquire();
+    std::lock_guard lock(m_lock[tx][ty]);
 
     if (m_tiles[tx][ty] == nullptr)
-    {
-        m_lock[tx][ty].Release();
         return;
-    }
-
-    m_lock[tx][ty].Release();
 
     if (--m_tilerefs[tx][ty] == 0)
     {
-        m_lock[tx][ty].Acquire();
-
         if (m_tiles[tx][ty] != nullptr)
             m_tiles[tx][ty]->DecRef();
 
         m_tiles[tx][ty] = nullptr;
-
-        m_lock[tx][ty].Release();
     }
 }
 

@@ -7,13 +7,14 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Storage/WDB/WDBStores.hpp"
 #include "InstanceMgr.hpp"
+
+#include "InstanceMap.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/Definitions.h"
 #include "Server/World.h"
 #include "Server/Script/ScriptMgr.h"
-#include "Utilities/Strings.hpp"
 
 InstanceSaved::InstanceSaved(uint32_t mapId, uint32_t instanceId, InstanceDifficulty::Difficulties difficulty, time_t resetTime, bool canReset)
     : m_resetTime(resetTime),

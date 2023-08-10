@@ -5,13 +5,21 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "MapDefines.h"
-#include "Storage/WDB/WDBStructures.hpp"
-#include "Map/Maps/BaseMap.hpp"
-#include "Map/Maps/WorldMap.hpp"
-#include "Map/Maps/InstanceMap.hpp"
+#include "Utilities/Util.hpp"
 #include "InstanceNumberGen.hpp"
 
+enum PlayerTeam : uint8_t;
+enum EnterState;
+namespace InstanceDifficulty
+{
+    enum Difficulties : uint8_t;
+}
+
+class InstanceSaved;
+class BattlegroundMap;
+class InstanceMap;
+class BaseMap;
+class WorldMap;
 class Player;
 
 class SERVER_DECL MapMgr

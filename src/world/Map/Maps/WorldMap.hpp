@@ -5,15 +5,17 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Storage/MySQLStructures.h"
-#include "Storage/MySQLDataStore.hpp"
 #include "Map/Cells/CellHandler.hpp"
 #include "Management/WorldStatesHandler.h"
 #include "DynamicTree.h"
-#include "Map/Cells/TerrainMgr.hpp"
-#include "Threading/AEThread.h"
-#include "Storage/WDB/WDBStructures.hpp"
+#include "Server/EventableObject.h"
 
+#include <queue>
+
+class WorldSession;
+class ByteBuffer;
+class WorldPacket;
+class DynamicObject;
 template <typename T>
 class CellHandler;
 class InstanceScript;
@@ -96,10 +98,7 @@ public:
             std::make_heap(this->c.begin(), this->c.end(), this->comp);
             return true;
         }
-        else
-        {
-            return false;
-        }
+
         return false;
     }
 

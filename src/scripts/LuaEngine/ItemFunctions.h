@@ -25,6 +25,7 @@
 #include "Management/ItemInterface.h"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Storage/MySQLDataStore.hpp"
 
 namespace luaItem
 {

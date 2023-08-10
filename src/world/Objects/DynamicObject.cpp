@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellIsFlags.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Data/WoWDynamicObject.hpp"
+#include "Map/Maps/WorldMap.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 
 DynamicObject::DynamicObject(uint32_t high, uint32_t low)

@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/GameEvent.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
+#include "Map/Maps/WorldMap.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/Script/ScriptMgr.h"
 

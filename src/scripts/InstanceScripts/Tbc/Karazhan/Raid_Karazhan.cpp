@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemInterface.h"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Map/Maps/MapScriptInterface.h"
+#include "Storage/MySQLDataStore.hpp"
 
 class KarazhanInstanceScript : public InstanceScript
 {

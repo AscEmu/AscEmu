@@ -51,6 +51,7 @@
 #include "Server/WorldSession.h"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Management/Battleground/BattlegroundDefines.hpp"
+#include "Map/Maps/WorldMap.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -62,31 +63,21 @@ Player* Aura::GetPlayerCaster()
     if (m_casterGuid == m_target->getGuid())
     {
         if (m_target->isPlayer())
-        {
             return static_cast<Player*>(m_target);
-        }
-        else //caster is not a player
-        {
-            return nullptr;
-        }
+
+        return nullptr;
     }
 
     if (m_target->getWorldMap())
-    {
         return m_target->getWorldMap()->getPlayer(WoWGuid::getGuidLowPartFromUInt64(m_casterGuid));
-    }
-    else
-    {
-        return nullptr;
-    }
+
+    return nullptr;
 }
 
 Unit* Aura::GetUnitTarget()
 {
     if (m_target && m_target->getWorldMap())
-    {
         return m_target;
-    }
     
     return nullptr;
 }
@@ -94,9 +85,7 @@ Unit* Aura::GetUnitTarget()
 Player* Aura::GetPlayerTarget()
 {
     if (p_target && p_target->getWorldMap())
-    {
         return p_target;
-    }
 
     return nullptr;
 }
@@ -108,8 +97,8 @@ Unit* Aura::GetUnitCaster()
 
     if (m_target->getWorldMap())
         return m_target->getWorldMap()->getUnit(m_casterGuid);
-    else
-        return nullptr;
+
+    return nullptr;
 }
 
 Aura::Aura(SpellInfo const* proto, int32 duration, Object* caster, Unit* target, bool temporary, Item* i_caster)

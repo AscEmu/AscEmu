@@ -7,11 +7,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Movement/MovementDefines.h"
 #include "CellHandlerDefines.hpp"
-#include "Threading/Mutex.h"
-#include "LocationVector.h"
 
 #include <cstdio>
 #include <atomic>
+#include <mutex>
 
 namespace G3D { class Plane; }
 namespace VMAP
@@ -22,6 +21,7 @@ namespace VMAP
 
 class TerrainHolder;
 class TerrainTile;
+class LocationVector;
 
 struct TileMapHeader
 {
@@ -209,7 +209,7 @@ class TerrainHolder
 public:
     uint32_t m_mapid;
     TerrainTile* m_tiles[Map::Terrain::TilesCount][Map::Terrain::TilesCount];
-    FastMutex m_lock[Map::Terrain::TilesCount][Map::Terrain::TilesCount];
+    std::mutex m_lock[Map::Terrain::TilesCount][Map::Terrain::TilesCount];
     std::atomic<unsigned long> m_tilerefs[Map::Terrain::TilesCount][Map::Terrain::TilesCount];
 
     /// Our memory saving system for small allocations

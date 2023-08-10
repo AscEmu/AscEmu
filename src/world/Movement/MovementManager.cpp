@@ -18,6 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "PathGenerator.h"
 #include "WaypointDefines.h"
 #include "Map/Management/MapMgr.hpp"
+#include "Map/Maps/WorldMap.hpp"
 #include "MovementGenerators/ChaseMovementGenerator.h"
 #include "MovementGenerators/ConfusedMovementGenerator.h"
 #include "MovementGenerators/FleeingMovementGenerator.h"
@@ -32,6 +33,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MovementGenerators/WaypointMovementGenerator.h"
 #include "MovementGenerators/FlightPathMovementGenerator.h"
 #include "Objects/Units/Creatures/AIInterface.h"
+#include "Storage/MySQLDataStore.hpp"
 
 namespace FactorySelector
 {

@@ -20,6 +20,7 @@
 #include "Setup.h"
 #include "Management/Faction.h"
 #include "Map/Management/MapMgr.hpp"
+#include "Map/Maps/WorldMap.hpp"
 #include "Server/Opcodes.hpp"
 #include "Server/Script/ScriptMgr.h"
 #include "Spell/SpellAuras.h"

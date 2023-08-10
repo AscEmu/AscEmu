@@ -30,6 +30,7 @@
 #include "Server/Script/ScriptMgr.h"
 #include "Spell/SpellMgr.hpp"
 #include "Management/Battleground/BattlegroundDefines.hpp"
+#include "Map/Maps/WorldMap.hpp"
 
 const uint32 ARENA_PREPARATION = 32727;
 

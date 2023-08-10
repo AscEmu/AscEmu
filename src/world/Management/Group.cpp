@@ -25,6 +25,8 @@
 #include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellAuras.h"
 #include "Management/ObjectMgr.hpp"
+#include "Map/Maps/InstanceMap.hpp"
+#include "Map/Maps/WorldMap.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/WorldSession.h"

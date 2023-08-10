@@ -22,6 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemInterface.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/QuestMgr.h"
+#include "Map/Maps/WorldMap.hpp"
 #include "Objects/Item.hpp"
 #include "Server/Packets/SmsgGossipComplete.h"
 #include "Server/Script/ScriptMgr.h"

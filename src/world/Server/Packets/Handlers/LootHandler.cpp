@@ -21,6 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/CreatureAIScript.h"
 #include "Server/Script/GameObjectAIScript.hpp"
 #include "Spell/Spell.Legacy.h"
+#include "Storage/MySQLDataStore.hpp"
 
 using namespace AscEmu::Packets;
 

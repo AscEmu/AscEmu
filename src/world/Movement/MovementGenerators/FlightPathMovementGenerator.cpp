@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/Spline/MoveSpline.h"
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Management/ObjectMgr.hpp"
+#include "Map/Maps/WorldMap.hpp"
 #include "Objects/Transporter.hpp"
 #include "Movement/WaypointManager.h"
 #include "Objects/Units/Creatures/AIInterface.h"

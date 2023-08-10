@@ -30,6 +30,7 @@
 #include "Server/WorldSessionLog.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Management/Battleground/BattlegroundDefines.hpp"
+#include "Storage/MySQLDataStore.hpp"
 
 static float EOTSBuffCoordinates[4][4] =
 {

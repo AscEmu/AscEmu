@@ -3,8 +3,6 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include <ctime>
-
 #include "WorldMap.hpp"
 #include "Objects/DynamicObject.hpp"
 #include "Objects/Units/Creatures/Pet.h"
@@ -12,14 +10,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Unit.hpp"
 #include "VMapFactory.h"
 #include "MMapFactory.h"
-#include "Map/Cells/CellHandler.hpp"
 #include "Macros/MapsMacros.hpp"
 #include "shared/WoWGuid.h"
 #include "MapScriptInterface.h"
 #include "Server/Script/ScriptMgr.h"
-#include "Macros/ScriptMacros.hpp"
 #include "Map/Management/MapMgr.hpp"
-#include "Management/WorldStatesHandler.h"
 #include "InstanceMap.hpp"
 #include "Server/Packets/SmsgUpdateWorldState.h"
 #include "Server/Packets/SmsgDefenseMessage.h"
@@ -32,7 +27,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Spell/Definitions/SummonControlTypes.hpp"
+#include "Storage/MySQLDataStore.hpp"
 #include "Storage/WDB/WDBStores.hpp"
+
+#include <ctime>
 
 using namespace AscEmu::Packets;
 using namespace AscEmu::Threading;

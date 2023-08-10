@@ -25,6 +25,7 @@
 #include <Spell/Definitions/PowerType.hpp>
 #include <Objects/Units/Creatures/Pet.h>
 #include "Management/ItemInterface.h"
+#include "Map/Maps/WorldMap.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
 
 //////////////////////////////////////////////////////////////

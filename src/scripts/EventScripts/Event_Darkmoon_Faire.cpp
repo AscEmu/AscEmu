@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Server/Script/CreatureAIScript.h"
 #include "Server/Script/GameObjectAIScript.hpp"
+#include "Storage/MySQLDataStore.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
  //\details <b>Darkmoon Faire (Elwynn Forest)</b>\n

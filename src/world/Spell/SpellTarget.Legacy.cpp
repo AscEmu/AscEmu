@@ -27,6 +27,8 @@
 #include "Server/World.h"
 #include "Definitions/SpellCastTargetFlags.hpp"
 #include "Definitions/SpellDidHitResult.hpp"
+#include "Map/Maps/WorldMap.hpp"
+#include "Objects/GameObjectProperties.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Objects/Units/Creatures/Pet.h"
