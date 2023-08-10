@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "zlib.h"
+#include "Management/AddonMgr.h"
 #include "Management/QuestMgr.h"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Map/Management/MapMgr.hpp"
@@ -2113,7 +2114,7 @@ void WorldSession::sendAddonInfo()
 
     m_addonList.clear();
 
-    BannedAddonList const* bannedAddons = sAddonMgr.getBannedAddonsList();
+    std::list<BannedAddon> const* bannedAddons = sAddonMgr.getBannedAddonsList();
     data << uint32_t(bannedAddons->size());
     for (auto itr = bannedAddons->begin(); itr != bannedAddons->end(); ++itr)
     {
@@ -2128,7 +2129,7 @@ void WorldSession::sendAddonInfo()
 #else
     WorldPacket data(SMSG_ADDON_INFO, 1000);
 
-    BannedAddonList const* bannedAddons = sAddonMgr.getBannedAddonsList();
+    std::list<BannedAddon> const* bannedAddons = sAddonMgr.getBannedAddonsList();
 
     data.writeBits(static_cast<uint32_t>(bannedAddons->size()), 18);
     data.writeBits(static_cast<uint32_t>(m_addonList.size()), 23);

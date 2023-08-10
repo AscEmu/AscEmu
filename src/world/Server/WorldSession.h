@@ -33,13 +33,7 @@
 #include "Objects/MovementInfo.hpp"
 #include "Logging/Logger.hpp"
 #include "Utilities/CallBack.h"
-
-#if VERSION_STRING >= Cata
-    #include "Management/AddonMgr.h"
-    #include "Management/ItemInterface.h"
-    #include "Objects/Units/Players/Player.hpp"
-    struct AddonEntry;
-#endif
+#include "Management/AddonMgr.h"
 
 class Player;
 class WorldPacket;
@@ -61,7 +55,6 @@ struct LfgPlayerBoot;
 struct LfgProposal;
 struct LfgReward;
 struct LfgRoleCheck;
-struct AddonEntry;
 struct Loot;
 class WoWGuid;
 class Query;
@@ -588,7 +581,7 @@ protected:
         void handleVoidStorageQuery(WorldPacket& recvData);
         void handleVoidStorageTransfer(WorldPacket& recvData);
         void handleVoidSwapItem(WorldPacket& recvData);
-        void sendVoidStorageTransferResult(VoidTransferError result);
+        void sendVoidStorageTransferResult(uint8_t result);
 
         // Transmogrification
         void handleTransmogrifyItems(WorldPacket& recvData);

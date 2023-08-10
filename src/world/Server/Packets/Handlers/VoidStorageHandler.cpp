@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 // Cata
 #include "Macros/GuildMacros.hpp"
+#include "Management/ItemInterface.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Item.hpp"
@@ -15,7 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #if VERSION_STRING >= Cata
 
-void WorldSession::sendVoidStorageTransferResult(VoidTransferError result)
+void WorldSession::sendVoidStorageTransferResult(uint8_t result)
 {
     WorldPacket data(SMSG_VOID_TRANSFER_RESULT, 4);
     data << uint32_t(result);

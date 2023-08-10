@@ -17,7 +17,7 @@ const uint8_t INVALID_BACKPACK_SLOT = 0xFF;
 #define VOID_STORAGE_MAX_WITHDRAW 9
 #define VOID_STORAGE_MAX_SLOT     80
 
-enum VoidTransferError
+enum VoidTransferError : uint8_t
 {
     VOID_TRANSFER_ERROR_NO_ERROR                = 0,
     VOID_TRANSFER_ERROR_INTERNAL_ERROR_1        = 1,

@@ -19,6 +19,7 @@
  */
 
 #include "Setup.h"
+#include "Management/ItemInterface.h"
 #include "Management/QuestMgr.h"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Map/Maps/WorldMap.hpp"

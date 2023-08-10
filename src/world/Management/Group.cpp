@@ -18,6 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "ItemInterface.h"
 #include "Battleground/BattlegroundMgr.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Management/LFG/LFGMgr.hpp"

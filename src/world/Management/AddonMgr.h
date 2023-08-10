@@ -6,14 +6,20 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "AEVersion.hpp"
-#include "WorldPacket.h"
-#include "Server/WorldSession.h"
+
+#include <cstdint>
+#include <list>
+#include <map>
+#include <string>
 
 //\TODO handle it, if possible, the same way in all versions
 #define STANDARD_ADDON_CRC 0x4C1C776D
 
 #if VERSION_STRING < Cata
-static uint8 PublicKey[265] =
+class ByteBuffer;
+class WorldSession;
+class WorldPacket;
+static uint8_t PublicKey[265] =
 {
     0x02, 0x01, 0x01, 0xC3, 0x5B, 0x50, 0x84, 0xB9, 0x3E, 0x32, 0x42, 0x8C, 0xD0, 0xC7, 0x48, 0xFA,
     0x0E, 0x5D, 0x54, 0x5A, 0xA3, 0x0E, 0x14, 0xBA, 0x9E, 0x0D, 0xB9, 0x5D, 0x8B, 0xEE, 0xB6, 0x84,
@@ -36,7 +42,7 @@ static uint8 PublicKey[265] =
 
 struct AddonEntry
 {
-    uint64 crc;
+    uint64_t crc;
     std::string name;
     bool banned;
     bool isNew;
@@ -51,7 +57,7 @@ typedef AddonData::iterator AddonDataItr;
 
 #else
 
-static uint8 PublicKey[256] =
+static uint8_t PublicKey[256] =
 {
     0xC3, 0x5B, 0x50, 0x84, 0xB9, 0x3E, 0x32, 0x42, 0x8C, 0xD0, 0xC7, 0x48, 0xFA, 0x0E, 0x5D, 0x54,
     0x5A, 0xA3, 0x0E, 0x14, 0xBA, 0x9E, 0x0D, 0xB9, 0x5D, 0x8B, 0xEE, 0xB6, 0x84, 0x93, 0x45, 0x75,
@@ -71,7 +77,7 @@ static uint8 PublicKey[256] =
     0x0D, 0x36, 0xEA, 0x01, 0xE0, 0xAA, 0x91, 0x20, 0x54, 0xF0, 0x72, 0xD8, 0x1E, 0xC7, 0x89, 0xD2
 };
 
-static uint8 publicKeyOrder[256] =
+static uint8_t publicKeyOrder[256] =
 {
     0x05, 0xB0, 0x94, 0x2B, 0x1C, 0x87, 0x40, 0x08, 0xA0, 0x91, 0xE2, 0x77, 0xB5, 0xC0, 0xF0, 0x48,
     0xF3, 0xD4, 0xD1, 0xAC, 0x15, 0xED, 0x55, 0x0A, 0x4B, 0x75, 0xF4, 0x52, 0x18, 0x14, 0x12, 0x4C,
@@ -150,13 +156,13 @@ class AddonMgr
         void LoadFromDB();
         void SaveToDB();
 
-        void SendAddonInfoPacket(WorldPacket* source, uint32 pos, WorldSession* m_session);
-        bool AppendPublicKey(WorldPacket& data, std::string& AddonName, uint32 CRC);
+        void SendAddonInfoPacket(WorldPacket* source, uint32_t pos, WorldSession* m_session);
+        bool AppendPublicKey(WorldPacket& data, std::string& AddonName, uint32_t CRC);
 
     private:
 
-        bool IsAddonBanned(uint64 crc, std::string name = "");
-        bool IsAddonBanned(std::string name, uint64 crc = 0);
+        bool IsAddonBanned(uint64_t crc, std::string name = "");
+        bool IsAddonBanned(std::string name, uint64_t crc = 0);
         bool ShouldShowInList(std::string name);
 
         KnownAddons mKnownAddons;

@@ -20,6 +20,7 @@
  */
 
 #include "Setup.h"
+#include "Management/ItemInterface.h"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Server/WorldSession.h"
 #include "Objects/Units/Creatures/Creature.h"

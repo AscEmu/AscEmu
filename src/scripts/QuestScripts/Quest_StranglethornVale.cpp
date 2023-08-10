@@ -19,6 +19,7 @@
  */
 
 #include "Setup.h"
+#include "Management/ItemInterface.h"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Movement/Spline/MoveSpline.h"

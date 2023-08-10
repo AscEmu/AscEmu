@@ -13,7 +13,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Transporter.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 
-using namespace AscEmu::Packets;
 
 TransportHandler& TransportHandler::getInstance()
 {
