@@ -4,9 +4,12 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "ChatHandler.hpp"
+
+#include "ChatCommand.hpp"
 #include "CommandTableStorage.hpp"
 #include "Exceptions/PlayerExceptions.hpp"
 #include "Management/ItemInterface.h"
+#include "Management/SkillNameMgr.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Map/Maps/WorldMap.hpp"

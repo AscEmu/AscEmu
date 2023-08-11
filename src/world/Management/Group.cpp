@@ -36,6 +36,7 @@
 #include "Server/Packets/SmsgGroupList.h"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Packets/SmsgInstanceReset.h"
+#include "Storage/WDB/WDBStores.hpp"
 
 using namespace AscEmu::Packets;
 

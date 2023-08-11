@@ -19,6 +19,7 @@
  *
  */
 
+#include "Chat/ChatDefines.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Map/Management/MapMgr.hpp"

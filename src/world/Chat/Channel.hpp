@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "ChannelDefines.hpp"
 #include "CommonTypes.hpp"
 
 #include <map>
@@ -76,7 +75,7 @@ private:
 
     uint8_t m_channelTeam = 0;
     uint32_t m_channelId = 0;
-    uint8_t m_channelFlags = CHANNEL_FLAGS_NONE;
+    uint8_t m_channelFlags = 0;
     bool m_muted = false;
     bool m_announcePlayers = true;
     uint8_t m_minimumLevel = 1;

@@ -39,6 +39,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "VMapManager2.h"
 #include "Management/QuestMgr.h"
 #include "Management/Battleground/BattlegroundMgr.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 
 #if VERSION_STRING >= Cata
 #include "Management/Guild/GuildFinderMgr.hpp"

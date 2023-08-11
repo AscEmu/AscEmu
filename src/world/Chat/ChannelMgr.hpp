@@ -6,10 +6,18 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Channel.hpp"
-#include "Storage/WDB/WDBStructures.hpp"
 
 #include <mutex>
 #include <vector>
+
+namespace WDB
+{
+    namespace Structures
+    {
+        struct ChatChannelsEntry;
+        struct AreaTableEntry;
+    }
+}
 
 class SERVER_DECL ChannelMgr
 {

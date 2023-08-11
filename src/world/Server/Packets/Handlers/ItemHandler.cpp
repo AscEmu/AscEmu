@@ -49,6 +49,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
 #include "Server/Packets/SmsgBuyFailed.h"
 #include "Server/Script/ScriptMgr.h"
+#include "Storage/WDB/WDBStores.hpp"
 
 using namespace AscEmu::Packets;
 

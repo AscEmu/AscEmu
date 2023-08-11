@@ -5,15 +5,19 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "ChatCommand.hpp"
-#include "ChatDefines.hpp"
-#include "Management/ItemProperties.hpp"
-#include "Management/SkillNameMgr.h"
+#include "CommonTypes.hpp"
+#include "AEVersion.hpp"
+//#include "ChatDefines.hpp"
 
+#include <string>
+
+class ChatCommand;
+class SkillNameMgr;
 class Creature;
 class WorldSession;
 class Player;
 class Unit;
+struct ItemProperties;
 
 int32_t GetSpellIDFromLink(const char* spelllink);
 uint16_t GetItemIDFromLink(const char* itemlink, uint32_t* itemid);
@@ -49,7 +53,7 @@ public:
     bool ExecuteCommandInTable(ChatCommand* table, const char* text, WorldSession* m_session);
     bool ShowHelpForCommand(WorldSession* m_session, ChatCommand* table, const char* cmd);
     void SendHighlightedName(WorldSession* m_session, const char* prefix, const char* full_name, std::string & lowercase_name, std::string & highlight, uint32_t id);
-    void SendItemLinkToPlayer(ItemProperties const* iProto, WorldSession* pSession, bool ItemCount, Player* owner, uint32_t language = LANG_UNIVERSAL);
+    void SendItemLinkToPlayer(ItemProperties const* iProto, WorldSession* pSession, bool ItemCount, Player* owner, uint32_t language = 0/*LANG_UNIVERSAL*/);
     bool HandleHelpCommand(const char* args, WorldSession* m_session);
     bool HandleCommandsCommand(const char* args, WorldSession* m_session);
     bool HandleGetSkillLevelCommand(const char* args, WorldSession* m_session);

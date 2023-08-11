@@ -5,7 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "AEVersion.hpp"
+
 #include <mutex>
+#include <vector>
+#include <unordered_map>
+#include <set>
+#include <map>
 
 struct KeyFrame;
 struct TransportTemplate;
@@ -17,6 +23,13 @@ namespace MovementMgr
 {
     template <typename length_type> class Spline;
 }
+
+namespace WDB::Structures
+{
+    struct TransportAnimationEntry;
+    struct TransportRotationEntry;
+}
+
 
 typedef MovementMgr::Spline<double>                         TransportSpline;
 typedef std::vector<KeyFrame>                               KeyFrameVec;

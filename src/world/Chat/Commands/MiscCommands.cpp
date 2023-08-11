@@ -3,6 +3,7 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Chat/ChatDefines.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Management/Battleground/Battleground.hpp"
 #include "Map/Management/MapMgr.hpp"
@@ -14,6 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Spell/SpellMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 
 //.mount
 bool ChatHandler::HandleMountCommand(const char* args, WorldSession* m_session)

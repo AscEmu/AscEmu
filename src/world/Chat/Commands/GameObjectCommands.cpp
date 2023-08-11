@@ -3,6 +3,7 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Chat/ChatDefines.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
@@ -11,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Storage/MySQLDataStore.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 
 //.gobject damage
 bool ChatHandler::HandleGODamageCommand(const char* args, WorldSession* session)

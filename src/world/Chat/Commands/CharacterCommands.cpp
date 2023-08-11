@@ -3,10 +3,12 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Chat/ChatDefines.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Management/HonorHandler.h"
 #include "Management/ItemInterface.h"
 #include "Management/ObjectMgr.hpp"
+#include "Management/SkillNameMgr.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/InstanceMap.hpp"
 #include "Map/Maps/WorldMap.hpp"
