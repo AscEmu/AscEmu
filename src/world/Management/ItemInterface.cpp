@@ -30,6 +30,7 @@
 #include "Server/WorldSession.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/SmsgInventoryChangeFailure.h"
+#include "Storage/WDB/WDBStores.hpp"
 
 using namespace AscEmu::Packets;
 
