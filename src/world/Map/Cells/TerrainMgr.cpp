@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "TerrainMgr.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Logging/Logger.hpp"
+#include "Macros/MapsMacros.hpp"
 #include "Server/World.h"
 
 static uint16_t const holetab_h[4] = { 0x1111, 0x2222, 0x4444, 0x8888 };

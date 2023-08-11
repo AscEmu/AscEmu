@@ -30,6 +30,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellMgr.hpp"
 #include "Units/Creatures/CreatureDefines.hpp"
 #include "Data/WoWObject.hpp"
+#include "Map/Maps/WorldMap.hpp"
 #include "Server/Packets/SmsgDestoyObject.h"
 #include "Server/Packets/SmsgPlaySound.h"
 #include "Server/Packets/SmsgGameobjectDespawnAnim.h"
