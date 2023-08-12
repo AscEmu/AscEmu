@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_TheSlavePens.h"
 
+#include "Server/Script/CreatureAIScript.h"
+
 class TheSlavePensInstanceScript : public InstanceScript
 {
 public:

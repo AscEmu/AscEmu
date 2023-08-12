@@ -22,6 +22,7 @@
 #include "Management/ItemInterface.h"
 #include "Management/QuestMgr.h"
 #include "Management/Gossip/GossipMenu.hpp"
+#include "Management/Gossip/GossipScript.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Server/WorldSession.h"
 #include "Objects/Units/Creatures/Creature.h"

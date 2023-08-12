@@ -19,6 +19,7 @@
 
 #include "Setup.h"
 #include "Management/ItemInterface.h"
+#include "Management/Gossip/GossipScript.hpp"
 #include "Server/Script/CreatureAIScript.h"
 
 class WoodlandWalker : public CreatureAIScript

@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Raid_Ulduar.h"
 
 #include "Setup.h"
+#include "Management/Gossip/GossipScript.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"
 
 class UlduarInstanceScript : public InstanceScript

@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Instance_AzjolNerub.h"
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class AzjolNerubInstanceScript : public InstanceScript
 {

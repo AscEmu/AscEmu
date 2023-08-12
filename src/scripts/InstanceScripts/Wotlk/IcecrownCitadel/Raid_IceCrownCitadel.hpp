@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Setup.h"
+#include "Management/Gossip/GossipScript.hpp"
+#include "Server/Script/CreatureAIScript.h"
 #include "Server/Script/GameObjectAIScript.hpp"
 
 // Overwrite we added 1 Encounte which is not in Database

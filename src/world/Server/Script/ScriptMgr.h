@@ -23,7 +23,6 @@
 
 #include "ScriptEvent.hpp"
 #include "AEVersion.hpp"
-#include "Management/Gossip/GossipScript.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Spell/SpellScriptDefines.hpp"
 
@@ -34,6 +33,25 @@
 #include <vector>
 #include <list>
 
+class GossipGeneric;
+class GossipStableMaster;
+class GossipTabardDesigner;
+class GossipCharterGiver;
+class GossipBattleMaster;
+class GossipInnKeeper;
+class GossipAuctioneer;
+class GossipFlightMaster;
+class GossipPetTrainer;
+class GossipClassTrainer;
+class GossipVendor;
+class GossipBanker;
+class GossipSpiritHealer;
+class GossipTrainer;
+class GossipScript;
+class GameObject;
+class Item;
+class Object;
+class Player;
 class InstanceMap;
 class Transporter;
 struct DamageInfo;
@@ -382,20 +400,20 @@ public:
         GossipScript* get_item_gossip(uint32) const;
 
         // Default Gossip Script Interfaces
-        GossipTrainer trainerScript_;
-        GossipSpiritHealer spirithealerScript_;
-        GossipBanker bankerScript_;
-        GossipVendor vendorScript_;
-        GossipClassTrainer classtrainerScript_;
-        GossipPetTrainer pettrainerScript_;
-        GossipFlightMaster flightmasterScript_;
-        GossipAuctioneer auctioneerScript_;
-        GossipInnKeeper innkeeperScript_;
-        GossipBattleMaster battlemasterScript_;
-        GossipCharterGiver chartergiverScript_;
-        GossipTabardDesigner tabardScript_;
-        GossipStableMaster stablemasterScript_;
-        GossipGeneric genericScript_;
+        GossipTrainer* trainerScript_;
+        GossipSpiritHealer* spirithealerScript_;
+        GossipBanker* bankerScript_;
+        GossipVendor* vendorScript_;
+        GossipClassTrainer* classtrainerScript_;
+        GossipPetTrainer* pettrainerScript_;
+        GossipFlightMaster* flightmasterScript_;
+        GossipAuctioneer* auctioneerScript_;
+        GossipInnKeeper* innkeeperScript_;
+        GossipBattleMaster* battlemasterScript_;
+        GossipCharterGiver* chartergiverScript_;
+        GossipTabardDesigner* tabardScript_;
+        GossipStableMaster* stablemasterScript_;
+        GossipGeneric* genericScript_;
 
     protected:
 

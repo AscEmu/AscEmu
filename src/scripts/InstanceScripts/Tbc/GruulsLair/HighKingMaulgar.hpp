@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "Server/Script/CreatureAIScript.h"
+
 enum MaulgarPhases
 {
     PHASE_1                         = 1,

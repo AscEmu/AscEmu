@@ -22,6 +22,7 @@
 #include "Setup.h"
 #include "Management/QuestMgr.h"
 #include "Management/Gossip/GossipMenu.hpp"
+#include "Management/Gossip/GossipScript.hpp"
 #include "Server/WorldSession.h"
 #include "Spell/SpellMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"

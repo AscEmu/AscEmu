@@ -43,6 +43,7 @@
 #include <git_version.h>
 
 #include "AchievementScript.hpp"
+#include "Management/Gossip/GossipScript.hpp"
 #include "Server/ServerState.h"
 #include "Server/World.h"
 

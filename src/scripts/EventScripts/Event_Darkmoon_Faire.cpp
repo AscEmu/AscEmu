@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Management/ItemInterface.h"
 #include "Management/Gossip/GossipMenu.hpp"
+#include "Management/Gossip/GossipScript.hpp"
 #include "Server/Master.h"
 #include "Server/WorldSession.h"
 #include "Server/Script/CreatureAIScript.h"

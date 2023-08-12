@@ -21,6 +21,7 @@
 #include "Setup.h"
 #include "Management/ItemInterface.h"
 #include "Management/Gossip/GossipMenu.hpp"
+#include "Management/Gossip/GossipScript.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Movement/Spline/MoveSpline.h"
 #include "Server/WorldSession.h"

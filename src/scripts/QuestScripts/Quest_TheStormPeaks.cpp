@@ -18,6 +18,7 @@
 
 #include "Setup.h"
 #include "Management/Gossip/GossipMenu.hpp"
+#include "Management/Gossip/GossipScript.hpp"
 #include "Server/WorldSession.h"
 #include "Server/Script/GameObjectAIScript.hpp"
 

@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Raid_OnyxiasLair.h"
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class OnyxiasLairInstanceScript : public InstanceScript
 {

@@ -22,7 +22,9 @@
 #include "Setup.h"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Objects/Units/Creatures/Pet.h"
+#include "Server/Script/CreatureAIScript.h"
 #include "Server/Script/GameObjectAIScript.hpp"
+
 
 class GrandWidowFaerlinaAI;
 class AnubRekhanAI;
@@ -1981,6 +1983,7 @@ const uint32_t IMMUNITY_HOLY = 34182;
 const uint32_t IMMUNITY_ARCANE = 34184;
 const uint32_t IMMUNITY_PHYSICAL = 34310;
 
+// todo move this to .cpp and remove WorldMap.h include
 class SapphironAI : public CreatureAIScript
 {
 public:

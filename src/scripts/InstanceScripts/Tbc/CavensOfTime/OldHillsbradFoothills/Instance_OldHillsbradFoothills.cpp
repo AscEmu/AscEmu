@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/WorldStates.h"
+#include "Map/Maps/WorldMap.hpp"
 
 class OldHilsbradInstance : public InstanceScript
 {

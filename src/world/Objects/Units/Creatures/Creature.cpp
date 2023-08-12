@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Management/ObjectMgr.hpp"
+#include "Management/Gossip/GossipScript.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
 #include "Server/Script/CreatureAIScript.h"
 #include "Objects/Units/Creatures/CreatureGroups.h"

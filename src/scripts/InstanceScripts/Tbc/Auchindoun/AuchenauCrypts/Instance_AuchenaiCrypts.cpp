@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Instance_AuchenaiCrypts.h"
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class AuchenaiCryptsInstanceScript : public InstanceScript
 {

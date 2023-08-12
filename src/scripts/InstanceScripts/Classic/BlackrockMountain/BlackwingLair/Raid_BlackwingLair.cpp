@@ -7,6 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Management/Gossip/GossipMenu.hpp"
+#include "Management/Gossip/GossipScript.hpp"
+#include "Server/Script/CreatureAIScript.h"
 
 class BlackwingLairInstanceScript : public InstanceScript
 {

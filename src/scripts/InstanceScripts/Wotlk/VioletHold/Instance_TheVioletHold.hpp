@@ -5,7 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "LocationVector.h"
 #include "Setup.h"
+#include "Management/Gossip/GossipScript.hpp"
+#include "Server/Script/CreatureAIScript.h"
 #include "Server/Script/GameObjectAIScript.hpp"
 
 LocationVector const DefenseSystemLocation = { 1888.146f, 803.382f,  58.60389f, 3.071779f };

@@ -18,6 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ArenaTeam.hpp"
 #include "Server/Script/CreatureAIScript.h"
 #include "Management/QuestLogEntry.hpp"
+#include "Management/Gossip/GossipScript.hpp"
 #include "Map/Management/MapMgr.hpp"
 
 #ifdef __APPLE__

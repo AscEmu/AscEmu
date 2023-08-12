@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "GruulTheDragonKiller.hpp"
 #include "Raid_GruulsLair.hpp"
+#include "Utilities/Util.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Boss: Gruul the Dragonkiller
@@ -29,7 +30,7 @@ GruulTheDragonkillerAI::GruulTheDragonkillerAI(Creature* pCreature) : CreatureAI
 
     mHurtfulStrike = addAISpell(SPELL_HURTFUL_STRIKE, 0.0f, TARGET_ATTACKING);
 
-    addEmoteForEvent(Event_OnCombatStart, GRUUL_SAY_AGGRO);
+    addEmoteForEvent(CreatureAIScript::Event_OnCombatStart, GRUUL_SAY_AGGRO);
     addEmoteForEvent(Event_OnTargetDied, GRUUL_SAY_SLAY_01);
     addEmoteForEvent(Event_OnTargetDied, GRUUL_SAY_SLAY_02);
     addEmoteForEvent(Event_OnTargetDied, GRUUL_SAY_SLAY_03);

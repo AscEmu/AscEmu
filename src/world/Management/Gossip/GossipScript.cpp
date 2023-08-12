@@ -23,39 +23,39 @@ GossipScript* GossipScript::getInterface(Creature* creature)
         return script;
 
     if (creature->isSpiritHealer())
-        return &sScriptMgr.spirithealerScript_;
+        return sScriptMgr.spirithealerScript_;
     if (creature->isInnkeeper())
-        return &sScriptMgr.innkeeperScript_;
+        return sScriptMgr.innkeeperScript_;
     if (creature->isBanker())
-        return &sScriptMgr.bankerScript_;
+        return sScriptMgr.bankerScript_;
     if (creature->isClassTrainer())
-        return &sScriptMgr.classtrainerScript_;
+        return sScriptMgr.classtrainerScript_;
     if (creature->isTrainer())
     {
         if (const auto trainer = creature->GetTrainer())
         {
             if (trainer->TrainerType == TRAINER_TYPE_PET)
-                return &sScriptMgr.pettrainerScript_;
+                return sScriptMgr.pettrainerScript_;
 
-            return &sScriptMgr.trainerScript_;
+            return sScriptMgr.trainerScript_;
         }
     }
     else if (creature->isTabardDesigner())
-        return &sScriptMgr.tabardScript_;
+        return sScriptMgr.tabardScript_;
     else if (creature->isTaxi())
-        return &sScriptMgr.flightmasterScript_;
+        return sScriptMgr.flightmasterScript_;
     else if (creature->isStableMaster())
-        return &sScriptMgr.stablemasterScript_;
+        return sScriptMgr.stablemasterScript_;
     else if (creature->isBattleMaster())
-        return &sScriptMgr.battlemasterScript_;
+        return sScriptMgr.battlemasterScript_;
     else if (creature->isAuctioneer())
-        return &sScriptMgr.auctioneerScript_;
+        return sScriptMgr.auctioneerScript_;
     else if (creature->isCharterGiver())
-        return &sScriptMgr.chartergiverScript_;
+        return sScriptMgr.chartergiverScript_;
     else if (creature->isVendor())
-        return &sScriptMgr.vendorScript_;
+        return sScriptMgr.vendorScript_;
 
-    return &sScriptMgr.genericScript_;
+    return sScriptMgr.genericScript_;
 }
 
 GossipScript* GossipScript::getInterface(Item* item)

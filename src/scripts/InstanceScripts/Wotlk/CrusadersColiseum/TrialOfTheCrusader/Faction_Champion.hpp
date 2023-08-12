@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "Server/Script/CreatureAIScript.h"
+
 LocationVector const FactionChampionLoc[] =
 {
     { 514.231f, 105.569f, 418.234f, 0 },               //  0 - Horde Initial Pos 0

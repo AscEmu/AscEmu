@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Instance_ManaTombs.h"
 
 #include "Setup.h"
+#include "Server/Script/CreatureAIScript.h"
 
 class ManaTombsInstanceScript : public InstanceScript
 {

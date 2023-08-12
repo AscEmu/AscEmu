@@ -7,7 +7,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Instance_ShadowfangKeep.h"
 
 #include "Management/Gossip/GossipMenu.hpp"
+#include "Management/Gossip/GossipScript.hpp"
 #include "Map/Maps/MapScriptInterface.h"
+#include "Server/Script/CreatureAIScript.h"
 #include "Storage/MySQLDataStore.hpp"
 
 // Instance script for map 33 (Shadowfang Keep)
