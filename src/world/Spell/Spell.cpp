@@ -42,7 +42,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgCancelCombat.h"
 #include "Server/Packets/MsgChannelUpdate.h"
 #include "Server/Packets/MsgChannelStart.h"
-#include "Server/Script/CreatureAIScript.h"
+#include "Server/Script/CreatureAIScript.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Creatures/CreatureDefines.hpp"
 #include "Objects/Units/Creatures/Pet.h"
@@ -51,6 +51,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/TradeData.hpp"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
+#include "Server/Script/HookInterface.hpp"
 #include "Utilities/Util.hpp"
 
 using namespace AscEmu::Packets;

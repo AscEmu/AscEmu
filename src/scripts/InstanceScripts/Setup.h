@@ -5,8 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Server/Script/ScriptMgr.h"
 #include "AEVersion.hpp"
+
+class ScriptMgr;
 
 //Classic
 void SetupBlackfathomDeeps(ScriptMgr* mgr);

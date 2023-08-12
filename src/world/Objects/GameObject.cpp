@@ -40,7 +40,7 @@
 #include "Server/Packets/SmsgFishNotHooked.h"
 #include "Server/Packets/SmsgEnableBarberShop.h"
 #include "Server/Packets/SmsgDestructibleBuildingDamage.h"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptMgr.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Management/QuestLogEntry.hpp"
@@ -51,8 +51,9 @@
 #include "Management/Gossip/GossipScript.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Server/World.h"
+#include "Server/Script/EventScript.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"
-#include "Server/Script/InstanceScript.h"
+#include "Server/Script/InstanceScript.hpp"
 
 // MIT
 

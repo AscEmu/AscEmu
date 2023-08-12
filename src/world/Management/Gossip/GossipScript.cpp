@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Item.hpp"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptMgr.hpp"
 
 void GossipScript::destroy()
 {

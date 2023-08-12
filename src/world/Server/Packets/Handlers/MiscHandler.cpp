@@ -59,14 +59,15 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgAccountDataTimes.h"
 #include "Server/Packets/SmsgLogoutCancelAck.h"
 #include "Server/Packets/SmsgMotd.h"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptMgr.hpp"
 #include "Objects/Transporter.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"
-#include "Server/Script/InstanceScript.h"
+#include "Server/Script/HookInterface.hpp"
+#include "Server/Script/InstanceScript.hpp"
 
 using namespace AscEmu::Packets;
 

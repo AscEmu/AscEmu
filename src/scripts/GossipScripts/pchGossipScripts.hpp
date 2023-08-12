@@ -9,6 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Gossip/GossipScript.hpp"
 #include "Objects/GameObject.h"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/WorldSession.h"

@@ -32,10 +32,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/MovementManager.h"
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Server/Definitions.h"
-#include "Server/Script/CreatureAIScript.h"
+#include "Server/Script/CreatureAIScript.hpp"
 #include "Objects/Units/Creatures/CreatureGroups.h"
 #include "Server/World.h"
-#include "Server/Script/InstanceScript.h"
+#include "Server/Script/InstanceScript.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 
 // Random and guessed values for Internal Spell cast chance

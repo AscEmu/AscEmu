@@ -40,9 +40,10 @@
 #include "Management/Battleground/BattlegroundMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Packets/SmsgMessageChat.h"
-#include "Script/ScriptMgr.h"
+#include "Script/ScriptMgr.hpp"
 #include "Objects/Transporter.hpp"
 #include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
+#include "Script/HookInterface.hpp"
 
 using namespace AscEmu::Packets;
 

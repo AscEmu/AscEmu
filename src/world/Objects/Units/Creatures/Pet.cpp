@@ -40,7 +40,8 @@
 #include "Server/Packets/SmsgPetActionFeedback.h"
 #include "Server/Packets/SmsgPetLearnedSpell.h"
 #include "Server/Packets/SmsgPetUnlearnedSpell.h"
-#include "Server/Script/CreatureAIScript.h"
+#include "Server/Script/CreatureAIScript.hpp"
+#include "Server/Script/HookInterface.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 
 #if VERSION_STRING < Cata

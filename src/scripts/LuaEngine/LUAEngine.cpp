@@ -4,8 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "LUAEngine.h"
-#include "Server/Script/ScriptMgr.h"
-#include "Server/Script/ScriptSetup.h"
+#include "Server/Script/ScriptMgr.hpp"
+#include "Server/Script/ScriptSetup.hpp"
 #include "Server/World.h"
 #include "LuaMacros.h"
 #include "Objects/GameObjectProperties.hpp"
@@ -16,11 +16,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 #include "Objects/GameObject.h"
 #include "Management/ArenaTeam.hpp"
-#include "Server/Script/CreatureAIScript.h"
+#include "Server/Script/CreatureAIScript.hpp"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/Gossip/GossipScript.hpp"
 #include "Map/Management/MapMgr.hpp"
-#include "Server/Script/InstanceScript.h"
+#include "Server/Script/InstanceScript.hpp"
+#include "Server/Script/QuestScript.hpp"
 
 #ifdef __APPLE__
 #undef check

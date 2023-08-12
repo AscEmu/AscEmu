@@ -24,7 +24,8 @@
 #include "Management/Gossip/GossipScript.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Server/WorldSession.h"
-#include "Server/Script/CreatureAIScript.h"
+#include "Server/Script/CreatureAIScript.hpp"
+#include "Server/Script/QuestScript.hpp"
 
 class Quest_The_Ring_of_Blood_The_Final_Challenge : public QuestScript
 {

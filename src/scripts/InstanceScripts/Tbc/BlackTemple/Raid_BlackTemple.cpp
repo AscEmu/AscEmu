@@ -9,9 +9,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Gossip/GossipScript.hpp"
 #include "Map/Maps/MapScriptInterface.h"
-#include "Server/Script/CreatureAIScript.h"
+#include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"
-#include "Server/Script/InstanceScript.h"
+#include "Server/Script/InstanceScript.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Illidan Encounter Event Options

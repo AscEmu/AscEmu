@@ -20,12 +20,15 @@
 
 #include "Setup.h"
 #include "Management/ItemInterface.h"
+#include "Management/QuestLogEntry.hpp"
 #include "Management/QuestMgr.h"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Gossip/GossipScript.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Server/WorldSession.h"
 #include "Objects/Units/Creatures/Creature.h"
+#include "Server/Script/QuestScript.hpp"
+#include "Server/Script/ScriptMgr.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // quest #8304 - Dearest Natalia

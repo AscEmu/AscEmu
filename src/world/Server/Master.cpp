@@ -41,7 +41,7 @@
 #include "World.h"
 #include "Chat/ChatHandler.hpp"
 #include "Management/GameEventMgr.h"
-#include "Script/ScriptMgr.h"
+#include "Script/ScriptMgr.hpp"
 #include "Spell/SpellMgr.hpp"
 
 // DB version

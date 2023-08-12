@@ -13,10 +13,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/WorldMap.hpp"
 #include "Server/Packets/SmsgTransferPending.h"
 #include "Movement/Spline/Spline.h"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptMgr.hpp"
 #include "Server/Definitions.h"
 #include "Server/WorldSession.h"
-#include "Server/Script/InstanceScript.h"
+#include "Server/Script/InstanceScript.hpp"
 
 using namespace AscEmu::Packets;
 

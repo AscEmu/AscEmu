@@ -31,8 +31,8 @@
 #include "Server/ServerState.h"
 #include "StrandOfTheAncient/StrandOfTheAncient.h"
 #include "WarsongGulch/WarsongGulch.h"
-#include "Server/Script/ScriptMgr.h"
-#include "Server/Script/ScriptSetup.h"
+#include "Server/Script/ScriptMgr.hpp"
+#include "Server/Script/ScriptSetup.hpp"
 
 extern "C" SCRIPT_DECL void _exp_set_serverstate_singleton(ServerState* state)
 {

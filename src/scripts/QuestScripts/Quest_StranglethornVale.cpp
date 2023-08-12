@@ -25,7 +25,8 @@
 #include "Map/Maps/MapScriptInterface.h"
 #include "Movement/Spline/MoveSpline.h"
 #include "Server/WorldSession.h"
-#include "Server/Script/CreatureAIScript.h"
+#include "Server/Script/CreatureAIScript.hpp"
+#include "Server/Script/QuestScript.hpp"
 #include "Spell/SpellMgr.hpp"
 
 enum

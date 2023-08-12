@@ -17,12 +17,13 @@
  */
 
 #include "Setup.h"
+#include "Management/QuestLogEntry.hpp"
 #include "Management/QuestMgr.h"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Gossip/GossipScript.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Server/WorldSession.h"
-#include "Server/Script/CreatureAIScript.h"
+#include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"
 #include "Storage/MySQLDataStore.hpp"
 

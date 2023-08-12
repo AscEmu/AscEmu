@@ -18,7 +18,10 @@
  */
 
 #include "Setup.h"
+#include "Chat/ChatDefines.hpp"
 #include "Map/Maps/WorldMap.hpp"
+#include "Server/Script/QuestScript.hpp"
+#include "Server/Script/ScriptMgr.hpp"
 
 class Zenn_Foulhoof : public QuestScript
 {

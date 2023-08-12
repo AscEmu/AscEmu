@@ -20,7 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "LootDefines.hpp"
 #include "Objects/GameObject.h"
 #include "Objects/Units/Creatures/Creature.h"
-#include "Server/Script/CreatureAIScript.h"
+#include "Server/Script/CreatureAIScript.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"

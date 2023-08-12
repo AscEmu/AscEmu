@@ -20,7 +20,8 @@
 #include "Setup.h"
 #include "Management/ItemInterface.h"
 #include "Management/Gossip/GossipScript.hpp"
-#include "Server/Script/CreatureAIScript.h"
+#include "Server/Script/CreatureAIScript.hpp"
+#include "Server/Script/QuestScript.hpp"
 
 class WoodlandWalker : public CreatureAIScript
 {

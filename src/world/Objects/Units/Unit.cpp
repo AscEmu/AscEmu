@@ -49,7 +49,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgAttackStop.h"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Packets/SmsgMoveKnockBack.h"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptMgr.hpp"
 #include "Creatures/CreatureGroups.h"
 #include "Creatures/Summons/SummonHandler.hpp"
 #include "Management/ItemInterface.h"
@@ -60,11 +60,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/ItemDefines.hpp"
 #include "Server/Packets/SmsgAttackSwingBadFacing.h"
 #include "Server/Packets/SmsgSpellDamageShield.h"
-#include "Server/Script/CreatureAIScript.h"
+#include "Server/Script/CreatureAIScript.hpp"
 #include "Spell/Definitions/SpellLog.hpp"
 #include "Spell/Definitions/SpellSchoolConversionTable.hpp"
 #include "Objects/Transporter.hpp"
 #include "Server/World.h"
+#include "Server/Script/HookInterface.hpp"
 
 #if VERSION_STRING <= TBC
 #include "Server/Packets/SmsgUpdateAuraDuration.h"

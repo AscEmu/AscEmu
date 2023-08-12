@@ -21,7 +21,7 @@
 
 #include "Setup.h"
 #include "Map/Maps/MapScriptInterface.h"
-#include "Server/Script/CreatureAIScript.h"
+#include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"
 
 class PaladinDeadNPC : public CreatureAIScript

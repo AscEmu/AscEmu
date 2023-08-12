@@ -19,8 +19,10 @@
  */
 
 #include "Setup.h"
+#include "Management/Quest.h"
+#include "Management/QuestLogEntry.hpp"
 #include "Map/Maps/MapScriptInterface.h"
-#include "Server/Script/CreatureAIScript.h"
+#include "Server/Script/CreatureAIScript.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // On quest accept

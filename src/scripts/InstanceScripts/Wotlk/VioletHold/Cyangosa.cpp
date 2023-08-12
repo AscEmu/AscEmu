@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Cyangosa.hpp"
 
-#include "Server/Script/InstanceScript.h"
+#include "Server/Script/InstanceScript.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //  Moragg AI

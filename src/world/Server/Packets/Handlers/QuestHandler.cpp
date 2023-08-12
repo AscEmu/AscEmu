@@ -25,7 +25,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/Item.hpp"
 #include "Server/Packets/SmsgGossipComplete.h"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/HookInterface.hpp"
+#include "Server/Script/QuestScript.hpp"
+#include "Server/Script/ScriptMgr.hpp"
 
 using namespace AscEmu::Packets;
 

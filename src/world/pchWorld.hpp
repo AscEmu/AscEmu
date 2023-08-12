@@ -105,7 +105,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Server/LogonCommClient/LogonCommClient.h"
 #include "Server/Packets/SmsgMessageChat.h"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptMgr.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Spell/Spell.h"
 #include "Spell/SpellAuras.h"

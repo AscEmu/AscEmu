@@ -11,7 +11,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObject.h"
 #include "Server/WorldSession.h"
 #include "Server/Script/GameObjectAIScript.hpp"
-#include "Server/Script/InstanceScript.h"
+#include "Server/Script/InstanceScript.hpp"
+#include "Server/Script/ScriptMgr.hpp"
 
 class RagefireChasmInstanceScript : public InstanceScript
 {

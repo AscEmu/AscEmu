@@ -19,9 +19,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgGuildInvite.h"
 #include "Server/Packets/SmsgGuildEvent.h"
 #include "Server/Packets/SmsgMessageChat.h"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptMgr.hpp"
 #include "Server/Definitions.h"
 #include "Server/World.h"
+#include "Server/Script/HookInterface.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 
 #if VERSION_STRING >= Cata

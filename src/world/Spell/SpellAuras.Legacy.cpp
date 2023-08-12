@@ -45,7 +45,7 @@
 #include "Server/Packets/SmsgSetForceReactions.h"
 #include "Server/Packets/SmsgControlVehicle.h"
 #include "Server/Packets/SmsgCancelCombat.h"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptMgr.hpp"
 #include "Objects/Units/ThreatHandler.h"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Server/WorldSession.h"

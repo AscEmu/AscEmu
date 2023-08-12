@@ -19,9 +19,11 @@
  */
 
 #include "Setup.h"
+#include "Management/QuestLogEntry.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Movement/Spline/MoveSplineInit.h"
-#include "Server/Script/CreatureAIScript.h"
+#include "Server/Script/CreatureAIScript.hpp"
+#include "Server/Script/QuestScript.hpp"
 
 LocationVector const WaypointTheSummoning[] =
 {

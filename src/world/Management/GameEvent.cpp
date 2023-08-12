@@ -8,7 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Server/DatabaseDefinition.hpp"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/EventScript.hpp"
+#include "Server/Script/ScriptMgr.hpp"
 
 void GameEvent::CreateNPCs()
 {

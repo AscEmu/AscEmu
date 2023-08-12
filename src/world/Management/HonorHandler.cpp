@@ -25,7 +25,8 @@
 #include "Management/Battleground/Battleground.hpp"
 #include "Server/World.h"
 #include "Management/ObjectMgr.hpp"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/HookInterface.hpp"
+#include "Server/Script/ScriptMgr.hpp"
 #include "Spell/SpellMgr.hpp"
 
 void HonorHandler::AddHonorPointsToPlayer(Player* pPlayer, uint32 uAmount)

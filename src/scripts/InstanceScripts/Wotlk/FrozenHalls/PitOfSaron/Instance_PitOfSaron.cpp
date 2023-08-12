@@ -6,8 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Instance_PitOfSaron.h"
 
 #include "Setup.h"
-#include "Server/Script/CreatureAIScript.h"
-#include "Server/Script/InstanceScript.h"
+#include "Server/Script/CreatureAIScript.hpp"
+#include "Server/Script/InstanceScript.hpp"
 
 class InstancePitOfSaronScript : public InstanceScript
 {

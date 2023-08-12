@@ -6,7 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Raid_Firelands.h"
 
-#include "Server/Script/InstanceScript.h"
+#include "Server/Script/InstanceScript.hpp"
+#include "Server/Script/ScriptMgr.hpp"
 
 class FirelandsInstanceScript : public InstanceScript
 {

@@ -20,6 +20,7 @@
 
 #include "Setup.h"
 #include "Management/ItemInterface.h"
+#include "Server/Script/ScriptMgr.hpp"
 #include "Spell/Spell.h"
 
 enum

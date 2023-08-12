@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Objects/Units/Creatures/Pet.h"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptMgr.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
 #include "Map/Maps/InstanceMap.hpp"
 #include "Server/World.h"

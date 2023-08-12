@@ -18,7 +18,7 @@
 #pragma once
 
 #include "AEVersion.hpp"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptMgr.hpp"
 
 
 // Class spell handlers

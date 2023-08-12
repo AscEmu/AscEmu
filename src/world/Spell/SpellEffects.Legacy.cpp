@@ -70,7 +70,7 @@
 #include "Server/Packets/SmsgPlayerBound.h"
 #include "Server/Packets/MsgCorpseQuery.h"
 #include "Server/Packets/SmsgMessageChat.h"
-#include "Server/Script/CreatureAIScript.h"
+#include "Server/Script/CreatureAIScript.hpp"
 #include "VMapFactory.h"
 #include "VMapManager2.h"
 #include "Management/QuestMgr.h"
@@ -81,7 +81,7 @@
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"
-#include "Server/Script/InstanceScript.h"
+#include "Server/Script/InstanceScript.hpp"
 
 using namespace AscEmu::Packets;
 

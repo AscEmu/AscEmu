@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Management/MapMgr.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Chat/ChatDefines.hpp"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptMgr.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Management/ObjectMgr.hpp"
@@ -29,7 +29,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Guild/GuildMgr.hpp"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
-#include "Server/Script/CreatureAIScript.h"
+#include "Server/Script/CreatureAIScript.hpp"
+#include "Server/Script/HookInterface.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 
 #if VERSION_STRING >= Cata

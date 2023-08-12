@@ -130,8 +130,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgTransferPending.h"
 #include "Server/Packets/SmsgTutorialFlags.h"
 #include "Server/Packets/SmsgUpdateWorldState.h"
-#include "Server/Script/CreatureAIScript.h"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/CreatureAIScript.hpp"
+#include "Server/Script/ScriptMgr.hpp"
 #include "Server/Warden/SpeedDetector.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/WorldStrings.h"
@@ -142,7 +142,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/WorldSessionLog.hpp"
-#include "Server/Script/InstanceScript.h"
+#include "Server/Script/HookInterface.hpp"
+#include "Server/Script/InstanceScript.hpp"
+#include "Server/Script/QuestScript.hpp"
 
 using namespace AscEmu::Packets;
 using namespace MapManagement::AreaManagement;

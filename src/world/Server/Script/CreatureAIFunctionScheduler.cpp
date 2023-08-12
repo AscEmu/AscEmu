@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "CreatureAIFunctionScheduler.hpp"
 #include "CreatureAIFunction.hpp"
-#include "CreatureAIScript.h"
+#include "CreatureAIScript.hpp"
 
 CreatureAIFunctionScheduler::CreatureAIFunctionScheduler(CreatureAIScript* script) : mOwner(script) { }
 

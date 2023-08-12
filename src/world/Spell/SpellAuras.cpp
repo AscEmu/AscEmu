@@ -11,7 +11,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellTypes.hpp"
 #include "SpellMgr.hpp"
 #include "Definitions/SpellEffects.hpp"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/HookInterface.hpp"
+#include "Server/Script/ScriptMgr.hpp"
 
 extern pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS];
 extern const char* SpellAuraNames[TOTAL_SPELL_AURAS];

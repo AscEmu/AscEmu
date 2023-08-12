@@ -14,10 +14,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WorldStrings.h"
 #include "Management/Battleground/Battleground.hpp"
 #include "Map/Maps/WorldMap.hpp"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptMgr.hpp"
 #include "Server/Packets/SmsgTransferAborted.h"
 #include "Server/Packets/SmsgRaidGroupOnly.h"
-#include "Server/Script/InstanceScript.h"
+#include "Server/Script/HookInterface.hpp"
+#include "Server/Script/InstanceScript.hpp"
 
 using namespace AscEmu::Packets;
 

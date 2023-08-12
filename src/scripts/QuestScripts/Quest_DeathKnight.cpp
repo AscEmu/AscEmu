@@ -20,8 +20,9 @@
 #include "Setup.h"
 #include "Management/Gossip/GossipScript.hpp"
 #include "Map/Maps/MapScriptInterface.h"
-#include "Server/Script/CreatureAIScript.h"
+#include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"
+#include "Server/Script/QuestScript.hpp"
 
 enum 
 {

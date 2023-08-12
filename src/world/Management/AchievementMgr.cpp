@@ -25,7 +25,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgCriteriaDeleted.h"
 #include "Server/Packets/SmsgCriteriaUpdate.h"
 #include "Server/Packets/SmsgMessageChat.h"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptMgr.hpp"
 
 using namespace AscEmu::Packets;
 

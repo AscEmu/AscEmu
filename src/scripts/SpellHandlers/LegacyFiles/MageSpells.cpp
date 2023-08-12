@@ -18,7 +18,7 @@
  */
 
 #include "Setup.h"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptMgr.hpp"
 #include "Spell/Spell.h"
 #include "Spell/SpellAuras.h"
 

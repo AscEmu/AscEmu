@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "SpellMgr.hpp"
 #include "SpellProc.hpp"
 #include "Definitions/ProcFlags.hpp"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptMgr.hpp"
 
 void SpellProc::init(Object* /*obj*/) { }
 

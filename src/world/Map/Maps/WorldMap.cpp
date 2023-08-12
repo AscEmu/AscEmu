@@ -13,7 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Macros/MapsMacros.hpp"
 #include "shared/WoWGuid.h"
 #include "MapScriptInterface.h"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptMgr.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "InstanceMap.hpp"
 #include "Server/Packets/SmsgUpdateWorldState.h"
@@ -32,7 +32,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <ctime>
 
-#include "Server/Script/InstanceScript.h"
+#include "Server/Script/InstanceScript.hpp"
 
 using namespace AscEmu::Packets;
 using namespace AscEmu::Threading;

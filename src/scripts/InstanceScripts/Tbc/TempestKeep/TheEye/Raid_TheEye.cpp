@@ -7,8 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Management/Faction.h"
-#include "Server/Script/CreatureAIScript.h"
-#include "Server/Script/InstanceScript.h"
+#include "Server/Script/CreatureAIScript.hpp"
+#include "Server/Script/InstanceScript.hpp"
 
 class TheEyeInstanceScript : public InstanceScript
 {

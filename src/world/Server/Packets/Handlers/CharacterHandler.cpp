@@ -34,8 +34,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"
 #include "Server/WorldSessionLog.hpp"
+#include "Server/Script/HookInterface.hpp"
 #include "Storage/WDB/WDBStores.hpp"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptMgr.hpp"
 #include "Utilities/Strings.hpp"
 
 using namespace AscEmu::Packets;

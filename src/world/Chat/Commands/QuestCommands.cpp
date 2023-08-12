@@ -30,6 +30,8 @@
 #include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
+#include "Server/Script/HookInterface.hpp"
+#include "Server/Script/QuestScript.hpp"
 #include "Storage/MySQLDataStore.hpp"
 
 class ChatHandler;

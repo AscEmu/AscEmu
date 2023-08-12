@@ -46,6 +46,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "scripts/InstanceScripts/Setup.h"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
+#include "Server/Script/HookInterface.hpp"
 #include "Storage/WorldStrings.h"
 
 #if VERSION_STRING < Cata

@@ -20,7 +20,8 @@
  */
 
 #include "Setup.h"
-#include "Server/Script/CreatureAIScript.h"
+#include "Management/QuestLogEntry.hpp"
+#include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"
 
 class RingoDeadNPC : public CreatureAIScript

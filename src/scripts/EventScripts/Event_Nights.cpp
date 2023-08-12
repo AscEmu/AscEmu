@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Event_Nights.h"
 
 #include "Setup.h"
+#include "Server/Script/EventScript.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Nights

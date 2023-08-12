@@ -5,10 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "CombatHandler.hpp"
 #include "Players/Player.hpp"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptMgr.hpp"
 #include "Unit.hpp"
 #include "UnitDefines.hpp"
 #include "Creatures/AIInterface.h"
+#include "Server/Script/HookInterface.hpp"
 
 CombatHandler::CombatHandler(Unit* owner) : m_owner(owner)
 {}

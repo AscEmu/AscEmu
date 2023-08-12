@@ -5,9 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 
+#include "Common.hpp"
 #include "Server/ServerState.h"
-#include "Server/Script/ScriptMgr.h"
-#include "Server/Script/ScriptSetup.h"
+#include "Server/Script/ScriptMgr.hpp"
+#include "Server/Script/ScriptSetup.hpp"
 
 extern "C" SCRIPT_DECL void _exp_set_serverstate_singleton(ServerState* state)
 {

@@ -19,7 +19,8 @@
  */
 
 #include "Setup.h"
-#include "Server/Script/CreatureAIScript.h"
+#include "Management/QuestLogEntry.hpp"
+#include "Server/Script/CreatureAIScript.hpp"
 
 class Professor_Phizzlethorpe : public CreatureAIScript
 {

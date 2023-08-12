@@ -48,7 +48,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgItemQuerySingle.h"
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
 #include "Server/Packets/SmsgBuyFailed.h"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptMgr.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 
 using namespace AscEmu::Packets;

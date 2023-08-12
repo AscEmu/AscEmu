@@ -19,8 +19,10 @@
 #include "Setup.h"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Gossip/GossipScript.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSession.h"
 #include "Server/Script/GameObjectAIScript.hpp"
+#include "Server/Script/ScriptMgr.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // The Gifts of Loken

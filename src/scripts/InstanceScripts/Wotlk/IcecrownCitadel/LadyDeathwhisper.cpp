@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "LadyDeathwhisper.hpp"
 #include "Raid_IceCrownCitadel.hpp"
-#include "Server/Script/InstanceScript.h"
+#include "Server/Script/InstanceScript.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Boss: Lady Deathwhisper

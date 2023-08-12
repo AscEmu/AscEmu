@@ -21,7 +21,7 @@
 #include "Management/ItemInterface.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Objects/Item.hpp"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptMgr.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/SpellIsFlags.hpp"

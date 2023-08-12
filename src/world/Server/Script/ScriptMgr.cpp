@@ -1,29 +1,14 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
+
+#include "ScriptMgr.hpp"
 
 #include "AEVersion.hpp"
 #include "WorldConf.h"
-#include "ScriptMgr.h"
 #include "CommonTypes.hpp"
-#include "CreatureAIScript.h"
+#include "CreatureAIScript.hpp"
 #include "Management/GameEvent.h"
 #include "Management/ObjectMgr.hpp"
 #include "Management/LFG/LFGMgr.hpp"
@@ -40,6 +25,7 @@
 #include <git_version.h>
 
 #include "AchievementScript.hpp"
+#include "QuestScript.hpp"
 #include "Management/Gossip/GossipScript.hpp"
 #include "Server/ServerState.h"
 
@@ -293,10 +279,8 @@ SpellScriptExecuteState ScriptMgr::callScriptedSpellProcCastSpell(SpellProc* spe
 AchievementCriteriaScript* ScriptMgr::getAchievementCriteriaScript(uint32_t criteriaId) const
 {
     for (const auto& itr : _achievementCriteriaScripts)
-    {
         if (itr.first == criteriaId)
             return itr.second;
-    }
 
     return nullptr;
 }
@@ -310,7 +294,7 @@ void ScriptMgr::register_achievement_criteria_script(uint32_t criteriaId, Achiev
         return;
     }
 
-    if (_achievementCriteriaScripts.find(criteriaId) != _achievementCriteriaScripts.end())
+    if (_achievementCriteriaScripts.contains(criteriaId))
     {
         sLogger.debug("ScriptMgr tried to register a script for achievement criteria id %u but this criteria has already one.", criteriaId);
         return;
@@ -322,19 +306,15 @@ void ScriptMgr::register_achievement_criteria_script(uint32_t criteriaId, Achiev
 void ScriptMgr::register_achievement_criteria_script(uint32_t* criteriaIds, AchievementCriteriaScript* acs)
 {
     for (uint32_t i = 0; criteriaIds[i] != 0; ++i)
-    {
         register_achievement_criteria_script(criteriaIds[i], acs);
-    }
 }
 #endif
 
 SpellScript* ScriptMgr::getSpellScript(uint32_t spellId) const
 {
     for (const auto& itr : _spellScripts)
-    {
         if (itr.first == spellId)
             return itr.second;
-    }
 
     return nullptr;
 }
@@ -375,14 +355,12 @@ void ScriptMgr::register_spell_script(uint32_t spellId, SpellScript* ss, bool re
 void ScriptMgr::register_spell_script(uint32_t* spellIds, SpellScript* ss)
 {
     for (uint32_t i = 0; spellIds[i] != 0; ++i)
-    {
         register_spell_script(spellIds[i], ss);
-    }
 }
 
 void ScriptMgr::_register_spell_script(uint32_t spellId, SpellScript* ss)
 {
-    if (_spellScripts.find(spellId) != _spellScripts.end())
+    if (_spellScripts.contains(spellId))
     {
         sLogger.debug("ScriptMgr tried to register a script for spell id %u but this spell has already one.", spellId);
         return;
@@ -391,19 +369,16 @@ void ScriptMgr::_register_spell_script(uint32_t spellId, SpellScript* ss)
     _spellScripts[spellId] = ss;
 }
 
-// MIT End
-// APGL Start
-
 struct ScriptingEngine_dl
 {
     Arcemu::DynLib* dl;
     exp_script_register InitializeCall;
-    uint32 Type;
+    uint32_t Type;
 
     ScriptingEngine_dl()
     {
-        dl = NULL;
-        InitializeCall = NULL;
+        dl = nullptr;
+        InitializeCall = nullptr;
         Type = 0;
     }
 };
@@ -546,7 +521,7 @@ void ScriptMgr::DumpUnimplementedSpells()
     std::ofstream of;
 
     sLogger.info("Dumping IDs for spells with unimplemented dummy/script effect(s)");
-    uint32 count = 0;
+    uint32_t count = 0;
 
     of.open("unimplemented1.txt");
 
@@ -637,33 +612,31 @@ CreatureAIScript* ScriptMgr::getCreatureAIScript(Creature* pCreature) const
     return nullptr;
 }
 
-void ScriptMgr::register_creature_script(uint32 entry, exp_create_creature_ai callback)
+void ScriptMgr::register_creature_script(uint32_t entry, exp_create_creature_ai callback)
 {
     std::lock_guard lock(m_creaturesMutex);
 
-    if (_creatures.find(entry) != _creatures.end())
+    if (_creatures.contains(entry))
         sLogger.debug("ScriptMgr tried to register a script for Creature ID: %u but this creature has already one!", entry);
 
     _creatures.insert(CreatureCreateMap::value_type(entry, callback));
 }
 
-void ScriptMgr::register_gameobject_script(uint32 entry, exp_create_gameobject_ai callback)
+void ScriptMgr::register_gameobject_script(uint32_t entry, exp_create_gameobject_ai callback)
 {
-    if (_gameobjects.find(entry) != _gameobjects.end())
+    if (_gameobjects.contains(entry))
         sLogger.debug("ScriptMgr tried to register a script for GameObject ID: %u but this go has already one.", entry);
 
     _gameobjects.insert(GameObjectCreateMap::value_type(entry, callback));
 }
 
-void ScriptMgr::register_dummy_aura(uint32 entry, exp_handle_dummy_aura callback)
+void ScriptMgr::register_dummy_aura(uint32_t entry, exp_handle_dummy_aura callback)
 {
-    if (_auras.find(entry) != _auras.end())
-    {
+    if (_auras.contains(entry))
         sLogger.debug("ScriptMgr tried to register a script for Aura ID: %u but this aura has already one.", entry);
-    }
 
     SpellInfo const* sp = sSpellMgr.getSpellInfo(entry);
-    if (sp == NULL)
+    if (sp == nullptr)
     {
         sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "ScriptMgr tried to register a dummy aura handler for invalid Spell ID: %u.", entry);
         return;
@@ -677,16 +650,16 @@ void ScriptMgr::register_dummy_aura(uint32 entry, exp_handle_dummy_aura callback
     _auras.insert(HandleDummyAuraMap::value_type(entry, callback));
 }
 
-void ScriptMgr::register_dummy_spell(uint32 entry, exp_handle_dummy_spell callback)
+void ScriptMgr::register_dummy_spell(uint32_t entry, exp_handle_dummy_spell callback)
 {
-    if (_spells.find(entry) != _spells.end())
+    if (_spells.contains(entry))
     {
         sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "ScriptMgr tried to register a script for Spell ID: %u but this spell has already one", entry);
         return;
     }
 
     SpellInfo const* sp = sSpellMgr.getSpellInfo(entry);
-    if (sp == NULL)
+    if (sp == nullptr)
     {
         sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "ScriptMgr tried to register a dummy handler for invalid Spell ID: %u.", entry);
         return;
@@ -698,12 +671,12 @@ void ScriptMgr::register_dummy_spell(uint32 entry, exp_handle_dummy_spell callba
     _spells.insert(HandleDummySpellMap::value_type(entry, callback));
 }
 
-void ScriptMgr::register_quest_script(uint32 entry, QuestScript* qs)
+void ScriptMgr::register_quest_script(uint32_t entry, QuestScript* qs)
 {
     QuestProperties const* q = sMySQLStore.getQuestProperties(entry);
     if (q != nullptr)
     {
-        if (q->pQuestScript != NULL)
+        if (q->pQuestScript != nullptr)
             sLogger.debug("ScriptMgr tried to register a script for Quest ID: %u but this quest has already one.", entry);
 
         const_cast<QuestProperties*>(q)->pQuestScript = qs;
@@ -712,7 +685,7 @@ void ScriptMgr::register_quest_script(uint32 entry, QuestScript* qs)
     _questscripts.insert(qs);
 }
 
-void ScriptMgr::register_event_script(uint32 entry, EventScript* es)
+void ScriptMgr::register_event_script(uint32_t entry, EventScript* es)
 {
     auto gameEvent = sGameEventMgr.GetEventById(entry);
     if (gameEvent != nullptr)
@@ -728,57 +701,46 @@ void ScriptMgr::register_event_script(uint32 entry, EventScript* es)
     }
 }
 
-void ScriptMgr::register_instance_script(uint32 pMapId, exp_create_instance_ai pCallback)
+void ScriptMgr::register_instance_script(uint32_t pMapId, exp_create_instance_ai pCallback)
 {
-    if (mInstances.find(pMapId) != mInstances.end())
+    if (mInstances.contains(pMapId))
         sLogger.debug("ScriptMgr tried to register a script for Instance ID: %u but this instance already has one.", pMapId);
 
     mInstances.insert(InstanceCreateMap::value_type(pMapId, pCallback));
-};
+}
 
-void ScriptMgr::register_creature_script(uint32* entries, exp_create_creature_ai callback)
+void ScriptMgr::register_creature_script(uint32_t* entries, exp_create_creature_ai callback)
 {
-    for (uint32 y = 0; entries[y] != 0; y++)
-    {
+    for (uint32_t y = 0; entries[y] != 0; y++)
         register_creature_script(entries[y], callback);
-    }
-};
+}
 
-void ScriptMgr::register_gameobject_script(uint32* entries, exp_create_gameobject_ai callback)
+void ScriptMgr::register_gameobject_script(uint32_t* entries, exp_create_gameobject_ai callback)
 {
-    for (uint32 y = 0; entries[y] != 0; y++)
-    {
+    for (uint32_t y = 0; entries[y] != 0; y++)
         register_gameobject_script(entries[y], callback);
-    }
-};
+}
 
-void ScriptMgr::register_dummy_aura(uint32* entries, exp_handle_dummy_aura callback)
+void ScriptMgr::register_dummy_aura(uint32_t* entries, exp_handle_dummy_aura callback)
 {
-    for (uint32 y = 0; entries[y] != 0; y++)
-    {
+    for (uint32_t y = 0; entries[y] != 0; y++)
         register_dummy_aura(entries[y], callback);
-    }
-};
+}
 
-void ScriptMgr::register_dummy_spell(uint32* entries, exp_handle_dummy_spell callback)
+void ScriptMgr::register_dummy_spell(uint32_t* entries, exp_handle_dummy_spell callback)
 {
-    for (uint32 y = 0; entries[y] != 0; y++)
-    {
+    for (uint32_t y = 0; entries[y] != 0; y++)
         register_dummy_spell(entries[y], callback);
-    }
-};
+}
 
-void ScriptMgr::register_script_effect(uint32* entries, exp_handle_script_effect callback)
+void ScriptMgr::register_script_effect(uint32_t* entries, exp_handle_script_effect callback)
 {
-    for (uint32 y = 0; entries[y] != 0; y++)
-    {
+    for (uint32_t y = 0; entries[y] != 0; y++)
         register_script_effect(entries[y], callback);
-    }
-};
+}
 
-void ScriptMgr::register_script_effect(uint32 entry, exp_handle_script_effect callback)
+void ScriptMgr::register_script_effect(uint32_t entry, exp_handle_script_effect callback)
 {
-
     HandleScriptEffectMap::iterator itr = SpellScriptEffects.find(entry);
 
     if (itr != SpellScriptEffects.end())
@@ -788,7 +750,7 @@ void ScriptMgr::register_script_effect(uint32 entry, exp_handle_script_effect ca
     }
 
     SpellInfo const* sp = sSpellMgr.getSpellInfo(entry);
-    if (sp == NULL)
+    if (sp == nullptr)
     {
         sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "ScriptMgr tried to register a script effect handler for invalid Spell %u.", entry);
         return;
@@ -797,42 +759,42 @@ void ScriptMgr::register_script_effect(uint32 entry, exp_handle_script_effect ca
     if (!sp->hasEffect(SPELL_EFFECT_SCRIPT_EFFECT) && !sp->hasEffect(SPELL_EFFECT_SEND_EVENT))
         sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "ScriptMgr registered a script effect handler for Spell ID: %u (%s), but spell has no scripted effect!", entry, sp->getName().c_str());
 
-    SpellScriptEffects.insert(std::pair< uint32, exp_handle_script_effect >(entry, callback));
+    SpellScriptEffects.insert(std::pair< uint32_t, exp_handle_script_effect >(entry, callback));
 }
 
 CreatureAIScript* ScriptMgr::CreateAIScriptClassForEntry(Creature* pCreature)
 {
-    uint32 entry = pCreature->getEntry();
+    uint32_t entry = pCreature->getEntry();
 
     std::lock_guard lock(m_creaturesMutex);
     CreatureCreateMap::iterator itr = _creatures.find(entry);
     if (itr == _creatures.end())
-        return NULL;
+        return nullptr;
 
     exp_create_creature_ai function_ptr = itr->second;
     return (function_ptr)(pCreature);
 }
 
-GameObjectAIScript* ScriptMgr::CreateAIScriptClassForGameObject(uint32 /*uEntryId*/, GameObject* pGameObject)
+GameObjectAIScript* ScriptMgr::CreateAIScriptClassForGameObject(uint32_t /*uEntryId*/, GameObject* pGameObject)
 {
     GameObjectCreateMap::iterator itr = _gameobjects.find(pGameObject->getEntry());
     if (itr == _gameobjects.end())
-        return NULL;
+        return nullptr;
 
     exp_create_gameobject_ai function_ptr = itr->second;
     return (function_ptr)(pGameObject);
 }
 
-InstanceScript* ScriptMgr::CreateScriptClassForInstance(uint32 /*pMapId*/, WorldMap* pMapMgr)
+InstanceScript* ScriptMgr::CreateScriptClassForInstance(uint32_t /*pMapId*/, WorldMap* pMapMgr)
 {
     InstanceCreateMap::iterator Iter = mInstances.find(pMapMgr->getBaseMap()->getMapId());
     if (Iter == mInstances.end())
-        return NULL;
+        return nullptr;
     exp_create_instance_ai function_ptr = Iter->second;
     return (function_ptr)(pMapMgr);
-};
+}
 
-bool ScriptMgr::CallScriptedDummySpell(uint32 uSpellId, uint8_t effectIndex, Spell* pSpell)
+bool ScriptMgr::CallScriptedDummySpell(uint32_t uSpellId, uint8_t effectIndex, Spell* pSpell)
 {
     HandleDummySpellMap::iterator itr = _spells.find(uSpellId);
     if (itr == _spells.end())
@@ -842,7 +804,7 @@ bool ScriptMgr::CallScriptedDummySpell(uint32 uSpellId, uint8_t effectIndex, Spe
     return (function_ptr)(effectIndex, pSpell);
 }
 
-bool ScriptMgr::HandleScriptedSpellEffect(uint32 SpellId, uint8_t effectIndex, Spell* s)
+bool ScriptMgr::HandleScriptedSpellEffect(uint32_t SpellId, uint8_t effectIndex, Spell* s)
 {
     HandleScriptEffectMap::iterator itr = SpellScriptEffects.find(SpellId);
     if (itr == SpellScriptEffects.end())
@@ -852,7 +814,7 @@ bool ScriptMgr::HandleScriptedSpellEffect(uint32 SpellId, uint8_t effectIndex, S
     return (ptr)(effectIndex, s);
 }
 
-bool ScriptMgr::CallScriptedDummyAura(uint32 uSpellId, uint8_t effectIndex, Aura* pAura, bool apply)
+bool ScriptMgr::CallScriptedDummyAura(uint32_t uSpellId, uint8_t effectIndex, Aura* pAura, bool apply)
 {
     HandleDummyAuraMap::iterator itr = _auras.find(uSpellId);
     if (itr == _auras.end())
@@ -870,22 +832,10 @@ bool ScriptMgr::CallScriptedItem(Item* pItem, Player* pPlayer)
         script->onHello(pItem, pPlayer);
         return true;
     }
+
     return false;
 }
 
-
-//////////////////////////////////////////////////////////////////////////////////////////
-//Class TargetType
-TargetType::TargetType(uint32_t pTargetGen, TargetFilter pTargetFilter, uint32_t pMinTargetNumber, uint32_t pMaxTargetNumber)
-{
-    mTargetGenerator = pTargetGen;
-    mTargetFilter = pTargetFilter;
-    mTargetNumber[0] = pMinTargetNumber;    // Unused array for now
-    mTargetNumber[1] = pMaxTargetNumber;
-}
-
-
-/* Hook Stuff */
 void ScriptMgr::register_hook(ServerHookEvents event, void* function_pointer)
 {
     if (event < NUM_SERVER_HOOKS)
@@ -894,48 +844,48 @@ void ScriptMgr::register_hook(ServerHookEvents event, void* function_pointer)
         sLogger.failure("ScriptMgr::register_hook tried to register invalid event %u", event);
 }
 
-bool ScriptMgr::has_creature_script(uint32 entry) const
+bool ScriptMgr::has_creature_script(uint32_t entry) const
 {
-    return (_creatures.find(entry) != _creatures.end());
+    return _creatures.contains(entry);
 }
 
-bool ScriptMgr::has_gameobject_script(uint32 entry) const
+bool ScriptMgr::has_gameobject_script(uint32_t entry) const
 {
-    return (_gameobjects.find(entry) != _gameobjects.end());
+    return _gameobjects.contains(entry);
 }
 
-bool ScriptMgr::has_dummy_aura_script(uint32 entry) const
+bool ScriptMgr::has_dummy_aura_script(uint32_t entry) const
 {
-    return (_auras.find(entry) != _auras.end());
+    return _auras.contains(entry);
 }
 
-bool ScriptMgr::has_dummy_spell_script(uint32 entry) const
+bool ScriptMgr::has_dummy_spell_script(uint32_t entry) const
 {
-    return (_spells.find(entry) != _spells.end());
+    return _spells.contains(entry);
 }
 
-bool ScriptMgr::has_script_effect(uint32 entry) const
+bool ScriptMgr::has_script_effect(uint32_t entry) const
 {
-    return (SpellScriptEffects.find(entry) != SpellScriptEffects.end());
+    return SpellScriptEffects.contains(entry);
 }
 
-bool ScriptMgr::has_instance_script(uint32 id) const
+bool ScriptMgr::has_instance_script(uint32_t id) const
 {
-    return (mInstances.find(id) != mInstances.end());
+    return mInstances.contains(id);
 }
 
 bool ScriptMgr::has_hook(ServerHookEvents evt, void* ptr) const
 {
-    return (_hooks[evt].size() != 0 && _hooks[evt].find(ptr) != _hooks[evt].end());
+    return _hooks[evt].size() != 0 && _hooks[evt].contains(ptr);
 }
 
-bool ScriptMgr::has_quest_script(uint32 entry) const
+bool ScriptMgr::has_quest_script(uint32_t entry) const
 {
     QuestProperties const* q = sMySQLStore.getQuestProperties(entry);
-    return (q == NULL || q->pQuestScript != NULL);
+    return q == nullptr || q->pQuestScript != nullptr;
 }
 
-void ScriptMgr::register_creature_gossip(uint32 entry, GossipScript* script)
+void ScriptMgr::register_creature_gossip(uint32_t entry, GossipScript* script)
 {
     const auto itr = creaturegossip_.find(entry);
     if (itr == creaturegossip_.end())
@@ -944,12 +894,12 @@ void ScriptMgr::register_creature_gossip(uint32 entry, GossipScript* script)
     _customgossipscripts.insert(script);
 }
 
-bool ScriptMgr::has_creature_gossip(uint32 entry) const
+bool ScriptMgr::has_creature_gossip(uint32_t entry) const
 {
-    return creaturegossip_.find(entry) != creaturegossip_.end();
+    return creaturegossip_.contains(entry);
 }
 
-GossipScript* ScriptMgr::get_creature_gossip(uint32 entry) const
+GossipScript* ScriptMgr::get_creature_gossip(uint32_t entry) const
 {
     const auto itr = creaturegossip_.find(entry);
     if (itr != creaturegossip_.end())
@@ -957,7 +907,7 @@ GossipScript* ScriptMgr::get_creature_gossip(uint32 entry) const
     return nullptr;
 }
 
-void ScriptMgr::register_item_gossip(uint32 entry, GossipScript* script)
+void ScriptMgr::register_item_gossip(uint32_t entry, GossipScript* script)
 {
     const auto itr = itemgossip_.find(entry);
     if (itr == itemgossip_.end())
@@ -966,7 +916,7 @@ void ScriptMgr::register_item_gossip(uint32 entry, GossipScript* script)
     _customgossipscripts.insert(script);
 }
 
-void ScriptMgr::register_go_gossip(uint32 entry, GossipScript* script)
+void ScriptMgr::register_go_gossip(uint32_t entry, GossipScript* script)
 {
     const auto itr = gogossip_.find(entry);
     if (itr == gogossip_.end())
@@ -975,17 +925,17 @@ void ScriptMgr::register_go_gossip(uint32 entry, GossipScript* script)
     _customgossipscripts.insert(script);
 }
 
-bool ScriptMgr::has_item_gossip(uint32 entry) const
+bool ScriptMgr::has_item_gossip(uint32_t entry) const
 {
-    return itemgossip_.find(entry) != itemgossip_.end();
+    return itemgossip_.contains(entry);
 }
 
-bool ScriptMgr::has_go_gossip(uint32 entry) const
+bool ScriptMgr::has_go_gossip(uint32_t entry) const
 {
-    return gogossip_.find(entry) != gogossip_.end();
+    return gogossip_.contains(entry);
 }
 
-GossipScript* ScriptMgr::get_go_gossip(uint32 entry) const
+GossipScript* ScriptMgr::get_go_gossip(uint32_t entry) const
 {
     const auto itr = gogossip_.find(entry);
     if (itr != gogossip_.end())
@@ -993,11 +943,12 @@ GossipScript* ScriptMgr::get_go_gossip(uint32 entry) const
     return nullptr;
 }
 
-GossipScript* ScriptMgr::get_item_gossip(uint32 entry) const
+GossipScript* ScriptMgr::get_item_gossip(uint32_t entry) const
 {
     const auto itr = itemgossip_.find(entry);
     if (itr != itemgossip_.end())
         return itr->second;
+
     return nullptr;
 }
 
@@ -1012,13 +963,13 @@ void ScriptMgr::ReloadScriptEngines()
         Arcemu::DynLib* dl = *itr;
 
         version_function = reinterpret_cast<exp_get_script_type>(dl->GetAddressForSymbol("_exp_get_script_type"));
-        if (version_function == NULL)
+        if (version_function == nullptr)
             continue;
 
         if ((version_function() & SCRIPT_TYPE_SCRIPT_ENGINE) != 0)
         {
             engine_reloadfunc = reinterpret_cast<exp_engine_reload>(dl->GetAddressForSymbol("_export_engine_reload"));
-            if (engine_reloadfunc != NULL)
+            if (engine_reloadfunc != nullptr)
                 engine_reloadfunc();
         }
     }
@@ -1035,281 +986,14 @@ void ScriptMgr::UnloadScriptEngines()
         Arcemu::DynLib* dl = *itr;
 
         version_function = reinterpret_cast<exp_get_script_type>(dl->GetAddressForSymbol("_exp_get_script_type"));
-        if (version_function == NULL)
+        if (version_function == nullptr)
             continue;
 
         if ((version_function() & SCRIPT_TYPE_SCRIPT_ENGINE) != 0)
         {
             engine_unloadfunc = reinterpret_cast<exp_engine_unload>(dl->GetAddressForSymbol("_exp_engine_unload"));
-            if (engine_unloadfunc != NULL)
+            if (engine_unloadfunc != nullptr)
                 engine_unloadfunc();
         }
     }
-}
-
-/* Hook Implementations */
-HookInterface& HookInterface::getInstance()
-{
-    static HookInterface mInstance;
-    return mInstance;
-}
-
-bool HookInterface::OnNewCharacter(uint32 Race, uint32 Class, WorldSession* Session, const char* Name)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_NEW_CHARACTER];
-    bool ret_val = true;
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-    {
-        bool rv = ((tOnNewCharacter)* itr)(Race, Class, Session, Name);
-        if (rv == false)  // never set ret_val back to true, once it's false
-            ret_val = false;
-    }
-    return ret_val;
-}
-
-void HookInterface::OnKillPlayer(Player* pPlayer, Player* pVictim)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_KILL_PLAYER];
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-        ((tOnKillPlayer)*itr)(pPlayer, pVictim);
-}
-
-void HookInterface::OnFirstEnterWorld(Player* pPlayer)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_FIRST_ENTER_WORLD];
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-        ((tOnFirstEnterWorld)*itr)(pPlayer);
-}
-
-void HookInterface::OnCharacterCreate(Player* pPlayer)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_CHARACTER_CREATE];
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-        ((tOCharacterCreate)*itr)(pPlayer);
-}
-
-void HookInterface::OnEnterWorld(Player* pPlayer)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_ENTER_WORLD];
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-        ((tOnEnterWorld)*itr)(pPlayer);
-}
-
-void HookInterface::OnGuildCreate(Player* pLeader, Guild* pGuild)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_GUILD_CREATE];
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-        ((tOnGuildCreate)*itr)(pLeader, pGuild);
-}
-
-void HookInterface::OnGuildJoin(Player* pPlayer, Guild* pGuild)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_GUILD_JOIN];
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-        ((tOnGuildJoin)*itr)(pPlayer, pGuild);
-}
-
-void HookInterface::OnDeath(Player* pPlayer)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_DEATH];
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-        ((tOnDeath)*itr)(pPlayer);
-}
-
-bool HookInterface::OnRepop(Player* pPlayer)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_REPOP];
-    bool ret_val = true;
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-    {
-        bool rv = ((tOnRepop)* itr)(pPlayer);
-        if (rv == false)  // never set ret_val back to true, once it's false
-            ret_val = false;
-    }
-    return ret_val;
-}
-
-void HookInterface::OnEmote(Player* pPlayer, uint32 Emote, Unit* pUnit)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_EMOTE];
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-        ((tOnEmote)*itr)(pPlayer, Emote, pUnit);
-}
-
-void HookInterface::OnEnterCombat(Player* pPlayer, Unit* pTarget)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_ENTER_COMBAT];
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-        ((tOnEnterCombat)*itr)(pPlayer, pTarget);
-}
-
-bool HookInterface::OnCastSpell(Player* pPlayer, SpellInfo const* pSpell, Spell* spell)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_CAST_SPELL];
-    bool ret_val = true;
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-    {
-        bool rv = ((tOnCastSpell)* itr)(pPlayer, pSpell, spell);
-        if (rv == false)  // never set ret_val back to true, once it's false
-            ret_val = false;
-    }
-    return ret_val;
-}
-
-bool HookInterface::OnLogoutRequest(Player* pPlayer)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_LOGOUT_REQUEST];
-    bool ret_val = true;
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-    {
-        bool rv = ((tOnLogoutRequest)* itr)(pPlayer);
-        if (rv == false)  // never set ret_val back to true, once it's false
-            ret_val = false;
-    }
-    return ret_val;
-}
-
-void HookInterface::OnLogout(Player* pPlayer)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_LOGOUT];
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-        ((tOnLogout)*itr)(pPlayer);
-}
-
-void HookInterface::OnQuestAccept(Player* pPlayer, QuestProperties const* pQuest, Object* pQuestGiver)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_QUEST_ACCEPT];
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-        ((tOnQuestAccept)*itr)(pPlayer, pQuest, pQuestGiver);
-}
-
-void HookInterface::OnZone(Player* pPlayer, uint32 zone, uint32 oldZone)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_ZONE];
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-        ((tOnZone)*itr)(pPlayer, zone, oldZone);
-}
-
-bool HookInterface::OnChat(Player* pPlayer, uint32 type, uint32 lang, const char* message, const char* misc)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_CHAT];
-    bool ret_val = true;
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-    {
-        bool rv = ((tOnChat)* itr)(pPlayer, type, lang, message, misc);
-        if (rv == false)  // never set ret_val back to true, once it's false
-            ret_val = false;
-    }
-    return ret_val;
-}
-
-void HookInterface::OnLoot(Player* pPlayer, Unit* pTarget, uint32 money, uint32 itemId)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_LOOT];
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-        ((tOnLoot)*itr)(pPlayer, pTarget, money, itemId);
-}
-
-void HookInterface::OnObjectLoot(Player* pPlayer, Object* pTarget, uint32 money, uint32 itemId)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_OBJECTLOOT];
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-        ((tOnObjectLoot)*itr)(pPlayer, pTarget, money, itemId);
-}
-
-void HookInterface::OnFullLogin(Player* pPlayer)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_FULL_LOGIN];
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-        ((tOnEnterWorld)*itr)(pPlayer);
-}
-
-void HookInterface::OnQuestCancelled(Player* pPlayer, QuestProperties const* pQuest)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_QUEST_CANCELLED];
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-        ((tOnQuestCancel)*itr)(pPlayer, pQuest);
-}
-
-void HookInterface::OnQuestFinished(Player* pPlayer, QuestProperties const* pQuest, Object* pQuestGiver)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_QUEST_FINISHED];
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-        ((tOnQuestFinished)*itr)(pPlayer, pQuest, pQuestGiver);
-}
-
-void HookInterface::OnHonorableKill(Player* pPlayer, Player* pKilled)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_HONORABLE_KILL];
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-        ((tOnHonorableKill)*itr)(pPlayer, pKilled);
-}
-
-void HookInterface::OnArenaFinish(Player* pPlayer, std::shared_ptr<ArenaTeam> pTeam, bool victory, bool rated)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_ARENA_FINISH];
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-        ((tOnArenaFinish)*itr)(pPlayer, pTeam, victory, rated);
-}
-
-void HookInterface::OnAreaTrigger(Player* pPlayer, uint32 areaTrigger)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_AREATRIGGER];
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-        ((tOnAreaTrigger)*itr)(pPlayer, areaTrigger);
-}
-
-void HookInterface::OnPostLevelUp(Player* pPlayer)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_POST_LEVELUP];
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-        ((tOnPostLevelUp)*itr)(pPlayer);
-}
-
-bool HookInterface::OnPreUnitDie(Unit* killer, Unit* victim)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_PRE_DIE];
-    bool ret_val = true;
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-    {
-        bool rv = ((tOnPreUnitDie)* itr)(killer, victim);
-        if (rv == false)  // never set ret_val back to true, once it's false
-            ret_val = false;
-    }
-    return ret_val;
-}
-
-
-void HookInterface::OnAdvanceSkillLine(Player* pPlayer, uint32 skillLine, uint32 current)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_ADVANCE_SKILLLINE];
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-        ((tOnAdvanceSkillLine)*itr)(pPlayer, skillLine, current);
-}
-
-void HookInterface::OnDuelFinished(Player* Winner, Player* Looser)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_DUEL_FINISHED];
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-        ((tOnDuelFinished)*itr)(Winner, Looser);
-}
-
-void HookInterface::OnAuraRemove(Aura* aura)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_AURA_REMOVE];
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-        ((tOnAuraRemove)*itr)(aura);
-}
-
-bool HookInterface::OnResurrect(Player* pPlayer)
-{
-    ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_RESURRECT];
-    bool ret_val = true;
-    for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
-    {
-        bool rv = ((tOnResurrect)* itr)(pPlayer);
-        if (rv == false)  // never set ret_val back to true, once it's false
-            ret_val = false;
-    }
-    return ret_val;
 }

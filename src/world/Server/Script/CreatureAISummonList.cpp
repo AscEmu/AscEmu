@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "CreatureAISummonList.hpp"
-#include "CreatureAIScript.h"
+#include "CreatureAIScript.hpp"
 #include "Objects/Units/Creatures/Creature.h"
 
 void SummonList::summon(Creature const* summon)

@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/EventableObject.h"
 #include "Management/Quest.h"
 #include "Objects/Units/Players/Player.hpp"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptMgr.hpp"
 
 enum QuestLogState : uint32_t
 {

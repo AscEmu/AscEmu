@@ -18,6 +18,8 @@
 
 #include "Setup.h"
 #include "Management/ItemInterface.h"
+#include "Management/QuestLogEntry.hpp"
+#include "Server/Script/QuestScript.hpp"
 
 class TabletOfTheSeven : public QuestScript
 {

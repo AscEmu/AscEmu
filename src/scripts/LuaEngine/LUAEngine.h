@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "LuaGlobal.h"
 #include "LuaHelpers.h"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptMgr.hpp"
 
 
 #ifdef DEBUG

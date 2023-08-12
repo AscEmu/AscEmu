@@ -19,7 +19,7 @@
 
 #include "Setup.h"
 #include "Spell/SpellAuras.h"
-#include "Server/Script/ScriptMgr.h"
+#include "Server/Script/ScriptMgr.hpp"
 #include <Spell/Definitions/SpellMechanics.hpp>
 #include <Objects/Units/Creatures/Pet.h>
 
