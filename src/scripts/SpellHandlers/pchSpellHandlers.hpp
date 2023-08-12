@@ -13,6 +13,6 @@
 #include <Spell/Definitions/ProcFlags.hpp>
 #include <Spell/Definitions/SpellEffects.hpp>
 #include <Spell/Definitions/PowerType.hpp>
-#include <Server/Script/CreatureAIScript.h>
-#include <Server/Script/ScriptMgr.h>
+#include <Server/Script/CreatureAIScript.hpp>
+#include <Server/Script/ScriptMgr.hpp>
 #include <Objects/Units/Creatures/Pet.h>
