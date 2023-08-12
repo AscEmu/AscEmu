@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObject.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"
+#include "Server/Script/InstanceScript.h"
 
 class BlackfathomDeepsInstanceScript : public InstanceScript
 {

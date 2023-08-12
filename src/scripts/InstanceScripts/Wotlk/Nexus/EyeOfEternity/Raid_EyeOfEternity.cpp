@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Raid_EyeOfEternity.h"
 
+#include "Server/Script/InstanceScript.h"
+
 class EyeOfEternityInstanceScript : public InstanceScript
 {
 public:

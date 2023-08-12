@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Raid_IceCrownCitadel.hpp"
 #include "LordMarrowgar.hpp"
 #include "Movement/MovementGenerators/PointMovementGenerator.h"
+#include "Server/Script/InstanceScript.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Boss: Lord Marrowgar

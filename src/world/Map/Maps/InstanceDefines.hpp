@@ -108,3 +108,5 @@ enum BindExtensionState
     EXTEND_STATE_EXTENDED = 2,
     EXTEND_STATE_KEEP = 255
 };
+
+const uint32_t defaultUpdateFrequency = 1000;

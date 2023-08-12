@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Raid_Baradin_Hold.h"
 
+#include "Server/Script/InstanceScript.h"
+
 class BaradinHoldInstanceScript : public InstanceScript
 {
 public:

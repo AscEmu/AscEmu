@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Raid_Bastion_Of_Twilight.h"
 
+#include "Server/Script/InstanceScript.h"
+
 class BastionOfTwilightInstanceScript : public InstanceScript
 {
 public:

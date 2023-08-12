@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObjectProperties.hpp"
 #include "Server/Script/CreatureAIScript.h"
 #include "Server/Script/GameObjectAIScript.hpp"
+#include "Server/Script/InstanceScript.h"
 
 class HydrossTheUnstableAI : public CreatureAIScript
 {

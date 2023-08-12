@@ -8,5 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Server/Script/ScriptMgr.h"
 #include "Server/Script/CreatureAIScript.h"
+#include "Server/Script/InstanceScript.h"
 #include "Spell/Spell.h"
 #include "Spell/SpellMgr.hpp"

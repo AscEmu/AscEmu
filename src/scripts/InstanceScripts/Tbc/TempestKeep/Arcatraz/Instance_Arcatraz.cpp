@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Instance_Arcatraz.h"
 #include "Management/Faction.h"
 #include "Server/Script/CreatureAIScript.h"
+#include "Server/Script/InstanceScript.h"
 
 class ArcatrazInstanceScript : public InstanceScript
 {

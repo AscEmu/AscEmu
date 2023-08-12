@@ -539,14 +539,14 @@ void IceCrownCitadelScript::OnPlayerEnter(Player* /*player*/)
 
     // Spawning the Gunships at the same moment a player enters causes them to bug the npcs sometimes
     if (!isPrepared)
-        scriptEvents.addEvent(EVENT_SPAWN_GUNSHIPS, 5000);
+        scriptEvents->addEvent(EVENT_SPAWN_GUNSHIPS, 5000);
 }    
 
 void IceCrownCitadelScript::UpdateEvent()
 {
-    scriptEvents.updateEvents(getUpdateFrequency(), 0);
+    scriptEvents->updateEvents(getUpdateFrequency(), 0);
 
-    while (uint32_t eventId = scriptEvents.getFinishedEvent())
+    while (uint32_t eventId = scriptEvents->getFinishedEvent())
     {
         switch (eventId)
         {
@@ -579,7 +579,7 @@ void IceCrownCitadelScript::UpdateEvent()
                 {
                     DoCheckFallingPlayer(GetCreatureByGuid(MuradinBronzebeardGbGUID));
                     if (DoWipeCheck(skybreaker))
-                        scriptEvents.addEvent(EVENT_WIPE_CHECK, 3000);
+                        scriptEvents->addEvent(EVENT_WIPE_CHECK, 3000);
                     else
                         DoAction(ACTION_FAIL);
                 }
@@ -587,7 +587,7 @@ void IceCrownCitadelScript::UpdateEvent()
                 {
                     DoCheckFallingPlayer(GetCreatureByGuid(DeathbringerSaurfangGbGUID));
                     if (DoWipeCheck(orgrimmar))
-                        scriptEvents.addEvent(EVENT_WIPE_CHECK, 3000);
+                        scriptEvents->addEvent(EVENT_WIPE_CHECK, 3000);
                     else
                         DoAction(ACTION_FAIL);
                 }
@@ -659,12 +659,12 @@ void IceCrownCitadelScript::DoAction(int32_t const action)
         }   
         case ACTION_INTRO_START:
         {
-            scriptEvents.addEvent(EVENT_START_FLY, 2500);
+            scriptEvents->addEvent(EVENT_START_FLY, 2500);
             break;
         }
         case ACTION_BATTLE_EVENT:
         {
-            scriptEvents.addEvent(EVENT_WIPE_CHECK, 5000);
+            scriptEvents->addEvent(EVENT_WIPE_CHECK, 5000);
             setBossState(DATA_ICECROWN_GUNSHIP_BATTLE, InProgress);
             break;
         }
@@ -699,7 +699,7 @@ void IceCrownCitadelScript::DoAction(int32_t const action)
         {
             if (getInstance()->getTeamIdInInstance() == TEAM_ALLIANCE)
             {
-                scriptEvents.addEvent(EVENT_SPAWN_ZEPPELIN_ALLIANCE, 1);
+                scriptEvents->addEvent(EVENT_SPAWN_ZEPPELIN_ALLIANCE, 1);
             }
             break;
         }

@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_Zul_Gurub_Cata.h"
 
+#include "Server/Script/InstanceScript.h"
+
 class ZulGurubCataInstanceScript : public InstanceScript
 {
 public:

@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Opcodes.hpp"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
+#include "Server/Script/InstanceScript.h"
 #include "Server/Script/ScriptMgr.h"
 
 InstanceMap::InstanceMap(BaseMap* baseMap, uint32_t id, uint32_t expiry, uint32_t InstanceId, uint8_t SpawnMode, PlayerTeam InstanceTeam)

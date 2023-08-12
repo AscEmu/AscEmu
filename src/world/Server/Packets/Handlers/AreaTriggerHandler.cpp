@@ -17,6 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.h"
 #include "Server/Packets/SmsgTransferAborted.h"
 #include "Server/Packets/SmsgRaidGroupOnly.h"
+#include "Server/Script/InstanceScript.h"
 
 using namespace AscEmu::Packets;
 

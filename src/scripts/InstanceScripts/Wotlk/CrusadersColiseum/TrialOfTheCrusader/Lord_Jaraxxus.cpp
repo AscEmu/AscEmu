@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Lord_Jaraxxus.hpp"
 #include "Raid_TrialOfTheCrusader.hpp"
 #include "Map/AreaBoundary.hpp"
+#include "Server/Script/InstanceScript.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///  Jaraxxus

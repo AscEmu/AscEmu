@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Raid_TrialOfTheCrusader.hpp"
 #include "Map/AreaBoundary.hpp"
 #include "Server/Script/AIUtils.hpp"
+#include "Server/Script/InstanceScript.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///  Combat Stalker

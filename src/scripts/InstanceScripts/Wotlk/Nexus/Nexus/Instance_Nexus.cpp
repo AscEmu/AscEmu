@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Server/Script/CreatureAIScript.h"
+#include "Server/Script/InstanceScript.h"
 
 class AnomalusAI : public CreatureAIScript
 {
@@ -89,7 +90,7 @@ public:
     {
         if (mInstance)
         {
-            GameObjectSet sphereSet = mInstance->getGameObjectsSetForEntry(ANOMALUS_CS);
+            InstanceScript::GameObjectSet sphereSet = mInstance->getGameObjectsSetForEntry(ANOMALUS_CS);
             for (auto goSphere : sphereSet)
             {
                 if (goSphere != nullptr)
@@ -272,7 +273,7 @@ public:
         if (mInstance)
         {
             mInstance->setBossState(DATA_MAGUS_TELESTRA, Performed);
-            GameObjectSet sphereSet = mInstance->getGameObjectsSetForEntry(TELESTRA_CS);
+            InstanceScript::GameObjectSet sphereSet = mInstance->getGameObjectsSetForEntry(TELESTRA_CS);
             for (auto goSphere : sphereSet)
             {
                 if (goSphere != nullptr)
@@ -382,7 +383,7 @@ public:
     {
         if (mInstance)
         {
-            GameObjectSet sphereSet = mInstance->getGameObjectsSetForEntry(ORMOROK_CS);
+            InstanceScript::GameObjectSet sphereSet = mInstance->getGameObjectsSetForEntry(ORMOROK_CS);
             for (auto goSphere : sphereSet)
             {
                 if (goSphere != nullptr)

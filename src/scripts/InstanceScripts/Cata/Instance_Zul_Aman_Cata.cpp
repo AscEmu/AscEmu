@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_Zul_Aman_Cata.h"
 
+#include "Server/Script/InstanceScript.h"
+
 class ZulAmanCataInstanceScript : public InstanceScript
 {
 public:

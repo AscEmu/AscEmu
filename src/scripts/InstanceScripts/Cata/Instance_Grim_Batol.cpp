@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_Grim_Batol.h"
 
+#include "Server/Script/InstanceScript.h"
+
 class GrimBatolInstanceScript : public InstanceScript
 {
 public:

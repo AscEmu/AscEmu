@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Objects/GameObject.h"
 #include "Server/Script/CreatureAIScript.h"
+#include "Server/Script/InstanceScript.h"
 
 enum BloodFurnanceEncounter
 {

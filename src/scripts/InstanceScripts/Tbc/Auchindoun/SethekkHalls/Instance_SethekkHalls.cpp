@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Server/Script/CreatureAIScript.h"
+#include "Server/Script/InstanceScript.h"
 
 class SethekkHallsInstanceScript : public InstanceScript
 {

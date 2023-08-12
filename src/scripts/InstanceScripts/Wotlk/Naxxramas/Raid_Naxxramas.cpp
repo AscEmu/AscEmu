@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Raid_Naxxramas.h"
 
 #include "Setup.h"
+#include "Server/Script/InstanceScript.h"
 
 //const uint32_t CN_THADDIUS = 15928;
 

@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_Maraudon.h"
 
+#include "Server/Script/InstanceScript.h"
+
 class MaraudonInstanceScript : public InstanceScript
 {
 public:

@@ -27,6 +27,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Definitions.h"
 #include "Server/Opcodes.hpp"
 #include "Server/World.h"
+#include "Server/Script/InstanceScript.h"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Summons/SummonHandler.hpp"
 

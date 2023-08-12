@@ -20,6 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/QuestLogEntry.hpp"
 #include "Management/Gossip/GossipScript.hpp"
 #include "Map/Management/MapMgr.hpp"
+#include "Server/Script/InstanceScript.h"
 
 #ifdef __APPLE__
 #undef check

@@ -52,6 +52,7 @@
 #include "Map/Maps/WorldMap.hpp"
 #include "Server/World.h"
 #include "Server/Script/GameObjectAIScript.hpp"
+#include "Server/Script/InstanceScript.h"
 
 // MIT
 

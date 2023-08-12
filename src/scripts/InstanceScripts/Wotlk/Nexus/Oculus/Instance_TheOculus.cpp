@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_TheOculus.h"
 
+#include "Server/Script/InstanceScript.h"
+
 class TheOculusInstanceScript : public InstanceScript
 {
 public:

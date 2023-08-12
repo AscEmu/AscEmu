@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.h"
 #include "Server/Definitions.h"
 #include "Server/WorldSession.h"
+#include "Server/Script/InstanceScript.h"
 
 using namespace AscEmu::Packets;
 

@@ -35,6 +35,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/CreatureAIScript.h"
 #include "Objects/Units/Creatures/CreatureGroups.h"
 #include "Server/World.h"
+#include "Server/Script/InstanceScript.h"
 #include "Storage/WDB/WDBStores.hpp"
 
 // Random and guessed values for Internal Spell cast chance
