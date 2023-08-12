@@ -30,6 +30,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Server/Script/CreatureAIScript.h"
+#include "Storage/WDB/WDBStores.hpp"
 
 #if VERSION_STRING >= Cata
 #include "Spell/SpellAuras.h"

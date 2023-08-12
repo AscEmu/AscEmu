@@ -5,36 +5,19 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "CommonTypes.hpp"
+
+
 #include <functional>
+
 #include "AIUtils.hpp"
-#include "Spell/SpellMgr.hpp"
+
+class CreatureAIScript;
 
 class SERVER_DECL CreatureAIFunction
 {
 public:
-    CreatureAIFunction(CreatureAIScript* owner, Function pFunction, SchedulerArgs const& schedArgs, FunctionArgs const& funcArgs = {})
-    {
-        mOwner = owner;
-        mFunction = pFunction;
-        schedulerArgs = schedArgs;
-        functionArgs = funcArgs;
-        mCooldownTimer = schedArgs.getInitialCooldown();
-
-        // Set CastTime and SpellDefault CD when its a Spell
-        if (const auto spellInfo = sSpellMgr.getSpellInfo(functionArgs.getSpellId()))
-        {
-            uint32_t castTime = GetCastTime(sSpellCastTimesStore.lookupEntry(spellInfo->getCastingTimeIndex())) ? GetCastTime(sSpellCastTimesStore.lookupEntry(spellInfo->getCastingTimeIndex())) : 500;
-            setCastTimer(Milliseconds(castTime));
-
-            // Set RecoveryTimer
-            // When not Available use Default Time
-            Milliseconds cooldown = Milliseconds(spellInfo->getRecoveryTime()) + getCastTimer();
-            if (!cooldown.count())
-                schedulerArgs.setSpellCooldown(mCooldownTimer);
-            else
-                schedulerArgs.setSpellCooldown(Milliseconds(cooldown));
-        }
-    }
+    CreatureAIFunction(CreatureAIScript* owner, Function pFunction, SchedulerArgs const& schedArgs, FunctionArgs const& funcArgs = {});
 
     ~CreatureAIFunction() = default;
 
@@ -42,33 +25,33 @@ public:
     void reset();
 
     // Flow
-    void setEnabled(bool set) { schedulerArgs.setEnabled(set); }
-    bool isEnabled() { return schedulerArgs.isEnabled(); }
+    void setEnabled(bool set);
+    bool isEnabled();
 
     // Combat
-    bool getCombatUsage() { return schedulerArgs.getCombatUsage(); }
+    bool getCombatUsage();
 
     // Timers
-    Milliseconds getInitialCooldown() { return schedulerArgs.getInitialCooldown(); }
-    Milliseconds getSpellCooldown() { return schedulerArgs.getInitialCooldown(); }
-    Milliseconds getCooldownTimer() { return mCooldownTimer; }
-    void setCooldownTimer(Milliseconds time) { mCooldownTimer = time; }
-    void decreaseCooldownTimer(Milliseconds time) { mCooldownTimer = mCooldownTimer - time; }
+    Milliseconds getInitialCooldown();
+    Milliseconds getSpellCooldown();
+    Milliseconds getCooldownTimer();
+    void setCooldownTimer(Milliseconds time);
+    void decreaseCooldownTimer(Milliseconds time);
 
-    void setCastTimer(Milliseconds time) { functionArgs.setCastTimer(time); }
-    Milliseconds getCastTimer() { return functionArgs.getCastTimer(); }
+    void setCastTimer(Milliseconds time);
+    Milliseconds getCastTimer();
 
     // Usages
-    void setCount(uint32_t count) { mCount = count; }
-    const uint32_t getCount() { return mCount; }
-    void increaseCount() { ++mCount; }
-    bool usesLeft() { return schedulerArgs.getMaxCount() ? getCount() < schedulerArgs.getMaxCount() : true; }
+    void setCount(uint32_t count);
+    const uint32_t getCount();
+    void increaseCount();
+    bool usesLeft();
 
     // Health
     const bool isHpInPercentRange(float targetHp);
 
     // Chances
-    bool isChanceMeet(float rolled) { return schedulerArgs.getChance() ? (rolled < schedulerArgs.getChance()) : true; }
+    bool isChanceMeet(float rolled);
 
     // Phases
     bool isAvailableForScriptPhase(uint32_t scriptPhase);
@@ -77,13 +60,13 @@ public:
     uint32_t getRandomMessage();
 
     // Main Execution
-    Function getFunction() const { return mFunction; }
+    Function getFunction() const;
 
     // Arguments
-    void setFunctionArgs(FunctionArgs& arguments) { functionArgs = arguments; }
-    FunctionArgs getFunctionArgs() { return functionArgs; }
-    void setSchedulerArgs(SchedulerArgs& arguments) { schedulerArgs = arguments; }
-    SchedulerArgs getSchedulerArgs() { return schedulerArgs; }
+    void setFunctionArgs(FunctionArgs& arguments);
+    FunctionArgs getFunctionArgs();
+    void setSchedulerArgs(SchedulerArgs& arguments);
+    SchedulerArgs getSchedulerArgs();
 
     bool mGarbage = false;      // when this dont gets Reset the Function Deletes itself upon completion
 

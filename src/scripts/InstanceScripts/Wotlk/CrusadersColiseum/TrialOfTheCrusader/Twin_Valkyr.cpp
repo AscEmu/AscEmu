@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Map/AreaBoundary.hpp"
+#include "Storage/WDB/WDBStores.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Twins Base AI
@@ -59,7 +60,7 @@ void TwinsAI::OnCombatStart(Unit*)
     if (CreatureAIScript* pSister = getLinkedCreatureAIScript())
     {
         SpellInfo const* spellInfo = sSpellMgr.getSpellInfo(MyEmphatySpellId);
-        Aura* pAura = sSpellMgr.newAura(spellInfo, (uint32_t)GetDuration(sSpellDurationStore.lookupEntry(spellInfo->getDurationIndex())), getCreature(), pSister->getCreature());
+        Aura* pAura = sSpellMgr.newAura(spellInfo, (int32_t)GetDuration(sSpellDurationStore.lookupEntry(spellInfo->getDurationIndex())), getCreature(), pSister->getCreature());
         getCreature()->addAura(pAura);
         setZoneWideCombat(pSister->getCreature());
     }

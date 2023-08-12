@@ -5,24 +5,17 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "CommonTypes.hpp"
+
 #include <vector>
 #include <cstdint>
 #include <functional>
 #include <string>
-#include "Map/RecastIncludes.hpp"
-#include "Objects/Units/Creatures/AIEvents.h"
-#include "Objects/Units/Unit.hpp"
-#include "Macros/AIInterfaceMacros.hpp"
-#include "Objects/Units/Creatures/CreatureDefines.hpp"
-#include "Server/Script/ScriptEvent.hpp"
-#include "Movement/WaypointDefines.h"
-#include "Chat/ChatDefines.hpp"
-#include "Storage/WDB/WDBStores.hpp"
-#include <G3D/Vector3.h>
 #include <chrono>
-#include <random>
-#include "Objects/Units/Creatures/AIInterface.h"
 
+class Unit;
+enum TargetFilter : uint32_t;
+enum EmoteType : uint32_t;
 
 /// Makes std::chrono_literals globally available.
 using namespace std::chrono_literals;
@@ -65,7 +58,7 @@ public:
     const int32_t getAuraId() { return auraId; }
 
 private:
-    uint32_t pFilter = TargetFilter_None;
+    uint32_t pFilter = 0;
     float minRange = 0.0f;
     float maxRange = 100.0f;
 
@@ -88,7 +81,7 @@ struct AIMessage
     bool useTarget;
 };
 
-struct SchedulerArgs
+struct SERVER_DECL SchedulerArgs
 {
 public:
     SchedulerArgs() {}
@@ -125,18 +118,7 @@ public:
     void setAvailableForScriptPhase(std::vector<uint32_t> phaseVector) { for (const auto& phase : phaseVector) mPhaseList.push_back(phase); }
 
     // Random Time
-    std::chrono::milliseconds randtime(std::chrono::milliseconds min, std::chrono::milliseconds max)
-    {
-        long long diff = max.count() - min.count();
-        ASSERT(diff >= 0);
-        ASSERT(diff <= (uint32_t)-1);
-
-        std::random_device rd;
-        std::mt19937_64 rng(rd());
-        std::uniform_int_distribution<long long> uni(0, diff);
-
-        return min + std::chrono::milliseconds(uni(rng));
-    }
+    std::chrono::milliseconds randtime(std::chrono::milliseconds min, std::chrono::milliseconds max);
 
     ScriptPhaseList mPhaseList = {};
 
@@ -244,7 +226,7 @@ private:
     Messages                mAIMessages;                    // Vector for Messages
 
     // Emote
-    EmoteType               mEmote = EmoteType::EMOTE_ONESHOT_NONE;
+    EmoteType               mEmote;
     bool                    mEmoteState = false;
 };
 

@@ -542,7 +542,7 @@ enum TextEmoteType
     TEXTEMOTE_SWEAT             = 451,
 };
 
-enum EmoteType
+enum EmoteType : uint32_t
 {
     EMOTE_ONESHOT_NONE                  = 0,
     EMOTE_ONESHOT_TALK                  = 1, // DNR
