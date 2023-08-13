@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 
 #include "Chat/ChatDefines.hpp"
+#include "Management/QuestProperties.hpp"
 #include "Objects/GameObjectProperties.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"

@@ -5,11 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Database/Field.hpp"
 #include "Server/EventableObject.h"
-#include "QuestProperties.hpp"
-#include "Objects/Units/Players/Player.hpp"
-#include "Server/Script/ScriptMgr.hpp"
+
+class QuestScript;
+class Unit;
+class Player;
+struct QuestProperties;
 
 enum QuestLogState : uint32_t
 {

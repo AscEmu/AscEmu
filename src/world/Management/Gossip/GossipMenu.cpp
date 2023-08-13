@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "GossipMenu.hpp"
 #include "Management/QuestDefines.hpp"
+#include "Management/QuestProperties.hpp"
 #include "Server/WorldSession.h"
 #include "Server/Packets/SmsgGossipMessage.h"
 #include "Server/Packets/SmsgGossipComplete.h"

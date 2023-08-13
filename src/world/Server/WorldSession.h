@@ -25,7 +25,6 @@
 
 #include <Threading/Mutex.h>
 #include "Server/Opcodes.hpp"
-#include "Management/QuestProperties.hpp"
 #include "FastQueue.h"
 #include "Server/CharacterErrors.h"
 #include "Objects/Units/Players/PlayerDefines.hpp"
@@ -35,6 +34,7 @@
 #include "Utilities/CallBack.h"
 #include "Management/AddonMgr.h"
 
+struct QuestProperties;
 class Player;
 class WorldPacket;
 class WorldSocket;

@@ -22,6 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Management/MapMgr.hpp"
 #include "Server/Script/InstanceScript.hpp"
 #include "Server/Script/QuestScript.hpp"
+#include "Management/QuestProperties.hpp"
 
 #ifdef __APPLE__
 #undef check

@@ -19,7 +19,10 @@
 #include "Setup.h"
 #include "Management/ItemInterface.h"
 #include "Management/QuestLogEntry.hpp"
+#include "Management/QuestProperties.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/QuestScript.hpp"
+#include "Server/Script/ScriptMgr.hpp"
 
 class TabletOfTheSeven : public QuestScript
 {

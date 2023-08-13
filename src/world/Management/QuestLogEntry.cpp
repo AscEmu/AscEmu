@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Management/ItemInterface.h"
 #include "QuestMgr.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/Script/QuestScript.hpp"
 
@@ -183,10 +184,8 @@ QuestProperties const* QuestLogEntry::getQuestProperties() const { return m_ques
 bool QuestLogEntry::isUnitAffected(Unit* unit) const
 {
     if (unit)
-    {
-        if (m_affected_units.find(unit->getGuid()) != m_affected_units.end())
+        if (m_affected_units.contains(unit->getGuid()))
             return true;
-    }
 
     return false;
 }
