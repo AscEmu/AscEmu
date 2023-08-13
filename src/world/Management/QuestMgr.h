@@ -22,7 +22,7 @@
 #define QUESTMGR_H
 
 #include "QuestDefines.hpp"
-#include "Management/Quest.h"
+#include "QuestProperties.hpp"
 #include "CommonTypes.hpp"
 
 #include <vector>

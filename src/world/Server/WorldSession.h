@@ -25,7 +25,7 @@
 
 #include <Threading/Mutex.h>
 #include "Server/Opcodes.hpp"
-#include "Management/Quest.h"
+#include "Management/QuestProperties.hpp"
 #include "FastQueue.h"
 #include "Server/CharacterErrors.h"
 #include "Objects/Units/Players/PlayerDefines.hpp"

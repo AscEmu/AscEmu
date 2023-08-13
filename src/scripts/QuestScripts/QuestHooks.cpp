@@ -19,7 +19,7 @@
  */
 
 #include "Setup.h"
-#include "Management/Quest.h"
+#include "Management/QuestProperties.hpp"
 #include "Management/QuestLogEntry.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Server/Script/CreatureAIScript.hpp"

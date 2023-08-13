@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/DynamicObject.hpp"
 #include "Management/AuctionMgr.h"
 #include "Management/QuestMgr.h"
-#include "Management/Quest.h"
+#include "Management/QuestProperties.hpp"
 #include "Management/GameEvent.h"
 #include "Management/Skill.hpp"
 #include "Management/Battleground/Battleground.hpp"

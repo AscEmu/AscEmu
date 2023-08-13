@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MySQLStructures.h"
 #include "Movement/Spline/SplineChain.h"
 #include "Objects/GameObjectProperties.hpp"
-#include "Management/Quest.h"
+#include "Management/QuestProperties.hpp"
 
 struct SplineChainLink;
 
