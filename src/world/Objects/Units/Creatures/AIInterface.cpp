@@ -374,7 +374,10 @@ void AIInterface::addSpellFromDatabase(std::vector<MySQLStructure::CreatureAIScr
 
             // Create AI Spell
             CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, spell.target, spellInfo->getSpellDefaultDuration(nullptr), spellCooldown, false, spell.triggered);
-            newAISpell->addDBEmote(spell.textId);
+
+            if (spell.textId)
+                newAISpell->addDBEmote(spell.textId);
+
             newAISpell->setMaxCastCount(spell.maxCount);
             newAISpell->scriptType = spell.event;
             newAISpell->spell_type = AI_SpellType(spell.spell_type);
