@@ -22,40 +22,7 @@ GossipScript* GossipScript::getInterface(Creature* creature)
     if (const auto script = sScriptMgr.get_creature_gossip(creature->getEntry()))
         return script;
 
-    if (creature->isSpiritHealer())
-        return sScriptMgr.spirithealerScript_;
-    if (creature->isInnkeeper())
-        return sScriptMgr.innkeeperScript_;
-    if (creature->isBanker())
-        return sScriptMgr.bankerScript_;
-    if (creature->isClassTrainer())
-        return sScriptMgr.classtrainerScript_;
-    if (creature->isTrainer())
-    {
-        if (const auto trainer = creature->GetTrainer())
-        {
-            if (trainer->TrainerType == TRAINER_TYPE_PET)
-                return sScriptMgr.pettrainerScript_;
-
-            return sScriptMgr.trainerScript_;
-        }
-    }
-    else if (creature->isTabardDesigner())
-        return sScriptMgr.tabardScript_;
-    else if (creature->isTaxi())
-        return sScriptMgr.flightmasterScript_;
-    else if (creature->isStableMaster())
-        return sScriptMgr.stablemasterScript_;
-    else if (creature->isBattleMaster())
-        return sScriptMgr.battlemasterScript_;
-    else if (creature->isAuctioneer())
-        return sScriptMgr.auctioneerScript_;
-    else if (creature->isCharterGiver())
-        return sScriptMgr.chartergiverScript_;
-    else if (creature->isVendor())
-        return sScriptMgr.vendorScript_;
-
-    return sScriptMgr.genericScript_;
+    return nullptr;
 }
 
 GossipScript* GossipScript::getInterface(Item* item)

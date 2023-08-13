@@ -172,22 +172,6 @@ public:
     GossipScript* get_go_gossip(uint32_t) const;
     GossipScript* get_item_gossip(uint32_t) const;
 
-    // Default Gossip Script Interfaces
-    GossipTrainer* trainerScript_;
-    GossipSpiritHealer* spirithealerScript_;
-    GossipBanker* bankerScript_;
-    GossipVendor* vendorScript_;
-    GossipClassTrainer* classtrainerScript_;
-    GossipPetTrainer* pettrainerScript_;
-    GossipFlightMaster* flightmasterScript_;
-    GossipAuctioneer* auctioneerScript_;
-    GossipInnKeeper* innkeeperScript_;
-    GossipBattleMaster* battlemasterScript_;
-    GossipCharterGiver* chartergiverScript_;
-    GossipTabardDesigner* tabardScript_;
-    GossipStableMaster* stablemasterScript_;
-    GossipGeneric* genericScript_;
-
 protected:
 
     InstanceCreateMap mInstances;

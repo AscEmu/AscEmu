@@ -474,8 +474,50 @@ public:
 
 void Creature::registerDatabaseGossip()
 {
-    if (GetCreatureProperties()->gossipId)
-        sScriptMgr.register_creature_gossip(getEntry(), new DatabaseGossip(GetCreatureProperties()->gossipId));
+    if (isGossip())
+    {
+        if (GetCreatureProperties()->gossipId)
+            sScriptMgr.register_creature_gossip(getEntry(), new DatabaseGossip(GetCreatureProperties()->gossipId));
+
+        if (isSpiritHealer())
+            sScriptMgr.register_creature_gossip(getEntry(), new GossipSpiritHealer());
+
+        if (isInnkeeper())
+            sScriptMgr.register_creature_gossip(getEntry(), new GossipInnKeeper());
+
+        if (isBanker())
+            sScriptMgr.register_creature_gossip(getEntry(), new GossipBanker());
+
+        if (isClassTrainer())
+            sScriptMgr.register_creature_gossip(getEntry(), new GossipClassTrainer());
+
+        if (isTrainer())
+        {
+            if (const auto trainer = GetTrainer())
+            {
+                if (trainer->TrainerType == TRAINER_TYPE_PET)
+                    sScriptMgr.register_creature_gossip(getEntry(), new GossipPetTrainer());
+                else
+                    sScriptMgr.register_creature_gossip(getEntry(), new GossipTrainer());
+            }
+        }
+        else if (isTabardDesigner())
+            sScriptMgr.register_creature_gossip(getEntry(), new GossipTabardDesigner());
+        else if (isTaxi())
+            sScriptMgr.register_creature_gossip(getEntry(), new GossipFlightMaster());
+        else if (isStableMaster())
+            sScriptMgr.register_creature_gossip(getEntry(), new GossipStableMaster());
+        else if (isBattleMaster())
+            sScriptMgr.register_creature_gossip(getEntry(), new GossipBattleMaster());
+        else if (isAuctioneer())
+            sScriptMgr.register_creature_gossip(getEntry(), new GossipAuctioneer());
+        else if (isCharterGiver())
+            sScriptMgr.register_creature_gossip(getEntry(), new GossipCharterGiver());
+        else if (isVendor())
+            sScriptMgr.register_creature_gossip(getEntry(), new GossipVendor());
+
+        sScriptMgr.register_creature_gossip(getEntry(), new GossipGeneric());
+    }
 }
 
 bool Creature::isReturningHome() const
