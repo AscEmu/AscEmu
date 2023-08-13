@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Instance_TheVioletHold.hpp"
 #include "Lavanthor.hpp"
 
+#include "Movement/MovementManager.h"
+
 //////////////////////////////////////////////////////////////////////////////////////////
 //  Lavanthor AI
 LavanthorAI::LavanthorAI(Creature* pCreature) : CreatureAIScript(pCreature)

@@ -6,9 +6,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "InstanceMap.hpp"
 
 #include "InstanceMgr.hpp"
+#include "Management/Group.h"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/Definitions.h"
 #include "Server/Opcodes.hpp"

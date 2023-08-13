@@ -21,6 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ObjectMgr.hpp"
 #include "Management/Gossip/GossipScript.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
+#include "Movement/MovementManager.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Objects/Units/Creatures/CreatureGroups.h"
 #include "Server/DatabaseDefinition.hpp"

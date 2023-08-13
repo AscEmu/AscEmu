@@ -41,6 +41,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Units/Creatures/AIInterface.h"
+#include "Units/Creatures/Corpse.hpp"
 
 #if VERSION_STRING >= Cata
 #include "Server/OpcodeTable.hpp"

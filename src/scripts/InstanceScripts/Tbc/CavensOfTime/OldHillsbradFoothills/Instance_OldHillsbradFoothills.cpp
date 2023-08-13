@@ -17,6 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/QuestLogEntry.hpp"
 #include "Management/WorldStates.h"
 #include "Map/Maps/WorldMap.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/InstanceScript.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 

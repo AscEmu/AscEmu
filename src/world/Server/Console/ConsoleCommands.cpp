@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Cryptography/crc32.h"
 #include "Server/World.h"
 #include "Management/ObjectMgr.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 

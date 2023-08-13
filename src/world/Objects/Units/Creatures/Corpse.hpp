@@ -28,6 +28,7 @@ enum CorpseFlags
 };
 
 struct WoWCorpse;
+class Player;
 
 class SERVER_DECL Corpse : public Object
 {

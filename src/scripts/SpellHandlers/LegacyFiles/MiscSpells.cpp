@@ -24,6 +24,7 @@
 #include "Management/Battleground/Battleground.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Map/Maps/WorldMap.hpp"
+#include "Movement/MovementManager.h"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Server/Master.h"
 #include "Server/World.h"

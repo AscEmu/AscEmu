@@ -17,6 +17,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Definitions.h"
 #include "Server/WorldSession.h"
 #include "Server/Script/InstanceScript.hpp"
+#include "Units/Creatures/Creature.h"
+#include "Units/Players/Player.hpp"
 
 using namespace AscEmu::Packets;
 

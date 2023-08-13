@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/QuestMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Item.hpp"
+#include "Objects/Units/Creatures/Creature.h"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Server/Script/ScriptMgr.hpp"

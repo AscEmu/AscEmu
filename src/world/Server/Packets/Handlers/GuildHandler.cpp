@@ -4,6 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Chat/ChatHandler.hpp"
+#include "Management/ArenaTeam.hpp"
+#include "Management/Charter.hpp"
 #include "Management/ItemInterface.h"
 #include "Server/Packets/CmsgGuildQuery.h"
 #include "Server/Packets/SmsgGuildCommandResult.h"
@@ -31,6 +33,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/Item.hpp"
+#include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Packets/CmsgPetitionShowSignatures.h"
 #include "Server/Packets/SmsgPetitionShowSignatures.h"
 #include "Server/Packets/CmsgOfferPetition.h"

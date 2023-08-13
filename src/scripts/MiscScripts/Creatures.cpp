@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Map/Maps/MapScriptInterface.h"
+#include "Movement/MovementManager.h"
 #include "Server/Script/CreatureAIScript.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////

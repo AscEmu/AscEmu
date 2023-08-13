@@ -22,10 +22,13 @@
 #include "Storage/MySQLStructures.h"
 #include "Objects/Item.hpp"
 #include "Management/LFG/LFGMgr.hpp"
+
+#include "Management/Group.h"
 #include "Management/LFG/LFGGroupData.hpp"
 #include "Management/LFG/LFGPlayerData.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/QuestMgr.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"
 #include "Server/WorldSession.h"

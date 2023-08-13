@@ -20,6 +20,7 @@
 #include "Setup.h"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Gossip/GossipScript.hpp"
+#include "Movement/MovementManager.h"
 #include "Server/WorldSession.h"
 #include "Server/Script/CreatureAIScript.hpp"
 

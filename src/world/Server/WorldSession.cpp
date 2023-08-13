@@ -42,7 +42,9 @@
 #include "Packets/SmsgMessageChat.h"
 #include "Script/ScriptMgr.hpp"
 #include "Objects/Transporter.hpp"
+#include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Script/HookInterface.hpp"
 
 using namespace AscEmu::Packets;

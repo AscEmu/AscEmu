@@ -22,6 +22,7 @@
 #include "Management/QuestLogEntry.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Map/Maps/WorldMap.hpp"
+#include "Movement/MovementManager.h"
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Server/Master.h"

@@ -25,6 +25,7 @@
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Map/Maps/InstanceMap.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Server/Packets/SmsgInstanceReset.h"

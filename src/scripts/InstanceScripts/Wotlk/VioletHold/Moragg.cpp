@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Instance_TheVioletHold.hpp"
 #include "Moragg.hpp"
 
+#include "Movement/MovementManager.h"
+
 //////////////////////////////////////////////////////////////////////////////////////////
 //  Moragg AI
 MoraggAI::MoraggAI(Creature* pCreature) : CreatureAIScript(pCreature)

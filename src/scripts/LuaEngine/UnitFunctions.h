@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/AreaBoundary.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/MapScriptInterface.h"
+#include "Movement/MovementManager.h"
 #include "Objects/Container.hpp"
 #include "Objects/Item.hpp"
 #include "Objects/Object.hpp"

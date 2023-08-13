@@ -61,6 +61,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgMotd.h"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Objects/Transporter.hpp"
+#include "Objects/Units/Creatures/Corpse.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"
 #include "Server/WorldSession.h"

@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Anubarak.hpp"
 #include "Management/WeatherMgr.hpp"
 #include "Management/Gossip/GossipMenu.hpp"
+#include "Movement/MovementManager.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Trial Of The Crusader Instance

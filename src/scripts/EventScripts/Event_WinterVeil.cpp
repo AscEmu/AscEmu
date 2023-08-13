@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObject.h"
 #include "Objects/Item.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Master.h"
 #include "Server/Script/GameObjectAIScript.hpp"
 #include "Storage/MySQLDataStore.hpp"

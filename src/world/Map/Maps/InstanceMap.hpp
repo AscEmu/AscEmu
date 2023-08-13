@@ -10,6 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 
+class Player;
+
 class SERVER_DECL InstanceMap : public WorldMap
 {
 public:

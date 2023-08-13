@@ -55,6 +55,7 @@
 #include "Server/Packets/SmsgSpellDelayed.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Management/Battleground/BattlegroundDefines.hpp"
+#include "Movement/MovementManager.h"
 
 using namespace AscEmu::Packets;
 

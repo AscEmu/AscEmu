@@ -4,11 +4,15 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Management/AuctionHouse.h"
+
+#include "MailMgr.h"
+#include "Logging/Log.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Objects/Item.hpp"
 #include "Management/ItemInterface.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Management/ObjectMgr.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/WorldSession.h"
 #include "Server/Packets/SmsgAuctionBidderNotification.h"

@@ -5,10 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "InstanceScript.hpp"
 
+#include "Management/Group.h"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Map/Maps/InstanceMap.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Map/Maps/WorldMap.hpp"
+#include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"
 #include "Server/Packets/SmsgUpdateInstanceEncounterUnit.h"

@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "BattleGroundMap.hpp"
 #include "InstanceDefines.hpp"
 #include "Management/Battleground/BattlegroundMgr.hpp"
+#include "Objects/Units/Players/Player.hpp"
 
 BattlegroundMap::BattlegroundMap(BaseMap* baseMap, uint32_t id, uint32_t expiry, uint32_t InstanceId, uint8_t spawnMode)
     : WorldMap(baseMap, id, expiry, InstanceId, spawnMode), m_battleground(nullptr)

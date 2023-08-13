@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 
 class Battleground;
+class Player;
 
 class SERVER_DECL BattlegroundMap : public WorldMap
 {

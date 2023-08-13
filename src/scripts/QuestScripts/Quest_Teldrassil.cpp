@@ -20,6 +20,8 @@
 #include "Setup.h"
 #include "Chat/ChatDefines.hpp"
 #include "Map/Maps/WorldMap.hpp"
+#include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/QuestScript.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 

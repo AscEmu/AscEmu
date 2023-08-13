@@ -24,6 +24,7 @@
 #define MAIL_MAX_ITEM_SLOT 12
 #define MAIL_DEFAULT_EXPIRATION_TIME 30
 
+class Player;
 /// \todo refactoring
 struct AuctionEntry;
 struct CalendarEvent;

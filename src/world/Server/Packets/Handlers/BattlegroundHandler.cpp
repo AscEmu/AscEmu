@@ -3,6 +3,7 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Management/Group.h"
 #include "Server/Packets/MsgInspectHonorStats.h"
 #include "Server/Packets/CmsgBattlemasterJoinArena.h"
 #include "Server/Packets/CmsgBattlefieldPort.h"
@@ -19,6 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ObjectMgr.hpp"
 #include "Management/Battleground/BattlegroundMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
+#include "Objects/Units/Creatures/Creature.h"
 #include "Storage/MySQLDataStore.hpp"
 
 #if VERSION_STRING >= Cata

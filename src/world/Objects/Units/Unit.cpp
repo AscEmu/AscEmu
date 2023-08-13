@@ -4,6 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Unit.hpp"
+
+#include "Creatures/Corpse.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Management/Battleground/Battleground.hpp"
 #include "Management/HonorHandler.h"
@@ -55,6 +57,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemInterface.h"
 #include "Management/QuestMgr.h"
 #include "Movement/AbstractFollower.h"
+#include "Movement/MovementManager.h"
 #include "Objects/DynamicObject.hpp"
 #include "Objects/GameObjectProperties.hpp"
 #include "Objects/ItemDefines.hpp"

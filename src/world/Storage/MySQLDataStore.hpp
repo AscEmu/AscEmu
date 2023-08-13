@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/Spline/SplineChain.h"
 #include "Objects/GameObjectProperties.hpp"
 #include "Management/QuestProperties.hpp"
+#include "Management/ItemProperties.hpp"
 
 struct SplineChainLink;
 
@@ -152,7 +153,7 @@ public:
     MySQLStructure::ItemPage const* getItemPage(uint32_t entry);
     ItemPageContainer const* getItemPagesStore() { return &_itemPagesStore; }
     ItemProperties const* getItemProperties(uint32_t entry);
-    ItemPropertiesContainer const* getItemPropertiesStore() { return &_itemPropertiesStore; }
+    ItemPropertiesContainer const* getItemPropertiesStore();
     std::string getItemLinkByProto(ItemProperties const* iProto, uint32_t language = 0);
 
     CreatureProperties const* getCreatureProperties(uint32_t entry);

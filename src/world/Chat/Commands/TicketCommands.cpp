@@ -4,7 +4,11 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Chat/ChatHandler.hpp"
+#include "Logging/Log.hpp"
+#include "Management/MailMgr.h"
 #include "Management/ObjectMgr.hpp"
+#include "Management/Tickets/TicketMgr.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"

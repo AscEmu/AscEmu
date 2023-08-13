@@ -71,6 +71,8 @@
 #include "Map/Maps/BattleGroundMap.hpp"
 #include "Server/Master.h"
 #include "Management/Battleground/BattlegroundDefines.hpp"
+#include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Players/Player.hpp"
 
 const float sotaTitanRelic[4] = { 836.5f, -108.8f, 120.59f, 0.0f };
 

@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "TicketMgr.hpp"
 
+#include "Logging/Logger.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/WDB/WDBStores.hpp"

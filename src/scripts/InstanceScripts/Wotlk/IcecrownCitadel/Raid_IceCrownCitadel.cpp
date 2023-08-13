@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "LordMarrowgar.hpp"
 #include "Saurfang.hpp"
 #include "Management/Gossip/GossipMenu.hpp"
+#include "Movement/MovementManager.h"
 #include "Server/WorldSession.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////

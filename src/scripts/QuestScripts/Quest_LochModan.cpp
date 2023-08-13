@@ -21,6 +21,7 @@
 #include "Setup.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Map/Maps/MapScriptInterface.h"
+#include "Movement/MovementManager.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/QuestScript.hpp"
 

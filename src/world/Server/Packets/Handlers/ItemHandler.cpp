@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Chat/ChatHandler.hpp"
+#include "Management/Charter.hpp"
 #include "Server/Packets/CmsgSwapItem.h"
 #include "Server/WorldSession.h"
 #include "Objects/Units/Players/Player.hpp"

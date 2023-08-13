@@ -26,6 +26,8 @@
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/Item.hpp"
+#include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"
 #include "Server/WorldSession.h"

@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Anubarak.hpp"
 #include "Raid_TrialOfTheCrusader.hpp"
+#include "Movement/MovementManager.h"
 #include "Server/Script/InstanceScript.hpp"
 
 // ToDo

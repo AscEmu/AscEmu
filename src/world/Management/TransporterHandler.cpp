@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObjectProperties.hpp"
 #include "Server/Definitions.h"
 #include "Objects/Transporter.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 
 

@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Instance_TheVioletHold.hpp"
 #include "Zuramat.hpp"
 
+#include "Movement/MovementManager.h"
+
 //////////////////////////////////////////////////////////////////////////////////////////
 //  Zuramat AI
 ZuramatAI::ZuramatAI(Creature* pCreature) : CreatureAIScript(pCreature)

@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ObjectMgr.hpp"
 #include "Management/WeatherMgr.hpp"
 #include "Map/Area/AreaStorage.hpp"
+#include "Movement/MovementManager.h"
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Objects/Units/ThreatHandler.h"
 #include "Server/DatabaseDefinition.hpp"

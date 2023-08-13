@@ -16,8 +16,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgActivatetaxiexpress.h"
 #include "Server/Packets/CmsgActivatetaxi.h"
 #include "Map/Management/MapMgr.hpp"
+#include "Movement/MovementManager.h"
 #include "Server/Packets/SmsgNewTaxiPath.h"
 #include "Movement/MovementGenerators/FlightPathMovementGenerator.h"
+#include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Players/Player.hpp"
 
 using namespace AscEmu::Packets;
 

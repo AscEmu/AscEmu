@@ -6,15 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include <string>
-#include "Spell/Spell.h"
-#include "Management/ArenaTeam.hpp"
-#include "Management/Charter.hpp"
-#include "Management/Group.h"
-#include "Management/Tickets/TicketMgr.hpp"
-#include "Movement/MovementManager.h"
-#include "Objects/Units/Creatures/Corpse.hpp"
+
 #include "Objects/Units/Creatures/CreatureDefines.hpp"
-#include "Objects/Units/Players/Player.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Objects/Units/Creatures/Vehicle.hpp"
 #include "Server/Script/SimpleEventScript.hpp"
@@ -24,6 +17,9 @@ This file is released under the MIT license. See README-MIT for more information
     #include "Storage/WDB/WDBStructures.hpp"
 #endif
 
+class Corpse;
+class Charter;
+class ArenaTeam;
 class SpellInfo;
 
 struct WorldState

@@ -16,6 +16,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Management/Battleground/BattlegroundDefines.hpp"
+#include "Objects/Units/Creatures/Corpse.hpp"
+#include "Objects/Units/Creatures/Creature.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Fire Locations

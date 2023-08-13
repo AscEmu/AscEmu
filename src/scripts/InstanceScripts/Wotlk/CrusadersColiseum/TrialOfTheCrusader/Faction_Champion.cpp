@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Faction_Champion.hpp"
 #include "Raid_TrialOfTheCrusader.hpp"
 #include "Map/AreaBoundary.hpp"
+#include "Movement/MovementManager.h"
 #include "Server/Script/InstanceScript.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////

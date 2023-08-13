@@ -3,6 +3,7 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Management/Group.h"
 #include "Server/Packets/MsgQuestPushResult.h"
 #include "Server/Packets/CmsgQuestgiverAcceptQuest.h"
 #include "Server/Packets/CmsgQuestQuery.h"
@@ -24,6 +25,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/QuestMgr.h"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/Item.hpp"
+#include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Packets/SmsgGossipComplete.h"
 #include "Server/Script/HookInterface.hpp"
 #include "Server/Script/QuestScript.hpp"

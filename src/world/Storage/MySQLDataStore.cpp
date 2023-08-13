@@ -524,6 +524,8 @@ ItemProperties const* MySQLDataStore::getItemProperties(uint32_t entry)
     return nullptr;
 }
 
+MySQLDataStore::ItemPropertiesContainer const* MySQLDataStore::getItemPropertiesStore() { return &_itemPropertiesStore; }
+
 std::string MySQLDataStore::getItemLinkByProto(ItemProperties const* iProto, uint32_t language/* = 0*/)
 {
     char buffer[256];
