@@ -354,7 +354,7 @@ void ScriptMgr::register_spell_script(uint32_t spellId, SpellScript* ss, bool re
 
 void ScriptMgr::register_spell_script(uint32_t* spellIds, SpellScript* ss)
 {
-    for (uint32_t i = 0; spellIds[i] != 0; ++i)
+    for (uint32_t i = 0; i < sizeof(spellIds) / sizeof(uint32_t); ++i)
         register_spell_script(spellIds[i], ss);
 }
 
@@ -711,31 +711,31 @@ void ScriptMgr::register_instance_script(uint32_t pMapId, exp_create_instance_ai
 
 void ScriptMgr::register_creature_script(uint32_t* entries, exp_create_creature_ai callback)
 {
-    for (uint32_t y = 0; entries[y] != 0; y++)
+    for (uint32_t y = 0; y < sizeof(entries) / sizeof(uint32_t); ++y)
         register_creature_script(entries[y], callback);
 }
 
 void ScriptMgr::register_gameobject_script(uint32_t* entries, exp_create_gameobject_ai callback)
 {
-    for (uint32_t y = 0; entries[y] != 0; y++)
+    for (uint32_t y = 0; y < sizeof(entries) / sizeof(uint32_t); ++y)
         register_gameobject_script(entries[y], callback);
 }
 
 void ScriptMgr::register_dummy_aura(uint32_t* entries, exp_handle_dummy_aura callback)
 {
-    for (uint32_t y = 0; entries[y] != 0; y++)
+    for (uint32_t y = 0; y < sizeof(entries) / sizeof(uint32_t); ++y)
         register_dummy_aura(entries[y], callback);
 }
 
 void ScriptMgr::register_dummy_spell(uint32_t* entries, exp_handle_dummy_spell callback)
 {
-    for (uint32_t y = 0; entries[y] != 0; y++)
+    for (uint32_t y = 0; y < sizeof(entries) / sizeof(uint32_t); ++y)
         register_dummy_spell(entries[y], callback);
 }
 
 void ScriptMgr::register_script_effect(uint32_t* entries, exp_handle_script_effect callback)
 {
-    for (uint32_t y = 0; entries[y] != 0; y++)
+    for (uint32_t y = 0; y < sizeof(entries) / sizeof(uint32_t); ++y)
         register_script_effect(entries[y], callback);
 }
 
