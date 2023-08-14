@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Data/Flags.hpp"
+#include "Management/AuctionHouse.h"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Server/Packets/ManagedPacket.h"
 #include "Server/WorldSession.h"
@@ -18,7 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgPetitionShowlist.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Map/Management/MapMgr.hpp"
-#include "Management/AuctionMgr.h"
+#include "Management/AuctionMgr.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Server/Packets/CmsgGossipSelectOption.h"
 #include "Server/Packets/CmsgGossipHello.h"
@@ -111,7 +112,7 @@ void WorldSession::sendAuctionList(Creature* creature)
     if (creature == nullptr)
         return;
 
-    const auto auctionHouse = sAuctionMgr.GetAuctionHouse(creature->getEntry());
+    const auto auctionHouse = sAuctionMgr.getAuctionHouse(creature->getEntry());
     if (auctionHouse == nullptr)
         return;
 

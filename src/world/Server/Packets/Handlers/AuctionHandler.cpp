@@ -15,7 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Objects/Units/Creatures/Creature.h"
-#include "Management/AuctionMgr.h"
+#include "Management/AuctionMgr.hpp"
 #include "Management/ItemInterface.h"
 #include "Map/Maps/WorldMap.hpp"
 #include "Server/Definitions.h"
@@ -202,7 +202,7 @@ void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
         auction->startPrice = srlPacket.bidMoney;
         auction->highestBid = 0;
         auction->highestBidderGuid = 0;
-        auction->Id = sAuctionMgr.GenerateAuctionId();
+        auction->Id = sAuctionMgr.generateAuctionId();
         auction->ownerGuid = _player->getGuidLow();
         auction->auctionItem = item;
         auction->isRemoved = false;

@@ -33,7 +33,7 @@
 #include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
 #include "Management/AddonMgr.h"
-#include "Management/AuctionMgr.h"
+#include "Management/AuctionMgr.hpp"
 #include "Utilities/Util.hpp"
 #include "Database/DatabaseUpdater.hpp"
 #include "Packets/SmsgServerMessage.h"

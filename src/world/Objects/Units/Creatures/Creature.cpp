@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Objects/DynamicObject.hpp"
-#include "Management/AuctionMgr.h"
+#include "Management/AuctionMgr.hpp"
 #include "Management/QuestMgr.h"
 #include "Management/QuestProperties.hpp"
 #include "Management/GameEvent.h"
@@ -33,8 +33,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/InstanceScript.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Summons/SummonHandler.hpp"
-
-using namespace AscEmu::Packets;
 
 uint8_t CreatureProperties::generateRandomDisplayIdAndReturnGender(uint32_t* displayId) const
 {
@@ -1663,7 +1661,7 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
         mTrainer = sObjectMgr.getTrainer(getEntry());
 
     if (isAuctioneer())
-        auctionHouse = sAuctionMgr.GetAuctionHouse(getEntry());
+        auctionHouse = sAuctionMgr.getAuctionHouse(getEntry());
 
     //load resistances
     for (uint8 x = 0; x < TOTAL_SPELL_SCHOOLS; ++x)
@@ -1898,7 +1896,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
         mTrainer = sObjectMgr.getTrainer(getEntry());
 
     if (isAuctioneer())
-        auctionHouse = sAuctionMgr.GetAuctionHouse(getEntry());
+        auctionHouse = sAuctionMgr.getAuctionHouse(getEntry());
 
     //load resistances
     for (uint8 j = 0; j < TOTAL_SPELL_SCHOOLS; ++j)

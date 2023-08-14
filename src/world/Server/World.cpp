@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "AEVersion.hpp"
 #include "Management/AddonMgr.h"
-#include "Management/AuctionMgr.h"
+#include "Management/AuctionMgr.hpp"
 #include "Management/CalendarMgr.hpp"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Management/WordFilter.h"
@@ -754,7 +754,7 @@ bool World::setInitialWorldSettings()
 
     sLogger.info("World : Starting Auction System...");
     sAuctionMgr.initialize();
-    sAuctionMgr.LoadAuctionHouses();
+    sAuctionMgr.loadAuctionHouses();
 
     sLogger.info("World : Loading LFG rewards...");
     sLfgMgr.initialize();
@@ -993,7 +993,7 @@ void World::Update(unsigned long timePassed)
 {
     sLfgMgr.Update(static_cast<uint32_t>(timePassed));
     mEventableObjectHolder->Update(static_cast<uint32_t>(timePassed));
-    sAuctionMgr.Update();
+    sAuctionMgr.update();
     updateQueuedSessions(static_cast<uint32_t>(timePassed));
     sMapMgr.update();
     sInstanceMgr.update();
