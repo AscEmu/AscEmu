@@ -23,12 +23,15 @@
 
 #include "Object.hpp"
 #include "Data/WoWGameObject.hpp"
-//#include "Map/Maps/BaseMap.hpp"
-//#include "GameObjectProperties.hpp"
 #include "GameObjectDefines.hpp"
 #include "Management/LootDefines.hpp"
 #include "Management/LootMgr.h"
 #include "Server/UpdateFieldInclude.h"
+
+namespace MySQLStructure
+{
+    struct GameobjectSpawn;
+}
 
 struct QuestProperties;
 struct GameObjectProperties;
@@ -37,7 +40,6 @@ enum LootState : uint8_t;
 class Player;
 class GameObjectAIScript;
 class GameObjectModel;
-struct WoWGameObject;
 class GameEvent;
 struct QuestRelation;
 

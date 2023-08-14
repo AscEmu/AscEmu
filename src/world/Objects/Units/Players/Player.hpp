@@ -22,6 +22,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/UpdateFieldInclude.h"
 #include "Map/Maps/InstanceMgr.hpp"
 
+namespace MySQLStructure
+{
+    struct VendorRestrictions;
+}
+
 struct VoidStorageItem;
 class TradeData;
 class ItemInterface;

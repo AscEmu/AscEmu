@@ -7,11 +7,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Map/RecastIncludes.hpp"
 #include "Objects/Units/Creatures/AIEvents.h"
-#include "Objects/Units/Unit.hpp"
+//#include "Objects/Units/Unit.hpp"
 #include "Macros/AIInterfaceMacros.hpp"
 #include "Objects/Units/Creatures/CreatureDefines.hpp"
 #include "Server/Script/ScriptEvent.hpp"
 #include "Chat/ChatDefines.hpp"
+#include "Storage/MySQLStructures.h"
 
 inline bool inRangeYZX(const float* v1, const float* v2, const float r, const float h)
 {
@@ -32,6 +33,7 @@ class WorldSession;
 class SpellCastTargets;
 class CreatureAIScript;
 class CreatureGroup;
+
 
 enum AI_SCRIPT_EVENT_TYPES
 {

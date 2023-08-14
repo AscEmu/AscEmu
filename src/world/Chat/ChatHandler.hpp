@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "CommonTypes.hpp"
 #include "AEVersion.hpp"
-//#include "ChatDefines.hpp"
 
 #include <string>
 

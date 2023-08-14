@@ -11,10 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Data/WoWUnit.hpp"
 #include "ThreatHandler.h"
 #include "CombatHandler.hpp"
-
-#include "Storage/MySQLStructures.h"
 #include "Management/LootMgr.h"
-
 #include "Spell/Definitions/AuraEffects.hpp"
 #include "Spell/Definitions/AuraSlots.hpp"
 #include "Spell/Definitions/AuraStates.hpp"
@@ -31,6 +28,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include <list>
 #include <optional>
 
+
+namespace MySQLStructure
+{
+    struct NpcScriptText;
+}
 
 class SpellCastTargets;
 struct AbstractFollower;

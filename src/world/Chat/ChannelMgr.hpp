@@ -5,10 +5,14 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Channel.hpp"
+#include "CommonTypes.hpp"
 
+#include <map>
 #include <mutex>
 #include <vector>
+
+class Player;
+class Channel;
 
 namespace WDB
 {

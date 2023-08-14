@@ -5,28 +5,22 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <set>
-#include <map>
-#include <mutex>
-#include <shared_mutex>
-
 #include "ObjectDefines.hpp"
 #include "Server/UpdateMask.h"
 #include "CommonTypes.hpp"
 #include "Server/EventableObject.h"
-#include "WoWGuid.h"
-#include <LocationVector.h>
-#include "Storage/MySQLStructures.h"
-#include "Storage/WDB/WDBStructures.hpp"
 #include "CommonDefines.hpp"
-#include "WorldPacket.h"
 #include "Units/Creatures/CreatureDefines.hpp"
-#include "Data/WoWObject.hpp"
 #include "MovementInfo.hpp"
 #include "Macros/MapsMacros.hpp"
 #include "Spell/Definitions/ProcFlags.hpp"
 #include "Spell/Definitions/School.hpp"
 #include "Units/UnitDefines.hpp"
+
+#include <set>
+#include <map>
+#include <mutex>
+#include <shared_mutex>
 
 struct WoWObject;
 class SpellInfo;

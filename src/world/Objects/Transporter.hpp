@@ -9,6 +9,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObject.h"
 
 
+namespace MySQLStructure
+{
+    struct CreatureSpawn;
+}
+
 class SERVER_DECL Transporter : public GameObject, public TransportBase
 {
     friend Transporter* TransportHandler::createTransport(uint32_t, WorldMap*);
