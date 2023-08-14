@@ -8,6 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WarsongGulchDefinitions.h"
 #include "Management/Battleground/Battleground.hpp"
 
+class BattlegroundMap;
+
 class WarsongGulch : public Battleground
 {
     GameObject* m_buffs[6];

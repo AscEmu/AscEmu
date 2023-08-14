@@ -4,7 +4,9 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Chat/ChatHandler.hpp"
-#include "Management/GameEvent.h"
+#include "Management/GameEvent.hpp"
+#include "Management/GameEventMgr.hpp"
+#include "Utilities/Util.hpp"
 
 //.event list
 bool ChatHandler::HandleEventListEvents(const char* /*args*/, WorldSession* m_session)

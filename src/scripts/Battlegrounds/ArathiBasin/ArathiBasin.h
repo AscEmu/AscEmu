@@ -8,6 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ArathiBasinDefinitions.h"
 #include "Management/Battleground/Battleground.hpp"
 
+class BattlegroundMap;
+
 class ArathiBasin : public Battleground
 {
 public:

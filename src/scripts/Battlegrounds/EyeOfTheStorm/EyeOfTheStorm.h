@@ -8,6 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "EyeOfTheStormDefinitions.h"
 #include "Management/Battleground/Battleground.hpp"
 
+class BattlegroundMap;
+
 class EyeOfTheStorm : public Battleground
 {
 public:

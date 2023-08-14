@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Management/Battleground/Battleground.hpp"
 #include "Management/Battleground/BattlegroundMgr.hpp"
-#include "Management/Arenas.h"
+#include "Management/Arenas.hpp"
 #include "Management/ArenaTeam.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Chat/ChatHandler.hpp"

@@ -5,15 +5,22 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "Server/EventableObject.h"
 #include "Objects/Units/Players/PlayerDefines.hpp"
-#include "Objects/Units/Unit.hpp"
-#include "Objects/Object.hpp"
 #include "Logging/Log.hpp"
 
 #include <mutex>
 #include <atomic>
 
-/// \brief Base class for battleground scripts (see: AlteracValley, ArathiBasin, EyeOfTheStorm, IsleOfConquest, WarsongGulch)
+class Object;
+class Spell;
+class Unit;
+class LocationVector;
+class GameObject;
+class Creature;
+class WorldMap;
+
+
 class SERVER_DECL Battleground : public EventableObject
 {
     // MIT start
@@ -63,160 +70,141 @@ protected:
 
     bool m_isWeekend = false;
 
-    // MIT end
     friend class AVNode;
 
+public:
+    // Team->Player Map
+    std::set<Player*> m_players[2];
 
-    public:
+    void addInvisGM();
+    void removeInvisGM();
+    std::recursive_mutex& GetMutex();
 
-        // Team->Player Map
-        std::set<Player*> m_players[2];
+    void startBattleground();
+    void endBattleground(PlayerTeam winningTeam);
+    bool hasStarted();
+    bool hasEnded();
 
-        void addInvisGM();
-        void removeInvisGM();
-        std::recursive_mutex& GetMutex();
+    void addHonorToTeam(uint32_t team, uint32_t amount);
 
-        void startBattleground();
-        void endBattleground(PlayerTeam winningTeam);
-        bool hasStarted();
-        bool hasEnded();
+    void castSpellOnTeam(uint32_t team, uint32_t spell);
 
-        void addHonorToTeam(uint32_t team, uint32_t amount);
+    void removeAuraFromTeam(uint32_t team, uint32_t aura);
 
-        void castSpellOnTeam(uint32_t team, uint32_t spell);
+    void sendChatMessage(uint8_t Type, uint64_t Guid, const char* Format, ...);
 
-        void removeAuraFromTeam(uint32_t team, uint32_t aura);
+    // Retrieval Functions
+    uint32_t getId();
+    uint32_t getLevelGroup();
+    WorldMap* getWorldMap();
 
-        void sendChatMessage(uint8_t Type, uint64_t Guid, const char* Format, ...);
+    // Send the pvp log data of all players to this player
+    void sendPVPData(Player* plr);
 
-        // Retrieval Functions
-        uint32_t getId();
-        uint32_t getLevelGroup();
-        WorldMap* getWorldMap();
+    // Send a packet to the entire battleground
+    void distributePacketToAll(WorldPacket* packet);
 
+    // send a packet to only this team
+    void distributePacketToTeam(WorldPacket* packet, uint32_t Team);
+    void playSoundToTeam(uint32_t Team, uint32_t Sound);
+    void playSoundToAll(uint32_t Sound);
 
+    bool isFull();
 
-        // Send the pvp log data of all players to this player
-        void sendPVPData(Player* plr);
+    // Are we full?
+    bool hasFreeSlots(uint32_t Team, uint32_t type);
 
-        // Send a packet to the entire battleground
-        void distributePacketToAll(WorldPacket* packet);
+    void addPlayer(Player* plr, uint32_t team);
+    void removePlayer(Player* plr, bool logout);
+    void portPlayer(Player* plr, bool skip_teleport = false);
+    void removePendingPlayer(Player* plr);
+    uint32_t getFreeSlots(uint32_t t, uint32_t type);
 
-        // send a packet to only this team
-        void distributePacketToTeam(WorldPacket* packet, uint32_t Team);
+    GameObject* spawnGameObject(uint32_t entry, LocationVector const& v, uint32_t flags, uint32_t faction, float scale);
+    Creature* spawnCreature(uint32_t entry, float x, float y, float z, float o, uint32_t faction = 0);
+    Creature* spawnCreature(uint32_t entry, LocationVector& v, uint32_t faction = 0);
+    void updatePvPData();
 
-        void playSoundToTeam(uint32_t Team, uint32_t Sound);
+    uint32_t getStartTime();
+    uint32_t getType();
 
-        void playSoundToAll(uint32_t Sound);
+    // events should execute in the correct context
+    int32 event_GetInstanceID() override;
+    void eventCreate();
+    void eventCountdown();
+    void close();
 
-        bool isFull();
+    void setWorldState(uint32_t Index, uint32_t Value);
+    Creature* spawnSpiritGuide(float x, float y, float z, float o, uint32_t horde);
+    Creature* spawnSpiritGuide(LocationVector& v, uint32_t faction);
 
-        // Are we full?
-        bool hasFreeSlots(uint32_t Team, uint32_t type);
+    uint32_t getLastResurrect();
+    void addSpiritGuide(Creature* pCreature);
+    void removeSpiritGuide(Creature* pCreature);
+    void queuePlayerForResurrect(Player* plr, Creature* spirit_healer);
+    void removePlayerFromResurrect(Player* plr, Creature* spirit_healer);
+    void eventResurrectPlayers();
 
-        void addPlayer(Player* plr, uint32_t team);
-        void removePlayer(Player* plr, bool logout);
-        void portPlayer(Player* plr, bool skip_teleport = false);
-        void removePendingPlayer(Player* plr);
-        uint32_t getFreeSlots(uint32_t t, uint32_t type);
+    void buildPvPUpdateDataPacket(WorldPacket* data);
+    void onPlayerPushed(Player* plr);
 
-        //GameObject* spawnGameObject(uint32_t entry, uint32_t MapId, float x, float y, float z, float o, uint32_t flags, uint32_t faction, float scale);
-        GameObject* spawnGameObject(uint32_t entry, LocationVector const& v, uint32_t flags, uint32_t faction, float scale);
-        Creature* spawnCreature(uint32_t entry, float x, float y, float z, float o, uint32_t faction = 0);
-        Creature* spawnCreature(uint32_t entry, LocationVector& v, uint32_t faction = 0);
-        void updatePvPData();
+    void queueAtNearestSpiritGuide(Player* plr, Creature* old);
 
-        uint32_t getStartTime();
-        uint32_t getType();
+    static bool isTypeArena(uint32_t x);
+    bool isArena();
 
-        // events should execute in the correct context
-        int32 event_GetInstanceID() override;
-        void eventCreate();
+    uint32_t getFieldCount(uint32_t BGType);
 
+    // Hook Functions
+    virtual bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam);
+    virtual void HookOnPlayerResurrect(Player* player);
+    virtual void HookOnUnitDied(Unit* victim);
+    virtual void OnStart();
+    virtual void OnClose();
+    virtual bool HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell);
+    virtual bool HookQuickLockOpen(GameObject* go, Player* player, Spell* spell);
 
-        void eventCountdown();
+    // Pure Hooks
+    virtual void HookOnPlayerDeath(Player* plr) = 0;
 
-        void close();
+    // Repopping - different battlegrounds have different ways of handling this
+    virtual bool HookHandleRepop(Player* plr) = 0;
 
-        void setWorldState(uint32_t Index, uint32_t Value);
-        Creature* spawnSpiritGuide(float x, float y, float z, float o, uint32_t horde);
-        Creature* spawnSpiritGuide(LocationVector& v, uint32_t faction);
+    // In CTF battlegrounds mounting will cause you to lose your flag.
+    virtual void HookOnMount(Player* plr) = 0;
 
-        uint32_t getLastResurrect();
-        void addSpiritGuide(Creature* pCreature);
-        void removeSpiritGuide(Creature* pCreature);
-        void queuePlayerForResurrect(Player* plr, Creature* spirit_healer);
-        void removePlayerFromResurrect(Player* plr, Creature* spirit_healer);
-        void eventResurrectPlayers();
+    // Only used in CTF (as far as I know)
+    virtual void HookFlagDrop(Player* plr, GameObject* obj) = 0;
+    virtual void HookFlagStand(Player* plr, GameObject* obj) = 0;
+    virtual void HookOnFlagDrop(Player* plr) = 0;
 
+    // Used when a player kills a player
+    virtual void HookOnPlayerKill(Player* plr, Player* pVictim) = 0;
+    virtual void HookOnHK(Player* plr) = 0;
 
-        void buildPvPUpdateDataPacket(WorldPacket* data);
-        void onPlayerPushed(Player* plr);
+    // On Area Trigger
+    virtual void HookOnAreaTrigger(Player* plr, uint32_t id) = 0;
 
+    // On Shadow Sight
+    virtual void HookOnShadowSight() = 0;
 
-        void queueAtNearestSpiritGuide(Player* plr, Creature* old);
+    // On Loot Generating
+    virtual void HookGenerateLoot(Player* plr, Object* pCorpse) = 0;
 
-        static bool isTypeArena(uint32_t x);
+    // On Unit Killing
+    virtual void HookOnUnitKill(Player* plr, Unit* pVictim) = 0;
+    virtual void OnAddPlayer(Player* plr) = 0;
+    virtual void OnCreate() = 0;
+    virtual void OnRemovePlayer(Player* plr) = 0;
 
-        bool isArena();
+    // Get the starting position for this team.
+    virtual LocationVector GetStartingCoords(uint32_t Team) = 0;
 
-        uint32_t getFieldCount(uint32_t BGType);
-
-
-
-
-
-
-        // Hook Functions
-        virtual bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam);
-        virtual void HookOnPlayerResurrect(Player* player);
-        virtual void HookOnUnitDied(Unit* victim);
-        virtual void OnStart();
-        virtual void OnClose();
-        virtual bool HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell);
-        virtual bool HookQuickLockOpen(GameObject* go, Player* player, Spell* spell);
-
-        // Pure Hooks
-        virtual void HookOnPlayerDeath(Player* plr) = 0;
-
-        // Repopping - different battlegrounds have different ways of handling this
-        virtual bool HookHandleRepop(Player* plr) = 0;
-
-        // In CTF battlegrounds mounting will cause you to lose your flag.
-        virtual void HookOnMount(Player* plr) = 0;
-
-        // Only used in CTF (as far as I know)
-        virtual void HookFlagDrop(Player* plr, GameObject* obj) = 0;
-        virtual void HookFlagStand(Player* plr, GameObject* obj) = 0;
-        virtual void HookOnFlagDrop(Player* plr) = 0;
-
-        // Used when a player kills a player
-        virtual void HookOnPlayerKill(Player* plr, Player* pVictim) = 0;
-        virtual void HookOnHK(Player* plr) = 0;
-
-        // On Area Trigger
-        virtual void HookOnAreaTrigger(Player* plr, uint32_t id) = 0;
-
-        // On Shadow Sight
-        virtual void HookOnShadowSight() = 0;
-
-        // On Loot Generating
-        virtual void HookGenerateLoot(Player* plr, Object* pCorpse) = 0;
-
-        // On Unit Killing
-        virtual void HookOnUnitKill(Player* plr, Unit* pVictim) = 0;
-        virtual void OnAddPlayer(Player* plr) = 0;
-        virtual void OnCreate() = 0;
-        virtual void OnRemovePlayer(Player* plr) = 0;
-
-        // Get the starting position for this team.
-        virtual LocationVector GetStartingCoords(uint32_t Team) = 0;
-
-        virtual uint32_t GetNameID();
-        virtual bool CanPlayerJoin(Player* plr, uint32_t type);
-        virtual bool CreateCorpse(Player* plr);
-        virtual uint8_t Rated();
-        virtual void SetIsWeekend(bool isweekend);
-        virtual uint64_t GetFlagHolderGUID(uint32_t faction) const;
+    virtual uint32_t GetNameID();
+    virtual bool CanPlayerJoin(Player* plr, uint32_t type);
+    virtual bool CreateCorpse(Player* plr);
+    virtual uint8_t Rated();
+    virtual void SetIsWeekend(bool isweekend);
+    virtual uint64_t GetFlagHolderGUID(uint32_t faction) const;
 
 };

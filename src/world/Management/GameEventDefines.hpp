@@ -5,13 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <set>
+#include <cstdint>
 #include <map>
-#include <ctime>
+#include <set>
 #include <string>
-
-#include "CommonTypes.hpp"
-#include "Threading/AEThread.h"
 
 class GameEvent;
 
@@ -66,56 +63,56 @@ struct GameEventFinishCondition
 {
     float reqNum;               // required number // use float, since some events use percent
     float done;                 // done number
-    uint32 max_world_state;     // max resource count world state update id
-    uint32 done_world_state;    // done resource count world state update id
+    uint32_t max_world_state;     // max resource count world state update id
+    uint32_t done_world_state;    // done resource count world state update id
 };
 
-typedef std::map<uint32 /*condition id*/, GameEventFinishCondition> GameEventConditionMap;
+typedef std::map<uint32_t /*condition id*/, GameEventFinishCondition> GameEventConditionMap;
 
 struct EventNamesQueryResult
 {
-    uint32 entry;
+    uint32_t entry;
     time_t start_time;
     time_t end_time;
-    uint32 occurence;
-    uint32 length;
+    uint32_t occurence;
+    uint32_t length;
     HolidayIds holiday_id;
     std::string description;
     GameEventState world_event;
-    uint8 announce;
+    uint8_t announce;
 };
 
 struct EventCreatureSpawnsQueryResult
 {
-    uint32 event_entry;
-    uint32 id;
-    uint32 entry;
-    uint16 map_id;
+    uint32_t event_entry;
+    uint32_t id;
+    uint32_t entry;
+    uint16_t map_id;
     float position_x;
     float position_y;
     float position_z;
     float orientation;
-    uint8 movetype;
-    uint32 displayid;
-    uint32 faction;
-    uint32 flags;
-    uint32 bytes0;
-    uint32 bytes1;
-    uint32 bytes2;
-    uint16 emote_state;
-    uint32 npc_respawn_link;
-    uint32 channel_spell;
-    uint32 channel_target_sqlid;
-    uint32 channel_target_sqlid_creature;
-    uint8 standstate;
-    uint8 death_state;
-    uint32 mountdisplayid;
-    uint32 slot1item;
-    uint32 slot2item;
-    uint32 slot3item;
-    uint16 CanFly;
-    uint32 phase;
-    uint32 waypoint_group;
+    uint8_t movetype;
+    uint32_t displayid;
+    uint32_t faction;
+    uint32_t flags;
+    uint32_t bytes0;
+    uint32_t bytes1;
+    uint32_t bytes2;
+    uint16_t emote_state;
+    uint32_t npc_respawn_link;
+    uint32_t channel_spell;
+    uint32_t channel_target_sqlid;
+    uint32_t channel_target_sqlid_creature;
+    uint8_t standstate;
+    uint8_t death_state;
+    uint32_t mountdisplayid;
+    uint32_t slot1item;
+    uint32_t slot2item;
+    uint32_t slot3item;
+    uint16_t CanFly;
+    uint32_t phase;
+    uint32_t waypoint_group;
 };
 
 struct EventGameObjectSpawnsQueryResult
@@ -137,65 +134,8 @@ struct EventGameObjectSpawnsQueryResult
     uint32_t state;
 };
 
-typedef std::map<uint32, GameEvent*> GameEvents;
-typedef std::set<uint16> ActiveEvents;
+typedef std::map<uint32_t, GameEvent*> GameEvents;
+typedef std::set<uint16_t> ActiveEvents;
 
-typedef std::map<uint32, uint32> NPCGuidList;
-typedef std::map<uint32, uint32> GOBGuidList;
-
-class GameEventMgr
-{
-    private:
-
-        GameEventMgr() = default;
-        ~GameEventMgr() = default;
-
-    public:
-
-        class GameEventMgrThread
-        {
-            private:
-
-                GameEventMgrThread() = default;
-                ~GameEventMgrThread() = default;
-
-            public:
-
-                static GameEventMgrThread& getInstance();
-                void initialize();
-                void finalize();
-
-                GameEventMgrThread(GameEventMgrThread&&) = delete;
-                GameEventMgrThread(GameEventMgrThread const&) = delete;
-                GameEventMgrThread& operator=(GameEventMgrThread&&) = delete;
-                GameEventMgrThread& operator=(GameEventMgrThread const&) = delete;
-
-                bool m_IsActive = false;
-
-                void Update();
-
-                std::unique_ptr<AscEmu::Threading::AEThread> m_reloadThread;
-                uint32_t m_reloadTime;
-        };
-
-        static GameEventMgr& getInstance();
-        void initialize();
-
-        GameEventMgr(GameEventMgr&&) = delete;
-        GameEventMgr(GameEventMgr const&) = delete;
-        GameEventMgr& operator=(GameEventMgr&&) = delete;
-        GameEventMgr& operator=(GameEventMgr const&) = delete;
-
-        ActiveEvents const& GetActiveEventList() const { return mActiveEvents; }
-        void StartArenaEvents();
-        void LoadFromDB();
-        GameEvent* GetEventById(uint32 pEventId);
-
-        GameEvents mGameEvents;
-        ActiveEvents mActiveEvents;
-        NPCGuidList mNPCGuidList;
-        GOBGuidList mGOBGuidList;
-};
-
-#define sGameEventMgr GameEventMgr::getInstance()
-#define sGameEventMgrThread GameEventMgr::GameEventMgrThread::getInstance()
+typedef std::map<uint32_t, uint32_t> NPCGuidList;
+typedef std::map<uint32_t, uint32_t> GOBGuidList;

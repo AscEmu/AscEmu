@@ -1,25 +1,10 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "Management/ItemInterface.h"
-#include "Management/Arenas.h"
+#include "Management/Arenas.hpp"
 #include "Management/ArenaTeam.hpp"
 #include "Management/WorldStates.h"
 #include "Map/Management/MapMgr.hpp"
@@ -27,21 +12,20 @@
 #include "Objects/GameObject.h"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/GameObjectProperties.hpp"
-#include "Server/Script/ScriptMgr.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Management/Battleground/BattlegroundDefines.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Server/Script/HookInterface.hpp"
 
-const uint32 ARENA_PREPARATION = 32727;
+const uint32_t ARENA_PREPARATION = 32727;
 
-const uint32 GREEN_TEAM = 0;
-const uint32 GOLD_TEAM = 1;
+const uint32_t GREEN_TEAM = 0;
+const uint32_t GOLD_TEAM = 1;
 
-Arena::Arena(WorldMap* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side) : Battleground(mgr, id, lgroup, t)
+Arena::Arena(WorldMap* _worldMap, uint32_t _id, uint32_t _levelGroup, uint32_t _arenaType, uint32_t _playersPerSide) : Battleground(_worldMap, _id, _levelGroup, _arenaType)
 {
 
-    for (uint8 i = 0; i < 2; i++)
+    for (uint8_t i = 0; i < 2; i++)
     {
         m_players[i].clear();
         m_pendPlayers[i].clear();
@@ -51,53 +35,49 @@ Arena::Arena(WorldMap* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_p
     m_resurrectMap.clear();
 
     m_hasStarted = false;
-    m_playerCountPerTeam = players_per_side;
-    m_buffs[0] = m_buffs[1] = NULL;
-    m_playersCount[0] = m_playersCount[1] = 0;
-    m_teams[0] = m_teams[1] = NULL;
+    m_playerCountPerTeam = _playersPerSide;
 
-    switch (t)
+    switch (_arenaType)
     {
-        case BattlegroundDef::TYPE_ARENA_5V5:
-            m_arenateamtype = 2;
-            break;
-        case BattlegroundDef::TYPE_ARENA_3V3:
-            m_arenateamtype = 1;
-            break;
-        case BattlegroundDef::TYPE_ARENA_2V2:
-            m_arenateamtype = 0;
-            break;
-        default:
-            m_arenateamtype = 0;
-            break;
+    case BattlegroundDef::TYPE_ARENA_5V5:
+        m_arenateamtype = 2;
+        break;
+    case BattlegroundDef::TYPE_ARENA_3V3:
+        m_arenateamtype = 1;
+        break;
+    case BattlegroundDef::TYPE_ARENA_2V2:
+        m_arenateamtype = 0;
+        break;
+    default:
+        m_arenateamtype = 0;
+        break;
     }
-    rated_match = false;
 
     switch (m_mapMgr->getBaseMap()->getMapId())
     {
-        case 559:
-            m_zoneId = 3698;
-            break;
-        case 562:
-            m_zoneId = 3702;
-            break;
-        case 572:
-            m_zoneId = 3968;
-            break;
-        case 617:
-            m_zoneId = 4378;
-            break;
-        case 618:
-            m_zoneId = 4408;
-            break;
-        default:
-            break;
+    case 559:
+        m_zoneId = 3698;
+        break;
+    case 562:
+        m_zoneId = 3702;
+        break;
+    case 572:
+        m_zoneId = 3968;
+        break;
+    case 617:
+        m_zoneId = 4378;
+        break;
+    case 618:
+        m_zoneId = 4408;
+        break;
+    default:
+        break;
     }
 }
 
 Arena::~Arena()
 {
-    for (uint8 i = 0; i < 2; ++i)
+    for (uint8_t i = 0; i < 2; ++i)
     {
         // buffs may not be spawned, so delete them if they're not
         if (m_buffs[i] && m_buffs[i]->IsInWorld() == false)
@@ -116,21 +96,21 @@ Arena::~Arena()
 }
 
 // \todo Rewrite this function entirely
-bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
+bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam _winningTeam)
 {
     // update arena team stats
     if (rated_match)
     {
         m_deltaRating[0] = m_deltaRating[1] = 0;
-        for (uint8 i = 0; i < 2; ++i)
+        for (uint8_t i = 0; i < 2; ++i)
         {
-            uint8 j = i ? 0 : 1; // opposing side
+            uint8_t j = i ? 0 : 1; // opposing side
             bool outcome;
 
             if (m_teams[i] == NULL || m_teams[j] == NULL)
                 continue;
 
-            outcome = (i == winningTeam);
+            outcome = (i == _winningTeam);
             if (outcome)
             {
                 m_teams[i]->m_stats.won_season++;
@@ -139,9 +119,9 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
 
             m_deltaRating[i] = CalcDeltaRating(m_teams[i]->m_stats.rating, m_teams[j]->m_stats.rating, outcome);
             m_teams[i]->m_stats.rating += m_deltaRating[i];
-            if (static_cast<int32>(m_teams[i]->m_stats.rating) < 0) m_teams[i]->m_stats.rating = 0;
+            if (static_cast<int32_t>(m_teams[i]->m_stats.rating) < 0) m_teams[i]->m_stats.rating = 0;
 
-            for (std::set<uint32>::iterator itr = m_players2[i].begin(); itr != m_players2[i].end(); ++itr)
+            for (std::set<uint32_t>::iterator itr = m_players2[i].begin(); itr != m_players2[i].end(); ++itr)
             {
                 std::shared_ptr<CachedCharacterInfo> info = sObjectMgr.getCachedCharacterInfo(*itr);
                 if (info)
@@ -151,7 +131,7 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
                     if (tp != NULL)
                     {
                         tp->PersonalRating += CalcDeltaRating(tp->PersonalRating, m_teams[j]->m_stats.rating, outcome);
-                        if (static_cast<int32>(tp->PersonalRating) < 0)
+                        if (static_cast<int32_t>(tp->PersonalRating) < 0)
                             tp->PersonalRating = 0;
 
                         if (outcome)
@@ -171,14 +151,14 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
 
     m_nextPvPUpdateTime = 0;
     updatePvPData();
-    playSoundToAll(winningTeam ? BattlegroundDef::ALLIANCEWINS : BattlegroundDef::HORDEWINS);
+    playSoundToAll(_winningTeam ? BattlegroundDef::ALLIANCEWINS : BattlegroundDef::HORDEWINS);
 
     sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_CLOSE);
-    sEventMgr.AddEvent(static_cast< Battleground* >(this), &Battleground::close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(static_cast<Battleground*>(this), &Battleground::close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-    for (uint8 i = 0; i < 2; i++)
+    for (uint8_t i = 0; i < 2; i++)
     {
-        bool victorious = (i == winningTeam);
+        bool victorious = (i == _winningTeam);
         std::set<Player*>::iterator itr = m_players[i].begin();
         for (; itr != m_players[i].end(); ++itr)
         {
@@ -195,17 +175,17 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
     return false;
 }
 
-void Arena::OnAddPlayer(Player* plr)
+void Arena::OnAddPlayer(Player* _player)
 {
-    if (plr == NULL)
+    if (_player == NULL)
         return;
 
-    plr->m_deathVision = true;
+    _player->m_deathVision = true;
 
     // remove all buffs (exclude talents, include flasks)
     for (uint16_t x = AuraSlots::REMOVABLE_SLOT_START; x < AuraSlots::REMOVABLE_SLOT_END; x++)
     {
-        if (auto* const aur = plr->getAuraWithAuraSlot(x))
+        if (auto* const aur = _player->getAuraWithAuraSlot(x))
         {
             if (!aur->getSpellInfo()->getDurationIndex() && aur->getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD)
                 continue;
@@ -214,86 +194,86 @@ void Arena::OnAddPlayer(Player* plr)
         }
     }
     // On arena start all conjured items are removed
-    plr->getItemInterface()->RemoveAllConjured();
+    _player->getItemInterface()->RemoveAllConjured();
     // On arena start remove all temp enchants
-    plr->removeTempItemEnchantsOnArena();
+    _player->removeTempItemEnchantsOnArena();
 
     // Before the arena starts all your cooldowns are reset
-    if (!m_hasStarted  && plr->IsInWorld())
-        plr->resetAllCooldowns();
+    if (!m_hasStarted && _player->IsInWorld())
+        _player->resetAllCooldowns();
 
-    // if (plr->m_isGmInvisible == false)
+    // if (_player->m_isGmInvisible == false)
     // Make sure the player isn't a GM an isn't invisible (monitoring?)
-    if (!plr->m_isGmInvisible)
+    if (!_player->m_isGmInvisible)
     {
-        if (!m_hasStarted  && plr->IsInWorld())
-            plr->castSpell(plr, ARENA_PREPARATION, true);
+        if (!m_hasStarted && _player->IsInWorld())
+            _player->castSpell(_player, ARENA_PREPARATION, true);
 
-        m_playersCount[plr->getTeam()]++;
+        m_playersCount[_player->getTeam()]++;
         UpdatePlayerCounts();
     }
     // If they're still queued for the arena, remove them from the queue
-    if (plr->isQueuedForBg())
-        plr->setIsQueuedForBg(false);
+    if (_player->isQueuedForBg())
+        _player->setIsQueuedForBg(false);
 
     // Add the green/gold team flag
-    Aura* aura = sSpellMgr.newAura(sSpellMgr.getSpellInfo((plr->getInitialTeam()) ? 35775 - plr->getBgTeam() : 32725 - plr->getBgTeam()), -1, plr, plr, true);
-    plr->addAura(aura);
+    Aura* aura = sSpellMgr.newAura(sSpellMgr.getSpellInfo((_player->getInitialTeam()) ? 35775 - _player->getBgTeam() : 32725 - _player->getBgTeam()), -1, _player, _player, true);
+    _player->addAura(aura);
 
-    plr->setFfaPvpFlag();
+    _player->setFfaPvpFlag();
 
-    m_playersAlive.insert(plr->getGuidLow());
+    m_playersAlive.insert(_player->getGuidLow());
 }
 
-void Arena::OnRemovePlayer(Player* plr)
+void Arena::OnRemovePlayer(Player* _player)
 {
     // remove arena readiness buff
-    plr->m_deathVision = false;
+    _player->m_deathVision = false;
 
-    plr->removeAllAuras();
+    _player->removeAllAuras();
 
     // Player has left arena, call HookOnPlayerDeath as if he died
-    HookOnPlayerDeath(plr);
+    HookOnPlayerDeath(_player);
 
-    plr->removeAllAurasById(plr->getInitialTeam() ? 35775 - plr->getBgTeam() : 32725 - plr->getBgTeam());
-    plr->removeFfaPvpFlag();
+    _player->removeAllAurasById(_player->getInitialTeam() ? 35775 - _player->getBgTeam() : 32725 - _player->getBgTeam());
+    _player->removeFfaPvpFlag();
 
     // Reset all their cooldowns and restore their HP/Mana/Energy to max
-    plr->resetAllCooldowns();
-    plr->setFullHealthMana();
+    _player->resetAllCooldowns();
+    _player->setFullHealthMana();
 }
 
-void Arena::HookOnPlayerKill(Player* plr, Player* pVictim)
+void Arena::HookOnPlayerKill(Player* _player, Player* _playerVictim)
 {
     if (!m_hasStarted)
     {
-        plr->kill(); //cheater.
+        _player->kill(); //cheater.
         return;
     }
 
-    if (pVictim->isPlayer())
+    if (_playerVictim->isPlayer())
     {
-        plr->m_bgScore.KillingBlows++;
+        _player->m_bgScore.KillingBlows++;
     }
 }
 
-void Arena::HookOnHK(Player* plr)
+void Arena::HookOnHK(Player* _player)
 {
-    plr->m_bgScore.HonorableKills++;
+    _player->m_bgScore.HonorableKills++;
 }
 
-void Arena::HookOnPlayerDeath(Player* plr)
+void Arena::HookOnPlayerDeath(Player* _player)
 {
-    if (plr)
+    if (_player)
     {
-        if (plr->m_isGmInvisible == true)
+        if (_player->m_isGmInvisible == true)
             return;
 
-        if (m_playersAlive.find(plr->getGuidLow()) != m_playersAlive.end())
+        if (m_playersAlive.find(_player->getGuidLow()) != m_playersAlive.end())
         {
-            m_playersCount[plr->getTeam()]--;
+            m_playersCount[_player->getTeam()]--;
             UpdatePlayerCounts();
-            m_playersAlive.erase(plr->getGuidLow());
+            m_playersAlive.erase(_player->getGuidLow());
         }
     }
     else
@@ -315,7 +295,7 @@ void Arena::HookOnShadowSight()
 void Arena::OnStart()
 {
     // remove arena readiness buff
-    for (uint8 i = 0; i < 2; ++i)
+    for (uint8_t i = 0; i < 2; ++i)
     {
         for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
@@ -337,7 +317,7 @@ void Arena::OnStart()
         }
     }
 
-    for (uint8 i = 0; i < 2; i++)
+    for (uint8_t i = 0; i < 2; i++)
     {
         if (m_teams[i] == NULL)
             continue;
@@ -363,8 +343,18 @@ void Arena::OnStart()
     playSoundToAll(BattlegroundDef::BATTLEGROUND_BEGIN);
 
     sEventMgr.RemoveEvents(this, EVENT_ARENA_SHADOW_SIGHT);
-    sEventMgr.AddEvent(static_cast< Battleground* >(this), &Battleground::HookOnShadowSight, EVENT_ARENA_SHADOW_SIGHT, 90000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(static_cast<Battleground*>(this), &Battleground::HookOnShadowSight, EVENT_ARENA_SHADOW_SIGHT, 90000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
+
+bool Arena::CanPlayerJoin(Player* _player, uint32_t _type)
+{
+    if (m_hasStarted)
+        return false;
+
+    return Battleground::CanPlayerJoin(_player, _type);
+}
+
+bool Arena::CreateCorpse(Player* /*plr*/) { return false; }
 
 void Arena::UpdatePlayerCounts()
 {
@@ -385,45 +375,51 @@ void Arena::UpdatePlayerCounts()
         this->endBattleground(TEAM_HORDE);
 }
 
-uint32 Arena::CalcDeltaRating(uint32 oldRating, uint32 opponentRating, bool outcome)
+uint32_t Arena::CalcDeltaRating(uint32_t _oldRating, uint32_t _opponentRating, bool _outcome)
 {
-    double power = (int)(opponentRating - oldRating) / 400.0f;
+    double power = (int)(_opponentRating - _oldRating) / 400.0f;
     double divisor = pow(10.0, power);
     divisor += 1.0;
 
     double winChance = 1.0 / divisor;
 
     // New Rating Calculation via Elo
-    // New Rating = Old Rating + K * (outcome - Expected Win Chance)
-    // outcome = 1 for a win and 0 for a loss (0.5 for a draw ... but we cant have that)
+    // New Rating = Old Rating + K * (_outcome - Expected Win Chance)
+    // _outcome = 1 for a win and 0 for a loss (0.5 for a draw ... but we cant have that)
     // K is the maximum possible change
     // Through investigation, K was estimated to be 32 (same as chess)
-    double multiplier = (outcome ? 1.0 : 0.0) - winChance;
+    double multiplier = (_outcome ? 1.0 : 0.0) - winChance;
     return long2int32(32.0 * multiplier);
 }
 
-uint32 Arena::GetTeamFaction(uint32 team)
+uint32_t Arena::GetTeamFaction(uint32_t _teamId)
 {
-    std::set< Player* >::iterator itr = m_players[team].begin();
+    std::set< Player* >::iterator itr = m_players[_teamId].begin();
     Player* p = *itr;
     return p->getTeam();
 }
 
-LocationVector Arena::GetStartingCoords(uint32 /*Team*/)
+uint8_t Arena::Rated() { return rated_match; }
+uint8_t Arena::GetArenaTeamType() const { return m_arenateamtype; }
+std::shared_ptr<ArenaTeam>* Arena::GetTeams() { return m_teams; }
+
+LocationVector Arena::GetStartingCoords(uint32_t /*Team*/)
 {
     return LocationVector(0, 0, 0, 0);
 }
+
+uint32_t Arena::GetNameID() { return 50; }
 
 bool Arena::HookHandleRepop(Player* /*plr*/)
 {
     return false;
 }
 
-void Arena::HookOnAreaTrigger(Player* plr, uint32 id)
+void Arena::HookOnAreaTrigger(Player* _player, uint32_t id)
 {
-    int32 buffslot = -1;
+    int32_t buffslot = -1;
 
-    if (plr)
+    if (_player)
     {
         switch (id)
         {
@@ -452,8 +448,8 @@ void Arena::HookOnAreaTrigger(Player* plr, uint32 id)
                     sLogger.failure("Arena::HookOnAreaTrigger: tried to use invalid spell %u for gameobject %u", m_buffs[buffslot]->GetGameObjectProperties()->raw.parameter_3, m_buffs[buffslot]->GetGameObjectProperties()->entry);
                 }
 
-                Spell* s = sSpellMgr.newSpell(plr, sp, true, 0);
-                SpellCastTargets targets(plr->getGuid());
+                Spell* s = sSpellMgr.newSpell(_player, sp, true, 0);
+                SpellCastTargets targets(_player->getGuid());
                 s->prepare(&targets);
 
                 // despawn the gameobject (not delete!)
@@ -465,6 +461,17 @@ void Arena::HookOnAreaTrigger(Player* plr, uint32 id)
     {
         sLogger.failure("Tried to call Arena::HookOnAreaTrigger with nullptr player pointer");
     }
+}
+
+int32_t Arena::GetFreeTeam() const
+{
+    size_t c0 = m_players[0].size() + m_pendPlayers[0].size();
+    size_t c1 = m_players[1].size() + m_pendPlayers[1].size();
+    if (m_hasStarted)
+        return -1;
+
+    // Check if there is free room, if yes, return team with less members
+    return ((c0 + c1 >= m_playerCountPerTeam * 2) ? -1 : (c0 > c1));
 }
 
 void Arena::HookGenerateLoot(Player* /*plr*/, Object* /*pCorpse*/)    // Not Used

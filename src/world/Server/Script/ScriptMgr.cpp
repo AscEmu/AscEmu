@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldConf.h"
 #include "CommonTypes.hpp"
 #include "CreatureAIScript.hpp"
-#include "Management/GameEvent.h"
+#include "Management/GameEvent.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Map/Management/MapMgr.hpp"
@@ -26,6 +26,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "AchievementScript.hpp"
 #include "QuestScript.hpp"
+#include "Management/GameEventMgr.hpp"
 #include "Management/Gossip/GossipScript.hpp"
 #include "Server/ServerState.h"
 

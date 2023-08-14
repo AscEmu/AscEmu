@@ -3,105 +3,118 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Management/GameEvent.h"
+#include "Management/GameEvent.hpp"
+
+#include "GameEventDefines.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
+#include "Objects/Units/Creatures/Creature.h"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/Script/EventScript.hpp"
-#include "Server/Script/ScriptMgr.hpp"
 
-void GameEvent::CreateNPCs()
+GameEvent::GameEvent(EventNamesQueryResult result)
 {
-    for (auto npc : npc_data)
-    {
-        auto mapmgr = sMapMgr.findWorldMap(npc.map_id);
-        if (mapmgr == nullptr)
-            continue;
+    event_id = result.entry;
+    start = result.start_time;
+    end = result.end_time;
+    occurence = result.occurence;
+    length = result.length;
+    holiday_id = result.holiday_id;
+    description = std::string(result.description);
+    //state = result.world_event;
+    announce = result.announce;
 
-        Creature* c = mapmgr->createCreature(npc.entry);
-        CreatureProperties const* cp = sMySQLStore.getCreatureProperties(npc.entry);
-        if (cp == nullptr)
-        {
-            sLogger.failure("try to create invalid creature %u!", npc.entry);
-            continue;
-        }
+    // Set later by event_save data, if any
+    state = GAMEEVENT_INACTIVE;
+    nextstart = 0;
 
-        c->Load(cp, npc.position_x, npc.position_y, npc.position_z, npc.orientation);
-        if (npc.waypoint_group != 0)
-        {
-            // todo aaron02
-        }
-
-        // Set up spawn specific information
-        c->setDisplayId(npc.displayid);
-        c->setFaction(npc.faction);
-
-        // Equipment
-        c->setVirtualItemSlotId(MELEE, cp->itemslot_1);
-        c->setVirtualItemSlotId(OFFHAND, cp->itemslot_2);
-        c->setVirtualItemSlotId(RANGED, cp->itemslot_3);
-
-        if (npc.mountdisplayid != 0)
-            c->setMountDisplayId(npc.mountdisplayid);
-
-        c->mEvent = this;
-        bool addToWorld = true;
-        if (mEventScript != nullptr)
-        {
-            addToWorld = mEventScript->OnCreatureLoad(this, c);
-        }
-        if (addToWorld)
-        {
-            c->AddToWorld(mapmgr);
-            active_npcs.push_back(c);
-        }
-        else
-        {
-            c->Delete();
-        }
-    }
+    mEventScript = nullptr;
 }
 
-void GameEvent::CreateObjects()
+void GameEvent::SetState(GameEventState pState)
 {
-    for (auto gobj : gameobject_data)
-    {
-        auto mapmgr = sMapMgr.findWorldMap(gobj.map_id);
-        if (mapmgr == NULL)
-            continue;
+    auto oldstate = state;
+    pState = OnStateChange(oldstate, pState);
 
-        GameObject* g = mapmgr->createGameObject(gobj.entry);
-        g->create(gobj.entry, mapmgr, gobj.phase, LocationVector(gobj.position_x, gobj.position_y, gobj.position_z, gobj.facing), QuaternionData(), GameObject_State(gobj.state));
+    if (state == pState)
+        return;
 
-        // Set up spawn specific information
-        MySQLStructure::GameObjectSpawnOverrides const* overrides = sMySQLStore.getGameObjectOverride(gobj.id);
-        if (overrides)
-        {
-            g->setScale(overrides->scale);
-
-            if (overrides->faction != 0)
-                g->SetFaction(overrides->faction);
-
-            g->setFlags(overrides->flags);
-        }
-
-        bool addToWorld = true;
-        if (mEventScript != nullptr)
-        {
-            addToWorld = mEventScript->OnGameObjectLoad(this, g);
-        }
-        if (addToWorld)
-        {
-            g->AddToWorld(mapmgr);
-            active_gameobjects.push_back(g);
-        }
-        else
-        {
-            g->Delete();
-        }
-    }
+    state = pState;
 }
+
+GameEventState GameEvent::GetState() { return state; }
+
+GameEventState GameEvent::OnStateChange(GameEventState pOldState, GameEventState pNewState)
+{
+    if (mEventScript != nullptr)
+        pNewState = mEventScript->OnEventStateChange(this, pOldState, pNewState);
+
+    if (pOldState == pNewState)
+        return pNewState;
+
+    // Save new state to DB before calling handler
+    const char* updateQuery = "REPLACE INTO gameevent_save (event_entry, state, next_start) VALUES (%u, %u, %u)";
+    CharacterDatabase.Execute(updateQuery, event_id, pNewState, nextstart);
+
+    bool shouldStop = true;
+    bool shouldStart = true;
+
+    switch (pNewState)
+    {
+        case GAMEEVENT_INACTIVE: // Despawn all entities
+        case GAMEEVENT_INACTIVE_FORCED:
+            if (mEventScript != nullptr)
+                shouldStop = mEventScript->OnBeforeEventStop(this, pOldState);
+
+            if (shouldStop)
+                DestroyAllEntities();
+
+            if (mEventScript != nullptr)
+                mEventScript->OnAfterEventStop(this, pOldState);
+
+            break;
+        case GAMEEVENT_ACTIVE: // Spawn all entities
+        case GAMEEVENT_ACTIVE_FORCED:
+        case GAMEEVENT_PREPARING: // Not yet supported, but should be used for things like darkmoon preparation
+            if (mEventScript != nullptr)
+                shouldStart = mEventScript->OnBeforeEventStart(this, pOldState);
+
+            if (shouldStart)
+            {
+                DestroyAllEntities();
+                SpawnAllEntities();
+            }
+
+            if (mEventScript != nullptr)
+                mEventScript->OnAfterEventStart(this, pOldState);
+            break;
+    }
+
+    return pNewState;
+}
+
+bool GameEvent::StartEvent(bool forced)
+{
+    if (forced)
+        SetState(GAMEEVENT_ACTIVE_FORCED);
+    else
+        SetState(GAMEEVENT_ACTIVE);
+
+    return GetState() == GAMEEVENT_ACTIVE || GetState() == GAMEEVENT_ACTIVE_FORCED;
+}
+
+bool GameEvent::StopEvent(bool forced)
+{
+    if (forced)
+        SetState(GAMEEVENT_INACTIVE_FORCED);
+    else
+        SetState(GAMEEVENT_INACTIVE);
+
+    return GetState() == GAMEEVENT_INACTIVE || GetState() == GAMEEVENT_INACTIVE_FORCED;
+}
+
+bool GameEvent::isValid() const { return length > 0 && end > time(nullptr); }
 
 void GameEvent::SpawnAllEntities()
 {
@@ -137,90 +150,93 @@ void GameEvent::DestroyAllEntities()
     active_gameobjects.clear();
 }
 
-void GameEvent::SetState(GameEventState pState)
+void GameEvent::CreateNPCs()
 {
-    auto oldstate = state;
-    pState = OnStateChange(oldstate, pState);
-
-    if (state == pState)
-        return;
-
-    state = pState;
-}
-
-GameEventState GameEvent::OnStateChange(GameEventState pOldState, GameEventState pNewState)
-{
-    if (mEventScript != nullptr)
-        pNewState = mEventScript->OnEventStateChange(this, pOldState, pNewState);
-
-    if (pOldState == pNewState)
-        return pNewState;
-
-    // Save new state to DB before calling handler
-    const char* updateQuery = "REPLACE INTO gameevent_save (event_entry, state, next_start) VALUES (%u, %u, %u)";
-    CharacterDatabase.Execute(updateQuery, event_id, pNewState, nextstart);
-
-    bool shouldStop = true;
-    bool shouldStart = true;
-
-    switch (pNewState)
+    for (const auto npc : npc_data)
     {
-    case GAMEEVENT_INACTIVE: // Despawn all entities
-    case GAMEEVENT_INACTIVE_FORCED:
-        if (mEventScript != nullptr)
-            shouldStop = mEventScript->OnBeforeEventStop(this, pOldState);
+        auto mapmgr = sMapMgr.findWorldMap(npc.map_id);
+        if (mapmgr == nullptr)
+            continue;
 
-        if (shouldStop)
-            DestroyAllEntities();
-
-        if (mEventScript != nullptr)
-            mEventScript->OnAfterEventStop(this, pOldState);
-
-        break;
-    case GAMEEVENT_ACTIVE: // Spawn all entities
-    case GAMEEVENT_ACTIVE_FORCED:
-    case GAMEEVENT_PREPARING: // Not yet supported, but should be used for things like darkmoon preparation
-        if (mEventScript != nullptr)
-            shouldStart = mEventScript->OnBeforeEventStart(this, pOldState);
-
-        if (shouldStart)
+        Creature* creature = mapmgr->createCreature(npc.entry);
+        CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(npc.entry);
+        if (creatureProperties == nullptr)
         {
-            DestroyAllEntities();
-            SpawnAllEntities();
+            sLogger.failure("try to create invalid creature %u!", npc.entry);
+            continue;
         }
 
+        creature->Load(creatureProperties, npc.position_x, npc.position_y, npc.position_z, npc.orientation);
+        if (npc.waypoint_group != 0)
+        {
+            // todo aaron02
+        }
+
+        // Set up spawn specific information
+        creature->setDisplayId(npc.displayid);
+        creature->setFaction(npc.faction);
+
+        // Equipment
+        creature->setVirtualItemSlotId(MELEE, creatureProperties->itemslot_1);
+        creature->setVirtualItemSlotId(OFFHAND, creatureProperties->itemslot_2);
+        creature->setVirtualItemSlotId(RANGED, creatureProperties->itemslot_3);
+
+        if (npc.mountdisplayid != 0)
+            creature->setMountDisplayId(npc.mountdisplayid);
+
+        creature->mEvent = this;
+        bool addToWorld = true;
         if (mEventScript != nullptr)
-            mEventScript->OnAfterEventStart(this, pOldState);
-        break;
+        {
+            addToWorld = mEventScript->OnCreatureLoad(this, creature);
+        }
+        if (addToWorld)
+        {
+            creature->AddToWorld(mapmgr);
+            active_npcs.push_back(creature);
+        }
+        else
+        {
+            creature->Delete();
+        }
     }
-
-    return pNewState;
 }
 
-bool GameEvent::StartEvent(bool forced)
+void GameEvent::CreateObjects()
 {
-    if (forced)
+    for (auto gobj : gameobject_data)
     {
-        SetState(GAMEEVENT_ACTIVE_FORCED);
-    }
-    else
-    {
-        SetState(GAMEEVENT_ACTIVE);
-    }
+        auto mapmgr = sMapMgr.findWorldMap(gobj.map_id);
+        if (mapmgr == nullptr)
+            continue;
 
-    return GetState() == GAMEEVENT_ACTIVE || GetState() == GAMEEVENT_ACTIVE_FORCED;
-}
+        GameObject* gameObject = mapmgr->createGameObject(gobj.entry);
+        gameObject->create(gobj.entry, mapmgr, gobj.phase, LocationVector(gobj.position_x, gobj.position_y, gobj.position_z, gobj.facing), QuaternionData(), GameObject_State(gobj.state));
 
-bool GameEvent::StopEvent(bool forced)
-{
-    if (forced)
-    {
-        SetState(GAMEEVENT_INACTIVE_FORCED);
-    }
-    else
-    {
-        SetState(GAMEEVENT_INACTIVE);
-    }
+        // Set up spawn specific information
+        if (MySQLStructure::GameObjectSpawnOverrides const* overrides = sMySQLStore.getGameObjectOverride(gobj.id))
+        {
+            gameObject->setScale(overrides->scale);
 
-    return GetState() == GAMEEVENT_INACTIVE || GetState() == GAMEEVENT_INACTIVE_FORCED;
+            if (overrides->faction != 0)
+                gameObject->SetFaction(overrides->faction);
+
+            gameObject->setFlags(overrides->flags);
+        }
+
+        bool addToWorld = true;
+        if (mEventScript != nullptr)
+        {
+            addToWorld = mEventScript->OnGameObjectLoad(this, gameObject);
+        }
+        if (addToWorld)
+        {
+            gameObject->AddToWorld(mapmgr);
+            active_gameobjects.push_back(gameObject);
+        }
+        else
+        {
+            gameObject->Delete();
+        }
+    }
 }

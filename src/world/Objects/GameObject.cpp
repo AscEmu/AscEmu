@@ -23,7 +23,7 @@
 #include "GameObjectModel.h"
 #include "Data/WoWGameObject.hpp"
 
-#include "Management/GameEvent.h"
+#include "Management/GameEvent.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include <G3D/Quat.h>
 

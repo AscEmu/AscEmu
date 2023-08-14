@@ -18,12 +18,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Management/Battleground/Battleground.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Management/HonorHandler.h"
-#include "Management/Battleground/Battleground.hpp"
-
 #include "BattlegroundMgr.hpp"
-#include "Management/Arenas.h"
+#include "Management/Arenas.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
@@ -38,6 +37,7 @@
 #include "Server/Packets/SmsgBattlegroundPlayerJoined.h"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Storage/WorldStrings.h"
+
 
 Battleground::Battleground(WorldMap* worldMap, uint32_t id, uint32_t levelGroup, uint32_t type) : m_mapMgr(worldMap), m_id(id), m_type(type), m_levelGroup(levelGroup)
 {
@@ -89,12 +89,8 @@ Battleground::~Battleground()
 void Battleground::updatePvPData()
 {
     if (isTypeArena(m_type))
-    {
         if (!m_hasEnded)
-        {
             return;
-        }
-    }
 
     if (UNIXTIME >= m_nextPvPUpdateTime)
     {
@@ -256,14 +252,14 @@ void Battleground::addPlayer(Player* plr, uint32_t team)
 {
     std::lock_guard lock(m_mutex);
 
-    /* This is called when the player is added, not when they port. So, they're essentially still queued, but not inside the bg yet */
+    // This is called when the player is added, not when they port. So, they're essentially still queued, but not inside the bg yet
     m_pendPlayers[team].insert(plr->getGuidLow());
 
-    /* Send a packet telling them that they can enter */
+    // Send a packet telling them that they can enter
     plr->setPendingBattleground(this);
     sBattlegroundManager.sendBattlefieldStatus(plr, BattlegroundDef::STATUS_READY, m_type, m_id, 80000, m_mapMgr->getBaseMap()->getMapId(), Rated());        // You will be removed from the queue in 2 minutes.
 
-    /* Add an event to remove them in 1 minute 20 seconds time. */
+    // Add an event to remove them in 1 minute 20 seconds time
     sEventMgr.AddEvent(plr, &Player::removeFromBgQueue, EVENT_BATTLEGROUND_QUEUE_UPDATE, 80000, 1, 0);
 }
 
@@ -273,7 +269,7 @@ void Battleground::removePendingPlayer(Player* plr)
 
     m_pendPlayers[plr->getBgTeam()].erase(plr->getGuidLow());
 
-    /* send a null bg update (so they don't join) */
+    // send a null bg update (so they don't join)
     sBattlegroundManager.sendBattlefieldStatus(plr, BattlegroundDef::STATUS_NOFLAGS, 0, 0, 0, 0, 0);
     plr->setPendingBattleground(nullptr);
     plr->setBgTeam(plr->getTeam());
@@ -295,7 +291,7 @@ void Battleground::SetIsWeekend(bool /*isweekend*/)
 {
 }
 
-void Battleground::portPlayer(Player* plr, bool skip_teleport /* = false*/)
+void Battleground::portPlayer(Player* plr, bool skip_teleport)
 {
     std::lock_guard lock(m_mutex);
 
@@ -314,7 +310,7 @@ void Battleground::portPlayer(Player* plr, bool skip_teleport /* = false*/)
     plr->setFullHealthMana();
     plr->setTeam(plr->getBgTeam());
 
-    //Do not let everyone know an invisible gm has joined.
+    // Do not let everyone know an invisible gm has joined.
     if (plr->m_isGmInvisible == false)
         distributePacketToTeam(AscEmu::Packets::SmsgBattlegroundPlayerJoined(plr->getGuid()).serialise().get(), plr->getBgTeam());
     else
@@ -322,7 +318,7 @@ void Battleground::portPlayer(Player* plr, bool skip_teleport /* = false*/)
 
     m_players[plr->getBgTeam()].insert(plr);
 
-    /* remove from any auto queue remove events */
+    // remove from any auto queue remove events
     sEventMgr.RemoveEvents(plr, EVENT_BATTLEGROUND_QUEUE_UPDATE);
 
     if (!skip_teleport)
@@ -337,13 +333,13 @@ void Battleground::portPlayer(Player* plr, bool skip_teleport /* = false*/)
 
     plr->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_PVP_ENTER);
 
-    /* Reset the score */
+    // Reset the score
     memset(&plr->m_bgScore, 0, sizeof(BGScore));
 
-    /* update pvp data */
+    // update pvp data
     updatePvPData();
 
-    /* add the player to the group */
+    // add the player to the group
     if (plr->getGroup() && !Rated())
     {
         // remove them from their group
@@ -361,34 +357,16 @@ void Battleground::portPlayer(Player* plr, bool skip_teleport /* = false*/)
 
     if (!skip_teleport)
     {
-        /* This is where we actually teleport the player to the battleground. */
+        // This is where we actually teleport the player to the battleground
         plr->safeTeleport(m_mapMgr, GetStartingCoords(plr->getBgTeam()));
         sBattlegroundManager.sendBattlefieldStatus(plr, BattlegroundDef::STATUS_TIME, m_type, m_id, static_cast<uint32_t>(UNIXTIME) - m_startTime, m_mapMgr->getBaseMap()->getMapId(), Rated());     // Elapsed time is the last argument
     }
     else
     {
-        /* If we are not ported, call this immediatelly, otherwise its called after teleportation in Player::OnPushToWorld */
+        // If we are not ported, call this immediatelly, otherwise its called after teleportation in Player::OnPushToWorld
         OnAddPlayer(plr);
     }
 }
-
-//GameObject* Battleground::spawnGameObject(uint32_t entry, uint32_t MapId, float x, float y, float z, float o, uint32_t flags, uint32_t faction, float scale)
-//{
-//    if (GameObject* go = m_mapMgr->createGameObject(entry))
-//    {
-//        go->create(entry, m_mapMgr, 0, LocationVector(x, y, z, o), QuaternionData(), GO_STATE_CLOSED);
-//
-//        go->SetFaction(faction);
-//        go->setScale(scale);
-//        go->setFlags(flags);
-//        go->SetPosition(x, y, z, o);
-//        go->SetInstanceID(m_mapMgr->getInstanceId());
-//
-//        return go;
-//    }
-//
-//    return nullptr;
-//}
 
 GameObject* Battleground::spawnGameObject(uint32_t entry, LocationVector const& v, uint32_t flags, uint32_t faction, float scale)
 {
@@ -451,19 +429,12 @@ std::recursive_mutex& Battleground::GetMutex()
     return m_mutex;
 }
 
-/*!
- * Starts the current battleground
- * \sa Battleground::EndBattleground */
 void Battleground::startBattleground()
 {
     this->OnStart();
 }
 
-/*!
- * Ends the current battleground
- * \param winningTeam PlayerTeam that won the battleground
- * \sa Battleground::StartBattleground
- * \todo Move reward calculations to seperate functions */
+//todo Move reward calculations to seperate functions
 void Battleground::endBattleground(PlayerTeam winningTeam)
 {
     std::lock_guard lock(m_mutex);
@@ -506,15 +477,11 @@ void Battleground::endBattleground(PlayerTeam winningTeam)
     this->updatePvPData();
 }
 
-/*! \returns True if battleground has started
- *  \sa Battleground::HasEnded */
 bool Battleground::hasStarted()
 {
     return this->m_hasStarted;
 }
 
-/*! \returns True if battleground has ended
- *  \sa Battleground::HasStarted */
 bool Battleground::hasEnded()
 {
     return this->m_hasEnded;
@@ -555,8 +522,6 @@ void Battleground::sendChatMessage(uint8_t Type, uint64_t Guid, const char* Form
     distributePacketToAll(AscEmu::Packets::SmsgMessageChat(Type, 0, 0, msg, Guid).serialise().get());
 }
 
-/*! \returns True if Battleground should handle calculations, false if calculations were handled completely
- *  \param winningTeam PlayerTeam of the team that won the battleground */
 bool Battleground::HandleFinishBattlegroundRewardCalculation(PlayerTeam /*winningTeam*/)
 {
     return true;
@@ -607,7 +572,7 @@ void Battleground::removePlayer(Player* plr, bool logout)
 {
     std::lock_guard lock(m_mutex);
 
-    //Don't show invisible gm's leaving the game.
+    // Don't show invisible gm's leaving the game.
     if (plr->m_isGmInvisible == false)
         distributePacketToAll(AscEmu::Packets::SmsgBattlegroundPlayerLeft(plr->getGuid()).serialise().get());
     else
@@ -622,21 +587,20 @@ void Battleground::removePlayer(Player* plr, bool logout)
     m_players[plr->getBgTeam()].erase(plr);
     memset(&plr->m_bgScore, 0, sizeof(BGScore));
 
-    /* are we in the group? */
+    // are we in the group?
     if (plr->getGroup() == m_groups[plr->getBgTeam()])
         plr->getGroup()->RemovePlayer(plr->getPlayerInfo());
 
     // reset team
     plr->resetTeam();
 
-    /* revive the player if he is dead */
+    // revive the player if he is dead
     if (!plr->isAlive())
     {
         plr->setHealth(plr->getMaxHealth());
         plr->resurrect();
     }
 
-    /* remove buffs */
     plr->removeAllAurasById(32727); // Arena preparation
     plr->removeAllAurasById(44521); // BG preparation
     plr->removeAllAurasById(44535);
@@ -644,7 +608,7 @@ void Battleground::removePlayer(Player* plr, bool logout)
 
     plr->setMoveRoot(false);
 
-    /* teleport out */
+    // teleport out
     if (!logout)
     {
         if (!m_hasEnded)
@@ -659,11 +623,10 @@ void Battleground::removePlayer(Player* plr, bool logout)
         sBattlegroundManager.sendBattlefieldStatus(plr, BattlegroundDef::STATUS_NOFLAGS, 0, 0, 0, 0, 0);
     }
 
-    if (/*!m_hasEnded && */m_players[0].size() == 0 && m_players[1].size() == 0)
+    if (m_players[0].size() == 0 && m_players[1].size() == 0)
     {
-        /* create an inactive event */
-        sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_CLOSE);                  // 10mins
-        //sEventMgr.AddEvent(this, &Battleground::close, EVENT_BATTLEGROUND_CLOSE, 600000, 1,0); //this is BS..appears to be        the cause if the battleground crashes.
+        // create an inactive event
+        sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_CLOSE);
         this->close();
     }
 
@@ -708,8 +671,6 @@ void Battleground::eventCountdown()
                     itr->getSession()->SystemMessage(itr->getSession()->LocalizedWorldSrv(ServerString::SS_BATTLE_BEGIN_ONE_MINUTE),
                                                      itr->getSession()->LocalizedWorldSrv(GetNameID()));
         }
-
-        // SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "One minute until the battle for %s begins!", GetName());
     }
     else if (m_countdownStage == 2)
     {
@@ -724,8 +685,6 @@ void Battleground::eventCountdown()
                     itr->getSession()->SystemMessage(itr->getSession()->LocalizedWorldSrv(ServerString::SS_THIRTY_SECONDS_UNTIL_THE_BATTLE),
                                                      itr->getSession()->LocalizedWorldSrv(GetNameID()));
         }
-
-        //SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "Thirty seconds until the battle for %s begins!", GetName());
     }
     else if (m_countdownStage == 3)
     {
@@ -741,7 +700,6 @@ void Battleground::eventCountdown()
                                                      itr->getSession()->LocalizedWorldSrv(GetNameID()));
         }
 
-        //SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "Fifteen seconds until the battle for %s begins!", GetName());
         sEventMgr.ModifyEventTime(this, EVENT_BATTLEGROUND_COUNTDOWN, 150);
         sEventMgr.ModifyEventTimeLeft(this, EVENT_BATTLEGROUND_COUNTDOWN, 15000);
     }
@@ -755,7 +713,7 @@ void Battleground::eventCountdown()
                     itr->getSession()->SystemMessage(itr->getSession()->LocalizedWorldSrv(ServerString::SS_THE_BATTLE_FOR_HAS_BEGUN),
                                                      itr->getSession()->LocalizedWorldSrv(GetNameID()));
         }
-        //SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The battle for %s has begun!", GetName());
+
         sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_COUNTDOWN);
         this->startBattleground();
     }
@@ -777,7 +735,7 @@ void Battleground::close()
 {
     std::lock_guard lock(m_mutex);
 
-    /* remove all players from the battleground */
+    // remove all players from the battleground
     m_hasEnded = true;
     for (uint8_t i = 0; i < 2; ++i)
     {
@@ -807,7 +765,7 @@ void Battleground::close()
         }
     }
 
-    /* call the virtual on close for cleanup etc */
+    // call the virtual on close for cleanup etc
     OnClose();
 }
 
@@ -1041,21 +999,15 @@ bool Battleground::hasFreeSlots(uint32_t Team, uint32_t type)
 {
     std::lock_guard lock(m_mutex);
 
-    bool res;
     const uint32_t maxPlayers = sBattlegroundManager.getMaximumPlayers(type);
 
     if (isTypeArena(type))
-    {
-        res = m_players[Team].size() + m_pendPlayers[Team].size() < maxPlayers;
-    }
-    else
-    {
+        return m_players[Team].size() + m_pendPlayers[Team].size() < maxPlayers;
+
         uint32_t size[2];
         size[0] = uint32_t(m_players[0].size() + m_pendPlayers[0].size());
         size[1] = uint32_t(m_players[1].size() + m_pendPlayers[1].size());
-        res = (size[Team] < maxPlayers) && ((static_cast<int>(size[Team]) - static_cast<int>(size[1 - Team])) <= 0);
-    }
-    return res;
+        return (size[Team] < maxPlayers) && ((static_cast<int>(size[Team]) - static_cast<int>(size[1 - Team])) <= 0);
 }
 
 bool Battleground::isTypeArena(uint32_t x)
@@ -1065,23 +1017,23 @@ bool Battleground::isTypeArena(uint32_t x)
 
 bool Battleground::isArena()
 {
-    return (m_type >= BattlegroundDef::TYPE_ARENA_2V2 && m_type <= BattlegroundDef::TYPE_ARENA_5V5);
+    return m_type >= BattlegroundDef::TYPE_ARENA_2V2 && m_type <= BattlegroundDef::TYPE_ARENA_5V5;
 }
 
 uint32_t Battleground::getFieldCount(uint32_t BGType)
 {
     switch (BGType)
     {
-    case BattlegroundDef::TYPE_ALTERAC_VALLEY:
-        return 5;
-    case BattlegroundDef::TYPE_ARATHI_BASIN:
-    case BattlegroundDef::TYPE_WARSONG_GULCH:
-    case BattlegroundDef::TYPE_STRAND_OF_THE_ANCIENT:
-    case BattlegroundDef::TYPE_ISLE_OF_CONQUEST:
-        return 2;
-    case BattlegroundDef::TYPE_EYE_OF_THE_STORM:
-        return 1;
-    default:
-        return 0;
+        case BattlegroundDef::TYPE_ALTERAC_VALLEY:
+            return 5;
+        case BattlegroundDef::TYPE_ARATHI_BASIN:
+        case BattlegroundDef::TYPE_WARSONG_GULCH:
+        case BattlegroundDef::TYPE_STRAND_OF_THE_ANCIENT:
+        case BattlegroundDef::TYPE_ISLE_OF_CONQUEST:
+            return 2;
+        case BattlegroundDef::TYPE_EYE_OF_THE_STORM:
+            return 1;
+        default:
+            return 0;
     }
 }

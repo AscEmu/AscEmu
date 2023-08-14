@@ -28,7 +28,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Packets/SmsgZoneUnderAttack.h"
 #include "OpcodeTable.hpp"
 #include "Chat/ChatHandler.hpp"
-#include "Management/GameEventMgr.h"
+#include "Management/GameEventMgr.hpp"
 #include "Objects/Units/Creatures/CreatureGroups.h"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Movement/WaypointManager.h"

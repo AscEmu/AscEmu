@@ -3,13 +3,15 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "GameEventMgr.h"
+#include "GameEventMgr.hpp"
+#include "GameEvent.hpp"
+#include "GameEventDefines.hpp"
 #include "Server/World.h"
-#include "GameEvent.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Debugging/CrashHandler.h"
 #include "Server/DatabaseDefinition.hpp"
 #include "Objects/GameObjectProperties.hpp"
+
 
 GameEventMgr& GameEventMgr::getInstance()
 {

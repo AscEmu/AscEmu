@@ -4,7 +4,9 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #pragma once
-#include "Management/Arenas.h"
+#include "Management/Arenas.hpp"
+
+class BattlegroundMap;
 
 class RingOfValor : public Arena
 {
