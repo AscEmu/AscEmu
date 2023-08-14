@@ -22,7 +22,7 @@ enum GameEventState : uint8_t
 };
 
 // Values based on Holidays.dbc
-enum HolidayIds
+enum HolidayIds : uint32_t
 {
     HOLIDAY_NONE                        = 0,
     HOLIDAY_FIREWORKS_SPECTACULAR       = 62,

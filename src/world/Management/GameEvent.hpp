@@ -20,7 +20,7 @@ struct EventNamesQueryResult;
 struct EventCreatureSpawnsQueryResult;
 struct EventGameObjectSpawnsQueryResult;
 
-enum HolidayIds;
+enum HolidayIds : uint32_t;
 enum GameEventState : uint8_t;
 
 class GameEvent
