@@ -37,6 +37,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/CommandTableStorage.hpp"
 #include "VMapFactory.h"
 #include "VMapManager2.h"
+#include "Management/MailMgr.h"
 #include "Management/QuestMgr.h"
 #include "Management/Battleground/BattlegroundMgr.hpp"
 #include "Management/Tickets/TicketMgr.hpp"
@@ -513,9 +514,8 @@ void World::updateQueuedSessions(uint32_t diff)
 
             if (QueuedSocket->GetSession())
             {
-                QueuedSocket->GetSession()->deleteMutex.Acquire();
+                std::lock_guard guard(QueuedSocket->GetSession()->deleteMutex);
                 QueuedSocket->Authenticate();
-                QueuedSocket->GetSession()->deleteMutex.Release();
             }
         }
 

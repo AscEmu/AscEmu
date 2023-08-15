@@ -23,7 +23,6 @@
 
 #include <string>
 
-#include <Threading/Mutex.h>
 #include "Server/Opcodes.hpp"
 #include "FastQueue.h"
 #include "Server/CharacterErrors.h"
@@ -269,7 +268,7 @@ class SERVER_DECL WorldSession
 
         bool bDeleted;
         uint32 GetInstance() { return instanceId; }
-        Mutex deleteMutex;
+        std::mutex deleteMutex;
         int32 m_moveDelayTime;
         int32 m_clientTimeDelay;
 

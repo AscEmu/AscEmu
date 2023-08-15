@@ -104,9 +104,9 @@ void WorldSession::handleAchievmentQueryOpcode(WorldPacket& recvPacket)
         return;
 
 #if VERSION_STRING >= Cata
-    player->getAchievementMgr().sendRespondInspectAchievements(_player);
+    player->getAchievementMgr()->sendRespondInspectAchievements(_player);
 #else
-    player->getAchievementMgr().sendAllAchievementData(_player);
+    player->getAchievementMgr()->sendAllAchievementData(_player);
 #endif
 
 #endif

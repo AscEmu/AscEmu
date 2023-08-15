@@ -521,7 +521,7 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
 
     _player->sendMessageToSet(SmsgTextEmote(nameLength, unitName, srlPacket.text_emote, _player->getGuid(), srlPacket.unk).serialise().get(), true);
 
-    _player->getAchievementMgr().updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, srlPacket.text_emote, 0, 0);
+    _player->getAchievementMgr()->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, srlPacket.text_emote, 0, 0);
 
     sQuestMgr.OnPlayerEmote(_player, srlPacket.text_emote, srlPacket.guid);
 }

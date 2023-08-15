@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObject.h"
 #include "Server/Warden/SpeedDetector.h"
 #include "Management/ObjectMgr.hpp"
+#include "Management/TaxiMgr.h"
 #include "Server/Packets/CmsgWorldTeleport.h"
 #include "Server/Packets/SmsgMountspecialAnim.h"
 #include "Server/Packets/MsgMoveTeleportAck.h"
@@ -129,7 +130,7 @@ bool WorldSession::isHackDetectedInMovementData(uint16_t opcode)
 
     // Speed
     // implement worldConfig.antiHack.isSpeedHackCkeckEnabled
-    if (!_player->m_taxi.empty() && _player->obj_movement_info.transport_guid == 0 && !_player->getSession()->GetPermissionCount())
+    if (!_player->m_taxi->empty() && _player->obj_movement_info.transport_guid == 0 && !_player->getSession()->GetPermissionCount())
     {
         // simplified: just take the fastest speed. less chance of fuckups too
         // get the "normal speeds" not the changed ones!
@@ -149,7 +150,7 @@ bool WorldSession::isHackDetectedInMovementData(uint16_t opcode)
 
 void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 {
-    if (_player->isTransferPending() || !_player->m_taxi.empty() || _player->justDied())
+    if (_player->isTransferPending() || !_player->m_taxi->empty() || _player->justDied())
         return;
 
     //////////////////////////////////////////////////////////////////////////////////////////

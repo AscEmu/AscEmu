@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
+#include "Management/AchievementMgr.h"
 #include "Objects/GameObject.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
@@ -58,7 +59,7 @@ public:
                 return;
             }
 #if VERSION_STRING > TBC
-            else if (req_achievement != 0 && pPlayer->getAchievementMgr().hasCompleted(req_achievement))
+            else if (req_achievement != 0 && pPlayer->getAchievementMgr()->hasCompleted(req_achievement))
             {
                 pPlayer->broadcastMessage("You do not have the required achievement to use this Portal");
                 return;

@@ -42,7 +42,7 @@ MailError MailSystem::DeliverMessage(uint64 recipent, MailMessage* message)
     Player* plr = sObjectMgr.getPlayer((uint32)recipent);
     if (plr != NULL)
     {
-        plr->m_mailBox.AddMessage(message);
+        plr->m_mailBox->AddMessage(message);
         if ((uint32)UNIXTIME >= message->delivery_time)
             plr->sendPacket(AscEmu::Packets::SmsgReceivedMail().serialise().get());
     }
@@ -117,11 +117,11 @@ void MailSystem::SaveMessageToSQL(MailMessage* message)
 
 void MailSystem::RemoveMessageIfDeleted(uint32 message_id, Player* plr)
 {
-    MailMessage* msg = plr->m_mailBox.GetMessage(message_id);
+    MailMessage* msg = plr->m_mailBox->GetMessage(message_id);
     if (msg == 0) return;
 
     if (msg->deleted_flag)   // we've deleted from inbox
-        plr->m_mailBox.DeleteMessage(message_id, true);   // wipe the message
+        plr->m_mailBox->DeleteMessage(message_id, true);   // wipe the message
 }
 
 void MailSystem::SendAutomatedMessage(uint32 type, uint64 sender, uint64 receiver, std::string subject, std::string body,

@@ -5,22 +5,23 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <mutex>
-
+#include "Objects/Units/Unit.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Objects/Units/Stats.h"
 #include "Management/QuestDefines.hpp"
-#include "Management/MailMgr.h"
-#include "Management/AchievementMgr.h"
-#include "Objects/Units/Unit.hpp" 
 #include "Management/ObjectUpdates/UpdateManager.hpp"
 #include "Data/WoWPlayer.hpp"
 #include "AEVersion.hpp"
 #include "Logging/Log.hpp"
-#include "Management/ItemProperties.hpp"
-#include "Management/TaxiMgr.h"
 #include "Server/UpdateFieldInclude.h"
-#include "Map/Maps/InstanceMgr.hpp"
+#include "Objects/ItemDefines.hpp"
+
+#include <mutex>
+
+struct InstancePlayerBind;
+struct ItemSet;
+class AchievementMgr;
+class Mailbox;
 
 namespace MySQLStructure
 {
@@ -1534,7 +1535,7 @@ private:
     /////////////////////////////////////////////////////////////////////////////////////////
     // Taxi
 public:
-    TaxiPath m_taxi;
+    TaxiPath* m_taxi;
 #if VERSION_STRING > WotLK
     void initTaxiNodesForLevel();
 #endif
@@ -1790,7 +1791,7 @@ public:
 
 #if VERSION_STRING > TBC
     void updateAchievementCriteria(AchievementCriteriaTypes type, uint64_t miscValue1 = 0, uint64_t miscValue2 = 0, uint64_t miscValue3 = 0, Unit* unit = nullptr);
-    AchievementMgr& getAchievementMgr();
+    AchievementMgr* getAchievementMgr();
 #endif
 
     void sendUpdateDataToSet(ByteBuffer* groupBuf, ByteBuffer* nonGroupBuf, bool sendToSelf);
@@ -1813,7 +1814,7 @@ private:
     uint32_t m_itemUpdateTimer = 0;
 
 #if VERSION_STRING > TBC
-    AchievementMgr m_achievementMgr = this;
+    AchievementMgr* m_achievementMgr;
 #endif
 
     uint32_t m_timeSyncCounter = 0;
@@ -2095,7 +2096,7 @@ public:
     // paladin related
     SpellInfo const* m_lastHealSpell = nullptr;
 
-    Mailbox m_mailBox;
+    Mailbox* m_mailBox;
     bool m_finishingMovesDodge = false;
 
     bool isAttacking() { return m_attacking; }

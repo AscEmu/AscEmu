@@ -39,7 +39,7 @@ void WorldSession::sendTaxiStatus(WoWGuid guid)
     if (!nearest)
         return;
 
-    uint8_t status = player->m_taxi.isTaximaskNodeKnown(nearest) ? 1 : 2;
+    uint8_t status = player->m_taxi->isTaximaskNodeKnown(nearest) ? 1 : 2;
     SendPacket(SmsgTaxinodeStatus(guid.getRawGuid(), status).serialise().get());
 }
 
@@ -58,7 +58,7 @@ void WorldSession::sendTaxiMenu(Creature* unit)
     data << uint32_t(1);
     data << uint64_t(unit->getGuid());
     data << uint32_t(nearestNode);
-    GetPlayer()->m_taxi.appendTaximaskTo(data, GetPlayer()->m_cheats.hasTaxiCheat);
+    GetPlayer()->m_taxi->appendTaximaskTo(data, GetPlayer()->m_cheats.hasTaxiCheat);
     SendPacket(&data);
 
     GetPlayer()->m_cheats.hasTaxiCheat = lastTaxiCheaterState;
@@ -80,7 +80,7 @@ void WorldSession::sendDoFlight(uint32_t mountDisplayId, uint32_t path, uint32_t
     if (mountDisplayId)
         GetPlayer()->mount(mountDisplayId);
 
-    GetPlayer()->m_taxi.setNodeAfterTeleport(0);
+    GetPlayer()->m_taxi->setNodeAfterTeleport(0);
     GetPlayer()->getMovementManager()->moveTaxiFlight(path, pathNode);
 }
 
@@ -92,7 +92,7 @@ bool WorldSession::sendLearnNewTaxiNode(Creature* unit)
     if (curloc == 0)
         return true;
 
-    if (GetPlayer()->m_taxi.setTaximaskNode(curloc))
+    if (GetPlayer()->m_taxi->setTaximaskNode(curloc))
     {
         SendPacket(SmsgNewTaxiPath().serialise().get());
         SendPacket(SmsgTaxinodeStatus(unit->getGuid(), 1).serialise().get());
@@ -105,7 +105,7 @@ bool WorldSession::sendLearnNewTaxiNode(Creature* unit)
 
 void WorldSession::sendDiscoverNewTaxiNode(uint32_t nodeid)
 {
-    if (GetPlayer()->m_taxi.setTaximaskNode(nodeid))
+    if (GetPlayer()->m_taxi->setTaximaskNode(nodeid))
     {
         GetPlayer()->sendPacket(SmsgNewTaxiPath().serialise().get());
     }
@@ -193,7 +193,7 @@ void WorldSession::handleActivateTaxiOpcode(WorldPacket& recvPacket)
 
     if (!GetPlayer()->m_cheats.hasTaxiCheat)
     {
-        if (!GetPlayer()->m_taxi.isTaximaskNodeKnown(srlPacket.nodes[0]) || !GetPlayer()->m_taxi.isTaximaskNodeKnown(srlPacket.nodes[1]))
+        if (!GetPlayer()->m_taxi->isTaximaskNodeKnown(srlPacket.nodes[0]) || !GetPlayer()->m_taxi->isTaximaskNodeKnown(srlPacket.nodes[1]))
         {
             SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_TaxiNotVisited).serialise().get());
             return;
@@ -225,7 +225,7 @@ void WorldSession::handleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
 
     for (uint32_t i = 0; i < srlPacket.nodeCount; ++i)
     {
-        if (!GetPlayer()->m_taxi.isTaximaskNodeKnown(srlPacket.pathParts[i]) && !GetPlayer()->m_cheats.hasTaxiCheat)
+        if (!GetPlayer()->m_taxi->isTaximaskNodeKnown(srlPacket.pathParts[i]) && !GetPlayer()->m_cheats.hasTaxiCheat)
         {
             SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_TaxiNotVisited).serialise().get());
             return;
@@ -252,7 +252,7 @@ void WorldSession::handleMoveSplineDoneOpcode(WorldPacket& recvData)
 
     recvData.read_skip<uint32_t>();   // spline id
 
-    uint32_t curDest = GetPlayer()->m_taxi.getTaxiDestination();
+    uint32_t curDest = GetPlayer()->m_taxi->getTaxiDestination();
     if (curDest)
     {
         WDB::Structures::TaxiNodesEntry const* curDestNode = sTaxiNodesStore.lookupEntry(curDest);
@@ -267,14 +267,14 @@ void WorldSession::handleMoveSplineDoneOpcode(WorldPacket& recvData)
                 WDB::Structures::TaxiPathNodeEntry const* node = flight->getPath()[flight->getCurrentNode()];
                 flight->skipCurrentNode();
 
-                GetPlayer()->m_taxi.setNodeAfterTeleport(node->NodeIndex);
+                GetPlayer()->m_taxi->setNodeAfterTeleport(node->NodeIndex);
                 GetPlayer()->safeTeleport(curDestNode->mapid, 0, LocationVector(node->x, node->y, node->z, GetPlayer()->GetOrientation()));
             }
         }
     }
 
     // at this point only 1 node is expected (final destination)
-    if (GetPlayer()->m_taxi.getPath().size() != 1)
+    if (GetPlayer()->m_taxi->getPath().size() != 1)
         return;
 
     GetPlayer()->cleanupAfterTaxiFlight();

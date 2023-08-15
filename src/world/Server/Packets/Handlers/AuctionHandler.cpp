@@ -17,6 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Creature.h"
 #include "Management/AuctionMgr.hpp"
 #include "Management/ItemInterface.h"
+#include "Management/MailMgr.h"
 #include "Map/Maps/WorldMap.hpp"
 #include "Server/Definitions.h"
 

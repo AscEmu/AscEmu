@@ -94,7 +94,7 @@ WorldSession::WorldSession(uint32 id, std::string name, WorldSocket* sock) :
 
 WorldSession::~WorldSession()
 {
-    deleteMutex.Acquire();
+    std::lock_guard guard(deleteMutex);
 
     if (_player)
     {
@@ -119,8 +119,6 @@ WorldSession::~WorldSession()
 
     if (m_loggingInPlayer)
         m_loggingInPlayer->setSession(nullptr);
-
-    deleteMutex.Release();
 }
 
 uint8 WorldSession::Update(uint32 InstanceID)

@@ -27,6 +27,7 @@
 #include "Management/TaxiMgr.h"
 #include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
+#include "Management/MailMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Management/Guild/Guild.hpp"

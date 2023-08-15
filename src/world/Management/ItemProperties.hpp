@@ -142,9 +142,9 @@ struct ItemProperties
 
 };
 
-typedef struct
+struct ItemSet
 {
     int32_t setid;
     uint32_t itemscount;
     //Spell* spell[8];
-} ItemSet;
+};

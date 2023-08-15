@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
+#include "Management/AchievementMgr.h"
 #include "Objects/Units/UnitDefines.hpp"
 #include "Objects/Units/Players/Player.hpp"
 
@@ -36,9 +37,9 @@ void Catrina(Player* pPlayer, Unit* pUnit)
     }
 
 #if VERSION_STRING > TBC
-    if (pPlayer->getAchievementMgr().hasCompleted(ACHIEVEMRNT_DEAD_MANS_PARTY) == false)
+    if (pPlayer->getAchievementMgr()->hasCompleted(ACHIEVEMRNT_DEAD_MANS_PARTY) == false)
     {
-        pPlayer->getAchievementMgr().gmCompleteAchievement(NULL, ACHIEVEMRNT_DEAD_MANS_PARTY);
+        pPlayer->getAchievementMgr()->gmCompleteAchievement(NULL, ACHIEVEMRNT_DEAD_MANS_PARTY);
     }
 #endif
 }
