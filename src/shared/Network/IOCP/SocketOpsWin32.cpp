@@ -2,13 +2,13 @@
  * Multiplatform Async Network Library
  * Copyright (c) 2007 Burlex
  *
- * SocketOpsLinux.cpp - Linux implementation of SocketOps.
+ * SocketOpsWin32.cpp - Win32 implementation of SocketOps.
  *
  */
 
-#include "Network.h"
+#include "../Network.h"
 
-#ifdef CONFIG_USE_KQUEUE
+#ifdef CONFIG_USE_IOCP
 
 namespace SocketOps
 {
@@ -16,35 +16,35 @@ namespace SocketOps
     SOCKET CreateTCPFileDescriptor()
     {
         // create a socket for use with overlapped i/o.
-        return socket(AF_INET, SOCK_STREAM, 0);
+        return ::WSASocketW(AF_INET, SOCK_STREAM, 0, 0, 0, WSA_FLAG_OVERLAPPED);
     }
 
     // Disable blocking send/recv calls.
     bool Nonblocking(SOCKET fd)
     {
-        uint32 arg = 1;
-        return (::ioctl(fd, FIONBIO, &arg) == 0);
+        u_long arg = 1;
+        return (::ioctlsocket(fd, FIONBIO, &arg) == 0);
     }
 
     // Disable blocking send/recv calls.
     bool Blocking(SOCKET fd)
     {
-        uint32 arg = 0;
-        return (ioctl(fd, FIONBIO, &arg) == 0);
+        u_long arg = 0;
+        return (ioctlsocket(fd, FIONBIO, &arg) == 0);
     }
 
     // Disable nagle buffering algorithm
     bool DisableBuffering(SOCKET fd)
     {
         uint32 arg = 1;
-        return (setsockopt(fd, 0x6, 0x1, (const char*)&arg, sizeof(arg)) == 0);
+        return (setsockopt(fd, 0x6, TCP_NODELAY, (const char*)&arg, sizeof(arg)) == 0);
     }
 
     // Enable nagle buffering algorithm
     bool EnableBuffering(SOCKET fd)
     {
         uint32 arg = 0;
-        return (setsockopt(fd, 0x6, 0x1, (const char*)&arg, sizeof(arg)) == 0);
+        return (setsockopt(fd, 0x6, TCP_NODELAY, (const char*)&arg, sizeof(arg)) == 0);
     }
 
     // Set internal buffer size to socket.
@@ -59,11 +59,21 @@ namespace SocketOps
         return (setsockopt(fd, SOL_SOCKET, SO_RCVBUF, (const char*)&size, sizeof(size)) == 0);
     }
 
+    // Set internal timeout.
+    bool SetTimeout(SOCKET fd, uint32 timeout)
+    {
+        struct timeval to;
+        to.tv_sec = timeout;
+        to.tv_usec = 0;
+        if(setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, (const char*)&to, (socklen_t)sizeof(to)) != 0) return false;
+        return (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&to, (socklen_t)sizeof(to)) == 0);
+    }
+
     // Closes a socket fully.
     void CloseSocket(SOCKET fd)
     {
-        shutdown(fd, SHUT_RDWR);
-        close(fd);
+        shutdown(fd, SD_BOTH);
+        closesocket(fd);
     }
 
     // Sets reuseaddr
@@ -73,19 +83,6 @@ namespace SocketOps
         if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (const char*)&option, 4) < 0)
             printf("SO_REUSEADDR setsockopt error\n");
     }
-
-    // Set internal timeout.
-    bool SetTimeout(SOCKET fd, uint32 timeout)
-    {
-        struct timeval to;
-        to.tv_sec = timeout;
-        to.tv_usec = 0;
-        if(setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, (const char*)&to, (socklen_t)sizeof(to)) != 0)
-            return false;
-        return (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&to, (socklen_t)sizeof(to)) == 0);
-    }
-
-
 }
 
 #endif

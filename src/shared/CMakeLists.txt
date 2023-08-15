@@ -9,8 +9,15 @@ file(GLOB SRC_DATABASE_FILES Database/*.cpp Database/*.h Database/*.hpp)
 file(GLOB SRC_DEBUGGING_FILES Debugging/*.cpp Debugging/*.h Debugging/*.hpp)
 file(GLOB SRC_EXCEPTIONS_FILES Exceptions/*.cpp Exceptions/*.h Exceptions/*.hpp)
 file(GLOB SRC_LOGGING_FILES Logging/*.cpp Logging/*.h Logging/*.hpp)
+file(GLOB SRC_NETWORK_FILES Network/*.cpp Network/*.h Network/*.hpp)
 
-include(Network/CMakeLists.txt) # SCH: coming soon
+if (WIN32)
+    file(GLOB SRC_NETWORK_FILES_PLATFORM Network/IOCP/*.cpp Network/IOCP/*.h Network/IOCP/*.hpp)
+elseif ((CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFreeBSD") OR APPLE)
+    file(GLOB SRC_NETWORK_FILES_PLATFORM Network/KQUEUE/*.cpp Network/KQUEUE/*.h Network/KQUEUE/*.hpp)
+else ()
+    file(GLOB SRC_NETWORK_FILES_PLATFORM Network/EPOLL/*.cpp Network/EPOLL/*.h Network/EPOLL/*.hpp)
+endif ()
 
 file(GLOB SRC_THREADING_FILES Threading/*.cpp Threading/*.h Threading/*.hpp)
 file(GLOB SRC_UTILITIES_FILES Utilities/*.cpp Utilities/*.h Utilities/*.hpp)
@@ -24,6 +31,7 @@ set(SHARED_SRCS
     ${SRC_EXCEPTIONS_FILES}
     ${SRC_LOGGING_FILES}
     ${SRC_NETWORK_FILES}
+    ${SRC_NETWORK_FILES_PLATFORM}
     ${SRC_THREADING_FILES}
     ${SRC_UTILITIES_FILES}
     ${SRC_LOCAL_DIR}
@@ -45,6 +53,15 @@ source_group(Debugging FILES ${SRC_DEBUGGING_FILES})
 source_group(Exceptions FILES ${SRC_EXCEPTIONS_FILES})
 source_group(Logging FILES ${SRC_LOGGING_FILES})
 source_group(Network FILES ${SRC_NETWORK_FILES})
+
+if (WIN32)
+    source_group(Network/IOCP FILES ${SRC_NETWORK_FILES_PLATFORM})
+elseif ((CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFreeBSD") OR APPLE)
+    source_group(Network/KQUEUE FILES ${SRC_NETWORK_FILES_PLATFORM})
+else ()
+    source_group(Network/EPOLL FILES ${SRC_NETWORK_FILES_PLATFORM})
+endif ()
+
 source_group(Threading FILES ${SRC_THREADING_FILES})
 source_group(Utilities FILES ${SRC_UTILITIES_FILES})
 

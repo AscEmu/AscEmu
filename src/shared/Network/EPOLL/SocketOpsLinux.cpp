@@ -2,13 +2,13 @@
  * Multiplatform Async Network Library
  * Copyright (c) 2007 Burlex
  *
- * SocketOpsWin32.cpp - Win32 implementation of SocketOps.
+ * SocketOpsLinux.cpp - Linux implementation of SocketOps.
  *
  */
 
-#include "Network.h"
+#include "../Network.h"
 
-#ifdef CONFIG_USE_IOCP
+#ifdef CONFIG_USE_EPOLL
 
 namespace SocketOps
 {
@@ -16,35 +16,35 @@ namespace SocketOps
     SOCKET CreateTCPFileDescriptor()
     {
         // create a socket for use with overlapped i/o.
-        return ::WSASocketW(AF_INET, SOCK_STREAM, 0, 0, 0, WSA_FLAG_OVERLAPPED);
+        return socket(AF_INET, SOCK_STREAM, 0);
     }
 
     // Disable blocking send/recv calls.
     bool Nonblocking(SOCKET fd)
     {
-        u_long arg = 1;
-        return (::ioctlsocket(fd, FIONBIO, &arg) == 0);
+        uint32 arg = 1;
+        return (::ioctl(fd, FIONBIO, &arg) == 0);
     }
 
     // Disable blocking send/recv calls.
     bool Blocking(SOCKET fd)
     {
-        u_long arg = 0;
-        return (ioctlsocket(fd, FIONBIO, &arg) == 0);
+        uint32 arg = 0;
+        return (ioctl(fd, FIONBIO, &arg) == 0);
     }
 
     // Disable nagle buffering algorithm
     bool DisableBuffering(SOCKET fd)
     {
         uint32 arg = 1;
-        return (setsockopt(fd, 0x6, TCP_NODELAY, (const char*)&arg, sizeof(arg)) == 0);
+        return (setsockopt(fd, 0x6, 0x1, (const char*)&arg, sizeof(arg)) == 0);
     }
 
     // Enable nagle buffering algorithm
     bool EnableBuffering(SOCKET fd)
     {
         uint32 arg = 0;
-        return (setsockopt(fd, 0x6, TCP_NODELAY, (const char*)&arg, sizeof(arg)) == 0);
+        return (setsockopt(fd, 0x6, 0x1, (const char*)&arg, sizeof(arg)) == 0);
     }
 
     // Set internal buffer size to socket.
@@ -72,8 +72,8 @@ namespace SocketOps
     // Closes a socket fully.
     void CloseSocket(SOCKET fd)
     {
-        shutdown(fd, SD_BOTH);
-        closesocket(fd);
+        shutdown(fd, SHUT_RDWR);
+        close(fd);
     }
 
     // Sets reuseaddr

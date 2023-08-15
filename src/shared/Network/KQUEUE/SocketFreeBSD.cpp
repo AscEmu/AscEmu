@@ -6,7 +6,7 @@
  *
  */
 
-#include "Network.h"
+#include "../Network.h"
 #include <errno.h>
 #ifdef CONFIG_USE_KQUEUE
 
