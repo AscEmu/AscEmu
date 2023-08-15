@@ -11,7 +11,7 @@
 #define _LISTENSOCKET_H
 #ifdef CONFIG_USE_KQUEUE
 
-#include "SocketDefines.h"
+#include "../SocketDefines.h"
 #include <errno.h>
 
 class ListenSocketBase

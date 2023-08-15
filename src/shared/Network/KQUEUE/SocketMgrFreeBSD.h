@@ -10,7 +10,7 @@
 #ifndef SOCKETMGR_FREE_BSD_H
 #define SOCKETMGR_FREE_BSD_H
 
-#include "SocketDefines.h"
+#include "../SocketDefines.h"
 
 #ifdef CONFIG_USE_KQUEUE
 

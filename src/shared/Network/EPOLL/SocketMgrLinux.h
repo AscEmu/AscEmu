@@ -10,7 +10,7 @@
 #ifndef SOCKETMGR_LINUX_H
 #define SOCKETMGR_LINUX_H
 
-#include "SocketDefines.h"
+#include "../SocketDefines.h"
 #include <atomic>
 
 #ifdef CONFIG_USE_EPOLL
