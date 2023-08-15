@@ -2,7 +2,7 @@
  * Multiplatform Async Network Library
  * Copyright (c) 2007 Burlex
  *
- * SocketOpsWin32.cpp - Win32 implementation of SocketOps.
+ * SocketOpsWin32.cpp - Windows implementation of SocketOps.
  *
  */
 

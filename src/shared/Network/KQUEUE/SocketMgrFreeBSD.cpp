@@ -2,7 +2,7 @@
  * Multiplatform Async Network Library
  * Copyright (c) 2007 Burlex
  *
- * SocketMgr - epoll manager for Linux.
+ * SocketMgr - kqueue manager for BSD.
  *
  */
 

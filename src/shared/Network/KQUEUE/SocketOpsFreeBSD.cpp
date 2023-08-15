@@ -2,7 +2,7 @@
  * Multiplatform Async Network Library
  * Copyright (c) 2007 Burlex
  *
- * SocketOpsLinux.cpp - Linux implementation of SocketOps.
+ * SocketOpsLinux.cpp - BSD implementation of SocketOps.
  *
  */
 
