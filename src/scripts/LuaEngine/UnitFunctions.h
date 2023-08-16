@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/WeatherMgr.hpp"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Guild/GuildMgr.hpp"
+#include "Management/TaxiMgr.h"
 #include "Map/AreaBoundary.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/MapScriptInterface.h"
@@ -4793,7 +4794,7 @@ public:
             return 0;
         }
 
-        lua_pushboolean(L, dynamic_cast<Player*>(ptr)->m_taxi.empty() ? 1 : 0);
+        lua_pushboolean(L, dynamic_cast<Player*>(ptr)->m_taxi->empty() ? 1 : 0);
         return 1;
     }
 
@@ -5917,7 +5918,7 @@ public:
 #if VERSION_STRING > TBC
         int32_t achievementID = static_cast<int32_t>(luaL_checkinteger(L, 1));
         Player* plr = dynamic_cast<Player*>(ptr);
-        if(plr->getAchievementMgr().gmCompleteAchievement(nullptr, achievementID))
+        if(plr->getAchievementMgr()->gmCompleteAchievement(nullptr, achievementID))
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -5934,7 +5935,7 @@ public:
 
 #if VERSION_STRING > TBC
         int32_t achievementID = static_cast<int32_t>(luaL_checkinteger(L, 1));
-        dynamic_cast<Player*>(ptr)->getAchievementMgr().gmResetAchievement(achievementID);
+        dynamic_cast<Player*>(ptr)->getAchievementMgr()->gmResetAchievement(achievementID);
 #endif
         return 0;
     }
@@ -5948,7 +5949,7 @@ public:
 
 #if VERSION_STRING > TBC
         uint32_t achievementID = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-        lua_pushboolean(L, dynamic_cast<Player*>(ptr)->getAchievementMgr().hasCompleted(achievementID) ? 1 : 0);
+        lua_pushboolean(L, dynamic_cast<Player*>(ptr)->getAchievementMgr()->hasCompleted(achievementID) ? 1 : 0);
 #endif
         return 1;
     }

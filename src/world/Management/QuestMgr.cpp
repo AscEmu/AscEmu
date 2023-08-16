@@ -21,6 +21,7 @@
 
 #include "QuestMgr.h"
 
+#include "MailMgr.h"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Logging/Log.hpp"
 #include "Objects/Item.hpp"

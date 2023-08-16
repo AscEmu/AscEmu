@@ -735,7 +735,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     mSession = pSession;
 
     // aquire delete mutex
-    pSession->deleteMutex.Acquire();
+    std::lock_guard guard(pSession->deleteMutex);
 
     // Set session properties
     pSession->SetClientBuild(mClientBuild);
@@ -805,9 +805,6 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
         SendPacket(SmsgAuthResponse(AuthRejected, ARST_ONLY_ERROR).serialise().get());
         Disconnect();
     }
-
-    // release delete mutex
-    pSession->deleteMutex.Release();
 }
 
 void WorldSocket::Authenticate()

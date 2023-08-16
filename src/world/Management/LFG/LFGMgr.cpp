@@ -1903,7 +1903,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
 #if VERSION_STRING > TBC
     // Update achievements
     if (dungeon->difficulty == 1) // Heroic
-        player->getAchievementMgr().updateAchievementCriteria(player, 13029, 1); // Done LFG Dungeon with random Players
+        player->getAchievementMgr()->updateAchievementCriteria(player, 13029, 1); // Done LFG Dungeon with random Players
 #endif
 
     LfgReward const* reward = GetRandomDungeonReward(rDungeonId, static_cast<uint8_t>(player->getLevel()));

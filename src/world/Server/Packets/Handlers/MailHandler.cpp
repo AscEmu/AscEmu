@@ -32,7 +32,7 @@ void WorldSession::handleMarkAsReadOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    auto mailMessage = _player->m_mailBox.GetMessage(srlPacket.messageId);
+    auto mailMessage = _player->m_mailBox->GetMessage(srlPacket.messageId);
     if (mailMessage == nullptr)
         return;
 
@@ -51,14 +51,14 @@ void WorldSession::handleMailDeleteOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto mailMessage = _player->m_mailBox.GetMessage(srlPacket.messageId);
+    const auto mailMessage = _player->m_mailBox->GetMessage(srlPacket.messageId);
     if (mailMessage == nullptr)
     {
         SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_DELETED, MAIL_ERR_INTERNAL_ERROR).serialise().get());
         return;
     }
 
-    _player->m_mailBox.DeleteMessage(srlPacket.messageId, true);
+    _player->m_mailBox->DeleteMessage(srlPacket.messageId, true);
 
     SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_DELETED, MAIL_OK).serialise().get());
 }
@@ -69,7 +69,7 @@ void WorldSession::handleTakeMoneyOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto mailMessage = _player->m_mailBox.GetMessage(srlPacket.messageId);
+    const auto mailMessage = _player->m_mailBox->GetMessage(srlPacket.messageId);
     if (mailMessage == nullptr || !mailMessage->money)
     {
         SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_MONEY_TAKEN, MAIL_ERR_INTERNAL_ERROR).serialise().get());
@@ -99,7 +99,7 @@ void WorldSession::handleReturnToSenderOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto mailMessage = _player->m_mailBox.GetMessage(srlPacket.messageId);
+    const auto mailMessage = _player->m_mailBox->GetMessage(srlPacket.messageId);
     if (mailMessage == nullptr)
     {
         SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_RETURNED_TO_SENDER, MAIL_ERR_INTERNAL_ERROR).serialise().get());
@@ -108,7 +108,7 @@ void WorldSession::handleReturnToSenderOpcode(WorldPacket& recvPacket)
 
     auto message = *mailMessage;
 
-    _player->m_mailBox.DeleteMessage(srlPacket.messageId, true);
+    _player->m_mailBox->DeleteMessage(srlPacket.messageId, true);
 
     message.player_guid = message.sender_guid;
     message.sender_guid = _player->getGuid();
@@ -132,7 +132,7 @@ void WorldSession::handleMailCreateTextItemOpcode(WorldPacket& recvPacket)
         return;
 
     const auto itemProperties = sMySQLStore.getItemProperties(8383);
-    auto message = _player->m_mailBox.GetMessage(srlPacket.messageId);
+    auto message = _player->m_mailBox->GetMessage(srlPacket.messageId);
     if (message == nullptr || !itemProperties)
     {
         SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_MADE_PERMANENT, MAIL_ERR_INTERNAL_ERROR).serialise().get());
@@ -179,7 +179,7 @@ void WorldSession::handleMailTimeOpcode(WorldPacket& /*recvPacket*/)
         data << uint32_t(0);
         data << uint32_t(0);
 
-        for (auto& message : _player->m_mailBox.Messages)
+        for (auto& message : _player->m_mailBox->Messages)
         {
             if (message.second.checked_flag & MAIL_CHECK_MASK_READ)
                 continue;
@@ -213,7 +213,7 @@ void WorldSession::handleGetMailOpcode(WorldPacket& /*recvPacket*/)
     data << uint32_t(0);
     data << uint8_t(0);
 
-    for (auto& message : _player->m_mailBox.Messages)
+    for (auto& message : _player->m_mailBox->Messages)
     {
         if (message.second.expire_time && static_cast<uint32_t>(UNIXTIME) > message.second.expire_time)
             continue;
@@ -322,7 +322,7 @@ void WorldSession::handleGetMailOpcode(WorldPacket& /*recvPacket*/)
     SendPacket(&data);
 
     // do cleanup on request mail
-    _player->m_mailBox.CleanupExpiredMessages();
+    _player->m_mailBox->CleanupExpiredMessages();
 }
 
 void WorldSession::handleTakeItemOpcode(WorldPacket& recvPacket)
@@ -331,7 +331,7 @@ void WorldSession::handleTakeItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    auto mailMessage = _player->m_mailBox.GetMessage(srlPacket.messageId);
+    auto mailMessage = _player->m_mailBox->GetMessage(srlPacket.messageId);
     if (mailMessage == nullptr || mailMessage->items.empty())
     {
         SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_INTERNAL_ERROR).serialise().get());

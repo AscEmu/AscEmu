@@ -23,6 +23,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Battleground/Battleground.hpp"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/ItemInterface.h"
+#include "Management/MailMgr.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/Skill.hpp"
 #include "Map/Area/AreaManagementGlobals.hpp"
@@ -151,6 +152,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/InstanceScript.hpp"
 #include "Server/Script/QuestScript.hpp"
 
+#if VERSION_STRING > TBC
+    #include "Management/AchievementMgr.h"
+#endif
+
 using namespace AscEmu::Packets;
 using namespace MapManagement::AreaManagement;
 using namespace InstanceDifficulty;
@@ -164,7 +169,7 @@ CachedCharacterInfo::~CachedCharacterInfo()
 Player::Player(uint32_t guid) :
     m_updateMgr(this, static_cast<size_t>(worldConfig.server.compressionThreshold), 40000, 30000, 1000),
     m_nextSave(Util::getMSTime() + worldConfig.getIntRate(INTRATE_SAVE)),
-    m_mailBox(guid),
+    m_mailBox(new Mailbox(guid)),
     m_speedCheatDetector(new SpeedCheatDetector),
     m_groupUpdateFlags(GROUP_UPDATE_FLAG_NONE)
 {
@@ -202,6 +207,10 @@ Player::Player(uint32_t guid) :
 
     // Zyres: initialise here because ItemInterface needs the guid from object data
     m_itemInterface = new ItemInterface(this);
+#if VERSION_STRING > TBC
+    m_achievementMgr = new AchievementMgr(this);
+#endif
+    m_taxi = new TaxiPath;
 
     // Override initialization from Unit class
     getThreatManager().initialize();
@@ -262,6 +271,12 @@ Player::~Player()
 
     for (auto pet = m_pets.begin(); pet != m_pets.end(); ++pet)
         delete pet->second;
+
+    delete m_mailBox;
+#if VERSION_STRING > TBC
+    delete m_achievementMgr;
+#endif
+    delete m_taxi;
 
     m_pets.clear();
     removeGarbageItems();
@@ -518,7 +533,7 @@ void Player::OnPrePushToWorld()
 {
     sendInitialLogonPackets();
 #if VERSION_STRING > TBC
-    m_achievementMgr.sendAllAchievementData(this);
+    m_achievementMgr->sendAllAchievementData(this);
 #endif
 }
 
@@ -1736,7 +1751,7 @@ bool Player::safeTeleport(uint32_t mapId, uint32_t instanceId, const LocationVec
 
     speedCheatDelay(10000);
 
-    if (m_taxi.getCurrentTaxiPath())
+    if (m_taxi->getCurrentTaxiPath())
     {
         sEventMgr.RemoveEvents(this, EVENT_PLAYER_TELEPORT);
         setMountDisplayId(0);
@@ -1965,7 +1980,7 @@ void Player::indoorCheckUpdate(uint32_t time)
             if (!isOutdoors())
             {
                 // this is duplicated check, but some mount auras comes w/o this flag set, maybe due to spellfixes.cpp line:663
-                if (isMounted() && !m_taxi.getCurrentTaxiPath())
+                if (isMounted() && !m_taxi->getCurrentTaxiPath())
                     dismount();
 
                 for (uint16_t x = AuraSlots::POSITIVE_SLOT_START; x < AuraSlots::POSITIVE_SLOT_END; ++x)
@@ -2212,7 +2227,7 @@ void Player::eventExploration()
                 applyPlayerRestState(false);
         }
 
-        if (!(currFields & val) && !m_taxi.getCurrentTaxiPath() && !obj_movement_info.transport_guid)
+        if (!(currFields & val) && !m_taxi->getCurrentTaxiPath() && !obj_movement_info.transport_guid)
         {
             setExploredZone(offset, currFields | val);
 
@@ -10047,7 +10062,7 @@ void Player::tagUnit(Object* object)
 }
 
 #if VERSION_STRING > TBC
-AchievementMgr& Player::getAchievementMgr() { return m_achievementMgr; }
+AchievementMgr* Player::getAchievementMgr() { return m_achievementMgr; }
 #endif
 
 void Player::sendUpdateDataToSet(ByteBuffer* groupBuf, ByteBuffer* nonGroupBuf, bool sendToSelf)
@@ -10461,10 +10476,10 @@ bool Player::activateTaxiPathTo(std::vector<uint32_t> const& nodes, Creature* np
     cancelTrade(true);
 
     // clean not finished taxi path if any
-    m_taxi.clearTaxiDestinations();
+    m_taxi->clearTaxiDestinations();
 
     // 0 element current node
-    m_taxi.addTaxiDestination(sourcenode);
+    m_taxi->addTaxiDestination(sourcenode);
 
     // fill destinations path tail
     uint32_t sourcepath = 0;
@@ -10483,7 +10498,7 @@ bool Player::activateTaxiPathTo(std::vector<uint32_t> const& nodes, Creature* np
 
         if (!path)
         {
-            m_taxi.clearTaxiDestinations();
+            m_taxi->clearTaxiDestinations();
             return false;
         }
 
@@ -10494,7 +10509,7 @@ bool Player::activateTaxiPathTo(std::vector<uint32_t> const& nodes, Creature* np
         if (prevnode == sourcenode)
             sourcepath = path;
 
-        m_taxi.addTaxiDestination(lastnode);
+        m_taxi->addTaxiDestination(lastnode);
 
         prevnode = lastnode;
     }
@@ -10506,7 +10521,7 @@ bool Player::activateTaxiPathTo(std::vector<uint32_t> const& nodes, Creature* np
     if ((mount_display_id == 0 && spellid == 0) || sourcepath == 0)
     {
         getSession()->SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_UnspecificError).serialise().get());
-        m_taxi.clearTaxiDestinations();
+        m_taxi->clearTaxiDestinations();
         return false;
     }
 
@@ -10523,7 +10538,7 @@ bool Player::activateTaxiPathTo(std::vector<uint32_t> const& nodes, Creature* np
     if (money < totalcost)
     {
         getSession()->SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_NotEnoughMoney).serialise().get());
-        m_taxi.clearTaxiDestinations();
+        m_taxi->clearTaxiDestinations();
         return false;
     }
 
@@ -10574,14 +10589,14 @@ bool Player::activateTaxiPathTo(uint32_t taxi_path_id, Creature* npc)
 
 void Player::cleanupAfterTaxiFlight()
 {
-    m_taxi.clearTaxiDestinations();        // not destinations, clear source node
+    m_taxi->clearTaxiDestinations();        // not destinations, clear source node
     dismount();
     removeUnitFlags(UNIT_FLAG_LOCK_PLAYER | UNIT_FLAG_MOUNTED_TAXI);
 }
 
 void Player::continueTaxiFlight() const
 {
-    uint32_t sourceNode = m_taxi.getTaxiSource();
+    uint32_t sourceNode = m_taxi->getTaxiSource();
     if (!sourceNode)
         return;
 
@@ -10589,10 +10604,10 @@ void Player::continueTaxiFlight() const
     if (!mountDisplayId)
         return;
 
-    uint32_t path = m_taxi.getCurrentTaxiPath();
+    uint32_t path = m_taxi->getCurrentTaxiPath();
 
     // search appropriate start path node
-    uint32_t startNode = m_taxi.nodeAfterTeleport;
+    uint32_t startNode = m_taxi->nodeAfterTeleport;
 
     TaxiPathNodeList const& nodeList = sTaxiPathNodesByPath[path];
 
@@ -10645,14 +10660,14 @@ void Player::sendTaxiNodeStatusMultiple()
         if (!nearestNode)
             continue;
 
-        getSession()->SendPacket(SmsgTaxinodeStatus(creature->getGuid(), uint8_t(m_taxi.isTaximaskNodeKnown(nearestNode) ? 1 : 2)).serialise().get());
+        getSession()->SendPacket(SmsgTaxinodeStatus(creature->getGuid(), uint8_t(m_taxi->isTaximaskNodeKnown(nearestNode) ? 1 : 2)).serialise().get());
     }
 }
 
 #if VERSION_STRING > WotLK
 void Player::initTaxiNodesForLevel()
 {
-    m_taxi.initTaxiNodesForLevel(getRace(), getClass(), getLevel());
+    m_taxi->initTaxiNodesForLevel(getRace(), getClass(), getLevel());
 }
 #endif
 
@@ -13755,7 +13770,7 @@ void Player::saveToDB(bool newCharacter /* =false */)
 
     // taxi destination
     ss << "'";
-    ss << m_taxi.saveTaxiDestinationsToString();
+    ss << m_taxi->saveTaxiDestinationsToString();
     ss << "', ";
 
     // last node
@@ -13934,7 +13949,7 @@ void Player::saveToDB(bool newCharacter /* =false */)
     }
     m_nextSave = Util::getMSTime() + worldConfig.getIntRate(INTRATE_SAVE);
 #if VERSION_STRING > TBC
-    m_achievementMgr.saveToDb(buf);
+    m_achievementMgr->saveToDb(buf);
 #endif
 
     if (buf)
@@ -14115,7 +14130,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
 
 #if VERSION_STRING > TBC
     // load achievements before anything else otherwise skills would complete achievements already in the DB, leading to duplicate achievements and criterias(like achievement=126).
-    m_achievementMgr.loadFromDb(results[PlayerQuery::Achievements].result, results[PlayerQuery::AchievementProgress].result);
+    m_achievementMgr->loadFromDb(results[PlayerQuery::Achievements].result, results[PlayerQuery::AchievementProgress].result);
 #endif
 
     setInitialPlayerData();
@@ -14246,7 +14261,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
     }
 
     // Load Taxis From Database
-    m_taxi.loadTaxiMask(field[32].GetString());
+    m_taxi->loadTaxiMask(field[32].GetString());
 
 #if VERSION_STRING > WotLK
     initTaxiNodesForLevel();
@@ -14644,7 +14659,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
     loadVoidStorage();
 #endif
 
-    m_mailBox.Load(results[PlayerQuery::Mailbox].result);
+    m_mailBox->Load(results[PlayerQuery::Mailbox].result);
 
     // Saved Instances
     loadBoundInstances();
@@ -14671,7 +14686,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
 #if VERSION_STRING > TBC
     // update achievements before adding player to World, otherwise we'll get a nice race condition.
     //move CheckAllAchievementCriteria() after FullLogin(this) and i'll cut your b***s.
-    m_achievementMgr.updateAllAchievementCriteria();
+    m_achievementMgr->updateAllAchievementCriteria();
 #endif
 
     m_session->fullLogin(this);
@@ -14731,11 +14746,11 @@ void Player::loadFromDBProc(QueryResultVector& results)
     if (!taxi_nodes.empty())
     {
         // Not finish taxi flight path
-        if (!m_taxi.loadTaxiDestinationsFromString(taxi_nodes, GetTeam()))
+        if (!m_taxi->loadTaxiDestinationsFromString(taxi_nodes, GetTeam()))
         {
             // problems with taxi path loading
             WDB::Structures::TaxiNodesEntry const* nodeEntry = nullptr;
-            if (uint32_t node_id = m_taxi.getTaxiSource())
+            if (uint32_t node_id = m_taxi->getTaxiSource())
                 nodeEntry = sTaxiNodesStore.lookupEntry(node_id);
 
             if (!nodeEntry) // don't know taxi start node, teleport to homebind
@@ -14746,10 +14761,10 @@ void Player::loadFromDBProc(QueryResultVector& results)
             {
                 safeTeleport(nodeEntry->mapid, 0, LocationVector(nodeEntry->x, nodeEntry->y, nodeEntry->z, 0.0f));
             }
-            m_taxi.clearTaxiDestinations();
+            m_taxi->clearTaxiDestinations();
         }
         
-        m_taxi.setNodeAfterTeleport(taxi_currentNode);
+        m_taxi->setNodeAfterTeleport(taxi_currentNode);
         // flight will started later
     }
 
@@ -16407,14 +16422,14 @@ uint32_t Player::getMainMeleeDamage(uint32_t attackPowerOverride)
 #if VERSION_STRING > TBC
 void Player::updateAchievementCriteria(AchievementCriteriaTypes type, uint64_t miscValue1 /*= 0*/, uint64_t miscValue2 /*= 0*/, uint64_t miscValue3 /*= 0*/, Unit* unit /*= nullptr*/)
 {
-    m_achievementMgr.updateAchievementCriteria(type, miscValue1, miscValue2, miscValue3, unit);
+    m_achievementMgr->updateAchievementCriteria(type, miscValue1, miscValue2, miscValue3, unit);
     Guild* guild = sGuildMgr.getGuildById(getGuildId());
     if (!guild)
         return;
 
     // Update only individual achievement criteria here, otherwise we may get multiple updates
     // from a single boss kill
-    if (m_achievementMgr.isGroupCriteriaType(type))
+    if (m_achievementMgr->isGroupCriteriaType(type))
         return;
 
     // ToDo Cata Has Guild Achievements

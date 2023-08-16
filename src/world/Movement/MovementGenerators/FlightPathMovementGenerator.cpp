@@ -37,7 +37,7 @@ bool isNodeIncludedInShortenedPath(WDB::Structures::TaxiPathNodeEntry const* pat
 void FlightPathMovementGenerator::loadPath(Player* player)
 {
     _pointsForPathSwitch.clear();
-    std::deque<uint32_t> const& taxi = player->m_taxi.getPath();
+    std::deque<uint32_t> const& taxi = player->m_taxi->getPath();
     for (uint32 src = 0, dst = 1; dst < taxi.size(); src = dst++)
     {
         uint32_t path, cost;
@@ -97,7 +97,7 @@ void FlightPathMovementGenerator::doFinalize(Player* player, bool active, bool /
     // remove flag to prevent send object build movement packets for flight state
     player->removeUnitStateFlag(UNIT_STATE_IN_FLIGHT);
 
-    if (!player->m_taxi.nodeAfterTeleport)
+    if (!player->m_taxi->nodeAfterTeleport)
     {
         player->cleanupAfterTaxiFlight();
     }
@@ -107,7 +107,7 @@ void FlightPathMovementGenerator::doFinalize(Player* player, bool active, bool /
         player->removeUnitFlags(UNIT_FLAG_LOCK_PLAYER | UNIT_FLAG_MOUNTED_TAXI);
     }
 
-    if (player->m_taxi.empty())
+    if (player->m_taxi->empty())
     {
         // update position and orientation for landing point
         // this prevent cheating with landing point at lags
@@ -159,7 +159,7 @@ bool FlightPathMovementGenerator::doUpdate(Player* player, uint32_t /*diff*/)
             while (!_pointsForPathSwitch.empty() && _pointsForPathSwitch.front().PathIndex <= _currentNode)
             {
                 _pointsForPathSwitch.pop_front();
-                player->m_taxi.nextTaxiDestination();
+                player->m_taxi->nextTaxiDestination();
                 if (!_pointsForPathSwitch.empty())
                 {
 #if VERSION_STRING > TBC

@@ -41,6 +41,7 @@
 #include "World.h"
 #include "Chat/ChatHandler.hpp"
 #include "Management/GameEventMgr.hpp"
+#include "Management/MailMgr.h"
 #include "Script/ScriptMgr.hpp"
 #include "Spell/SpellMgr.hpp"
 
