@@ -152,6 +152,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/InstanceScript.hpp"
 #include "Server/Script/QuestScript.hpp"
 
+#if VERSION_STRING > TBC
+    #include "Management/AchievementMgr.h"
+#endif
+
 using namespace AscEmu::Packets;
 using namespace MapManagement::AreaManagement;
 using namespace InstanceDifficulty;
@@ -203,10 +207,10 @@ Player::Player(uint32_t guid) :
 
     // Zyres: initialise here because ItemInterface needs the guid from object data
     m_itemInterface = new ItemInterface(this);
-
+#if VERSION_STRING > TBC
     m_achievementMgr = new AchievementMgr(this);
-
-    m_taxi = new TaxiPath();
+#endif
+    m_taxi = new TaxiPath;
 
     // Override initialization from Unit class
     getThreatManager().initialize();
@@ -269,7 +273,9 @@ Player::~Player()
         delete pet->second;
 
     delete m_mailBox;
+#if VERSION_STRING > TBC
     delete m_achievementMgr;
+#endif
     delete m_taxi;
 
     m_pets.clear();

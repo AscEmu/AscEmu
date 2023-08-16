@@ -16,9 +16,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/UpdateFieldInclude.h"
 #include "Objects/ItemDefines.hpp"
 
+// todo include header for now struct InstancePlayerBind definition
+#include "Map/Maps/InstanceMgr.hpp"
+
 #include <mutex>
 
-struct InstancePlayerBind;
+//struct InstancePlayerBind;
 struct ItemSet;
 class AchievementMgr;
 class Mailbox;
@@ -2030,7 +2033,7 @@ public:
     uint32_t getMaxPersonalRating();
 
     // Instance IDs
-    typedef std::unordered_map<uint32_t /*mapId*/, InstancePlayerBind > BoundInstancesMap;
+    typedef std::unordered_map<uint32_t /*mapId*/, InstancePlayerBind> BoundInstancesMap;
     void loadBoundInstances();
 
     // permanent binds and solo binds by difficulty
