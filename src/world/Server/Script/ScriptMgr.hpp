@@ -172,7 +172,15 @@ protected:
     CustomGossipScripts _customgossipscripts;
     EventScripts _eventscripts;
     QuestScripts _questscripts;
-    GossipMap creaturegossip_, gogossip_, itemgossip_;
+
+    GossipMap creaturegossip_;
+    std::mutex m_gossipCreatureMutex;
+
+    GossipMap gogossip_;
+    std::mutex m_gossipGoMutex;
+
+    GossipMap itemgossip_;
+    std::mutex m_gossipItemMutex;
 };
 
 #define sScriptMgr ScriptMgr::getInstance()

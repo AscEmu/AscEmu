@@ -888,6 +888,8 @@ bool ScriptMgr::has_quest_script(uint32_t entry) const
 
 void ScriptMgr::register_creature_gossip(uint32_t entry, GossipScript* script)
 {
+    std::lock_guard lock(m_gossipCreatureMutex);
+
     const auto itr = creaturegossip_.find(entry);
     if (itr == creaturegossip_.end())
     {
@@ -903,11 +905,15 @@ void ScriptMgr::register_creature_gossip(uint32_t entry, GossipScript* script)
 
 bool ScriptMgr::has_creature_gossip(uint32_t entry) const
 {
+    std::lock_guard lock(m_gossipCreatureMutex);
+
     return creaturegossip_.contains(entry);
 }
 
 GossipScript* ScriptMgr::get_creature_gossip(uint32_t entry) const
 {
+    std::lock_guard lock(m_gossipCreatureMutex);
+
     const auto itr = creaturegossip_.find(entry);
     if (itr != creaturegossip_.end())
         return itr->second;
@@ -916,6 +922,8 @@ GossipScript* ScriptMgr::get_creature_gossip(uint32_t entry) const
 
 void ScriptMgr::register_item_gossip(uint32_t entry, GossipScript* script)
 {
+    std::lock_guard lock(m_gossipItemMutex);
+
     const auto itr = itemgossip_.find(entry);
     if (itr == itemgossip_.end())
         itemgossip_.insert(std::make_pair(entry, script));
@@ -925,6 +933,8 @@ void ScriptMgr::register_item_gossip(uint32_t entry, GossipScript* script)
 
 void ScriptMgr::register_go_gossip(uint32_t entry, GossipScript* script)
 {
+    std::lock_guard lock(m_gossipGoMutex);
+
     const auto itr = gogossip_.find(entry);
     if (itr == gogossip_.end())
         gogossip_.insert(std::make_pair(entry, script));
@@ -934,16 +944,22 @@ void ScriptMgr::register_go_gossip(uint32_t entry, GossipScript* script)
 
 bool ScriptMgr::has_item_gossip(uint32_t entry) const
 {
+    std::lock_guard lock(m_gossipItemMutex);
+
     return itemgossip_.contains(entry);
 }
 
 bool ScriptMgr::has_go_gossip(uint32_t entry) const
 {
+    std::lock_guard lock(m_gossipGoMutex);
+
     return gogossip_.contains(entry);
 }
 
 GossipScript* ScriptMgr::get_go_gossip(uint32_t entry) const
 {
+    std::lock_guard lock(m_gossipGoMutex);
+
     const auto itr = gogossip_.find(entry);
     if (itr != gogossip_.end())
         return itr->second;
@@ -952,6 +968,8 @@ GossipScript* ScriptMgr::get_go_gossip(uint32_t entry) const
 
 GossipScript* ScriptMgr::get_item_gossip(uint32_t entry) const
 {
+    std::lock_guard lock(m_gossipItemMutex);
+
     const auto itr = itemgossip_.find(entry);
     if (itr != itemgossip_.end())
         return itr->second;
