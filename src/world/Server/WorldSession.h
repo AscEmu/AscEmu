@@ -21,10 +21,8 @@
 #ifndef WORLDSESSION_H
 #define WORLDSESSION_H
 
-#include <string>
-
 #include "Server/Opcodes.hpp"
-#include "FastQueue.h"
+#include "ThreadSafeQueue.hpp"
 #include "Server/CharacterErrors.h"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Data/Flags.hpp"
@@ -32,6 +30,8 @@
 #include "Logging/Logger.hpp"
 #include "Utilities/CallBack.h"
 #include "Management/AddonMgr.h"
+
+#include <string>
 
 struct QuestProperties;
 class Player;
@@ -235,7 +235,7 @@ class SERVER_DECL WorldSession
 
         void LogoutPlayer(bool Save);
 
-        void QueuePacket(WorldPacket* packet);
+        void QueuePacket(std::shared_ptr<WorldPacket> packet);
 
         void OutPacket(uint16 opcode, uint16 len, const void* data);
 
@@ -1008,7 +1008,7 @@ protected:
 
         AccountDataEntry sAccountData[8]{};
 
-        FastQueue<WorldPacket*, Mutex> _recvQueue;
+        ThreadSafeQueue<std::shared_ptr<WorldPacket>> _recvQueue;
         char* permissions;
         int permissioncount;
 
