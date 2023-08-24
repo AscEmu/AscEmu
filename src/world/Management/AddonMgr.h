@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 #include <list>
 #include <map>
+#include <memory>
 #include <string>
 
 //\TODO handle it, if possible, the same way in all versions

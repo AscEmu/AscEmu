@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
+#include "Logging/Logger.hpp"
 #include "Server/Packets/CmsgJoinChannel.h"
 #include "Server/Packets/SmsgChannelMemberCount.h"
 #include "Server/Packets/CmsgChannelDisplayList.h"

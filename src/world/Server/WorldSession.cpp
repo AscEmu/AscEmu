@@ -519,6 +519,17 @@ bool WorldSession::CanUseCommand(char cmdstr)
     return false;
 }
 
+AccountDataEntry* WorldSession::GetAccountData(uint32 index)
+{
+    if (index < 8)
+    {
+        return &sAccountData[index];
+    }
+
+    sLogger.failure("GetAccountData tried to get invalid index %u", index);
+    return nullptr;
+}
+
 void WorldSession::SendNotification(const char* message, ...)
 {
     if (!message)

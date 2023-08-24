@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Logging/Log.hpp"
+#include "Logging/Logger.hpp"
 
 using AscEmu::Threading::AEThread;
 using std::chrono::milliseconds;
