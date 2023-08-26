@@ -530,6 +530,7 @@ public:
     int32_t getCalculatedRangedAttackPower() const;
 
     bool canReachWithAttack(Unit* unitTarget);
+    bool canBeginCombat(Unit* target);  //used in CreatureAIScript
 
     virtual void calculateDamage();
 

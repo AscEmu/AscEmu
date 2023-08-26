@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CreatureAIScript.hpp"
 
 #include "InstanceScript.hpp"
-#include "Management/Faction.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Map/Maps/MapScriptInterface.h"
@@ -798,7 +797,7 @@ void CreatureAIScript::setZoneWideCombat(Creature* creature)
     {
         if (Player* plr = player.second)
         {
-            if (!plr->isAlive() || !canBeginCombat(creature, plr))
+            if (!plr->isAlive() || !creature->canBeginCombat(plr))
                 continue;
 
             creature->getAIInterface()->onHostileAction(plr);
@@ -1885,7 +1884,7 @@ bool CreatureAIScript::isValidUnitTarget(Object* pObject, TargetFilter pFilter, 
             if (!UnitTarget->getCombatHandler().isInCombat())
                 return false; // not-in-combat targets if friendly
 
-            if (isHostile(getCreature(), UnitTarget) || getCreature()->getThreatManager().getThreat(UnitTarget) > 0)
+            if (getCreature()->isHostileTo(UnitTarget) || getCreature()->getThreatManager().getThreat(UnitTarget) > 0)
                 return false;
         }
 

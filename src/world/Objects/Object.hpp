@@ -673,7 +673,10 @@ public:
 
         bool isHostileTo(Object* target);
         bool IsHostileToPlayers();
+
         bool isFriendlyTo(Object* target);
+
+        bool isNeutralTo(Object* target) const;
         bool isNeutralToAll() const;
 
         bool isValidTarget(Object* target, SpellInfo const* bySpell = nullptr);       // used for findTarget

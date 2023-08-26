@@ -21,7 +21,6 @@
 #include "Management/Skill.hpp"
 #include "Management/ItemInterface.h"
 #include "Map/Maps/MapScriptInterface.h"
-#include "Management/Faction.h"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Spell/SpellAuras.h"
@@ -154,7 +153,7 @@ bool HolidayCheer(uint8_t effectIndex, Spell* pSpell)
         else
             continue;
 
-        if (pSpell->getCaster()->CalcDistance(target) > dist || isAttackable(pSpell->getCaster(), target))
+        if (pSpell->getCaster()->CalcDistance(target) > dist || pSpell->getCaster()->isValidTarget(target))
             continue;
 
         target->emote(EMOTE_ONESHOT_LAUGH);
@@ -726,7 +725,7 @@ bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
                     if (u->getTargetGuid() != s->getPlayerCaster()->getGuid())
                         continue;
 
-                    if (!isAttackable(s->getPlayerCaster(), u))
+                    if (!s->getPlayerCaster()->isValidTarget(u))
                         continue;
 
                     s->getPlayerCaster()->castSpell(u, spellids[spellindex], true);

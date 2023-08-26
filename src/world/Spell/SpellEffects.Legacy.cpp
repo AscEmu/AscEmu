@@ -38,7 +38,6 @@
 #include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "Map/Management/MapMgr.hpp"
-#include "Management/Faction.h"
 #include "SpellMgr.hpp"
 #include "SpellAuras.h"
 #include "Definitions/SpellCastTargetFlags.hpp"
@@ -1764,7 +1763,7 @@ void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
         {
             /* try to get a selection */
             unitTarget = m_caster->getWorldMap()->getUnit(m_targets.getUnitTarget());
-            if ((!unitTarget) || !isAttackable(p_caster, unitTarget, getSpellInfo()) || (unitTarget->CalcDistance(p_caster) > 28.0f))
+            if ((!unitTarget) || !p_caster->isValidTarget(unitTarget, getSpellInfo()) || (unitTarget->CalcDistance(p_caster) > 28.0f))
             {
                 return;
             }
@@ -3375,7 +3374,7 @@ void Spell::SpellEffectTriggerMissile(uint8_t effectIndex) // Trigger Missile
 
         if (std::sqrt(r) > spellRadius) continue;
 
-        if (!isAttackable(m_caster, itr))   //Fix Me: only enemy targets?
+        if (!m_caster->isValidTarget(itr))   //Fix Me: only enemy targets?
             continue;
 
         Spell* sp = sSpellMgr.newSpell(m_caster, spInfo, true, nullptr);
@@ -3679,7 +3678,7 @@ void Spell::SpellEffectLearnSpell(uint8_t effectIndex) // Learn Spell
 
     if (playerTarget)
     {
-        /*if (u_caster && isHostile(playerTarget, u_caster))
+        /*if (u_caster && playerTarget->isHostileTo(u_caster))
         return;*/
 
         uint32 spellToLearn = getSpellInfo()->getEffectTriggerSpell(effectIndex);
@@ -3792,7 +3791,7 @@ void Spell::SpellEffectDispel(uint8_t effectIndex) // Dispel
 
     uint16_t start, end;
 
-    if (isAttackable(u_caster, unitTarget) || getSpellInfo()->getEffectMiscValue(effectIndex) == DISPEL_STEALTH)    // IsAttackable returns false for stealthed
+    if (u_caster->isValidTarget(unitTarget) || getSpellInfo()->getEffectMiscValue(effectIndex) == DISPEL_STEALTH)    // IsAttackable returns false for stealthed
     {
         start = AuraSlots::POSITIVE_SLOT_START;
         end = AuraSlots::POSITIVE_SLOT_END;
@@ -5815,7 +5814,7 @@ void Spell::SpellEffectSpellSteal(uint8_t /*effectIndex*/)
     }
 
     uint16_t start, end;
-    if (isAttackable(u_caster, unitTarget))
+    if (u_caster->isValidTarget(unitTarget))
     {
         start = AuraSlots::POSITIVE_SLOT_START;
         end = AuraSlots::POSITIVE_SLOT_END;

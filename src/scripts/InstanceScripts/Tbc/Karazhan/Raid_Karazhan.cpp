@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Raid_Karazhan.h"
 
 #include "Setup.h"
-#include "Management/Faction.h"
 #include "Management/ItemInterface.h"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Gossip/GossipScript.hpp"
@@ -860,7 +859,7 @@ public:
         for (const auto& itr : getCreature()->getInRangePlayersSet())
         {
             Player* RandomTarget = static_cast<Player*>(itr);
-            if (RandomTarget && RandomTarget->isAlive() && isHostile(getCreature(), itr))
+            if (RandomTarget && RandomTarget->isAlive() && getCreature()->isHostileTo(itr))
                 Target_List.push_back(RandomTarget);
         }
 
@@ -1650,10 +1649,10 @@ public:
         std::vector<Player* > TargetTable;
         for (const auto& itr : getCreature()->getInRangePlayersSet())
         {
-            if (itr && isHostile(getCreature(), itr))
+            if (itr && getCreature()->isHostileTo(itr))
             {
                 Player* RandomTarget = static_cast<Player*>(itr);
-                if (RandomTarget && RandomTarget->isAlive() && isHostile(getCreature(), RandomTarget))
+                if (RandomTarget && RandomTarget->isAlive() && getCreature()->isHostileTo(RandomTarget))
                     TargetTable.push_back(RandomTarget);
             }
         }
@@ -2184,7 +2183,7 @@ public:
         std::vector<Player*> Targets;
         for (const auto& itr: getCreature()->getInRangePlayersSet())
         {
-            if (itr && isHostile(getCreature(), itr))
+            if (itr && getCreature()->isHostileTo(itr))
             {
                 Player* RandomTarget = static_cast<Player*>(itr);
                 if (RandomTarget && RandomTarget->isAlive())
@@ -2298,7 +2297,7 @@ public:
         for (const auto& itr : getCreature()->getInRangePlayersSet())
         {
             Player* RandomTarget = static_cast<Player*>(itr);
-            if (RandomTarget && isHostile(getCreature(), RandomTarget) && RandomTarget->isAlive())
+            if (RandomTarget && getCreature()->isHostileTo(RandomTarget) && RandomTarget->isAlive())
             {
                 TargetTable.push_back(RandomTarget);
             }
@@ -2409,7 +2408,7 @@ public:
             {
                 Unit* RandomTarget = static_cast<Unit*>(itr);
 
-                if (RandomTarget && RandomTarget->isAlive() && isHostile(getCreature(), itr))
+                if (RandomTarget && RandomTarget->isAlive() && getCreature()->isHostileTo(itr))
                     TargetTable.push_back(RandomTarget);
             }
 

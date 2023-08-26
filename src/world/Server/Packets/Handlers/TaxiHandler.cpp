@@ -4,7 +4,6 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Server/WorldSession.h"
-#include "Management/Faction.h"
 #include "Management/TaxiMgr.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/CmsgTaxiQueryAvailableNodes.h"
@@ -28,7 +27,7 @@ void WorldSession::sendTaxiStatus(WoWGuid guid)
 {
     Player* const player = GetPlayer();
     Creature* unit = player->getWorldMapCreature(guid.getRawGuid());
-    if (!unit || isHostile(unit, player) || !unit->isTaxi())
+    if (!unit || unit->isHostileTo(player) || !unit->isTaxi())
     {
         sLogger.failure("WorldSession::sendTaxiStatus Creature with guid - " I64FMT " not found.", unit->getGuid());
         return;

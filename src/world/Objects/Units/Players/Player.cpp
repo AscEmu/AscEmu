@@ -18,7 +18,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ArenaTeam.hpp"
 #include "Management/AuctionHouse.h"
 #include "Management/Charter.hpp"
-#include "Management/Faction.h"
 #include "Management/HonorHandler.h"
 #include "Management/Battleground/Battleground.hpp"
 #include "Management/Guild/GuildMgr.hpp"
@@ -10650,7 +10649,7 @@ void Player::sendTaxiNodeStatusMultiple()
             continue;
 
         Creature* creature = itr->ToCreature();
-        if (!creature || isHostile(creature, this))
+        if (!creature || creature->isHostileTo(this))
             continue;
 
         if (!(creature->getNpcFlags() & UNIT_NPC_FLAG_FLIGHTMASTER))
@@ -13265,7 +13264,7 @@ void Player::_eventAttack(bool offhand)
         return;
     }
 
-    if (!isAttackable(this, pVictim))
+    if (!this->isValidTarget(pVictim))
     {
         interruptHealthRegeneration(5000);
         eventAttackStop();
@@ -16470,7 +16469,7 @@ Creature* Player::getCreatureWhenICanInteract(WoWGuid const& guid, uint32_t npcf
         return nullptr;
 
     // not unfriendly/hostile
-    if (isHostile(this, creature))
+    if (this->isHostileTo(creature))
         return nullptr;
 
     // not too far

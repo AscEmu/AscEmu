@@ -18,7 +18,6 @@
  */
 
 #include "Setup.h"
-#include "Management/Faction.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/Units/Players/Player.hpp"
@@ -57,7 +56,7 @@ bool Pestilence(uint8_t effectIndex, Spell* pSpell)
             if (Main->getGuid() == Target->getGuid() && !u_caster->hasAurasWithId(63334))
                 continue;
 
-            if (isAttackable(Target, u_caster) && u_caster->CalcDistance(itr) <= (pSpell->getEffectRadius(effectIndex) + inc))
+            if (Target->isValidTarget(u_caster) && u_caster->CalcDistance(itr) <= (pSpell->getEffectRadius(effectIndex) + inc))
             {
                 if (blood)
                     u_caster->castSpell(Target, BLOOD_PLAGUE, true);
@@ -260,7 +259,7 @@ bool DeathCoil(uint8_t /*effectIndex*/, Spell* s)
     int32_t dmg = s->damage;
 
     SpellForcedBasePoints forcedBasePoints;
-    if (isAttackable(s->getPlayerCaster(), unitTarget))
+    if (s->getPlayerCaster()->isValidTarget(unitTarget))
     {
         forcedBasePoints.set(EFF_INDEX_0, dmg);
         s->getPlayerCaster()->castSpell(unitTarget, 47632, forcedBasePoints, true);

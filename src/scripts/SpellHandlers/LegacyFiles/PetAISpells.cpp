@@ -21,7 +21,6 @@
 #include "Objects/Item.hpp"
 #include "Management/ItemInterface.h"
 #include "Map/Management/MapMgr.hpp"
-#include "Management/Faction.h"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Spell/Spell.h"
 #include "Server/Script/ScriptMgr.hpp"
@@ -86,7 +85,7 @@ public:
                 pet->m_baseDamage[1] += ownerBonus;
 
                 const auto unitTarget = pet->getWorldMap()->getUnit(playerOwner->getTargetGuid());
-                if (unitTarget != nullptr && isAttackable(playerOwner, unitTarget))
+                if (unitTarget != nullptr && playerOwner->isValidTarget(unitTarget))
                 {
                     pet->getAIInterface()->onHostileAction(unitTarget);
                     pet->getAIInterface()->setCurrentTarget(unitTarget);

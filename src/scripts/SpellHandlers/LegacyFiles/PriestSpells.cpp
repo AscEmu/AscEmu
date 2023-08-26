@@ -18,7 +18,6 @@
  */
 
 #include "Setup.h"
-#include "Management/Faction.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Spell/Spell.h"
@@ -69,7 +68,7 @@ bool Penance(uint8_t /*effectIndex*/, Spell* pSpell)
             break;
     }
 
-    if (isAttackable(player, target))   // Do holy damage
+    if (player->isValidTarget(target))   // Do holy damage
     {
         // First tick is instant.
         player->castSpell(target, hostileSpell[0], true);

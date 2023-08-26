@@ -34,7 +34,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Objects/DynamicObject.hpp"
-#include "Management/Faction.h"
 #include "Objects/GameObject.h"
 #include "Management/ObjectMgr.hpp"
 #include "Management/QuestMgr.h"
@@ -625,7 +624,7 @@ void Spell::handleHittedTarget(const uint64_t targetGuid, uint8_t effIndex)
     {
         // Combat is applied instantly to caster if spell had cast time and target is hostile
         // Instant spells on hostile targets and all spells on friendly targets will have combat delayed
-        if (isFriendly(getUnitCaster(), GetUnitTarget()))
+        if (getUnitCaster()->isFriendlyTo(GetUnitTarget()))
             getUnitCaster()->getCombatHandler().onFriendlyAction(GetUnitTarget());
         else if (!(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
             getUnitCaster()->getCombatHandler().onHostileAction(GetUnitTarget(), getFullCastTime() > 0);
@@ -678,7 +677,7 @@ void Spell::handleHittedEffect(const uint64_t targetGuid, uint8_t effIndex, int3
     if (!getSpellInfo()->doesEffectApplyAura(effIndex) && getUnitCaster() != nullptr && GetUnitTarget() != nullptr && getUnitCaster() != GetUnitTarget()
         && getSpellInfo()->getEffect(effIndex) != SPELL_EFFECT_INSTANT_KILL)
     {
-        if (isFriendly(getUnitCaster(), GetUnitTarget()))
+        if (getUnitCaster()->isFriendlyTo(GetUnitTarget()))
         {
             GetUnitTarget()->getCombatHandler().takeCombatAction(getUnitCaster(), true);
         }
@@ -782,7 +781,7 @@ void Spell::handleMissedTarget(SpellTargetMod const missedTarget)
     {
         // Combat is applied instantly to caster if spell had cast time and target is hostile
         // Instant spells on hostile targets and all spells on friendly targets will have combat delayed
-        if (isFriendly(getUnitCaster(), GetUnitTarget()))
+        if (getUnitCaster()->isFriendlyTo(GetUnitTarget()))
             getUnitCaster()->getCombatHandler().onFriendlyAction(GetUnitTarget());
         else if (!(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_NO_INITIAL_AGGRO))
             getUnitCaster()->getCombatHandler().onHostileAction(GetUnitTarget(), getFullCastTime() > 0);
@@ -855,7 +854,7 @@ void Spell::handleMissedEffect(SpellTargetMod const missedTarget, bool reCheckTa
     {
         if (getUnitCaster() != nullptr)
         {
-            if (isFriendly(getUnitCaster(), GetUnitTarget()))
+            if (getUnitCaster()->isFriendlyTo(GetUnitTarget()))
             {
                 GetUnitTarget()->getCombatHandler().takeCombatAction(getUnitCaster(), true);
             }
@@ -1847,7 +1846,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 {
                     if (auto* const playerOwner = getCaster()->getPlayerOwnerOrSelf())
                     {
-                        if (targetPlayer->getDuelPlayer() != playerOwner && isFriendly(playerOwner, targetPlayer))
+                        if (targetPlayer->getDuelPlayer() != playerOwner && playerOwner->isFriendlyTo(targetPlayer))
                             return SPELL_FAILED_TARGET_DUELING;
                     }
                 }
@@ -1856,7 +1855,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 // but allow spell casting in duels
                 if (auto* const playerOwner = getCaster()->getPlayerOwnerOrSelf())
                 {
-                    if (targetPlayer->getDuelPlayer() != playerOwner && !isFriendly(playerOwner, targetPlayer))
+                    if (targetPlayer->getDuelPlayer() != playerOwner && !playerOwner->isFriendlyTo(targetPlayer))
                     {
                         if ((m_caster->GetArea() != nullptr && m_caster->GetArea()->flags & MapManagement::AreaManagement::AREA_SANCTUARY) ||
                             (targetPlayer->GetArea() != nullptr && targetPlayer->GetArea()->flags & MapManagement::AreaManagement::AREA_SANCTUARY))
@@ -4117,7 +4116,7 @@ SpellCastResult Spell::checkRange(const bool secondCheck)
         if (targetUnit == nullptr)
             minRange += rangeEntry->minRange;
         else
-            minRange += isFriendly(m_caster, targetUnit) ? rangeEntry->minRangeFriendly : rangeEntry->minRange;
+            minRange += m_caster->isFriendlyTo(targetUnit) ? rangeEntry->minRangeFriendly : rangeEntry->minRange;
 #endif
 
         // Get maximum range
@@ -4127,7 +4126,7 @@ SpellCastResult Spell::checkRange(const bool secondCheck)
         if (targetUnit == nullptr)
             maxRange = rangeEntry->maxRange;
         else
-            maxRange = isFriendly(m_caster, targetUnit) ? rangeEntry->maxRangeFriendly : rangeEntry->maxRange;
+            maxRange = m_caster->isFriendlyTo(targetUnit) ? rangeEntry->maxRangeFriendly : rangeEntry->maxRange;
 #endif
 
         // Player, creature or corpse target

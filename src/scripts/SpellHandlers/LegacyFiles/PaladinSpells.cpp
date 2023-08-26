@@ -18,7 +18,6 @@
  */
 
 #include "Setup.h"
-#include "Management/Faction.h"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Units/Players/Player.hpp"
@@ -45,7 +44,7 @@ bool HolyShock(uint8_t /*effectIndex*/, Spell* pSpell)
 
     uint32_t spell_id = 0;
 
-    if (isAttackable(caster, target))
+    if (caster->isValidTarget(target))
     {
         // Cast offensive Holy Shock
         switch (pSpell->getSpellInfo()->getId())

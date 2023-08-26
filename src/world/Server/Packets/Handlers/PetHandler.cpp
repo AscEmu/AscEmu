@@ -24,7 +24,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/MovementDefines.h"
 #include "Movement/MovementManager.h"
 #include "Objects/Units/Creatures/Vehicle.hpp"
-#include "Management/Faction.h"
 #include "Map/Maps/WorldMap.hpp"
 #include "Spell/Definitions/SpellFailure.hpp"
 #include "Server/Packets/SmsgPetLearnedSpell.h"
@@ -103,7 +102,7 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
                 {
                     case PET_ACTION_ATTACK:
                     {
-                        if (unitTarget == summonedPet || !isAttackable(summonedPet, unitTarget))
+                        if (unitTarget == summonedPet || !summonedPet->isValidTarget(unitTarget))
                         {
                             summonedPet->SendActionFeedback(PET_FEEDBACK_CANT_ATTACK_TARGET);
                             return;
@@ -158,7 +157,7 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
                     {
                         if (aiSpell->spellType != STYPE_BUFF)
                         {
-                            if (unitTarget == summonedPet || !isAttackable(summonedPet, unitTarget))
+                            if (unitTarget == summonedPet || !summonedPet->isValidTarget(unitTarget))
                             {
                                 summonedPet->SendActionFeedback(PET_FEEDBACK_CANT_ATTACK_TARGET);
                                 return;

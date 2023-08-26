@@ -44,7 +44,6 @@
 #include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/MapScriptInterface.h"
-#include "Management/Faction.h"
 #include "SpellMgr.hpp"
 #include "SpellAuras.h"
 #include "Definitions/SpellEffects.hpp"
@@ -316,7 +315,7 @@ void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float s
         {
             if (u_caster != nullptr)
             {
-                if (isAttackable(u_caster, itr, getSpellInfo()))
+                if (u_caster->isValidTarget(itr, getSpellInfo()))
                 {
                     did_hit_result = static_cast<SpellDidHitResult>(DidHit(i, static_cast<Unit*>(itr)));
                     if (did_hit_result != SPELL_DID_HIT_SUCCESS)
@@ -331,7 +330,7 @@ void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float s
                 if (g_caster && g_caster->getCreatedByGuid() && g_caster->getUnitOwner())
                 {
                     //trap, check not to attack owner and friendly
-                    if (isAttackable(g_caster->getUnitOwner(), itr, getSpellInfo()))
+                    if (g_caster->getUnitOwner()->isValidTarget(itr, getSpellInfo()))
                         SafeAddTarget(tmpMap, itr->getGuid());
                 }
                 else
@@ -398,7 +397,7 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
 
                 if (u_caster != nullptr)
                 {
-                    if (isAttackable(u_caster, itr, getSpellInfo()))
+                    if (u_caster->isValidTarget(itr, getSpellInfo()))
                     {
                         did_hit_result = static_cast<SpellDidHitResult>(DidHit(i, static_cast<Unit*>(itr)));
                         if (did_hit_result == SPELL_DID_HIT_SUCCESS)
@@ -412,7 +411,7 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
                     if (g_caster != nullptr && g_caster->getCreatedByGuid() && g_caster->getUnitOwner() != nullptr)
                     {
                         //trap, check not to attack owner and friendly
-                        if (isAttackable(g_caster->getUnitOwner(), itr, getSpellInfo()))
+                        if (g_caster->getUnitOwner()->isValidTarget(itr, getSpellInfo()))
                             SafeAddTarget(tmpMap, itr->getGuid());
                     }
                     else
@@ -464,7 +463,7 @@ void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, 
 
                 if (u_caster != nullptr)
                 {
-                    if (isFriendly(u_caster, itr))
+                    if (u_caster->isFriendlyTo(itr))
                     {
                         did_hit_result = static_cast<SpellDidHitResult>(DidHit(i, static_cast<Unit*>(itr)));
                         if (did_hit_result == SPELL_DID_HIT_SUCCESS)
@@ -478,7 +477,7 @@ void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, 
                     if (g_caster != nullptr && g_caster->getCreatedByGuid() && g_caster->getUnitOwner() != nullptr)
                     {
                         //trap, check not to attack owner and friendly
-                        if (isFriendly(g_caster->getUnitOwner(), itr))
+                        if (g_caster->getUnitOwner()->isFriendlyTo(itr))
                             SafeAddTarget(tmpMap, itr->getGuid());
                     }
                     else
@@ -525,7 +524,7 @@ uint64 Spell::GetSinglePossibleEnemy(uint32 i, float prange)
         {
             if (u_caster != nullptr)
             {
-                if (isAttackable(u_caster, itr, getSpellInfo()) && DidHit(i, static_cast<Unit*>(itr)) == SPELL_DID_HIT_SUCCESS)
+                if (u_caster->isValidTarget(itr, getSpellInfo()) && DidHit(i, static_cast<Unit*>(itr)) == SPELL_DID_HIT_SUCCESS)
                 {
                     return itr->getGuid();
                 }
@@ -535,7 +534,7 @@ uint64 Spell::GetSinglePossibleEnemy(uint32 i, float prange)
                 if (g_caster && g_caster->getCreatedByGuid() && g_caster->getUnitOwner())
                 {
                     //trap, check not to attack owner and friendly
-                    if (isAttackable(g_caster->getUnitOwner(), itr, getSpellInfo()))
+                    if (g_caster->getUnitOwner()->isValidTarget(itr, getSpellInfo()))
                     {
                         return itr->getGuid();
                     }
@@ -578,7 +577,7 @@ uint64 Spell::GetSinglePossibleFriend(uint32 i, float prange)
         {
             if (u_caster != nullptr)
             {
-                if (isFriendly(u_caster, itr) && DidHit(i, static_cast<Unit*>(itr)) == SPELL_DID_HIT_SUCCESS)
+                if (u_caster->isFriendlyTo(itr) && DidHit(i, static_cast<Unit*>(itr)) == SPELL_DID_HIT_SUCCESS)
                 {
                     return itr->getGuid();
                 }
@@ -588,7 +587,7 @@ uint64 Spell::GetSinglePossibleFriend(uint32 i, float prange)
                 if (g_caster && g_caster->getCreatedByGuid() && g_caster->getUnitOwner())
                 {
                     //trap, check not to attack owner and friendly
-                    if (isFriendly(g_caster->getUnitOwner(), itr))
+                    if (g_caster->getUnitOwner()->isFriendlyTo(itr))
                     {
                         return itr->getGuid();
                     }
@@ -1455,7 +1454,7 @@ void Spell::HandleAddAura(uint64 guid)
 
     if (getUnitCaster() != nullptr)
     {
-        if (isFriendly(getUnitCaster(), Target))
+        if (getUnitCaster()->isFriendlyTo(Target))
         {
             Target->getCombatHandler().takeCombatAction(getUnitCaster(), true);
         }
@@ -2108,7 +2107,7 @@ uint8 Spell::CanCast(bool /*tolerate*/)
                     case 68015:
                     case 68016:
                     {
-                        if (getSpellInfo()->getEffect(0) == SPELL_EFFECT_DUMMY && !isFriendly(u_caster, target))
+                        if (getSpellInfo()->getEffect(0) == SPELL_EFFECT_DUMMY && !u_caster->isFriendlyTo(target))
                             facing_flags = SPELL_INFRONT_STATUS_REQUIRE_INFRONT;
                     } break;
                 }

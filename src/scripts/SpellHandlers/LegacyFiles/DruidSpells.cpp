@@ -18,7 +18,6 @@
  */
 
 #include "Setup.h"
-#include "Management/Faction.h"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Spell/Spell.h"
 #include "Spell/SpellAuras.h"
@@ -36,7 +35,7 @@ bool Starfall(uint8_t effectIndex, Spell* pSpell)
             continue;
 
         Unit* Target = static_cast<Unit*>(itr);
-        if (isAttackable(Target, m_caster) && m_caster->CalcDistance(itr) <= pSpell->getEffectRadius(effectIndex))
+        if (Target->isValidTarget(m_caster) && m_caster->CalcDistance(itr) <= pSpell->getEffectRadius(effectIndex))
         {
             m_caster->castSpell(Target, pSpell->getSpellInfo()->calculateEffectValue(effectIndex, m_caster), true);
             ++am;

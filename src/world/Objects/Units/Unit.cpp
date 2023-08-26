@@ -46,7 +46,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 #include "Movement/Spline/MoveSpline.h"
 #include "Movement/Spline/MoveSplineInit.h"
-#include "Management/Faction.h"
 #include "Server/Packets/SmsgAttackStart.h"
 #include "Server/Packets/SmsgAttackStop.h"
 #include "Server/Packets/SmsgMessageChat.h"
@@ -1785,6 +1784,43 @@ bool Unit::canReachWithAttack(Unit* unitTarget)
     }
 
     return (distance <= attackreach);
+}
+
+bool Unit::canBeginCombat(Unit* target)
+{
+    if (this == target)
+        return false;
+
+    // ...the two units need to be in the world
+    if (!IsInWorld() || !target->IsInWorld())
+        return false;
+    // ...the two units need to both be alive
+    if (!isAlive() || !target->isAlive())
+        return false;
+    // ...the two units need to be on the same map
+    if (getWorldMap() != target->getWorldMap())
+        return false;
+    // ...the two units need to be in the same phase
+    if (GetPhase() != target->GetPhase())
+        return false;
+    if (hasUnitStateFlag(UNIT_STATE_EVADING) || target->hasUnitStateFlag(UNIT_STATE_EVADING))
+        return false;
+    if (hasUnitStateFlag(UNIT_STATE_IN_FLIGHT) || target->hasUnitStateFlag(UNIT_STATE_IN_FLIGHT))
+        return false;
+    // ... both units must not be ignoring combat
+    if (getAIInterface()->isCombatDisabled() || target->getAIInterface()->isCombatDisabled())
+        return false;
+    if (isFriendlyTo(target) || target->isFriendlyTo(this))
+        return false;
+
+    Player* playerA = getUnitOwnerOrSelf() ? getUnitOwnerOrSelf()->ToPlayer() : nullptr;
+    Player* playerB = target->getUnitOwnerOrSelf() ? target->getUnitOwnerOrSelf()->ToPlayer() : nullptr;
+
+    // ...neither of the two units must be (owned by) a player with .gm on
+    if ((playerA && playerA->isGMFlagSet()) || (playerB && playerB->isGMFlagSet()))
+        return false;
+
+    return true;
 }
 
 void Unit::calculateDamage()
@@ -7365,10 +7401,10 @@ void Unit::addToInRangeObjects(Object* pObj)
 {
     if (pObj->isCreatureOrPlayer())
     {
-        if (isHostile(this, pObj))
+        if (this->isHostileTo(pObj))
             addInRangeOppositeFaction(pObj);
 
-        if (isFriendly(this, pObj))
+        if (this->isFriendlyTo(pObj))
             addInRangeSameFaction(pObj);
     }
 
@@ -11424,7 +11460,7 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 if (!itr || itr == pVictim || !itr->isCreatureOrPlayer())
                     continue;
 
-                if (CalcDistance(itr) < 5.0f && isAttackable(this, itr) && itr->isInFront(this) && !static_cast<Unit*>(itr)->isPacified())
+                if (CalcDistance(itr) < 5.0f && this->isValidTarget(itr) && itr->isInFront(this) && !static_cast<Unit*>(itr)->isPacified())
                 {
                     // Sweeping Strikes hits cannot be dodged, missed or parried (from wowhead)
                     bool skip_hit_check2 = ex->spell_info->getId() == 12328 ? true : false;

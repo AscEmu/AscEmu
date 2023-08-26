@@ -15,13 +15,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Map/Management/MapMgr.hpp"
-#include "Management/Faction.h"
 #include "Spell/SpellMgr.hpp"
 #include "Macros/AIInterfaceMacros.hpp"
 #include "Spell/Definitions/SpellCastTargetFlags.hpp"
 #include "Spell/Definitions/SpellRanged.hpp"
 #include "Spell/Definitions/LockTypes.hpp"
-#include "Spell/Definitions/SpellIsFlags.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Pet.h"
 #include "Spell/Definitions/SpellEffects.hpp"
@@ -2054,7 +2052,7 @@ void AIInterface::updateTotem(uint32_t p_time)
                 (!m_Unit->getWorldMap()->getUnit(nextTarget->getGuid()) ||
                     !nextTarget->isAlive() ||
                     !(m_Unit->isInRange(nextTarget->GetPosition(), pSpell->getSpellInfo()->custom_base_range_or_radius_sqr)) ||
-                    !isAttackable(m_Unit, nextTarget, pSpell->getSpellInfo())
+                    !m_Unit->isValidTarget(nextTarget, pSpell->getSpellInfo())
                     )
                 )
             {

@@ -20,7 +20,6 @@
 
 #include "VMapManager2.h"
 #include "Map/Management/MapMgr.hpp"
-#include "Management/Faction.h"
 #include "SpellTarget.h"
 #include "Spell.h"
 #include "Objects/GameObject.h"
@@ -55,11 +54,11 @@ SpellCastResult Spell::checkExplicitTarget(Object* target, uint32_t requiredTarg
         return SPELL_FAILED_BAD_TARGETS;
 
     // Check if spell can target friendly unit
-    if (requiredTargetMask & SPELL_TARGET_REQUIRE_FRIENDLY && !isFriendly(m_caster, target))
+    if (requiredTargetMask & SPELL_TARGET_REQUIRE_FRIENDLY && !m_caster->isFriendlyTo(target))
         return SPELL_FAILED_BAD_TARGETS;
 
     // Check if spell can target attackable unit
-    if (requiredTargetMask & SPELL_TARGET_REQUIRE_ATTACKABLE && !(requiredTargetMask & SPELL_TARGET_AREA_SELF && m_caster == target) && !isAttackable(m_caster, target, getSpellInfo()))
+    if (requiredTargetMask & SPELL_TARGET_REQUIRE_ATTACKABLE && !(requiredTargetMask & SPELL_TARGET_AREA_SELF && m_caster == target) && !m_caster->isValidTarget(target, getSpellInfo()))
         return SPELL_FAILED_BAD_TARGETS;
 
     if (requiredTargetMask & SPELL_TARGET_OBJECT_TARCLASS)

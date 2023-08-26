@@ -28,7 +28,6 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Map/Management/MapMgr.hpp"
-#include "Management/Faction.h"
 #include "SpellAuras.h"
 #include "Definitions/SpellModifierType.hpp"
 #include "SpellHelpers.h"
@@ -493,10 +492,10 @@ void Aura::EventUpdateFriendAA(AuraEffectModifier* /*aurEff*/, float r)
         if (!ou->isAlive())
             continue;
 
-        if (isHostile(u, ou))
+        if (u->isHostileTo(ou))
             continue;
 
-        if (isNeutral(u, ou))
+        if (u->isNeutralTo(ou))
             continue;
 
         if (ou->hasAurasWithId(m_spellInfo->getId()))
@@ -522,10 +521,10 @@ void Aura::EventUpdateFriendAA(AuraEffectModifier* /*aurEff*/, float r)
         if (u->getDistanceSq(tu) > r)
             removable = true;
 
-        if (isHostile(u, tu))
+        if (u->isHostileTo(tu))
             removable = true;
 
-        if (isNeutral(u, tu))
+        if (u->isNeutralTo(tu))
             removable = true;
 
         if ((u->GetPhase() & tu->GetPhase()) == 0)
@@ -563,7 +562,7 @@ void Aura::EventUpdateEnemyAA(AuraEffectModifier* /*aurEff*/, float r)
         if (!ou->isAlive())
             continue;
 
-        if (!isHostile(u, ou))
+        if (!u->isHostileTo(ou))
             continue;
 
         if (ou->hasAurasWithId(m_spellInfo->getId()))
@@ -589,10 +588,10 @@ void Aura::EventUpdateEnemyAA(AuraEffectModifier* /*aurEff*/, float r)
         if (u->getDistanceSq(tu) > r)
             removable = true;
 
-        if (!isHostile(u, tu))
+        if (!u->isHostileTo(tu))
             removable = true;
 
-        if (isNeutral(u, tu))
+        if (u->isNeutralTo(tu))
             removable = true;
 
         if ((u->GetPhase() & tu->GetPhase()) == 0)
@@ -2358,7 +2357,7 @@ void Aura::SpellAuraModSchoolImmunity(AuraEffectModifier* aurEff, bool apply)
         Unit* c = GetUnitCaster();
         if (c)
         {
-            if (isAttackable(c, m_target))
+            if (c->isValidTarget(m_target))
                 mPositive = false;
             else mPositive = true;
         }

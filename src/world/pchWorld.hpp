@@ -51,7 +51,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Macros/PlayerMacros.hpp"
 #include "Macros/ScriptMacros.hpp"
 #include "Macros/UnitMacros.hpp"
-#include "Management/Faction.h"
 #include "Management/ItemInterface.h"
 #include "Management/ObjectMgr.hpp"
 #include "Management/QuestLogEntry.hpp"
