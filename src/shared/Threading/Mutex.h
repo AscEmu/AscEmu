@@ -64,7 +64,7 @@ class SERVER_DECL Mutex
 #endif
 };
 
-#ifdef WIN32
+/*#ifdef WIN32
 
 
 class SERVER_DECL FastMutex
@@ -89,6 +89,6 @@ class SERVER_DECL FastMutex
 
 #define FastMutex Mutex
 
-#endif
+#endif*/
 
 #endif      //_THREADING_MUTEX_H
