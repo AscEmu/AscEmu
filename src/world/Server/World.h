@@ -159,7 +159,7 @@ class SERVER_DECL World : public EventableObject
     private:
 
         SessionSet globalSessionSet;
-        Mutex globalSessionMutex;
+        std::mutex globalSessionMutex;
 
     public:
 
@@ -173,7 +173,7 @@ class SERVER_DECL World : public EventableObject
         typedef std::list<WorldSocket*> QueuedWorldSocketList;
         QueuedWorldSocketList mQueuedSessions;
 
-        Mutex queueMutex;
+        std::mutex queueMutex;
 
         uint32_t mQueueUpdateTimer = 0;
 

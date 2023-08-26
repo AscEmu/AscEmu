@@ -22,7 +22,6 @@
 
 #include "DatabaseDefinition.hpp"
 #include "ThreadSafeQueue.hpp"
-#include "Threading/Mutex.h"
 #include "WorldPacket.h"
 #include "Objects/Item.hpp"
 #include "Exceptions/PlayerExceptions.hpp"
@@ -40,7 +39,6 @@
 #include "Management/Battleground/BattlegroundMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Packets/SmsgMessageChat.h"
-#include "Script/ScriptMgr.hpp"
 #include "Objects/Transporter.hpp"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Creatures/Summons/SummonHandler.hpp"

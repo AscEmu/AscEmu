@@ -51,7 +51,7 @@ void Database::destroyDbConnection()
 {
     if (m_dbConnection)
     {
-        m_dbConnection->Busy.unlock();
+        m_dbConnection->Busy.Release();
         m_dbConnection = nullptr;
     }
 }
@@ -114,7 +114,7 @@ DatabaseConnection* Database::GetFreeConnection()
     for (;;)
     {
         DatabaseConnection* con = Connections[((i++) % mConnectionCount)];
-        if (con->Busy.try_lock())
+        if (con->Busy.AttemptAcquire())
             return con;
     }
 }
@@ -135,7 +135,7 @@ QueryResult* Database::Query(const char* QueryString, ...)
     if (_SendQuery(con, sql, false))
         qResult = _StoreQueryResult(con);
 
-    con->Busy.unlock();
+    con->Busy.Release();
     return qResult;
 }
 
@@ -161,7 +161,7 @@ QueryResult* Database::Query(bool *success, const char* QueryString, ...)
         *success = false;
     }
 
-    con->Busy.unlock();
+    con->Busy.Release();
     return qResult;
 }
 
@@ -174,7 +174,7 @@ QueryResult* Database::QueryNA(const char* QueryString)
     if (_SendQuery(con, QueryString, false))
         qResult = _StoreQueryResult(con);
 
-    con->Busy.unlock();
+    con->Busy.Release();
     return qResult;
 }
 
@@ -222,7 +222,7 @@ void Database::destroyQueryBufferConnection()
 {
     if (m_queryBufferConnection)
     {
-        m_queryBufferConnection->Busy.unlock();
+        m_queryBufferConnection->Busy.Release();
         m_queryBufferConnection = nullptr;
     }
 }
@@ -287,7 +287,7 @@ void Database::PerformQueryBuffer(QueryBuffer* b, DatabaseConnection* ccon)
     _EndTransaction(con);
 
     if (ccon == NULL)
-        con->Busy.unlock();
+        con->Busy.Release();
 }
 // Use this when we do not have a result. ex: INSERT into SQL 1
 bool Database::Execute(const char* QueryString, ...)
@@ -334,7 +334,7 @@ bool Database::WaitExecute(const char* QueryString, ...)
 
     DatabaseConnection* con = GetFreeConnection();
     bool Result = _SendQuery(con, sql, false);
-    con->Busy.unlock();
+    con->Busy.Release();
     return Result;
 }
 
@@ -342,7 +342,7 @@ bool Database::WaitExecuteNA(const char* QueryString)
 {
     DatabaseConnection* con = GetFreeConnection();
     bool Result = _SendQuery(con, QueryString, false);
-    con->Busy.unlock();
+    con->Busy.Release();
     return Result;
 }
 
@@ -370,7 +370,7 @@ void AsyncQuery::Perform()
     for (std::vector<AsyncQueryResult>::iterator itr = queries.begin(); itr != queries.end(); ++itr)
         itr->result = db->FQuery(itr->query, conn);
 
-    conn->Busy.unlock();
+    conn->Busy.Release();
     func->run(queries);
 
     delete this;

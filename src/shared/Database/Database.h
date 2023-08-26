@@ -33,7 +33,7 @@ class SQLCallbackBase;
 
 struct DatabaseConnection
 {
-    std::mutex Busy;
+    Mutex Busy;
 };
 
 struct SERVER_DECL AsyncQueryResult

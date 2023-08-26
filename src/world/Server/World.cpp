@@ -102,6 +102,9 @@ void World::finalize()
     sLogger.info("WorldLog : ~WorldLog()");
     sWorldPacketLog.finalize();
 
+    sLogger.info("TransportHandler : unload()");
+    sTransportHandler.unload();
+
     sLogger.info("ObjectMgr : ~ObjectMgr()");
     sObjectMgr.finalize();
 
@@ -454,9 +457,9 @@ void World::addGlobalSession(WorldSession* worldSession)
 {
     if (worldSession)
     {
-        globalSessionMutex.Acquire();
+        std::lock_guard lock(globalSessionMutex);
+
         globalSessionSet.insert(worldSession);
-        globalSessionMutex.Release();
     }
 }
 
@@ -464,7 +467,7 @@ void World::updateGlobalSession(uint32_t /*diff*/)
 {
     std::list<WorldSession*> ErasableSessions;
 
-    globalSessionMutex.Acquire();
+    globalSessionMutex.lock();
 
     for (SessionSet::iterator itr = globalSessionSet.begin(); itr != globalSessionSet.end();)
     {
@@ -486,7 +489,7 @@ void World::updateGlobalSession(uint32_t /*diff*/)
         }
     }
 
-    globalSessionMutex.Release();
+    globalSessionMutex.unlock();
 
     deleteSessions(ErasableSessions);
     ErasableSessions.clear();
@@ -499,11 +502,11 @@ void World::updateQueuedSessions(uint32_t diff)
     if (diff >= getQueueUpdateTimer())
     {
         mQueueUpdateTimer = settings.server.queueUpdateInterval;
-        queueMutex.Acquire();
+
+        std::lock_guard lock(queueMutex);
 
         if (getQueuedSessions() == 0)
         {
-            queueMutex.Release();
             return;
         }
 
@@ -522,7 +525,6 @@ void World::updateQueuedSessions(uint32_t diff)
 
         if (getQueuedSessions() == 0)
         {
-            queueMutex.Release();
             return;
         }
 
@@ -533,10 +535,9 @@ void World::updateQueuedSessions(uint32_t diff)
             (*iter)->UpdateQueuePosition(queuPosition++);
             if (iter == mQueuedSessions.end())
                 break;
-            else
-                ++iter;
+
+            ++iter;
         }
-        queueMutex.Release();
     }
     else
     {
@@ -546,28 +547,25 @@ void World::updateQueuedSessions(uint32_t diff)
 
 uint32_t World::addQueuedSocket(WorldSocket* socket)
 {
-    queueMutex.Acquire();
+    std::lock_guard lock(queueMutex);
+
     mQueuedSessions.push_back(socket);
-    queueMutex.Release();
 
     return getQueuedSessions();
 }
 
 void World::removeQueuedSocket(WorldSocket* socket)
 {
-    queueMutex.Acquire();
+    std::lock_guard lock(queueMutex);
 
     for (QueuedWorldSocketList::iterator iter = mQueuedSessions.begin(); iter != mQueuedSessions.end(); ++iter)
     {
         if ((*iter) == socket)
         {
             mQueuedSessions.erase(iter);
-            queueMutex.Release();
             return;
         }
     }
-
-    queueMutex.Release();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
