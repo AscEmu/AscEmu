@@ -103,7 +103,7 @@ std::string MySQLDatabase::EscapeString(std::string Escape)
     else
         ret = a2;
 
-    con->Busy.Release();
+    con->Busy.unlock();
 
     return std::string(ret);
 }
@@ -120,7 +120,7 @@ void MySQLDatabase::EscapeLongString(const char* str, uint32 len, std::stringstr
         ret = a2;
 
     out.write(a2, (std::streamsize)strlen(a2));
-    con->Busy.Release();
+    con->Busy.unlock();
 }
 
 std::string MySQLDatabase::EscapeString(const char* esc, DatabaseConnection* con)

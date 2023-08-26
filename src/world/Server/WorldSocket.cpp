@@ -1030,7 +1030,8 @@ void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* dat
 
     if (isLogEnabled)
     {
-        mPacketLogMutex.Acquire();
+        std::lock_guard lock(mPacketLogMutex);
+
         unsigned int line = 1;
         unsigned int countpos = 0;
         uint16_t lenght = static_cast<uint16_t>(len);
@@ -1144,6 +1145,5 @@ void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* dat
 
         fprintf(mPacketLogFile, "-------------------------------------------------------------------\n\n");
         fflush(mPacketLogFile);
-        mPacketLogMutex.Release();
     }
 }

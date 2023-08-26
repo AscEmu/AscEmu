@@ -3060,7 +3060,7 @@ public:
         lua_newtable(L);
         if (const auto group = _player->getGroup())
         {
-            group->getLock().Acquire();
+            group->getLock().lock();
             for (uint32_t i = 0; i < group->GetSubGroupCount(); i++)
             {
                 SubGroup* sgrp = group->GetSubGroup(i);
@@ -3078,7 +3078,7 @@ public:
                     }
                 }
             }
-            group->getLock().Release();
+            group->getLock().unlock();
         }
         return 1;
     }

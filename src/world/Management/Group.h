@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Map/Maps/InstanceMgr.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
-#include "Threading/Mutex.h"
 
 class BaseMap;
 
@@ -232,9 +231,9 @@ public:
 
     uint64 m_targetIcons[8];
     bool m_disbandOnNoMembers;
-    inline Mutex & getLock() { return m_groupLock; }
-    inline void Lock() { m_groupLock.Acquire(); }
-    inline void Unlock() { return m_groupLock.Release(); }
+    inline std::mutex & getLock() { return m_groupLock; }
+    inline void Lock() { m_groupLock.lock(); }
+    inline void Unlock() { return m_groupLock.unlock(); }
     bool m_isqueued;
 
     void SetAssistantLeader(std::shared_ptr<CachedCharacterInfo> pMember);
@@ -316,7 +315,7 @@ protected:
     uint64 m_guid;
 
     uint32 m_MemberCount;
-    Mutex m_groupLock;
+    std::mutex m_groupLock;
     bool m_dirty;
     bool m_updateblock;
     uint32 updatecounter;

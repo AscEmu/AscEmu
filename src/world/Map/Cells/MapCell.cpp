@@ -17,7 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Storage/MySQLDataStore.hpp"
 
-Mutex m_cellloadLock;
+std::mutex m_cellloadLock;
 uint32_t m_celltilesLoaded[MAX_NUM_MAPS][64][64];
 
 extern bool bServerShutdown;
@@ -105,14 +105,14 @@ void MapCell::setActivity(bool state)
             std::string vmapPath = worldConfig.server.dataDir + "vmaps";
             std::string mmapPath = worldConfig.server.dataDir + "mmaps";
 
-            m_cellloadLock.Acquire();
+            std::lock_guard lock(m_cellloadLock);
+
             if (m_celltilesLoaded[mapId][tileX][tileY] == 0)
             {
                 mgr->loadMap(vmapPath.c_str(), mapId, tileX, tileY);
                 mmgr->loadMap(mmapPath, mapId, tileX, tileY);
             }
             ++m_celltilesLoaded[mapId][tileX][tileY];
-            m_cellloadLock.Release();
         }
     }
     else if (_active && !state)
@@ -131,14 +131,13 @@ void MapCell::setActivity(bool state)
         {
             const auto mgr = VMAP::VMapFactory::createOrGetVMapManager();
             MMAP::MMapManager* mmgr = MMAP::MMapFactory::createOrGetMMapManager();
-            m_cellloadLock.Acquire();
+            std::lock_guard lock(m_cellloadLock);
+
             if (!(--m_celltilesLoaded[mapId][tileX][tileY]))
             {
                 mgr->unloadMap(mapId, tileX, tileY);
                 mmgr->unloadMap(mapId, tileX, tileY);
             }
-
-            m_cellloadLock.Release();
         }
     }
 

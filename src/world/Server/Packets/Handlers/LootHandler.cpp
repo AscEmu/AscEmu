@@ -267,7 +267,7 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
 
             groupMembers.reserve(group->MemberCount());
 
-            group->getLock().Acquire();
+            group->getLock().lock();
             for (uint32_t i = 0; i < group->GetSubGroupCount(); i++)
             {
                 auto subGroup = group->GetSubGroup(i);
@@ -278,7 +278,7 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
                             groupMembers.push_back(loggedInPlayer);
                 }
             }
-            group->getLock().Release();
+            group->getLock().unlock();
 
             if (groupMembers.empty())
                 return;

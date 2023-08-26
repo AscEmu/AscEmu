@@ -956,7 +956,9 @@ void Battleground::queueAtNearestSpiritGuide(Player* plr, Creature* old)
     float dist = 999999.0f;
     const Creature* cl = nullptr;
     std::set<uint32_t> *closest = nullptr;
-    m_lock.Acquire();
+
+    std::lock_guard lock(m_lock);
+
     for (auto& itr : m_resurrectMap)
     {
         if (itr.first == old)
@@ -977,8 +979,6 @@ void Battleground::queueAtNearestSpiritGuide(Player* plr, Creature* old)
         plr->setAreaSpiritHealerGuid(cl->getGuid());
         plr->castSpell(plr, 2584, true);
     }
-
-    m_lock.Release();
 }
 
 uint64_t Battleground::GetFlagHolderGUID(uint32_t /*faction*/) const

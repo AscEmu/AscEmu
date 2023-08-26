@@ -152,9 +152,8 @@ void AuctionHouse::loadAuctionsFromDB()
 
 void AuctionHouse::updateAuctions()
 {
-    std::lock_guard<std::mutex> guard(auctionLock);
-
-    removalLock.Acquire();
+    std::lock_guard guard(auctionLock);
+    std::lock_guard lock(removalLock);
 
     auto const time = static_cast<uint32_t>(UNIXTIME);
     for (auto itr = auctions.begin(); itr != auctions.end();)
@@ -178,13 +177,11 @@ void AuctionHouse::updateAuctions()
             removalList.push_back(auction);
         }
     }
-
-    removalLock.Release();
 }
 
 void AuctionHouse::updateDeletionQueue()
 {
-    removalLock.Acquire();
+    std::lock_guard lock(removalLock);
 
     for (auto auction : removalList)
     {
@@ -193,7 +190,6 @@ void AuctionHouse::updateDeletionQueue()
     }
 
     removalList.clear();
-    removalLock.Release();
 }
 
 void AuctionHouse::removeAuction(Auction* auction)
@@ -309,9 +305,10 @@ void AuctionHouse::queueDeletion(Auction* auction, uint32_t reasonType)
 
     auction->isRemoved = true;
     auction->removedType = reasonType;
-    removalLock.Acquire();
+
+    std::lock_guard lock(removalLock);
+
     removalList.push_back(auction);
-    removalLock.Release();
 }
 
 void AuctionHouse::sendOwnerListPacket(Player* player, WorldPacket* /*packet*/)

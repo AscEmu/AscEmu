@@ -20,7 +20,7 @@ class WorldPacketLog
     FILE* mPacketLogFile;
     bool isLogEnabled;
 
-    Mutex mPacketLogMutex;
+    std::mutex mPacketLogMutex;
 
 private:
     WorldPacketLog() = default;

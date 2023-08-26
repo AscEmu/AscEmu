@@ -76,7 +76,7 @@ class SERVER_DECL EventableObject
     protected:
 
         int32 m_event_Instanceid;
-        Mutex m_lock;
+        std::mutex m_lock;
         EventMap m_events;
         EventableObjectHolder* m_holder;
         volatile long m_refs;
@@ -109,10 +109,10 @@ class EventableObjectHolder
     protected:
 
         int32 mInstanceId;
-        Mutex m_lock;
+        std::mutex m_lock;
         EventList m_events;
 
-        Mutex m_insertPoolLock;
+        std::mutex m_insertPoolLock;
         typedef std::list<TimedEvent*> InsertableQueue;
         InsertableQueue m_insertPool;
 };

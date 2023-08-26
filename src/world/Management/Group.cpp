@@ -128,7 +128,8 @@ bool Group::AddMember(std::shared_ptr<CachedCharacterInfo> info, int32 subgroupi
 {
     if (info)
     {
-        m_groupLock.Acquire();
+        std::lock_guard lock(m_groupLock);
+
         Player* pPlayer = sObjectMgr.getPlayer(info->guid);
 
         if (m_isqueued)
@@ -142,7 +143,6 @@ bool Group::AddMember(std::shared_ptr<CachedCharacterInfo> info, int32 subgroupi
             SubGroup* subgroup = (subgroupid > 0) ? m_SubGroups[subgroupid] : FindFreeSubGroup();
             if (subgroup == NULL)
             {
-                m_groupLock.Release();
                 return false;
             }
 
@@ -164,11 +164,9 @@ bool Group::AddMember(std::shared_ptr<CachedCharacterInfo> info, int32 subgroupi
                 m_dirty = true;
                 Update(); // Send group update
 
-                m_groupLock.Release();
                 return true;
             }
 
-            m_groupLock.Release();
             info->m_Group = NULL;
             info->subGroup = -1;
             return false;
@@ -176,7 +174,6 @@ bool Group::AddMember(std::shared_ptr<CachedCharacterInfo> info, int32 subgroupi
 
         info->m_Group = NULL;
         info->subGroup = -1;
-        m_groupLock.Release();
         return false;
     }
 
@@ -221,7 +218,7 @@ void Group::Update()
             m_Looter = pNewLeader->getPlayerInfo();
     }
 
-    m_groupLock.Acquire();
+    std::lock_guard lock(m_groupLock);
 
     for (uint8 i = 0; i < m_SubGroupCount; i++)
     {
@@ -337,13 +334,12 @@ void Group::Update()
         m_dirty = false;
         SaveToDB();
     }
-
-    m_groupLock.Release();
 }
 
 void Group::Disband()
 {
-    m_groupLock.Acquire();
+    std::lock_guard lock(m_groupLock);
+
     m_updateblock = true;
 
     if (m_isqueued)
@@ -361,7 +357,6 @@ void Group::Disband()
         sg->Disband();
     }
 
-    m_groupLock.Release();
     CharacterDatabase.Execute("DELETE FROM `groups` WHERE `group_id` = %u", m_Id);
     delete this;    // destroy ourselves, the destructor removes from eventmgr and objectmgr.
 }
@@ -400,7 +395,7 @@ void SubGroup::Disband()
 
 Player* Group::FindFirstPlayer()
 {
-    m_groupLock.Acquire();
+    std::lock_guard lock(m_groupLock);
 
     for (uint8 i = 0; i < m_SubGroupCount; i++)
     {
@@ -412,7 +407,6 @@ Player* Group::FindFirstPlayer()
                 {
                     if (Player* loggedInPlayer = sObjectMgr.getPlayer(itr->guid))
                     {
-                        m_groupLock.Release();
                         return loggedInPlayer;
                     }
                 }
@@ -420,7 +414,6 @@ Player* Group::FindFirstPlayer()
         }
     }
 
-    m_groupLock.Release();
     return nullptr;
 }
 
@@ -431,7 +424,8 @@ void Group::RemovePlayer(std::shared_ptr<CachedCharacterInfo> info)
 
     Player* pPlayer = sObjectMgr.getPlayer(info->guid);
 
-    m_groupLock.Acquire();
+    std::lock_guard lock(m_groupLock);
+
     if (m_isqueued)
     {
         m_isqueued = false;
@@ -461,10 +455,7 @@ void Group::RemovePlayer(std::shared_ptr<CachedCharacterInfo> info)
     info->subGroup = -1;
 
     if (!sg)
-    {
-        m_groupLock.Release();
         return;
-    }
 
     m_dirty = true;
     sg->RemovePlayer(info);
@@ -504,7 +495,6 @@ void Group::RemovePlayer(std::shared_ptr<CachedCharacterInfo> info)
     {
         if (m_disbandOnNoMembers)
         {
-            m_groupLock.Release();
             Disband();
             return;
         }
@@ -533,7 +523,6 @@ void Group::RemovePlayer(std::shared_ptr<CachedCharacterInfo> info)
     }
 
     Update();
-    m_groupLock.Release();
 }
 
 void Group::ExpandToRaid()
@@ -548,7 +537,8 @@ void Group::ExpandToRaid()
     }
 
     // Very simple ;)
-    m_groupLock.Acquire();
+    std::lock_guard lock(m_groupLock);
+
     m_SubGroupCount = 8;
 
     for (uint8 i = 1; i < m_SubGroupCount; ++i)
@@ -557,7 +547,6 @@ void Group::ExpandToRaid()
     m_GroupType = GROUP_TYPE_RAID;
     m_dirty = true;
     Update();
-    m_groupLock.Release();
 }
 
 void Group::SetLooter(Player* pPlayer, uint8 method, uint16 threshold)
@@ -574,7 +563,7 @@ void Group::SetLooter(Player* pPlayer, uint8 method, uint16 threshold)
 
 void Group::SendPacketToAllButOne(WorldPacket* packet, Player* pSkipTarget)
 {
-    m_groupLock.Acquire();
+    std::lock_guard lock(m_groupLock);
 
     for (uint8 i = 0; i < m_SubGroupCount; i++)
     {
@@ -585,13 +574,11 @@ void Group::SendPacketToAllButOne(WorldPacket* packet, Player* pSkipTarget)
                     loggedInPlayer->getSession()->SendPacket(packet);
         }
     }
-
-    m_groupLock.Release();
 }
 
 void Group::OutPacketToAllButOne(uint16 op, uint16 len, const void* data, Player* pSkipTarget)
 {
-    m_groupLock.Acquire();
+    std::lock_guard lock(m_groupLock);
 
     for (uint8 i = 0; i < m_SubGroupCount; i++)
     {
@@ -602,8 +589,6 @@ void Group::OutPacketToAllButOne(uint16 op, uint16 len, const void* data, Player
                     loggedInPlayer->getSession()->OutPacket(op, len, data);
         }
     }
-
-    m_groupLock.Release();
 }
 
 bool Group::HasMember(Player* pPlayer)
@@ -612,7 +597,8 @@ bool Group::HasMember(Player* pPlayer)
         return false;
 
     std::set<std::shared_ptr<CachedCharacterInfo>>::iterator itr;
-    m_groupLock.Acquire();
+
+    std::lock_guard lock(m_groupLock);
 
     for (uint8 i = 0; i < m_SubGroupCount; i++)
     {
@@ -620,13 +606,11 @@ bool Group::HasMember(Player* pPlayer)
         {
             if (m_SubGroups[i]->m_GroupMembers.find(pPlayer->getPlayerInfo()) != m_SubGroups[i]->m_GroupMembers.end())
             {
-                m_groupLock.Release();
                 return true;
             }
         }
     }
 
-    m_groupLock.Release();
     return false;
 }
 
@@ -635,18 +619,16 @@ bool Group::HasMember(std::shared_ptr<CachedCharacterInfo> info)
     std::set<std::shared_ptr<CachedCharacterInfo>>::iterator itr;
     uint8 i = 0;
 
-    m_groupLock.Acquire();
+    std::lock_guard lock(m_groupLock);
 
     for (; i < m_SubGroupCount; i++)
     {
         if (m_SubGroups[i]->m_GroupMembers.find(info) != m_SubGroups[i]->m_GroupMembers.end())
         {
-            m_groupLock.Release();
             return true;
         }
     }
 
-    m_groupLock.Release();
     return false;
 }
 
@@ -658,7 +640,8 @@ void Group::MovePlayer(std::shared_ptr<CachedCharacterInfo> info, uint8 subgroup
     if (m_SubGroups[subgroup]->IsFull())
         return;
 
-    m_groupLock.Acquire();
+    std::lock_guard lock(m_groupLock);
+
     SubGroup* sg = NULL;
 
     if (info->subGroup > 0 && info->subGroup < 8)
@@ -681,7 +664,6 @@ void Group::MovePlayer(std::shared_ptr<CachedCharacterInfo> info, uint8 subgroup
 
     if (sg == NULL)
     {
-        m_groupLock.Release();
         return;
     }
 
@@ -690,16 +672,11 @@ void Group::MovePlayer(std::shared_ptr<CachedCharacterInfo> info, uint8 subgroup
     // Grab the new group, and insert
     sg = m_SubGroups[subgroup];
     if (!sg->AddPlayer(info))
-    {
         RemovePlayer(info);
-    }
     else
-    {
         info->subGroup = (int8)sg->GetID();
-    }
 
     Update();
-    m_groupLock.Release();
 }
 
 void Group::SendNullUpdate(Player* pPlayer)
@@ -711,7 +688,7 @@ void Group::LoadFromDB(Field* fields)
 {
 #define LOAD_ASSISTANT(__i, __d) g = fields[__i].GetUInt32(); if (g != 0) { __d = sObjectMgr.getCachedCharacterInfo(g); }
 
-    m_groupLock.Acquire();
+    std::lock_guard lock(m_groupLock);
 
     uint32 g;
     m_updateblock = true;
@@ -751,8 +728,6 @@ void Group::LoadFromDB(Field* fields)
     }
 
     m_updateblock = false;
-
-    m_groupLock.Release();
 }
 
 void Group::SaveToDB()
@@ -1020,7 +995,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     if (Distribute && pPlayer->IsInWorld())
     {
         float dist = pPlayer->getWorldMap()->getVisibilityRange();
-        m_groupLock.Acquire();
+        m_groupLock.lock();
         for (uint8 i = 0; i < m_SubGroupCount; ++i)
         {
             if (m_SubGroups[i] == nullptr)
@@ -1036,7 +1011,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
                 }
             }
         }
-        m_groupLock.Release();
+        m_groupLock.unlock();
     }
 
     if (!Packet)
@@ -1057,7 +1032,8 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
     UpdateMask hisMask;
     hisMask.SetCount(getSizeOfStructure(WoWPlayer));
 
-    m_groupLock.Acquire();
+    std::lock_guard lock(m_groupLock);
+
     for (uint8 i = 0; i < m_SubGroupCount; ++i)
     {
         if (m_SubGroups[i] == nullptr)
@@ -1131,8 +1107,6 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
             }
         }
     }
-
-    m_groupLock.Release();
 }
 
 bool Group::isRaid() const
@@ -1592,7 +1566,7 @@ void Group::UpdateAchievementCriteriaForInrange(Object* o, AchievementCriteriaTy
 
 void Group::teleport(WorldSession* m_session)
 {
-    m_groupLock.Acquire();
+    std::lock_guard lock(m_groupLock);
 
     for (uint8 i = 0; i < m_SubGroupCount; i++)
     {
@@ -1611,7 +1585,6 @@ void Group::teleport(WorldSession* m_session)
             }
         }
     }
-    m_groupLock.Release();
 }
 
 void Group::ExpandToLFG()
@@ -1637,7 +1610,8 @@ void Group::GoOffline(Player* p)
 
     if (p->IsInWorld())
     {
-        m_groupLock.Acquire();
+        std::lock_guard lock(m_groupLock);
+
         for (uint8 i = 0; i < m_SubGroupCount; ++i)
         {
             if (m_SubGroups[i] == nullptr)
@@ -1650,7 +1624,6 @@ void Group::GoOffline(Player* p)
                     plr->sendPacket(&data);
             }
         }
-        m_groupLock.Release();
     }
 }
 
@@ -1687,7 +1660,7 @@ void Group::updateLooterGuid(Object* pLootedObject)
 
     std::shared_ptr<CachedCharacterInfo> pNewLooter = nullptr;
 
-    m_groupLock.Acquire();
+    m_groupLock.lock();
     for (uint8_t i = 0; i < m_SubGroupCount; i++)
     {
         auto start = m_SubGroups[i]->m_GroupMembers.begin();
@@ -1775,7 +1748,7 @@ void Group::updateLooterGuid(Object* pLootedObject)
             }
         }
     }
-    m_groupLock.Release();
+    m_groupLock.unlock();
 
     if (pNewLooter)
     {

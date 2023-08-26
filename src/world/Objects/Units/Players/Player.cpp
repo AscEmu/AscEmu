@@ -11530,7 +11530,7 @@ void Player::onKillUnitReputation(Unit* unit, bool innerLoop)
     {
         if (!innerLoop)
         {
-            m_Group->getLock().Acquire();
+            m_Group->getLock().lock();
 
             for (uint32_t i = 0; i < m_Group->GetSubGroupCount(); ++i)
                 for (auto groupMember : m_Group->GetSubGroup(i)->getGroupMembers())
@@ -11538,7 +11538,7 @@ void Player::onKillUnitReputation(Unit* unit, bool innerLoop)
                         if (player->isInRange(this, 100.0f))
                             player->onKillUnitReputation(unit, true);
 
-            m_Group->getLock().Release();
+            m_Group->getLock().unlock();
 
             return;
         }
