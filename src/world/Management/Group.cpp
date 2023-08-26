@@ -28,6 +28,7 @@
 #include "Map/Maps/InstanceMap.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/Units/Creatures/Pet.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/WorldSession.h"
 #include "Server/Packets/SmsgPartyCommandResult.h"

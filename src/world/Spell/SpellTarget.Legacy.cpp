@@ -32,8 +32,9 @@
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Objects/Units/Creatures/Pet.h"
+#include "Objects/Units/Players/Player.hpp"
 
- // APGL End
+// APGL End
  // MIT Start
 
 SpellCastResult Spell::checkExplicitTarget(Object* target, uint32_t requiredTargetMask) const

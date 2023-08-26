@@ -17,6 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Creatures/Pet.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Opcodes.hpp"
 
 CreatureAIScript::CreatureAIScript(Creature* creature) : mScriptPhase(0), summons(creature), mCreatureTimerCount(0), mAIUpdateFrequency(defaultUpdateFrequency),

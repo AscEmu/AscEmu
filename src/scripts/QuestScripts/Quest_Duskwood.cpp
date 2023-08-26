@@ -19,6 +19,7 @@
 
 #include "Setup.h"
 #include "Map/Maps/MapScriptInterface.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/QuestScript.hpp"
 

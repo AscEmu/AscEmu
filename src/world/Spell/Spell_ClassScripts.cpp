@@ -28,6 +28,7 @@
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
+#include "Objects/Units/Players/Player.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
  // Mage Scripts

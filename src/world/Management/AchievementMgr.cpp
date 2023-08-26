@@ -17,6 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Management/MapMgr.hpp"
 #include "Management/Faction.h"
 #include "Map/Maps/WorldMap.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"
 #include "Spell/Definitions/SpellMechanics.hpp"
@@ -28,6 +29,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgCriteriaUpdate.h"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Script/ScriptMgr.hpp"
+#include "Objects/Units/Players/Player.hpp"
 
 using namespace AscEmu::Packets;
 

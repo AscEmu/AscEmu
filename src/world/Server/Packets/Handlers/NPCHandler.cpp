@@ -31,6 +31,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgTrainerList.h"
 #include "Server/Packets/CmsgBinderActivate.h"
 #include "Objects/Units/Creatures/Pet.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSessionLog.hpp"
 #include "Server/Packets/MsgListStabledPets.h"
 #include "Server/Packets/CmsgNpcTextQuery.h"

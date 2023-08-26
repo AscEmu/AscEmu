@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Raid_Magtheridons_Lair.hpp"
 #include "Magtheridon.hpp"
 #include "Map/Maps/MapScriptInterface.h"
+#include "Objects/Units/Players/Player.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Magtheridons Lair Instance

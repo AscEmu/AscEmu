@@ -20,6 +20,7 @@
 
 #include "Setup.h"
 #include "Management/QuestLogEntry.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/CreatureAIScript.hpp"
 
 class Corporal_Keeshan : public CreatureAIScript

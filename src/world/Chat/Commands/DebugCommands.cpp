@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/MovementManager.h"
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Objects/Units/ThreatHandler.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/ServerState.h"
 #include "Server/World.h"

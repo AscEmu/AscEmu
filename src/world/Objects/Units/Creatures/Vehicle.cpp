@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Movement/MovementManager.h"
 #include "Movement/Spline/MoveSplineInit.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 

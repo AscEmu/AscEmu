@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Spell/Definitions/SpellFamily.hpp"
 #include "Map/Area/AreaStorage.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/Definitions.h"
 #include "Storage/MySQLDataStore.hpp"

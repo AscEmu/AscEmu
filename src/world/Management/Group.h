@@ -8,8 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "AEVersion.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Map/Maps/InstanceMgr.hpp"
-#include "Objects/Units/Players/Player.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
+#include "Threading/Mutex.h"
 
 class BaseMap;
 
@@ -144,7 +144,19 @@ protected:
     uint32 m_Id;
 };
 
+enum AchievementCriteriaTypes : uint8_t;
 class Arena;
+class Object;
+class WorldPacket;
+class Field;
+struct Loot;
+class Creature;
+class WorldSession;
+
+namespace WDB{
+    namespace Structures{
+        struct MapEntry;}}
+
 class SERVER_DECL Group
 {
 public:

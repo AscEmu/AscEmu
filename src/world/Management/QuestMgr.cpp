@@ -32,6 +32,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Map/Management/MapMgr.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"
 #include "Spell/SpellAuras.h"

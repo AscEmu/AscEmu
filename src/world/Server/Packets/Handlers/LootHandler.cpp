@@ -18,6 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemInterface.h"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Creatures/Corpse.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/World.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"

@@ -22,6 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Creature.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Management/ObjectMgr.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"
 #include "Server/WorldSession.h"

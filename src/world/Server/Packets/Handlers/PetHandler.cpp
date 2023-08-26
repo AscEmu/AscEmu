@@ -30,6 +30,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgPetLearnedSpell.h"
 #include "Objects/Units/ThreatHandler.h"
 #include "Objects/Units/Creatures/AIInterface.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 
 using namespace AscEmu::Packets;

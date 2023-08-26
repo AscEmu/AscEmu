@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
 
 #include "SummonHandler.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Spell/SpellAuras.h"

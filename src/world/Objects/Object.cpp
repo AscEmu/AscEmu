@@ -40,8 +40,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/Spline/MovementPacketBuilder.h"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
+#include "Units/Stats.h"
 #include "Units/Creatures/AIInterface.h"
 #include "Units/Creatures/Corpse.hpp"
+#include "Units/Players/Player.hpp"
 
 #if VERSION_STRING >= Cata
 #include "Server/OpcodeTable.hpp"

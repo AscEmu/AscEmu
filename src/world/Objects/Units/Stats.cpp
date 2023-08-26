@@ -24,10 +24,12 @@
 #include "Objects/Item.hpp"
 #include "Creatures/Creature.h"
 #include "Creatures/Pet.h"
+#include "Logging/Log.hpp"
 #include "Server/World.h"
 #include "Management/ItemInterface.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Objects/Units/Unit.hpp"
+#include "Players/Player.hpp"
 
 // APGL End
 // MIT Start

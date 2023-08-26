@@ -30,6 +30,7 @@
 #include "Storage/MySQLStructures.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"
 #include "Server/WorldSession.h"

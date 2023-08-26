@@ -62,6 +62,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.hpp"
 #include "Objects/Transporter.hpp"
 #include "Objects/Units/Creatures/Corpse.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"
 #include "Server/WorldSession.h"

@@ -11,3 +11,4 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/MapScriptInterface.h"
 #include "Management/ItemInterface.h"
 #include "Management/QuestLogEntry.hpp"
+#include "Objects/Units/Players/Player.hpp"

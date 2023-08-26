@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Map/AreaBoundary.hpp"
 #include "Movement/MovementManager.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////

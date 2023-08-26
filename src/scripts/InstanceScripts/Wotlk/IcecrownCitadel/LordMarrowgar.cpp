@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Movement/MovementManager.h"
 #include "Movement/MovementGenerators/PointMovementGenerator.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/InstanceScript.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////

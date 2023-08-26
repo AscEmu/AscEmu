@@ -30,6 +30,7 @@
 #include "Management/Group.h"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSession.h"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Server/Packets/SmsgPlaySound.h"
