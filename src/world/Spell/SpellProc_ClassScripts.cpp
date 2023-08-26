@@ -26,6 +26,7 @@
 #include "SpellMgr.hpp"
 #include "SpellAuras.h"
 #include "Definitions/ProcFlags.hpp"
+#include "Management/Group.h"
 #include "Storage/WDB/WDBStores.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////

@@ -59,6 +59,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/MovementManager.h"
 #include "Objects/DynamicObject.hpp"
 #include "Objects/GameObjectProperties.hpp"
+#include "Objects/Item.hpp"
 #include "Objects/ItemDefines.hpp"
 #include "Server/Packets/SmsgAttackSwingBadFacing.h"
 #include "Server/Packets/SmsgSpellDamageShield.h"

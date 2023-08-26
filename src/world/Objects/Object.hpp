@@ -14,13 +14,14 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MovementInfo.hpp"
 #include "Macros/MapsMacros.hpp"
 #include "Spell/Definitions/ProcFlags.hpp"
-#include "Spell/Definitions/School.hpp"
 #include "Units/UnitDefines.hpp"
 
 #include <set>
 #include <map>
 #include <mutex>
 #include <shared_mutex>
+
+#include "DamageInfo.hpp"
 
 struct WoWObject;
 class SpellInfo;
@@ -60,37 +61,6 @@ enum CurrentSpellType : uint8_t
     CURRENT_CHANNELED_SPELL     = 2,
     CURRENT_AUTOREPEAT_SPELL    = 3,
     CURRENT_SPELL_MAX
-};
-
-struct DamageInfo
-{
-    SchoolMask schoolMask = SCHOOL_MASK_NORMAL;
-
-    uint32_t realDamage = 0; // the damage after resist, absorb etc
-    int32_t fullDamage = 0; // the damage before resist, absorb etc
-    uint32_t absorbedDamage = 0;
-    uint32_t resistedDamage = 0;
-    uint32_t blockedDamage = 0;
-
-    WeaponDamageType weaponType = MELEE;
-    bool isHeal = false;
-    bool isCritical = false;
-    bool isPeriodic = false;
-
-    uint32_t attackerProcFlags = PROC_NULL;
-    uint32_t victimProcFlags = PROC_NULL;
-
-    uint8_t getSchoolTypeFromMask() const
-    {
-        for (uint8_t i = 0; i < TOTAL_SPELL_SCHOOLS; ++i)
-        {
-            if (schoolMask & (1 << i))
-                return i;
-        }
-
-        // shouldn't happen
-        return SCHOOL_NORMAL;
-    }
 };
 
 class SERVER_DECL Object : public EventableObject

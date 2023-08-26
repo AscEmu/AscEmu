@@ -20,6 +20,7 @@
 #include "Setup.h"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
+#include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Master.h"
 #include "Server/Script/ScriptMgr.hpp"

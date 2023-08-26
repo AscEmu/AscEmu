@@ -19,3 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Players/Player.hpp"
+#include "Spell/SpellScript.hpp"
+#include "Objects/Units/Unit.hpp"
+#include "Objects/Units/Creatures/Creature.h"
+#include "Spell/SpellProc.hpp"

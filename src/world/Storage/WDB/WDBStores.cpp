@@ -8,7 +8,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "AEVersion.hpp"
 #include "Server/World.h"
 #include "WDBGlobals.hpp"
+#include "Logging/Logger.hpp"
 #include "Map/Area/AreaStorage.hpp"
+#include "Spell/Definitions/PowerType.hpp"
 #if VERSION_STRING >= Cata
     #include "Objects/Units/Players/PlayerDefines.hpp"
     #include "Spell/SpellAuras.h"

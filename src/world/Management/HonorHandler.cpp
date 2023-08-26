@@ -20,6 +20,8 @@
  */
 
 #include "Management/HonorHandler.h"
+
+#include "Group.h"
 #include "Objects/Item.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.hpp"

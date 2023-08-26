@@ -22,6 +22,7 @@
 #include "Management/ItemInterface.h"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Map/Maps/WorldMap.hpp"
+#include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellMgr.hpp"

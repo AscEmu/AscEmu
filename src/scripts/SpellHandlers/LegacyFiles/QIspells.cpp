@@ -25,6 +25,7 @@
 #include "Movement/MovementManager.h"
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Objects/Units/Creatures/AIInterface.h"
+#include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Master.h"
 #include "Spell/SpellAuras.h"

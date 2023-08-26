@@ -26,9 +26,8 @@
 #include "SpellCastTargets.hpp"
 #include "SpellInfo.hpp"
 #include "SpellTargetConstraint.hpp"
-#include "Objects/Units/Creatures/Creature.h"
-#include "Objects/Units/Unit.hpp"
 #include "Movement/Spline/MovementTypedefs.h"
+#include "Objects/DamageInfo.hpp"
 
 class Corpse;
 class WorldSession;
@@ -39,6 +38,9 @@ class Item;
 class Group;
 class Aura;
 class DummySpellHandler;
+class Creature;
+struct CreatureProperties;
+class GameObject;
 
 typedef void(Spell::*pSpellEffect)(uint8_t effectIndex);
 typedef void(Spell::*pSpellTarget)(uint32 i, uint32 j);

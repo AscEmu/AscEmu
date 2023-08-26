@@ -25,10 +25,17 @@
 
 #include "Definitions/AuraEffects.hpp"
 #include "Definitions/AuraRemoveMode.hpp"
-#include "Objects/Item.hpp"
-#include "Objects/Object.hpp"
+#include "Definitions/School.hpp"
 #include "Server/EventableObject.h"
-#include "Objects/Units/Unit.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
+
+enum SchoolMask : uint8_t;
+class Item;
+class SpellInfo;
+class Object;
+class Player;
+class Unit;
+class Aura;
 
 enum AURA_INTERNAL_USAGE_FLAGS
 {
@@ -512,7 +519,7 @@ class SERVER_DECL Aura : public EventableObject
         Aura(SpellInfo const* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL);
         ~Aura();
 
-        inline bool IsPassive() const { if (!m_spellInfo) return false; return (m_spellInfo->isPassive() && !m_areaAura); }
+        bool IsPassive() const;
 
         Unit* GetUnitCaster();
         Player* GetPlayerCaster();
@@ -771,18 +778,7 @@ class SERVER_DECL Aura : public EventableObject
         uint32 GetCasterFaction() { return m_casterfaction; }
         void SetCasterFaction(uint32 faction) { m_casterfaction = faction; }
 
-        inline bool IsInrange(float x1, float y1, float z1, Object* o, float square_r)
-        {
-            float t;
-            float r;
-            t = x1 - o->GetPositionX();
-            r = t * t;
-            t = y1 - o->GetPositionY();
-            r += t * t;
-            t = z1 - o->GetPositionZ();
-            r += t * t;
-            return (r <= square_r);
-        }
+        bool IsInrange(float x1, float y1, float z1, Object* o, float square_r);
 
     protected:
 

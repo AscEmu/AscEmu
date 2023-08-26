@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Objects/Object.hpp"
+class Unit;
 
 namespace Packets::Movement
 {

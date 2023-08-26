@@ -8,6 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CommonTypes.hpp"
 #include "Logging/LoggerDefines.hpp"
 
+#include <mutex>
+
 class WorldPacket;
 
 extern SERVER_DECL time_t UNIXTIME; // update this every loop to avoid the time() syscall!

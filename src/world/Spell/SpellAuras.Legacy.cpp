@@ -89,6 +89,8 @@ Player* Aura::GetPlayerTarget()
     return nullptr;
 }
 
+bool Aura::IsPassive() const { if (!m_spellInfo) return false; return (m_spellInfo->isPassive() && !m_areaAura); }
+
 Unit* Aura::GetUnitCaster()
 {
     if (m_casterGuid == m_target->getGuid())
@@ -6146,6 +6148,19 @@ bool Aura::IsCombatStateAffecting()
         return true;
 
     return false;
+}
+
+bool Aura::IsInrange(float x1, float y1, float z1, Object* o, float square_r)
+{
+    float t;
+    float r;
+    t = x1 - o->GetPositionX();
+    r = t * t;
+    t = y1 - o->GetPositionY();
+    r += t * t;
+    t = z1 - o->GetPositionZ();
+    r += t * t;
+    return (r <= square_r);
 }
 
 bool Aura::IsAreaAura() const

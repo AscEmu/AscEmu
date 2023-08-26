@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemInterface.h"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Management/ObjectMgr.hpp"
+#include "Objects/Item.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Creatures/Pet.h"

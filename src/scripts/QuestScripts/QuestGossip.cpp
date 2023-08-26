@@ -28,6 +28,7 @@
 #include "Server/Script/ScriptMgr.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
+#include "Objects/Units/Creatures/Creature.h"
 
 enum
 {
