@@ -32,6 +32,7 @@
 #include "Spell/SpellMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Management/Battleground/BattlegroundDefines.hpp"
+#include "Objects/Units/Players/Player.hpp"
 
 uint32_t buffentries[3] = { 180380, 180362, 180146 };
 

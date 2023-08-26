@@ -27,6 +27,7 @@
 #include "Server/WorldSession.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"
+#include "Objects/Units/Players/Player.hpp"
 
 enum
 {

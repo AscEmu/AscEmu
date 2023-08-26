@@ -26,6 +26,7 @@
 #include "Map/Maps/WorldMap.hpp"
 #include "Movement/MovementManager.h"
 #include "Objects/Units/Creatures/AIInterface.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Master.h"
 #include "Server/World.h"
 #include "Spell/SpellAuras.h"

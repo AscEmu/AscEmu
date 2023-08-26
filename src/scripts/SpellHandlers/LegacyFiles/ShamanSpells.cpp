@@ -22,6 +22,7 @@
 #include "Objects/Item.hpp"
 #include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
 #include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellMgr.hpp"

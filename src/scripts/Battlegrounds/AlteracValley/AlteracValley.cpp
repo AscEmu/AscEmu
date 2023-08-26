@@ -18,6 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Battleground/BattlegroundDefines.hpp"
 #include "Objects/Units/Creatures/Corpse.hpp"
 #include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Players/Player.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Fire Locations

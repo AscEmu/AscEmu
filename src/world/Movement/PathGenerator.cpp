@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MMapManager.h"
 #include "DetourCommon.h"
 #include "DetourNavMeshQuery.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/World.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////

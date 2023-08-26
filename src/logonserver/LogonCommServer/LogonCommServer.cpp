@@ -373,7 +373,7 @@ void LogonCommServerSocket::HandleMappingReply(WorldPacket & recvData)
     if (!realm)
         return;
 
-    sRealmManager.getRealmLock().Acquire();
+    sRealmManager.getRealmLock().lock();
 
     std::unordered_map<uint32, uint8>::iterator itr;
     buf >> count;
@@ -388,7 +388,7 @@ void LogonCommServerSocket::HandleMappingReply(WorldPacket & recvData)
             realm->_characterMap.insert(std::make_pair(account_id, number_of_characters));
     }
 
-    sRealmManager.getRealmLock().Release();
+    sRealmManager.getRealmLock().unlock();
 }
 
 void LogonCommServerSocket::HandleUpdateMapping(WorldPacket & recvData)
@@ -402,7 +402,7 @@ void LogonCommServerSocket::HandleUpdateMapping(WorldPacket & recvData)
     if (!realm)
         return;
 
-    sRealmManager.getRealmLock().Acquire();
+    sRealmManager.getRealmLock().lock();
     recvData >> account_id;
     recvData >> chars_to_add;
 
@@ -412,7 +412,7 @@ void LogonCommServerSocket::HandleUpdateMapping(WorldPacket & recvData)
     else
         realm->_characterMap.insert(std::make_pair(account_id, chars_to_add));
 
-    sRealmManager.getRealmLock().Release();
+    sRealmManager.getRealmLock().unlock();
 }
 
 void LogonCommServerSocket::HandleTestConsoleLogin(WorldPacket & recvData)

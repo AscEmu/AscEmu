@@ -27,6 +27,7 @@
 #include "Server/Script/ScriptMgr.hpp"
 #include <Spell/Definitions/PowerType.hpp>
 
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/CreatureAIScript.hpp"
 
 class ArmyOfTheDeadGhoulAI : public CreatureAIScript

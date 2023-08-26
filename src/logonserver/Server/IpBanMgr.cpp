@@ -27,7 +27,7 @@ void IpBanMgr::initialize()
 
 void IpBanMgr::reload()
 {
-    ipBanMutex.Acquire();
+    std::lock_guard lock(ipBanMutex);
     _ipBanList.clear();
 
     QueryResult* result = sLogonSQL->Query("SELECT ip, expire FROM ipbans");
@@ -65,7 +65,6 @@ void IpBanMgr::reload()
         } while (result->NextRow());
         delete result;
     }
-    ipBanMutex.Release();
 }
 
 bool IpBanMgr::add(std::string ip, uint32_t duration)
@@ -90,35 +89,34 @@ bool IpBanMgr::add(std::string ip, uint32_t duration)
     ipBan.Mask = ipraw;
     ipBan.Expire = duration;
 
-    ipBanMutex.Acquire();
+    std::lock_guard lock(ipBanMutex);
+
     _ipBanList.push_back(ipBan);
-    ipBanMutex.Release();
 
     return true;
 }
 
 bool IpBanMgr::remove(const std::string& ip)
 {
-    ipBanMutex.Acquire();
+    std::lock_guard lock(ipBanMutex);
 
     for (auto itr = _ipBanList.begin(); itr != _ipBanList.end();)
     {
         if (itr->db_ip == ip)
         {
             _ipBanList.erase(itr);
-            ipBanMutex.Release();
             return true;
         }
         
         ++itr;
     }
-    ipBanMutex.Release();
+
     return false;
 }
 
 IpBanStatus IpBanMgr::getBanStatus(in_addr ip_address)
 {
-    ipBanMutex.Acquire();
+    std::lock_guard lock(ipBanMutex);
 
     for (auto itr2 = _ipBanList.begin(); itr2 != _ipBanList.end();)
     {
@@ -128,10 +126,7 @@ IpBanStatus IpBanMgr::getBanStatus(in_addr ip_address)
         if (ParseCIDRBan(ip_address.s_addr, bannedIp->Mask, bannedIp->Bytes))
         {
             if (bannedIp->Expire == 0)
-            {
-                ipBanMutex.Release();
                 return BAN_STATUS_PERMANENT_BAN;
-            }
 
             if (static_cast<uint32_t>(UNIXTIME) >= bannedIp->Expire)
             {
@@ -140,12 +135,10 @@ IpBanStatus IpBanMgr::getBanStatus(in_addr ip_address)
             }
             else
             {
-                ipBanMutex.Release();
                 return BAN_STATUS_TIME_LEFT_ON_BAN;
             }
         }
     }
 
-    ipBanMutex.Release();
     return BAN_STATUS_NOT_BANNED;
 }

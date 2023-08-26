@@ -23,6 +23,8 @@
 #include <Spell/Definitions/SpellMechanics.hpp>
 #include <Objects/Units/Creatures/Pet.h>
 
+#include "Objects/Units/Players/Player.hpp"
+
 bool Refocus(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     Player* playerTarget = pSpell->GetPlayerTarget();

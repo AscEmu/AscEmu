@@ -27,6 +27,7 @@
 #include "Map/Maps/WorldMap.hpp"
 #include "Server/WorldSession.h"
 #include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/QuestScript.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 

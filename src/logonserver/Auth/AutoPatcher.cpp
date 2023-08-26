@@ -232,15 +232,17 @@ void PatchMgr::BeginPatchJob(Patch* pPatch, AuthSocket* pClient, uint32 Skip)
 
     pJob = new PatchJob(pPatch, pClient, Skip);
     pClient->m_patchJob = pJob;
-    m_patchJobLock.Acquire();
+
+    std::lock_guard lock(m_patchJobLock);
     m_patchJobs.push_back(pJob);
-    m_patchJobLock.Release();
 }
 
 void PatchMgr::UpdateJobs()
 {
     std::list<PatchJob*>::iterator itr, itr2;
-    m_patchJobLock.Acquire();
+
+    std::lock_guard lock(m_patchJobLock);
+
     for (itr = m_patchJobs.begin(); itr != m_patchJobs.end();)
     {
         itr2 = itr;
@@ -253,13 +255,14 @@ void PatchMgr::UpdateJobs()
             m_patchJobs.erase(itr2);
         }
     }
-    m_patchJobLock.Release();
 }
 
 void PatchMgr::AbortPatchJob(PatchJob* pJob)
 {
     std::list<PatchJob*>::iterator itr;
-    m_patchJobLock.Acquire();
+
+    std::lock_guard lock(m_patchJobLock);
+
     for (itr = m_patchJobs.begin(); itr != m_patchJobs.end(); ++itr)
     {
         if ((*itr) == pJob)
@@ -269,7 +272,6 @@ void PatchMgr::AbortPatchJob(PatchJob* pJob)
         }
     }
     delete pJob;
-    m_patchJobLock.Release();
 }
 
 // this is what blizz sends.

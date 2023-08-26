@@ -2962,7 +2962,7 @@ void LuaEngine::Restart()
 {
     DLLLogDetail("LuaEngineMgr : Restarting Engine.");
     GET_LOCK
-    getcoLock().Acquire();
+    getcoLock().lock();
     Unload();
     lu = luaL_newstate();
     LoadScripts();
@@ -3151,7 +3151,7 @@ void LuaEngine::Restart()
         }
     }
     RELEASE_LOCK
-    getcoLock().Release();
+    getcoLock().unlock();
 
     //hyper: do OnSpawns for spawned creatures.
     std::vector<uint32_t> temp = LuaGlobal::instance()->m_onLoadInfo;
@@ -3185,7 +3185,7 @@ void LuaEngine::Restart()
 
 void LuaEngine::ResumeLuaThread(int ref)
 {
-    getcoLock().Acquire();
+    getcoLock().lock();
     lua_State* expectedThread = nullptr;
     lua_rawgeti(lu, LUA_REGISTRYINDEX, ref);
     if (lua_isthread(lu, -1))
@@ -3210,9 +3210,10 @@ void LuaEngine::ResumeLuaThread(int ref)
         }
         luaL_unref(lu, LUA_REGISTRYINDEX, ref);
     }
-    getcoLock().Release();
+    getcoLock().unlock();
 }
 
 //I know its not a good idea to do it like that BUT it is the easiest way. I will make it better in steps:
+// todo: Yea sure buddy... best regards Zyres
 #include "FunctionTables.h"
 #include "LUAFunctions.h"

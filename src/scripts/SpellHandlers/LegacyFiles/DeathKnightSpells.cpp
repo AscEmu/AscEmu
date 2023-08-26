@@ -21,6 +21,7 @@
 #include "Management/Faction.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Opcodes.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Spell/SpellAuras.h"

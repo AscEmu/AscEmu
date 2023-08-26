@@ -12,3 +12,4 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/WorldSession.h"
+#include "Objects/Units/Players/Player.hpp"

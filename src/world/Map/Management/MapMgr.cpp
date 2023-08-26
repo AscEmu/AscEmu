@@ -17,6 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
 #include "Map/Maps/InstanceMap.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/World.h"
 
 MapMgr& MapMgr::getInstance()

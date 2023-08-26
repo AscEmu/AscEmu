@@ -11,3 +11,4 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Master.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Spell/SpellMgr.hpp"
+#include "Objects/Units/Players/Player.hpp"

@@ -23,6 +23,7 @@
 #include "Map/Maps/MapScriptInterface.h"
 #include "Management/Faction.h"
 #include "Map/Maps/WorldMap.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellMgr.hpp"
 

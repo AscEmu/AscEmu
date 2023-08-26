@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/MapScriptInterface.h"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/GameObjectProperties.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/Master.h"
 #include "Spell/SpellMgr.hpp"

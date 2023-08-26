@@ -19,6 +19,7 @@
 
 #ifndef _AUTOPATCHER_H
 #define _AUTOPATCHER_H
+
 #include "AuthSocket.h"
 
 struct Patch
@@ -72,7 +73,7 @@ class PatchMgr
 
         std::vector<Patch*> m_patches;
 
-        Mutex m_patchJobLock;
+        std::mutex m_patchJobLock;
         std::list<PatchJob*> m_patchJobs;
 };
 

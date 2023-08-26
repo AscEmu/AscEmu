@@ -8,8 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Database/Field.hpp>
 #include <Threading/AEThread.h>
 
-#include "Threading/Mutex.h"
-
 struct Account
 {
     uint32_t AccountId;
@@ -106,7 +104,7 @@ private:
 
 protected:
 
-    Mutex accountMgrMutex;
+    std::mutex accountMgrMutex;
 };
 
 #define sAccountMgr AccountMgr::getInstance()
