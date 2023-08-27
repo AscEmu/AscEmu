@@ -23,7 +23,7 @@
 #include "Chat/ChatHandler.hpp"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Map/Management/MapMgr.hpp"
-#include "Spell/SpellAuras.h"
+#include "Spell/SpellAura.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Map/Maps/InstanceMap.hpp"
 #include "Map/Maps/WorldMap.hpp"

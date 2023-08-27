@@ -24,7 +24,7 @@
 #include "Server/Opcodes.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Spell/Spell.hpp"
-#include "Spell/SpellAuras.h"
+#include "Spell/SpellAura.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/DispelType.hpp"
 

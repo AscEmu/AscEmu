@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ArenaTeam.hpp"
 #include "Management/WorldStates.h"
 #include "Map/Management/MapMgr.hpp"
-#include "Spell/SpellAuras.h"
+#include "Spell/SpellAura.hpp"
 #include "Objects/GameObject.h"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/GameObjectProperties.hpp"

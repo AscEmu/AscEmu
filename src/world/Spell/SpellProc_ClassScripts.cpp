@@ -25,7 +25,7 @@
 #include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "SpellMgr.hpp"
-#include "SpellAuras.h"
+#include "SpellAura.hpp"
 #include "Definitions/ProcFlags.hpp"
 #include "Management/Group.h"
 #include "Storage/WDB/WDBStores.hpp"

@@ -34,7 +34,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStores.hpp"
 
 #if VERSION_STRING >= Cata
-#include "Spell/SpellAuras.h"
+#include "Spell/SpellAura.hpp"
 #endif
 
 using namespace AscEmu::Packets;

@@ -22,7 +22,7 @@
 #include "Spell/Spell.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellMgr.hpp"
-#include "SpellAuras.h"
+#include "SpellAura.hpp"
 #include "Definitions/SpellSchoolConversionTable.hpp"
 #include "Definitions/DispelType.hpp"
 #include "Map/Maps/WorldMap.hpp"

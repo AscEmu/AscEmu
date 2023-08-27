@@ -4,7 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Spell.hpp"
-#include "SpellAuras.h"
+
+#include "SpellAura.hpp"
 #include "SpellTarget.h"
 #include "Definitions/AuraInterruptFlags.hpp"
 #include "Definitions/AuraStates.hpp"

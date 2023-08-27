@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/LFG/LFGMgr.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Objects/Item.hpp"
-#include "Spell/SpellAuras.h"
+#include "Spell/SpellAura.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/MySQLDataStore.hpp"

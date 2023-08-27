@@ -41,7 +41,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgBuyBankSlotResult.h"
 #include "Server/Packets/SmsgGossipComplete.h"
 #include "Spell/Spell.hpp"
-#include "Spell/SpellAuras.h"
+#include "Spell/SpellAura.hpp"
 #include "Storage/WorldStrings.h"
 
 using namespace AscEmu::Packets;

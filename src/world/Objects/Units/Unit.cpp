@@ -37,7 +37,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellIsFlags.hpp"
 #include "Spell/Definitions/SpellMechanics.hpp"
 #include "Spell/Definitions/SpellTypes.hpp"
-#include "Spell/SpellAuras.h"
+#include "Spell/SpellAura.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/SpellTarget.h"
 #include "Storage/MySQLDataStore.hpp"

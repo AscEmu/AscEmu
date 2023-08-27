@@ -39,7 +39,7 @@
 #include "Map/Area/AreaStorage.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "SpellMgr.hpp"
-#include "SpellAuras.h"
+#include "SpellAura.hpp"
 #include "Definitions/SpellCastTargetFlags.hpp"
 #include "Definitions/SpellDamageType.hpp"
 #include "Definitions/CastInterruptFlags.hpp"

@@ -21,7 +21,7 @@
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Spell/Spell.hpp"
-#include "Spell/SpellAuras.h"
+#include "Spell/SpellAura.hpp"
 
 bool Cold_Snap(uint8_t /*effectIndex*/, Spell* pSpell)
 {

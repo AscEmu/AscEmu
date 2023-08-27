@@ -1,33 +1,19 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #pragma once
-
-#include <cstdint>
-#include <set>
 
 #include "Definitions/AuraEffects.hpp"
 #include "Definitions/AuraRemoveMode.hpp"
 #include "Definitions/School.hpp"
 #include "Server/EventableObject.h"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "AuraEffectModifier.hpp"
+#include "SpellAuraDefines.hpp"
+
+#include <cstdint>
 
 enum SchoolMask : uint8_t;
 class Item;
@@ -37,132 +23,6 @@ class Player;
 class Unit;
 class Aura;
 
-enum AURA_INTERNAL_USAGE_FLAGS
-{
-    //if all 3 mods are resisted then we can send client as a fully resisted spell.
-    //don't change the value of these !
-    MOD_0_RESISTED      = 1,
-    MOD_1_RESISTED      = 2,
-    MOD_2_RESISTED      = 4
-};
-
-enum AuraTickFlags
-{
-    FLAG_PERIODIC_NONE              = 0,
-    FLAG_PERIODIC_DAMAGE            = 2,
-    FLAG_PERIODIC_TRIGGER_SPELL     = 4,
-    FLAG_PERIODIC_HEAL              = 8,
-    FLAG_PERIODIC_LEECH             = 16,
-    FLAG_PERIODIC_ENERGIZE          = 32
-};
-
-struct ProcTriggerSpellOnSpell
-{
-    uint32 origId;
-    uint32 spellId;
-    uint64 caster;
-    uint32 procChance;
-    uint32 procFlags;
-    uint32 RemainingCharges;
-    uint32 LastTrigger;
-    void* owner;                //mark the owner of this proc to know which one to delete
-};
-
-struct DamageSplitTarget
-{
-    uint64 m_target;            // we store them
-    uint32 m_spellId;
-    float m_pctDamageSplit;     // % of taken damage to transfer (i.e. Soul Link)
-    uint32 m_flatDamageSplit;   // flat damage to transfer (i.e. Blessing of Sacrifice)
-    uint8 damage_type;          // bitwise 0-127 thingy
-    void* creator;
-};
-
-typedef std::set< uint64 > AreaAuraList;
-
-// APGL End
-// MIT Start
-
-/// 4-bit flag
-enum AuraUpdateFlags : uint8_t
-{
-    AFLAG_EMPTY                 = 0x00,
-    AFLAG_EFFECT_1              = 0x01,
-    AFLAG_EFFECT_2              = 0x02,
-    AFLAG_EFFECT_3              = 0x04,
-    AFLAG_IS_CASTER             = 0x08,
-    AFLAG_SET                   = 0x09,
-    AFLAG_CANCELLABLE           = 0x10,
-    AFLAG_DURATION              = 0x20,
-#if VERSION_STRING < Cata
-    AFLAG_HIDE                  = 0x40, // Seems to hide the aura and tell client the aura was removed
-#else
-    AFLAG_SEND_EFFECT_AMOUNT    = 0x40, // used with AFLAG_EFFECT_0/1/2
-#endif
-    AFLAG_NEGATIVE              = 0x80,
-
-    AFLAG_MASK_ALL              = 0xFF
-};
-
-struct SERVER_DECL AuraEffectModifier
-{
-public:
-    void setAuraEffectType(AuraEffect type);
-    AuraEffect getAuraEffectType() const;
-
-    void setEffectDamage(int32_t value);
-    void setEffectDamage(float_t value);
-    int32_t getEffectDamage() const;
-    float_t getEffectFloatDamage() const;
-
-    void setEffectBaseDamage(int32_t baseValue);
-    int32_t getEffectBaseDamage() const;
-
-    void setEffectFixedDamage(int32_t fixedValue);
-    int32_t getEffectFixedDamage() const;
-
-    void setEffectMiscValue(int32_t miscValue);
-    int32_t getEffectMiscValue() const;
-
-    void setEffectAmplitude(int32_t amplitude);
-    int32_t getEffectAmplitude() const;
-
-    void setEffectDamageFraction(float_t fraction);
-    float_t getEffectDamageFraction() const;
-
-    void setEffectPercentModifier(float_t pctMod);
-    float_t getEffectPercentModifier() const;
-
-    void setEffectDamageStatic(bool);
-    bool isEffectDamageStatic() const;
-
-    void setEffectIndex(uint8_t effIndex);
-    uint8_t getEffectIndex() const;
-
-    void setEffectActive(bool set);
-    bool isActive() const;
-
-    void applyEffect(bool apply, bool skipScriptCheck = false);
-
-    void setAura(Aura* aur);
-    Aura* getAura() const;
-
-private:
-    AuraEffect mAuraEffect = SPELL_AURA_NONE;   // Effect type
-    int32_t mDamage = 0;                        // Effect calculated amount
-    float_t mRealDamage = 0.0f;                 // Effect exact calculated damage
-    int32_t mBaseDamage = 0;                    // Effect base amount
-    int32_t mFixedDamage = 0;                   // For example used with auras that increase your spell power by % of some stat
-    int32_t miscValue = 0;                      // Misc Value
-    int32_t mAmplitude = 0;                     // Effect amplitude
-    float_t mDamageFraction = 0.0f;             // Leftover damage from previous tick which will be added to next tick
-    float_t mEffectPctModifier = 1.0f;          // Effect percent modifier
-    bool mEffectDamageStatic = false;           // If effect damage is set to static, effect will not gain spell power bonuses
-    bool mActive = false;                       // Is effect active
-    uint8_t effIndex = 0;
-
-    Aura* mAura = nullptr;
-};
 
 class SERVER_DECL Aura : public EventableObject
 {
@@ -827,8 +687,8 @@ class AbsorbAura : public Aura
         uint32_t m_absorbDamageBatch = 0;
 
         // Legacy script hooks
-        virtual int32_t CalcAbsorbAmount(AuraEffectModifier* aurEff) { return aurEff->getEffectDamage(); }
-        virtual uint8_t CalcPctDamage() { return 100; }
+        virtual int32_t CalcAbsorbAmount(AuraEffectModifier* aurEff);
+        virtual uint8_t CalcPctDamage();
 };
 
 typedef void(Aura::*pSpellAura)(AuraEffectModifier* aurEff, bool apply);

@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Management/MapMgr.hpp"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellMgr.hpp"
-#include "Spell/SpellAuras.h"
+#include "Spell/SpellAura.hpp"
 #include "Spell/Definitions/ProcFlags.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Spell/Definitions/PowerType.hpp"

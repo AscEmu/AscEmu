@@ -45,7 +45,7 @@
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "SpellMgr.hpp"
-#include "SpellAuras.h"
+#include "SpellAura.hpp"
 #include "Definitions/SpellEffects.hpp"
 #include "Management/TaxiMgr.h"
 #include "Server/World.h"
