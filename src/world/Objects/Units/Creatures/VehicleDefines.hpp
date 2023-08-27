@@ -5,6 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "LocationVector.h"
+#include <vector>
+#include <map>
+#include <unordered_map>
+#include <cstdint>
+
 enum VehicleStatus
 {
     STATUS_NONE                     = 0,
@@ -61,6 +67,14 @@ struct VehicleSeatAddon
     LocationVector exitLocation = { 0.f, 0.f, 0.f, 0.f };
     VehicleExitParameters exitParameter = VehicleExitParameters::None;
 };
+
+namespace WDB
+{
+    namespace Structures
+    {
+        struct VehicleSeatEntry;
+    }
+}
 
 struct VehicleSeat
 {

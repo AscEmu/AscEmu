@@ -21,6 +21,7 @@
 
 #include "Setup.h"
 #include "Map/Maps/MapScriptInterface.h"
+#include "Objects/GameObject.h"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"

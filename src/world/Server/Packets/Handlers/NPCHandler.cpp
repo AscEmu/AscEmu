@@ -27,6 +27,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Gossip/GossipScript.hpp"
 #include "Map/Maps/WorldMap.hpp"
+#include "Objects/GameObject.h"
 #include "Server/Packets/SmsgBinderConfirm.h"
 #include "Server/Packets/CmsgTrainerList.h"
 #include "Server/Packets/CmsgBinderActivate.h"

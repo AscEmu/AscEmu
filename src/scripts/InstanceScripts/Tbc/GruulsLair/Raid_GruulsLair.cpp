@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Raid_GruulsLair.hpp"
 #include "GruulTheDragonKiller.hpp"
 #include "HighKingMaulgar.hpp"
+#include "Objects/GameObject.h"
 
 GruulsLairInstanceScript::GruulsLairInstanceScript(WorldMap* pMapMgr) : InstanceScript(pMapMgr)
 {

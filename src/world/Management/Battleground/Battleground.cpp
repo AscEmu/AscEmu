@@ -29,6 +29,7 @@
 #include "Chat/ChatHandler.hpp"
 #include "Management/Group.h"
 #include "Map/Maps/WorldMap.hpp"
+#include "Objects/GameObject.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSession.h"

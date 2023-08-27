@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Northrend_Beasts.hpp"
 #include "Raid_TrialOfTheCrusader.hpp"
 #include "Map/AreaBoundary.hpp"
+#include "Objects/Units/Creatures/Vehicle.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/AIUtils.hpp"
 #include "Server/Script/InstanceScript.hpp"

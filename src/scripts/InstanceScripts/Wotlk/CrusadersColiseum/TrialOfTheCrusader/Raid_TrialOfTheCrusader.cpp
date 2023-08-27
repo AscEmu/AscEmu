@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/WeatherMgr.hpp"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Movement/MovementManager.h"
+#include "Objects/GameObject.h"
 #include "Objects/Units/Players/Player.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////

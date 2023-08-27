@@ -53,6 +53,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.hpp"
 #include "Creatures/CreatureGroups.h"
 #include "Creatures/Summons/SummonHandler.hpp"
+#include "Management/Group.h"
 #include "Management/ItemInterface.h"
 #include "Management/QuestMgr.h"
 #include "Movement/AbstractFollower.h"

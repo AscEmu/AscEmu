@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Raid_IceCrownCitadel.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/Gossip/GossipMenu.hpp"
+#include "Objects/Transporter.hpp"
 #include "Objects/Units/Players/Player.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////

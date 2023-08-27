@@ -18,6 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ArenaTeam.hpp"
 #include "Management/AuctionHouse.h"
 #include "Management/Charter.hpp"
+#include "Management/Group.h"
 #include "Management/HonorHandler.h"
 #include "Management/Battleground/Battleground.hpp"
 #include "Management/Guild/GuildMgr.hpp"

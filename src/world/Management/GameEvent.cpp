@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
+#include "Objects/GameObject.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/Script/EventScript.hpp"

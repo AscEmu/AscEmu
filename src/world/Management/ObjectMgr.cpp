@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <utility>
 
 #include "Charter.hpp"
+#include "Group.h"
 #include "QuestMgr.h"
 #include "Gossip/GossipMenu.hpp"
 #include "Macros/GuildMacros.hpp"
@@ -27,6 +28,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/LFG/LFGMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Movement/MovementManager.h"
+#include "Objects/GameObject.h"
 #include "Objects/GameObjectProperties.hpp"
 #include "Objects/Units/Creatures/Corpse.hpp"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"

@@ -56,6 +56,7 @@
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Management/Battleground/BattlegroundDefines.hpp"
 #include "Movement/MovementManager.h"
+#include "Objects/GameObject.h"
 
 using namespace AscEmu::Packets;
 

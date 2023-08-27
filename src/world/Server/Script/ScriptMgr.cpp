@@ -28,6 +28,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "QuestScript.hpp"
 #include "Management/GameEventMgr.hpp"
 #include "Management/Gossip/GossipScript.hpp"
+#include "Objects/GameObject.h"
 #include "Server/ServerState.h"
 #include "Spell/Spell.hpp"
 

@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/MovementManager.h"
 #include "Movement/WaypointManager.h"
 #include "Movement/Spline/MoveSplineInit.h"
+#include "Objects/GameObject.h"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
 #include "Storage/MySQLDataStore.hpp"

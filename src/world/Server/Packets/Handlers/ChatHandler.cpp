@@ -12,6 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatDefines.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Chat/ChatHandler.hpp"
+
+#include "Management/Group.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Management/QuestMgr.h"

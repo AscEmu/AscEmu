@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellClickInfo.hpp"
 #include "Spell/Definitions/TeleportCoords.hpp"
 #include "MySQLStructures.h"
+#include "Macros/MapsMacros.hpp"
 #include "Movement/Spline/SplineChain.h"
 #include "Objects/GameObjectProperties.hpp"
 #include "Management/QuestProperties.hpp"

@@ -74,6 +74,7 @@
 #include "VMapManager2.h"
 #include "Management/QuestMgr.h"
 #include "Movement/MovementManager.h"
+#include "Objects/GameObject.h"
 #include "Objects/Units/Creatures/Corpse.hpp"
 #include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
 #include "Objects/Units/Creatures/Summons/SummonHandler.hpp"

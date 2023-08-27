@@ -25,6 +25,7 @@
 #include "Objects/GameObjectProperties.hpp"
 #include "Server/Master.h"
 #include "Management/Battleground/BattlegroundDefines.hpp"
+#include "Objects/GameObject.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Storage/MySQLDataStore.hpp"
 

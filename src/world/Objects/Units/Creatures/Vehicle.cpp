@@ -3,8 +3,8 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Vehicle.hpp"
 #include "Storage/MySQLDataStore.hpp"
-#include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellAura.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Server/Packets/SmsgControlVehicle.h"
@@ -241,6 +241,10 @@ void Vehicle::loadAccessory(uint32_t entry, int8_t seatId, bool minion, uint8_t 
     sEventMgr.AddEvent(getBase()->ToUnit(), &Unit::handleSpellClick, accessory->ToUnit(), seatId, 0, 50, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
+Unit* Vehicle::getBase() const { return _owner; }
+WDB::Structures::VehicleEntry const* Vehicle::getVehicleInfo() const { return _vehicleInfo; }
+uint32_t Vehicle::getEntry() const { return _creatureEntry; }
+
 void Vehicle::removeAllPassengers()
 {
     // Passengers always cast an aura with SPELL_AURA_CONTROL_VEHICLE on the vehicle
@@ -313,6 +317,9 @@ bool Vehicle::isControler(Unit* _unit)
 
     return false;
 }
+
+void Vehicle::setLastShootPos(LocationVector const& pos) { _lastShootPos.ChangeCoords(pos); }
+LocationVector const& Vehicle::getLastShootPos() const { return _lastShootPos; }
 
 VehicleSeatAddon const* Vehicle::getSeatAddonForSeatOfPassenger(Unit const* passenger) const
 {
@@ -494,6 +501,8 @@ int8_t Vehicle::getSeatForNumberPassenger(Unit const* passenger) const
 
     return -1;
 }
+
+bool Vehicle::hasVehicleFlags(uint32_t flags) { return getVehicleInfo()->flags & flags; }
 
 SeatMap::iterator Vehicle::getSeatIteratorForPassenger(Unit* passenger)
 {

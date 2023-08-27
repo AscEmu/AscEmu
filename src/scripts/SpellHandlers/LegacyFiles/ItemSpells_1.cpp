@@ -17,6 +17,7 @@
 
 #include "Setup.h"
 #include "Chat/ChatDefines.hpp"
+#include "Management/Group.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/Skill.hpp"
 #include "Management/ItemInterface.h"

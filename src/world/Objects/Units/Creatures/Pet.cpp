@@ -21,6 +21,7 @@
 
 #include "Pet.h"
 #include "Creature.h"
+#include "Management/Group.h"
 #include "Objects/Units/Unit.hpp"
 #include "Objects/DynamicObject.hpp"
 #include "Management/HonorHandler.h"

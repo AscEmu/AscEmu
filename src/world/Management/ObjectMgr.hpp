@@ -6,10 +6,11 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include <string>
-
+#include "Server/EventableObject.h"
 #include "Objects/Units/Creatures/CreatureDefines.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
-#include "Objects/Units/Creatures/Vehicle.hpp"
+//#include "Objects/Units/Creatures/Vehicle.hpp"
+#include "Objects/Units/Creatures/VehicleDefines.hpp"
 #include "Server/Script/SimpleEventScript.hpp"
 
 #if VERSION_STRING >= WotLK
@@ -21,6 +22,10 @@ class Corpse;
 class Charter;
 class ArenaTeam;
 class SpellInfo;
+class Pet;
+class WorldMap;
+class GameObject;
+class Unit;
 
 struct WorldState
 {

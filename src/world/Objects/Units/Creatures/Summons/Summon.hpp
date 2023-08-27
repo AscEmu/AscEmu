@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Objects/Units/Creatures/Creature.h"
-#include "Objects/Units/Unit.hpp"
+//#include "Objects/Units/Unit.hpp"
 
 class SERVER_DECL Summon : public Creature
 {

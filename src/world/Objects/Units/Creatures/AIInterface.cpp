@@ -22,6 +22,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/LockTypes.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Pet.h"
+#include "Vehicle.hpp"
+#include "Management/Group.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Map/AreaBoundary.hpp"
@@ -2230,6 +2232,12 @@ void AIInterface::atEngagementOver()
     // Remove Instance Combat
     instanceCombatProgress(false);
 }
+
+bool AIInterface::isEngaged() { return m_isEngaged; }
+bool AIInterface::isEngagedBy(Unit* who) const { return getUnit()->getThreatManager().canHaveThreatList() ? getUnit()->getThreatManager().isThreatenedBy(who, true) : getUnit()->getCombatHandler().isInPreCombatWithUnit(who); }
+
+bool AIInterface::isImmuneToNPC() { return m_Unit->hasUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT); }
+bool AIInterface::isImmuneToPC() { return m_Unit->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT); }
 
 void AIInterface::setCreatureProtoDifficulty(uint32_t entry)
 {

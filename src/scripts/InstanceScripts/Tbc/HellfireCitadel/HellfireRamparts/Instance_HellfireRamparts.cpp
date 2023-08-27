@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WatchkeeperGargolmar.hpp"
 #include "Omor.hpp"
 #include "NazanAndVazruden.hpp"
+#include "Objects/GameObject.h"
 #include "Server/Script/CreatureAIScript.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////

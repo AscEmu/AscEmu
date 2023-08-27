@@ -20,7 +20,6 @@
 #include "Setup.h"
 #include "Objects/Units/Stats.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellAura.hpp"
 #include <Spell/Definitions/PowerType.hpp>
 #include <Objects/Units/Creatures/Pet.h>
@@ -30,6 +29,7 @@
 #include "Objects/Units/Players/Player.hpp"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellMgr.hpp"
+#include "Objects/GameObject.h"
 
 //////////////////////////////////////////////////////////////
  //bool SoulLinkParent( uint32_t i, Spell *s )

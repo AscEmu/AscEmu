@@ -5,12 +5,26 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Objects/Transporter.hpp"
+#include "AEVersion.hpp"
+#include "LocationVector.h"
 #include "VehicleDefines.hpp"
+#include "WoWGuid.h"
+#include "Objects/TransportBase.hpp"
+
+#include <set>
 
 #ifdef FT_VEHICLES
 
 class Unit;
+
+namespace WDB
+{
+    namespace Structures
+    {
+        struct VehicleEntry;
+        struct VehicleSeatEntry;
+    }
+}
 
 class SERVER_DECL Vehicle : public TransportBase
 {
@@ -23,9 +37,9 @@ public:
     void loadAllAccessories(bool evading);
     void loadAccessory(uint32_t entry, int8_t seatId, bool minion, uint8_t type, uint32_t summonTime);
 
-    Unit* getBase() const { return _owner; }
-    WDB::Structures::VehicleEntry const* getVehicleInfo() const { return _vehicleInfo; }
-    uint32_t getEntry() const { return _creatureEntry; }
+    Unit* getBase() const;
+    WDB::Structures::VehicleEntry const* getVehicleInfo() const;
+    uint32_t getEntry() const;
 
     bool hasEmptySeat(int8_t seatId) const;
     bool hasEmptySeat() const;
@@ -42,15 +56,15 @@ public:
     bool isControllableVehicle() const;
     bool isControler(Unit* _unit);
 
-    void setLastShootPos(LocationVector const& pos) { _lastShootPos.ChangeCoords(pos); }
-    LocationVector const& getLastShootPos() const { return _lastShootPos; }
+    void setLastShootPos(LocationVector const& pos);
+    LocationVector const& getLastShootPos() const;
 
     SeatMap Seats;
 
     WDB::Structures::VehicleSeatEntry const* getSeatForPassenger(Unit const* passenger) const;
     int8_t getSeatForNumberPassenger(Unit const* passenger) const;
 
-    bool hasVehicleFlags(uint32_t flags) { return getVehicleInfo()->flags & flags; }
+    bool hasVehicleFlags(uint32_t flags);
 
 protected:
     uint32_t usableSeatNum;

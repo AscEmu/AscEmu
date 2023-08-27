@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Objects/DynamicObject.hpp"
 
+#include "GameObject.h"
 #include "Data/Flags.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellMgr.hpp"

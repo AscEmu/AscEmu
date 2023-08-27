@@ -14,6 +14,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatDefines.hpp"
 #include "Storage/MySQLStructures.h"
 
+#include <functional>
+
 inline bool inRangeYZX(const float* v1, const float* v2, const float r, const float h)
 {
     const float dx = v2[0] - v1[0];
@@ -33,6 +35,9 @@ class WorldSession;
 class SpellCastTargets;
 class CreatureAIScript;
 class CreatureGroup;
+class SpellInfo;
+
+enum MovementGeneratorType : uint8_t;
 
 
 enum AI_SCRIPT_EVENT_TYPES
@@ -351,11 +356,11 @@ public:
     void engagementOver();
     void atEngagementOver();
 
-    bool isEngaged() { return m_isEngaged; }
-    bool isEngagedBy(Unit* who) const { return getUnit()->getThreatManager().canHaveThreatList() ? getUnit()->getThreatManager().isThreatenedBy(who, true) : getUnit()->getCombatHandler().isInPreCombatWithUnit(who); }
+    bool isEngaged();
+    bool isEngagedBy(Unit* who) const;
 
-    bool isImmuneToNPC() { return m_Unit->hasUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT); }
-    bool isImmuneToPC() { return m_Unit->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT); }
+    bool isImmuneToNPC();
+    bool isImmuneToPC();
     void setImmuneToNPC(bool apply);
     void setImmuneToPC(bool apply);
 

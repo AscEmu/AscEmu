@@ -40,6 +40,7 @@
 #include "Definitions/SpellMechanics.hpp"
 #include "Definitions/PowerType.hpp"
 #include "Definitions/SpellEffects.hpp"
+#include "Management/Group.h"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Server/Packets/MsgChannelUpdate.h"
 #include "Server/Packets/SmsgPlayerVehicleData.h"
@@ -53,6 +54,8 @@
 #include "Storage/WDB/WDBStores.hpp"
 #include "Management/Battleground/BattlegroundDefines.hpp"
 #include "Map/Maps/WorldMap.hpp"
+#include "Objects/GameObject.h"
+#include "Objects/Units/Creatures/Vehicle.hpp"
 
 using namespace AscEmu::Packets;
 

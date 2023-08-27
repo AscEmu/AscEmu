@@ -36,6 +36,7 @@
 #include "Packets/SmsgLogoutComplete.h"
 #include "OpcodeTable.hpp"
 #include "World.h"
+#include "Management/Group.h"
 #include "Management/Battleground/BattlegroundMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Packets/SmsgMessageChat.h"

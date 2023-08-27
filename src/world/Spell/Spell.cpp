@@ -26,6 +26,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellPacketFlags.hpp"
 #include "Definitions/SpellState.hpp"
 #include "Definitions/SpellRanged.hpp"
+#include "Management/Group.h"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Management/Battleground/Battleground.hpp"
 #include "Management/ItemInterface.h"
@@ -39,6 +40,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObject.h"
 #include "Management/ObjectMgr.hpp"
 #include "Management/QuestMgr.h"
+#include "Objects/Item.hpp"
 #include "Server/Definitions.h"
 #include "Server/Packets/SmsgCancelCombat.h"
 #include "Server/Packets/MsgChannelUpdate.h"
@@ -5106,7 +5108,7 @@ void Spell::sendSpellGo()
     if (i_caster != nullptr)
         castFlags |= SPELL_PACKET_FLAGS_ITEM_CASTER;
 
-    if (!missedTargets.empty())
+    if (!m_missedTargets.empty())
         castFlags |= SPELL_PACKET_FLAGS_EXTRA_MESSAGE;
 
 #if VERSION_STRING >= WotLK
@@ -5153,8 +5155,8 @@ void Spell::sendSpellGo()
 #endif
 
     // Add hitted targets
-    data << uint8_t(uniqueHittedTargets.size());
-    for (const auto& uniqueTarget : uniqueHittedTargets)
+    data << uint8_t(m_uniqueHittedTargets.size());
+    for (const auto& uniqueTarget : m_uniqueHittedTargets)
     {
         data << uint64_t(uniqueTarget.first);
     }
@@ -5163,7 +5165,7 @@ void Spell::sendSpellGo()
     // Add missed targets
     if (castFlags & SPELL_PACKET_FLAGS_EXTRA_MESSAGE)
     {
-        data << uint8_t(missedTargets.size());
+        data << uint8_t(m_missedTargets.size());
         writeSpellMissedTargets(&data);
     }
     else
@@ -5177,7 +5179,7 @@ void Spell::sendSpellGo()
     if (castFlags & SPELL_PACKET_FLAGS_POWER_UPDATE && u_caster != nullptr)
         data << uint32_t(u_caster->getPower(getSpellInfo()->getPowerType()));
 #else
-    data << uint8_t(missedTargets.size());
+    data << uint8_t(m_missedTargets.size());
 
     if (castFlags & SPELL_PACKET_FLAGS_EXTRA_MESSAGE)
         writeSpellMissedTargets(&data);

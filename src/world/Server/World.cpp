@@ -42,6 +42,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Battleground/BattlegroundMgr.hpp"
 #include "Management/Tickets/TicketMgr.hpp"
 #include "Movement/MovementGenerator.h"
+#include "Objects/GameObject.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Storage/WDB/WDBStores.hpp"

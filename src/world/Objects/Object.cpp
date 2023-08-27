@@ -23,12 +23,15 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellState.hpp"
 #include <Spell/Definitions/AuraInterruptFlags.hpp>
 
+#include "GameObject.h"
 #include "GameObjectProperties.hpp"
+#include "Transporter.hpp"
 #include "Data/Flags.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Units/Creatures/CreatureDefines.hpp"
 #include "Data/WoWObject.hpp"
+#include "Management/Group.h"
 #include "Map/Maps/WorldMap.hpp"
 #include "Server/Packets/SmsgDestoyObject.h"
 #include "Server/Packets/SmsgPlaySound.h"
@@ -44,6 +47,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Stats.h"
 #include "Units/Creatures/AIInterface.h"
 #include "Units/Creatures/Corpse.hpp"
+#include "Units/Creatures/Vehicle.hpp"
 #include "Units/Players/Player.hpp"
 
 #if VERSION_STRING >= Cata

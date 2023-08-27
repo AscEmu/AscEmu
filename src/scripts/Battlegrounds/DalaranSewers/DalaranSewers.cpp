@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "DalaranSewers.h"
 
 #include "Map/Maps/BattleGroundMap.hpp"
+#include "Objects/GameObject.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Master.h"
 

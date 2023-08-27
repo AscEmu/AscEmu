@@ -21,6 +21,7 @@
 #include "RuinsOfLordaeron.h"
 
 #include "Map/Maps/BattleGroundMap.hpp"
+#include "Objects/GameObject.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Master.h"
 

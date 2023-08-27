@@ -21,6 +21,7 @@
 #include "Management/Gossip/GossipScript.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Movement/MovementManager.h"
+#include "Objects/GameObject.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"

@@ -23,6 +23,7 @@
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Gossip/GossipScript.hpp"
 #include "Map/Maps/MapScriptInterface.h"
+#include "Objects/GameObject.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/CreatureAIScript.hpp"
 

@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Instance_Deadmines.h"
 
 #include "Setup.h"
+#include "Objects/GameObject.h"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/InstanceScript.hpp"
