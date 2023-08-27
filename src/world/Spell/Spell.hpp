@@ -215,6 +215,9 @@ public:
     bool hasAttributeExF(SpellAttributesExF _attribute) const;
     bool hasAttributeExG(SpellAttributesExG _attribute) const;
 
+    // LuaEngine
+    void resetSpellInfoOverride();
+
 private:
     SpellInfo const* m_spellInfo = nullptr;
     // used by spells that should have dynamic variables in spellentry

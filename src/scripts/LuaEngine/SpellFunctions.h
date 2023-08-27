@@ -470,7 +470,7 @@ namespace LuaSpell
     {
         if (!sp)
             return 0;
-        sp->m_spellInfo_override = nullptr;
+        sp->resetSpellInfoOverride();
         return 0;
     }
 

@@ -5763,6 +5763,11 @@ bool Spell::hasAttributeExG(SpellAttributesExG _attribute) const
     return (getSpellInfo()->getAttributesExG() & _attribute) != 0;
 }
 
+void Spell::resetSpellInfoOverride()
+{
+    m_spellInfo_override = nullptr;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Misc
 Aura* Spell::getTriggeredByAura() const
