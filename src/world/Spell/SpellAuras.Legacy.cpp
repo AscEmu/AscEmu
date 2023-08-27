@@ -19,6 +19,7 @@
  *
  */
 
+#include "Spell.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Objects/Item.hpp"
@@ -31,6 +32,7 @@
 #include "SpellAuras.h"
 #include "Definitions/SpellModifierType.hpp"
 #include "SpellHelpers.h"
+#include "SpellMgr.hpp"
 #include "Definitions/ProcFlags.hpp"
 #include "Definitions/AuraInterruptFlags.hpp"
 #include "Definitions/SpellSchoolConversionTable.hpp"

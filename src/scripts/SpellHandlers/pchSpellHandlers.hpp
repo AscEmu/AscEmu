@@ -23,3 +23,4 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Unit.hpp"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Spell/SpellProc.hpp"
+#include "Spell/SpellMgr.hpp"

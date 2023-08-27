@@ -20,10 +20,10 @@
 #include "Setup.h"
 #include "Spell/SpellAuras.h"
 #include "Server/Script/ScriptMgr.hpp"
-#include <Spell/Definitions/SpellMechanics.hpp>
-#include <Objects/Units/Creatures/Pet.h>
-
+#include "Spell/Definitions/SpellMechanics.hpp"
+#include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Players/Player.hpp"
+#include "Spell/SpellMgr.hpp"
 
 bool Refocus(uint8_t /*effectIndex*/, Spell* pSpell)
 {

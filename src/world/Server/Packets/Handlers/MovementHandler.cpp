@@ -24,6 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Transporter.hpp"
 #include "Server/World.h"
 #include "Server/WorldSessionLog.hpp"
+#include "Spell/Spell.h"
 
 using namespace AscEmu::Packets;
 

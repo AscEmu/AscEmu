@@ -1571,6 +1571,34 @@ uint16 Pet::GetSpellState(SpellInfo const* sp)
     return itr->second;
 }
 
+bool Pet::HasSpell(uint32 SpellID)
+{
+    const auto sp = sSpellMgr.getSpellInfo(SpellID);
+    if (sp)
+        return mSpells.find(sp) != mSpells.end();
+    return false;
+}
+void Pet::RemoveSpell(uint32 SpellID)
+{
+    const auto sp = sSpellMgr.getSpellInfo(SpellID);
+    if (sp) RemoveSpell(sp);
+}
+void Pet::SetSpellState(uint32 SpellID, uint16 State)
+{
+    const auto sp = sSpellMgr.getSpellInfo(SpellID);
+    if (sp) SetSpellState(sp, State);
+}
+uint16 Pet::GetSpellState(uint32 SpellID)
+{
+    if (SpellID == 0)
+        return DEFAULT_SPELL_STATE;
+
+    const auto sp = sSpellMgr.getSpellInfo(SpellID);
+    if (sp)
+        return GetSpellState(sp);
+    return DEFAULT_SPELL_STATE;
+}
+
 void Pet::SetDefaultActionbar()
 {
     // Set up the default actionbar.
