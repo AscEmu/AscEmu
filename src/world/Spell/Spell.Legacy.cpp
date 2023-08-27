@@ -20,7 +20,7 @@
  */
 
 #include "Objects/Units/Creatures/Pet.h"
-#include "Spell.Legacy.h"
+#include "Spell/Spell.hpp"
 #include "Definitions/SpellInFrontStatus.hpp"
 #include "Definitions/SpellCastTargetFlags.hpp"
 #include "Definitions/SpellDamageType.hpp"

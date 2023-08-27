@@ -32,6 +32,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/EventScript.hpp"
 #include "Server/Script/HookInterface.hpp"
 #include "Server/Script/InstanceScript.hpp"
+#include "Spell/Spell.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Summons/SummonHandler.hpp"
 

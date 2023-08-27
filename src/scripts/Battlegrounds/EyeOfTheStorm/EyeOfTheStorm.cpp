@@ -32,6 +32,7 @@
 #include "Management/Battleground/BattlegroundDefines.hpp"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/Player.hpp"
+#include "Spell/Spell.hpp"
 #include "Storage/MySQLDataStore.hpp"
 
 static float EOTSBuffCoordinates[4][4] =

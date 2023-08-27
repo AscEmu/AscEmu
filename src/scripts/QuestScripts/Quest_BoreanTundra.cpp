@@ -26,6 +26,7 @@
 #include "Server/WorldSession.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"
+#include "Spell/Spell.hpp"
 #include "Storage/MySQLDataStore.hpp"
 
 enum 

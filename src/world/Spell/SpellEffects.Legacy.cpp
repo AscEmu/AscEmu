@@ -56,7 +56,7 @@
 #include "Definitions/SpellMechanics.hpp"
 #include "Definitions/PowerType.hpp"
 #include "Definitions/Spec.hpp"
-#include "Spell.h"
+#include "Spell.hpp"
 #include "Definitions/SpellEffects.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgTaxinodeStatus.h"

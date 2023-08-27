@@ -88,7 +88,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellDamageType.hpp"
 #include "Spell/Definitions/SpellFailure.hpp"
 #include "Spell/Definitions/SpellIsFlags.hpp"
-#include "Spell/Spell.h"
+#include "Spell/Spell.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellDefines.hpp"
 #include "Spell/SpellMgr.hpp"

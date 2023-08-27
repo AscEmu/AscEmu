@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Raid_TrialOfTheCrusader.hpp"
 #include "Movement/MovementManager.h"
 #include "Server/Script/InstanceScript.hpp"
+#include "Spell/Spell.hpp"
 
 // ToDo
 // Cannot Get Submerge Phase to Work

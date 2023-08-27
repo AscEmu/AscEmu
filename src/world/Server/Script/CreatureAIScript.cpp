@@ -18,9 +18,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Opcodes.hpp"
+#include "Spell/Spell.hpp"
+#include "Spell/SpellAuras.h"
 
 CreatureAIScript::CreatureAIScript(Creature* creature) : mScriptPhase(0), summons(creature), mCreatureTimerCount(0), mAIUpdateFrequency(defaultUpdateFrequency),
-isIdleEmoteEnabled(false), idleEmoteTimerId(0), idleEmoteTimeMin(0), idleEmoteTimeMax(0), _creature(creature), linkedCreatureAI(nullptr), mCreatureAIScheduler(std::make_shared<CreatureAIFunctionScheduler>(this))
+                                                         isIdleEmoteEnabled(false), idleEmoteTimerId(0), idleEmoteTimeMin(0), idleEmoteTimeMax(0), _creature(creature), linkedCreatureAI(nullptr), mCreatureAIScheduler(std::make_shared<CreatureAIFunctionScheduler>(this))
 {
     mCreatureTimerIds.clear();
     mCreatureTimer.clear();

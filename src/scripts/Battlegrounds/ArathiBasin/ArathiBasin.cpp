@@ -34,6 +34,7 @@
 #include "Management/Battleground/BattlegroundDefines.hpp"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/Player.hpp"
+#include "Spell/Spell.hpp"
 
 uint32_t buffentries[3] = { 180380, 180362, 180146 };
 

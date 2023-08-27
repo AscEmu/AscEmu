@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "GruulTheDragonKiller.hpp"
 #include "Raid_GruulsLair.hpp"
 #include "Objects/Units/Players/Player.hpp"
+#include "Spell/Spell.hpp"
 #include "Utilities/Util.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////

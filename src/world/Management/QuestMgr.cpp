@@ -48,6 +48,7 @@
 #include "Utilities/Strings.hpp"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/QuestScript.hpp"
+#include "Spell/Spell.hpp"
 
 using namespace AscEmu::Packets;
 

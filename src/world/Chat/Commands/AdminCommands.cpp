@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
+#include "Spell/Spell.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"

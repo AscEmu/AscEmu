@@ -17,6 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/HookInterface.hpp"
+#include "Spell/Spell.hpp"
 
 const uint32_t ARENA_PREPARATION = 32727;
 

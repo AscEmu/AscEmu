@@ -29,6 +29,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/GameEventMgr.hpp"
 #include "Management/Gossip/GossipScript.hpp"
 #include "Server/ServerState.h"
+#include "Spell/Spell.hpp"
 
 // APGL End
 // MIT Start

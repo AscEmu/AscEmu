@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.hpp"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/InstanceScript.hpp"
-#include "Spell/Spell.h"
+#include "Spell/Spell.hpp"
+#include "Spell/SpellAuras.h"
 #include "Spell/SpellMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"

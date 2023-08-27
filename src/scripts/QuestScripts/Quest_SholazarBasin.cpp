@@ -26,6 +26,7 @@
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSession.h"
 #include "Server/Script/CreatureAIScript.hpp"
+#include "Spell/SpellAuras.h"
 
 enum
 {

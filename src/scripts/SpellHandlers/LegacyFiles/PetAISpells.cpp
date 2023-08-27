@@ -22,7 +22,7 @@
 #include "Management/ItemInterface.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Objects/Units/Creatures/Pet.h"
-#include "Spell/Spell.h"
+#include "Spell/Spell.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include <Spell/Definitions/PowerType.hpp>
 

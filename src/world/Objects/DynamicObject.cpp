@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/SpellAuras.h"
-#include "Spell/Spell.Legacy.h"
+#include "Spell/Spell.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Data/WoWDynamicObject.hpp"
 #include "Map/Maps/WorldMap.hpp"

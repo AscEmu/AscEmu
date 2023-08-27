@@ -23,6 +23,7 @@
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Opcodes.hpp"
 #include "Server/Script/ScriptMgr.hpp"
+#include "Spell/Spell.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/DispelType.hpp"

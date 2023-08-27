@@ -24,6 +24,7 @@
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/Player.hpp"
+#include "Spell/Spell.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellMgr.hpp"
 

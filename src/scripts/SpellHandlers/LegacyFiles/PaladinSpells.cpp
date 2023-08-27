@@ -24,7 +24,7 @@
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Master.h"
 #include "Server/Script/ScriptMgr.hpp"
-#include "Spell/Spell.h"
+#include "Spell/Spell.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/PowerType.hpp"
 

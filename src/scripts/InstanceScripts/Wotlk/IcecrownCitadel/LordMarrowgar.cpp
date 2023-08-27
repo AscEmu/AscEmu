@@ -10,6 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/MovementGenerators/PointMovementGenerator.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/InstanceScript.hpp"
+#include "Spell/Spell.hpp"
+#include "Spell/SpellAuras.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Boss: Lord Marrowgar

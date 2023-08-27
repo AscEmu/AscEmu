@@ -30,6 +30,7 @@
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Master.h"
 #include "Server/World.h"
+#include "Spell/Spell.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"

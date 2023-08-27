@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Item.hpp"
 #include "Management/ItemInterface.h"
 #include "Map/Management/MapMgr.hpp"
-#include "Spell/Spell.h"
+#include "Spell/Spell.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/ProcFlags.hpp"

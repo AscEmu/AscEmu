@@ -35,6 +35,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/World.h"
 #include "Server/Script/InstanceScript.hpp"
+#include "Spell/Spell.hpp"
+#include "Spell/SpellAuras.h"
 #include "Storage/WDB/WDBStores.hpp"
 
 // Random and guessed values for Internal Spell cast chance

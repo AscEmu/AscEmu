@@ -10,6 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/MapScriptInterface.h"
 #include "Movement/MovementManager.h"
 #include "Objects/Units/Players/Player.hpp"
+#include "Spell/Spell.hpp"
+#include "Spell/SpellAuras.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Misc: Muradin

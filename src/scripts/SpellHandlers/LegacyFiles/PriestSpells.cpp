@@ -20,7 +20,7 @@
 #include "Setup.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/ScriptMgr.hpp"
-#include "Spell/Spell.h"
+#include "Spell/Spell.hpp"
 #include "Spell/SpellAuras.h"
 
 bool Penance(uint8_t /*effectIndex*/, Spell* pSpell)

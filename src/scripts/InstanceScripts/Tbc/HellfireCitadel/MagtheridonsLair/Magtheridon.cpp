@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Magtheridon.hpp"
 #include "Raid_Magtheridons_Lair.hpp"
 #include "Server/Script/InstanceScript.hpp"
+#include "Spell/Spell.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Boss: Magtheridon

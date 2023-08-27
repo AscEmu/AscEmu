@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemInterface.h"
 #include "Objects/Units/Players/TradeData.hpp"
 #include "Server/WorldSessionLog.hpp"
+#include "Spell/Spell.hpp"
 #include "Spell/SpellMgr.hpp"
 
 using namespace AscEmu::Packets;

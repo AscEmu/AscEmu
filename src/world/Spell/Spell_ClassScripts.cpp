@@ -19,6 +19,7 @@
  *
  */
 
+#include "Spell/Spell.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "SpellAuras.h"

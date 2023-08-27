@@ -18,6 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSessionLog.hpp"
 #include "Server/Packets/CmsgCastSpell.h"
 #include "Server/Packets/CmsgPetCastSpell.h"
+#include "Spell/Spell.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 
 using namespace AscEmu::Packets;

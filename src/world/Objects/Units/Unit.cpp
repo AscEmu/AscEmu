@@ -69,6 +69,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Transporter.hpp"
 #include "Server/World.h"
 #include "Server/Script/HookInterface.hpp"
+#include "Spell/Spell.hpp"
 
 #if VERSION_STRING <= TBC
 #include "Server/Packets/SmsgUpdateAuraDuration.h"

@@ -53,6 +53,7 @@
 #include "Server/Script/EventScript.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"
 #include "Server/Script/InstanceScript.hpp"
+#include "Spell/Spell.hpp"
 #include "Units/Players/Player.hpp"
 
 // MIT
