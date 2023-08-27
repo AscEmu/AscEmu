@@ -38,7 +38,7 @@ typedef std::pair<uint64_t, DamageInfo> SpellUniqueTarget;
 class SERVER_DECL Spell
 {
 public:
-    Spell(Object* caster, SpellInfo const* spellInfo, bool triggered, Aura* aur);
+    Spell(Object* _caster, SpellInfo const* _spellInfo, bool _triggered, Aura* _aura);
     ~Spell();
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -154,29 +154,76 @@ protected:
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Targets
+    bool hasTarget(const uint64_t& _guid, std::vector<uint64_t>* tmpGuidMap);
+
+    Item* getItemTarget() const;
+
+    void setUnitTarget(Unit* _unit);
+    Unit* getUnitTarget() const;
+
+    Player* getPlayerTarget() const;
+    GameObject* getGameObjectTarget() const;
+    std::shared_ptr<Corpse> getCorpseTarget() const;
+
+    void unsetAllTargets();
+
+    void setTargetConstraintCreature(Creature* _creature);
+    Creature* getTargetConstraintCreature() const;
+
+    void setTargetConstraintGameObject(GameObject* _gameobject);
+    GameObject* getTargetConstraintGameObject() const;
+
+    LocationVector getDestination() { return m_targets.getDestination(); }
+    LocationVector getSource() { return m_targets.getSource(); }
 
 private:
     // Stores unique hitted targets with DamageInfo for proc system
-    std::vector<SpellUniqueTarget> uniqueHittedTargets;
+    std::vector<SpellUniqueTarget> m_uniqueHittedTargets;
     // Stores targets with hit result != SPELL_DID_HIT_SUCCESS
-    std::vector<SpellTargetMod> missedTargets;
+    std::vector<SpellTargetMod> m_missedTargets;
     // Stores hitted targets for each spell effect
     std::vector<uint64_t> m_effectTargets[MAX_SPELL_EFFECTS];
 
     SpellCastResult checkExplicitTarget(Object* target, uint32_t requiredTargetMask) const;
     void safeAddMissedTarget(uint64_t targetGuid, SpellDidHitResult hitResult, SpellDidHitResult extendedHitResult);
 
-    Unit* unitTarget = nullptr;
-    Item* itemTarget = nullptr;
-    GameObject* gameObjTarget = nullptr;
-    Player* playerTarget = nullptr;
-    std::shared_ptr<Corpse> corpseTarget = nullptr;
+    Unit* m_unitTarget = nullptr;
+    Item* m_itemTarget = nullptr;
+    GameObject* m_gameObjTarget = nullptr;
+    Player* m_playerTarget = nullptr;
+    std::shared_ptr<Corpse> m_corpseTarget = nullptr;
+
+protected:
+    // Current Targets to be used in effect handler
+    Creature* m_targetConstraintCreature = nullptr;
+    GameObject* m_targetConstraintGameObject = nullptr;
+
+    SpellTargetConstraint* m_targetConstraint;
+
+public:
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // SpellInfo
+    SpellInfo const* getSpellInfo() const;
+
+    // helper
+    bool hasAttribute(SpellAttributes _attribute) const;
+    bool hasAttributeEx(SpellAttributesEx _attribute) const;
+    bool hasAttributeExB(SpellAttributesExB _attribute) const;
+    bool hasAttributeExC(SpellAttributesExC _attribute) const;
+    bool hasAttributeExD(SpellAttributesExD _attribute) const;
+    bool hasAttributeExE(SpellAttributesExE _attribute) const;
+    bool hasAttributeExF(SpellAttributesExF _attribute) const;
+    bool hasAttributeExG(SpellAttributesExG _attribute) const;
+
+private:
+    SpellInfo const* m_spellInfo = nullptr;
+    // used by spells that should have dynamic variables in spellentry
+    // seems to be used only by LuaEngine -Appled
+    SpellInfo const* m_spellInfo_override = nullptr;
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
-    SpellInfo const* getSpellInfo() const;
-
     // Some spells inherit base points from the mother spell
     SpellForcedBasePoints forced_basepoints = SpellForcedBasePoints();
 
@@ -195,13 +242,6 @@ public:
 
     int32_t getDuration();
     float_t getEffectRadius(uint8_t effectIndex);
-
-    LocationVector getDestination() { return m_targets.getDestination(); }
-    LocationVector getSource() { return m_targets.getSource(); }
-
-    // used by spells that should have dynamic variables in spellentry
-    // seems to be used only by LuaEngine -Appled
-    SpellInfo const* m_spellInfo_override = nullptr;
 
 private:
     struct HitSpellEffect
@@ -277,8 +317,6 @@ private:
 
     bool m_triggeredSpell = false;
     Aura* m_triggeredByAura = nullptr;
-
-    SpellInfo const* m_spellInfo = nullptr;
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -457,15 +495,6 @@ public:
     // Checks the caster is ready for cast
     uint8 CanCast(bool);
 
-    bool hasAttribute(SpellAttributes attribute);
-    bool hasAttributeEx(SpellAttributesEx attribute);
-    bool hasAttributeExB(SpellAttributesExB attribute);
-    bool hasAttributeExC(SpellAttributesExC attribute);
-    bool hasAttributeExD(SpellAttributesExD attribute);
-    bool hasAttributeExE(SpellAttributesExE attribute);
-    bool hasAttributeExF(SpellAttributesExF attribute);
-    bool hasAttributeExG(SpellAttributesExG attribute);
-
     // Handles Teleport function
     void HandleTeleport(LocationVector position, uint32 mapid, Unit* Target);
     // Determines how much skill caster going to gain
@@ -474,11 +503,6 @@ public:
     void AddTime(uint32 type);
 
     uint32 getState() const;
-    void SetUnitTarget(Unit* punit);
-    void SetTargetConstraintCreature(Creature* pCreature);
-    void SetTargetConstraintGameObject(GameObject* pGameobject);
-    Creature* GetTargetConstraintCreature() const;
-    GameObject* GetTargetConstraintGameObject() const;
 
     // Send Packet functions
     void SendLogExecute(uint32 damage, uint64& targetGuid);
@@ -619,12 +643,6 @@ public:
     // It should NOT be used for weapon_damage_type which needs: 0 = MELEE, 1 = OFFHAND, 2 = RANGED
     uint32 GetType();
 
-    Item* GetItemTarget() const;
-    Unit* GetUnitTarget() const;
-    Player* GetPlayerTarget() const;
-    GameObject* GetGameObjectTarget() const;
-    std::shared_ptr<Corpse> GetCorpseTarget() const;
-
     uint32 chaindamage;
 
     bool IsAspect();
@@ -673,17 +691,10 @@ protected:
 
     uint64_t m_magnetTarget;
 
-    // Current Targets to be used in effect handler
-    Creature* targetConstraintCreature;
-    GameObject* targetConstraintGameObject;
     uint32 add_damage;
 
     uint8 m_rune_avail_before;
     //void _DamageRangeUpdate();
-
-    bool HasTarget(const uint64& guid, std::vector<uint64_t>* tmpMap);
-
-    SpellTargetConstraint* m_target_constraint;
 
     virtual int32 DoCalculateEffect(uint32 i, Unit* target, int32 value);
     virtual void DoAfterHandleEffect(Unit* target, uint32 i);

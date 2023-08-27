@@ -13249,7 +13249,7 @@ uint32_t Unit::handleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
 
                 const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
                 Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, NULL);
-                spell->SetUnitTarget(this);
+                spell->setUnitTarget(this);
                 if (ospinfo)
                     doSpellHealing(this, spellId, amount * (ospinfo->calculateEffectValue(0)) / 100.0f, true);
                 delete spell;

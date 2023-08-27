@@ -516,7 +516,7 @@ bool PoweringUpEffect(uint8_t effectIndex, Spell* pSpell)
 {
     if (effectIndex == EFF_INDEX_1)
     {
-        if (Unit* target = pSpell->GetUnitTarget())
+        if (Unit* target = pSpell->getUnitTarget())
         {
             if (Aura* pAura = target->getAuraWithId(twins::SPELL_POWERING_UP))
             {

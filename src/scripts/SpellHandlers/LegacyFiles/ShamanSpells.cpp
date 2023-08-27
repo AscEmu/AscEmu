@@ -72,7 +72,7 @@ bool SkyShatterRegalia(uint8_t /*effectIndex*/, Spell* s)
 
 bool ManaTide(uint8_t /*effectIndex*/, Spell* s)
 {
-    Unit* unitTarget = s->GetUnitTarget();
+    Unit* unitTarget = s->getUnitTarget();
 
     if (unitTarget == NULL || unitTarget->isDead() || unitTarget->getClass() == WARRIOR || unitTarget->getClass() == ROGUE)
         return false;

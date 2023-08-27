@@ -47,7 +47,7 @@ enum
 
 bool FrostWarding(uint8_t /*effectIndex*/, Spell* s)
 {
-    Unit* unitTarget = s->GetUnitTarget();
+    Unit* unitTarget = s->getUnitTarget();
 
     if (!unitTarget)
         return false;
@@ -71,7 +71,7 @@ bool FrostWarding(uint8_t /*effectIndex*/, Spell* s)
 
 bool MoltenShields(uint8_t /*effectIndex*/, Spell* s)
 {
-    Unit* unitTarget = s->GetUnitTarget();
+    Unit* unitTarget = s->getUnitTarget();
 
     if (!unitTarget)
         return false;
@@ -156,7 +156,7 @@ bool GnomishBattleChicken(uint8_t /*effectIndex*/, Spell* s)
 
 bool GiftOfLife(uint8_t /*effectIndex*/, Spell* s)
 {
-    Player* playerTarget = s->GetPlayerTarget();
+    Player* playerTarget = s->getPlayerTarget();
 
     if (!playerTarget)
         return false;
@@ -171,16 +171,16 @@ bool GiftOfLife(uint8_t /*effectIndex*/, Spell* s)
 
 bool Give5kGold(uint8_t /*effectIndex*/, Spell* s)
 {
-    if (s->GetPlayerTarget() != NULL)
+    if (s->getPlayerTarget() != NULL)
     {
-        if (worldConfig.player.isGoldCapEnabled && (s->GetPlayerTarget()->getCoinage() + 50000000) > worldConfig.player.limitGoldAmount)
+        if (worldConfig.player.isGoldCapEnabled && (s->getPlayerTarget()->getCoinage() + 50000000) > worldConfig.player.limitGoldAmount)
         {
-            s->GetPlayerTarget()->setCoinage(worldConfig.player.limitGoldAmount);
-            s->GetPlayerTarget()->getItemInterface()->buildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
+            s->getPlayerTarget()->setCoinage(worldConfig.player.limitGoldAmount);
+            s->getPlayerTarget()->getItemInterface()->buildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
         }
         else
         {
-            s->GetPlayerTarget()->modCoinage(50000000);
+            s->getPlayerTarget()->modCoinage(50000000);
         }
     }
     else
@@ -391,7 +391,7 @@ bool ChaosBlast(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pSpell->getUnitCaster() == NULL)
         return true;
 
-    pSpell->getUnitCaster()->castSpell(pSpell->GetUnitTarget(), 37675, true);
+    pSpell->getUnitCaster()->castSpell(pSpell->getUnitTarget(), 37675, true);
     return true;
 }
 
@@ -529,7 +529,7 @@ static float IOCTeleOutLocations[6][4] =
 
 bool IOCTeleporterIn(uint8_t /*effectIndex*/, Spell* s)
 {
-    Player* p = s->GetPlayerTarget();
+    Player* p = s->getPlayerTarget();
     if (p == NULL)
         return true;
 
@@ -560,7 +560,7 @@ bool IOCTeleporterIn(uint8_t /*effectIndex*/, Spell* s)
 
 bool IOCTeleporterOut(uint8_t /*effectIndex*/, Spell* s)
 {
-    Player* p = s->GetPlayerTarget();
+    Player* p = s->getPlayerTarget();
     if (p == NULL)
         return true;
 
@@ -602,7 +602,7 @@ const float sotaTransDest[5][4] =
 // 54640
 bool SOTATeleporter(uint8_t /*effectIndex*/, Spell* s)
 {
-    Player* plr = s->GetPlayerTarget();
+    Player* plr = s->getPlayerTarget();
     if (plr == NULL)
         return true;
 
@@ -630,7 +630,7 @@ bool SOTATeleporter(uint8_t /*effectIndex*/, Spell* s)
 // 51892 - Eye of Acherus Visual
 bool EyeOfAcherusVisual(uint8_t /*effectIndex*/, Spell* spell)
 {
-    Player* player = spell->GetPlayerTarget();
+    Player* player = spell->getPlayerTarget();
     if (player == nullptr)
         return true;
 
@@ -643,7 +643,7 @@ bool EyeOfAcherusVisual(uint8_t /*effectIndex*/, Spell* spell)
 // 52694 - Recall Eye of Acherus
 bool RecallEyeOfAcherus(uint8_t /*effectIndex*/, Spell* spell)
 {
-    Player* player = spell->GetPlayerTarget();
+    Player* player = spell->getPlayerTarget();
     if (player == nullptr)
         return true;
 

@@ -1736,7 +1736,7 @@ void AIInterface::castSpell(Unit* caster, SpellInfo const* spellInfo, SpellCastT
             return;
 
         sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "AI DEBUG: Unit %u casting spell %u on target " I64FMT " ", caster->getEntry(),
-            spellInfo->getId(), targets.getUnitTarget());
+            spellInfo->getId(), targets.getUnitTargetGuid());
 
         //i wonder if this will lead to a memory leak :S
         Spell* nspell = sSpellMgr.newSpell(caster, spellInfo, false, nullptr);
@@ -2064,7 +2064,7 @@ void AIInterface::updateTotem(uint32_t p_time)
                 SpellCastTargets targets(0);
                 pSpell->GenerateTargets(&targets);
                 if (targets.getTargetMask() & TARGET_FLAG_UNIT)
-                    m_target = getUnit()->getWorldMapUnit(targets.getUnitTarget());
+                    m_target = getUnit()->getWorldMapUnit(targets.getUnitTargetGuid());
             }
             nextTarget = getCurrentTarget();
             if (nextTarget)

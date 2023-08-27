@@ -31,7 +31,7 @@
 bool HolyShock(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     ///\todo This function returns true on failures (invalid target, invalid spell). Verify this is the correct return value
-    Unit* target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->getUnitTarget();
     if (target == nullptr)
     {
         return true;
@@ -119,7 +119,7 @@ bool HolyShock(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool JudgementLightWisdomJustice(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Unit* target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->getUnitTarget();
     if (target == nullptr)
     {
         return true;
@@ -251,7 +251,7 @@ bool RighteousDefense(uint8_t /*effectIndex*/, Spell* s)
 {
     //we will try to lure 3 enemies from our target
 
-    Unit* unitTarget = s->GetUnitTarget();
+    Unit* unitTarget = s->getUnitTarget();
 
     if (!unitTarget || !s->getUnitCaster())
         return false;

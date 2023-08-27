@@ -1494,7 +1494,7 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
                             for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
                             {
                                 Spell* curSpell = _unit->getCurrentSpell(CurrentSpellType(i));
-                                if (curSpell != nullptr && curSpell->GetUnitTarget() == m_target)
+                                if (curSpell != nullptr && curSpell->getUnitTarget() == m_target)
                                 {
                                     _unit->interruptSpellWithSpellType(CurrentSpellType(i));
                                 }

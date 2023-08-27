@@ -309,7 +309,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     {
         if (itemProto->ForcedPetId == 0)
         {
-            if (targets.getUnitTarget() != _player->getGuid())
+            if (targets.getUnitTargetGuid() != _player->getGuid())
             {
                 _player->sendCastFailedPacket(spellInfo->getId(), SPELL_FAILED_BAD_TARGETS, srlPacket.castCount, 0);
                 return;

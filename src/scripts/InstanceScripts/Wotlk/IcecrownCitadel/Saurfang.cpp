@@ -1252,7 +1252,7 @@ SpellScriptCheckDummy GenericBloodLinkTrigger::onDummyOrScriptedEffect(Spell* sp
         return SpellScriptCheckDummy::DUMMY_NOT_HANDLED;
 
     auto* const saurfang = spell->getUnitCaster();
-    auto* const unitTarget = spell->GetUnitTarget();
+    auto* const unitTarget = spell->getUnitTarget();
     const auto spellId = spell->getSpellInfo()->calculateEffectValue(effIndex);
     if (saurfang != nullptr && unitTarget != nullptr)
         unitTarget->castSpell(saurfang, spellId, true);
@@ -1347,8 +1347,8 @@ void BloodNova::filterEffectTargets(Spell* spell, uint8_t effIndex, std::vector<
 
 SpellScriptCheckDummy BloodNova::onDummyOrScriptedEffect(Spell* spell, uint8_t /*effIndex*/)
 {
-    if (spell->getUnitCaster() != nullptr && spell->GetUnitTarget() != nullptr)
-        spell->getUnitCaster()->castSpell(spell->GetUnitTarget(), SPELL_BLOOD_NOVA_DAMAGE, true);
+    if (spell->getUnitCaster() != nullptr && spell->getUnitTarget() != nullptr)
+        spell->getUnitCaster()->castSpell(spell->getUnitTarget(), SPELL_BLOOD_NOVA_DAMAGE, true);
 
     return SpellScriptCheckDummy::DUMMY_OK;
 }
@@ -1380,7 +1380,7 @@ SpellScriptExecuteState BloodLinkDummy::onDoProcEffect(SpellProc* spellProc, Uni
 
 SpellCastResult BloodLinkDummy::onCanCast(Spell* spell, uint32_t* /*parameter1*/, uint32_t* /*parameter2*/)
 {
-    const auto* const target = spell->GetUnitTarget();
+    const auto* const target = spell->getUnitTarget();
     if (target == nullptr)
         return SPELL_FAILED_BAD_TARGETS;
 
@@ -1394,8 +1394,8 @@ SpellCastResult BloodLinkDummy::onCanCast(Spell* spell, uint32_t* /*parameter1*/
 SpellScriptCheckDummy BloodLinkDummy::onDummyOrScriptedEffect(Spell* spell, uint8_t /*effIndex*/)
 {
     // On dummy effect, cast 72195 on spell target
-    if (spell->GetUnitTarget() != nullptr)
-        spell->GetUnitTarget()->castSpell(spell->GetUnitTarget(), SPELL_BLOOD_LINK_POWER, true);
+    if (spell->getUnitTarget() != nullptr)
+        spell->getUnitTarget()->castSpell(spell->getUnitTarget(), SPELL_BLOOD_LINK_POWER, true);
 
     return SpellScriptCheckDummy::DUMMY_OK;
 }
@@ -1417,10 +1417,10 @@ SpellScriptCheckDummy BloodLinkEnergize::onDummyOrScriptedEffect(Spell* spell, u
 /// Spell: Remove Marks of The Fallen
 SpellScriptCheckDummy RemoveMarksOfTheFallen::onDummyOrScriptedEffect(Spell* spell, uint8_t effIndex)
 {
-    if (spell->GetUnitTarget() != nullptr)
+    if (spell->getUnitTarget() != nullptr)
     {
         const auto spellId = spell->getSpellInfo()->calculateEffectValue(effIndex);
-        spell->GetUnitTarget()->removeAllAurasById(spellId);
+        spell->getUnitTarget()->removeAllAurasById(spellId);
     }
 
     return SpellScriptCheckDummy::DUMMY_OK;

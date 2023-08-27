@@ -475,7 +475,7 @@ bool FelStreakEffect(uint8_t effectIndex, Spell* pSpell)
     if (effectIndex == EFF_INDEX_0)
     {
         uint32_t spellId = pSpell->damage;
-        pSpell->getUnitCaster()->castSpell(pSpell->GetUnitTarget(), spellId, true);
+        pSpell->getUnitCaster()->castSpell(pSpell->getUnitTarget(), spellId, true);
     }
 
     return true;

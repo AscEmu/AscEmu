@@ -56,7 +56,7 @@ bool Preparation(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool Shiv(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Unit* pTarget = pSpell->GetUnitTarget();
+    Unit* pTarget = pSpell->getUnitTarget();
     if (!pSpell->getPlayerCaster() || !pTarget) return true;
 
     pSpell->getPlayerCaster()->castSpell(pTarget->getGuid(), 5940, true);
@@ -90,7 +90,7 @@ bool ImprovedSprint(uint8_t effectIndex, Spell* pSpell)
 {
     if (effectIndex == 0)
     {
-        Unit* target = pSpell->GetUnitTarget();
+        Unit* target = pSpell->getUnitTarget();
         if (target == NULL)
             return true;
 
@@ -109,7 +109,7 @@ bool ImprovedSprint(uint8_t effectIndex, Spell* pSpell)
 
 bool CloakOfShadows(uint8_t /*effectIndex*/, Spell* s)
 {
-    Unit* unitTarget = s->GetUnitTarget();
+    Unit* unitTarget = s->getUnitTarget();
 
     if (!unitTarget || !unitTarget->isAlive())
         return false;

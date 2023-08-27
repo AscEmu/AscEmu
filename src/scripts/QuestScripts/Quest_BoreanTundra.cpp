@@ -612,7 +612,7 @@ bool PlaceCart(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pPlayer == nullptr)
         return true;
 
-    Creature* pCreature = pSpell->GetTargetConstraintCreature();
+    Creature* pCreature = pSpell->getTargetConstraintCreature();
     auto* questLog = pPlayer->getQuestLogByQuestId(11897);
     if (questLog == nullptr)
         return true;
@@ -666,7 +666,7 @@ bool PlaceOil(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pPlayer == nullptr)
         return true;
 
-    Creature* pCreature = pSpell->GetTargetConstraintCreature();
+    Creature* pCreature = pSpell->getTargetConstraintCreature();
     auto* questLog = pPlayer->getQuestLogByQuestId(11715);
     if (questLog == nullptr)
         return true;

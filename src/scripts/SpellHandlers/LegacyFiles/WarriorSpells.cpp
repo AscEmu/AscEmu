@@ -27,13 +27,13 @@
 
 bool Execute(uint8_t effectIndex, Spell* pSpell)
 {
-    if (pSpell->getPlayerCaster() == NULL || pSpell->GetUnitTarget() == NULL)
+    if (pSpell->getPlayerCaster() == NULL || pSpell->getUnitTarget() == NULL)
     {
         return true;
     }
 
     Player* Caster = pSpell->getPlayerCaster();
-    Unit* Target = pSpell->GetUnitTarget();
+    Unit* Target = pSpell->getUnitTarget();
 
     uint32_t rage = Caster->getPower(POWER_TYPE_RAGE);
 
@@ -146,7 +146,7 @@ bool Charge(uint8_t effectIndex, Spell* s)
 
 bool LastStand(uint8_t /*effectIndex*/, Spell* s)
 {
-    Player* playerTarget = s->GetPlayerTarget();
+    Player* playerTarget = s->getPlayerTarget();
 
     if (!playerTarget)
     {

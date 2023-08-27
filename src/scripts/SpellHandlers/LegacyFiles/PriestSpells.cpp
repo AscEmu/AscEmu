@@ -26,10 +26,10 @@
 bool Penance(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (!pSpell->getPlayerCaster() || !pSpell->getPlayerCaster()->isAlive() ||
-        !pSpell->GetUnitTarget() || !pSpell->GetUnitTarget()->isAlive())
+        !pSpell->getUnitTarget() || !pSpell->getUnitTarget()->isAlive())
         return true;
 
-    Unit* target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->getUnitTarget();
     Player* player = pSpell->getPlayerCaster();
 
     // index 0 contains the spell for the first tick, index 1 is the peroidic cast spell.
@@ -88,7 +88,7 @@ bool PainAndSufferingProc(uint8_t /*effectIndex*/, Spell* pSpell)
     if (caster == NULL)
         return true;
 
-    Unit* target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->getUnitTarget();
     if (target == NULL)
         return true;
 

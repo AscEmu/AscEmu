@@ -155,8 +155,8 @@ public:
 
     SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t /*effIndex*/, int32_t* damage) override
     {
-        if (spell->GetUnitTarget() != nullptr)
-            *damage = static_cast<int32_t>(std::round(spell->GetUnitTarget()->getMaxHealth() * static_cast<float_t>(*damage / 100.0f)));
+        if (spell->getUnitTarget() != nullptr)
+            *damage = static_cast<int32_t>(std::round(spell->getUnitTarget()->getMaxHealth() * static_cast<float_t>(*damage / 100.0f)));
 
         // no healing bonuses
         return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;

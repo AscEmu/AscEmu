@@ -274,18 +274,18 @@ namespace LuaSpell
             return 1;
         }
 
-        if (sp->m_targets.getUnitTarget())
+        if (sp->m_targets.getUnitTargetGuid())
         {
-            PUSH_UNIT(L, sp->getCaster()->getWorldMap()->getUnit(sp->m_targets.getUnitTarget()));
+            PUSH_UNIT(L, sp->getCaster()->getWorldMap()->getUnit(sp->m_targets.getUnitTargetGuid()));
             return 1;
         }
         
-        if (sp->m_targets.getItemTarget())
+        if (sp->m_targets.getItemTargetGuid())
         {
             if (!sp->getPlayerCaster())
             {
                 lua_pushnil(L);
-                PUSH_ITEM(L, sp->getPlayerCaster()->getItemInterface()->GetItemByGUID(sp->m_targets.getItemTarget()));
+                PUSH_ITEM(L, sp->getPlayerCaster()->getItemInterface()->GetItemByGUID(sp->m_targets.getItemTargetGuid()));
                 return 1;
             }
         }

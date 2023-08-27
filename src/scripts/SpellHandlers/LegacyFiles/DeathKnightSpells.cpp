@@ -72,10 +72,10 @@ bool Pestilence(uint8_t effectIndex, Spell* pSpell)
 
 bool DeathStrike(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->getPlayerCaster() == NULL || pSpell->GetUnitTarget() == NULL)
+    if (pSpell->getPlayerCaster() == NULL || pSpell->getUnitTarget() == NULL)
         return true;
 
-    Unit* Target = pSpell->GetUnitTarget();
+    Unit* Target = pSpell->getUnitTarget();
 
     // Get count of diseases on target which were casted by caster
     uint32_t count = Target->getAuraCountWithDispelType(DISPEL_DISEASE, pSpell->getPlayerCaster()->getGuid());
@@ -170,7 +170,7 @@ bool RaiseDead(uint8_t /*effectIndex*/, Spell* s)
 
 bool DeathGrip(uint8_t effectIndex, Spell* s)
 {
-    Unit* unitTarget = s->GetUnitTarget();
+    Unit* unitTarget = s->getUnitTarget();
 
     if (!s->getUnitCaster() || !s->getUnitCaster()->isAlive() || !unitTarget || !unitTarget->isAlive())
         return false;
@@ -252,7 +252,7 @@ bool DeathGrip(uint8_t effectIndex, Spell* s)
 
 bool DeathCoil(uint8_t /*effectIndex*/, Spell* s)
 {
-    Unit* unitTarget = s->GetUnitTarget();
+    Unit* unitTarget = s->getUnitTarget();
 
     if (s->getPlayerCaster() == NULL || unitTarget == NULL)
         return false;

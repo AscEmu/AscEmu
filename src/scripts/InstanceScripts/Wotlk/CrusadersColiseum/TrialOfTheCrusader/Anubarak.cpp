@@ -607,7 +607,7 @@ bool PermafrostDummySpell(uint8_t effectIndex, Spell* pSpell)
     // always check spellid and effectindex
     if (pSpell->getSpellInfo()->getId() == anubarak::SPELL_PERMAFROST_DUMMY && effectIndex == EFF_INDEX_0)
     {
-        Unit* target = pSpell->GetUnitTarget();
+        Unit* target = pSpell->getUnitTarget();
         if (target && target->isCreature())
         {
             if (SpikeAI* pSpikeAI = dynamic_cast<SpikeAI*>(target->ToCreature()->GetScript()))

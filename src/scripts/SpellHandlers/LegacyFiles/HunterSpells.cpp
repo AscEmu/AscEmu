@@ -28,7 +28,7 @@
 
 bool Refocus(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Player* playerTarget = pSpell->GetPlayerTarget();
+    Player* playerTarget = pSpell->getPlayerTarget();
     if (playerTarget == 0) return true;
 
     SpellSet::const_iterator itr = playerTarget->m_spells.begin();
@@ -256,7 +256,7 @@ public:
 
 bool ChimeraShot(uint8_t /*effectIndex*/, Spell *spell)
 {
-    Unit *target = spell->GetUnitTarget();
+    Unit *target = spell->getUnitTarget();
 
     HasNameHash condition;
     ChimeraShotAction action;

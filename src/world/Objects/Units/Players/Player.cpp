@@ -2079,7 +2079,7 @@ void Player::zoneUpdate(uint32_t zoneId)
                 {
                     if (getCurrentSpell(CurrentSpellType(i)) != nullptr)
                     {
-                        Unit* target = getCurrentSpell(CurrentSpellType(i))->GetUnitTarget();
+                        Unit* target = getCurrentSpell(CurrentSpellType(i))->getUnitTarget();
                         if (target != nullptr && target != m_duelPlayer && target != this)
                         {
                             interruptSpellWithSpellType(CurrentSpellType(i));
@@ -7238,7 +7238,7 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t /*spellId*/)
                 if (attacker->getCurrentSpell(static_cast<CurrentSpellType>(i)) == nullptr)
                     continue;
 
-                if (attacker->getCurrentSpell(static_cast<CurrentSpellType>(i))->m_targets.getUnitTarget() == getGuid())
+                if (attacker->getCurrentSpell(static_cast<CurrentSpellType>(i))->m_targets.getUnitTargetGuid() == getGuid())
                     attacker->interruptSpellWithSpellType(static_cast<CurrentSpellType>(i));
             }
         }
