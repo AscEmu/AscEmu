@@ -20,6 +20,7 @@
 #pragma once
 
 #include "Management/ItemInterface.h"
+#include "Objects/Item.hpp"
 
 #define GET_SPELLVAR_INT(proto,offset,subindex) *(int*)((char*)(proto) + (offset) + (subindex))
 #define GET_SPELLVAR_CHAR(proto,offset,subindex) *(char**)((char*)(proto) + (offset) + (subindex))

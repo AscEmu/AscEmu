@@ -47,7 +47,7 @@
 #include "SpellMgr.hpp"
 #include "SpellAura.hpp"
 #include "Definitions/SpellEffects.hpp"
-#include "Management/TaxiMgr.h"
+#include "Management/TaxiMgr.hpp"
 #include "Server/World.h"
 #include "Server/Packets/SmsgSpellFailure.h"
 #include "Server/Packets/SmsgSpellFailedOther.h"

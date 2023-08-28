@@ -5,9 +5,15 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Management/TaxiMgr.h"
-#include "Objects/Item.hpp"
-#include "Objects/Units/Unit.hpp"
+class Aura;
+class QueryResult;
+class Field;
+class Spell;
+class WorldPacket;
+class GameObject;
+class Unit;
+class Item;
+class TaxiPath;
 
 extern "C"
 {

@@ -5,6 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "LuaHelpers.h"
 
+#include <cstdlib>
+#include <string.h>
+
 int LuaHelpers::ExtractfRefFromCString(lua_State* L, const char* functionName)
 {
     auto functionRef = 0;

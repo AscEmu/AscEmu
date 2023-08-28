@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Server/WorldSession.h"
-#include "Management/TaxiMgr.h"
+#include "Management/TaxiMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/CmsgTaxiQueryAvailableNodes.h"
 #include "Server/Packets/CmsgEnabletaxi.h"
@@ -14,7 +14,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgActivatetaxireply.h"
 #include "Server/Packets/CmsgActivatetaxiexpress.h"
 #include "Server/Packets/CmsgActivatetaxi.h"
-#include "Map/Management/MapMgr.hpp"
 #include "Movement/MovementManager.h"
 #include "Server/Packets/SmsgNewTaxiPath.h"
 #include "Movement/MovementGenerators/FlightPathMovementGenerator.h"

@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Map/Cells/CellHandler.hpp"
-#include "Management/WorldStatesHandler.h"
+#include "Management/WorldStatesHandler.hpp"
 #include "DynamicTree.h"
 #include "Server/EventableObject.h"
 

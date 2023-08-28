@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "AlteracValley.h"
 
 #include "Management/HonorHandler.h"
-#include "Management/WorldStates.h"
+#include "Management/WorldStates.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/GameObjectProperties.hpp"

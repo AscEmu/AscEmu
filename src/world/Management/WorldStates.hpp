@@ -1,26 +1,12 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-#ifndef WORLDSTATES_H
-#define WORLDSTATES_H
+#pragma once
 
-enum WorldStates{
+enum WorldStates
+{
     WORLDSTATE_AV_STONEHEARTH_GRAVE_HORDE_CONTROLLED                     = 1301,
     WORLDSTATE_AV_STONEHEARTH_GRAVE_ALLIANCE_CONTROLLED                  = 1302,
     WORLDSTATE_AV_STONEHEARTH_GRAVE_HORDE_ASSAULTING                     = 1303,
@@ -404,6 +390,3 @@ enum WorldStates{
     WORLDSTATE_SOTA_SHOW_HORDE_ROUND                                     = 4353, // Horder attacks, Alliance defends
     WORLDSTATE_WG_SHOW_NEXT_BATTLE                                       = 4354, // unixtime of next battle (shows it as time left in the UI)
 };
-
-
-#endif         // WORLDSTATES_H

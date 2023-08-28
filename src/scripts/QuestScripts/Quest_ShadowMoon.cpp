@@ -21,6 +21,7 @@
 
 #include "Setup.h"
 #include "Management/ItemInterface.h"
+#include "Management/ObjectMgr.hpp"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Gossip/GossipScript.hpp"

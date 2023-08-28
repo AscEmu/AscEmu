@@ -20,7 +20,7 @@
 #include "IsleOfConquest.h"
 
 #include "Chat/ChatDefines.hpp"
-#include "Management/WorldStates.h"
+#include "Management/WorldStates.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
 #include "Objects/GameObjectProperties.hpp"
 #include "Server/Master.h"

@@ -1,96 +1,86 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-#include "WorldStatesHandler.h"
+#include "WorldStatesHandler.hpp"
+
+#include "ObjectMgr.hpp"
+#include "WorldPacket.h"
 #include "Server/World.h"
-#include "Management/ObjectMgr.hpp"
 
-void WorldStatesHandler::SetWorldStateForZone(uint32 zone, uint32 /*area*/, uint32 field, uint32 value)
+WorldStatesHandler::WorldStatesHandler(uint32_t _mapid) : m_map(_mapid) { }
+
+void WorldStatesHandler::SetWorldStateForZone(uint32_t _zone, uint32_t /*area*/, uint32_t _field, uint32_t _value)
 {
-    std::unordered_map< uint32, std::unordered_map< uint32, uint32 > >::iterator itr = worldstates.find(zone);
-    if (itr == worldstates.end())
+    const auto itr = m_worldStates.find(_zone);
+    if (itr == m_worldStates.end())
         return;
 
-    std::unordered_map< uint32, uint32 >::iterator itr2 = itr->second.find(field);
+    const auto itr2 = itr->second.find(_field);
     if (itr2 == itr->second.end())
         return;
 
-    itr2->second = value;
+    itr2->second = _value;
 
-    if (observer != NULL)
-        observer->onWorldStateUpdate(zone, field, value);
+    if (m_observer != nullptr)
+        m_observer->onWorldStateUpdate(_zone, _field, _value);
 }
 
-uint32 WorldStatesHandler::GetWorldStateForZone(uint32 zone, uint32 /*area*/, uint32 field) const
+uint32_t WorldStatesHandler::GetWorldStateForZone(uint32_t _zone, uint32_t /*area*/, uint32_t _field) const
 {
-    std::unordered_map< uint32, std::unordered_map< uint32, uint32 > >::const_iterator itr = worldstates.find(zone);
-    if (itr == worldstates.end())
+    const auto itr = m_worldStates.find(_zone);
+    if (itr == m_worldStates.end())
         return 0;
 
-    std::unordered_map< uint32, uint32 >::const_iterator itr2 = itr->second.find(field);
+    const auto itr2 = itr->second.find(_field);
     if (itr2 == itr->second.end())
         return 0;
 
     return itr2->second;
 }
 
-void WorldStatesHandler::BuildInitWorldStatesForZone(uint32 zone, uint32 area, WorldPacket &data) const{
-    data << uint32(map);
-    data << uint32(zone);
-    data << uint32(area);
+void WorldStatesHandler::BuildInitWorldStatesForZone(uint32_t _zone, uint32_t _area, WorldPacket& _data) const
+{
+    _data << uint32_t(m_map);
+    _data << uint32_t(_zone);
+    _data << uint32_t(_area);
 
-    std::unordered_map< uint32, std::unordered_map< uint32, uint32 > >::const_iterator itr = worldstates.find(zone);
-
-    if (itr != worldstates.end())
+    const auto itr = m_worldStates.find(_zone);
+    if (itr != m_worldStates.end())
     {
-        data << uint16(2 + itr->second.size());
+        _data << uint16_t(2 + itr->second.size());
 
-        for (std::unordered_map< uint32, uint32 >::const_iterator itr2 = itr->second.begin(); itr2 != itr->second.end(); ++itr2)
+        for (auto itr2 = itr->second.begin(); itr2 != itr->second.end(); ++itr2)
         {
-            data << uint32(itr2->first);
-            data << uint32(itr2->second);
+            _data << uint32_t(itr2->first);
+            _data << uint32_t(itr2->second);
         }
-
     }
     else
     {
-        data << uint16(2);
+        _data << uint16_t(2);
     }
 
 #if VERSION_STRING > TBC
-    data << uint32(3191);
-    data << uint32(worldConfig.arena.arenaSeason);
-    data << uint32(3901);
-    data << uint32(worldConfig.arena.arenaProgress);
+    _data << uint32_t(3191);
+    _data << uint32_t(worldConfig.arena.arenaSeason);
+    _data << uint32_t(3901);
+    _data << uint32_t(worldConfig.arena.arenaProgress);
 #endif
 }
 
-void WorldStatesHandler::InitWorldStates(std::shared_ptr<WorldStateMap> states)
+void WorldStatesHandler::InitWorldStates(std::shared_ptr<std::multimap<uint32_t, WorldState>> _states)
 {
-    if (states == nullptr)
+    if (_states == nullptr)
         return;
 
-    for (std::multimap< uint32, WorldState >::iterator itr = states->begin(); itr != states->end(); ++itr)
+    for (auto itr = _states->begin(); itr != _states->end(); ++itr)
     {
-        uint32 zone = itr->first;
-        worldstates[zone];
-        worldstates[zone].insert(std::pair< uint32, uint32 >(itr->second.field, itr->second.value));
+        uint32_t zone = itr->first;
+        m_worldStates[zone];
+        m_worldStates[zone].insert(std::pair(itr->second.field, itr->second.value));
     }
 }
+
+void WorldStatesHandler::setObserver(WorldStatesObserver* _observer){ m_observer = _observer; }

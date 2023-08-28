@@ -149,6 +149,8 @@ struct SERVER_DECL TransportAnimation
 
 typedef std::map<uint32_t, TransportAnimation> TransportAnimationContainer;
 
+class Player;
+
 class SERVER_DECL TransportHandler
 {
 public:

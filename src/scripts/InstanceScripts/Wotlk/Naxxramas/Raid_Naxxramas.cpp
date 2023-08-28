@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Raid_Naxxramas.h"
 
 #include "Setup.h"
+#include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/InstanceScript.hpp"
 

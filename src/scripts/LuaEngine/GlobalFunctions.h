@@ -24,7 +24,7 @@
 #include "LUAEngine.h"
 #include "git_version.h"
 #include "Chat/CommandTableStorage.hpp"
-#include "Management/TaxiMgr.h"
+#include "Management/TaxiMgr.hpp"
 #include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
 #include "Management/MailMgr.h"

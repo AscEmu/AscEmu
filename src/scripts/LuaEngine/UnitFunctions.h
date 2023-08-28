@@ -15,7 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/WeatherMgr.hpp"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Guild/GuildMgr.hpp"
-#include "Management/TaxiMgr.h"
+#include "Management/TaxiMgr.hpp"
 #include "Map/AreaBoundary.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/MapScriptInterface.h"

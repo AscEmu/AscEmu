@@ -32,7 +32,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObject.h"
 #include "Management/ObjectMgr.hpp"
 #include "Management/QuestMgr.h"
-#include "Management/TaxiMgr.h"
+#include "Management/TaxiMgr.hpp"
 #include "Management/WeatherMgr.hpp"
 #include "Management/Tickets/TicketMgr.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"

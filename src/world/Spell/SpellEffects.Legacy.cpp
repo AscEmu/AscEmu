@@ -28,7 +28,7 @@
 #include "Management/HonorHandler.h"
 #include "Objects/Item.hpp"
 #include "Objects/Container.hpp"
-#include "Management/TaxiMgr.h"
+#include "Management/TaxiMgr.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/ItemProperties.hpp"
 #include "Management/Skill.hpp"

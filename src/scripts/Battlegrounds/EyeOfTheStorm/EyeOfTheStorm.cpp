@@ -23,7 +23,7 @@
 #include "CommonDefines.hpp"
 #include "Chat/ChatDefines.hpp"
 #include "Management/HonorHandler.h"
-#include "Management/WorldStates.h"
+#include "Management/WorldStates.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
 #include "Objects/GameObjectProperties.hpp"
 #include "Server/Master.h"

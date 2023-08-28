@@ -23,6 +23,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/InstanceScript.hpp"
 #include "Server/Script/QuestScript.hpp"
 #include "Management/QuestProperties.hpp"
+#include "Objects/Item.hpp"
 #include "Spell/Spell.hpp"
 
 #ifdef __APPLE__
