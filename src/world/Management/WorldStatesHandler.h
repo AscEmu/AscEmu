@@ -25,6 +25,7 @@
 #include "ObjectMgr.hpp"
 
 struct WorldState;
+class WorldPacket;
 
 class SERVER_DECL WorldStatesHandler
 {
