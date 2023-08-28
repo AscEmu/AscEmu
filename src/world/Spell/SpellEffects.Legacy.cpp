@@ -879,7 +879,7 @@ void Spell::SpellEffectInstantKill(uint8_t /*effectIndex*/)
         if (!p_caster || !m_unitTarget || !m_unitTarget->isPet())
             return;
 
-        //TO< Pet* >(unitTarget)->Dismiss(true);
+        //TO< Pet* >(m_unitTarget)->Dismiss(true);
 
         SpellInfo const* se = sSpellMgr.getSpellInfo(5);
 
@@ -899,7 +899,7 @@ void Spell::SpellEffectInstantKill(uint8_t /*effectIndex*/)
     }
 
     //instant kill effects don't have a log
-    //m_caster->SpellNonMeleeDamageLog(unitTarget, GetProto()->getId(), unitTarget->getHealth(), true);
+    //m_caster->SpellNonMeleeDamageLog(m_unitTarget, GetProto()->getId(), m_unitTarget->getHealth(), true);
     // cebernic: the value of instant kill must be higher than normal health,cuz anti health regenerated.
     if (u_caster != nullptr)
         u_caster->dealDamage(m_unitTarget, m_unitTarget->getHealth() << 1, 0);
@@ -1479,7 +1479,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                 /* Possibly broken (infinity loop) -- ask Zyres
                 if (p_caster != nullptr)
                 {
-                    if (unitTarget->isDazed())
+                    if (m_unitTarget->isDazed())
                         for (uint32 i = UNIT_FIELD_AURASTATE; i < AURASTATE_FLAG_SWIFTMEND; i)
                         {
                             switch (m_spellInfo->getId())
@@ -1608,7 +1608,7 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                     uint32 stundmg;
                     float bowdmg;
                     float ammodmg;
-                    if (unitTarget->isDazed())
+                    if (m_unitTarget->isDazed())
                         stundmg = p_caster->getCalculatedRangedAttackPower() / 10 + m_spellInfo->getEffectBasePoints(effectIndex) + m_spellInfo->getEffectBasePoints(effectIndex + 1);
                     else
                         stundmg = p_caster->getCalculatedRangedAttackPower() / 10 + m_spellInfo->getEffectBasePoints(effectIndex);
@@ -1819,9 +1819,9 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
 #ifdef GM_Z_DEBUG_DIRECTLY
     else
     {
-        if (unitTarget->isPlayer() && unitTarget->IsInWorld() && TO< Player* >(unitTarget)->getSession() && TO< Player* >(unitTarget)->getSession()->CanUseCommand('z'))
+        if (m_unitTarget->isPlayer() && m_unitTarget->IsInWorld() && TO< Player* >(m_unitTarget)->getSession() && TO< Player* >(m_unitTarget)->getSession()->CanUseCommand('z'))
         {
-            sChatHandler.BlueSystemMessage(TO< Player* >(unitTarget)->getSession(), "[%sSystem%s] |rSpell::SpellEffectApplyAura: %s EffectApplyAuraName [%u] .", MSG_COLOR_WHITE, MSG_COLOR_LIGHTBLUE, MSG_COLOR_SUBWHITE,
+            sChatHandler.BlueSystemMessage(TO< Player* >(m_unitTarget)->getSession(), "[%sSystem%s] |rSpell::SpellEffectApplyAura: %s EffectApplyAuraName [%u] .", MSG_COLOR_WHITE, MSG_COLOR_LIGHTBLUE, MSG_COLOR_SUBWHITE,
                                            i);
         }
     }
@@ -2477,8 +2477,8 @@ void Spell::SpellEffectDodge(uint8_t /*effectIndex*/)
     //i think this actually enables the skill to be able to dodge melee+ranged attacks
     //value is static and sets value directly which will be modified by other factors
     //this is only basic value and will be overwritten elsewhere !!!
-    //  if (unitTarget->isPlayer())
-    //      unitTarget->SetFloatValue(PLAYER_DODGE_PERCENTAGE,damage);
+    //  if (m_unitTarget->isPlayer())
+    //      m_unitTarget->SetFloatValue(PLAYER_DODGE_PERCENTAGE,damage);
 }
 
 void Spell::SpellEffectParry(uint8_t /*effectIndex*/)
@@ -2491,8 +2491,8 @@ void Spell::SpellEffectBlock(uint8_t /*effectIndex*/)
 {
     //i think this actually enables the skill to be able to block melee+ranged attacks
     //value is static and sets value directly which will be modified by other factors
-    //  if (unitTarget->isPlayer())
-    //      unitTarget->SetFloatValue(PLAYER_BLOCK_PERCENTAGE,damage);
+    //  if (m_unitTarget->isPlayer())
+    //      m_unitTarget->SetFloatValue(PLAYER_BLOCK_PERCENTAGE,damage);
 }
 
 void Spell::SpellEffectCreateItem(uint8_t effectIndex)
@@ -3400,12 +3400,12 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
             uint32 v = 0;
             uint32 lockskill = p_caster->getSkillLineCurrent(SKILL_LOCKPICKING);
 
-            if (itemTarget)
+            if (m_itemTarget)
             {
-                if (!itemTarget->m_isLocked)
+                if (!m_itemTarget->m_isLocked)
                     return;
 
-                auto lock = sLockStore.lookupEntry(itemTarget->getItemProperties()->LockId);
+                auto lock = sLockStore.lookupEntry(m_itemTarget->getItemProperties()->LockId);
                 if (!lock)
                     return;
 
@@ -3414,17 +3414,17 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
                     if (lock->locktype[j] == 2 && lock->minlockskill[j] && lockskill >= lock->minlockskill[j])
                     {
                         v = lock->minlockskill[j];
-                        itemTarget->m_isLocked = false;
-                        itemTarget->addFlags(ITEM_FLAG_LOOTABLE);
+                        m_itemTarget->m_isLocked = false;
+                        m_itemTarget->addFlags(ITEM_FLAG_LOOTABLE);
                         DetermineSkillUp(SKILL_LOCKPICKING, v / 5);
                         break;
                     }
                 }
             }
-            else if (gameObjTarget)
+            else if (m_gameObjTarget)
             {
-                auto gameobject_info = gameObjTarget->GetGameObjectProperties();
-                if (gameObjTarget->getState() == 0)
+                auto gameobject_info = m_gameObjTarget->GetGameObjectProperties();
+                if (m_gameObjTarget->getState() == 0)
                     return;
 
                 auto lock = sLockStore.lookupEntry(gameobject_info->raw.parameter_0);
@@ -3436,18 +3436,18 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
                     if (lock->locktype[j] == 2 && lock->minlockskill[j] && lockskill >= lock->minlockskill[j])
                     {
                         v = lock->minlockskill[j];
-                        gameObjTarget->setFlags(GO_FLAG_NONE);
-                        gameObjTarget->setState(GO_STATE_CLOSED);
+                        m_gameObjTarget->setFlags(GO_FLAG_NONE);
+                        m_gameObjTarget->setState(GO_STATE_CLOSED);
                         //Add Fill GO loot here
-                        if (gameObjTarget->IsLootable())
+                        if (m_gameObjTarget->IsLootable())
                         {
-                            GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(gameObjTarget);
+                            GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(m_gameObjTarget);
                             if (pLGO->loot.items.size() == 0)
                             {
-                                if (gameObjTarget->getWorldMap() != nullptr)
-                                    sLootMgr.fillGOLoot(p_caster, &pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, gameObjTarget->getWorldMap()->getDifficulty());
+                                if (m_gameObjTarget->getWorldMap() != nullptr)
+                                    sLootMgr.fillGOLoot(p_caster, &pLGO->loot, m_gameObjTarget->GetGameObjectProperties()->raw.parameter_1, m_gameObjTarget->getWorldMap()->getDifficulty());
                                 else
-                                    sLootMgr.fillGOLoot(p_caster, &pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, 0);
+                                    sLootMgr.fillGOLoot(p_caster, &pLGO->loot, m_gameObjTarget->GetGameObjectProperties()->raw.parameter_1, 0);
 
                                 DetermineSkillUp(SKILL_LOCKPICKING, v / 5);     //to prevent free skill up
                             }
@@ -4246,11 +4246,11 @@ void Spell::SpellEffectSummonPet(uint8_t effectIndex) //summon - pet
 
 void Spell::SpellEffectLearnPetSpell(uint8_t effectIndex)
 {
-    /*if (unitTarget && m_caster->getObjectTypeId() == TYPEID_PLAYER)
+    /*if (m_unitTarget && m_caster->getObjectTypeId() == TYPEID_PLAYER)
     {
-    if (unitTarget->isPet() && unitTarget->getObjectTypeId() == TYPEID_UNIT)
+    if (m_unitTarget->isPet() && m_unitTarget->getObjectTypeId() == TYPEID_UNIT)
     {
-    TO< Player* >(m_caster)->AddPetSpell(GetProto()->EffectTriggerSpell[i], unitTarget->getEntry());
+    TO< Player* >(m_caster)->AddPetSpell(GetProto()->EffectTriggerSpell[i], m_unitTarget->getEntry());
     }
     }*/
 
@@ -4513,7 +4513,7 @@ void Spell::SpellEffectDistract(uint8_t /*effectIndex*/) // Distract
 
     if (m_targets.getDestination().isSet())
     {
-        //      unitTarget->getAIInterface()->MoveTo(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, 0);
+        //      m_unitTarget->getAIInterface()->MoveTo(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, 0);
         uint32 Stare_duration = getDuration();
         if (Stare_duration > 30 * 60 * 1000)
             Stare_duration = 10000;//if we try to stare for more then a half an hour then better not stare at all :P (bug)
@@ -4794,9 +4794,9 @@ void Spell::SpellEffectActivateObject(uint8_t effectIndex) // Activate Object
     m_gameObjTarget->setDynamicFlags(GO_DYN_FLAG_INTERACTABLE);
 
 #if VERSION_STRING < WotLK
-    sEventMgr.AddEvent(gameObjTarget, &GameObject::setDynamicFlags, static_cast<uint32_t>(0), 0, static_cast<uint32_t>(getDuration()), 1, 0);
+    sEventMgr.AddEvent(m_gameObjTarget, &GameObject::setDynamicFlags, static_cast<uint32_t>(0), 0, static_cast<uint32_t>(getDuration()), 1, 0);
 #elif VERSION_STRING < Mop
-    sEventMgr.AddEvent(gameObjTarget, &GameObject::setDynamicFlags, static_cast<uint16_t>(0), 0, static_cast<uint32_t>(getDuration()), 1, 0);
+    sEventMgr.AddEvent(m_gameObjTarget, &GameObject::setDynamicFlags, static_cast<uint16_t>(0), 0, static_cast<uint32_t>(getDuration()), 1, 0);
 #else
     sEventMgr.AddEvent(dynamic_cast<Object*>(m_gameObjTarget), &Object::setDynamicFlags, static_cast<uint16_t>(0), 0, static_cast<uint32_t>(getDuration()), 1, 0);
 #endif
