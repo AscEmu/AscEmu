@@ -22,7 +22,7 @@
 
 #include "Chat/ChatDefines.hpp"
 #include "Management/HonorHandler.h"
-#include "Management/WorldStates.h"
+#include "Management/WorldStates.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
 #include "Objects/GameObjectProperties.hpp"
 #include "Server/Master.h"
@@ -30,6 +30,9 @@
 #include "Server/WorldSessionLog.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Management/Battleground/BattlegroundDefines.hpp"
+#include "Objects/GameObject.h"
+#include "Objects/Units/Players/Player.hpp"
+#include "Spell/Spell.hpp"
 
 WarsongGulch::WarsongGulch(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : Battleground(mgr, id, lgroup, t)
 {

@@ -21,6 +21,7 @@
 #include "Setup.h"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Gossip/GossipScript.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSession.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"

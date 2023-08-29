@@ -6,21 +6,24 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CreatureAIScript.hpp"
 
 #include "InstanceScript.hpp"
-#include "Management/Faction.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Movement/MovementManager.h"
 #include "Movement/WaypointManager.h"
 #include "Movement/Spline/MoveSplineInit.h"
+#include "Objects/GameObject.h"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Creatures/Pet.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Opcodes.hpp"
+#include "Spell/Spell.hpp"
+#include "Spell/SpellAura.hpp"
 
 CreatureAIScript::CreatureAIScript(Creature* creature) : mScriptPhase(0), summons(creature), mCreatureTimerCount(0), mAIUpdateFrequency(defaultUpdateFrequency),
-isIdleEmoteEnabled(false), idleEmoteTimerId(0), idleEmoteTimeMin(0), idleEmoteTimeMax(0), _creature(creature), linkedCreatureAI(nullptr), mCreatureAIScheduler(std::make_shared<CreatureAIFunctionScheduler>(this))
+                                                         isIdleEmoteEnabled(false), idleEmoteTimerId(0), idleEmoteTimeMin(0), idleEmoteTimeMax(0), _creature(creature), linkedCreatureAI(nullptr), mCreatureAIScheduler(std::make_shared<CreatureAIFunctionScheduler>(this))
 {
     mCreatureTimerIds.clear();
     mCreatureTimer.clear();
@@ -797,7 +800,7 @@ void CreatureAIScript::setZoneWideCombat(Creature* creature)
     {
         if (Player* plr = player.second)
         {
-            if (!plr->isAlive() || !canBeginCombat(creature, plr))
+            if (!plr->isAlive() || !creature->canBeginCombat(plr))
                 continue;
 
             creature->getAIInterface()->onHostileAction(plr);
@@ -1884,7 +1887,7 @@ bool CreatureAIScript::isValidUnitTarget(Object* pObject, TargetFilter pFilter, 
             if (!UnitTarget->getCombatHandler().isInCombat())
                 return false; // not-in-combat targets if friendly
 
-            if (isHostile(getCreature(), UnitTarget) || getCreature()->getThreatManager().getThreat(UnitTarget) > 0)
+            if (getCreature()->isHostileTo(UnitTarget) || getCreature()->getThreatManager().getThreat(UnitTarget) > 0)
                 return false;
         }
 

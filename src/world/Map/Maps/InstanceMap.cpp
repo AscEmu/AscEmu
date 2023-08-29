@@ -377,3 +377,6 @@ uint32_t InstanceMap::getMaxPlayers()
     return getBaseMap()->getMapInfo()->playerlimit;
 #endif
 }
+
+PlayerTeam InstanceMap::getTeamIdInInstance() { return instanceTeam; }
+uint32_t InstanceMap::getTeamInInstance() { return instanceTeam == TEAM_ALLIANCE ? ALLIANCE : HORDE; }

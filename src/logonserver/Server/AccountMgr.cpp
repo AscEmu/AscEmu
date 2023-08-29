@@ -101,11 +101,10 @@ void AccountMgr::addAccount(Field* field)
 
 std::shared_ptr<Account> AccountMgr::getAccountByName(std::string& Name)
 {
-    accountMgrMutex.Acquire();
+    std::lock_guard lock(accountMgrMutex);
 
     auto pAccount = _getAccountByNameLockFree(Name);
 
-    accountMgrMutex.Release();
     return pAccount;
 }
 
@@ -173,7 +172,7 @@ void AccountMgr::updateAccount(std::shared_ptr<Account> account, Field* field)
 
 void AccountMgr::reloadAccounts(bool silent)
 {
-    accountMgrMutex.Acquire();
+    std::lock_guard lock(accountMgrMutex);
 
     if (!silent)
         sLogger.info("[AccountMgr] Reloading Accounts...");
@@ -216,8 +215,6 @@ void AccountMgr::reloadAccounts(bool silent)
 
     if (!silent)
         sLogger.info("[AccountMgr] Found %u accounts.", static_cast<uint32_t>(_accountMap.size()));
-
-    accountMgrMutex.Release();
 }
 
 size_t AccountMgr::getCount() const

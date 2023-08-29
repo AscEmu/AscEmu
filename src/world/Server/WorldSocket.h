@@ -21,11 +21,11 @@
 #ifndef WORLDSOCKET_H
 #define WORLDSOCKET_H
 
-#include "FastQueue.h"
 #include "Cryptography/WowCrypt.hpp"
 #include "WorldPacket.h"
 #include "Network/Network.h"
 #include "AEVersion.hpp"
+#include "ThreadSafeQueue.hpp"
 
 #include <string>
 
@@ -58,7 +58,7 @@ class SERVER_DECL WorldSocket : public Socket
 #endif
 
     public:
-        void HandleWoWConnection(WorldPacket* recvPacket);
+        void HandleWoWConnection(std::shared_ptr<WorldPacket> recvPacket);
 
         void OnConnectTwo();
 
@@ -99,8 +99,8 @@ class SERVER_DECL WorldSocket : public Socket
 
     protected:
 
-        void _HandleAuthSession(WorldPacket* recvPacket);
-        void _HandlePing(WorldPacket* recvPacket);
+        void _HandleAuthSession(std::shared_ptr<WorldPacket> recvPacket);
+        void _HandlePing(std::shared_ptr<WorldPacket> recvPacket);
 
     private:
 
@@ -113,9 +113,8 @@ class SERVER_DECL WorldSocket : public Socket
         uint32 mRequestID;
 
         WorldSession* mSession;
-        WorldPacket* pAuthenticationPacket;
-        FastQueue<WorldPacket*, DummyLock> _queue;
-        Mutex queueLock;
+        std::shared_ptr<WorldPacket> pAuthenticationPacket;
+        ThreadSafeQueue<std::shared_ptr<WorldPacket>> _queue;
 
         WowCrypt _crypt;
         uint32 _latency;

@@ -152,15 +152,12 @@ WorldSocket::WorldSocket(SOCKET fd)
 
 WorldSocket::~WorldSocket()
 {
-    WorldPacket* pck;
-    queueLock.Acquire();
-    while ((pck = _queue.Pop()) != nullptr)
+    std::shared_ptr<WorldPacket> pck;
+    while ((pck = _queue.pop()) != nullptr)
     {
-        delete pck;
     }
-    queueLock.Release();
 
-    delete pAuthenticationPacket;
+    pAuthenticationPacket = nullptr;
 
     if (mSession)
     {
@@ -177,6 +174,14 @@ WorldSocket::~WorldSocket()
 
 void WorldSocket::OnDisconnect()
 {
+    if (!_queue.hasItems())
+        return;
+
+    std::shared_ptr<WorldPacket> pck;
+    while ((pck = _queue.pop()) != nullptr)
+    {
+    }
+
     if (mSession)
     {
         mSession->SetSocket(nullptr);
@@ -215,58 +220,42 @@ void WorldSocket::OutPacket(uint32_t opcode, size_t len, const void* data)
     if (res == OUTPACKET_RESULT_NO_ROOM_IN_BUFFER)
     {
         /* queue the packet */
-        queueLock.Acquire();
-        WorldPacket* packet = new WorldPacket(opcode, len);
+        std::shared_ptr<WorldPacket> packet = std::make_shared<WorldPacket>(opcode, len);
         if (len)
             packet->append(static_cast<const uint8_t*>(data), len);
 
-        _queue.Push(packet);
-        queueLock.Release();
+        _queue.push(packet);
     }
 }
 
 void WorldSocket::UpdateQueuedPackets()
 {
-    queueLock.Acquire();
-    if (!_queue.HasItems())
-    {
-        queueLock.Release();
+    if (!_queue.hasItems())
         return;
-    }
 
-    WorldPacket* pck;
-    while ((pck = _queue.front()) != nullptr)
+    std::shared_ptr<WorldPacket> pck;
+    while ((pck = _queue.pop()) != nullptr)
     {
-        /* try to push out as many as you can */
+        // try to push out as many as you can
         switch (_OutPacket(pck->GetOpcode(), pck->size(), pck->size() ? pck->contents() : nullptr))
         {
             case OUTPACKET_RESULT_SUCCESS:
-            {
-                delete pck;
-                _queue.pop_front();
-            }
-            break;
+                break;
 
+            // still connected
             case OUTPACKET_RESULT_NO_ROOM_IN_BUFFER:
-            {
-                /* still connected */
-                queueLock.Release();
                 return;
-            }
 
-        default:
+            // kill everything in the buffer
+            default:
             {
-                /* kill everything in the buffer */
-                while ((pck == _queue.Pop()) != 0)
+                while ((pck == _queue.pop()) != 0)
                 {
-                    delete pck;
                 }
-                queueLock.Release();
                 return;
             }
         }
     }
-    queueLock.Release();
 }
 
 #if VERSION_STRING != Mop
@@ -425,7 +414,7 @@ void WorldSocket::OnConnectTwo()
 }
 #endif
 
-void WorldSocket::_HandleAuthSession(WorldPacket* recvPacket)
+void WorldSocket::_HandleAuthSession(std::shared_ptr<WorldPacket> recvPacket)
 {
 #if VERSION_STRING == Mop
     std::string account;
@@ -827,7 +816,6 @@ void WorldSocket::Authenticate()
 #endif
         mSession->_latency = _latency;
 
-        delete pAuthenticationPacket;
         pAuthenticationPacket = nullptr;
 
         sWorld.addSession(mSession);
@@ -844,7 +832,7 @@ void WorldSocket::UpdateQueuePosition(uint32 Position)
     SendPacket(SmsgAuthResponse(0, ARST_QUEUE, Position).serialise().get());
 }
 
-void WorldSocket::_HandlePing(WorldPacket* recvPacket)
+void WorldSocket::_HandlePing(std::shared_ptr<WorldPacket> recvPacket)
 {
     uint32 ping;
     if (recvPacket->size() < 4)
@@ -969,7 +957,7 @@ void WorldSocket::OnRead()
             }
         }
 
-        WorldPacket* packet = new WorldPacket(sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), mOpcode), mSize);
+        std::shared_ptr<WorldPacket> packet = std::make_shared<WorldPacket>(sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), mOpcode), mSize);
         packet->resize(mSize);
 
         if (mRemaining > 0)
@@ -988,35 +976,30 @@ void WorldSocket::OnRead()
             case CMSG_PING:
             {
                 _HandlePing(packet);
-                delete packet;
-            }
-            break;
+            } break;
 #if VERSION_STRING >= Cata
             case MSG_WOW_CONNECTION:
             {
                 HandleWoWConnection(packet);
-            }
-            break;
+            } break;
 #endif
             case CMSG_AUTH_SESSION:
             {
                 _HandleAuthSession(packet);
-            }
-            break;
+            } break;
             default:
             {
                 if (mSession)
                     mSession->QueuePacket(packet);
                 else
-                    delete packet;
-            }
-            break;
+                    packet = nullptr;
+            } break;
         }
     }
 }
 
 #if VERSION_STRING >= Cata
-void WorldSocket::HandleWoWConnection(WorldPacket* recvPacket)
+void WorldSocket::HandleWoWConnection(std::shared_ptr<WorldPacket> recvPacket)
 {
     std::string ClientToServerMsg;
     *recvPacket >> ClientToServerMsg;
@@ -1047,7 +1030,8 @@ void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* dat
 
     if (isLogEnabled)
     {
-        mPacketLogMutex.Acquire();
+        std::lock_guard lock(mPacketLogMutex);
+
         unsigned int line = 1;
         unsigned int countpos = 0;
         uint16_t lenght = static_cast<uint16_t>(len);
@@ -1161,6 +1145,5 @@ void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* dat
 
         fprintf(mPacketLogFile, "-------------------------------------------------------------------\n\n");
         fflush(mPacketLogFile);
-        mPacketLogMutex.Release();
     }
 }

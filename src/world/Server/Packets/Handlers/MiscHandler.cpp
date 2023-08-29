@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "zlib.h"
 #include "Management/AddonMgr.h"
+#include "Management/Group.h"
 #include "Management/QuestMgr.h"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Map/Management/MapMgr.hpp"
@@ -62,6 +63,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.hpp"
 #include "Objects/Transporter.hpp"
 #include "Objects/Units/Creatures/Corpse.hpp"
+#include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
@@ -69,6 +72,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/GameObjectAIScript.hpp"
 #include "Server/Script/HookInterface.hpp"
 #include "Server/Script/InstanceScript.hpp"
+#include "Spell/Spell.hpp"
 
 using namespace AscEmu::Packets;
 

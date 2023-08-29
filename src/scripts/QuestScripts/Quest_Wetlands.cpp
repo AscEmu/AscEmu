@@ -20,8 +20,9 @@
 
 #include "Setup.h"
 #include "Management/ItemInterface.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/ScriptMgr.hpp"
-#include "Spell/Spell.h"
+#include "Spell/Spell.hpp"
 
 enum
 {

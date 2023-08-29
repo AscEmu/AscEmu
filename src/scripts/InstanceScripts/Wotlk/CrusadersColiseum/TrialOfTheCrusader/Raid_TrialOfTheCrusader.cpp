@@ -11,9 +11,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Faction_Champion.hpp"
 #include "Twin_Valkyr.hpp"
 #include "Anubarak.hpp"
+#include "Management/AchievementMgr.h"
 #include "Management/WeatherMgr.hpp"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Movement/MovementManager.h"
+#include "Objects/GameObject.h"
+#include "Objects/Units/Players/Player.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Trial Of The Crusader Instance

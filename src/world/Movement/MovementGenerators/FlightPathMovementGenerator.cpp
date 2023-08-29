@@ -15,6 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Transporter.hpp"
 #include "Movement/WaypointManager.h"
 #include "Objects/Units/Creatures/AIInterface.h"
+#include "Objects/Units/Players/Player.hpp"
 
 uint32_t FlightPathMovementGenerator::getPathAtMapEnd() const
 {

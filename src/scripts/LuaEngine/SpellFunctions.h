@@ -20,6 +20,7 @@
 #pragma once
 
 #include "Management/ItemInterface.h"
+#include "Objects/Item.hpp"
 
 #define GET_SPELLVAR_INT(proto,offset,subindex) *(int*)((char*)(proto) + (offset) + (subindex))
 #define GET_SPELLVAR_CHAR(proto,offset,subindex) *(char**)((char*)(proto) + (offset) + (subindex))
@@ -274,18 +275,18 @@ namespace LuaSpell
             return 1;
         }
 
-        if (sp->m_targets.getUnitTarget())
+        if (sp->m_targets.getUnitTargetGuid())
         {
-            PUSH_UNIT(L, sp->getCaster()->getWorldMap()->getUnit(sp->m_targets.getUnitTarget()));
+            PUSH_UNIT(L, sp->getCaster()->getWorldMap()->getUnit(sp->m_targets.getUnitTargetGuid()));
             return 1;
         }
         
-        if (sp->m_targets.getItemTarget())
+        if (sp->m_targets.getItemTargetGuid())
         {
             if (!sp->getPlayerCaster())
             {
                 lua_pushnil(L);
-                PUSH_ITEM(L, sp->getPlayerCaster()->getItemInterface()->GetItemByGUID(sp->m_targets.getItemTarget()));
+                PUSH_ITEM(L, sp->getPlayerCaster()->getItemInterface()->GetItemByGUID(sp->m_targets.getItemTargetGuid()));
                 return 1;
             }
         }
@@ -470,7 +471,7 @@ namespace LuaSpell
     {
         if (!sp)
             return 0;
-        sp->m_spellInfo_override = nullptr;
+        sp->resetSpellInfoOverride();
         return 0;
     }
 

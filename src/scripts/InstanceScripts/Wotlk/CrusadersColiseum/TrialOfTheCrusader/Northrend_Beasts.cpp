@@ -7,8 +7,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Northrend_Beasts.hpp"
 #include "Raid_TrialOfTheCrusader.hpp"
 #include "Map/AreaBoundary.hpp"
+#include "Objects/Units/Creatures/Vehicle.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/AIUtils.hpp"
 #include "Server/Script/InstanceScript.hpp"
+#include "Spell/Spell.hpp"
+#include "Spell/SpellAura.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///  Combat Stalker
@@ -1108,7 +1112,7 @@ SpellScriptExecuteState ParalyticSpray::beforeSpellEffect(Spell* spell, uint8_t 
     if (effIndex != EFF_INDEX_0)
         return SpellScriptExecuteState::EXECUTE_PREVENT;
 
-    spell->getUnitCaster()->castSpell(spell->GetUnitTarget(), Beasts::Dreadscale_Acidmaw::SPELL_PARALYTIC_TOXIN, true);
+    spell->getUnitCaster()->castSpell(spell->getUnitTarget(), Beasts::Dreadscale_Acidmaw::SPELL_PARALYTIC_TOXIN, true);
     return SpellScriptExecuteState::EXECUTE_OK;
 }
 
@@ -1151,7 +1155,7 @@ SpellScriptExecuteState BurningSpray::beforeSpellEffect(Spell* spell, uint8_t ef
     if (effIndex != EFF_INDEX_0)
         return SpellScriptExecuteState::EXECUTE_PREVENT;
 
-    spell->getUnitCaster()->castSpell(spell->GetUnitTarget(), Beasts::Dreadscale_Acidmaw::SPELL_BURNING_BILE, true);
+    spell->getUnitCaster()->castSpell(spell->getUnitTarget(), Beasts::Dreadscale_Acidmaw::SPELL_BURNING_BILE, true);
     return SpellScriptExecuteState::EXECUTE_OK;
 }
 
@@ -1162,7 +1166,7 @@ SpellScriptExecuteState BurningBile::beforeSpellEffect(Spell* spell, uint8_t eff
     if (effectIndex != EFF_INDEX_1)
         return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
 
-    spell->GetUnitTarget()->removeAllAurasByAuraEffect(SPELL_AURA_MOD_DECREASE_SPEED);
+    spell->getUnitTarget()->removeAllAurasByAuraEffect(SPELL_AURA_MOD_DECREASE_SPEED);
     return SpellScriptExecuteState::EXECUTE_PREVENT;
 }
 
@@ -1211,7 +1215,7 @@ bool ArcticBreathEffect(uint8_t effectIndex, Spell* pSpell)
     if (effectIndex == EFF_INDEX_0)
     {
         uint32_t spellId = pSpell->calculateEffect(effectIndex);
-        pSpell->getUnitCaster()->castSpell(pSpell->GetUnitTarget(), spellId, true);
+        pSpell->getUnitCaster()->castSpell(pSpell->getUnitTarget(), spellId, true);
     }
 
     return true;
@@ -1240,7 +1244,7 @@ SpellScriptExecuteState MassiceCrash::beforeSpellEffect(Spell* spell, uint8_t ef
 {
     if (effIndex == EFF_INDEX_2)
     {
-        if (Player* target = spell->GetUnitTarget()->ToPlayer())
+        if (Player* target = spell->getUnitTarget()->ToPlayer())
             if (target->getRaidDifficulty() != InstanceDifficulty::RAID_10MAN_HEROIC || target->getRaidDifficulty() != InstanceDifficulty::RAID_25MAN_HEROIC)
                 target->castSpell(target, Beasts::Icehowl::SPELL_SURGE_OF_ADRENALINE, true);
     }

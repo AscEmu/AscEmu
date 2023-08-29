@@ -17,6 +17,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Xevozz.hpp"
 #include "Zuramat.hpp"
 #include "Management/Gossip/GossipMenu.hpp"
+#include "Objects/GameObject.h"
+#include "Objects/Units/Players/Player.hpp"
+#include "Spell/Spell.hpp"
+#include "Spell/SpellAura.hpp"
 
 
 //////////////////////////////////////////////////////////////////////////////////////////

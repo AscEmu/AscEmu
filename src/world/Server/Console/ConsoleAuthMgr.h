@@ -7,14 +7,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 #include <map>
-
-#include "Threading/Mutex.h"
+#include <mutex>
 
 class ConsoleSocket;
 
 class ConsoleAuthMgr
 {
-    Mutex consoleAuthMgrLock;
+    std::mutex consoleAuthMgrLock;
     uint32_t authRequestId;
     std::map<uint32_t, ConsoleSocket*> consoleRequestMap;
 

@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_DrakTharonKeep.h"
 
+#include "Objects/GameObject.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/InstanceScript.hpp"
 #include "Storage/MySQLDataStore.hpp"

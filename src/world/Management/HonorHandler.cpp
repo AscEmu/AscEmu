@@ -20,11 +20,14 @@
  */
 
 #include "Management/HonorHandler.h"
+
+#include "Group.h"
 #include "Objects/Item.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.hpp"
 #include "Server/World.h"
 #include "Management/ObjectMgr.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/HookInterface.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Spell/SpellMgr.hpp"

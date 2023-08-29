@@ -14,15 +14,18 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObject.h"
 #include "Map/Management/MapMgr.hpp"
 #include "WoWGuid.h"
+#include "Management/Group.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Management/ItemInterface.h"
 #include "Management/ObjectMgr.hpp"
+#include "Objects/Item.hpp"
 #include "Objects/Units/Creatures/Corpse.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/World.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"
 #include "Server/Script/HookInterface.hpp"
-#include "Spell/Spell.Legacy.h"
+#include "Spell/Spell.hpp"
 #include "Storage/MySQLDataStore.hpp"
 
 using namespace AscEmu::Packets;
@@ -266,7 +269,7 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
 
             groupMembers.reserve(group->MemberCount());
 
-            group->getLock().Acquire();
+            group->getLock().lock();
             for (uint32_t i = 0; i < group->GetSubGroupCount(); i++)
             {
                 auto subGroup = group->GetSubGroup(i);
@@ -277,7 +280,7 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
                             groupMembers.push_back(loggedInPlayer);
                 }
             }
-            group->getLock().Release();
+            group->getLock().unlock();
 
             if (groupMembers.empty())
                 return;

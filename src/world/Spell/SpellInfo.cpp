@@ -9,10 +9,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellFamily.hpp"
 #include "Definitions/SpellIsFlags.hpp"
 #include "Definitions/SpellCastTargetFlags.hpp"
-#include "SpellAuras.h"
+#include "SpellAura.hpp"
 #include "SpellTarget.h"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Management/Skill.hpp"
+#include "Objects/Item.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Units/Players/Player.hpp"
 

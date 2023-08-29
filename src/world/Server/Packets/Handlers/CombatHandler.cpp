@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Map/Management/MapMgr.hpp"
-#include "Management/Faction.h"
 #include "Map/Maps/WorldMap.hpp"
 
 using namespace AscEmu::Packets;
@@ -27,7 +26,7 @@ void WorldSession::handleAttackSwingOpcode(WorldPacket& recvPacket)
     if (unitTarget == nullptr)
         return;
 
-    if (!isAttackable(_player, unitTarget) || unitTarget->isDead())
+    if (!_player->isValidTarget(unitTarget) || unitTarget->isDead())
         return;
 
     _player->smsg_AttackStart(unitTarget);

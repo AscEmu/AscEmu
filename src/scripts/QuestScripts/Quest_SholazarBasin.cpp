@@ -23,8 +23,10 @@
 #include "Management/QuestLogEntry.hpp"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Gossip/GossipScript.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSession.h"
 #include "Server/Script/CreatureAIScript.hpp"
+#include "Spell/SpellAura.hpp"
 
 enum
 {

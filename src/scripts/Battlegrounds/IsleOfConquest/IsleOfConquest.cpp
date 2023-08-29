@@ -20,11 +20,13 @@
 #include "IsleOfConquest.h"
 
 #include "Chat/ChatDefines.hpp"
-#include "Management/WorldStates.h"
+#include "Management/WorldStates.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
 #include "Objects/GameObjectProperties.hpp"
 #include "Server/Master.h"
 #include "Management/Battleground/BattlegroundDefines.hpp"
+#include "Objects/GameObject.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Storage/MySQLDataStore.hpp"
 
 // gameobject faction

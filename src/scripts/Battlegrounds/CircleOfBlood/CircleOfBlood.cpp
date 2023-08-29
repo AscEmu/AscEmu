@@ -21,6 +21,7 @@
 #include "CircleOfBlood.h"
 
 #include "Map/Maps/BattleGroundMap.hpp"
+#include "Objects/GameObject.h"
 #include "Objects/Units/Players/Player.hpp"
 
 CircleOfBlood::CircleOfBlood(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t, uint32_t players_per_side) :

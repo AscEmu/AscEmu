@@ -165,7 +165,7 @@ private:
     std::mutex auctionLock;
     std::unordered_map<uint32_t, Auction*> auctions;
 
-    Mutex removalLock;
+    std::mutex removalLock;
     std::list<Auction*> removalList;
 
     WDB::Structures::AuctionHouseEntry const* auctionHouseEntryDbc;

@@ -21,8 +21,10 @@
 #include "Management/ItemInterface.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Objects/Item.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/ScriptMgr.hpp"
-#include "Spell/SpellAuras.h"
+#include "Spell/Spell.hpp"
+#include "Spell/SpellAura.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/SpellIsFlags.hpp"
 #include "Spell/Definitions/SpellMechanics.hpp"
@@ -54,7 +56,7 @@ bool Preparation(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool Shiv(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Unit* pTarget = pSpell->GetUnitTarget();
+    Unit* pTarget = pSpell->getUnitTarget();
     if (!pSpell->getPlayerCaster() || !pTarget) return true;
 
     pSpell->getPlayerCaster()->castSpell(pTarget->getGuid(), 5940, true);
@@ -88,7 +90,7 @@ bool ImprovedSprint(uint8_t effectIndex, Spell* pSpell)
 {
     if (effectIndex == 0)
     {
-        Unit* target = pSpell->GetUnitTarget();
+        Unit* target = pSpell->getUnitTarget();
         if (target == NULL)
             return true;
 
@@ -107,7 +109,7 @@ bool ImprovedSprint(uint8_t effectIndex, Spell* pSpell)
 
 bool CloakOfShadows(uint8_t /*effectIndex*/, Spell* s)
 {
-    Unit* unitTarget = s->GetUnitTarget();
+    Unit* unitTarget = s->getUnitTarget();
 
     if (!unitTarget || !unitTarget->isAlive())
         return false;

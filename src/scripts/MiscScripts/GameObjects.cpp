@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/QuestLogEntry.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Map/Maps/WorldMap.hpp"
+#include "Objects/GameObject.h"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/Player.hpp"

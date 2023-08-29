@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStores.hpp"
 #include "GuildMgr.hpp"
 #include "Guild.hpp"
+#include "Logging/Logger.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"

@@ -15,15 +15,15 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Map/Management/MapMgr.hpp"
-#include "Management/Faction.h"
 #include "Spell/SpellMgr.hpp"
 #include "Macros/AIInterfaceMacros.hpp"
 #include "Spell/Definitions/SpellCastTargetFlags.hpp"
 #include "Spell/Definitions/SpellRanged.hpp"
 #include "Spell/Definitions/LockTypes.hpp"
-#include "Spell/Definitions/SpellIsFlags.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Pet.h"
+#include "Vehicle.hpp"
+#include "Management/Group.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Map/AreaBoundary.hpp"
@@ -34,8 +34,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Definitions.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Objects/Units/Creatures/CreatureGroups.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/World.h"
 #include "Server/Script/InstanceScript.hpp"
+#include "Spell/Spell.hpp"
+#include "Spell/SpellAura.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 
 // Random and guessed values for Internal Spell cast chance
@@ -1735,7 +1738,7 @@ void AIInterface::castSpell(Unit* caster, SpellInfo const* spellInfo, SpellCastT
             return;
 
         sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "AI DEBUG: Unit %u casting spell %u on target " I64FMT " ", caster->getEntry(),
-            spellInfo->getId(), targets.getUnitTarget());
+            spellInfo->getId(), targets.getUnitTargetGuid());
 
         //i wonder if this will lead to a memory leak :S
         Spell* nspell = sSpellMgr.newSpell(caster, spellInfo, false, nullptr);
@@ -2053,7 +2056,7 @@ void AIInterface::updateTotem(uint32_t p_time)
                 (!m_Unit->getWorldMap()->getUnit(nextTarget->getGuid()) ||
                     !nextTarget->isAlive() ||
                     !(m_Unit->isInRange(nextTarget->GetPosition(), pSpell->getSpellInfo()->custom_base_range_or_radius_sqr)) ||
-                    !isAttackable(m_Unit, nextTarget, pSpell->getSpellInfo())
+                    !m_Unit->isValidTarget(nextTarget, pSpell->getSpellInfo())
                     )
                 )
             {
@@ -2063,7 +2066,7 @@ void AIInterface::updateTotem(uint32_t p_time)
                 SpellCastTargets targets(0);
                 pSpell->GenerateTargets(&targets);
                 if (targets.getTargetMask() & TARGET_FLAG_UNIT)
-                    m_target = getUnit()->getWorldMapUnit(targets.getUnitTarget());
+                    m_target = getUnit()->getWorldMapUnit(targets.getUnitTargetGuid());
             }
             nextTarget = getCurrentTarget();
             if (nextTarget)
@@ -2229,6 +2232,12 @@ void AIInterface::atEngagementOver()
     // Remove Instance Combat
     instanceCombatProgress(false);
 }
+
+bool AIInterface::isEngaged() { return m_isEngaged; }
+bool AIInterface::isEngagedBy(Unit* who) const { return getUnit()->getThreatManager().canHaveThreatList() ? getUnit()->getThreatManager().isThreatenedBy(who, true) : getUnit()->getCombatHandler().isInPreCombatWithUnit(who); }
+
+bool AIInterface::isImmuneToNPC() { return m_Unit->hasUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT); }
+bool AIInterface::isImmuneToPC() { return m_Unit->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT); }
 
 void AIInterface::setCreatureProtoDifficulty(uint32_t entry)
 {

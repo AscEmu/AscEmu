@@ -20,7 +20,9 @@
 #pragma once
 
 #include "Setup.h"
+#include "Management/ObjectMgr.hpp"
 #include "Map/Maps/MapScriptInterface.h"
+#include "Objects/GameObject.h"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"

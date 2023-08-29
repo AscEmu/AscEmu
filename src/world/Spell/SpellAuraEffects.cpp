@@ -3,7 +3,8 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "SpellAuras.h"
+#include "Spell/Spell.hpp"
+#include "SpellAura.hpp"
 #include "Definitions/SpellFamily.hpp"
 #include "Definitions/SpellIsFlags.hpp"
 #include "Definitions/SpellTypes.hpp"
@@ -11,9 +12,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemInterface.h"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Management/ObjectMgr.hpp"
+#include "Objects/Item.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Creatures/Pet.h"
+#include "Objects/Units/Players/Player.hpp"
 
 pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
 {

@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "AchievementMgr.h"
 
+#include "Group.h"
 #include "MailMgr.h"
 #include "QuestProperties.hpp"
 #include "Macros/AIInterfaceMacros.hpp"
@@ -15,8 +16,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Map/Management/MapMgr.hpp"
-#include "Management/Faction.h"
 #include "Map/Maps/WorldMap.hpp"
+#include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"
 #include "Spell/Definitions/SpellMechanics.hpp"
@@ -28,6 +30,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgCriteriaUpdate.h"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Script/ScriptMgr.hpp"
+#include "Objects/Units/Players/Player.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -660,7 +663,7 @@ void AchievementMgr::updateAchievementCriteria(AchievementCriteriaTypes _type, i
                     case 247: // Make Love, Not Warcraft
                     {
                         Player* pTarget = sObjectMgr.getPlayer(static_cast<uint32_t>(selectedGUID));
-                        if (pTarget && pTarget->isDead() && isHostile(pTarget, getPlayer()))
+                        if (pTarget && pTarget->isDead() && pTarget->isHostileTo(getPlayer()))
                             updateCriteriaProgress(achievementCriteria, 1);
                     }
                     break;

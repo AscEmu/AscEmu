@@ -4,11 +4,15 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "SpellMgr.hpp"
+
+#include "Spell/Spell.hpp"
+#include "SpellAura.hpp"
 #include "Spell/Definitions/AuraEffects.hpp"
 #include "Spell/Definitions/SpellDamageType.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Spell/Definitions/SpellFamily.hpp"
 #include "Map/Area/AreaStorage.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/Definitions.h"
 #include "Storage/MySQLDataStore.hpp"
@@ -93,7 +97,7 @@ void SpellMgr::initialize()
 
     for (auto& itr : mSpellInfoMapStore)
     {
-        auto spellInfo = &itr.second;
+        auto spellInfo = itr.second;
 
         // Custom values
         // todo: if possible, get rid of these
@@ -134,7 +138,7 @@ void SpellMgr::calculateSpellCoefficients()
 {
     for (auto& itr : mSpellInfoMapStore)
     {
-        auto spellInfo = &itr.second;
+        auto spellInfo = itr.second;
         setSpellCoefficient(spellInfo);
     }
 }
@@ -435,7 +439,7 @@ SpellInfo const* SpellMgr::getSpellInfo(const uint32_t spellId) const
 {
     const auto itr = getSpellInfoMap()->find(spellId);
     if (itr != getSpellInfoMap()->end())
-        return &itr->second;
+        return itr->second;
 
     return nullptr;
 }
@@ -475,7 +479,7 @@ void SpellMgr::loadSpellInfoData()
             continue;
 
         auto spell_id = dbcSpellEntry->Id;
-        SpellInfo& spellInfo = mSpellInfoMapStore[spell_id];
+        SpellInfo& spellInfo = *mSpellInfoMapStore[spell_id];
 
         spellInfo.setId(spell_id);
         spellInfo.setAttributes(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->Attributes : 0);
@@ -691,7 +695,7 @@ void SpellMgr::loadSpellInfoData()
             continue;
 
         auto spell_id = dbcSpellEntry->Id;
-        SpellInfo& spellInfo = mSpellInfoMapStore[spell_id];
+        SpellInfo& spellInfo = *mSpellInfoMapStore[spell_id];
 
         spellInfo.setId(spell_id);
         spellInfo.setAttributes(dbcSpellEntry->Attributes);
@@ -2063,7 +2067,7 @@ SpellInfo* SpellMgr::getMutableSpellInfo(const uint32_t spellId)
 {
     const auto itr = getSpellInfoMap()->find(spellId);
     if (itr != getSpellInfoMap()->end())
-        return const_cast<SpellInfo*>(&itr->second);
+        return itr->second;
 
     return nullptr;
 }

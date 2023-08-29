@@ -3,11 +3,14 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Logging/Logger.hpp"
+#include "Spell/SpellInfo.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/AuraEffects.hpp"
 #include "Spell/Definitions/DiminishingGroup.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Spell/Definitions/SpellIsFlags.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 //\brief: This file includes all old setted custom values or spell.dbc overwrite values
 // If possible, these should be get rid of or moved under appropriate class (like that diminishing group)

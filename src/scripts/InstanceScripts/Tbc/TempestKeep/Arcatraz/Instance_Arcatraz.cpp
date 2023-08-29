@@ -5,7 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Instance_Arcatraz.h"
-#include "Management/Faction.h"
+
+#include "Objects/GameObject.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/InstanceScript.hpp"
 
@@ -94,7 +96,7 @@ public:
                 continue;
 
             Player* RandomTarget = static_cast<Player*>(itr);
-            if (RandomTarget->isAlive() && isHostile(itr, getCreature()))
+            if (RandomTarget->isAlive() && itr->isHostileTo(getCreature()))
                 TargetTable.push_back(RandomTarget);
         }
 

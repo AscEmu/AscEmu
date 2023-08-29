@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "AlteracValley.h"
 
 #include "Management/HonorHandler.h"
-#include "Management/WorldStates.h"
+#include "Management/WorldStates.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/GameObjectProperties.hpp"
@@ -16,8 +16,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Management/Battleground/BattlegroundDefines.hpp"
+#include "Objects/GameObject.h"
 #include "Objects/Units/Creatures/Corpse.hpp"
 #include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Players/Player.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Fire Locations

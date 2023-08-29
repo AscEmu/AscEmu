@@ -18,9 +18,9 @@ class SpellCastTargets
 private:
     uint32_t m_targetMask = 0;
 
-    uint64_t m_gameObjectTarget = 0;
-    uint64_t m_unitTarget = 0;
-    uint64_t m_itemTarget = 0;
+    uint64_t m_gameObjectTargetGuid = 0;
+    uint64_t m_unitTargetGuid = 0;
+    uint64_t m_itemTargetGuid = 0;
     // todo: transporter guids on source/destination
     uint64_t unkuint64_1 = 0;
     uint64_t unkuint64_2 = 0;
@@ -50,9 +50,9 @@ public:
     void setTargetMask(uint32_t mask);
     void addTargetMask(uint32_t mask);
 
-    uint64_t getGameObjectTarget() const;
-    uint64_t getUnitTarget() const;
-    uint64_t getItemTarget() const;
+    uint64_t getGameObjectTargetGuid() const;
+    uint64_t getUnitTargetGuid() const;
+    uint64_t getItemTargetGuid() const;
     LocationVector getSource() const;
     LocationVector getDestination() const;
 

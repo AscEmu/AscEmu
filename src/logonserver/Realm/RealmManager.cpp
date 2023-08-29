@@ -132,7 +132,7 @@ namespace AscEmu::Realm
     void RealmManager::sendRealms(AuthSocket* authSocket)
     {
         sLogger.trace("[RealmManager] Sending realms to a socket.");
-        this->realmLock.Acquire();
+        realmLock.lock();
 
         ByteBuffer data(this->realms.size() * 150 + 20);
         data << uint8_t(0x10);
@@ -205,7 +205,7 @@ namespace AscEmu::Realm
         data << uint8_t(0x17);
         data << uint8_t(0);
 
-        this->realmLock.Release();
+        realmLock.unlock();
 
         *reinterpret_cast<uint16_t*>(&data.contents()[1]) = uint16_t(data.size() - 3);
 
@@ -213,18 +213,18 @@ namespace AscEmu::Realm
 
         std::list<LogonCommServerSocket*> server_sockets;
 
-        this->serverSocketLock.Acquire();
+        serverSocketLock.lock();
 
         if (this->serverSockets.empty())
         {
-            this->serverSocketLock.Release();
+            serverSocketLock.unlock();
             return;
         }
 
         for (const auto& serverSocket : this->serverSockets)
             server_sockets.push_back(serverSocket);
 
-        this->serverSocketLock.Release();
+        serverSocketLock.unlock();
 
         for (const auto& serverSocket : server_sockets)
             serverSocket->RefreshRealmsPop();
@@ -237,7 +237,7 @@ namespace AscEmu::Realm
 
         const auto now = uint32_t(time(nullptr));
 
-        this->serverSocketLock.Acquire();
+        std::lock_guard lock(serverSocketLock);
 
         for (auto logonCommServerSocket = this->serverSockets.begin(); logonCommServerSocket != this->serverSockets.end();)
         {
@@ -255,13 +255,11 @@ namespace AscEmu::Realm
                 commServerSocket->Disconnect();
             }
         }
-
-        this->serverSocketLock.Release();
     }
 
     void RealmManager::checkServers()
     {
-        this->serverSocketLock.Acquire();
+        std::lock_guard lock(serverSocketLock);
 
         for (auto logonCommServerSocket = this->serverSockets.begin(); logonCommServerSocket != this->serverSockets.end();)
         {
@@ -275,13 +273,11 @@ namespace AscEmu::Realm
                 commServerSocket->Disconnect();
             }
         }
-
-        this->serverSocketLock.Release();
     }
 
     void RealmManager::setRealmOffline(uint32_t realm_id)
     {
-        this->realmLock.Acquire();
+        std::lock_guard lock(realmLock);
 
         auto realm = getRealmById(realm_id);
         if (realm != nullptr)
@@ -291,13 +287,11 @@ namespace AscEmu::Realm
             sLogger.info("[RealmManager] Realm %u is now offline (socket close).", realm_id);
             sLogonSQL->Query("UPDATE realms SET status = 0 WHERE id = %u", uint32_t(realm->id));
         }
-
-        this->realmLock.Release();
     }
 
     void RealmManager::setRealmPopulation(uint32_t realm_id, float population)
     {
-        this->realmLock.Acquire();
+        std::lock_guard lock(realmLock);
 
         auto realm = getRealmById(realm_id);
         if (realm != nullptr)
@@ -317,21 +311,17 @@ namespace AscEmu::Realm
             realm->population = (population > 0) ? (population >= 1) ? (population >= 2) ? 2.0f : 1.0f : 0.0f : 0.0f;
             realm->flags = flags;
         }
-
-        this->realmLock.Release();
     }
 
     void RealmManager::addServerSocket(::LogonCommServerSocket* sock)
     {
-        this->serverSocketLock.Acquire();
+        std::lock_guard lock(serverSocketLock);
         this->serverSockets.insert(sock);
-        this->serverSocketLock.Release();
     }
 
     void RealmManager::removeServerSocket(::LogonCommServerSocket* sock)
     {
-        this->serverSocketLock.Acquire();
+        std::lock_guard lock(serverSocketLock);
         this->serverSockets.erase(sock);
-        this->serverSocketLock.Release();
     }
 }

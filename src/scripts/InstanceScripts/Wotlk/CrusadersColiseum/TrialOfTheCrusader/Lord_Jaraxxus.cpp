@@ -8,6 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Raid_TrialOfTheCrusader.hpp"
 #include "Map/AreaBoundary.hpp"
 #include "Server/Script/InstanceScript.hpp"
+#include "Spell/Spell.hpp"
+#include "Spell/SpellAura.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///  Jaraxxus
@@ -473,7 +475,7 @@ bool FelStreakEffect(uint8_t effectIndex, Spell* pSpell)
     if (effectIndex == EFF_INDEX_0)
     {
         uint32_t spellId = pSpell->damage;
-        pSpell->getUnitCaster()->castSpell(pSpell->GetUnitTarget(), spellId, true);
+        pSpell->getUnitCaster()->castSpell(pSpell->getUnitTarget(), spellId, true);
     }
 
     return true;

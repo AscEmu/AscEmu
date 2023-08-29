@@ -20,6 +20,7 @@ set(sources
 
 set(headers
     Setup.h
+    pchSpellHandlers.hpp
 )
 
 include_directories(

@@ -17,13 +17,16 @@
 
 #include "Setup.h"
 #include "Chat/ChatDefines.hpp"
+#include "Management/Group.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/Skill.hpp"
 #include "Management/ItemInterface.h"
 #include "Map/Maps/MapScriptInterface.h"
-#include "Management/Faction.h"
 #include "Map/Maps/WorldMap.hpp"
-#include "Spell/SpellAuras.h"
+#include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Players/Player.hpp"
+#include "Spell/Spell.hpp"
+#include "Spell/SpellAura.hpp"
 #include "Spell/SpellMgr.hpp"
 
 /*
@@ -153,7 +156,7 @@ bool HolidayCheer(uint8_t effectIndex, Spell* pSpell)
         else
             continue;
 
-        if (pSpell->getCaster()->CalcDistance(target) > dist || isAttackable(pSpell->getCaster(), target))
+        if (pSpell->getCaster()->CalcDistance(target) > dist || pSpell->getCaster()->isValidTarget(target))
             continue;
 
         target->emote(EMOTE_ONESHOT_LAUGH);
@@ -163,7 +166,7 @@ bool HolidayCheer(uint8_t effectIndex, Spell* pSpell)
 
 bool NetOMatic(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Unit* target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->getUnitTarget();
     if (!pSpell->getPlayerCaster() || !target)
         return true;
 
@@ -189,7 +192,7 @@ bool NetOMatic(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool BanishExile(uint8_t effectIndex, Spell* pSpell)
 {
-    Unit* target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->getUnitTarget();
     if (!pSpell->getPlayerCaster() || !target)
         return true;
 
@@ -199,7 +202,7 @@ bool BanishExile(uint8_t effectIndex, Spell* pSpell)
 
 bool ForemansBlackjack(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Unit* target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->getUnitTarget();
     if (!pSpell->getPlayerCaster() || !target || !target->isCreature())
         return true;
 
@@ -278,7 +281,7 @@ bool ReindeerTransformation(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool WinterWondervolt(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Unit* target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->getUnitTarget();
 
     if (target == NULL || !target->isPlayer())
         return true;
@@ -325,7 +328,7 @@ bool ScryingCrystal(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool MinionsOfGurok(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Unit* target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->getUnitTarget();
     if (!pSpell->getPlayerCaster() || !target || !target->isCreature() || target->getEntry() != 17157)
         return true;
 
@@ -403,7 +406,7 @@ bool ScalingMountDummyAura(uint32_t /*i*/, Aura* pAura, bool /*apply*/)
 
 bool BigBlizzardBear(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (Player* plr = pSpell->GetPlayerTarget())
+    if (Player* plr = pSpell->getPlayerTarget())
     {
         uint32_t newspell = 58997;
         if (plr->getSkillLineCurrent(SKILL_RIDING, true) >= 150)
@@ -415,7 +418,7 @@ bool BigBlizzardBear(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool WingedSteed(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (Player* plr = pSpell->GetPlayerTarget())
+    if (Player* plr = pSpell->getPlayerTarget())
     {
         uint32_t newspell = 54726;
         if (plr->getSkillLineCurrent(SKILL_RIDING, true) == 300)
@@ -428,7 +431,7 @@ bool WingedSteed(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool HeadlessHorsemanMount(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (Player* plr = pSpell->GetPlayerTarget())
+    if (Player* plr = pSpell->getPlayerTarget())
     {
         uint32_t newspell = 51621;
         auto pArea = plr->GetArea();
@@ -451,7 +454,7 @@ bool HeadlessHorsemanMount(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool MagicBroomMount(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (Player* plr = pSpell->GetPlayerTarget())
+    if (Player* plr = pSpell->getPlayerTarget())
     {
         uint32_t newspell = 42680;
         auto pArea = plr->GetArea();
@@ -474,7 +477,7 @@ bool MagicBroomMount(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool MagicRoosterMount(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (Player* plr = pSpell->GetPlayerTarget())
+    if (Player* plr = pSpell->getPlayerTarget())
         plr->castSpell(plr, 66122, true);
 
     return true;
@@ -483,7 +486,7 @@ bool MagicRoosterMount(uint8_t /*effectIndex*/, Spell* pSpell)
 bool Invincible(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     // Apply the new aura in the 3rd effect call
-    if (Player* plr = pSpell->GetPlayerTarget())
+    if (Player* plr = pSpell->getPlayerTarget())
     {
         uint32_t newspell = 72281;
         auto pArea = plr->GetArea();
@@ -506,7 +509,7 @@ bool Invincible(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool Poultryizer(uint8_t /*effectIndex*/, Spell* s)
 {
-    Unit* unitTarget = s->GetUnitTarget();
+    Unit* unitTarget = s->getUnitTarget();
 
     if (!unitTarget || !unitTarget->isAlive())
         return false;
@@ -518,7 +521,7 @@ bool Poultryizer(uint8_t /*effectIndex*/, Spell* s)
 
 bool SixDemonBag(uint8_t /*effectIndex*/, Spell* s)
 {
-    Unit* unitTarget = s->GetUnitTarget();
+    Unit* unitTarget = s->getUnitTarget();
 
     if (!unitTarget || !unitTarget->isAlive())
         return false;
@@ -662,7 +665,7 @@ bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
     if (!malfunction)
     {
 
-        s->getPlayerCaster()->castSpell(s->GetUnitTarget(), spellids[1], true);
+        s->getPlayerCaster()->castSpell(s->getUnitTarget(), spellids[1], true);
 
     }
     else
@@ -682,7 +685,7 @@ bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
             case 1:  // them
             {
                 // if it's a malfunction it will only grow the target, since shrinking is normal
-                s->getPlayerCaster()->castSpell(s->GetUnitTarget(), spellids[0], true);
+                s->getPlayerCaster()->castSpell(s->getUnitTarget(), spellids[0], true);
             }
             break;
 
@@ -725,7 +728,7 @@ bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
                     if (u->getTargetGuid() != s->getPlayerCaster()->getGuid())
                         continue;
 
-                    if (!isAttackable(s->getPlayerCaster(), u))
+                    if (!s->getPlayerCaster()->isValidTarget(u))
                         continue;
 
                     s->getPlayerCaster()->castSpell(u, spellids[spellindex], true);
@@ -902,7 +905,7 @@ bool X53Mount(uint8_t /*effectIndex*/, Aura *a, bool apply)
 
 bool SchoolsOfArcaneMagicMastery(uint8_t /*effectIndex*/, Spell* s)
 {
-    if (auto player = s->GetPlayerTarget())
+    if (auto player = s->getPlayerTarget())
     {
         uint32_t spell = player->getAreaId() == 4637 ? 59316 : 59314;
         player->castSpell(player, spell, true);

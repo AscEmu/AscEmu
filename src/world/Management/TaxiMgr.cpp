@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Storage/WDB/WDBStores.hpp"
-#include "Management/TaxiMgr.h"
+#include "Management/TaxiMgr.hpp"
 #include "Server/Opcodes.hpp"
 #include "Objects/Units/Players/Player.hpp"
 

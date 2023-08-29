@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
-#include "Spell/SpellAuras.h"
+#include "Spell/SpellAura.hpp"
 #include "Storage/MySQLDataStore.hpp"
 
 enum SpellItems

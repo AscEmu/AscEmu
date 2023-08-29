@@ -367,7 +367,7 @@ class LfgMgr : EventableObject
 
     protected:
 
-        Mutex m_lock;
+        std::mutex m_lock;
 };
 
 #define sLfgMgr LfgMgr::getInstance()

@@ -5,13 +5,25 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Spell.h"
-#include "SpellAuras.h"
-#include "SpellInfo.hpp"
+//#include "Spell.hpp"
+//#include "SpellAura.hpp"
+//#include "SpellInfo.hpp"
 #include "SpellTargetConstraint.hpp"
-#include "Storage/WDB/WDBStructures.hpp"
+//#include "Storage/WDB/WDBStructures.hpp"
 #include "Definitions/SpellMechanics.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
+
+namespace WDB
+{
+    namespace Structures
+    {
+        struct SkillLineAbilityEntry;
+    }
+}
+
+class Unit;
+class Object;
+class Spell;
 
 struct SpellArea
 {
@@ -28,7 +40,7 @@ struct SpellArea
     bool fitsToRequirements(Player* player, uint32_t newZone, uint32_t newArea) const;
 };
 
-typedef std::unordered_map<uint32_t, SpellInfo> SpellInfoMap;
+typedef std::unordered_map<uint32_t, SpellInfo*> SpellInfoMap;
 
 typedef Spell* (*SpellScriptLinker)(Object* Caster, SpellInfo* info, bool triggered, Aura* aur);
 typedef Aura* (*AuraScriptLinker)(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary, Item* i_caster);

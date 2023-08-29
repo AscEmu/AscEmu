@@ -22,8 +22,10 @@
 #include "Objects/Item.hpp"
 #include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
 #include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/ScriptMgr.hpp"
-#include "Spell/SpellAuras.h"
+#include "Spell/Spell.hpp"
+#include "Spell/SpellAura.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/Definitions/ProcFlags.hpp"
@@ -70,7 +72,7 @@ bool SkyShatterRegalia(uint8_t /*effectIndex*/, Spell* s)
 
 bool ManaTide(uint8_t /*effectIndex*/, Spell* s)
 {
-    Unit* unitTarget = s->GetUnitTarget();
+    Unit* unitTarget = s->getUnitTarget();
 
     if (unitTarget == NULL || unitTarget->isDead() || unitTarget->getClass() == WARRIOR || unitTarget->getClass() == ROGUE)
         return false;

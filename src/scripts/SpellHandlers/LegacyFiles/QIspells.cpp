@@ -24,9 +24,13 @@
 #include "Map/Maps/WorldMap.hpp"
 #include "Movement/MovementManager.h"
 #include "Movement/Spline/MoveSplineInit.h"
+#include "Objects/GameObject.h"
 #include "Objects/Units/Creatures/AIInterface.h"
+#include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Master.h"
-#include "Spell/SpellAuras.h"
+#include "Spell/Spell.hpp"
+#include "Spell/SpellAura.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 
@@ -77,7 +81,7 @@ bool ElementalPowerExtractor(uint32_t /*i*/, Spell* pSpell)
         return true;
 
     Player* pPlayer = pSpell->getPlayerCaster();
-    Unit* pUnit = pSpell->GetUnitTarget();
+    Unit* pUnit = pSpell->getUnitTarget();
     if (pUnit == nullptr || pUnit->isCreature() == false)
         return true;
 
@@ -449,7 +453,7 @@ bool YennikuRelease(uint8_t /*effectIndex*/, Spell* pSpell)
     if (qle == nullptr)
         return true;
 
-    Creature* yenniku = static_cast<Creature*>(pSpell->GetUnitTarget());
+    Creature* yenniku = static_cast<Creature*>(pSpell->getUnitTarget());
     if (yenniku == nullptr)
         return true;
 
@@ -644,12 +648,12 @@ bool NaturalRemedies(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool FloraoftheEcoDomes(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->getPlayerCaster() == nullptr || pSpell->GetUnitTarget() == nullptr || pSpell->GetUnitTarget()->isCreature() == false)
+    if (pSpell->getPlayerCaster() == nullptr || pSpell->getUnitTarget() == nullptr || pSpell->getUnitTarget()->isCreature() == false)
         return true;
 
     Player* pPlayer = pSpell->getPlayerCaster();
 
-    Creature* normal = static_cast<Creature*>(pSpell->GetUnitTarget());
+    Creature* normal = static_cast<Creature*>(pSpell->getUnitTarget());
 
     LocationVector normPos = normal->GetPosition();
 
@@ -730,7 +734,7 @@ bool ZappedGiants(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pPlayer->hasQuestInQuestLog(7003) == false && pPlayer->hasQuestInQuestLog(7725) == false)
         return true;
 
-    Creature* creat = static_cast<Creature*>(pSpell->GetUnitTarget());
+    Creature* creat = static_cast<Creature*>(pSpell->getUnitTarget());
     if (creat == nullptr)
         return true;
 
@@ -1037,7 +1041,7 @@ bool GoreBladder(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
     }
 
-    Unit* target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->getUnitTarget();
     if (target == nullptr || target->getEntry() != 29392 || target->isDead() == false)
         return true;
 
@@ -1054,7 +1058,7 @@ bool PlagueSpray(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Unit* target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->getUnitTarget();
     if (!target || target->getEntry() != 23652 || !target->isAlive())
         return true;
     else if (!target || target->getEntry() != 23652 || !target->hasAurasWithId(40467))
@@ -1083,7 +1087,7 @@ bool PurifiedAshes(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Unit* target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->getUnitTarget();
     if (!target || target->getEntry() != 26633 || !target->isDead())
         return true;
 
@@ -1105,7 +1109,7 @@ bool DISMEMBER(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!pSpell->getPlayerCaster())
         return true;
 
-    Unit* target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->getUnitTarget();
     if (!target || (target->getEntry() != 23657 && target->getEntry() != 23661 && target->getEntry() != 23662 && target->getEntry() != 23663 && target->getEntry() != 23664 && target->getEntry() != 23665 && target->getEntry() != 23666 && target->getEntry() != 23667 && target->getEntry() != 23668 && target->getEntry() != 23669 && target->getEntry() != 23670) || !target->isDead())
         return true;
 
@@ -1135,7 +1139,7 @@ bool CraftyBlaster(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
     }
 
-    Unit* target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->getUnitTarget();
     if (!target || (target->getEntry() != 25432 && target->getEntry() != 25434) || !target->isAlive())
     {
         return true;
@@ -1155,7 +1159,7 @@ bool RagefistTorch(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
     }
 
-    Unit* target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->getUnitTarget();
     if (!target || (target->getEntry() != 25342 && target->getEntry() != 25343))
     {
         return true;
@@ -1197,7 +1201,7 @@ bool HodirsHorn(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Unit* target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->getUnitTarget();
     if (!target || (target->getEntry() != 29974 && target->getEntry() != 30144 && target->getEntry() != 30135) || !target->isDead())
         return true;
 
@@ -1217,7 +1221,7 @@ bool TelluricPoultice(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
     }
 
-    Unit* target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->getUnitTarget();
     if (!target || target->getEntry() != 30035)
     {
         return true;
@@ -1239,7 +1243,7 @@ bool Screwdriver(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
     }
 
-    Unit* target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->getUnitTarget();
     if (!target || target->getEntry() != 25753 || !target->isDead())
     {
         return true;
@@ -1261,7 +1265,7 @@ bool IncineratingOil(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
     }
 
-    Unit* target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->getUnitTarget();
     if (!target || target->getEntry() != 28156)
     {
         return true;
@@ -1293,7 +1297,7 @@ bool PrayerBeads(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pSpell->getPlayerCaster() == nullptr)
         return true;
 
-    Unit* target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->getUnitTarget();
     if (!target || target->getEntry() != 22431)
         return true;
 
@@ -1574,10 +1578,10 @@ bool CurativeAnimalSalve(uint8_t /*effectIndex*/, Spell* pSpell) // Curing the S
     if (caster == NULL)
         return true;
 
-    if (!pSpell->GetUnitTarget()->isCreature())
+    if (!pSpell->getUnitTarget()->isCreature())
         return true;
 
-    Creature* target = static_cast<Creature*>(pSpell->GetUnitTarget());
+    Creature* target = static_cast<Creature*>(pSpell->getUnitTarget());
 
     LocationVector targetPos = target->GetPosition();
 
@@ -1743,10 +1747,10 @@ bool DouseEternalFlame(uint8_t /*effectIndex*/, Spell* pSpell)
 
 bool Triage(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (!pSpell->getPlayerCaster() || pSpell->GetUnitTarget() == nullptr)
+    if (!pSpell->getPlayerCaster() || pSpell->getUnitTarget() == nullptr)
         return true;
 
-    pSpell->getPlayerCaster()->castSpell(pSpell->GetUnitTarget(), sSpellMgr.getSpellInfo(746), true);
+    pSpell->getPlayerCaster()->castSpell(pSpell->getUnitTarget(), sSpellMgr.getSpellInfo(746), true);
 
     pSpell->getPlayerCaster()->addQuestKill(6624, 0, 0);
 
@@ -1850,10 +1854,10 @@ bool PoweringOurDefenses(uint8_t /*effectIndex*/, Spell* pSpell)
 // Testing the Antidote
 bool TestingTheAntidote(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (!pSpell->GetUnitTarget() || !pSpell->GetUnitTarget()->isCreature())
+    if (!pSpell->getUnitTarget() || !pSpell->getUnitTarget()->isCreature())
         return true;
 
-    Creature* target = static_cast<Creature*>(pSpell->GetUnitTarget());
+    Creature* target = static_cast<Creature*>(pSpell->getUnitTarget());
     if (target == nullptr || target->getEntry() != 16880) // Hulking Helboar
         return true;
 
@@ -2214,7 +2218,7 @@ bool FuryOfTheDreghoodElders(uint32_t /*i*/, Spell* pSpell)
 
     Player* pPlayer = pSpell->getPlayerCaster();
 
-    Unit* pUnit = pSpell->GetUnitTarget();
+    Unit* pUnit = pSpell->getUnitTarget();
     if (pUnit == nullptr || !pUnit->isCreature() || pUnit->getEntry() != 19354)
         return true;
 
@@ -2272,7 +2276,7 @@ bool PlantForsakenBanner(uint8_t /*effectIndex*/, Spell* pSpell)
     if (!pPlayer->hasQuestInQuestLog(11282))
         return true;
 
-    Creature* target = dynamic_cast<Creature*>(pSpell->GetUnitTarget());
+    Creature* target = dynamic_cast<Creature*>(pSpell->getUnitTarget());
     if (target == nullptr || target->isAlive())
         return true;
 
@@ -2306,7 +2310,7 @@ bool ConvertingSentry(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pCaster == nullptr)
         return true;
 
-    Creature* pTarget = dynamic_cast<Creature*>(pSpell->GetUnitTarget());
+    Creature* pTarget = dynamic_cast<Creature*>(pSpell->getUnitTarget());
     if (pTarget == nullptr || pTarget->getEntry() != 24972 || pTarget->isAlive())   // Erratic Sentry: 24972
         return true;
 
@@ -2937,14 +2941,14 @@ bool FindingTheSource(uint8_t /*effectIndex*/, Spell* pSpell)
 // quest 5163 - Are We There, Yeti?
 bool ReleaseUmisYeti(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->getPlayerCaster() == nullptr || pSpell->GetUnitTarget() == nullptr || !pSpell->GetUnitTarget()->isCreature())
+    if (pSpell->getPlayerCaster() == nullptr || pSpell->getUnitTarget() == nullptr || !pSpell->getUnitTarget()->isCreature())
         return true;
 
     QuestLogEntry* qLogEntry = pSpell->getPlayerCaster()->getQuestLogByQuestId(5163);
     if (qLogEntry == nullptr)
         return true;
 
-    Creature* target = static_cast<Creature*>(pSpell->GetUnitTarget());
+    Creature* target = static_cast<Creature*>(pSpell->getUnitTarget());
     static const uint32_t friends[] = { 10978, 7583, 10977 };
     for (uint8_t j = 0; j < sizeof(friends) / sizeof(uint32_t); j++)
     {
@@ -3001,7 +3005,7 @@ bool ProtectingOurOwn(uint8_t /*effectIndex*/, Spell* pSpell)
 /////////////////////////////////////////////////////////////////
 bool CastFishingNet(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->getPlayerCaster() == nullptr || pSpell->GetGameObjectTarget() == nullptr)
+    if (pSpell->getPlayerCaster() == nullptr || pSpell->getGameObjectTarget() == nullptr)
         return true;
 
     Player* pPlayer = pSpell->getPlayerCaster();
@@ -3009,7 +3013,7 @@ bool CastFishingNet(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pQuest == nullptr)
         return true;
 
-    pSpell->GetGameObjectTarget()->despawn(600, 20000);
+    pSpell->getGameObjectTarget()->despawn(600, 20000);
 
     LocationVector pos = pPlayer->GetPosition();
 

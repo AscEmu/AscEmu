@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Raid_TrialOfTheCrusader.hpp"
 #include "Map/AreaBoundary.hpp"
 #include "Movement/MovementManager.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/InstanceScript.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////

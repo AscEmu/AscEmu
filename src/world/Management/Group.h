@@ -8,7 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "AEVersion.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Map/Maps/InstanceMgr.hpp"
-#include "Objects/Units/Players/Player.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 
 class BaseMap;
@@ -144,7 +143,19 @@ protected:
     uint32 m_Id;
 };
 
+enum AchievementCriteriaTypes : uint8_t;
 class Arena;
+class Object;
+class WorldPacket;
+class Field;
+struct Loot;
+class Creature;
+class WorldSession;
+
+namespace WDB{
+    namespace Structures{
+        struct MapEntry;}}
+
 class SERVER_DECL Group
 {
 public:
@@ -220,9 +231,9 @@ public:
 
     uint64 m_targetIcons[8];
     bool m_disbandOnNoMembers;
-    inline Mutex & getLock() { return m_groupLock; }
-    inline void Lock() { m_groupLock.Acquire(); }
-    inline void Unlock() { return m_groupLock.Release(); }
+    inline std::mutex & getLock() { return m_groupLock; }
+    inline void Lock() { m_groupLock.lock(); }
+    inline void Unlock() { return m_groupLock.unlock(); }
     bool m_isqueued;
 
     void SetAssistantLeader(std::shared_ptr<CachedCharacterInfo> pMember);
@@ -304,7 +315,7 @@ protected:
     uint64 m_guid;
 
     uint32 m_MemberCount;
-    Mutex m_groupLock;
+    std::mutex m_groupLock;
     bool m_dirty;
     bool m_updateblock;
     uint32 updatecounter;

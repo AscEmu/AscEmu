@@ -89,7 +89,7 @@ void Mutex::Release()
 }
 
 
-#ifdef WIN32
+/*#ifdef WIN32
 
 bool FastMutex::AttemptAcquire()
 {
@@ -136,5 +136,5 @@ void FastMutex::Release()
         InterlockedExchange(&m_lock, 0);
 }
 
-#endif
+#endif*/
 

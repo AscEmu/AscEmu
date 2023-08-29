@@ -9,6 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "LuaGlobal.h"
 #include "LuaHelpers.h"
+#include "Server/EventableObject.h"
+#include "Server/EventMgr.h"
 #include "Server/Script/ScriptMgr.hpp"
 
 
@@ -187,8 +189,8 @@ struct LuaObjectBinding
 class LuaEngine
 {
     lua_State* lu;  // main state.
-    Mutex call_lock;
-    Mutex co_lock;
+    std::mutex call_lock;
+    std::mutex co_lock;
 
     typedef std::unordered_map<uint32_t, LuaObjectBinding> LuaObjectBindingMap;
 
@@ -353,8 +355,8 @@ public:
     }
     void RegisterCoreFunctions();
 
-    Mutex & getLock() { return call_lock; }
-    Mutex & getcoLock() { return co_lock; }
+    std::mutex & getLock() { return call_lock; }
+    std::mutex & getcoLock() { return co_lock; }
     lua_State* getluState() { return lu; }
 
     LuaObjectBinding* getUnitBinding(uint32_t Id)

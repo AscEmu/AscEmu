@@ -25,6 +25,7 @@
 #include "Management/Gossip/GossipScript.hpp"
 #include "Server/WorldSession.h"
 #include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 
 class AncientMarks : public GossipScript

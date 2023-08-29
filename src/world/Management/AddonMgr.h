@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 #include <list>
 #include <map>
+#include <memory>
 #include <string>
 
 //\TODO handle it, if possible, the same way in all versions
@@ -156,7 +157,7 @@ class AddonMgr
         void LoadFromDB();
         void SaveToDB();
 
-        void SendAddonInfoPacket(WorldPacket* source, uint32_t pos, WorldSession* m_session);
+        void SendAddonInfoPacket(std::shared_ptr<WorldPacket> source, uint32_t pos, WorldSession* m_session);
         bool AppendPublicKey(WorldPacket& data, std::string& AddonName, uint32_t CRC);
 
     private:

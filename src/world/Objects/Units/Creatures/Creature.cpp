@@ -16,14 +16,17 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Management/MapMgr.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Pet.h"
+#include "Management/Group.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Management/ObjectMgr.hpp"
 #include "Management/Gossip/GossipScript.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
 #include "Movement/MovementManager.h"
+#include "Objects/GameObject.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Objects/Units/Creatures/CreatureGroups.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/Definitions.h"
 #include "Server/Opcodes.hpp"
@@ -31,6 +34,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/EventScript.hpp"
 #include "Server/Script/HookInterface.hpp"
 #include "Server/Script/InstanceScript.hpp"
+#include "Spell/Spell.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Summons/SummonHandler.hpp"
 
@@ -2589,7 +2593,7 @@ void Creature::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
             for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
             {
                 Spell* curSpell = attacker->getCurrentSpell(CurrentSpellType(i));
-                if (curSpell != nullptr && curSpell->m_targets.getUnitTarget() == getGuid())
+                if (curSpell != nullptr && curSpell->m_targets.getUnitTargetGuid() == getGuid())
                     attacker->interruptSpellWithSpellType(CurrentSpellType(i));
             }
         }

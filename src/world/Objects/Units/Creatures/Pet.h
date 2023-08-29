@@ -22,8 +22,6 @@
 #define PET_H
 
 #include "Creature.h"
-#include "Spell/SpellInfo.hpp"
-#include "Spell/SpellMgr.hpp"
 #include "Macros/PetMacros.hpp"
 
 /* Taken from ItemPetFood.dbc
@@ -189,8 +187,8 @@ public:
             std::map<uint32, AI_Spell*>::iterator itr = m_AISpellStore.find(spellid);
             if (itr != m_AISpellStore.end())
                 return itr->second;
-            else
-                return NULL;
+
+            return NULL;
         }
 
         void UpdatePetInfo(bool bSetToOffline);
@@ -218,33 +216,10 @@ public:
         uint32 GetUntrainCost();
         void SetSpellState(SpellInfo const* sp, uint16 State);
         uint16 GetSpellState(SpellInfo const* sp);
-        bool HasSpell(uint32 SpellID)
-        {
-            const auto sp = sSpellMgr.getSpellInfo(SpellID);
-            if (sp)
-                return mSpells.find(sp) != mSpells.end();
-            return false;
-        }
-        inline void RemoveSpell(uint32 SpellID)
-        {
-            const auto sp = sSpellMgr.getSpellInfo(SpellID);
-            if (sp) RemoveSpell(sp);
-        }
-        inline void SetSpellState(uint32 SpellID, uint16 State)
-        {
-            const auto sp = sSpellMgr.getSpellInfo(SpellID);
-            if (sp) SetSpellState(sp, State);
-        }
-        inline uint16 GetSpellState(uint32 SpellID)
-        {
-            if (SpellID == 0)
-                return DEFAULT_SPELL_STATE;
-
-            const auto sp = sSpellMgr.getSpellInfo(SpellID);
-            if (sp)
-                return GetSpellState(sp);
-            return DEFAULT_SPELL_STATE;
-        }
+        bool HasSpell(uint32 SpellID);
+        void RemoveSpell(uint32 SpellID);
+        void SetSpellState(uint32 SpellID, uint16 State);
+        uint16 GetSpellState(uint32 SpellID);
 
         AI_Spell* CreateAISpell(SpellInfo const* info);
         inline PetSpellMap* GetSpells() { return &mSpells; }

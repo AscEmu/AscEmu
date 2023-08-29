@@ -18,7 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ArenaTeam.hpp"
 #include "Management/AuctionHouse.h"
 #include "Management/Charter.hpp"
-#include "Management/Faction.h"
+#include "Management/Group.h"
 #include "Management/HonorHandler.h"
 #include "Management/Battleground/Battleground.hpp"
 #include "Management/Guild/GuildMgr.hpp"
@@ -32,7 +32,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObject.h"
 #include "Management/ObjectMgr.hpp"
 #include "Management/QuestMgr.h"
-#include "Management/TaxiMgr.h"
+#include "Management/TaxiMgr.hpp"
 #include "Management/WeatherMgr.hpp"
 #include "Management/Tickets/TicketMgr.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
@@ -89,8 +89,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellDamageType.hpp"
 #include "Spell/Definitions/SpellFailure.hpp"
 #include "Spell/Definitions/SpellIsFlags.hpp"
-#include "Spell/Spell.h"
-#include "Spell/SpellAuras.h"
+#include "Spell/Spell.hpp"
+#include "Spell/SpellAura.hpp"
 #include "Spell/SpellDefines.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
@@ -2080,7 +2080,7 @@ void Player::zoneUpdate(uint32_t zoneId)
                 {
                     if (getCurrentSpell(CurrentSpellType(i)) != nullptr)
                     {
-                        Unit* target = getCurrentSpell(CurrentSpellType(i))->GetUnitTarget();
+                        Unit* target = getCurrentSpell(CurrentSpellType(i))->getUnitTarget();
                         if (target != nullptr && target != m_duelPlayer && target != this)
                         {
                             interruptSpellWithSpellType(CurrentSpellType(i));
@@ -7239,7 +7239,7 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t /*spellId*/)
                 if (attacker->getCurrentSpell(static_cast<CurrentSpellType>(i)) == nullptr)
                     continue;
 
-                if (attacker->getCurrentSpell(static_cast<CurrentSpellType>(i))->m_targets.getUnitTarget() == getGuid())
+                if (attacker->getCurrentSpell(static_cast<CurrentSpellType>(i))->m_targets.getUnitTargetGuid() == getGuid())
                     attacker->interruptSpellWithSpellType(static_cast<CurrentSpellType>(i));
             }
         }
@@ -10650,7 +10650,7 @@ void Player::sendTaxiNodeStatusMultiple()
             continue;
 
         Creature* creature = itr->ToCreature();
-        if (!creature || isHostile(creature, this))
+        if (!creature || creature->isHostileTo(this))
             continue;
 
         if (!(creature->getNpcFlags() & UNIT_NPC_FLAG_FLIGHTMASTER))
@@ -11530,7 +11530,7 @@ void Player::onKillUnitReputation(Unit* unit, bool innerLoop)
     {
         if (!innerLoop)
         {
-            m_Group->getLock().Acquire();
+            m_Group->getLock().lock();
 
             for (uint32_t i = 0; i < m_Group->GetSubGroupCount(); ++i)
                 for (auto groupMember : m_Group->GetSubGroup(i)->getGroupMembers())
@@ -11538,7 +11538,7 @@ void Player::onKillUnitReputation(Unit* unit, bool innerLoop)
                         if (player->isInRange(this, 100.0f))
                             player->onKillUnitReputation(unit, true);
 
-            m_Group->getLock().Release();
+            m_Group->getLock().unlock();
 
             return;
         }
@@ -13265,7 +13265,7 @@ void Player::_eventAttack(bool offhand)
         return;
     }
 
-    if (!isAttackable(this, pVictim))
+    if (!this->isValidTarget(pVictim))
     {
         interruptHealthRegeneration(5000);
         eventAttackStop();
@@ -16470,7 +16470,7 @@ Creature* Player::getCreatureWhenICanInteract(WoWGuid const& guid, uint32_t npcf
         return nullptr;
 
     // not unfriendly/hostile
-    if (isHostile(this, creature))
+    if (this->isHostileTo(creature))
         return nullptr;
 
     // not too far

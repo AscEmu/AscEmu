@@ -30,7 +30,6 @@
 #include "GameObjectProperties.hpp"
 #include "Data/Flags.hpp"
 #include "Map/Cells/MapCell.hpp"
-#include "Management/Faction.h"
 #include "Spell/SpellMgr.hpp"
 #include "Management/Battleground/Battleground.hpp"
 #include "Server/Packets/SmsgGameobjectCustomAnim.h"
@@ -54,6 +53,8 @@
 #include "Server/Script/EventScript.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"
 #include "Server/Script/InstanceScript.hpp"
+#include "Spell/Spell.hpp"
+#include "Units/Players/Player.hpp"
 
 // MIT
 
@@ -896,7 +897,7 @@ void GameObject::Update(unsigned long time_passed)
                         {
                             if (radius > itr->getDistance(this->GetPosition()))
                             {
-                                if (itr->isCreatureOrPlayer() && isAttackable(this, itr))
+                                if (itr->isCreatureOrPlayer() && this->isValidTarget(itr))
                                     target = itr->ToUnit();
                             }
                         }

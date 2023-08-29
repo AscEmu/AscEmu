@@ -381,7 +381,7 @@ bool MasterLogon::CheckDBVersion()
     return true;
 }
 
-Mutex m_allowedIpLock;
+std::mutex m_allowedIpLock;
 std::vector<AllowedIP> m_allowedIps;
 std::vector<AllowedIP> m_allowedModIps;
 
@@ -407,7 +407,7 @@ bool MasterLogon::SetLogonConfiguration()
     std::vector<std::string> allowedIPs = AscEmu::Util::Strings::split(logonConfig.logonServer.allowedIps, " ");
     std::vector<std::string> allowedModIPs = AscEmu::Util::Strings::split(logonConfig.logonServer.allowedModIps, " ");
 
-    m_allowedIpLock.Acquire();
+    std::lock_guard lock(m_allowedIpLock);
     m_allowedIps.clear();
     m_allowedModIps.clear();
 
@@ -466,38 +466,33 @@ bool MasterLogon::SetLogonConfiguration()
     }
 
     sRealmManager.checkServers();
-    m_allowedIpLock.Release();
 
     return true;
 }
 
 bool MasterLogon::IsServerAllowed(unsigned int IP)
 {
-    m_allowedIpLock.Acquire();
+    std::lock_guard lock(m_allowedIpLock);
+
     for (auto itr = m_allowedIps.begin(); itr != m_allowedIps.end(); ++itr)
     {
         if (ParseCIDRBan(IP, itr->IP, itr->Bytes))
-        {
-            m_allowedIpLock.Release();
             return true;
-        }
     }
-    m_allowedIpLock.Release();
+
     return false;
 }
 
 bool MasterLogon::IsServerAllowedMod(unsigned int IP)
 {
-    m_allowedIpLock.Acquire();
+    std::lock_guard lock(m_allowedIpLock);
+
     for (auto itr = m_allowedModIps.begin(); itr != m_allowedModIps.end(); ++itr)
     {
         if (ParseCIDRBan(IP, itr->IP, itr->Bytes))
-        {
-            m_allowedIpLock.Release();
             return true;
-        }
     }
-    m_allowedIpLock.Release();
+
     return false;
 }
 

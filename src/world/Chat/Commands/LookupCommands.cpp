@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatHandler.hpp"
 #include "Management/QuestProperties.hpp"
 #include "Objects/GameObjectProperties.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSession.h"
 #include "Spell/SpellMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"

@@ -50,6 +50,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
 #include "Server/Packets/SmsgBuyFailed.h"
 #include "Server/Script/ScriptMgr.hpp"
+#include "Spell/Spell.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 
 using namespace AscEmu::Packets;
@@ -308,7 +309,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     {
         if (itemProto->ForcedPetId == 0)
         {
-            if (targets.getUnitTarget() != _player->getGuid())
+            if (targets.getUnitTargetGuid() != _player->getGuid())
             {
                 _player->sendCastFailedPacket(spellInfo->getId(), SPELL_FAILED_BAD_TARGETS, srlPacket.castCount, 0);
                 return;

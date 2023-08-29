@@ -60,8 +60,8 @@ namespace AscEmu::Realm
 
         void sendRealms(::AuthSocket* Socket);
 
-        Mutex& getServerSocketLock() { return serverSocketLock; }
-        Mutex& getRealmLock() { return realmLock; }
+        std::mutex& getServerSocketLock() { return serverSocketLock; }
+        std::mutex& getRealmLock() { return realmLock; }
 
         void timeoutSockets();
         void checkServers();
@@ -78,8 +78,8 @@ namespace AscEmu::Realm
 
         std::vector<std::shared_ptr<Realm>> realms;
         std::set<::LogonCommServerSocket*> serverSockets;
-        Mutex serverSocketLock;
-        Mutex realmLock;
+        std::mutex serverSocketLock;
+        std::mutex realmLock;
 
         bool usePings;
 

@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Raid_TrialOfTheCrusader.hpp"
 #include "Movement/MovementManager.h"
 #include "Server/Script/InstanceScript.hpp"
+#include "Spell/Spell.hpp"
 
 // ToDo
 // Cannot Get Submerge Phase to Work
@@ -606,7 +607,7 @@ bool PermafrostDummySpell(uint8_t effectIndex, Spell* pSpell)
     // always check spellid and effectindex
     if (pSpell->getSpellInfo()->getId() == anubarak::SPELL_PERMAFROST_DUMMY && effectIndex == EFF_INDEX_0)
     {
-        Unit* target = pSpell->GetUnitTarget();
+        Unit* target = pSpell->getUnitTarget();
         if (target && target->isCreature())
         {
             if (SpikeAI* pSpikeAI = dynamic_cast<SpikeAI*>(target->ToCreature()->GetScript()))

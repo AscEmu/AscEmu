@@ -18,12 +18,13 @@
  */
 
 #include "Setup.h"
-#include "Management/Faction.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Opcodes.hpp"
 #include "Server/Script/ScriptMgr.hpp"
-#include "Spell/SpellAuras.h"
+#include "Spell/Spell.hpp"
+#include "Spell/SpellAura.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/DispelType.hpp"
 
@@ -56,7 +57,7 @@ bool Pestilence(uint8_t effectIndex, Spell* pSpell)
             if (Main->getGuid() == Target->getGuid() && !u_caster->hasAurasWithId(63334))
                 continue;
 
-            if (isAttackable(Target, u_caster) && u_caster->CalcDistance(itr) <= (pSpell->getEffectRadius(effectIndex) + inc))
+            if (Target->isValidTarget(u_caster) && u_caster->CalcDistance(itr) <= (pSpell->getEffectRadius(effectIndex) + inc))
             {
                 if (blood)
                     u_caster->castSpell(Target, BLOOD_PLAGUE, true);
@@ -71,10 +72,10 @@ bool Pestilence(uint8_t effectIndex, Spell* pSpell)
 
 bool DeathStrike(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    if (pSpell->getPlayerCaster() == NULL || pSpell->GetUnitTarget() == NULL)
+    if (pSpell->getPlayerCaster() == NULL || pSpell->getUnitTarget() == NULL)
         return true;
 
-    Unit* Target = pSpell->GetUnitTarget();
+    Unit* Target = pSpell->getUnitTarget();
 
     // Get count of diseases on target which were casted by caster
     uint32_t count = Target->getAuraCountWithDispelType(DISPEL_DISEASE, pSpell->getPlayerCaster()->getGuid());
@@ -169,7 +170,7 @@ bool RaiseDead(uint8_t /*effectIndex*/, Spell* s)
 
 bool DeathGrip(uint8_t effectIndex, Spell* s)
 {
-    Unit* unitTarget = s->GetUnitTarget();
+    Unit* unitTarget = s->getUnitTarget();
 
     if (!s->getUnitCaster() || !s->getUnitCaster()->isAlive() || !unitTarget || !unitTarget->isAlive())
         return false;
@@ -251,7 +252,7 @@ bool DeathGrip(uint8_t effectIndex, Spell* s)
 
 bool DeathCoil(uint8_t /*effectIndex*/, Spell* s)
 {
-    Unit* unitTarget = s->GetUnitTarget();
+    Unit* unitTarget = s->getUnitTarget();
 
     if (s->getPlayerCaster() == NULL || unitTarget == NULL)
         return false;
@@ -259,7 +260,7 @@ bool DeathCoil(uint8_t /*effectIndex*/, Spell* s)
     int32_t dmg = s->damage;
 
     SpellForcedBasePoints forcedBasePoints;
-    if (isAttackable(s->getPlayerCaster(), unitTarget))
+    if (s->getPlayerCaster()->isValidTarget(unitTarget))
     {
         forcedBasePoints.set(EFF_INDEX_0, dmg);
         s->getPlayerCaster()->castSpell(unitTarget, 47632, forcedBasePoints, true);

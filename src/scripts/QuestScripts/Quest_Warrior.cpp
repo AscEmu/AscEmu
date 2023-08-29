@@ -23,6 +23,7 @@
 #include "Map/Maps/MapScriptInterface.h"
 #include "Movement/MovementManager.h"
 #include "Movement/Spline/MoveSplineInit.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/QuestScript.hpp"
 

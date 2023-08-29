@@ -20,6 +20,7 @@
 #include "Setup.h"
 #include "Management/ItemInterface.h"
 #include "Management/Gossip/GossipScript.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/QuestScript.hpp"
 

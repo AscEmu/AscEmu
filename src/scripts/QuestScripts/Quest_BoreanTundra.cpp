@@ -22,9 +22,12 @@
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Gossip/GossipScript.hpp"
 #include "Map/Maps/MapScriptInterface.h"
+#include "Objects/GameObject.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSession.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"
+#include "Spell/Spell.hpp"
 #include "Storage/MySQLDataStore.hpp"
 
 enum 
@@ -610,7 +613,7 @@ bool PlaceCart(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pPlayer == nullptr)
         return true;
 
-    Creature* pCreature = pSpell->GetTargetConstraintCreature();
+    Creature* pCreature = pSpell->getTargetConstraintCreature();
     auto* questLog = pPlayer->getQuestLogByQuestId(11897);
     if (questLog == nullptr)
         return true;
@@ -664,7 +667,7 @@ bool PlaceOil(uint8_t /*effectIndex*/, Spell* pSpell)
     if (pPlayer == nullptr)
         return true;
 
-    Creature* pCreature = pSpell->GetTargetConstraintCreature();
+    Creature* pCreature = pSpell->getTargetConstraintCreature();
     auto* questLog = pPlayer->getQuestLogByQuestId(11715);
     if (questLog == nullptr)
         return true;

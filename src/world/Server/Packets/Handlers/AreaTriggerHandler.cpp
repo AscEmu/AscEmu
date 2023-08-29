@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WorldStrings.h"
 #include "Management/Battleground/Battleground.hpp"
 #include "Map/Maps/WorldMap.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Server/Packets/SmsgTransferAborted.h"
 #include "Server/Packets/SmsgRaidGroupOnly.h"

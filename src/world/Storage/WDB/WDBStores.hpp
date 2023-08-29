@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "WDBStructures.hpp"
-#include "Management/TaxiMgr.h"
+#include "Management/TaxiMgr.hpp"
 #include "WDBGlobals.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Server/Definitions.h"

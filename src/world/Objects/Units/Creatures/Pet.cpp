@@ -21,6 +21,7 @@
 
 #include "Pet.h"
 #include "Creature.h"
+#include "Management/Group.h"
 #include "Objects/Units/Unit.hpp"
 #include "Objects/DynamicObject.hpp"
 #include "Management/HonorHandler.h"
@@ -30,10 +31,11 @@
 #include "Storage/MySQLStructures.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
-#include "Spell/SpellAuras.h"
+#include "Spell/SpellAura.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/Definitions/SpellEffectTarget.hpp"
 #include "Storage/WDB/WDBStores.hpp"
@@ -42,6 +44,7 @@
 #include "Server/Packets/SmsgPetUnlearnedSpell.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/HookInterface.hpp"
+#include "Spell/Spell.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 
 #if VERSION_STRING < Cata
@@ -1570,6 +1573,34 @@ uint16 Pet::GetSpellState(SpellInfo const* sp)
     return itr->second;
 }
 
+bool Pet::HasSpell(uint32 SpellID)
+{
+    const auto sp = sSpellMgr.getSpellInfo(SpellID);
+    if (sp)
+        return mSpells.find(sp) != mSpells.end();
+    return false;
+}
+void Pet::RemoveSpell(uint32 SpellID)
+{
+    const auto sp = sSpellMgr.getSpellInfo(SpellID);
+    if (sp) RemoveSpell(sp);
+}
+void Pet::SetSpellState(uint32 SpellID, uint16 State)
+{
+    const auto sp = sSpellMgr.getSpellInfo(SpellID);
+    if (sp) SetSpellState(sp, State);
+}
+uint16 Pet::GetSpellState(uint32 SpellID)
+{
+    if (SpellID == 0)
+        return DEFAULT_SPELL_STATE;
+
+    const auto sp = sSpellMgr.getSpellInfo(SpellID);
+    if (sp)
+        return GetSpellState(sp);
+    return DEFAULT_SPELL_STATE;
+}
+
 void Pet::SetDefaultActionbar()
 {
     // Set up the default actionbar.
@@ -2189,7 +2220,7 @@ void Pet::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
             for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
             {
                 Spell* curSpell = attacker->getCurrentSpell(CurrentSpellType(i));
-                if (curSpell != nullptr && curSpell->m_targets.getUnitTarget() == getGuid())
+                if (curSpell != nullptr && curSpell->m_targets.getUnitTargetGuid() == getGuid())
                     attacker->interruptSpellWithSpellType(CurrentSpellType(i));
             }
         }

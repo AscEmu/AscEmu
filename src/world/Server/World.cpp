@@ -10,9 +10,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/AuctionMgr.hpp"
 #include "Management/CalendarMgr.hpp"
 #include "Management/LFG/LFGMgr.hpp"
-#include "Management/WordFilter.h"
+#include "Management/WordFilter.hpp"
 #include "Management/WeatherMgr.hpp"
-#include "Management/TaxiMgr.h"
+#include "Management/TaxiMgr.hpp"
 #include "Management/ItemInterface.h"
 #include "Chat/ChannelMgr.hpp"
 #include "WorldSocket.h"
@@ -39,9 +39,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "VMapManager2.h"
 #include "Management/MailMgr.h"
 #include "Management/QuestMgr.h"
+#include "Management/TransporterHandler.hpp"
 #include "Management/Battleground/BattlegroundMgr.hpp"
 #include "Management/Tickets/TicketMgr.hpp"
 #include "Movement/MovementGenerator.h"
+#include "Objects/GameObject.h"
+#include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 
 #if VERSION_STRING >= Cata
@@ -100,6 +104,9 @@ void World::finalize()
 {
     sLogger.info("WorldLog : ~WorldLog()");
     sWorldPacketLog.finalize();
+
+    sLogger.info("TransportHandler : unload()");
+    sTransportHandler.unload();
 
     sLogger.info("ObjectMgr : ~ObjectMgr()");
     sObjectMgr.finalize();
@@ -453,9 +460,9 @@ void World::addGlobalSession(WorldSession* worldSession)
 {
     if (worldSession)
     {
-        globalSessionMutex.Acquire();
+        std::lock_guard lock(globalSessionMutex);
+
         globalSessionSet.insert(worldSession);
-        globalSessionMutex.Release();
     }
 }
 
@@ -463,7 +470,7 @@ void World::updateGlobalSession(uint32_t /*diff*/)
 {
     std::list<WorldSession*> ErasableSessions;
 
-    globalSessionMutex.Acquire();
+    globalSessionMutex.lock();
 
     for (SessionSet::iterator itr = globalSessionSet.begin(); itr != globalSessionSet.end();)
     {
@@ -485,7 +492,7 @@ void World::updateGlobalSession(uint32_t /*diff*/)
         }
     }
 
-    globalSessionMutex.Release();
+    globalSessionMutex.unlock();
 
     deleteSessions(ErasableSessions);
     ErasableSessions.clear();
@@ -498,11 +505,11 @@ void World::updateQueuedSessions(uint32_t diff)
     if (diff >= getQueueUpdateTimer())
     {
         mQueueUpdateTimer = settings.server.queueUpdateInterval;
-        queueMutex.Acquire();
+
+        std::lock_guard lock(queueMutex);
 
         if (getQueuedSessions() == 0)
         {
-            queueMutex.Release();
             return;
         }
 
@@ -521,7 +528,6 @@ void World::updateQueuedSessions(uint32_t diff)
 
         if (getQueuedSessions() == 0)
         {
-            queueMutex.Release();
             return;
         }
 
@@ -532,10 +538,9 @@ void World::updateQueuedSessions(uint32_t diff)
             (*iter)->UpdateQueuePosition(queuPosition++);
             if (iter == mQueuedSessions.end())
                 break;
-            else
-                ++iter;
+
+            ++iter;
         }
-        queueMutex.Release();
     }
     else
     {
@@ -545,28 +550,25 @@ void World::updateQueuedSessions(uint32_t diff)
 
 uint32_t World::addQueuedSocket(WorldSocket* socket)
 {
-    queueMutex.Acquire();
+    std::lock_guard lock(queueMutex);
+
     mQueuedSessions.push_back(socket);
-    queueMutex.Release();
 
     return getQueuedSessions();
 }
 
 void World::removeQueuedSocket(WorldSocket* socket)
 {
-    queueMutex.Acquire();
+    std::lock_guard lock(queueMutex);
 
     for (QueuedWorldSocketList::iterator iter = mQueuedSessions.begin(); iter != mQueuedSessions.end(); ++iter)
     {
         if ((*iter) == socket)
         {
             mQueuedSessions.erase(iter);
-            queueMutex.Release();
             return;
         }
     }
-
-    queueMutex.Release();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

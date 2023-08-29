@@ -21,6 +21,7 @@
 #define LUA_AURA_H
 
 #include "SpellFunctions.h"
+#include "Spell/SpellAura.hpp"
 
 namespace LuaAura
 {

@@ -9,14 +9,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "LuaMacros.h"
 #include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
-#include "Management/Faction.h"
 #include "Management/Group.h"
 #include "Management/ItemInterface.h"
 #include "Management/QuestMgr.h"
 #include "Management/WeatherMgr.hpp"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Guild/GuildMgr.hpp"
-#include "Management/TaxiMgr.h"
+#include "Management/TaxiMgr.hpp"
 #include "Map/AreaBoundary.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/MapScriptInterface.h"
@@ -33,7 +32,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Script/HookInterface.hpp"
-#include "Spell/SpellAuras.h"
+#include "Spell/SpellAura.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/WDB/WDBStores.hpp"
@@ -440,7 +439,7 @@ public:
             if (!obj->isCreatureOrPlayer() || dynamic_cast<Unit*>(obj)->isDead())
                 continue;
 
-            if (!isFriendly(obj, ptr))
+            if (!obj->isFriendlyTo(ptr))
                 continue;
 
             if (ptr->GetDistance2dSq(obj) > 10 * 10) // 10yrd range?
@@ -1073,7 +1072,7 @@ public:
         for (const auto& itr : ptr->getInRangeObjectsSet())
         {
             Object* obj = itr;
-            if (obj && obj->isCreatureOrPlayer() && isFriendly(obj, ptr))
+            if (obj && obj->isCreatureOrPlayer() && obj->isFriendlyTo(ptr))
                 allies.push_back(obj);
         }
 
@@ -1095,7 +1094,7 @@ public:
         for (const auto& itr : ptr->getInRangeObjectsSet())
         {
             Object* obj = itr;
-            if (obj && obj->isCreatureOrPlayer() && isHostile(ptr, obj))
+            if (obj && obj->isCreatureOrPlayer() && ptr->isHostileTo(obj))
                 enemies.push_back(obj);
         }
 
@@ -1139,7 +1138,7 @@ public:
         if (!target)
             return 0;
 
-        if (isAttackable(ptr, target))
+        if (ptr->isValidTarget(target))
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -1266,7 +1265,7 @@ public:
         lua_newtable(L);
         for (const auto& itr : ptr->getInRangeObjectsSet())
         {
-            if (itr && itr->isCreatureOrPlayer() && isFriendly(ptr, itr))
+            if (itr && itr->isCreatureOrPlayer() && ptr->isFriendlyTo(itr))
             {
                 count++;
                 lua_pushinteger(L, count);
@@ -1286,7 +1285,7 @@ public:
         lua_newtable(L);
         for (const auto& itr : ptr->getInRangeObjectsSet())
         {
-            if (itr && itr->isCreatureOrPlayer() && !isFriendly(ptr, itr))
+            if (itr && itr->isCreatureOrPlayer() && !ptr->isFriendlyTo(itr))
             {
                 count++;
                 lua_pushinteger(L, count);
@@ -1415,7 +1414,7 @@ public:
             return 0;
 
         Unit* target = CHECK_UNIT(L, 1);
-        if (!target || !isHostile(ptr, target) || ptr == target)
+        if (!target || !ptr->isHostileTo(target) || ptr == target)
             return 0;
         
         ptr->getAIInterface()->setCurrentTarget(target);
@@ -3060,7 +3059,7 @@ public:
         lua_newtable(L);
         if (const auto group = _player->getGroup())
         {
-            group->getLock().Acquire();
+            group->getLock().lock();
             for (uint32_t i = 0; i < group->GetSubGroupCount(); i++)
             {
                 SubGroup* sgrp = group->GetSubGroup(i);
@@ -3078,7 +3077,7 @@ public:
                     }
                 }
             }
-            group->getLock().Release();
+            group->getLock().unlock();
         }
         return 1;
     }
@@ -5525,7 +5524,7 @@ public:
         Unit* obj = CHECK_UNIT(L, 1);
         if (!obj || !ptr)
             return 0;
-        if (isFriendly(ptr, obj))
+        if (ptr->isFriendlyTo(obj))
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -6055,7 +6054,7 @@ public:
         Unit* ret = nullptr;
         for (const auto& itr : ptr->getInRangeObjectsSet())
         {
-            if (!itr || !itr->isCreatureOrPlayer() || !isHostile(ptr, itr))
+            if (!itr || !itr->isCreatureOrPlayer() || !ptr->isHostileTo(itr))
                 continue;
 
             current_dist = ptr->GetDistance2dSq(itr);
@@ -6081,7 +6080,7 @@ public:
         Unit* ret = nullptr;
         for (const auto& itr : ptr->getInRangeObjectsSet())
         {
-            if (!itr || !itr->isCreatureOrPlayer() || isHostile(itr, ptr))
+            if (!itr || !itr->isCreatureOrPlayer() || itr->isHostileTo(ptr))
                 continue;
 
             current_dist = itr->getDistanceSq(ptr);
@@ -6356,14 +6355,14 @@ public:
     static int IsHostile(lua_State* L, Unit* ptr)
     {
         Object* B = CHECK_OBJECT(L, 1);
-        lua_pushboolean(L, isHostile(ptr, B));
+        lua_pushboolean(L, ptr->isHostileTo(B));
         return 1;
     }
 
     static int IsAttackable(lua_State* L, Unit* ptr)
     {
         Object* B = CHECK_OBJECT(L, 1);
-        lua_pushboolean(L, isAttackable(ptr, B));
+        lua_pushboolean(L, ptr->isValidTarget(B));
         return 1;
     }
 

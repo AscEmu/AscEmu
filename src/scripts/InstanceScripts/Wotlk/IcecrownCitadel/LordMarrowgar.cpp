@@ -8,7 +8,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Movement/MovementManager.h"
 #include "Movement/MovementGenerators/PointMovementGenerator.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/InstanceScript.hpp"
+#include "Spell/Spell.hpp"
+#include "Spell/SpellAura.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Boss: Lord Marrowgar
@@ -425,10 +428,10 @@ void BoneStorm::onAuraCreate(Aura* aur)
 /// Spell: Bone Storm Damage
 SpellScriptEffectDamage BoneStormDamage::doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* dmg)
 {
-    if (effIndex != EFF_INDEX_0 || spell->GetUnitTarget() == nullptr)
+    if (effIndex != EFF_INDEX_0 || spell->getUnitTarget() == nullptr)
         return SpellScriptEffectDamage::DAMAGE_DEFAULT;
 
-    auto distance = spell->GetUnitTarget()->GetDistance2dSq(spell->getCaster());
+    auto distance = spell->getUnitTarget()->GetDistance2dSq(spell->getCaster());
     // If target is closer than 5 yards, do full damage
     if (distance <= 5.0f)
         distance = 1.0f;
@@ -561,7 +564,7 @@ SpellScriptExecuteState Coldflame::beforeSpellEffect(Spell* spell, uint8_t effec
     if (effectIndex != EFF_INDEX_0)
         return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
 
-    spell->getUnitCaster()->castSpell(spell->GetUnitTarget(), spell->damage, true);
+    spell->getUnitCaster()->castSpell(spell->getUnitTarget(), spell->damage, true);
 
     return SpellScriptExecuteState::EXECUTE_PREVENT;
 }
@@ -574,7 +577,7 @@ SpellScriptExecuteState ColdflameBonestorm::beforeSpellEffect(Spell* spell, uint
         return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
 
     for (uint8_t i = 0; i < 4; ++i)
-        spell->getUnitCaster()->castSpell(spell->GetUnitTarget(), (spell->damage + i), true);
+        spell->getUnitCaster()->castSpell(spell->getUnitTarget(), (spell->damage + i), true);
 
     return SpellScriptExecuteState::EXECUTE_PREVENT;
 }
@@ -620,7 +623,7 @@ SpellScriptExecuteState ColdflameDamage::beforeSpellEffect(Spell* /*spell*/, uin
 /// Spell: Bone Slice
 SpellScriptEffectDamage BoneSlice::doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* dmg)
 {
-    if (effIndex != EFF_INDEX_0 || spell->GetUnitTarget() == nullptr)
+    if (effIndex != EFF_INDEX_0 || spell->getUnitTarget() == nullptr)
         return SpellScriptEffectDamage::DAMAGE_DEFAULT;
 
     if (!targetCount)
@@ -651,8 +654,8 @@ void BoneSlice::afterSpellEffect(Spell* spell, uint8_t effIndex)
     if (effIndex != EFF_INDEX_0)
         return;
 
-    if (spell->GetUnitTarget())
+    if (spell->getUnitTarget())
     {
-        static_cast<Creature*>(spell->getUnitCaster())->GetScript()->SetCreatureData64(DATA_SPIKE_IMMUNE, spell->GetUnitTarget()->getGuid());
+        static_cast<Creature*>(spell->getUnitCaster())->GetScript()->SetCreatureData64(DATA_SPIKE_IMMUNE, spell->getUnitTarget()->getGuid());
     }
 }

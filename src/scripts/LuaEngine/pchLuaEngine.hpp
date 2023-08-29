@@ -6,3 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "LUAEngine.h"
+#include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Players/Player.hpp"
+#include "Spell/Spell.hpp"

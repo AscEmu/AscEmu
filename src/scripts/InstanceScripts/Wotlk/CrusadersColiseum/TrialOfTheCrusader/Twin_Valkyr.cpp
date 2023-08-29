@@ -10,6 +10,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Map/AreaBoundary.hpp"
 #include "Movement/MovementManager.h"
+#include "Objects/Units/Players/Player.hpp"
+#include "Spell/Spell.hpp"
+#include "Spell/SpellAura.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -513,7 +516,7 @@ bool PoweringUpEffect(uint8_t effectIndex, Spell* pSpell)
 {
     if (effectIndex == EFF_INDEX_1)
     {
-        if (Unit* target = pSpell->GetUnitTarget())
+        if (Unit* target = pSpell->getUnitTarget())
         {
             if (Aura* pAura = target->getAuraWithId(twins::SPELL_POWERING_UP))
             {

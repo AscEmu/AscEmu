@@ -21,17 +21,16 @@
 #ifndef WORLDSESSION_H
 #define WORLDSESSION_H
 
-#include <string>
-
 #include "Server/Opcodes.hpp"
-#include "FastQueue.h"
+#include "ThreadSafeQueue.hpp"
 #include "Server/CharacterErrors.h"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Data/Flags.hpp"
 #include "Objects/MovementInfo.hpp"
-#include "Logging/Logger.hpp"
 #include "Utilities/CallBack.h"
 #include "Management/AddonMgr.h"
+
+#include <string>
 
 struct QuestProperties;
 class Player;
@@ -42,11 +41,6 @@ class MapMgr;
 class Creature;
 struct TrainerSpell;
 class InstanceSaved;
-
-template<class T, class LOCK>
-
-class FastQueue;
-class Mutex;
 
 struct LfgUpdateData; // forward declare
 struct LfgJoinResultData;
@@ -214,16 +208,7 @@ class SERVER_DECL WorldSession
                 sAccountData[index].bIsDirty = false;
         }
 
-        AccountDataEntry* GetAccountData(uint32 index)
-        {
-            if (index < 8)
-            {
-                return &sAccountData[index];
-            }
-
-            sLogger.failure("GetAccountData tried to get invalid index %u", index);
-            return nullptr;
-        }
+        AccountDataEntry* GetAccountData(uint32 index);
 
         void SetLogoutTimer(uint32 ms)
         {
@@ -235,7 +220,7 @@ class SERVER_DECL WorldSession
 
         void LogoutPlayer(bool Save);
 
-        void QueuePacket(WorldPacket* packet);
+        void QueuePacket(std::shared_ptr<WorldPacket> packet);
 
         void OutPacket(uint16 opcode, uint16 len, const void* data);
 
@@ -1008,7 +993,7 @@ protected:
 
         AccountDataEntry sAccountData[8]{};
 
-        FastQueue<WorldPacket*, Mutex> _recvQueue;
+        ThreadSafeQueue<std::shared_ptr<WorldPacket>> _recvQueue;
         char* permissions;
         int permissioncount;
 

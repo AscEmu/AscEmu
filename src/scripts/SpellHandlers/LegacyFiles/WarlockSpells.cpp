@@ -20,13 +20,16 @@
 #include "Setup.h"
 #include "Objects/Units/Stats.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Map/Management/MapMgr.hpp"
-#include "Spell/SpellAuras.h"
+#include "Spell/SpellAura.hpp"
 #include <Spell/Definitions/PowerType.hpp>
 #include <Objects/Units/Creatures/Pet.h>
 #include "Management/ItemInterface.h"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
+#include "Objects/Units/Players/Player.hpp"
+#include "Spell/Spell.hpp"
+#include "Spell/SpellMgr.hpp"
+#include "Objects/GameObject.h"
 
 //////////////////////////////////////////////////////////////
  //bool SoulLinkParent( uint32_t i, Spell *s )
@@ -47,7 +50,7 @@ bool SoulLinkParent(uint8_t /*effectIndex*/, Spell* s)
         return true;
     }
 
-    Unit* u = s->GetUnitTarget();
+    Unit* u = s->getUnitTarget();
     if (u == nullptr)
     {
         return true;
@@ -60,7 +63,7 @@ bool SoulLinkParent(uint8_t /*effectIndex*/, Spell* s)
 
 bool LifeTap(uint8_t effectIndex, Spell* s)
 {
-    Player* playerTarget = s->GetPlayerTarget();
+    Player* playerTarget = s->getPlayerTarget();
 
     if (!s->getPlayerCaster() || !playerTarget)
     {
@@ -93,7 +96,7 @@ bool LifeTap(uint8_t effectIndex, Spell* s)
 
 bool SoulShatter(uint8_t /*effectIndex*/, Spell* s)
 {
-    Unit* unitTarget = s->GetUnitTarget();
+    Unit* unitTarget = s->getUnitTarget();
 
     if (!s->getPlayerCaster() || !s->getPlayerCaster()->isAlive() || !unitTarget || !unitTarget->isAlive())
         return false;
@@ -224,7 +227,7 @@ bool FelHealthStone(uint8_t /*effectIndex*/, Spell* s)
 
 bool MasterDemonologist1(uint8_t /*effectIndex*/, Spell* s)
 {
-    Unit* unitTarget = s->GetUnitTarget();
+    Unit* unitTarget = s->getUnitTarget();
 
     if (!s->getPlayerCaster() || !unitTarget)
         return false; //can't imagine how this talent got to anybody else then a player casting on pet
@@ -282,7 +285,7 @@ bool MasterDemonologist1(uint8_t /*effectIndex*/, Spell* s)
 bool MasterDemonologist2(uint8_t /*effectIndex*/, Spell* s)
 {
     Player* p_caster = s->getPlayerCaster();
-    Unit* unitTarget = s->GetUnitTarget();
+    Unit* unitTarget = s->getUnitTarget();
 
     if (!p_caster || !unitTarget)
         return false; //can't imagine how this talent got to anybody else then a player casting on pet
@@ -339,7 +342,7 @@ bool MasterDemonologist2(uint8_t /*effectIndex*/, Spell* s)
 bool MasterDemonologist3(uint8_t /*effectIndex*/, Spell* s)
 {
     Player* p_caster = s->getPlayerCaster();
-    Unit* unitTarget = s->GetUnitTarget();
+    Unit* unitTarget = s->getUnitTarget();
 
     if (!p_caster || !unitTarget)
         return false; //can't imagine how this talent got to anybody else then a player casting on pet
@@ -395,7 +398,7 @@ bool MasterDemonologist3(uint8_t /*effectIndex*/, Spell* s)
 bool MasterDemonologist4(uint8_t /*effectIndex*/, Spell* s)
 {
     Player* p_caster = s->getPlayerCaster();
-    Unit* unitTarget = s->GetUnitTarget();
+    Unit* unitTarget = s->getUnitTarget();
 
     if (!p_caster || !unitTarget)
         return false; //can't imagine how this talent got to anybody else then a player casting on pet
@@ -451,7 +454,7 @@ bool MasterDemonologist4(uint8_t /*effectIndex*/, Spell* s)
 bool MasterDemonologist5(uint8_t /*effectIndex*/, Spell* s)
 {
     Player* p_caster = s->getPlayerCaster();
-    Unit* unitTarget = s->GetUnitTarget();
+    Unit* unitTarget = s->getUnitTarget();
 
     if (!p_caster || !unitTarget)
         return false; //can't imagine how this talent got to anybody else then a player casting on pet

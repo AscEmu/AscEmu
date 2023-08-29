@@ -4,6 +4,9 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
+#include "Objects/Units/Unit.hpp"
+#include "Spell/Spell.hpp"
+#include "Spell/SpellAura.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/SpellDamageType.hpp"
 
@@ -159,10 +162,10 @@ public:
 #if VERSION_STRING == WotLK
     SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t /*effIndex*/, int32_t* damage) override
     {
-        if (spell->GetUnitTarget() == nullptr)
+        if (spell->getUnitTarget() == nullptr)
             return SpellScriptEffectDamage::DAMAGE_DEFAULT;
 
-        *damage = spell->GetUnitTarget()->getMaxHealth() * (*damage) / 100;
+        *damage = spell->getUnitTarget()->getMaxHealth() * (*damage) / 100;
         return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;
     }
 #endif
@@ -214,10 +217,10 @@ public:
 #if VERSION_STRING == WotLK
     SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t /*effIndex*/, int32_t* damage) override
     {
-        if (spell->GetUnitTarget() == nullptr)
+        if (spell->getUnitTarget() == nullptr)
             return SpellScriptEffectDamage::DAMAGE_DEFAULT;
 
-        *damage = spell->GetUnitTarget()->getBaseMana() * (*damage) / 100;
+        *damage = spell->getUnitTarget()->getBaseMana() * (*damage) / 100;
         return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;
     }
 #endif
@@ -302,7 +305,7 @@ public:
     {
         // According to WoWhead from 3.2.0 patch, all auto attacks and special attacks can proc this
         // Weapon damage starts at 6.6% and goes up to 33% if target has five stacks of debuff
-        if (spell->GetUnitTarget() == nullptr)
+        if (spell->getUnitTarget() == nullptr)
             return SpellScriptEffectDamage::DAMAGE_DEFAULT;
 
         uint32_t auraId = SPELL_HOLY_VENGEANCE;
@@ -310,7 +313,7 @@ public:
             auraId = SPELL_BLOOD_CORRUPTION;
 
         float_t dmgPercent = 6.6f;
-        const auto aur = spell->GetUnitTarget()->getAuraWithId(auraId);
+        const auto aur = spell->getUnitTarget()->getAuraWithId(auraId);
         if (aur != nullptr)
             dmgPercent *= aur->getStackCount();
 

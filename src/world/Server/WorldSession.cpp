@@ -21,8 +21,7 @@
 #include "WorldSession.h"
 
 #include "DatabaseDefinition.hpp"
-#include "FastQueue.h"
-#include "Threading/Mutex.h"
+#include "ThreadSafeQueue.hpp"
 #include "WorldPacket.h"
 #include "Objects/Item.hpp"
 #include "Exceptions/PlayerExceptions.hpp"
@@ -37,10 +36,10 @@
 #include "Packets/SmsgLogoutComplete.h"
 #include "OpcodeTable.hpp"
 #include "World.h"
+#include "Management/Group.h"
 #include "Management/Battleground/BattlegroundMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Packets/SmsgMessageChat.h"
-#include "Script/ScriptMgr.hpp"
 #include "Objects/Transporter.hpp"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
@@ -104,10 +103,11 @@ WorldSession::~WorldSession()
 
     delete[]permissions;
 
-    WorldPacket* packet;
+    std::shared_ptr<WorldPacket> packet;
 
-    while ((packet = _recvQueue.Pop()) != nullptr)
-        delete packet;
+    while ((packet = _recvQueue.pop()) != nullptr)
+    {
+    }
 
     for (uint32 x = 0; x < 8; x++)
     {
@@ -127,8 +127,6 @@ uint8 WorldSession::Update(uint32 InstanceID)
 
     if (!((++_updatecount) % 2) && _socket)
         _socket->UpdateQueuedPackets();
-
-    WorldPacket* packet;
 
     if (InstanceID != instanceId)
     {
@@ -161,7 +159,9 @@ uint8 WorldSession::Update(uint32 InstanceID)
 
     }
 
-    while ((packet = _recvQueue.Pop()) != nullptr)
+    std::shared_ptr<WorldPacket> packet;
+
+    while ((packet = _recvQueue.pop()) != nullptr)
     {
         if (packet != nullptr)
         {
@@ -192,7 +192,7 @@ uint8 WorldSession::Update(uint32 InstanceID)
                 }
             }
 
-            delete packet;
+            packet = nullptr;
 
             if (InstanceID != instanceId)
             {
@@ -518,6 +518,17 @@ bool WorldSession::CanUseCommand(char cmdstr)
     return false;
 }
 
+AccountDataEntry* WorldSession::GetAccountData(uint32 index)
+{
+    if (index < 8)
+    {
+        return &sAccountData[index];
+    }
+
+    sLogger.failure("GetAccountData tried to get invalid index %u", index);
+    return nullptr;
+}
+
 void WorldSession::SendNotification(const char* message, ...)
 {
     if (!message)
@@ -742,10 +753,10 @@ void WorldSession::OutPacket(uint16 opcode, uint16 len, const void* data)
     }
 }
 
-void WorldSession::QueuePacket(WorldPacket* packet)
+void WorldSession::QueuePacket(std::shared_ptr<WorldPacket> packet)
 {
     m_lastPing = static_cast<uint32>(UNIXTIME);
-    _recvQueue.Push(packet);
+    _recvQueue.push(packet);
 }
 
 void WorldSession::Disconnect()

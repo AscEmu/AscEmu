@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "GruulTheDragonKiller.hpp"
 #include "Raid_GruulsLair.hpp"
+#include "Objects/Units/Players/Player.hpp"
+#include "Spell/Spell.hpp"
 #include "Utilities/Util.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -103,7 +105,7 @@ void GruulTheDragonkillerAI::AIUpdate(unsigned long time_passed)
 /// Spell Effect: Ground Slam
 bool GroundSlamEffect(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Unit* target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->getUnitTarget();
 
     if (!target || !target->isPlayer())
         return true;
@@ -117,7 +119,7 @@ bool GroundSlamEffect(uint8_t /*effectIndex*/, Spell* pSpell)
 /// Spell Effect: Shatter
 bool ShatterEffect(uint8_t /*effectIndex*/, Spell* pSpell)
 {
-    Unit* target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->getUnitTarget();
 
     if (!target)
         return true;
@@ -132,11 +134,11 @@ bool ShatterEffect(uint8_t /*effectIndex*/, Spell* pSpell)
 /// Spell: Shatter Damage
 SpellScriptEffectDamage ShatterDamage::doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* dmg)
 {
-    if (effIndex != EFF_INDEX_0 || spell->GetUnitTarget() == nullptr)
+    if (effIndex != EFF_INDEX_0 || spell->getUnitTarget() == nullptr)
         return SpellScriptEffectDamage::DAMAGE_DEFAULT;
 
     float radius = spell->getEffectRadius(EFF_INDEX_0);
-    auto distance = spell->GetUnitTarget()->GetDistance2dSq(spell->getCaster());
+    auto distance = spell->getUnitTarget()->GetDistance2dSq(spell->getCaster());
 
     if (distance < 1.0f)
         distance = 1.0f;

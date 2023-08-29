@@ -67,7 +67,7 @@
 #include "StrandOfTheAncient.h"
 
 #include "Chat/ChatDefines.hpp"
-#include "Management/WorldStates.h"
+#include "Management/WorldStates.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
 #include "Server/Master.h"
 #include "Management/Battleground/BattlegroundDefines.hpp"

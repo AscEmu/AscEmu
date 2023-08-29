@@ -3,7 +3,7 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Management/WordFilter.h"
+#include "Management/WordFilter.hpp"
 #include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
 #include "Management/Battleground/Battleground.hpp"
@@ -12,6 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatDefines.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Chat/ChatHandler.hpp"
+
+#include "Management/Group.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Management/QuestMgr.h"
@@ -34,7 +36,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStores.hpp"
 
 #if VERSION_STRING >= Cata
-#include "Spell/SpellAuras.h"
+#include "Spell/SpellAura.hpp"
 #endif
 
 using namespace AscEmu::Packets;

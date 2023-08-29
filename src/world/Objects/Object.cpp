@@ -17,19 +17,21 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "Map/Management/MapMgr.hpp"
-#include "Management/Faction.h"
 #include "Spell/Definitions/ProcFlags.hpp"
 #include "Spell/Definitions/SpellDamageType.hpp"
 #include "Spell/Definitions/SpellMechanics.hpp"
 #include "Spell/Definitions/SpellState.hpp"
 #include <Spell/Definitions/AuraInterruptFlags.hpp>
 
+#include "GameObject.h"
 #include "GameObjectProperties.hpp"
+#include "Transporter.hpp"
 #include "Data/Flags.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Units/Creatures/CreatureDefines.hpp"
 #include "Data/WoWObject.hpp"
+#include "Management/Group.h"
 #include "Map/Maps/WorldMap.hpp"
 #include "Server/Packets/SmsgDestoyObject.h"
 #include "Server/Packets/SmsgPlaySound.h"
@@ -40,8 +42,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/Spline/MovementPacketBuilder.h"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
+#include "Spell/Spell.hpp"
+#include "Spell/SpellAura.hpp"
+#include "Units/Stats.h"
 #include "Units/Creatures/AIInterface.h"
 #include "Units/Creatures/Corpse.hpp"
+#include "Units/Creatures/Vehicle.hpp"
+#include "Units/Players/Player.hpp"
 
 #if VERSION_STRING >= Cata
 #include "Server/OpcodeTable.hpp"
@@ -1638,7 +1645,7 @@ void Object::updateInRangeOppositeFactionSet()
         {
             if (itr->isCreatureOrPlayer() || itr->isGameObject())
             {
-                if (isHostile(this, itr))
+                if (this->isHostileTo(itr))
                 {
                     if (!itr->isObjectInInRangeOppositeFactionSet(this))
                         itr->addInRangeOppositeFaction(this);
@@ -1696,7 +1703,7 @@ void Object::updateInRangeSameFactionSet()
         {
             if (itr->isCreatureOrPlayer() || itr->isGameObject())
             {
-                if (isFriendly(this, itr))
+                if (this->isFriendlyTo(itr))
                 {
                     if (!itr->isObjectInInRangeSameFactionSet(this))
                         itr->addInRangeSameFaction(this);
@@ -4041,6 +4048,14 @@ bool Object::IsHostileToPlayers()
 bool Object::isFriendlyTo(Object* target)
 {
     return getEnemyReaction(target) >= Standing::STANDING_FRIENDLY;
+}
+
+bool Object::isNeutralTo(Object* target) const
+{
+    if ((m_factionTemplate->HostileMask & target->m_factionTemplate->Mask) == 0 && (m_factionTemplate->FriendlyMask & target->m_factionTemplate->Mask) == 0)
+        return true;
+
+    return false;
 }
 
 bool Object::isNeutralToAll() const

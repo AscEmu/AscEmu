@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 
+enum PlayerTeam : uint8_t;
 class Player;
 
 class SERVER_DECL InstanceMap : public WorldMap
@@ -37,8 +38,8 @@ public:
     bool hasPermBoundPlayers();
     uint32_t getMaxPlayers();
 
-    PlayerTeam getTeamIdInInstance() { return instanceTeam; }
-    uint32_t getTeamInInstance() { return instanceTeam == TEAM_ALLIANCE ? ALLIANCE : HORDE; }
+    PlayerTeam getTeamIdInInstance();
+    uint32_t getTeamInInstance();
 
 private:
     bool m_resetAfterUnload = false;

@@ -19,6 +19,7 @@
  *
  */
 
+#include "Spell.hpp"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Objects/Item.hpp"
@@ -28,10 +29,10 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Map/Management/MapMgr.hpp"
-#include "Management/Faction.h"
-#include "SpellAuras.h"
+#include "SpellAura.hpp"
 #include "Definitions/SpellModifierType.hpp"
 #include "SpellHelpers.h"
+#include "SpellMgr.hpp"
 #include "Definitions/ProcFlags.hpp"
 #include "Definitions/AuraInterruptFlags.hpp"
 #include "Definitions/SpellSchoolConversionTable.hpp"
@@ -39,6 +40,7 @@
 #include "Definitions/SpellMechanics.hpp"
 #include "Definitions/PowerType.hpp"
 #include "Definitions/SpellEffects.hpp"
+#include "Management/Group.h"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Server/Packets/MsgChannelUpdate.h"
 #include "Server/Packets/SmsgPlayerVehicleData.h"
@@ -52,6 +54,8 @@
 #include "Storage/WDB/WDBStores.hpp"
 #include "Management/Battleground/BattlegroundDefines.hpp"
 #include "Map/Maps/WorldMap.hpp"
+#include "Objects/GameObject.h"
+#include "Objects/Units/Creatures/Vehicle.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -89,6 +93,8 @@ Player* Aura::GetPlayerTarget()
 
     return nullptr;
 }
+
+bool Aura::IsPassive() const { if (!m_spellInfo) return false; return (m_spellInfo->isPassive() && !m_areaAura); }
 
 Unit* Aura::GetUnitCaster()
 {
@@ -493,10 +499,10 @@ void Aura::EventUpdateFriendAA(AuraEffectModifier* /*aurEff*/, float r)
         if (!ou->isAlive())
             continue;
 
-        if (isHostile(u, ou))
+        if (u->isHostileTo(ou))
             continue;
 
-        if (isNeutral(u, ou))
+        if (u->isNeutralTo(ou))
             continue;
 
         if (ou->hasAurasWithId(m_spellInfo->getId()))
@@ -522,10 +528,10 @@ void Aura::EventUpdateFriendAA(AuraEffectModifier* /*aurEff*/, float r)
         if (u->getDistanceSq(tu) > r)
             removable = true;
 
-        if (isHostile(u, tu))
+        if (u->isHostileTo(tu))
             removable = true;
 
-        if (isNeutral(u, tu))
+        if (u->isNeutralTo(tu))
             removable = true;
 
         if ((u->GetPhase() & tu->GetPhase()) == 0)
@@ -563,7 +569,7 @@ void Aura::EventUpdateEnemyAA(AuraEffectModifier* /*aurEff*/, float r)
         if (!ou->isAlive())
             continue;
 
-        if (!isHostile(u, ou))
+        if (!u->isHostileTo(ou))
             continue;
 
         if (ou->hasAurasWithId(m_spellInfo->getId()))
@@ -589,10 +595,10 @@ void Aura::EventUpdateEnemyAA(AuraEffectModifier* /*aurEff*/, float r)
         if (u->getDistanceSq(tu) > r)
             removable = true;
 
-        if (!isHostile(u, tu))
+        if (!u->isHostileTo(tu))
             removable = true;
 
-        if (isNeutral(u, tu))
+        if (u->isNeutralTo(tu))
             removable = true;
 
         if ((u->GetPhase() & tu->GetPhase()) == 0)
@@ -1491,7 +1497,7 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
                             for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
                             {
                                 Spell* curSpell = _unit->getCurrentSpell(CurrentSpellType(i));
-                                if (curSpell != nullptr && curSpell->GetUnitTarget() == m_target)
+                                if (curSpell != nullptr && curSpell->getUnitTarget() == m_target)
                                 {
                                     _unit->interruptSpellWithSpellType(CurrentSpellType(i));
                                 }
@@ -2358,7 +2364,7 @@ void Aura::SpellAuraModSchoolImmunity(AuraEffectModifier* aurEff, bool apply)
         Unit* c = GetUnitCaster();
         if (c)
         {
-            if (isAttackable(c, m_target))
+            if (c->isValidTarget(m_target))
                 mPositive = false;
             else mPositive = true;
         }
@@ -6147,6 +6153,19 @@ bool Aura::IsCombatStateAffecting()
         return true;
 
     return false;
+}
+
+bool Aura::IsInrange(float x1, float y1, float z1, Object* o, float square_r)
+{
+    float t;
+    float r;
+    t = x1 - o->GetPositionX();
+    r = t * t;
+    t = y1 - o->GetPositionY();
+    r += t * t;
+    t = z1 - o->GetPositionZ();
+    r += t * t;
+    return (r <= square_r);
 }
 
 bool Aura::IsAreaAura() const

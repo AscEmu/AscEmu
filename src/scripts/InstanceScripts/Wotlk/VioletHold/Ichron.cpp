@@ -9,6 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/MovementGenerators/PointMovementGenerator.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/InstanceScript.hpp"
+#include "Spell/Spell.hpp"
+#include "Spell/SpellAura.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //  Ichron AI
@@ -200,10 +202,10 @@ void IchronGlobuleAI::DamageTaken(Unit* /*attacker*/, uint32_t* damage)
 /// Spell: 54269 - Merge
 SpellScriptCheckDummy IchronMerge::onDummyOrScriptedEffect(Spell* spell, uint8_t /*effIndex*/)
 {
-    if (spell->GetUnitTarget() == nullptr)
+    if (spell->getUnitTarget() == nullptr)
         return SpellScriptCheckDummy::DUMMY_OK;
 
-    if (Creature* target =  spell->GetUnitTarget()->ToCreature())
+    if (Creature* target =  spell->getUnitTarget()->ToCreature())
     {
         if (Aura* aura = target->getAuraWithId(Ichron::SPELL_SHRINK))
             aura->refreshOrModifyStack(false, -1);

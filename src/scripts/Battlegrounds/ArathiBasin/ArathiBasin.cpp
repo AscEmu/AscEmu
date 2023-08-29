@@ -23,7 +23,7 @@
 #include "Chat/ChatDefines.hpp"
 #include "Management/HonorHandler.h"
 #include "Management/QuestLogEntry.hpp"
-#include "Management/WorldStates.h"
+#include "Management/WorldStates.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/GameObjectProperties.hpp"
@@ -32,6 +32,10 @@
 #include "Spell/SpellMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Management/Battleground/BattlegroundDefines.hpp"
+#include "Objects/GameObject.h"
+#include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Players/Player.hpp"
+#include "Spell/Spell.hpp"
 
 uint32_t buffentries[3] = { 180380, 180362, 180146 };
 

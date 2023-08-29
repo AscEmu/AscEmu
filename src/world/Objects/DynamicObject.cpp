@@ -5,17 +5,17 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Objects/DynamicObject.hpp"
 
+#include "GameObject.h"
 #include "Data/Flags.hpp"
 #include "Map/Management/MapMgr.hpp"
-#include "Management/Faction.h"
 #include "Spell/SpellMgr.hpp"
-#include "Spell/SpellAuras.h"
-#include "Spell/Spell.Legacy.h"
-#include "Spell/Definitions/SpellIsFlags.hpp"
+#include "Spell/SpellAura.hpp"
+#include "Spell/Spell.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Data/WoWDynamicObject.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
+#include "Objects/Units/Players/Player.hpp"
 
 DynamicObject::DynamicObject(uint32_t high, uint32_t low)
 {
@@ -129,7 +129,7 @@ void DynamicObject::updateTargets()
 
             Unit* target = static_cast<Unit*>(object);
 
-            if (!isAttackable(m_unitCaster, target, m_spellInfo))
+            if (!m_unitCaster->isValidTarget(target, m_spellInfo))
                 continue;
 
             // skip units already hit, their range will be tested later

@@ -21,9 +21,12 @@
 
 #include "Setup.h"
 #include "Map/Maps/MapScriptInterface.h"
+#include "Objects/GameObject.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"
 #include "Server/Script/QuestScript.hpp"
+#include "Spell/SpellAura.hpp"
 
 class WyrmcultBlackwhelp : public CreatureAIScript
 {

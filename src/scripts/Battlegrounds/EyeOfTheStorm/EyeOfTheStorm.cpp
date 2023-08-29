@@ -23,13 +23,17 @@
 #include "CommonDefines.hpp"
 #include "Chat/ChatDefines.hpp"
 #include "Management/HonorHandler.h"
-#include "Management/WorldStates.h"
+#include "Management/WorldStates.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
 #include "Objects/GameObjectProperties.hpp"
 #include "Server/Master.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Management/Battleground/BattlegroundDefines.hpp"
+#include "Objects/GameObject.h"
+#include "Objects/Units/Creatures/Creature.h"
+#include "Objects/Units/Players/Player.hpp"
+#include "Spell/Spell.hpp"
 #include "Storage/MySQLDataStore.hpp"
 
 static float EOTSBuffCoordinates[4][4] =

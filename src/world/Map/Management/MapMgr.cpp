@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Unit.hpp"
 #include "VMapFactory.h"
 #include "MMapFactory.h"
+#include "Management/Group.h"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/WDB/WDBStores.hpp"
@@ -17,6 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
 #include "Map/Maps/InstanceMap.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/World.h"
 
 MapMgr& MapMgr::getInstance()

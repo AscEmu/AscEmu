@@ -8,15 +8,17 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Spell/SpellMgr.hpp"
-#include "Spell/SpellAuras.h"
+#include "Spell/SpellAura.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Server/Packets/CmsgCastSpell.h"
 #include "Server/Packets/CmsgPetCastSpell.h"
+#include "Spell/Spell.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 
 using namespace AscEmu::Packets;

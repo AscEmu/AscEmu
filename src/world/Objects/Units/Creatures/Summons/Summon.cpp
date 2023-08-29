@@ -8,14 +8,16 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
 
 #include "SummonHandler.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
-#include "Spell/SpellAuras.h"
+#include "Spell/SpellAura.hpp"
 #include "Spell/Definitions/SpellCastTargetFlags.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
+#include "Spell/Spell.hpp"
 
 Summon::Summon(uint64_t guid, WDB::Structures::SummonPropertiesEntry const* properties) : Creature(guid), m_Properties(properties)
 {

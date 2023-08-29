@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ManagedPacket.h"
 
 #if VERSION_STRING >= Mop
-#include "Spell/SpellAuras.h"
+#include "Spell/SpellAura.hpp"
 #endif
 
 namespace AscEmu::Packets

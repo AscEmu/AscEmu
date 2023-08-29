@@ -18,18 +18,18 @@
  */
 
 #include "Setup.h"
-#include "Management/Faction.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/ScriptMgr.hpp"
-#include "Spell/Spell.h"
-#include "Spell/SpellAuras.h"
+#include "Spell/Spell.hpp"
+#include "Spell/SpellAura.hpp"
 
 bool Penance(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (!pSpell->getPlayerCaster() || !pSpell->getPlayerCaster()->isAlive() ||
-        !pSpell->GetUnitTarget() || !pSpell->GetUnitTarget()->isAlive())
+        !pSpell->getUnitTarget() || !pSpell->getUnitTarget()->isAlive())
         return true;
 
-    Unit* target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->getUnitTarget();
     Player* player = pSpell->getPlayerCaster();
 
     // index 0 contains the spell for the first tick, index 1 is the peroidic cast spell.
@@ -68,7 +68,7 @@ bool Penance(uint8_t /*effectIndex*/, Spell* pSpell)
             break;
     }
 
-    if (isAttackable(player, target))   // Do holy damage
+    if (player->isValidTarget(target))   // Do holy damage
     {
         // First tick is instant.
         player->castSpell(target, hostileSpell[0], true);
@@ -88,7 +88,7 @@ bool PainAndSufferingProc(uint8_t /*effectIndex*/, Spell* pSpell)
     if (caster == NULL)
         return true;
 
-    Unit* target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->getUnitTarget();
     if (target == NULL)
         return true;
 

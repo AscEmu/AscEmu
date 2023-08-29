@@ -23,10 +23,12 @@
 #include "Management/QuestMgr.h"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Gossip/GossipScript.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSession.h"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
+#include "Objects/Units/Creatures/Creature.h"
 
 enum
 {

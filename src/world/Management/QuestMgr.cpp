@@ -21,6 +21,7 @@
 
 #include "QuestMgr.h"
 
+#include "Group.h"
 #include "MailMgr.h"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Logging/Log.hpp"
@@ -32,9 +33,11 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Map/Management/MapMgr.hpp"
+#include "Objects/GameObject.h"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"
-#include "Spell/SpellAuras.h"
+#include "Spell/SpellAura.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Server/Packets/MsgQuestPushResult.h"
 #include "Server/Packets/SmsgQuestgiverQuestComplete.h"
@@ -47,6 +50,7 @@
 #include "Utilities/Strings.hpp"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/QuestScript.hpp"
+#include "Spell/Spell.hpp"
 
 using namespace AscEmu::Packets;
 

@@ -20,9 +20,8 @@
 
 #include "VMapManager2.h"
 #include "Map/Management/MapMgr.hpp"
-#include "Management/Faction.h"
 #include "SpellTarget.h"
-#include "Spell.h"
+#include "Spell.hpp"
 #include "Objects/GameObject.h"
 #include "Server/World.h"
 #include "Definitions/SpellCastTargetFlags.hpp"
@@ -32,73 +31,7 @@
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Objects/Units/Creatures/Pet.h"
-
- // APGL End
- // MIT Start
-
-SpellCastResult Spell::checkExplicitTarget(Object* target, uint32_t requiredTargetMask) const
-{
-    if (target == nullptr || !target->IsInWorld())
-        return SPELL_FAILED_BAD_IMPLICIT_TARGETS;
-
-    // Gameobject target, not item
-    if (!target->isGameObject() && (requiredTargetMask & SPELL_TARGET_REQUIRE_GAMEOBJECT) && !(requiredTargetMask & SPELL_TARGET_REQUIRE_ITEM))
-        return SPELL_FAILED_BAD_TARGETS;
-
-    // Check if spell can target gameobjects
-    if (target->isGameObject() && !m_triggeredSpell && !(requiredTargetMask & SPELL_TARGET_OBJECT_SCRIPTED) && !(requiredTargetMask & SPELL_TARGET_REQUIRE_GAMEOBJECT))
-        return SPELL_FAILED_BAD_TARGETS;
-
-    // Check if spell can target items
-    if (target->isItem() && !m_triggeredSpell && !(requiredTargetMask & SPELL_TARGET_REQUIRE_ITEM))
-        return SPELL_FAILED_BAD_TARGETS;
-
-    // Check if spell can target friendly unit
-    if (requiredTargetMask & SPELL_TARGET_REQUIRE_FRIENDLY && !isFriendly(m_caster, target))
-        return SPELL_FAILED_BAD_TARGETS;
-
-    // Check if spell can target attackable unit
-    if (requiredTargetMask & SPELL_TARGET_REQUIRE_ATTACKABLE && !(requiredTargetMask & SPELL_TARGET_AREA_SELF && m_caster == target) && !isAttackable(m_caster, target, getSpellInfo()))
-        return SPELL_FAILED_BAD_TARGETS;
-
-    if (requiredTargetMask & SPELL_TARGET_OBJECT_TARCLASS)
-    {
-        const auto* const originalTarget = m_caster->getWorldMapObject(m_targets.getUnitTarget());
-        if (originalTarget == nullptr)
-            return SPELL_FAILED_BAD_TARGETS;
-        if (originalTarget->isPlayer() != target->isPlayer())
-            return SPELL_FAILED_BAD_TARGETS;
-        if ((originalTarget->isPlayer() && target->isPlayer() && static_cast<Player const*>(originalTarget)->getClass() != static_cast<Player const*>(target)->getClass()))
-            return SPELL_FAILED_BAD_TARGETS;
-    }
-
-    // Check if spell can target pet
-    if (requiredTargetMask & SPELL_TARGET_OBJECT_CURPET && !target->isPet())
-        return SPELL_FAILED_BAD_TARGETS;
-
-    // Area spells cannot target totems or dead units unless spell caster is the target
-    if (m_caster != target &&
-        ((target->isCreatureOrPlayer() && !static_cast<Unit const*>(target)->isAlive()) || (target->isCreature() && target->isTotem()))
-        && (requiredTargetMask & (SPELL_TARGET_AREA | SPELL_TARGET_AREA_SELF | SPELL_TARGET_AREA_CURTARGET | SPELL_TARGET_AREA_CONE | SPELL_TARGET_AREA_PARTY | SPELL_TARGET_AREA_RAID)))
-        return SPELL_FAILED_BAD_TARGETS;
-
-    return SPELL_CAST_SUCCESS;
-}
-
-void Spell::safeAddMissedTarget(uint64_t targetGuid, SpellDidHitResult hitResult, SpellDidHitResult extendedHitResult)
-{
-    for (const auto& targetMod : missedTargets)
-    {
-        // Check if target is already in the vector
-        if (targetMod.targetGuid == targetGuid)
-            return;
-    }
-
-    missedTargets.push_back(SpellTargetMod(targetGuid, hitResult, extendedHitResult));
-}
-
-// MIT End
-// APGL Start
+#include "Objects/Units/Players/Player.hpp"
 
 void Spell::FillTargetMap(uint32 i)
 {
@@ -122,13 +55,13 @@ void Spell::FillTargetMap(uint32 i)
     {
         Object* target = nullptr;
         if (TargetType & SPELL_TARGET_REQUIRE_GAMEOBJECT)
-            target = m_caster->getWorldMapObject(m_targets.getGameObjectTarget());
+            target = m_caster->getWorldMapObject(m_targets.getGameObjectTargetGuid());
         else if (TargetType & SPELL_TARGET_REQUIRE_ITEM)
-            target = m_caster->getWorldMapObject(m_targets.getItemTarget());
+            target = m_caster->getWorldMapObject(m_targets.getItemTargetGuid());
 
         // If target was not found, try unit
         if (target == nullptr)
-            target = m_caster->getWorldMapObject(m_targets.getUnitTarget());
+            target = m_caster->getWorldMapObject(m_targets.getUnitTargetGuid());
 
         AddTarget(i, TargetType, target);
     }
@@ -146,7 +79,7 @@ void Spell::FillTargetMap(uint32 i)
     if (TargetType & SPELL_TARGET_OBJECT_PETOWNER)
     {
         WoWGuid wowGuid;
-        wowGuid.Init(m_targets.getUnitTarget());
+        wowGuid.Init(m_targets.getUnitTargetGuid());
         if (wowGuid.isPet())
         {
             Pet* p = m_caster->getWorldMap()->getPet(wowGuid.getGuidLowPart());
@@ -227,7 +160,7 @@ void Spell::AddChainTargets(uint32 i, uint32 targetType, float /*r*/, uint32 /*m
     if (!m_caster->IsInWorld())
         return;
 
-    Object* targ = m_caster->getWorldMap()->getObject(m_targets.getUnitTarget());
+    Object* targ = m_caster->getWorldMap()->getObject(m_targets.getUnitTargetGuid());
 
     if (targ == nullptr)
         return;
@@ -290,7 +223,7 @@ void Spell::AddChainTargets(uint32 i, uint32 targetType, float /*r*/, uint32 /*m
 
 void Spell::AddPartyTargets(uint32 i, uint32 targetType, float r, uint32 /*maxtargets*/)
 {
-    Object* u = m_caster->getWorldMap()->getObject(m_targets.getUnitTarget());
+    Object* u = m_caster->getWorldMap()->getObject(m_targets.getUnitTargetGuid());
     if (u == nullptr)
         u = m_caster;
 
@@ -329,7 +262,7 @@ void Spell::AddPartyTargets(uint32 i, uint32 targetType, float r, uint32 /*maxta
 
 void Spell::AddRaidTargets(uint32 i, uint32 targetType, float r, uint32 /*maxtargets*/, bool /*partylimit*/)
 {
-    Object* u = m_caster->getWorldMap()->getObject(m_targets.getUnitTarget());
+    Object* u = m_caster->getWorldMap()->getObject(m_targets.getUnitTargetGuid());
     if (u == nullptr)
         u = m_caster;
 
@@ -374,7 +307,7 @@ void Spell::AddAOETargets(uint32 i, uint32 targetType, float r, uint32 maxtarget
     if (targetType & (SPELL_TARGET_AREA_PARTY | SPELL_TARGET_AREA_RAID) && !(p_caster == nullptr && !m_caster->isPet() && (!m_caster->isCreature() || !m_caster->isTotem())))
         return;
 
-    Object* tarobj = m_caster->getWorldMap()->getObject(m_targets.getUnitTarget());
+    Object* tarobj = m_caster->getWorldMap()->getObject(m_targets.getUnitTargetGuid());
 
     if (targetType & SPELL_TARGET_AREA_SELF)
         source = m_caster->GetPosition();
@@ -385,9 +318,9 @@ void Spell::AddAOETargets(uint32 i, uint32 targetType, float r, uint32 maxtarget
         if (!m_targets.getDestination().isSet())
         {
             // If position is not set, try unit target's position
-            if (m_targets.getUnitTarget() != 0)
+            if (m_targets.getUnitTargetGuid() != 0)
             {
-                const auto targetUnit = m_caster->getWorldMapUnit(m_targets.getUnitTarget());
+                const auto targetUnit = m_caster->getWorldMapUnit(m_targets.getUnitTargetGuid());
                 if (targetUnit != nullptr)
                     m_targets.setDestination(targetUnit->GetPosition());
             }

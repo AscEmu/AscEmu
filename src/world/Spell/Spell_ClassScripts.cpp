@@ -19,15 +19,16 @@
  *
  */
 
+#include "Spell/Spell.hpp"
 #include "Map/Management/MapMgr.hpp"
-#include "Management/Faction.h"
 #include "Spell/SpellMgr.hpp"
-#include "SpellAuras.h"
+#include "SpellAura.hpp"
 #include "Definitions/SpellSchoolConversionTable.hpp"
 #include "Definitions/DispelType.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
+#include "Objects/Units/Players/Player.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
  // Mage Scripts
@@ -381,9 +382,9 @@ public:
         {
             if (m_caster != NULL && m_caster->IsInWorld())
             {
-                Unit* target = m_caster->getWorldMap()->getUnit(m_targets.getUnitTarget());
+                Unit* target = m_caster->getWorldMap()->getUnit(m_targets.getUnitTargetGuid());
 
-                if (target == NULL || !(isAttackable(m_caster, target) || target->getRace() == RACE_UNDEAD))
+                if (target == NULL || !(m_caster->isValidTarget(target) || target->getRace() == RACE_UNDEAD))
                     result = SPELL_FAILED_BAD_TARGETS;
             }
         }

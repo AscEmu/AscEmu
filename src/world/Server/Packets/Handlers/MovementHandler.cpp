@@ -13,7 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObject.h"
 #include "Server/Warden/SpeedDetector.h"
 #include "Management/ObjectMgr.hpp"
-#include "Management/TaxiMgr.h"
+#include "Management/TaxiMgr.hpp"
 #include "Server/Packets/CmsgWorldTeleport.h"
 #include "Server/Packets/SmsgMountspecialAnim.h"
 #include "Server/Packets/MsgMoveTeleportAck.h"
@@ -24,6 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Transporter.hpp"
 #include "Server/World.h"
 #include "Server/WorldSessionLog.hpp"
+#include "Spell/Spell.hpp"
 
 using namespace AscEmu::Packets;
 

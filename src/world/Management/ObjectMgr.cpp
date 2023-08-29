@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <utility>
 
 #include "Charter.hpp"
+#include "Group.h"
 #include "QuestMgr.h"
 #include "Gossip/GossipMenu.hpp"
 #include "Macros/GuildMacros.hpp"
@@ -23,10 +24,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellMgr.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Spell/Definitions/SpellEffects.hpp"
-#include "Management/TaxiMgr.h"
+#include "Management/TaxiMgr.hpp"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Movement/MovementManager.h"
+#include "Objects/GameObject.h"
 #include "Objects/GameObjectProperties.hpp"
 #include "Objects/Units/Creatures/Corpse.hpp"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
