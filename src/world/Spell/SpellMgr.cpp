@@ -1022,9 +1022,10 @@ void SpellMgr::loadSpellInfoData()
             }
         }
 #endif
+        
+#endif
         mSpellInfoMapStore.insert({spell_id, spellInfo});
     }
-#endif
 }
 
 void SpellMgr::loadSkillLineAbilityMap()

@@ -1743,6 +1743,7 @@ std::shared_ptr<std::vector<TrainerSpell>> ObjectMgr::getTrainerSpellSetById(uin
 
 void ObjectMgr::loadTrainers()
 {
+#if VERSION_STRING <= Cata
     std::string normalTalkMessage = "DMSG";
 
     if (auto* const trainerResult = sMySQLStore.getWorldDBQuery("SELECT * FROM trainer_properties WHERE build <= %u;", VERSION_STRING))
@@ -1795,6 +1796,7 @@ void ObjectMgr::loadTrainers()
         delete trainerResult;
         sLogger.info("ObjectMgr : %u trainers loaded.", static_cast<uint32_t>(m_trainers.size()));
     }
+#endif
 }
 
 std::shared_ptr<Trainer> ObjectMgr::getTrainer(uint32_t _entry)
