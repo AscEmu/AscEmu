@@ -10,21 +10,40 @@
 
 if (NOT IS_64BIT)
 LIST(APPEND MY_INCLUDE_PATHS 
-            "$ENV{ProgramFiles\(x86\)}/MySQL/*/include"
-            "$ENV{ProgramFiles}/MySQL/*/include"
-            "$ENV{ProgramW6432}/MySQL/*/include"
-            "$ENV{SystemDrive}/MySQL/*/include"
+            "/usr/include"
             "/usr/include/mysql"
+            "/usr/local/include"
             "/usr/local/include/mysql"
-            "/usr/mysql/include/mysql")
+            "/usr/local/mysql/include"
+            "${PROGRAM_FILES_64}/MySQL/*/include"
+            "${PROGRAM_FILES_64}/MySQL/include"
+            "${PROGRAM_FILES_32}/MySQL/*/include"
+            "${PROGRAM_FILES_32}/MySQL/include"
+            "$ENV{ProgramFiles}/MySQL/*/include"
+            "$ENV{SystemDrive}/MySQL/*/include"
+            "$ENV{MYSQL_ROOT}/include"
+            "C:/Program Files (x86)/MySQL/*/include"
+            "D:/Program Files (x86)/MySQL/*/include"
+            "C:/Program Files/MySQL/*/include"
+            "D:/Program Files/MySQL/*/include")
 else ()
 LIST(APPEND MY_INCLUDE_PATHS 
-            "$ENV{ProgramFiles}/MySQL/*/include"
-            "$ENV{ProgramW6432}/MySQL/*/include"
-            "$ENV{SystemDrive}/MySQL/*/include"
+            "/usr/include"
             "/usr/include/mysql"
+            "/usr/local/include"
             "/usr/local/include/mysql"
-            "/usr/mysql/include/mysql")
+            "/usr/local/mysql/include"
+            "${PROGRAM_FILES_64}/MySQL/*/include"
+            "${PROGRAM_FILES_64}/MySQL/include"
+            "${PROGRAM_FILES_32}/MySQL/*/include"
+            "${PROGRAM_FILES_32}/MySQL/include"
+            "$ENV{ProgramFiles}/MySQL/*/include"
+            "$ENV{SystemDrive}/MySQL/*/include"
+            "$ENV{MYSQL_ROOT}/include"
+            "C:/Program Files (x86)/MySQL/*/include"
+            "D:/Program Files (x86)/MySQL/*/include"
+            "C:/Program Files/MySQL/*/include"
+            "D:/Program Files/MySQL/*/include")
 endif ()
 
 find_path(MYSQL_INCLUDE_DIR
@@ -35,15 +54,24 @@ if (WIN32)
 
 if (NOT IS_64BIT)
 LIST(APPEND MY_LIB_PATHS 
-            "$ENV{ProgramFiles\(x86\)}/MySQL/*/lib"
+            "${PROGRAM_FILES_64}/MySQL/*/lib"
+            "${PROGRAM_FILES_32}/MySQL/*/lib"
             "$ENV{ProgramFiles}/MySQL/*/lib"
-            "$ENV{ProgramW6432}/MySQL/*/lib"
-            "$ENV{SystemDrive}/MySQL/*/lib")
+            "$ENV{SystemDrive}/MySQL/*/lib"
+            "C:/Program Files (x86)/MySQL/*/lib"
+            "D:/Program Files (x86)/MySQL/*/lib"
+            "C:/Program Files/MySQL/*/lib"
+            "D:/Program Files/MySQL/*/lib")
 else ()
 LIST(APPEND MY_LIB_PATHS 
+            "${PROGRAM_FILES_64}/MySQL/*/lib"
+            "${PROGRAM_FILES_32}/MySQL/*/lib"
             "$ENV{ProgramFiles}/MySQL/*/lib"
-            "$ENV{ProgramW6432}/MySQL/*/lib"
-            "$ENV{SystemDrive}/MySQL/*/lib")
+            "$ENV{SystemDrive}/MySQL/*/lib"
+            "C:/Program Files (x86)/MySQL/*/lib"
+            "D:/Program Files (x86)/MySQL/*/lib"
+            "C:/Program Files/MySQL/*/lib"
+            "D:/Program Files/MySQL/*/lib")
 endif ()
 
 find_library(MYSQL_LIBRARY
