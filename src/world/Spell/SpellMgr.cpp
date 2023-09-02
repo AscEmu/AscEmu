@@ -116,6 +116,12 @@ void SpellMgr::finalize()
         delete itr->second;
 
     mSpellTargetConstraintMap.clear();
+
+    for (auto itr = mSpellInfoMapStore.begin(); itr != mSpellInfoMapStore.end(); ++itr)
+        delete itr->second;
+
+    mSpellInfoMapStore.clear();
+
 }
 
 void SpellMgr::loadSpellDataFromDatabase()
@@ -471,7 +477,6 @@ SpellInfo const* SpellMgr::getSpellInfoByDifficulty([[maybe_unused]]const uint32
 
 void SpellMgr::loadSpellInfoData()
 {
-#if VERSION_STRING == Mop
     for (uint32_t i = 0; i < MAX_SPELL_ID; ++i)
     {
         const auto dbcSpellEntry = sSpellStore.lookupEntry(i);
@@ -479,142 +484,144 @@ void SpellMgr::loadSpellInfoData()
             continue;
 
         auto spell_id = dbcSpellEntry->Id;
-        SpellInfo& spellInfo = *mSpellInfoMapStore[spell_id];
+        SpellInfo* spellInfo = new SpellInfo;
 
-        spellInfo.setId(spell_id);
-        spellInfo.setAttributes(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->Attributes : 0);
-        spellInfo.setAttributesEx(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesEx : 0);
-        spellInfo.setAttributesExB(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExB : 0);
-        spellInfo.setAttributesExC(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExC : 0);
-        spellInfo.setAttributesExD(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExD : 0);
-        spellInfo.setAttributesExE(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExE : 0);
-        spellInfo.setAttributesExF(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExF : 0);
-        spellInfo.setAttributesExG(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExG : 0);
-        spellInfo.setCastingTimeIndex(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->CastingTimeIndex : 0);
-        spellInfo.setDurationIndex(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->DurationIndex : 0);
-        spellInfo.setPowerType(static_cast<PowerType>(dbcSpellEntry->GetSpellPower() ? dbcSpellEntry->GetSpellPower()->powerType : 0));
-        spellInfo.setRangeIndex(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->rangeIndex : 0);
-        spellInfo.setSpeed(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->speed : 0);
-        spellInfo.setSpellVisual(0, dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->SpellVisual : 0);
-        spellInfo.setSpellVisual(1, dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->SpellVisual1 : 0);
-        spellInfo.setSpellIconID(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->spellIconID : 0);
-        spellInfo.setActiveIconID(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->activeIconID : 0);
-        spellInfo.setSchoolMask(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->School : 0);
-        spellInfo.setRuneCostID(dbcSpellEntry->RuneCostID);
-        spellInfo.setSpellDifficultyID(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->SpellDifficultyId : 0);
-        spellInfo.setAttributesExH(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExH : 0);
-        spellInfo.setAttributesExI(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExI : 0);
-        spellInfo.setAttributesExJ(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExJ : 0);
+#if VERSION_STRING == Mop
 
-        spellInfo.setName(dbcSpellEntry->Name);
-        spellInfo.setRank(dbcSpellEntry->Rank);
+        spellInfo->setId(spell_id);
+        spellInfo->setAttributes(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->Attributes : 0);
+        spellInfo->setAttributesEx(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesEx : 0);
+        spellInfo->setAttributesExB(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExB : 0);
+        spellInfo->setAttributesExC(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExC : 0);
+        spellInfo->setAttributesExD(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExD : 0);
+        spellInfo->setAttributesExE(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExE : 0);
+        spellInfo->setAttributesExF(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExF : 0);
+        spellInfo->setAttributesExG(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExG : 0);
+        spellInfo->setCastingTimeIndex(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->CastingTimeIndex : 0);
+        spellInfo->setDurationIndex(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->DurationIndex : 0);
+        spellInfo->setPowerType(static_cast<PowerType>(dbcSpellEntry->GetSpellPower() ? dbcSpellEntry->GetSpellPower()->powerType : 0));
+        spellInfo->setRangeIndex(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->rangeIndex : 0);
+        spellInfo->setSpeed(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->speed : 0);
+        spellInfo->setSpellVisual(0, dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->SpellVisual : 0);
+        spellInfo->setSpellVisual(1, dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->SpellVisual1 : 0);
+        spellInfo->setSpellIconID(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->spellIconID : 0);
+        spellInfo->setActiveIconID(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->activeIconID : 0);
+        spellInfo->setSchoolMask(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->School : 0);
+        spellInfo->setRuneCostID(dbcSpellEntry->RuneCostID);
+        spellInfo->setSpellDifficultyID(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->SpellDifficultyId : 0);
+        spellInfo->setAttributesExH(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExH : 0);
+        spellInfo->setAttributesExI(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExI : 0);
+        spellInfo->setAttributesExJ(dbcSpellEntry->GetSpellMisc() ? dbcSpellEntry->GetSpellMisc()->AttributesExJ : 0);
+
+        spellInfo->setName(dbcSpellEntry->Name);
+        spellInfo->setRank(dbcSpellEntry->Rank);
 
         // Initialize DBC links
-        spellInfo.SpellScalingId = dbcSpellEntry->SpellScalingId;
-        spellInfo.SpellAuraOptionsId = dbcSpellEntry->SpellAuraOptionsId;
-        spellInfo.SpellAuraRestrictionsId = dbcSpellEntry->SpellAuraRestrictionsId;
-        spellInfo.SpellCastingRequirementsId = dbcSpellEntry->SpellCastingRequirementsId;
-        spellInfo.SpellCategoriesId = dbcSpellEntry->SpellCategoriesId;
-        spellInfo.SpellClassOptionsId = dbcSpellEntry->SpellClassOptionsId;
-        spellInfo.SpellCooldownsId = dbcSpellEntry->SpellCooldownsId;
-        spellInfo.SpellEquippedItemsId = dbcSpellEntry->SpellEquippedItemsId;
-        spellInfo.SpellInterruptsId = dbcSpellEntry->SpellInterruptsId;
-        spellInfo.SpellLevelsId = dbcSpellEntry->SpellLevelsId;
-        spellInfo.SpellPowerId = dbcSpellEntry->Id;
-        spellInfo.SpellReagentsId = dbcSpellEntry->SpellReagentsId;
-        spellInfo.SpellShapeshiftId = dbcSpellEntry->SpellShapeshiftId;
-        spellInfo.SpellTargetRestrictionsId = dbcSpellEntry->SpellTargetRestrictionsId;
-        spellInfo.SpellTotemsId = dbcSpellEntry->SpellTotemsId;
+        spellInfo->SpellScalingId = dbcSpellEntry->SpellScalingId;
+        spellInfo->SpellAuraOptionsId = dbcSpellEntry->SpellAuraOptionsId;
+        spellInfo->SpellAuraRestrictionsId = dbcSpellEntry->SpellAuraRestrictionsId;
+        spellInfo->SpellCastingRequirementsId = dbcSpellEntry->SpellCastingRequirementsId;
+        spellInfo->SpellCategoriesId = dbcSpellEntry->SpellCategoriesId;
+        spellInfo->SpellClassOptionsId = dbcSpellEntry->SpellClassOptionsId;
+        spellInfo->SpellCooldownsId = dbcSpellEntry->SpellCooldownsId;
+        spellInfo->SpellEquippedItemsId = dbcSpellEntry->SpellEquippedItemsId;
+        spellInfo->SpellInterruptsId = dbcSpellEntry->SpellInterruptsId;
+        spellInfo->SpellLevelsId = dbcSpellEntry->SpellLevelsId;
+        spellInfo->SpellPowerId = dbcSpellEntry->Id;
+        spellInfo->SpellReagentsId = dbcSpellEntry->SpellReagentsId;
+        spellInfo->SpellShapeshiftId = dbcSpellEntry->SpellShapeshiftId;
+        spellInfo->SpellTargetRestrictionsId = dbcSpellEntry->SpellTargetRestrictionsId;
+        spellInfo->SpellTotemsId = dbcSpellEntry->SpellTotemsId;
 
         // Data from SpellAuraOptions.dbc
         if (dbcSpellEntry->SpellAuraOptionsId && dbcSpellEntry->GetSpellAuraOptions() != nullptr)
         {
-            spellInfo.setMaxstack(dbcSpellEntry->GetSpellAuraOptions()->MaxStackAmount);
-            spellInfo.setProcChance(dbcSpellEntry->GetSpellAuraOptions()->procChance);
-            spellInfo.setProcCharges(dbcSpellEntry->GetSpellAuraOptions()->procCharges);
-            spellInfo.setProcFlags(dbcSpellEntry->GetSpellAuraOptions()->procFlags);
+            spellInfo->setMaxstack(dbcSpellEntry->GetSpellAuraOptions()->MaxStackAmount);
+            spellInfo->setProcChance(dbcSpellEntry->GetSpellAuraOptions()->procChance);
+            spellInfo->setProcCharges(dbcSpellEntry->GetSpellAuraOptions()->procCharges);
+            spellInfo->setProcFlags(dbcSpellEntry->GetSpellAuraOptions()->procFlags);
         }
 
         // Data from SpellAuraRestrictions.dbc
         if (dbcSpellEntry->SpellAuraRestrictionsId && dbcSpellEntry->GetSpellAuraRestrictions() != nullptr)
         {
-            spellInfo.setCasterAuraState(dbcSpellEntry->GetSpellAuraRestrictions()->CasterAuraState);
-            spellInfo.setTargetAuraState(dbcSpellEntry->GetSpellAuraRestrictions()->TargetAuraState);
-            spellInfo.setCasterAuraStateNot(dbcSpellEntry->GetSpellAuraRestrictions()->CasterAuraStateNot);
-            spellInfo.setTargetAuraStateNot(dbcSpellEntry->GetSpellAuraRestrictions()->TargetAuraStateNot);
-            spellInfo.setCasterAuraSpell(dbcSpellEntry->GetSpellAuraRestrictions()->casterAuraSpell);
-            spellInfo.setTargetAuraSpell(dbcSpellEntry->GetSpellAuraRestrictions()->targetAuraSpell);
-            spellInfo.setCasterAuraSpellNot(dbcSpellEntry->GetSpellAuraRestrictions()->CasterAuraSpellNot);
-            spellInfo.setTargetAuraSpellNot(dbcSpellEntry->GetSpellAuraRestrictions()->TargetAuraSpellNot);
+            spellInfo->setCasterAuraState(dbcSpellEntry->GetSpellAuraRestrictions()->CasterAuraState);
+            spellInfo->setTargetAuraState(dbcSpellEntry->GetSpellAuraRestrictions()->TargetAuraState);
+            spellInfo->setCasterAuraStateNot(dbcSpellEntry->GetSpellAuraRestrictions()->CasterAuraStateNot);
+            spellInfo->setTargetAuraStateNot(dbcSpellEntry->GetSpellAuraRestrictions()->TargetAuraStateNot);
+            spellInfo->setCasterAuraSpell(dbcSpellEntry->GetSpellAuraRestrictions()->casterAuraSpell);
+            spellInfo->setTargetAuraSpell(dbcSpellEntry->GetSpellAuraRestrictions()->targetAuraSpell);
+            spellInfo->setCasterAuraSpellNot(dbcSpellEntry->GetSpellAuraRestrictions()->CasterAuraSpellNot);
+            spellInfo->setTargetAuraSpellNot(dbcSpellEntry->GetSpellAuraRestrictions()->TargetAuraSpellNot);
         }
 
         // Data from SpellCastingRequirements.dbc
         if (dbcSpellEntry->SpellCastingRequirementsId && dbcSpellEntry->GetSpellCastingRequirements() != nullptr)
         {
-            spellInfo.setFacingCasterFlags(dbcSpellEntry->GetSpellCastingRequirements()->FacingCasterFlags);
-            spellInfo.setRequiresAreaId(dbcSpellEntry->GetSpellCastingRequirements()->AreaGroupId);
-            spellInfo.setRequiresSpellFocus(dbcSpellEntry->GetSpellCastingRequirements()->RequiresSpellFocus);
+            spellInfo->setFacingCasterFlags(dbcSpellEntry->GetSpellCastingRequirements()->FacingCasterFlags);
+            spellInfo->setRequiresAreaId(dbcSpellEntry->GetSpellCastingRequirements()->AreaGroupId);
+            spellInfo->setRequiresSpellFocus(dbcSpellEntry->GetSpellCastingRequirements()->RequiresSpellFocus);
         }
 
         // Data from SpellCategories.dbc
         if (dbcSpellEntry->SpellCategoriesId && dbcSpellEntry->GetSpellCategories() != nullptr)
         {
-            spellInfo.setCategory(dbcSpellEntry->GetSpellCategories()->Category);
-            spellInfo.setDispelType(dbcSpellEntry->GetSpellCategories()->DispelType);
-            spellInfo.setDmgClass(dbcSpellEntry->GetSpellCategories()->DmgClass);
-            spellInfo.setMechanicsType(dbcSpellEntry->GetSpellCategories()->MechanicsType);
-            spellInfo.setPreventionType(dbcSpellEntry->GetSpellCategories()->PreventionType);
-            spellInfo.setStartRecoveryCategory(dbcSpellEntry->GetSpellCategories()->StartRecoveryCategory);
+            spellInfo->setCategory(dbcSpellEntry->GetSpellCategories()->Category);
+            spellInfo->setDispelType(dbcSpellEntry->GetSpellCategories()->DispelType);
+            spellInfo->setDmgClass(dbcSpellEntry->GetSpellCategories()->DmgClass);
+            spellInfo->setMechanicsType(dbcSpellEntry->GetSpellCategories()->MechanicsType);
+            spellInfo->setPreventionType(dbcSpellEntry->GetSpellCategories()->PreventionType);
+            spellInfo->setStartRecoveryCategory(dbcSpellEntry->GetSpellCategories()->StartRecoveryCategory);
         }
 
         // Data from SpellClassOptions.dbc
         if (dbcSpellEntry->SpellClassOptionsId && dbcSpellEntry->GetSpellClassOptions() != nullptr)
         {
-            spellInfo.setSpellFamilyName(dbcSpellEntry->GetSpellClassOptions()->SpellFamilyName);
+            spellInfo->setSpellFamilyName(dbcSpellEntry->GetSpellClassOptions()->SpellFamilyName);
             for (uint8_t j = 0; j < MAX_SPELL_EFFECTS; ++j)
-                spellInfo.setSpellFamilyFlags(dbcSpellEntry->GetSpellClassOptions()->SpellFamilyFlags[j], j);
+                spellInfo->setSpellFamilyFlags(dbcSpellEntry->GetSpellClassOptions()->SpellFamilyFlags[j], j);
         }
 
         // Data from SpellCooldowns.dbc
         if (dbcSpellEntry->SpellCooldownsId && dbcSpellEntry->GetSpellCooldowns() != nullptr)
         {
-            spellInfo.setCategoryRecoveryTime(dbcSpellEntry->GetSpellCooldowns()->CategoryRecoveryTime);
-            spellInfo.setRecoveryTime(dbcSpellEntry->GetSpellCooldowns()->RecoveryTime);
-            spellInfo.setStartRecoveryTime(dbcSpellEntry->GetSpellCooldowns()->StartRecoveryTime);
+            spellInfo->setCategoryRecoveryTime(dbcSpellEntry->GetSpellCooldowns()->CategoryRecoveryTime);
+            spellInfo->setRecoveryTime(dbcSpellEntry->GetSpellCooldowns()->RecoveryTime);
+            spellInfo->setStartRecoveryTime(dbcSpellEntry->GetSpellCooldowns()->StartRecoveryTime);
         }
 
         // Data from SpellEquippedItems.dbc
         if (dbcSpellEntry->SpellEquippedItemsId && dbcSpellEntry->GetSpellEquippedItems() != nullptr)
         {
-            spellInfo.setEquippedItemClass(dbcSpellEntry->GetSpellEquippedItems()->EquippedItemClass);
-            spellInfo.setEquippedItemInventoryTypeMask(dbcSpellEntry->GetSpellEquippedItems()->EquippedItemInventoryTypeMask);
-            spellInfo.setEquippedItemSubClass(dbcSpellEntry->GetSpellEquippedItems()->EquippedItemSubClassMask);
+            spellInfo->setEquippedItemClass(dbcSpellEntry->GetSpellEquippedItems()->EquippedItemClass);
+            spellInfo->setEquippedItemInventoryTypeMask(dbcSpellEntry->GetSpellEquippedItems()->EquippedItemInventoryTypeMask);
+            spellInfo->setEquippedItemSubClass(dbcSpellEntry->GetSpellEquippedItems()->EquippedItemSubClassMask);
         }
 
         // Data from SpellInterrupts.dbc
         if (dbcSpellEntry->SpellInterruptsId && dbcSpellEntry->GetSpellInterrupts() != nullptr)
         {
-            spellInfo.setAuraInterruptFlags(dbcSpellEntry->GetSpellInterrupts()->AuraInterruptFlags);
-            spellInfo.setChannelInterruptFlags(dbcSpellEntry->GetSpellInterrupts()->ChannelInterruptFlags);
-            spellInfo.setInterruptFlags(dbcSpellEntry->GetSpellInterrupts()->InterruptFlags);
+            spellInfo->setAuraInterruptFlags(dbcSpellEntry->GetSpellInterrupts()->AuraInterruptFlags);
+            spellInfo->setChannelInterruptFlags(dbcSpellEntry->GetSpellInterrupts()->ChannelInterruptFlags);
+            spellInfo->setInterruptFlags(dbcSpellEntry->GetSpellInterrupts()->InterruptFlags);
         }
 
         // Data from SpellLevels.dbc
         if (dbcSpellEntry->SpellLevelsId && dbcSpellEntry->GetSpellLevels() != nullptr)
         {
-            spellInfo.setBaseLevel(dbcSpellEntry->GetSpellLevels()->baseLevel);
-            spellInfo.setMaxLevel(dbcSpellEntry->GetSpellLevels()->maxLevel);
-            spellInfo.setSpellLevel(dbcSpellEntry->GetSpellLevels()->spellLevel);
+            spellInfo->setBaseLevel(dbcSpellEntry->GetSpellLevels()->baseLevel);
+            spellInfo->setMaxLevel(dbcSpellEntry->GetSpellLevels()->maxLevel);
+            spellInfo->setSpellLevel(dbcSpellEntry->GetSpellLevels()->spellLevel);
         }
 
         // Data from SpellPower.dbc
         if (dbcSpellEntry->GetSpellPower() != nullptr)
         {
-            spellInfo.setManaCost(dbcSpellEntry->GetSpellPower()->manaCost);
-            spellInfo.setManaCostPerlevel(dbcSpellEntry->GetSpellPower()->manaCostPerlevel);
-            spellInfo.setManaCostPercentage(dbcSpellEntry->GetSpellPower()->ManaCostPercentageFloat);
-            spellInfo.setManaPerSecond(dbcSpellEntry->GetSpellPower()->manaPerSecond);
-            spellInfo.setManaPerSecondPerLevel(dbcSpellEntry->GetSpellPower()->manaPerSecondPerLevel);
+            spellInfo->setManaCost(dbcSpellEntry->GetSpellPower()->manaCost);
+            spellInfo->setManaCostPerlevel(dbcSpellEntry->GetSpellPower()->manaCostPerlevel);
+            spellInfo->setManaCostPercentage(dbcSpellEntry->GetSpellPower()->ManaCostPercentageFloat);
+            spellInfo->setManaPerSecond(dbcSpellEntry->GetSpellPower()->manaPerSecond);
+            spellInfo->setManaPerSecondPerLevel(dbcSpellEntry->GetSpellPower()->manaPerSecondPerLevel);
         }
 
         // Data from SpellReagents.db2
@@ -623,25 +630,25 @@ void SpellMgr::loadSpellInfoData()
             for (uint8_t j = 0; j < MAX_SPELL_REAGENTS; ++j)
             {
                 const auto spellReagent = sSpellReagentsStore.lookupEntry(dbcSpellEntry->SpellReagentsId);
-                spellInfo.setReagent(spellReagent->Reagent[j], j);
-                spellInfo.setReagentCount(spellReagent->ReagentCount[j], j);
+                spellInfo->setReagent(spellReagent->Reagent[j], j);
+                spellInfo->setReagentCount(spellReagent->ReagentCount[j], j);
             }
         }
 
         // Data from SpellShapeshift.dbc
         if (dbcSpellEntry->SpellShapeshiftId && dbcSpellEntry->GetSpellShapeshift() != nullptr)
         {
-            spellInfo.setRequiredShapeShift(dbcSpellEntry->GetSpellShapeshift()->Shapeshifts);
-            spellInfo.setShapeshiftExclude(dbcSpellEntry->GetSpellShapeshift()->ShapeshiftsExcluded);
+            spellInfo->setRequiredShapeShift(dbcSpellEntry->GetSpellShapeshift()->Shapeshifts);
+            spellInfo->setShapeshiftExclude(dbcSpellEntry->GetSpellShapeshift()->ShapeshiftsExcluded);
         }
 
         // Data from SpellTargetRestrictions.dbc
         if (dbcSpellEntry->SpellTargetRestrictionsId && dbcSpellEntry->GetSpellTargetRestrictions() != nullptr)
         {
-            spellInfo.setMaxTargets(dbcSpellEntry->GetSpellTargetRestrictions()->MaxAffectedTargets);
-            spellInfo.setMaxTargetLevel(dbcSpellEntry->GetSpellTargetRestrictions()->MaxTargetLevel);
-            spellInfo.setTargetCreatureType(dbcSpellEntry->GetSpellTargetRestrictions()->TargetCreatureType);
-            spellInfo.setTargets(dbcSpellEntry->GetSpellTargetRestrictions()->Targets);
+            spellInfo->setMaxTargets(dbcSpellEntry->GetSpellTargetRestrictions()->MaxAffectedTargets);
+            spellInfo->setMaxTargetLevel(dbcSpellEntry->GetSpellTargetRestrictions()->MaxTargetLevel);
+            spellInfo->setTargetCreatureType(dbcSpellEntry->GetSpellTargetRestrictions()->TargetCreatureType);
+            spellInfo->setTargets(dbcSpellEntry->GetSpellTargetRestrictions()->Targets);
         }
 
         // Data from SpellTotems.dbc
@@ -649,8 +656,8 @@ void SpellMgr::loadSpellInfoData()
         {
             for (uint8_t j = 0; j < MAX_SPELL_TOTEMS; ++j)
             {
-                spellInfo.setTotemCategory(dbcSpellEntry->GetSpellTotems()->TotemCategory[j], j);
-                spellInfo.setTotem(dbcSpellEntry->GetSpellTotems()->Totem[j], j);
+                spellInfo->setTotemCategory(dbcSpellEntry->GetSpellTotems()->TotemCategory[j], j);
+                spellInfo->setTotem(dbcSpellEntry->GetSpellTotems()->Totem[j], j);
             }
         }
 
@@ -660,299 +667,290 @@ void SpellMgr::loadSpellInfoData()
             const auto spell_effect_entry = GetSpellEffectEntry(spell_id, j);
             if (spell_effect_entry != nullptr)
             {
-                spellInfo.setEffect(spell_effect_entry->Effect, j);
-                spellInfo.setEffectMultipleValue(spell_effect_entry->EffectMultipleValue, j);
-                spellInfo.setEffectApplyAuraName(spell_effect_entry->EffectApplyAuraName, j);
-                spellInfo.setEffectAmplitude(spell_effect_entry->EffectAmplitude, j);
-                spellInfo.setEffectBasePoints(spell_effect_entry->EffectBasePoints, j);
-                spellInfo.setEffectBonusMultiplier(spell_effect_entry->EffectBonusMultiplier, j);
-                spellInfo.setEffectDamageMultiplier(spell_effect_entry->EffectDamageMultiplier, j);
-                spellInfo.setEffectChainTarget(spell_effect_entry->EffectChainTarget, j);
-                spellInfo.setEffectDieSides(spell_effect_entry->EffectDieSides, j);
-                spellInfo.setEffectItemType(spell_effect_entry->EffectItemType, j);
-                spellInfo.setEffectMechanic(spell_effect_entry->EffectMechanic, j);
-                spellInfo.setEffectMiscValue(spell_effect_entry->EffectMiscValue, j);
-                spellInfo.setEffectMiscValueB(spell_effect_entry->EffectMiscValueB, j);
-                spellInfo.setEffectPointsPerComboPoint(spell_effect_entry->EffectPointsPerComboPoint, j);
-                spellInfo.setEffectRadiusIndex(spell_effect_entry->EffectRadiusIndex, j);
-                spellInfo.setEffectRadiusMaxIndex(spell_effect_entry->EffectRadiusMaxIndex, j);
-                spellInfo.setEffectRealPointsPerLevel(spell_effect_entry->EffectRealPointsPerLevel, j);
+                spellInfo->setEffect(spell_effect_entry->Effect, j);
+                spellInfo->setEffectMultipleValue(spell_effect_entry->EffectMultipleValue, j);
+                spellInfo->setEffectApplyAuraName(spell_effect_entry->EffectApplyAuraName, j);
+                spellInfo->setEffectAmplitude(spell_effect_entry->EffectAmplitude, j);
+                spellInfo->setEffectBasePoints(spell_effect_entry->EffectBasePoints, j);
+                spellInfo->setEffectBonusMultiplier(spell_effect_entry->EffectBonusMultiplier, j);
+                spellInfo->setEffectDamageMultiplier(spell_effect_entry->EffectDamageMultiplier, j);
+                spellInfo->setEffectChainTarget(spell_effect_entry->EffectChainTarget, j);
+                spellInfo->setEffectDieSides(spell_effect_entry->EffectDieSides, j);
+                spellInfo->setEffectItemType(spell_effect_entry->EffectItemType, j);
+                spellInfo->setEffectMechanic(spell_effect_entry->EffectMechanic, j);
+                spellInfo->setEffectMiscValue(spell_effect_entry->EffectMiscValue, j);
+                spellInfo->setEffectMiscValueB(spell_effect_entry->EffectMiscValueB, j);
+                spellInfo->setEffectPointsPerComboPoint(spell_effect_entry->EffectPointsPerComboPoint, j);
+                spellInfo->setEffectRadiusIndex(spell_effect_entry->EffectRadiusIndex, j);
+                spellInfo->setEffectRadiusMaxIndex(spell_effect_entry->EffectRadiusMaxIndex, j);
+                spellInfo->setEffectRealPointsPerLevel(spell_effect_entry->EffectRealPointsPerLevel, j);
                 for (uint8_t x = 0; x < 3; ++x)
-                    spellInfo.setEffectSpellClassMask(spell_effect_entry->EffectSpellClassMask[x], j, x);
-                spellInfo.setEffectTriggerSpell(spell_effect_entry->EffectTriggerSpell, j);
-                spellInfo.setEffectImplicitTargetA(spell_effect_entry->EffectImplicitTargetA, j);
-                spellInfo.setEffectImplicitTargetB(spell_effect_entry->EffectImplicitTargetB, j);
-                spellInfo.setEffectSpellId(spell_effect_entry->EffectSpellId, j);
-                spellInfo.setEffectIndex(spell_effect_entry->EffectIndex, j);
+                    spellInfo->setEffectSpellClassMask(spell_effect_entry->EffectSpellClassMask[x], j, x);
+                spellInfo->setEffectTriggerSpell(spell_effect_entry->EffectTriggerSpell, j);
+                spellInfo->setEffectImplicitTargetA(spell_effect_entry->EffectImplicitTargetA, j);
+                spellInfo->setEffectImplicitTargetB(spell_effect_entry->EffectImplicitTargetB, j);
+                spellInfo->setEffectSpellId(spell_effect_entry->EffectSpellId, j);
+                spellInfo->setEffectIndex(spell_effect_entry->EffectIndex, j);
             }
         }
-    }
 #else
-    for (uint32_t i = 0; i < MAX_SPELL_ID; ++i)
-    {
-        const auto dbcSpellEntry = sSpellStore.lookupEntry(i);
-        if (dbcSpellEntry == nullptr)
-            continue;
 
-        auto spell_id = dbcSpellEntry->Id;
-        SpellInfo& spellInfo = *mSpellInfoMapStore[spell_id];
-
-        spellInfo.setId(spell_id);
-        spellInfo.setAttributes(dbcSpellEntry->Attributes);
-        spellInfo.setAttributesEx(dbcSpellEntry->AttributesEx);
-        spellInfo.setAttributesExB(dbcSpellEntry->AttributesExB);
-        spellInfo.setAttributesExC(dbcSpellEntry->AttributesExC);
-        spellInfo.setAttributesExD(dbcSpellEntry->AttributesExD);
+        spellInfo->setId(spell_id);
+        spellInfo->setAttributes(dbcSpellEntry->Attributes);
+        spellInfo->setAttributesEx(dbcSpellEntry->AttributesEx);
+        spellInfo->setAttributesExB(dbcSpellEntry->AttributesExB);
+        spellInfo->setAttributesExC(dbcSpellEntry->AttributesExC);
+        spellInfo->setAttributesExD(dbcSpellEntry->AttributesExD);
 #if VERSION_STRING >= TBC
-        spellInfo.setAttributesExE(dbcSpellEntry->AttributesExE);
-        spellInfo.setAttributesExF(dbcSpellEntry->AttributesExF);
+        spellInfo->setAttributesExE(dbcSpellEntry->AttributesExE);
+        spellInfo->setAttributesExF(dbcSpellEntry->AttributesExF);
 #endif
 #if VERSION_STRING >= WotLK
-        spellInfo.setAttributesExG(dbcSpellEntry->AttributesExG);
+        spellInfo->setAttributesExG(dbcSpellEntry->AttributesExG);
 #endif
-        spellInfo.setCastingTimeIndex(dbcSpellEntry->CastingTimeIndex);
-        spellInfo.setDurationIndex(dbcSpellEntry->DurationIndex);
-        spellInfo.setPowerType(static_cast<PowerType>(dbcSpellEntry->powerType));
-        spellInfo.setRangeIndex(dbcSpellEntry->rangeIndex);
-        spellInfo.setSpeed(dbcSpellEntry->speed);
-        spellInfo.setSpellVisual(0, dbcSpellEntry->SpellVisual);
-        spellInfo.setSpellVisual(1, dbcSpellEntry->SpellVisual1);
-        spellInfo.setSpellIconID(dbcSpellEntry->spellIconID);
-        spellInfo.setActiveIconID(dbcSpellEntry->activeIconID);
+        spellInfo->setCastingTimeIndex(dbcSpellEntry->CastingTimeIndex);
+        spellInfo->setDurationIndex(dbcSpellEntry->DurationIndex);
+        spellInfo->setPowerType(static_cast<PowerType>(dbcSpellEntry->powerType));
+        spellInfo->setRangeIndex(dbcSpellEntry->rangeIndex);
+        spellInfo->setSpeed(dbcSpellEntry->speed);
+        spellInfo->setSpellVisual(0, dbcSpellEntry->SpellVisual);
+        spellInfo->setSpellVisual(1, dbcSpellEntry->SpellVisual1);
+        spellInfo->setSpellIconID(dbcSpellEntry->spellIconID);
+        spellInfo->setActiveIconID(dbcSpellEntry->activeIconID);
 #if VERSION_STRING == Classic
         // Classic doesn't have schools bitwise in DBC
-        spellInfo.setSchoolMask(1 << dbcSpellEntry->School);
+        spellInfo->setSchoolMask(1 << dbcSpellEntry->School);
 #else
-        spellInfo.setSchoolMask(dbcSpellEntry->School);
+        spellInfo->setSchoolMask(dbcSpellEntry->School);
 #endif
 #if VERSION_STRING >= WotLK
-        spellInfo.setRuneCostID(dbcSpellEntry->RuneCostID);
-        spellInfo.setSpellDifficultyID(dbcSpellEntry->SpellDifficultyId);
+        spellInfo->setRuneCostID(dbcSpellEntry->RuneCostID);
+        spellInfo->setSpellDifficultyID(dbcSpellEntry->SpellDifficultyId);
 #endif
 
 #if VERSION_STRING < Cata
-        spellInfo.setCategory(dbcSpellEntry->Category);
-        spellInfo.setDispelType(dbcSpellEntry->DispelType);
-        spellInfo.setMechanicsType(dbcSpellEntry->MechanicsType);
-        spellInfo.setRequiredShapeShift(dbcSpellEntry->Shapeshifts);
-        spellInfo.setShapeshiftExclude(dbcSpellEntry->ShapeshiftsExcluded);
-        spellInfo.setTargets(dbcSpellEntry->Targets);
-        spellInfo.setTargetCreatureType(dbcSpellEntry->TargetCreatureType);
-        spellInfo.setRequiresSpellFocus(dbcSpellEntry->RequiresSpellFocus);
+        spellInfo->setCategory(dbcSpellEntry->Category);
+        spellInfo->setDispelType(dbcSpellEntry->DispelType);
+        spellInfo->setMechanicsType(dbcSpellEntry->MechanicsType);
+        spellInfo->setRequiredShapeShift(dbcSpellEntry->Shapeshifts);
+        spellInfo->setShapeshiftExclude(dbcSpellEntry->ShapeshiftsExcluded);
+        spellInfo->setTargets(dbcSpellEntry->Targets);
+        spellInfo->setTargetCreatureType(dbcSpellEntry->TargetCreatureType);
+        spellInfo->setRequiresSpellFocus(dbcSpellEntry->RequiresSpellFocus);
 #if VERSION_STRING >= TBC
-        spellInfo.setFacingCasterFlags(dbcSpellEntry->FacingCasterFlags);
+        spellInfo->setFacingCasterFlags(dbcSpellEntry->FacingCasterFlags);
 #endif
-        spellInfo.setCasterAuraState(dbcSpellEntry->CasterAuraState);
-        spellInfo.setTargetAuraState(dbcSpellEntry->TargetAuraState);
+        spellInfo->setCasterAuraState(dbcSpellEntry->CasterAuraState);
+        spellInfo->setTargetAuraState(dbcSpellEntry->TargetAuraState);
 #if VERSION_STRING >= TBC
-        spellInfo.setCasterAuraStateNot(dbcSpellEntry->CasterAuraStateNot);
-        spellInfo.setTargetAuraStateNot(dbcSpellEntry->TargetAuraStateNot);
+        spellInfo->setCasterAuraStateNot(dbcSpellEntry->CasterAuraStateNot);
+        spellInfo->setTargetAuraStateNot(dbcSpellEntry->TargetAuraStateNot);
 #endif
 #if VERSION_STRING == WotLK
-        spellInfo.setCasterAuraSpell(dbcSpellEntry->casterAuraSpell);
-        spellInfo.setTargetAuraSpell(dbcSpellEntry->targetAuraSpell);
-        spellInfo.setCasterAuraSpellNot(dbcSpellEntry->casterAuraSpellNot);
-        spellInfo.setTargetAuraSpellNot(dbcSpellEntry->targetAuraSpellNot);
+        spellInfo->setCasterAuraSpell(dbcSpellEntry->casterAuraSpell);
+        spellInfo->setTargetAuraSpell(dbcSpellEntry->targetAuraSpell);
+        spellInfo->setCasterAuraSpellNot(dbcSpellEntry->casterAuraSpellNot);
+        spellInfo->setTargetAuraSpellNot(dbcSpellEntry->targetAuraSpellNot);
 #endif
-        spellInfo.setRecoveryTime(dbcSpellEntry->RecoveryTime);
-        spellInfo.setCategoryRecoveryTime(dbcSpellEntry->CategoryRecoveryTime);
-        spellInfo.setInterruptFlags(dbcSpellEntry->InterruptFlags);
-        spellInfo.setAuraInterruptFlags(dbcSpellEntry->AuraInterruptFlags);
-        spellInfo.setChannelInterruptFlags(dbcSpellEntry->ChannelInterruptFlags);
-        spellInfo.setProcFlags(dbcSpellEntry->procFlags);
-        spellInfo.setProcChance(dbcSpellEntry->procChance);
-        spellInfo.setProcCharges(dbcSpellEntry->procCharges);
-        spellInfo.setMaxLevel(dbcSpellEntry->maxLevel);
-        spellInfo.setBaseLevel(dbcSpellEntry->baseLevel);
-        spellInfo.setSpellLevel(dbcSpellEntry->spellLevel);
-        spellInfo.setManaCost(dbcSpellEntry->manaCost);
-        spellInfo.setManaCostPerlevel(dbcSpellEntry->manaCostPerlevel);
-        spellInfo.setManaPerSecond(dbcSpellEntry->manaPerSecond);
-        spellInfo.setManaPerSecondPerLevel(dbcSpellEntry->manaPerSecondPerLevel);
-        spellInfo.setMaxstack(dbcSpellEntry->MaxStackAmount);
+        spellInfo->setRecoveryTime(dbcSpellEntry->RecoveryTime);
+        spellInfo->setCategoryRecoveryTime(dbcSpellEntry->CategoryRecoveryTime);
+        spellInfo->setInterruptFlags(dbcSpellEntry->InterruptFlags);
+        spellInfo->setAuraInterruptFlags(dbcSpellEntry->AuraInterruptFlags);
+        spellInfo->setChannelInterruptFlags(dbcSpellEntry->ChannelInterruptFlags);
+        spellInfo->setProcFlags(dbcSpellEntry->procFlags);
+        spellInfo->setProcChance(dbcSpellEntry->procChance);
+        spellInfo->setProcCharges(dbcSpellEntry->procCharges);
+        spellInfo->setMaxLevel(dbcSpellEntry->maxLevel);
+        spellInfo->setBaseLevel(dbcSpellEntry->baseLevel);
+        spellInfo->setSpellLevel(dbcSpellEntry->spellLevel);
+        spellInfo->setManaCost(dbcSpellEntry->manaCost);
+        spellInfo->setManaCostPerlevel(dbcSpellEntry->manaCostPerlevel);
+        spellInfo->setManaPerSecond(dbcSpellEntry->manaPerSecond);
+        spellInfo->setManaPerSecondPerLevel(dbcSpellEntry->manaPerSecondPerLevel);
+        spellInfo->setMaxstack(dbcSpellEntry->MaxStackAmount);
         for (uint8_t j = 0; j < MAX_SPELL_TOTEMS; ++j)
-            spellInfo.setTotem(dbcSpellEntry->Totem[j], j);
+            spellInfo->setTotem(dbcSpellEntry->Totem[j], j);
         for (uint8_t j = 0; j < MAX_SPELL_REAGENTS; ++j)
         {
-            spellInfo.setReagent(dbcSpellEntry->Reagent[j], j);
-            spellInfo.setReagentCount(dbcSpellEntry->ReagentCount[j], j);
+            spellInfo->setReagent(dbcSpellEntry->Reagent[j], j);
+            spellInfo->setReagentCount(dbcSpellEntry->ReagentCount[j], j);
         }
-        spellInfo.setEquippedItemClass(dbcSpellEntry->EquippedItemClass);
-        spellInfo.setEquippedItemSubClass(dbcSpellEntry->EquippedItemSubClass);
-        spellInfo.setEquippedItemInventoryTypeMask(dbcSpellEntry->EquippedItemInventoryTypeMask);
+        spellInfo->setEquippedItemClass(dbcSpellEntry->EquippedItemClass);
+        spellInfo->setEquippedItemSubClass(dbcSpellEntry->EquippedItemSubClass);
+        spellInfo->setEquippedItemInventoryTypeMask(dbcSpellEntry->EquippedItemInventoryTypeMask);
         for (uint8_t j = 0; j < MAX_SPELL_EFFECTS; ++j)
         {
-            spellInfo.setEffect(dbcSpellEntry->Effect[j], j);
-            spellInfo.setEffectDieSides(dbcSpellEntry->EffectDieSides[j], j);
-            spellInfo.setEffectRealPointsPerLevel(dbcSpellEntry->EffectRealPointsPerLevel[j], j);
-            spellInfo.setEffectBasePoints(dbcSpellEntry->EffectBasePoints[j], j);
-            spellInfo.setEffectMechanic(dbcSpellEntry->EffectMechanic[j], j);
-            spellInfo.setEffectImplicitTargetA(dbcSpellEntry->EffectImplicitTargetA[j], j);
-            spellInfo.setEffectImplicitTargetB(dbcSpellEntry->EffectImplicitTargetB[j], j);
-            spellInfo.setEffectRadiusIndex(dbcSpellEntry->EffectRadiusIndex[j], j);
-            spellInfo.setEffectApplyAuraName(dbcSpellEntry->EffectApplyAuraName[j], j);
-            spellInfo.setEffectAmplitude(dbcSpellEntry->EffectAmplitude[j], j);
-            spellInfo.setEffectMultipleValue(dbcSpellEntry->EffectMultipleValue[j], j);
-            spellInfo.setEffectChainTarget(dbcSpellEntry->EffectChainTarget[j], j);
-            spellInfo.setEffectItemType(dbcSpellEntry->EffectItemType[j], j);
-            spellInfo.setEffectMiscValue(dbcSpellEntry->EffectMiscValue[j], j);
+            spellInfo->setEffect(dbcSpellEntry->Effect[j], j);
+            spellInfo->setEffectDieSides(dbcSpellEntry->EffectDieSides[j], j);
+            spellInfo->setEffectRealPointsPerLevel(dbcSpellEntry->EffectRealPointsPerLevel[j], j);
+            spellInfo->setEffectBasePoints(dbcSpellEntry->EffectBasePoints[j], j);
+            spellInfo->setEffectMechanic(dbcSpellEntry->EffectMechanic[j], j);
+            spellInfo->setEffectImplicitTargetA(dbcSpellEntry->EffectImplicitTargetA[j], j);
+            spellInfo->setEffectImplicitTargetB(dbcSpellEntry->EffectImplicitTargetB[j], j);
+            spellInfo->setEffectRadiusIndex(dbcSpellEntry->EffectRadiusIndex[j], j);
+            spellInfo->setEffectApplyAuraName(dbcSpellEntry->EffectApplyAuraName[j], j);
+            spellInfo->setEffectAmplitude(dbcSpellEntry->EffectAmplitude[j], j);
+            spellInfo->setEffectMultipleValue(dbcSpellEntry->EffectMultipleValue[j], j);
+            spellInfo->setEffectChainTarget(dbcSpellEntry->EffectChainTarget[j], j);
+            spellInfo->setEffectItemType(dbcSpellEntry->EffectItemType[j], j);
+            spellInfo->setEffectMiscValue(dbcSpellEntry->EffectMiscValue[j], j);
 #if VERSION_STRING >= TBC
-            spellInfo.setEffectMiscValueB(dbcSpellEntry->EffectMiscValueB[j], j);
+            spellInfo->setEffectMiscValueB(dbcSpellEntry->EffectMiscValueB[j], j);
 #endif
-            spellInfo.setEffectTriggerSpell(dbcSpellEntry->EffectTriggerSpell[j], j);
-            spellInfo.setEffectPointsPerComboPoint(dbcSpellEntry->EffectPointsPerComboPoint[j], j);
+            spellInfo->setEffectTriggerSpell(dbcSpellEntry->EffectTriggerSpell[j], j);
+            spellInfo->setEffectPointsPerComboPoint(dbcSpellEntry->EffectPointsPerComboPoint[j], j);
 #if VERSION_STRING == WotLK
             for (uint8_t x = 0; x < 3; ++x)
-                spellInfo.setEffectSpellClassMask(dbcSpellEntry->EffectSpellClassMask[j][x], j, x);
+                spellInfo->setEffectSpellClassMask(dbcSpellEntry->EffectSpellClassMask[j][x], j, x);
 #endif
         }
-        spellInfo.setSpellPriority(dbcSpellEntry->spellPriority);
-        spellInfo.setName(dbcSpellEntry->Name[sWorld.getDbcLocaleLanguageId()]);
-        spellInfo.setRank(dbcSpellEntry->Rank[sWorld.getDbcLocaleLanguageId()]);
-        spellInfo.setManaCostPercentage(dbcSpellEntry->ManaCostPercentage);
-        spellInfo.setStartRecoveryCategory(dbcSpellEntry->StartRecoveryCategory);
-        spellInfo.setStartRecoveryTime(dbcSpellEntry->StartRecoveryTime);
-        spellInfo.setMaxTargetLevel(dbcSpellEntry->MaxTargetLevel);
-        spellInfo.setSpellFamilyName(dbcSpellEntry->SpellFamilyName);
+        spellInfo->setSpellPriority(dbcSpellEntry->spellPriority);
+        spellInfo->setName(dbcSpellEntry->Name[sWorld.getDbcLocaleLanguageId()]);
+        spellInfo->setRank(dbcSpellEntry->Rank[sWorld.getDbcLocaleLanguageId()]);
+        spellInfo->setManaCostPercentage(dbcSpellEntry->ManaCostPercentage);
+        spellInfo->setStartRecoveryCategory(dbcSpellEntry->StartRecoveryCategory);
+        spellInfo->setStartRecoveryTime(dbcSpellEntry->StartRecoveryTime);
+        spellInfo->setMaxTargetLevel(dbcSpellEntry->MaxTargetLevel);
+        spellInfo->setSpellFamilyName(dbcSpellEntry->SpellFamilyName);
 #if VERSION_STRING != WotLK
         for (uint8_t j = 0; j < 2; ++j)
-            spellInfo.setSpellFamilyFlags(dbcSpellEntry->SpellFamilyFlags[j], j);
+            spellInfo->setSpellFamilyFlags(dbcSpellEntry->SpellFamilyFlags[j], j);
 #else
         for (uint8_t j = 0; j < MAX_SPELL_EFFECTS; ++j)
-            spellInfo.setSpellFamilyFlags(dbcSpellEntry->SpellFamilyFlags[j], j);
+            spellInfo->setSpellFamilyFlags(dbcSpellEntry->SpellFamilyFlags[j], j);
 #endif
-        spellInfo.setMaxTargets(dbcSpellEntry->MaxTargets);
-        spellInfo.setDmgClass(dbcSpellEntry->DmgClass);
-        spellInfo.setPreventionType(dbcSpellEntry->PreventionType);
+        spellInfo->setMaxTargets(dbcSpellEntry->MaxTargets);
+        spellInfo->setDmgClass(dbcSpellEntry->DmgClass);
+        spellInfo->setPreventionType(dbcSpellEntry->PreventionType);
         for (uint8_t j = 0; j < MAX_SPELL_EFFECTS; ++j)
-            spellInfo.setEffectDamageMultiplier(dbcSpellEntry->EffectDamageMultiplier[j], j);
+            spellInfo->setEffectDamageMultiplier(dbcSpellEntry->EffectDamageMultiplier[j], j);
 #if VERSION_STRING >= TBC
         for (uint8_t j = 0; j < MAX_SPELL_TOTEM_CATEGORIES; ++j)
-            spellInfo.setTotemCategory(dbcSpellEntry->TotemCategory[j], j);
-        spellInfo.setRequiresAreaId(dbcSpellEntry->AreaGroupId);
+            spellInfo->setTotemCategory(dbcSpellEntry->TotemCategory[j], j);
+        spellInfo->setRequiresAreaId(dbcSpellEntry->AreaGroupId);
 #endif
 #if VERSION_STRING == WotLK
         for (uint8_t j = 0; j < MAX_SPELL_EFFECTS; ++j)
-            spellInfo.setEffectBonusMultiplier(dbcSpellEntry->EffectBonusMultiplier[j], j);
+            spellInfo->setEffectBonusMultiplier(dbcSpellEntry->EffectBonusMultiplier[j], j);
 #endif
         // Cataclysm and MoP begins
 #else
-        spellInfo.setAttributesExH(dbcSpellEntry->AttributesExH);
-        spellInfo.setAttributesExI(dbcSpellEntry->AttributesExI);
-        spellInfo.setAttributesExJ(dbcSpellEntry->AttributesExJ);
+        spellInfo->setAttributesExH(dbcSpellEntry->AttributesExH);
+        spellInfo->setAttributesExI(dbcSpellEntry->AttributesExI);
+        spellInfo->setAttributesExJ(dbcSpellEntry->AttributesExJ);
 
-        spellInfo.setName(dbcSpellEntry->Name);
-        spellInfo.setRank(dbcSpellEntry->Rank);
+        spellInfo->setName(dbcSpellEntry->Name);
+        spellInfo->setRank(dbcSpellEntry->Rank);
 
         // Initialize DBC links
-        spellInfo.SpellScalingId = dbcSpellEntry->SpellScalingId;
-        spellInfo.SpellAuraOptionsId = dbcSpellEntry->SpellAuraOptionsId;
-        spellInfo.SpellAuraRestrictionsId = dbcSpellEntry->SpellAuraRestrictionsId;
-        spellInfo.SpellCastingRequirementsId = dbcSpellEntry->SpellCastingRequirementsId;
-        spellInfo.SpellCategoriesId = dbcSpellEntry->SpellCategoriesId;
-        spellInfo.SpellClassOptionsId = dbcSpellEntry->SpellClassOptionsId;
-        spellInfo.SpellCooldownsId = dbcSpellEntry->SpellCooldownsId;
-        spellInfo.SpellEquippedItemsId = dbcSpellEntry->SpellEquippedItemsId;
-        spellInfo.SpellInterruptsId = dbcSpellEntry->SpellInterruptsId;
-        spellInfo.SpellLevelsId = dbcSpellEntry->SpellLevelsId;
-        spellInfo.SpellPowerId = dbcSpellEntry->SpellPowerId;
-        spellInfo.SpellReagentsId = dbcSpellEntry->SpellReagentsId;
-        spellInfo.SpellShapeshiftId = dbcSpellEntry->SpellShapeshiftId;
-        spellInfo.SpellTargetRestrictionsId = dbcSpellEntry->SpellTargetRestrictionsId;
-        spellInfo.SpellTotemsId = dbcSpellEntry->SpellTotemsId;
+        spellInfo->SpellScalingId = dbcSpellEntry->SpellScalingId;
+        spellInfo->SpellAuraOptionsId = dbcSpellEntry->SpellAuraOptionsId;
+        spellInfo->SpellAuraRestrictionsId = dbcSpellEntry->SpellAuraRestrictionsId;
+        spellInfo->SpellCastingRequirementsId = dbcSpellEntry->SpellCastingRequirementsId;
+        spellInfo->SpellCategoriesId = dbcSpellEntry->SpellCategoriesId;
+        spellInfo->SpellClassOptionsId = dbcSpellEntry->SpellClassOptionsId;
+        spellInfo->SpellCooldownsId = dbcSpellEntry->SpellCooldownsId;
+        spellInfo->SpellEquippedItemsId = dbcSpellEntry->SpellEquippedItemsId;
+        spellInfo->SpellInterruptsId = dbcSpellEntry->SpellInterruptsId;
+        spellInfo->SpellLevelsId = dbcSpellEntry->SpellLevelsId;
+        spellInfo->SpellPowerId = dbcSpellEntry->SpellPowerId;
+        spellInfo->SpellReagentsId = dbcSpellEntry->SpellReagentsId;
+        spellInfo->SpellShapeshiftId = dbcSpellEntry->SpellShapeshiftId;
+        spellInfo->SpellTargetRestrictionsId = dbcSpellEntry->SpellTargetRestrictionsId;
+        spellInfo->SpellTotemsId = dbcSpellEntry->SpellTotemsId;
 
         // Data from SpellAuraOptions.dbc
         auto spellAuraOption = dbcSpellEntry->GetSpellAuraOptions();
         if (dbcSpellEntry->SpellAuraOptionsId && spellAuraOption != nullptr)
         {
-            spellInfo.setMaxstack(spellAuraOption->MaxStackAmount);
-            spellInfo.setProcChance(spellAuraOption->procChance);
-            spellInfo.setProcCharges(spellAuraOption->procCharges);
-            spellInfo.setProcFlags(spellAuraOption->procFlags);
+            spellInfo->setMaxstack(spellAuraOption->MaxStackAmount);
+            spellInfo->setProcChance(spellAuraOption->procChance);
+            spellInfo->setProcCharges(spellAuraOption->procCharges);
+            spellInfo->setProcFlags(spellAuraOption->procFlags);
         }
 
         // Data from SpellAuraRestrictions.dbc
         if (dbcSpellEntry->SpellAuraRestrictionsId && dbcSpellEntry->GetSpellAuraRestrictions() != nullptr)
         {
-            spellInfo.setCasterAuraState(dbcSpellEntry->GetSpellAuraRestrictions()->CasterAuraState);
-            spellInfo.setTargetAuraState(dbcSpellEntry->GetSpellAuraRestrictions()->TargetAuraState);
-            spellInfo.setCasterAuraStateNot(dbcSpellEntry->GetSpellAuraRestrictions()->CasterAuraStateNot);
-            spellInfo.setTargetAuraStateNot(dbcSpellEntry->GetSpellAuraRestrictions()->TargetAuraStateNot);
-            spellInfo.setCasterAuraSpell(dbcSpellEntry->GetSpellAuraRestrictions()->casterAuraSpell);
-            spellInfo.setTargetAuraSpell(dbcSpellEntry->GetSpellAuraRestrictions()->targetAuraSpell);
-            spellInfo.setCasterAuraSpellNot(dbcSpellEntry->GetSpellAuraRestrictions()->CasterAuraSpellNot);
-            spellInfo.setTargetAuraSpellNot(dbcSpellEntry->GetSpellAuraRestrictions()->TargetAuraSpellNot);
+            spellInfo->setCasterAuraState(dbcSpellEntry->GetSpellAuraRestrictions()->CasterAuraState);
+            spellInfo->setTargetAuraState(dbcSpellEntry->GetSpellAuraRestrictions()->TargetAuraState);
+            spellInfo->setCasterAuraStateNot(dbcSpellEntry->GetSpellAuraRestrictions()->CasterAuraStateNot);
+            spellInfo->setTargetAuraStateNot(dbcSpellEntry->GetSpellAuraRestrictions()->TargetAuraStateNot);
+            spellInfo->setCasterAuraSpell(dbcSpellEntry->GetSpellAuraRestrictions()->casterAuraSpell);
+            spellInfo->setTargetAuraSpell(dbcSpellEntry->GetSpellAuraRestrictions()->targetAuraSpell);
+            spellInfo->setCasterAuraSpellNot(dbcSpellEntry->GetSpellAuraRestrictions()->CasterAuraSpellNot);
+            spellInfo->setTargetAuraSpellNot(dbcSpellEntry->GetSpellAuraRestrictions()->TargetAuraSpellNot);
         }
 
         // Data from SpellCastingRequirements.dbc
         if (dbcSpellEntry->SpellCastingRequirementsId && dbcSpellEntry->GetSpellCastingRequirements() != nullptr)
         {
-            spellInfo.setFacingCasterFlags(dbcSpellEntry->GetSpellCastingRequirements()->FacingCasterFlags);
-            spellInfo.setRequiresAreaId(dbcSpellEntry->GetSpellCastingRequirements()->AreaGroupId);
-            spellInfo.setRequiresSpellFocus(dbcSpellEntry->GetSpellCastingRequirements()->RequiresSpellFocus);
+            spellInfo->setFacingCasterFlags(dbcSpellEntry->GetSpellCastingRequirements()->FacingCasterFlags);
+            spellInfo->setRequiresAreaId(dbcSpellEntry->GetSpellCastingRequirements()->AreaGroupId);
+            spellInfo->setRequiresSpellFocus(dbcSpellEntry->GetSpellCastingRequirements()->RequiresSpellFocus);
         }
 
         // Data from SpellCategories.dbc
         auto spellCategories = dbcSpellEntry->GetSpellCategories();
         if (dbcSpellEntry->SpellCategoriesId && spellCategories != nullptr)
         {
-            spellInfo.setCategory(spellCategories->Category);
-            spellInfo.setDispelType(spellCategories->DispelType);
-            spellInfo.setDmgClass(spellCategories->DmgClass);
-            spellInfo.setMechanicsType(spellCategories->MechanicsType);
-            spellInfo.setPreventionType(spellCategories->PreventionType);
-            spellInfo.setStartRecoveryCategory(spellCategories->StartRecoveryCategory);
+            spellInfo->setCategory(spellCategories->Category);
+            spellInfo->setDispelType(spellCategories->DispelType);
+            spellInfo->setDmgClass(spellCategories->DmgClass);
+            spellInfo->setMechanicsType(spellCategories->MechanicsType);
+            spellInfo->setPreventionType(spellCategories->PreventionType);
+            spellInfo->setStartRecoveryCategory(spellCategories->StartRecoveryCategory);
         }
 
         // Data from SpellClassOptions.dbc
         if (dbcSpellEntry->SpellClassOptionsId && dbcSpellEntry->GetSpellClassOptions() != nullptr)
         {
-            spellInfo.setSpellFamilyName(dbcSpellEntry->GetSpellClassOptions()->SpellFamilyName);
+            spellInfo->setSpellFamilyName(dbcSpellEntry->GetSpellClassOptions()->SpellFamilyName);
             for (uint8_t j = 0; j < MAX_SPELL_EFFECTS; ++j)
-                spellInfo.setSpellFamilyFlags(dbcSpellEntry->GetSpellClassOptions()->SpellFamilyFlags[j], j);
+                spellInfo->setSpellFamilyFlags(dbcSpellEntry->GetSpellClassOptions()->SpellFamilyFlags[j], j);
         }
 
         // Data from SpellCooldowns.dbc
         if (dbcSpellEntry->SpellCooldownsId && dbcSpellEntry->GetSpellCooldowns() != nullptr)
         {
-            spellInfo.setCategoryRecoveryTime(dbcSpellEntry->GetSpellCooldowns()->CategoryRecoveryTime);
-            spellInfo.setRecoveryTime(dbcSpellEntry->GetSpellCooldowns()->RecoveryTime);
-            spellInfo.setStartRecoveryTime(dbcSpellEntry->GetSpellCooldowns()->StartRecoveryTime);
+            spellInfo->setCategoryRecoveryTime(dbcSpellEntry->GetSpellCooldowns()->CategoryRecoveryTime);
+            spellInfo->setRecoveryTime(dbcSpellEntry->GetSpellCooldowns()->RecoveryTime);
+            spellInfo->setStartRecoveryTime(dbcSpellEntry->GetSpellCooldowns()->StartRecoveryTime);
         }
 
         // Data from SpellEquippedItems.dbc
         if (dbcSpellEntry->SpellEquippedItemsId && dbcSpellEntry->GetSpellEquippedItems() != nullptr)
         {
-            spellInfo.setEquippedItemClass(dbcSpellEntry->GetSpellEquippedItems()->EquippedItemClass);
-            spellInfo.setEquippedItemInventoryTypeMask(dbcSpellEntry->GetSpellEquippedItems()->EquippedItemInventoryTypeMask);
-            spellInfo.setEquippedItemSubClass(dbcSpellEntry->GetSpellEquippedItems()->EquippedItemSubClassMask);
+            spellInfo->setEquippedItemClass(dbcSpellEntry->GetSpellEquippedItems()->EquippedItemClass);
+            spellInfo->setEquippedItemInventoryTypeMask(dbcSpellEntry->GetSpellEquippedItems()->EquippedItemInventoryTypeMask);
+            spellInfo->setEquippedItemSubClass(dbcSpellEntry->GetSpellEquippedItems()->EquippedItemSubClassMask);
         }
 
         // Data from SpellInterrupts.dbc
         if (dbcSpellEntry->SpellInterruptsId && dbcSpellEntry->GetSpellInterrupts() != nullptr)
         {
-            spellInfo.setAuraInterruptFlags(dbcSpellEntry->GetSpellInterrupts()->AuraInterruptFlags);
-            spellInfo.setChannelInterruptFlags(dbcSpellEntry->GetSpellInterrupts()->ChannelInterruptFlags);
-            spellInfo.setInterruptFlags(dbcSpellEntry->GetSpellInterrupts()->InterruptFlags);
+            spellInfo->setAuraInterruptFlags(dbcSpellEntry->GetSpellInterrupts()->AuraInterruptFlags);
+            spellInfo->setChannelInterruptFlags(dbcSpellEntry->GetSpellInterrupts()->ChannelInterruptFlags);
+            spellInfo->setInterruptFlags(dbcSpellEntry->GetSpellInterrupts()->InterruptFlags);
         }
 
         // Data from SpellLevels.dbc
         if (dbcSpellEntry->SpellLevelsId && dbcSpellEntry->GetSpellLevels() != nullptr)
         {
-            spellInfo.setBaseLevel(dbcSpellEntry->GetSpellLevels()->baseLevel);
-            spellInfo.setMaxLevel(dbcSpellEntry->GetSpellLevels()->maxLevel);
-            spellInfo.setSpellLevel(dbcSpellEntry->GetSpellLevels()->spellLevel);
+            spellInfo->setBaseLevel(dbcSpellEntry->GetSpellLevels()->baseLevel);
+            spellInfo->setMaxLevel(dbcSpellEntry->GetSpellLevels()->maxLevel);
+            spellInfo->setSpellLevel(dbcSpellEntry->GetSpellLevels()->spellLevel);
         }
 
         // Data from SpellPower.dbc
         auto spellPower = dbcSpellEntry->GetSpellPower();
         if (dbcSpellEntry->SpellPowerId && spellPower != nullptr)
         {
-            spellInfo.setManaCost(spellPower->manaCost);
-            spellInfo.setManaCostPerlevel(spellPower->manaCostPerlevel);
-            spellInfo.setManaCostPercentage(spellPower->ManaCostPercentage);
-            spellInfo.setManaPerSecond(spellPower->manaPerSecond);
-            spellInfo.setManaPerSecondPerLevel(spellPower->manaPerSecondPerLevel);
+            spellInfo->setManaCost(spellPower->manaCost);
+            spellInfo->setManaCostPerlevel(spellPower->manaCostPerlevel);
+            spellInfo->setManaCostPercentage(spellPower->ManaCostPercentage);
+            spellInfo->setManaPerSecond(spellPower->manaPerSecond);
+            spellInfo->setManaPerSecondPerLevel(spellPower->manaPerSecondPerLevel);
         }
 
         // Data from SpellReagents.dbc
@@ -960,25 +958,25 @@ void SpellMgr::loadSpellInfoData()
         {
             for (uint8_t j = 0; j < MAX_SPELL_REAGENTS; ++j)
             {
-                spellInfo.setReagent(dbcSpellEntry->GetSpellReagents()->Reagent[j], j);
-                spellInfo.setReagentCount(dbcSpellEntry->GetSpellReagents()->ReagentCount[j], j);
+                spellInfo->setReagent(dbcSpellEntry->GetSpellReagents()->Reagent[j], j);
+                spellInfo->setReagentCount(dbcSpellEntry->GetSpellReagents()->ReagentCount[j], j);
             }
         }
 
         // Data from SpellShapeshift.dbc
         if (dbcSpellEntry->SpellShapeshiftId && dbcSpellEntry->GetSpellShapeshift() != nullptr)
         {
-            spellInfo.setRequiredShapeShift(dbcSpellEntry->GetSpellShapeshift()->Shapeshifts);
-            spellInfo.setShapeshiftExclude(dbcSpellEntry->GetSpellShapeshift()->ShapeshiftsExcluded);
+            spellInfo->setRequiredShapeShift(dbcSpellEntry->GetSpellShapeshift()->Shapeshifts);
+            spellInfo->setShapeshiftExclude(dbcSpellEntry->GetSpellShapeshift()->ShapeshiftsExcluded);
         }
 
         // Data from SpellTargetRestrictions.dbc
         if (dbcSpellEntry->SpellTargetRestrictionsId && dbcSpellEntry->GetSpellTargetRestrictions() != nullptr)
         {
-            spellInfo.setMaxTargets(dbcSpellEntry->GetSpellTargetRestrictions()->MaxAffectedTargets);
-            spellInfo.setMaxTargetLevel(dbcSpellEntry->GetSpellTargetRestrictions()->MaxTargetLevel);
-            spellInfo.setTargetCreatureType(dbcSpellEntry->GetSpellTargetRestrictions()->TargetCreatureType);
-            spellInfo.setTargets(dbcSpellEntry->GetSpellTargetRestrictions()->Targets);
+            spellInfo->setMaxTargets(dbcSpellEntry->GetSpellTargetRestrictions()->MaxAffectedTargets);
+            spellInfo->setMaxTargetLevel(dbcSpellEntry->GetSpellTargetRestrictions()->MaxTargetLevel);
+            spellInfo->setTargetCreatureType(dbcSpellEntry->GetSpellTargetRestrictions()->TargetCreatureType);
+            spellInfo->setTargets(dbcSpellEntry->GetSpellTargetRestrictions()->Targets);
         }
 
         // Data from SpellTotems.dbc
@@ -986,8 +984,8 @@ void SpellMgr::loadSpellInfoData()
         {
             for (uint8_t j = 0; j < MAX_SPELL_TOTEMS; ++j)
             {
-                spellInfo.setTotemCategory(dbcSpellEntry->GetSpellTotems()->TotemCategory[j], j);
-                spellInfo.setTotem(dbcSpellEntry->GetSpellTotems()->Totem[j], j);
+                spellInfo->setTotemCategory(dbcSpellEntry->GetSpellTotems()->TotemCategory[j], j);
+                spellInfo->setTotem(dbcSpellEntry->GetSpellTotems()->Totem[j], j);
             }
         }
 
@@ -997,33 +995,34 @@ void SpellMgr::loadSpellInfoData()
             const auto spell_effect_entry = GetSpellEffectEntry(spell_id, j);
             if (spell_effect_entry != nullptr)
             {
-                spellInfo.setEffect(spell_effect_entry->Effect, j);
-                spellInfo.setEffectMultipleValue(spell_effect_entry->EffectMultipleValue, j);
-                spellInfo.setEffectApplyAuraName(spell_effect_entry->EffectApplyAuraName, j);
-                spellInfo.setEffectAmplitude(spell_effect_entry->EffectAmplitude, j);
-                spellInfo.setEffectBasePoints(spell_effect_entry->EffectBasePoints, j);
-                spellInfo.setEffectBonusMultiplier(spell_effect_entry->EffectBonusMultiplier, j);
-                spellInfo.setEffectDamageMultiplier(spell_effect_entry->EffectDamageMultiplier, j);
-                spellInfo.setEffectChainTarget(spell_effect_entry->EffectChainTarget, j);
-                spellInfo.setEffectDieSides(spell_effect_entry->EffectDieSides, j);
-                spellInfo.setEffectItemType(spell_effect_entry->EffectItemType, j);
-                spellInfo.setEffectMechanic(spell_effect_entry->EffectMechanic, j);
-                spellInfo.setEffectMiscValue(spell_effect_entry->EffectMiscValue, j);
-                spellInfo.setEffectMiscValueB(spell_effect_entry->EffectMiscValueB, j);
-                spellInfo.setEffectPointsPerComboPoint(spell_effect_entry->EffectPointsPerComboPoint, j);
-                spellInfo.setEffectRadiusIndex(spell_effect_entry->EffectRadiusIndex, j);
-                spellInfo.setEffectRadiusMaxIndex(spell_effect_entry->EffectRadiusMaxIndex, j);
-                spellInfo.setEffectRealPointsPerLevel(spell_effect_entry->EffectRealPointsPerLevel, j);
+                spellInfo->setEffect(spell_effect_entry->Effect, j);
+                spellInfo->setEffectMultipleValue(spell_effect_entry->EffectMultipleValue, j);
+                spellInfo->setEffectApplyAuraName(spell_effect_entry->EffectApplyAuraName, j);
+                spellInfo->setEffectAmplitude(spell_effect_entry->EffectAmplitude, j);
+                spellInfo->setEffectBasePoints(spell_effect_entry->EffectBasePoints, j);
+                spellInfo->setEffectBonusMultiplier(spell_effect_entry->EffectBonusMultiplier, j);
+                spellInfo->setEffectDamageMultiplier(spell_effect_entry->EffectDamageMultiplier, j);
+                spellInfo->setEffectChainTarget(spell_effect_entry->EffectChainTarget, j);
+                spellInfo->setEffectDieSides(spell_effect_entry->EffectDieSides, j);
+                spellInfo->setEffectItemType(spell_effect_entry->EffectItemType, j);
+                spellInfo->setEffectMechanic(spell_effect_entry->EffectMechanic, j);
+                spellInfo->setEffectMiscValue(spell_effect_entry->EffectMiscValue, j);
+                spellInfo->setEffectMiscValueB(spell_effect_entry->EffectMiscValueB, j);
+                spellInfo->setEffectPointsPerComboPoint(spell_effect_entry->EffectPointsPerComboPoint, j);
+                spellInfo->setEffectRadiusIndex(spell_effect_entry->EffectRadiusIndex, j);
+                spellInfo->setEffectRadiusMaxIndex(spell_effect_entry->EffectRadiusMaxIndex, j);
+                spellInfo->setEffectRealPointsPerLevel(spell_effect_entry->EffectRealPointsPerLevel, j);
                 for (uint8_t x = 0; x < 3; ++x)
-                    spellInfo.setEffectSpellClassMask(spell_effect_entry->EffectSpellClassMask[x], j, x);
-                spellInfo.setEffectTriggerSpell(spell_effect_entry->EffectTriggerSpell, j);
-                spellInfo.setEffectImplicitTargetA(spell_effect_entry->EffectImplicitTargetA, j);
-                spellInfo.setEffectImplicitTargetB(spell_effect_entry->EffectImplicitTargetB, j);
-                spellInfo.setEffectSpellId(spell_effect_entry->EffectSpellId, j);
-                spellInfo.setEffectIndex(spell_effect_entry->EffectIndex, j);
+                    spellInfo->setEffectSpellClassMask(spell_effect_entry->EffectSpellClassMask[x], j, x);
+                spellInfo->setEffectTriggerSpell(spell_effect_entry->EffectTriggerSpell, j);
+                spellInfo->setEffectImplicitTargetA(spell_effect_entry->EffectImplicitTargetA, j);
+                spellInfo->setEffectImplicitTargetB(spell_effect_entry->EffectImplicitTargetB, j);
+                spellInfo->setEffectSpellId(spell_effect_entry->EffectSpellId, j);
+                spellInfo->setEffectIndex(spell_effect_entry->EffectIndex, j);
             }
         }
 #endif
+        mSpellInfoMapStore.insert({spell_id, spellInfo});
     }
 #endif
 }
