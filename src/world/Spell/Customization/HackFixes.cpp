@@ -1070,2525 +1070,1464 @@ void SpellMgr::applyHackFixes()
             default:
                 break;
         }
-    }
-    // END OF LOOP
 
-    /////////////////////////////////////////////////////////////////
-    //SPELL COEFFICIENT SETTINGS END
-    /////////////////////////////////////////////////////////////////
+        // Zyres: cleanup session 09/03/2023
 
-    ////////////////////////////////////////////////////////////
-    // Wands
-    sp = getMutableSpellInfo(SPELL_RANGED_WAND);
-    if (sp != nullptr)
-        sp->setDmgClass(SPELL_DMG_TYPE_RANGED);
-
-
-    //////////////////////////////////////////////////////
-    // CLASS-SPECIFIC SPELL FIXES                       //
-    //////////////////////////////////////////////////////
-
-    // Note: when applying spell hackfixes, please follow a template
-
-    //////////////////////////////////////////
-    // WARRIOR                              //
-    //////////////////////////////////////////
-
-    // Insert warrior spell fixes here
-
-    ////////////////////////////////////////////////////////////
-    // Arms
-
-    // Warrior - Tactical Mastery Rank 1
-    sp = getMutableSpellInfo(12295);
-    if (sp != nullptr)
-        sp->setRequiredShapeShift(0x00070000);
-    // Warrior - Tactical Mastery Rank 2
-    sp = getMutableSpellInfo(12676);
-    if (sp != nullptr)
-        sp->setRequiredShapeShift(0x00070000);
-    // Warrior - Tactical Mastery Rank 3
-    sp = getMutableSpellInfo(12677);
-    if (sp != nullptr)
-        sp->setRequiredShapeShift(0x00070000);
-
-    // Warrior - Rend
-    sp = getMutableSpellInfo(772);
-    if (sp != nullptr)
-        sp->setMechanicsType(MECHANIC_BLEEDING);
-    sp = getMutableSpellInfo(6546);
-    if (sp != nullptr)
-        sp->setMechanicsType(MECHANIC_BLEEDING);
-    sp = getMutableSpellInfo(6547);
-    if (sp != nullptr)
-        sp->setMechanicsType(MECHANIC_BLEEDING);
-    sp = getMutableSpellInfo(6548);
-    if (sp != nullptr)
-        sp->setMechanicsType(MECHANIC_BLEEDING);
-    sp = getMutableSpellInfo(11572);
-    if (sp != nullptr)
-        sp->setMechanicsType(MECHANIC_BLEEDING);
-    sp = getMutableSpellInfo(11573);
-    if (sp != nullptr)
-        sp->setMechanicsType(MECHANIC_BLEEDING);
-    sp = getMutableSpellInfo(11574);
-    if (sp != nullptr)
-        sp->setMechanicsType(MECHANIC_BLEEDING);
-    sp = getMutableSpellInfo(25208);
-    if (sp != nullptr)
-        sp->setMechanicsType(MECHANIC_BLEEDING);
-
-    // Warrior - Improved Hamstring
-    // Blizzard uses attackable target for this talent which won't work in our spell system...
-    sp = getMutableSpellInfo(12289);
-    if (sp != nullptr)
-        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 0);
-    sp = getMutableSpellInfo(12668);
-    if (sp != nullptr)
-        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 0);
-    sp = getMutableSpellInfo(23695);
-    if (sp != nullptr)
-        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 0);
-
-    ////////////////////////////////////////////////////////////
-    // Fury
-
-    // Warrior - Slam
-    sp = getMutableSpellInfo(1464);
-    if (sp != nullptr)
-        sp->setEffect(SPELL_EFFECT_SCHOOL_DAMAGE, 0);
-
-    sp = getMutableSpellInfo(8820);
-    if (sp != nullptr)
-        sp->setEffect(SPELL_EFFECT_SCHOOL_DAMAGE, 0);
-
-    sp = getMutableSpellInfo(11604);
-    if (sp != nullptr)
-        sp->setEffect(SPELL_EFFECT_SCHOOL_DAMAGE, 0);
-
-    sp = getMutableSpellInfo(11605);
-    if (sp != nullptr)
-        sp->setEffect(SPELL_EFFECT_SCHOOL_DAMAGE, 0);
-
-    sp = getMutableSpellInfo(25241);
-    if (sp != nullptr)
-        sp->setEffect(SPELL_EFFECT_SCHOOL_DAMAGE, 0);
-
-    sp = getMutableSpellInfo(25242);
-    if (sp != nullptr)
-        sp->setEffect(SPELL_EFFECT_SCHOOL_DAMAGE, 0);
-
-    sp = getMutableSpellInfo(47474);
-    if (sp != nullptr)
-        sp->setEffect(SPELL_EFFECT_SCHOOL_DAMAGE, 0);
-
-    sp = getMutableSpellInfo(47475);
-    if (sp != nullptr)
-        sp->setEffect(SPELL_EFFECT_SCHOOL_DAMAGE, 0);
-
-    // Warrior - Bloodthirst new version is ok but old version is wrong from now on :(
-    sp = getMutableSpellInfo(23881);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1); //cast on us, it is good
-        sp->setEffectTriggerSpell(23885, 1); //evil , but this is good for us :D
-    }
-    sp = getMutableSpellInfo(23892);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(23886, 1); //evil , but this is good for us :D  // DankoDJ: Is there a reason to trigger an non existing spell?
-    }
-    sp = getMutableSpellInfo(23893);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1); //
-        sp->setEffectTriggerSpell(23887, 1); //evil , but this is good for us :D // DankoDJ: Is there a reason to trigger an non existing spell?
-    }
-    sp = getMutableSpellInfo(23894);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1); //
-        sp->setEffectTriggerSpell(23888, 1); //evil , but this is good for us :D // DankoDJ: Is there a reason to trigger an non existing spell?
-    }
-    sp = getMutableSpellInfo(25251);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1); //aura
-        sp->setEffectTriggerSpell(25252, 1); //evil , but this is good for us :D // DankoDJ: Is there a reason to trigger an non existing spell?
-    }
-    sp = getMutableSpellInfo(30335);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1); //aura
-        sp->setEffectTriggerSpell(30339, 1); //evil , but this is good for us :D // DankoDJ: Is there a reason to trigger an non existing spell?
-    }
-
-    // Warrior - Berserker Rage
-    sp = getMutableSpellInfo(18499);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 0);//Forcing a dummy aura, so we can add the missing 4th effect.
-        sp->setEffect(SPELL_EFFECT_NULL, 1);
-        sp->setEffect(SPELL_EFFECT_NULL, 2);
-    }
-
-    // Warrior - Heroic Fury
-    sp = getMutableSpellInfo(60970);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_DUMMY, 0);
-    }
-
-    ////////////////////////////////////////////////////////////
-    // Protection
-
-    // Intervene  Ranger: stop attack
-    sp = getMutableSpellInfo(3411);
-    if (sp != nullptr)
-    {
-        sp->addAttributes(ATTRIBUTES_STOP_ATTACK);
-    }
-
-    //////////////////////////////////////////
-    // PALADIN                              //
-    //////////////////////////////////////////
-
-    // Insert paladin spell fixes here
-
-    //Paladin - Hammer of the Righteous
-    sp = getMutableSpellInfo(53595);
-    if (sp != nullptr)
-    {
-        sp->setSpeed(0);    //without, no damage is done
-    }
-
-    //Paladin - Divine Storm
-    sp = getMutableSpellInfo(53385);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
-        sp->setEffectRadiusIndex(43, 0); //16 yards
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(54172, 1);
-        sp->setProcChance(100);
-        sp->setMaxTargets(4);
-    }
-
-    //Paladin - Judgements of the Wise
-    sp = getMutableSpellInfo(31930);
-    if (sp != nullptr)
-    {
-        sp->setSpellFamilyName(0);
-        sp->setSpellFamilyFlags(0, 0);
-        sp->setSpellFamilyFlags(0, 1);
-        sp->setSpellFamilyFlags(0, 2);
-    }
-
-    sp = getMutableSpellInfo(54180);
-    if (sp != nullptr)
-    {
-        sp->setSpellFamilyName(0);
-        sp->setSpellFamilyFlags(0, 0);
-        sp->setSpellFamilyFlags(0, 1);
-        sp->setSpellFamilyFlags(0, 2);
-    }
-
-    //Paladin - Avenging Wrath marker - Is forced debuff
-    sp = getMutableSpellInfo(61987);
-    if (sp != nullptr)
-    {
-        sp->setAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
-    }
-
-    //Paladin - Forbearance - Is forced debuff
-    sp = getMutableSpellInfo(25771);
-    if (sp != nullptr)
-    {
-        sp->setAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
-    }
-
-    //Divine Protection
-    sp = getMutableSpellInfo(498);
-    if (sp != nullptr)
-        sp->setTargetAuraSpellNot(25771);
-
-    //Divine Shield
-    sp = getMutableSpellInfo(642);
-    if (sp != nullptr)
-        sp->setTargetAuraSpellNot(25771);
-
-    //Hand of Protection Rank 1
-    sp = getMutableSpellInfo(1022);
-    if (sp != nullptr)
-        sp->setTargetAuraSpellNot(25771);
-
-    //Hand of Protection Rank 2
-    sp = getMutableSpellInfo(5599);
-    if (sp != nullptr)
-        sp->setTargetAuraSpellNot(25771);
-
-    //Hand of Protection Rank 3
-    sp = getMutableSpellInfo(10278);
-    if (sp != nullptr)
-        sp->setTargetAuraSpellNot(25771);
-
-    //Paladin - Hammer of Justice - Interrupt effect
-    sp = getMutableSpellInfo(853);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(32747, 1);
-    }
-    sp = getMutableSpellInfo(5588);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(32747, 1);
-    }
-    sp = getMutableSpellInfo(5589);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(32747, 1);
-    }
-    sp = getMutableSpellInfo(10308);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(32747, 1);
-    }
-
-    //////////////////////////////////////////
-    // HUNTER                               //
-    //////////////////////////////////////////
-
-    // Insert hunter spell fixes here
-
-    // Hunter - Spirit Bond
-    sp = getMutableSpellInfo(19578);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(19579, 0);
-    }
-    sp = getMutableSpellInfo(20895);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(24529, 0);
-    }
-    sp = getMutableSpellInfo(19579);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1); //we should do the same for player too as we did for pet
-        sp->setEffectApplyAuraName(sp->getEffectApplyAuraName(0), 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 1);
-        sp->setEffectBasePoints(sp->getEffectBasePoints(0), 1);
-        sp->setEffectAmplitude(sp->getEffectAmplitude(0), 1);
-        sp->setEffectDieSides(sp->getEffectDieSides(0), 1);
-    }
-    sp = getMutableSpellInfo(24529);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1); //we should do the same for player too as we did for pet
-        sp->setEffectApplyAuraName(sp->getEffectApplyAuraName(0), 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 1);
-        sp->setEffectBasePoints(sp->getEffectBasePoints(0), 1);
-        sp->setEffectAmplitude(sp->getEffectAmplitude(0), 1);
-        sp->setEffectDieSides(sp->getEffectDieSides(0), 1);
-    }
-
-    // Hunter - Ferocious Inspiration
-    sp = getMutableSpellInfo(34455);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-        sp->setEffectTriggerSpell(34456, 0);
-        sp->setEffect(SPELL_EFFECT_NULL, 1); //remove this
-    }
-    sp = getMutableSpellInfo(34459);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-        sp->setEffectTriggerSpell(34456, 0);
-        sp->setEffect(SPELL_EFFECT_NULL, 1); //remove this
-    }
-    sp = getMutableSpellInfo(34460);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-        sp->setEffectTriggerSpell(34456, 0);
-        sp->setEffect(SPELL_EFFECT_NULL, 1); //remove this
-    }
-
-    // Hunter - Focused Fire
-    sp = getMutableSpellInfo(35029);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(35060, 0);
-    }
-    sp = getMutableSpellInfo(35030);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(35061, 0);
-    }
-
-    // Hunter - Thrill of the Hunt
-    sp = getMutableSpellInfo(34497);
-    if (sp != nullptr)
-    {
-        sp->setProcChance(sp->calculateEffectValue(0));
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(34720, 0);
-    }
-    sp = getMutableSpellInfo(34498);
-    if (sp != nullptr)
-    {
-        sp->setProcChance(sp->calculateEffectValue(0));
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(34720, 0);
-    }
-    sp = getMutableSpellInfo(34499);
-    if (sp != nullptr)
-    {
-        sp->setProcChance(sp->calculateEffectValue(0));
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(34720, 0);
-    }
-
-    //Hunter - Frenzy
-    sp = getMutableSpellInfo(19621);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(19615, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-        sp->setProcChance(sp->getEffectBasePoints(0));
-    }
-    sp = getMutableSpellInfo(19622);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(19615, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-        sp->setProcChance(sp->getEffectBasePoints(0));
-    }
-    sp = getMutableSpellInfo(19623);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(19615, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-        sp->setProcChance(sp->getEffectBasePoints(0));
-    }
-    sp = getMutableSpellInfo(19624);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(19615, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-        sp->setProcChance(sp->getEffectBasePoints(0));
-    }
-    sp = getMutableSpellInfo(19625);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(19615, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-        sp->setProcChance(sp->getEffectBasePoints(0));
-    }
-
-    // Feed pet
-    sp = getMutableSpellInfo(6991);
-    if (sp != nullptr)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_NONE, 0);
-    }
-
-    //////////////////////////////////////////
-    // ROGUE                                //
-    //////////////////////////////////////////
-
-    // Insert rogue spell fixes here
-
-    // Garrote - this is used?
-    sp = getMutableSpellInfo(37066);
-    if (sp != nullptr)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_SINGLE_ENEMY, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_SINGLE_ENEMY, 1);
-    }
-
-    //rogue - Vanish : Second Trigger Spell
-    sp = getMutableSpellInfo(18461);
-    if (sp != nullptr)
-        sp->addAttributesEx(ATTRIBUTESEX_NOT_BREAK_STEALTH);
-
-    //rogue - Shadowstep
-    sp = getMutableSpellInfo(36563);
-    if (sp != nullptr)
-    {
-        sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 2);
-    }
-    // Still related to shadowstep - prevent the trigger spells from breaking stealth.
-    sp = getMutableSpellInfo(44373);
-    if (sp != nullptr)
-        sp->addAttributesEx(ATTRIBUTESEX_NOT_BREAK_STEALTH);
-    sp = getMutableSpellInfo(36563);
-    if (sp != nullptr)
-        sp->addAttributesEx(ATTRIBUTESEX_NOT_BREAK_STEALTH);
-    sp = getMutableSpellInfo(36554);
-    if (sp != nullptr)
-        sp->addAttributesEx(ATTRIBUTESEX_NOT_BREAK_STEALTH);
-
-    //garrot
-    sp = getMutableSpellInfo(703);
-    if (sp != nullptr)
-        sp->setMechanicsType(MECHANIC_BLEEDING);
-    sp = getMutableSpellInfo(8631);
-    if (sp != nullptr)
-        sp->setMechanicsType(MECHANIC_BLEEDING);
-    sp = getMutableSpellInfo(8632);
-    if (sp != nullptr)
-        sp->setMechanicsType(MECHANIC_BLEEDING);
-    sp = getMutableSpellInfo(8633);
-    if (sp != nullptr)
-        sp->setMechanicsType(MECHANIC_BLEEDING);
-    sp = getMutableSpellInfo(11289);
-    if (sp != nullptr)
-        sp->setMechanicsType(MECHANIC_BLEEDING);
-    sp = getMutableSpellInfo(11290);
-    if (sp != nullptr)
-        sp->setMechanicsType(MECHANIC_BLEEDING);
-    sp = getMutableSpellInfo(26839);
-    if (sp != nullptr)
-        sp->setMechanicsType(MECHANIC_BLEEDING);
-    sp = getMutableSpellInfo(26884);
-    if (sp != nullptr)
-        sp->setMechanicsType(MECHANIC_BLEEDING);
-
-    //rupture
-    sp = getMutableSpellInfo(1943);
-    if (sp != nullptr)
-        sp->setMechanicsType(MECHANIC_BLEEDING);
-    sp = getMutableSpellInfo(8639);
-    if (sp != nullptr)
-        sp->setMechanicsType(MECHANIC_BLEEDING);
-    sp = getMutableSpellInfo(8640);
-    if (sp != nullptr)
-        sp->setMechanicsType(MECHANIC_BLEEDING);
-    sp = getMutableSpellInfo(11273);
-    if (sp != nullptr)
-        sp->setMechanicsType(MECHANIC_BLEEDING);
-    sp = getMutableSpellInfo(11274);
-    if (sp != nullptr)
-        sp->setMechanicsType(MECHANIC_BLEEDING);
-    sp = getMutableSpellInfo(11275);
-    if (sp != nullptr)
-        sp->setMechanicsType(MECHANIC_BLEEDING);
-    sp = getMutableSpellInfo(26867);
-    if (sp != nullptr)
-        sp->setMechanicsType(MECHANIC_BLEEDING);
-
-    //Rogue - Killing Spree Stealth fix
-    sp = getMutableSpellInfo(51690);
-    if (sp != nullptr)
-        sp->addAttributesEx(ATTRIBUTESEX_NOT_BREAK_STEALTH);
-
-    // Fan of knives
-    sp = getMutableSpellInfo(51723);
-    if (sp != nullptr)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_ALL_ENEMY_IN_AREA, 0);
-        sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 0);
-    }
-
-    // Rogue - Master of Subtlety
-    sp = getMutableSpellInfo(31665);
-    if (sp != nullptr)
-        sp->addAttributesEx(ATTRIBUTESEX_NOT_BREAK_STEALTH);
-
-    //////////////////////////////////////////
-    // PRIEST                               //
-    //////////////////////////////////////////
-
-    // Insert priest spell fixes here
-
-    // Prayer of mending
-    sp = getMutableSpellInfo(41635);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_SINGLE_FRIEND, 0);
-    }
-    sp = getMutableSpellInfo(48110);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_SINGLE_FRIEND, 0);
-    }
-    sp = getMutableSpellInfo(48111);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_SINGLE_FRIEND, 0);
-    }
-    sp = getMutableSpellInfo(33110);
-    if (sp != nullptr)
-        sp->setEffectImplicitTargetA(EFF_TARGET_SINGLE_FRIEND, 0);
-
-    // Body and soul - fix duration of cleanse poison
-    sp = getMutableSpellInfo(64134);
-    if (sp != nullptr)
-        sp->setDurationIndex(29);
-
-    // Spirit of Redemption - required spells can be casted while dead
-    sp = getMutableSpellInfo(27795);   // This is casted by shape shift
-    if (sp != nullptr)
-        sp->addAttributesExC(ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD);
-    sp = getMutableSpellInfo(27792);   // This is casted by Apply Aura: Spirit of Redemption
-    if (sp != nullptr)
-        sp->addAttributesExC(ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD);
-
-    //Priest - Wand Specialization
-    sp = getMutableSpellInfo(14524);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
-        sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 0);
-    }
-    sp = getMutableSpellInfo(14525);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
-        sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 0);
-    }
-    sp = getMutableSpellInfo(14526);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
-        sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 0);
-    }
-    sp = getMutableSpellInfo(14527);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
-        sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 0);
-    }
-    sp = getMutableSpellInfo(14528);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
-        sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 0);
-    }
-
-    //Priest - Inspiration proc spell
-    sp = getMutableSpellInfo(14893);
-    if (sp != nullptr)
-        sp->setRangeIndex(4);
-    sp = getMutableSpellInfo(15357);
-    if (sp != nullptr)
-        sp->setRangeIndex(4);
-    sp = getMutableSpellInfo(15359);
-    if (sp != nullptr)
-        sp->setRangeIndex(4);
-
-    // priest - Reflective Shield
-    sp = getMutableSpellInfo(33201);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(33619, 0); //!! WRONG spell, we will make direct dmg here
-    }
-    sp = getMutableSpellInfo(33202);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(33619, 0); //!! WRONG spell, we will make direct dmg here
-    }
-    // Weakened Soul - Is debuff
-    sp = getMutableSpellInfo(6788);
-    if (sp != nullptr)
-    {
-        sp->setAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
-    }
-
-    // Penance
-    sp = getMutableSpellInfo(47540);
-    if (sp != nullptr)
-    {
-        sp->setDurationIndex(566); // Change to instant cast as script will cast the real channeled spell.
-        sp->setChannelInterruptFlags(0); // Remove channeling behavior.
-    }
-
-    sp = getMutableSpellInfo(53005);
-    if (sp != nullptr)
-    {
-        sp->setDurationIndex(566);
-        sp->setChannelInterruptFlags(0);
-    }
-
-    sp = getMutableSpellInfo(53006);
-    if (sp != nullptr)
-    {
-        sp->setDurationIndex(566);
-        sp->setChannelInterruptFlags(0);
-    }
-
-    sp = getMutableSpellInfo(53007);
-    if (sp != nullptr)
-    {
-        sp->setDurationIndex(566);
-        sp->setChannelInterruptFlags(0);
-    }
-
-    // Penance triggered healing spells have wrong targets.
-    sp = getMutableSpellInfo(47750);
-    if (sp != nullptr)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_SINGLE_FRIEND, 0);
-    }
-
-    sp = getMutableSpellInfo(52983);
-    if (sp != nullptr)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_SINGLE_FRIEND, 0);
-    }
-
-    sp = getMutableSpellInfo(52984);
-    if (sp != nullptr)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_SINGLE_FRIEND, 0);
-    }
-
-    sp = getMutableSpellInfo(52985);
-    if (sp != nullptr)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_SINGLE_FRIEND, 0);
-    }
-
-
-    //////////////////////////////////////////
-    // SHAMAN                               //
-    //////////////////////////////////////////
-
-    // Insert shaman spell fixes here
-
-    // Shamanistic Rage
-    SpellInfo const*  parentsp = getMutableSpellInfo(30823);
-    SpellInfo* triggersp = getMutableSpellInfo(30824);
-    if (parentsp != nullptr && triggersp != nullptr)
-        triggersp->setEffectBasePoints(parentsp->getEffectBasePoints(0), 0);
-
-    //summon only 1 elemental totem
-    sp = getMutableSpellInfo(2894);
-    if (sp != nullptr)
-        sp->setEffectImplicitTargetA(EFF_TARGET_TOTEM_FIRE, 0); //remove this targeting. it is enough to get 1 target
-
-    //summon only 1 elemental totem
-    sp = getMutableSpellInfo(2062);
-    if (sp != nullptr)
-        sp->setEffectImplicitTargetA(EFF_TARGET_TOTEM_EARTH, 0); //remove this targeting. it is enough to get 1 target
-
-    //Bloodlust
-    sp = getMutableSpellInfo(2825);
-    if (sp != nullptr)
-        sp->setCasterAuraSpellNot(57724); //sated debuff
-
-    // Sated - is debuff
-    sp = getMutableSpellInfo(57724);
-    if (sp != nullptr)
-    {
-        sp->setAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
-    }
-
-    //Heroism
-    sp = getMutableSpellInfo(32182);
-    if (sp != nullptr)
-        sp->setCasterAuraSpellNot(57723); //sated debuff
-
-    // Sated - is debuff
-    sp = getMutableSpellInfo(57723);
-    if (sp != nullptr)
-    {
-        sp->setAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
-    }
-
-    // Purge
-    sp = getMutableSpellInfo(370);
-    if (sp != nullptr)
-        sp->setDispelType(DISPEL_MAGIC);
-    sp = getMutableSpellInfo(8012);
-    if (sp != nullptr)
-        sp->setDispelType(DISPEL_MAGIC);
-    sp = getMutableSpellInfo(27626);
-    if (sp != nullptr)
-        sp->setDispelType(DISPEL_MAGIC);
-    sp = getMutableSpellInfo(33625);
-    if (sp != nullptr)
-        sp->setDispelType(DISPEL_MAGIC);
-
-    //Shaman - Shamanistic Focus
-    // needs to be fixed (doesn't need to proc, it now just reduces mana cost always by %)
-    sp = getMutableSpellInfo(43338);
-    if (sp != nullptr)
-    {
-        sp->setEffectTriggerSpell(43339, 0);
-    }
-
-    sp = getMutableSpellInfo(43339);
-    if (sp != nullptr)
-    {
-        sp->setEffectMiscValue(SPELLMOD_COST, 0);
-    }
-
-    //shaman - Improved Chain Heal
-    sp = getMutableSpellInfo(30873);
-    if (sp != nullptr)
-    {
-        sp->setEffectDieSides(0, 0);
-    }
-    sp = getMutableSpellInfo(30872);
-    if (sp != nullptr)
-    {
-        sp->setEffectDieSides(0, 0);
-    }
-
-    //shaman - Improved Weapon Totems
-    sp = getMutableSpellInfo(29193);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
-        sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 1);
-        sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 0);
-        sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 1);
-    }
-    sp = getMutableSpellInfo(29192);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
-        sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 1);
-        sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 0);
-        sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 1);
-    }
-
-    // Shaman - Improved Fire Totems
-    sp = getMutableSpellInfo(16544);
-    if (sp != nullptr)
-    {
-        sp->setEffectMiscValue(SPELLMOD_DURATION, 0);
-    }
-    sp = getMutableSpellInfo(16086);
-    if (sp != nullptr)
-    {
-        sp->setEffectMiscValue(SPELLMOD_DURATION, 0);
-    }
-
-    //shaman - Elemental Weapons
-    sp = getMutableSpellInfo(29080);
-    if (sp != nullptr)
-    {
-        sp->setEffectMiscValue(SPELLMOD_DAMAGE_DONE, 1);
-        sp->setEffectMiscValue(SPELLMOD_DAMAGE_DONE, 2);
-    }
-    sp = getMutableSpellInfo(29079);
-    if (sp != nullptr)
-    {
-        sp->setEffectMiscValue(SPELLMOD_DAMAGE_DONE, 1);
-        sp->setEffectMiscValue(SPELLMOD_DAMAGE_DONE, 2);
-    }
-    sp = getMutableSpellInfo(16266);
-    if (sp != nullptr)
-    {
-        sp->setEffectMiscValue(SPELLMOD_DAMAGE_DONE, 1);
-        sp->setEffectMiscValue(SPELLMOD_DAMAGE_DONE, 2);
-    }
-
-    //  Unleashed Rage - LordLeeCH
-    sp = getMutableSpellInfo(30802);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA, 0);
-    }
-    sp = getMutableSpellInfo(30808);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA, 0);
-    }
-    sp = getMutableSpellInfo(30809);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA, 0);
-    }
-
-    // Ancestral healing proc spell
-    sp = getMutableSpellInfo(16177);
-    if (sp != nullptr)
-        sp->setRangeIndex(4);
-    sp = getMutableSpellInfo(16236);
-    if (sp != nullptr)
-        sp->setRangeIndex(4);
-    sp = getMutableSpellInfo(16237);
-    if (sp != nullptr)
-        sp->setRangeIndex(4);
-
-    sp = getMutableSpellInfo(20608);   //Reincarnation
-    if (sp != nullptr)
-    {
-        for (uint8 i = 0; i < 8; ++i)
-        {
-            if (sp->getReagent(i))
-            {
-                sp->setReagent(0, i);
-                sp->setReagentCount(0, i);
-            }
-        }
-    }
-
-    //////////////////////////////////////////
-    // MAGE                                 //
-    //////////////////////////////////////////
-
-    // Insert mage spell fixes here
-
-    // Brain Freeze rank 1
-    sp = getMutableSpellInfo(44546);
-    if (sp != nullptr)
-        sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 0);
-
-    // Brain Freeze rank 2
-    sp = getMutableSpellInfo(44548);
-    if (sp != nullptr)
-        sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 0);
-
-    // Brain Freeze rank 3
-    sp = getMutableSpellInfo(44549);
-    if (sp != nullptr)
-        sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 0);
-
-    // Fingers of Frost rank 1
-    sp = getMutableSpellInfo(44543);
-    if (sp != nullptr)
-        sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 0);
-
-
-    // Fingers of Frost rank 2
-    sp = getMutableSpellInfo(44545);
-    if (sp != nullptr)
-        sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 0);
-
-
-    //Mage - Spell Power
-    sp = getMutableSpellInfo(35578);
-    if (sp != nullptr)
-    {
-        sp->setEffectMiscValue(SPELLMOD_CRITICAL_DAMAGE, 0);
-        sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
-    }
-    sp = getMutableSpellInfo(35581);
-    if (sp != nullptr)
-    {
-        sp->setEffectMiscValue(SPELLMOD_CRITICAL_DAMAGE, 0);
-        sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
-    }
-
-    //Mage - Elemental Precision
-    sp = getMutableSpellInfo(29438);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
-        sp->setEffectMiscValue(SPELLMOD_COST, 0);
-    }
-    sp = getMutableSpellInfo(29439);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
-        sp->setEffectMiscValue(SPELLMOD_COST, 0);
-    }
-    sp = getMutableSpellInfo(29440);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
-        sp->setEffectMiscValue(SPELLMOD_COST, 0);
-    }
-
-    //Mage - Arcane Blast
-    sp = getMutableSpellInfo(30451);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
-    }
-
-    // Arcane Blast
-    sp = getMutableSpellInfo(42894);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
-    }
-
-    sp = getMutableSpellInfo(42896);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
-    }
-
-    sp = getMutableSpellInfo(42897);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
-    }
-
-    //mage : Empowered Arcane Missiles
-    //heh B thinks he is smart by adding this to description ? If it doesn't work std then it still needs to made by hand
-    sp = getMutableSpellInfo(31579);
-    if (sp != nullptr)
-    {
-        sp->setEffectBasePoints(5 * (sp->calculateEffectValue(0)), 0);
-    }
-    sp = getMutableSpellInfo(31582);
-    if (sp != nullptr)
-    {
-        sp->setEffectBasePoints(5 * (sp->calculateEffectValue(0)), 0);
-    }
-    sp = getMutableSpellInfo(31583);
-    if (sp != nullptr)
-    {
-        sp->setEffectBasePoints(5 * (sp->calculateEffectValue(0)), 0);
-    }
-
-    //Arcane Potency procs
-    sp = getMutableSpellInfo(57529);
-    if (sp != nullptr)
-    {
-        sp->setProcFlags(0);
-        sp->setAuraInterruptFlags(0);
-    }
-
-    sp = getMutableSpellInfo(57531);
-    if (sp != nullptr)
-    {
-        sp->setProcFlags(0);
-        sp->setAuraInterruptFlags(0);
-    }
-
-    //mage - Combustion
-    sp = getMutableSpellInfo(11129);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_NULL, 0);
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1);
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(28682, 1);
-        sp->setProcChance(0);
-    }
-
-    // mage - Conjure Refreshment Table
-    sp = getMutableSpellInfo(43985);
-    if (sp != nullptr)
-        sp->setEffectImplicitTargetA(EFF_TARGET_DYNAMIC_OBJECT, 0);
-
-    // Hypothermia - forced debuff
-    sp = getMutableSpellInfo(41425);
-    if (sp != nullptr)
-    {
-        sp->setAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
-    }
-
-    // Mage - Permafrost Rank 1
-    sp = getMutableSpellInfo(11175);
-    if (sp != nullptr)
-    {
-        sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 1);
-    }
-
-    // Mage - Permafrost Rank 2
-    sp = getMutableSpellInfo(12569);
-    if (sp != nullptr)
-    {
-        sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 1);
-    }
-
-    // Mage - Permafrost Rank 3
-    sp = getMutableSpellInfo(12571);
-    if (sp != nullptr)
-    {
-        sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 1);
-    }
-
-    //////////////////////////////////////////
-    // WARLOCK                              //
-    //////////////////////////////////////////
-
-    // Insert warlock spell fixes here
-
-    //Dummy for Demonic Circle
-    sp = getMutableSpellInfo(48018);
-    if (sp != nullptr)
-    {
-
-        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
         createDummySpell(62388);
-        sp = getMutableSpellInfo(62388);
-        if (sp != nullptr)
-        {
-            sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
-            sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 0);
-        }
-    }
+        createDummySpell(56817);
+        createDummySpell(62330);
 
-    //megai2: Immolation Aura
-    sp = getMutableSpellInfo(50589);
-    if (sp != nullptr)
-    {
-        sp->setChannelInterruptFlags(0); // Remove channeling behaviour.
-    }
+        switch (sp->getId())
+        {
+            /////////////////////////////////////////////////////////////////
+            //SPELL COEFFICIENT SETTINGS END
+            /////////////////////////////////////////////////////////////////
+
+            ////////////////////////////////////////////////////////////
+            // Wands
+            case SPELL_RANGED_WAND:
+                sp->setDmgClass(SPELL_DMG_TYPE_RANGED);
+                break;
+
+            //////////////////////////////////////////////////////
+            // CLASS-SPECIFIC SPELL FIXES                       //
+            //////////////////////////////////////////////////////
+
+            // Note: when applying spell hackfixes, please follow a template
+
+            //////////////////////////////////////////
+            // WARRIOR                              //
+            //////////////////////////////////////////
+
+
+            ////////////////////////////////////////////////////////////
+            // Arms
+
+            // Warrior - Tactical Mastery Rank 1
+            case 12295:
+            // Warrior - Tactical Mastery Rank 2
+            case 12676:
+            // Warrior - Tactical Mastery Rank 3
+            case 12677:
+                sp->setRequiredShapeShift(0x00070000);
+                break;
+
+            // Warrior - Rend
+            case 772:
+            case 6546:
+            case 6547:
+            case 6548:
+            case 11572:
+            case 11573:
+            case 11574:
+            case 25208:
+                sp->setMechanicsType(MECHANIC_BLEEDING);
+                break;
+            // Warrior - Improved Hamstring
+            // Blizzard uses attackable target for this talent which won't work in our spell system...
+            case 12289:
+            case 12668:
+            case 23695:
+                sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 0);
+                break;
+
+            ////////////////////////////////////////////////////////////
+            // Fury
+
+            // Warrior - Slam
+            case 1464:
+            case 8820:
+            case 11604:
+            case 11605:
+            case 25241:
+            case 25242:
+            case 47474:
+            case 47475:
+                sp->setEffect(SPELL_EFFECT_SCHOOL_DAMAGE, 0);
+                break;
+
+            // Warrior - Bloodthirst new version is ok but old version is wrong from now on :(
+            case 23881:
+            {
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1); //cast on us, it is good
+                sp->setEffectTriggerSpell(23885, 1); //evil , but this is good for us :D
+            } break;
+            case 23892:
+            {
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
+                sp->setEffectTriggerSpell(23886, 1); //evil , but this is good for us :D  // DankoDJ: Is there a reason to trigger an non existing spell?
+            } break;
+            case 23893:
+            {
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1); //
+                sp->setEffectTriggerSpell(23887, 1); //evil , but this is good for us :D // DankoDJ: Is there a reason to trigger an non existing spell?
+            } break;
+            case 23894:
+            {
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1); //
+                sp->setEffectTriggerSpell(23888, 1); //evil , but this is good for us :D // DankoDJ: Is there a reason to trigger an non existing spell?
+            } break;
+            case 25251:
+            {
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1); //aura
+                sp->setEffectTriggerSpell(25252, 1); //evil , but this is good for us :D // DankoDJ: Is there a reason to trigger an non existing spell?
+            } break;
+            case 30335:
+            {
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1); //aura
+                sp->setEffectTriggerSpell(30339, 1); //evil , but this is good for us :D // DankoDJ: Is there a reason to trigger an non existing spell?
+            } break;
+
+            // Warrior - Berserker Rage
+            case 18499:
+            {
+                sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 0);//Forcing a dummy aura, so we can add the missing 4th effect.
+                sp->setEffect(SPELL_EFFECT_NULL, 1);
+                sp->setEffect(SPELL_EFFECT_NULL, 2);
+            } break;
+
+            // Warrior - Heroic Fury
+            case 60970:
+                sp->setEffect(SPELL_EFFECT_DUMMY, 0);
+                break;
+            ////////////////////////////////////////////////////////////
+            // Protection
+
+            // Intervene  Ranger: stop attack
+            case 3411:
+                sp->addAttributes(ATTRIBUTES_STOP_ATTACK);
+                break;
+            //////////////////////////////////////////
+            // PALADIN                              //
+            //////////////////////////////////////////
+
+            //Paladin - Hammer of the Righteous
+            case 53595:
+                sp->setSpeed(0);    //without, no damage is done
+                break;
+
+            //Paladin - Divine Storm
+            case 53385:
+            {
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
+                sp->setEffectRadiusIndex(43, 0); //16 yards
+                sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
+                sp->setEffectTriggerSpell(54172, 1);
+                sp->setProcChance(100);
+                sp->setMaxTargets(4);
+            } break;
+
+            //Paladin - Judgements of the Wise
+            case 31930:
+            case 54180:
+            {
+                sp->setSpellFamilyName(0);
+                sp->setSpellFamilyFlags(0, 0);
+                sp->setSpellFamilyFlags(0, 1);
+                sp->setSpellFamilyFlags(0, 2);
+            } break;
+
+            //Paladin - Avenging Wrath marker - Is forced debuff
+            case 61987:
+            //Paladin - Forbearance - Is forced debuff
+            case 25771:
+                sp->setAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
+                break;
+
+            //Divine Protection
+            case 498:
+            //Divine Shield
+            case 642:
+            //Hand of Protection Rank 1
+            case 1022:
+            //Hand of Protection Rank 2
+            case 5599:
+            //Hand of Protection Rank 3
+            case 10278:
+                sp->setTargetAuraSpellNot(25771);
+                break;
+
+            //Paladin - Hammer of Justice - Interrupt effect
+            case 853:
+            case 5588:
+            case 5589:
+            case 10308:
+            {
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
+                sp->setEffectTriggerSpell(32747, 1);
+            } break;
+
+            //////////////////////////////////////////
+            // HUNTER                               //
+            //////////////////////////////////////////
+
+            // Insert hunter spell fixes here
+
+            // Hunter - Spirit Bond
+            case 19578:
+            {
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
+                sp->setEffectTriggerSpell(19579, 0);
+            } break;
+
+            case 20895:
+            {
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
+                sp->setEffectTriggerSpell(24529, 0);
+            } break;
+
+            case 19579:
+            case 24529:
+            {
+                sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1); //we should do the same for player too as we did for pet
+                sp->setEffectApplyAuraName(sp->getEffectApplyAuraName(0), 1);
+                sp->setEffectImplicitTargetA(EFF_TARGET_PET, 1);
+                sp->setEffectBasePoints(sp->getEffectBasePoints(0), 1);
+                sp->setEffectAmplitude(sp->getEffectAmplitude(0), 1);
+                sp->setEffectDieSides(sp->getEffectDieSides(0), 1);
+            } break;
+
+            // Hunter - Ferocious Inspiration
+            case 34455:
+            case 34459:
+            case 34460:
+            {
+                sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
+                sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
+                sp->setEffectTriggerSpell(34456, 0);
+                sp->setEffect(SPELL_EFFECT_NULL, 1); //remove this
+            } break;
+
+            // Hunter - Focused Fire
+            case 35029:
+            {
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
+                sp->setEffectTriggerSpell(35060, 0);
+            } break;
+
+            case 35030:
+            {
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
+                sp->setEffectTriggerSpell(35061, 0);
+            } break;
+
+            // Hunter - Thrill of the Hunt
+            case 34497:
+            case 34498:
+            case 34499:
+            {
+                sp->setProcChance(sp->calculateEffectValue(0));
+                sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
+                sp->setEffectTriggerSpell(34720, 0);
+            } break;
+
+            //Hunter - Frenzy
+            case 19621:
+            case 19622:
+            case 19623:
+            case 19624:
+            case 19625:
+            {
+                sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
+                sp->setEffectTriggerSpell(19615, 0);
+                sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
+                sp->setProcChance(sp->getEffectBasePoints(0));
+            } break;
+
+            // Feed pet
+            case 6991:
+                sp->setEffectImplicitTargetA(EFF_TARGET_NONE, 0);
+                break;
+
+            //////////////////////////////////////////
+            // ROGUE                                //
+            //////////////////////////////////////////
+
+            // Garrote - this is used?
+            case 37066:
+            {
+                sp->setEffectImplicitTargetA(EFF_TARGET_SINGLE_ENEMY, 0);
+                sp->setEffectImplicitTargetA(EFF_TARGET_SINGLE_ENEMY, 1);
+            } break;
+
+            //rogue - Vanish : Second Trigger Spell
+            case 18461:
+                sp->addAttributesEx(ATTRIBUTESEX_NOT_BREAK_STEALTH);
+                break;
+
+            //rogue - Shadowstep
+            case 36563:
+                sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 2);
+                sp->addAttributesEx(ATTRIBUTESEX_NOT_BREAK_STEALTH);
+                break;
+
+            // Still related to shadowstep - prevent the trigger spells from breaking stealth.
+            case 44373:
+            case 36554:
+                sp->addAttributesEx(ATTRIBUTESEX_NOT_BREAK_STEALTH);
+                break;
+
+            //garrot
+            case 703:
+            case 8631:
+            case 8632:
+            case 8633:
+            case 11289:
+            case 11290:
+            case 26839:
+            case 26884:
+
+            //rupture
+            case 1943:
+            case 8639:
+            case 8640:
+            case 11273:
+            case 11274:
+            case 11275:
+            case 26867:
+                sp->setMechanicsType(MECHANIC_BLEEDING);
+                break;
+
+            //Rogue - Killing Spree Stealth fix
+            case 51690:
+                sp->addAttributesEx(ATTRIBUTESEX_NOT_BREAK_STEALTH);
+                break;
+
+            // Fan of knives
+            case 51723:
+            {
+                sp->setEffectImplicitTargetA(EFF_TARGET_ALL_ENEMY_IN_AREA, 0);
+                sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 0);
+            } break;
+
+            // Rogue - Master of Subtlety
+            case 31665:
+                sp->addAttributesEx(ATTRIBUTESEX_NOT_BREAK_STEALTH);
+                break;
+
+            //////////////////////////////////////////
+            // PRIEST                               //
+            //////////////////////////////////////////
+
+            // Prayer of mending
+            case 41635:
+            case 48110:
+            case 48111:
+            {
+                sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 0);
+                sp->setEffectImplicitTargetA(EFF_TARGET_SINGLE_FRIEND, 0);
+            } break;
+
+            case 33110:
+                sp->setEffectImplicitTargetA(EFF_TARGET_SINGLE_FRIEND, 0);
+                break;
+
+            // Body and soul - fix duration of cleanse poison
+            case 64134:
+                sp->setDurationIndex(29);
+                break;
+
+            // Spirit of Redemption - required spells can be casted while dead
+            case 27795:   // This is casted by shape shift
+            case 27792:   // This is casted by Apply Aura: Spirit of Redemption
+                sp->addAttributesExC(ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD);
+                break;
+
+            //Priest - Wand Specialization
+            case 14524:
+            case 14525:
+            case 14526:
+            case 14527:
+            case 14528:
+            {
+                sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
+                sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 0);
+            } break;
+
+            //Priest - Inspiration proc spell
+            case 14893:
+            case 15357:
+            case 15359:
+                sp->setRangeIndex(4);
+                break;
+
+            // priest - Reflective Shield
+            case 33201:
+            case 33202:
+            {
+                sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
+                sp->setEffectTriggerSpell(33619, 0); //!! WRONG spell, we will make direct dmg here
+            } break;
+
+            // Weakened Soul - Is debuff
+            case 6788:
+                sp->setAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
+                break;
+
+            // Penance
+            case 47540:
+            case 53005:
+            case 53006:
+            case 53007:
+            {
+                sp->setDurationIndex(566);
+                sp->setChannelInterruptFlags(0);
+            } break;
+
+            // Penance triggered healing spells have wrong targets.
+            case 47750:
+            case 52983:
+            case 52984:
+            case 52985:
+                sp->setEffectImplicitTargetA(EFF_TARGET_SINGLE_FRIEND, 0);
+                break;
+
+            //////////////////////////////////////////
+            // SHAMAN                               //
+            //////////////////////////////////////////
+
+            // Shamanistic Rage
+            case 30824:
+            {
+                if (SpellInfo const* parentsp = getMutableSpellInfo(30823))
+                    sp->setEffectBasePoints(parentsp->getEffectBasePoints(0), 0);
+            } break;
+
+            //summon only 1 elemental totem
+            case 2894:
+                sp->setEffectImplicitTargetA(EFF_TARGET_TOTEM_FIRE, 0); //remove this targeting. it is enough to get 1 target
+                break;
+
+            //summon only 1 elemental totem
+            case 2062:
+                sp->setEffectImplicitTargetA(EFF_TARGET_TOTEM_EARTH, 0); //remove this targeting. it is enough to get 1 target
+                break;
+
+            //Bloodlust
+            case 2825:
+                sp->setCasterAuraSpellNot(57724); //sated debuff
+                break;
+
+            // Sated - is debuff
+            case 57724:
+                sp->setAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
+                break;
+
+            //Heroism
+            case 32182:
+                sp->setCasterAuraSpellNot(57723); //sated debuff
+                break;
+
+            // Sated - is debuff
+            case 57723:
+                sp->setAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
+                break;
+
+            // Purge
+            case 370:
+            case 8012:
+            case 27626:
+            case 33625:
+                sp->setDispelType(DISPEL_MAGIC);
+                break;
+
+            //Shaman - Shamanistic Focus
+            // needs to be fixed (doesn't need to proc, it now just reduces mana cost always by %)
+            case 43338:
+                sp->setEffectTriggerSpell(43339, 0);
+                break;
+
+            case 43339:
+                sp->setEffectMiscValue(SPELLMOD_COST, 0);
+                break;
+
+            //shaman - Improved Chain Heal
+            case 30873:
+            case 30872:
+                sp->setEffectDieSides(0, 0);
+                break;
+
+            //shaman - Improved Weapon Totems
+            case 29193:
+            case 29192:
+            {
+                sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
+                sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 1);
+                sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 0);
+                sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 1);
+            } break;
+
+            // Shaman - Improved Fire Totems
+            case 16544:
+            case 16086:
+                sp->setEffectMiscValue(SPELLMOD_DURATION, 0);
+                break;
+
+            //shaman - Elemental Weapons
+            case 29080:
+            case 29079:
+            case 16266:
+            {
+                sp->setEffectMiscValue(SPELLMOD_DAMAGE_DONE, 1);
+                sp->setEffectMiscValue(SPELLMOD_DAMAGE_DONE, 2);
+            } break;
+
+            //  Unleashed Rage - LordLeeCH
+            case 30802:
+            case 30808:
+            case 30809:
+                sp->setEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA, 0);
+                break;
+
+            // Ancestral healing proc spell
+            case 16177:
+            case 16236:
+            case 16237:
+                sp->setRangeIndex(4);
+                break;
+
+            case 20608:   //Reincarnation
+            {
+                for (uint8 i = 0; i < 8; ++i)
+                {
+                    if (sp->getReagent(i))
+                    {
+                        sp->setReagent(0, i);
+                        sp->setReagentCount(0, i);
+                    }
+                }
+            } break;
+
+            //////////////////////////////////////////
+            // MAGE                                 //
+            //////////////////////////////////////////
+
+            // Brain Freeze rank 1
+            case 44546:
+            // Brain Freeze rank 2
+            case 44548:
+            // Brain Freeze rank 3
+            case 44549:
+            // Fingers of Frost rank 1
+            case 44543:
+            // Fingers of Frost rank 2
+            case 44545:
+                sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 0);
+                break;
+
+            //Mage - Spell Power
+            case 35578:
+            case 35581:
+            {
+                sp->setEffectMiscValue(SPELLMOD_CRITICAL_DAMAGE, 0);
+                sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
+            } break;
+
+            //Mage - Elemental Precision
+            case 29438:
+            case 29439:
+            case 29440:
+            {
+                sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
+                sp->setEffectMiscValue(SPELLMOD_COST, 0);
+            } break;
+
+            //Mage - Arcane Blast
+            case 30451:
+            case 42894:
+            case 42896:
+            case 42897:
+                sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
+                break;
+
+            //mage : Empowered Arcane Missiles
+            case 31579:
+            case 31582:
+            case 31583:
+                sp->setEffectBasePoints(5 * (sp->calculateEffectValue(0)), 0);
+                break;
+
+            //Arcane Potency procs
+            case 57529:
+            case 57531:
+            {
+                sp->setProcFlags(0);
+                sp->setAuraInterruptFlags(0);
+            } break;
+
+            //mage - Combustion
+            case 11129:
+            {
+                sp->setEffect(SPELL_EFFECT_NULL, 0);
+                sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1);
+                sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
+                sp->setEffectTriggerSpell(28682, 1);
+                sp->setProcChance(0);
+            } break;
+
+            // mage - Conjure Refreshment Table
+            case 43985:
+                sp->setEffectImplicitTargetA(EFF_TARGET_DYNAMIC_OBJECT, 0);
+                break;
+
+            // Hypothermia - forced debuff
+            case 41425:
+                sp->setAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
+                break;
+
+            // Mage - Permafrost Rank 1
+            case 11175:
+            // Mage - Permafrost Rank 2
+            case 12569:
+            // Mage - Permafrost Rank 3
+            case 12571:
+                sp->setEffectMiscValue(SPELLMOD_ALL_EFFECTS, 1);
+                break;
+
+            //////////////////////////////////////////
+            // WARLOCK                              //
+            //////////////////////////////////////////
+
+            //Dummy for Demonic Circle
+            case 48018:
+                sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
+                break;
+
+            case 62388:
+            {
+                sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
+                sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 0);
+            } break;
+
+            //megai2: Immolation Aura
+            case 50589:
+                sp->setChannelInterruptFlags(0); // Remove channeling behaviour.
+                break;
 
 #if VERSION_STRING < Cata
-    //megai2: Everlasting Affliction
-    sp = getMutableSpellInfo(47205);
-    if (sp != nullptr)
-    {
-        sp->setEffectSpellClassMask(0x111, 1, 0);
-        sp->setEffectSpellClassMask(0, 1, 1);
-    }
-
-    sp = getMutableSpellInfo(47204);
-    if (sp != nullptr)
-    {
-        sp->setEffectSpellClassMask(0x111, 1, 0);
-        sp->setEffectSpellClassMask(0, 1, 1);
-    }
-
-    sp = getMutableSpellInfo(47203);
-    if (sp != nullptr)
-    {
-        sp->setEffectSpellClassMask(0x111, 1, 0);
-        sp->setEffectSpellClassMask(0, 1, 1);
-    }
-
-    sp = getMutableSpellInfo(47202);
-    if (sp != nullptr)
-    {
-        sp->setEffectSpellClassMask(0x111, 1, 0);
-        sp->setEffectSpellClassMask(0, 1, 1);
-    }
-
-    sp = getMutableSpellInfo(47201);
-    if (sp != nullptr)
-    {
-        sp->setEffectSpellClassMask(0x111, 1, 0);
-        sp->setEffectSpellClassMask(0, 1, 1);
-    }
+            //megai2: Everlasting Affliction
+            case 47205:
+            case 47204:
+            case 47203:
+            case 47202:
+            case 47201:
+            {
+                sp->setEffectSpellClassMask(0x111, 1, 0);
+                sp->setEffectSpellClassMask(0, 1, 1);
+            } break;
 #endif
 
-    // Demonic Knowledge
-    sp = getMutableSpellInfo(35691);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_DAMAGE_DONE, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 0);
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1);
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_DAMAGE_DONE, 1);
-        sp->setEffectBasePoints(sp->getEffectBasePoints(0), 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 1);
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 2);
-        sp->setEffectTriggerSpell(35696, 2);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 2);
-    }
-    sp = getMutableSpellInfo(35692);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_DAMAGE_DONE, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 0);
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1);
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_DAMAGE_DONE, 1);
-        sp->setEffectBasePoints(sp->getEffectBasePoints(0), 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 1);
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 2);
-        sp->setEffectTriggerSpell(35696, 2);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 2);
-    }
-    sp = getMutableSpellInfo(35693);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_DAMAGE_DONE, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 0);
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1);
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_DAMAGE_DONE, 1);
-        sp->setEffectBasePoints(sp->getEffectBasePoints(0), 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 1);
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 2);
-        sp->setEffectTriggerSpell(35696, 2);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 2);
-    }
-    sp = getMutableSpellInfo(35696);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0); //making this only for the visible effect
-        sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 0); //no effect here
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-    }
+            // Demonic Knowledge
+            case 35691:
+            case 35692:
+            case 35693:
+            {
+                sp->setEffectApplyAuraName(SPELL_AURA_MOD_DAMAGE_DONE, 0);
+                sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 0);
+                sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1);
+                sp->setEffectApplyAuraName(SPELL_AURA_MOD_DAMAGE_DONE, 1);
+                sp->setEffectBasePoints(sp->getEffectBasePoints(0), 1);
+                sp->setEffectImplicitTargetA(EFF_TARGET_PET, 1);
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 2);
+                sp->setEffectTriggerSpell(35696, 2);
+                sp->setEffectImplicitTargetA(EFF_TARGET_PET, 2);
+            } break;
 
-    //warlock: Empowered Corruption
-    sp = getMutableSpellInfo(32381);
-    if (sp != nullptr)
-    {
-        sp->setEffectBasePoints(sp->getEffectBasePoints(0) * 6, 0);
-    }
-    sp = getMutableSpellInfo(32382);
-    if (sp != nullptr)
-    {
-        sp->setEffectBasePoints(sp->getEffectBasePoints(0) * 6, 0);
-    }
-    sp = getMutableSpellInfo(32383);
-    if (sp != nullptr)
-    {
-        sp->setEffectBasePoints(sp->getEffectBasePoints(0) * 6, 0);
-    }
+            case 35696:
+            {
+                sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0); //making this only for the visible effect
+                sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 0); //no effect here
+                sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
+            } break;
 
-    //warlock - Demonic Tactics
-    sp = getMutableSpellInfo(30242);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_NULL, 0); //disable this. This is just blizz crap. Pure proof that they suck :P
-        sp->setEffectImplicitTargetB(EFF_TARGET_PET, 1);
-        //sp->EffectApplyAuraName[2] = SPELL_AURA_MOD_SPELL_CRIT_CHANCE; //lvl 1 has it fucked up :O
-                                                                        // Zyres: No you fukced it up. This spell was defined few lines below.
-        sp->setEffectImplicitTargetB(EFF_TARGET_PET, 2);
-    }
-    sp = getMutableSpellInfo(30245);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_NULL, 0); //disable this. This is just blizz crap. Pure proof that they suck :P
-        sp->setEffectImplicitTargetB(EFF_TARGET_PET, 1);
-        sp->setEffectImplicitTargetB(EFF_TARGET_PET, 2);
-    }
-    sp = getMutableSpellInfo(30246);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_NULL, 0); //disable this. This is just blizz crap. Pure proof that they suck :P
-        sp->setEffectImplicitTargetB(EFF_TARGET_PET, 1);
-        sp->setEffectImplicitTargetB(EFF_TARGET_PET, 2);
-    }
-    sp = getMutableSpellInfo(30247);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_NULL, 0); //disable this. This is just blizz crap. Pure proof that they suck :P
-        sp->setEffectImplicitTargetB(EFF_TARGET_PET, 1);
-        sp->setEffectImplicitTargetB(EFF_TARGET_PET, 2);
-    }
-    sp = getMutableSpellInfo(30248);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_NULL, 0); //disable this. This is just blizz crap. Pure proof that they suck :P
-        sp->setEffectImplicitTargetB(EFF_TARGET_PET, 1);
-        sp->setEffectImplicitTargetB(EFF_TARGET_PET, 2);
-    }
+            //warlock: Empowered Corruption
+            case 32381:
+            case 32382:
+            case 32383:
+                sp->setEffectBasePoints(sp->getEffectBasePoints(0) * 6, 0);
+                break;
 
-    //warlock - Demonic Resilience
-    sp = getMutableSpellInfo(30319);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 1);
-    }
-    sp = getMutableSpellInfo(30320);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 1);
-    }
-    sp = getMutableSpellInfo(30321);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 1);
-    }
+            //warlock - Demonic Tactics
+            case 30242:
+            case 30245:
+            case 30246:
+            case 30247:
+            case 30248:
+            {
+                sp->setEffect(SPELL_EFFECT_NULL, 0); //disable this. This is just blizz crap. Pure proof that they suck :P
+                sp->setEffectImplicitTargetB(EFF_TARGET_PET, 1);
+                sp->setEffectImplicitTargetB(EFF_TARGET_PET, 2);
+            } break;
 
-    //warlock - Improved Imp
-    sp = getMutableSpellInfo(18694);
-    if (sp != nullptr)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-    }
-    sp = getMutableSpellInfo(18695);
-    if (sp != nullptr)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-    }
-    sp = getMutableSpellInfo(18696);
-    if (sp != nullptr)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-    }
+            //warlock - Demonic Resilience
+            case 30319:
+            case 30320:
+            case 30321:
+            {
+                sp->setEffectApplyAuraName(SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, 1);
+                sp->setEffectImplicitTargetA(EFF_TARGET_PET, 1);
+            } break;
 
-    //warlock - Demonic Brutality
-    sp = getMutableSpellInfo(18705);
-    if (sp != nullptr)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-    }
-    sp = getMutableSpellInfo(18706);
-    if (sp != nullptr)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-    }
-    sp = getMutableSpellInfo(18707);
-    if (sp != nullptr)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-    }
+            //warlock - Improved Imp
+            case 18694:
+            case 18695:
+            case 18696:
 
-    //warlock - Improved Succubus
-    sp = getMutableSpellInfo(18754);
-    if (sp != nullptr)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 1);
-    }
-    sp = getMutableSpellInfo(18755);
-    if (sp != nullptr)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 1);
-    }
-    sp = getMutableSpellInfo(18756);
-    if (sp != nullptr)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 1);
-    }
+            //warlock - Demonic Brutality
+            case 18705:
+            case 18706:
+            case 18707:
+                sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
+                break;
 
-    //warlock - Fel Vitality
-    sp = getMutableSpellInfo(18731);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_PERCENT_STAT, 0);
-        sp->setEffectMiscValue(3, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-    }
-    sp = getMutableSpellInfo(18743);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_PERCENT_STAT, 0);
-        sp->setEffectMiscValue(3, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-    }
-    sp = getMutableSpellInfo(18744);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_PERCENT_STAT, 0);
-        sp->setEffectMiscValue(3, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-    }
+            //warlock - Improved Succubus
+            case 18754:
+            case 18755:
+            case 18756:
+            {
+                sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
+                sp->setEffectImplicitTargetA(EFF_TARGET_PET, 1);
+            } break;
 
-    //warlock - Unholy Power
-    sp = getMutableSpellInfo(18769);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-        //this is required since blizz uses spells for melee attacks while we use fixed functions
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1);
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_DAMAGE_PERCENT_DONE, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 1);
-        sp->setEffectMiscValue(SCHOOL_NORMAL, 1);
-        sp->setEffectBasePoints(sp->getEffectBasePoints(0), 1);
-    }
-    sp = getMutableSpellInfo(18770);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-        //this is required since blizz uses spells for melee attacks while we use fixed functions
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1);
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_DAMAGE_PERCENT_DONE, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 1);
-        sp->setEffectMiscValue(SCHOOL_NORMAL, 1);
-        sp->setEffectBasePoints(sp->getEffectBasePoints(0), 1);
-    }
-    sp = getMutableSpellInfo(18771);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-        //this is required since blizz uses spells for melee attacks while we use fixed functions
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1);
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_DAMAGE_PERCENT_DONE, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 1);
-        sp->setEffectMiscValue(SCHOOL_NORMAL, 1);
-        sp->setEffectBasePoints(sp->getEffectBasePoints(0), 1);
-    }
-    sp = getMutableSpellInfo(18772);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-        //this is required since blizz uses spells for melee attacks while we use fixed functions
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1);
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_DAMAGE_PERCENT_DONE, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 1);
-        sp->setEffectMiscValue(SCHOOL_NORMAL, 1);
-        sp->setEffectBasePoints(sp->getEffectBasePoints(0), 1);
-    }
-    sp = getMutableSpellInfo(18773);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-        //this is required since blizz uses spells for melee attacks while we use fixed functions
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1);
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_DAMAGE_PERCENT_DONE, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 1);
-        sp->setEffectMiscValue(SCHOOL_NORMAL, 1);
-        sp->setEffectBasePoints(sp->getEffectBasePoints(0), 1);
-    }
+            //warlock - Fel Vitality
+            case 18731:
+            case 18743:
+            case 18744:
+            {
+                sp->setEffectApplyAuraName(SPELL_AURA_MOD_PERCENT_STAT, 0);
+                sp->setEffectMiscValue(3, 0);
+                sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
+            } break;
 
-    //warlock - Master Demonologist - 25 spells here
-    sp = getMutableSpellInfo(23785);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(23784, 0);
-    }
-    sp = getMutableSpellInfo(23822);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(23830, 0);
-    }
-    sp = getMutableSpellInfo(23823);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(23831, 0);
-    }
-    sp = getMutableSpellInfo(23824);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(23832, 0);
-    }
-    sp = getMutableSpellInfo(23825);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(35708, 0);
-    }
-    //and the rest
-    sp = getMutableSpellInfo(23784);
-    if (sp != nullptr)
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-    sp = getMutableSpellInfo(23830);
-    if (sp != nullptr)
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-    sp = getMutableSpellInfo(23831);
-    if (sp != nullptr)
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-    sp = getMutableSpellInfo(23832);
-    if (sp != nullptr)
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-    sp = getMutableSpellInfo(35708);
-    if (sp != nullptr)
-        sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
-    sp = getMutableSpellInfo(23759);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
-    }
-    sp = getMutableSpellInfo(23760);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
-    }
-    sp = getMutableSpellInfo(23761);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
-    }
-    sp = getMutableSpellInfo(23762);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
-    }
-    sp = getMutableSpellInfo(23826);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
-    }
-    sp = getMutableSpellInfo(23827);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
-    }
-    sp = getMutableSpellInfo(23828);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA,0);
-    }
-    sp = getMutableSpellInfo(23829);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
-    }
-    // Zyres: eeek
-    for (uint32 i = 23833; i <= 23844; ++i)
-    {
-        sp = getMutableSpellInfo(i);
-        if (sp != nullptr)
-        {
-            sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
-        }
-    }
-    sp = getMutableSpellInfo(35702);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
-        sp->setEffect(SPELL_EFFECT_NULL, 1); //hacks, we are handling this in another way
-    }
-    sp = getMutableSpellInfo(35703);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
-        sp->setEffect(SPELL_EFFECT_NULL, 1); //hacks, we are handling this in another way
-    }
-    sp = getMutableSpellInfo(35704);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
-        sp->setEffect(SPELL_EFFECT_NULL, 1); //hacks, we are handling this in another way
-    }
-    sp = getMutableSpellInfo(35705);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
-        sp->setEffect(SPELL_EFFECT_NULL, 1); //hacks, we are handling this in another way
-    }
-    sp = getMutableSpellInfo(35706);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
-        sp->setEffect(SPELL_EFFECT_NULL, 1); //hacks, we are handling this in another way
-    }
+            //warlock - Unholy Power
+            case 18769:
+            case 18770:
+            case 18771:
+            case 18772:
+            case 18773:
+            {
+                sp->setEffectApplyAuraName(SPELL_AURA_ADD_PCT_MODIFIER, 0);
+                sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
+                //this is required since blizz uses spells for melee attacks while we use fixed functions
+                sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1);
+                sp->setEffectApplyAuraName(SPELL_AURA_MOD_DAMAGE_PERCENT_DONE, 1);
+                sp->setEffectImplicitTargetA(EFF_TARGET_PET, 1);
+                sp->setEffectMiscValue(SCHOOL_NORMAL, 1);
+                sp->setEffectBasePoints(sp->getEffectBasePoints(0), 1);
+            } break;
 
-    //warlock - Improved Drain Soul
-    sp = getMutableSpellInfo(18213);
-    if (sp != nullptr)
-    {
-        sp->setProcChance(100);
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(18371, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 0);
-        sp->setEffect(SPELL_EFFECT_NULL, 2); //remove this effect
-    }
-    sp = getMutableSpellInfo(18372);
-    if (sp != nullptr)
-    {
-        sp->setProcChance(100);
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(18371, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 0);
-        sp->setEffect(SPELL_EFFECT_NULL, 2); //remove this effect
-    }
+            //warlock - Master Demonologist - 25 spells here
+            case 23785:
+            {
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
+                sp->setEffectTriggerSpell(23784, 0);
+            } break;
+            case 23822:
+            {
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
+                sp->setEffectTriggerSpell(23830, 0);
+            } break;
+            case 23823:
+            {
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
+                sp->setEffectTriggerSpell(23831, 0);
+            } break;
+            case 23824:
+            {
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
+                sp->setEffectTriggerSpell(23832, 0);
+            } break;
+            case 23825:
+            {
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
+                sp->setEffectTriggerSpell(35708, 0);
+            } break;
 
-    //Warlock Chaos bolt
-    sp = getMutableSpellInfo(50796);
-    if (sp != nullptr)
-    {
-        sp->addAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
-    }
+            //and the rest
+            case 23784:
+            case 23830:
+            case 23831:
+            case 23832:
+            case 35708:
+                sp->setEffectImplicitTargetA(EFF_TARGET_PET, 0);
+                break;
 
-    sp = getMutableSpellInfo(59170);
-    if (sp != nullptr)
-    {
-        sp->addAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
-    }
+            case 23759:
+            case 23760:
+            case 23761:
+            case 23762:
+            case 23826:
+            case 23827:
+            case 23828:
+            case 23829:
 
-    sp = getMutableSpellInfo(59171);
-    if (sp != nullptr)
-    {
-        sp->addAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
-    }
+            case 23833:
+            case 23834:
+            case 23835:
+            case 23836:
+            case 23837:
+            case 23838:
+            case 23839:
+            case 23840:
+            case 23841:
+            case 23842:
+            case 23843:
+            case 23844:
+                sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
+                break;
 
-    sp = getMutableSpellInfo(59172);
-    if (sp != nullptr)
-    {
-        sp->addAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
-    }
-    // End Warlock chaos bolt
+            case 35702:
+            case 35703:
+            case 35704:
+            case 35705:
+            case 35706:
+            {
+                sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
+                sp->setEffect(SPELL_EFFECT_NULL, 1); //hacks, we are handling this in another way
+            } break;
 
-    //Warlock Healthstones
-    int HealthStoneID[8] = { 6201, 6202, 5699, 11729, 11730, 27230, 47871, 47878 };
-    for (uint8 i = 0; i < 8; i++)
-    {
-        sp = getMutableSpellInfo(HealthStoneID[i]);
-        if (sp != nullptr)
-        {
-            sp->setReagent(0, 1);
-        }
-    }
+            //warlock - Improved Drain Soul
+            case 18213:
+            case 18372:
+            {
+                sp->setProcChance(100);
+                sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
+                sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
+                sp->setEffectTriggerSpell(18371, 0);
+                sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 0);
+                sp->setEffect(SPELL_EFFECT_NULL, 2); //remove this effect
+            } break;
 
-    //////////////////////////////////////////
-    // DRUID                                //
-    //////////////////////////////////////////
+            //Warlock Chaos bolt
+            case 50796:
+            case 59170:
+            case 59171:
+            case 59172:
+                sp->addAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
+                break;
 
-    // Insert druid spell fixes here
+            case 6201:
+            case 6202:
+            case 5699:
+            case 11729:
+            case 11730:
+            case 27230:
+            case 47871:
+            case 47878:
+                sp->setReagent(0, 1);
+                break;
 
-    ////////////////////////////////////////////////////////////
-    // Balance
-    ////////////////////////////////////////////////////////////
+            //////////////////////////////////////////
+            // DRUID                                //
+            //////////////////////////////////////////
 
-    // Druid - Force of Nature
-    sp = getMutableSpellInfo(33831);
-    if (sp != nullptr)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 0); //some land under target is used that gathers multiple targets ...
-        sp->setEffectImplicitTargetA(EFF_TARGET_NONE, 1);
-    }
+            ////////////////////////////////////////////////////////////
+            // Balance
 
-    ////////////////////////////////////////////////////////////
-    //    Feral Combat
-    ////////////////////////////////////////////////////////////
+            // Druid - Force of Nature
+            case 33831:
+            {
+                sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 0); //some land under target is used that gathers multiple targets ...
+                sp->setEffectImplicitTargetA(EFF_TARGET_NONE, 1);
+            } break;
 
-    // Druid - Bash - Interrupt effect
-    sp = getMutableSpellInfo(5211);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(32747, 1);
-    }
-    sp = getMutableSpellInfo(6798);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(32747, 1);
-    }
-    sp = getMutableSpellInfo(8983);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(32747, 1);
-    }
+            ////////////////////////////////////////////////////////////
+            //    Feral Combat
 
-    //Druid - Feral Swiftness
-    sp = getMutableSpellInfo(17002);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(24867, 1);
-    }
-    sp = getMutableSpellInfo(24866);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(24864, 1);
-    }
+            // Druid - Bash - Interrupt effect
+            case 5211:
+            case 6798:
+            case 8983:
+            {
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
+                sp->setEffectTriggerSpell(32747, 1);
+            } break;
 
-    // Druid - Maim
-    sp = getMutableSpellInfo(22570);
-    if (sp != nullptr)
-    {
-        sp->setAuraInterruptFlags(AURA_INTERRUPT_ON_UNUSED2);
-    }
-    sp = getMutableSpellInfo(49802);
-    if (sp != nullptr)
-    {
-        sp->setAuraInterruptFlags(AURA_INTERRUPT_ON_UNUSED2);
-    }
+            //Druid - Feral Swiftness
+            case 17002:
+            {
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
+                sp->setEffectTriggerSpell(24867, 1);
+            } break;
+            case 24866:
+            {
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
+                sp->setEffectTriggerSpell(24864, 1);
+            } break;
 
-    sp = getMutableSpellInfo(20719); //feline grace
-    if (sp != nullptr)
-        sp->setEffect(SPELL_EFFECT_NULL, 0);
+            // Druid - Maim
+            case 22570:
+            case 49802:
+                sp->setAuraInterruptFlags(AURA_INTERRUPT_ON_UNUSED2);
+                break;
 
-    // Druid - Feral Swiftness
-    sp = getMutableSpellInfo(17002);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(24867, 1);
-    }
-    sp = getMutableSpellInfo(24866);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(24864, 1);
-    }
+            case 20719: //feline grace
+                sp->setEffect(SPELL_EFFECT_NULL, 0);
+                break;
 
-    // Druid - Frenzied Regeneration
-    sp = getMutableSpellInfo(22842);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
-        sp->setEffectApplyAuraName(SPELL_AURA_PERIODIC_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(22845, 0);
-    }
+            // Druid - Frenzied Regeneration
+            case 22842:
+            {
+                sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
+                sp->setEffectApplyAuraName(SPELL_AURA_PERIODIC_TRIGGER_SPELL, 0);
+                sp->setEffectTriggerSpell(22845, 0);
+            }break;
 
-    // Druid - Primal Fury (talent)
-    sp = getMutableSpellInfo(37116);
-    if (sp != nullptr)
-        sp->setRequiredShapeShift(0);
+            // Druid - Primal Fury (talent)
+            case 37116:
+            case 37117:
+                sp->setRequiredShapeShift(0);
+                break;
 
-    sp = getMutableSpellInfo(37117);
-    if (sp != nullptr)
-        sp->setRequiredShapeShift(0);
+            // Druid - Predatory Strikes
+            case 16972:
+            case 16974:
+            case 16975:
+            {
+                uint32_t mm = decimalToMask(FORM_BEAR) | decimalToMask(FORM_DIREBEAR) | decimalToMask(FORM_MOONKIN) | decimalToMask(FORM_CAT);
+                sp->setRequiredShapeShift(mm);
+            } break;
 
-    // Druid - Predatory Strikes
-    uint32 mm = decimalToMask(FORM_BEAR) | decimalToMask(FORM_DIREBEAR) | decimalToMask(FORM_MOONKIN) | decimalToMask(FORM_CAT);
+            ////////////////////////////////////////////////////////////
+            // Restoration
 
-    sp = getMutableSpellInfo(16972);
-    if (sp != nullptr)
-        sp->setRequiredShapeShift(mm);
-    sp = getMutableSpellInfo(16974);
-    if (sp != nullptr)
-        sp->setRequiredShapeShift(mm);
-    sp = getMutableSpellInfo(16975);
-    if (sp != nullptr)
-        sp->setRequiredShapeShift(mm);
+            // Druid - Natural Shapeshifter
+            case 16833:
+            case 16834:
+            case 16835:
+                sp->setDurationIndex(0);
+                break;
 
-    ////////////////////////////////////////////////////////////
-    // Restoration
-    ////////////////////////////////////////////////////////////
+            //////////////////////////////////////////
+            // DEATH KNIGHT                         //
+            //////////////////////////////////////////
 
-    // Druid - Natural Shapeshifter
-    sp = getMutableSpellInfo(16833);
-    if (sp != nullptr)
-        sp->setDurationIndex(0);
-    sp = getMutableSpellInfo(16834);
-    if (sp != nullptr)
-        sp->setDurationIndex(0);
-    sp = getMutableSpellInfo(16835);
-    if (sp != nullptr)
-        sp->setDurationIndex(0);
-
-    //////////////////////////////////////////
-    // DEATH KNIGHT                         //
-    //////////////////////////////////////////
-
-    // Insert Death Knight spells here
-
-    // Unholy Aura - Ranks 1
-    sp = getMutableSpellInfo(50391);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_INCREASE_SPEED_ALWAYS, 0);
-        sp->setEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA, 0);
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(50392, 1);
-        sp->setEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
-    }
-    // Unholy Aura - Ranks 2
-    sp = getMutableSpellInfo(50392);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_INCREASE_SPEED_ALWAYS, 0);
-        sp->setEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA, 0);
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(50392, 1);
-        sp->setEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
-    }
+            // Unholy Aura - Ranks 1
+            case 50391:
+            // Unholy Aura - Ranks 2
+            case 50392:
+            {
+                sp->setEffectApplyAuraName(SPELL_AURA_MOD_INCREASE_SPEED_ALWAYS, 0);
+                sp->setEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA, 0);
+                sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
+                sp->setEffectTriggerSpell(50392, 1);
+                sp->setEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA, 1);
+                sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
+            } break;
 
 #if VERSION_STRING >= TBC
-    //    Empower Rune Weapon
-    sp = getMutableSpellInfo(47568);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_ACTIVATE_RUNES, 2);
-        sp->setEffectBasePoints(1, 2);
-        sp->setEffectMiscValue(RUNE_UNHOLY, 2);
-    }
+            // Empower Rune Weapon
+            case 47568:
+            {
+                sp->setEffect(SPELL_EFFECT_ACTIVATE_RUNES, 2);
+                sp->setEffectBasePoints(1, 2);
+                sp->setEffectMiscValue(RUNE_UNHOLY, 2);
+            } break;
 #endif
 
-    // DEATH AND DECAY
-    sp = getMutableSpellInfo(49937);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE, 0);
-        sp->setEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA, 0);
-    }
+            // DEATH AND DECAY
+            case 49937:
+            case 49936:
+            case 49938:
+            case 43265:
+            {
+                sp->setEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE, 0);
+                sp->setEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA, 0);
+            } break;
 
-    sp = getMutableSpellInfo(49936);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE, 0);
-        sp->setEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA, 0);
-    }
+            // Vengeance
+            case 93099:
+            {
+                sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
+                sp->setEffectTriggerSpell(76691, 0);
+            } break;
 
-    sp = getMutableSpellInfo(49938);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE, 0);
-        sp->setEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA, 0);
-    }
+            // Path of Frost
+            case 3714:
+            {
+                sp->setEffectApplyAuraName(SPELL_AURA_WATER_WALK, 0);
+                sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
+            } break;
 
-    sp = getMutableSpellInfo(43265);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE, 0);
-        sp->setEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA, 0);
-    }
+            // Rune Strike
+            case 56815:
+                sp->addAttributes(ATTRIBUTES_CANT_BE_DPB);
+                break;
 
-    // Vengeance
-    sp = getMutableSpellInfo(93099);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(76691, 0);
-    }
+            case 56817:
+            {
+                sp->setDurationIndex(28);
+                sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
+                sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 0);
+            } break;
 
-    // Path of Frost
-    sp = getMutableSpellInfo(3714);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_WATER_WALK, 0);
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
-    }
+            //Frost Strike
+            case 49143:
+            case 51416:
+            case 51417:
+            case 51418:
+            case 51419:
+            case 55268:
+                sp->setAttributes(ATTRIBUTES_CANT_BE_DPB);
+                break;
 
-    // Rune Strike
-    sp = getMutableSpellInfo(56815);
-    if (sp != nullptr)
-    {
-        sp->addAttributes(ATTRIBUTES_CANT_BE_DPB);
-    }
+            //////////////////////////////////////////
+            // ITEMS                                //
+            //////////////////////////////////////////
 
-    createDummySpell(56817);
-    sp = getMutableSpellInfo(56817);
-    if (sp != nullptr)
-    {
-        sp->setDurationIndex(28);
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
-        sp->setEffectApplyAuraName(SPELL_AURA_DUMMY, 0);
-    }
+            case 61177: // Northrend Inscription Research
+            case 61288: // Minor Inscription Research
+            case 60893: // Northrend Alchemy Research
+            {
+                sp->setEffect(SPELL_EFFECT_NULL, 1);
+                sp->setEffectBasePoints(0, 1);
+                sp->setEffectImplicitTargetA(EFF_TARGET_NONE, 1);
+                sp->setEffectDieSides(0, 1);
+            } break;
 
-    //Frost Strike
-    sp = getMutableSpellInfo(49143);
-    if (sp != nullptr)
-    {
-        sp->setAttributes(ATTRIBUTES_CANT_BE_DPB);
-    }
-    sp = getMutableSpellInfo(51416);
-    if (sp != nullptr)
-    {
-        sp->setAttributes(ATTRIBUTES_CANT_BE_DPB);
-    }
-    sp = getMutableSpellInfo(51417);
-    if (sp != nullptr)
-    {
-        sp->setAttributes(ATTRIBUTES_CANT_BE_DPB);
-    }
-    sp = getMutableSpellInfo(51418);
-    if (sp != nullptr)
-    {
-        sp->setAttributes(ATTRIBUTES_CANT_BE_DPB);
-    }
-    sp = getMutableSpellInfo(51419);
-    if (sp != nullptr)
-    {
-        sp->setAttributes(ATTRIBUTES_CANT_BE_DPB);
-    }
-    sp = getMutableSpellInfo(55268);
-    if (sp != nullptr)
-    {
-        sp->setAttributes(ATTRIBUTES_CANT_BE_DPB);
-    }
-
-    //////////////////////////////////////////
-    // ITEMS                                //
-    //////////////////////////////////////////
-
-    // Insert items spell fixes here
-
-    sp = getMutableSpellInfo(61177); // Northrend Inscription Research
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_NULL, 1);
-        sp->setEffectBasePoints(0, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_NONE, 1);
-        sp->setEffectDieSides(0, 1);
-    }
-    sp = getMutableSpellInfo(61288); // Minor Inscription Research
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_NULL, 1);
-        sp->setEffectBasePoints(0, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_NONE, 1);
-        sp->setEffectDieSides(0, 1);
-    }
-    sp = getMutableSpellInfo(60893); // Northrend Alchemy Research
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_NULL, 1);
-        sp->setEffectBasePoints(0, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_NONE, 1);
-        sp->setEffectDieSides(0, 1);
-    }
 #if VERSION_STRING < Cata
-    sp = getMutableSpellInfo(46097); // Brutal Totem of Survival
-    if (sp != nullptr)
-    {
-        sp->setEffectSpellClassMask(0x00100000 | 0x10000000 | 0x80000000, 0, 0);
-        sp->setEffectSpellClassMask(0x08000000, 0, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
-    }
-    sp = getMutableSpellInfo(43860); // Totem of Survival
-    if (sp != nullptr)
-    {
-        sp->setEffectSpellClassMask(0x00100000 | 0x10000000 | 0x80000000, 0, 0);
-        sp->setEffectSpellClassMask(0x08000000, 0, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
-    }
-    sp = getMutableSpellInfo(43861); // Merciless Totem of Survival
-    if (sp != nullptr)
-    {
-        sp->setEffectSpellClassMask(0x00100000 | 0x10000000 | 0x80000000, 0, 0);
-        sp->setEffectSpellClassMask(0x08000000, 0, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
-    }
-    sp = getMutableSpellInfo(43862); // Vengeful Totem of Survival
-    if (sp != nullptr)
-    {
-        sp->setEffectSpellClassMask(0x00100000 | 0x10000000 | 0x80000000, 0, 0);
-        sp->setEffectSpellClassMask(0x08000000, 0, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
-    }
-    sp = getMutableSpellInfo(60564); // Savage Gladiator's Totem of Survival
-    if (sp != nullptr)
-    {
-        sp->setEffectSpellClassMask(0x00100000 | 0x10000000 | 0x80000000, 0, 0);
-        sp->setEffectSpellClassMask(0x08000000, 0, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(60565, 1); // Savage Magic
-    }
-    sp = getMutableSpellInfo(60571); // Hateful Gladiator's Totem of Survival
-    if (sp != nullptr)
-    {
-        sp->setEffectSpellClassMask(0x00100000 | 0x10000000 | 0x80000000, 0, 0);
-        sp->setEffectSpellClassMask(0x08000000, 0, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(60566, 1); // Hateful Magic
-    }
-    sp = getMutableSpellInfo(60572); // Deadly Gladiator's Totem of Survival
-    if (sp != nullptr)
-    {
-        sp->setEffectSpellClassMask(0x00100000 | 0x10000000 | 0x80000000, 0, 0);
-        sp->setEffectSpellClassMask(0x08000000, 0, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(60567, 1); // Deadly Magic
-    }
-    sp = getMutableSpellInfo(60567); // Deadly Magic
-    if (sp != nullptr)
-        sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
-    sp = getMutableSpellInfo(46098); // Brutal Totem of Third WInd
-    if (sp != nullptr)
-    {
-        sp->setEffectSpellClassMask(0x00000080, 0, 0);
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(46099, 1); // Brutal Gladiator's Totem of the Third Wind
-    }
-    sp = getMutableSpellInfo(34138); // Totem of the Third Wind
-    if (sp != nullptr)
-    {
-        sp->setEffectSpellClassMask(0x00000080, 0, 0);
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(34132, 1); // Gladiator's Totem of the Third Wind
-    }
-    sp = getMutableSpellInfo(42370); // Merciless Totem of the Third WInd
-    if (sp != nullptr)
-    {
-        sp->setEffectSpellClassMask(0x00000080, 0, 0);
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(42371, 1); // Merciless Gladiator's Totem of the Third Wind
-    }
-    sp = getMutableSpellInfo(43728); // Vengeful Totem of Third WInd
-    if (sp != nullptr)
-    {
-        sp->setEffectSpellClassMask(0x00000080, 0, 0);
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(43729, 1); // Vengeful Gladiator's Totem of the Third Wind
-    }
+
+            case 46097: // Brutal Totem of Survival
+            case 43860: // Totem of Survival
+            case 43861: // Merciless Totem of Survival
+            case 43862: // Vengeful Totem of Survival
+            {
+                sp->setEffectSpellClassMask(0x00100000 | 0x10000000 | 0x80000000, 0, 0);
+                sp->setEffectSpellClassMask(0x08000000, 0, 1);
+                sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
+            } break;
+
+            case 60564: // Savage Gladiator's Totem of Survival
+            {
+                sp->setEffectSpellClassMask(0x00100000 | 0x10000000 | 0x80000000, 0, 0);
+                sp->setEffectSpellClassMask(0x08000000, 0, 1);
+                sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
+                sp->setEffectTriggerSpell(60565, 1); // Savage Magic
+            } break;
+
+            case 60571: // Hateful Gladiator's Totem of Survival
+            {
+                sp->setEffectSpellClassMask(0x00100000 | 0x10000000 | 0x80000000, 0, 0);
+                sp->setEffectSpellClassMask(0x08000000, 0, 1);
+                sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
+                sp->setEffectTriggerSpell(60566, 1); // Hateful Magic
+            } break;
+
+            case 60572: // Deadly Gladiator's Totem of Survival
+            {
+                sp->setEffectSpellClassMask(0x00100000 | 0x10000000 | 0x80000000, 0, 0);
+                sp->setEffectSpellClassMask(0x08000000, 0, 1);
+                sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
+                sp->setEffectTriggerSpell(60567, 1); // Deadly Magic
+            } break;
+
+            case 60567: // Deadly Magic
+                sp->setEffectImplicitTargetA(EFF_TARGET_SELF, 1);
+                break;
+
+            case 46098: // Brutal Totem of Third WInd
+            {
+                sp->setEffectSpellClassMask(0x00000080, 0, 0);
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
+                sp->setEffectTriggerSpell(46099, 1); // Brutal Gladiator's Totem of the Third Wind
+            } break;
+
+            case 34138: // Totem of the Third Wind
+            {
+                sp->setEffectSpellClassMask(0x00000080, 0, 0);
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
+                sp->setEffectTriggerSpell(34132, 1); // Gladiator's Totem of the Third Wind
+            } break;
+
+            case 42370: // Merciless Totem of the Third WInd
+            {
+                sp->setEffectSpellClassMask(0x00000080, 0, 0);
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
+                sp->setEffectTriggerSpell(42371, 1); // Merciless Gladiator's Totem of the Third Wind
+            } break;
+
+            case 43728: // Vengeful Totem of Third WInd
+            {
+                sp->setEffectSpellClassMask(0x00000080, 0, 0);
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
+                sp->setEffectTriggerSpell(43729, 1); // Vengeful Gladiator's Totem of the Third Wind
+            } break;
+
 #endif
 
-    //Compact Harvest Reaper
-    sp = getMutableSpellInfo(4078);
-    if (sp != nullptr)
-    {
-        sp->setDurationIndex(6);
-    }
+            //Compact Harvest Reaper
+            case 4078:
+                sp->setDurationIndex(6);
+                break;
 
-    //Graccu's Mince Meat Fruitcake
-    sp = getMutableSpellInfo(25990);
-    if (sp != nullptr)
-    {
-        sp->setEffectAmplitude(1000, 1);
-    }
+            //Graccu's Mince Meat Fruitcake
+            case 25990:
+                sp->setEffectAmplitude(1000, 1);
+                break;
 
-    //Extract Gas
-    sp = getMutableSpellInfo(30427);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_DUMMY, 0);
-    }
+            //Extract Gas
+            case 30427:
+                sp->setEffect(SPELL_EFFECT_DUMMY, 0);
+                break;
 
-    //Primal Instinct - Idol of Terror proc
-    sp = getMutableSpellInfo(43738);
-    if (sp != nullptr)
-    {
-        sp->custom_self_cast_only = true;
-    }
+            //Primal Instinct - Idol of Terror proc
+            case 43738:
+                sp->custom_self_cast_only = true;
+                break;
 
-    //Thunderfury
-    sp = getMutableSpellInfo(21992);
-    if (sp != nullptr)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_ALL_ENEMIES_AROUND_CASTER, 2); // cebernic: for enemies not self
-    }
+            //Thunderfury
+            case 21992:
+                sp->setEffectImplicitTargetA(EFF_TARGET_ALL_ENEMIES_AROUND_CASTER, 2); // cebernic: for enemies not self
+                break;
 
-    // todo: write spell script for this
-    // Sigil of the Unfaltering Knight
-    /*sp = getMutableSpellInfo(62147);
-    if (sp != nullptr)
-    {
-        sp->custom_proc_interval = 45000;
-    }*/
+            // todo: write spell script for this
+            // Sigil of the Unfaltering Knight
+            /*case 62147:
+                sp->custom_proc_interval = 45000;
+            break;*/
 
-    // Deadly Aggression - triggered by Deadly Gladiator's Relic/Idol/Libram/Totem
-    sp = getMutableSpellInfo(60549);
-    if (sp != nullptr)
-    {
-        // effect 1 and 2 are the same... dunno why
-        sp->setEffect(SPELL_EFFECT_NULL, 1);
-    }
+            // Deadly Aggression - triggered by Deadly Gladiator's Relic/Idol/Libram/Totem
+            case 60549:
+            // Furious Gladiator's Libram of Fortitude - triggered by LK Arena 4 Gladiator's Relic/Idol/Libram/Totem
+            case 60551:
+            // Relentless Aggression - triggered by LK Arena 5 Gladiator's Relic/Idol/Libram/Totem
+            case 60553:
+            // Savage Aggression - triggered by Savage Gladiator's Relic/Idol/Libram/Totem
+            case 60544:
+                // effect 1 and 2 are the same... dunno why
+                sp->setEffect(SPELL_EFFECT_NULL, 1);
+                break;
 
-    // Furious Gladiator's Libram of Fortitude - triggered by LK Arena 4 Gladiator's Relic/Idol/Libram/Totem
-    sp = getMutableSpellInfo(60551);
-    if (sp != nullptr)
-    {
-        // effect 1 and 2 are the same... dunno why
-        sp->setEffect(SPELL_EFFECT_NULL, 1);
-    }
+            // todo: write spell script for this
+            // Sigil of Haunted Dreams
+            /*case 60826:
+                sp->custom_proc_interval = 45000;
+                break;*/
 
-    // Relentless Aggression - triggered by LK Arena 5 Gladiator's Relic/Idol/Libram/Totem
-    sp = getMutableSpellInfo(60553);
-    if (sp != nullptr)
-    {
-        // effect 1 and 2 are the same... dunno why
-        sp->setEffect(SPELL_EFFECT_NULL, 1);
-    }
+            //Totem of the Third Wind - bad range
+            case 34132:
+            case 42371:
+            case 43729:
+            case 46099:
+                sp->setRangeIndex(5);
+                break;
 
-    // Savage Aggression - triggered by Savage Gladiator's Relic/Idol/Libram/Totem
-    sp = getMutableSpellInfo(60544);
-    if (sp != nullptr)
-    {
-        // effect 1 and 2 are the same... dunno why
-        sp->setEffect(SPELL_EFFECT_NULL, 1);
-    }
+            // Eye of Acherus, our phase shift mode messes up the control :/
+            case 51852:
+                sp->setEffect(SPELL_EFFECT_NULL, 0);
+                break;
 
-    // todo: write spell script for this
-    // Sigil of Haunted Dreams
-    /*sp = getMutableSpellInfo(60826);
-    if (sp != nullptr)
-    {
-        sp->custom_proc_interval = 45000;
-    }*/
+            //Ashtongue Talisman of Equilibrium
+            case 40442:
+            {
+                sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
+                sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
+                sp->setEffectTriggerSpell(40452, 0);
+                sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1);
+                sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
+                sp->setEffectTriggerSpell(40445, 1);
+                sp->setEffect(SPELL_EFFECT_APPLY_AURA, 2);
+                sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 2);
+                sp->setProcChance(25);
+                sp->setEffectTriggerSpell(40446, 2);
+                sp->setMaxstack(1);
+            } break;
 
-    //Totem of the Third Wind - bad range
-    sp = getMutableSpellInfo(34132);
-    if (sp != nullptr)
-    {
-        sp->setRangeIndex(5);
-    }
-    sp = getMutableSpellInfo(42371);
-    if (sp != nullptr)
-    {
-        sp->setRangeIndex(5);
-    }
-    sp = getMutableSpellInfo(43729);
-    if (sp != nullptr)
-    {
-        sp->setRangeIndex(5);
-    }
-    sp = getMutableSpellInfo(46099);
-    if (sp != nullptr)
-    {
-        sp->setRangeIndex(5);
-    }
+            //Ashtongue Talisman of Acumen
+            case 40438:
+            {
+                sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
+                sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
+                sp->setProcChance(10);
+                sp->setEffectTriggerSpell(40441, 0);
+                sp->setMaxstack(1);
+                sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1);
+                sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
+                sp->setEffectTriggerSpell(40440, 1);
+            } break;
 
-    // Eye of Acherus, our phase shift mode messes up the control :/
-    sp = getMutableSpellInfo(51852);
-    if (sp != nullptr)
-        sp->setEffect(SPELL_EFFECT_NULL, 0);
+            // Drums of war targets surrounding party members instead of us
+            case 35475:
+            // Drums of Battle targets surrounding party members instead of us
+            case 35476:
+            // Drums of Restoration targets surrounding party members instead of us
+            case 35478:
+            // Drums of Speed targets surrounding party members instead of us
+            case 35477:
+            {
+                sp->setEffectImplicitTargetA(EFF_TARGET_ALL_PARTY, 0);
+                sp->setEffectImplicitTargetA(EFF_TARGET_ALL_PARTY, 1);
+                sp->setEffectImplicitTargetA(EFF_TARGET_NONE, 2);
+                sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 0);
+                sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 1);
+                sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 2);
+                sp->setRequiredShapeShift(0);
+            } break;
 
+            // Drums of Panic targets surrounding creatures instead of us
+            case 35474:
+            {
+                sp->setEffectImplicitTargetA(EFF_TARGET_ALL_ENEMIES_AROUND_CASTER, 0);
+                sp->setEffectImplicitTargetA(EFF_TARGET_ALL_ENEMIES_AROUND_CASTER, 1);
+                sp->setEffectImplicitTargetA(EFF_TARGET_NONE, 2);
+                sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 0);
+                sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 1);
+                sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 2);
+                sp->setRequiredShapeShift(0);
+            } break;
 
-    //Ashtongue Talisman of Equilibrium
-    // DankoDJ: To set the same value several times makes no sense!
-    sp = getMutableSpellInfo(40442);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(40452, 0);
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1);
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(40445, 1);
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 2);
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 2);
-        sp->setProcChance(25);
-        sp->setEffectTriggerSpell(40446, 2);
-        sp->setMaxstack(1);
-    }
+            //Purify helboar meat
+            case 29200:
+            {
+                sp->setReagent(0, 1);
+                sp->setReagentCount(0, 1);
+            } break;
 
-    //Ashtongue Talisman of Acumen
-    // DankoDJ: To set the same value several times makes no sense!
-    sp = getMutableSpellInfo(40438);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 0);
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
-        sp->setProcChance(10);
-        sp->setEffectTriggerSpell(40441, 0);
-        sp->setMaxstack(1);
-        sp->setEffect(SPELL_EFFECT_APPLY_AURA, 1);
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(40440, 1);
-    }
-    // Drums of war targets surrounding party members instead of us
-    sp = getMutableSpellInfo(35475);
-    if (sp != nullptr)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_ALL_PARTY, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_ALL_PARTY, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_NONE, 2);
-        sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 0);
-        sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 1);
-        sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 2);
-    }
+            //Thorium Grenade
+            case 19769:
+            //M73 Frag Grenade
+            case 13808:
+            //Iron Grenade
+            case 4068:
+            //Frost Grenade
+            case 39965:
+            //Adamantine Grenade
+            case 30217:
+                sp->removeInterruptFlags(CAST_INTERRUPT_ON_MOVEMENT);
+                break;
 
-    // Drums of Battle targets surrounding party members instead of us
-    sp = getMutableSpellInfo(35476);
-    if (sp != nullptr)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_ALL_PARTY, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_ALL_PARTY, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_NONE, 2);
-        sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 0);
-        sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 1);
-        sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 2);
-    }
+            ///////////////////////////////////////////////////////////////
+            // Trinket Fixes        Please keep nice and clean :)
+            ///////////////////////////////////////////////////////////////
 
-    // Drums of Panic targets surrounding creatures instead of us
-    sp = getMutableSpellInfo(35474);
-    if (sp != nullptr)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_ALL_ENEMIES_AROUND_CASTER, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_ALL_ENEMIES_AROUND_CASTER, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_NONE, 2);
-        sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 0);
-        sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 1);
-        sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 2);
-    }
+            //Figurine - Shadowsong Panther
+            case 46784:        //    http://www.wowhead.com/?item=35702
+                sp->addAttributesEx(ATTRIBUTESEX_NOT_BREAK_STEALTH);
+                break;
 
-    // Drums of Restoration targets surrounding party members instead of us
-    sp = getMutableSpellInfo(35478);
-    if (sp != nullptr)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_ALL_PARTY, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_ALL_PARTY, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_NONE, 2);
-        sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 0);
-        sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 1);
-        sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 2);
-    }
-    // Drums of Speed targets surrounding party members instead of us
-    sp = getMutableSpellInfo(35477);
-    if (sp != nullptr)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_ALL_PARTY, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_ALL_PARTY, 1);
-        sp->setEffectImplicitTargetA(EFF_TARGET_NONE, 2);
-        sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 0);
-        sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 1);
-        sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 2);
-    }
+            // Infernal Protection
+            case 36488:            //    http://www.wowhead.com/?spell=36488
+                sp->setEffectImplicitTargetA(EFF_TARGET_SINGLE_FRIEND, 0);
+                break;
 
-    //all Drums
-    sp = getMutableSpellInfo(35474);
-    if (sp != nullptr)
-        sp->setRequiredShapeShift(0);
-    sp = getMutableSpellInfo(35475);
-    if (sp != nullptr)
-        sp->setRequiredShapeShift(0);
-    sp = getMutableSpellInfo(35476);
-    if (sp != nullptr)
-        sp->setRequiredShapeShift(0);
-    sp = getMutableSpellInfo(35477);
-    if (sp != nullptr)
-        sp->setRequiredShapeShift(0);
-    sp = getMutableSpellInfo(35478);
-    if (sp != nullptr)
-        sp->setRequiredShapeShift(0);
+            //Fury of the Five Flights
+            case 60313:
+                sp->setMaxstack(20);
+                break;
 
-    //Purify helboar meat
-    sp = getMutableSpellInfo(29200);
-    if (sp != nullptr)
-    {
-        sp->setReagent(0, 1);
-        sp->setReagentCount(0, 1);
-    }
+            //Pendant of the Violet Eye
+            case 35095:
+                sp->custom_self_cast_only = true;
+                break;
 
-    //Thorium Grenade
-    sp = getMutableSpellInfo(19769);
-    if (sp != nullptr)
-    {
-        sp->removeInterruptFlags(CAST_INTERRUPT_ON_MOVEMENT);
-    }
+            //////////////////////////////////////////
+            // BOSSES                               //
+            //////////////////////////////////////////
 
-    //M73 Frag Grenade
-    sp = getMutableSpellInfo(13808);
-    if (sp != nullptr)
-    {
-        sp->removeInterruptFlags(CAST_INTERRUPT_ON_MOVEMENT);
-    }
+            // Blood Nova (Deathbringer Saurfang) - limit range to 100 yards
+            case 72378:
+            case 73058:
+            // Boiling Blood (Deathbringer Saurfang) - limit range to 100 yards
+            case 72385:
+            case 72441:
+            case 72442:
+            case 72443:
+                sp->setRangeIndex(6);
+                break;
 
-    //Iron Grenade
-    sp = getMutableSpellInfo(4068);
-    if (sp != nullptr)
-    {
-        sp->removeInterruptFlags(CAST_INTERRUPT_ON_MOVEMENT);
-    }
+            // Bone Storm (Lord Marrowgar)
+            case 69075:
+                sp->setEffectImplicitTargetA(SPELL_TARGET_AREA, 0);
+                break;
 
-    //Frost Grenade
-    sp = getMutableSpellInfo(39965);
-    if (sp != nullptr)
-    {
-        sp->removeInterruptFlags(CAST_INTERRUPT_ON_MOVEMENT);
-    }
+            // Major Domo - Magic Reflection
+            case 20619:
+            // Major Domo - Damage Shield
+            case 21075:
+            {
+                for (uint8 i = 0; i < 3; ++i)
+                {
+                    if (sp->getEffectImplicitTargetA(i) > 0)
+                        sp->setEffectImplicitTargetA(EFF_TARGET_ALL_FRIENDLY_IN_AREA, i);
+                    if (sp->getEffectImplicitTargetB(i) > 0)
+                        sp->setEffectImplicitTargetB(EFF_TARGET_ALL_FRIENDLY_IN_AREA, i);
+                }
+            } break;
 
-    //Adamantine Grenade
-    sp = getMutableSpellInfo(30217);
-    if (sp != nullptr)
-    {
-        sp->removeInterruptFlags(CAST_INTERRUPT_ON_MOVEMENT);
-    }
+            // Dark Glare
+            case 26029:
+                sp->cone_width = 15.0f; // 15 degree cone
+                break;
 
-    ///////////////////////////////////////////////////////////////
-    // Trinket Fixes        Please keep nice and clean :)
-    ///////////////////////////////////////////////////////////////
+            // Drain Power (Malacrass) // bugged - the charges fade even when refreshed with new ones. This makes them everlasting.
+            case 44131:
+            case 44132:
+                sp->setDurationIndex(21);
+                break;
 
-    //Figurine - Shadowsong Panther
-    sp = getMutableSpellInfo(46784);        //    http://www.wowhead.com/?item=35702
-    if (sp != nullptr)
-        sp->addAttributesEx(ATTRIBUTESEX_NOT_BREAK_STEALTH);
+            // Zul'jin spell, proc from Creeping Paralysis
+            case 43437:
+            {
+                sp->setEffectImplicitTargetA(EFF_TARGET_NONE, 0);
+                sp->setEffectImplicitTargetA(EFF_TARGET_NONE, 1);
+            } break;
 
-    // Infernal Protection
-    sp = getMutableSpellInfo(36488);            //    http://www.wowhead.com/?spell=36488
-    if (sp != nullptr)
-        sp->setEffectImplicitTargetA(EFF_TARGET_SINGLE_FRIEND, 0);
+            //Bloodboil
+            case 42005:
+                sp->setMaxTargets(5);
+                break;
 
+            //Doom
+            case 31347:
+                sp->setMaxTargets(1);
+                break;
 
-    //Fury of the Five Flights
-    sp = getMutableSpellInfo(60313);
-    if (sp != nullptr)
-    {
-        sp->setMaxstack(20);
-    }
+            //Shadow of Death
+            case 40251:
+            {
+                sp->setEffectApplyAuraName(SPELL_AURA_PERIODIC_TRIGGER_SPELL, 0);
+                sp->setEffectTriggerSpell(0, 0);
+            } break;
 
-    //Pendant of the Violet Eye
-    sp = getMutableSpellInfo(35095);
-    if (sp != nullptr)
-    {
-        sp->custom_self_cast_only = true;
-    }
+            case 9036:
+            {
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
+                sp->setEffectTriggerSpell(20584, 1);
+            } break;
 
-    //////////////////////////////////////////
-    // BOSSES                               //
-    //////////////////////////////////////////
+            case 24379:   //bg Restoration
+                sp->setEffectTriggerSpell(23493, 0);
+                break;
 
-    // Insert boss spell fixes here
+            case 23493:   //bg Restoration
+                sp->setEffectTriggerSpell(24379, 0);
+                break;
 
-    // Blood Nova (Deathbringer Saurfang) - limit range to 100 yards
-    sp = getMutableSpellInfo(72378);
-    if (sp != nullptr)
-        sp->setRangeIndex(6);
-    sp = getMutableSpellInfo(73058);
-    if (sp != nullptr)
-        sp->setRangeIndex(6);
+            case 5246:    // why self?
+            {
+                sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
+                sp->setEffectTriggerSpell(20511, 0); // cebernic: this just real spell
+                sp->setEffectImplicitTargetA(EFF_TARGET_NONE, 0);
+            } break;
 
-    // Boiling Blood (Deathbringer Saurfang) - limit range to 100 yards
-    sp = getMutableSpellInfo(72385);
-    if (sp != nullptr)
-        sp->setRangeIndex(6);
-    sp = getMutableSpellInfo(72441);
-    if (sp != nullptr)
-        sp->setRangeIndex(6);
-    sp = getMutableSpellInfo(72442);
-    if (sp != nullptr)
-        sp->setRangeIndex(6);
-    sp = getMutableSpellInfo(72443);
-    if (sp != nullptr)
-        sp->setRangeIndex(6);
+            // Noggenfogger elixir - reduce size effect
+            case 16595:
+            {
+                sp->setEffectApplyAuraName(SPELL_AURA_MOD_SCALE, 0);
+                sp->setEffectBasePoints(-50, 0);
+                sp->setMaxstack(1);
+            } break;
 
-    // Bone Storm (Lord Marrowgar)
-    sp = getMutableSpellInfo(69075);
-    if (sp != nullptr)
-        sp->setEffectImplicitTargetA(SPELL_TARGET_AREA, 0);
+            case 46584:
+            {
+                sp->setEffect(SPELL_EFFECT_DUMMY, 0);
+                sp->setEffect(SPELL_EFFECT_NULL, 1);
+                sp->setEffect(SPELL_EFFECT_NULL, 2);
+            } break;
 
-    // Major Domo - Magic Reflection
-    sp = getMutableSpellInfo(20619);
-    if (sp != nullptr)
-    {
-        for (uint8 i = 0; i < 3; ++i)
-        {
-            if (sp->getEffectImplicitTargetA(i) > 0)
-                sp->setEffectImplicitTargetA(EFF_TARGET_ALL_FRIENDLY_IN_AREA, i);
-            if (sp->getEffectImplicitTargetB(i) > 0)
-                sp->setEffectImplicitTargetB(EFF_TARGET_ALL_FRIENDLY_IN_AREA, i);
+            //Other Librams
+            //Libram of Saints Departed and Libram of Zeal
+            case 34263:
+            //Libram of Avengement
+            case 34260:
+            //Libram of Mending
+            case 43742:
+            {
+                sp->custom_self_cast_only = true;
+                sp->setProcChance(100);
+            } break;
+
+            // Recently Bandaged - is debuff
+            case 11196:
+                sp->setAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
+                break;
+
+            case 44856:        // Bash'ir Phasing Device
+                sp->setAuraInterruptFlags(AURA_INTERRUPT_ON_LEAVE_AREA);
+                break;
+
+            case 24574:        // Zandalarian Hero Badge 24590 24575
+            {
+                sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
+                sp->setEffectTriggerSpell(24590, 0);
+                sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
+            } break;
+
+            //Tempfix for Stone Statues
+            case 32253:
+            case 32787:
+            case 32788:
+            case 32790:
+            case 32791:
+                sp->setDurationIndex(64);
+                break;
+
+            //////////////////////////////////////////////////////
+            // GAME-OBJECT SPELL FIXES                          //
+            //////////////////////////////////////////////////////
+
+            // Blessing of Zim'Torga
+            case 51729:
+            // Blessing of Zim'Abwa
+            case 51265:
+            // Blessing of Zim'Rhuk
+            case 52051:
+                sp->setEffectImplicitTargetA(EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET, 0);
+                break;
+
+            // Ritual of Summoning summons a GameObject that triggers an inexistant spell.
+            // This will copy an existant Summon Player spell used for another Ritual Of Summoning
+            // to the one taught by Warlock trainers.
+            case 7720:
+            {
+                const uint32_t ritOfSummId = 62330;
+                SpellInfo* ritOfSumm = getMutableSpellInfo(ritOfSummId);
+                if (ritOfSumm != NULL)
+                {
+                    memcpy(ritOfSumm, sp, sizeof(SpellInfo));
+                    ritOfSumm->setId(ritOfSummId);
+                }
+            } break;
+
+            //Persistent Shield
+            case 26467:
+            {
+                sp->setEffectTriggerSpell(26470, 0);
+                sp->addAttributes(ATTRIBUTES_NO_VISUAL_AURA | ATTRIBUTES_PASSIVE);
+                sp->setDurationIndex(0);
+            } break;
+
+            //Gravity Bomb
+            case 63024:
+            {
+                sp->setEffectBasePoints(0, 0);
+                sp->setEffect(SPELL_EFFECT_NULL, 1);
+                sp->setEffect(SPELL_EFFECT_NULL, 2);
+                sp->setTargetAuraState(0);
+                sp->setCasterAuraSpell(0);
+                sp->setCasterAuraState(0);
+                sp->setCasterAuraStateNot(0);
+                sp->setTargetAuraStateNot(0);
+                sp->setTargetAuraSpell(0);
+                sp->setCasterAuraSpellNot(0);
+                sp->setTargetAuraSpellNot(0);
+                sp->addAttributes(ATTRIBUTES_NEGATIVE);
+            } break;
+
+            // War Stomp
+            case 20549:
+            {
+                sp->setEffectImplicitTargetA(EFF_TARGET_ALL_ENEMY_IN_AREA, 0);
+                sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 0);
+            } break;
+
+            default:
+                break;
         }
     }
-
-    // Major Domo - Damage Shield
-    sp = getMutableSpellInfo(21075);
-    if (sp != nullptr)
-    {
-        for (uint8 i = 0; i < 3; ++i)
-        {
-            if (sp->getEffectImplicitTargetA(i) > 0)
-                sp->setEffectImplicitTargetA(EFF_TARGET_ALL_FRIENDLY_IN_AREA, i);
-            if (sp->getEffectImplicitTargetB(i) > 0)
-                sp->setEffectImplicitTargetB(EFF_TARGET_ALL_FRIENDLY_IN_AREA, i);
-        }
-    }
-
-    // Dark Glare
-    sp = getMutableSpellInfo(26029);
-    if (sp != nullptr)
-        sp->cone_width = 15.0f; // 15 degree cone
-
-    // Drain Power (Malacrass) // bugged - the charges fade even when refreshed with new ones. This makes them everlasting.
-    sp = getMutableSpellInfo(44131);
-    if (sp != nullptr)
-        sp->setDurationIndex(21);
-    sp = getMutableSpellInfo(44132);
-    if (sp != nullptr)
-        sp->setDurationIndex(21);
-
-    // Zul'jin spell, proc from Creeping Paralysis
-    sp = getMutableSpellInfo(43437);
-    if (sp != nullptr)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_NONE, 0);
-        sp->setEffectImplicitTargetA(EFF_TARGET_NONE, 1);
-    }
-
-    //Bloodboil
-    sp = getMutableSpellInfo(42005);
-    if (sp != nullptr)
-    {
-        sp->setMaxTargets(5);
-    }
-
-    //Doom
-    sp = getMutableSpellInfo(31347);
-    if (sp != nullptr)
-    {
-        sp->setMaxTargets(1);
-    }
-    //Shadow of Death
-    sp = getMutableSpellInfo(40251);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_PERIODIC_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(0, 0);
-    }
-
-    sp = getMutableSpellInfo(9036);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 1);
-        sp->setEffectTriggerSpell(20584, 1);
-    }
-
-    sp = getMutableSpellInfo(24379);   //bg Restoration
-    if (sp != nullptr)
-    {
-        sp->setEffectTriggerSpell(23493, 0);
-    }
-
-    sp = getMutableSpellInfo(23493);   //bg Restoration
-    if (sp != nullptr)
-    {
-        sp->setEffectTriggerSpell(24379, 0);
-    }
-
-    sp = getMutableSpellInfo(5246);    // why self?
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(20511, 0); // cebernic: this just real spell
-        sp->setEffectImplicitTargetA(EFF_TARGET_NONE, 0);
-    }
-
-    // Noggenfogger elixir - reduce size effect
-    sp = getMutableSpellInfo(16595);
-    if (sp != nullptr)
-    {
-        sp->setEffectApplyAuraName(SPELL_AURA_MOD_SCALE, 0);
-        sp->setEffectBasePoints(-50, 0);
-        sp->setMaxstack(1);
-    }
-
-    sp = getMutableSpellInfo(46584);
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_DUMMY, 0);
-        sp->setEffect(SPELL_EFFECT_NULL, 1);
-        sp->setEffect(SPELL_EFFECT_NULL, 2);
-    }
-
-    //Other Librams
-    //Libram of Saints Departed and Libram of Zeal
-    sp = getMutableSpellInfo(34263);
-    if (sp != nullptr)
-    {
-        sp->custom_self_cast_only = true;
-        sp->setProcChance(100);
-    }
-
-    //Libram of Avengement
-    sp = getMutableSpellInfo(34260);
-    if (sp != nullptr)
-    {
-        sp->custom_self_cast_only = true;
-        sp->setProcChance(100);
-    }
-
-    //Libram of Mending
-    sp = getMutableSpellInfo(43742);
-    if (sp != nullptr)
-    {
-        sp->custom_self_cast_only = true;
-        sp->setProcChance(100);
-    }
-
-    // Recently Bandaged - is debuff
-    sp = getMutableSpellInfo(11196);
-    if (sp != nullptr)
-    {
-        sp->setAttributes(ATTRIBUTES_IGNORE_INVULNERABILITY);
-    }
-
-    sp = getMutableSpellInfo(44856);        // Bash'ir Phasing Device
-    if (sp != nullptr)
-        sp->setAuraInterruptFlags(AURA_INTERRUPT_ON_LEAVE_AREA);
-
-
-    sp = getMutableSpellInfo(24574);        // Zandalarian Hero Badge 24590 24575
-    if (sp != nullptr)
-    {
-        sp->setEffect(SPELL_EFFECT_TRIGGER_SPELL, 0);
-        sp->setEffectTriggerSpell(24590, 0);
-        sp->setEffectApplyAuraName(SPELL_AURA_PROC_TRIGGER_SPELL, 0);
-    }
-
-    //Tempfix for Stone Statues
-    sp = getMutableSpellInfo(32253);
-    if (sp != nullptr)
-        sp->setDurationIndex(64);
-    sp = getMutableSpellInfo(32787);
-    if (sp != nullptr)
-        sp->setDurationIndex(64);
-    sp = getMutableSpellInfo(32788);
-    if (sp != nullptr)
-        sp->setDurationIndex(64);
-    sp = getMutableSpellInfo(32790);
-    if (sp != nullptr)
-        sp->setDurationIndex(64);
-    sp = getMutableSpellInfo(32791);
-    if (sp != nullptr)
-        sp->setDurationIndex(64);
-
-    //////////////////////////////////////////////////////
-    // GAME-OBJECT SPELL FIXES                          //
-    //////////////////////////////////////////////////////
-
-    // Blessing of Zim'Torga
-    sp = getMutableSpellInfo(51729);
-    if (sp)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET, 0);
-    }
-
-    // Blessing of Zim'Abwa
-    sp = getMutableSpellInfo(51265);
-    if (sp)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET, 0);
-    }
-
-    // Blessing of Zim'Rhuk
-    sp = getMutableSpellInfo(52051);
-    if (sp)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET, 0);
-    }
-
-    // Ritual of Summoning summons a GameObject that triggers an inexistant spell.
-    // This will copy an existant Summon Player spell used for another Ritual Of Summoning
-    // to the one taught by Warlock trainers.
-    sp = getMutableSpellInfo(7720);
-    if (sp)
-    {
-        const uint32 ritOfSummId = 62330;
-        createDummySpell(ritOfSummId);
-        SpellInfo* ritOfSumm = getMutableSpellInfo(ritOfSummId);
-        if (ritOfSumm != NULL)
-        {
-            memcpy(ritOfSumm, sp, sizeof(SpellInfo));
-            ritOfSumm->setId(ritOfSummId);
-        }
-    }
-    //Persistent Shield
-    sp = getMutableSpellInfo(26467);
-    if (sp)
-    {
-        sp->setEffectTriggerSpell(26470, 0);
-        sp->addAttributes(ATTRIBUTES_NO_VISUAL_AURA | ATTRIBUTES_PASSIVE);
-        sp->setDurationIndex(0);
-    }
-    //Gravity Bomb
-    sp = getMutableSpellInfo(63024);
-    if (sp)
-    {
-        sp->setEffectBasePoints(0, 0);
-        sp->setEffect(SPELL_EFFECT_NULL, 1);
-        sp->setEffect(SPELL_EFFECT_NULL, 2);
-        sp->setTargetAuraState(0);
-        sp->setCasterAuraSpell(0);
-        sp->setCasterAuraState(0);
-        sp->setCasterAuraStateNot(0);
-        sp->setTargetAuraStateNot(0);
-        sp->setTargetAuraSpell(0);
-        sp->setCasterAuraSpellNot(0);
-        sp->setTargetAuraSpellNot(0);
-        sp->addAttributes(ATTRIBUTES_NEGATIVE);
-    }
-    // War Stomp
-    sp = getMutableSpellInfo(20549);
-    if (sp)
-    {
-        sp->setEffectImplicitTargetA(EFF_TARGET_ALL_ENEMY_IN_AREA, 0);
-        sp->setEffectImplicitTargetB(EFF_TARGET_NONE, 0);
-    }
+    // END OF LOOP
 }
