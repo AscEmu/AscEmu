@@ -7,6 +7,7 @@ set(CMAKE_MACOSX_RPATH TRUE)
 
 add_definitions(-DUSE_KQUEUE)
 
+# find required libraries
 find_package(ZLIB REQUIRED)
 find_package(PCRE REQUIRED)
 find_package(OpenSSL REQUIRED)

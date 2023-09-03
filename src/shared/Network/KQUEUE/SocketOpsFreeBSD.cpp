@@ -2,11 +2,11 @@
  * Multiplatform Async Network Library
  * Copyright (c) 2007 Burlex
  *
- * SocketOpsLinux.cpp - Linux implementation of SocketOps.
+ * SocketOpsLinux.cpp - BSD implementation of SocketOps.
  *
  */
 
-#include "Network.h"
+#include "../Network.h"
 
 #ifdef CONFIG_USE_KQUEUE
 
@@ -84,8 +84,6 @@ namespace SocketOps
             return false;
         return (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&to, (socklen_t)sizeof(to)) == 0);
     }
-
-
 }
 
 #endif

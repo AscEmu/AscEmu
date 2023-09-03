@@ -2,11 +2,11 @@
  * Multiplatform Async Network Library
  * Copyright (c) 2007 Burlex
  *
- * SocketMgr - epoll manager for Linux.
+ * SocketMgr - kqueue manager for BSD.
  *
  */
 
-#include "Network.h"
+#include "../Network.h"
 
 #ifdef CONFIG_USE_KQUEUE
 

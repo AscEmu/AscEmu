@@ -18,6 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 struct SplineChainLink;
 
 typedef std::pair<uint32_t, uint16_t> ChainKeyType;
+
 // Custom Functions to make par a keyvariable in an unordered map
 struct ChainKeyTypeHash
 {
@@ -28,6 +29,7 @@ struct ChainKeyTypeHash
         return hash;
     }
 };
+
 // Custom Functions to make par a keyvariable in an unordered map
 struct ChainKeyTypeEqual
 {
@@ -37,8 +39,7 @@ struct ChainKeyTypeEqual
     }
 };
 
-
-//Zyres: Define base tables
+// Zyres: Define base tables
 struct MySQLAdditionalTable
 {
     std::string mainTable;
@@ -50,12 +51,10 @@ extern SERVER_DECL std::vector<MySQLAdditionalTable> MySQLAdditionalTables;
 class SERVER_DECL MySQLDataStore
 {
 private:
-
     MySQLDataStore() = default;
     ~MySQLDataStore() = default;
 
 public:
-
     static MySQLDataStore& getInstance();
     void finalize();
 
@@ -64,7 +63,7 @@ public:
     MySQLDataStore& operator=(MySQLDataStore&&) = delete;
     MySQLDataStore& operator=(MySQLDataStore const&) = delete;
 
-    //maps
+    // maps
     typedef std::unordered_map<uint32_t, MySQLStructure::ItemPage> ItemPageContainer;
     typedef std::unordered_map<uint32_t, ItemProperties> ItemPropertiesContainer;
     typedef std::unordered_map<uint32_t, CreatureProperties> CreaturePropertiesContainer;
@@ -150,7 +149,7 @@ public:
 
     typedef std::vector<MySQLStructure::RecallStruct*> RecallMap;
 
-    //helper
+    // helper
     MySQLStructure::ItemPage const* getItemPage(uint32_t entry);
     ItemPageContainer const* getItemPagesStore() { return &_itemPagesStore; }
     ItemProperties const* getItemProperties(uint32_t entry);
@@ -286,13 +285,13 @@ public:
         return false;
     }
 
-    //Config
+    // config
     void loadAdditionalTableConfig();
 
-    //helpers
+    // helpers
     QueryResult* getWorldDBQuery(const char* query, ...);
 
-    //Loads
+    // loads
     void loadItemPagesTable();
     void loadItemPropertiesTable();
 
@@ -336,7 +335,7 @@ public:
     void loadItemSetLinkedSetBonusTable();
     void loadCreatureInitialEquipmentTable();
 
-    //player create info
+    // player create info
     void loadPlayerCreateInfoTable();
     void loadPlayerCreateInfoBars();
     void loadPlayerCreateInfoItems();

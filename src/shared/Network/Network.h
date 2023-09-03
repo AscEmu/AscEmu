@@ -17,18 +17,18 @@
 #include "Socket.h"
 
 #ifdef CONFIG_USE_IOCP
-#include "SocketMgrWin32.h"
-#include "ListenSocketWin32.h"
+#include "IOCP/SocketMgrWin32.h"
+#include "IOCP/ListenSocketWin32.h"
 #endif
 
 #ifdef CONFIG_USE_EPOLL
-#include "SocketMgrLinux.h"
-#include "ListenSocketLinux.h"
+#include "EPOLL/SocketMgrLinux.h"
+#include "EPOLL/ListenSocketLinux.h"
 #endif
 
 #ifdef CONFIG_USE_KQUEUE
-#include "SocketMgrFreeBSD.h"
-#include "ListenSocketFreeBSD.h"
+#include "KQUEUE/SocketMgrFreeBSD.h"
+#include "KQUEUE/ListenSocketFreeBSD.h"
 #endif
 
 #endif      // _NETWORK_H
