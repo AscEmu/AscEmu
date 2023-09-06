@@ -265,6 +265,12 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
 
     PrintBanner();
 
+#if VERSION_STRING == Mop
+    sLogger.info("Size of WoWObject %u / 8", static_cast<uint32_t>(sizeof(WoWObject) / sizeof(uint32_t)));
+    sLogger.info("Size of WoWUnit %u / 160", static_cast<uint32_t>(sizeof(WoWUnit) / sizeof(uint32_t)));
+    sLogger.info("Size of WoWPlayer %u / 1987", static_cast<uint32_t>(sizeof(WoWPlayer) / sizeof(uint32_t)));
+#endif
+
     sLogger.info("The key combination <Ctrl-C> will safely shut down the server.");
 
 #ifndef WIN32

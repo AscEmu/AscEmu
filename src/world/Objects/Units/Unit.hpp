@@ -401,10 +401,17 @@ public:
     uint32_t getCreatedBySpellId() const;
     void setCreatedBySpellId(uint32_t id);
 
+#if VERSION_STRING < Mop
     uint32_t getNpcFlags() const;
     void setNpcFlags(uint32_t npcFlags);
     void addNpcFlags(uint32_t npcFlags);
     void removeNpcFlags(uint32_t npcFlags);
+#else
+    uint64_t getNpcFlags() const;
+    void setNpcFlags(uint64_t npcFlags);
+    void addNpcFlags(uint64_t npcFlags);
+    void removeNpcFlags(uint64_t npcFlags);
+#endif
 
     uint32_t getEmoteState() const;
     void setEmoteState(uint32_t id);

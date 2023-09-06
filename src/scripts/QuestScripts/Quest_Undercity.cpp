@@ -47,7 +47,12 @@ public:
             creat->setNpcFlags(UNIT_NPC_FLAG_NONE);
 
             // Players can't interact with Sylvanas for 180000 ms.
+#if VERSION_STRING < Mop
             sEventMgr.AddEvent(static_cast<Unit*>(creat), &Unit::setNpcFlags, static_cast<uint32_t>(2), EVENT_SCRIPT_UPDATE_EVENT, 180000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+#else
+            sEventMgr.AddEvent(static_cast<Unit*>(creat), &Unit::setNpcFlags, static_cast<uint64_t>(2), EVENT_SCRIPT_UPDATE_EVENT, 180000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+
+#endif
         }
     }
 

@@ -1385,10 +1385,17 @@ void Unit::modModCastSpeed(float modifier)
 uint32_t Unit::getCreatedBySpellId() const { return unitData()->created_by_spell_id; }
 void Unit::setCreatedBySpellId(uint32_t id) { write(unitData()->created_by_spell_id, id); }
 
+#if VERSION_STRING < Mop
 uint32_t Unit::getNpcFlags() const { return unitData()->npc_flags; }
 void Unit::setNpcFlags(uint32_t npcFlags) { write(unitData()->npc_flags, npcFlags); }
 void Unit::addNpcFlags(uint32_t npcFlags) { setNpcFlags(getNpcFlags() | npcFlags); }
 void Unit::removeNpcFlags(uint32_t npcFlags) { setNpcFlags(getNpcFlags() & ~npcFlags); }
+#else
+uint64_t Unit::getNpcFlags() const { return unitData()->npc_flags; }
+void Unit::setNpcFlags(uint64_t npcFlags) { write(unitData()->npc_flags, npcFlags); }
+void Unit::addNpcFlags(uint64_t npcFlags) { setNpcFlags(getNpcFlags() | npcFlags); }
+void Unit::removeNpcFlags(uint64_t npcFlags) { setNpcFlags(getNpcFlags() & ~npcFlags); }
+#endif
 
 uint32_t Unit::getEmoteState() const { return unitData()->npc_emote_state; }
 void Unit::setEmoteState(uint32_t id) { write(unitData()->npc_emote_state, id); }
