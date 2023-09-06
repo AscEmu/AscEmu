@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include <cstdint>
+#include "AEVersion.hpp"
 
 //\brief: TypeFlags, mostly used to define updatePackets.
 //\note: check out class inheritance. it is not true that every unit is "just" a creature.

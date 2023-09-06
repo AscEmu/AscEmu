@@ -159,7 +159,6 @@ class SERVER_DECL World : public EventableObject
     private:
 
         SessionSet globalSessionSet;
-        std::mutex globalSessionMutex;
 
     public:
 

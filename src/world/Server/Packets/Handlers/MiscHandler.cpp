@@ -1248,6 +1248,7 @@ void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
 
 void WorldSession::sendItemDb2Reply(uint32_t entry)
 {
+#if VERSION_STRING < Mop
     WorldPacket data(SMSG_DB_REPLY, 44);
     ItemProperties const* proto = sMySQLStore.getItemProperties(entry);
     if (!proto)
@@ -1277,10 +1278,12 @@ void WorldSession::sendItemDb2Reply(uint32_t entry)
     data.append(buff);
 
     SendPacket(&data);
+#endif
 }
 
 void WorldSession::sendItemSparseDb2Reply(uint32_t entry)
 {
+#if VERSION_STRING < Mop
     WorldPacket data(SMSG_DB_REPLY, 526);
     ItemProperties const* proto = sMySQLStore.getItemProperties(entry);
     if (!proto)
@@ -1409,6 +1412,7 @@ void WorldSession::sendItemSparseDb2Reply(uint32_t entry)
     data.append(buff);
 
     SendPacket(&data);
+#endif
 }
 
 #endif
@@ -1464,6 +1468,9 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
 #elif VERSION_STRING == Mop
     uint32_t type;
     recvPacket >> type;
+
+    if (type != DB2_REPLY_ITEM && type != DB2_REPLY_SPARSE)
+        return;
 
     uint32_t count = recvPacket.readBits(21);
 

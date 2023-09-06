@@ -6124,7 +6124,7 @@ void Player::smsg_TalentsInfo([[maybe_unused]]bool SendPetTalents)
     getSession()->SendPacket(&data);
 #endif
 #else
-    WorldPacket data(SMSG_TALENTS_INFO, 1000);
+    WorldPacket data(SMSG_TALENTS_INFO, 50);
     data << uint8_t(m_talentActiveSpec); // Which spec is active right now
     data.writeBits(m_talentSpecsCount, 19);
 

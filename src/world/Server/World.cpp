@@ -459,18 +459,12 @@ void World::disconnectSessionByPlayerName(const std::string& playerName, WorldSe
 void World::addGlobalSession(WorldSession* worldSession)
 {
     if (worldSession)
-    {
-        std::lock_guard lock(globalSessionMutex);
-
         globalSessionSet.insert(worldSession);
-    }
 }
 
 void World::updateGlobalSession(uint32_t /*diff*/)
 {
     std::list<WorldSession*> ErasableSessions;
-
-    globalSessionMutex.lock();
 
     for (SessionSet::iterator itr = globalSessionSet.begin(); itr != globalSessionSet.end();)
     {
@@ -491,8 +485,6 @@ void World::updateGlobalSession(uint32_t /*diff*/)
             globalSessionSet.erase(it2);
         }
     }
-
-    globalSessionMutex.unlock();
 
     deleteSessions(ErasableSessions);
     ErasableSessions.clear();
