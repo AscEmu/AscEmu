@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/TransporterHandler.hpp"
 #include "Objects/GameObject.h"
 
-
 namespace MySQLStructure
 {
     struct CreatureSpawn;

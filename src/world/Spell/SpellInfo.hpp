@@ -538,7 +538,7 @@ public:
 
         return EffectCustomFlag[idx];
     }
-        
+
 private:
     // Setters for spell data
     void setId(uint32_t value) { Id = value; }
