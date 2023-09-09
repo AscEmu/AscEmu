@@ -12,13 +12,10 @@ This file is released under the MIT license. See README-MIT for more information
 class LocationVector;
 class WorldMap;
 
-namespace WDB
+namespace WDB::Structures
 {
-    namespace Structures
-    {
-        struct AreaTableEntry;
-        struct WMOAreaTableEntry;
-    }
+    struct AreaTableEntry;
+    struct WMOAreaTableEntry;
 }
 
 namespace MapManagement::AreaManagement

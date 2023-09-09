@@ -68,12 +68,9 @@ struct VehicleSeatAddon
     VehicleExitParameters exitParameter = VehicleExitParameters::None;
 };
 
-namespace WDB
+namespace WDB::Structures
 {
-    namespace Structures
-    {
-        struct VehicleSeatEntry;
-    }
+    struct VehicleSeatEntry;
 }
 
 struct VehicleSeat

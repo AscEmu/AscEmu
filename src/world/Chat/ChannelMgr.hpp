@@ -14,13 +14,10 @@ This file is released under the MIT license. See README-MIT for more information
 class Player;
 class Channel;
 
-namespace WDB
+namespace WDB::Structures
 {
-    namespace Structures
-    {
-        struct ChatChannelsEntry;
-        struct AreaTableEntry;
-    }
+    struct ChatChannelsEntry;
+    struct AreaTableEntry;
 }
 
 class SERVER_DECL ChannelMgr

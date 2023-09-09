@@ -22,13 +22,10 @@ class WorldSession;
 class Object;
 class QueryResult;
 
-namespace WDB
+namespace WDB::Structures
 {
-    namespace Structures
-    {
-        struct AchievementEntry;
-        struct AchievementCriteriaEntry;
-    }
+    struct AchievementEntry;
+    struct AchievementCriteriaEntry;
 }
 
 class QueryBuffer;
