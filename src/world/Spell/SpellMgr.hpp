@@ -13,12 +13,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellMechanics.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 
-namespace WDB
+namespace WDB::Structures
 {
-    namespace Structures
-    {
-        struct SkillLineAbilityEntry;
-    }
+    struct SkillLineAbilityEntry;
 }
 
 class Unit;
