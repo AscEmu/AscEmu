@@ -22,6 +22,7 @@ people are awsome:
 - dhmann
 - Evairfairy
 - Infield (Iny)
+- JustZerooo
 - Lectro
 - master312
 - Nupper

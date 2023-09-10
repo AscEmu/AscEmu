@@ -152,9 +152,10 @@ struct Loot;
 class Creature;
 class WorldSession;
 
-namespace WDB{
-    namespace Structures{
-        struct MapEntry;}}
+namespace WDB::Structures
+{
+    struct MapEntry;
+}
 
 class SERVER_DECL Group
 {

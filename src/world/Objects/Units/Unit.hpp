@@ -57,8 +57,9 @@ class MovementManager;
 struct FactionDBC;
 struct SpellForcedBasePoints;
 
-namespace MovementMgr {
-class MoveSpline;
+namespace MovementMgr
+{
+    class MoveSpline;
 }
 
 enum MovementGeneratorType : uint8_t;
