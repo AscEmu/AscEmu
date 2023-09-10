@@ -32,6 +32,7 @@
 #include "Packets/SmsgAuthChallenge.h"
 #include "Packets/SmsgAuthResponse.h"
 #include "OpcodeTable.hpp"
+#include "WorldSession.h"
 
 using namespace AscEmu::Packets;
 

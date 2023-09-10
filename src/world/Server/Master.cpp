@@ -39,6 +39,7 @@
 #include "Packets/SmsgServerMessage.h"
 #include "OpcodeTable.hpp"
 #include "World.h"
+#include "WorldSession.h"
 #include "Chat/ChatHandler.hpp"
 #include "Data/WoWDynamicObject.hpp"
 #include "Data/WoWGameObject.hpp"

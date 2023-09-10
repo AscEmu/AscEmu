@@ -22,6 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.hpp"
 #include "Server/Definitions.h"
 #include "Server/World.h"
+#include "Server/WorldSession.h"
 #include "Server/Script/HookInterface.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 

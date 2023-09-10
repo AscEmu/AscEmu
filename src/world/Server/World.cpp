@@ -37,6 +37,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/CommandTableStorage.hpp"
 #include "VMapFactory.h"
 #include "VMapManager2.h"
+#include "WorldSession.h"
 #include "Management/MailMgr.h"
 #include "Management/ObjectMgr.hpp"
 #include "Management/QuestMgr.h"

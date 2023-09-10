@@ -38,6 +38,7 @@
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"
+#include "Server/WorldSession.h"
 #include "Spell/SpellAura.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Server/Packets/MsgQuestPushResult.h"

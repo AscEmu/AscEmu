@@ -15,6 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/WorldSession.h"
 #include "Server/Script/ScriptMgr.hpp"
 
 bool handleSendChatAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool /*isWebClient*/)

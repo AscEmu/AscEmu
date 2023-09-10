@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"
+#include "Server/WorldSession.h"
 #include "Server/Packets/CmsgGmTicketCreate.h"
 #include "Server/Packets/SmsgGmTicketCreate.h"
 #include "Server/Packets/CmsgGmTicketUpdateText.h"

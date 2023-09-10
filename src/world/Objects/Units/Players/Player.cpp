@@ -147,6 +147,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Corpse.hpp"
 #include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Server/Script/HookInterface.hpp"
 #include "Server/Script/InstanceScript.hpp"

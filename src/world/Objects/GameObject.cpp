@@ -51,6 +51,7 @@
 #include "Management/Gossip/GossipScript.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Server/World.h"
+#include "Server/WorldSession.h"
 #include "Server/Script/EventScript.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"
 #include "Server/Script/InstanceScript.hpp"

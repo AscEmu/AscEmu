@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Management/Guild/GuildDefinitions.hpp"
-#include "Server/WorldSession.h"
 #include "GuildLog.hpp"
 
 class GuildBankEventLogEntry : public GuildLogEntry
