@@ -40,6 +40,7 @@
 #include "OpcodeTable.hpp"
 #include "World.h"
 #include "Chat/ChatHandler.hpp"
+#include "Data/WoWDynamicObject.hpp"
 #include "Management/GameEventMgr.hpp"
 #include "Management/LootMgr.h"
 #include "Management/MailMgr.h"
@@ -269,6 +270,9 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
     sLogger.info("Size of WoWObject %u / 8", static_cast<uint32_t>(sizeof(WoWObject) / sizeof(uint32_t)));
     sLogger.info("Size of WoWUnit %u / 160", static_cast<uint32_t>(sizeof(WoWUnit) / sizeof(uint32_t)));
     sLogger.info("Size of WoWPlayer %u / 1987", static_cast<uint32_t>(sizeof(WoWPlayer) / sizeof(uint32_t)));
+    sLogger.info("Size of WoWGameObject %u / 20", static_cast<uint32_t>(sizeof(WoWGameObject) / sizeof(uint32_t)));
+    sLogger.info("Size of WoWDynamicObject %u / 14", static_cast<uint32_t>(sizeof(WoWDynamicObject) / sizeof(uint32_t)));
+    sLogger.info("Size of WoWItem %u / 69", static_cast<uint32_t>(sizeof(WoWItem) / sizeof(uint32_t)));
 #endif
 
     sLogger.info("The key combination <Ctrl-C> will safely shut down the server.");

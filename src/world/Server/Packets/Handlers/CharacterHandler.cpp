@@ -747,6 +747,14 @@ void WorldSession::fullLogin(Player* player)
         player->AddToWorld();
     //////////////////////////////////////////////////////////////////////////////////////////
 
+#if VERSION_STRING == Mop
+    {
+        WorldPacket packet(SMSG_SETUP_CURRENCY, 4);
+        packet.writeBits(0, 21);
+        packet.flushBits();
+        player->sendPacket(&packet);
+    }
+#endif
 
     sHookInterface.OnFullLogin(player);
 
