@@ -23,6 +23,16 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "DamageInfo.hpp"
 
+namespace WDB
+{
+    namespace Structures
+    {
+        struct AreaTableEntry;
+        struct FactionEntry;
+        struct FactionTemplateEntry;
+    }
+}
+
 struct WoWObject;
 class SpellInfo;
 struct FactionDBC;
@@ -760,6 +770,6 @@ public:
         std::set<Spell*> m_pendingSpells;
 
         bool GetPoint(float angle, float rad, float & outx, float & outy, float & outz, bool sloppypath = false);
-        bool GetRandomPoint(float rad, float & outx, float & outy, float & outz) { return GetPoint(Util::getRandomFloat(float(M_PI * 2)), rad, outx, outy, outz); }
-        bool GetRandomPoint(float rad, LocationVector & out) { return GetRandomPoint(rad, out.x, out.y, out.z); }
+        bool GetRandomPoint(float rad, float & outx, float & outy, float & outz);
+        bool GetRandomPoint(float rad, LocationVector & out);
 };

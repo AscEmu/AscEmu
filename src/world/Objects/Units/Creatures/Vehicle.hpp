@@ -6,15 +6,14 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "AEVersion.hpp"
-#include "LocationVector.h"
 #include "VehicleDefines.hpp"
-#include "WoWGuid.h"
 #include "Objects/TransportBase.hpp"
 
 #include <set>
 
 #ifdef FT_VEHICLES
 
+class WoWGuid;
 class Unit;
 
 namespace WDB::Structures

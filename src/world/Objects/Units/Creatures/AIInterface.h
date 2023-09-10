@@ -7,12 +7,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Map/RecastIncludes.hpp"
 #include "Objects/Units/Creatures/AIEvents.h"
-//#include "Objects/Units/Unit.hpp"
 #include "Macros/AIInterfaceMacros.hpp"
 #include "Objects/Units/Creatures/CreatureDefines.hpp"
 #include "Server/Script/ScriptEvent.hpp"
 #include "Chat/ChatDefines.hpp"
 #include "Storage/MySQLStructures.h"
+#include "Utilities/Util.hpp"
 
 #include <functional>
 
@@ -440,7 +440,7 @@ public:
     static bool isInBounds(CreatureBoundary const* boundary, LocationVector who);
     bool isInBoundary(LocationVector who) const;
     bool isInBoundary() const;
-    void doImmediateBoundaryCheck() { m_boundaryCheckTime.resetInterval(0); }
+    void doImmediateBoundaryCheck();
 
     bool canUnitEvade(unsigned long time_passed);
     void enterEvadeMode();

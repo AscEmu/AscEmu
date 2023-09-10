@@ -229,8 +229,8 @@ public:
     uint32_t getHealth() const;
     void setHealth(uint32_t health);
     void modHealth(int32_t health);
-    inline void setFullHealth() { setHealth(getMaxHealth()); }
-    void setHealthPct(uint32_t val) { if (val > 0) setHealth(Util::float2int32(val * 0.01f * getMaxHealth())); }
+    void setFullHealth();
+    void setHealthPct(uint32_t val);
 
     uint32_t getPower(PowerType type, bool inRealTime = true) const;
     void setPower(PowerType type, uint32_t value, bool sendPacket = true);

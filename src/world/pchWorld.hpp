@@ -90,6 +90,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/MovementInfo.hpp"
 #include "Objects/Object.hpp"
 #include "Objects/ObjectDefines.hpp"
+#include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Creatures/CreatureDefines.hpp"
 #include "Objects/Units/Creatures/Corpse.hpp"

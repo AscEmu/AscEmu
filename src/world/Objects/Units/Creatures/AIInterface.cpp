@@ -2908,6 +2908,8 @@ bool AIInterface::isInBoundary() const
     return AIInterface::isInBounds(&_boundary, getUnit()->GetPosition()) != _negateBoundary;
 }
 
+void AIInterface::doImmediateBoundaryCheck() { m_boundaryCheckTime.resetInterval(0); }
+
 /*static*/ bool AIInterface::isInBounds(CreatureBoundary const* boundary, LocationVector pos)
 {
     for (AreaBoundary const* areaBoundary : *boundary)

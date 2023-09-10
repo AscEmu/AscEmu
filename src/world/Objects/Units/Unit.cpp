@@ -556,6 +556,9 @@ void Unit::modHealth(int32_t health)
     setHealth(newHealth);
 }
 
+void Unit::setFullHealth() { setHealth(getMaxHealth()); }
+void Unit::setHealthPct(uint32_t val) { if (val > 0) setHealth(Util::float2int32(val * 0.01f * getMaxHealth())); }
+
 uint32_t Unit::getPower(PowerType type, [[maybe_unused]]bool inRealTime/* = true*/) const
 {
     if (type == POWER_TYPE_HEALTH)

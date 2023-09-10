@@ -19,13 +19,24 @@
 #pragma once
 
 #include "CommonTypes.hpp"
-#include "Storage/WDB/WDBStructures.hpp"
 #include "Spell/Definitions/School.hpp"
-#include "Utilities/Util.hpp"
 #include "Macros/CreatureMacros.hpp"
 
 #include <ctime>
 #include <list>
+#include <set>
+#include <string>
+#include <memory>
+#include <vector>
+
+namespace WDB
+{
+    namespace Structures
+    {
+        struct ItemExtendedCostEntry;
+        struct CreatureModelDataEntry;
+    }
+}
 
 struct AI_Spell;
 
@@ -147,8 +158,8 @@ struct SpawnTimedEmotes
     uint8_t msg_lang;         // yell ? say ?
     uint32_t expire_after;    // going to nex faze in
 };
-typedef std::list<std::shared_ptr<SpawnTimedEmotes>> TimedEmoteList;
 
+typedef std::list<std::shared_ptr<SpawnTimedEmotes>> TimedEmoteList;
 
 enum MONSTER_SAY_EVENTS
 {
