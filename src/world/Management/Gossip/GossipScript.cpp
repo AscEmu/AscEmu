@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "GossipScript.hpp"
 #include "GossipMenu.hpp"
+#include "Management/ObjectMgr.hpp"
 #include "Management/QuestMgr.h"
 #include "Objects/GameObject.h"
 #include "Storage/MySQLDataStore.hpp"

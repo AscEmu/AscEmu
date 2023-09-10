@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Chat/ChatDefines.hpp"
 #include "Logging/Log.hpp"
+#include "Management/ObjectMgr.hpp"
 #include "Management/QuestProperties.hpp"
 #include "Movement/MovementDefines.h"
 #include "Objects/GameObjectProperties.hpp"

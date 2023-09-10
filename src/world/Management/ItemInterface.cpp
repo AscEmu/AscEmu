@@ -24,6 +24,7 @@
 #include "Objects/Units/Players/Player.hpp"
 #include "Management/ItemInterface.h"
 
+#include "ObjectMgr.hpp"
 #include "QuestMgr.h"
 #include "Chat/ChatHandler.hpp"
 #include "Objects/Units/Creatures/Creature.h"

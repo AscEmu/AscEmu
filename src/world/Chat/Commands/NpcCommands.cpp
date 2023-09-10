@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Chat/ChatHandler.hpp"
+#include "Management/ObjectMgr.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Movement/MovementManager.h"
 #include "Objects/Units/Creatures/Creature.h"

@@ -25,6 +25,7 @@
 #include "Objects/Units/Unit.hpp"
 #include "Objects/DynamicObject.hpp"
 #include "Management/HonorHandler.h"
+#include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Stats.h"
 #include "Management/Battleground/Battleground.hpp"
 #include "Storage/MySQLDataStore.hpp"

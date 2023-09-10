@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Chat/ChatHandler.hpp"
+#include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSession.h"

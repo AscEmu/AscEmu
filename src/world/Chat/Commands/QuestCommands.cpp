@@ -21,6 +21,7 @@
 
 #include "Chat/ChatHandler.hpp"
 #include "Management/ItemInterface.h"
+#include "Management/ObjectMgr.hpp"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/QuestMgr.h"
 #include "Map/Management/MapMgr.hpp"

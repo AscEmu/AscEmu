@@ -21,6 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Management/ItemInterface.h"
+#include "Management/ObjectMgr.hpp"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/QuestMgr.h"
 #include "Map/Maps/WorldMap.hpp"

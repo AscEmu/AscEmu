@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "InstanceMgr.hpp"
 #include "Management/Group.h"
+#include "Management/ObjectMgr.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"

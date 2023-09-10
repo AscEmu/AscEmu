@@ -28,6 +28,7 @@
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Management/Group.h"
+#include "Management/ObjectMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/GameObject.h"
 #include "Objects/Units/Creatures/Creature.h"

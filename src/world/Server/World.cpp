@@ -38,6 +38,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "VMapFactory.h"
 #include "VMapManager2.h"
 #include "Management/MailMgr.h"
+#include "Management/ObjectMgr.hpp"
 #include "Management/QuestMgr.h"
 #include "Management/TransporterHandler.hpp"
 #include "Management/Battleground/BattlegroundMgr.hpp"

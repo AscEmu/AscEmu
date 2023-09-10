@@ -32,6 +32,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <ctime>
 
+#include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Creatures/Corpse.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/InstanceScript.hpp"

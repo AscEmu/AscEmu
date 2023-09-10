@@ -4,6 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Vehicle.hpp"
+
+#include "Management/ObjectMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Spell/SpellAura.hpp"
 #include "Spell/Definitions/PowerType.hpp"

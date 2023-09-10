@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Management/Group.h"
+#include "Management/ObjectMgr.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Management/LFG/LFGMgr.hpp" 
 #include "Map/Maps/WorldMap.hpp"

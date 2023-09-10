@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "zlib.h"
 #include "Management/AddonMgr.h"
 #include "Management/Group.h"
+#include "Management/ObjectMgr.hpp"
 #include "Management/QuestMgr.h"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Map/Management/MapMgr.hpp"

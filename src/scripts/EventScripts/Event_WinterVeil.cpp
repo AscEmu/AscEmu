@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Management/ItemInterface.h"
+#include "Management/ObjectMgr.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/GameObject.h"

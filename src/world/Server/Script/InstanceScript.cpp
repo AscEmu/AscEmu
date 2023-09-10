@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "InstanceScript.hpp"
 
 #include "Management/Group.h"
+#include "Management/ObjectMgr.hpp"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Map/Maps/InstanceMap.hpp"
 #include "Map/Maps/MapScriptInterface.h"

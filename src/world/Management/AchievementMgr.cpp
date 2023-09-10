@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Group.h"
 #include "MailMgr.h"
+#include "ObjectMgr.hpp"
 #include "QuestProperties.hpp"
 #include "Macros/AIInterfaceMacros.hpp"
 #include "Storage/WDB/WDBStores.hpp"

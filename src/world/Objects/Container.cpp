@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Container.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Data/WoWContainer.hpp"
+#include "Management/AchievementMgr.h"
 #include "Units/Players/Player.hpp"
 
 Container::Container(uint32_t high, uint32_t low) : Item()

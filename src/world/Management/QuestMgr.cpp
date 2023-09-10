@@ -23,6 +23,7 @@
 
 #include "Group.h"
 #include "MailMgr.h"
+#include "ObjectMgr.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Logging/Log.hpp"
 #include "Objects/Item.hpp"

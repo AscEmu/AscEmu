@@ -27,6 +27,7 @@
 #include "Management/LFG/LFGGroupData.hpp"
 #include "Management/LFG/LFGPlayerData.hpp"
 #include "Management/ItemInterface.h"
+#include "Management/ObjectMgr.hpp"
 #include "Management/QuestMgr.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"

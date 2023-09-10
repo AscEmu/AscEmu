@@ -72,6 +72,7 @@
 #include "Server/Script/CreatureAIScript.hpp"
 #include "VMapFactory.h"
 #include "VMapManager2.h"
+#include "Management/ObjectMgr.hpp"
 #include "Management/QuestMgr.h"
 #include "Movement/MovementManager.h"
 #include "Objects/GameObject.h"

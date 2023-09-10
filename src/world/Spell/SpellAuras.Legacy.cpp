@@ -41,6 +41,7 @@
 #include "Definitions/PowerType.hpp"
 #include "Definitions/SpellEffects.hpp"
 #include "Management/Group.h"
+#include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Server/Packets/MsgChannelUpdate.h"
 #include "Server/Packets/SmsgPlayerVehicleData.h"

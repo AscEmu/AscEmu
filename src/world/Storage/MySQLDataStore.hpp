@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Management/ObjectMgr.hpp"
 #include "Spell/SpellClickInfo.hpp"
 #include "Spell/Definitions/TeleportCoords.hpp"
 #include "MySQLStructures.h"
@@ -14,7 +13,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObjectProperties.hpp"
 #include "Management/QuestProperties.hpp"
 #include "Management/ItemProperties.hpp"
+#include "Objects/Units/Creatures/CreatureDefines.hpp"
+#include "Objects/Units/Players/PlayerDefines.hpp"
 
+class QueryResult;
+class SpellInfo;
 struct SplineChainLink;
 
 typedef std::pair<uint32_t, uint16_t> ChainKeyType;

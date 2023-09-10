@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Chat/ChatHandler.hpp"
+#include "Management/AchievementMgr.h"
 #include "Management/QuestProperties.hpp"
 #include "Objects/GameObjectProperties.hpp"
 #include "Objects/Units/Players/Player.hpp"

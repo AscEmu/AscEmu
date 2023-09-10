@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 #include "Management/ItemInterface.h"
+#include "Management/ObjectMgr.hpp"
 #include "Objects/GameObject.h"
 #include "Objects/Item.hpp"
 #include "Objects/Units/Players/Player.hpp"
