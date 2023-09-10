@@ -110,7 +110,16 @@ namespace WDB
             return;
         }
 
-        ASSERT(WDB::WDBLoader::getFormatRecordSize(_storage.getFormat()) == sizeof(T));
+        if (WDB::WDBLoader::getFormatRecordSize(_storage.getFormat()) != sizeof(T))
+        {
+            std::ostringstream stream;
+            stream << "WDBLoader:: wrong format for " << _dbcFilename << " and version:  " << VERSION_STRING << "\n";
+            std::string buf = stream.str();
+            _errors.push_back(buf);
+
+            std::cout << stream.str() << "\n";
+            return;
+        }
 
         std::string dbc_file_path = _dbcPath + _dbcFilename;
 

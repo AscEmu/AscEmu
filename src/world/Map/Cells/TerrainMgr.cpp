@@ -7,6 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Area/AreaStorage.hpp"
 #include "G3D/Plane.h"
 #include "TerrainMgr.hpp"
+
+#include "LocationVector.h"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Logging/Logger.hpp"
 #include "Macros/MapsMacros.hpp"

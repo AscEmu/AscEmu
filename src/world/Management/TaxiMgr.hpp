@@ -5,14 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <cstddef>
-#include <map>
-#include <unordered_map>
 #include "CommonTypes.hpp"
 #include "Utilities/Util.hpp"
-#include <ByteBuffer.h>
+#include <map>
+#include <unordered_map>
 #include <deque>
 
+class ByteBuffer;
 struct TaxiPathBySourceAndDestination;
 
 #define TaxiMaskSize 114

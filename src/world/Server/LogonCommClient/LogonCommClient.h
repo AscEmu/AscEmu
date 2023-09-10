@@ -22,9 +22,10 @@
 #define LOGON_COMM_CLIENT_H
 
 #include "CommonTypes.hpp"
-#include "ByteBuffer.h"
 #include "Network/Socket.h"
 #include <Cryptography/RC4Engine.h>
+
+class ByteBuffer;
 
 class LogonCommClientSocket : public Socket
 {
