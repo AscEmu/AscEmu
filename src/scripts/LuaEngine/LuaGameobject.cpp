@@ -3,8 +3,9 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "LUAEngine.h"
-#include "GameobjectFunctions.h"
+#include "LuaGameobject.hpp"
+
+#include "LUAEngine.hpp"
 
 #include "LuaMacros.h"
 #include "Management/WeatherMgr.hpp"
@@ -12,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Map/Maps/WorldMap.hpp"
+#include "Objects/GameObject.h"
 #include "Objects/GameObjectProperties.hpp"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/Player.hpp"

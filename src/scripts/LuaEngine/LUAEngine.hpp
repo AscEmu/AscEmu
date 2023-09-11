@@ -5,13 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <set>
-
-#include "LuaGlobal.h"
-#include "LuaHelpers.h"
+#include "LuaGlobal.hpp"
+#include "LuaHelpers.hpp"
+#include "LUAFunctionTables.hpp"
 #include "Server/EventableObject.h"
 #include "Server/EventMgr.h"
 #include "Server/Script/ScriptMgr.hpp"
+#include <set>
 
 
 #ifdef DEBUG
@@ -231,81 +231,18 @@ public:
     void DestroyAllLuaEvents();
     inline bool ExecuteCall(uint8_t params = 0, uint8_t res = 0);
     inline void EndCall(uint8_t res = 0);
+
     // Wrappers
-    Unit* CheckUnit(lua_State* L, int narg)
-    {
-        if (L == nullptr)
-            return ArcLuna<Unit>::check(lu, narg);
-        return ArcLuna<Unit>::check(L, narg);
-    }
-
-    GameObject* CheckGo(lua_State* L, int narg)
-    {
-        if (L == nullptr)
-            return ArcLuna<GameObject>::check(lu, narg);
-        return ArcLuna<GameObject>::check(L, narg);
-    }
-
-    Item* CheckItem(lua_State* L, int narg)
-    {
-        if (L == nullptr)
-            return ArcLuna<Item>::check(lu, narg);
-        return ArcLuna<Item>::check(L, narg);
-    }
-
-    WorldPacket* CheckPacket(lua_State* L, int narg)
-    {
-        if (L == nullptr)
-            return ArcLuna<WorldPacket>::check(lu, narg);
-        return ArcLuna<WorldPacket>::check(L, narg);
-    }
-
-    uint64_t CheckGuid(lua_State* L, int narg)
-    {
-        if (L == nullptr)
-            return GUID_MGR::check(lu, narg);
-        return GUID_MGR::check(L, narg);
-    }
-
-    Object* CheckObject(lua_State* L, int narg)
-    {
-        if (L == nullptr)
-            return ArcLuna<Object>::check(lu, narg);
-        return ArcLuna<Object>::check(L, narg);
-    }
-
-    TaxiPath* CheckTaxiPath(lua_State* L, int narg)
-    {
-        if (L == nullptr)
-            return ArcLuna<TaxiPath>::check(lu, narg);
-        return ArcLuna<TaxiPath>::check(L, narg);
-    }
-
-    Spell* CheckSpell(lua_State* L, int narg)
-    {
-        if (L == nullptr)
-            return ArcLuna<Spell>::check(lu, narg);
-        return ArcLuna<Spell>::check(L, narg);
-    }
-
-    Aura* CheckAura(lua_State* L, int narg)
-    {
-        if (L == nullptr)
-            return ArcLuna<Aura>::check(lu, narg);
-        return ArcLuna<Aura>::check(L, narg);
-    }
-    bool CheckBool(lua_State* L, int narg)
-    {
-        // first try with bool type
-        if (lua_isboolean(L, narg))
-            return lua_toboolean(L, narg) > 0;
-
-        // then try with integer type
-        if (lua_isnumber(L, narg))
-            return lua_tonumber(L, narg) > 0;
-            // then return true by default
-        return true;
-    }
+    Unit* CheckUnit(lua_State* L, int narg);
+    GameObject* CheckGo(lua_State* L, int narg);
+    Item* CheckItem(lua_State* L, int narg);
+    WorldPacket* CheckPacket(lua_State* L, int narg);
+    uint64_t CheckGuid(lua_State* L, int narg);
+    Object* CheckObject(lua_State* L, int narg);
+    TaxiPath* CheckTaxiPath(lua_State* L, int narg);
+    Spell* CheckSpell(lua_State* L, int narg);
+    Aura* CheckAura(lua_State* L, int narg);
+    bool CheckBool(lua_State* L, int narg);
 
     void PushUnit(Object* unit, lua_State* L = nullptr);
     void PushGo(Object* go, lua_State* L = nullptr);
@@ -318,117 +255,42 @@ public:
     void PushSqlResult(QueryResult* res, lua_State* L = nullptr);
     void PushAura(Aura* aura, lua_State* L = nullptr);
 
-    void PUSH_BOOL(bool bewl)
-    {
-        if (bewl)
-            lua_pushboolean(lu, 1);
-        else
-            lua_pushboolean(lu, 0);
-    }
+    void PUSH_BOOL(bool bewl);
+    void PUSH_NIL(lua_State* L = nullptr);
+    void PUSH_INT(int32_t value);
+    void PUSH_UINT(uint32_t value);
+    void PUSH_FLOAT(float value);
+    void PUSH_STRING(const char* str);
 
-    void PUSH_NIL(lua_State* L = nullptr)
-    {
-        if (L == nullptr)
-            lua_pushnil(lu);
-        else
-            lua_pushnil(L);
-    }
-
-    void PUSH_INT(int32_t value)
-    {
-        lua_pushinteger(lu, value);
-    }
-
-    void PUSH_UINT(uint32_t value)
-    {
-        lua_pushnumber(lu, value);
-    }
-
-    void PUSH_FLOAT(float value)
-    {
-        lua_pushnumber(lu, value);
-    }
-
-    void PUSH_STRING(const char* str)
-    {
-        lua_pushstring(lu, str);
-    }
     void RegisterCoreFunctions();
 
-    std::mutex & getLock() { return call_lock; }
-    std::mutex & getcoLock() { return co_lock; }
-    lua_State* getluState() { return lu; }
+    std::mutex& getLock();
+    std::mutex& getcoLock();
+    lua_State* getluState();
 
-    LuaObjectBinding* getUnitBinding(uint32_t Id)
-    {
-        auto itr = m_unitBinding.find(Id);
-        return itr == m_unitBinding.end() ? nullptr : &itr->second;
-    }
-    LuaObjectBinding* getQuestBinding(uint32_t Id)
-    {
-        auto itr = m_questBinding.find(Id);
-        return itr == m_questBinding.end() ? nullptr : &itr->second;
-    }
-    LuaObjectBinding* getGameObjectBinding(uint32_t Id)
-    {
-        auto itr = m_gameobjectBinding.find(Id);
-        return itr == m_gameobjectBinding.end() ? nullptr : &itr->second;
-    }
-    LuaObjectBinding* getInstanceBinding(uint32_t Id)
-    {
-        auto itr = m_instanceBinding.find(Id);
-        return itr == m_instanceBinding.end() ? nullptr : &itr->second;
-    }
-    LuaObjectBinding* getLuaUnitGossipBinding(uint32_t Id)
-    {
-        auto itr = m_unit_gossipBinding.find(Id);
-        return itr == m_unit_gossipBinding.end() ? nullptr : &itr->second;
-    }
-    LuaObjectBinding* getLuaItemGossipBinding(uint32_t Id)
-    {
-        auto itr = m_item_gossipBinding.find(Id);
-        return itr == m_item_gossipBinding.end() ? nullptr : &itr->second;
-    }
-    LuaObjectBinding* getLuaGOGossipBinding(uint32_t Id)
-    {
-        auto itr = m_go_gossipBinding.find(Id);
-        return itr == m_go_gossipBinding.end() ? nullptr : &itr->second;
-    }
-    LuaQuest* getLuaQuest(uint32_t id)
-    {
-        const auto itr = m_qAIScripts.find(id);
-        return itr == m_qAIScripts.end() ? nullptr : itr->second;
-    }
-        /*int getPendingThread(lua_State * threadtosearch) {
-            set<lua_State*>::iterator itr = m_pendingThreads.find(threadtosearch);
-            return (itr == m_pendingThreads.end())? nullptr : (*itr);
-            }*/
-    LuaGossip* getUnitGossipInterface(uint32_t id)
-    {
-        const auto itr = m_unitgAIScripts.find(id);
-        return itr == m_unitgAIScripts.end() ? nullptr : itr->second;
-    }
-    LuaGossip* getItemGossipInterface(uint32_t id)
-    {
-        const auto itr = m_itemgAIScripts.find(id);
-        return itr == m_itemgAIScripts.end() ? nullptr : itr->second;
-    }
-    LuaGossip* getGameObjectGossipInterface(uint32_t id)
-    {
-        const auto itr = m_gogAIScripts.find(id);
-        return itr == m_gogAIScripts.end() ? nullptr : itr->second;
-    }
+    LuaObjectBinding* getUnitBinding(uint32_t Id);
+    LuaObjectBinding* getQuestBinding(uint32_t Id);
+    LuaObjectBinding* getGameObjectBinding(uint32_t Id);
+    LuaObjectBinding* getInstanceBinding(uint32_t Id);
+    LuaObjectBinding* getLuaUnitGossipBinding(uint32_t Id);
+    LuaObjectBinding* getLuaItemGossipBinding(uint32_t Id);
+    LuaObjectBinding* getLuaGOGossipBinding(uint32_t Id);
+    LuaQuest* getLuaQuest(uint32_t id);
+    //int getPendingThread(lua_State * threadtosearch);
+    LuaGossip* getUnitGossipInterface(uint32_t id);
+    LuaGossip* getItemGossipInterface(uint32_t id);
+    LuaGossip* getGameObjectGossipInterface(uint32_t id);
 
-    std::multimap<uint32_t, LuaCreature*> & getLuCreatureMap() { return m_cAIScripts; }
-    std::multimap<uint32_t, LuaGameObjectScript*> & getLuGameObjectMap() { return m_gAIScripts; }
-    std::unordered_map<uint32_t, LuaQuest*> & getLuQuestMap() { return m_qAIScripts; }
-    std::unordered_map<uint32_t, LuaInstance*> & getLuInstanceMap() { return m_iAIScripts; }
-    std::unordered_map<uint32_t, LuaGossip*> & getUnitGossipInterfaceMap() { return m_unitgAIScripts; }
-    std::unordered_map<uint32_t, LuaGossip*> & getItemGossipInterfaceMap() { return m_itemgAIScripts; }
-    std::unordered_map<uint32_t, LuaGossip*> & getGameObjectGossipInterfaceMap() { return m_gogAIScripts; }
-    std::set<int> & getThreadRefs() { return m_pendingThreads; }
-    std::set<int> & getFunctionRefs() { return m_functionRefs; }
-    std::map< uint64_t, std::set<int> > & getObjectFunctionRefs() { return m_objectFunctionRefs; }
+    std::multimap<uint32_t, LuaCreature*> & getLuCreatureMap();
+    std::multimap<uint32_t, LuaGameObjectScript*> & getLuGameObjectMap();
+    std::unordered_map<uint32_t, LuaQuest*> & getLuQuestMap();
+    std::unordered_map<uint32_t, LuaInstance*> & getLuInstanceMap();
+    std::unordered_map<uint32_t, LuaGossip*> & getUnitGossipInterfaceMap();
+    std::unordered_map<uint32_t, LuaGossip*> & getItemGossipInterfaceMap();
+    std::unordered_map<uint32_t, LuaGossip*> & getGameObjectGossipInterfaceMap();
+    std::set<int> & getThreadRefs();
+    std::set<int> & getFunctionRefs();
+    std::map< uint64_t, std::set<int> > & getObjectFunctionRefs();
 
     std::unordered_map<int, EventInfoHolder*> m_registeredTimedEvents;
 

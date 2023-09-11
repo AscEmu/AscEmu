@@ -3,10 +3,10 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "LuaHelpers.h"
+#include "LuaHelpers.hpp"
 
 #include <cstdlib>
-#include <string.h>
+#include <string>
 
 int LuaHelpers::ExtractfRefFromCString(lua_State* L, const char* functionName)
 {

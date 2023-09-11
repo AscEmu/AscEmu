@@ -3,9 +3,8 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "LuaGlobal.h"
-#include "LUAEngine.h"
-
+#include "LuaGlobal.hpp"
+#include "LUAEngine.hpp"
 
 std::unique_ptr<LuaGlobal> LuaGlobal::s_instance;
 

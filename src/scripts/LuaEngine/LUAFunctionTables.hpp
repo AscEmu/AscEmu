@@ -5,71 +5,72 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "AuraFunctions.h"
-#include "GameobjectFunctions.h"
-#include "ItemFunctions.h"
-#include "LuaSqlApi.h"
-#include "PacketFunctions.h"
-#include "SpellFunctions.h"
-#include "TaxiFunctions.h"
-#include "UnitFunctions.h"
+#include "LuaGameobject.hpp"
+#include "LuaHelpers.hpp"
+#include "LuaItem.hpp"
+#include "LuaUnit.hpp"
+#include "LuaPacket.hpp"
+#include "LuaSpell.hpp"
+#include "LuaSqlApi.hpp"
+#include "LuaAura.hpp"
+#include "LuaTaxi.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Script function tables
 
-RegType<Item> ItemMethods[] =
+inline RegType<Item> ItemMethods[] =
 {
-    { "GossipCreateMenu", &luaItem::GossipCreateMenu },
-    { "GossipMenuAddItem", &luaItem::GossipMenuAddItem },
-    { "GossipSendMenu", &luaItem::GossipSendMenu },
-    { "GossipComplete", &luaItem::GossipComplete },
-    { "GossipSendPOI", &luaItem::GossipSendPOI },
-    { "GossipSendQuickMenu", &luaItem::GossipSendQuickMenu },
-    { "GetOwner", &luaItem::GetOwner },
-    { "AddEnchantment", &luaItem::AddEnchantment },
-    { "RemoveEnchantment", &luaItem::RemoveEnchantment },
-    { "GetEntryId", &luaItem::GetEntryId },
-    { "GetName", &luaItem::GetName },
-    { "GetSpellId", &luaItem::GetSpellId },
-    { "GetSpellTrigger", &luaItem::GetSpellTrigger },
-    { "GetGuid", &luaItem::GetGUID },
-    { "AddLoot", &luaItem::AddLoot},
-    { "SetByteValue", &luaItem::SetByteValue },
-    { "GetByteValue", &luaItem::GetByteValue },
-    { "getItemLink", &luaItem::GetItemLink },
-    { "GetItemLevel", &luaItem::GetItemLevel },
-    { "GetRequiredLevel", &luaItem::GetRequiredLevel },
-    { "GetBuyPrice", &luaItem::GetBuyPrice },
-    { "GetSellPrice", &luaItem::GetSellPrice },
-    { "repairItem", &luaItem::RepairItem },
-    { "GetMaxDurability", &luaItem::GetMaxDurability },
-    { "GetDurability", &luaItem::GetDurability },
-    { "HasEnchantment", &luaItem::HasEnchantment },
-    { "ModifyEnchantmentTime", &luaItem::ModifyEnchantmentTime },
-    { "SetStackCount", &luaItem::SetStackCount },
-    { "HasFlag", &luaItem::HasFlag },
-    { "IsSoulbound", &luaItem::IsSoulbound },
-    { "IsAccountbound", &luaItem::IsAccountbound },
-    { "IsContainer", &luaItem::IsContainer },
-    { "GetContainerItemCount", &luaItem::GetContainerItemCount },
-    { "GetEquippedSlot", &luaItem::GetEquippedSlot },
-    { "GetObjectType", &luaItem::GetObjectType },
-    { "Remove", &luaItem::Remove },
-    { "Create", &luaItem::Create },
-    { "ModUInt32Value", &luaItem::ModUInt32Value },
-    { "ModFloatValue", &luaItem::ModFloatValue },
-    { "SetUInt32Value", &luaItem::SetUInt32Value },
-    { "SetUInt64Value", &luaItem::SetUInt64Value },
-    { "SetFloatValue", &luaItem::SetFloatValue },
-    { "GetUInt32Value", &luaItem::GetUInt32Value },
-    { "GetUInt64Value", &luaItem::GetUInt64Value },
-    { "GetFloatValue", &luaItem::GetFloatValue },
-    { "RemoveFlag", &luaItem::RemoveFlag },
-    { "SetFlag", &luaItem::SetFlag },
+    { "GossipCreateMenu", &LuaItem::GossipCreateMenu },
+    { "GossipMenuAddItem", &LuaItem::GossipMenuAddItem },
+    { "GossipSendMenu", &LuaItem::GossipSendMenu },
+    { "GossipComplete", &LuaItem::GossipComplete },
+    { "GossipSendPOI", &LuaItem::GossipSendPOI },
+    { "GossipSendQuickMenu", &LuaItem::GossipSendQuickMenu },
+    { "GetOwner", &LuaItem::GetOwner },
+    { "AddEnchantment", &LuaItem::AddEnchantment },
+    { "RemoveEnchantment", &LuaItem::RemoveEnchantment },
+    { "GetEntryId", &LuaItem::GetEntryId },
+    { "GetName", &LuaItem::GetName },
+    { "GetSpellId", &LuaItem::GetSpellId },
+    { "GetSpellTrigger", &LuaItem::GetSpellTrigger },
+    { "GetGuid", &LuaItem::GetGUID },
+    { "AddLoot", &LuaItem::AddLoot},
+    { "SetByteValue", &LuaItem::SetByteValue },
+    { "GetByteValue", &LuaItem::GetByteValue },
+    { "getItemLink", &LuaItem::GetItemLink },
+    { "GetItemLevel", &LuaItem::GetItemLevel },
+    { "GetRequiredLevel", &LuaItem::GetRequiredLevel },
+    { "GetBuyPrice", &LuaItem::GetBuyPrice },
+    { "GetSellPrice", &LuaItem::GetSellPrice },
+    { "repairItem", &LuaItem::RepairItem },
+    { "GetMaxDurability", &LuaItem::GetMaxDurability },
+    { "GetDurability", &LuaItem::GetDurability },
+    { "HasEnchantment", &LuaItem::HasEnchantment },
+    { "ModifyEnchantmentTime", &LuaItem::ModifyEnchantmentTime },
+    { "SetStackCount", &LuaItem::SetStackCount },
+    { "HasFlag", &LuaItem::HasFlag },
+    { "IsSoulbound", &LuaItem::IsSoulbound },
+    { "IsAccountbound", &LuaItem::IsAccountbound },
+    { "IsContainer", &LuaItem::IsContainer },
+    { "GetContainerItemCount", &LuaItem::GetContainerItemCount },
+    { "GetEquippedSlot", &LuaItem::GetEquippedSlot },
+    { "GetObjectType", &LuaItem::GetObjectType },
+    { "Remove", &LuaItem::Remove },
+    { "Create", &LuaItem::Create },
+    { "ModUInt32Value", &LuaItem::ModUInt32Value },
+    { "ModFloatValue", &LuaItem::ModFloatValue },
+    { "SetUInt32Value", &LuaItem::SetUInt32Value },
+    { "SetUInt64Value", &LuaItem::SetUInt64Value },
+    { "SetFloatValue", &LuaItem::SetFloatValue },
+    { "GetUInt32Value", &LuaItem::GetUInt32Value },
+    { "GetUInt64Value", &LuaItem::GetUInt64Value },
+    { "GetFloatValue", &LuaItem::GetFloatValue },
+    { "RemoveFlag", &LuaItem::RemoveFlag },
+    { "SetFlag", &LuaItem::SetFlag },
     { nullptr, nullptr },
 };
 
-RegType<Unit> UnitMethods[] =
+inline RegType<Unit> UnitMethods[] =
 {
     { "GossipCreateMenu", &LuaUnit::GossipCreateMenu },
     { "GossipMenuAddItem", &LuaUnit::GossipMenuAddItem },
@@ -469,7 +470,7 @@ RegType<Unit> UnitMethods[] =
     { "GetLocation", &LuaUnit::GetLocation },
     { "GetSpawnLocation", &LuaUnit::GetSpawnLocation },
     { "GetPlayerMovementFlags", &LuaUnit::GetPlayerMovementFlags},
-    { "GetObject", &LuaUnit::GetObject },
+    { "GetObject", &LuaUnit::GetObjectByGuid },
     { "GetSecondHated", &LuaUnit::GetSecondHated },
     { "UseAI", &LuaUnit::UseAI },
     { "FlagFFA", &LuaUnit::FlagFFA },
@@ -509,7 +510,7 @@ RegType<Unit> UnitMethods[] =
     { nullptr, nullptr },
 };
 
-RegType<GameObject> GOMethods[] =
+inline RegType<GameObject> GOMethods[] =
 {
     { "GetGuid", &LuaGameObject::GetGUID },
     { "GetName", &LuaGameObject::GetName },
@@ -618,59 +619,58 @@ RegType<GameObject> GOMethods[] =
     { nullptr, nullptr },
 };
 
-RegType<WorldPacket> LuaPacketMethods[] =
+inline RegType<WorldPacket> LuaPacketMethods[] =
 {
-    {"CreatePacket", &luPacket::CreatePacket },
-    { "GetOpcode", &luPacket::GetOpcode },
-    { "GetSize", &luPacket::GetSize },
+    {"CreatePacket", &LuaPacket::CreatePacket },
+    { "GetOpcode", &LuaPacket::GetOpcode },
+    { "GetSize", &LuaPacket::GetSize },
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Read operations
-    {"ReadByte", &luPacket::ReadByte },
-    {"ReadUByte", &luPacket::ReadUByte },
-    {"ReadShort", &luPacket::ReadShort },
-    {"ReadUShort", &luPacket::ReadUShort },
-    {"ReadLong", &luPacket::ReadLong },
-    {"ReadULong", &luPacket::ReadULong },
-    {"ReadFloat", &luPacket::ReadFloat },
-    {"ReadDouble", &luPacket::ReadDouble },
-    {"ReadGUID", &luPacket::ReadGUID },
-    {"ReadWoWGuid", &luPacket::ReadWoWGuid },
-    {"ReadString", &luPacket::ReadString },
+    {"ReadByte", &LuaPacket::ReadByte },
+    {"ReadUByte", &LuaPacket::ReadUByte },
+    {"ReadShort", &LuaPacket::ReadShort },
+    {"ReadUShort", &LuaPacket::ReadUShort },
+    {"ReadLong", &LuaPacket::ReadLong },
+    {"ReadULong", &LuaPacket::ReadULong },
+    {"ReadFloat", &LuaPacket::ReadFloat },
+    {"ReadDouble", &LuaPacket::ReadDouble },
+    {"ReadGUID", &LuaPacket::ReadGUID },
+    {"ReadWoWGuid", &LuaPacket::ReadWoWGuid },
+    {"ReadString", &LuaPacket::ReadString },
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Write operations
-    {"WriteUByte", &luPacket::WriteUByte },
-    {"WriteByte", &luPacket::WriteByte },
-    {"WriteShort", &luPacket::WriteShort },
-    {"WriteUShort", &luPacket::WriteUShort },
-    {"WriteLong", &luPacket::WriteLong },
-    {"WriteULong", &luPacket::WriteULong },
-    {"WriteFloat", &luPacket::WriteFloat },
-    {"WriteDouble", &luPacket::WriteDouble },
-    {"WriteGUID", &luPacket::WriteGUID },
-    {"WriteWoWGuid", &luPacket::WriteWoWGuid },
-    {"WriteString", &luPacket::WriteString },
-    {"GetObjectType", &luPacket::GetObjectType},
+    {"WriteUByte", &LuaPacket::WriteUByte },
+    {"WriteByte", &LuaPacket::WriteByte },
+    {"WriteShort", &LuaPacket::WriteShort },
+    {"WriteUShort", &LuaPacket::WriteUShort },
+    {"WriteLong", &LuaPacket::WriteLong },
+    {"WriteULong", &LuaPacket::WriteULong },
+    {"WriteFloat", &LuaPacket::WriteFloat },
+    {"WriteDouble", &LuaPacket::WriteDouble },
+    {"WriteGUID", &LuaPacket::WriteGUID },
+    {"WriteWoWGuid", &LuaPacket::WriteWoWGuid },
+    {"WriteString", &LuaPacket::WriteString },
+    {"GetObjectType", &LuaPacket::GetObjectType},
     {nullptr, nullptr},
 };
 
-RegType<TaxiPath> LuaTaxiMethods[] =
+inline RegType<TaxiPath> LuaTaxiMethods[] =
 {
-    // todo aaron02 add these back when i have more spare time :)
-    //{ "CreateTaxi", &LuaTaxi::CreateTaxi },
-    //{ "GetNodeCount", &LuaTaxi::GetNodeCount },
-    //{ "AddPathNode", &LuaTaxi::AddPathNode },
-    //{ "GetNodeX", &LuaTaxi::GetNodeX },
-    //{ "GetNodeY", &LuaTaxi::GetNodeY },
-    //{ "GetNodeZ", &LuaTaxi::GetNodeZ },
-    //{ "GetNodeMapId", &LuaTaxi::GetNodeMapId },
-    //{ "GetId", &LuaTaxi::GetId },
+    { "CreateTaxi", &LuaTaxi::CreateTaxi },
+    { "GetNodeCount", &LuaTaxi::GetNodeCount },
+    { "AddPathNode", &LuaTaxi::AddPathNode },
+    { "GetNodeX", &LuaTaxi::GetNodeX },
+    { "GetNodeY", &LuaTaxi::GetNodeY },
+    { "GetNodeZ", &LuaTaxi::GetNodeZ },
+    { "GetNodeMapId", &LuaTaxi::GetNodeMapId },
+    { "GetId", &LuaTaxi::GetId },
     { "GetObjectType", &LuaTaxi::GetObjectType},
     {nullptr, nullptr},
 };
 
-RegType<Spell> SpellMethods[] =
+inline RegType<Spell> SpellMethods[] =
 {
     { "GetCaster", &LuaSpell::GetCaster },
     { "GetEntry", &LuaSpell::GetEntry },
@@ -697,30 +697,30 @@ RegType<Spell> SpellMethods[] =
     { "GetCastedItemId", &LuaSpell::GetCastedItemId},
     {nullptr, nullptr},
 };
-RegType<QueryResult> QResultMethods[] =
+inline RegType<QueryResult> QResultMethods[] =
 {
-    {"GetColumn", &luaSql::GetColumn },
-    {"NextRow", &luaSql::NextRow },
-    {"GetColumnCount", &luaSql::GetColumnCount },
-    {"GetRowCount", &luaSql::GetRowCount },
+    {"GetColumn", &LuaSqlApi::GetColumn },
+    {"NextRow", &LuaSqlApi::NextRow },
+    {"GetColumnCount", &LuaSqlApi::GetColumnCount },
+    {"GetRowCount", &LuaSqlApi::GetRowCount },
     { nullptr, nullptr},
 };
-RegType<Field> SQLFieldMethods[] =
+inline RegType<Field> SQLFieldMethods[] =
 {
-    {"GetByte", &luaSql::GetByte },
-    {"GetUByte", &luaSql::GetUByte },
-    {"GetShort", &luaSql::GetShort },
-    {"GetUShort", &luaSql::GetUShort},
-    {"GetLong", &luaSql::GetLong },
-    {"GetULong", &luaSql::GetULong },
-    {"GetString", &luaSql::GetString },
-    {"GetGuid", &luaSql::GetGUID },
-    {"GetFloat", &luaSql::GetFloat },
-    {"GetBool", &luaSql::GetBool },
+    {"GetByte", &LuaSqlApi::GetByte },
+    {"GetUByte", &LuaSqlApi::GetUByte },
+    {"GetShort", &LuaSqlApi::GetShort },
+    {"GetUShort", &LuaSqlApi::GetUShort},
+    {"GetLong", &LuaSqlApi::GetLong },
+    {"GetULong", &LuaSqlApi::GetULong },
+    {"GetString", &LuaSqlApi::GetString },
+    {"GetGuid", &LuaSqlApi::GetGUID },
+    {"GetFloat", &LuaSqlApi::GetFloat },
+    {"GetBool", &LuaSqlApi::GetBool },
     {nullptr, nullptr},
 };
 
-RegType<Aura> AuraMethods[] =
+inline RegType<Aura> AuraMethods[] =
 {
     {"GetObjectType", &LuaAura::GetObjectType},
     {"GetSpellId", &LuaAura::GetSpellId},
@@ -737,13 +737,13 @@ RegType<Aura> AuraMethods[] =
     {nullptr, nullptr},
 };
 
-template<typename T> RegType<T>* GetMethodTable() { return nullptr; }
-template<> RegType<Unit>* GetMethodTable<Unit>() { return UnitMethods; }
-template<> RegType<Item>* GetMethodTable<Item>() { return ItemMethods; }
-template<> RegType<GameObject>* GetMethodTable<GameObject>() { return GOMethods; }
-template<> RegType<WorldPacket>* GetMethodTable<WorldPacket>() { return LuaPacketMethods; }
-template<> RegType<TaxiPath>* GetMethodTable<TaxiPath>() { return LuaTaxiMethods; }
-template<> RegType<Spell>* GetMethodTable<Spell>() { return SpellMethods; }
-template<> RegType<QueryResult>* GetMethodTable<QueryResult>() { return QResultMethods; }
-template<> RegType<Field> * GetMethodTable<Field>() { return SQLFieldMethods; }
-template<> RegType<Aura> * GetMethodTable<Aura>() { return AuraMethods; }
+template<typename T> RegType<T>* GetMethodTable(){ return nullptr; }
+template<> inline RegType<Unit>* GetMethodTable<Unit>() { return UnitMethods; }
+template<> inline RegType<Item>* GetMethodTable<Item>() { return ItemMethods; }
+template<> inline RegType<GameObject>* GetMethodTable<GameObject>() { return GOMethods; }
+template<> inline RegType<WorldPacket>* GetMethodTable<WorldPacket>() { return LuaPacketMethods; }
+template<> inline RegType<TaxiPath>* GetMethodTable<TaxiPath>() { return LuaTaxiMethods; }
+template<> inline RegType<Spell>* GetMethodTable<Spell>() { return SpellMethods; }
+template<> inline RegType<QueryResult>* GetMethodTable<QueryResult>() { return QResultMethods; }
+template<> inline RegType<Field>* GetMethodTable<Field>() { return SQLFieldMethods; }
+template<> inline RegType<Aura>* GetMethodTable<Aura>() { return AuraMethods; }
