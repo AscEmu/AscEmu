@@ -20,6 +20,7 @@
 #pragma once
 
 #include "LUAEngine.h"
+#include "Server/Opcodes.hpp"
 
 namespace luPacket
 {
