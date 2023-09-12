@@ -76,6 +76,9 @@ namespace AscEmu::Logging
 
     void Logger::trace(const char* message, ...)
     {
+#if defined(_MSC_VER)
+        SetConsoleOutputCP(65001);
+#endif
         va_list arguments;
         va_start(arguments, message);
         log(Severity::INFO, MessageType::TRACE, message, arguments);
@@ -84,6 +87,9 @@ namespace AscEmu::Logging
 
     void Logger::debug(const char* message, ...)
     {
+#if defined(_MSC_VER)
+        SetConsoleOutputCP(65001);
+#endif
         va_list arguments;
         va_start(arguments, message);
         log(Severity::INFO, MessageType::DEBUG, message, arguments);
@@ -92,6 +98,9 @@ namespace AscEmu::Logging
 
     void Logger::debugFlag(DebugFlags log_flags, const char* message, ...)
     {
+#if defined(_MSC_VER)
+        SetConsoleOutputCP(65001);
+#endif
         if (!(aelog_debug_flags & log_flags))
             return;
 
@@ -105,6 +114,9 @@ namespace AscEmu::Logging
 
     void Logger::info(const char* message, ...)
     {
+#if defined(_MSC_VER)
+        SetConsoleOutputCP(65001);
+#endif
         va_list arguments;
         va_start(arguments, message);
         log(Severity::INFO, MessageType::MINOR, message, arguments);
@@ -113,6 +125,9 @@ namespace AscEmu::Logging
 
     void Logger::warning(const char* message, ...)
     {
+#if defined(_MSC_VER)
+        SetConsoleOutputCP(65001);
+#endif
         va_list arguments;
         va_start(arguments, message);
         log(Severity::WARNING, MessageType::MINOR, message, arguments);
@@ -121,6 +136,9 @@ namespace AscEmu::Logging
 
     void Logger::failure(const char* message, ...)
     {
+#if defined(_MSC_VER)
+        SetConsoleOutputCP(65001);
+#endif
         va_list arguments;
         va_start(arguments, message);
         log(Severity::FAILURE, MessageType::MAJOR, message, arguments);
@@ -129,6 +147,9 @@ namespace AscEmu::Logging
 
     void Logger::fatal(const char* message, ...)
     {
+#if defined(_MSC_VER)
+        SetConsoleOutputCP(65001);
+#endif
         va_list arguments;
         va_start(arguments, message);
         log(Severity::FATAL, MessageType::MAJOR, message, arguments);
@@ -137,6 +158,9 @@ namespace AscEmu::Logging
 
     void Logger::log(Severity severity, MessageType messageType, const char* message, ...)
     {
+#if defined(_MSC_VER)
+        SetConsoleOutputCP(65001);
+#endif
         va_list arguments;
         va_start(arguments, message);
         log(severity, messageType, message, arguments);
@@ -145,6 +169,9 @@ namespace AscEmu::Logging
 
     void Logger::log(Severity severity, MessageType messageType, const char* message, va_list arguments)
     {
+#if defined(_MSC_VER)
+        SetConsoleOutputCP(65001);
+#endif
         if (this->minimumMessageType > messageType)
             return;
 
@@ -163,6 +190,9 @@ namespace AscEmu::Logging
 
     void Logger::file(Severity severity, MessageType messageType, const char* message, ...)
     {
+#if defined(_MSC_VER)
+        SetConsoleOutputCP(65001);
+#endif
         char logMessage[327680];
         va_list arguments;
         va_start(arguments, message);
@@ -177,6 +207,9 @@ namespace AscEmu::Logging
 
     void Logger::createLogMessage(char* result, Severity severity, MessageType messageType, const char* message, va_list arguments)
     {
+#if defined(_MSC_VER)
+        SetConsoleOutputCP(65001);
+#endif
         char formattedMessage[32768];
         vsnprintf(formattedMessage, 32768, message, arguments);
 
