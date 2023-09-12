@@ -5,9 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Database/Database.h"
+#include <set>
+#include <atomic>
+#include <mutex>
 
 class AuthSocket;
+class Database;
 
 extern Database* sLogonSQL;
 

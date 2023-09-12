@@ -25,6 +25,7 @@
 #include <set>
 
 #include "EventMgr.h"
+#include "Threading/LegacyThreadPool.h"
 
 class EventableObjectHolder;
 

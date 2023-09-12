@@ -28,6 +28,7 @@
 #include "WorldPacket.h"
 #include "Server/AccountMgr.h"
 #include "Cryptography/Sha1.h"
+#include "Database/Database.h"
 #include "Utilities/Strings.hpp"
 #include "Server/IpBanMgr.h"
 

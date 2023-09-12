@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <WorldPacket.h>
 #include <LogonCommServer/LogonCommServer.h>
 #include "Auth/AuthSocket.h"
+#include "Database/Database.h"
 
 namespace AscEmu::Realm
 {

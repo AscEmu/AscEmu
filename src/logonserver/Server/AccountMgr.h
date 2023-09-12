@@ -58,7 +58,7 @@ struct Account
     void SetSessionKey(const uint8_t* key)
     {
         if (SessionKey == NULL)
-            SessionKey = new uint8[40];
+            SessionKey = new uint8_t[40];
         memcpy(SessionKey, key, 40);
     }
 

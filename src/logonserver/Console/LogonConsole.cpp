@@ -28,6 +28,8 @@
 #include <LogonConf.hpp>
 #include <Utilities/Strings.cpp>
 
+#include "Database/Database.h"
+
 LogonConsole& LogonConsole::getInstance()
 {
     static LogonConsole mInstance;

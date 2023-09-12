@@ -26,6 +26,8 @@
 #include "Server/Master.hpp"
 #include <Realm/RealmManager.hpp>
 
+#include "Database/Database.h"
+
 enum _errors
 {
     CE_SUCCESS = 0x00,
