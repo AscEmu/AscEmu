@@ -77,7 +77,7 @@ bool ChatHandler::HandleSpawnInstanceTransport(const char* args, WorldSession* m
     if (!pEntry)
         return false;
 
-    uint32 entry = atoi(pEntry);
+    uint32_t entry = atoi(pEntry);
     sTransportHandler.createTransport(entry, (m_session->GetPlayerOrThrow()->getWorldMap()));
 
     return true;

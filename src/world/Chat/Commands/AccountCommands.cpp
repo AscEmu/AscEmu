@@ -55,7 +55,7 @@ bool ChatHandler::HandleAccountMuteCommand(const char* args, WorldSession* m_ses
 
     char* pAccount = (char*)args;
     char* pDuration = strchr(pAccount, ' ');
-    if (pDuration == NULL)
+    if (pDuration == nullptr)
         return false;
     *pDuration = 0;
     ++pDuration;
@@ -64,18 +64,18 @@ bool ChatHandler::HandleAccountMuteCommand(const char* args, WorldSession* m_ses
     if (timeperiod == 0)
         return false;
 
-    uint32 banned = (uint32)UNIXTIME + timeperiod;
+    uint32_t banned = (uint32_t)UNIXTIME + timeperiod;
 
     sLogonCommHandler.setAccountMute(pAccount, banned);
 
-    std::string tsstr = Util::GetDateTimeStringFromTimeStamp(timeperiod + (uint32)UNIXTIME);
+    std::string tsstr = Util::GetDateTimeStringFromTimeStamp(timeperiod + (uint32_t)UNIXTIME);
     GreenSystemMessage(m_session, "Account '%s' has been muted until %s. The change will be effective immediately.", pAccount,
                        tsstr.c_str());
 
-    sGMLog.writefromsession(m_session, "mutex account %s until %s", pAccount, Util::GetDateTimeStringFromTimeStamp(timeperiod + (uint32)UNIXTIME).c_str());
+    sGMLog.writefromsession(m_session, "mutex account %s until %s", pAccount, Util::GetDateTimeStringFromTimeStamp(timeperiod + (uint32_t)UNIXTIME).c_str());
 
     WorldSession* pSession = sWorld.getSessionByAccountName(pAccount);
-    if (pSession != NULL)
+    if (pSession != nullptr)
     {
         pSession->m_muted = banned;
         pSession->SystemMessage("Your voice has been muted until %s by a GM. Until this time, you will not be able to speak in any form.", tsstr.c_str());
@@ -91,7 +91,7 @@ bool ChatHandler::HandleAccountUnmuteCommand(const char* args, WorldSession* m_s
     GreenSystemMessage(m_session, "Account '%s' has been unmuted.", args);
     sGMLog.writefromsession(m_session, "unmuted account %s", args);
     WorldSession* pSession = sWorld.getSessionByAccountName(args);
-    if (pSession != NULL)
+    if (pSession != nullptr)
     {
         pSession->m_muted = 0;
         pSession->SystemMessage("Your voice has restored. You may speak again.");
@@ -103,24 +103,24 @@ bool ChatHandler::HandleAccountUnmuteCommand(const char* args, WorldSession* m_s
 void ParseAccBanArgs(char* args, char** BanDuration, char** BanReason)
 {
     char* pBanDuration = strchr(args, ' ');
-    char* pReason = NULL;
-    if (pBanDuration != NULL)
+    char* pReason = nullptr;
+    if (pBanDuration != nullptr)
     {
         if (isdigit(*(pBanDuration + 1)))       // this is the duration of the ban
         {
-            *pBanDuration = 0;                  // NULL-terminate the first string (character/account/ip)
+            *pBanDuration = 0;                  // nullptr-terminate the first string (character/account/ip)
             ++pBanDuration;                     // point to next arg
             pReason = strchr(pBanDuration + 1, ' ');
-            if (pReason != NULL)                // BanReason is OPTIONAL
+            if (pReason != nullptr)                // BanReason is OPTIONAL
             {
-                *pReason = 0;                   // BanReason was given, so NULL-terminate the duration string
+                *pReason = 0;                   // BanReason was given, so nullptr-terminate the duration string
                 ++pReason;                      // and point to the ban reason
             }
         }
         else                                    // no duration was given (didn't start with a digit) - so this arg must be ban reason and duration defaults to permanent
         {
             pReason = pBanDuration;
-            pBanDuration = NULL;
+            pBanDuration = nullptr;
             *pReason = 0;
             ++pReason;
         }
@@ -138,23 +138,23 @@ bool ChatHandler::HandleAccountBannedCommand(const char* args, WorldSession* m_s
     char* pDuration;
     ParseAccBanArgs(pAccount, &pDuration, &pReason);
     uint32_t timeperiod = 0;
-    if (pDuration != NULL)
+    if (pDuration != nullptr)
     {
         timeperiod = Util::GetTimePeriodFromString(pDuration);
         if (timeperiod == 0)
             return false;
     }
-    uint32 banned = (timeperiod ? (uint32)UNIXTIME + timeperiod : 1);
+    uint32_t banned = (timeperiod ? (uint32_t)UNIXTIME + timeperiod : 1);
 
     const std::string reason = pReason;
 
     sLogonCommHandler.setAccountBanned(pAccount, banned, reason.c_str());
 
     GreenSystemMessage(m_session, "Account '%s' has been banned %s%s for reason : %s. The change will be effective immediately.", pAccount,
-                       timeperiod ? "until " : "forever", timeperiod ? Util::GetDateTimeStringFromTimeStamp(timeperiod + (uint32)UNIXTIME).c_str() : "", reason.c_str());
+                       timeperiod ? "until " : "forever", timeperiod ? Util::GetDateTimeStringFromTimeStamp(timeperiod + (uint32_t)UNIXTIME).c_str() : "", reason.c_str());
 
     sWorld.disconnectSessionByAccountName(pAccount, m_session);
-    sGMLog.writefromsession(m_session, "banned account %s until %s", pAccount, timeperiod ? Util::GetDateTimeStringFromTimeStamp(timeperiod + (uint32)UNIXTIME).c_str() : "permanent");
+    sGMLog.writefromsession(m_session, "banned account %s until %s", pAccount, timeperiod ? Util::GetDateTimeStringFromTimeStamp(timeperiod + (uint32_t)UNIXTIME).c_str() : "permanent");
     return true;
 }
 
@@ -207,7 +207,7 @@ bool ChatHandler::HandleAccountGetAccountID(const char* args, WorldSession* m_se
 
     char* pAccount = (char*)args;
 
-    sLogonCommHandler.checkIfAccountExist(pAccount, m_session->GetAccountNameS(), NULL, 2);
+    sLogonCommHandler.checkIfAccountExist(pAccount, m_session->GetAccountNameS(), nullptr, 2);
 
     sGMLog.writefromsession(m_session, "looked up account id for account %s", pAccount);
 

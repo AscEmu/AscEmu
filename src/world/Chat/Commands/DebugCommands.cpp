@@ -50,11 +50,11 @@ bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldS
 
     //prepare new table for dump
     char my_table[1400];
-    sprintf(my_table, "CREATE TABLE `creature_ai_scripts_%s` (`min_build` int NOT NULL DEFAULT '8606',`max_build` int NOT NULL DEFAULT '12340',`entry` int unsigned NOT NULL,\
-            `difficulty` tinyint unsigned NOT NULL DEFAULT '0',`phase` tinyint unsigned NOT NULL DEFAULT '0',`event` tinyint unsigned NOT NULL DEFAULT '0',`action` tinyint unsigned NOT NULL DEFAULT '0',\
-            `maxCount` tinyint unsigned NOT NULL DEFAULT '0',`chance` float unsigned NOT NULL DEFAULT '1',`spell` int unsigned NOT NULL DEFAULT '0',`spell_type` int NOT NULL DEFAULT '0',`triggered` tinyint(1) NOT NULL DEFAULT '0',\
-            `target` tinyint NOT NULL DEFAULT '0',`cooldownMin` int NOT NULL DEFAULT '0',`cooldownMax` int unsigned NOT NULL DEFAULT '0',`minHealth` float NOT NULL DEFAULT '0',\
-            `maxHealth` float NOT NULL DEFAULT '100',`textId` int unsigned NOT NULL DEFAULT '0',`misc1` int NOT NULL DEFAULT '0',`comments` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,\
+    sprintf(my_table, "CREATE TABLE `creature_ai_scripts_%s` (`min_build` int NOT nullptr DEFAULT '8606',`max_build` int NOT nullptr DEFAULT '12340',`entry` int unsigned NOT nullptr,\
+            `difficulty` tinyint unsigned NOT nullptr DEFAULT '0',`phase` tinyint unsigned NOT nullptr DEFAULT '0',`event` tinyint unsigned NOT nullptr DEFAULT '0',`action` tinyint unsigned NOT nullptr DEFAULT '0',\
+            `maxCount` tinyint unsigned NOT nullptr DEFAULT '0',`chance` float unsigned NOT nullptr DEFAULT '1',`spell` int unsigned NOT nullptr DEFAULT '0',`spell_type` int NOT nullptr DEFAULT '0',`triggered` tinyint(1) NOT nullptr DEFAULT '0',\
+            `target` tinyint NOT nullptr DEFAULT '0',`cooldownMin` int NOT nullptr DEFAULT '0',`cooldownMax` int unsigned NOT nullptr DEFAULT '0',`minHealth` float NOT nullptr DEFAULT '0',\
+            `maxHealth` float NOT nullptr DEFAULT '100',`textId` int unsigned NOT nullptr DEFAULT '0',`misc1` int NOT nullptr DEFAULT '0',`comments` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,\
             UNIQUE KEY `entry` (`min_build`,`max_build`,`entry`,`difficulty`,`phase`,`spell`,`event`,`action`,`textId`) USING BTREE) ENGINE = MyISAM DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI System'", args);
 
     WorldDatabase.Execute(my_table);
@@ -70,7 +70,7 @@ bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldS
         }
 
         auto creature_spawn = new MySQLStructure::CreatureSpawn;
-        uint8 gender = creature_properties->generateRandomDisplayIdAndReturnGender(&creature_spawn->displayid);
+        uint8_t gender = creature_properties->generateRandomDisplayIdAndReturnGender(&creature_spawn->displayid);
         creature_spawn->entry = entry;
         creature_spawn->id = sObjectMgr.generateCreatureSpawnId();
         creature_spawn->movetype = 0;
@@ -103,8 +103,8 @@ bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldS
             creature->PushToWorld(session->GetPlayer()->getWorldMap());
 
             // Add to map
-            uint32 x = session->GetPlayer()->getWorldMap()->getPosX(session->GetPlayer()->GetPositionX());
-            uint32 y = session->GetPlayer()->getWorldMap()->getPosY(session->GetPlayer()->GetPositionY());
+            uint32_t x = session->GetPlayer()->getWorldMap()->getPosX(session->GetPlayer()->GetPositionX());
+            uint32_t y = session->GetPlayer()->getWorldMap()->getPosY(session->GetPlayer()->GetPositionY());
             session->GetPlayer()->getWorldMap()->getBaseMap()->getSpawnsListAndCreate(x, y)->CreatureSpawns.push_back(creature_spawn);
             MapCell* map_cell = session->GetPlayer()->getWorldMap()->getCell(x, y);
             if (map_cell != nullptr)
@@ -308,9 +308,9 @@ bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_sess
     bool in_front_of_creature = m_session->GetPlayer()->isInFront(selected_unit);
     float distance_to_creature = m_session->GetPlayer()->CalcDistance(selected_unit);
 
-    uint32 ai_agent = selected_unit->getAIInterface()->getCurrentAgent();
+    uint32_t ai_agent = selected_unit->getAIInterface()->getCurrentAgent();
 
-    uint32 attackerscount = static_cast<uint32>(selected_unit->getThreatManager().getThreatListSize());
+    uint32_t attackerscount = static_cast<uint32_t>(selected_unit->getThreatManager().getThreatListSize());
 
     if (selected_unit->isCreature())
         BlueSystemMessage(m_session, "Showing creature moveinfo for %s", static_cast<Creature*>(selected_unit)->GetCreatureProperties()->Name.c_str());
@@ -495,8 +495,8 @@ bool ChatHandler::HandleDebugSpeed(const char* args, WorldSession* m_session)
 //.debug pvpcredit
 bool ChatHandler::HandleDebugPVPCreditCommand(const char* args, WorldSession* m_session)
 {
-    uint32 rank;
-    uint32 points;
+    uint32_t rank;
+    uint32_t points;
     if (sscanf(args, "%u %u", &rank, &points) != 2)
     {
         RedSystemMessage(m_session, "Command must be in format <rank> <points>.");
@@ -605,7 +605,7 @@ bool ChatHandler::HandlePlayMovie(const char* args, WorldSession* m_session)
     if (selected_player == nullptr)
         return true;
 
-    uint32 movie = atol(args);
+    uint32_t movie = atol(args);
 
     selected_player->sendMovie(movie);
 
@@ -622,13 +622,13 @@ bool ChatHandler::HandleSendCastFailed(const char* args, WorldSession* m_session
     if (selected_player == nullptr)
         return true;
 
-    uint32 fail = atol(args);
+    uint32_t fail = atol(args);
     if (fail > SPELL_FAILED_UNKNOWN)
     {
         RedSystemMessage(m_session, "Argument %u is out of range!", fail);
         return false;
     }
-    selected_player->sendCastFailedPacket(1, static_cast<uint8>(fail), 0, 0);
+    selected_player->sendCastFailedPacket(1, static_cast<uint8_t>(fail), 0, 0);
 
     return true;
 }
@@ -694,7 +694,7 @@ bool ChatHandler::HandleDebugInFrontCommand(const char* /*args*/, WorldSession* 
 {
     Object* obj;
 
-    uint64 guid = m_session->GetPlayer()->getTargetGuid();
+    uint64_t guid = m_session->GetPlayer()->getTargetGuid();
     if (guid != 0)
     {
         if ((obj = m_session->GetPlayer()->getWorldMap()->getUnit(guid)) == 0)
@@ -740,7 +740,7 @@ bool ChatHandler::HandleShowReactionCommand(const char* args, WorldSession* m_se
     if (!pReaction)
         return false;
 
-    uint32 Reaction = atoi(pReaction);
+    uint32_t Reaction = atoi(pReaction);
 
     obj->SendAIReaction(Reaction);
 
@@ -756,7 +756,7 @@ bool ChatHandler::HandleDistanceCommand(const char* /*args*/, WorldSession* m_se
 {
     Object* obj;
 
-    uint64 guid = m_session->GetPlayer()->getTargetGuid();
+    uint64_t guid = m_session->GetPlayer()->getTargetGuid();
     if (guid != 0)
     {
         if ((obj = m_session->GetPlayer()->getWorldMap()->getUnit(guid)) == 0)
@@ -796,24 +796,24 @@ bool ChatHandler::HandleAIMoveCommand(const char* args, WorldSession* m_session)
         return true;
     }
 
-    uint32 Move = 1;
-    uint32 Run = 0;
-    uint32 Time = 0;
-    uint32 Meth = 0;
+    uint32_t Move = 1;
+    uint32_t Run = 0;
+    uint32_t Time = 0;
+    uint32_t Meth = 0;
 
     char* pMove = strtok((char*)args, " ");
     if (pMove)
         Move = atoi(pMove);
 
-    char* pRun = strtok(NULL, " ");
+    char* pRun = strtok(nullptr, " ");
     if (pRun)
         Run = atoi(pRun);
 
-    char* pTime = strtok(NULL, " ");
+    char* pTime = strtok(nullptr, " ");
     if (pTime)
         Time = atoi(pTime);
 
-    char* pMeth = strtok(NULL, " ");
+    char* pMeth = strtok(nullptr, " ");
     if (pMeth)
         Meth = atoi(pMeth);
 
@@ -918,7 +918,7 @@ bool ChatHandler::HandleFaceCommand(const char* args, WorldSession* m_session)
         return true;
     }
 
-    uint32 Orentation = 0;
+    uint32_t Orentation = 0;
     char* pOrentation = strtok((char*)args, " ");
     if (pOrentation)
         Orentation = atoi(pOrentation);
@@ -1078,8 +1078,8 @@ bool ChatHandler::HandleDebugDumpCoordsCommmand(const char* /*args*/, WorldSessi
 //.debug spawnwar
 bool ChatHandler::HandleDebugSpawnWarCommand(const char* args, WorldSession* m_session)
 {
-    uint32 count, npcid;
-    uint32 health = 0;
+    uint32_t count, npcid;
+    uint32_t health = 0;
 
     // takes 2 or 3 arguments: npcid, count, (health)
     if (sscanf(args, "%u %u %u", &npcid, &count, &health) != 3)
@@ -1141,8 +1141,8 @@ bool ChatHandler::HandleUpdateWorldStateCommand(const char *args, WorldSession* 
         return true;
     }
 
-    uint32 field = 0;
-    uint32 state = 0;
+    uint32_t field = 0;
+    uint32_t state = 0;
 
     std::stringstream ss(args);
 
@@ -1170,7 +1170,7 @@ bool ChatHandler::HandleInitWorldStatesCommand(const char* /*args*/, WorldSessio
 {
     Player* p = session->GetPlayer();
 
-    uint32 zone = p->getZoneId();
+    uint32_t zone = p->getZoneId();
     if (zone == 0)
         zone = p->getAreaId();
 
@@ -1186,7 +1186,7 @@ bool ChatHandler::HandleClearWorldStatesCommand(const char* /*args*/, WorldSessi
 {
     Player* p = session->GetPlayer();
 
-    uint32 zone = p->getZoneId();
+    uint32_t zone = p->getZoneId();
     if (zone == 0)
         zone = p->getAreaId();
 
@@ -1194,10 +1194,10 @@ bool ChatHandler::HandleClearWorldStatesCommand(const char* /*args*/, WorldSessi
 
     WorldPacket data(SMSG_INIT_WORLD_STATES, 16);
 
-    data << uint32(p->GetMapId());
-    data << uint32(p->getZoneId());
-    data << uint32(p->getAreaId());
-    data << uint16(0);
+    data << uint32_t(p->GetMapId());
+    data << uint32_t(p->getZoneId());
+    data << uint32_t(p->getAreaId());
+    data << uint16_t(0);
 
     p->sendPacket(&data);
 
@@ -1213,7 +1213,7 @@ bool ChatHandler::HandleAuraUpdateRemove(const char* args, WorldSession* m_sessi
     char* pArgs = strtok((char*)args, " ");
     if (!pArgs)
         return false;
-    uint8 VisualSlot = (uint8)atoi(pArgs);
+    uint8_t VisualSlot = (uint8_t)atoi(pArgs);
     Player* Pl = m_session->GetPlayer();
     Aura* AuraPtr = Pl->getAuraWithId(Pl->getVisualAuraList().at(VisualSlot));
     if (!AuraPtr)
@@ -1232,7 +1232,7 @@ bool ChatHandler::HandleAuraUpdateAdd(const char* args, WorldSession* m_session)
     if (!args)
         return false;
 
-    uint32 SpellID = 0;
+    uint32_t SpellID = 0;
     int Flags = 0;
     int StackCount = 0;
     if (sscanf(args, "%u 0x%X %i", &SpellID, &Flags, &StackCount) != 3 && sscanf(args, "%u %u %i", &SpellID, &Flags, &StackCount) != 3)
@@ -1241,7 +1241,7 @@ bool ChatHandler::HandleAuraUpdateAdd(const char* args, WorldSession* m_session)
     Player* Pl = m_session->GetPlayer();
     if (Aura* AuraPtr = Pl->getAuraWithId(SpellID))
     {
-        uint8 VisualSlot = AuraPtr->m_visualSlot;
+        uint8_t VisualSlot = AuraPtr->m_visualSlot;
         Pl->sendAuraUpdate(AuraPtr, false);
         SystemMessage(m_session, "SMSG_AURA_UPDATE (update): VisualSlot %u - SpellID %u - Flags %i (0x%04X) - StackCount %i", VisualSlot, SpellID, Flags, Flags, StackCount);
     }
@@ -1253,7 +1253,7 @@ bool ChatHandler::HandleAuraUpdateAdd(const char* args, WorldSession* m_session)
             SystemMessage(m_session, "SpellID %u is invalid.", SpellID);
             return true;
         }
-        Spell* SpellPtr = sSpellMgr.newSpell(Pl, Sp, false, NULL);
+        Spell* SpellPtr = sSpellMgr.newSpell(Pl, Sp, false, nullptr);
         AuraPtr = sSpellMgr.newAura(Sp, SpellPtr->getDuration(), Pl, Pl);
         SystemMessage(m_session, "SMSG_AURA_UPDATE (add): VisualSlot %u - SpellID %u - Flags %i (0x%04X) - StackCount %i", AuraPtr->m_visualSlot, SpellID, Flags, Flags, StackCount);
         Pl->addAura(AuraPtr);       // Serves purpose to just add the aura to our auraslots
@@ -1295,7 +1295,7 @@ bool ChatHandler::HandleSimpleDistanceCommand(const char* args, WorldSession* m_
 //.debug rangecheck
 bool ChatHandler::HandleRangeCheckCommand(const char* /*args*/, WorldSession* m_session)
 {
-    uint64 guid = m_session->GetPlayer()->getTargetGuid();
+    uint64_t guid = m_session->GetPlayer()->getTargetGuid();
     m_session->SystemMessage("=== RANGE CHECK ===");
     if (guid == 0)
     {
@@ -1340,7 +1340,7 @@ bool ChatHandler::HandleCollisionTestLOS(const char* /*args*/, WorldSession* m_s
 {
     if (worldConfig.terrainCollision.isCollisionEnabled)
     {
-        Object* pObj = NULL;
+        Object* pObj = nullptr;
         Creature* pCreature = GetSelectedCreature(m_session, false);
         Player* pPlayer = GetSelectedPlayer(m_session, true, true);
         if (pCreature)
@@ -1348,7 +1348,7 @@ bool ChatHandler::HandleCollisionTestLOS(const char* /*args*/, WorldSession* m_s
         else if (pPlayer)
             pObj = pPlayer;
 
-        if (pObj == NULL)
+        if (pObj == nullptr)
         {
             SystemMessage(m_session, "Invalid target.");
             return true;
@@ -1409,14 +1409,14 @@ bool ChatHandler::HandleGetDeathState(const char* /*args*/, WorldSession* m_sess
 
 struct spell_thingo
 {
-    uint32 type;
-    uint32 target;
+    uint32_t type;
+    uint32_t target;
 };
 
 std::list<SpellInfo const*> aiagent_spells;
-std::map<uint32, spell_thingo> aiagent_extra;
+std::map<uint32_t, spell_thingo> aiagent_extra;
 
-SpellCastTargets SetTargets(SpellInfo const* /*sp*/, uint32 /*type*/, uint32 targettype, Unit* dst, Creature* src)
+SpellCastTargets SetTargets(SpellInfo const* /*sp*/, uint32_t /*type*/, uint32_t targettype, Unit* dst, Creature* src)
 {
     SpellCastTargets targets;
     targets.setUnitTarget(0);
@@ -1456,7 +1456,7 @@ bool ChatHandler::HandleCastSpellCommand(const char* args, WorldSession* m_sessi
         return false;
     }
 
-    uint32 spellid = atol(args);
+    uint32_t spellid = atol(args);
     SpellInfo const* spellentry = sSpellMgr.getSpellInfo(spellid);
     if (!spellentry)
     {
@@ -1464,7 +1464,7 @@ bool ChatHandler::HandleCastSpellCommand(const char* args, WorldSession* m_sessi
         return false;
     }
 
-    Spell* sp = sSpellMgr.newSpell(caster, spellentry, false, NULL);
+    Spell* sp = sSpellMgr.newSpell(caster, spellentry, false, nullptr);
 
     BlueSystemMessage(m_session, "Casting spell %d on target.", spellid);
     SpellCastTargets targets(target->getGuid());
@@ -1497,7 +1497,7 @@ bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_ses
         return false;
     }
 
-    uint32 spellId = atol(args);
+    uint32_t spellId = atol(args);
     SpellInfo const* spellentry = sSpellMgr.getSpellInfo(spellId);
     if (!spellentry)
     {
@@ -1512,10 +1512,10 @@ bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_ses
     data << caster->GetNewGUID();
     data << caster->GetNewGUID();
     data << spellId;
-    data << uint8(0);
-    data << uint16(0);
-    data << uint32(0);
-    data << uint16(2);
+    data << uint8_t(0);
+    data << uint16_t(0);
+    data << uint32_t(0);
+    data << uint16_t(2);
     data << target->getGuid();
     m_session->SendPacket(&data);
 
@@ -1523,10 +1523,10 @@ bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_ses
     data << caster->GetNewGUID();
     data << caster->GetNewGUID();
     data << spellId;
-    data << uint8(0) << uint8(1) << uint8(1);
+    data << uint8_t(0) << uint8_t(1) << uint8_t(1);
     data << target->getGuid();
-    data << uint8(0);
-    data << uint16(2);
+    data << uint8_t(0);
+    data << uint16_t(2);
     data << target->getGuid();
     m_session->SendPacket(&data);
 
@@ -1556,7 +1556,7 @@ bool ChatHandler::HandleCastSelfCommand(const char* args, WorldSession* m_sessio
         return false;
     }
 
-    uint32 spellid = atol(args);
+    uint32_t spellid = atol(args);
     SpellInfo const* spellentry = sSpellMgr.getSpellInfo(spellid);
     if (!spellentry)
     {
@@ -1564,7 +1564,7 @@ bool ChatHandler::HandleCastSelfCommand(const char* args, WorldSession* m_sessio
         return false;
     }
 
-    Spell* sp = sSpellMgr.newSpell(target, spellentry, false, NULL);
+    Spell* sp = sSpellMgr.newSpell(target, spellentry, false, nullptr);
 
     BlueSystemMessage(m_session, "Target is casting spell %d on himself.", spellid);
     SpellCastTargets targets(target->getGuid());

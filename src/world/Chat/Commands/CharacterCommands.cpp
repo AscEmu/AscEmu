@@ -60,7 +60,7 @@ bool ChatHandler::HandleCharDeMorphCommand(const char* /*args*/, WorldSession* m
 //.character levelup
 bool ChatHandler::HandleCharLevelUpCommand(const char* args, WorldSession* m_session)
 {
-    uint32 levels = atoi(args);
+    uint32_t levels = atoi(args);
 
     if (levels == 0)
     {
@@ -112,7 +112,7 @@ bool ChatHandler::HandleCharUnlearnCommand(const char* args, WorldSession* m_ses
     if (player_target == nullptr)
         return true;
 
-    uint32 spell_id = atol(args);
+    uint32_t spell_id = atol(args);
     if (spell_id == 0)
     {
         spell_id = GetSpellIDFromLink(args);
@@ -318,7 +318,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
         sGMLog.writefromsession(m_session, "taught %s all spells.", selected_player->getName().c_str());
         SystemMessage(m_session, "Taught %s all spells.", selected_player->getName().c_str());
 
-        static uint32 spellarray[DRUID + 1][512] =
+        static uint32_t spellarray[DRUID + 1][512] =
         {
 #if VERSION_STRING < Cata
             { 0 }, // N/A
@@ -349,8 +349,8 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
 #endif
         };
 
-        uint8 player_class = selected_player->getClass();
-        for (uint32 i = 0; spellarray[player_class][i] != 0; ++i)
+        uint8_t player_class = selected_player->getClass();
+        for (uint32_t i = 0; spellarray[player_class][i] != 0; ++i)
         {
             spell_entry = sSpellMgr.getSpellInfo(spellarray[player_class][i]);
             if (spell_entry == nullptr)
@@ -363,7 +363,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
         }
 
 #if VERSION_STRING < Cata
-        static uint32 paladinspellarray[DBC_NUM_RACES][5] =
+        static uint32_t paladinspellarray[DBC_NUM_RACES][5] =
         {
             { 0 },                                  // RACE 0
             { 23214, 13819, 31801, 53720, 0 },      // HUMAN  Charger, Warhorse, Seal of Vengeance, Seal of Martyr
@@ -380,7 +380,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
 #endif
         };
 #else
-        static uint32 paladinspellarray[DBC_NUM_RACES][3] =
+        static uint32_t paladinspellarray[DBC_NUM_RACES][3] =
         {
             { 0 },                  // RACE 0
             { 13819, 23214, 0 },    // HUMAN  Summon Warhorse, Summon Charger
@@ -408,7 +408,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
         };
 #endif
 
-        static uint32 shamanspellarray[DBC_NUM_RACES][2] =
+        static uint32_t shamanspellarray[DBC_NUM_RACES][2] =
         {
 #if VERSION_STRING < Cata
             { 0 },                                  // RACE 0
@@ -451,7 +451,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
         };
 
 #if VERSION_STRING < Cata
-        static uint32 magespellarray[DBC_NUM_RACES][13] =
+        static uint32_t magespellarray[DBC_NUM_RACES][13] =
         {
             { 0 },                                                                                  // RACE 0
             { 3561, 3562, 3565, 10059, 11416, 11419, 32266, 32271, 33690, 33691, 49359, 49360, 0 }, // HUMAN
@@ -468,7 +468,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
 #endif
         };
 #else
-        static uint32 magespellarray[DBC_NUM_RACES][17] =
+        static uint32_t magespellarray[DBC_NUM_RACES][17] =
         {
             { 0 },      // RACE 0
             { 3561, 3562, 3565, 10059, 11416, 11419, 32266, 32271, 53142, 33690, 33691, 49360, 49359, 53140, 88342, 88345, 0 },       // HUMAN
@@ -496,11 +496,11 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
         };
 #endif
 
-        uint8 player_race = selected_player->getRace();
+        uint8_t player_race = selected_player->getRace();
         switch (player_class)
         {
             case PALADIN:
-                for (uint32 i = 0; paladinspellarray[player_race][i] != 0; ++i)
+                for (uint32_t i = 0; paladinspellarray[player_race][i] != 0; ++i)
                 {
                     spell_entry = sSpellMgr.getSpellInfo(paladinspellarray[player_race][i]);
                     if (spell_entry == nullptr)
@@ -513,7 +513,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
                 }
                 break;
             case MAGE:
-                for (uint32 i = 0; magespellarray[player_race][i] != 0; ++i)
+                for (uint32_t i = 0; magespellarray[player_race][i] != 0; ++i)
                 {
                     spell_entry = sSpellMgr.getSpellInfo(magespellarray[player_race][i]);
                     if (spell_entry == nullptr)
@@ -526,7 +526,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
                 }
                 break;
             case SHAMAN:
-                for (uint32 i = 0; shamanspellarray[player_race][i] != 0; ++i)
+                for (uint32_t i = 0; shamanspellarray[player_race][i] != 0; ++i)
                 {
                     spell_entry = sSpellMgr.getSpellInfo(shamanspellarray[player_race][i]);
                     if (spell_entry == nullptr)
@@ -542,7 +542,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
         return true;
     }
 
-    uint32 spell = atol(args);
+    uint32_t spell = atol(args);
     if (spell == 0)
     {
         spell = GetSpellIDFromLink(args);
@@ -582,7 +582,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
 //.character add honorpoints
 bool ChatHandler::HandleCharAddHonorPointsCommand(const char* args, WorldSession* m_session)
 {
-    uint32 honor_amount = args ? atol(args) : 1;
+    uint32_t honor_amount = args ? atol(args) : 1;
 
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
@@ -601,7 +601,7 @@ bool ChatHandler::HandleCharAddHonorPointsCommand(const char* args, WorldSession
 //.character add honorkill
 bool ChatHandler::HandleCharAddHonorKillCommand(const char* args, WorldSession* m_session)
 {
-    uint32 kill_amount = args ? atol(args) : 1;
+    uint32_t kill_amount = args ? atol(args) : 1;
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
         return true;
@@ -623,10 +623,10 @@ bool ChatHandler::HandleCharAddHonorKillCommand(const char* args, WorldSession* 
 //.character add item
 bool ChatHandler::HandleCharAddItemCommand(const char* args, WorldSession* m_session)
 {
-    uint32 itemid = 0;
-    uint32 count = 1;
-    int32 randomprop = 0;
-    int32 numadded = 0;
+    uint32_t itemid = 0;
+    uint32_t count = 1;
+    int32_t randomprop = 0;
+    int32_t numadded = 0;
 
     // check for item link
     uint16_t ofs = GetItemIDFromLink(args, &itemid);
@@ -680,7 +680,7 @@ bool ChatHandler::HandleCharAddItemCommand(const char* args, WorldSession* m_ses
 //.character add itemset
 bool ChatHandler::HandleCharAddItemSetCommand(const char* args, WorldSession* m_session)
 {
-    int32 setid = atoi(args);
+    int32_t setid = atoi(args);
     if (!setid)
     {
         RedSystemMessage(m_session, "You must specify a setid.");
@@ -701,7 +701,7 @@ bool ChatHandler::HandleCharAddItemSetCommand(const char* args, WorldSession* m_
     BlueSystemMessage(m_session, "Searching item set %u...", setid);
     sGMLog.writefromsession(m_session, "used add item set command, set %u, target %s", setid, player->getName().c_str());
 
-    uint32 itemset_items_count = 0;
+    uint32_t itemset_items_count = 0;
 
     MySQLDataStore::ItemPropertiesContainer const* its = sMySQLStore.getItemPropertiesStore();
     for (MySQLDataStore::ItemPropertiesContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
@@ -760,11 +760,11 @@ bool ChatHandler::HandleCharAddCopperCommand(const char* args, WorldSession* m_s
     if (player_target == nullptr)
         return true;
 
-    int32 total = atoi(args);
+    int32_t total = atoi(args);
 
-    uint32 gold = (uint32)std::floor((float)int32abs(total) / 10000.0f);
-    uint32 silver = (uint32)std::floor(((float)int32abs(total) / 100.0f)) % 100;
-    uint32 copper = int32abs2uint32(total) % 100;
+    uint32_t gold = (uint32_t)std::floor((float)int32abs(total) / 10000.0f);
+    uint32_t silver = (uint32_t)std::floor(((float)int32abs(total) / 100.0f)) % 100;
+    uint32_t copper = int32abs2uint32(total) % 100;
 
 #if VERSION_STRING < Cata
     uint32_t newgold = player_target->getCoinage() + total;
@@ -821,10 +821,10 @@ bool ChatHandler::HandleCharAddSilverCommand(const char* args, WorldSession* m_s
     if (player_target == nullptr)
         return true;
 
-    int32 total = atoi(args) * 100;
+    int32_t total = atoi(args) * 100;
 
-    uint32 gold = (uint32)std::floor((float)int32abs(total) / 10000.0f);
-    uint32 silver = (uint32)std::floor(((float)int32abs(total) / 100.0f)) % 100;
+    uint32_t gold = (uint32_t)std::floor((float)int32abs(total) / 10000.0f);
+    uint32_t silver = (uint32_t)std::floor(((float)int32abs(total) / 100.0f)) % 100;
 
 #if VERSION_STRING < Cata
     uint32_t newgold = player_target->getCoinage() + total;
@@ -881,9 +881,9 @@ bool ChatHandler::HandleCharAddGoldCommand(const char* args, WorldSession* m_ses
     if (player_target == nullptr)
         return true;
 
-    int32 total = atoi(args) * 10000;
+    int32_t total = atoi(args) * 10000;
 
-    uint32 gold = (uint32)std::floor((float)int32abs(total) / 10000.0f);
+    uint32_t gold = (uint32_t)std::floor((float)int32abs(total) / 10000.0f);
 
 #if VERSION_STRING < Cata
     uint32_t newgold = player_target->getCoinage() + total;
@@ -959,8 +959,8 @@ bool ChatHandler::HandleCharResetSkillsCommand(const char* /*args*/, WorldSessio
 //.character removeitem
 bool ChatHandler::HandleCharRemoveItemCommand(const char* args, WorldSession* m_session)
 {
-    uint32 item_id;
-    int32 count, ocount;
+    uint32_t item_id;
+    int32_t count, ocount;
 
     int argc = sscanf(args, "%u %u", &item_id, (unsigned int*)&count);
     if (argc == 1)
@@ -973,9 +973,9 @@ bool ChatHandler::HandleCharRemoveItemCommand(const char* args, WorldSession* m_
     if (selected_player == nullptr)
         return true;
 
-    int32 loop_count = 0;
-    int32 start_count = selected_player->getItemInterface()->GetItemCount(item_id, true);
-    int32 start_count2 = start_count;
+    int32_t loop_count = 0;
+    int32_t start_count = selected_player->getItemInterface()->GetItemCount(item_id, true);
+    int32_t start_count2 = start_count;
     if (count > start_count)
         count = start_count;
 
@@ -1248,7 +1248,7 @@ bool ChatHandler::HandleCharSetAllExploredCommand(const char* /*args*/, WorldSes
     GreenSystemMessage(player_target->getSession(), "%s sets all areas as explored for you.", m_session->GetPlayer()->getName().c_str());
     sGMLog.writefromsession(m_session, "sets all areas as explored for player %s", player_target->getName().c_str());
 
-    for (uint8 i = 0; i < WOWPLAYER_EXPLORED_ZONES_COUNT; ++i)
+    for (uint8_t i = 0; i < WOWPLAYER_EXPLORED_ZONES_COUNT; ++i)
     {
         player_target->setExploredZone(i, 0xFFFFFFFF);
     }
@@ -1266,15 +1266,15 @@ bool ChatHandler::HandleCharSetGenderCommand(const char* args, WorldSession* m_s
     if (player_target == nullptr)
         return true;
 
-    uint32 displayId = player_target->getNativeDisplayId();
-    uint8 gender;
+    uint32_t displayId = player_target->getNativeDisplayId();
+    uint8_t gender;
     if (*args == 0)
     {
         gender = player_target->getGender() == 1 ? 0 : 1;
     }
     else
     {
-        gender = (uint8)atoi(args);
+        gender = (uint8_t)atoi(args);
         if (gender > 1)
             gender = 1;
     }
@@ -1313,17 +1313,17 @@ bool ChatHandler::HandleCharSetItemsRepairedCommand(const char* /*args*/, WorldS
     if (player_target == nullptr)
         return true;
 
-    for (uint8 i = 0; i < MAX_INVENTORY_SLOT; i++)
+    for (uint8_t i = 0; i < MAX_INVENTORY_SLOT; i++)
     {
-        auto player_item = player_target->getItemInterface()->GetInventoryItem(static_cast<uint16>(i));
+        auto player_item = player_target->getItemInterface()->GetInventoryItem(static_cast<uint16_t>(i));
         if (player_item != nullptr)
         {
             if (player_item->isContainer())
             {
                 auto item_container = static_cast<Container*>(player_item);
-                for (uint32 j = 0; j < item_container->getItemProperties()->ContainerSlots; ++j)
+                for (uint32_t j = 0; j < item_container->getItemProperties()->ContainerSlots; ++j)
                 {
-                    player_item = item_container->getItem(static_cast<uint16>(j));
+                    player_item = item_container->getItem(static_cast<uint16_t>(j));
                     if (player_item != nullptr)
                     {
                         player_item->setDurabilityToMax();
@@ -1337,7 +1337,7 @@ bool ChatHandler::HandleCharSetItemsRepairedCommand(const char* /*args*/, WorldS
                 {
                     player_item->setDurabilityToMax();
                     player_item->m_isDirty = true;
-                    player_target->applyItemMods(player_item, static_cast<uint16>(i), true);
+                    player_target->applyItemMods(player_item, static_cast<uint16_t>(i), true);
                 }
                 else
                 {
@@ -1369,7 +1369,7 @@ bool ChatHandler::HandleCharSetLevelCommand(const char* args, WorldSession* m_se
     if (player_target == nullptr)
         return true;
 
-    uint32 new_level = args ? atol(args) : 0;
+    uint32_t new_level = args ? atol(args) : 0;
     if (new_level == 0 || new_level > worldConfig.player.playerLevelCap)
     {
         RedSystemMessage(m_session, "Level %u is not a valid level! Check out your world.conf!", new_level);
@@ -1482,7 +1482,7 @@ bool ChatHandler::HandleCharSetNameCommand(const char* args, WorldSession* m_ses
 //.character set phase
 bool ChatHandler::HandleCharSetPhaseCommand(const char* args, WorldSession* m_session)
 {
-    uint32 phase = atoi(args);
+    uint32_t phase = atoi(args);
     if (phase == 0)
     {
         RedSystemMessage(m_session, "No phase set. Use .character set phase <phase>");
@@ -1545,8 +1545,8 @@ bool ChatHandler::HandleCharSetSpeedCommand(const char* args, WorldSession* m_se
 //.character set standing
 bool ChatHandler::HandleCharSetStandingCommand(const char* args, WorldSession* m_session)
 {
-    uint32 faction;
-    int32 standing;
+    uint32_t faction;
+    int32_t standing;
 
     if (sscanf(args, "%u %d", &faction, (unsigned int*)&standing) != 2)
     {
@@ -1593,8 +1593,8 @@ bool ChatHandler::HandleCharSetTalentpointsCommand(const char* args, WorldSessio
     if (player_target == nullptr)
         return true;
 
-    uint32 primary_amount = 0;
-    [[maybe_unused]]uint32 secondary_amount = 0;
+    uint32_t primary_amount = 0;
+    [[maybe_unused]]uint32_t secondary_amount = 0;
 
     std::stringstream ss(args);
     ss >> primary_amount;
@@ -1643,8 +1643,8 @@ bool ChatHandler::HandleCharSetTitleCommand(const char* args, WorldSession* m_se
     if (player_target == nullptr)
         return true;
 
-    int32 title = atol(args);
-    if (title > int32(PVPTITLE_END) || title < -int32(PVPTITLE_END))
+    int32_t title = atol(args);
+    if (title > int32_t(PVPTITLE_END) || title < -int32_t(PVPTITLE_END))
     {
         RedSystemMessage(m_session, "Argument %i is out of range!", title);
         return false;
@@ -1704,7 +1704,7 @@ bool ChatHandler::HandleCharSetForceRenameCommand(const char* args, WorldSession
     Player* plr = sObjectMgr.getPlayer(pi->guid);
     if (plr == nullptr)
     {
-        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_FORCED_RENAME, pi->guid);
+        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32_t)LOGIN_FORCED_RENAME, pi->guid);
     }
     else
     {
@@ -1737,7 +1737,7 @@ bool ChatHandler::HandleCharSetCustomizeCommand(const char* args, WorldSession* 
     Player* plr = sObjectMgr.getPlayer(pi->guid);
     if (plr == nullptr)
     {
-        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_CUSTOMIZE_LOOKS, pi->guid);
+        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32_t)LOGIN_CUSTOMIZE_LOOKS, pi->guid);
     }
     else
     {
@@ -1769,7 +1769,7 @@ bool ChatHandler::HandleCharSetFactionChangeCommand(const char* args, WorldSessi
     Player* plr = sObjectMgr.getPlayer(pi->guid);
     if (plr == nullptr)
     {
-        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_CUSTOMIZE_FACTION, pi->guid);
+        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32_t)LOGIN_CUSTOMIZE_FACTION, pi->guid);
     }
     else
     {
@@ -1801,7 +1801,7 @@ bool ChatHandler::HandleCharSetRaceChangeCommand(const char* args, WorldSession*
     Player* plr = sObjectMgr.getPlayer(pi->guid);
     if (plr == nullptr)
     {
-        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_CUSTOMIZE_RACE, pi->guid);
+        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32_t)LOGIN_CUSTOMIZE_RACE, pi->guid);
     }
     else
     {
@@ -1852,13 +1852,13 @@ bool ChatHandler::HandleCharListSkillsCommand(const char* /*args*/, WorldSession
 //.character list standing
 bool ChatHandler::HandleCharListStandingCommand(const char* args, WorldSession* m_session)
 {
-    uint32 faction = atoi(args);
+    uint32_t faction = atoi(args);
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
         return true;
 
-    int32 standing = player_target->getFactionStanding(faction);
-    int32 bstanding = player_target->getBaseFactionStanding(faction);
+    int32_t standing = player_target->getFactionStanding(faction);
+    int32_t bstanding = player_target->getBaseFactionStanding(faction);
 
     SystemMessage(m_session, "==== %s standing ====", player_target->getName().c_str());
     SystemMessage(m_session, "Reputation for faction %u:", faction);
@@ -1912,7 +1912,7 @@ bool ChatHandler::HandleCharListInstanceCommand(const char* /*args*/, WorldSessi
     if (player_target == nullptr)
         return true;
 
-    uint32 count = 0;
+    uint32_t count = 0;
     std::stringstream ss;
     ss << "Show persistent instances of " << MSG_COLOR_CYAN << player_target->getName().c_str() << "|r\n";
 
@@ -1929,7 +1929,7 @@ bool ChatHandler::HandleCharListInstanceCommand(const char* /*args*/, WorldSessi
                 ss << " - " << MSG_COLOR_CYAN << mapInfo->mapid << "|r";
                 ss << " (" << MSG_COLOR_CYAN << mapInfo->name << "|r)";
 
-                ss << " [" << GetMapTypeString(static_cast<uint8>(mapInfo->type)) << "]";
+                ss << " [" << GetMapTypeString(static_cast<uint8_t>(mapInfo->type)) << "]";
                 if (mapInfo->isMultimodeDungeon())
                 {
                     ss << " [" << GetDifficultyString(save->getDifficulty()) << "]";

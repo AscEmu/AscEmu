@@ -4,7 +4,6 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Chat/ChatHandler.hpp"
-#include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Creatures/Vehicle.hpp"
@@ -56,12 +55,12 @@ bool ChatHandler::HandleVehicleEjectAllPassengersCommand(const char* /*args*/, W
         return false;
     }
     Unit* u = p->getWorldMap()->getUnit(p->getTargetGuid());
-    if (u == NULL)
+    if (u == nullptr)
     {
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
-    if (u->getVehicleKit() == NULL)
+    if (u->getVehicleKit() == nullptr)
     {
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;
@@ -80,12 +79,12 @@ bool ChatHandler::HandleVehicleInstallAccessoriesCommand(const char* /*args*/, W
         return false;
     }
     Unit* u = p->getWorldMap()->getUnit(p->getTargetGuid());
-    if (u == NULL)
+    if (u == nullptr)
     {
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
-    if (u->getVehicleKit() == NULL)
+    if (u->getVehicleKit() == nullptr)
     {
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;
@@ -98,7 +97,7 @@ bool ChatHandler::HandleVehicleInstallAccessoriesCommand(const char* /*args*/, W
 bool ChatHandler::HandleVehicleAddPassengerCommand(const char* args, WorldSession* session)
 {
     std::stringstream ss(args);
-    uint32 creature_entry;
+    uint32_t creature_entry;
     ss >> creature_entry;
     if (ss.fail())
     {
@@ -111,12 +110,12 @@ bool ChatHandler::HandleVehicleAddPassengerCommand(const char* args, WorldSessio
         return false;
     }
     Unit* u = session->GetPlayer()->getWorldMap()->getUnit(session->GetPlayer()->getTargetGuid());
-    if (u == NULL)
+    if (u == nullptr)
     {
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
-    if (u->getVehicleKit() == NULL)
+    if (u->getVehicleKit() == nullptr)
     {
         RedSystemMessage(session, "You need to select a vehicle.");
         return false;

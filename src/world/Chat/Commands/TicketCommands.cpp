@@ -32,7 +32,7 @@ bool ChatHandler::HandleTicketListCommand(const char* /*args*/, WorldSession* m_
         Field* fields = result->Fetch();
         sstext << "TicketID: " << fields[0].GetUInt16()
             << " | Player: " << fields[2].GetString()
-            << " | Opened: " << Util::GetDateStringFromSeconds((uint32)UNIXTIME - fields[9].GetUInt32())
+            << " | Opened: " << Util::GetDateStringFromSeconds((uint32_t)UNIXTIME - fields[9].GetUInt32())
             << '\n';
     } while (result->NextRow());
 
@@ -58,7 +58,7 @@ bool ChatHandler::HandleTicketListAllCommand(const char* /*args*/, WorldSession*
         Field* fields = result->Fetch();
         sstext << "TicketID: " << fields[0].GetUInt16()
             << " | Player: " << fields[2].GetString()
-            << " | Opened: " << Util::GetDateStringFromSeconds((uint32)UNIXTIME - fields[9].GetUInt32())
+            << " | Opened: " << Util::GetDateStringFromSeconds((uint32_t)UNIXTIME - fields[9].GetUInt32())
             << '\n';
     } while (result->NextRow());
 
@@ -77,7 +77,7 @@ bool ChatHandler::HandleTicketGetCommand(const char* args, WorldSession* m_sessi
         return false;
     }
 
-    uint32 ticketID = atol(args);
+    uint32_t ticketID = atol(args);
 
     QueryResult* result = CharacterDatabase.Query("SELECT * FROM gm_tickets WHERE ticketid = %u", ticketID);
 
@@ -101,11 +101,11 @@ bool ChatHandler::HandleTicketGetCommand(const char* args, WorldSession* m_sessi
 void ParseTicketArgs(char* args, char** insertComment)
 {
     char* Comment = strchr(args, ' ');
-    if (Comment != NULL)
+    if (Comment != nullptr)
     {
         if (isdigit(*(Comment + 1)))       // this is the duration of the ban
         {
-            *Comment = 0;                  // NULL-terminate the first string (character/account/ip)
+            *Comment = 0;                  // nullptr-terminate the first string (character/account/ip)
             ++Comment;                     // point to next arg
         }
     }
@@ -130,7 +130,7 @@ bool ChatHandler::HandleTicketCloseCommand(const char* args, WorldSession* m_ses
         return false;
     }
 
-    uint32 ticketID = atol(args);
+    uint32_t ticketID = atol(args);
 
     Player* player = m_session->GetPlayer();
 
@@ -141,7 +141,7 @@ bool ChatHandler::HandleTicketCloseCommand(const char* args, WorldSession* m_ses
         return false;
     }
     Field* fields = result->Fetch();
-    uint32 playerGuid = fields[1].GetUInt32();
+    uint32_t playerGuid = fields[1].GetUInt32();
 
     GM_Ticket* gm_ticket = sTicketMgr.getGMTicketByPlayer(playerGuid);
     if (gm_ticket == nullptr)
@@ -186,7 +186,7 @@ bool ChatHandler::HandleTicketDeleteCommand(const char* args, WorldSession* m_se
         return false;
     }
 
-    uint32 ticketID = atol(args);
+    uint32_t ticketID = atol(args);
 
     QueryResult* result = CharacterDatabase.Query("SELECT * FROM gm_tickets WHERE ticketid = %u AND deleted = 1", ticketID);
     if (!result)

@@ -1,23 +1,7 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "Chat/ChatDefines.hpp"
 #include "Chat/ChatHandler.hpp"
@@ -41,7 +25,7 @@ bool ChatHandler::HandleCreateInstanceCommand(const char* args, WorldSession* m_
         return true;
 
     float x, y, z;
-    uint32 mapid;
+    uint32_t mapid;
 
     if (sscanf(args, "%u %f %f %f", &mapid, &x, &y, &z) != 4)
         return false;
@@ -68,7 +52,7 @@ bool ChatHandler::HandleCountCreaturesCommand(const char* args, WorldSession* m_
     if (plr == nullptr)
         return true;
 
-    uint32 entry;
+    uint32_t entry;
     if (sscanf(args, "%u", &entry) != 1)
         return false;
 
@@ -99,7 +83,7 @@ bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m
         return false;
 
     bool userInput = true;
-    uint32 instanceId = (args ? atoi(args) : 0);
+    uint32_t instanceId = (args ? atoi(args) : 0);
     if (instanceId == 0)
     {
         userInput = false;
@@ -131,7 +115,7 @@ bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m
     ss << "Persistent: " << MSG_COLOR_CYAN << (save->canReset() ? "No" : "Yes") << "|r\n";
     if (instance->getBaseMap()->getMapInfo() != nullptr)
     {
-        ss << "Type: " << MSG_COLOR_CYAN << GetMapTypeString(static_cast<uint8>(instance->getBaseMap()->getMapInfo()->type)) << "|r";
+        ss << "Type: " << MSG_COLOR_CYAN << GetMapTypeString(static_cast<uint8_t>(instance->getBaseMap()->getMapInfo()->type)) << "|r";
 
         if (instance->getBaseMap()->getMapInfo()->isMultimodeDungeon())
         {
@@ -147,9 +131,9 @@ bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m
     }
     //ss << "Created: " << MSG_COLOR_CYAN << Util::GetDateTimeStringFromTimeStamp(0) << "|r\n";
     if (save->getResetTime() != 0)
-        ss << "Expires: " << MSG_COLOR_CYAN << Util::GetDateTimeStringFromTimeStamp((uint32)save->getResetTime()) << "|r\n";
+        ss << "Expires: " << MSG_COLOR_CYAN << Util::GetDateTimeStringFromTimeStamp((uint32_t)save->getResetTime()) << "|r\n";
 
-    if (instance == NULL)
+    if (instance == nullptr)
     {
         ss << "Status: " << MSG_COLOR_LIGHTRED << "Shut Down|r\n";
     }
@@ -178,9 +162,9 @@ bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m
 //.instance reset
 bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_session)
 {
-    uint32 instanceId;
+    uint32_t instanceId;
     int argc = 1;
-    char* playername = NULL;
+    char* playername = nullptr;
     char* guidString = (char*)args;
 
     // Parse arguments
@@ -272,7 +256,7 @@ bool ChatHandler::HandleResetAllInstancesCommand(const char* args, WorldSession*
 //.instance shutdown
 bool ChatHandler::HandleShutdownInstanceCommand(const char* args, WorldSession* m_session)
 {
-    uint32 instanceId = (args ? atoi(args) : 0);
+    uint32_t instanceId = (args ? atoi(args) : 0);
     if (instanceId == 0)
         return false;
 

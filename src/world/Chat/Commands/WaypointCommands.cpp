@@ -48,10 +48,10 @@ bool ChatHandler::HandleWayPointAddCommand(const char* args, WorldSession* m_ses
     uint32_t pathId = creature_target->getWaypointPath();
 
     char* pWaitTime = strtok((char*)args, " ");
-    uint32 WaitTime = (pWaitTime) ? atoi(pWaitTime) : 10000;
+    uint32_t WaitTime = (pWaitTime) ? atoi(pWaitTime) : 10000;
 
-    char* pFlags = strtok(NULL, " ");
-    uint32 Flags = (pFlags) ? atoi(pFlags) : 0;
+    char* pFlags = strtok(nullptr, " ");
+    uint32_t Flags = (pFlags) ? atoi(pFlags) : 0;
 
     bool showing = ai->isShowWayPointsActive();
 
@@ -69,7 +69,7 @@ bool ChatHandler::HandleWayPointAddCommand(const char* args, WorldSession* m_ses
     }
 
     WaypointNode waypoint;
-    waypoint.id = uint32(ai->getWayPointsCount() + 1);
+    waypoint.id = uint32_t(ai->getWayPointsCount() + 1);
     waypoint.x = player->GetPositionX();
     waypoint.y = player->GetPositionY();
     waypoint.z = player->GetPositionZ();
@@ -102,7 +102,7 @@ bool ChatHandler::HandleWayPointAddCommand(const char* args, WorldSession* m_ses
 //.waypoint delete
 bool ChatHandler::HandleWayPointDeleteCommand(const char* /*args*/, WorldSession* m_session)
 {
-    uint32 wpid = GetSelectedWayPointId(m_session);
+    uint32_t wpid = GetSelectedWayPointId(m_session);
     Player* player = m_session->GetPlayer();
     AIInterface* ai = player->m_aiInterfaceWaypoint;
     if (ai == nullptr || !ai->getUnit())

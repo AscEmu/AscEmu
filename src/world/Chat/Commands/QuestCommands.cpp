@@ -1,23 +1,7 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "Chat/ChatHandler.hpp"
 #include "Management/ItemInterface.h"
@@ -37,15 +21,13 @@
 #include "Server/Script/QuestScript.hpp"
 #include "Storage/MySQLDataStore.hpp"
 
-class ChatHandler;
-
-uint32 GetQuestIDFromLink(const char* questlink)
+uint32_t GetQuestIDFromLink(const char* questlink)
 {
-    if (questlink == NULL)
+    if (questlink == nullptr)
         return 0;
 
     const char* ptr = strstr(questlink, "|Hquest:");
-    if (ptr == NULL)
+    if (ptr == nullptr)
     {
         return 0;
     }
@@ -105,7 +87,7 @@ bool ChatHandler::HandleQuestStatusCommand(const char* args, WorldSession* m_ses
     if (plr == nullptr)
         return true;
 
-    uint32 quest_id = atol(args);
+    uint32_t quest_id = atol(args);
     if (quest_id == 0)
     {
         quest_id = GetQuestIDFromLink(args);
@@ -151,7 +133,7 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
     if (player == nullptr)
         return true;
 
-    uint32 quest_id = atol(args);
+    uint32_t quest_id = atol(args);
     if (quest_id == 0)
     {
         quest_id = GetQuestIDFromLink(args);
@@ -248,10 +230,10 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
     if (plr == nullptr)
         return true;
 
-    uint32 quest_id = atol(args);
+    uint32_t quest_id = atol(args);
     // reward_slot is for when quest has choice of rewards (0 is the first choice, 1 is the second choice, ...)
     // reward_slot will default to 0 if none is specified
-    uint32 reward_slot;
+    uint32_t reward_slot;
     if (quest_id == 0)
     {
         quest_id = GetQuestIDFromLink(args);
@@ -272,7 +254,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
         reward_slot = 0;
     }
     // currently Quest::reward_choiceitem declaration is
-    // uint32 reward_choiceitem[6];
+    // uint32_t reward_choiceitem[6];
     // so reward_slot must be 0 to 5
     if (reward_slot > 5)
         reward_slot = 0;
@@ -289,7 +271,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
         {
             if (auto* questLog = plr->getQuestLogByQuestId(quest_id))
             {
-                uint32 giver_id = 0;
+                uint32_t giver_id = 0;
                 QueryResult* creatureResult = sMySQLStore.getWorldDBQuery("SELECT id FROM creature_quest_starter WHERE quest = %u AND min_build <= %u AND max_build >= %u", quest_id, VERSION_STRING, VERSION_STRING);
 
                 if (creatureResult)
@@ -353,16 +335,16 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
 
             // Quest Rewards : Copied from QuestMgr::OnQuestFinished()
             // Reputation reward
-            for (uint8 z = 0; z < 6; z++)
+            for (uint8_t z = 0; z < 6; z++)
             {
                 if (qst->reward_repfaction[z])
                 {
-                    int32 amt = 0;
-                    uint32 fact = qst->reward_repfaction[z];
+                    int32_t amt = 0;
+                    uint32_t fact = qst->reward_repfaction[z];
                     if (qst->reward_repvalue[z])
                         amt = qst->reward_repvalue[z];
 
-                    if (qst->reward_replimit && (plr->getFactionStanding(fact) >= (int32)qst->reward_replimit))
+                    if (qst->reward_replimit && (plr->getFactionStanding(fact) >= (int32_t)qst->reward_replimit))
                         continue;
 
                     amt = Util::float2int32(amt * worldConfig.getFloatRate(RATE_QUESTREPUTATION));
@@ -370,7 +352,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                 }
             }
             // Static Item reward
-            for (uint8 i = 0; i < 4; ++i)
+            for (uint8_t i = 0; i < 4; ++i)
             {
                 if (qst->reward_item[i])
                 {
@@ -387,14 +369,14 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                             auto slotresult = plr->getItemInterface()->FindFreeInventorySlot(proto);
                             if (!slotresult.Result)
                             {
-                                plr->getItemInterface()->buildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+                                plr->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
                             }
                             else
                             {
                                 auto* item = sObjectMgr.createItem(qst->reward_item[i], plr);
                                 if (item)
                                 {
-                                    item->setStackCount(uint32(qst->reward_itemcount[i]));
+                                    item->setStackCount(uint32_t(qst->reward_itemcount[i]));
                                     if (!plr->getItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
                                     {
                                         item->deleteMe();
@@ -426,14 +408,14 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                         auto slotresult = plr->getItemInterface()->FindFreeInventorySlot(proto);
                         if (!slotresult.Result)
                         {
-                            plr->getItemInterface()->buildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+                            plr->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
                         }
                         else
                         {
                             auto item = sObjectMgr.createItem(qst->reward_choiceitem[reward_slot], plr);
                             if (item)
                             {
-                                item->setStackCount(uint32(qst->reward_choiceitemcount[reward_slot]));
+                                item->setStackCount(uint32_t(qst->reward_choiceitemcount[reward_slot]));
                                 if (!plr->getItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
                                 {
                                     item->deleteMe();
@@ -452,7 +434,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
             if (qst->is_repeatable == DEFINE_QUEST_REPEATABLE_DAILY)
                 plr->addQuestIdToFinishedDailies(qst->id);
             // Remove quests that are listed to be removed on quest complete.
-            std::set<uint32>::iterator iter = qst->remove_quest_list.begin();
+            std::set<uint32_t>::iterator iter = qst->remove_quest_list.begin();
             for (; iter != qst->remove_quest_list.end(); ++iter)
             {
                 if (!plr->hasQuestFinished((*iter)))
@@ -537,11 +519,11 @@ bool ChatHandler::HandleQuestItemCommand(const char* args, WorldSession* m_sessi
     recout = "|cff00ff00Quest item matches: itemid: count -> Name\n\n";
     SendMultilineMessage(m_session, recout.c_str());
 
-    uint32 count = 0;
+    uint32_t count = 0;
     do
     {
         Field* fields = result->Fetch();
-        uint32 id = fields[0].GetUInt32();
+        uint32_t id = fields[0].GetUInt32();
         std::string itemid = MyConvertIntToString(id);
         std::string itemcnt = MyConvertIntToString(fields[1].GetUInt32());
         auto tmpItem = sMySQLStore.getItemProperties(id);
@@ -696,7 +678,7 @@ bool ChatHandler::HandleQuestGiverCommand(const char* args, WorldSession* m_sess
 
 bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_session)
 {
-    uint32 quest_giver = 0;
+    uint32_t quest_giver = 0;
     if (*args)
         quest_giver = atol(args);
     else
@@ -731,8 +713,8 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
     std::string recout = "|cff00ff00Quest matches: id: title\n\n";
     SendMultilineMessage(m_session, recout.c_str());
 
-    uint32 count = 0;
-    uint32 quest_id = 0;
+    uint32_t count = 0;
+    uint32_t quest_id = 0;
     QuestProperties const* qst;
     Field* fields;
 
@@ -753,7 +735,7 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
             quest_id = fields[0].GetUInt32();
 
             qst = sMySQLStore.getQuestProperties(quest_id);
-            if (qst == NULL)
+            if (qst == nullptr)
                 continue;
 
             std::string qid = MyConvertIntToString(quest_id);
@@ -816,7 +798,7 @@ bool ChatHandler::HandleQuestAddStartCommand(const char* args, WorldSession* m_s
         return false;
     }
 
-    uint32 quest_id = atol(args);
+    uint32_t quest_id = atol(args);
     if (quest_id == 0)
     {
         quest_id = GetQuestIDFromLink(args);
@@ -854,10 +836,10 @@ bool ChatHandler::HandleQuestAddStartCommand(const char* args, WorldSession* m_s
     qstrel->qst = qst;
     qstrel->type = QUESTGIVER_QUEST_START;
 
-    uint8 qstrelid;
+    uint8_t qstrelid;
     if (unit->HasQuests())
     {
-        qstrelid = (uint8)unit->GetQuestRelation(quest_id);
+        qstrelid = (uint8_t)unit->GetQuestRelation(quest_id);
         unit->DeleteQuest(qstrel);
     }
 
@@ -902,7 +884,7 @@ bool ChatHandler::HandleQuestAddFinishCommand(const char* args, WorldSession* m_
         return false;
     }
 
-    uint32 quest_id = atol(args);
+    uint32_t quest_id = atol(args);
     if (quest_id == 0)
     {
         quest_id = GetQuestIDFromLink(args);
@@ -940,10 +922,10 @@ bool ChatHandler::HandleQuestAddFinishCommand(const char* args, WorldSession* m_
     qstrel->qst = qst;
     qstrel->type = QUESTGIVER_QUEST_END;
 
-    uint8 qstrelid;
+    uint8_t qstrelid;
     if (unit->HasQuests())
     {
-        qstrelid = (uint8)unit->GetQuestRelation(quest_id);
+        qstrelid = (uint8_t)unit->GetQuestRelation(quest_id);
         unit->DeleteQuest(qstrel);
     }
 
@@ -1001,7 +983,7 @@ bool ChatHandler::HandleQuestDelStartCommand(const char* args, WorldSession* m_s
         return false;
     }
 
-    uint32 quest_id = atol(args);
+    uint32_t quest_id = atol(args);
     if (quest_id == 0)
     {
         quest_id = GetQuestIDFromLink(args);
@@ -1039,10 +1021,10 @@ bool ChatHandler::HandleQuestDelStartCommand(const char* args, WorldSession* m_s
     qstrel->qst = qst;
     qstrel->type = QUESTGIVER_QUEST_START;
 
-    uint8 qstrelid;
+    uint8_t qstrelid;
     if (unit->HasQuests())
     {
-        qstrelid = (uint8)unit->GetQuestRelation(quest_id);
+        qstrelid = (uint8_t)unit->GetQuestRelation(quest_id);
         unit->DeleteQuest(qstrel);
     }
     unit->_LoadQuests();
@@ -1085,7 +1067,7 @@ bool ChatHandler::HandleQuestDelFinishCommand(const char* args, WorldSession* m_
         return false;
     }
 
-    uint32 quest_id = atol(args);
+    uint32_t quest_id = atol(args);
     if (quest_id == 0)
     {
         quest_id = GetQuestIDFromLink(args);
@@ -1123,10 +1105,10 @@ bool ChatHandler::HandleQuestDelFinishCommand(const char* args, WorldSession* m_
     qstrel->qst = qst;
     qstrel->type = QUESTGIVER_QUEST_END;
 
-    uint8 qstrelid;
+    uint8_t qstrelid;
     if (unit->HasQuests())
     {
-        qstrelid = (uint8)unit->GetQuestRelation(quest_id);
+        qstrelid = (uint8_t)unit->GetQuestRelation(quest_id);
         unit->DeleteQuest(qstrel);
     }
 
@@ -1325,7 +1307,7 @@ bool ChatHandler::HandleQuestStarterSpawnCommand(const char* args, WorldSession*
     }
 
     Field* fields = spawnResult->Fetch();
-    uint32 locmap = fields[0].GetUInt32();
+    uint32_t locmap = fields[0].GetUInt32();
     float x = fields[1].GetFloat();
     float y = fields[2].GetFloat();
     float z = fields[3].GetFloat();
@@ -1396,7 +1378,7 @@ bool ChatHandler::HandleQuestFinisherSpawnCommand(const char* args, WorldSession
     }
 
     Field* fields = spawnResult->Fetch();
-    uint32 locmap = fields[0].GetUInt32();
+    uint32_t locmap = fields[0].GetUInt32();
     float x = fields[1].GetFloat();
     float y = fields[2].GetFloat();
     float z = fields[3].GetFloat();
@@ -1456,7 +1438,7 @@ bool ChatHandler::HandleQuestRemoveCommand(const char* args, WorldSession* m_ses
         return true;
 
     std::string recout = "";
-    uint32 quest_id = atol(args);
+    uint32_t quest_id = atol(args);
     if (quest_id == 0)
     {
         quest_id = GetQuestIDFromLink(args);
@@ -1484,7 +1466,7 @@ bool ChatHandler::HandleQuestRewardCommand(const char* args, WorldSession* m_ses
 
     std::stringstream recout;
 
-    uint32 qu_id = atol(args);
+    uint32_t qu_id = atol(args);
     if (qu_id == 0)
     {
         qu_id = GetQuestIDFromLink(args);
@@ -1495,9 +1477,9 @@ bool ChatHandler::HandleQuestRewardCommand(const char* args, WorldSession* m_ses
     QuestProperties const* q = sMySQLStore.getQuestProperties(qu_id);
     if (q)
     {
-        for (uint32 r = 0; r < q->count_reward_item; ++r)
+        for (uint32_t r = 0; r < q->count_reward_item; ++r)
         {
-            uint32 itemid = q->reward_item[r];
+            uint32_t itemid = q->reward_item[r];
             ItemProperties const* itemProto = sMySQLStore.getItemProperties(itemid);
             if (!itemProto)
             {
@@ -1513,9 +1495,9 @@ bool ChatHandler::HandleQuestRewardCommand(const char* args, WorldSession* m_ses
                     recout << "[x" << q->reward_itemcount[r] << "]\n";
             }
         }
-        for (uint32 r = 0; r < q->count_reward_choiceitem; ++r)
+        for (uint32_t r = 0; r < q->count_reward_choiceitem; ++r)
         {
-            uint32 itemid = q->reward_choiceitem[r];
+            uint32_t itemid = q->reward_choiceitem[r];
             ItemProperties const* itemProto = sMySQLStore.getItemProperties(itemid);
             if (!itemProto)
             {

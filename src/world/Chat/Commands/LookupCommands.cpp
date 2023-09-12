@@ -80,13 +80,13 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
     AscEmu::Util::Strings::toLowerCase(x);
     GreenSystemMessage(m_session, "Starting search of achievement `%s`...", x.c_str());
     auto startTime = Util::TimeNow();
-    uint32 i, j, numFound = 0;
+    uint32_t i, j, numFound = 0;
     std::string y, recout;
     char playerGUID[17];
     snprintf(playerGUID, 17, "%llu", m_session->GetPlayer()->getGuid());
     if (lookupname || lookupdesc || lookupreward)
     {
-        std::set<uint32> foundList;
+        std::set<uint32_t> foundList;
         j = sAchievementStore.getNumRows();
         bool foundmatch;
         for (i = 0; i < j && numFound < 25; ++i)
@@ -190,7 +190,7 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
     } // lookup name or description
     if (lookupcriteria && numFound < 25)
     {
-        std::set<uint32> foundList;
+        std::set<uint32_t> foundList;
         j = sAchievementCriteriaStore.getNumRows();
         for (i = 0; i < j && numFound < 25; ++i)
         {
@@ -308,7 +308,7 @@ bool ChatHandler::HandleLookupCreatureCommand(const char* args, WorldSession* m_
     BlueSystemMessage(m_session, "Starting search of creature `%s`...", x.c_str());
     auto startTime = Util::TimeNow();
 
-    uint32 count = 0;
+    uint32_t count = 0;
 
     MySQLDataStore::CreaturePropertiesContainer const* its = sMySQLStore.getCreaturePropertiesStore();
     for (MySQLDataStore::CreaturePropertiesContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
@@ -364,8 +364,8 @@ bool ChatHandler::HandleLookupFactionCommand(const char* args, WorldSession* m_s
 
     GreenSystemMessage(m_session, "Starting search of faction `%s`...", x.c_str());
     auto startTime = Util::TimeNow();
-    uint32 count = 0;
-    for (uint32 index = 0; index < sFactionStore.getNumRows(); ++index)
+    uint32_t count = 0;
+    for (uint32_t index = 0; index < sFactionStore.getNumRows(); ++index)
     {
         WDB::Structures::FactionEntry const* faction = sFactionStore.lookupEntry(index);
         if (faction != nullptr)
@@ -414,7 +414,7 @@ bool ChatHandler::HandleLookupItemCommand(const char* args, WorldSession* m_sess
     BlueSystemMessage(m_session, "Starting search of item `%s`...", x.c_str());
     auto startTime = Util::TimeNow();
 
-    uint32 count = 0;
+    uint32_t count = 0;
 
     MySQLDataStore::ItemPropertiesContainer const* its = sMySQLStore.getItemPropertiesStore();
     for (MySQLDataStore::ItemPropertiesContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
@@ -465,7 +465,7 @@ bool ChatHandler::HandleLookupObjectCommand(const char* args, WorldSession* m_se
     GreenSystemMessage(m_session, "Starting search of object `%s`...", x.c_str());
     auto startTime = Util::TimeNow();
     GameObjectProperties const* gameobject_info;
-    uint32 count = 0;
+    uint32_t count = 0;
     std::string y;
     std::string recout;
 
@@ -526,7 +526,7 @@ bool ChatHandler::HandleLookupQuestCommand(const char* args, WorldSession* m_ses
     BlueSystemMessage(m_session, "Starting search of quests `%s`...", search_string.c_str());
     auto startTime = Util::TimeNow();
     std::string recout;
-    uint32 count = 0;
+    uint32_t count = 0;
 
     MySQLDataStore::QuestPropertiesContainer const* its = sMySQLStore.getQuestPropertiesStore();
     for (MySQLDataStore::QuestPropertiesContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
@@ -599,7 +599,7 @@ bool ChatHandler::HandleLookupSpellCommand(const char* args, WorldSession* m_ses
 
     GreenSystemMessage(m_session, "Starting search of spell `%s`...", x.c_str());
     auto startTime = Util::TimeNow();
-    uint32 count = 0;
+    uint32_t count = 0;
     std::string recout;
     char itoabuf[12];
     for (auto it = sSpellMgr.getSpellInfoMap()->begin(); it != sSpellMgr.getSpellInfoMap()->end(); ++it)
@@ -654,8 +654,8 @@ bool ChatHandler::HandleLookupSkillCommand(const char* args, WorldSession* m_ses
 
     GreenSystemMessage(m_session, "Starting search of skill `%s`...", x.c_str());
     auto startTime = Util::TimeNow();
-    uint32 count = 0;
-    for (uint32 index = 0; index < sSkillLineStore.getNumRows(); ++index)
+    uint32_t count = 0;
+    for (uint32_t index = 0; index < sSkillLineStore.getNumRows(); ++index)
     {
         auto skill_line = sSkillLineStore.lookupEntry(index);
         if (skill_line == nullptr)

@@ -59,7 +59,7 @@ bool ChatHandler::HandleBGMenuCommand(const char* args, WorldSession* m_session)
     if (!*args)
         return false;
 
-    uint32 type = atoi(args);
+    uint32_t type = atoi(args);
     if (type >= BATTLEGROUND_NUM_TYPES)
         return false;
 
@@ -102,7 +102,7 @@ bool ChatHandler::HandleBGSendStatusCommand(const char* args, WorldSession* m_se
     if (!*args)
         return false;
 
-    uint32 type = atoi(args);
+    uint32_t type = atoi(args);
     sBattlegroundManager.sendBattlefieldStatus(m_session->GetPlayer(), BattlegroundDef::STATUS_INQUEUE, type, 0, 0, m_session->GetPlayer()->GetMapId(), 0);
     return true;
 }
@@ -118,7 +118,7 @@ bool ChatHandler::HandleBGSetScoreCommand(const char* /*args*/, WorldSession* m_
 //.battleground setworldstate
 bool ChatHandler::HandleBGSetWorldStateCommand(const char* args, WorldSession* m_session)
 {
-    uint32 id, val;
+    uint32_t id, val;
     if (sscanf(args, "%u %u", &id, &val) != 2)
     {
         RedSystemMessage(m_session, ".battleground setworldstate rquires at least 2 values!");
@@ -135,7 +135,7 @@ bool ChatHandler::HandleBGSetWorldStateCommand(const char* args, WorldSession* m
 //.battleground setworldstates
 bool ChatHandler::HandleBGSetWorldStatesCommand(const char* args, WorldSession* m_session)
 {
-    uint32 first, last, val;
+    uint32_t first, last, val;
     if (sscanf(args, "%u %u %u", &first, &last, &val) != 3)
     {
         RedSystemMessage(m_session, ".battleground setworldstates rquires at least 3 values!");
@@ -144,7 +144,7 @@ bool ChatHandler::HandleBGSetWorldStatesCommand(const char* args, WorldSession* 
     }
 
     if (m_session->GetPlayer()->getBattleground())
-        for (uint32 i = first; i < last; i++)
+        for (uint32_t i = first; i < last; i++)
             m_session->GetPlayer()->getBattleground()->setWorldState(i, val);
 
     return true;

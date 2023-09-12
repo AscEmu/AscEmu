@@ -34,12 +34,12 @@ bool ChatHandler::HandleGuildCreateCommand(const char* args, WorldSession* m_ses
     {
         // send message to user
         char buf[256];
-        snprintf((char*)buf, 256, "The name was too long by %u", (uint32)strlen(args) - 75);
+        snprintf((char*)buf, 256, "The name was too long by %u", (uint32_t)strlen(args) - 75);
         SystemMessage(m_session, buf);
         return true;
     }
 
-    for (uint32 i = 0; i < strlen(args); i++)
+    for (uint32_t i = 0; i < strlen(args); i++)
     {
         if (!isalpha(args[i]) && args[i] != ' ')
         {
@@ -126,7 +126,7 @@ bool ChatHandler::HandleGuildJoinCommand(const char* args, WorldSession* m_sessi
     Guild* guild = sGuildMgr.getGuildByName(std::string(args));
     if (guild != nullptr)
     {
-        uint32 memberCount = guild->getMembersCount();
+        uint32_t memberCount = guild->getMembersCount();
 
         if (worldConfig.guild.maxMembers > 0 && memberCount >= worldConfig.guild.maxMembers)
         {

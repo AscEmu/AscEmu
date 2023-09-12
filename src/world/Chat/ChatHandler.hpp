@@ -221,8 +221,6 @@ public:
     bool HandleDistanceCommand(const char* args, WorldSession* m_session);
     bool HandleAIMoveCommand(const char* args, WorldSession* m_session);
     bool HandleFaceCommand(const char* args, WorldSession* m_session);
-    bool HandleSetBytesCommand(const char* args, WorldSession* m_session);
-    bool HandleGetBytesCommand(const char* args, WorldSession* m_session);
     bool HandleDebugLandWalk(const char* args, WorldSession* m_session);
     bool HandleAggroRangeCommand(const char* args, WorldSession* m_session);
     bool HandleKnockBackCommand(const char* args, WorldSession* m_session);
@@ -231,9 +229,6 @@ public:
     bool HandleMoveFallCommand(const char* args, WorldSession* m_session);
     bool HandleThreatListCommand(const char* args, WorldSession* m_session);
     bool HandlePlayMovie(const char* args, WorldSession* m_session);
-    bool HandleSendItemPushResult(const char* args, WorldSession* m_session);
-    bool HandleModifyBitCommand(const char* args, WorldSession* m_session);
-    bool HandleModifyValueCommand(const char* args, WorldSession* m_session);
     bool HandleDebugDumpCoordsCommmand(const char* args, WorldSession* m_session);
     bool HandleDebugSpawnWarCommand(const char* args, WorldSession* m_session);
     bool HandleUpdateWorldStateCommand(const char* args, WorldSession* session);
@@ -247,9 +242,6 @@ public:
     bool HandleCollisionTestLOS(const char* args, WorldSession* m_session);
     bool HandleCollisionGetHeight(const char* args, WorldSession* m_session);
     bool HandleGetDeathState(const char* args, WorldSession* m_session);
-    bool HandleAIAgentDebugSkip(const char* args, WorldSession* m_session);
-    bool HandleAIAgentDebugContinue(const char* args, WorldSession* m_session);
-    bool HandleAIAgentDebugBegin(const char* args, WorldSession* m_session);
     bool HandleCastSpellCommand(const char* args, WorldSession* m_session);
     bool HandleCastSpellNECommand(const char* args, WorldSession* m_session);
     bool HandleCastSelfCommand(const char* args, WorldSession* m_session);
@@ -466,7 +458,6 @@ public:
     bool HandleReviveCommand(const char* args, WorldSession* m_session);
     bool HandleUnrootCommand(const char* /*args*/, WorldSession* m_session);
     bool HandleRootCommand(const char* /*args*/, WorldSession* m_session);
-    bool HandleAutoSaveChangesCommand(const char* /*args*/, WorldSession* m_session);
     bool HandleDismountCommand(const char* /*args*/, WorldSession* m_session);
     bool HandleMountCommand(const char* args, WorldSession* m_session);
     bool HandleWorldPortCommand(const char* args, WorldSession* m_session);

@@ -8,9 +8,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"
 
-uint8 ChatHandler::GetArenaTeamInternalType(uint32 type, WorldSession* m_session)
+uint8_t ChatHandler::GetArenaTeamInternalType(uint32_t type, WorldSession* m_session)
 {
-    uint8 internal_type;
+    uint8_t internal_type;
     switch (type)
     {
         case 2:
@@ -82,7 +82,7 @@ bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_sessio
 
 bool ChatHandler::HandleArenaSetTeamLeader(const char* args, WorldSession* m_session)
 {
-    uint32 team_type;
+    uint32_t team_type;
 
     auto player = GetSelectedPlayer(m_session, true, true);
     if (sscanf(args, "%u", &team_type) != 1)
@@ -91,7 +91,7 @@ bool ChatHandler::HandleArenaSetTeamLeader(const char* args, WorldSession* m_ses
         return true;
     }
 
-    uint8 internal_type = GetArenaTeamInternalType(team_type, m_session);
+    uint8_t internal_type = GetArenaTeamInternalType(team_type, m_session);
     if (internal_type == 10)
         return true;
 

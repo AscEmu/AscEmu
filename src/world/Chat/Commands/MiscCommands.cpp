@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatHandler.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Management/Battleground/Battleground.hpp"
-#include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/Player.hpp"
@@ -34,7 +33,7 @@ bool ChatHandler::HandleMountCommand(const char* args, WorldSession* m_session)
         return true;
     }
 
-    uint32 modelid = atol(args);
+    uint32_t modelid = atol(args);
     if (!modelid)
     {
         RedSystemMessage(m_session, "No model specified!");
@@ -80,7 +79,7 @@ bool ChatHandler::HandleDismountCommand(const char* /*args*/, WorldSession* m_se
 //.gocreature
 bool ChatHandler::HandleGoCreatureSpawnCommand(const char* args, WorldSession* m_session)
 {
-    uint32 spawn_id;
+    uint32_t spawn_id;
     if (sscanf(args, "%u", &spawn_id) != 1)
     {
         RedSystemMessage(m_session, "Command must be in format: .gocreature <creature_spawnid>.");
@@ -106,7 +105,7 @@ bool ChatHandler::HandleGoCreatureSpawnCommand(const char* args, WorldSession* m
 //.gogameobject
 bool ChatHandler::HandleGoGameObjectSpawnCommand(const char* args, WorldSession* m_session)
 {
-    uint32 spawn_id;
+    uint32_t spawn_id;
     if (sscanf(args, "%u", &spawn_id) != 1)
     {
         RedSystemMessage(m_session, "Command must be in format: .gogameobject <gameobject_spawnid>.");
@@ -137,8 +136,8 @@ bool ChatHandler::HandleGoStartLocationCommand(const char* args, WorldSession* m
         return true;
 
     std::string race;
-    uint8 raceid = 0;
-    uint8 classid = 0;
+    uint8_t raceid = 0;
+    uint8_t classid = 0;
 
     if (strlen(args) > 0)
     {
@@ -191,7 +190,7 @@ bool ChatHandler::HandleGoStartLocationCommand(const char* args, WorldSession* m
     }
 
     PlayerCreateInfo const* player_info = nullptr;
-    for (uint8 i = 1; i <= 11; ++i)
+    for (uint8_t i = 1; i <= 11; ++i)
     {
         player_info = sMySQLStore.getPlayerCreateInfo((raceid ? raceid : i), (classid ? classid : i));
         if (player_info != nullptr)
@@ -213,8 +212,8 @@ bool ChatHandler::HandleGoStartLocationCommand(const char* args, WorldSession* m
 //.gotrig
 bool ChatHandler::HandleGoTriggerCommand(const char* args, WorldSession* m_session)
 {
-    uint32 trigger_id;
-    int32 instance_id = 0;
+    uint32_t trigger_id;
+    int32_t instance_id = 0;
 
     if (sscanf(args, "%u %d", &trigger_id, &instance_id) < 1)
     {
@@ -411,7 +410,7 @@ bool ChatHandler::HandleKickByNameCommand(const char* args, WorldSession* m_sess
     auto player_target = sObjectMgr.getPlayer(player_name, false);
     if (player_target != nullptr)
     {
-        char* reason = strtok(NULL, "\n");
+        char* reason = strtok(nullptr, "\n");
         std::string kickreason = "No reason";
 
         if (reason)
@@ -493,7 +492,7 @@ bool ChatHandler::HandleKickByIPCommand(const char* args, WorldSession* m_sessio
 bool ChatHandler::HandleWorldPortCommand(const char* args, WorldSession* m_session)
 {
     float x, y, z, o = 0.0f;
-    uint32 mapid;
+    uint32_t mapid;
 
     if (sscanf(args, "%u %f %f %f %f", &mapid, &x, &y, &z, &o) < 4)
     {
@@ -517,7 +516,7 @@ bool ChatHandler::HandleWorldPortCommand(const char* args, WorldSession* m_sessi
 bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
 {
     Object* obj;
-    uint64 guid = m_session->GetPlayer()->getTargetGuid();
+    uint64_t guid = m_session->GetPlayer()->getTargetGuid();
     if (guid != 0)
     {
         if ((obj = m_session->GetPlayer()->getWorldMap()->getUnit(guid)) == 0)
@@ -540,8 +539,8 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
     }
 
     auto out_map_id = obj->GetMapId();
-    auto out_zone_id = at->zone; // uint32 at_old->ZoneId
-    auto out_area_id = at->id; // uint32 at_old->AreaId
+    auto out_zone_id = at->zone; // uint32_t at_old->ZoneId
+    auto out_area_id = at->id; // uint32_t at_old->AreaId
     auto out_phase = obj->GetPhase();
     auto out_x = obj->GetPositionX();
     auto out_y = obj->GetPositionY();
@@ -566,7 +565,7 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
 #endif
 
     // ".gps 1" will save gps info to file logs/gps.log - This probably isn't very multithread safe so don't have many gms spamming it!
-    if (args != NULL && *args == '1')
+    if (args != nullptr && *args == '1')
     {
         FILE* gpslog = fopen(AscEmu::Logging::getFormattedFileName("logs", "gps", false).c_str(), "at");
         if (gpslog)
@@ -777,7 +776,7 @@ bool ChatHandler::HandleAppearCommand(const char* args, WorldSession* m_session)
             SystemMessage(m_session, "%s has blocked other GMs from appearing to them.", chr->getName().c_str());
             return true;
         }
-        if (chr->getWorldMap() == NULL)
+        if (chr->getWorldMap() == nullptr)
         {
             SystemMessage(m_session, "%s is already being teleported.", chr->getName().c_str());
             return true;
@@ -856,7 +855,7 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession* m_session)
             SystemMessage(m_session, buf);
             return true;
         }
-        if (chr->getWorldMap() == NULL)
+        if (chr->getWorldMap() == nullptr)
         {
             snprintf((char*)buf, 256, "%s is already being teleported.", chr->getName().c_str());
             SystemMessage(m_session, buf);
@@ -1120,24 +1119,24 @@ bool ChatHandler::HandleUnBanCharacterCommand(const char* args, WorldSession* m_
 void ParseBanArgs(char* args, char** BanDuration, char** BanReason)
 {
     char* pBanDuration = strchr(args, ' ');
-    char* pReason = NULL;
-    if (pBanDuration != NULL)
+    char* pReason = nullptr;
+    if (pBanDuration != nullptr)
     {
         if (isdigit(*(pBanDuration + 1)))       // this is the duration of the ban
         {
-            *pBanDuration = 0;                  // NULL-terminate the first string (character/account/ip)
+            *pBanDuration = 0;                  // nullptr-terminate the first string (character/account/ip)
             ++pBanDuration;                     // point to next arg
             pReason = strchr(pBanDuration + 1, ' ');
-            if (pReason != NULL)                // BanReason is OPTIONAL
+            if (pReason != nullptr)                // BanReason is OPTIONAL
             {
-                *pReason = 0;                   // BanReason was given, so NULL-terminate the duration string
+                *pReason = 0;                   // BanReason was given, so nullptr-terminate the duration string
                 ++pReason;                      // and point to the ban reason
             }
         }
         else                                    // no duration was given (didn't start with a digit) - so this arg must be ban reason and duration defaults to permanent
         {
             pReason = pBanDuration;
-            pBanDuration = NULL;
+            pBanDuration = nullptr;
             *pReason = 0;
             ++pReason;
         }
@@ -1155,14 +1154,14 @@ bool ChatHandler::HandleIPBanCommand(const char* args, WorldSession* m_session)
     ParseBanArgs(pIp, &pDuration, &pReason);
 
     uint32_t timeperiod = 0;
-    if (pDuration != NULL)
+    if (pDuration != nullptr)
     {
         timeperiod = Util::GetTimePeriodFromString(pDuration);
         if (timeperiod == 0)
             return false;
     }
 
-    uint32 o1, o2, o3, o4;
+    uint32_t o1, o2, o3, o4;
     if (sscanf(pIp, "%3u.%3u.%3u.%3u", &o1, &o2, &o3, &o4) != 4
         || o1 > 255 || o2 > 255 || o3 > 255 || o4 > 255)
     {
@@ -1189,7 +1188,7 @@ bool ChatHandler::HandleIPBanCommand(const char* args, WorldSession* m_session)
     const std::string reason = pReason;
 
     SystemMessage(m_session, "Adding [%s] to IP ban table, expires %s.Reason is :%s", pIp, (expire_time == 0) ? "Never" : ctime(&expire_time), reason.c_str());
-    sLogonCommHandler.addIpBan(IP.c_str(), (uint32)expire_time, reason.c_str());
+    sLogonCommHandler.addIpBan(IP.c_str(), (uint32_t)expire_time, reason.c_str());
     sWorld.disconnectSessionByIp(IP.substr(0, IP.find("/")), m_session);
     sGMLog.writefromsession(m_session, "banned ip address %s, expires %s", pIp, (expire_time == 0) ? "Never" : ctime(&expire_time));
 
@@ -1203,12 +1202,12 @@ bool ChatHandler::HandleBanCharacterCommand(const char* args, WorldSession* m_se
         return false;
 
     char* pCharacter = (char*)args;
-    std::shared_ptr<CachedCharacterInfo> pInfo = NULL;
+    std::shared_ptr<CachedCharacterInfo> pInfo = nullptr;
     char* pReason;
     char* pDuration;
     uint32_t BanTime = 0;
     ParseBanArgs(pCharacter, &pDuration, &pReason);
-    if (pDuration != NULL)
+    if (pDuration != nullptr)
     {
         BanTime = Util::GetTimePeriodFromString(pDuration);
         if (BanTime == 0)
@@ -1216,39 +1215,39 @@ bool ChatHandler::HandleBanCharacterCommand(const char* args, WorldSession* m_se
     }
 
     Player* pPlayer = sObjectMgr.getPlayer(pCharacter, false);
-    if (pPlayer == NULL)
+    if (pPlayer == nullptr)
     {
         pInfo = sObjectMgr.getCachedCharacterInfoByName(pCharacter);
-        if (pInfo == NULL)
+        if (pInfo == nullptr)
         {
             SystemMessage(m_session, "Player not found.");
             return true;
         }
-        SystemMessage(m_session, "Banning player '%s' in database for '%s'.", pCharacter, (pReason == NULL) ? "No reason." : pReason);
-        std::string escaped_reason = (pReason == NULL) ? "No reason." : CharacterDatabase.EscapeString(std::string(pReason));
+        SystemMessage(m_session, "Banning player '%s' in database for '%s'.", pCharacter, (pReason == nullptr) ? "No reason." : pReason);
+        std::string escaped_reason = (pReason == nullptr) ? "No reason." : CharacterDatabase.EscapeString(std::string(pReason));
         CharacterDatabase.Execute("UPDATE characters SET banned = %u, banReason = '%s' WHERE guid = %u",
-            BanTime ? BanTime + (uint32)UNIXTIME : 1, escaped_reason.c_str(), pInfo->guid);
+            BanTime ? BanTime + (uint32_t)UNIXTIME : 1, escaped_reason.c_str(), pInfo->guid);
     }
     else
     {
-        SystemMessage(m_session, "Banning player '%s' ingame for '%s'.", pCharacter, (pReason == NULL) ? "No reason." : pReason);
-        std::string sReason = (pReason == NULL) ? "No Reason." : std::string(pReason);
-        uint32 uBanTime = BanTime ? BanTime + (uint32)UNIXTIME : 1;
+        SystemMessage(m_session, "Banning player '%s' ingame for '%s'.", pCharacter, (pReason == nullptr) ? "No reason." : pReason);
+        std::string sReason = (pReason == nullptr) ? "No Reason." : std::string(pReason);
+        uint32_t uBanTime = BanTime ? BanTime + (uint32_t)UNIXTIME : 1;
         pPlayer->setBanned(uBanTime, sReason);
         pInfo = pPlayer->getPlayerInfo();
     }
-    SystemMessage(m_session, "This ban is due to expire %s%s.", BanTime ? "on " : "", BanTime ? Util::GetDateTimeStringFromTimeStamp(BanTime + (uint32)UNIXTIME).c_str() : "Never");
+    SystemMessage(m_session, "This ban is due to expire %s%s.", BanTime ? "on " : "", BanTime ? Util::GetDateTimeStringFromTimeStamp(BanTime + (uint32_t)UNIXTIME).c_str() : "Never");
 
-    sGMLog.writefromsession(m_session, "banned %s, reason %s, for %s", pCharacter, (pReason == NULL) ? "No reason" : pReason, BanTime ? Util::GetDateStringFromSeconds(BanTime).c_str() : "ever");
+    sGMLog.writefromsession(m_session, "banned %s, reason %s, for %s", pCharacter, (pReason == nullptr) ? "No reason" : pReason, BanTime ? Util::GetDateStringFromSeconds(BanTime).c_str() : "ever");
 
     std::stringstream worldAnnounce;
     worldAnnounce << MSG_COLOR_RED << "GM: " << pCharacter << " has been banned by " << m_session->GetPlayer()->getName().c_str() << " for ";
-    worldAnnounce << (BanTime ? Util::GetDateStringFromSeconds(BanTime) : "ever") << " Reason: " << ((pReason == NULL) ? "No reason." : pReason);
+    worldAnnounce << (BanTime ? Util::GetDateStringFromSeconds(BanTime) : "ever") << " Reason: " << ((pReason == nullptr) ? "No reason." : pReason);
     sWorld.sendMessageToAll(worldAnnounce.str());
 
     if (sWorld.settings.logger.enableSqlBanLog && pInfo)
     {
-        CharacterDatabase.Execute("INSERT INTO `banned_char_log` VALUES('%s', '%s', %u, %u, '%s')", m_session->GetPlayer()->getName().c_str(), pInfo->name.c_str(), (uint32)UNIXTIME, (uint32)UNIXTIME + BanTime, (pReason == NULL) ? "No reason." : CharacterDatabase.EscapeString(std::string(pReason)).c_str());
+        CharacterDatabase.Execute("INSERT INTO `banned_char_log` VALUES('%s', '%s', %u, %u, '%s')", m_session->GetPlayer()->getName().c_str(), pInfo->name.c_str(), (uint32_t)UNIXTIME, (uint32_t)UNIXTIME + BanTime, (pReason == nullptr) ? "No reason." : CharacterDatabase.EscapeString(std::string(pReason)).c_str());
     }
 
     if (pPlayer)
@@ -1276,7 +1275,7 @@ bool ChatHandler::HandleBanAllCommand(const char* args, WorldSession* m_session)
     ParseBanArgs(pCharacter, &pDuration, &pReason);
     uint32_t BanTime = 0;
 
-    if (pDuration != NULL)
+    if (pDuration != nullptr)
     {
         BanTime = Util::GetTimePeriodFromString(pDuration);
         if (BanTime == 0)
@@ -1296,13 +1295,13 @@ bool ChatHandler::HandleBanAllCommand(const char* args, WorldSession* m_session)
         return true;
     }
 
-    if (pBanned->getSession() == NULL)
+    if (pBanned->getSession() == nullptr)
     {
         RedSystemMessage(m_session, "Player does not have a session!");
         return true;
     }
 
-    if (pBanned->getSession()->GetSocket() == NULL)
+    if (pBanned->getSession()->GetSocket() == nullptr)
     {
         RedSystemMessage(m_session, "Player does not have a socket!");
         return true;
