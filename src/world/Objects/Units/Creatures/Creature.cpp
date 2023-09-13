@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Management/MapMgr.hpp"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Pet.h"
+#include "Logging/Logger.hpp"
 #include "Management/Group.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/MySQLStructures.h"

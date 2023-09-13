@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Data/Flags.hpp"
+#include "Logging/Logger.hpp"
 #include "Management/AuctionHouse.h"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Server/Packets/ManagedPacket.h"

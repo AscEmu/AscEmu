@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "GameObjectProperties.hpp"
 #include "Data/Flags.hpp"
+#include "Logging/Logger.hpp"
 #include "Management/TransporterHandler.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"

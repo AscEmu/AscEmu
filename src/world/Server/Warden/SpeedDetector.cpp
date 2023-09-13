@@ -19,6 +19,8 @@
  */
 
 #include "Server/Warden/SpeedDetector.h"
+
+#include "Logging/Logger.hpp"
 #include "Server/World.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSession.h"

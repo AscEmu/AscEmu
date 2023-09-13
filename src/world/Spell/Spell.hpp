@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "SpellTargetConstraint.hpp"
 #include "Movement/Spline/MovementTypedefs.h"
 #include "Objects/DamageInfo.hpp"
+#include <memory>
 
 class Corpse;
 class WorldSession;

@@ -29,6 +29,7 @@
 #include "Objects/Item.hpp"
 #include "QuestLogEntry.hpp"
 #include "Gossip/GossipMenu.hpp"
+#include "Logging/Logger.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/QuestDefines.hpp"
 #include "Storage/MySQLDataStore.hpp"

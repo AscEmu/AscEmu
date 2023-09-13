@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "InstanceMap.hpp"
 
 #include "InstanceMgr.hpp"
+#include "Logging/Logger.hpp"
 #include "Management/Group.h"
 #include "Management/ObjectMgr.hpp"
 #include "Storage/WDB/WDBStores.hpp"

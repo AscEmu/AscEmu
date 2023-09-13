@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Guild.hpp"
 #include "GuildBankTab.hpp"
+
+#include "Logging/Logger.hpp"
 #include "Objects/Item.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"
@@ -156,7 +158,7 @@ void GuildBankTab::sendText(Guild const* guild, WorldSession* session) const
     if (session)
         sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "sendText % s: Tabid: % u, Text : % s", session->GetPlayer()->getName().c_str(), static_cast<uint32_t>(mTabId), mText.c_str());
     else
-            sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "sendText (Broadcast): Tabid: %u, Text: %s", static_cast<uint32_t>(mTabId), mText.c_str());
+        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "sendText (Broadcast): Tabid: %u, Text: %s", static_cast<uint32_t>(mTabId), mText.c_str());
 
 #if VERSION_STRING < Cata
     if (session)

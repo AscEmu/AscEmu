@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Group.h"
 #include "LootDefines.hpp"
+#include "Logging/Logger.hpp"
 #include "Objects/GameObject.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Server/Script/CreatureAIScript.hpp"

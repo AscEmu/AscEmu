@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Movement/Spline/Spline.h>
 #include <Movement/Spline/MoveSplineInitArgs.h>
 
+#include "Logging/Logger.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/GameObjectProperties.hpp"
 #include "Server/Definitions.h"

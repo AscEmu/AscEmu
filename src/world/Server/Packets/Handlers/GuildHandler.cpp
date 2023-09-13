@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Chat/ChatHandler.hpp"
+#include "Logging/Logger.hpp"
 #include "Management/ArenaTeam.hpp"
 #include "Management/Charter.hpp"
 #include "Management/ItemInterface.h"

@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "VMapFactory.h"
 #include "Chat/ChatHandler.hpp"
+#include "Logging/Logger.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Management/WeatherMgr.hpp"
 #include "Map/Area/AreaStorage.hpp"

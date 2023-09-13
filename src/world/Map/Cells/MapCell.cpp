@@ -8,6 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MMapManager.h"
 #include "MMapFactory.h"
 #include "Map/Cells/MapCell.hpp"
+
+#include "Logging/Logger.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/GameObject.h"

@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "MailMgr.h"
 #include "Logging/Log.hpp"
+#include "Logging/Logger.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Objects/Item.hpp"
 #include "Management/ItemInterface.h"

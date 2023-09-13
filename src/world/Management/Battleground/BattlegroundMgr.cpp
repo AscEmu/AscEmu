@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ArenaTeam.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Chat/ChatHandler.hpp"
+#include "Logging/Logger.hpp"
 #include "Management/Group.h"
 #include "Management/ObjectMgr.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"

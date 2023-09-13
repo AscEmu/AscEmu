@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellIsFlags.hpp"
 #include "Definitions/SpellTypes.hpp"
 #include "SpellMgr.hpp"
+#include "Logging/Logger.hpp"
 #include "Management/ItemInterface.h"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Management/ObjectMgr.hpp"

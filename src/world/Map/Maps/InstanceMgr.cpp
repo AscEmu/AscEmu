@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "InstanceMgr.hpp"
 
 #include "InstanceMap.hpp"
+#include "Logging/Logger.hpp"
 #include "Management/Group.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"

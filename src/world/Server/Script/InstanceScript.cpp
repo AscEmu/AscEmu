@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "InstanceScript.hpp"
 
+#include "Logging/Logger.hpp"
 #include "Management/Group.h"
 #include "Management/ObjectMgr.hpp"
 #include "Management/LFG/LFGMgr.hpp"

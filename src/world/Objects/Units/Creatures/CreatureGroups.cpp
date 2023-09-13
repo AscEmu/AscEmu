@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CreatureGroups.h"
 #include "Creature.h"
 #include "AIInterface.h"
+#include "Logging/Logger.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Movement/MovementManager.h"

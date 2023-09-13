@@ -4,6 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Management/ArenaTeam.hpp"
+
+#include "Logging/Logger.hpp"
 #include "Server/WorldSession.h"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"

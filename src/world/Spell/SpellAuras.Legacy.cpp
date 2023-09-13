@@ -40,6 +40,7 @@
 #include "Definitions/SpellMechanics.hpp"
 #include "Definitions/PowerType.hpp"
 #include "Definitions/SpellEffects.hpp"
+#include "Logging/Logger.hpp"
 #include "Management/Group.h"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Creatures/Pet.h"

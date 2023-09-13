@@ -32,6 +32,8 @@
 #include <string>
 #include <vector>
 
+#include "Debugging/Errors.h"
+
 using AscEmu::Threading::AEThread;
 using std::unique_ptr;
 using std::make_unique;

@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObject.h"
 #include "Map/Management/MapMgr.hpp"
 #include "WoWGuid.h"
+#include "Logging/Logger.hpp"
 #include "Management/Group.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Management/ItemInterface.h"

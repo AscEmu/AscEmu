@@ -29,6 +29,7 @@
 
 #include "GameObjectProperties.hpp"
 #include "Data/Flags.hpp"
+#include "Logging/Logger.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Map/Cells/MapCell.hpp"
 #include "Spell/SpellMgr.hpp"

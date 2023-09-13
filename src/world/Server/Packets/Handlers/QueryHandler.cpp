@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgGameobjectQueryResponse.h"
 #include "Server/Packets/SmsgQueryTimeResponse.h"
 #include "Logging/Log.hpp"
+#include "Logging/Logger.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Management/QuestMgr.h"
 #include "Objects/Units/Creatures/Corpse.hpp"

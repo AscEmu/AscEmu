@@ -21,6 +21,8 @@
 #include "DatabaseCommon.hpp"
 #include "MySQLDatabase.h"
 
+#include "Logging/Logger.hpp"
+
 MySQLDatabase::~MySQLDatabase()
 {
     for(int32 i = 0; i < mConnectionCount; ++i)

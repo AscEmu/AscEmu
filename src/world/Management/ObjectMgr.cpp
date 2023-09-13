@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Group.h"
 #include "QuestMgr.h"
 #include "Gossip/GossipMenu.hpp"
+#include "Logging/Logger.hpp"
 #include "Macros/GuildMacros.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Management/QuestLogEntry.hpp"

@@ -27,6 +27,7 @@
 #include "Map/Management/MapMgr.hpp"
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
 #include "Chat/ChatHandler.hpp"
+#include "Logging/Logger.hpp"
 #include "Management/Group.h"
 #include "Management/ObjectMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"

@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Chat/ChatHandler.hpp"
+#include "Logging/Logger.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/ObjectMgr.hpp"
 #include "Management/QuestLogEntry.hpp"

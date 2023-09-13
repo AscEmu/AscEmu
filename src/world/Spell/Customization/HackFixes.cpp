@@ -20,6 +20,7 @@
  */
 
 #include "Cryptography/crc32.h"
+#include "Logging/Logger.hpp"
 #include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Server/World.h"
 #include "Spell/Definitions/SpellModifierType.hpp"

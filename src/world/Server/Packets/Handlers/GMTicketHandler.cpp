@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ObjectMgr.hpp"
 #include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
+#include "Logging/Logger.hpp"
 #include "Management/Tickets/TicketMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"

@@ -5,8 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Utilities/Util.hpp"
+#include "CommonTypes.hpp"
 #include "InstanceNumberGen.hpp"
+#include "Utilities/Util.hpp"
+
+#include <unordered_map>
 
 enum PlayerTeam : uint8_t;
 enum EnterState;

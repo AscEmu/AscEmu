@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "MMapManager.h"
+#include "Logging/Logger.hpp"
 #include "Map/Cells/CellHandler.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Objects/GameObjectProperties.hpp"

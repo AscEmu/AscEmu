@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Chat/ChatDefines.hpp"
 #include "Chat/ChatHandler.hpp"
+#include "Logging/Logger.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/InstanceDefines.hpp"

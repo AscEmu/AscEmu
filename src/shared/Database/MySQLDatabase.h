@@ -20,6 +20,8 @@
 #ifndef _MYSQLDATABASE_H
 #define _MYSQLDATABASE_H
 
+#include "CommonTypes.hpp"
+#include "Database.h"
 #include <string>
 #include <mysql.h>
 

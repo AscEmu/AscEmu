@@ -26,6 +26,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellPacketFlags.hpp"
 #include "Definitions/SpellState.hpp"
 #include "Definitions/SpellRanged.hpp"
+#include "Logging/Logger.hpp"
 #include "Management/Group.h"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Management/Battleground/Battleground.hpp"

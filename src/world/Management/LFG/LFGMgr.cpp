@@ -23,6 +23,7 @@
 #include "Objects/Item.hpp"
 #include "Management/LFG/LFGMgr.hpp"
 
+#include "Logging/Logger.hpp"
 #include "Management/Group.h"
 #include "Management/LFG/LFGGroupData.hpp"
 #include "Management/LFG/LFGPlayerData.hpp"

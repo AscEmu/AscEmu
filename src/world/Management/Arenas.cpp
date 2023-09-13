@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Management/ItemInterface.h"
 #include "Management/Arenas.hpp"
+
+#include "Logging/Logger.hpp"
 #include "Management/ArenaTeam.hpp"
 #include "Management/WorldStates.hpp"
 #include "Map/Management/MapMgr.hpp"

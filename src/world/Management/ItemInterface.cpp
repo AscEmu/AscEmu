@@ -27,6 +27,7 @@
 #include "ObjectMgr.hpp"
 #include "QuestMgr.h"
 #include "Chat/ChatHandler.hpp"
+#include "Logging/Logger.hpp"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/TradeData.hpp"
 #include "Server/WorldSession.h"

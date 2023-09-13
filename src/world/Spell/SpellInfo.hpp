@@ -12,7 +12,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "SpellDefines.hpp"
 #include "SpellScript.hpp"
 #include "CommonTypes.hpp"
-#include "Logging/Logger.hpp"
 
 #include <string>
 
@@ -195,251 +194,33 @@ public:
     float getSpeed() const { return speed; }
     uint32_t getMaxstack() const { return MaxStackAmount; }
 
-    uint32_t getTotem(uint8_t idx) const
-    {
-        if (idx >= MAX_SPELL_TOTEMS)
-        {
-            sLogger.failure("Totem index id %u is invalid!", idx);
-            return 0;
-        }
-
-        return Totem[idx];
-    }
-
-    int32_t getReagent(uint8_t idx) const
-    {
-        if (idx >= MAX_SPELL_REAGENTS)
-        {
-            sLogger.failure("Reagent index id %u is invalid!", idx);
-            return 0;
-        }
-
-        return Reagent[idx];
-    }
-
-    uint32_t getReagentCount(uint8_t idx) const
-    {
-        if (idx >= MAX_SPELL_REAGENTS)
-        {
-            sLogger.failure("ReagentCount index id %u is invalid!", idx);
-            return 0;
-        }
-
-        return ReagentCount[idx];
-    }
+    uint32_t getTotem(uint8_t idx) const;
+    int32_t getReagent(uint8_t idx) const;
+    uint32_t getReagentCount(uint8_t idx) const;
 
     int32_t getEquippedItemClass() const { return EquippedItemClass; }
     int32_t getEquippedItemSubClass() const { return EquippedItemSubClass; }
     int32_t getEquippedItemInventoryTypeMask() const { return EquippedItemInventoryTypeMask; }
 
-    uint32_t getEffect(uint8_t idx) const
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return 0;
-        }
-
-        return Effect[idx];
-    }
-
-    int32_t getEffectDieSides(uint8_t idx) const
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return 0;
-        }
-
-        return EffectDieSides[idx];
-    }
-
-    float getEffectRealPointsPerLevel(uint8_t idx) const
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return 0.f;
-        }
-
-        return EffectRealPointsPerLevel[idx];
-    }
-
-    int32_t getEffectBasePoints(uint8_t idx) const
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return 0;
-        }
-
-        return EffectBasePoints[idx];
-    }
-
-    uint32_t getEffectMechanic(uint8_t idx) const
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return 0;
-        }
-
-        return EffectMechanic[idx];
-    }
-
-    uint32_t getEffectImplicitTargetA(uint8_t idx) const
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return 0;
-        }
-
-        return EffectImplicitTargetA[idx];
-    }
-
-    uint32_t getEffectImplicitTargetB(uint8_t idx) const
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return 0;
-        }
-
-        return EffectImplicitTargetB[idx];
-    }
-
-    uint32_t getEffectRadiusIndex(uint8_t idx) const
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return 0;
-        }
-
-        return EffectRadiusIndex[idx];
-    }
-
-    uint32_t getEffectApplyAuraName(uint8_t idx) const
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return 0;
-        }
-
-        return EffectApplyAuraName[idx];
-    }
-
-    uint32_t getEffectAmplitude(uint8_t idx) const
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return 0;
-        }
-
-        return EffectAmplitude[idx];
-    }
-
-    float getEffectMultipleValue(uint8_t idx) const
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return 0;
-        }
-
-        return EffectMultipleValue[idx];
-    }
-
-    uint32_t getEffectChainTarget(uint8_t idx) const
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return 0;
-        }
-
-        return EffectChainTarget[idx];
-    }
-
-    uint32_t getEffectItemType(uint8_t idx) const
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return 0;
-        }
-
-        return EffectItemType[idx];
-    }
-
-    int32_t getEffectMiscValue(uint8_t idx) const
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return 0;
-        }
-
-        return EffectMiscValue[idx];
-    }
-
-    int32_t getEffectMiscValueB(uint8_t idx) const
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return 0;
-        }
-
-        return EffectMiscValueB[idx];
-    }
-
-    uint32_t getEffectTriggerSpell(uint8_t idx) const
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return 0;
-        }
-
-        return EffectTriggerSpell[idx];
-    }
-
-    float getEffectPointsPerComboPoint(uint8_t idx) const
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return 0;
-        }
-
-        return EffectPointsPerComboPoint[idx];
-    }
-
-    uint32_t getEffectSpellClassMask(uint8_t idx1, uint8_t idx2) const
-    {
-        if (idx1 >= MAX_SPELL_EFFECTS || idx2 >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Totem index id %u or effect index %u is invalid!", idx1, idx2);
-            return 0;
-        }
-
-        return EffectSpellClassMask[idx1][idx2];
-    }
-
-    uint32_t* getEffectSpellClassMask(uint8_t idx1)
-    {
-        if (idx1 >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx1);
-            return 0;
-        }
-
-        return EffectSpellClassMask[idx1];
-    }
+    uint32_t getEffect(uint8_t idx) const;
+    int32_t getEffectDieSides(uint8_t idx) const;
+    float getEffectRealPointsPerLevel(uint8_t idx) const;
+    int32_t getEffectBasePoints(uint8_t idx) const;
+    uint32_t getEffectMechanic(uint8_t idx) const;
+    uint32_t getEffectImplicitTargetA(uint8_t idx) const;
+    uint32_t getEffectImplicitTargetB(uint8_t idx) const;
+    uint32_t getEffectRadiusIndex(uint8_t idx) const;
+    uint32_t getEffectApplyAuraName(uint8_t idx) const;
+    uint32_t getEffectAmplitude(uint8_t idx) const;
+    float getEffectMultipleValue(uint8_t idx) const;
+    uint32_t getEffectChainTarget(uint8_t idx) const;
+    uint32_t getEffectItemType(uint8_t idx) const;
+    int32_t getEffectMiscValue(uint8_t idx) const;
+    int32_t getEffectMiscValueB(uint8_t idx) const;
+    uint32_t getEffectTriggerSpell(uint8_t idx) const;
+    float getEffectPointsPerComboPoint(uint8_t idx) const;
+    uint32_t getEffectSpellClassMask(uint8_t idx1, uint8_t idx2) const;
+    uint32_t* getEffectSpellClassMask(uint8_t idx1);
 
     uint32_t getSpellVisual(uint8_t visualIndex) const { return SpellVisual[visualIndex]; }
     uint32_t getSpellIconID() const { return spellIconID; }
@@ -453,61 +234,24 @@ public:
     uint32_t getMaxTargetLevel() const { return MaxTargetLevel; }
     uint32_t getSpellFamilyName() const { return SpellFamilyName; }
 
-    uint32_t getSpellFamilyFlags(uint8_t idx) const
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return 0;
-        }
-
-        return SpellFamilyFlags[idx];
-    }
-
+    uint32_t getSpellFamilyFlags(uint8_t idx) const;
     const uint32_t* getSpellFamilyFlags() const { return SpellFamilyFlags; }
 
     uint32_t getMaxTargets() const { return MaxTargets; }
     uint32_t getDmgClass() const { return DmgClass; }
     uint32_t getPreventionType() const { return PreventionType; }
 
-    float getEffectDamageMultiplier(uint8_t idx) const
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return 0;
-        }
-
-        return EffectDamageMultiplier[idx];
-    }
+    float getEffectDamageMultiplier(uint8_t idx) const;
 
 #if VERSION_STRING > Classic
-    uint32_t getTotemCategory(uint8_t idx) const
-    {
-        if (idx >= MAX_SPELL_TOTEM_CATEGORIES)
-        {
-            sLogger.failure("TotemCategory index id %u is invalid!", idx);
-            return 0;
-        }
-
-        return TotemCategory[idx];
-    }
+    uint32_t getTotemCategory(uint8_t idx) const;
 #endif
 
     int32_t getRequiresAreaId() const { return AreaGroupId; }
     uint32_t getSchoolMask() const { return SchoolMask; }
     uint32_t getRuneCostID() const { return RuneCostID; }
 
-    float getEffectBonusMultiplier(uint8_t idx) const
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return 0;
-        }
-
-        return EffectBonusMultiplier[idx];
-    }
+    float getEffectBonusMultiplier(uint8_t idx) const;
 
     float* getEffectBonusMultiplier()
     {
@@ -528,16 +272,7 @@ public:
     float getCone_width() const { return cone_width; }
     int getAi_target_type() const { return ai_target_type; }
 
-    uint32_t getEffectCustomFlag(uint8_t idx) const
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return 0;
-        }
-
-        return EffectCustomFlag[idx];
-    }
+    uint32_t getEffectCustomFlag(uint8_t idx) const;
 
 private:
     // Setters for spell data
@@ -609,240 +344,32 @@ private:
     void setSpeed(float value) { speed = value; }    // used in HackFixes.cpp
     void setMaxstack(uint32_t value) { MaxStackAmount = value; }    // used in HackFixes.cpp
 
-    void setTotem(uint32_t totemId, uint8_t idx)                      // used in HackFixes.cpp
-    {
-        if (idx >= MAX_SPELL_TOTEMS)
-        {
-            sLogger.failure("Totem index id %u is invalid!", idx);
-            return;
-        }
-
-        Totem[idx] = totemId;
-    }
-
-    void setReagent(int32_t reagentId, uint8_t idx)                      // used in HackFixes.cpp
-    {
-        if (idx >= MAX_SPELL_REAGENTS)
-        {
-            sLogger.failure("Spellreagents index id %u is invalid!", idx);
-            return;
-        }
-
-        Reagent[idx] = reagentId;
-    }
-
-    void setReagentCount(uint32_t reagentId, uint8_t idx)                 // used in HackFixes.cpp
-    {
-        if (idx >= MAX_SPELL_REAGENTS)
-        {
-            sLogger.failure("Reagentcount index id %u is invalid!", idx);
-            return;
-        }
-
-        ReagentCount[idx] = reagentId;
-    }
+    void setTotem(uint32_t totemId, uint8_t idx);                      // used in HackFixes.cpp
+    void setReagent(int32_t reagentId, uint8_t idx);                      // used in HackFixes.cpp
+    void setReagentCount(uint32_t reagentId, uint8_t idx);                 // used in HackFixes.cpp
 
     void setEquippedItemClass(int32_t value) { EquippedItemClass = value; }    // used in HackFixes.cpp
     void setEquippedItemSubClass(int32_t value) { EquippedItemSubClass = value; }
     void setEquippedItemInventoryTypeMask(int32_t value) { EquippedItemInventoryTypeMask = value; }
 
-    void setEffect(uint32_t effectId, uint8_t idx)                          // used in HackFixes.cpp / ObjectMgr.cpp
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return;
-        }
-
-        Effect[idx] = effectId;
-    }
-
-    void setEffectDieSides(int32_t effecSide, uint8_t idx)                 // used in HackFixes.cpp
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return;
-        }
-
-        EffectDieSides[idx] = effecSide;
-    }
-
-    void setEffectRealPointsPerLevel(float pointsPerLevel, uint8_t idx)   // used in HackFixes.cpp
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return;
-        }
-
-        EffectRealPointsPerLevel[idx] = pointsPerLevel;
-    }
-
-    void setEffectBasePoints(int32_t pointsPerLevel, uint8_t idx)               // used in HackFixes.cpp / ObjectMgr.cpp
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return;
-        }
-
-        EffectBasePoints[idx] = pointsPerLevel;
-    }
-
-    void setEffectMechanic(uint32_t mechanic, uint8_t idx)                       // used in HackFixes.cpp
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return;
-        }
-
-        EffectMechanic[idx] = mechanic;
-    }
-
-    void setEffectImplicitTargetA(uint32_t targetA, uint8_t idx)                // used in HackFixes.cpp
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return;
-        }
-
-        EffectImplicitTargetA[idx] = targetA;
-    }
-
-    void setEffectImplicitTargetB(uint32_t targetB, uint8_t idx)                // used in HackFixes.cpp
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return;
-        }
-
-        EffectImplicitTargetB[idx] = targetB;
-    }
-
-    void setEffectRadiusIndex(uint32_t radiusIndex, uint8_t idx)                // used in HackFixes.cpp
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return;
-        }
-
-        EffectRadiusIndex[idx] = radiusIndex;
-    }
-
-    void setEffectApplyAuraName(uint32_t auraName, uint8_t idx)                 // used in HackFixes.cpp / ObjectMgr.cpp
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return;
-        }
-
-        EffectApplyAuraName[idx] = auraName;
-    }
-
-    void setEffectAmplitude(uint32_t amplitude, uint8_t idx)                    // used in HackFixes.cpp
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return;
-        }
-
-        EffectAmplitude[idx] = amplitude;
-    }
-
-    void setEffectMultipleValue(float multiply, uint8_t idx)                   // used in HackFixes.cpp
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return;
-        }
-
-        EffectMultipleValue[idx] = multiply;
-    }
-
-    void setEffectChainTarget(uint32_t chainTarget, uint8_t idx)                // used in HackFixes.cpp
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return;
-        }
-
-        EffectChainTarget[idx] = chainTarget;
-    }
-
-    void setEffectItemType(uint32_t itemEntryId, uint8_t idx)
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return;
-        }
-
-        EffectItemType[idx] = itemEntryId;
-    }
-
-    void setEffectMiscValue(int32_t misc, uint8_t idx)                          // used in HackFixes.cpp / ObjectMgr.cpp
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return;
-        }
-
-        EffectMiscValue[idx] = misc;
-    }
-
-    void setEffectMiscValueB(int32_t miscB, uint8_t idx)
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return;
-        }
-
-        EffectMiscValueB[idx] = miscB;
-    }
-
-    void setEffectTriggerSpell(uint32_t spell, uint8_t idx)                     // used in ObjectMgr.cpp
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return;
-        }
-
-        EffectTriggerSpell[idx] = spell;
-    }
-
-    void setEffectPointsPerComboPoint(float effectPoints, uint8_t idx)          // used in HackFixes.cpp
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return;
-        }
-
-        EffectPointsPerComboPoint[idx] = effectPoints;
-    }
-
-    void setEffectSpellClassMask(uint32_t spellClass, uint8_t idx1, uint8_t idx2)           // used in HackFixes.cpp
-    {
-        if (idx1 >= MAX_SPELL_EFFECTS || idx2 >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id1 %u or id2 %u is invalid!", idx1, idx2);
-            return;
-        }
-
-        EffectSpellClassMask[idx1][idx2] = spellClass;
-    }
+    void setEffect(uint32_t effectId, uint8_t idx);                          // used in HackFixes.cpp / ObjectMgr.cpp
+    void setEffectDieSides(int32_t effecSide, uint8_t idx);                 // used in HackFixes.cpp
+    void setEffectRealPointsPerLevel(float pointsPerLevel, uint8_t idx);   // used in HackFixes.cpp
+    void setEffectBasePoints(int32_t pointsPerLevel, uint8_t idx);               // used in HackFixes.cpp / ObjectMgr.cpp
+    void setEffectMechanic(uint32_t mechanic, uint8_t idx);                       // used in HackFixes.cpp
+    void setEffectImplicitTargetA(uint32_t targetA, uint8_t idx);                // used in HackFixes.cpp
+    void setEffectImplicitTargetB(uint32_t targetB, uint8_t idx);                // used in HackFixes.cpp
+    void setEffectRadiusIndex(uint32_t radiusIndex, uint8_t idx);                // used in HackFixes.cpp
+    void setEffectApplyAuraName(uint32_t auraName, uint8_t idx);                 // used in HackFixes.cpp / ObjectMgr.cpp
+    void setEffectAmplitude(uint32_t amplitude, uint8_t idx);                    // used in HackFixes.cpp
+    void setEffectMultipleValue(float multiply, uint8_t idx);                   // used in HackFixes.cpp
+    void setEffectChainTarget(uint32_t chainTarget, uint8_t idx);                // used in HackFixes.cpp
+    void setEffectItemType(uint32_t itemEntryId, uint8_t idx);
+    void setEffectMiscValue(int32_t misc, uint8_t idx);                          // used in HackFixes.cpp / ObjectMgr.cpp
+    void setEffectMiscValueB(int32_t miscB, uint8_t idx);
+    void setEffectTriggerSpell(uint32_t spell, uint8_t idx);                     // used in ObjectMgr.cpp
+    void setEffectPointsPerComboPoint(float effectPoints, uint8_t idx);          // used in HackFixes.cpp
+    void setEffectSpellClassMask(uint32_t spellClass, uint8_t idx1, uint8_t idx2);           // used in HackFixes.cpp
 
     void setSpellVisual(uint8_t visualIndex, uint32_t value) { SpellVisual[visualIndex] = value; }
     void setSpellIconID(uint32_t value) { spellIconID = value; }
@@ -856,95 +383,32 @@ private:
     void setMaxTargetLevel(uint32_t value) { MaxTargetLevel = value; }
     void setSpellFamilyName(uint32_t value) { SpellFamilyName = value; }        // used in HackFixes.cpp
 
-    void setSpellFamilyFlags(uint32_t value, uint8_t idx)                             // used in HackFixes.cpp
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return;
-        }
-
-        SpellFamilyFlags[idx] = value;
-    }
+    void setSpellFamilyFlags(uint32_t value, uint8_t idx);                            // used in HackFixes.cpp
 
     void setMaxTargets(uint32_t value) { MaxTargets = value; }        // used in HackFixes.cpp
     void setDmgClass(uint32_t value) { DmgClass = value; }        // used in HackFixes.cpp
     void setPreventionType(uint32_t value) { PreventionType = value; }
 
-    void setEffectDamageMultiplier(float dmgMultiplier, uint8_t idx)                       // used in HackFixes.cpp
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return;
-        }
-
-        EffectDamageMultiplier[idx] = dmgMultiplier;
-    }
+    void setEffectDamageMultiplier(float dmgMultiplier, uint8_t idx);                     // used in HackFixes.cpp
 
 #if VERSION_STRING > Classic
-    void setTotemCategory(uint32_t category, uint8_t idx)
-    {
-        if (idx >= MAX_SPELL_TOTEM_CATEGORIES)
-        {
-            sLogger.failure("TotemCategory index id %u is invalid!", idx);
-            return;
-        }
-
-        TotemCategory[idx] = category;
-    }
+    void setTotemCategory(uint32_t category, uint8_t idx);
 #endif
 
     void setRequiresAreaId(int32_t value) { AreaGroupId = value; }
     void setSchoolMask(uint32_t value) { SchoolMask = value; }                  // used in HackFixes.cpp
     void setRuneCostID(uint32_t value) { RuneCostID = value; }
 
-    void setEffectBonusMultiplier(float value, uint8_t idx)
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return;
-        }
-
-        EffectBonusMultiplier[idx] = value;
-    }
+    void setEffectBonusMultiplier(float value, uint8_t idx);
 
     void setSpellDifficultyID(uint32_t value) { SpellDifficultyId = value; }
 
 #if VERSION_STRING >= Cata
-    void setEffectRadiusMaxIndex(uint32_t value, uint8_t idx)
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return;
-        }
+    void setEffectRadiusMaxIndex(uint32_t value, uint8_t idx);
 
-        EffectRadiusMaxIndex[idx] = value;
-    }
+    void setEffectSpellId(uint32_t value, uint8_t idx);
 
-    void setEffectSpellId(uint32_t value, uint8_t idx)
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return;
-        }
-
-        EffectSpellId[idx] = value;
-    }
-
-    void setEffectIndex(uint32_t value, uint8_t idx)
-    {
-        if (idx >= MAX_SPELL_EFFECTS)
-        {
-            sLogger.failure("Effect index id %u is invalid!", idx);
-            return;
-        }
-
-        EffectIndex[idx] = value;
-    }
+    void setEffectIndex(uint32_t value, uint8_t idx);
 #endif
 
     //////////////////////////////////////////////////////////////////////////////////////////

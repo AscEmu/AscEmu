@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 
 // Cata
+#include "Logging/Logger.hpp"
 #include "Macros/GuildMacros.hpp"
 #include "Management/ItemInterface.h"
 #include "Objects/Units/Creatures/Creature.h"

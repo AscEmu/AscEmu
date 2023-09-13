@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellTypes.hpp"
 #include "SpellMgr.hpp"
 #include "Definitions/SpellEffects.hpp"
+#include "Logging/Logger.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/HookInterface.hpp"
 #include "Server/Script/ScriptMgr.hpp"

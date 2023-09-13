@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ChatCommand.hpp"
 #include "CommandTableStorage.hpp"
 #include "Exceptions/PlayerExceptions.hpp"
+#include "Logging/Logger.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/SkillNameMgr.h"
 #include "Map/Management/MapMgr.hpp"

@@ -4,6 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Management/WeatherMgr.hpp"
+
+#include "Logging/Logger.hpp"
 #include "Server/WorldSession.h"
 #include "Server/World.h"
 #include "Objects/Units/Players/Player.hpp"

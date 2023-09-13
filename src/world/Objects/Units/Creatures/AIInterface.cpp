@@ -23,6 +23,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/PowerType.hpp"
 #include "Pet.h"
 #include "Vehicle.hpp"
+#include "Logging/Logger.hpp"
 #include "Management/Group.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Management/ObjectMgr.hpp"
