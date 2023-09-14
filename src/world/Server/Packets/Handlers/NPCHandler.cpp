@@ -44,6 +44,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgGossipComplete.h"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellAura.hpp"
+#include "Spell/SpellInfo.hpp"
 #include "Storage/WorldStrings.h"
 
 using namespace AscEmu::Packets;

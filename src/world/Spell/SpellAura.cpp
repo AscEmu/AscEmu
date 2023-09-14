@@ -6,14 +6,15 @@ This file is released under the MIT license. See README-MIT for more information
 #include "SpellAura.hpp"
 
 #include "Spell/Spell.hpp"
+#include "Spell/SpellInfo.hpp"
 #include "SpellCastTargets.hpp"
 #include "Definitions/SpellCastTargetFlags.hpp"
-#include "Definitions/SpellFamily.hpp"
 #include "Definitions/SpellIsFlags.hpp"
 #include "Definitions/SpellMechanics.hpp"
 #include "Definitions/SpellTypes.hpp"
 #include "SpellMgr.hpp"
 #include "Definitions/SpellEffects.hpp"
+#include "Definitions/SpellFamily.hpp"
 #include "Logging/Logger.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/HookInterface.hpp"
@@ -1004,7 +1005,7 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
                 if (aurEff->getAuraEffectType() == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE)
                 {
                     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                        triggerSpell->forced_basepoints.set(i, customDamage);
+                        triggerSpell->forced_basepoints->set(i, customDamage);
                 }
 #endif
 

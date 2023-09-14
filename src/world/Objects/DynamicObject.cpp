@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellMgr.hpp"
 #include "Spell/SpellAura.hpp"
 #include "Spell/Spell.hpp"
-#include "Management/ObjectMgr.hpp"
+#include "Spell/SpellInfo.hpp"
 #include "Data/WoWDynamicObject.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"

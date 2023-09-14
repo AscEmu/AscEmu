@@ -33,6 +33,7 @@
 #include "Spell/Definitions/SpellMechanics.hpp"
 #include "Spell/Definitions/SpellEffectTarget.hpp"
 #include "Spell/SpellHelpers.h"
+#include "Spell/SpellInfo.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/SpellTarget.h"
 #include "Spell/Definitions/SpellEffects.hpp"

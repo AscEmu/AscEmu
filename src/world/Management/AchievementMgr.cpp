@@ -33,6 +33,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSession.h"
+#include "Spell/SpellInfo.hpp"
 
 using namespace AscEmu::Packets;
 

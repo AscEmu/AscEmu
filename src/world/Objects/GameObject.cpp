@@ -57,6 +57,7 @@
 #include "Server/Script/GameObjectAIScript.hpp"
 #include "Server/Script/InstanceScript.hpp"
 #include "Spell/Spell.hpp"
+#include "Spell/SpellInfo.hpp"
 #include "Units/Players/Player.hpp"
 
 // MIT

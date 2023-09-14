@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Spell/Spell.hpp"
 #include "SpellAura.hpp"
+#include "Spell/SpellInfo.hpp"
 #include "Definitions/SpellFamily.hpp"
 #include "Definitions/SpellIsFlags.hpp"
 #include "Definitions/SpellTypes.hpp"

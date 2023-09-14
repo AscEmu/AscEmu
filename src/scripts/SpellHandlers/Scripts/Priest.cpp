@@ -7,8 +7,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Unit.hpp"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellAura.hpp"
+#include "Spell/SpellInfo.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/SpellProc.hpp"
+#include "Spell/SpellScript.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Spell/Definitions/SpellEffectTarget.hpp"
 
@@ -191,7 +193,7 @@ public:
 
     SpellScriptExecuteState onCastProcSpell(SpellProc* /*spellProc*/, Unit* /*caster*/, Unit* /*victim*/, Spell* spell) override
     {
-        spell->forced_basepoints.set(EFF_INDEX_0, absorbAmount);
+        spell->forced_basepoints->set(EFF_INDEX_0, absorbAmount);
         absorbAmount = 0;
         return SpellScriptExecuteState::EXECUTE_OK;
     }
@@ -462,10 +464,10 @@ public:
     {
 #if VERSION_STRING < WotLK
         // Same amount for party and self in Classic and TBC
-        spell->forced_basepoints.set(EFF_INDEX_0, selfHeal);
+        spell->forced_basepoints->set(EFF_INDEX_0, selfHeal);
 #else
-        spell->forced_basepoints.set(EFF_INDEX_0, partyHeal);
-        spell->forced_basepoints.set(EFF_INDEX_1, selfHeal);
+        spell->forced_basepoints->set(EFF_INDEX_0, partyHeal);
+        spell->forced_basepoints->set(EFF_INDEX_1, selfHeal);
 #endif
         selfHeal = 0;
         partyHeal = 0;

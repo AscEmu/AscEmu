@@ -22,6 +22,7 @@
 #include "Map/Management/MapMgr.hpp"
 #include "SpellTarget.h"
 #include "Spell.hpp"
+#include "Spell/SpellInfo.hpp"
 #include "Objects/GameObject.h"
 #include "Server/World.h"
 #include "Definitions/SpellCastTargetFlags.hpp"

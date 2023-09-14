@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CreatureAIFunction.hpp"
 #include "CreatureAIScript.hpp"
 #include "Logging/Logger.hpp"
+#include "Spell/SpellInfo.hpp"
 
 CreatureAIFunctionScheduler::CreatureAIFunctionScheduler(CreatureAIScript* script) : mOwner(script) { }
 

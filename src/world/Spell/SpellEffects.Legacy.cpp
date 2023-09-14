@@ -57,6 +57,7 @@
 #include "Definitions/PowerType.hpp"
 #include "Definitions/Spec.hpp"
 #include "Spell.hpp"
+#include "Spell/SpellInfo.hpp"
 #include "Definitions/SpellEffects.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Server/Packets/SmsgTaxinodeStatus.h"
@@ -3869,7 +3870,7 @@ void Spell::SpellEffectDispel(uint8_t effectIndex) // Dispel
                         {
                             const auto spellInfo = sSpellMgr.getSpellInfo(31117);
                             Spell* spell = sSpellMgr.newSpell(u_caster, spellInfo, true, nullptr);
-                            spell->forced_basepoints.set(0, (aursp->calculateEffectValue(0)) * 9);   //damage effect
+                            spell->forced_basepoints->set(0, (aursp->calculateEffectValue(0)) * 9);   //damage effect
                             spell->ProcedOnSpell = getSpellInfo();
                             spell->pSpellId = aursp->getId();
                             SpellCastTargets targets(u_caster->getGuid());
@@ -5135,7 +5136,7 @@ void Spell::SpellEffectFeedPet(uint8_t effectIndex)  // Feed Pet
 
     const auto spellInfo = sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(effectIndex));
     Spell* sp = sSpellMgr.newSpell(p_caster, spellInfo, true, nullptr);
-    sp->forced_basepoints.set(0, damage);
+    sp->forced_basepoints->set(0, damage);
     SpellCastTargets tgt(pPet->getGuid());
     sp->prepare(&tgt);
 
@@ -5977,9 +5978,9 @@ void Spell::SpellEffectTriggerSpellWithValue(uint8_t effectIndex)
     for (uint8_t x = 0; x < 3; x++)
     {
         if (effectIndex == x)
-            sp->forced_basepoints.set(x, damage);  //prayer of mending should inherit heal bonus ?
+            sp->forced_basepoints->set(x, damage);  //prayer of mending should inherit heal bonus ?
         else
-            sp->forced_basepoints.set(x, TriggeredSpell->getEffectBasePoints(effectIndex));
+            sp->forced_basepoints->set(x, TriggeredSpell->getEffectBasePoints(effectIndex));
 
     }
 

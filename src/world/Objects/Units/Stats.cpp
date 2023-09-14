@@ -30,6 +30,7 @@
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Objects/Units/Unit.hpp"
 #include "Players/Player.hpp"
+#include "Spell/SpellInfo.hpp"
 
 // APGL End
 // MIT Start

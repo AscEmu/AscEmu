@@ -39,6 +39,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Utilities/Strings.hpp"
 #include "Server/WorldSession.h"
+#include "Spell/SpellInfo.hpp"
 
 #if VERSION_STRING < Cata
 #include "Management/Guild/Guild.hpp"

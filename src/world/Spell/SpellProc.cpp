@@ -7,9 +7,20 @@ This file is released under the MIT license. See README-MIT for more information
 #include "SpellProc.hpp"
 
 #include "Spell/Spell.hpp"
+#include "Spell/SpellInfo.hpp"
 #include "Definitions/ProcFlags.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"
+
+SpellProc::SpellProc()
+{
+    mOverrideEffectDamage = new SpellForcedBasePoints;
+}
+
+SpellProc::~SpellProc()
+{
+    delete mOverrideEffectDamage;
+}
 
 void SpellProc::init(Object* /*obj*/) { }
 
@@ -170,13 +181,13 @@ void SpellProc::setCastedOnProcOwner(bool enable) { m_castOnProcOwner = enable; 
 int32_t SpellProc::getOverrideEffectDamage(uint8_t effIndex) const
 {
     int32_t overrideValue = 0;
-    mOverrideEffectDamage.get(effIndex, &overrideValue);
+    mOverrideEffectDamage->get(effIndex, &overrideValue);
     return overrideValue;
 }
 
 void SpellProc::setOverrideEffectDamage(uint8_t effIndex, int32_t damage)
 {
-    mOverrideEffectDamage.set(effIndex, damage);
+    mOverrideEffectDamage->set(effIndex, damage);
 }
 
 Aura* SpellProc::getCreatedByAura() const { return m_createdByAura; }

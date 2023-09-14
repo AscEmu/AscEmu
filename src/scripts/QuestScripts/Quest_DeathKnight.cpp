@@ -27,6 +27,7 @@
 #include "Server/Script/GameObjectAIScript.hpp"
 #include "Server/Script/QuestScript.hpp"
 #include "Spell/Spell.hpp"
+#include "Spell/SpellScript.hpp"
 
 enum 
 {

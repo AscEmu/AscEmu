@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "SpellMgr.hpp"
 
 #include "Spell/Spell.hpp"
+#include "Spell/SpellInfo.hpp"
 #include "SpellAura.hpp"
 #include "Logging/Logger.hpp"
 #include "Spell/Definitions/AuraEffects.hpp"

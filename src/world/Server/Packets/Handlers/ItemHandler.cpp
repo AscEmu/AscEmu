@@ -54,6 +54,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgBuyFailed.h"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Spell/Spell.hpp"
+#include "Spell/SpellInfo.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 
 using namespace AscEmu::Packets;
@@ -333,7 +334,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     spell->setItemCaster(tmpItem);
 
     if (spellToLearn != 0)
-        spell->forced_basepoints.set(0, spellToLearn);
+        spell->forced_basepoints->set(0, spellToLearn);
 
 #if VERSION_STRING >= WotLK
     spell->m_glyphslot = srlPacket.glyphIndex;

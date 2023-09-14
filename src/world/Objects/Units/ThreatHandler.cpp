@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Opcodes.hpp"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellAura.hpp"
+#include "Spell/SpellInfo.hpp"
 
 void ThreatReference::addThreat(float amount)
 {

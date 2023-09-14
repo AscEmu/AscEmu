@@ -92,6 +92,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Spell.hpp"
 #include "Spell/SpellAura.hpp"
 #include "Spell/SpellDefines.hpp"
+#include "Spell/SpellInfo.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Creatures/Pet.h"

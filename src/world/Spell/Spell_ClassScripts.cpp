@@ -20,7 +20,7 @@
  */
 
 #include "Spell/Spell.hpp"
-#include "Map/Management/MapMgr.hpp"
+#include "Spell/SpellInfo.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "SpellAura.hpp"
 #include "Definitions/SpellSchoolConversionTable.hpp"

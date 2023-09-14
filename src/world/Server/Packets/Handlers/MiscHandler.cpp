@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "zlib.h"
+#include "Chat/ChatDefines.hpp"
 #include "Management/AddonMgr.h"
 #include "Management/Group.h"
 #include "Management/ObjectMgr.hpp"

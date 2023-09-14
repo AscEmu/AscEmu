@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgItemEnchantmentTimeUpdate.h"
 #include "Server/Packets/SmsgItemTimeUpdate.h"
 #include "Spell/Spell.hpp"
+#include "Spell/SpellInfo.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Spell/SpellMgr.hpp"

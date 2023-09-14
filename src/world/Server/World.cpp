@@ -48,6 +48,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObject.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/Player.hpp"
+#include "Spell/SpellInfo.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 
 #if VERSION_STRING >= Cata

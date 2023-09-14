@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "SpellScript.hpp"
 #include "SpellDefines.hpp"
+#include "SpellInfo.hpp"
 #include "SpellProc.hpp"
 #include "Objects/Object.hpp"
 

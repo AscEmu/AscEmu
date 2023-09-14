@@ -22,6 +22,7 @@
 #include "Server/Script/ScriptMgr.hpp"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellAura.hpp"
+#include "Spell/SpellInfo.hpp"
 
 bool Penance(uint8_t /*effectIndex*/, Spell* pSpell)
 {

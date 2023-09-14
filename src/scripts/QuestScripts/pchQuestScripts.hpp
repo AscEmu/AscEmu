@@ -16,3 +16,4 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/GameObject.h"
 #include "Management/ObjectMgr.hpp"
+#include "Spell/SpellScript.hpp"

@@ -9,12 +9,18 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellState.hpp"
 #include "Definitions/SpellTargetMod.hpp"
 #include "SpellCastTargets.hpp"
-#include "SpellInfo.hpp"
 #include "SpellTargetConstraint.hpp"
 #include "Movement/Spline/MovementTypedefs.h"
 #include "Objects/DamageInfo.hpp"
 #include <memory>
 
+#include "SpellDefines.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
+
+struct AuraEffectModifier;
+struct SpellForcedBasePoints;
+class Object;
+class SpellInfo;
 class Corpse;
 class WorldSession;
 class Unit;
@@ -27,6 +33,7 @@ class DummySpellHandler;
 class Creature;
 struct CreatureProperties;
 class GameObject;
+class Spell;
 
 typedef void(Spell::*pSpellEffect)(uint8_t effectIndex);
 typedef void(Spell::*pSpellTarget)(uint32 i, uint32 j);
@@ -229,7 +236,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
     // Some spells inherit base points from the mother spell
-    SpellForcedBasePoints forced_basepoints = SpellForcedBasePoints();
+    SpellForcedBasePoints* forced_basepoints;
 
     Aura* getTriggeredByAura() const;
 

@@ -21,13 +21,14 @@
 #include "Objects/Units/Stats.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Spell/SpellAura.hpp"
-#include <Spell/Definitions/PowerType.hpp>
-#include <Objects/Units/Creatures/Pet.h>
+#include "Spell/Definitions/PowerType.hpp"
+#include "Objects/Units/Creatures/Pet.h"
 #include "Management/ItemInterface.h"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Spell/Spell.hpp"
+#include "Spell/SpellInfo.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Objects/GameObject.h"
 

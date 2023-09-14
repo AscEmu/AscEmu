@@ -25,6 +25,7 @@
 #include "Server/Script/ScriptMgr.hpp"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellAura.hpp"
+#include "Spell/SpellInfo.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/DispelType.hpp"
 
@@ -259,17 +260,17 @@ bool DeathCoil(uint8_t /*effectIndex*/, Spell* s)
 
     int32_t dmg = s->damage;
 
-    SpellForcedBasePoints forcedBasePoints;
+    SpellForcedBasePoints* forcedBasePoints;
     if (s->getPlayerCaster()->isValidTarget(unitTarget))
     {
-        forcedBasePoints.set(EFF_INDEX_0, dmg);
-        s->getPlayerCaster()->castSpell(unitTarget, 47632, forcedBasePoints, true);
+        forcedBasePoints->set(EFF_INDEX_0, dmg);
+        s->getPlayerCaster()->castSpell(unitTarget, 47632, *forcedBasePoints, true);
     }
     else if (unitTarget->isPlayer() && unitTarget->getRace() == RACE_UNDEAD)
     {
         float multiplier = 1.5f;
-        forcedBasePoints.set(EFF_INDEX_0, static_cast<int32_t>((dmg * multiplier)));
-        s->getPlayerCaster()->castSpell(unitTarget, 47633, forcedBasePoints, true);
+        forcedBasePoints->set(EFF_INDEX_0, static_cast<int32_t>((dmg * multiplier)));
+        s->getPlayerCaster()->castSpell(unitTarget, 47633, *forcedBasePoints, true);
     }
 
     return true;
@@ -299,10 +300,10 @@ bool DeathAndDecay(uint8_t effectIndex, Aura* pAura, bool apply)
         if (caster == NULL)
             return true;
 
-        SpellForcedBasePoints forcedBasePoints;
-        forcedBasePoints.set(EFF_INDEX_0, static_cast<uint32_t>(pAura->getEffectDamage(effectIndex) + caster->getCalculatedAttackPower() * 0.064));
+        SpellForcedBasePoints* forcedBasePoints;
+        forcedBasePoints->set(EFF_INDEX_0, static_cast<uint32_t>(pAura->getEffectDamage(effectIndex) + caster->getCalculatedAttackPower() * 0.064));
 
-        caster->castSpell(pAura->getOwner(), 52212, forcedBasePoints, true);
+        caster->castSpell(pAura->getOwner(), 52212, *forcedBasePoints, true);
     }
 
     return true;

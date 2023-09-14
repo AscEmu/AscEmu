@@ -27,6 +27,7 @@
 #include "Objects/Units/Players/Player.hpp"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellAura.hpp"
+#include "Spell/SpellInfo.hpp"
 #include "Spell/SpellMgr.hpp"
 
 /*

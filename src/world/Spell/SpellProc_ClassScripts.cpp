@@ -20,10 +20,10 @@
  */
 
 #include "Spell/Spell.hpp"
+#include "Spell/SpellInfo.hpp"
 #include "Objects/Item.hpp"
 #include "Management/ItemInterface.h"
 #include "Objects/Units/Players/PlayerClasses.hpp"
-#include "Map/Management/MapMgr.hpp"
 #include "SpellMgr.hpp"
 #include "SpellAura.hpp"
 #include "Definitions/ProcFlags.hpp"
@@ -445,9 +445,9 @@ public:
         SpellCastTargets targets(victim->getGuid());
 
         Spell* spell = sSpellMgr.newSpell(getProcOwner(), getSpell(), true, nullptr);
-        spell->forced_basepoints.set(0, getOverrideEffectDamage(0));
-        spell->forced_basepoints.set(1, getOverrideEffectDamage(1));
-        spell->forced_basepoints.set(2, getOverrideEffectDamage(2));
+        spell->forced_basepoints->set(0, getOverrideEffectDamage(0));
+        spell->forced_basepoints->set(1, getOverrideEffectDamage(1));
+        spell->forced_basepoints->set(2, getOverrideEffectDamage(2));
         spell->ProcedOnSpell = CastingSpell;
 
         spell->prepare(&targets);

@@ -32,6 +32,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObject.h"
 #include "Server/ServerState.h"
 #include "Spell/Spell.hpp"
+#include "Spell/SpellInfo.hpp"
 
 // APGL End
 // MIT Start

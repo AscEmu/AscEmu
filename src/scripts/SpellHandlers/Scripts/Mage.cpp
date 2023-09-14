@@ -7,7 +7,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellAura.hpp"
+#include "Spell/SpellInfo.hpp"
 #include "Spell/SpellMgr.hpp"
+#include "Spell/SpellScript.hpp"
 
 enum MageSpells
 {
@@ -310,7 +312,7 @@ public:
 
     SpellScriptExecuteState onCastProcSpell(SpellProc* /*spellProc*/, Unit* /*caster*/, Unit* /*victim*/, Spell* spell) override
     {
-        spell->forced_basepoints.set(EFF_INDEX_0, manaReturn);
+        spell->forced_basepoints->set(EFF_INDEX_0, manaReturn);
         manaReturn = 0;
         return SpellScriptExecuteState::EXECUTE_OK;
     }

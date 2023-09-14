@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Xevozz.hpp"
 #include "Instance_TheVioletHold.hpp"
 #include "Movement/MovementManager.h"
+#include "Spell/SpellInfo.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //  Xevozz AI

@@ -9,15 +9,18 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/EventableObject.h"
 #include "Objects/Units/Creatures/CreatureDefines.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
-//#include "Objects/Units/Creatures/Vehicle.hpp"
 #include "Objects/Units/Creatures/VehicleDefines.hpp"
 #include "Server/Script/SimpleEventScript.hpp"
 
 #if VERSION_STRING >= WotLK
     #include "AchievementMgr.h"
-    #include "Storage/WDB/WDBStructures.hpp"
+namespace WDB::Structures
+{
+    struct DungeonEncounterEntry;
+}
 #endif
 
+class Object;
 class Corpse;
 class Charter;
 class ArenaTeam;

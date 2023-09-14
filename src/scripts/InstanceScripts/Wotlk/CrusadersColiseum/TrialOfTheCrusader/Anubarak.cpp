@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/MovementManager.h"
 #include "Server/Script/InstanceScript.hpp"
 #include "Spell/Spell.hpp"
+#include "Spell/SpellInfo.hpp"
 
 // ToDo
 // Cannot Get Submerge Phase to Work

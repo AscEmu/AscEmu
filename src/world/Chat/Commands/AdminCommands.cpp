@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSessionLog.hpp"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellAura.hpp"
+#include "Spell/SpellInfo.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 
@@ -26,7 +27,7 @@ bool ChatHandler::HandleAdminCastAllCommand(const char* args, WorldSession* m_se
     }
 
     uint32_t spell_id = atol(args);
-    auto spell_entry = sSpellMgr.getSpellInfo(spell_id);
+    SpellInfo const* spell_entry = sSpellMgr.getSpellInfo(spell_id);
     if (!spell_entry)
     {
         RedSystemMessage(m_session, "Spell %u is not a valid spell!", spell_id);

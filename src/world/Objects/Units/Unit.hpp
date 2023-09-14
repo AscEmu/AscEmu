@@ -28,6 +28,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include <list>
 #include <optional>
 
+#include "Spell/SpellDefines.hpp"
+#include "Spell/Definitions/AuraRemoveMode.hpp"
+
 
 namespace MySQLStructure
 {

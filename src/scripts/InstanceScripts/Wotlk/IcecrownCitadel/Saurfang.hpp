@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Raid_IceCrownCitadel.hpp"
 #include "Server/Script/AchievementScript.hpp"
+#include "Spell/SpellScript.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Boss: Deathbringer Suarfang

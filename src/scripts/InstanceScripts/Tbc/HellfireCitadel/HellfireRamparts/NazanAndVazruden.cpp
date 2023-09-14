@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "NazanAndVazruden.hpp"
 #include "Instance_HellfireRamparts.hpp"
 #include "Movement/MovementManager.h"
+#include "Spell/SpellInfo.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Boss: Nazan

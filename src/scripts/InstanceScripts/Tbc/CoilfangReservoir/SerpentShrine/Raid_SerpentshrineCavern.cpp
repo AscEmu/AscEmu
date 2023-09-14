@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"
 #include "Server/Script/InstanceScript.hpp"
+#include "Spell/SpellInfo.hpp"
 
 class HydrossTheUnstableAI : public CreatureAIScript
 {
@@ -841,9 +842,9 @@ public:
             if (random_target == nullptr)
                 return;
             //let's force this effect
-            SpellForcedBasePoints forcedBasePoints;
-            forcedBasePoints.set(0, random_target->getMaxHealth() / 2);
-            getCreature()->castSpell(random_target, info_cataclysmic_bolt, forcedBasePoints, true);
+            SpellForcedBasePoints* forcedBasePoints;
+            forcedBasePoints->set(0, random_target->getMaxHealth() / 2);
+            getCreature()->castSpell(random_target, info_cataclysmic_bolt, *forcedBasePoints, true);
             TargetTable.clear();
         }
 

@@ -20,6 +20,7 @@
  */
 
 #include "Spell.hpp"
+#include "Spell/SpellInfo.hpp"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Objects/Item.hpp"

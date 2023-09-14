@@ -39,6 +39,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellTypes.hpp"
 #include "Spell/SpellAura.hpp"
 #include "Spell/SpellMgr.hpp"
+#include "Spell/SpellInfo.hpp"
 #include "Spell/SpellTarget.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Creatures/Pet.h"
@@ -3570,7 +3571,7 @@ void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePo
         return;
 
     Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
-    newSpell->forced_basepoints = forcedBasePoints;
+    newSpell->forced_basepoints = &forcedBasePoints;
     newSpell->m_charges = spellCharges;
 
     SpellCastTargets targets(0);
@@ -3636,7 +3637,7 @@ void Unit::castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, SpellForce
         return;
 
     Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
-    newSpell->forced_basepoints = forcedBasepoints;
+    newSpell->forced_basepoints = &forcedBasepoints;
 
     SpellCastTargets targets(targetGuid);
 
@@ -3650,7 +3651,7 @@ void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePo
         return;
 
     Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
-    newSpell->forced_basepoints = forcedBasepoints;
+    newSpell->forced_basepoints = &forcedBasepoints;
 
     SpellCastTargets targets(0);
     if (target != nullptr)
@@ -13889,7 +13890,7 @@ uint32_t Unit::handleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
                     continue;
                 int32_t val = parentproc->calculateEffectValue(0);
                 Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, NULL);
-                spell->forced_basepoints.set(0, (val * damageInfo.realDamage) / 300); //per tick
+                spell->forced_basepoints->set(0, (val * damageInfo.realDamage) / 300); //per tick
                 SpellCastTargets targets(getGuid());
                 spell->prepare(&targets);
                 continue;
