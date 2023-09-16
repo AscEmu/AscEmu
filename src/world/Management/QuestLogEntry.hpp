@@ -5,8 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Server/EventableObject.h"
+#include "CommonTypes.hpp"
+#include <set>
 
+class QueryBuffer;
+class Field;
 class QuestScript;
 class Unit;
 class Player;
@@ -20,7 +23,7 @@ enum QuestLogState : uint32_t
     QLS_ObjectiveCompleted = 0x01000000
 };
 
-class SERVER_DECL QuestLogEntry : public EventableObject
+class SERVER_DECL QuestLogEntry
 {
     friend class QuestMgr;
 

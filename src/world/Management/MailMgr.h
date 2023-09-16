@@ -20,10 +20,12 @@
 #define MAILMGR_H
 
 #include "Server/EventableObject.h"
+#include <vector>
 
 #define MAIL_MAX_ITEM_SLOT 12
 #define MAIL_DEFAULT_EXPIRATION_TIME 30
 
+class QueryResult;
 class Player;
 /// \todo refactoring
 struct AuctionEntry;
@@ -136,7 +138,7 @@ class Mailbox
 
         void AddMessage(MailMessage* Message);
         void DeleteMessage(uint32 MessageId, bool sql);
-        MailMessage* GetMessage(uint32 message_id)
+        MailMessage* GetMessageById(uint32 message_id)
         {
             MessageMap::iterator iter = Messages.find(message_id);
             if (iter == Messages.end())

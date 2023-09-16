@@ -5,8 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Common.Legacy.h"
+#include <filesystem>
 
-// Banner information
-#define AE_PLATFORM     "@AE_PLATFORM@"
-#define AE_ARCHITECTURE "@AE_ARCHITECTURE@"
+namespace fs = std::filesystem;
+
+unsigned const maxPathLength = 1024;

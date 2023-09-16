@@ -15,6 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/Definitions.h"
+#include "Server/EventMgr.h"
 #include "Server/Packets/SmsgEnchantmentLog.h"
 #include "Server/Packets/SmsgItemEnchantmentTimeUpdate.h"
 #include "Server/Packets/SmsgItemTimeUpdate.h"

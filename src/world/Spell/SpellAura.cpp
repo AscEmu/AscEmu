@@ -17,6 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellFamily.hpp"
 #include "Logging/Logger.hpp"
 #include "Objects/Units/Players/Player.hpp"
+#include "Server/EventMgr.h"
 #include "Server/Script/HookInterface.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 

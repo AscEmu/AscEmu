@@ -71,6 +71,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellLog.hpp"
 #include "Spell/Definitions/SpellSchoolConversionTable.hpp"
 #include "Objects/Transporter.hpp"
+#include "Server/EventMgr.h"
 #include "Server/World.h"
 #include "Server/Script/HookInterface.hpp"
 #include "Spell/Spell.hpp"

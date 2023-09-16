@@ -23,6 +23,7 @@
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/Packets/SmsgReceivedMail.h"
+#include "CommonTime.hpp"
 
 MailSystem& MailSystem::getInstance()
 {
@@ -117,7 +118,7 @@ void MailSystem::SaveMessageToSQL(MailMessage* message)
 
 void MailSystem::RemoveMessageIfDeleted(uint32 message_id, Player* plr)
 {
-    MailMessage* msg = plr->m_mailBox->GetMessage(message_id);
+    MailMessage* msg = plr->m_mailBox->GetMessageById(message_id);
     if (msg == 0) return;
 
     if (msg->deleted_flag)   // we've deleted from inbox

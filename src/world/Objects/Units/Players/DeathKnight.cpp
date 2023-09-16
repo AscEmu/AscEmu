@@ -20,6 +20,7 @@
  */
 
 #include "Objects/Units/Players/PlayerClasses.hpp"
+#include "Server/EventMgr.h"
 #include "Server/WorldSession.h"
 #include "Server/Packets/SmsgConvertRune.h"
 

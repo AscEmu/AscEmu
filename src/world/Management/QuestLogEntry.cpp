@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Logging/Logger.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/EventMgr.h"
 #include "Server/Script/QuestScript.hpp"
 
 QuestLogEntry::QuestLogEntry(QuestProperties const* questProperties, Player* player, uint8_t slot) : m_slot(slot), m_questProperties(questProperties), m_player(player)

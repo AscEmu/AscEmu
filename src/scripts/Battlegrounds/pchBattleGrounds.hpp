@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/HonorHandler.h"
 #include "Management/WorldStates.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
+#include "Server/EventMgr.h"
 #include "Server/Master.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Spell/Spell.hpp"
@@ -15,3 +16,4 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/GameObject.h"
+#include "CommonTime.hpp"

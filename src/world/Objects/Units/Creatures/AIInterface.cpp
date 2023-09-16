@@ -36,6 +36,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Objects/Units/Creatures/CreatureGroups.h"
 #include "Objects/Units/Players/Player.hpp"
+#include "Server/EventMgr.h"
 #include "Server/World.h"
 #include "Server/Script/InstanceScript.hpp"
 #include "Spell/Spell.hpp"

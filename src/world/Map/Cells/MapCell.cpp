@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ObjectMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/GameObjectProperties.hpp"
+#include "Server/EventMgr.h"
 #include "Server/World.h"
 #include "Storage/MySQLDataStore.hpp"
 

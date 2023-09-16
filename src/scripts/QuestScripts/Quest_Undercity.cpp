@@ -24,6 +24,7 @@
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/Player.hpp"
+#include "Server/EventMgr.h"
 #include "Server/Script/QuestScript.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Spell/SpellMgr.hpp"

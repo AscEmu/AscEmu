@@ -30,6 +30,7 @@
 #include "Logging/Logger.hpp"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/TradeData.hpp"
+#include "Server/EventMgr.h"
 #include "Server/WorldSession.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/SmsgInventoryChangeFailure.h"

@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Database.h"
 #include "Field.hpp"
 #include <Common.hpp>
+#include "CommonFilesystem.hpp"
 #include <Utilities/Util.hpp>
 #include <iostream>
 

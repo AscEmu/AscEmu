@@ -32,6 +32,7 @@
 #include "Management/Battleground/BattlegroundDefines.hpp"
 #include "Objects/GameObject.h"
 #include "Objects/Units/Players/Player.hpp"
+#include "Server/EventMgr.h"
 #include "Spell/Spell.hpp"
 
 WarsongGulch::WarsongGulch(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : Battleground(mgr, id, lgroup, t)

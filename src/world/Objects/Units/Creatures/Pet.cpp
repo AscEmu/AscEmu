@@ -35,6 +35,7 @@
 #include "Map/Maps/BattleGroundMap.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/EventMgr.h"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Spell/SpellAura.hpp"

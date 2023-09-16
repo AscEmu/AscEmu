@@ -36,6 +36,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Corpse.hpp"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/EventMgr.h"
 #include "Server/World.h"
 #include "Utilities/Strings.hpp"
 #include "Server/WorldSession.h"

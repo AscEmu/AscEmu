@@ -82,6 +82,7 @@
 #include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
 #include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 #include "Server/Definitions.h"
+#include "Server/EventMgr.h"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"

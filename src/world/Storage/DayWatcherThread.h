@@ -7,6 +7,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <ctime>
 
+namespace AscEmu::Threading
+{
+    class AEThread;
+}
+
 enum DAYWATCHERSETTINGS
 {
     WEEKLY  = 1,

@@ -680,9 +680,9 @@ public:
             }
             else
             {
-                char buff[32];
-                sprintf(buff, I64FMT, GUID);
-                lua_pushfstring(L, "%s", buff);
+                std::stringstream message;
+                message << GUID;
+                lua_pushfstring(L, "%s", message.str().c_str());
             }
             return 1;
         }

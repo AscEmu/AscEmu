@@ -8,11 +8,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CommonTypes.hpp"
 #include "InstanceNumberGen.hpp"
 #include "Utilities/Util.hpp"
-
+#include "Map/Maps/InstanceDefines.hpp"
 #include <unordered_map>
 
 enum PlayerTeam : uint8_t;
-enum EnterState;
+
 namespace InstanceDifficulty
 {
     enum Difficulties : uint8_t;

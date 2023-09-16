@@ -20,6 +20,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Corpse.hpp"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/Player.hpp"
+#include "Server/EventMgr.h"
+#include "CommonTime.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Fire Locations

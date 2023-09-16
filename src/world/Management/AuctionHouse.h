@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "AEVersion.hpp"
 #include "Objects/Item.hpp"
+#include <unordered_map>
 
 namespace WDB::Structures
 {

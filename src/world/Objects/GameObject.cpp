@@ -51,6 +51,7 @@
 #include "Management/QuestMgr.h"
 #include "Management/Gossip/GossipScript.hpp"
 #include "Map/Maps/WorldMap.hpp"
+#include "Server/EventMgr.h"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Server/Script/EventScript.hpp"

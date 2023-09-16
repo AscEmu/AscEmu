@@ -11,6 +11,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <set>
 #include <string>
+#include <unordered_map>
+
+#include "PerformanceCounter.hpp"
+#include "Utilities/CallBack.h"
 
 class WorldPacket;
 class WorldSocket;

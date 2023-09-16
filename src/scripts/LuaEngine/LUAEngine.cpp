@@ -25,6 +25,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/QuestProperties.hpp"
 #include "Objects/Item.hpp"
 #include "Spell/Spell.hpp"
+#include "CommonFilesystem.hpp"
 
 #ifdef __APPLE__
 #undef check

@@ -24,6 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Definitions.h"
 #include "Server/WorldSessionLog.hpp"
+#include "CommonTime.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -33,7 +34,7 @@ void WorldSession::handleMarkAsReadOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    auto mailMessage = _player->m_mailBox->GetMessage(srlPacket.messageId);
+    auto mailMessage = _player->m_mailBox->GetMessageById(srlPacket.messageId);
     if (mailMessage == nullptr)
         return;
 
@@ -52,7 +53,7 @@ void WorldSession::handleMailDeleteOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto mailMessage = _player->m_mailBox->GetMessage(srlPacket.messageId);
+    const auto mailMessage = _player->m_mailBox->GetMessageById(srlPacket.messageId);
     if (mailMessage == nullptr)
     {
         SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_DELETED, MAIL_ERR_INTERNAL_ERROR).serialise().get());
@@ -70,7 +71,7 @@ void WorldSession::handleTakeMoneyOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto mailMessage = _player->m_mailBox->GetMessage(srlPacket.messageId);
+    const auto mailMessage = _player->m_mailBox->GetMessageById(srlPacket.messageId);
     if (mailMessage == nullptr || !mailMessage->money)
     {
         SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_MONEY_TAKEN, MAIL_ERR_INTERNAL_ERROR).serialise().get());
@@ -100,7 +101,7 @@ void WorldSession::handleReturnToSenderOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto mailMessage = _player->m_mailBox->GetMessage(srlPacket.messageId);
+    const auto mailMessage = _player->m_mailBox->GetMessageById(srlPacket.messageId);
     if (mailMessage == nullptr)
     {
         SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_RETURNED_TO_SENDER, MAIL_ERR_INTERNAL_ERROR).serialise().get());
@@ -133,7 +134,7 @@ void WorldSession::handleMailCreateTextItemOpcode(WorldPacket& recvPacket)
         return;
 
     const auto itemProperties = sMySQLStore.getItemProperties(8383);
-    auto message = _player->m_mailBox->GetMessage(srlPacket.messageId);
+    auto message = _player->m_mailBox->GetMessageById(srlPacket.messageId);
     if (message == nullptr || !itemProperties)
     {
         SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_MADE_PERMANENT, MAIL_ERR_INTERNAL_ERROR).serialise().get());
@@ -332,7 +333,7 @@ void WorldSession::handleTakeItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    auto mailMessage = _player->m_mailBox->GetMessage(srlPacket.messageId);
+    auto mailMessage = _player->m_mailBox->GetMessageById(srlPacket.messageId);
     if (mailMessage == nullptr || mailMessage->items.empty())
     {
         SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_ITEM_TAKEN, MAIL_ERR_INTERNAL_ERROR).serialise().get());

@@ -18,6 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Battleground/BattlegroundDefines.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/Units/Players/Player.hpp"
+#include "Server/EventMgr.h"
 #include "Server/Script/HookInterface.hpp"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellInfo.hpp"

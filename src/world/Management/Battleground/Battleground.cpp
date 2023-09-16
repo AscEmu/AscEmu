@@ -34,6 +34,7 @@
 #include "Objects/GameObject.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/Player.hpp"
+#include "Server/EventMgr.h"
 #include "Server/WorldSession.h"
 #include "Spell/Definitions/PowerType.hpp"
 #include "Server/Packets/SmsgPlaySound.h"

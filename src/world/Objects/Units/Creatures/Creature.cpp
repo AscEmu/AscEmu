@@ -30,6 +30,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/Definitions.h"
+#include "Server/EventMgr.h"
 #include "Server/Opcodes.hpp"
 #include "Server/World.h"
 #include "Server/Script/EventScript.hpp"

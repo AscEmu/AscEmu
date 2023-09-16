@@ -23,6 +23,7 @@
 #include "Logging/Logger.hpp"
 #include "Server/World.h"
 #include "Objects/Units/Players/Player.hpp"
+#include "Server/EventMgr.h"
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
 

@@ -59,7 +59,9 @@
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/GameObject.h"
 #include "Objects/Units/Creatures/Vehicle.hpp"
+#include "Server/EventMgr.h"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "CommonTime.hpp"
 
 using namespace AscEmu::Packets;
 

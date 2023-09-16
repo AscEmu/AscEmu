@@ -19,6 +19,7 @@
 
 #include "Setup.h"
 #include "Objects/Units/Unit.hpp"
+#include "Server/EventMgr.h"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellAura.hpp"

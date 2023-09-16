@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Setup.h"
+#include "Server/EventMgr.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Map/Maps/MapScriptInterface.h"

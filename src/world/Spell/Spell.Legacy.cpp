@@ -58,6 +58,7 @@
 #include "Management/Battleground/BattlegroundDefines.hpp"
 #include "Movement/MovementManager.h"
 #include "Objects/GameObject.h"
+#include "Server/EventMgr.h"
 #include "Server/WorldSession.h"
 #include "Storage/WDB/WDBStructures.hpp"
 

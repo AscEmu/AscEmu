@@ -13,6 +13,7 @@ extern "C"
 }
 
 #include <cstdint>
+#include <cstring>
 
 #define GET_SPELLVAR_INT(proto,offset,subindex) *(int*)((char*)(proto) + (offset) + (subindex))
 #define GET_SPELLVAR_CHAR(proto,offset,subindex) *(char**)((char*)(proto) + (offset) + (subindex))

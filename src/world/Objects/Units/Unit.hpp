@@ -27,6 +27,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <array>
 #include <list>
 #include <optional>
+#include <unordered_set>
 
 #include "Spell/SpellDefines.hpp"
 #include "Spell/Definitions/AuraRemoveMode.hpp"

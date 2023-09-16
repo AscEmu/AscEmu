@@ -13,15 +13,18 @@ This file is released under the MIT license. See README-MIT for more information
 #include <queue>
 
 #include "InstanceDefines.hpp"
+#include "Debugging/Errors.h"
 #include "Map/SpawnGroups.hpp"
 
-namespace WDB
+namespace AscEmu::Threading
 {
-    namespace Structures
-    {
-        struct SummonPropertiesEntry;
-        struct MapDifficulty;
-    }
+    class AEThread;
+}
+
+namespace WDB::Structures
+{
+    struct SummonPropertiesEntry;
+    struct MapDifficulty;
 }
 
 class WorldSession;

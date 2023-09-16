@@ -23,6 +23,7 @@
 #include "Spell/Definitions/SpellMechanics.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Players/Player.hpp"
+#include "Server/EventMgr.h"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellInfo.hpp"
 #include "Spell/SpellMgr.hpp"

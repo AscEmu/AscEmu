@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/EventMgr.h"
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Server/Script/CreatureAIScript.hpp"
@@ -707,7 +708,9 @@ bool ChatHandler::HandleNpcSelectCommand(const char* /*args*/, WorldSession* m_s
     }
 
     player->setTargetGuid(near_creature->getGuid());
-    SystemMessage(m_session, "Nearest Creature %s spawnID: %u GUID: " I64FMT " selected", near_creature->GetCreatureProperties()->Name.c_str(), near_creature->spawnid, near_creature->getGuid());
+    std::stringstream message;
+    message << "Nearest Creature " << near_creature->GetCreatureProperties()->Name << " spawnID: " << near_creature->spawnid << " GUID: " << near_creature->getGuid() << " selected";
+    SystemMessage(m_session, message.str().c_str());
     return true;
 }
 

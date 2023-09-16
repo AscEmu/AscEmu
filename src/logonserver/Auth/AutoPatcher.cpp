@@ -27,6 +27,8 @@
 #endif
 #include <Logging/Logger.hpp>
 
+#include "CommonFilesystem.hpp"
+
 PatchMgr& PatchMgr::getInstance()
 {
     static PatchMgr mInstance;

@@ -35,6 +35,7 @@
 #include "Objects/Units/Creatures/Vehicle.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/EventMgr.h"
 #include "Server/WorldSession.h"
 #include "Server/Packets/SmsgPartyCommandResult.h"
 #include "Server/Packets/SmsgGroupSetLeader.h"

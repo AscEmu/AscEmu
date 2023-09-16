@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "LuaGlobalFunctions.hpp"
 
+#include "Common.hpp"
+#include "git_version.h"
 #include "LUAEngine.hpp"
 #include "LuaGlobal.hpp"
 #include "LuaMacros.h"

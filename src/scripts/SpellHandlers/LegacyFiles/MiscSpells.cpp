@@ -28,6 +28,7 @@
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/Player.hpp"
+#include "Server/EventMgr.h"
 #include "Server/Master.h"
 #include "Server/World.h"
 #include "Spell/Spell.hpp"

@@ -17,6 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/MovementManager.h"
 #include "Objects/GameObject.h"
 #include "Objects/Units/Players/Player.hpp"
+#include "CommonTime.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Trial Of The Crusader Instance

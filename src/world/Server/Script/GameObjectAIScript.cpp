@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "GameObjectAIScript.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/GameObject.h"
+#include "Server/EventMgr.h"
 
 GameObjectAIScript::GameObjectAIScript(GameObject* _goinstance) : _gameobject(_goinstance)
 {

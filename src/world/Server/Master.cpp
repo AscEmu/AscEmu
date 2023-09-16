@@ -51,6 +51,7 @@
 #include "Management/MailMgr.h"
 #include "Script/ScriptMgr.hpp"
 #include "Spell/SpellMgr.hpp"
+#include "CommonFilesystem.hpp"
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20230710-00_characters_taxi";

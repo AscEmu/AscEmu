@@ -33,8 +33,10 @@
 #include "Objects/GameObject.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/Player.hpp"
+#include "Server/EventMgr.h"
 #include "Spell/Spell.hpp"
 #include "Storage/MySQLDataStore.hpp"
+#include "CommonTime.hpp"
 
 static float EOTSBuffCoordinates[4][4] =
 {

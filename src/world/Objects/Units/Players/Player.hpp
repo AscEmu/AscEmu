@@ -21,6 +21,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <mutex>
 
+#include "Utilities/CallBack.h"
+
+class QueryResult;
+
 namespace WDB::Structures
 {
     struct SpellShapeshiftFormEntry;

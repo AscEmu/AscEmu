@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/InstanceScript.hpp"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellAura.hpp"
+#include "CommonTime.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //  Ichron AI

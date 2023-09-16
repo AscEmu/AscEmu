@@ -41,6 +41,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgAiReaction.h"
 #include "Movement/PathGenerator.h"
 #include "Movement/Spline/MovementPacketBuilder.h"
+#include "Server/EventMgr.h"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Spell/Spell.hpp"
