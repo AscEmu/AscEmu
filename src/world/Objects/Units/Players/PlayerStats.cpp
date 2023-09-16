@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Player.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Objects/Units/Stats.h"
+#include "Storage/WDB/WDBStructures.hpp"
 
 //\ brief: This file includes all (rewritten and confirmed) stat calculations for players
 void Player::updateManaRegeneration()

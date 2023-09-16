@@ -87,6 +87,7 @@
 #include "Server/WorldSessionLog.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"
 #include "Server/Script/InstanceScript.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 using namespace AscEmu::Packets;
 

@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/DatabaseDefinition.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/MySQLDataStore.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Strings.hpp"
 
 TaxiMask sTaxiNodesMask;

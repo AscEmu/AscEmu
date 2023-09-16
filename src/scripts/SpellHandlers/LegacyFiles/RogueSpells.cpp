@@ -29,6 +29,7 @@
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/SpellIsFlags.hpp"
 #include "Spell/Definitions/SpellMechanics.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 //Alice : Correct formula for Rogue - Preparation
 

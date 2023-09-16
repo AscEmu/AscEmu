@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "AEVersion.hpp"
 #include "CommonTypes.hpp"
 #include "Utilities/Util.hpp"
 #include <map>

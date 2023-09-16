@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/WDB/WDBStores.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 //.mount
 bool ChatHandler::HandleMountCommand(const char* args, WorldSession* m_session)

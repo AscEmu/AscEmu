@@ -15,6 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Server/Packets/SmsgInstanceReset.h"
+#include "Storage/MySQLStructures.h"
 
 using namespace AscEmu::Packets;
 

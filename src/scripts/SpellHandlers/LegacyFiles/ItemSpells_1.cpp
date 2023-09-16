@@ -29,6 +29,7 @@
 #include "Spell/SpellAura.hpp"
 #include "Spell/SpellInfo.hpp"
 #include "Spell/SpellMgr.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 /*
      How to add a new item spell to the dummy spell handler:

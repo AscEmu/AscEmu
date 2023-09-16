@@ -6,8 +6,18 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Map/Cells/TerrainMgr.hpp"
-#include "Storage/MySQLStructures.h"
-#include "Storage/WDB/WDBStructures.hpp"
+#include <vector>
+namespace WDB::Structures
+{
+    struct MapEntry;
+}
+
+namespace MySQLStructure
+{
+    struct CreatureSpawn;
+    struct GameobjectSpawn;
+    struct MapInfo;
+}
 
 typedef std::vector<MySQLStructure::CreatureSpawn*> CreatureSpawnList;
 typedef std::vector<MySQLStructure::GameobjectSpawn*> GameobjectSpawnList;

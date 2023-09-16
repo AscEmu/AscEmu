@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Server/Script/InstanceScript.hpp"
 #include "Server/Script/ScriptMgr.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 InstanceSaved::InstanceSaved(uint32_t mapId, uint32_t instanceId, InstanceDifficulty::Difficulties difficulty, time_t resetTime, bool canReset)
     : m_resetTime(resetTime),

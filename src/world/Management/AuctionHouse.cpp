@@ -22,6 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgAuctionBidderListResult.h"
 #include "Server/Packets/SmsgAuctionListResult.h"
 #include "Server/Packets/CmsgAuctionListItems.h"
+#include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Strings.hpp"
 
 using namespace AscEmu::Packets;

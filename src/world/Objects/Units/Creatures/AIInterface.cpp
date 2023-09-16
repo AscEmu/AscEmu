@@ -42,6 +42,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellAura.hpp"
 #include "Spell/SpellInfo.hpp"
 #include "Storage/WDB/WDBStores.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 // Random and guessed values for Internal Spell cast chance
 float spellChanceModifierDispell[12] =

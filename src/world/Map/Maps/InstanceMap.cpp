@@ -20,6 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Server/Script/InstanceScript.hpp"
 #include "Server/Script/ScriptMgr.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 InstanceMap::InstanceMap(BaseMap* baseMap, uint32_t id, uint32_t expiry, uint32_t InstanceId, uint8_t SpawnMode, PlayerTeam InstanceTeam)
     : WorldMap(baseMap, id, expiry, InstanceId, SpawnMode), instanceTeam(InstanceTeam)

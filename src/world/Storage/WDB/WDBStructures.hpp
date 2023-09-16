@@ -8,6 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "AEVersion.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "CommonTypes.hpp"
+#include "WDBDefines.hpp"
+
 #include <cstring>
 #include <map>
 #include <set>
@@ -1747,10 +1749,6 @@ namespace WDB::Structures
 #endif
 
 #if VERSION_STRING >= Cata
-#define MAX_SPELL_EFFECTS 3
-#define MAX_SPELL_REAGENTS 8
-#define MAX_SPELL_TOTEMS 2
-#define MAX_SPELL_TOTEM_CATEGORIES 2
 
     // SpellAuraOptions.dbc
     struct SpellAuraOptionsEntry
@@ -2493,9 +2491,6 @@ namespace WDB::Structures
     };
 
 #if VERSION_STRING == Classic
-#define MAX_SPELL_EFFECTS 3
-#define MAX_SPELL_REAGENTS 8
-#define MAX_SPELL_TOTEMS 2
 
     struct SpellEntry
     {
@@ -2594,10 +2589,6 @@ namespace WDB::Structures
 #pragma pack(pop)
 #endif
 #if VERSION_STRING == TBC
-#define MAX_SPELL_EFFECTS 3
-#define MAX_SPELL_REAGENTS 8
-#define MAX_SPELL_TOTEMS 2
-#define MAX_SPELL_TOTEM_CATEGORIES 2
 
     struct SpellEntry
     {
@@ -2704,10 +2695,6 @@ namespace WDB::Structures
 #pragma pack(pop)
 #endif
 #if VERSION_STRING == WotLK
-#define MAX_SPELL_EFFECTS 3
-#define MAX_SPELL_REAGENTS 8
-#define MAX_SPELL_TOTEMS 2
-#define MAX_SPELL_TOTEM_CATEGORIES 2
 
     struct SpellEntry
     {

@@ -20,6 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/MovementGenerators/FlightPathMovementGenerator.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/Player.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 using namespace AscEmu::Packets;
 

@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Definitions.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/WDB/WDBStores.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 #if VERSION_STRING < WotLK
 #include "Definitions/SpellEffectTarget.hpp"

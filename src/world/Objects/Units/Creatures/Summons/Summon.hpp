@@ -8,6 +8,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Creature.h"
 //#include "Objects/Units/Unit.hpp"
 
+namespace WDB::Structures
+{
+    struct SummonPropertiesEntry;
+}
+
 class SERVER_DECL Summon : public Creature
 {
 public:

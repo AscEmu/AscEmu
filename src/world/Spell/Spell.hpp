@@ -12,10 +12,17 @@ This file is released under the MIT license. See README-MIT for more information
 #include "SpellTargetConstraint.hpp"
 #include "Movement/Spline/MovementTypedefs.h"
 #include "Objects/DamageInfo.hpp"
-#include <memory>
-
 #include "SpellDefines.hpp"
-#include "Storage/WDB/WDBStructures.hpp"
+#include "Storage/WDB/WDBDefines.hpp"
+
+#include <map>
+#include <memory>
+#include <set>
+
+namespace WDB::Structures
+{
+    struct SummonPropertiesEntry;
+}
 
 struct AuraEffectModifier;
 struct SpellForcedBasePoints;

@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellScript.hpp"
 #include "Spell/Definitions/SpellFamily.hpp"
 #include "Storage/WDB/WDBStores.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 enum RogueSpells
 {

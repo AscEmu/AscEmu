@@ -9,11 +9,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/AuraRemoveMode.hpp"
 #include "Definitions/School.hpp"
 #include "Server/EventableObject.h"
-#include "Storage/WDB/WDBStructures.hpp"
 #include "AuraEffectModifier.hpp"
 #include "SpellAuraDefines.hpp"
 
 #include <cstdint>
+
+#include "Storage/WDB/WDBDefines.hpp"
 
 enum SchoolMask : uint8_t;
 class Item;

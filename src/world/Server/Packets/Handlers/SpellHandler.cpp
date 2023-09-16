@@ -22,6 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Spell.hpp"
 #include "Spell/SpellInfo.hpp"
 #include "Storage/WDB/WDBStores.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 using namespace AscEmu::Packets;
 

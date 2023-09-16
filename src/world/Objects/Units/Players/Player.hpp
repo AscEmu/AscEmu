@@ -21,6 +21,18 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <mutex>
 
+namespace WDB::Structures
+{
+    struct SpellShapeshiftFormEntry;
+    struct ChrClassesEntry;
+    struct ChrRacesEntry;
+
+#if VERSION_STRING > TBC
+        struct ScalingStatValuesEntry;
+        struct ScalingStatDistributionEntry;
+#endif
+}
+
 //struct InstancePlayerBind;
 struct ItemSet;
 class AchievementMgr;

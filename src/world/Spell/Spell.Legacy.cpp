@@ -59,6 +59,7 @@
 #include "Movement/MovementManager.h"
 #include "Objects/GameObject.h"
 #include "Server/WorldSession.h"
+#include "Storage/WDB/WDBStructures.hpp"
 
 using namespace AscEmu::Packets;
 

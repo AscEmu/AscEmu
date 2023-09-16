@@ -46,6 +46,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Spell.hpp"
 #include "Spell/SpellAura.hpp"
 #include "Spell/SpellInfo.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 #include "Units/Stats.h"
 #include "Units/Creatures/AIInterface.h"
 #include "Units/Creatures/Corpse.hpp"

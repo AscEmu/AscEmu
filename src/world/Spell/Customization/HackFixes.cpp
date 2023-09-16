@@ -37,6 +37,7 @@
 #include "Spell/SpellMgr.hpp"
 #include "Spell/SpellTarget.h"
 #include "Spell/Definitions/SpellEffects.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 using AscEmu::World::Spell::Helpers::decimalToMask;
 

@@ -4,15 +4,20 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "AreaStorage.hpp"
+
+#include <G3D/g3dmath.h>
+
 #include "VMapFactory.h"
 #include "VMapManager2.h"
 #include "MMapFactory.h"
 #include "Macros/MapsMacros.hpp"
 #include "AreaManagementGlobals.hpp"
+#include "LocationVector.h"
 #include "Logging/Logger.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Movement/MovementDefines.h"
 #include "Storage/WDB/WDBStores.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 namespace MapManagement::AreaManagement
 {

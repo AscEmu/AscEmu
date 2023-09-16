@@ -6,8 +6,13 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "AEVersion.hpp"
-#include "Storage/WDB/WDBStructures.hpp"
 #include "Objects/Item.hpp"
+
+namespace WDB::Structures
+{
+    struct AuctionHouseEntry;
+}
+
 
 namespace AscEmu::Packets
 {

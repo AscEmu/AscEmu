@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgChannelNotify.h"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Storage/WDB/WDBStores.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 using namespace AscEmu::Packets;
 

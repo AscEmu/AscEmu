@@ -74,6 +74,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Server/Script/HookInterface.hpp"
 #include "Spell/Spell.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 #if VERSION_STRING <= TBC
 #include "Server/Packets/SmsgUpdateAuraDuration.h"

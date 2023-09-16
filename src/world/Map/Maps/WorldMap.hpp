@@ -12,6 +12,18 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <queue>
 
+#include "InstanceDefines.hpp"
+#include "Map/SpawnGroups.hpp"
+
+namespace WDB
+{
+    namespace Structures
+    {
+        struct SummonPropertiesEntry;
+        struct MapDifficulty;
+    }
+}
+
 class WorldSession;
 class ByteBuffer;
 class WorldPacket;
@@ -34,6 +46,8 @@ class Summon;
 class InstanceMap;
 class CreatureGroup;
 enum LineOfSightChecks : uint8_t;
+enum SpawnObjectType;
+enum EnterState;
 
 struct CorpseInfo
 {
@@ -223,10 +237,7 @@ public:
     void removeGameObjectModel(GameObjectModel const& model) { _dynamicTree.remove(model); }
     void insertGameObjectModel(GameObjectModel const& model) { _dynamicTree.insert(model); }
     bool containsGameObjectModel(GameObjectModel const& model) const { return _dynamicTree.contains(model); }
-    float getGameObjectFloor(uint32_t phasemask, LocationVector pos, float maxSearchDist = 50.0f) const
-    {
-        return _dynamicTree.getHeight(pos.x, pos.y, pos.z, maxSearchDist, phasemask);
-    }
+    float getGameObjectFloor(uint32_t phasemask, LocationVector pos, float maxSearchDist = 50.0f) const;
 
     // Terrain
     TerrainHolder* getTerrain() const { return _terrain; }
@@ -234,7 +245,7 @@ public:
     float getGridHeight(float x, float y) const;
     float getHeight(LocationVector const& pos, bool vmap = true, float maxSearchDist = 50.0f) const;
     // phasemask seems to be invalid when loading into a map                                                                                                                                                // phase
-    float getHeight(uint32_t phasemask, LocationVector const& pos, bool vmap = true, float maxSearchDist = 50.0f) const { return std::max<float>(getHeight(pos, vmap, maxSearchDist), getGameObjectFloor(phasemask, pos, maxSearchDist)); }
+    float getHeight(uint32_t phasemask, LocationVector const& pos, bool vmap = true, float maxSearchDist = 50.0f) const;
 
     // Instance
     uint32_t getInstanceId() const { return _instanceId; }

@@ -12,6 +12,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Data/WoWItem.hpp"
 #include "Server/UpdateFieldInclude.h"
 
+namespace WDB::Structures
+{
+    struct SpellItemEnchantmentEntry;
+}
+
 class Container;
 
 struct EnchantmentInstance

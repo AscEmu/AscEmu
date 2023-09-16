@@ -34,6 +34,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Packets/SmsgInventoryChangeFailure.h"
 #include "Storage/WDB/WDBStores.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 using namespace AscEmu::Packets;
 

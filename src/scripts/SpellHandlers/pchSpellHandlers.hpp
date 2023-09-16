@@ -27,3 +27,5 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellProc.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Objects/GameObject.h"
+#include "Storage/WDB/WDBStores.hpp"
+#include "Storage/WDB/WDBStructures.hpp"

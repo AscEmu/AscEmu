@@ -8,11 +8,16 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/EventableObject.h"
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Objects/Units/Creatures/CreatureDefines.hpp"
-#include "Storage/WDB/WDBStructures.hpp"
 
 #include <map>
 #include <vector>
 #include <set>
+
+namespace WDB::Structures
+{
+    struct ItemRandomSuffixEntry;
+    struct ItemRandomPropertiesEntry;
+}
 
 struct ItemProperties;
 class Player;

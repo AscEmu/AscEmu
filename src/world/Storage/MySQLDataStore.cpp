@@ -22,6 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellMgr.hpp"
 #include "Utilities/Strings.hpp"
 #include "Storage/WDB/WDBStores.hpp"
+#include "WDB/WDBStructures.hpp"
 
 SERVER_DECL std::vector<MySQLAdditionalTable> MySQLAdditionalTables;
 

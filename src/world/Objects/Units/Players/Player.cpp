@@ -153,6 +153,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/HookInterface.hpp"
 #include "Server/Script/InstanceScript.hpp"
 #include "Server/Script/QuestScript.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 #if VERSION_STRING > TBC
     #include "Management/AchievementMgr.h"

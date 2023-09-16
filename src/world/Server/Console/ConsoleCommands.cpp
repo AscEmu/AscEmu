@@ -17,6 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/WorldSession.h"
 #include "Server/Script/ScriptMgr.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 bool handleSendChatAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool /*isWebClient*/)
 {

@@ -34,6 +34,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/DatabaseDefinition.hpp"
 #include "Spell/SpellInfo.hpp"
 #include "Spell/SpellMgr.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 using namespace AscEmu::Packets;
 

@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Storage/WDB/WDBStores.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Strings.hpp"
 
 #if VERSION_STRING < Cata

@@ -32,6 +32,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/AuraRemoveMode.hpp"
 
 
+namespace WDB::Structures
+{
+#if VERSION_STRING >= Cata
+    struct MountCapabilityEntry;
+#endif
+}
+
 namespace MySQLStructure
 {
     struct NpcScriptText;

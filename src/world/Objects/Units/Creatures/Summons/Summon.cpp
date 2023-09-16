@@ -20,6 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellInfo.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 Summon::Summon(uint64_t guid, WDB::Structures::SummonPropertiesEntry const* properties) : Creature(guid), m_Properties(properties)
 {

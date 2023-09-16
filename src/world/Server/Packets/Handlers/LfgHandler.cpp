@@ -25,6 +25,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSearchLfgLeave.h"
 #include "Server/Script/InstanceScript.hpp"
 #include "Server/Script/ScriptMgr.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 using namespace AscEmu::Packets;
 

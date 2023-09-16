@@ -21,6 +21,7 @@
 #define SKILLNAMEMGR_H
 
 #include "Storage/WDB/WDBStores.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 #if VERSION_STRING < Cata
 #include "Server/World.h"

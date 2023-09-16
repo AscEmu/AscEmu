@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Server/Packets/SmsgUpdateInstanceEncounterUnit.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 InstanceScript::InstanceScript(WorldMap* pMapMgr) : mInstance(pMapMgr)
 {

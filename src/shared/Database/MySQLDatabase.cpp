@@ -18,7 +18,6 @@
  *
  */
 
-#include "DatabaseCommon.hpp"
 #include "MySQLDatabase.h"
 
 #include "Logging/Logger.hpp"

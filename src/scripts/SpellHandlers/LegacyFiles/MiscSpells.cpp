@@ -37,6 +37,7 @@
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/WDB/WDBStores.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 enum
 {

@@ -29,6 +29,7 @@
 #include "Definitions/ProcFlags.hpp"
 #include "Management/Group.h"
 #include "Storage/WDB/WDBStores.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Warrior ProcScripts

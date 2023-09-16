@@ -23,6 +23,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Spell/SpellMgr.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Strings.hpp"
 
 using namespace AscEmu::Packets;

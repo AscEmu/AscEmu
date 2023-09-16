@@ -173,13 +173,7 @@ public:
         inline uint32 GetPetAction(void) { return m_Action; }
 
         inline void SetPetDiet(uint32 diet) { m_Diet = diet; }
-        inline void SetPetDiet()
-        { 
-            if (myFamily)
-                m_Diet = myFamily->petdietflags;
-            else
-                m_Diet = 0;
-        }
+        inline void SetPetDiet();
         inline uint32 GetPetDiet(void) { return m_Diet; }
 
         inline AI_Spell* GetAISpellForSpellId(uint32 spellid)

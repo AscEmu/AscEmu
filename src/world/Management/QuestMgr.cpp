@@ -54,6 +54,7 @@
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/QuestScript.hpp"
 #include "Spell/Spell.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 using namespace AscEmu::Packets;
 

@@ -11,6 +11,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include <filesystem>
 #include <iostream>
 
+#include "AEVersion.hpp"
+
 namespace WDB
 {
     enum LocaleConstant

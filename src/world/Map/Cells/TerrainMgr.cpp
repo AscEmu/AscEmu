@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Logging/Logger.hpp"
 #include "Macros/MapsMacros.hpp"
 #include "Server/World.h"
+#include "Storage/WDB/WDBStructures.hpp"
 
 static uint16_t const holetab_h[4] = { 0x1111, 0x2222, 0x4444, 0x8888 };
 static uint16_t const holetab_v[4] = { 0x000F, 0x00F0, 0x0F00, 0xF000 };

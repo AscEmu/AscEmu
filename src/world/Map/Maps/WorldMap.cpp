@@ -38,6 +38,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/InstanceScript.hpp"
 #include "Objects/Item.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 using namespace AscEmu::Packets;
 using namespace AscEmu::Threading;
@@ -3016,6 +3017,17 @@ bool WorldMap::getObjectHitPos(uint32_t phasemask, LocationVector pos1, Location
     rz = resultPos.z;
     return result;
 }
+
+float WorldMap::getGameObjectFloor(uint32_t phasemask, LocationVector pos, float maxSearchDist /*= 50.0f*/) const
+{
+    return _dynamicTree.getHeight(pos.x, pos.y, pos.z, maxSearchDist, phasemask);
+}
+
+float WorldMap::getHeight(uint32_t phasemask, LocationVector const& pos, bool vmap /*= true*/, float maxSearchDist /*= 50.0f*/) const
+{
+    return std::max<float>(getHeight(pos, vmap, maxSearchDist), getGameObjectFloor(phasemask, pos, maxSearchDist));
+}
+
 
 float WorldMap::getWaterOrGroundLevel(uint32_t phasemask, LocationVector const& pos, float* ground /*= nullptr*/, bool /*swim = false*/, float collisionHeight /*= 2.03128f*/)
 {

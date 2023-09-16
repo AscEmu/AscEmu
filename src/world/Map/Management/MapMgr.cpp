@@ -22,6 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
+#include "Storage/WDB/WDBStructures.hpp"
 
 MapMgr& MapMgr::getInstance()
 {

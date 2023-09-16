@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Cells/CellHandler.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Objects/GameObjectProperties.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 BaseMap::BaseMap(uint32_t mapId, MySQLStructure::MapInfo const* mapInfo, WDB::Structures::MapEntry const* mapEntry) :
         _mapEntry(mapEntry), _mapInfo(mapInfo), _mapId(mapId)

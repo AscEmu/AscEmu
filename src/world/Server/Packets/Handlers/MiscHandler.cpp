@@ -75,6 +75,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/HookInterface.hpp"
 #include "Server/Script/InstanceScript.hpp"
 #include "Spell/Spell.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 using namespace AscEmu::Packets;
 

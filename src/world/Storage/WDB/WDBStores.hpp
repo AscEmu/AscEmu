@@ -5,38 +5,160 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "WDBStructures.hpp"
 #include "Management/TaxiMgr.hpp"
 #include "WDBGlobals.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
-#include "Server/Definitions.h"
 #include "AEVersion.hpp"
+
+namespace WDB::Structures
+{
+    struct ItemExtendedCostEntry;
+    struct ItemEntry;
+    struct VehicleSeatEntry;
+    struct VehicleEntry;
+    struct SummonPropertiesEntry;
+    struct ItemRandomSuffixEntry;
+    struct GtRegenMPPerSptEntry;
+    struct GtOCTRegenMPEntry;
+    struct GtCombatRatingsEntry;
+    struct GtChanceToSpellCritBaseEntry;
+    struct GtChanceToSpellCritEntry;
+    struct GtChanceToMeleeCritBaseEntry;
+    struct GtChanceToMeleeCritEntry;
+    struct WorldMapOverlayEntry;
+    struct WMOAreaTableEntry;
+    struct TransportAnimationEntry;
+    struct TaxiPathEntry;
+    struct TaxiNodesEntry;
+    struct TalentTabEntry;
+    struct TalentEntry;
+    struct SpellShapeshiftFormEntry;
+    struct SpellRangeEntry;
+    struct SpellItemEnchantmentEntry;
+    struct SpellEntry;
+    struct SkillLineEntry;
+    struct SkillLineAbilityEntry;
+    struct NameGenEntry;
+    struct MapEntry;
+    struct MailTemplateEntry;
+    struct LockEntry;
+    struct LiquidTypeEntry;
+    struct LFGDungeonEntry;
+    struct ItemRandomPropertiesEntry;
+    struct ItemSetEntry;
+    struct GameObjectDisplayInfoEntry;
+    struct FactionTemplateEntry;
+    struct FactionEntry;
+    struct EmotesTextEntry;
+    struct DurabilityQualityEntry;
+    struct DurabilityCostsEntry;
+    struct CreatureFamilyEntry;
+    struct CreatureSpellDataEntry;
+    struct CreatureDisplayInfoEntry;
+    struct ChrRacesEntry;
+    struct CreatureModelDataEntry;
+    struct CreatureDisplayInfoExtraEntry;
+    struct ChrClassesEntry;
+    struct CharStartOutfitEntry;
+    struct ChatChannelsEntry;
+    struct BankBagSlotPrices;
+    struct AuctionHouseEntry;
+    struct AreaTriggerEntry;
+    struct AreaTableEntry;
+    struct SpellDurationEntry;
+    struct SpellCastTimesEntry;
+    struct SpellRadiusEntry;
+    struct TaxiPathNodeEntry;
+    struct MapDifficulty;
+
+#if VERSION_STRING < Cata
+    struct GtOCTRegenHPEntry;
+    struct GtRegenHPPerSptEntry;
+
+    struct StableSlotPrices;
+#endif
+
+#ifdef AE_TBC
+    struct ItemDisplayInfo;
+#endif
+
+#if VERSION_STRING >= TBC
+    struct CharTitlesEntry;
+    struct GemPropertiesEntry;
+    struct TotemCategoryEntry;
+    struct WorldMapAreaEntry;
+#endif
+
+#if VERSION_STRING >= WotLK
+    struct AchievementEntry;
+    struct AchievementCriteriaEntry;
+    struct AreaGroupEntry;
+    struct BarberShopStyleEntry;
+    struct CurrencyTypesEntry;
+    struct DungeonEncounterEntry;
+    struct TransportRotationEntry;
+    struct GlyphPropertiesEntry;
+    struct GlyphSlotEntry;
+    struct GtBarberShopCostBaseEntry;
+    struct HolidaysEntry;
+    struct ItemLimitCategoryEntry;
+    struct MapDifficultyEntry;
+    struct QuestXP;
+    struct ScalingStatDistributionEntry;
+    struct ScalingStatValuesEntry;
+    struct SpellDifficultyEntry;
+    struct SpellRuneCostEntry;
+#endif
+
+#if VERSION_STRING >= Cata
+    struct BannedAddOnsEntry;
+    struct ChrPowerTypesEntry;
+    struct GtOCTBaseHPByClassEntry;
+    struct GtOCTBaseMPByClassEntry;
+    struct GtOCTClassCombatRatingScalarEntry;
+    struct GuildPerkSpellsEntry;
+    struct EmotesEntry;
+    struct ItemCurrencyCostEntry;
+    struct MountCapabilityEntry;
+    struct MountTypeEntry;
+    struct NumTalentsAtLevel;
+    struct PhaseEntry;
+    struct QuestSortEntry;
+    struct SpellAuraOptionsEntry;
+    struct SpellAuraRestrictionsEntry;
+    struct SpellCastingRequirementsEntry;
+    struct SpellCategoriesEntry;
+    struct SpellClassOptionsEntry;
+    struct SpellCooldownsEntry;
+    struct SpellEffectEntry;
+    struct SpellEquippedItemsEntry;
+    struct SpellInterruptsEntry;
+    struct SpellLevelsEntry;
+    struct SpellPowerEntry;
+    struct SpellScalingEntry;
+    struct SpellShapeshiftEntry;
+    struct SpellTargetRestrictionsEntry;
+    struct SpellTotemsEntry;
+    struct TalentTreePrimarySpells;
+    struct SpellReagentsEntry;
+#endif
+
+#ifdef AE_CATA
+    struct ItemReforgeEntry;
+#endif
+
+#ifdef AE_MOP
+    struct SpellMiscEntry;
+#endif
+}
 
 typedef std::map<uint32_t, WDB::Structures::MapDifficulty> MapDifficultyMap;
 typedef std::vector<WDB::Structures::TaxiPathNodeEntry const*> TaxiPathNodeList;
 typedef std::vector<TaxiPathNodeList> TaxiPathNodesByPath;
 
-inline float GetRadius(WDB::Structures::SpellRadiusEntry const* radius)
-{
-    if (radius == nullptr)
-        return 0;
-
-    return radius->radius_min;
-}
-
-inline uint32_t GetCastTime(WDB::Structures::SpellCastTimesEntry const* time)
-{
-    if (time == nullptr)
-        return 0;
-
-    return time->CastTime;
-}
-inline uint32_t GetDuration(WDB::Structures::SpellDurationEntry const* dur)
-{
-    if (dur == nullptr)
-        return 0;
-    return dur->Duration1;
-}
+extern float SERVER_DECL GetRadius(WDB::Structures::SpellRadiusEntry const* radius);
+extern uint32_t SERVER_DECL GetCastTime(WDB::Structures::SpellCastTimesEntry const* time);
+extern uint32_t SERVER_DECL GetDuration(WDB::Structures::SpellDurationEntry const* dur);
 
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::AreaTableEntry> sAreaStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::AreaTriggerEntry> sAreaTriggerStore;

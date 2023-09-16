@@ -5,12 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <string>
 #include "Server/EventableObject.h"
 #include "Objects/Units/Creatures/CreatureDefines.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Objects/Units/Creatures/VehicleDefines.hpp"
 #include "Server/Script/SimpleEventScript.hpp"
+#include <string>
 
 #if VERSION_STRING >= WotLK
     #include "AchievementMgr.h"

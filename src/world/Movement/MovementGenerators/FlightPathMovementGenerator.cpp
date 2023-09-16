@@ -5,18 +5,15 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "FlightPathMovementGenerator.h"
 #include "Objects/Units/Creatures/Creature.h"
-#include "Debugging/Errors.h"
 #include "Logging/Logger.hpp"
 #include "Map/Management/MapMgr.hpp"
-#include "Movement/MovementDefines.h"
 #include "Movement/Spline/MoveSpline.h"
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Management/ObjectMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
-#include "Objects/Transporter.hpp"
-#include "Movement/WaypointManager.h"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Units/Players/Player.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 uint32_t FlightPathMovementGenerator::getPathAtMapEnd() const
 {

@@ -34,6 +34,7 @@
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
+#include "Storage/WDB/WDBStructures.hpp"
 
 uint32 LfgDungeonTypes[MAX_DUNGEONS];
 

@@ -40,6 +40,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/HookInterface.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Server/Script/ScriptMgr.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Strings.hpp"
 
 using namespace AscEmu::Packets;

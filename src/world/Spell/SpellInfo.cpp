@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Item.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Units/Players/Player.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 SpellInfo::SpellInfo()
 {

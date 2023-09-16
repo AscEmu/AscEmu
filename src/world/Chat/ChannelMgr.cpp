@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/World.h"
 #include "Server/Packets/SmsgChannelNotify.h"
+#include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Strings.hpp"
 
 #if VERSION_STRING < Cata

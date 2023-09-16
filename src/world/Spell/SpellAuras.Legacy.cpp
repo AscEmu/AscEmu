@@ -59,6 +59,7 @@
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/GameObject.h"
 #include "Objects/Units/Creatures/Vehicle.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 using namespace AscEmu::Packets;
 

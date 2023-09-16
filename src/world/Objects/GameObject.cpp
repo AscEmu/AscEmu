@@ -58,6 +58,7 @@
 #include "Server/Script/InstanceScript.hpp"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellInfo.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 #include "Units/Players/Player.hpp"
 
 // MIT

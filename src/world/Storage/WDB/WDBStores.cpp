@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "AEVersion.hpp"
 #include "Server/World.h"
 #include "WDBGlobals.hpp"
+#include "WDBStructures.hpp"
 #include "Logging/Logger.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "Spell/Definitions/PowerType.hpp"
@@ -15,6 +16,29 @@ This file is released under the MIT license. See README-MIT for more information
     #include "Objects/Units/Players/PlayerDefines.hpp"
     #include "Spell/SpellAura.hpp"
 #endif
+
+float SERVER_DECL GetRadius(WDB::Structures::SpellRadiusEntry const* radius)
+{
+    if (radius == nullptr)
+        return 0;
+
+    return radius->radius_min;
+}
+
+uint32_t SERVER_DECL GetCastTime(WDB::Structures::SpellCastTimesEntry const* time)
+{
+    if (time == nullptr)
+        return 0;
+
+    return time->CastTime;
+}
+
+uint32_t SERVER_DECL GetDuration(WDB::Structures::SpellDurationEntry const* dur)
+{
+    if (dur == nullptr)
+        return 0;
+    return dur->Duration1;
+}
 
 typedef std::map<WMOAreaTableTripple, WDB::Structures::WMOAreaTableEntry const*> WMOAreaInfoByTripple;
 

@@ -49,6 +49,7 @@
 #include "Spell/Spell.hpp"
 #include "Spell/SpellInfo.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 #if VERSION_STRING < Cata
 #include "Server/World.h"
@@ -702,6 +703,14 @@ void Pet::buildPetSpellList(WorldPacket& data)
     }
 
     data << uint8(0);
+}
+
+void Pet::SetPetDiet()
+{
+    if (myFamily)
+        m_Diet = myFamily->petdietflags;
+    else
+        m_Diet = 0;
 }
 
 void Pet::SendSpellsToOwner()

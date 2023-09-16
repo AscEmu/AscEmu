@@ -33,6 +33,7 @@
 #include "Storage/WDB/WDBStores.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Players/Player.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 void Spell::FillTargetMap(uint32 i)
 {

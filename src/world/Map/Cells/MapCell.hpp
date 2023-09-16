@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <list>
 #include <mutex>
+#include <set>
 
 class Object;
 class WorldMap;

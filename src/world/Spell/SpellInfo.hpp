@@ -6,12 +6,12 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "AEVersion.hpp"
-#include "Storage/WDB/WDBStructures.hpp"
 #include "Definitions/AuraEffects.hpp"
 #include "Definitions/PowerType.hpp"
 #include "SpellDefines.hpp"
 #include "SpellScript.hpp"
 #include "CommonTypes.hpp"
+#include "Storage/WDB/WDBDefines.hpp"
 
 #include <string>
 
@@ -21,8 +21,7 @@ class Unit;
 
 struct SpellForcedBasePoints
 {
-public:
-    inline void set(uint8_t effIndex, int32_t value)
+    void set(uint8_t effIndex, int32_t value)
     {
         if (effIndex >= MAX_SPELL_EFFECTS)
             return;
@@ -39,7 +38,7 @@ public:
         m_forcedBasePoints.push_back(std::make_pair(effIndex, value));
     }
 
-    inline void get(uint8_t effIndex, int32_t* basePoints) const
+    void get(uint8_t effIndex, int32_t* basePoints) const
     {
         if (effIndex >= MAX_SPELL_EFFECTS)
             return;
