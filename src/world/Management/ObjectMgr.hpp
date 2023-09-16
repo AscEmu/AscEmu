@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/VehicleDefines.hpp"
 #include "Server/Script/SimpleEventScript.hpp"
 #include <string>
+#include <atomic>
 
 #if VERSION_STRING >= WotLK
     #include "AchievementMgr.h"
