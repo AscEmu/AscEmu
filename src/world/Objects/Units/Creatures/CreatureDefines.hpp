@@ -30,13 +30,10 @@
 #include <vector>
 #include <math.h>
 
-namespace WDB
+namespace WDB::Structures
 {
-    namespace Structures
-    {
-        struct ItemExtendedCostEntry;
-        struct CreatureModelDataEntry;
-    }
+    struct ItemExtendedCostEntry;
+    struct CreatureModelDataEntry;
 }
 
 struct AI_Spell;

@@ -102,6 +102,12 @@ namespace Util
         return static_cast<int32_t>(std::round(value));
     }
 
+    template <typename T>
+    T int32abs(int value)
+    {
+        return static_cast<T>(std::abs(value));
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Time calculation/formatting
 

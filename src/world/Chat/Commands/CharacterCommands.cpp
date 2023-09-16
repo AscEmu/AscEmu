@@ -3,7 +3,6 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Common.Legacy.h"
 #include "Chat/ChatDefines.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Management/HonorHandler.h"
@@ -764,9 +763,9 @@ bool ChatHandler::HandleCharAddCopperCommand(const char* args, WorldSession* m_s
 
     int32_t total = atoi(args);
 
-    uint32_t gold = (uint32_t)std::floor((float)int32abs(total) / 10000.0f);
-    uint32_t silver = (uint32_t)std::floor(((float)int32abs(total) / 100.0f)) % 100;
-    uint32_t copper = int32abs2uint32(total) % 100;
+    uint32_t gold = (uint32_t)std::floor(Util::int32abs<float>(total) / 10000.0f);
+    uint32_t silver = (uint32_t)std::floor(Util::int32abs<float>(total) / 100.0f) % 100;
+    uint32_t copper = Util::int32abs<uint32_t>(total) % 100;
 
 #if VERSION_STRING < Cata
     uint32_t newgold = player_target->getCoinage() + total;
@@ -825,8 +824,8 @@ bool ChatHandler::HandleCharAddSilverCommand(const char* args, WorldSession* m_s
 
     int32_t total = atoi(args) * 100;
 
-    uint32_t gold = (uint32_t)std::floor((float)int32abs(total) / 10000.0f);
-    uint32_t silver = (uint32_t)std::floor(((float)int32abs(total) / 100.0f)) % 100;
+    uint32_t gold = (uint32_t)std::floor(Util::int32abs<float>(total) / 10000.0f);
+    uint32_t silver = (uint32_t)std::floor(Util::int32abs<float>(total) / 100.0f) % 100;
 
 #if VERSION_STRING < Cata
     uint32_t newgold = player_target->getCoinage() + total;
@@ -885,7 +884,7 @@ bool ChatHandler::HandleCharAddGoldCommand(const char* args, WorldSession* m_ses
 
     int32_t total = atoi(args) * 10000;
 
-    uint32_t gold = (uint32_t)std::floor((float)int32abs(total) / 10000.0f);
+    uint32_t gold = (uint32_t)std::floor(Util::int32abs<float>(total) / 10000.0f);
 
 #if VERSION_STRING < Cata
     uint32_t newgold = player_target->getCoinage() + total;
