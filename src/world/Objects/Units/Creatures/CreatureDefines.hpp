@@ -28,6 +28,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <math.h>
 
 namespace WDB
 {
