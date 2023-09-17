@@ -60,7 +60,7 @@ void Vehicle::deactivate()
 {
     if (_status == STATUS_DEACTIVATED && !getBase()->hasUnitStateFlag(UNIT_STATE_ACCESSORY))
     {
-        sLogger.failure("Vehicle " I64FMT " attempts to deactivate, but already has STATUS_DEACTIVATED! ", getBase()->getGuid());
+        sLogger.failure("Vehicle %s attempts to deactivate, but already has STATUS_DEACTIVATED! ", std::to_string(getBase()->getGuid()).c_str());
         return;
     }
 

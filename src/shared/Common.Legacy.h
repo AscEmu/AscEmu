@@ -110,17 +110,8 @@
 #include "Threading/ConditionVariable.h"
 
 #if COMPILER == COMPILER_MICROSOFT
-    #define I64FMT "%016I64X"
-    #define I64FMTD "%I64u"
-    #define SI64FMTD "%I64d"
-    #define atoll __atoi64
-    #define stricmp _stricmp
 #else
-    #define stricmp strcasecmp
     #define strnicmp strncasecmp
-    #define I64FMT "%016llX"
-    #define I64FMTD "%llu"
-    #define SI64FMTD "%lld"
 #endif
 
 #define atol(a) strtoul( a, NULL, 10)

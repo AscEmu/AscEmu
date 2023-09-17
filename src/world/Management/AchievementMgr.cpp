@@ -1002,8 +1002,8 @@ bool AchievementMgr::updateAchievementCriteria(Player* _player, int32_t _criteri
     if (achievement->flags & ACHIEVEMENT_FLAG_COUNTER)
     {
         // can't complete this type of achivement (counter)
-        sLogger.debug("AchievementMgr Referred achievement (%u) |Hachievement:%u:" I64FMT ":0:0:0:-1:0:0:0:0|h[%s]|h is a counter and cannot be completed.",
-            achievement->ID, achievement->ID, _player->getGuid(), achievement->name);
+        sLogger.debug("AchievementMgr Referred achievement (%u) |Hachievement:%u:%s:0:0:0:-1:0:0:0:0|h[%s]|h is a counter and cannot be completed.",
+            achievement->ID, achievement->ID, std::to_string(_player->getGuid()).c_str(), achievement->name);
         return false;
     }
 
@@ -1112,8 +1112,8 @@ bool AchievementMgr::gmCompleteCriteria(WorldSession* _gmSession, uint32_t _crit
     if (achievement->flags & ACHIEVEMENT_FLAG_COUNTER)
     {
         // can't complete this type of achivement (counter)
-        _gmSession->SystemMessage("Referred achievement (%u) |Hachievement:%u:" I64FMT ":0:0:0:-1:0:0:0:0|h[%s]|h is a counter and cannot be completed.",
-            achievement->ID, achievement->ID, _gmSession->GetPlayer()->getGuid(), achievement->name);
+        _gmSession->SystemMessage("Referred achievement (%u) |Hachievement:%u:%s:0:0:0:-1:0:0:0:0|h[%s]|h is a counter and cannot be completed.",
+            achievement->ID, achievement->ID, std::to_string(_gmSession->GetPlayer()->getGuid()).c_str(), achievement->name);
         return false;
     }
 
@@ -1748,8 +1748,8 @@ bool AchievementMgr::gmCompleteAchievement(WorldSession* _gmSession, uint32_t _a
 
     if (achievement->flags & ACHIEVEMENT_FLAG_COUNTER)
     {
-        _gmSession->SystemMessage("Achievement (%u) |Hachievement:%u:" I64FMT ":0:0:0:-1:0:0:0:0|h[%s]|h is a counter and cannot be completed.",
-            achievement->ID, achievement->ID, _gmSession->GetPlayer()->getGuid(), achievement->name);
+        _gmSession->SystemMessage("Achievement (%u) |Hachievement:%u:%s:0:0:0:-1:0:0:0:0|h[%s]|h is a counter and cannot be completed.",
+            achievement->ID, achievement->ID, std::to_string(_gmSession->GetPlayer()->getGuid()).c_str(), achievement->name);
         return false;
     }
     completedAchievement(achievement);

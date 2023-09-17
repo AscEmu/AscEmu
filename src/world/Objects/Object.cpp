@@ -3463,7 +3463,7 @@ void Object::AddToWorld()
 
     if (mapMgr == nullptr)
     {
-        sLogger.failure("AddToWorld() failed for Object with GUID " I64FMT " MapId %u InstanceId %u", getGuid(), GetMapId(), GetInstanceID());
+        sLogger.failure("AddToWorld() failed for Object with GUID %s MapId %u InstanceId %u", std::to_string(getGuid()).c_str(), GetMapId(), GetInstanceID());
         return;
     }
 
@@ -3499,7 +3499,7 @@ void Object::PushToWorld(WorldMap* mgr)
 {
     if (mgr == nullptr)
     {
-        sLogger.failure("Invalid push to world of Object " I64FMT " ", getGuid());
+        sLogger.failure("Invalid push to world of Object %s", std::to_string(getGuid()).c_str());
         return; // instance add failed
     }
 

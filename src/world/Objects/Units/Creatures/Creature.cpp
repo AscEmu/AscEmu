@@ -752,7 +752,7 @@ void Creature::OnRemoveCorpse()
     // time to respawn!
     if (IsInWorld() && (int32)m_WorldMap->getInstanceId() == m_instanceId)
     {
-        sLogger.info("Removing corpse of " I64FMT "...", getGuid());
+        sLogger.info("Removing corpse of &s...", std::to_string(getGuid()).c_str());
 
         setDeathState(DEAD);
         m_position = m_spawnLocation;
@@ -798,7 +798,7 @@ void Creature::OnRespawn(WorldMap* m)
 
     getMovementManager()->clear();
 
-    sLogger.info("Respawning " I64FMT "...", getGuid());
+    sLogger.info("Respawning %s...", std::to_string(getGuid()).c_str());
     setHealth(getMaxHealth());
 
     if (m_spawn)

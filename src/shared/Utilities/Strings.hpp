@@ -27,4 +27,7 @@ namespace AscEmu::Util::Strings
 
     /*! \brief Returns true if string is in source */
     bool contains(std::string& string, std::string& source);
+
+    /*! \brief Returns true if both strings are equal (case sensitive) */
+    bool isEqual(const char* lhs, const char* rhs);
 }

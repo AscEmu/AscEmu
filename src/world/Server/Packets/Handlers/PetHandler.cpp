@@ -265,7 +265,7 @@ void WorldSession::handleUnstablePet(WorldPacket& recvPacket)
     const auto playerPet = _player->getPlayerPet(srlPacket.petNumber);
     if (playerPet == nullptr)
     {
-        sLogger.failure("PET SYSTEM: Player " I64FMT " tried to unstable non-existent pet %u", _player->getGuid(), srlPacket.petNumber);
+        sLogger.failure("PET SYSTEM: Player %s tried to unstable non-existent pet %u", std::to_string(_player->getGuid()).c_str(), srlPacket.petNumber);
         return;
     }
 
@@ -286,7 +286,7 @@ void WorldSession::handleStableSwapPet(WorldPacket& recvPacket)
     const auto playerPet = _player->getPlayerPet(srlPacket.petNumber);
     if (playerPet == nullptr)
     {
-        sLogger.failure("PET SYSTEM: Player " I64FMT " tried to unstable non-existent pet %u", _player->getGuid(), srlPacket.petNumber);
+        sLogger.failure("PET SYSTEM: Player %s tried to unstable non-existent pet %u", std::to_string(_player->getGuid()).c_str(), srlPacket.petNumber);
         return;
     }
 

@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/AchievementMgr.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSessionLog.hpp"
+#include "Utilities/Strings.hpp"
 
 
 #if VERSION_STRING > TBC
@@ -20,7 +21,7 @@ bool ChatHandler::HandleAchievementCompleteCommand(const char* args, WorldSessio
     if (!*args)
         return false;
 
-    if (stricmp(args, "all") == 0)
+    if (AscEmu::Util::Strings::isEqual(args, "all"))
     {
         selected_player->getAchievementMgr()->gmCompleteAchievement(m_session, 0, true);
         SystemMessage(m_session, "All achievements have now been completed for that player.");
@@ -54,7 +55,7 @@ bool ChatHandler::HandleAchievementCriteriaCommand(const char* args, WorldSessio
     uint32_t criteria_id = atol(args);
     if (criteria_id == 0)
     {
-        if (stricmp(args, "all") == 0)
+        if (AscEmu::Util::Strings::isEqual(args, "all"))
         {
             selected_player->getAchievementMgr()->gmCompleteCriteria(m_session, 0, true);
             SystemMessage(m_session, "All achievement criteria have now been completed for that player.");
@@ -93,16 +94,15 @@ bool ChatHandler::HandleAchievementResetCommand(const char* args, WorldSession* 
         achievement_id = atol(args + 9);
         if (achievement_id == 0)
         {
-            if (stricmp(args + 9, "all") != 0)
-            {
+            if (!AscEmu::Util::Strings::isEqual(args + 9, "all"))
                 return false;
-            }
+
             resetAll = true;
         }
         reset_criteria = true;
         reset_achievement = false;
     }
-    else if (stricmp(args, "all") == 0)
+    else if (AscEmu::Util::Strings::isEqual(args, "all"))
     {
         resetAll = true;
         reset_criteria = true;

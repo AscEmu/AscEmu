@@ -649,7 +649,7 @@ void WorldMap::PushObject(Object* obj)
         {
             plObj = static_cast<Player*>(obj);
 
-            sLogger.debug("Creating player " I64FMT " for himself.", obj->getGuid());
+            sLogger.debug("Creating player %s for himself.", std::to_string(obj->getGuid()).c_str());
             ByteBuffer pbuf(10000);
             count = plObj->buildCreateUpdateBlockForPlayer(&pbuf, plObj);
             plObj->getUpdateMgr().pushCreationData(&pbuf, count);

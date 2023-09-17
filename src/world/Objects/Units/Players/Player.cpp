@@ -12233,7 +12233,7 @@ void Player::spawnPet(uint32_t petId)
     const auto itr = m_pets.find(petId);
     if (itr == m_pets.end())
     {
-        sLogger.failure("PET SYSTEM: " I64FMT " Tried to load invalid pet %u", getGuid(), petId);
+        sLogger.failure("PET SYSTEM: %s Tried to load invalid pet %u", std::to_string(getGuid()).c_str(), petId);
         return;
     }
 
@@ -13351,7 +13351,7 @@ void Player::eventCharmAttack()
     Unit* pVictim = getWorldMap()->getUnit(getTargetGuid());
     if (!pVictim)
     {
-        sLogger.failure("WORLD: " I64FMT " doesn't exist.", getTargetGuid());
+        sLogger.failure("WORLD: %s doesn't exist.", std::to_string(getTargetGuid()).c_str());
         sLogger.info("Player::Update:  No valid current selection to attack, stopping attack");
         this->interruptHealthRegeneration(5000); //prevent clicking off creature for a quick heal
         // todo

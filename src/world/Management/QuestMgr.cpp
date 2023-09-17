@@ -356,7 +356,7 @@ uint32 QuestMgr::ActiveQuestsCount(Object* quest_giver, Player* plr)
 
     if (!bValid)
     {
-        sLogger.debug("QUESTS: Warning, invalid NPC " I64FMT " specified for ActiveQuestsCount. TypeId: %d.", quest_giver->getGuid(), quest_giver->getObjectTypeId());
+        sLogger.debug("QUESTS: Warning, invalid NPC %s specified for ActiveQuestsCount. TypeId: %d.", std::to_string(quest_giver->getGuid()).c_str(), quest_giver->getObjectTypeId());
         return 0;
     }
 
@@ -2332,7 +2332,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 
         if (!bValid)
         {
-            sLogger.debug("QUESTS: Warning, invalid NPC " I64FMT " specified for OnActivateQuestGiver. TypeId: %d.", qst_giver->getGuid(), qst_giver->getObjectTypeId());
+            sLogger.debug("QUESTS: Warning, invalid NPC %s specified for OnActivateQuestGiver. TypeId: %d.", std::to_string(qst_giver->getGuid()).c_str(), qst_giver->getObjectTypeId());
             return false;
         }
 

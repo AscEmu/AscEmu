@@ -260,7 +260,7 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
 {
     if (!m_caster->IsInWorld())
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Object " I64FMT " is casting spell ID %u while not in world", m_caster->getGuid(), getSpellInfo()->getId());
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Object %s is casting spell ID %u while not in world", std::to_string(m_caster->getGuid()).c_str(), getSpellInfo()->getId());
         delete this;
         return SPELL_FAILED_DONT_REPORT;
     }

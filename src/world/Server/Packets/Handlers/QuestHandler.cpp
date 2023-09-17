@@ -478,7 +478,7 @@ void WorldSession::handleQuestgiverStatusQueryOpcode(WorldPacket& recvPacket)
 
     if (!qst_giver)
     {
-        sLogger.debug("Invalid questgiver GUID " I64FMT ".", srlPacket.questGiverGuid.getRawGuid());
+        sLogger.debug("Invalid questgiver GUID %s.", std::to_string(srlPacket.questGiverGuid.getRawGuid()).c_str());
         return;
     }
 

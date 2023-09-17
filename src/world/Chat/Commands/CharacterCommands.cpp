@@ -314,7 +314,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
 
     SpellInfo const* spell_entry = nullptr;
 
-    if (stricmp(args, "all") == 0)
+    if (AscEmu::Util::Strings::isEqual(args, "all"))
     {
         sGMLog.writefromsession(m_session, "taught %s all spells.", selected_player->getName().c_str());
         SystemMessage(m_session, "Taught %s all spells.", selected_player->getName().c_str());

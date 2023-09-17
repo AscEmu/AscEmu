@@ -27,6 +27,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Spell/SpellMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
+#include "Utilities/Strings.hpp"
 
 
 int LuaGlobalFunctions::PerformIngameSpawn(lua_State* L)
@@ -205,17 +206,17 @@ int LuaGlobalFunctions::SendWorldMessage(lua_State* L)
 int LuaGlobalFunctions::ReloadTable(lua_State* L)
 {
     const char* TableName = luaL_checkstring(L, 1);
-    if (!stricmp(TableName, "spell_disable"))
+    if (AscEmu::Util::Strings::isEqual(TableName, "spell_disable"))
     {
         sSpellMgr.reloadSpellDisabled();
     }
-    else if (!stricmp(TableName, "vendors"))
+    else if (AscEmu::Util::Strings::isEqual(TableName, "vendors"))
     {
         sObjectMgr.loadVendors();
     }
     else
     {
-        if (!stricmp(TableName, "command_overrides"))    // Command Overrides
+        if (AscEmu::Util::Strings::isEqual(TableName, "command_overrides"))    // Command Overrides
         {
             sCommandTableStorage.Dealloc();
             sCommandTableStorage.Init();

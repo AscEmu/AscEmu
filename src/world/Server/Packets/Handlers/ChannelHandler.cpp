@@ -28,6 +28,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Server/World.h"
 #include "Management/ObjectMgr.hpp"
+#include "Utilities/Strings.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -37,7 +38,7 @@ void WorldSession::handleChannelJoin(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (!sWorld.settings.gm.gmClientChannelName.empty() && !stricmp(sWorld.settings.gm.gmClientChannelName.c_str(), srlPacket.channelName.c_str()) && !GetPermissionCount())
+    if (!sWorld.settings.gm.gmClientChannelName.empty() && AscEmu::Util::Strings::isEqual(sWorld.settings.gm.gmClientChannelName.c_str(), srlPacket.channelName.c_str()) && !GetPermissionCount())
         return;
 
     const auto channel = sChannelMgr.getOrCreateChannel(srlPacket.channelName, _player, srlPacket.dbcId);

@@ -20,6 +20,7 @@
 #ifndef _IVMAPMANAGER_H
 #define _IVMAPMANAGER_H
 
+#include "CommonTypes.hpp"
 #include <string>
 #include <optional>
 

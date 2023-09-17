@@ -21,6 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "Utilities/Strings.hpp"
 
 //.mount
 bool ChatHandler::HandleMountCommand(const char* args, WorldSession* m_session)
@@ -257,7 +258,7 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
         named_player->kill();
         RedSystemMessage(named_player->getSession(), "You were killed by %s with a GM command.", m_session->GetPlayer()->getName().c_str());
         GreenSystemMessage(m_session, "Killed player %s.", args);
-        sGMLog.writefromsession(m_session, "used kill command on Player Name: %s Guid:  " I64FMT " ", named_player->getName().c_str(), named_player->getGuid());
+        sGMLog.writefromsession(m_session, "used kill command on Player Name: %s Guid: %s ", named_player->getName().c_str(), std::to_string(named_player->getGuid()).c_str());
     }
     else
     {
@@ -288,7 +289,7 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
                     player->kill();
                     RedSystemMessage(player->getSession(), "You were killed by %s with a GM command.", m_session->GetPlayer()->getName().c_str());
                     GreenSystemMessage(m_session, "Killed player %s.", player->getName().c_str());
-                    sGMLog.writefromsession(m_session, "used kill command on Player Name: %s Guid:  " I64FMT " ", m_session->GetPlayer()->getName().c_str(), player->getGuid());
+                    sGMLog.writefromsession(m_session, "used kill command on Player Name: %s Guid: %s", m_session->GetPlayer()->getName().c_str(), std::to_string(player->getGuid()).c_str());
                     break;
                 }
                 default:
@@ -812,7 +813,7 @@ bool ChatHandler::HandleBlockAppearCommand(const char* args, WorldSession* m_ses
     if (!*args)
         return false;
 
-    if (!stricmp(args, "on"))
+    if (AscEmu::Util::Strings::isEqual(args, "on"))
     {
         if (m_session->GetPlayer()->isAppearingDisabled())
         {
@@ -824,7 +825,7 @@ bool ChatHandler::HandleBlockAppearCommand(const char* args, WorldSession* m_ses
             GreenSystemMessage(m_session, "Appear blocking is now enabled");
         }
     }
-    else if (!stricmp(args, "off"))
+    else if (AscEmu::Util::Strings::isEqual(args, "off"))
     {
         if (m_session->GetPlayer()->isAppearingDisabled())
         {
@@ -907,7 +908,7 @@ bool ChatHandler::HandleBlockSummonCommand(const char* args, WorldSession* m_ses
     if (!*args)
         return false;
 
-    if (!stricmp(args, "on"))
+    if (AscEmu::Util::Strings::isEqual(args, "on"))
     {
         if (m_session->GetPlayer()->isSummoningDisabled())
         {
@@ -919,7 +920,7 @@ bool ChatHandler::HandleBlockSummonCommand(const char* args, WorldSession* m_ses
             GreenSystemMessage(m_session, "Summon blocking is now enabled");
         }
     }
-    else if (!stricmp(args, "off"))
+    else if (AscEmu::Util::Strings::isEqual(args, "off"))
     {
         if (m_session->GetPlayer()->isSummoningDisabled())
         {

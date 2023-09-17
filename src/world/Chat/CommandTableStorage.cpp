@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ChatHandler.hpp"
 #include "Logging/Logger.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Utilities/Strings.hpp"
 
 
 CommandTableStorage& CommandTableStorage::getInstance()
@@ -18,93 +19,93 @@ CommandTableStorage& CommandTableStorage::getInstance()
 
 ChatCommand* CommandTableStorage::GetSubCommandTable(const char* name)
 {
-    if (!stricmp(name, "modify"))
+    if (AscEmu::Util::Strings::isEqual(name, "modify"))
         return _modifyCommandTable;
-    if (!stricmp(name, "waypoint"))
+    if (AscEmu::Util::Strings::isEqual(name, "waypoint"))
         return _waypointCommandTable;
-    if (!stricmp(name, "event"))
+    if (AscEmu::Util::Strings::isEqual(name, "event"))
         return _eventCommandTable;
-    if (!stricmp(name, "debug"))
+    if (AscEmu::Util::Strings::isEqual(name, "debug"))
         return _debugCommandTable;
-    if (!stricmp(name, "gmTicket"))
+    if (AscEmu::Util::Strings::isEqual(name, "gmTicket"))
         return _GMTicketCommandTable;
-    if (!stricmp(name, "ticket"))
+    if (AscEmu::Util::Strings::isEqual(name, "ticket"))
         return _TicketCommandTable;
-    if (!stricmp(name, "gobject"))
+    if (AscEmu::Util::Strings::isEqual(name, "gobject"))
         return _GameObjectCommandTable;
-    if (!stricmp(name, "battleground"))
+    if (AscEmu::Util::Strings::isEqual(name, "battleground"))
         return _BattlegroundCommandTable;
-    if (!stricmp(name, "npc"))
+    if (AscEmu::Util::Strings::isEqual(name, "npc"))
         return _NPCCommandTable;
-    if (!stricmp(name, "cheat"))
+    if (AscEmu::Util::Strings::isEqual(name, "cheat"))
         return _CheatCommandTable;
-    if (!stricmp(name, "account"))
+    if (AscEmu::Util::Strings::isEqual(name, "account"))
         return _accountCommandTable;
-    if (!stricmp(name, "quest"))
+    if (AscEmu::Util::Strings::isEqual(name, "quest"))
         return _questCommandTable;
-    if (!stricmp(name, "pet"))
+    if (AscEmu::Util::Strings::isEqual(name, "pet"))
         return _petCommandTable;
-    if (!stricmp(name, "recall"))
+    if (AscEmu::Util::Strings::isEqual(name, "recall"))
         return _recallCommandTable;
-    if (!stricmp(name, "guild"))
+    if (AscEmu::Util::Strings::isEqual(name, "guild"))
         return _GuildCommandTable;
-    if (!stricmp(name, "gm"))
+    if (AscEmu::Util::Strings::isEqual(name, "gm"))
         return _gmCommandTable;
-    if (!stricmp(name, "server"))
+    if (AscEmu::Util::Strings::isEqual(name, "server"))
         return _serverCommandTable;
-    if (!stricmp(name, "character"))
+    if (AscEmu::Util::Strings::isEqual(name, "character"))
         return _characterCommandTable;
-    if (!stricmp(name, "lookup"))
+    if (AscEmu::Util::Strings::isEqual(name, "lookup"))
         return _lookupCommandTable;
-    if (!stricmp(name, "admin"))
+    if (AscEmu::Util::Strings::isEqual(name, "admin"))
         return _adminCommandTable;
-    if (!stricmp(name, "kick"))
+    if (AscEmu::Util::Strings::isEqual(name, "kick"))
         return _kickCommandTable;
-    if (!stricmp(name, "ban"))
+    if (AscEmu::Util::Strings::isEqual(name, "ban"))
         return _banCommandTable;
-    if (!stricmp(name, "unban"))
+    if (AscEmu::Util::Strings::isEqual(name, "unban"))
         return _unbanCommandTable;
-    if (!stricmp(name, "instance"))
+    if (AscEmu::Util::Strings::isEqual(name, "instance"))
         return _instanceCommandTable;
-    if (!stricmp(name, "arena"))
+    if (AscEmu::Util::Strings::isEqual(name, "arena"))
         return _arenaCommandTable;
-    if (!stricmp(name, "achieve"))
+    if (AscEmu::Util::Strings::isEqual(name, "achieve"))
         return _achievementCommandTable;
-    if (!stricmp(name, "vehicle"))
+    if (AscEmu::Util::Strings::isEqual(name, "vehicle"))
         return _vehicleCommandTable;
-    if (!stricmp(name, "transport"))
+    if (AscEmu::Util::Strings::isEqual(name, "transport"))
         return _transportCommandTable;
     return nullptr;
 }
 
 ChatCommand* CommandTableStorage::GetCharSubCommandTable(const char* name)
 {
-    if (0 == stricmp(name, "add"))
+    if (AscEmu::Util::Strings::isEqual(name, "add"))
         return _characterAddCommandTable;
-    if (0 == stricmp(name, "set"))
+    if (AscEmu::Util::Strings::isEqual(name, "set"))
         return _characterSetCommandTable;
-    if (0 == stricmp(name, "list"))
+    if (AscEmu::Util::Strings::isEqual(name, "list"))
         return _characterListCommandTable;
     return nullptr;
 }
 
 ChatCommand* CommandTableStorage::GetNPCSubCommandTable(const char* name)
 {
-    if (0 == stricmp(name, "set"))
+    if (AscEmu::Util::Strings::isEqual(name, "set"))
         return _NPCSetCommandTable;
     return nullptr;
 }
 
 ChatCommand* CommandTableStorage::GetGOSubCommandTable(const char* name)
 {
-    if (0 == stricmp(name, "set"))
+    if (AscEmu::Util::Strings::isEqual(name, "set"))
         return _GameObjectSetCommandTable;
     return nullptr;
 }
 
 ChatCommand* CommandTableStorage::GetReloadCommandTable(const char* name)
 {
-    if (0 == stricmp(name, "reload"))
+    if (AscEmu::Util::Strings::isEqual(name, "reload"))
         return _reloadTableCommandTable;
     return nullptr;
 }
@@ -199,28 +200,28 @@ void CommandTableStorage::Override(const char* command, const char* level)
                     if (!curr_subcommand.compare(sub_command))
                     {
                         ChatCommand* p3 = nullptr;
-                        if (0 == stricmp(main_command.c_str(), "character"))
+                        if (AscEmu::Util::Strings::isEqual(main_command.c_str(), "character"))
                         {
-                            if (0 == stricmp(sub_command.c_str(), "add"))
+                            if (AscEmu::Util::Strings::isEqual(sub_command.c_str(), "add"))
                                 p3 = &_characterAddCommandTable[0];
-                            else if (0 == stricmp(sub_command.c_str(), "set"))
+                            else if (AscEmu::Util::Strings::isEqual(sub_command.c_str(), "set"))
                                 p3 = &_characterSetCommandTable[0];
-                            else if (0 == stricmp(sub_command.c_str(), "list"))
+                            else if (AscEmu::Util::Strings::isEqual(sub_command.c_str(), "list"))
                                 p3 = &_characterListCommandTable[0];
                         }
-                        else if (0 == stricmp(main_command.c_str(), "npc"))
+                        else if (AscEmu::Util::Strings::isEqual(main_command.c_str(), "npc"))
                         {
-                            if (0 == stricmp(sub_command.c_str(), "set"))
+                            if (AscEmu::Util::Strings::isEqual(sub_command.c_str(), "set"))
                                 p3 = &_NPCSetCommandTable[0];
                         }
-                        else if (0 == stricmp(main_command.c_str(), "gameobject"))
+                        else if (AscEmu::Util::Strings::isEqual(main_command.c_str(), "gameobject"))
                         {
-                            if (0 == stricmp(sub_command.c_str(), "set"))
+                            if (AscEmu::Util::Strings::isEqual(sub_command.c_str(), "set"))
                                 p3 = &_GameObjectSetCommandTable[0];
                         }
-                        else if (0 == stricmp(main_command.c_str(), "server"))
+                        else if (AscEmu::Util::Strings::isEqual(main_command.c_str(), "server"))
                         {
-                            if (0 == stricmp(sub_command.c_str(), "reload"))
+                            if (AscEmu::Util::Strings::isEqual(sub_command.c_str(), "reload"))
                                 p3 = &_reloadTableCommandTable[0];
                         }
 

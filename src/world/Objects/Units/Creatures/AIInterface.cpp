@@ -1741,8 +1741,8 @@ void AIInterface::castSpell(Unit* caster, SpellInfo const* spellInfo, SpellCastT
         if (isCastDisabled())
             return;
 
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "AI DEBUG: Unit %u casting spell %u on target " I64FMT " ", caster->getEntry(),
-            spellInfo->getId(), targets.getUnitTargetGuid());
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "AI DEBUG: Unit %u casting spell %u on target %s", caster->getEntry(),
+            spellInfo->getId(), std::to_string(targets.getUnitTargetGuid()).c_str());
 
         //i wonder if this will lead to a memory leak :S
         Spell* nspell = sSpellMgr.newSpell(caster, spellInfo, false, nullptr);

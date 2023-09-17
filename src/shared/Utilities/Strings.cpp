@@ -63,4 +63,9 @@ namespace AscEmu::Util::Strings
     {
         return source.find(string) != std::string::npos;
     }
+
+    bool isEqual(const char* lhs, const char* rhs)
+    {
+        return !std::strcmp(lhs, rhs);
+    }
 }
