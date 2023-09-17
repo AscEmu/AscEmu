@@ -16,24 +16,23 @@ This file is released under the MIT license. See README-MIT for more information
 
 enum FactionTemplateFlags
 {
-    FACTION_TEMPLATE_FLAG_PVP = 0x00000800,   // flagged for PvP
-    FACTION_TEMPLATE_FLAG_CONTESTED_GUARD = 0x00001000,   // faction will attack players that were involved in PvP combats
+    FACTION_TEMPLATE_FLAG_PVP = 0x00000800,                 // flagged for PvP
+    FACTION_TEMPLATE_FLAG_CONTESTED_GUARD = 0x00001000,     // faction will attack players that were involved in PvP combats
     FACTION_TEMPLATE_FLAG_HOSTILE_BY_DEFAULT = 0x00002000
 };
 
 enum FactionMasks
 {
-    FACTION_MASK_PLAYER = 1,    // any player
-    FACTION_MASK_ALLIANCE = 2,    // player or creature from alliance team
-    FACTION_MASK_HORDE = 4,    // player or creature from horde team
-    FACTION_MASK_MONSTER = 8     // aggressive creature from monster team
+    FACTION_MASK_PLAYER = 1,        // any player
+    FACTION_MASK_ALLIANCE = 2,      // player or creature from alliance team
+    FACTION_MASK_HORDE = 4,         // player or creature from horde team
+    FACTION_MASK_MONSTER = 8        // aggressive creature from monster team
     // if none flags set then non-aggressive creature
 };
 
 struct WMOAreaTableTripple
 {
-    WMOAreaTableTripple(int32_t r, int32_t a, int32_t g) : groupId(g), rootId(r), adtId(a)
-    { }
+    WMOAreaTableTripple(int32_t r, int32_t a, int32_t g) : groupId(g), rootId(r), adtId(a) { }
 
     bool operator <(const WMOAreaTableTripple& b) const
     {
@@ -292,7 +291,7 @@ namespace WDB::Structures
                 uint32_t questCount;                                // 4
             } complete_daily_quest;
 
-            // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_BATTLEGROUND= 15
+            // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_BATTLEGROUND = 15
             struct
             {
                 uint32_t mapID;                                     // 3
@@ -304,10 +303,10 @@ namespace WDB::Structures
                 uint32_t mapID;                                     // 3
             } death_at_map;
 
-            // ACHIEVEMENT_CRITERIA_TYPE_DEATH_IN_DUNGEON       = 18
+            // ACHIEVEMENT_CRITERIA_TYPE_DEATH_IN_DUNGEON = 18
             struct
             {
-                uint32_t  manLimit;                               // 3
+                uint32_t  manLimit;                                 // 3
             } death_in_dungeon;
 
             // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_RAID = 19
@@ -329,10 +328,10 @@ namespace WDB::Structures
                 uint32_t fallHeight;                                // 4
             } fall_without_dying;
 
-            // ACHIEVEMENT_CRITERIA_TYPE_DEATHS_FROM            = 26
+            // ACHIEVEMENT_CRITERIA_TYPE_DEATHS_FROM = 26
             struct
             {
-                uint32_t type;                                    // 3, see enum EnviromentalDamage
+                uint32_t type;                                      // 3, see enum EnviromentalDamage
             } death_from;
 
             // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST = 27
@@ -343,15 +342,15 @@ namespace WDB::Structures
             } complete_quest;
 
             // ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET = 28
-            // ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET2= 69
+            // ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET2 = 69
             struct
             {
                 uint32_t spellID;                                   // 3
                 uint32_t spellCount;                                // 4
             } be_spell_target;
 
-            // ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL= 29
-            // ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2            = 110
+            // ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL = 29
+            // ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2 = 110
             struct
             {
                 uint32_t spellID;                                   // 3
@@ -361,8 +360,8 @@ namespace WDB::Structures
             // ACHIEVEMENT_CRITERIA_TYPE_BG_OBJECTIVE_CAPTURE
             struct
             {
-                uint32_t objectiveId;                             // 3
-                uint32_t completeCount;                           // 4
+                uint32_t objectiveId;                               // 3
+                uint32_t completeCount;                             // 4
             } bg_objective;
 
             // ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA = 31
@@ -643,7 +642,7 @@ namespace WDB::Structures
             } raw;
         };
 
-        char* name[NAME_PATTERN];                                             // 9-24
+        char* name[NAME_PATTERN];                                   // 9-24
         //uint32_t name_flags;                                      // 25
         uint32_t completionFlag;                                    // 26
         uint32_t groupFlag;                                         // 27
@@ -658,16 +657,16 @@ namespace WDB::Structures
         int32_t factionFlag;                                        // 1 -1=all, 0=horde, 1=alliance
         int32_t mapID;                                              // 2 -1=none
         uint32_t parentAchievement;                                 // 3
-        char* name[NAME_PATTERN];                                             // 4-19
+        char* name[NAME_PATTERN];                                   // 4-19
         //uint32_t name_flags;                                      // 20
-        char* description[NAME_PATTERN];                                      // 21-36
+        char* description[NAME_PATTERN];                            // 21-36
         //uint32_t desc_flags;                                      // 37
         uint32_t categoryId;                                        // 38
         uint32_t points;                                            // 39 reward points
         uint32_t orderInCategory;                                   // 8
         uint32_t flags;                                             // 41
         uint32_t icon;                                              // 10
-        char* rewardName[NAME_PATTERN];                                       // 43-58 title/item reward name
+        char* rewardName[NAME_PATTERN];                             // 43-58 title/item reward name
         //uint32_t rewardName_flags;                                // 59
         uint32_t count;                                             // 60
         uint32_t refAchievement;                                    // 61
@@ -700,7 +699,7 @@ namespace WDB::Structures
 #endif
         // 5-9 unused
         int32_t area_level;                                         // 10
-        char* area_name[NAME_PATTERN];                                         // 11-26
+        char* area_name[NAME_PATTERN];                              // 11-26
         // 27, string flags, unused
         uint32_t team;                                              // 28
 #if VERSION_STRING == Classic
@@ -1068,7 +1067,7 @@ namespace WDB::Structures
         float spillover_rate_out;                                   // 20
         uint32_t spillover_max_in;                                  // 21
 #endif
-        char* Name[NAME_PATTERN];                                              // 19-34
+        char* Name[NAME_PATTERN];                                   // 19-34
         //uint32_t name_flags;                                      // 35
         //uint32_t Description[16];                                 // 36-51
         //uint32_t description_flags;                               // 52
@@ -1092,8 +1091,8 @@ namespace WDB::Structures
         uint32_t Mask;                                              // 3
         uint32_t FriendlyMask;                                      // 4
         uint32_t HostileMask;                                       // 5
-        uint32_t EnemyFactions[MAX_FACTION_RELATIONS];                                  // 6-9
-        uint32_t FriendlyFactions[MAX_FACTION_RELATIONS];                               // 10-13
+        uint32_t EnemyFactions[MAX_FACTION_RELATIONS];              // 6-9
+        uint32_t FriendlyFactions[MAX_FACTION_RELATIONS];           // 10-13
 
         // Helpers
         bool isFriendlyTo(FactionTemplateEntry const& entry) const
@@ -1415,7 +1414,7 @@ namespace WDB::Structures
     struct LiquidTypeEntry
     {
         uint32_t Id;                                                // 0
-        //uint32_t liquid_id;                                         // 1
+        //uint32_t liquid_id;                                       // 1
         uint32_t Type;                                              // 2
         uint32_t SpellId;                                           // 3
     };
@@ -1542,14 +1541,14 @@ namespace WDB::Structures
 #if VERSION_STRING >= WotLK
     struct MapDifficultyEntry
     {
-        //uint32_t ID;                                            // 0
-        uint32_t MapID;                                           // 1
-        uint32_t Difficulty;                                      // 2 (for arenas: arena slot)
-        char const* Message;                                    // 3-18 text showed when transfer to map failed (missing requirements)
-        //uint32 Message_lang_mask;                             // 19
-        uint32_t RaidDuration;                                    // 20
-        uint32_t MaxPlayers;                                      // 21
-        //char const* Difficultystring;                         // 22
+        //uint32_t ID;                                              // 0
+        uint32_t MapID;                                             // 1
+        uint32_t Difficulty;                                        // 2 (for arenas: arena slot)
+        char const* Message;                                        // 3-18 text showed when transfer to map failed (missing requirements)
+        //uint32 Message_lang_mask;                                 // 19
+        uint32_t RaidDuration;                                      // 20
+        uint32_t MaxPlayers;                                        // 21
+        //char const* Difficultystring;                             // 22
     };
 #endif
 
@@ -1737,7 +1736,7 @@ namespace WDB::Structures
         uint32_t green;                                             // 11 min
         //uint32_t abandonable;                                     // 12
         //uint32_t reqTP;                                           // 13
-        //uint32_t reqtrainpoints;                                    // 14
+        //uint32_t reqtrainpoints;                                  // 14
     };
 
 #if VERSION_STRING <= WotLK
@@ -2324,42 +2323,42 @@ namespace WDB::Structures
         VEHICLE_SEAT_FLAG_UNK7 = 0x00000040,
         VEHICLE_SEAT_FLAG_UNK8 = 0x00000080,
         VEHICLE_SEAT_FLAG_UNK9 = 0x00000100,
-        VEHICLE_SEAT_FLAG_HIDE_PASSENGER = 0x00000200,           // Passenger is hidden
+        VEHICLE_SEAT_FLAG_HIDE_PASSENGER = 0x00000200,              // Passenger is hidden
         VEHICLE_SEAT_FLAG_ALLOW_TURNING = 0x00000400,
-        VEHICLE_SEAT_FLAG_CAN_CONTROL = 0x00000800,           // Lua_UnitInVehicleControlSeat
-        VEHICLE_SEAT_FLAG_CAN_CAST_MOUNT_SPELL = 0x00001000,           // Can cast spells with SPELL_AURA_MOUNTED from seat (possibly 4.x only, 0 seats on 3.3.5a)
-        VEHICLE_SEAT_FLAG_UNCONTROLLED = 0x00002000,           // can override !& VEHICLE_SEAT_FLAG_CAN_ENTER_OR_EXIT
-        VEHICLE_SEAT_FLAG_CAN_ATTACK = 0x00004000,           // Can attack, cast spells and use items from vehicle?
+        VEHICLE_SEAT_FLAG_CAN_CONTROL = 0x00000800,                 // Lua_UnitInVehicleControlSeat
+        VEHICLE_SEAT_FLAG_CAN_CAST_MOUNT_SPELL = 0x00001000,        // Can cast spells with SPELL_AURA_MOUNTED from seat (possibly 4.x only, 0 seats on 3.3.5a)
+        VEHICLE_SEAT_FLAG_UNCONTROLLED = 0x00002000,                // can override !& VEHICLE_SEAT_FLAG_CAN_ENTER_OR_EXIT
+        VEHICLE_SEAT_FLAG_CAN_ATTACK = 0x00004000,                  // Can attack, cast spells and use items from vehicle?
         VEHICLE_SEAT_FLAG_SHOULD_USE_VEH_SEAT_EXIT_ANIM_ON_FORCED_EXIT = 0x00008000,
         VEHICLE_SEAT_FLAG_UNK17 = 0x00010000,
-        VEHICLE_SEAT_FLAG_UNK18 = 0x00020000,           // Needs research and support (28 vehicles): Allow entering vehicles while keeping specific permanent(?) auras that impose visuals (states like beeing under freeze/stun mechanic, emote state animations).
+        VEHICLE_SEAT_FLAG_UNK18 = 0x00020000,                       // Needs research and support (28 vehicles): Allow entering vehicles while keeping specific permanent(?) auras that impose visuals (states like beeing under freeze/stun mechanic, emote state animations).
         VEHICLE_SEAT_FLAG_HAS_VEH_EXIT_ANIM_VOLUNTARY_EXIT = 0x00040000,
         VEHICLE_SEAT_FLAG_HAS_VEH_EXIT_ANIM_FORCED_EXIT = 0x00080000,
         VEHICLE_SEAT_FLAG_PASSENGER_NOT_SELECTABLE = 0x00100000,
         VEHICLE_SEAT_FLAG_UNK22 = 0x00200000,
         VEHICLE_SEAT_FLAG_REC_HAS_VEHICLE_ENTER_ANIM = 0x00400000,
-        VEHICLE_SEAT_FLAG_IS_USING_VEHICLE_CONTROLS = 0x00800000,           // Lua_IsUsingVehicleControls
+        VEHICLE_SEAT_FLAG_IS_USING_VEHICLE_CONTROLS = 0x00800000,   // Lua_IsUsingVehicleControls
         VEHICLE_SEAT_FLAG_ENABLE_VEHICLE_ZOOM = 0x01000000,
-        VEHICLE_SEAT_FLAG_USABLE = 0x02000000,           // Lua_CanExitVehicle
-        VEHICLE_SEAT_FLAG_CAN_SWITCH = 0x04000000,           // Lua_CanSwitchVehicleSeats
+        VEHICLE_SEAT_FLAG_USABLE = 0x02000000,                      // Lua_CanExitVehicle
+        VEHICLE_SEAT_FLAG_CAN_SWITCH = 0x04000000,                  // Lua_CanSwitchVehicleSeats
         VEHICLE_SEAT_FLAG_HAS_START_WARITING_FOR_VEH_TRANSITION_ANIM_ENTER = 0x08000000,
         VEHICLE_SEAT_FLAG_HAS_START_WARITING_FOR_VEH_TRANSITION_ANIM_EXIT = 0x10000000,
-        VEHICLE_SEAT_FLAG_CAN_CAST = 0x20000000,           // Lua_UnitHasVehicleUI
-        VEHICLE_SEAT_FLAG_UNK2 = 0x40000000,           // checked in conjunction with 0x800 in CastSpell2
+        VEHICLE_SEAT_FLAG_CAN_CAST = 0x20000000,                    // Lua_UnitHasVehicleUI
+        VEHICLE_SEAT_FLAG_UNK2 = 0x40000000,                        // checked in conjunction with 0x800 in CastSpell2
     };
 
     enum VehicleSeatFlagsB
     {
         VEHICLE_SEAT_FLAG_B_NONE = 0x00000000,
         VEHICLE_SEAT_FLAG_B_USABLE_FORCED = 0x00000002,
-        VEHICLE_SEAT_FLAG_B_TARGETS_IN_RAIDUI = 0x00000008,           // Lua_UnitTargetsVehicleInRaidUI
-        VEHICLE_SEAT_FLAG_B_EJECTABLE = 0x00000020,           // ejectable
+        VEHICLE_SEAT_FLAG_B_TARGETS_IN_RAIDUI = 0x00000008,         // Lua_UnitTargetsVehicleInRaidUI
+        VEHICLE_SEAT_FLAG_B_EJECTABLE = 0x00000020,                 // ejectable
         VEHICLE_SEAT_FLAG_B_USABLE_FORCED_2 = 0x00000040,
         VEHICLE_SEAT_FLAG_B_USABLE_FORCED_3 = 0x00000100,
         VEHICLE_SEAT_FLAG_B_KEEP_PET = 0x00020000,
         VEHICLE_SEAT_FLAG_B_USABLE_FORCED_4 = 0x02000000,
         VEHICLE_SEAT_FLAG_B_CAN_SWITCH = 0x04000000,
-        VEHICLE_SEAT_FLAG_B_VEHICLE_PLAYERFRAME_UI = 0x80000000            // Lua_UnitHasVehiclePlayerFrameUI - actually checked for flagsb &~ 0x80000000
+        VEHICLE_SEAT_FLAG_B_VEHICLE_PLAYERFRAME_UI = 0x80000000     // Lua_UnitHasVehiclePlayerFrameUI - actually checked for flagsb &~ 0x80000000
     };
 
     struct VehicleSeatEntry
@@ -2491,7 +2490,6 @@ namespace WDB::Structures
     };
 
 #if VERSION_STRING == Classic
-
     struct SpellEntry
     {
         uint32_t Id;                                                // 0
@@ -2588,8 +2586,8 @@ namespace WDB::Structures
     };
 #pragma pack(pop)
 #endif
-#if VERSION_STRING == TBC
 
+#if VERSION_STRING == TBC
     struct SpellEntry
     {
         uint32_t Id;                                                // 0
@@ -2694,8 +2692,8 @@ namespace WDB::Structures
     };
 #pragma pack(pop)
 #endif
-#if VERSION_STRING == WotLK
 
+#if VERSION_STRING == WotLK
     struct SpellEntry
     {
         uint32_t Id;                                                // 0
@@ -2925,7 +2923,6 @@ namespace WDB::Structures
         uint32_t GetEffectApplyAuraNameByIndex(uint8_t index) const;
 
     private:
-
         SpellEntry(SpellEntry const&);
     };
 
@@ -3037,7 +3034,6 @@ namespace WDB::Structures
         uint32_t GetEffectApplyAuraNameByIndex(uint8_t index) const;
 
     private:
-
         SpellEntry(SpellEntry const&);
     };
 
