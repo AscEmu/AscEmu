@@ -32,7 +32,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellDefines.hpp"
 #include "Spell/Definitions/AuraRemoveMode.hpp"
 
-
 namespace WDB::Structures
 {
 #if VERSION_STRING >= Cata

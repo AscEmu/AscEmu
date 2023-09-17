@@ -1952,7 +1952,7 @@ uint8 Spell::CanCast(bool /*tolerate*/)
                         liquidLevel = liquidData.level;
 
                     if (liquidLevel <= ground)
-                        return SPELL_FAILED_NOT_FISHABLE;;
+                        return SPELL_FAILED_NOT_FISHABLE;
 
                     if (ground + 0.75 > liquidLevel)
 #if VERSION_STRING > Classic

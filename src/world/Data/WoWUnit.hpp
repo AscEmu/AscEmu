@@ -433,7 +433,7 @@ struct WoWUnit : WoWObject
     guid_union charmed_by_guid;
     guid_union summoned_by_guid;
     guid_union created_by_guid;
-    guid_union demon_creator_guid;;
+    guid_union demon_creator_guid;
     guid_union target_guid;
     guid_union battle_pet_companion_guid;
     guid_union channel_object_guid;
