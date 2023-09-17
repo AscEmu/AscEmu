@@ -16,6 +16,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Logging/Logger.hpp>
 #include "Auth/AutoPatcher.h"
 #include <Network/Network.h>
+
+#include "git_version.h"
 #include "Console/LogonConsole.h"
 #include "LogonConf.hpp"
 #include "Database/Database.h"

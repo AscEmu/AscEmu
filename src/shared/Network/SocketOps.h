@@ -10,6 +10,8 @@
 #ifndef SOCKET_OPS_H
 #define SOCKET_OPS_H
 
+#include "Network/NetworkIncludes.hpp"
+
 namespace SocketOps
 {
     // Create file descriptor for socket i/o operations.

@@ -5,13 +5,14 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "Server/LogonCommClient/LogonCommClient.h"
+
 #include <string>
 #include <map>
 #include <set>
+#include <unordered_map>
 
-#include "CommonTypes.hpp"
-#include "Server/WorldSocket.h"
-#include "Server/LogonCommClient/LogonCommClient.h"
+class WorldSocket;
 
 struct LogonServerStructure
 {

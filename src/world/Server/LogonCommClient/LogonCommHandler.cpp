@@ -4,10 +4,13 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Server/LogonCommClient/LogonCommHandler.h"
+
+#include "WorldPacket.h"
 #include "Server/Master.h"
 #include "Config/Config.h"
 #include "Cryptography/LogonCommDefines.h"
 #include "Cryptography/Sha1.h"
+#include "Logging/Logger.hpp"
 #include "Server/ConfigMgr.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"

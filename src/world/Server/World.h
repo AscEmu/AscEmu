@@ -107,7 +107,7 @@ class SERVER_DECL World : public EventableObject
     // InfoCore
     private:
 
-        Arcemu::PerformanceCounter perfcounter;
+        Ascemu::PerformanceCounter perfcounter;
 
         double mTotalTrafficInKB = 0;
         double mTotalTrafficOutKB = 0;

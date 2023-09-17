@@ -30,10 +30,12 @@
 #include "Database/Database.h"
 #include "Server/World.h"
 #include "Cryptography/LogonCommDefines.h"
+#include "Logging/Logger.hpp"
 #include "Server/ConfigMgr.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
+#include "Server/WorldSocket.h"
 
 LogonCommClientSocket::LogonCommClientSocket(SOCKET fd) : Socket(fd, 724288, 262444)
 {

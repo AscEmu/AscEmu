@@ -20,7 +20,6 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
-#include "git_version.h"
 #include <signal.h>
 
 #ifndef WIN32
@@ -29,16 +28,12 @@
 #endif
 
 #include "DynLib.hpp"
-#include "SysInfo.hpp"
-#include "PerformanceCounter.hpp"
 
 #include <cstdio>
 #include <cstdarg>
 #include <ctime>
 #include <cmath>
 #include <cerrno>
-
-#include "Network/NetworkIncludes.hpp"
 
 // current compiler (old)
 #define COMPILER_MICROSOFT 0
@@ -96,9 +91,6 @@
 #include <algorithm>
 #include <cstring>
 #include <climits>
-
-#include <unordered_map>
-#include <unordered_set>
 
 #include "CommonHelpers.hpp"
 #include "CommonTypes.hpp"
