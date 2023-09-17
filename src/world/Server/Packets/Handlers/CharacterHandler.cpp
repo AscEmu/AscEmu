@@ -3,6 +3,7 @@ Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "git_version.h"
 #include "Chat/ChatDefines.hpp"
 #include "Server/WorldSession.h"
 #include "Server/Packets/CmsgSetFactionAtWar.h"
@@ -31,6 +32,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Guild/GuildMgr.hpp"
 #include "Server/CharacterErrors.h"
 #include "Cryptography/AuthCodes.h"
+#include "Logging/Logger.hpp"
 #include "Management/ArenaTeam.hpp"
 #include "Management/Charter.hpp"
 #include "Objects/Units/Creatures/Corpse.hpp"

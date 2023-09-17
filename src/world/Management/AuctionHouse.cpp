@@ -217,7 +217,7 @@ void AuctionHouse::removeAuction(Auction* auction)
             snprintf(subject, 100, "%u:0:1", auction->auctionItem->getEntry());
 
             // <owner player guid>:bid:buyout
-            snprintf(body, 200, "%X:%u:%u", auction->ownerGuid.getGuidLow(), auction->highestBid, auction->buyoutPrice);
+            snprintf(body, 200, "%X:%s:%s", auction->ownerGuid.getGuidLow(), std::to_string(auction->highestBid).c_str(), std::to_string(auction->buyoutPrice).c_str());
 
             // Auction won by highest bidder. He gets the item.
             sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, auctionHouseEntryDbc->id, auction->highestBidderGuid, subject, body, 0, 0, auction->auctionItem->getGuid(), MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
@@ -231,12 +231,12 @@ void AuctionHouse::removeAuction(Auction* auction)
 
             // <hex player guid>:bid:0:deposit:cut
             if (auction->highestBid == auction->buyoutPrice)       // Buyout
-                snprintf(body, 200, "%X:%u:%u:%u:%u", auction->highestBidderGuid.getGuidLow(), auction->highestBid, auction->buyoutPrice, auction->depositAmount, (unsigned int)auction_cut);
+                snprintf(body, 200, "%X:%s:%s:%u:%u", auction->highestBidderGuid.getGuidLow(), std::to_string(auction->highestBid).c_str(), std::to_string(auction->buyoutPrice).c_str(), auction->depositAmount, (unsigned int)auction_cut);
             else
-                snprintf(body, 200, "%X:%u:0:%u:%u", auction->highestBidderGuid.getGuidLow(), auction->highestBid, auction->depositAmount, (unsigned int)auction_cut);
+                snprintf(body, 200, "%X:%s:0:%u:%u", auction->highestBidderGuid.getGuidLow(), std::to_string(auction->highestBid).c_str(), auction->depositAmount, (unsigned int)auction_cut);
 
             // send message away.
-            sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, auctionHouseEntryDbc->id, auction->ownerGuid, subject, body, amount, 0, 0, MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
+            sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, auctionHouseEntryDbc->id, auction->ownerGuid, subject, body, static_cast<uint32_t>(amount), 0, 0, MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
 
             // If it's not a buyout (otherwise the players has been already notified)
             if (auction->highestBid < auction->buyoutPrice || auction->buyoutPrice == 0)
@@ -260,7 +260,7 @@ void AuctionHouse::removeAuction(Auction* auction)
             // return bidders money
             if (auction->highestBidderGuid)
             {
-                sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, getId(), auction->highestBidderGuid, subject, "", auction->highestBid, 0, 0, MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
+                sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, getId(), auction->highestBidderGuid, subject, "", static_cast<uint32_t>(auction->highestBid), 0, 0, MAIL_STATIONERY_AUCTION, MAIL_CHECK_MASK_COPIED);
             }
 
         }
@@ -388,7 +388,7 @@ void AuctionHouse::sendAuctionBuyOutNotificationPacket(Auction* auction)
     Player* owner = sObjectMgr.getPlayer(auction->ownerGuid.getGuidLow());
     if (owner && owner->IsInWorld())
     {
-        owner->getSession()->SendPacket(SmsgAuctionOwnerNotification(auction->Id, auction->highestBid, auction->auctionItem->getEntry()).serialise().get());
+        owner->getSession()->SendPacket(SmsgAuctionOwnerNotification(auction->Id, static_cast<uint32_t>(auction->highestBid), auction->auctionItem->getEntry()).serialise().get());
     }
 }
 

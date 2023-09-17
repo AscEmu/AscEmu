@@ -22,6 +22,8 @@
 // Class WorldSocket - Main network code functions, handles
 // reading/writing of all packets.
 
+#include "WorldSocket.h"
+
 #include "DatabaseDefinition.hpp"
 #include "Utilities/Util.hpp"
 #include "Server/LogonCommClient/LogonCommHandler.h"

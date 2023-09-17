@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Cryptography/MD5.h"
 #include "Database/Field.hpp"
 #include "Database/Database.h"
+#include "Logging/Logger.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/Opcodes.hpp"
 #include "Server/WorldSession.h"
