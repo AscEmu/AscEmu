@@ -32,8 +32,8 @@ namespace WDB::Structures
     struct ChrRacesEntry;
 
 #if VERSION_STRING > TBC
-        struct ScalingStatValuesEntry;
-        struct ScalingStatDistributionEntry;
+    struct ScalingStatValuesEntry;
+    struct ScalingStatDistributionEntry;
 #endif
 }
 

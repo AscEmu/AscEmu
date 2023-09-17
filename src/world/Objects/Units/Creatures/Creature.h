@@ -12,12 +12,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/MovementDefines.h"
 #include "Server/UpdateFieldInclude.h"
 
-namespace WDB
+namespace WDB::Structures
 {
-    namespace Structures
-    {
-        struct CreatureFamilyEntry;
-    }
+    struct CreatureFamilyEntry;
 }
 
 class CreatureAIScript;

@@ -23,14 +23,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "DamageInfo.hpp"
 
-namespace WDB
+namespace WDB::Structures
 {
-    namespace Structures
-    {
-        struct AreaTableEntry;
-        struct FactionEntry;
-        struct FactionTemplateEntry;
-    }
+    struct AreaTableEntry;
+    struct FactionEntry;
+    struct FactionTemplateEntry;
 }
 
 struct WoWObject;
