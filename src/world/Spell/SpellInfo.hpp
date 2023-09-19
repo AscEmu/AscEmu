@@ -48,15 +48,12 @@ struct SpellForcedBasePoints
 
     void setValue(SpellEffIndex effIndex, int32_t value)
     {
-        if (effIndex < MAX_SPELL_EFFECTS)
-        {
-            m_forcedBasePoints[effIndex] = value;
-        }
+        m_forcedBasePoints[effIndex] = value;
     }
 
     int32_t getValue(SpellEffIndex effIndex) const
     {
-        return effIndex < MAX_SPELL_EFFECTS ? m_forcedBasePoints[effIndex] : 0;
+        return m_forcedBasePoints[effIndex];
     }
 
 private:
