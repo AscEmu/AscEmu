@@ -42,21 +42,6 @@ file(GLOB SRC_STORAGE_FILES Storage/*.cpp Storage/*.h Storage/*.hpp)
 file(GLOB SRC_STORAGE_WDB_FILES Storage/WDB/*.cpp Storage/WDB/*.h Storage/WDB/*.hpp)
 file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
 
-# version-specific includes.
-if ("${ASCEMU_VERSION}" STREQUAL "Classic")
-    file(GLOB SRC_GAMECLASSIC_STORAGE_FILES GameClassic/Storage/*.cpp GameClassic/Storage/*.h GameClassic/Storage/*.hpp)
-elseif ("${ASCEMU_VERSION}" STREQUAL "TBC")
-    file(GLOB SRC_GAMEBC_STORAGE_FILES GameTBC/Storage/*.cpp GameTBC/Storage/*.h GameTBC/Storage/*.hpp)
-elseif ("${ASCEMU_VERSION}" STREQUAL "WotLK")
-    file(GLOB SRC_GAMELK_STORAGE_FILES GameWotLK/Storage/*.cpp GameWotLK/Storage/*.h GameWotLK/Storage/*.hpp)
-elseif ("${ASCEMU_VERSION}" STREQUAL "Cata")
-    file(GLOB SRC_GAMECATA_STORAGE_FILES GameCata/Storage/*.cpp GameCata/Storage/*.h GameCata/Storage/*.hpp)
-    file(GLOB SRC_STORAGE_DB2_FILES Storage/DB2/*.cpp Storage/DB2/*.h Storage/DB2/*.hpp)
-elseif ("${ASCEMU_VERSION}" STREQUAL "Mop")
-    file(GLOB SRC_GAMEMOP_STORAGE_FILES GameMop/Storage/*.cpp GameMop/Storage/*.h GameMop/Storage/*.hpp)
-    file(GLOB SRC_STORAGE_DB2_FILES Storage/DB2/*.cpp Storage/DB2/*.h Storage/DB2/*.hpp)
-endif ()
-
 if (WIN32)
     set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/resources.rc")
 endif ()
@@ -101,36 +86,6 @@ set(WORLD_SRCS
     ${SRC_STORAGE_WDB_FILES}
     ${SRC_LOCAL_DIR}
 )
-
-# version-specific includes.
-if ("${ASCEMU_VERSION}" STREQUAL "Classic")
-set(WORLD_SRCS
-    ${WORLD_SRCS}
-    ${SRC_GAMECLASSIC_STORAGE_FILES}
-)
-elseif ("${ASCEMU_VERSION}" STREQUAL "TBC")
-set(WORLD_SRCS
-    ${WORLD_SRCS}
-    ${SRC_GAMEBC_STORAGE_FILES}
-)
-elseif ("${ASCEMU_VERSION}" STREQUAL "WotLK")
-set(WORLD_SRCS
-    ${WORLD_SRCS}
-    ${SRC_GAMELK_STORAGE_FILES}
-)
-elseif ("${ASCEMU_VERSION}" STREQUAL "Cata")
-set(WORLD_SRCS
-    ${WORLD_SRCS}
-    ${SRC_GAMECATA_STORAGE_FILES}
-    ${SRC_STORAGE_DB2_FILES}
-)
-elseif ("${ASCEMU_VERSION}" STREQUAL "Mop")
-set(WORLD_SRCS
-    ${WORLD_SRCS}
-    ${SRC_GAMEMOP_STORAGE_FILES}
-    ${SRC_STORAGE_DB2_FILES}
-)
-endif ()
 
 include_directories(
     ${OPENSSL_INCLUDE_DIR}
