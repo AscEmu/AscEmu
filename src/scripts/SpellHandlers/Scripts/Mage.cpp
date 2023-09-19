@@ -312,7 +312,7 @@ public:
 
     SpellScriptExecuteState onCastProcSpell(SpellProc* /*spellProc*/, Unit* /*caster*/, Unit* /*victim*/, Spell* spell) override
     {
-        spell->forced_basepoints->set(EFF_INDEX_0, manaReturn);
+        spell->forced_basepoints.setValue(EFF_INDEX_0, manaReturn);
         manaReturn = 0;
         return SpellScriptExecuteState::EXECUTE_OK;
     }

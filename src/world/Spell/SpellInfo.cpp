@@ -1012,7 +1012,7 @@ bool SpellInfo::isStackableFromMultipleCasters() const
     return getMaxstack() > 1 && !isChanneled() && !(getAttributesExC() & ATTRIBUTESEXC_APPLY_OWN_STACK_FOR_EACH_CASTER);
 }
 
-int32_t SpellInfo::calculateEffectValue(uint8_t effIndex, Unit* unitCaster/* = nullptr*/, Item* itemCaster/* = nullptr*/, SpellForcedBasePoints forcedBasePoints/* = SpellForcedBasePoints()*/) const
+int32_t SpellInfo::calculateEffectValue(uint8_t effIndex, Unit* unitCaster/* = nullptr*/, Item* itemCaster/* = nullptr*/, std::optional<SpellForcedBasePoints> const& forcedBasePoints/* = {}*/) const
 {
     if (effIndex >= MAX_SPELL_EFFECTS)
         return 0;
@@ -1071,7 +1071,10 @@ int32_t SpellInfo::calculateEffectValue(uint8_t effIndex, Unit* unitCaster/* = n
     basePoints = getEffectBasePoints(effIndex) + 1;
 #endif
 
-    forcedBasePoints.get(effIndex, &basePoints);
+    if (forcedBasePoints.has_value())
+    {
+        basePoints = (*forcedBasePoints).getValue(effIndex);
+    }
 
     // Check if value increases with level
     if (unitCaster != nullptr)

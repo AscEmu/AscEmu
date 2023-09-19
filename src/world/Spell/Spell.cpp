@@ -203,8 +203,6 @@ Spell::Spell(Object* _caster, SpellInfo const* _spellInfo, bool _triggered, Aura
                 break;
         }
     }
-
-    forced_basepoints = new SpellForcedBasePoints;
 }
 
 Spell::~Spell()
@@ -249,10 +247,7 @@ Spell::~Spell()
 
         itr = m_pendingAuras.erase(itr);
     }
-
-    delete forced_basepoints;
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Main control flow
@@ -1492,7 +1487,7 @@ void Spell::cancel()
 
 int32_t Spell::calculateEffect(uint8_t effIndex)
 {
-    auto value = getSpellInfo()->calculateEffectValue(effIndex, getUnitCaster(), getItemCaster(), *forced_basepoints);
+    int32_t value = getSpellInfo()->calculateEffectValue(effIndex, getUnitCaster(), getItemCaster(), forced_basepoints);
 
     // Legacy script hook
     value = DoCalculateEffect(effIndex, getUnitTarget(), value);

@@ -843,9 +843,7 @@ public:
             if (random_target == nullptr)
                 return;
             //let's force this effect
-            SpellForcedBasePoints* forcedBasePoints;
-            forcedBasePoints->set(0, random_target->getMaxHealth() / 2);
-            getCreature()->castSpell(random_target, info_cataclysmic_bolt, *forcedBasePoints, true);
+            getCreature()->castSpell(random_target, info_cataclysmic_bolt, { random_target->getMaxHealth() / 2 }, true);
             TargetTable.clear();
         }
 

@@ -992,11 +992,10 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
             if (spellpower > hp)
                 spellpower = hp;
 
-            SpellInfo const* entry = sSpellMgr.getSpellInfo(44413);
-            SpellForcedBasePoints forcedBasePoints;
-            forcedBasePoints.set(0, spellpower);
-            if (entry != nullptr)
-                pl->castSpell(pl->getGuid(), entry, forcedBasePoints, true);
+            if (SpellInfo const* entry = sSpellMgr.getSpellInfo(44413))
+            {
+                pl->castSpell(pl->getGuid(), entry, { spellpower }, true);
+            }
         }
     }
 

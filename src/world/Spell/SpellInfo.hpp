@@ -12,8 +12,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "SpellScript.hpp"
 #include "CommonTypes.hpp"
 #include "Storage/WDB/WDBDefines.hpp"
-
+#include <array>
 #include <string>
+#include <optional>
 
 class Item;
 class Player;
@@ -21,40 +22,45 @@ class Unit;
 
 struct SpellForcedBasePoints
 {
-    void set(uint8_t effIndex, int32_t value)
+    SpellForcedBasePoints(std::optional<int32_t> const pointValue0 = {}, std::optional<int32_t> const pointValue1 = {}, std::optional<int32_t> const pointValue2 = {})
     {
-        if (effIndex >= MAX_SPELL_EFFECTS)
-            return;
+        m_forcedBasePoints.fill(0);
 
-        for (auto& values : m_forcedBasePoints)
+        if (pointValue0.has_value())
         {
-            if (values.first == effIndex)
-            {
-                values.second = value;
-                return;
-            }
+            m_forcedBasePoints[0] = *pointValue0;
         }
 
-        m_forcedBasePoints.push_back(std::make_pair(effIndex, value));
+        if (pointValue1.has_value())
+        {
+            m_forcedBasePoints[1] = *pointValue1;
+        }
+
+        if (pointValue2.has_value())
+        {
+            m_forcedBasePoints[2] = *pointValue2;
+        }
     }
 
-    void get(uint8_t effIndex, int32_t* basePoints) const
-    {
-        if (effIndex >= MAX_SPELL_EFFECTS)
-            return;
+    SpellForcedBasePoints(const SpellForcedBasePoints& other) = default;
+    SpellForcedBasePoints(SpellForcedBasePoints&&) = default;
+    SpellForcedBasePoints& operator=(SpellForcedBasePoints const&) = default;
 
-        for (const auto& values : m_forcedBasePoints)
+    void setValue(uint8_t effIndex, int32_t value)
+    {
+        if (effIndex < MAX_SPELL_EFFECTS)
         {
-            if (values.first == effIndex)
-            {
-                *basePoints = values.second;
-                break;
-            }
+            m_forcedBasePoints[effIndex] = value;
         }
+    }
+
+    int32_t getValue(uint8_t effIndex) const
+    {
+        return effIndex < MAX_SPELL_EFFECTS ? m_forcedBasePoints[effIndex] : 0;
     }
 
 private:
-    std::vector<std::pair<uint8_t, int32_t>> m_forcedBasePoints;
+    std::array<int32_t, MAX_SPELL_EFFECTS> m_forcedBasePoints;
 };
 
 class SERVER_DECL SpellInfo
@@ -118,7 +124,7 @@ public:
     // If spell stacks from different casters (i.e. Sunder Armor)
     bool isStackableFromMultipleCasters() const;
 
-    int32_t calculateEffectValue(uint8_t effIndex, Unit* unitCaster = nullptr, Item* itemCaster = nullptr, SpellForcedBasePoints forcedBasePoints = SpellForcedBasePoints()) const;
+    int32_t calculateEffectValue(uint8_t effIndex, Unit* unitCaster = nullptr, Item* itemCaster = nullptr, std::optional<SpellForcedBasePoints> const& forcedBasePoints = {}) const;
 
     bool doesEffectApplyAura(uint8_t effIndex) const;
 

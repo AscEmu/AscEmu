@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "CommonTypes.hpp"
 #include "Definitions/ProcFlags.hpp"
+#include "SpellInfo.hpp"
 #include <unordered_map>
 
 class Aura;
@@ -16,7 +17,6 @@ class SpellProc;
 class Unit;
 
 struct DamageInfo;
-struct SpellForcedBasePoints;
 
 typedef SpellProc* (*spell_proc_factory_function)();
 typedef std::unordered_map<uint32_t, spell_proc_factory_function> SpellProcMap;
@@ -151,7 +151,7 @@ class SERVER_DECL SpellProc
         // Mask used on spell effect
         uint32_t mGroupRelation[3] = { 0, 0, 0 };
 
-        SpellForcedBasePoints* mOverrideEffectDamage;
+        SpellForcedBasePoints mOverrideEffectDamage;
 
         // Indicates that this proc will be skipped on next ::handleProc call
         // used to avoid some spell procs from procing themselves

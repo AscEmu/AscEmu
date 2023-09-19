@@ -446,9 +446,9 @@ public:
         SpellCastTargets targets(victim->getGuid());
 
         Spell* spell = sSpellMgr.newSpell(getProcOwner(), getSpell(), true, nullptr);
-        spell->forced_basepoints->set(0, getOverrideEffectDamage(0));
-        spell->forced_basepoints->set(1, getOverrideEffectDamage(1));
-        spell->forced_basepoints->set(2, getOverrideEffectDamage(2));
+        spell->forced_basepoints.setValue(0, getOverrideEffectDamage(0));
+        spell->forced_basepoints.setValue(1, getOverrideEffectDamage(1));
+        spell->forced_basepoints.setValue(2, getOverrideEffectDamage(2));
         spell->ProcedOnSpell = CastingSpell;
 
         spell->prepare(&targets);
@@ -490,7 +490,7 @@ public:
         }
 
         SpellForcedBasePoints forcedBasePoints;
-        forcedBasePoints.set(0, aura->getEffectDamage(0));
+        forcedBasePoints.setValue(0, aura->getEffectDamage(0));
 
         caster->castSpell(getProcOwner(), 33110, forcedBasePoints, true);
 

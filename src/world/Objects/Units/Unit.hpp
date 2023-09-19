@@ -23,7 +23,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellModifierType.hpp"
 #include "Spell/Definitions/SpellTypes.hpp"
 #include "Spell/SpellProc.hpp"
-
 #include <array>
 #include <list>
 #include <optional>
@@ -733,17 +732,17 @@ public:
     void castSpell(Unit* target, uint32_t spellId, bool triggered = false);
     void castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, bool triggered = false);
     void castSpell(Unit* target, SpellInfo const* spellInfo, bool triggered = false);
-    void castSpell(uint64_t targetGuid, uint32_t spellId, SpellForcedBasePoints forcedBasepoints, bool triggered = false);
-    void castSpell(Unit* target, uint32_t spellId, SpellForcedBasePoints forcedBasePoints, bool triggered = false);
-    void castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasePoints, int32_t spellCharges, bool triggered = false);
+    void castSpell(uint64_t targetGuid, uint32_t spellId, SpellForcedBasePoints const& forcedBasepoints, bool triggered = false);
+    void castSpell(Unit* target, uint32_t spellId, SpellForcedBasePoints const& forcedBasePoints, bool triggered = false);
+    void castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePoints const& forcedBasePoints, int32_t spellCharges, bool triggered = false);
     void castSpell(SpellCastTargets targets, uint32_t spellId, bool triggered = false);
     void castSpell(SpellCastTargets targets, SpellInfo const* spellInfo, bool triggered = false);
     void castSpellLoc(const LocationVector location, uint32_t spellId, bool triggered = false);
     void castSpellLoc(const LocationVector location, SpellInfo const* spellInfo, bool triggered = false);
     void eventCastSpell(Unit* target, SpellInfo const* spellInfo);
 
-    void castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasepoints, bool triggered);
-    void castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasepoints, bool triggered);
+    void castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, SpellForcedBasePoints const& forcedBasepoints, bool triggered);
+    void castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePoints const& forcedBasepoints, bool triggered);
 
     SpellProc* addProcTriggerSpell(uint32_t spellId, uint32_t originalSpellId, uint64_t casterGuid, uint32_t procChance, SpellProcFlags procFlags, SpellExtraProcFlags exProcFlags, uint32_t const* spellFamilyMask, uint32_t const* procClassMask = nullptr, Aura* createdByAura = nullptr, Object* obj = nullptr);
     // Gets proc chance and proc flags from spellInfo

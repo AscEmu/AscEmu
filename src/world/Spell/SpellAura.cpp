@@ -1006,7 +1006,7 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
                 if (aurEff->getAuraEffectType() == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE)
                 {
                     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                        triggerSpell->forced_basepoints->set(i, customDamage);
+                        triggerSpell->forced_basepoints.setValue(i, customDamage);
                 }
 #endif
 

@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/Spline/MovementTypedefs.h"
 #include "Objects/DamageInfo.hpp"
 #include "SpellDefines.hpp"
+#include "SpellInfo.hpp"
 #include "Storage/WDB/WDBDefines.hpp"
 
 #include <map>
@@ -25,7 +26,6 @@ namespace WDB::Structures
 }
 
 struct AuraEffectModifier;
-struct SpellForcedBasePoints;
 class Object;
 class SpellInfo;
 class Corpse;
@@ -243,7 +243,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
     // Some spells inherit base points from the mother spell
-    SpellForcedBasePoints* forced_basepoints;
+    SpellForcedBasePoints forced_basepoints;
 
     Aura* getTriggeredByAura() const;
 
