@@ -115,13 +115,9 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
     data << uint64_t(0);
 
     sObjectMgr.m_playerLock.lock();
-    PlayerStorageMap::const_iterator iend = sObjectMgr.getPlayerStorage().end();
-    auto playerPair = sObjectMgr.getPlayerStorage().begin();
-    while (playerPair != iend && sent_count < 49)
-    {
-        const Player* player = playerPair->second;
-        ++playerPair;
 
+    for (auto const& [guid, player] : sObjectMgr.getPlayerStorage())
+    {
         if (!player->getSession() || !player->IsInWorld())
             continue;
 
@@ -212,7 +208,12 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
         data << player->getGender();
         data << uint32_t(player->getZoneId());
         ++sent_count;
+        if (sent_count >= 49)
+        {
+            break;
+        }
     }
+
     sObjectMgr.m_playerLock.unlock();
     data.wpos(0);
     data << sent_count;
@@ -835,7 +836,7 @@ void WorldSession::handleUpdateAccountData(WorldPacket& recvPacket)
 
     if (srlPacket.uiDecompressedSize > receivedPackedSize)
     {
-        const int32_t ZlibResult = uncompress(reinterpret_cast<uint8_t*>(data), &uid, recvPacket.contents() + 8, 
+        const int32_t ZlibResult = uncompress(reinterpret_cast<uint8_t*>(data), &uid, recvPacket.contents() + 8,
             static_cast<uLong>(receivedPackedSize));
 
         switch (ZlibResult)
@@ -1746,7 +1747,7 @@ void WorldSession::handleWhoIsOpcode(WorldPacket& recvPacket)
 
     delete accountInfoResult;
 
-    std::string msg = srlPacket.characterName + "'s " + "account information: acctID: " + acctID + ", Name: " 
+    std::string msg = srlPacket.characterName + "'s " + "account information: acctID: " + acctID + ", Name: "
     + acctName + ", Permissions: " + acctPerms + ", E-Mail: " + acctEmail + ", lastIP: " + acctIP + ", Muted: " + acctMuted;
 
     WorldPacket data(SMSG_WHOIS, msg.size() + 1);
