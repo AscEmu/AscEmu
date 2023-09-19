@@ -134,11 +134,11 @@ struct CompareTimeAndGuid
     }
 };
 
-typedef std::unordered_map<uint32_t, Player*> PlayerStorageMap;
+typedef std::unordered_map<uint32_t /*lowGUID*/, Player*> PlayerStorageMap;
 typedef std::vector<Creature*> CreaturesStorageMap;
-typedef std::unordered_map<uint32_t, Pet*> PetStorageMap;
+typedef std::unordered_map<uint32_t /*lowGUID*/, Pet*> PetStorageMap;
 typedef std::vector<GameObject*> GameObjectStorageMap;
-typedef std::unordered_map<uint32_t, DynamicObject*> DynamicObjectStorageMap;
+typedef std::unordered_map<uint32_t /*lowGUID*/, DynamicObject*> DynamicObjectStorageMap;
 typedef std::set<Transporter*> TransportsContainer;
 
 typedef std::set<Creature*> CreatureSet;
@@ -150,8 +150,8 @@ typedef std::set<Object*> UpdateQueue;
 typedef std::set<Player*> PUpdateQueue;
 
 typedef std::set<uint64_t> CombatProgressMap;
-typedef std::unordered_map<uint32_t, Creature*> CreatureSqlIdMap;
-typedef std::unordered_map<uint32_t, GameObject*> GameObjectSqlIdMap;
+typedef std::unordered_map<uint32_t /*lowGUID*/, Creature*> CreatureSqlIdMap;
+typedef std::unordered_map<uint32_t /*lowGUID*/, GameObject*> GameObjectSqlIdMap;
 
 class SERVER_DECL WorldMap : public CellHandler <MapCell>, public EventableObject, public WorldStatesHandler::WorldStatesObserver
 {

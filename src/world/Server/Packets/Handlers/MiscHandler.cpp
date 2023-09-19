@@ -92,20 +92,16 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
 {
     CmsgWho srlPacket;
     if (!srlPacket.deserialise(recvPacket))
+    {
         return;
+    }
 
-    bool cname = false;
-    bool gname = false;
-
-    if (srlPacket.player_name.length() > 0)
-        cname = true;
-
-    if (srlPacket.guild_name.length() > 0)
-        gname = true;
+    bool const hasCharName = !srlPacket.player_name.empty();
+    bool const hasGuildName = !srlPacket.guild_name.empty();
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_WHO with %u zones and %u names", srlPacket.zone_count, srlPacket.name_count);
 
-    uint32_t team = _player->getTeam();
+    PlayerTeam const team = _player->getTeam();
 
     uint32_t sent_count = 0;
     uint32_t total_count = 0;
@@ -115,104 +111,116 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
     data << uint64_t(0);
 
     sObjectMgr.m_playerLock.lock();
-    PlayerStorageMap::const_iterator iend = sObjectMgr.getPlayerStorage().end();
-    auto playerPair = sObjectMgr.getPlayerStorage().begin();
-    while (playerPair != iend && sent_count < 49)
+
+    for (auto const& itr : sObjectMgr.getPlayerStorage())
     {
-        const Player* player = playerPair->second;
-        ++playerPair;
-
-        if (!player->getSession() || !player->IsInWorld())
-            continue;
-
-        if (!worldConfig.gm.showGmInWhoList && !HasGMPermissions())
+        Player* player = itr.second;
+        if (player == nullptr || player->getSession() == nullptr || !player->IsInWorld())
         {
-            if (player->getSession()->HasGMPermissions())
-                continue;
+            continue;
+        }
+
+        if (!worldConfig.gm.showGmInWhoList && !HasGMPermissions() && player->getSession()->HasGMPermissions())
+        {
+            continue;
         }
 
         // Team check
         if (!HasGMPermissions() && player->getTeam() != team && !player->getSession()->HasGMPermissions() && !worldConfig.player.isInterfactionMiscEnabled)
+        {
             continue;
+        }
 
         ++total_count;
 
-        // Add by default, if we don't have any checks
-        bool add = true;
-
         // Chat name
-        if (cname && srlPacket.player_name.compare(player->getName()) != 0)
+        if (hasCharName && srlPacket.player_name.compare(player->getName()) != 0)
+        {
             continue;
+        }
 
         // Guild name
-        if (gname)
+        if (hasGuildName && !player->getGuild() || srlPacket.guild_name.compare(player->getGuild()->getName()) != 0)
         {
-            if (!player->getGuild() || srlPacket.guild_name.compare(player->getGuild()->getName()) != 0)
-                continue;
+            continue;
         }
 
         // Level check
-        if (srlPacket.min_level && srlPacket.max_level)
+        // skip players outside of level range
+        if (srlPacket.min_level > 0 && srlPacket.max_level > 0 && player->getLevel() < srlPacket.min_level || player->getLevel() > srlPacket.max_level)
         {
-            // skip players outside of level range
-            if (player->getLevel() < srlPacket.min_level || player->getLevel() > srlPacket.max_level)
-                continue;
+            continue;
         }
 
         // Zone id compare
-        if (srlPacket.zone_count)
+        if (srlPacket.zone_count > 0)
         {
             // people that fail the zone check don't get added
-            add = false;
+            bool skip = true;
             for (uint32_t i = 0; i < srlPacket.zone_count; ++i)
             {
                 if (srlPacket.zones[i] == player->getZoneId())
                 {
-                    add = true;
+                    skip = false;
                     break;
                 }
             }
+
+            if (skip)
+            {
+                continue;
+            }
         }
 
-        if (!((srlPacket.class_mask >> 1) & player->getClassMask()) || !((srlPacket.race_mask >> 1) & player->getRaceMask()))
-            add = false;
-
-        // skip players that fail zone check
-        if (!add)
+        if (((srlPacket.class_mask >> 1) & player->getClassMask()) == 0 || ((srlPacket.race_mask >> 1) & player->getRaceMask()) == 0)
+        {
             continue;
+        }
 
-        if (srlPacket.name_count)
+        if (srlPacket.name_count > 0)
         {
             // people that fail name check don't get added
-            add = false;
+            bool skip = true;
             for (uint32_t i = 0; i < srlPacket.name_count; ++i)
             {
                 if (!strnicmp(srlPacket.names[i].c_str(), player->getName().c_str(), srlPacket.names[i].length()))
                 {
-                    add = true;
+                    skip = false;
                     break;
                 }
             }
-        }
 
-        if (!add)
-            continue;
+            if (skip)
+            {
+                continue;
+            }
+        }
 
         // if we're here, it means we've passed all tests
         data << player->getName().c_str();
 
-        if (player->m_playerInfo->m_guild)
+        if (player->m_playerInfo->m_guild > 0)
+        {
             data << sGuildMgr.getGuildById(player->m_playerInfo->m_guild)->getName().c_str();
+        }
         else
+        {
             data << uint8_t(0);
+        }
 
         data << player->getLevel();
         data << uint32_t(player->getClass());
         data << uint32_t(player->getRace());
         data << player->getGender();
         data << uint32_t(player->getZoneId());
+
         ++sent_count;
+        if (sent_count >= 49)
+        {
+            break;
+        }
     }
+
     sObjectMgr.m_playerLock.unlock();
     data.wpos(0);
     data << sent_count;
@@ -835,7 +843,7 @@ void WorldSession::handleUpdateAccountData(WorldPacket& recvPacket)
 
     if (srlPacket.uiDecompressedSize > receivedPackedSize)
     {
-        const int32_t ZlibResult = uncompress(reinterpret_cast<uint8_t*>(data), &uid, recvPacket.contents() + 8, 
+        const int32_t ZlibResult = uncompress(reinterpret_cast<uint8_t*>(data), &uid, recvPacket.contents() + 8,
             static_cast<uLong>(receivedPackedSize));
 
         switch (ZlibResult)
@@ -1746,7 +1754,7 @@ void WorldSession::handleWhoIsOpcode(WorldPacket& recvPacket)
 
     delete accountInfoResult;
 
-    std::string msg = srlPacket.characterName + "'s " + "account information: acctID: " + acctID + ", Name: " 
+    std::string msg = srlPacket.characterName + "'s " + "account information: acctID: " + acctID + ", Name: "
     + acctName + ", Permissions: " + acctPerms + ", E-Mail: " + acctEmail + ", lastIP: " + acctIP + ", Muted: " + acctMuted;
 
     WorldPacket data(SMSG_WHOIS, msg.size() + 1);
