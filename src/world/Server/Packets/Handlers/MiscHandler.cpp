@@ -101,7 +101,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_WHO with %u zones and %u names", srlPacket.zone_count, srlPacket.name_count);
 
-    uint32_t team = _player->getTeam();
+    PlayerTeam const team = _player->getTeam();
 
     uint32_t sent_count = 0;
     uint32_t total_count = 0;
