@@ -209,7 +209,7 @@ void Aura::removeAura(AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
         ///\ todo: handle this in effects
         if (caster->isPlayer() && caster->IsInWorld() && static_cast<Player*>(caster)->getFarsightGuid() != 0)
         {
-            uint8_t j = 0;;
+            uint8_t j = 0;
             for (; j < MAX_SPELL_EFFECTS; ++j)
                 if (getSpellInfo()->getEffect(j) == SPELL_EFFECT_ADD_FARSIGHT)
                     break;

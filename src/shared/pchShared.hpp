@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2022 AscEmu Team <http://www.ascemu.org>
+// Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
 
 #pragma once
 
@@ -9,5 +9,5 @@
 #include <sstream>
 #include <string>
 #include <atomic>
-#include <Common.hpp>
-#include <Utilities/Util.hpp>
+#include "Common.hpp"
+#include "Utilities/Util.hpp"
