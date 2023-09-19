@@ -95,7 +95,7 @@ public:
         }
 
         // Cast Improved Blood Presence in Frost and Unholy presences
-        int32 const p_damage = improvedFrostPresence->getAuraEffect(EFF_INDEX_0)->getEffectDamage();
+        int32_t const p_damage = improvedFrostPresence->getAuraEffect(EFF_INDEX_0)->getEffectDamage();
         if (!isBloodPresence() && improvedBloodPresence != nullptr)
         {
             aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(SPELL_IMPROVED_BLOOD_PRESENCE_DUMMY), { p_damage }, true);
