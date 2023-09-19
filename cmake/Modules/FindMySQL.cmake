@@ -45,7 +45,6 @@ else()
 
         # MySQL
         "/usr/include/mysql"
-        "/usr/local/include"
         "/usr/local/include/mysql"
         "/usr/local/mysql/include"
 
