@@ -24,40 +24,46 @@ struct SpellForcedBasePoints
 {
     SpellForcedBasePoints(std::optional<int32_t> const pointValue0 = {}, std::optional<int32_t> const pointValue1 = {}, std::optional<int32_t> const pointValue2 = {})
     {
-        m_forcedBasePoints.fill(0);
-
         if (pointValue0.has_value())
         {
-            m_forcedBasePoints[0] = *pointValue0;
+            m_values[0] = *pointValue0;
         }
 
         if (pointValue1.has_value())
         {
-            m_forcedBasePoints[1] = *pointValue1;
+            m_values[1] = *pointValue1;
         }
 
         if (pointValue2.has_value())
         {
-            m_forcedBasePoints[2] = *pointValue2;
+            m_values[2] = *pointValue2;
         }
     }
 
     SpellForcedBasePoints(const SpellForcedBasePoints& other) = default;
     SpellForcedBasePoints(SpellForcedBasePoints&&) = default;
-    SpellForcedBasePoints& operator=(SpellForcedBasePoints const&) = default;
+    SpellForcedBasePoints& operator=(SpellForcedBasePoints const& basePoints)
+    {
+        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        {
+            if (basePoints.m_values[i].has_value())
+            {
+                m_values[i] = basePoints.m_values[i];
+            }
+        }
+    }
 
     void setValue(SpellEffIndex effIndex, int32_t value)
     {
-        m_forcedBasePoints[effIndex] = value;
+        m_values[effIndex] = value;
     }
 
     int32_t getValue(SpellEffIndex effIndex) const
     {
-        return m_forcedBasePoints[effIndex];
+        return m_values[effIndex].has_value() ? *m_values[effIndex] : 0;
     }
 
-private:
-    std::array<int32_t, MAX_SPELL_EFFECTS> m_forcedBasePoints;
+    std::array<std::optional<int32_t>, MAX_SPELL_EFFECTS> m_values;
 };
 
 class SERVER_DECL SpellInfo
