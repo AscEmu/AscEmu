@@ -172,12 +172,12 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
             }
         }
 
-        if (!((srlPacket.class_mask >> 1) & player->getClassMask()) || !((srlPacket.race_mask >> 1) & player->getRaceMask()))
+        if (((srlPacket.class_mask >> 1) & player->getClassMask()) == 0 || ((srlPacket.race_mask >> 1) & player->getRaceMask()) == 0)
         {
             continue;
         }
 
-        if (srlPacket.name_count)
+        if (srlPacket.name_count > 0)
         {
             // people that fail name check don't get added
             bool skip = true;
@@ -199,7 +199,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
         // if we're here, it means we've passed all tests
         data << player->getName().c_str();
 
-        if (player->m_playerInfo->m_guild)
+        if (player->m_playerInfo->m_guild > 0)
         {
             data << sGuildMgr.getGuildById(player->m_playerInfo->m_guild)->getName().c_str();
         }
