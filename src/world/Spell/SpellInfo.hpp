@@ -51,6 +51,7 @@ struct SpellForcedBasePoints
                 m_values[i] = basePoints.m_values[i];
             }
         }
+        return *this;
     }
 
     void setValue(SpellEffIndex effIndex, int32_t value)
