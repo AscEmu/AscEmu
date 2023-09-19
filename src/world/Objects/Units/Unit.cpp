@@ -3626,9 +3626,8 @@ void Unit::castSpellLoc(const LocationVector location, SpellInfo const* spellInf
 
 void Unit::eventCastSpell(Unit* target, SpellInfo const* spellInfo)
 {
-    const SpellForcedBasePoints forcedBasePoints;
     if (spellInfo != nullptr)
-        castSpell(target, spellInfo, forcedBasePoints, true);
+        castSpell(target, spellInfo, {}, true);
     else
         sLogger.failure("Unit::eventCastSpell tried to cast invalid spell with no spellInfo (nullptr)");
 }

@@ -123,7 +123,7 @@ public:
                 for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
                     forcedBasePoints.setValue(static_cast<SpellEffIndex>(i), basePoints);
 
-                aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(SPELL_IMPROVED_UNHOLY_PRESENCE_DUMMY), { p_damage }, true);
+                aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(SPELL_IMPROVED_UNHOLY_PRESENCE_DUMMY), forcedBasePoints, true);
             }
 #else
             // Cast Improved Unholy Presence in Blood and Frost presences
