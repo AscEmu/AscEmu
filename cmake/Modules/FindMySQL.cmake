@@ -8,87 +8,105 @@
 
 # NOTE: You can't build AE with Win32 and use MySQL x64 libs and otherwise. This will result in LNK errors!
 
-if (NOT IS_64BIT)
-LIST(APPEND MY_INCLUDE_PATHS 
-            "/usr/include"
-            "/usr/include/mysql"
-            "/usr/local/include"
-            "/usr/local/include/mysql"
-            "/usr/local/mysql/include"
-            "${PROGRAM_FILES_64}/MySQL/*/include"
-            "${PROGRAM_FILES_64}/MySQL/include"
-            "${PROGRAM_FILES_32}/MySQL/*/include"
-            "${PROGRAM_FILES_32}/MySQL/include"
-            "$ENV{ProgramFiles}/MySQL/*/include"
-            "$ENV{SystemDrive}/MySQL/*/include"
-            "$ENV{MYSQL_ROOT}/include"
-            "C:/Program Files (x86)/MySQL/*/include"
-            "D:/Program Files (x86)/MySQL/*/include"
-            "C:/Program Files/MySQL/*/include"
-            "D:/Program Files/MySQL/*/include")
-else ()
-LIST(APPEND MY_INCLUDE_PATHS 
-            "/usr/include"
-            "/usr/include/mysql"
-            "/usr/local/include"
-            "/usr/local/include/mysql"
-            "/usr/local/mysql/include"
-            "${PROGRAM_FILES_64}/MySQL/*/include"
-            "${PROGRAM_FILES_64}/MySQL/include"
-            "${PROGRAM_FILES_32}/MySQL/*/include"
-            "${PROGRAM_FILES_32}/MySQL/include"
-            "$ENV{ProgramFiles}/MySQL/*/include"
-            "$ENV{SystemDrive}/MySQL/*/include"
-            "$ENV{MYSQL_ROOT}/include"
-            "C:/Program Files (x86)/MySQL/*/include"
-            "D:/Program Files (x86)/MySQL/*/include"
-            "C:/Program Files/MySQL/*/include"
-            "D:/Program Files/MySQL/*/include")
-endif ()
+# MySQL 32/64 bit handling
+if (WIN32)
+    LIST(APPEND MY_INCLUDE_PATHS
+        # MySQL
+        "$ENV{ProgramFiles}/MySQL/*/include"
+        "$ENV{SystemDrive}/MySQL/*/include"
+        "$ENV{MYSQL_ROOT}/include"
+        "C:/Program Files/MySQL/*/include"
+        "D:/Program Files/MySQL/*/include"
+        "${PROGRAM_FILES_32}/MySQL/*/include"
+        "${PROGRAM_FILES_32}/MySQL/include"
+        "${PROGRAM_FILES_64}/MySQL/*/include"
+        "${PROGRAM_FILES_64}/MySQL/include"
+        "C:/Program Files (x86)/MySQL/*/include"
+        "D:/Program Files (x86)/MySQL/*/include"
+
+        # MariaDB
+        "$ENV{ProgramFiles}/MariaDB/*/include"
+        "$ENV{SystemDrive}/MariaDB/*/include"
+        "$ENV{MARIADB_ROOT}/include"
+        "C:/Program Files/MariaDB/*/include"
+        "D:/Program Files/MariaDB/*/include"
+        "${PROGRAM_FILES_32}/MariaDB/*/include"
+        "${PROGRAM_FILES_32}/MariaDB/include"
+        "${PROGRAM_FILES_64}/MariaDB/*/include"
+        "${PROGRAM_FILES_64}/MariaDB/include"
+        "C:/Program Files (x86)/MariaDB/*/include"
+        "D:/Program Files (x86)/MariaDB/*/include"
+    )
+else()
+    LIST(APPEND MY_INCLUDE_PATHS
+        # Generic
+        "/usr/include"
+        "/usr/local/include"
+
+        # MySQL
+        "/usr/include/mysql"
+        "/usr/local/include"
+        "/usr/local/include/mysql"
+        "/usr/local/mysql/include"
+
+        # MariaDB
+        "/usr/include/mariadb"
+        "/usr/local/include/mariadb"
+        "/usr/local/mariadb/include"
+    )
+endif()
 
 find_path(MYSQL_INCLUDE_DIR
     NAMES "mysql.h"
     PATHS ${MY_INCLUDE_PATHS})
 
 if (WIN32)
+    LIST(APPEND MY_LIB_PATHS
+        # MySQL
+        "${PROGRAM_FILES_64}/MySQL/*/lib"
+        "${PROGRAM_FILES_32}/MySQL/*/lib"
+        "$ENV{ProgramFiles}/MySQL/*/lib"
+        "$ENV{SystemDrive}/MySQL/*/lib"
+        "C:/Program Files (x86)/MySQL/*/lib"
+        "D:/Program Files (x86)/MySQL/*/lib"
+        "C:/Program Files/MySQL/*/lib"
+        "D:/Program Files/MySQL/*/lib"
 
-if (NOT IS_64BIT)
-LIST(APPEND MY_LIB_PATHS 
-            "${PROGRAM_FILES_64}/MySQL/*/lib"
-            "${PROGRAM_FILES_32}/MySQL/*/lib"
-            "$ENV{ProgramFiles}/MySQL/*/lib"
-            "$ENV{SystemDrive}/MySQL/*/lib"
-            "C:/Program Files (x86)/MySQL/*/lib"
-            "D:/Program Files (x86)/MySQL/*/lib"
-            "C:/Program Files/MySQL/*/lib"
-            "D:/Program Files/MySQL/*/lib")
-else ()
-LIST(APPEND MY_LIB_PATHS 
-            "${PROGRAM_FILES_64}/MySQL/*/lib"
-            "${PROGRAM_FILES_32}/MySQL/*/lib"
-            "$ENV{ProgramFiles}/MySQL/*/lib"
-            "$ENV{SystemDrive}/MySQL/*/lib"
-            "C:/Program Files (x86)/MySQL/*/lib"
-            "D:/Program Files (x86)/MySQL/*/lib"
-            "C:/Program Files/MySQL/*/lib"
-            "D:/Program Files/MySQL/*/lib")
-endif ()
+        # MariaDB
+        "${PROGRAM_FILES_64}/MariaDB/*/lib"
+        "${PROGRAM_FILES_32}/MariaDB/*/lib"
+        "$ENV{ProgramFiles}/MariaDB/*/lib"
+        "$ENV{SystemDrive}/MariaDB/*/lib"
+        "C:/Program Files (x86)/MariaDB/*/lib"
+        "D:/Program Files (x86)/MariaDB/*/lib"
+        "C:/Program Files/MariaDB/*/lib"
+        "D:/Program Files/MariaDB/*/lib"
+        )
 
-find_library(MYSQL_LIBRARY
-    NAMES "libmysql"
-    PATHS ${MY_LIB_PATHS})
+    find_library(MYSQL_LIBRARY
+        NAMES "libmysql" "libmariadb"
+        PATHS ${MY_LIB_PATHS})
 
-else (WIN32)
-find_library(MYSQL_LIBRARY	
-    NAMES "mysqlclient" "mysqlclient_r"
-    PATHS "/usr/lib"
-        "/usr/lib/mysql"
-        "/usr/local/lib"
-        "/usr/local/mysql/lib"
-        "/usr/local/lib/mysql"
-        "/opt/local/lib/mysql5/mysql")
+else()
+    find_library(MYSQL_LIBRARY
+        NAMES "mysqlclient" "mysqlclient_r"
+        PATHS
+            # Generic
+            "/usr/lib"
+            "/usr/local/lib"
 
-endif (WIN32)
+            # MySQL
+            "/usr/lib/mysql"
+            "/usr/local/mysql/lib"
+            "/usr/local/lib/mysql"
+            "/opt/local/lib/mysql5/mysql"
+
+            # MariaDB
+            "/usr/lib/mariadb"
+            "/usr/local/mariadb/lib"
+            "/usr/local/lib/mariadb"
+            "/opt/local/lib/mariadb/mysql")
+endif()
 
 if (MYSQL_LIBRARY)
     if (MYSQL_INCLUDE_DIR)
@@ -104,6 +122,6 @@ if (MYSQL_LIBRARY)
         message(FATAL_ERROR "Could not find MySQL headers! Please install the development libraries and headers")
     endif (MYSQL_INCLUDE_DIR)
     mark_as_advanced(MYSQL_FOUND MYSQL_LIBRARY)
-else (MYSQL_LIBRARY)
+else ()
     message(FATAL_ERROR "Could not find the MySQL libraries! Please install the development libraries and headers")
-endif (MYSQL_LIBRARY)
+endif ()
