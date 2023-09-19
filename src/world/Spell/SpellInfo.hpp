@@ -46,7 +46,7 @@ struct SpellForcedBasePoints
     SpellForcedBasePoints(SpellForcedBasePoints&&) = default;
     SpellForcedBasePoints& operator=(SpellForcedBasePoints const&) = default;
 
-    void setValue(uint8_t effIndex, int32_t value)
+    void setValue(SpellEffIndex effIndex, int32_t value)
     {
         if (effIndex < MAX_SPELL_EFFECTS)
         {
@@ -54,7 +54,7 @@ struct SpellForcedBasePoints
         }
     }
 
-    int32_t getValue(uint8_t effIndex) const
+    int32_t getValue(SpellEffIndex effIndex) const
     {
         return effIndex < MAX_SPELL_EFFECTS ? m_forcedBasePoints[effIndex] : 0;
     }

@@ -3548,25 +3548,27 @@ void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, bool triggered/* 
 void Unit::castSpell(uint64_t targetGuid, uint32_t spellId, SpellForcedBasePoints const& forcedBasepoints, bool triggered/* = false*/)
 {
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
-    if (spellInfo == nullptr)
-        return;
-
-    castSpell(targetGuid, spellInfo, forcedBasepoints, triggered);
+    if (spellInfo != nullptr)
+    {
+        castSpell(targetGuid, spellInfo, forcedBasepoints, triggered);
+    }
 }
 
 void Unit::castSpell(Unit* target, uint32_t spellId, SpellForcedBasePoints const& forcedBasepoints, bool triggered/* = false*/)
 {
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
-    if (spellInfo == nullptr)
-        return;
-
-    castSpell(target, spellInfo, forcedBasepoints, triggered);
+    if (spellInfo != nullptr)
+    {
+        castSpell(target, spellInfo, forcedBasepoints, triggered);
+    }
 }
 
 void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePoints const& forcedBasePoints, int32_t spellCharges, bool triggered/* = false*/)
 {
     if (spellInfo == nullptr)
+    {
         return;
+    }
 
     Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
     newSpell->forced_basepoints = forcedBasePoints;
@@ -3587,8 +3589,10 @@ void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePo
 
 void Unit::castSpell(SpellCastTargets targets, uint32_t spellId, bool triggered/* = false*/)
 {
-    const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
-    castSpell(targets, spellInfo, triggered);
+    if (const auto spellInfo = sSpellMgr.getSpellInfo(spellId))
+    {
+        castSpell(targets, spellInfo, triggered);
+    }
 }
 
 void Unit::castSpell(SpellCastTargets targets, SpellInfo const* spellInfo, bool triggered/* = false*/)
@@ -8137,7 +8141,7 @@ void Unit::handleSpellClick(Unit* clicker, int8_t seatId /*= -1*/)
                     //   HANDLE_AURA_CONTROL_VEHICLE will call enterVehicle or exitVehicle
 
                     SpellForcedBasePoints bp;
-                    bp.setValue(i, seatId + 1);
+                    bp.setValue(static_cast<SpellEffIndex>(i), seatId + 1);
                     caster->castSpell(target, clickPair.spellId, bp, true);
                 }
             }
@@ -8167,9 +8171,7 @@ void Unit::callEnterVehicle(Unit* base, int8_t seatId /*= -1*/)
     //   The Aura Handler "HANDLE_AURA_CONTROL_VEHICLE" takes care of us.
     //   HANDLE_AURA_CONTROL_VEHICLE will call enterVehicle or exitVehicle
 
-    SpellForcedBasePoints bp;
-    bp.setValue(0, seatId + 1);
-    castSpell(base, VEHICLE_SPELL_RIDE_HARDCODED, bp, true);
+    castSpell(base, VEHICLE_SPELL_RIDE_HARDCODED, { seatId + 1 }, true);
 }
 
 void Unit::enterVehicle(Vehicle* vehicle, int8_t seatId)
@@ -11714,11 +11716,11 @@ uint32_t Unit::handleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
 
 #if VERSION_STRING >= TBC
         // SPELL_AURA_PROC_TRIGGER_SPELL_WITH_VALUE
-        for (uint8_t i = 0; i < 3; ++i)
+        for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
             if (ospinfo && ospinfo->getEffectApplyAuraName(i) == SPELL_AURA_PROC_TRIGGER_SPELL_WITH_VALUE)
             {
-                spell_proc->setOverrideEffectDamage(i, ospinfo->getEffectBasePoints(i) + 1);
+                spell_proc->setOverrideEffectDamage(static_cast<SpellEffIndex>(i), ospinfo->getEffectBasePoints(i) + 1);
                 sScriptMgr.callScriptedSpellProcDoEffect(spell_proc, victim, CastingSpell, damageInfo);
                 spell_proc->doEffect(victim, CastingSpell, flag, damageInfo.realDamage, damageInfo.absorbedDamage, damageInfo.weaponType);
             }
@@ -12316,7 +12318,9 @@ uint32_t Unit::handleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
                 uint32_t tickcount = GetDuration(spell_duration) / spellInfo->getEffectAmplitude(0);
 
                 if (ospinfo)
-                    spell_proc->setOverrideEffectDamage(0, ospinfo->getEffectBasePoints(0) * damageInfo.realDamage / (100 * tickcount));
+                {
+                    spell_proc->setOverrideEffectDamage(EFF_INDEX_0, ospinfo->getEffectBasePoints(0) * damageInfo.realDamage / (100 * tickcount));
+                }
             }
             break;
             //druid - Primal Fury
@@ -12774,7 +12778,7 @@ uint32_t Unit::handleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
 
                 //null check was made before like 2 times already :P
                 if (ospinfo)
-                    spell_proc->setOverrideEffectDamage(0, (ospinfo->calculateEffectValue(2)) * getMaxPower(POWER_TYPE_MANA) / 100);
+                    spell_proc->setOverrideEffectDamage(EFF_INDEX_0, (ospinfo->calculateEffectValue(2)) * getMaxPower(POWER_TYPE_MANA) / 100);
             }
             break;
             // warlock - Unstable Affliction
@@ -12782,7 +12786,7 @@ uint32_t Unit::handleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
             {
                 //null check was made before like 2 times already :P
                 if (ospinfo)
-                    spell_proc->setOverrideEffectDamage(0, (ospinfo->calculateEffectValue(0)) * 9);
+                    spell_proc->setOverrideEffectDamage(EFF_INDEX_0, (ospinfo->calculateEffectValue(0)) * 9);
             }
             break;
 
@@ -13888,7 +13892,7 @@ uint32_t Unit::handleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
                     continue;
                 int32_t val = parentproc->calculateEffectValue(0);
                 Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, NULL);
-                spell->forced_basepoints.setValue(0, (val * damageInfo.realDamage) / 300); //per tick
+                spell->forced_basepoints.setValue(EFF_INDEX_0, (val * damageInfo.realDamage) / 300); //per tick
                 SpellCastTargets targets(getGuid());
                 spell->prepare(&targets);
                 continue;
@@ -14718,7 +14722,7 @@ uint32_t Unit::handleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
             {
                 if (CastingSpell == NULL)
                     continue;
-                spell_proc->setOverrideEffectDamage(0, CastingSpell->getManaCost() * 40 / 100);
+                spell_proc->setOverrideEffectDamage(EFF_INDEX_0, CastingSpell->getManaCost() * 40 / 100);
             }
             break;
             //priest - Reflective Shield
@@ -14990,7 +14994,7 @@ uint32_t Unit::handleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
                 auto spell_duration = sSpellDurationStore.lookupEntry(spellInfo->getDurationIndex());
                 uint32_t tickcount = GetDuration(spell_duration) / spellInfo->getEffectAmplitude(0);
                 if (ospinfo)
-                    spell_proc->setOverrideEffectDamage(0, ospinfo->getEffectBasePoints(0) * damageInfo.realDamage / (100 * tickcount));
+                    spell_proc->setOverrideEffectDamage(EFF_INDEX_0, ospinfo->getEffectBasePoints(0) * damageInfo.realDamage / (100 * tickcount));
             }
             break;
 
@@ -15037,7 +15041,7 @@ uint32_t Unit::handleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
                 if (idx != 1)
                 {
                     if (ospinfo)
-                        spell_proc->setOverrideEffectDamage(0, ((CastingSpell->getEffectBasePoints(static_cast<uint8_t>(idx)) + 1) * (ospinfo->calculateEffectValue(0)) / 100));
+                        spell_proc->setOverrideEffectDamage(EFF_INDEX_0, ((CastingSpell->getEffectBasePoints(static_cast<uint8_t>(idx)) + 1) * (ospinfo->calculateEffectValue(0)) / 100));
                 }
             }
             break;

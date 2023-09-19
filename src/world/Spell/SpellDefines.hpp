@@ -440,5 +440,13 @@ enum SpellVisualIds : uint32_t
     SPELL_VISUAL_DRINK                              = 438,
 };
 
+// Helpers for spell script
+enum SpellEffIndex : uint8_t
+{
+    EFF_INDEX_0                                     = 0,
+    EFF_INDEX_1                                     = 1,
+    EFF_INDEX_2                                     = 2
+};
+
 // todo: move this to each dbc structure file
 #define MAX_SPELL_ID 121820

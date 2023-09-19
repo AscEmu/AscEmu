@@ -172,12 +172,12 @@ void SpellProc::setCastedByProcCreator(bool enable) { m_castedByProcCreator = en
 bool SpellProc::isCastedOnProcOwner() const { return m_castOnProcOwner; }
 void SpellProc::setCastedOnProcOwner(bool enable) { m_castOnProcOwner = enable; }
 
-int32_t SpellProc::getOverrideEffectDamage(uint8_t effIndex) const
+int32_t SpellProc::getOverrideEffectDamage(SpellEffIndex effIndex) const
 {
     return mOverrideEffectDamage.getValue(effIndex);
 }
 
-void SpellProc::setOverrideEffectDamage(uint8_t effIndex, int32_t damage)
+void SpellProc::setOverrideEffectDamage(SpellEffIndex effIndex, int32_t damage)
 {
     mOverrideEffectDamage.setValue(effIndex, damage);
 }

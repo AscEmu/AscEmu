@@ -121,7 +121,7 @@ public:
                 SpellForcedBasePoints forcedBasePoints;
                 const auto basePoints = improvedUnholyPresence->getSpellInfo()->calculateEffectValue(EFF_INDEX_1);
                 for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                    forcedBasePoints.setValue(i, basePoints);
+                    forcedBasePoints.setValue(static_cast<SpellEffIndex>(i), basePoints);
 
                 aur->getOwner()->castSpell(aur->getOwner(), sSpellMgr.getSpellInfo(SPELL_IMPROVED_UNHOLY_PRESENCE_DUMMY), { p_damage }, true);
             }

@@ -1073,7 +1073,7 @@ int32_t SpellInfo::calculateEffectValue(uint8_t effIndex, Unit* unitCaster/* = n
 
     if (forcedBasePoints.has_value())
     {
-        basePoints = (*forcedBasePoints).getValue(effIndex);
+        basePoints = (*forcedBasePoints).getValue(static_cast<SpellEffIndex>(effIndex));
     }
 
     // Check if value increases with level

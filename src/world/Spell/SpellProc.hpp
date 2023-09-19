@@ -98,8 +98,8 @@ class SERVER_DECL SpellProc
         void setCastedOnProcOwner(bool);
 
         // Returns 0 if effect index has not been overridden
-        int32_t getOverrideEffectDamage(uint8_t effIndex) const;
-        void setOverrideEffectDamage(uint8_t effIndex, int32_t damage);
+        int32_t getOverrideEffectDamage(SpellEffIndex effIndex) const;
+        void setOverrideEffectDamage(SpellEffIndex effIndex, int32_t damage);
 
         Aura* getCreatedByAura() const;
         void setCreatedByAura(Aura* aur);

@@ -51,10 +51,10 @@ public:
     {
         Player* plr = static_cast<Player*>(getProcOwner());
 
-        setOverrideEffectDamage(0, plr->getBlockDamageReduction() * (getOriginalSpell()->calculateEffectValue(0)) / 100);
+        setOverrideEffectDamage(EFF_INDEX_0, plr->getBlockDamageReduction() * (getOriginalSpell()->calculateEffectValue(0)) / 100);
 
         // plr->GetBlockDamageReduction() returns ZERO if player has no shield equipped
-        if (getOverrideEffectDamage(0) == 0)
+        if (getOverrideEffectDamage(EFF_INDEX_0) == 0)
             return true;
 
         return false;
@@ -268,7 +268,7 @@ public:
 
         if (item != nullptr && item->getGuid() == mItemGUID)
         {
-            setOverrideEffectDamage(0, damage);
+            setOverrideEffectDamage(EFF_INDEX_0, damage);
             return false;
         }
 
@@ -415,7 +415,7 @@ public:
         auto amplitude = castingSpell->getEffectAmplitude(0) == 0 ? 1 : castingSpell->getEffectAmplitude(0);
         int ticks = GetDuration(sSpellDurationStore.lookupEntry(castingSpell->getDurationIndex())) / amplitude;
 
-        setOverrideEffectDamage(0, dmg * ticks * (getOriginalSpell()->calculateEffectValue(0)) / 100);
+        setOverrideEffectDamage(EFF_INDEX_0, dmg * ticks * (getOriginalSpell()->calculateEffectValue(0)) / 100);
 
         return false;
     }
@@ -436,7 +436,7 @@ public:
         int ticks = GetDuration(sSpellDurationStore.lookupEntry(castingSpell->getDurationIndex())) / castingSpell->getEffectAmplitude(0);
 
         // Total periodic effect is a single tick amount multiplied by number of ticks
-        setOverrideEffectDamage(0, dmg * ticks * (getOriginalSpell()->calculateEffectValue(0)) / 100);
+        setOverrideEffectDamage(EFF_INDEX_0, dmg * ticks * (getOriginalSpell()->calculateEffectValue(0)) / 100);
 
         return false;
     }
@@ -446,11 +446,12 @@ public:
         SpellCastTargets targets(victim->getGuid());
 
         Spell* spell = sSpellMgr.newSpell(getProcOwner(), getSpell(), true, nullptr);
-        spell->forced_basepoints.setValue(0, getOverrideEffectDamage(0));
-        spell->forced_basepoints.setValue(1, getOverrideEffectDamage(1));
-        spell->forced_basepoints.setValue(2, getOverrideEffectDamage(2));
-        spell->ProcedOnSpell = CastingSpell;
+        for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        {
+            spell->forced_basepoints.setValue(static_cast<SpellEffIndex>(i), getOverrideEffectDamage(static_cast<SpellEffIndex>(i)));
+        }
 
+        spell->ProcedOnSpell = CastingSpell;
         spell->prepare(&targets);
     }
 };
@@ -489,10 +490,8 @@ public:
             return true;
         }
 
-        SpellForcedBasePoints forcedBasePoints;
-        forcedBasePoints.setValue(0, aura->getEffectDamage(0));
-
-        caster->castSpell(getProcOwner(), 33110, forcedBasePoints, true);
+        int32 const p_damage = aura->getEffectDamage(0);
+        caster->castSpell(getProcOwner(), 33110, { p_damage }, true);
 
         int32 count = getProcOwner()->getAuraCountForId(getSpell()->getId());
 
@@ -509,7 +508,7 @@ public:
                 getProcOwner()->removeAllAurasById(getSpell()->getId());
 
                 if (playerRandom)
-                    caster->castSpell(playerRandom, getSpell(), forcedBasePoints, count - 1, true);
+                    caster->castSpell(playerRandom, getSpell(), { p_damage }, count - 1, true);
             }
         }
 

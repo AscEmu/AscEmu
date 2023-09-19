@@ -26,11 +26,3 @@ enum class SpellScriptCheckDummy : uint8_t
     DUMMY_NOT_HANDLED = 0,      // Default value, generates warning to debug log of unhandled dummy effect
     DUMMY_OK                    // Dummy effect handled, no warning to debug log
 };
-
-// Helpers for spell script
-enum SpellEffects : uint8_t
-{
-    EFF_INDEX_0 = 0,
-    EFF_INDEX_1,
-    EFF_INDEX_2
-};
