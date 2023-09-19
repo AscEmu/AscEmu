@@ -149,10 +149,14 @@ if (WIN32 AND NOT USE_PCH)
 endif ()
 
 if (APPLE)
-    target_link_libraries(${PROJECT_NAME} c++)
+    LIST(APPEND WORLD_LINK_EXTRA_LIBS c++)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFreeBSD")
-    target_link_libraries(${PROJECT_NAME} c++experimental)
+    LIST(APPEND WORLD_LINK_EXTRA_LIBS c++experimental)
 endif ()
+
+if (BUILD_LUAENGINE)
+    LIST(APPEND WORLD_LINK_EXTRA_LIBS lualib)
+endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS TRUE)
 
@@ -163,13 +167,15 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/WorldConf.h.in ${CMAKE_CURRENT_SOURCE
 # include library dependencies.
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
+    ${WORLD_LINK_EXTRA_LIBS}
     shared
-    lualib
     collision
     g3dlite
     Detour
     Recast
 )
+
+unset(WORLD_LINK_EXTRA_LIBS)
 
 # generate precompiled header.
 if (USE_PCH)
