@@ -3168,7 +3168,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             {
                 // Clone effects require creature or player target
                 if (target == nullptr)
-                    return SPELL_FAILED_BAD_IMPLICIT_TARGETS;;
+                    return SPELL_FAILED_BAD_IMPLICIT_TARGETS;
 
                 if (target->getGuid() == m_caster->getGuid())
                     return SPELL_FAILED_BAD_TARGETS;
