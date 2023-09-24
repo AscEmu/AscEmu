@@ -1253,18 +1253,18 @@ bool ExtractFile(HANDLE fileInArchive, char const* filename)
 
 char const* localeNames[TOTAL_LOCALES] =
 {
-  "enUS",
-  "koKR",
-  "frFR",
-  "deDE",
-  "zhCN",
-  "zhTW",
-  "esES",
-  "esMX",
-  "ruRU",
-  "none",
-  "ptBR",
-  "itIT"
+    "enUS",
+    "koKR",
+    "frFR",
+    "deDE",
+    "zhCN",
+    "zhTW",
+    "esES",
+    "esMX",
+    "ruRU",
+    "none",
+    "ptBR",
+    "itIT"
 };
 
 void ExtractDBCFiles(int l)
