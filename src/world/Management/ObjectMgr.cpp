@@ -766,6 +766,12 @@ void ObjectMgr::loadAchievementRewards()
         {
             sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid creature entry %u as sender, ignore.", entry, reward.sender);
             continue;
+
+            if (reward.subject.empty() || reward.text.empty())
+            {
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid mail text data (subject, text), ignored", entry);
+                continue;
+            }
         }
 
         if (reward.itemId != 0)
