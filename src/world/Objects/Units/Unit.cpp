@@ -970,11 +970,8 @@ void Unit::setLevel(uint32_t level)
 uint32_t Unit::getFactionTemplate() const { return unitData()->faction_template; }
 void Unit::setFactionTemplate(uint32_t id) { write(unitData()->faction_template, id); }
 
-#if VERSION_STRING >= WotLK
 uint32_t Unit::getVirtualItemSlotId(WeaponDamageType slot) const { return unitData()->virtual_item_slot_display[slot]; }
-#else
-uint32_t Unit::getVirtualItemDisplayId(WeaponDamageType slot) const { return unitData()->virtual_item_slot_display[slot]; }
-#endif
+
 void Unit::setVirtualItemSlotId(WeaponDamageType slot, uint32_t item_id)
 {
     const auto isProperOffhandWeapon = [](uint32_t itemClass, uint32_t itemSubClass) -> bool
