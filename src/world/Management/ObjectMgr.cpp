@@ -786,13 +786,13 @@ void ObjectMgr::loadAchievementRewards()
         if (reward.titel_A != 0 && sCharTitlesStore.lookupEntry(reward.titel_A) == nullptr)
         {
             sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid title id (%u) in `title_A`, set to 0", entry, reward.titel_A);
-            reward.titel_A = 0;
+            continue;
         }
 
         if (reward.titel_H != 0 && sCharTitlesStore.lookupEntry(reward.titel_H) == nullptr)
         {
             sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid title id (%u) in `title_A`, set to 0", entry, reward.titel_H);
-            reward.titel_H = 0;
+            continue;
         }
 
         m_achievementRewards.emplace(entry, reward);
