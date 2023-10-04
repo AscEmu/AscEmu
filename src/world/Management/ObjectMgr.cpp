@@ -755,7 +755,7 @@ void ObjectMgr::loadAchievementRewards()
             continue;
 
         // must be title or mail at least
-        if (reward.titel_A == 0 && reward.titel_H == 0 && reward.itemId == 0)
+        if (reward.titel_A == 0 && reward.titel_H == 0 && reward.sender == 0)
         {
             sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have any rewards, ignore.", entry);
             continue;
