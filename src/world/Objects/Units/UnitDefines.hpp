@@ -980,8 +980,9 @@ enum WeaponDamageType : uint8_t
     MELEE   = 0,
     OFFHAND = 1,
     RANGED  = 2,
-    TOTAL_WEAPON_DAMAGE_TYPES
 };
+
+constexpr uint8_t TOTAL_WEAPON_DAMAGE_TYPES = 3;
 
 enum AURA_CHECK_RESULT
 {

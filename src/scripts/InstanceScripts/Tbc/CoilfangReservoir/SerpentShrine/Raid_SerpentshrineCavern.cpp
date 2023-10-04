@@ -486,8 +486,8 @@ public:
     void SwitchToHumanForm()
     {
         getCreature()->setDisplayId(20514);
-        getCreature()->setVirtualItemSlotId(MELEE, (getCreature()->m_spawn != nullptr) ? getCreature()->m_spawn->Item1SlotEntry : 0);
-        getCreature()->setVirtualItemSlotId(OFFHAND, (getCreature()->m_spawn != nullptr) ?  getCreature()->m_spawn->Item2SlotEntry : 0);
+        getCreature()->setVirtualItemSlotId(MELEE, (getCreature()->m_spawn != nullptr) ? getCreature()->m_spawn->itemEquipSlots[MELEE] : 0);
+        getCreature()->setVirtualItemSlotId(OFFHAND, (getCreature()->m_spawn != nullptr) ?  getCreature()->m_spawn->itemEquipSlots[OFFHAND] : 0);
     }
 
     void SwitchToDemonForm()

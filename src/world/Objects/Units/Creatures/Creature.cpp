@@ -884,15 +884,9 @@ void Creature::SaveToDB()
         m_spawn->channel_spell = 0;
         m_spawn->MountedDisplayID = getMountDisplayId();
 
-#if VERSION_STRING < WotLK
-        m_spawn->Item1SlotEntry = getVirtualItemEntry(MELEE);
-        m_spawn->Item2SlotEntry = getVirtualItemEntry(OFFHAND);
-        m_spawn->Item3SlotEntry = getVirtualItemEntry(RANGED);
-#else
-        m_spawn->Item1SlotEntry = getVirtualItemSlotId(MELEE);
-        m_spawn->Item2SlotEntry = getVirtualItemSlotId(OFFHAND);
-        m_spawn->Item3SlotEntry = getVirtualItemSlotId(RANGED);
-#endif
+        m_spawn->itemEquipSlots[MELEE] = getVirtualItemSlotId(MELEE);
+        m_spawn->itemEquipSlots[OFFHAND] = getVirtualItemSlotId(OFFHAND);
+        m_spawn->itemEquipSlots[RANGED] = getVirtualItemSlotId(RANGED);
 
         if (IsFlying())
             m_spawn->CanFly = 1;
@@ -950,9 +944,9 @@ void Creature::SaveToDB()
     ss << m_spawn->death_state << ",";
 
     ss << getMountDisplayId() << ","
-        << m_spawn->Item1SlotEntry << ","
-        << m_spawn->Item2SlotEntry << ","
-        << m_spawn->Item3SlotEntry << ",";
+        << m_spawn->itemEquipSlots[MELEE] << ","
+        << m_spawn->itemEquipSlots[OFFHAND] << ","
+        << m_spawn->itemEquipSlots[RANGED] << ",";
 
     if (IsFlying())
         ss << 1 << ",";
@@ -1617,9 +1611,9 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     setMinRangedDamage(creature_properties->RangedMinDamage);
     setMaxRangedDamage(creature_properties->RangedMaxDamage);
 
-    setVirtualItemSlotId(MELEE, spawn->Item1SlotEntry);
-    setVirtualItemSlotId(OFFHAND, spawn->Item2SlotEntry);
-    setVirtualItemSlotId(RANGED, spawn->Item3SlotEntry);
+    setVirtualItemSlotId(MELEE, spawn->itemEquipSlots[MELEE]);
+    setVirtualItemSlotId(OFFHAND, spawn->itemEquipSlots[OFFHAND]);
+    setVirtualItemSlotId(RANGED, spawn->itemEquipSlots[RANGED]);
 
     setFaction(spawn->factionid);
     setUnitFlags(spawn->flags);
@@ -1943,9 +1937,9 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     setPowerType(POWER_TYPE_MANA);
 
     // Equipment
-    setVirtualItemSlotId(MELEE, creature_properties->itemslot_1);
-    setVirtualItemSlotId(OFFHAND, creature_properties->itemslot_2);
-    setVirtualItemSlotId(RANGED, creature_properties->itemslot_3);
+    setVirtualItemSlotId(MELEE, creature_properties->itemEquipSlots[MELEE]);
+    setVirtualItemSlotId(OFFHAND, creature_properties->itemEquipSlots[OFFHAND]);
+    setVirtualItemSlotId(RANGED, creature_properties->itemEquipSlots[RANGED]);
 
     /*  // Dont was Used in old AIInterface left the code here if needed at other Date
     if (creature_properties->guardtype == GUARDTYPE_CITY)

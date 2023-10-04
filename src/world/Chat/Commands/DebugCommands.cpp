@@ -91,9 +91,7 @@ bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldS
         creature_spawn->channel_target_creature = creature_spawn->channel_target_go = creature_spawn->channel_spell = 0;
         creature_spawn->MountedDisplayID = 0;
 
-        creature_spawn->Item1SlotEntry = creature_properties->itemslot_1;
-        creature_spawn->Item2SlotEntry = creature_properties->itemslot_2;
-        creature_spawn->Item3SlotEntry = creature_properties->itemslot_3;
+        creature_spawn->itemEquipSlots = creature_properties->itemEquipSlots;
 
         creature_spawn->CanFly = 0;
         creature_spawn->phase = session->GetPlayer()->GetPhase();
@@ -361,7 +359,7 @@ bool ChatHandler::HandleDebugState(const char* /*args*/, WorldSession* m_session
         return false;
 
     GreenSystemMessage(m_session, "Display unitStateFlag: %u", selected_unit->getUnitStateFlags());
-    
+
     return true;
 }
 

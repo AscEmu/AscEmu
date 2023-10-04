@@ -332,9 +332,9 @@ Creature* Transporter::createNPCPassenger(MySQLStructure::CreatureSpawn* data)
 #endif
 
     // Equipment
-    pCreature->setVirtualItemSlotId(MELEE, creature_properties->itemslot_1);
-    pCreature->setVirtualItemSlotId(OFFHAND, creature_properties->itemslot_2);
-    pCreature->setVirtualItemSlotId(RANGED, creature_properties->itemslot_3);
+    pCreature->setVirtualItemSlotId(MELEE, creature_properties->itemEquipSlots[MELEE]);
+    pCreature->setVirtualItemSlotId(OFFHAND, creature_properties->itemEquipSlots[OFFHAND]);
+    pCreature->setVirtualItemSlotId(RANGED, creature_properties->itemEquipSlots[RANGED]);
 
     if (data->emote_state)
         pCreature->setEmoteState(data->emote_state);

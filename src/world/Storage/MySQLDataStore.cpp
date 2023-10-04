@@ -869,9 +869,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
         }
 
         //Itemslot
-        creatureProperties.itemslot_1 = 0;
-        creatureProperties.itemslot_2 = 0;
-        creatureProperties.itemslot_3 = 0;
+        creatureProperties.itemEquipSlots.fill(0);
 
         /*for (uint8_t i = 0; i < NUM_MONSTER_SAY_EVENTS; ++i)
         {
@@ -900,7 +898,7 @@ void MySQLDataStore::loadCreaturePropertiesMovementTable()
         return;
     }
 
-    uint32_t row_count = 0;   
+    uint32_t row_count = 0;
     row_count = static_cast<uint32_t>(_creaturePropertiesMovementStore.size());
 
     sLogger.info("MySQLDataLoads : Table creature_properties_movement has %u columns", creature_properties_movement_result->GetFieldCount());
@@ -2439,7 +2437,7 @@ void MySQLDataStore::loadCreatureInitialEquipmentTable()
 
     sLogger.info("MySQLDataLoads : Table `creature_initial_equip` has %u columns", initial_equipment_result->GetFieldCount());
 
-    uint32_t initial_equipment_count = 0;
+    uint32_t count = 0;
     do
     {
         Field* fields = initial_equipment_result->Fetch();
@@ -2451,31 +2449,25 @@ void MySQLDataStore::loadCreatureInitialEquipmentTable()
             continue;
         }
 
-        uint32_t itemId = fields[1].GetUInt32();
-        if (sMySQLStore.getItemProperties(itemId) || sItemStore.lookupEntry(itemId))
-            const_cast<CreatureProperties*>(creature_properties)->itemslot_1 = itemId;
-        else
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_1 %u for creature %u", itemId, entry);
+        for (uint32 i = 0; i < 3; ++i)
+        {
+            uint32_t const itemId = fields[1 + i].GetUInt32();
+            if (itemId != 0)
+            {
+                if (sMySQLStore.getItemProperties(itemId) != nullptr || sItemStore.lookupEntry(itemId) != nullptr)
+                    const_cast<CreatureProperties*>(creature_properties)->itemEquipSlots[i] = itemId;
+                else
+                    sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_%u %u for creature %u", i, itemId, entry);
+            }
+        }
 
-        itemId = fields[2].GetUInt32();
-        if (sMySQLStore.getItemProperties(itemId) || sItemStore.lookupEntry(itemId))
-            const_cast<CreatureProperties*>(creature_properties)->itemslot_2 = itemId;
-        else
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_2 %u for creature %u", itemId, entry);
-
-        itemId = fields[3].GetUInt32();
-        if (sMySQLStore.getItemProperties(itemId) || sItemStore.lookupEntry(itemId))
-            const_cast<CreatureProperties*>(creature_properties)->itemslot_3 = itemId;
-        else
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "MySQLDataLoads : Table `creature_initial_equip` has unknown itemslot_3 %u for creature %u", itemId, entry);
-
-        ++initial_equipment_count;
+        ++count;
 
     } while (initial_equipment_result->NextRow());
 
     delete initial_equipment_result;
 
-    sLogger.info("MySQLDataLoads : Loaded %u rows from `creature_initial_equip` table in %u ms!", initial_equipment_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    sLogger.info("MySQLDataLoads : Loaded %u rows from `creature_initial_equip` table in %u ms!", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 void MySQLDataStore::loadPlayerCreateInfoTable()
@@ -4253,7 +4245,7 @@ void MySQLDataStore::loadTransportDataTable()
 void MySQLDataStore::loadTransportEntrys()
 {
     auto startTime = Util::TimeNow();
-    //                                                  
+    //
     QueryResult* result = WorldDatabase.Query("SELECT entry FROM gameobject_properties WHERE type = 15 AND  build <= %u ORDER BY entry ASC", getAEVersion());
     if (result == nullptr)
     {
@@ -4282,7 +4274,7 @@ void MySQLDataStore::loadTransportEntrys()
 void MySQLDataStore::loadTransportMaps()
 {
     auto startTime = Util::TimeNow();
-    //                                                  
+    //
     QueryResult* result = WorldDatabase.Query("SELECT parameter_6 FROM gameobject_properties WHERE type = 15 AND  build <= %u ORDER BY entry ASC", getAEVersion());
     if (result == nullptr)
     {
@@ -4446,9 +4438,9 @@ void MySQLDataStore::loadCreatureSpawns()
                 cspawn->death_state = fields[22].GetUInt32();
                 cspawn->MountedDisplayID = fields[23].GetUInt32();
 
-                cspawn->Item1SlotEntry = fields[24].GetUInt32();
-                cspawn->Item2SlotEntry = fields[25].GetUInt32();
-                cspawn->Item3SlotEntry = fields[26].GetUInt32();
+                cspawn->itemEquipSlots[0] = fields[24].GetUInt32();
+                cspawn->itemEquipSlots[1] = fields[25].GetUInt32();
+                cspawn->itemEquipSlots[2] = fields[26].GetUInt32();
 
                 cspawn->CanFly = fields[27].GetUInt32();
 
@@ -4501,7 +4493,7 @@ void MySQLDataStore::loadGameobjectSpawns()
                 Field* fields = gobject_spawn_result->Fetch();
                 uint32_t spawnId = fields[0].GetUInt32();
                 uint32 gameobject_entry = fields[3].GetUInt32();
-                
+
                 auto gameobject_info = sMySQLStore.getGameObjectProperties(gameobject_entry);
                 if (gameobject_info == nullptr)
                 {
@@ -4601,7 +4593,7 @@ void MySQLDataStore::loadCreatureAIScriptsTable()
             sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_ai_scripts` includes invalid creature entry %u <skipped>", creature_entry);
             continue;
         }
-           
+
         SpellInfo const* spell = sSpellMgr.getSpellInfo(spellId);
         if (spell == nullptr && spellId != 0)
         {
@@ -4767,7 +4759,7 @@ void MySQLDataStore::loadCreatureGroupSpawns()
         {
             sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Spawn data with ID (%u) not found, but is listed as a member of spawn group %u!", spawnId, groupId);
             continue;
-        } 
+        }
     } while (result->NextRow());
 
     delete result;

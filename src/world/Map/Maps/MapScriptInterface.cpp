@@ -355,11 +355,7 @@ Creature* MapScriptInterface::spawnCreature(uint32_t Entry, LocationVector pos, 
     spawn->channel_target_go = 0;
     spawn->channel_spell = 0;
     spawn->MountedDisplayID = 0;
-
-    spawn->Item1SlotEntry = creature_properties->itemslot_1;
-    spawn->Item2SlotEntry = creature_properties->itemslot_2;
-    spawn->Item3SlotEntry = creature_properties->itemslot_3;
-
+    spawn->itemEquipSlots = creature_properties->itemEquipSlots;
     spawn->CanFly = 0;
     spawn->phase = phase;
 

@@ -179,9 +179,9 @@ void GameEvent::CreateNPCs()
         creature->setFaction(npc.faction);
 
         // Equipment
-        creature->setVirtualItemSlotId(MELEE, creatureProperties->itemslot_1);
-        creature->setVirtualItemSlotId(OFFHAND, creatureProperties->itemslot_2);
-        creature->setVirtualItemSlotId(RANGED, creatureProperties->itemslot_3);
+        creature->setVirtualItemSlotId(MELEE, creatureProperties->itemEquipSlots[MELEE]);
+        creature->setVirtualItemSlotId(OFFHAND, creatureProperties->itemEquipSlots[OFFHAND]);
+        creature->setVirtualItemSlotId(RANGED, creatureProperties->itemEquipSlots[RANGED]);
 
         if (npc.mountdisplayid != 0)
             creature->setMountDisplayId(npc.mountdisplayid);

@@ -36,7 +36,7 @@ enum WorldMapInfoFlag
 
     WMI_INSTANCE_XPACK_01 = 0x008, // TBC
     WMI_INSTANCE_XPACK_02 = 0x010, // WotLK
-    
+
     WMI_INSTANCE_HAS_NORMAL_10MEN = 0x020,
     WMI_INSTANCE_HAS_NORMAL_25MEN = 0x040,
     WMI_INSTANCE_HAS_HEROIC_10MEN = 0x080,
@@ -156,9 +156,7 @@ namespace MySQLStructure
         uint32_t MountedDisplayID;
 
         // store item entry
-        uint32_t Item1SlotEntry;
-        uint32_t Item2SlotEntry;
-        uint32_t Item3SlotEntry;
+        std::array<uint32_t, TOTAL_WEAPON_DAMAGE_TYPES> itemEquipSlots;
 
         uint32_t CanFly;
         uint32_t phase;
@@ -693,7 +691,7 @@ namespace MySQLStructure
         uint32_t hordeEntry;
         uint32_t allianceEntry;
     };
-    
+
 
     //////////////////////////////////////////////////////////////////////////////////////////
     /* CHARACTERS DB Structures

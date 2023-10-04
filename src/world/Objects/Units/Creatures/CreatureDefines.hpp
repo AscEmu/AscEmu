@@ -21,7 +21,9 @@
 #include "CommonTypes.hpp"
 #include "Spell/Definitions/School.hpp"
 #include "Macros/CreatureMacros.hpp"
+#include "Objects/Units/UnitDefines.hpp"
 
+#include <array>
 #include <ctime>
 #include <list>
 #include <set>
@@ -246,9 +248,7 @@ struct CreatureProperties
     // APGL Start
 
     //itemslots
-    uint32 itemslot_1;
-    uint32 itemslot_2;
-    uint32 itemslot_3;
+    std::array<uint32_t, TOTAL_WEAPON_DAMAGE_TYPES> itemEquipSlots;
 
     // AI Stuff
     bool m_canRangedAttack;
