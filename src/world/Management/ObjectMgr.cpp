@@ -800,7 +800,7 @@ void ObjectMgr::loadAchievementRewards()
 
         if (reward.titel_H != 0 && sCharTitlesStore.lookupEntry(reward.titel_H) == nullptr)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid title id (%u) in `title_A`, ignore", entry, reward.titel_H);
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid title id (%u) in `title_H`, ignore", entry, reward.titel_H);
             continue;
         }
 
