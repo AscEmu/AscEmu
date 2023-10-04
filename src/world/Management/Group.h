@@ -232,7 +232,7 @@ public:
 
     uint64 m_targetIcons[8];
     bool m_disbandOnNoMembers;
-    inline std::mutex & getLock() { return m_groupLock; }
+    inline std::recursive_mutex& getLock() { return m_groupLock; }
     inline void Lock() { m_groupLock.lock(); }
     inline void Unlock() { return m_groupLock.unlock(); }
     bool m_isqueued;
@@ -316,7 +316,7 @@ protected:
     uint64 m_guid;
 
     uint32 m_MemberCount;
-    std::mutex m_groupLock;
+    std::recursive_mutex m_groupLock;
     bool m_dirty;
     bool m_updateblock;
     uint32 updatecounter;

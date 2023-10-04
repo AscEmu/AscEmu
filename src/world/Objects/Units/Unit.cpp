@@ -3573,7 +3573,7 @@ void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePo
         return;
 
     Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
-    newSpell->forced_basepoints = &forcedBasePoints;
+    newSpell->forced_basepoints = std::make_shared<SpellForcedBasePoints>(forcedBasePoints);
     newSpell->m_charges = spellCharges;
 
     SpellCastTargets targets(0);
@@ -3639,7 +3639,7 @@ void Unit::castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, SpellForce
         return;
 
     Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
-    newSpell->forced_basepoints = &forcedBasepoints;
+    newSpell->forced_basepoints = std::make_shared<SpellForcedBasePoints>(forcedBasepoints);
 
     SpellCastTargets targets(targetGuid);
 
@@ -3653,7 +3653,7 @@ void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePo
         return;
 
     Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
-    newSpell->forced_basepoints = &forcedBasepoints;
+    newSpell->forced_basepoints = std::make_shared<SpellForcedBasePoints>(forcedBasepoints);
 
     SpellCastTargets targets(0);
     if (target != nullptr)
