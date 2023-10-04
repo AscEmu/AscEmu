@@ -719,7 +719,7 @@ void ObjectMgr::loadAchievementRewards()
         Field* fields = result->Fetch();
         uint32_t entry = fields[0].GetUInt32();
 
-        if (!sAchievementStore.lookupEntry(entry))
+        if (sAchievementStore.lookupEntry(entry) == nullptr)
         {
             sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : Achievement reward entry %u has wrong achievement, ignore", entry);
             continue;
