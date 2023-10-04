@@ -2449,7 +2449,7 @@ void MySQLDataStore::loadCreatureInitialEquipmentTable()
             continue;
         }
 
-        for (uint8 i = 0; i < TOTAL_WEAPON_DAMAGE_TYPES; ++i)
+        for (uint8_t i = 0; i < TOTAL_WEAPON_DAMAGE_TYPES; ++i)
         {
             uint32_t const itemId = fields[1 + i].GetUInt32();
             if (itemId != 0)
