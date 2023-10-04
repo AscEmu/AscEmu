@@ -762,10 +762,13 @@ void ObjectMgr::loadAchievementRewards()
         }
 
         //check mail data before item for report including wrong item case
-        if (reward.sender != 0 && sMySQLStore.getCreatureProperties(reward.sender) == nullptr)
+        if (reward.sender != 0)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid creature entry %u as sender, ignore.", entry, reward.sender);
-            continue;
+            if (sMySQLStore.getCreatureProperties(reward.sender) == nullptr)
+            {
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid creature entry %u as sender, ignore.", entry, reward.sender);
+                continue;
+            }
 
             if (reward.subject.empty() || reward.text.empty())
             {
