@@ -762,17 +762,23 @@ void ObjectMgr::loadAchievementRewards()
         }
 
         //check mail data before item for report including wrong item case
-        if (reward.sender != 0)
+        if (reward.sender != 0 && sMySQLStore.getCreatureProperties(reward.sender) == nullptr)
         {
-            if (sMySQLStore.getCreatureProperties(reward.sender) == nullptr)
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid creature entry %u as sender, ignore.", entry, reward.sender);
+            continue;
+        }
+
+        if (reward.itemId != 0)
+        {
+            if (sMySQLStore.getItemProperties(reward.itemId) == nullptr)
             {
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid creature entry %u as sender, ignore.", entry, reward.sender);
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid item id %u, ignore", entry, reward.itemId);
                 continue;
             }
 
-            if (reward.itemId != 0 && sMySQLStore.getItemProperties(reward.itemId) == nullptr)
+            if (reward.sender == 0)
             {
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid item id %u, ignore", entry, reward.itemId);
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has item id %u but has no sender, ignore", entry, reward.itemId);
                 continue;
             }
         }
