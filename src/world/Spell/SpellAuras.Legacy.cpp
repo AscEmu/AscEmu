@@ -6254,7 +6254,7 @@ void Aura::SpellAuraMirrorImage2(AuraEffectModifier* /*aurEff*/, bool apply)
 
             item = p->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
             if (item != nullptr)
-                m_target->setVirtualItemSlotId(0, item->getItemProperties()->ItemId);
+                m_target->setVirtualItemSlotId(MELEE, item->getItemProperties()->ItemId);
 
             item = p->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
             if (item != nullptr)

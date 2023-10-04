@@ -5392,12 +5392,12 @@ void Spell::writeProjectileDataToPacket(WorldPacket *data)
     {
         // Get creature's ranged weapon
         // Need to loop through all weapon slots because NPCs can have the ranged weapon in main hand
-        for (uint8_t i = 0; i <= RANGED; ++i)
+        for (uint8_t i = 0; i < TOTAL_WEAPON_DAMAGE_TYPES; ++i)
         {
 #if VERSION_STRING > TBC
-            const auto entryId = u_caster->getVirtualItemSlotId(i);
+            const auto entryId = u_caster->getVirtualItemSlotId(static_cast<WeaponDamageType>(i));
 #else
-            const auto entryId = dynamic_cast<Creature*>(u_caster)->getVirtualItemEntry(i);
+            const auto entryId = dynamic_cast<Creature*>(u_caster)->getVirtualItemEntry(static_cast<WeaponDamageType>(i));
 #endif
             if (entryId == 0)
                 continue;

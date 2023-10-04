@@ -1051,6 +1051,12 @@ bool ChatHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_ses
         return true;
     }
 
+    if (equipment_slot >= TOTAL_WEAPON_DAMAGE_TYPES)
+    {
+        RedSystemMessage(m_session, "Invalid equipment slot. Available slots are: (0)melee, (1)offhand, (2)ranged");
+        return true;
+    }
+
     Creature* creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
         return true;
@@ -1063,9 +1069,9 @@ bool ChatHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_ses
     }
 
 #if VERSION_STRING < WotLK
-    const auto previousValue = creature_target->getVirtualItemEntry(equipment_slot);
+    const auto previousValue = creature_target->getVirtualItemEntry(static_cast<WeaponDamageType>(equipment_slot));
 #else
-    const auto previousValue = creature_target->getVirtualItemSlotId(equipment_slot);
+    const auto previousValue = creature_target->getVirtualItemSlotId(static_cast<WeaponDamageType>(equipment_slot));
 #endif
 
 
@@ -1102,7 +1108,7 @@ bool ChatHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_ses
         }
     }
 
-    creature_target->setVirtualItemSlotId(equipment_slot, item_id);
+    creature_target->setVirtualItemSlotId(static_cast<WeaponDamageType>(equipment_slot), item_id);
     creature_target->SaveToDB();
     return true;
 }
