@@ -746,7 +746,7 @@ void ObjectMgr::loadAchievementRewards()
             if (iter->second.gender == GENDER_NONE || reward.gender == GENDER_NONE)
             {
                 dup = true;
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : Achievement reward %u must have single GENDER_NONE (%u), ignore duplicate case", 2, entry);
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : Achievement reward %u must have single GENDER_NONE (%u), ignore duplicate case", entry, GENDER_NONE);
                 break;
             }
         }
