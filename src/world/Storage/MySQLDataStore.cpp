@@ -4407,6 +4407,7 @@ void MySQLDataStore::loadCreatureSpawns()
                 if (creature_properties == nullptr)
                 {
                     sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Creature spawn ID: %u has invalid entry: %u which is not in creature_properties table! Skipped loading.", cspawn->id, creature_entry);
+                    delete cspawn;
                     continue;
                 }
 
