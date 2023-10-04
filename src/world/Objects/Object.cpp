@@ -1496,11 +1496,15 @@ void Object::removeTravelingSpell(Spell* spell)
 
 void Object::addGarbageSpell(Spell* spell)
 {
+    std::lock_guard<std::mutex> lock(m_garbageMutex);
+
     m_garbageSpells.push_back(spell);
 }
 
 void Object::removeGarbageSpells()
 {
+    std::lock_guard<std::mutex> lock(m_garbageMutex);
+
     for (auto itr = m_garbageSpells.begin(); itr != m_garbageSpells.end();)
     {
         delete *itr;

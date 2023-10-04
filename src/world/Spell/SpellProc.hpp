@@ -151,7 +151,7 @@ class SERVER_DECL SpellProc
         // Mask used on spell effect
         uint32_t mGroupRelation[3] = { 0, 0, 0 };
 
-        SpellForcedBasePoints* mOverrideEffectDamage;
+        std::weak_ptr<SpellForcedBasePoints> mOverrideEffectDamage;
 
         // Indicates that this proc will be skipped on next ::handleProc call
         // used to avoid some spell procs from procing themselves

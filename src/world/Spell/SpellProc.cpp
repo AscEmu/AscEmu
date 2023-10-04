@@ -14,12 +14,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 SpellProc::SpellProc()
 {
-    mOverrideEffectDamage = new SpellForcedBasePoints;
+    mOverrideEffectDamage = std::make_shared<SpellForcedBasePoints>();
 }
 
 SpellProc::~SpellProc()
 {
-    delete mOverrideEffectDamage;
 }
 
 void SpellProc::init(Object* /*obj*/) { }
@@ -118,7 +117,7 @@ void SpellProc::castSpell(Unit* victim, SpellInfo const* castingSpell)
     SpellCastTargets targets(victim->getGuid());
     Spell* spell = sSpellMgr.newSpell(caster, mSpell, true, nullptr);
 
-    spell->forced_basepoints = mOverrideEffectDamage;
+    spell->forced_basepoints = mOverrideEffectDamage.lock();
 
     spell->ProcedOnSpell = castingSpell;
     if (mOrigSpell != nullptr)
@@ -180,14 +179,24 @@ void SpellProc::setCastedOnProcOwner(bool enable) { m_castOnProcOwner = enable; 
 
 int32_t SpellProc::getOverrideEffectDamage(uint8_t effIndex) const
 {
-    int32_t overrideValue = 0;
-    mOverrideEffectDamage->get(effIndex, &overrideValue);
-    return overrideValue;
+    auto sharedPtr = mOverrideEffectDamage.lock();
+    if (sharedPtr)
+    {
+        int32_t overrideValue = 0;
+        sharedPtr->get(effIndex, &overrideValue);
+        return overrideValue;
+    }
+
+    return 0;
 }
 
 void SpellProc::setOverrideEffectDamage(uint8_t effIndex, int32_t damage)
 {
-    mOverrideEffectDamage->set(effIndex, damage);
+    auto sharedPtr = mOverrideEffectDamage.lock();
+    if (sharedPtr)
+    {
+        sharedPtr->set(effIndex, damage);
+    }
 }
 
 Aura* SpellProc::getCreatedByAura() const { return m_createdByAura; }
