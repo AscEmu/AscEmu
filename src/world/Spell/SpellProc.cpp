@@ -117,7 +117,7 @@ void SpellProc::castSpell(Unit* victim, SpellInfo const* castingSpell)
     SpellCastTargets targets(victim->getGuid());
     Spell* spell = sSpellMgr.newSpell(caster, mSpell, true, nullptr);
 
-    spell->forced_basepoints = mOverrideEffectDamage.lock();
+    spell->forced_basepoints = mOverrideEffectDamage;
 
     spell->ProcedOnSpell = castingSpell;
     if (mOrigSpell != nullptr)
@@ -179,24 +179,14 @@ void SpellProc::setCastedOnProcOwner(bool enable) { m_castOnProcOwner = enable; 
 
 int32_t SpellProc::getOverrideEffectDamage(uint8_t effIndex) const
 {
-    auto sharedPtr = mOverrideEffectDamage.lock();
-    if (sharedPtr)
-    {
-        int32_t overrideValue = 0;
-        sharedPtr->get(effIndex, &overrideValue);
-        return overrideValue;
-    }
-
-    return 0;
+    int32_t overrideValue = 0;
+    mOverrideEffectDamage->get(effIndex, &overrideValue);
+    return overrideValue;
 }
 
 void SpellProc::setOverrideEffectDamage(uint8_t effIndex, int32_t damage)
 {
-    auto sharedPtr = mOverrideEffectDamage.lock();
-    if (sharedPtr)
-    {
-        sharedPtr->set(effIndex, damage);
-    }
+    mOverrideEffectDamage->set(effIndex, damage);
 }
 
 Aura* SpellProc::getCreatedByAura() const { return m_createdByAura; }
