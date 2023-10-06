@@ -15459,11 +15459,14 @@ void Player::regenerateHealth(bool inCombat)
         basespirit = 50;
     }
 
+#if VERSION_STRING >= TBC // support classic
+
 #if VERSION_STRING < Cata
     float amt = basespirit * HPRegen->ratio + extraspirit * HPRegenBase->ratio;
 #else
     float amt = static_cast<float>(basespirit * 200 + extraspirit * 200);
 #endif
+
 
     // Food buffs
     for (const auto& aurEff : getAuraEffectList(SPELL_AURA_MOD_REGEN))
@@ -15506,6 +15509,7 @@ void Player::regenerateHealth(bool inCombat)
             dealDamage(this, Util::float2int32(-amt), 0);
         }
     }
+#endif
 }
 
 void Player::_Relocate(uint32_t mapid, const LocationVector& v, bool sendpending, bool force_new_world, uint32_t instance_id)
