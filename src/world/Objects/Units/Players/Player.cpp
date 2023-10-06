@@ -15459,10 +15459,12 @@ void Player::regenerateHealth(bool inCombat)
         basespirit = 50;
     }
 
+#if VERSION_STRING >= TBC // support classic
 #if VERSION_STRING < Cata
     float amt = basespirit * HPRegen->ratio + extraspirit * HPRegenBase->ratio;
 #else
     float amt = static_cast<float>(basespirit * 200 + extraspirit * 200);
+#endif
 #endif
 
     // Food buffs
