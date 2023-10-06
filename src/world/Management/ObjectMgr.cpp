@@ -706,8 +706,7 @@ void ObjectMgr::loadAchievementRewards()
     m_achievementRewards.clear();
 
     QueryResult* result = WorldDatabase.Query("SELECT entry, gender, title_A, title_H, item, sender, subject, text FROM achievement_reward");
-
-    if (!result)
+    if (result == nullptr)
     {
         sLogger.info("Loaded 0 achievement rewards. DB table `achievement_reward` is empty.");
         return;
@@ -720,32 +719,34 @@ void ObjectMgr::loadAchievementRewards()
         Field* fields = result->Fetch();
         uint32_t entry = fields[0].GetUInt32();
 
-        if (!sAchievementStore.lookupEntry(entry))
+        if (sAchievementStore.lookupEntry(entry) == nullptr)
         {
             sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : Achievement reward entry %u has wrong achievement, ignore", entry);
             continue;
         }
 
         AchievementReward reward;
-        reward.gender = fields[1].GetUInt8();
-        reward.titel_A = fields[2].GetUInt32();
-        reward.titel_H = fields[3].GetUInt32();
-        reward.itemId = fields[4].GetUInt32();
-        reward.sender = fields[5].GetUInt32();
-        reward.subject = fields[6].GetString() ? fields[6].GetString() : "";
-        reward.text = fields[7].GetString() ? fields[7].GetString() : "";
+        reward.gender   = fields[1].GetUInt8();
+        reward.titel_A  = fields[2].GetUInt32();
+        reward.titel_H  = fields[3].GetUInt32();
+        reward.itemId   = fields[4].GetUInt32();
+        reward.sender   = fields[5].GetUInt32();
+        reward.subject  = fields[6].GetString() != nullptr ? fields[6].GetString() : "";
+        reward.text     = fields[7].GetString() != nullptr ? fields[7].GetString() : "";
 
-        if (reward.gender > 2)
+        if (reward.gender > GENDER_NONE)
+        {
             sLogger.debug("ObjectMgr : achievement reward %u has wrong gender %u.", entry, static_cast<uint32_t>(reward.gender));
+        }
 
         bool dup = false;
         AchievementRewardsMapBounds bounds = m_achievementRewards.equal_range(entry);
         for (AchievementRewardsMap::const_iterator iter = bounds.first; iter != bounds.second; ++iter)
         {
-            if (iter->second.gender == 2 || reward.gender == 2)
+            if (iter->second.gender == GENDER_NONE || reward.gender == GENDER_NONE)
             {
                 dup = true;
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : Achievement reward %u must have single GENDER_NONE (%u), ignore duplicate case", 2, entry);
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : Achievement reward %u must have single GENDER_NONE (%u), ignore duplicate case", entry, GENDER_NONE);
                 break;
             }
         }
@@ -754,59 +755,56 @@ void ObjectMgr::loadAchievementRewards()
             continue;
 
         // must be title or mail at least
-        if (!reward.titel_A && !reward.titel_H && !reward.sender)
+        if (reward.titel_A == 0 && reward.titel_H == 0 && reward.sender == 0)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have title or item reward data, ignore.", entry);
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have any rewards, ignore.", entry);
             continue;
         }
 
-        if (reward.titel_A)
-        {
-            auto const* char_title_entry = sCharTitlesStore.lookupEntry(reward.titel_A);
-            if (!char_title_entry)
-            {
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid title id (%u) in `title_A`, set to 0", entry, reward.titel_A);
-                reward.titel_A = 0;
-            }
-        }
-
-        if (reward.titel_H)
-        {
-            auto const* char_title_entry = sCharTitlesStore.lookupEntry(reward.titel_H);
-            if (!char_title_entry)
-            {
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid title id (%u) in `title_A`, set to 0", entry, reward.titel_H);
-                reward.titel_H = 0;
-            }
-        }
-
         //check mail data before item for report including wrong item case
-        if (reward.sender)
+        if (reward.sender != 0)
         {
-            if (!sMySQLStore.getCreatureProperties(reward.sender))
+            if (sMySQLStore.getCreatureProperties(reward.sender) == nullptr)
             {
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid creature entry %u as sender, mail reward skipped.", entry, reward.sender);
-                reward.sender = 0;
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid creature entry %u as sender, ignore.", entry, reward.sender);
+                continue;
+            }
+
+            if (reward.subject.empty() || reward.text.empty())
+            {
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid mail text data (subject, text), ignored", entry);
+                continue;
             }
         }
-        else
+
+        if (reward.itemId != 0)
         {
-            if (reward.itemId)
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have sender data but have item reward, item will not rewarded", entry);
+            if (sMySQLStore.getItemProperties(reward.itemId) == nullptr)
+            {
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid item id %u, ignore", entry, reward.itemId);
+                continue;
+            }
 
-            if (!reward.subject.empty())
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have sender data but have mail subject.", entry);
-
-            if (!reward.text.empty())
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have sender data but have mail text.", entry);
+            if (reward.sender == 0)
+            {
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has item id %u but has no sender, ignore", entry, reward.itemId);
+                continue;
+            }
         }
 
-        if (reward.itemId == 0)
+        if (reward.titel_A != 0 && sCharTitlesStore.lookupEntry(reward.titel_A) == nullptr)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid item id %u, reward mail will be without item.", entry, reward.itemId);
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid title id (%u) in `title_A`, ignore", entry, reward.titel_A);
+            continue;
         }
 
-        m_achievementRewards.insert(AchievementRewardsMap::value_type(entry, reward));
+        if (reward.titel_H != 0 && sCharTitlesStore.lookupEntry(reward.titel_H) == nullptr)
+        {
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid title id (%u) in `title_H`, ignore", entry, reward.titel_H);
+            continue;
+        }
+
+        m_achievementRewards.emplace(entry, reward);
         ++count;
 
     } while (result->NextRow());
