@@ -4407,6 +4407,7 @@ void MySQLDataStore::loadCreatureSpawns()
                 if (creature_properties == nullptr)
                 {
                     sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Creature spawn ID: %u has invalid entry: %u which is not in creature_properties table! Skipped loading.", cspawn->id, creature_entry);
+                    delete cspawn;
                     continue;
                 }
 
@@ -4596,22 +4597,24 @@ void MySQLDataStore::loadCreatureAIScriptsTable()
         uint32_t spellId = fields[9].GetUInt32();
         uint32_t textId = fields[17].GetUInt32();
 
-        if (!getCreatureProperties(creature_entry))
+        if (getCreatureProperties(creature_entry) == nullptr)
         {
             sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_ai_scripts` includes invalid creature entry %u <skipped>", creature_entry);
-            continue;
-        }
-           
-        SpellInfo const* spell = sSpellMgr.getSpellInfo(spellId);
-        if (spell == nullptr && spellId != 0)
-        {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_ai_scripts` includes invalid spellId for creature entry %u <skipped>", spellId, creature_entry);
+            delete ai_script;
             continue;
         }
 
-        if (!sMySQLStore.getNpcScriptText(textId) && textId != 0)
+        if (spellId != 0 && sSpellMgr.getSpellInfo(spellId) == nullptr)
+        {
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_ai_scripts` includes invalid spellId for creature entry %u <skipped>", spellId, creature_entry);
+            delete ai_script;
+            continue;
+        }
+
+        if (textId != 0 && sMySQLStore.getNpcScriptText(textId) == nullptr)
         {
             sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_ai_scripts` includes invalid textId for creature entry %u <skipped>", textId, creature_entry);
+            delete ai_script;
             continue;
         }
 
