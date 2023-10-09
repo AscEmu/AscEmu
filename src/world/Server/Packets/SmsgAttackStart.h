@@ -22,7 +22,7 @@ namespace AscEmu::Packets
         }
 
         SmsgAttackStart(uint64_t attackerGuid, uint64_t victimGuid) :
-            ManagedPacket(SMSG_ATTACKSTART, 0),
+            ManagedPacket(SMSG_ATTACK_START, 0),
             attackerGuid(attackerGuid),
             victimGuid(victimGuid)
         {

@@ -20,6 +20,26 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
+#include <cstdio>
+#include <cstdarg>
+#include <ctime>
+#include <cmath>
+#include <cerrno>
+
+#include <cstdlib>
+#include <set>
+#include <list>
+#include <string>
+#include <map>
+#include <queue>
+#include <sstream>
+#include <algorithm>
+#include <cstring>
+#include <climits>
+
+// Include all threading files
+#include <cassert>
+
 #include <signal.h>
 
 #ifndef WIN32
@@ -29,11 +49,11 @@
 
 #include "DynLib.hpp"
 
-#include <cstdio>
-#include <cstdarg>
-#include <ctime>
-#include <cmath>
-#include <cerrno>
+#include "CommonHelpers.hpp"
+#include "CommonTypes.hpp"
+
+#include "Threading/LegacyThreading.h"
+#include "Threading/ConditionVariable.h"
 
 // current compiler (old)
 #define COMPILER_MICROSOFT 0
@@ -80,26 +100,6 @@
 #ifdef USE_POLL
     #define CONFIG_USE_POLL
 #endif
-
-#include <cstdlib>
-#include <set>
-#include <list>
-#include <string>
-#include <map>
-#include <queue>
-#include <sstream>
-#include <algorithm>
-#include <cstring>
-#include <climits>
-
-#include "CommonHelpers.hpp"
-#include "CommonTypes.hpp"
-
-// Include all threading files
-#include <cassert>
-
-#include "Threading/LegacyThreading.h"
-#include "Threading/ConditionVariable.h"
 
 #if COMPILER == COMPILER_MICROSOFT
 #else

@@ -130,7 +130,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgStartMirrorTimer.h"
 #include "Server/Packets/SmsgSummonRequest.h"
 #include "Server/Packets/SmsgSupercededSpell.h"
-#include "Server/Packets/SmsgTimeSyncReq.h"
+#include "Server/Packets/SmsgTimeSyncRequest.h"
 #include "Server/Packets/SmsgTitleEarned.h"
 #include "Server/Packets/SmsgTransferAborted.h"
 #include "Server/Packets/SmsgTransferPending.h"
@@ -10221,7 +10221,7 @@ void Player::resetTimeSync()
 
 void Player::sendTimeSync()
 {
-    getSession()->SendPacket(SmsgTimeSyncReq(m_timeSyncCounter++).serialise().get());
+    getSession()->SendPacket(SmsgTimeSyncRequest(m_timeSyncCounter++).serialise().get());
 
     // Schedule next sync in 10 sec
     m_timeSyncTimer = 10000;

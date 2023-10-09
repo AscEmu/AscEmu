@@ -22,7 +22,7 @@ namespace AscEmu::Packets
         }
 
         SmsgAttackStop(WoWGuid attackerGuid, WoWGuid victimGuid) :
-            ManagedPacket(SMSG_ATTACKSTOP, 0),
+            ManagedPacket(SMSG_ATTACK_STOP, 0),
             attackerGuid(attackerGuid),
             victimGuid(victimGuid)
         {

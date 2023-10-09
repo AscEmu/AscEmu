@@ -341,12 +341,12 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void
     //case SMSG_SPELL_FAILURE:
     //case SMSG_CAST_FAILED:
     //case SMSG_MOVE_SET_CAN_FLY:
-    //case SMSG_TIME_SYNC_REQ:
+    //case SMSG_TIME_SYNC_REQUEST:
     //case SMSG_UPDATE_OBJECT:
     //case SMSG_UPDATE_WORLD_STATE:
     //case MSG_MOVE_SET_FLIGHT_SPEED:
     //case MSG_MOVE_SET_RUN_SPEED:
-    //case SMSG_LOGIN_SETTIMESPEED:
+    //case SMSG_LOGIN_SET_TIME_SPEED:
     //case SMSG_INITIALIZE_FACTIONS:
     //case SMSG_ACTION_BUTTONS:
     //case SMSG_SEND_UNLEARN_SPELLS:
@@ -1020,8 +1020,8 @@ void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* dat
         case MSG_MOVE_HEARTBEAT:
         case SMSG_ATTACKERSTATEUPDATE:
         case SMSG_EMOTE:
-        case SMSG_TIME_SYNC_REQ:
-        case CMSG_TIME_SYNC_RESP:
+        case SMSG_TIME_SYNC_REQUEST:
+        case CMSG_TIME_SYNC_RESPONSE:
         {
         } break;
         default:

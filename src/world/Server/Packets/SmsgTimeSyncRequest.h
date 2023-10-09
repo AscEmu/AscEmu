@@ -11,17 +11,17 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu::Packets
 {
-    class SmsgTimeSyncReq : public ManagedPacket
+    class SmsgTimeSyncRequest : public ManagedPacket
     {
     public:
         uint32_t counter;
         
-        SmsgTimeSyncReq() : SmsgTimeSyncReq(0)
+        SmsgTimeSyncRequest() : SmsgTimeSyncRequest(0)
         {
         }
 
-        SmsgTimeSyncReq(uint32_t counter) :
-            ManagedPacket(SMSG_TIME_SYNC_REQ, 4),
+        SmsgTimeSyncRequest(uint32_t counter) :
+            ManagedPacket(SMSG_TIME_SYNC_REQUEST, 4),
             counter(counter)
         {
         }
