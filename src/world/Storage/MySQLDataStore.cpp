@@ -4594,8 +4594,7 @@ void MySQLDataStore::loadCreatureAIScriptsTable()
             continue;
         }
 
-        SpellInfo const* spell = sSpellMgr.getSpellInfo(spellId);
-        if (spell == nullptr && spellId != 0)
+        if (spellId != 0 && sSpellMgr.getSpellInfo(spellId) == nullptr)
         {
             sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_ai_scripts` includes invalid spellId for creature entry %u <skipped>", spellId, creature_entry);
             continue;
