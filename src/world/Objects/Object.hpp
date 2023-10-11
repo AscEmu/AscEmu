@@ -227,6 +227,7 @@ private:
 
     std::map<Spell*, bool> m_travelingSpells;
     std::list<Spell*> m_garbageSpells;
+    std::mutex m_garbageMutex;
 
 public:
     Spell* getCurrentSpell(CurrentSpellType spellType) const;

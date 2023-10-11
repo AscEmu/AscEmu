@@ -243,7 +243,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
     // Some spells inherit base points from the mother spell
-    SpellForcedBasePoints* forced_basepoints;
+    std::shared_ptr<SpellForcedBasePoints> forced_basepoints;
 
     Aura* getTriggeredByAura() const;
 

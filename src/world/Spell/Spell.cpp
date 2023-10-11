@@ -204,7 +204,7 @@ Spell::Spell(Object* _caster, SpellInfo const* _spellInfo, bool _triggered, Aura
         }
     }
 
-    forced_basepoints = new SpellForcedBasePoints;
+    forced_basepoints = std::make_shared<SpellForcedBasePoints>();
 }
 
 Spell::~Spell()
@@ -249,8 +249,6 @@ Spell::~Spell()
 
         itr = m_pendingAuras.erase(itr);
     }
-
-    delete forced_basepoints;
 }
 
 

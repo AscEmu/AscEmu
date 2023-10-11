@@ -14,12 +14,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 SpellProc::SpellProc()
 {
-    mOverrideEffectDamage = new SpellForcedBasePoints;
+    mOverrideEffectDamage = std::make_shared<SpellForcedBasePoints>();
 }
 
 SpellProc::~SpellProc()
 {
-    delete mOverrideEffectDamage;
 }
 
 void SpellProc::init(Object* /*obj*/) { }
