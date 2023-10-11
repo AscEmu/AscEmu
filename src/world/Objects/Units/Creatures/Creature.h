@@ -366,7 +366,7 @@ public:
 
         void SetType(uint32 t);
 
-        void setRespawnTime(uint32_t respawn) { respawn ? std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) + respawn : 0; }
+        void setRespawnTime(uint32_t respawn) { m_respawnTime = respawn ? std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) + respawn : 0; }
         time_t getRespawnTime() { return m_respawnTime; }
 
     protected:
