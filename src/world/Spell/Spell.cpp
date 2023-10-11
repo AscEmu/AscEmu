@@ -3073,7 +3073,11 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     }
 
                     // Check if creature is even wielding a weapon
+#if VERSION_STRING < WotLK
+                    if (target->getVirtualItemDisplayId(MELEE) == 0)
+#else
                     if (target->getVirtualItemSlotId(MELEE) == 0)
+#endif
                         return SPELL_FAILED_TARGET_NO_WEAPONS;
                 }
             } break;
