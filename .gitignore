@@ -5,6 +5,8 @@
 .vcxproj
 .vcxproj.filters
 .sln
+.cache
+.vscode
 src/logonserver/logon_conf.h
 src/shared/git_version.h
 src/shared/Common.hpp
