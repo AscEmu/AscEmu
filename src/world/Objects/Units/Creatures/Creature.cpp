@@ -884,15 +884,15 @@ void Creature::SaveToDB()
         m_spawn->channel_spell = 0;
         m_spawn->MountedDisplayID = getMountDisplayId();
 
-#if VERSION_STRING >= WotLK
-        m_spawn->itemEquipSlots[MELEE] = getVirtualItemSlotId(MELEE);
-        m_spawn->itemEquipSlots[OFFHAND] = getVirtualItemSlotId(OFFHAND);
-        m_spawn->itemEquipSlots[RANGED] = getVirtualItemSlotId(RANGED);
-#else
+#if VERSION_STRING < WotLK
         m_spawn->itemEquipSlots[MELEE] = getVirtualItemDisplayId(MELEE);
         m_spawn->itemEquipSlots[OFFHAND] = getVirtualItemDisplayId(OFFHAND);
         m_spawn->itemEquipSlots[RANGED] = getVirtualItemDisplayId(RANGED);
-#endif
+#else
+        m_spawn->itemEquipSlots[MELEE] = getVirtualItemSlotId(MELEE);
+        m_spawn->itemEquipSlots[OFFHAND] = getVirtualItemSlotId(OFFHAND);
+        m_spawn->itemEquipSlots[RANGED] = getVirtualItemSlotId(RANGED);
+#endif // VERSION_STRING < WotLK
 
         if (IsFlying())
             m_spawn->CanFly = 1;
