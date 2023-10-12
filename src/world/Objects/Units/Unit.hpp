@@ -282,12 +282,12 @@ public:
 
 #if VERSION_STRING >= WotLK
     // Returns item entry in wotlk and above
-    uint32_t getVirtualItemSlotId(WeaponDamageType slot) const;
-    void setVirtualItemSlotId(WeaponDamageType slot, uint32_t item_id);
+    virtual uint32_t getVirtualItemSlotId(WeaponDamageType slot) const;
+    virtual void setVirtualItemSlotId(WeaponDamageType slot, uint32_t item_id);
 #else
     // Returns item display id in classic and tbc
-    uint32_t getVirtualItemDisplayId(WeaponDamageType slot) const;
-    void setVirtualItemDisplayId(WeaponDamageType slot, uint32_t item_id);
+    virtual uint32_t getVirtualItemDisplayId(WeaponDamageType slot) const;
+    virtual void setVirtualItemDisplayId(WeaponDamageType slot, uint32_t item_id);
 #endif
 
 #if VERSION_STRING < WotLK

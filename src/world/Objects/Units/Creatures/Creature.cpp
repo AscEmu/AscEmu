@@ -885,9 +885,9 @@ void Creature::SaveToDB()
         m_spawn->MountedDisplayID = getMountDisplayId();
 
 #if VERSION_STRING < WotLK
-        m_spawn->itemEquipSlots[MELEE] = getVirtualItemDisplayId(MELEE);
-        m_spawn->itemEquipSlots[OFFHAND] = getVirtualItemDisplayId(OFFHAND);
-        m_spawn->itemEquipSlots[RANGED] = getVirtualItemDisplayId(RANGED);
+        m_spawn->itemEquipSlots[MELEE] = getVirtualItemEntry(MELEE);
+        m_spawn->itemEquipSlots[OFFHAND] = getVirtualItemEntry(OFFHAND);
+        m_spawn->itemEquipSlots[RANGED] = getVirtualItemEntry(RANGED);
 #else
         m_spawn->itemEquipSlots[MELEE] = getVirtualItemSlotId(MELEE);
         m_spawn->itemEquipSlots[OFFHAND] = getVirtualItemSlotId(OFFHAND);

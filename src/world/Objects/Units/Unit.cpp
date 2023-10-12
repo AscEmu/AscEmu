@@ -1053,7 +1053,7 @@ void Unit::setVirtualItemDisplayId(WeaponDamageType slot, uint32_t item_id)
 
         if (isCreature())
         {
-            dynamic_cast<Creature*>(this)->setVirtualItemEntry(slot, 0);
+            setVirtualItemEntry(slot, 0);
 
             if (slot == OFFHAND)
                 dynamic_cast<Creature*>(this)->toggleDualwield(false);

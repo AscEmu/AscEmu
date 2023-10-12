@@ -5395,7 +5395,7 @@ void Spell::writeProjectileDataToPacket(WorldPacket *data)
 #if VERSION_STRING > TBC
             const auto entryId = u_caster->getVirtualItemSlotId(static_cast<WeaponDamageType>(i));
 #else
-            const auto entryId = dynamic_cast<Creature*>(u_caster)->getVirtualItemEntry(static_cast<WeaponDamageType>(i));
+            const auto entryId = u_caster->getVirtualItemEntry(static_cast<WeaponDamageType>(i));
 #endif
             if (entryId == 0)
                 continue;
