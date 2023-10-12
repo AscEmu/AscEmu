@@ -309,7 +309,7 @@ void Creature::setMaxWanderDistance(float_t dist)
 }
 
 #if VERSION_STRING < WotLK
-uint32_t Creature::getVirtualItemEntry(uint8_t slot) const
+uint32_t Creature::getVirtualItemEntry(WeaponDamageType slot) const
 {
     if (slot >= TOTAL_WEAPON_DAMAGE_TYPES)
         return 0;
@@ -317,7 +317,7 @@ uint32_t Creature::getVirtualItemEntry(uint8_t slot) const
     return m_virtualItemEntry[slot];
 }
 
-void Creature::setVirtualItemEntry(uint8_t slot, uint32_t itemId)
+void Creature::setVirtualItemEntry(WeaponDamageType slot, uint32_t itemId)
 {
     if (slot >= TOTAL_WEAPON_DAMAGE_TYPES)
         return;

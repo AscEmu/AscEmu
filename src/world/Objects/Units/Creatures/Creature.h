@@ -112,10 +112,6 @@ public:
     float_t getMaxWanderDistance() const;
     void setMaxWanderDistance(float_t dist);
 
-#if VERSION_STRING < WotLK
-    uint32_t getVirtualItemEntry(uint8_t slot) const override;
-    void setVirtualItemEntry(uint8_t slot, uint32_t itemId) override;
-#endif
     void toggleDualwield(bool);
 
     std::shared_ptr<std::vector<CreatureItem>> getSellItems();
