@@ -975,6 +975,9 @@ uint32_t Unit::getVirtualItemSlotId(WeaponDamageType slot) const { return unitDa
 #else
 uint32_t Unit::getVirtualItemDisplayId(WeaponDamageType slot) const { return unitData()->virtual_item_slot_display[slot]; }
 #endif
+
+
+#if VERSION_STRING >= WotLK
 void Unit::setVirtualItemSlotId(WeaponDamageType slot, uint32_t item_id)
 {
     const auto isProperOffhandWeapon = [](uint32_t itemClass, uint32_t itemSubClass) -> bool
@@ -1000,22 +1003,14 @@ void Unit::setVirtualItemSlotId(WeaponDamageType slot, uint32_t item_id)
     if (item_id == 0)
     {
         write(unitData()->virtual_item_slot_display[slot], 0U);
-#if VERSION_STRING < WotLK
-        setVirtualItemInfo(slot, 0);
-#endif
 
-        if (isCreature())
+        if (isCreature() && slot == OFFHAND)
         {
-#if VERSION_STRING < WotLK
-            dynamic_cast<Creature*>(this)->setVirtualItemEntry(slot, 0);
-#endif
-            if (slot == OFFHAND)
-                dynamic_cast<Creature*>(this)->toggleDualwield(false);
+            dynamic_cast<Creature*>(this)->toggleDualwield(false);
         }
         return;
     }
 
-#if VERSION_STRING >= WotLK
     const auto itemDbc = sItemStore.lookupEntry(item_id);
     if (itemDbc == nullptr
         || !(itemDbc->Class == ITEM_CLASS_WEAPON
@@ -1027,7 +1022,45 @@ void Unit::setVirtualItemSlotId(WeaponDamageType slot, uint32_t item_id)
         dynamic_cast<Creature*>(this)->toggleDualwield(isProperOffhandWeapon(itemDbc->Class, itemDbc->SubClass));
 
     write(unitData()->virtual_item_slot_display[slot], item_id);
+}
 #else
+void Unit::setVirtualItemDisplayId(WeaponDamageType slot, uint32_t item_id)
+{
+    const auto isProperOffhandWeapon = [](uint32_t itemClass, uint32_t itemSubClass) -> bool
+    {
+        if (itemClass != ITEM_CLASS_WEAPON)
+            return false;
+
+        switch (itemSubClass)
+        {
+            case ITEM_SUBCLASS_WEAPON_BOW:
+            case ITEM_SUBCLASS_WEAPON_GUN:
+            case ITEM_SUBCLASS_WEAPON_THROWN:
+            case ITEM_SUBCLASS_WEAPON_CROSSBOW:
+            case ITEM_SUBCLASS_WEAPON_WAND:
+                return false;
+            default:
+                break;
+        }
+
+        return true;
+    };
+
+    if (item_id == 0)
+    {
+        write(unitData()->virtual_item_slot_display[slot], 0U);
+        setVirtualItemInfo(slot, 0);
+
+        if (isCreature())
+        {
+            dynamic_cast<Creature*>(this)->setVirtualItemEntry(slot, 0);
+
+            if (slot == OFFHAND)
+                dynamic_cast<Creature*>(this)->toggleDualwield(false);
+        }
+        return;
+    }
+
     unit_virtual_item_info virtualItemInfo{};
 
     uint32_t displayId = 0;
@@ -1108,8 +1141,8 @@ void Unit::setVirtualItemSlotId(WeaponDamageType slot, uint32_t item_id)
 
     write(unitData()->virtual_item_slot_display[slot], displayId);
     setVirtualItemInfo(slot, virtualItemInfo.raw);
-#endif
 }
+#endif // VERSION_STRING >= WotLK
 
 #if VERSION_STRING < WotLK
 uint64_t Unit::getVirtualItemInfo(uint8_t slot) const { return unitData()->virtual_item_info[slot].raw; }
