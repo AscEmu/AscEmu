@@ -7401,7 +7401,7 @@ void Unit::smsg_AttackStart(Unit* pVictim)
 {
     sendMessageToSet(SmsgAttackStart(getGuid(), pVictim->getGuid()).serialise().get(), false);
 
-    sLogger.debug("WORLD: Sent SMSG_ATTACKSTART");
+    sLogger.debug("WORLD: Sent SMSG_ATTACK_START");
 
     if (isPlayer())
     {

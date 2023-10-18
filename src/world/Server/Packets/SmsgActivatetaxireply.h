@@ -21,7 +21,7 @@ namespace AscEmu::Packets
         }
 
         SmsgActivatetaxireply(uint32_t error) :
-            ManagedPacket(SMSG_ACTIVATETAXIREPLY, 0),
+            ManagedPacket(SMSG_ACTIVATE_TAXI_REPLY, 0),
             error(error)
         {
         }

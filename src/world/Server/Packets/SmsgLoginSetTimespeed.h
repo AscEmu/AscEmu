@@ -22,7 +22,7 @@ namespace AscEmu::Packets
         }
 
         SmsgLoginSetTimespeed(uint32_t time, float gameSpeed) :
-            ManagedPacket(SMSG_LOGIN_SETTIMESPEED, 8),
+            ManagedPacket(SMSG_LOGIN_SET_TIME_SPEED, 8),
             time(time),
             gameSpeed(gameSpeed)
         {

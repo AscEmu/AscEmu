@@ -21,7 +21,7 @@ namespace AscEmu::Packets
         }
 
         SmsgStandstateUpdate(uint8_t state) :
-            ManagedPacket(SMSG_STANDSTATE_UPDATE, 1),
+            ManagedPacket(SMSG_STAND_STATE_UPDATE, 1),
             state(state)
         {
         }
