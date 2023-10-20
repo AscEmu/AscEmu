@@ -346,6 +346,7 @@ public:
 
     uint32_t getDisplayId() const;
     void setDisplayId(uint32_t id);
+    void resetDisplayId();
 
     uint32_t getNativeDisplayId() const;
     void setNativeDisplayId(uint32_t id);

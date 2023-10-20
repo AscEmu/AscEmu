@@ -56,6 +56,7 @@ public:
     static int IsInCombat(lua_State* L, Unit* ptr);
     static int SetScale(lua_State* L, Unit* ptr);
     static int SetModel(lua_State* L, Unit* ptr);
+    static int ResetModel(lua_State* /*L*/, Unit* ptr);
     static int SetNPCFlags(lua_State* L, Unit* ptr);
     static int SetMount(lua_State* L, Unit* ptr);
     static int RemoveItem(lua_State* L, Unit* ptr);

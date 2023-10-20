@@ -836,6 +836,14 @@ int LuaUnit::SetModel(lua_State* L, Unit* ptr)
         RET_BOOL(true)
 }
 
+int LuaUnit::ResetModel(lua_State* /*L*/, Unit* ptr)
+{
+    if (ptr != nullptr)
+        ptr->resetDisplayId();
+
+    return 0;
+}
+
 int LuaUnit::SetNPCFlags(lua_State* L, Unit* ptr)
 {
     if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature())

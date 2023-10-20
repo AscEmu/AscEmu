@@ -129,6 +129,7 @@ inline RegType<Unit> UnitMethods[] =
     { "SetCombatTargetingCapable", &LuaUnit::DisableTargeting },
     { "SetNPCFlags", &LuaUnit::SetNPCFlags },
     { "SetModel", &LuaUnit::SetModel },
+    { "ResetModel", &LuaUnit::ResetModel },
     { "SetScale", &LuaUnit::SetScale },
     { "SetFaction", &LuaUnit::SetFaction },
     { "SetStandState", &LuaUnit::SetStandState },

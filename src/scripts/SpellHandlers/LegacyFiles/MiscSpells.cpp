@@ -339,7 +339,7 @@ bool ReturnFlash(uint8_t /*effectIndex*/, Aura* pAura, bool apply)
     if (apply && pAura->getOwner()->isPlayer())
     {
         Player* p_target = static_cast<Player*>(pAura->getOwner());
-        p_target->setDisplayId(p_target->getNativeDisplayId());
+        p_target->resetDisplayId();
     }
     return true;
 }

@@ -1276,6 +1276,10 @@ void Unit::setDisplayId(uint32_t id)
     //\ todo: missing update flag for player display id
     plr->addGroupUpdateFlag(isPlayer() ? 0 : GROUP_UPDATE_FLAG_PET_MODEL_ID);
 }
+void Unit::resetDisplayId()
+{
+    write(unitData()->display_id, unitData()->native_display_id);
+}
 
 uint32_t Unit::getNativeDisplayId() const { return unitData()->native_display_id; }
 void Unit::setNativeDisplayId(uint32_t id) { write(unitData()->native_display_id, id); }
