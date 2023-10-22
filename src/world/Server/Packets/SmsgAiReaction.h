@@ -35,9 +35,8 @@ namespace AscEmu::Packets
         {
 #if VERSION_STRING <= Cata
             packet << unpackedGuid << reaction;
-#else
+#elif VERSION_STRING == Mop
             ObjectGuid guid = unpackedGuid;
-
             packet.writeBit(guid[5]);
             packet.writeBit(guid[7]);
             packet.writeBit(guid[0]);

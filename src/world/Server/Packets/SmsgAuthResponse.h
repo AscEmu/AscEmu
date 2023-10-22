@@ -153,12 +153,12 @@ namespace AscEmu::Packets
             
 #endif
 #if VERSION_STRING == Mop
-                    packet.writeBit(1);     // has account info
+                    packet.writeBit(1);                 // has account info
 
                     uint8_t realmsCount = 0;
-                    packet.writeBits(realmsCount, 21);      // send realms
+                    packet.writeBits(realmsCount, 21);  // send realms
 
-                    packet.writeBits(11, 23);         // classes
+                    packet.writeBits(11, 23);           // classes
                     packet.writeBits(0, 21);
                     packet.writeBit(0);
                     packet.writeBit(0);
@@ -167,7 +167,7 @@ namespace AscEmu::Packets
                     packet.writeBits(15, 23);           // races
                     packet.writeBit(0);
 
-                    packet.writeBit(0);                         // is queued
+                    packet.writeBit(0);                 // is queued
 
                     packet.flushBits();
 

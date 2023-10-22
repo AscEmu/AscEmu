@@ -35,9 +35,30 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+#if VERSION_STRING <= Cata
             uint64_t unpackedGuid;
             packet >> unpackedGuid;
             guid.Init(unpackedGuid);
+#elif VERSION_STRING == Mop
+            ObjectGuid npcGuid;
+            npcGuid[0] = packet.readBit();
+            npcGuid[5] = packet.readBit();
+            npcGuid[4] = packet.readBit();
+            npcGuid[7] = packet.readBit();
+            npcGuid[6] = packet.readBit();
+            npcGuid[2] = packet.readBit();
+            npcGuid[1] = packet.readBit();
+            npcGuid[3] = packet.readBit();
+
+            packet.ReadByteSeq(npcGuid[0]);
+            packet.ReadByteSeq(npcGuid[4]);
+            packet.ReadByteSeq(npcGuid[2]);
+            packet.ReadByteSeq(npcGuid[3]);
+            packet.ReadByteSeq(npcGuid[7]);
+            packet.ReadByteSeq(npcGuid[1]);
+            packet.ReadByteSeq(npcGuid[5]);
+            packet.ReadByteSeq(npcGuid[6]);
+#endif
             return true;
         }
     };
