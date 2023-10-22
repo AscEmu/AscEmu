@@ -40,7 +40,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Container.hpp"
 #include "Objects/DynamicObject.hpp"
 #include "Server/Opcodes.hpp"
-#include "Server/Packets/SmsgActivatetaxireply.h"
+#include "Server/Packets/SmsgActivateTaxiReply.h"
 #include "Server/Packets/SmsgTaxinodeStatus.h"
 #include "Server/Packets/MsgTalentWipeConfirm.h"
 #include "Server/Packets/SmsgPetUnlearnConfirm.h"
@@ -115,7 +115,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgDurabilityDamageDeath.h"
 #include "Server/Packets/SmsgInitialSpells.h"
 #include "Server/Packets/SmsgLearnedSpell.h"
-#include "Server/Packets/SmsgLoginSetTimespeed.h"
+#include "Server/Packets/SmsgLoginSetTimeSpeed.h"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Packets/SmsgMoveKnockBack.h"
 #include "Server/Packets/SmsgPreResurrect.h"
@@ -2976,7 +2976,7 @@ void Player::sendInitialLogonPackets()
     data.writeBits(0, 19);
     getSession()->SendPacket(&data);
 
-    m_session->SendPacket(SmsgLoginSetTimespeed(Util::getGameTime(), 0.0166666669777748f).serialise().get());
+    m_session->SendPacket(SmsgLoginSetTimeSpeed(Util::getGameTime(), 0.0166666669777748f).serialise().get());
 
     data.Initialize(SMSG_SET_FORCED_REACTIONS, 1 + 4 + 4);
     data.writeBits(0, 6);
@@ -3028,7 +3028,7 @@ void Player::sendInitialLogonPackets()
     sendActionBars(false);
     sendSmsgInitialFactions();
 
-    m_session->SendPacket(SmsgLoginSetTimespeed(Util::getGameTime(), 0.0166666669777748f).serialise().get());
+    m_session->SendPacket(SmsgLoginSetTimeSpeed(Util::getGameTime(), 0.0166666669777748f).serialise().get());
 
     updateSpeed();
 
@@ -10419,7 +10419,7 @@ bool Player::activateTaxiPathTo(std::vector<uint32_t> const& nodes, Creature* np
     // not let cheating with start flight in time of logout process || while in combat || has type state: stunned || has type state: root
     if (getSession()->IsLoggingOut() || isInCombat() || hasUnitStateFlag(UNIT_STATE_STUNNED) || hasUnitStateFlag(UNIT_STATE_ROOTED))
     {
-        getSession()->SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_TaxiPlayerBusy).serialise().get());
+        getSession()->SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_TaxiPlayerBusy).serialise().get());
         return false;
     }
 
@@ -10432,13 +10432,13 @@ bool Player::activateTaxiPathTo(std::vector<uint32_t> const& nodes, Creature* np
         // not let cheating with start flight mounted
         if (isMounted())
         {
-            getSession()->SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_TaxiPlayerAlreadyMounted).serialise().get());
+            getSession()->SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_TaxiPlayerAlreadyMounted).serialise().get());
             return false;
         }
 
         if (isInDisallowedMountForm())
         {
-            getSession()->SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_TaxiPlayerShapeshifted).serialise().get());;
+            getSession()->SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_TaxiPlayerShapeshifted).serialise().get());;
             return false;
         }
     }
@@ -10467,7 +10467,7 @@ bool Player::activateTaxiPathTo(std::vector<uint32_t> const& nodes, Creature* np
     WDB::Structures::TaxiNodesEntry const* node = sTaxiNodesStore.lookupEntry(sourcenode);
     if (!node)
     {
-        getSession()->SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_NoDirectPath).serialise().get());
+        getSession()->SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_NoDirectPath).serialise().get());
         return false;
     }
 
@@ -10524,7 +10524,7 @@ bool Player::activateTaxiPathTo(std::vector<uint32_t> const& nodes, Creature* np
     // in spell case allow 0 model
     if ((mount_display_id == 0 && spellid == 0) || sourcepath == 0)
     {
-        getSession()->SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_UnspecificError).serialise().get());
+        getSession()->SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_UnspecificError).serialise().get());
         m_taxi->clearTaxiDestinations();
         return false;
     }
@@ -10541,7 +10541,7 @@ bool Player::activateTaxiPathTo(std::vector<uint32_t> const& nodes, Creature* np
 
     if (money < totalcost)
     {
-        getSession()->SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_NotEnoughMoney).serialise().get());
+        getSession()->SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_NotEnoughMoney).serialise().get());
         m_taxi->clearTaxiDestinations();
         return false;
     }
@@ -10556,7 +10556,7 @@ bool Player::activateTaxiPathTo(std::vector<uint32_t> const& nodes, Creature* np
 #if VERSION_STRING > TBC
     updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GOLD_SPENT_FOR_TRAVELLING, firstcost);
 #endif
-    getSession()->SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_Ok).serialise().get());
+    getSession()->SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_Ok).serialise().get());
     getSession()->sendDoFlight(mount_display_id, sourcepath);
     return true;
 }
