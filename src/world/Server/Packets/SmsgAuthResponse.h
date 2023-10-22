@@ -85,8 +85,8 @@ namespace AscEmu::Packets
  #if VERSION_STRING <= WotLK
                     packet << error;
 #else
-                    packet.writeBit(0);     // has account info
-                    packet.writeBit(0);     // has queue info
+                    packet.writeBit(0);                 // has account info
+                    packet.writeBit(0);                 // has queue info
                     packet << error;
 #endif
                 } break;
@@ -99,14 +99,14 @@ namespace AscEmu::Packets
                         packet << error;
 #endif 
 #if VERSION_STRING == Cata
-                        packet.writeBit(0); // has account info
-                        packet.writeBit(0); // has queue info
+                        packet.writeBit(0);             // has account info
+                        packet.writeBit(0);             // has queue info
                         packet << error;
                         packet.flushBits();
 #endif 
 #if VERSION_STRING == Mop
-                        packet.writeBit(0); // has account info
-                        packet.writeBit(0); // has queue info
+                        packet.writeBit(0);             // has account info
+                        packet.writeBit(0);             // has queue info
                         packet << error;
                         packet.flushBits();
 #endif    
@@ -122,17 +122,17 @@ namespace AscEmu::Packets
     #endif
 #endif 
 #if VERSION_STRING == Cata
-                        packet.writeBit(1); // has queue info
-                        packet.writeBit(0); // unk queue bool
-                        packet.writeBit(0); // has account info
+                        packet.writeBit(1);             // has queue info
+                        packet.writeBit(0);             // unk queue bool
+                        packet.writeBit(0);             // has account info
                         packet.flushBits();
                         packet << error;
                         packet << queuePosition;
 #endif 
 #if VERSION_STRING == Mop
-                        packet.writeBit(0); // has account info
-                        packet.writeBit(1); // has queue info
-                        packet.writeBit(0); // unk queue bool
+                        packet.writeBit(0);             // has account info
+                        packet.writeBit(1);             // has queue info
+                        packet.writeBit(0);             // unk queue bool
                         packet << error;
                         packet.flushBits();
                         packet << queuePosition;
@@ -146,8 +146,8 @@ namespace AscEmu::Packets
                     
 #endif
 #if VERSION_STRING == Cata
-                    packet.writeBit(0);       // has queue info
-                    packet.writeBit(1);       // has account Info
+                    packet.writeBit(0);                 // has queue info
+                    packet.writeBit(1);                 // has account Info
                     packet << accountInfo.billingTimeRemaining << accountInfo.expansion << uint32_t(0)
                         << accountInfo.expansion << accountInfo.billingTimeRested << accountInfo.billingPlanFlags << error;
             
