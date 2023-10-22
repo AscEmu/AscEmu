@@ -22,7 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgPowerUpdate.h"
 #include "Server/Packets/SmsgSpellHealLog.h"
 #include "Server/Packets/SmsgSpellOrDamageImmune.h"
-#include "Server/Packets/SmsgStandstateUpdate.h"
+#include "Server/Packets/SmsgStandStateUpdate.h"
 #include "Server/Packets/SmsgControlVehicle.h"
 #include "Server/Packets/SmsgPlayerVehicleData.h"
 #include "Server/Opcodes.hpp"
@@ -1349,7 +1349,7 @@ void Unit::setStandState(uint8_t standState)
     write(unitData()->field_bytes_1.s.stand_state, standState);
 
     if (isPlayer())
-        dynamic_cast<Player*>(this)->sendPacket(SmsgStandstateUpdate(standState).serialise().get());
+        dynamic_cast<Player*>(this)->sendPacket(SmsgStandStateUpdate(standState).serialise().get());
 
     if (standState != STANDSTATE_SIT)
         removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_STAND_UP);

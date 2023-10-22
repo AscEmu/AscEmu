@@ -11,16 +11,16 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu::Packets
 {
-    class SmsgStandstateUpdate : public ManagedPacket
+    class SmsgStandStateUpdate : public ManagedPacket
     {
     public:
         uint8_t state;
 
-        SmsgStandstateUpdate() : SmsgStandstateUpdate(0)
+        SmsgStandStateUpdate() : SmsgStandStateUpdate(0)
         {
         }
 
-        SmsgStandstateUpdate(uint8_t state) :
+        SmsgStandStateUpdate(uint8_t state) :
             ManagedPacket(SMSG_STAND_STATE_UPDATE, 1),
             state(state)
         {
