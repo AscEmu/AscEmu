@@ -11,16 +11,16 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu::Packets
 {
-    class SmsgActivatetaxireply : public ManagedPacket
+    class SmsgActivateTaxiReply : public ManagedPacket
     {
     public:
         uint32_t error;
 
-        SmsgActivatetaxireply() : SmsgActivatetaxireply(0)
+        SmsgActivateTaxiReply() : SmsgActivateTaxiReply(0)
         {
         }
 
-        SmsgActivatetaxireply(uint32_t error) :
+        SmsgActivateTaxiReply(uint32_t error) :
             ManagedPacket(SMSG_ACTIVATE_TAXI_REPLY, 0),
             error(error)
         {

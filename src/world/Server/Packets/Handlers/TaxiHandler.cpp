@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgTaxinodeStatus.h"
 #include "Server/Packets/CmsgTaxinodeStatusQuery.h"
 #include "Server/Packets/SmsgShowTaxiNodes.h"
-#include "Server/Packets/SmsgActivatetaxireply.h"
+#include "Server/Packets/SmsgActivateTaxiReply.h"
 #include "Server/Packets/CmsgActivatetaxiexpress.h"
 #include "Server/Packets/CmsgActivatetaxi.h"
 #include "Movement/MovementManager.h"
@@ -134,7 +134,7 @@ void WorldSession::handleTaxiQueryAvaibleNodesOpcode(WorldPacket& recvPacket)
     Creature* unit = GetPlayer()->getCreatureWhenICanInteract(WoWGuid(srlPacket.creatureGuid), UNIT_NPC_FLAG_FLIGHTMASTER);
     if (!unit)
     {
-        SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_TaxiTooFarAway).serialise().get());
+        SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_TaxiTooFarAway).serialise().get());
         return;
     }
 
@@ -163,7 +163,7 @@ void WorldSession::handleEnabletaxiOpcode(WorldPacket& recvPacket)
     Creature* unit = GetPlayer()->getCreatureWhenICanInteract(srlPacket.creatureGuid, UNIT_NPC_FLAG_FLIGHTMASTER);
     if (!unit)
     {
-        SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_TaxiTooFarAway).serialise().get());
+        SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_TaxiTooFarAway).serialise().get());
         return;
     }
 
@@ -187,7 +187,7 @@ void WorldSession::handleActivateTaxiOpcode(WorldPacket& recvPacket)
     Creature* npc = GetPlayer()->getCreatureWhenICanInteract(srlPacket.guid, UNIT_NPC_FLAG_FLIGHTMASTER);
     if (!npc)
     {
-        SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_TaxiTooFarAway).serialise().get());
+        SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_TaxiTooFarAway).serialise().get());
         return;
     }
 
@@ -195,7 +195,7 @@ void WorldSession::handleActivateTaxiOpcode(WorldPacket& recvPacket)
     {
         if (!GetPlayer()->m_taxi->isTaximaskNodeKnown(srlPacket.nodes[0]) || !GetPlayer()->m_taxi->isTaximaskNodeKnown(srlPacket.nodes[1]))
         {
-            SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_TaxiNotVisited).serialise().get());
+            SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_TaxiNotVisited).serialise().get());
             return;
         }
     }
@@ -218,7 +218,7 @@ void WorldSession::handleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
     Creature* npc = GetPlayer()->getCreatureWhenICanInteract(srlPacket.guid, UNIT_NPC_FLAG_FLIGHTMASTER);
     if (!npc)
     {
-        SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_TaxiTooFarAway).serialise().get());
+        SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_TaxiTooFarAway).serialise().get());
         return;
     }
     std::vector<uint32_t> nodes;
@@ -227,7 +227,7 @@ void WorldSession::handleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
     {
         if (!GetPlayer()->m_taxi->isTaximaskNodeKnown(srlPacket.pathParts[i]) && !GetPlayer()->m_cheats.hasTaxiCheat)
         {
-            SendPacket(SmsgActivatetaxireply(TaxiNodeError::ERR_TaxiNotVisited).serialise().get());
+            SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_TaxiNotVisited).serialise().get());
             return;
         }
 
