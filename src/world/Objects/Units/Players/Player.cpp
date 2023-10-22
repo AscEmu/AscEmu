@@ -115,7 +115,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgDurabilityDamageDeath.h"
 #include "Server/Packets/SmsgInitialSpells.h"
 #include "Server/Packets/SmsgLearnedSpell.h"
-#include "Server/Packets/SmsgLoginSetTimespeed.h"
+#include "Server/Packets/SmsgLoginSetTimeSpeed.h"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Packets/SmsgMoveKnockBack.h"
 #include "Server/Packets/SmsgPreResurrect.h"
@@ -2976,7 +2976,7 @@ void Player::sendInitialLogonPackets()
     data.writeBits(0, 19);
     getSession()->SendPacket(&data);
 
-    m_session->SendPacket(SmsgLoginSetTimespeed(Util::getGameTime(), 0.0166666669777748f).serialise().get());
+    m_session->SendPacket(SmsgLoginSetTimeSpeed(Util::getGameTime(), 0.0166666669777748f).serialise().get());
 
     data.Initialize(SMSG_SET_FORCED_REACTIONS, 1 + 4 + 4);
     data.writeBits(0, 6);
@@ -3028,7 +3028,7 @@ void Player::sendInitialLogonPackets()
     sendActionBars(false);
     sendSmsgInitialFactions();
 
-    m_session->SendPacket(SmsgLoginSetTimespeed(Util::getGameTime(), 0.0166666669777748f).serialise().get());
+    m_session->SendPacket(SmsgLoginSetTimeSpeed(Util::getGameTime(), 0.0166666669777748f).serialise().get());
 
     updateSpeed();
 

@@ -11,17 +11,17 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu::Packets
 {
-    class SmsgLoginSetTimespeed : public ManagedPacket
+    class SmsgLoginSetTimeSpeed : public ManagedPacket
     {
     public:
         uint32_t time;
         float gameSpeed;
         
-        SmsgLoginSetTimespeed() : SmsgLoginSetTimespeed(0, 0)
+        SmsgLoginSetTimeSpeed() : SmsgLoginSetTimeSpeed(0, 0)
         {
         }
 
-        SmsgLoginSetTimespeed(uint32_t time, float gameSpeed) :
+        SmsgLoginSetTimeSpeed(uint32_t time, float gameSpeed) :
             ManagedPacket(SMSG_LOGIN_SET_TIME_SPEED, 8),
             time(time),
             gameSpeed(gameSpeed)
