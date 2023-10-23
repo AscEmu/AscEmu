@@ -719,7 +719,6 @@ void WorldSession::fullLogin(Player* player)
     data.writeBits(0, 20);
     data.flushBits();
     SendPacket(&data);
-
 #endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -764,7 +763,7 @@ void WorldSession::fullLogin(Player* player)
     sObjectMgr.addPlayer(player);
 }
 
-void WorldSession::handleDeclinedPlayerNameOpcode(WorldPacket& recvPacket)
+void WorldSession::handleSetPlayerDeclinedNamesOpcode(WorldPacket& recvPacket)
 {
     CmsgSetPlayerDeclinedNames srlPacket;
     if (!srlPacket.deserialise(recvPacket))
