@@ -108,10 +108,10 @@ void World::finalize()
 {
     sLogger.info("WorldLog : ~WorldLog()");
     sWorldPacketLog.finalize();
-
+#if VERSION_STRING <= Cata  // support MOP
     sLogger.info("TransportHandler : unload()");
     sTransportHandler.unload();
-
+#endif
     sLogger.info("ObjectMgr : ~ObjectMgr()");
     sObjectMgr.finalize();
 
@@ -743,6 +743,7 @@ bool World::setInitialWorldSettings()
     sObjectMgr.loadAchievementCriteriaList();
 #endif
 
+#if VERSION_STRING <= Cata // support MOP
     sLogger.info("World : Starting Transport System...");
     sTransportHandler.loadTransportTemplates();
     sTransportHandler.spawnContinentTransports();
@@ -757,6 +758,7 @@ bool World::setInitialWorldSettings()
     sLogger.info("World : Loading LFG rewards...");
     sLfgMgr.initialize();
     sLfgMgr.LoadRewards();
+#endif
 
     sGuildMgr.loadGuildDataFromDB();
 
