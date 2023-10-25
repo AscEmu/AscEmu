@@ -31,3 +31,4 @@ bool handleClearConsoleCommand(BaseConsole* baseConsole, int /*argumentCount*/, 
 bool handleReloadScriptEngineCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient);
 bool handlePrintTimeDateCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient);
 bool handleGetAccountsCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient);
+bool handleSendMailGold(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient);

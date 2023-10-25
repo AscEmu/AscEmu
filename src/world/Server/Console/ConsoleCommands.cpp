@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Console/BaseConsole.h"
 #include "Server/Master.h"
 #include "Cryptography/crc32.h"
+#include "Management/MailMgr.h"
 #include "Server/World.h"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"
@@ -449,6 +450,33 @@ bool handleGetAccountsCommand(BaseConsole* baseConsole, int /*argumentCount*/, s
     std::cout << "Command result is: " << sLogonCommHandler.accountResult << "\n";
 
     baseConsole->Write("%s\r\n", sLogonCommHandler.accountResult.c_str());
+
+    return true;
+}
+
+bool handleSendMailGold(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool /*isWebClient*/)
+{
+    if (argumentCount > 0 && consoleInput.empty())
+        return false;
+
+    std::vector<std::string> mailVector = AscEmu::Util::Strings::split(consoleInput, "|");
+
+    std::string* mailString = mailVector.data();
+    std::string charName(mailString[0].erase(0, 1));
+    std::string subject(mailString[1]);
+    std::string body(mailString[2]);
+    uint32_t gold(std::stoul(mailString[3]));
+
+    std::cout << charName << " check" << "\n";
+    std::cout << subject << " check" << "\n";
+    std::cout << body << " check" << "\n";
+    std::cout << gold << " check" << "\n";
+
+    if (QueryResult* result = CharacterDatabase.Query("SELECT guid FROM characters WHERE name = '%s'", charName.c_str()))
+    {
+        uint64_t guid = result->Fetch()[0].GetUInt64();
+        sMailSystem.SendAutomatedMessage(MAIL_TYPE_NORMAL, guid, guid, subject, body, gold, 0, 0, MAIL_STATIONERY_GM);
+    }
 
     return true;
 }

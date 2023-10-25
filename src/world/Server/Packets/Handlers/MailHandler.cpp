@@ -166,11 +166,18 @@ void WorldSession::handleItemTextQueryOpcode(WorldPacket& recvPacket)
     CmsgItemTextQuery srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
-  
+
+#if VERSION_STRING > TBC
     if (const auto item = _player->getItemInterface()->GetItemByGUID(srlPacket.itemGuid))
         SendPacket(SmsgItemTextQueryResponse(0, srlPacket.itemGuid, item->getText()).serialise().get());
     else
         SendPacket(SmsgItemTextQueryResponse(1, 0, "").serialise().get());
+#else
+    if (auto itemPage = sMySQLStore.getItemPage(srlPacket.itemTextId))
+        SendPacket(SmsgItemTextQueryResponse(0, itemPage->id, itemPage->text).serialise().get());
+    else
+        SendPacket(SmsgItemTextQueryResponse(1, 0, "").serialise().get());
+#endif
 }
 
 void WorldSession::handleMailTimeOpcode(WorldPacket& /*recvPacket*/)
@@ -212,7 +219,9 @@ void WorldSession::handleGetMailOpcode(WorldPacket& /*recvPacket*/)
     uint32_t realCount = 0;
     uint8_t count = 0;
 
+#if VERSION_STRING > TBC
     data << uint32_t(0);
+#endif
     data << uint8_t(0);
 
     for (auto& message : _player->m_mailBox->Messages)
@@ -234,8 +243,10 @@ void WorldSession::handleGetMailOpcode(WorldPacket& /*recvPacket*/)
             guidSize = 8;
         else
             guidSize = 4;
-
-#if VERSION_STRING < Cata
+#if VERSION_STRING <= TBC
+        const size_t messageSize = 2 + 4 + 1 + guidSize + 4 * 8 + (message.second.subject.size() + 1)  + 1 + (
+            message.second.items.size() * (1 + 4 + 4 + MAX_INSPECTED_ENCHANTMENT_SLOT * 3 * 4 + 4 + 4 + 1 + 4 + 4 + 4));
+#elif VERSION_STRING < Cata
         const size_t messageSize = 2 + 4 + 1 + guidSize + 4 * 8 + (message.second.subject.size() + 1) + (message.second.body.size() + 1) + 1 + (
             message.second.items.size() * (1 + 4 + 4 + MAX_INSPECTED_ENCHANTMENT_SLOT * 3 * 4 + 4 + 4 + 4 + 4 + 4 + 4 + 1));
 #else
@@ -268,6 +279,20 @@ void WorldSession::handleGetMailOpcode(WorldPacket& /*recvPacket*/)
 #else
         data << uint64_t(message.second.cod);
 #endif
+#if VERSION_STRING < WotLK
+        uint32_t itemPageEntry = 0;
+        if (!message.second.body.empty())
+        {
+            itemPageEntry = sMySQLStore.getItemPageEntryByText(message.second.body);
+            if (itemPageEntry == 0)
+            {
+                itemPageEntry = sObjectMgr.generateItemPageEntry();
+                sMySQLStore.addItemPage(itemPageEntry, message.second.body);
+            }
+        }
+        data << uint32_t(itemPageEntry);
+
+#endif
         data << uint32_t(0);
         data << uint32_t(message.second.stationery);
 #if VERSION_STRING < Cata
@@ -278,8 +303,11 @@ void WorldSession::handleGetMailOpcode(WorldPacket& /*recvPacket*/)
         data << uint32_t(message.second.checked_flag);
         data << float(float((message.second.expire_time - uint32_t(UNIXTIME)) / DAY));
         data << uint32_t(0);
+
         data << message.second.subject;
+#if VERSION_STRING > TBC
         data << message.second.body;
+#endif
 
         data << uint8_t(message.second.items.size());
 
@@ -317,9 +345,12 @@ void WorldSession::handleGetMailOpcode(WorldPacket& /*recvPacket*/)
         ++count;
         ++realCount;
     }
-
+#if VERSION_STRING > TBC
     data.put<uint32_t>(0, realCount);
     data.put<uint8_t>(4, count);
+#else
+    data.put<uint8_t>(0, count);
+#endif
 
     SendPacket(&data);
 

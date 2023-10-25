@@ -150,6 +150,7 @@ static ConsoleCommand Commands[] =
     { &handleReloadScriptEngineCommand, "reloadscripts",    0,  "None",                                 "Reloads all scripting engines currently loaded." },
     { &handlePrintTimeDateCommand,      "datetime",         0,  "None",                                 "Shows time and date according to localtime()" },
     { &handleGetAccountsCommand,        "getaccountdata",   0,  "None",                                 "Prints out all account data" },
+    { &handleSendMailGold, "sendmoney", 1, "None", ""},
     { nullptr,                          "",                 0,  "",                                     "" },
 };
 

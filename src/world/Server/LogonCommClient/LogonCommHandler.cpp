@@ -506,24 +506,17 @@ void LogonCommHandler::testConsoleLogon(std::string & username, std::string & pa
 {
     std::string newuser = username;
     std::string newpass = password;
-    std::string srpstr;
 
     AscEmu::Util::Strings::toUpperCase(newuser);
     AscEmu::Util::Strings::toUpperCase(newpass);
 
-    srpstr = newuser + ":" + newpass;
-
     // Send request packet to server.
     if (LogonCommClientSocket* logonCommSocket = getLogonServerSocket())
     {
-        Sha1Hash hash;
-        hash.UpdateData(srpstr);
-        hash.Finalize();
-
         WorldPacket data(LRCMSG_LOGIN_CONSOLE_REQUEST, 100);
         data << requestnum;
         data << newuser;
-        data.append(hash.GetDigest(), 20);
+        data << newpass;
 
         logonCommSocket->SendPacket(&data, false);
     }

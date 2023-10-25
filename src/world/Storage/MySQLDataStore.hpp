@@ -154,6 +154,7 @@ public:
 
     // helper
     MySQLStructure::ItemPage const* getItemPage(uint32_t entry);
+    uint32_t getItemPageEntryByText(std::string _text);
     ItemPageContainer const* getItemPagesStore() { return &_itemPagesStore; }
     ItemProperties const* getItemProperties(uint32_t entry);
     ItemPropertiesContainer const* getItemPropertiesStore();
@@ -296,6 +297,7 @@ public:
 
     // loads
     void loadItemPagesTable();
+    void addItemPage(uint32_t _entry, std::string _text, uint32_t _nextPage = 0);
     void loadItemPropertiesTable();
 
     void loadCreaturePropertiesMovementTable();

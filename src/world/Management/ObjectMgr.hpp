@@ -420,6 +420,7 @@ public:
     uint32_t generateGuildId();
     uint32_t generateCreatureSpawnId();
     uint32_t generateGameObjectSpawnId();
+    uint32_t generateItemPageEntry();
 #if VERSION_STRING > WotLK
     uint64_t generateVoidStorageItemId();
 #endif
@@ -441,6 +442,7 @@ private:
 
 protected:
     std::atomic<unsigned long> m_hiItemGuid = 0;
+    std::atomic<unsigned long> m_hiItemPageEntry = 0;
     std::atomic<unsigned long> m_hiGroupId = 0;
     std::atomic<unsigned long> m_hiCharterId = 0;
     std::atomic<unsigned long> m_hiCreatureSpawnId;

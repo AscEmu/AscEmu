@@ -2552,6 +2552,13 @@ void ObjectMgr::setHighestGuids()
         delete result;
     }
 
+    result = WorldDatabase.Query("SELECT MAX(entry) FROM item_pages");
+    if (result)
+    {
+        m_hiItemPageEntry = result->Fetch()[0].GetUInt32();
+        delete result;
+    }
+
     result = CharacterDatabase.Query("SELECT MAX(guid) FROM corpses");
     if (result)
     {
@@ -2666,6 +2673,7 @@ uint32_t ObjectMgr::generateArenaTeamId() { return ++m_hiArenaTeamId; }
 uint32_t ObjectMgr::generateGuildId() { return ++m_hiGuildId; }
 uint32_t ObjectMgr::generateCreatureSpawnId() { return ++m_hiCreatureSpawnId; }
 uint32_t ObjectMgr::generateGameObjectSpawnId() { return ++m_hiGameObjectSpawnId; }
+uint32_t ObjectMgr::generateItemPageEntry() { return ++m_hiItemPageEntry; }
 #if VERSION_STRING > WotLK
 uint64_t ObjectMgr::generateVoidStorageItemId() { return ++m_voidItemId; }
 #endif

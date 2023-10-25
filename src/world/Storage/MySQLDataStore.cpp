@@ -178,14 +178,7 @@ void MySQLDataStore::loadItemPagesTable()
     {
         Field* fields = itempages_result->Fetch();
 
-        uint32_t entry = fields[0].GetUInt32();
-
-        MySQLStructure::ItemPage& itemPage = _itemPagesStore[entry];
-
-        itemPage.id = entry;
-        itemPage.text = fields[1].GetString();
-        itemPage.nextPage = fields[2].GetUInt32();
-
+        addItemPage(fields[0].GetUInt32(), fields[1].GetString(), fields[2].GetUInt32());
 
         ++itempages_count;
     } while (itempages_result->NextRow());
@@ -195,6 +188,15 @@ void MySQLDataStore::loadItemPagesTable()
     sLogger.info("MySQLDataLoads : Loaded %u pages from `item_pages` table in %u ms!", itempages_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
+void MySQLDataStore::addItemPage(uint32_t _entry, std::string _text, uint32_t _nextPage /*= 0*/)
+{
+    MySQLStructure::ItemPage& itemPage = _itemPagesStore[_entry];
+
+    itemPage.id = _entry;
+    itemPage.text = _text;
+    itemPage.nextPage = _nextPage;
+}
+
 MySQLStructure::ItemPage const* MySQLDataStore::getItemPage(uint32_t entry)
 {
     ItemPageContainer::const_iterator itr = _itemPagesStore.find(entry);
@@ -202,6 +204,14 @@ MySQLStructure::ItemPage const* MySQLDataStore::getItemPage(uint32_t entry)
         return &(itr->second);
 
     return nullptr;
+}
+
+uint32_t MySQLDataStore::getItemPageEntryByText(std::string _text)
+{
+    for (auto itemPage : _itemPagesStore)
+        if (itemPage.second.text == _text)
+            return itemPage.first;
+    return 0;
 }
 
 void MySQLDataStore::loadItemPropertiesTable()

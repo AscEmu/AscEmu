@@ -421,11 +421,11 @@ void LogonCommServerSocket::HandleTestConsoleLogin(WorldPacket & recvData)
     WorldPacket data(LRSMSG_LOGIN_CONSOLE_RESULT, 8);
     uint32 request;
     std::string accountname;
-    uint8 key[20];
+    std::string password;
 
     recvData >> request;
     recvData >> accountname;
-    recvData.read(key, 20);
+    recvData >> password;
 
     data << request;
 
@@ -437,14 +437,12 @@ void LogonCommServerSocket::HandleTestConsoleLogin(WorldPacket & recvData)
         return;
     }
 
-    if (pAccount->GMFlags == NULL || strchr(pAccount->GMFlags, 'z') == NULL)
-    {
-        data << uint32(0);
-        SendPacket(&data);
-        return;
-    }
-
-    if (memcmp(pAccount->SrpHash, key, 20) != 0)
+    std::string pass;
+    pass.assign(accountname);
+    pass.push_back(':');
+    pass.append(password);
+    auto checkPassQuery = sLogonSQL->Query("SELECT acc_name, encrypted_password FROM accounts WHERE encrypted_password = SHA(UPPER('%s')) AND acc_name = '%s'", pass.c_str(), accountname.c_str());
+    if (!checkPassQuery)
     {
         data << uint32(0);
         SendPacket(&data);
