@@ -357,7 +357,6 @@ bool fillArchiveNameVector(std::vector<std::string>& pArchiveNames)
 #elif VERSION_STRING == TBC
     pArchiveNames.push_back(input_path + std::string("patch.MPQ"));
     pArchiveNames.push_back(input_path + std::string("patch-2.MPQ"));
-    pArchiveNames.push_back(input_path + std::string("expansion.MPQ"));
     pArchiveNames.push_back(input_path + std::string("common.MPQ"));
 #elif VERSION_STRING == WotLK
     pArchiveNames.push_back(input_path + std::string("patch.MPQ"));
