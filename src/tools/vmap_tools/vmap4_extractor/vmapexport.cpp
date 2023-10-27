@@ -327,8 +327,6 @@ bool fillArchiveNameVector(std::vector<std::string>& pArchiveNames)
         pArchiveNames.push_back(in_path + *i + "/patch-" + *i + "-2" ".MPQ");
         pArchiveNames.push_back(in_path + *i + "/locale-" + *i + ".MPQ");
         pArchiveNames.push_back(in_path + *i + "/speech-" + *i + ".MPQ");
-        pArchiveNames.push_back(in_path + *i + "/expansion-locale-" + *i + ".MPQ");
-        pArchiveNames.push_back(in_path + *i + "/expansion-speech-" + *i + ".MPQ");
 #elif VERSION_STRING == WotLK
         pArchiveNames.push_back(in_path + *i + "/patch-" + *i + ".MPQ");
         pArchiveNames.push_back(in_path + *i + "/patch-" + *i + "-2" ".MPQ");
