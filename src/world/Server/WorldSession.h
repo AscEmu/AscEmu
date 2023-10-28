@@ -383,7 +383,7 @@ protected:
         void handlePlayerLoginOpcode(WorldPacket& recvPacket);
         void handleCharRenameOpcode(WorldPacket& recvPacket);
         void handleCharCreateOpcode(WorldPacket& recvPacket);
-        void handleDeclinedPlayerNameOpcode(WorldPacket& recvPacket); // declined names (Cyrillic client)
+        void handleSetPlayerDeclinedNamesOpcode(WorldPacket& recvPacket); // declined names (Cyrillic client)
         void handleCharEnumOpcode(WorldPacket& /*recvPacket*/);
 #if VERSION_STRING > TBC
         void handleCharFactionOrRaceChange(WorldPacket& recvPacket);
@@ -946,7 +946,6 @@ protected:
         void handleLeaveVehicle(WorldPacket& /*recvPacket*/);
         void handleEnterVehicle(WorldPacket& recvPacket);
 #endif
-
         //////////////////////////////////////////////////////////////////////////////////////////
         // VoiceChatHandler.cpp
         // Zyres: this feature will be not implemented in the near future!
@@ -957,19 +956,16 @@ protected:
         //////////////////////////////////////////////////////////////////////////////////////////
         // OtherFiles
 
-
         ////////////////////////////////////UNSORTED BELOW THIS LINE///////////////////////////////
 
         void Unhandled(WorldPacket& recvPacket);
         void nothingToHandle(WorldPacket& recvPacket);
 
     public:
-
         float m_wLevel; // Level of water the player is currently in
         bool m_bIsWLevelSet; // Does the m_wLevel variable contain up-to-date information about water level?
 
     private:
-
         friend class Player;
         Player* _player;
         WorldSocket* _socket;
@@ -997,8 +993,8 @@ protected:
         char* permissions;
         int permissioncount;
 
-        bool _loggingOut; //Player is being removed from the game.
-        bool LoggingOut; //Player requesting to be logged out
+        bool _loggingOut; // Player is being removed from the game.
+        bool LoggingOut; // Player requesting to be logged out
 
         uint32 _latency;
 #if VERSION_STRING < Cata
@@ -1010,7 +1006,6 @@ protected:
         uint8 _updatecount;
 
     public:
-
         static void InitPacketHandlerTable();
         static void loadHandlers();
 

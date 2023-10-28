@@ -12,18 +12,18 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu::Packets
 {
-    class CmsgBuybackItem : public ManagedPacket
+    class CmsgBuyBackItem : public ManagedPacket
     {
     public:
         uint64_t itemGuid;
         int32_t buybackSlot;
 
-        CmsgBuybackItem() : CmsgBuybackItem(0, 0)
+        CmsgBuyBackItem() : CmsgBuyBackItem(0, 0)
         {
         }
 
-        CmsgBuybackItem(uint64_t itemGuid, int32_t buybackSlot) :
-            ManagedPacket(CMSG_BUYBACK_ITEM, 8),
+        CmsgBuyBackItem(uint64_t itemGuid, int32_t buybackSlot) :
+            ManagedPacket(CMSG_BUY_BACK_ITEM, 8),
             itemGuid(itemGuid),
             buybackSlot(buybackSlot)
         {

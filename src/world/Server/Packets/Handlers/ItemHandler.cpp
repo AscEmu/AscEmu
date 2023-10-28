@@ -29,7 +29,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgCancelTempEnchantment.h"
 #include "Server/Packets/CmsgAutobankItem.h"
 #include "Server/Packets/CmsgBuyItemInSlot.h"
-#include "Server/Packets/CmsgBuybackItem.h"
+#include "Server/Packets/CmsgBuyBackItem.h"
 #include "Server/Packets/CmsgAutoequipItemSlot.h"
 #include "Server/Packets/CmsgDestroyItem.h"
 #include "Server/Packets/CmsgSwapInvItem.h"
@@ -1760,11 +1760,11 @@ void WorldSession::handleItemQuerySingleOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleBuyBackOpcode(WorldPacket& recvPacket)
 {
-    CmsgBuybackItem srlPacket;
+    CmsgBuyBackItem srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BUYBACK_ITEM");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BUY_BACK_ITEM");
 
     srlPacket.buybackSlot -= 74;
 

@@ -385,7 +385,7 @@ void WorldSession::handleVoidStorageTransfer(WorldPacket& recvData)
         player->deleteVoidStorageItem(slot);
     }
 
-    WorldPacket data(SMSG_VOID_STOARGE_TRANSFER_CHANGES, ((5 + 5 + (7 + 7) * depositCount +
+    WorldPacket data(SMSG_VOID_STORAGE_TRANSFER_CHANGES, ((5 + 5 + (7 + 7) * depositCount +
         7 * withdrawCount) / 8) + 7 * withdrawCount + (7 + 7 + 4 * 4) * depositCount);
 
     data.writeBits(depositCount, 5);
