@@ -1153,7 +1153,7 @@ void WorldSession::handleDestroyItemOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_DESTROYITEM SrcInv Slot: %i Src slot: %i", srlPacket.srcInventorySlot, srlPacket.srcSlot);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_DESTROY_ITEM SrcInv Slot: %i Src slot: %i", srlPacket.srcInventorySlot, srlPacket.srcSlot);
 
     if (Item* srcItem = _player->getItemInterface()->GetInventoryItem(srlPacket.srcInventorySlot, srlPacket.srcSlot))
     {

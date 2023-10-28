@@ -13,8 +13,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgTaxinodeStatusQuery.h"
 #include "Server/Packets/SmsgShowTaxiNodes.h"
 #include "Server/Packets/SmsgActivateTaxiReply.h"
-#include "Server/Packets/CmsgActivatetaxiexpress.h"
-#include "Server/Packets/CmsgActivatetaxi.h"
+#include "Server/Packets/CmsgActivateTaxiExpress.h"
+#include "Server/Packets/CmsgActivateTaxi.h"
 #include "Movement/MovementManager.h"
 #include "Server/Packets/SmsgNewTaxiPath.h"
 #include "Movement/MovementGenerators/FlightPathMovementGenerator.h"
@@ -178,11 +178,11 @@ void WorldSession::handleEnabletaxiOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleActivateTaxiOpcode(WorldPacket& recvPacket)
 {
-    CmsgActivatetaxi srlPacket;
+    CmsgActivateTaxi srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ACTIVATETAXI");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ACTIVATE_TAXI");
 
     Creature* npc = GetPlayer()->getCreatureWhenICanInteract(srlPacket.guid, UNIT_NPC_FLAG_FLIGHTMASTER);
     if (!npc)
@@ -209,11 +209,11 @@ void WorldSession::handleActivateTaxiOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
 {
-    CmsgActivatetaxiexpress srlPacket;
+    CmsgActivateTaxiExpress srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ACTIVATETAXIEXPRESS");
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ACTIVATE_TAXI_EXPRESS");
 
     Creature* npc = GetPlayer()->getCreatureWhenICanInteract(srlPacket.guid, UNIT_NPC_FLAG_FLIGHTMASTER);
     if (!npc)

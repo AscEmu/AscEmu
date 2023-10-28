@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu::Packets
 {
-    class SmsgCharEnum : public ManagedPacket
+    class SmsgEnumCharactersResult : public ManagedPacket
     {
     public:
         typedef std::vector<CharEnumData> _charEnumData;
@@ -20,12 +20,12 @@ namespace AscEmu::Packets
         uint8_t char_count;
         uint8_t unk1;
 
-        SmsgCharEnum() : SmsgCharEnum(0, std::vector<CharEnumData>())
+        SmsgEnumCharactersResult() : SmsgEnumCharactersResult(0, std::vector<CharEnumData>())
         {
         }
 
-        SmsgCharEnum(uint8_t char_count, _charEnumData enum_data) :
-            ManagedPacket(SMSG_CHAR_ENUM, 1 + char_count * 200),
+        SmsgEnumCharactersResult(uint8_t char_count, _charEnumData enum_data) :
+            ManagedPacket(SMSG_ENUM_CHARACTERS_RESULT, 1 + char_count * 200),
             enum_data(enum_data),
             char_count(char_count),
             unk1(0)

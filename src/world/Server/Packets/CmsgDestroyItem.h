@@ -23,7 +23,7 @@ namespace AscEmu::Packets
         }
 
         CmsgDestroyItem(int8_t srcInventorySlot, int8_t srcSlot) :
-            ManagedPacket(CMSG_DESTROYITEM, 2),
+            ManagedPacket(CMSG_DESTROY_ITEM, 2),
             srcInventorySlot(srcInventorySlot),
             srcSlot(srcSlot)
         {

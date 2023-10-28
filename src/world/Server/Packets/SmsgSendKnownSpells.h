@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu::Packets
 {
-    class SmsgInitialSpells : public ManagedPacket
+    class SmsgSendKnownSpells : public ManagedPacket
     {
     public:
         struct SpellCooldown
@@ -27,12 +27,12 @@ namespace AscEmu::Packets
         std::vector<uint32_t> spell_ids;
         std::vector<SpellCooldown> spell_cooldowns;
 
-        SmsgInitialSpells() : SmsgInitialSpells(std::vector<uint32_t>(), std::vector<SpellCooldown>())
+        SmsgSendKnownSpells() : SmsgSendKnownSpells(std::vector<uint32_t>(), std::vector<SpellCooldown>())
         {
         }
 
-        SmsgInitialSpells(std::vector<uint32_t> spell_ids, std::vector<SpellCooldown> spell_cooldowns) :
-            ManagedPacket(SMSG_INITIAL_SPELLS, 0),
+        SmsgSendKnownSpells(std::vector<uint32_t> spell_ids, std::vector<SpellCooldown> spell_cooldowns) :
+            ManagedPacket(SMSG_SEND_KNOWN_SPELLS, 0),
             unk1(0),
             spell_ids(move(spell_ids)),
             spell_cooldowns(move(spell_cooldowns))

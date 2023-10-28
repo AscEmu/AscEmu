@@ -47,7 +47,6 @@ namespace MapManagement::AreaManagement
                 }
             }
         }
-
     }
 
     WDB::WDBContainer<WDB::Structures::AreaTableEntry>* AreaStorage::GetStorage()

@@ -2386,8 +2386,8 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     data->writeBit(updateFlags & UPDATEFLAG_LIVING);
     data->writeBits(stopFrameCount, 24);
     data->writeBit(updateFlags & UPDATEFLAG_NO_BIRTH_ANIM);
-    data->writeBit(updateFlags & UPDATEFLAG_POSITION); //UPDATEFLAG_GO_TRANSPORT_POSITION
-    data->writeBit(updateFlags & UPDATEFLAG_HAS_POSITION);   //UPDATEFLAG_STATIONARY_POSITION
+    data->writeBit(updateFlags & UPDATEFLAG_POSITION);          // UPDATEFLAG_GO_TRANSPORT_POSITION
+    data->writeBit(updateFlags & UPDATEFLAG_HAS_POSITION);      // UPDATEFLAG_STATIONARY_POSITION
     data->writeBit(updateFlags & UPDATEFLAG_AREATRIGGER);
     data->writeBit(updateFlags & UPDATEFLAG_ENABLE_PORTALS);
     data->writeBit(updateFlags & UPDATEFLAG_TRANSPORT);
