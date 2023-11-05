@@ -16,7 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 // This table can be used to teleport players when they use a game object such
 // as a door or portal. Any object used in this table should exist in the
 // gameobject_properties table, and be of type 10. Custom portal can use the generic
-// display id of 6831. Portals also have the Sound2 field set to '1'.
+// display id of 6831. Portals also have the parameter_1 field set to '1'.
 //////////////////////////////////////////////////////////////////////////////////////////
 
 struct GameobjectTeleport
