@@ -59,7 +59,7 @@
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20230710-00_characters_taxi";
-static const char* REQUIRED_WORLD_DB_VERSION = "20230727-00_trialofcrusader";
+static const char* REQUIRED_WORLD_DB_VERSION = "20231123-00_creature_properties";
 
 volatile bool Master::m_stopEvent = false;
 
