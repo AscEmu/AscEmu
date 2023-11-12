@@ -28,7 +28,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgFeatureSystemStatus.h"
 #include "Server/Packets/CmsgSetPlayerDeclinedNames.h"
 #include "Server/Packets/SmsgSetPlayerDeclinedNamesResult.h"
-#include "Server/Packets/SmsgCharEnum.h"
+#include "Server/Packets/SmsgEnumCharactersResult.h"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Server/CharacterErrors.h"
 #include "Cryptography/AuthCodes.h"
@@ -939,7 +939,7 @@ void WorldSession::characterEnumProc(QueryResult* result)
                 delete item_db_result;
             }
 
-            // save data to serialize it in packet serialisation SmsgCharEnum.
+            // save data to serialize it in packet serialisation SmsgEnumCharactersResult.
             enumData.push_back(charEnum);
 
             ++charRealCount;
@@ -947,7 +947,7 @@ void WorldSession::characterEnumProc(QueryResult* result)
     }
 
     sLogger.debug("Character Enum Built in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
-    SendPacket(SmsgCharEnum(charRealCount, enumData).serialise().get());
+    SendPacket(SmsgEnumCharactersResult(charRealCount, enumData).serialise().get());
 }
 
 void WorldSession::handleCharEnumOpcode(WorldPacket& /*recvPacket*/)

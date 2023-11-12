@@ -22,7 +22,7 @@ namespace AscEmu::Packets
         }
 
         CmsgLootRelease(uint64_t guid) :
-            ManagedPacket(CMSG_ACTIVATETAXI, 8),
+            ManagedPacket(CMSG_LOOT_RELEASE, 8),
             guid(guid)
         {
         }

@@ -348,10 +348,10 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void
     //case MSG_MOVE_SET_RUN_SPEED:
     //case SMSG_LOGIN_SET_TIME_SPEED:
     //case SMSG_INITIALIZE_FACTIONS:
-    //case SMSG_ACTION_BUTTONS:
+    //case SMSG_UPDATE_ACTION_BUTTONS:
     //case SMSG_SEND_UNLEARN_SPELLS:
-    //case SMSG_INITIAL_SPELLS:
-    //case SMSG_TALENTS_INFO:
+    //case SMSG_SEND_KNOWN_SPELLS:
+    //case SMSG_UPDATE_TALENT_DATA:
     //case SMSG_TUTORIAL_FLAGS:
     //case SMSG_SET_PROFICIENCY:
     //case SMSG_BINDPOINTUPDATE:
@@ -404,7 +404,7 @@ void WorldSocket::OnConnect()
     SendPacket(SmsgAuthChallenge(mSeed).serialise().get());
 
 #else
-    WorldPacket packet(MSG_WOW_CONNECTION, 46);
+    WorldPacket packet(MSG_VERIFY_CONNECTIVITY, 46);
     packet << "RLD OF WARCRAFT CONNECTION - SERVER TO CLIENT";
     SendPacket(&packet);
 #endif
@@ -981,7 +981,7 @@ void WorldSocket::OnRead()
                 _HandlePing(packet);
             } break;
 #if VERSION_STRING >= Cata
-            case MSG_WOW_CONNECTION:
+            case MSG_VERIFY_CONNECTIVITY:
             {
                 HandleWoWConnection(packet);
             } break;

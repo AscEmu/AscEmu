@@ -12,17 +12,17 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu::Packets
 {
-    class CmsgPlayedTime : public ManagedPacket
+    class CmsgRequestPlayedTime : public ManagedPacket
     {
     public:
         uint8_t displayInUi;
 
-        CmsgPlayedTime() : CmsgPlayedTime(0)
+        CmsgRequestPlayedTime() : CmsgRequestPlayedTime(0)
         {
         }
 
-        CmsgPlayedTime(uint8_t displayInUi) :
-            ManagedPacket(CMSG_PLAYED_TIME, 0),
+        CmsgRequestPlayedTime(uint8_t displayInUi) :
+            ManagedPacket(CMSG_REQUEST_PLAYED_TIME, 0),
             displayInUi(displayInUi)
         {
         }

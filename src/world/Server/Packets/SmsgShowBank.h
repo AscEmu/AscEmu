@@ -36,6 +36,25 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& /*packet*/) override
         {
+            // data.writeBit(guid[2]);
+            // data.writeBit(guid[4]);
+            // data.writeBit(guid[3]);
+            // data.writeBit(guid[6]);
+            // data.writeBit(guid[5]);
+            // data.writeBit(guid[1]);
+            // data.writeBit(guid[7]);
+            // data.writeBit(guid[0]);
+
+            // data.WriteByteSeq(guid[7]);
+            // data.WriteByteSeq(guid[0]);
+            // data.WriteByteSeq(guid[5]);
+            // data.WriteByteSeq(guid[3]);
+            // data.WriteByteSeq(guid[6]);
+            // data.WriteByteSeq(guid[1]);
+            // data.WriteByteSeq(guid[4]);
+            // data.WriteByteSeq(guid[2]);
+
+            // SendPacket(&data);
             return false;
         }
     };

@@ -43,6 +43,27 @@ namespace AscEmu::Packets
         {
             packet >> button >> action >> misc >> type;
             return true;
+
+
+            // recvData >> button;
+	
+            // buttonStream[7] = recvData.readBit();
+            // buttonStream[0] = recvData.readBit();
+            // buttonStream[5] = recvData.readBit();
+            // buttonStream[2] = recvData.readBit();
+            // buttonStream[1] = recvData.readBit();
+            // buttonStream[6] = recvData.readBit();
+            // buttonStream[3] = recvData.readBit();
+            // buttonStream[4] = recvData.readBit();
+
+            // recvData.ReadByteSeq(buttonStream[6]);
+            // recvData.ReadByteSeq(buttonStream[7]);
+            // recvData.ReadByteSeq(buttonStream[3]);
+            // recvData.ReadByteSeq(buttonStream[5]);
+            // recvData.ReadByteSeq(buttonStream[2]);
+            // recvData.ReadByteSeq(buttonStream[1]);
+            // recvData.ReadByteSeq(buttonStream[4]);
+            // recvData.ReadByteSeq(buttonStream[0]);
         }
     };
 }

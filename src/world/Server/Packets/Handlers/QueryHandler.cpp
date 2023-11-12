@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Server/Packets/CmsgNameQuery.h"
 #include "Server/Packets/CmsgGameobjectQuery.h"
-#include "Server/Packets/SmsgNameQueryResponse.h"
+#include "Server/Packets/SmsgQueryPlayernameResponse.h"
 #include "Server/Packets/SmsgGameobjectQueryResponse.h"
 #include "Server/Packets/SmsgQueryTimeResponse.h"
 #include "Logging/Log.hpp"
@@ -43,7 +43,7 @@ void WorldSession::handleNameQueryOpcode(WorldPacket& recvData)
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_NAME_QUERY for: %s", info->name.c_str());
-    SendPacket(SmsgNameQueryResponse(srlPacket.guid, info->name, info->race, info->gender, info->cl).serialise().get());
+    SendPacket(SmsgQueryPlayernameResponse(srlPacket.guid, info->name, info->race, info->gender, info->cl).serialise().get());
 }
 
 void WorldSession::handleGameObjectQueryOpcode(WorldPacket& recvData)

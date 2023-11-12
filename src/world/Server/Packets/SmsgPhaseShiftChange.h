@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu::Packets
 {
-    class SmsgSetPhaseShift : public ManagedPacket
+    class SmsgPhaseShiftChange : public ManagedPacket
     {
 #if VERSION_STRING > TBC
     public:
@@ -20,12 +20,12 @@ namespace AscEmu::Packets
         uint32_t phaseFlags;
         uint32_t mapId;
 
-        SmsgSetPhaseShift() : SmsgSetPhaseShift(0, WoWGuid())
+        SmsgPhaseShiftChange() : SmsgPhaseShiftChange(0, WoWGuid())
         {
         }
 
-        SmsgSetPhaseShift(uint32_t phaseId, WoWGuid guid, uint32_t phaseFlags = 0, uint32_t mapId = 0) :
-            ManagedPacket(SMSG_SET_PHASE_SHIFT, 4),
+        SmsgPhaseShiftChange(uint32_t phaseId, WoWGuid guid, uint32_t phaseFlags = 0, uint32_t mapId = 0) :
+            ManagedPacket(SMSG_PHASE_SHIFT_CHANGE, 4),
             phaseId(phaseId),
             guid(guid),
             phaseFlags(phaseFlags),
@@ -90,13 +90,13 @@ namespace AscEmu::Packets
             packet.WriteByteSeq(guid[3]);
             packet.WriteByteSeq(guid[2]);
 
-            packet << uint32(1);              // size phaseIds
+            packet << uint32(1);                // size phaseIds
             packet << uint16(phaseId);
 
             packet.WriteByteSeq(guid[0]);
             packet.WriteByteSeq(guid[6]);
 
-            packet << uint32(0);              // unknown
+            packet << uint32(0);                // unknown
 
             packet.WriteByteSeq(guid[1]);
             packet.WriteByteSeq(guid[7]);

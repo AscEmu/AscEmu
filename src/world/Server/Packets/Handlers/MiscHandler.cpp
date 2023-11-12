@@ -26,7 +26,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSetSelection.h"
 #include "Server/Packets/CmsgTutorialFlag.h"
 #include "Server/Packets/CmsgSetSheathed.h"
-#include "Server/Packets/CmsgPlayedTime.h"
+#include "Server/Packets/CmsgRequestPlayedTime.h"
 #include "Server/Packets/SmsgPlayedTime.h"
 #include "Server/Packets/CmsgSetActionButton.h"
 #include "Server/Packets/CmsgSetWatchedFaction.h"
@@ -339,11 +339,11 @@ void WorldSession::handleSetSheathedOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handlePlayedTimeOpcode(WorldPacket& recvPacket)
 {
-    CmsgPlayedTime srlPacket;
+    CmsgRequestPlayedTime srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_PLAYED_TIME: displayinui: %u", srlPacket.displayInUi);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REQUEST_PLAYED_TIME: displayinui: %u", srlPacket.displayInUi);
 
     const uint32_t playedTime = static_cast<uint32_t>(UNIXTIME) - _player->m_playedTime[2];
     if (playedTime > 0)

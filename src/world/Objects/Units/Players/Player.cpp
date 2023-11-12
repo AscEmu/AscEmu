@@ -113,7 +113,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgDuelRequested.h"
 #include "Server/Packets/SmsgDuelWinner.h"
 #include "Server/Packets/SmsgDurabilityDamageDeath.h"
-#include "Server/Packets/SmsgInitialSpells.h"
+#include "Server/Packets/SmsgSendKnownSpells.h"
 #include "Server/Packets/SmsgLearnedSpell.h"
 #include "Server/Packets/SmsgLoginSetTimeSpeed.h"
 #include "Server/Packets/SmsgMessageChat.h"
@@ -123,7 +123,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgSendUnlearnSpells.h"
 #include "Server/Packets/SmsgSetFactionStanding.h"
 #include "Server/Packets/SmsgSetFactionVisible.h"
-#include "Server/Packets/SmsgSetPhaseShift.h"
+#include "Server/Packets/SmsgPhaseShiftChange.h"
 #include "Server/Packets/SmsgTriggerMovie.h"
 #include "Server/Packets/SmsgTriggerCinematic.h"
 #include "Server/Packets/SmsgSpellCooldown.h"
@@ -2022,7 +2022,7 @@ void Player::setPhase(uint8_t command, uint32_t newPhase)
     if (getSession())
     {
 #if VERSION_STRING == WotLK
-        sendPacket(SmsgSetPhaseShift(newPhase, getGuid()).serialise().get());
+        sendPacket(SmsgPhaseShiftChange(newPhase, getGuid()).serialise().get());
 #elif VERSION_STRING > WotLK
 
         uint32_t phaseFlags = 0;
@@ -2039,7 +2039,7 @@ void Player::setPhase(uint8_t command, uint32_t newPhase)
             }
         }
 
-        sendPacket(SmsgSetPhaseShift(newPhase, getGuid(), phaseFlags, GetMapId()).serialise().get());
+        sendPacket(SmsgPhaseShiftChange(newPhase, getGuid(), phaseFlags, GetMapId()).serialise().get());
 #endif
     }
 
@@ -3920,7 +3920,7 @@ bool Player::hasDeletedSpell(uint32_t spellId)
 
 void Player::sendSmsgInitialSpells()
 {
-    auto smsgInitialSpells = SmsgInitialSpells();
+    auto smsgInitialSpells = SmsgSendKnownSpells();
 
     uint32_t mstime = Util::getMSTime();
 
@@ -6099,7 +6099,7 @@ void Player::smsg_TalentsInfo([[maybe_unused]]bool SendPetTalents)
     // TODO: classic and tbc
 #if VERSION_STRING < Mop
 #if VERSION_STRING >= WotLK
-    WorldPacket data(SMSG_TALENTS_INFO, 1000);
+    WorldPacket data(SMSG_UPDATE_TALENT_DATA, 1000);
     data << uint8_t(SendPetTalents ? 1 : 0);
     if (SendPetTalents)
     {
@@ -6145,7 +6145,7 @@ void Player::smsg_TalentsInfo([[maybe_unused]]bool SendPetTalents)
     getSession()->SendPacket(&data);
 #endif
 #else
-    WorldPacket data(SMSG_TALENTS_INFO, 50);
+    WorldPacket data(SMSG_UPDATE_TALENT_DATA, 50);
     data << uint8_t(m_talentActiveSpec); // Which spec is active right now
     data.writeBits(m_talentSpecsCount, 19);
 
@@ -6316,7 +6316,7 @@ void Player::setActionButton(uint8_t button, uint32_t action, uint8_t type, uint
 void Player::sendActionBars([[maybe_unused]]bool clearBars)
 {
 #if VERSION_STRING < Mop
-    WorldPacket data(SMSG_ACTION_BUTTONS, PLAYER_ACTION_BUTTON_SIZE + 1);
+    WorldPacket data(SMSG_UPDATE_ACTION_BUTTONS, PLAYER_ACTION_BUTTON_SIZE + 1);
 
 #if VERSION_STRING == WotLK
     // 0 does nothing, 1 clears bars from clientside
@@ -6342,7 +6342,7 @@ void Player::sendActionBars([[maybe_unused]]bool clearBars)
 #endif
     }
 #else
-    WorldPacket data(SMSG_ACTION_BUTTONS, (PLAYER_ACTION_BUTTON_COUNT * 8) + 1);
+    WorldPacket data(SMSG_UPDATE_ACTION_BUTTONS, (PLAYER_ACTION_BUTTON_COUNT * 8) + 1);
 
     uint8_t buttons[PLAYER_ACTION_BUTTON_COUNT][8];
 

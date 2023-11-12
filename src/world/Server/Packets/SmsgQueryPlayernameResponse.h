@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu::Packets
 {
-    class SmsgNameQueryResponse : public ManagedPacket
+    class SmsgQueryPlayernameResponse : public ManagedPacket
     {
     public:
         WoWGuid guid;
@@ -20,12 +20,12 @@ namespace AscEmu::Packets
         uint8_t gender;
         uint8_t class_;
 
-        SmsgNameQueryResponse() : SmsgNameQueryResponse(0, "", 0, 0, 0)
+        SmsgQueryPlayernameResponse() : SmsgQueryPlayernameResponse(0, "", 0, 0, 0)
         {
         }
 
-        SmsgNameQueryResponse(uint64_t guid, std::string playerName, uint8_t race, uint8_t gender, uint8_t class_) :
-            ManagedPacket(SMSG_NAME_QUERY_RESPONSE, 0),
+        SmsgQueryPlayernameResponse(uint64_t guid, std::string playerName, uint8_t race, uint8_t gender, uint8_t class_) :
+            ManagedPacket(SMSG_QUERY_PLAYER_NAME_RESPONSE, 0),
             guid(guid),
             player_name(playerName),
             race(race),

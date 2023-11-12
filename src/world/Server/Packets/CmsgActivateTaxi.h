@@ -12,19 +12,19 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu::Packets
 {
-    class CmsgActivatetaxi : public ManagedPacket
+    class CmsgActivateTaxi : public ManagedPacket
     {
     public:
         uint64_t guid;
         std::vector<uint32_t> nodes;
 
-        CmsgActivatetaxi() : CmsgActivatetaxi(0, {0, 0})
+        CmsgActivateTaxi() : CmsgActivateTaxi(0, {0, 0})
         {
             nodes.resize(2);
         }
 
-        CmsgActivatetaxi(uint64_t guid, std::vector<uint32_t> nodes) :
-            ManagedPacket(CMSG_ACTIVATETAXI, 8 + 4 + 4),
+        CmsgActivateTaxi(uint64_t guid, std::vector<uint32_t> nodes) :
+            ManagedPacket(CMSG_ACTIVATE_TAXI, 8 + 4 + 4),
             guid(guid),
             nodes(nodes)
         {
