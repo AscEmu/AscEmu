@@ -1,4 +1,4 @@
-# Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
 cmake_minimum_required(VERSION 3.16.3)
 
 project(Ascemu)
