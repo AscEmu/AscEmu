@@ -1,4 +1,4 @@
-# Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
 
 # MSVC >= 19.29
 set(MSVC_SUPPORTS_VERSION 19.29.30140.0)

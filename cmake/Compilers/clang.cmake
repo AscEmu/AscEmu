@@ -1,4 +1,4 @@
-# Copyright (c) 2014-2023 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
 
 # Clang >= 8.0.0
 set(CLANG_SUPPORTS_VERSION 8.0.0)
