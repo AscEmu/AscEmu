@@ -566,7 +566,7 @@ void WorldSession::handleLootMasterGiveOpcode(WorldPacket& recvPacket)
 
     if (loot && srlPacket.slot >= loot->items.size())
     {
-        sLogger.debug("AutoLootItem: Player %s might be using a hack! (slot %u, size %u)", _player->getName().c_str(), srlPacket.slot, static_cast<uint32_t>(loot->items.size()));
+        sLogger.debug("AutoLootItem: Player {} might be using a hack! (slot {}, size {})", _player->getName(), srlPacket.slot, static_cast<uint32_t>(loot->items.size()));
         return;
     }
 

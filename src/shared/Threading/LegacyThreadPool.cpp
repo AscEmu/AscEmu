@@ -76,11 +76,11 @@ bool CThreadPool::ThreadExit(Thread* t)
 
     if(itr != m_freeThreads.end())
     {
-        sLogger.failure("Thread %u duplicated with thread %u", (*itr)->ControlInterface.GetId(), t->ControlInterface.GetId());
+        sLogger.failure("Thread {} duplicated with thread {}", (*itr)->ControlInterface.GetId(), t->ControlInterface.GetId());
     }
     m_freeThreads.insert(t);
 
-    sLogger.debug("Thread %u entered the free pool.", t->ControlInterface.GetId());
+    sLogger.debug("Thread {} entered the free pool.", t->ControlInterface.GetId());
     _mutex.Release();
     return true;
 }
@@ -103,7 +103,7 @@ void CThreadPool::ExecuteTask(ThreadBase* ExecutionTarget)
 
         // resume the thread, and it should start working.
         t->ControlInterface.Resume();
-        sLogger.debug("Thread %u left the thread pool.", t->ControlInterface.GetId());
+        sLogger.debug("Thread {} left the thread pool.", t->ControlInterface.GetId());
     }
     else
     {
@@ -114,9 +114,9 @@ void CThreadPool::ExecuteTask(ThreadBase* ExecutionTarget)
 
     // add the thread to the active set
 #ifdef WIN32
-    sLogger.debug("Thread %u is now executing task at 0x%p.", t->ControlInterface.GetId(), ExecutionTarget);
+    sLogger.debug("Thread {} is now executing task at 0x%p.", t->ControlInterface.GetId(), fmt::ptr(ExecutionTarget));
 #else
-    sLogger.debug("Thread %u is now executing task at %p.", t->ControlInterface.GetId(), ExecutionTarget);
+    sLogger.debug("Thread {} is now executing task at %p.", t->ControlInterface.GetId(), fmt::ptr(ExecutionTarget));
 #endif
     m_activeThreads.insert(t);
     _mutex.Release();
@@ -130,16 +130,16 @@ void CThreadPool::Startup()
     for(i = 0; i < tcount; ++i)
         StartThread(NULL);
 
-    sLogger.debug("ThreadPool : launched %u threads.", tcount);
+    sLogger.debug("ThreadPool : launched {} threads.", tcount);
 }
 
 void CThreadPool::ShowStats()
 {
     _mutex.Acquire();
-    sLogger.debug("ThreadPool Status : Active Threads: %u", m_activeThreads.size());
-    sLogger.debug("ThreadPool Status : Suspended Threads: %u", m_freeThreads.size());
-    sLogger.debug("ThreadPool Status : Requested-To-Freed Ratio: %.3f%% (%u/%u)", float(float(_threadsRequestedSinceLastCheck + 1) / float(_threadsExitedSinceLastCheck + 1) * 100.0f), _threadsRequestedSinceLastCheck, _threadsExitedSinceLastCheck);
-    sLogger.debug("ThreadPool Status : Eaten Count: %d (negative is bad!)", _threadsEaten);
+    sLogger.debug("ThreadPool Status : Active Threads: {}", m_activeThreads.size());
+    sLogger.debug("ThreadPool Status : Suspended Threads: {}", m_freeThreads.size());
+    sLogger.debug("ThreadPool Status : Requested-To-Freed Ratio: {0:.3f}% ({}/{})", float(float(_threadsRequestedSinceLastCheck + 1) / float(_threadsExitedSinceLastCheck + 1) * 100.0f), _threadsRequestedSinceLastCheck, _threadsExitedSinceLastCheck);
+    sLogger.debug("ThreadPool Status : Eaten Count: {} (negative is bad!)", _threadsEaten);
     _mutex.Release();
 }
 
@@ -158,7 +158,7 @@ void CThreadPool::IntegrityCheck()
         for(uint32 i = 0; i < new_threads; ++i)
             StartThread(NULL);
 
-        sLogger.debug("ThreadPool : (gobbled < 0) Spawning %u threads.", new_threads);
+        sLogger.debug("ThreadPool : (gobbled < 0) Spawning {} threads.", new_threads);
     }
     else if(gobbled < THREAD_RESERVE)
     {
@@ -168,7 +168,7 @@ void CThreadPool::IntegrityCheck()
         for(uint32 i = 0; i < new_threads; ++i)
             StartThread(NULL);
 
-        sLogger.debug("ThreadPool : (gobbled <= 5) Spawning %u threads.", new_threads);
+        sLogger.debug("ThreadPool : (gobbled <= 5) Spawning {} threads.", new_threads);
     }
     else if(gobbled > THREAD_RESERVE)
     {
@@ -177,7 +177,7 @@ void CThreadPool::IntegrityCheck()
         uint32 kill_count = (gobbled - THREAD_RESERVE);
         KillFreeThreads(kill_count);
         _threadsEaten -= kill_count;
-        sLogger.debug("ThreadPool : (gobbled > 5) Killing %u threads.", kill_count);
+        sLogger.debug("ThreadPool : (gobbled > 5) Killing {} threads.", kill_count);
     }
     else
     {
@@ -194,7 +194,7 @@ void CThreadPool::IntegrityCheck()
 
 void CThreadPool::KillFreeThreads(uint32 count)
 {
-    sLogger.debug("ThreadPool : Killing %u excess threads.", count);
+    sLogger.debug("ThreadPool : Killing {} excess threads.", count);
     _mutex.Acquire();
     Thread* t;
     ThreadSet::iterator itr;
@@ -214,7 +214,7 @@ void CThreadPool::Shutdown()
 {
     _mutex.Acquire();
     size_t tcount = m_activeThreads.size() + m_freeThreads.size();        // exit all
-    sLogger.debug("ThreadPool : Shutting down %zu threads.", tcount);
+    sLogger.debug("ThreadPool : Shutting down {} threads.", tcount);
     KillFreeThreads((uint32)m_freeThreads.size());
     _threadsToExit += (uint32)m_activeThreads.size();
 
@@ -247,7 +247,7 @@ void CThreadPool::Shutdown()
                     t->ControlInterface.Resume();
                 }
             }
-            sLogger.debug("ThreadPool : %u active and %u free threads remaining...", m_activeThreads.size(), m_freeThreads.size());
+            sLogger.debug("ThreadPool : {} active and {} free threads remaining...", m_activeThreads.size(), m_freeThreads.size());
             _mutex.Release();
             Arcemu::Sleep(1000);
             continue;
@@ -268,7 +268,7 @@ static unsigned long WINAPI thread_proc(void* param)
     uint32 tid = t->ControlInterface.GetId();
     bool ht = (t->ExecutionTarget != NULL);
     t->SetupMutex.Release();
-    sLogger.debug("Thread %u started.", t->ControlInterface.GetId());
+    sLogger.debug("Thread {} started.", t->ControlInterface.GetId());
 
     for(;;)
     {
@@ -282,13 +282,13 @@ static unsigned long WINAPI thread_proc(void* param)
 
         if(!ThreadPool.ThreadExit(t))
         {
-            sLogger.debug("Thread %u exiting.", tid);
+            sLogger.debug("Thread {} exiting.", tid);
             break;
         }
         else
         {
             if(ht)
-                sLogger.debug("Thread %u waiting for a new task.", tid);
+                sLogger.debug("Thread {} waiting for a new task.", tid);
             // enter "suspended" state. when we return, the threadpool will either tell us to fuk off, or to execute a new task.
             t->ControlInterface.Suspend();
             // after resuming, this is where we will end up. start the loop again, check for tasks, then go back to the threadpool.
@@ -321,7 +321,7 @@ static void* thread_proc(void* param)
 {
     Thread* t = (Thread*)param;
     t->SetupMutex.Acquire();
-    sLogger.debug("Thread %u started.", t->ControlInterface.GetId());
+    sLogger.debug("Thread {} started.", t->ControlInterface.GetId());
     t->SetupMutex.Release();
 
     for(;;)

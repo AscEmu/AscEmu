@@ -212,7 +212,7 @@ void MasterLogon::CheckForDeadSockets()
 
 void MasterLogon::PrintBanner()
 {
-    sLogger.file(AscEmu::Logging::Severity::FAILURE, AscEmu::Logging::MessageType::MINOR, "<< AscEmu %s/%s-%s %s :: Logon Server >>", BUILD_HASH_STR, CONFIG, AE_PLATFORM, AE_ARCHITECTURE);
+    sLogger.file(AscEmu::Logging::Severity::FAILURE, AscEmu::Logging::MessageType::MINOR, "<< AscEmu {}/{}-{} {} :: Logon Server >>", BUILD_HASH_STR, CONFIG, AE_PLATFORM, AE_ARCHITECTURE);
     sLogger.file(AscEmu::Logging::Severity::FAILURE, AscEmu::Logging::MessageType::MINOR, "========================================================");
 }
 
@@ -317,7 +317,7 @@ bool MasterLogon::StartDb()
                 errorMessage += "    Name\r\n";
         }
 
-        sLogger.fatal(errorMessage.c_str());
+        sLogger.fatal(errorMessage);
         return false;
     }
 
@@ -359,14 +359,14 @@ bool MasterLogon::CheckDBVersion()
     Field* f = cqr->Fetch();
     const char *LogonDBVersion = f->GetString();
 
-    sLogger.info("Database : Last logon database update: %s", LogonDBVersion);
+    sLogger.info("Database : Last logon database update: {}", LogonDBVersion);
     int result = strcmp(LogonDBVersion, REQUIRED_LOGON_DB_VERSION);
     if (result != 0)
     {
-        sLogger.failure("Database : Last logon database update doesn't match the required one which is %s.", REQUIRED_LOGON_DB_VERSION);
+        sLogger.failure("Database : Last logon database update doesn't match the required one which is {}.", REQUIRED_LOGON_DB_VERSION);
         if (result < 0)
         {
-            sLogger.failure("Database : You need to apply the logon update queries that are newer than %s. Exiting.", LogonDBVersion);
+            sLogger.failure("Database : You need to apply the logon update queries that are newer than {}. Exiting.", LogonDBVersion);
             sLogger.failure("Database : You can find the logon update queries in the sql/logon/updates sub-directory of your AscEmu source directory.");
         }
         else
@@ -420,7 +420,7 @@ bool MasterLogon::SetLogonConfiguration()
         std::string::size_type i = allowedIP.find('/');
         if (i == std::string::npos)
         {
-            sLogger.failure("Ips: %s could not be parsed. Ignoring", allowedIP.c_str());
+            sLogger.failure("Ips: {} could not be parsed. Ignoring", allowedIP);
             continue;
         }
 
@@ -431,7 +431,7 @@ bool MasterLogon::SetLogonConfiguration()
         const unsigned char ipmask = static_cast<char>(atoi(smask.c_str()));
         if (ipraw == 0 || ipmask == 0)
         {
-            sLogger.failure("Ips: %s could not be parsed. Ignoring", allowedIP.c_str());
+            sLogger.failure("Ips: {} could not be parsed. Ignoring", allowedIP);
             continue;
         }
 
@@ -446,7 +446,7 @@ bool MasterLogon::SetLogonConfiguration()
         std::string::size_type i = allowedModIP.find('/');
         if (i == std::string::npos)
         {
-            sLogger.failure("ModIps: %s could not be parsed. Ignoring", allowedModIP.c_str());
+            sLogger.failure("ModIps: {} could not be parsed. Ignoring", allowedModIP);
             continue;
         }
 
@@ -457,7 +457,7 @@ bool MasterLogon::SetLogonConfiguration()
         unsigned char ipmask = static_cast<char>(atoi(smask.c_str()));
         if (ipraw == 0 || ipmask == 0)
         {
-            sLogger.failure("ModIps: %s could not be parsed. Ignoring", allowedModIP.c_str());
+            sLogger.failure("ModIps: {} could not be parsed. Ignoring", allowedModIP);
             continue;
         }
 

@@ -21,7 +21,7 @@ namespace AscEmu::Packets
     {
     public:
         bool chatQuery;
-        std::string channelName;
+        utf8_string channelName;
         uint8_t channelFlags;
         std::vector<SmsgChannelListMembers> members;
         uint32_t membersCount;

@@ -16,7 +16,7 @@ namespace AscEmu::Packets
     public:
         uint32_t charterId;
         uint64_t leaderGuid;
-        std::string name;
+        utf8_string name;
         uint32_t type;
         uint32_t slots;
 

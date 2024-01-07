@@ -175,16 +175,16 @@ uint8 WorldSession::Update(uint32 InstanceID)
                 OpcodeHandler* handler = &WorldPacketHandlers[sOpcodeTables.getInternalIdForHex(packet->GetOpcode())];
                 if (handler->status == STATUS_LOGGEDIN && !_player && handler->handler != 0)
                 {
-                    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[Session] Received unexpected/wrong state packet with opcode %s (0x%.4X)",
-                        sOpcodeTables.getNameForOpcode(packet->GetOpcode()).c_str(), packet->GetOpcode());
+                    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[Session] Received unexpected/wrong state packet with opcode {} (0x%.4X)",
+                        sOpcodeTables.getNameForOpcode(packet->GetOpcode()), packet->GetOpcode());
                 }
                 else
                 {
                     // Valid Packet :>
                     if (handler->handler == 0)
                     {
-                        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[Session] Received unhandled packet with opcode %s (0x%.4X)",
-                            sOpcodeTables.getNameForOpcode(packet->GetOpcode()).c_str(), packet->GetOpcode());
+                        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[Session] Received unhandled packet with opcode {} (0x%.4X)",
+                            sOpcodeTables.getNameForOpcode(packet->GetOpcode()), packet->GetOpcode());
                     }
                     else
                     {
@@ -494,7 +494,7 @@ void WorldSession::LoadSecurity(std::string securitystring)
     if (permissions[tmp.size()] != 0)
         permissions[tmp.size()] = 0;
 
-    sLogger.debug("Loaded permissions for %u. (%u) : [%s]", this->GetAccountId(), permissioncount, securitystring.c_str());
+    sLogger.debug("Loaded permissions for {}. ({}) : [{}]", this->GetAccountId(), permissioncount, securitystring);
 }
 
 void WorldSession::SetSecurity(std::string securitystring)
@@ -526,7 +526,7 @@ AccountDataEntry* WorldSession::GetAccountData(uint32 index)
         return &sAccountData[index];
     }
 
-    sLogger.failure("GetAccountData tried to get invalid index %u", index);
+    sLogger.failure("GetAccountData tried to get invalid index {}", index);
     return nullptr;
 }
 
@@ -719,8 +719,8 @@ void WorldSession::nothingToHandle(WorldPacket& recv_data)
 {
     if (!recv_data.isEmpty())
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Opcode %s [%s] (0x%.4X) received. Apply nothingToHandle handler but size is %lu!",
-            sOpcodeTables.getNameForOpcode(recv_data.GetOpcode()).c_str(), sOpcodeTables.getNameForAEVersion().c_str(), recv_data.GetOpcode(), recv_data.size());
+        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Opcode {} [{}] (0x%.4X) received. Apply nothingToHandle handler but size is {}!",
+            sOpcodeTables.getNameForOpcode(recv_data.GetOpcode()), sOpcodeTables.getNameForAEVersion(), recv_data.GetOpcode(), recv_data.size());
     }
 }
 

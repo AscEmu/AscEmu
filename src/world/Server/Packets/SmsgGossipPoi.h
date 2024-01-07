@@ -20,7 +20,7 @@ namespace AscEmu::Packets
         float posY;
         uint32_t icon;
         uint32_t data;
-        std::string name;
+        utf8_string name;
 
         SmsgGossipPoi() : SmsgGossipPoi(0, 0, 0, 0, 0, "")
         {

@@ -7,10 +7,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "LoggerDefines.hpp"
 #include "Utilities/Util.hpp"
 #include "Config/Config.h"
-
 #include <iostream>
 #include <cstdarg>
 #include <string>
+#include <fmt/core.h>
 
 namespace AscEmu::Logging
 {
@@ -74,109 +74,12 @@ namespace AscEmu::Logging
         this->aelog_debug_flags = debug_flags;
     }
 
-    void Logger::trace(const char* message, ...)
+    void Logger::log(Severity severity, MessageType messageType, std::string_view message)
     {
-#if defined(_MSC_VER)
-        SetConsoleOutputCP(65001);
-#endif
-        va_list arguments;
-        va_start(arguments, message);
-        log(Severity::INFO, MessageType::TRACE, message, arguments);
-        va_end(arguments);
-    }
-
-    void Logger::debug(const char* message, ...)
-    {
-#if defined(_MSC_VER)
-        SetConsoleOutputCP(65001);
-#endif
-        va_list arguments;
-        va_start(arguments, message);
-        log(Severity::INFO, MessageType::DEBUG, message, arguments);
-        va_end(arguments);
-    }
-
-    void Logger::debugFlag(DebugFlags log_flags, const char* message, ...)
-    {
-#if defined(_MSC_VER)
-        SetConsoleOutputCP(65001);
-#endif
-        if (!(aelog_debug_flags & log_flags))
-            return;
-
-        va_list arguments;
-        va_start(arguments, message);
-        auto severity = getSeverityConsoleColorByDebugFlag(log_flags);
-        log(severity, MessageType::DEBUG, message, arguments);
-        va_end(arguments);
-
-    }
-
-    void Logger::info(const char* message, ...)
-    {
-#if defined(_MSC_VER)
-        SetConsoleOutputCP(65001);
-#endif
-        va_list arguments;
-        va_start(arguments, message);
-        log(Severity::INFO, MessageType::MINOR, message, arguments);
-        va_end(arguments);
-    }
-
-    void Logger::warning(const char* message, ...)
-    {
-#if defined(_MSC_VER)
-        SetConsoleOutputCP(65001);
-#endif
-        va_list arguments;
-        va_start(arguments, message);
-        log(Severity::WARNING, MessageType::MINOR, message, arguments);
-        va_end(arguments);
-    }
-
-    void Logger::failure(const char* message, ...)
-    {
-#if defined(_MSC_VER)
-        SetConsoleOutputCP(65001);
-#endif
-        va_list arguments;
-        va_start(arguments, message);
-        log(Severity::FAILURE, MessageType::MAJOR, message, arguments);
-        va_end(arguments);
-    }
-
-    void Logger::fatal(const char* message, ...)
-    {
-#if defined(_MSC_VER)
-        SetConsoleOutputCP(65001);
-#endif
-        va_list arguments;
-        va_start(arguments, message);
-        log(Severity::FATAL, MessageType::MAJOR, message, arguments);
-        va_end(arguments);
-    }
-
-    void Logger::log(Severity severity, MessageType messageType, const char* message, ...)
-    {
-#if defined(_MSC_VER)
-        SetConsoleOutputCP(65001);
-#endif
-        va_list arguments;
-        va_start(arguments, message);
-        log(severity, messageType, message, arguments);
-        va_end(arguments);
-    }
-
-    void Logger::log(Severity severity, MessageType messageType, const char* message, va_list arguments)
-    {
-#if defined(_MSC_VER)
-        SetConsoleOutputCP(65001);
-#endif
         if (this->minimumMessageType > messageType)
             return;
 
-        char logMessage[327680];
-        createLogMessage(logMessage, severity, messageType, message, arguments);
+        auto logMessage = fmt::format("{} {}{}: {}", Util::GetCurrentTimeString(), getSeverityText(severity), getMessageTypeText(messageType), message);
   
         setSeverityConsoleColor(severity);
         std::cout << logMessage << "\n";
@@ -188,36 +91,14 @@ namespace AscEmu::Logging
         writeFile(this->normalLogFile, logMessage);
     }
 
-    void Logger::file(Severity severity, MessageType messageType, const char* message, ...)
+    void Logger::file(Severity severity, MessageType messageType, std::string_view message)
     {
-#if defined(_MSC_VER)
-        SetConsoleOutputCP(65001);
-#endif
-        char logMessage[327680];
-        va_list arguments;
-        va_start(arguments, message);
-        createLogMessage(logMessage, severity, messageType, message, arguments);
-        va_end(arguments);
+        auto logMessage = fmt::format("{} {}{}: {}", Util::GetCurrentTimeString(), getSeverityText(severity), getMessageTypeText(messageType), message);
 
         if (severity >= Severity::FAILURE)
             writeFile(this->errorLogFile, logMessage);
 
         writeFile(this->normalLogFile, logMessage);
-    }
-
-    void Logger::createLogMessage(char* result, Severity severity, MessageType messageType, const char* message, va_list arguments)
-    {
-#if defined(_MSC_VER)
-        SetConsoleOutputCP(65001);
-#endif
-        char formattedMessage[32768];
-        vsnprintf(formattedMessage, 32768, message, arguments);
-
-        std::string currentTime = Util::GetCurrentTimeString();
-        std::string severityText = getSeverityText(severity);
-        std::string messageTypeText = getMessageTypeText(messageType);
-
-        sprintf(result, "%s %s%s: %s", currentTime.c_str(), severityText.c_str(), messageTypeText.c_str(), formattedMessage);
     }
 
     std::string Logger::getMessageTypeText(MessageType messageType)
@@ -251,11 +132,12 @@ namespace AscEmu::Logging
         }
     }
 
-    void Logger::writeFile(FILE* file, const char* msg)
+    void Logger::writeFile(FILE* file, std::string_view msg)
     {
-        if (file == nullptr)
+        if (file == nullptr || msg.empty())
             return;
-        fprintf(file, "%s\n", msg);
+
+        fmt::print(file, "{}\n", msg);
         fflush(file);
     }
 

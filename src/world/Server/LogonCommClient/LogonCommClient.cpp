@@ -48,7 +48,7 @@ LogonCommClientSocket::LogonCommClientSocket(SOCKET fd) : Socket(fd, 724288, 262
     authenticated = 0;
     pingtime = 0;
 
-    sLogger.debug("Create new LogonCommClientSocket %u", m_fd);
+    sLogger.debug("Create new LogonCommClientSocket {}", m_fd);
 }
 
 void LogonCommClientSocket::OnRead()
@@ -133,7 +133,7 @@ void LogonCommClientSocket::HandlePacket(WorldPacket& recvData)
 
     if (recvData.GetOpcode() >= LRMSG_MAX_OPCODES || Handlers[recvData.GetOpcode()] == 0)
     {
-        sLogger.failure("Got unknown packet from logoncomm: %u", recvData.GetOpcode());
+        sLogger.failure("Got unknown packet from logoncomm: {}", recvData.GetOpcode());
         return;
     }
 
@@ -152,17 +152,17 @@ void LogonCommClientSocket::HandleRegister(WorldPacket& recvData)
 
     if (error == 1)
     {
-        sLogger.failure("Realm `%s` with id %u is not known by logonserver - failed!", realmname.c_str(), realmlid);
+        sLogger.failure("Realm `{}` with id {} is not known by logonserver - failed!", realmname, realmlid);
         return;
     }
 
     if (error == 2)
     {
-        sLogger.failure("Realm `%s` already registered - failed!", realmname.c_str());
+        sLogger.failure("Realm `{}` already registered - failed!", realmname);
         return;
     }
 
-    sLogger.info("Realm `%s` registered as realm %u.", realmname.c_str(), realmlid);
+    sLogger.info("Realm `{}` registered as realm {}.", realmname, realmlid);
 
     sLogonCommHandler.addRealmToRealmlistResult(_id, realmlid);
     realm_ids.insert(realmlid);
@@ -358,7 +358,7 @@ void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket& recvData)
 
         uncompressed.clear();
     }
-    sLogger.info("LogonCommClient : Build character mapping in %u ms. (%u)", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)), static_cast<uint32_t>(mapping_to_send.size()));
+    sLogger.info("LogonCommClient : Build character mapping in {} ms. ({})", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)), static_cast<uint32_t>(mapping_to_send.size()));
 }
 
 void LogonCommClientSocket::CompressAndSend(ByteBuffer& uncompressed)
@@ -548,7 +548,7 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
     {
         if (request_name.compare("none") != 0)
         {
-            sLogger.failure("Receiver %s not found!", request_string);
+            sLogger.failure("Receiver {} not found!", request_string);
             return;
         }
     }

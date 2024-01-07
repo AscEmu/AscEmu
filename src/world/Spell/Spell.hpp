@@ -47,7 +47,6 @@ typedef void(Spell::*pSpellTarget)(uint32 i, uint32 j);
 
 #define GO_FISHING_BOBBER 35591
 
-// MIT Starts
 typedef std::pair<uint64_t, DamageInfo> SpellUniqueTarget;
 
 class SERVER_DECL Spell
@@ -475,8 +474,6 @@ public:
     void spellEffectJumpBehindTarget(uint8_t effectIndex);
 
 public:
-    // MIT Ends
-    // APGL Starts
     friend class DummySpellHandler;
 
     // Fills specified targets at the area of effect

@@ -396,7 +396,7 @@ Creature* Battleground::spawnCreature(uint32_t entry, float x, float y, float z,
     CreatureProperties const* cp = sMySQLStore.getCreatureProperties(entry);
     if (cp == nullptr)
     {
-        sLogger.failure("tried to push a invalid creature with entry %u!", entry);
+        sLogger.failure("tried to push a invalid creature with entry {}!", entry);
         return nullptr;
     }
 

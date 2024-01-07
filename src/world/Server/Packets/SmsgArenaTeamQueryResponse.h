@@ -16,7 +16,7 @@ namespace AscEmu::Packets
     {
     public:
         uint32_t id;
-        std::string name;
+        utf8_string name;
         uint32_t playerCount;
         ArenaTeamEmblem emblem;
         

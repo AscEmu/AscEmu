@@ -2388,10 +2388,10 @@ bool Player::create(CharCreate& charCreateContent)
         m_session->Disconnect();
 #if VERSION_STRING > TBC
         if (charCreateContent._class == DEATHKNIGHT)
-            sLogger.failure("Account Name: %s tried to create a deathknight, however your playercreateinfo table does not support this class, please update your database.", m_session->GetAccountName().c_str());
+            sLogger.failure("Account Name: {} tried to create a deathknight, however your playercreateinfo table does not support this class, please update your database.", m_session->GetAccountName());
         else
 #endif
-            sLogger.failure("Account Name: %s tried to create an invalid character with race %u and class %u, if this is intended please update your playercreateinfo table inside your database.", m_session->GetAccountName().c_str(), charCreateContent._race, charCreateContent._class);
+            sLogger.failure("Account Name: {} tried to create an invalid character with race {} and class {}, if this is intended please update your playercreateinfo table inside your database.", m_session->GetAccountName(), charCreateContent._race, charCreateContent._class);
         return false;
     }
 
@@ -2410,7 +2410,7 @@ bool Player::create(CharCreate& charCreateContent)
     // check that the account can create deathknights, if we're making one
     if (charCreateContent._class == DEATHKNIGHT && !(m_session->_accountFlags & ACCOUNT_FLAG_XPACK_02))
     {
-        sLogger.failure("Account %s tried to create a DeathKnight, but Account flag is %u!", m_session->GetAccountName().c_str(), m_session->_accountFlags);
+        sLogger.failure("Account {} tried to create a DeathKnight, but Account flag is {}!", m_session->GetAccountName(), m_session->_accountFlags);
         m_session->Disconnect();
         return false;
     }
@@ -2523,7 +2523,7 @@ bool Player::create(CharCreate& charCreateContent)
             const auto itemProperties = sMySQLStore.getItemProperties(itemId);
             if (!itemProperties)
             {
-                sLogger.debug("StartOutfit - Item with entry %u not in item_properties table but in CharStartOutfit.dbc!", itemId);
+                sLogger.debug("StartOutfit - Item with entry {} not in item_properties table but in CharStartOutfit.dbc!", itemId);
                 continue;
             }
 
@@ -2550,7 +2550,7 @@ bool Player::create(CharCreate& charCreateContent)
                 {
                     if (!getItemInterface()->SafeAddItem(item, INVENTORY_SLOT_NOT_SET, itemSlot))
                     {
-                        sLogger.debug("StartOutfit - Item with entry %u can not be added safe to slot %u!", itemId, static_cast<uint32_t>(itemSlot));
+                        sLogger.debug("StartOutfit - Item with entry {} can not be added safe to slot {}!", itemId, static_cast<uint32_t>(itemSlot));
                         item->deleteMe();
                     }
                 }
@@ -2559,7 +2559,7 @@ bool Player::create(CharCreate& charCreateContent)
                     item->setStackCount(itemProperties->MaxCount);
                     if (!getItemInterface()->AddItemToFreeSlot(item))
                     {
-                        sLogger.debug("StartOutfit - Item with entry %u can not be added to a free slot!", itemId);
+                        sLogger.debug("StartOutfit - Item with entry {} can not be added to a free slot!", itemId);
                         item->deleteMe();
                     }
                 }
@@ -2598,8 +2598,8 @@ bool Player::create(CharCreate& charCreateContent)
 WDB::Structures::ChrRacesEntry const* Player::getDbcRaceEntry() { return m_dbcRace; };
 WDB::Structures::ChrClassesEntry const* Player::getDbcClassEntry() { return m_dbcClass; };
 
-std::string Player::getName() const { return m_name; }
-void Player::setName(std::string name) { m_name = name; }
+utf8_string Player::getName() const { return m_name; }
+void Player::setName(utf8_string name) { m_name = name; }
 
 uint32_t Player::getLoginFlag() const { return m_loginFlag; }
 void Player::setLoginFlag(uint32_t flag) { m_loginFlag = flag; }
@@ -2619,12 +2619,12 @@ void Player::setInitialDisplayIds(uint8_t gender, uint8_t race)
                 setNativeDisplayId(raceEntry->model_female);
                 break;
             default:
-                sLogger.failure("Gender %u is not valid for Player charecters!", gender);
+                sLogger.failure("Gender {} is not valid for Player charecters!", gender);
         }
     }
     else
     {
-        sLogger.failure("Race %u is not supported by this AEVersion (%u)", race, getAEVersion());
+        sLogger.failure("Race {} is not supported by this AEVersion ({})", race, getAEVersion());
     }
 }
 
@@ -2962,7 +2962,7 @@ void Player::changeLanguage(uint64_t guid, uint8_t race)
 
 void Player::sendInitialLogonPackets()
 {
-    sLogger.debug("Player %s gets prepared for login.", getName().c_str());
+    sLogger.debug("Player {} gets prepared for login.", getName());
 
 #if VERSION_STRING == Mop
     m_session->SendPacket(SmsgBindPointUpdate(getBindPosition(), getBindMapId(), getBindZoneId()).serialise().get());
@@ -3054,7 +3054,7 @@ void Player::sendInitialLogonPackets()
 #endif
 #endif
 
-    sLogger.info("WORLD: Sent initial logon packets for %s.", getName().c_str());
+    sLogger.info("WORLD: Sent initial logon packets for {}.", getName());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -3558,7 +3558,7 @@ void Player::setInitialPlayerData()
     }
     else
     {
-        sLogger.failure("Major error in Player::setInitialPlayerData : No LevelInfo for player (level %u, race %u, class %u)!", getLevel(), getRace(), getClass());
+        sLogger.failure("Major error in Player::setInitialPlayerData : No LevelInfo for player (level {}, race {}, class {})!", getLevel(), getRace(), getClass());
 
         setBaseHealth(1);
         setBaseMana(1);
@@ -3939,7 +3939,7 @@ void Player::sendSmsgInitialSpells()
             continue;
         }
 
-        sLogger.debug("InitialSpells sending spell cooldown for spell %u to %u ms", itr2->first, itr2->second.ExpireTime - mstime);
+        sLogger.debug("InitialSpells sending spell cooldown for spell {} to {} ms", itr2->first, itr2->second.ExpireTime - mstime);
 
         smsgInitialSpells.addSpellCooldown(itr2->first, itr2->second.ItemId, 0, itr2->second.ExpireTime - mstime, 0);
     }
@@ -3954,7 +3954,7 @@ void Player::sendSmsgInitialSpells()
             continue;
         }
 
-        sLogger.debug("InitialSpells sending category cooldown for cat %u to %u ms", itr2->first, itr2->second.ExpireTime - mstime);
+        sLogger.debug("InitialSpells sending category cooldown for cat {} to {} ms", itr2->first, itr2->second.ExpireTime - mstime);
 
         smsgInitialSpells.addSpellCooldown(itr2->first, itr2->second.ItemId, static_cast<uint16_t>(itr2->first), 0, itr2->second.ExpireTime - mstime);
     }
@@ -4712,7 +4712,7 @@ void Player::_addCategoryCooldown(uint32_t categoryId, uint32_t time, uint32_t S
         m_cooldownMap[COOLDOWN_TYPE_CATEGORY].insert(std::make_pair(categoryId, playerCooldown));
     }
 
-    sLogger.debug("Player::_addCategoryCooldown added cooldown for COOLDOWN_TYPE_CATEGORY category_type %u time %u item %u spell %u", categoryId, time - Util::getMSTime(), ItemId, SpellId);
+    sLogger.debug("Player::_addCategoryCooldown added cooldown for COOLDOWN_TYPE_CATEGORY category_type {} time {} item {} spell {}", categoryId, time - Util::getMSTime(), ItemId, SpellId);
 }
 
 void Player::_addCooldown(uint32_t type, uint32_t mis, uint32_t time, uint32_t SpellId, uint32_t ItemId)
@@ -4738,7 +4738,7 @@ void Player::_addCooldown(uint32_t type, uint32_t mis, uint32_t time, uint32_t S
         m_cooldownMap[type].insert(std::make_pair(mis, playerCooldown));
     }
 
-    sLogger.debug("Player::_addCooldown added cooldown for type %u misc %u time %u item %u spell %u", type, mis, time - Util::getMSTime(), ItemId, SpellId);
+    sLogger.debug("Player::_addCooldown added cooldown for type {} misc {} time {} item {} spell {}", type, mis, time - Util::getMSTime(), ItemId, SpellId);
 }
 
 void Player::_loadPlayerCooldowns(QueryResult* result)
@@ -4987,7 +4987,7 @@ void Player::addSkillLine(uint16_t skillLine, uint16_t currentValue, uint16_t ma
 
         if (!foundPosition)
         {
-            sLogger.failure("Player::addSkillLine : Could not add skill line %u to player (guid %u), skill fields are full!", skillLine, getGuidLow());
+            sLogger.failure("Player::addSkillLine : Could not add skill line {} to player (guid {}), skill fields are full!", skillLine, getGuidLow());
             return;
         }
 
@@ -5770,7 +5770,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     auto spellId = talentInfo->RankID[talentRank];
     if (spellId == 0)
     {
-        sLogger.info("Player::learnTalent: Player tried to learn talent %u (rank %u) but talent's spell id is 0.", talentId, talentRank);
+        sLogger.info("Player::learnTalent: Player tried to learn talent {} (rank {}) but talent's spell id is 0.", talentId, talentRank);
         return;
     }
 
@@ -6987,7 +6987,7 @@ void Player::applyItemMods(Item* item, int16_t slot, bool apply, bool justBroked
         }
         else
         {
-            sLogger.failure("Item %u has wrong ItemSet %u", itemProperties->ItemId, setId);
+            sLogger.failure("Item {} has wrong ItemSet {}", itemProperties->ItemId, setId);
         }
     }
 
@@ -7975,7 +7975,7 @@ void Player::updateChannels()
             if (newChannel == nullptr)
             {
                 // should not happen
-                sLogger.failure("Player::updateChannels : Could not create new channel %u with name %s", channelDbc->id, channelName.c_str());
+                sLogger.failure("Player::updateChannels : Could not create new channel {} with name {}", channelDbc->id, channelName);
                 continue;
             }
 
@@ -10165,7 +10165,7 @@ bool Player::canBuyAt(MySQLStructure::VendorRestrictions const* vendor)
         }
         else
         {
-            sLogger.failure("VendorRestrictions: Mount vendor specified, but not enough m_playerCreateInfo for creature %u", vendor->entry);
+            sLogger.failure("VendorRestrictions: Mount vendor specified, but not enough m_playerCreateInfo for creature {}", vendor->entry);
         }
     }
 
@@ -10267,25 +10267,25 @@ void Player::loadVoidStorage()
 
         if (!itemId)
         {
-            sLogger.debug("Player::loadVoidStorage - Player (GUID: %u, name: %s) has an item with an invalid id (item id: %I64u, entry: %u).", getGuidLow(), getName().c_str(), itemId, itemEntry);
+            sLogger.debug("Player::loadVoidStorage - Player (GUID: {}, name: {}) has an item with an invalid id (item id: %I64u, entry: {}).", getGuidLow(), getName(), itemId, itemEntry);
             continue;
         }
 
         if (!sMySQLStore.getItemProperties(itemEntry))
         {
-            sLogger.debug("Player::loadVoidStorage - Player (GUID: %u, name: %s) has an item with an invalid entry (item id: %I64u, entry: %u).", getGuidLow(), getName().c_str(), itemId, itemEntry);
+            sLogger.debug("Player::loadVoidStorage - Player (GUID: {}, name: {}) has an item with an invalid entry (item id: %I64u, entry: {}).", getGuidLow(), getName(), itemId, itemEntry);
             continue;
         }
 
         if (slot >= VOID_STORAGE_MAX_SLOT)
         {
-            sLogger.debug("Player::loadVoidStorage - Player (GUID: %u, name: %s) has an item with an invalid slot (item id: %I64u, entry: %u, slot: %u).", getGuidLow(), getName().c_str(), itemId, itemEntry, slot);
+            sLogger.debug("Player::loadVoidStorage - Player (GUID: {}, name: {}) has an item with an invalid slot (item id: %I64u, entry: {}, slot: {}).", getGuidLow(), getName(), itemId, itemEntry, slot);
             continue;
         }
 
         if (!sObjectMgr.getPlayer(creatorGuid))
         {
-            sLogger.debug("Player::loadVoidStorage - Player (GUID: %u, name: %s) has an item with an invalid creator guid, set to 0 (item id: %I64u, entry: %u, creatorGuid: %u).", getGuidLow(), getName().c_str(), itemId, itemEntry, creatorGuid);
+            sLogger.debug("Player::loadVoidStorage - Player (GUID: {}, name: {}) has an item with an invalid creator guid, set to 0 (item id: %I64u, entry: {}, creatorGuid: {}).", getGuidLow(), getName(), itemId, itemEntry, creatorGuid);
             creatorGuid = 0;
         }
 
@@ -10370,7 +10370,7 @@ void Player::addVoidStorageItemAtSlot(uint8_t slot, const VoidStorageItem& item)
 
     if (_voidStorageItems[slot])
     {
-        sLogger.debug("Player::addVoidStorageItemAtSlot - Player (GUID: %u, name: %s) tried to add an item to an used slot (item id: %u, entry: %u, slot: %u).", getGuidLow(), getName().c_str(), _voidStorageItems[slot]->itemId, _voidStorageItems[slot]->itemEntry, slot);
+        sLogger.debug("Player::addVoidStorageItemAtSlot - Player (GUID: {}, name: {}) tried to add an item to an used slot (item id: {}, entry: {}, slot: {}).", getGuidLow(), getName(), _voidStorageItems[slot]->itemId, _voidStorageItems[slot]->itemEntry, slot);
         getSession()->sendVoidStorageTransferResult(VOID_TRANSFER_ERROR_INTERNAL_ERROR_1);
         return;
     }
@@ -12130,7 +12130,7 @@ uint32_t Player::subtractRestXp(uint32_t amount)
     else
         m_restAmount = restAmount;
 
-    sLogger.debug("Subtracted %d rest XP to a total of %d", amount, m_restAmount);
+    sLogger.debug("Subtracted {} rest XP to a total of {}", amount, m_restAmount);
 
     updateRestState();
 
@@ -12153,7 +12153,7 @@ void Player::addCalculatedRestXp(uint32_t seconds)
     if (m_restAmount > nextLevelXp + static_cast<uint32_t>(static_cast<float>(nextLevelXp >> 1) * restXpRate))
         m_restAmount = nextLevelXp + static_cast<uint32_t>(static_cast<float>(nextLevelXp >> 1) * restXpRate);
 
-    sLogger.debug("Add %d rest XP to a total of %d, RestState %d", restXp, m_restAmount, m_isResting);
+    sLogger.debug("Add {} rest XP to a total of {}, RestState {}", restXp, m_restAmount, m_isResting);
 
     updateRestState();
 }
@@ -12250,7 +12250,7 @@ void Player::spawnPet(uint32_t petId)
     const auto itr = m_pets.find(petId);
     if (itr == m_pets.end())
     {
-        sLogger.failure("PET SYSTEM: %s Tried to load invalid pet %u", std::to_string(getGuid()).c_str(), petId);
+        sLogger.failure("PET SYSTEM: {} Tried to load invalid pet {}", std::to_string(getGuid()), petId);
         return;
     }
 
@@ -12407,14 +12407,14 @@ void Player::loadBoundInstances()
 
             if (!mapEntry || !mapEntry->isDungeon())
             {
-                sLogger.failure("Player::loadBoundInstances: Player '%s' (%s) has bind to not existed or not dungeon map %d (%s)",
-                    getName().c_str(), getGuid(), mapId, mapname.c_str());
+                sLogger.failure("Player::loadBoundInstances: Player '{}' ({}) has bind to not existed or not dungeon map {} ({})",
+                    getName(), getGuid(), mapId, mapname);
                 deleteInstance = true;
             }
             else if (difficulty >= InstanceDifficulty::MAX_DIFFICULTY)
             {
-                sLogger.failure("entities.player", "Player::loadBoundInstances: player '%s' (%s) has bind to not existed difficulty %d instance for map %u (%s)",
-                    getName().c_str(), getGuid(), difficulty, mapId, mapname.c_str());
+                sLogger.failure("entities.player", "Player::loadBoundInstances: player '{}' ({}) has bind to not existed difficulty {} instance for map {} ({})",
+                    getName(), getGuid(), difficulty, mapId, mapname);
                 deleteInstance = true;
             }
             else
@@ -12422,14 +12422,14 @@ void Player::loadBoundInstances()
                 WDB::Structures::MapDifficulty const* mapDiff = getMapDifficultyData(mapId, InstanceDifficulty::Difficulties(difficulty));
                 if (!mapDiff)
                 {
-                    sLogger.failure("entities.player", "Player::loadBoundInstances: player '%s' (%s) has bind to not existed difficulty %d instance for map %u (%s)",
-                        getName().c_str(), getGuid(), difficulty, mapId, mapname.c_str());
+                    sLogger.failure("entities.player", "Player::loadBoundInstances: player '{}' ({}) has bind to not existed difficulty {} instance for map {} ({})",
+                        getName(), getGuid(), difficulty, mapId, mapname);
                     deleteInstance = true;
                 }
                 else if (!perm && group)
                 {
-                    sLogger.failure("entities.player", "Player::loadBoundInstances: player '%s' (%s) is in group %s but has a non-permanent character bind to map %d (%s), %d, %d",
-                        getName().c_str(), getGuid(), group->GetGUID(), mapId, mapname.c_str(), instanceId, difficulty);
+                    sLogger.failure("entities.player", "Player::loadBoundInstances: player '{}' ({}) is in group {} but has a non-permanent character bind to map {} ({}), {}, {}",
+                        getName(), getGuid(), group->GetGUID(), mapId, mapname, instanceId, difficulty);
                     deleteInstance = true;
                 }
             }
@@ -12809,7 +12809,7 @@ uint32_t Player::getMaxPersonalRating()
                 }
                 else
                 {
-                    sLogger.failure("%s: GetMemberByGuid returned NULL for player guid = %u", __FUNCTION__, m_playerInfo->guid);
+                    sLogger.failure("{}: GetMemberByGuid returned NULL for player guid = {}", __FUNCTION__, m_playerInfo->guid);
                 }
             }
         }
@@ -13280,7 +13280,7 @@ void Player::_eventAttack(bool offhand)
 
     if (!pVictim)
     {
-        sLogger.info("Player::Update:  No valid current selection to attack, stopping attack");
+        sLogger.info("Player::Update: No valid current selection to attack, stopping attack");
         interruptHealthRegeneration(5000); //prevent clicking off creature for a quick heal
         eventAttackStop();
         return;
@@ -13368,8 +13368,8 @@ void Player::eventCharmAttack()
     Unit* pVictim = getWorldMap()->getUnit(getTargetGuid());
     if (!pVictim)
     {
-        sLogger.failure("WORLD: %s doesn't exist.", std::to_string(getTargetGuid()).c_str());
-        sLogger.info("Player::Update:  No valid current selection to attack, stopping attack");
+        sLogger.failure("WORLD: {} doesn't exist.", std::to_string(getTargetGuid()));
+        sLogger.info("Player::Update: No valid current selection to attack, stopping attack");
         this->interruptHealthRegeneration(5000); //prevent clicking off creature for a quick heal
         // todo
         //removeUnitStateFlag(UNIT_STATE_ATTACKING);
@@ -14069,7 +14069,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
     QueryResult* result = results[PlayerQuery::LoginFlags].result;
     if (!result)
     {
-        sLogger.failure("Player login query failed! guid = %u", getGuidLow());
+        sLogger.failure("Player login query failed! guid = {}", getGuidLow());
         removePendingPlayer();
         return;
     }
@@ -14077,7 +14077,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
     const uint32_t fieldcount = 95;
     if (result->GetFieldCount() != fieldcount)
     {
-        sLogger.failure("Expected %u fields from the database, but received %u!  You may need to update your character database.", fieldcount, uint32_t(result->GetFieldCount()));
+        sLogger.failure("Expected {} fields from the database, but received {}!  You may need to update your character database.", fieldcount, uint32_t(result->GetFieldCount()));
         removePendingPlayer();
         return;
     }
@@ -14112,7 +14112,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
     if (!m_dbcClass || !m_dbcRace)
     {
         // bad character
-        sLogger.failure("guid %u failed to login, no race or class dbc found. (race %u class %u)", getGuidLow(), (unsigned int)getRace(), (unsigned int)getClass());
+        sLogger.failure("guid {} failed to login, no race or class dbc found. (race {} class {})", getGuidLow(), (unsigned int)getRace(), (unsigned int)getClass());
         removePendingPlayer();
         return;
     }
@@ -14131,7 +14131,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
     m_playerCreateInfo = sMySQLStore.getPlayerCreateInfo(getRace(), getClass());
     if (m_playerCreateInfo == nullptr)
     {
-        sLogger.failure("player guid %u has no playerCreateInfo!", getGuidLow());
+        sLogger.failure("player guid {} has no playerCreateInfo!", getGuidLow());
         removePendingPlayer();
         return;
     }
@@ -14144,7 +14144,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
 
     if (!m_levelInfo)
     {
-        sLogger.failure("guid %u level %u class %u race %u levelinfo not found!", getGuidLow(), getLevel(), (unsigned int)getClass(), (unsigned int)getRace());
+        sLogger.failure("guid {} level {} class {} race {} levelinfo not found!", getGuidLow(), getLevel(), (unsigned int)getClass(), (unsigned int)getRace());
         removePendingPlayer();
         return;
     }
@@ -14218,7 +14218,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
     m_loadMana = field[20].GetUInt32();
     setHealth(m_loadHealth);
 
-    sLogger.debug("Player level %u, health %u, mana %u loaded from db!", getLevel(), m_loadHealth, m_loadMana);
+    sLogger.debug("Player level {}, health {}, mana {} loaded from db!", getLevel(), m_loadHealth, m_loadMana);
 
     setPvpRank(field[21].GetUInt8());
 
@@ -14790,7 +14790,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
     }
 
     auto timeToNow = Util::GetTimeDifferenceToNow(startTime);
-    sLogger.info("Time for playerloading: %u ms", static_cast<uint32_t>(timeToNow));
+    sLogger.info("Time for playerloading: {} ms", static_cast<uint32_t>(timeToNow));
 }
 
 void Player::_loadQuestLogEntry(QueryResult* result)

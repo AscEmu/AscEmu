@@ -1779,7 +1779,7 @@ void Pet::ApplySummonLevelAbilities()
 
     if (stat_index < 0)
     {
-        sLogger.failure("PETSTAT: No stat index found for entry %u, `%s`! Using 5 as a default.", getEntry(), GetCreatureProperties()->Name.c_str());
+        sLogger.failure("PETSTAT: No stat index found for entry {}, `{}`! Using 5 as a default.", getEntry(), GetCreatureProperties()->Name);
         stat_index = 5;
     }
 
@@ -1857,7 +1857,7 @@ void Pet::ApplySummonLevelAbilities()
     double mana = has_mana ? (pet_int * pet_int_to_mana) : 0.0;
     if (health == 0)
     {
-        sLogger.failure("Pet with entry %u has 0 health !!", getEntry());
+        sLogger.failure("Pet with entry {} has 0 health !!", getEntry());
         health = 100;
     }
     setBaseHealth((uint32)(health));
@@ -1895,7 +1895,7 @@ void Pet::ApplyPetLevelAbilities()
     MySQLStructure::PetLevelAbilities const* pet_abilities = sMySQLStore.getPetLevelAbilities(level);
     if (pet_abilities == nullptr)
     {
-        sLogger.failure("No abilities for level %u in table pet_level_abilities! Auto apply abilities of level 80!", level);
+        sLogger.failure("No abilities for level {} in table pet_level_abilities! Auto apply abilities of level 80!", level);
         pet_abilities = sMySQLStore.getPetLevelAbilities(DBC_PLAYER_LEVEL_CAP);
     }
 
@@ -1911,7 +1911,7 @@ void Pet::ApplyPetLevelAbilities()
 
     //Family Aura
     if (pet_family > 46)
-        sLogger.failure("PETSTAT: Creature family %i [%s] has missing data.", pet_family, myFamily->name);
+        sLogger.failure("PETSTAT: Creature family {} [{}] has missing data.", pet_family, myFamily->name);
     else if (family_aura[pet_family] != 0)
         this->castSpell(this, family_aura[pet_family], true);
 
@@ -2108,7 +2108,7 @@ void Pet::HandleAutoCastEvent(AutoCastEvents Type)
         }
         else if (sp->autocast_type != static_cast<uint32>(Type))
         {
-            sLogger.failure("Found corrupted spell (%lu) at m_autoCastSpells, skipping", sp->entryId);
+            sLogger.failure("Found corrupted spell ({}) at m_autoCastSpells, skipping", sp->entryId);
             continue;
         }
 

@@ -52,20 +52,20 @@ void WorldSession::handleVoidStorageUnlock(WorldPacket& recvData)
     Creature* creature = player->getWorldMapCreature(npcGuid);
     if (!creature)
     {
-        sLogger.debug("handleVoidStorageUnlock - Unit (GUID: %u) not found.", uint64_t(npcGuid));
+        sLogger.debug("handleVoidStorageUnlock - Unit (GUID: {}) not found.", uint64_t(npcGuid));
         return;
     }
 
     // Validate
     if (!creature->isVoidStorage() && creature->getDistance(player) > 5.0f)
     {
-        sLogger.debug("handleVoidStorageUnlock - Unit (GUID: %u) can't interact with it or is no Void Storage.", uint64_t(npcGuid));
+        sLogger.debug("handleVoidStorageUnlock - Unit (GUID: {}) can't interact with it or is no Void Storage.", uint64_t(npcGuid));
         return;
     }
 
     if (player->isVoidStorageUnlocked())
     {
-        sLogger.debug("handleVoidStorageUnlock - Player (GUID: %u, name: %s) tried to unlock void storage a 2nd time.", player->getGuidLow(), player->getName().c_str());
+        sLogger.debug("handleVoidStorageUnlock - Player (GUID: {}, name: {}) tried to unlock void storage a 2nd time.", player->getGuidLow(), player->getName());
         return;
     }
 
@@ -100,20 +100,20 @@ void WorldSession::handleVoidStorageQuery(WorldPacket& recvData)
     Creature* creature = player->getWorldMapCreature(npcGuid);
     if (!creature)
     {
-        sLogger.debug("handleVoidStorageQuery - Unit (GUID: %u) not found.", uint64_t(npcGuid));
+        sLogger.debug("handleVoidStorageQuery - Unit (GUID: {}) not found.", uint64_t(npcGuid));
         return;
     }
 
     // Validate
     if (!creature->isVoidStorage() && creature->getDistance(player) > 5.0f)
     {
-        sLogger.debug("handleVoidStorageQuery - Unit (GUID: %u) can't interact with it or is no Void Storage.", uint64_t(npcGuid));
+        sLogger.debug("handleVoidStorageQuery - Unit (GUID: {}) can't interact with it or is no Void Storage.", uint64_t(npcGuid));
         return;
     }
 
     if (!player->isVoidStorageUnlocked())
     {
-        sLogger.debug("handleVoidStorageQuery - Player (GUID: %u, name: %s) queried void storage without unlocking it.", player->getGuidLow(), player->getName().c_str());
+        sLogger.debug("handleVoidStorageQuery - Player (GUID: {}, name: {}) queried void storage without unlocking it.", player->getGuidLow(), player->getName());
         return;
     }
 
@@ -203,7 +203,7 @@ void WorldSession::handleVoidStorageTransfer(WorldPacket& recvData)
 
     if (countDeposit > 9)
     {
-        sLogger.debug("handleVoidStorageTransfer - Player (GUID: %u, name: %s) wants to deposit more than 9 items (%u).", player->getGuidLow(), player->getName().c_str(), countDeposit);
+        sLogger.debug("handleVoidStorageTransfer - Player (GUID: {}, name: {}) wants to deposit more than 9 items ({}).", player->getGuidLow(), player->getName(), countDeposit);
         return;
     }
 
@@ -231,7 +231,7 @@ void WorldSession::handleVoidStorageTransfer(WorldPacket& recvData)
 
     if (countWithdraw > 9)
     {
-        sLogger.debug("handleVoidStorageTransfer - Player (GUID: %u, name: %s) wants to withdraw more than 9 items (%u).", player->getGuidLow(), player->getName().c_str(), countWithdraw);
+        sLogger.debug("handleVoidStorageTransfer - Player (GUID: {}, name: {}) wants to withdraw more than 9 items ({}).", player->getGuidLow(), player->getName(), countWithdraw);
         return;
     }
 
@@ -289,20 +289,20 @@ void WorldSession::handleVoidStorageTransfer(WorldPacket& recvData)
     Creature* creature = player->getWorldMapCreature(npcGuid);
     if (!creature)
     {
-        sLogger.debug("handleVoidStorageTransfer - Unit (GUID: %u) not found.", uint64_t(npcGuid));
+        sLogger.debug("handleVoidStorageTransfer - Unit (GUID: {}) not found.", uint64_t(npcGuid));
         return;
     }
 
     // Validate
     if (!creature->isVoidStorage() && creature->getDistance(player) > 5.0f)
     {
-        sLogger.debug("handleVoidStorageTransfer - Unit (GUID: %u) can't interact with it or is no Void Storage.", uint64_t(npcGuid));
+        sLogger.debug("handleVoidStorageTransfer - Unit (GUID: {}) can't interact with it or is no Void Storage.", uint64_t(npcGuid));
         return;
     }
 
     if (!player->isVoidStorageUnlocked())
     {
-        sLogger.debug("handleVoidStorageTransfer - Player (GUID: %u, name: %s) queried void storage without unlocking it.", player->getGuidLow(), player->getName().c_str());
+        sLogger.debug("handleVoidStorageTransfer - Player (GUID: {}, name: {}) queried void storage without unlocking it.", player->getGuidLow(), player->getName());
         return;
     }
 
@@ -337,7 +337,7 @@ void WorldSession::handleVoidStorageTransfer(WorldPacket& recvData)
         Item* item = player->getItemInterface()->GetItemByGUID(*itr);
         if (!item)
         {
-            sLogger.debug("handleVoidStorageTransfer - Player (GUID: %u, name: %s) wants to deposit an invalid item (item guid: %I64u).", player->getGuidLow(), player->getName().c_str(), uint64(*itr));
+            sLogger.debug("handleVoidStorageTransfer - Player (GUID: {}, name: {}) wants to deposit an invalid item (item guid: %I64u).", player->getGuidLow(), player->getName(), uint64(*itr));
             continue;
         }
 
@@ -363,7 +363,7 @@ void WorldSession::handleVoidStorageTransfer(WorldPacket& recvData)
         VoidStorageItem* itemVS = player->getVoidStorageItem(*itr, slot);
         if (!itemVS)
         {
-            sLogger.debug("handleVoidStorageTransfer - Player (GUID: %u, name: %s) tried to withdraw an invalid item (id: %I64u)", player->getGuidLow(), player->getName().c_str(), uint64(*itr));
+            sLogger.debug("handleVoidStorageTransfer - Player (GUID: {}, name: {}) tried to withdraw an invalid item (id: %I64u)", player->getGuidLow(), player->getName(), uint64(*itr));
             continue;
         }
 
@@ -373,7 +373,7 @@ void WorldSession::handleVoidStorageTransfer(WorldPacket& recvData)
         if (msg != ADD_ITEM_RESULT_OK)
         {
             sendVoidStorageTransferResult(VOID_TRANSFER_ERROR_INVENTORY_FULL);
-            sLogger.debug("handleVoidStorageTransfer - Player (GUID: %u, name: %s) couldn't withdraw item id %I64u because inventory was full.", player->getGuidLow(), player->getName().c_str(), uint64(*itr));
+            sLogger.debug("handleVoidStorageTransfer - Player (GUID: {}, name: {}) couldn't withdraw item id %I64u because inventory was full.", player->getGuidLow(), player->getName(), uint64(*itr));
             return;
         }
 
@@ -529,27 +529,27 @@ void WorldSession::handleVoidSwapItem(WorldPacket& recvData)
     Creature* creature = player->getWorldMapCreature(npcGuid);
     if (!creature)
     {
-        sLogger.debug("handleVoidSwapItem - Unit (GUID: %u) not found.", uint64_t(npcGuid));
+        sLogger.debug("handleVoidSwapItem - Unit (GUID: {}) not found.", uint64_t(npcGuid));
         return;
     }
 
     // Validate
     if (!creature->isVoidStorage() && creature->getDistance(player) > 5.0f)
     {
-        sLogger.debug("handleVoidSwapItem - Unit (GUID: %u) can't interact with it or is no Void Storage.", uint64_t(npcGuid));
+        sLogger.debug("handleVoidSwapItem - Unit (GUID: {}) can't interact with it or is no Void Storage.", uint64_t(npcGuid));
         return;
     }
 
     if (!player->isVoidStorageUnlocked())
     {
-        sLogger.debug("handleVoidSwapItem - Player (GUID: %u, name: %s) queried void storage without unlocking it.", player->getGuidLow(), player->getName().c_str());
+        sLogger.debug("handleVoidSwapItem - Player (GUID: {}, name: {}) queried void storage without unlocking it.", player->getGuidLow(), player->getName());
         return;
     }
 
     uint8_t oldSlot;
     if (!player->getVoidStorageItem(itemId, oldSlot))
     {
-        sLogger.debug("handleVoidSwapItem - Player (GUID: %u, name: %s) requested swapping an invalid item (slot: %u, itemid: %I64u).", player->getGuidLow(), player->getName().c_str(), newSlot, uint64(itemId));
+        sLogger.debug("handleVoidSwapItem - Player (GUID: {}, name: {}) requested swapping an invalid item (slot: {}, itemid: %I64u).", player->getGuidLow(), player->getName(), newSlot, uint64(itemId));
         return;
     }
 

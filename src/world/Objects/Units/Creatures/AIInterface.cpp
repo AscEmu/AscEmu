@@ -304,7 +304,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
                 onTauntScripts.push_back(aiScripts);
             } break;
             default:
-                sLogger.debugFlag(AscEmu::Logging::LF_SCRIPT_MGR, "unhandled event with eventId %u", eventId);
+                sLogger.debugFlag(AscEmu::Logging::LF_SCRIPT_MGR, "unhandled event with eventId {}", eventId);
         }
     }
 
@@ -375,7 +375,7 @@ void AIInterface::addSpellFromDatabase(std::vector<MySQLStructure::CreatureAIScr
             else
                 castChance = ((75.0f / static_cast<float_t>(spellCounter)) * spellChanceModifierDispell[spellInfo->getDispelType()] * spellChanceModifierType[spell.spell_type]);
 
-            sLogger.debugFlag(AscEmu::Logging::DebugFlags::LF_SPELL, "spell %u chance %f", spell.spellId, castChance);
+            sLogger.debugFlag(AscEmu::Logging::DebugFlags::LF_SPELL, "spell {} chance {}", spell.spellId, castChance);
 
             uint32_t spellCooldown = Util::getRandomUInt(spell.cooldownMin, spell.cooldownMax);
             if (spellCooldown == 0)
@@ -400,7 +400,7 @@ void AIInterface::addSpellFromDatabase(std::vector<MySQLStructure::CreatureAIScr
                 mCreatureAISpells.push_back(newAISpell);
         }
         else
-            sLogger.debug("Tried to Register Creature AI Spell without a valid Spell Id %u", spell.spellId);
+            sLogger.debug("Tried to Register Creature AI Spell without a valid Spell Id {}", spell.spellId);
     }
 }
 
@@ -1397,7 +1397,7 @@ void AIInterface::handleAgentSpell(uint32_t spellId)
             }
             break;
             default:
-                sLogger.failure("AI Agents: Targettype of AI agent spell %u for creature %u not set", spellInfo->getId(), static_cast<Creature*>(getUnit())->GetCreatureProperties()->Id);
+                sLogger.failure("AI Agents: Targettype of AI agent spell {} for creature {} not set", spellInfo->getId(), static_cast<Creature*>(getUnit())->GetCreatureProperties()->Id);
         }
     }
     uint32_t casttime = (GetCastTime(sSpellCastTimesStore.lookupEntry(AIspell->spell->getCastingTimeIndex())) ? GetCastTime(sSpellCastTimesStore.lookupEntry(AIspell->spell->getCastingTimeIndex())) : 500);
@@ -1743,8 +1743,8 @@ void AIInterface::castSpell(Unit* caster, SpellInfo const* spellInfo, SpellCastT
         if (isCastDisabled())
             return;
 
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "AI DEBUG: Unit %u casting spell %u on target %s", caster->getEntry(),
-            spellInfo->getId(), std::to_string(targets.getUnitTargetGuid()).c_str());
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "AI DEBUG: Unit {} casting spell {} on target {}", caster->getEntry(),
+            spellInfo->getId(), std::to_string(targets.getUnitTargetGuid()));
 
         //i wonder if this will lead to a memory leak :S
         Spell* nspell = sSpellMgr.newSpell(caster, spellInfo, false, nullptr);
@@ -1762,7 +1762,7 @@ SpellInfo const* AIInterface::getSpellEntry(uint32_t spellId)
 
     if (!spellInfo)
     {
-        sLogger.failure("WORLD: unknown spell id %i", spellId);
+        sLogger.failure("WORLD: unknown spell id {}", spellId);
         return NULL;
     }
 
@@ -3537,7 +3537,7 @@ void CreatureAISpells::addDBEmote(uint32_t textId)
     if (npcScriptText != nullptr)
         addEmote(npcScriptText->text, npcScriptText->type, npcScriptText->sound);
     else
-        sLogger.debug("A script tried to add a spell emote with %u! Id is not available in table npc_script_text.", textId);
+        sLogger.debug("A script tried to add a spell emote with {}! Id is not available in table npc_script_text.", textId);
 }
 
 void CreatureAISpells::addEmote(std::string pText, uint8_t pType, uint32_t pSoundId)
@@ -3693,7 +3693,7 @@ CreatureAISpells* AIInterface::addAISpell(uint32_t spellId, float castChance, ui
         return newAISpell;
     }
 
-    sLogger.failure("tried to add invalid spell with id %u", spellId);
+    sLogger.failure("tried to add invalid spell with id {}", spellId);
 
     return nullptr;
 }
@@ -3714,7 +3714,7 @@ void AIInterface::UpdateAISpells()
                     const float targetDistance = getUnit()->GetPosition().Distance2DSq({ mCurrentSpellTarget->GetPositionX(), mCurrentSpellTarget->GetPositionY() });
                     if (!mLastCastedSpell->isDistanceInRange(targetDistance))
                     {
-                        sLogger.debugFlag(AscEmu::Logging::LF_SCRIPT_MGR, "Target outside of spell range (%u)! Min: %f Max: %f, distance to Target: %f", mLastCastedSpell->mSpellInfo->getId(), mLastCastedSpell->mMinPositionRangeToCast, mLastCastedSpell->mMaxPositionRangeToCast, targetDistance);
+                        sLogger.debugFlag(AscEmu::Logging::LF_SCRIPT_MGR, "Target outside of spell range ({})! Min: {} Max: {}, distance to Target: {}", mLastCastedSpell->mSpellInfo->getId(), mLastCastedSpell->mMinPositionRangeToCast, mLastCastedSpell->mMaxPositionRangeToCast, targetDistance);
                         getUnit()->interruptSpell();
                         mLastCastedSpell = nullptr;
                         mCurrentSpellTarget = nullptr;

@@ -26,7 +26,7 @@ void TicketMgr::initialize()
         delete result;
     }
 
-    sLogger.info("TicketMgr : HighGuid(TICKET) = %u", m_nextTicketId);
+    sLogger.info("TicketMgr : HighGuid(TICKET) = {}", m_nextTicketId);
 }
 void TicketMgr::finalize()
 {
@@ -82,7 +82,7 @@ void TicketMgr::loadGMTickets()
         addGMTicket(ticket, true);
     } while (result->NextRow());
 
-    sLogger.info("ObjectMgr : %u active GM Tickets loaded.", result->GetRowCount());
+    sLogger.info("ObjectMgr : {} active GM Tickets loaded.", result->GetRowCount());
     delete result;
 }
 

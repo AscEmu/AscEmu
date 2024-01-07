@@ -12,7 +12,7 @@ namespace AscEmu::Packets
     class SmsgGroupDecline : public ManagedPacket
     {
     public:
-        std::string name;
+        utf8_string name;
 
         SmsgGroupDecline() : SmsgGroupDecline("")
         {

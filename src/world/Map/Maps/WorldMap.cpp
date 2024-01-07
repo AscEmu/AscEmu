@@ -184,7 +184,7 @@ WorldMap::~WorldMap()
 
     MMAP::MMapFactory::createOrGetMMapManager()->unloadMapInstance(getBaseMap()->getMapId(), getInstanceId());
 
-    sLogger.debug("WorldMap : Instance %u shut down. (%s)", getInstanceId(), getBaseMap()->getMapName().c_str());
+    sLogger.debug("WorldMap : Instance {} shut down. ({})", getInstanceId(), getBaseMap()->getMapName());
 }
 
 void WorldMap::startMapThread()
@@ -584,13 +584,13 @@ void WorldMap::PushObject(Object* obj)
         //Zyres: this was an old ASSERT MapMgr for map x is not allowed to push objects for mapId z
         if (obj->GetMapId() != getBaseMap()->getMapId())
         {
-            sLogger.failure("WorldMap::PushObject manager for mapId %u tried to push object for mapId %u, return!", getBaseMap()->getMapId(), obj->GetMapId());
+            sLogger.failure("WorldMap::PushObject manager for mapId {} tried to push object for mapId {}, return!", getBaseMap()->getMapId(), obj->GetMapId());
             return;
         }
 
         if (obj->GetPositionY() > Map::Terrain::_maxY || obj->GetPositionY() < Map::Terrain::_minY)
         {
-            sLogger.failure("WorldMap::PushObject not allowed to push object to y: %f (max %f/min %f), return!", obj->GetPositionY(), Map::Terrain::_maxY, Map::Terrain::_minY);
+            sLogger.failure("WorldMap::PushObject not allowed to push object to y: {} (max {}/min {}), return!", obj->GetPositionY(), Map::Terrain::_maxY, Map::Terrain::_minY);
             return;
         }
 
@@ -649,7 +649,7 @@ void WorldMap::PushObject(Object* obj)
         {
             plObj = static_cast<Player*>(obj);
 
-            sLogger.debug("Creating player %s for himself.", std::to_string(obj->getGuid()).c_str());
+            sLogger.debug("Creating player {} for himself.", std::to_string(obj->getGuid()));
             ByteBuffer pbuf(10000);
             count = plObj->buildCreateUpdateBlockForPlayer(&pbuf, plObj);
             plObj->getUpdateMgr().pushCreationData(&pbuf, count);
@@ -788,7 +788,7 @@ void WorldMap::PushStaticObject(Object* obj)
             break;
 
         default:
-            sLogger.debug("WorldMap::PushStaticObject called for invalid type %u.", obj->GetTypeFromGUID());
+            sLogger.debug("WorldMap::PushStaticObject called for invalid type {}.", obj->GetTypeFromGUID());
             break;
     }
 
@@ -807,7 +807,7 @@ void WorldMap::RemoveObject(Object* obj, bool free_guid)
 
     if (obj->GetMapId() != getBaseMap()->getMapId())
     {
-        sLogger.failure("WorldMap::RemoveObject tried to remove object with map %u but WorldMap is for map %u!", obj->GetMapId(), getBaseMap()->getMapId());
+        sLogger.failure("WorldMap::RemoveObject tried to remove object with map {} but WorldMap is for map {}!", obj->GetMapId(), getBaseMap()->getMapId());
         return;
     }
 
@@ -878,7 +878,7 @@ void WorldMap::RemoveObject(Object* obj, bool free_guid)
             break;
         default:
         {
-            sLogger.debug("WorldMap::RemoveObject called for invalid type %u.", obj->GetTypeFromGUID());
+            sLogger.debug("WorldMap::RemoveObject called for invalid type {}.", obj->GetTypeFromGUID());
             break;
         }
     }
@@ -1050,7 +1050,7 @@ void WorldMap::updateAllCells(bool apply, uint32_t areamask)
     getTerrain()->getCellLimits(StartX, EndX, StartY, EndY);
 
     if (!areamask)
-        sLogger.debugFlag(AscEmu::Logging::LF_MAP_CELL, "Updating all cells for map %03u, server might lag.", getBaseMap()->getMapId());
+        sLogger.debugFlag(AscEmu::Logging::LF_MAP_CELL, "Updating all cells for map {:03}, server might lag.", getBaseMap()->getMapId());
 
     for (uint32_t x = StartX; x < EndX; x++)
     {
@@ -1077,7 +1077,7 @@ void WorldMap::updateAllCells(bool apply, uint32_t areamask)
                 {   // Cell doesn't exist, create it.
                     cellInfo = create(x, y);
                     cellInfo->init(x, y, this);
-                    sLogger.debugFlag(AscEmu::Logging::LF_MAP_CELL, "Created cell [%u,%u] on map %u (instance %u).", x, y, getBaseMap()->getMapId(), getInstanceId());
+                    sLogger.debugFlag(AscEmu::Logging::LF_MAP_CELL, "Created cell [{},{}] on map {} (instance {}).", x, y, getBaseMap()->getMapId(), getInstanceId());
                 }
 
                 spawns = _map->getSpawnsList(x, y);
@@ -1097,7 +1097,7 @@ void WorldMap::updateAllCells(bool apply, uint32_t areamask)
     }
 
     if (!areamask)
-        sLogger.debugFlag(AscEmu::Logging::LF_MAP_CELL, "Cell updating success for map %03u", getBaseMap()->getMapId());
+        sLogger.debugFlag(AscEmu::Logging::LF_MAP_CELL, "Cell updating success for map {:03}", getBaseMap()->getMapId());
 }
 
 void WorldMap::updateAllCells(bool apply)
@@ -1121,7 +1121,7 @@ void WorldMap::updateAllCells(bool apply)
                 {   // Cell doesn't exist, create it.
                     cellInfo = create(x, y);
                     cellInfo->init(x, y, this);
-                    sLogger.debugFlag(AscEmu::Logging::LF_MAP_CELL, "Created cell [%u,%u] on map %u (instance %u).", x, y, getBaseMap()->getMapId(), getInstanceId());
+                    sLogger.debugFlag(AscEmu::Logging::LF_MAP_CELL, "Created cell [{},{}] on map {} (instance {}).", x, y, getBaseMap()->getMapId(), getInstanceId());
                 }
 
                 spawns = _map->getSpawnsList(cellInfo->getPositionX(), cellInfo->getPositionY());
@@ -1139,7 +1139,7 @@ void WorldMap::updateAllCells(bool apply)
             }
         }
     }
-    sLogger.debugFlag(AscEmu::Logging::LF_MAP_CELL, "Cell updating success for map %03u", getBaseMap()->getMapId());
+    sLogger.debugFlag(AscEmu::Logging::LF_MAP_CELL, "Cell updating success for map {:03}", getBaseMap()->getMapId());
 }
 
 void WorldMap::updateCellActivity(uint32_t x, uint32_t y, uint32_t radius)
@@ -1164,14 +1164,14 @@ void WorldMap::updateCellActivity(uint32_t x, uint32_t y, uint32_t radius)
                     objCell = create(posX, posY);
                     objCell->init(posX, posY, this);
 
-                    sLogger.debug("WorldMap : Cell [%u,%u] on map %u (instance %u) is now active.", posX, posY, getBaseMap()->getMapId(), getInstanceId());
+                    sLogger.debug("WorldMap : Cell [{},{}] on map {} (instance {}) is now active.", posX, posY, getBaseMap()->getMapId(), getInstanceId());
                     objCell->setActivity(true);
 
                     getTerrain()->loadTile(static_cast<int32_t>(posX) / 8, static_cast<int32_t>(posY) / 8);
 
                     if (!objCell->isLoaded())
                     {
-                        sLogger.debug("WorldMap : Loading objects for Cell [%u][%u] on map %u (instance %u)...", posX, posY, getBaseMap()->getMapId(), getInstanceId());
+                        sLogger.debug("WorldMap : Loading objects for Cell [{}][{}] on map {} (instance {})...", posX, posY, getBaseMap()->getMapId(), getInstanceId());
 
                         sp = _map->getSpawnsList(posX, posY);
                         if (sp)
@@ -1187,14 +1187,14 @@ void WorldMap::updateCellActivity(uint32_t x, uint32_t y, uint32_t radius)
                     if (objCell->isIdlePending())
                         objCell->cancelPendingIdle();
 
-                    sLogger.debug("Cell [%u,%u] on map %u (instance %u) is now active.", posX, posY, getBaseMap()->getMapId(), getInstanceId());
+                    sLogger.debug("Cell [{},{}] on map {} (instance {}) is now active.", posX, posY, getBaseMap()->getMapId(), getInstanceId());
 
                     getTerrain()->loadTile(static_cast<int32_t>(posX) / 8, static_cast<int32_t>(posY) / 8);
                     objCell->setActivity(true);
 
                     if (!objCell->isLoaded())
                     {
-                        sLogger.debug("Loading objects for Cell [%u][%u] on map %u (instance %u)...", posX, posY, getBaseMap()->getMapId(), getInstanceId());
+                        sLogger.debug("Loading objects for Cell [{}][{}] on map {} (instance {})...", posX, posY, getBaseMap()->getMapId(), getInstanceId());
                         sp = _map->getSpawnsList(posX, posY);
                         if (sp)
                             objCell->loadObjects(sp);
@@ -1212,7 +1212,7 @@ void WorldMap::updateCellActivity(uint32_t x, uint32_t y, uint32_t radius)
 
 void WorldMap::setCellIdle(uint16_t x, uint16_t y, MapCell* cell)
 {
-    sLogger.debug("Cell [%u,%u] on map %u (instance %u) is now idle.", x, y, getBaseMap()->getMapId(), getInstanceId());
+    sLogger.debug("Cell [{},{}] on map {} (instance {}) is now idle.", x, y, getBaseMap()->getMapId(), getInstanceId());
     cell->setActivity(false);
 
     _terrain->unloadTile(static_cast<int32_t>(x) / 8, static_cast<int32_t>(y) / 8);
@@ -1224,7 +1224,7 @@ void WorldMap::unloadCell(uint32_t x, uint32_t y)
     if (c == nullptr || isCellActive(x, y) || !c->isUnloadPending())
         return;
 
-    sLogger.debug("Unloading Cell [%u][%u] on map %u (instance %u)...", x, y, getBaseMap()->getMapId(), getInstanceId());
+    sLogger.debug("Unloading Cell [{}][{}] on map {} (instance {})...", x, y, getBaseMap()->getMapId(), getInstanceId());
 
     c->unload();
 }
@@ -1845,7 +1845,7 @@ GameObject* WorldMap::createAndSpawnGameObject(uint32_t entryID, LocationVector 
         return nullptr;
     }
 
-    sLogger.debug("CreateAndSpawnGameObject: By Entry '%u'", entryID);
+    sLogger.debug("CreateAndSpawnGameObject: By Entry '{}'", entryID);
 
     GameObject* go = createGameObject(entryID);
 
@@ -2093,7 +2093,7 @@ void WorldMap::loadRespawnTimes()
         }
         else
         {
-            sLogger.debug("Loading saved respawn time of %" PRIu64 " for spawnid (%u,%u) - invalid spawn type, ignoring", respawnTime, uint32_t(type), spawnId);
+            sLogger.debug("Loading saved respawn time of %" PRIu64 " for spawnid ({},{}) - invalid spawn type, ignoring", respawnTime, uint32_t(type), spawnId);
         }
 
     } while (result->NextRow());
@@ -2144,7 +2144,7 @@ void WorldMap::saveRespawnTime(SpawnObjectType type, uint32_t spawnId, uint32_t 
     if (startup)
     {
         if (!success)
-            sLogger.failure("Attempt to load saved respawn %" PRIu64 " for (%u,%u) failed - duplicate respawn? Skipped.", respawnTime, uint32_t(type), spawnId);
+            sLogger.failure("Attempt to load saved respawn %" PRIu64 " for ({},{}) failed - duplicate respawn? Skipped.", respawnTime, uint32_t(type), spawnId);
     }
     else if (success)
     {
@@ -2161,7 +2161,7 @@ bool WorldMap::addRespawn(RespawnInfo const& info)
 {
     if (!info.spawnId)
     {
-        sLogger.failure("Attempt to insert respawn info for zero spawn id (type %u)", uint32_t(info.type));
+        sLogger.failure("Attempt to insert respawn info for zero spawn id (type {})", uint32_t(info.type));
         return false;
     }
 
@@ -2182,7 +2182,7 @@ bool WorldMap::addRespawn(RespawnInfo const& info)
     }
     else
     {
-        sLogger.failure("Invalid respawn info for spawn id (%u,%u) being inserted", uint32(info.type), info.spawnId);
+        sLogger.failure("Invalid respawn info for spawn id ({},{}) being inserted", uint32(info.type), info.spawnId);
     }
 
     RespawnInfo* ri = new RespawnInfo(info);
@@ -2280,7 +2280,7 @@ bool WorldMap::checkRespawn(RespawnInfo* info)
         }
         default:
         {
-            sLogger.failure("Invalid spawn type %u with spawnId %u on map %u", uint32_t(info->type), info->spawnId, getBaseMap()->getMapId());
+            sLogger.failure("Invalid spawn type {} with spawnId {} on map {}", uint32_t(info->type), info->spawnId, getBaseMap()->getMapId());
             return true;
         }
     }
@@ -2355,7 +2355,7 @@ void WorldMap::doRespawn(SpawnObjectType type, Object* object, uint32_t spawnId,
         }
         default:
         {
-            sLogger.failure("Invalid spawn type %u (spawnid %u) on map %u", static_cast<uint32_t>(type), spawnId, getBaseMap()->getMapId());
+            sLogger.failure("Invalid spawn type {} (spawnid {}) on map {}", static_cast<uint32_t>(type), spawnId, getBaseMap()->getMapId());
         }
     }
 }

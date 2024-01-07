@@ -52,13 +52,13 @@ void Aura::addAuraEffect(AuraEffect auraEffect, int32_t damage, int32_t miscValu
 
     if (auraEffect >= TOTAL_SPELL_AURAS)
     {
-        sLogger.failure("Aura::addAuraEffect : Unknown aura effect type %u for spell id %u", auraEffect, getSpellId());
+        sLogger.failure("Aura::addAuraEffect : Unknown aura effect type {} for spell id {}", auraEffect, getSpellId());
         return;
     }
 
     if (m_auraEffects[effIndex].getAuraEffectType() != SPELL_AURA_NONE)
     {
-        sLogger.failure("Aura::addAuraEffect : Tried to add effect to index %u but effect already exists", effIndex);
+        sLogger.failure("Aura::addAuraEffect : Tried to add effect to index {} but effect already exists", effIndex);
         return;
     }
 
@@ -182,7 +182,7 @@ void Aura::removeAura(AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
     sScriptMgr.callScriptedAuraOnRemove(this, mode);
     sHookInterface.OnAuraRemove(this);
 
-    sLogger.debug("Removing aura %u from unit %u", getSpellId(), getOwner()->getGuid());
+    sLogger.debug("Removing aura {} from unit {}", getSpellId(), getOwner()->getGuid());
 
     m_isGarbage = true;
 
@@ -327,7 +327,7 @@ void Aura::applyModifiers(bool apply, AuraEffect applyOnlyFor/* = SPELL_AURA_NON
 
         m_auraEffects[i].applyEffect(apply);
 
-        sLogger.debugFlag(AscEmu::Logging::LF_AURA, "Aura::applyModifiers : Spell Id %u, Aura Effect %u (%s), Target GUID %u, EffectIndex %u, Duration %u, Damage %d, MiscValue %d",
+        sLogger.debugFlag(AscEmu::Logging::LF_AURA, "Aura::applyModifiers : Spell Id {}, Aura Effect {} ({}), Target GUID {}, EffectIndex {}, Duration {}, Damage {}, MiscValue {}",
             getSpellInfo()->getId(), m_auraEffects[i].getAuraEffectType(), SpellAuraNames[m_auraEffects[i].getAuraEffectType()], getOwner()->getGuid(), i, getTimeLeft(), m_auraEffects[i].getEffectDamage(), m_auraEffects[i].getEffectMiscValue());
     }
 
@@ -358,7 +358,7 @@ void Aura::updateModifiers()
                 break;
         }
 
-        sLogger.debug("Aura::updateModifiers : Spell Id %u, Aura Effect %u (%s), Target GUID %u, EffectIndex %u, Duration %u, Damage %d, MiscValue %d",
+        sLogger.debug("Aura::updateModifiers : Spell Id {}, Aura Effect {} ({}), Target GUID {}, EffectIndex {}, Duration {}, Damage {}, MiscValue {}",
             getSpellInfo()->getId(), m_auraEffects[i].getAuraEffectType(), SpellAuraNames[m_auraEffects[i].getAuraEffectType()], getOwner()->getGuid(), i, getTimeLeft(), m_auraEffects[i].getEffectDamage(), m_auraEffects[i].getEffectMiscValue());
     }
     m_updatingModifiers = false;
@@ -976,7 +976,7 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             const auto triggerInfo = sSpellMgr.getSpellInfo(triggerId);
             if (triggerInfo == nullptr)
             {
-                sLogger.failure("Aura::periodicTick : Periodic trigger aura effect has invalid spell id (%u) in aura id %u", triggerId, getSpellId());
+                sLogger.failure("Aura::periodicTick : Periodic trigger aura effect has invalid spell id ({}) in aura id {}", triggerId, getSpellId());
                 return;
             }
 
@@ -1155,7 +1155,7 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
             if (sScriptMgr.CallScriptedDummyAura(getSpellId(), aurEff->getEffectIndex(), this, true))
                 break;
 
-            sLogger.debugFlag(AscEmu::Logging::LF_AURA_EFF, "Spell aura %u has a periodic trigger dummy effect but no handler for it", getSpellId());
+            sLogger.debugFlag(AscEmu::Logging::LF_AURA_EFF, "Spell aura {} has a periodic trigger dummy effect but no handler for it", getSpellId());
         } break;
 #endif
         default:

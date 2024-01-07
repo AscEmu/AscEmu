@@ -307,7 +307,7 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     Config.MainConfig.tryGetInt("Server", "MapUnloadTime", &server.mapUnloadTime);
     if (server.mapUnloadTime == 0)
     {
-        sLogger.failure("MapUnloadTime is set to 0. This will NEVER unload MapCells!!! Overriding it to default value of %u", MAP_CELL_DEFAULT_UNLOAD_TIME);
+        sLogger.failure("MapUnloadTime is set to 0. This will NEVER unload MapCells!!! Overriding it to default value of {}", MAP_CELL_DEFAULT_UNLOAD_TIME);
         server.mapUnloadTime = MAP_CELL_DEFAULT_UNLOAD_TIME;
     }
     Config.MainConfig.tryGetInt("Server", "MapCellNumber", &server.mapCellNumber);

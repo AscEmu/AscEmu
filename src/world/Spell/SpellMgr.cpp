@@ -200,7 +200,7 @@ void SpellMgr::addSpellById(const uint32_t spellId, SpellScriptLinker spellScrip
     auto spellInfo = getMutableSpellInfo(spellId);
     if (spellInfo == nullptr)
     {
-        sLogger.failure("SpellMgr::addSpellById : Unknown spell id %u tried to register a spell script, skipped", spellId);
+        sLogger.failure("SpellMgr::addSpellById : Unknown spell id {} tried to register a spell script, skipped", spellId);
         return;
     }
     addSpellBySpellInfo(spellInfo, spellScript);
@@ -211,7 +211,7 @@ void SpellMgr::addAuraById(const uint32_t spellId, AuraScriptLinker auraScript)
     auto spellInfo = getMutableSpellInfo(spellId);
     if (spellInfo == nullptr)
     {
-        sLogger.failure("SpellMgr::addAuraById : Unknown spell id %u tried to register an aura script, skipped", spellId);
+        sLogger.failure("SpellMgr::addAuraById : Unknown spell id {} tried to register an aura script, skipped", spellId);
         return;
     }
     addAuraBySpellInfo(spellInfo, auraScript);
@@ -1049,7 +1049,7 @@ void SpellMgr::loadSkillLineAbilityMap()
         ++count;
     }
 
-    sLogger.info("SpellMgr : Loaded %u skill abilities in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    sLogger.info("SpellMgr : Loaded {} skill abilities in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 void SpellMgr::loadSpellCoefficientOverride()
@@ -1071,7 +1071,7 @@ void SpellMgr::loadSpellCoefficientOverride()
         auto spellInfo = getMutableSpellInfo(fields[0].GetUInt32());
         if (spellInfo == nullptr)
         {
-            sLogger.failure("Table `spell_coefficient_override` has unknown spell entry %u, skipped", fields[0].GetUInt32());
+            sLogger.failure("Table `spell_coefficient_override` has unknown spell entry {}, skipped", fields[0].GetUInt32());
             continue;
         }
 
@@ -1086,7 +1086,7 @@ void SpellMgr::loadSpellCoefficientOverride()
     } while (result->NextRow());
     delete result;
 
-    sLogger.info("Loaded %u override values from `spell_coefficient_override` table", overridenCoeffs);
+    sLogger.info("Loaded {} override values from `spell_coefficient_override` table", overridenCoeffs);
 }
 
 void SpellMgr::loadSpellCustomOverride()
@@ -1110,7 +1110,7 @@ void SpellMgr::loadSpellCustomOverride()
         auto spellInfo = getMutableSpellInfo(fields[0].GetUInt32());
         if (spellInfo == nullptr)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Table `spell_custom_override` has unknown spell entry %u, skipped", fields[0].GetUInt32());
+            sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Table `spell_custom_override` has unknown spell entry {}, skipped", fields[0].GetUInt32());
             continue;
         }
 
@@ -1186,7 +1186,7 @@ void SpellMgr::loadSpellCustomOverride()
     } while (result->NextRow());
     delete result;
    
-    sLogger.info("Loaded %u override values from `spell_custom_override` table", overridenSpells);
+    sLogger.info("Loaded {} override values from `spell_custom_override` table", overridenSpells);
 }
 
 void SpellMgr::loadSpellAIThreat()
@@ -1207,7 +1207,7 @@ void SpellMgr::loadSpellAIThreat()
         auto spellInfo = getMutableSpellInfo(spellId);
         if (spellInfo == nullptr)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Table `ai_threattospellid` has invalid spell entry %u, skipped", spellId);
+            sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Table `ai_threattospellid` has invalid spell entry {}, skipped", spellId);
             continue;
         }
 
@@ -1218,7 +1218,7 @@ void SpellMgr::loadSpellAIThreat()
     } while (result->NextRow());
     delete result;
 
-    sLogger.info("SpellMgr : Loaded %u spell ai threat", threatCount);
+    sLogger.info("SpellMgr : Loaded {} spell ai threat", threatCount);
 }
 
 void SpellMgr::loadSpellEffectOverride()
@@ -1250,7 +1250,7 @@ void SpellMgr::loadSpellEffectOverride()
         auto spellInfo = getMutableSpellInfo(seo_SpellId);
         if (spellInfo == nullptr)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Table `spell_effects_override` has invalid spell entry %u, skipped", seo_SpellId);
+            sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Table `spell_effects_override` has invalid spell entry {}, skipped", seo_SpellId);
             continue;
         }
 
@@ -1288,7 +1288,7 @@ void SpellMgr::loadSpellEffectOverride()
     } while (result->NextRow());
     delete result;
 
-    sLogger.info("SpellMgr : Loaded %u spell effect overrides", overridenEffects);
+    sLogger.info("SpellMgr : Loaded {} spell effect overrides", overridenEffects);
 }
 
 void SpellMgr::loadSpellAreas()
@@ -1349,7 +1349,7 @@ void SpellMgr::loadSpellAreas()
 
         if (duplicate)
         {
-            sLogger.failure("Table `spell_area` has duplicate spell entry (%u) with similiar requirements, skipped", spellId);
+            sLogger.failure("Table `spell_area` has duplicate spell entry ({}) with similiar requirements, skipped", spellId);
             continue;
         }
 
@@ -1359,7 +1359,7 @@ void SpellMgr::loadSpellAreas()
             const auto areaEntry = MapManagement::AreaManagement::AreaStorage::GetAreaById(spellArea.areaId);
             if (areaEntry == nullptr)
             {
-                sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Table `spell_area` has invalid area id %u for spell entry %u, skipped", spellArea.areaId, spellId);
+                sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Table `spell_area` has invalid area id {} for spell entry {}, skipped", spellArea.areaId, spellId);
                 continue;
             }
         }
@@ -1370,7 +1370,7 @@ void SpellMgr::loadSpellAreas()
             const auto startQuest = sMySQLStore.getQuestProperties(spellArea.questStart);
             if (startQuest == nullptr)
             {
-                sLogger.failure("Table `spell_area` has invalid quest id %u for spell entry %u, skipped", spellArea.questStart, spellId);
+                sLogger.failure("Table `spell_area` has invalid quest id {} for spell entry {}, skipped", spellArea.questStart, spellId);
                 continue;
             }
         }
@@ -1381,14 +1381,14 @@ void SpellMgr::loadSpellAreas()
             const auto endQuest = sMySQLStore.getQuestProperties(spellArea.questEnd);
             if (endQuest == nullptr)
             {
-                sLogger.failure("Table `spell_area` has invalid quest id %u for spell entry %u, skipped", spellArea.questEnd, spellId);
+                sLogger.failure("Table `spell_area` has invalid quest id {} for spell entry {}, skipped", spellArea.questEnd, spellId);
                 continue;
             }
 
             // Check if the end quest is same as start quest
             if (spellArea.questEnd == spellArea.questStart && !spellArea.questStartCanActive)
             {
-                sLogger.failure("Table `spell_area` has quest (id %u) requirement for spell entry %u for start and end at the same time, skipped", spellArea.questEnd, spellId);
+                sLogger.failure("Table `spell_area` has quest (id {}) requirement for spell entry {} for start and end at the same time, skipped", spellArea.questEnd, spellId);
                 continue;
             }
         }
@@ -1400,13 +1400,13 @@ void SpellMgr::loadSpellAreas()
             const auto spellInfo = getSpellInfo(auraId);
             if (spellInfo == nullptr)
             {
-                sLogger.failure("Table `spell_area` has invalid aura spell entry %u for spell %u, skipped", auraId, spellId);
+                sLogger.failure("Table `spell_area` has invalid aura spell entry {} for spell {}, skipped", auraId, spellId);
                 continue;
             }
 
             if (auraId == spellArea.spellId)
             {
-                sLogger.failure("Table `spell_area` has aura spell requirements for itself (id %u), skipped", spellId);
+                sLogger.failure("Table `spell_area` has aura spell requirements for itself (id {}), skipped", spellId);
                 continue;
             }
 
@@ -1425,7 +1425,7 @@ void SpellMgr::loadSpellAreas()
 
                 if (chain)
                 {
-                    sLogger.failure("Table `spell_area` has aura spell (id %u) requirement that itself was autocasted from an aura, skipping", spellId);
+                    sLogger.failure("Table `spell_area` has aura spell (id {}) requirement that itself was autocasted from an aura, skipping", spellId);
                     continue;
                 }
 
@@ -1441,7 +1441,7 @@ void SpellMgr::loadSpellAreas()
 
                 if (chain)
                 {
-                    sLogger.failure("Table `spell_area` has aura spell (id %u) requirement that itself was autocasted from an aura, skipping", spellId);
+                    sLogger.failure("Table `spell_area` has aura spell (id {}) requirement that itself was autocasted from an aura, skipping", spellId);
                     continue;
                 }
             }
@@ -1449,13 +1449,13 @@ void SpellMgr::loadSpellAreas()
 
         if (spellArea.raceMask > 0 && !(spellArea.raceMask & RACEMASK_ALL_PLAYABLE))
         {
-            sLogger.failure("Table `spell_area` has invalid racemask for spell entry %u, skipped", spellId);
+            sLogger.failure("Table `spell_area` has invalid racemask for spell entry {}, skipped", spellId);
             continue;
         }
 
         if (spellArea.gender != GENDER_NONE && spellArea.gender != GENDER_MALE && spellArea.gender != GENDER_FEMALE)
         {
-            sLogger.failure("Table `spell_area` has invalid gender for spell entry %u, skipped", spellId);
+            sLogger.failure("Table `spell_area` has invalid gender for spell entry {}, skipped", spellId);
             continue;
         }
 
@@ -1483,7 +1483,7 @@ void SpellMgr::loadSpellAreas()
     } while (result->NextRow());
     delete result;
 
-    sLogger.info("SpellMgr : Loaded %u spell area requirements", areaCount);
+    sLogger.info("SpellMgr : Loaded {} spell area requirements", areaCount);
 }
 
 void SpellMgr::loadSpellRequired()
@@ -1513,20 +1513,20 @@ void SpellMgr::loadSpellRequired()
         const auto spellInfo = getSpellInfo(spell_id);
         if (spellInfo == nullptr)
         {
-            sLogger.debug("SpellMgr : spell_id %u in `spell_required` table is not found, skipped", spell_id);
+            sLogger.debug("SpellMgr : spell_id {} in `spell_required` table is not found, skipped", spell_id);
             continue;
         }
 
         const auto requiredInfo = getSpellInfo(spell_req);
         if (requiredInfo == nullptr)
         {
-            sLogger.debug("SpellMgr : req_spell %u in `spell_required` table is not found, skipped", spell_req);
+            sLogger.debug("SpellMgr : req_spell {} in `spell_required` table is not found, skipped", spell_req);
             continue;
         }
 
         if (isSpellRequiringSpell(spell_id, spell_req))
         {
-            sLogger.debug("SpellMgr : duplicated entry of req_spell %u and spell_id %u in `spell_required`, skipped", spell_req, spell_id);
+            sLogger.debug("SpellMgr : duplicated entry of req_spell {} and spell_id {} in `spell_required`, skipped", spell_req, spell_id);
             continue;
         }
 
@@ -1536,7 +1536,7 @@ void SpellMgr::loadSpellRequired()
     } while (result->NextRow());
 
     delete result;
-    sLogger.info("SpellMgr : Loaded %u spell required records in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    sLogger.info("SpellMgr : Loaded {} spell required records in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 void SpellMgr::loadSpellTargetConstraints()
@@ -1597,7 +1597,7 @@ void SpellMgr::loadSpellTargetConstraints()
         delete result;
     }
 
-    sLogger.info("SpellMgr : Loaded constraints for %u spells...", static_cast<uint32_t>(mSpellTargetConstraintMap.size()));
+    sLogger.info("SpellMgr : Loaded constraints for {} spells...", static_cast<uint32_t>(mSpellTargetConstraintMap.size()));
 }
 
 void SpellMgr::loadSpellDisabled()
@@ -1613,7 +1613,7 @@ void SpellMgr::loadSpellDisabled()
         delete result;
     }
 
-    sLogger.info("SpellMgr : Loaded %u disabled spells.", static_cast<uint32_t>(mDisabledSpells.size()));
+    sLogger.info("SpellMgr : Loaded {} disabled spells.", static_cast<uint32_t>(mDisabledSpells.size()));
 }
 
 void SpellMgr::setSpellCoefficient(SpellInfo* sp)

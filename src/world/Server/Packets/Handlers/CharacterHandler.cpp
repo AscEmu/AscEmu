@@ -47,35 +47,31 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
-CharacterErrorCodes VerifyName(std::string name)
+CharacterErrorCodes VerifyName(utf8_string name)
 {
-    static const wchar_t* bannedCharacters = L"\t\v\b\f\a\n\r\\\"\'\? <>[](){}_=+-|/!@#$%^&*~`.,0123456789\0";
-    static const wchar_t* allowedCharacters = L"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const std::size_t MIN_NAME_LENGTH = 2;
+    const std::size_t MAX_NAME_LENGTH = 12;
 
-    std::wstring wname;
-    if (!Util::Utf8toWStr(name, wname))
-        return E_CHAR_NAME_NO_NAME;
-
-
-    if (wname.find_first_of(bannedCharacters) != wname.npos)
+    if(!AscEmu::Util::utf8::is_valid(name))
         return E_CHAR_NAME_INVALID_CHARACTER;
-
 
     if (worldConfig.server.enableLimitedNames)
     {
-        if (wname.find_first_not_of(allowedCharacters) != wname.npos)
+        if(!AscEmu::Util::utf8::is_valid(name))
             return E_CHAR_NAME_INVALID_CHARACTER;
 
-        if (wname.length() == 0)
+        const std::size_t length = AscEmu::Util::utf8::length(name);
+
+        if (length == 0)
             return E_CHAR_NAME_NO_NAME;
 
-        if (wname.length() < 2)
+        if (length < MIN_NAME_LENGTH)
             return E_CHAR_NAME_TOO_SHORT;
 
-        if (wname.length() > 12)
+        if (length > MAX_NAME_LENGTH)
             return E_CHAR_NAME_TOO_LONG;
-    }
 
+    }
     return E_CHAR_NAME_SUCCESS;
 }
 
@@ -195,7 +191,7 @@ void WorldSession::handlePlayerLoginOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_PLAYER_LOGIN %u (guidLow)", srlPacket.guid.getGuidLow());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_PLAYER_LOGIN {} (guidLow)", srlPacket.guid.getGuidLow());
 
     if (sObjectMgr.getPlayer(srlPacket.guid.getGuidLow()) != nullptr || m_loggingInPlayer || _player)
     {
@@ -288,7 +284,7 @@ void WorldSession::loadPlayerFromDBProc(QueryResultVector& results)
 
     if (player == nullptr)
     {
-        sLogger.failure("Unknown class %u!", _class);
+        sLogger.failure("Unknown class {}!", _class);
         SendPacket(SmsgCharacterLoginFailed(E_CHAR_LOGIN_NO_CHARACTER).serialise().get());
         return;
     }
@@ -296,7 +292,7 @@ void WorldSession::loadPlayerFromDBProc(QueryResultVector& results)
     player->setSession(this);
     m_bIsWLevelSet = false;
 
-    sLogger.debug("Async loading player %u", static_cast<uint32_t>(playerGuid));
+    sLogger.debug("Async loading player {}", static_cast<uint32_t>(playerGuid));
     m_loggingInPlayer = player;
     player->loadFromDB(playerGuid);
 }
@@ -489,7 +485,7 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
 
     const auto playerInfo = std::make_shared<CachedCharacterInfo>();
     playerInfo->guid = newPlayer->getGuidLow();
-    std::string name = newPlayer->getName();
+    utf8_string name = newPlayer->getName();
     AscEmu::Util::Strings::capitalize(name);
     playerInfo->name = name;
     playerInfo->cl = newPlayer->getClass();
@@ -594,7 +590,7 @@ void WorldSession::sendServerStats()
 
 void WorldSession::fullLogin(Player* player)
 {
-    sLogger.debug("WorldSession : Fully loading player %u", player->getGuidLow());
+    sLogger.debug("WorldSession : Fully loading player {}", player->getGuidLow());
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // basic setup
@@ -657,7 +653,7 @@ void WorldSession::fullLogin(Player* player)
     //////////////////////////////////////////////////////////////////////////////////////////
     // set db, time and count - our db now knows that we are online.
     CharacterDatabase.Execute("UPDATE characters SET online = 1 WHERE guid = %u", player->getGuidLow());
-    sLogger.debug("Player %s logged in.", player->getName().c_str());
+    sLogger.debug("Player {} logged in.", player->getName());
     sWorld.incrementPlayerCount(player->getTeam());
 
     player->m_playedTime[2] = uint32_t(UNIXTIME);
@@ -803,7 +799,7 @@ void WorldSession::characterEnumProc(QueryResult* result)
 
             if (!isClassRaceCombinationPossible(charEnum.Class, charEnum.race))
             {
-                sLogger.debug("Class %u and race %u is not a valid combination for Version %u - skipped",
+                sLogger.debug("Class {} and race {} is not a valid combination for Version {} - skipped",
                     charEnum.Class, charEnum.race, VERSION_STRING);
                 continue;
             }
@@ -946,7 +942,7 @@ void WorldSession::characterEnumProc(QueryResult* result)
         } while (result->NextRow());
     }
 
-    sLogger.debug("Character Enum Built in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    sLogger.debug("Character Enum Built in {} ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     SendPacket(SmsgEnumCharactersResult(charRealCount, enumData).serialise().get());
 }
 

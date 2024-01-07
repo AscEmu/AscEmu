@@ -468,8 +468,8 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
 void WorldSession::handleAcknowledgementOpcodes(WorldPacket& recvPacket)
 {
-    sLogger.debug("Opcode %s (%u) received. This opcode is not known/implemented right now!",
-        sOpcodeTables.getNameForInternalId(recvPacket.GetOpcode()).c_str(), recvPacket.GetOpcode());
+    sLogger.debug("Opcode {} ({}) received. This opcode is not known/implemented right now!",
+        sOpcodeTables.getNameForInternalId(recvPacket.GetOpcode()), recvPacket.GetOpcode());
 
     recvPacket.rfinish();
 }
@@ -518,7 +518,7 @@ void WorldSession::handleForceSpeedChangeAck(WorldPacket& recvPacket)
     case CMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE_ACK:   move_type = TYPE_FLY_BACK;      force_move_type = TYPE_FLY_BACK;    break;
     case CMSG_FORCE_PITCH_RATE_CHANGE_ACK:          move_type = TYPE_PITCH_RATE;    force_move_type = TYPE_PITCH_RATE;  break;
     default:
-        sLogger.failure("WorldSession::handleForceSpeedChangeAck: Unknown move type opcode: %u", recvPacket.GetOpcode());
+        sLogger.failure("WorldSession::handleForceSpeedChangeAck: Unknown move type opcode: {}", recvPacket.GetOpcode());
         return;
     }
 
@@ -543,8 +543,8 @@ void WorldSession::handleForceSpeedChangeAck(WorldPacket& recvPacket)
         }
     }
 #else // todo fix for cata / mop
-    sLogger.debug("Opcode %s (%u) received. This opcode is not known/implemented right now!",
-        sOpcodeTables.getNameForInternalId(recvPacket.GetOpcode()).c_str(), recvPacket.GetOpcode());
+    sLogger.debug("Opcode {} ({}) received. This opcode is not known/implemented right now!",
+        sOpcodeTables.getNameForInternalId(recvPacket.GetOpcode()), recvPacket.GetOpcode());
 
     recvPacket.rfinish();
 #endif

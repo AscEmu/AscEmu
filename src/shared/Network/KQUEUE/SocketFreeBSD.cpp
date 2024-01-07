@@ -21,7 +21,7 @@ void Socket::PostEvent(int events, bool oneshot)
         EV_SET(&ev, m_fd, events, EV_ADD, 0, 0, NULL);
 
     if(kevent(kq, &ev, 1, 0, 0, NULL) < 0)
-        sLogger.warning("kqueue : Could not modify event for fd %u", GetFd());
+        sLogger.warning("kqueue : Could not modify event for fd {}", GetFd());
 }
 
 void Socket::ReadCallback(uint32 len)

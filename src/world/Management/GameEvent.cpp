@@ -164,7 +164,7 @@ void GameEvent::CreateNPCs()
         CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(npc.entry);
         if (creatureProperties == nullptr)
         {
-            sLogger.failure("try to create invalid creature %u!", npc.entry);
+            sLogger.failure("try to create invalid creature {}!", npc.entry);
             continue;
         }
 

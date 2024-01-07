@@ -53,7 +53,7 @@ bool AddonMgr::IsAddonBanned(std::string name, uint64_t crc)
     {
         if (itr->second->banned)
         {
-            sLogger.debug("Addon %s is banned.", name.c_str());
+            sLogger.debug("Addon {} is banned.", name);
             return true;
         }
     }
@@ -67,7 +67,7 @@ bool AddonMgr::IsAddonBanned(std::string name, uint64_t crc)
         ent->isNew = true;
         ent->showinlist = true;
 
-        sLogger.debug("Discovered new addon %s sent by client.", name.c_str());
+        sLogger.debug("Discovered new addon {} sent by client.", name);
 
         mKnownAddons[ent->name] = ent;
     }
@@ -96,7 +96,7 @@ bool AddonMgr::ShouldShowInList(std::string name)
         ent->isNew = true;
         ent->showinlist = true;
 
-        sLogger.debug("Discovered new addon %s sent by client.", name.c_str());
+        sLogger.debug("Discovered new addon {} sent by client.", name);
 
         mKnownAddons[ent->name] = ent;
     }
@@ -263,7 +263,7 @@ void AddonMgr::LoadFromDB()
     QueryResult* result = CharacterDatabase.Query(&success, loadClientAddons);
     if (!success)
     {
-        sLogger.failure("Query failed: %s", loadClientAddons);
+        sLogger.failure("Query failed: {}", loadClientAddons);
         return;
     }
     if (!result)
@@ -307,7 +307,7 @@ void AddonMgr::SaveToDB()
     {
         if (itr->second->isNew)
         {
-            sLogger.info("Saving new addon %s", itr->second->name.c_str());
+            sLogger.info("Saving new addon {}", itr->second->name);
             std::stringstream ss;
             ss << "INSERT INTO clientaddons (name, crc, banned, showinlist) VALUES(\""
                << CharacterDatabase.EscapeString(itr->second->name) << "\",\""
@@ -346,7 +346,7 @@ void AddonMgr::LoadFromDB()
 
         delete clientAddonsResult;
 
-        sLogger.debug("Loaded %u known addons from table `clientaddons` in %u ms", knownAddonsCount, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)) );
+        sLogger.debug("Loaded {} known addons from table `clientaddons` in {} ms", knownAddonsCount, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)) );
     }
     else
     {
@@ -382,7 +382,7 @@ void AddonMgr::LoadFromDB()
 
         delete clientAddonsResult;
 
-        sLogger.debug("Loaded %u banned addons from table `clientaddons` in %u ms", bannedAddonsCount, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+        sLogger.debug("Loaded {} banned addons from table `clientaddons` in {} ms", bannedAddonsCount, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     }
 }
 
