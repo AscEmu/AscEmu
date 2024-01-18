@@ -140,7 +140,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
         }
 
         // Guild name
-        if (hasGuildName && !player->getGuild() || srlPacket.guild_name.compare(player->getGuild()->getName()) != 0)
+        if (hasGuildName && (!player->getGuild() || srlPacket.guild_name.compare(player->getGuild()->getName()) != 0))
         {
             continue;
         }
