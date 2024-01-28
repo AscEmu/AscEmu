@@ -1003,7 +1003,7 @@ bool AchievementMgr::updateAchievementCriteria(Player* _player, int32_t _criteri
     {
         // can't complete this type of achivement (counter)
         sLogger.debug("AchievementMgr Referred achievement ({}) |Hachievement:{}:{}:0:0:0:-1:0:0:0:0|h[{}]|h is a counter and cannot be completed.",
-            achievement->ID, achievement->ID, std::to_string(_player->getGuid()), achievement->name);
+            achievement->ID, achievement->ID, std::to_string(_player->getGuid()), achievement->name[0]);
         return false;
     }
 
@@ -1927,7 +1927,7 @@ void AchievementMgr::giveAchievementReward(WDB::Structures::AchievementEntry con
         Creature* creature = getPlayer()->getWorldMap()->createCreature(Reward->sender);
         if (creature == nullptr)
         {
-            sLogger.failure("can not create sender for achievement {}", _entry);
+            sLogger.failure("can not create sender for achievement {}", _entry->ID);
             return;
         }
 

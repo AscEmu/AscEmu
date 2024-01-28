@@ -1909,9 +1909,9 @@ void Pet::ApplyPetLevelAbilities()
     setBaseHealth(pet_abilities->health);
     setMaxHealth(pet_abilities->health);
 
-    //Family Aura
+    // Family Aura
     if (pet_family > 46)
-        sLogger.failure("PETSTAT: Creature family {} [{}] has missing data.", pet_family, myFamily->name);
+        sLogger.failure("PetStat : Creature family {} [{}] has missing data.", pet_family, fmt::ptr(myFamily->name));
     else if (family_aura[pet_family] != 0)
         this->castSpell(this, family_aura[pet_family], true);
 

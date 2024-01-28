@@ -168,14 +168,14 @@ uint8 WorldSession::Update(uint32 InstanceID)
         {
             if (sOpcodeTables.getInternalIdForHex(packet->GetOpcode()) >= NUM_OPCODES)
             {
-                sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[Session] Received out of range packet with opcode 0x%.4X", packet->GetOpcode());
+                sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[Session] Received out of range packet with opcode 0x{:4X}", packet->GetOpcode());
             }
             else
             {
                 OpcodeHandler* handler = &WorldPacketHandlers[sOpcodeTables.getInternalIdForHex(packet->GetOpcode())];
                 if (handler->status == STATUS_LOGGEDIN && !_player && handler->handler != 0)
                 {
-                    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[Session] Received unexpected/wrong state packet with opcode {} (0x%.4X)",
+                    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[Session] Received unexpected/wrong state packet with opcode {} (0x{:4X})",
                         sOpcodeTables.getNameForOpcode(packet->GetOpcode()), packet->GetOpcode());
                 }
                 else
@@ -183,7 +183,7 @@ uint8 WorldSession::Update(uint32 InstanceID)
                     // Valid Packet :>
                     if (handler->handler == 0)
                     {
-                        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[Session] Received unhandled packet with opcode {} (0x%.4X)",
+                        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[Session] Received unhandled packet with opcode {} (0x{:4X})",
                             sOpcodeTables.getNameForOpcode(packet->GetOpcode()), packet->GetOpcode());
                     }
                     else
@@ -719,7 +719,7 @@ void WorldSession::nothingToHandle(WorldPacket& recv_data)
 {
     if (!recv_data.isEmpty())
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Opcode {} [{}] (0x%.4X) received. Apply nothingToHandle handler but size is {}!",
+        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Opcode {} [{}] (0x{:4X}) received. Apply nothingToHandle handler but size is {}!",
             sOpcodeTables.getNameForOpcode(recv_data.GetOpcode()), sOpcodeTables.getNameForAEVersion(), recv_data.GetOpcode(), recv_data.size());
     }
 }

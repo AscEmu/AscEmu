@@ -113,11 +113,8 @@ void CThreadPool::ExecuteTask(ThreadBase* ExecutionTarget)
     }
 
     // add the thread to the active set
-#ifdef WIN32
-    sLogger.debug("Thread {} is now executing task at 0x%p.", t->ControlInterface.GetId(), fmt::ptr(ExecutionTarget));
-#else
-    sLogger.debug("Thread {} is now executing task at %p.", t->ControlInterface.GetId(), fmt::ptr(ExecutionTarget));
-#endif
+    sLogger.debug("Thread {} is now executing task at {}", t->ControlInterface.GetId(), fmt::ptr(ExecutionTarget));
+
     m_activeThreads.insert(t);
     _mutex.Release();
 }
@@ -138,7 +135,7 @@ void CThreadPool::ShowStats()
     _mutex.Acquire();
     sLogger.debug("ThreadPool Status : Active Threads: {}", m_activeThreads.size());
     sLogger.debug("ThreadPool Status : Suspended Threads: {}", m_freeThreads.size());
-    sLogger.debug("ThreadPool Status : Requested-To-Freed Ratio: {0:.3f}% ({}/{})", float(float(_threadsRequestedSinceLastCheck + 1) / float(_threadsExitedSinceLastCheck + 1) * 100.0f), _threadsRequestedSinceLastCheck, _threadsExitedSinceLastCheck);
+    sLogger.debug("ThreadPool Status : Requested-To-Freed Ratio: {:3f} ({}/{})", float(float(_threadsRequestedSinceLastCheck + 1) / float(_threadsExitedSinceLastCheck + 1) * 100.0f), _threadsRequestedSinceLastCheck, _threadsExitedSinceLastCheck);
     sLogger.debug("ThreadPool Status : Eaten Count: {} (negative is bad!)", _threadsEaten);
     _mutex.Release();
 }

@@ -173,11 +173,11 @@ bool checkRequiredDirs()
 
         if (fs::exists(requiredPath))
         {
-            sLogger.info("Required dir {} found!", requiredPath.u8string());
+            sLogger.info("Required dir {} found!", requiredPath.generic_string());
         }
         else
         {
-            sLogger.failure("Directory {} not found. Shutting down.", requiredPath.u8string());
+            sLogger.failure("Directory {} not found. Shutting down.", requiredPath.generic_string());
             return false;
         }
     }
@@ -227,23 +227,23 @@ void checkAdditinaloDirs()
 
         if (fs::exists(additionalPath))
         {
-            sLogger.info("Required dir {} found!", additionalPath.u8string());
+            sLogger.info("Required dir {} found!", additionalPath.generic_string());
         }
         else
         {
             if (dir == "mmaps")
             {
-                sLogger.failure("Movement maps in {} not found. Disabling pathfinding.", additionalPath.u8string());
+                sLogger.failure("Movement maps in {} not found. Disabling pathfinding.", additionalPath.generic_string());
                 worldConfig.terrainCollision.isPathfindingEnabled = false;
             }
             else if (dir == "vmaps")
             {
-                sLogger.failure("Vertical maps in {} not found. Disabling collision.", additionalPath.u8string());
+                sLogger.failure("Vertical maps in {} not found. Disabling collision.", additionalPath.generic_string());
                 worldConfig.terrainCollision.isCollisionEnabled = false;
             }
             else
             {
-                sLogger.failure("Required dir {} not found!", additionalPath.u8string());
+                sLogger.failure("Required dir {} not found!", additionalPath.generic_string());
             }
 
             // Give user a chance to read the error message

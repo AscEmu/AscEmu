@@ -4,7 +4,7 @@
 
 ## Folder: fmt
 - Web: https://github.com/fmtlib/fmt
-- Version: 679af1f5cc0b8b6242fd92b89194ef69ee848e82 (2024/01/08)
+- Version: a33701196adfad74917046096bf5a2aa0ab0bb50 (2022/08/27)
 
 ## Folder: recastnavigation
 - Web: https://github.com/recastnavigation/recastnavigation

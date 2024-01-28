@@ -803,7 +803,7 @@ void LfgMgr::OfferContinue(Group* grp)
         if (Player* leader = sObjectMgr.getPlayer(grp->GetLeader()->guid))
             leader->getSession()->sendLfgOfferContinue(GetDungeon(gguid, false));
 
-        sLogger.debug("player {} ", sObjectMgr.getPlayer(grp->GetLeader()->guid));
+        sLogger.debug("player {} ", fmt::ptr(sObjectMgr.getPlayer(grp->GetLeader()->guid)));
     }
 }
 

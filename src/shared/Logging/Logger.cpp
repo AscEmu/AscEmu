@@ -76,6 +76,9 @@ namespace AscEmu::Logging
 
     void Logger::log(Severity severity, MessageType messageType, std::string_view message)
     {
+#if defined(_MSC_VER)
+        SetConsoleOutputCP(65001);
+#endif
         if (this->minimumMessageType > messageType)
             return;
 

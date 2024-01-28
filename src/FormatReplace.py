@@ -33,7 +33,7 @@ def startMultiLine(line):
 
 def continueMultiLine(line, existPrevLine):
     if haveDelimeter(line):
-        existPrevLine = False;
+        existPrevLine = False
     return handleCleanup(line), existPrevLine
 
 def checkTextLine(line, existPrevLine):
@@ -46,46 +46,46 @@ def checkTextLine(line, existPrevLine):
             return startMultiLine(line)
 
 def handleCleanup(line):
-    line = line.replace("%s", "{}");
-    line = line.replace("%.*s", "{}");
-    line = line.replace("%u", "{}");
-    line = line.replace("%hu", "{}");
-    line = line.replace("%lu", "{}");
-    line = line.replace("%llu", "{}");
-    line = line.replace("%zu", "{}");
-    line = line.replace("%02u", "{:02}");
-    line = line.replace("%03u", "{:03}");
-    line = line.replace("%04u", "{:04}");
-    line = line.replace("%05u", "{:05}");
-    line = line.replace("%02i", "{:02}");
-    line = line.replace("%03i", "{:03}");
-    line = line.replace("%04i", "{:04}");
-    line = line.replace("%05i", "{:05}");
-    line = line.replace("%02d", "{:02}");
-    line = line.replace("%03d", "{:03}");
-    line = line.replace("%04d", "{:04}");
-    line = line.replace("%05d", "{:05}");
-    line = line.replace("%d", "{}");
-    line = line.replace("%i", "{}");
-    line = line.replace("%x", "{:x}");
-    line = line.replace("%X", "{:X}");
-    line = line.replace("%lx", "{:x}");
-    line = line.replace("%lX", "{:X}");
-    line = line.replace("%02X", "{:02X}");
-    line = line.replace("%08X", "{:08X}");
-    line = line.replace("%f", "{}");
-    line = line.replace("%.1f", "{0:.1f}");
-    line = line.replace("%.2f", "{0:.2f}");
-    line = line.replace("%.3f", "{0:.3f}");
-    line = line.replace("%.4f", "{0:.4f}");
-    line = line.replace("%.5f", "{0:.5f}");
-    line = line.replace("%3.1f", "{:3.1f}");
-    line = line.replace("%%", "%");
-    line = line.replace(".c_str()", "");
-    line = line.replace("\" SZFMTD \"", "{}");
-    line = line.replace("\" UI64FMTD \"", "{}");
-    # line = line.replace("\" STRING_VIEW_FMT \"", "{}");
-    # line = line.replace("STRING_VIEW_FMT_ARG", "");
+    line = line.replace("%s", "{}")
+    line = line.replace("%.*s", "{}")
+    line = line.replace("%u", "{}")
+    line = line.replace("%hu", "{}")
+    line = line.replace("%lu", "{}")
+    line = line.replace("%llu", "{}")
+    line = line.replace("%zu", "{}")
+    line = line.replace("%02u", "{:02}")
+    line = line.replace("%03u", "{:03}")
+    line = line.replace("%04u", "{:04}")
+    line = line.replace("%05u", "{:05}")
+    line = line.replace("%02i", "{:02}")
+    line = line.replace("%03i", "{:03}")
+    line = line.replace("%04i", "{:04}")
+    line = line.replace("%05i", "{:05}")
+    line = line.replace("%02d", "{:02}")
+    line = line.replace("%03d", "{:03}")
+    line = line.replace("%04d", "{:04}")
+    line = line.replace("%05d", "{:05}")
+    line = line.replace("%d", "{}")
+    line = line.replace("%i", "{}")
+    line = line.replace("%x", "{:x}")
+    line = line.replace("%X", "{:X}")
+    line = line.replace("%lx", "{:x}")
+    line = line.replace("%lX", "{:X}")
+    line = line.replace("%02X", "{:02X}")
+    line = line.replace("%08X", "{:08X}")
+    line = line.replace("%f", "{}")
+    line = line.replace("%.1f", "{0:.1f}")
+    line = line.replace("%.2f", "{0:.2f}")
+    line = line.replace("%.3f", "{0:.3f}")
+    line = line.replace("%.4f", "{0:.4f}")
+    line = line.replace("%.5f", "{0:.5f}")
+    line = line.replace("%3.1f", "{:3.1f}")
+    line = line.replace("%%", "%")
+    line = line.replace(".c_str()", "")
+    line = line.replace("\" SZFMTD \"", "{}")
+    line = line.replace("\" UI64FMTD \"", "{}")
+    # line = line.replace("\" STRING_VIEW_FMT \"", "{}")
+    # line = line.replace("STRING_VIEW_FMT_ARG", "")
     return line
 
 def getDefaultfile(name):
@@ -140,4 +140,6 @@ for i in p.glob('**/*'):
     if '.cpp' in i.name:
         handlefile(fname)
     if '.h' in i.name:
+        handlefile(fname)
+    if '.hpp' in i.name:
         handlefile(fname)

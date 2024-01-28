@@ -1984,7 +1984,7 @@ void ObjectMgr::loadInstanceEncounters()
 #else
                 const auto itrEncounterName = itr->second->encounterName;
 #endif
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `instance_encounters` specified encounter {} ({}) as last encounter but {} ({}) is already marked as one, skipped!", entry, dungeonEncounterName, itr->second->id, itrEncounterName);
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `instance_encounters` specified encounter {} ({}) as last encounter but {} ({}) is already marked as one, skipped!", entry, dungeonEncounterName, itr->second->id, fmt::ptr(itrEncounterName));
                 continue;
             }
 

@@ -70,7 +70,6 @@ CharacterErrorCodes VerifyName(utf8_string name)
 
         if (length > MAX_NAME_LENGTH)
             return E_CHAR_NAME_TOO_LONG;
-
     }
     return E_CHAR_NAME_SUCCESS;
 }

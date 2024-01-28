@@ -2858,7 +2858,7 @@ void MySQLDataStore::loadPlayerCreateInfoLevelstats()
             {
                 if (info->level_stats[level].strength == 0)
                 {
-                    sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Race {} Class {} Level {} does not have stats data. Using stats data of level % i.", _race, _class, level + 1, level);
+                    sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Race {} Class {} Level {} does not have stats data. Using stats data of level {}.", _race, _class, level + 1, level);
                     info->level_stats[level] = info->level_stats[level - 1U];
                 }
             }

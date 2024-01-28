@@ -372,8 +372,8 @@ void AddonMgr::LoadFromDB()
             std::string name = fields[1].GetString();
             std::string version = fields[3].GetString();
 
-            MD5(reinterpret_cast<uint8_t const*>(name.c_str()), name.length(), addon.nameMD5);
-            MD5(reinterpret_cast<uint8_t const*>(version.c_str()), version.length(), addon.versionMD5);
+            MD5(reinterpret_cast<uint8_t const*>(name.c_str()), name.length(), addon.nameMD5);//
+            MD5(reinterpret_cast<uint8_t const*>(version.c_str()), version.length(), addon.versionMD5);//
 
             mBannedAddons.push_back(addon);
 

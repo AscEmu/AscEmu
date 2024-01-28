@@ -898,7 +898,7 @@ void ScriptMgr::register_creature_gossip(uint32_t entry, GossipScript* script)
     if (itr == creaturegossip_.end())
     {
         creaturegossip_.insert(std::make_pair(entry, script));
-        //keeping track of all created gossips to delete them all on shutdown
+        // keeping track of all created gossips to delete them all on shutdown
         _customgossipscripts.insert(script);
     }
     else
@@ -931,7 +931,7 @@ void ScriptMgr::register_item_gossip(uint32_t entry, GossipScript* script)
     const auto itr = itemgossip_.find(entry);
     if (itr == itemgossip_.end())
         itemgossip_.insert(std::make_pair(entry, script));
-    //keeping track of all created gossips to delete them all on shutdown
+    // keeping track of all created gossips to delete them all on shutdown
     _customgossipscripts.insert(script);
 }
 
@@ -942,7 +942,7 @@ void ScriptMgr::register_go_gossip(uint32_t entry, GossipScript* script)
     const auto itr = gogossip_.find(entry);
     if (itr == gogossip_.end())
         gogossip_.insert(std::make_pair(entry, script));
-    //keeping track of all created gossips to delete them all on shutdown
+    // keeping track of all created gossips to delete them all on shutdown
     _customgossipscripts.insert(script);
 }
 
@@ -983,7 +983,7 @@ GossipScript* ScriptMgr::get_item_gossip(uint32_t entry) const
 
 void ScriptMgr::ReloadScriptEngines()
 {
-    //for all scripting engines that allow reloading, assuming there will be new scripting engines.
+    // for all scripting engines that allow reloading, assuming there will be new scripting engines.
     exp_get_script_type version_function;
     exp_engine_reload engine_reloadfunc;
 
@@ -1006,7 +1006,7 @@ void ScriptMgr::ReloadScriptEngines()
 
 void ScriptMgr::UnloadScriptEngines()
 {
-    //for all scripting engines that allow unloading, assuming there will be new scripting engines.
+    // for all scripting engines that allow unloading, assuming there will be new scripting engines.
     exp_get_script_type version_function;
     exp_engine_unload engine_unloadfunc;
 

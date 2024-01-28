@@ -331,7 +331,7 @@ void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
         snprintf(buf, 3, "%.2X", key[i]);
         sstext << buf;
     }
-    sLogger.info(sstext);
+    //sLogger.info(sstext); FIX fmt
 
     recvCrypto.Setup(key, 20);
     sendCrypto.Setup(key, 20);

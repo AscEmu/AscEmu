@@ -71,7 +71,7 @@ void DatabaseUpdater::setupDatabase(const std::string& database, Database& dbPoi
 
     if (fs::exists(baseFilePath))
     {
-        sLogger.debug("{}", baseFilePath);
+        sLogger.debug("{}", baseFilePath.generic_string());
         std::string loadedFile = Util::readFileIntoString(baseFilePath);
 
         // split into seperated string

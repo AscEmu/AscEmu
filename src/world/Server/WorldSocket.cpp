@@ -212,7 +212,7 @@ void WorldSocket::OutPacket(uint32_t opcode, size_t len, const void* data)
 {
     if ((len + 10) > WORLDSOCKET_SENDBUF_SIZE)
     {
-        sLogger.failure("WARNING: Tried to send a packet of {} bytes (which is too large) to a socket. Opcode was: {} (0x%03X)", static_cast<unsigned int>(len), static_cast<unsigned int>(opcode), static_cast<unsigned int>(opcode));
+        sLogger.failure("WARNING: Tried to send a packet of {} bytes (which is too large) to a socket. Opcode was: {} (0x{:03X})", static_cast<unsigned int>(len), static_cast<unsigned int>(opcode), static_cast<unsigned int>(opcode));
         return;
     }
 
@@ -1026,7 +1026,7 @@ void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* dat
         } break;
         default:
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[{}]: {} {} (0x%03X) of {} bytes.", direction ? "SERVER" : "CLIENT", direction ? "sent" : "received",
+            sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[{}]: {} {} (0x{:03X}) of {} bytes.", direction ? "SERVER" : "CLIENT", direction ? "sent" : "received",
                 sOpcodeTables.getNameForInternalId(opcode), sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), opcode), len);
         } break;
     }

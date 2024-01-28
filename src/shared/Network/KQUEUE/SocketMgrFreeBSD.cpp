@@ -51,13 +51,13 @@ void SocketMgr::RemoveSocket(Socket* s)
 {
     if(fds[s->GetFd()] != s)
     {
-        /* already removed */
+        // already removed.
         sLogger.warning("kqueue : Duplicate removal of fd {}!", s->GetFd());
         return;
     }
     fds[s->GetFd()] = 0;
 
-    // remove kevent
+    // remove kevent.
     struct kevent ev, ev2;
     EV_SET(&ev, s->GetFd(), EVFILT_WRITE, EV_DELETE, 0, 0, NULL);
     EV_SET(&ev2, s->GetFd(), EVFILT_READ, EV_DELETE, 0, 0, NULL);
@@ -86,7 +86,7 @@ uint32 SocketMgr::GetSocketCount()
 
 bool SocketWorkerThread::runThread()
 {
-    //printf("Worker thread started.\n");
+    sLogger.info("Worker thread started.");
     int fd_count;
     running = true;
     Socket* ptr;
@@ -106,7 +106,7 @@ bool SocketWorkerThread::runThread()
         {
             if(events[i].ident >= SOCKET_HOLDER_SIZE)
             {
-                sLogger.warning("kqueue : Requested FD that is too high ({})", events[i].ident);
+                sLogger.warning("kqueue : Requested FD that is too high ({})", ptr->GetFd());
                 continue;
             }
 
@@ -120,9 +120,9 @@ bool SocketWorkerThread::runThread()
                 }
                 else
                 {
-                    sLogger.warning("kqueue : Returned invalid fd (no pointer) of FD {}", events[i].ident);
+                    sLogger.warning("kqueue : Returned invalid fd (no pointer) of FD {}", ptr->GetFd());
 
-                    /* make sure it removes so we don't go chasing it again */
+                    // make sure it removes so we don't go chasing it again.
                     EV_SET(&ev, events[i].ident, EVFILT_WRITE, EV_DELETE, 0, 0, NULL);
                     EV_SET(&ev2, events[i].ident, EVFILT_READ, EV_DELETE, 0, 0, NULL);
                     kevent(kq, &ev, 1, 0, 0, NULL);
@@ -138,20 +138,20 @@ bool SocketWorkerThread::runThread()
             }
             else if(events[i].filter == EVFILT_WRITE)
             {
-                ptr->BurstBegin();          // Lock receive mutex
-                ptr->WriteCallback();       // Perform actual send()
+                ptr->BurstBegin();                          // Lock receive mutex
+                ptr->WriteCallback();                       // Perform actual send()
                 if(ptr->writeBuffer.GetSize() > 0)
-                    ptr->PostEvent(EVFILT_WRITE, true);   // Still remaining data.
+                    ptr->PostEvent(EVFILT_WRITE, true);     // Still remaining data.
                 else
                 {
                     ptr->DecSendLock();
                     ptr->PostEvent(EVFILT_READ, false);
                 }
-                ptr->BurstEnd();            // Unlock
+                ptr->BurstEnd(); // Unlock
             }
             else if(events[i].filter == EVFILT_READ)
             {
-                ptr->ReadCallback(0);               // Len is unknown at this point.
+                ptr->ReadCallback(0); // Len is unknown at this point.
                 if(ptr->writeBuffer.GetSize() > 0 && ptr->IsConnected() && !ptr->HasSendLock())
                 {
                     ptr->PostEvent(EVFILT_WRITE, true);
