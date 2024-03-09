@@ -192,11 +192,11 @@ void WorldSession::handleTrainerBuySpellOpcode(WorldPacket& recvPacket)
     if (trainerSpell->deleteSpell)
     {
         if (trainerSpell->learnSpell)
-            _player->removeSpell(trainerSpell->deleteSpell, true, true, trainerSpell->learnSpell->getId());
+            _player->removeSpell(trainerSpell->deleteSpell, true);
         else if (trainerSpell->castSpell)
-            _player->removeSpell(trainerSpell->deleteSpell, true, true, trainerSpell->castSpell->getId());
+            _player->removeSpell(trainerSpell->deleteSpell, true);
         else
-            _player->removeSpell(trainerSpell->deleteSpell, true, false, 0);
+            _player->removeSpell(trainerSpell->deleteSpell, true);
     }
 
     SendPacket(SmsgTrainerBuySucceeded(srlPacket.guid.getRawGuid(), srlPacket.spellId).serialise().get());

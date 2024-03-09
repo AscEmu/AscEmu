@@ -14,14 +14,9 @@ This file is released under the MIT license. See README-MIT for more information
 enum DruidSpells
 {
     SPELL_FUROR_R1                          = 17056,
-    SPELL_FUROR_R2                          = 17058,
-    SPELL_FUROR_R3                          = 17059,
-    SPELL_FUROR_R4                          = 17060,
-    SPELL_FUROR_R5                          = 17061,
     SPELL_FUROR_RAGE                        = 17057,
     SPELL_FUROR_ENERGY                      = 17099,
     SPELL_IMPROVED_LEADER_OF_THE_PACK_R1    = 34297,
-    SPELL_IMPROVED_LEADER_OF_THE_PACK_R2    = 34300,
     SPELL_LEADER_OF_THE_PACK_DUMMY          = 17007,
     SPELL_LEADER_OF_THE_PACK_AURA           = 24932,
     SPELL_LEADER_OF_THE_PACK_HEAL           = 34299,
@@ -193,31 +188,13 @@ void setupDruidSpells(ScriptMgr* mgr)
     SetupLegacyDruidSpells(mgr);
 
 #if VERSION_STRING < Mop
-    uint32_t furorIds[] =
-    {
-        SPELL_FUROR_R1,
-        SPELL_FUROR_R2,
-        SPELL_FUROR_R3,
-#if VERSION_STRING < Cata
-        SPELL_FUROR_R4,
-        SPELL_FUROR_R5,
-#endif
-        0
-    };
-    mgr->register_spell_script(furorIds, new FurorDummy);
-
+    mgr->register_spell_script(SPELL_FUROR_R1, new FurorDummy);
     mgr->register_spell_script(SPELL_FUROR_RAGE, new Furor);
     mgr->register_spell_script(SPELL_FUROR_ENERGY, new Furor);
 #endif
 
 #if VERSION_STRING < Cata
-    uint32_t improvedLeaderOfThePackIds[] =
-    {
-        SPELL_IMPROVED_LEADER_OF_THE_PACK_R1,
-        SPELL_IMPROVED_LEADER_OF_THE_PACK_R2,
-        0
-    };
-    mgr->register_spell_script(improvedLeaderOfThePackIds, new ImprovedLeaderOfThePackDummy);
+    mgr->register_spell_script(SPELL_IMPROVED_LEADER_OF_THE_PACK_R1, new ImprovedLeaderOfThePackDummy);
 #endif
 
     mgr->register_spell_script(SPELL_LEADER_OF_THE_PACK_DUMMY, new LeaderOfThePackDummy);

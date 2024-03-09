@@ -130,6 +130,7 @@ void SpellMgr::finalize()
 void SpellMgr::loadSpellDataFromDatabase()
 {
     // Load spell related SQL tables
+    loadSpellRanks();
     loadSpellCustomOverride();
     loadSpellCoefficientOverride();
     loadSpellAIThreat();
@@ -321,22 +322,22 @@ void SpellMgr::reloadSpellDisabled()
     loadSpellDisabled();
 }
 
-SpellSkillMapBounds SpellMgr::getSkillEntryForSpellBounds(uint32_t spellId) const
+SpellSkillAbilityMapBounds SpellMgr::getSkillEntryForSpellBounds(uint32_t spellId) const
 {
     return mSpellSkillsMap.equal_range(spellId);
 }
 
+SkillSkillAbilityMapBounds SpellMgr::getSkillEntryForSkillBounds(uint16_t skillId) const
+{
+    return mSkillSpellsMap.equal_range(skillId);
+}
+
 WDB::Structures::SkillLineAbilityEntry const* SpellMgr::getFirstSkillEntryForSpell(uint32_t spellId, Player const* forPlayer/* = nullptr*/) const
 {
-    WDB::Structures::SkillLineAbilityEntry const* skillLineAbility = nullptr;
-
     const auto spellSkillBounds = getSkillEntryForSpellBounds(spellId);
     for (auto spellSkillItr = spellSkillBounds.first; spellSkillItr != spellSkillBounds.second; ++spellSkillItr)
     {
         const auto skillEntry = spellSkillItr->second;
-        if (skillEntry == nullptr)
-            continue;
-
         if (forPlayer != nullptr)
         {
             if (skillEntry->race_mask != 0 && !(skillEntry->race_mask & forPlayer->getRaceMask()))
@@ -346,16 +347,10 @@ WDB::Structures::SkillLineAbilityEntry const* SpellMgr::getFirstSkillEntryForSpe
                 continue;
         }
 
-        skillLineAbility = skillEntry;
-        break;
+        return skillEntry;
     }
 
-    return skillLineAbility;
-}
-
-SkillLineAbilityMapBounds SpellMgr::getSkillLineAbilityMapBounds(uint32_t skillId) const
-{
-    return mSkillLineAbilityMap.equal_range(skillId);
+    return nullptr;
 }
 
 SpellTargetConstraint* SpellMgr::getSpellTargetConstraintForSpell(uint32_t spellId) const
@@ -446,6 +441,9 @@ bool SpellMgr::checkLocation(SpellInfo const* spellInfo, uint32_t zone_id, uint3
 
 SpellInfo const* SpellMgr::getSpellInfo(const uint32_t spellId) const
 {
+    if (spellId == 0)
+        return nullptr;
+
     const auto itr = getSpellInfoMap()->find(spellId);
     if (itr != getSpellInfoMap()->end())
         return itr->second;
@@ -1034,7 +1032,7 @@ void SpellMgr::loadSpellInfoData()
 void SpellMgr::loadSkillLineAbilityMap()
 {
     const auto startTime = Util::TimeNow();
-    mSkillLineAbilityMap.clear();
+    mSkillSpellsMap.clear();
     mSpellSkillsMap.clear();
 
     uint32_t count = 0;
@@ -1044,13 +1042,154 @@ void SpellMgr::loadSkillLineAbilityMap()
         if (skillAbilityEntry == nullptr)
             continue;
 
-        mSkillLineAbilityMap.insert(SkillLineAbilityMap::value_type(skillAbilityEntry->Id, skillAbilityEntry));
-        mSpellSkillsMap.insert(std::make_pair(skillAbilityEntry->spell, skillAbilityEntry));
+        // Should not happen but just in case
+        if (skillAbilityEntry->skilline > 0)
+            mSkillSpellsMap.insert({ static_cast<uint16_t>(skillAbilityEntry->skilline), skillAbilityEntry});
+
+        mSpellSkillsMap.insert({ skillAbilityEntry->spell, skillAbilityEntry });
         ++count;
     }
 
     sLogger.info("SpellMgr : Loaded %u skill abilities in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
+
+#if VERSION_STRING < Mop
+void SpellMgr::loadTalentRanks()
+{
+    const auto startTime = Util::TimeNow();
+
+    uint32_t count = 0;
+    for (uint32_t i = 0; i < sTalentStore.getNumRows(); ++i)
+    {
+        const auto talentEntry = sTalentStore.lookupEntry(i);
+        if (talentEntry == nullptr)
+            continue;
+
+        const auto* const firstRank = getSpellInfo(talentEntry->RankID[0]);
+        if (firstRank == nullptr)
+        {
+            sLogger.failure("SpellMgr::loadTalentRanks : Unknown spell id %u in sTalentStore, skipping this chain", talentEntry->RankID[0]);
+            continue;
+        }
+
+#if VERSION_STRING >= WotLK
+        const auto talentTree = sTalentTabStore.lookupEntry(talentEntry->TalentTree);
+#endif
+
+        // Get last rank
+        SpellInfo const* lastRank = nullptr;
+        for (uint8_t rank = 0; rank < 5; ++rank)
+        {
+            const auto spellId = talentEntry->RankID[rank];
+            if (spellId == 0)
+                break;
+
+            auto* const rankInfo = getMutableSpellInfo(spellId);
+            if (rankInfo == nullptr)
+                break;
+
+            // Also add some talent data to each rank's SpellInfo for faster access
+            rankInfo->setIsTalent(true);
+#if VERSION_STRING >= WotLK
+            if (talentTree != nullptr && talentTree->PetTalentMask != 0)
+                rankInfo->setIsPetTalent(true);
+#endif
+
+            lastRank = rankInfo;
+        }
+
+        // If talent has no ranks, skip it
+        if (lastRank == nullptr || lastRank->getId() == firstRank->getId())
+            continue;
+
+        std::map<uint32_t/*spell id*/, SpellRankInfo> preparedSpellRanks{};
+        auto areSpellsValid = true, areRanksValid = true, foundDuplicateChain = false;
+        uint32_t invalidSpellId = 0;
+        uint8_t invalidSpellRank = 0, expectedSpellRank = 0;
+
+        uint32_t previousSpellId = 0;
+        uint8_t previousRank = 0;
+        for (uint8_t rank = 1; rank <= 5; ++rank)
+        {
+            const auto spellId = talentEntry->RankID[rank - 1];
+            if (spellId == 0)
+                break;
+
+            if (rank != (previousRank + 1))
+            {
+                areRanksValid = false;
+                invalidSpellRank = rank;
+                expectedSpellRank = previousRank + 1;
+                break;
+            }
+
+            const auto* const spellInfo = getSpellInfo(spellId);
+            if (spellInfo == nullptr)
+            {
+                areSpellsValid = false;
+                invalidSpellId = spellId;
+                break;
+            }
+
+            if (spellInfo->hasSpellRanks())
+            {
+                foundDuplicateChain = true;
+                invalidSpellId = spellId;
+                break;
+            }
+
+            SpellRankInfo rankInfo{};
+            rankInfo.previousSpell = previousSpellId != 0 ? getSpellInfo(previousSpellId) : nullptr;
+            rankInfo.nextSpell = rank < 5 ? getSpellInfo(talentEntry->RankID[rank]) : nullptr;
+            rankInfo.firstSpell = firstRank;
+            rankInfo.lastSpell = lastRank;
+            rankInfo.rank = rank;
+
+            previousSpellId = spellId;
+            previousRank = rank;
+
+            // Spell rank data is ready but validate and prepare the entire chain before saving it
+            preparedSpellRanks.insert({ spellId, rankInfo });
+        }
+
+        if (!areSpellsValid)
+        {
+            sLogger.failure("SpellMgr::loadTalentRanks : Talent rank chain contains invalid spell id %u, skipping this chain", invalidSpellId);
+            continue;
+        }
+
+        if (!areRanksValid)
+        {
+            sLogger.failure("SpellMgr::loadTalentRanks : Talent rank chain contains invalid rank %u for spell id %u (expected %u), skipping this chain",
+                invalidSpellRank, invalidSpellId, expectedSpellRank);
+            continue;
+        }
+
+        if (foundDuplicateChain)
+        {
+            // Do not send error for talents because same spell can be found in multiple different talent trees
+            continue;
+        }
+
+        if (preparedSpellRanks.size() == 1)
+        {
+            sLogger.failure("SpellMgr::loadTalentRanks : Talent rank chain contains only one spell for id %u, skipping", preparedSpellRanks.cbegin()->first);
+            continue;
+        }
+
+        // Finally insert validated spell rank data to SpellInfo class
+        for (const auto& [spellId, rankInfo] : preparedSpellRanks)
+        {
+            auto spellInfo = getMutableSpellInfo(spellId);
+            spellInfo->setSpellRankData(rankInfo);
+        }
+
+        ++count;
+    }
+
+    sLogger.info("SpellMgr : Loaded %u talent rank chains in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
+#endif
 
 void SpellMgr::loadSpellCoefficientOverride()
 {
@@ -1086,16 +1225,13 @@ void SpellMgr::loadSpellCoefficientOverride()
     } while (result->NextRow());
     delete result;
 
-    sLogger.info("Loaded %u override values from `spell_coefficient_override` table", overridenCoeffs);
+    sLogger.info("SpellMgr : Loaded %u override values from `spell_coefficient_override` table", overridenCoeffs);
 }
 
 void SpellMgr::loadSpellCustomOverride()
 {
-    //                                                   0        1               2                       3                        4               5                6                  7              8
-    const auto result = WorldDatabase.Query("SELECT `spell_id`, `rank`, `assign_on_target_flag`, `assign_self_cast_only`, `assign_c_is_flag`, `proc_flags`, `proc_target_selfs`, `proc_chance`, `proc_charges`, "
-    //                                       9                       10                            11                             12
-                                      "`proc_interval`, `proc_effect_trigger_spell_0`, `proc_effect_trigger_spell_1`, `proc_effect_trigger_spell_2` FROM spell_custom_override");
-    
+    //                                                   0                1                         2                     3
+    const auto result = WorldDatabase.Query("SELECT `spell_id`, `assign_on_target_flag`, `assign_self_cast_only`, `assign_c_is_flag` FROM spell_custom_override");
     if (result == nullptr)
     {
         sLogger.debug("SpellMgr::loadSpellCustomOverride : Your `spell_custom_override` table is empty!");
@@ -1114,21 +1250,19 @@ void SpellMgr::loadSpellCustomOverride()
             continue;
         }
 
-        // rank
-        if (fields[1].isSet())
-            spellInfo->custom_RankNumber = fields[1].GetUInt32();
-
         // assign_on_target_flag
-        if (fields[2].isSet())
-            spellInfo->custom_BGR_one_buff_on_target = fields[2].GetUInt32();
+        if (fields[1].isSet())
+            spellInfo->custom_BGR_one_buff_on_target = fields[1].GetUInt32();
 
         // assign_self_cast_only
-        if (fields[3].isSet())
-            spellInfo->custom_self_cast_only = fields[3].GetBool();
+        if (fields[2].isSet())
+            spellInfo->custom_self_cast_only = fields[2].GetBool();
 
         // assign_c_is_flag
-        if (fields[4].isSet())
-            spellInfo->custom_c_is_flags = fields[4].GetUInt32();
+        if (fields[3].isSet())
+            spellInfo->custom_c_is_flags = fields[3].GetUInt32();
+
+        // todo: following columns will be removed from db on spell proc rework -Appled
 
         //\ todo: remove this field
         //proc_flags
@@ -1186,7 +1320,7 @@ void SpellMgr::loadSpellCustomOverride()
     } while (result->NextRow());
     delete result;
    
-    sLogger.info("Loaded %u override values from `spell_custom_override` table", overridenSpells);
+    sLogger.info("SpellMgr : Loaded %u override values from `spell_custom_override` table", overridenSpells);
 }
 
 void SpellMgr::loadSpellAIThreat()
@@ -1218,7 +1352,7 @@ void SpellMgr::loadSpellAIThreat()
     } while (result->NextRow());
     delete result;
 
-    sLogger.info("SpellMgr : Loaded %u spell ai threat", threatCount);
+    sLogger.info("SpellMgr : Loaded %u spell ai threat from `ai_threattospellid` table", threatCount);
 }
 
 void SpellMgr::loadSpellEffectOverride()
@@ -1288,7 +1422,7 @@ void SpellMgr::loadSpellEffectOverride()
     } while (result->NextRow());
     delete result;
 
-    sLogger.info("SpellMgr : Loaded %u spell effect overrides", overridenEffects);
+    sLogger.info("SpellMgr : Loaded %u spell effect overrides from `spell_effects_override` table", overridenEffects);
 }
 
 void SpellMgr::loadSpellAreas()
@@ -1314,7 +1448,7 @@ void SpellMgr::loadSpellAreas()
 
         uint32_t spellId = fields[0].GetUInt32();
 
-        SpellArea spellArea;
+        SpellArea spellArea{};
         spellArea.spellId = spellId;
         spellArea.areaId = fields[1].GetUInt32();
         spellArea.questStart = fields[2].GetUInt32();
@@ -1483,13 +1617,11 @@ void SpellMgr::loadSpellAreas()
     } while (result->NextRow());
     delete result;
 
-    sLogger.info("SpellMgr : Loaded %u spell area requirements", areaCount);
+    sLogger.info("SpellMgr : Loaded %u spell area requirements from `spell_area` table", areaCount);
 }
 
 void SpellMgr::loadSpellRequired()
 {
-    const auto startTime = Util::TimeNow();
-
     mSpellsRequiringSpell.clear();
     mSpellRequired.clear();
 
@@ -1536,7 +1668,7 @@ void SpellMgr::loadSpellRequired()
     } while (result->NextRow());
 
     delete result;
-    sLogger.info("SpellMgr : Loaded %u spell required records in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    sLogger.info("SpellMgr : Loaded %u spell required records from `spell_required` table", count);
 }
 
 void SpellMgr::loadSpellTargetConstraints()
@@ -1597,7 +1729,7 @@ void SpellMgr::loadSpellTargetConstraints()
         delete result;
     }
 
-    sLogger.info("SpellMgr : Loaded constraints for %u spells...", static_cast<uint32_t>(mSpellTargetConstraintMap.size()));
+    sLogger.info("SpellMgr : Loaded %u spell target constraints from `spelltargetconstraints` table", static_cast<uint32_t>(mSpellTargetConstraintMap.size()));
 }
 
 void SpellMgr::loadSpellDisabled()
@@ -1613,15 +1745,166 @@ void SpellMgr::loadSpellDisabled()
         delete result;
     }
 
-    sLogger.info("SpellMgr : Loaded %u disabled spells.", static_cast<uint32_t>(mDisabledSpells.size()));
+    sLogger.info("SpellMgr : Loaded %u disabled spells from `spell_disable` table", static_cast<uint32_t>(mDisabledSpells.size()));
+}
+
+void SpellMgr::loadSpellRanks()
+{
+#if VERSION_STRING < Mop
+    // Load talent ranks from DBC before spell ranks from database
+    loadTalentRanks();
+#endif
+
+    //                                                  0             1          2
+    const auto result = WorldDatabase.Query("SELECT `spell_id`, `first_spell`, `rank` "
+        "FROM spell_ranks WHERE `min_build` <= %u AND `max_build` >= %u ORDER BY `first_spell`, `rank`", VERSION_STRING, VERSION_STRING);
+
+    if (result == nullptr)
+    {
+        sLogger.debug("SpellMgr::loadSpellRanks : Your `spell_ranks` table is empty");
+        return;
+    }
+
+    std::map<uint8_t/*rank*/, uint32_t/*spell id*/> spellRankChain{};
+    uint32_t totalSpellRankChains = 0;
+
+    const auto createSpellRankChain = [&spellRankChain, this, &totalSpellRankChains]() -> void
+    {
+        if (spellRankChain.empty())
+            return;
+
+        if (spellRankChain.size() < 2)
+        {
+            sLogger.failure("SpellMgr::loadSpellRanks : Spell rank chain for spell id %u must contain at least 2 spells, skipping", spellRankChain.cbegin()->second);
+            spellRankChain.clear();
+            return;
+        }
+
+        std::map<uint32_t/*spell id*/, SpellRankInfo> preparedSpellRanks{};
+        auto areChainSpellsValid = true, areChainRanksValid = true, foundDuplicateChain = false;
+        uint32_t invalidSpellId = 0;
+        uint8_t invalidSpellRank = 0, expectedSpellRank = 0;
+
+        uint32_t previousSpellId = 0;
+        uint8_t previousRank = 0;
+        for (auto itr = spellRankChain.cbegin(); itr != spellRankChain.cend();)
+        {
+            const auto spellRank = itr->first;
+            const auto spellId = itr->second;
+
+            if (spellRank == 0)
+            {
+                areChainRanksValid = false;
+                invalidSpellRank = spellRank;
+                invalidSpellId = spellId;
+                expectedSpellRank = 1;
+                break;
+            }
+            else if (spellRank > 1 && spellRank != (previousRank + 1))
+            {
+                areChainRanksValid = false;
+                invalidSpellRank = spellRank;
+                invalidSpellId = spellId;
+                expectedSpellRank = previousRank + 1;
+                break;
+            }
+
+            const auto* const spellInfo = getSpellInfo(spellId);
+            if (spellInfo == nullptr)
+            {
+                areChainSpellsValid = false;
+                invalidSpellId = spellId;
+                break;
+            }
+
+            if (spellInfo->hasSpellRanks())
+            {
+                foundDuplicateChain = true;
+                invalidSpellId = spellId;
+                break;
+            }
+
+            SpellRankInfo rankInfo{};
+            rankInfo.previousSpell = previousSpellId != 0 ? getSpellInfo(previousSpellId) : nullptr;
+            rankInfo.firstSpell = getSpellInfo(spellRankChain.cbegin()->second);
+            rankInfo.lastSpell = getSpellInfo(spellRankChain.crbegin()->second);
+            rankInfo.rank = spellRank;
+
+            previousSpellId = spellId;
+            previousRank = spellRank;
+            ++itr;
+
+            rankInfo.nextSpell = itr != spellRankChain.cend() ? getSpellInfo(itr->second) : nullptr;
+
+            // Spell rank data is ready but validate and prepare the entire chain before saving it
+            preparedSpellRanks.insert({ spellId, rankInfo });
+        }
+
+        if (!areChainSpellsValid)
+        {
+            sLogger.failure("SpellMgr::loadSpellRanks : Spell rank chain contains invalid spell id %u, skipping this chain", invalidSpellId);
+            spellRankChain.clear();
+            return;
+        }
+
+        if (!areChainRanksValid)
+        {
+            sLogger.failure("SpellMgr::loadSpellRanks : Spell rank chain contains invalid spell rank %u for spell id %u (expected %u), skipping this chain",
+                invalidSpellRank, invalidSpellId, expectedSpellRank);
+            spellRankChain.clear();
+            return;
+        }
+
+        if (foundDuplicateChain)
+        {
+            sLogger.failure("SpellMgr::loadSpellRanks : Spell id %u already contains a spell rank chain, skipping this chain", invalidSpellId);
+            spellRankChain.clear();
+            return;
+        }
+
+        // Finally insert validated spell rank data to SpellInfo class
+        for (const auto& [spellId, rankInfo] : preparedSpellRanks)
+        {
+            auto spellInfo = getMutableSpellInfo(spellId);
+            spellInfo->setSpellRankData(rankInfo);
+        }
+
+        spellRankChain.clear();
+        ++totalSpellRankChains;
+    };
+
+    uint32_t lastFetchedSpellId = 0;
+    do
+    {
+        const auto fields = result->Fetch();
+        const auto spellId = fields[0].GetUInt32();
+        const auto firstSpellId = fields[1].GetUInt32();
+        const auto rank = fields[2].GetUInt8();
+
+        if (lastFetchedSpellId == 0)
+            lastFetchedSpellId = firstSpellId;
+
+        // First spell id changes => create a rank chain for each rank before continuing
+        if (lastFetchedSpellId != firstSpellId)
+        {
+            createSpellRankChain();
+            lastFetchedSpellId = firstSpellId;
+        }
+
+        spellRankChain.insert({ rank, spellId });
+    } while (result->NextRow());
+    delete result;
+
+    // Remember to create a rank chain for last chain as well
+    createSpellRankChain();
+
+    sLogger.info("SpellMgr : Loaded %u spell rank chains from `spell_ranks` table", totalSpellRankChains);
 }
 
 void SpellMgr::setSpellCoefficient(SpellInfo* sp)
 {
     const auto baseDuration = float(GetDuration(sSpellDurationStore.lookupEntry(sp->getDurationIndex())));
-#if VERSION_STRING <= TBC
-    const auto isOverTimeSpell = sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE) || sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_HEAL);
-#endif
+
     // Check if coefficient is overriden from database
     if (sp->spell_coeff_direct != -1)
     {
@@ -1698,6 +1981,8 @@ void SpellMgr::setSpellCoefficient(SpellInfo* sp)
         }
     }
 #else
+    const auto isOverTimeSpell = sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE) || sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_HEAL);
+
     // Helper lambda for checking if spell has additional effects
     auto hasAdditionalEffects = [&](SpellInfo const* sp) -> bool
     {
@@ -2068,6 +2353,9 @@ void SpellMgr::setSpellCoefficient(SpellInfo* sp)
 
 SpellInfo* SpellMgr::getMutableSpellInfo(const uint32_t spellId)
 {
+    if (spellId == 0)
+        return nullptr;
+
     const auto itr = getSpellInfoMap()->find(spellId);
     if (itr != getSpellInfoMap()->end())
         return itr->second;

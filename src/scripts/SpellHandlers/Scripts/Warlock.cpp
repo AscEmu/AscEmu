@@ -14,7 +14,6 @@ enum WarlockSpells
 {
     SPELL_BACKLASH_PROC             = 34936,
     SPELL_NIGHTFALL_R1              = 18094,
-    SPELL_NIGHTFALL_R2              = 18095,
     SPELL_SHADOW_TRANCE_PROC        = 17941,
 };
 
@@ -94,13 +93,6 @@ void setupWarlockSpells(ScriptMgr* mgr)
     mgr->register_spell_script(SPELL_BACKLASH_PROC, new Backlash);
 #endif
 
-    uint32_t nightfallIds[] =
-    {
-        SPELL_NIGHTFALL_R1,
-        SPELL_NIGHTFALL_R2,
-        0
-    };
-    mgr->register_spell_script(nightfallIds, new NightfallDummy);
-
+    mgr->register_spell_script(SPELL_NIGHTFALL_R1, new NightfallDummy);
     mgr->register_spell_script(SPELL_SHADOW_TRANCE_PROC, new ShadowTrance);
 }

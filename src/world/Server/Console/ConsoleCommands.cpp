@@ -10,7 +10,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Server/Console/BaseConsole.h"
 #include "Server/Master.h"
-#include "Cryptography/crc32.h"
 #include "Management/MailMgr.h"
 #include "Server/World.h"
 #include "Management/ObjectMgr.hpp"
@@ -20,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSocket.h"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "Utilities/Strings.hpp"
 
 bool handleSendChatAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool /*isWebClient*/)
 {
@@ -371,17 +371,6 @@ bool handleWhisperCommand(BaseConsole* baseConsole, int argumentCount, std::stri
 
     player->broadcastMessage(whisperOut.str().c_str());
     baseConsole->Write("Message '%s' sent to player %s.\r\n", consoleInput.c_str(), player->getName().c_str());
-
-    return true;
-}
-
-bool handleCreateNameHashCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool /*isWebClient*/)
-{
-    if (argumentCount > 0 && consoleInput.empty())
-        return false;
-
-    baseConsole->Write("Name Hash for %s is 0x%X \r\n", consoleInput.c_str(), crc32((const unsigned char*)consoleInput.c_str(), 
-        (unsigned int)consoleInput.length()));
 
     return true;
 }

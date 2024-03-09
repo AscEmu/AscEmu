@@ -1380,37 +1380,46 @@ void Pet::UpdateSpellList(bool showLearnSpells)
         s2 = f->tameable;
     }
 
-
-    if (s || s2)
+    const auto learnNewSkillSpells = [this, showLearnSpells](uint16_t skillLine) -> void
     {
-        for (uint32 idx = 0; idx < sSkillLineAbilityStore.getNumRows(); ++idx)
+        if (skillLine == 0)
+            return;
+
+        const auto skillBounds = sSpellMgr.getSkillEntryForSkillBounds(skillLine);
+        for (auto skillItr = skillBounds.first; skillItr != skillBounds.second; ++skillItr)
         {
-            const auto skill_line_ability = sSkillLineAbilityStore.lookupEntry(idx);
-            if (skill_line_ability == nullptr)
-                continue;
+            const auto skill_line_ability = skillItr->second;
 
             // Update existing spell, or add new "automatic-acquired" spell
-            if ((skill_line_ability->skilline == s || skill_line_ability->skilline == s2) && skill_line_ability->acquireMethod == 2)
+            if (skill_line_ability->acquireMethod == 2)
             {
                 SpellInfo const* sp = sSpellMgr.getSpellInfo(skill_line_ability->spell);
                 if (sp && getLevel() >= sp->getBaseLevel())
                 {
                     // Pet is able to learn this spell; now check if it already has it, or a higher rank of it
                     bool addThisSpell = true;
-                    for (PetSpellMap::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
+                    if (sp->hasSpellRanks())
                     {
-                        // Very hacky way to check if spell is same but different rank
-                        // It's better than nothing until better solution is implemented -Appled
-                        const bool sameSpell = itr->first->custom_NameHash == sp->custom_NameHash &&
-                            itr->first->getSpellVisual(0) == sp->getSpellVisual(0) &&
-                            itr->first->getSpellIconID() == sp->getSpellIconID() &&
-                            itr->first->getName() == sp->getName();
-
-                        if (sameSpell && (itr->first->custom_RankNumber >= sp->custom_RankNumber))
+                        for (const auto& spellMapEntry : mSpells)
                         {
-                            // Pet already has this spell, or a higher rank. Don't add it.
-                            addThisSpell = false;
+                            const auto* const knownSpell = spellMapEntry.first;
+                            if (!knownSpell->hasSpellRanks())
+                                continue;
+
+                            if (!sp->getRankInfo()->isSpellPartOfThisSpellRankChain(knownSpell))
+                                continue;
+
+                            if (knownSpell->getRankInfo()->getRank() >= sp->getRankInfo()->getRank())
+                            {
+                                // Pet already has this spell, or a higher rank. Don't add it.
+                                addThisSpell = false;
+                                break;
+                            }
                         }
+                    }
+                    else
+                    {
+                        addThisSpell = !HasSpell(skill_line_ability->spell);
                     }
                     if (addThisSpell)
                     {
@@ -1419,7 +1428,10 @@ void Pet::UpdateSpellList(bool showLearnSpells)
                 }
             }
         }
-    }
+    };
+
+    learnNewSkillSpells(s);
+    learnNewSkillSpells(s2);
 }
 
 void Pet::AddSpell(SpellInfo const* sp, bool learning, bool showLearnSpell)
@@ -1446,14 +1458,7 @@ void Pet::AddSpell(SpellInfo const* sp, bool learning, bool showLearnSpell)
         {
             for (PetSpellMap::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
             {
-                // Very hacky way to check if spell is same but different rank
-                // It's better than nothing until better solution is implemented -Appled
-                const bool sameSpell = itr->first->custom_NameHash == sp->custom_NameHash &&
-                    itr->first->getSpellVisual(0) == sp->getSpellVisual(0) &&
-                    itr->first->getSpellIconID() == sp->getSpellIconID() &&
-                    itr->first->getName() == sp->getName();
-
-                if (sameSpell)
+                if (itr->first->hasSpellRanks() && itr->first->getRankInfo()->isSpellPartOfThisSpellRankChain(sp))
                 {
                     // replace the action bar
                     for (uint8 i = 0; i < 10; ++i)
