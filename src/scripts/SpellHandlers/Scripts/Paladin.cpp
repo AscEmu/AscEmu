@@ -15,11 +15,9 @@ This file is released under the MIT license. See README-MIT for more information
 enum PaladinSpells
 {
     SPELL_ART_OF_WAR_PROC_R1            = 53489,
-    SPELL_ART_OF_WAR_PROC_R2            = 59578,
     SPELL_BLOOD_CORRUPTION              = 53742,
     SPELL_EYE_FOR_AN_EYE_DAMAGE         = 25997,
     SPELL_EYE_FOR_AN_EYE_DUMMY_R1       = 9799,
-    SPELL_EYE_FOR_AN_EYE_DUMMY_R2       = 25988,
     SPELL_HOLY_VENGEANCE                = 31803,
     SPELL_JUDGEMENT_OF_LIGHT_DEBUFF     = 20185,
     SPELL_JUDGEMENT_OF_LIGHT_HEAL       = 20267,
@@ -36,10 +34,6 @@ enum PaladinSpells
     SPELL_SEAL_OF_VENGEANCE_DIRECT      = 42463,
     SPELL_SEAL_OF_VENGEANCE_DUMMY       = 31801,
     SPELL_VENGEANCE_PROC_R1             = 20050,
-    SPELL_VENGEANCE_PROC_R2             = 20052,
-    SPELL_VENGEANCE_PROC_R3             = 20053,
-    SPELL_VENGEANCE_PROC_R4             = 20054,
-    SPELL_VENGEANCE_PROC_R5             = 20055,
 };
 
 #if VERSION_STRING == WotLK
@@ -401,22 +395,10 @@ void setupPaladinSpells(ScriptMgr* mgr)
     SetupLegacyPaladinSpells(mgr);
 
 #if VERSION_STRING == WotLK
-    uint32_t artOfWarIds[] =
-    {
-        SPELL_ART_OF_WAR_PROC_R1,
-        SPELL_ART_OF_WAR_PROC_R2,
-        0
-    };
-    mgr->register_spell_script(artOfWarIds, new ArtOfWar);
+    mgr->register_spell_script(SPELL_ART_OF_WAR_PROC_R1, new ArtOfWar);
 #endif
 
-    uint32_t eyeForEyeIds[] =
-    {
-        SPELL_EYE_FOR_AN_EYE_DUMMY_R1,
-        SPELL_EYE_FOR_AN_EYE_DUMMY_R2,
-        0
-    };
-    mgr->register_spell_script(eyeForEyeIds, new EyeForAnEyeDummy);
+    mgr->register_spell_script(SPELL_EYE_FOR_AN_EYE_DUMMY_R1, new EyeForAnEyeDummy);
     mgr->register_spell_script(SPELL_EYE_FOR_AN_EYE_DAMAGE, new EyeForAnEye);
 
 #if VERSION_STRING < Cata
@@ -443,17 +425,6 @@ void setupPaladinSpells(ScriptMgr* mgr)
 #endif
 
 #if VERSION_STRING < Cata
-    uint32_t vengeanceProcIds[] =
-    {
-        SPELL_VENGEANCE_PROC_R1,
-        SPELL_VENGEANCE_PROC_R2,
-        SPELL_VENGEANCE_PROC_R3,
-#if VERSION_STRING < WotLK
-        SPELL_VENGEANCE_PROC_R4,
-        SPELL_VENGEANCE_PROC_R5,
-#endif
-        0
-    };
-    mgr->register_spell_script(vengeanceProcIds, new Vengeance);
+    mgr->register_spell_script(SPELL_VENGEANCE_PROC_R1, new Vengeance);
 #endif
 }

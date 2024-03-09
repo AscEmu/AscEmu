@@ -123,13 +123,6 @@ struct ReflectSpellSchool
     bool infront;
 };
 
-struct OnHitSpell
-{
-    uint32_t spellid;
-    uint32_t mindmg;
-    uint32_t maxdmg;
-};
-
 typedef struct
 {
     SpellInfo const* spell_info;

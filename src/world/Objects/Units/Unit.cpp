@@ -5016,13 +5016,8 @@ void Unit::addAuraStateAndAuras(AuraState state)
         {
             // Activate passive spells which require this aurastate
             const auto player = dynamic_cast<Player*>(this);
-            const auto& playerSpellMap = player->m_spells;
-            for (const auto& spellId : playerSpellMap)
+            for (const auto& spellId : player->getSpellSet())
             {
-                // Skip deleted spells, i.e. spells with lower rank than the current rank
-                auto deletedSpell = player->m_deletedSpells.find(spellId);
-                if ((deletedSpell != player->m_deletedSpells.end()))
-                    continue;
                 SpellInfo const* spellInfo = sSpellMgr.getSpellInfo(spellId);
                 if (spellInfo == nullptr || !spellInfo->isPassive())
                     continue;
@@ -8394,7 +8389,7 @@ void Unit::mount(uint32_t mount, uint32_t VehicleId, uint32_t creatureEntry)
     if (mount)
         setMountDisplayId(mount);
 
-    setUnitFlags(UNIT_FLAG_MOUNT);
+    addUnitFlags(UNIT_FLAG_MOUNT);
 
     if (Player* player = ToPlayer())
     {
@@ -9530,7 +9525,8 @@ AuraCheckResponse Unit::auraCheck(SpellInfo const* spellInfo, Object* /*caster*/
     auraCheckResponse.Error = AURA_CHECK_RESULT_NONE;
     auraCheckResponse.Misc = 0;
 
-    uint32_t rank = spellInfo->custom_RankNumber;
+    if (!spellInfo->hasSpellRanks())
+        return auraCheckResponse;
 
     // look for spells with same namehash
     for (uint16_t x = AuraSlots::TOTAL_SLOT_START; x < AuraSlots::TOTAL_SLOT_END; x++)
@@ -9538,14 +9534,7 @@ AuraCheckResponse Unit::auraCheck(SpellInfo const* spellInfo, Object* /*caster*/
         Aura* aura = getAuraWithAuraSlot(x);
         if (aura != nullptr)
         {
-            // Very hacky way to check if spell is same but different rank
-            // It's better than nothing until better solution is implemented -Appled
-            const bool sameSpell = aura->getSpellInfo()->custom_NameHash == spellInfo->custom_NameHash &&
-                aura->getSpellInfo()->getSpellVisual(0) == spellInfo->getSpellVisual(0) &&
-                aura->getSpellInfo()->getSpellIconID() == spellInfo->getSpellIconID() &&
-                aura->getSpellInfo()->getName() == spellInfo->getName();
-
-            if (!sameSpell)
+            if (!spellInfo->getRankInfo()->isSpellPartOfThisSpellRankChain(aura->getSpellId()))
                 continue;
 
             // we've got an aura with the same name as the one we're trying to apply
@@ -9562,7 +9551,7 @@ AuraCheckResponse Unit::auraCheck(SpellInfo const* spellInfo, Object* /*caster*/
                 auraCheckResponse.Misc = aura->getSpellInfo()->getId();
 
                 // compare the rank to our applying spell
-                if (aura_sp->custom_RankNumber > rank)
+                if (aura_sp->getRankInfo()->getRank() > spellInfo->getRankInfo()->getRank())
                 {
                     if (spellInfo->getEffect(0) == SPELL_EFFECT_TRIGGER_SPELL ||
                         spellInfo->getEffect(1) == SPELL_EFFECT_TRIGGER_SPELL ||
@@ -9595,14 +9584,10 @@ AuraCheckResponse Unit::auraCheck(SpellInfo const* spellInfo, Aura* aura, Object
     auraCheckResponse.Error = AURA_CHECK_RESULT_NONE;
     auraCheckResponse.Misc = 0;
 
-    // Very hacky way to check if spell is same but different rank
-    // It's better than nothing until better solution is implemented -Appled
-    const bool sameSpell = aura->getSpellInfo()->custom_NameHash == spellInfo->custom_NameHash &&
-        aura->getSpellInfo()->getSpellVisual(0) == spellInfo->getSpellVisual(0) &&
-        aura->getSpellInfo()->getSpellIconID() == spellInfo->getSpellIconID() &&
-        aura->getSpellInfo()->getName() == spellInfo->getName();
+    if (!spellInfo->hasSpellRanks() || !aura->getSpellInfo()->hasSpellRanks())
+        return auraCheckResponse;
 
-    if (sameSpell)
+    if (spellInfo->getRankInfo()->isSpellPartOfThisSpellRankChain(aura->getSpellId()))
     {
         // we've got an aura with the same name as the one we're trying to apply
         // but first we check if it has the same effects
@@ -9616,7 +9601,7 @@ AuraCheckResponse Unit::auraCheck(SpellInfo const* spellInfo, Aura* aura, Object
             auraCheckResponse.Misc = aura->getSpellInfo()->getId();
 
             // compare the rank to our applying spell
-            if (aura->getSpellInfo()->custom_RankNumber > spellInfo->custom_RankNumber)
+            if (aura->getSpellInfo()->getRankInfo()->getRank() > spellInfo->getRankInfo()->getRank())
                 auraCheckResponse.Error = AURA_CHECK_RESULT_HIGHER_BUFF_PRESENT;
             else
                 auraCheckResponse.Error = AURA_CHECK_RESULT_LOWER_BUFF_PRESENT;
@@ -11152,53 +11137,6 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     //spells triggering
     if (dmg.realDamage > 0 && ability == 0)
     {
-        if (isPlayer() && static_cast<Player*>(this)->m_onStrikeSpells.size())
-        {
-            SpellCastTargets targets(pVictim->getGuid());
-            Spell* cspell;
-
-            // Loop on hit spells, and strike with those.
-            for (std::map<SpellInfo const*, std::pair<uint32_t, uint32_t>>::iterator itr = static_cast<Player*>(this)->m_onStrikeSpells.begin();
-                itr != static_cast<Player*>(this)->m_onStrikeSpells.end(); ++itr)
-            {
-                if (itr->second.first)
-                {
-                    // We have a *periodic* delayed spell.
-                    uint32_t t = Util::getMSTime();
-                    if (t > itr->second.second)    // Time expired
-                    {
-                        // Set new time
-                        itr->second.second = t + itr->second.first;
-                    }
-
-                    // Cast.
-                    cspell = sSpellMgr.newSpell(this, itr->first, true, NULL);
-                    cspell->prepare(&targets);
-                }
-                else
-                {
-                    cspell = sSpellMgr.newSpell(this, itr->first, true, NULL);
-                    cspell->prepare(&targets);
-                }
-            }
-        }
-
-        if (isPlayer() && static_cast<Player*>(this)->m_onStrikeSpellDmg.size())
-        {
-            for (std::map<uint32_t, OnHitSpell>::iterator it2 = static_cast<Player*>(this)->m_onStrikeSpellDmg.begin(); it2 != static_cast<Player*>(this)->m_onStrikeSpellDmg.end();)
-            {
-                std::map<uint32_t, OnHitSpell>::iterator itr = it2;
-                ++it2;
-
-                uint32_t dmg2 = itr->second.mindmg;
-                uint32_t range = itr->second.maxdmg - itr->second.mindmg;
-                if (range != 0)
-                    dmg2 += Util::getRandomUInt(range);
-
-                doSpellDamage(pVictim, itr->second.spellid, static_cast<float_t>(dmg2), 0);
-            }
-        }
-
         //ugly hack for shadowfiend restoring mana
         if (getSummonedByGuid() != 0 && getEntry() == 19668)
         {
@@ -12988,12 +12926,6 @@ uint32_t Unit::handleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
                 for (auto spellSkillItr = spellSkillBounds.first; spellSkillItr != spellSkillBounds.second; ++spellSkillItr)
                 {
                     auto skill_line_ability = spellSkillItr->second;
-                    if (!skill_line_ability)
-                    {
-                        _continue = true;
-                        break;
-                    }
-
                     if (skill_line_ability->skilline != SKILL_DESTRUCTION)
                     {
                         _continue = true;

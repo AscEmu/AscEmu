@@ -3837,7 +3837,7 @@ void Aura::SpellAuraHover(AuraEffectModifier* aurEff, bool apply)
 void Aura::SendDummyModifierLog(std::map< SpellInfo*, uint32 >* m, SpellInfo* spellInfo, uint32 i, bool apply, bool pct)
 {
     int32 v = spellInfo->getEffectBasePoints(static_cast<uint8_t>(i)) + 1;
-    uint32* mask = spellInfo->getEffectSpellClassMask(static_cast<uint8_t>(i));
+    auto* mask = spellInfo->getEffectSpellClassMask(static_cast<uint8_t>(i));
     uint8 type = static_cast<uint8>(spellInfo->getEffectMiscValue(static_cast<uint8_t>(i)));
 
     if (apply)

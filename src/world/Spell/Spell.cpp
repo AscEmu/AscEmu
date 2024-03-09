@@ -2188,7 +2188,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         // but skip triggered and passive spells
         if ((p_caster->hasUnitFlags(UNIT_FLAG_MOUNT) || p_caster->hasUnitFlags(UNIT_FLAG_MOUNTED_TAXI)) && !m_triggeredSpell && !getSpellInfo()->isPassive())
         {
-            if (p_caster->m_taxi->empty())
+            if (!p_caster->m_taxi->empty())
             {
                 return SPELL_FAILED_NOT_ON_TAXI;
             }

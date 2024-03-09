@@ -738,6 +738,7 @@ void CommandTableStorage::Init()
     static ChatCommand characterListCommandTable[] =
     {
         { "skills",         'm', &ChatHandler::HandleCharListSkillsCommand,         "Lists all the skills from a player",                   nullptr },
+        { "spells",         'm', &ChatHandler::handleCharListSpellsCommand,         "Lists all the spells from a player",                   nullptr },
         { "standing",       'm', &ChatHandler::HandleCharListStandingCommand,       "Lists standing of faction x.",                         nullptr },
         { "items",          'm', &ChatHandler::HandleCharListItemsCommand,          "Lists items of selected Player",                       nullptr },
         { "kills",          'm', &ChatHandler::HandleCharListKillsCommand,          "Lists all kills of selected Player",                   nullptr },

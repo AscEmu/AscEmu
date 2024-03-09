@@ -211,13 +211,11 @@ bool NorthRendInscriptionResearch(uint8_t /*effectIndex*/, Spell* s)
         std::vector<uint32_t> discoverableGlyphs;
 
         // how many of these are the right type (minor/major) of glyph, and learnable by the player
-        for (uint32_t idx = 0; idx < sSkillLineAbilityStore.getNumRows(); ++idx)
+        const auto skillBounds = sSpellMgr.getSkillEntryForSkillBounds(SKILL_INSCRIPTION);
+        for (auto skillItr = skillBounds.first; skillItr != skillBounds.second; ++skillItr)
         {
-            auto skill_line_ability = sSkillLineAbilityStore.lookupEntry(idx);
-            if (skill_line_ability == nullptr)
-                continue;
-
-            if (skill_line_ability->skilline == SKILL_INSCRIPTION && skill_line_ability->next == 0)
+            auto skill_line_ability = skillItr->second;
+            if (skill_line_ability->next == 0)
             {
                 SpellInfo const* se1 = sSpellMgr.getSpellInfo(skill_line_ability->spell);
                 if (se1 && se1->getEffect(0) == SPELL_EFFECT_CREATE_ITEM)
