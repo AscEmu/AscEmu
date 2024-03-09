@@ -18,20 +18,13 @@ enum MageSpells
     SPELL_GLYPH_OF_THE_PENGUIN  = 52648,
     SPELL_HOT_STREAK_BUFF       = 48108,
     SPELL_HOT_STREAK_R1         = 44445,
-    SPELL_HOT_STREAK_R2         = 44446,
-    SPELL_HOT_STREAK_R3         = 44448,
     SPELL_IMPACT_DUMMY          = 64343,
     SPELL_IMPACT_STUN           = 12355,
     SPELL_INVISIBILITY          = 66,
     SPELL_INVISIBILITY_REAL     = 32612,
     SPELL_MASTER_OF_ELEMENTS_R1 = 29074,
-    SPELL_MASTER_OF_ELEMENTS_R2 = 29075,
-    SPELL_MASTER_OF_ELEMENTS_R3 = 29076,
     SPELL_MASTER_OF_ELEMENTS    = 29077,
     SPELL_POLYMORPH_R1          = 118,
-    SPELL_POLYMORPH_R2          = 12824,
-    SPELL_POLYMORPH_R3          = 12825,
-    SPELL_POLYMORPH_R4          = 12826,
     SPELL_POLYMORPH_TURTLE      = 28271,
     SPELL_POLYMORPH_PIG         = 28272,
     SPELL_POLYMORPH_SERPENT     = 61025,
@@ -373,14 +366,7 @@ void setupMageSpells(ScriptMgr* mgr)
 #endif
 
 #if VERSION_STRING >= WotLK
-    uint32_t hotStreakIds[] =
-    {
-        SPELL_HOT_STREAK_R1,
-        SPELL_HOT_STREAK_R2,
-        SPELL_HOT_STREAK_R3,
-        0
-    };
-    mgr->register_spell_script(hotStreakIds, new HotStreakDummy);
+    mgr->register_spell_script(SPELL_HOT_STREAK_R1, new HotStreakDummy);
     mgr->register_spell_script(SPELL_HOT_STREAK_BUFF, new HotStreak);
 #endif
 
@@ -394,25 +380,13 @@ void setupMageSpells(ScriptMgr* mgr)
     mgr->register_spell_script(SPELL_INVISIBILITY, new Invisibility);
 
 #if VERSION_STRING < Mop
-    uint32_t masterOfElementsId[] =
-    {
-        SPELL_MASTER_OF_ELEMENTS_R1,
-        SPELL_MASTER_OF_ELEMENTS_R2,
-        SPELL_MASTER_OF_ELEMENTS_R3,
-        0
-    };
-    mgr->register_spell_script(masterOfElementsId, new MasterOfElementsDummy);
+    mgr->register_spell_script(SPELL_MASTER_OF_ELEMENTS_R1, new MasterOfElementsDummy);
     mgr->register_spell_script(SPELL_MASTER_OF_ELEMENTS, new MasterOfElements);
 #endif
 
     uint32_t polymorphIds[] =
     {
         SPELL_POLYMORPH_R1,
-#if VERSION_STRING < Cata
-        SPELL_POLYMORPH_R2,
-        SPELL_POLYMORPH_R3,
-        SPELL_POLYMORPH_R4,
-#endif
         SPELL_POLYMORPH_TURTLE,
         SPELL_POLYMORPH_PIG,
 #if VERSION_STRING >= WotLK

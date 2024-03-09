@@ -83,9 +83,10 @@ public:
 #endif
 
     SpellScript* getSpellScript(uint32_t spellId) const;
-    // By default this will register spell script to spell's all different difficulties (if they exist)
+    // By default this will register spell script to spell's all different ranks and difficulties (if they exist)
     void register_spell_script(uint32_t spellId, SpellScript* ss, bool registerAllDifficulties = true);
-    void register_spell_script(uint32_t* spellIds, SpellScript* ss);
+    // By default this will register spell script to spell's all different ranks and difficulties (if they exist)
+    void register_spell_script(uint32_t* spellIds, SpellScript* ss, bool registerAllDifficulties = true);
 
     // Creature AI script hooks
     void DamageTaken(Creature* pCreature, Unit* attacker, uint32_t* damage) const;

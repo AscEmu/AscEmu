@@ -1254,13 +1254,13 @@ void SetupTheVioletHold(ScriptMgr* mgr)
 
 // Trash
     // Intro
-    uint32_t entrys1[] = { NPC_AZURE_INVADER_1, NPC_AZURE_MAGE_SLAYER_1, NPC_AZURE_BINDER_1 };
+    uint32_t entrys1[] = { NPC_AZURE_INVADER_1, NPC_AZURE_MAGE_SLAYER_1, NPC_AZURE_BINDER_1, 0 };
     mgr->register_creature_script(entrys1, &TrashAI::Create);
     // Common
-    uint32_t entrys2[] = { NPC_PORTAL_GUARDIAN, NPC_PORTAL_KEEPER, NPC_AZURE_SPELLBREAKER_1, NPC_AZURE_INVADER_2, NPC_AZURE_SPELLBREAKER_2, NPC_AZURE_MAGE_SLAYER_2, NPC_AZURE_BINDER_2 };
+    uint32_t entrys2[] = { NPC_PORTAL_GUARDIAN, NPC_PORTAL_KEEPER, NPC_AZURE_SPELLBREAKER_1, NPC_AZURE_INVADER_2, NPC_AZURE_SPELLBREAKER_2, NPC_AZURE_MAGE_SLAYER_2, NPC_AZURE_BINDER_2, 0 };
     mgr->register_creature_script(entrys2, &TrashAI::Create);
     //Elite
-    uint32_t entrys3[] = { NPC_AZURE_CAPTAIN_1, NPC_AZURE_RAIDER_1, NPC_AZURE_STALKER_1, NPC_AZURE_SORCEROR_1 };
+    uint32_t entrys3[] = { NPC_AZURE_CAPTAIN_1, NPC_AZURE_RAIDER_1, NPC_AZURE_STALKER_1, NPC_AZURE_SORCEROR_1, 0 };
     mgr->register_creature_script(entrys3, &TrashAI::Create);
     // Boss Waves
     mgr->register_creature_script(NPC_SABOTEOUR, &AzureSaboteurAI::Create);
@@ -1277,7 +1277,7 @@ void SetupTheVioletHold(ScriptMgr* mgr)
 
 // Spells
     mgr->register_spell_script(SPELL_DESTROY_DOOR_SEAL, new DestroyDoorSeal);
-    uint32_t entrys4[] = { SPELL_ARCANE_LIGHTNING_DAMAGE, SPELL_ARCANE_LIGHTNING_INSTAKILL, SPELL_ARCANE_LIGHTNING_DUMMY };
+    uint32_t entrys4[] = { SPELL_ARCANE_LIGHTNING_DAMAGE, SPELL_ARCANE_LIGHTNING_INSTAKILL, SPELL_ARCANE_LIGHTNING_DUMMY, 0 };
     mgr->register_spell_script(entrys4, new ArcaneLightning);
     mgr->register_spell_script(Ichron::SPELL_MERGE, new IchronMerge);
     mgr->register_spell_script(Ichron::SPELL_PROTECTIVE_BUBBLE, new IchronBubble);

@@ -18,34 +18,19 @@ enum PriestSpells
 {
     SPELL_ABOLISH_DISEASE                   = 552,
     SPELL_BODY_AND_SOUL_R1                  = 64127,
-    SPELL_BODY_AND_SOUL_R2                  = 64129,
     SPELL_BODY_AND_SOUL_SPEED_R1            = 64128,
-    SPELL_BODY_AND_SOUL_SPEED_R2            = 65081,
     SPELL_BODY_AND_SOUL_POISON              = 64134,
     SPELL_BODY_AND_SOUL_POISON_SINGLE       = 64136,
     SPELL_DIVINE_AEGIS_R1                   = 47509,
-    SPELL_DIVINE_AEGIS_R2                   = 47511,
-    SPELL_DIVINE_AEGIS_R3                   = 47515,
     SPELL_DIVINE_AEGIS                      = 47753,
     SPELL_EMPOWERED_RENEW_R1                = 63534,
-    SPELL_EMPOWERED_RENEW_R2                = 63542,
-    SPELL_EMPOWERED_RENEW_R3                = 63543,
     SPELL_EMPOWERED_RENEW_HEAL              = 63544,
     SPELL_HOLY_CONCENTRATION_R1             = 34754,
-    SPELL_HOLY_CONCENTRATION_R2             = 63724,
-    SPELL_HOLY_CONCENTRATION_R3             = 63725,
     SPELL_IMPROVED_DEVOURING_PLAGUE_R1      = 63625,
-    SPELL_IMPROVED_DEVOURING_PLAGUE_R2      = 63626,
-    SPELL_IMPROVED_DEVOURING_PLAGUE_R3      = 63627,
     SPELL_IMPROVED_DEVOURING_PLAGUE_DMG     = 63675,
     SPELL_IMPROVED_DEVOURING_PLAGUE_HEAL    = 75999,
     SPELL_IMPROVED_MIND_BLAST_R1            = 15273,
-    SPELL_IMPROVED_MIND_BLAST_R2            = 15312,
-    SPELL_IMPROVED_MIND_BLAST_R3            = 15313,
-    SPELL_IMPROVED_MIND_BLAST_R4            = 15314,
-    SPELL_IMPROVED_MIND_BLAST_R5            = 15316,
     SPELL_IMPROVED_SPIRIT_TAP_R1            = 49694,
-    SPELL_IMPROVED_SPIRIT_TAP_R2            = 59000,
     SPELL_MIND_TRAUMA                       = 48301,
 #if VERSION_STRING < Cata
     SPELL_SURGE_OF_LIGHT_PROC               = 33151,
@@ -55,10 +40,6 @@ enum PriestSpells
     SPELL_VAMPIRIC_EMBRACE_DUMMY            = 15286,
     SPELL_VAMPIRIC_EMBRACE_HEAL             = 15290,
     SPELL_VAMPIRIC_TOUCH_R1                 = 34914,
-    SPELL_VAMPIRIC_TOUCH_R2                 = 34916,
-    SPELL_VAMPIRIC_TOUCH_R3                 = 34917,
-    SPELL_VAMPIRIC_TOUCH_R4                 = 48159,
-    SPELL_VAMPIRIC_TOUCH_R5                 = 48160,
     SPELL_VAMPIRIC_TOUCH_DISPEL             = 64085,
     SPELL_VAMPIRIC_TOUCH_MANA               = 34919,
     SPELL_REPLENISHMENT                     = 57669,
@@ -215,8 +196,7 @@ public:
 };
 #endif
 
-#if VERSION_STRING >= TBC
-#if VERSION_STRING < Cata
+#if VERSION_STRING == TBC || VERSION_STRING == WotLK
 class HolyConcentration : public SpellScript
 {
 public:
@@ -239,10 +219,8 @@ public:
     }
 };
 #endif
-#endif
 
-#if VERSION_STRING >= WotLK
-#if VERSION_STRING < Mop
+#if VERSION_STRING >= WotLK && VERSION_STRING < Mop
 class ImprovedDevouringPlagueDummy : public SpellScript
 {
 public:
@@ -264,10 +242,8 @@ public:
     }
 };
 #endif
-#endif
 
-#if VERSION_STRING >= WotLK
-#if VERSION_STRING < Mop
+#if VERSION_STRING >= WotLK && VERSION_STRING < Mop
 class ImprovedMindBlastDummy : public SpellScript
 {
 public:
@@ -297,10 +273,8 @@ public:
     }
 };
 #endif
-#endif
 
-#if VERSION_STRING < Mop
-#if VERSION_STRING >= TBC
+#if VERSION_STRING < Mop && VERSION_STRING >= TBC
 class SurgeOfLight : public SpellScript
 {
 public:
@@ -326,7 +300,6 @@ public:
     }
 #endif
 };
-#endif
 #endif
 
 #if VERSION_STRING == WotLK
@@ -474,8 +447,7 @@ public:
         return SpellScriptExecuteState::EXECUTE_OK;
     }
 
-#if VERSION_STRING >= WotLK
-#if VERSION_STRING < Mop
+#if VERSION_STRING >= WotLK && VERSION_STRING < Mop
     void filterEffectTargets(Spell* spell, uint8_t effIndex, std::vector<uint64_t>* effTargets) override
     {
         if (effIndex != EFF_INDEX_0)
@@ -484,7 +456,6 @@ public:
         // Remove caster from party effect
         effTargets->erase(std::remove(effTargets->begin(), effTargets->end(), spell->getCaster()->getGuid()), effTargets->end());
     }
-#endif
 #endif
 
 private:
@@ -526,7 +497,7 @@ public:
     }
 
 #if VERSION_STRING == WotLK
-    void onAuraRemove(Aura* aur, [[maybe_unused]]AuraRemoveMode mode) override
+    void onAuraRemove(Aura* aur, AuraRemoveMode mode) override
     {
         if (mode != AURA_REMOVE_ON_DISPEL)
             return;
@@ -601,13 +572,7 @@ void setupPriestSpells(ScriptMgr* mgr)
 
 #if VERSION_STRING >= WotLK
 #if VERSION_STRING < Mop
-    uint32_t bodyAndSoulIds[] =
-    {
-        SPELL_BODY_AND_SOUL_R1,
-        SPELL_BODY_AND_SOUL_R2,
-        0
-    };
-    mgr->register_spell_script(bodyAndSoulIds, new BodyAndSoulDummy);
+    mgr->register_spell_script(SPELL_BODY_AND_SOUL_R1, new BodyAndSoulDummy);
 #endif
 
 #if VERSION_STRING == WotLK
@@ -615,120 +580,44 @@ void setupPriestSpells(ScriptMgr* mgr)
     mgr->register_spell_script(SPELL_BODY_AND_SOUL_POISON, new BodyAndSoulPoison);
 #endif
 
-    uint32_t bodyAndSoulSpeedIds[] =
-    {
-        SPELL_BODY_AND_SOUL_SPEED_R1,
-        SPELL_BODY_AND_SOUL_SPEED_R2,
-        0
-    };
-    mgr->register_spell_script(bodyAndSoulSpeedIds, new BodyAndSoulSpeed);
+    mgr->register_spell_script(SPELL_BODY_AND_SOUL_SPEED_R1, new BodyAndSoulSpeed);
 #endif
 
 #if VERSION_STRING >= WotLK
-    uint32_t divineAegisIds[] =
-    {
-        SPELL_DIVINE_AEGIS_R1,
-        SPELL_DIVINE_AEGIS_R2,
-        SPELL_DIVINE_AEGIS_R3,
-        0
-    };
-    mgr->register_spell_script(divineAegisIds, new DivineAegisDummy);
+    mgr->register_spell_script(SPELL_DIVINE_AEGIS_R1, new DivineAegisDummy);
     mgr->register_spell_script(SPELL_DIVINE_AEGIS, new DivineAegis);
 #endif
 
 #if VERSION_STRING == WotLK
-    uint32_t empoweredRenewIds[] =
-    {
-        SPELL_EMPOWERED_RENEW_R1,
-        SPELL_EMPOWERED_RENEW_R2,
-        SPELL_EMPOWERED_RENEW_R3,
-        0
-    };
-    mgr->register_spell_script(empoweredRenewIds, new EmpoweredRenewDummy);
+    mgr->register_spell_script(SPELL_EMPOWERED_RENEW_R1, new EmpoweredRenewDummy);
 #endif
 
-#if VERSION_STRING >= TBC
-#if VERSION_STRING < Cata
-    uint32_t holyConcentrationIds[] =
-    {
-        SPELL_HOLY_CONCENTRATION_R1,
-#if VERSION_STRING == WotLK
-        SPELL_HOLY_CONCENTRATION_R2,
-        SPELL_HOLY_CONCENTRATION_R3,
-#endif
-        0
-    };
-    mgr->register_spell_script(holyConcentrationIds, new HolyConcentration);
-#endif
+#if VERSION_STRING == TBC || VERSION_STRING == WotLK
+    mgr->register_spell_script(SPELL_HOLY_CONCENTRATION_R1, new HolyConcentration);
 #endif
 
-#if VERSION_STRING < Mop
-#if VERSION_STRING >= WotLK
-    uint32_t improvedDevouringPlagueIds[] =
-    {
-        SPELL_IMPROVED_DEVOURING_PLAGUE_R1,
-        SPELL_IMPROVED_DEVOURING_PLAGUE_R2,
-#if VERSION_STRING == WotLK
-        SPELL_IMPROVED_DEVOURING_PLAGUE_R3,
-#endif
-        0
-    };
-    mgr->register_spell_script(improvedDevouringPlagueIds, new ImprovedDevouringPlagueDummy);
-#endif
+#if VERSION_STRING < Mop && VERSION_STRING >= WotLK
+    mgr->register_spell_script(SPELL_IMPROVED_DEVOURING_PLAGUE_R1, new ImprovedDevouringPlagueDummy);
 #endif
 
-#if VERSION_STRING < Mop
-#if VERSION_STRING >= WotLK
-    uint32_t improvedMindBlastIds[] =
-    {
-        SPELL_IMPROVED_MIND_BLAST_R1,
-        SPELL_IMPROVED_MIND_BLAST_R2,
-        SPELL_IMPROVED_MIND_BLAST_R3,
-#if VERSION_STRING < Cata
-        SPELL_IMPROVED_MIND_BLAST_R4,
-        SPELL_IMPROVED_MIND_BLAST_R5,
-#endif
-        0
-    };
-    mgr->register_spell_script(improvedMindBlastIds, new ImprovedMindBlastDummy);
+#if VERSION_STRING < Mop && VERSION_STRING >= WotLK
+    mgr->register_spell_script(SPELL_IMPROVED_MIND_BLAST_R1, new ImprovedMindBlastDummy);
     mgr->register_spell_script(SPELL_MIND_TRAUMA, new MindTrauma);
 #endif
-#endif
 
 #if VERSION_STRING == WotLK
-    uint32_t improvedSpiritTapIds[] =
-    {
-        SPELL_IMPROVED_SPIRIT_TAP_R1,
-        SPELL_IMPROVED_SPIRIT_TAP_R2,
-        0
-    };
-    mgr->register_spell_script(improvedSpiritTapIds, new ImprovedSpiritTap);
+    mgr->register_spell_script(SPELL_IMPROVED_SPIRIT_TAP_R1, new ImprovedSpiritTap);
 #endif
 
-#if VERSION_STRING < Mop
-#if VERSION_STRING >= TBC
+#if VERSION_STRING < Mop && VERSION_STRING >= TBC
     mgr->register_spell_script(SPELL_SURGE_OF_LIGHT_PROC, new SurgeOfLight);
-#endif
 #endif
 
     mgr->register_spell_script(SPELL_VAMPIRIC_EMBRACE_DUMMY, new VampiricEmbraceDummy);
     mgr->register_spell_script(SPELL_VAMPIRIC_EMBRACE_HEAL, new VampiricEmbrace);
 
 #if VERSION_STRING >= TBC
-    uint32_t vampiricTouchIds[] =
-    {
-        SPELL_VAMPIRIC_TOUCH_R1,
-#if VERSION_STRING < Cata
-        SPELL_VAMPIRIC_TOUCH_R2,
-        SPELL_VAMPIRIC_TOUCH_R3,
-#if VERSION_STRING == WotLK
-        SPELL_VAMPIRIC_TOUCH_R4,
-        SPELL_VAMPIRIC_TOUCH_R5,
-#endif
-#endif
-        0
-    };
-    mgr->register_spell_script(vampiricTouchIds, new VampiricTouchDummy);
+    mgr->register_spell_script(SPELL_VAMPIRIC_TOUCH_R1, new VampiricTouchDummy);
     mgr->register_spell_script(SPELL_VAMPIRIC_TOUCH_MANA, new VampiricTouch);
 #endif
 }
