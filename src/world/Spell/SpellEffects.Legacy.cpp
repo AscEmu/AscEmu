@@ -1021,7 +1021,8 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                 if (m_unitTarget->hasAuraState(AURASTATE_FLAG_CONFLAGRATE, getSpellInfo(), u_caster))
                 {
                     // random extra damage
-                    uint32 extra_dmg = 111 + (getSpellInfo()->custom_RankNumber * 11) + Util::getRandomUInt(getSpellInfo()->custom_RankNumber * 11);
+                    const uint8_t spellRank = getSpellInfo()->hasSpellRanks() ? getSpellInfo()->getRankInfo()->getRank() : 1;
+                    uint32 extra_dmg = 111 + (spellRank * 11) + Util::getRandomUInt(spellRank * 11);
                     dmg += extra_dmg;
                 }
             } break;
@@ -3240,9 +3241,9 @@ void Spell::SpellEffectEnergize(uint8_t effectIndex) // Energize
             modEnergy = damage;
             if (p_caster)
             {
-                if (p_caster->m_spells.find(12818) != p_caster->m_spells.end())
+                if (p_caster->hasSpell(12818))
                     modEnergy += 110; //60
-                if (p_caster->m_spells.find(12301) != p_caster->m_spells.end())
+                if (p_caster->hasSpell(12301))
                     modEnergy += 60; //30
             }
         }

@@ -47,13 +47,14 @@ bool Execute(uint8_t effectIndex, Spell* pSpell)
     int32_t dmg = 0;
     uint32_t multiple[] = { 0, 3, 6, 9, 12, 15, 18, 21, 30, 38, };
 
+    const uint8_t rank = pSpell->getSpellInfo()->hasSpellRanks() ? pSpell->getSpellInfo()->getRankInfo()->getRank() : 1;
     if (rage >= 30)
     {
-        toadd = (multiple[pSpell->getSpellInfo()->custom_RankNumber] * 30);
+        toadd = (multiple[rank] * 30);
     }
     else
     {
-        toadd = (multiple[pSpell->getSpellInfo()->custom_RankNumber] * rage);
+        toadd = (multiple[rank] * rage);
     }
 
     dmg = pSpell->calculateEffect(effectIndex);

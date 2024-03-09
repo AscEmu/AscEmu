@@ -9530,7 +9530,8 @@ AuraCheckResponse Unit::auraCheck(SpellInfo const* spellInfo, Object* /*caster*/
     auraCheckResponse.Error = AURA_CHECK_RESULT_NONE;
     auraCheckResponse.Misc = 0;
 
-    uint32_t rank = spellInfo->custom_RankNumber;
+    if (!spellInfo->hasSpellRanks())
+        return auraCheckResponse;
 
     // look for spells with same namehash
     for (uint16_t x = AuraSlots::TOTAL_SLOT_START; x < AuraSlots::TOTAL_SLOT_END; x++)
@@ -9538,14 +9539,7 @@ AuraCheckResponse Unit::auraCheck(SpellInfo const* spellInfo, Object* /*caster*/
         Aura* aura = getAuraWithAuraSlot(x);
         if (aura != nullptr)
         {
-            // Very hacky way to check if spell is same but different rank
-            // It's better than nothing until better solution is implemented -Appled
-            const bool sameSpell = aura->getSpellInfo()->custom_NameHash == spellInfo->custom_NameHash &&
-                aura->getSpellInfo()->getSpellVisual(0) == spellInfo->getSpellVisual(0) &&
-                aura->getSpellInfo()->getSpellIconID() == spellInfo->getSpellIconID() &&
-                aura->getSpellInfo()->getName() == spellInfo->getName();
-
-            if (!sameSpell)
+            if (!spellInfo->getRankInfo()->isSpellPartOfThisSpellRankChain(aura->getSpellId()))
                 continue;
 
             // we've got an aura with the same name as the one we're trying to apply
@@ -9562,7 +9556,7 @@ AuraCheckResponse Unit::auraCheck(SpellInfo const* spellInfo, Object* /*caster*/
                 auraCheckResponse.Misc = aura->getSpellInfo()->getId();
 
                 // compare the rank to our applying spell
-                if (aura_sp->custom_RankNumber > rank)
+                if (aura_sp->getRankInfo()->getRank() > spellInfo->getRankInfo()->getRank())
                 {
                     if (spellInfo->getEffect(0) == SPELL_EFFECT_TRIGGER_SPELL ||
                         spellInfo->getEffect(1) == SPELL_EFFECT_TRIGGER_SPELL ||
@@ -9595,14 +9589,10 @@ AuraCheckResponse Unit::auraCheck(SpellInfo const* spellInfo, Aura* aura, Object
     auraCheckResponse.Error = AURA_CHECK_RESULT_NONE;
     auraCheckResponse.Misc = 0;
 
-    // Very hacky way to check if spell is same but different rank
-    // It's better than nothing until better solution is implemented -Appled
-    const bool sameSpell = aura->getSpellInfo()->custom_NameHash == spellInfo->custom_NameHash &&
-        aura->getSpellInfo()->getSpellVisual(0) == spellInfo->getSpellVisual(0) &&
-        aura->getSpellInfo()->getSpellIconID() == spellInfo->getSpellIconID() &&
-        aura->getSpellInfo()->getName() == spellInfo->getName();
+    if (!spellInfo->hasSpellRanks() || !aura->getSpellInfo()->hasSpellRanks())
+        return auraCheckResponse;
 
-    if (sameSpell)
+    if (spellInfo->getRankInfo()->isSpellPartOfThisSpellRankChain(aura->getSpellId()))
     {
         // we've got an aura with the same name as the one we're trying to apply
         // but first we check if it has the same effects
@@ -9616,7 +9606,7 @@ AuraCheckResponse Unit::auraCheck(SpellInfo const* spellInfo, Aura* aura, Object
             auraCheckResponse.Misc = aura->getSpellInfo()->getId();
 
             // compare the rank to our applying spell
-            if (aura->getSpellInfo()->custom_RankNumber > spellInfo->custom_RankNumber)
+            if (aura->getSpellInfo()->getRankInfo()->getRank() > spellInfo->getRankInfo()->getRank())
                 auraCheckResponse.Error = AURA_CHECK_RESULT_HIGHER_BUFF_PRESENT;
             else
                 auraCheckResponse.Error = AURA_CHECK_RESULT_LOWER_BUFF_PRESENT;

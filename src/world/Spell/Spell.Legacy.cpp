@@ -1409,8 +1409,16 @@ void Spell::HandleAddAura(uint64 guid)
                     0
                 };
 
-                if (u_caster && u_caster->hasAurasWithId(vindication))
-                    spellid = u_caster->getAuraWithId(vindication)->getSpellInfo()->custom_RankNumber == 2 ? 26017 : 67;
+                if (u_caster)
+                {
+                    if (const auto* vindicationAur = u_caster->getAuraWithId(vindication))
+                    {
+                        const uint8_t rank = vindicationAur->getSpellInfo()->hasSpellRanks()
+                            ? vindicationAur->getSpellInfo()->getRankInfo()->getRank()
+                            : 1;
+                        spellid = rank == 2 ? 26017 : 67;
+                    }
+                }
             } break;
             case 5229:
             {
@@ -1437,8 +1445,13 @@ void Spell::HandleAddAura(uint64 guid)
 
                     Spell* spell = sSpellMgr.newSpell(p_caster, spellInfo, true, nullptr);
 
-
-                    spell->forced_basepoints->set(0, p_caster->getAuraWithId(kingOfTheJungle)->getSpellInfo()->custom_RankNumber * 5);
+                    if (const auto* kotjAur = p_caster->getAuraWithId(kingOfTheJungle))
+                    {
+                        const uint8_t rank = kotjAur->getSpellInfo()->hasSpellRanks()
+                            ? kotjAur->getSpellInfo()->getRankInfo()->getRank()
+                            : 1;
+                        spell->forced_basepoints->set(0, rank * 5);
+                    }
                     SpellCastTargets targets(p_caster->getGuid());
                     spell->prepare(&targets);
                 }
@@ -1513,8 +1526,13 @@ void Spell::HandleAddAura(uint64 guid)
                 57531,
                 0
             };
-            if (Target->getAuraWithId(arcanePotency))
-                spellid = Target->getAuraWithId(arcanePotency)->getSpellInfo()->custom_RankNumber == 1 ? 57529 : 57531;
+            if (const auto* arcPotencyAur = Target->getAuraWithId(arcanePotency))
+            {
+                const uint8_t rank = arcPotencyAur->getSpellInfo()->hasSpellRanks()
+                    ? arcPotencyAur->getSpellInfo()->getRankInfo()->getRank()
+                    : 1;
+                spellid = rank == 1 ? 57529 : 57531;
+            }
         }
         break;
     }

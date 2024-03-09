@@ -144,7 +144,6 @@ static ConsoleCommand Commands[] =
     { &handleSendWAnnounceCommand,      "w",                1,  "<wannounce>",                          "Send announce on screen for all." },
     { &handleSendWAnnounceCommand,      "wannounce",        1,  "<wannounce>",                          "Send announce on screen for all." },
     { &handleWhisperCommand,            "whisper",          2,  "<player> <message>",                   "Whispers message to someone." },
-    { &handleCreateNameHashCommand,     "getnamehash",      1,  "<text>",                               "Returns the crc32 hash of <text>" },
     { &handleRevivePlayerCommand,       "reviveplr",        1,  "<player name>",                        "Revives a Player <player name>" },
     { &handleClearConsoleCommand,       "clear",            0,  "None",                                 "Clears the console." },
     { &handleReloadScriptEngineCommand, "reloadscripts",    0,  "None",                                 "Reloads all scripting engines currently loaded." },
