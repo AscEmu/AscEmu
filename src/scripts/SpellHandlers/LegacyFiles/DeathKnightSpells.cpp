@@ -335,18 +335,18 @@ bool WillOfTheNecropolis(uint8_t effectIndex, Spell* spell)
     switch (spell->getSpellInfo()->getId())
     {
         case 49189:
-            plr->removeSpell(52285, false, false, 0);
-            plr->removeSpell(52286, false, false, 0);
+            plr->removeSpell(52285, false);
+            plr->removeSpell(52286, false);
             break;
 
         case 50149:
-            plr->removeSpell(52284, false, false, 0);
-            plr->removeSpell(52286, false, false, 0);
+            plr->removeSpell(52284, false);
+            plr->removeSpell(52286, false);
             break;
 
         case 50150:
-            plr->removeSpell(52284, false, false, 0);
-            plr->removeSpell(52285, false, false, 0);
+            plr->removeSpell(52284, false);
+            plr->removeSpell(52285, false);
             break;
     }
 

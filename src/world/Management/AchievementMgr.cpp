@@ -948,9 +948,9 @@ void AchievementMgr::updateAchievementCriteria(AchievementCriteriaTypes _type)
             case ACHIEVEMENT_CRITERIA_TYPE_NUMBER_OF_MOUNTS:
             {
                 // achievementCriteria field4 = 777 for mounts, 778 for companion pets
-                SpellSet::iterator sl = getPlayer()->m_spells.begin();
+                SpellSet::iterator sl = getPlayer()->getSpellSet().begin();
                 uint32_t nm = 0;
-                while (sl != getPlayer()->m_spells.end())
+                while (sl != getPlayer()->getSpellSet().end())
                 {
                     SpellInfo const* sp = sSpellMgr.getSpellInfo(*sl);
                     if (achievementCriteria->number_of_mounts.unknown == 777 && sp && sp->getMechanicsType() == MECHANIC_MOUNTED)

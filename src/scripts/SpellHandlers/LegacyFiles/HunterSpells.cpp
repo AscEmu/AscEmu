@@ -33,8 +33,8 @@ bool Refocus(uint8_t /*effectIndex*/, Spell* pSpell)
     Player* playerTarget = pSpell->getPlayerTarget();
     if (playerTarget == 0) return true;
 
-    SpellSet::const_iterator itr = playerTarget->m_spells.begin();
-    for (; itr != playerTarget->m_spells.end(); ++itr)
+    SpellSet::const_iterator itr = playerTarget->getSpellSet().begin();
+    for (; itr != playerTarget->getSpellSet().end(); ++itr)
     {
         if ((*itr) == 24531)       // skip calling spell.. otherwise spammies! :D
             continue;

@@ -1582,7 +1582,7 @@ void WorldSession::handleRemoveGlyph(WorldPacket& recvPacket)
 
     _player->setGlyph(srlPacket.glyphNumber, 0);
     _player->removeAllAurasById(glyphPropertiesEntry->SpellID);
-    _player->m_specs[_player->m_talentActiveSpec].glyphs[srlPacket.glyphNumber] = 0;
+    _player->m_specs[_player->m_talentActiveSpec].setGlyph(0, srlPacket.glyphNumber);
     _player->smsg_TalentsInfo(false);
 }
 #endif
@@ -1923,7 +1923,7 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
     packedGuid.appendPackGUID(inspectedPlayer->getGuid());
     data.append(packedGuid);
 
-    data << uint32_t(inspectedPlayer->getActiveSpec().GetTP());
+    data << uint32_t(inspectedPlayer->getActiveSpec().getTalentPoints());
     data << uint8_t(inspectedPlayer->m_talentSpecsCount);
     data << uint8_t(inspectedPlayer->m_talentActiveSpec);
     for (uint8_t s = 0; s < inspectedPlayer->m_talentSpecsCount; ++s)
@@ -1975,7 +1975,7 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
 #ifdef FT_GLYPHS
         data << uint8_t(GLYPHS_COUNT);
 
-        for (auto glyph : playerSpec.glyphs)
+        for (const auto& glyph : playerSpec.getGlyphs())
             data << uint16_t(glyph);
 #endif
     }

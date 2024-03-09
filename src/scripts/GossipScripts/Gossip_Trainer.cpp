@@ -66,7 +66,7 @@ public:
                     unlearnGold = 1000000;
 
                 plr->modCoinage(-unlearnGold);
-                plr->removeSpell(17040, false, false, 0);
+                plr->removeSpell(17040, false);
                 textid = 20009;
             }
         }
@@ -132,7 +132,7 @@ public:
                     unlearnGold = 1000000;
 
                 plr->modCoinage(-unlearnGold);
-                plr->removeSpell(17039, false, false, 0);
+                plr->removeSpell(17039, false);
                 textid = 20009;
             }
         }
@@ -195,7 +195,7 @@ public:
                     unlearnGold = 1000000;
 
                 plr->modCoinage(-unlearnGold);
-                plr->removeSpell(17041, false, false, 0);
+                plr->removeSpell(17041, false);
                 textid = 20009;
             }
         }

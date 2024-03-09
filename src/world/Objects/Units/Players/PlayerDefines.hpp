@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Skill.hpp"
 #include "CommonTypes.hpp"
 
+#include <array>
 #include <ctime>
 #include <string>
 #include <map>
@@ -1071,11 +1072,9 @@ struct PlayerCooldown
 class PlayerSpec
 {
 public:
-
     PlayerSpec()
     {
-        tp = 0;
-        for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; i++)
+        for (uint8_t i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
         {
             mActions[i].Action = 0;
             mActions[i].Type = 0;
@@ -1083,49 +1082,68 @@ public:
         }
     }
 
-    void SetTP(uint32_t points) { tp = points; }
+    void setTalentPoints(uint32_t points) { mTalentPoints = points; }
+    uint32_t getTalentPoints() const { return mTalentPoints; }
 
-    uint32_t GetTP() const { return tp; }
+    // Note; does not set free talent points
+    void clearTalents() { mTalents.clear(); }
 
-    void Reset()
+    void addTalent(uint32_t talentId, uint8_t rankId)
     {
-        tp += static_cast<uint32_t>(talents.size());
-        talents.clear();
-    }
-
-    void AddTalent(uint32_t talentid, uint8_t rankid)
-    {
-        auto itr = talents.find(talentid);
-        if (itr != talents.end())
-            itr->second = rankid;
+        const auto itr = mTalents.find(talentId);
+        if (itr != mTalents.cend())
+            itr->second = rankId;
         else
-            talents.insert(std::make_pair(talentid, rankid));
+            mTalents.insert({ talentId, rankId });
     }
-    bool HasTalent(uint32_t talentid, uint8_t rankid)
+
+    bool hasTalent(uint32_t talentid, uint8_t rankid) const
     {
-        auto itr = talents.find(talentid);
-        if (itr != talents.end())
+        const auto itr = mTalents.find(talentid);
+        if (itr != mTalents.cend())
             return itr->second == rankid;
 
         return false;
     }
 
-    std::map<uint32_t, uint8_t> talents;
 #ifdef FT_GLYPHS
-    uint16_t glyphs[GLYPHS_COUNT] = { 0 };
-#endif
-    ActionButton mActions[PLAYER_ACTION_BUTTON_COUNT];
-private:
+    uint16_t getGlyph(uint16_t slot) const
+    {
+        if (slot >= GLYPHS_COUNT)
+            return 0;
 
-    uint32_t tp;
+        return mGlyphs[slot];
+    }
+
+    void setGlyph(uint16_t glyphId, uint16_t slot)
+    {
+        if (slot >= GLYPHS_COUNT)
+            return;
+
+        mGlyphs[slot] = glyphId;
+    }
+
+    std::array<uint16_t, GLYPHS_COUNT> const& getGlyphs() const { return mGlyphs; }
+#endif
+
+    std::map<uint32_t, uint8_t> const& getTalents() const { return mTalents; }
+    ActionButton& getActionButton(uint8_t slot) { return mActions[slot]; }
+    ActionButton const& getActionButton(uint8_t slot) const { return mActions[slot]; }
+
+private:
+    uint32_t mTalentPoints = 0;
+    std::map<uint32_t, uint8_t> mTalents;
+
+#ifdef FT_GLYPHS
+    std::array<uint16_t, GLYPHS_COUNT> mGlyphs = { 0 };
+#endif
+    std::array<ActionButton, PLAYER_ACTION_BUTTON_COUNT> mActions = { ActionButton() };
 };
 
 typedef std::set<uint32_t>                            SpellSet;
 typedef std::list<classScriptOverride*>             ScriptOverrideList;
 typedef std::map<uint32_t, ScriptOverrideList* >      SpellOverrideMap;
 typedef std::map<uint32_t, FactionReputation*>        ReputationMap;
-typedef std::map<SpellInfo const*, std::pair<uint32_t, uint32_t> >StrikeSpellMap;
-typedef std::map<uint32_t, OnHitSpell >               StrikeSpellDmgMap;
 typedef std::map<uint16_t, PlayerSkill>               SkillMap;
 typedef std::map<uint32_t, PlayerCooldown>            PlayerCooldownMap;
 

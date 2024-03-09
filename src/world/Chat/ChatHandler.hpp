@@ -178,6 +178,7 @@ public:
 
     // Character list commands
     bool HandleCharListSkillsCommand(const char* /*args*/, WorldSession* m_session);
+    bool handleCharListSpellsCommand(const char* args, WorldSession* m_session);
     bool HandleCharListStandingCommand(const char* args, WorldSession* m_session);
     bool HandleCharListItemsCommand(const char* /*args*/, WorldSession* m_session);
     bool HandleCharListKillsCommand(const char* /*args*/, WorldSession* m_session);
