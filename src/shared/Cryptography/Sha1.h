@@ -1,53 +1,45 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-#ifndef _AUTH_SHA1_H
-#define _AUTH_SHA1_H
+#pragma once
 
 #include <cstdlib>
 #include <openssl/sha.h>
+
 #include "Cryptography/BigNumber.h"
+
+#if defined(OPENSSL_VERSION_MAJOR) && (OPENSSL_VERSION_MAJOR >= 3)
+#include <openssl/evp.h>
+#endif
 
 class Sha1Hash
 {
 public:
-    Sha1Hash();
+    Sha1Hash() noexcept;
     ~Sha1Hash() = default;
 
     void UpdateFinalizeBigNumbers(BigNumber* bn0, ...);
     void UpdateBigNumbers(BigNumber* bn0, ...);
 
-    void UpdateData(const uint8* dta, int len);
-    void UpdateData(const std::string & str);
+    void UpdateData(const uint8_t* dta, int len);
+    void UpdateData(const std::string& str);
 
     void Initialize();
     void Finalize();
 
-    uint8* GetDigest(void) { return mDigest; };
+    uint8_t* GetDigest(void) { return mDigest; };
     int GetLength(void) { return SHA_DIGEST_LENGTH; };
 
     BigNumber GetBigNumber();
 
 private:
+#if defined(OPENSSL_VERSION_MAJOR) && (OPENSSL_VERSION_MAJOR >= 3)
+    EVP_MD_CTX *mC;
+    uint8_t mDigest[SHA_DIGEST_LENGTH];
+#else
     SHA_CTX mC;
-    uint8 mDigest[SHA_DIGEST_LENGTH];
-};
-
+    uint8_t mDigest[SHA_DIGEST_LENGTH];
 #endif
+};
