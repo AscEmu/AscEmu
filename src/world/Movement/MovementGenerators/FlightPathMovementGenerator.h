@@ -55,7 +55,6 @@ public:
     void preloadEndGrid();
 
 private:
-            
     float _endGridX;                                        //! X coord of last node location
     float _endGridY;                                        //! Y coord of last node location
     uint32_t _endMapId;                                     //! map Id of last node location
