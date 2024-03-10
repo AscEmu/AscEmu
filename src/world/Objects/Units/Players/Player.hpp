@@ -797,39 +797,31 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spells and skills
-#if VERSION_STRING >= Cata
-    void setInitialPlayerProfessions();
-#endif
-    bool hasSpell(uint32_t spellId);
-    bool hasDeletedSpell(uint32_t spellId);
-    void sendSmsgInitialSpells();
+    bool hasSpell(uint32_t spellId) const;
+    bool hasDeletedSpell(uint32_t spellId) const;
     void addSpell(uint32_t spellId, uint16_t fromSkill = 0);
-    bool removeSpell(uint32_t spellId, bool moveToDeleted, bool supercededSpell, uint32_t supercededSpellId);
+    void addDeletedSpell(uint32_t spellId);
+    bool removeSpell(uint32_t spellId, bool moveToDeleted);
     bool removeDeletedSpell(uint32_t spellId);
+    SpellSet const& getSpellSet() const;
+    SpellSet const& getDeletedSpellSet() const;
+
+    void sendSmsgInitialSpells();
     void sendPreventSchoolCast(uint32_t spellSchool, uint32_t timeMs);
 
     void resetSpells();
 
-    void addOnStrikeSpell(SpellInfo const* spellInfo, uint32_t delay);
-    void removeOnStrikeSpell(SpellInfo const* spellInfo);
-
-    void addOnStrikeSpellDamage(uint32_t spellId, uint32_t minDmg, uint32_t maxDmg);
-    void removeOnStrikeSpellDamage(uint32_t spellId);
-
     void addShapeShiftSpell(uint32_t spellId);
     void removeShapeShiftSpell(uint32_t spellId);
+    SpellSet const& getShapeshiftSpells() const;
+
     void sendAvailSpells(WDB::Structures::SpellShapeshiftFormEntry const* shapeshiftFormEntry, bool active);
 
     bool isInFeralForm();
     bool isInDisallowedMountForm() const;
 
     // Spells variables
-    StrikeSpellMap m_onStrikeSpells;
-    StrikeSpellDmgMap m_onStrikeSpellDmg;
     SpellOverrideMap m_spellOverrideMap;
-    SpellSet m_spells;
-    SpellSet m_deletedSpells;
-    SpellSet mShapeShiftSpells;
 
     void updateAutoRepeatSpell();
     bool canUseFlyingMountHere();
@@ -898,6 +890,9 @@ public:
     void removeAllSkills();
     void updateSkillMaximumValues();
     float getSkillUpChance(uint16_t id);
+#if VERSION_STRING >= Cata
+    void setInitialPlayerProfessions();
+#endif
 
     uint32_t getArmorProficiency() const;
     void addArmorProficiency(uint32_t proficiency);
@@ -922,6 +917,14 @@ public:
     bool m_FirstCastAutoRepeat = false;
 
 private:
+    // learningPreviousRanks and ignorePreviousRanks are for internal use only
+    void _addSpell(uint32_t spellId, uint16_t fromSkill = 0, bool learningPreviousRanks = false, bool ignorePreviousRanks = false);
+    // removingPreviousRanks and forceRemoveHigherRanks are for internal use only
+    bool _removeSpell(uint32_t spellId, bool moveToDeleted, bool silently = false, bool removingPreviousRank = false, bool forceRemoveHigherRanks = false);
+    SpellSet m_spellSet;
+    SpellSet m_deletedSpellSet;
+    SpellSet m_shapeshiftSpells;
+
     bool m_canDualWield2H = false;
 
     // Skills
@@ -941,8 +944,6 @@ private:
     // Talents
 public:
     void learnTalent(uint32_t talentId, uint32_t talentRank);
-    void addTalent(SpellInfo const* sp);
-    void removeTalent(uint32_t spellId, bool onSpecChange = false);
     // Resets only current spec's talents
     void resetTalents();
     // Resets talents for both specs
@@ -984,7 +985,11 @@ protected:
     // Actionbar
 public:
     void setActionButton(uint8_t button, uint32_t action, uint8_t type, uint8_t misc);
-    void sendActionBars(bool clearBars);
+    // Action param
+    // 0: Normal action, sends bars
+    // 1: Sent after changing talent spec, sends bars and client will check if spell is known
+    // 2: Sent before changing talent spec, clears bars clientside
+    void sendActionBars(uint8_t action);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Auction
@@ -1923,8 +1928,8 @@ public:
 
     PlayerSpec& getActiveSpec();
 
-#if VERSION_STRING > TBC
-    uint32_t GetGlyph(uint32_t spec, uint32_t slot) const { return m_specs[spec].glyphs[slot]; }
+#ifdef FT_GLYPHS
+    uint16_t getGlyph(uint8_t spec, uint16_t slot) const { return m_specs[spec].getGlyph(slot); }
 #endif
 
     /////////////////////////////////////////////////////////////////////////////////////////
@@ -2153,8 +2158,6 @@ protected:
     uint32_t _fields[getSizeOfStructure(WoWPlayer)];
 
 public:
-    void addDeletedSpell(uint32_t id) { m_deletedSpells.insert(id); }
-
     std::map<uint32_t, Standing> m_forcedReactions;
 
     bool m_passOnLoot = false;

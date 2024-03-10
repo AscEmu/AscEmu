@@ -1559,7 +1559,7 @@ int LuaUnit::UnlearnSpell(lua_State* L, Unit* ptr)
         return 0;
 
     const uint32_t spellid = static_cast<uint32_t>(luaL_checkinteger(L, 1));
-    dynamic_cast<Player*>(ptr)->removeSpell(spellid, false, false, 0);
+    dynamic_cast<Player*>(ptr)->removeSpell(spellid, false);
     return 0;
 }
 
@@ -5852,7 +5852,7 @@ int LuaUnit::GetTalentPoints(lua_State* L, Unit* ptr)
     PlayerSpec plrSpec = static_cast<Player*>(ptr)->m_spec;
 #endif
     //uint32_t Lvl = static_cast<Player*>(ptr)->getLevel();
-    const uint32_t FreePoints = plrSpec.GetTP();
+    const uint32_t FreePoints = plrSpec.getTalentPoints();
 
     lua_pushnumber(L, FreePoints);
     return 1;

@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "InstanceNumberGen.hpp"
 #include "Utilities/Util.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
+#include <mutex>
 #include <unordered_map>
 
 enum PlayerTeam : uint8_t;

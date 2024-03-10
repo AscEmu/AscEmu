@@ -1569,7 +1569,7 @@ void Guild::deleteMember(uint64_t guid, bool isDisbanding, bool /*isKicked*/)
             {
                 if (entry->Level <= getLevel())
                 {
-                    player->removeSpell(entry->SpellId, false, false, 0);
+                    player->removeSpell(entry->SpellId, false);
                 }
             }
         }

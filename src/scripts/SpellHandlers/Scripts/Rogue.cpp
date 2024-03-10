@@ -15,13 +15,8 @@ This file is released under the MIT license. See README-MIT for more information
 enum RogueSpells
 {
     SPELL_CUT_TO_THE_CHASE_R1       = 51664,
-    SPELL_CUT_TO_THE_CHASE_R2       = 51665,
-    SPELL_CUT_TO_THE_CHASE_R3       = 51667,
-    SPELL_CUT_TO_THE_CHASE_R4       = 51668,
-    SPELL_CUT_TO_THE_CHASE_R5       = 51669,
     SPELL_CRIPPLING_POISON          = 3409,
     SPELL_DEADLY_BREW_R1            = 51625,
-    SPELL_DEADLY_BREW_R2            = 51626,
 };
 
 #if VERSION_STRING >= WotLK
@@ -91,8 +86,9 @@ public:
 private:
     Aura* sliceAura = nullptr;
 };
+#endif
 
-#if VERSION_STRING < Mop
+#if VERSION_STRING >= WotLK && VERSION_STRING < Mop
 class DeadlyBrew : public SpellScript
 {
 public:
@@ -122,7 +118,6 @@ public:
     }
 };
 #endif
-#endif
 
 void setupRogueSpells(ScriptMgr* mgr)
 {
@@ -130,27 +125,10 @@ void setupRogueSpells(ScriptMgr* mgr)
     SetupLegacyRogueSpells(mgr);
 
 #if VERSION_STRING >= WotLK
-    uint32_t cutChaseIds[] =
-    {
-        SPELL_CUT_TO_THE_CHASE_R1,
-        SPELL_CUT_TO_THE_CHASE_R2,
-        SPELL_CUT_TO_THE_CHASE_R3,
-#if VERSION_STRING == WotLK
-        SPELL_CUT_TO_THE_CHASE_R4,
-        SPELL_CUT_TO_THE_CHASE_R5,
+    mgr->register_spell_script(SPELL_CUT_TO_THE_CHASE_R1, new CutToTheChase);
 #endif
-        0
-    };
-    mgr->register_spell_script(cutChaseIds, new CutToTheChase);
 
-#if VERSION_STRING < Mop
-    uint32_t deadlyBrewIds[] =
-    {
-        SPELL_DEADLY_BREW_R1,
-        SPELL_DEADLY_BREW_R2,
-        0
-    };
-    mgr->register_spell_script(deadlyBrewIds, new DeadlyBrew);
-#endif
+#if VERSION_STRING >= WotLK && VERSION_STRING < Mop
+    mgr->register_spell_script(SPELL_DEADLY_BREW_R1, new DeadlyBrew);
 #endif
 }

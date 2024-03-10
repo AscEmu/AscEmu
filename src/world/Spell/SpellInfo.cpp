@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellIsFlags.hpp"
 #include "Definitions/SpellCastTargetFlags.hpp"
 #include "SpellAura.hpp"
+#include "SpellMgr.hpp"
 #include "SpellTarget.h"
 #include "Logging/Logger.hpp"
 #include "Storage/WDB/WDBStores.hpp"
@@ -20,6 +21,46 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+
+SpellInfo const* SpellRankInfo::getPreviousSpell() const { return previousSpell; }
+SpellInfo const* SpellRankInfo::getNextSpell() const { return nextSpell; }
+SpellInfo const* SpellRankInfo::getFirstSpell() const { return firstSpell; }
+SpellInfo const* SpellRankInfo::getLastSpell() const { return lastSpell; }
+uint8_t SpellRankInfo::getRank() const { return rank; }
+
+SpellInfo const* SpellRankInfo::getSpellWithRank(uint8_t spellRank) const
+{
+    if (spellRank == 0)
+        return nullptr;
+
+    const auto* spellInfo = getFirstSpell();
+    do
+    {
+        if (spellInfo->getRankInfo()->getRank() == spellRank)
+            return spellInfo;
+
+        spellInfo = spellInfo->getRankInfo()->getNextSpell();
+    } while (spellInfo != nullptr);
+
+    return nullptr;
+}
+
+bool SpellRankInfo::isSpellPartOfThisSpellRankChain(uint32_t spellId) const
+{
+    if (spellId == 0)
+        return false;
+
+    return isSpellPartOfThisSpellRankChain(sSpellMgr.getSpellInfo(spellId));
+}
+
+bool SpellRankInfo::isSpellPartOfThisSpellRankChain(SpellInfo const* providedSpellInfo) const
+{
+    if (providedSpellInfo == nullptr || !providedSpellInfo->hasSpellRanks())
+        return false;
+
+    const auto* const rankInfo = providedSpellInfo->getRankInfo();
+    return getFirstSpell()->getId() == rankInfo->getFirstSpell()->getId() && getLastSpell()->getId() == rankInfo->getLastSpell()->getId();
+}
 
 SpellInfo::SpellInfo()
 {
@@ -938,7 +979,7 @@ bool SpellInfo::isPassive() const
     return (Attributes & ATTRIBUTES_PASSIVE) != 0;
 }
 
-bool SpellInfo::isProfession() const
+bool SpellInfo::isProfession(bool checkRiding/* = false*/) const
 {
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
@@ -948,6 +989,9 @@ bool SpellInfo::isProfession() const
 
             //Profession skill
             if (skill == SKILL_FISHING || skill == SKILL_COOKING || skill == SKILL_FIRST_AID)
+                return true;
+
+            if (checkRiding && skill == SKILL_RIDING)
                 return true;
 
             if (isPrimaryProfessionSkill(skill))
@@ -982,6 +1026,16 @@ bool SpellInfo::isPrimaryProfessionSkill(uint32_t skill_id) const
     return false;
 }
 
+bool SpellInfo::isTalent() const
+{
+    return m_isTalent;
+}
+
+bool SpellInfo::isPetTalent() const
+{
+    return m_isPetTalent;
+}
+
 bool SpellInfo::isAllowingDeadTarget() const
 {
     return hasAttribute(ATTRIBUTESEXB_CAN_BE_CASTED_ON_DEAD_TARGET) || Targets & (SpellCastTargetFlags::TARGET_FLAG_CORPSE | SpellCastTargetFlags::TARGET_FLAG_CORPSE2 | SpellCastTargetFlags::TARGET_FLAG_UNIT_CORPSE);
@@ -1010,6 +1064,71 @@ bool SpellInfo::isOnNextMeleeAttack() const
 bool SpellInfo::isStackableFromMultipleCasters() const
 {
     return getMaxstack() > 1 && !isChanneled() && !(getAttributesExC() & ATTRIBUTESEXC_APPLY_OWN_STACK_FOR_EACH_CASTER);
+}
+
+bool SpellInfo::hasSpellRanks() const
+{
+    return m_spellRankInfo.has_value();
+}
+
+SpellRankInfo const* SpellInfo::getRankInfo() const
+{
+    if (!hasSpellRanks())
+        return nullptr;
+
+    return &m_spellRankInfo.value();
+}
+
+bool SpellInfo::canKnowOnlySingleRank() const
+{
+    // Passive spells or spells without mana cost should have only one rank known
+    if (isPassive() || (getPowerType() != POWER_TYPE_MANA && getPowerType() != POWER_TYPE_HEALTH))
+        return true;
+
+    // Profession skills should have only one rank known
+    if (isProfession(true))
+        return true;
+
+    const auto isSpellAutoLearnedFromSkill = [](uint32_t spellId) -> bool
+    {
+        const auto spellBounds = sSpellMgr.getSkillEntryForSpellBounds(spellId);
+        for (auto spellItr = spellBounds.first; spellItr != spellBounds.second; ++spellItr)
+        {
+            const auto skillEntry = spellItr->second;
+            if (skillEntry->acquireMethod != 1)
+                continue;
+            if (skillEntry->minSkillLineRank > 0)
+                return true;
+        }
+
+        return false;
+    };
+
+    // Spells that are auto learned from a skill with certain skill level should have only one rank known
+    if (isSpellAutoLearnedFromSkill(getId()))
+        return true;
+
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    {
+        if (getEffect(i) == SPELL_EFFECT_NULL)
+            continue;
+
+        if (getSpellFamilyName() == SPELLFAMILY_DRUID)
+        {
+            // Druid shapeshift spells should have only one rank known
+            if (getEffect(i) == SPELL_EFFECT_APPLY_AURA && getEffectApplyAuraName(i) == SPELL_AURA_MOD_SHAPESHIFT)
+                return true;
+        }
+        else if (getSpellFamilyName() == SPELLFAMILY_PALADIN)
+        {
+            // Paladin auras should have only one rank known
+            if (getEffect(i) == SPELL_EFFECT_APPLY_RAID_AREA_AURA ||
+                getEffect(i) == SPELL_EFFECT_APPLY_GROUP_AREA_AURA)
+                return true;
+        }
+    }
+
+    return false;
 }
 
 int32_t SpellInfo::calculateEffectValue(uint8_t effIndex, Unit* unitCaster/* = nullptr*/, Item* itemCaster/* = nullptr*/, SpellForcedBasePoints forcedBasePoints/* = SpellForcedBasePoints()*/) const
@@ -1454,7 +1573,7 @@ uint32_t SpellInfo::getEffectSpellClassMask(uint8_t idx1, uint8_t idx2) const
     return EffectSpellClassMask[idx1][idx2];
 }
 
-uint32_t* SpellInfo::getEffectSpellClassMask(uint8_t idx1)
+uint32_t const* SpellInfo::getEffectSpellClassMask(uint8_t idx1) const
 {
     if (idx1 >= MAX_SPELL_EFFECTS)
     {

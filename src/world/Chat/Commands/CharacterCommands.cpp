@@ -129,7 +129,7 @@ bool ChatHandler::HandleCharUnlearnCommand(const char* args, WorldSession* m_ses
     {
         GreenSystemMessage(player_target->getSession(), "Removed spell %u.", spell_id);
         GreenSystemMessage(m_session, "Removed spell %u from %s.", spell_id, player_target->getName().c_str());
-        player_target->removeSpell(spell_id, false, false, 0);
+        player_target->removeSpell(spell_id, false);
     }
     else
     {
@@ -1604,10 +1604,10 @@ bool ChatHandler::HandleCharSetTalentpointsCommand(const char* args, WorldSessio
 #endif
 
 #ifdef FT_DUAL_SPEC
-    player_target->m_specs[SPEC_PRIMARY].SetTP(primary_amount);
-    player_target->m_specs[SPEC_SECONDARY].SetTP(secondary_amount);
+    player_target->m_specs[SPEC_PRIMARY].setTalentPoints(primary_amount);
+    player_target->m_specs[SPEC_SECONDARY].setTalentPoints(secondary_amount);
 #else
-    player_target->m_spec.SetTP(primary_amount);
+    player_target->m_spec.setTalentPoints(primary_amount);
 #endif
 
     player_target->smsg_TalentsInfo(false);
@@ -1847,6 +1847,44 @@ bool ChatHandler::HandleCharListSkillsCommand(const char* /*args*/, WorldSession
             BlueSystemMessage(m_session, " %s: Value: %u, MaxValue: %u. (+ %d bonus)", SkillName, nobonus, max, bonus);
         }
     }
+    return true;
+}
+
+//.character list spells
+bool ChatHandler::handleCharListSpellsCommand(const char* args, WorldSession* m_session)
+{
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    // No args or 0 = list only active spells
+    // 1 = list deleted / inactive spells
+    const auto arg = static_cast<uint8_t>(atol(args));
+    std::string spellString = "";
+    uint8_t itemsPerRow = 0;
+
+    const auto& spellSet = arg == 1 ? player_target->getDeletedSpellSet() : player_target->getSpellSet();
+    for (auto itr = spellSet.cbegin(); itr != spellSet.cend();)
+    {
+        spellString += std::to_string(*itr);
+        ++itr;
+        if (itr != spellSet.cend())
+            spellString += ", ";
+        ++itemsPerRow;
+        if (itemsPerRow >= 9)
+        {
+            // Add a line break after 9 spells
+            spellString += "\n";
+            itemsPerRow = 0;
+        }
+    }
+
+    if (arg == 1)
+        BlueSystemMessage(m_session, "===== %s has %u deleted spells =====", player_target->getName().c_str(), spellSet.size());
+    else
+        BlueSystemMessage(m_session, "===== %s has %u spells =====", player_target->getName().c_str(), spellSet.size());
+
+    SendMultilineMessage(m_session, spellString.c_str());
     return true;
 }
 

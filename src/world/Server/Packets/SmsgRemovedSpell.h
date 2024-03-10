@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 
+#include "AEVersion.hpp"
 #include "ManagedPacket.h"
 
 namespace AscEmu::Packets
@@ -14,20 +15,36 @@ namespace AscEmu::Packets
     class SmsgRemovedSpell : public ManagedPacket
     {
     public:
+#if VERSION_STRING < WotLK
+        uint16_t spellId;
+#else
         uint32_t spellId;
+#endif
         
         SmsgRemovedSpell() : SmsgRemovedSpell(0)
         {
         }
 
         SmsgRemovedSpell(uint32_t spellId) :
+#if VERSION_STRING < WotLK
+            ManagedPacket(SMSG_REMOVED_SPELL, 2),
+            spellId(static_cast<uint16_t>(spellId))
+#else
             ManagedPacket(SMSG_REMOVED_SPELL, 4),
             spellId(spellId)
+#endif
         {
         }
 
     protected:
-        size_t expectedSize() const override { return 4; }
+        size_t expectedSize() const override
+        {
+#if VERSION_STRING < WotLK
+            return 2;
+#else
+            return 4;
+#endif
+        }
 
         bool internalSerialise(WorldPacket& packet) override
         {

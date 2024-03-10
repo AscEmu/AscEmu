@@ -13,10 +13,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CommonTypes.hpp"
 #include "Storage/WDB/WDBDefines.hpp"
 
+#include <optional>
 #include <string>
 
 class Item;
 class Player;
+class SpellInfo;
 class Unit;
 
 struct SpellForcedBasePoints
@@ -57,13 +59,42 @@ private:
     std::vector<std::pair<uint8_t, int32_t>> m_forcedBasePoints;
 };
 
+struct SERVER_DECL SpellRankInfo
+{
+    friend class SpellMgr;
+
+public:
+    // Returns nullptr from the first rank in rank chain
+    SpellInfo const* getPreviousSpell() const;
+    // Returns nullptr from the last rank in rank chain
+    SpellInfo const* getNextSpell() const;
+    SpellInfo const* getFirstSpell() const;
+    SpellInfo const* getLastSpell() const;
+    uint8_t getRank() const;
+
+    // Returns nullptr if spell with provided rank does not exist
+    SpellInfo const* getSpellWithRank(uint8_t spellRank) const;
+
+    // Returns true if spells are from same rank chain
+    bool isSpellPartOfThisSpellRankChain(uint32_t spellId) const;
+    // Returns true if spells are from same rank chain
+    bool isSpellPartOfThisSpellRankChain(SpellInfo const* providedSpellInfo) const;
+
+private:
+    SpellInfo const* previousSpell = nullptr;
+    SpellInfo const* nextSpell = nullptr;
+    SpellInfo const* firstSpell = nullptr;
+    SpellInfo const* lastSpell = nullptr;
+    uint8_t rank = 0;
+};
+
 class SERVER_DECL SpellInfo
 {
+    friend class SpellMgr;
+
 public:
     SpellInfo();
     ~SpellInfo() = default;
-
-    friend class SpellMgr;
 
     // helper functions
     bool hasEffect(uint32_t effect) const;
@@ -105,18 +136,26 @@ public:
 
     bool isRequireCooldownSpell() const;
     bool isPassive() const;
-    bool isProfession() const;
+    bool isProfession(bool checkRiding = false) const;
     bool isPrimaryProfession() const;
     bool isPrimaryProfessionSkill(uint32_t skill_id) const;
-
+    // Returns true if spell is found in Talent.dbc
+    bool isTalent() const;
+    // Returns true if spell is found in Talent.dbc and is part of pet talent trees
+    bool isPetTalent() const;
     bool isAllowingDeadTarget() const;
-
     bool isDeathPersistent() const;
     bool isChanneled() const;
     bool isRangedAutoRepeat() const;
     bool isOnNextMeleeAttack() const;
     // If spell stacks from different casters (i.e. Sunder Armor)
     bool isStackableFromMultipleCasters() const;
+
+    bool hasSpellRanks() const;
+    SpellRankInfo const* getRankInfo() const;
+    // Returns true if player can only know a single rank from the spell rank chain
+    // Mostly if spell costs mana then player can know all ranks
+    bool canKnowOnlySingleRank() const;
 
     int32_t calculateEffectValue(uint8_t effIndex, Unit* unitCaster = nullptr, Item* itemCaster = nullptr, SpellForcedBasePoints forcedBasePoints = SpellForcedBasePoints()) const;
 
@@ -219,14 +258,14 @@ public:
     uint32_t getEffectTriggerSpell(uint8_t idx) const;
     float getEffectPointsPerComboPoint(uint8_t idx) const;
     uint32_t getEffectSpellClassMask(uint8_t idx1, uint8_t idx2) const;
-    uint32_t* getEffectSpellClassMask(uint8_t idx1);
+    uint32_t const* getEffectSpellClassMask(uint8_t idx1) const;
 
     uint32_t getSpellVisual(uint8_t visualIndex) const { return SpellVisual[visualIndex]; }
     uint32_t getSpellIconID() const { return spellIconID; }
     uint32_t getActiveIconID() const { return activeIconID; }
     uint32_t getSpellPriority() const { return spellPriority; } // not used!
-    std::string getName() const { return Name; }
-    std::string getRank() const { return Rank; }
+    std::string const& getName() const { return Name; }
+    std::string const& getRank() const { return Rank; }
     uint32_t getManaCostPercentage() const { return ManaCostPercentage; }
     uint32_t getStartRecoveryCategory() const { return StartRecoveryCategory; }
     uint32_t getStartRecoveryTime() const { return StartRecoveryTime; }
@@ -234,7 +273,7 @@ public:
     uint32_t getSpellFamilyName() const { return SpellFamilyName; }
 
     uint32_t getSpellFamilyFlags(uint8_t idx) const;
-    const uint32_t* getSpellFamilyFlags() const { return SpellFamilyFlags; }
+    uint32_t const* getSpellFamilyFlags() const { return SpellFamilyFlags; }
 
     uint32_t getMaxTargets() const { return MaxTargets; }
     uint32_t getDmgClass() const { return DmgClass; }
@@ -251,11 +290,7 @@ public:
     uint32_t getRuneCostID() const { return RuneCostID; }
 
     float getEffectBonusMultiplier(uint8_t idx) const;
-
-    float* getEffectBonusMultiplier()
-    {
-        return EffectBonusMultiplier;
-    }
+    float const* getEffectBonusMultiplier() const { return EffectBonusMultiplier; }
 
     uint32_t getSpellDifficultyID() const { return SpellDifficultyId; }
 
@@ -263,7 +298,6 @@ public:
     //custom values
     uint32_t getCustom_BGR_one_buff_on_target() const { return custom_BGR_one_buff_on_target; }
     uint32_t getCustom_c_is_flags() const { return custom_c_is_flags; }
-    uint32_t getCustom_RankNumber() const { return custom_RankNumber; }
     int32_t getCustom_ThreatForSpell() const { return custom_ThreatForSpell; }
     float getCustom_ThreatForSpellCoef() const { return custom_ThreatForSpellCoef; }
 
@@ -410,6 +444,11 @@ private:
     void setEffectIndex(uint32_t value, uint8_t idx);
 #endif
 
+    void setSpellRankData(SpellRankInfo rankData) { m_spellRankInfo = rankData; }
+
+    void setIsTalent(bool isTalent) { m_isTalent = isTalent; }
+    void setIsPetTalent(bool isPetTalent) { m_isPetTalent = isPetTalent; }
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Applied values from DBC
     uint32_t Id = 0;
@@ -537,7 +576,7 @@ private:
     float EffectDamageMultiplier[MAX_SPELL_EFFECTS];
 #if VERSION_STRING > Classic
     // Data from SpellTotems.dbc (in Cataclysm)
-    uint32_t TotemCategory[MAX_SPELL_TOTEM_CATEGORIES];     // not used!
+    uint32_t TotemCategory[MAX_SPELL_TOTEM_CATEGORIES];
 #endif
     // Data from SpellCastingRequirements.dbc (in Cataclysm)
     int32_t AreaGroupId = 0;
@@ -548,6 +587,12 @@ private:
     float EffectBonusMultiplier[MAX_SPELL_EFFECTS];
     // Data from SpellDifficulty.dbc (in Cataclysm)
     uint32_t SpellDifficultyId = 0;
+
+    // Spell rank data
+    std::optional<SpellRankInfo> m_spellRankInfo = std::nullopt;
+
+    bool m_isTalent = false;
+    bool m_isPetTalent = false;
 
     // Script links (Legacy)
     void* (*spellScriptLink) = nullptr;
@@ -596,12 +641,6 @@ public:
     // from MySQL table spell_custom_assign - 353 spells
     // also flags added in SpellCustomizations::SetMissingCIsFlags
     uint32_t custom_c_is_flags = 0;
-
-    // from MySQL table spell_ranks - 6546 spells
-    uint32_t custom_RankNumber = 0;
-
-    // set in HackFixes.cpp for all Dummy Trigger
-    uint32_t custom_NameHash = 0;
 
     // from MySQL table ai_threattospellid - 144 spells
     int32_t custom_ThreatForSpell = 0;

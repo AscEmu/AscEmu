@@ -23,7 +23,6 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2014 | CommonDefines.hpp
 * 2008 | WoWGuid.h
 * 2008 | WorldPacket.h
-* 2008 | Threading/ThreadStarter.h
 * 2008 | Threading/LegacyThreadPool.h
 * 2008 | Threading/LegacyThreadPool.cpp
 * 2008 | Threading/LegacyThreadBase.h
@@ -37,7 +36,6 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2008 | PreallocatedQueue.h
 * 2008 | LocationVector.cpp
 * 2008 | LocationVector.h
-* 2008 | FindFilesResult.hpp
 * 2008 | DynLib.hpp
 * 2008 | DynLib.cpp
 * 2008 | Database/MySQLDatabase.h
@@ -91,8 +89,6 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2005 | CircularQueue.h
 * 2005 | StackWalker.h
 * 2005 | StackWalker.cpp
-* 1996 | Cryptography/crc32.h
-* 1996 | Cryptography/crc32.cpp
 
 ### Ready to remove
 
@@ -108,6 +104,10 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2008 | Log.Legacy.cpp
 * 2005 | Timer.h
 
+### Removed on 23 Nov 2017
+* 2008 | ascemu_getopt.cpp
+* 2007 | ascemu_getopt.h
+
 ### Removed on 23 Dez 2017
 * 2008 | MersenneTwister.h
 * 2008 | MersenneTwister.cpp
@@ -121,6 +121,14 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2008 | Threading/AtomicCounter.cpp
 * 2008 | Threading/AtomicBoolean.h
 * 2008 | Threading/AtomicBoolean.cpp
+
+### Removed on 11 Jul 2019
+* 2008 | FindFilesResult.hpp
+* 2008 | FindFiles.hpp
+* 2008 | FindFiles.cpp
+
+### Removed on 17 Nov 2019
+* 2008 | Singleton.h
 
 ### Removed on 20 Apr 2020
 * 2008 | Database/Field.h
@@ -155,43 +163,47 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 ### Removed on 07 Jun 2022
 * 2014 | AscemuServerDefines.hpp
 
-### Removed on 08 Jan 2023
-* 2008 | ascemu_getopt.cpp
-* 2007 | ascemu_getopt.h
-* 2008 | Singleton.h
-* 2008 | FindFiles.hpp
-* 2008 | FindFiles.cpp
+### Removed on 24 Aug 2023
+* 2008 | FastQueue.h
+
+### Removed on 16 Sep 2023
+* 2021 | Database/DatabaseCommon.hpp
+
+### Removed on 09 Mar 2024
+* 1996 | crc32.h
+* 1996 | crc32.cpp
 
 ### New files
 * 2015 | Exceptions/PlayerExceptions.hpp
 * 2015 | Exceptions/Exceptions.hpp
+* 2016 | git_version.h
+* 2017 | ByteConverter.h
 * 2017 | Common.hpp
 * 2017 | Logging/Log.cpp
 * 2017 | Logging/Log.hpp
 * 2017 | Logging/LoggerDefines.hpp
 * 2017 | Utilities/Util.cpp
 * 2017 | Utilities/Util.hpp
+* 2017 | Cryptography/LogonCommDefines.h
 * 2017 | Cryptography/WowCrypt.cpp
 * 2017 | Cryptography/WowCrypt.hpp
+* 2017 | Threading/AEThread.cpp
+* 2017 | Threading/AEThread.h
+* 2017 | Threading/ThreadState.h
+* 2018 | Threading/AEThreadPool.cpp
+* 2018 | Threading/AEThreadPool.h
 * 2020 | Database/Field.hpp
 * 2020 | Database/DatabaseUpdater.cpp
 * 2020 | Database/DatabaseUpdater.hpp
+* 2021 | FactoryHolder.h
+* 2021 | Logging/Logger.cpp
+* 2021 | Logging/Logger.hpp
+* 2021 | Logging/MessageType.hpp
+* 2021 | Logging/Severity.hpp
+* 2021 | ObjectRegistry.h
+* 2021 | Utilities/Strings.cpp
+* 2021 | Utilities/Strings.hpp
 * 2022 | AEVersion.hpp
-* 2023 | Cryptography/LogonCommDefines.h
-* 2023 | ByteConverter.h
-* 2023 | Logging/Logger.cpp
-* 2023 | Logging/Logger.hpp
-* 2023 | Logging/MessageType.hpp
-* 2023 | Logging/Severity.hpp
-* 2023 | Threading/AEThread.cpp
-* 2023 | Threading/AEThread.h
-* 2023 | Threading/AEThreadPool.cpp
-* 2023 | Threading/AEThreadPool.h
-* 2023 | Threading/ThreadState.h
-* 2023 | Utilities/Strings.cpp
-* 2023 | Utilities/Strings.hpp
-* 2023 | FactoryHolder.h
-* 2023 | ObjectRegistry.h
 * 2023 | pchShared.hpp
 * 2023 | ThreadSafeQueue.hpp
 * 2023 | CommonTime.hpp

@@ -59,7 +59,7 @@
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20230710-00_characters_taxi";
-static const char* REQUIRED_WORLD_DB_VERSION = "20231123-00_creature_properties";
+static const char* REQUIRED_WORLD_DB_VERSION = "20240309-00_spell_ranks";
 
 volatile bool Master::m_stopEvent = false;
 
@@ -718,8 +718,8 @@ void OnCrash(bool Terminate)
 
 void Master::PrintBanner()
 {
-    sLogger.file(AscEmu::Logging::Severity::FAILURE, AscEmu::Logging::MessageType::MINOR, "<< AscEmu {}/{}-{} {} :: World Server >>", BUILD_HASH_STR, CONFIG, AE_PLATFORM, AE_ARCHITECTURE);
-    sLogger.file(AscEmu::Logging::Severity::FAILURE, AscEmu::Logging::MessageType::MINOR, "========================================================");
+    sLogger.info("<< AscEmu {}/{}-{} {} :: World Server >>", BUILD_HASH_STR, CONFIG, AE_PLATFORM, AE_ARCHITECTURE);
+    sLogger.info("========================================================");
 }
 
 bool Master::LoadWorldConfiguration(std::string config_file)

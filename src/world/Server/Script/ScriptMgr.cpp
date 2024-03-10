@@ -333,34 +333,62 @@ void ScriptMgr::register_spell_script(uint32_t spellId, SpellScript* ss, bool re
         return;
     }
 
-    if (registerAllDifficulties)
+    const auto addScriptToAllDifficultiesReturnCount = [this, ss](SpellInfo const* spInfo) -> uint8_t
     {
-        if (spellInfo->getSpellDifficultyID() != 0)
+        uint8_t registeredSpells = 0;
+        if (spInfo->getSpellDifficultyID() != 0)
         {
-            uint8_t registeredSpells = 0;
             for (uint8_t i = 0; i < InstanceDifficulty::MAX_DIFFICULTY; ++i)
             {
-                const auto spellDifficultyInfo = sSpellMgr.getSpellInfoByDifficulty(spellInfo->getSpellDifficultyID(), i);
+                const auto spellDifficultyInfo = sSpellMgr.getSpellInfoByDifficulty(spInfo->getSpellDifficultyID(), i);
                 if (spellDifficultyInfo == nullptr)
                     continue;
 
                 _register_spell_script(spellDifficultyInfo->getId(), ss);
                 ++registeredSpells;
             }
-
-            // Make sure to register at least the original spell
-            if (registeredSpells > 0)
-                return;
         }
+        return registeredSpells;
+    };
+
+    if (spellInfo->hasSpellRanks())
+    {
+        const auto* rankedSpell = spellInfo->getRankInfo()->getFirstSpell();
+        do
+        {
+            if (registerAllDifficulties)
+            {
+                const auto registeredSpells = addScriptToAllDifficultiesReturnCount(rankedSpell);
+                if (registeredSpells > 0)
+                {
+                    // Script was certainly added to this rank, safe to continue to next rank
+                    rankedSpell = rankedSpell->getRankInfo()->getNextSpell();
+                    continue;
+                }
+            }
+            _register_spell_script(rankedSpell->getId(), ss);
+            rankedSpell = rankedSpell->getRankInfo()->getNextSpell();
+        } while (rankedSpell != nullptr);
+
+        // Script is added to all ranks and difficulties, safe to exit
+        return;
+    }
+
+    if (registerAllDifficulties)
+    {
+        const auto registeredSpells = addScriptToAllDifficultiesReturnCount(spellInfo);
+        // Make sure to register at least the original spell
+        if (registeredSpells > 0)
+            return;
     }
 
     _register_spell_script(spellId, ss);
 }
 
-void ScriptMgr::register_spell_script(uint32_t* spellIds, SpellScript* ss)
+void ScriptMgr::register_spell_script(uint32_t* spellIds, SpellScript* ss, bool registerAllDifficulties/* = true*/)
 {
-    for (uint32_t i = 0; i < sizeof(spellIds) / sizeof(uint32_t); ++i)
-        register_spell_script(spellIds[i], ss);
+    for (uint32_t i = 0; spellIds[i] != 0; ++i)
+        register_spell_script(spellIds[i], ss, registerAllDifficulties);
 }
 
 void ScriptMgr::_register_spell_script(uint32_t spellId, SpellScript* ss)
@@ -716,31 +744,31 @@ void ScriptMgr::register_instance_script(uint32_t pMapId, exp_create_instance_ai
 
 void ScriptMgr::register_creature_script(uint32_t* entries, exp_create_creature_ai callback)
 {
-    for (uint32_t y = 0; y < sizeof(entries) / sizeof(uint32_t); ++y)
+    for (uint32_t y = 0; entries[y] != 0; ++y)
         register_creature_script(entries[y], callback);
 }
 
 void ScriptMgr::register_gameobject_script(uint32_t* entries, exp_create_gameobject_ai callback)
 {
-    for (uint32_t y = 0; y < sizeof(entries) / sizeof(uint32_t); ++y)
+    for (uint32_t y = 0; entries[y] != 0; ++y)
         register_gameobject_script(entries[y], callback);
 }
 
 void ScriptMgr::register_dummy_aura(uint32_t* entries, exp_handle_dummy_aura callback)
 {
-    for (uint32_t y = 0; y < sizeof(entries) / sizeof(uint32_t); ++y)
+    for (uint32_t y = 0; entries[y] != 0; ++y)
         register_dummy_aura(entries[y], callback);
 }
 
 void ScriptMgr::register_dummy_spell(uint32_t* entries, exp_handle_dummy_spell callback)
 {
-    for (uint32_t y = 0; y < sizeof(entries) / sizeof(uint32_t); ++y)
+    for (uint32_t y = 0; entries[y] != 0; ++y)
         register_dummy_spell(entries[y], callback);
 }
 
 void ScriptMgr::register_script_effect(uint32_t* entries, exp_handle_script_effect callback)
 {
-    for (uint32_t y = 0; y < sizeof(entries) / sizeof(uint32_t); ++y)
+    for (uint32_t y = 0; entries[y] != 0; ++y)
         register_script_effect(entries[y], callback);
 }
 

@@ -25,7 +25,6 @@ bool handleRehashConfigCommand(BaseConsole* baseConsole, int /*argumentCount*/, 
 bool handleUnbanAccountCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient);
 bool handleSendWAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient);
 bool handleWhisperCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient);
-bool handleCreateNameHashCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient);
 bool handleRevivePlayerCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient);
 bool handleClearConsoleCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient);
 bool handleReloadScriptEngineCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient);

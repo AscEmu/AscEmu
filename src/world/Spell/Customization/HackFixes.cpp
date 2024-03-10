@@ -19,7 +19,6 @@
  *
  */
 
-#include "Cryptography/crc32.h"
 #include "Logging/Logger.hpp"
 #include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Server/World.h"
@@ -43,7 +42,6 @@ using AscEmu::World::Spell::Helpers::decimalToMask;
 
 void SpellMgr::createDummySpell(uint32_t id)
 {
-    const char* name = "Dummy Trigger";
     SpellInfo* sp = new SpellInfo;
     memset(sp, 0, sizeof(SpellInfo));
     sp->setId(id);
@@ -56,7 +54,6 @@ void SpellMgr::createDummySpell(uint32_t id)
     sp->setEquippedItemClass(-1);
     sp->setEffect(SPELL_EFFECT_DUMMY, 0);
     sp->setEffectImplicitTargetA(EFF_TARGET_DUEL, 0);
-    sp->custom_NameHash = crc32((const unsigned char*)name, (unsigned int)strlen(name));
     sp->setEffectDamageMultiplier(1.0f, 0);
     sWorld.dummySpellList.push_back(sp);
 }
@@ -656,8 +653,6 @@ void SpellMgr::applyHackFixes()
         sp = sSpellMgr.getMutableSpellInfo(it.first);
         if (sp == nullptr)
             continue;
-
-        sp->custom_NameHash = 0;
 
         float radius = std::max(::GetRadius(sSpellRadiusStore.lookupEntry(sp->getEffectRadiusIndex(0))), ::GetRadius(sSpellRadiusStore.lookupEntry(sp->getEffectRadiusIndex(1))));
         radius = std::max(::GetRadius(sSpellRadiusStore.lookupEntry(sp->getEffectRadiusIndex(2))), radius);

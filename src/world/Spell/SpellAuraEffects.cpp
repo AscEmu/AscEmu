@@ -1374,8 +1374,6 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
                 getOwner()->castSpell(getOwner(), 54817, true);
                 // Demonic language
                 getOwner()->castSpell(getOwner(), 54879, true);
-                // Demonic spells
-                getOwner()->castSpell(getOwner(), 59673, true);
                 // Enslave immunity
                 getOwner()->castSpell(getOwner(), 61610, true);
             }
@@ -1520,7 +1518,7 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
     if (getPlayerOwner() != nullptr)
     {
         // Apply talents and spells that require this form
-        for (const auto& spell : getPlayerOwner()->m_spells)
+        for (const auto& spell : getPlayerOwner()->getSpellSet())
         {
             const auto spellInfo = sSpellMgr.getSpellInfo(spell);
             if (spellInfo == nullptr)
@@ -1548,7 +1546,7 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
         }
 
         // Apply dummy shapeshift spells
-        for (const auto& spell : getPlayerOwner()->mShapeShiftSpells)
+        for (const auto& spell : getPlayerOwner()->getShapeshiftSpells())
         {
             const auto spellInfo = sSpellMgr.getSpellInfo(spell);
             if (spellInfo == nullptr)
@@ -1606,7 +1604,7 @@ void Aura::spellAuraEffectPeriodicLeech(AuraEffectModifier* aurEff, bool apply)
                     for (auto spellSkillItr = spellSkillBounds.first; spellSkillItr != spellSkillBounds.second; ++spellSkillItr)
                     {
                         auto skill_line_ability = spellSkillItr->second;
-                        if (skill_line_ability == nullptr || skill_line_ability->skilline != SKILL_AFFLICTION)
+                        if (skill_line_ability->skilline != SKILL_AFFLICTION)
                         {
                             _continue = true;
                             break;
