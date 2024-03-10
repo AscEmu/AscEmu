@@ -2,6 +2,10 @@
 
 # Opensource software in this folder:
 
+## Folder: fmt
+- Web: https://github.com/fmtlib/fmt
+- Version: a33701196adfad74917046096bf5a2aa0ab0bb50 (2022/08/27)
+
 ## Folder: recastnavigation
 - Web: https://github.com/recastnavigation/recastnavigation
 - Version: d0b2ed8ff5d371f375cf49dad7ca96e8b22142d0 (2022/11/28)

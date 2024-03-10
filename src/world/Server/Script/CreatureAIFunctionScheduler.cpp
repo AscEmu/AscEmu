@@ -66,7 +66,7 @@ CreatureAIFunc CreatureAIFunctionScheduler::addAISpell(FunctionArgs funcArgs, Sc
         return addAIFunction(&CreatureAIScript::CreatureAIFunc_CastSpell, pScheduler, funcArgs);
     }
 
-    sLogger.failure("tried to add invalid spell with id %u", funcArgs.getSpellId());
+    sLogger.failure("tried to add invalid spell with id {}", funcArgs.getSpellId());
 
     // Return an empty weak_ptr
     return CreatureAIFunc();

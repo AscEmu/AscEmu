@@ -118,7 +118,7 @@ void WeatherMgr::loadFromDB()
         weatherInfo->_generateWeather();
     }
     while (result->NextRow());
-    sLogger.info("WeatherMgr : Loaded weather information for %u zones.", result->GetRowCount());
+    sLogger.info("WeatherMgr : Loaded weather information for {} zones.", result->GetRowCount());
 
     delete result;
 }
@@ -189,7 +189,7 @@ void WeatherInfo::_generateWeather()
     sendUpdate();
 
     sEventMgr.AddEvent(this, &WeatherInfo::buildUp, EVENT_WEATHER_UPDATE, static_cast<uint32_t>(m_totalTime / ceil(m_maxDensity / m_densityUpdate) * 2), 0, 0);
-    sLogger.debugFlag(AscEmu::Logging::LF_MAP, "Forecast for zone:%d new type:%d new interval:%d ms", m_zoneId, m_currentEffect, static_cast<uint32_t>(m_totalTime / ceil(m_maxDensity / m_densityUpdate) * 2));
+    sLogger.debugFlag(AscEmu::Logging::LF_MAP, "Forecast for zone:{} new type:{} new interval:{} ms", m_zoneId, m_currentEffect, static_cast<uint32_t>(m_totalTime / ceil(m_maxDensity / m_densityUpdate) * 2));
 }
 
 void WeatherInfo::buildUp()

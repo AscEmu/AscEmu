@@ -74,7 +74,7 @@ void GuildFinderMgr::loadGuildSettingsFromDB()
         ++count;
     } while(result->NextRow());
 
-    sLogger.info("Loaded %u guild finder guild-related settings in %u ms.", count, Util::GetTimeDifferenceToNow(startTime));
+    sLogger.info("Loaded {} guild finder guild-related settings in {} ms.", count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 void GuildFinderMgr::loadMembershipRequestsFromDB()
@@ -110,7 +110,7 @@ void GuildFinderMgr::loadMembershipRequestsFromDB()
         ++count;
     } while(result->NextRow());
 
-    sLogger.info("Loaded %u guild finder membership requests in %u ms.", count, Util::GetTimeDifferenceToNow(startTime));
+    sLogger.info("Loaded {} guild finder membership requests in {} ms.", count, Util::GetTimeDifferenceToNow(startTime));
 }
 
 void GuildFinderMgr::addMembershipRequest(uint32_t guildGuid, MembershipRequest const& request)

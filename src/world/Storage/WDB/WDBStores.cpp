@@ -601,7 +601,7 @@ bool loadDBCs()
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sEmotesStore, dbc_path, "Emotes.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sItemCurrencyCostStore, dbc_path, "ItemCurrencyCost.db2");
     {
-        sLogger.debug("Loaded %u rows from ItemCurrencyCost.db2", sItemCurrencyCostStore.getNumRows());
+        sLogger.debug("Loaded {} rows from ItemCurrencyCost.db2", sItemCurrencyCostStore.getNumRows());
     }
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sMountCapabilityStore, dbc_path, "MountCapability.dbc");
     WDB::loadWDBFile(available_dbc_locales, bad_dbc_files, sMountTypeStore, dbc_path, "MountType.dbc");

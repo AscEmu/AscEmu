@@ -52,11 +52,11 @@ void SocketMgr::AddSocket(Socket* s)
     struct epoll_event ev;
     memset(&ev, 0, sizeof(epoll_event));
     ev.events = (s->writeBuffer.GetSize()) ? EPOLLOUT : EPOLLIN;
-    ev.events |= EPOLLET;            /* use edge-triggered instead of level-triggered because we're using nonblocking sockets */
+    ev.events |= EPOLLET; // use edge-triggered instead of level-triggered because we're using nonblocking sockets.
     ev.data.fd = s->GetFd();
 
     if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, ev.data.fd, &ev))
-        sLogger.failure("Could not add event to epoll set on fd %u", ev.data.fd);
+        sLogger.failure("Could not add event to epoll set on fd {}", s->GetFd());
 }
 
 void SocketMgr::AddListenSocket(ListenSocketBase* s)
@@ -68,18 +68,18 @@ void SocketMgr::AddListenSocket(ListenSocketBase* s)
     struct epoll_event ev;
     memset(&ev, 0, sizeof(epoll_event));
     ev.events = EPOLLIN;
-    ev.events |= EPOLLET;            /* use edge-triggered instead of level-triggered because we're using nonblocking sockets */
+    ev.events |= EPOLLET; // use edge-triggered instead of level-triggered because we're using nonblocking sockets.
     ev.data.fd = s->GetFd();
 
     if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, ev.data.fd, &ev))
-        sLogger.failure("Could not add event to epoll set on fd %u", ev.data.fd);
+        sLogger.failure("Could not add event to epoll set on fd {}", s->GetFd());
 }
 
 void SocketMgr::RemoveSocket(Socket* s)
 {
     if(fds[s->GetFd()] != s)
     {
-        sLogger.failure("Could not remove fd %u from the set due to it not existing?", s->GetFd());
+        sLogger.failure("Could not remove fd {} from the set due to it not existing?", s->GetFd());
         return;
     }
 
@@ -93,7 +93,7 @@ void SocketMgr::RemoveSocket(Socket* s)
     ev.events = EPOLLIN | EPOLLOUT | EPOLLERR | EPOLLHUP | EPOLLONESHOT;
 
     if(epoll_ctl(epoll_fd, EPOLL_CTL_DEL, ev.data.fd, &ev))
-        sLogger.failure("Could not remove fd %u from epoll set, errno %u", s->GetFd(), errno);
+        sLogger.failure("Could not remove fd {} from epoll set, errno {}", s->GetFd(), errno);
 }
 
 void SocketMgr::CloseAll()
@@ -112,7 +112,7 @@ void SocketMgr::SpawnWorkerThreads()
 
 void SocketMgr::ShowStatus()
 {
-    sLogger.info("sockets count = %u", static_cast<uint32_t>(socket_count.load()));
+    sLogger.info("sockets count = {}", static_cast<uint32_t>(socket_count.load()));
 }
 
 bool SocketWorkerThread::runThread()
@@ -121,6 +121,7 @@ bool SocketWorkerThread::runThread()
     Socket* ptr;
     int i;
     running = true;
+    // events[i].data.fd = ptr->GetFd();
 
     while(running)
     {
@@ -129,7 +130,7 @@ bool SocketWorkerThread::runThread()
         {
             if(events[i].data.fd >= SOCKET_HOLDER_SIZE)
             {
-                sLogger.failure("Requested FD that is too high (%u)", events[i].data.fd);
+                sLogger.failure("Requested FD that is too high ({})", ptr->GetFd());
                 continue;
             }
 
@@ -140,8 +141,7 @@ bool SocketWorkerThread::runThread()
                 if((ptr = ((Socket*)sSocketMgr.listenfds[events[i].data.fd])) != NULL)
                     ((ListenSocketBase*)ptr)->OnAccept();
                 else
-                    sLogger.failure("Returned invalid fd (no pointer) of FD %u", events[i].data.fd);
-
+                    sLogger.failure("Returned invalid fd (no pointer) of FD {}", ptr->GetFd());
                 continue;
             }
 
@@ -152,7 +152,7 @@ bool SocketWorkerThread::runThread()
             }
             else if(events[i].events & EPOLLIN)
             {
-                ptr->ReadCallback(0);               // Len is unknown at this point.
+                ptr->ReadCallback(0); // Len is unknown at this point.
 
                 /* changing to written state? */
                 if(ptr->writeBuffer.GetSize() && !ptr->HasSendLock() && ptr->IsConnected())
@@ -160,8 +160,8 @@ bool SocketWorkerThread::runThread()
             }
             else if(events[i].events & EPOLLOUT)
             {
-                ptr->BurstBegin();          // Lock receive mutex
-                ptr->WriteCallback();       // Perform actual send()
+                ptr->BurstBegin();      // Lock receive mutex
+                ptr->WriteCallback();   // Perform actual send()
                 if(ptr->writeBuffer.GetSize() > 0)
                 {
                     /* we don't have to do anything here. no more oneshots :) */
@@ -172,7 +172,7 @@ bool SocketWorkerThread::runThread()
                     ptr->DecSendLock();
                     ptr->PostEvent(EPOLLIN);
                 }
-                ptr->BurstEnd();            // Unlock
+                ptr->BurstEnd(); // Unlock
             }
         }
     }

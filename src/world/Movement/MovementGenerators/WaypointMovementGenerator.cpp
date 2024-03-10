@@ -99,7 +99,7 @@ void WaypointMovementGenerator<Creature>::doInitialize(Creature* owner)
 
     if (!_path)
     {
-        sLogger.failure("WaypointMovementGenerator::DoInitialize: couldn't load path for creature (%u) (_pathId: %u)", owner->getGuid(), _pathId);
+        sLogger.failure("WaypointMovementGenerator::DoInitialize: couldn't load path for creature ({}) (_pathId: {})", owner->getGuid(), _pathId);
         return;
     }
 
@@ -232,7 +232,7 @@ void WaypointMovementGenerator<Creature>::onArrived(Creature* owner)
 
     if (waypoint.eventId && Util::getRandomUInt(0, 99) < waypoint.eventChance)
     {
-        sLogger.debug("Creature movement start script %u at point %u for %u.", waypoint.eventId, _currentNode, owner->getGuid());
+        sLogger.debug("Creature movement start script {} at point {} for {}.", waypoint.eventId, _currentNode, owner->getGuid());
         owner->removeUnitStateFlag(UNIT_STATE_ROAMING_MOVE);
         // add waypoint scripts
     }

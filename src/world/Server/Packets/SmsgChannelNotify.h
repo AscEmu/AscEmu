@@ -17,7 +17,7 @@ namespace AscEmu::Packets
     {
     public:
         uint8_t flag;
-        std::string channelName;
+        utf8_string channelName;
         uint64_t guid;
 
         uint8_t extraFlag;

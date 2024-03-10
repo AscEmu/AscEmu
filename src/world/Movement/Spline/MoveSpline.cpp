@@ -270,9 +270,9 @@ bool MoveSplineInitArgs::Validate(Unit* unit) const
     if (!(exp))\
     {\
         if (unit)\
-            sLogger.failure("misc.movesplineinitargs MoveSplineInitArgs::Validate: expression '%s' failed", #exp);\
+            sLogger.failure("misc.movesplineinitargs MoveSplineInitArgs::Validate: expression '{}' failed", #exp);\
         else\
-            sLogger.failure("misc.movesplineinitargs MoveSplineInitArgs::Validate: expression '%s' failed for cyclic spline continuation", #exp); \
+            sLogger.failure("misc.movesplineinitargs MoveSplineInitArgs::Validate: expression '{}' failed for cyclic spline continuation", #exp); \
         return false;\
     }
     CHECK(path.size() > 1);

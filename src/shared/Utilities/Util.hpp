@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <random>
 #include <utility>
 #include <filesystem>
+#include <locale>
 
 namespace Util
 {
@@ -29,68 +30,12 @@ namespace Util
     uint32_t getNumberFromStringByRange(const std::string& string, int startCharacter, int endCharacter);
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // WString functions
-    bool Utf8toWStr(const std::string& utf8str, std::wstring& wstr);
-    bool WStrToUtf8(const std::wstring& wstr, std::string& utf8str);
+    // utf8String functions
 
-    size_t Utf8length(std::string& utf8str);
+    std::size_t max_consecutive(std::string_view name, bool case_insensitive = false, const std::locale& locale = std::locale());
 
-    inline wchar_t WCharToUpper(wchar_t wchar)
-    {
-        if (wchar >= L'a' && wchar <= L'z')                      // LATIN SMALL LETTER A - LATIN SMALL LETTER Z
-            return wchar_t(uint16_t(wchar)-0x0020);
-        if (wchar == 0x00DF)                                     // LATIN SMALL LETTER SHARP S
-            return wchar_t(0x1E9E);
-        if (wchar >= 0x00E0 && wchar <= 0x00F6)                  // LATIN SMALL LETTER A WITH GRAVE - LATIN SMALL LETTER O WITH DIAERESIS
-            return wchar_t(uint16_t(wchar)-0x0020);
-        if (wchar >= 0x00F8 && wchar <= 0x00FE)                  // LATIN SMALL LETTER O WITH STROKE - LATIN SMALL LETTER THORN
-            return wchar_t(uint16_t(wchar)-0x0020);
-        if (wchar >= 0x0101 && wchar <= 0x012F)                  // LATIN SMALL LETTER A WITH MACRON - LATIN SMALL LETTER I WITH OGONEK (only %2=1)
-        {
-            if (wchar % 2 == 1)
-                return wchar_t(uint16_t(wchar)-0x0001);
-        }
-        if (wchar >= 0x0430 && wchar <= 0x044F)                  // CYRILLIC SMALL LETTER A - CYRILLIC SMALL LETTER YA
-            return wchar_t(uint16_t(wchar)-0x0020);
-        if (wchar == 0x0401 || wchar == 0x0451)                  // CYRILLIC CAPITAL LETTER IO, CYRILLIC SMALL LETTER IO
-            return wchar_t(0x0401);
-
-         return wchar;
-    }
-
-    inline wchar_t WCharToLower(wchar_t wchar)
-    {
-        if (wchar >= L'A' && wchar <= L'Z')                      // LATIN CAPITAL LETTER A - LATIN CAPITAL LETTER Z
-            return wchar_t(uint16_t(wchar)+0x0020);
-        if (wchar >= 0x00C0 && wchar <= 0x00D6)                  // LATIN CAPITAL LETTER A WITH GRAVE - LATIN CAPITAL LETTER O WITH DIAERESIS
-            return wchar_t(uint16_t(wchar)+0x0020);
-        if (wchar >= 0x00D8 && wchar <= 0x00DF)                  // LATIN CAPITAL LETTER O WITH STROKE - LATIN CAPITAL LETTER THORN
-            return wchar_t(uint16_t(wchar)+0x0020);
-        if (wchar >= 0x0100 && wchar <= 0x012E)                  // LATIN CAPITAL LETTER A WITH MACRON - LATIN CAPITAL LETTER I WITH OGONEK (only %2=0)
-        {
-            if (wchar % 2 == 0)
-                return wchar_t(uint16_t(wchar)+0x0001);
-        }
-        if (wchar == 0x1E9E)                                     // LATIN CAPITAL LETTER SHARP S
-            return wchar_t(0x00DF);
-        if (wchar == 0x0401)                                     // CYRILLIC CAPITAL LETTER IO
-            return wchar_t(0x0451);
-        if (wchar >= 0x0410 && wchar <= 0x042F)                  // CYRILLIC CAPITAL LETTER A - CYRILLIC CAPITAL LETTER YA
-            return wchar_t(uint16_t(wchar)+0x0020);
-
-         return wchar;
-    }
-
-    inline void WStrToUpper(std::wstring& str)
-    {
-        std::transform(str.begin(), str.end(), str.begin(), WCharToUpper);
-    }
-
-    inline void WStrToLower(std::wstring& str)
-    {
-        std::transform(str.begin(), str.end(), str.begin(), WCharToLower);
-    }
-
+    //////////////////////////////////////////////////////////////////////////////////////////
+    
     inline uint32_t MAKE_PAIR32(uint16_t l, uint16_t h)
     {
         return uint32_t(l | (uint32_t(h) << 16));

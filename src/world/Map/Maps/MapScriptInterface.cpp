@@ -379,7 +379,7 @@ Creature* MapScriptInterface::spawnCreature(uint32_t Entry, LocationVector pos, 
         return creature;
     }
 
-    sLogger.failure("MapScriptInterface::SpawnCreature tried to spawn invalid creature %u (nullptr), returning nullptr!", Entry);
+    sLogger.failure("MapScriptInterface::SpawnCreature tried to spawn invalid creature {} (nullptr), returning nullptr!", Entry);
     return nullptr;
 }
 
@@ -407,7 +407,7 @@ Creature* MapScriptInterface::spawnCreature(MySQLStructure::CreatureSpawn* sp, b
         return p;
     }
 
-    sLogger.failure("MapScriptInterface::SpawnCreature tried to spawn invalid creature %u (nullptr), returning nullptr!", sp->entry);
+    sLogger.failure("MapScriptInterface::SpawnCreature tried to spawn invalid creature {} (nullptr), returning nullptr!", sp->entry);
     return nullptr;
 }
 

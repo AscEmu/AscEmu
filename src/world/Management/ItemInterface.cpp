@@ -424,13 +424,13 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
 {
     if (slot >= MAX_INVENTORY_SLOT)
     {
-        sLogger.failure("ItemInterface::m_AddItem slot %u is invalid!", slot);
+        sLogger.failure("ItemInterface::m_AddItem slot {} is invalid!", slot);
         return ADD_ITEM_RESULT_ERROR;
     }
 
     if (ContainerSlot >= MAX_INVENTORY_SLOT)
     {
-        sLogger.failure("ItemInterface::m_AddItem containerSlot %u is invalid!", ContainerSlot);
+        sLogger.failure("ItemInterface::m_AddItem containerSlot {} is invalid!", ContainerSlot);
         return ADD_ITEM_RESULT_ERROR;
     }
 
@@ -468,7 +468,7 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
     {
         if (GetInventoryItem(slot) != nullptr /*|| (slot == EQUIPMENT_SLOT_OFFHAND && !m_pOwner->HasSkillLine(118))*/)
         {
-            //sLogger.failure("bugged inventory: %u %u", m_pOwner->GetName(), item->getGuid());
+            //sLogger.failure("bugged inventory: {} {}", m_pOwner->GetName(), item->getGuid());
             SlotResult result = this->FindFreeInventorySlot(item->getItemProperties());
 
             // send message to player
@@ -607,13 +607,13 @@ Item* ItemInterface::SafeRemoveAndRetreiveItemFromSlot(int8 ContainerSlot, int16
 {
     if (slot >= MAX_INVENTORY_SLOT)
     {
-        sLogger.failure("ItemInterface::SafeRemoveAndRetreiveItemFromSlot slot %u is invalid!", slot);
+        sLogger.failure("ItemInterface::SafeRemoveAndRetreiveItemFromSlot slot {} is invalid!", slot);
         return nullptr;
     }
 
     if (ContainerSlot >= MAX_INVENTORY_SLOT)
     {
-        sLogger.failure("ItemInterface::SafeRemoveAndRetreiveItemFromSlot containerSlot %u is invalid!", ContainerSlot);
+        sLogger.failure("ItemInterface::SafeRemoveAndRetreiveItemFromSlot containerSlot {} is invalid!", ContainerSlot);
         return nullptr;
     }
 
@@ -783,13 +783,13 @@ bool ItemInterface::SafeFullRemoveItemFromSlot(int8 ContainerSlot, int16 slot)
 {
     if (slot >= MAX_INVENTORY_SLOT)
     {
-        sLogger.failure("ItemInterface::SafeFullRemoveItemFromSlot slot %u is invalid!", slot);
+        sLogger.failure("ItemInterface::SafeFullRemoveItemFromSlot slot {} is invalid!", slot);
         return false;
     }
 
     if (ContainerSlot >= MAX_INVENTORY_SLOT)
     {
-        sLogger.failure("ItemInterface::SafeFullRemoveItemFromSlot containerSlot %u is invalid!", ContainerSlot);
+        sLogger.failure("ItemInterface::SafeFullRemoveItemFromSlot containerSlot {} is invalid!", ContainerSlot);
         return false;
     }
 
@@ -3074,7 +3074,7 @@ void ItemInterface::AddBuyBackItem(Item* it, uint32 price)
         {
             if (m_pOwner->getVendorBuybackSlot(i) == 0 || m_pBuyBack[i] == nullptr)
             {
-                sLogger.info("setting buybackslot %u", i / 2);
+                sLogger.info("setting buybackslot {}", i / 2);
                 m_pBuyBack[i] = it;
 
                 m_pOwner->setVendorBuybackSlot(i, m_pBuyBack[i]->getGuid());
@@ -3105,7 +3105,7 @@ void ItemInterface::RemoveBuyBackItem(uint8_t index)
             {
                 m_pBuyBack[j] = nullptr;
 
-                sLogger.info("nulling %u", j);
+                sLogger.info("nulling {}", j);
             }
         }
         else
@@ -3137,13 +3137,13 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
     Item* SrcItem = GetInventoryItem(srcslot);
     Item* DstItem = GetInventoryItem(dstslot);
 
-    sLogger.debug("ItemInterface::SwapItemSlots(%u, %u);", srcslot, dstslot);
+    sLogger.debug("ItemInterface::SwapItemSlots({}, {});", srcslot, dstslot);
     //Item * temp = GetInventoryItem(srcslot);
     //if (temp)
-    //    sLogger.debug("Source item: %s (inventoryType=%u, realslot=%u);" , temp->GetProto()->Name1 , temp->GetProto()->InventoryType , GetItemSlotByType(temp->GetProto()->InventoryType));
+    //    sLogger.debug("Source item: {} (inventoryType={}, realslot={});" , temp->GetProto()->Name1 , temp->GetProto()->InventoryType , GetItemSlotByType(temp->GetProto()->InventoryType));
     //    temp = GetInventoryItem(dstslot);
     //if (temp)
-    //    sLogger.debug("Destination: Item: %s (inventoryType=%u, realslot=%u);" , temp->GetProto()->Name1 , temp->GetProto()->InventoryType , GetItemSlotByType(temp->GetProto()->InventoryType));
+    //    sLogger.debug("Destination: Item: {} (inventoryType={}, realslot={});" , temp->GetProto()->Name1 , temp->GetProto()->InventoryType , GetItemSlotByType(temp->GetProto()->InventoryType));
     //else
     //    sLogger.debug("Destination: Empty");
 
@@ -3244,7 +3244,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
                 auto result = m_pOwner->getItemInterface()->SafeAddItem(tSrcItem, dstslot, static_cast<int16>(Slot));
                 if (!result)
                 {
-                    sLogger.failure("Error while adding item %u to player %s", tSrcItem->getEntry(), m_pOwner->getName().c_str());
+                    sLogger.failure("Error while adding item {} to player {}", tSrcItem->getEntry(), m_pOwner->getName());
                     return;
                 }
             }
@@ -3291,23 +3291,23 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
 
     if (m_pItems[(int)dstslot] != nullptr)
     {
-        //sLogger.debug("(SrcItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now %u" , dstslot , m_pItems[(int)dstslot]->getGuid());
+        //sLogger.debug("(SrcItem) PLAYER_FIELD_INV_SLOT_HEAD + {} is now {}" , dstslot , m_pItems[(int)dstslot]->getGuid());
         m_pOwner->setInventorySlotItemGuid(static_cast<uint8_t>(dstslot), m_pItems[(int)dstslot]->getGuid());
     }
     else
     {
-        //sLogger.debug("(SrcItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now 0" , dstslot);
+        //sLogger.debug("(SrcItem) PLAYER_FIELD_INV_SLOT_HEAD + {} is now 0" , dstslot);
         m_pOwner->setInventorySlotItemGuid(static_cast<uint8_t>(dstslot), 0);
     }
 
     if (m_pItems[(int)srcslot] != nullptr)
     {
-        //sLogger.debug("(DstItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now %u" , dstslot , m_pItems[(int)srcslot]->getGuid());
+        //sLogger.debug("(DstItem) PLAYER_FIELD_INV_SLOT_HEAD + {} is now {}" , dstslot , m_pItems[(int)srcslot]->getGuid());
         m_pOwner->setInventorySlotItemGuid(static_cast<uint8_t>(srcslot), m_pItems[(int)srcslot]->getGuid());
     }
     else
     {
-        //sLogger.debug("(DstItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now 0" , dstslot);
+        //sLogger.debug("(DstItem) PLAYER_FIELD_INV_SLOT_HEAD + {} is now 0" , dstslot);
         m_pOwner->setInventorySlotItemGuid(static_cast<uint8_t>(srcslot), 0);
     }
 
@@ -3568,7 +3568,7 @@ SlotResult ItemInterface::FindFreeInventorySlot(ItemProperties const* proto)
     //special slots will be ignored of item is not set
     if (proto != nullptr)
     {
-        //sLogger.debug("ItemInterface::FindFreeInventorySlot called for item %s" , proto->Name1);
+        //sLogger.debug("ItemInterface::FindFreeInventorySlot called for item {}" , proto->Name1);
         if (proto->BagFamily)
         {
             if (proto->BagFamily & ITEM_TYPE_KEYRING || proto->Class == ITEM_CLASS_KEY)
@@ -4136,7 +4136,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
 
             if ((it->RandomPropId != 0) && (it->RandomSuffixId != 0))
             {
-                sLogger.failure("Item %u (%s) has both RandomPropId and RandomSuffixId.", itemid, it->Name.c_str());
+                sLogger.failure("Item {} ({}) has both RandomPropId and RandomSuffixId.", itemid, it->Name);
             }
 
             if (it->RandomPropId != 0)
@@ -4149,7 +4149,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
                 }
                 else
                 {
-                    sLogger.failure("Item %u (%s) has unknown RandomPropId %u", itemid, it->Name.c_str(), it->RandomPropId);
+                    sLogger.failure("Item {} ({}) has unknown RandomPropId {}", itemid, it->Name, it->RandomPropId);
                 }
             }
 
@@ -4163,7 +4163,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
                 }
                 else
                 {
-                    sLogger.failure("Item %u (%s) has unknown RandomSuffixId %u", itemid, it->Name.c_str(), it->RandomSuffixId);
+                    sLogger.failure("Item {} ({}) has unknown RandomSuffixId {}", itemid, it->Name, it->RandomSuffixId);
                 }
             }
         }

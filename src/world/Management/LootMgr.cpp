@@ -242,7 +242,7 @@ void LootMgr::loadLootProp()
             auto item_random_properties = sItemRandomPropertiesStore.lookupEntry(eid);
             if (item_random_properties == nullptr)
             {
-                sLogger.failure("RandomProp group %u references non-existent randomprop %u.", id, eid);
+                sLogger.failure("RandomProp group {} references non-existent randomprop {}.", id, eid);
                 continue;
             }
 
@@ -273,7 +273,7 @@ void LootMgr::loadLootProp()
             auto item_random_suffix = sItemRandomSuffixStore.lookupEntry(eid);
             if (item_random_suffix == nullptr)
             {
-                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "RandomSuffix group %u references non-existent randomsuffix %u.", id, eid);
+                sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "RandomSuffix group {} references non-existent randomsuffix {}.", id, eid);
                 continue;
             }
 
@@ -299,7 +299,7 @@ void LootMgr::loadLootTables(const char* szTableName, LootTemplateMap* LootTable
     QueryResult* result = sMySQLStore.getWorldDBQuery("SELECT * FROM %s ORDER BY entryid ASC", szTableName);
     if (!result)
     {
-        sLogger.failure("Loading loot from table %s failed.", szTableName);
+        sLogger.failure("Loading loot from table {} failed.", szTableName);
         return;
     }
 
@@ -324,7 +324,7 @@ void LootMgr::loadLootTables(const char* szTableName, LootTemplateMap* LootTable
         ItemProperties const* itemProto = sMySQLStore.getItemProperties(itemId);
         if (!itemProto)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Invalid Item with entry %u set in %s", itemId, szTableName);
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Invalid Item with entry {} set in {}", itemId, szTableName);
             continue;
         }
 
@@ -347,7 +347,7 @@ void LootMgr::loadLootTables(const char* szTableName, LootTemplateMap* LootTable
         count++;
     } while (result->NextRow());
 
-    sLogger.info("%u loot templates loaded from %s", count, szTableName);
+    sLogger.info("{} loot templates loaded from {}", count, szTableName);
     delete result;
 }
 
@@ -700,7 +700,7 @@ void LootMgr::addLoot(Loot* loot, uint32_t itemid, std::vector<float> chance, ui
 {
     if (loot->items.size() > 16)
     {
-        sLogger.debug("LootMgr::addLoot cannot add item %u to Loot, Maximum drops reached", itemid);
+        sLogger.debug("LootMgr::addLoot cannot add item {} to Loot, Maximum drops reached", itemid);
         return;
     }
 

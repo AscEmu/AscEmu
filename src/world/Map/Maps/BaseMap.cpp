@@ -30,7 +30,7 @@ BaseMap::BaseMap(uint32_t mapId, MySQLStructure::MapInfo const* mapInfo, WDB::St
 
 BaseMap::~BaseMap()
 {
-    sLogger.info("BaseMap : Close Tempelate from Map %u", this->_mapId);
+    sLogger.info("BaseMap : Close Tempelate from Map {}", this->_mapId);
 
     for (uint32_t x = 0; x < Map::Cell::_sizeX; x++)
     {
@@ -215,7 +215,7 @@ void BaseMap::loadSpawns(bool reload)
             } break;
         }
     }
-    sLogger.info("MapMgr : %u creatures / %u gobjects on map %u cached.", CreatureSpawnCount, GameObjectSpawnCount, _mapId);
+    sLogger.info("MapMgr : {} creatures / {} gobjects on map {} cached.", CreatureSpawnCount, GameObjectSpawnCount, _mapId);
 }
 
 CellSpawns* BaseMap::getSpawnsList(uint32_t cellx, uint32_t celly)
@@ -228,7 +228,7 @@ CellSpawns* BaseMap::getSpawnsList(uint32_t cellx, uint32_t celly)
         return spawns[cellx][celly];
     }
 
-    sLogger.failure("BaseMap::getSpawnsList invalid cell count! x: %u (max: %u) y:%u (max: %u)", cellx, Map::Cell::_sizeX, celly, Map::Cell::_sizeY);
+    sLogger.failure("BaseMap::getSpawnsList invalid cell count! x: {} (max: {}) y:{} (max: {})", cellx, Map::Cell::_sizeX, celly, Map::Cell::_sizeY);
     return nullptr;
 }
 
@@ -247,6 +247,6 @@ CellSpawns* BaseMap::getSpawnsListAndCreate(uint32_t cellx, uint32_t celly)
         return spawns[cellx][celly];
     }
 
-    sLogger.failure("BaseMap::getSpawnsListAndCreate invalid cell count! x: %u (max: %u) y:%u (max: %u)", cellx, Map::Cell::_sizeX, celly, Map::Cell::_sizeY);
+    sLogger.failure("BaseMap::getSpawnsListAndCreate invalid cell count! x: {} (max: {}) y:{} (max: {})", cellx, Map::Cell::_sizeX, celly, Map::Cell::_sizeY);
     return nullptr;
 }

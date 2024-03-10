@@ -23,7 +23,7 @@ void CalendarMgr::loadFromDB()
         QueryResult* result = CharacterDatabase.Query(&success, loadCalendarEvents);
         if (!success)
         {
-            sLogger.failure("Query failed: %s", loadCalendarEvents);
+            sLogger.failure("Query failed: {}", loadCalendarEvents);
             return;
         }
         if (result)
@@ -45,14 +45,14 @@ void CalendarMgr::loadFromDB()
                 CalendarEvent* calendarEvent = new CalendarEvent(static_cast<uint32_t>(entry), creator, title, description, type, dungeon, date, flags);
                 m_events.insert(calendarEvent);
 
-                sLogger.debug("Title %s loaded", calendarEvent->m_title.c_str()); // remove me ;-)
+                sLogger.debug("Title {} loaded", calendarEvent->m_title); // remove me ;-)
 
                 ++count;
             }
             while (result->NextRow());
             delete result;
 
-            sLogger.info("CalendarMgr : %u calendar events loaded from table calendar_events", count);
+            sLogger.info("CalendarMgr : {} calendar events loaded from table calendar_events", count);
         }
     }
 
@@ -63,7 +63,7 @@ void CalendarMgr::loadFromDB()
         QueryResult* result = CharacterDatabase.Query(&success, loadCalendarInvites);
         if (!success)
         {
-            sLogger.failure("Query failed: %s", loadCalendarInvites);
+            sLogger.failure("Query failed: {}", loadCalendarInvites);
             return;
         }
         if (result)
@@ -89,7 +89,7 @@ void CalendarMgr::loadFromDB()
             }
             while (result->NextRow());
             delete result;
-            sLogger.info("CalendarMgr : Loaded %u calendar invites", count);
+            sLogger.info("CalendarMgr : Loaded {} calendar invites", count);
         }
     }
 }

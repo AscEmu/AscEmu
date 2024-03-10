@@ -295,13 +295,13 @@ void ScriptMgr::register_achievement_criteria_script(uint32_t criteriaId, Achiev
     const auto criteriaEntry = sAchievementCriteriaStore.lookupEntry(criteriaId);
     if (criteriaEntry == nullptr)
     {
-        sLogger.failure("ScriptMgr tried to register a script for achievement criteria id %u but criteria does not exist!", criteriaId);
+        sLogger.failure("ScriptMgr tried to register a script for achievement criteria id {} but criteria does not exist!", criteriaId);
         return;
     }
 
     if (_achievementCriteriaScripts.contains(criteriaId))
     {
-        sLogger.debug("ScriptMgr tried to register a script for achievement criteria id %u but this criteria has already one.", criteriaId);
+        sLogger.debug("ScriptMgr tried to register a script for achievement criteria id {} but this criteria has already one.", criteriaId);
         return;
     }
 
@@ -329,7 +329,7 @@ void ScriptMgr::register_spell_script(uint32_t spellId, SpellScript* ss, bool re
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
     if (spellInfo == nullptr)
     {
-        sLogger.failure("ScriptMgr tried to register a script for spell id %u but spell does not exist!", spellId);
+        sLogger.failure("ScriptMgr tried to register a script for spell id {} but spell does not exist!", spellId);
         return;
     }
 
@@ -395,7 +395,7 @@ void ScriptMgr::_register_spell_script(uint32_t spellId, SpellScript* ss)
 {
     if (_spellScripts.contains(spellId))
     {
-        sLogger.debug("ScriptMgr tried to register a script for spell id %u but this spell has already one.", spellId);
+        sLogger.debug("ScriptMgr tried to register a script for spell id {} but this spell has already one.", spellId);
         return;
     }
 
@@ -441,7 +441,7 @@ void ScriptMgr::LoadScripts()
         if (!dynLib->Load())
         {
             loadMessageStream << "ERROR: Cannot open library.";
-            sLogger.failure(loadMessageStream.str().c_str());
+            sLogger.failure(loadMessageStream.str());
             delete dynLib;
             continue;
         }
@@ -450,7 +450,7 @@ void ScriptMgr::LoadScripts()
         if (!serverStateCall)
         {
             loadMessageStream << "ERROR: Cannot find set_serverstate_call function.";
-            sLogger.failure(loadMessageStream.str().c_str());
+            sLogger.failure(loadMessageStream.str());
             delete dynLib;
             continue;
         }
@@ -463,7 +463,7 @@ void ScriptMgr::LoadScripts()
         if (!versionCall || !registerCall || !typeCall)
         {
             loadMessageStream << "ERROR: Cannot find version functions.";
-            sLogger.failure(loadMessageStream.str().c_str());
+            sLogger.failure(loadMessageStream.str());
             delete dynLib;
             continue;
         }
@@ -474,7 +474,7 @@ void ScriptMgr::LoadScripts()
         if (dllVersion != BUILD_HASH_STR)
         {
             loadMessageStream << "ERROR: Version mismatch.";
-            sLogger.failure(loadMessageStream.str().c_str());
+            sLogger.failure(loadMessageStream.str());
             delete dynLib;
             continue;
         }
@@ -499,7 +499,7 @@ void ScriptMgr::LoadScripts()
 
             loadMessageStream << "loaded";
         }
-        sLogger.info(loadMessageStream.str().c_str());
+        sLogger.info(loadMessageStream.str());
 
         dllCount++;
     }
@@ -510,7 +510,7 @@ void ScriptMgr::LoadScripts()
     }
     else
     {
-        sLogger.info("ScriptMgr : Loaded %u external libraries.", dllCount);
+        sLogger.info("ScriptMgr : Loaded {} external libraries.", dllCount);
         sLogger.info("ScriptMgr : Loading optional scripting engine(s)...");
 
         for (auto& engineDl : scriptingEngineDls)
@@ -586,7 +586,7 @@ void ScriptMgr::DumpUnimplementedSpells()
 
     of.close();
 
-    sLogger.info("Dumped %u IDs.", count);
+    sLogger.info("Dumped {} IDs.", count);
 
     sLogger.info("Dumping IDs for spells with unimplemented dummy aura effect.");
 
@@ -619,7 +619,7 @@ void ScriptMgr::DumpUnimplementedSpells()
 
     of2.close();
 
-    sLogger.info("Dumped %u IDs.", count);
+    sLogger.info("Dumped {} IDs.", count);
 }
 
 void ScriptMgr::DamageTaken(Creature* pCreature, Unit* attacker, uint32_t* damage) const
@@ -650,7 +650,7 @@ void ScriptMgr::register_creature_script(uint32_t entry, exp_create_creature_ai 
     std::lock_guard lock(m_creaturesMutex);
 
     if (_creatures.contains(entry))
-        sLogger.debug("ScriptMgr tried to register a script for Creature ID: %u but this creature has already one!", entry);
+        sLogger.debug("ScriptMgr tried to register a script for Creature ID: {} but this creature has already one!", entry);
 
     _creatures.insert(CreatureCreateMap::value_type(entry, callback));
 }
@@ -658,7 +658,7 @@ void ScriptMgr::register_creature_script(uint32_t entry, exp_create_creature_ai 
 void ScriptMgr::register_gameobject_script(uint32_t entry, exp_create_gameobject_ai callback)
 {
     if (_gameobjects.contains(entry))
-        sLogger.debug("ScriptMgr tried to register a script for GameObject ID: %u but this go has already one.", entry);
+        sLogger.debug("ScriptMgr tried to register a script for GameObject ID: {} but this go has already one.", entry);
 
     _gameobjects.insert(GameObjectCreateMap::value_type(entry, callback));
 }
@@ -666,18 +666,18 @@ void ScriptMgr::register_gameobject_script(uint32_t entry, exp_create_gameobject
 void ScriptMgr::register_dummy_aura(uint32_t entry, exp_handle_dummy_aura callback)
 {
     if (_auras.contains(entry))
-        sLogger.debug("ScriptMgr tried to register a script for Aura ID: %u but this aura has already one.", entry);
+        sLogger.debug("ScriptMgr tried to register a script for Aura ID: {} but this aura has already one.", entry);
 
     SpellInfo const* sp = sSpellMgr.getSpellInfo(entry);
     if (sp == nullptr)
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "ScriptMgr tried to register a dummy aura handler for invalid Spell ID: %u.", entry);
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "ScriptMgr tried to register a dummy aura handler for invalid Spell ID: {}.", entry);
         return;
     }
 
 #if VERSION_STRING >= TBC
     if (!sp->hasEffectApplyAuraName(SPELL_AURA_DUMMY) && !sp->hasEffectApplyAuraName(SPELL_AURA_PERIODIC_TRIGGER_DUMMY))
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "ScriptMgr registered a dummy aura handler for Spell ID: %u (%s), but spell has no dummy aura!", entry, sp->getName().c_str());
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "ScriptMgr registered a dummy aura handler for Spell ID: {} ({}), but spell has no dummy aura!", entry, sp->getName());
 #endif
 
     _auras.insert(HandleDummyAuraMap::value_type(entry, callback));
@@ -687,19 +687,19 @@ void ScriptMgr::register_dummy_spell(uint32_t entry, exp_handle_dummy_spell call
 {
     if (_spells.contains(entry))
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "ScriptMgr tried to register a script for Spell ID: %u but this spell has already one", entry);
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "ScriptMgr tried to register a script for Spell ID: {} but this spell has already one", entry);
         return;
     }
 
     SpellInfo const* sp = sSpellMgr.getSpellInfo(entry);
     if (sp == nullptr)
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "ScriptMgr tried to register a dummy handler for invalid Spell ID: %u.", entry);
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "ScriptMgr tried to register a dummy handler for invalid Spell ID: {}.", entry);
         return;
     }
 
     if (!sp->hasEffect(SPELL_EFFECT_DUMMY) && !sp->hasEffect(SPELL_EFFECT_SCRIPT_EFFECT) && !sp->hasEffect(SPELL_EFFECT_SEND_EVENT))
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "ScriptMgr registered a dummy handler for Spell ID: %u (%s), but spell has no dummy/script/send event effect!", entry, sp->getName().c_str());
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "ScriptMgr registered a dummy handler for Spell ID: {} ({}), but spell has no dummy/script/send event effect!", entry, sp->getName());
 
     _spells.insert(HandleDummySpellMap::value_type(entry, callback));
 }
@@ -710,7 +710,7 @@ void ScriptMgr::register_quest_script(uint32_t entry, QuestScript* qs)
     if (q != nullptr)
     {
         if (q->pQuestScript != nullptr)
-            sLogger.debug("ScriptMgr tried to register a script for Quest ID: %u but this quest has already one.", entry);
+            sLogger.debug("ScriptMgr tried to register a script for Quest ID: {} but this quest has already one.", entry);
 
         const_cast<QuestProperties*>(q)->pQuestScript = qs;
     }
@@ -725,7 +725,7 @@ void ScriptMgr::register_event_script(uint32_t entry, EventScript* es)
     {
         if (gameEvent->mEventScript != nullptr)
         {
-            sLogger.debug("ScriptMgr tried to register a script for Event ID: %u but this event has already one.", entry);
+            sLogger.debug("ScriptMgr tried to register a script for Event ID: {} but this event has already one.", entry);
             return;
         }
 
@@ -737,7 +737,7 @@ void ScriptMgr::register_event_script(uint32_t entry, EventScript* es)
 void ScriptMgr::register_instance_script(uint32_t pMapId, exp_create_instance_ai pCallback)
 {
     if (mInstances.contains(pMapId))
-        sLogger.debug("ScriptMgr tried to register a script for Instance ID: %u but this instance already has one.", pMapId);
+        sLogger.debug("ScriptMgr tried to register a script for Instance ID: {} but this instance already has one.", pMapId);
 
     mInstances.insert(InstanceCreateMap::value_type(pMapId, pCallback));
 }
@@ -778,19 +778,19 @@ void ScriptMgr::register_script_effect(uint32_t entry, exp_handle_script_effect 
 
     if (itr != SpellScriptEffects.end())
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "ScriptMgr tried to register more than 1 script effect handlers for Spell %u", entry);
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "ScriptMgr tried to register more than 1 script effect handlers for Spell {}", entry);
         return;
     }
 
     SpellInfo const* sp = sSpellMgr.getSpellInfo(entry);
     if (sp == nullptr)
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "ScriptMgr tried to register a script effect handler for invalid Spell %u.", entry);
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "ScriptMgr tried to register a script effect handler for invalid Spell {}.", entry);
         return;
     }
 
     if (!sp->hasEffect(SPELL_EFFECT_SCRIPT_EFFECT) && !sp->hasEffect(SPELL_EFFECT_SEND_EVENT))
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "ScriptMgr registered a script effect handler for Spell ID: %u (%s), but spell has no scripted effect!", entry, sp->getName().c_str());
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "ScriptMgr registered a script effect handler for Spell ID: {} ({}), but spell has no scripted effect!", entry, sp->getName());
 
     SpellScriptEffects.insert(std::pair< uint32_t, exp_handle_script_effect >(entry, callback));
 }
@@ -874,7 +874,7 @@ void ScriptMgr::register_hook(ServerHookEvents event, void* function_pointer)
     if (event < NUM_SERVER_HOOKS)
         _hooks[event].insert(function_pointer);
     else
-        sLogger.failure("ScriptMgr::register_hook tried to register invalid event %u", event);
+        sLogger.failure("ScriptMgr::register_hook tried to register invalid event {}", event);
 }
 
 bool ScriptMgr::has_creature_script(uint32_t entry) const
@@ -926,7 +926,7 @@ void ScriptMgr::register_creature_gossip(uint32_t entry, GossipScript* script)
     if (itr == creaturegossip_.end())
     {
         creaturegossip_.insert(std::make_pair(entry, script));
-        //keeping track of all created gossips to delete them all on shutdown
+        // keeping track of all created gossips to delete them all on shutdown
         _customgossipscripts.insert(script);
     }
     else
@@ -959,7 +959,7 @@ void ScriptMgr::register_item_gossip(uint32_t entry, GossipScript* script)
     const auto itr = itemgossip_.find(entry);
     if (itr == itemgossip_.end())
         itemgossip_.insert(std::make_pair(entry, script));
-    //keeping track of all created gossips to delete them all on shutdown
+    // keeping track of all created gossips to delete them all on shutdown
     _customgossipscripts.insert(script);
 }
 
@@ -970,7 +970,7 @@ void ScriptMgr::register_go_gossip(uint32_t entry, GossipScript* script)
     const auto itr = gogossip_.find(entry);
     if (itr == gogossip_.end())
         gogossip_.insert(std::make_pair(entry, script));
-    //keeping track of all created gossips to delete them all on shutdown
+    // keeping track of all created gossips to delete them all on shutdown
     _customgossipscripts.insert(script);
 }
 
@@ -1011,7 +1011,7 @@ GossipScript* ScriptMgr::get_item_gossip(uint32_t entry) const
 
 void ScriptMgr::ReloadScriptEngines()
 {
-    //for all scripting engines that allow reloading, assuming there will be new scripting engines.
+    // for all scripting engines that allow reloading, assuming there will be new scripting engines.
     exp_get_script_type version_function;
     exp_engine_reload engine_reloadfunc;
 
@@ -1034,7 +1034,7 @@ void ScriptMgr::ReloadScriptEngines()
 
 void ScriptMgr::UnloadScriptEngines()
 {
-    //for all scripting engines that allow unloading, assuming there will be new scripting engines.
+    // for all scripting engines that allow unloading, assuming there will be new scripting engines.
     exp_get_script_type version_function;
     exp_engine_unload engine_unloadfunc;
 

@@ -137,26 +137,26 @@ void LfgMgr::LoadRewards()
 #if VERSION_STRING < Cata
         if (!sLFGDungeonStore.lookupEntry(dungeonId))
         {
-            sLogger.debug("Dungeon %u specified in table `lfg_dungeon_rewards` does not exist!", dungeonId);
+            sLogger.debug("Dungeon {} specified in table `lfg_dungeon_rewards` does not exist!", dungeonId);
             continue;
         }
 #endif
 
         if (!maxLevel || maxLevel > 80)
         {
-            sLogger.debug("Level %u specified for dungeon %u in table `lfg_dungeon_rewards` can never be reached!", maxLevel, dungeonId);
+            sLogger.debug("Level {} specified for dungeon {} in table `lfg_dungeon_rewards` can never be reached!", maxLevel, dungeonId);
             maxLevel = 80;
         }
 
         if (firstQuestId && !sMySQLStore.getQuestProperties(firstQuestId))
         {
-            sLogger.debug("First quest %u specified for dungeon %u in table `lfg_dungeon_rewards` does not exist!", firstQuestId, dungeonId);
+            sLogger.debug("First quest {} specified for dungeon {} in table `lfg_dungeon_rewards` does not exist!", firstQuestId, dungeonId);
             firstQuestId = 0;
         }
 
         if (otherQuestId && !sMySQLStore.getQuestProperties(otherQuestId))
         {
-            sLogger.debug("Other quest %u specified for dungeon %u in table `lfg_dungeon_rewards` does not exist!", otherQuestId, dungeonId);
+            sLogger.debug("Other quest {} specified for dungeon {} in table `lfg_dungeon_rewards` does not exist!", otherQuestId, dungeonId);
             otherQuestId = 0;
         }
 
@@ -168,7 +168,7 @@ void LfgMgr::LoadRewards()
     }
     while (result->NextRow());
 
-    sLogger.info("LFGMgr : Loaded %u lfg dungeon rewards in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    sLogger.info("LFGMgr : Loaded {} lfg dungeon rewards in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 void LfgMgr::Update(uint32 diff)
@@ -262,7 +262,7 @@ void LfgMgr::Update(uint32 diff)
         while (!newToQueue.empty())
         {
             uint64 frontguid = newToQueue.front();
-            sLogger.debug("Update: QueueId %u: checking %u newToQueue(%u), currentQueue(%u)", queueId, frontguid, uint32(newToQueue.size()), uint32(currentQueue.size()));
+            sLogger.debug("Update: QueueId {}: checking {} newToQueue({}), currentQueue({})", queueId, frontguid, uint32(newToQueue.size()), uint32(currentQueue.size()));
             firstNew.push_back(frontguid);
             newToQueue.pop_front();
 
@@ -331,7 +331,7 @@ void LfgMgr::Update(uint32 diff)
             LfgQueueInfo* queue = itQueue->second;
             if (!queue)
             {
-                sLogger.debug("Update: %u queued with null queue info!", itQueue->first);
+                sLogger.debug("Update: {} queued with null queue info!", itQueue->first);
                 continue;
             }
             uint32 dungeonId = (*queue->dungeons.begin());
@@ -391,12 +391,12 @@ void LfgMgr::AddToQueue(uint64 guid, uint8 queueId)
     LfgGuidList& list = m_newToQueue[queueId];
     if (std::find(list.begin(), list.end(), guid) != list.end())
     {
-        sLogger.debug("%u already in new queue. ignoring", guid);
+        sLogger.debug("{} already in new queue. ignoring", guid);
     }
     else
     {
         list.push_back(guid);
-        sLogger.debug("%u added to m_newToQueue (size: %u)", guid, uint32(list.size()));
+        sLogger.debug("{} added to m_newToQueue (size: {})", guid, uint32(list.size()));
     }
 }
 
@@ -419,12 +419,12 @@ bool LfgMgr::RemoveFromQueue(uint64 guid)
     {
         delete it->second;
         m_QueueInfoMap.erase(it);
-        sLogger.debug("%u removed", guid);
+        sLogger.debug("{} removed", guid);
         return true;
     }
     else
     {
-        sLogger.debug("%u not in queue", guid);
+        sLogger.debug("{} not in queue", guid);
         return false;
     }
 
@@ -633,7 +633,7 @@ void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDung
     // Can't join. Send result
     if (joinData.result != LFG_JOIN_OK)
     {
-        sLogger.debug("%u joining with %u members. result: %u   cant join return", guid, group ? group->MemberCount() : 1, joinData.result);
+        sLogger.debug("{} joining with {} members. result: {}   cant join return", guid, group ? group->MemberCount() : 1, joinData.result);
         if (!dungeons.empty())                             // Only should show lockmap when have no dungeons available
             joinData.lockmap.clear();
 
@@ -644,7 +644,7 @@ void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDung
     // \todo Raid browser not supported yet
     if (isRaid)
     {
-        sLogger.debug("%u trying to join raid browser and it's disabled.", guid);
+        sLogger.debug("{} trying to join raid browser and it's disabled.", guid);
         return;
     }
 
@@ -724,7 +724,7 @@ void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDung
         AddToQueue(guid, uint8(player->getTeam()));
     }
 
-    sLogger.debug("%u joined with %u members. dungeons: %u", guid, group ? group->MemberCount() : 1, uint8(dungeons.size()));
+    sLogger.debug("{} joined with {} members. dungeons: {}", guid, group ? group->MemberCount() : 1, uint8(dungeons.size()));
 }
 
 void LfgMgr::Leave(Player* player, std::shared_ptr<Group> _group /* = nullptr*/)
@@ -735,7 +735,7 @@ void LfgMgr::Leave(Player* player, std::shared_ptr<Group> _group /* = nullptr*/)
     uint64 guid = _group ? _group->GetID() : player->getGuid();
     LfgState state = GetState(guid);
 
-    sLogger.debug("%u", guid);
+    sLogger.debug("{}", guid);
     switch (state)
     {
         case LFG_STATE_QUEUED:
@@ -803,13 +803,13 @@ void LfgMgr::OfferContinue(Group* grp)
         if (Player* leader = sObjectMgr.getPlayer(grp->GetLeader()->guid))
             leader->getSession()->sendLfgOfferContinue(GetDungeon(gguid, false));
 
-        sLogger.debug("player %u ", sObjectMgr.getPlayer(grp->GetLeader()->guid));
+        sLogger.debug("player {} ", fmt::ptr(sObjectMgr.getPlayer(grp->GetLeader()->guid)));
     }
 }
 
 LfgProposal* LfgMgr::FindNewGroups(LfgGuidList& check, LfgGuidList& all)
 {
-    sLogger.debug("(%s) - all(%s)", ConcatenateGuids(check).c_str(), ConcatenateGuids(all).c_str());
+    sLogger.debug("({}) - all({})", ConcatenateGuids(check), ConcatenateGuids(all));
 
     LfgProposal* pProposal = nullptr;
     if (check.empty() || check.size() > 5 || !CheckCompatibility(check, pProposal))
@@ -836,7 +836,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
 
     if (check.size() > 5 || check.empty())
     {
-        sLogger.debug("(%s): Size wrong - Not compatibles", strGuids.c_str());
+        sLogger.debug("({}): Size wrong - Not compatibles", strGuids);
         return false;
     }
 
@@ -853,7 +853,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
     LfgAnswer answer = GetCompatibles(strGuids);
     if (answer != LFG_ANSWER_PENDING)
     {
-        sLogger.debug("(%s) compatibles (cached): %d", strGuids.c_str(), answer);
+        sLogger.debug("({}) compatibles (cached): {}", strGuids, answer);
         return answer == LFG_ANSWER_AGREE ? true : false;
     }
 
@@ -866,7 +866,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
         // Check all-but-new compatibilities (New, A, B, C, D) --> check(A, B, C, D)
         if (!CheckCompatibility(check, pProposal))          // Group not compatible
         {
-            sLogger.debug("(%s) not compatibles (%s not compatibles)", strGuids.c_str(), ConcatenateGuids(check).c_str());
+            sLogger.debug("({}) not compatibles ({} not compatibles)", strGuids, ConcatenateGuids(check));
             SetCompatibles(strGuids, false);
             return false;
         }
@@ -884,7 +884,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
         LfgQueueInfoMap::iterator itQueue = m_QueueInfoMap.find(guid);
         if (itQueue == m_QueueInfoMap.end() || GetState(guid) != LFG_STATE_QUEUED)
         {
-            sLogger.debug("%u is not queued but listed as queued!", (*it));
+            sLogger.debug("{} is not queued but listed as queued!", (*it));
             RemoveFromQueue(guid);
             return false;
         }
@@ -923,11 +923,11 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
         SetCompatibles(strGuids, false);
         if (numLfgGroups > 1)
         {
-            sLogger.debug("(%s) More than one Lfggroup (%u)", strGuids.c_str(), numLfgGroups);
+            sLogger.debug("({}) More than one Lfggroup ({})", strGuids, numLfgGroups);
         }
         else
         {
-            sLogger.debug("(%s) Too much players (%u)", strGuids.c_str(), numPlayers);
+            sLogger.debug("({}) Too much players ({})", strGuids, numPlayers);
         }
 
         return false;
@@ -971,7 +971,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
         }
         else
         {
-            sLogger.debug("(%s) Warning! %u offline! Marking as not compatibles!", strGuids.c_str(), it->first);
+            sLogger.debug("({}) Warning! {} offline! Marking as not compatibles!", strGuids, it->first);
         }
     }
 
@@ -981,7 +981,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
     {
         if (players.size() == numPlayers)
         {
-            sLogger.debug("(%s) Roles not compatible", strGuids.c_str());
+            sLogger.debug("({}) Roles not compatible", strGuids);
         }
 
         SetCompatibles(strGuids, false);
@@ -1021,7 +1021,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
     // Group is compatible, if we have MAXGROUPSIZE members then match is found
     if (numPlayers != 5)
     {
-        sLogger.debug("(%s) Compatibles but not match. Players(%u)", strGuids.c_str(), numPlayers);
+        sLogger.debug("({}) Compatibles but not match. Players({})", strGuids, numPlayers);
         uint8 Tanks_Needed = LFG_TANKS_NEEDED;
         uint8 Healers_Needed = LFG_HEALERS_NEEDED;
         uint8 Dps_Needed = LFG_DPS_NEEDED;
@@ -1063,7 +1063,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
         }
         return true;
     }
-    sLogger.debug("(%s) MATCH! Group formed", strGuids.c_str());
+    sLogger.debug("({}) MATCH! Group formed", strGuids);
 
     // GROUP FORMED!
 
@@ -1236,7 +1236,7 @@ void LfgMgr::RemoveFromCompatibles(uint64 guid)
     out << guid;
     std::string strGuid = out.str();
 
-    sLogger.debug("Removing %u", guid);
+    sLogger.debug("Removing {}", guid);
     for (LfgCompatibleMap::iterator itNext = m_CompatibleMap.begin(); itNext != m_CompatibleMap.end();)
     {
         LfgCompatibleMap::iterator it = itNext++;
@@ -1363,7 +1363,7 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
     LfgProposalPlayer* ppPlayer = itProposalPlayer->second;
 
     ppPlayer->accept = LfgAnswer(accept);
-    sLogger.debug("Player %u of proposal %u selected: %u", guid, proposalId, accept);
+    sLogger.debug("Player {} of proposal {} selected: {}", guid, proposalId, accept);
     if (!accept)
     {
         RemoveProposal(itProposal, LFG_UPDATETYPE_PROPOSAL_DECLINED);
@@ -1422,13 +1422,13 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
 
             uint32 lowgroupguid = (*it)->getGroup() ? wowGuid.getGuidLowPart() : 0;
             if (player->groupLowGuid != lowgroupguid)
-                sLogger.debug("%u group mismatch: actual (%u) - queued (%u)", (*it)->getGuid(), lowgroupguid, player->groupLowGuid);
+                sLogger.debug("{} group mismatch: actual ({}) - queued ({})", (*it)->getGuid(), lowgroupguid, player->groupLowGuid);
 
             uint64 guid2 = player->groupLowGuid ? WoWGuid(player->groupLowGuid, 0, HIGHGUID_TYPE_GROUP).getRawGuid() : (*it)->getGuid();
             LfgQueueInfoMap::iterator itQueue = m_QueueInfoMap.find(guid2);
             if (itQueue == m_QueueInfoMap.end())
             {
-                sLogger.debug("Queue info for guid %u not found!", guid);
+                sLogger.debug("Queue info for guid {} not found!", guid);
                 waitTimesMap[(*it)->getGuid()] = -1;
             }
             else
@@ -1470,12 +1470,12 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
                 uint64 gguid = grp->GetID();
                 SetState(gguid, LFG_STATE_PROPOSAL);
                 grp->AddMember(player->getPlayerInfo());
-                sLogger.debug("Add Player In Group %s", player->getName().c_str());
+                sLogger.debug("Add Player In Group {}", player->getName());
             }
             else if (group != grp)
             {
                 grp->AddMember(player->getPlayerInfo());
-                sLogger.debug("Add Player In Group %s", player->getName().c_str());
+                sLogger.debug("Add Player In Group {}", player->getName());
             }
 
             // Update timers
@@ -1551,7 +1551,7 @@ void LfgMgr::RemoveProposal(LfgProposalMap::iterator itProposal, LfgUpdateType t
     LfgProposal* pProposal = itProposal->second;
     pProposal->state = LFG_PROPOSAL_FAILED;
 
-    sLogger.debug("Proposal %u, state FAILED, UpdateType %u", itProposal->first, type);
+    sLogger.debug("Proposal {}, state FAILED, UpdateType {}", itProposal->first, type);
     // Mark all people that didn't answered as no accept
     if (type == LFG_UPDATETYPE_PROPOSAL_FAILED)
         for (LfgProposalPlayerMap::const_iterator it = pProposal->players.begin(); it != pProposal->players.end(); ++it)
@@ -1598,12 +1598,12 @@ void LfgMgr::RemoveProposal(LfgProposalMap::iterator itProposal, LfgUpdateType t
             if (it->second->accept == LFG_ANSWER_DENY)
             {
                 updateData.updateType = type;
-                sLogger.debug("%u didn't accept. Removing from queue and compatible cache", guid);
+                sLogger.debug("{} didn't accept. Removing from queue and compatible cache", guid);
             }
             else
             {
                 updateData.updateType = LFG_UPDATETYPE_REMOVED_FROM_QUEUE;
-                sLogger.debug("%u in same group that someone that didn't accept. Removing from queue and compatible cache", guid);
+                sLogger.debug("{} in same group that someone that didn't accept. Removing from queue and compatible cache", guid);
             }
             ClearState(guid);
             if (grp)
@@ -1616,7 +1616,7 @@ void LfgMgr::RemoveProposal(LfgProposalMap::iterator itProposal, LfgUpdateType t
         }
         else
         {
-            sLogger.debug("Readding %u to queue.", guid);
+            sLogger.debug("Readding {} to queue.", guid);
             SetState(guid, LFG_STATE_QUEUED);
             if (grp)
             {
@@ -1780,7 +1780,7 @@ void LfgMgr::UpdateBoot(Player* player, bool accept)
 
 void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*/)
 {
-    sLogger.debug("%u is being teleported %s", player->getGuid(), out ? "out" : "in");
+    sLogger.debug("{} is being teleported {}", player->getGuid(), out ? "out" : "in");
     if (out)
     {
         player->removeAllAurasById(LFG_SPELL_LUCK_OF_THE_DRAW);
@@ -1831,7 +1831,7 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
                 MySQLStructure::AreaTrigger const* areaTrigger = sMySQLStore.getMapEntranceTrigger(dungeon->map);
                 if (areaTrigger == nullptr)
                 {
-                    sLogger.debug("Failed to teleport %u: No areatrigger found for map: %u difficulty: %u", player->getGuid(), dungeon->map, dungeon->difficulty);
+                    sLogger.debug("Failed to teleport {}: No areatrigger found for map: {} difficulty: {}", player->getGuid(), dungeon->map, dungeon->difficulty);
                     error = LFG_TELEPORTERROR_INVALID_LOCATION;
                 }
                 else
@@ -1867,7 +1867,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
     auto group = player->getGroup();
     if (!group || !group->isLFGGroup())
     {
-        sLogger.debug("%u is not in a group or not a LFGGroup. Ignoring", player->getGuid());
+        sLogger.debug("{} is not in a group or not a LFGGroup. Ignoring", player->getGuid());
         return;
     }
 
@@ -1876,13 +1876,13 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
     uint32 gDungeonId = GetDungeon(gguid, true);
     if (gDungeonId != dungeonId)
     {
-        sLogger.debug("%u Finished dungeon %u but group queued for %u. Ignoring", guid, dungeonId, gDungeonId);
+        sLogger.debug("{} Finished dungeon {} but group queued for {}. Ignoring", guid, dungeonId, gDungeonId);
         return;
     }
 
     if (GetState(guid) == LFG_STATE_FINISHED_DUNGEON)
     {
-        sLogger.debug("%u Already rewarded player. Ignoring", guid);
+        sLogger.debug("{} Already rewarded player. Ignoring", guid);
         return;
     }
 
@@ -1899,7 +1899,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
     WDB::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.lookupEntry(rDungeonId);
     if (!dungeon || (dungeon->type != LFG_TYPE_RANDOM /*add seasonal checks*/))
     {
-        sLogger.debug("%u dungeon %u is not random nor seasonal", guid, rDungeonId);
+        sLogger.debug("{} dungeon {} is not random nor seasonal", guid, rDungeonId);
         return;
     }
 
@@ -1951,7 +1951,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                 ItemProperties const* proto = sMySQLStore.getItemProperties(qReward->reward_item[i]);
                 if (!proto)
                 {
-                    sLogger.failure("Invalid item prototype in quest reward! ID %d, quest %d", qReward->reward_item[i], qReward->id);
+                    sLogger.failure("Invalid item prototype in quest reward! ID {}, quest {}", qReward->reward_item[i], qReward->id);
                 }
                 else
                 {
@@ -2045,7 +2045,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                 ItemProperties const* proto = sMySQLStore.getItemProperties(qReward->reward_item[i]);
                 if (!proto)
                 {
-                    sLogger.failure("Invalid item prototype in quest reward! ID %d, quest %d", qReward->reward_item[i], qReward->id);
+                    sLogger.failure("Invalid item prototype in quest reward! ID {}, quest {}", qReward->reward_item[i], qReward->id);
                 }
                 else
                 {
@@ -2106,7 +2106,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
 
     // Give rewards
     //Log.Debug("LfgMgr", "LfgMgr::RewardDungeonDoneFor: %u done dungeon %u, %s previously done.", player->GetGUID(), GetDungeon(gguid), index > 0 ? " " : " not");
-    sLogger.debug("%u done dungeon %u, previously done.", player->getGuid(), GetDungeon(gguid));
+    sLogger.debug("{} done dungeon {}, previously done.", player->getGuid(), GetDungeon(gguid));
     player->getSession()->sendLfgPlayerReward(dungeon->Entry(), GetDungeon(gguid, false), index, reward, qReward);
 #else
     if (player == nullptr ||dungeonId == 0) { return; }
@@ -2136,7 +2136,7 @@ uint32_t LfgMgr::GetLFGDungeon(uint32_t id)
 
 LfgReward const* LfgMgr::GetRandomDungeonReward(uint32 dungeon, uint8 level)
 {
-    sLogger.debug("Get Reward dungeon id = %u level = %u", dungeon, level);
+    sLogger.debug("Get Reward dungeon id = {} level = {}", dungeon, level);
     LfgReward const* rew = NULL;
     LfgRewardMapBounds bounds = m_RewardMap.equal_range(dungeon & 0x00FFFFFF);
     for (LfgRewardMap::const_iterator itr = bounds.first; itr != bounds.second; ++itr)
@@ -2179,7 +2179,7 @@ std::string LfgMgr::ConcatenateGuids(LfgGuidList check)
 
 LfgState LfgMgr::GetState(uint64 guid)
 {
-    sLogger.debug("%u", guid);
+    sLogger.debug("{}", guid);
     if (HIGHGUID_TYPE_GROUP == guid)
         return m_Groups[guid].GetState();
     else
@@ -2188,19 +2188,19 @@ LfgState LfgMgr::GetState(uint64 guid)
 
 uint32 LfgMgr::GetDungeon(uint64 guid, bool asId /*= true*/)
 {
-    sLogger.debug("%u asId: %u", guid, asId);
+    sLogger.debug("{} asId: {}", guid, asId);
     return m_Groups[guid].GetDungeon(asId);
 }
 
 uint8 LfgMgr::GetRoles(uint64 guid)
 {
-    sLogger.debug("%u", guid);
+    sLogger.debug("{}", guid);
     return m_Players[guid].GetRoles();
 }
 
 const std::string& LfgMgr::GetComment(uint64 guid)
 {
-    sLogger.debug("%u", guid);
+    sLogger.debug("{}", guid);
     return m_Players[guid].GetComment();
 }
 
@@ -2216,43 +2216,43 @@ bool LfgMgr::IsTeleported(uint64 pguid)
 
 const LfgDungeonSet& LfgMgr::GetSelectedDungeons(uint64 guid)
 {
-    sLogger.debug("%u", guid);
+    sLogger.debug("{}", guid);
     return m_Players[guid].GetSelectedDungeons();
 }
 
 const LfgLockMap& LfgMgr::GetLockedDungeons(uint64 guid)
 {
-    sLogger.debug("%u", guid);
+    sLogger.debug("{}", guid);
     return m_Players[guid].GetLockedDungeons();
 }
 
 uint8 LfgMgr::GetKicksLeft(uint64 guid)
 {
-    sLogger.debug("%u", guid);
+    sLogger.debug("{}", guid);
     return m_Groups[guid].GetKicksLeft();
 }
 
 uint8 LfgMgr::GetVotesNeeded(uint64 guid)
 {
-    sLogger.debug("%u", guid);
+    sLogger.debug("{}", guid);
     return m_Groups[guid].GetVotesNeeded();
 }
 
 void LfgMgr::RestoreState(uint64 guid)
 {
-    sLogger.debug("%u", guid);
+    sLogger.debug("{}", guid);
     m_Groups[guid].RestoreState();
 }
 
 void LfgMgr::ClearState(uint64 guid)
 {
-    sLogger.debug("%u", guid);
+    sLogger.debug("{}", guid);
     m_Players[guid].ClearState();
 }
 
 void LfgMgr::SetState(uint64 guid, LfgState state)
 {
-    sLogger.debug("%u state %u", guid, state);
+    sLogger.debug("{} state {}", guid, state);
 
     WoWGuid wowGuid;
     wowGuid.Init(guid);
@@ -2266,43 +2266,43 @@ void LfgMgr::SetState(uint64 guid, LfgState state)
 
 void LfgMgr::SetDungeon(uint64 guid, uint32 dungeon)
 {
-    sLogger.debug("%u dungeon %u", guid, dungeon);
+    sLogger.debug("{} dungeon {}", guid, dungeon);
     m_Groups[guid].SetDungeon(dungeon);
 }
 
 void LfgMgr::SetRoles(uint64 guid, uint8 roles)
 {
-    sLogger.debug("%u roles: %u", guid, roles);
+    sLogger.debug("{} roles: {}", guid, roles);
     m_Players[guid].SetRoles(roles);
 }
 
 void LfgMgr::SetComment(uint64 guid, const std::string& comment)
 {
-    sLogger.debug("%u comment: %s", guid, comment.c_str());
+    sLogger.debug("{} comment: {}", guid, comment);
     m_Players[guid].SetComment(comment);
 }
 
 void LfgMgr::SetSelectedDungeons(uint64 guid, const LfgDungeonSet& dungeons)
 {
-    sLogger.debug("%u", guid);
+    sLogger.debug("{}", guid);
     m_Players[guid].SetSelectedDungeons(dungeons);
 }
 
 void LfgMgr::SetLockedDungeons(uint64 guid, const LfgLockMap& lock)
 {
-    sLogger.debug("%u", guid);
+    sLogger.debug("{}", guid);
     m_Players[guid].SetLockedDungeons(lock);
 }
 
 void LfgMgr::DecreaseKicksLeft(uint64 guid)
 {
-    sLogger.debug("%u", guid);
+    sLogger.debug("{}", guid);
     m_Groups[guid].DecreaseKicksLeft();
 }
 
 void LfgMgr::RemovePlayerData(uint64 guid)
 {
-    sLogger.debug("%u", guid);
+    sLogger.debug("{}", guid);
     LfgPlayerDataMap::iterator it = m_Players.find(guid);
     if (it != m_Players.end())
         m_Players.erase(it);
@@ -2310,7 +2310,7 @@ void LfgMgr::RemovePlayerData(uint64 guid)
 
 void LfgMgr::RemoveGroupData(uint64 guid)
 {
-    sLogger.debug("%u", guid);
+    sLogger.debug("{}", guid);
     LfgGroupDataMap::iterator it = m_Groups.find(guid);
     if (it != m_Groups.end())
         m_Groups.erase(it);

@@ -327,7 +327,7 @@ uint32_t TaxiMgr::getTaxiMountDisplayId(uint32_t id, uint32_t team, bool allowed
             mount_id = mount_info->getRandomModelId();
             if (!mount_id)
             {
-                sLogger.failure("TaxiMgr:::No displayid found for the taxi mount with the entry %u! Can't load it!", mount_entry);
+                sLogger.failure("TaxiMgr:::No displayid found for the taxi mount with the entry {}! Can't load it!", mount_entry);
                 return 0;
             }
         }
@@ -361,7 +361,7 @@ void TaxiMgr::loadTaxiNodeLevelData()
 
         if (!node)
         {
-            sLogger.failure("TaxiMgr:: Table `taxi_level_data` has data for nonexistent taxi node (ID: %u), skipped", taxiNodeId);
+            sLogger.failure("TaxiMgr:: Table `taxi_level_data` has data for nonexistent taxi node (ID: {}), skipped", taxiNodeId);
             continue;
         };
 
@@ -370,7 +370,7 @@ void TaxiMgr::loadTaxiNodeLevelData()
         ++count;
     } while (result->NextRow());
 
-    sLogger.info("TaxiMgr:: Loaded %u taxi node level definitions in %u ms", count, Util::GetTimeDifferenceToNow(oldMSTime));
+    sLogger.info("TaxiMgr:: Loaded {} taxi node level definitions in {} ms", count, Util::GetTimeDifferenceToNow(oldMSTime));
 }
 
 bool TaxiMgr::isTaxiNodeUnlockedFor(uint32_t taxiNodeId, uint8_t level) const

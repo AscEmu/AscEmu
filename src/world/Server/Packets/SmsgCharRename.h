@@ -17,7 +17,7 @@ namespace AscEmu::Packets
         size_t size;
         uint8_t result;
         uint64_t guid;
-        std::string name;
+        utf8_string name;
 
         SmsgCharRename() : SmsgCharRename(0, 0, 0, "")
         {

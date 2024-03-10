@@ -430,7 +430,7 @@ bool ConfigFile::tryGetBool(const std::string& sectionName, const std::string& c
 
     catch (std::invalid_argument& e)
     {
-        sLogger.failure("%s", e.what());
+        sLogger.failure("{}", e.what());
         ASSERT(false)
     }
     return false;
@@ -449,7 +449,7 @@ bool ConfigFile::tryGetFloat(const std::string& sectionName, const std::string& 
 
     catch (std::invalid_argument& e)
     {
-        sLogger.failure("%s", e.what());
+        sLogger.failure("{}", e.what());
         ASSERT(false)
     }
     return false;
@@ -468,7 +468,7 @@ bool ConfigFile::tryGetInt(const std::string& sectionName, const std::string& co
 
     catch (std::invalid_argument& e)
     {
-        sLogger.failure("%s", e.what());
+        sLogger.failure("{}", e.what());
         ASSERT(false)
     }
     return false;
@@ -487,7 +487,7 @@ bool ConfigFile::tryGetInt(const std::string& sectionName, const std::string& co
 
     catch (std::invalid_argument& e)
     {
-        sLogger.failure("%s", e.what());
+        sLogger.failure("{}", e.what());
         ASSERT(false)
     }
     return false;
@@ -506,7 +506,7 @@ bool ConfigFile::tryGetInt(const std::string& sectionName, const std::string& co
 
     catch (std::invalid_argument& e)
     {
-        sLogger.failure("%s", e.what());
+        sLogger.failure("{}", e.what());
         ASSERT(false)
     }
     return false;
@@ -525,7 +525,7 @@ bool ConfigFile::tryGetString(const std::string& sectionName, const std::string&
 
     catch (std::invalid_argument& e)
     {
-        sLogger.failure("%s", e.what());
+        sLogger.failure("{}", e.what());
         ASSERT(false)
     }
     return false;

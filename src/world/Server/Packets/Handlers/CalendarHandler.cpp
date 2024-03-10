@@ -17,7 +17,7 @@ void WorldSession::handleCalendarGetCalendar(WorldPacket& /*recvPacket*/)
 
     /* Get all events for the player */
     uint32_t guid = static_cast<uint32_t>(_player->getGuid());
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "HandleCalendarGetCalendar CMSG_CALENDAR_GET_CALENDAR for guid %u", guid);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "HandleCalendarGetCalendar CMSG_CALENDAR_GET_CALENDAR for guid {}", guid);
 
 }
 
@@ -65,8 +65,8 @@ void WorldSession::handleCalendarAddEvent(WorldPacket& recvPacket)
     recvPacket >> flags;
 
     // \todo save it to db
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "HandleCalendarAddEvent Playerguid: %u sends Calendarevent: Title: %s, Description: %s, Type: %u, Repeatable: %u, maxInvites: %u, dungeonId: %u, PackedTime: %u, unkPackedTime: %u, Flags: %u,",
-        guid, title.c_str(), description.c_str(), type, repeatable, maxInvites, dungeonId, eventPackedTime, unkPackedTime, flags);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "HandleCalendarAddEvent Playerguid: {} sends Calendarevent: Title: {}, Description: {}, Type: {}, Repeatable: {}, maxInvites: {}, dungeonId: {}, PackedTime: {}, unkPackedTime: {}, Flags: {},",
+        guid, title, description, type, repeatable, maxInvites, dungeonId, eventPackedTime, unkPackedTime, flags);
 
 }
 
@@ -150,7 +150,7 @@ void WorldSession::sendCalendarRaidLockoutUpdated(InstanceSaved const* save)
     if (!save)
         return;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_CALENDAR_RAID_LOCKOUT_UPDATED [%u] Map: %u, Difficulty %u", _player->getGuid(), save->getMapId(), save->getDifficulty());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_CALENDAR_RAID_LOCKOUT_UPDATED [{}] Map: {}, Difficulty {}", _player->getGuid(), save->getMapId(), save->getDifficulty());
 
     const auto now = Util::getTimeNow();
     time_t currTime = now;

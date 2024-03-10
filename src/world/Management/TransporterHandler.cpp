@@ -42,7 +42,7 @@ void TransportHandler::loadTransportTemplates()
         GameObjectProperties const* gameobject_info = sMySQLStore.getGameObjectProperties(entry);
         if (gameobject_info == nullptr)
         {
-            sLogger.failure("Transport %u has no associated GameObjectProperties from `gameobject_properities` , skipped.", entry);
+            sLogger.failure("Transport {} has no associated GameObjectProperties from `gameobject_properities` , skipped.", entry);
             continue;
         }
 
@@ -58,7 +58,7 @@ void TransportHandler::loadTransportTemplates()
         ++createCount;
     }
 
-    sLogger.debugFlag(AscEmu::Logging::LF_MAP, "Transporter Handler : Loaded %u transport templates", createCount);
+    sLogger.debugFlag(AscEmu::Logging::LF_MAP, "Transporter Handler : Loaded {} transport templates", createCount);
 }
 
 void TransportHandler::spawnContinentTransports()
@@ -79,7 +79,7 @@ void TransportHandler::spawnContinentTransports()
                     ++createCount;
     }
 
-    sLogger.debugFlag(AscEmu::Logging::LF_MAP, "Transporter Handler : Spawned %u Continent Transports", createCount);
+    sLogger.debugFlag(AscEmu::Logging::LF_MAP, "Transporter Handler : Spawned {} Continent Transports", createCount);
 }
 
 Transporter* TransportHandler::createTransport(uint32_t entry, WorldMap* map /*= nullptr*/)
@@ -87,7 +87,7 @@ Transporter* TransportHandler::createTransport(uint32_t entry, WorldMap* map /*=
     TransportTemplate const* tInfo = getTransportTemplate(entry);
     if (!tInfo)
     {
-        sLogger.failure("Transport %u will not be loaded, `transport_template` missing", entry);
+        sLogger.failure("Transport {} will not be loaded, `transport_template` missing", entry);
         return nullptr;
     }
 
@@ -126,7 +126,7 @@ Transporter* TransportHandler::createTransport(uint32_t entry, WorldMap* map /*=
     {
         if (mapEntry->instanceable() != tInfo->inInstance)
         {
-            sLogger.failure("Transport %u attempted creation in instance map (id: %u) but it is not an instanced transport!", entry, mapId);
+            sLogger.failure("Transport {} attempted creation in instance map (id: {}) but it is not an instanced transport!", entry, mapId);
             delete trans;
             return nullptr;
         }
@@ -292,7 +292,7 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
 
     if (keyFrames.empty())
     {
-        sLogger.failure("TransportHandler::generatePath no keyFrames available for Transport %u", goInfo->entry);
+        sLogger.failure("TransportHandler::generatePath no keyFrames available for Transport {}", goInfo->entry);
         return;
     }
 
@@ -484,7 +484,7 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
     keyFrames.back().NextArriveTime = keyFrames.back().DepartureTime;
 
     transport->pathTime = keyFrames.back().DepartureTime;
-    sLogger.debugFlag(AscEmu::Logging::LF_MAP, "TransportHandler: total time %u at transport %u \n", transport->pathTime, transport->entry);
+    sLogger.debugFlag(AscEmu::Logging::LF_MAP, "TransportHandler: total time {} at transport {} \n", transport->pathTime, transport->entry);
 }
 
 float TransportHandler::normalizeOrientation(float o)

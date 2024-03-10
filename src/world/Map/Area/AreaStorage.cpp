@@ -161,7 +161,7 @@ namespace MapManagement::AreaManagement
 
         if (wmoEntry)
         {
-            sLogger.debug("Got WMOAreaTableEntry! flag %u, areaid %u", wmoEntry->flags, wmoEntry->areaId);
+            sLogger.debug("Got WMOAreaTableEntry! flag {}, areaid {}", wmoEntry->flags, wmoEntry->areaId);
             atEntry = GetAreaById(wmoEntry->areaId);
         }
 

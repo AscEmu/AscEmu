@@ -202,7 +202,7 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
             }
             break;
             default:
-                sLogger.debug("WARNING: Unknown pet action received. Action = %u, Misc = %u", srlPacket.action, srlPacket.misc);
+                sLogger.debug("WARNING: Unknown pet action received. Action = {}, Misc = {}", srlPacket.action, srlPacket.misc);
             break;
         }
 
@@ -265,7 +265,7 @@ void WorldSession::handleUnstablePet(WorldPacket& recvPacket)
     const auto playerPet = _player->getPlayerPet(srlPacket.petNumber);
     if (playerPet == nullptr)
     {
-        sLogger.failure("PET SYSTEM: Player %s tried to unstable non-existent pet %u", std::to_string(_player->getGuid()).c_str(), srlPacket.petNumber);
+        sLogger.failure("PET SYSTEM: Player {} tried to unstable non-existent pet {}", std::to_string(_player->getGuid()), srlPacket.petNumber);
         return;
     }
 
@@ -286,7 +286,7 @@ void WorldSession::handleStableSwapPet(WorldPacket& recvPacket)
     const auto playerPet = _player->getPlayerPet(srlPacket.petNumber);
     if (playerPet == nullptr)
     {
-        sLogger.failure("PET SYSTEM: Player %s tried to unstable non-existent pet %u", std::to_string(_player->getGuid()).c_str(), srlPacket.petNumber);
+        sLogger.failure("PET SYSTEM: Player {} tried to unstable non-existent pet {}", std::to_string(_player->getGuid()), srlPacket.petNumber);
         return;
     }
 
@@ -605,13 +605,13 @@ void WorldSession::handleDismissCritter(WorldPacket& recvPacket)
 
     if (_player->getCritterGuid() == 0)
     {
-        sLogger.failure("Player %u sent dismiss companion packet, but player has no companion", _player->getGuidLow());
+        sLogger.failure("Player {} sent dismiss companion packet, but player has no companion", _player->getGuidLow());
         return;
     }
 
     if (_player->getCritterGuid() != srlPacket.guid.getRawGuid())
     {
-        sLogger.failure("Player %u sent dismiss companion packet, but it doesn't match player's companion", _player->getGuidLow());
+        sLogger.failure("Player {} sent dismiss companion packet, but it doesn't match player's companion", _player->getGuidLow());
         return;
     }
 

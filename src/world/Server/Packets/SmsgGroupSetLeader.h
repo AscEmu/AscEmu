@@ -12,7 +12,7 @@ namespace AscEmu::Packets
     class SmsgGroupSetLeader : public ManagedPacket
     {
     public:
-        std::string name;
+        utf8_string name;
 
         SmsgGroupSetLeader() : SmsgGroupSetLeader("")
         {

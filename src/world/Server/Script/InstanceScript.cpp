@@ -232,7 +232,7 @@ void InstanceScript::loadSavedInstanceData(char const* data)
 {
     if (!data)
     {
-        sLogger.failure("Unable to load Saved Instance Data for Instance %s (Map %d, Instance Id: %d).", mInstance->getBaseMap()->getMapName().c_str(), mInstance->getBaseMap()->getMapId(), mInstance->getInstanceId());
+        sLogger.failure("Unable to load Saved Instance Data for Instance {} (Map {}, Instance Id: {}).", mInstance->getBaseMap()->getMapName(), mInstance->getBaseMap()->getMapId(), mInstance->getInstanceId());
         return;
     }
 
@@ -241,7 +241,7 @@ void InstanceScript::loadSavedInstanceData(char const* data)
     readSaveDataBossStates(loadStream);
     readSaveDataExtended(loadStream);
 
-    sLogger.debug("Saved Instance Data Loaded for Instance %s (Map %d, Instance Id: %d) is complete.", mInstance->getBaseMap()->getMapName().c_str(), mInstance->getBaseMap()->getMapId(), mInstance->getInstanceId());
+    sLogger.debug("Saved Instance Data Loaded for Instance {} (Map {}, Instance Id: {}) is complete.", mInstance->getBaseMap()->getMapName(), mInstance->getBaseMap()->getMapId(), mInstance->getInstanceId());
 }
 
 void InstanceScript::readSaveDataBossStates(std::istringstream& data)
@@ -549,7 +549,7 @@ Creature* InstanceScript::spawnCreature(uint32_t entry, float posX, float posY, 
     CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(entry);
     if (creatureProperties == nullptr)
     {
-        sLogger.failure("tried to create a invalid creature with entry %u!", entry);
+        sLogger.failure("tried to create a invalid creature with entry {}!", entry);
         return nullptr;
     }
 

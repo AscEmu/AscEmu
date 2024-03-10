@@ -259,7 +259,7 @@ Creature* CreatureAIScript::spawnCreature(uint32_t entry, float posX, float posY
     CreatureProperties const* creatureProperties = sMySQLStore.getCreatureProperties(entry);
     if (creatureProperties == nullptr)
     {
-        sLogger.failure("tried to create an invalid creature with entry %u!", entry);
+        sLogger.failure("tried to create an invalid creature with entry {}!", entry);
         return nullptr;
     }
 
@@ -545,7 +545,7 @@ WaypointNode CreatureAIScript::createWaypoint(uint32_t pId, uint32_t pWaittime, 
 
     if (waypoint.moveType >= WAYPOINT_MOVE_TYPE_MAX)
     {
-        sLogger.failure("Waypoint %u has invalid move_type, setting default", waypoint.id);
+        sLogger.failure("Waypoint {} has invalid move_type, setting default", waypoint.id);
         waypoint.moveType = WAYPOINT_MOVE_TYPE_WALK;
     }
 
@@ -1462,13 +1462,13 @@ void CreatureAIScript::addEmoteForEvent(uint32_t eventType, uint32_t scriptTextI
                 mEmotesOnIdle.push_back(scriptTextId);
                 break;
             default:
-                sLogger.debug("CreatureAIScript::addEmoteForEvent : Invalid event type: %u !", eventType);
+                sLogger.debug("CreatureAIScript::addEmoteForEvent : Invalid event type: {} !", eventType);
                 break;
         }
     }
     else
     {
-        sLogger.debug("CreatureAIScript::addEmoteForEvent : id: %u is not available in table npc_script_text!", scriptTextId);
+        sLogger.debug("CreatureAIScript::addEmoteForEvent : id: {} is not available in table npc_script_text!", scriptTextId);
     }
 }
 

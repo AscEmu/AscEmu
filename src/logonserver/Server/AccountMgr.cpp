@@ -25,7 +25,7 @@ void AccountMgr::initialize(uint32_t reloadTime)
 
     reloadAccounts(true);
 
-    sLogger.info("AccountMgr : loaded %u accounts.", static_cast<uint32_t>(getCount()));
+    sLogger.info("AccountMgr : loaded {} accounts.", static_cast<uint32_t>(getCount()));
 
     m_reloadThread = std::make_unique<AscEmu::Threading::AEThread>("ReloadAccounts", [this](AscEmu::Threading::AEThread& /*thread*/) { this->reloadAccounts(false); }, std::chrono::seconds(m_reloadTime));
 }
@@ -54,7 +54,7 @@ void AccountMgr::addAccount(Field* field)
     if (static_cast<uint32_t>(UNIXTIME) > account->Banned && account->Banned != 0 && account->Banned != 1)
     {
         account->Banned = 0;
-        sLogger.debug("Account %s's ban has expired.", accountName.c_str());
+        sLogger.debug("Account {}'s ban has expired.", accountName);
         sLogonSQL->Execute("UPDATE accounts SET banned = 0 WHERE id = %u", account->AccountId);
     }
     
@@ -66,7 +66,7 @@ void AccountMgr::addAccount(Field* field)
     if (static_cast<uint32_t>(UNIXTIME) > account->Muted && account->Muted != 0 && account->Muted != 1)
     {
         account->Muted = 0;
-        sLogger.debug("Account %s's mute has expired.", accountName.c_str());
+        sLogger.debug("Account {}'s mute has expired.", accountName);
         sLogonSQL->Execute("UPDATE accounts SET muted = 0 WHERE id = %u", account->AccountId);
     }
 
@@ -90,7 +90,7 @@ void AccountMgr::addAccount(Field* field)
     }
     else
     {
-        sLogger.failure("Account `%s` has incorrect number of bytes in encrypted password! Disabling.", accountName.c_str());
+        sLogger.failure("Account `{}` has incorrect number of bytes in encrypted password! Disabling.", accountName);
         memset(account->SrpHash, 0, 20);
     }
 
@@ -116,7 +116,7 @@ void AccountMgr::updateAccount(std::shared_ptr<Account> account, Field* field)
 
     if (id != account->AccountId)
     {
-        sLogger.failure("AccountMgr : deleting duplicate account %u [%s]...", id, accountName.c_str());
+        sLogger.failure("AccountMgr : deleting duplicate account {} [{}]...", id, accountName);
         sLogonSQL->Execute("DELETE FROM accounts WHERE id = %u", id);
         return;
     }
@@ -129,7 +129,7 @@ void AccountMgr::updateAccount(std::shared_ptr<Account> account, Field* field)
     if (static_cast<uint32_t>(UNIXTIME) > account->Banned && account->Banned != 0 && account->Banned != 1)
     {
         account->Banned = 0;
-        sLogger.debug("Account %s's ban has expired.", accountName.c_str());
+        sLogger.debug("Account {}'s ban has expired.", accountName);
         sLogonSQL->Execute("UPDATE accounts SET banned = 0 WHERE id = %u", account->AccountId);
     }
 
@@ -141,7 +141,7 @@ void AccountMgr::updateAccount(std::shared_ptr<Account> account, Field* field)
     if (static_cast<uint32_t>(UNIXTIME) > account->Muted && account->Muted != 0 && account->Muted != 1)
     {
         account->Muted = 0;
-        sLogger.debug("Account %s's mute has expired.", accountName.c_str());
+        sLogger.debug("Account {}'s mute has expired.", accountName);
         sLogonSQL->Execute("UPDATE accounts SET muted = 0 WHERE id = %u", account->AccountId);
     }
 
@@ -165,7 +165,7 @@ void AccountMgr::updateAccount(std::shared_ptr<Account> account, Field* field)
     }
     else
     {
-        sLogger.failure("Account `%s` has incorrect number of bytes in encrypted password! Disabling.", accountName.c_str());
+        sLogger.failure("Account `{}` has incorrect number of bytes in encrypted password! Disabling.", accountName);
         memset(account->SrpHash, 0, 20);
     }
 }
@@ -214,7 +214,7 @@ void AccountMgr::reloadAccounts(bool silent)
     }
 
     if (!silent)
-        sLogger.info("[AccountMgr] Found %u accounts.", static_cast<uint32_t>(_accountMap.size()));
+        sLogger.info("[AccountMgr] Found {} accounts.", static_cast<uint32_t>(_accountMap.size()));
 }
 
 size_t AccountMgr::getCount() const

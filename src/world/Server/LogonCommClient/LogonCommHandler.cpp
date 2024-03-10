@@ -174,7 +174,7 @@ void LogonCommHandler::tryLogonServerConnection(LogonServerStructure* server)
     }
 
     sLogger.info("Authentication successful.");
-    sLogger.info("LogonCommClient : Logonserver was connected on [%s:%u].", server->address.c_str(), server->port);
+    sLogger.info("LogonCommClient : Logonserver was connected on [{}:{}].", server->address, server->port);
 
     // Send the initial ping
     logonCommSocket->SendPing();
@@ -208,7 +208,7 @@ void LogonCommHandler::tryLogonServerConnection(LogonServerStructure* server)
     // Wait for all realms to register
     Arcemu::Sleep(200);
 
-    sLogger.info("LogonCommClient : Logonserver latency is %ums.", logonCommSocket->latency);
+    sLogger.info("LogonCommClient : Logonserver latency is {}ms.", logonCommSocket->latency);
 }
 
 LogonCommClientSocket* LogonCommHandler::createReturnLogonServerConnection(std::string Address, uint32_t Port)
@@ -245,12 +245,12 @@ void LogonCommHandler::setAccountPermission(uint32_t acct, std::string perm)
 
         if (perm.compare("0") == 0)
         {
-            sLogger.info("LogonCommClient : Permissions removed for Account ID %u!", acct);
+            sLogger.info("LogonCommClient : Permissions removed for Account ID {}!", acct);
             return;
         }
     }
 
-    sLogger.info("LogonCommClient : Permission set to %s for account %u", perm.c_str(), acct);
+    sLogger.info("LogonCommClient : Permission set to {} for account {}", perm, acct);
     accountPermissionsStore.insert(make_pair(acct, perm));
 
 }
@@ -261,11 +261,11 @@ void LogonCommHandler::removeAccountPermission(uint32_t acct)
     if (itr != accountPermissionsStore.end())
     {
         accountPermissionsStore.erase(acct);
-        sLogger.info("LogonCommClient : Permission for Account ID %u removed!", acct);
+        sLogger.info("LogonCommClient : Permission for Account ID {} removed!", acct);
     }
     else
     {
-        sLogger.info("LogonCommClient : No permissions found for Account ID %u", acct);
+        sLogger.info("LogonCommClient : No permissions found for Account ID {}", acct);
     }
 }
 
@@ -334,7 +334,7 @@ void LogonCommHandler::updateLogonServerConnection()
             if (logonCommSocket->last_pong < time && ((time - logonCommSocket->last_pong) > 60))
             {
                 // no pong for 60 seconds -> remove the socket
-                sLogger.info("Logonserver %u connection dropped due to pong timeout!", itr.first->id);
+                sLogger.info("Logonserver {} connection dropped due to pong timeout!", itr.first->id);
                 logonCommSocket->_id = 0;
                 logonCommSocket->Disconnect();
                 itr.second = nullptr;
@@ -368,7 +368,7 @@ void LogonCommHandler::dropLogonServerConnection(uint32_t ID)
     {
         if (itr.first->id == ID && itr.second != nullptr)
         {
-            sLogger.failure("Logonserver connection %u was dropped. Try to reconnect next loop.", ID);
+            sLogger.failure("Logonserver connection {} was dropped. Try to reconnect next loop.", ID);
             itr.second = nullptr;
             break;
         }
@@ -381,7 +381,7 @@ uint32_t LogonCommHandler::clientConnectionId(std::string AccountName, WorldSock
 {
     uint32_t request_id = next_request++;
 
-    sLogger.debug(" Send Request for Account: `%s` (request ID: %u).", AccountName.c_str(), request_id);
+    sLogger.debug(" Send Request for Account: `{}` (request ID: {}).", AccountName, request_id);
 
     // Send request packet to server.
     if (logons.empty())

@@ -203,7 +203,7 @@ void FlightPathMovementGenerator::doEventIfAny(Player* player, WDB::Structures::
 #if VERSION_STRING >= TBC
     if (uint32 eventid = departure ? node->departureEventID : node->arivalEventID)
     {
-        sLogger.debug("FlightPathMovementGenerator:: Taxi %s event %u of node %u of path %u for player %s", departure ? "departure" : "arrival", eventid, node->NodeIndex, node->pathId, player->getName().c_str());
+        sLogger.debug("FlightPathMovementGenerator:: Taxi {} event {} of node {} of path {} for player {}", departure ? "departure" : "arrival", eventid, node->NodeIndex, node->pathId, player->getName());
     }
 #endif
 }
@@ -241,7 +241,7 @@ void FlightPathMovementGenerator::preloadEndGrid()
     // Load the MapCell
     if (endMap)
     {
-        sLogger.debug("FlightPathMovementGenerator:: Preloading of Cell(%f, %f) for map %u at node index %u/%u", _endGridX, _endGridY, _endMapId, _preloadTargetNode, (uint32_t)(_path.size() - 1));
+        sLogger.debug("FlightPathMovementGenerator:: Preloading of Cell({}, {}) for map {} at node index {}/{}", _endGridX, _endGridY, _endMapId, _preloadTargetNode, (uint32_t)(_path.size() - 1));
         if (endMap->getCellByCoords(_endGridX, _endGridY))
             endMap->getCellByCoords(_endGridX, _endGridY)->setActivity(true);
     }

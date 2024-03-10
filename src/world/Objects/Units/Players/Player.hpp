@@ -19,6 +19,8 @@ This file is released under the MIT license. See README-MIT for more information
 // todo include header for now struct InstancePlayerBind definition
 #include "Map/Maps/InstanceMgr.hpp"
 
+#include <Utilities/utf8.hpp>
+
 #include <mutex>
 
 #include "Utilities/CallBack.h"
@@ -623,7 +625,7 @@ public:
     WDB::Structures::ChrRacesEntry const* getDbcRaceEntry();
     WDB::Structures::ChrClassesEntry const* getDbcClassEntry();
 
-    std::string getName() const;
+    utf8_string getName() const;
     void setName(std::string name);
 
     uint32_t getLoginFlag() const;
@@ -684,7 +686,7 @@ private:
 
     uint32_t m_classicMaxLevel = 60;
 
-    std::string m_name;
+    utf8_string m_name;
 
     uint32_t m_loginFlag = LOGIN_NO_FLAG;
 

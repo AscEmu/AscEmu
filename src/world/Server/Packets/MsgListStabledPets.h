@@ -16,7 +16,7 @@ struct PlayerStablePetList
     uint32_t entry;
     uint32_t level;
     uint8_t stableState;
-    std::string name;
+    utf8_string name;
 };
 
 namespace AscEmu::Packets

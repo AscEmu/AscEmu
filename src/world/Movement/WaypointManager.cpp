@@ -48,7 +48,7 @@ void WaypointMgr::load()
 
         if (waypoint.moveType >= WAYPOINT_MOVE_TYPE_MAX)
         {
-            sLogger.failure("WaypointMgr Waypoint %u in creature_waypoints has invalid move_type, ignoring", waypoint.id);
+            sLogger.failure("WaypointMgr Waypoint {} in creature_waypoints has invalid move_type, ignoring", waypoint.id);
             continue;
         }
 
@@ -63,7 +63,7 @@ void WaypointMgr::load()
     }
     while (result->NextRow());
 
-    sLogger.info("WaypointMgr : Loaded %u waypoints in %u ms", count, Util::GetTimeDifferenceToNow(oldMSTime));
+    sLogger.info("WaypointMgr : Loaded {} waypoints in {} ms", count, Util::GetTimeDifferenceToNow(oldMSTime));
 }
 
 void WaypointMgr::loadCustomWaypoints()
@@ -103,7 +103,7 @@ void WaypointMgr::loadCustomWaypoints()
 
         if (waypoint.moveType >= WAYPOINT_MOVE_TYPE_MAX)
         {
-            sLogger.failure("WaypointMgr Waypoint %u in creature_waypoints has invalid move_type, ignoring", waypoint.id);
+            sLogger.failure("WaypointMgr Waypoint {} in creature_waypoints has invalid move_type, ignoring", waypoint.id);
             continue;
         }
 
@@ -117,7 +117,7 @@ void WaypointMgr::loadCustomWaypoints()
         ++count;
     } while (result->NextRow());
 
-    sLogger.info("WaypointMgr : Loaded %u custom waypoints in %u ms", count, Util::GetTimeDifferenceToNow(oldMSTime));
+    sLogger.info("WaypointMgr : Loaded {} custom waypoints in {} ms", count, Util::GetTimeDifferenceToNow(oldMSTime));
 }
 
 WaypointMgr* WaypointMgr::getInstance()
@@ -185,5 +185,5 @@ void WaypointMgr::deleteAllWayPoints(uint32_t pathid)
     if (itr != _waypointStore.end())
         _waypointStore.erase(pathid);
 
-    sLogger.debug("Deleted waypoints for pathID %u", pathid);
+    sLogger.debug("Deleted waypoints for pathID {}", pathid);
 }

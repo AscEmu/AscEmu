@@ -168,7 +168,7 @@ struct DynamicTreeIntersectionCallback_WithLogger
     }
     bool operator()(const G3D::Ray& r, const GameObjectModel& obj, float& distance)
     {
-        sLogger.debug("DynamicTreeIntersectionCallback_WithLogger : testing intersection with %s", obj.name.c_str());
+        sLogger.debug("DynamicTreeIntersectionCallback_WithLogger : testing intersection with {}", obj.name);
         bool hit = obj.intersectRay(r, distance, true, phase_mask);
         if (hit)
         {

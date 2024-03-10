@@ -302,13 +302,13 @@ bool GameObject::loadFromDB(MySQLStructure::GameobjectSpawn* spawn, WorldMap* ma
 {
     if (!spawn)
     {
-        sLogger.failure("Gameobject (spawnId: %u) not found in table gameobject_spawns, cant load.");
+        sLogger.failure("Gameobject (spawnId: {}) not found in table gameobject_spawns, cant load.");
         return false;
     }
 
     if (!map || !map->getBaseMap())
     {
-        sLogger.failure("Gameobject (spawnId: %u) invalid WorldMap or base data Invalid, cant load.");
+        sLogger.failure("Gameobject (spawnId: {}) invalid WorldMap or base data Invalid, cant load.");
         return false;
     }
 
@@ -366,7 +366,7 @@ void GameObject::saveToDB(bool newSpawn)
 {
     if (m_spawn == nullptr)
     {
-        sLogger.failure("Saving to Database failed for GameObject with entry %u spawnId %u, no SpawnData available", getEntry(), getSpawnId());
+        sLogger.failure("Saving to Database failed for GameObject with entry {} spawnId {}, no SpawnData available", getEntry(), getSpawnId());
         return;
     }
     std::stringstream ss;
@@ -435,13 +435,13 @@ bool GameObject::create(uint32_t entry, WorldMap* map, uint32_t phase, LocationV
     gameobject_properties = sMySQLStore.getGameObjectProperties(entry);
     if (gameobject_properties == nullptr)
     {
-        sLogger.failure("Something tried to create a GameObject with invalid entry %u", entry);
+        sLogger.failure("Something tried to create a GameObject with invalid entry {}", entry);
         return false;
     }
 
     if (gameobject_properties->type == GAMEOBJECT_TYPE_MO_TRANSPORT)
     {
-        sLogger.failure("Gameobject (GUID: %u Entry: %u) not created: gameobject type GAMEOBJECT_TYPE_MO_TRANSPORT cannot be manually created.", getGuidLow(), entry);
+        sLogger.failure("Gameobject (GUID: {} Entry: {}) not created: gameobject type GAMEOBJECT_TYPE_MO_TRANSPORT cannot be manually created.", getGuidLow(), entry);
         return false;
     }
 
@@ -1043,7 +1043,7 @@ void GameObject::despawn(uint32_t delay, uint32_t forceRespawntime)
             }
             else
             {
-                sLogger.failure("GameObject::Despawn tries to respawn go %u without a valid MapCell, return!", this->getEntry());
+                sLogger.failure("GameObject::Despawn tries to respawn go {} without a valid MapCell, return!", this->getEntry());
             }
             return;
         }
@@ -1290,7 +1290,7 @@ void GameObject::CallScriptUpdate()
     if (myScript)
         myScript->AIUpdate();
     else
-        sLogger.failure("GameObject::CallScriptUpdate tries to call, but go %u has no valid script (nullptr)", this->getEntry());
+        sLogger.failure("GameObject::CallScriptUpdate tries to call, but go {} has no valid script (nullptr)", this->getEntry());
 }
 
 GameObjectAIScript* GameObject::GetScript() { return myScript; }
@@ -1373,7 +1373,7 @@ void GameObject::CastSpell(uint64_t TargetGUID, uint32_t SpellID)
     SpellInfo const* sp = sSpellMgr.getSpellInfo(SpellID);
     if (sp == nullptr)
     {
-        sLogger.failure("GameObject %u tried to cast a non-existing Spell %u.", gameobject_properties->entry, SpellID);
+        sLogger.failure("GameObject {} tried to cast a non-existing Spell {}.", gameobject_properties->entry, SpellID);
         return;
     }
 
@@ -2047,7 +2047,7 @@ void GameObject_FishingNode::onUse(Player* player)
             //provide error, no fishable zone or area should be 0
             if (!zone_skill)
             {
-                sLogger.failure("Fishable areaId %u are not found in `fishing` table.", subzone);
+                sLogger.failure("Fishable areaId {} are not found in `fishing` table.", subzone);
                 break;
             }
 
@@ -2320,7 +2320,7 @@ void GameObject_SpellCaster::InitAI()
 {
     spell = sSpellMgr.getSpellInfo(gameobject_properties->spell_caster.spell_id);
     if (spell == nullptr)
-        sLogger.failure("GameObject %u ( %s ) has a nonexistant spellID in the database.", gameobject_properties->entry, gameobject_properties->name.c_str());
+        sLogger.failure("GameObject {} ( {} ) has a nonexistant spellID in the database.", gameobject_properties->entry, gameobject_properties->name);
 }
 
 void GameObject_SpellCaster::onUse(Player* player)

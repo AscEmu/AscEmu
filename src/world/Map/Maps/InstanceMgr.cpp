@@ -167,7 +167,7 @@ void InstanceMgr::loadInstances()
     // Load reset times and clean expired instances
     sInstanceMgr.loadResetTimes();
 
-    sLogger.info("Loaded instances in %u ms", Util::GetTimeDifferenceToNow(oldTime));
+    sLogger.info("Loaded instances in {} ms", Util::GetTimeDifferenceToNow(oldTime));
 }
 
 void InstanceMgr::loadResetTimes()
@@ -486,19 +486,19 @@ InstanceSaved* InstanceMgr::addInstanceSave(uint32_t mapId, uint32_t instanceId,
     WDB::Structures::MapEntry const* entry = sMapStore.lookupEntry(mapId);
     if (!entry)
     {
-        sLogger.failure("InstanceMgr::addInstanceSave: wrong mapid = %d, instanceid = %d!", mapId, instanceId);
+        sLogger.failure("InstanceMgr::addInstanceSave: wrong mapid = {}, instanceid = {}!", mapId, instanceId);
         return nullptr;
     }
 
     if (instanceId == 0)
     {
-        sLogger.failure("InstanceMgr::addInstanceSave: mapid = %d, wrong instanceid = %d!", mapId, instanceId);
+        sLogger.failure("InstanceMgr::addInstanceSave: mapid = {}, wrong instanceid = {}!", mapId, instanceId);
         return nullptr;
     }
 
     if (difficulty >= (entry->isRaid() ? InstanceDifficulty::Difficulties::MAX_RAID_DIFFICULTY : InstanceDifficulty::Difficulties::MAX_DUNGEON_DIFFICULTY))
     {
-        sLogger.failure("InstanceMgr::addInstanceSave: mapid = %d, instanceid = %d, wrong dificalty %u!", mapId, instanceId, difficulty);
+        sLogger.failure("InstanceMgr::addInstanceSave: mapid = {}, instanceid = {}, wrong dificalty {}!", mapId, instanceId, difficulty);
         return nullptr;
     }
 
@@ -519,7 +519,7 @@ InstanceSaved* InstanceMgr::addInstanceSave(uint32_t mapId, uint32_t instanceId,
         }
     }
 
-    sLogger.debug("InstanceMgr::addInstanceSave: mapid = %d, instanceid = %d", mapId, instanceId);
+    sLogger.debug("InstanceMgr::addInstanceSave: mapid = {}, instanceid = {}", mapId, instanceId);
 
     InstanceSaved* save = new InstanceSaved(mapId, instanceId, difficulty, resetTime, canReset);
     if (!load)
@@ -608,7 +608,7 @@ time_t InstanceMgr::getSubsequentResetTime(uint32_t mapid, InstanceDifficulty::D
     WDB::Structures::MapDifficulty const* mapDiff = getMapDifficultyData(mapid, difficulty);
     if (!mapDiff || !mapDiff->resetTime)
     {
-        sLogger.failure("InstanceMgr::getSubsequentResetTime: not valid difficulty or no reset delay for map %u", mapid);
+        sLogger.failure("InstanceMgr::getSubsequentResetTime: not valid difficulty or no reset delay for map {}", mapid);
         return 0;
     }
 

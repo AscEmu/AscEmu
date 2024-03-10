@@ -132,7 +132,7 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow());
 
-            sLogger.debug("Loaded %u guild definitions in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+            sLogger.debug("Loaded {} guild definitions in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
@@ -165,7 +165,7 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow());
 
-            sLogger.debug("Loaded %u guild ranks in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+            sLogger.debug("Loaded {} guild ranks in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
@@ -199,7 +199,7 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow() && result2->NextRow());
 
-            sLogger.debug("Loaded %u guild members int %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+            sLogger.debug("Loaded {} guild members int {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
@@ -232,7 +232,7 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow());
 
-            sLogger.debug("Loaded %u bank tab rights in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+            sLogger.debug("Loaded {} bank tab rights in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
@@ -265,7 +265,7 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow());
 
-            sLogger.debug("Loaded %u guild event logs in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+            sLogger.debug("Loaded {} guild event logs in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
@@ -297,7 +297,7 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow());
 
-            sLogger.debug("Loaded %u guild bank event logs in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+            sLogger.debug("Loaded {} guild bank event logs in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
@@ -330,7 +330,7 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow());
 
-            sLogger.debug("Loaded %u guild new logs in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+            sLogger.debug("Loaded {} guild new logs in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
@@ -363,7 +363,7 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow());
 
-            sLogger.debug("Loaded %u guild bank tabs in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+            sLogger.debug("Loaded {} guild bank tabs in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
@@ -392,7 +392,7 @@ void GuildMgr::loadGuildDataFromDB()
                 ++count;
             } while (result->NextRow());
 
-            sLogger.info("Loaded %u guild bank items in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+            sLogger.info("Loaded {} guild bank items in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
     }
 
@@ -455,7 +455,7 @@ void GuildMgr::loadGuildXpForLevelFromDB()
 
         if (level >= worldConfig.guild.maxLevel)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `guild_xp_for_level` includes invalid xp definitions for level %u which is higher than the defined levelcap in your config file! <skipped>", level);
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `guild_xp_for_level` includes invalid xp definitions for level {} which is higher than the defined levelcap in your config file! <skipped>", level);
             continue;
         }
 
@@ -469,12 +469,12 @@ void GuildMgr::loadGuildXpForLevelFromDB()
     {
         if (!GuildXPperLevel[level])
         {
-            sLogger.failure("Level %i does not have XP for guild level data. Using data of level [%i] + 1660000.", level + 1, level);
+            sLogger.failure("Level {} does not have XP for guild level data. Using data of level [{}] + 1660000.", level + 1, level);
             GuildXPperLevel[level] = GuildXPperLevel[level - 1U] + 1660000;
         }
     }
 
-    sLogger.debug("Loaded %u xp for guild level definitions in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    sLogger.debug("Loaded {} xp for guild level definitions in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 void GuildMgr::loadGuildRewardsFromDB()
@@ -503,13 +503,13 @@ void GuildMgr::loadGuildRewardsFromDB()
 
         if (!sItemStore.lookupEntry(reward.entry))
         {
-            sLogger.failure("Guild rewards constains not existing item entry %u", reward.entry);
+            sLogger.failure("Guild rewards constains not existing item entry {}", reward.entry);
             continue;
         }
 
         if (reward.standing >= 8)
         {
-            sLogger.failure("Guild rewards contains wrong reputation standing %u, max is %u", uint32_t(reward.standing), 8 - 1);
+            sLogger.failure("Guild rewards contains wrong reputation standing {}, max is {}", uint32_t(reward.standing), 8 - 1);
             continue;
         }
 
@@ -517,7 +517,7 @@ void GuildMgr::loadGuildRewardsFromDB()
         ++count;
     } while (result->NextRow());
 
-    sLogger.debug("Loaded %u guild reward definitions in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    sLogger.debug("Loaded {} guild reward definitions in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 #if VERSION_STRING >= Cata

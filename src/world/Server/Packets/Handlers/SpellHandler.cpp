@@ -72,7 +72,7 @@ void WorldSession::handleSpellClick(WorldPacket& recvPacket)
             else
             {
                 sChatHandler.BlueSystemMessage(this, "NPC Id %u (%s) has no spellclick spell associated with it.", creatureTarget->GetCreatureProperties()->Id, creatureTarget->GetCreatureProperties()->Name.c_str());
-                sLogger.failure("Spellclick packet received for creature %u but there is no spell associated with it.", creatureTarget->getEntry());
+                sLogger.failure("Spellclick packet received for creature {} but there is no spell associated with it.", creatureTarget->getEntry());
                 return;
             }
 
@@ -94,7 +94,7 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
     const auto spellInfo = sSpellMgr.getSpellInfo(srlPacket.spell_id);
     if (spellInfo == nullptr)
     {
-        sLogger.failure("Unknown spell id %u in handleCastSpellOpcode().", srlPacket.spell_id);
+        sLogger.failure("Unknown spell id {} in handleCastSpellOpcode().", srlPacket.spell_id);
         return;
     }
 
@@ -102,7 +102,7 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
     if (!_player->hasSpell(srlPacket.spell_id))
     {
         sCheatLog.writefromsession(this, "WORLD: Player %u tried to cast spell %u but player does not have it.", _player->getGuidLow(), srlPacket.spell_id);
-        sLogger.info("WORLD: Player %u tried to cast spell %u but player does not have it.", _player->getGuidLow(), srlPacket.spell_id);
+        sLogger.info("WORLD: Player {} tried to cast spell {} but player does not have it.", _player->getGuidLow(), srlPacket.spell_id);
         return;
     }
 
@@ -110,7 +110,7 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
     if (spellInfo->isPassive())
     {
         sCheatLog.writefromsession(this, "WORLD: Player %u tried to cast a passive spell %u, ignored", _player->getGuidLow(), srlPacket.spell_id);
-        sLogger.info("WORLD: Player %u tried to cast a passive spell %u, ignored", _player->getGuidLow(), srlPacket.spell_id);
+        sLogger.info("WORLD: Player {} tried to cast a passive spell {}, ignored", _player->getGuidLow(), srlPacket.spell_id);
         return;
     }
 
@@ -250,14 +250,14 @@ void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
 
     if (_player->getFirstPetFromSummons() == nullptr && _player->getCharmGuid() == 0)
     {
-        sLogger.failure("Received opcode but player %u has no pet.", _player->getGuidLow());
+        sLogger.failure("Received opcode but player {} has no pet.", _player->getGuidLow());
         return;
     }
 
     Unit* petUnit = _player->getWorldMap()->getUnit(srlPacket.petGuid);
     if (petUnit == nullptr)
     {
-        sLogger.failure("Pet entity cannot be found for player %u.", _player->getGuidLow());
+        sLogger.failure("Pet entity cannot be found for player {}.", _player->getGuidLow());
         return;
     }
 
@@ -320,7 +320,7 @@ void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
     }
     else
     {
-        sLogger.failure("Pet doesn't belong to player %u", _player->getGuidLow());
+        sLogger.failure("Pet doesn't belong to player {}", _player->getGuidLow());
         return;
     }
 
@@ -367,7 +367,7 @@ void WorldSession::handleCancelTotem(WorldPacket& recvPacket)
 
     if (totemSlot >= SUMMON_SLOT_MINIPET)
     {
-        sLogger.failure("Player %u tried to cancel totem from out of range slot %u, ignored.", _player->getGuidLow(), totemSlot);
+        sLogger.failure("Player {} tried to cancel totem from out of range slot {}, ignored.", _player->getGuidLow(), totemSlot);
         return;
     }
 

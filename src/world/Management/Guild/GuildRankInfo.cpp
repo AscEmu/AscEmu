@@ -130,7 +130,7 @@ void GuildRankInfo::createMissingTabsIfNeeded(uint8_t tabs, bool /*_delete*/, bo
             rightsAndSlots.SetGuildMasterValues();
 
         if (logOnCreate)
-            sLogger.failure("Guild %u has broken Tab %u for rank %u. Created default tab.", mGuildId, i, static_cast<uint32_t>(mRankId));
+            sLogger.failure("Guild {} has broken Tab {} for rank {}. Created default tab.", mGuildId, i, static_cast<uint32_t>(mRankId));
 
         CharacterDatabase.Execute("REPLACE INTO guild_bank_rights VALUES(%u, %u, %u, %u, %u);",
             mGuildId, i, static_cast<uint32_t>(mRankId), static_cast<uint32_t>(rightsAndSlots.getRights()), rightsAndSlots.getSlots());

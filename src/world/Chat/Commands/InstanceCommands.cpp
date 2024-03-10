@@ -36,10 +36,10 @@ bool ChatHandler::HandleCreateInstanceCommand(const char* args, WorldSession* m_
     WorldMap* mgr = sMapMgr.createInstanceForPlayer(mapid, m_session->GetPlayer());
     if (mgr == nullptr)
     {
-        sLogger.failure("call failed for map %u", mapid);
+        sLogger.failure("call failed for map {}", mapid);
         return false;
     }
-    sLogger.info("CreateInstanceGMCommand : GM created instance for map %u", mapid);
+    sLogger.info("CreateInstanceGMCommand : GM created instance for map {}", mapid);
 
     LocationVector vec(x, y, z);
     m_session->GetPlayer()->safeTeleport(mgr, vec);

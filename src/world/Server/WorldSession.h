@@ -29,7 +29,7 @@
 #include "Objects/MovementInfo.hpp"
 #include "Utilities/CallBack.h"
 #include "Management/AddonMgr.h"
-
+#include <Utilities/utf8.hpp>
 #include <string>
 
 struct QuestProperties;
@@ -100,7 +100,7 @@ struct AccountDataEntry
 
 struct CharCreate
 {
-    std::string name;
+    utf8_string name;
     uint8_t _race;
     uint8_t _class;
     uint8_t gender;
@@ -113,7 +113,7 @@ struct CharCreate
 };
 
 extern OpcodeHandler WorldPacketHandlers[NUM_OPCODES];
-extern CharacterErrorCodes VerifyName(std::string name);
+extern CharacterErrorCodes VerifyName(utf8_string name);
 
 class SERVER_DECL WorldSession
 {

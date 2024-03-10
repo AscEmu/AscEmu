@@ -13,6 +13,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "GuildBankTab.hpp"
 #include "Macros/GuildMacros.hpp"
 
+#include <Utilities/utf8.hpp>
+
 #include <string>
 #include <set>
 
@@ -28,7 +30,7 @@ class SERVER_DECL Guild
 {
 protected:
     uint32_t m_id;
-    std::string m_name;
+    utf8_string m_name;
     uint64_t m_leaderGuid;
     std::string m_motd;
     std::string m_info;
@@ -40,7 +42,6 @@ protected:
     uint64_t m_todayExperience;
 
 public:
-
     uint32_t getId() const { return m_id; }
 
     uint64_t getGUID() const { return WoWGuid(m_id, 0, HIGHGUID_TYPE_GUILD).getRawGuid(); }
@@ -66,7 +67,6 @@ public:
     class GuildMember
     {
     public:
-
         GuildMember(uint32_t guildId, uint64_t guid, uint8_t rankId);
 
         void setStats(Player* player);
@@ -129,7 +129,6 @@ public:
         Player* getPlayerByGuid(uint64_t guid);
 
     private:
-
         uint32_t mGuildId;
 
         uint64_t mGuid;
@@ -154,16 +153,13 @@ public:
     };
 
 private:
-
     typedef std::vector<GuildRankInfo> GuildRankInfoStore;
     typedef std::vector<GuildBankTab*> GuildBankTabsStore;  //done
     typedef std::map<uint32_t, class GuildMember*> GuildMembersStore;
 
 protected:
-
     EmblemInfo m_emblemInfo;
     uint32_t mAccountsNumber;
-
 
     GuildRankInfoStore _guildRankInfoStore;
     GuildMembersStore _guildMembersStore;
@@ -174,7 +170,6 @@ protected:
     GuildLogHolder* mNewsLog;
 
 public:
-
     Guild();
     ~Guild();
 
@@ -294,10 +289,10 @@ public:
     bool hasAchieved(uint32_t achievementId) const;
 
 private:
-
     inline uint8_t _getRanksSize() const { return uint8_t(_guildRankInfoStore.size()); }
     inline const GuildRankInfo* getRankInfo(uint8_t rankId) const { return rankId < _getRanksSize() ? &_guildRankInfoStore[rankId] : nullptr; }
     inline GuildRankInfo* getRankInfo(uint8_t rankId) { return rankId < _getRanksSize() ? &_guildRankInfoStore[rankId] : nullptr; }
+
 public:
     inline bool _hasRankRight(uint64_t playerGuid, uint32_t right) const
     {
@@ -313,8 +308,10 @@ private:
     inline uint8_t _getLowestRankId() const { return uint8_t(_guildRankInfoStore.size() - 1); }
 
     inline uint8_t _getPurchasedTabsSize() const { return uint8_t(_guildBankTabsStore.size()); }    //done
+
 public:
     inline GuildBankTab* getBankTab(uint8_t tabId) { return tabId < _guildBankTabsStore.size() ? _guildBankTabsStore[tabId] : nullptr; }    //done
+
 private:
     inline const GuildBankTab* getBankTab(uint8_t tabId) const { return tabId < _guildBankTabsStore.size() ? _guildBankTabsStore[tabId] : nullptr; }    //done
 
@@ -342,6 +339,7 @@ private:
 
         return nullptr;
     }
+
 public:
     std::vector<std::string> getMemberNameList() const
     {

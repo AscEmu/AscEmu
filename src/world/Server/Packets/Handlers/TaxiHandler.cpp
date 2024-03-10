@@ -30,7 +30,7 @@ void WorldSession::sendTaxiStatus(WoWGuid guid)
     Creature* unit = player->getWorldMapCreature(guid.getRawGuid());
     if (!unit || unit->isHostileTo(player) || !unit->isTaxi())
     {
-        sLogger.failure("WorldSession::sendTaxiStatus Creature with guid - %s not found.", std::to_string(unit->getGuid()).c_str());
+        sLogger.failure("WorldSession::sendTaxiStatus Creature with guid - {} not found.", std::to_string(unit->getGuid()));
         return;
     }
 
@@ -69,7 +69,7 @@ void WorldSession::sendDoFlight(uint32_t mountDisplayId, uint32_t path, uint32_t
     TaxiPathNodeList const& nodes = sTaxiPathNodesByPath[path];
     if (nodes.size() < pathNode)
     {
-        sLogger.failure("Taxi cannot be Started PathId %u contains %u nodes but Startnode was set to %u", path, nodes.size(), pathNode);
+        sLogger.failure("Taxi cannot be Started PathId {} contains {} nodes but Startnode was set to {}", path, nodes.size(), pathNode);
         return;
     }
 

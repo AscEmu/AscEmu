@@ -258,7 +258,7 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
 {
     if (!m_caster->IsInWorld())
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Object %s is casting spell ID %u while not in world", std::to_string(m_caster->getGuid()).c_str(), getSpellInfo()->getId());
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Object {} is casting spell ID {} while not in world", std::to_string(m_caster->getGuid()), getSpellInfo()->getId());
         delete this;
         return SPELL_FAILED_DONT_REPORT;
     }
@@ -380,7 +380,7 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
             m_triggeredByAura->removeAura();
         }
 
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::prepare : canCast result %u for spell id %u (refer to SpellFailure.hpp to work out why)", cancastresult, getSpellInfo()->getId());
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::prepare : canCast result {} for spell id {} (refer to SpellFailure.hpp to work out why)", cancastresult, getSpellInfo()->getId());
 
         finish(false);
         return cancastresult;
@@ -453,18 +453,18 @@ void Spell::castMe(const bool doReCheck)
     if (m_caster->isPlayer())
     {
         const auto plr = static_cast<Player*>(m_caster);
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::castMe : Player guid %u casted spell %s (id %u)",
-            plr->getGuidLow(), getSpellInfo()->getName().c_str(), getSpellInfo()->getId());
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::castMe : Player guid {} casted spell {} (id {})",
+            plr->getGuidLow(), getSpellInfo()->getName(), getSpellInfo()->getId());
     }
     else if (m_caster->isCreature())
     {
         const auto creature = static_cast<Creature*>(m_caster);
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::castMe : Creature guid %u (entry %u) casted spell %s (id %u)",
-            creature->spawnid, creature->getEntry(), getSpellInfo()->getName().c_str(), getSpellInfo()->getId());
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::castMe : Creature guid {} (entry {}) casted spell {} (id {})",
+            creature->spawnid, creature->getEntry(), getSpellInfo()->getName(), getSpellInfo()->getId());
     }
     else
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::castMe : Spell id %u casted, caster guid %u", getSpellInfo()->getId(), m_caster->getGuid());
+        sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::castMe : Spell id {} casted, caster guid {}", getSpellInfo()->getId(), m_caster->getGuid());
     }
 
     // Check cast again if spell had cast time
@@ -896,11 +896,11 @@ void Spell::handleHittedEffect(const uint64_t targetGuid, uint8_t effIndex, int3
     const auto effectId = getSpellInfo()->getEffect(effIndex);
     if (effectId >= TOTAL_SPELL_EFFECTS)
     {
-        sLogger.failure("Spell::handleHittedEffect : Unknown spell effect %u in spell id %u, index %u", effectId, getSpellInfo()->getId(), effIndex);
+        sLogger.failure("Spell::handleHittedEffect : Unknown spell effect {} in spell id {}, index {}", effectId, getSpellInfo()->getId(), effIndex);
         return;
     }
 
-    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::handleHittedEffect : Spell effect %u, spell id %u, damage %d", effectId, getSpellInfo()->getId(), damage);
+    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::handleHittedEffect : Spell effect {}, spell id {}, damage {}", effectId, getSpellInfo()->getId(), damage);
 
     const auto scriptResult = sScriptMgr.callScriptedSpellBeforeSpellEffect(this, effIndex);
 
@@ -2258,7 +2258,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 const auto gameObjectInfo = obj->GetGameObjectProperties();
                 if (gameObjectInfo == nullptr)
                 {
-                    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::canCast : Found gameobject entry %u with invalid gameobject properties, spawn id %u", obj->getEntry(), obj->getGuidLow());
+                    sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::canCast : Found gameobject entry {} with invalid gameobject properties, spawn id {}", obj->getEntry(), obj->getGuidLow());
                     continue;
                 }
 
@@ -3232,7 +3232,7 @@ SpellCastResult Spell::checkPower()
     // Invalid power types
     if (!getSpellInfo()->hasValidPowerType())
     {
-        sLogger.failure("Spell::checkPower : Unknown power type %u for spell id %u", getSpellInfo()->getPowerType(), getSpellInfo()->getId());
+        sLogger.failure("Spell::checkPower : Unknown power type {} for spell id {}", getSpellInfo()->getPowerType(), getSpellInfo()->getId());
         return SPELL_FAILED_ERROR;
     }
 
@@ -3698,7 +3698,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                     const auto itemProperties = sMySQLStore.getItemProperties(getSpellInfo()->getEffectItemType(i));
                     if (itemProperties == nullptr)
                     {
-                        sLogger.failure("Spell::checkItems: Spell entry %u has unknown item id (%u) in SPELL_EFFECT_CREATE_ITEM effect", getSpellInfo()->getId(), getSpellInfo()->getEffectItemType(i));
+                        sLogger.failure("Spell::checkItems: Spell entry {} has unknown item id ({}) in SPELL_EFFECT_CREATE_ITEM effect", getSpellInfo()->getId(), getSpellInfo()->getEffectItemType(i));
                         return SPELL_FAILED_ERROR;
                     }
 
@@ -3739,7 +3739,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                     const auto itemProperties = sMySQLStore.getItemProperties(getSpellInfo()->getEffectItemType(i));
                     if (itemProperties == nullptr)
                     {
-                        sLogger.failure("Spell::checkItems: Spell entry %u has unknown item id (%u) in SPELL_EFFECT_ENCHANT_ITEM effect", getSpellInfo()->getId(), getSpellInfo()->getEffectItemType(i));
+                        sLogger.failure("Spell::checkItems: Spell entry {} has unknown item id ({}) in SPELL_EFFECT_ENCHANT_ITEM effect", getSpellInfo()->getId(), getSpellInfo()->getEffectItemType(i));
                         return SPELL_FAILED_ERROR;
                     }
 
@@ -3801,7 +3801,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                 const auto enchantEntry = sSpellItemEnchantmentStore.lookupEntry(static_cast<uint32_t>(getSpellInfo()->getEffectMiscValue(i)));
                 if (enchantEntry == nullptr)
                 {
-                    sLogger.failure("Spell::checkItems: Spell entry %u has no valid enchantment (%u)", getSpellInfo()->getId(), getSpellInfo()->getEffectMiscValue(i));
+                    sLogger.failure("Spell::checkItems: Spell entry {} has no valid enchantment ({})", getSpellInfo()->getId(), getSpellInfo()->getEffectMiscValue(i));
                     return SPELL_FAILED_ERROR;
                 }
 
@@ -3867,7 +3867,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                 const auto enchantmentEntry = sSpellItemEnchantmentStore.lookupEntry(static_cast<uint32_t>(getSpellInfo()->getEffectMiscValue(i)));
                 if (enchantmentEntry == nullptr)
                 {
-                    sLogger.failure("Spell::checkItems: Spell entry %u has no valid enchantment (%u)", getSpellInfo()->getId(), getSpellInfo()->getEffectMiscValue(i));
+                    sLogger.failure("Spell::checkItems: Spell entry {} has no valid enchantment ({})", getSpellInfo()->getId(), getSpellInfo()->getEffectMiscValue(i));
                     return SPELL_FAILED_ERROR;
                 }
 
@@ -4475,7 +4475,7 @@ SpellCastResult Spell::checkShapeshift(SpellInfo const* spellInfo, const uint32_
         auto shapeShift = sSpellShapeshiftFormStore.lookupEntry(shapeshiftForm);
         if (shapeShift == nullptr)
         {
-            sLogger.failure("Spell::checkShapeshift: Caster has unknown shapeshift form %u", shapeshiftForm);
+            sLogger.failure("Spell::checkShapeshift: Caster has unknown shapeshift form {}", shapeshiftForm);
             return SPELL_CAST_SUCCESS;
         }
 
@@ -5545,7 +5545,7 @@ void Spell::takePower()
 
     if (!getSpellInfo()->hasValidPowerType())
     {
-        sLogger.failure("Spell::takePower : Unknown power type %u for spell id %u", getSpellInfo()->getPowerType(), getSpellInfo()->getId());
+        sLogger.failure("Spell::takePower : Unknown power type {} for spell id {}", getSpellInfo()->getPowerType(), getSpellInfo()->getId());
         return;
     }
 
@@ -6088,7 +6088,7 @@ void Spell::_updateCasterPointers(Object* caster)
             g_caster = dynamic_cast<GameObject*>(caster);
             break;
         default:
-            sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::_updateCasterPointers : Incompatible object type (type %u) for spell caster", caster->getObjectTypeId());
+            sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Spell::_updateCasterPointers : Incompatible object type (type {}) for spell caster", caster->getObjectTypeId());
             break;
     }
 }
@@ -6162,7 +6162,7 @@ void Spell::_updateTargetPointers(const uint64_t targetGuid)
                     m_corpseTarget = sObjectMgr.getCorpseByGuid(wowGuid.getGuidLowPart());
                     break;
                 default:
-                    sLogger.failure("Spell::_updateTargetPointers : Invalid object type for spell target (low guid %u) in spell %u", wowGuid.getGuidLowPart(), getSpellInfo()->getId());
+                    sLogger.failure("Spell::_updateTargetPointers : Invalid object type for spell target (low guid {}) in spell {}", wowGuid.getGuidLowPart(), getSpellInfo()->getId());
                     break;
             }
         }

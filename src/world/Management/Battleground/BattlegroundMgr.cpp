@@ -238,7 +238,7 @@ void BattlegroundManager::handleBattlegroundJoin(WorldSession* session, WorldPac
     // Queue him!
     std::lock_guard queueLock(m_queueLock);
     m_queuedPlayers[srlPacket.bgType][lgroup].push_back(pguid);
-    sLogger.info("BattlegroundManager : Player %u is now in battleground queue for instance %u", session->GetPlayer()->getGuidLow(), srlPacket.instanceId + 1);
+    sLogger.info("BattlegroundManager : Player {} is now in battleground queue for instance {}", session->GetPlayer()->getGuidLow(), srlPacket.instanceId + 1);
 
     plr->setIsQueuedForBg(true);
     plr->setQueuedBgInstanceId(srlPacket.instanceId);
@@ -460,7 +460,7 @@ int BattlegroundManager::createArenaType(uint8_t type, std::shared_ptr<Group> gr
     const auto arena = dynamic_cast<Arena*>(createInstance(type, BattlegroundDef::LEVEL_GROUP_70));
     if (arena == nullptr)
     {
-        sLogger.failure("%s (%u): Couldn't create Arena Instance", __FILE__, __LINE__);
+        sLogger.failure("{} ({}): Couldn't create Arena Instance", __FILE__, __LINE__);
         return -1;
     }
 
@@ -664,7 +664,7 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
                     arena = dynamic_cast<Arena*>(createInstance(_bgType, _levelGroup));
                     if (arena == nullptr)
                     {
-                        sLogger.failure("%s (%u): Couldn't create Arena Instance", __FILE__, __LINE__);
+                        sLogger.failure("{} ({}): Couldn't create Arena Instance", __FILE__, __LINE__);
                         return;
                     } // No alliance in the queue
 
@@ -817,7 +817,7 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
 
             if (itz == m_queuedGroups[i].end())
             {
-                sLogger.failure("Internal error at %s:%u", __FILE__, __LINE__);
+                sLogger.failure("Internal error at {}:{}", __FILE__, __LINE__);
                 return;
             }
 
@@ -860,7 +860,7 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
 
                 if (itz == possibleGroups.end())
                 {
-                    sLogger.failure("Internal error at %s:%u", __FILE__, __LINE__);
+                    sLogger.failure("Internal error at {}:{}", __FILE__, __LINE__);
                     return;
                 }
 
@@ -881,7 +881,7 @@ void BattlegroundManager::removePlayerFromQueues(Player* player)
 {
     if (player->getBgQueueType() >= BATTLEGROUND_NUM_TYPES)
     {
-        sLogger.failure("BattlegroundManager::removePlayerFromQueues queueType %u is not valid!", BATTLEGROUND_NUM_TYPES);
+        sLogger.failure("BattlegroundManager::removePlayerFromQueues queueType {} is not valid!", BATTLEGROUND_NUM_TYPES);
         return;
     }
 
@@ -896,7 +896,7 @@ void BattlegroundManager::removePlayerFromQueues(Player* player)
     {
         if (*itr == player->getGuidLow())
         {
-            sLogger.debug("Removing player %u from queue instance %u type %u", player->getGuidLow(), player->getQueuedBgInstanceId(), player->getBgQueueType());
+            sLogger.debug("Removing player {} from queue instance {} type {}", player->getGuidLow(), player->getQueuedBgInstanceId(), player->getBgQueueType());
             m_queuedPlayers[player->getBgQueueType()][lgroup].erase(itr);
             break;
         }
@@ -912,7 +912,7 @@ void BattlegroundManager::removePlayerFromQueues(Player* player)
 
     if (auto group = player->getGroup())
     {
-        sLogger.debug("Player %u removed whilst in a group. Removing players group %u from queue", player->getGuidLow(), group->GetID());
+        sLogger.debug("Player {} removed whilst in a group. Removing players group {} from queue", player->getGuidLow(), group->GetID());
         removeGroupFromQueues(group->GetID());
     }
 }
@@ -1008,7 +1008,7 @@ Battleground* BattlegroundManager::createInstance(uint32_t type, uint32_t levelG
     {
         if (!Battleground::isTypeArena(type))
         {
-            sLogger.failure("BattlegroundManager", "No map Id is registered for Battleground type %u", type);
+            sLogger.failure("BattlegroundManager", "No map Id is registered for Battleground type {}", type);
             return nullptr;
         }
     }
@@ -1044,7 +1044,7 @@ Battleground* BattlegroundManager::createInstance(uint32_t type, uint32_t levelG
         mgr = sMapMgr.createBattleground(mapid);
         if (mgr == nullptr)
         {
-            sLogger.failure("call failed for map %u, type %u, level group %u", mapid, type, levelGroup);
+            sLogger.failure("call failed for map {}, type {}, level group {}", mapid, type, levelGroup);
             return nullptr;      // Shouldn't happen
         }
 
@@ -1053,7 +1053,7 @@ Battleground* BattlegroundManager::createInstance(uint32_t type, uint32_t levelG
         iid = ++m_maxBattlegroundId[type];
         bg = arenaFactory(mgr, iid, levelGroup, type, players_per_side);
         mgr->setBattleground(bg);
-        sLogger.info("BattlegroundManager : Created arena battleground type %u for level group %u on map %u.", type, levelGroup, mapid);
+        sLogger.info("BattlegroundManager : Created arena battleground type {} for level group {} on map {}.", type, levelGroup, mapid);
         sEventMgr.AddEvent(bg, &Battleground::eventCreate, EVENT_BATTLEGROUND_QUEUE_UPDATE, 1, 1, 0);
         std::lock_guard instanceLock(m_instanceLock);
         m_instances[type].insert(std::make_pair(iid, bg));
@@ -1063,7 +1063,7 @@ Battleground* BattlegroundManager::createInstance(uint32_t type, uint32_t levelG
 
     if (cfunc == nullptr)
     {
-        sLogger.failure("Could not find CreateBattlegroundFunc pointer for type %u level group %u", type, levelGroup);
+        sLogger.failure("Could not find CreateBattlegroundFunc pointer for type {} level group {}", type, levelGroup);
         return nullptr;
     }
 
@@ -1107,7 +1107,7 @@ Battleground* BattlegroundManager::createInstance(uint32_t type, uint32_t levelG
     mgr = sMapMgr.createBattleground(m_bgMaps[type]);
     if (mgr == nullptr)
     {
-        sLogger.failure("call failed for map %u, type %u, level group %u", m_bgMaps[type], type, levelGroup);
+        sLogger.failure("call failed for map {}, type {}, level group {}", m_bgMaps[type], type, levelGroup);
         return nullptr;      // Shouldn't happen
     }
 
@@ -1118,7 +1118,7 @@ Battleground* BattlegroundManager::createInstance(uint32_t type, uint32_t levelG
     mgr->setBattleground(bg);
 
     sEventMgr.AddEvent(bg, &Battleground::eventCreate, EVENT_BATTLEGROUND_QUEUE_UPDATE, 1, 1, 0);
-    sLogger.info("BattlegroundManager : Created battleground type %u for level group %u.", type, levelGroup);
+    sLogger.info("BattlegroundManager : Created battleground type {} for level group {}.", type, levelGroup);
 
     std::lock_guard instanceLock(m_instanceLock);
     m_instances[type].insert(std::make_pair(iid, bg));
@@ -1159,7 +1159,7 @@ void BattlegroundManager::deleteBattleground(Battleground* battleground)
         }
     }
 
-    //sLogger.info("Deleting battleground from queue %u, instance %u", bg->GetType(), bg->GetId());
+    //sLogger.info("Deleting battleground from queue {}, instance {}", bg->GetType(), bg->GetId());
     delete battleground;
 }
 
@@ -1292,7 +1292,7 @@ void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battle
 
         std::lock_guard queueLock(m_queueLock);
         m_queuedGroups[battlegroundType].push_back(group->GetID());
-        sLogger.info("BattlegroundMgr : Group %u is now in battleground queue for arena type %u", group->GetID(), battlegroundType);
+        sLogger.info("BattlegroundMgr : Group {} is now in battleground queue for arena type {}", group->GetID(), battlegroundType);
 
         // send the battleground status packet
 
@@ -1304,7 +1304,7 @@ void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battle
     std::lock_guard queueLock(m_queueLock);
     m_queuedPlayers[battlegroundType][lgroup].push_back(pguid);
 
-    sLogger.info("BattlegroundMgr : Player %u is now in battleground queue for {Arena %u}", session->GetPlayer()->getGuidLow(), battlegroundType);
+    sLogger.info("BattlegroundMgr : Player {} is now in battleground queue for {Arena {}}", session->GetPlayer()->getGuidLow(), battlegroundType);
 
     // send the battleground status packet
     sendBattlefieldStatus(session->GetPlayer(), BattlegroundDef::STATUS_INQUEUE, battlegroundType, 0, 0, 0, 0);

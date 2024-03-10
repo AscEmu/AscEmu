@@ -64,7 +64,7 @@ namespace AscEmu::Realm
 
             delete result;
         }
-        sLogger.info("[RealmManager] Loaded %u realms.", static_cast<uint32_t>(this->realms.size()));
+        sLogger.info("[RealmManager] Loaded {} realms.", static_cast<uint32_t>(this->realms.size()));
     }
 
     std::shared_ptr<Realm> RealmManager::getRealmById(uint32_t id) const
@@ -124,7 +124,7 @@ namespace AscEmu::Realm
             if (::Util::GetTimeDifferenceToNow(realm->lastPing) > 2 * 60 * 1000 && realm->status != 0)
             {
                 realm->status = 0;
-                sLogger.info("Realm %u status gets set to 0 (offline) since there was no ping the last 2 minutes (%u).", uint32_t(realm->id), ::Util::GetTimeDifferenceToNow(realm->lastPing));
+                sLogger.info("Realm {} status gets set to 0 (offline) since there was no ping the last 2 minutes ({}).", uint32_t(realm->id), ::Util::GetTimeDifferenceToNow(realm->lastPing));
                 sLogonSQL->Query("UPDATE realms SET status = 0 WHERE id = %u", uint32_t(realm->id));
             }
         }
@@ -270,7 +270,7 @@ namespace AscEmu::Realm
 
             if (!sMasterLogon.IsServerAllowed(commServerSocket->GetRemoteAddress().s_addr))
             {
-                sLogger.log(Logging::Severity::INFO, Logging::MessageType::MAJOR, "[RealmManager] Disconnecting socket: %s due to it no longer being on an allowed IP.", commServerSocket->GetRemoteIP().c_str());
+                sLogger.log(Logging::Severity::INFO, Logging::MessageType::MAJOR, "[RealmManager] Disconnecting socket: {} due to it no longer being on an allowed IP.", commServerSocket->GetRemoteIP());
                 commServerSocket->Disconnect();
             }
         }
@@ -285,7 +285,7 @@ namespace AscEmu::Realm
         {
             realm->flags = RealmFlag::OFFLINE | RealmFlag::INVALID;
             realm->_characterMap.clear();
-            sLogger.info("[RealmManager] Realm %u is now offline (socket close).", realm_id);
+            sLogger.info("[RealmManager] Realm {} is now offline (socket close).", realm_id);
             sLogonSQL->Query("UPDATE realms SET status = 0 WHERE id = %u", uint32_t(realm->id));
         }
     }

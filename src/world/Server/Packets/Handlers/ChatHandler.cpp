@@ -220,7 +220,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
         {
             // TODO Verify "strange gestures" for xfaction
             _player->sendMessageToSet(SmsgMessageChat(CHAT_MSG_EMOTE, messageLanguage, gmFlag, srlPacket.message, _player->getGuid()).serialise().get(), true, true);
-            sLogger.info("[emote] %s: %s", _player->getName().c_str(), srlPacket.message.c_str());
+            sLogger.info("[emote] {}: {}", _player->getName(), srlPacket.message);
         } break;
         case CHAT_MSG_SAY:
         {
@@ -277,7 +277,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
                         }
                     }
                 }
-                sLogger.info("[party] %s: %s", _player->getName().c_str(), srlPacket.message.c_str());
+                sLogger.info("[party] {}: {}", _player->getName(), srlPacket.message);
             }
         } break;
         case CHAT_MSG_GUILD:
@@ -557,8 +557,8 @@ void WorldSession::handleReportSpamOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("REPORT SPAM: type %u, guid %u, unk1 %u, unk2 %u, unk3 %u, unk4 %u, message %s", srlPacket.spam_type, srlPacket.spammer_guid.getGuidLow(),
-        srlPacket.unk1, srlPacket.unk2, srlPacket.unk3, srlPacket.unk4, srlPacket.description.c_str());
+    sLogger.debug("REPORT SPAM: type {}, guid {}, unk1 {}, unk2 {}, unk3 {}, unk4 {}, message {}", srlPacket.spam_type, srlPacket.spammer_guid.getGuidLow(),
+        srlPacket.unk1, srlPacket.unk2, srlPacket.unk3, srlPacket.unk4, srlPacket.description);
 
     SendPacket(SmsgComplainResult(0).serialise().get());
 }
@@ -583,5 +583,5 @@ void WorldSession::handleChatChannelWatchOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debug("Unhandled... Player %s watch channel: %s", _player->getName().c_str(), srlPacket.name.c_str());
+    sLogger.debug("Unhandled... Player {} watch channel: {}", _player->getName(), srlPacket.name);
 }

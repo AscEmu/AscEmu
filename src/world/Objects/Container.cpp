@@ -58,7 +58,7 @@ void Container::create(uint32_t itemid, Player* owner)
     }
     else
     {
-        sLogger.failure("Container::create: Can't create item %u missing properties!", itemid);
+        sLogger.failure("Container::create: Can't create item {} missing properties!", itemid);
         return;
     }
 }
@@ -87,7 +87,7 @@ void Container::loadFromDB(Field* fields)
     }
     else
     {
-        sLogger.failure("Container::loadFromDB: Can't load item %u missing properties!", itemId);
+        sLogger.failure("Container::loadFromDB: Can't load item {} missing properties!", itemId);
         return;
     }
 }
@@ -110,7 +110,7 @@ bool Container::addItem(int16_t slot, Item* item)
 
     if (m_Slot[slot])
     {
-        sLogger.failure("Container::addItem: Bad container item %u slot %d", item->getGuidLow(), slot);
+        sLogger.failure("Container::addItem: Bad container item {} slot {}", item->getGuidLow(), slot);
         return false;
     }
 

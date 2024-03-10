@@ -46,7 +46,7 @@ void WorldSession::handleChannelJoin(WorldPacket& recvPacket)
         return;
 
     channel->attemptJoin(_player, srlPacket.password.c_str());
-    sLogger.debug("ChannelJoin %s", srlPacket.channelName.c_str());
+    sLogger.debug("ChannelJoin {}", srlPacket.channelName);
 }
 
 void WorldSession::handleGetChannelMemberCount(WorldPacket& recvPacket)

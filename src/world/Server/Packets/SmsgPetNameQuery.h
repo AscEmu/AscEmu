@@ -15,7 +15,7 @@ namespace AscEmu::Packets
     {
     public:
         uint32_t petNumber;
-        std::string name;
+        utf8_string name;
         uint32_t timeStamp;
         uint8_t unknown;
 
