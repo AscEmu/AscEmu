@@ -5,12 +5,13 @@ on:
     branches: [ master, develop ]
   pull_request:
     branches: [ develop ]
+
 jobs:
 
   Classic:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Setup Environment
       run: |
         sudo apt-get update && sudo apt-get install -y zlib1g-dev
@@ -24,13 +25,16 @@ jobs:
         gcc --version
         cmake --version
         mkdir ascemu_build_сlassic
-        cmake -DCMAKE_INSTALL_PREFIX=~/ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=1 -DASCEMU_VERSION=Classic
-        make -j 4 && make install
-
+        cd ascemu_build_сlassic
+        cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=1 -DASCEMU_VERSION=Classic
+        cd ..
+        cd ascemu_build_сlassic
+        make -j4
+        sudo make install
   TBC:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Setup Environment
       run: |
         sudo apt-get update && sudo apt-get install -y zlib1g-dev
@@ -44,12 +48,16 @@ jobs:
         gcc --version
         cmake --version
         mkdir ascemu_build_tbc
-        cmake -DCMAKE_INSTALL_PREFIX=~/ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=1 -DASCEMU_VERSION=TBC
-        make -j 4 && make install
+        cd ascemu_build_tbc
+        cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=1 -DASCEMU_VERSION=TBC
+        cd ..
+        cd ascemu_build_tbc
+        make -j4
+        sudo make install
   WotLK:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Setup Environment
       run: |
         sudo apt-get update && sudo apt-get install -y zlib1g-dev
@@ -63,12 +71,16 @@ jobs:
         gcc --version
         cmake --version
         mkdir ascemu_build_wotlk
-        cmake -DCMAKE_INSTALL_PREFIX=~/ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=1 -DASCEMU_VERSION=WotLK
-        make -j 4 && make install
+        cd ascemu_build_wotlk
+        cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=1 -DASCEMU_VERSION=WotLK
+        cd ..
+        cd ascemu_build_wotlk
+        make -j4
+        sudo make install
   Cata:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Setup Environment
       run: |
         sudo apt-get update && sudo apt-get install -y zlib1g-dev
@@ -82,12 +94,16 @@ jobs:
         gcc --version
         cmake --version
         mkdir ascemu_build_cata
-        cmake -DCMAKE_INSTALL_PREFIX=~/ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=1 -DASCEMU_VERSION=Cata
-        make -j 4 && make install
+        cd ascemu_build_cata
+        cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=1 -DASCEMU_VERSION=Cata
+        cd ..
+        cd ascemu_build_cata
+        make -j4
+        sudo make install
   Mop:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Setup Environment
       run: |
         sudo apt-get update && sudo apt-get install -y zlib1g-dev
@@ -101,5 +117,9 @@ jobs:
         gcc --version
         cmake --version
         mkdir ascemu_build_mop
-        cmake -DCMAKE_INSTALL_PREFIX=~/ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=1 -DASCEMU_VERSION=Mop
-        make -j 4 && make install
+        cd ascemu_build_mop
+        cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=1 -DASCEMU_VERSION=Mop
+        cd ..
+        cd ascemu_build_mop
+        make -j4
+        sudo make install
