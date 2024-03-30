@@ -60,7 +60,7 @@ void Vehicle::deactivate()
 {
     if (_status == STATUS_DEACTIVATED && !getBase()->hasUnitStateFlag(UNIT_STATE_ACCESSORY))
     {
-        sLogger.failure("Vehicle %s attempts to deactivate, but already has STATUS_DEACTIVATED! ", std::to_string(getBase()->getGuid()).c_str());
+        sLogger.failure("Vehicle {} attempts to deactivate, but already has STATUS_DEACTIVATED! ", std::to_string(getBase()->getGuid()));
         return;
     }
 
@@ -219,7 +219,7 @@ void Vehicle::loadAccessory(uint32_t entry, int8_t seatId, bool minion, uint8_t 
 {
     if (_status == STATUS_DEACTIVATED)
     {
-        sLogger.failure("Vehicle (%s, Entry: %u) attempts to load accessory (Entry: %u) on seat %d with STATUS_DEACTIVATED! ", getBase()->getGuid(), getEntry(), entry, (int32_t)seatId);
+        sLogger.failure("Vehicle ({}, Entry: {}) attempts to load accessory (Entry: {}) on seat {} with STATUS_DEACTIVATED! ", getBase()->getGuid(), getEntry(), entry, (int32_t)seatId);
         return;
     }
 
@@ -338,7 +338,7 @@ bool Vehicle::addPassenger(Unit* unit, int8_t seatId)
 {
     if (_status == STATUS_DEACTIVATED)
     {
-        sLogger.failure("Passenger %s, attempting to board vehicle %s during deactivating! SeatId: %d", unit->getGuid(), getBase()->getGuidHigh(), (int32_t)seatId);
+        sLogger.failure("Passenger {}, attempting to board vehicle {} during deactivating! SeatId: {}", unit->getGuid(), getBase()->getGuidHigh(), (int32_t)seatId);
         return false;
     }
 

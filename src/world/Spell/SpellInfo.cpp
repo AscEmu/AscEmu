@@ -247,7 +247,7 @@ bool SpellInfo::isDamagingEffect(uint8_t effIndex) const
     }
     else
     {
-        sLogger.failure("SpellInfo::isDamagingEffect called with invalid effIndex %u", static_cast<uint32_t>(effIndex));
+        sLogger.failure("SpellInfo::isDamagingEffect called with invalid effIndex {}", static_cast<uint32_t>(effIndex));
         return false;
     }
 }
@@ -289,7 +289,7 @@ bool SpellInfo::isHealingEffect(uint8_t effIndex) const
     }
     else
     {
-        sLogger.failure("SpellInfo::isHealingEffect called with invalid effIndex %u", static_cast<uint32_t>(effIndex));
+        sLogger.failure("SpellInfo::isHealingEffect called with invalid effIndex {}", static_cast<uint32_t>(effIndex));
         return false;
     }
 }
@@ -384,7 +384,7 @@ int32_t SpellInfo::getBasePowerCost(Unit* caster) const
     {
         if (!hasValidPowerType())
         {
-            sLogger.failure("SpellInfo::getBasePowerCost : Unknown power type %u for spell id %u", getPowerType(), getId());
+            sLogger.failure("SpellInfo::getBasePowerCost : Unknown power type {} for spell id {}", getPowerType(), getId());
             return 0;
         }
 
@@ -420,7 +420,7 @@ int32_t SpellInfo::getBasePowerCost(Unit* caster) const
                     break;
 #endif
                 default:
-                    sLogger.failure("SpellInfo::getBasePowerCost() : Unknown power type %u for spell id %u", getPowerType(), getId());
+                    sLogger.failure("SpellInfo::getBasePowerCost() : Unknown power type {} for spell id {}", getPowerType(), getId());
                     return 0;
             }
         }
@@ -1346,7 +1346,7 @@ uint32_t SpellInfo::getTotem(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_TOTEMS)
     {
-        sLogger.failure("Totem index id %u is invalid!", idx);
+        sLogger.failure("Totem index id {} is invalid!", idx);
         return 0;
     }
 
@@ -1357,7 +1357,7 @@ int32_t SpellInfo::getReagent(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_REAGENTS)
     {
-        sLogger.failure("Reagent index id %u is invalid!", idx);
+        sLogger.failure("Reagent index id {} is invalid!", idx);
         return 0;
     }
 
@@ -1368,7 +1368,7 @@ uint32_t SpellInfo::getReagentCount(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_REAGENTS)
     {
-        sLogger.failure("ReagentCount index id %u is invalid!", idx);
+        sLogger.failure("ReagentCount index id {} is invalid!", idx);
         return 0;
     }
 
@@ -1379,7 +1379,7 @@ uint32_t SpellInfo::getEffect(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return 0;
     }
 
@@ -1390,7 +1390,7 @@ int32_t SpellInfo::getEffectDieSides(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return 0;
     }
 
@@ -1401,7 +1401,7 @@ float SpellInfo::getEffectRealPointsPerLevel(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return 0.f;
     }
 
@@ -1412,7 +1412,7 @@ int32_t SpellInfo::getEffectBasePoints(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return 0;
     }
 
@@ -1423,7 +1423,7 @@ uint32_t SpellInfo::getEffectMechanic(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return 0;
     }
 
@@ -1434,7 +1434,7 @@ uint32_t SpellInfo::getEffectImplicitTargetA(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return 0;
     }
 
@@ -1445,7 +1445,7 @@ uint32_t SpellInfo::getEffectImplicitTargetB(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return 0;
     }
 
@@ -1456,7 +1456,7 @@ uint32_t SpellInfo::getEffectRadiusIndex(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return 0;
     }
 
@@ -1467,7 +1467,7 @@ uint32_t SpellInfo::getEffectApplyAuraName(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return 0;
     }
 
@@ -1478,7 +1478,7 @@ uint32_t SpellInfo::getEffectAmplitude(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return 0;
     }
 
@@ -1489,7 +1489,7 @@ float SpellInfo::getEffectMultipleValue(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return 0;
     }
 
@@ -1500,7 +1500,7 @@ uint32_t SpellInfo::getEffectChainTarget(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return 0;
     }
 
@@ -1511,7 +1511,7 @@ uint32_t SpellInfo::getEffectItemType(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return 0;
     }
 
@@ -1522,7 +1522,7 @@ int32_t SpellInfo::getEffectMiscValue(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return 0;
     }
 
@@ -1533,7 +1533,7 @@ int32_t SpellInfo::getEffectMiscValueB(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return 0;
     }
 
@@ -1544,7 +1544,7 @@ uint32_t SpellInfo::getEffectTriggerSpell(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return 0;
     }
 
@@ -1555,7 +1555,7 @@ float SpellInfo::getEffectPointsPerComboPoint(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return 0;
     }
 
@@ -1566,7 +1566,7 @@ uint32_t SpellInfo::getEffectSpellClassMask(uint8_t idx1, uint8_t idx2) const
 {
     if (idx1 >= MAX_SPELL_EFFECTS || idx2 >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Totem index id %u or effect index %u is invalid!", idx1, idx2);
+        sLogger.failure("Totem index id {} or effect index {} is invalid!", idx1, idx2);
         return 0;
     }
 
@@ -1577,7 +1577,7 @@ uint32_t const* SpellInfo::getEffectSpellClassMask(uint8_t idx1) const
 {
     if (idx1 >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx1);
+        sLogger.failure("Effect index id {} is invalid!", idx1);
         return 0;
     }
 
@@ -1588,7 +1588,7 @@ uint32_t SpellInfo::getSpellFamilyFlags(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return 0;
     }
 
@@ -1599,7 +1599,7 @@ float SpellInfo::getEffectDamageMultiplier(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return 0;
     }
 
@@ -1611,7 +1611,7 @@ uint32_t SpellInfo::getTotemCategory(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_TOTEM_CATEGORIES)
     {
-        sLogger.failure("TotemCategory index id %u is invalid!", idx);
+        sLogger.failure("TotemCategory index id {} is invalid!", idx);
         return 0;
     }
 
@@ -1623,7 +1623,7 @@ float SpellInfo::getEffectBonusMultiplier(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return 0;
     }
 
@@ -1634,7 +1634,7 @@ uint32_t SpellInfo::getEffectCustomFlag(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return 0;
     }
 
@@ -1645,7 +1645,7 @@ void SpellInfo::setTotem(uint32_t totemId, uint8_t idx)                      // 
 {
     if (idx >= MAX_SPELL_TOTEMS)
     {
-        sLogger.failure("Totem index id %u is invalid!", idx);
+        sLogger.failure("Totem index id {} is invalid!", idx);
         return;
     }
 
@@ -1656,7 +1656,7 @@ void SpellInfo::setReagent(int32_t reagentId, uint8_t idx)                      
 {
     if (idx >= MAX_SPELL_REAGENTS)
     {
-        sLogger.failure("Spellreagents index id %u is invalid!", idx);
+        sLogger.failure("Spellreagents index id {} is invalid!", idx);
         return;
     }
 
@@ -1667,7 +1667,7 @@ void SpellInfo::setReagentCount(uint32_t reagentId, uint8_t idx)                
 {
     if (idx >= MAX_SPELL_REAGENTS)
     {
-        sLogger.failure("Reagentcount index id %u is invalid!", idx);
+        sLogger.failure("Reagentcount index id {} is invalid!", idx);
         return;
     }
 
@@ -1678,7 +1678,7 @@ void SpellInfo::setEffect(uint32_t effectId, uint8_t idx)                       
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return;
     }
 
@@ -1689,7 +1689,7 @@ void SpellInfo::setEffectDieSides(int32_t effecSide, uint8_t idx)               
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return;
     }
 
@@ -1700,7 +1700,7 @@ void SpellInfo::setEffectRealPointsPerLevel(float pointsPerLevel, uint8_t idx)  
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return;
     }
 
@@ -1711,7 +1711,7 @@ void SpellInfo::setEffectBasePoints(int32_t pointsPerLevel, uint8_t idx)        
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return;
     }
 
@@ -1722,7 +1722,7 @@ void SpellInfo::setEffectMechanic(uint32_t mechanic, uint8_t idx)               
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return;
     }
 
@@ -1733,7 +1733,7 @@ void SpellInfo::setEffectImplicitTargetA(uint32_t targetA, uint8_t idx)         
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return;
     }
 
@@ -1744,7 +1744,7 @@ void SpellInfo::setEffectImplicitTargetB(uint32_t targetB, uint8_t idx)         
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return;
     }
 
@@ -1755,7 +1755,7 @@ void SpellInfo::setEffectRadiusIndex(uint32_t radiusIndex, uint8_t idx)         
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return;
     }
 
@@ -1766,7 +1766,7 @@ void SpellInfo::setEffectApplyAuraName(uint32_t auraName, uint8_t idx)          
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return;
     }
 
@@ -1777,7 +1777,7 @@ void SpellInfo::setEffectAmplitude(uint32_t amplitude, uint8_t idx)             
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return;
     }
 
@@ -1788,7 +1788,7 @@ void SpellInfo::setEffectMultipleValue(float multiply, uint8_t idx)             
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return;
     }
 
@@ -1799,7 +1799,7 @@ void SpellInfo::setEffectChainTarget(uint32_t chainTarget, uint8_t idx)         
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return;
     }
 
@@ -1810,7 +1810,7 @@ void SpellInfo::setEffectItemType(uint32_t itemEntryId, uint8_t idx)
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return;
     }
 
@@ -1821,7 +1821,7 @@ void SpellInfo::setEffectMiscValue(int32_t misc, uint8_t idx)                   
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return;
     }
 
@@ -1832,7 +1832,7 @@ void SpellInfo::setEffectMiscValueB(int32_t miscB, uint8_t idx)
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return;
     }
 
@@ -1843,7 +1843,7 @@ void SpellInfo::setEffectTriggerSpell(uint32_t spell, uint8_t idx)              
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return;
     }
 
@@ -1854,7 +1854,7 @@ void SpellInfo::setEffectPointsPerComboPoint(float effectPoints, uint8_t idx)   
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return;
     }
 
@@ -1865,7 +1865,7 @@ void SpellInfo::setEffectSpellClassMask(uint32_t spellClass, uint8_t idx1, uint8
 {
     if (idx1 >= MAX_SPELL_EFFECTS || idx2 >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id1 %u or id2 %u is invalid!", idx1, idx2);
+        sLogger.failure("Effect index id1 {} or id2 {} is invalid!", idx1, idx2);
         return;
     }
 
@@ -1876,7 +1876,7 @@ void SpellInfo::setSpellFamilyFlags(uint32_t value, uint8_t idx)                
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return;
     }
 
@@ -1887,7 +1887,7 @@ void SpellInfo::setEffectDamageMultiplier(float dmgMultiplier, uint8_t idx)     
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return;
     }
 
@@ -1899,7 +1899,7 @@ void SpellInfo::setTotemCategory(uint32_t category, uint8_t idx)
 {
     if (idx >= MAX_SPELL_TOTEM_CATEGORIES)
     {
-        sLogger.failure("TotemCategory index id %u is invalid!", idx);
+        sLogger.failure("TotemCategory index id {} is invalid!", idx);
         return;
     }
 
@@ -1911,7 +1911,7 @@ void SpellInfo::setEffectBonusMultiplier(float value, uint8_t idx)
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return;
     }
 
@@ -1923,7 +1923,7 @@ void SpellInfo::setEffectRadiusMaxIndex(uint32_t value, uint8_t idx)
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return;
     }
 
@@ -1934,7 +1934,7 @@ void SpellInfo::setEffectSpellId(uint32_t value, uint8_t idx)
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return;
     }
 
@@ -1945,7 +1945,7 @@ void SpellInfo::setEffectIndex(uint32_t value, uint8_t idx)
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
-        sLogger.failure("Effect index id %u is invalid!", idx);
+        sLogger.failure("Effect index id {} is invalid!", idx);
         return;
     }
 

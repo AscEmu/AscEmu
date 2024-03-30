@@ -10,7 +10,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <string>
 #include <sstream>
 #include <fstream>
-#include "utf8.h"
 
 namespace Util
 {
@@ -87,55 +86,37 @@ namespace Util
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // WString functions
-    size_t Utf8length(std::string& utf8str)
+    // utf8String functions
+    std::size_t max_consecutive(std::string_view name, const bool case_insensitive, const std::locale& locale)
     {
-        try
-        {
-            return utf8::distance(utf8str.c_str(), utf8str.c_str() + utf8str.size());
-        }
-        catch (std::exception&)
-        {
-            utf8str.clear();
-            return 0;
-        }
-    }
+        std::size_t current_run = 0;
+        std::size_t longest_run = 0;
+        char last = 0;
 
-    bool Utf8toWStr(const std::string& utf8str, std::wstring& wstr)
-    {
-        try
+        for(auto c : name)
         {
-            size_t len = utf8::distance(utf8str.c_str(), utf8str.c_str() + utf8str.size());
-            wstr.resize(len);
+            if(case_insensitive)
+            {
+                c = std::tolower(c, locale);
+            }
 
-            if (len)
-                utf8::utf8to16(utf8str.c_str(), utf8str.c_str() + utf8str.size(), &wstr[0]);
-        }
-        catch (std::exception&)
-        {
-            wstr.clear();
-            return false;
-        }
+            if(c == last)
+            {
+                ++current_run;
+            } else 
+            {
+                current_run = 1;
+            }
 
-        return true;
-    }
+            if(current_run > longest_run)
+            {
+                longest_run = current_run;
+            }
 
-    bool WStrToUtf8(const std::wstring& wstr, std::string& utf8str)
-    {
-        try
-        {
-            utf8str.resize(wstr.size() * 2);
-
-            char* oend = utf8::utf16to8(wstr.c_str(), wstr.c_str() + wstr.size(), &utf8str[0]);
-            utf8str.resize(oend - (&utf8str[0]));
-        }
-        catch (std::exception&)
-        {
-            utf8str.clear();
-            return false;
+            last = c;
         }
 
-        return true;
+        return longest_run;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -361,7 +342,6 @@ namespace Util
 
         return ss.str();
     }
-
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Random number helper functions

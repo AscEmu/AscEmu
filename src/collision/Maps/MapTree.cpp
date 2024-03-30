@@ -277,7 +277,7 @@ namespace VMAP
 
     bool StaticMapTree::InitMap(const std::string &fname, VMapManager2* vm)
     {
-        sLogger.debug("initializing StaticMapTree '%s'", fname.c_str());
+        sLogger.debug("initializing StaticMapTree '{}'", fname);
         bool success = false;
         std::string fullname = iBasePath + fname;
         FILE* rf = fopen(fullname.c_str(), "rb");
@@ -301,12 +301,12 @@ namespace VMAP
         // only non-tiled maps have them, and if so exactly one (so far at least...)
         ModelSpawn spawn;
 #ifdef VMAP_DEBUG
-        sLogger.debug("map isTiled: %u", static_cast<uint32_t>(iIsTiled));
+        sLogger.debug("map isTiled: {}", static_cast<uint32_t>(iIsTiled));
 #endif
         if (!iIsTiled && ModelSpawn::readFromFile(rf, spawn))
         {
             WorldModel* model = vm->acquireModelInstance(iBasePath, spawn.name);
-            sLogger.debug("loading %s", spawn.name.c_str());
+            sLogger.debug("loading {}", spawn.name);
             if (model)
             {
                 // assume that global model always is the first and only tree value (could be improved...)
@@ -316,7 +316,7 @@ namespace VMAP
             else
             {
                 success = false;
-                sLogger.failure("could not acquire WorldModel pointer for '%s'", spawn.name.c_str());
+                sLogger.failure("could not acquire WorldModel pointer for '{}'", spawn.name);
             }
         }
 
@@ -351,7 +351,7 @@ namespace VMAP
         }
         if (!iTreeValues)
         {
-            sLogger.failure("tree has not been initialized [%u, %u]", tileX, tileY);
+            sLogger.failure("tree has not been initialized [{}, {}]", tileX, tileY);
             return false;
         }
         bool result = true;
@@ -377,7 +377,7 @@ namespace VMAP
                     // acquire model instance
                     WorldModel* model = vm->acquireModelInstance(iBasePath, spawn.name);
                     if (!model)
-                        sLogger.failure("could not acquire WorldModel pointer [%u, %u]", tileX, tileY);
+                        sLogger.failure("could not acquire WorldModel pointer [{}, {}]", tileX, tileY);
 
                     // update tree
                     uint32_t referencedVal;
@@ -388,7 +388,7 @@ namespace VMAP
                         {
                             if (referencedVal > iNTreeValues)
                             {
-                                sLogger.failure("invalid tree element (%u/%u) referenced in tile %s", referencedVal, iNTreeValues, tilefile.c_str());
+                                sLogger.failure("invalid tree element ({}/{}) referenced in tile {}", referencedVal, iNTreeValues, tilefile);
                                 continue;
                             }
 
@@ -402,7 +402,7 @@ namespace VMAP
                             if (iTreeValues[referencedVal].ID != spawn.ID)
                                 sLogger.debug("trying to load wrong spawn in node");
                             else if (iTreeValues[referencedVal].name != spawn.name)
-                                sLogger.debug("name collision on GUID=%u", spawn.ID);
+                                sLogger.debug("name collision on GUID={}", spawn.ID);
 #endif
                         }
                     }
@@ -426,7 +426,7 @@ namespace VMAP
         loadedTileMap::iterator tile = iLoadedTiles.find(tileID);
         if (tile == iLoadedTiles.end())
         {
-            sLogger.failure("trying to unload non-loaded tile - Map:%u X:%u Y:%u", iMapID, tileX, tileY);
+            sLogger.failure("trying to unload non-loaded tile - Map:{} X:{} Y:{}", iMapID, tileX, tileY);
             return;
         }
         if (tile->second) // file associated with tile
@@ -460,7 +460,7 @@ namespace VMAP
                         else
                         {
                             if (!iLoadedSpawns.count(referencedNode))
-                                sLogger.failure("trying to unload non-referenced model '%s' (ID:%u)", spawn.name.c_str(), spawn.ID);
+                                sLogger.failure("trying to unload non-referenced model '{}' (ID:{})", spawn.name, spawn.ID);
                             else if (--iLoadedSpawns[referencedNode] == 0)
                             {
                                 iTreeValues[referencedNode].setUnloaded();

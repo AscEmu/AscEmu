@@ -16,7 +16,7 @@ namespace AscEmu::Packets
         static const size_t PACKET_SIZE = sizeof(uint8_t) + 96;
     public:
         uint8_t failed;
-        std::string name;
+        utf8_string name;
 
         SmsgGroupInvite() : SmsgGroupInvite(0, "")
         {

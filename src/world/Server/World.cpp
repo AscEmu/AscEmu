@@ -593,7 +593,7 @@ void World::sendMessageToAll(const std::string& message, WorldSession* sendToSel
 
     if (settings.announce.showAnnounceInConsoleOutput)
     {
-        sLogger.info("WORLD : SendWorldText %s", message.c_str());
+        sLogger.info("WORLD : SendWorldText {}", message);
     }
 }
 
@@ -697,7 +697,7 @@ bool World::setInitialWorldSettings()
     if (mDbcLocaleId == 0)
         localeString.append("/enUS");
 
-    sLogger.info("World : Using %s DBC locale", localeString.c_str());
+    sLogger.info("World : Using {} DBC locale", localeString);
 #endif
 
     sTaxiMgr.initialize();
@@ -780,7 +780,7 @@ bool World::setInitialWorldSettings()
 
     broadcastMgr = std::move(std::make_unique<BroadcastMgr>());
 
-    sLogger.info("World: init in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    sLogger.info("World: init in {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
     return true;
 }
@@ -907,7 +907,7 @@ void World::loadMySQLStores()
     sMySQLStore.loadCreatureAIScriptsTable();
     sMySQLStore.loadSpawnGroupIds();
 
-    sLogger.info("Done. MySQLStore loaded in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    sLogger.info("Done. MySQLStore loaded in {} ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
     sFormationMgr->loadCreatureFormations();
     sWaypointMgr->load();
@@ -977,16 +977,16 @@ void World::loadMySQLTablesByTask()
 
     g_chatFilter = new WordFilter();
 
-    sLogger.info("Done. Database loaded in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    sLogger.info("Done. Database loaded in {} ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 void World::logEntitySize()
 {
-    sLogger.info("World : Object size: %lu bytes", sizeof(Object));
-    sLogger.info("World : Unit size: %lu bytes", sizeof(Unit) + sizeof(AIInterface));
-    sLogger.info("World : Creature size: %lu bytes", sizeof(Creature) + sizeof(AIInterface));
-    sLogger.info("World : Player size: %lu bytes", sizeof(Player) + sizeof(ItemInterface) + 50000 + 30000 + 1000 + sizeof(AIInterface));
-    sLogger.info("World : GameObject size: %lu bytes", sizeof(GameObject));
+    sLogger.info("World : Object size: {} bytes", sizeof(Object));
+    sLogger.info("World : Unit size: {} bytes", sizeof(Unit) + sizeof(AIInterface));
+    sLogger.info("World : Creature size: {} bytes", sizeof(Creature) + sizeof(AIInterface));
+    sLogger.info("World : Player size: {} bytes", sizeof(Player) + sizeof(ItemInterface) + 50000 + 30000 + 1000 + sizeof(AIInterface));
+    sLogger.info("World : GameObject size: {} bytes", sizeof(GameObject));
 }
 
 void World::Update(unsigned long timePassed)
@@ -1014,12 +1014,12 @@ void World::saveAllPlayersToDb()
         {
             const auto startTime = Util::TimeNow();
             player->saveToDB(false);
-            sLogger.info("Saved player `%s` (level %u) in %u ms.", player->getName().c_str(), player->getLevel(), static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+            sLogger.info("Saved player `{}` (level {}) in {} ms.", player->getName(), player->getLevel(), static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
             ++count;
         }
     }
 
-    sLogger.info("Saved %u players.", count);
+    sLogger.info("Saved {} players.", count);
 }
 
 void World::playSoundToAllPlayers(uint32_t soundId)

@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <memory>
 
 #include "CommonTypes.hpp"
+#include <Utilities/utf8.hpp>
 
 class CachedCharacterInfo;
 class Field;
@@ -19,7 +20,7 @@ struct ArenaTeamPacketList
 {
     uint64_t guid;
     uint8_t isLoggedIn;
-    std::string name;
+    utf8_string name;
     uint32_t isLeader;
     uint8_t lastLevel;
     uint8_t cl;

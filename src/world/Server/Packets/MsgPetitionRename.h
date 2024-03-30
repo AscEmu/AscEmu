@@ -15,7 +15,7 @@ namespace AscEmu::Packets
     {
     public:
         uint64_t itemGuid;
-        std::string name;
+        utf8_string name;
 
         MsgPetitionRename() : MsgPetitionRename(0, "")
         {

@@ -60,7 +60,7 @@ bool ChatHandler::HandleWayPointAddCommand(const char* args, WorldSession* m_ses
     {
         pathId = sWaypointMgr->generateWaypointPathId();
         creature_target->loadPath(pathId);
-        sLogger.debug("New Waypoint Path %u Startet for Creature %u.", pathId, creature_target->getSpawnId());
+        sLogger.debug("New Waypoint Path {} Startet for Creature {}.", pathId, creature_target->getSpawnId());
 
         // Start Movement
         creature_target->setDefaultMovementType(WAYPOINT_MOTION_TYPE);
@@ -79,7 +79,7 @@ bool ChatHandler::HandleWayPointAddCommand(const char* args, WorldSession* m_ses
 
     if (waypoint.moveType >= WAYPOINT_MOVE_TYPE_MAX)
     {
-        sLogger.failure("Waypoint %u has invalid move_type, setting default", waypoint.id);
+        sLogger.failure("Waypoint {} has invalid move_type, setting default", waypoint.id);
         waypoint.moveType = WAYPOINT_MOVE_TYPE_WALK;
     }
 

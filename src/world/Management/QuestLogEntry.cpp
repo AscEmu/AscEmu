@@ -115,7 +115,7 @@ void QuestLogEntry::setSlot(uint8_t slot)
 {
     if (slot > MAX_QUEST_LOG_SIZE)
     {
-        sLogger.failure("%u is not a valid questlog slot!", uint32_t(slot));
+        sLogger.failure("{} is not a valid questlog slot!", uint32_t(slot));
         return;
     }
 
@@ -128,7 +128,7 @@ uint32_t QuestLogEntry::getMobCountByIndex(uint8_t index) const
 {
     if (index >= 4)
     {
-        sLogger.failure("%u is not a valid index for questlog mob count!", uint32_t(index));
+        sLogger.failure("{} is not a valid index for questlog mob count!", uint32_t(index));
         return 0;
     }
 
@@ -139,7 +139,7 @@ void QuestLogEntry::setMobCountForIndex(uint8_t index, uint32_t count)
 {
     if (index >= 4)
     {
-        sLogger.failure("%u is not a valid index for questlog mob count!", uint32_t(index));
+        sLogger.failure("{} is not a valid index for questlog mob count!", uint32_t(index));
         return;
     }
 
@@ -150,7 +150,7 @@ void QuestLogEntry::incrementMobCountForIndex(uint8_t index)
 {
     if (index >= 4)
     {
-        sLogger.failure("%u is not a valid index for questlog mob count!", uint32_t(index));
+        sLogger.failure("{} is not a valid index for questlog mob count!", uint32_t(index));
         return;
     }
 
@@ -161,7 +161,7 @@ uint32_t QuestLogEntry::getExploredAreaByIndex(uint8_t index) const
 {
     if (index >= 4)
     {
-        sLogger.failure("%u is not a valid index for questlog explore areas!", uint32_t(index));
+        sLogger.failure("{} is not a valid index for questlog explore areas!", uint32_t(index));
         return 0;
     }
 
@@ -172,7 +172,7 @@ void QuestLogEntry::setExploredAreaForIndex(uint8_t index)
 {
     if (index >= 4)
     {
-        sLogger.failure("%u is not a valid index for questlog explore areas!", uint32_t(index));
+        sLogger.failure("{} is not a valid index for questlog explore areas!", uint32_t(index));
         return;
     }
     m_explored_areas[index] = 1;
@@ -414,7 +414,7 @@ void QuestLogEntry::sendUpdateAddKill(uint8_t index)
 {
     if (index >= 4)
     {
-        sLogger.failure("%u is not a valid index for questlog mob count!", uint32_t(index));
+        sLogger.failure("{} is not a valid index for questlog mob count!", uint32_t(index));
         return;
     }
 

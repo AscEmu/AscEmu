@@ -153,7 +153,7 @@ void CommandTableStorage::Override(const char* command, const char* level)
                 if (!curr_table.compare(main_command))
                 {
                     p->CommandGroup = level[0];
-                    sLogger.debug("Changing command level of .`%s` to %c.", main_command.c_str(), level[0]);
+                    sLogger.debug("Changing command level of .`{}` to %c.", main_command, level[0]);
                     break;
                 }
                 ++p;
@@ -174,7 +174,7 @@ void CommandTableStorage::Override(const char* command, const char* level)
                         if (!curr_subcommand.compare(sub_command))
                         {
                             p2->CommandGroup = level[0];
-                            sLogger.debug("Changing command level of .`%s %s` to %c.", main_command.c_str(), sub_command.c_str(), level[0]);
+                            sLogger.debug("Changing command level of .`{} {}` to %c.", main_command, sub_command, level[0]);
                             break;
                         }
                         ++p2;
@@ -233,7 +233,7 @@ void CommandTableStorage::Override(const char* command, const char* level)
                             if (!curr_sec_subcommand.compare(sec_sub_command))
                             {
                                 p3->CommandGroup = level[0];
-                                sLogger.debug("Changing command level of .`%s %s %s` to %c.", main_command.c_str(), sub_command.c_str(), sec_sub_command.c_str(), level[0]);
+                                sLogger.debug("Changing command level of .`{} {} {}` to %c.", main_command, sub_command, sec_sub_command, level[0]);
                                 break;
                             }
                             ++p3;

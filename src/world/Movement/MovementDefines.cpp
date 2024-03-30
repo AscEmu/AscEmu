@@ -74,7 +74,7 @@ void ExtraMovementStatusElement::readNextElement(ByteBuffer& packet)
             packet >> Data.byteData;
             break;
         default:
-            sLogger.failure("Incorrect extraMovementStatusElement sequence %d detected", element);
+            sLogger.failure("Incorrect extraMovementStatusElement sequence {} detected", element);
             break;
     }
 }
@@ -112,7 +112,7 @@ void ExtraMovementStatusElement::writeNextElement(ByteBuffer& packet)
             packet << Data.byteData;
             break;
         default:
-            sLogger.failure("Incorrect extraMovementStatusElement sequence %d detected", element);
+            sLogger.failure("Incorrect extraMovementStatusElement sequence {} detected", element);
             break;
     }
 }

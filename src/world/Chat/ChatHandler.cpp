@@ -170,7 +170,7 @@ int ChatHandler::ParseCommands(const char* text, WorldSession* session)
     catch (AscEmu::Exception::PlayerNotFoundException& e)
     {
         // TODO: Handle this properly (what do we do when we're running commands with no player object?)
-        sLogger.failure("PlayerNotFoundException occurred when processing command [%s]. Exception: %s", text, e.AEwhat());
+        sLogger.failure("PlayerNotFoundException occurred when processing command [{}]. Exception: {}", text, e.AEwhat());
     }
 
     return 1;

@@ -302,7 +302,7 @@ void MovementManager::update(uint32_t diff)
 
     if (empty())
     {
-        sLogger.failure("MovementManager: update called without Initializing! (%u)", _owner->getGuid());
+        sLogger.failure("MovementManager: update called without Initializing! ({})", _owner->getGuid());
         return;
     }
 
@@ -960,18 +960,18 @@ void MovementManager::moveTaxiFlight(uint32_t path, uint32_t pathnode)
             bool hasExisting = hasMovementGenerator([](MovementGenerator const* gen) { return gen->getMovementGeneratorType() == FLIGHT_MOTION_TYPE; });
             if (hasExisting)
             {
-                sLogger.failure("MoveTaxiFlight:: %s already has a Flightpath Movement Generator", _owner->ToPlayer()->getName().c_str());
+                sLogger.failure("MoveTaxiFlight:: {} already has a Flightpath Movement Generator", _owner->ToPlayer()->getName());
                 return;
             }
 
-            sLogger.debug("MoveTaxiFlight:: %s taxi to (Path %u node %u).", _owner->ToPlayer()->getName().c_str(), path, pathnode);
+            sLogger.debug("MoveTaxiFlight:: {} taxi to (Path {} node {}).", _owner->ToPlayer()->getName(), path, pathnode);
             FlightPathMovementGenerator* movement = new FlightPathMovementGenerator(pathnode);
             movement->loadPath(_owner->ToPlayer());
             add(movement);
         }
         else
         {
-            sLogger.failure("MoveTaxiFlight:: %s attempted taxi to (non-existing Path %u node %u).", _owner->ToPlayer()->getName().c_str(), path, pathnode);
+            sLogger.failure("MoveTaxiFlight:: {} attempted taxi to (non-existing Path {} node {}).", _owner->ToPlayer()->getName(), path, pathnode);
         }
     }
 }

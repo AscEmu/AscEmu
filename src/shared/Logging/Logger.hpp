@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Config/Config.h"
 #include "MessageType.hpp"
 #include "Severity.hpp"
+#include "StringFormat.hpp"
 
 namespace AscEmu::Logging
 {
@@ -17,10 +18,10 @@ namespace AscEmu::Logging
         FILE* normalLogFile = nullptr;
         FILE* errorLogFile = nullptr;
         MessageType minimumMessageType = MessageType::MINOR;
-        uint32_t aelog_debug_flags = 0;
+        uint32_t aelog_debug_flags;
 
 #ifdef _WIN32
-        HANDLE handle_stdout = nullptr;
+        HANDLE handle_stdout;
 #endif
 
     public:
@@ -39,35 +40,71 @@ namespace AscEmu::Logging
 
         void setDebugFlags(DebugFlags debug_flags);
 
-        void trace(const char* message, ...);
+        template<typename... Args>
+        inline void trace(std::string_view fmt, Args&&... args)
+        {
+            log(Severity::INFO, MessageType::TRACE, StringFormat(fmt, std::forward<Args>(args)...));
+        }
 
-        void debug(const char* message, ...);
+        template<typename... Args>
+        inline void debug(std::string_view fmt, Args&&... args)
+        {
+            log(Severity::INFO, MessageType::DEBUG, StringFormat(fmt, std::forward<Args>(args)...));
+        }
 
-        void debugFlag(DebugFlags log_flags, const char* message, ...);
+        template<typename... Args>
+        inline void debugFlag(DebugFlags log_flags, std::string_view fmt, Args&&... args)
+        {
+            log(getSeverityConsoleColorByDebugFlag(log_flags), MessageType::DEBUG, StringFormat(fmt, std::forward<Args>(args)...));
+        }
 
-        void info(const char* message, ...);
+        template<typename... Args>
+        inline void info(std::string_view fmt, Args&&... args)
+        {
+            log(Severity::INFO, MessageType::MINOR, StringFormat(fmt, std::forward<Args>(args)...));
+        }
 
-        void warning(const char* message, ...);
+        template<typename... Args>
+        inline void warning(std::string_view fmt, Args&&... args)
+        {
+            log(Severity::WARNING, MessageType::MINOR, StringFormat(fmt, std::forward<Args>(args)...));
+        }
 
-        void failure(const char* message, ...);
+        template<typename... Args>
+        inline void failure(std::string_view fmt, Args&&... args)
+        {
+            log(Severity::FAILURE, MessageType::MAJOR, StringFormat(fmt, std::forward<Args>(args)...));
+        }
 
-        void fatal(const char* message, ...);
+        template<typename... Args>
+        inline void fatal(std::string_view fmt, Args&&... args)
+        {
+            log(Severity::FATAL, MessageType::MAJOR, StringFormat(fmt, std::forward<Args>(args)...));
+        }
 
-        void log(Severity severity, MessageType messageType, const char* message, ...);
+        template<typename... Args>
+        inline void log(Severity severity, MessageType messageType, std::string_view fmt, Args&&... args)
+        {
+            log(severity, messageType, StringFormat(fmt, std::forward<Args>(args)...));
+        }
 
-        void log(Severity severity, MessageType messageType, const char* message, va_list arguments);
+        template<typename... Args>
+        inline void file(Severity severity, MessageType messageType, std::string_view fmt, Args&&... args)
+        {
+            file(severity, messageType, StringFormat(fmt, std::forward<Args>(args)...));
+        }
 
-        void file(Severity severity, MessageType messageType, const char* message, ...);
+        void log(Severity severity, MessageType messageType, std::string_view message);
+        void file(Severity severity, MessageType messageType, std::string_view message);
 
     private:
         Logger() = default;
         ~Logger() = default;
 
-        void createLogMessage(char* result, Severity severity, MessageType messageType, const char* message, va_list arguments);
         std::string getMessageTypeText(MessageType messageType);
         std::string getSeverityText(Severity severity);
 
-        void writeFile(FILE* file, const char* msg);
+        void writeFile(FILE* file, std::string_view msg);
 
 #ifndef _WIN32
         void setConsoleColor(const char* color);
@@ -81,4 +118,5 @@ namespace AscEmu::Logging
 
     std::string getFormattedFileName(const std::string& path_prefix, const std::string& file_prefix, bool use_date_time);
 }
+
 #define sLogger AscEmu::Logging::Logger::getInstance()

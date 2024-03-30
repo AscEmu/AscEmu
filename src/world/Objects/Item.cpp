@@ -121,7 +121,7 @@ void Item::create(uint32_t itemId, Player* owner)
     m_itemProperties = sMySQLStore.getItemProperties(itemId);
     if (!m_itemProperties)
     {
-        sLogger.failure("Item::create: Can't create item %u missing properties!", itemId);
+        sLogger.failure("Item::create: Can't create item {} missing properties!", itemId);
         return;
     }
 
@@ -471,7 +471,7 @@ void Item::applyEnchantmentBonus(EnchantmentSlot slot, bool apply)
     }
     else if (apply)
     {
-        sLogger.failure("Item::applyEnchantmentBonus : Tried to apply visual enchantment but equipment slot %i is invalid", itemSlot);
+        sLogger.failure("Item::applyEnchantmentBonus : Tried to apply visual enchantment but equipment slot {} is invalid", itemSlot);
     }
 
 #if VERSION_STRING >= Cata
@@ -624,7 +624,7 @@ void Item::applyEnchantmentBonus(EnchantmentSlot slot, bool apply)
                 }
 
                 default:
-                    sLogger.failure("Unknown enchantment type: %u (%u)", Entry->type[c], Entry->Id);
+                    sLogger.failure("Unknown enchantment type: {} ({})", Entry->type[c], Entry->Id);
                     break;
                 }
         }
@@ -921,14 +921,14 @@ uint32_t Item::repairItemCost()
     auto durability_costs = sDurabilityCostsStore.lookupEntry(m_itemProperties->ItemLevel);
     if (durability_costs == nullptr)
     {
-        sLogger.failure("Repair: Unknown item level (%u)", durability_costs);
+        sLogger.failure("Repair: Unknown item level ({})", fmt::ptr(durability_costs));
         return 0;
     }
 
     auto durability_quality = sDurabilityQualityStore.lookupEntry((m_itemProperties->Quality + 1) * 2);
     if (durability_quality == nullptr)
     {
-        sLogger.failure("Repair: Unknown item quality (%u)", durability_quality);
+        sLogger.failure("Repair: Unknown item quality ({})", fmt::ptr(durability_quality));
         return 0;
     }
 
@@ -1243,7 +1243,7 @@ void Item::loadFromDB(Field* fields, Player* plr, bool light)
     m_itemProperties = sMySQLStore.getItemProperties(itemid);
     if (!m_itemProperties)
     {
-        sLogger.failure("Item::loadFromDB: Can't load item %u missing properties!", itemid);
+        sLogger.failure("Item::loadFromDB: Can't load item {} missing properties!", itemid);
         return;
     }
 

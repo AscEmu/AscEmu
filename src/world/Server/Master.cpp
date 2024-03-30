@@ -173,11 +173,11 @@ bool checkRequiredDirs()
 
         if (fs::exists(requiredPath))
         {
-            sLogger.info("Required dir %s found!", requiredPath.u8string().c_str());
+            sLogger.info("Required dir {} found!", requiredPath.generic_string());
         }
         else
         {
-            sLogger.failure("Directory %s not found. Shutting down.", requiredPath.u8string().c_str());
+            sLogger.failure("Directory {} not found. Shutting down.", requiredPath.generic_string());
             return false;
         }
     }
@@ -227,23 +227,23 @@ void checkAdditinaloDirs()
 
         if (fs::exists(additionalPath))
         {
-            sLogger.info("Required dir %s found!", additionalPath.u8string().c_str());
+            sLogger.info("Required dir {} found!", additionalPath.generic_string());
         }
         else
         {
             if (dir == "mmaps")
             {
-                sLogger.failure("Movement maps in %s not found. Disabling pathfinding.", additionalPath.u8string().c_str());
+                sLogger.failure("Movement maps in {} not found. Disabling pathfinding.", additionalPath.generic_string());
                 worldConfig.terrainCollision.isPathfindingEnabled = false;
             }
             else if (dir == "vmaps")
             {
-                sLogger.failure("Vertical maps in %s not found. Disabling collision.", additionalPath.u8string().c_str());
+                sLogger.failure("Vertical maps in {} not found. Disabling collision.", additionalPath.generic_string());
                 worldConfig.terrainCollision.isCollisionEnabled = false;
             }
             else
             {
-                sLogger.failure("Required dir %s not found!", additionalPath.u8string().c_str());
+                sLogger.failure("Required dir {} not found!", additionalPath.generic_string());
             }
 
             // Give user a chance to read the error message
@@ -277,12 +277,12 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
     PrintBanner();
 
 #if VERSION_STRING == Mop
-    sLogger.info("Size of WoWObject %u / 8", static_cast<uint32_t>(sizeof(WoWObject) / sizeof(uint32_t)));
-    sLogger.info("Size of WoWUnit %u / 160", static_cast<uint32_t>(sizeof(WoWUnit) / sizeof(uint32_t)));
-    sLogger.info("Size of WoWPlayer %u / 1987", static_cast<uint32_t>(sizeof(WoWPlayer) / sizeof(uint32_t)));
-    sLogger.info("Size of WoWGameObject %u / 20", static_cast<uint32_t>(sizeof(WoWGameObject) / sizeof(uint32_t)));
-    sLogger.info("Size of WoWDynamicObject %u / 14", static_cast<uint32_t>(sizeof(WoWDynamicObject) / sizeof(uint32_t)));
-    sLogger.info("Size of WoWItem %u / 69", static_cast<uint32_t>(sizeof(WoWItem) / sizeof(uint32_t)));
+    sLogger.info("Size of WoWObject {} / 8", static_cast<uint32_t>(sizeof(WoWObject) / sizeof(uint32_t)));
+    sLogger.info("Size of WoWUnit {} / 160", static_cast<uint32_t>(sizeof(WoWUnit) / sizeof(uint32_t)));
+    sLogger.info("Size of WoWPlayer {} / 1987", static_cast<uint32_t>(sizeof(WoWPlayer) / sizeof(uint32_t)));
+    sLogger.info("Size of WoWGameObject {} / 20", static_cast<uint32_t>(sizeof(WoWGameObject) / sizeof(uint32_t)));
+    sLogger.info("Size of WoWDynamicObject {} / 14", static_cast<uint32_t>(sizeof(WoWDynamicObject) / sizeof(uint32_t)));
+    sLogger.info("Size of WoWItem {} / 69", static_cast<uint32_t>(sizeof(WoWItem) / sizeof(uint32_t)));
 #endif
 
     sLogger.info("The key combination <Ctrl-C> will safely shut down the server.");
@@ -374,7 +374,7 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
         sScriptMgr.DumpUnimplementedSpells();
     }
 
-    sLogger.info("Server : Ready for connections. Startup time: %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    sLogger.info("Server : Ready for connections. Startup time: {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
     sGameEventMgrThread.initialize();
 
@@ -530,15 +530,15 @@ bool Master::_CheckDBVersion()
     Field* f = wqr->Fetch();
     const char *WorldDBVersion = f->GetString();
 
-    sLogger.info("Database : Last world database update: %s", WorldDBVersion);
+    sLogger.info("Database : Last world database update: {}", WorldDBVersion);
     int result = strcmp(WorldDBVersion, REQUIRED_WORLD_DB_VERSION);
     if (result != 0)
     {
-        sLogger.fatal("Database : Last world database update doesn't match the required one which is %s.", REQUIRED_WORLD_DB_VERSION);
+        sLogger.fatal("Database : Last world database update doesn't match the required one which is {}.", REQUIRED_WORLD_DB_VERSION);
 
         if (result < 0)
         {
-            sLogger.fatal("Database : You need to apply the world update queries that are newer than %s. Exiting.", WorldDBVersion);
+            sLogger.fatal("Database : You need to apply the world update queries that are newer than {}. Exiting.", WorldDBVersion);
             sLogger.fatal("Database : You can find the world update queries in the sql/world_updates sub-directory of your AscEmu source directory.");
         }
         else
@@ -563,14 +563,14 @@ bool Master::_CheckDBVersion()
     f = cqr->Fetch();
     const char *CharDBVersion = f->GetString();
 
-    sLogger.info("Database : Last character database update: %s", CharDBVersion);
+    sLogger.info("Database : Last character database update: {}", CharDBVersion);
     result = strcmp(CharDBVersion, REQUIRED_CHAR_DB_VERSION);
     if (result != 0)
     {
-        sLogger.fatal("Database : Last character database update doesn't match the required one which is %s.", REQUIRED_CHAR_DB_VERSION);
+        sLogger.fatal("Database : Last character database update doesn't match the required one which is {}.", REQUIRED_CHAR_DB_VERSION);
         if (result < 0)
         {
-            sLogger.fatal("Database : You need to apply the character update queries that are newer than %s. Exiting.", CharDBVersion);
+            sLogger.fatal("Database : You need to apply the character update queries that are newer than {}. Exiting.", CharDBVersion);
             sLogger.fatal("Database : You can find the character update queries in the sql/character_updates sub-directory of your AscEmu source directory.");
         }
         else
@@ -718,7 +718,7 @@ void OnCrash(bool Terminate)
 
 void Master::PrintBanner()
 {
-    sLogger.info("<< AscEmu %s/%s-%s %s :: World Server >>", BUILD_HASH_STR, CONFIG, AE_PLATFORM, AE_ARCHITECTURE);
+    sLogger.info("<< AscEmu {}/{}-{} {} :: World Server >>", BUILD_HASH_STR, CONFIG, AE_PLATFORM, AE_ARCHITECTURE);
     sLogger.info("========================================================");
 }
 
@@ -861,10 +861,10 @@ void Master::ShutdownThreadPools(bool listnersockcreate)
                 if (m_ShutdownTimer > 60000.0f)
                 {
                     if (!(static_cast<int>(m_ShutdownTimer) % 60000))
-                    sLogger.info("Server : Shutdown in %i minutes.", static_cast<int>(m_ShutdownTimer / 60000.0f));
+                    sLogger.info("Server : Shutdown in {} minutes.", static_cast<int>(m_ShutdownTimer / 60000.0f));
                 }
                 else
-                sLogger.info("Server : Shutdown in %i seconds.", static_cast<int>(m_ShutdownTimer / 1000.0f));
+                sLogger.info("Server : Shutdown in {} seconds.", static_cast<int>(m_ShutdownTimer / 1000.0f));
 
                 next_printout = Util::getMSTime() + 500;
             }
@@ -920,7 +920,7 @@ void Master::StartNetworkSubsystem()
 
 void Master::ShutdownLootSystem()
 {
-    sLogger.info("Shutdown : Initiated at %s", Util::GetDateTimeStringFromTimeStamp((uint32)UNIXTIME).c_str());
+    sLogger.info("Shutdown : Initiated at {}", Util::GetDateTimeStringFromTimeStamp((uint32)UNIXTIME));
 
     if (sLootMgr.is_loading)
     {

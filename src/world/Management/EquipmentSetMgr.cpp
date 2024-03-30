@@ -89,7 +89,7 @@ namespace Arcemu
         {
             if (setcount >= 10)
             {
-                sLogger.failure("There were more than 10 equipment sets for GUID: %u", ownerGUID);
+                sLogger.failure("There were more than 10 equipment sets for GUID: {}", ownerGUID);
                 return true;
             }
 
