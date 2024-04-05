@@ -4495,13 +4495,13 @@ void Player::updatePotionCooldown()
     if (m_lastPotionId == 0 || getCombatHandler().isInCombat())
         return;
 
-    if (ItemProperties const* itemProperties = sMySQLStore.getItemProperties(m_lastPotionId))
+    if (const auto itemProperties = sMySQLStore.getItemProperties(m_lastPotionId))
     {
-        for (uint8_t spellIndex = 0; spellIndex < 5; ++spellIndex)
+        for (uint8_t spellIndex = 0; spellIndex < MAX_ITEM_PROTO_SPELLS; ++spellIndex)
         {
-            if (itemProperties->Spells[spellIndex].Id && itemProperties->Spells[spellIndex].Trigger == USE)
+            if (itemProperties->Spells[spellIndex].Id != 0 && itemProperties->Spells[spellIndex].Trigger == USE)
             {
-                if (const auto spellInfo = sSpellMgr.getSpellInfo(itemProperties->Spells[spellIndex].Id))
+                if (const auto* const spellInfo = sSpellMgr.getSpellInfo(itemProperties->Spells[spellIndex].Id))
                 {
                     cooldownAddItem(itemProperties, spellIndex);
                     sendSpellCooldownEventPacket(spellInfo->getId());

@@ -310,6 +310,10 @@ void CombatHandler::_leaveCombat()
     getOwner()->removeUnitFlags(UNIT_FLAG_COMBAT);
     m_inCombat = false;
 
+    // Potion cooldown starts when combat ends
+    if (getOwner()->isPlayer())
+        dynamic_cast<Player*>(getOwner())->updatePotionCooldown();
+
     std::lock_guard<std::mutex> guard(m_mutexPlayerCombat);
     m_combatPlayerTargets.clear();
 }
