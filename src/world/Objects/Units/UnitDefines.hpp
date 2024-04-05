@@ -84,21 +84,22 @@ enum HealthAndPowerIntervals : uint16_t
 
 #if VERSION_STRING < WotLK
     REGENERATION_INTERVAL_MANA_ENERGY           = 2000,
-    REGENERATION_INTERVAL_RAGE_RUNIC_POWER      = 3000,
+    REGENERATION_INTERVAL_RAGE                  = 3000,
     REGENERATION_INTERVAL_FOCUS                 = 4000,
 #else
-    REGENERATION_INTERVAL_MANA_ENERGY           = 100,
-    REGENERATION_INTERVAL_RAGE_RUNIC_POWER      = 800,
-    REGENERATION_INTERVAL_FOCUS                 = 200,
-
+    REGENERATION_INTERVAL_POWER                 = 100,
     REGENERATION_PACKET_UPDATE_INTERVAL         = 2000,
 #endif
 
+#if VERSION_STRING >= Cata
     REGENERATION_INTERVAL_HOLY_POWER            = 10000,
+#endif
 
     // Creature timers
+#if VERSION_STRING < WotLK
     //\ todo: this actually is 4000 in retail classic, maybe same for tbc, but needs more research
     CREATURE_REGENERATION_INTERVAL_MANA_ENERGY  = 2000
+#endif
 };
 
 enum UnitBatchTimers : uint16_t

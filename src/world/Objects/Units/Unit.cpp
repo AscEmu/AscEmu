@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStores.hpp"
 #include "Management/Battleground/Battleground.hpp"
 #include "Management/HonorHandler.h"
+#include "Management/Loot/LootMgr.hpp"
 #include "Movement/Spline/MovementPacketBuilder.h"
 #include "Objects/GameObject.h"
 #include "Server/Packets/SmsgAuraUpdate.h"
@@ -98,9 +99,6 @@ Unit::Unit() :
 #else
     m_updateFlag = UPDATEFLAG_LIVING;
 #endif
-
-    // Zyres: initialise here because multiversion differences
-    std::fill_n(m_pctPowerRegenModifier, TOTAL_PLAYER_POWER_TYPES, 1.0f);
 
     m_lastAiInterfaceUpdateTime = Util::getMSTime();
 
@@ -217,39 +215,6 @@ void Unit::Update(unsigned long time_passed)
 
         // POWER & HP REGENERATION
         regenerateHealthAndPowers(static_cast<uint16_t>(time_passed));
-
-#if VERSION_STRING >= WotLK
-        // Send power amount to nearby players
-        if (time_passed >= m_powerUpdatePacketTime)
-        {
-            m_powerUpdatePacketTime = REGENERATION_PACKET_UPDATE_INTERVAL;
-
-            switch (getPowerType())
-            {
-                case POWER_TYPE_MANA:
-                    setPower(POWER_TYPE_MANA, m_manaAmount);
-                    break;
-                case POWER_TYPE_RAGE:
-                    setPower(POWER_TYPE_RAGE, m_rageAmount);
-                    break;
-                case POWER_TYPE_FOCUS:
-                    setPower(POWER_TYPE_FOCUS, m_focusAmount);
-                    break;
-                case POWER_TYPE_ENERGY:
-                    setPower(POWER_TYPE_ENERGY, m_energyAmount);
-                    break;
-                case POWER_TYPE_RUNIC_POWER:
-                    setPower(POWER_TYPE_RUNIC_POWER, m_runicPowerAmount);
-                    break;
-                default:
-                    break;
-            }
-        }
-        else
-        {
-            m_powerUpdatePacketTime -= static_cast<uint16_t>(time_passed);
-        }
-#endif
 
         if (m_healthRegenerationInterruptTime > 0)
         {
@@ -562,34 +527,10 @@ void Unit::modHealth(int32_t health)
 void Unit::setFullHealth() { setHealth(getMaxHealth()); }
 void Unit::setHealthPct(uint32_t val) { if (val > 0) setHealth(Util::float2int32(val * 0.01f * getMaxHealth())); }
 
-uint32_t Unit::getPower(PowerType type, [[maybe_unused]]bool inRealTime/* = true*/) const
+uint32_t Unit::getPower(PowerType type) const
 {
     if (type == POWER_TYPE_HEALTH)
         return getHealth();
-
-#if VERSION_STRING >= WotLK
-    if (inRealTime)
-    {
-        // Following power types update in real time since wotlk
-        // We cannot update WoWData values in real time, otherwise SMSG_UPDATE_OBJECT is sent every 100ms per player
-        // Therefore private variables are updated in real time and WoWData values are updated every 2 sec (blizzlike)
-        switch (type)
-        {
-            case POWER_TYPE_MANA:
-                return m_manaAmount;
-            case POWER_TYPE_RAGE:
-                return m_rageAmount;
-            case POWER_TYPE_FOCUS:
-                return m_focusAmount;
-            case POWER_TYPE_ENERGY:
-                return m_energyAmount;
-            case POWER_TYPE_RUNIC_POWER:
-                return m_runicPowerAmount;
-            default:
-                break;
-        }
-    }
-#endif
 
     // Since cata power fields work differently
     // Get matching power index by power type
@@ -617,7 +558,7 @@ uint32_t Unit::getPower(PowerType type, [[maybe_unused]]bool inRealTime/* = true
     }
 }
 
-void Unit::setPower(PowerType type, uint32_t value, bool sendPacket/* = true*/)
+void Unit::setPower(PowerType type, uint32_t value, bool sendPacket/* = true*/, bool skipObjectUpdate/* = false*/)
 {
     if (type == POWER_TYPE_HEALTH)
     {
@@ -629,35 +570,8 @@ void Unit::setPower(PowerType type, uint32_t value, bool sendPacket/* = true*/)
     if (value > maxPower)
         value = maxPower;
 
-    if (getPower(type, false) == value)
+    if (getPower(type) == value)
         return;
-
-#if VERSION_STRING >= WotLK
-    // Sync realtime values with WoWData values
-    switch (type)
-    {
-        case POWER_TYPE_MANA:
-            m_manaAmount = value;
-            break;
-        case POWER_TYPE_RAGE:
-            m_rageAmount = value;
-            break;
-        case POWER_TYPE_FOCUS:
-            m_focusAmount = value;
-            break;
-        case POWER_TYPE_ENERGY:
-            m_energyAmount = value;
-            break;
-        case POWER_TYPE_RUNIC_POWER:
-            m_runicPowerAmount = value;
-            break;
-        default:
-            break;
-    }
-
-    // Reset update timer
-    m_powerUpdatePacketTime = REGENERATION_PACKET_UPDATE_INTERVAL;
-#endif
 
     // Since cata power fields work differently
     // Get matching power index by power type
@@ -665,31 +579,34 @@ void Unit::setPower(PowerType type, uint32_t value, bool sendPacket/* = true*/)
     switch (powerIndex)
     {
         case POWER_FIELD_INDEX_1:
-            write(unitData()->power_1, value);
+            write(unitData()->power_1, value, skipObjectUpdate);
             break;
         case POWER_FIELD_INDEX_2:
-            write(unitData()->power_2, value);
+            write(unitData()->power_2, value, skipObjectUpdate);
             break;
         case POWER_FIELD_INDEX_3:
-            write(unitData()->power_3, value);
+            write(unitData()->power_3, value, skipObjectUpdate);
             break;
         case POWER_FIELD_INDEX_4:
-            write(unitData()->power_4, value);
+            write(unitData()->power_4, value, skipObjectUpdate);
             break;
         case POWER_FIELD_INDEX_5:
-            write(unitData()->power_5, value);
+            write(unitData()->power_5, value, skipObjectUpdate);
             break;
 #if VERSION_STRING == WotLK
         case POWER_FIELD_INDEX_6:
-            write(unitData()->power_6, value);
+            write(unitData()->power_6, value, skipObjectUpdate);
             break;
         case POWER_FIELD_INDEX_7:
-            write(unitData()->power_7, value);
+            write(unitData()->power_7, value, skipObjectUpdate);
             break;
 #endif
         default:
             return;
     }
+
+    if (skipObjectUpdate)
+        return;
 
 #if VERSION_STRING == TBC
     // TODO Fix this later
@@ -844,9 +761,28 @@ void Unit::modMaxPower(PowerType type, int32_t value)
     setMaxPower(type, newValue);
 }
 
-#if VERSION_STRING >= WotLK
 float Unit::getPowerRegeneration(PowerType type) const
 {
+#if VERSION_STRING < WotLK
+    switch (type)
+    {
+        case POWER_TYPE_MANA:
+#if VERSION_STRING == TBC
+            if (isPlayer())
+                return dynamic_cast<Player const*>(this)->getManaRegeneration();
+            else
+#endif
+                return m_manaRegeneration;
+        case POWER_TYPE_RAGE:
+            return m_rageRegeneration;
+        case POWER_TYPE_FOCUS:
+            return m_focusRegeneration;
+        case POWER_TYPE_ENERGY:
+            return m_energyRegeneration;
+        default:
+            return 0.0f;
+    }
+#else
     if (type == POWER_TYPE_HEALTH)
         return 0.0f;
 
@@ -866,10 +802,35 @@ float Unit::getPowerRegeneration(PowerType type) const
         default:
             return 0.0f;
     }
+#endif
 }
 
 void Unit::setPowerRegeneration(PowerType type, float value)
 {
+#if VERSION_STRING < WotLK
+    switch (type)
+    {
+        case POWER_TYPE_MANA:
+#if VERSION_STRING == TBC
+            if (isPlayer())
+                dynamic_cast<Player*>(this)->setManaRegeneration(value);
+            else
+#endif
+                m_manaRegeneration = value;
+            break;
+        case POWER_TYPE_RAGE:
+            m_rageRegeneration = value;
+            break;
+        case POWER_TYPE_FOCUS:
+            m_focusRegeneration = value;
+            break;
+        case POWER_TYPE_ENERGY:
+            m_energyRegeneration = value;
+            break;
+        default:
+            break;
+    }
+#else
     if (type == POWER_TYPE_HEALTH)
         return;
 
@@ -890,13 +851,31 @@ void Unit::setPowerRegeneration(PowerType type, float value)
         default:
             break;
     }
+#endif
 }
 
-float Unit::getManaRegeneration() const { return getPowerRegeneration(POWER_TYPE_MANA); }
-void Unit::setManaRegeneration(float value) { setPowerRegeneration(POWER_TYPE_MANA, value); }
-
-float Unit::getPowerRegenerationWhileCasting(PowerType type) const
+float Unit::getPowerRegenerationWhileInterrupted(PowerType type) const
 {
+#if VERSION_STRING < WotLK
+    switch (type)
+    {
+        case POWER_TYPE_MANA:
+#if VERSION_STRING == TBC
+            if (isPlayer())
+                return dynamic_cast<Player const*>(this)->getManaRegenerationWhileCasting();
+            else
+#endif
+                return m_manaRegenerationWhileCasting;
+        case POWER_TYPE_RAGE:
+            return m_rageRegenerationWhileCombat;
+        case POWER_TYPE_FOCUS:
+            return m_focusRegeneration;
+        case POWER_TYPE_ENERGY:
+            return m_energyRegeneration;
+        default:
+            return 0.0f;
+    }
+#else
     if (type == POWER_TYPE_HEALTH)
         return 0.0f;
 
@@ -916,10 +895,35 @@ float Unit::getPowerRegenerationWhileCasting(PowerType type) const
         default:
             return 0.0f;
     }
+#endif
 }
 
-void Unit::setPowerRegenerationWhileCasting(PowerType type, float value)
+void Unit::setPowerRegenerationWhileInterrupted(PowerType type, float value)
 {
+#if VERSION_STRING < WotLK
+    switch (type)
+    {
+        case POWER_TYPE_MANA:
+#if VERSION_STRING == TBC
+            if (isPlayer())
+                dynamic_cast<Player*>(this)->setManaRegenerationWhileCasting(value);
+            else
+#endif
+                m_manaRegenerationWhileCasting = value;
+            break;
+        case POWER_TYPE_RAGE:
+            m_rageRegenerationWhileCombat = value;
+            break;
+        case POWER_TYPE_FOCUS:
+            m_focusRegeneration = value;
+            break;
+        case POWER_TYPE_ENERGY:
+            m_energyRegeneration = value;
+            break;
+        default:
+            break;
+    }
+#else
     if (type == POWER_TYPE_HEALTH)
         return;
 
@@ -940,11 +944,8 @@ void Unit::setPowerRegenerationWhileCasting(PowerType type, float value)
         default:
             break;
     }
-}
-
-float Unit::getManaRegenerationWhileCasting() const { return getPowerRegenerationWhileCasting(POWER_TYPE_MANA); }
-void Unit::setManaRegenerationWhileCasting(float value) { setPowerRegenerationWhileCasting(POWER_TYPE_MANA, value); }
 #endif
+}
 
 uint32_t Unit::getLevel() const { return unitData()->level; }
 void Unit::setLevel(uint32_t level)
@@ -4820,7 +4821,7 @@ uint8_t Unit::findVisualSlotForAura(Aura const* aur) const
     return visualSlot;
 }
 
-Aura* Unit::getAuraWithId(uint32_t spell_id)
+Aura* Unit::getAuraWithId(uint32_t spell_id) const
 {
     for (const auto& aur : getAuraList())
     {
@@ -4831,7 +4832,7 @@ Aura* Unit::getAuraWithId(uint32_t spell_id)
     return nullptr;
 }
 
-Aura* Unit::getAuraWithId(uint32_t const* auraId)
+Aura* Unit::getAuraWithId(uint32_t const* auraId) const
 {
     for (const auto& aur : getAuraList())
     {
@@ -4848,7 +4849,7 @@ Aura* Unit::getAuraWithId(uint32_t const* auraId)
     return nullptr;
 }
 
-Aura* Unit::getAuraWithIdForGuid(uint32_t const* auraId, uint64_t guid)
+Aura* Unit::getAuraWithIdForGuid(uint32_t const* auraId, uint64_t guid) const
 {
     for (const auto& aur : getAuraList())
     {
@@ -4865,7 +4866,7 @@ Aura* Unit::getAuraWithIdForGuid(uint32_t const* auraId, uint64_t guid)
     return nullptr;
 }
 
-Aura* Unit::getAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid)
+Aura* Unit::getAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid) const
 {
     for (const auto& aur : getAuraList())
     {
@@ -4876,7 +4877,7 @@ Aura* Unit::getAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid)
     return nullptr;
 }
 
-Aura* Unit::getAuraWithAuraEffect(AuraEffect aura_effect)
+Aura* Unit::getAuraWithAuraEffect(AuraEffect aura_effect) const
 {
     if (aura_effect >= TOTAL_SPELL_AURAS)
         return nullptr;
@@ -4887,7 +4888,7 @@ Aura* Unit::getAuraWithAuraEffect(AuraEffect aura_effect)
     return getAuraEffectList(aura_effect).front()->getAura();
 }
 
-Aura* Unit::getAuraWithVisualSlot(uint8_t visualSlot)
+Aura* Unit::getAuraWithVisualSlot(uint8_t visualSlot) const
 {
     for (const auto& aur : getAuraList())
     {
@@ -4898,12 +4899,64 @@ Aura* Unit::getAuraWithVisualSlot(uint8_t visualSlot)
     return nullptr;
 }
 
-Aura* Unit::getAuraWithAuraSlot(uint16_t auraSlot)
+Aura* Unit::getAuraWithAuraSlot(uint16_t auraSlot) const
 {
     if (auraSlot >= AuraSlots::TOTAL_SLOT_END)
         return nullptr;
 
     return m_auraList[auraSlot];
+}
+
+int32_t Unit::getTotalIntDamageForAuraEffect(AuraEffect aura_effect) const
+{
+    int32_t totalDamage = 0;
+    for (const auto& aurEff : getAuraEffectList(aura_effect))
+        totalDamage += aurEff->getEffectDamage();
+
+    return totalDamage;
+}
+
+int32_t Unit::getTotalIntDamageForAuraEffectByMiscValue(AuraEffect aura_effect, int32_t miscValue) const
+{
+    int32_t totalDamage = 0;
+    for (const auto& aurEff : getAuraEffectList(aura_effect))
+    {
+        if (aurEff->getEffectMiscValue() == miscValue)
+            totalDamage += aurEff->getEffectDamage();
+    }
+
+    return totalDamage;
+}
+
+float_t Unit::getTotalFloatDamageForAuraEffect(AuraEffect aura_effect) const
+{
+    float_t totalDamage = 0.0f;
+    for (const auto& aurEff : getAuraEffectList(aura_effect))
+        totalDamage += aurEff->getEffectFloatDamage();
+
+    return totalDamage;
+}
+
+float_t Unit::getTotalFloatDamageForAuraEffectByMiscValue(AuraEffect aura_effect, int32_t miscValue) const
+{
+    float_t totalDamage = 0.0f;
+    for (const auto& aurEff : getAuraEffectList(aura_effect))
+    {
+        if (aurEff->getEffectMiscValue() == miscValue)
+            totalDamage += aurEff->getEffectFloatDamage();
+    }
+
+    return totalDamage;
+}
+
+float_t Unit::getTotalPctMultiplierForAuraEffect(AuraEffect aura_effect) const
+{
+    return 1.0f + (getTotalFloatDamageForAuraEffect(aura_effect) / 100.0f);
+}
+
+float_t Unit::getTotalPctMultiplierForAuraEffectByMiscValue(AuraEffect aura_effect, int32_t miscValue) const
+{
+    return 1.0f + (getTotalFloatDamageForAuraEffectByMiscValue(aura_effect, miscValue) / 100.0f);
 }
 
 bool Unit::hasAurasWithId(uint32_t auraId) const
@@ -6241,15 +6294,15 @@ void Unit::regenerateHealthAndPowers(uint16_t timePassed)
         }
     }
 
+#if VERSION_STRING < WotLK
     // Mana and Energy
     m_manaEnergyRegenerateTimer += timePassed;
-    if (getPlayerOwnerOrSelf() != nullptr)
+    if (isPlayer())
     {
-        // Player and player owned creatures regen in real time since wotlk
         if (m_manaEnergyRegenerateTimer >= REGENERATION_INTERVAL_MANA_ENERGY)
         {
-            regeneratePower(POWER_TYPE_MANA);
-            regeneratePower(POWER_TYPE_ENERGY);
+            regeneratePower(POWER_TYPE_MANA, m_manaEnergyRegenerateTimer);
+            regeneratePower(POWER_TYPE_ENERGY, m_manaEnergyRegenerateTimer);
             m_manaEnergyRegenerateTimer = 0;
         }
     }
@@ -6257,12 +6310,12 @@ void Unit::regenerateHealthAndPowers(uint16_t timePassed)
     {
         if (m_manaEnergyRegenerateTimer >= CREATURE_REGENERATION_INTERVAL_MANA_ENERGY)
         {
+            if (!(isCreature() && getNpcFlags() & UNIT_NPC_FLAG_DISABLE_PWREGEN))
+            {
+                regeneratePower(POWER_TYPE_MANA, m_manaEnergyRegenerateTimer);
+                regeneratePower(POWER_TYPE_ENERGY, m_manaEnergyRegenerateTimer);
+            }
             m_manaEnergyRegenerateTimer = 0;
-            if (isCreature() && getNpcFlags() & UNIT_NPC_FLAG_DISABLE_PWREGEN)
-                return;
-
-                regeneratePower(POWER_TYPE_MANA);
-                regeneratePower(POWER_TYPE_ENERGY);
         }
     }
 
@@ -6270,16 +6323,42 @@ void Unit::regenerateHealthAndPowers(uint16_t timePassed)
     m_focusRegenerateTimer += timePassed;
     if (m_focusRegenerateTimer >= REGENERATION_INTERVAL_FOCUS)
     {
-        regeneratePower(POWER_TYPE_FOCUS);
+        regeneratePower(POWER_TYPE_FOCUS, m_focusRegenerateTimer);
         m_focusRegenerateTimer = 0;
     }
+#else
+    m_powerUpdatePacketTime += timePassed;
+    m_powerRegenerateTimer += timePassed;
+
+    // Creatures that are not owned by players do not need to be updated in real time
+    const auto updateInterval = getPlayerOwnerOrSelf() != nullptr
+        ? REGENERATION_INTERVAL_POWER
+        : REGENERATION_PACKET_UPDATE_INTERVAL;
+
+    // Since wotlk most powers regenerate in real time
+    if (m_powerRegenerateTimer >= updateInterval)
+    {
+        regeneratePower(POWER_TYPE_MANA, m_powerRegenerateTimer);
+        regeneratePower(POWER_TYPE_ENERGY, m_powerRegenerateTimer);
+        regeneratePower(POWER_TYPE_FOCUS, m_powerRegenerateTimer);
+        if (isPlayer())
+        {
+            regeneratePower(POWER_TYPE_RAGE, m_powerRegenerateTimer);
+            regeneratePower(POWER_TYPE_RUNIC_POWER, m_powerRegenerateTimer);
+        }
+
+        m_powerRegenerateTimer = 0;
+        if (m_powerUpdatePacketTime >= REGENERATION_PACKET_UPDATE_INTERVAL)
+            m_powerUpdatePacketTime = 0;
+    }
+#endif
 
     // Update player only resources
     if (isPlayer())
         dynamic_cast<Player*>(this)->regeneratePlayerPowers(timePassed);
 }
 
-void Unit::regeneratePower(PowerType type)
+void Unit::regeneratePower(PowerType type, uint16_t timePassed)
 {
 #if VERSION_STRING >= Cata
     if (getPowerIndexFromDBC(type) == TOTAL_PLAYER_POWER_TYPES)
@@ -6301,36 +6380,26 @@ void Unit::regeneratePower(PowerType type)
     if (maxPower == 0)
         return;
 
-    // Helper lambda to get correct rate from config files
-    const auto getConfigRate = [&](WorldConfigRates rate) -> float_t
-    {
-        if (!isPlayer() && isVehicle())
-            return worldConfig.getFloatRate(RATE_VEHICLES_POWER_REGEN);
-        else
-            return worldConfig.getFloatRate(rate);
-    };
-
     float_t amount = 0.0f;
     auto sendUpdatePacket = false;
     switch (type)
     {
         case POWER_TYPE_MANA:
         {
-            const auto manaRate = getConfigRate(RATE_POWER1);
             if (isPlayer())
             {
 #if VERSION_STRING < Cata
                 // Check for 5 second regen interruption
                 if (isPowerRegenerationInterrupted())
-                    amount = static_cast<Player*>(this)->getManaRegenerationWhileCasting();
+                    amount = getPowerRegenerationWhileInterrupted(POWER_TYPE_MANA);
                 else
-                    amount = static_cast<Player*>(this)->getManaRegeneration();
+                    amount = getPowerRegeneration(POWER_TYPE_MANA);
 #else
                 // Check for combat (5 second rule was removed in cata)
                 if (getCombatHandler().isInCombat())
-                    amount = getManaRegenerationWhileCasting();
+                    amount = getPowerRegenerationWhileInterrupted(POWER_TYPE_MANA);
                 else
-                    amount = getManaRegeneration();
+                    amount = getPowerRegeneration(POWER_TYPE_MANA);
 #endif
 #if VERSION_STRING < WotLK
                 // Send update packet pre-wotlk
@@ -6339,10 +6408,14 @@ void Unit::regeneratePower(PowerType type)
             }
             else
             {
+                const auto manaRate = worldConfig.getFloatRate(isVehicle() ? RATE_VEHICLES_POWER_REGEN : RATE_POWER1);
                 //\ todo: this creature mana regeneration is not correct, rewrite it
                 if (getCombatHandler().isInCombat())
                 {
-                    amount = (getLevel() + 10) * m_pctPowerRegenModifier[POWER_TYPE_MANA];
+                    amount = (getLevel() + 10) * getTotalPctMultiplierForAuraEffectByMiscValue(SPELL_AURA_MOD_POWER_REGEN_PERCENT, POWER_TYPE_MANA);
+                    // Apply config rate for player owned creatures only
+                    if (getPlayerOwner() != nullptr)
+                        amount *= manaRate;
                 }
                 else
                 {
@@ -6362,71 +6435,64 @@ void Unit::regeneratePower(PowerType type)
 
             // Mana regeneration is calculated per 1 second
             // Convert it to correct amount for expansion / unit (i.e in wotlk 100ms for players and 2000ms for creatures)
-            amount *= manaRate * (m_manaEnergyRegenerateTimer * 0.001f);
+            amount *= timePassed / 1000.0f;
         } break;
         case POWER_TYPE_RAGE:
 #if VERSION_STRING >= WotLK
         case POWER_TYPE_RUNIC_POWER:
 #endif
         {
-            // Rage and Runic Power do not decay while in combat
             if (getCombatHandler().isInCombat())
-                return;
+            {
+                amount += getPowerRegenerationWhileInterrupted(type);
+            }
+            else
+            {
+                // Rage and Runic Power are lost at rate of 1.25 point per 1 second when out of combat
+                amount = -12.5f;
+                amount += getPowerRegeneration(type);
+            }
 
-            // TODO: fix this hackfix when aura system supports this
-            const auto hasAngerManagement = hasAurasWithId(12296);
-
-            // Rage and Runic Power are lost at rate of 1.25 point per 1 second (or 1 point per 800ms)
-            // Convert the value first to 5 seconds because regeneration modifiers work like that
-            float_t decayValue = 12.5f * 5;
-
-            // Anger Management slows out of combat rage decay
-            if (hasAngerManagement)
-                decayValue -= 17.0f;
-
-#if VERSION_STRING >= WotLK
-            // Divide it first by 5 and then multiply by 0.8 to get correct amount for 800ms
-            decayValue = (decayValue / 5) * 0.8f;
-#else
-            // Convert the value to 3 seconds (Pre-Wotlk rage decays every 3 seconds)
-            decayValue *= 0.6f;
-
+            // Convert it to correct amount for expansion (wotlk 100ms, pre wotlk 3000ms)
+            amount *= timePassed / 1000.0f;
+#if VERSION_STRING < WotLK
             sendUpdatePacket = true;
 #endif
-
-            amount = currentPower <= decayValue ? -static_cast<int32_t>(currentPower) : -decayValue;
         } break;
         case POWER_TYPE_FOCUS:
         {
-            const auto focusRate = getConfigRate(RATE_POWER3);
 #if VERSION_STRING < WotLK
+            // 24 focus per 4 seconds or 6 focus per 1 second according to WoWWiki
+            amount = 6.0f;
             sendUpdatePacket = true;
-
-            // 24 focus per 4 seconds according to WoWWiki
-            amount = 24.0f;
 #else
-            // Focus regens 1 point per 200ms as of 3.0.2
-            amount = 1.0f;
+            // Focus regens 1 point per 200ms or 5 point per 1 second as of 3.0.2
+            amount = 5.0f;
+            // Do not send for players or player owned creatures after wotlk, they regen in real time
+            if (getPlayerOwnerOrSelf() == nullptr)
+                sendUpdatePacket = true;
 #endif
-            amount *= focusRate * m_pctPowerRegenModifier[POWER_TYPE_FOCUS];
+            amount += getPowerRegeneration(type);
+            // Convert it to correct amount for expansion (wotlk 100ms, pre wotlk 4000ms)
+            amount *= timePassed / 1000.0f;
         } break;
         case POWER_TYPE_ENERGY:
         {
-            const auto energyRate = getConfigRate(RATE_POWER4);
-
             // 10 energy per 1 second
-            // Convert it to correct amount for expansion / unit (i.e in wotlk 100ms for players and 2000ms for creatures)
-            amount = 10.0f * (m_manaEnergyRegenerateTimer * 0.001f);
+            amount = 10.0f;
+            amount += getPowerRegeneration(type);
 
+            // Send update packet for creatures in all versions
 #if VERSION_STRING >= WotLK
-            // Do not send update packet for players or player owned creatures after wotlk
+            // but not for players or player owned creatures after wotlk, they regen in real time
             if (getPlayerOwnerOrSelf() == nullptr)
 #endif
             {
                 sendUpdatePacket = true;
             }
 
-            amount *= energyRate * m_pctPowerRegenModifier[POWER_TYPE_ENERGY];
+            // Convert it to correct amount for expansion / unit (i.e in wotlk 100ms for players and 2000ms for creatures)
+            amount *= timePassed / 1000.0f;
         } break;
 #if VERSION_STRING >= Cata
         case POWER_TYPE_HOLY_POWER:
@@ -6493,29 +6559,8 @@ void Unit::regeneratePower(PowerType type)
 #if VERSION_STRING < WotLK
     setPower(type, powerResult, sendUpdatePacket);
 #else
-    // In wotlk+ most of the powers regen in real time but we cannot update WoWData values in realtime,
-    // so we use private member variables to store power in real time
-    switch (type)
-    {
-        case POWER_TYPE_MANA:
-            m_manaAmount = powerResult;
-            break;
-        case POWER_TYPE_RAGE:
-            m_rageAmount = powerResult;
-            break;
-        case POWER_TYPE_FOCUS:
-            m_focusAmount = powerResult;
-            break;
-        case POWER_TYPE_ENERGY:
-            m_energyAmount = powerResult;
-            break;
-        case POWER_TYPE_RUNIC_POWER:
-            m_runicPowerAmount = powerResult;
-            break;
-        default:
-            setPower(type, powerResult, sendUpdatePacket);
-            break;
-    }
+    const auto updateObject = sendUpdatePacket || m_powerUpdatePacketTime >= REGENERATION_PACKET_UPDATE_INTERVAL || powerResult == maxPower || powerResult == 0;
+    setPower(type, powerResult, sendUpdatePacket, !updateObject);
 #endif
 }
 
@@ -6624,6 +6669,47 @@ uint8_t Unit::getPowerIndexFromDBC(PowerType type) const
     }
 
     return getPowerIndexByClass(getClass(), static_cast<uint8_t>(type));
+#endif
+}
+
+void Unit::_regeneratePowersAtRegenUpdate([[maybe_unused]]PowerType type)
+{
+    // Before power regeneration is updated there must be a regeneration update with old values
+#if VERSION_STRING < WotLK
+    switch (type)
+    {
+        case POWER_TYPE_MANA:
+        case POWER_TYPE_ENERGY:
+            // Mana and energy are linked together with same timer
+            regeneratePower(POWER_TYPE_MANA, m_manaEnergyRegenerateTimer);
+            regeneratePower(POWER_TYPE_ENERGY, m_manaEnergyRegenerateTimer);
+            m_manaEnergyRegenerateTimer = 0;
+            break;
+        case POWER_TYPE_RAGE:
+            regeneratePower(POWER_TYPE_RAGE, m_rageRegenerateTimer);
+            m_rageRegenerateTimer = 0;
+            break;
+        case POWER_TYPE_FOCUS:
+            regeneratePower(POWER_TYPE_FOCUS, m_focusRegenerateTimer);
+            m_focusRegenerateTimer = 0;
+            break;
+        default:
+            break;
+    }
+#else
+    // In wotlk all powers are on same timer so must update all
+    regeneratePower(POWER_TYPE_MANA, m_powerRegenerateTimer);
+    regeneratePower(POWER_TYPE_ENERGY, m_powerRegenerateTimer);
+    regeneratePower(POWER_TYPE_FOCUS, m_powerRegenerateTimer);
+    if (isPlayer())
+    {
+        regeneratePower(POWER_TYPE_RAGE, m_powerRegenerateTimer);
+        regeneratePower(POWER_TYPE_RUNIC_POWER, m_powerRegenerateTimer);
+    }
+
+    m_powerRegenerateTimer = 0;
+    if (m_powerUpdatePacketTime >= REGENERATION_PACKET_UPDATE_INTERVAL)
+        m_powerUpdatePacketTime = 0;
 #endif
 }
 
@@ -8415,7 +8501,7 @@ void Unit::mount(uint32_t mount, uint32_t VehicleId, uint32_t creatureEntry)
         // if we have charmed npc, stun him also (everywhere)
         if (Unit* charm = getWorldMapUnit(getCharmGuid()))
             if (charm->getObjectTypeId() == TYPEID_UNIT)
-                charm->setUnitFlags(UNIT_FLAG_STUNNED);
+                charm->addUnitFlags(UNIT_FLAG_STUNNED);
 
         ByteBuffer guidData;
         guidData << GetNewGUID();

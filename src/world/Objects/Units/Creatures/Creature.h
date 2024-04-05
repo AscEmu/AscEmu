@@ -51,7 +51,7 @@ public:
     void AddToWorld(WorldMap* pMapMgr);                   // hides virtual function Object::AddToWorld
     // void PushToWorld(WorldMap*);                       // not used
     void RemoveFromWorld(bool free_guid);               // hides virtual function Unit::RemoveFromWorld
-    // void OnPrePushToWorld();                         // not used
+    void OnPrePushToWorld() override;                   // overrides virtual function Unit::OnPrePushToWorld
     void OnPushToWorld() override;                      // overrides virtual function Unit::OnPushToWorld
     // void OnPreRemoveFromWorld();                     // not used
     // void OnRemoveFromWorld();                        // not used

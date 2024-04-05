@@ -235,8 +235,8 @@ public:
     void setFullHealth();
     void setHealthPct(uint32_t val);
 
-    uint32_t getPower(PowerType type, bool inRealTime = true) const;
-    void setPower(PowerType type, uint32_t value, bool sendPacket = true);
+    uint32_t getPower(PowerType type) const;
+    void setPower(PowerType type, uint32_t value, bool sendPacket = true, bool skipObjectUpdate = false);
     void modPower(PowerType type, int32_t value);
 
     uint32_t getMaxHealth() const;
@@ -247,18 +247,11 @@ public:
     void setMaxPower(PowerType type, uint32_t value);
     void modMaxPower(PowerType type, int32_t value);
 
-#if VERSION_STRING >= WotLK
     float getPowerRegeneration(PowerType type) const;
     void setPowerRegeneration(PowerType type, float value);
-    float getManaRegeneration() const;
-    void setManaRegeneration(float value);
-
-    // In cata+ these mean 'while in combat'
-    float getPowerRegenerationWhileCasting(PowerType type) const;
-    void setPowerRegenerationWhileCasting(PowerType type, float value);
-    float getManaRegenerationWhileCasting() const;
-    void setManaRegenerationWhileCasting(float value);
-#endif
+    // Interrupted means 'while in combat' or 'while casting'
+    float getPowerRegenerationWhileInterrupted(PowerType type) const;
+    void setPowerRegenerationWhileInterrupted(PowerType type, float value);
 
     uint32_t getLevel() const;
     void setLevel(uint32_t level);
@@ -794,15 +787,24 @@ public:
     void addAura(Aura* aur);
     uint8_t findVisualSlotForAura(Aura const* aur) const;
 
-    Aura* getAuraWithId(uint32_t spell_id);
-    Aura* getAuraWithId(uint32_t const* auraId);
-    Aura* getAuraWithIdForGuid(uint32_t const* auraId, uint64_t guid);
-    Aura* getAuraWithIdForGuid(uint32_t spell_id, uint64_t guid);
-    Aura* getAuraWithAuraEffect(AuraEffect aura_effect);
-    Aura* getAuraWithVisualSlot(uint8_t visualSlot);
+    Aura* getAuraWithId(uint32_t spell_id) const;
+    Aura* getAuraWithId(uint32_t const* auraId) const;
+    Aura* getAuraWithIdForGuid(uint32_t const* auraId, uint64_t guid) const;
+    Aura* getAuraWithIdForGuid(uint32_t spell_id, uint64_t guid) const;
+    Aura* getAuraWithAuraEffect(AuraEffect aura_effect) const;
+    Aura* getAuraWithVisualSlot(uint8_t visualSlot) const;
     // Note; this is internal serverside aura slot, not the slot in client
     // For clientside slot use getAuraWithVisualSlot
-    Aura* getAuraWithAuraSlot(uint16_t auraSlot);
+    Aura* getAuraWithAuraSlot(uint16_t auraSlot) const;
+
+    int32_t getTotalIntDamageForAuraEffect(AuraEffect aura_effect) const;
+    int32_t getTotalIntDamageForAuraEffectByMiscValue(AuraEffect aura_effect, int32_t miscValue) const;
+    float_t getTotalFloatDamageForAuraEffect(AuraEffect aura_effect) const;
+    float_t getTotalFloatDamageForAuraEffectByMiscValue(AuraEffect aura_effect, int32_t miscValue) const;
+    // Returns 1.0f if there are no provided aura effects
+    float_t getTotalPctMultiplierForAuraEffect(AuraEffect aura_effect) const;
+    // Returns 1.0f if there are no provided aura effects
+    float_t getTotalPctMultiplierForAuraEffectByMiscValue(AuraEffect aura_effect, int32_t miscValue) const;
 
     bool hasAurasWithId(uint32_t auraId) const;
     bool hasAurasWithId(uint32_t const* auraId) const;
@@ -916,7 +918,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Health and power
     void regenerateHealthAndPowers(uint16_t timePassed);
-    void regeneratePower(PowerType type);
+    void regeneratePower(PowerType type, uint16_t timePassed);
     void interruptHealthRegeneration(uint32_t timeInMS);
     bool isHealthRegenerationInterrupted() const;
 #if VERSION_STRING < Cata
@@ -946,22 +948,32 @@ private:
     // The leftover power from power regeneration which will be added to new value on next power update
     float_t m_powerFractions[TOTAL_PLAYER_POWER_TYPES] = {0};
 
-#if VERSION_STRING >= WotLK
-    // Powers in real time
-    uint32_t m_manaAmount = 0;
-    uint32_t m_rageAmount = 0;
-    uint32_t m_focusAmount = 0;
-    uint32_t m_energyAmount = 0;
-    uint32_t m_runicPowerAmount = 0;
-
-    uint32_t m_powerUpdatePacketTime = REGENERATION_PACKET_UPDATE_INTERVAL;
-#endif
-
 protected:
     uint16_t m_healthRegenerateTimer = 0;
+#if VERSION_STRING < WotLK
     // Mana and Energy
     uint16_t m_manaEnergyRegenerateTimer = 0;
+    uint16_t m_rageRegenerateTimer = 0;
     uint16_t m_focusRegenerateTimer = 0;
+
+    // Classic and TBC dont have these in unitdata
+    float_t m_manaRegeneration = 0.0f;
+    float_t m_manaRegenerationWhileCasting = 0.0f;
+    float_t m_rageRegeneration = 0.0f;
+    float_t m_rageRegenerationWhileCombat = 0.0f;
+    float_t m_focusRegeneration = 0.0f;
+    float_t m_energyRegeneration = 0.0f;
+#else
+    uint16_t m_powerRegenerateTimer = 0;
+    uint16_t m_powerUpdatePacketTime = 0;
+#endif
+    void _regeneratePowersAtRegenUpdate(PowerType type);
+
+public:
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Stats and formulas, defined in UnitStats.cpp
+    void updateEnergyRegeneration(bool initialUpdate = false);
+    void updateFocusRegeneration(bool initialUpdate = false);
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -1421,10 +1433,6 @@ public:
 
     int32_t m_creatureAttackPowerMod[12] = {0};
     int32_t m_creatureRangedAttackPowerMod[12] = {0};
-
-    int32_t m_pctRegenModifier = 0;
-    // SPELL_AURA_MOD_POWER_REGEN_PERCENT
-    float m_pctPowerRegenModifier[TOTAL_PLAYER_POWER_TYPES];
 
     // Auras Modifiers
     int32_t m_interruptRegen = 0;
