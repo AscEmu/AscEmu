@@ -2103,7 +2103,7 @@ void AIInterface::setImmuneToNPC(bool apply)
 {
     if (apply)
     {
-        m_Unit->setUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
+        m_Unit->addUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
     }
     else
     {
@@ -2115,7 +2115,7 @@ void AIInterface::setImmuneToPC(bool apply)
 {
     if (apply)
     {
-        m_Unit->setUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+        m_Unit->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
     }
     else
     {

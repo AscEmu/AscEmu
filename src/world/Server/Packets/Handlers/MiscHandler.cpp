@@ -7,6 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Item.hpp"
 #include "Management/WeatherMgr.hpp"
 #include "Management/ItemInterface.h"
+#include "Management/Loot/LootMgr.hpp"
+#include "Management/Loot/LootRoll.hpp"
 #include "Macros/CorpseMacros.hpp"
 #include "Management/Battleground/Battleground.hpp"
 #include "Server/WorldSocket.h"
@@ -299,7 +301,7 @@ void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)
             return;
         }
 
-        if (_player->m_isResting || !_player->m_taxi->empty() || worldConfig.player.enableInstantLogoutForAccessType == 2)
+        if (_player->m_isResting || _player->isOnTaxi() || worldConfig.player.enableInstantLogoutForAccessType == 2)
         {
             SetLogoutTimer(1);
             return;
@@ -308,7 +310,7 @@ void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)
 
     if (GetPermissionCount() > 0)
     {
-        if (_player->m_isResting || !_player->m_taxi->empty() || worldConfig.player.enableInstantLogoutForAccessType > 0)
+        if (_player->m_isResting || _player->isOnTaxi() || worldConfig.player.enableInstantLogoutForAccessType > 0)
         {
             SetLogoutTimer(1);
             return;
@@ -702,7 +704,7 @@ void WorldSession::handleOpenItemOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleDismountOpcode(WorldPacket& /*recvPacket*/)
 {
-    if (!_player->m_taxi->empty())
+    if (_player->isOnTaxi())
         return;
 
     _player->dismount();

@@ -35,31 +35,26 @@ void WorldSession::sendTaxiStatus(WoWGuid guid)
     }
 
     // find taxi node
-    uint32 nearest = sTaxiMgr.getNearestTaxiNode(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ(), unit->GetMapId(), player->GetTeam());
-    if (!nearest)
+    const auto nearest = sTaxiMgr.getNearestTaxiNode(unit->GetPosition(), unit->GetMapId(), player->GetTeam());
+    if (nearest == 0)
         return;
 
-    uint8_t status = player->m_taxi->isTaximaskNodeKnown(nearest) ? 1 : 2;
-    SendPacket(SmsgTaxinodeStatus(guid.getRawGuid(), status).serialise().get());
+    SendPacket(SmsgTaxinodeStatus(guid.getRawGuid(), player->m_taxi->isTaximaskNodeKnown(nearest)).serialise().get());
 }
 
 void WorldSession::sendTaxiMenu(Creature* unit)
 {
     // find current node
-    uint32_t nearestNode = sTaxiMgr.getNearestTaxiNode(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ(), unit->GetMapId(), GetPlayer()->GetTeam());
-    if (!nearestNode)
+    const auto nearestNode = sTaxiMgr.getNearestTaxiNode(unit->GetPosition(), unit->GetMapId(), GetPlayer()->GetTeam());
+    if (nearestNode == 0)
         return;
 
     bool lastTaxiCheaterState = GetPlayer()->m_cheats.hasTaxiCheat;
     if (unit->getEntry() == 29480)
         GetPlayer()->m_cheats.hasTaxiCheat = true; // Grimwing in Ebon Hold, special case. NOTE: Not perfect, Zul'Aman should not be included according to WoWhead, and I think taxicheat includes it.
 
-    WorldPacket data(SMSG_SHOWTAXINODES, (4 + 8 + 4 + 8 * 4));
-    data << uint32_t(1);
-    data << uint64_t(unit->getGuid());
-    data << uint32_t(nearestNode);
-    GetPlayer()->m_taxi->appendTaximaskTo(data, GetPlayer()->m_cheats.hasTaxiCheat);
-    SendPacket(&data);
+    const auto& taxiMask = GetPlayer()->getTaxiData()->getTaxiMask(GetPlayer()->m_cheats.hasTaxiCheat);
+    SendPacket(SmsgShowTaxiNodes(unit->getGuid(), nearestNode, taxiMask).serialise().get());
 
     GetPlayer()->m_cheats.hasTaxiCheat = lastTaxiCheaterState;
 }
@@ -87,20 +82,18 @@ void WorldSession::sendDoFlight(uint32_t mountDisplayId, uint32_t path, uint32_t
 bool WorldSession::sendLearnNewTaxiNode(Creature* unit)
 {
     // find current node
-    uint32 curloc = sTaxiMgr.getNearestTaxiNode(unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ(), unit->GetMapId(), GetPlayer()->GetTeam());
-
+    const auto curloc = sTaxiMgr.getNearestTaxiNode(unit->GetPosition(), unit->GetMapId(), GetPlayer()->GetTeam());
     if (curloc == 0)
         return true;
 
     if (GetPlayer()->m_taxi->setTaximaskNode(curloc))
     {
         SendPacket(SmsgNewTaxiPath().serialise().get());
-        SendPacket(SmsgTaxinodeStatus(unit->getGuid(), 1).serialise().get());
-
+        SendPacket(SmsgTaxinodeStatus(unit->getGuid(), true).serialise().get());
         return true;
     }
-    else
-        return false;
+
+    return false;
 }
 
 void WorldSession::sendDiscoverNewTaxiNode(uint32_t nodeid)

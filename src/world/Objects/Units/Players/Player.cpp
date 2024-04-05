@@ -694,6 +694,7 @@ void Player::OnPushToWorld()
 
 #endif
 
+    sendTaxiNodeStatusMultiple();
     continueTaxiFlight();
 }
 
@@ -2683,7 +2684,8 @@ void Player::applyLevelInfo(uint32_t newLevel)
             m_levelInfo->Stat[STAT_SPIRIT] - previousLevelInfo->Stat[STAT_SPIRIT]);
     }
 
-#if VERSION_STRING > WotLK
+#if VERSION_STRING >= TBC
+    // Classic does not have any level dependant flight paths
     initTaxiNodesForLevel();
 #endif
 
@@ -10707,7 +10709,7 @@ void Player::continueTaxiFlight() const
 
 void Player::sendTaxiNodeStatusMultiple()
 {
-    for (const auto itr : getInRangeObjectsSet())
+    for (const auto& itr : getInRangeObjectsSet())
     {
         if (!itr->isCreature())
             continue;
@@ -10719,20 +10721,28 @@ void Player::sendTaxiNodeStatusMultiple()
         if (!(creature->getNpcFlags() & UNIT_NPC_FLAG_FLIGHTMASTER))
             continue;
 
-        uint32 nearestNode = sTaxiMgr.getNearestTaxiNode(creature->GetPositionX(), creature->GetPositionY(), creature->GetPositionZ(), creature->GetMapId(), GetTeam());
-        if (!nearestNode)
+        const auto nearestNode = sTaxiMgr.getNearestTaxiNode(creature->GetPosition(), creature->GetMapId(), GetTeam());
+        if (nearestNode == 0)
             continue;
 
-        getSession()->SendPacket(SmsgTaxinodeStatus(creature->getGuid(), uint8_t(m_taxi->isTaximaskNodeKnown(nearestNode) ? 1 : 2)).serialise().get());
+        getSession()->SendPacket(SmsgTaxinodeStatus(creature->getGuid(), m_taxi->isTaximaskNodeKnown(nearestNode)).serialise().get());
     }
 }
 
-#if VERSION_STRING > WotLK
+bool Player::isInFlight() const
+{
+    return hasUnitStateFlag(UNIT_STATE_IN_FLIGHT);
+}
+
+bool Player::isOnTaxi() const
+{
+    return !m_taxi->empty();
+}
+
 void Player::initTaxiNodesForLevel()
 {
     m_taxi->initTaxiNodesForLevel(getRace(), getClass(), getLevel());
 }
-#endif
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // Loot
@@ -13798,9 +13808,7 @@ void Player::saveToDB(bool newCharacter /* =false */)
     // taxi mask
     ss << "'";
 
-    std::ostringstream staxi;
-    staxi << m_taxi;
-    ss << staxi.str();
+    ss << m_taxi->saveTaximaskNodeToString();
 
     ss << "', ";
 
@@ -14322,10 +14330,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
 
     // Load Taxis From Database
     m_taxi->loadTaxiMask(field[32].GetString());
-
-#if VERSION_STRING > WotLK
     initTaxiNodesForLevel();
-#endif
 
     m_banned = field[33].GetUInt32();      //Character ban
     m_banreason = field[34].GetString();

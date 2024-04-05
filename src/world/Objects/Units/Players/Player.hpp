@@ -1567,10 +1567,6 @@ private:
     /////////////////////////////////////////////////////////////////////////////////////////
     // Taxi
 public:
-    TaxiPath* m_taxi;
-#if VERSION_STRING > WotLK
-    void initTaxiNodesForLevel();
-#endif
     bool activateTaxiPathTo(std::vector<uint32_t> const& nodes, Creature* npc = nullptr, uint32_t spellid = 0);
     bool activateTaxiPathTo(uint32_t taxi_path_id, uint32_t spellid = 0);
     bool activateTaxiPathTo(uint32_t taxi_path_id, Creature* npc);
@@ -1578,7 +1574,15 @@ public:
     void continueTaxiFlight() const;
     void sendTaxiNodeStatusMultiple();
 
-    bool isInFlight()  const { return hasUnitStateFlag(UNIT_STATE_IN_FLIGHT); }
+    bool isInFlight() const;
+    bool isOnTaxi() const;
+
+    void initTaxiNodesForLevel();
+
+    TaxiPath* getTaxiData() const { return m_taxi; }
+
+private:
+    TaxiPath* m_taxi = nullptr;
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // Loot

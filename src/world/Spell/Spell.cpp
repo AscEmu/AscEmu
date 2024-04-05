@@ -29,6 +29,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellRanged.hpp"
 #include "Logging/Logger.hpp"
 #include "Management/Group.h"
+#include "Management/Loot/LootMgr.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Management/Battleground/Battleground.hpp"
 #include "Management/ItemInterface.h"
@@ -2059,7 +2060,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
 
                 // Do not allow spell casts on players when they are on a taxi
                 // unless it's a summoning spell
-                if (!targetPlayer->m_taxi->empty() && !getSpellInfo()->hasEffect(SPELL_EFFECT_SUMMON_PLAYER))
+                if (targetPlayer->isOnTaxi() && !getSpellInfo()->hasEffect(SPELL_EFFECT_SUMMON_PLAYER))
                     return SPELL_FAILED_BAD_TARGETS;
             }
             else if (getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_TARGET_ONLY_PLAYERS)
@@ -2188,7 +2189,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         // but skip triggered and passive spells
         if ((p_caster->hasUnitFlags(UNIT_FLAG_MOUNT) || p_caster->hasUnitFlags(UNIT_FLAG_MOUNTED_TAXI)) && !m_triggeredSpell && !getSpellInfo()->isPassive())
         {
-            if (!p_caster->m_taxi->empty())
+            if (p_caster->isOnTaxi())
             {
                 return SPELL_FAILED_NOT_ON_TAXI;
             }
@@ -2717,8 +2718,8 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (dynamic_cast<Creature*>(target)->IsPickPocketed())
                     return SPELL_FAILED_TARGET_NO_POCKETS;
 
-                const auto itr = sLootMgr.PickpocketingLoot.find(target->getEntry());
-                if (itr == sLootMgr.PickpocketingLoot.end())
+                const auto itr = sLootMgr.getPickpocketingLoot().find(target->getEntry());
+                if (itr == sLootMgr.getPickpocketingLoot().end())
                     return SPELL_FAILED_TARGET_NO_POCKETS;
             } break;
 #if VERSION_STRING >= WotLK
