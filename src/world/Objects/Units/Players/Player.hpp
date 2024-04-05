@@ -51,6 +51,7 @@ namespace MySQLStructure
 struct VoidStorageItem;
 class TradeData;
 class ItemInterface;
+struct ItemProperties;
 struct Auction;
 enum AchievementCriteriaTypes : uint8_t;
 class ArenaTeam;
@@ -1450,13 +1451,13 @@ public:
     void addQuestToRemove(uint32_t questId);
 
     void addQuestToFinished(uint32_t questId);
-    bool hasQuestFinished(uint32_t questId);
+    bool hasQuestFinished(uint32_t questId) const;
 
     void areaExploredQuestEvent(uint32_t questId);
 
     void clearQuest(uint32_t questId);
 
-    bool hasQuestForItem(uint32_t itemId);
+    bool hasQuestForItem(uint32_t itemId) const;
 
     void addQuestSpell(uint32_t spellId);
     bool hasQuestSpell(uint32_t spellId);

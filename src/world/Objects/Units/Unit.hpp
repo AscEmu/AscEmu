@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Data/WoWUnit.hpp"
 #include "ThreatHandler.h"
 #include "CombatHandler.hpp"
-#include "Management/LootMgr.h"
+#include "Management/Loot/Loot.hpp"
 #include "Spell/Definitions/AuraEffects.hpp"
 #include "Spell/Definitions/AuraSlots.hpp"
 #include "Spell/Definitions/AuraStates.hpp"

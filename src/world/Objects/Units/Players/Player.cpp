@@ -23,6 +23,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Battleground/Battleground.hpp"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/ItemInterface.h"
+#include "Management/Loot/LootMgr.hpp"
 #include "Management/MailMgr.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/Skill.hpp"
@@ -8904,9 +8905,9 @@ void Player::addQuestToFinished(uint32_t questId)
     m_finishedQuests.insert(questId);
 }
 
-bool Player::hasQuestFinished(uint32_t questId)
+bool Player::hasQuestFinished(uint32_t questId) const
 {
-    return m_finishedQuests.find(questId) != m_finishedQuests.end();
+    return m_finishedQuests.find(questId) != m_finishedQuests.cend();
 }
 
 void Player::areaExploredQuestEvent(uint32_t questId)
@@ -8920,20 +8921,18 @@ void Player::clearQuest(uint32_t questId)
     m_finishedDailies.erase(questId);
 }
 
-bool Player::hasQuestForItem(uint32_t itemId)
+bool Player::hasQuestForItem(uint32_t itemId) const
 {
-    for (auto& questLogEntry : m_questlog)
+    for (const auto& questLogEntry : m_questlog)
     {
-        if (questLogEntry)
+        if (questLogEntry != nullptr)
         {
             QuestProperties const* questProperties = questLogEntry->getQuestProperties();
 
             // Check the item_quest_association table for an entry related to this item
-            QuestAssociationList* tempList = sQuestMgr.GetQuestAssociationListForItemId(itemId);
-            if (tempList != nullptr)
+            if (const auto* tempList = sQuestMgr.GetQuestAssociationListForItemId(itemId))
             {
-                QuestAssociationList::iterator questAssiciation;
-                for (questAssiciation = tempList->begin(); questAssiciation != tempList->end(); ++questAssiciation)
+                for (auto questAssiciation = tempList->cbegin(); questAssiciation != tempList->cend(); ++questAssiciation)
                     if ((*questAssiciation)->qst == questProperties && (getItemInterface()->GetItemCount(itemId) < (*questAssiciation)->item_count))
                         return true;
             }
@@ -10816,7 +10815,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
                 if (groupRules)
                     group->updateLooterGuid(go);
 
-                pLoot->fillLoot(lootid, sLootMgr.GOLoot, this, false, static_cast<uint8_t>(pLGO->getLootMode()));
+                pLoot->fillLoot(lootid, sLootMgr.getGameobjectLoot(), this, false, static_cast<uint8_t>(pLGO->getLootMode()));
                 pLGO->setLootGenerationTime();
 
                 // get next RR player (for next loot)
@@ -10926,7 +10925,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
             {
             case PARTY_LOOT_MASTER_LOOTER:
             {
-                if (!item->is_looted && !item->is_ffa && item->allowedForPlayer(this))
+                if (!item->is_looted && !item->is_ffa && item->isAllowedForPlayer(this))
                     slottype = LOOT_SLOT_TYPE_MASTER;
                 else
                     // dont show item
@@ -10947,7 +10946,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
             break;
             case PARTY_LOOT_ROUND_ROBIN:
             {
-                if (!item->is_looted && !item->is_ffa && item->allowedForPlayer(this))
+                if (!item->is_looted && !item->is_ffa && item->isAllowedForPlayer(this))
                 {
                     if (pLoot->roundRobinPlayer != 0 && getGuid() != pLoot->roundRobinPlayer)
                         // dont show Item.
@@ -10994,15 +10993,15 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
     PersonaltemMap::const_iterator q_itr = lootPlayerQuestItems.find(getGuidLow());
     if (q_itr != lootPlayerQuestItems.end())
     {
-        PersonaltemList* q_list = q_itr->second;
-        for (PersonaltemList::const_iterator qi = q_list->begin(); qi != q_list->end(); ++qi, personalItemsCount++)
+        const auto& q_list = q_itr->second;
+        for (auto qi = q_list->cbegin(); qi != q_list->cend(); ++qi, personalItemsCount++)
         {
             uint8_t slottype = LOOT_SLOT_TYPE_ALLOW_LOOT;
 
             LootItem& questItem = pLoot->quest_items[qi->index];
-            if (!qi->is_looted && !questItem.is_looted && questItem.allowedForPlayer(this))
+            if (!qi->is_looted && !questItem.is_looted && questItem.isAllowedForPlayer(this))
             {
-                data << uint8_t(pLoot->items.size() + (qi - q_list->begin()));
+                data << uint8_t(pLoot->items.size() + (qi - q_list->cbegin()));
                 data << uint32_t(questItem.itemproto->ItemId);
                 data << uint32_t(questItem.count);  //nr of items of this type
                 data << uint32_t(questItem.itemproto->DisplayInfoID);
@@ -11036,13 +11035,13 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
     PersonaltemMap::const_iterator ffa_itr = lootPlayerFFAItems.find(getGuidLow());
     if (ffa_itr != lootPlayerFFAItems.end())
     {
-        PersonaltemList* ffa_list = ffa_itr->second;
-        for (PersonaltemList::const_iterator fi = ffa_list->begin(); fi != ffa_list->end(); ++fi, ffaItemsCount++)
+        const auto& ffa_list = ffa_itr->second;
+        for (auto fi = ffa_list->cbegin(); fi != ffa_list->cend(); ++fi, ffaItemsCount++)
         {
             uint8_t slottype = LOOT_SLOT_TYPE_ALLOW_LOOT;
 
             LootItem& ffaItem = pLoot->items[fi->index];
-            if (!fi->is_looted && !ffaItem.is_looted && ffaItem.allowedForPlayer(this))
+            if (!fi->is_looted && !ffaItem.is_looted && ffaItem.isAllowedForPlayer(this))
             {
                 data << uint8_t(fi->index);
                 data << uint32_t(ffaItem.itemproto->ItemId);

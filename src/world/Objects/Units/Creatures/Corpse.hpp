@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Objects/Object.hpp"
 #include "Data/WoWCorpse.hpp"
-#include "Management/LootMgr.h"
+#include "Management/Loot/Loot.hpp"
 #include "Server/UpdateFieldInclude.h"
 
 enum CORPSE_STATE

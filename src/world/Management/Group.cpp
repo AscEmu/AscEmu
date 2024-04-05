@@ -21,7 +21,8 @@
 #include "Group.h"
 
 #include "ItemInterface.h"
-#include "LootDefines.hpp"
+#include "Management/Loot/LootDefines.hpp"
+#include "Management/Loot/LootRoll.hpp"
 #include "Battleground/BattlegroundMgr.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Management/LFG/LFGMgr.hpp"

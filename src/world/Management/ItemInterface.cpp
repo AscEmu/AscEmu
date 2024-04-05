@@ -23,7 +23,7 @@
 #include "ItemProperties.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Management/ItemInterface.h"
-
+#include "Management/Loot/LootMgr.hpp"
 #include "ObjectMgr.hpp"
 #include "QuestMgr.h"
 #include "Chat/ChatHandler.hpp"
@@ -4141,7 +4141,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
 
             if (it->RandomPropId != 0)
             {
-                auto item_random_properties = sLootMgr.GetRandomProperties(it);
+                auto item_random_properties = sLootMgr.getRandomProperties(it);
 
                 if (item_random_properties != nullptr)
                 {
@@ -4155,7 +4155,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
 
             if (it->RandomSuffixId != 0)
             {
-                auto item_random_suffix = sLootMgr.GetRandomSuffix(it);
+                auto item_random_suffix = sLootMgr.getRandomSuffix(it);
 
                 if (item_random_suffix != nullptr)
                 {

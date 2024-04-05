@@ -63,7 +63,7 @@ struct ItemProperties
     uint32_t PageId;
     uint32_t PageLanguage;
     uint32_t PageMaterial;
-    uint32_t QuestId;
+    uint32_t QuestId; // id of the quest that this item starts (not required quest)
     uint32_t LockId;
     uint32_t LockMaterial;
     uint32_t SheathID;

@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "LuaMacros.h"
 #include "Chat/ChatDefines.hpp"
 #include "Management/ItemInterface.h"
+#include "Management/Loot/LootMgr.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Map/Maps/WorldMap.hpp"
