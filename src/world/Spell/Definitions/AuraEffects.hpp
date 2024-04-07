@@ -95,11 +95,11 @@ enum AuraEffect : uint32_t
     SPELL_AURA_SPLIT_DAMAGE = 81,                                       // Split Damage
     SPELL_AURA_WATER_BREATHING = 82,                                    // Water Breathing
     SPELL_AURA_MOD_BASE_RESISTANCE = 83,                                // Mod Base Resistance
-    SPELL_AURA_MOD_REGEN = 84,                                          // Mod Health Regen
+    SPELL_AURA_MOD_HEALTH_REGEN = 84,                                   // Mod Health Regen
     SPELL_AURA_MOD_POWER_REGEN = 85,                                    // Mod Power Regen
     SPELL_AURA_CHANNEL_DEATH_ITEM = 86,                                 // Create Death Item
     SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN = 87,                           // Mod Dmg % Taken
-    SPELL_AURA_MOD_PERCENT_REGEN = 88,                                  // Mod Health Regen Percent
+    SPELL_AURA_MOD_HEALTH_REGEN_PERCENT = 88,                           // Mod Health Regen Percent
     SPELL_AURA_PERIODIC_DAMAGE_PERCENT = 89,                            // Periodic Damage Percent
     SPELL_AURA_MOD_RESIST_CHANCE = 90,                                  // Mod Resist Chance
     SPELL_AURA_MOD_DETECT_RANGE = 91,                                   // Mod Detect Range
@@ -127,7 +127,7 @@ enum AuraEffect : uint32_t
     SPELL_AURA_MOD_RANGED_DAMAGE_TAKEN = 113,                           // Mod Ranged Dmg Taken
     SPELL_AURA_MOD_RANGED_DAMAGE_TAKEN_PCT = 114,                       // Mod Ranged % Dmg Taken
     SPELL_AURA_MOD_HEALING = 115,                                       // Mod Healing
-    SPELL_AURA_IGNORE_REGEN_INTERRUPT = 116,                            // Regen During Combat
+    SPELL_AURA_MOD_HEALTH_REGEN_DURING_COMBAT = 116,                    // Mod Health Regen During Combat
     SPELL_AURA_MOD_MECHANIC_RESISTANCE = 117,                           // Mod Mechanic Resistance
     SPELL_AURA_MOD_HEALING_PCT = 118,                                   // Mod Healing %
     SPELL_AURA_SHARE_PET_TRACKING = 119,                                // Share Pet Tracking
@@ -172,7 +172,7 @@ enum AuraEffect : uint32_t
     SPELL_AURA_MOD_SHIELD_BLOCK = 158,                                  // Mod Shield Block
     SPELL_AURA_NO_PVP_CREDIT = 159,                                     // No PVP Credit
     SPELL_AURA_MOD_SIDE_REAR_PDAE_DAMAGE_TAKEN = 160,                   // Mod Side/Rear PBAE Damage Taken
-    SPELL_AURA_MOD_HEALTH_REGEN_IN_COMBAT = 161,                        // Mod Health Regen In Combat
+    SPELL_AURA_MOD_HEALTH_REGEN_ALWAYS = 161,                           // Mod Health Regen Always (In combat as well)
     SPELL_AURA_PERIODIC_POWER_BURN = 162,                               // Power Burn
     SPELL_AURA_MOD_CRIT_DAMAGE_BONUS_MELEE = 163,                       // Mod Critical Damage Bonus (Physical)
     SPELL_AURA_MELEE_ATTACK_POWER_ATTACKER_BONUS = 165,                 // Melee AP Attacker Bonus

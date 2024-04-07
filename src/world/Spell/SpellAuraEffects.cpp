@@ -108,11 +108,11 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::SpellAuraSplitDamage,                                            //  81 SPELL_AURA_SPLIT_DAMAGE
     &Aura::SpellAuraWaterBreathing,                                         //  82 SPELL_AURA_WATER_BREATHING
     &Aura::SpellAuraModBaseResistance,                                      //  83 SPELL_AURA_MOD_BASE_RESISTANCE
-    &Aura::spellAuraEffectNotUsed,                                          //  84 SPELL_AURA_MOD_REGEN // Implemented in Player::regenerateHealth
+    &Aura::spellAuraEffectNotUsed,                                          //  84 SPELL_AURA_MOD_HEALTH_REGEN // Implemented in Player::calculateHealthRegenerationValue, Creature::RegenerateHealth
     &Aura::spellAuraEffectModPowerRegen,                                    //  85 SPELL_AURA_MOD_POWER_REGEN
     &Aura::SpellAuraChannelDeathItem,                                       //  86 SPELL_AURA_CHANNEL_DEATH_ITEM
     &Aura::SpellAuraModDamagePercTaken,                                     //  87 SPELL_AURA_MOD_DAMAGE_PERC_TAKEN
-    &Aura::SpellAuraModRegenPercent,                                        //  88 SPELL_AURA_MOD_REGEN_PERCENT
+    &Aura::spellAuraEffectNotUsed,                                          //  88 SPELL_AURA_MOD_HEALTH_REGEN_PERCENT // Implemented in Player::calculateHealthRegenerationValue, Creature::RegenerateHealth
     &Aura::spellAuraEffectPeriodicDamagePercent,                            //  89 SPELL_AURA_PERIODIC_DAMAGE_PERCENT
     &Aura::SpellAuraModResistChance,                                        //  90 SPELL_AURA_MOD_RESIST_CHANCE
     &Aura::SpellAuraModDetectRange,                                         //  91 SPELL_AURA_MOD_DETECT_RANGE
@@ -134,13 +134,13 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::spellAuraEffectAddModifier,                                      // 107 SPELL_AURA_ADD_FLAT_MODIFIER
     &Aura::spellAuraEffectAddModifier,                                      // 108 SPELL_AURA_ADD_PCT_MOD
     &Aura::SpellAuraAddClassTargetTrigger,                                  // 109 SPELL_AURA_ADD_CLASS_TARGET_TRIGGER
-    &Aura::SpellAuraModPowerRegPerc,                                        // 110 SPELL_AURA_MOD_POWER_REG_PERC
+    &Aura::spellAuraEffectModPowerRegen,                                    // 110 SPELL_AURA_MOD_POWER_REGEN_PERCENT
     &Aura::spellAuraEffectNotImplemented,                                   // 111 SPELL_AURA_111
     &Aura::SpellAuraOverrideClassScripts,                                   // 112 SPELL_AURA_OVERRIDE_CLASS_SCRIPTS
     &Aura::SpellAuraModRangedDamageTaken,                                   // 113 SPELL_AURA_MOD_RANGED_DAMAGE_TAKEN
     &Aura::spellAuraEffectNotImplemented,                                   // 114 SPELL_AURA_114
     &Aura::SpellAuraModHealing,                                             // 115 SPELL_AURA_MOD_HEALING
-    &Aura::SpellAuraIgnoreRegenInterrupt,                                   // 116 SPELL_AURA_IGNORE_REGEN_INTERRUPT
+    &Aura::spellAuraEffectNotUsed,                                          // 116 SPELL_AURA_MOD_HEALTH_REGEN_DURING_COMBAT // Implemented in Player::calculateHealthRegenerationValue
     &Aura::SpellAuraModMechanicResistance,                                  // 117 SPELL_AURA_MOD_MECHANIC_RESISTANCE
     &Aura::SpellAuraModHealingPCT,                                          // 118 SPELL_AURA_MOD_HEALING_PCT
     &Aura::spellAuraEffectNotImplemented,                                   // 119 SPELL_AURA_119
@@ -185,7 +185,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::SpellAuraModBlockValue,                                          // 158 SPELL_AURA_MOD_BLOCK_VALUE
     &Aura::SpellAuraNoPVPCredit,                                            // 159 SPELL_AURA_NO_PVP_CREDIT
     &Aura::spellAuraEffectNotImplemented,                                   // 160 SPELL_AURA_160
-    &Aura::SpellAuraModHealthRegInCombat,                                   // 161 SPELL_AURA_MOD_HEALTH_REG_IN_COMBAT
+    &Aura::spellAuraEffectNotUsed,                                          // 161 SPELL_AURA_MOD_HEALTH_REGEN_ALWAYS // implemented in Player::calculateHealthRegenerationValue
     &Aura::spellAuraEffectPeriodicPowerBurn,                                // 162 SPELL_AURA_PERIODIC_POWER_BURN
     &Aura::SpellAuraModCritDmgPhysical,                                     // 163 SPELL_AURA_MOD_CRIT_DMG_PHYSICAL
     &Aura::spellAuraEffectNotImplemented,                                   // 164 SPELL_AURA_164
@@ -558,11 +558,11 @@ const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
     "SPELL_AURA_SPLIT_DAMAGE",                                              //  81 Split Damage
     "SPELL_AURA_WATER_BREATHING",                                           //  82 Water Breathing
     "SPELL_AURA_MOD_BASE_RESISTANCE",                                       //  83 Mod Base Resistance
-    "SPELL_AURA_MOD_REGEN",                                                 //  84 Mod Health Regen
+    "SPELL_AURA_MOD_HEALTH_REGEN",                                          //  84 Mod Health Regen
     "SPELL_AURA_MOD_POWER_REGEN",                                           //  85 Mod Power Regen
     "SPELL_AURA_CHANNEL_DEATH_ITEM",                                        //  86 Create Death Item
     "SPELL_AURA_MOD_DAMAGE_PERC_TAKEN",                                     //  87 Mod Dmg % Taken
-    "SPELL_AURA_MOD_REGEN_PERCENT",                                         //  88 Mod Health Regen Percent
+    "SPELL_AURA_MOD_HEALTH_REGEN_PERCENT",                                  //  88 Mod Health Regen Percent
     "SPELL_AURA_PERIODIC_DAMAGE_PERCENT",                                   //  89 Periodic Damage Percent
     "SPELL_AURA_MOD_RESIST_CHANCE",                                         //  90 Mod Resist Chance
     "SPELL_AURA_MOD_DETECT_RANGE",                                          //  91 Mod Detect Range
@@ -584,13 +584,13 @@ const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
     "SPELL_AURA_ADD_FLAT_MODIFIER",                                         // 107 Add Flat Modifier
     "SPELL_AURA_ADD_PCT_MOD",                                               // 108 Add % Modifier
     "SPELL_AURA_ADD_CLASS_TARGET_TRIGGER",                                  // 109 Add Class Target Trigger
-    "SPELL_AURA_MOD_POWER_REG_PERC",                                        // 110 Mod Power Regen %
+    "SPELL_AURA_MOD_POWER_REGEN_PERCENT",                                   // 110 Mod Power Regen %
     "SPELL_AURA_111",                                                       // 111 Add Class Caster Hit Trigger
     "SPELL_AURA_OVERRIDE_CLASS_SCRIPTS",                                    // 112 Override Class Scripts
     "SPELL_AURA_MOD_RANGED_DAMAGE_TAKEN",                                   // 113 Mod Ranged Dmg Taken
     "SPELL_AURA_114",                                                       // 114 Mod Ranged % Dmg Taken
     "SPELL_AURA_MOD_HEALING",                                               // 115 Mod Healing
-    "SPELL_AURA_IGNORE_REGEN_INTERRUPT",                                    // 116 Regen During Combat
+    "SPELL_AURA_MOD_HEALTH_REGEN_DURING_COMBAT",                            // 116 Mod Health Regen During Combat
     "SPELL_AURA_MOD_MECHANIC_RESISTANCE",                                   // 117 Mod Mechanic Resistance
     "SPELL_AURA_MOD_HEALING_PCT",                                           // 118 Mod Healing %
     "SPELL_AURA_119",                                                       // 119 Share Pet Tracking
@@ -635,7 +635,7 @@ const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
     "SPELL_AURA_MOD_BLOCK_VALUE",                                           // 158 used Apply Aura: Mod Shield Block // https://classic.wowhead.com/spell=25036/
     "SPELL_AURA_NO_PVP_CREDIT",                                             // 159 used Apply Aura: No PVP Credit // https://classic.wowhead.com/spell=2479/
     "SPELL_AURA_160",                                                       // 160 used Apply Aura: Mod Side/Rear PBAE Damage Taken % // https://classic.wowhead.com/spell=23198
-    "SPELL_AURA_MOD_HEALTH_REG_IN_COMBAT",                                  // 161 Mod Health Regen In Combat
+    "SPELL_AURA_MOD_HEALTH_REGEN_ALWAYS",                                   // 161 Mod Health Regen Always (In combat as well)
     "SPELL_AURA_PERIODIC_POWER_BURN",                                       // 162 Power Burn
     "SPELL_AURA_MOD_CRIT_DMG_PHYSICAL",                                     // 163 missing Apply Aura: Mod Critical Damage Bonus (Physical)
     "SPELL_AURA_164",                                                       // 164 missing used // test spell
@@ -1767,16 +1767,39 @@ void Aura::spellAuraEffectSchoolAbsorb(AuraEffectModifier* /*aurEff*/, bool /*ap
 
 void Aura::spellAuraEffectModPowerRegen(AuraEffectModifier* aurEff, bool apply)
 {
-    if (getPlayerOwner() == nullptr || aurEff->getEffectDamage() == 0)
+    if (aurEff->getEffectDamage() == 0)
         return;
 
-    // TODO: only mana is handled for now
-    if (aurEff->getEffectMiscValue() != POWER_TYPE_MANA)
-        return;
-
-    const auto value = apply ? aurEff->getEffectDamage() : -aurEff->getEffectDamage();
-    getPlayerOwner()->m_modInterrManaRegen += value;
-    getPlayerOwner()->updateStats();
+    // Update only necessary powers, the rest are handled in regeneratePower
+    switch (aurEff->getEffectMiscValue())
+    {
+        case POWER_TYPE_MANA:
+            // TODO: missing update for creatures
+            if (getPlayerOwner() == nullptr)
+                break;
+            getPlayerOwner()->updateManaRegeneration();
+            break;
+        case POWER_TYPE_RAGE:
+            if (getPlayerOwner() == nullptr)
+                break;
+            getPlayerOwner()->updateRageRegeneration();
+            break;
+        case POWER_TYPE_FOCUS:
+            getOwner()->updateFocusRegeneration();
+            break;
+        case POWER_TYPE_ENERGY:
+            getOwner()->updateEnergyRegeneration();
+            break;
+#if VERSION_STRING >= WotLK
+        case POWER_TYPE_RUNIC_POWER:
+            if (getPlayerOwner() == nullptr)
+                break;
+            getPlayerOwner()->updateRunicPowerRegeneration();
+            break;
+#endif
+        default:
+            break;
+    }
 }
 
 void Aura::spellAuraEffectPeriodicDamagePercent(AuraEffectModifier* aurEff, bool apply)

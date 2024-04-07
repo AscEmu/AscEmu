@@ -133,7 +133,7 @@ bool WorldSession::isHackDetectedInMovementData(uint16_t opcode)
 
     // Speed
     // implement worldConfig.antiHack.isSpeedHackCkeckEnabled
-    if (!_player->m_taxi->empty() && _player->obj_movement_info.transport_guid == 0 && !_player->getSession()->GetPermissionCount())
+    if (_player->isOnTaxi() && _player->obj_movement_info.transport_guid == 0 && !_player->getSession()->GetPermissionCount())
     {
         // simplified: just take the fastest speed. less chance of fuckups too
         // get the "normal speeds" not the changed ones!
@@ -153,13 +153,13 @@ bool WorldSession::isHackDetectedInMovementData(uint16_t opcode)
 
 void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 {
-    if (_player->isTransferPending() || !_player->m_taxi->empty() || _player->justDied())
+    if (_player->isTransferPending() || _player->isOnTaxi() || _player->justDied())
         return;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     /// Set up some vars to simplify code
     // Zyres: save the opcode here for better handling
-    const uint16_t opcode = recvData.GetOpcode();
+    const auto opcode = sOpcodeTables.getInternalIdForHex(recvData.GetOpcode());
 
     // Zyres: We (the player) controles the movement of us or another player/unit.
     // this is always initialise with the player, can be changed to any other unit.
@@ -490,6 +490,7 @@ void WorldSession::handleForceSpeedChangeAck(WorldPacket& recvPacket)
     recvPacket >> movementInfo;
 
     // now can skip not our packet
+    // TODO: following statement is always true -Appled
     if (movementInfo.getGuid() != mover->getGuid())
     {
         recvPacket.rfinish();                   // prevent warnings spam
@@ -506,20 +507,21 @@ void WorldSession::handleForceSpeedChangeAck(WorldPacket& recvPacket)
 
     static char const* move_type_name[MAX_SPEED_TYPE] = { "Walk", "Run", "RunBack", "Swim", "SwimBack", "TurnRate", "Flight", "FlightBack", "PitchRate" };
 
-    switch (recvPacket.GetOpcode())
+    const auto opcode = sOpcodeTables.getInternalIdForHex(recvPacket.GetOpcode());
+    switch (opcode)
     {
-    case CMSG_FORCE_WALK_SPEED_CHANGE_ACK:          move_type = TYPE_WALK;          force_move_type = TYPE_WALK;        break;
-    case CMSG_FORCE_RUN_SPEED_CHANGE_ACK:           move_type = TYPE_RUN;           force_move_type = TYPE_RUN;         break;
-    case CMSG_FORCE_RUN_BACK_SPEED_CHANGE_ACK:      move_type = TYPE_RUN_BACK;      force_move_type = TYPE_RUN_BACK;    break;
-    case CMSG_FORCE_SWIM_SPEED_CHANGE_ACK:          move_type = TYPE_SWIM;          force_move_type = TYPE_SWIM;        break;
-    case CMSG_FORCE_SWIM_BACK_SPEED_CHANGE_ACK:     move_type = TYPE_SWIM_BACK;     force_move_type = TYPE_SWIM_BACK;   break;
-    case CMSG_FORCE_TURN_RATE_CHANGE_ACK:           move_type = TYPE_TURN_RATE;     force_move_type = TYPE_TURN_RATE;   break;
-    case CMSG_FORCE_FLIGHT_SPEED_CHANGE_ACK:        move_type = TYPE_FLY;           force_move_type = TYPE_FLY;         break;
-    case CMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE_ACK:   move_type = TYPE_FLY_BACK;      force_move_type = TYPE_FLY_BACK;    break;
-    case CMSG_FORCE_PITCH_RATE_CHANGE_ACK:          move_type = TYPE_PITCH_RATE;    force_move_type = TYPE_PITCH_RATE;  break;
-    default:
-        sLogger.failure("WorldSession::handleForceSpeedChangeAck: Unknown move type opcode: {}", recvPacket.GetOpcode());
-        return;
+        case CMSG_FORCE_WALK_SPEED_CHANGE_ACK:          move_type = TYPE_WALK;          force_move_type = TYPE_WALK;        break;
+        case CMSG_FORCE_RUN_SPEED_CHANGE_ACK:           move_type = TYPE_RUN;           force_move_type = TYPE_RUN;         break;
+        case CMSG_FORCE_RUN_BACK_SPEED_CHANGE_ACK:      move_type = TYPE_RUN_BACK;      force_move_type = TYPE_RUN_BACK;    break;
+        case CMSG_FORCE_SWIM_SPEED_CHANGE_ACK:          move_type = TYPE_SWIM;          force_move_type = TYPE_SWIM;        break;
+        case CMSG_FORCE_SWIM_BACK_SPEED_CHANGE_ACK:     move_type = TYPE_SWIM_BACK;     force_move_type = TYPE_SWIM_BACK;   break;
+        case CMSG_FORCE_TURN_RATE_CHANGE_ACK:           move_type = TYPE_TURN_RATE;     force_move_type = TYPE_TURN_RATE;   break;
+        case CMSG_FORCE_FLIGHT_SPEED_CHANGE_ACK:        move_type = TYPE_FLY;           force_move_type = TYPE_FLY;         break;
+        case CMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE_ACK:   move_type = TYPE_FLY_BACK;      force_move_type = TYPE_FLY_BACK;    break;
+        case CMSG_FORCE_PITCH_RATE_CHANGE_ACK:          move_type = TYPE_PITCH_RATE;    force_move_type = TYPE_PITCH_RATE;  break;
+        default:
+            sLogger.failure("WorldSession::handleForceSpeedChangeAck: Unknown move type opcode: {}", recvPacket.GetOpcode());
+            return;
     }
 
     // skip all forced speed changes except last and unexpected

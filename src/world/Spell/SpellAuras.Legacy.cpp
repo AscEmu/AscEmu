@@ -3557,14 +3557,6 @@ void Aura::SpellAuraModDamagePercTaken(AuraEffectModifier* aurEff, bool apply)
     }
 }
 
-void Aura::SpellAuraModRegenPercent(AuraEffectModifier* aurEff, bool apply)
-{
-    if (apply)
-        m_target->m_pctRegenModifier += aurEff->getEffectDamage();
-    else
-        m_target->m_pctRegenModifier -= aurEff->getEffectDamage();
-}
-
 void Aura::SpellAuraModResistChance(AuraEffectModifier* aurEff, bool apply)
 {
     apply ? m_target->m_resistChance = aurEff->getEffectDamage() : m_target->m_resistChance = 0;
@@ -3926,16 +3918,6 @@ void Aura::SpellAuraAddClassTargetTrigger(AuraEffectModifier* aurEff, bool apply
     }
 }
 
-void Aura::SpellAuraModPowerRegPerc(AuraEffectModifier* aurEff, bool apply)
-{
-    if (apply)
-        m_target->m_pctPowerRegenModifier[aurEff->getEffectMiscValue()] += ((float)(aurEff->getEffectDamage())) / 100.0f;
-    else
-        m_target->m_pctPowerRegenModifier[aurEff->getEffectMiscValue()] -= ((float)(aurEff->getEffectDamage())) / 100.0f;
-    if (p_target != nullptr)
-        p_target->updateStats();
-}
-
 void Aura::SpellAuraOverrideClassScripts(AuraEffectModifier* aurEff, bool apply)
 {
     Player* plr = GetPlayerCaster();
@@ -4106,17 +4088,6 @@ void Aura::SpellAuraModHealing(AuraEffectModifier* aurEff, bool apply)
             m_target->m_healTakenMod[x] += val;
         }
     }
-}
-
-void Aura::SpellAuraIgnoreRegenInterrupt(AuraEffectModifier* aurEff, bool apply)
-{
-    if (p_target == nullptr)
-        return;
-
-    if (apply)
-        p_target->m_pctIgnoreRegenModifier += ((float)(aurEff->getEffectDamage())) / 100;
-    else
-        p_target->m_pctIgnoreRegenModifier -= ((float)(aurEff->getEffectDamage())) / 100;
 }
 
 void Aura::SpellAuraModMechanicResistance(AuraEffectModifier* aurEff, bool apply)
@@ -4643,15 +4614,6 @@ void Aura::SpellAuraNoPVPCredit(AuraEffectModifier* /*aurEff*/, bool apply)
         p_target->incrementHonorless();
     else
         p_target->decrementHonorless();
-}
-
-void Aura::SpellAuraModHealthRegInCombat(AuraEffectModifier* aurEff, bool apply)
-{
-    // demon armor etc, they all seem to be 5 sec.
-    if (apply)
-    {
-        sEventMgr.AddEvent(this, &Aura::EventPeriodicHeal1, uint32(aurEff->getEffectDamage()), EVENT_AURA_PERIODIC_HEALINCOMB, 5000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-    }
 }
 
 void Aura::SpellAuraModCritDmgPhysical(AuraEffectModifier* aurEff, bool apply)

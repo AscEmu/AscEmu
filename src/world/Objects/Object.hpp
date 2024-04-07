@@ -121,20 +121,18 @@ protected:
         uint32_t* m_uint32Values = nullptr;
     };
 
-    bool skipping_updates = false;
-
     const WoWObject* objectData() const { return wow_data; }
 
 public:
-    bool write(const uint8_t& member, uint8_t val);
-    bool write(const uint16_t& member, uint16_t val);
-    bool write(const float& member, float val);
-    bool write(const int32_t& member, int32_t val);
-    bool write(const uint32_t& member, uint32_t val);
-    bool write(const uint64_t& member, uint64_t val);
-    bool write(const uint64_t& member, uint32_t low, uint32_t high);
-    bool writeLow(const uint64_t& member, uint32_t val);
-    bool writeHigh(const uint64_t& member, uint32_t val);
+    bool write(const uint8_t& member, uint8_t val, bool skipObjectUpdate = false);
+    bool write(const uint16_t& member, uint16_t val, bool skipObjectUpdate = false);
+    bool write(const float& member, float val, bool skipObjectUpdate = false);
+    bool write(const int32_t& member, int32_t val, bool skipObjectUpdate = false);
+    bool write(const uint32_t& member, uint32_t val, bool skipObjectUpdate = false);
+    bool write(const uint64_t& member, uint64_t val, bool skipObjectUpdate = false);
+    bool write(const uint64_t& member, uint32_t low, uint32_t high, bool skipObjectUpdate = false);
+    bool writeLow(const uint64_t& member, uint32_t val, bool skipObjectUpdate = false);
+    bool writeHigh(const uint64_t& member, uint32_t val, bool skipObjectUpdate = false);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // WoWData
@@ -690,7 +688,7 @@ public:
         // Is the player in a battleground?
         bool IsInBg();
         // What's their faction? Horde/Ally.
-        uint32 GetTeam();
+        uint32 GetTeam() const;
         // Objects directly cannot be in a group.
         //virtual Group* getGroup() { return NULL; }
 

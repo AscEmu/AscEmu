@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/AuctionMgr.hpp"
 #include "Management/CalendarMgr.hpp"
 #include "Management/LFG/LFGMgr.hpp"
+#include "Management/Loot/LootMgr.hpp"
 #include "Management/WordFilter.hpp"
 #include "Management/WeatherMgr.hpp"
 #include "Management/TaxiMgr.hpp"

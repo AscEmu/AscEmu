@@ -102,7 +102,7 @@ Object::~Object()
     }
 }
 
-bool Object::write(const uint8_t& member, uint8_t val)
+bool Object::write(const uint8_t& member, uint8_t val, bool skipObjectUpdate/* = false*/)
 {
     if (member == val)
         return false;
@@ -116,13 +116,13 @@ bool Object::write(const uint8_t& member, uint8_t val)
 
     m_updateMask.SetBit(distance);
 
-    if (!skipping_updates)
+    if (!skipObjectUpdate)
         updateObject();
 
     return true;
 }
 
-bool Object::write(const uint16_t& member, uint16_t val)
+bool Object::write(const uint16_t& member, uint16_t val, bool skipObjectUpdate/* = false*/)
 {
     if (member == val)
         return false;
@@ -137,13 +137,13 @@ bool Object::write(const uint16_t& member, uint16_t val)
     m_updateMask.SetBit(distance);
     m_updateMask.SetBit(distance + 1);
 
-    if (!skipping_updates)
+    if (!skipObjectUpdate)
         updateObject();
 
     return true;
 }
 
-bool Object::write(const float& member, float val)
+bool Object::write(const float& member, float val, bool skipObjectUpdate/* = false*/)
 {
     if (member == val)
         return false;
@@ -157,13 +157,13 @@ bool Object::write(const float& member, float val)
 
     m_updateMask.SetBit(distance);
 
-    if (!skipping_updates)
+    if (!skipObjectUpdate)
         updateObject();
 
     return true;
 }
 
-bool Object::write(const int32_t& member, int32_t val)
+bool Object::write(const int32_t& member, int32_t val, bool skipObjectUpdate/* = false*/)
 {
     if (member == val)
         return false;
@@ -177,13 +177,13 @@ bool Object::write(const int32_t& member, int32_t val)
 
     m_updateMask.SetBit(distance);
 
-    if (!skipping_updates)
+    if (!skipObjectUpdate)
         updateObject();
 
     return true;
 }
 
-bool Object::write(const uint32_t& member, uint32_t val)
+bool Object::write(const uint32_t& member, uint32_t val, bool skipObjectUpdate/* = false*/)
 {
     if (member == val)
         return false;
@@ -197,13 +197,13 @@ bool Object::write(const uint32_t& member, uint32_t val)
 
     m_updateMask.SetBit(distance);
 
-    if (!skipping_updates)
+    if (!skipObjectUpdate)
         updateObject();
 
     return true;
 }
 
-bool Object::write(const uint64_t& member, uint64_t val)
+bool Object::write(const uint64_t& member, uint64_t val, bool skipObjectUpdate/* = false*/)
 {
     if (member == val)
         return false;
@@ -218,13 +218,13 @@ bool Object::write(const uint64_t& member, uint64_t val)
     m_updateMask.SetBit(distance);
     m_updateMask.SetBit(distance + 1);
 
-    if (!skipping_updates)
+    if (!skipObjectUpdate)
         updateObject();
 
     return true;
 }
 
-bool Object::writeLow(const uint64_t& member, uint32_t val)
+bool Object::writeLow(const uint64_t& member, uint32_t val, bool skipObjectUpdate/* = false*/)
 {
     if (member == val)
         return false;
@@ -238,13 +238,13 @@ bool Object::writeLow(const uint64_t& member, uint32_t val)
 
     m_updateMask.SetBit(distance);
 
-    if (!skipping_updates)
+    if (!skipObjectUpdate)
         updateObject();
 
     return true;
 }
 
-bool Object::writeHigh(const uint64_t& member, uint32_t val)
+bool Object::writeHigh(const uint64_t& member, uint32_t val, bool skipObjectUpdate/* = false*/)
 {
     if (member == val)
         return false;
@@ -258,13 +258,13 @@ bool Object::writeHigh(const uint64_t& member, uint32_t val)
 
     m_updateMask.SetBit(distance + 1);
 
-    if (!skipping_updates)
+    if (!skipObjectUpdate)
         updateObject();
 
     return true;
 }
 
-bool Object::write(const uint64_t& member, uint32_t low, uint32_t high)
+bool Object::write(const uint64_t& member, uint32_t low, uint32_t high, bool skipObjectUpdate/* = false*/)
 {
     const auto nonconst_member = const_cast<uint64_t*>(&member);
     const auto low_ptr = reinterpret_cast<uint32_t*>(*nonconst_member);
@@ -283,7 +283,7 @@ bool Object::write(const uint64_t& member, uint32_t low, uint32_t high)
     m_updateMask.SetBit(distance);
     m_updateMask.SetBit(distance + 1);
 
-    if (!skipping_updates)
+    if (!skipObjectUpdate)
         updateObject();
 
     return true;
@@ -4428,7 +4428,7 @@ bool Object::IsInBg()
     return false;
 }
 
-uint32 Object::GetTeam()
+uint32 Object::GetTeam() const
 {
 
     switch (m_factionEntry->ID)

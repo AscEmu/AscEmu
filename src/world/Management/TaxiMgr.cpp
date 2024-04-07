@@ -25,45 +25,108 @@ TaxiMask sHordeTaxiNodesMask;
 TaxiMask sAllianceTaxiNodesMask;
 TaxiMask sDeathKnightTaxiNodesMask;
 
-uint32_t TeamForRace(uint8_t race)
+static uint8_t getFieldForTaxiNode(uint32_t nodeId)
 {
-    if (WDB::Structures::ChrRacesEntry const* rEntry = sChrRacesStore.lookupEntry(race))
-    {
-        switch (rEntry->team_id)
-        {
-            case 1: return TEAM_HORDE;
-            case 7: return TEAM_ALLIANCE;
-        }
-    }
+#if VERSION_STRING < Cata
+    return static_cast<uint8_t>((nodeId - 1) / 32);
+#else
+    return static_cast<uint8_t>((nodeId - 1) / 8);
+#endif
+}
 
-    return TEAM_ALLIANCE;
+static uint8_t getSubmaskForTaxiNode(uint32_t nodeId)
+{
+#if VERSION_STRING < Cata
+    return 1 << ((nodeId - 1) % 32);
+#else
+    return 1 << ((nodeId - 1) % 8);
+#endif
 }
 
 TaxiPath::TaxiPath()
 { 
-    memset(m_taximask, 0, sizeof(m_taximask));
+    m_taximask.fill(0);
 }
 
-#if VERSION_STRING > WotLK
 void TaxiPath::initTaxiNodesForLevel(uint32_t race, uint32_t chrClass, uint8_t level)
 {
+#if VERSION_STRING >= WotLK
     // class specific initial known nodes
     switch (chrClass)
     {
         case DEATHKNIGHT:
         {
-            for (uint8_t i = 0; i < TaxiMaskSize; ++i)
+            for (uint8_t i = 0; i < DBC_TAXI_MASK_SIZE; ++i)
                 m_taximask[i] |= sOldContinentsNodesMask[i];
             break;
         }
     }
+#endif
     
-    uint32_t team = TeamForRace(race);
+    const auto team = getSideByRace(race);
 
+#if VERSION_STRING < Cata
+    // Add race specific initial nodes
+    switch (race)
+    {
+        case RACE_HUMAN:
+            // Stormwind
+            setTaximaskNode(2);
+            break;
+        case RACE_ORC:
+            // Orgrimmar
+            setTaximaskNode(23);
+            break;
+        case RACE_DWARF:
+            // Ironforge
+            setTaximaskNode(6);
+            break;
+        case RACE_NIGHTELF:
+            // Auberdine
+            setTaximaskNode(26);
+            // Rut'theran Village
+            setTaximaskNode(27);
+            break;
+        case RACE_UNDEAD:
+            // Undercity
+            setTaximaskNode(11);
+            break;
+        case RACE_TAUREN:
+            // Thunder Bluff
+            setTaximaskNode(22);
+            break;
+        case RACE_GNOME:
+            // Ironforge
+            setTaximaskNode(6);
+            break;
+        case RACE_TROLL:
+            // Orgrimmar
+            setTaximaskNode(23);
+            break;
+#if VERSION_STRING >= TBC
+        case RACE_BLOODELF:
+            // Silvermoon City
+            setTaximaskNode(82);
+            break;
+        case RACE_DRAENEI:
+            // Exodar
+            setTaximaskNode(94);
+            break;
+#endif
+        default:
+            break;
+    }
+
+#if VERSION_STRING >= TBC
+    // Isle of Queldanas
+    if (level >= 68)
+        setTaximaskNode(213);
+#endif
+#else
     // Patch 4.2: players will now unlock all taxi nodes within the recommended level range of the player
     for (uint32_t i = 0; i < sTaxiNodesStore.getNumRows(); ++i)
     {
-        if (WDB::Structures::TaxiNodesEntry const* itr = sTaxiNodesStore.lookupEntry(i))
+        if (const auto itr = sTaxiNodesStore.lookupEntry(i))
         {
             // Skip scripted and debug nodes
             if (itr->flags == TAXI_NODE_FLAG_SCRIPT)
@@ -78,62 +141,47 @@ void TaxiPath::initTaxiNodesForLevel(uint32_t race, uint32_t chrClass, uint8_t l
                 setTaximaskNode(itr->id);
         }
     }
+#endif
 
     // New continent starting masks (It will be accessible only at new map)
     switch (team)
     {
         case TEAM_ALLIANCE:
-            setTaximaskNode(100); // Honor Hold
-            setTaximaskNode(245); // Valiance Keep
+#if VERSION_STRING >= TBC
+            // Honor Hold
+            setTaximaskNode(100);
+#if VERSION_STRING >= Cata
+            // Valiance Keep
+            setTaximaskNode(245);
+#endif
+#endif
             break;
         case TEAM_HORDE:
-            setTaximaskNode(99); // Thrallmar
-            setTaximaskNode(257); // Warsong Hold
+#if VERSION_STRING >= TBC
+            // Thrallmar
+            setTaximaskNode(99);
+#if VERSION_STRING >= Cata
+            // Warsong Hold
+            setTaximaskNode(257);
+#endif
+#endif
             break;
         default:
             break;
     }
 }
-#endif
-
-std::vector<std::string_view> tokenize(std::string_view str, char sep, bool keepEmpty)
-{
-    std::vector<std::string_view> tokens;
-
-    size_t start = 0;
-    for (size_t end = str.find(sep); end != std::string_view::npos; end = str.find(sep, start))
-    {
-        if (keepEmpty || (start < end))
-            tokens.push_back(str.substr(start, end - start));
-        start = end + 1;
-    }
-
-    if (keepEmpty || (start < str.length()))
-        tokens.push_back(str.substr(start));
-
-    return tokens;
-}
-
-std::optional<uint32_t> to_uint(const std::string_view& input)
-{
-    int out;
-    const std::from_chars_result result = std::from_chars(input.data(), input.data() + input.size(), out);
-    if (result.ec == std::errc::invalid_argument || result.ec == std::errc::result_out_of_range)
-    {
-        return std::nullopt;
-    }
-    return out;
-}
 
 void TaxiPath::loadTaxiMask(std::string const& data)
 {
-    std::vector<std::string_view> tokens = tokenize(data, ' ', false);
-    for (uint8_t index = 0; (index < TaxiMaskSize) && (index < tokens.size()); ++index)
+    const auto tokens = AscEmu::Util::Strings::split(data, " ");
+    auto iter = tokens.cbegin();
+    uint8_t index = 0;
+    for (; index < DBC_TAXI_MASK_SIZE && iter != tokens.cend(); ++iter, ++index)
     {
-        if (Optional<uint32_t> mask = to_uint(tokens[index]))
+        if (const uint32_t mask = atol((*iter).c_str()))
         {
             // load and set bits only for existing taxi nodes
-            m_taximask[index] = sTaxiNodesMask[index] & *mask;
+            m_taximask[index] = sTaxiNodesMask[index] & mask;
         }
         else
         {
@@ -142,35 +190,42 @@ void TaxiPath::loadTaxiMask(std::string const& data)
     }
 }
 
-void TaxiPath::appendTaximaskTo(ByteBuffer& data, bool all)
+bool TaxiPath::isTaximaskNodeKnown(uint32_t nodeidx) const
 {
+    const auto field = getFieldForTaxiNode(nodeidx);
+    const auto submask = getSubmaskForTaxiNode(nodeidx);
+    return (m_taximask[field] & submask) == submask;
+}
 
-#if VERSION_STRING > WotLK
-    data << uint32_t(TaxiMaskSize);
-#endif
+bool TaxiPath::setTaximaskNode(uint32_t nodeidx)
+{
+    const auto field = getFieldForTaxiNode(nodeidx);
+    const auto submask = getSubmaskForTaxiNode(nodeidx);
+    if ((m_taximask[field] & submask) != submask)
+    {
+        m_taximask[field] |= submask;
+        return true;
+    }
+    return false;
+}
 
-    if (all)
-    {
-        for (uint8_t i = 0; i < TaxiMaskSize; ++i)
-            data << uint8_t(sTaxiNodesMask[i]);              // all existing nodes
-    }
-    else
-    {
-        for (uint8_t i = 0; i < TaxiMaskSize; ++i)
-            data << uint8_t(m_taximask[i]);                  // known nodes
-    }
+std::string TaxiPath::saveTaximaskNodeToString() const
+{
+    std::ostringstream ss;
+    for (uint8_t i = 0; i < DBC_TAXI_MASK_SIZE; ++i)
+        ss << uint32_t(m_taximask[i]) << " ";
+    return ss.str();
 }
 
 bool TaxiPath::loadTaxiDestinationsFromString(std::string const& values, uint32_t team)
 {
     clearTaxiDestinations();
 
-    std::vector<std::string_view> tokens = tokenize(values, ' ', false);
-    auto itr = tokens.begin();
-    for (auto itr : tokens)
+    const auto tokens = AscEmu::Util::Strings::split(values, " ");
+    for (const auto& itr : tokens)
     {
-        if (Optional<uint32_t> node = to_uint(itr))
-            addTaxiDestination(*node);
+        if (const uint32_t node = atol((itr).c_str()))
+            addTaxiDestination(node);
         else
             return false;
     }
@@ -198,7 +253,7 @@ bool TaxiPath::loadTaxiDestinationsFromString(std::string const& values, uint32_
     return true;
 }
 
-std::string TaxiPath::saveTaxiDestinationsToString()
+std::string TaxiPath::saveTaxiDestinationsToString() const
 {
     if (m_TaxiDestinations.empty())
         return "";
@@ -226,16 +281,20 @@ uint32_t TaxiPath::getCurrentTaxiPath() const
     return path;
 }
 
-std::ostringstream& operator<<(std::ostringstream& ss, TaxiPath const& taxi)
+uint32_t TaxiPath::nextTaxiDestination()
 {
-    for (uint8_t i = 0; i < TaxiMaskSize; ++i)
-        ss << uint32_t(taxi.m_taximask[i]) << ' ';
-    return ss;
+    m_TaxiDestinations.pop_front();
+    return getTaxiDestination();
+}
+
+TaxiMask const& TaxiPath::getTaxiMask(bool all) const
+{
+    return all ? sTaxiNodesMask : m_taximask;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Taxi Mgr
-uint32_t TaxiMgr::getNearestTaxiNode(float x, float y, float z, uint32_t mapid, uint32_t team)
+uint32_t TaxiMgr::getNearestTaxiNode(LocationVector const& pos, uint32_t mapid, uint32_t team) const
 {
     bool found = false;
     float dist = 10000;
@@ -243,19 +302,18 @@ uint32_t TaxiMgr::getNearestTaxiNode(float x, float y, float z, uint32_t mapid, 
 
     for (uint32_t i = 1; i < sTaxiNodesStore.getNumRows(); ++i)
     {
-        WDB::Structures::TaxiNodesEntry const* node = sTaxiNodesStore.lookupEntry(i);
-
-        if (!node || node->mapid != mapid || (!node->mountCreatureID[team == TEAM_ALLIANCE ? 1 : 0] && node->mountCreatureID[0] != 32981)) // dk flight
+        const auto node = sTaxiNodesStore.lookupEntry(i);
+        if (node == nullptr || node->mapid != mapid || (!node->mountCreatureID[team == TEAM_ALLIANCE ? 1 : 0] && node->mountCreatureID[0] != 32981)) // dk flight
             continue;
 
-        uint8_t  field = (uint8_t)((i - 1) / 8);
-        uint32_t submask = 1 << ((i - 1) % 8);
+        const auto field = getFieldForTaxiNode(i);
+        const auto submask = getSubmaskForTaxiNode(i);
 
         // skip not taxi network nodes
         if ((sTaxiNodesMask[field] & submask) == 0)
             continue;
 
-        float dist2 = (node->x - x) * (node->x - x) + (node->y - y) * (node->y - y) + (node->z - z) * (node->z - z);
+        float dist2 = (node->x - pos.x) * (node->x - pos.x) + (node->y - pos.y) * (node->y - pos.y) + (node->z - pos.z) * (node->z - pos.z);
         if (found)
         {
             if (dist2 < dist)
@@ -275,20 +333,20 @@ uint32_t TaxiMgr::getNearestTaxiNode(float x, float y, float z, uint32_t mapid, 
     return id;
 }
 
-void TaxiMgr::getTaxiPath(uint32_t source, uint32_t destination, uint32_t& path, uint32_t& cost)
+void TaxiMgr::getTaxiPath(uint32_t source, uint32_t destination, uint32_t& path, uint32_t& cost) const
 {
-    TaxiPathSetBySource::iterator src_i = sTaxiPathSetBySource.find(source);
-    if (src_i == sTaxiPathSetBySource.end())
+    const auto src_i = sTaxiPathSetBySource.find(source);
+    if (src_i == sTaxiPathSetBySource.cend())
     {
         path = 0;
         cost = 0;
         return;
     }
 
-    TaxiPathSetForSource& pathSet = src_i->second;
+    const auto& pathSet = src_i->second;
 
-    TaxiPathSetForSource::iterator dest_i = pathSet.find(destination);
-    if (dest_i == pathSet.end())
+    const auto dest_i = pathSet.find(destination);
+    if (dest_i == pathSet.cend())
     {
         path = 0;
         cost = 0;
@@ -299,13 +357,12 @@ void TaxiMgr::getTaxiPath(uint32_t source, uint32_t destination, uint32_t& path,
     path = dest_i->second.ID;
 }
 
-uint32_t TaxiMgr::getTaxiMountDisplayId(uint32_t id, uint32_t team, bool allowed_alt_team /* = false */)
+uint32_t TaxiMgr::getTaxiMountDisplayId(uint32_t id, uint32_t team, bool allowed_alt_team /* = false */) const
 {
     uint32_t mount_id = 0;
 
     // select mount creature id
-    WDB::Structures::TaxiNodesEntry const* node = sTaxiNodesStore.lookupEntry(id);
-    if (node)
+    if (const auto node = sTaxiNodesStore.lookupEntry(id))
     {
         uint32_t mount_entry = 0;
         if (team == TEAM_ALLIANCE)
@@ -321,11 +378,10 @@ uint32_t TaxiMgr::getTaxiMountDisplayId(uint32_t id, uint32_t team, bool allowed
             mount_entry = team == TEAM_ALLIANCE ? node->mountCreatureID[0] : node->mountCreatureID[1];
         }
 
-        CreatureProperties const* mount_info = sMySQLStore.getCreatureProperties(mount_entry);
-        if (mount_info)
+        if (const auto mount_info = sMySQLStore.getCreatureProperties(mount_entry))
         {
             mount_id = mount_info->getRandomModelId();
-            if (!mount_id)
+            if (mount_id == 0)
             {
                 sLogger.failure("TaxiMgr:::No displayid found for the taxi mount with the entry {}! Can't load it!", mount_entry);
                 return 0;
@@ -357,9 +413,8 @@ void TaxiMgr::loadTaxiNodeLevelData()
         uint32_t taxiNodeId = fields[0].GetUInt16();
         uint8_t level = fields[1].GetUInt8();
 
-        WDB::Structures::TaxiNodesEntry const* node = sTaxiNodesStore.lookupEntry(taxiNodeId);
-
-        if (!node)
+        const auto node = sTaxiNodesStore.lookupEntry(taxiNodeId);
+        if (node == nullptr)
         {
             sLogger.failure("TaxiMgr:: Table `taxi_level_data` has data for nonexistent taxi node (ID: {}), skipped", taxiNodeId);
             continue;
@@ -375,8 +430,8 @@ void TaxiMgr::loadTaxiNodeLevelData()
 
 bool TaxiMgr::isTaxiNodeUnlockedFor(uint32_t taxiNodeId, uint8_t level) const
 {
-    TaxiNodeLevelDataContainer::const_iterator itr = _taxiNodeLevelDataStore.find(taxiNodeId);
-    if (itr != _taxiNodeLevelDataStore.end())
+    const auto itr = _taxiNodeLevelDataStore.find(taxiNodeId);
+    if (itr != _taxiNodeLevelDataStore.cend())
         return itr->second <= level;
 
     return false;
@@ -395,7 +450,7 @@ void TaxiMgr::initialize()
 #if VERSION_STRING > WotLK
     for (uint32_t i = 0; i < sSpellEffectStore.getNumRows(); ++i)
     {
-        if (WDB::Structures::SpellEffectEntry const* sInfo = sSpellEffectStore.lookupEntry(i))
+        if (const auto sInfo = sSpellEffectStore.lookupEntry(i))
         {
             if (sInfo->Effect == SPELL_EFFECT_START_TAXI)
                 spellPaths.insert(sInfo->EffectMiscValue);
@@ -404,7 +459,7 @@ void TaxiMgr::initialize()
 #else
     for (uint32_t i = 0; i < sSpellStore.getNumRows(); ++i)
     {
-        if (WDB::Structures::SpellEntry const* sInfo = sSpellStore.lookupEntry(i))
+        if (const auto sInfo = sSpellStore.lookupEntry(i))
         {
             for (uint8_t j = 0; j < MAX_SPELL_EFFECTS; ++j)
             {
@@ -415,22 +470,22 @@ void TaxiMgr::initialize()
     }
 #endif
 
-    memset(sTaxiNodesMask, 0, sizeof(sTaxiNodesMask));
-    memset(sOldContinentsNodesMask, 0, sizeof(sOldContinentsNodesMask));
-    memset(sHordeTaxiNodesMask, 0, sizeof(sHordeTaxiNodesMask));
-    memset(sAllianceTaxiNodesMask, 0, sizeof(sAllianceTaxiNodesMask));
-    memset(sDeathKnightTaxiNodesMask, 0, sizeof(sDeathKnightTaxiNodesMask));
+    sTaxiNodesMask.fill(0);
+    sOldContinentsNodesMask.fill(0);
+    sHordeTaxiNodesMask.fill(0);
+    sAllianceTaxiNodesMask.fill(0);
+    sDeathKnightTaxiNodesMask.fill(0);
     for (uint32_t i = 1; i < sTaxiNodesStore.getNumRows(); ++i)
     {
-        WDB::Structures::TaxiNodesEntry const* node = sTaxiNodesStore.lookupEntry(i);
-        if (!node)
+        const auto node = sTaxiNodesStore.lookupEntry(i);
+        if (node == nullptr)
             continue;
 
-        TaxiPathSetBySource::const_iterator src_i = sTaxiPathSetBySource.find(i);
-        if (src_i != sTaxiPathSetBySource.end() && !src_i->second.empty())
+        const auto src_i = std::as_const(sTaxiPathSetBySource).find(i);
+        if (src_i != sTaxiPathSetBySource.cend() && !src_i->second.empty())
         {
             bool ok = false;
-            for (TaxiPathSetForSource::const_iterator dest_i = src_i->second.begin(); dest_i != src_i->second.end(); ++dest_i)
+            for (auto dest_i = src_i->second.begin(); dest_i != src_i->second.end(); ++dest_i)
             {
                 // not spell path
                 if (spellPaths.find(dest_i->second.ID) == spellPaths.end())
@@ -445,8 +500,8 @@ void TaxiMgr::initialize()
         }
 
         // valid taxi network node
-        uint8_t  field = (uint8_t)((i - 1) / 8);
-        uint32_t submask = 1 << ((i - 1) % 8);
+        const auto field = getFieldForTaxiNode(i);
+        const auto submask = getSubmaskForTaxiNode(i);
 
         sTaxiNodesMask[field] |= submask;
         if (node->mountCreatureID[0] && node->mountCreatureID[0] != 32981)

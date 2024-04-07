@@ -8,12 +8,13 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ItemDefines.hpp"
 #include "Management/ItemProperties.hpp"
 #include "Objects/Object.hpp"
-#include "Management/LootMgr.h"
+#include "Management/Loot/LootDefines.hpp"
 #include "Data/WoWItem.hpp"
 #include "Server/UpdateFieldInclude.h"
 
 class QueryBuffer;
 class Field;
+struct Loot;
 
 namespace WDB::Structures
 {

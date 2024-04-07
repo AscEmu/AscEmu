@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChannelMgr.hpp"
 #include "Management/Group.h"
 #include "Management/ItemInterface.h"
+#include "Management/Loot/LootMgr.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/QuestMgr.h"
@@ -4807,7 +4808,7 @@ int LuaUnit::IsOnTaxi(lua_State* L, Unit* ptr)
         return 0;
     }
 
-    lua_pushboolean(L, dynamic_cast<Player*>(ptr)->m_taxi->empty() ? 1 : 0);
+    lua_pushboolean(L, dynamic_cast<Player*>(ptr)->isOnTaxi() ? 1 : 0);
     return 1;
 }
 
@@ -4818,7 +4819,7 @@ int LuaUnit::GetTaxi(lua_State* L, Unit* ptr)
         return 0;
     }
 
-    PUSH_TAXIPATH(L, dynamic_cast<Player*>(ptr)->m_taxi);
+    PUSH_TAXIPATH(L, dynamic_cast<Player*>(ptr)->getTaxiData());
     return 1;
 }
 

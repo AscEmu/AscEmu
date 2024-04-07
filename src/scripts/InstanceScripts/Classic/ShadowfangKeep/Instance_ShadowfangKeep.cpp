@@ -1074,7 +1074,6 @@ public:
         setAIAgent(AGENT_SPELL);
 
         aiUpdateOriginal = GetAIUpdateFreq();
-        originalRegen = getCreature()->m_pctPowerRegenModifier[POWER_TYPE_MANA];
     }
 
     void OnCastSpell(uint32_t spellId) override
@@ -1089,15 +1088,14 @@ public:
     {
         setAIAgent(AGENT_SPELL);
         getCreature()->getAIInterface()->setMeleeDisabled(true);
-        getCreature()->m_pctPowerRegenModifier[POWER_TYPE_MANA] = originalRegen;
+        getCreature()->removeNpcFlags(UNIT_NPC_FLAG_DISABLE_PWREGEN);
     }
 
     void OnCombatStart(Unit* /*pEnemy*/) override
     {
         // do not regen mana
-        getCreature()->m_pctPowerRegenModifier[POWER_TYPE_MANA] = 0.3f;
+        getCreature()->addNpcFlags(UNIT_NPC_FLAG_DISABLE_PWREGEN);
         aiUpdateOriginal = GetAIUpdateFreq();
-        originalRegen = getCreature()->m_pctPowerRegenModifier[POWER_TYPE_MANA];
 
         // Do not do melee attacks
         getCreature()->getAIInterface()->setMeleeDisabled(true);
@@ -1203,7 +1201,6 @@ protected:
     CreatureAISpells* sVoidBolt;
 
     uint32_t aiUpdateOriginal;
-    float originalRegen;
 };
 
 // Creature entry: 3886

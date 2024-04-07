@@ -23,6 +23,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Battleground/Battleground.hpp"
 #include "Management/Guild/GuildMgr.hpp"
 #include "Management/ItemInterface.h"
+#include "Management/Loot/LootMgr.hpp"
 #include "Management/MailMgr.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/Skill.hpp"
@@ -540,6 +541,15 @@ void Player::OnPrePushToWorld()
 #if VERSION_STRING > TBC
     m_achievementMgr->sendAllAchievementData(this);
 #endif
+
+    // Send initial power regen modifiers before push
+    updateManaRegeneration(true);
+    updateRageRegeneration(true);
+    updateFocusRegeneration(true);
+    updateEnergyRegeneration(true);
+#if VERSION_STRING >= WotLK
+    updateRunicPowerRegeneration(true);
+#endif
 }
 
 void Player::OnPushToWorld()
@@ -693,6 +703,7 @@ void Player::OnPushToWorld()
 
 #endif
 
+    sendTaxiNodeStatusMultiple();
     continueTaxiFlight();
 }
 
@@ -1100,13 +1111,7 @@ void Player::setSelfResurrectSpell(uint32_t spell) { write(playerData()->self_re
 uint32_t Player::getWatchedFaction() const { return playerData()->field_watched_faction_idx; }
 void Player::setWatchedFaction(uint32_t factionId) { write(playerData()->field_watched_faction_idx, factionId); }
 
-#if VERSION_STRING == Classic
-float Player::getManaRegeneration() const { return m_manaRegeneration; }
-void Player::setManaRegeneration(float value) { m_manaRegeneration = value; }
-
-float Player::getManaRegenerationWhileCasting() const { return m_manaRegenerationWhileCasting; }
-void Player::setManaRegenerationWhileCasting(float value) { m_manaRegenerationWhileCasting = value; }
-#elif VERSION_STRING == TBC
+#if VERSION_STRING == TBC
 float Player::getManaRegeneration() const { return playerData()->field_mod_mana_regen; }
 void Player::setManaRegeneration(float value) { write(playerData()->field_mod_mana_regen, value); }
 
@@ -2682,7 +2687,8 @@ void Player::applyLevelInfo(uint32_t newLevel)
             m_levelInfo->Stat[STAT_SPIRIT] - previousLevelInfo->Stat[STAT_SPIRIT]);
     }
 
-#if VERSION_STRING > WotLK
+#if VERSION_STRING >= TBC
+    // Classic does not have any level dependant flight paths
     initTaxiNodesForLevel();
 #endif
 
@@ -3716,30 +3722,24 @@ void Player::setInitialPlayerData()
 
 void Player::regeneratePlayerPowers(uint16_t diff)
 {
-    // Rage and Runic Power (neither decays while in combat)
-    if ((isClassDeathKnight() || isClassDruid() || isClassWarrior()) && !getCombatHandler().isInCombat())
+#if VERSION_STRING < WotLK
+    // Rage
+    m_rageRegenerateTimer += diff;
+    if (m_rageRegenerateTimer >= REGENERATION_INTERVAL_RAGE)
     {
-        m_rageRunicPowerRegenerateTimer += diff;
-        if (m_rageRunicPowerRegenerateTimer >= REGENERATION_INTERVAL_RAGE_RUNIC_POWER)
-        {
-            if (isClassDruid() || isClassWarrior())
-                regeneratePower(POWER_TYPE_RAGE);
-#if VERSION_STRING >= WotLK
-            if (isClassDeathKnight())
-                regeneratePower(POWER_TYPE_RUNIC_POWER);
-#endif
-            m_rageRunicPowerRegenerateTimer = 0;
-        }
+        regeneratePower(POWER_TYPE_RAGE, m_rageRegenerateTimer);
+        m_rageRegenerateTimer = 0;
     }
+#endif
 
 #if VERSION_STRING >= Cata
-    // Holy Power (does not decay while in combat)
-    if (isClassPaladin() && !getCombatHandler().isInCombat())
+    // Holy Power
+    if (isClassPaladin())
     {
         m_holyPowerRegenerateTimer += diff;
         if (m_holyPowerRegenerateTimer >= REGENERATION_INTERVAL_HOLY_POWER)
         {
-            regeneratePower(POWER_TYPE_HOLY_POWER);
+            regeneratePower(POWER_TYPE_HOLY_POWER, m_holyPowerRegenerateTimer);
             m_holyPowerRegenerateTimer = 0;
         }
     }
@@ -3750,33 +3750,22 @@ void Player::regeneratePlayerPowers(uint16_t diff)
     if (diff >= m_foodDrinkSpellVisualTimer)
     {
         // Find food/drink aura
-        auto foundFood = false, foundDrink = false;
-        for (uint16_t i = AuraSlots::POSITIVE_SLOT_START; i < AuraSlots::POSITIVE_SLOT_END; ++i)
+        const auto findFoodOrDrinkAura = [this](AuraEffect auraEffect) -> bool
         {
-            const auto* aur = getAuraWithAuraSlot(i);
-            if (aur == nullptr)
-                continue;
-
-            if (!(aur->getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP))
-                continue;
-
-            if (aur->hasAuraEffect(SPELL_AURA_MOD_REGEN) || aur->hasAuraEffect(SPELL_AURA_PERIODIC_HEAL_PCT))
+            for (const auto& aurEff : getAuraEffectList(auraEffect))
             {
-                // Food takes priority over drink
-                foundFood = true;
-                break;
+                if (aurEff->getAura()->IsPassive() || aurEff->getAura()->isNegative())
+                    continue;
+                if (aurEff->getAura()->getSpellInfo()->getAuraInterruptFlags() & AURA_INTERRUPT_ON_STAND_UP)
+                    return true;
             }
+            return false;
+        };
 
-            if (aur->hasAuraEffect(SPELL_AURA_MOD_POWER_REGEN) || aur->hasAuraEffect(SPELL_AURA_PERIODIC_POWER_PCT))
-            {
-                // Don't break here, try find a food aura
-                foundDrink = true;
-            }
-        }
-
-        if (foundFood)
+        // Food takes priority over drink
+        if (findFoodOrDrinkAura(SPELL_AURA_MOD_HEALTH_REGEN) || findFoodOrDrinkAura(SPELL_AURA_PERIODIC_HEAL_PCT))
             playSpellVisual(SPELL_VISUAL_FOOD, 0);
-        else if (foundDrink)
+        else if (findFoodOrDrinkAura(SPELL_AURA_MOD_POWER_REGEN) || findFoodOrDrinkAura(SPELL_AURA_PERIODIC_POWER_PCT))
             playSpellVisual(SPELL_VISUAL_DRINK, 0);
 
         m_foodDrinkSpellVisualTimer = 5000;
@@ -4506,13 +4495,13 @@ void Player::updatePotionCooldown()
     if (m_lastPotionId == 0 || getCombatHandler().isInCombat())
         return;
 
-    if (ItemProperties const* itemProperties = sMySQLStore.getItemProperties(m_lastPotionId))
+    if (const auto itemProperties = sMySQLStore.getItemProperties(m_lastPotionId))
     {
-        for (uint8_t spellIndex = 0; spellIndex < 5; ++spellIndex)
+        for (uint8_t spellIndex = 0; spellIndex < MAX_ITEM_PROTO_SPELLS; ++spellIndex)
         {
-            if (itemProperties->Spells[spellIndex].Id && itemProperties->Spells[spellIndex].Trigger == USE)
+            if (itemProperties->Spells[spellIndex].Id != 0 && itemProperties->Spells[spellIndex].Trigger == USE)
             {
-                if (const auto spellInfo = sSpellMgr.getSpellInfo(itemProperties->Spells[spellIndex].Id))
+                if (const auto* const spellInfo = sSpellMgr.getSpellInfo(itemProperties->Spells[spellIndex].Id))
                 {
                     cooldownAddItem(itemProperties, spellIndex);
                     sendSpellCooldownEventPacket(spellInfo->getId());
@@ -8904,9 +8893,9 @@ void Player::addQuestToFinished(uint32_t questId)
     m_finishedQuests.insert(questId);
 }
 
-bool Player::hasQuestFinished(uint32_t questId)
+bool Player::hasQuestFinished(uint32_t questId) const
 {
-    return m_finishedQuests.find(questId) != m_finishedQuests.end();
+    return m_finishedQuests.find(questId) != m_finishedQuests.cend();
 }
 
 void Player::areaExploredQuestEvent(uint32_t questId)
@@ -8920,20 +8909,18 @@ void Player::clearQuest(uint32_t questId)
     m_finishedDailies.erase(questId);
 }
 
-bool Player::hasQuestForItem(uint32_t itemId)
+bool Player::hasQuestForItem(uint32_t itemId) const
 {
-    for (auto& questLogEntry : m_questlog)
+    for (const auto& questLogEntry : m_questlog)
     {
-        if (questLogEntry)
+        if (questLogEntry != nullptr)
         {
             QuestProperties const* questProperties = questLogEntry->getQuestProperties();
 
             // Check the item_quest_association table for an entry related to this item
-            QuestAssociationList* tempList = sQuestMgr.GetQuestAssociationListForItemId(itemId);
-            if (tempList != nullptr)
+            if (const auto* tempList = sQuestMgr.GetQuestAssociationListForItemId(itemId))
             {
-                QuestAssociationList::iterator questAssiciation;
-                for (questAssiciation = tempList->begin(); questAssiciation != tempList->end(); ++questAssiciation)
+                for (auto questAssiciation = tempList->cbegin(); questAssiciation != tempList->cend(); ++questAssiciation)
                     if ((*questAssiciation)->qst == questProperties && (getItemInterface()->GetItemCount(itemId) < (*questAssiciation)->item_count))
                         return true;
             }
@@ -10708,7 +10695,7 @@ void Player::continueTaxiFlight() const
 
 void Player::sendTaxiNodeStatusMultiple()
 {
-    for (const auto itr : getInRangeObjectsSet())
+    for (const auto& itr : getInRangeObjectsSet())
     {
         if (!itr->isCreature())
             continue;
@@ -10720,20 +10707,28 @@ void Player::sendTaxiNodeStatusMultiple()
         if (!(creature->getNpcFlags() & UNIT_NPC_FLAG_FLIGHTMASTER))
             continue;
 
-        uint32 nearestNode = sTaxiMgr.getNearestTaxiNode(creature->GetPositionX(), creature->GetPositionY(), creature->GetPositionZ(), creature->GetMapId(), GetTeam());
-        if (!nearestNode)
+        const auto nearestNode = sTaxiMgr.getNearestTaxiNode(creature->GetPosition(), creature->GetMapId(), GetTeam());
+        if (nearestNode == 0)
             continue;
 
-        getSession()->SendPacket(SmsgTaxinodeStatus(creature->getGuid(), uint8_t(m_taxi->isTaximaskNodeKnown(nearestNode) ? 1 : 2)).serialise().get());
+        getSession()->SendPacket(SmsgTaxinodeStatus(creature->getGuid(), m_taxi->isTaximaskNodeKnown(nearestNode)).serialise().get());
     }
 }
 
-#if VERSION_STRING > WotLK
+bool Player::isInFlight() const
+{
+    return hasUnitStateFlag(UNIT_STATE_IN_FLIGHT);
+}
+
+bool Player::isOnTaxi() const
+{
+    return !m_taxi->empty();
+}
+
 void Player::initTaxiNodesForLevel()
 {
     m_taxi->initTaxiNodesForLevel(getRace(), getClass(), getLevel());
 }
-#endif
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // Loot
@@ -10816,7 +10811,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
                 if (groupRules)
                     group->updateLooterGuid(go);
 
-                pLoot->fillLoot(lootid, sLootMgr.GOLoot, this, false, static_cast<uint8_t>(pLGO->getLootMode()));
+                pLoot->fillLoot(lootid, sLootMgr.getGameobjectLoot(), this, false, static_cast<uint8_t>(pLGO->getLootMode()));
                 pLGO->setLootGenerationTime();
 
                 // get next RR player (for next loot)
@@ -10926,7 +10921,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
             {
             case PARTY_LOOT_MASTER_LOOTER:
             {
-                if (!item->is_looted && !item->is_ffa && item->allowedForPlayer(this))
+                if (!item->is_looted && !item->is_ffa && item->isAllowedForPlayer(this))
                     slottype = LOOT_SLOT_TYPE_MASTER;
                 else
                     // dont show item
@@ -10947,7 +10942,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
             break;
             case PARTY_LOOT_ROUND_ROBIN:
             {
-                if (!item->is_looted && !item->is_ffa && item->allowedForPlayer(this))
+                if (!item->is_looted && !item->is_ffa && item->isAllowedForPlayer(this))
                 {
                     if (pLoot->roundRobinPlayer != 0 && getGuid() != pLoot->roundRobinPlayer)
                         // dont show Item.
@@ -10994,15 +10989,15 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
     PersonaltemMap::const_iterator q_itr = lootPlayerQuestItems.find(getGuidLow());
     if (q_itr != lootPlayerQuestItems.end())
     {
-        PersonaltemList* q_list = q_itr->second;
-        for (PersonaltemList::const_iterator qi = q_list->begin(); qi != q_list->end(); ++qi, personalItemsCount++)
+        const auto& q_list = q_itr->second;
+        for (auto qi = q_list->cbegin(); qi != q_list->cend(); ++qi, personalItemsCount++)
         {
             uint8_t slottype = LOOT_SLOT_TYPE_ALLOW_LOOT;
 
             LootItem& questItem = pLoot->quest_items[qi->index];
-            if (!qi->is_looted && !questItem.is_looted && questItem.allowedForPlayer(this))
+            if (!qi->is_looted && !questItem.is_looted && questItem.isAllowedForPlayer(this))
             {
-                data << uint8_t(pLoot->items.size() + (qi - q_list->begin()));
+                data << uint8_t(pLoot->items.size() + (qi - q_list->cbegin()));
                 data << uint32_t(questItem.itemproto->ItemId);
                 data << uint32_t(questItem.count);  //nr of items of this type
                 data << uint32_t(questItem.itemproto->DisplayInfoID);
@@ -11036,13 +11031,13 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
     PersonaltemMap::const_iterator ffa_itr = lootPlayerFFAItems.find(getGuidLow());
     if (ffa_itr != lootPlayerFFAItems.end())
     {
-        PersonaltemList* ffa_list = ffa_itr->second;
-        for (PersonaltemList::const_iterator fi = ffa_list->begin(); fi != ffa_list->end(); ++fi, ffaItemsCount++)
+        const auto& ffa_list = ffa_itr->second;
+        for (auto fi = ffa_list->cbegin(); fi != ffa_list->cend(); ++fi, ffaItemsCount++)
         {
             uint8_t slottype = LOOT_SLOT_TYPE_ALLOW_LOOT;
 
             LootItem& ffaItem = pLoot->items[fi->index];
-            if (!fi->is_looted && !ffaItem.is_looted && ffaItem.allowedForPlayer(this))
+            if (!fi->is_looted && !ffaItem.is_looted && ffaItem.isAllowedForPlayer(this))
             {
                 data << uint8_t(fi->index);
                 data << uint32_t(ffaItem.itemproto->ItemId);
@@ -13799,9 +13794,7 @@ void Player::saveToDB(bool newCharacter /* =false */)
     // taxi mask
     ss << "'";
 
-    std::ostringstream staxi;
-    staxi << m_taxi;
-    ss << staxi.str();
+    ss << m_taxi->saveTaximaskNodeToString();
 
     ss << "', ";
 
@@ -14323,10 +14316,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
 
     // Load Taxis From Database
     m_taxi->loadTaxiMask(field[32].GetString());
-
-#if VERSION_STRING > WotLK
     initTaxiNodesForLevel();
-#endif
 
     m_banned = field[33].GetUInt32();      //Character ban
     m_banreason = field[34].GetString();
@@ -15488,81 +15478,24 @@ void Player::calcStat(uint8_t type)
 
 void Player::regenerateHealth(bool inCombat)
 {
-    uint32_t currentHealth = getHealth();
-    uint32_t maxHealth = getMaxHealth();
-
+    const auto currentHealth = getHealth();
     if (currentHealth == 0)
         return;
 
+    const auto maxHealth = getMaxHealth();
     if (currentHealth >= maxHealth)
         return;
 
-#if VERSION_STRING < Cata
-    auto HPRegenBase = sGtRegenHPPerSptStore.lookupEntry(getLevel() - 1 + (getClass() - 1) * 100);
-    if (HPRegenBase == nullptr)
-        HPRegenBase = sGtRegenHPPerSptStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (getClass() - 1) * 100);
-
-    auto HPRegen = sGtOCTRegenHPStore.lookupEntry(getLevel() - 1 + (getClass() - 1) * 100);
-    if (HPRegen == nullptr)
-        HPRegen = sGtOCTRegenHPStore.lookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (getClass() - 1) * 100);
-#endif
-
-    uint32_t basespirit = getStat(STAT_SPIRIT);
-    uint32_t extraspirit = 0;
-
-    if (basespirit > 50)
-    {
-        extraspirit = basespirit - 50;
-        basespirit = 50;
-    }
-
-#if VERSION_STRING < Cata
-    float amt = basespirit * HPRegen->ratio + extraspirit * HPRegenBase->ratio;
-#else
-    float amt = static_cast<float>(basespirit * 200 + extraspirit * 200);
-#endif
-
-    // Food buffs
-    for (const auto& aurEff : getAuraEffectList(SPELL_AURA_MOD_REGEN))
-    {
-        // The value is stored as per 5 seconds
-        amt += aurEff->getEffectDamage() * (static_cast<float_t>(m_healthRegenerateTimer / 1000) / 5.0f);
-    }
-
-    if (m_pctRegenModifier)
-        amt += (amt * m_pctRegenModifier) / 100;
-
-    amt *= worldConfig.getFloatRate(RATE_HEALTH);//Apply conf file rate
-    //Near values from official
-    // wowwiki: Health Regeneration is increased by 33% while sitting.
-    if (m_isResting)
-        amt = amt * 1.33f;
-
-    if (inCombat)
-        amt *= m_pctIgnoreRegenModifier;
+    float_t amt = 0.0f;
 
     // While polymorphed health is regenerated rapidly
     // Exact value is yet unknown but it's roughly 10% of health per sec
-    // todo
     if (hasUnitStateFlag(UNIT_STATE_POLYMORPHED))
-        amt += getMaxHealth() * 0.10f;
+        amt = getMaxHealth() * 0.10f;
+    else
+        amt = calculateHealthRegenerationValue(inCombat);
 
-    if (amt != 0)
-    {
-        if (amt > 0)
-        {
-            if (amt <= 1.0f)//this fixes regen like 0.98
-                currentHealth++;
-            else
-                currentHealth += Util::float2int32(amt);
-
-            setHealth((currentHealth >= maxHealth) ? maxHealth : currentHealth);
-        }
-        else
-        {
-            dealDamage(this, Util::float2int32(-amt), 0);
-        }
-    }
+    modHealth(static_cast<int32_t>(std::ceil(amt)));
 }
 
 void Player::_Relocate(uint32_t mapid, const LocationVector& v, bool sendpending, bool force_new_world, uint32_t instance_id)
@@ -16153,7 +16086,7 @@ void Player::modifyBonuses(uint32_t type, int32_t val, bool apply)
         break;
         case ITEM_MOD_MANA_REGENERATION:
         {
-            m_modInterrManaRegen += val;
+            m_manaFromItems += val;
         }
         break;
         case ITEM_MOD_ARMOR_PENETRATION_RATING:

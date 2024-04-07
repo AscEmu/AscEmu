@@ -190,7 +190,6 @@ class SERVER_DECL Aura : public EventableObject
         void spellAuraEffectModPowerRegen(AuraEffectModifier* aurEff, bool apply);
         void spellAuraEffectChannelDeathItem(AuraEffectModifier* aurEff, bool apply);
         void spellAuraEffectModDamagePercTaken(AuraEffectModifier* aurEff, bool apply);
-        void spellAuraEffectModRegenPercent(AuraEffectModifier* aurEff, bool apply);
         void spellAuraEffectPeriodicDamagePercent(AuraEffectModifier* aurEff, bool apply);
         void spellAuraEffectModResistChance(AuraEffectModifier* aurEff, bool apply);
         void spellAuraEffectModDetectRange(AuraEffectModifier* aurEff, bool apply);
@@ -211,11 +210,9 @@ class SERVER_DECL Aura : public EventableObject
         void spellAuraEffectHover(AuraEffectModifier* aurEff, bool apply);
         void spellAuraEffectAddModifier(AuraEffectModifier* aurEff, bool apply);
         void spellAuraEffectAddClassTargetTrigger(AuraEffectModifier* aurEff, bool apply);
-        void spellAuraEffectModPowerRegPerc(AuraEffectModifier* aurEff, bool apply);
         void spellAuraEffectOverrideClassScripts(AuraEffectModifier* aurEff, bool apply);
         void spellAuraEffectModRangedDamageTaken(AuraEffectModifier* aurEff, bool apply);
         void spellAuraEffectModHealing(AuraEffectModifier* aurEff, bool apply);
-        void spellAuraEffectIgnoreRegenInterrupt(AuraEffectModifier* aurEff, bool apply);
         void spellAuraEffectModMechanicResistance(AuraEffectModifier* aurEff, bool apply);
         void spellAuraEffectModHealingPCT(AuraEffectModifier* aurEff, bool apply);
         void spellAuraEffectUntrackable(AuraEffectModifier* aurEff, bool apply);
@@ -252,7 +249,6 @@ class SERVER_DECL Aura : public EventableObject
         void spellAuraEffectModUnderwaterBreathing(AuraEffectModifier* aurEff, bool apply);
         void spellAuraEffectModReputationAdjust(AuraEffectModifier* aurEff, bool apply);
         void spellAuraEffectNoPVPCredit(AuraEffectModifier* aurEff, bool apply);
-        void spellAuraEffectModHealthRegInCombat(AuraEffectModifier* aurEff, bool apply);
         void spellAuraEffectPeriodicPowerBurn(AuraEffectModifier* aurEff, bool apply);
         void spellAuraEffectModCritDmgPhysical(AuraEffectModifier* aurEff, bool apply);
         void spellAuraEffectModPAttackPower(AuraEffectModifier* aurEff, bool apply);
@@ -483,7 +479,6 @@ class SERVER_DECL Aura : public EventableObject
         void SpellAuraModBaseResistance(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraChannelDeathItem(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModDamagePercTaken(AuraEffectModifier* aurEff, bool apply);
-        void SpellAuraModRegenPercent(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModResistChance(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModDetectRange(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraPreventsFleeing(AuraEffectModifier* aurEff, bool apply);
@@ -502,11 +497,9 @@ class SERVER_DECL Aura : public EventableObject
         void SpellAuraFeatherFall(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraHover(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraAddClassTargetTrigger(AuraEffectModifier* aurEff, bool apply);
-        void SpellAuraModPowerRegPerc(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraOverrideClassScripts(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModRangedDamageTaken(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModHealing(AuraEffectModifier* aurEff, bool apply);
-        void SpellAuraIgnoreRegenInterrupt(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModMechanicResistance(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModHealingPCT(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraUntrackable(AuraEffectModifier* aurEff, bool apply);
@@ -542,7 +535,6 @@ class SERVER_DECL Aura : public EventableObject
         void SpellAuraModUnderwaterBreathing(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModReputationAdjust(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraNoPVPCredit(AuraEffectModifier* aurEff, bool apply);
-        void SpellAuraModHealthRegInCombat(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModCritDmgPhysical(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModPAttackPower(AuraEffectModifier* aurEff, bool apply);
         void SpellAuraModRangedAttackPowerPct(AuraEffectModifier* aurEff, bool apply);

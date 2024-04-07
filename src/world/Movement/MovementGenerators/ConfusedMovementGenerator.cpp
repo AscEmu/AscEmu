@@ -37,7 +37,7 @@ void ConfusedMovementGenerator<T>::doInitialize(T* owner)
         return;
 
     // TODO: UNIT_FIELD_FLAGS should not be handled by generators
-    owner->setUnitFlags(UNIT_FLAG_CONFUSED);
+    owner->addUnitFlags(UNIT_FLAG_CONFUSED);
     owner->stopMoving();
 
     _timer.resetInterval(0);

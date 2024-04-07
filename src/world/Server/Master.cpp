@@ -49,7 +49,7 @@
 #include "Network/Network.h"
 #include "Server/WorldSocket.h"
 #include "Management/GameEventMgr.hpp"
-#include "Management/LootMgr.h"
+#include "Management/Loot/LootMgr.hpp"
 #include "Management/MailMgr.h"
 #include "Script/ScriptMgr.hpp"
 #include "Spell/SpellMgr.hpp"
@@ -922,10 +922,10 @@ void Master::ShutdownLootSystem()
 {
     sLogger.info("Shutdown : Initiated at {}", Util::GetDateTimeStringFromTimeStamp((uint32)UNIXTIME));
 
-    if (sLootMgr.is_loading)
+    if (sLootMgr.isLoading())
     {
         sLogger.info("Shutdown : Waiting for loot to finish loading...");
-        while (sLootMgr.is_loading)
+        while (sLootMgr.isLoading())
             Arcemu::Sleep(100);
     }
 }

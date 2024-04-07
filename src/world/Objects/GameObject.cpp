@@ -26,7 +26,7 @@
 #include "Management/GameEvent.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include <G3D/Quat.h>
-
+#include "Management/Loot/LootMgr.hpp"
 #include "GameObjectProperties.hpp"
 #include "Data/Flags.hpp"
 #include "Logging/Logger.hpp"
@@ -1411,14 +1411,14 @@ void GameObject_Lootable::getFishLoot(Player* loot_owner, bool getJunk/* = false
     const uint8_t lootMode = getJunk ? LOOT_MODE_JUNK_FISH : 0;
 
     // if subzone loot exist use it
-    loot.fillLoot(subzone, sLootMgr.FishingLoot, loot_owner, true, lootMode);
+    loot.fillLoot(subzone, sLootMgr.getFishingLoot(), loot_owner, true, lootMode);
     if (loot.empty())
     {
         //subzone no result,use zone loot
-        loot.fillLoot(zone, sLootMgr.FishingLoot, loot_owner, true, lootMode);
+        loot.fillLoot(zone, sLootMgr.getFishingLoot(), loot_owner, true, lootMode);
         //use zone 1 as default, somewhere fishing got nothing,becase subzone and zone not set, like Off the coast of Storm Peaks.
         if (loot.empty())
-            loot.fillLoot(defaultzone, sLootMgr.FishingLoot, loot_owner, true, lootMode);
+            loot.fillLoot(defaultzone, sLootMgr.getFishingLoot(), loot_owner, true, lootMode);
     }
 }
 

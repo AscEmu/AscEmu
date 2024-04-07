@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "LuaMacros.h"
 #include "Management/WeatherMgr.hpp"
 #include "Management/Gossip/GossipMenu.hpp"
+#include "Management/Loot/LootMgr.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/MapScriptInterface.h"
 #include "Map/Maps/WorldMap.hpp"

@@ -630,13 +630,9 @@ void ObjectMgr::loadVendors()
             sLogger.failure("Invalid format in vendors ({}/6) columns, loading anyway because we have enough data", result->GetFieldCount());
         }
 
-
-        WDB::Structures::ItemExtendedCostEntry const* item_extended_cost = nullptr;
-
         do
         {
             Field* fields = result->Fetch();
-
             auto itr = m_vendors.find(fields[0].GetUInt32());
             if (itr == m_vendors.end())
             {
@@ -648,20 +644,22 @@ void ObjectMgr::loadVendors()
                 items = itr->second;
             }
 
-            CreatureItem itm;
+            CreatureItem itm{};
             itm.itemid = fields[1].GetUInt32();
             itm.amount = fields[2].GetUInt32();
             itm.available_amount = fields[3].GetUInt32();
             itm.max_amount = fields[3].GetUInt32();
             itm.incrtime = fields[4].GetUInt32();
+            itm.extended_cost = nullptr;
             if (fields[5].GetUInt32() > 0)
             {
-                item_extended_cost = sItemExtendedCostStore.lookupEntry(fields[5].GetUInt32());
+                const auto item_extended_cost = sItemExtendedCostStore.lookupEntry(fields[5].GetUInt32());
                 if (item_extended_cost == nullptr)
                     sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "LoadVendors : Extendedcost for item {} references nonexistent EC {}", fields[1].GetUInt32(), fields[5].GetUInt32());
+                else
+                    itm.extended_cost = item_extended_cost;
             }
 
-            itm.extended_cost = item_extended_cost;
             items->push_back(itm);
         } while (result->NextRow());
 

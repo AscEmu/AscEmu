@@ -29,6 +29,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellRanged.hpp"
 #include "Logging/Logger.hpp"
 #include "Management/Group.h"
+#include "Management/Loot/LootMgr.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Management/Battleground/Battleground.hpp"
 #include "Management/ItemInterface.h"
@@ -666,6 +667,26 @@ void Spell::castMe(const bool doReCheck)
         }
     }
 
+    // Set cooldown on item after SMSG_SPELL_GO
+    if (i_caster != nullptr && i_caster->getOwner() != nullptr && !GetSpellFailed())
+    {
+        // Potion cooldown starts after leaving combat
+        if (i_caster->getItemProperties()->Class == ITEM_CLASS_CONSUMABLE && i_caster->getItemProperties()->SubClass == ITEM_SUBCLASS_POTION)
+        {
+            i_caster->getOwner()->setLastPotion(i_caster->getItemProperties()->ItemId);
+            i_caster->getOwner()->updatePotionCooldown();
+        }
+        else
+        {
+            for (uint8_t spellIndex = 0; spellIndex < MAX_ITEM_PROTO_SPELLS; ++spellIndex)
+            {
+                const auto& itemSpell = i_caster->getItemProperties()->Spells[spellIndex];
+                if (itemSpell.Id != 0 && itemSpell.Trigger == USE)
+                    i_caster->getOwner()->cooldownAddItem(i_caster->getItemProperties(), spellIndex);
+            }
+        }
+    }
+
     // Take cast item after SMSG_SPELL_GO but before effect handling
     if (!GetSpellFailed())
         removeCastItem();
@@ -1124,33 +1145,6 @@ void Spell::finish(bool successful)
 
     // Recheck used spell modifiers
     takeUsedSpellModifiers();
-
-    // Set cooldown on item
-    if (getItemCaster() != nullptr && getItemCaster()->getOwner() != nullptr && cancastresult == SPELL_CAST_SUCCESS && !GetSpellFailed())
-    {
-        uint8_t i = 0;
-        for (; i < MAX_ITEM_PROTO_SPELLS; ++i)
-        {
-            if (getItemCaster()->getItemProperties()->Spells[i].Trigger == USE)
-            {
-                if (getItemCaster()->getItemProperties()->Spells[i].Id != 0)
-                    break;
-            }
-        }
-
-        // Potion cooldown starts after leaving combat
-        if (getItemCaster()->getItemProperties()->Class == ITEM_CLASS_CONSUMABLE && getItemCaster()->getItemProperties()->SubClass == 1)
-        {
-            getItemCaster()->getOwner()->setLastPotion(getItemCaster()->getItemProperties()->ItemId);
-            if (!getItemCaster()->getOwner()->getCombatHandler().isInCombat())
-                getItemCaster()->getOwner()->updatePotionCooldown();
-        }
-        else
-        {
-            if (i < MAX_ITEM_PROTO_SPELLS)
-                getItemCaster()->getOwner()->cooldownAddItem(getItemCaster()->getItemProperties(), i);
-        }
-    }
 
     if (getPlayerCaster() != nullptr)
     {
@@ -2059,7 +2053,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
 
                 // Do not allow spell casts on players when they are on a taxi
                 // unless it's a summoning spell
-                if (!targetPlayer->m_taxi->empty() && !getSpellInfo()->hasEffect(SPELL_EFFECT_SUMMON_PLAYER))
+                if (targetPlayer->isOnTaxi() && !getSpellInfo()->hasEffect(SPELL_EFFECT_SUMMON_PLAYER))
                     return SPELL_FAILED_BAD_TARGETS;
             }
             else if (getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_TARGET_ONLY_PLAYERS)
@@ -2188,7 +2182,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         // but skip triggered and passive spells
         if ((p_caster->hasUnitFlags(UNIT_FLAG_MOUNT) || p_caster->hasUnitFlags(UNIT_FLAG_MOUNTED_TAXI)) && !m_triggeredSpell && !getSpellInfo()->isPassive())
         {
-            if (!p_caster->m_taxi->empty())
+            if (p_caster->isOnTaxi())
             {
                 return SPELL_FAILED_NOT_ON_TAXI;
             }
@@ -2717,8 +2711,8 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (dynamic_cast<Creature*>(target)->IsPickPocketed())
                     return SPELL_FAILED_TARGET_NO_POCKETS;
 
-                const auto itr = sLootMgr.PickpocketingLoot.find(target->getEntry());
-                if (itr == sLootMgr.PickpocketingLoot.end())
+                const auto itr = sLootMgr.getPickpocketingLoot().find(target->getEntry());
+                if (itr == sLootMgr.getPickpocketingLoot().end())
                     return SPELL_FAILED_TARGET_NO_POCKETS;
             } break;
 #if VERSION_STRING >= WotLK
@@ -5534,12 +5528,9 @@ void Spell::takePower()
         return;
     }
 #endif
-    // Check also that the caster's power type is mana
-    // otherwise spell procs, which use no power but have default power type (= mana), will set this to true
-    // and that will show for example rage inaccurately later
-    else if (getSpellInfo()->getPowerType() == POWER_TYPE_MANA && u_caster->getPowerType() == POWER_TYPE_MANA)
+    else if (getSpellInfo()->getPowerType() == POWER_TYPE_MANA && m_powerCost > 0)
     {
-        // Start five second timer later at spell cast
+        // Start five second timer later at spell cast if spell has a mana cost
         m_usesMana = true;
     }
 
@@ -5549,8 +5540,7 @@ void Spell::takePower()
         return;
     }
 
-    const auto powerType = getSpellInfo()->getPowerType();
-    u_caster->modPower(powerType, -static_cast<int32_t>(getPowerCost()));
+    u_caster->modPower(getSpellInfo()->getPowerType(), -static_cast<int32_t>(m_powerCost));
 }
 
 uint32_t Spell::calculatePowerCost()
@@ -5971,7 +5961,7 @@ void Spell::removeCastItem()
                 removable = true;
 
             auto charges = getItemCaster()->getSpellCharges(i);
-            if (charges != 0)
+            if (charges != 0 && protoSpell.Id == getSpellInfo()->getId())
             {
                 if (charges > 0)
                     --charges;

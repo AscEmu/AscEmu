@@ -37,6 +37,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Charter.hpp"
 #include "Objects/Units/Creatures/Corpse.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/OpcodeTable.hpp"
 #include "Server/World.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Server/Script/HookInterface.hpp"
@@ -117,7 +118,8 @@ void WorldSession::handleCharFactionOrRaceChange(WorldPacket& recvPacket)
         return;
     }
 
-    const uint32_t used_loginFlag = ((recvPacket.GetOpcode() == CMSG_CHAR_RACE_CHANGE) ? LOGIN_CUSTOMIZE_RACE : LOGIN_CUSTOMIZE_FACTION);
+    const auto opcode = sOpcodeTables.getInternalIdForHex(recvPacket.GetOpcode());
+    const uint32_t used_loginFlag = ((opcode == CMSG_CHAR_RACE_CHANGE) ? LOGIN_CUSTOMIZE_RACE : LOGIN_CUSTOMIZE_FACTION);
     uint32_t newflags = 0;
 
     const auto loginFlagsQuery = CharacterDatabase.Query("SELECT login_flags FROM characters WHERE guid = %u", srlPacket.guid.getGuidLow());
@@ -674,11 +676,6 @@ void WorldSession::fullLogin(Player* player)
     player->sendDungeonDifficultyPacket();
     player->sendRaidDifficultyPacket();
 #endif
-    //////////////////////////////////////////////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // Taxi
-    player->sendTaxiNodeStatusMultiple();
     //////////////////////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////////////

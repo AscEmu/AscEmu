@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/GameEvent.hpp"
 #include "Management/Skill.hpp"
 #include "Management/Battleground/Battleground.hpp"
+#include "Management/Loot/LootMgr.hpp"
 #include "Objects/Units/Stats.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Cells/MapCell.hpp"
@@ -1385,9 +1386,7 @@ void Creature::RegenerateHealth()
     {
         // 25% of max health per tick
         amt = getMaxHealth() * 0.25f;
-
-        if (m_pctRegenModifier)
-            amt += (amt * m_pctRegenModifier) / 100;
+        amt *= getTotalPctMultiplierForAuraEffect(SPELL_AURA_MOD_HEALTH_REGEN_PERCENT);
 
         //Apply shit from conf file
         amt *= worldConfig.getFloatRate(RATE_HEALTH);
@@ -1700,7 +1699,6 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8 mode, MySQLStruc
     setBytes2(spawn->bytes2);
 
     ////////////AI
-    sEventMgr.AddEvent(this, &Creature::OnLoaded, 0, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
     if (isattackable(spawn))
         getAIInterface()->setAllowedToEnterCombat(true);
@@ -2007,8 +2005,12 @@ void Creature::OnLoaded()
 {
     getAIInterface()->initialiseScripts(getEntry());
     getAIInterface()->eventOnLoad();
+}
 
+void Creature::OnPrePushToWorld()
+{
     immediateMovementFlagsUpdate();
+    Unit::OnPrePushToWorld();
 }
 
 void Creature::OnPushToWorld()
@@ -2018,6 +2020,14 @@ void Creature::OnPushToWorld()
         sLogger.failure("Something tried to push Creature with entry {} with invalid creature_properties!", getEntry());
         return;
     }
+
+    OnLoaded();
+
+    // Send initial power regen modifiers
+    // TODO: missing mana regen update for creatures
+    //updateManaRegeneration(true);
+    updateFocusRegeneration(true);
+    updateEnergyRegeneration(true);
 
     std::set<uint32>::iterator itr = creature_properties->start_auras.begin();
     for (; itr != creature_properties->start_auras.end(); ++itr)

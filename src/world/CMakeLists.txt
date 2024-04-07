@@ -12,6 +12,7 @@ file(GLOB SRC_MANAGEMENT_BATTLEGROUND_FILES Management/Battleground/*.cpp Manage
 file(GLOB SRC_MANAGEMENT_GOSSIP_FILES Management/Gossip/*.cpp Management/Gossip/*.h Management/Gossip/*.hpp)
 file(GLOB SRC_MANAGEMENT_GUILD_FILES Management/Guild/*.cpp Management/Guild/*.h Management/Guild/*.hpp)
 file(GLOB SRC_MANAGEMENT_LFG_FILES Management/LFG/*.cpp Management/LFG/*.h Management/LFG/*.hpp)
+file(GLOB SRC_MANAGEMENT_LOOT_FILES Management/Loot/*.cpp Management/Loot/*.h Management/Loot/*.hpp)
 file(GLOB SRC_MANAGEMENT_OBJECTUPDATES_FILES Management/ObjectUpdates/*.cpp Management/ObjectUpdates/*.h Management/ObjectUpdates/*.hpp)
 file(GLOB SRC_MANAGEMENT_TICKETS_FILES Management/Tickets/*.cpp Management/Tickets/*.h Management/Tickets/*.hpp)
 file(GLOB SRC_MAP_FILES Map/*.cpp Map/*.h Map/*.hpp)
@@ -56,6 +57,7 @@ set(WORLD_SRCS
     ${SRC_MANAGEMENT_GOSSIP_FILES}
     ${SRC_MANAGEMENT_GUILD_FILES}
     ${SRC_MANAGEMENT_LFG_FILES}
+    ${SRC_MANAGEMENT_LOOT_FILES}
     ${SRC_MANAGEMENT_OBJECTUPDATES_FILES}
     ${SRC_MANAGEMENT_TICKETS_FILES}
     ${SRC_MAP_FILES}
@@ -113,6 +115,7 @@ source_group(Management\\Battleground FILES ${SRC_MANAGEMENT_BATTLEGROUND_FILES}
 source_group(Management\\Gossip FILES ${SRC_MANAGEMENT_GOSSIP_FILES})
 source_group(Management\\Guild FILES ${SRC_MANAGEMENT_GUILD_FILES})
 source_group(Management\\LFG FILES ${SRC_MANAGEMENT_LFG_FILES})
+source_group(Management\\Loot FILES ${SRC_MANAGEMENT_LOOT_FILES})
 source_group(Management\\ObjectUpdates FILES ${SRC_MANAGEMENT_OBJECTUPDATES_FILES})
 source_group(Management\\Tickets FILES ${SRC_MANAGEMENT_TICKETS_FILES})
 source_group(Map FILES ${SRC_MAP_FILES})

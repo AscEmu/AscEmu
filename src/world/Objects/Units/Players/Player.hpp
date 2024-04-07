@@ -51,6 +51,7 @@ namespace MySQLStructure
 struct VoidStorageItem;
 class TradeData;
 class ItemInterface;
+struct ItemProperties;
 struct Auction;
 enum AchievementCriteriaTypes : uint8_t;
 class ArenaTeam;
@@ -368,7 +369,7 @@ public:
     uint32_t getWatchedFaction() const;
     void setWatchedFaction(uint32_t factionId);
 
-#if VERSION_STRING < WotLK
+#if VERSION_STRING == TBC
     float getManaRegeneration() const;
     void setManaRegeneration(float value);
 
@@ -769,24 +770,22 @@ public:
 #endif
 
     // PlayerStats.cpp
-    void updateManaRegeneration();
+    void updateManaRegeneration(bool initialUpdate = false);
+    void updateRageRegeneration(bool initialUpdate = false);
+#if VERSION_STRING >= WotLK
+    void updateRunicPowerRegeneration(bool initialUpdate = false);
+#endif
+    // Returns health regen value per 2 sec
+    float_t calculateHealthRegenerationValue(bool inCombat) const;
 
 private:
     // Regenerate timers
-    // Rage and Runic Power
-    uint16_t m_rageRunicPowerRegenerateTimer = 0;
 #if VERSION_STRING >= Cata
     uint16_t m_holyPowerRegenerateTimer = 0;
 #endif
 
     // This timer ticks even if the player is not eating or drinking
     uint16_t m_foodDrinkSpellVisualTimer = 5000;
-
-#if VERSION_STRING == Classic
-    // Classic doesn't have these in unit or playerdata
-    float m_manaRegeneration = 0.0f;
-    float m_manaRegenerationWhileCasting = 0.0f;
-#endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Database stuff
@@ -1450,13 +1449,13 @@ public:
     void addQuestToRemove(uint32_t questId);
 
     void addQuestToFinished(uint32_t questId);
-    bool hasQuestFinished(uint32_t questId);
+    bool hasQuestFinished(uint32_t questId) const;
 
     void areaExploredQuestEvent(uint32_t questId);
 
     void clearQuest(uint32_t questId);
 
-    bool hasQuestForItem(uint32_t itemId);
+    bool hasQuestForItem(uint32_t itemId) const;
 
     void addQuestSpell(uint32_t spellId);
     bool hasQuestSpell(uint32_t spellId);
@@ -1566,10 +1565,6 @@ private:
     /////////////////////////////////////////////////////////////////////////////////////////
     // Taxi
 public:
-    TaxiPath* m_taxi;
-#if VERSION_STRING > WotLK
-    void initTaxiNodesForLevel();
-#endif
     bool activateTaxiPathTo(std::vector<uint32_t> const& nodes, Creature* npc = nullptr, uint32_t spellid = 0);
     bool activateTaxiPathTo(uint32_t taxi_path_id, uint32_t spellid = 0);
     bool activateTaxiPathTo(uint32_t taxi_path_id, Creature* npc);
@@ -1577,7 +1572,15 @@ public:
     void continueTaxiFlight() const;
     void sendTaxiNodeStatusMultiple();
 
-    bool isInFlight()  const { return hasUnitStateFlag(UNIT_STATE_IN_FLIGHT); }
+    bool isInFlight() const;
+    bool isOnTaxi() const;
+
+    void initTaxiNodesForLevel();
+
+    TaxiPath* getTaxiData() const { return m_taxi; }
+
+private:
+    TaxiPath* m_taxi = nullptr;
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // Loot
@@ -1992,8 +1995,6 @@ public:
 
     // SPELL_AURA_MOD_MANA_REGEN_INTERRUPT
     uint32_t m_modInterrManaRegenPct = 0;
-    // SPELL_AURA_MOD_POWER_REGEN
-    int32_t m_modInterrManaRegen = 0;
     // SPELL_AURA_REGEN_MANA_STAT_PCT
     int32_t m_modManaRegenFromStat[STAT_COUNT] = { 0 };
     float m_RegenManaOnSpellResist = 0.0f;
@@ -2009,7 +2010,6 @@ public:
     float m_increaseDamageByTypePct[12] = { 0 };
     float m_increaseCricticalByTypePct[12] = { 0 };
     int32_t m_detectedRange = 0;
-    float m_pctIgnoreRegenModifier = 0.0f;
     uint32_t m_retaineDrage = 0;                            // Warrior spell related
 
     void calcStat(uint8_t t);
