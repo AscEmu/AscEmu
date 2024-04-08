@@ -112,5 +112,5 @@ void Charter::removeSignature(uint32_t _playerGuid)
     saveToDB();
 }
 
-uint8_t Charter::getSignatureCount() const { return m_signatures.size(); }
+uint8_t Charter::getSignatureCount() const { return static_cast<uint8_t>(m_signatures.size()); }
 std::vector<uint32_t> Charter::getSignatures() { return m_signatures; }

@@ -46,7 +46,7 @@ public:
     bool hasArrived() const { return (_currentNode >= _path.size()); }
     void setCurrentNodeAfterTeleport();
     void skipCurrentNode() { ++_currentNode; }
-    void setToLastNode() { _currentNode = _path.size() - 1; }
+    void setToLastNode() { _currentNode = static_cast<uint32_t>(_path.size()) - 1; }
     void doEventIfAny(Player* player, WDB::Structures::TaxiPathNodeEntry const* node, bool departure);
 
     bool getResetPos(Player*, float& x, float& y, float& z);

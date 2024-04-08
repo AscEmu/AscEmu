@@ -392,9 +392,9 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE *output, WMORoot *rootWMO, bool precise
         int VERT[] = { 0x54524556, nColVertices * 3 * static_cast<int>(sizeof(float)) + 4, nColVertices };// "VERT"
         int check = 3 * nColVertices;
         fwrite(VERT, 4, 3, output);
-        for (uint32 i = 0; i<nVertices; ++i)
+        for (uint32 i = 0; i < nVertices; ++i)
             if (IndexRenum[i] >= 0)
-                check -= fwrite(MOVT + 3 * i, sizeof(float), 3, output);
+                check -= static_cast<int>(fwrite(MOVT + 3 * i, sizeof(float), 3, output));
 
         assert(check == 0);
 
@@ -520,7 +520,7 @@ WMOInstance::WMOInstance(MPQFile& f, char const* WmoInstName, uint32 mapID, uint
 
     fseek(input, 8, SEEK_SET); // get the correct no of vertices
     int nVertices;
-    int count = fread(&nVertices, sizeof(int), 1, input);
+    int count = static_cast<int>(fread(&nVertices, sizeof(int), 1, input));
     fclose(input);
 
     if (count != 1 || nVertices == 0)
@@ -553,7 +553,7 @@ WMOInstance::WMOInstance(MPQFile& f, char const* WmoInstName, uint32 mapID, uint
     fwrite(&scale, sizeof(float), 1, pDirfile);
     fwrite(&pos2, sizeof(float), 3, pDirfile);
     fwrite(&pos3, sizeof(float), 3, pDirfile);
-    uint32 nlen = strlen(WmoInstName);
+    uint32 nlen = static_cast<uint32_t>(strlen(WmoInstName));
     fwrite(&nlen, sizeof(uint32), 1, pDirfile);
     fwrite(WmoInstName, sizeof(char), nlen, pDirfile);
 

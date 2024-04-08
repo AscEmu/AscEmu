@@ -23,6 +23,7 @@ TwinsAI::TwinsAI(Creature* pCreature) : CreatureAIScript(pCreature)
     // Add Boundary
     pCreature->getAIInterface()->addBoundary(new CircleBoundary(LocationVector(563.26f, 139.6f), 75.0));
 
+    AuraState = 0;
     Weapon = 0;
     MyEmphatySpellId = 0;
     OtherEssenceSpellId = 0;
@@ -333,7 +334,7 @@ void EssenceGossip::onHello(Object* pObject, Player* plr)
     menu.sendGossipPacket(plr);
 }
 
-uint32_t EssenceGossip::getData(Creature* pCreature, bool data)
+uint32_t EssenceGossip::getData(Creature* pCreature, bool data) const
 {
     uint32_t spellReturned = 0;
     switch (pCreature->getEntry())
@@ -377,7 +378,8 @@ void UnleashedBallAI::OnLoad()
     if (stalkerGUIDS.empty())
         return;
 
-    if (Creature* pStalker = getInstanceScript()->GetCreatureByGuid(stalkerGUIDS[Util::getRandomUInt(0, stalkerGUIDS.size() - 1)]))
+    const auto maxStalkers = static_cast<uint32_t>(stalkerGUIDS.size() - 1);
+    if (Creature* pStalker = getInstanceScript()->GetCreatureByGuid(stalkerGUIDS[Util::getRandomUInt(0, maxStalkers)]))
         getMovementManager()->movePoint(1, pStalker->GetPositionX(), pStalker->GetPositionY(), pStalker->GetPositionZ());
 
     RangeCheckTimer = 500;
@@ -389,7 +391,8 @@ void UnleashedBallAI::OnReachWP(uint32_t type, uint32_t id)
         return;
 
     // move to another random stalker
-    if (Creature* pStalker = getInstanceScript()->GetCreatureByGuid(stalkerGUIDS[Util::getRandomUInt(0, stalkerGUIDS.size() - 1)]))
+    const auto maxStalkers = static_cast<uint32_t>(stalkerGUIDS.size() - 1);
+    if (Creature* pStalker = getInstanceScript()->GetCreatureByGuid(stalkerGUIDS[Util::getRandomUInt(0, maxStalkers)]))
         getMovementManager()->movePoint(1, pStalker->GetPositionX(), pStalker->GetPositionY(), pStalker->GetPositionZ());
 }
 
@@ -464,12 +467,13 @@ void BulletCotrollerAI::OnLoad()
 
     addAIFunction([this](CreatureAIFunc pThis)
         {
+            const auto maxStalkers = static_cast<uint32_t>(stalkerGUIDS.size() - 1);
             if (darkCounter < 36)
-                if (Creature* pStalker = getInstanceScript()->GetCreatureByGuid(stalkerGUIDS[Util::getRandomUInt(0, stalkerGUIDS.size() - 1)]))
+                if (Creature* pStalker = getInstanceScript()->GetCreatureByGuid(stalkerGUIDS[Util::getRandomUInt(0, maxStalkers)]))
                     summonCreature(NPC_UNLEASHED_DARK, pStalker->GetPosition());
 
             if (lightCounter < 36)
-                if (Creature* pStalker = getInstanceScript()->GetCreatureByGuid(stalkerGUIDS[Util::getRandomUInt(0, stalkerGUIDS.size() - 1)]))
+                if (Creature* pStalker = getInstanceScript()->GetCreatureByGuid(stalkerGUIDS[Util::getRandomUInt(0, maxStalkers)]))
                     summonCreature(NPC_UNLEASHED_LIGHT, pStalker->GetPosition());
 
             repeatFunctionFromScheduler(pThis, 1s);

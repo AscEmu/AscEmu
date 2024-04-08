@@ -225,10 +225,10 @@ public:
     std::vector<uint32_t> selectChampions(PlayerTeam playerTeam);
 
 protected:
-    uint32_t    mChampionsNotStarted;
-    uint32_t    mChampionsFailed;
-    uint32_t    mChampionsKilled;
-    bool        mInProgress;
+    uint32_t mChampionsNotStarted = 0;
+    uint32_t mChampionsFailed = 0;
+    uint32_t mChampionsKilled = 0;
+    bool mInProgress = false;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -246,7 +246,7 @@ public:
     void OnDied(Unit* /*_killer*/) override;
     void justReachedSpawn() override;
 
-    float calculateThreat(float distance, float armor, uint32_t health);
+    float calculateThreat(float distance, uint32_t armor, uint32_t health) const;
 
     uint32_t enemiesInRange(float range);
 
