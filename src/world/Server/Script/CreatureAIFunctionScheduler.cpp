@@ -210,7 +210,7 @@ void CreatureAIFunctionScheduler::update(unsigned long time_passed)
             continue;
         }
 
-        if (!function->isHpInPercentRange(mOwner->_getHealthPercent()))
+        if (!function->isHpInPercentRange(static_cast<float>(mOwner->_getHealthPercent())))
             continue; // Not in HP range, skip
 
         // We are a Spell Function so lets do some cheks dependant on that

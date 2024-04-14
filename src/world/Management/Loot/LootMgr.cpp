@@ -198,7 +198,7 @@ void LootMgr::loadLootTables(std::string const& szTableName, LootTemplateMap* Lo
     QueryResult* result = sMySQLStore.getWorldDBQuery("SELECT * FROM %s ORDER BY entryid ASC", szTableName.c_str());
     if (result == nullptr)
     {
-        sLogger.failure("LootMgr::loadLootTables : Loading loot from table {} failed.", szTableName.c_str());
+        sLogger.failure("LootMgr::loadLootTables : Loading loot from table {} failed.", szTableName);
         return;
     }
 
@@ -223,7 +223,7 @@ void LootMgr::loadLootTables(std::string const& szTableName, LootTemplateMap* Lo
         const auto itemProto = sMySQLStore.getItemProperties(itemId);
         if (itemProto == nullptr)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "LootMgr::loadLootTables : Invalid Item with entry {} set in {}", itemId, szTableName.c_str());
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "LootMgr::loadLootTables : Invalid Item with entry {} set in {}", itemId, szTableName);
             continue;
         }
 

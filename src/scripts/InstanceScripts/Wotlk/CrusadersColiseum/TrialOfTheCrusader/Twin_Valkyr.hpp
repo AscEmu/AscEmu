@@ -173,7 +173,7 @@ class EssenceGossip : public GossipScript
 public:
     void onHello(Object* pObject, Player* plr) override;
 
-    uint32_t getData(Creature* pCreature, bool data);
+    uint32_t getData(Creature* pCreature, bool data) const;
 
     template<class T> inline
     const T& RAID_MODE(Creature* pCreature, const T& normal10, const T& normal25, const T& heroic10, const T& heroic25) const

@@ -1811,7 +1811,7 @@ MySQLStructure::NpcScriptText const* MySQLDataStore::getNpcScriptTextById(uint32
     if (list != _npcScriptTextStoreById.end())
     {
         std::vector<MySQLStructure::NpcScriptText> const& textList = list->second;
-        for (auto text : textList)
+        for (const auto& text : textList)
         {
             if (text.text_id == index)
                 return &text;

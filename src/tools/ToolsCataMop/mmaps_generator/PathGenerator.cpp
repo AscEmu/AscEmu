@@ -88,7 +88,7 @@ bool handleArgs(int argc, char** argv,
             if (!param)
                 return false;
 
-            float maxangle = atof(param);
+            float maxangle = static_cast<float>(atof(param));
             if (maxangle <= 90.f && maxangle >= 45.f)
                 maxAngle = maxangle;
             else
@@ -297,6 +297,6 @@ int main(int argc, char** argv)
         builder.buildAllMaps(threads);
 
     if (!silent)
-        printf("Finished. MMAPS were built in %u ms!\n", Util::GetTimeDifferenceToNow(startTime));
+        printf("Finished. MMAPS were built in %I64d ms!\n", Util::GetTimeDifferenceToNow(startTime));
     return 0;
 }

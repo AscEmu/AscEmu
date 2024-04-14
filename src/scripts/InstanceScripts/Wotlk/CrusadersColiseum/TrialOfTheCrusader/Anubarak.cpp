@@ -208,7 +208,7 @@ void AnubarakAI::emerge(CreatureAIFunc pThis)
 void AnubarakAI::summonFrostSphere(CreatureAIFunc pThis)
 {
     // Get a random starting index within the valid range
-    uint8_t startAt = Util::getRandomUInt(0, sphereGuids.size() - 1);
+    uint8_t startAt = Util::getRandomUInt(0, static_cast<uint32_t>(sphereGuids.size() - 1));
     uint8_t attempts = 0;
 
     do {
@@ -246,7 +246,7 @@ void AnubarakAI::summonScarabs(CreatureAIFunc pThis)
     if (!burrowGuids.empty()) 
     {
         // Get a random index within the valid range
-        uint32_t at = Util::getRandomUInt(0, burrowGuids.size() - 1);
+        uint32_t at = Util::getRandomUInt(0, static_cast<uint32_t>(burrowGuids.size() - 1));
 
         // Get the iterator pointing to the selected element in the vector
         auto i = burrowGuids.begin() + at;
@@ -309,7 +309,7 @@ void SwarmScrabAI::AIUpdate(unsigned long time_passed)
     if (_isCasting())
         return;
 
-    if (determinationTimer <= time_passed)
+    if (determinationTimer <= static_cast<int32_t>(time_passed))
     {
         castSpellOnSelf(anubarak::SPELL_DETERMINATION);
         determinationTimer = Util::getRandomUInt(10 * TimeVarsMs::Second, 60 * TimeVarsMs::Second);
@@ -368,7 +368,7 @@ void BurrowerAI::AIUpdate(unsigned long time_passed)
     if (_isCasting())
         return;
 
-    if ((submergeTimer <= time_passed) && _getHealthPercent() <= 80)
+    if ((submergeTimer <= static_cast<int32_t>(time_passed)) && _getHealthPercent() <= 80)
     {
         if (hasAura(anubarak::SPELL_SUBMERGE_EFFECT))
         {
@@ -540,7 +540,7 @@ void SpikeAI::AIUpdate(unsigned long time_passed)
 
     if (phaseTimer)
     {
-        if (phaseTimer <= time_passed)
+        if (phaseTimer <= static_cast<int32_t>(time_passed))
         {
             switch (getScriptPhase())
             {

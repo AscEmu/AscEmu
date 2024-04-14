@@ -11,6 +11,19 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Severity.hpp"
 #include "StringFormat.hpp"
 
+// Required for fmt lib 10.0+ because enums are not formatted automatically anymore -Appled
+template <typename EnumType>
+    requires std::is_enum_v<EnumType>
+struct fmt::formatter<EnumType> : fmt::formatter<std::underlying_type_t<EnumType>>
+{
+    // Forwards the formatting by casting the enum to it's underlying type
+    auto format(const EnumType& enumValue, format_context& ctx) const
+    {
+        return fmt::formatter<std::underlying_type_t<EnumType>>::format(
+            static_cast<std::underlying_type_t<EnumType>>(enumValue), ctx);
+    }
+};
+
 namespace AscEmu::Logging
 {
     class SERVER_DECL Logger
@@ -18,10 +31,10 @@ namespace AscEmu::Logging
         FILE* normalLogFile = nullptr;
         FILE* errorLogFile = nullptr;
         MessageType minimumMessageType = MessageType::MINOR;
-        uint32_t aelog_debug_flags;
+        uint32_t aelog_debug_flags = 0;
 
 #ifdef _WIN32
-        HANDLE handle_stdout;
+        HANDLE handle_stdout = nullptr;
 #endif
 
     public:
@@ -55,6 +68,8 @@ namespace AscEmu::Logging
         template<typename... Args>
         inline void debugFlag(DebugFlags log_flags, std::string_view fmt, Args&&... args)
         {
+            if (!(aelog_debug_flags & log_flags))
+                return;
             log(getSeverityConsoleColorByDebugFlag(log_flags), MessageType::DEBUG, StringFormat(fmt, std::forward<Args>(args)...));
         }
 

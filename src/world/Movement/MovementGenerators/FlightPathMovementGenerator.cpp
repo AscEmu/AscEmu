@@ -18,17 +18,17 @@ This file is released under the MIT license. See README-MIT for more information
 uint32_t FlightPathMovementGenerator::getPathAtMapEnd() const
 {
     if (_currentNode >= _path.size())
-        return _path.size();
+        return static_cast<uint32_t>(_path.size());
 
     uint32_t curMapId = _path[_currentNode]->mapid;
     for (uint32_t i = _currentNode; i < _path.size(); ++i)
         if (_path[i]->mapid != curMapId)
             return i;
 
-    return _path.size();
+    return static_cast<uint32_t>(_path.size());
 }
 
-bool isNodeIncludedInShortenedPath(WDB::Structures::TaxiPathNodeEntry const* path1, WDB::Structures::TaxiPathNodeEntry const* path2)
+static bool isNodeIncludedInShortenedPath(WDB::Structures::TaxiPathNodeEntry const* path1, WDB::Structures::TaxiPathNodeEntry const* path2)
 {
     return path1->mapid != path2->mapid || std::pow(path1->x - path2->x, 2) + std::pow(path1->y - path2->y, 2) > (40.0f * 40.0f);
 }
@@ -188,7 +188,7 @@ void FlightPathMovementGenerator::setCurrentNodeAfterTeleport()
         return;
 
     uint32_t map0 = _path[_currentNode]->mapid;
-    for (size_t i = _currentNode + 1; i < _path.size(); ++i)
+    for (uint32_t i = _currentNode + 1; i < _path.size(); ++i)
     {
         if (_path[i]->mapid != map0)
         {
@@ -223,14 +223,15 @@ void FlightPathMovementGenerator::initEndGridInfo()
     //  be reinitialized for each flightmaster at the end of each spline (or stop) in the flight.
 
     // Number of nodes in path.
-    uint32_t nodeCount = _path.size();
+    const auto nodeCount = static_cast<uint32_t>(_path.size());
     // MapId of last node
-    _endMapId = _path[nodeCount - 1]->mapid; 
+    const uint32_t endNode = nodeCount - 1;
+    _endMapId = _path[endNode]->mapid;
     // Node where Destination Cell gets Loaded
     _preloadTargetNode = nodeCount - 3;
     // EndCell Position
-    _endGridX = _path[nodeCount - 1]->x;
-    _endGridY = _path[nodeCount - 1]->y;
+    _endGridX = _path[endNode]->x;
+    _endGridY = _path[endNode]->y;
 }
 
 void FlightPathMovementGenerator::preloadEndGrid()

@@ -1068,7 +1068,7 @@ void SpellMgr::loadTalentRanks()
         const auto* const firstRank = getSpellInfo(talentEntry->RankID[0]);
         if (firstRank == nullptr)
         {
-            sLogger.failure("SpellMgr::loadTalentRanks : Unknown spell id %u in sTalentStore, skipping this chain", talentEntry->RankID[0]);
+            sLogger.failure("SpellMgr::loadTalentRanks : Unknown spell id {} in sTalentStore, skipping this chain", talentEntry->RankID[0]);
             continue;
         }
 
@@ -1154,13 +1154,13 @@ void SpellMgr::loadTalentRanks()
 
         if (!areSpellsValid)
         {
-            sLogger.failure("SpellMgr::loadTalentRanks : Talent rank chain contains invalid spell id %u, skipping this chain", invalidSpellId);
+            sLogger.failure("SpellMgr::loadTalentRanks : Talent rank chain contains invalid spell id {}, skipping this chain", invalidSpellId);
             continue;
         }
 
         if (!areRanksValid)
         {
-            sLogger.failure("SpellMgr::loadTalentRanks : Talent rank chain contains invalid rank %u for spell id %u (expected %u), skipping this chain",
+            sLogger.failure("SpellMgr::loadTalentRanks : Talent rank chain contains invalid rank {} for spell id {} (expected {}), skipping this chain",
                 invalidSpellRank, invalidSpellId, expectedSpellRank);
             continue;
         }
@@ -1173,7 +1173,7 @@ void SpellMgr::loadTalentRanks()
 
         if (preparedSpellRanks.size() == 1)
         {
-            sLogger.failure("SpellMgr::loadTalentRanks : Talent rank chain contains only one spell for id %u, skipping", preparedSpellRanks.cbegin()->first);
+            sLogger.failure("SpellMgr::loadTalentRanks : Talent rank chain contains only one spell for id {}, skipping", preparedSpellRanks.cbegin()->first);
             continue;
         }
 
@@ -1187,7 +1187,7 @@ void SpellMgr::loadTalentRanks()
         ++count;
     }
 
-    sLogger.info("SpellMgr : Loaded %u talent rank chains in %u ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    sLogger.info("SpellMgr : Loaded {} talent rank chains in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 #endif
 
@@ -1776,7 +1776,7 @@ void SpellMgr::loadSpellRanks()
 
         if (spellRankChain.size() < 2)
         {
-            sLogger.failure("SpellMgr::loadSpellRanks : Spell rank chain for spell id %u must contain at least 2 spells, skipping", spellRankChain.cbegin()->second);
+            sLogger.failure("SpellMgr::loadSpellRanks : Spell rank chain for spell id {} must contain at least 2 spells, skipping", spellRankChain.cbegin()->second);
             spellRankChain.clear();
             return;
         }
@@ -1843,14 +1843,14 @@ void SpellMgr::loadSpellRanks()
 
         if (!areChainSpellsValid)
         {
-            sLogger.failure("SpellMgr::loadSpellRanks : Spell rank chain contains invalid spell id %u, skipping this chain", invalidSpellId);
+            sLogger.failure("SpellMgr::loadSpellRanks : Spell rank chain contains invalid spell id {}, skipping this chain", invalidSpellId);
             spellRankChain.clear();
             return;
         }
 
         if (!areChainRanksValid)
         {
-            sLogger.failure("SpellMgr::loadSpellRanks : Spell rank chain contains invalid spell rank %u for spell id %u (expected %u), skipping this chain",
+            sLogger.failure("SpellMgr::loadSpellRanks : Spell rank chain contains invalid spell rank {} for spell id {} (expected {}), skipping this chain",
                 invalidSpellRank, invalidSpellId, expectedSpellRank);
             spellRankChain.clear();
             return;
@@ -1858,7 +1858,7 @@ void SpellMgr::loadSpellRanks()
 
         if (foundDuplicateChain)
         {
-            sLogger.failure("SpellMgr::loadSpellRanks : Spell id %u already contains a spell rank chain, skipping this chain", invalidSpellId);
+            sLogger.failure("SpellMgr::loadSpellRanks : Spell id {} already contains a spell rank chain, skipping this chain", invalidSpellId);
             spellRankChain.clear();
             return;
         }
@@ -1899,7 +1899,7 @@ void SpellMgr::loadSpellRanks()
     // Remember to create a rank chain for last chain as well
     createSpellRankChain();
 
-    sLogger.info("SpellMgr : Loaded %u spell rank chains from `spell_ranks` table", totalSpellRankChains);
+    sLogger.info("SpellMgr : Loaded {} spell rank chains from `spell_ranks` table", totalSpellRankChains);
 }
 
 void SpellMgr::setSpellCoefficient(SpellInfo* sp)

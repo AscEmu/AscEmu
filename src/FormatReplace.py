@@ -3,7 +3,6 @@ from os import getcwd
 
 if not getcwd().endswith('src') and not getcwd().endswith('modules'):
     print('Run this from the src or modules directory!')
-    print('(Invoke as \'python ../apps/Fmt/FormatReplace.py\')')
     exit(1)
 
 def isLogger(line):
@@ -53,6 +52,7 @@ def handleCleanup(line):
     line = line.replace("%lu", "{}")
     line = line.replace("%llu", "{}")
     line = line.replace("%zu", "{}")
+    line = line.replace("%lld", "{}")
     line = line.replace("%02u", "{:02}")
     line = line.replace("%03u", "{:03}")
     line = line.replace("%04u", "{:04}")

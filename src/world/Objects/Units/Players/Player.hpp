@@ -1824,7 +1824,7 @@ public:
     void tagUnit(Object* object);
 
 #if VERSION_STRING > TBC
-    void updateAchievementCriteria(AchievementCriteriaTypes type, uint64_t miscValue1 = 0, uint64_t miscValue2 = 0, uint64_t miscValue3 = 0, Unit* unit = nullptr);
+    void updateAchievementCriteria(AchievementCriteriaTypes type, int32_t miscValue1 = 0, int32_t miscValue2 = 0, uint32_t miscValue3 = 0, Unit* unit = nullptr);
     AchievementMgr* getAchievementMgr();
 #endif
 

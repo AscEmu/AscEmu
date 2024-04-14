@@ -9875,8 +9875,8 @@ void Player::applyReforgeEnchantment(Item* item, bool apply)
     if (!reforge)
         return;
 
-    float removeValue = item->getReforgableStat(ItemModType(reforge->SourceStat)) * reforge->SourceMultiplier;
-    float addValue = removeValue * reforge->FinalMultiplier;
+    auto removeValue = static_cast<int32_t>(item->getReforgableStat(ItemModType(reforge->SourceStat)) * reforge->SourceMultiplier);
+    auto addValue = static_cast<int32_t>(removeValue * reforge->FinalMultiplier);
 
     switch (reforge->SourceStat)
     {
@@ -9902,52 +9902,52 @@ void Player::applyReforgeEnchantment(Item* item, bool apply)
         modifyBonuses(ITEM_MOD_STAMINA, -removeValue, apply);
         break;
     case ITEM_MOD_DEFENSE_RATING:
-        modifyBonuses(ITEM_MOD_DEFENSE_RATING, -int32_t(removeValue), apply);
+        modifyBonuses(ITEM_MOD_DEFENSE_RATING, -removeValue, apply);
         break;
     case  ITEM_MOD_DODGE_RATING:
-        modifyBonuses(ITEM_MOD_DODGE_RATING, -int32_t(removeValue), apply);
+        modifyBonuses(ITEM_MOD_DODGE_RATING, -removeValue, apply);
         break;
     case ITEM_MOD_PARRY_RATING:
-        modifyBonuses(ITEM_MOD_PARRY_RATING, -int32_t(removeValue), apply);
+        modifyBonuses(ITEM_MOD_PARRY_RATING, -removeValue, apply);
         break;
     case ITEM_MOD_SHIELD_BLOCK_RATING:
-        modifyBonuses(ITEM_MOD_SHIELD_BLOCK_RATING, -int32_t(removeValue), apply);
+        modifyBonuses(ITEM_MOD_SHIELD_BLOCK_RATING, -removeValue, apply);
         break;
     case ITEM_MOD_MELEE_HIT_RATING:
-        modifyBonuses(ITEM_MOD_MELEE_HIT_RATING, -int32_t(removeValue), apply);
+        modifyBonuses(ITEM_MOD_MELEE_HIT_RATING, -removeValue, apply);
         break;
     case ITEM_MOD_RANGED_HIT_RATING:
-        modifyBonuses(ITEM_MOD_RANGED_HIT_RATING, -int32_t(removeValue), apply);
+        modifyBonuses(ITEM_MOD_RANGED_HIT_RATING, -removeValue, apply);
         break;
     case ITEM_MOD_SPELL_HIT_RATING:
-        modifyBonuses(ITEM_MOD_SPELL_HIT_RATING, -int32_t(removeValue), apply);
+        modifyBonuses(ITEM_MOD_SPELL_HIT_RATING, -removeValue, apply);
         break;
     case ITEM_MOD_MELEE_CRITICAL_STRIKE_RATING:
-        modifyBonuses(ITEM_MOD_MELEE_CRITICAL_STRIKE_RATING, -int32_t(removeValue), apply);
+        modifyBonuses(ITEM_MOD_MELEE_CRITICAL_STRIKE_RATING, -removeValue, apply);
         break;
     case ITEM_MOD_RANGED_CRITICAL_STRIKE_RATING:
-        modifyBonuses(ITEM_MOD_RANGED_CRITICAL_STRIKE_RATING, -int32_t(removeValue), apply);
+        modifyBonuses(ITEM_MOD_RANGED_CRITICAL_STRIKE_RATING, -removeValue, apply);
         break;
     case ITEM_MOD_SPELL_CRITICAL_STRIKE_RATING:
-        modifyBonuses(ITEM_MOD_SPELL_CRITICAL_STRIKE_RATING, -int32_t(removeValue), apply);
+        modifyBonuses(ITEM_MOD_SPELL_CRITICAL_STRIKE_RATING, -removeValue, apply);
         break;
     case ITEM_MOD_SPELL_HASTE_RATING:
-        modifyBonuses(ITEM_MOD_SPELL_HASTE_RATING, -int32_t(removeValue), apply);
+        modifyBonuses(ITEM_MOD_SPELL_HASTE_RATING, -removeValue, apply);
         break;
     case ITEM_MOD_HIT_RATING:
-        modifyBonuses(ITEM_MOD_HIT_RATING, -int32_t(removeValue), apply);
+        modifyBonuses(ITEM_MOD_HIT_RATING, -removeValue, apply);
         break;
     case ITEM_MOD_CRITICAL_STRIKE_RATING:
-        modifyBonuses(ITEM_MOD_CRITICAL_STRIKE_RATING, -int32_t(removeValue), apply);
+        modifyBonuses(ITEM_MOD_CRITICAL_STRIKE_RATING, -removeValue, apply);
         break;
     case ITEM_MOD_RESILIENCE_RATING:
-        modifyBonuses(ITEM_MOD_RESILIENCE_RATING, -int32_t(removeValue), apply);
+        modifyBonuses(ITEM_MOD_RESILIENCE_RATING, -removeValue, apply);
         break;
     case ITEM_MOD_HASTE_RATING:
-        modifyBonuses(ITEM_MOD_HASTE_RATING, -int32_t(removeValue), apply);
+        modifyBonuses(ITEM_MOD_HASTE_RATING, -removeValue, apply);
         break;
     case ITEM_MOD_EXPERTISE_RATING:
-        modifyBonuses(ITEM_MOD_EXPERTISE_RATING, -int32_t(removeValue), apply);
+        modifyBonuses(ITEM_MOD_EXPERTISE_RATING, -removeValue, apply);
         break;
     case ITEM_MOD_ATTACK_POWER:
         modifyBonuses(ITEM_MOD_ATTACK_POWER, -removeValue, apply);
@@ -9956,13 +9956,13 @@ void Player::applyReforgeEnchantment(Item* item, bool apply)
         modifyBonuses(ITEM_MOD_RANGED_ATTACK_POWER, -removeValue, apply);
         break;
     case ITEM_MOD_MANA_REGENERATION:
-        modifyBonuses(ITEM_MOD_MANA_REGENERATION , -int32_t(removeValue), apply);
+        modifyBonuses(ITEM_MOD_MANA_REGENERATION , -removeValue, apply);
         break;
     case ITEM_MOD_ARMOR_PENETRATION_RATING:
-        modifyBonuses(ITEM_MOD_ARMOR_PENETRATION_RATING, -int32_t(removeValue), apply);
+        modifyBonuses(ITEM_MOD_ARMOR_PENETRATION_RATING, -removeValue, apply);
         break;
     case ITEM_MOD_SPELL_POWER:
-        modifyBonuses(ITEM_MOD_SPELL_POWER , -int32_t(removeValue), apply);
+        modifyBonuses(ITEM_MOD_SPELL_POWER , -removeValue, apply);
         break;
     /*case ITEM_MOD_HEALTH_REGEN:   // todo dunno where these are handled
         -int32_t(removeValue)
@@ -9999,52 +9999,52 @@ void Player::applyReforgeEnchantment(Item* item, bool apply)
         modifyBonuses(ITEM_MOD_STAMINA, addValue, apply);
         break;
     case ITEM_MOD_DEFENSE_RATING:
-        modifyBonuses(ITEM_MOD_DEFENSE_RATING, int32_t(addValue), apply);
+        modifyBonuses(ITEM_MOD_DEFENSE_RATING, addValue, apply);
         break;
     case  ITEM_MOD_DODGE_RATING:
-        modifyBonuses(ITEM_MOD_DODGE_RATING, int32_t(addValue), apply);
+        modifyBonuses(ITEM_MOD_DODGE_RATING, addValue, apply);
         break;
     case ITEM_MOD_PARRY_RATING:
-        modifyBonuses(ITEM_MOD_PARRY_RATING, int32_t(addValue), apply);
+        modifyBonuses(ITEM_MOD_PARRY_RATING, addValue, apply);
         break;
     case ITEM_MOD_SHIELD_BLOCK_RATING:
-        modifyBonuses(ITEM_MOD_SHIELD_BLOCK_RATING, int32_t(addValue), apply);
+        modifyBonuses(ITEM_MOD_SHIELD_BLOCK_RATING, addValue, apply);
         break;
     case ITEM_MOD_MELEE_HIT_RATING:
-        modifyBonuses(ITEM_MOD_MELEE_HIT_RATING, int32_t(addValue), apply);
+        modifyBonuses(ITEM_MOD_MELEE_HIT_RATING, addValue, apply);
         break;
     case ITEM_MOD_RANGED_HIT_RATING:
-        modifyBonuses(ITEM_MOD_RANGED_HIT_RATING, int32_t(addValue), apply);
+        modifyBonuses(ITEM_MOD_RANGED_HIT_RATING, addValue, apply);
         break;
     case ITEM_MOD_SPELL_HIT_RATING:
-        modifyBonuses(ITEM_MOD_SPELL_HIT_RATING, int32_t(addValue), apply);
+        modifyBonuses(ITEM_MOD_SPELL_HIT_RATING, addValue, apply);
         break;
     case ITEM_MOD_MELEE_CRITICAL_STRIKE_RATING:
-        modifyBonuses(ITEM_MOD_MELEE_CRITICAL_STRIKE_RATING, int32_t(addValue), apply);
+        modifyBonuses(ITEM_MOD_MELEE_CRITICAL_STRIKE_RATING, addValue, apply);
         break;
     case ITEM_MOD_RANGED_CRITICAL_STRIKE_RATING:
-        modifyBonuses(ITEM_MOD_RANGED_CRITICAL_STRIKE_RATING, int32_t(addValue), apply);
+        modifyBonuses(ITEM_MOD_RANGED_CRITICAL_STRIKE_RATING, addValue, apply);
         break;
     case ITEM_MOD_SPELL_CRITICAL_STRIKE_RATING:
-        modifyBonuses(ITEM_MOD_SPELL_CRITICAL_STRIKE_RATING, int32_t(addValue), apply);
+        modifyBonuses(ITEM_MOD_SPELL_CRITICAL_STRIKE_RATING, addValue, apply);
         break;
     case ITEM_MOD_SPELL_HASTE_RATING:
-        modifyBonuses(ITEM_MOD_SPELL_HASTE_RATING, int32_t(addValue), apply);
+        modifyBonuses(ITEM_MOD_SPELL_HASTE_RATING, addValue, apply);
         break;
     case ITEM_MOD_HIT_RATING:
-        modifyBonuses(ITEM_MOD_HIT_RATING, int32_t(addValue), apply);
+        modifyBonuses(ITEM_MOD_HIT_RATING, addValue, apply);
         break;
     case ITEM_MOD_CRITICAL_STRIKE_RATING:
-        modifyBonuses(ITEM_MOD_CRITICAL_STRIKE_RATING, int32_t(addValue), apply);
+        modifyBonuses(ITEM_MOD_CRITICAL_STRIKE_RATING, addValue, apply);
         break;
     case ITEM_MOD_RESILIENCE_RATING:
-        modifyBonuses(ITEM_MOD_RESILIENCE_RATING, int32_t(addValue), apply);
+        modifyBonuses(ITEM_MOD_RESILIENCE_RATING, addValue, apply);
         break;
     case ITEM_MOD_HASTE_RATING:
-        modifyBonuses(ITEM_MOD_HASTE_RATING, int32_t(addValue), apply);
+        modifyBonuses(ITEM_MOD_HASTE_RATING, addValue, apply);
         break;
     case ITEM_MOD_EXPERTISE_RATING:
-        modifyBonuses(ITEM_MOD_EXPERTISE_RATING, int32_t(addValue), apply);
+        modifyBonuses(ITEM_MOD_EXPERTISE_RATING, addValue, apply);
         break;
     case ITEM_MOD_ATTACK_POWER:
         modifyBonuses(ITEM_MOD_ATTACK_POWER, addValue, apply);
@@ -10053,13 +10053,13 @@ void Player::applyReforgeEnchantment(Item* item, bool apply)
         modifyBonuses(ITEM_MOD_RANGED_ATTACK_POWER, addValue, apply);
         break;
     case ITEM_MOD_MANA_REGENERATION:
-        modifyBonuses(ITEM_MOD_MANA_REGENERATION, int32_t(addValue), apply);
+        modifyBonuses(ITEM_MOD_MANA_REGENERATION, addValue, apply);
         break;
     case ITEM_MOD_ARMOR_PENETRATION_RATING:
-        modifyBonuses(CR_ARMOR_PENETRATION, int32_t(addValue), apply);
+        modifyBonuses(CR_ARMOR_PENETRATION, addValue, apply);
         break;
     case ITEM_MOD_SPELL_POWER:
-        modifyBonuses(ITEM_MOD_SPELL_POWER, int32_t(addValue), apply);
+        modifyBonuses(ITEM_MOD_SPELL_POWER, addValue, apply);
         break;
     /*case ITEM_MOD_HEALTH_REGEN:   // todo dunno where these are handled
         int32_t(addValue)
@@ -10089,7 +10089,7 @@ bool Player::isAtGroupRewardDistance(Object* pRewardSource)
     Object* player = nullptr;
     const auto corpse = sObjectMgr.getCorpseByOwner(getGuidLow());
     if (corpse)
-        player = sObjectMgr.getPlayer(corpse->getOwnerGuid());
+        player = sObjectMgr.getPlayer(static_cast<uint32_t>(corpse->getOwnerGuid()));
 
     if (!player || isAlive())
         player = this;
@@ -10405,7 +10405,7 @@ void Player::addVoidStorageItemAtSlot(uint8_t slot, const VoidStorageItem& item)
         return;
     }
 
-    _voidStorageItems[slot] = new VoidStorageItem(item.itemId, item.itemId,
+    _voidStorageItems[slot] = new VoidStorageItem(item.itemId, item.itemEntry,
         item.creatorGuid, item.itemRandomPropertyId, item.itemSuffixFactor);
 }
 
@@ -16414,7 +16414,7 @@ uint32_t Player::getMainMeleeDamage(uint32_t attackPowerOverride)
 }
 
 #if VERSION_STRING > TBC
-void Player::updateAchievementCriteria(AchievementCriteriaTypes type, uint64_t miscValue1 /*= 0*/, uint64_t miscValue2 /*= 0*/, uint64_t miscValue3 /*= 0*/, Unit* unit /*= nullptr*/)
+void Player::updateAchievementCriteria(AchievementCriteriaTypes type, int32_t miscValue1 /*= 0*/, int32_t miscValue2 /*= 0*/, uint32_t miscValue3 /*= 0*/, Unit* unit /*= nullptr*/)
 {
     m_achievementMgr->updateAchievementCriteria(type, miscValue1, miscValue2, miscValue3, unit);
     Guild* guild = sGuildMgr.getGuildById(getGuildId());

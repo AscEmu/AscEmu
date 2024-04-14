@@ -59,7 +59,8 @@ void ChampionControllerAI::DoAction(int32_t action)
         case champions::ACTION_FAILED:
         {
             mChampionsFailed++;
-            if (mChampionsFailed + mChampionsKilled >= summons.size())
+            const auto championsKilled = static_cast<uint32_t>(mChampionsFailed + mChampionsKilled);
+            if (championsKilled >= summons.size())
             {
                 getInstanceScript()->setBossState(DATA_FACTION_CRUSADERS, EncounterStates::Failed);
                 summons.despawnAll();
@@ -103,8 +104,9 @@ void ChampionControllerAI::summonChampions()
 
     for (uint8_t i = 0; i < vChampionEntries.size(); ++i)
     {
-        uint8_t pos = Util::getRandomUInt(0, vChampionJumpTarget.size() - 1);
-        if (Creature* champion = summonCreature(vChampionEntries[i], vChampionJumpOrigin[Util::getRandomUInt(0, vChampionJumpOrigin.size() - 1)], CreatureSummonDespawnType::MANUAL_DESPAWN))
+        uint8_t pos = Util::getRandomUInt(0, static_cast<uint32_t>(vChampionJumpTarget.size() - 1));
+        const auto maxChampionOrigin = static_cast<uint32_t>(vChampionJumpOrigin.size() - 1);
+        if (Creature* champion = summonCreature(vChampionEntries[i], vChampionJumpOrigin[Util::getRandomUInt(0, maxChampionOrigin)], CreatureSummonDespawnType::MANUAL_DESPAWN))
         {
             summons.summon(champion);
             champion->getAIInterface()->setReactState(REACT_PASSIVE);
@@ -155,7 +157,7 @@ std::vector<uint32_t> ChampionControllerAI::selectChampions(PlayerTeam playerTea
     // Fill Healers
     for (uint8_t i = 0; i < healersSubtracted; ++i)
     {
-        uint8_t pos = Util::getRandomUInt(0, vHealersEntries.size() - 1);
+        uint8_t pos = Util::getRandomUInt(0, static_cast<uint32_t>(vHealersEntries.size() - 1));
         switch (vHealersEntries[pos])
         {
             case NPC_ALLIANCE_DRUID_RESTORATION:
@@ -191,7 +193,7 @@ std::vector<uint32_t> ChampionControllerAI::selectChampions(PlayerTeam playerTea
     // Damage Dealers
     if (getInstanceScript()->getInstance()->getDifficulty() == InstanceDifficulty::RAID_10MAN_NORMAL || getInstanceScript()->getInstance()->getDifficulty() == InstanceDifficulty::RAID_10MAN_HEROIC)
         for (uint8_t i = 0; i < 4; ++i)
-            vOtherEntries.erase(vOtherEntries.begin() + Util::getRandomUInt(0, vOtherEntries.size() - 1));
+            vOtherEntries.erase(vOtherEntries.begin() + Util::getRandomUInt(0, static_cast<uint32_t>(vOtherEntries.size() - 1)));
 
     std::vector<uint32_t> vChampionEntries;
     vChampionEntries.clear();
@@ -212,6 +214,7 @@ FactionChampionsAI::FactionChampionsAI(Creature* pCreature, uint8_t aitype) : Cr
     // Add Boundary
     pCreature->getAIInterface()->addBoundary(new CircleBoundary(LocationVector(563.26f, 139.6f), 75.0));
     mAIType = aitype;
+    mTeamInInstance = 0;
 }
 
 CreatureAIScript* FactionChampionsAI::Create(Creature* pCreature) { return new FactionChampionsAI(pCreature, champions::AI_MELEE); }
@@ -292,7 +295,7 @@ void FactionChampionsAI::justReachedSpawn()
     despawn();
 }
 
-float FactionChampionsAI::calculateThreat(float distance, float armor, uint32_t health)
+float FactionChampionsAI::calculateThreat(float distance, uint32_t armor, uint32_t health) const
 {
     float dist_mod = (mAIType == champions::AI_MELEE || mAIType == champions::AI_PET) ? 15.0f / (15.0f + distance) : 1.0f;
     float armor_mod = (mAIType == champions::AI_MELEE || mAIType == champions::AI_PET) ? armor / 16635.0f : 0.0f;
@@ -320,7 +323,7 @@ void FactionChampionsAI::update(CreatureAIFunc pThis)
         if (Player* victim = ref->getVictim()->ToPlayer())
         {
             ref->scaleThreat(0.0f);
-            ref->addThreat(1000000.0f * calculateThreat(getCreature()->getDistance2d(victim), victim->getArmorProficiency(), victim->getHealth()));
+            ref->addThreat(1000000.0f * calculateThreat(getCreature()->getDistance2d(victim), victim->getResistance(0), victim->getHealth()));
         }
 }
 

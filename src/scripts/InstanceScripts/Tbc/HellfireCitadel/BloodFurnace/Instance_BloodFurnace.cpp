@@ -66,8 +66,8 @@ public:
         }
     }
 
-    uint64_t m_broggokDoorGUID = 0;
-    uint64_t m_theMakerDoorGUID = 0;
+    uint32_t m_broggokDoorGUID = 0;
+    uint32_t m_theMakerDoorGUID = 0;
 
 };
 
