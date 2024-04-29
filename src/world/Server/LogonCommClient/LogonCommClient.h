@@ -35,7 +35,6 @@ class LogonCommClientSocket : public Socket
     RC4Engine _recvCrypto;
 
     public:
-
         LogonCommClientSocket(SOCKET fd);
         ~LogonCommClientSocket();
 

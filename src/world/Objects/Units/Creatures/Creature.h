@@ -39,7 +39,6 @@ uint8 get_byte(uint32 buffer, uint32 index);
 class SERVER_DECL Creature : public Unit
 {
 public:
-
     Creature(uint64_t guid);
     virtual ~Creature();
 
@@ -48,8 +47,8 @@ public:
 
     void Update(unsigned long time_passed);             // hides function Unit::Update
     void AddToWorld();                                  // hides virtual function Object::AddToWorld
-    void AddToWorld(WorldMap* pMapMgr);                   // hides virtual function Object::AddToWorld
-    // void PushToWorld(WorldMap*);                       // not used
+    void AddToWorld(WorldMap* pMapMgr);                 // hides virtual function Object::AddToWorld
+    // void PushToWorld(WorldMap*);                     // not used
     void RemoveFromWorld(bool free_guid);               // hides virtual function Unit::RemoveFromWorld
     void OnPrePushToWorld() override;                   // overrides virtual function Unit::OnPrePushToWorld
     void OnPushToWorld() override;                      // overrides virtual function Unit::OnPushToWorld
@@ -284,11 +283,9 @@ public:
         std::pair<uint32_t/*nodeId*/, uint32_t/*pathId*/> _currentWaypointNodeInfo = {0, 0};
 
     protected:
-
         virtual void SafeDelete();      // use DeleteMe() instead of SafeDelete() to avoid crashes like InWorld Creatures deleted.
 
     public:
-
         // Demon
         void EnslaveExpire();
 
@@ -351,7 +348,7 @@ public:
         bool IsInLimboState();
 
         void SetLimboState(bool set);
-    static uint32 GetLineByFamily(WDB::Structures::CreatureFamilyEntry const* family);
+        static uint32 GetLineByFamily(WDB::Structures::CreatureFamilyEntry const* family);
         void RemoveLimboState(Unit* healer);
 
         MapCell* m_respawnCell = nullptr;
@@ -370,7 +367,6 @@ public:
         time_t getRespawnTime() { return m_respawnTime; }
 
     protected:
-
         time_t m_corpseRemoveTime = 0;      // (msecs)timer for death or corpse disappearance
         time_t m_respawnTime = 0;           // (secs) time of next respawn
         uint32_t m_respawnDelay = 300;      // (secs) delay between corpse disappearance and respawning
@@ -402,7 +398,6 @@ public:
         CreatureProperties const* creature_properties = nullptr;
 
     private:
-
         uint32 m_Creature_type = 0;
 
         uint16_t m_movementFlagUpdateTimer = 1000;

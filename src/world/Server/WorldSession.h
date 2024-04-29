@@ -230,9 +230,7 @@ class SERVER_DECL WorldSession
 
         uint8 Update(uint32 InstanceID);
 
-        
         void SendNotification(const char* message, ...);
-
 
         void SetInstance(uint32 Instance) { instanceId = Instance; }
         uint32 GetLatency() const { return _latency; }
@@ -264,7 +262,6 @@ class SERVER_DECL WorldSession
         // Handlers (Already rewritten)
 
     protected:
-
         //////////////////////////////////////////////////////////////////////////////////////////
         // AreaTriggerHandler.cpp
         void handleAreaTriggerOpcode(WorldPacket& recvPacket);

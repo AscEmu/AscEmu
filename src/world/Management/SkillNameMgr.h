@@ -73,7 +73,6 @@ enum SpellTreeName
 class SkillNameMgr
 {
     public:
-
         char** SkillNames;
         uint32 maxskill;
 

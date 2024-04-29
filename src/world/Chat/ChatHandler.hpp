@@ -23,7 +23,7 @@ uint16_t GetItemIDFromLink(const char* itemlink, uint32_t* itemid);
 
 class SERVER_DECL ChatHandler
 {
-friend class CommandTableStorage;
+    friend class CommandTableStorage;
 
 private:
     ChatHandler() = default;

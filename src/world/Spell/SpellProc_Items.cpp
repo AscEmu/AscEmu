@@ -28,7 +28,6 @@
 class TwinBladesOfAzzinothSpellProc : public SpellProc
 {
 public:
-
     static SpellProc* Create() { return new TwinBladesOfAzzinothSpellProc(); }
 
     void init(Object* /*obj*/) override

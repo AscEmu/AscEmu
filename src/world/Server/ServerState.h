@@ -17,13 +17,16 @@ class ServerState
     std::chrono::time_point<std::chrono::high_resolution_clock> m_currentTime;
     // long long representation of the delta between currentTime and initTime
     std::atomic<long long> m_delta;
+
 public:
     long long getDelta() const;
     void update();
 
     ServerState();
+
 private:
     static ServerState* singletonPtr;
+
 public:
     static ServerState* instance(ServerState* existingPtr = nullptr);
 };

@@ -94,7 +94,7 @@ void FormationMgr::loadCreatureFormations()
         //Load group member data
         FormationInfo member;
         member.LeaderSpawnId              = fields[0].GetUInt32();
-        uint32_t memberSpawnId = fields[1].GetUInt32();
+        uint32_t memberSpawnId            = fields[1].GetUInt32();
         member.FollowDist                 = 0.f;
         member.FollowAngle                = 0.f;
 

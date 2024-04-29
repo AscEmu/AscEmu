@@ -12,35 +12,33 @@ class WorldSession;
 
 class GuildBankTab
 {
-    public:
+public:
+    GuildBankTab(uint32_t guildId, uint8_t tabId);
 
-        GuildBankTab(uint32_t guildId, uint8_t tabId);
+    void loadGuildBankTabFromDB(Field* fields);
+    bool loadGuildBankTabItemFromDB(Field* fields);
+    void removeBankTabItemFromDB(bool removeItemsFromDB = false);
 
-        void loadGuildBankTabFromDB(Field* fields);
-        bool loadGuildBankTabItemFromDB(Field* fields);
-        void removeBankTabItemFromDB(bool removeItemsFromDB = false);
+    void writeInfoPacket(WorldPacket& data) const;
+    bool writeSlotPacket(WorldPacket& data, uint8_t slotId, bool ignoreEmpty = true) const;
 
-        void writeInfoPacket(WorldPacket& data) const;
-        bool writeSlotPacket(WorldPacket& data, uint8_t slotId, bool ignoreEmpty = true) const;
+    void setInfo(std::string const& name, std::string const& icon);
+    void setText(std::string const& text);
+    void sendText(Guild const* guild, WorldSession* session) const;
 
-        void setInfo(std::string const& name, std::string const& icon);
-        void setText(std::string const& text);
-        void sendText(Guild const* guild, WorldSession* session) const;
+    std::string const& getName() const;
+    std::string const& getIcon() const;
+    std::string const& getText() const;
 
-        std::string const& getName() const;
-        std::string const& getIcon() const;
-        std::string const& getText() const;
+    Item* getItem(uint8_t slotId) const;
+    bool setItem(uint8_t slotId, Item* item);
 
-        Item* getItem(uint8_t slotId) const;
-        bool setItem(uint8_t slotId, Item* item);
+private:
+    uint32_t mGuildId;
+    uint8_t mTabId;
 
-    private:
-
-        uint32_t mGuildId;
-        uint8_t mTabId;
-
-        Item* mItems[MAX_GUILD_BANK_SLOTS];
-        std::string mName;
-        std::string mIcon;
-        std::string mText;
+    Item* mItems[MAX_GUILD_BANK_SLOTS];
+    std::string mName;
+    std::string mIcon;
+    std::string mText;
 };

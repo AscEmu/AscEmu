@@ -12,27 +12,25 @@ class WorldPacket;
 
 class EmblemInfo
 {
-    public:
+public:
+    EmblemInfo();
 
-        EmblemInfo();
+    void loadEmblemInfoFromDB(Field* fields);
+    void saveEmblemInfoToDB(uint32_t guildId) const;
 
-        void loadEmblemInfoFromDB(Field* fields);
-        void saveEmblemInfoToDB(uint32_t guildId) const;
+    void readEmblemInfoFromPacket(WorldPacket& recv);
+    void writeEmblemInfoToPacket(WorldPacket& data) const;
 
-        void readEmblemInfoFromPacket(WorldPacket& recv);
-        void writeEmblemInfoToPacket(WorldPacket& data) const;
+    uint32_t getStyle() const;
+    uint32_t getColor() const;
+    uint32_t getBorderStyle() const;
+    uint32_t getBorderColor() const;
+    uint32_t getBackgroundColor() const;
 
-        uint32_t getStyle() const;
-        uint32_t getColor() const;
-        uint32_t getBorderStyle() const;
-        uint32_t getBorderColor() const;
-        uint32_t getBackgroundColor() const;
-
-    private:
-
-        uint32_t mStyle;
-        uint32_t mColor;
-        uint32_t mBorderStyle;
-        uint32_t mBorderColor;
-        uint32_t mBackgroundColor;
+private:
+    uint32_t mStyle;
+    uint32_t mColor;
+    uint32_t mBorderStyle;
+    uint32_t mBorderColor;
+    uint32_t mBackgroundColor;
 };

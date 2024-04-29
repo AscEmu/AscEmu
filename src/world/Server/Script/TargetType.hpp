@@ -42,8 +42,8 @@ public:
     TargetType(uint32_t pTargetGen = TargetGen_Self, TargetFilter pTargetFilter = static_cast<TargetFilter>(0) /*TargetFilter_None*/, uint32_t pMinTargetNumber = 0, uint32_t pMaxTargetNumber = 0);
     ~TargetType() = default;
 
-    uint32_t mTargetGenerator;      // Defines what kind of target should we try to find
-    TargetFilter mTargetFilter;     // Defines filter of target
-    uint32_t mTargetNumber[2];      // 0: Defines min. number of creature on hatelist (0 - any, 1 - the most hated etc.)
+    uint32_t mTargetGenerator;              // Defines what kind of target should we try to find
+    TargetFilter mTargetFilter;             // Defines filter of target
+    uint32_t mTargetNumber[2];              // 0: Defines min. number of creature on hatelist (0 - any, 1 - the most hated etc.)
     // 1: Defines max. number of creature on hatelist (0 - any, HateList.size + 1 - the least hated etc.)
 };

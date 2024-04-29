@@ -14,7 +14,6 @@ namespace WDB::Structures
     struct AuctionHouseEntry;
 }
 
-
 namespace AscEmu::Packets
 {
     class CmsgAuctionListItems;

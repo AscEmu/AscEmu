@@ -60,11 +60,11 @@ struct CalendarEvent
 
     uint32_t m_entry;               // entry of the calendar event (unique)
     uint32_t m_creator;             // id of the character
-    std::string m_title;          // title of the calendar event
-    std::string m_description;    // description of the event
-    CalendarEventType m_type;     // the calendar type
+    std::string m_title;            // title of the calendar event
+    std::string m_description;      // description of the event
+    CalendarEventType m_type;       // the calendar type
     uint32_t m_dungeon;             // the dungeon id
-    time_t m_date;                // the date
+    time_t m_date;                  // the date
     uint32_t m_flags;               // the flag
 };
 
@@ -77,15 +77,14 @@ struct CalendarInvite
 
     ~CalendarInvite() = default;
 
-    uint32_t m_inviteId;               // entry of the calendar event (unique)
-    uint32_t m_event;             // id of the character
+    uint32_t m_inviteId;            // entry of the calendar event (unique)
+    uint32_t m_event;               // id of the character
     uint32_t m_invitee;
     uint32_t m_sender;
     CalendarInviteStatus m_status;
     time_t m_statusTime;
     uint32_t m_rank;
     std::string m_text;
-
 };
 
 typedef std::vector<CalendarInvite*> CalendarInviteStore;
@@ -95,12 +94,10 @@ typedef std::map<uint64_t /* eventId */, CalendarInviteStore > CalendarEventInvi
 class CalendarMgr
 {
 private:
-
     CalendarMgr() = default;
     ~CalendarMgr() = default;
 
 public:
-
     static CalendarMgr& getInstance();
 
     CalendarMgr(CalendarMgr&&) = delete;

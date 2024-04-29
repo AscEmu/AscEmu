@@ -16,7 +16,7 @@ struct QuestProperties;
 struct GameObjectProperties
 {
     uint32_t entry;
-    uint32_t type;    //uint8_t
+    uint32_t type; // uint8_t
     uint32_t display_id;
     std::string name;
     std::string category_name;
@@ -470,7 +470,7 @@ struct GameObjectProperties
             case GAMEOBJECT_TYPE_AREADAMAGE:    autoCloseTime = areadamage.autoCloseTime; break;
             default: break;
         }
-        return autoCloseTime;              // prior to 3.0.3, conversion was / 0x10000;
+        return autoCloseTime; // prior to 3.0.3, conversion was / 0x10000;
     }
 
     bool isLargeGameObject() const

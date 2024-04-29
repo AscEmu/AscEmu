@@ -20,7 +20,6 @@ typedef std::map<Player*, uint8_t> MemberMap;
 class SERVER_DECL Channel
 {
 public:
-
     // Custom channels don't use channel id
     Channel(std::string name, uint8_t team, uint32_t channelId = 0);
     ~Channel();
@@ -30,8 +29,8 @@ public:
     uint32_t getChannelId() const;
     uint8_t getChannelFlags() const;
     uint8_t getChannelTeam() const;
-    // Used by Lua API
-    void setChannelName(std::string name);
+
+    void setChannelName(std::string name); // Used by Lua API
 
     void attemptJoin(Player* plr, std::string password, bool skipCheck = false);
     void leaveChannel(Player* plr, bool sendPacket = true);

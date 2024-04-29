@@ -138,62 +138,59 @@ typedef std::list<SavedAddon> SavedAddonsList;
 class AddonMgr
 {
 #if VERSION_STRING < Cata
-    private:
+private:
+    AddonMgr() = default;
+    ~AddonMgr() = default;
 
-        AddonMgr() = default;
-        ~AddonMgr() = default;
+public:
+    static AddonMgr& getInstance();
+    void initialize();
+    void finalize();
 
-    public:
+    AddonMgr(AddonMgr&&) = delete;
+    AddonMgr(AddonMgr const&) = delete;
+    AddonMgr& operator=(AddonMgr&&) = delete;
+    AddonMgr& operator=(AddonMgr const&) = delete;
 
-        static AddonMgr& getInstance();
-        void initialize();
-        void finalize();
+    void LoadFromDB();
+    void SaveToDB();
 
-        AddonMgr(AddonMgr&&) = delete;
-        AddonMgr(AddonMgr const&) = delete;
-        AddonMgr& operator=(AddonMgr&&) = delete;
-        AddonMgr& operator=(AddonMgr const&) = delete;
+    void SendAddonInfoPacket(std::shared_ptr<WorldPacket> source, uint32_t pos, WorldSession* m_session);
+    bool AppendPublicKey(WorldPacket& data, std::string& AddonName, uint32_t CRC);
 
-        void LoadFromDB();
-        void SaveToDB();
+private:
+    bool IsAddonBanned(uint64_t crc, std::string name = "");
+    bool IsAddonBanned(std::string name, uint64_t crc = 0);
+    bool ShouldShowInList(std::string name);
 
-        void SendAddonInfoPacket(std::shared_ptr<WorldPacket> source, uint32_t pos, WorldSession* m_session);
-        bool AppendPublicKey(WorldPacket& data, std::string& AddonName, uint32_t CRC);
+    KnownAddons mKnownAddons;
+    AddonData mAddonData;
 
-    private:
-
-        bool IsAddonBanned(uint64_t crc, std::string name = "");
-        bool IsAddonBanned(std::string name, uint64_t crc = 0);
-        bool ShouldShowInList(std::string name);
-
-        KnownAddons mKnownAddons;
-        AddonData mAddonData;
 #else
 
-    private:
-    
-        AddonMgr() = default;
-        ~AddonMgr() = default;
-    
-    public:
-    
-        static AddonMgr& getInstance();
-        void initialize();
+private:
+    AddonMgr() = default;
+    ~AddonMgr() = default;
 
-        AddonMgr(AddonMgr&&) = delete;
-        AddonMgr(AddonMgr const&) = delete;
-        AddonMgr& operator=(AddonMgr&&) = delete;
-        AddonMgr& operator=(AddonMgr const&) = delete;
+public:
+    static AddonMgr& getInstance();
+    void initialize();
 
-        void LoadFromDB();
-        void SaveAddon(AddonEntry const& addon);
-        SavedAddon const* getAddonInfoForAddonName(const std::string& name);
+    AddonMgr(AddonMgr&&) = delete;
+    AddonMgr(AddonMgr const&) = delete;
+    AddonMgr& operator=(AddonMgr&&) = delete;
+    AddonMgr& operator=(AddonMgr const&) = delete;
 
-        BannedAddonList const* getBannedAddonsList();
+    void LoadFromDB();
+    void SaveAddon(AddonEntry const& addon);
+    SavedAddon const* getAddonInfoForAddonName(const std::string& name);
 
-        SavedAddonsList mKnownAddons;
+    BannedAddonList const* getBannedAddonsList();
 
-        BannedAddonList mBannedAddons;
+    SavedAddonsList mKnownAddons;
+
+    BannedAddonList mBannedAddons;
+
 #endif
 };
 

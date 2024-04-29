@@ -282,7 +282,6 @@ float World::getRAMUsage()
     return perfcounter.GetCurrentRAMUsage();
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // Session functions
 void World::addSession(WorldSession* worldSession)

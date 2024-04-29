@@ -32,7 +32,6 @@ class UpdateMask
     uint32 mBlocks; // in uint32 blocks
 
     public:
-
         UpdateMask() : mUpdateMask(0), mCount(0), mBlocks(0) { }
         UpdateMask(const UpdateMask & mask) : mUpdateMask(0) { *this = mask; }
 

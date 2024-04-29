@@ -409,7 +409,6 @@ uint32_t GuildMgr::getNextGuildId()
 
 // Guild collection
 
-
 std::string GuildMgr::getGuildNameById(uint32_t guildId) const
 {
     if (Guild* guild = getGuildById(guildId))

@@ -21,7 +21,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/HookInterface.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 
-
 extern const char* SpellAuraNames[TOTAL_SPELL_AURAS];
 
 AuraEffectModifier const* Aura::getAuraEffect(uint8_t effIndex) const

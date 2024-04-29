@@ -295,7 +295,7 @@ public:
     uint32_t getSpellDifficultyID() const { return SpellDifficultyId; }
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    //custom values
+    // Custom values
     uint32_t getCustom_BGR_one_buff_on_target() const { return custom_BGR_one_buff_on_target; }
     uint32_t getCustom_c_is_flags() const { return custom_c_is_flags; }
     int32_t getCustom_ThreatForSpell() const { return custom_ThreatForSpell; }
@@ -311,20 +311,20 @@ private:
     // Setters for spell data
     void setId(uint32_t value) { Id = value; }
     void setCategory(uint32_t value) { Category = value; }
-    void setDispelType(uint32_t value) { DispelType = value; }              // used in HackFixes.cpp
-    void setMechanicsType(uint32_t value) { MechanicsType = value; }        // used in HackFixes.cpp
+    void setDispelType(uint32_t value) { DispelType = value; } // used in HackFixes.cpp
+    void setMechanicsType(uint32_t value) { MechanicsType = value; } // used in HackFixes.cpp
 
-    void setAttributes(uint32_t value) { Attributes = value; }              // used in HackFixes.cpp
-    void addAttributes(uint32_t value) { Attributes |= value; }             // used in HackFixes.cpp
-    void removeAttributes(uint32_t value) { Attributes &= ~value; }         // used in HackFixes.cpp
+    void setAttributes(uint32_t value) { Attributes = value; } // used in HackFixes.cpp
+    void addAttributes(uint32_t value) { Attributes |= value; } // used in HackFixes.cpp
+    void removeAttributes(uint32_t value) { Attributes &= ~value; } // used in HackFixes.cpp
 
-    void setAttributesEx(uint32_t value) { AttributesEx = value; }          // used in HackFixes.cpp
-    void addAttributesEx(uint32_t value) { AttributesEx |= value; }         // used in HackFixes.cpp
+    void setAttributesEx(uint32_t value) { AttributesEx = value; } // used in HackFixes.cpp
+    void addAttributesEx(uint32_t value) { AttributesEx |= value; } // used in HackFixes.cpp
 
-    void setAttributesExB(uint32_t value) { AttributesExB = value; }        // used in HackFixes.cpp
+    void setAttributesExB(uint32_t value) { AttributesExB = value; } // used in HackFixes.cpp
 
     void setAttributesExC(uint32_t value) { AttributesExC = value; }
-    void addAttributesExC(uint32_t value) { AttributesExC |= value; }       // used in HackFixes.cpp
+    void addAttributesExC(uint32_t value) { AttributesExC |= value; } // used in HackFixes.cpp
 
     void setAttributesExD(uint32_t value) { AttributesExD = value; }
     void setAttributesExE(uint32_t value) { AttributesExE = value; }
@@ -339,70 +339,70 @@ private:
     void setTargetCreatureType(uint32_t value) { TargetCreatureType = value; }
     void setRequiresSpellFocus(uint32_t value) { RequiresSpellFocus = value; }
     void setFacingCasterFlags(uint32_t value) { FacingCasterFlags = value; } // used in HackFixes.cpp
-    void setCasterAuraState(uint32_t value) { CasterAuraState = value; }    // used in HackFixes.cpp
-    void setTargetAuraState(uint32_t value) { TargetAuraState = value; }    // used in HackFixes.cpp
-    void setCasterAuraStateNot(uint32_t value) { CasterAuraStateNot = value; }    // used in HackFixes.cpp
-    void setTargetAuraStateNot(uint32_t value) { TargetAuraStateNot = value; }    // used in HackFixes.cpp
-    void setCasterAuraSpell(uint32_t value) { casterAuraSpell = value; }    // used in HackFixes.cpp
-    void setTargetAuraSpell(uint32_t value) { targetAuraSpell = value; }    // used in HackFixes.cpp
-    void setCasterAuraSpellNot(uint32_t value) { casterAuraSpellNot = value; }    // used in HackFixes.cpp
-    void setTargetAuraSpellNot(uint32_t value) { targetAuraSpellNot = value; }    // used in HackFixes.cpp
-    void setCastingTimeIndex(uint32_t value) { CastingTimeIndex = value; }    // used in HackFixes.cpp
-    void setRecoveryTime(uint32_t value) { RecoveryTime = value; }    // used in HackFixes.cpp / Spell_ClassScripts.cpp
-    void setCategoryRecoveryTime(uint32_t value) { CategoryRecoveryTime = value; }    // used in HackFixes.cpp
+    void setCasterAuraState(uint32_t value) { CasterAuraState = value; } // used in HackFixes.cpp
+    void setTargetAuraState(uint32_t value) { TargetAuraState = value; } // used in HackFixes.cpp
+    void setCasterAuraStateNot(uint32_t value) { CasterAuraStateNot = value; } // used in HackFixes.cpp
+    void setTargetAuraStateNot(uint32_t value) { TargetAuraStateNot = value; } // used in HackFixes.cpp
+    void setCasterAuraSpell(uint32_t value) { casterAuraSpell = value; } // used in HackFixes.cpp
+    void setTargetAuraSpell(uint32_t value) { targetAuraSpell = value; } // used in HackFixes.cpp
+    void setCasterAuraSpellNot(uint32_t value) { casterAuraSpellNot = value; } // used in HackFixes.cpp
+    void setTargetAuraSpellNot(uint32_t value) { targetAuraSpellNot = value; } // used in HackFixes.cpp
+    void setCastingTimeIndex(uint32_t value) { CastingTimeIndex = value; } // used in HackFixes.cpp
+    void setRecoveryTime(uint32_t value) { RecoveryTime = value; } // used in HackFixes.cpp / Spell_ClassScripts.cpp
+    void setCategoryRecoveryTime(uint32_t value) { CategoryRecoveryTime = value; } // used in HackFixes.cpp
 
     void setInterruptFlags(uint32_t value) { InterruptFlags = value; }
-    void removeInterruptFlags(uint32_t value) { InterruptFlags |= ~value; }    // used in HackFixes.cpp
+    void removeInterruptFlags(uint32_t value) { InterruptFlags |= ~value; } // used in HackFixes.cpp
 
-    void addAuraInterruptFlags(uint32_t value) { AuraInterruptFlags |= value; }    // used in HackFixes.cpp
-    void setAuraInterruptFlags(uint32_t value) { AuraInterruptFlags = value; }    // used in HackFixes.cpp
+    void addAuraInterruptFlags(uint32_t value) { AuraInterruptFlags |= value; } // used in HackFixes.cpp
+    void setAuraInterruptFlags(uint32_t value) { AuraInterruptFlags = value; } // used in HackFixes.cpp
 
-    void setChannelInterruptFlags(uint32_t value) { ChannelInterruptFlags = value; }    // used in HackFixes.cpp
+    void setChannelInterruptFlags(uint32_t value) { ChannelInterruptFlags = value; } // used in HackFixes.cpp
 
-    void setProcFlags(uint32_t value) { procFlags = value; }    // used in HackFixes.cpp
-    void addProcFlags(uint32_t value) { procFlags |= value; }    // used in HackFixes.cpp
+    void setProcFlags(uint32_t value) { procFlags = value; } // used in HackFixes.cpp
+    void addProcFlags(uint32_t value) { procFlags |= value; } // used in HackFixes.cpp
 
-    void setProcChance(uint32_t value) { procChance = value; }    // used in HackFixes.cpp
-    void setProcCharges(uint32_t value) { procCharges = value; }    // used in HackFixes.cpp
+    void setProcChance(uint32_t value) { procChance = value; } // used in HackFixes.cpp
+    void setProcCharges(uint32_t value) { procCharges = value; } // used in HackFixes.cpp
     void setMaxLevel(uint32_t value) { maxLevel = value; }
     void setBaseLevel(uint32_t value) { baseLevel = value; }
-    void setSpellLevel(uint32_t value) { spellLevel = value; }    // used in HackFixes.cpp
-    void setDurationIndex(uint32_t value) { DurationIndex = value; }    // used in HackFixes.cpp / SpellEffects.cpp
+    void setSpellLevel(uint32_t value) { spellLevel = value; } // used in HackFixes.cpp
+    void setDurationIndex(uint32_t value) { DurationIndex = value; } // used in HackFixes.cpp / SpellEffects.cpp
     void setPowerType(PowerType value) { powerType = value; }
     void setManaCost(uint32_t value) { manaCost = value; }
     void setManaCostPerlevel(uint32_t value) { manaCostPerlevel = value; }
     void setManaPerSecond(uint32_t value) { manaPerSecond = value; }
     void setManaPerSecondPerLevel(uint32_t value) { manaPerSecondPerLevel = value; }
-    void setRangeIndex(uint32_t value) { rangeIndex = value; }    // used in HackFixes.cpp
-    void setSpeed(float value) { speed = value; }    // used in HackFixes.cpp
-    void setMaxstack(uint32_t value) { MaxStackAmount = value; }    // used in HackFixes.cpp
+    void setRangeIndex(uint32_t value) { rangeIndex = value; } // used in HackFixes.cpp
+    void setSpeed(float value) { speed = value; } // used in HackFixes.cpp
+    void setMaxstack(uint32_t value) { MaxStackAmount = value; } // used in HackFixes.cpp
 
-    void setTotem(uint32_t totemId, uint8_t idx);                      // used in HackFixes.cpp
-    void setReagent(int32_t reagentId, uint8_t idx);                      // used in HackFixes.cpp
-    void setReagentCount(uint32_t reagentId, uint8_t idx);                 // used in HackFixes.cpp
+    void setTotem(uint32_t totemId, uint8_t idx); // used in HackFixes.cpp
+    void setReagent(int32_t reagentId, uint8_t idx); // used in HackFixes.cpp
+    void setReagentCount(uint32_t reagentId, uint8_t idx); // used in HackFixes.cpp
 
-    void setEquippedItemClass(int32_t value) { EquippedItemClass = value; }    // used in HackFixes.cpp
+    void setEquippedItemClass(int32_t value) { EquippedItemClass = value; } // used in HackFixes.cpp
     void setEquippedItemSubClass(int32_t value) { EquippedItemSubClass = value; }
     void setEquippedItemInventoryTypeMask(int32_t value) { EquippedItemInventoryTypeMask = value; }
 
-    void setEffect(uint32_t effectId, uint8_t idx);                          // used in HackFixes.cpp / ObjectMgr.cpp
-    void setEffectDieSides(int32_t effecSide, uint8_t idx);                 // used in HackFixes.cpp
-    void setEffectRealPointsPerLevel(float pointsPerLevel, uint8_t idx);   // used in HackFixes.cpp
-    void setEffectBasePoints(int32_t pointsPerLevel, uint8_t idx);               // used in HackFixes.cpp / ObjectMgr.cpp
-    void setEffectMechanic(uint32_t mechanic, uint8_t idx);                       // used in HackFixes.cpp
-    void setEffectImplicitTargetA(uint32_t targetA, uint8_t idx);                // used in HackFixes.cpp
-    void setEffectImplicitTargetB(uint32_t targetB, uint8_t idx);                // used in HackFixes.cpp
-    void setEffectRadiusIndex(uint32_t radiusIndex, uint8_t idx);                // used in HackFixes.cpp
-    void setEffectApplyAuraName(uint32_t auraName, uint8_t idx);                 // used in HackFixes.cpp / ObjectMgr.cpp
-    void setEffectAmplitude(uint32_t amplitude, uint8_t idx);                    // used in HackFixes.cpp
-    void setEffectMultipleValue(float multiply, uint8_t idx);                   // used in HackFixes.cpp
-    void setEffectChainTarget(uint32_t chainTarget, uint8_t idx);                // used in HackFixes.cpp
+    void setEffect(uint32_t effectId, uint8_t idx); // used in HackFixes.cpp / ObjectMgr.cpp
+    void setEffectDieSides(int32_t effecSide, uint8_t idx); // used in HackFixes.cpp
+    void setEffectRealPointsPerLevel(float pointsPerLevel, uint8_t idx); // used in HackFixes.cpp
+    void setEffectBasePoints(int32_t pointsPerLevel, uint8_t idx); // used in HackFixes.cpp / ObjectMgr.cpp
+    void setEffectMechanic(uint32_t mechanic, uint8_t idx); // used in HackFixes.cpp
+    void setEffectImplicitTargetA(uint32_t targetA, uint8_t idx); // used in HackFixes.cpp
+    void setEffectImplicitTargetB(uint32_t targetB, uint8_t idx); // used in HackFixes.cpp
+    void setEffectRadiusIndex(uint32_t radiusIndex, uint8_t idx); // used in HackFixes.cpp
+    void setEffectApplyAuraName(uint32_t auraName, uint8_t idx); // used in HackFixes.cpp / ObjectMgr.cpp
+    void setEffectAmplitude(uint32_t amplitude, uint8_t idx); // used in HackFixes.cpp
+    void setEffectMultipleValue(float multiply, uint8_t idx); // used in HackFixes.cpp
+    void setEffectChainTarget(uint32_t chainTarget, uint8_t idx); // used in HackFixes.cpp
     void setEffectItemType(uint32_t itemEntryId, uint8_t idx);
-    void setEffectMiscValue(int32_t misc, uint8_t idx);                          // used in HackFixes.cpp / ObjectMgr.cpp
+    void setEffectMiscValue(int32_t misc, uint8_t idx); // used in HackFixes.cpp / ObjectMgr.cpp
     void setEffectMiscValueB(int32_t miscB, uint8_t idx);
-    void setEffectTriggerSpell(uint32_t spell, uint8_t idx);                     // used in ObjectMgr.cpp
-    void setEffectPointsPerComboPoint(float effectPoints, uint8_t idx);          // used in HackFixes.cpp
-    void setEffectSpellClassMask(uint32_t spellClass, uint8_t idx1, uint8_t idx2);           // used in HackFixes.cpp
+    void setEffectTriggerSpell(uint32_t spell, uint8_t idx);    // used in ObjectMgr.cpp
+    void setEffectPointsPerComboPoint(float effectPoints, uint8_t idx); // used in HackFixes.cpp
+    void setEffectSpellClassMask(uint32_t spellClass, uint8_t idx1, uint8_t idx2);  // used in HackFixes.cpp
 
     void setSpellVisual(uint8_t visualIndex, uint32_t value) { SpellVisual[visualIndex] = value; }
     void setSpellIconID(uint32_t value) { spellIconID = value; }
@@ -414,22 +414,22 @@ private:
     void setStartRecoveryCategory(uint32_t value) { StartRecoveryCategory = value; }
     void setStartRecoveryTime(uint32_t value) { StartRecoveryTime = value; }
     void setMaxTargetLevel(uint32_t value) { MaxTargetLevel = value; }
-    void setSpellFamilyName(uint32_t value) { SpellFamilyName = value; }        // used in HackFixes.cpp
+    void setSpellFamilyName(uint32_t value) { SpellFamilyName = value; } // used in HackFixes.cpp
 
-    void setSpellFamilyFlags(uint32_t value, uint8_t idx);                            // used in HackFixes.cpp
+    void setSpellFamilyFlags(uint32_t value, uint8_t idx); // used in HackFixes.cpp
 
-    void setMaxTargets(uint32_t value) { MaxTargets = value; }        // used in HackFixes.cpp
-    void setDmgClass(uint32_t value) { DmgClass = value; }        // used in HackFixes.cpp
+    void setMaxTargets(uint32_t value) { MaxTargets = value; } // used in HackFixes.cpp
+    void setDmgClass(uint32_t value) { DmgClass = value; } // used in HackFixes.cpp
     void setPreventionType(uint32_t value) { PreventionType = value; }
 
-    void setEffectDamageMultiplier(float dmgMultiplier, uint8_t idx);                     // used in HackFixes.cpp
+    void setEffectDamageMultiplier(float dmgMultiplier, uint8_t idx); // used in HackFixes.cpp
 
 #if VERSION_STRING > Classic
     void setTotemCategory(uint32_t category, uint8_t idx);
 #endif
 
     void setRequiresAreaId(int32_t value) { AreaGroupId = value; }
-    void setSchoolMask(uint32_t value) { SchoolMask = value; }                  // used in HackFixes.cpp
+    void setSchoolMask(uint32_t value) { SchoolMask = value; } // used in HackFixes.cpp
     void setRuneCostID(uint32_t value) { RuneCostID = value; }
 
     void setEffectBonusMultiplier(float value, uint8_t idx);
@@ -538,9 +538,9 @@ private:
     uint32_t EffectAmplitude[MAX_SPELL_EFFECTS];
     float EffectMultipleValue[MAX_SPELL_EFFECTS];
     uint32_t EffectChainTarget[MAX_SPELL_EFFECTS];
-    uint32_t EffectItemType[MAX_SPELL_EFFECTS];                 //ItemEntryId
-    int32_t EffectMiscValue[MAX_SPELL_EFFECTS];                 //can be: creature, go, area, smt, speed
-    int32_t EffectMiscValueB[MAX_SPELL_EFFECTS];                //can be: speed slot-type, summon
+    uint32_t EffectItemType[MAX_SPELL_EFFECTS]; // ItemEntryId
+    int32_t EffectMiscValue[MAX_SPELL_EFFECTS]; // can be: creature, go, area, smt, speed
+    int32_t EffectMiscValueB[MAX_SPELL_EFFECTS]; // can be: speed slot-type, summon
     uint32_t EffectTriggerSpell[MAX_SPELL_EFFECTS];
     float EffectPointsPerComboPoint[MAX_SPELL_EFFECTS];
     uint32_t EffectSpellClassMask[MAX_SPELL_EFFECTS][3];
@@ -633,7 +633,7 @@ public:
     float_t spell_ap_coeff_overtime = 0.0f;
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    //custom values
+    // Custom values
 
     // from MySQL table spell_custom_assign - 1970 spells
     uint32_t custom_BGR_one_buff_on_target = 0;

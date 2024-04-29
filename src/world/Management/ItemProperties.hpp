@@ -34,14 +34,14 @@ struct ItemProperties
     uint32_t RequiredLevel;
     uint16_t RequiredSkill;
     uint32_t RequiredSkillRank;
-    uint32_t RequiredSkillSubRank;  // required spell
+    uint32_t RequiredSkillSubRank; // required spell
     uint32_t RequiredPlayerRank1;
     uint32_t RequiredPlayerRank2;
     uint32_t RequiredFaction;
     uint32_t RequiredFactionStanding;
     uint32_t Unique;
     uint32_t MaxCount;
-    uint32_t ContainerSlots;        //uint8_t
+    uint32_t ContainerSlots; // uint8_t
     uint32_t itemstatscount;
     ItemStat Stats[MAX_ITEM_PROTO_STATS];
     uint32_t ScalingStatsEntry;
@@ -86,7 +86,7 @@ struct ItemProperties
     uint32_t HolidayId;
     uint32_t FoodType;
 
-    std::string lowercase_name;      // used in auctions
+    std::string lowercase_name; // used in auctions
     int32_t ForcedPetId;
 
     bool HasFlag(uint32_t flag) const
@@ -139,7 +139,6 @@ struct ItemProperties
 
         return cost * count;
     }
-
 };
 
 struct ItemSet

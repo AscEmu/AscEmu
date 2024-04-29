@@ -69,7 +69,6 @@ public:
     QuestScript* getQuestScript() const;
 
 private:
-
     uint8_t m_slot = 0;
     uint32_t m_state = 0;
     uint32_t m_mobcount[4] = {0};

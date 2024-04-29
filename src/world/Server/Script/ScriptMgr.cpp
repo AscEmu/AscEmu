@@ -34,9 +34,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Spell.hpp"
 #include "Spell/SpellInfo.hpp"
 
-// APGL End
-// MIT Start
-
 ScriptMgr& ScriptMgr::getInstance()
 {
     static ScriptMgr mInstance;

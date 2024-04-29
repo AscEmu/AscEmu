@@ -9,25 +9,23 @@ This file is released under the MIT license. See README-MIT for more information
 
 class GuildLogEntry
 {
-    public:
+public:
+    GuildLogEntry(uint32_t guildId, uint32_t guid);
 
-        GuildLogEntry(uint32_t guildId, uint32_t guid);
+    GuildLogEntry(uint32_t guildId, uint32_t guid, time_t timestamp);
 
-        GuildLogEntry(uint32_t guildId, uint32_t guid, time_t timestamp);
+    virtual ~GuildLogEntry() {}
 
-        virtual ~GuildLogEntry() {}
+    uint32_t getGUID() const;
+    uint64_t getTimestamp() const;
 
-        uint32_t getGUID() const;
-        uint64_t getTimestamp() const;
+    virtual void saveGuildLogToDB() const = 0;
+    virtual void writeGuildLogPacket(WorldPacket& data, ByteBuffer& content) const = 0;
 
-        virtual void saveGuildLogToDB() const = 0;
-        virtual void writeGuildLogPacket(WorldPacket& data, ByteBuffer& content) const = 0;
-
-    protected:
-
-        uint32_t mGuildId;
-        uint32_t mGuid;
-        uint64_t mTimestamp;
+protected:
+    uint32_t mGuildId;
+    uint32_t mGuid;
+    uint64_t mTimestamp;
 };
 
 typedef std::list<GuildLogEntry*> GuildLog;

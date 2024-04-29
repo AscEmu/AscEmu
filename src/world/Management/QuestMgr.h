@@ -217,7 +217,6 @@ public:
         void FillQuestMenu(Creature*, Player*, GossipMenu &);
 
     private:
-
         std::unordered_map<uint32, std::list<QuestRelation*>* > m_npc_quests;
         std::unordered_map<uint32, std::list<QuestRelation*>* > m_obj_quests;
         std::unordered_map<uint32, std::list<QuestRelation*>* > m_itm_quests;

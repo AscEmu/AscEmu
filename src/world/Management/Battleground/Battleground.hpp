@@ -20,10 +20,8 @@ class GameObject;
 class Creature;
 class WorldMap;
 
-
 class SERVER_DECL Battleground : public EventableObject
 {
-    // MIT start
 public:
     // Creating a battleground requires a pre-existing map manager
     Battleground(WorldMap* worldMap, uint32_t id, uint32_t levelGroup, uint32_t type);
@@ -206,5 +204,4 @@ public:
     virtual uint8_t Rated();
     virtual void SetIsWeekend(bool isweekend);
     virtual uint64_t GetFlagHolderGUID(uint32_t faction) const;
-
 };

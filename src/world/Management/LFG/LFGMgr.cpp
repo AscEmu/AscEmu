@@ -46,30 +46,30 @@ LfgMgr& LfgMgr::getInstance()
 
 void LfgMgr::initialize()
 {
-        m_update = true;
-        m_QueueTimer = 0;
-        m_lfgProposalId = 1;
-        m_WaitTimeAvg = -1;
-        m_WaitTimeTank = -1;
-        m_WaitTimeHealer = -1;
-        m_WaitTimeDps = -1;
-        m_NumWaitTimeAvg = 0;
-        m_NumWaitTimeTank = 0;
-        m_NumWaitTimeHealer = 0;
-        m_NumWaitTimeDps = 0;
+    m_update = true;
+    m_QueueTimer = 0;
+    m_lfgProposalId = 1;
+    m_WaitTimeAvg = -1;
+    m_WaitTimeTank = -1;
+    m_WaitTimeHealer = -1;
+    m_WaitTimeDps = -1;
+    m_NumWaitTimeAvg = 0;
+    m_NumWaitTimeTank = 0;
+    m_NumWaitTimeHealer = 0;
+    m_NumWaitTimeDps = 0;
 
 #if VERSION_STRING < Cata
-        // Initialize dungeon cache
-        for (uint32 i = 0; i < sLFGDungeonStore.getNumRows(); ++i)
+    // Initialize dungeon cache
+    for (uint32 i = 0; i < sLFGDungeonStore.getNumRows(); ++i)
+    {
+        WDB::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.lookupEntry(i);
+        if (dungeon && dungeon->type != LFG_TYPE_ZONE)
         {
-            WDB::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.lookupEntry(i);
-            if (dungeon && dungeon->type != LFG_TYPE_ZONE)
-            {
-                if (dungeon->type != LFG_TYPE_RANDOM)
-                    m_CachedDungeonMap[dungeon->grouptype].insert(dungeon->ID);
-                m_CachedDungeonMap[0].insert(dungeon->ID);
-            }
+            if (dungeon->type != LFG_TYPE_RANDOM)
+                m_CachedDungeonMap[dungeon->grouptype].insert(dungeon->ID);
+            m_CachedDungeonMap[0].insert(dungeon->ID);
         }
+    }
 #endif
 }
 
@@ -1647,7 +1647,6 @@ void LfgMgr::RemoveProposal(LfgProposalMap::iterator itProposal, LfgUpdateType t
 
     delete pProposal;
     m_Proposals.erase(itProposal);
-
 }
 
 void LfgMgr::InitBoot(Group* grp, uint64 kicker, uint64 victim, std::string reason)
@@ -1735,9 +1734,9 @@ void LfgMgr::UpdateBoot(Player* player, bool accept)
         }
     }
 
-    if (agreeNum == pBoot->votedNeeded ||                  // Vote passed
-        votesNum == pBoot->votes.size() ||                 // All voted but not passed
-        (pBoot->votes.size() - votesNum + agreeNum) < pBoot->votedNeeded) // Vote didnt passed
+    if (agreeNum == pBoot->votedNeeded ||                                   // Vote passed
+        votesNum == pBoot->votes.size() ||                                  // All voted but not passed
+        (pBoot->votes.size() - votesNum + agreeNum) < pBoot->votedNeeded)   // Vote didnt passed
     {
         // Send update info to all players
         pBoot->inProgress = false;

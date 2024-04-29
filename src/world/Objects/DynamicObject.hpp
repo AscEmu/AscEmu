@@ -38,7 +38,6 @@ private:
     const WoWDynamicObject* dynamicObjectData() const { return reinterpret_cast<WoWDynamicObject*>(wow_data); }
 
 public:
-
     uint64_t getCasterGuid() const;
     void setCasterGuid(uint64_t guid);
 

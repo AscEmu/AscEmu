@@ -8,126 +8,125 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace MovementMgr {
 
-
 #if VERSION_STRING >= Cata
-    Location MoveSpline::ComputePosition() const
+Location MoveSpline::ComputePosition() const
+{
+    ASSERT(Initialized());
+
+    float u = 1.f;
+    int32_t seg_time = spline.length(point_Idx, point_Idx + 1);
+    if (seg_time > 0)
+        u = (time_passed - spline.length(point_Idx)) / (float)seg_time;
+    Location c;
+    c.orientation = initialOrientation;
+    spline.evaluate_percent(point_Idx, u, c);
+
+    if (splineflags.animation)
+        ;// MoveSplineFlag::Animation disables falling or parabolic movement
+    else if (splineflags.parabolic)
+        computeParabolicElevation(c.z);
+    else if (splineflags.falling)
+        computeFallElevation(c.z);
+
+    if (splineflags.done && splineflags.isFacing())
     {
-        ASSERT(Initialized());
-
-        float u = 1.f;
-        int32_t seg_time = spline.length(point_Idx, point_Idx + 1);
-        if (seg_time > 0)
-            u = (time_passed - spline.length(point_Idx)) / (float)seg_time;
-        Location c;
-        c.orientation = initialOrientation;
-        spline.evaluate_percent(point_Idx, u, c);
-
-        if (splineflags.animation)
-            ;// MoveSplineFlag::Animation disables falling or parabolic movement
-        else if (splineflags.parabolic)
-            computeParabolicElevation(c.z);
-        else if (splineflags.falling)
-            computeFallElevation(c.z);
-
-        if (splineflags.done && splineflags.isFacing())
-        {
-            if (splineflags.final_angle)
-                c.orientation = facing.angle;
-            else if (splineflags.final_point)
-                c.orientation = std::atan2(facing.f.y - c.y, facing.f.x - c.x);
-            //nothing to do for MoveSplineFlag::Final_Target flag
-        }
-        else
-        {
-            if (!splineflags.hasFlag(MoveSplineFlag::OrientationFixed | MoveSplineFlag::Falling))
-            {
-                Vector3 hermite;
-                spline.evaluate_derivative(point_Idx, u, hermite);
-                c.orientation = std::atan2(hermite.y, hermite.x);
-            }
-
-            if (splineflags.orientationInversed)
-                c.orientation = -c.orientation;
-        }
-        return c;
+        if (splineflags.final_angle)
+            c.orientation = facing.angle;
+        else if (splineflags.final_point)
+            c.orientation = std::atan2(facing.f.y - c.y, facing.f.x - c.x);
+        //nothing to do for MoveSplineFlag::Final_Target flag
     }
+    else
+    {
+        if (!splineflags.hasFlag(MoveSplineFlag::OrientationFixed | MoveSplineFlag::Falling))
+        {
+            Vector3 hermite;
+            spline.evaluate_derivative(point_Idx, u, hermite);
+            c.orientation = std::atan2(hermite.y, hermite.x);
+        }
+
+        if (splineflags.orientationInversed)
+            c.orientation = -c.orientation;
+    }
+    return c;
+}
 #elif VERSION_STRING == WotLK
-    Location MoveSpline::ComputePosition() const
+Location MoveSpline::ComputePosition() const
+{
+    ASSERT(Initialized());
+
+    float u = 1.f;
+    int32_t seg_time = spline.length(point_Idx, point_Idx + 1);
+    if (seg_time > 0)
+        u = (time_passed - spline.length(point_Idx)) / (float)seg_time;
+    Location c;
+    c.orientation = initialOrientation;
+    spline.evaluate_percent(point_Idx, u, c);
+
+    if (splineflags.animation)
+        ;// MoveSplineFlag::Animation disables falling or parabolic movement
+    else if (splineflags.parabolic)
+        computeParabolicElevation(c.z);
+    else if (splineflags.falling)
+        computeFallElevation(c.z);
+
+    if (splineflags.done && splineflags.isFacing())
     {
-        ASSERT(Initialized());
-
-        float u = 1.f;
-        int32_t seg_time = spline.length(point_Idx, point_Idx + 1);
-        if (seg_time > 0)
-            u = (time_passed - spline.length(point_Idx)) / (float)seg_time;
-        Location c;
-        c.orientation = initialOrientation;
-        spline.evaluate_percent(point_Idx, u, c);
-
-        if (splineflags.animation)
-            ;// MoveSplineFlag::Animation disables falling or parabolic movement
-        else if (splineflags.parabolic)
-            computeParabolicElevation(c.z);
-        else if (splineflags.falling)
-            computeFallElevation(c.z);
-
-        if (splineflags.done && splineflags.isFacing())
-        {
-            if (splineflags.final_angle)
-                c.orientation = facing.angle;
-            else if (splineflags.final_point)
-                c.orientation = std::atan2(facing.f.y - c.y, facing.f.x - c.x);
-            //nothing to do for MoveSplineFlag::Final_Target flag
-        }
-        else
-        {
-            if (!splineflags.hasFlag(MoveSplineFlag::OrientationFixed | MoveSplineFlag::Falling))
-            {
-                Vector3 hermite;
-                spline.evaluate_derivative(point_Idx, u, hermite);
-                c.orientation = std::atan2(hermite.y, hermite.x);
-            }
-
-            if (splineflags.backward)
-                c.orientation = c.orientation - float(M_PI);
-        }
-        return c;
+        if (splineflags.final_angle)
+            c.orientation = facing.angle;
+        else if (splineflags.final_point)
+            c.orientation = std::atan2(facing.f.y - c.y, facing.f.x - c.x);
+        //nothing to do for MoveSplineFlag::Final_Target flag
     }
+    else
+    {
+        if (!splineflags.hasFlag(MoveSplineFlag::OrientationFixed | MoveSplineFlag::Falling))
+        {
+            Vector3 hermite;
+            spline.evaluate_derivative(point_Idx, u, hermite);
+            c.orientation = std::atan2(hermite.y, hermite.x);
+        }
+
+        if (splineflags.backward)
+            c.orientation = c.orientation - float(M_PI);
+    }
+    return c;
+}
 #else
-    Location MoveSpline::ComputePosition() const
+Location MoveSpline::ComputePosition() const
+{
+    ASSERT(Initialized());
+
+    float u = 1.f;
+    int32_t seg_time = spline.length(point_Idx, point_Idx + 1);
+    if (seg_time > 0)
+        u = (time_passed - spline.length(point_Idx)) / (float)seg_time;
+    Location c;
+    c.orientation = initialOrientation;
+    spline.evaluate_percent(point_Idx, u, c);
+    
+    if (splineflags.falling)
+        computeFallElevation(c.z);
+
+    if (splineflags.done && splineflags.isFacing())
     {
-        ASSERT(Initialized());
-
-        float u = 1.f;
-        int32_t seg_time = spline.length(point_Idx, point_Idx + 1);
-        if (seg_time > 0)
-            u = (time_passed - spline.length(point_Idx)) / (float)seg_time;
-        Location c;
-        c.orientation = initialOrientation;
-        spline.evaluate_percent(point_Idx, u, c);
-        
-        if (splineflags.falling)
-            computeFallElevation(c.z);
-
-        if (splineflags.done && splineflags.isFacing())
-        {
-            if (splineflags.final_angle)
-                c.orientation = facing.angle;
-            else if (splineflags.final_point)
-                c.orientation = std::atan2(facing.f.y - c.y, facing.f.x - c.x);
-            //nothing to do for MoveSplineFlag::Final_Target flag
-        }
-        else
-        {
-            if (!splineflags.hasFlag(MoveSplineFlag::Falling))
-            {
-                Vector3 hermite;
-                spline.evaluate_derivative(point_Idx, u, hermite);
-                c.orientation = std::atan2(hermite.y, hermite.x);
-            }
-        }
-        return c;
+        if (splineflags.final_angle)
+            c.orientation = facing.angle;
+        else if (splineflags.final_point)
+            c.orientation = std::atan2(facing.f.y - c.y, facing.f.x - c.x);
+        //nothing to do for MoveSplineFlag::Final_Target flag
     }
+    else
+    {
+        if (!splineflags.hasFlag(MoveSplineFlag::Falling))
+        {
+            Vector3 hermite;
+            spline.evaluate_derivative(point_Idx, u, hermite);
+            c.orientation = std::atan2(hermite.y, hermite.x);
+        }
+    }
+    return c;
+}
 #endif
 
 void MoveSpline::computeParabolicElevation(float& el) const

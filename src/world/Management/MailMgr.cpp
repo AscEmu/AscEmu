@@ -64,7 +64,6 @@ void Mailbox::DeleteMessage(uint32 MessageId, bool sql)
         CharacterDatabase.WaitExecute("DELETE FROM mailbox WHERE message_id = %u", MessageId);
 }
 
-
 void Mailbox::CleanupExpiredMessages()
 {
     MessageMap::iterator itr, it2;

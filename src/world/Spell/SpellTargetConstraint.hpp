@@ -18,25 +18,25 @@ enum SpellTargetConstraintType : uint8_t
 
 class SpellTargetConstraint
 {
-    private:
-        std::vector<uint32_t> m_creatureTargets;
-        std::vector<uint32_t> m_gameobjectTargets;
-        std::vector<uint32_t> m_explicitTargets;
+private:
+    std::vector<uint32_t> m_creatureTargets;
+    std::vector<uint32_t> m_gameobjectTargets;
+    std::vector<uint32_t> m_explicitTargets;
 
-    public:
-        SpellTargetConstraint() = default;
-        ~SpellTargetConstraint();
+public:
+    SpellTargetConstraint() = default;
+    ~SpellTargetConstraint();
 
-        bool hasCreature(uint32_t entryId) const;
-        bool hasGameObject(uint32_t entryId) const;
+    bool hasCreature(uint32_t entryId) const;
+    bool hasGameObject(uint32_t entryId) const;
 
-        void addCreature(uint32_t entryId);
-        void addGameObject(uint32_t entryId);
+    void addCreature(uint32_t entryId);
+    void addGameObject(uint32_t entryId);
 
-        // Explicit target = requires caster to target it
-        void addExplicitTarget(uint32_t entryId);
-        bool hasExplicitTarget(uint32_t value) const;
+    // Explicit target = requires caster to target it
+    void addExplicitTarget(uint32_t entryId);
+    bool hasExplicitTarget(uint32_t value) const;
 
-        std::vector<uint32_t> getCreatures() const;
-        std::vector<uint32_t> getGameObjects() const;
+    std::vector<uint32_t> getCreatures() const;
+    std::vector<uint32_t> getGameObjects() const;
 };

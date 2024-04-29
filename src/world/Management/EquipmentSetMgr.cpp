@@ -28,7 +28,6 @@
 
 namespace Arcemu
 {
-
     EquipmentSetMgr::~EquipmentSetMgr()
     {
         for (EquipmentSetStorage::iterator itr = EquipmentSets.begin(); itr != EquipmentSets.end(); ++itr)

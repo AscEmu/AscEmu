@@ -17,7 +17,6 @@ class WorldPacket;
 class SERVER_DECL WorldStatesHandler
 {
 public:
-
     class SERVER_DECL WorldStatesObserver
     {
     public:

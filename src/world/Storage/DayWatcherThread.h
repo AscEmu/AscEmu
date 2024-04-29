@@ -41,7 +41,6 @@ class DayWatcherThread
     void threadRunner(AscEmu::Threading::AEThread& thread);
 
 public:
-
     DayWatcherThread();
     ~DayWatcherThread();
 

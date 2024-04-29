@@ -126,68 +126,64 @@ typedef std::map<uint32, MailMessage> MessageMap;
 
 class Mailbox
 {
-    protected:
+protected:
+    uint64 owner;
 
-        uint64 owner;
-        
+public:
+    MessageMap Messages;
 
-    public:
-        MessageMap Messages;
+    Mailbox(uint64 owner_) : owner(owner_) {}
 
-        Mailbox(uint64 owner_) : owner(owner_) {}
+    void AddMessage(MailMessage* Message);
+    void DeleteMessage(uint32 MessageId, bool sql);
+    MailMessage* GetMessageById(uint32 message_id)
+    {
+        MessageMap::iterator iter = Messages.find(message_id);
+        if (iter == Messages.end())
+            return NULL;
+        return &(iter->second);
+    }
 
-        void AddMessage(MailMessage* Message);
-        void DeleteMessage(uint32 MessageId, bool sql);
-        MailMessage* GetMessageById(uint32 message_id)
-        {
-            MessageMap::iterator iter = Messages.find(message_id);
-            if (iter == Messages.end())
-                return NULL;
-            return &(iter->second);
-        }
-
-        void CleanupExpiredMessages();
-        inline size_t MessageCount() { return Messages.size(); }
-        inline uint64 GetOwner() { return owner; }
-        void Load(QueryResult* result);
+    void CleanupExpiredMessages();
+    inline size_t MessageCount() { return Messages.size(); }
+    inline uint64 GetOwner() { return owner; }
+    void Load(QueryResult* result);
 };
 
 
 class SERVER_DECL MailSystem : public EventableObject
 {
-    private:
-        MailSystem() = default;
-        ~MailSystem() = default;
+private:
+    MailSystem() = default;
+    ~MailSystem() = default;
 
-    public:
+public:
+    static MailSystem& getInstance();
 
-        static MailSystem& getInstance();
+    MailSystem(MailSystem&&) = delete;
+    MailSystem(MailSystem const&) = delete;
+    MailSystem& operator=(MailSystem&&) = delete;
+    MailSystem& operator=(MailSystem const&) = delete;
 
-        MailSystem(MailSystem&&) = delete;
-        MailSystem(MailSystem const&) = delete;
-        MailSystem& operator=(MailSystem&&) = delete;
-        MailSystem& operator=(MailSystem const&) = delete;
+    void StartMailSystem();
+    MailError DeliverMessage(uint64 recipent, MailMessage* message);
+    void RemoveMessageIfDeleted(uint32 message_id, Player* plr);
+    void SaveMessageToSQL(MailMessage* message);
+    void SendAutomatedMessage(uint32 type, uint64 sender, uint64 receiver, std::string subject, std::string body, uint32 money,
+                              uint32 cod, std::vector<uint64> &item_guids, uint32 stationery, MailCheckMask checked = MAIL_CHECK_MASK_HAS_BODY, uint32 deliverdelay = 0);
 
-        void StartMailSystem();
-        MailError DeliverMessage(uint64 recipent, MailMessage* message);
-        void RemoveMessageIfDeleted(uint32 message_id, Player* plr);
-        void SaveMessageToSQL(MailMessage* message);
-        void SendAutomatedMessage(uint32 type, uint64 sender, uint64 receiver, std::string subject, std::string body, uint32 money,
-                                  uint32 cod, std::vector<uint64> &item_guids, uint32 stationery, MailCheckMask checked = MAIL_CHECK_MASK_HAS_BODY, uint32 deliverdelay = 0);
+    /// overload to keep backward compatibility (passing just 1 item guid instead of a vector)
+    void SendAutomatedMessage(uint32 type, uint64 sender, uint64 receiver, std::string subject, std::string body, uint32 money,
+                              uint32 cod, uint64 item_guid, uint32 stationery, MailCheckMask checked = MAIL_CHECK_MASK_HAS_BODY, uint32 deliverdelay = 0);
 
-        /// overload to keep backward compatibility (passing just 1 item guid instead of a vector)
-        void SendAutomatedMessage(uint32 type, uint64 sender, uint64 receiver, std::string subject, std::string body, uint32 money,
-                                  uint32 cod, uint64 item_guid, uint32 stationery, MailCheckMask checked = MAIL_CHECK_MASK_HAS_BODY, uint32 deliverdelay = 0);
+    void SendCreatureGameobjectMail(uint32 type, uint32 sender, uint64 receiver, std::string subject, std::string body, uint32 money,
+                              uint32 cod, uint64 item_guid, uint32 stationery, MailCheckMask checked = MAIL_CHECK_MASK_HAS_BODY, uint32 deliverdelay = 0);
 
-        void SendCreatureGameobjectMail(uint32 type, uint32 sender, uint64 receiver, std::string subject, std::string body, uint32 money,
-                                  uint32 cod, uint64 item_guid, uint32 stationery, MailCheckMask checked = MAIL_CHECK_MASK_HAS_BODY, uint32 deliverdelay = 0);
-
-        inline bool MailOption(uint32 flag)
-        {
-            return (config_flags & flag) ? true : false;
-        }
-        uint32 config_flags = 0;
-
+    inline bool MailOption(uint32 flag)
+    {
+        return (config_flags & flag) ? true : false;
+    }
+    uint32 config_flags = 0;
 };
 
 #define sMailSystem MailSystem::getInstance()

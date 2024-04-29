@@ -89,9 +89,7 @@ namespace BattlegroundDef
         IOC_BASES_ASSAULTED = 0,
         IOC_BASES_DEFENDED = 1
     };
-    
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //based on BattlemasterList.dbc (BATTLEGROUND_NUM_TYPES = Max entry's +1)

@@ -16,34 +16,32 @@ enum LfgGroupEnum
 /// Stores all lfg data needed about a group.
 class LfgGroupData
 {
-    public:
+public:
+    LfgGroupData();
+    ~LfgGroupData() = default;
 
-        LfgGroupData();
-        ~LfgGroupData() = default;
+    // General
+    void SetState(LfgState state);
+    void RestoreState();
+    // Dungeon
+    void SetDungeon(uint32_t dungeon);
+    void DecreaseKicksLeft();
 
-        // General
-        void SetState(LfgState state);
-        void RestoreState();
-        // Dungeon
-        void SetDungeon(uint32_t dungeon);
-        void DecreaseKicksLeft();
+    // General
+    LfgState GetState() const;
+    // Dungeon
+    uint32_t GetDungeon(bool asId = true) const;
+    // VoteKick
+    uint8_t GetVotesNeeded() const;
+    uint8_t GetKicksLeft() const;
 
-        // General
-        LfgState GetState() const;
-        // Dungeon
-        uint32_t GetDungeon(bool asId = true) const;
-        // VoteKick
-        uint8_t GetVotesNeeded() const;
-        uint8_t GetKicksLeft() const;
-
-    private:
-
-        // General
-        LfgState m_State;         ///< State if group in LFG
-        LfgState m_OldState;      ///< Old State
-        // Dungeon
-        uint32_t m_Dungeon;       ///< Dungeon entry
-        // Vote Kick
-        uint8_t m_VotesNeeded;    ///< Votes need to kick success
-        uint8_t m_KicksLeft;      ///< Number of kicks left
+private:
+    // General
+    LfgState m_State;         ///< State if group in LFG
+    LfgState m_OldState;      ///< Old State
+    // Dungeon
+    uint32_t m_Dungeon;       ///< Dungeon entry
+    // Vote Kick
+    uint8_t m_VotesNeeded;    ///< Votes need to kick success
+    uint8_t m_KicksLeft;      ///< Number of kicks left
 };

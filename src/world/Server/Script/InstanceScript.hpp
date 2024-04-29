@@ -36,7 +36,6 @@ class scriptEventMap;
 class SERVER_DECL InstanceScript
 {
 public:
-
     InstanceScript(WorldMap* pMapMgr);
     virtual ~InstanceScript() {}
 
@@ -77,7 +76,6 @@ public:
     InstanceMap* getInstance();
     uint8_t GetDifficulty();
 
-    // MIT start
     //////////////////////////////////////////////////////////////////////////////////////////
     // data
     void addObject(Object* obj);
@@ -168,7 +166,6 @@ private:
     ObjectGuidMap _objectGuids;
 
 public:
-
     uint32_t addTimer(uint32_t durationInMs);
     uint32_t getTimeForTimer(uint32_t timerId);
     uint32_t completedEncounters = 0; // completed encounter mask, bit indexes are DungeonEncounter.dbc boss numbers, used for packets
@@ -187,11 +184,9 @@ public:
     // instance update
 
 private:
-
     uint32_t mUpdateFrequency = defaultUpdateFrequency;
 
 public:
-
     uint32_t getUpdateFrequency() { return mUpdateFrequency; }
     void setUpdateFrequency(uint32_t frequencyInMs) { mUpdateFrequency = frequencyInMs; }
 
@@ -208,7 +203,6 @@ protected:
     // misc
 
 public:
-
     typedef std::set<Creature*> CreatureSet;
     typedef std::set<GameObject*> GameObjectSet;
 
@@ -235,16 +229,13 @@ public:
     void setGameObjectStateForEntry(uint32_t entry, uint8_t state);
 
 private:
-
     bool mSpawnsCreated = false;
 
 public:
-
     bool spawnsCreated() { return mSpawnsCreated; }
     void setSpawnsCreated(bool created = true) { mSpawnsCreated = created; }
 
 protected:
-
     std::vector<BossInfo> bosses;
 
     WorldMap* mInstance;

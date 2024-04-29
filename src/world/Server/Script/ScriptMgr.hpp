@@ -127,7 +127,7 @@ public:
     void register_quest_script(uint32_t entry, QuestScript* qs);
     void register_event_script(uint32_t entry, EventScript* es);
 
-    // GOSSIP INTERFACE REGISTRATION
+    // Gossip interface registration
     void register_creature_gossip(uint32_t, GossipScript*);
     void register_item_gossip(uint32_t, GossipScript*);
     void register_go_gossip(uint32_t, GossipScript*);
@@ -160,7 +160,6 @@ public:
     GossipScript* get_item_gossip(uint32_t) const;
 
 protected:
-
     InstanceCreateMap mInstances;
     CreatureCreateMap _creatures;
     std::mutex m_creaturesMutex;

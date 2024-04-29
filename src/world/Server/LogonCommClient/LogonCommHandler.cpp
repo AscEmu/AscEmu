@@ -65,8 +65,7 @@ class LogonCommWatcherThread : public ThreadBase
 
     Arcemu::Threading::ConditionVariable cond;
 
-    public:
-
+public:
     LogonCommWatcherThread()
     {
         running = true;

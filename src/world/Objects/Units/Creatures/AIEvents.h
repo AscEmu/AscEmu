@@ -21,10 +21,10 @@ enum AiEvents
     EVENT_UNFEAR,
     EVENT_FOLLOWOWNER,
     EVENT_WANDER, // unused
-    EVENT_UNWANDER,// unused
+    EVENT_UNWANDER, // unused
     EVENT_UNITDIED,
     EVENT_HOSTILEACTION,
-    EVENT_FORCEREDIRECTED,// unused
+    EVENT_FORCEREDIRECTED, // unused
     NUM_AI_EVENTS
 };
 

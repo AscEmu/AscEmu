@@ -32,7 +32,6 @@ void OpcodeTables::initialize()
             ++valueCount;
         }
     }
-
     std::cout << "OpcodeTables prepared " << valueCount << " hexvalues for 5 version" << "\n";
 }
 

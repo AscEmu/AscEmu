@@ -110,7 +110,6 @@ public:
 class SERVER_DECL AuraAction
 {
 public:
-
     virtual void operator()(Aura* /*aura*/) {}
 };
 
@@ -155,15 +154,15 @@ public: //\todo Zyres: public fpr LuaEngine, sort out why
     //////////////////////////////////////////////////////////////////////////////////////////
     // Essential functions
 
-    void Update(unsigned long time_passed);             // hides function Object::Update
-    // void AddToWorld();                               // not used
-    // void AddToWorld(WorldMap* pMapMgr);                // not used
-    // void PushToWorld(WorldMap*);                       // not used
-    virtual void RemoveFromWorld(bool free_guid);       // hides virtual function Object::RemoveFromWorld
-    // void OnPrePushToWorld();                         // not used
-    virtual void OnPushToWorld();                       // hides virtual function Object::OnPushToWorld
-    // void OnPreRemoveFromWorld();                     // not used
-    // void OnRemoveFromWorld();                        // not used
+    void Update(unsigned long time_passed);                                 // hides function Object::Update
+    // void AddToWorld();                                                   // not used
+    // void AddToWorld(WorldMap* pMapMgr);                                  // not used
+    // void PushToWorld(WorldMap*);                                         // not used
+    virtual void RemoveFromWorld(bool free_guid);                           // hides virtual function Object::RemoveFromWorld
+    // void OnPrePushToWorld();                                             // not used
+    virtual void OnPushToWorld();                                           // hides virtual function Object::OnPushToWorld
+    // void OnPreRemoveFromWorld();                                         // not used
+    // void OnRemoveFromWorld();                                            // not used
     virtual void die(Unit* pAttacker, uint32_t damage, uint32_t spellid);
     virtual void buildPetSpellList(WorldPacket& data);
 
@@ -906,7 +905,7 @@ public:
 
     void updateVisibility();
 
- private:
+private:
      // Stealth
      int32_t m_stealthLevel[STEALTH_FLAG_TOTAL] = {0};
      int32_t m_stealthDetection[STEALTH_FLAG_TOTAL] = {0};
@@ -1266,7 +1265,6 @@ protected:
     uint64_t m_auraRaidUpdateMask = 0;
 
 public:
-
     void updateAuraForGroup(uint8_t slot);
 
     void giveGroupXP(Unit* unitVictim, Player* playerInGroup);
@@ -1284,7 +1282,6 @@ public:
     AuraCheckResponse auraCheck(SpellInfo const* spellInfo, Aura* aura, Object* caster = nullptr);
 
 public:
-
     friend class AIInterface;
     friend class Aura;
 
@@ -1292,6 +1289,7 @@ public:
     uint32_t getSpellDidHitResult(Unit* pVictim, uint32_t weapon_damage_type, Spell* castingSpell);
 
     DamageInfo strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo const* ability, int32_t add_damage, int32_t pct_dmg_mod, uint32_t exclusive_damage, bool disable_proc, bool skip_hit_check, bool force_crit = false, Spell* castingSpell = nullptr);
+
 protected:
     bool m_extraAttackCounter = false;
 

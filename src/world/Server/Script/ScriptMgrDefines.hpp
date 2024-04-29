@@ -90,7 +90,6 @@ typedef void(*EventFunc)(CreatureAIScript* pCreatureAI, int32_t pMiscVal);
 typedef std::vector<Unit*> UnitArray;
 typedef std::pair<RangeStatus, float> RangeStatusPair;
 
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // Instanced class created for each instance of the map, holds all scriptable exports
 
@@ -138,4 +137,4 @@ struct ObjectData
 };
 
 const int32_t INVALIDATE_TIMER = -1;
-const uint32_t DEFAULT_DESPAWN_TIMER = 2000;      //milliseconds
+const uint32_t DEFAULT_DESPAWN_TIMER = 2000; // milliseconds

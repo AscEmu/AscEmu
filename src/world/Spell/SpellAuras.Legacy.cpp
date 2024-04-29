@@ -709,7 +709,6 @@ void Aura::EventUpdateAreaAura(uint8_t effIndex, float r)
             return;
     }
 
-
     for (AreaAuraList::iterator itr = targets.begin(); itr != targets.end(); ++itr)
     {
         auto unit = m_target->getWorldMap()->getUnit(*itr);
