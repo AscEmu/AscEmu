@@ -305,7 +305,6 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Creature AI Functions
 public:
-    
     //Premade Spell Function
     virtual void CreatureAIFunc_CastSpell(CreatureAIFunc pThis);
 

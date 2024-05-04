@@ -43,7 +43,6 @@
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Storage/WorldStrings.h"
 
-
 Battleground::Battleground(WorldMap* worldMap, uint32_t id, uint32_t levelGroup, uint32_t type) : m_mapMgr(worldMap), m_id(id), m_type(type), m_levelGroup(levelGroup)
 {
     sEventMgr.AddEvent(this, &Battleground::eventResurrectPlayers, EVENT_BATTLEGROUND_QUEUE_UPDATE, 30000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -245,7 +244,6 @@ void Battleground::buildPvPUpdateDataPacket(WorldPacket* data)
             }
         }
     }
-
 }
 
 uint8_t Battleground::Rated()

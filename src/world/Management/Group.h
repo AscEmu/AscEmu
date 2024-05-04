@@ -110,7 +110,6 @@ struct InstanceGroupBind
 class Group;
 class Player;
 
-
 class SERVER_DECL SubGroup // Most stuff will be done through here, not through the "Group" class.
 {
 public:

@@ -15,16 +15,13 @@ class GameEventMgr
     ~GameEventMgr() = default;
 
 public:
-
     class GameEventMgrThread
     {
     private:
-
         GameEventMgrThread() = default;
         ~GameEventMgrThread() = default;
 
     public:
-
         static GameEventMgrThread& getInstance();
         void initialize();
         void finalize();

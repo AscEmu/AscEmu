@@ -9,13 +9,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 class WordFilter
 {
-    public:
+public:
+    WordFilter();
+    ~WordFilter();
 
-        WordFilter();
-        ~WordFilter();
-
-        bool isBlockedOrReplaceWord(std::string& chatMessage);
-
+    bool isBlockedOrReplaceWord(std::string& chatMessage);
 };
 
 extern WordFilter* g_chatFilter;

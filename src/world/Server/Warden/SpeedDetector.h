@@ -45,29 +45,27 @@ class Player;
 //////////////////////////////////////////////////////////////////////////////////////////
 class SpeedCheatDetector
 {
-    public:
+public:
+    SpeedCheatDetector();
 
-        SpeedCheatDetector();
+void addSample(LocationVector v, int timestamp, float speed);
+    /// update the detector with new values
+    void AddSample(float x, float y, int stamp, float player_speed);
+    /// test cheater status
+    inline char IsCheatDetected() { return cheat_threat >= CHEAT_ALARMS_TO_TRIGGER_CHEAT; }
+    /// delay then reset cheat detector
+    void SkipSamplingUntil(int stamp);
+    /// take actions against a cheater
+    void ReportCheater(Player* _player);
+    /// reset internal values on speed change
+    void EventSpeedChange();
 
-    void addSample(LocationVector v, int timestamp, float speed);
-        /// update the detector with new values
-        void AddSample(float x, float y, int stamp, float player_speed);
-        /// test cheater status
-        inline char IsCheatDetected() { return cheat_threat >= CHEAT_ALARMS_TO_TRIGGER_CHEAT; }
-        /// delay then reset cheat detector
-        void SkipSamplingUntil(int stamp);
-        /// take actions against a cheater
-        void ReportCheater(Player* _player);
-        /// reset internal values on speed change
-        void EventSpeedChange();
-
-    private:
-
-        float last_x, last_y;
-        int last_stamp;
-        signed char cheat_threat;           /// don't draw quick conclusions. If player is suspicious over time then kill him
-        float last_used_speed;              /// we reset if speed changed since our last measure
-        float bigest_hacked_speed_dif;
+private:
+    float last_x, last_y;
+    int last_stamp;
+    signed char cheat_threat;           /// don't draw quick conclusions. If player is suspicious over time then kill him
+    float last_used_speed;              /// we reset if speed changed since our last measure
+    float bigest_hacked_speed_dif;
 };
 
 #endif // SPEEDDETECTOR_H

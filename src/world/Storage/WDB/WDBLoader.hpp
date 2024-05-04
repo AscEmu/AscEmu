@@ -60,7 +60,7 @@ namespace WDB
         unsigned char* m_data;
         unsigned char* m_string_table;
 
-        //db2 fields
+        // db2 fields
         uint32_t m_tableHash{};
         uint32_t m_build{};
 

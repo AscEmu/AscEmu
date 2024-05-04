@@ -32,6 +32,7 @@ struct InstancePlayerBind
 class SERVER_DECL InstanceSaved
 {
     friend class InstanceMgr;
+
 public:
     InstanceSaved(uint32_t mapId, uint32_t instanceId, InstanceDifficulty::Difficulties difficulty, time_t resetTime, bool canReset);
     ~InstanceSaved();

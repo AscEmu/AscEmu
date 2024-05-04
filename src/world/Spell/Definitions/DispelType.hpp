@@ -16,8 +16,8 @@ enum DispelType : uint8_t
     DISPEL_INVISIBILTY     = 6,
     DISPEL_ALL             = 7,
     DISPEL_SPECIAL_NPCONLY = 8,
-    DISPEL_FRENZY          = 9, // enrage/frenzy
-    DISPEL_UNK10           = 10, // only spell 45362 has this on 3.3.5a
-    DISPEL_UNK11           = 11, // only spell 66006 (Divine Storm) has this on 3.3.5a
+    DISPEL_FRENZY          = 9,     // enrage/frenzy
+    DISPEL_UNK10           = 10,    // only spell 45362 has this on 3.3.5a
+    DISPEL_UNK11           = 11,    // only spell 66006 (Divine Storm) has this on 3.3.5a
     TOTAL_DISPEL_TYPES
 };

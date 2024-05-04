@@ -61,10 +61,10 @@ enum HolidayIds : uint32_t
 
 struct GameEventFinishCondition
 {
-    float reqNum;               // required number // use float, since some events use percent
-    float done;                 // done number
-    uint32_t max_world_state;     // max resource count world state update id
-    uint32_t done_world_state;    // done resource count world state update id
+    float reqNum;                   // required number // use float, since some events use percent
+    float done;                     // done number
+    uint32_t max_world_state;       // max resource count world state update id
+    uint32_t done_world_state;      // done resource count world state update id
 };
 
 typedef std::map<uint32_t /*condition id*/, GameEventFinishCondition> GameEventConditionMap;

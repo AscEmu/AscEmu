@@ -114,7 +114,6 @@ enum PetType
 typedef std::map<SpellInfo const*, uint16> PetSpellMap;
 struct PlayerPet;
 
-
 class SERVER_DECL Pet : public Creature
 {
     friend class Player;
@@ -131,8 +130,8 @@ public:
 
     void Update(unsigned long /*time_passed*/);         // hides function Creature::Update
     // void AddToWorld();                               // not used
-    // void AddToWorld(WorldMap* pMapMgr);                // not used
-    // void PushToWorld(WorldMap*);                       // not used
+    // void AddToWorld(WorldMap* pMapMgr);              // not used
+    // void PushToWorld(WorldMap*);                     // not used
     void RemoveFromWorld(bool free_guid);               // hides function Creature::RemoveFromWorld
     // void OnPrePushToWorld();                         // not used
     void OnPushToWorld();                               // hides function Creature::OnPushToWorld
@@ -226,9 +225,9 @@ public:
         void UpdateSpellList(bool showLearnSpells = true);
 
         // talents
-        void SendTalentsToOwner();        // Send talentpoints and talent spells to owner
+        void SendTalentsToOwner();                                                                          // Send talentpoints and talent spells to owner
         inline uint8 GetTPsForLevel(uint32 level) { return (level >= 20) ? uint8(level - 16) >> 2 : 0; }    // pet gain first talent point at lvl 20, then every 4 lvls another point
-        inline uint8 GetSpentTPs() { return GetTPsForLevel(getLevel()) - this->getPetTalentPoints(); }    // returns amount of spent talent points
+        inline uint8 GetSpentTPs() { return GetTPsForLevel(getLevel()) - this->getPetTalentPoints(); }      // returns amount of spent talent points
 
         void HandleAutoCastEvent(AutoCastEvents Type);
         AI_Spell* HandleAutoCastEvent();
@@ -242,7 +241,6 @@ public:
         void die(Unit* pAttacker, uint32 damage, uint32 spellid);
 
     protected:
-
         PetSpellMap mSpells;
         PlayerPet* mPi = nullptr;
         uint32 ActionBar[10] = {0};

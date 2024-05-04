@@ -154,7 +154,7 @@ public:
 
 private:
     typedef std::vector<GuildRankInfo> GuildRankInfoStore;
-    typedef std::vector<GuildBankTab*> GuildBankTabsStore;  //done
+    typedef std::vector<GuildBankTab*> GuildBankTabsStore;
     typedef std::map<uint32_t, class GuildMember*> GuildMembersStore;
 
 protected:
@@ -163,7 +163,7 @@ protected:
 
     GuildRankInfoStore _guildRankInfoStore;
     GuildMembersStore _guildMembersStore;
-    GuildBankTabsStore _guildBankTabsStore; //done
+    GuildBankTabsStore _guildBankTabsStore;
 
     GuildLogHolder* mEventLog;
     GuildLogHolder* mBankEventLog[MAX_GUILD_BANK_TABS + 1];
@@ -307,13 +307,13 @@ public:
 private:
     inline uint8_t _getLowestRankId() const { return uint8_t(_guildRankInfoStore.size() - 1); }
 
-    inline uint8_t _getPurchasedTabsSize() const { return uint8_t(_guildBankTabsStore.size()); }    //done
+    inline uint8_t _getPurchasedTabsSize() const { return uint8_t(_guildBankTabsStore.size()); }
 
 public:
-    inline GuildBankTab* getBankTab(uint8_t tabId) { return tabId < _guildBankTabsStore.size() ? _guildBankTabsStore[tabId] : nullptr; }    //done
+    inline GuildBankTab* getBankTab(uint8_t tabId) { return tabId < _guildBankTabsStore.size() ? _guildBankTabsStore[tabId] : nullptr; }
 
 private:
-    inline const GuildBankTab* getBankTab(uint8_t tabId) const { return tabId < _guildBankTabsStore.size() ? _guildBankTabsStore[tabId] : nullptr; }    //done
+    inline const GuildBankTab* getBankTab(uint8_t tabId) const { return tabId < _guildBankTabsStore.size() ? _guildBankTabsStore[tabId] : nullptr; }
 
     inline const GuildMember* getMember(uint64_t guid) const
     {
@@ -373,6 +373,7 @@ public:
     int32_t getMemberRemainingMoney(GuildMember const* member) const;
     void updateMemberWithdrawSlots(uint64_t guid, uint8_t tabId);
     bool memberHasTabRights(uint64_t guid, uint8_t tabId, uint32_t rights) const;
+
 public:
     void logEvent(GuildEventLogTypes eventType, uint32_t playerGuid1, uint32_t playerGuid2 = 0, uint8_t newRank = 0);
     void logBankEvent(GuildBankEventLogTypes eventType, uint8_t tabId, uint32_t playerGuid, uint32_t itemOrMoney, uint16_t itemStackCount = 0, uint8_t destTabId = 0);

@@ -17,7 +17,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStores.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
 
-
 TransportHandler& TransportHandler::getInstance()
 {
     static TransportHandler mInstance;

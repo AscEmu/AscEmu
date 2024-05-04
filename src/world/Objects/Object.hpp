@@ -73,7 +73,6 @@ enum CurrentSpellType : uint8_t
 class SERVER_DECL Object : public EventableObject
 {
 public:
-
     Object();
     virtual ~Object();
 
@@ -664,11 +663,11 @@ public:
         int32 event_GetInstanceID();
 
         // Object activation
+
     private:
-
         bool Active = false;
-    public:
 
+    public:
         bool IsActive() { return Active; }
         virtual bool CanActivate();
         virtual void Activate(WorldMap* mgr);
@@ -693,7 +692,6 @@ public:
         //virtual Group* getGroup() { return NULL; }
 
     protected:
-
         //void _Create (uint32 guidlow, uint32 guidhigh);
         void _Create(uint32 mapid, float x, float y, float z, float ang);
 

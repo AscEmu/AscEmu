@@ -30,7 +30,6 @@ const uint32_t GOLD_TEAM = 1;
 
 Arena::Arena(WorldMap* _worldMap, uint32_t _id, uint32_t _levelGroup, uint32_t _arenaType, uint32_t _playersPerSide) : Battleground(_worldMap, _id, _levelGroup, _arenaType)
 {
-
     for (uint8_t i = 0; i < 2; i++)
     {
         m_players[i].clear();
@@ -98,7 +97,6 @@ Arena::~Arena()
                 delete(*itr);
         }
     }
-
 }
 
 // \todo Rewrite this function entirely
@@ -480,7 +478,7 @@ int32_t Arena::GetFreeTeam() const
     return ((c0 + c1 >= m_playerCountPerTeam * 2) ? -1 : (c0 > c1));
 }
 
-void Arena::HookGenerateLoot(Player* /*plr*/, Object* /*pCorpse*/)    // Not Used
+void Arena::HookGenerateLoot(Player* /*plr*/, Object* /*pCorpse*/) // Not Used
 {}
 
 void Arena::HookOnUnitKill(Player* /*plr*/, Unit* /*pVictim*/)

@@ -14,7 +14,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <unordered_map>
 #include <vector>
 
-
 class PathGenerator;
 class Unit;
 class LocationVector;
@@ -178,6 +177,7 @@ public:
     void moveFormation(Unit* leader, float range, float angle, uint32_t point1, uint32_t point2);
 
     void launchMoveSpline(MovementMgr::MoveSplineInit&& init, uint32_t id = 0, MovementGeneratorPriority priority = MOTION_PRIORITY_NORMAL, MovementGeneratorType type = EFFECT_MOTION_TYPE);
+
 private:
     typedef std::unique_ptr<MovementGenerator, MovementGeneratorDeleter> MovementGeneratorPointer;
     typedef std::multiset<MovementGenerator*, MovementGeneratorComparator> MovementManagerContainer;

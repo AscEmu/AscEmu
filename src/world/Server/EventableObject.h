@@ -47,7 +47,6 @@ class SERVER_DECL EventableObject
     friend class EventableObjectHolder;
 
     protected:
-
         void event_RemoveEvents();
         void event_RemoveEvents(uint32_t EventType);
         void event_ModifyTimeLeft(uint32_t EventType, time_t TimeLeft, bool unconditioned = false);
@@ -59,7 +58,6 @@ class SERVER_DECL EventableObject
         bool event_GetTimeLeft(uint32_t EventType, time_t* Time);
 
     public:
-
         uint32_t event_GetEventPeriod(uint32_t EventType);
         // Public methods
         EventableObject();
@@ -76,7 +74,6 @@ class SERVER_DECL EventableObject
         void DecRef();
 
     protected:
-
         int32_t m_event_Instanceid;
         std::mutex m_lock;
         EventMap m_events;
@@ -97,7 +94,6 @@ typedef std::set<EventableObject*> EventableObjectSet;
 class EventableObjectHolder
 {
     public:
-
         EventableObjectHolder(int32_t instance_id);
         ~EventableObjectHolder();
 
@@ -109,7 +105,6 @@ class EventableObjectHolder
         uint32_t GetInstanceID() { return mInstanceId; }
 
     protected:
-
         int32_t mInstanceId;
         std::mutex m_lock;
         EventList m_events;

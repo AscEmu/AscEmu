@@ -100,21 +100,21 @@ void BattlegroundManager::handleBattlegroundListPacket(WorldSession* session, ui
         data << uint64_t(0);
 
     data << from;
-    data << uint32_t(battlegroundType);   // typeid
+    data << uint32_t(battlegroundType);                                     // typeid
 #endif
 
 #if VERSION_STRING >= WotLK
-    data << uint8_t(0);                                      // unk
-    data << uint8_t(0);                                      // unk
+    data << uint8_t(0);                                                     // unk
+    data << uint8_t(0);                                                     // unk
 
     // Rewards
-    data << uint8_t(0);                                      // 3.3.3 hasWin
-    data << uint32_t(0);                                     // 3.3.3 winHonor
-    data << uint32_t(0);                                     // 3.3.3 winArena
-    data << uint32_t(0);                                     // 3.3.3 lossHonor
+    data << uint8_t(0);                                                     // 3.3.3 hasWin
+    data << uint32_t(0);                                                    // 3.3.3 winHonor
+    data << uint32_t(0);                                                    // 3.3.3 winArena
+    data << uint32_t(0);                                                    // 3.3.3 lossHonor
 
     uint8_t isRandom = battlegroundType == BattlegroundDef::TYPE_RANDOM;
-    data << uint8_t(isRandom);                               // 3.3.3 isRandom
+    data << uint8_t(isRandom);                                              // 3.3.3 isRandom
 
     // Random bgs
     if (isRandom == 1)
@@ -139,13 +139,13 @@ void BattlegroundManager::handleBattlegroundListPacket(WorldSession* session, ui
         return;
     }
 
-    if (battlegroundType >= BATTLEGROUND_NUM_TYPES)     //VLack: Nasty hackers might try to abuse this packet to crash us...
+    if (battlegroundType >= BATTLEGROUND_NUM_TYPES) // VLack: Nasty hackers might try to abuse this packet to crash us...
         return;
 
     uint32_t Count = 0;
     const size_t pos = data.wpos();
 
-    data << uint32_t(0);      // Count
+    data << uint32_t(0); // Count
 
     // Append the battlegrounds
     std::lock_guard instanceLock(m_instanceLock);
@@ -157,7 +157,6 @@ void BattlegroundManager::handleBattlegroundListPacket(WorldSession* session, ui
             ++Count;
         }
     }
-    
 
     data.put<uint32_t>(pos, Count);
 #else
@@ -174,13 +173,13 @@ void BattlegroundManager::handleBattlegroundListPacket(WorldSession* session, ui
     {
         data << uint8(0);
 
-        if (battlegroundType >= BATTLEGROUND_NUM_TYPES)     //VLack: Nasty hackers might try to abuse this packet to crash us...
+        if (battlegroundType >= BATTLEGROUND_NUM_TYPES) // VLack: Nasty hackers might try to abuse this packet to crash us...
             return;
 
         uint32_t Count = 0;
         const size_t pos = data.wpos();
 
-        data << uint32_t(0);      // Count
+        data << uint32_t(0); // Count
 
         // Append the battlegrounds
         std::lock_guard instanceLock(m_instanceLock);
@@ -247,7 +246,6 @@ void BattlegroundManager::handleBattlegroundJoin(WorldSession* session, WorldPac
     plr->setBGEntryPoint(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), plr->GetOrientation(), plr->GetMapId(), plr->GetInstanceID());
 
     sendBattlefieldStatus(plr, BattlegroundDef::STATUS_INQUEUE, srlPacket.bgType, srlPacket.instanceId, 0, m_bgMaps[srlPacket.bgType], 0);
-
 }
 
 void ErasePlayerFromList(uint32_t guid, std::list<uint32_t>* l)
@@ -381,7 +379,6 @@ void BattlegroundManager::handleGetBattlegroundQueueCommand(WorldSession* sessio
             }
         }
     }
-
 
     if (!foundSomething)
         session->SystemMessage("There's nobody queued.");
@@ -591,7 +588,6 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
                 }
             }
 
-
             /// Now that we have a list of players who didn't queue for a specific instance
             /// try to add them to a Bg/Arena that is already under way
             std::vector<uint32_t> tryJoinVec;
@@ -760,7 +756,6 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
                     }
                 }
 
-
                 uint32_t minPlayers = sBattlegroundManager.getMinimumPlayers(bgToStart);
                 if (forceStart || tempPlayerVec[0].size() >= minPlayers && tempPlayerVec[1].size() >= minPlayers && bgToStart != BattlegroundDef::TYPE_RANDOM)
                 {
@@ -802,7 +797,7 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
     std::list<uint32_t>::iterator itz;
     for (uint8_t i = BattlegroundDef::TYPE_ARENA_2V2; i <= BattlegroundDef::TYPE_ARENA_5V5; ++i)
     {
-        if (!forceStart && m_queuedGroups[i].size() < 2)      // got enough to have an arena battle ;P
+        if (!forceStart && m_queuedGroups[i].size() < 2) // got enough to have an arena battle ;P
             continue;
 
         for (uint32_t j = 0; j < static_cast<uint32_t>(m_queuedGroups[i].size()); j++)
@@ -874,7 +869,6 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
             }
         }
     }
-    
 }
 
 void BattlegroundManager::removePlayerFromQueues(Player* player)
@@ -939,13 +933,12 @@ void BattlegroundManager::removeGroupFromQueues(uint32_t groupId)
     }
 }
 
-
 bool BattlegroundManager::canCreateInstance(uint32_t /*type*/, uint32_t /*levelGroup*/)
 {
     return true;
 }
 
-/// Returns the minimum number of players (Only valid for battlegrounds)
+// Returns the minimum number of players (Only valid for battlegrounds)
 uint32_t BattlegroundManager::getMinimumPlayers(uint32_t dbcIndex)
 {
     switch (dbcIndex)
@@ -973,7 +966,7 @@ uint32_t BattlegroundManager::getMinimumPlayers(uint32_t dbcIndex)
     }
 }
 
-/// Returns the maximum number of players (Only valid for battlegrounds)
+// Returns the maximum number of players (Only valid for battlegrounds)
 uint32_t BattlegroundManager::getMaximumPlayers(uint32_t dbcIndex)
 {
     switch (dbcIndex)
@@ -1000,7 +993,6 @@ uint32_t BattlegroundManager::getMaximumPlayers(uint32_t dbcIndex)
             return 1;
     }
 }
-
 
 Battleground* BattlegroundManager::createInstance(uint32_t type, uint32_t levelGroup)
 {
@@ -1045,7 +1037,7 @@ Battleground* BattlegroundManager::createInstance(uint32_t type, uint32_t levelG
         if (mgr == nullptr)
         {
             sLogger.failure("call failed for map {}, type {}, level group {}", mapid, type, levelGroup);
-            return nullptr;      // Shouldn't happen
+            return nullptr; // Shouldn't happen
         }
 
         const uint32_t players_per_side = getMaximumPlayers(type);
@@ -1069,7 +1061,7 @@ Battleground* BattlegroundManager::createInstance(uint32_t type, uint32_t levelG
 
     t = time(nullptr);
 #ifdef WIN32
-    //    localtime_s(&tm, &t);
+    // localtime_s(&tm, &t);
     //zack : some luv for vs2k3 compiler
     tm = *localtime(&t);
 #else
@@ -1108,7 +1100,7 @@ Battleground* BattlegroundManager::createInstance(uint32_t type, uint32_t levelG
     if (mgr == nullptr)
     {
         sLogger.failure("call failed for map {}, type {}, level group {}", m_bgMaps[type], type, levelGroup);
-        return nullptr;      // Shouldn't happen
+        return nullptr; // Shouldn't happen
     }
 
     // Call the create function
@@ -1122,7 +1114,6 @@ Battleground* BattlegroundManager::createInstance(uint32_t type, uint32_t levelG
 
     std::lock_guard instanceLock(m_instanceLock);
     m_instances[type].insert(std::make_pair(iid, bg));
-    
 
     return bg;
 }
@@ -1299,12 +1290,11 @@ void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battle
         return;
     }
 
-
     // Queue him!
     std::lock_guard queueLock(m_queueLock);
     m_queuedPlayers[battlegroundType][lgroup].push_back(pguid);
 
-    sLogger.info("BattlegroundMgr : Player {} is now in battleground queue for {Arena {}}", session->GetPlayer()->getGuidLow(), battlegroundType);
+    sLogger.info("BattlegroundMgr : Player {} is now in battleground queue for (Arena {})", session->GetPlayer()->getGuidLow(), battlegroundType);
 
     // send the battleground status packet
     sendBattlefieldStatus(session->GetPlayer(), BattlegroundDef::STATUS_INQUEUE, battlegroundType, 0, 0, 0, 0);
@@ -1314,5 +1304,4 @@ void BattlegroundManager::handleArenaJoin(WorldSession* session, uint32_t battle
 
     session->GetPlayer()->setBGEntryPoint(session->GetPlayer()->GetPositionX(), session->GetPlayer()->GetPositionY(), session->GetPlayer()->GetPositionZ(), session->GetPlayer()->GetOrientation(),
         session->GetPlayer()->GetMapId(), session->GetPlayer()->GetInstanceID());
-
 }

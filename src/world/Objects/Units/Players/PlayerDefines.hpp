@@ -506,7 +506,6 @@ static const uint32_t TalentTreesPerClass[MAX_PLAYER_CLASSES][3] =
 #endif
 };
 
-
 enum RestState
 {
     RESTSTATE_RESTED        = 1,
@@ -952,7 +951,6 @@ struct PlayerCreateInfo
 class SERVER_DECL CachedCharacterInfo
 {
 public:
-
     ~CachedCharacterInfo();
 
     uint32_t guid = 0;
@@ -1140,12 +1138,12 @@ private:
     std::array<ActionButton, PLAYER_ACTION_BUTTON_COUNT> mActions = { ActionButton() };
 };
 
-typedef std::set<uint32_t>                            SpellSet;
-typedef std::list<classScriptOverride*>             ScriptOverrideList;
-typedef std::map<uint32_t, ScriptOverrideList* >      SpellOverrideMap;
-typedef std::map<uint32_t, FactionReputation*>        ReputationMap;
-typedef std::map<uint16_t, PlayerSkill>               SkillMap;
-typedef std::map<uint32_t, PlayerCooldown>            PlayerCooldownMap;
+typedef std::set<uint32_t>                              SpellSet;
+typedef std::list<classScriptOverride*>                 ScriptOverrideList;
+typedef std::map<uint32_t, ScriptOverrideList* >        SpellOverrideMap;
+typedef std::map<uint32_t, FactionReputation*>          ReputationMap;
+typedef std::map<uint16_t, PlayerSkill>                 SkillMap;
+typedef std::map<uint32_t, PlayerCooldown>              PlayerCooldownMap;
 
 struct PlayerCheat
 {

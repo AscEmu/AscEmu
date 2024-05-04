@@ -150,12 +150,10 @@ class SERVER_DECL EventMgr
     friend class MiniEventMgr;
 
     private:
-
         EventMgr() = default;
         ~EventMgr() = default;
 
     public:
-
         static EventMgr& getInstance();
 
         EventMgr(EventMgr&&) = delete;
@@ -286,7 +284,6 @@ class SERVER_DECL EventMgr
         }
 
     protected:
-
         HolderMap mHolders;
         std::mutex holderLock;
 };

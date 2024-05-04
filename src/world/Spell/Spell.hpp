@@ -681,13 +681,13 @@ public:
     uint8 extra_cast_number;
     uint32 m_glyphslot;
 
-    ////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////
     ///bool DuelSpellNoMoreValid()
     /// Tells if the Spell was being casted while dueling but now the duel is over
     ///
     /// \return true if Spell is now invalid because the duel is over false if Spell is valid.
     ///
-    ///////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////
     bool DuelSpellNoMoreValid() const;
 
     /// Spell state's
@@ -696,11 +696,10 @@ public:
     void SetSpellFailed(bool failed = true);
 
 protected:
-
     /// Spell state's
-    bool m_Spell_Failed;         //for 5sr
+    bool m_Spell_Failed;            // for 5sr
     bool m_Delayed;
-    uint8 m_DelayStep;            //3.0.2 - spells can only be delayed twice.
+    uint8 m_DelayStep;              // 3.0.2 - spells can only be delayed twice.
 
     bool m_IsCastedOnSelf;
 
@@ -714,8 +713,7 @@ protected:
     virtual int32 DoCalculateEffect(uint32 i, Unit* target, int32 value);
     virtual void DoAfterHandleEffect(Unit* target, uint32 i);
 
-public:     //Modified by LUAppArc private->public
-
+public: // Modified by LUAppArc private->public
     float m_missilePitch;
     uint32 m_missileTravelTime;
 

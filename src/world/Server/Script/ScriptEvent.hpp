@@ -20,7 +20,6 @@ class SERVER_DECL scriptEventMap
     typedef std::multimap<uint32_t, ScriptEvent> EventMap;
 
 public:
-
     scriptEventMap() : bossPhase(0) {}
 
     void resetEvents();

@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <vector>
 #include <queue>
 
-
 template<typename T>
 class custom_priority_queue_ascend : public std::priority_queue<T, std::vector<T>, std::greater<int32_t>>
 {
@@ -45,7 +44,6 @@ public:
         return false;
     }
 };
-
 
 class UniqueNumberPool
 {

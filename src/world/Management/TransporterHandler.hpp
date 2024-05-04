@@ -30,7 +30,6 @@ namespace WDB::Structures
     struct TransportRotationEntry;
 }
 
-
 typedef MovementMgr::Spline<double>                         TransportSpline;
 typedef std::vector<KeyFrame>                               KeyFrameVec;
 typedef std::unordered_map<uint32_t, TransportTemplate>     TransportTemplates;

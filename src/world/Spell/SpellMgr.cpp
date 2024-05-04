@@ -71,7 +71,7 @@ bool SpellArea::fitsToRequirements(Player* player, uint32_t newZone, uint32_t ne
     // Misc Conditions
     switch (spellId)
     {
-        case 58600: //Restricted Flight Zone (Dalaran)
+        case 58600: // Restricted Flight Zone (Dalaran)
         {
             if (player == nullptr)
                 return false;

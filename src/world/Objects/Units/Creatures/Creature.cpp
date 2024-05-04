@@ -460,7 +460,6 @@ class DatabaseGossip : public GossipScript
     uint32_t m_gossipMenuId;
 
 public:
-
     DatabaseGossip(uint32_t gossipId) : m_gossipMenuId(gossipId) {}
 
     void onHello(Object* object, Player* player) override

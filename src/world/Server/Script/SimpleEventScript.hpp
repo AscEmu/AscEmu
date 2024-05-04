@@ -37,8 +37,8 @@ enum class ScriptCommands : uint8_t
     SCRIPT_COMMAND_FLAG_REMOVE              = 5,
     SCRIPT_COMMAND_TELEPORT_TO              = 6,
     SCRIPT_COMMAND_QUEST_EXPLORED           = 7,
-    SCRIPT_COMMAND_KILL_CREDIT              = 8,       //Implemented (   data_1 (spellid), data_2 (quest id), data_3 (targettype 0 Creature/ 1 Gameobject), data_4 (target id), data_5 (killcredit), delay (when script needs to start ( in ms), next_event (next event_id when you want to add more )
-    SCRIPT_COMMAND_RESPAWN_GAMEOBJECT       = 9,       //Implemented (   data_1 (GoId), data_2 (respawntime), delay (when script needs to start ( in ms), next_event (next event_id when you want to add more )
+    SCRIPT_COMMAND_KILL_CREDIT              = 8,       // Implemented (   data_1 (spellid), data_2 (quest id), data_3 (targettype 0 Creature/ 1 Gameobject), data_4 (target id), data_5 (killcredit), delay (when script needs to start ( in ms), next_event (next event_id when you want to add more )
+    SCRIPT_COMMAND_RESPAWN_GAMEOBJECT       = 9,       // Implemented (   data_1 (GoId), data_2 (respawntime), delay (when script needs to start ( in ms), next_event (next event_id when you want to add more )
     SCRIPT_COMMAND_TEMP_SUMMON_CREATURE     = 10,
     SCRIPT_COMMAND_OPEN_DOOR                = 11,
     SCRIPT_COMMAND_CLOSE_DOOR               = 12,

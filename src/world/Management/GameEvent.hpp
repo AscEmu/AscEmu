@@ -62,7 +62,6 @@ public:
     std::set<uint16_t> prerequisite_events;
 
 private:
-
     void CreateNPCs();
     void CreateObjects();
 

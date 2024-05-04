@@ -868,7 +868,6 @@ void CommandTableStorage::Init()
 #endif
         { nullptr,                  '0', nullptr,                                                          "",                                                                                  nullptr }
     };
-
     dupe_command_table(vehicleCommandTable, _vehicleCommandTable);
 
     static ChatCommand commandTable[] =

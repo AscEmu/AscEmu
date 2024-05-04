@@ -15,6 +15,7 @@ class BroadcastMgr
     void threadRunner(AscEmu::Threading::AEThread& thread);
     void threadInit();
     void sendBroadcast();
+
 public:
     BroadcastMgr();
     ~BroadcastMgr();

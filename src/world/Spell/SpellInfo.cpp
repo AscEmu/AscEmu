@@ -1641,7 +1641,7 @@ uint32_t SpellInfo::getEffectCustomFlag(uint8_t idx) const
     return EffectCustomFlag[idx];
 }
 
-void SpellInfo::setTotem(uint32_t totemId, uint8_t idx)                      // used in HackFixes.cpp
+void SpellInfo::setTotem(uint32_t totemId, uint8_t idx)                                         // used in HackFixes.cpp
 {
     if (idx >= MAX_SPELL_TOTEMS)
     {
@@ -1652,7 +1652,7 @@ void SpellInfo::setTotem(uint32_t totemId, uint8_t idx)                      // 
     Totem[idx] = totemId;
 }
 
-void SpellInfo::setReagent(int32_t reagentId, uint8_t idx)                      // used in HackFixes.cpp
+void SpellInfo::setReagent(int32_t reagentId, uint8_t idx)                                      // used in HackFixes.cpp
 {
     if (idx >= MAX_SPELL_REAGENTS)
     {
@@ -1663,7 +1663,7 @@ void SpellInfo::setReagent(int32_t reagentId, uint8_t idx)                      
     Reagent[idx] = reagentId;
 }
 
-void SpellInfo::setReagentCount(uint32_t reagentId, uint8_t idx)                 // used in HackFixes.cpp
+void SpellInfo::setReagentCount(uint32_t reagentId, uint8_t idx)                                // used in HackFixes.cpp
 {
     if (idx >= MAX_SPELL_REAGENTS)
     {
@@ -1674,7 +1674,7 @@ void SpellInfo::setReagentCount(uint32_t reagentId, uint8_t idx)                
     ReagentCount[idx] = reagentId;
 }
 
-void SpellInfo::setEffect(uint32_t effectId, uint8_t idx)                          // used in HackFixes.cpp / ObjectMgr.cpp
+void SpellInfo::setEffect(uint32_t effectId, uint8_t idx)                                       // used in HackFixes.cpp / ObjectMgr.cpp
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
@@ -1685,7 +1685,7 @@ void SpellInfo::setEffect(uint32_t effectId, uint8_t idx)                       
     Effect[idx] = effectId;
 }
 
-void SpellInfo::setEffectDieSides(int32_t effecSide, uint8_t idx)                 // used in HackFixes.cpp
+void SpellInfo::setEffectDieSides(int32_t effecSide, uint8_t idx)                               // used in HackFixes.cpp
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
@@ -1696,7 +1696,7 @@ void SpellInfo::setEffectDieSides(int32_t effecSide, uint8_t idx)               
     EffectDieSides[idx] = effecSide;
 }
 
-void SpellInfo::setEffectRealPointsPerLevel(float pointsPerLevel, uint8_t idx)   // used in HackFixes.cpp
+void SpellInfo::setEffectRealPointsPerLevel(float pointsPerLevel, uint8_t idx)                  // used in HackFixes.cpp
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
@@ -1707,7 +1707,7 @@ void SpellInfo::setEffectRealPointsPerLevel(float pointsPerLevel, uint8_t idx)  
     EffectRealPointsPerLevel[idx] = pointsPerLevel;
 }
 
-void SpellInfo::setEffectBasePoints(int32_t pointsPerLevel, uint8_t idx)               // used in HackFixes.cpp / ObjectMgr.cpp
+void SpellInfo::setEffectBasePoints(int32_t pointsPerLevel, uint8_t idx)                        // used in HackFixes.cpp / ObjectMgr.cpp
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
@@ -1718,7 +1718,7 @@ void SpellInfo::setEffectBasePoints(int32_t pointsPerLevel, uint8_t idx)        
     EffectBasePoints[idx] = pointsPerLevel;
 }
 
-void SpellInfo::setEffectMechanic(uint32_t mechanic, uint8_t idx)                       // used in HackFixes.cpp
+void SpellInfo::setEffectMechanic(uint32_t mechanic, uint8_t idx)                               // used in HackFixes.cpp
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
@@ -1729,7 +1729,7 @@ void SpellInfo::setEffectMechanic(uint32_t mechanic, uint8_t idx)               
     EffectMechanic[idx] = mechanic;
 }
 
-void SpellInfo::setEffectImplicitTargetA(uint32_t targetA, uint8_t idx)                // used in HackFixes.cpp
+void SpellInfo::setEffectImplicitTargetA(uint32_t targetA, uint8_t idx)                         // used in HackFixes.cpp
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
@@ -1740,7 +1740,7 @@ void SpellInfo::setEffectImplicitTargetA(uint32_t targetA, uint8_t idx)         
     EffectImplicitTargetA[idx] = targetA;
 }
 
-void SpellInfo::setEffectImplicitTargetB(uint32_t targetB, uint8_t idx)                // used in HackFixes.cpp
+void SpellInfo::setEffectImplicitTargetB(uint32_t targetB, uint8_t idx)                         // used in HackFixes.cpp
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
@@ -1751,7 +1751,7 @@ void SpellInfo::setEffectImplicitTargetB(uint32_t targetB, uint8_t idx)         
     EffectImplicitTargetB[idx] = targetB;
 }
 
-void SpellInfo::setEffectRadiusIndex(uint32_t radiusIndex, uint8_t idx)                // used in HackFixes.cpp
+void SpellInfo::setEffectRadiusIndex(uint32_t radiusIndex, uint8_t idx)                         // used in HackFixes.cpp
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
@@ -1762,7 +1762,7 @@ void SpellInfo::setEffectRadiusIndex(uint32_t radiusIndex, uint8_t idx)         
     EffectRadiusIndex[idx] = radiusIndex;
 }
 
-void SpellInfo::setEffectApplyAuraName(uint32_t auraName, uint8_t idx)                 // used in HackFixes.cpp / ObjectMgr.cpp
+void SpellInfo::setEffectApplyAuraName(uint32_t auraName, uint8_t idx)                          // used in HackFixes.cpp / ObjectMgr.cpp
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
@@ -1773,7 +1773,7 @@ void SpellInfo::setEffectApplyAuraName(uint32_t auraName, uint8_t idx)          
     EffectApplyAuraName[idx] = auraName;
 }
 
-void SpellInfo::setEffectAmplitude(uint32_t amplitude, uint8_t idx)                    // used in HackFixes.cpp
+void SpellInfo::setEffectAmplitude(uint32_t amplitude, uint8_t idx)                             // used in HackFixes.cpp
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
@@ -1784,7 +1784,7 @@ void SpellInfo::setEffectAmplitude(uint32_t amplitude, uint8_t idx)             
     EffectAmplitude[idx] = amplitude;
 }
 
-void SpellInfo::setEffectMultipleValue(float multiply, uint8_t idx)                   // used in HackFixes.cpp
+void SpellInfo::setEffectMultipleValue(float multiply, uint8_t idx)                             // used in HackFixes.cpp
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
@@ -1795,7 +1795,7 @@ void SpellInfo::setEffectMultipleValue(float multiply, uint8_t idx)             
     EffectMultipleValue[idx] = multiply;
 }
 
-void SpellInfo::setEffectChainTarget(uint32_t chainTarget, uint8_t idx)                // used in HackFixes.cpp
+void SpellInfo::setEffectChainTarget(uint32_t chainTarget, uint8_t idx)                         // used in HackFixes.cpp
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
@@ -1817,7 +1817,7 @@ void SpellInfo::setEffectItemType(uint32_t itemEntryId, uint8_t idx)
     EffectItemType[idx] = itemEntryId;
 }
 
-void SpellInfo::setEffectMiscValue(int32_t misc, uint8_t idx)                          // used in HackFixes.cpp / ObjectMgr.cpp
+void SpellInfo::setEffectMiscValue(int32_t misc, uint8_t idx)                                   // used in HackFixes.cpp / ObjectMgr.cpp
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
@@ -1839,7 +1839,7 @@ void SpellInfo::setEffectMiscValueB(int32_t miscB, uint8_t idx)
     EffectMiscValueB[idx] = miscB;
 }
 
-void SpellInfo::setEffectTriggerSpell(uint32_t spell, uint8_t idx)                     // used in ObjectMgr.cpp
+void SpellInfo::setEffectTriggerSpell(uint32_t spell, uint8_t idx)                              // used in ObjectMgr.cpp
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
@@ -1850,7 +1850,7 @@ void SpellInfo::setEffectTriggerSpell(uint32_t spell, uint8_t idx)              
     EffectTriggerSpell[idx] = spell;
 }
 
-void SpellInfo::setEffectPointsPerComboPoint(float effectPoints, uint8_t idx)          // used in HackFixes.cpp
+void SpellInfo::setEffectPointsPerComboPoint(float effectPoints, uint8_t idx)                   // used in HackFixes.cpp
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
@@ -1861,7 +1861,7 @@ void SpellInfo::setEffectPointsPerComboPoint(float effectPoints, uint8_t idx)   
     EffectPointsPerComboPoint[idx] = effectPoints;
 }
 
-void SpellInfo::setEffectSpellClassMask(uint32_t spellClass, uint8_t idx1, uint8_t idx2)           // used in HackFixes.cpp
+void SpellInfo::setEffectSpellClassMask(uint32_t spellClass, uint8_t idx1, uint8_t idx2)        // used in HackFixes.cpp
 {
     if (idx1 >= MAX_SPELL_EFFECTS || idx2 >= MAX_SPELL_EFFECTS)
     {
@@ -1872,7 +1872,7 @@ void SpellInfo::setEffectSpellClassMask(uint32_t spellClass, uint8_t idx1, uint8
     EffectSpellClassMask[idx1][idx2] = spellClass;
 }
 
-void SpellInfo::setSpellFamilyFlags(uint32_t value, uint8_t idx)                             // used in HackFixes.cpp
+void SpellInfo::setSpellFamilyFlags(uint32_t value, uint8_t idx)                                // used in HackFixes.cpp
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
@@ -1883,7 +1883,7 @@ void SpellInfo::setSpellFamilyFlags(uint32_t value, uint8_t idx)                
     SpellFamilyFlags[idx] = value;
 }
 
-void SpellInfo::setEffectDamageMultiplier(float dmgMultiplier, uint8_t idx)                       // used in HackFixes.cpp
+void SpellInfo::setEffectDamageMultiplier(float dmgMultiplier, uint8_t idx)                     // used in HackFixes.cpp
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {

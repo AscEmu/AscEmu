@@ -31,11 +31,10 @@
 #include "Objects/Units/Players/Player.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
- // Mage Scripts
+// Mage Scripts
 class FirestarterTalent : public Spell
 {
 public:
-
     FirestarterTalent(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new FirestarterTalent(Caster, info, triggered, aur); }
@@ -52,7 +51,6 @@ public:
 class MissileBarrage : public Spell
 {
 public:
-
     MissileBarrage(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new MissileBarrage(Caster, info, triggered, aur); }
@@ -77,7 +75,6 @@ public:
 class FireNova : public Spell
 {
 public:
-
     FireNova(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new FireNova(Caster, info, triggered, aur); }
@@ -139,7 +136,6 @@ public:
 class CheatDeathAura : public AbsorbAura
 {
 public:
-
     CheatDeathAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
         : AbsorbAura(proto, duration, caster, target, temporary, i_caster)
     {
@@ -198,7 +194,6 @@ public:
     }
 
 private:
-
     SpellInfo const* dSpell;
 };
 
@@ -207,7 +202,6 @@ private:
 class DispersionSpell : public Spell
 {
 public:
-
     DispersionSpell(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new DispersionSpell(Caster, info, triggered, aur); }
@@ -229,7 +223,6 @@ public:
 class InnervateSpell : public Spell
 {
 public:
-
     InnervateSpell(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new InnervateSpell(Caster, info, triggered, aur); }
@@ -248,7 +241,6 @@ public:
 class BloodPlagueSpell : public Spell
 {
 public:
-
     BloodPlagueSpell(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new BloodPlagueSpell(Caster, info, triggered, aur); }
@@ -265,7 +257,6 @@ public:
 class IcyTouchSpell : public Spell
 {
 public:
-
     IcyTouchSpell(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new IcyTouchSpell(Caster, info, triggered, aur); }
@@ -282,7 +273,6 @@ public:
 class FrostFeverSpell : public Spell
 {
 public:
-
     FrostFeverSpell(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new FrostFeverSpell(Caster, info, triggered, aur); }
@@ -299,7 +289,6 @@ public:
 class BloodBoilSpell : public Spell
 {
 public:
-
     BloodBoilSpell(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new BloodBoilSpell(Caster, info, triggered, aur); }
@@ -324,7 +313,6 @@ public:
 class BloodStrikeSpell : public Spell
 {
 public:
-
     BloodStrikeSpell(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new BloodStrikeSpell(Caster, info, triggered, aur); }
@@ -369,7 +357,6 @@ public:
 class DeathCoilSpell : public Spell
 {
 public:
-
     DeathCoilSpell(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new DeathCoilSpell(Caster, info, triggered, aur); }
@@ -396,7 +383,6 @@ public:
 class RuneStrileSpell : public Spell
 {
 public:
-
     RuneStrileSpell(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new RuneStrileSpell(Caster, info, triggered, aur); }
@@ -411,7 +397,6 @@ public:
 class AntiMagicShellAura : public AbsorbAura
 {
 public:
-
     AntiMagicShellAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
         : AbsorbAura(proto, duration, caster, target, temporary, i_caster) {}
 
@@ -439,7 +424,6 @@ class SpellDeflectionAura : public AbsorbAura
 {
 #if VERSION_STRING >= TBC // support classic
 public:
-
     SpellDeflectionAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
         : AbsorbAura(proto, duration, caster, target, temporary, i_caster) {}
 
@@ -472,7 +456,6 @@ public:
 class BloodwormSpell : public Spell
 {
 public:
-
     BloodwormSpell(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new BloodwormSpell(Caster, info, triggered, aur); }
@@ -486,7 +469,6 @@ public:
 class WillOfTheNecropolisAura : public AbsorbAura
 {
 public:
-
     WillOfTheNecropolisAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
         : AbsorbAura(proto, duration, caster, target, temporary, i_caster) {}
 
@@ -522,7 +504,6 @@ public:
 class VampiricBloodSpell : public Spell
 {
 public:
-
     VampiricBloodSpell(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new VampiricBloodSpell(Caster, info, triggered, aur); }
@@ -539,7 +520,6 @@ public:
 class HeartStrikeSpell : public Spell
 {
 public:
-
     HeartStrikeSpell(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
 
     static Spell* Create(Object* Caster, SpellInfo *info, bool triggered, Aura* aur) { return new HeartStrikeSpell(Caster, info, triggered, aur); }
@@ -551,7 +531,7 @@ public:
 
         uint32 suddenDoom[] =
         {
-            //SPELL_HASH_SUDDEN_DOOM
+            // SPELL_HASH_SUDDEN_DOOM
             49018,
             49529,
             49530,
@@ -573,37 +553,37 @@ void SpellMgr::setupSpellClassScripts()
 {
     //////////////////////////////////////////////////////////////////////////////////////////
     // Mage
-    addSpellById(2120, FirestarterTalent::Create);   //Rank 1
+    addSpellById(2120, FirestarterTalent::Create);      // Rank 1
 #if VERSION_STRING < Cata
-    addSpellById(2121, FirestarterTalent::Create);   //Rank 2
-    addSpellById(8422, FirestarterTalent::Create);   //Rank 3
-    addSpellById(8423, FirestarterTalent::Create);   //Rank 4
-    addSpellById(10215, FirestarterTalent::Create);   //Rank 5
-    addSpellById(10216, FirestarterTalent::Create);   //Rank 6
+    addSpellById(2121, FirestarterTalent::Create);      // Rank 2
+    addSpellById(8422, FirestarterTalent::Create);      // Rank 3
+    addSpellById(8423, FirestarterTalent::Create);      // Rank 4
+    addSpellById(10215, FirestarterTalent::Create);     // Rank 5
+    addSpellById(10216, FirestarterTalent::Create);     // Rank 6
 #if VERSION_STRING >= TBC
-    addSpellById(27086, FirestarterTalent::Create);   //Rank 7
+    addSpellById(27086, FirestarterTalent::Create);     // Rank 7
 #if VERSION_STRING == WotLK
-    addSpellById(42925, FirestarterTalent::Create);   //Rank 8
-    addSpellById(42926, FirestarterTalent::Create);   //Rank 9
+    addSpellById(42925, FirestarterTalent::Create);     // Rank 8
+    addSpellById(42926, FirestarterTalent::Create);     // Rank 9
 #endif
 #endif
 #endif
-    addSpellById(5143, MissileBarrage::Create);   //Rank 1
+    addSpellById(5143, MissileBarrage::Create);         // Rank 1
 #if VERSION_STRING < Cata
-    addSpellById(5144, MissileBarrage::Create);   //Rank 2
-    addSpellById(5145, MissileBarrage::Create);   //Rank 3
-    addSpellById(8416, MissileBarrage::Create);   //Rank 4
-    addSpellById(8417, MissileBarrage::Create);   //Rank 5
-    addSpellById(10211, MissileBarrage::Create);   //Rank 6
-    addSpellById(10212, MissileBarrage::Create);   //Rank 7
-    addSpellById(25345, MissileBarrage::Create);   //Rank 8
-    addSpellById(27075, MissileBarrage::Create);   //Rank 9
+    addSpellById(5144, MissileBarrage::Create);         // Rank 2
+    addSpellById(5145, MissileBarrage::Create);         // Rank 3
+    addSpellById(8416, MissileBarrage::Create);         // Rank 4
+    addSpellById(8417, MissileBarrage::Create);         // Rank 5
+    addSpellById(10211, MissileBarrage::Create);        // Rank 6
+    addSpellById(10212, MissileBarrage::Create);        // Rank 7
+    addSpellById(25345, MissileBarrage::Create);        // Rank 8
+    addSpellById(27075, MissileBarrage::Create);        // Rank 9
 #if VERSION_STRING >= TBC
-    addSpellById(38699, MissileBarrage::Create);   //Rank 10
-    addSpellById(38704, MissileBarrage::Create);   //Rank 11
+    addSpellById(38699, MissileBarrage::Create);        // Rank 10
+    addSpellById(38704, MissileBarrage::Create);        // Rank 11
 #if VERSION_STRING == WotLK
-    addSpellById(42843, MissileBarrage::Create);   //Rank 12
-    addSpellById(42846, MissileBarrage::Create);   //Rank 13
+    addSpellById(42843, MissileBarrage::Create);        // Rank 12
+    addSpellById(42846, MissileBarrage::Create);        // Rank 13
 #endif
 #endif
 #endif
@@ -616,18 +596,18 @@ void SpellMgr::setupSpellClassScripts()
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Shaman
-    addSpellById(1535, FireNova::Create);   //Rank 1
+    addSpellById(1535, FireNova::Create);   // Rank 1
 #if VERSION_STRING < Cata
-    addSpellById(8498, FireNova::Create);   //Rank 2
-    addSpellById(8499, FireNova::Create);   //Rank 3
-    addSpellById(11314, FireNova::Create);  //Rank 4
-    addSpellById(11315, FireNova::Create);  //Rank 5
+    addSpellById(8498, FireNova::Create);   // Rank 2
+    addSpellById(8499, FireNova::Create);   // Rank 3
+    addSpellById(11314, FireNova::Create);  // Rank 4
+    addSpellById(11315, FireNova::Create);  // Rank 5
 #if VERSION_STRING >= TBC
-    addSpellById(25546, FireNova::Create);  //Rank 6
-    addSpellById(25547, FireNova::Create);  //Rank 7
+    addSpellById(25546, FireNova::Create);  // Rank 6
+    addSpellById(25547, FireNova::Create);  // Rank 7
 #if VERSION_STRING == WotLK
-    addSpellById(61649, FireNova::Create);  //Rank 8
-    addSpellById(61657, FireNova::Create);  //Rank 9
+    addSpellById(61649, FireNova::Create);  // Rank 8
+    addSpellById(61657, FireNova::Create);  // Rank 9
 #endif
 #endif
 #endif
@@ -652,35 +632,35 @@ void SpellMgr::setupSpellClassScripts()
     addSpellById(45477, &IcyTouchSpell::Create);
     addSpellById(55095, &FrostFeverSpell::Create);
 
-    addSpellById(48721, &BloodBoilSpell::Create);   // Rank 1
+    addSpellById(48721, &BloodBoilSpell::Create);           // Rank 1
 #if VERSION_STRING == WotLK
-    addSpellById(49939, &BloodBoilSpell::Create);   // Rank 2
-    addSpellById(49940, &BloodBoilSpell::Create);   // Rank 3
-    addSpellById(49941, &BloodBoilSpell::Create);   // Rank 4
+    addSpellById(49939, &BloodBoilSpell::Create);           // Rank 2
+    addSpellById(49940, &BloodBoilSpell::Create);           // Rank 3
+    addSpellById(49941, &BloodBoilSpell::Create);           // Rank 4
 #endif
-    addSpellById(45902, &BloodStrikeSpell::Create);   // Rank 1
+    addSpellById(45902, &BloodStrikeSpell::Create);         // Rank 1
 #if VERSION_STRING == WotLK
-    addSpellById(49926, &BloodStrikeSpell::Create);   // Rank 2
-    addSpellById(49927, &BloodStrikeSpell::Create);   // Rank 3
-    addSpellById(49928, &BloodStrikeSpell::Create);   // Rank 4
-    addSpellById(49929, &BloodStrikeSpell::Create);   // Rank 5
-    addSpellById(49930, &BloodStrikeSpell::Create);   // Rank 6
+    addSpellById(49926, &BloodStrikeSpell::Create);         // Rank 2
+    addSpellById(49927, &BloodStrikeSpell::Create);         // Rank 3
+    addSpellById(49928, &BloodStrikeSpell::Create);         // Rank 4
+    addSpellById(49929, &BloodStrikeSpell::Create);         // Rank 5
+    addSpellById(49930, &BloodStrikeSpell::Create);         // Rank 6
 #endif
-    addSpellById(47541, &DeathCoilSpell::Create);   // Rank 1
+    addSpellById(47541, &DeathCoilSpell::Create);           // Rank 1
 #if VERSION_STRING == WotLK
-    addSpellById(49892, &DeathCoilSpell::Create);   // Rank 2
-    addSpellById(49893, &DeathCoilSpell::Create);   // Rank 3
-    addSpellById(49894, &DeathCoilSpell::Create);   // Rank 4
-    addSpellById(49895, &DeathCoilSpell::Create);   // Rank 5
+    addSpellById(49892, &DeathCoilSpell::Create);           // Rank 2
+    addSpellById(49893, &DeathCoilSpell::Create);           // Rank 3
+    addSpellById(49894, &DeathCoilSpell::Create);           // Rank 4
+    addSpellById(49895, &DeathCoilSpell::Create);           // Rank 5
 #endif
     addSpellById(56815, &RuneStrileSpell::Create);
 
     addAuraById(48707, &AntiMagicShellAura::Create);
 
 #if VERSION_STRING == WotLK
-    addAuraById(49145, &SpellDeflectionAura::Create);   // Rank 1
-    addAuraById(49495, &SpellDeflectionAura::Create);   // Rank 2
-    addAuraById(49497, &SpellDeflectionAura::Create);   // Rank 3
+    addAuraById(49145, &SpellDeflectionAura::Create);       // Rank 1
+    addAuraById(49495, &SpellDeflectionAura::Create);       // Rank 2
+    addAuraById(49497, &SpellDeflectionAura::Create);       // Rank 3
 #endif
 
     addSpellById(50452, &BloodwormSpell::Create);
@@ -692,12 +672,12 @@ void SpellMgr::setupSpellClassScripts()
 #endif
     addSpellById(55233, &VampiricBloodSpell::Create);
 
-    addSpellById(55050, &HeartStrikeSpell::Create);   // Rank 1
+    addSpellById(55050, &HeartStrikeSpell::Create);         // Rank 1
 #if VERSION_STRING == WotLK
-    addSpellById(55258, &HeartStrikeSpell::Create);   // Rank 2
-    addSpellById(55259, &HeartStrikeSpell::Create);   // Rank 3
-    addSpellById(55260, &HeartStrikeSpell::Create);   // Rank 4
-    addSpellById(55261, &HeartStrikeSpell::Create);   // Rank 5
-    addSpellById(55262, &HeartStrikeSpell::Create);   // Rank 6
+    addSpellById(55258, &HeartStrikeSpell::Create);         // Rank 2
+    addSpellById(55259, &HeartStrikeSpell::Create);         // Rank 3
+    addSpellById(55260, &HeartStrikeSpell::Create);         // Rank 4
+    addSpellById(55261, &HeartStrikeSpell::Create);         // Rank 5
+    addSpellById(55262, &HeartStrikeSpell::Create);         // Rank 6
  #endif
 }

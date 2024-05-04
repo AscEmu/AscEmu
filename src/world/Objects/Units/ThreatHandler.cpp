@@ -323,6 +323,7 @@ void ThreatManager::updateRedirectInfo()
     _redirectInfo.clear();
     uint32_t totalPct = 0;
     for (auto const& pair : _redirectRegistry) // (spellid, victim -> pct)
+    {
         for (auto const& victimPair : pair.second) // (victim,pct)
         {
             uint32_t thisPct = std::min<uint32_t>(100 - totalPct, victimPair.second);
@@ -335,6 +336,7 @@ void ThreatManager::updateRedirectInfo()
                     return;
             }
         }
+    }
 }
 
 void ThreatManager::forwardThreatForAssistingMe(Unit* assistant, float baseAmount, SpellInfo const* spell, bool ignoreModifiers)

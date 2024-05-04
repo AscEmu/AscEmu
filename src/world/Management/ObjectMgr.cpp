@@ -200,7 +200,6 @@ std::shared_ptr<ArenaTeam> ObjectMgr::getArenaTeamByGuid(uint32_t _guid, uint32_
 class ArenaSorter
 {
 public:
-
     bool operator()(std::shared_ptr<ArenaTeam> const& _arenaTeamA, std::shared_ptr<ArenaTeam> const& _arenaTeamB) const
     {
         return (_arenaTeamA->m_stats.rating > _arenaTeamB->m_stats.rating);

@@ -53,7 +53,6 @@ private:
     ~TicketMgr() = default;
 
 public:
-    //NIT
     static TicketMgr& getInstance();
     void initialize();
     void finalize();

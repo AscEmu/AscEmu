@@ -561,11 +561,11 @@ ZLiquidStatus TileMap::getLiquidStatus(LocationVector pos, uint8_t ReqLiquidType
     // For speed check as int values
     float delta = liquid_level - pos.z;
 
-    if (delta > collisionHeight)                   // Under water
+    if (delta > collisionHeight)        // Under water
         return LIQUID_MAP_UNDER_WATER;
     if (delta > 0.0f)                   // In water
         return LIQUID_MAP_IN_WATER;
-    if (delta > -0.1f)                   // Walk on water
+    if (delta > -0.1f)                  // Walk on water
         return LIQUID_MAP_WATER_WALK;
     // Above water
     return LIQUID_MAP_ABOVE_WATER;

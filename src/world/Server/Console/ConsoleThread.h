@@ -7,16 +7,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Threading/LegacyThreadBase.h"
 
-
 class ConsoleThread : public ThreadBase
 {
-    public:
+public:
+    bool runThread();
+    void stopThread();
 
-        bool runThread();
-        void stopThread();
-
-    protected:
-
-        bool mStopConsoleThread;
-        bool mIsConsoleThreadRunning;
+protected:
+    bool mStopConsoleThread;
+    bool mIsConsoleThreadRunning;
 };

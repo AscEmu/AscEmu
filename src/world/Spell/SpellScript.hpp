@@ -30,6 +30,7 @@ public:
     SpellScript() = default;
     virtual ~SpellScript() {}
 
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Spell execution
 
     // Called at the end of spell check cast function
@@ -51,6 +52,7 @@ public:
     // Called after spell effect is handled
     virtual void afterSpellEffect(Spell* spell, uint8_t effIndex);
 
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Aura
 
     // Called when aura is created (Aura constructor)
@@ -68,6 +70,7 @@ public:
     // Called when periodic tick happens
     virtual SpellScriptExecuteState onAuraPeriodicTick(Aura* aur, AuraEffectModifier* aurEff, float_t* damage);
 
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Spell proc
 
     // Called after this object is created

@@ -44,6 +44,7 @@ class UpdateManager
     void internalPushUpdatesIfBufferIsFull(size_t additionalDataSize);
     void internalSendDelayedPackets();
     void internalUpdateMapMgr();
+
 public:
     UpdateManager(Player* owner, size_t compressionThreshold, size_t creationBufferInitialSize, size_t updateBufferInitialSize, size_t outOfRangeIdsInitialSize);
 

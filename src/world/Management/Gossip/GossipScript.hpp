@@ -16,7 +16,6 @@ class GameObject;
 class SERVER_DECL GossipScript
 {
 public:
-
     GossipScript() = default;
     virtual ~GossipScript() = default;
 
@@ -33,7 +32,6 @@ public:
 class SERVER_DECL GossipSpiritHealer : public GossipScript
 {
 public:
-
     GossipSpiritHealer() = default;
     virtual ~GossipSpiritHealer() = default;
 
@@ -43,7 +41,6 @@ public:
 class SERVER_DECL GossipVendor : public GossipScript
 {
 public:
-
     GossipVendor() = default;
     virtual ~GossipVendor() = default;
 
@@ -54,7 +51,6 @@ public:
 class SERVER_DECL GossipTrainer : public GossipScript
 {
 public:
-
     GossipTrainer() = default;
     virtual ~GossipTrainer() = default;
 
@@ -65,7 +61,6 @@ public:
 class SERVER_DECL GossipClassTrainer : public GossipScript
 {
 public:
-
     GossipClassTrainer() = default;
     virtual ~GossipClassTrainer() = default;
 
@@ -76,7 +71,6 @@ public:
 class SERVER_DECL GossipPetTrainer : public GossipScript
 {
 public:
-
     GossipPetTrainer() = default;
     virtual ~GossipPetTrainer() = default;
 
@@ -87,7 +81,6 @@ public:
 class SERVER_DECL GossipFlightMaster : public GossipScript
 {
 public:
-
     GossipFlightMaster() = default;
     virtual ~GossipFlightMaster() = default;
 
@@ -98,7 +91,6 @@ public:
 class SERVER_DECL GossipAuctioneer : public GossipScript
 {
 public:
-
     GossipAuctioneer() = default;
     virtual ~GossipAuctioneer() = default;
 
@@ -109,7 +101,6 @@ public:
 class SERVER_DECL GossipInnKeeper : public GossipScript
 {
 public:
-
     GossipInnKeeper() = default;
     virtual ~GossipInnKeeper() = default;
 
@@ -120,7 +111,6 @@ public:
 class SERVER_DECL GossipBattleMaster : public GossipScript
 {
 public:
-
     GossipBattleMaster() = default;
     virtual ~GossipBattleMaster() = default;
 
@@ -131,7 +121,6 @@ public:
 class SERVER_DECL GossipBanker : public GossipScript
 {
 public:
-
     GossipBanker() = default;
     virtual ~GossipBanker() = default;
 
@@ -142,7 +131,6 @@ public:
 class SERVER_DECL GossipCharterGiver : public GossipScript
 {
 public:
-
     GossipCharterGiver() = default;
     virtual ~GossipCharterGiver() = default;
 
@@ -153,7 +141,6 @@ public:
 class SERVER_DECL GossipTabardDesigner : public GossipScript
 {
 public:
-
     GossipTabardDesigner() = default;
     virtual ~GossipTabardDesigner() = default;
 
@@ -164,7 +151,6 @@ public:
 class SERVER_DECL GossipStableMaster : public GossipScript
 {
 public:
-
     GossipStableMaster() = default;
     virtual ~GossipStableMaster() = default;
 
@@ -175,7 +161,6 @@ public:
 class SERVER_DECL GossipGeneric : public GossipScript
 {
 public:
-
     GossipGeneric() = default;
     virtual ~GossipGeneric() = default;
 

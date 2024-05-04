@@ -10,8 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 enum AURA_INTERNAL_USAGE_FLAGS
 {
-    //if all 3 mods are resisted then we can send client as a fully resisted spell.
-    //don't change the value of these !
+    // if all 3 mods are resisted then we can send client as a fully resisted spell.
+    // don't change the value of these !
     MOD_0_RESISTED      = 1,
     MOD_1_RESISTED      = 2,
     MOD_2_RESISTED      = 4
@@ -36,16 +36,16 @@ struct ProcTriggerSpellOnSpell
     uint32_t procFlags;
     uint32_t RemainingCharges;
     uint32_t LastTrigger;
-    void* owner;                    //mark the owner of this proc to know which one to delete
+    void* owner;                            // mark the owner of this proc to know which one to delete
 };
 
 struct DamageSplitTarget
 {
-    uint64_t m_target;              // we store them
+    uint64_t m_target;                      // we store them
     uint32_t m_spellId;
-    float m_pctDamageSplit;         // % of taken damage to transfer (i.e. Soul Link)
-    uint32_t m_flatDamageSplit;     // flat damage to transfer (i.e. Blessing of Sacrifice)
-    uint8_t damage_type;            // bitwise 0-127 thingy
+    float m_pctDamageSplit;                 // % of taken damage to transfer (i.e. Soul Link)
+    uint32_t m_flatDamageSplit;             // flat damage to transfer (i.e. Blessing of Sacrifice)
+    uint8_t damage_type;                    // bitwise 0-127 thingy
     void* creator;
 };
 
@@ -63,9 +63,9 @@ enum AuraUpdateFlags : uint8_t
     AFLAG_CANCELLABLE           = 0x10,
     AFLAG_DURATION              = 0x20,
 #if VERSION_STRING < Cata
-    AFLAG_HIDE                  = 0x40, // Seems to hide the aura and tell client the aura was removed
+    AFLAG_HIDE                  = 0x40,     // Seems to hide the aura and tell client the aura was removed
 #else
-    AFLAG_SEND_EFFECT_AMOUNT    = 0x40, // used with AFLAG_EFFECT_0/1/2
+    AFLAG_SEND_EFFECT_AMOUNT    = 0x40,     // used with AFLAG_EFFECT_0/1/2
 #endif
     AFLAG_NEGATIVE              = 0x80,
 

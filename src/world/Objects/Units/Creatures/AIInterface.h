@@ -39,7 +39,6 @@ class SpellInfo;
 
 enum MovementGeneratorType : uint8_t;
 
-
 enum AI_SCRIPT_EVENT_TYPES
 {
     onLoad              = 0,

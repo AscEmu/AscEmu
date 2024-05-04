@@ -121,7 +121,6 @@ public:
     GameObjectValue const* getGOValue() const;
 
 private:
-
     void updatePackedRotation();
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -129,7 +128,6 @@ private:
     WoWGameObject* gameObjectData() const { return reinterpret_cast<WoWGameObject*>(wow_data); }
 
 public:
-
     uint64_t getCreatedByGuid() const;
     void setCreatedByGuid(uint64_t guid);
 
@@ -235,7 +233,6 @@ public:
         }
 
     protected:
-
         bool m_summonedGo = false;
         bool m_deleted = false;
         GameObjectProperties const* gameobject_properties = nullptr;
@@ -247,7 +244,6 @@ public:
 
     //MIT
     public:
-
         void sendGameobjectCustomAnim(uint32_t anim = 0);
         virtual void onUse(Player* /*player*/);
 
@@ -284,181 +280,170 @@ public:
 // Abstract Base Class for lootables (fishing node, fishing hole, and chests)
 class GameObject_Lootable : public GameObject
 {
-    public:
+public:
+    GameObject_Lootable(uint64 GUID) : GameObject(GUID) {}
+    ~GameObject_Lootable() {}
 
-        GameObject_Lootable(uint64 GUID) : GameObject(GUID) {}
-        ~GameObject_Lootable() {}
+    virtual bool HasLoot() = 0;
 
-        virtual bool HasLoot() = 0;
+    uint16_t getLootMode() const;
+    bool hasLootMode(uint16_t lootMode) const;
+    void setLootMode(uint16_t lootMode);
+    void addLootMode(uint16_t lootMode);
+    void removeLootMode(uint16_t lootMode);
+    void resetLootMode();
+    void setLootGenerationTime();
+    uint32_t getLootGenerationTime() const;
 
-        uint16_t getLootMode() const;
-        bool hasLootMode(uint16_t lootMode) const;
-        void setLootMode(uint16_t lootMode);
-        void addLootMode(uint16_t lootMode);
-        void removeLootMode(uint16_t lootMode);
-        void resetLootMode();
-        void setLootGenerationTime();
-        uint32_t getLootGenerationTime() const;
+    time_t getRestockTime() const;
+    void setRestockTime(time_t time);
 
-        time_t getRestockTime() const;
-        void setRestockTime(time_t time);
+    void getFishLoot(Player* loot_owner, bool getJunk = false);
 
-        void getFishLoot(Player* loot_owner, bool getJunk = false);
+    Loot loot;
 
-        Loot loot;
+protected:
+    time_t m_restockTime = 0;                // seconds
 
-    protected:
-        time_t m_restockTime = 0;                // seconds
-
-        uint16_t m_LootMode = LOOT_MODE_DEFAULT; // bitmask, determines what loot will be lootable used for Hardmodes example Ulduar Bosses
-        uint32_t m_lootGenerationTime = 0;
+    uint16_t m_LootMode = LOOT_MODE_DEFAULT; // bitmask, determines what loot will be lootable used for Hardmodes example Ulduar Bosses
+    uint32_t m_lootGenerationTime = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Implements Type 0 (DOOR) GameObjects
 class GameObject_Door : public GameObject
 {
-    public:
+public:
+    GameObject_Door(uint64 GUID);
+    ~GameObject_Door();
 
-        GameObject_Door(uint64 GUID);
-        ~GameObject_Door();
+    void InitAI();
 
-        void InitAI();
+    void onUse(Player* player) override;
 
-        void onUse(Player* player) override;
-
-    protected:
-        void _internalUpdateOnState(unsigned long timeDiff) override;
+protected:
+    void _internalUpdateOnState(unsigned long timeDiff) override;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Implements Type 1 (BUTTON) GameObjects
 class GameObject_Button : public GameObject
 {
-    public:
+public:
+    GameObject_Button(uint64 GUID);
+    ~GameObject_Button();
 
-        GameObject_Button(uint64 GUID);
-        ~GameObject_Button();
+    void InitAI();
 
-        void InitAI();
+    void onUse(Player* player) override;
 
-        void onUse(Player* player) override;
+protected:
+    void _internalUpdateOnState(unsigned long timeDiff) override;
 
-    protected:
-        void _internalUpdateOnState(unsigned long timeDiff) override;
-
-    private:
-
-        SpellInfo const* spell;
+private:
+    SpellInfo const* spell;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // implementing Type 2 (QUESTGIVER) GameObjects
 class GameObject_QuestGiver : public GameObject
 {
-    public:
+public:
+    GameObject_QuestGiver(uint64 GUID);
+    ~GameObject_QuestGiver();
 
-        GameObject_QuestGiver(uint64 GUID);
-        ~GameObject_QuestGiver();
+    void InitAI();
 
-        void InitAI();
+    bool HasQuests();
 
-        bool HasQuests();
+    void onUse(Player* player) override;
 
-        void onUse(Player* player) override;
+    uint32 NumOfQuests();
 
-        uint32 NumOfQuests();
+    void AddQuest(QuestRelation* Q);
 
-        void AddQuest(QuestRelation* Q);
+    void DeleteQuest(QuestRelation* Q);
 
-        void DeleteQuest(QuestRelation* Q);
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Searches for a QuestRelation in the GO and if found, returns the Quest
+    // \param uint32 quest_id  -  Identifier of the Quest
+    // \param uint8 quest_relation  -  QuestRelation type
+    // \return the Quest on success NULL on failure
+    QuestProperties const* FindQuest(uint32_t quest_id, uint8_t quest_relation);
 
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // Searches for a QuestRelation in the GO and if found, returns the Quest
-        // \param uint32 quest_id  -  Identifier of the Quest
-        // \param uint8 quest_relation  -  QuestRelation type
-        // \return the Quest on success NULL on failure
-        QuestProperties const* FindQuest(uint32_t quest_id, uint8_t quest_relation);
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Finds the Quest with quest_id in the GO, and returns it's QuestRelation type
+    // \param uint32 quest_id  -  Identifier of the Quest
+    // \return Returns the QuestRelation type on success, 0 on failure
+    uint16 GetQuestRelation(uint32_t quest_id);
 
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // Finds the Quest with quest_id in the GO, and returns it's QuestRelation type
-        // \param uint32 quest_id  -  Identifier of the Quest
-        // \return Returns the QuestRelation type on success, 0 on failure
-        uint16 GetQuestRelation(uint32_t quest_id);
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Returns an iterator to the GO's QuestRelation list beginning
+    // \return an iterator to the QuestRelation list's beginning
+    std::list<QuestRelation*>::iterator QuestsBegin();
 
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // Returns an iterator to the GO's QuestRelation list beginning
-        // \return an iterator to the QuestRelation list's beginning
-        std::list<QuestRelation*>::iterator QuestsBegin();
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Returns an iterator to the GO's QuestRelation list end
+    // \return an iterator to the QuestRelation list's end
+    std::list<QuestRelation*>::iterator QuestsEnd();
 
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // Returns an iterator to the GO's QuestRelation list end
-        // \return an iterator to the QuestRelation list's end
-        std::list<QuestRelation*>::iterator QuestsEnd();
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Initializes the QuestRelation list with another
+    // \param std::list< QuestRelation* >* qst_lst  -  pointer to the other list
+    void SetQuestList(std::list<QuestRelation*>* qst_lst);
 
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // Initializes the QuestRelation list with another
-        // \param std::list< QuestRelation* >* qst_lst  -  pointer to the other list
-        void SetQuestList(std::list<QuestRelation*>* qst_lst);
+    std::list<QuestRelation*>& getQuestList() const;
 
-        std::list<QuestRelation*>& getQuestList() const;
+private:
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Loads the QuestRelations from QuestMgr for this GO
+    void LoadQuests();
 
-    private:
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // Loads the QuestRelations from QuestMgr for this GO
-        void LoadQuests();
-
-        std::list<QuestRelation*>* m_quests;
-
+    std::list<QuestRelation*>* m_quests;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // implementing type 3 (CHEST) GameObjects
 class GameObject_Chest : public GameObject_Lootable
 {
-    public:
+public:
+    GameObject_Chest(uint64 GUID);
+    ~GameObject_Chest();
 
-        GameObject_Chest(uint64 GUID);
-        ~GameObject_Chest();
+    void InitAI();
 
-        void InitAI();
+    bool IsLootable() { return true; }
+    bool HasLoot();
 
-        bool IsLootable() { return true; }
-        bool HasLoot();
+    void onUse(Player* player) override;
 
-        void onUse(Player* player) override;
+    void Open();
+    void Close();
 
-        void Open();
-        void Close();
+protected:
+    void _internalUpdateOnState(unsigned long timeDiff) override;
 
-    protected:
-        void _internalUpdateOnState(unsigned long timeDiff) override;
-
-    private:
-
-        SpellInfo const* spell;
+private:
+    SpellInfo const* spell;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // implementing Type 6 (TRAP) GameObjects
 class GameObject_Trap : public GameObject
 {
-    public:
+public:
+    GameObject_Trap(uint64 GUID);
+    ~GameObject_Trap();
 
-        GameObject_Trap(uint64 GUID);
-        ~GameObject_Trap();
+    void InitAI();
 
-        void InitAI();
+    void onUse(Player* player) override;
 
-        void onUse(Player* player) override;
+protected:
+    void _internalUpdateOnState(unsigned long timeDiff) override;
 
-    protected:
-        void _internalUpdateOnState(unsigned long timeDiff) override;
-
-    private:
-
-        SpellInfo const* spell;
+private:
+    SpellInfo const* spell;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -466,7 +451,6 @@ class GameObject_Trap : public GameObject
 class GameObject_Chair : public GameObject
 {
 public:
-
     GameObject_Chair(uint64 GUID) : GameObject(GUID){}
     ~GameObject_Chair(){};
 
@@ -478,44 +462,42 @@ public:
 // implementing Type 8 (SPELL_FOCUS) GameObjects
 class GameObject_SpellFocus : public GameObject
 {
-    public:
+public:
+    GameObject_SpellFocus(uint64 GUID);
+    ~GameObject_SpellFocus();
 
-        GameObject_SpellFocus(uint64 GUID);
-        ~GameObject_SpellFocus();
-
-        void OnPushToWorld();
+    void OnPushToWorld();
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // implementing Type 10 (GOOBER) GameObjects
 class GameObject_Goober : public GameObject
 {
-    public:
+public:
+    GameObject_Goober(uint64 GUID);
+    ~GameObject_Goober();
 
-        GameObject_Goober(uint64 GUID);
-        ~GameObject_Goober();
+    void InitAI();
 
-        void InitAI();
+    void onUse(Player* player) override;
 
-        void onUse(Player* player) override;
+protected:
+    void _internalUpdateOnState(unsigned long timeDiff) override;
 
-    protected:
-        void _internalUpdateOnState(unsigned long timeDiff) override;
-
-    private:
-        SpellInfo const* spell;
+private:
+    SpellInfo const* spell;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // implementing Type 11 (TRANSPORT) GameObjects
 class GameObject_Transport : public GameObject
 {
-    public:
-        GameObject_Transport(uint64_t guid) : GameObject(guid) {}
-        ~GameObject_Transport() {}
+public:
+    GameObject_Transport(uint64_t guid) : GameObject(guid) {}
+    ~GameObject_Transport() {}
 
-    protected:
-        void _internalUpdateOnState(unsigned long timeDiff) override;
+protected:
+    void _internalUpdateOnState(unsigned long timeDiff) override;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -523,156 +505,150 @@ class GameObject_Transport : public GameObject
 class GameObject_Camera : public GameObject
 {
 public:
-
     GameObject_Camera(uint64 GUID) : GameObject(GUID) {}
     ~GameObject_Camera() {}
 
     void onUse(Player* player) override;
-
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // implements Type 17 (FISHINGNODE) GameObjects
 class GameObject_FishingNode : public GameObject_Lootable
 {
-    public:
+public:
+    GameObject_FishingNode(uint64 GUID);
+    ~GameObject_FishingNode();
 
-        GameObject_FishingNode(uint64 GUID);
-        ~GameObject_FishingNode();
+    void onUse(Player* player) override;
 
-        void onUse(Player* player) override;
+    bool HasLoot();
 
-        bool HasLoot();
+    bool IsLootable() override { return true; }
 
-        bool IsLootable() override { return true; }
-
-    protected:
-        void _internalUpdateOnState(unsigned long timeDiff) override;
+protected:
+    void _internalUpdateOnState(unsigned long timeDiff) override;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class implementing Type 18 (SUMMONING_RITUAL) GameObjects
 class GameObject_Ritual : public GameObject
 {
-    public:
+public:
+    GameObject_Ritual(uint64 GUID);
+    ~GameObject_Ritual();
 
-        GameObject_Ritual(uint64 GUID);
-        ~GameObject_Ritual();
+    void InitAI();
 
-        void InitAI();
+    void onUse(Player* player) override;
 
-        void onUse(Player* player) override;
+    struct RitualStruct
+    {
+        uint64_t CasterGUID = 0;
+        uint64_t TargetGUID = 0;
+        uint32_t SpellID = 0;
+        uint32_t CurrentMembers = 0;
+        uint32_t MaxMembers = 0;
+        std::vector<uint64_t> Members;
 
-        struct RitualStruct
+        RitualStruct(uint32_t members) : MaxMembers(members), Members(members) {}
+
+        void Setup(uint64_t caster_guid, uint64_t target_guid, uint32_t spell_id)
         {
-            uint64_t CasterGUID = 0;
-            uint64_t TargetGUID = 0;
-            uint32_t SpellID = 0;
-            uint32_t CurrentMembers = 0;
-            uint32_t MaxMembers = 0;
-            std::vector<uint64_t> Members;
+            CasterGUID = caster_guid;
+            TargetGUID = target_guid;
+            SpellID = spell_id;
 
-            RitualStruct(uint32_t members) : MaxMembers(members), Members(members) {}
+            AddMember(caster_guid);
+        }
 
-            void Setup(uint64_t caster_guid, uint64_t target_guid, uint32_t spell_id)
+        uint64_t GetCasterGUID() { return CasterGUID; }
+        uint64_t GetTargetGUID() { return TargetGUID; }
+        uint32_t GetSpellID() { return SpellID; }
+
+        bool AddMember(uint64_t GUID)
+        {
+            uint32_t i = 0;
+            for (; i < MaxMembers; i++)
+                if (Members[i] == 0)
+                    break;
+
+            if (i == MaxMembers)
+                return false;
+
+            Members[i] = GUID;
+            CurrentMembers++;
+
+            return true;
+        }
+
+        bool RemoveMember(uint64_t GUID)
+        {
+            uint32_t i = 0;
+            for (; i < MaxMembers; i++)
             {
-                CasterGUID = caster_guid;
-                TargetGUID = target_guid;
-                SpellID = spell_id;
-
-                AddMember(caster_guid);
-            }
-
-            uint64_t GetCasterGUID() { return CasterGUID; }
-            uint64_t GetTargetGUID() { return TargetGUID; }
-            uint32_t GetSpellID() { return SpellID; }
-
-            bool AddMember(uint64_t GUID)
-            {
-                uint32_t i = 0;
-                for (; i < MaxMembers; i++)
-                    if (Members[i] == 0)
-                        break;
-
-                if (i == MaxMembers)
-                    return false;
-
-                Members[i] = GUID;
-                CurrentMembers++;
-
-                return true;
-            }
-
-            bool RemoveMember(uint64_t GUID)
-            {
-                uint32_t i = 0;
-                for (; i < MaxMembers; i++)
+                if (Members[i] == GUID)
                 {
-                    if (Members[i] == GUID)
-                    {
-                        Members[i] = 0;
-                        CurrentMembers--;
-                        return true;
-                    }
+                    Members[i] = 0;
+                    CurrentMembers--;
+                    return true;
                 }
-
-                return false;
             }
 
-            bool HasMember(uint64_t GUID)
-            {
-                for (uint32_t i = 0; i < MaxMembers; i++)
-                    if (Members[i] == GUID)
-                        return true;
+            return false;
+        }
 
-                return false;
-            }
-
-            uint64_t GetMemberGUIDBySlot(uint32_t Slot) { return Members[Slot]; }
-
-            bool HasFreeSlots()
-            {
-                if (CurrentMembers < MaxMembers)
+        bool HasMember(uint64_t GUID)
+        {
+            for (uint32_t i = 0; i < MaxMembers; i++)
+                if (Members[i] == GUID)
                     return true;
 
-                return false;
-            }
+            return false;
+        }
 
-            uint32_t GetMaxMembers() { return MaxMembers; }
+        uint64_t GetMemberGUIDBySlot(uint32_t Slot) { return Members[Slot]; }
 
-            void Finish() { SpellID = 0; }
+        bool HasFreeSlots()
+        {
+            if (CurrentMembers < MaxMembers)
+                return true;
 
-            bool IsFinished()
-            {
-                if (SpellID == 0)
-                    return true;
+            return false;
+        }
 
-                return false;
-            }
-        };
+        uint32_t GetMaxMembers() { return MaxMembers; }
 
-        RitualStruct* GetRitual() const { return Ritual; }
+        void Finish() { SpellID = 0; }
 
-    private:
-        RitualStruct* Ritual = nullptr;
+        bool IsFinished()
+        {
+            if (SpellID == 0)
+                return true;
+
+            return false;
+        }
+    };
+
+    RitualStruct* GetRitual() const { return Ritual; }
+
+private:
+    RitualStruct* Ritual = nullptr;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Implements Type 22 (SPELLCASTER) GameObjects
 class GameObject_SpellCaster : public GameObject
 {
-    public:
+public:
+    GameObject_SpellCaster(uint64 GUID);
+    ~GameObject_SpellCaster();
 
-        GameObject_SpellCaster(uint64 GUID);
-        ~GameObject_SpellCaster();
+    void InitAI();
 
-        void InitAI();
+    void onUse(Player* player) override;
 
-        void onUse(Player* player) override;
-
-    private:
-
-        SpellInfo const* spell;
+private:
+    SpellInfo const* spell;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -680,7 +656,6 @@ class GameObject_SpellCaster : public GameObject
 class GameObject_Meetingstone : public GameObject
 {
 public:
-
     GameObject_Meetingstone(uint64 GUID) : GameObject(GUID) {}
     ~GameObject_Meetingstone() {}
 
@@ -692,7 +667,6 @@ public:
 class GameObject_FlagStand : public GameObject
 {
 public:
-
     GameObject_FlagStand(uint64 GUID) : GameObject(GUID) {}
     ~GameObject_FlagStand() {}
 
@@ -703,26 +677,25 @@ public:
 // implementing Type 25 (FISHINGHOLE) GameObjects
 class GameObject_FishingHole : public GameObject_Lootable
 {
-    public:
+public:
+    GameObject_FishingHole(uint64 GUID);
+    ~GameObject_FishingHole();
 
-        GameObject_FishingHole(uint64 GUID);
-        ~GameObject_FishingHole();
+    void InitAI();
 
-        void InitAI();
+    void onUse(Player* player) override;
 
-        void onUse(Player* player) override;
+    bool IsLootable() { return true; }
+    bool HasLoot();
 
-        bool IsLootable() { return true; }
-        bool HasLoot();
+    uint32_t getMaxOpen() const { return maxOpens; }
+    void setMaxOpen(uint32_t max) { maxOpens = max; }
 
-        uint32_t getMaxOpen() const { return maxOpens; }
-        void setMaxOpen(uint32_t max) { maxOpens = max; }
+protected:
+    void _internalUpdateOnState(unsigned long timeDiff) override;
 
-    protected:
-        void _internalUpdateOnState(unsigned long timeDiff) override;
-
-    private:
-        uint32_t maxOpens = 0;
+private:
+    uint32_t maxOpens = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -730,7 +703,6 @@ class GameObject_FishingHole : public GameObject_Lootable
 class GameObject_FlagDrop : public GameObject
 {
 public:
-
     GameObject_FlagDrop(uint64 GUID) : GameObject(GUID) {}
     ~GameObject_FlagDrop() {}
 
@@ -742,7 +714,6 @@ public:
 class GameObject_BarberChair : public GameObject
 {
 public:
-
     GameObject_BarberChair(uint64 GUID) : GameObject(GUID) {}
     ~GameObject_BarberChair() {}
 
@@ -753,38 +724,36 @@ public:
 // Implements Type 33 (DESTRUCTIBLE) GameObjects
 class SERVER_DECL GameObject_Destructible : public GameObject
 {
-    public:
+public:
+    GameObject_Destructible(uint64 GUID);
+    ~GameObject_Destructible();
 
-        GameObject_Destructible(uint64 GUID);
-        ~GameObject_Destructible();
+    void InitAI();
 
-        void InitAI();
+    void Damage(uint32_t damage, uint64_t AttackerGUID, uint64_t ControllerGUID, uint32_t SpellID);
 
-        void Damage(uint32_t damage, uint64_t AttackerGUID, uint64_t ControllerGUID, uint32_t SpellID);
+    void Rebuild();
+    void setDestructibleState(GameObjectDestructibleState state, bool setHealth = false);
+    GameObjectDestructibleState GetDestructibleState() const
+    {
+        if (hasFlags(GO_FLAG_DESTROYED))
+            return GO_DESTRUCTIBLE_DESTROYED;
+        if (hasFlags(GO_FLAG_DAMAGED))
+            return GO_DESTRUCTIBLE_DAMAGED;
+        return GO_DESTRUCTIBLE_INTACT;
+    }
 
-        void Rebuild();
-        void setDestructibleState(GameObjectDestructibleState state, bool setHealth = false);
-        GameObjectDestructibleState GetDestructibleState() const
-        {
-            if (hasFlags(GO_FLAG_DESTROYED))
-                return GO_DESTRUCTIBLE_DESTROYED;
-            if (hasFlags(GO_FLAG_DAMAGED))
-                return GO_DESTRUCTIBLE_DAMAGED;
-            return GO_DESTRUCTIBLE_INTACT;
-        }
+    uint32_t GetHP() { return hitpoints; }
+    void setHP(uint32_t hp) { hitpoints = hp; }
 
-        uint32_t GetHP() { return hitpoints; }
-        void setHP(uint32_t hp) { hitpoints = hp; }
+    uint32_t GetMaxHP() { return maxhitpoints; }
+    void setMaxHP(uint32_t maxHp) { maxhitpoints = maxHp; }
 
-        uint32_t GetMaxHP() { return maxhitpoints; }
-        void setMaxHP(uint32_t maxHp) { maxhitpoints = maxHp; }
+private:
+    void SendDamagePacket(uint32_t damage, uint64_t AttackerGUID, uint64_t ControllerGUID, uint32_t SpellID);
 
-    private:
-
-        void SendDamagePacket(uint32_t damage, uint64_t AttackerGUID, uint64_t ControllerGUID, uint32_t SpellID);
-
-        uint32_t hitpoints;
-        uint32_t maxhitpoints;
+    uint32_t hitpoints;
+    uint32_t maxhitpoints;
 };
 
 #endif // GAMEOBJECT_H

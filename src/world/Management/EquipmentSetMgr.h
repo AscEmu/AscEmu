@@ -53,7 +53,6 @@ namespace Arcemu
         }
     };
 
-
     //////////////////////////////////////////////////////////////////////////////////////////
     /// \note EquipmentSetStorage   - Storage for world of warcraft equipment set structures
     ///
@@ -73,7 +72,6 @@ namespace Arcemu
     class EquipmentSetMgr
     {
         public:
-
             EquipmentSetMgr() { ownerGUID = 1; }
             EquipmentSetMgr(uint32_t ownerGUID) { this->ownerGUID = ownerGUID; }
             ~EquipmentSetMgr();
@@ -145,7 +143,6 @@ namespace Arcemu
             void FillEquipmentSetListPacket(WorldPacket & data);
 
         private:
-
             EquipmentSetMgr(EquipmentSetMgr & /*other*/) {}
             EquipmentSetMgr & operator=(EquipmentSetMgr & /*other*/) { return *this; }
 

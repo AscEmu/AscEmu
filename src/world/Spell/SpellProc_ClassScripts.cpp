@@ -36,7 +36,6 @@
 class DamageShieldSpellProc : public SpellProc
 {
 public:
-
     static SpellProc* Create() { return new DamageShieldSpellProc(); }
 
     bool canProc(Unit* /*victim*/, SpellInfo const* /*castingSpell*/) override
@@ -64,7 +63,6 @@ public:
 class JuggernautSpellProc : public SpellProc
 {
 public:
-
     static SpellProc* Create() { return new JuggernautSpellProc(); }
 
     bool canProc(Unit* /*victim*/, SpellInfo const* castingSpell) override
@@ -178,7 +176,6 @@ public:
 class FrostBrandAttackSpellProc : public SpellProc
 {
 public:
-
     static SpellProc* Create() { return new FrostBrandAttackSpellProc(); }
 
     void init(Object* obj) override
@@ -196,7 +193,6 @@ public:
 class FlametongueWeaponSpellProc : public SpellProc
 {
 public:
-
     static SpellProc* Create() { return new FlametongueWeaponSpellProc(); }
 
     void init(Object* obj) override
@@ -285,7 +281,6 @@ private:
 class PoisonSpellProc : public SpellProc
 {
 public:
-
     static SpellProc* Create() { return new PoisonSpellProc(); }
 
     PoisonSpellProc()
@@ -348,7 +343,6 @@ protected:
 class WoundPoisonSpellProc : public PoisonSpellProc
 {
 public:
-
     static SpellProc* Create() { return new WoundPoisonSpellProc(); }
 
     void init(Object* obj) override
@@ -362,7 +356,6 @@ public:
 class InstantPoisonSpellProc : public PoisonSpellProc
 {
 public:
-
     static SpellProc* Create() { return new InstantPoisonSpellProc(); }
 
     void init(Object* obj) override
@@ -376,7 +369,6 @@ public:
 class WaylaySpellProc : public SpellProc
 {
 public:
-
     static SpellProc* Create() { return new WaylaySpellProc(); }
 
     void init(Object* /*obj*/) override
@@ -391,7 +383,6 @@ public:
 class SpiritTapSpellProc : public SpellProc
 {
 public:
-
     static SpellProc* Create() { return new SpiritTapSpellProc(); }
 
     void init(Object* /*obj*/) override
@@ -403,7 +394,6 @@ public:
 class ImprovedDevouringPlagueSpellProc : public SpellProc
 {
 public:
-
     static SpellProc* Create() { return new ImprovedDevouringPlagueSpellProc(); }
 
     bool doEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, uint32 /*weaponDamageType*/) override
@@ -424,7 +414,6 @@ public:
 class EmpoweredRenewSpellProc : public SpellProc
 {
 public:
-
     static SpellProc* Create() { return new EmpoweredRenewSpellProc(); }
 
     bool doEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, uint32 /*weapon_damage_type*/) override
@@ -458,7 +447,6 @@ public:
 class MiserySpellProc : public SpellProc
 {
 public:
-
     static SpellProc* Create() { return new MiserySpellProc(); }
 
     void init(Object* /*obj*/) override
@@ -473,7 +461,6 @@ public:
 class PrayerOfMendingProc : public SpellProc
 {
 public:
-
     static SpellProc* Create() { return new PrayerOfMendingProc(); }
 
     bool doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, uint32 /*weaponDamageType*/) override
@@ -522,7 +509,6 @@ public:
 class SealOfCommandSpellProc : public SpellProc
 {
 public:
-
     static SpellProc* Create() { return new SealOfCommandSpellProc(); }
 
     void init(Object* /*obj*/) override
@@ -551,7 +537,6 @@ public:
 class GraceOfTheNaaruSpellProc : public SpellProc
 {
 public:
-
     static SpellProc* Create() { return new GraceOfTheNaaruSpellProc(); }
 
     void init(Object* /*obj*/) override
@@ -563,7 +548,6 @@ public:
 class SpiritualAttunementSpellProc : public SpellProc
 {
 public:
-
     static SpellProc* Create() { return new SpiritualAttunementSpellProc(); }
 
     bool canProc(Unit* /*victim*/, SpellInfo const* castingSpell) override
@@ -578,7 +562,6 @@ public:
 class PaladinSealsSpellProc : public SpellProc
 {
 public:
-
     static SpellProc* Create() { return new PaladinSealsSpellProc(); }
 
     void init(Object* /*obj*/) override
@@ -592,7 +575,6 @@ public:
 class BladeBarrierSpellProc : public SpellProc
 {
 public:
-
     static SpellProc* Create() { return new BladeBarrierSpellProc(); }
 
     void init(Object* /*obj*/) override
@@ -613,14 +595,13 @@ public:
         return false;
     }
 
-    private:
+private:
     DeathKnight* dk;
 };
 
 class DeathRuneMasterySpellProc : public SpellProc
 {
 public:
-
     static SpellProc* Create() { return new DeathRuneMasterySpellProc(); }
 
     bool doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, uint32 /*weaponDamageType*/) override

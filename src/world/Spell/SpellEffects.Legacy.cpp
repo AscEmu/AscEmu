@@ -283,7 +283,9 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::spellEffectNotImplemented,          // 181 SPELL_EFFECT_NULL_181
     &Spell::spellEffectNotImplemented           // 182 SPELL_EFFECT_NULL_182
 #endif
+#if VERSION_STRING >= Mop
     // TODO: mop
+#endif
 };
 
 const char* SpellEffectNames[TOTAL_SPELL_EFFECTS] =

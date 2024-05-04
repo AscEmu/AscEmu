@@ -11,10 +11,10 @@ struct DamageProc
 {
     uint32_t m_spellId;
     uint32_t m_damage;
-    //uint64 m_caster;          //log is: some reflects x arcane/nature damage to 'attacker' no matter who casted
+    // uint64_t m_caster;           // log is: some reflects x arcane/nature damage to 'attacker' no matter who casted
     uint32_t m_school;
     uint32_t m_flags;
-    void* owner;                //mark the owner of this proc to know which one to delete
+    void* owner;                    // mark the owner of this proc to know which one to delete
 };
 
 enum SpellAttributes : uint32_t

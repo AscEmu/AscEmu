@@ -11,8 +11,8 @@ This file is released under the MIT license. See README-MIT for more information
 class SERVER_DECL ConfigMgr
 {
 public:
-
     ConfigFile MainConfig;
     ConfigFile ClusterConfig;
 };
+
 extern SERVER_DECL ConfigMgr Config;

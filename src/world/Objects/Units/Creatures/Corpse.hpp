@@ -65,7 +65,6 @@ private:
     const WoWCorpse* corpseData() const { return reinterpret_cast<WoWCorpse*>(wow_data); }
 
 public:
-
     uint64_t getOwnerGuid() const;
     void setOwnerGuid(uint64_t guid);
 

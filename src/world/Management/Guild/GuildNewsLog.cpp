@@ -55,7 +55,6 @@ void GuildNewsLogEntry::setSticky(bool isSticky)
     }
 }
 
-
 void GuildNewsLogEntry::saveGuildLogToDB() const
 {
     CharacterDatabase.Execute("DELETE FROM guild_news_log WHERE guildId = %u AND logGuid = %u", mGuildId, getGUID());

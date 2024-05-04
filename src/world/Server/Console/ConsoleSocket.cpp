@@ -20,7 +20,6 @@ ConsoleSocket::ConsoleSocket(SOCKET iFd) :
 {
     mInputBuffer = new char[ConsoleDefines::localBuffer];
     mRemoteConsole = new RemoteConsole(this);
-    
 }
 
 ConsoleSocket::~ConsoleSocket()
@@ -42,7 +41,6 @@ ConsoleSocket::~ConsoleSocket()
     }
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // virtual functions (Socket)
 
@@ -60,7 +58,6 @@ void ConsoleSocket::OnDisconnect()
 {
     closeRemoteConnection();
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // handle console input

@@ -21,14 +21,12 @@ class Arena;
 typedef Battleground* (*BattlegroundFactoryMethod)(BattlegroundMap* mgr, uint32_t iid, uint32_t group, uint32_t type);
 typedef Battleground* (*ArenaFactoryMethod)(BattlegroundMap* mgr, uint32_t iid, uint32_t group, uint32_t type, uint32_t players_per_side);
 
-
 class SERVER_DECL BattlegroundManager : public EventableObject
 {
     BattlegroundManager() = default;
     ~BattlegroundManager() = default;
 
 public:
-
     static BattlegroundManager& getInstance();
     void initialize();
 

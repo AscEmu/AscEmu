@@ -17,7 +17,7 @@ class Unit;
 enum TargetFilter : uint32_t;
 enum EmoteType : uint32_t;
 
-/// Makes std::chrono_literals globally available.
+// Makes std::chrono_literals globally available.
 using namespace std::chrono_literals;
 
 // forward declerations

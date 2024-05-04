@@ -145,7 +145,6 @@ private:
         AddItemResult m_AddItem(Item* item, int8 ContainerSlot, int16 slot);
 
     public:
-
         Arcemu::EquipmentSetMgr m_EquipmentSets;
         friend class ItemIterator;
         ItemInterface(Player* pPlayer);
@@ -242,7 +241,6 @@ private:
         // Refundable item stuff end
 
     public:
-
         //////////////////////////////////////////////////////////////////////////////////////////
         // bool AddItemById(uint32 itemid, uint32 count, int32 randomprop)
         // Adds item(s) to a Player
@@ -287,7 +285,6 @@ class ItemIterator
     ItemInterface* m_target;
 
     public:
-
         ItemIterator(ItemInterface* target) : m_atEnd(false), m_searchInProgress(false), m_slot(0), m_containerSlot(0), m_container(nullptr), m_currentItem(nullptr), m_target(target) {}
         ~ItemIterator() { if (m_searchInProgress) { EndSearch(); } }
 

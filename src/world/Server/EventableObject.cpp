@@ -247,7 +247,6 @@ void EventableObject::event_ModifyTimeAndTimeLeft(uint32_t EventType, time_t Tim
     }
 }
 
-
 bool EventableObject::event_HasEvent(uint32_t EventType)
 {
     bool ret = false;

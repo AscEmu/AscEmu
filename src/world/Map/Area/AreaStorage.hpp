@@ -29,14 +29,12 @@ namespace MapManagement::AreaManagement
     class AreaStorage
     {
     protected:
-
         static WDB::WDBContainer<WDB::Structures::AreaTableEntry>* m_storage;
         static MapEntryPair m_map_storage;
         static AreaFlagByAreaID m_area_flag_by_id_collection;
         static AreaFlagByMapID m_area_flag_by_map_id_collection;
 
     public:
-
         static void Initialise(WDB::WDBContainer<WDB::Structures::AreaTableEntry>* dbc_storage);
         static MapEntryPair* GetMapCollection();
 

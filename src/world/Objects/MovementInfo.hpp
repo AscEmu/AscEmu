@@ -60,7 +60,6 @@ struct MovementInfo
     int8_t getByteParam() const { return byte_parameter; }
 #endif
 
-
     struct JumpInfo
     {
         JumpInfo() : velocity(0.f), sinAngle(0.f), cosAngle(0.f), xyspeed(0.f) { }
