@@ -594,7 +594,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
     //                                                                  0          1           2             3                 4               5                  6
     QueryResult* creature_properties_result = getWorldDBQuery("SELECT entry, killcredit1, killcredit2, male_displayid, female_displayid, male_displayid2, female_displayid2, "
         //7      8         9         10       11     12     13       14            15              16           17
-        "name, subname, info_str, type_flags, type, family, `rank`, encounter, base_attack_mod, range_attack_mod, leader, "
+        "name, subname, icon_name, type_flags, type, family, `rank`, encounter, base_attack_mod, range_attack_mod, leader, "
         //  18        19        20        21         22      23     24      25          26           27
         "minlevel, maxlevel, faction, minhealth, maxhealth, mana, scale, npcflags, attacktime, attack_school, "
         //   28          29         30            31                 32                33            34        35
@@ -680,7 +680,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
         creatureProperties.lowercase_name = lower_case_name;
 
         creatureProperties.SubName = fields[8].GetString();
-        creatureProperties.info_str = fields[9].GetString();
+        creatureProperties.icon_name = fields[9].GetString();
         creatureProperties.typeFlags = fields[10].GetUInt32();
         creatureProperties.Type = fields[11].GetUInt32();
         creatureProperties.Family = fields[12].GetUInt32();
