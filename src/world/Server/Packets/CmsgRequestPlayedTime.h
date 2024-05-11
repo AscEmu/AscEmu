@@ -15,29 +15,29 @@ namespace AscEmu::Packets
     class CmsgRequestPlayedTime : public ManagedPacket
     {
     public:
-        uint8_t displayInUi;
+        uint8_t displayInChatFrame;
 
         CmsgRequestPlayedTime() : CmsgRequestPlayedTime(0)
         {
         }
 
-        CmsgRequestPlayedTime(uint8_t displayInUi) :
+        CmsgRequestPlayedTime(uint8_t displayInChatFrame) :
             ManagedPacket(CMSG_REQUEST_PLAYED_TIME, 0),
-            displayInUi(displayInUi)
+            displayInChatFrame(displayInChatFrame)
         {
         }
 
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << displayInUi;
+            packet << displayInChatFrame;
             return true;
         }
 
         bool internalDeserialise([[maybe_unused]]WorldPacket& packet) override
         {
 #if VERSION_STRING > TBC
-            packet >> displayInUi;
+            packet >> displayInChatFrame;
 #endif
             return true;
         }
