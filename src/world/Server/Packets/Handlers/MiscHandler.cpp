@@ -345,7 +345,7 @@ void WorldSession::handlePlayedTimeOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REQUEST_PLAYED_TIME: displayinui: {}", srlPacket.displayInUi);
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REQUEST_PLAYED_TIME: displayInChatFrame: {}", srlPacket.displayInChatFrame);
 
     const uint32_t playedTime = static_cast<uint32_t>(UNIXTIME) - _player->m_playedTime[2];
     if (playedTime > 0)
@@ -355,7 +355,7 @@ void WorldSession::handlePlayedTimeOpcode(WorldPacket& recvPacket)
         _player->m_playedTime[2] += playedTime;
     }
 
-    SendPacket(SmsgPlayedTime(_player->m_playedTime[1], _player->m_playedTime[0], srlPacket.displayInUi).serialise().get());
+    SendPacket(SmsgPlayedTime(_player->m_playedTime[1], _player->m_playedTime[0], srlPacket.displayInChatFrame).serialise().get());
 
     sLogger.debug("Sent SMSG_PLAYED_TIME total: {} level: {}", _player->m_playedTime[1], _player->m_playedTime[0]);
 }
@@ -1051,10 +1051,9 @@ void WorldSession::handleReturnToGraveyardOpcode(WorldPacket& /*recvPacket*/)
 void WorldSession::handleLogDisconnectOpcode(WorldPacket& recvPacket)
 {
     uint32_t disconnectReason;
-    recvPacket >> disconnectReason;     // 13 - closed window
+    recvPacket >> disconnectReason; // 13 - closed window
 
-    sLogger.debug("Player {} disconnected on {} - Reason {}", _player->getName(),
-        Util::GetCurrentDateTimeString(), disconnectReason);
+    sLogger.debug("Player {} disconnected on {} - Reason {}", _player->getName(), Util::GetCurrentDateTimeString(), disconnectReason);
 }
 #endif
 
@@ -1266,22 +1265,22 @@ void WorldSession::sendItemDb2Reply(uint32_t entry)
     ItemProperties const* proto = sMySQLStore.getItemProperties(entry);
     if (!proto)
     {
-        data << uint32_t(-1);         // entry
+        data << uint32_t(-1);                                   // entry
         data << uint32_t(DB2_REPLY_ITEM);
-        data << uint32_t(1322512289); // hotfix date
-        data << uint32_t(0);          // size of next block
+        data << uint32_t(1322512289);                           // hotfix date
+        data << uint32_t(0);                                    // size of next block
         return;
     }
 
     data << uint32_t(entry);
     data << uint32_t(DB2_REPLY_ITEM);
-    data << uint32_t(1322512290);     // hotfix date
+    data << uint32_t(1322512290);                               // hotfix date
 
     ByteBuffer buff;
     buff << uint32_t(entry);
     buff << uint32_t(proto->Class);
     buff << uint32_t(proto->SubClass);
-    buff << int32_t(0);// unk?
+    buff << int32_t(0);                                         // unk?
     buff << uint32_t(proto->LockMaterial);
     buff << uint32_t(proto->DisplayInfoID);
     buff << uint32_t(proto->InventoryType);
@@ -1301,16 +1300,16 @@ void WorldSession::sendItemSparseDb2Reply(uint32_t entry)
     ItemProperties const* proto = sMySQLStore.getItemProperties(entry);
     if (!proto)
     {
-        data << uint32_t(-1);         // entry
+        data << uint32_t(-1);                                   // entry
         data << uint32_t(DB2_REPLY_SPARSE);
-        data << uint32_t(1322512289); // hotfix date
-        data << uint32_t(0);          // size of next block
+        data << uint32_t(1322512289);                           // hotfix date
+        data << uint32_t(0);                                    // size of next block
         return;
     }
 
     data << uint32_t(entry);
     data << uint32_t(DB2_REPLY_SPARSE);
-    data << uint32_t(1322512290);     // hotfix date
+    data << uint32_t(1322512290);                               // hotfix date
 
     ByteBuffer buff;
     buff << uint32_t(entry);
@@ -1329,13 +1328,13 @@ void WorldSession::sendItemSparseDb2Reply(uint32_t entry)
     buff << uint32_t(proto->RequiredLevel);
     buff << uint32_t(proto->RequiredSkill);
     buff << uint32_t(proto->RequiredSkillRank);
-    buff << uint32_t(0);// req spell
+    buff << uint32_t(0);                                        // req spell
     buff << uint32_t(proto->RequiredPlayerRank1);
     buff << uint32_t(proto->RequiredPlayerRank2);
     buff << uint32_t(proto->RequiredFactionStanding);
     buff << uint32_t(proto->RequiredFaction);
     buff << int32_t(proto->MaxCount);
-    buff << int32_t(0);//stackable
+    buff << int32_t(0);                                         // stackable
     buff << uint32_t(proto->ContainerSlots);
 
     for (uint32_t x = 0; x < MAX_ITEM_PROTO_STATS; ++x)
@@ -1345,15 +1344,15 @@ void WorldSession::sendItemSparseDb2Reply(uint32_t entry)
         buff << int32_t(proto->Stats[x].Value);
 
     for (uint32_t x = 0; x < MAX_ITEM_PROTO_STATS; ++x)
-        buff << int32_t(0);//unk
+        buff << int32_t(0);                                     // unk
 
     for (uint32_t x = 0; x < MAX_ITEM_PROTO_STATS; ++x)
-        buff << int32_t(0);//unk
+        buff << int32_t(0);                                     // unk
 
     buff << uint32_t(proto->ScalingStatsEntry);
-    buff << uint32_t(0);// damage type
+    buff << uint32_t(0);                                        // damage type
     buff << uint32_t(proto->Delay);
-    buff << float(40);// ranged range
+    buff << float(40);                                          // ranged range
 
     for (uint32_t x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
         buff << int32_t(0);
@@ -1381,7 +1380,7 @@ void WorldSession::sendItemSparseDb2Reply(uint32_t entry)
     if (name.length())
         buff << name;
 
-    for (uint32_t i = 0; i < 3; ++i) // other 3 names
+    for (uint32_t i = 0; i < 3; ++i)                            // other 3 names
         buff << uint16_t(0);
 
     std::string desc = proto->Description;
@@ -1417,9 +1416,9 @@ void WorldSession::sendItemSparseDb2Reply(uint32_t entry)
     buff << int32_t(proto->ExistingDuration);
     buff << uint32_t(proto->ItemLimitCategory);
     buff << uint32_t(proto->HolidayId);
-    buff << float(proto->ScalingStatsFlag);                  // StatScalingFactor
-    buff << uint32_t(0);            // archaeology unk
-    buff << uint32_t(0);         // archaeology findinds count
+    buff << float(proto->ScalingStatsFlag);                     // StatScalingFactor
+    buff << uint32_t(0);                                        // archaeology unk
+    buff << uint32_t(0);                                        // archaeology findinds count
 
     data << uint32_t(buff.size());
     data.append(buff);
@@ -1547,7 +1546,7 @@ void WorldSession::handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/)
     if (result)
     {
         WorldPacket data(SMSG_REQUEST_CEMETERY_LIST_RESPONSE, 8 * result->GetRowCount());
-        data.writeBit(false);               //unk bit
+        data.writeBit(false); // unk bit
         data.flushBits();
         data.writeBits(result->GetRowCount(), 24);
         data.flushBits();
@@ -1822,11 +1821,11 @@ void WorldSession::handleAmmoSetOpcode(WorldPacket& recvPacket)
     }
     switch (_player->getClass())
     {
-        case PRIEST:  // allowing priest, warlock, mage to equip ammo will mess up wand shoot. stop it.
+        case PRIEST:        // allowing priest, warlock, mage to equip ammo will mess up wand shoot. stop it.
         case WARLOCK:
         case MAGE:
-        case SHAMAN: // these don't get messed up since they don't use wands, but they don't get to use bows/guns/crossbows anyways
-        case DRUID:  // we wouldn't want them cheating extra stats from ammo, would we?
+        case SHAMAN:        // these don't get messed up since they don't use wands, but they don't get to use bows/guns/crossbows anyways
+        case DRUID:         // we wouldn't want them cheating extra stats from ammo, would we?
         case PALADIN:
 #if VERSION_STRING > TBC
         case DEATHKNIGHT:
@@ -2124,9 +2123,9 @@ void WorldSession::sendAddonInfo()
         data << uint8_t(crcpub);
         if (crcpub)
         {
-            uint8_t usepk = (itr.crc != STANDARD_ADDON_CRC); // standard addon CRC
+            uint8_t usepk = (itr.crc != STANDARD_ADDON_CRC);    // standard addon CRC
             data << uint8_t(usepk);
-            if (usepk)                                      // add public key if crc is wrong
+            if (usepk)                                          // add public key if crc is wrong
             {
                 sLogger.debug("AddOn: {}: CRC checksum mismatch: got 0x{:x} - expected 0x{:x} - sending pubkey to accountID {}",
                     itr.name, itr.crc, STANDARD_ADDON_CRC, GetAccountId());
@@ -2150,7 +2149,7 @@ void WorldSession::sendAddonInfo()
         data.append(itr->nameMD5, sizeof(itr->nameMD5));
         data.append(itr->versionMD5, sizeof(itr->versionMD5));
         data << uint32_t(itr->timestamp);
-        data << uint32_t(1);  // banned?
+        data << uint32_t(1); // banned?
     }
 
     SendPacket(&data);
@@ -2186,10 +2185,10 @@ void WorldSession::sendAddonInfo()
         if (itr.enabled)
         {
             data << uint8_t(itr.enabled);
-            data << uint32_t(0);
+            data << uint64_t(0); // sch: normal value - uint32_t
         }
 
-        data << uint8(itr.state);
+        data << uint8_t(itr.state);
     }
 
     m_addonList.clear();
@@ -2197,10 +2196,10 @@ void WorldSession::sendAddonInfo()
     for (auto itr = bannedAddons->begin(); itr != bannedAddons->end(); ++itr)
     {
         data << uint32_t(itr->id);
-        data << uint32_t(1);  // banned?
+        data << uint32_t(1); // banned?
 
-        for (int32 i = 0; i < 8; i++)
-            data << uint32(0);
+        for (int32_t i = 0; i < 8; i++)
+            data << uint32_t(0);
 
         data << uint32_t(itr->timestamp);
     }
@@ -2259,7 +2258,7 @@ void WorldSession::handleReportOpcode(WorldPacket& recvPacket)
 {
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REPORT");
 
-    uint8_t spam_type;                                        // 0 - mail, 1 - chat
+    uint8_t spam_type;                                      // 0 - mail, 1 - chat
     uint64_t spammer_guid;
     uint32_t unk1 = 0;
     uint32_t unk2 = 0;
@@ -2267,27 +2266,27 @@ void WorldSession::handleReportOpcode(WorldPacket& recvPacket)
     uint32_t unk4 = 0;
 
     std::string description;
-    recvPacket >> spam_type;                                 // unk 0x01 const, may be spam type (mail/chat)
-    recvPacket >> spammer_guid;                              // player guid
+    recvPacket >> spam_type;                                // unk 0x01 const, may be spam type (mail/chat)
+    recvPacket >> spammer_guid;                             // player guid
 
     switch (spam_type)
     {
         case 0:
         {
-            recvPacket >> unk1;                              // const 0
-            recvPacket >> unk2;                              // probably mail id
-            recvPacket >> unk3;                              // const 0
+            recvPacket >> unk1;                             // const 0
+            recvPacket >> unk2;                             // probably mail id
+            recvPacket >> unk3;                             // const 0
 
             sLogger.debug("Received REPORT SPAM: type {}, guid {}, unk1 {}, unk2 {}, unk3 {}", spam_type, WoWGuid::getGuidLowPartFromUInt64(spammer_guid), unk1, unk2, unk3);
 
         } break;
         case 1:
         {
-            recvPacket >> unk1;                              // probably language
-            recvPacket >> unk2;                              // message type?
-            recvPacket >> unk3;                              // probably channel id
-            recvPacket >> unk4;                              // unk random value
-            recvPacket >> description;                       // spam description string (messagetype, channel name, player name, message)
+            recvPacket >> unk1;                             // probably language
+            recvPacket >> unk2;                             // message type?
+            recvPacket >> unk3;                             // probably channel id
+            recvPacket >> unk4;                             // unk random value
+            recvPacket >> description;                      // spam description string (messagetype, channel name, player name, message)
 
             sLogger.debug("Received REPORT SPAM: type {}, guid {}, unk1 {}, unk2 {}, unk3 {}, unk4 {}, message {}", spam_type, WoWGuid::getGuidLowPartFromUInt64(spammer_guid), unk1, unk2, unk3, unk4, description);
 
@@ -2296,7 +2295,7 @@ void WorldSession::handleReportOpcode(WorldPacket& recvPacket)
 
     // Complaint Received message
     WorldPacket data(SMSG_REPORT_RESULT, 1);
-    data << uint8_t(0);     // 1 reset reported player 0 ignore
+    data << uint8_t(0);                                     // 1 reset reported player 0 ignore
     data << uint8_t(0);
 
     SendPacket(&data);
@@ -2306,8 +2305,8 @@ void WorldSession::handleReportPlayerOpcode(WorldPacket& recvPacket)
 {
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REPORT_PLAYER {}", static_cast<uint32_t>(recvPacket.size()));
 
-    uint8_t unk3 = 0;   // type
-    uint8_t unk4 = 0;   // guid - 1
+    uint8_t unk3 = 0;                                       // type
+    uint8_t unk4 = 0;                                       // guid - 1
     uint32_t unk5 = 0;
     uint64_t unk6 = 0;
     uint32_t unk7 = 0;
@@ -2315,14 +2314,14 @@ void WorldSession::handleReportPlayerOpcode(WorldPacket& recvPacket)
 
     std::string message;
 
-    uint32_t length = recvPacket.readBits(9);    // length * 2
-    recvPacket >> unk3;                          // type
-    recvPacket >> unk4;                          // guid - 1?
-    message = recvPacket.ReadString(length / 2);   // message
-    recvPacket >> unk5;                          // unk
-    recvPacket >> unk6;                          // unk
-    recvPacket >> unk7;                          // unk
-    recvPacket >> unk8;                          // unk
+    uint32_t length = recvPacket.readBits(9);               // length * 2
+    recvPacket >> unk3;                                     // type
+    recvPacket >> unk4;                                     // guid - 1?
+    message = recvPacket.ReadString(length / 2);            // message
+    recvPacket >> unk5;                                     // unk
+    recvPacket >> unk6;                                     // unk
+    recvPacket >> unk7;                                     // unk
+    recvPacket >> unk8;                                     // unk
 
     switch (unk3)
     {
