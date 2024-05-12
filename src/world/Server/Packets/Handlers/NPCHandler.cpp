@@ -126,7 +126,7 @@ void WorldSession::sendAuctionList(Creature* creature)
     SendPacket(MsgAuctionHello(creature->getGuid(), auctionHouse->getId(), auctionHouse->isEnabled ? 1U : 0U).serialise().get());
 }
 
-//helper
+// helper
 void WorldSession::sendSpiritHealerRequest(Creature* creature)
 {
     SendPacket(SmsgSpiritHealerConfirm(creature->getGuid()).serialise().get());

@@ -694,7 +694,7 @@ const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
     "SPELL_AURA_MOD_CASTING_SPEED",                                         // 216 // not used
     "SPELL_AURA_217",                                                       // 217 // increases time between ranged attacks
     "SPELL_AURA_218",                                                       // 218 Regenerate mana equal to $s1% of your Intellect every 5 sec, even while casting
-    "SPELL_AURA_REGEN_MANA_STAT_PCT",                                       // 219 Increases your healing spells  by up to $s1% of your Strength // increases your critical strike rating by 35% of your spirit // Molten Armor only?
+    "SPELL_AURA_REGEN_MANA_STAT_PCT",                                       // 219 Increases your healing spells by up to $s1% of your Strength // increases your critical strike rating by 35% of your spirit // Molten Armor only?
     "SPELL_AURA_SPELL_HEALING_STAT_PCT",                                    // 220 Detaunt "Ignores an enemy, forcing the caster to not attack it unless there is no other target nearby. When the effect wears off, the creature will attack the most threatening target."
     "SPELL_AURA_221",                                                       // 221 // not used
     "SPELL_AURA_222",                                                       // 222 // used in one spell, cold stare 43593
@@ -704,7 +704,7 @@ const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
     "SPELL_AURA_PERIODIC_TRIGGER_DUMMY",                                    // 226 // used in brewfest spells, headless horseman, Aspect of the Viper
     "SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE",                         // 227 // Used by Mind Flay, Siege Turrets 'Machine gun' and a few other spells.
     "SPELL_AURA_228",                                                       // 228 Stealth Detection. https://www.wowhead.com/spell=34709 // handled in Unit::canSee
-    "SPELL_AURA_REDUCE_AOE_DAMAGE_TAKEN",                                   // 229  Apply Aura:Reduces the damage your pet takes from area of effect attacks // http://www.thottbot.com/s35694
+    "SPELL_AURA_REDUCE_AOE_DAMAGE_TAKEN",                                   // 229 Apply Aura:Reduces the damage your pet takes from area of effect attacks // http://www.thottbot.com/s35694
     "SPELL_AURA_INCREASE_MAX_HEALTH",                                       // 230 Used by Increase Max Health (commanding shout);
     "SPELL_AURA_PROC_TRIGGER_SPELL",                                        // 231 curse a target https://www.wowhead.com/spell=40303
     "SPELL_AURA_REDUCE_EFFECT_DURATION",                                    // 232 // Reduces duration of Magic effects by $s2%.
