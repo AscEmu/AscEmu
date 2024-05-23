@@ -16,17 +16,17 @@ namespace AscEmu::Packets
     public:
         uint32_t totalPlayedTime;
         uint32_t playedTimeOnLevel;
-        uint8_t displayInUi;
+        uint8_t displayInChatFrame;
 
         SmsgPlayedTime() : SmsgPlayedTime(0, 0, 0)
         {
         }
 
-        SmsgPlayedTime(uint32_t totalPlayedTime, uint32_t playedTimeOnLevel, uint8_t displayInUi) :
+        SmsgPlayedTime(uint32_t totalPlayedTime, uint32_t playedTimeOnLevel, uint8_t displayInChatFrame) :
             ManagedPacket(SMSG_PLAYED_TIME, 8),
             totalPlayedTime(totalPlayedTime),
             playedTimeOnLevel(playedTimeOnLevel),
-            displayInUi(displayInUi)
+            displayInChatFrame(displayInChatFrame)
         {
         }
 
@@ -38,7 +38,7 @@ namespace AscEmu::Packets
             packet << totalPlayedTime << playedTimeOnLevel;
 
 #if VERSION_STRING > TBC
-            packet << displayInUi;
+            packet << displayInChatFrame;
 #endif
             return true;
         }

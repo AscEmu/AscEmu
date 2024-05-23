@@ -180,7 +180,7 @@ struct CreatureProperties
     uint32 Female_DisplayID2;
     std::string Name;
     std::string SubName;
-    std::string info_str;
+    std::string icon_name;
     uint32 typeFlags;
     uint32 Type;
     uint32 Family;

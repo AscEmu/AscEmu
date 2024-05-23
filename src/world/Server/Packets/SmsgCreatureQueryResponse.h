@@ -57,7 +57,7 @@ namespace AscEmu::Packets
                     packet << uint8_t(0);
 #endif
                 packet << subName;
-                packet << info.info_str << info.typeFlags;
+                packet << info.icon_name << info.typeFlags;
 #if VERSION_STRING > WotLK
                 packet << uint32_t(0);
 #endif
