@@ -809,11 +809,13 @@ void WorldSocket::Authenticate()
             return;
 
         SendPacket(SmsgAuthResponse(AuthOkay, ARST_ACCOUNT_DATA).serialise().get());
+
 #if VERSION_STRING < Cata
         sAddonMgr.SendAddonInfoPacket(pAuthenticationPacket, static_cast<uint32>(pAuthenticationPacket->rpos()), mSession);
 #else
         mSession->sendAddonInfo();
 #endif
+
 #if VERSION_STRING > TBC
         mSession->sendClientCacheVersion(BUILD_VERSION);
 #endif
@@ -981,7 +983,7 @@ void WorldSocket::OnRead()
                 _HandlePing(packet);
             } break;
 #if VERSION_STRING >= Cata
-            case MSG_VERIFY_CONNECTIVITY:
+            case MSG_VERIFY_CONNECTIVITY: // MSG_WOW_CONNECTION
             {
                 HandleWoWConnection(packet);
             } break;

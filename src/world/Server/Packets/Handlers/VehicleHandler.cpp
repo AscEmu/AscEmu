@@ -115,7 +115,7 @@ void WorldSession::handleChangeSeatsOnControlledVehicle([[maybe_unused]]WorldPac
         return;
 
     uint64_t guid = srlPacket.sourceGuid;               // current vehicle guid
-    uint64_t accessory = srlPacket.destinationGuid;     //  accessory guid
+    uint64_t accessory = srlPacket.destinationGuid;     // accessory guid
 
     vehicle_base->obj_movement_info = srlPacket.movementInfo;
     int8_t seatId = srlPacket.seat;
