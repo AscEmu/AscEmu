@@ -24,7 +24,7 @@
 
 ## Folder: zlib
 - Web: http://www.zlib.net
-- Version: 1.2.13 (2022/10/13)
+- Version: 1.3.1 (2024/01/22)
 
 ## Folder: lualib
 - Web: https://www.lua.org
