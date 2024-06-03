@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/EventableObject.h"
 
 #include <queue>
+#include <algorithm>
 
 #include "InstanceDefines.hpp"
 #include "Debugging/Errors.h"
