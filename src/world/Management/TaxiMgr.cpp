@@ -113,6 +113,22 @@ void TaxiPath::initTaxiNodesForLevel(uint32_t race, uint32_t chrClass, uint8_t l
             setTaximaskNode(94);
             break;
 #endif
+#if VERSION_STRING >= Cata
+        case RACE_GOBLIN:
+            setTaximaskNode(23);
+            break;
+        case RACE_WORGEN:
+            setTaximaskNode(2);
+            break;
+#endif
+#if VERSION_STRING >= Mop   
+        case RACE_PANDAREN_ALLIANCE:
+            setTaximaskNode(2);
+            break;
+        case RACE_PANDAREN_HORDE:
+            setTaximaskNode(23);
+            break;
+#endif
         default:
             break;
     }
