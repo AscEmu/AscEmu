@@ -47,7 +47,7 @@ if (WIN32)
     set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/resources.rc")
 endif ()
 
-set(WORLD_SRCS
+add_executable(${PROJECT_NAME}
     ${SRC_CHAT_FILES}
     ${SRC_COMMAND_FILES}
     ${SRC_DATA_FILES}
@@ -87,6 +87,7 @@ set(WORLD_SRCS
     ${SRC_STORAGE_FILES}
     ${SRC_STORAGE_WDB_FILES}
     ${SRC_LOCAL_DIR}
+    ${APP_ICON_RESOURCE_WINDOWS}
 )
 
 include_directories(
@@ -144,8 +145,6 @@ source_group(Spell\\Customization FILES ${SRC_SPELL_CUSTOM_FILES})
 source_group(Spell\\Definitions FILES ${SRC_SPELL_DEFINITIONS_FILES})
 source_group(Storage FILES ${SRC_STORAGE_FILES})
 source_group(Storage\\WDB FILES ${SRC_STORAGE_WDB_FILES})
-
-add_executable(${PROJECT_NAME} ${WORLD_SRCS} ${APP_ICON_RESOURCE_WINDOWS})
 
 if (WIN32 AND NOT USE_PCH)
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/INCREMENTAL:NO")

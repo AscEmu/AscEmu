@@ -5,9 +5,7 @@ project(creature_data CXX)
 
 file(GLOB SRC_CREATURE_DATA *.cpp *.h)
 
-set(CREATURE_DATA_SRCS
-    ${SRC_CREATURE_DATA}
-)
+add_executable(${PROJECT_NAME} ${SRC_CREATURE_DATA})
 
 if (NOT WIN32 AND NOT IS_64BIT)
     add_definitions(-D_FILE_OFFSET_BITS=64)
@@ -19,8 +17,6 @@ include_directories(
     ${DEPENDENCY_ROOT}/dbcfile
     ${LOADLIB_PATH}
 )
-
-add_executable(${PROJECT_NAME} ${CREATURE_DATA_SRCS})
 
 # include library dependencies.
 target_link_libraries(${PROJECT_NAME}

@@ -5,9 +5,7 @@ project(mmaps_generator CXX)
 
 file(GLOB SRC_MMAPS_EXTRACTOR *.cpp *.h)
 
-set(MMAPS_EXTRACTOR_SRCS
-    ${SRC_MMAPS_EXTRACTOR}
-)
+add_executable(${PROJECT_NAME} ${SRC_MMAPS_EXTRACTOR})
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
@@ -21,8 +19,6 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/dep/loadlib
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
-
-add_executable(${PROJECT_NAME} ${MMAPS_EXTRACTOR_SRCS})
 
 # include library dependencies.
 target_link_libraries(${PROJECT_NAME}
