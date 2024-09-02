@@ -47,11 +47,11 @@ void WowCrypt::initWotlkCrypt(uint8_t* key)
     HMAC(EVP_sha1(), recv, seedLenght, key, 40, encryptHash, &mdLength);
     assert(mdLength == SHA_DIGEST_LENGTH);
 
-    RC4_set_key(&m_clientWotlkDecryptKey, SHA_DIGEST_LENGTH, decryptHash);
-    RC4_set_key(&m_serverWotlkEncryptKey, SHA_DIGEST_LENGTH, encryptHash);
+    ASC_RC4::RC4_set_key(&m_clientWotlkDecryptKey, SHA_DIGEST_LENGTH, decryptHash);
+    ASC_RC4::RC4_set_key(&m_serverWotlkEncryptKey, SHA_DIGEST_LENGTH, encryptHash);
 
-    RC4(&m_serverWotlkEncryptKey, 1024, pass, pass);
-    RC4(&m_clientWotlkDecryptKey, 1024, pass, pass);
+    ASC_RC4::RC4(&m_serverWotlkEncryptKey, 1024, pass, pass);
+    ASC_RC4::RC4(&m_clientWotlkDecryptKey, 1024, pass, pass);
 
     m_isInitialized = true;
 }
@@ -73,11 +73,11 @@ void WowCrypt::initMopCrypt(uint8_t* key)
     HMAC(EVP_sha1(), recv, seedLenght, key, 40, encryptHash, &mdLength);
     assert(mdLength == SHA_DIGEST_LENGTH);
 
-    RC4_set_key(&m_clientWotlkDecryptKey, SHA_DIGEST_LENGTH, decryptHash);
-    RC4_set_key(&m_serverWotlkEncryptKey, SHA_DIGEST_LENGTH, encryptHash);
+    ASC_RC4::RC4_set_key(&m_clientWotlkDecryptKey, SHA_DIGEST_LENGTH, decryptHash);
+    ASC_RC4::RC4_set_key(&m_serverWotlkEncryptKey, SHA_DIGEST_LENGTH, encryptHash);
 
-    RC4(&m_serverWotlkEncryptKey, 1024, pass, pass);
-    RC4(&m_clientWotlkDecryptKey, 1024, pass, pass);
+    ASC_RC4::RC4(&m_serverWotlkEncryptKey, 1024, pass, pass);
+    ASC_RC4::RC4(&m_clientWotlkDecryptKey, 1024, pass, pass);
 
     m_isInitialized = true;
 }
@@ -87,7 +87,7 @@ void WowCrypt::decryptWotlkReceive(uint8_t* data, size_t length)
     if (!m_isInitialized)
         return;
     
-    RC4(&m_clientWotlkDecryptKey, (unsigned long)length, data, data);
+    ASC_RC4::RC4(&m_clientWotlkDecryptKey, (unsigned long)length, data, data);
 }
 
 void WowCrypt::encryptWotlkSend(uint8_t* data, size_t length)
@@ -95,7 +95,7 @@ void WowCrypt::encryptWotlkSend(uint8_t* data, size_t length)
     if (!m_isInitialized)
         return;
     
-    RC4(&m_serverWotlkEncryptKey, (unsigned long)length, data, data);
+    ASC_RC4::RC4(&m_serverWotlkEncryptKey, (unsigned long)length, data, data);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

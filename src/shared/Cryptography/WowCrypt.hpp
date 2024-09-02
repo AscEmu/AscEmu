@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <openssl/sha.h>
 #include <openssl/rc4.h>
 
+#include "RC4.hpp"
 #include "Cryptography/Sha1.h"
 
 class WowCrypt
@@ -37,8 +38,8 @@ public:
     void encryptWotlkSend(uint8_t* data, size_t length);
 
 private:
-    RC4_KEY m_clientWotlkDecryptKey;
-    RC4_KEY m_serverWotlkEncryptKey;
+    ASC_RC4::RC4_KEY m_clientWotlkDecryptKey;
+    ASC_RC4::RC4_KEY m_serverWotlkEncryptKey;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Legacy
