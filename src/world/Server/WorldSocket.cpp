@@ -27,7 +27,7 @@
 #include "DatabaseDefinition.hpp"
 #include "Utilities/Util.hpp"
 #include "Server/LogonCommClient/LogonCommHandler.h"
-#include "Cryptography/Sha1.h"
+#include "Cryptography/Sha1.hpp"
 #include "World.h"
 #include "Management/AddonMgr.h"
 #include "Packets/SmsgPong.h"
@@ -690,28 +690,28 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
 #endif
     uint32 t = 0;
     if (m_fullAccountName == nullptr) // should never happen !
-        sha.UpdateData(AccountName);
+        sha.updateData(AccountName);
     else
     {
-        sha.UpdateData(*m_fullAccountName);
+        sha.updateData(*m_fullAccountName);
 
         // this is unused now. we may as well free up the memory.
         delete m_fullAccountName;
         m_fullAccountName = nullptr;
     }
 
-    sha.UpdateData(reinterpret_cast<uint8*>(&t), 4);
-    sha.UpdateData(reinterpret_cast<uint8*>(&mClientSeed), 4);
-    sha.UpdateData(reinterpret_cast<uint8*>(&mSeed), 4);
+    sha.updateData(reinterpret_cast<uint8*>(&t), 4);
+    sha.updateData(reinterpret_cast<uint8*>(&mClientSeed), 4);
+    sha.updateData(reinterpret_cast<uint8*>(&mSeed), 4);
 #if VERSION_STRING < WotLK
     sha.UpdateBigNumbers(&BNK, NULL);
 #else
-    sha.UpdateData(reinterpret_cast<uint8*>(&K), 40);
+    sha.updateData(reinterpret_cast<uint8*>(&K), 40);
 #endif
-    sha.Finalize();
+    sha.finalize();
 
 #if VERSION_STRING < Cata
-    if (memcmp(sha.GetDigest(), digest, 20))
+    if (memcmp(sha.getDigest(), digest, 20))
 #else
     if (memcmp(sha.GetDigest(), AuthDigest, 20))
 #endif

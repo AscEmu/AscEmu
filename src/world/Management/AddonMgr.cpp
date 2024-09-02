@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <zlib.h>
 
 #include "Server/LogonCommClient/LogonCommHandler.h"
-#include "Cryptography/MD5.h"
+#include "Cryptography/MD5.hpp"
 #include "Database/Field.hpp"
 #include "Database/Database.h"
 #include "Logging/Logger.hpp"

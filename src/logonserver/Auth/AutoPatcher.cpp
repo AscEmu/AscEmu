@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <Cryptography/MD5.h>
+#include <Cryptography/MD5.hpp>
 #include "Auth/AutoPatcher.h"
 
 #ifndef WIN32
@@ -100,10 +100,10 @@ void PatchMgr::initialize()
         CloseHandle(hFile);
 
         // md5hash the file
-        md5.Initialize();
-        md5.UpdateData(pPatch->Data, pPatch->FileSize);
-        md5.Finalize();
-        memcpy(pPatch->MD5, md5.GetDigest(), MD5_DIGEST_LENGTH);
+        md5.initialize();
+        md5.updateData(pPatch->Data, pPatch->FileSize);
+        md5.finalize();
+        memcpy(pPatch->MD5, md5.getDigest(), MD5_DIGEST_LENGTH);
 
         // add the patch to the patchlist
         m_patches.push_back(pPatch);

@@ -27,7 +27,7 @@
 #include "Network/Socket.h"
 #include "WorldPacket.h"
 #include "Server/AccountMgr.h"
-#include "Cryptography/Sha1.h"
+#include "Cryptography/Sha1.hpp"
 #include "Database/Database.h"
 #include "Utilities/Strings.hpp"
 #include "Server/IpBanMgr.h"
@@ -312,13 +312,13 @@ void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
     }
 
     Sha1Hash hash;
-    hash.UpdateData(realm->password);
-    hash.Finalize();
+    hash.updateData(realm->password);
+    hash.finalize();
 
     // check if we have the correct password
     uint32_t result = 1;
 
-    if (memcmp(key, hash.GetDigest(), 20) != 0)
+    if (memcmp(key, hash.getDigest(), 20) != 0)
         result = 0;
 
     sLogger.info("Authentication request from {}, id {} - result {}.", GetRemoteIP(), uint32_t(realmId), result ? "OK" : "FAIL");

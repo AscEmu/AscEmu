@@ -26,6 +26,7 @@
 #include "Server/Master.hpp"
 #include <Realm/RealmManager.hpp>
 
+#include "Cryptography/MD5.hpp"
 #include "Database/Database.h"
 
 enum _errors
@@ -265,12 +266,12 @@ void AuthSocket::HandleChallenge()
     //
 
     Sha1Hash sha;
-    sha.UpdateData(s.AsByteArray(), 32);
-    sha.UpdateData(m_account->SrpHash, 20);
-    sha.Finalize();
+    sha.updateData(s.AsByteArray(), 32);
+    sha.updateData(m_account->SrpHash, 20);
+    sha.finalize();
 
     BigNumber x;
-    x.SetBinary(sha.GetDigest(), sha.GetLength());
+    x.SetBinary(sha.getDigest(), SHA_DIGEST_LENGTH);
     v = g.ModExp(x, N);
 
     // Next we generate b, and B which are the public and private values of the server
@@ -350,11 +351,11 @@ void AuthSocket::HandleProof()
     A.SetBinary(lp.A, 32);
 
     Sha1Hash sha;
-    sha.UpdateBigNumbers(&A, &B, 0);
-    sha.Finalize();
+    sha.updateBigNumbers(&A, &B, 0);
+    sha.finalize();
 
     BigNumber u;
-    u.SetBinary(sha.GetDigest(), 20);
+    u.SetBinary(sha.getDigest(), 20);
 
     // S session key key, S = ( A * v^u ) ^ b
     BigNumber S = (A * (v.ModExp(u, N))).ModExp(b, N);
@@ -369,55 +370,55 @@ void AuthSocket::HandleProof()
     {
         t1[i] = t[i * 2];
     }
-    sha.Initialize();
-    sha.UpdateData(t1, 16);
-    sha.Finalize();
+    sha.initialize();
+    sha.updateData(t1, 16);
+    sha.finalize();
     for (int i = 0; i < 20; i++)
     {
-        vK[i * 2] = sha.GetDigest()[i];
+        vK[i * 2] = sha.getDigest()[i];
     }
     for (int i = 0; i < 16; i++)
     {
         t1[i] = t[i * 2 + 1];
     }
-    sha.Initialize();
-    sha.UpdateData(t1, 16);
-    sha.Finalize();
+    sha.initialize();
+    sha.updateData(t1, 16);
+    sha.finalize();
     for (int i = 0; i < 20; i++)
     {
-        vK[i * 2 + 1] = sha.GetDigest()[i];
+        vK[i * 2 + 1] = sha.getDigest()[i];
     }
     m_sessionkey.SetBinary(vK, 40);
 
     uint8 hash[20];
 
-    sha.Initialize();
-    sha.UpdateBigNumbers(&N, NULL);
-    sha.Finalize();
-    memcpy(hash, sha.GetDigest(), 20);
-    sha.Initialize();
-    sha.UpdateBigNumbers(&g, NULL);
-    sha.Finalize();
+    sha.initialize();
+    sha.updateBigNumbers(&N, NULL);
+    sha.finalize();
+    memcpy(hash, sha.getDigest(), 20);
+    sha.initialize();
+    sha.updateBigNumbers(&g, NULL);
+    sha.finalize();
     for (int i = 0; i < 20; i++)
     {
-        hash[i] ^= sha.GetDigest()[i];
+        hash[i] ^= sha.getDigest()[i];
     }
     BigNumber t3;
     t3.SetBinary(hash, 20);
 
-    sha.Initialize();
-    sha.UpdateData((const uint8*)m_account->UsernamePtr->c_str(), (int)m_account->UsernamePtr->size());
-    sha.Finalize();
+    sha.initialize();
+    sha.updateData((const uint8*)m_account->UsernamePtr->c_str(), (int)m_account->UsernamePtr->size());
+    sha.finalize();
 
     BigNumber t4;
-    t4.SetBinary(sha.GetDigest(), 20);
+    t4.SetBinary(sha.getDigest(), 20);
 
-    sha.Initialize();
-    sha.UpdateBigNumbers(&t3, &t4, &s, &A, &B, &m_sessionkey, NULL);
-    sha.Finalize();
+    sha.initialize();
+    sha.updateBigNumbers(&t3, &t4, &s, &A, &B, &m_sessionkey, NULL);
+    sha.finalize();
 
     BigNumber M;
-    M.SetBinary(sha.GetDigest(), 20);
+    M.SetBinary(sha.getDigest(), 20);
 
     // Compare the M value the client sent us to the one we generated, this proves we both have the same values
     // which proves we have the same username-password pairs
@@ -434,9 +435,9 @@ void AuthSocket::HandleProof()
     m_account->SetSessionKey(m_sessionkey.AsByteArray());
 
     // let the client know
-    sha.Initialize();
-    sha.UpdateBigNumbers(&A, &M, &m_sessionkey, 0);
-    sha.Finalize();
+    sha.initialize();
+    sha.updateBigNumbers(&A, &M, &m_sessionkey, 0);
+    sha.finalize();
 
     //SendProofError(0, sha.GetDigest());
     sendAuthProof(sha);
@@ -697,7 +698,7 @@ void AuthSocket::HandleReconnectChallenge()
     buf.append(buffer, 20);
     buf << uint64(0);
     buf << uint64(0);
-    Send(buf.contents(), 34);
+    Send(buf.contents(), 2);
 }
 
 void AuthSocket::HandleReconnectProof()

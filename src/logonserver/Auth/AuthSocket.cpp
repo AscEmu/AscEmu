@@ -15,7 +15,7 @@ void AuthSocket::sendAuthProof(Sha1Hash sha)
     if (m_challenge.build == 5875)
     {
         sAuthLogonProof_S proof;
-        memcpy(proof.M2, sha.GetDigest(), 20);
+        memcpy(proof.M2, sha.getDigest(), 20);
         proof.cmd = 1;
         proof.error = 0;
         proof.unk2 = 0;
@@ -25,7 +25,7 @@ void AuthSocket::sendAuthProof(Sha1Hash sha)
     else
     {
         sAuthLogonProof_S proof;
-        memcpy(proof.M2, sha.GetDigest(), 20);
+        memcpy(proof.M2, sha.getDigest(), 20);
         proof.cmd = 1;
         proof.error = 0;
         proof.unk2 = 0;

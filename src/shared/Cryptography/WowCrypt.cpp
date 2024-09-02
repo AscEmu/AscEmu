@@ -8,9 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include <algorithm>
 #include <cassert>
 #include <openssl/hmac.h>
-#include <openssl/sha.h>
 
-#include "Sha1.h"
+#include "Sha1.hpp"
 
 WowCrypt::WowCrypt()
 {
@@ -168,15 +167,15 @@ void WowCrypt::generateTbcKey(uint8_t* key, uint8_t* sessionkey)
     }
 
     Sha1Hash sha1;
-    sha1.UpdateData(firstBuffer, 64);
-    sha1.UpdateData(sessionkey, 40);
-    sha1.Finalize();
+    sha1.updateData(firstBuffer, 64);
+    sha1.updateData(sessionkey, 40);
+    sha1.finalize();
 
-    uint8_t* tempDigest = sha1.GetDigest();
+    uint8_t* tempDigest = sha1.getDigest();
     Sha1Hash sha2;
-    sha2.UpdateData(secondBuffer, 64);
-    sha2.UpdateData(tempDigest, SHA_DIGEST_LENGTH);
-    sha2.Finalize();
+    sha2.updateData(secondBuffer, 64);
+    sha2.updateData(tempDigest, SHA_DIGEST_LENGTH);
+    sha2.finalize();
 
-    memcpy(key, sha2.GetDigest(), SHA_DIGEST_LENGTH);
+    memcpy(key, sha2.getDigest(), SHA_DIGEST_LENGTH);
 }

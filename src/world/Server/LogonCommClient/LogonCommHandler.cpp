@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Master.h"
 #include "Config/Config.h"
 #include "Cryptography/LogonCommDefines.h"
-#include "Cryptography/Sha1.h"
+#include "Cryptography/Sha1.hpp"
 #include "Logging/Logger.hpp"
 #include "Server/ConfigMgr.hpp"
 #include "Server/DatabaseDefinition.hpp"
@@ -31,11 +31,11 @@ void LogonCommHandler::initialize()
 
     // sha1 hash it
     Sha1Hash hash;
-    hash.UpdateData(logon_pass);
-    hash.Finalize();
+    hash.updateData(logon_pass);
+    hash.finalize();
 
     memset(sql_passhash, 0, 20);
-    memcpy(sql_passhash, hash.GetDigest(), 20);
+    memcpy(sql_passhash, hash.getDigest(), 20);
 
     server_population = 0;
 
