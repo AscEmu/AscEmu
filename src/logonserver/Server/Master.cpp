@@ -427,7 +427,7 @@ bool MasterLogon::SetLogonConfiguration()
         std::string stmp = allowedIP.substr(0, i);
         std::string smask = allowedIP.substr(i + 1);
 
-        const unsigned int ipraw = MakeIP(stmp.c_str());
+        const unsigned int ipraw = Util::makeIP(stmp.c_str());
         const unsigned char ipmask = static_cast<char>(atoi(smask.c_str()));
         if (ipraw == 0 || ipmask == 0)
         {
@@ -453,7 +453,7 @@ bool MasterLogon::SetLogonConfiguration()
         std::string stmp = allowedModIP.substr(0, i);
         std::string smask = allowedModIP.substr(i + 1);
 
-        unsigned int ipraw = MakeIP(stmp.c_str());
+        unsigned int ipraw = Util::makeIP(stmp.c_str());
         unsigned char ipmask = static_cast<char>(atoi(smask.c_str()));
         if (ipraw == 0 || ipmask == 0)
         {

@@ -194,6 +194,10 @@ namespace Util
         std::chrono::time_point<std::chrono::high_resolution_clock> m_startTime;
         std::string functionName;
     };
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Misc
+    unsigned int makeIP(std::string_view _str);
 }
 
 struct SmallTimeTracker

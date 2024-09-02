@@ -4,6 +4,9 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Util.hpp"
+
+#include <array>
+
 #include "Common.hpp"
 #include "CommonTime.hpp"
 #include "Strings.hpp"
@@ -485,5 +488,32 @@ namespace Util
         // example: 20180722-00_some_update_file.sql
         uint32_t const version = getNumberFromStringByRange(fileName, 9, 11);
         return version;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Misc
+    unsigned int makeIP(std::string_view _str)
+    {
+        std::array<unsigned int, 4> bytes;
+        char dot; // To capture the dots between the numbers
+
+        std::stringstream ss{ std::string{_str} };  // Convert string_view to string for stringstream
+
+        for (auto& byte : bytes)
+        {
+            if (!(ss >> byte) || byte > 255)
+            {
+                return 0;  // Return 0 if parsing fails or if any byte is out of range
+            }
+            if (&byte != &bytes.back())
+            {
+                if (!(ss >> dot) || dot != '.')
+                {
+                    return 0;  // Return 0 if dots are incorrectly placed
+                }
+            }
+        }
+
+        return (bytes[0]) | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24);
     }
 }

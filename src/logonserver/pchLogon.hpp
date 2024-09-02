@@ -21,7 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Utilities/Strings.hpp>
 #include <Utilities/Util.hpp>
 #include <Cryptography/BigNumber.h>
-#include <Cryptography/Sha1.h>
+#include <Cryptography/Sha1.hpp>
 #include <Cryptography/WowCrypt.hpp>
 #include <Database/Database.h>
 #include <Network/Network.h>

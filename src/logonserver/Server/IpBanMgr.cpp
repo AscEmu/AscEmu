@@ -47,7 +47,7 @@ void IpBanMgr::reload()
             else
                 smask = ipString.substr(i + 1);
 
-            const unsigned int ipraw = MakeIP(stmp.c_str());
+            const unsigned int ipraw = Util::makeIP(stmp.c_str());
             const unsigned int ipmask = atoi(smask.c_str());
             if (ipraw == 0 || ipmask == 0)
             {
@@ -78,7 +78,7 @@ bool IpBanMgr::add(std::string ip, uint32_t duration)
     std::string stmp = ipString.substr(0, i);
     std::string smask = ipString.substr(i + 1);
 
-    const unsigned int ipraw = MakeIP(stmp.c_str());
+    const unsigned int ipraw = Util::makeIP(stmp.c_str());
     const unsigned int ipmask = atoi(smask.c_str());
     if (ipraw == 0 || ipmask == 0)
         return false;
