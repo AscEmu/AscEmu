@@ -773,7 +773,7 @@ uint32_t Item::generateRandomSuffixFactor(ItemProperties const* m_itemProto)
         value = SuffixMods[m_itemProto->InventoryType];
 
     value = value * static_cast<double>(m_itemProto->ItemLevel) + 0.5;
-    return long2int32(value);
+    return Util::long2int32(value);
 }
 
 void Item::_setEnchantmentDataFields(EnchantmentSlot slot, uint32_t enchantmentId, uint32_t duration, uint32_t charges)
@@ -933,7 +933,7 @@ uint32_t Item::repairItemCost()
     }
 
     uint32_t dmodifier = durability_costs->modifier[m_itemProperties->Class == ITEM_CLASS_WEAPON ? m_itemProperties->SubClass : m_itemProperties->SubClass + 21];
-    uint32_t cost = long2int32((getMaxDurability() - getDurability()) * dmodifier * double(durability_quality->quality_modifier));
+    uint32_t cost = Util::long2int32((getMaxDurability() - getDurability()) * dmodifier * double(durability_quality->quality_modifier));
     return cost;
 }
 

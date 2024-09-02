@@ -115,25 +115,6 @@
     #pragma float_control(precise, on)
 #endif
 
-// Fastest Method of long2int32
-static inline int long2int32(const double value)
-{
-#if !defined(_WIN64) && COMPILER == COMPILER_MICROSOFT && !defined(USING_BIG_ENDIAN)
-    int i;
-    __asm
-    {
-        fld value
-        frndint
-        fistp i
-    }
-    return i;
-#else
-    union { int asInt[2]; double asDouble; } n;
-    n.asDouble = value + 6755399441055744.0;
-
-    return n.asInt [0];
-#endif
-}
 
 #ifdef MS_FLOAT_CONTROL
     #pragma float_control(pop)

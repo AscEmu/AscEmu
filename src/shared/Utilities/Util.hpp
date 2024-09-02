@@ -47,6 +47,12 @@ namespace Util
         return static_cast<int32_t>(std::round(value));
     }
 
+    // Fastest Method of long2int32
+    inline int32_t long2int32(const double value)
+    {
+        return static_cast<int32_t>(std::lround(value));
+    }
+
     template <typename T>
     T int32abs(int value)
     {
