@@ -67,8 +67,8 @@ void LogonCommClientSocket::OnRead()
             // decrypt the first two bytes
             if (use_crypto)
             {
-                _recvCrypto.Process((uint8*)&opcode, (uint8*)&opcode, 2);
-                _recvCrypto.Process((uint8*)&remaining, (uint8*)&remaining, 4);
+                _rwCrypto.process((uint8*)&opcode, (uint8*)&opcode, 2);
+                _rwCrypto.process((uint8*)&remaining, (uint8*)&remaining, 4);
             }
 
             // convert network byte order
@@ -90,7 +90,7 @@ void LogonCommClientSocket::OnRead()
 
         // decrypt the rest of the packet
         if (use_crypto && remaining)
-            _recvCrypto.Process(buff.contents(), buff.contents(), remaining);
+            _rwCrypto.process(buff.contents(), buff.contents(), remaining);
 
         // handle the packet
         HandlePacket(buff);
@@ -222,14 +222,14 @@ void LogonCommClientSocket::SendPacket(WorldPacket* data, bool no_crypto)
     byteSwapUInt32(&header.size);
 
     if (use_crypto && !no_crypto)
-        _sendCrypto.Process((unsigned char*)&header, (unsigned char*)&header, 6);
+        _rwCrypto.process((unsigned char*)&header, (unsigned char*)&header, 6);
 
     bool rv = BurstSend((const uint8*)&header, 6);
 
     if (data->size() > 0 && rv)
     {
         if (use_crypto && !no_crypto)
-            _sendCrypto.Process(data->contents(), data->contents(), (unsigned int)data->size());
+            _rwCrypto.process(data->contents(), data->contents(), (unsigned int)data->size());
 
         rv = BurstSend(data->contents(), (uint32)data->size());
     }
@@ -254,8 +254,7 @@ void LogonCommClientSocket::SendChallenge()
 {
     uint8* key = sLogonCommHandler.sql_passhash;
 
-    _recvCrypto.Setup(key, 20);
-    _sendCrypto.Setup(key, 20);
+    _rwCrypto.setup(key, 20);
 
     // packets are encrypted from now on
     use_crypto = true;

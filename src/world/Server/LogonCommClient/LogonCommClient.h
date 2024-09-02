@@ -23,7 +23,7 @@
 
 #include "CommonTypes.hpp"
 #include "Network/Socket.h"
-#include <Cryptography/RC4Engine.h>
+#include <Cryptography/RC4.hpp>
 
 class ByteBuffer;
 
@@ -31,8 +31,8 @@ class LogonCommClientSocket : public Socket
 {
     uint32 remaining;
     uint16 opcode;
-    RC4Engine _sendCrypto;
-    RC4Engine _recvCrypto;
+
+    AscEmu::RC4Engine _rwCrypto;
 
     public:
         LogonCommClientSocket(SOCKET fd);

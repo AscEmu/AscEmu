@@ -8,10 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdlib>
 #include <string>
 #include <openssl/md5.h>
-
-#if defined(OPENSSL_VERSION_MAJOR) && (OPENSSL_VERSION_MAJOR >= 3)
 #include <openssl/types.h>
-#endif
 
 class MD5Hash
 {
@@ -29,11 +26,6 @@ public:
     int GetLength(void) { return MD5_DIGEST_LENGTH; };
 
 private:
-#if defined(OPENSSL_VERSION_MAJOR) && (OPENSSL_VERSION_MAJOR >= 3)
     EVP_MD_CTX *mC;
     uint8_t mDigest[MD5_DIGEST_LENGTH];
-#else
-    MD5_CTX mC;
-    uint8_t mDigest[MD5_DIGEST_LENGTH];
-#endif
 };

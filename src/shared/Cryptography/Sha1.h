@@ -7,12 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdlib>
 #include <openssl/sha.h>
-
 #include "Cryptography/BigNumber.h"
-
-#if defined(OPENSSL_VERSION_MAJOR) && (OPENSSL_VERSION_MAJOR >= 3)
 #include <openssl/evp.h>
-#endif
 
 class Sha1Hash
 {
@@ -35,11 +31,6 @@ public:
     BigNumber GetBigNumber();
 
 private:
-#if defined(OPENSSL_VERSION_MAJOR) && (OPENSSL_VERSION_MAJOR >= 3)
     EVP_MD_CTX *mC;
     uint8_t mDigest[SHA_DIGEST_LENGTH];
-#else
-    SHA_CTX mC;
-    uint8_t mDigest[SHA_DIGEST_LENGTH];
-#endif
 };

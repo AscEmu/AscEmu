@@ -89,8 +89,8 @@ void LogonCommServerSocket::OnRead()
             if (use_crypto)
             {
                 // decrypt the packet
-                recvCrypto.Process((unsigned char*)&opcode, (unsigned char*)&opcode, 2);
-                recvCrypto.Process((unsigned char*)&remaining, (unsigned char*)&remaining, 4);
+                _rwCrypto.process((unsigned char*)&opcode, (unsigned char*)&opcode, 2);
+                _rwCrypto.process((unsigned char*)&remaining, (unsigned char*)&remaining, 4);
             }
 
             /* reverse byte order */
@@ -111,7 +111,7 @@ void LogonCommServerSocket::OnRead()
         }
 
         if (use_crypto && remaining)
-            recvCrypto.Process((unsigned char*)buff.contents(), (unsigned char*)buff.contents(), remaining);
+            _rwCrypto.process((unsigned char*)buff.contents(), (unsigned char*)buff.contents(), remaining);
 
         // handle the packet
         HandlePacket(buff);
@@ -280,14 +280,14 @@ void LogonCommServerSocket::SendPacket(WorldPacket* data)
     byteSwapUInt32(&header.size);
 
     if (use_crypto)
-        sendCrypto.Process((unsigned char*)&header, (unsigned char*)&header, 6);
+        _rwCrypto.process((unsigned char*)&header, (unsigned char*)&header, 6);
 
     rv = BurstSend((uint8*)&header, 6);
 
     if (data->size() > 0 && rv)
     {
         if (use_crypto)
-            sendCrypto.Process((unsigned char*)data->contents(), (unsigned char*)data->contents(), (uint32)data->size());
+            _rwCrypto.process((unsigned char*)data->contents(), (unsigned char*)data->contents(), (uint32)data->size());
 
         rv = BurstSend(data->contents(), (uint32)data->size());
     }
@@ -333,8 +333,8 @@ void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
     }
     //sLogger.info(sstext); FIX fmt
 
-    recvCrypto.Setup(key, 20);
-    sendCrypto.Setup(key, 20);
+    _rwCrypto.setup(key, 20);
+
 
     // packets are encrypted from now on
     use_crypto = true;

@@ -5,54 +5,85 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#define ASC_RC4_KEY_LENGTH 256
+#include "CommonTypes.hpp"
+#include <algorithm>
 
-class ASC_RC4
+namespace AscEmu
 {
-public:
-    typedef struct {
-        uint8_t state[ASC_RC4_KEY_LENGTH];
-        uint8_t x, y;
-    } RC4_KEY;
+    constexpr static int keyLength = 256;
 
-    static void RC4_set_key(RC4_KEY* key, int len, const uint8_t* data)
+    class RC4StreamCipher
     {
-        uint8_t* state = key->state;
-        uint8_t j = 0;
+    public:
+        typedef struct
+        {
+            uint8_t state[keyLength];
+            uint8_t x, y;
+        } KeyStruct;
 
-        // Initialize the state with the identity permutation
-        for (int i = 0; i < ASC_RC4_KEY_LENGTH; i++) {
-            state[i] = i;
+        static void setKey(KeyStruct* _key, const size_t _len, const uint8_t* _data)
+        {
+            uint8_t* state = _key->state;
+            uint8_t j = 0;
+
+            // Initialize the state with the identity permutation
+            for (int i = 0; i < keyLength; i++)
+            {
+                state[i] = i;
+            }
+
+            // Key-scheduling algorithm (KSA)
+            for (int i = 0; i < keyLength; i++)
+            {
+                j = (j + state[i] + _data[i % _len]) % keyLength;
+                std::swap(state[i], state[j]);
+            }
+
+            _key->x = 0;
+            _key->y = 0;
         }
 
-        // Key-scheduling algorithm (KSA)
-        for (int i = 0; i < ASC_RC4_KEY_LENGTH; i++) {
-            j = (j + state[i] + data[i % len]) % ASC_RC4_KEY_LENGTH;
-            std::swap(state[i], state[j]);
+        static void process(KeyStruct* _key, const size_t _len, const uint8_t* _inData, uint8_t* _outData)
+        {
+            uint8_t* state = _key->state;
+            uint8_t x = _key->x;
+            uint8_t y = _key->y;
+
+            for (size_t i = 0; i < _len; i++)
+            {
+                x = (x + 1) % keyLength;
+                y = (y + state[x]) % keyLength;
+
+                std::swap(state[x], state[y]);
+
+                const uint8_t xor_index = (state[x] + state[y]) % keyLength;
+                _outData[i] = _inData[i] ^ state[xor_index];
+            }
+
+            _key->x = x;
+            _key->y = y;
         }
+    };
 
-        key->x = 0;
-        key->y = 0;
-    }
-
-    static void RC4(RC4_KEY* key, size_t len, const uint8_t* indata, uint8_t* outdata)
+    class RC4Engine
     {
-        uint8_t* state = key->state;
-        uint8_t x = key->x;
-        uint8_t y = key->y;
-        uint8_t xor_index;
+    public:
+        RC4Engine() = default;
+        ~RC4Engine() = default;
 
-        for (size_t i = 0; i < len; i++) {
-            x = (x + 1) % ASC_RC4_KEY_LENGTH;
-            y = (y + state[x]) % ASC_RC4_KEY_LENGTH;
-
-            std::swap(state[x], state[y]);
-
-            xor_index = (state[x] + state[y]) % ASC_RC4_KEY_LENGTH;
-            outdata[i] = indata[i] ^ state[xor_index];
+        void setup(const uint8_t* _data, const size_t _len)
+        {
+            RC4StreamCipher::setKey(&m_key, _len, _data);
+            m_isInitialized = true;
         }
 
-        key->x = x;
-        key->y = y;
-    }
-};
+        void process(const uint8_t* _inData, uint8_t* _outData, const size_t _len)
+        {
+            RC4StreamCipher::process(&m_key, _len, _inData, _outData);
+        }
+
+    private:
+        RC4StreamCipher::KeyStruct m_key = {{0}, 0, 0};
+        bool m_isInitialized = false;
+    };
+}

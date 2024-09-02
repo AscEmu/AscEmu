@@ -6,7 +6,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WowCrypt.hpp"
 
 #include <algorithm>
+#include <cassert>
 #include <openssl/hmac.h>
+#include <openssl/sha.h>
+
+#include "Sha1.h"
 
 WowCrypt::WowCrypt()
 {
@@ -47,11 +51,11 @@ void WowCrypt::initWotlkCrypt(uint8_t* key)
     HMAC(EVP_sha1(), recv, seedLenght, key, 40, encryptHash, &mdLength);
     assert(mdLength == SHA_DIGEST_LENGTH);
 
-    ASC_RC4::RC4_set_key(&m_clientWotlkDecryptKey, SHA_DIGEST_LENGTH, decryptHash);
-    ASC_RC4::RC4_set_key(&m_serverWotlkEncryptKey, SHA_DIGEST_LENGTH, encryptHash);
+    m_clientWotlkDecrypt.setup(decryptHash, SHA_DIGEST_LENGTH);
+    m_servertWotlkEncrypt.setup(encryptHash, SHA_DIGEST_LENGTH);
 
-    ASC_RC4::RC4(&m_serverWotlkEncryptKey, 1024, pass, pass);
-    ASC_RC4::RC4(&m_clientWotlkDecryptKey, 1024, pass, pass);
+    m_clientWotlkDecrypt.process(pass, pass, 1024);
+    m_servertWotlkEncrypt.process(pass, pass, 1024);
 
     m_isInitialized = true;
 }
@@ -73,11 +77,11 @@ void WowCrypt::initMopCrypt(uint8_t* key)
     HMAC(EVP_sha1(), recv, seedLenght, key, 40, encryptHash, &mdLength);
     assert(mdLength == SHA_DIGEST_LENGTH);
 
-    ASC_RC4::RC4_set_key(&m_clientWotlkDecryptKey, SHA_DIGEST_LENGTH, decryptHash);
-    ASC_RC4::RC4_set_key(&m_serverWotlkEncryptKey, SHA_DIGEST_LENGTH, encryptHash);
+    m_clientWotlkDecrypt.setup(decryptHash, SHA_DIGEST_LENGTH);
+    m_servertWotlkEncrypt.setup(encryptHash, SHA_DIGEST_LENGTH);
 
-    ASC_RC4::RC4(&m_serverWotlkEncryptKey, 1024, pass, pass);
-    ASC_RC4::RC4(&m_clientWotlkDecryptKey, 1024, pass, pass);
+    m_clientWotlkDecrypt.process(pass, pass, 1024);
+    m_servertWotlkEncrypt.process(pass, pass, 1024);
 
     m_isInitialized = true;
 }
@@ -86,16 +90,16 @@ void WowCrypt::decryptWotlkReceive(uint8_t* data, size_t length)
 {
     if (!m_isInitialized)
         return;
-    
-    ASC_RC4::RC4(&m_clientWotlkDecryptKey, (unsigned long)length, data, data);
+
+    m_clientWotlkDecrypt.process(data, data, length);
 }
 
 void WowCrypt::encryptWotlkSend(uint8_t* data, size_t length)
 {
     if (!m_isInitialized)
         return;
-    
-    ASC_RC4::RC4(&m_serverWotlkEncryptKey, (unsigned long)length, data, data);
+
+    m_servertWotlkEncrypt.process(data, data, length);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

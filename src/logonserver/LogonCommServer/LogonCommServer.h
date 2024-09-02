@@ -20,7 +20,7 @@
 #ifndef __LOGON_COMM_SERVER_H
 #define __LOGON_COMM_SERVER_H
 
-#include "Cryptography/RC4Engine.h"
+#include "Cryptography/RC4.hpp"
 #include "CommonTypes.hpp"
 #include "Network/Socket.h"
 #include "zlib.h"
@@ -30,8 +30,8 @@ class LogonCommServerSocket : public Socket
     uint32 remaining;
     uint16 opcode;
     uint32 seed;
-    RC4Engine sendCrypto;
-    RC4Engine recvCrypto;
+
+    AscEmu::RC4Engine _rwCrypto;
 
     public:
 
