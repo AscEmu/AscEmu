@@ -102,6 +102,7 @@
 #endif
 
 #if COMPILER == COMPILER_MICROSOFT
+    #define strnicmp _strnicmp
 #else
     #define strnicmp strncasecmp
 #endif
