@@ -19,6 +19,8 @@
 
 #include "TerrainBuilder.h"
 
+#include <map>
+
 #include "MapBuilder.h"
 
 #include "VMapManager2.h"

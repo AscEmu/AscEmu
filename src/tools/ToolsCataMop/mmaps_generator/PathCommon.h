@@ -21,7 +21,7 @@
 #define _MMAP_COMMON_H
 
 #include "Common.hpp"
-
+#include <string>
 #include <vector>
 
 #ifndef _WIN32

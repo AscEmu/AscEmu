@@ -19,6 +19,8 @@
 
 #include "IntermediateValues.h"
 
+#include "CommonTypes.hpp"
+
 namespace MMAP
 {
     IntermediateValues::~IntermediateValues()
