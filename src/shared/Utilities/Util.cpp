@@ -516,4 +516,37 @@ namespace Util
 
         return (bytes[0]) | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24);
     }
+
+    bool parseCIDRBan(uint32_t _ip, uint32_t _mask, uint32_t _maskBits)
+    {
+        if (_maskBits > 32)
+            return false;  // Sanity check
+
+        // Define the leftover bits comparison table
+        constexpr std::array<uint8_t, 9> leftover_bits_compare = { 0x00, 0x80, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC, 0xFE, 0xFF };
+
+        int full_bytes = _maskBits / 8;
+        int leftover_bits = _maskBits % 8;
+
+        // Convert IP and Mask to arrays of bytes
+        auto ip_bytes = reinterpret_cast<uint8_t*>(&_ip);
+        auto mask_bytes = reinterpret_cast<uint8_t*>(&_mask);
+
+        // Compare full bytes
+        if (full_bytes > 0)
+        {
+            if (std::memcmp(ip_bytes, mask_bytes, full_bytes) != 0)
+                return false;
+        }
+
+        // Compare leftover bits
+        if (leftover_bits > 0)
+        {
+            uint8_t mask = leftover_bits_compare[leftover_bits];
+            if ((ip_bytes[full_bytes] & mask) != (mask_bytes[full_bytes] & mask))
+                return false;
+        }
+
+        return true;  // All testable bits match
+    }
 }

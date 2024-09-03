@@ -123,7 +123,7 @@ IpBanStatus IpBanMgr::getBanStatus(in_addr ip_address)
         const auto bannedIp = itr2;
         ++itr2;
 
-        if (ParseCIDRBan(ip_address.s_addr, bannedIp->Mask, bannedIp->Bytes))
+        if (Util::parseCIDRBan(ip_address.s_addr, bannedIp->Mask, bannedIp->Bytes))
         {
             if (bannedIp->Expire == 0)
                 return BAN_STATUS_PERMANENT_BAN;

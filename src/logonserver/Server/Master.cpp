@@ -478,7 +478,7 @@ bool MasterLogon::IsServerAllowed(unsigned int IP)
 
     for (auto itr = m_allowedIps.begin(); itr != m_allowedIps.end(); ++itr)
     {
-        if (ParseCIDRBan(IP, itr->IP, itr->Bytes))
+        if (Util::parseCIDRBan(IP, itr->IP, itr->Bytes))
             return true;
     }
 
@@ -491,7 +491,7 @@ bool MasterLogon::IsServerAllowedMod(unsigned int IP)
 
     for (auto itr = m_allowedModIps.begin(); itr != m_allowedModIps.end(); ++itr)
     {
-        if (ParseCIDRBan(IP, itr->IP, itr->Bytes))
+        if (Util::parseCIDRBan(IP, itr->IP, itr->Bytes))
             return true;
     }
 

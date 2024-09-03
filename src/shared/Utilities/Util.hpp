@@ -204,6 +204,8 @@ namespace Util
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
     unsigned int makeIP(std::string_view _str);
+
+    bool parseCIDRBan(uint32_t _ip, uint32_t _mask, uint32_t _maskBits);
 }
 
 struct SmallTimeTracker
