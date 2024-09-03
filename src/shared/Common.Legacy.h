@@ -27,13 +27,7 @@
 #include <cerrno>
 
 #include <cstdlib>
-#include <set>
-#include <list>
-#include <string>
-#include <map>
-#include <queue>
-#include <sstream>
-#include <algorithm>
+
 #include <cstring>
 #include <climits>
 
@@ -46,11 +40,6 @@
 #include <sched.h>
 #include <sys/resource.h>
 #endif
-
-#include "DynLib.hpp"
-
-#include "CommonHelpers.hpp"
-#include "CommonTypes.hpp"
 
 #include "Threading/LegacyThreading.h"
 #include "Threading/ConditionVariable.h"
@@ -106,8 +95,6 @@
 #else
     #define strnicmp strncasecmp
 #endif
-
-#define atol(a) strtoul( a, NULL, 10)
 
 #if COMPILER == COMPILER_MICROSOFT
     #define MS_FLOAT_CONTROL

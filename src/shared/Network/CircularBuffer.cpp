@@ -22,8 +22,9 @@
  *
  */
 
-#include <Common.hpp>
 #include "CircularBuffer.h"
+#include <cstdlib>
+#include <cstring>
 
 /** Constructor
  */

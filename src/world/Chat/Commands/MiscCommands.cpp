@@ -38,7 +38,7 @@ bool ChatHandler::HandleMountCommand(const char* args, WorldSession* m_session)
         return true;
     }
 
-    uint32_t modelid = atol(args);
+    uint32_t modelid = std::stoul(args);
     if (!modelid)
     {
         RedSystemMessage(m_session, "No model specified!");

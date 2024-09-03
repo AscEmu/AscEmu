@@ -18,7 +18,7 @@
  *
  */
 
-#include "Common.hpp"
+#include "ConditionVariable.h"
 
 #if defined( __WIN32__ ) || defined( WIN32 ) || defined( _WIN32 )
 #include <winsock2.h>

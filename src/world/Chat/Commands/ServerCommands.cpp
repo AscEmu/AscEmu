@@ -171,7 +171,7 @@ bool ChatHandler::HandleServerShutdownCommand(const char* args, WorldSession* m_
     if (!args)
         shutdowntime = 30;
     else
-        shutdowntime = atol(args);
+        shutdowntime = std::stoul(args);
 
     if (shutdowntime < 30)
         shutdowntime = 30;
@@ -238,7 +238,7 @@ bool ChatHandler::HandleServerRestartCommand(const char* args, WorldSession* m_s
     if (!args)
         shutdowntime = 30;
     else
-        shutdowntime = atol(args);
+        shutdowntime = std::stoul(args);
 
     if (shutdowntime < 30)
         shutdowntime = 30;

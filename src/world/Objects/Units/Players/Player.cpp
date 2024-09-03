@@ -12869,7 +12869,7 @@ void Player::loadFieldsFromString(const char* string, uint16_t /*firstField*/, u
             break;
 
         *end = 0;
-        setExploredZone(Counter, atol(start));
+        setExploredZone(Counter, std::stoul(start));
         start = end + 1;
     }
 }
@@ -14402,19 +14402,19 @@ void Player::loadFromDBProc(QueryResultVector& results)
             if (!end)
                 break;
             *end = 0;
-            m_specs[0 + s].getActionButton(Counter).Action = (uint32_t)atol(start);
+            m_specs[0 + s].getActionButton(Counter).Action = std::stoul(start);
             start = end + 1;
             end = strchr(start, ',');
             if (!end)
                 break;
             *end = 0;
-            m_specs[0 + s].getActionButton(Counter).Type = (uint8_t)atol(start);
+            m_specs[0 + s].getActionButton(Counter).Type = static_cast<uint8_t>(std::stoul(start));
             start = end + 1;
             end = strchr(start, ',');
             if (!end)
                 break;
             *end = 0;
-            m_specs[0 + s].getActionButton(Counter).Misc = (uint8_t)atol(start);
+            m_specs[0 + s].getActionButton(Counter).Misc = static_cast<uint8_t>(std::stoul(start));
             start = end + 1;
 
             Counter++;
@@ -14469,16 +14469,16 @@ void Player::loadFromDBProc(QueryResultVector& results)
     while (std::getline(savedPlayerBuffsStream, auraId, ','))
     {
         LoginAura la;
-        la.id = atol(auraId.c_str());
+        la.id = std::stoul(auraId.c_str());
 
         std::getline(savedPlayerBuffsStream, auraDuration, ',');
-        la.dur = atol(auraDuration.c_str());
+        la.dur = std::stoul(auraDuration.c_str());
 
         std::getline(savedPlayerBuffsStream, auraPositivValue, ',');
         la.positive = auraPositivValue.empty() ? false : true;
 
         std::getline(savedPlayerBuffsStream, auraCharges, ',');
-        la.charges = atol(auraCharges.c_str());
+        la.charges = std::stoul(auraCharges.c_str());
 
         m_loginAuras.push_back(la);
     }
@@ -14491,7 +14491,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
         end = strchr(start, ',');
         if (!end)break;
         *end = 0;
-        const uint32_t questEntry = atol(start);
+        const uint32_t questEntry = std::stoul(start);
         m_finishedQuests.insert(questEntry);
 
         // Load talent points from finished quests
@@ -14508,7 +14508,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
         end = strchr(start, ',');
         if (!end) break;
         *end = 0;
-        m_finishedDailies.insert(atol(start));
+        m_finishedDailies.insert(std::stoul(start));
         start = end + 1;
     }
 
@@ -14558,7 +14558,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
             end = strchr(start, ',');
             if (!end)break;
             *end = 0;
-            m_specs[s].setGlyph(static_cast<uint16_t>(atol(start)), glyphid);
+            m_specs[s].setGlyph(static_cast<uint16_t>(std::stoul(start)), glyphid);
             ++glyphid;
             start = end + 1;
         }
@@ -14571,14 +14571,14 @@ void Player::loadFromDBProc(QueryResultVector& results)
             if (!end)
                 break;
             *end = 0;
-            uint32_t talentid = atol(start);
+            uint32_t talentid = std::stoul(start);
             start = end + 1;
 
             end = strchr(start, ',');
             if (!end)
                 break;
             *end = 0;
-            uint8_t rank = (uint8_t)atol(start);
+            uint8_t rank = static_cast<uint8_t>(std::stoul(start));
             start = end + 1;
 
             m_specs[s].addTalent(talentid, rank);
@@ -14596,14 +14596,14 @@ void Player::loadFromDBProc(QueryResultVector& results)
             if (!end)
                 break;
             *end = 0;
-            uint32_t talentid = atol(start);
+            uint32_t talentid = std::stoul(start);
             start = end + 1;
 
             end = strchr(start, ',');
             if (!end)
                 break;
             *end = 0;
-            uint8_t rank = (uint8_t)atol(start);
+            uint8_t rank = static_cast<uint8_t>(std::stoul(start));
             start = end + 1;
 
             spec.addTalent(talentid, rank);

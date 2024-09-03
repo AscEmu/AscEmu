@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Console/ConsoleThread.h"
 #include "Logging/Log.hpp"
 #include "Logging/Logger.hpp"
+#include "Threading/LegacyThreadPool.h"
 
 #ifndef WIN32
     #include <poll.h>

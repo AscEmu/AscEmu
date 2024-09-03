@@ -13,6 +13,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Auth/AuthSocket.h"
 #include "Server/LogonServerDefines.hpp"
 #include "Server/Master.hpp"
+
+#include <csignal>
 #include <Logging/Logger.hpp>
 #include "Auth/AutoPatcher.h"
 #include <Network/Network.h>

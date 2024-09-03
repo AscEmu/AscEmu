@@ -10,6 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Master.hpp"
 #include <Logging/Log.hpp>
 
+#include "Utilities/Util.hpp"
+
 IpBanMgr& IpBanMgr::getInstance()
 {
     static IpBanMgr mInstance;

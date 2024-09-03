@@ -6,6 +6,8 @@
  *
  */
 
+#include <vector>
+
 #include "../Network.h"
 
 #ifdef CONFIG_USE_IOCP

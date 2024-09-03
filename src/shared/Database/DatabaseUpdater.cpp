@@ -7,10 +7,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Logging/Logger.hpp>
 #include "Database.h"
 #include "Field.hpp"
-#include <Common.hpp>
 #include "CommonFilesystem.hpp"
 #include <Utilities/Util.hpp>
 #include <iostream>
+
+#include "Threading/LegacyThreadPool.h"
 
 void DatabaseUpdater::initBaseIfNeeded(const std::string& dbName, const std::string& dbBaseType, Database& dbPointer)
 {

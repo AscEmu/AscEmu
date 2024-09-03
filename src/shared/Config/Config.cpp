@@ -8,6 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Util.hpp"
 #include <stdexcept>
 
+#include "Debugging/Errors.h"
+
 bool ConfigFile::openAndLoadConfigFile(const std::string& configFileName)
 {
     mSettings.clear();

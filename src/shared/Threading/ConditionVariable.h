@@ -19,6 +19,7 @@
 
 #ifndef _CONDITION_VARIABLE_H
 #define _CONDITION_VARIABLE_H
+#include "CThreads.h"
 
 namespace Arcemu
 {

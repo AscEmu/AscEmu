@@ -22,6 +22,7 @@
 #include "EventableObject.h"
 #include "EventMgr.h"
 #include "Logging/Logger.hpp"
+#include "Threading/LegacyThreadPool.h"
 
 EventableObject::~EventableObject()
 {

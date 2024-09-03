@@ -4,6 +4,9 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "MoveSpline.h"
+
+#include <sstream>
+
 #include "Logging/Logger.hpp"
 
 namespace MovementMgr {

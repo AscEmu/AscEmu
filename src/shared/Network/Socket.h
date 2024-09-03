@@ -19,6 +19,8 @@
 #include <map>
 #include <set>
 
+#include "Threading/Mutex.h"
+
 class SERVER_DECL Socket
 {
     public:

@@ -12,6 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include <string>
 #include <fmt/core.h>
 
+#include "CThreads.h"
+
 namespace AscEmu::Logging
 {
     Logger& Logger::getInstance()
