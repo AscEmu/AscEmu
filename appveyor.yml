@@ -1,3 +1,4 @@
+version: 1.0.{build}
 image: Visual Studio 2022
 
 branches:
@@ -5,6 +6,7 @@ branches:
     - coverity_scan
 
 environment:
+  OPENSSL_ROOT_DIR: C:\OpenSSL-v32-Win64
   matrix:
   - ASC_VERSION: Classic
   - ASC_VERSION: TBC
