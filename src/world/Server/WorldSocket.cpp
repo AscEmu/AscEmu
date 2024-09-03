@@ -635,16 +635,16 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
 
     Sha1Hash hasher;
     uint8_t buffer[104];
-    hasher.Initialize();
+    hasher.initialize();
     memcpy(buffer, abuf, 64);
     memcpy(&buffer[64], K, 40);
-    hasher.UpdateData(buffer, 104);
-    hasher.Finalize();
+    hasher.updateData(buffer, 104);
+    hasher.finalize();
     memcpy(buffer, bbuf, 64);
-    memcpy(&buffer[64], hasher.GetDigest(), 20);
-    hasher.Initialize();
-    hasher.UpdateData(buffer, 84);
-    hasher.Finalize();
+    memcpy(&buffer[64], hasher.getDigest(), 20);
+    hasher.initialize();
+    hasher.updateData(buffer, 84);
+    hasher.finalize();
 
     _crypt.setLegacyKey(K, 40);
     _crypt.initLegacyCrypt();
@@ -704,7 +704,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     sha.updateData(reinterpret_cast<uint8*>(&mClientSeed), 4);
     sha.updateData(reinterpret_cast<uint8*>(&mSeed), 4);
 #if VERSION_STRING < WotLK
-    sha.UpdateBigNumbers(&BNK, NULL);
+    sha.updateBigNumbers(&BNK, NULL);
 #else
     sha.updateData(reinterpret_cast<uint8*>(&K), 40);
 #endif
@@ -713,7 +713,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
 #if VERSION_STRING < Cata
     if (memcmp(sha.getDigest(), digest, 20))
 #else
-    if (memcmp(sha.GetDigest(), AuthDigest, 20))
+    if (memcmp(sha.getDigest(), AuthDigest, 20))
 #endif
     {
         // AUTH_UNKNOWN_ACCOUNT = 21
