@@ -38,6 +38,7 @@ PatchMgr& PatchMgr::getInstance()
 void PatchMgr::initialize()
 {
     // load patches
+    //\todo: Zyres: replace with std::filesystem for all environments
 #ifdef WIN32
     sLogger.info("PatchMgr : Loading Patches...");
     char Buffer[maxPathLength * 10];
@@ -186,10 +187,10 @@ void PatchMgr::initialize()
         close(read_fd);
 
         // md5hash the file
-        md5.Initialize();
-        md5.UpdateData(pPatch->Data, pPatch->FileSize);
-        md5.Finalize();
-        memcpy(pPatch->MD5, md5.GetDigest(), MD5_DIGEST_LENGTH);
+        md5.initialize();
+        md5.updateData(pPatch->Data, pPatch->FileSize);
+        md5.finalize();
+        memcpy(pPatch->MD5, md5.getDigest(), MD5_DIGEST_LENGTH);
 
         // add the patch to the patchlist
         m_patches.push_back(pPatch);

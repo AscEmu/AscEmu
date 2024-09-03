@@ -20,19 +20,7 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
-#include <cstdio>
-#include <cstdarg>
-#include <ctime>
-#include <cmath>
-#include <cerrno>
-
-#include <cstdlib>
-
-#include <cstring>
-#include <climits>
-
 // Include all threading files
-#include <cassert>
 
 #include <signal.h>
 
