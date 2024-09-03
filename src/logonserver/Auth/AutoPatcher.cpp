@@ -19,12 +19,7 @@
 
 #include <Cryptography/MD5.hpp>
 #include "Auth/AutoPatcher.h"
-
-#ifndef WIN32
-#include <fcntl.h>
-#include <dirent.h>
-#include <sys/stat.h>
-#endif
+#include <fstream>
 #include <Logging/Logger.hpp>
 
 #include "CommonFilesystem.hpp"
@@ -37,182 +32,87 @@ PatchMgr& PatchMgr::getInstance()
 
 void PatchMgr::initialize()
 {
-    // load patches
-    //\todo: Zyres: replace with std::filesystem for all environments
-#ifdef WIN32
+    // Load patches
     sLogger.info("PatchMgr : Loading Patches...");
-    char Buffer[maxPathLength * 10];
-    char Buffer2[maxPathLength * 10];
-    char Buffer3[maxPathLength * 10];
 
-    WIN32_FIND_DATA fd;
-    HANDLE fHandle;
-    MD5Hash md5;
-    Patch* pPatch;
-    DWORD size, sizehigh;
-    HANDLE hFile;
-    uint32 srcversion;
-    char locality[5];
-    uint32 i;
+    const std::string patchDirectory = "./ClientPatches";
 
-    if (!GetCurrentDirectory(maxPathLength * 10, Buffer))
-        return;
-
-    strcpy(Buffer2, Buffer);
-    strcat(Buffer, "\\ClientPatches\\*.*");
-    fHandle = FindFirstFile(Buffer, &fd);
-    if (fHandle == INVALID_HANDLE_VALUE)
-        return;
-
-    do
-    {
-        snprintf(Buffer3, maxPathLength * 10, "%s\\ClientPatches\\%s", Buffer2, fd.cFileName);
-        if (sscanf(fd.cFileName, "%4s%u.", locality, &srcversion) != 2)
-            continue;
-
-        hFile = CreateFile(Buffer3, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_ARCHIVE, NULL);
-        if (hFile == INVALID_HANDLE_VALUE)
-            continue;
-
-        sLogger.info("PatchMgr : Found patch for {} locale `{}`.", srcversion, locality);
-        pPatch = new Patch;
-        size = GetFileSize(hFile, &sizehigh);
-        pPatch->FileSize = size;
-        pPatch->Data = new uint8[size];
-        pPatch->Version = srcversion;
-        for (i = 0; i < 4; ++i)
-            pPatch->Locality[i] = static_cast<char>(tolower(locality[i]));
-        pPatch->Locality[4] = 0;
-        pPatch->uLocality = *(uint32*)pPatch->Locality;
-
-        if (pPatch->Data == NULL)
-        {
-            // shouldn't really happen
-            delete pPatch;
-            CloseHandle(hFile);
-            continue;
-        }
-
-        // read the whole file
-        ASSERT(ReadFile(hFile, pPatch->Data, pPatch->FileSize, &size, NULL));
-        ASSERT(size == pPatch->FileSize);
-
-        // close the handle, no longer needed
-        CloseHandle(hFile);
-
-        // md5hash the file
-        md5.initialize();
-        md5.updateData(pPatch->Data, pPatch->FileSize);
-        md5.finalize();
-        memcpy(pPatch->MD5, md5.getDigest(), MD5_DIGEST_LENGTH);
-
-        // add the patch to the patchlist
-        m_patches.push_back(pPatch);
-
-    } while (FindNextFile(fHandle, &fd));
-    FindClose(fHandle);
-#else
-    /*
-     *nix patch loader
-     */
-    sLogger.info("PatchMgr : Loading Patches...");
-    char Buffer[maxPathLength * 10];
-    char Buffer2[maxPathLength * 10];
-    char Buffer3[maxPathLength * 10];
-
-    struct dirent** list;
-    int filecount;
-    int read_fd;
-    MD5Hash md5;
-    Patch* pPatch;
-    int size;
-    uint32 srcversion;
-    char locality[5];
-    uint32 i;
-    struct stat sb;
-
-    strcpy(Buffer, "./ClientPatches");
-    strcpy(Buffer2, Buffer);
-
-    filecount = scandir("./ClientPatches", &list, 0, 0);
-    if (filecount <= 0 || list == NULL)
+    if (!fs::exists(patchDirectory) || !fs::is_directory(patchDirectory))
     {
         sLogger.failure("No patches found.");
         return;
     }
 
-    while (filecount--)
+    for (const auto& entry : fs::directory_iterator(patchDirectory))
     {
-        snprintf(Buffer3, maxPathLength * 10, "./ClientPatches/%s", list[filecount]->d_name);
-        if (sscanf(list[filecount]->d_name, "%4s%u.", locality, &srcversion) != 2)
+        if (!entry.is_regular_file())
             continue;
 
-        read_fd = open(Buffer3, O_RDONLY);
-        if (read_fd < 0)
+        std::string filePath = entry.path().string();
+        std::string fileName = entry.path().filename().string();
+        uint32 srcversion;
+        char locality[5] = { 0 };
+
+        if (sscanf(fileName.c_str(), "%4s%u.", locality, &srcversion) != 2)
+            continue;
+
+        std::ifstream file(filePath, std::ios::binary | std::ios::ate);
+        if (!file.is_open())
         {
-            sLogger.failure("Cannot open {}", Buffer3);
+            sLogger.failure("Cannot open {}", filePath);
             continue;
         }
 
-        if (fstat(read_fd, &sb) < 0)
-        {
-            sLogger.failure("Cannot stat {}", Buffer3);
-            close(read_fd);
-            continue;
-        }
+        std::streamsize size = file.tellg();
+        file.seekg(0, std::ios::beg);
 
-        sLogger.info("PatchMgr : Found patch for b{} locale `{}` ({} bytes).", srcversion, locality, static_cast<uint32_t>(sb.st_size));
-        pPatch = new Patch;
-        size = sb.st_size;
-        pPatch->FileSize = size;
-        pPatch->Data = new uint8[size];
+        Patch* pPatch = new Patch;
+        pPatch->FileSize = static_cast<uint32>(size);
+        pPatch->Data = new uint8_t[pPatch->FileSize];
         pPatch->Version = srcversion;
-        for (i = 0; i < 4; ++i)
-            pPatch->Locality[i] = tolower(locality[i]);
-        pPatch->Locality[4] = 0;
-        pPatch->uLocality = *(uint32*)pPatch->Locality;
-
-        if (pPatch->Data == NULL)
+        for (uint32 i = 0; i < 4; ++i)
         {
-            // shouldn't really happen
+            pPatch->Locality[i] = static_cast<char>(std::tolower(locality[i]));
+        }
+
+        pPatch->Locality[4] = '\0';
+        pPatch->uLocality = *reinterpret_cast<uint32*>(pPatch->Locality);
+
+        if (!file.read(reinterpret_cast<char*>(pPatch->Data), pPatch->FileSize))
+        {
+            sLogger.failure("Cannot read {}", filePath);
             delete pPatch;
-            close(read_fd);
             continue;
         }
 
-        // read the whole file
-        ASSERT(read(read_fd, pPatch->Data, size) == size);
+        file.close();
 
-        // close handle
-        close(read_fd);
+        sLogger.info("PatchMgr : Found patch for {} locale `{}` ({} bytes).", srcversion, locality, pPatch->FileSize);
 
         // md5hash the file
+        MD5Hash md5;
         md5.initialize();
         md5.updateData(pPatch->Data, pPatch->FileSize);
         md5.finalize();
-        memcpy(pPatch->MD5, md5.getDigest(), MD5_DIGEST_LENGTH);
+        std::memcpy(pPatch->MD5, md5.getDigest(), MD5_DIGEST_LENGTH);
 
         // add the patch to the patchlist
         m_patches.push_back(pPatch);
-        free(list[filecount]);
     }
-    free(list);
-#endif
 }
 
 Patch* PatchMgr::FindPatchForClient(uint32 Version, const char* Locality)
 {
     char tmplocality[5];
-    uint32 ulocality;
-    uint32 i;
-    std::vector<Patch*>::iterator itr;
     Patch* fallbackPatch = nullptr;
-    for (i = 0; i < 4; ++i)
-        tmplocality[i] = static_cast<char>(tolower(Locality[i]));
-    tmplocality[4] = 0;
-    ulocality = *(uint32*)tmplocality;
 
-    for (itr = m_patches.begin(); itr != m_patches.end(); ++itr)
+    for (uint32 i = 0; i < 4; ++i)
+        tmplocality[i] = static_cast<char>(tolower(Locality[i]));
+
+    tmplocality[4] = 0;
+    uint32 ulocality = *(uint32*)tmplocality;
+
+    for (std::vector<Patch*>::iterator itr = m_patches.begin(); itr != m_patches.end(); ++itr)
     {
         // since localities are always 4 bytes we can do a simple int compare,
         // saving a string compare ;)
@@ -231,9 +131,7 @@ Patch* PatchMgr::FindPatchForClient(uint32 Version, const char* Locality)
 
 void PatchMgr::BeginPatchJob(Patch* pPatch, AuthSocket* pClient, uint32 Skip)
 {
-    PatchJob* pJob;
-
-    pJob = new PatchJob(pPatch, pClient, Skip);
+    PatchJob* pJob = new PatchJob(pPatch, pClient, Skip);
     pClient->m_patchJob = pJob;
 
     std::lock_guard lock(m_patchJobLock);
@@ -242,13 +140,13 @@ void PatchMgr::BeginPatchJob(Patch* pPatch, AuthSocket* pClient, uint32 Skip)
 
 void PatchMgr::UpdateJobs()
 {
-    std::list<PatchJob*>::iterator itr, itr2;
+    std::list<PatchJob*>::iterator itr;
 
     std::lock_guard lock(m_patchJobLock);
 
     for (itr = m_patchJobs.begin(); itr != m_patchJobs.end();)
     {
-        itr2 = itr;
+        std::list<PatchJob*>::iterator itr2 = itr;
         ++itr;
 
         if (!(*itr2)->Update())
@@ -262,11 +160,9 @@ void PatchMgr::UpdateJobs()
 
 void PatchMgr::AbortPatchJob(PatchJob* pJob)
 {
-    std::list<PatchJob*>::iterator itr;
-
     std::lock_guard lock(m_patchJobLock);
 
-    for (itr = m_patchJobs.begin(); itr != m_patchJobs.end(); ++itr)
+    for (std::list<PatchJob*>::iterator itr = m_patchJobs.begin(); itr != m_patchJobs.end(); ++itr)
     {
         if ((*itr) == pJob)
         {
@@ -315,12 +211,11 @@ bool PatchJob::Update()
 
     // send 1500 byte chunks
     TransferDataPacket header;
-    bool result;
     header.cmd = 0x31;
     header.chunk_size = static_cast<uint16>((m_bytesLeft > 1500) ? 1500 : m_bytesLeft);
     //LogDebug("PatchJob : Sending %u byte chunk", header.chunk_size);
 
-    result = m_client->BurstSend((const uint8*)&header, sizeof(TransferDataPacket));
+    bool result = m_client->BurstSend((const uint8*)&header, sizeof(TransferDataPacket));
     if (result)
     {
         result = m_client->BurstSend(m_dataPointer, header.chunk_size);
@@ -345,8 +240,6 @@ bool PatchMgr::InitiatePatch(Patch* pPatch, AuthSocket* pClient)
 {
     // send initiate packet
     TransferInitiatePacket init;
-    bool result;
-
     init.cmd = 0x30;
     init.strsize = 5;
     init.name[0] = 'P';
@@ -360,9 +253,10 @@ bool PatchMgr::InitiatePatch(Patch* pPatch, AuthSocket* pClient)
 
     // send it to the client
     pClient->BurstBegin();
-    result = pClient->BurstSend((const uint8*)&init, sizeof(TransferInitiatePacket));
+    bool result = pClient->BurstSend((const uint8*)&init, sizeof(TransferInitiatePacket));
     if (result)
         pClient->BurstPush();
+
     pClient->BurstEnd();
     return result;
 }

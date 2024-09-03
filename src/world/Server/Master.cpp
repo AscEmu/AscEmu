@@ -58,6 +58,7 @@
 #include "Logging/Logger.hpp"
 #include <cstdarg>
 #include <iostream>
+#include <signal.h>
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20230710-00_characters_taxi";

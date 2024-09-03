@@ -22,8 +22,6 @@
 
 // Include all threading files
 
-#include <signal.h>
-
 #ifndef WIN32
 #include <sched.h>
 #include <sys/resource.h>
