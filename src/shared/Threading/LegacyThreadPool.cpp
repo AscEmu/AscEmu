@@ -20,6 +20,7 @@
 #include "LegacyThreadPool.h"
 #include <Logging/Logger.hpp>
 #include "Utilities/Util.hpp"
+#include <cstdarg>
 
 #ifdef WIN32
 

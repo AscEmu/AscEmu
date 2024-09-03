@@ -571,7 +571,7 @@ bool ChatHandler::HandleNpcListLootCommand(const char* args, WorldSession* m_ses
 
         uint32_t minQuality = 0;
         if (*args)
-            minQuality = atol(args);
+            minQuality = std::stoul(args);
 
         SystemMessage(m_session, "Listing loot for Creature %s (%u)", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
 
@@ -717,7 +717,7 @@ bool ChatHandler::HandleNpcSelectCommand(const char* /*args*/, WorldSession* m_s
 //.npc spawn
 bool ChatHandler::HandleNpcSpawnCommand(const char* args, WorldSession* m_session)
 {
-    uint32_t entry = atol(args);
+    uint32_t entry = std::stoul(args);
     if (entry == 0)
         return false;
 

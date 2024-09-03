@@ -20,6 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Storage/MySQLDataStore.hpp"
+#include <cstdarg>
 
 using namespace AscEmu::Packets;
 
@@ -676,7 +677,7 @@ int32_t GetSpellIDFromLink(const char* spelllink)
         return 0;
     }
 
-    return atol(ptr + 8);       // spell id is just past "|Hspell:" (8 bytes)
+    return std::stoul(ptr + 8);       // spell id is just past "|Hspell:" (8 bytes)
 }
 
 void ChatHandler::SendItemLinkToPlayer(ItemProperties const* iProto, WorldSession* pSession, bool ItemCount, Player* owner, uint32_t language)

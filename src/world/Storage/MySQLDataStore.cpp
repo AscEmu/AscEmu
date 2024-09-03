@@ -23,6 +23,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Strings.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "WDB/WDBStructures.hpp"
+#include <cstdarg>
 
 SERVER_DECL std::vector<MySQLAdditionalTable> MySQLAdditionalTables;
 
@@ -872,7 +873,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
             std::vector<std::string> split_auras = AscEmu::Util::Strings::split(auras, " ");
             for (std::vector<std::string>::iterator it = split_auras.begin(); it != split_auras.end(); ++it)
             {
-                uint32_t id = atol((*it).c_str());
+                uint32_t id = std::stoul((*it).c_str());
                 if (id)
                     creatureProperties.start_auras.insert(id);
             }

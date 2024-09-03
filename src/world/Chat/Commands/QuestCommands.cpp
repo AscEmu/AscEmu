@@ -33,7 +33,7 @@ uint32_t GetQuestIDFromLink(const char* questlink)
         return 0;
     }
 
-    return atol(ptr + 8);       // quest id is just past "|Hquest:" (8 bytes)
+    return std::stoul(ptr + 8);       // quest id is just past "|Hquest:" (8 bytes)
 }
 
 std::string RemoveQuestFromPlayer(Player* plr, QuestProperties const* qst)
@@ -88,7 +88,7 @@ bool ChatHandler::HandleQuestStatusCommand(const char* args, WorldSession* m_ses
     if (plr == nullptr)
         return true;
 
-    uint32_t quest_id = atol(args);
+    uint32_t quest_id = std::stoul(args);
     if (quest_id == 0)
     {
         quest_id = GetQuestIDFromLink(args);
@@ -134,7 +134,7 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
     if (player == nullptr)
         return true;
 
-    uint32_t quest_id = atol(args);
+    uint32_t quest_id = std::stoul(args);
     if (quest_id == 0)
     {
         quest_id = GetQuestIDFromLink(args);
@@ -231,7 +231,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
     if (plr == nullptr)
         return true;
 
-    uint32_t quest_id = atol(args);
+    uint32_t quest_id = std::stoul(args);
     // reward_slot is for when quest has choice of rewards (0 is the first choice, 1 is the second choice, ...)
     // reward_slot will default to 0 if none is specified
     uint32_t reward_slot;
@@ -242,13 +242,13 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
             return false;
 
         if (strstr(args, "|r"))
-            reward_slot = atol(strstr(args, "|r") + 2);
+            reward_slot = std::stoul(strstr(args, "|r") + 2);
         else
             reward_slot = 0;
     }
     else if (strchr(args, ' '))
     {
-        reward_slot = atol(strchr(args, ' ') + 1);
+        reward_slot = std::stoul(strchr(args, ' ') + 1);
     }
     else
     {
@@ -576,7 +576,7 @@ bool ChatHandler::HandleQuestGiverCommand(const char* args, WorldSession* m_sess
         delete objectResult1;
 
         std::string creatureName1 = "N/A";
-        CreatureProperties const* creatureResult1 = sMySQLStore.getCreatureProperties(atol(creatureId1.c_str()));
+        CreatureProperties const* creatureResult1 = sMySQLStore.getCreatureProperties(std::stoul(creatureId1.c_str()));
         if (creatureResult1)
         {
             creatureName1 = creatureResult1->Name;
@@ -631,7 +631,7 @@ bool ChatHandler::HandleQuestGiverCommand(const char* args, WorldSession* m_sess
         delete objectResult2;
 
         std::string itemName2 = "N/A";
-        ItemProperties const* itemResult2 = sMySQLStore.getItemProperties(atol(itemId2.c_str()));
+        ItemProperties const* itemResult2 = sMySQLStore.getItemProperties(std::stoul(itemId2.c_str()));
         if (itemResult2)
         {
             itemName2 = itemResult2->Name;
@@ -681,7 +681,7 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
 {
     uint32_t quest_giver = 0;
     if (*args)
-        quest_giver = atol(args);
+        quest_giver = std::stoul(args);
     else
     {
         WoWGuid wowGuid;
@@ -799,7 +799,7 @@ bool ChatHandler::HandleQuestAddStartCommand(const char* args, WorldSession* m_s
         return false;
     }
 
-    uint32_t quest_id = atol(args);
+    uint32_t quest_id = std::stoul(args);
     if (quest_id == 0)
     {
         quest_id = GetQuestIDFromLink(args);
@@ -885,7 +885,7 @@ bool ChatHandler::HandleQuestAddFinishCommand(const char* args, WorldSession* m_
         return false;
     }
 
-    uint32_t quest_id = atol(args);
+    uint32_t quest_id = std::stoul(args);
     if (quest_id == 0)
     {
         quest_id = GetQuestIDFromLink(args);
@@ -984,7 +984,7 @@ bool ChatHandler::HandleQuestDelStartCommand(const char* args, WorldSession* m_s
         return false;
     }
 
-    uint32_t quest_id = atol(args);
+    uint32_t quest_id = std::stoul(args);
     if (quest_id == 0)
     {
         quest_id = GetQuestIDFromLink(args);
@@ -1068,7 +1068,7 @@ bool ChatHandler::HandleQuestDelFinishCommand(const char* args, WorldSession* m_
         return false;
     }
 
-    uint32_t quest_id = atol(args);
+    uint32_t quest_id = std::stoul(args);
     if (quest_id == 0)
     {
         quest_id = GetQuestIDFromLink(args);
@@ -1158,7 +1158,7 @@ bool ChatHandler::HandleQuestFinisherCommand(const char* args, WorldSession* m_s
         delete objectResult1;
 
         std::string creatureName1 = "N/A";
-        CreatureProperties const* creatureResult1 = sMySQLStore.getCreatureProperties(atol(creatureId1.c_str()));
+        CreatureProperties const* creatureResult1 = sMySQLStore.getCreatureProperties(std::stoul(creatureId1.c_str()));
 
         if (creatureResult1)
         {
@@ -1213,7 +1213,7 @@ bool ChatHandler::HandleQuestFinisherCommand(const char* args, WorldSession* m_s
         delete objectResult2;
 
         std::string itemName2 = "N/A";
-        ItemProperties const* itemResult2 = sMySQLStore.getItemProperties(atol(itemId2.c_str()));
+        ItemProperties const* itemResult2 = sMySQLStore.getItemProperties(std::stoul(itemId2.c_str()));
         if (itemResult2)
         {
             itemName2 = itemResult2->Name;
@@ -1285,7 +1285,7 @@ bool ChatHandler::HandleQuestStarterSpawnCommand(const char* args, WorldSession*
     delete objectResult;
 
     std::string starterName = "N/A";
-    CreatureProperties const* creatureResult = sMySQLStore.getCreatureProperties(atol(starterId.c_str()));
+    CreatureProperties const* creatureResult = sMySQLStore.getCreatureProperties(std::stoul(starterId.c_str()));
     if (creatureResult)
     {
         starterName = creatureResult->Name;
@@ -1356,7 +1356,7 @@ bool ChatHandler::HandleQuestFinisherSpawnCommand(const char* args, WorldSession
     delete objectResult;
 
     std::string finisherName = "N/A";
-    CreatureProperties const* creatureResult = sMySQLStore.getCreatureProperties(atol(finisherId.c_str()));
+    CreatureProperties const* creatureResult = sMySQLStore.getCreatureProperties(std::stoul(finisherId.c_str()));
     if (creatureResult)
     {
         finisherName = creatureResult->Name;
@@ -1439,7 +1439,7 @@ bool ChatHandler::HandleQuestRemoveCommand(const char* args, WorldSession* m_ses
         return true;
 
     std::string recout = "";
-    uint32_t quest_id = atol(args);
+    uint32_t quest_id = std::stoul(args);
     if (quest_id == 0)
     {
         quest_id = GetQuestIDFromLink(args);
@@ -1467,7 +1467,7 @@ bool ChatHandler::HandleQuestRewardCommand(const char* args, WorldSession* m_ses
 
     std::stringstream recout;
 
-    uint32_t qu_id = atol(args);
+    uint32_t qu_id = std::stoul(args);
     if (qu_id == 0)
     {
         qu_id = GetQuestIDFromLink(args);

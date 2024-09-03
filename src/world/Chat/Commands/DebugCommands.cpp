@@ -607,7 +607,7 @@ bool ChatHandler::HandlePlayMovie(const char* args, WorldSession* m_session)
     if (selected_player == nullptr)
         return true;
 
-    uint32_t movie = atol(args);
+    uint32_t movie = std::stoul(args);
 
     selected_player->sendMovie(movie);
 
@@ -624,7 +624,7 @@ bool ChatHandler::HandleSendCastFailed(const char* args, WorldSession* m_session
     if (selected_player == nullptr)
         return true;
 
-    uint32_t fail = atol(args);
+    uint32_t fail = std::stoul(args);
     if (fail > SPELL_FAILED_UNKNOWN)
     {
         RedSystemMessage(m_session, "Argument %u is out of range!", fail);
@@ -1458,7 +1458,7 @@ bool ChatHandler::HandleCastSpellCommand(const char* args, WorldSession* m_sessi
         return false;
     }
 
-    uint32_t spellid = atol(args);
+    uint32_t spellid = std::stoul(args);
     SpellInfo const* spellentry = sSpellMgr.getSpellInfo(spellid);
     if (!spellentry)
     {
@@ -1499,7 +1499,7 @@ bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_ses
         return false;
     }
 
-    uint32_t spellId = atol(args);
+    uint32_t spellId = std::stoul(args);
     SpellInfo const* spellentry = sSpellMgr.getSpellInfo(spellId);
     if (!spellentry)
     {
@@ -1558,7 +1558,7 @@ bool ChatHandler::HandleCastSelfCommand(const char* args, WorldSession* m_sessio
         return false;
     }
 
-    uint32_t spellid = atol(args);
+    uint32_t spellid = std::stoul(args);
     SpellInfo const* spellentry = sSpellMgr.getSpellInfo(spellid);
     if (!spellentry)
     {

@@ -31,6 +31,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStores.hpp"
 
 #include <ctime>
+#include <cstdarg>
 
 #include "Logging/Logger.hpp"
 #include "Management/ObjectMgr.hpp"

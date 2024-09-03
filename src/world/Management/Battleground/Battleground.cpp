@@ -42,6 +42,7 @@
 #include "Server/Packets/SmsgBattlegroundPlayerJoined.h"
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Storage/WorldStrings.h"
+#include <cstdarg>
 
 Battleground::Battleground(WorldMap* worldMap, uint32_t id, uint32_t levelGroup, uint32_t type) : m_mapMgr(worldMap), m_id(id), m_type(type), m_levelGroup(levelGroup)
 {

@@ -77,7 +77,7 @@ bool ChatHandler::HandleTicketGetCommand(const char* args, WorldSession* m_sessi
         return false;
     }
 
-    uint32_t ticketID = atol(args);
+    uint32_t ticketID = std::stoul(args);
 
     QueryResult* result = CharacterDatabase.Query("SELECT * FROM gm_tickets WHERE ticketid = %u", ticketID);
 
@@ -130,7 +130,7 @@ bool ChatHandler::HandleTicketCloseCommand(const char* args, WorldSession* m_ses
         return false;
     }
 
-    uint32_t ticketID = atol(args);
+    uint32_t ticketID = std::stoul(args);
 
     Player* player = m_session->GetPlayer();
 
@@ -186,7 +186,7 @@ bool ChatHandler::HandleTicketDeleteCommand(const char* args, WorldSession* m_se
         return false;
     }
 
-    uint32_t ticketID = atol(args);
+    uint32_t ticketID = std::stoul(args);
 
     QueryResult* result = CharacterDatabase.Query("SELECT * FROM gm_tickets WHERE ticketid = %u AND deleted = 1", ticketID);
     if (!result)

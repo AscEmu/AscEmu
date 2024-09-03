@@ -22,7 +22,7 @@ bool ChatHandler::HandlePetCreateCommand(const char* args, WorldSession* m_sessi
     if (!*args)
         return false;
 
-    uint32_t entry = atol(args);
+    uint32_t entry = std::stoul(args);
     CreatureProperties const* creature_proto = sMySQLStore.getCreatureProperties(entry);
     if (creature_proto == nullptr)
     {
@@ -156,7 +156,7 @@ bool ChatHandler::HandlePetAddSpellCommand(const char* args, WorldSession* m_ses
     if (!*args)
         return false;
 
-    uint32_t SpellId = atol(args);
+    uint32_t SpellId = std::stoul(args);
     SpellInfo const* spell_entry = sSpellMgr.getSpellInfo(SpellId);
     if (spell_entry == nullptr)
     {
@@ -191,7 +191,7 @@ bool ChatHandler::HandlePetRemoveSpellCommand(const char* args, WorldSession* m_
     if (!*args)
         return false;
 
-    uint32_t SpellId = atol(args);
+    uint32_t SpellId = std::stoul(args);
     SpellInfo const* spell_entry = sSpellMgr.getSpellInfo(SpellId);
     if (spell_entry == nullptr)
     {
@@ -217,7 +217,7 @@ bool ChatHandler::HandlePetSetLevelCommand(const char* args, WorldSession* m_ses
         return false;
 
 
-    int32_t newLevel = atol(args);
+    int32_t newLevel = std::stoul(args);
     if (newLevel < 1)
         return false;
 

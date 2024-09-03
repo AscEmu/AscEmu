@@ -113,7 +113,7 @@ bool ChatHandler::HandleCharUnlearnCommand(const char* args, WorldSession* m_ses
     if (player_target == nullptr)
         return true;
 
-    uint32_t spell_id = atol(args);
+    uint32_t spell_id = std::stoul(args);
     if (spell_id == 0)
     {
         spell_id = GetSpellIDFromLink(args);
@@ -543,7 +543,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
         return true;
     }
 
-    uint32_t spell = atol(args);
+    uint32_t spell = std::stoul(args);
     if (spell == 0)
     {
         spell = GetSpellIDFromLink(args);
@@ -583,7 +583,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
 //.character add honorpoints
 bool ChatHandler::HandleCharAddHonorPointsCommand(const char* args, WorldSession* m_session)
 {
-    uint32_t honor_amount = args ? atol(args) : 1;
+    uint32_t honor_amount = args ? std::stoul(args) : 1;
 
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
@@ -602,7 +602,7 @@ bool ChatHandler::HandleCharAddHonorPointsCommand(const char* args, WorldSession
 //.character add honorkill
 bool ChatHandler::HandleCharAddHonorKillCommand(const char* args, WorldSession* m_session)
 {
-    uint32_t kill_amount = args ? atol(args) : 1;
+    uint32_t kill_amount = args ? std::stoul(args) : 1;
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
         return true;
@@ -1370,7 +1370,7 @@ bool ChatHandler::HandleCharSetLevelCommand(const char* args, WorldSession* m_se
     if (player_target == nullptr)
         return true;
 
-    uint32_t new_level = args ? atol(args) : 0;
+    uint32_t new_level = args ? std::stoul(args) : 0;
     if (new_level == 0 || new_level > worldConfig.player.playerLevelCap)
     {
         RedSystemMessage(m_session, "Level %u is not a valid level! Check out your world.conf!", new_level);
@@ -1644,7 +1644,7 @@ bool ChatHandler::HandleCharSetTitleCommand(const char* args, WorldSession* m_se
     if (player_target == nullptr)
         return true;
 
-    int32_t title = atol(args);
+    int32_t title = std::stoul(args);
     if (title > int32_t(PVPTITLE_END) || title < -int32_t(PVPTITLE_END))
     {
         RedSystemMessage(m_session, "Argument %i is out of range!", title);
@@ -1859,7 +1859,7 @@ bool ChatHandler::handleCharListSpellsCommand(const char* args, WorldSession* m_
 
     // No args or 0 = list only active spells
     // 1 = list deleted / inactive spells
-    const auto arg = static_cast<uint8_t>(atol(args));
+    const auto arg = static_cast<uint8_t>(std::stoul(args));
     std::string spellString = "";
     uint8_t itemsPerRow = 0;
 

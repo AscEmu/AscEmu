@@ -20,6 +20,7 @@
  */
 
 #include <cstdint>
+#include <cstdarg>
 
 #include <Network/Network.h>
 #include <Config/Config.h>

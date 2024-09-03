@@ -30,6 +30,7 @@
 
 #include <string>
 #include <vector>
+#include <cstdarg>
 
 #include "Debugging/Errors.h"
 

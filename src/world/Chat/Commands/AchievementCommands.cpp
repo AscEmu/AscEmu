@@ -29,7 +29,7 @@ bool ChatHandler::HandleAchievementCompleteCommand(const char* args, WorldSessio
         return true;
     }
 
-    uint32_t achievement_id = atol(args);
+    uint32_t achievement_id = std::stoul(args);
     if (achievement_id == 0)
         return false;
 
@@ -52,7 +52,7 @@ bool ChatHandler::HandleAchievementCriteriaCommand(const char* args, WorldSessio
     if (!*args)
         return false;
 
-    uint32_t criteria_id = atol(args);
+    uint32_t criteria_id = std::stoul(args);
     if (criteria_id == 0)
     {
         if (AscEmu::Util::Strings::isEqual(args, "all"))
@@ -91,7 +91,7 @@ bool ChatHandler::HandleAchievementResetCommand(const char* args, WorldSession* 
 
     if (strnicmp(args, "criteria ", 9) == 0)
     {
-        achievement_id = atol(args + 9);
+        achievement_id = std::stoul(args + 9);
         if (achievement_id == 0)
         {
             if (!AscEmu::Util::Strings::isEqual(args + 9, "all"))
@@ -109,7 +109,7 @@ bool ChatHandler::HandleAchievementResetCommand(const char* args, WorldSession* 
     }
     else
     {
-        achievement_id = atol(args);
+        achievement_id = std::stoul(args);
         if (achievement_id == 0)
         {
             if (args == nullptr)
@@ -120,7 +120,7 @@ bool ChatHandler::HandleAchievementResetCommand(const char* args, WorldSession* 
                 return false;
 
             // achievement id is just past "|Hachievement:" (14 bytes)
-            achievement_id = atol(ptr + 14);
+            achievement_id = std::stoul(ptr + 14);
 
             if (achievement_id == 0)
                 return false;

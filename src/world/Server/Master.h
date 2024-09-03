@@ -5,10 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <iostream>
-
 #include "CommonTypes.hpp"
-#include <cstdarg>
+#include <string>
 
 class SERVER_DECL Master
 {
@@ -42,17 +40,7 @@ public:
     bool m_restartEvent;
 
     // lib Log
-    inline void libLog(const char* format, ...)
-    {
-        char message_buffer[32768];
-        va_list ap;
-
-        va_start(ap, format);
-        vsnprintf(message_buffer, 32768, format, ap);
-        va_end(ap);
-
-        std::cout << message_buffer << "\n";
-    }
+    void libLog(const char* format, ...);
 
 private:
     bool _StartDB();

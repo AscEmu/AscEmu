@@ -56,6 +56,8 @@
 #include "CommonFilesystem.hpp"
 #include "git_version.h"
 #include "Logging/Logger.hpp"
+#include <cstdarg>
+#include <iostream>
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20230710-00_characters_taxi";
@@ -928,4 +930,16 @@ void Master::ShutdownLootSystem()
         while (sLootMgr.isLoading())
             Arcemu::Sleep(100);
     }
+}
+
+void Master::libLog(const char* format, ...)
+{
+    char message_buffer[32768];
+    va_list ap;
+
+    va_start(ap, format);
+    vsnprintf(message_buffer, 32768, format, ap);
+    va_end(ap);
+
+    std::cout << message_buffer << "\n";
 }

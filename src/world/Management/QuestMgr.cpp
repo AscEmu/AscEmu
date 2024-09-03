@@ -2518,7 +2518,7 @@ void QuestMgr::LoadExtraQuestStuff()
             std::vector<std::string> qsts = AscEmu::Util::Strings::split(quests, " ");
             for (std::vector<std::string>::iterator iter = qsts.begin(); iter != qsts.end(); ++iter)
             {
-                uint32 id = atol((*iter).c_str());
+                uint32 id = std::stoul((*iter).c_str());
                 if (id)
                     const_cast<QuestProperties*>(qst)->quest_list.insert(id);
             }
@@ -2530,7 +2530,7 @@ void QuestMgr::LoadExtraQuestStuff()
             std::vector<std::string> qsts = AscEmu::Util::Strings::split(quests, " ");
             for (std::vector<std::string>::iterator iter = qsts.begin(); iter != qsts.end(); ++iter)
             {
-                uint32 id = atol((*iter).c_str());
+                uint32 id = std::stoul((*iter).c_str());
                 if (id)
                     const_cast<QuestProperties*>(qst)->remove_quest_list.insert(id);
             }

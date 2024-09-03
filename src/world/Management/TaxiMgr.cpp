@@ -178,7 +178,7 @@ void TaxiPath::loadTaxiMask(std::string const& data)
     uint8_t index = 0;
     for (; index < DBC_TAXI_MASK_SIZE && iter != tokens.cend(); ++iter, ++index)
     {
-        if (const uint32_t mask = atol((*iter).c_str()))
+        if (const uint32_t mask = std::stoul((*iter).c_str()))
         {
             // load and set bits only for existing taxi nodes
             m_taximask[index] = sTaxiNodesMask[index] & mask;
@@ -224,7 +224,7 @@ bool TaxiPath::loadTaxiDestinationsFromString(std::string const& values, uint32_
     const auto tokens = AscEmu::Util::Strings::split(values, " ");
     for (const auto& itr : tokens)
     {
-        if (const uint32_t node = atol((itr).c_str()))
+        if (const uint32_t node = std::stoul((itr).c_str()))
             addTaxiDestination(node);
         else
             return false;

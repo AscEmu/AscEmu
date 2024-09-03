@@ -27,7 +27,7 @@ bool ChatHandler::HandleAdminCastAllCommand(const char* args, WorldSession* m_se
         return true;
     }
 
-    uint32_t spell_id = atol(args);
+    uint32_t spell_id = std::stoul(args);
     SpellInfo const* spell_entry = sSpellMgr.getSpellInfo(spell_id);
     if (!spell_entry)
     {

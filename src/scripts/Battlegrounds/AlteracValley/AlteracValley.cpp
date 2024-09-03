@@ -22,6 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/EventMgr.h"
 #include "CommonTime.hpp"
+#include <cstdarg>
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Fire Locations

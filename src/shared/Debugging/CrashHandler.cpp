@@ -23,6 +23,7 @@
 #include "Debugging/CrashHandler.h"
 #include "CommonFilesystem.hpp"
 #include "Logging/Logger.hpp"
+#include <cstdarg>
 
 void OutputCrashLogLine(const char* format, ...)
 {

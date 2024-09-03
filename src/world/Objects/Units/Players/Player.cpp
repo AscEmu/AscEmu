@@ -157,6 +157,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/InstanceScript.hpp"
 #include "Server/Script/QuestScript.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+#include <cstdarg>
 
 #if VERSION_STRING > TBC
     #include "Management/AchievementMgr.h"
@@ -14435,19 +14436,19 @@ void Player::loadFromDBProc(QueryResultVector& results)
             if (!end)
                 break;
             *end = 0;
-            spec.getActionButton(Counter).Action = (uint32_t)atol(start);
+            spec.getActionButton(Counter).Action = (uint32_t)std::stoul(start);
             start = end + 1;
             end = strchr(start, ',');
             if (!end)
                 break;
             *end = 0;
-            spec.getActionButton(Counter).Type = (uint8_t)atol(start);
+            spec.getActionButton(Counter).Type = (uint8_t)std::stoul(start);
             start = end + 1;
             end = strchr(start, ',');
             if (!end)
                 break;
             *end = 0;
-            spec.getActionButton(Counter).Misc = (uint8_t)atol(start);
+            spec.getActionButton(Counter).Misc = (uint8_t)std::stoul(start);
             start = end + 1;
 
             Counter++;
