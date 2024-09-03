@@ -35,6 +35,8 @@
 #include <queue>
 #include <type_traits>
 
+#include "CommonTypes.hpp"
+
 template <typename T>
 class ProducerConsumerQueue
 {
