@@ -10,3 +10,9 @@ This file is released under the MIT license. See README-MIT for more information
 // Banner information
 #define AE_PLATFORM     "@AE_PLATFORM@"
 #define AE_ARCHITECTURE "@AE_ARCHITECTURE@"
+
+#ifdef _DEBUG
+    #define CONFIG "Debug"
+#else
+    #define CONFIG "Release"
+#endif

@@ -78,6 +78,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/InstanceScript.hpp"
 #include "Spell/Spell.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "Utilities/Strings.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -185,7 +186,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
             bool skip = true;
             for (uint32_t i = 0; i < srlPacket.name_count; ++i)
             {
-                if (!strnicmp(srlPacket.names[i].c_str(), player->getName().c_str(), srlPacket.names[i].length()))
+                if (AscEmu::Util::Strings::isEqual(srlPacket.names[i].c_str(), player->getName().c_str()))
                 {
                     skip = false;
                     break;

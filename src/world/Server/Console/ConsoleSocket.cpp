@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "BaseConsole.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Network/Network.h"
+#include "Utilities/Strings.hpp"
 
 ConsoleSocket::ConsoleSocket(SOCKET iFd) :
     Socket(iFd, 10000, 1000),
@@ -116,13 +117,13 @@ void ConsoleSocket::handleConsoleInput()
                 } break;
                 case ConsoleDefines::RemoteConsoleState::UserLoggedIn:
                 {
-                    if (!strnicmp(mInputBuffer, "quit", 4))
+                    if (AscEmu::Util::Strings::isEqual(mInputBuffer, "quit"))
                     {
                         Disconnect();
                         break;
                     }
 
-                    if (!strnicmp(mInputBuffer, "webclient", 9))
+                    if (AscEmu::Util::Strings::isEqual(mInputBuffer, "webclient"))
                     {
                         isWebClient = true;
                         break;

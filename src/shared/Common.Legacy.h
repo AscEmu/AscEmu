@@ -24,40 +24,6 @@
 
 #include "Threading/ConditionVariable.h"
 
-// current compiler (old)
-#define COMPILER_MICROSOFT 0
-#define COMPILER_GNU       1
-#define COMPILER_BORLAND   2
-#define COMPILER_INTEL     3
-
-#ifdef _MSC_VER
-#  define COMPILER COMPILER_MICROSOFT
-#elif defined( __BORLANDC__ )
-#  define COMPILER COMPILER_BORLAND
-#elif defined( __INTEL_COMPILER )
-#  define COMPILER COMPILER_INTEL
-#elif defined( __GNUC__ )
-#  define COMPILER COMPILER_GNU
-#else
-#  pragma error "FATAL ERROR: Unknown compiler."
-#endif
-
-#ifdef WIN32
-    #define LIBMASK ".dll";
-#else
-    #ifndef __APPLE__
-        #define LIBMASK ".so";
-    #else
-        #define LIBMASK ".dylib";
-    #endif
-#endif
-
-#ifdef _DEBUG
-    #define CONFIG "Debug"
-#else
-    #define CONFIG "Release"
-#endif
-
 #ifdef USE_EPOLL
     #define CONFIG_USE_EPOLL
 #endif
@@ -68,23 +34,6 @@
 
 #ifdef USE_POLL
     #define CONFIG_USE_POLL
-#endif
-
-#if COMPILER == COMPILER_MICROSOFT
-    #define strnicmp _strnicmp
-#else
-    #define strnicmp strncasecmp
-#endif
-
-#if COMPILER == COMPILER_MICROSOFT
-    #define MS_FLOAT_CONTROL
-    #pragma float_control(push)
-    #pragma float_control(precise, on)
-#endif
-
-
-#ifdef MS_FLOAT_CONTROL
-    #pragma float_control(pop)
 #endif
 
 #ifndef WIN32

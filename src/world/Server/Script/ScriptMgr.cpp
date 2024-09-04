@@ -25,7 +25,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <git_version.h>
 
 #include "AchievementScript.hpp"
-#include "Common.Legacy.h"
 #include "DynLib.hpp"
 #include "QuestScript.hpp"
 #include "Logging/Logger.hpp"
@@ -35,6 +34,16 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/ServerState.h"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellInfo.hpp"
+
+#ifdef WIN32
+    #define LIBMASK ".dll";
+#else
+    #ifndef __APPLE__
+        #define LIBMASK ".so";
+    #else
+        #define LIBMASK ".dylib";
+    #endif
+#endif
 
 ScriptMgr& ScriptMgr::getInstance()
 {
