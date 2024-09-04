@@ -39,29 +39,34 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
 
     std::string x;
     bool lookupname = true, lookupdesc = false, lookupcriteria = false, lookupreward = false;
-    if (strnicmp(args, "name ", 5) == 0)
+    std::string name(args, 5);
+    std::string desc(args, 5);
+    std::string criteria(args, 9);
+    std::string reward(args, 7);
+    std::string all(args, 4);
+    if (AscEmu::Util::Strings::isEqual(name, "name "))
     {
         x = std::string(args + 5);
     }
-    else if (strnicmp(args, "desc ", 5) == 0)
+    else if (AscEmu::Util::Strings::isEqual(desc, "desc "))
     {
         lookupname = false;
         lookupdesc = true;
         x = std::string(args + 5);
     }
-    else if (strnicmp(args, "criteria ", 9) == 0)
+    else if (AscEmu::Util::Strings::isEqual(criteria, "criteria "))
     {
         lookupname = false;
         lookupcriteria = true;
         x = std::string(args + 9);
     }
-    else if (strnicmp(args, "reward ", 7) == 0)
+    else if (AscEmu::Util::Strings::isEqual(reward, "reward "))
     {
         lookupname = false;
         lookupreward = true;
         x = std::string(args + 7);
     }
-    else if (strnicmp(args, "all ", 4) == 0)
+    else if (AscEmu::Util::Strings::isEqual(all, "all "))
     {
         lookupdesc = true;
         lookupcriteria = true;

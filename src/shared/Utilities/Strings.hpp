@@ -30,4 +30,5 @@ namespace AscEmu::Util::Strings
 
     /*! \brief Returns true if both strings are equal (case sensitive) */
     bool isEqual(const char* lhs, const char* rhs);
+    bool isEqual(std::string lhs, const char* rhs);
 }

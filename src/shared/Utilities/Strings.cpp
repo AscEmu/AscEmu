@@ -69,4 +69,9 @@ namespace AscEmu::Util::Strings
     {
         return !std::strcmp(lhs, rhs);
     }
+
+    bool isEqual(std::string lhs, const char* rhs)
+    {
+        return !std::strcmp(lhs.c_str(), rhs);
+    }
 }

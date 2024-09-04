@@ -89,7 +89,9 @@ bool ChatHandler::HandleAchievementResetCommand(const char* args, WorldSession* 
     bool resetAll = false;
     uint32_t achievement_id = 0;
 
-    if (strnicmp(args, "criteria ", 9) == 0)
+    std::string criteria(args, 9);
+
+    if (AscEmu::Util::Strings::isEqual(criteria, "criteria "))
     {
         achievement_id = std::stoul(args + 9);
         if (achievement_id == 0)
