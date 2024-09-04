@@ -41,11 +41,15 @@
 #include "World.h"
 #include "WorldSession.h"
 #include "Chat/ChatHandler.hpp"
-//#include "Data/WoWDynamicObject.hpp"
-//#include "Data/WoWGameObject.hpp"
-//#include "Data/WoWItem.hpp"
-//#include "Data/WoWPlayer.hpp"
-//#include "Data/WoWUnit.hpp"
+
+#if VERSION_STRING == Mop
+#include "Data/WoWDynamicObject.hpp"
+#include "Data/WoWGameObject.hpp"
+#include "Data/WoWItem.hpp"
+#include "Data/WoWPlayer.hpp"
+#include "Data/WoWUnit.hpp"
+#endif
+
 #include "Network/Network.h"
 #include "Server/WorldSocket.h"
 #include "Management/GameEventMgr.hpp"
