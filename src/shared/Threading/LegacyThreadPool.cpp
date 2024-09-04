@@ -17,11 +17,10 @@
  *
  */
 
-#include "LegacyThreadPool.h"
+#include "Threading/LegacyThreading.h"
 #include <Logging/Logger.hpp>
 #include "Utilities/Util.hpp"
 #include <cstdarg>
-#include "LegacyThreadBase.h"
 
 #ifdef WIN32
 
