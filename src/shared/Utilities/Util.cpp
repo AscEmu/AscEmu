@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CommonTime.hpp"
 #include "Strings.hpp"
 #include <string>
+#include <cstring>
 #include <sstream>
 #include <fstream>
 
