@@ -174,7 +174,7 @@ void LogonCommClientSocket::HandleSessionInfo(WorldPacket& recvData)
     recvData >> request_id;
 
     Mutex & m = sLogonCommHandler.getPendingLock();
-    m.Acquire();
+    m.acquire();
 
     // find the socket with this request
     WorldSocket* sock = sLogonCommHandler.getWorldSocketForClientRequestId(request_id);

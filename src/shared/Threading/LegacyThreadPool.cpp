@@ -51,7 +51,7 @@ CThreadPool::CThreadPool()
 
 bool CThreadPool::ThreadExit(Thread* t)
 {
-    _mutex.Acquire();
+    _mutex.acquire();
 
     // we're definitely no longer active
     m_activeThreads.erase(t);
@@ -89,7 +89,7 @@ bool CThreadPool::ThreadExit(Thread* t)
 void CThreadPool::ExecuteTask(ThreadBase* ExecutionTarget)
 {
     Thread* t;
-    _mutex.Acquire();
+    _mutex.acquire();
     ++_threadsRequestedSinceLastCheck;
     --_threadsEaten;
 
@@ -133,7 +133,7 @@ void CThreadPool::Startup()
 
 void CThreadPool::ShowStats()
 {
-    _mutex.Acquire();
+    _mutex.acquire();
     sLogger.debug("ThreadPool Status : Active Threads: {}", m_activeThreads.size());
     sLogger.debug("ThreadPool Status : Suspended Threads: {}", m_freeThreads.size());
     sLogger.debug("ThreadPool Status : Requested-To-Freed Ratio: {:3f} ({}/{})", float(float(_threadsRequestedSinceLastCheck + 1) / float(_threadsExitedSinceLastCheck + 1) * 100.0f), _threadsRequestedSinceLastCheck, _threadsExitedSinceLastCheck);
@@ -143,7 +143,7 @@ void CThreadPool::ShowStats()
 
 void CThreadPool::IntegrityCheck()
 {
-    _mutex.Acquire();
+    _mutex.acquire();
     int32 gobbled = _threadsEaten;
 
     if(gobbled < 0)
@@ -193,7 +193,7 @@ void CThreadPool::IntegrityCheck()
 void CThreadPool::KillFreeThreads(uint32 count)
 {
     sLogger.debug("ThreadPool : Killing {} excess threads.", count);
-    _mutex.Acquire();
+    _mutex.acquire();
     Thread* t;
     ThreadSet::iterator itr;
     uint32 i;
@@ -210,7 +210,7 @@ void CThreadPool::KillFreeThreads(uint32 count)
 
 void CThreadPool::Shutdown()
 {
-    _mutex.Acquire();
+    _mutex.acquire();
     size_t tcount = m_activeThreads.size() + m_freeThreads.size();        // exit all
     sLogger.debug("ThreadPool : Shutting down {} threads.", tcount);
     KillFreeThreads((uint32)m_freeThreads.size());
@@ -230,7 +230,7 @@ void CThreadPool::Shutdown()
 
     for(int i = 0;; i++)
     {
-        _mutex.Acquire();
+        _mutex.acquire();
         if(m_activeThreads.size() || m_freeThreads.size())
         {
             if(i != 0 && m_freeThreads.size() != 0)
@@ -262,7 +262,7 @@ void CThreadPool::Shutdown()
 static unsigned long WINAPI thread_proc(void* param)
 {
     Thread* t = (Thread*)param;
-    t->SetupMutex.Acquire();
+    t->SetupMutex.acquire();
     uint32 tid = t->ControlInterface.GetId();
     bool ht = (t->ExecutionTarget != NULL);
     t->SetupMutex.Release();
@@ -305,7 +305,7 @@ Thread* CThreadPool::StartThread(ThreadBase* ExecutionTarget)
     t->DeleteAfterExit = false;
     t->ExecutionTarget = ExecutionTarget;
     //h = (HANDLE)_beginthreadex(NULL, 0, &thread_proc, (void*)t, 0, NULL);
-    t->SetupMutex.Acquire();
+    t->SetupMutex.acquire();
     h = CreateThread(NULL, 0, &thread_proc, (LPVOID)t, 0, (LPDWORD)&t->ControlInterface.thread_id);
     t->ControlInterface.Setup(h);
     t->SetupMutex.Release();
@@ -318,7 +318,7 @@ Thread* CThreadPool::StartThread(ThreadBase* ExecutionTarget)
 static void* thread_proc(void* param)
 {
     Thread* t = (Thread*)param;
-    t->SetupMutex.Acquire();
+    t->SetupMutex.acquire();
     sLogger.debug("Thread {} started.", t->ControlInterface.GetId());
     t->SetupMutex.Release();
 
@@ -353,8 +353,8 @@ Thread* CThreadPool::StartThread(ThreadBase* ExecutionTarget)
     t->DeleteAfterExit = false;
 
     // lock the main mutex, to make sure id generation doesn't get messed up
-    _mutex.Acquire();
-    t->SetupMutex.Acquire();
+    _mutex.acquire();
+    t->SetupMutex.acquire();
     pthread_create(&target, NULL, &thread_proc, (void*)t);
     t->ControlInterface.Setup(target);
     pthread_detach(target);

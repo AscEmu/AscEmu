@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Common.hpp"
+#include "Threading/ConditionVariable.h"
 #include "Threading/AEThreadPool.h"
 #include "Utilities/Util.hpp"
 #include "Database/DatabaseUpdater.hpp"

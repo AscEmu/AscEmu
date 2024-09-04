@@ -21,7 +21,8 @@
 #ifndef FQUEUE_H
 #define FQUEUE_H
 
-#include "Mutex.h"
+#include "Mutex.hpp"
+#include "CommonTypes.hpp"
 
 template<class T>
 class FQueue
@@ -32,7 +33,7 @@ class FQueue
 
         uint32 get_size()
         {
-            lock.Acquire();
+            lock.acquire();
             ::uint32 retval = size;
             lock.Release();
             return retval;
@@ -44,7 +45,7 @@ class FQueue
             p->value = item;
             p->pNext = NULL;
 
-            lock.Acquire();
+            lock.acquire();
             if(last != NULL)//have some items
             {
                 last->pNext = (h*)p;
@@ -63,7 +64,7 @@ class FQueue
 
         T pop()
         {
-            lock.Acquire();
+            lock.acquire();
             if(size == 0)
             {
                 lock.Release();

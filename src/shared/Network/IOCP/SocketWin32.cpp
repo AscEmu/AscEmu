@@ -18,7 +18,7 @@ void Socket::WriteCallback()
 
     //printf("\nSocket::Writecallback(): sendsize : %u\n", this->m_writeByteCount);
     // We don't want any writes going on while this is happening.
-    m_writeMutex.Acquire();
+    m_writeMutex.acquire();
     if(writeBuffer.GetContiguiousBytes())
     {
         DWORD w_length = 0;
@@ -71,7 +71,7 @@ void Socket::SetupReadEvent()
     if(IsDeleted() || !IsConnected())
         return;
 
-    m_readMutex.Acquire();
+    m_readMutex.acquire();
     DWORD r_length = 0;
     DWORD flags = 0;
     WSABUF buf;

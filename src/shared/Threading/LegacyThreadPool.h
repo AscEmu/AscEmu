@@ -21,7 +21,7 @@
 
 #include <set>
 #include "CThreads.h"
-#include "Mutex.h"
+#include "Mutex.hpp"
 #include "Debugging/Errors.h"
 
 // This HAS to be called outside the threads __try / __except block!

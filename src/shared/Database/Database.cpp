@@ -116,7 +116,7 @@ DatabaseConnection* Database::GetFreeConnection()
     for (;;)
     {
         DatabaseConnection* con = Connections[((i++) % mConnectionCount)];
-        if (con->Busy.AttemptAcquire())
+        if (con->Busy.attemptAcquire())
             return con;
     }
 }

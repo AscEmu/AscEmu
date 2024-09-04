@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Setup.h"
 
-#include "Common.hpp"
 #include "Server/ServerState.h"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Server/Script/ScriptSetup.hpp"

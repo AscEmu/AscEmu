@@ -63,6 +63,8 @@
 #include <cstdarg>
 #include <iostream>
 #include <signal.h>
+
+#include "Common.hpp"
 #include "Threading/LegacyThreading.h"
 
 // DB version
@@ -691,7 +693,7 @@ void OnCrash(bool Terminate)
 {
     sLogger.failure("Crash Handler : Advanced crash handler initialized.");
 
-    if (!m_crashedMutex.AttemptAcquire())
+    if (!m_crashedMutex.attemptAcquire())
         TerminateThread(GetCurrentThread(), 0);
 
     try

@@ -9,7 +9,7 @@
 #ifndef SOCKET_DEFINES_H
 #define SOCKET_DEFINES_H
 
-#include "Common.hpp"
+#include "Threading/ConditionVariable.h"
 #include <cstring>
 #include <cstdio>
 

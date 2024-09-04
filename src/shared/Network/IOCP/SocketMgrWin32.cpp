@@ -116,7 +116,7 @@ void SocketMgr::CloseAll()
 {
     std::vector<Socket*> tokill;
 
-    socketLock.Acquire();
+    socketLock.acquire();
     for(std::set<Socket*>::iterator itr = _sockets.begin(); itr != _sockets.end(); ++itr)
         tokill.push_back(*itr);
     socketLock.Release();
@@ -127,7 +127,7 @@ void SocketMgr::CloseAll()
     size_t size;
     do
     {
-        socketLock.Acquire();
+        socketLock.acquire();
         size = _sockets.size();
         socketLock.Release();
     }

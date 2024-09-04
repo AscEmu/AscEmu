@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ConsoleCommands.h"
 #include <git_version.h>
 
+#include "Common.hpp"
 #include "Chat/ChatDefines.hpp"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Server/Console/BaseConsole.h"

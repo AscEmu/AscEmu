@@ -25,7 +25,7 @@
 #include "Debugging/Errors.h"
 
 // Platform Specific Lock Implementation
-#include "Mutex.h"
+#include "Mutex.hpp"
 
 // Platform Specific Thread Base
 #include "LegacyThreadBase.h"

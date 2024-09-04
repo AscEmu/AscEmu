@@ -25,7 +25,7 @@
 #include "Logging/Logger.hpp"
 #include <cstdarg>
 
-#include "Threading/Mutex.h"
+#include "Threading/Mutex.hpp"
 
 void OutputCrashLogLine(const char* format, ...)
 {
@@ -284,7 +284,7 @@ int __cdecl HandleCrash(PEXCEPTION_POINTERS pExceptPtrs)
     }
 
     /* only allow one thread to crash. */
-    if(!m_crashLock.AttemptAcquire())
+    if(!m_crashLock.attemptAcquire())
     {
         TerminateThread(GetCurrentThread(), static_cast<DWORD>(-1));
         // not reached

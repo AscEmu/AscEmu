@@ -23,7 +23,7 @@
 #include "Field.hpp"
 #include "Threading/Queue.h"
 #include "Threading/AEThread.h"
-
+#include "CommonTypes.hpp"
 #include <string>
 
 class QueryResult;

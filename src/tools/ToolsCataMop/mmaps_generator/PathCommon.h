@@ -1,37 +1,16 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #ifndef _MMAP_COMMON_H
 #define _MMAP_COMMON_H
 
-#include "Common.hpp"
 #include <string>
 #include <vector>
-
-#ifndef _WIN32
-    #include <stddef.h>
-    #include <dirent.h>
-#endif
-
-#ifdef __linux__
-    #include <errno.h>
-#endif
+#include <filesystem>
+#include <regex>
+#include <iostream>
 
 enum NavTerrain
 {
@@ -49,36 +28,20 @@ enum NavTerrain
 
 namespace MMAP
 {
-    inline bool matchWildcardFilter(const char* filter, const char* str)
+    inline bool matchWildcardFilter(const std::string& filter, const std::string& str)
     {
-        if (!filter || !str)
-            return false;
-
-        // end on null character
-        while (*filter && *str)
+        // Convert the wildcard pattern to a regex pattern
+        std::string regexPattern = "^" + std::regex_replace(filter, std::regex(R"(\*)"), ".*") + "$";
+        try
         {
-            if (*filter == '*')
-            {
-                if (*++filter == '\0')   // wildcard at end of filter means all remaing chars match
-                    return true;
-
-                for (;;)
-                {
-                    if (*filter == *str)
-                        break;
-                    if (*str == '\0')
-                        return false;   // reached end of string without matching next filter character
-                    str++;
-                }
-            }
-            else if (*filter != *str)
-                return false;           // mismatch
-
-            filter++;
-            str++;
+            std::regex wildcardRegex(regexPattern);
+            return std::regex_match(str, wildcardRegex);
         }
-
-        return ((*filter == '\0' || (*filter == '*' && *++filter == '\0')) && *str == '\0');
+        catch (const std::regex_error& e)
+        {
+            std::cerr << "Regex error: " << e.what() << std::endl;
+            return false;
+        }
     }
 
     enum ListFilesResult
@@ -87,50 +50,30 @@ namespace MMAP
         LISTFILE_OK = 1
     };
 
-    inline ListFilesResult getDirContents(std::vector<std::string> &fileList, std::string dirpath = ".", std::string filter = "*")
+    inline ListFilesResult getDirContents(std::vector<std::string> &fileList, const std::string& dirpath = ".", const std::string& filter = "*")
     {
-    #ifdef WIN32
-        HANDLE hFind;
-        WIN32_FIND_DATA findFileInfo;
-        std::string directory;
+        std::filesystem::path dir(dirpath);
 
-        directory = dirpath + "/" + filter;
-
-        hFind = FindFirstFile(directory.c_str(), &findFileInfo);
-
-        if (hFind == INVALID_HANDLE_VALUE)
+        if (!std::filesystem::exists(dir) || !std::filesystem::is_directory(dir))
             return LISTFILE_DIRECTORY_NOT_FOUND;
-        do
+
+        try
         {
-            if ((findFileInfo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
-                fileList.push_back(std::string(findFileInfo.cFileName));
-        }
-        while (FindNextFile(hFind, &findFileInfo));
-
-        FindClose(hFind);
-
-    #else
-        const char *p = dirpath.c_str();
-        DIR * dirp = opendir(p);
-        struct dirent * dp;
-
-        while (dirp)
-        {
-            errno = 0;
-            if ((dp = readdir(dirp)) != NULL)
+            for (const auto& entry : std::filesystem::directory_iterator(dir))
             {
-                if (matchWildcardFilter(filter.c_str(), dp->d_name))
-                    fileList.push_back(std::string(dp->d_name));
+                if (entry.is_regular_file())
+                {
+                    const std::string filename = entry.path().filename().string();
+                    if (matchWildcardFilter(filter, filename))
+                        fileList.push_back(filename);
+                }
             }
-            else
-                break;
         }
-
-        if (dirp)
-            closedir(dirp);
-        else
+        catch (const std::filesystem::filesystem_error& e)
+        {
+            std::cerr << "Filesystem error: " << e.what() << std::endl;
             return LISTFILE_DIRECTORY_NOT_FOUND;
-    #endif
+        }
 
         return LISTFILE_OK;
     }

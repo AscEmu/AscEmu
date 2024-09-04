@@ -313,7 +313,7 @@ float LogonCommHandler::getRealmPopulation()
 
 void LogonCommHandler::updateLogonServerConnection()
 {
-    mapLock.Acquire();
+    mapLock.acquire();
 
     uint32_t time = (uint32_t)UNIXTIME;
 
@@ -365,7 +365,7 @@ void LogonCommHandler::updateLogonServerConnection()
 
 void LogonCommHandler::dropLogonServerConnection(uint32_t ID)
 {
-    mapLock.Acquire();
+    mapLock.acquire();
 
     for (auto &itr : logons)
     {
@@ -399,7 +399,7 @@ uint32_t LogonCommHandler::clientConnectionId(std::string AccountName, WorldSock
         return (uint32_t)-1;
     }
 
-    pendingLock.Acquire();
+    pendingLock.acquire();
 
     WorldPacket data(LRCMSG_ACC_SESSION_REQUEST, 100);
     data << request_id;
@@ -425,7 +425,7 @@ uint32_t LogonCommHandler::clientConnectionId(std::string AccountName, WorldSock
 
 void LogonCommHandler::removeUnauthedClientSocketClose(uint32_t id)
 {
-    pendingLock.Acquire();
+    pendingLock.acquire();
     pending_logons.erase(id);
     pendingLock.Release();
 }

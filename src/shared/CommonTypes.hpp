@@ -16,6 +16,12 @@ typedef uint32_t uint32;
 typedef uint16_t uint16;
 typedef uint8_t uint8;
 
+#ifdef WIN32
+#include <Windows.h>
+#else
+#include <pthread.h>
+#endif
+
 #ifdef _WIN32
     #ifndef SCRIPTLIB
         #define SERVER_DECL __declspec(dllexport)

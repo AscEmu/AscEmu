@@ -21,7 +21,7 @@
 #define _CRASH_HANDLER_H
 
 #include <cstdint>
-#include "Common.hpp"
+#include "Threading/ConditionVariable.h"
 
 bool HookCrashReporter(bool logon);
 void OutputCrashLogLine(const char* format, ...);

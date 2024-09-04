@@ -43,7 +43,7 @@ public:
 
     void AddSocket(Socket* s)
     {
-        socketLock.Acquire();
+        socketLock.acquire();
         _sockets.insert(s);
         ++socket_count;
         socketLock.Release();
@@ -51,7 +51,7 @@ public:
 
     void RemoveSocket(Socket* s)
     {
-        socketLock.Acquire();
+        socketLock.acquire();
         _sockets.erase(s);
         --socket_count;
         socketLock.Release();

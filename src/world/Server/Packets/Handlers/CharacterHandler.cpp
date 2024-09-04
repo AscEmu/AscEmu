@@ -3,6 +3,7 @@ Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Common.hpp"
 #include "git_version.h"
 #include "Chat/ChatDefines.hpp"
 #include "Server/WorldSession.h"

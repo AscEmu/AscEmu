@@ -5,8 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Common.hpp"
-
 #ifdef _WIN32
     #define CONSOLE_COLOR_RED       FOREGROUND_INTENSITY | FOREGROUND_RED
     #define CONSOLE_COLOR_GREEN     FOREGROUND_INTENSITY | FOREGROUND_GREEN

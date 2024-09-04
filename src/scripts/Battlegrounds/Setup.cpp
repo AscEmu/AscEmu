@@ -18,6 +18,7 @@
  */
 
 #include "Setup.h"
+
 #include "AlteracValley/AlteracValley.h"
 #include "ArathiBasin/ArathiBasin.h"
 #include "CircleOfBlood/CircleOfBlood.h"
@@ -33,7 +34,6 @@
 #include "WarsongGulch/WarsongGulch.h"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Server/Script/ScriptSetup.hpp"
-#include "Common.hpp"
 
 extern "C" SCRIPT_DECL void _exp_set_serverstate_singleton(ServerState* state)
 {

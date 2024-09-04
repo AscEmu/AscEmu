@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <array>
 
-#include "Common.hpp"
 #include "CommonTime.hpp"
 #include "Strings.hpp"
 #include <string>

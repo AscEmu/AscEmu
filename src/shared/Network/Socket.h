@@ -19,7 +19,7 @@
 #include <map>
 #include <set>
 
-#include "Threading/Mutex.h"
+#include "Threading/Mutex.hpp"
 
 class SERVER_DECL Socket
 {
@@ -56,7 +56,7 @@ class SERVER_DECL Socket
         bool Send(const uint8* Bytes, uint32 Size);
 
         // Burst system - Locks the sending mutex.
-        inline void BurstBegin() { m_writeMutex.Acquire(); }
+        inline void BurstBegin() { m_writeMutex.acquire(); }
 
         // Burst system - Adds bytes to output buffer.
         bool BurstSend(const uint8* Bytes, uint32 Size);
@@ -191,7 +191,7 @@ class SERVER_DECL Socket
         void PollTraffic(unsigned long* sent, unsigned long* recieved)
         {
 
-            m_writeMutex.Acquire();
+            m_writeMutex.acquire();
             *sent = m_BytesSent;
             *recieved = m_BytesRecieved;
             m_BytesSent = 0;
@@ -266,7 +266,7 @@ class SocketGarbageCollector
         {
             std::map<Socket*, time_t>::iterator i, i2;
             time_t t = UNIXTIME;
-            lock.Acquire();
+            lock.acquire();
             for(i = deletionQueue.begin(); i != deletionQueue.end();)
             {
                 i2 = i++;
@@ -281,7 +281,7 @@ class SocketGarbageCollector
 
         void QueueSocket(Socket* s)
         {
-            lock.Acquire();
+            lock.acquire();
             deletionQueue.insert(std::map<Socket*, time_t>::value_type(s, UNIXTIME + SOCKET_GC_TIMEOUT));
             lock.Release();
         }

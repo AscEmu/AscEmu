@@ -20,7 +20,7 @@
 #ifndef _THREADING_LOCKEDQUEUE_H
 #define _THREADING_LOCKEDQUEUE_H
 
-#include "Mutex.h"
+#include "Mutex.hpp"
 #include <deque>
 
 template<class TYPE>
@@ -31,14 +31,14 @@ class LockedQueue
 
         inline void add(const TYPE & element)
         {
-            mutex.Acquire();
+            mutex.acquire();
             queue.push_back(element);
             mutex.Release();
         }
 
         inline TYPE next()
         {
-            mutex.Acquire();
+            mutex.acquire();
             assert(queue.size() > 0);
             TYPE t = queue.front();
             queue.pop_front();
@@ -48,7 +48,7 @@ class LockedQueue
 
         inline size_t size()
         {
-            mutex.Acquire();
+            mutex.acquire();
             size_t c = queue.size();
             mutex.Release();
             return c;
@@ -56,7 +56,7 @@ class LockedQueue
 
         inline TYPE get_first_element()
         {
-            mutex.Acquire();
+            mutex.acquire();
             TYPE t;
             if(queue.size() == 0)
                 t = reinterpret_cast<TYPE>(0);
@@ -68,7 +68,7 @@ class LockedQueue
 
         inline void pop()
         {
-            mutex.Acquire();
+            mutex.acquire();
             ASSERT(queue.size() > 0);
             queue.pop_front();
             mutex.Release();
@@ -76,7 +76,7 @@ class LockedQueue
 
         inline void clear()
         {
-            mutex.Acquire();
+            mutex.acquire();
             queue.resize(0);
             mutex.Release();
         }
