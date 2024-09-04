@@ -7,6 +7,7 @@
  */
 
 #include "../Network.h"
+#include "Threading/LegacyThreading.h"
 #include <cassert>
 
 #ifdef CONFIG_USE_EPOLL
