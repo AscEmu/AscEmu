@@ -21,6 +21,7 @@
 #include <Logging/Logger.hpp>
 #include "Utilities/Util.hpp"
 #include <cstdarg>
+#include "LegacyThreadBase.h"
 
 #ifdef WIN32
 
@@ -398,6 +399,13 @@ void SetThreadName(const char* format, ...)
 
     va_end(ap);
 }
+
+#ifndef WIN32
+#include <sched.h>
+#include <sys/resource.h>
+#else
+#include <windows.h>
+#endif
 
 namespace Arcemu
 {
