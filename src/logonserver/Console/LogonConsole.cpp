@@ -26,9 +26,10 @@
 #include <Server/IpBanMgr.h>
 #include <Network/Network.h>
 #include <LogonConf.hpp>
-#include <Utilities/Strings.cpp>
+#include <Utilities/Strings.hpp>
 
 #include "Database/Database.h"
+#include "Threading/LegacyThreading.h"
 
 LogonConsole& LogonConsole::getInstance()
 {
