@@ -65,7 +65,7 @@ bool CThreadPool::ThreadExit(Thread* t)
         if(t->DeleteAfterExit)
             m_freeThreads.erase(t);
 
-        _mutex.Release();
+        _mutex.release();
         delete t;
         return false;
     }
@@ -82,7 +82,7 @@ bool CThreadPool::ThreadExit(Thread* t)
     m_freeThreads.insert(t);
 
     sLogger.debug("Thread {} entered the free pool.", t->ControlInterface.GetId());
-    _mutex.Release();
+    _mutex.release();
     return true;
 }
 
@@ -117,7 +117,7 @@ void CThreadPool::ExecuteTask(ThreadBase* ExecutionTarget)
     sLogger.debug("Thread {} is now executing task at {}", t->ControlInterface.GetId(), fmt::ptr(ExecutionTarget));
 
     m_activeThreads.insert(t);
-    _mutex.Release();
+    _mutex.release();
 }
 
 void CThreadPool::Startup()
@@ -138,7 +138,7 @@ void CThreadPool::ShowStats()
     sLogger.debug("ThreadPool Status : Suspended Threads: {}", m_freeThreads.size());
     sLogger.debug("ThreadPool Status : Requested-To-Freed Ratio: {:3f} ({}/{})", float(float(_threadsRequestedSinceLastCheck + 1) / float(_threadsExitedSinceLastCheck + 1) * 100.0f), _threadsRequestedSinceLastCheck, _threadsExitedSinceLastCheck);
     sLogger.debug("ThreadPool Status : Eaten Count: {} (negative is bad!)", _threadsEaten);
-    _mutex.Release();
+    _mutex.release();
 }
 
 void CThreadPool::IntegrityCheck()
@@ -187,7 +187,7 @@ void CThreadPool::IntegrityCheck()
     _threadsRequestedSinceLastCheck = 0;
     _threadsFreedSinceLastCheck = 0;
 
-    _mutex.Release();
+    _mutex.release();
 }
 
 void CThreadPool::KillFreeThreads(uint32 count)
@@ -205,7 +205,7 @@ void CThreadPool::KillFreeThreads(uint32 count)
         ++_threadsToExit;
         t->ControlInterface.Resume();
     }
-    _mutex.Release();
+    _mutex.release();
 }
 
 void CThreadPool::Shutdown()
@@ -226,7 +226,7 @@ void CThreadPool::Shutdown()
         else
             t->ControlInterface.Resume();
     }
-    _mutex.Release();
+    _mutex.release();
 
     for(int i = 0;; i++)
     {
@@ -246,12 +246,12 @@ void CThreadPool::Shutdown()
                 }
             }
             sLogger.debug("ThreadPool : {} active and {} free threads remaining...", m_activeThreads.size(), m_freeThreads.size());
-            _mutex.Release();
+            _mutex.release();
             Arcemu::Sleep(1000);
             continue;
         }
 
-        _mutex.Release();
+        _mutex.release();
         break;
     }
 }
@@ -265,7 +265,7 @@ static unsigned long WINAPI thread_proc(void* param)
     t->SetupMutex.acquire();
     uint32 tid = t->ControlInterface.GetId();
     bool ht = (t->ExecutionTarget != NULL);
-    t->SetupMutex.Release();
+    t->SetupMutex.release();
     sLogger.debug("Thread {} started.", t->ControlInterface.GetId());
 
     for(;;)
@@ -308,7 +308,7 @@ Thread* CThreadPool::StartThread(ThreadBase* ExecutionTarget)
     t->SetupMutex.acquire();
     h = CreateThread(NULL, 0, &thread_proc, (LPVOID)t, 0, (LPDWORD)&t->ControlInterface.thread_id);
     t->ControlInterface.Setup(h);
-    t->SetupMutex.Release();
+    t->SetupMutex.release();
 
     return t;
 }
@@ -320,7 +320,7 @@ static void* thread_proc(void* param)
     Thread* t = (Thread*)param;
     t->SetupMutex.acquire();
     sLogger.debug("Thread {} started.", t->ControlInterface.GetId());
-    t->SetupMutex.Release();
+    t->SetupMutex.release();
 
     for(;;)
     {
@@ -358,8 +358,8 @@ Thread* CThreadPool::StartThread(ThreadBase* ExecutionTarget)
     pthread_create(&target, NULL, &thread_proc, (void*)t);
     t->ControlInterface.Setup(target);
     pthread_detach(target);
-    t->SetupMutex.Release();
-    _mutex.Release();
+    t->SetupMutex.release();
+    _mutex.release();
     return t;
 }
 

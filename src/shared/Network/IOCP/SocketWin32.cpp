@@ -63,7 +63,7 @@ void Socket::WriteCallback()
         // Write operation is completed.
         DecSendLock();
     }
-    m_writeMutex.Release();
+    m_writeMutex.release();
 }
 
 void Socket::SetupReadEvent()
@@ -99,7 +99,7 @@ void Socket::SetupReadEvent()
     }
     m_BytesRecieved += r_length;
     //m_readEvent = ov;
-    m_readMutex.Release();
+    m_readMutex.release();
 }
 
 void Socket::ReadCallback(uint32 len)

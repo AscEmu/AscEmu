@@ -180,7 +180,7 @@ void LogonCommClientSocket::HandleSessionInfo(WorldPacket& recvData)
     WorldSocket* sock = sLogonCommHandler.getWorldSocketForClientRequestId(request_id);
     if (sock == nullptr || sock->Authed || !sock->IsConnected())       // Expired/Client disconnected
     {
-        m.Release();
+        m.release();
         return;
     }
 
@@ -188,7 +188,7 @@ void LogonCommClientSocket::HandleSessionInfo(WorldPacket& recvData)
     sock->Authed = true;
     sLogonCommHandler.removeUnauthedClientSocket(request_id);
     sock->InformationRetreiveCallback(recvData, request_id);
-    m.Release();
+    m.release();
 }
 
 void LogonCommClientSocket::HandlePong(WorldPacket& /*recvData*/)

@@ -27,7 +27,7 @@ void Mutex::acquire()
     mtx.lock();
 }
 
-void Mutex::Release()
+void Mutex::release()
 {
     // Use unlock to release the mutex
     mtx.unlock();

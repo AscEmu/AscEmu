@@ -35,7 +35,7 @@ class FQueue
         {
             lock.acquire();
             ::uint32 retval = size;
-            lock.Release();
+            lock.release();
             return retval;
         }
 
@@ -57,7 +57,7 @@ class FQueue
                 last = first = p;
                 size = 1;
             }
-            lock.Release();
+            lock.release();
         }
 
         T pop_nowait() { return pop(); }
@@ -67,14 +67,14 @@ class FQueue
             lock.acquire();
             if(size == 0)
             {
-                lock.Release();
+                lock.release();
                 return NULL;
             }
 
             h* tmp = first;
             if(tmp == NULL)
             {
-                lock.Release();
+                lock.release();
                 return NULL;
             }
 
@@ -85,7 +85,7 @@ class FQueue
                 first = last = NULL;
             }
 
-            lock.Release();
+            lock.release();
 
             T returnVal = tmp->value;
             delete tmp;

@@ -33,7 +33,7 @@ class LockedQueue
         {
             mutex.acquire();
             queue.push_back(element);
-            mutex.Release();
+            mutex.release();
         }
 
         inline TYPE next()
@@ -42,7 +42,7 @@ class LockedQueue
             assert(queue.size() > 0);
             TYPE t = queue.front();
             queue.pop_front();
-            mutex.Release();
+            mutex.release();
             return t;
         }
 
@@ -50,7 +50,7 @@ class LockedQueue
         {
             mutex.acquire();
             size_t c = queue.size();
-            mutex.Release();
+            mutex.release();
             return c;
         }
 
@@ -62,7 +62,7 @@ class LockedQueue
                 t = reinterpret_cast<TYPE>(0);
             else
                 t = queue.front();
-            mutex.Release();
+            mutex.release();
             return t;
         }
 
@@ -71,14 +71,14 @@ class LockedQueue
             mutex.acquire();
             ASSERT(queue.size() > 0);
             queue.pop_front();
-            mutex.Release();
+            mutex.release();
         }
 
         inline void clear()
         {
             mutex.acquire();
             queue.resize(0);
-            mutex.Release();
+            mutex.release();
         }
 
     protected:

@@ -65,7 +65,7 @@ class SERVER_DECL Socket
         void BurstPush();
 
         // Burst system - Unlocks the sending mutex.
-        inline void BurstEnd() { m_writeMutex.Release(); }
+        inline void BurstEnd() { m_writeMutex.release(); }
 
         /* Client Operations */
 
@@ -197,7 +197,7 @@ class SERVER_DECL Socket
             m_BytesSent = 0;
             m_BytesRecieved = 0;
 
-            m_writeMutex.Release();
+            m_writeMutex.release();
         }
 };
 
@@ -276,14 +276,14 @@ class SocketGarbageCollector
                     deletionQueue.erase(i2);
                 }
             }
-            lock.Release();
+            lock.release();
         }
 
         void QueueSocket(Socket* s)
         {
             lock.acquire();
             deletionQueue.insert(std::map<Socket*, time_t>::value_type(s, UNIXTIME + SOCKET_GC_TIMEOUT));
-            lock.Release();
+            lock.release();
         }
 };
 

@@ -16,7 +16,7 @@ public:
 
     bool attemptAcquire();
     void acquire();
-    void Release();
+    void release();
 
 private:
     std::recursive_mutex mtx; // Using std::recursive_mutex for recursive locking behavior

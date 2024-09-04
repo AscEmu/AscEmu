@@ -119,7 +119,7 @@ void SocketMgr::CloseAll()
     socketLock.acquire();
     for(std::set<Socket*>::iterator itr = _sockets.begin(); itr != _sockets.end(); ++itr)
         tokill.push_back(*itr);
-    socketLock.Release();
+    socketLock.release();
 
     for(std::vector<Socket*>::iterator itr = tokill.begin(); itr != tokill.end(); ++itr)
         (*itr)->Disconnect();
@@ -129,7 +129,7 @@ void SocketMgr::CloseAll()
     {
         socketLock.acquire();
         size = _sockets.size();
-        socketLock.Release();
+        socketLock.release();
     }
     while(size);
 }

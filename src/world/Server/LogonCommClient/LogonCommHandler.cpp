@@ -360,7 +360,7 @@ void LogonCommHandler::updateLogonServerConnection()
         }
     }
 
-    mapLock.Release();
+    mapLock.release();
 }
 
 void LogonCommHandler::dropLogonServerConnection(uint32_t ID)
@@ -377,7 +377,7 @@ void LogonCommHandler::dropLogonServerConnection(uint32_t ID)
         }
     }
 
-    mapLock.Release();
+    mapLock.release();
 }
 
 uint32_t LogonCommHandler::clientConnectionId(std::string AccountName, WorldSocket* Socket)
@@ -417,7 +417,7 @@ uint32_t LogonCommHandler::clientConnectionId(std::string AccountName, WorldSock
     logonCommSocket->SendPacket(&data, false);
 
     pending_logons[request_id] = Socket;
-    pendingLock.Release();
+    pendingLock.release();
 
     updateRealmPopulation();
     return request_id;
@@ -427,7 +427,7 @@ void LogonCommHandler::removeUnauthedClientSocketClose(uint32_t id)
 {
     pendingLock.acquire();
     pending_logons.erase(id);
-    pendingLock.Release();
+    pendingLock.release();
 }
 
 void LogonCommHandler::removeUnauthedClientSocket(uint32_t id)

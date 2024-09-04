@@ -46,7 +46,7 @@ public:
         socketLock.acquire();
         _sockets.insert(s);
         ++socket_count;
-        socketLock.Release();
+        socketLock.release();
     }
 
     void RemoveSocket(Socket* s)
@@ -54,7 +54,7 @@ public:
         socketLock.acquire();
         _sockets.erase(s);
         --socket_count;
-        socketLock.Release();
+        socketLock.release();
     }
 
     void ShutdownThreads();
