@@ -20,6 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Strings.hpp"
+#include "Threading/LegacyThreading.h"
 
 bool handleSendChatAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool /*isWebClient*/)
 {

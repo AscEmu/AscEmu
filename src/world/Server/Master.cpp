@@ -41,11 +41,11 @@
 #include "World.h"
 #include "WorldSession.h"
 #include "Chat/ChatHandler.hpp"
-#include "Data/WoWDynamicObject.hpp"
-#include "Data/WoWGameObject.hpp"
-#include "Data/WoWItem.hpp"
-#include "Data/WoWPlayer.hpp"
-#include "Data/WoWUnit.hpp"
+//#include "Data/WoWDynamicObject.hpp"
+//#include "Data/WoWGameObject.hpp"
+//#include "Data/WoWItem.hpp"
+//#include "Data/WoWPlayer.hpp"
+//#include "Data/WoWUnit.hpp"
 #include "Network/Network.h"
 #include "Server/WorldSocket.h"
 #include "Management/GameEventMgr.hpp"
@@ -59,6 +59,7 @@
 #include <cstdarg>
 #include <iostream>
 #include <signal.h>
+#include "Threading/LegacyThreading.h"
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20230710-00_characters_taxi";

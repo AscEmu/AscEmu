@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Threading/LegacyThreadPool.h"
 #include "Utilities/Strings.hpp"
+#include "Threading/LegacyThreading.h"
 
 LogonCommHandler& LogonCommHandler::getInstance()
 {
