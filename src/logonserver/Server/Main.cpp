@@ -19,6 +19,10 @@
 
 #include "Server/Master.hpp"
 
+#ifndef WIN32
+#include <sys/resource.h>
+#endif
+
 int main(int argc, char** argv)
 {
 #ifndef WIN32
