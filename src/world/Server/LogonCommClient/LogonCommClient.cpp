@@ -313,7 +313,7 @@ void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket& recvData)
     {
         do
         {
-            account_id = result->Fetch()[0].GetUInt32();
+            account_id = result->Fetch()[0].asUint32();
             itr = mapping_to_send.find(account_id);
             if (itr != mapping_to_send.end())
                 itr->second++;

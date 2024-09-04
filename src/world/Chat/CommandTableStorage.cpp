@@ -4,6 +4,9 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "CommandTableStorage.hpp"
+
+#include <sstream>
+
 #include "ChatCommand.hpp"
 #include "ChatHandler.hpp"
 #include "Logging/Logger.hpp"
@@ -124,8 +127,8 @@ void CommandTableStorage::Load()
 
     do
     {
-        const char* name = result->Fetch()[0].GetString();
-        const char* level = result->Fetch()[1].GetString();
+        const char* name = result->Fetch()[0].asCString();
+        const char* level = result->Fetch()[1].asCString();
         Override(name, level);
     } while (result->NextRow());
     delete result;

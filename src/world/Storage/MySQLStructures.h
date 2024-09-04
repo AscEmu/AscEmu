@@ -148,7 +148,7 @@ namespace MySQLStructure
         uint32_t bytes2;
         uint32_t emote_state;
         //uint32_t respawnNpcLink;
-        uint16_t channel_spell;
+        uint32_t channel_spell;
         uint32_t channel_target_go;
         uint32_t channel_target_creature;
         uint16_t stand_state;

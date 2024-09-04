@@ -28,20 +28,20 @@ GuildBankTab::GuildBankTab(uint32_t guildId, uint8_t tabId) : mGuildId(guildId),
 
 void GuildBankTab::loadGuildBankTabFromDB(Field* fields)
 {
-    mName = fields[2].GetString();
-    mIcon = fields[3].GetString();
-    mText = fields[4].GetString();
+    mName = fields[2].asCString();
+    mIcon = fields[3].asCString();
+    mText = fields[4].asCString();
 }
 
 bool GuildBankTab::loadGuildBankTabItemFromDB(Field* fields)
 {
-    uint8_t slotId = fields[2].GetUInt8();
+    uint8_t slotId = fields[2].asUint8();
 
-    Item* pItem = sObjectMgr.loadItem(fields[3].GetUInt32());
+    Item* pItem = sObjectMgr.loadItem(fields[3].asUint32());
     if (pItem == nullptr)
     {
         CharacterDatabase.Execute("DELETE FROM guild_bank_items WHERE itemGuid = %u AND guildId = %u AND tabId = %u",
-            fields[3].GetUInt32(), mGuildId, static_cast<uint32_t>(fields[1].GetUInt8()));
+            fields[3].asUint32(), mGuildId, static_cast<uint32_t>(fields[1].asUint8()));
     }
 
     mItems[slotId] = pItem;

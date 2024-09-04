@@ -464,7 +464,7 @@ bool handleSendMailGold(BaseConsole* baseConsole, int argumentCount, std::string
 
     if (QueryResult* result = CharacterDatabase.Query("SELECT guid FROM characters WHERE name = '%s'", charName.c_str()))
     {
-        uint64_t guid = result->Fetch()[0].GetUInt64();
+        uint64_t guid = result->Fetch()[0].asUint64();
         sMailSystem.SendAutomatedMessage(MAIL_TYPE_NORMAL, guid, guid, subject, body, gold, 0, 0, MAIL_STATIONERY_GM);
     }
 

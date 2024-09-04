@@ -124,9 +124,9 @@ void AuctionHouse::loadAuctionsFromDB()
     {
         Field* fields = result->Fetch();
         auto auction = new Auction;
-        auction->Id = fields[0].GetUInt32();
+        auction->Id = fields[0].asUint32();
 
-        Item* pItem = sObjectMgr.loadItem(fields[2].GetUInt32());
+        Item* pItem = sObjectMgr.loadItem(fields[2].asUint32());
         if (!pItem)
         {
             CharacterDatabase.Execute("DELETE FROM auctions WHERE auctionId=%u", auction->Id);
@@ -135,13 +135,13 @@ void AuctionHouse::loadAuctionsFromDB()
         }
 
         auction->auctionItem = pItem;
-        auction->ownerGuid = fields[3].GetUInt32();
-        auction->startPrice = fields[4].GetUInt32();
-        auction->buyoutPrice = fields[5].GetUInt32();
-        auction->expireTime = fields[6].GetUInt32();
-        auction->highestBidderGuid = fields[7].GetUInt32();
-        auction->highestBid = fields[8].GetUInt32();
-        auction->depositAmount = fields[9].GetUInt32();
+        auction->ownerGuid = fields[3].asUint32();
+        auction->startPrice = fields[4].asUint32();
+        auction->buyoutPrice = fields[5].asUint32();
+        auction->expireTime = fields[6].asUint32();
+        auction->highestBidderGuid = fields[7].asUint32();
+        auction->highestBid = fields[8].asUint32();
+        auction->depositAmount = fields[9].asUint32();
 
         auction->removedType = AUCTION_REMOVE_EXPIRED;
         auction->isRemoved = false;

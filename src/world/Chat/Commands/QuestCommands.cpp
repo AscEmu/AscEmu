@@ -278,7 +278,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                 if (creatureResult)
                 {
                     Field* creatureFields = creatureResult->Fetch();
-                    giver_id = creatureFields[0].GetUInt32();
+                    giver_id = creatureFields[0].asUint32();
                     delete creatureResult;
                 }
                 else
@@ -287,7 +287,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                     if (objectResult)
                     {
                         Field* objectFields = objectResult->Fetch();
-                        giver_id = objectFields[0].GetUInt32();
+                        giver_id = objectFields[0].asUint32();
                         delete objectResult;
                     }
                 }
@@ -524,9 +524,9 @@ bool ChatHandler::HandleQuestItemCommand(const char* args, WorldSession* m_sessi
     do
     {
         Field* fields = result->Fetch();
-        uint32_t id = fields[0].GetUInt32();
+        uint32_t id = fields[0].asUint32();
         std::string itemid = MyConvertIntToString(id);
-        std::string itemcnt = MyConvertIntToString(fields[1].GetUInt32());
+        std::string itemcnt = MyConvertIntToString(fields[1].asUint32());
         auto tmpItem = sMySQLStore.getItemProperties(id);
         if (tmpItem != nullptr)
         {
@@ -571,7 +571,7 @@ bool ChatHandler::HandleQuestGiverCommand(const char* args, WorldSession* m_sess
     if (objectResult1)
     {
         Field* fields = objectResult1->Fetch();
-        std::string creatureId1 = MyConvertIntToString(fields[0].GetUInt32());
+        std::string creatureId1 = MyConvertIntToString(fields[0].asUint32());
 
         delete objectResult1;
 
@@ -588,7 +588,7 @@ bool ChatHandler::HandleQuestGiverCommand(const char* args, WorldSession* m_sess
             if (spawnResult1)
             {
                 fields = spawnResult1->Fetch();
-                spawnId1 = fields[0].GetString();
+                spawnId1 = fields[0].asCString();
 
                 delete spawnResult1;
             }
@@ -626,7 +626,7 @@ bool ChatHandler::HandleQuestGiverCommand(const char* args, WorldSession* m_sess
     if (objectResult2)
     {
         Field* fields = objectResult2->Fetch();
-        std::string itemId2 = MyConvertIntToString(fields[0].GetUInt32());
+        std::string itemId2 = MyConvertIntToString(fields[0].asUint32());
 
         delete objectResult2;
 
@@ -643,7 +643,7 @@ bool ChatHandler::HandleQuestGiverCommand(const char* args, WorldSession* m_sess
             if (spawnResult2)
             {
                 fields = spawnResult2->Fetch();
-                spawnId2 = fields[0].GetString();
+                spawnId2 = fields[0].asCString();
 
                 delete spawnResult2;
             }
@@ -733,7 +733,7 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
         do
         {
             fields = creatureResult->Fetch();
-            quest_id = fields[0].GetUInt32();
+            quest_id = fields[0].asUint32();
 
             qst = sMySQLStore.getQuestProperties(quest_id);
             if (qst == nullptr)
@@ -1153,7 +1153,7 @@ bool ChatHandler::HandleQuestFinisherCommand(const char* args, WorldSession* m_s
     if (objectResult1)
     {
         Field* fields = objectResult1->Fetch();
-        std::string creatureId1 = MyConvertIntToString(fields[0].GetUInt32());
+        std::string creatureId1 = MyConvertIntToString(fields[0].asUint32());
 
         delete objectResult1;
 
@@ -1171,7 +1171,7 @@ bool ChatHandler::HandleQuestFinisherCommand(const char* args, WorldSession* m_s
             if (spawnResult1)
             {
                 fields = spawnResult1->Fetch();
-                spawnId1 = fields[0].GetString();
+                spawnId1 = fields[0].asCString();
 
                 delete spawnResult1;
             }
@@ -1208,7 +1208,7 @@ bool ChatHandler::HandleQuestFinisherCommand(const char* args, WorldSession* m_s
     if (objectResult2)
     {
         Field* fields = objectResult2->Fetch();
-        std::string itemId2 = MyConvertIntToString(fields[0].GetUInt32());
+        std::string itemId2 = MyConvertIntToString(fields[0].asUint32());
 
         delete objectResult2;
 
@@ -1225,7 +1225,7 @@ bool ChatHandler::HandleQuestFinisherCommand(const char* args, WorldSession* m_s
             if (spawnResult2)
             {
                 fields = spawnResult2->Fetch();
-                spawnId2 = fields[0].GetString();
+                spawnId2 = fields[0].asCString();
 
                 delete spawnResult2;
             }
@@ -1273,7 +1273,7 @@ bool ChatHandler::HandleQuestStarterSpawnCommand(const char* args, WorldSession*
     if (objectResult)
     {
         Field* fields = objectResult->Fetch();
-        starterId = MyConvertIntToString(fields[0].GetUInt32());
+        starterId = MyConvertIntToString(fields[0].asUint32());
     }
     else
     {
@@ -1308,10 +1308,10 @@ bool ChatHandler::HandleQuestStarterSpawnCommand(const char* args, WorldSession*
     }
 
     Field* fields = spawnResult->Fetch();
-    uint32_t locmap = fields[0].GetUInt32();
-    float x = fields[1].GetFloat();
-    float y = fields[2].GetFloat();
-    float z = fields[3].GetFloat();
+    uint32_t locmap = fields[0].asUint32();
+    float x = fields[1].asFloat();
+    float y = fields[2].asFloat();
+    float z = fields[3].asFloat();
 
     delete spawnResult;
 
@@ -1344,7 +1344,7 @@ bool ChatHandler::HandleQuestFinisherSpawnCommand(const char* args, WorldSession
     if (objectResult)
     {
         Field* fields = objectResult->Fetch();
-        finisherId = MyConvertIntToString(fields[0].GetUInt32());
+        finisherId = MyConvertIntToString(fields[0].asUint32());
     }
     else
     {
@@ -1379,10 +1379,10 @@ bool ChatHandler::HandleQuestFinisherSpawnCommand(const char* args, WorldSession
     }
 
     Field* fields = spawnResult->Fetch();
-    uint32_t locmap = fields[0].GetUInt32();
-    float x = fields[1].GetFloat();
-    float y = fields[2].GetFloat();
-    float z = fields[3].GetFloat();
+    uint32_t locmap = fields[0].asUint32();
+    float x = fields[1].asFloat();
+    float y = fields[2].asFloat();
+    float z = fields[3].asFloat();
 
     delete spawnResult;
 

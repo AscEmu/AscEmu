@@ -30,9 +30,9 @@ bool ChatHandler::HandleTicketListCommand(const char* /*args*/, WorldSession* m_
     do
     {
         Field* fields = result->Fetch();
-        sstext << "TicketID: " << fields[0].GetUInt16()
-            << " | Player: " << fields[2].GetString()
-            << " | Opened: " << Util::GetDateStringFromSeconds((uint32_t)UNIXTIME - fields[9].GetUInt32())
+        sstext << "TicketID: " << fields[0].asUint16()
+            << " | Player: " << fields[2].asCString()
+            << " | Opened: " << Util::GetDateStringFromSeconds((uint32_t)UNIXTIME - fields[9].asUint32())
             << '\n';
     } while (result->NextRow());
 
@@ -56,9 +56,9 @@ bool ChatHandler::HandleTicketListAllCommand(const char* /*args*/, WorldSession*
     do
     {
         Field* fields = result->Fetch();
-        sstext << "TicketID: " << fields[0].GetUInt16()
-            << " | Player: " << fields[2].GetString()
-            << " | Opened: " << Util::GetDateStringFromSeconds((uint32_t)UNIXTIME - fields[9].GetUInt32())
+        sstext << "TicketID: " << fields[0].asUint16()
+            << " | Player: " << fields[2].asCString()
+            << " | Opened: " << Util::GetDateStringFromSeconds((uint32_t)UNIXTIME - fields[9].asUint32())
             << '\n';
     } while (result->NextRow());
 
@@ -87,9 +87,9 @@ bool ChatHandler::HandleTicketGetCommand(const char* args, WorldSession* m_sessi
     std::stringstream sstext;
     Field* fields = result->Fetch();
 
-    sstext << "Ticket ID: " << ticketID << " | Player: " << fields[2].GetString() << '\n'
+    sstext << "Ticket ID: " << ticketID << " | Player: " << fields[2].asCString() << '\n'
             << "======= Content =======" << '\n'
-            << fields[8].GetString() << '\n';
+            << fields[8].asCString() << '\n';
 
     delete result;
 
@@ -141,7 +141,7 @@ bool ChatHandler::HandleTicketCloseCommand(const char* args, WorldSession* m_ses
         return false;
     }
     Field* fields = result->Fetch();
-    uint32_t playerGuid = fields[1].GetUInt32();
+    uint32_t playerGuid = fields[1].asUint32();
 
     GM_Ticket* gm_ticket = sTicketMgr.getGMTicketByPlayer(playerGuid);
     if (gm_ticket == nullptr)

@@ -193,15 +193,15 @@ void InstanceMgr::loadResetTimes()
         {
             Field* fields = result->Fetch();
 
-            uint32_t instanceId = fields[0].GetUInt32();
+            uint32_t instanceId = fields[0].asUint32();
 
             // Add our Current Instance Id as Used to our Pool
             sMapMgr.instanceIdPool.addUsedValue(instanceId);
 
-            if (time_t resettime = static_cast<time_t>(fields[3].GetUInt64()))
+            if (time_t resettime = static_cast<time_t>(fields[3].asUint64()))
             {
-                auto mapid = fields[1].GetUInt16();
-                auto difficulty = fields[2].GetUInt8();
+                auto mapid = fields[1].asUint16();
+                auto difficulty = fields[2].asUint8();
 
                 instResetTime[instanceId] = ResetTimeMapDiffType(Util::MAKE_PAIR32(mapid, difficulty), resettime);
                 mapDiffResetInstances.insert(ResetTimeMapDiffInstances::value_type(Util::MAKE_PAIR32(mapid, difficulty), instanceId));
@@ -228,9 +228,9 @@ void InstanceMgr::loadResetTimes()
         do
         {
             Field* fields = result->Fetch();
-            auto mapid = fields[0].GetUInt16();
-            InstanceDifficulty::Difficulties difficulty = InstanceDifficulty::Difficulties(fields[1].GetUInt8());
-            uint64_t oldresettime = fields[2].GetUInt64();
+            auto mapid = fields[0].asUint16();
+            InstanceDifficulty::Difficulties difficulty = InstanceDifficulty::Difficulties(fields[1].asUint8());
+            uint64_t oldresettime = fields[2].asUint64();
 
             WDB::Structures::MapDifficulty const* mapDiff = getMapDifficultyData(mapid, difficulty);
             if (!mapDiff)

@@ -117,7 +117,7 @@ void DayWatcherThread::load_settings()
     QueryResult* result = CharacterDatabase.Query("SELECT setting_value FROM server_settings WHERE setting_id = \'last_arena_update_time\'");
     if (result)
     {
-        m_lastArenaTime = result->Fetch()[0].GetUInt32();
+        m_lastArenaTime = result->Fetch()[0].asUint32();
         delete result;
     }
     else
@@ -130,7 +130,7 @@ void DayWatcherThread::load_settings()
     QueryResult* result2 = CharacterDatabase.Query("SELECT setting_value FROM server_settings WHERE setting_id = \'last_daily_update_time\'");
     if (result2)
     {
-        m_lastDailyTime = result2->Fetch()[0].GetUInt32();
+        m_lastDailyTime = result2->Fetch()[0].asUint32();
         delete result2;
     }
     else
@@ -201,8 +201,8 @@ void DayWatcherThread::update_arena()
         do
         {
             Field* field = result->Fetch();
-            uint32_t guid = field[0].GetUInt32();
-            uint32_t arenapoints = field[1].GetUInt32();
+            uint32_t guid = field[0].asUint32();
+            uint32_t arenapoints = field[1].asUint32();
             uint32_t orig_arenapoints = arenapoints;
 
             for (uint8_t i = 0; i < 3; ++i)

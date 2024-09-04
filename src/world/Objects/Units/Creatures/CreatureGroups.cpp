@@ -93,21 +93,21 @@ void FormationMgr::loadCreatureFormations()
 
         //Load group member data
         FormationInfo member;
-        member.LeaderSpawnId              = fields[0].GetUInt32();
-        uint32_t memberSpawnId            = fields[1].GetUInt32();
+        member.LeaderSpawnId              = fields[0].asUint32();
+        uint32_t memberSpawnId            = fields[1].asUint32();
         member.FollowDist                 = 0.f;
         member.FollowAngle                = 0.f;
 
         //If creature is group leader we may skip loading of dist/angle
         if (member.LeaderSpawnId != memberSpawnId)
         {
-            member.FollowDist             = fields[2].GetFloat();
-            member.FollowAngle            = fields[3].GetFloat() * float(M_PI) / 180.0f;
+            member.FollowDist             = fields[2].asFloat();
+            member.FollowAngle            = fields[3].asFloat() * float(M_PI) / 180.0f;
         }
 
-        member.GroupAI                    = fields[4].GetUInt32();
+        member.GroupAI                    = fields[4].asUint32();
         for (uint8_t i = 0; i < 2; ++i)
-            member.LeaderWaypointIDs[i]   = fields[5 + i].GetUInt16();
+            member.LeaderWaypointIDs[i]   = fields[5 + i].asUint16();
 
         // check data correctness
         {

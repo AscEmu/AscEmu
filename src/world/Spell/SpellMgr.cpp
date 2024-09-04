@@ -1207,15 +1207,15 @@ void SpellMgr::loadSpellCoefficientOverride()
     do
     {
         const auto fields = result->Fetch();
-        auto spellInfo = getMutableSpellInfo(fields[0].GetUInt32());
+        auto spellInfo = getMutableSpellInfo(fields[0].asUint32());
         if (spellInfo == nullptr)
         {
-            sLogger.failure("Table `spell_coefficient_override` has unknown spell entry {}, skipped", fields[0].GetUInt32());
+            sLogger.failure("Table `spell_coefficient_override` has unknown spell entry {}, skipped", fields[0].asUint32());
             continue;
         }
 
-        const auto direct_override = fields[1].GetFloat();
-        const auto overtime_override = fields[2].GetFloat();
+        const auto direct_override = fields[1].asFloat();
+        const auto overtime_override = fields[2].asFloat();
         // Coeff can be overridden to 0 when it won't receive any bonus from spell power (default value is -1)
         if (direct_override >= 0)
             spellInfo->spell_coeff_direct = direct_override;
@@ -1243,24 +1243,24 @@ void SpellMgr::loadSpellCustomOverride()
     {
         const auto fields = result->Fetch();
 
-        auto spellInfo = getMutableSpellInfo(fields[0].GetUInt32());
+        auto spellInfo = getMutableSpellInfo(fields[0].asUint32());
         if (spellInfo == nullptr)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Table `spell_custom_override` has unknown spell entry {}, skipped", fields[0].GetUInt32());
+            sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Table `spell_custom_override` has unknown spell entry {}, skipped", fields[0].asUint32());
             continue;
         }
 
         // assign_on_target_flag
         if (fields[1].isSet())
-            spellInfo->custom_BGR_one_buff_on_target = fields[1].GetUInt32();
+            spellInfo->custom_BGR_one_buff_on_target = fields[1].asUint32();
 
         // assign_self_cast_only
         if (fields[2].isSet())
-            spellInfo->custom_self_cast_only = fields[2].GetBool();
+            spellInfo->custom_self_cast_only = fields[2].asBool();
 
         // assign_c_is_flag
         if (fields[3].isSet())
-            spellInfo->custom_c_is_flags = fields[3].GetUInt32();
+            spellInfo->custom_c_is_flags = fields[3].asUint32();
 
         // todo: following columns will be removed from db on spell proc rework -Appled
 
@@ -1336,7 +1336,7 @@ void SpellMgr::loadSpellAIThreat()
     do
     {
         const auto fields = result->Fetch();
-        const auto spellId = fields[0].GetUInt32();
+        const auto spellId = fields[0].asUint32();
 
         auto spellInfo = getMutableSpellInfo(spellId);
         if (spellInfo == nullptr)
@@ -1345,8 +1345,8 @@ void SpellMgr::loadSpellAIThreat()
             continue;
         }
 
-        spellInfo->custom_ThreatForSpell = fields[1].GetInt32();
-        spellInfo->custom_ThreatForSpellCoef = fields[2].GetFloat();
+        spellInfo->custom_ThreatForSpell = fields[1].asInt32();
+        spellInfo->custom_ThreatForSpellCoef = fields[2].asFloat();
 
         ++threatCount;
     } while (result->NextRow());
@@ -1368,18 +1368,18 @@ void SpellMgr::loadSpellEffectOverride()
     do
     {
         const auto fields = result->Fetch();
-        uint32_t seo_SpellId = fields[0].GetUInt32();
-        uint8_t seo_EffectId = fields[1].GetUInt8();
-        uint32_t seo_Disable = fields[2].GetUInt32();
-        uint32_t seo_Effect = fields[3].GetUInt32();
-        uint32_t seo_BasePoints = fields[4].GetUInt32();
-        uint32_t seo_ApplyAuraName = fields[5].GetUInt32();
+        uint32_t seo_SpellId = fields[0].asUint32();
+        uint8_t seo_EffectId = fields[1].asUint8();
+        uint32_t seo_Disable = fields[2].asUint32();
+        uint32_t seo_Effect = fields[3].asUint32();
+        uint32_t seo_BasePoints = fields[4].asUint32();
+        uint32_t seo_ApplyAuraName = fields[5].asUint32();
         //uint32_t seo_SpellGroupRelation = fields[6].GetUInt32();
-        uint32_t seo_MiscValue = fields[7].GetUInt32();
-        uint32_t seo_TriggerSpell = fields[8].GetUInt32();
-        uint32_t seo_ImplicitTargetA = fields[9].GetUInt32();
-        uint32_t seo_ImplicitTargetB = fields[10].GetUInt32();
-        uint32_t seo_EffectCustomFlag = fields[11].GetUInt32();
+        uint32_t seo_MiscValue = fields[7].asUint32();
+        uint32_t seo_TriggerSpell = fields[8].asUint32();
+        uint32_t seo_ImplicitTargetA = fields[9].asUint32();
+        uint32_t seo_ImplicitTargetB = fields[10].asUint32();
+        uint32_t seo_EffectCustomFlag = fields[11].asUint32();
 
         auto spellInfo = getMutableSpellInfo(seo_SpellId);
         if (spellInfo == nullptr)
@@ -1446,18 +1446,18 @@ void SpellMgr::loadSpellAreas()
     {
         const auto fields = result->Fetch();
 
-        uint32_t spellId = fields[0].GetUInt32();
+        uint32_t spellId = fields[0].asUint32();
 
         SpellArea spellArea{};
         spellArea.spellId = spellId;
-        spellArea.areaId = fields[1].GetUInt32();
-        spellArea.questStart = fields[2].GetUInt32();
-        spellArea.questStartCanActive = fields[3].GetBool();
-        spellArea.questEnd = fields[4].GetUInt32();
-        spellArea.auraSpell = fields[5].GetInt32();
-        spellArea.raceMask = fields[6].GetUInt32();
-        spellArea.gender = Gender(fields[7].GetUInt32());
-        spellArea.autoCast = fields[8].GetBool();
+        spellArea.areaId = fields[1].asUint32();
+        spellArea.questStart = fields[2].asUint32();
+        spellArea.questStartCanActive = fields[3].asBool();
+        spellArea.questEnd = fields[4].asUint32();
+        spellArea.auraSpell = fields[5].asInt32();
+        spellArea.raceMask = fields[6].asUint32();
+        spellArea.gender = Gender(fields[7].asUint32());
+        spellArea.autoCast = fields[8].asBool();
 
         // Search for a duplicate entry
         auto duplicate = false;
@@ -1638,8 +1638,8 @@ void SpellMgr::loadSpellRequired()
     {
         auto fields = result->Fetch();
 
-        auto spell_id = fields[0].GetUInt32();
-        auto spell_req = fields[1].GetUInt32();
+        auto spell_id = fields[0].asUint32();
+        auto spell_req = fields[1].asUint32();
 
         // Check for valid spells
         const auto spellInfo = getSpellInfo(spell_id);
@@ -1686,7 +1686,7 @@ void SpellMgr::loadSpellTargetConstraints()
 
             if (fields != nullptr)
             {
-                const auto spellId = fields[0].GetUInt32();
+                const auto spellId = fields[0].asUint32();
                 if (oldspellId != spellId)
                 {
                     stc = new SpellTargetConstraint;
@@ -1694,8 +1694,8 @@ void SpellMgr::loadSpellTargetConstraints()
                     mSpellTargetConstraintMap.insert(std::pair(spellId, stc));
                 }
 
-                const auto type = fields[1].GetUInt8();
-                const auto value = fields[2].GetUInt32();
+                const auto type = fields[1].asUint8();
+                const auto value = fields[2].asUint32();
 
                 if (type == SPELL_CONSTRAINT_EXPLICIT_CREATURE)
                 {
@@ -1740,7 +1740,7 @@ void SpellMgr::loadSpellDisabled()
     {
         do
         {
-            mDisabledSpells.insert(result->Fetch()[0].GetUInt32());
+            mDisabledSpells.insert(result->Fetch()[0].asUint32());
         } while (result->NextRow());
 
         delete result;
@@ -1878,9 +1878,9 @@ void SpellMgr::loadSpellRanks()
     do
     {
         const auto fields = result->Fetch();
-        const auto spellId = fields[0].GetUInt32();
-        const auto firstSpellId = fields[1].GetUInt32();
-        const auto rank = fields[2].GetUInt8();
+        const auto spellId = fields[0].asUint32();
+        const auto firstSpellId = fields[1].asUint32();
+        const auto rank = fields[2].asUint8();
 
         if (lastFetchedSpellId == 0)
             lastFetchedSpellId = firstSpellId;

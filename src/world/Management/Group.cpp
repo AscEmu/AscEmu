@@ -694,21 +694,21 @@ void Group::SendNullUpdate(Player* pPlayer)
 
 void Group::LoadFromDB(Field* fields)
 {
-#define LOAD_ASSISTANT(__i, __d) g = fields[__i].GetUInt32(); if (g != 0) { __d = sObjectMgr.getCachedCharacterInfo(g); }
+#define LOAD_ASSISTANT(__i, __d) g = fields[__i].asUint32(); if (g != 0) { __d = sObjectMgr.getCachedCharacterInfo(g); }
 
     std::lock_guard lock(m_groupLock);
 
     uint32 g;
     m_updateblock = true;
 
-    m_Id = fields[0].GetUInt32();
+    m_Id = fields[0].asUint32();
 
-    m_GroupType = fields[1].GetUInt8();
-    m_SubGroupCount = fields[2].GetUInt8();
-    m_LootMethod = fields[3].GetUInt8();
-    m_LootThreshold = fields[4].GetUInt8();
-    m_difficulty = fields[5].GetUInt8();
-    m_raiddifficulty = fields[6].GetUInt8();
+    m_GroupType = fields[1].asUint8();
+    m_SubGroupCount = fields[2].asUint8();
+    m_LootMethod = fields[3].asUint8();
+    m_LootThreshold = fields[4].asUint8();
+    m_difficulty = fields[5].asUint8();
+    m_raiddifficulty = fields[6].asUint8();
 
     LOAD_ASSISTANT(7, m_assistantLeader);
     LOAD_ASSISTANT(8, m_mainTank);
@@ -723,7 +723,7 @@ void Group::LoadFromDB(Field* fields)
     {
         for (uint8 j = 0; j < 5; ++j)
         {
-            uint32 guid = fields[10 + (i * 5) + j].GetUInt32();
+            uint32 guid = fields[10 + (i * 5) + j].asUint32();
             if (guid == 0)
                 continue;
 

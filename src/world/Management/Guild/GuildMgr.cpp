@@ -157,7 +157,7 @@ void GuildMgr::loadGuildDataFromDB()
             do
             {
                 Field* fields = result->Fetch();
-                uint32_t guildId = fields[0].GetUInt32();
+                uint32_t guildId = fields[0].asUint32();
 
                 if (Guild* guild = getGuildById(guildId))
                     guild->loadRankFromDB(fields);
@@ -191,7 +191,7 @@ void GuildMgr::loadGuildDataFromDB()
             {
                 Field* fields = result->Fetch();
                 Field* fields2 = result2->Fetch();
-                uint32_t guildId = fields[0].GetUInt32();
+                uint32_t guildId = fields[0].asUint32();
 
                 if (Guild* guild = getGuildById(guildId))
                     guild->loadMemberFromDB(fields, fields2);
@@ -224,7 +224,7 @@ void GuildMgr::loadGuildDataFromDB()
             do
             {
                 Field* fields = result->Fetch();
-                uint32_t guildId = fields[0].GetUInt32();
+                uint32_t guildId = fields[0].asUint32();
 
                 if (Guild* guild = getGuildById(guildId))
                     guild->loadBankRightFromDB(fields);
@@ -257,7 +257,7 @@ void GuildMgr::loadGuildDataFromDB()
             do
             {
                 Field* fields = result->Fetch();
-                uint32_t guildId = fields[0].GetUInt32();
+                uint32_t guildId = fields[0].asUint32();
 
                 if (Guild* guild = getGuildById(guildId))
                     guild->loadEventLogFromDB(fields);
@@ -289,7 +289,7 @@ void GuildMgr::loadGuildDataFromDB()
             do
             {
                 Field* fields = result->Fetch();
-                uint32_t guildId = fields[0].GetUInt32();
+                uint32_t guildId = fields[0].asUint32();
 
                 if (Guild* guild = getGuildById(guildId))
                     guild->loadBankEventLogFromDB(fields);
@@ -322,7 +322,7 @@ void GuildMgr::loadGuildDataFromDB()
             do
             {
                 Field* fields = result->Fetch();
-                uint32_t guildId = fields[0].GetUInt32();
+                uint32_t guildId = fields[0].asUint32();
 
                 if (Guild* guild = getGuildById(guildId))
                     guild->loadGuildNewsLogFromDB(fields);
@@ -355,7 +355,7 @@ void GuildMgr::loadGuildDataFromDB()
             do
             {
                 Field* fields = result->Fetch();
-                uint32_t guildId = fields[0].GetUInt32();
+                uint32_t guildId = fields[0].asUint32();
 
                 if (Guild* guild = getGuildById(guildId))
                     guild->loadBankTabFromDB(fields);
@@ -384,7 +384,7 @@ void GuildMgr::loadGuildDataFromDB()
             do
             {
                 Field* fields = result->Fetch();
-                uint32_t guildId = fields[0].GetUInt32();
+                uint32_t guildId = fields[0].asUint32();
 
                 if (Guild* guild = getGuildById(guildId))
                     guild->loadBankItemFromDB(fields);
@@ -449,8 +449,8 @@ void GuildMgr::loadGuildXpForLevelFromDB()
     {
         Field* fields = result->Fetch();
 
-        uint32_t level = fields[0].GetUInt8();
-        uint32_t requiredXP = static_cast<uint32_t>(fields[1].GetUInt64());
+        uint32_t level = fields[0].asUint8();
+        uint32_t requiredXP = static_cast<uint32_t>(fields[1].asUint64());
 
         if (level >= worldConfig.guild.maxLevel)
         {
@@ -494,11 +494,11 @@ void GuildMgr::loadGuildRewardsFromDB()
     {
         GuildReward reward;
         Field* fields = result->Fetch();
-        reward.entry = fields[0].GetUInt32();
-        reward.standing = fields[1].GetUInt8();
-        reward.racemask = fields[2].GetInt32();
-        reward.price = fields[3].GetUInt64();
-        reward.achievementId = fields[4].GetUInt32();
+        reward.entry = fields[0].asUint32();
+        reward.standing = fields[1].asUint8();
+        reward.racemask = fields[2].asInt32();
+        reward.price = fields[3].asUint64();
+        reward.achievementId = fields[4].asUint32();
 
         if (!sItemStore.lookupEntry(reward.entry))
         {

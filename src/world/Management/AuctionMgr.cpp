@@ -32,7 +32,7 @@ void AuctionMgr::loadAuctionHouses()
     QueryResult* res = CharacterDatabase.Query("SELECT MAX(auctionId) FROM auctions");
     if (res)
     {
-        m_maxId = res->Fetch()[0].GetUInt32();
+        m_maxId = res->Fetch()[0].asUint32();
         delete res;
     }
 
@@ -44,10 +44,10 @@ void AuctionMgr::loadAuctionHouses()
         uint32_t c = 0;
         do
         {
-            auto ah = new AuctionHouse(res->Fetch()[0].GetUInt32());
+            auto ah = new AuctionHouse(res->Fetch()[0].asUint32());
             ah->loadAuctionsFromDB();
             m_auctionHouses.push_back(ah);
-            tempmap.insert(std::make_pair(res->Fetch()[0].GetUInt32(), ah));
+            tempmap.insert(std::make_pair(res->Fetch()[0].asUint32(), ah));
             if (!((++c) % period))
                 sLogger.info("AuctionHouse : Done {}/{}, {}% complete.", c, res->GetRowCount(), c * 100 / res->GetRowCount());
 
@@ -61,7 +61,7 @@ void AuctionMgr::loadAuctionHouses()
     {
         do
         {
-            m_auctionHouseEntryMap.insert(std::make_pair(res->Fetch()[0].GetUInt32(), tempmap[res->Fetch()[1].GetUInt32()]));
+            m_auctionHouseEntryMap.insert(std::make_pair(res->Fetch()[0].asUint32(), tempmap[res->Fetch()[1].asUint32()]));
         }
         while (res->NextRow());
         delete res;

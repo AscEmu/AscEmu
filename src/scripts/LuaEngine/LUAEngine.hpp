@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/EventMgr.h"
 #include "Server/Script/ScriptMgr.hpp"
 #include <set>
+#include <sstream>
 
 
 #ifdef DEBUG

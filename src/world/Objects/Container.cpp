@@ -65,20 +65,20 @@ void Container::create(uint32_t itemid, Player* owner)
 
 void Container::loadFromDB(Field* fields)
 {
-    uint32_t itemId = fields[2].GetUInt32();
+    uint32_t itemId = fields[2].asUint32();
 
     if (m_itemProperties = sMySQLStore.getItemProperties(itemId))
     {
         setEntry(itemId);
 
-        setCreatorGuid(fields[5].GetUInt32());
+        setCreatorGuid(fields[5].asUint32());
         setStackCount(1);
 
-        setFlags(fields[8].GetUInt32());
-        setRandomPropertiesId(fields[9].GetUInt32());
+        setFlags(fields[8].asUint32());
+        setRandomPropertiesId(fields[9].asUint32());
 
         setMaxDurability(m_itemProperties->MaxDurability);
-        setDurability(fields[12].GetUInt32());
+        setDurability(fields[12].asUint32());
 
         setSlotCount(m_itemProperties->ContainerSlots);
 

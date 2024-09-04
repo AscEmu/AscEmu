@@ -49,16 +49,16 @@ ArenaTeam::ArenaTeam(Field* field)
 {
     uint32_t z = 0;
 
-    m_id = field[z++].GetUInt32();
-    m_type = field[z++].GetUInt8();
-    m_leader = field[z++].GetUInt32();
-    m_name = field[z++].GetString();
-    m_emblem.emblemStyle = field[z++].GetUInt32();
-    m_emblem.emblemColour = field[z++].GetUInt32();
-    m_emblem.borderStyle = field[z++].GetUInt32();
-    m_emblem.borderColour = field[z++].GetUInt32();
-    m_emblem.backgroundColour = field[z++].GetUInt32();
-    m_stats.rating = field[z++].GetUInt32();
+    m_id = field[z++].asUint32();
+    m_type = field[z++].asUint8();
+    m_leader = field[z++].asUint32();
+    m_name = field[z++].asCString();
+    m_emblem.emblemStyle = field[z++].asUint32();
+    m_emblem.emblemColour = field[z++].asUint32();
+    m_emblem.borderStyle = field[z++].asUint32();
+    m_emblem.borderColour = field[z++].asUint32();
+    m_emblem.backgroundColour = field[z++].asUint32();
+    m_stats.rating = field[z++].asUint32();
 
     _allocateSlots(m_type);
 
@@ -68,14 +68,14 @@ ArenaTeam::ArenaTeam(Field* field)
     m_stats.won_week = 0;
     m_stats.ranking = 0;
 
-    if (sscanf(field[z++].GetString(), "%u %u %u %u", &m_stats.played_week, &m_stats.won_week, &m_stats.played_season, &m_stats.won_season) != 3)
+    if (sscanf(field[z++].asCString(), "%u %u %u %u", &m_stats.played_week, &m_stats.won_week, &m_stats.played_season, &m_stats.won_season) != 3)
         return;
 
-    m_stats.ranking = field[z++].GetUInt32();
+    m_stats.ranking = field[z++].asUint32();
     for (uint32_t i = 0; i < m_slots; ++i)
     {
         uint32_t guid;
-        const char* data = field[z++].GetString();
+        const char* data = field[z++].asCString();
         int ret = sscanf(data, "%u %u %u %u %u %u", &guid, &m_members[i].Played_ThisWeek, &m_members[i].Won_ThisWeek,
                          &m_members[i].Played_ThisSeason, &m_members[i].Won_ThisSeason, &m_members[i].PersonalRating);
         if (ret >= 5)

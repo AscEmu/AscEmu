@@ -12,11 +12,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 Charter::Charter(Field* _field)
 {
-    m_charterId = _field[0].GetUInt32();
-    m_charterType = _field[1].GetUInt8();
-    m_leaderGuid = _field[2].GetUInt32();
-    m_guildName = _field[3].GetString();
-    m_itemGuid = _field[4].GetUInt64();
+    m_charterId = _field[0].asUint32();
+    m_charterType = _field[1].asUint8();
+    m_leaderGuid = _field[2].asUint32();
+    m_guildName = _field[3].asCString();
+    m_itemGuid = _field[4].asUint64();
 
     m_availableSlots = getNumberOfAvailableSlots();
 
@@ -24,7 +24,7 @@ Charter::Charter(Field* _field)
     {
         constexpr uint8_t fieldOffset = 5;
 
-        if (uint32_t playerGuid = _field[i + fieldOffset].GetUInt32())
+        if (uint32_t playerGuid = _field[i + fieldOffset].asUint32())
             m_signatures.push_back(playerGuid);
     }
 }

@@ -126,7 +126,7 @@ void DatabaseUpdater::applyUpdatesForDatabase(const std::string& database, Datab
     }
 
     Field* fields = result->Fetch();
-    const std::string dbLastUpdate = fields[0].GetString();
+    const std::string dbLastUpdate = fields[0].asCString();
 
     sLogger.info("Database {} Version : {}", database, dbLastUpdate);
 

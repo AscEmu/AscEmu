@@ -190,7 +190,7 @@ void Mailbox::Load(QueryResult* result)
     do
     {
         fields = result->Fetch();
-        uint32 expiry_time = fields[10].GetUInt32();
+        uint32 expiry_time = fields[10].asUint32();
 
         // Do not load expired mails!
         if (expiry_time < now)
@@ -199,14 +199,14 @@ void Mailbox::Load(QueryResult* result)
         // Create message struct
         i = 0;
         msg.items.clear();
-        msg.message_id = fields[i++].GetUInt32();
-        msg.message_type = fields[i++].GetUInt32();
-        msg.player_guid = fields[i++].GetUInt32();
-        msg.sender_guid = fields[i++].GetUInt32();
-        msg.subject = fields[i++].GetString();
-        msg.body = fields[i++].GetString();
-        msg.money = fields[i++].GetUInt32();
-        str = (char*)fields[i++].GetString();
+        msg.message_id = fields[i++].asUint32();
+        msg.message_type = fields[i++].asUint32();
+        msg.player_guid = fields[i++].asUint32();
+        msg.sender_guid = fields[i++].asUint32();
+        msg.subject = fields[i++].asCString();
+        msg.body = fields[i++].asCString();
+        msg.money = fields[i++].asUint32();
+        str = (char*)fields[i++].asCString();
         p = strchr(str, ',');
         if (p == NULL)
         {
@@ -230,12 +230,12 @@ void Mailbox::Load(QueryResult* result)
             }
         }
 
-        msg.cod = fields[i++].GetUInt32();
-        msg.stationery = fields[i++].GetUInt32();
-        msg.expire_time = fields[i++].GetUInt32();
-        msg.delivery_time = fields[i++].GetUInt32();
-        msg.checked_flag = fields[i++].GetUInt32();
-        msg.deleted_flag = fields[i++].GetBool();
+        msg.cod = fields[i++].asUint32();
+        msg.stationery = fields[i++].asUint32();
+        msg.expire_time = fields[i++].asUint32();
+        msg.delivery_time = fields[i++].asUint32();
+        msg.checked_flag = fields[i++].asUint32();
+        msg.deleted_flag = fields[i++].asBool();
 
         // Add to the mailbox
         AddMessage(&msg);

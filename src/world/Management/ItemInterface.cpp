@@ -3415,22 +3415,22 @@ void ItemInterface::mLoadItemsFromDatabase(QueryResult* result)
         {
             Field* fields = result->Fetch();
 
-            containerslot = fields[13].GetInt8();
-            slot = fields[14].GetInt8();
+            containerslot = fields[13].asInt8();
+            slot = fields[14].asInt8();
 
-            ItemProperties const* proto = sMySQLStore.getItemProperties(fields[2].GetUInt32());
+            ItemProperties const* proto = sMySQLStore.getItemProperties(fields[2].asUint32());
             if (proto != nullptr)
             {
                 if (proto->InventoryType == INVTYPE_BAG)
                 {
-                    item = new Container(HIGHGUID_TYPE_CONTAINER, fields[1].GetUInt32());
+                    item = new Container(HIGHGUID_TYPE_CONTAINER, fields[1].asUint32());
                     static_cast<Container*>(item)->loadFromDB(fields);
 
                 }
                 else
                 {
                     item = new Item;
-                    item->init(HIGHGUID_TYPE_ITEM, fields[1].GetUInt32());
+                    item->init(HIGHGUID_TYPE_ITEM, fields[1].asUint32());
                     item->loadFromDB(fields, m_pOwner, false);
 
                 }

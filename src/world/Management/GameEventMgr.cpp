@@ -77,15 +77,15 @@ void GameEventMgr::LoadFromDB()
             Field* field = result->Fetch();
 
             EventNamesQueryResult dbResult;
-            dbResult.entry = field[0].GetUInt32();
-            dbResult.start_time = field[1].GetUInt32();
-            dbResult.end_time = field[2].GetUInt32();
-            dbResult.occurence = field[3].GetUInt32();
-            dbResult.length = field[4].GetUInt32();
-            dbResult.holiday_id = HolidayIds(field[5].GetUInt32());
-            dbResult.description = field[6].GetString();
-            dbResult.world_event = GameEventState(field[7].GetUInt8());
-            dbResult.announce = field[8].GetUInt8();
+            dbResult.entry = field[0].asUint32();
+            dbResult.start_time = field[1].asUint32();
+            dbResult.end_time = field[2].asUint32();
+            dbResult.occurence = field[3].asUint32();
+            dbResult.length = field[4].asUint32();
+            dbResult.holiday_id = HolidayIds(field[5].asUint32());
+            dbResult.description = field[6].asCString();
+            dbResult.world_event = GameEventState(field[7].asUint8());
+            dbResult.announce = field[8].asUint8();
 
             GameEvent gameEvent = GameEvent(dbResult);
 
@@ -122,7 +122,7 @@ void GameEventMgr::LoadFromDB()
             do
             {
                 Field* field = result->Fetch();
-                uint32 event_id = field[0].GetUInt8();
+                uint32 event_id = field[0].asUint8();
 
                 auto gameEvent = GetEventById(event_id);
                 if (gameEvent == nullptr)
@@ -132,8 +132,8 @@ void GameEventMgr::LoadFromDB()
                     continue;
                 }
 
-                gameEvent->state = (GameEventState)(field[1].GetUInt8());
-                gameEvent->nextstart = time_t(field[2].GetUInt32());
+                gameEvent->state = (GameEventState)(field[1].asUint8());
+                gameEvent->nextstart = time_t(field[2].asUint32());
 
                 ++pCount;
 
@@ -167,7 +167,7 @@ void GameEventMgr::LoadFromDB()
             {
                 Field* field = result->Fetch();
 
-                uint32 event_id = field[28].GetUInt32();
+                uint32 event_id = field[28].asUint32();
 
                 auto gameEvent = GetEventById(event_id);
                 if (gameEvent == nullptr)
@@ -177,41 +177,41 @@ void GameEventMgr::LoadFromDB()
                 }
 
                 EventCreatureSpawnsQueryResult dbResult;
-                dbResult.event_entry = field[28].GetUInt32();
-                dbResult.id = field[0].GetUInt32();
-                dbResult.entry = field[1].GetUInt32();
+                dbResult.event_entry = field[28].asUint32();
+                dbResult.id = field[0].asUint32();
+                dbResult.entry = field[1].asUint32();
                 auto creature_properties = sMySQLStore.getCreatureProperties(dbResult.entry);
                 if (creature_properties == nullptr)
                 {
                     sLogger.failure("Could not create CreatureSpawn for invalid entry {} (missing in table creature_properties)", dbResult.entry);
                     continue;
                 }
-                dbResult.map_id = field[2].GetUInt16();
-                dbResult.position_x = field[3].GetFloat();
-                dbResult.position_y = field[4].GetFloat();
-                dbResult.position_z = field[5].GetFloat();
-                dbResult.orientation = field[6].GetFloat();
-                dbResult.movetype = field[7].GetUInt8();
-                dbResult.displayid = field[8].GetUInt32();
-                dbResult.faction = field[9].GetUInt32();
-                dbResult.flags = field[10].GetUInt32();
-                dbResult.bytes0 = field[11].GetUInt32();
-                dbResult.bytes1 = field[12].GetUInt32();
-                dbResult.bytes2 = field[13].GetUInt32();
-                dbResult.emote_state = field[14].GetUInt16();
-                dbResult.npc_respawn_link = field[15].GetUInt32();
-                dbResult.channel_spell = field[16].GetUInt32();
-                dbResult.channel_target_sqlid = field[17].GetUInt32();
-                dbResult.channel_target_sqlid_creature = field[18].GetUInt32();
-                dbResult.standstate = field[19].GetUInt8();
-                dbResult.death_state = field[20].GetUInt8();
-                dbResult.mountdisplayid = field[21].GetUInt32();
-                dbResult.slot1item = field[22].GetUInt32();
-                dbResult.slot2item = field[23].GetUInt32();
-                dbResult.slot3item = field[24].GetUInt32();
-                dbResult.CanFly = field[25].GetUInt16();
-                dbResult.phase = field[26].GetUInt32();
-                dbResult.waypoint_group = field[27].GetUInt32();
+                dbResult.map_id = field[2].asUint16();
+                dbResult.position_x = field[3].asFloat();
+                dbResult.position_y = field[4].asFloat();
+                dbResult.position_z = field[5].asFloat();
+                dbResult.orientation = field[6].asFloat();
+                dbResult.movetype = field[7].asUint8();
+                dbResult.displayid = field[8].asUint32();
+                dbResult.faction = field[9].asUint32();
+                dbResult.flags = field[10].asUint32();
+                dbResult.bytes0 = field[11].asUint32();
+                dbResult.bytes1 = field[12].asUint32();
+                dbResult.bytes2 = field[13].asUint32();
+                dbResult.emote_state = field[14].asUint16();
+                dbResult.npc_respawn_link = field[15].asUint32();
+                dbResult.channel_spell = field[16].asUint32();
+                dbResult.channel_target_sqlid = field[17].asUint32();
+                dbResult.channel_target_sqlid_creature = field[18].asUint32();
+                dbResult.standstate = field[19].asUint8();
+                dbResult.death_state = field[20].asUint8();
+                dbResult.mountdisplayid = field[21].asUint32();
+                dbResult.slot1item = field[22].asUint32();
+                dbResult.slot2item = field[23].asUint32();
+                dbResult.slot3item = field[24].asUint32();
+                dbResult.CanFly = field[25].asUint16();
+                dbResult.phase = field[26].asUint32();
+                dbResult.waypoint_group = field[27].asUint32();
 
                 gameEvent->npc_data.push_back(dbResult);
 
@@ -245,7 +245,7 @@ void GameEventMgr::LoadFromDB()
             do
             {
                 Field* field = result->Fetch();
-                uint32 event_id = field[14].GetUInt32();
+                uint32 event_id = field[14].asUint32();
 
                 auto gameEvent = GetEventById(event_id);
                 if (gameEvent == nullptr)
@@ -256,26 +256,26 @@ void GameEventMgr::LoadFromDB()
 
                 EventGameObjectSpawnsQueryResult dbResult;
                 dbResult.event_entry = event_id;
-                dbResult.id = field[0].GetUInt32();
-                dbResult.entry = field[1].GetUInt32();
+                dbResult.id = field[0].asUint32();
+                dbResult.entry = field[1].asUint32();
                 auto gameobject_info = sMySQLStore.getGameObjectProperties(dbResult.entry);
                 if (gameobject_info == nullptr)
                 {
                     sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Could not create GameobjectSpawn for invalid entry {} (missing in table gameobject_properties)", dbResult.entry);
                     continue;
                 }
-                dbResult.map_id = field[2].GetUInt32();
-                dbResult.phase = field[3].GetUInt32();
-                dbResult.position_x = field[4].GetFloat();
-                dbResult.position_y = field[5].GetFloat();
-                dbResult.position_z = field[6].GetFloat();
-                dbResult.facing = field[7].GetFloat();
-                dbResult.orientation1 = field[8].GetFloat();
-                dbResult.orientation2 = field[9].GetFloat();
-                dbResult.orientation3 = field[10].GetFloat();
-                dbResult.orientation4 = field[11].GetFloat();
-                dbResult.spawnTimesecs = field[12].GetUInt32();
-                dbResult.state = field[13].GetUInt32();
+                dbResult.map_id = field[2].asUint32();
+                dbResult.phase = field[3].asUint32();
+                dbResult.position_x = field[4].asFloat();
+                dbResult.position_y = field[5].asFloat();
+                dbResult.position_z = field[6].asFloat();
+                dbResult.facing = field[7].asFloat();
+                dbResult.orientation1 = field[8].asFloat();
+                dbResult.orientation2 = field[9].asFloat();
+                dbResult.orientation3 = field[10].asFloat();
+                dbResult.orientation4 = field[11].asFloat();
+                dbResult.spawnTimesecs = field[12].asUint32();
+                dbResult.state = field[13].asUint32();
 
                 gameEvent->gameobject_data.push_back(dbResult);
 

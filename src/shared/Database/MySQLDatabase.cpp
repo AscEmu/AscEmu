@@ -20,6 +20,8 @@
 
 #include "MySQLDatabase.h"
 
+#include <sstream>
+
 #include "Logging/Logger.hpp"
 
 MySQLDatabase::~MySQLDatabase()
@@ -198,7 +200,7 @@ bool MySQLQueryResult::NextRow()
         return false;
 
     for(uint32 i = 0; i < mFieldCount; ++i)
-        mCurrentRow[i].SetValue(row[i]);
+        mCurrentRow[i].setValue(row[i]);
 
     return true;
 }

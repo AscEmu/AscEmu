@@ -97,15 +97,15 @@ void InitializeGameObjectTeleportTable(ScriptMgr* mgr)
         {
             GameobjectTeleport* gt = new GameobjectTeleport;
             Field* fields = result->Fetch();
-            uint32_t entry = fields[0].GetUInt32();
-            gt->mapid = fields[1].GetUInt32();
-            gt->x = fields[2].GetFloat();
-            gt->y = fields[3].GetFloat();
-            gt->z = fields[4].GetFloat();
-            gt->o = fields[5].GetFloat();
-            gt->req_level = fields[6].GetUInt32();
-            gt->req_class = fields[7].GetUInt8();
-            gt->req_achievement = fields[8].GetUInt32();
+            uint32_t entry = fields[0].asUint32();
+            gt->mapid = fields[1].asUint32();
+            gt->x = fields[2].asFloat();
+            gt->y = fields[3].asFloat();
+            gt->z = fields[4].asFloat();
+            gt->o = fields[5].asFloat();
+            gt->req_level = fields[6].asUint32();
+            gt->req_class = fields[7].asUint8();
+            gt->req_achievement = fields[8].asUint32();
             m_teleStorage[entry] = gt;
             mgr->register_gameobject_script(entry, &CustomTeleport::Create);
         } while (result->NextRow());

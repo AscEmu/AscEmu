@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Server/LogonCommClient/LogonCommHandler.h"
 
+#include <sstream>
+
 #include "WorldPacket.h"
 #include "Server/Master.h"
 #include "Config/Config.h"
@@ -110,8 +112,8 @@ void LogonCommHandler::loadAccountPermissions()
     {
         do
         {
-            uint32_t id = result->Fetch()[0].GetUInt32();
-            std::string perm = result->Fetch()[1].GetString();
+            uint32_t id = result->Fetch()[0].asUint32();
+            std::string perm = result->Fetch()[1].asCString();
 
             accountPermissionsStore.insert(make_pair(id, perm));
 

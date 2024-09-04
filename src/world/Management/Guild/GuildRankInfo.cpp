@@ -26,10 +26,10 @@ GuildRankInfo::GuildRankInfo(uint32_t guildId, uint8_t rankId, std::string const
 
 void GuildRankInfo::loadGuildRankFromDB(Field* fields)
 {
-    mRankId = fields[1].GetUInt8();
-    mName = fields[2].GetString();
-    mRights = fields[3].GetUInt32();
-    mBankMoneyPerDay = fields[4].GetUInt32();
+    mRankId = fields[1].asUint8();
+    mName = fields[2].asCString();
+    mRights = fields[3].asUint32();
+    mBankMoneyPerDay = fields[4].asUint32();
 
     if (mRankId == GR_GUILDMASTER)
     {

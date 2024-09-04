@@ -51,16 +51,16 @@ void GuildFinderMgr::loadGuildSettingsFromDB()
     do
     {
         Field* fields = result->Fetch();
-        uint32_t guildId = fields[0].GetUInt32();
-        uint8_t availability = fields[1].GetUInt8();
-        uint8_t classRoles = fields[2].GetUInt8();
-        uint8_t interests = fields[3].GetUInt8();
-        uint8_t level = fields[4].GetUInt8();
-        bool listed = (fields[5].GetUInt8() != 0);
-        std::string comment = fields[6].GetString();
+        uint32_t guildId = fields[0].asUint32();
+        uint8_t availability = fields[1].asUint8();
+        uint8_t classRoles = fields[2].asUint8();
+        uint8_t interests = fields[3].asUint8();
+        uint8_t level = fields[4].asUint8();
+        bool listed = (fields[5].asUint8() != 0);
+        std::string comment = fields[6].asCString();
 
         PlayerTeam guildTeam = TEAM_ALLIANCE;
-        if (auto raceEntry = sChrRacesStore.lookupEntry(fields[7].GetUInt8()))
+        if (auto raceEntry = sChrRacesStore.lookupEntry(fields[7].asUint8()))
         {
             if (raceEntry->team_id == 1)
             {
@@ -95,13 +95,13 @@ void GuildFinderMgr::loadMembershipRequestsFromDB()
     do
     {
         Field* fields = result->Fetch();
-        uint32_t guildId = fields[0].GetUInt32();
-        uint32_t playerId = fields[1].GetUInt32();
-        uint8_t availability = fields[2].GetUInt8();
-        uint8_t classRoles = fields[3].GetUInt8();
-        uint8_t interests = fields[4].GetUInt8();
-        std::string comment = fields[5].GetString();
-        uint32_t submitTime = fields[6].GetUInt32();
+        uint32_t guildId = fields[0].asUint32();
+        uint32_t playerId = fields[1].asUint32();
+        uint8_t availability = fields[2].asUint8();
+        uint8_t classRoles = fields[3].asUint8();
+        uint8_t interests = fields[4].asUint8();
+        std::string comment = fields[5].asCString();
+        uint32_t submitTime = fields[6].asUint32();
 
         MembershipRequest request(playerId, guildId, availability, classRoles, interests, comment, time_t(submitTime));
 

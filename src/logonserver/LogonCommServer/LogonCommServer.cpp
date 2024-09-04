@@ -18,6 +18,9 @@
  */
 
 #include "LogonCommServer.h"
+
+#include <sstream>
+
 #include "Cryptography/LogonCommDefines.h"
 
 #include "Logging/Log.hpp"

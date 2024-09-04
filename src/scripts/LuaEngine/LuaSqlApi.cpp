@@ -69,7 +69,7 @@ int LuaSqlApi::GetString(lua_State* L, Field* field)
     if (field == nullptr)
         lua_pushnil(L);
     else
-        lua_pushstring(L, field->GetString());
+        lua_pushstring(L, field->asCString());
     return 1;
 }
 
@@ -78,7 +78,7 @@ int LuaSqlApi::GetFloat(lua_State* L, Field* field)
     if (field == nullptr)
         lua_pushnil(L);
     else
-        lua_pushnumber(L, field->GetFloat());
+        lua_pushnumber(L, field->asFloat());
     return 1;
 }
 
@@ -88,7 +88,7 @@ int LuaSqlApi::GetBool(lua_State* L, Field* field)
         lua_pushnil(L);
     else
     {
-        if (field->GetBool())
+        if (field->asBool())
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -101,7 +101,7 @@ int LuaSqlApi::GetUByte(lua_State* L, Field* field)
     if (field == nullptr)
         lua_pushnil(L);
     else
-        lua_pushinteger(L, field->GetUInt8());
+        lua_pushinteger(L, field->asUint8());
     return 1;
 }
 
@@ -110,7 +110,7 @@ int LuaSqlApi::GetByte(lua_State* L, Field* field)
     if (field == nullptr)
         lua_pushnil(L);
     else
-        lua_pushinteger(L, field->GetInt8());
+        lua_pushinteger(L, field->asInt8());
     return 1;
 }
 
@@ -119,7 +119,7 @@ int LuaSqlApi::GetUShort(lua_State* L, Field* field)
     if (field == nullptr)
         lua_pushnil(L);
     else
-        lua_pushinteger(L, field->GetUInt16());
+        lua_pushinteger(L, field->asUint16());
     return 1;
 }
 
@@ -128,7 +128,7 @@ int LuaSqlApi::GetShort(lua_State* L, Field* field)
     if (field == nullptr)
         lua_pushnil(L);
     else
-        lua_pushinteger(L, field->GetInt16());
+        lua_pushinteger(L, field->asInt16());
     return 1;
 }
 
@@ -137,7 +137,7 @@ int LuaSqlApi::GetULong(lua_State* L, Field* field)
     if (field == nullptr)
         lua_pushnil(L);
     else
-        lua_pushnumber(L, field->GetUInt32());
+        lua_pushnumber(L, field->asUint32());
     return 1;
 }
 
@@ -146,7 +146,7 @@ int LuaSqlApi::GetLong(lua_State* L, Field* field)
     if (field == nullptr)
         lua_pushnil(L);
     else
-        lua_pushnumber(L, field->GetInt32());
+        lua_pushnumber(L, field->asInt32());
     return 1;
 }
 
@@ -156,7 +156,7 @@ int LuaSqlApi::GetGUID(lua_State* L, Field* field)
         lua_pushnil(L);
     else
     {
-        const uint64_t guid = field->GetUInt64();
+        const uint64_t guid = field->asUint64();
         PUSH_GUID(L, guid);
     }
     return 1;

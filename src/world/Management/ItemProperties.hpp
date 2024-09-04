@@ -80,7 +80,7 @@ struct ItemProperties
     uint32_t SocketBonus;
     uint32_t GemProperties;
     int32_t DisenchantReqSkill;
-    uint32_t ArmorDamageModifier;
+    float ArmorDamageModifier;
     uint32_t ExistingDuration;
     uint32_t ItemLimitCategory;
     uint32_t HolidayId;

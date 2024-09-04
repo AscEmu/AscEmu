@@ -76,8 +76,8 @@ struct QuestProperties
     uint32_t MailSendItem;
 
     uint32_t point_mapid;
-    uint32_t point_x;
-    uint32_t point_y;
+    float point_x;
+    float point_y;
     uint32_t point_opt;
 
     uint32_t rew_money_at_max_level;

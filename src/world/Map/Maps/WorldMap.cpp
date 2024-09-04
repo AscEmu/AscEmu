@@ -2064,9 +2064,9 @@ void WorldMap::loadRespawnTimes()
     do
     {
         Field* fields = result->Fetch();
-        SpawnObjectType type = SpawnObjectType(fields[0].GetUInt16());
-        uint32_t spawnId = fields[1].GetUInt32();
-        uint64_t respawnTime = fields[2].GetUInt64();
+        SpawnObjectType type = SpawnObjectType(fields[0].asUint16());
+        uint32_t spawnId = fields[1].asUint32();
+        uint64_t respawnTime = fields[2].asUint64();
 
         if (type == SPAWN_TYPE_CREATURE)
         {

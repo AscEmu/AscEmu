@@ -280,14 +280,14 @@ void AddonMgr::LoadFromDB()
         field = result->Fetch();
         ent = new AddonEntry;
 
-        ent->name = field[1].GetString();
-        ent->crc = field[2].GetUInt64();
-        ent->banned = (field[3].GetUInt32() > 0 ? true : false);
+        ent->name = field[1].asCString();
+        ent->crc = field[2].asUint64();
+        ent->banned = (field[3].asUint32() > 0 ? true : false);
         ent->isNew = false;
 
         // To avoid crashes for stilly nubs who don't update table :P
         if (result->GetFieldCount() == 5)
-            ent->showinlist = (field[4].GetUInt32() > 0 ? true : false);
+            ent->showinlist = (field[4].asUint32() > 0 ? true : false);
 
         mKnownAddons[ent->name] = ent;
 
@@ -336,8 +336,8 @@ void AddonMgr::LoadFromDB()
         {
             Field* fields = clientAddonsResult->Fetch();
 
-            std::string name = fields[0].GetString();
-            uint32_t crc = fields[1].GetUInt32();
+            std::string name = fields[0].asCString();
+            uint32_t crc = fields[1].asUint32();
 
             mKnownAddons.emplace_back(SavedAddon(name, crc));
 
@@ -366,11 +366,11 @@ void AddonMgr::LoadFromDB()
             Field* fields = clientAddonsResult->Fetch();
 
             BannedAddon addon;
-            addon.id = fields[0].GetUInt32() + dbcMaxBannedAddon;
-            addon.timestamp = uint32_t(fields[2].GetUInt64());
+            addon.id = fields[0].asUint32() + dbcMaxBannedAddon;
+            addon.timestamp = uint32_t(fields[2].asUint64());
 
-            std::string name = fields[1].GetString();
-            std::string version = fields[3].GetString();
+            std::string name = fields[1].asCString();
+            std::string version = fields[3].asCString();
 
             MD5(reinterpret_cast<uint8_t const*>(name.c_str()), name.length(), addon.nameMD5);//
             MD5(reinterpret_cast<uint8_t const*>(version.c_str()), version.length(), addon.versionMD5);//

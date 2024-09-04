@@ -422,7 +422,7 @@ void Pet::SetNameForEntry(uint32 entry)
             QueryResult* result = CharacterDatabase.Query("SELECT `name` FROM `playersummons` WHERE `ownerguid`=%u AND `entry`=%d", m_Owner->getGuidLow(), entry);
             if (result)
             {
-                m_name = result->Fetch()->GetString();
+                m_name = result->Fetch()->asCString();
                 delete result;
             }
             else // no name found, generate one and save it
@@ -1102,8 +1102,8 @@ void Pet::InitializeMe(bool first)
             do
             {
                 Field* f = query->Fetch();
-                SpellInfo const* spell = sSpellMgr.getSpellInfo(f[2].GetUInt32());
-                uint16 flags = f[3].GetUInt16();
+                SpellInfo const* spell = sSpellMgr.getSpellInfo(f[2].asUint32());
+                uint16 flags = f[3].asUint16();
                 if (spell != NULL && mSpells.find(spell) == mSpells.end())
                     mSpells.insert(std::make_pair(spell, flags));
 

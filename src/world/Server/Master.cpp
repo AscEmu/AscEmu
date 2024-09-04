@@ -67,7 +67,7 @@
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20230710-00_characters_taxi";
-static const char* REQUIRED_WORLD_DB_VERSION = "20240511-01_creature_properties";
+static const char* REQUIRED_WORLD_DB_VERSION = "20240904-00_misc";
 
 volatile bool Master::m_stopEvent = false;
 
@@ -536,7 +536,7 @@ bool Master::_CheckDBVersion()
     }
 
     Field* f = wqr->Fetch();
-    const char *WorldDBVersion = f->GetString();
+    const char *WorldDBVersion = f->asCString();
 
     sLogger.info("Database : Last world database update: {}", WorldDBVersion);
     int result = strcmp(WorldDBVersion, REQUIRED_WORLD_DB_VERSION);
@@ -569,7 +569,7 @@ bool Master::_CheckDBVersion()
     }
 
     f = cqr->Fetch();
-    const char *CharDBVersion = f->GetString();
+    const char *CharDBVersion = f->asCString();
 
     sLogger.info("Database : Last character database update: {}", CharDBVersion);
     result = strcmp(CharDBVersion, REQUIRED_CHAR_DB_VERSION);

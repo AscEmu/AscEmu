@@ -2605,8 +2605,8 @@ void QuestMgr::LoadExtraQuestStuff()
         do
         {
             Field* data = pResult->Fetch();
-            entry = data[0].GetUInt32();
-            quest = data[1].GetUInt32();
+            entry = data[0].asUint32();
+            quest = data[1].asUint32();
 
             if (auto qst = sMySQLStore.getQuestProperties(quest))
                 addCreatureQuest(entry, qst, 1);  // 1 = starter
@@ -2623,8 +2623,8 @@ void QuestMgr::LoadExtraQuestStuff()
         do
         {
             Field* data = pResult->Fetch();
-            entry = data[0].GetUInt32();
-            quest = data[1].GetUInt32();
+            entry = data[0].asUint32();
+            quest = data[1].asUint32();
 
             if (auto qst = sMySQLStore.getQuestProperties(quest))
                 addCreatureQuest(entry, qst, 2);  // 2 = finisher
@@ -2641,8 +2641,8 @@ void QuestMgr::LoadExtraQuestStuff()
         do
         {
             Field* data = pResult->Fetch();
-            entry = data[0].GetUInt32();
-            quest = data[1].GetUInt32();
+            entry = data[0].asUint32();
+            quest = data[1].asUint32();
 
             if (auto qst = sMySQLStore.getQuestProperties(quest))
                 addGameObjectQuest(entry, qst, 1);  // 1 = starter
@@ -2659,8 +2659,8 @@ void QuestMgr::LoadExtraQuestStuff()
         do
         {
             Field* data = pResult->Fetch();
-            entry = data[0].GetUInt32();
-            quest = data[1].GetUInt32();
+            entry = data[0].asUint32();
+            quest = data[1].asUint32();
 
             auto qst = sMySQLStore.getQuestProperties(quest);
             if (auto qst = sMySQLStore.getQuestProperties(quest))
@@ -2684,9 +2684,9 @@ void QuestMgr::LoadExtraQuestStuff()
         do
         {
             Field* data = pResult->Fetch();
-            item = data[0].GetUInt32();
-            quest = data[1].GetUInt32();
-            item_count = data[2].GetUInt8();
+            item = data[0].asUint32();
+            quest = data[1].asUint32();
+            item_count = data[2].asUint8();
 
             auto qst = sMySQLStore.getQuestProperties(quest);
             if (qst == nullptr)
@@ -2713,14 +2713,14 @@ void QuestMgr::LoadExtraQuestStuff()
         {
             Field* fields = result->Fetch();
 
-            uint32 questId = fields[0].GetUInt32();
-            uint32 poiId = fields[1].GetUInt32();
-            int32  objIndex = fields[2].GetInt32();
-            uint32 mapId = fields[3].GetUInt32();
-            uint32 mapAreaId = fields[4].GetUInt32();
-            uint32 floorId = fields[5].GetUInt32();
-            uint32 unk3 = fields[6].GetUInt32();
-            uint32 unk4 = fields[7].GetUInt32();
+            uint32 questId = fields[0].asUint32();
+            uint32 poiId = fields[1].asUint32();
+            int32  objIndex = fields[2].asInt32();
+            uint32 mapId = fields[3].asUint32();
+            uint32 mapAreaId = fields[4].asUint32();
+            uint32 floorId = fields[5].asUint32();
+            uint32 unk3 = fields[6].asUint32();
+            uint32 unk4 = fields[7].asUint32();
 
             QuestPOI POI(poiId, objIndex, mapId, mapAreaId, floorId, unk3, unk4);
             m_QuestPOIMap[questId].push_back(POI);
@@ -2741,10 +2741,10 @@ void QuestMgr::LoadExtraQuestStuff()
             {
                 Field* pointFields = points->Fetch();
 
-                uint32 questId = pointFields[0].GetUInt32();
-                uint32 poiId = pointFields[1].GetUInt32();
-                int32  x = pointFields[2].GetInt32();
-                int32  y = pointFields[3].GetInt32();
+                uint32 questId = pointFields[0].asUint32();
+                uint32 poiId = pointFields[1].asUint32();
+                int32  x = pointFields[2].asInt32();
+                int32  y = pointFields[3].asInt32();
 
                 QuestPOIVector & vect = m_QuestPOIMap[questId];
 

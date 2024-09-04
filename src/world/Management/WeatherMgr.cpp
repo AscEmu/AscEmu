@@ -106,13 +106,13 @@ void WeatherMgr::loadFromDB()
     {
         Field* fields = result->Fetch();
         WeatherInfo* weatherInfo = new WeatherInfo;
-        weatherInfo->m_zoneId = fields[0].GetUInt32();
-        weatherInfo->m_effectValues[0] = fields[1].GetUInt32();  // high_chance
-        weatherInfo->m_effectValues[1] = fields[2].GetUInt32();  // high_type
-        weatherInfo->m_effectValues[2] = fields[3].GetUInt32();  // med_chance
-        weatherInfo->m_effectValues[3] = fields[4].GetUInt32();  // med_type
-        weatherInfo->m_effectValues[4] = fields[5].GetUInt32();  // low_chance
-        weatherInfo->m_effectValues[5] = fields[6].GetUInt32();  // low_type
+        weatherInfo->m_zoneId = fields[0].asUint32();
+        weatherInfo->m_effectValues[0] = fields[1].asUint32();  // high_chance
+        weatherInfo->m_effectValues[1] = fields[2].asUint32();  // high_type
+        weatherInfo->m_effectValues[2] = fields[3].asUint32();  // med_chance
+        weatherInfo->m_effectValues[3] = fields[4].asUint32();  // med_type
+        weatherInfo->m_effectValues[4] = fields[5].asUint32();  // low_chance
+        weatherInfo->m_effectValues[5] = fields[6].asUint32();  // low_type
         m_zoneWeathers[weatherInfo->m_zoneId] = weatherInfo;
 
         weatherInfo->_generateWeather();

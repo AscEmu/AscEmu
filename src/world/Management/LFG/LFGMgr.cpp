@@ -125,14 +125,14 @@ void LfgMgr::LoadRewards()
     do
     {
         Field* fields = result->Fetch();
-        uint32 dungeonId = fields[0].GetUInt32();
-        uint32 maxLevel = fields[1].GetUInt8();
-        uint32 firstQuestId = fields[2].GetUInt32();
-        uint32 firstMoneyVar = fields[3].GetUInt32();
-        uint32 firstXPVar = fields[4].GetUInt32();
-        uint32 otherQuestId = fields[5].GetUInt32();
-        uint32 otherMoneyVar = fields[6].GetUInt32();
-        uint32 otherXPVar = fields[7].GetUInt32();
+        uint32 dungeonId = fields[0].asUint32();
+        uint32 maxLevel = fields[1].asUint8();
+        uint32 firstQuestId = fields[2].asUint32();
+        uint32 firstMoneyVar = fields[3].asUint32();
+        uint32 firstXPVar = fields[4].asUint32();
+        uint32 otherQuestId = fields[5].asUint32();
+        uint32 otherMoneyVar = fields[6].asUint32();
+        uint32 otherXPVar = fields[7].asUint32();
 
 #if VERSION_STRING < Cata
         if (!sLFGDungeonStore.lookupEntry(dungeonId))

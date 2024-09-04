@@ -54,9 +54,9 @@ namespace AscEmu::Realm
                 this->realms.reserve(realmCount);
 
                 auto realm = std::make_shared<Realm>();
-                realm->id = field[0].GetUInt32();
-                realm->password = field[1].GetString();
-                realm->status = field[2].GetUInt8();
+                realm->id = field[0].asUint32();
+                realm->password = field[1].asCString();
+                realm->status = field[2].asUint8();
                 realm->lastPing = ::Util::TimeNow();
 
                 this->realms.emplace_back(std::move(realm));

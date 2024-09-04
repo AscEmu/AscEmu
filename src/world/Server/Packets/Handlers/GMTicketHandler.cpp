@@ -64,7 +64,7 @@ void WorldSession::handleGMSurveySubmitOpcode(WorldPacket& recvPacket)
     if (result == nullptr)
         return;
 
-    uint32_t next_survey_id = result->Fetch()[0].GetUInt32() + 1;
+    uint32_t next_survey_id = result->Fetch()[0].asUint32() + 1;
 
     for (auto subSurvey : srlPacket.subSurvey)
         CharacterDatabase.Execute("INSERT INTO gm_survey_answers VALUES(%u , %u , %u)",

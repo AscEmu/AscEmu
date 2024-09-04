@@ -1141,24 +1141,24 @@ void Guild::sendLoginInfo(WorldSession* session)
 
 bool Guild::loadGuildFromDB(Field* fields)
 {
-    m_id = fields[0].GetUInt32();
-    m_name = fields[1].GetString();
-    m_leaderGuid = WoWGuid(fields[2].GetUInt32(), 0, HIGHGUID_TYPE_PLAYER).getRawGuid();
+    m_id = fields[0].asUint32();
+    m_name = fields[1].asCString();
+    m_leaderGuid = WoWGuid(fields[2].asUint32(), 0, HIGHGUID_TYPE_PLAYER).getRawGuid();
 
     m_emblemInfo.loadEmblemInfoFromDB(fields);
 
-    m_info = fields[8].GetString();
-    m_motd = fields[9].GetString();
-    m_createdDate = time_t(fields[10].GetUInt32());
-    m_bankMoney = fields[11].GetUInt64();
+    m_info = fields[8].asCString();
+    m_motd = fields[9].asCString();
+    m_createdDate = time_t(fields[10].asUint32());
+    m_bankMoney = fields[11].asUint64();
 #if VERSION_STRING >= Cata
-    m_level = static_cast<uint8_t>(fields[12].GetUInt32());
-    m_experience = fields[13].GetUInt64();
-    m_todayExperience = fields[14].GetUInt64();
+    m_level = fields[12].asUint8();
+    m_experience = fields[13].asUint64();
+    m_todayExperience = fields[14].asUint64();
 
-    uint8_t purchasedTabs = uint8_t(fields[15].GetUInt64());
+    uint8_t purchasedTabs = fields[15].asUint8();
 #else
-    uint8_t purchasedTabs = uint8_t(fields[12].GetUInt64());
+    uint8_t purchasedTabs = fields[12].asUint8();
 #endif
     if (purchasedTabs > MAX_GUILD_BANK_TABS)
     {
@@ -1187,8 +1187,8 @@ void Guild::loadRankFromDB(Field* fields)
 
 bool Guild::loadMemberFromDB(Field* fields, Field* fields2)
 {
-    uint32_t lowguid = fields[1].GetUInt32();
-    auto member = new GuildMember(m_id, WoWGuid(lowguid, 0, HIGHGUID_TYPE_PLAYER).getRawGuid(), fields[2].GetUInt8());
+    uint32_t lowguid = fields[1].asUint32();
+    auto member = new GuildMember(m_id, WoWGuid(lowguid, 0, HIGHGUID_TYPE_PLAYER).getRawGuid(), fields[2].asUint8());
     if (!member->loadGuildMembersFromDB(fields, fields2))
     {
         CharacterDatabase.Execute("DELETE FROM guild_members WHERE guildId = %u", lowguid);
@@ -1203,17 +1203,17 @@ bool Guild::loadMemberFromDB(Field* fields, Field* fields2)
 
 void Guild::loadBankRightFromDB(Field* fields)
 {
-    GuildBankRightsAndSlots rightsAndSlots(fields[1].GetUInt8(), fields[3].GetUInt8(), fields[4].GetUInt32());
-    setRankBankTabRightsAndSlots(fields[2].GetUInt8(), rightsAndSlots, false);
+    GuildBankRightsAndSlots rightsAndSlots(fields[1].asUint8(), fields[3].asUint8(), fields[4].asUint32());
+    setRankBankTabRightsAndSlots(fields[2].asUint8(), rightsAndSlots, false);
 }
 
 bool Guild::loadEventLogFromDB(Field* fields)
 {
     if (mEventLog->canInsert())
     {
-        mEventLog->loadEvent(new GuildEventLogEntry(m_id, fields[1].GetUInt32(), time_t(fields[6].GetUInt32()),
-                                                    GuildEventLogTypes(fields[2].GetUInt8()), fields[3].GetUInt32(),
-                                                    fields[4].GetUInt32(), fields[5].GetUInt8()));
+        mEventLog->loadEvent(new GuildEventLogEntry(m_id, fields[1].asUint32(), time_t(fields[6].asUint32()),
+                                                    GuildEventLogTypes(fields[2].asUint8()), fields[3].asUint32(),
+                                                    fields[4].asUint32(), fields[5].asUint8()));
         return true;
     }
 
@@ -1222,7 +1222,7 @@ bool Guild::loadEventLogFromDB(Field* fields)
 
 bool Guild::loadBankEventLogFromDB(Field* fields)
 {
-    uint8_t dbTabId = fields[1].GetUInt8();
+    uint8_t dbTabId = fields[1].asUint8();
     bool isMoneyTab = dbTabId == GUILD_BANK_MONEY_TAB;
     if (dbTabId < _getPurchasedTabsSize() || isMoneyTab)
     {
@@ -1230,8 +1230,8 @@ bool Guild::loadBankEventLogFromDB(Field* fields)
         GuildLogHolder* pLog = mBankEventLog[tabId];
         if (pLog->canInsert())
         {
-            uint32_t guid = fields[2].GetUInt32();
-            const auto eventType = GuildBankEventLogTypes(fields[3].GetUInt8());
+            uint32_t guid = fields[2].asUint32();
+            const auto eventType = GuildBankEventLogTypes(fields[3].asUint8());
             if (GuildBankEventLogEntry::isMoneyEvent(eventType))
             {
                 if (!isMoneyTab)
@@ -1246,8 +1246,8 @@ bool Guild::loadBankEventLogFromDB(Field* fields)
                 return false;
             }
 
-            pLog->loadEvent(new GuildBankEventLogEntry(m_id, guid, time_t(fields[8].GetUInt32()), dbTabId, eventType, fields[4].GetUInt32(),
-                                                        fields[5].GetUInt32(), fields[6].GetUInt16(), fields[7].GetUInt8()));
+            pLog->loadEvent(new GuildBankEventLogEntry(m_id, guid, time_t(fields[8].asUint32()), dbTabId, eventType, fields[4].asUint32(),
+                                                        fields[5].asUint32(), fields[6].asUint16(), fields[7].asUint8()));
         }
     }
 
@@ -1259,13 +1259,13 @@ void Guild::loadGuildNewsLogFromDB(Field* fields)
     if (!mNewsLog->canInsert())
         return;
 
-    mNewsLog->loadEvent(new GuildNewsLogEntry(m_id, fields[1].GetUInt32(), fields[6].GetUInt32(), GuildNews(fields[2].GetUInt8()),
-                                                fields[3].GetUInt32(), fields[4].GetUInt32(), fields[5].GetUInt32())); 
+    mNewsLog->loadEvent(new GuildNewsLogEntry(m_id, fields[1].asUint32(), fields[6].asUint32(), GuildNews(fields[2].asUint8()),
+                                                fields[3].asUint32(), fields[4].asUint32(), fields[5].asUint32())); 
 }
 
 void Guild::loadBankTabFromDB(Field* fields)
 {
-    uint8_t tabId = fields[1].GetUInt8();
+    uint8_t tabId = fields[1].asUint8();
     if (tabId >= _getPurchasedTabsSize())
         sLogger.failure("Invalid tab (tabId: {}) in guild bank, skipped.", tabId);
     else
@@ -1274,10 +1274,10 @@ void Guild::loadBankTabFromDB(Field* fields)
 
 bool Guild::loadBankItemFromDB(Field* fields)
 {
-    uint8_t tabId = fields[1].GetUInt8();
+    uint8_t tabId = fields[1].asUint8();
     if (tabId >= _getPurchasedTabsSize())
     {
-        sLogger.failure("Invalid tab for item (GUID: {}) in guild bank, skipped.", fields[3].GetUInt32());
+        sLogger.failure("Invalid tab for item (GUID: {}) in guild bank, skipped.", fields[3].asUint32());
         return false;
     }
 
@@ -1453,7 +1453,7 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
         if (auto result = CharacterDatabase.Query("SELECT guildId, playerGuid FROM guild_members WHERE playerid = %u", WoWGuid::getGuidLowPartFromUInt64(guid)))
         {
             Field* fields = result->Fetch();
-            if (fields[0].GetUInt32() != 0)
+            if (fields[0].asUint32() != 0)
                 return false;
         }
     }
@@ -2684,17 +2684,17 @@ void Guild::GuildMember::resetFlags()
 
 bool Guild::GuildMember::loadGuildMembersFromDB(Field* fields, Field* fields2)
 {
-    std::shared_ptr<CachedCharacterInfo> plr = sObjectMgr.getCachedCharacterInfo((fields[1].GetUInt32()));
+    std::shared_ptr<CachedCharacterInfo> plr = sObjectMgr.getCachedCharacterInfo((fields[1].asUint32()));
     if (plr == nullptr)
         return false;
 
-    plr->m_guild = fields[0].GetUInt32();
-    plr->guildRank = fields[2].GetUInt32();
-    mPublicNote = fields[3].GetString();
-    mOfficerNote = fields[4].GetString();
+    plr->m_guild = fields[0].asUint32();
+    plr->guildRank = fields[2].asUint32();
+    mPublicNote = fields[3].asCString();
+    mOfficerNote = fields[4].asCString();
 
     for (uint8_t i = 0; i <= MAX_GUILD_BANK_TABS; ++i)
-        mBankWithdraw[i] = fields2[1 + i].GetUInt32();
+        mBankWithdraw[i] = fields2[1 + i].asUint32();
 
     setStats(plr->name, static_cast<uint8_t>(plr->lastLevel), plr->cl, plr->lastZone, plr->acct, 0);
     mLogoutTime = plr->lastOnline;

@@ -42,7 +42,7 @@ bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldS
             do
             {
                 Field* fields = creature_spawn_result->Fetch();
-                creatureEntries.push_back(fields[0].GetUInt32());
+                creatureEntries.push_back(fields[0].asUint32());
 
             } while (creature_spawn_result->NextRow());
         }

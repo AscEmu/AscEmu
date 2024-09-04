@@ -22,7 +22,7 @@ void TicketMgr::initialize()
     auto result = CharacterDatabase.Query("SELECT MAX(ticketid) FROM gm_tickets");
     if (result)
     {
-        m_nextTicketId = result->Fetch()[0].GetUInt32();
+        m_nextTicketId = result->Fetch()[0].asUint32();
         delete result;
     }
 
@@ -65,19 +65,19 @@ void TicketMgr::loadGMTickets()
         Field* fields = result->Fetch();
 
         GM_Ticket* ticket = new GM_Ticket;
-        ticket->guid = fields[0].GetUInt64();
-        ticket->playerGuid = fields[1].GetUInt64();
-        ticket->name = fields[2].GetString();
-        ticket->level = fields[3].GetUInt32();
-        ticket->map = fields[4].GetUInt32();
-        ticket->posX = fields[5].GetFloat();
-        ticket->posY = fields[6].GetFloat();
-        ticket->posZ = fields[7].GetFloat();
-        ticket->message = fields[8].GetString();
-        ticket->timestamp = fields[9].GetUInt32();
-        ticket->deleted = fields[10].GetUInt32() == 1;
-        ticket->assignedToPlayer = fields[11].GetUInt64();
-        ticket->comment = fields[12].GetString();
+        ticket->guid = fields[0].asUint64();
+        ticket->playerGuid = fields[1].asUint64();
+        ticket->name = fields[2].asCString();
+        ticket->level = fields[3].asUint32();
+        ticket->map = fields[4].asUint32();
+        ticket->posX = fields[5].asFloat();
+        ticket->posY = fields[6].asFloat();
+        ticket->posZ = fields[7].asFloat();
+        ticket->message = fields[8].asCString();
+        ticket->timestamp = fields[9].asUint32();
+        ticket->deleted = fields[10].asUint32() == 1;
+        ticket->assignedToPlayer = fields[11].asUint64();
+        ticket->comment = fields[12].asCString();
 
         addGMTicket(ticket, true);
     } while (result->NextRow());

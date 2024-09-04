@@ -410,8 +410,8 @@ void TaxiMgr::loadTaxiNodeLevelData()
     {
         Field* fields = result->Fetch();
 
-        uint32_t taxiNodeId = fields[0].GetUInt16();
-        uint8_t level = fields[1].GetUInt8();
+        uint32_t taxiNodeId = fields[0].asUint16();
+        uint8_t level = fields[1].asUint8();
 
         const auto node = sTaxiNodesStore.lookupEntry(taxiNodeId);
         if (node == nullptr)

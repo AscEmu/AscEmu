@@ -137,9 +137,9 @@ void LootMgr::loadLootProp()
     {
         do
         {
-            uint32_t id = result->Fetch()[0].GetUInt32();
-            uint32_t eid = result->Fetch()[1].GetUInt32();
-            float ch = result->Fetch()[2].GetFloat();
+            uint32_t id = result->Fetch()[0].asUint32();
+            uint32_t eid = result->Fetch()[1].asUint32();
+            float ch = result->Fetch()[2].asFloat();
             auto item_random_properties = sItemRandomPropertiesStore.lookupEntry(eid);
             if (item_random_properties == nullptr)
             {
@@ -167,9 +167,9 @@ void LootMgr::loadLootProp()
     {
         do
         {
-            uint32_t id = result->Fetch()[0].GetUInt32();
-            uint32_t eid = result->Fetch()[1].GetUInt32();
-            float ch = result->Fetch()[2].GetFloat();
+            uint32_t id = result->Fetch()[0].asUint32();
+            uint32_t eid = result->Fetch()[1].asUint32();
+            float ch = result->Fetch()[2].asFloat();
             auto item_random_suffix = sItemRandomSuffixStore.lookupEntry(eid);
             if (item_random_suffix == nullptr)
             {
@@ -211,14 +211,14 @@ void LootMgr::loadLootTables(std::string const& szTableName, LootTemplateMap* Lo
         std::vector<float> chance;
         chance.reserve(4);
 
-        uint32_t entry = fields[0].GetUInt32();
-        uint32_t itemId = fields[1].GetUInt32();
-        chance.push_back(fields[2].GetFloat());
-        chance.push_back(fields[3].GetFloat());
-        chance.push_back(fields[4].GetFloat());
-        chance.push_back(fields[5].GetFloat());
-        uint32_t mincount = fields[6].GetUInt32();
-        uint32_t maxcount = fields[7].GetUInt8();
+        uint32_t entry = fields[0].asUint32();
+        uint32_t itemId = fields[1].asUint32();
+        chance.push_back(fields[2].asFloat());
+        chance.push_back(fields[3].asFloat());
+        chance.push_back(fields[4].asFloat());
+        chance.push_back(fields[5].asFloat());
+        uint32_t mincount = fields[6].asUint32();
+        uint32_t maxcount = fields[7].asUint8();
 
         const auto itemProto = sMySQLStore.getItemProperties(itemId);
         if (itemProto == nullptr)

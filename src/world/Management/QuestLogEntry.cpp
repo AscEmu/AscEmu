@@ -61,18 +61,18 @@ void QuestLogEntry::loadFromDB(Field* fields)
     //     1          2         3       4      5      6      7      8      9     10     11     12
     // playerguid, questid, timeleft, area0, area1, area2, area3, kill0, kill1, kill2, kill3, state
 
-    m_expirytime = fields[3].GetUInt32();
+    m_expirytime = fields[3].asUint32();
 
     for (uint8_t i = 0; i < 4; ++i)
     {
-        m_explored_areas[i] = fields[4 + i].GetUInt32();
+        m_explored_areas[i] = fields[4 + i].asUint32();
         if (const auto questScript = getQuestScript())
             questScript->OnExploreArea(m_explored_areas[i], m_player, this);
     }
 
     for (uint8_t i = 0; i < 4; ++i)
     {
-        m_mobcount[i] = fields[8 + i].GetUInt32();
+        m_mobcount[i] = fields[8 + i].asUint32();
 
         if (getQuestProperties()->required_mobtype[i] == QUEST_MOB_TYPE_CREATURE)
         {
@@ -86,7 +86,7 @@ void QuestLogEntry::loadFromDB(Field* fields)
         }
     }
 
-    m_state = fields[12].GetUInt32();
+    m_state = fields[12].asUint32();
 }
 
 void QuestLogEntry::saveToDB(QueryBuffer* queryBuffer)

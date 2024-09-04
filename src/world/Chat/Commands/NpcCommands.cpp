@@ -549,7 +549,7 @@ bool ChatHandler::HandleNpcListAIAgentCommand(const char* /*args*/, WorldSession
     do
     {
         Field* fields = result->Fetch();
-        SystemMessage(m_session, "-- agent: %u | spellId: %u | event: %u | chance: %u | maxcount: %u", fields[1].GetUInt32(), fields[5].GetUInt32(), fields[2].GetUInt32(), fields[3].GetUInt32(), fields[4].GetUInt32());
+        SystemMessage(m_session, "-- agent: %u | spellId: %u | event: %u | chance: %u | maxcount: %u", fields[1].asUint32(), fields[5].asUint32(), fields[2].asUint32(), fields[3].asUint32(), fields[4].asUint32());
     } while (result->NextRow());
 
     delete result;
@@ -579,12 +579,12 @@ bool ChatHandler::HandleNpcListLootCommand(const char* args, WorldSession* m_ses
         {
             Field* field = loot_result->Fetch();
 
-            auto item_proto = sMySQLStore.getItemProperties(field[0].GetUInt32());
+            auto item_proto = sMySQLStore.getItemProperties(field[0].asUint32());
             if (item_proto == nullptr || item_proto->Quality < minQuality)
                 continue;
 
             RedSystemMessage(m_session, "ItemID: %u %s", item_proto->ItemId, sMySQLStore.getItemLinkByProto(item_proto, m_session->language).c_str());
-            SystemMessage(m_session, "-- N10 (%3.2lf) N25 (%3.2lf) H10 (%3.2lf) H25 (%3.2lf) min/max (%u/%u)", field[1].GetFloat(), field[3].GetFloat(), field[2].GetFloat(), field[4].GetFloat(), field[5].GetUInt32(), field[6].GetUInt32());
+            SystemMessage(m_session, "-- N10 (%3.2lf) N25 (%3.2lf) H10 (%3.2lf) H25 (%3.2lf) min/max (%u/%u)", field[1].asFloat(), field[3].asFloat(), field[2].asFloat(), field[4].asFloat(), field[5].asUint32(), field[6].asUint32());
 
             ++numFound;
         } while (loot_result->NextRow() && (numFound <= 25));

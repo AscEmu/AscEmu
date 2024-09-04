@@ -1554,7 +1554,7 @@ void WorldSession::handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/)
         do
         {
             Field* field = result->Fetch();
-            data << uint32_t(field[0].GetUInt32());
+            data << uint32_t(field[0].asUint32());
         } while (result->NextRow());
         delete result;
 
@@ -1716,7 +1716,7 @@ void WorldSession::handleWhoIsOpcode(WorldPacket& recvPacket)
     }
 
     Field* fields_acctID = resultAcctId->Fetch();
-    const uint32_t accId = fields_acctID[0].GetUInt32();
+    const uint32_t accId = fields_acctID[0].asUint32();
     delete resultAcctId;
 
     //todo: this will not work! no table accounts in character_db!!!
@@ -1729,27 +1729,27 @@ void WorldSession::handleWhoIsOpcode(WorldPacket& recvPacket)
     }
 
     Field* fields = accountInfoResult->Fetch();
-    std::string acctID = fields[0].GetString();
+    std::string acctID = fields[0].asCString();
     if (acctID.empty())
         acctID = "Unknown";
 
-    std::string acctName = fields[1].GetString();
+    std::string acctName = fields[1].asCString();
     if (acctName.empty())
         acctName = "Unknown";
 
-    std::string acctPerms = fields[2].GetString();
+    std::string acctPerms = fields[2].asCString();
     if (acctPerms.empty())
         acctPerms = "Unknown";
 
-    std::string acctEmail = fields[3].GetString();
+    std::string acctEmail = fields[3].asCString();
     if (acctEmail.empty())
         acctEmail = "Unknown";
 
-    std::string acctIP = fields[4].GetString();
+    std::string acctIP = fields[4].asCString();
     if (acctIP.empty())
         acctIP = "Unknown";
 
-    std::string acctMuted = fields[5].GetString();
+    std::string acctMuted = fields[5].asCString();
     if (acctMuted.empty())
         acctMuted = "Unknown";
 

@@ -19,6 +19,9 @@
  */
 
 #include "Management/EquipmentSetMgr.h"
+
+#include <sstream>
+
 #include "Database/Field.hpp"
 #include "Database/Database.h"
 #include "WoWGuid.h"
@@ -95,13 +98,13 @@ namespace Arcemu
             Field* fields = result->Fetch();
 
             EquipmentSet* set = new EquipmentSet();
-            set->SetGUID = fields[1].GetUInt32();
-            set->SetID = fields[2].GetUInt32();
-            set->SetName = fields[3].GetString();
-            set->IconName = fields[4].GetString();
+            set->SetGUID = fields[1].asUint32();
+            set->SetID = fields[2].asUint32();
+            set->SetName = fields[3].asCString();
+            set->IconName = fields[4].asCString();
 
             for (uint32 i = 0; i < set->ItemGUID.size(); ++i)
-                set->ItemGUID[i] = fields[5 + i].GetUInt32();
+                set->ItemGUID[i] = fields[5 + i].asUint32();
 
             EquipmentSets.emplace(std::pair< uint32, EquipmentSet* >(set->SetGUID, set));
             setcount++;

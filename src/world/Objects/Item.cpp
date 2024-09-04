@@ -1238,7 +1238,7 @@ uint8_t Item::getCharterTypeForEntry() const
 
 void Item::loadFromDB(Field* fields, Player* plr, bool light)
 {
-    uint32_t itemid = fields[2].GetUInt32();
+    uint32_t itemid = fields[2].asUint32();
 
     m_itemProperties = sMySQLStore.getItemProperties(itemid);
     if (!m_itemProperties)
@@ -1255,20 +1255,20 @@ void Item::loadFromDB(Field* fields, Player* plr, bool light)
     setEntry(itemid);
     m_owner = plr;
 
-    m_wrappedItemId = fields[3].GetUInt32();
-    setGiftCreatorGuid(fields[4].GetUInt32());
-    setCreatorGuid(fields[5].GetUInt32());
+    m_wrappedItemId = fields[3].asUint32();
+    setGiftCreatorGuid(fields[4].asUint32());
+    setCreatorGuid(fields[5].asUint32());
 
-    uint32_t count = fields[6].GetUInt32();
+    uint32_t count = fields[6].asUint32();
     if (count > m_itemProperties->MaxCount && (m_owner && !m_owner->m_cheats.hasItemStackCheat))
         count = m_itemProperties->MaxCount;
     setStackCount(count);
 
-    setChargesLeft(fields[7].GetUInt32());
+    setChargesLeft(fields[7].asUint32());
 
-    setFlags(fields[8].GetUInt32());
-    uint32_t randomProp = fields[9].GetUInt32();
-    const uint32_t randomSuffix = fields[10].GetUInt32();
+    setFlags(fields[8].asUint32());
+    uint32_t randomProp = fields[9].asUint32();
+    const uint32_t randomSuffix = fields[10].asUint32();
 
     setRandomPropertiesId(randomProp);
 
@@ -1279,16 +1279,16 @@ void Item::loadFromDB(Field* fields, Player* plr, bool light)
         setPropertySeed(0);
 
 #ifdef AE_TBC
-    setTextId(fields[11].GetUInt32());
+    setTextId(fields[11].asUint32());
 #endif
 
     setMaxDurability(m_itemProperties->MaxDurability);
-    setDurability(fields[12].GetUInt32());
+    setDurability(fields[12].asUint32());
 
     if (light)
         return;
 
-    std::string enchant_field = fields[15].GetString();
+    std::string enchant_field = fields[15].asCString();
     if (!enchant_field.empty())
     {
         std::vector<std::string> enchants = AscEmu::Util::Strings::split(enchant_field, ";");
@@ -1307,12 +1307,12 @@ void Item::loadFromDB(Field* fields, Player* plr, bool light)
         }
     }
 
-    m_expiresOnTime = fields[16].GetUInt32();
+    m_expiresOnTime = fields[16].asUint32();
 
     // Refund stuff
     std::pair<time_t, uint32_t> refundentry;
-    refundentry.first = fields[17].GetUInt32();
-    refundentry.second = fields[18].GetUInt32();
+    refundentry.first = fields[17].asUint32();
+    refundentry.second = fields[18].asUint32();
 
     if (refundentry.first != 0 && refundentry.second != 0 && getOwner() != nullptr)
     {
@@ -1321,7 +1321,7 @@ void Item::loadFromDB(Field* fields, Player* plr, bool light)
             m_owner->getItemInterface()->AddRefundable(this, refundentry.second, refundentry.first);
     }
 
-    m_text = fields[19].GetString();
+    m_text = fields[19].asCString();
 
     applyRandomProperties(false);
 

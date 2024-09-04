@@ -21,6 +21,7 @@
 
 #include <cstdint>
 #include <cstdarg>
+#include <sstream>
 
 #include <Network/Network.h>
 #include <Config/Config.h>

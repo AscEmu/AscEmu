@@ -56,9 +56,9 @@ void AchievementMgr::loadFromDb(QueryResult* _achievementResult, QueryResult* _c
         do
         {
             Field* field = _achievementResult->Fetch();
-            uint32_t id = field[0].GetUInt32();
+            uint32_t id = field[0].asUint32();
             if (m_completedAchievements[id] == 0)
-                m_completedAchievements[id] = field[1].GetUInt32();
+                m_completedAchievements[id] = field[1].asUint32();
             else
                 sLogger.failure("Duplicate completed achievement {} for player {}, skipping", id, m_player->getGuidLow());
         } while (_achievementResult->NextRow());
@@ -69,10 +69,10 @@ void AchievementMgr::loadFromDb(QueryResult* _achievementResult, QueryResult* _c
         do
         {
             Field* field = _criteriaResult->Fetch();
-            uint32_t progress_id = field[0].GetUInt32();
+            uint32_t progress_id = field[0].asUint32();
             if (m_criteriaProgress[progress_id] == nullptr)
             {
-                const auto progress = new CriteriaProgress(progress_id, field[1].GetUInt32(), static_cast<time_t>(field[2].GetUInt64()));
+                const auto progress = new CriteriaProgress(progress_id, field[1].asUint32(), static_cast<time_t>(field[2].asUint64()));
                 m_criteriaProgress[progress_id] = progress;
             }
             else
@@ -1866,7 +1866,7 @@ bool AchievementMgr::showCompletedAchievement(uint32_t _achievementId, const Pla
                 if (field != nullptr)
                 {
                     // somebody has this Realm First achievement... is it this player?
-                    uint64_t firstguid = field->GetUInt32();
+                    uint64_t firstguid = field->asUint32();
                     if (firstguid != (uint32_t)_player->getGuid())
                     {
                         // nope, somebody else was first.

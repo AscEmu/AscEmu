@@ -41,15 +41,15 @@ void AccountMgr::addAccount(Field* field)
 {
     auto account = std::make_shared<Account>();
 
-    account->AccountId = field[0].GetUInt32();
+    account->AccountId = field[0].asUint32();
 
-    std::string accountName = field[1].GetString();
-    std::string encryptedPassword = field[2].GetString();
+    std::string accountName = field[1].asCString();
+    std::string encryptedPassword = field[2].asCString();
 
-    account->AccountFlags = field[3].GetUInt8();
-    account->Banned = field[4].GetUInt32();
-    account->forcedLanguage = field[5].GetString();
-    account->Muted = field[6].GetUInt32();
+    account->AccountFlags = field[3].asUint8();
+    account->Banned = field[4].asUint32();
+    account->forcedLanguage = field[5].asCString();
+    account->Muted = field[6].asUint32();
 
     if (static_cast<uint32_t>(UNIXTIME) > account->Banned && account->Banned != 0 && account->Banned != 1)
     {
@@ -110,9 +110,9 @@ std::shared_ptr<Account> AccountMgr::getAccountByName(std::string& Name)
 
 void AccountMgr::updateAccount(std::shared_ptr<Account> account, Field* field)
 {
-    const uint32_t id = field[0].GetUInt32();
-    std::string accountName = field[1].GetString();
-    std::string encryptedPassword = field[2].GetString();
+    const uint32_t id = field[0].asUint32();
+    std::string accountName = field[1].asCString();
+    std::string encryptedPassword = field[2].asCString();
 
     if (id != account->AccountId)
     {
@@ -121,10 +121,10 @@ void AccountMgr::updateAccount(std::shared_ptr<Account> account, Field* field)
         return;
     }
 
-    account->AccountFlags = field[3].GetUInt8();
-    account->Banned = field[4].GetUInt32();
-    account->forcedLanguage = field[5].GetString();
-    account->Muted = field[6].GetUInt32();
+    account->AccountFlags = field[3].asUint8();
+    account->Banned = field[4].asUint32();
+    account->forcedLanguage = field[5].asCString();
+    account->Muted = field[6].asUint32();
 
     if (static_cast<uint32_t>(UNIXTIME) > account->Banned && account->Banned != 0 && account->Banned != 1)
     {
@@ -185,7 +185,7 @@ void AccountMgr::reloadAccounts(bool silent)
         do
         {
             Field* field = result->Fetch();
-            std::string accountName = field[1].GetString();
+            std::string accountName = field[1].asCString();
 
             AscEmu::Util::Strings::toUpperCase(accountName);
 

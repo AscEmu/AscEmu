@@ -760,7 +760,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
         {
             for (uint8_t i = 0; i < 8; ++i)
             {
-                const char* data = pResult->Fetch()[1 + i].GetString();
+                const char* data = pResult->Fetch()[1 + i].asCString();
                 size_t len = data ? strlen(data) : 0;
                 if (len > 1)
                 {
