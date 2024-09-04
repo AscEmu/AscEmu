@@ -11,6 +11,7 @@
 
 #include "Common.hpp"
 #include <cstring>
+#include <cstdio>
 
 /* Implementation Selection */
 #ifdef WIN32        // Easy

@@ -25,6 +25,8 @@
 #include "Logging/Logger.hpp"
 #include <cstdarg>
 
+#include "Threading/Mutex.h"
+
 void OutputCrashLogLine(const char* format, ...)
 {
     std::string s = AscEmu::Logging::getFormattedFileName("logs", "CrashLog", false);

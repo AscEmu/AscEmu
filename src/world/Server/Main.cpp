@@ -21,6 +21,7 @@
 #include "Server/Master.h"
 #include "Debugging/CrashHandler.h"
 #include "ServerState.h"
+#include "Threading/LegacyThreadPool.h"
 
 #ifndef WIN32
 #include <sys/resource.h>

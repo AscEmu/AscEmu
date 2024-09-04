@@ -20,6 +20,8 @@
 #ifndef _CIRCULARQUEUE_H
 #define _CIRCULARQUEUE_H
 
+#include <cstdio>
+
 template<class T, int ELEMENTCOUNT>
 class CircularQueue
 {

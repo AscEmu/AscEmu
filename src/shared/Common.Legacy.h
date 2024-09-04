@@ -22,12 +22,6 @@
 
 // Include all threading files
 
-#ifndef WIN32
-#include <sched.h>
-#include <sys/resource.h>
-#endif
-
-#include "Threading/LegacyThreading.h"
 #include "Threading/ConditionVariable.h"
 
 // current compiler (old)

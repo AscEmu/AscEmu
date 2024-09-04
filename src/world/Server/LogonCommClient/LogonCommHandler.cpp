@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/ConfigMgr.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"
+#include "Threading/LegacyThreadPool.h"
 #include "Utilities/Strings.hpp"
 
 LogonCommHandler& LogonCommHandler::getInstance()
