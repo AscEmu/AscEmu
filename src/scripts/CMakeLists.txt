@@ -14,7 +14,6 @@ if (NOT ${BUILD_ASCEMUSCRIPTS})
 endif ()
 
 add_subdirectory(EventScripts)
-add_subdirectory(ExtraScripts)
 add_subdirectory(GossipScripts)
 add_subdirectory(InstanceScripts)
 add_subdirectory(LuaEngine)

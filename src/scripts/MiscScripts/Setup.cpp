@@ -40,6 +40,7 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
     SetupMiscCreatures(mgr);
     InitializeGameObjectTeleportTable(mgr);
     SetupCityDalaran(mgr);
+    SetupNeutralGuards(mgr);
 }
 
 #ifdef WIN32
