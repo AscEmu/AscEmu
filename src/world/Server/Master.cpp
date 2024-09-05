@@ -618,7 +618,7 @@ bool Master::_StartDB()
 
     // Initialize it
     if (!WorldDatabase.Initialize(worldConfig.worldDb.host.c_str(), (unsigned int)worldConfig.worldDb.port, worldConfig.worldDb.user.c_str(),
-                                             worldConfig.worldDb.password.c_str(), worldConfig.worldDb.dbName.c_str(), worldConfig.worldDb.connections, 16384))
+                                             worldConfig.worldDb.password.c_str(), worldConfig.worldDb.dbName.c_str(), worldConfig.worldDb.connections, 16384, worldConfig.worldDb.isLegacyAuth))
     {
         sLogger.fatal("Configs : Connection to WorldDatabase failed. Check your database configurations!");
         return false;
@@ -640,7 +640,7 @@ bool Master::_StartDB()
 
     // Initialize it
     if (!CharacterDatabase.Initialize(worldConfig.charDb.host.c_str(), (unsigned int)worldConfig.charDb.port, worldConfig.charDb.user.c_str(),
-                                                 worldConfig.charDb.password.c_str(), worldConfig.charDb.dbName.c_str(), worldConfig.charDb.connections, 16384))
+                                                 worldConfig.charDb.password.c_str(), worldConfig.charDb.dbName.c_str(), worldConfig.charDb.connections, 16384, worldConfig.charDb.isLegacyAuth))
     {
         sLogger.fatal("Configs : Connection to CharacterDatabase failed. Check your database configurations!");
         return false;

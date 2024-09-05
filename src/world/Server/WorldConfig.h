@@ -68,6 +68,7 @@ public:
         std::string dbName;
         int port;
         int connections;
+        bool isLegacyAuth;
     } worldDb;
 
     struct CharacterDatabaseSettings
@@ -78,6 +79,7 @@ public:
         std::string dbName;
         int port;
         int connections;
+        bool isLegacyAuth;
     } charDb;
 
     // world.conf - LogonServer Settings

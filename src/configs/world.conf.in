@@ -1,6 +1,6 @@
 ################################################################################
 # AscEmu World Configuration File
-# Last edited: 05/08/2021
+# Last edited: 09/05/2024
 ################################################################################
 
 ################################################################################
@@ -12,20 +12,23 @@
 #    Database.Name        - The database name
 #    Database.Port        - Port that MySQL listens on. Usually 3306.
 #    Database.Connections - Parallel connections for database.
+#    Database.LegacyAuth  - Use MySQL Legacy Authentification (0 = false, 1 = true)
 
 <WorldDatabase Hostname    = "localhost"
                Username    = "root"
                Password    = "root"
                Name        = "ascemu_world"
                Port        = "3306"
-               Connections = "3">
+               Connections = "3"
+               LegacyAuth  = "0">
 
 <CharacterDatabase Hostname    = "localhost" 
                    Username    = "root" 
                    Password    = "root" 
                    Name        = "ascemu_char" 
                    Port        = "3306"
-                   Connections = "5">
+                   Connections = "5"
+                   LegacyAuth  = "0">
 
 ################################################################################
 # LogonServer Settings

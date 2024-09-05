@@ -108,7 +108,7 @@ class SERVER_DECL Database
         //////////////////////////////////////////////////////////////////////////////////////////
         virtual bool Initialize(const char* Hostname, unsigned int port,
                                 const char* Username, const char* Password, const char* DatabaseName,
-                                uint32 ConnectionCount, uint32 BufferSize) = 0;
+                                uint32 ConnectionCount, uint32 BufferSize, bool useLegacyAuth = false) = 0;
 
         virtual void Shutdown() = 0;
 

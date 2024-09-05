@@ -1,6 +1,6 @@
 ################################################################################
 # AscEmu Logonserver Configuration File
-# Last edited: 05/08/2021
+# Last edited: 09/05/2024
 ################################################################################
 
 ################################################################################
@@ -12,14 +12,15 @@
 #    LogonDatabase.Name        - The database name
 #    LogonDatabase.Port        - Port that MySQL listens on. Usually 3306.
 #    LogonDatabase.Connections - Parallel connections for database.
-#
+#    LogonDatabase.LegacyAuth  - Use MySQL Legacy Authentification (0 = false, 1 = true)
 
 <LogonDatabase Hostname    = "localhost"
                Username    = "root"
                Password    = "root"
                Name        = "ascemu_logon"
                Port        = "3306"
-               Connections = "5">
+               Connections = "5"
+               LegacyAuth  = "0">
 
 ################################################################################
 # Host Directive

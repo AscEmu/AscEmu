@@ -330,7 +330,7 @@ bool MasterLogon::StartDb()
     // Initialize it
     if (!sLogonSQL->Initialize(dbHostname.c_str(), (unsigned int)dbPort, dbUsername.c_str(),
         dbPassword.c_str(), dbDatabase.c_str(), logonConfig.logonDb.connections,
-        16384))
+        16384, logonConfig.logonDb.isLegacyAuth))
     {
         sLogger.fatal("sql: Logon database initialization failed. Exiting.");
         return false;

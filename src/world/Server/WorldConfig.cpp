@@ -20,9 +20,11 @@ WorldConfig::WorldConfig(): mFloatRates{}, mIntRates{}
     // world.conf - Mysql Database Section
     worldDb.port = 3306;
     worldDb.connections = 3;
+    worldDb.isLegacyAuth = false;
 
     charDb.port = 3306;
     charDb.connections = 5;
+    charDb.isLegacyAuth = false;
 
     // world.conf - LogonServer Settings
     logonServer.address = "127.0.0.1";
@@ -245,6 +247,7 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     Config.MainConfig.tryGetString("WorldDatabase", "Name", &worldDb.dbName);
     Config.MainConfig.tryGetInt("WorldDatabase", "Port", &worldDb.port);
     Config.MainConfig.tryGetInt("WorldDatabase", "Connections", &worldDb.connections);
+    Config.MainConfig.tryGetBool("WorldDatabase", "LegacyAuth", &worldDb.isLegacyAuth);
 
     Config.MainConfig.tryGetString("CharacterDatabase", "Hostname", &charDb.host);
     Config.MainConfig.tryGetString("CharacterDatabase", "Username", &charDb.user);
@@ -252,6 +255,7 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     Config.MainConfig.tryGetString("CharacterDatabase", "Name", &charDb.dbName);
     Config.MainConfig.tryGetInt("CharacterDatabase", "Port", &charDb.port);
     Config.MainConfig.tryGetInt("CharacterDatabase", "Connections", &charDb.connections);
+    Config.MainConfig.tryGetBool("CharacterDatabase", "LegacyAuth", &charDb.isLegacyAuth);
 
     // world.conf - LogonServer Settings
     Config.MainConfig.tryGetString("LogonServer", "Address", &logonServer.address);

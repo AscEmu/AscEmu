@@ -44,7 +44,7 @@ class SERVER_DECL MySQLDatabase : public Database
 
         bool Initialize(const char* Hostname, unsigned int port,
                         const char* Username, const char* Password, const char* DatabaseName,
-                        uint32 ConnectionCount, uint32 BufferSize);
+                        uint32 ConnectionCount, uint32 BufferSize, bool useLegacyAuth = false);
 
         void Shutdown();
 

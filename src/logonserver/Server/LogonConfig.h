@@ -26,6 +26,7 @@ public:
         std::string password;
         uint32_t port;
         int connections;
+        bool isLegacyAuth;
     } logonDb;
 
     // logon.conf - Listen
