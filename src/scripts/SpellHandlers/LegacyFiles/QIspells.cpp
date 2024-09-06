@@ -34,6 +34,7 @@
 #include "Spell/SpellInfo.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
+#include "Utilities/Random.hpp"
 
 enum
 {

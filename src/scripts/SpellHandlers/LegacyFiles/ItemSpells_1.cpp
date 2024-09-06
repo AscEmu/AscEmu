@@ -31,6 +31,8 @@
 #include "Spell/SpellInfo.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "Utilities/Random.hpp"
+#include "Utilities/Util.hpp"
 
 /*
      How to add a new item spell to the dummy spell handler:

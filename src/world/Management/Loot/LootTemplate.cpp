@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "LootTemplate.hpp"
 #include "Management/ItemProperties.hpp"
 #include "Objects/Units/Players/Player.hpp"
+#include "Utilities/Random.hpp"
 #include "Utilities/Util.hpp"
 
 void LootTemplate::addEntry(LootStoreItem& item)

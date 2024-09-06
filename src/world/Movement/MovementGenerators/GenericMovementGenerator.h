@@ -5,9 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Utilities/Util.hpp"
 #include "Movement/MovementGenerator.h"
 #include "Movement/Spline/MoveSplineInit.h"
+
+namespace Util
+{
+    struct SmallTimeTracker;
+}
 
 class Unit;
 
@@ -31,5 +35,5 @@ private:
     MovementMgr::MoveSplineInit _splineInit;
     MovementGeneratorType _type;
     uint32_t _pointId;
-    SmallTimeTracker _duration;
+    std::unique_ptr<Util::SmallTimeTracker> _duration;
 };

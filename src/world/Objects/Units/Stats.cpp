@@ -27,10 +27,14 @@
 #include "Logging/Log.hpp"
 #include "Server/World.h"
 #include "Management/ItemInterface.h"
+#include "Movement/MovementGenerators/RandomMovementGenerator.h"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Objects/Units/Unit.hpp"
 #include "Players/Player.hpp"
 #include "Spell/SpellInfo.hpp"
+#include "Utilities/Narrow.hpp"
+#include "Utilities/Random.hpp"
+#include "Utilities/Util.hpp"
 
 // APGL End
 // MIT Start

@@ -77,6 +77,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/HookInterface.hpp"
 #include "Spell/Spell.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "Utilities/Narrow.hpp"
+#include "Utilities/Random.hpp"
 
 #if VERSION_STRING <= TBC
 #include "Server/Packets/SmsgUpdateAuraDuration.h"

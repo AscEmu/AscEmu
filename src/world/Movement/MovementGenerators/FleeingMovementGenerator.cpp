@@ -12,12 +12,14 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/PathGenerator.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Objects/Units/Unit.hpp"
+#include "Utilities/Random.hpp"
+#include "Utilities/TimeTracker.hpp"
 
 #define MIN_QUIET_DISTANCE 28.0f
 #define MAX_QUIET_DISTANCE 43.0f
 
 template<class T>
-FleeingMovementGenerator<T>::FleeingMovementGenerator(uint64_t fleeTargetGUID) : _fleeTargetGUID(fleeTargetGUID), _timer(0)
+FleeingMovementGenerator<T>::FleeingMovementGenerator(uint64_t fleeTargetGUID) : _fleeTargetGUID(fleeTargetGUID), _timer(std::make_unique<Util::SmallTimeTracker>(0))
 {
     this->Mode = MOTION_MODE_DEFAULT;
     this->Priority = MOTION_PRIORITY_HIGHEST;
@@ -71,8 +73,8 @@ bool FleeingMovementGenerator<T>::doUpdate(T* owner, uint32_t diff)
     else
         MovementGenerator::removeFlag(MOVEMENTGENERATOR_FLAG_INTERRUPTED);
 
-    _timer.updateTimer(diff);
-    if ((MovementGenerator::hasFlag(MOVEMENTGENERATOR_FLAG_SPEED_UPDATE_PENDING) && !owner->movespline->Finalized()) || (_timer.isTimePassed() && owner->movespline->Finalized()))
+    _timer->updateTimer(diff);
+    if ((MovementGenerator::hasFlag(MOVEMENTGENERATOR_FLAG_SPEED_UPDATE_PENDING) && !owner->movespline->Finalized()) || (_timer->isTimePassed() && owner->movespline->Finalized()))
     {
         MovementGenerator::removeFlag(MOVEMENTGENERATOR_FLAG_TRANSITORY);
         setTargetLocation(owner);
@@ -140,7 +142,7 @@ void FleeingMovementGenerator<T>::setTargetLocation(T* owner)
     // Add LOS check for target point
     if (!owner->IsWithinLOS(destination))
     {
-        _timer.resetInterval(200);
+        _timer->resetInterval(200);
         return;
     }
 
@@ -155,7 +157,7 @@ void FleeingMovementGenerator<T>::setTargetLocation(T* owner)
                 || (_path->getPathType() & PATHFIND_SHORTCUT)
                 || (_path->getPathType() & PATHFIND_FARFROMPOLY))
     {
-        _timer.resetInterval(100);
+        _timer->resetInterval(100);
         return;
     }
 
@@ -165,7 +167,7 @@ void FleeingMovementGenerator<T>::setTargetLocation(T* owner)
     init.MovebyPath(_path->getPath());
     init.SetWalk(false);
     int32_t traveltime = init.Launch();
-    _timer.resetInterval(traveltime + Util::getRandomUInt(800, 1500));
+    _timer->resetInterval(traveltime + Util::getRandomUInt(800, 1500));
 }
 
 template<class T>
@@ -225,13 +227,14 @@ template void FleeingMovementGenerator<Creature>::getPoint(Creature*, LocationVe
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // TimedFleeingMovementGenerator
+TimedFleeingMovementGenerator::TimedFleeingMovementGenerator(uint64_t fleeTargetGUID, uint32_t time) : FleeingMovementGenerator<Creature>(fleeTargetGUID), _totalFleeTime(std::make_unique<Util::SmallTimeTracker>(time)) { }
 bool TimedFleeingMovementGenerator::update(Unit* owner, uint32_t diff)
 {
     if (!owner || !owner->isAlive())
         return false;
 
-    _totalFleeTime.updateTimer(diff);
-    if (_totalFleeTime.isTimePassed())
+    _totalFleeTime->updateTimer(diff);
+    if (_totalFleeTime->isTimePassed())
         return false;
 
     return FleeingMovementGenerator<Creature>::doUpdate(owner->ToCreature(), diff);

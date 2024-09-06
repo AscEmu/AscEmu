@@ -20,6 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/InstanceScript.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "Utilities/Narrow.hpp"
 
 InstanceSaved::InstanceSaved(uint32_t mapId, uint32_t instanceId, InstanceDifficulty::Difficulties difficulty, time_t resetTime, bool canReset)
     : m_resetTime(resetTime),
@@ -618,4 +619,9 @@ time_t InstanceMgr::getSubsequentResetTime(uint32_t mapid, InstanceDifficulty::D
         period = DAY;
 
     return Util::getLocalHourTimestamp(((resetTime + MINUTE) / DAY * DAY) + period, resetHour);
+}
+
+void InstanceMgr::initializeResetTimeFor(uint16_t mapid, InstanceDifficulty::Difficulties d, time_t t)
+{
+    m_resetTimeByMapDifficulty[Util::MAKE_PAIR32(mapid, d)] = t;
 }

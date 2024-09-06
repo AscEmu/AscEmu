@@ -26,6 +26,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/Spec.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/MySQLDataStore.hpp"
+#include "Utilities/Narrow.hpp"
 #include "Utilities/Strings.hpp"
 
 //.character clearcooldowns

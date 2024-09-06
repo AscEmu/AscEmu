@@ -26,6 +26,7 @@
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"
 #include "Server/Script/QuestScript.hpp"
+#include "Utilities/Random.hpp"
 
 class TheKesselRun : public QuestScript
 {

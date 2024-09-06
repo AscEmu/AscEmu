@@ -61,6 +61,8 @@
 #include "Server/EventMgr.h"
 #include "Server/WorldSession.h"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "Utilities/Narrow.hpp"
+#include "Utilities/Random.hpp"
 
 using namespace AscEmu::Packets;
 

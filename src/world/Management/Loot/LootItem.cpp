@@ -8,6 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ItemProperties.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/World.h"
+#include "Utilities/Random.hpp"
+#include "Utilities/Util.hpp"
 
 LootStoreItem::LootStoreItem(ItemProperties const* _itemproto, std::vector<float> _chance, uint32_t _mincount, uint32_t _maxcount) :
     itemId(_itemproto->ItemId), itemproto(_itemproto), chance(_chance), mincount(_mincount), maxcount(_maxcount)

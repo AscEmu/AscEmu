@@ -46,6 +46,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellInfo.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "Utilities/Random.hpp"
+#include "Utilities/TimeTracker.hpp"
 
 // Random and guessed values for Internal Spell cast chance
 float spellChanceModifierDispell[12] =
@@ -113,7 +115,6 @@ AIInterface::AIInterface()
     m_is_in_instance(false),
     internalPhase(0),
 
-    m_boundaryCheckTime(2500),
     _negateBoundary(false),
 
     mShowWayPoints(false),
@@ -124,7 +125,15 @@ AIInterface::AIInterface()
     totemspell(nullptr),
 
     canEnterCombat(true),
-    timed_emote_expire(0xFFFFFFFF)
+    timed_emote_expire(0xFFFFFFFF),
+
+    m_fleeTimer(std::make_unique<Util::SmallTimeTracker>(0)),
+    m_boundaryCheckTime(std::make_unique<Util::SmallTimeTracker>(2500)),
+    m_updateAssistTimer(std::make_unique<Util::SmallTimeTracker>(1500)),
+    mSpellWaitTimer(std::make_unique<Util::SmallTimeTracker>(1500)),
+    m_noTargetTimer(std::make_unique<Util::SmallTimeTracker>(4000)),
+    m_cannotReachTimer(std::make_unique<Util::SmallTimeTracker>(500)),
+    m_updateTargetTimer(std::make_unique<Util::SmallTimeTracker>(1500))
 {
     _boundary.clear();
     m_assistTargets.clear();
@@ -155,12 +164,6 @@ AIInterface::AIInterface()
     mLastCastedSpell = nullptr;
     mCurrentSpellTarget = nullptr;
     setCannotReachTarget(false);
-    m_fleeTimer.resetInterval(0);
-    mSpellWaitTimer.resetInterval(1500);
-    m_cannotReachTimer.resetInterval(500);
-    m_noTargetTimer.resetInterval(4000);
-    m_updateAssistTimer.resetInterval(1500);
-    m_updateTargetTimer.resetInterval(1500);
 };
 
 AIInterface::~AIInterface()
@@ -206,7 +209,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
     {
         for (auto spell : mCreatureAISpells)
         {
-            spell->mCooldownTimer.resetInterval(spell->mCooldown);
+            spell->mCooldownTimer->resetInterval(spell->mCooldown);
             spell->setCastCount(0);
         }
     }
@@ -436,10 +439,10 @@ bool AIInterface::canUnitEvade(unsigned long time_passed)
         // if we dont have a Valid target go in Evade Mode
         if (!getCurrentTarget() && !getUnit()->isInEvadeMode())
         {
-            m_noTargetTimer.updateTimer(time_passed);
-            if (m_noTargetTimer.isTimePassed())
+            m_noTargetTimer->updateTimer(time_passed);
+            if (m_noTargetTimer->isTimePassed())
             {
-                m_noTargetTimer.resetInterval(4000);
+                m_noTargetTimer->resetInterval(4000);
                 return true;
             }
         }
@@ -447,8 +450,8 @@ bool AIInterface::canUnitEvade(unsigned long time_passed)
         // if we cannot reach the Target go in Evade Mode
         if (canNotReachTarget() && !getUnit()->isInEvadeMode())
         {
-            m_cannotReachTimer.updateTimer(time_passed);
-            if (m_cannotReachTimer.isTimePassed())
+            m_cannotReachTimer->updateTimer(time_passed);
+            if (m_cannotReachTimer->isTimePassed())
                 return true;
         }
     }
@@ -456,12 +459,12 @@ bool AIInterface::canUnitEvade(unsigned long time_passed)
     // periodic check to see if the creature has passed an evade boundary
     if (!getUnit()->isInEvadeMode())
     {
-        m_boundaryCheckTime.updateTimer(time_passed);
-        if (m_boundaryCheckTime.isTimePassed())
+        m_boundaryCheckTime->updateTimer(time_passed);
+        if (m_boundaryCheckTime->isTimePassed())
         {
             if (checkBoundary())
             {
-                m_boundaryCheckTime.resetInterval(2500);
+                m_boundaryCheckTime->resetInterval(2500);
                 return false;
             }
         }
@@ -569,7 +572,7 @@ void AIInterface::Update(unsigned long time_passed)
 
 void AIInterface::updateAIScript(unsigned long time_passed)
 {
-    mSpellWaitTimer.updateTimer(time_passed);
+    mSpellWaitTimer->updateTimer(time_passed);
 
     // Update Spells
     if (getUnit()->isInCombat())
@@ -578,9 +581,9 @@ void AIInterface::updateAIScript(unsigned long time_passed)
         for (auto spells : mCreatureAISpells)
         {
             if (!getUnit()->isCastingSpell())
-                spells->mCooldownTimer.updateTimer(time_passed);
+                spells->mCooldownTimer->updateTimer(time_passed);
 
-            spells->mDurationTimer.updateTimer(time_passed);
+            spells->mDurationTimer->updateTimer(time_passed);
         }
 
         UpdateAISpells();
@@ -856,25 +859,25 @@ void AIInterface::updateTargets(unsigned long time_passed)
     // Find Target when no Threat List is available
     if (!isEngaged() && hasReactState(REACT_AGGRESSIVE))
     {
-        m_updateTargetTimer.updateTimer(time_passed);
-        if (m_updateTargetTimer.isTimePassed())
+        m_updateTargetTimer->updateTimer(time_passed);
+        if (m_updateTargetTimer->isTimePassed())
         {
-            m_updateTargetTimer.resetInterval(1500);
+            m_updateTargetTimer->resetInterval(1500);
             findTarget();
         }
     }
 
     if (isEngaged())
     {
-        m_updateAssistTimer.updateTimer(time_passed);
+        m_updateAssistTimer->updateTimer(time_passed);
 
         if (canUnitEvade(time_passed))
             enterEvadeMode();
 
         // Find Assist Targets to assist us in our Fight
-        if (m_updateAssistTimer.isTimePassed())
+        if (m_updateAssistTimer->isTimePassed())
         {
-            m_updateAssistTimer.resetInterval(1500);
+            m_updateAssistTimer->resetInterval(1500);
 
             // find nearby allies
             findAssistance();
@@ -1202,7 +1205,7 @@ void AIInterface::updateAgent(uint32_t p_time)
 
     // Do not update combat if unit is feared
     // but update if the fear is self caused by on low health fleeing
-    if (getUnit()->hasUnitStateFlag(UNIT_STATE_FLEEING) && m_fleeTimer.getExpireTime() <= 0)
+    if (getUnit()->hasUnitStateFlag(UNIT_STATE_FLEEING) && m_fleeTimer->getExpireTime() <= 0)
         return;
 
     // Selects Current Agent Type For Unit
@@ -1413,8 +1416,8 @@ void AIInterface::handleAgentFlee(uint32_t p_time)
     if (getUnit()->isInEvadeMode())
         return;
 
-    m_fleeTimer.updateTimer(p_time);
-    if (m_fleeTimer.isTimePassed())
+    m_fleeTimer->updateTimer(p_time);
+    if (m_fleeTimer->isTimePassed())
     {
         getUnit()->setControlled(false, UNIT_STATE_FLEEING);
         setCurrentAgent(AGENT_NULL);
@@ -1423,7 +1426,7 @@ void AIInterface::handleAgentFlee(uint32_t p_time)
     if (m_hasFleed)
         return;
 
-    m_fleeTimer.resetInterval(m_FleeDuration);
+    m_fleeTimer->resetInterval(m_FleeDuration);
 
     if (m_Unit->IsInWorld() && m_Unit->isCreature() && static_cast<Creature*>(m_Unit)->GetScript())
         static_cast<Creature*>(m_Unit)->GetScript()->OnFlee(getCurrentTarget());
@@ -1617,7 +1620,7 @@ bool AIInterface::canAssistTo(Unit* u, Unit* enemy, bool checkfaction /*= true*/
 void AIInterface::selectCurrentAgent(Unit* target, uint32_t spellid)
 {
     // If mob is currently fleeing
-    if (m_fleeTimer.getExpireTime() > 0)
+    if (m_fleeTimer->getExpireTime() > 0)
     {
         setCurrentAgent(AGENT_FLEE);
         return;
@@ -2224,7 +2227,7 @@ void AIInterface::atEngagementOver()
     getUnit()->setTargetGuid(0);
 
     m_hasFleed = false;
-    m_fleeTimer.resetInterval(0);
+    m_fleeTimer->resetInterval(0);
     setCurrentAgent(AGENT_NULL);
 
     m_Unit->smsg_AttackStop(nullptr);
@@ -2876,7 +2879,7 @@ void AIInterface::setCannotReachTarget(bool cannotReach)
     if (cannotReach == m_cannotReachTarget)
         return;
     m_cannotReachTarget = cannotReach;
-    m_cannotReachTimer.resetInterval(5000);
+    m_cannotReachTimer->resetInterval(5000);
 }
 
 void AIInterface::initializeReactState()
@@ -2914,7 +2917,7 @@ bool AIInterface::isInBoundary() const
     return AIInterface::isInBounds(&_boundary, getUnit()->GetPosition()) != _negateBoundary;
 }
 
-void AIInterface::doImmediateBoundaryCheck() { m_boundaryCheckTime.resetInterval(0); }
+void AIInterface::doImmediateBoundaryCheck() { m_boundaryCheckTime->resetInterval(0); }
 
 /*static*/ bool AIInterface::isInBounds(CreatureBoundary const* boundary, LocationVector pos)
 {
@@ -3485,7 +3488,8 @@ uint32 AIInterface::fixupCorridor(dtPolyRef* path, const uint32 npath, const uin
     return req + size;
 }
 
-CreatureAISpells::CreatureAISpells(SpellInfo const* spellInfo, float castChance, uint32_t targetType, uint32_t duration, uint32_t cooldown, bool forceRemove, bool isTriggered)
+CreatureAISpells::CreatureAISpells(SpellInfo const* spellInfo, float castChance, uint32_t targetType, uint32_t duration, uint32_t cooldown, bool forceRemove, bool isTriggered) :
+    mDurationTimer(std::make_unique<Util::SmallTimeTracker>(0)), mCooldownTimer(std::make_unique<Util::SmallTimeTracker>(0))
 {
     mSpellInfo = spellInfo;
     mCastChance = castChance;
@@ -3523,12 +3527,12 @@ CreatureAISpells::CreatureAISpells(SpellInfo const* spellInfo, float castChance,
 
 void CreatureAISpells::setdurationTimer(uint32_t durationTimer)
 {
-    mDurationTimer.resetInterval(durationTimer);
+    mDurationTimer->resetInterval(durationTimer);
 }
 
 void CreatureAISpells::setCooldownTimer(uint32_t cooldownTimer)
 {
-    mCooldownTimer.resetInterval(cooldownTimer);
+    mCooldownTimer->resetInterval(cooldownTimer);
 }
 
 void CreatureAISpells::addDBEmote(uint32_t textId)
@@ -3702,7 +3706,7 @@ void AIInterface::UpdateAISpells()
 {
     if (mLastCastedSpell)
     {
-        if (!mSpellWaitTimer.isTimePassed())
+        if (!mSpellWaitTimer->isTimePassed())
         {
             // spell has a min/max range
             if (!getUnit()->isCastingSpell() && (mLastCastedSpell->mMaxPositionRangeToCast > 0.0f || mLastCastedSpell->mMinPositionRangeToCast > 0.0f))
@@ -3745,7 +3749,7 @@ void AIInterface::UpdateAISpells()
         if (AISpell != nullptr)
         {
             // stop spells and remove aura in case of duration
-            if (AISpell->mDurationTimer.isTimePassed() && AISpell->mForceRemoveAura)
+            if (AISpell->mDurationTimer->isTimePassed() && AISpell->mForceRemoveAura)
             {
                 getUnit()->interruptSpell();
                 getUnit()->removeAllAurasById(AISpell->mSpellInfo->getId());
@@ -3754,7 +3758,7 @@ void AIInterface::UpdateAISpells()
     }
 
     // cast one spell and check if spell is done (duration)
-    if (mSpellWaitTimer.isTimePassed())
+    if (mSpellWaitTimer->isTimePassed())
     {
         CreatureAISpells* usedSpell = nullptr;
 
@@ -3779,7 +3783,7 @@ void AIInterface::UpdateAISpells()
                     continue;
 
                 // spell was casted before, check if the wait time is done
-                if (!AISpell->mCooldownTimer.isTimePassed())
+                if (!AISpell->mCooldownTimer->isTimePassed())
                     continue;
 
                 // check if creature has Mana/Power required to cast
@@ -3915,11 +3919,11 @@ void AIInterface::UpdateAISpells()
             uint32_t casttime = (GetCastTime(sSpellCastTimesStore.lookupEntry(usedSpell->mSpellInfo->getCastingTimeIndex())) ? GetCastTime(sSpellCastTimesStore.lookupEntry(usedSpell->mSpellInfo->getCastingTimeIndex())) : 500);
 
             // reset cast wait timer
-            mSpellWaitTimer.resetInterval(casttime);
+            mSpellWaitTimer->resetInterval(casttime);
 
             // reset spell timers to cleanup exceeded spells
-            usedSpell->mDurationTimer.resetInterval(usedSpell->mDuration);
-            usedSpell->mCooldownTimer.resetInterval(usedSpell->mCooldown);
+            usedSpell->mDurationTimer->resetInterval(usedSpell->mDuration);
+            usedSpell->mCooldownTimer->resetInterval(usedSpell->mCooldown);
         }
     }
 }

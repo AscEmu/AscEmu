@@ -9,8 +9,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/MovementDefines.h"
 #include "Movement/Spline/MoveSpline.h"
 #include "Objects/Units/Unit.hpp"
+#include "Utilities/TimeTracker.hpp"
 
-GenericMovementGenerator::GenericMovementGenerator(MovementMgr::MoveSplineInit&& splineInit, MovementGeneratorType type, uint32_t id) : _splineInit(std::move(splineInit)), _type(type), _pointId(id), _duration(0)
+GenericMovementGenerator::GenericMovementGenerator(MovementMgr::MoveSplineInit&& splineInit, MovementGeneratorType type, uint32_t id) :
+_splineInit(std::move(splineInit)), _type(type), _pointId(id), _duration(std::make_unique<Util::SmallTimeTracker>(0))
 {
     Mode = MOTION_MODE_DEFAULT;
     Priority = MOTION_PRIORITY_NORMAL;
@@ -30,7 +32,7 @@ void GenericMovementGenerator::initialize(Unit* /*owner*/)
     removeFlag(MOVEMENTGENERATOR_FLAG_INITIALIZATION_PENDING | MOVEMENTGENERATOR_FLAG_DEACTIVATED);
     addFlag(MOVEMENTGENERATOR_FLAG_INITIALIZED);
 
-    _duration.resetInterval(_splineInit.Launch());
+    _duration->resetInterval(_splineInit.Launch());
 }
 
 void GenericMovementGenerator::reset(Unit* owner)
@@ -45,9 +47,9 @@ bool GenericMovementGenerator::update(Unit* owner, uint32_t diff)
 
     // Cyclic splines never expire, so update the duration only if it's not cyclic
     if (!owner->movespline->isCyclic())
-        _duration.updateTimer(diff);
+        _duration->updateTimer(diff);
 
-    if (_duration.isTimePassed() || owner->movespline->Finalized())
+    if (_duration->isTimePassed() || owner->movespline->Finalized())
     {
         addFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED);
         return false;

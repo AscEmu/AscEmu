@@ -28,6 +28,7 @@
 
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/CreatureAIScript.hpp"
+#include "Utilities/Random.hpp"
 
 class ArmyOfTheDeadGhoulAI : public CreatureAIScript
 {

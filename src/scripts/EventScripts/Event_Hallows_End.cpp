@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/GameObjectAIScript.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "Utilities/Random.hpp"
 
 enum
 {

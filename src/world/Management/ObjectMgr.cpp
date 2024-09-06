@@ -42,6 +42,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Spell/SpellInfo.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "Utilities/Narrow.hpp"
 
 #if VERSION_STRING < Cata
 #include "Management/Guild/Guild.hpp"

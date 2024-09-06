@@ -46,6 +46,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLStructures.h"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "Utilities/Random.hpp"
 
 int LuaUnit::GetDisplay(lua_State* L, Unit* ptr)
 {

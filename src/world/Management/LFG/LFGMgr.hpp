@@ -5,12 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <list>
-
 #include "LFG.hpp"
 #include "Server/Definitions.h"
 #include "Server/EventableObject.h"
-#include "Utilities/Util.hpp"
+
+#include <list>
 
 class LfgGroupData;
 class LfgPlayerData;
@@ -368,10 +367,3 @@ protected:
 };
 
 #define sLfgMgr LfgMgr::getInstance()
-
-template <class C> typename C::value_type const& SelectRandomContainerElement(C const& container)
-{
-    typename C::const_iterator it = container.begin();
-    std::advance(it, Util::getRandomUInt(0, static_cast<uint32>(container.size() - 1)));
-    return *it;
-}

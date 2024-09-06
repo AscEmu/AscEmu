@@ -51,6 +51,7 @@
 #include "Spell/SpellInfo.hpp"
 #include "Spell/Definitions/SpellEffects.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "Utilities/Random.hpp"
 
 #if VERSION_STRING < Cata
 #include "Server/World.h"

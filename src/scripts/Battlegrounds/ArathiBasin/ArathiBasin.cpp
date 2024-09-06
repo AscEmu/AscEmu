@@ -38,6 +38,8 @@
 #include "Server/EventMgr.h"
 #include "Spell/Spell.hpp"
 #include "CommonTime.hpp"
+#include "Utilities/Random.hpp"
+#include "Utilities/Util.hpp"
 
 uint32_t buffentries[3] = { 180380, 180362, 180146 };
 

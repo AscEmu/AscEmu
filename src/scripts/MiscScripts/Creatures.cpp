@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/MovementManager.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/CreatureAIScript.hpp"
+#include "Utilities/Random.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Explosive Sheep (Summoned by ItemID: 4384)

@@ -10,7 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Movement/PathGenerator.h"
 #include "Objects/Units/Unit.hpp"
-#include "Utilities/Util.hpp"
+#include "Utilities/Random.hpp"
+#include "Utilities/TimeTracker.hpp"
 
 static void doMovementInform(Unit* owner, Unit* target)
 {
@@ -21,7 +22,7 @@ static void doMovementInform(Unit* owner, Unit* target)
         AI->movementInform(FOLLOW_MOTION_TYPE, target->getGuidLow());
 }
 
-FollowMovementGenerator::FollowMovementGenerator(Unit* target, float range, ChaseAngle angle) : AbstractFollower(target), _range(range), _angle(angle), _checkTimer(CHECK_INTERVAL)
+FollowMovementGenerator::FollowMovementGenerator(Unit* target, float range, ChaseAngle angle) : AbstractFollower(target), _range(range), _angle(angle), _checkTimer(std::make_unique<Util::SmallTimeTracker>(CHECK_INTERVAL))
 {
     Mode = MOTION_MODE_DEFAULT;
     Priority = MOTION_PRIORITY_NORMAL;
@@ -76,10 +77,10 @@ bool FollowMovementGenerator::update(Unit* owner, uint32_t diff)
         return true;
     }
 
-    _checkTimer.updateTimer(diff);
-    if (_checkTimer.isTimePassed())
+    _checkTimer->updateTimer(diff);
+    if (_checkTimer->isTimePassed())
     {
-        _checkTimer.resetInterval(CHECK_INTERVAL);
+        _checkTimer->resetInterval(CHECK_INTERVAL);
         if (hasFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED) && positionOkay(owner, target, _range, _angle))
         {
             removeFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED);
@@ -174,6 +175,10 @@ void FollowMovementGenerator::finalize(Unit* owner, bool active, bool/* movement
         updatePetSpeed(owner);
     }
 }
+
+MovementGeneratorType FollowMovementGenerator::getMovementGeneratorType() const { return FOLLOW_MOTION_TYPE; }
+
+void FollowMovementGenerator::unitSpeedChanged() { _lastTargetPosition.reset(); }
 
 void FollowMovementGenerator::updatePetSpeed(Unit* owner)
 {

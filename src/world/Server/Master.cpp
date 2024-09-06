@@ -66,6 +66,7 @@
 
 #include "Common.hpp"
 #include "Threading/LegacyThreading.h"
+#include "Utilities/Benchmark.hpp"
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20230710-00_characters_taxi";

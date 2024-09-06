@@ -123,52 +123,6 @@ namespace Util
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // Narrowing std::string and cstring to specific types
-    // bool conversion
-    bool stringToBool(const std::string& _str) { return safeStringToSigned<bool>(_str); }
-    bool stringToBool(const char* _cstr) { return safeStringToSigned<bool>(_cstr); }
-
-    // uint8_t conversion
-    uint8_t stringToUint8(const std::string& _str, bool _silencedError) { return safeStringToUnsigned<uint8_t>(_str, _silencedError); }
-    uint8_t stringToUint8(const char* _cstr, bool _silencedError) { return safeStringToUnsigned<uint8_t>(_cstr, _silencedError); }
-
-    // int8_t conversion
-    int8_t stringToInt8(const std::string& _str) { return safeStringToSigned<int8_t>(_str); }
-    int8_t stringToInt8(const char* _cstr) { return safeStringToSigned<int8_t>(_cstr); }
-
-    // uint16_t conversion
-    uint16_t stringToUint16(const std::string& _str, bool _silencedError) { return safeStringToUnsigned<uint16_t>(_str, _silencedError); }
-    uint16_t stringToUint16(const char* _cstr, bool _silencedError) { return safeStringToUnsigned<uint16_t>(_cstr, _silencedError); }
-
-    // int16_t conversion
-    int16_t stringToInt16(const std::string& _str) { return safeStringToSigned<int16_t>(_str); }
-    int16_t stringToInt16(const char* _cstr) { return safeStringToSigned<int16_t>(_cstr); }
-
-    // uint32_t conversion
-    uint32_t stringToUint32(const std::string& _str, bool _silencedError) { return safeStringToUnsigned<uint32_t>(_str, _silencedError); }
-    uint32_t stringToUint32(const char* _cstr, bool _silencedError) { return safeStringToUnsigned<uint32_t>(_cstr, _silencedError); }
-
-    // int32_t conversion
-    int32_t stringToInt32(const std::string& _str) { return safeStringToSigned<int32_t>(_str); }
-    int32_t stringToInt32(const char* _cstr) { return safeStringToSigned<int32_t>(_cstr); }
-
-    // uint64_t conversion
-    uint64_t stringToUint64(const std::string& _str, bool _silencedError) { return safeStringToUnsigned<uint64_t>(_str, _silencedError); }
-    uint64_t stringToUint64(const char* _cstr, bool _silencedError) { return safeStringToUnsigned<uint64_t>(_cstr, _silencedError); }
-
-    // int64_t conversion
-    int64_t stringToInt64(const std::string& _str) { return safeStringToSigned<int64_t>(_str); }
-    int64_t stringToInt64(const char* cstr) { return safeStringToSigned<int64_t>(cstr); }
-
-    // float conversion
-    float stringToFloat(const std::string& _str) { return safeStringToSigned<float>(_str); }
-    float stringToFloat(const char* _cstr) { return safeStringToSigned<float>(_cstr); }
-
-    // double conversion
-    double stringToDouble(const std::string& _str) { return safeStringToSigned<double>(_str); }
-    double stringToDouble(const char* _cstr) { return safeStringToSigned<double>(_cstr); }
-
-    //////////////////////////////////////////////////////////////////////////////////////////
     // Time calculation
     // \note typedef high_resolution_clock system_clock
     // for further information check out https://msdn.microsoft.com/en-us/library/hh874757.aspx
@@ -390,78 +344,6 @@ namespace Util
         }
 
         return ss.str();
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // Random number helper functions
-
-    int getRandomInt(int end)
-    {
-        return getRandomUInt(0, end);
-    }
-
-    int getRandomInt(int start, int end)
-    {
-        std::random_device rd;
-        std::mt19937 mt(rd());
-        std::uniform_int_distribution<int> dist(start, end);
-        return dist(mt);
-    }
-
-    uint32_t getRandomUInt(uint32_t end)
-    {
-        return getRandomUInt(0, end);
-    }
-
-    uint32_t getRandomUInt(uint32_t start, uint32_t end)
-    {
-        std::random_device rd;
-        std::mt19937 mt(rd());
-        std::uniform_int_distribution<uint32_t> dist(start, end);
-        return dist(mt);
-    }
-
-    float getRandomFloat(float end)
-    {
-        return getRandomFloat(0.0f, end);
-    }
-
-    float getRandomFloat(float start, float end)
-    {
-        std::random_device rd;
-        std::mt19937 mt(rd());
-        std::uniform_real_distribution<float> dist(start, end);
-        return dist(mt);
-    }
-
-    bool checkChance(uint32_t val)
-    {
-        if (val >= 100)
-            return true;
-        if (val == 0)
-            return false;
-
-        return val >= getRandomUInt(100);
-    }
-
-    bool checkChance(int32_t val)
-    {
-        if (val >= 100)
-            return true;
-        if (val <= 0)
-            return false;
-
-        return val >= getRandomInt(100);
-    }
-
-    bool checkChance(float_t val)
-    {
-        if (val >= 100.0f)
-            return true;
-        if (val <= 0.0f)
-            return false;
-
-        return static_cast<uint32_t>(val * 100) >= getRandomUInt(100 * 100);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////

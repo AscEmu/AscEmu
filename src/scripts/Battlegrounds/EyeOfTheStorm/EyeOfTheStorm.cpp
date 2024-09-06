@@ -37,6 +37,8 @@
 #include "Spell/Spell.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "CommonTime.hpp"
+#include "Utilities/Random.hpp"
+#include "Utilities/Util.hpp"
 
 static float EOTSBuffCoordinates[4][4] =
 {

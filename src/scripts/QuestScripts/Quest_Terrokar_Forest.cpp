@@ -27,6 +27,7 @@
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSession.h"
 #include "Server/Script/CreatureAIScript.hpp"
+#include "Utilities/Random.hpp"
 
 class ThreatFromAboveQAI : public CreatureAIScript
 {

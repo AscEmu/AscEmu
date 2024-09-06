@@ -19,3 +19,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObject.h"
 #include "Management/ObjectMgr.hpp"
 #include "CommonTime.hpp"
+#include "Utilities/Narrow.hpp"
+#include "Utilities/Util.hpp"
+#include "Utilities/Random.hpp"

@@ -53,6 +53,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Creatures/Corpse.hpp"
 #include "Units/Creatures/Vehicle.hpp"
 #include "Units/Players/Player.hpp"
+#include "Utilities/Random.hpp"
 
 #if VERSION_STRING >= Cata
 #include "Server/OpcodeTable.hpp"

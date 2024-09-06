@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Utilities/TimeTracker.hpp"
 
 MapScriptInterface::MapScriptInterface(WorldMap& mgr) : m_worldMap(mgr)
 {}

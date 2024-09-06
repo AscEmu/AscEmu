@@ -169,7 +169,7 @@ public:
 
     void AIUpdate(unsigned long time_passed) override;
 protected:
-    int32_t determinationTimer = Util::getRandomUInt(5 * TimeVarsMs::Second, 60 * TimeVarsMs::Second);
+    int32_t determinationTimer = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

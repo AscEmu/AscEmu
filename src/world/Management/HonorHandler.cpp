@@ -31,6 +31,7 @@
 #include "Server/Script/HookInterface.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Spell/SpellMgr.hpp"
+#include "Utilities/Narrow.hpp"
 
 void HonorHandler::AddHonorPointsToPlayer(Player* pPlayer, uint32 uAmount)
 {

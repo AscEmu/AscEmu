@@ -11,14 +11,16 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/MovementDefines.h"
 #include "Movement/Spline/MoveSpline.h"
 #include "Movement/Spline/MoveSplineInit.h"
+#include "Utilities/TimeTracker.hpp"
 
-FormationMovementGenerator::FormationMovementGenerator(Unit* leader, float range, float angle, uint32_t point1, uint32_t point2) : AbstractFollower(leader),
-    _range(range), _angle(angle), _point1(point1), _point2(point2), _lastLeaderSplineID(0), _hasPredictedDestination(false)
+FormationMovementGenerator::FormationMovementGenerator(Unit* leader, float range, float angle, uint32_t point1, uint32_t point2) :
+AbstractFollower(leader), _range(range), _angle(angle), _point1(point1), _point2(point2), _lastLeaderSplineID(0), _hasPredictedDestination(false)
 {
     Mode = MOTION_MODE_DEFAULT;
     Priority = MOTION_PRIORITY_NORMAL;
     Flags = MOVEMENTGENERATOR_FLAG_INITIALIZATION_PENDING;
     BaseUnitState = UNIT_STATE_FOLLOW_FORMATION;
+    _nextMoveTimer = std::make_unique<Util::SmallTimeTracker>(0);
 }
 
 MovementGeneratorType FormationMovementGenerator::getMovementGeneratorType() const
@@ -38,7 +40,7 @@ void FormationMovementGenerator::doInitialize(Creature* owner)
         return;
     }
 
-    _nextMoveTimer.resetInterval(0);
+    _nextMoveTimer->resetInterval(0);
 }
 
 void FormationMovementGenerator::doReset(Creature* owner)
@@ -60,7 +62,7 @@ bool FormationMovementGenerator::doUpdate(Creature* owner, uint32_t diff)
     {
         addFlag(MOVEMENTGENERATOR_FLAG_INTERRUPTED);
         owner->stopMoving();
-        _nextMoveTimer.resetInterval(0);
+        _nextMoveTimer->resetInterval(0);
         _hasPredictedDestination = false;
         return true;
     }
@@ -70,7 +72,7 @@ bool FormationMovementGenerator::doUpdate(Creature* owner, uint32_t diff)
     {
         addFlag(MOVEMENTGENERATOR_FLAG_INTERRUPTED);
         owner->stopMoving();
-        _nextMoveTimer.resetInterval(0);
+        _nextMoveTimer->resetInterval(0);
         _hasPredictedDestination = false;
         return true;
     }
@@ -101,10 +103,10 @@ bool FormationMovementGenerator::doUpdate(Creature* owner, uint32_t diff)
         return true;
     }
 
-    _nextMoveTimer.updateTimer(diff);
-    if (_nextMoveTimer.isTimePassed())
+    _nextMoveTimer->updateTimer(diff);
+    if (_nextMoveTimer->isTimePassed())
     {
-        _nextMoveTimer.resetInterval(FORMATION_MOVEMENT_INTERVAL);
+        _nextMoveTimer->resetInterval(FORMATION_MOVEMENT_INTERVAL);
 
         // Our leader has a different position than on our last check, launch movement.
         if (_lastLeaderPosition != target->GetPosition())

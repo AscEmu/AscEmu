@@ -27,6 +27,7 @@
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"
 #include "Spell/SpellInfo.hpp"
+#include "Utilities/Random.hpp"
 
 
 class GrandWidowFaerlinaAI;

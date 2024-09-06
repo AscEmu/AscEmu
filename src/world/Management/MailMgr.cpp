@@ -18,6 +18,8 @@
 
 #include "MailMgr.h"
 
+#include <sstream>
+
 #include "Logging/Log.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"

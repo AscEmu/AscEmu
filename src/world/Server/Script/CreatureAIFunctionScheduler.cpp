@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CreatureAIScript.hpp"
 #include "Logging/Logger.hpp"
 #include "Spell/SpellInfo.hpp"
+#include "Utilities/Random.hpp"
 
 CreatureAIFunctionScheduler::CreatureAIFunctionScheduler(CreatureAIScript* script) : mOwner(script) { }
 
@@ -176,9 +177,7 @@ void CreatureAIFunctionScheduler::update(unsigned long time_passed)
     // Randomize the order of functions
     // Warning when 2 functions have 2 seconds timer the first always would executes before the second one...
     // Randomizing the order could lead to unexpected behaviour when u rely on the order of insertion
-    std::random_device rd;
-    std::mt19937 g(rd());
-    std::shuffle(mCreatureAIFunctions.begin(), mCreatureAIFunctions.end(), g);
+    Util::randomShuffleVector(&mCreatureAIFunctions);
 
     // Delete functions marked for removal
     mCreatureAIFunctions.erase(std::remove_if(mCreatureAIFunctions.begin(), mCreatureAIFunctions.end(), [](const auto& function) {

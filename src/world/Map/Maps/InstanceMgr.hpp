@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Utilities/Util.hpp"
 #include "InstanceDefines.hpp"
 #include "CommonTypes.hpp"
 
@@ -152,10 +151,7 @@ public:
     time_t getSubsequentResetTime(uint32_t mapid, InstanceDifficulty::Difficulties difficulty, time_t resetTime) const;
 
     // Use this on startup when initializing reset times
-    void initializeResetTimeFor(uint16_t mapid, InstanceDifficulty::Difficulties d, time_t t)
-    {
-        m_resetTimeByMapDifficulty[Util::MAKE_PAIR32(mapid, d)] = t;
-    }
+    void initializeResetTimeFor(uint16_t mapid, InstanceDifficulty::Difficulties d, time_t t);
 
     // Use this only when updating existing reset times
     void setResetTimeFor(uint16_t mapid, InstanceDifficulty::Difficulties d, time_t t)

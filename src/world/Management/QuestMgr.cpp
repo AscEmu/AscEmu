@@ -55,6 +55,8 @@
 #include "Server/Script/QuestScript.hpp"
 #include "Spell/Spell.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "Utilities/Narrow.hpp"
+#include "Utilities/TimeTracker.hpp"
 
 using namespace AscEmu::Packets;
 

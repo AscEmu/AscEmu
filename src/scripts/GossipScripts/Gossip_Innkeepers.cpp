@@ -11,6 +11,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSession.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Utilities/Random.hpp"
+#include "Utilities/Util.hpp"
 
 enum
 {

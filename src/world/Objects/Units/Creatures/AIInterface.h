@@ -12,9 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptEvent.hpp"
 #include "Chat/ChatDefines.hpp"
 #include "Storage/MySQLStructures.h"
-#include "Utilities/Util.hpp"
-
 #include <functional>
+#include "Utilities/TimeTracker.hpp"
 
 inline bool inRangeYZX(const float* v1, const float* v2, const float r, const float h)
 {
@@ -146,8 +145,8 @@ public:
 
     std::function<Unit* ()> getTargetFunction = nullptr;
 
-    SmallTimeTracker mDurationTimer;
-    SmallTimeTracker mCooldownTimer;
+    std::unique_ptr<Util::SmallTimeTracker> mDurationTimer;
+    std::unique_ptr<Util::SmallTimeTracker> mCooldownTimer;
 
     uint32_t mDuration;
     void setdurationTimer(uint32_t durationTimer);
@@ -339,7 +338,7 @@ public:
 private:
     AI_Agent m_AiCurrentAgent;
     bool m_hasFleed;
-    SmallTimeTracker m_fleeTimer;
+    std::unique_ptr<Util::SmallTimeTracker> m_fleeTimer;
 
 protected:
     bool m_AlreadyCallAssistance;
@@ -555,11 +554,11 @@ public:
     bool isValidUnitTarget(Object* pObject, TargetFilter pFilter, float pMinRange = 0.0f, float pMaxRange = 0.0f);
 
 protected:
-    SmallTimeTracker m_boundaryCheckTime;
+    std::unique_ptr<Util::SmallTimeTracker> m_boundaryCheckTime;
     CreatureBoundary _boundary;
     bool _negateBoundary;
 
-    SmallTimeTracker m_updateAssistTimer;
+    std::unique_ptr<Util::SmallTimeTracker> m_updateAssistTimer;
     AssistTargetSet m_assistTargets;
 
 private:
@@ -648,7 +647,7 @@ public:
     typedef std::vector<CreatureAISpells*> CreatureAISpellsArray;
     CreatureAISpellsArray mCreatureAISpells;
 
-    SmallTimeTracker mSpellWaitTimer;
+    std::unique_ptr<Util::SmallTimeTracker> mSpellWaitTimer;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // script events
@@ -663,7 +662,7 @@ protected:
     uint32_t timed_emote_expire;
 
     bool m_cannotReachTarget;
-    SmallTimeTracker m_noTargetTimer;
-    SmallTimeTracker m_cannotReachTimer;
-    SmallTimeTracker m_updateTargetTimer;
+    std::unique_ptr<Util::SmallTimeTracker> m_noTargetTimer;
+    std::unique_ptr<Util::SmallTimeTracker> m_cannotReachTimer;
+    std::unique_ptr<Util::SmallTimeTracker> m_updateTargetTimer;
 };

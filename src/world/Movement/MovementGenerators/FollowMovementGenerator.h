@@ -9,7 +9,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/MovementDefines.h"
 #include "Movement/MovementGenerator.h"
 #include "LocationVector.h"
-#include "Utilities/Util.hpp"
+
+namespace Util
+{
+    struct SmallTimeTracker;
+}
 
 class PathGenerator;
 class Unit;
@@ -27,9 +31,9 @@ public:
     bool update(Unit*, uint32_t) override;
     void deactivate(Unit*) override;
     void finalize(Unit*, bool, bool) override;
-    MovementGeneratorType getMovementGeneratorType() const override { return FOLLOW_MOTION_TYPE; }
+    MovementGeneratorType getMovementGeneratorType() const override;
 
-    void unitSpeedChanged() override { _lastTargetPosition.reset(); }
+    void unitSpeedChanged() override;
 
 private:
     static constexpr uint32_t CHECK_INTERVAL = 100;
@@ -39,7 +43,7 @@ private:
     float const _range;
     ChaseAngle const _angle;
 
-    SmallTimeTracker _checkTimer;
+    std::unique_ptr<Util::SmallTimeTracker> _checkTimer;
     std::unique_ptr<PathGenerator> _path;
     Optional<LocationVector> _lastTargetPosition;
 };

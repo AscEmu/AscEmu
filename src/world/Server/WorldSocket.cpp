@@ -35,6 +35,7 @@
 #include "Packets/SmsgAuthResponse.h"
 #include "OpcodeTable.hpp"
 #include "WorldSession.h"
+#include "Utilities/Random.hpp"
 
 using namespace AscEmu::Packets;
 

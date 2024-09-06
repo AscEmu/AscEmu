@@ -13,6 +13,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/PathGenerator.h"
 #include "Objects/Units/Unit.hpp"
 #include "Server/World.h"
+#include "Utilities/Random.hpp"
+#include "Utilities/TimeTracker.hpp"
 #include "Utilities/Util.hpp"
 
 static bool hasLostTarget(Unit* owner, Unit* target)
@@ -59,7 +61,7 @@ static void doMovementInform(Unit* owner, Unit* target)
 }
 
 ChaseMovementGenerator::ChaseMovementGenerator(Unit *target, Optional<ChaseRange> range, Optional<ChaseAngle> angle) : AbstractFollower(target), _range(range),
-    _angle(angle), _rangeCheckTimer(RANGE_CHECK_INTERVAL)
+    _angle(angle), _rangeCheckTimer(std::make_unique<Util::SmallTimeTracker>(RANGE_CHECK_INTERVAL))
 {
     Mode = MOTION_MODE_DEFAULT;
     Priority = MOTION_PRIORITY_NORMAL;
@@ -115,10 +117,10 @@ bool ChaseMovementGenerator::update(Unit* owner, uint32_t diff)
     Optional<ChaseAngle> angle = mutualChase ? Optional<ChaseAngle>() : _angle;
 
     // periodically check if we're already in the expected range...
-    _rangeCheckTimer.updateTimer(diff);
-    if (_rangeCheckTimer.isTimePassed())
+    _rangeCheckTimer->updateTimer(diff);
+    if (_rangeCheckTimer->isTimePassed())
     {
-        _rangeCheckTimer.resetInterval(RANGE_CHECK_INTERVAL);
+        _rangeCheckTimer->resetInterval(RANGE_CHECK_INTERVAL);
         if (hasFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED) && positionOkay(owner, target, _movingTowards ? Optional<float>() : minTarget, _movingTowards ? maxTarget : Optional<float>(), angle))
         {
             removeFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED);
@@ -254,3 +256,7 @@ void ChaseMovementGenerator::finalize(Unit* owner, bool active, bool/* movementI
             cOwner->getAIInterface()->setCannotReachTarget(false);
     }
 }
+
+MovementGeneratorType ChaseMovementGenerator::getMovementGeneratorType() const { return CHASE_MOTION_TYPE; }
+
+void ChaseMovementGenerator::unitSpeedChanged() { _lastTargetPosition.reset(); }

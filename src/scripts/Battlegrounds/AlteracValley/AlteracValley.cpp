@@ -24,6 +24,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CommonTime.hpp"
 #include <cstdarg>
 
+#include "Utilities/Narrow.hpp"
+#include "Utilities/Random.hpp"
+#include "Utilities/Util.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Fire Locations
 

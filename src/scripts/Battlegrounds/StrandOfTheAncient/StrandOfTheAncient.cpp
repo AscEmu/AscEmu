@@ -75,6 +75,8 @@
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/EventMgr.h"
 #include "CommonTime.hpp"
+#include "Utilities/Random.hpp"
+#include "Utilities/Util.hpp"
 
 const float sotaTitanRelic[4] = { 836.5f, -108.8f, 120.59f, 0.0f };
 

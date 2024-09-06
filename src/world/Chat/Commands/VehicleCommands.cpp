@@ -3,6 +3,8 @@ Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include <sstream>
+
 #include "Chat/ChatHandler.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/Units/Creatures/Creature.h"

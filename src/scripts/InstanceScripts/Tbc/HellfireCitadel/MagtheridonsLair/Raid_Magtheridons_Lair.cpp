@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/MapScriptInterface.h"
 #include "Objects/GameObject.h"
 #include "Objects/Units/Players/Player.hpp"
+#include "Utilities/Random.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Magtheridons Lair Instance

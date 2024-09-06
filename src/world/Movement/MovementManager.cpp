@@ -35,6 +35,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MovementGenerators/FlightPathMovementGenerator.h"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Utilities/TimeTracker.hpp"
 
 namespace FactorySelector
 {

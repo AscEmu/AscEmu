@@ -30,3 +30,5 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/GameObject.h"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "Utilities/Util.hpp"
+#include "Utilities/Random.hpp"

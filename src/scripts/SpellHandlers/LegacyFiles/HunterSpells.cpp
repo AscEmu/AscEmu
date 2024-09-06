@@ -27,6 +27,7 @@
 #include "Spell/Spell.hpp"
 #include "Spell/SpellInfo.hpp"
 #include "Spell/SpellMgr.hpp"
+#include "Utilities/Narrow.hpp"
 
 bool Refocus(uint8_t /*effectIndex*/, Spell* pSpell)
 {

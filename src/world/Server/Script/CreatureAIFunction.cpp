@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CreatureAIScript.hpp"
 #include "Spell/SpellInfo.hpp"
 #include "Storage/WDB/WDBStores.hpp"
+#include "Utilities/Random.hpp"
 
 CreatureAIFunction::CreatureAIFunction(CreatureAIScript* owner, Function pFunction, SchedulerArgs const& schedArgs, FunctionArgs const& funcArgs)
 {

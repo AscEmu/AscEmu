@@ -159,6 +159,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStructures.hpp"
 #include <cstdarg>
 
+#include "Utilities/Narrow.hpp"
+
 #if VERSION_STRING > TBC
     #include "Management/AchievementMgr.h"
 #endif
@@ -218,6 +220,9 @@ Player::Player(uint32_t guid) :
     m_achievementMgr = new AchievementMgr(this);
 #endif
     m_taxi = new TaxiPath;
+
+    m_underwaterLastDamage = Util::getMSTime();
+    m_explorationTimer = Util::getMSTime();
 
     // Override initialization from Unit class
     getThreatManager().initialize();

@@ -7,9 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Macros/ItemMacros.hpp"
 #include "Objects/ItemDefines.hpp"
-#include "Utilities/Util.hpp"
 
-#include <cstdint>
 #include <string>
 
 class Spell;
@@ -89,56 +87,18 @@ struct ItemProperties
     std::string lowercase_name; // used in auctions
     int32_t ForcedPetId;
 
-    bool HasFlag(uint32_t flag) const
-    {
-        if ((Flags & flag) != 0)
-            return true;
-
-        return false;
-    }
+    bool HasFlag(uint32_t flag) const;
     
-    bool HasFlag2(uint32_t flag) const
-    {
-        if ((Flags2 & flag) != 0)
-            return true;
-        
-        return false;
-    }
+    bool HasFlag2(uint32_t flag) const;
 
-    bool isPotion() const { return Class == ITEM_CLASS_CONSUMABLE && SubClass == ITEM_SUBCLASS_POTION; }
-    bool isVellum() const { return Class == ITEM_CLASS_TRADEGOODS && SubClass == ITEM_SUBCLASS_ARMOR_ENCHANTMENT; }
-    bool isConjuredConsumable() const { return Class == ITEM_CLASS_CONSUMABLE && (Flags & ITEM_FLAG_CONJURED); }
-    bool isCurrencyToken() const { return BagFamily & ITEM_TYPE_CURRENCY; }
+    bool isPotion() const;
+    bool isVellum() const;
+    bool isConjuredConsumable() const;
+    bool isCurrencyToken() const;
 
-    bool isRangedWeapon() const
-    {
-        return Class == ITEM_CLASS_WEAPON ||
-            SubClass == ITEM_SUBCLASS_WEAPON_BOW ||
-            SubClass == ITEM_SUBCLASS_WEAPON_GUN ||
-            SubClass == ITEM_SUBCLASS_WEAPON_CROSSBOW;
-    }
+    bool isRangedWeapon() const;
 
-    uint32_t getBuyPriceForItem(uint32_t count, uint32_t factionStanding) const
-    {
-        const float pricemod[9] =
-        {
-            1.0f,        // HATED
-            1.0f,        // HOSTILE
-            1.0f,        // UNFRIENDLY
-            1.0f,        // NEUTRAL
-            0.95f,       // FRIENDLY
-            0.90f,       // HONORED
-            0.85f,       // REVERED
-            0.80f        // EXHALTED
-        };
-
-        int32_t cost = BuyPrice;
-
-        if (factionStanding && factionStanding <= 8)
-            cost = Util::float2int32(ceilf(BuyPrice * pricemod[factionStanding]));
-
-        return cost * count;
-    }
+    uint32_t getBuyPriceForItem(uint32_t count, uint32_t factionStanding) const;
 };
 
 struct ItemSet

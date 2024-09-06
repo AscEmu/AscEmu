@@ -5,6 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Logging/Log.hpp"
 #include "QuestLogEntry.hpp"
+
+#include <sstream>
+
 #include "Server/WorldSession.h"
 #include "Management/ItemInterface.h"
 #include "QuestMgr.h"

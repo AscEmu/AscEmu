@@ -23,17 +23,20 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Spell.hpp"
 #include "Spell/SpellAura.hpp"
 #include "Spell/SpellInfo.hpp"
+#include "Utilities/Random.hpp"
+#include "Utilities/TimeTracker.hpp"
 
-CreatureAIScript::CreatureAIScript(Creature* creature) : mScriptPhase(0), summons(creature), mCreatureTimerCount(0), mAIUpdateFrequency(defaultUpdateFrequency),
-                                                         isIdleEmoteEnabled(false), idleEmoteTimerId(0), idleEmoteTimeMin(0), idleEmoteTimeMax(0), _creature(creature), linkedCreatureAI(nullptr), mCreatureAIScheduler(std::make_shared<CreatureAIFunctionScheduler>(this))
+CreatureAIScript::CreatureAIScript(Creature* creature) :
+mScriptPhase(0), summons(creature), mCreatureTimerCount(0), mAIUpdateFrequency(defaultUpdateFrequency), isIdleEmoteEnabled(false), idleEmoteTimerId(0),
+idleEmoteTimeMin(0), idleEmoteTimeMax(0), _creature(creature), linkedCreatureAI(nullptr),
+mCreatureAIScheduler(std::make_shared<CreatureAIFunctionScheduler>(this)),
+m_oldAIUpdate(std::make_unique<Util::SmallTimeTracker>(1000))
 {
     mCreatureTimerIds.clear();
     mCreatureTimer.clear();
 
     mCustomAIUpdateDelayTimerId = 0;
     mCustomAIUpdateDelay = 0;
-
-    m_oldAIUpdate.resetInterval(1000);
 }
 
 CreatureAIScript::~CreatureAIScript()
@@ -147,13 +150,13 @@ void CreatureAIScript::_internalAIUpdate(unsigned long time_passed)
     }
     else
     {
-        m_oldAIUpdate.updateTimer(time_passed);
+        m_oldAIUpdate->updateTimer(time_passed);
 
         // old Timer AIUpdate
-        if (m_oldAIUpdate.isTimePassed())
+        if (m_oldAIUpdate->isTimePassed())
         {
             AIUpdate();
-            m_oldAIUpdate.resetInterval(1000);
+            m_oldAIUpdate->resetInterval(1000);
         }
     }
 }

@@ -21,6 +21,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "Utilities/Narrow.hpp"
+#include "Utilities/Random.hpp"
 
 SpellInfo const* SpellRankInfo::getPreviousSpell() const { return previousSpell; }
 SpellInfo const* SpellRankInfo::getNextSpell() const { return nextSpell; }

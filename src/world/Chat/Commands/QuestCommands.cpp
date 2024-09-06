@@ -21,6 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/HookInterface.hpp"
 #include "Server/Script/QuestScript.hpp"
 #include "Storage/MySQLDataStore.hpp"
+#include "Utilities/Narrow.hpp"
 
 uint32_t GetQuestIDFromLink(const char* questlink)
 {

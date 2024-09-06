@@ -11,6 +11,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLStructures.h"
 #include "Logging/Log.hpp"
 #include "Logging/Logger.hpp"
+#include "Utilities/Random.hpp"
+#include "Utilities/Util.hpp"
 
 using AscEmu::Threading::AEThread;
 using std::chrono::milliseconds;

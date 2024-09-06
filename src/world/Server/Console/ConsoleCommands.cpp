@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ConsoleCommands.h"
 #include <git_version.h>
+#include <iostream>
+#include <sstream>
 
 #include "Common.hpp"
 #include "Chat/ChatDefines.hpp"
@@ -22,6 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Strings.hpp"
 #include "Threading/LegacyThreading.h"
+#include "Utilities/Util.hpp"
 
 bool handleSendChatAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool /*isWebClient*/)
 {

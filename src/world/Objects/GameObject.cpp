@@ -61,6 +61,8 @@
 #include "Spell/SpellInfo.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Units/Players/Player.hpp"
+#include "Utilities/Narrow.hpp"
+#include "Utilities/Random.hpp"
 
 // MIT
 

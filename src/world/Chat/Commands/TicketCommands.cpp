@@ -3,6 +3,8 @@ Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include <sstream>
+
 #include "Chat/ChatHandler.hpp"
 #include "Logging/Log.hpp"
 #include "Management/MailMgr.h"
@@ -14,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSessionLog.hpp"
 #include "Server/Packets/SmsgGmTicketDeleteTicket.h"
 #include "Server/Packets/SmsgGmTicketStatusUpdate.h"
+#include "Utilities/Util.hpp"
 
 using namespace AscEmu::Packets;
 

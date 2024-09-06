@@ -12,3 +12,4 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/GameObjectAIScript.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Objects/GameObject.h"
+#include "Utilities/Random.hpp"

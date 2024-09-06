@@ -550,7 +550,7 @@ public:
     uint32_t m_underwaterTime = 180000;
     uint32_t m_underwaterMaxTime = 180000;
     uint32_t m_underwaterState = 0;
-    uint32_t m_underwaterLastDamage = Util::getMSTime();
+    uint32_t m_underwaterLastDamage;
 
     void handleKnockback(Object* caster, float horizontal, float vertical) override;
 
@@ -613,7 +613,7 @@ public:
     bool hasOverlayUncovered(uint32_t overlayId);
     void eventExploration();
 
-    uint32_t m_explorationTimer = Util::getMSTime();
+    uint32_t m_explorationTimer;
 
     void ejectFromInstance();
     bool exitInstance();

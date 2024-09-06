@@ -15,6 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/GameObjectAIScript.hpp"
 #include "Server/Script/InstanceScript.hpp"
 #include "Spell/SpellInfo.hpp"
+#include "Utilities/Random.hpp"
 
 class HydrossTheUnstableAI : public CreatureAIScript
 {

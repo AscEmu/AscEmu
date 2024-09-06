@@ -36,6 +36,7 @@
 #include "Server/Packets/SmsgInventoryChangeFailure.h"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "Utilities/Random.hpp"
 
 using namespace AscEmu::Packets;
 

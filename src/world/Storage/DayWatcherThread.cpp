@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/EventMgr.h"
 #include "Server/World.h"
+#include "Utilities/Narrow.hpp"
 
 using AscEmu::Threading::AEThread;
 using std::chrono::milliseconds;

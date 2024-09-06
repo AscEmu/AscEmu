@@ -99,7 +99,7 @@ void IchronAI::DoAction(int32_t actionId)
 
             for (auto spell : mCreatureAISpells)
             {
-                spell->setCooldownTimer(spell->mCooldownTimer.getExpireTime() + 15 * TimeVarsMs::Second);
+                spell->setCooldownTimer(spell->mCooldownTimer->getExpireTime() + 15 * TimeVarsMs::Second);
             }
             break;
         }

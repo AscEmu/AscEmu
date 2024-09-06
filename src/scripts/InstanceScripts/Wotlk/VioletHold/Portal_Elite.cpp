@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Portal_Elite.hpp"
 #include "Instance_TheVioletHold.hpp"
 #include "CommonTime.hpp"
+#include "Utilities/Random.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Elite Portal AI

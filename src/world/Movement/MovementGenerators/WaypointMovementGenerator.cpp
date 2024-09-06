@@ -15,8 +15,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Transporter.hpp"
 #include "Movement/WaypointManager.h"
 #include "Objects/Units/Creatures/AIInterface.h"
+#include "Utilities/Random.hpp"
+#include "Utilities/TimeTracker.hpp"
 
-WaypointMovementGenerator<Creature>::WaypointMovementGenerator(uint32_t pathId, bool repeating) : _nextMoveTime(0), _pathId(pathId), _repeating(repeating), _loadedFromDB(true)
+WaypointMovementGenerator<Creature>::WaypointMovementGenerator(uint32_t pathId, bool repeating) : _nextMoveTime(std::make_unique<Util::SmallTimeTracker>(0)), _pathId(pathId), _repeating(repeating), _loadedFromDB(true)
 {
     Mode = MOTION_MODE_DEFAULT;
     Priority = MOTION_PRIORITY_NORMAL;
@@ -24,7 +26,7 @@ WaypointMovementGenerator<Creature>::WaypointMovementGenerator(uint32_t pathId, 
     BaseUnitState = UNIT_STATE_ROAMING;
 }
 
-WaypointMovementGenerator<Creature>::WaypointMovementGenerator(WaypointPath& path, bool repeating) : _nextMoveTime(0), _pathId(0), _repeating(repeating), _loadedFromDB(false)
+WaypointMovementGenerator<Creature>::WaypointMovementGenerator(WaypointPath& path, bool repeating) : _nextMoveTime(std::make_unique<Util::SmallTimeTracker>(0)), _pathId(0), _repeating(repeating), _loadedFromDB(false)
 {
     _path = &path;
 
@@ -48,13 +50,13 @@ void WaypointMovementGenerator<Creature>::pause(uint32_t timer/* = 0*/)
             return;
 
         addFlag(MOVEMENTGENERATOR_FLAG_TIMED_PAUSED);
-        _nextMoveTime.resetInterval(timer);
+        _nextMoveTime->resetInterval(timer);
         removeFlag(MOVEMENTGENERATOR_FLAG_PAUSED);
     }
     else
     {
         addFlag(MOVEMENTGENERATOR_FLAG_PAUSED);
-        _nextMoveTime.resetInterval(1); // Needed so that Update does not behave as if node was reached
+        _nextMoveTime->resetInterval(1); // Needed so that Update does not behave as if node was reached
         removeFlag(MOVEMENTGENERATOR_FLAG_TIMED_PAUSED);
     }
 }
@@ -62,10 +64,10 @@ void WaypointMovementGenerator<Creature>::pause(uint32_t timer/* = 0*/)
 void WaypointMovementGenerator<Creature>::resume(uint32_t overrideTimer/* = 0*/)
 {
     if (overrideTimer)
-        _nextMoveTime.resetInterval(overrideTimer);
+        _nextMoveTime->resetInterval(overrideTimer);
 
-    if (_nextMoveTime.isTimePassed())
-        _nextMoveTime.resetInterval(1); // Needed so that Update does not behave as if node was reached
+    if (_nextMoveTime->isTimePassed())
+        _nextMoveTime->resetInterval(1); // Needed so that Update does not behave as if node was reached
 
     removeFlag(MOVEMENTGENERATOR_FLAG_PAUSED);
 }
@@ -105,7 +107,7 @@ void WaypointMovementGenerator<Creature>::doInitialize(Creature* owner)
 
     owner->stopMoving();
 
-    _nextMoveTime.resetInterval(1000);
+    _nextMoveTime->resetInterval(1000);
 }
 
 void WaypointMovementGenerator<Creature>::doReset(Creature* owner)
@@ -114,8 +116,8 @@ void WaypointMovementGenerator<Creature>::doReset(Creature* owner)
 
     owner->stopMoving();
 
-    if (!hasFlag(MOVEMENTGENERATOR_FLAG_FINALIZED) && _nextMoveTime.isTimePassed())
-        _nextMoveTime.resetInterval(1); // Needed so that Update does not behave as if node was reached
+    if (!hasFlag(MOVEMENTGENERATOR_FLAG_FINALIZED) && _nextMoveTime->isTimePassed())
+        _nextMoveTime->resetInterval(1); // Needed so that Update does not behave as if node was reached
 }
 
 bool WaypointMovementGenerator<Creature>::doUpdate(Creature* owner, uint32_t diff)
@@ -135,7 +137,7 @@ bool WaypointMovementGenerator<Creature>::doUpdate(Creature* owner, uint32_t dif
 
     if (hasFlag(MOVEMENTGENERATOR_FLAG_INTERRUPTED))
     {
-        if (hasFlag(MOVEMENTGENERATOR_FLAG_INITIALIZED) && (_nextMoveTime.isTimePassed() || !hasFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED)))
+        if (hasFlag(MOVEMENTGENERATOR_FLAG_INITIALIZED) && (_nextMoveTime->isTimePassed() || !hasFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED)))
         {
             startMove(owner, true);
             return true;
@@ -160,7 +162,7 @@ bool WaypointMovementGenerator<Creature>::doUpdate(Creature* owner, uint32_t dif
         if (hasFlag(MOVEMENTGENERATOR_FLAG_SPEED_UPDATE_PENDING))
             startMove(owner, true);
     }
-    else if (!_nextMoveTime.isTimePassed()) // it's not moving, is there a timer?
+    else if (!_nextMoveTime->isTimePassed()) // it's not moving, is there a timer?
     {
         if (updateTimer(diff))
         {
@@ -186,7 +188,7 @@ bool WaypointMovementGenerator<Creature>::doUpdate(Creature* owner, uint32_t dif
             addFlag(MOVEMENTGENERATOR_FLAG_INFORM_ENABLED); // signals to future startMove that it reached a node
         }
 
-        if (_nextMoveTime.isTimePassed()) // OnArrived might have set a timer
+        if (_nextMoveTime->isTimePassed()) // OnArrived might have set a timer
             startMove(owner); // check path status, get next point and move if necessary & can
     }
 
@@ -227,7 +229,7 @@ void WaypointMovementGenerator<Creature>::onArrived(Creature* owner)
     if (waypoint.delay)
     {
         owner->removeUnitStateFlag(UNIT_STATE_ROAMING_MOVE);
-        _nextMoveTime.resetInterval(waypoint.delay);
+        _nextMoveTime->resetInterval(waypoint.delay);
     }
 
     if (waypoint.eventId && Util::getRandomUInt(0, 99) < waypoint.eventChance)
@@ -255,7 +257,7 @@ void WaypointMovementGenerator<Creature>::startMove(Creature* owner, bool relaun
 
     if (owner->hasUnitStateFlag(UNIT_STATE_NOT_MOVE) || owner->isCastingSpell() || (owner->isFormationLeader() && !owner->isFormationLeaderMoveAllowed())) // if cannot move OR cannot move because of formation
     {
-        _nextMoveTime.resetInterval(1000); // delay 1s
+        _nextMoveTime->resetInterval(1000); // delay 1s
         return;
     }
 
@@ -368,6 +370,17 @@ bool WaypointMovementGenerator<Creature>::computeNextNode()
 
     _currentNode = (_currentNode + 1) % _path->nodes.size();
     return true;
+}
+
+bool WaypointMovementGenerator<Creature>::updateTimer(uint32_t diff)
+{
+    _nextMoveTime->updateTimer(diff);
+    if (_nextMoveTime->isTimePassed())
+    {
+        _nextMoveTime->resetInterval(0);
+        return true;
+    }
+    return false;
 }
 
 std::string WaypointMovementGenerator<Creature>::getDebugInfo() const

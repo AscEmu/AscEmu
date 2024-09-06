@@ -23,6 +23,8 @@
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Spell/Spell.hpp"
+#include "Utilities/Random.hpp"
+#include "Utilities/Util.hpp"
 
 enum
 {

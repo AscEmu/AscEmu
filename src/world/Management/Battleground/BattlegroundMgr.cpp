@@ -23,6 +23,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgGroupJoinedBattleground.h"
 #include "Server/Packets/SmsgBattlefieldStatus.h"
 #include "Storage/WorldStrings.h"
+#include "Utilities/Random.hpp"
 
 using namespace AscEmu::Packets;
 

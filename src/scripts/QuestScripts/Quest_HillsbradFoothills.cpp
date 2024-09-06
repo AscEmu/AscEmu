@@ -23,6 +23,7 @@
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/QuestScript.hpp"
+#include "Utilities/Random.hpp"
 
 bool BaronVardusAllowSpawn = true;
 

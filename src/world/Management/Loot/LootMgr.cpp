@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/DatabaseDefinition.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/WDB/WDBStores.hpp"
+#include "Utilities/Random.hpp"
 #include "Utilities/Util.hpp"
 
 template <class T> // works for anything that has the field 'chance' and is stored in plain array

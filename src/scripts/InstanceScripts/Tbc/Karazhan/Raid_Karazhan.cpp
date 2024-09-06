@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/InstanceScript.hpp"
 #include "Storage/MySQLDataStore.hpp"
+#include "Utilities/Random.hpp"
 
 class KarazhanInstanceScript : public InstanceScript
 {

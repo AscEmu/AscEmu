@@ -4,6 +4,9 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "MovementGenerator.h"
+
+#include <sstream>
+
 #include "Objects/Units/Creatures/Creature.h"
 #include "MovementGenerators/IdleMovementGenerator.h"
 #include "Movement/MovementDefines.h"

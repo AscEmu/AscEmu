@@ -15,6 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Spell.hpp"
 #include "Spell/SpellAura.hpp"
 #include "Storage/MySQLDataStore.hpp"
+#include "Utilities/Random.hpp"
 
 // Instance script for map 33 (Shadowfang Keep)
 class ShadowfangKeepInstance : public InstanceScript

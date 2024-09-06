@@ -3,6 +3,8 @@ Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include <sstream>
+
 #include "Common.hpp"
 #include "git_version.h"
 #include "Chat/ChatDefines.hpp"
@@ -20,6 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Threading/LegacyThreading.h"
+#include "Utilities/Util.hpp"
 
 //.server info
 bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_session)

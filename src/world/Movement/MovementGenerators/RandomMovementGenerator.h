@@ -7,9 +7,14 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Movement/MovementGenerator.h"
 #include "LocationVector.h"
-#include "Utilities/Util.hpp"
+
+namespace Util
+{
+    struct SmallTimeTracker;
+}
 
 class PathGenerator;
+struct SmallTimeTracker;
 
 template<class T>
 class RandomMovementGenerator : public MovementGeneratorMedium<T, RandomMovementGenerator<T>>
@@ -34,7 +39,7 @@ private:
     void setRandomLocation(T*);
 
     std::unique_ptr<PathGenerator> _path;
-    SmallTimeTracker _timer;
+    std::unique_ptr<Util::SmallTimeTracker> _timer;
     LocationVector _reference;
     float _maxWanderDistance;
     uint8_t _wanderSteps;

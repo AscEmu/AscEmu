@@ -18,6 +18,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"
 #include "Server/WorldSession.h"
+#include "Utilities/Random.hpp"
+#include "Utilities/TimeTracker.hpp"
 
 using namespace AscEmu::Packets;
 

@@ -10,9 +10,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/Spline/MoveSplineInit.h"
 #include "Movement/PathGenerator.h"
 #include "Server/Definitions.h"
+#include "Utilities/Random.hpp"
+#include "Utilities/TimeTracker.hpp"
 
 template<class T>
-RandomMovementGenerator<T>::RandomMovementGenerator(float distance) : _timer(0), _reference(), _maxWanderDistance(distance), _wanderSteps(0)
+RandomMovementGenerator<T>::RandomMovementGenerator(float distance) :
+_timer(std::make_unique<Util::SmallTimeTracker>(0)), _reference(), _maxWanderDistance(distance), _wanderSteps(0)
 {
     this->Mode = MOTION_MODE_DEFAULT;
     this->Priority = MOTION_PRIORITY_NORMAL;
@@ -34,7 +37,7 @@ void RandomMovementGenerator<T>::pause(uint32_t timer /*= 0*/)
     if (timer)
     {
         this->addFlag(MOVEMENTGENERATOR_FLAG_TIMED_PAUSED);
-        _timer.resetInterval(timer);
+        _timer->resetInterval(timer);
         this->removeFlag(MOVEMENTGENERATOR_FLAG_PAUSED);
     }
     else
@@ -48,7 +51,7 @@ template<class T>
 void RandomMovementGenerator<T>::resume(uint32_t overrideTimer /*= 0*/)
 {
     if (overrideTimer)
-        _timer.resetInterval(overrideTimer);
+        _timer->resetInterval(overrideTimer);
 
     this->removeFlag(MOVEMENTGENERATOR_FLAG_PAUSED);
 }
@@ -76,7 +79,7 @@ void RandomMovementGenerator<Creature>::doInitialize(Creature* owner)
     // Retail seems to let a creature walk 2 up to 10 splines before triggering a pause
     _wanderSteps = static_cast<uint8_t>(Util::getRandomUInt(2, 10));
 
-    _timer.resetInterval(0);
+    _timer->resetInterval(0);
     _path = nullptr;
 }
 
@@ -117,7 +120,7 @@ void RandomMovementGenerator<Creature>::setRandomLocation(Creature* owner)
     if (!owner->IsWithinLOS(position))
     {
         // Retry later on
-        _timer.resetInterval(200);
+        _timer->resetInterval(200);
         return;
     }
 
@@ -133,7 +136,7 @@ void RandomMovementGenerator<Creature>::setRandomLocation(Creature* owner)
                 || (_path->getPathType() & PATHFIND_SHORTCUT)
                 /*|| (_path->GetPathType() & PATHFIND_FARFROMPOLY)*/)
     {
-        _timer.resetInterval(100);
+        _timer->resetInterval(100);
         return;
     }
 
@@ -161,11 +164,11 @@ void RandomMovementGenerator<Creature>::setRandomLocation(Creature* owner)
 
     --_wanderSteps;
     if (_wanderSteps) // Creature has yet to do steps before pausing
-        _timer.resetInterval(splineDuration);
+        _timer->resetInterval(splineDuration);
     else
     {
         // Creature has made all its steps, time for a little break
-        _timer.resetInterval(splineDuration + Util::getRandomUInt(4, 10) * IN_MILLISECONDS); // Retails seems to use rounded numbers so we do as well
+        _timer->resetInterval(splineDuration + Util::getRandomUInt(4, 10) * IN_MILLISECONDS); // Retails seems to use rounded numbers so we do as well
         _wanderSteps = static_cast<uint8_t>(Util::getRandomUInt(2, 10));
     }
 
@@ -198,8 +201,8 @@ bool RandomMovementGenerator<Creature>::doUpdate(Creature* owner, uint32_t diff)
     else
         removeFlag(MOVEMENTGENERATOR_FLAG_INTERRUPTED);
 
-    _timer.updateTimer(diff);
-    if ((hasFlag(MOVEMENTGENERATOR_FLAG_SPEED_UPDATE_PENDING) && !owner->movespline->Finalized()) || (_timer.isTimePassed() && owner->movespline->Finalized()))
+    _timer->updateTimer(diff);
+    if ((hasFlag(MOVEMENTGENERATOR_FLAG_SPEED_UPDATE_PENDING) && !owner->movespline->Finalized()) || (_timer->isTimePassed() && owner->movespline->Finalized()))
         setRandomLocation(owner);
 
     return true;

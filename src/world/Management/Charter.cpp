@@ -4,6 +4,9 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Charter.hpp"
+
+#include <sstream>
+
 #include "Management/ObjectMgr.hpp"
 #include "Database/Field.hpp"
 #include "Objects/Units/Players/Player.hpp"

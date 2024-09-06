@@ -12,7 +12,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include <set>
 #include <cstdio>
 #include <cstdlib>
+#include <cstdint>
 #include <cstring>
+#include <utility>
+#include <sstream>
 #include "AEVersion.hpp"
 #include "CommonDefines.hpp"
 #include "CommonTypes.hpp"
@@ -27,6 +30,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "LocationVector.h"
 #include "Utilities/Strings.hpp"
 #include "Utilities/Util.hpp"
+#include "Utilities/Narrow.hpp"
+#include "Utilities/Random.hpp"
 #include "Cryptography/BigNumber.h"
 #include "Cryptography/WowCrypt.hpp"
 #include "VMapManager2.h"
@@ -55,6 +60,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Macros/UnitMacros.hpp"
 #include "Management/Group.h"
 #include "Management/ItemInterface.h"
+#include "Management/ItemProperties.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Management/QuestLogEntry.hpp"
 #include "Map/Area/AreaManagementGlobals.hpp"

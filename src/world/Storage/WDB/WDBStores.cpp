@@ -12,6 +12,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Logging/Logger.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "Spell/Definitions/PowerType.hpp"
+#include "Utilities/Narrow.hpp"
+#include "Utilities/Random.hpp"
 #if VERSION_STRING >= Cata
     #include "Objects/Units/Players/PlayerDefines.hpp"
     #include "Spell/SpellAura.hpp"

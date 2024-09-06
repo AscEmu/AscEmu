@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CreatureAIFunction.hpp"
 #include "AIUtils.hpp"
 #include "CreatureAISummonList.hpp"
+#include <memory>
 
 class Creature;
 struct FilterArgs;
@@ -348,7 +349,7 @@ private:
     uint32_t mCustomAIUpdateDelayTimerId;
     uint32_t mCustomAIUpdateDelay;
 
-    SmallTimeTracker m_oldAIUpdate;
+    std::unique_ptr<Util::SmallTimeTracker> m_oldAIUpdate;
 
 public:
     //old stuff

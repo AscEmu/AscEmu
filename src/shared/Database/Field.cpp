@@ -4,8 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Field.hpp"
+#include "Utilities/Narrow.hpp"
 #include <cstdint>
-#include <Utilities/Util.hpp>
 
 bool Field::isSet() const { return m_value ? true : false; }
 void Field::setValue(char* value) { m_value = value; }

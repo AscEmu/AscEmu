@@ -32,6 +32,9 @@
 #include <G3D/Ray.h>
 #include <G3D/Vector3.h>
 
+#include "Utilities/TimeTracker.hpp"
+#include <memory>
+
 using VMAP::ModelInstance;
 
 namespace {
@@ -67,7 +70,7 @@ struct DynTreeImpl : public ParentTree/*, public Intersectable*/
     typedef ParentTree base;
 
     DynTreeImpl() :
-        rebalance_timer(CHECK_TREE_PERIOD),
+        rebalance_timer(std::make_unique<Util::SmallTimeTracker>(CHECK_TREE_PERIOD)),
         unbalanced_times(0)
     {
     }
@@ -95,16 +98,16 @@ struct DynTreeImpl : public ParentTree/*, public Intersectable*/
         if (!size())
             return;
 
-        rebalance_timer.updateTimer(difftime);
-        if (rebalance_timer.isTimePassed())
+        rebalance_timer->updateTimer(difftime);
+        if (rebalance_timer->isTimePassed())
         {
-            rebalance_timer.resetInterval(CHECK_TREE_PERIOD);
+            rebalance_timer->resetInterval(CHECK_TREE_PERIOD);
             if (unbalanced_times > 0)
                 balance();
         }
     }
 
-    SmallTimeTracker rebalance_timer;
+    std::unique_ptr<Util::SmallTimeTracker> rebalance_timer;
     int unbalanced_times;
 };
 

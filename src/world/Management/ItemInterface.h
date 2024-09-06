@@ -21,15 +21,17 @@
 #pragma once
 
 #include "EquipmentSetMgr.h"
-#include "ItemProperties.hpp"
 #include "Objects/ItemDefines.hpp"
 #include "CommonTypes.hpp"
+#include "Macros/ItemMacros.hpp"
 
 #include <cstdint>
 #include <list>
 #include <mutex>
+#include <vector>
 
 class Creature;
+struct ItemProperties;
 
 struct VoidStorageItem
 {
@@ -61,7 +63,7 @@ struct VoidStorageItem
 
 struct SlotResult
 {
-    SlotResult() { ContainerSlot = -1, Slot = -1, Result = false; }
+    SlotResult() { ContainerSlot = -1; Slot = -1; Result = false; }
     int8 ContainerSlot;
     int8 Slot;
     bool Result;

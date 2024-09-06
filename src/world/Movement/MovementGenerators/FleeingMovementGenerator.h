@@ -5,8 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Utilities/Util.hpp"
 #include "Movement/MovementGenerator.h"
+
+namespace Util
+{
+    struct SmallTimeTracker;
+}
 
 class Creature;
 class PathGenerator;
@@ -34,18 +38,18 @@ private:
 
     std::unique_ptr<PathGenerator> _path;
     uint64_t _fleeTargetGUID;
-    SmallTimeTracker _timer;
+    std::unique_ptr<Util::SmallTimeTracker> _timer;
 };
 
 class TimedFleeingMovementGenerator : public FleeingMovementGenerator<Creature>
 {
 public:
-    explicit TimedFleeingMovementGenerator(uint64_t fleeTargetGUID, uint32_t time) : FleeingMovementGenerator<Creature>(fleeTargetGUID), _totalFleeTime(time) { }
+    explicit TimedFleeingMovementGenerator(uint64_t fleeTargetGUID, uint32_t time);
 
     bool update(Unit*, uint32_t) override;
     void finalize(Unit*, bool, bool) override;
     MovementGeneratorType getMovementGeneratorType() const override;
 
 private:
-    SmallTimeTracker _totalFleeTime;
+    std::unique_ptr<Util::SmallTimeTracker> _totalFleeTime;
 };

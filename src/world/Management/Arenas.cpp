@@ -22,6 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/HookInterface.hpp"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellInfo.hpp"
+#include "Utilities/Narrow.hpp"
 
 const uint32_t ARENA_PREPARATION = 32727;
 

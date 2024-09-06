@@ -62,6 +62,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Server/Script/HookInterface.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "Utilities/Narrow.hpp"
+#include "Utilities/Random.hpp"
 #include "Utilities/Util.hpp"
 
 using namespace AscEmu::Packets;

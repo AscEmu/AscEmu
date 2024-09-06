@@ -35,6 +35,8 @@
 #include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "Utilities/Narrow.hpp"
+#include "Utilities/Random.hpp"
 
 uint32 LfgDungeonTypes[MAX_DUNGEONS];
 
@@ -1069,7 +1071,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
 
     // Select a random dungeon from the compatible list
     // Create a new proposal
-    pProposal = new LfgProposal(SelectRandomContainerElement(compatibleDungeons));
+    pProposal = new LfgProposal(Util::selectRandomContainerElement(compatibleDungeons));
     pProposal->cancelTime = time_t(time(NULL)) + LFG_TIME_PROPOSAL;
     pProposal->state = LFG_PROPOSAL_INITIATING;
     pProposal->queues = check;

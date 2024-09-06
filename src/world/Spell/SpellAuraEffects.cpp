@@ -21,6 +21,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/EventMgr.h"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "Utilities/Narrow.hpp"
+#include "Utilities/Random.hpp"
 
 pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
 {
