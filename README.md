@@ -85,4 +85,6 @@ HowTo install - detailed guides on our wiki.
 
 ## Special Thanks
 * [JetBrains - For supporting OpenSource Projects](https://www.jetbrains.com/)
-* [PVS-Studio - For supporting OpenSource Projects](https://pvs-studio.com/en/)
+
+## SAST Tools
+[PVS-Studio](https://pvs-studio.com/en/pvs-studio/?utm_source=website&utm_medium=github&utm_campaign=open_source) - static analyzer for C, C++, C#, and Java code.
