@@ -71,16 +71,6 @@ public:
     // For skill related GM commands
     SkillNameMgr* SkillNameManager;
 
-    // AccountCommands
-    bool HandleAccountCreate(const char* args, WorldSession* m_session);
-    bool HandleAccountChangePassword(const char* args, WorldSession* m_session);
-    bool HandleAccountBannedCommand(const char* args, WorldSession* m_session);
-    bool HandleAccountSetGMCommand(const char* args, WorldSession* m_session);
-    bool HandleAccountUnbanCommand(const char* args, WorldSession* m_session);
-    bool HandleAccountMuteCommand(const char* args, WorldSession* m_session);
-    bool HandleAccountUnmuteCommand(const char* args, WorldSession* m_session);
-    bool HandleAccountGetAccountID(const char* args, WorldSession* m_session);
-
 #if VERSION_STRING > TBC
     // Achievement
     bool HandleAchievementCompleteCommand(const char* args, WorldSession* m_session);

@@ -127,7 +127,7 @@ public:
     void changeAccountPassword(const char* old_pw, const char* new_password, const char* account_name);
 
     void setAccountPermission(uint32_t acct, std::string perm);
-    const std::string* getPermissionStringForAccountId(uint32_t username);
+    std::string getPermissionStringForAccountId(uint32_t username);
     void removeAccountPermission(uint32_t acct);
 
     void addIpBan(const char* ip, uint32_t duration, const char* reason);

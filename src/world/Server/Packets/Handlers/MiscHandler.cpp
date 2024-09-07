@@ -295,7 +295,7 @@ void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)
         return;
     }
 
-    if (GetPermissionCount() == 0)
+    if (!hasPermissions())
     {
         if (_player->getCombatHandler().isInCombat() || _player->m_duelPlayer != nullptr)
         {
@@ -310,7 +310,7 @@ void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)
         }
     }
 
-    if (GetPermissionCount() > 0)
+    if (hasPermissions())
     {
         if (_player->m_isResting || _player->isOnTaxi() || worldConfig.player.enableInstantLogoutForAccessType > 0)
         {

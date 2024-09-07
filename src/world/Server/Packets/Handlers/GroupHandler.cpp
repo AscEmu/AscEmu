@@ -348,7 +348,7 @@ void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (player->getTeam() != _player->getTeam() && _player->getSession()->GetPermissionCount() == 0 && !sWorld.settings.player.isInterfactionGroupEnabled)
+    if (player->getTeam() != _player->getTeam() && !_player->getSession()->hasPermissions() && !sWorld.settings.player.isInterfactionGroupEnabled)
     {
         SendPacket(SmsgPartyCommandResult(0, member_name, ERR_PARTY_WRONG_FACTION).serialise().get());
         return;
@@ -366,7 +366,7 @@ void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (player->isGMFlagSet() && !_player->getSession()->HasPermissions())
+    if (player->isGMFlagSet() && !_player->getSession()->hasPermissions())
     {
         SendPacket(SmsgPartyCommandResult(0, member_name, ERR_PARTY_CANNOT_FIND).serialise().get());
         return;
@@ -460,7 +460,7 @@ void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (invitedPlayer->getTeam() != _player->getTeam() && _player->getSession()->GetPermissionCount() == 0 && !worldConfig.player.isInterfactionGroupEnabled)
+    if (invitedPlayer->getTeam() != _player->getTeam() && !_player->getSession()->hasPermissions() && !worldConfig.player.isInterfactionGroupEnabled)
     {
         SendPacket(SmsgPartyCommandResult(0, srlPacket.name, ERR_PARTY_WRONG_FACTION).serialise().get());
         return;
@@ -478,7 +478,7 @@ void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (invitedPlayer->isGMFlagSet() && !_player->getSession()->HasPermissions())
+    if (invitedPlayer->isGMFlagSet() && !_player->getSession()->hasPermissions())
     {
         SendPacket(SmsgPartyCommandResult(0, srlPacket.name, ERR_PARTY_CANNOT_FIND).serialise().get());
         return;

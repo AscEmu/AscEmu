@@ -3122,7 +3122,7 @@ void Player::outPacketToSet(uint16_t opcode, uint16_t length, const void* data, 
         {
             if (m_isGmInvisible)
             {
-                if (player->getSession()->GetPermissionCount() > 0)
+                if (player->getSession()->hasPermissions())
                     player->outPacket(opcode, length, data);
             }
             else
@@ -3156,7 +3156,7 @@ void Player::sendMessageToSet(WorldPacket* data, bool sendToSelf, bool sendToOwn
 
             if (data->GetOpcode() != SMSG_MESSAGECHAT)
             {
-                if (m_isGmInvisible && ((player->getSession()->GetPermissionCount() <= 0)))
+                if (m_isGmInvisible && !player->getSession()->hasPermissions())
                     continue;
 
                 if (player->isVisibleObject(getGuid()))
@@ -9113,7 +9113,7 @@ void Player::addToFriendList(std::string name, std::string note)
             return;
         }
 
-        if (targetPlayer->getPlayerInfo()->team != getInitialTeam() && m_session->permissioncount == 0 && !worldConfig.player.isInterfactionFriendsEnabled)
+        if (targetPlayer->getPlayerInfo()->team != getInitialTeam() && !m_session->hasPermissions() && !worldConfig.player.isInterfactionFriendsEnabled)
         {
             m_session->SendPacket(SmsgFriendStatus(FRIEND_ENEMY, targetPlayer->getGuidLow()).serialise().get());
             return;
@@ -15194,7 +15194,7 @@ void Player::updateStats()
     if (res < hp)
         res = hp;
 
-    if (worldConfig.limit.isLimitSystemEnabled && (worldConfig.limit.maxHealthCap > 0) && (res > worldConfig.limit.maxHealthCap) && getSession()->GetPermissionCount() <= 0)   //hacker?
+    if (worldConfig.limit.isLimitSystemEnabled && (worldConfig.limit.maxHealthCap > 0) && (res > worldConfig.limit.maxHealthCap) && !getSession()->hasPermissions())   //hacker?
     {
         std::stringstream dmgLog;
         dmgLog << "has over " << worldConfig.limit.maxArenaPoints << " health " << res;
@@ -15240,7 +15240,7 @@ void Player::updateStats()
         if (res < mana)
             res = mana;
 
-        if (worldConfig.limit.isLimitSystemEnabled && (worldConfig.limit.maxManaCap > 0) && (res > worldConfig.limit.maxManaCap) && getSession()->GetPermissionCount() <= 0)   //hacker?
+        if (worldConfig.limit.isLimitSystemEnabled && (worldConfig.limit.maxManaCap > 0) && (res > worldConfig.limit.maxManaCap) && !getSession()->hasPermissions())   //hacker?
         {
             char logmsg[256];
             snprintf(logmsg, 256, "has over %u mana (%i)", worldConfig.limit.maxManaCap, res);

@@ -597,9 +597,9 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     recvData >> GMFlags;
     recvData >> AccountFlags;
 
-    const std::string* forcedPermissions = sLogonCommHandler.getPermissionStringForAccountId(AccountID);
-    if (forcedPermissions != nullptr)
-        GMFlags.assign(*forcedPermissions);
+    std::string forcedPermissions = sLogonCommHandler.getPermissionStringForAccountId(AccountID);
+    if (!forcedPermissions.empty())
+        GMFlags = forcedPermissions;
 
     sLogger.debug("InformationRetreiveCallback : got information packet from logon: `{}` ID {} (request {})", AccountName, AccountID, mRequestID);
 

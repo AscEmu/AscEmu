@@ -171,19 +171,21 @@ class SERVER_DECL WorldSession
 
         // GM Permission System
         void LoadSecurity(std::string securitystring);
-        void SetSecurity(std::string securitystring);
-        char* GetPermissions() const { return permissions; }
-        ptrdiff_t GetPermissionCount() const { return permissioncount; }
-        bool HasPermissions() const { return (permissioncount > 0) ? true : false; }
-        bool HasGMPermissions() const
+        char* GetPermissions() const
         {
-            if (!permissioncount)
-                return false;
-
-            return (strchr(permissions, 'a') != nullptr) ? true : false;
+            char* charPtr = new char[permissions.size() + 1];
+            std::strcpy(charPtr, permissions.c_str());
+            return charPtr;
         }
 
+    //MIT
+    bool hasPermissions() const;
+    bool hasPermission(const char* requiredPermission) const;
+
+        bool HasGMPermissions() const;
+
         bool CanUseCommand(char cmdstr);
+        bool canUseCommand(const std::string& cmdstr) const;
 
         void SetSocket(WorldSocket* sock)
         {
@@ -987,8 +989,7 @@ protected:
         AccountDataEntry sAccountData[8]{};
 
         ThreadSafeQueue<std::shared_ptr<WorldPacket>> _recvQueue;
-        char* permissions;
-        int permissioncount;
+        std::string permissions;
 
         bool _loggingOut; // Player is being removed from the game.
         bool LoggingOut; // Player requesting to be logged out

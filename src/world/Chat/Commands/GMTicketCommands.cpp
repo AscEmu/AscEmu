@@ -348,7 +348,7 @@ bool ChatHandler::HandleGMTicketAssignToCommand(const char* args, WorldSession* 
         return true;
     }
 
-    if (plr->getSession()->GetPermissionCount() == 0)
+    if (!plr->getSession()->HasGMPermissions())
     {
         chn->say(cplr, "GmTicket:0:Player is not a GM.", cplr, true);
         return true;

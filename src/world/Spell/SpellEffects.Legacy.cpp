@@ -903,7 +903,7 @@ void Spell::SpellEffectInstantKill(uint8_t /*effectIndex*/)
         if (!p_caster || (u_caster && u_caster->isPet()))
             return;
 
-        if (p_caster->getSession()->GetPermissionCount() == 0)
+        if (!p_caster->getSession()->hasPermissions())
             return;
     }
 
@@ -4114,7 +4114,7 @@ void Spell::SpellEffectEnchantItem(uint8_t effectIndex) // Enchant Item Permanen
         return;
     }
 
-    if (p_caster->getSession()->GetPermissionCount() > 0)
+    if (p_caster->getSession()->hasPermissions())
         sGMLog.writefromsession(p_caster->getSession(), "enchanted item for %s", m_itemTarget->getOwner()->getName().c_str());
 
     //remove other perm enchantment that was enchanted by profession
@@ -6055,7 +6055,7 @@ void Spell::SpellEffectEnchantItemPrismatic(uint8_t effectIndex)
         return;
     }
 
-    if (p_caster->getSession()->GetPermissionCount() > 0)
+    if (p_caster->getSession()->hasPermissions())
         sGMLog.writefromsession(p_caster->getSession(), "enchanted item for %s", m_itemTarget->getOwner()->getName().c_str());
 
     //remove other socket enchant

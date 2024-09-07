@@ -116,7 +116,7 @@ void WorldSession::handleInitiateTradeOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (playerTarget->getTeam() != _player->getTeam() && GetPermissionCount() == 0 && !worldConfig.player.isInterfactionTradeEnabled)
+    if (playerTarget->getTeam() != _player->getTeam() && !hasPermissions() && !worldConfig.player.isInterfactionTradeEnabled)
     {
         sendTradeResult(TRADE_STATUS_WRONG_FACTION);
         return;

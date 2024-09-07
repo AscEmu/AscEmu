@@ -72,8 +72,6 @@ WorldSession::WorldSession(uint32 id, std::string name, WorldSocket* sock) :
 #endif
     _side(255),
     _logoutTime(0),
-    permissions(nullptr),
-    permissioncount(0),
     _loggingOut(false),
     LoggingOut(false),
     _latency(0),
@@ -102,8 +100,6 @@ WorldSession::~WorldSession()
         sLogger.failure("warning: logged out player in worldsession destructor");
         LogoutPlayer(true);
     }
-
-    delete[]permissions;
 
     std::shared_ptr<WorldPacket> packet;
 
@@ -461,63 +457,43 @@ Player* WorldSession::GetPlayerOrThrow()
 
 void WorldSession::LoadSecurity(std::string securitystring)
 {
-    std::list < char >tmp;
-    bool hasa = false;
-    for (uint32 i = 0; i < securitystring.length(); ++i)
-    {
-        char c = securitystring.at(i);
-        c = static_cast<char>(tolower(c));
-        if (c == '4' || c == '3')
-            c = 'a'; // for the lazy people
+    permissions = securitystring;
 
-        if (c == 'a')
-        {
-            // all permissions
-            tmp.push_back('a');
-            hasa = true;
-        }
-        else if (!hasa && (c == '0') && i == 0)
-            break;
-        else if (!hasa || (hasa && (c == 'z')))
-        {
-            tmp.push_back(c);
-        }
-    }
-
-    permissions = new char[tmp.size() + 1];
-    memset(permissions, 0, tmp.size() + 1);
-    permissioncount = static_cast<uint32>(tmp.size());
-    int k = 0;
-
-    for (std::list <char>::iterator itr = tmp.begin(); itr != tmp.end(); ++itr)
-        permissions[k++] = (*itr);
-
-    if (permissions[tmp.size()] != 0)
-        permissions[tmp.size()] = 0;
-
-    sLogger.debug("Loaded permissions for {}. ({}) : [{}]", this->GetAccountId(), permissioncount, securitystring);
+    sLogger.debug("Loaded permissions for {}. [{}]", this->GetAccountId(), permissions);
 }
 
-void WorldSession::SetSecurity(std::string securitystring)
+bool WorldSession::hasPermissions() const
 {
-    delete[]permissions;
-    LoadSecurity(securitystring);
+    return permissions.size() > 1 ? true : false;
+}
+
+bool WorldSession::hasPermission(const char* requiredPermission) const
+{
+    if (requiredPermission == nullptr || permissions.empty())
+        return false;
+
+    sLogger.info("Your permission string is \"{}\"", permissions);
+
+    if (permissions.find(requiredPermission) != std::string::npos)
+        return true;
+    return false;
+}
+
+bool WorldSession::HasGMPermissions() const
+{
+    return hasPermission("a");
 }
 
 bool WorldSession::CanUseCommand(char cmdstr)
 {
-    if (permissioncount == 0)
-        return false;
-    if (cmdstr == 0)
-        return true;
-    if (permissions[0] == 'a' && cmdstr != 'z') // all
-        return true;
+    std::string commandPermission;
+    commandPermission.append(1, cmdstr);
+    return canUseCommand(commandPermission);
+}
 
-    for (int i = 0; i < permissioncount; ++i)
-        if (permissions[i] == cmdstr)
-            return true;
-
-    return false;
+bool WorldSession::canUseCommand(const std::string& cmdstr) const
+{
+    return hasPermission(cmdstr.c_str());
 }
 
 AccountDataEntry* WorldSession::GetAccountData(uint32 index)

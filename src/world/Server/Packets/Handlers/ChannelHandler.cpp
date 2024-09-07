@@ -38,7 +38,7 @@ void WorldSession::handleChannelJoin(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (!sWorld.settings.gm.gmClientChannelName.empty() && AscEmu::Util::Strings::isEqual(sWorld.settings.gm.gmClientChannelName.c_str(), srlPacket.channelName.c_str()) && !GetPermissionCount())
+    if (!sWorld.settings.gm.gmClientChannelName.empty() && AscEmu::Util::Strings::isEqual(sWorld.settings.gm.gmClientChannelName.c_str(), srlPacket.channelName.c_str()) && !hasPermissions())
         return;
 
     const auto channel = sChannelMgr.getOrCreateChannel(srlPacket.channelName, _player, srlPacket.dbcId);

@@ -97,7 +97,7 @@ void Guild::sendGuildInvitePacket(WorldSession* session, std::string invitedName
         return;
     }
 
-    if (invitedPlayer->getTeam() != session->GetPlayer()->getTeam() && session->GetPlayer()->getSession()->GetPermissionCount() == 0 && !worldConfig.player.isInterfactionGuildEnabled)
+    if (invitedPlayer->getTeam() != session->GetPlayer()->getTeam() && !session->GetPlayer()->getSession()->hasPermissions() && !worldConfig.player.isInterfactionGuildEnabled)
     {
         session->SendPacket(SmsgGuildCommandResult(GC_TYPE_INVITE, "", GC_ERROR_NOT_ALLIED).serialise().get());
         return;

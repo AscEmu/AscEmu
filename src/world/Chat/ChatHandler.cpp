@@ -22,6 +22,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include <cstdarg>
 
+#include "CommandRegistry.hpp"
+
 using namespace AscEmu::Packets;
 
 ChatHandler& ChatHandler::getInstance()
@@ -33,6 +35,7 @@ ChatHandler& ChatHandler::getInstance()
 void ChatHandler::initialize()
 {
     sCommandTableStorage.Init();
+    sCommandTableStorage.registerCommands();
     SkillNameManager = new SkillNameMgr;
 }
 
@@ -148,7 +151,7 @@ int ChatHandler::ParseCommands(const char* text, WorldSession* session)
     if (!*text)
         return 0;
 
-    if (session->GetPermissionCount() == 0 && worldConfig.server.requireGmForCommands)
+    if (!session->HasGMPermissions() && worldConfig.server.requireGmForCommands)
         return 0;
 
     if (text[0] != '!' && text[0] != '.') // let's not confuse users
@@ -158,6 +161,20 @@ int ChatHandler::ParseCommands(const char* text, WorldSession* session)
     if (text[1] == '.')
         return 0;
 
+    // Try the new command system first
+    {
+        std::string input(text);
+
+        if (!input.length())
+            return 0;
+
+        // Check if the command exists in the new system first
+        const std::string fullCommand(input.begin() + 1, input.end());  // Remove the leading '.' or '!'
+        if (CommandRegistry::getInstance().executeCommand(fullCommand, session))
+            return 1;  // Command was handled by the new system
+    }
+
+    // Fallback to the old system
     text++;
 
     try

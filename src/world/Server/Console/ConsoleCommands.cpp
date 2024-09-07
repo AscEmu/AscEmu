@@ -136,7 +136,7 @@ bool handleServerInfoCommand(BaseConsole* baseConsole, int /*argumentCount*/, st
         {
             onlineCount++;
             avgLatency += player->getSession()->GetLatency();
-            if (player->getSession()->GetPermissionCount())
+            if (player->getSession()->hasPermissions())
                 gmCount++;
         }
     }
@@ -179,7 +179,7 @@ bool handleOnlineGmsCommand(BaseConsole* baseConsole, int /*argumentCount*/, std
     for (const auto playerPair : sObjectMgr.getPlayerStorage())
     {
         const Player* player = playerPair.second;
-        if (player->getSession()->GetPermissionCount())
+        if (player->getSession()->hasPermissions())
         {
             baseConsole->Write("| %21s | %15s | %03u ms |\r\n", player->getName().c_str(), player->getSession()->GetPermissions(),
                 player->getSession()->GetLatency());

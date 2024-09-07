@@ -56,7 +56,7 @@ bool WorldSession::isSessionMuted()
 
 bool WorldSession::isFloodProtectionTriggered()
 {
-    if (!GetPermissionCount() && worldConfig.chat.linesBeforeProtection)
+    if (!hasPermissions() && worldConfig.chat.linesBeforeProtection)
     {
         if (UNIXTIME >= floodTime)
         {
@@ -152,7 +152,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
         }
 
         // GMs speak universal language
-        if (GetPermissionCount() > 0)
+        if (hasPermissions())
         {
             messageLanguage = LANG_UNIVERSAL;
             player_can_speak_language = true;
@@ -397,7 +397,7 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (!GetPermissionCount() && worldConfig.chat.linesBeforeProtection)
+    if (!hasPermissions() && worldConfig.chat.linesBeforeProtection)
     {
         if (UNIXTIME >= floodTime)
         {

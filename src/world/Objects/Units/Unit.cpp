@@ -7019,7 +7019,7 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
         if (isPlayer())
         {
             const auto plr = dynamic_cast<Player*>(this);
-            if (!plr->getSession()->HasPermissions() && worldConfig.limit.isLimitSystemEnabled != 0)
+            if (!plr->getSession()->hasPermissions() && worldConfig.limit.isLimitSystemEnabled != 0)
                 damage = plr->checkDamageLimits(damage, spellId);
         }
 
@@ -7715,7 +7715,7 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
         if (attacker->isPlayer())
         {
             const auto plr = dynamic_cast<Player*>(attacker);
-            if (!plr->getSession()->HasPermissions() && worldConfig.limit.isLimitSystemEnabled != 0)
+            if (!plr->getSession()->hasPermissions() && worldConfig.limit.isLimitSystemEnabled != 0)
                 damage = plr->checkDamageLimits(damage, spellId);
         }
 

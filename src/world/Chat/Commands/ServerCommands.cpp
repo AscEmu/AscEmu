@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "git_version.h"
 #include "Chat/ChatDefines.hpp"
 #include "Chat/ChatHandler.hpp"
+#include "Chat/CommandRegistry.hpp"
 #include "Chat/CommandTableStorage.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"
@@ -39,7 +40,7 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_
         {
             online_count++;
             latency_avg += player->getSession()->GetLatency();
-            if (player->getSession()->GetPermissionCount())
+            if (player->getSession()->hasPermissions())
             {
                 if (!worldConfig.gm.listOnlyActiveGms)
                     online_gm++;
@@ -304,7 +305,9 @@ bool ChatHandler::HandleReloadCommandOverridesCommand(const char* /*args*/, Worl
     auto startTime = Util::TimeNow();
     sCommandTableStorage.Dealloc();
     sCommandTableStorage.Init();
+    sCommandTableStorage.registerCommands();
     sCommandTableStorage.Load();
+
     GreenSystemMessage(m_session, "CharactersDB 'command_overrides' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }

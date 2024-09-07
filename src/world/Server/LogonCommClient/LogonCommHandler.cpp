@@ -107,15 +107,18 @@ void LogonCommHandler::startLogonCommHandler()
 void LogonCommHandler::loadAccountPermissions()
 {
     sLogger.info("LogonCommClient : Loading account permissions...");
+
     QueryResult* result = CharacterDatabase.Query("SELECT id, permissions FROM account_permissions");
     if (result != nullptr)
     {
         do
         {
             uint32_t id = result->Fetch()[0].asUint32();
-            std::string perm = result->Fetch()[1].asCString();
+            std::string dbPermission = result->Fetch()[1].asCString();
+            if (AscEmu::Util::Strings::isEqual(dbPermission, "az"))
+                dbPermission = "12stulfbvrjiqdmwcogenaz";
 
-            accountPermissionsStore.insert(make_pair(id, perm));
+            accountPermissionsStore.insert(make_pair(id, dbPermission));
 
         } while (result->NextRow());
 
@@ -243,44 +246,25 @@ void LogonCommHandler::setAccountPermission(uint32_t acct, std::string perm)
 {
     AccountPermissionMap::iterator itr = accountPermissionsStore.find(acct);
     if (itr != accountPermissionsStore.end())
-    {
         accountPermissionsStore.erase(acct);
-
-        if (perm.compare("0") == 0)
-        {
-            sLogger.info("LogonCommClient : Permissions removed for Account ID {}!", acct);
-            return;
-        }
-    }
 
     sLogger.info("LogonCommClient : Permission set to {} for account {}", perm, acct);
     accountPermissionsStore.insert(make_pair(acct, perm));
-
 }
 
 void LogonCommHandler::removeAccountPermission(uint32_t acct)
 {
-    AccountPermissionMap::iterator itr = accountPermissionsStore.find(acct);
-    if (itr != accountPermissionsStore.end())
-    {
-        accountPermissionsStore.erase(acct);
-        sLogger.info("LogonCommClient : Permission for Account ID {} removed!", acct);
-    }
-    else
-    {
-        sLogger.info("LogonCommClient : No permissions found for Account ID {}", acct);
-    }
+    setAccountPermission(acct, "");
 }
 
-const std::string* LogonCommHandler::getPermissionStringForAccountId(uint32_t username)
+std::string LogonCommHandler::getPermissionStringForAccountId(uint32_t username)
 {
+    std::string permission = "";
     AccountPermissionMap::iterator itr = accountPermissionsStore.find(username);
-    if (itr == accountPermissionsStore.end())
-    {
-        return nullptr;
-    }
+    if (itr != accountPermissionsStore.end())
+        permission = itr->second;
 
-    return &itr->second;
+    return permission;
 }
 
 void LogonCommHandler::addRealmToRealmlistResult(uint32_t ID, uint32_t ServID)
