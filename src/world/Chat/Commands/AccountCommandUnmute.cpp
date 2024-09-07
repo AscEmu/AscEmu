@@ -14,7 +14,7 @@ bool AccountCommandUnmute::execute(const std::vector<std::string>& args, WorldSe
 {
     if (args.size() != getArgumentCount())
     {
-        session->SystemMessage("Usage: .account unmute <username>");
+        session->systemMessage("Usage: .account unmute <username>");
         return false;
     }
 
@@ -22,14 +22,14 @@ bool AccountCommandUnmute::execute(const std::vector<std::string>& args, WorldSe
 
     sLogonCommHandler.setAccountMute(username.c_str(), 0);
 
-    session->SystemMessage("Account '{}' has been unmuted.", username);
-    sGMLog.writefromsession(session, "unmuted account {}", username);
+    session->systemMessage("Account '{}' has been unmuted.", username);
+    sGMLog.write(session, "unmuted account {}", username);
 
     WorldSession* targetSession = sWorld.getSessionByAccountName(username);
     if (targetSession)
     {
         targetSession->m_muted = 0;
-        targetSession->SystemMessage("Your voice has restored. You may speak again.");
+        targetSession->systemMessage("Your voice has restored. You may speak again.");
     }
 
     return true;

@@ -1011,6 +1011,7 @@ protected:
         time_t floodTime;
 
         void SystemMessage(const char* format, ...);
+    void systemMessage(const std::string& format, ...);
 
         uint32 language;
         uint32 m_muted;

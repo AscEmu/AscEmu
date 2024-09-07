@@ -15,7 +15,7 @@ bool AccountCommandBan::execute(const std::vector<std::string>& args, WorldSessi
 {
     if (args.size() < getArgumentCount())
     {
-        session->SystemMessage("Usage: .account ban <name> [duration] [reason]");
+        session->systemMessage("Usage: .account ban <name> [duration] [reason]");
         return false;
     }
 
@@ -29,12 +29,12 @@ bool AccountCommandBan::execute(const std::vector<std::string>& args, WorldSessi
 
     sLogonCommHandler.setAccountBanned(accountName.c_str(), bannedUntil, reason.c_str());
 
-    session->SystemMessage("Account '{}' has been banned until {} for reason : {}.", accountName, Util::GetDateTimeStringFromTimeStamp(bannedUntil), reason);
+    session->systemMessage("Account '{}' has been banned until {} for reason : {}.", accountName, Util::GetDateTimeStringFromTimeStamp(bannedUntil), reason);
 
     sWorld.disconnectSessionByAccountName(accountName, session);
-    sGMLog.writefromsession(session, "banned account {} until {}", accountName, Util::GetDateTimeStringFromTimeStamp(bannedUntil));
+    sGMLog.write(session, "banned account {} until {}", accountName, Util::GetDateTimeStringFromTimeStamp(bannedUntil));
 
-    session->SystemMessage("Account banned successfully.");
+    session->systemMessage("Account banned successfully.");
 
     return true;
 }

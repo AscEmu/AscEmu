@@ -11,7 +11,7 @@ bool AccountCommandChangePw::execute(const std::vector<std::string>& args, World
 {
     if (args.size() != getArgumentCount())
     {
-        session->SystemMessage("Usage: .account changepw <oldPassword> <newPassword> <newPassword>");
+        session->systemMessage("Usage: .account changepw <oldPassword> <newPassword> <newPassword>");
         return false;
     }
 
@@ -21,7 +21,7 @@ bool AccountCommandChangePw::execute(const std::vector<std::string>& args, World
 
     if (newPassword1 != newPassword2)
     {
-        session->SystemMessage("Your new passwords doesn't match!");
+        session->systemMessage("Your new passwords doesn't match!");
         return false;
     }
 

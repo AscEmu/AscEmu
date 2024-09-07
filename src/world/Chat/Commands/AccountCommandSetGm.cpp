@@ -11,7 +11,7 @@ bool AccountCommandSetGm::execute(const std::vector<std::string>& args, WorldSes
 {
     if (args.size() != getArgumentCount())
     {
-        session->SystemMessage("Usage: .account setgm <accountname> <permission>");
+        session->systemMessage("Usage: .account setgm <accountname> <permission>");
         return false;
     }
 

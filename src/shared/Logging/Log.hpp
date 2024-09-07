@@ -66,4 +66,5 @@ public:
 
     // WorldSession.cpp
     void writefromsession(WorldSession* session, const char* format, ...);
+    void write(WorldSession* session, const char* format, ...);
 };

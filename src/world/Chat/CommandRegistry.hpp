@@ -61,7 +61,7 @@ public:
                 {
                     if (!session->hasPermission(overridePermission->c_str()))
                     {
-                        session->SystemMessage("You do not have permission to use this command.");
+                        session->systemMessage("You do not have permission to use this command.");
                         return false;
                     }
                 }
@@ -74,7 +74,7 @@ public:
                 {
                     if (!session->hasPermission(commandPermission.c_str()))
                     {
-                        session->SystemMessage("You do not have permission to use this command.");
+                        session->systemMessage("You do not have permission to use this command.");
                         return false;
                     }
                 }
@@ -96,7 +96,7 @@ public:
             // Check if the command expects arguments
             if (args.size() < command->getArgumentCount())
             {
-                session->SystemMessage("Incorrect number of arguments. Usage: {} ", command->getHelp());
+                session->systemMessage("Incorrect number of arguments. Usage: {} ", command->getHelp());
                 return false;
             }
 

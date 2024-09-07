@@ -559,6 +559,35 @@ void SessionLog::writefromsession(WorldSession* session, const char* format, ...
     }
 }
 
+void SessionLog::write(WorldSession* session, const char* format, ...)
+{
+    if (isSessionLogOpen())
+    {
+        va_list ap;
+        va_start(ap, format);
+
+        // Get current time
+        std::string current_time = "[" + Util::GetCurrentDateTimeString() + "] ";
+        
+        // Build the log entry with session details
+        std::string logEntry = std::format("{}Account {} [{}], IP {}, Player {} :: ",
+            current_time,
+            session->GetAccountId(),
+            session->GetAccountName(),
+            session->GetSocket() ? session->GetSocket()->GetRemoteIP() : "NOIP",
+            session->GetPlayer() ? session->GetPlayer()->getName() : "nologin");
+
+        // Format the remaining message using std::vformat
+        logEntry += std::vformat(format, std::make_format_args(ap));
+
+        // Write to the log file
+        fprintf(mSessionLogFile, "%s\n", logEntry.c_str());
+        fflush(mSessionLogFile);
+
+        va_end(ap);
+    }
+}
+
 void WorldSession::SystemMessage(const char* format, ...)
 {
     char buffer[1024];
@@ -568,6 +597,18 @@ void WorldSession::SystemMessage(const char* format, ...)
     va_end(ap);
 
     SendPacket(SmsgMessageChat(SystemMessagePacket(buffer)).serialise().get());
+}
+
+void WorldSession::systemMessage(const std::string& format, ...)
+{
+    const char* fmtChar = format.c_str();
+    va_list args;
+    va_start(args, fmtChar);
+    // Format the string using fmt::vformat with va_list
+    std::string formattedMessage = fmt::vformat(fmtChar, fmt::make_format_args(args));
+    va_end(args);
+
+    SendPacket(SmsgMessageChat(SystemMessagePacket(formattedMessage.c_str())).serialise().get());
 }
 
 void WorldSession::SendChatPacket(WorldPacket* data, uint32 langpos, int32 lang, WorldSession* originator)

@@ -12,7 +12,7 @@ bool AccountCommandGetId::execute(const std::vector<std::string>& args, WorldSes
 {
     if (args.size() != getArgumentCount())
     {
-        session->SystemMessage("Usage: .account getid <name>");
+        session->systemMessage("Usage: .account getid <name>");
         return false;
     }
 
@@ -20,7 +20,7 @@ bool AccountCommandGetId::execute(const std::vector<std::string>& args, WorldSes
 
     sLogonCommHandler.checkIfAccountExist(accountName.c_str(), session->GetAccountNameS(), nullptr, 2);
 
-    sGMLog.writefromsession(session, "looked up account id for account {}", accountName);
+    sGMLog.write(session, "looked up account id for account {}", accountName);
 
     return true;
 }

@@ -14,7 +14,7 @@ bool AccountCommandMute::execute(const std::vector<std::string>& args, WorldSess
 {
     if (args.size() != getArgumentCount())
     {
-        session->SystemMessage("Usage: .account mute <username> <timeperiod>");
+        session->systemMessage("Usage: .account mute <username> <timeperiod>");
         return false;
     }
 
@@ -29,16 +29,16 @@ bool AccountCommandMute::execute(const std::vector<std::string>& args, WorldSess
     sLogonCommHandler.setAccountMute(username.c_str(), banned);
 
     const std::string bannedString = Util::GetDateTimeStringFromTimeStamp(banned);
-    session->SystemMessage("Account '{}}' has been muted until {}}. The change will be effective immediately.",
+    session->systemMessage("Account '{}}' has been muted until {}}. The change will be effective immediately.",
         username, bannedString);
 
-    sGMLog.writefromsession(session, "mutex account {} until {}", username, bannedString);
+    sGMLog.write(session, "mutex account {} until {}", username, bannedString);
 
     WorldSession* pSession = sWorld.getSessionByAccountName(username);
     if (pSession != nullptr)
     {
         pSession->m_muted = banned;
-        pSession->SystemMessage("Your voice has been muted until {} by a GM. Until this time, you will not be able to speak in any form.", bannedString);
+        pSession->systemMessage("Your voice has been muted until {} by a GM. Until this time, you will not be able to speak in any form.", bannedString);
     }
 
     return true;

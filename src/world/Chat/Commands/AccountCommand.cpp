@@ -5,13 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "AccountCommand.hpp"
 #include "AccountCommandCreate.hpp"
-#include "AccountCommandSetGM.hpp"
+#include "AccountCommandSetGm.hpp"
 #include "AccountCommandMute.hpp"
 #include "AccountCommandUnmute.hpp"
 #include "AccountCommandBan.hpp"
 #include "AccountCommandUnban.hpp"
 #include "AccountCommandChangePw.hpp"
-#include "AccountCommandGetID.hpp"
+#include "AccountCommandGetId.hpp"
 #include "Server/WorldSession.h"
 
 AccountCommand::AccountCommand()
@@ -50,14 +50,14 @@ bool AccountCommand::execute(const std::vector<std::string>& args, WorldSession*
         // Check if the user has permission to execute the subcommand
         if (!session->hasPermission(subCmd->getRequiredPermission()))
         {
-            session->SystemMessage("You do not have permission to use this subcommand.");
+            session->systemMessage("You do not have permission to use this subcommand.");
             return false;
         }
 
         // If the subcommand requires arguments, validate them
         if (subCommandArgs.size() < subCmd->getArgumentCount())
         {
-            session->SystemMessage("Incorrect number of arguments. Usage: {}", subCmd->getHelp());
+            session->systemMessage("Incorrect number of arguments. Usage: {}", subCmd->getHelp());
             return false;
         }
 
@@ -65,7 +65,7 @@ bool AccountCommand::execute(const std::vector<std::string>& args, WorldSession*
         return subCmd->execute(subCommandArgs, session);
     }
 
-    session->SystemMessage("Unknown subcommand.");
+    session->systemMessage("Unknown subcommand.");
     return false;
 }
 
@@ -76,7 +76,7 @@ void AccountCommand::registerSubCommand(const std::string& name, std::unique_ptr
 
 void AccountCommand::listAvailableSubCommands(WorldSession* session) const
 {
-    session->SystemMessage("Available subcommands:");
+    session->systemMessage("Available subcommands:");
 
     for (const auto& pair : subCommands_)
     {
@@ -88,7 +88,7 @@ void AccountCommand::listAvailableSubCommands(WorldSession* session) const
         if (session->hasPermission(subCommand->getRequiredPermission()) || commandPermission == "0")
         {
             std::string outList = " - " + subCommandName + ": " + subCommand->getHelp();
-            session->SystemMessage(outList.c_str());
+            session->systemMessage(outList.c_str());
         }
     }
 }

@@ -12,16 +12,16 @@ bool AccountCommandUnban::execute(const std::vector<std::string>& args, WorldSes
 {
     if (args.size() != getArgumentCount())
     {
-        session->SystemMessage("Usage: .account unban <name>");
+        session->systemMessage("Usage: .account unban <name>");
         return false;
     }
 
     const std::string& accountName = args[0];
 
     sLogonCommHandler.setAccountBanned(accountName.c_str(), 0, "");
-    session->SystemMessage("Account '{}' has been unbanned. This change will be effective immediately.", accountName);
+    session->systemMessage("Account '{}' has been unbanned. This change will be effective immediately.", accountName);
 
-    sGMLog.writefromsession(session, "unbanned account {}", accountName);
+    sGMLog.write(session, "unbanned account {}", accountName);
     return true;
 }
 
