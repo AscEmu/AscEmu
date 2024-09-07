@@ -54,15 +54,9 @@ bool AccountCommand::execute(const std::vector<std::string>& args, WorldSession*
             return false;
         }
 
-        // If the subcommand requires arguments, validate them
-        if (subCommandArgs.size() < subCmd->getArgumentCount())
-        {
-            session->systemMessage("Incorrect number of arguments. Usage: {}", subCmd->getHelp());
-            return false;
-        }
-
         // Execute the subcommand with the provided arguments
-        return subCmd->execute(subCommandArgs, session);
+        subCmd->execute(subCommandArgs, session);
+        return true;
     }
 
     session->systemMessage("Unknown subcommand.");

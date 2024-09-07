@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
 #include "Utilities/Narrow.hpp"
+#include "Utilities/Util.hpp"
 
 bool AccountCommandBan::execute(const std::vector<std::string>& args, WorldSession* session)
 {

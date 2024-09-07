@@ -47,6 +47,7 @@
 #include "Objects/Units/Players/Player.hpp"
 #include "Script/HookInterface.hpp"
 #include <cstdarg>
+#include <format>
 
 using namespace AscEmu::Packets;
 
