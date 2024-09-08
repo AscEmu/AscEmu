@@ -443,13 +443,13 @@ void WorldSession::sendRefundInfo(uint64_t GUID)
     if (!_player || !_player->IsInWorld())
         return;
 
-    Item* item = _player->getItemInterface()->GetItemByGUID(guid);
+    Item* item = _player->getItemInterface()->GetItemByGUID(GUID);
     if (item == nullptr)
         return;
 
     if (item->isEligibleForRefund())
     {
-        std::pair<time_t, uint32_t> refundEntryPair = _player->getItemInterface()->LookupRefundable(guid);
+        std::pair<time_t, uint32_t> refundEntryPair = _player->getItemInterface()->LookupRefundable(GUID);
 
         if (refundEntryPair.first == 0 || refundEntryPair.second == 0)
             return;
