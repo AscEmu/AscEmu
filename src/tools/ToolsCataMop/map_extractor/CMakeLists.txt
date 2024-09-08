@@ -5,9 +5,7 @@ project(map_extractor CXX)
 
 file(GLOB SRC_MAPS_EXTRACTOR *.cpp *.h)
 
-set(MAPS_EXTRACTOR_SRCS
-    ${SRC_MAPS_EXTRACTOR}
-)
+add_executable(${PROJECT_NAME} ${SRC_MAPS_EXTRACTOR})
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -16,8 +14,6 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/loadlib
     ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
 )
-
-add_executable(${PROJECT_NAME} ${MAPS_EXTRACTOR_SRCS})
 
 add_dependencies(${PROJECT_NAME} storm)
 

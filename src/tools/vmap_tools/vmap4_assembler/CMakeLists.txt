@@ -5,9 +5,7 @@ project(vmap4_assembler CXX)
 
 file(GLOB SRC_VMAPS_EXTRACTOR *.cpp *.h)
 
-set(VMAPS_EXTRACTOR_SRCS
-    ${SRC_VMAPS_EXTRACTOR}
-)
+add_executable(${PROJECT_NAME} ${SRC_VMAPS_EXTRACTOR})
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/src/shared
@@ -18,8 +16,6 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
     ${ZLIB_INCLUDE_DIRS}
 )
-
-add_executable(${PROJECT_NAME} ${VMAPS_EXTRACTOR_SRCS})
 
 # include library dependencies.
 target_link_libraries(${PROJECT_NAME}

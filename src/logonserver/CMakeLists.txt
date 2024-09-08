@@ -14,13 +14,14 @@ if (WIN32)
     set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/resources.rc")
 endif ()
 
-set(LOGON_SRCS
+add_executable(${PROJECT_NAME}
     ${SRC_AUTH_FILES}
     ${SRC_CONSOLE_FILES}
     ${SRC_LOGON_COMM_SERVER_FILES}
     ${SRC_REALM_FILES}
     ${SRC_SERVER_FILES}
     ${SRC_LOCAL_DIR}
+    ${APP_ICON_RESOURCE_WINDOWS}
 )
 
 include_directories(
@@ -38,8 +39,6 @@ source_group(Console FILES ${SRC_CONSOLE_FILES})
 source_group(LogonCommServer FILES ${SRC_LOGON_COMM_SERVER_FILES})
 source_group(Realm FILES ${SRC_REALM_FILES})
 source_group(Server FILES ${SRC_SERVER_FILES})
-
-add_executable(${PROJECT_NAME} ${LOGON_SRCS} ${APP_ICON_RESOURCE_WINDOWS})
 
 if (APPLE)
     target_link_libraries(${PROJECT_NAME} c++)
