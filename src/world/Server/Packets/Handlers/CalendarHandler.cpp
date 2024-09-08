@@ -9,26 +9,29 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/InstanceMgr.hpp"
 #include "Utilities/Util.hpp"
 
-#if VERSION_STRING > TBC
 
 // \todo CalendarHandler
 void WorldSession::handleCalendarGetCalendar(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "HandleCalendarGetCalendar Not handled");
 
     /* Get all events for the player */
     uint32_t guid = static_cast<uint32_t>(_player->getGuid());
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "HandleCalendarGetCalendar CMSG_CALENDAR_GET_CALENDAR for guid {}", guid);
-
+#endif
 }
 
 void WorldSession::handleCalendarComplain(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "HandleCalendarComplain Not handled");
+#endif
 }
 
 void WorldSession::handleCalendarGetNumPending(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "HandleCalendarGetNumPending Not handled");
 
     WorldPacket data(SMSG_CALENDAR_SEND_NUM_PENDING, 4);
@@ -36,10 +39,12 @@ void WorldSession::handleCalendarGetNumPending(WorldPacket& /*recvPacket*/)
     data << uint32_t(0);  // num pending
 #endif
     SendPacket(&data);
+#endif
 }
 
 void WorldSession::handleCalendarAddEvent(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     // Create an Event and save it to char db 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "HandleCalendarAddEvent Not handled");
 
@@ -68,66 +73,89 @@ void WorldSession::handleCalendarAddEvent(WorldPacket& recvPacket)
     // \todo save it to db
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "HandleCalendarAddEvent Playerguid: {} sends Calendarevent: Title: {}, Description: {}, Type: {}, Repeatable: {}, maxInvites: {}, dungeonId: {}, PackedTime: {}, unkPackedTime: {}, Flags: {},",
         guid, title, description, type, repeatable, maxInvites, dungeonId, eventPackedTime, unkPackedTime, flags);
-
+#endif
 }
 
 void WorldSession::handleCalendarGetEvent(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "HandleCalendarGetEvent Not handled");
+#endif
 }
 
 void WorldSession::handleCalendarGuildFilter(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "HandleCalendarGuildFilter Not handled");
+#endif
 }
 
 void WorldSession::handleCalendarArenaTeam(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "HandleCalendarArenaTeam Not handled");
+#endif
 }
 
 void WorldSession::handleCalendarUpdateEvent(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "HandleCalendarUpdateEvent Not handled");
+#endif
 }
 
 void WorldSession::handleCalendarRemoveEvent(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "HandleCalendarRemoveEvent Not handled");
+#endif
 }
 
 void WorldSession::handleCalendarCopyEvent(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "HandleCalendarCopyEvent Not handled");
+#endif
 }
 
 void WorldSession::handleCalendarEventInvite(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "HandleCalendarEventInvite Not handled");
+#endif
 }
 
 void WorldSession::handleCalendarEventRsvp(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "HandleCalendarEventRsvp Not handled");
+#endif
 }
 
 void WorldSession::handleCalendarEventRemoveInvite(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "HandleCalendarEventRemoveInvite Not handled");
+#endif
 }
 
 void WorldSession::handleCalendarEventStatus(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "HandleCalendarEventStatus Not handled");
+#endif
 }
 
 void WorldSession::handleCalendarEventModeratorStatus(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "HandleCalendarEventModeratorStatus Not handled");
+#endif
 }
 
 void WorldSession::sendCalendarRaidLockout(InstanceSaved const* save, bool add)
 {
+#if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "SMSG_CALENDAR_RAID_LOCKOUT_ADDED/REMOVED");
     const auto now = Util::getTimeNow();
     time_t currTime = now;
@@ -144,10 +172,12 @@ void WorldSession::sendCalendarRaidLockout(InstanceSaved const* save, bool add)
     data << uint32_t(save->getResetTime() - currTime);
     data << uint64_t(save->getInstanceId());
     SendPacket(&data);
+#endif
 }
 
 void WorldSession::sendCalendarRaidLockoutUpdated(InstanceSaved const* save)
 {
+#if VERSION_STRING > TBC
     if (!save)
         return;
 
@@ -163,5 +193,6 @@ void WorldSession::sendCalendarRaidLockoutUpdated(InstanceSaved const* save)
     data << uint32_t(0); // Amount of seconds that has changed to the reset time
     data << uint32_t(save->getResetTime() - currTime);
     SendPacket(&data);
-}
 #endif
+}
+

@@ -297,37 +297,36 @@ class SERVER_DECL WorldSession
         void handleInspectHonorStatsOpcode(WorldPacket& recvPacket);
         void handlePVPLogDataOpcode(WorldPacket& /*recvPacket*/);
         void handleBattlefieldListOpcode(WorldPacket& recvPacket);
-#if VERSION_STRING >= Cata
-        void handleRequestRatedBgInfoOpcode(WorldPacket& recvPacket);
-        void handleRequestRatedBgStatsOpcode(WorldPacket& /*recvPacket*/);
-        void handleRequestPvPRewardsOpcode(WorldPacket& /*recvPacket*/);
-        void handleRequestPvpOptionsOpcode(WorldPacket& /*recvPacket*/);
-#endif
+
+        void handleRequestRatedBgInfoOpcode(WorldPacket& recvPacket);       //>= Cata
+        void handleRequestRatedBgStatsOpcode(WorldPacket& /*recvPacket*/);  //>= Cata
+        void handleRequestPvPRewardsOpcode(WorldPacket& /*recvPacket*/);    //>= Cata
+        void handleRequestPvpOptionsOpcode(WorldPacket& /*recvPacket*/);    //>= Cata
+
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // CalendarHandler.cpp
         // \todo handle it
-#if VERSION_STRING > TBC
-        void handleCalendarGetCalendar(WorldPacket& /*recvPacket*/);
-        void handleCalendarComplain(WorldPacket& recvPacket);
-        void handleCalendarGetNumPending(WorldPacket& /*recvPacket*/);
-        void handleCalendarAddEvent(WorldPacket& recvPacket);
-        void handleCalendarGetEvent(WorldPacket& recvPacket);
-        void handleCalendarGuildFilter(WorldPacket& recvPacket);
-        void handleCalendarArenaTeam(WorldPacket& recvPacket);
-        void handleCalendarUpdateEvent(WorldPacket& recvPacket);
-        void handleCalendarRemoveEvent(WorldPacket& recvPacket);
-        void handleCalendarCopyEvent(WorldPacket& recvPacket);
-        void handleCalendarEventInvite(WorldPacket& recvPacket);
-        void handleCalendarEventRsvp(WorldPacket& recvPacket);
-        void handleCalendarEventRemoveInvite(WorldPacket& recvPacket);
-        void handleCalendarEventStatus(WorldPacket& recvPacket);
-        void handleCalendarEventModeratorStatus(WorldPacket& recvPacket);
+        void handleCalendarGetCalendar(WorldPacket& /*recvPacket*/);    //> TBC
+        void handleCalendarComplain(WorldPacket& recvPacket);           //> TBC
+        void handleCalendarGetNumPending(WorldPacket& /*recvPacket*/);  //> TBC
+        void handleCalendarAddEvent(WorldPacket& recvPacket);           //> TBC
+        void handleCalendarGetEvent(WorldPacket& recvPacket);           //> TBC
+        void handleCalendarGuildFilter(WorldPacket& recvPacket);        //> TBC
+        void handleCalendarArenaTeam(WorldPacket& recvPacket);          //> TBC
+        void handleCalendarUpdateEvent(WorldPacket& recvPacket);        //> TBC
+        void handleCalendarRemoveEvent(WorldPacket& recvPacket);        //> TBC
+        void handleCalendarCopyEvent(WorldPacket& recvPacket);          //> TBC
+        void handleCalendarEventInvite(WorldPacket& recvPacket);        //> TBC
+        void handleCalendarEventRsvp(WorldPacket& recvPacket);          //> TBC
+        void handleCalendarEventRemoveInvite(WorldPacket& recvPacket);  //> TBC
+        void handleCalendarEventStatus(WorldPacket& recvPacket);        //> TBC
+        void handleCalendarEventModeratorStatus(WorldPacket& recvPacket);   //> TBC
 
 public:
-        void sendCalendarRaidLockout(InstanceSaved const* save, bool add);
-        void sendCalendarRaidLockoutUpdated(InstanceSaved const* save);
-#endif
+        void sendCalendarRaidLockout(InstanceSaved const* save, bool add);  //> TBC
+        void sendCalendarRaidLockoutUpdated(InstanceSaved const* save);     //> TBC
+
 protected:
         //////////////////////////////////////////////////////////////////////////////////////////
         // ChannelHandler.cpp
@@ -371,10 +370,9 @@ protected:
         void handleCharCreateOpcode(WorldPacket& recvPacket);
         void handleSetPlayerDeclinedNamesOpcode(WorldPacket& recvPacket); // declined names (Cyrillic client)
         void handleCharEnumOpcode(WorldPacket& /*recvPacket*/);
-#if VERSION_STRING > TBC
-        void handleCharFactionOrRaceChange(WorldPacket& recvPacket);
-        void handleCharCustomizeLooksOpcode(WorldPacket& recvPacket);
-#endif
+
+        void handleCharFactionOrRaceChange(WorldPacket& recvPacket);    //> TBC
+        void handleCharCustomizeLooksOpcode(WorldPacket& recvPacket);   //> TBC
         
         //////////////////////////////////////////////////////////////////////////////////////////
         // ChatHandler.cpp
@@ -413,16 +411,14 @@ protected:
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // GroupHandler.cpp
-#if VERSION_STRING >= Cata
     public:
-        void sendEmptyGroupList(Player* player);
+        void sendEmptyGroupList(Player* player);                                //>= Cata
 
     private:
-        void handleGroupInviteResponseOpcode(WorldPacket& recvPacket);
-        void handleGroupSetRolesOpcode(WorldPacket& recvPacket);
-        void handleGroupRequestJoinUpdatesOpcode(WorldPacket& /*recvPacket*/);
-        void handleGroupRoleCheckBeginOpcode(WorldPacket& recvPacket);
-#endif
+        void handleGroupInviteResponseOpcode(WorldPacket& recvPacket);          //>= Cata
+        void handleGroupSetRolesOpcode(WorldPacket& recvPacket);                //>= Cata
+        void handleGroupRequestJoinUpdatesOpcode(WorldPacket& /*recvPacket*/);  //>= Cata
+        void handleGroupRoleCheckBeginOpcode(WorldPacket& recvPacket);          //>= Cata
 
         void handleGroupInviteOpcode(WorldPacket& recvPacket);
         void handleGroupDeclineOpcode(WorldPacket& /*recvPacket*/);
@@ -446,9 +442,9 @@ protected:
         // GuildHandler.cpp
         void handleGuildQuery(WorldPacket& recvPacket);
         void handleInviteToGuild(WorldPacket& recvPacket);
-#if VERSION_STRING < Cata
-        void handleGuildInfo(WorldPacket& /*recvPacket*/);
-#endif
+
+        void handleGuildInfo(WorldPacket& /*recvPacket*/);          //< Cata
+
         void handleSaveGuildEmblem(WorldPacket& recvPacket);
         void handleGuildAccept(WorldPacket& /*recvPacket*/);
         void handleGuildDecline(WorldPacket& /*recvPacket*/);
@@ -481,28 +477,19 @@ protected:
 
         //\brief this was two seperated opcodes on versions < Cata.
         //       now it is one since cata.
-#if VERSION_STRING < Cata
-        void handleGuildSetPublicNote(WorldPacket& recvPacket);
-        void handleGuildSetOfficerNote(WorldPacket& recvPacket);
-#else
-        void handleGuildSetNoteOpcode(WorldPacket& recvPacket);
-#endif
+        void handleGuildSetPublicNote(WorldPacket& recvPacket);     //<Cata
+        void handleGuildSetOfficerNote(WorldPacket& recvPacket);    //<Cata
+
+        void handleGuildSetNoteOpcode(WorldPacket& recvPacket);     //>=Cata
 
         //\brief this was an empty opcodes on versions < Cata.
         //       now it has some content since cata.
-#if VERSION_STRING < Cata
-        void handleGuildDelRank(WorldPacket& /*recvPacket*/);
-#else
         void handleGuildDelRank(WorldPacket& recvPacket);
-#endif
 
         //\brief this was an MSG opcode on versions < Cata.
         //       now it is split into CMSG and SMSG packets since cata.
-#if VERSION_STRING < Cata
-        void handleGuildBankQueryText(WorldPacket& recvPacket);
-#else
-        void handleQueryGuildBankTabText(WorldPacket& recvPacket);
-#endif
+        void handleGuildBankQueryText(WorldPacket& recvPacket); //<Cata
+        void handleQueryGuildBankTabText(WorldPacket& recvPacket);  //>=Cata
 
         void handleCharterShowSignatures(WorldPacket& recvPacket);
         void handleCharterOffer(WorldPacket& recvPacket);
@@ -513,30 +500,28 @@ protected:
         void handleCharterQuery(WorldPacket& recvPacket);
         void handleCharterBuy(WorldPacket& recvPacket);
 
-#if VERSION_STRING >= Cata
         // Guild
-        void handleGuildAssignRankOpcode(WorldPacket& recvPacket);
-        void handleGuildQueryRanksOpcode(WorldPacket& recvPacket);
-        void handleGuildRequestChallengeUpdate(WorldPacket& /*recvPacket*/);
-        void handleGuildQueryXPOpcode(WorldPacket& recvPacket);
-        void handleGuildRequestPartyState(WorldPacket& recvPacket);
-        void handleGuildRequestMaxDailyXP(WorldPacket& recvPacket);
-        void handleAutoDeclineGuildInvites(WorldPacket& recvPacket);
-        void handleGuildRewardsQueryOpcode(WorldPacket& recvPacket);
-        void handleGuildQueryNewsOpcode(WorldPacket& recvPacket);
-        void handleGuildNewsUpdateStickyOpcode(WorldPacket& recvPacket);
-        void handleGuildSetGuildMaster(WorldPacket& recvPacket);
+        void handleGuildAssignRankOpcode(WorldPacket& recvPacket);              //>= Cata
+        void handleGuildQueryRanksOpcode(WorldPacket& recvPacket);              //>= Cata
+        void handleGuildRequestChallengeUpdate(WorldPacket& /*recvPacket*/);    //>= Cata
+        void handleGuildQueryXPOpcode(WorldPacket& recvPacket);                 //>= Cata
+        void handleGuildRequestPartyState(WorldPacket& recvPacket);             //>= Cata
+        void handleGuildRequestMaxDailyXP(WorldPacket& recvPacket);             //>= Cata
+        void handleAutoDeclineGuildInvites(WorldPacket& recvPacket);            //>= Cata
+        void handleGuildRewardsQueryOpcode(WorldPacket& recvPacket);            //>= Cata
+        void handleGuildQueryNewsOpcode(WorldPacket& recvPacket);               //>= Cata
+        void handleGuildNewsUpdateStickyOpcode(WorldPacket& recvPacket);        //>= Cata
+        void handleGuildSetGuildMaster(WorldPacket& recvPacket);                //>= Cata
 
         // GuildFinder
-        void handleGuildFinderAddRecruit(WorldPacket& recvPacket);
-        void handleGuildFinderBrowse(WorldPacket& recvPacket);
-        void handleGuildFinderDeclineRecruit(WorldPacket& recvPacket);
-        void handleGuildFinderGetApplications(WorldPacket& /*recvPacket*/);
-        void handleGuildFinderGetRecruits(WorldPacket& recvPacket);
-        void handleGuildFinderPostRequest(WorldPacket& /*recvPacket*/);
-        void handleGuildFinderRemoveRecruit(WorldPacket& recvPacket);
-        void handleGuildFinderSetGuildPost(WorldPacket& recvPacket);
-#endif
+        void handleGuildFinderAddRecruit(WorldPacket& recvPacket);              //>= Cata
+        void handleGuildFinderBrowse(WorldPacket& recvPacket);                  //>= Cata
+        void handleGuildFinderDeclineRecruit(WorldPacket& recvPacket);          //>= Cata
+        void handleGuildFinderGetApplications(WorldPacket& /*recvPacket*/);     //>= Cata
+        void handleGuildFinderGetRecruits(WorldPacket& recvPacket);             //>= Cata
+        void handleGuildFinderPostRequest(WorldPacket& /*recvPacket*/);         //>= Cata
+        void handleGuildFinderRemoveRecruit(WorldPacket& recvPacket);           //>= Cata
+        void handleGuildFinderSetGuildPost(WorldPacket& recvPacket);            //>= Cata
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // ItemHandler.cpp
@@ -545,29 +530,26 @@ protected:
         void sendBuyFailed(uint64_t guid, uint32_t itemid, uint8_t error);
         void sendSellItem(uint64_t vendorguid, uint64_t itemid, uint8_t error);
 
-#if VERSION_STRING >= Cata
         // Void Storage
-        void handleVoidStorageUnlock(WorldPacket& recvData);
-        void handleVoidStorageQuery(WorldPacket& recvData);
-        void handleVoidStorageTransfer(WorldPacket& recvData);
-        void handleVoidSwapItem(WorldPacket& recvData);
-        void sendVoidStorageTransferResult(uint8_t result);
+        void handleVoidStorageUnlock(WorldPacket& recvData);        //>= Cata
+        void handleVoidStorageQuery(WorldPacket& recvData);         //>= Cata
+        void handleVoidStorageTransfer(WorldPacket& recvData);      //>= Cata
+        void handleVoidSwapItem(WorldPacket& recvData);             //>= Cata
+        void sendVoidStorageTransferResult(uint8_t result);         //>= Cata
 
         // Transmogrification
-        void handleTransmogrifyItems(WorldPacket& recvData);
+        void handleTransmogrifyItems(WorldPacket& recvData);        //>= Cata
 
         // Reforge
-        void handleReforgeItemOpcode(WorldPacket& recvData);
-        void sendReforgeResult(bool success);
-#endif
+        void handleReforgeItemOpcode(WorldPacket& recvData);        //>= Cata
+        void sendReforgeResult(bool success);                       //>= Cata
 
-#if VERSION_STRING >= WotLK
-        void sendRefundInfo(uint64_t guid);
+        void sendRefundInfo(uint64_t guid);                             //>= WotLK
 
     protected:
-        void handleItemRefundInfoOpcode(WorldPacket& recvPacket);
-        void handleItemRefundRequestOpcode(WorldPacket& recvPacket);
-#endif
+        void handleItemRefundInfoOpcode(WorldPacket& recvPacket);       //>= WotLK
+        void handleItemRefundRequestOpcode(WorldPacket& recvPacket);    //>= WotLK
+
         void handleUseItemOpcode(WorldPacket& recvPacket);
         void handleSwapItemOpcode(WorldPacket& recvPacket);
         void handleSplitOpcode(WorldPacket& recvPacket);
@@ -587,15 +569,13 @@ protected:
         void handleAutoBankItemOpcode(WorldPacket& recvPacket);
         void handleAutoStoreBankItemOpcode(WorldPacket& recvPacket);
         void handleCancelTemporaryEnchantmentOpcode(WorldPacket& recvPacket);
-#if VERSION_STRING > Classic
-        void handleInsertGemOpcode(WorldPacket& recvPacket);
-#endif
+
+        void handleInsertGemOpcode(WorldPacket& recvPacket);        //> Classic
+
         void handleWrapItemOpcode(WorldPacket& recvPacket);
-#if VERSION_STRING > TBC
-        void handleEquipmentSetUse(WorldPacket& recvPacket);
-        void handleEquipmentSetSave(WorldPacket& recvPacket);
-        void handleEquipmentSetDelete(WorldPacket& recvPacket);
-#endif
+        void handleEquipmentSetUse(WorldPacket& recvPacket);        //> TBC
+        void handleEquipmentSetSave(WorldPacket& recvPacket);       //> TBC
+        void handleEquipmentSetDelete(WorldPacket& recvPacket);     //> TBC
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // LfgHandler.cpp
@@ -616,21 +596,18 @@ protected:
 
     protected:
         void handleLfgSetCommentOpcode(WorldPacket& recvPacket);
-#if VERSION_STRING >= Cata
-        void handleLfgLockInfoOpcode(WorldPacket& recvPacket);
-#endif
-#if VERSION_STRING > TBC
-        void handleLfgJoinOpcode(WorldPacket& recvPacket);
-        void handleLfgLeaveOpcode(WorldPacket& recvPacket);
-        void handleLfgSearchOpcode(WorldPacket& recvPacket);
-        void handleLfgSearchLeaveOpcode(WorldPacket& recvPacket);
-        void handleLfgProposalResultOpcode(WorldPacket& recvPacket);
-        void handleLfgSetRolesOpcode(WorldPacket& recvPacket);
-        void handleLfgSetBootVoteOpcode(WorldPacket& recvPacket);
-        void handleLfgPlayerLockInfoRequestOpcode(WorldPacket& recvPacket);
-        void handleLfgTeleportOpcode(WorldPacket& recvPacket);
-        void handleLfgPartyLockInfoRequestOpcode(WorldPacket& recvPacket);
-#endif
+        void handleLfgLockInfoOpcode(WorldPacket& recvPacket);      //>= Cata
+
+        void handleLfgJoinOpcode(WorldPacket& recvPacket);          //> TBC
+        void handleLfgLeaveOpcode(WorldPacket& recvPacket);         //> TBC
+        void handleLfgSearchOpcode(WorldPacket& recvPacket);        //> TBC
+        void handleLfgSearchLeaveOpcode(WorldPacket& recvPacket);   //> TBC
+        void handleLfgProposalResultOpcode(WorldPacket& recvPacket);//> TBC
+        void handleLfgSetRolesOpcode(WorldPacket& recvPacket);      //> TBC
+        void handleLfgSetBootVoteOpcode(WorldPacket& recvPacket);   //> TBC
+        void handleLfgPlayerLockInfoRequestOpcode(WorldPacket& recvPacket); //> TBC
+        void handleLfgTeleportOpcode(WorldPacket& recvPacket);      //> TBC
+        void handleLfgPartyLockInfoRequestOpcode(WorldPacket& recvPacket);  //> TBC
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // LootHandler.cpp
@@ -665,9 +642,7 @@ protected:
     public:
         void sendAccountDataTimes(uint32 mask);
         void sendMOTD();
-#if VERSION_STRING > TBC
-        void sendClientCacheVersion(uint32 version);
-#endif
+        void sendClientCacheVersion(uint32 version);    //> TBC
 
     protected:
         void handleStandStateChangeOpcode(WorldPacket& recvPacket);
@@ -705,11 +680,11 @@ protected:
         void handleUpdateAccountData(WorldPacket& recvPacket);
         void handleRequestAccountData(WorldPacket& recvPacket);
         void handleBugOpcode(WorldPacket& recvPacket);
-#if VERSION_STRING >= Cata
-        void handleSuggestionOpcode(WorldPacket& recvPacket);
-        void handleReturnToGraveyardOpcode(WorldPacket& /*recvPacket*/);
-        void handleLogDisconnectOpcode(WorldPacket& recvPacket);
-#endif
+
+        void handleSuggestionOpcode(WorldPacket& recvPacket);               //>= Cata
+        void handleReturnToGraveyardOpcode(WorldPacket& /*recvPacket*/);    //>= Cata
+        void handleLogDisconnectOpcode(WorldPacket& recvPacket);            //>= Cata
+
         void handleCompleteCinematic(WorldPacket& /*recvPacket*/);
         void handleNextCinematic(WorldPacket& /*recvPacket*/);
         void handleReadyForAccountDataTimes(WorldPacket& /*recvPacket*/);
@@ -717,20 +692,18 @@ protected:
         void handleLogoutCancelOpcode(WorldPacket& /*recvPacket*/);
         void handlePlayerLogoutOpcode(WorldPacket& /*recvPacket*/);
         void handleCorpseReclaimOpcode(WorldPacket& recvPacket);
-#if VERSION_STRING >= Cata
-        void handleLoadScreenOpcode(WorldPacket& recvPacket);
-        void handleUITimeRequestOpcode(WorldPacket& /*recvPacket*/);
-        void handleTimeSyncRespOpcode(WorldPacket& recvPacket);
-        void handleObjectUpdateFailedOpcode(WorldPacket& recvPacket);
-        void handleRequestHotfix(WorldPacket& recvPacket);
-        void handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/);
-        void sendItemDb2Reply(uint32_t entry);
-        void sendItemSparseDb2Reply(uint32_t entry);
-#endif
-#if VERSION_STRING > TBC
-        void handleRemoveGlyph(WorldPacket& recvPacket);
-        void handleBarberShopResult(WorldPacket& recvPacket);
-#endif
+
+        void handleLoadScreenOpcode(WorldPacket& recvPacket);               //>= Cata
+        void handleUITimeRequestOpcode(WorldPacket& /*recvPacket*/);        //>= Cata
+        void handleTimeSyncRespOpcode(WorldPacket& recvPacket);             //>= Cata
+        void handleObjectUpdateFailedOpcode(WorldPacket& recvPacket);       //>= Cata
+        void handleRequestHotfix(WorldPacket& recvPacket);                  //>= Cata
+        void handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/);  //>= Cata
+        void sendItemDb2Reply(uint32_t entry);                              //>= Cata
+        void sendItemSparseDb2Reply(uint32_t entry);                        //>= Cata
+
+        void handleRemoveGlyph(WorldPacket& recvPacket);                    //> TBC
+        void handleBarberShopResult(WorldPacket& recvPacket);               //> TBC
         void handleRepopRequestOpcode(WorldPacket& /*recvPacket*/);
         void handleWhoIsOpcode(WorldPacket& recvPacket);
         void handleAmmoSetOpcode(WorldPacket& recvPacket);
@@ -738,24 +711,22 @@ protected:
         void handleInspectOpcode(WorldPacket& recvPacket);
 
     //\todo move to seperated file
-#if VERSION_STRING >= Cata
     private:
-        bool isAddonMessageFiltered;
-        std::vector<std::string> mRegisteredAddonPrefixesVector;
-        typedef std::list<AddonEntry> AddonsList;
-        AddonsList m_addonList;
+        bool isAddonMessageFiltered;                                        //>= Cata
+        std::vector<std::string> mRegisteredAddonPrefixesVector;            //>= Cata
+        typedef std::list<AddonEntry> AddonsList;                           //>= Cata
+        AddonsList m_addonList;                                             //>= Cata
 
     public:
-        bool isAddonRegistered(const std::string& addon_name) const;
-        void readAddonInfoPacket(ByteBuffer& recvPacket);
-        void sendAddonInfo();
+        bool isAddonRegistered(const std::string& addon_name) const;        //>= Cata
+        void readAddonInfoPacket(ByteBuffer& recvPacket);                   //>= Cata
+        void sendAddonInfo();                                               //>= Cata
 
     protected:
-        void handleUnregisterAddonPrefixesOpcode(WorldPacket& /*recvPacket*/);
-        void handleAddonRegisteredPrefixesOpcode(WorldPacket& recvPacket);
-        void handleReportOpcode(WorldPacket& recvPacket);
-        void handleReportPlayerOpcode(WorldPacket& recvPacket);
-#endif
+        void handleUnregisterAddonPrefixesOpcode(WorldPacket& /*recvPacket*/);  //>= Cata
+        void handleAddonRegisteredPrefixesOpcode(WorldPacket& recvPacket);  //>= Cata
+        void handleReportOpcode(WorldPacket& recvPacket);                   //>= Cata
+        void handleReportPlayerOpcode(WorldPacket& recvPacket);             //>= Cata
 
         void HandleMirrorImageOpcode(WorldPacket& recvPacket);
 
@@ -849,20 +820,15 @@ protected:
         void handleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket);
         void handleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket);
         void handlePushQuestToPartyOpcode(WorldPacket& recvPacket);
-#if VERSION_STRING > TBC
-        void handleQuestPOIQueryOpcode(WorldPacket& recvPacket);
-#endif
+        void handleQuestPOIQueryOpcode(WorldPacket& recvPacket);        //> TBC
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // SkillHandler.cpp
         void handleUnlearnSkillOpcode(WorldPacket& recvPacket);
         void handleLearnTalentOpcode(WorldPacket& recvPacket);
         void handleUnlearnTalents(WorldPacket& recvPacket);
-#if VERSION_STRING < Cata
-        void handleLearnMultipleTalentsOpcode(WorldPacket& recvPacket);
-#else
-        void handleLearnPreviewTalentsOpcode(WorldPacket& recvPacket);
-#endif
+        void handleLearnMultipleTalentsOpcode(WorldPacket& recvPacket); //< Cata
+        void handleLearnPreviewTalentsOpcode(WorldPacket& recvPacket);  //>=Cata
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // SocialHandler.cpp
@@ -922,16 +888,15 @@ protected:
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // VehicleHandler.cpp
-#if VERSION_STRING > TBC
-        void handleDismissVehicle(WorldPacket& /*recvPacket*/);
-        void handleRequestVehiclePreviousSeat(WorldPacket& /*recvPacket*/);
-        void handleRequestVehicleNextSeat(WorldPacket& /*recvPacket*/);
-        void handleRequestVehicleSwitchSeat(WorldPacket& recvPacket);
-        void handleChangeSeatsOnControlledVehicle(WorldPacket& recvPacket);
-        void handleRemoveVehiclePassenger(WorldPacket& recvPacket);
-        void handleLeaveVehicle(WorldPacket& /*recvPacket*/);
-        void handleEnterVehicle(WorldPacket& recvPacket);
-#endif
+        void handleDismissVehicle(WorldPacket& /*recvPacket*/);                 //> TBC
+        void handleRequestVehiclePreviousSeat(WorldPacket& /*recvPacket*/);     //> TBC
+        void handleRequestVehicleNextSeat(WorldPacket& /*recvPacket*/);         //> TBC
+        void handleRequestVehicleSwitchSeat(WorldPacket& recvPacket);           //> TBC
+        void handleChangeSeatsOnControlledVehicle(WorldPacket& recvPacket);     //> TBC
+        void handleRemoveVehiclePassenger(WorldPacket& recvPacket);             //> TBC
+        void handleLeaveVehicle(WorldPacket& /*recvPacket*/);                   //> TBC
+        void handleEnterVehicle(WorldPacket& recvPacket);                       //> TBC
+
         //////////////////////////////////////////////////////////////////////////////////////////
         // VoiceChatHandler.cpp
         // Zyres: this feature will be not implemented in the near future!

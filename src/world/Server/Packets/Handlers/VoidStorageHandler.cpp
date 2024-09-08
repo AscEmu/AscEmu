@@ -14,18 +14,18 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Item.hpp"
 
-
-#if VERSION_STRING >= Cata
-
 void WorldSession::sendVoidStorageTransferResult(uint8_t result)
 {
+#if VERSION_STRING >= Cata
     WorldPacket data(SMSG_VOID_TRANSFER_RESULT, 4);
     data << uint32_t(result);
     SendPacket(&data);
+#endif
 }
 
 void WorldSession::handleVoidStorageUnlock(WorldPacket& recvData)
 {
+#if VERSION_STRING >= Cata
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_VOID_STORAGE_UNLOCK");
 
     Player* player = GetPlayer();
@@ -71,10 +71,12 @@ void WorldSession::handleVoidStorageUnlock(WorldPacket& recvData)
 
     player->modCoinage(-int64_t(VOID_STORAGE_UNLOCK));
     player->unlockVoidStorage();
+#endif
 }
 
 void WorldSession::handleVoidStorageQuery(WorldPacket& recvData)
 {
+#if VERSION_STRING >= Cata
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_VOID_STORAGE_QUERY");
     Player* player = GetPlayer();
 
@@ -187,10 +189,12 @@ void WorldSession::handleVoidStorageQuery(WorldPacket& recvData)
     data.append(itemData);
 
     SendPacket(&data);
+#endif
 }
 
 void WorldSession::handleVoidStorageTransfer(WorldPacket& recvData)
 {
+#if VERSION_STRING >= Cata
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_VOID_STORAGE_TRANSFER");
     Player* player = GetPlayer();
 
@@ -479,10 +483,12 @@ void WorldSession::handleVoidStorageTransfer(WorldPacket& recvData)
     sendVoidStorageTransferResult(VOID_TRANSFER_ERROR_NO_ERROR);
 
     player->saveVoidStorage();
+#endif
 }
 
 void WorldSession::handleVoidSwapItem(WorldPacket& recvData)
 {
+#if VERSION_STRING >= Cata
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_VOID_SWAP_ITEM");
 
     Player* player = GetPlayer();
@@ -633,5 +639,6 @@ void WorldSession::handleVoidSwapItem(WorldPacket& recvData)
     SendPacket(&data);
 
     player->saveVoidStorage();
-}
 #endif
+}
+

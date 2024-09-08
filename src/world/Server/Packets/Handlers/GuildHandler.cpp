@@ -51,6 +51,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "scripts/InstanceScripts/Setup.h"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
+#include "Server/Packets/CmsgGuildBankQueryText.h"
 #include "Server/Script/HookInterface.hpp"
 #include "Storage/WorldStrings.h"
 
@@ -100,13 +101,13 @@ void WorldSession::handleInviteToGuild(WorldPacket& recvPacket)
         guild->sendGuildInvitePacket(_player->getSession(), srlPacket.name);
 }
 
-#if VERSION_STRING < Cata
 void WorldSession::handleGuildInfo(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING < Cata
     if (const auto guild = _player->getGuild())
         SendPacket(SmsgGuildInfo(guild->getName(), guild->getCreatedDate(), guild->getMembersCount(), guild->getAccountCount()).serialise().get());
-}
 #endif
+}
 
 void WorldSession::handleSaveGuildEmblem(WorldPacket& recvPacket)
 {
@@ -315,9 +316,10 @@ void WorldSession::handleGuildDemote(WorldPacket& recvPacket)
 #endif
 }
 
-#if VERSION_STRING < Cata
+
 void WorldSession::handleGuildSetPublicNote(WorldPacket& recvPacket)
 {
+#if VERSION_STRING < Cata
     CmsgGuildSetPublicNote srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -328,10 +330,12 @@ void WorldSession::handleGuildSetPublicNote(WorldPacket& recvPacket)
 
     if (Guild* guild = _player->getGuild())
         guild->handleSetMemberNote(this, srlPacket.note, targetPlayerInfo->guid, true);
+#endif
 }
 
 void WorldSession::handleGuildSetOfficerNote(WorldPacket& recvPacket)
 {
+#if VERSION_STRING < Cata
     CmsgGuildSetOfficerNote srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -342,36 +346,35 @@ void WorldSession::handleGuildSetOfficerNote(WorldPacket& recvPacket)
 
     if (Guild* guild = _player->getGuild())
         guild->handleSetMemberNote(this, srlPacket.note, targetPlayerInfo->guid, false);
+#endif
 }
-#else
+
 void WorldSession::handleGuildSetNoteOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     CmsgGuildSetNote srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
 
     if (Guild* guild = _player->getGuild())
         guild->handleSetMemberNote(this, srlPacket.note, srlPacket.guid, srlPacket.isPublic);
-}
 #endif
+}
 
-#if VERSION_STRING < Cata
 void WorldSession::handleGuildDelRank(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING < Cata
     if (Guild* guild = _player->getGuild())
         guild->handleRemoveLowestRank(this);
-}
 #else
-void WorldSession::handleGuildDelRank(WorldPacket& recvPacket)
-{
     CmsgGuildDelRank srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
 
     if (Guild* guild = _player->getGuild())
         guild->handleRemoveRank(this, static_cast<uint8_t>(srlPacket.rankId));
-}
 #endif
+}
 
 void WorldSession::handleGuildBankWithdrawMoney(WorldPacket& recvPacket)
 {
@@ -425,27 +428,30 @@ void WorldSession::handleGuildBankSwapItems(WorldPacket& recvPacket)
         guild->swapItemsWithInventory(_player, srlPacket.toChar, srlPacket.tabId, srlPacket.slotId, srlPacket.playerBag, srlPacket.playerSlotId, srlPacket.splitedAmount);
 }
 
-#if VERSION_STRING < Cata
+
 void WorldSession::handleGuildBankQueryText(WorldPacket& recvPacket)
 {
+#if VERSION_STRING < Cata
     MsgQueryGuildBankText srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
 
     if (Guild* guild = _player->getGuild())
         guild->sendBankTabText(this, srlPacket.tabId);
+#endif
 }
-#else
+
 void WorldSession::handleQueryGuildBankTabText(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     CmsgGuildBankQueryText srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
 
     if (Guild* guild = _player->getGuild())
         guild->sendBankTabText(this, srlPacket.tabId);
-}
 #endif
+}
 
 void WorldSession::handleGuildBankQueryTab(WorldPacket& recvPacket)
 {
@@ -946,9 +952,9 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
     }
 }
 
-#if VERSION_STRING >= Cata
 void WorldSession::handleGuildAssignRankOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     ObjectGuid targetGuid;
     ObjectGuid setterGuid;
 
@@ -1008,10 +1014,12 @@ void WorldSession::handleGuildAssignRankOpcode(WorldPacket& recvPacket)
 
     if (Guild* guild = _player->getGuild())
         guild->handleSetMemberRank(this, targetGuid, setterGuid, rankId);
+#endif
 }
 
 void WorldSession::handleGuildQueryRanksOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     ObjectGuid guildGuid;
 
     guildGuid[2] = recvPacket.readBit();
@@ -1039,16 +1047,20 @@ void WorldSession::handleGuildQueryRanksOpcode(WorldPacket& recvPacket)
         if (guild->isMember(_player->getGuid()))
             guild->sendGuildRankInfo(this);
     }
+#endif
 }
 
 void WorldSession::handleGuildRequestChallengeUpdate(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING >= Cata
     if (Guild* guild = _player->getGuild())
         guild->handleGuildRequestChallengeUpdate(this);
+#endif
 }
 
 void WorldSession::handleGuildQueryXPOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     ObjectGuid guildGuid;
 
     guildGuid[2] = recvPacket.readBit();
@@ -1078,10 +1090,12 @@ void WorldSession::handleGuildQueryXPOpcode(WorldPacket& recvPacket)
         if (guild->isMember(_player->getGuid()))
             guild->sendGuildXP(this);
     }
+#endif
 }
 
 void WorldSession::handleGuildRequestPartyState(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     ObjectGuid guildGuid;
 
     guildGuid[0] = recvPacket.readBit();
@@ -1106,10 +1120,12 @@ void WorldSession::handleGuildRequestPartyState(WorldPacket& recvPacket)
 
     if (Guild* guild = sGuildMgr.getGuildById(guildId))
         guild->handleGuildPartyRequest(this);
+#endif
 }
 
 void WorldSession::handleGuildRequestMaxDailyXP(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     ObjectGuid guid;
 
     guid[0] = recvPacket.readBit();
@@ -1141,10 +1157,12 @@ void WorldSession::handleGuildRequestMaxDailyXP(WorldPacket& recvPacket)
             SendPacket(&data);
         }
     }
+#endif
 }
 
 void WorldSession::handleAutoDeclineGuildInvites(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     uint8_t enable;
     recvPacket >> enable;
 
@@ -1154,11 +1172,12 @@ void WorldSession::handleAutoDeclineGuildInvites(WorldPacket& recvPacket)
         _player->addPlayerFlags(PLAYER_FLAGS_AUTO_DECLINE_GUILD);
     else
         _player->removePlayerFlags(PLAYER_FLAGS_AUTO_DECLINE_GUILD);
-
+#endif
 }
 
 void WorldSession::handleGuildRewardsQueryOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     recvPacket.read_skip<uint32_t>();
 
     if (sGuildMgr.getGuildById(_player->getGuildId()))
@@ -1182,18 +1201,22 @@ void WorldSession::handleGuildRewardsQueryOpcode(WorldPacket& recvPacket)
 
         SendPacket(&data);
     }
+#endif
 }
 
 void WorldSession::handleGuildQueryNewsOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     recvPacket.read_skip<uint32_t>();
 
     if (Guild* guild = _player->getGuild())
         guild->sendNewsUpdate(this);
+#endif
 }
 
 void WorldSession::handleGuildNewsUpdateStickyOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     uint32_t newsId;
     recvPacket >> newsId;
 
@@ -1221,10 +1244,12 @@ void WorldSession::handleGuildNewsUpdateStickyOpcode(WorldPacket& recvPacket)
 
     if (Guild* guild = _player->getGuild())
         guild->handleNewsSetSticky(this, newsId, isSticky);
+#endif
 }
 
 void WorldSession::handleGuildSetGuildMaster(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     const auto nameLength = static_cast<uint8_t>(recvPacket.readBits(7));
 
     recvPacket.readBit();
@@ -1233,12 +1258,14 @@ void WorldSession::handleGuildSetGuildMaster(WorldPacket& recvPacket)
 
     if (Guild* guild = _player->getGuild())
         guild->handleSetNewGuildMaster(this, playerName);
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // GuildFinder
 void WorldSession::handleGuildFinderAddRecruit(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     if (sGuildFinderMgr.getAllMembershipRequestsForPlayer(_player->getGuidLow()).size() == 10)
         return;
 
@@ -1293,10 +1320,12 @@ void WorldSession::handleGuildFinderAddRecruit(WorldPacket& recvPacket)
 
     MembershipRequest request = MembershipRequest(_player->getGuidLow(), guildLowGuid, availability, classRoles, guildInterests, comment, time(nullptr));
     sGuildFinderMgr.addMembershipRequest(guildLowGuid, request);
+#endif
 }
 
 void WorldSession::handleGuildFinderBrowse(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     uint32_t classRoles = 0;
     uint32_t availability = 0;
     uint32_t guildInterests = 0;
@@ -1403,10 +1432,12 @@ void WorldSession::handleGuildFinderBrowse(WorldPacket& recvPacket)
     data.append(bufferData);
 
     player->sendPacket(&data);
+#endif
 }
 
 void WorldSession::handleGuildFinderDeclineRecruit(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     ObjectGuid playerGuid;
 
     playerGuid[1] = recvPacket.readBit();
@@ -1434,10 +1465,12 @@ void WorldSession::handleGuildFinderDeclineRecruit(WorldPacket& recvPacket)
         return;
 
     sGuildFinderMgr.removeMembershipRequest(wowGuid.getGuidLowPart(), _player->getGuildId());
+#endif
 }
 
 void WorldSession::handleGuildFinderGetApplications(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING >= Cata
     std::list<MembershipRequest> applicatedGuilds = sGuildFinderMgr.getAllMembershipRequestsForPlayer(_player->getGuidLow());
     uint32_t applicationsCount = static_cast<uint32_t>(applicatedGuilds.size());
     WorldPacket data(SMSG_LF_GUILD_MEMBERSHIP_LIST_UPDATED, 7 + 54 * applicationsCount);
@@ -1499,10 +1532,12 @@ void WorldSession::handleGuildFinderGetApplications(WorldPacket& /*recvPacket*/)
     data << uint32_t(10 - sGuildFinderMgr.countRequestsFromPlayer(_player->getGuidLow()));
 
     _player->sendPacket(&data);
+#endif
 }
 
 void WorldSession::handleGuildFinderGetRecruits(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     uint32_t unkTime = 0;
     recvPacket >> unkTime;
 
@@ -1572,10 +1607,12 @@ void WorldSession::handleGuildFinderGetRecruits(WorldPacket& recvPacket)
     data << uint32_t(time(nullptr));
 
     player->sendPacket(&data);
+#endif
 }
 
 void WorldSession::handleGuildFinderPostRequest(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING >= Cata
     Player* player = _player;
     if (!player->getGuildId())
         return;
@@ -1614,10 +1651,12 @@ void WorldSession::handleGuildFinderPostRequest(WorldPacket& /*recvPacket*/)
     }
 
     player->getSession()->SendPacket(&data);
+#endif
 }
 
 void WorldSession::handleGuildFinderRemoveRecruit(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     ObjectGuid guildGuid;
 
     guildGuid[0] = recvPacket.readBit();
@@ -1639,10 +1678,12 @@ void WorldSession::handleGuildFinderRemoveRecruit(WorldPacket& recvPacket)
     recvPacket.ReadByteSeq(guildGuid[7]);
 
     sGuildFinderMgr.removeMembershipRequest(WoWGuid::getGuidLowPartFromUInt64(_player->getGuid()), WoWGuid::getGuidLowPartFromUInt64(guildGuid));
+#endif
 }
 
 void WorldSession::handleGuildFinderSetGuildPost(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     uint32_t classRoles = 0;
     uint32_t availability = 0;
     uint32_t guildInterests = 0;
@@ -1684,6 +1725,5 @@ void WorldSession::handleGuildFinderSetGuildPost(WorldPacket& recvPacket)
 
     LFGuildSettings settings(listed, player->getTeam(), player->getGuildId(), static_cast<uint8_t>(classRoles), static_cast<uint8_t>(availability), static_cast<uint8_t>(guildInterests), static_cast<uint8_t>(level), comment);
     sGuildFinderMgr.setGuildSettings(player->getGuildId(), settings);
-}
-
 #endif
+}

@@ -378,9 +378,10 @@ void WorldSession::handleQuestQueryOpcode(WorldPacket& recvPacket)
     }
 }
 
-#if VERSION_STRING > TBC
+
 void WorldSession::handleQuestPOIQueryOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     CmsgQuestPoiQuery srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -400,8 +401,8 @@ void WorldSession::handleQuestPOIQueryOpcode(WorldPacket& recvPacket)
         sQuestMgr.BuildQuestPOIResponse(data, questId);
 
     SendPacket(&data);
-}
 #endif
+}
 
 void WorldSession::handleQuestgiverCancelOpcode(WorldPacket& /*recvPacket*/)
 {

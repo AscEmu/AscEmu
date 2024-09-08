@@ -1003,9 +1003,9 @@ void WorldSession::handleBugOpcode(WorldPacket& recv_data)
 }
 #endif
 
-#if VERSION_STRING >= Cata
 void WorldSession::handleSuggestionOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     uint8_t unk1;
     uint8_t unk2;
 
@@ -1036,28 +1036,28 @@ void WorldSession::handleSuggestionOpcode(WorldPacket& recvPacket)
     ss << CharacterDatabase.EscapeString(suggestionMessage) << "')";
 
     CharacterDatabase.ExecuteNA(ss.str().c_str());
-}
 #endif
+}
 
-#if VERSION_STRING >= Cata
 void WorldSession::handleReturnToGraveyardOpcode(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING >= Cata
     if (_player->isAlive())
         return;
 
     _player->repopAtGraveyard(_player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), _player->GetMapId());
-}
 #endif
+}
 
-#if VERSION_STRING >= Cata
 void WorldSession::handleLogDisconnectOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     uint32_t disconnectReason;
     recvPacket >> disconnectReason; // 13 - closed window
 
     sLogger.debug("Player {} disconnected on {} - Reason {}", _player->getName(), Util::GetCurrentDateTimeString(), disconnectReason);
-}
 #endif
+}
 
 void WorldSession::handleCompleteCinematic(WorldPacket& /*recvPacket*/)
 {
@@ -1175,32 +1175,39 @@ void WorldSession::handleCorpseReclaimOpcode(WorldPacket& recvPacket)
     _player->setHealth(_player->getMaxHealth() / 2);
 }
 
-#if VERSION_STRING >= Cata
+
 void WorldSession::handleLoadScreenOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     uint32_t mapId;
 
     recvPacket >> mapId;
     recvPacket.readBit();
+#endif
 }
 
 void WorldSession::handleUITimeRequestOpcode(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING >= Cata
     WorldPacket data(SMSG_UI_TIME, 4);
     data << uint32_t(time(nullptr));
     SendPacket(&data);
+#endif
 }
 
 void WorldSession::handleTimeSyncRespOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     uint32_t counter;
     uint32_t clientTicks;
     recvPacket >> counter;
     recvPacket >> clientTicks;
+#endif
 }
 
 void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     ObjectGuid guid;
 
 #if VERSION_STRING == Cata
@@ -1253,15 +1260,17 @@ void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
     }
 
     //_player->updateVisibility();
+#endif
 }
 
-#if VERSION_STRING >= Cata
+
 
 #define DB2_REPLY_SPARSE 2442913102
 #define DB2_REPLY_ITEM   1344507586
 
 void WorldSession::sendItemDb2Reply(uint32_t entry)
 {
+#if VERSION_STRING >= Cata
 #if VERSION_STRING < Mop
     WorldPacket data(SMSG_DB_REPLY, 44);
     ItemProperties const* proto = sMySQLStore.getItemProperties(entry);
@@ -1293,10 +1302,12 @@ void WorldSession::sendItemDb2Reply(uint32_t entry)
 
     SendPacket(&data);
 #endif
+#endif
 }
 
 void WorldSession::sendItemSparseDb2Reply(uint32_t entry)
 {
+#if VERSION_STRING >= Cata
 #if VERSION_STRING < Mop
     WorldPacket data(SMSG_DB_REPLY, 526);
     ItemProperties const* proto = sMySQLStore.getItemProperties(entry);
@@ -1427,12 +1438,12 @@ void WorldSession::sendItemSparseDb2Reply(uint32_t entry)
 
     SendPacket(&data);
 #endif
-}
-
 #endif
+}
 
 void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
 #if VERSION_STRING == Cata
     uint32_t type;
     recvPacket >> type;
@@ -1537,11 +1548,14 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
         SendPacket(&data);
     }
 #endif
+
     delete[] guids;
+#endif
 }
 
 void WorldSession::handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING >= Cata
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REQUEST_CEMETERY_LIST");
 
     QueryResult* result = WorldDatabase.Query("SELECT id FROM graveyards WHERE faction = %u OR faction = 3;", _player->getTeam());
@@ -1562,12 +1576,14 @@ void WorldSession::handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/)
 
         SendPacket(&data);
     }
-}
 #endif
+}
 
-#if VERSION_STRING > TBC
+
+
 void WorldSession::handleRemoveGlyph(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     CmsgRemoveGlyph srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -1587,11 +1603,10 @@ void WorldSession::handleRemoveGlyph(WorldPacket& recvPacket)
     _player->removeAllAurasById(glyphPropertiesEntry->SpellID);
     _player->m_specs[_player->m_talentActiveSpec].setGlyph(0, srlPacket.glyphNumber);
     _player->smsg_TalentsInfo(false);
-}
 #endif
+}
 
 #if VERSION_STRING > TBC
-
 namespace BarberShopResult
 {
     enum
@@ -1600,9 +1615,11 @@ namespace BarberShopResult
         NoMoney = 1
     };
 }
+#endif
 
 void WorldSession::handleBarberShopResult(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     // todo: Here was SMSG_BARBER_SHOP:RESULT... maybe itr is MSG or it was just wrong. Check it!
     CmsgAlterAppearance srlPacket;
     if (!srlPacket.deserialise(recvPacket))
@@ -1669,8 +1686,8 @@ void WorldSession::handleBarberShopResult(WorldPacket& recvPacket)
     _player->setStandState(STANDSTATE_STAND);
     _player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_VISIT_BARBER_SHOP, 1, 0, 0);
     _player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GOLD_SPENT_AT_BARBER, cost, 0, 0);
-}
 #endif
+}
 
 void WorldSession::handleRepopRequestOpcode(WorldPacket& /*recvPacket*/)
 {
@@ -2034,9 +2051,10 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
 #endif
 }
 
-#if VERSION_STRING >= Cata
+
 void WorldSession::readAddonInfoPacket(ByteBuffer &recvPacket)
 {
+#if VERSION_STRING >= Cata
     if (recvPacket.rpos() + 4 > recvPacket.size())
         return;
 
@@ -2111,10 +2129,13 @@ void WorldSession::readAddonInfoPacket(ByteBuffer &recvPacket)
     {
         sLogger.failure("Decompression of addon section of CMSG_AUTH_SESSION failed.");
     }
+#endif
+
 }
 
 void WorldSession::sendAddonInfo()
 {
+#if VERSION_STRING >= Cata
 #if VERSION_STRING < Mop
     WorldPacket data(SMSG_ADDON_INFO, 4);
     for (auto itr : m_addonList)
@@ -2208,10 +2229,12 @@ void WorldSession::sendAddonInfo()
 
     SendPacket(&data);
 #endif
+#endif
 }
 
 bool WorldSession::isAddonRegistered(const std::string& addon_name) const
 {
+#if VERSION_STRING >= Cata
     if (!isAddonMessageFiltered)
         return true;
 
@@ -2220,17 +2243,23 @@ bool WorldSession::isAddonRegistered(const std::string& addon_name) const
 
     auto itr = std::find(mRegisteredAddonPrefixesVector.begin(), mRegisteredAddonPrefixesVector.end(), addon_name);
     return itr != mRegisteredAddonPrefixesVector.end();
+#else
+    return false;
+#endif
 }
 
 void WorldSession::handleUnregisterAddonPrefixesOpcode(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING >= Cata
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_UNREGISTER_ALL_ADDON_PREFIXES");
 
     mRegisteredAddonPrefixesVector.clear();
+#endif
 }
 
 void WorldSession::handleAddonRegisteredPrefixesOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     uint32_t addonCount = recvPacket.readBits(25);
 
     if (addonCount > 64)
@@ -2254,10 +2283,12 @@ void WorldSession::handleAddonRegisteredPrefixesOpcode(WorldPacket& recvPacket)
     }
 
     isAddonMessageFiltered = true;
+#endif
 }
 
 void WorldSession::handleReportOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REPORT");
 
     uint8_t spam_type;                                      // 0 - mail, 1 - chat
@@ -2301,10 +2332,12 @@ void WorldSession::handleReportOpcode(WorldPacket& recvPacket)
     data << uint8_t(0);
 
     SendPacket(&data);
+#endif
 }
 
 void WorldSession::handleReportPlayerOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REPORT_PLAYER {}", static_cast<uint32_t>(recvPacket.size()));
 
     uint8_t unk3 = 0;                                       // type
@@ -2353,9 +2386,8 @@ void WorldSession::handleReportPlayerOpcode(WorldPacket& recvPacket)
             sLogger.debug("type is {}", unk3);
             break;
     }
-}
-
 #endif
+}
 
 void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
 {
@@ -2454,14 +2486,14 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
     sLogger.debug("Sent SMSG_MIRRORIMAGE_DATA");
 }
 
-#if VERSION_STRING > TBC
 void WorldSession::sendClientCacheVersion(uint32 version)
 {
+#if VERSION_STRING > TBC
     WorldPacket data(SMSG_CLIENTCACHE_VERSION, 4);
     data << uint32_t(version);
     SendPacket(&data);
-}
 #endif
+}
 
 void WorldSession::sendAccountDataTimes(uint32 mask)
 {

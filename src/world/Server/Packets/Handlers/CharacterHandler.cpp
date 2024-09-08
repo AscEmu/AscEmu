@@ -104,10 +104,11 @@ void WorldSession::handleCharDeleteOpcode(WorldPacket& recvPacket)
     SendPacket(SmsgCharDelete(deleteResult).serialise().get());
 }
 
-#if VERSION_STRING > TBC
+
 // \todo port player to a main city of his new faction
 void WorldSession::handleCharFactionOrRaceChange(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     CmsgCharFactionChange srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -184,8 +185,8 @@ void WorldSession::handleCharFactionOrRaceChange(WorldPacket& recvPacket)
         newname.c_str(), newflags, static_cast<uint32_t>(srlPacket.charCreate._race), srlPacket.guid.getGuidLow());
 
     SendPacket(SmsgCharFactionChange(0, srlPacket.guid, srlPacket.charCreate).serialise().get());
-}
 #endif
+}
 
 void WorldSession::handlePlayerLoginOpcode(WorldPacket& recvPacket)
 {
@@ -511,9 +512,9 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     sLogonCommHandler.updateAccountCount(GetAccountId(), 1);
 }
 
-#if VERSION_STRING > TBC
 void WorldSession::handleCharCustomizeLooksOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     CmsgCharCustomize srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -555,8 +556,8 @@ void WorldSession::handleCharCustomizeLooksOpcode(WorldPacket& recvPacket)
         srlPacket.createStruct.facialHair);
 
     SendPacket(SmsgCharCustomize(E_RESPONSE_SUCCESS, srlPacket.guid, srlPacket.createStruct).serialise().get());
-}
 #endif
+}
 
 void WorldSession::initGMMyMaster()
 {

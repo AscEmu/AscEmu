@@ -44,9 +44,10 @@ void WorldSession::handleUnlearnTalents(WorldPacket& /*recvPacket*/)
     _player->resetTalents();
 }
 
-#if VERSION_STRING < Cata
+
 void WorldSession::handleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING < Cata
 #if VERSION_STRING > TBC
     CmsgLearnTalentMultiple srlPacket;
     if (!srlPacket.deserialise(recvPacket))
@@ -59,10 +60,12 @@ void WorldSession::handleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
 
     _player->smsg_TalentsInfo(false);
 #endif
+#endif
 }
-#else
+
 void WorldSession::handleLearnPreviewTalentsOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     int32_t current_tab;
     uint32_t talent_count;
     uint32_t talent_id;
@@ -80,5 +83,5 @@ void WorldSession::handleLearnPreviewTalentsOpcode(WorldPacket& recvPacket)
     }
 
     _player->smsg_TalentsInfo(false);
-}
 #endif
+}
