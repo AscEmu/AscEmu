@@ -30,9 +30,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
-#if VERSION_STRING < Cata
 void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING < Cata
     CmsgSetActiveMover srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -58,8 +58,8 @@ void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvPacket)
         m_MoverWoWGuid.Init(_player->getGuid());
     else
         m_MoverWoWGuid = srlPacket.guid;
-}
 #endif
+}
 
 void WorldSession::updatePlayerMovementVars(uint16_t opcode)
 {

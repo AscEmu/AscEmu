@@ -550,9 +550,9 @@ void WorldSession::handleEmoteOpcode(WorldPacket& recvPacket)
     sQuestMgr.OnPlayerEmote(_player, srlPacket.emote, guid);
 }
 
-#if VERSION_STRING < Cata
 void WorldSession::handleReportSpamOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING < Cata
     CmsgComplaint srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -561,8 +561,8 @@ void WorldSession::handleReportSpamOpcode(WorldPacket& recvPacket)
         srlPacket.unk1, srlPacket.unk2, srlPacket.unk3, srlPacket.unk4, srlPacket.description);
 
     SendPacket(SmsgComplainResult(0).serialise().get());
-}
 #endif
+}
 
 void WorldSession::handleChatIgnoredOpcode(WorldPacket& recvPacket)
 {
