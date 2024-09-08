@@ -89,28 +89,14 @@ enum AccountDataType
 #endif
 };
 
-const uint8 GLOBAL_CACHE_MASK        = 0x15;
-const uint8 PER_CHARACTER_CACHE_MASK = 0xEA;
+const uint8_t GLOBAL_CACHE_MASK        = 0x15;
+const uint8_t PER_CHARACTER_CACHE_MASK = 0xEA;
 
 struct AccountDataEntry
 {
     char* data;
-    uint32 sz;
+    uint32_t sz;
     bool bIsDirty;
-};
-
-struct CharCreate
-{
-    utf8_string name;
-    uint8_t _race;
-    uint8_t _class;
-    uint8_t gender;
-    uint8_t skin;
-    uint8_t face;
-    uint8_t hairStyle;
-    uint8_t hairColor;
-    uint8_t facialHair;
-    uint8_t outfitId;
 };
 
 extern OpcodeHandler WorldPacketHandlers[NUM_OPCODES];
@@ -121,7 +107,7 @@ class SERVER_DECL WorldSession
     friend class WorldSocket;
 
     public:
-        WorldSession(uint32 id, std::string name, WorldSocket* sock);
+        WorldSession(uint32_t id, std::string name, WorldSocket* sock);
         ~WorldSession();
 
         Player* m_loggingInPlayer;
@@ -132,17 +118,17 @@ class SERVER_DECL WorldSession
 
         void Delete();
 
-        void SendChatPacket(WorldPacket* data, uint32 langpos, int32 lang, WorldSession* originator);
+        void SendChatPacket(WorldPacket* data, uint32_t langpos, int32_t lang, WorldSession* originator);
 
-        uint32 m_currMsTime;
-        uint32 m_lastPing;
+        uint32_t m_currMsTime;
+        uint32_t m_lastPing;
 
-        uint32 GetAccountId() const { return _accountId; }
+        uint32_t GetAccountId() const { return _accountId; }
         Player* GetPlayer() { return _player; }
         Player* GetPlayerOrThrow();
 
         // Acct flags
-        void SetAccountFlags(uint32 /*flags*/)
+        void SetAccountFlags(uint32_t /*flags*/)
         {
             // TODO: add a config to determine what flags are allowed on the server.
             // For now, override the db value depending on the AE Version.
@@ -167,7 +153,7 @@ class SERVER_DECL WorldSession
                     break;
             }
         }
-        bool HasFlag(uint32 flag) { return (_accountFlags & flag) != 0; }
+        bool HasFlag(uint32_t flag) { return (_accountFlags & flag) != 0; }
         uint32 GetFlags() { return _accountFlags; }
 
         // GM Permission System
@@ -194,7 +180,7 @@ class SERVER_DECL WorldSession
         }
         void SetPlayer(Player* plr) { _player = plr; }
 
-        void SetAccountData(uint32 index, char* data, bool initial, uint32 sz)
+        void SetAccountData(uint32_t index, char* data, bool initial, uint32_t sz)
         {
             if (index >= 8)
                 return;
@@ -213,7 +199,7 @@ class SERVER_DECL WorldSession
 
         AccountDataEntry* GetAccountData(uint32 index);
 
-        void SetLogoutTimer(uint32 ms)
+        void SetLogoutTimer(uint32_t ms)
         {
             if (ms)
                 _logoutTime = m_currMsTime + ms;
@@ -225,24 +211,24 @@ class SERVER_DECL WorldSession
 
         void QueuePacket(std::shared_ptr<WorldPacket> packet);
 
-        void OutPacket(uint16 opcode, uint16 len, const void* data);
+        void OutPacket(uint16_t opcode, uint16_t len, const void* data);
 
         WorldSocket* GetSocket() { return _socket; }
 
         void Disconnect();
 
-        uint8 Update(uint32 InstanceID);
+        uint8_t Update(uint32_t InstanceID);
 
         void SendNotification(const char* message, ...);
 
-        void SetInstance(uint32 Instance) { instanceId = Instance; }
-        uint32 GetLatency() const { return _latency; }
+        void SetInstance(uint32_t Instance) { instanceId = Instance; }
+        uint32_t GetLatency() const { return _latency; }
         std::string GetAccountName() { return _accountName; }
         const char* GetAccountNameS() const { return _accountName.c_str(); }
-        const char* LocalizedWorldSrv(uint32 id);
-        const char* LocalizedGossipOption(uint32 id);
-        const char* LocalizedMapName(uint32 id);
-        const char* LocalizedBroadCast(uint32 id);
+        const char* LocalizedWorldSrv(uint32_t id);
+        const char* LocalizedGossipOption(uint32_t id);
+        const char* LocalizedMapName(uint32_t id);
+        const char* LocalizedBroadCast(uint32_t id);
 
 #if VERSION_STRING != Cata
         uint32_t GetClientBuild() { return client_build; }
@@ -253,10 +239,10 @@ class SERVER_DECL WorldSession
 #endif
 
         bool bDeleted;
-        uint32 GetInstance() { return instanceId; }
+        uint32_t GetInstance() { return instanceId; }
         std::mutex deleteMutex;
-        int32 m_moveDelayTime;
-        int32 m_clientTimeDelay;
+        int32_t m_moveDelayTime;
+        int32_t m_clientTimeDelay;
 
         
         bool IsLoggingOut() { return _loggingOut; }
@@ -973,8 +959,8 @@ protected:
         // Preallocated buffers for movement handlers
         MovementInfo sessionMovementInfo;
 
-        uint32 _accountId;
-        uint32 _accountFlags;
+        uint32_t _accountId;
+        uint32_t _accountFlags;
         std::string _accountName;
 #if VERSION_STRING > TBC
         bool has_level_55_char; // death knights
@@ -985,7 +971,7 @@ protected:
 
         WoWGuid m_MoverWoWGuid;
 
-        uint32 _logoutTime; // time we received a logout request -- wait 20 seconds, and quit
+        uint32_t _logoutTime; // time we received a logout request -- wait 20 seconds, and quit
 
         AccountDataEntry sAccountData[8]{};
 
@@ -995,20 +981,21 @@ protected:
         bool _loggingOut; // Player is being removed from the game.
         bool LoggingOut; // Player requesting to be logged out
 
-        uint32 _latency;
+        uint32_t _latency;
 #if VERSION_STRING < Cata
         uint32_t client_build;
 #else
         uint16_t client_build;
 #endif
-        uint32 instanceId;
-        uint8 _updatecount;
+        uint32_t instanceId;
+        uint8_t _updatecount;
 
     public:
         static void InitPacketHandlerTable();
         static void loadHandlers();
+    static void registerOpcodeHandler();
 
-        uint32 floodLines;
+        uint32_t floodLines;
         time_t floodTime;
 
         void SystemMessage(const char* format, ...);
@@ -1026,8 +1013,8 @@ protected:
         sendSystemMessagePacket(formattedMessage);
     }
 
-        uint32 language;
-        uint32 m_muted;
+        uint32_t language;
+        uint32_t m_muted;
 };
 
 #endif // WORLDSESSION_H

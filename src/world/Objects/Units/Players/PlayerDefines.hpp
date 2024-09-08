@@ -20,6 +20,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include <list>
 #include <memory>
 
+#include "Utilities/utf8String.hpp"
+
 class Player;
 class Item;
 
@@ -944,6 +946,20 @@ struct PlayerCreateInfo
     std::set<uint32_t> spell_cast_list;
 
     CreateInfo_LevelstatsVector level_stats;
+};
+
+struct CharCreate
+{
+    utf8_string name;
+    uint8_t _race;
+    uint8_t _class;
+    uint8_t gender;
+    uint8_t skin;
+    uint8_t face;
+    uint8_t hairStyle;
+    uint8_t hairColor;
+    uint8_t facialHair;
+    uint8_t outfitId;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
