@@ -5,6 +5,7 @@ project(world CXX)
 
 file(GLOB SRC_CHAT_FILES Chat/*.cpp Chat/*.h Chat/*.hpp)
 file(GLOB SRC_COMMAND_FILES Chat/Commands/*.cpp Chat/Commands/*.h Chat/Commands/*.hpp)
+file(GLOB SRC_COMMAND_ACCOUNT_FILES Chat/Commands/Account/*.cpp Chat/Commands/Account/*.hpp)
 file(GLOB SRC_DATA_FILES Data/*.cpp Data/*.h Data/*.hpp)
 file(GLOB SRC_MACROS_FILES Macros/*.cpp Macros/*.h Macros/*.hpp)
 file(GLOB SRC_MANAGEMENT_FILES Management/*.cpp Management/*.h Management/*.hpp)
@@ -50,6 +51,7 @@ endif ()
 add_executable(${PROJECT_NAME}
     ${SRC_CHAT_FILES}
     ${SRC_COMMAND_FILES}
+    ${SRC_COMMAND_ACCOUNT_FILES}
     ${SRC_DATA_FILES}
     ${SRC_MACROS_FILES}
     ${SRC_MANAGEMENT_FILES}
@@ -109,6 +111,7 @@ include_directories(
 # source group.
 source_group(Chat FILES ${SRC_CHAT_FILES})
 source_group(Chat\\Commands FILES ${SRC_COMMAND_FILES})
+source_group(Chat\\Commands\\Account FILES ${SRC_COMMAND_ACCOUNT_FILES})
 source_group(Data FILES ${SRC_DATA_FILES})
 source_group(Macros FILES ${SRC_MACROS_FILES})
 source_group(Management FILES ${SRC_MANAGEMENT_FILES})

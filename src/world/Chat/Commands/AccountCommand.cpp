@@ -4,14 +4,14 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "AccountCommand.hpp"
-#include "AccountCommandCreate.hpp"
-#include "AccountCommandSetGm.hpp"
-#include "AccountCommandMute.hpp"
-#include "AccountCommandUnmute.hpp"
-#include "AccountCommandBan.hpp"
-#include "AccountCommandUnban.hpp"
-#include "AccountCommandChangePw.hpp"
-#include "AccountCommandGetId.hpp"
+#include "Account/AccountCommandCreate.hpp"
+#include "Account/AccountCommandSetGm.hpp"
+#include "Account/AccountCommandMute.hpp"
+#include "Account/AccountCommandUnmute.hpp"
+#include "Account/AccountCommandBan.hpp"
+#include "Account/AccountCommandUnban.hpp"
+#include "Account/AccountCommandChangePw.hpp"
+#include "Account/AccountCommandGetId.hpp"
 #include "Server/WorldSession.h"
 
 AccountCommand::AccountCommand()
