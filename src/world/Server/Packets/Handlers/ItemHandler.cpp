@@ -509,9 +509,9 @@ void WorldSession::sendRefundInfo(uint64_t GUID)
 }
 
 // todo : Check for MOP
-#if VERSION_STRING == Cata
 void WorldSession::handleTransmogrifyItems(WorldPacket& recvData)
 {
+#if VERSION_STRING == Cata
     sLogger.debug("Received CMSG_TRANSMOGRIFY_ITEMS");
     Player* player = GetPlayer();
 
@@ -665,10 +665,12 @@ void WorldSession::handleTransmogrifyItems(WorldPacket& recvData)
     // ... unless client was modified
     if (cost) // 0 cost if reverting look
         player->modCoinage(-cost);
+#endif
 }
 
 void WorldSession::handleReforgeItemOpcode(WorldPacket& recvData)
 {
+#if VERSION_STRING == Cata
     uint32_t slot, reforgeEntry;
     ObjectGuid guid;
     uint32_t bag;
@@ -752,16 +754,18 @@ void WorldSession::handleReforgeItemOpcode(WorldPacket& recvData)
 
     item->addEnchantment(reforgeEntry, REFORGE_ENCHANTMENT_SLOT, 0);
     sendReforgeResult(true);
+#endif
 }
 
 void WorldSession::sendReforgeResult(bool success)
 {
+#if VERSION_STRING == Cata
     WorldPacket data(SMSG_REFORGE_RESULT, 1);
     data.writeBit(success);
     data.flushBits();
     SendPacket(&data);
-}
 #endif
+}
 
 void WorldSession::handleItemRefundInfoOpcode(WorldPacket& recvPacket)
 {
@@ -1480,9 +1484,9 @@ void WorldSession::handleAutoEquipItemSlotOpcode(WorldPacket& recvPacket)
     }
 }
 
-#if VERSION_STRING == TBC
 void WorldSession::handleItemQuerySingleOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING == TBC
     CmsgItemQuerySingle srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -1620,10 +1624,9 @@ void WorldSession::handleItemQuerySingleOpcode(WorldPacket& recvPacket)
     data << itemProto->ExistingDuration;                    // 2.4.2 Item duration in seconds
 
     SendPacket(&data);
-}
+
 #else
-void WorldSession::handleItemQuerySingleOpcode(WorldPacket& recvPacket)
-{
+
     CmsgItemQuerySingle srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -1755,8 +1758,8 @@ void WorldSession::handleItemQuerySingleOpcode(WorldPacket& recvPacket)
     data << itemProperties->ItemLimitCategory;
     data << itemProperties->HolidayId;                           // HolidayNames.dbc
     SendPacket(&data);
-}
 #endif
+}
 
 void WorldSession::handleBuyBackOpcode(WorldPacket& recvPacket)
 {

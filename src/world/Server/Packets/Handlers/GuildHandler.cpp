@@ -361,7 +361,7 @@ void WorldSession::handleGuildSetNoteOpcode(WorldPacket& recvPacket)
 #endif
 }
 
-void WorldSession::handleGuildDelRank(WorldPacket& /*recvPacket*/)
+void WorldSession::handleGuildDelRank(WorldPacket& recvPacket)
 {
 #if VERSION_STRING < Cata
     if (Guild* guild = _player->getGuild())

@@ -475,10 +475,10 @@ void WorldSession::handlePetCancelAura(WorldPacket& recvPacket)
 #endif
 }
 
-#if VERSION_STRING < Cata
-#if VERSION_STRING > TBC
 void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
 {
+#if VERSION_STRING < Cata
+#if VERSION_STRING > TBC
     CmsgPetLearnTalent srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -532,11 +532,10 @@ void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
     }
 
     pet->SendTalentsToOwner();
-}
+
 #endif
 #else
-void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
-{
+
 #if VERSION_STRING < Mop
     CmsgPetLearnTalent srlPacket;
     if (!srlPacket.deserialise(recvPacket))
@@ -593,8 +592,8 @@ void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
 
     pet->SendTalentsToOwner();
 #endif
-}
 #endif
+}
 
 void WorldSession::handleDismissCritter(WorldPacket& recvPacket)
 {
