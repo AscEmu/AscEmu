@@ -27,10 +27,6 @@ jobs:
         cd gcc-14.1.0
         ./configure -v --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu --prefix=/usr/local/gcc-14.1.0 --enable-checking=release --enable-languages=c,c++ --disable-multilib --program-suffix=-14.1.0
 
-    # Check GCC version to confirm installation
-    - name: Verify GCC 14 installation
-      run: gcc-14 --version
-
     # Set GCC 14 as the default GCC version
     - name: Set GCC 14 as default
       run: |
