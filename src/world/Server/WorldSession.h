@@ -31,6 +31,7 @@
 #include "Management/AddonMgr.h"
 #include <Utilities/utf8.hpp>
 #include <string>
+#include "Logging/StringFormat.hpp"
 
 struct QuestProperties;
 class Player;
@@ -1011,7 +1012,19 @@ protected:
         time_t floodTime;
 
         void SystemMessage(const char* format, ...);
-    void systemMessage(const std::string& format, ...);
+
+    void sendSystemMessagePacket(std::string& _message);
+
+    // Variadic template version of systemMessage
+    template<typename... Args>
+    void systemMessage(const std::string& format, Args&&... args)
+    {
+        // Use the custom StringFormat function to format the string
+        std::string formattedMessage = AscEmu::StringFormat(format, std::forward<Args>(args)...);
+
+        // Send the formatted message via packet
+        sendSystemMessagePacket(formattedMessage);
+    }
 
         uint32 language;
         uint32 m_muted;

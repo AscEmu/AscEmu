@@ -14,8 +14,6 @@ message(STATUS "Applying settings for ${CMAKE_CXX_COMPILER}")
 # check support for unordered_map/set
 add_definitions(-DHAS_CXX0X)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++2a")
-
 # apply base flags (optimization level 2)
 add_compile_options(-O2)
 

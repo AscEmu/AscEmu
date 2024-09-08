@@ -47,7 +47,6 @@
 #include "Objects/Units/Players/Player.hpp"
 #include "Script/HookInterface.hpp"
 #include <cstdarg>
-#include <format>
 
 using namespace AscEmu::Packets;
 
@@ -569,23 +568,26 @@ void SessionLog::write(WorldSession* session, const char* format, ...)
 
         // Get current time
         std::string current_time = "[" + Util::GetCurrentDateTimeString() + "] ";
-        
-        // Build the log entry with session details
-        std::string logEntry = std::format("{}Account {} [{}], IP {}, Player {} :: ",
+
+        // Format the fixed part of the log entry using AscEmu::StringFormat
+        std::string logEntry = AscEmu::StringFormat("{}Account {} [{}], IP {}, Player {} :: ",
             current_time,
             session->GetAccountId(),
             session->GetAccountName(),
             session->GetSocket() ? session->GetSocket()->GetRemoteIP() : "NOIP",
             session->GetPlayer() ? session->GetPlayer()->getName() : "nologin");
 
-        // Format the remaining message using std::vformat
-        logEntry += std::vformat(format, std::make_format_args(ap));
+        // Use a buffer to format the variable arguments (like vsnprintf)
+        char messageBuffer[1024];
+        vsnprintf(messageBuffer, sizeof(messageBuffer), format, ap);
+        va_end(ap);
+
+        // Append the formatted message to the log entry
+        logEntry += messageBuffer;
 
         // Write to the log file
         fprintf(mSessionLogFile, "%s\n", logEntry.c_str());
         fflush(mSessionLogFile);
-
-        va_end(ap);
     }
 }
 
@@ -600,16 +602,9 @@ void WorldSession::SystemMessage(const char* format, ...)
     SendPacket(SmsgMessageChat(SystemMessagePacket(buffer)).serialise().get());
 }
 
-void WorldSession::systemMessage(const std::string& format, ...)
+void WorldSession::sendSystemMessagePacket(std::string& _message)
 {
-    const char* fmtChar = format.c_str();
-    va_list args;
-    va_start(args, fmtChar);
-    // Format the string using fmt::vformat with va_list
-    std::string formattedMessage = fmt::vformat(fmtChar, fmt::make_format_args(args));
-    va_end(args);
-
-    SendPacket(SmsgMessageChat(SystemMessagePacket(formattedMessage.c_str())).serialise().get());
+    SendPacket(SmsgMessageChat(SystemMessagePacket(_message)).serialise().get());
 }
 
 void WorldSession::SendChatPacket(WorldPacket* data, uint32 langpos, int32 lang, WorldSession* originator)
