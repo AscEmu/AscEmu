@@ -20,9 +20,21 @@ jobs:
         sudo apt-get update && sudo apt-get install -y libbz2-dev
         sudo apt-get update && sudo apt-get install -y default-libmysqlclient-dev
         sudo apt-get update && sudo apt-get install -y libmysql++-dev
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+        sudo apt-get update
+        sudo apt-get install gcc-14 g++-14
+    # Check GCC version to confirm installation
+    - name: Verify GCC 14 installation
+      run: gcc-14 --version
+
+    # Set GCC 14 as the default GCC version
+    - name: Set GCC 14 as default
+      run: |
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 60
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 60
     - name: AscEmu Build Classic
       run: |
-        gcc --version
+        gcc-14 --version
         cmake --version
         mkdir ascemu_build_сlassic
         cd ascemu_build_сlassic
