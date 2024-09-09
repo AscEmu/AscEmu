@@ -1328,9 +1328,9 @@ bool ChatHandler::HandleBanAllCommand(const char* args, WorldSession* m_session)
 
     AccountCommandBan banCommand;
     if (banCommand.execute({pAcc, pDuration, pReason }, m_session))
-        GreenSystemMessage(m_session, "Execute account ban for '{}'.", pAcc);
+        greenSystemMessage(m_session, "Execute account ban for '{}'.", pAcc);
     else
-        RedSystemMessage(m_session, "Cant execute account ban for '{}'", pAcc);
+        redSystemMessage(m_session, "Cant execute account ban for '{}'", pAcc);
 
     return true;
 }

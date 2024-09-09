@@ -453,6 +453,12 @@ void ChatHandler::BlueSystemMessage(WorldSession* m_session, const char* message
         m_session->SendPacket(SmsgMessageChat(SystemMessagePacket(msg)).serialise().get());
 }
 
+void ChatHandler::sendSystemMessagePacket(WorldSession* _session, std::string& _message)
+{
+    if (_session != nullptr)
+        _session->SendPacket(SmsgMessageChat(SystemMessagePacket(_message)).serialise().get());
+}
+
 std::string ChatHandler::GetNpcFlagString(Creature* creature)
 {
     std::string s = "";

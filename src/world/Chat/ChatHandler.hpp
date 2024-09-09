@@ -46,6 +46,53 @@ public:
     void RedSystemMessage(WorldSession* m_session, const char* message, ...);
     void GreenSystemMessage(WorldSession* m_session, const char* message, ...);
     void BlueSystemMessage(WorldSession* m_session, const char* message, ...);
+
+    void sendSystemMessagePacket(WorldSession* _session, std::string& _message);
+
+    // Variadic template version of systemMessage
+    template<typename... Args>
+    void systemMessage(WorldSession* _session, const std::string& _format, Args&&... _args)
+    {
+        // Use the custom StringFormat function to format the string
+        std::string formattedMessage = AscEmu::StringFormat(_format, std::forward<Args>(_args)...);
+
+        // Send the formatted message via packet
+        sendSystemMessagePacket(_session, formattedMessage);
+    }
+
+    // Variadic template version of redSystemMessage
+    template<typename... Args>
+    void colorSystemMessage(WorldSession* _session, const std::string _colorCode, const std::string& _format, Args&&... _args)
+    {
+        // Use the custom StringFormat function to format the string
+        const std::string formattedMessage = AscEmu::StringFormat(_format, std::forward<Args>(_args)...);
+        std::string coloredMessage = _colorCode + formattedMessage + "|r";
+
+        // Send the formatted message via packet
+        sendSystemMessagePacket(_session, coloredMessage);
+    }
+
+    // Variadic template version of redSystemMessage
+    template<typename... Args>
+    void redSystemMessage(WorldSession* _session, const std::string& _format, Args&&... _args)
+    {
+        colorSystemMessage(_session, MSG_COLOR_LIGHTRED, _format, std::forward<Args>(_args)...);
+    }
+
+    // Variadic template version of greenSystemMessage
+    template<typename... Args>
+    void greenSystemMessage(WorldSession* _session, const std::string& _format, Args&&... _args)
+    {
+        colorSystemMessage(_session, MSG_COLOR_GREEN, _format, std::forward<Args>(_args)...);
+    }
+
+    // Variadic template version of blueSystemMessage
+    template<typename... Args>
+    void blueSystemMessage(WorldSession* _session, const std::string& _format, Args&&... _args)
+    {
+        colorSystemMessage(_session, MSG_COLOR_LIGHTBLUE, _format, std::forward<Args>(_args)...);
+    }
+
     bool hasStringAbbr(const char* s1, const char* s2);
     void SendMultilineMessage(WorldSession* m_session, const char* str);
 
