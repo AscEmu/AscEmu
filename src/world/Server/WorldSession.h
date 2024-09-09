@@ -58,19 +58,6 @@ class QueryResult;
 #define WORLDSOCKET_TIMEOUT 120
 #define PLAYER_LOGOUT_DELAY (20 * 1000) // 20 seconds should be more than enough.
 
-struct OpcodeHandler
-{
-    uint16 status;
-    void (WorldSession::*handler)(WorldPacket& recvPacket);
-};
-
-enum SessionStatus
-{
-    STATUS_AUTHED = 0,
-    STATUS_LOGGEDIN,
-    //STATUS_LOGGEDIN_RECENTLY_LOGGOUT = 3,
-};
-
 ///\todo refactoring these types. In use? Implement it!
 enum AccountDataType
 {
@@ -99,7 +86,6 @@ struct AccountDataEntry
     bool bIsDirty;
 };
 
-extern OpcodeHandler WorldPacketHandlers[NUM_OPCODES];
 extern CharacterErrorCodes VerifyName(utf8_string name);
 
 class SERVER_DECL WorldSession
@@ -955,9 +941,7 @@ protected:
         uint32_t instanceId;
         uint8_t _updatecount;
 
-    public:
-        static void InitPacketHandlerTable();
-        static void loadHandlers();
+public:
     static void registerOpcodeHandler();
 
         uint32_t floodLines;

@@ -18,9 +18,9 @@ class WorldSession;
 
 enum OpcodeState
 {
-    SSTATUS_AUTHED = 0,
-    SSTATUS_LOGGEDIN,
-    //SSTATUS_LOGGEDIN_RECENTLY_LOGGOUT = 3,
+    STATUS_AUTHED = 0,
+    STATUS_LOGGEDIN,
+    //STATUS_LOGGEDIN_RECENTLY_LOGGOUT = 3,
 };
 
 struct OpcodeEntry
@@ -40,7 +40,7 @@ public:
     }
 
     // Overload for member functions with version flags
-    template <OpcodeState State = SSTATUS_LOGGEDIN>
+    template <OpcodeState State = STATUS_LOGGEDIN>
     void registerOpcode(uint32 opcode, void (WorldSession::* handler)(WorldPacket&), bool classic, bool tbc, bool wotlk, bool cata, bool mop)
     {
         OpcodeEntry entry;
@@ -58,7 +58,7 @@ public:
     }
 
     // Overload for free functions or lambdas with version flags
-    template <OpcodeState State = SSTATUS_LOGGEDIN>
+    template <OpcodeState State = STATUS_LOGGEDIN>
     void registerOpcode(uint32 opcode, std::function<void(WorldSession&, WorldPacket&)> handler, bool classic, bool tbc, bool wotlk, bool cata, bool mop)
     {
         OpcodeEntry entry;
@@ -74,14 +74,14 @@ public:
     }
 
     // Overload for member functions without version flags (default to true for all versions)
-    template <OpcodeState State = SSTATUS_LOGGEDIN>
+    template <OpcodeState State = STATUS_LOGGEDIN>
     void registerOpcode(uint32 opcode, void (WorldSession::* handler)(WorldPacket&))
     {
         registerOpcode<State>(opcode, handler, true, true, true, true, true);
     }
 
     // Overload for free functions or lambdas without version flags (default to true for all versions)
-    template <OpcodeState State = SSTATUS_LOGGEDIN>
+    template <OpcodeState State = STATUS_LOGGEDIN>
     void registerOpcode(uint32 opcode, std::function<void(WorldSession&, WorldPacket&)> handler)
     {
         registerOpcode<State>(opcode, handler, true, true, true, true, true);

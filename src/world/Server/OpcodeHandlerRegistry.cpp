@@ -23,14 +23,21 @@ bool OpcodeHandlerRegistry::handleOpcode(WorldSession& session, WorldPacket& pac
 
         if (versionId < NUM_VERSIONS && entry.versions[versionId])
         {
+            // Check if the opcode is defined on our version
+            if (internalId == 0)
+            {
+                sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received out of range packet with undefined opcode 0x{:04X}", rawOpcode);
+                return false;
+            }
+
             // Check if the state is provided and the session matches the required state
             if (entry.state.has_value())
             {
                 OpcodeState requiredState = entry.state.value();
-                if (requiredState == SSTATUS_LOGGEDIN && !session.GetPlayer())
+                if (requiredState == STATUS_LOGGEDIN && !session.GetPlayer())
                 {
-                    sLogger.debug("Received packet for invalid state. Internal ID: 0x{:04X}, Required State: {}, Name {}", internalId, requiredState, opcodeName);
-                    return true;
+                    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received packet for invalid state. Internal ID: 0x{:04X}, Required State: {}, Name {}", internalId, requiredState, opcodeName);
+                    return false;
                 }
             }
 

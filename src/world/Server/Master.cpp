@@ -354,7 +354,7 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
 
     sOpcodeTables.initialize();
 
-    WorldSession::InitPacketHandlerTable();
+    WorldSession::registerOpcodeHandler();
 
     if (!sWorld.setInitialWorldSettings())
     {
