@@ -5,10 +5,15 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "AchievementCommandCriteria.hpp"
 #include "Server/WorldSessionLog.hpp"
+
+#if VERSION_STRING > TBC
 #include "Utilities/Narrow.hpp"
+#include "Management/AchievementMgr.h"
+#endif
 
 bool AchievementCommandCriteria::execute(const std::vector<std::string>& args, WorldSession* session)
 {
+#if VERSION_STRING > TBC
     if (args.size() < getArgumentCount())
     {
         session->systemMessage("Usage: .achieve criteria <all> or <achievement id>");
@@ -40,6 +45,9 @@ bool AchievementCommandCriteria::execute(const std::vector<std::string>& args, W
     }
 
     return true;
+#else
+    return false;
+#endif
 }
 
 std::string AchievementCommandCriteria::getHelp() const

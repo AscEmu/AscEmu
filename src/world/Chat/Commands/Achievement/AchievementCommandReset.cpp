@@ -6,8 +6,14 @@ This file is released under the MIT license. See README-MIT for more information
 #include "AchievementCommandReset.hpp"
 #include "Server/WorldSessionLog.hpp"
 
+#if VERSION_STRING > TBC
+#include "Utilities/Narrow.hpp"
+#include "Management/AchievementMgr.h"
+#endif
+
 bool AchievementCommandReset::execute(const std::vector<std::string>& args, WorldSession* session)
 {
+#if VERSION_STRING > TBC
     if (args.size() < getArgumentCount())
     {
         session->systemMessage("Usage: .achieve (<criteria> <all>/<achievement id>) | (<all>) | (<achievement id>)");
@@ -67,6 +73,9 @@ bool AchievementCommandReset::execute(const std::vector<std::string>& args, Worl
         selected_player->getAchievementMgr()->gmResetCriteria(achievement_id, resetAll);
 
     return true;
+#else
+    return false;
+#endif
 }
 
 std::string AchievementCommandReset::getHelp() const

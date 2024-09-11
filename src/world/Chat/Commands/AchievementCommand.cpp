@@ -4,21 +4,26 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "AchievementCommand.hpp"
+#include "Server/WorldSession.h"
 
+#if VERSION_STRING > TBC
 #include "Achievement/AchievementCommandComplete.hpp"
 #include "Achievement/AchievementCommandCriteria.hpp"
 #include "Achievement/AchievementCommandReset.hpp"
-#include "Server/WorldSession.h"
+#endif
 
 AchievementCommand::AchievementCommand()
 {
+#if VERSION_STRING > TBC
     registerSubCommand("complete", std::make_unique<AchievementCommandComplete>());
     registerSubCommand("criteria", std::make_unique<AchievementCommandCriteria>());
     registerSubCommand("reset", std::make_unique<AchievementCommandReset>());
+#endif
 }
 
 bool AchievementCommand::execute(const std::vector<std::string>& args, WorldSession* session)
 {
+#if VERSION_STRING > TBC
     if (hasSubcommands() && args.empty())
     {
         // If no subcommand is provided, list available subcommands
@@ -51,6 +56,10 @@ bool AchievementCommand::execute(const std::vector<std::string>& args, WorldSess
 
     session->systemMessage("Unknown subcommand.");
     return false;
+#else
+    session->systemMessage("This command is available for version >= WotLK");
+    return false;
+#endif
 }
 
 void AchievementCommand::registerSubCommand(const std::string& name, std::unique_ptr<ICommand> command)
@@ -79,12 +88,12 @@ void AchievementCommand::listAvailableSubCommands(WorldSession* session) const
 
 std::string AchievementCommand::getHelp() const
 {
-    return "Usage: .achieve <subcommand>\nUse .account to see available subcommands.";
+    return "Usage: .achieve <subcommand>\nUse .achievement to see available subcommands.";
 }
 
 const char* AchievementCommand::getRequiredPermission() const
 {
-    return "m";  // This is the permission required for the main ".achieve" command
+    return "m";
 }
 
 bool AchievementCommand::hasSubcommands() const

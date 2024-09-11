@@ -118,13 +118,6 @@ public:
     // For skill related GM commands
     SkillNameMgr* SkillNameManager;
 
-#if VERSION_STRING > TBC
-    // Achievement
-    bool HandleAchievementCompleteCommand(const char* args, WorldSession* m_session);
-    bool HandleAchievementCriteriaCommand(const char* args, WorldSession* m_session);
-    bool HandleAchievementResetCommand(const char* args, WorldSession* m_session);
-#endif
-
     // Admin commands
     bool HandleAdminCastAllCommand(const char* args, WorldSession* m_session);
     bool HandleAdminDispelAllCommand(const char* args, WorldSession* m_session);
