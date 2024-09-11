@@ -43,8 +43,8 @@ public:
 
     void SystemMessage(WorldSession* m_session, const char* message, ...);
     void ColorSystemMessage(WorldSession* m_session, const char* colorcode, const char* message, ...);
-    void RedSystemMessage(WorldSession* m_session, const char* message, ...);
-    void GreenSystemMessage(WorldSession* m_session, const char* message, ...);
+    static void RedSystemMessage(WorldSession* m_session, const char* message, ...);
+    static void GreenSystemMessage(WorldSession* m_session, const char* message, ...);
     void BlueSystemMessage(WorldSession* m_session, const char* message, ...);
 
     void sendSystemMessagePacket(WorldSession* _session, std::string& _message);
@@ -105,7 +105,7 @@ public:
     bool HandleGetSkillLevelCommand(const char* args, WorldSession* m_session);
 
     // Helper
-    Player* GetSelectedPlayer(WorldSession* m_session, bool showerror = true, bool auto_self = false);
+    static Player* GetSelectedPlayer(WorldSession* m_session, bool showerror = true, bool auto_self = false);
     Creature* GetSelectedCreature(WorldSession* m_session, bool showerror = true);
     Unit* GetSelectedUnit(WorldSession* m_session, bool showerror = true);
     uint32_t GetSelectedWayPointId(WorldSession* m_session);

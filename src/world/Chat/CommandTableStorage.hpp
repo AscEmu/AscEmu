@@ -41,7 +41,6 @@ class SERVER_DECL CommandTableStorage
     ChatCommand* _unbanCommandTable;
     ChatCommand* _instanceCommandTable;
     ChatCommand* _arenaCommandTable;
-    ChatCommand* _achievementCommandTable;
     ChatCommand* _vehicleCommandTable;
     ChatCommand* _transportCommandTable;
     ChatCommand* _commandTable;

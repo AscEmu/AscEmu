@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ChatHandler.hpp"
 #include "CommandRegistry.hpp"
 #include "Commands/AccountCommand.hpp"
+#include "Commands/AchievementCommand.hpp"
 #include "Logging/Logger.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Utilities/Strings.hpp"
@@ -71,8 +72,6 @@ ChatCommand* CommandTableStorage::GetSubCommandTable(const char* name)
         return _instanceCommandTable;
     if (AscEmu::Util::Strings::isEqual(name, "arena"))
         return _arenaCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "achieve"))
-        return _achievementCommandTable;
     if (AscEmu::Util::Strings::isEqual(name, "vehicle"))
         return _vehicleCommandTable;
     if (AscEmu::Util::Strings::isEqual(name, "transport"))
@@ -282,7 +281,6 @@ void CommandTableStorage::Dealloc()
     free(_unbanCommandTable);
     free(_instanceCommandTable);
     free(_arenaCommandTable);
-    free(_achievementCommandTable);
     free(_vehicleCommandTable);
     free(_transportCommandTable);
     free(_commandTable);
@@ -292,6 +290,7 @@ void CommandTableStorage::registerCommands()
 {
     // Register the main ".account" command with all subcommands
     CommandRegistry::getInstance().registerCommand("account", std::make_unique<AccountCommand>());
+    CommandRegistry::getInstance().registerCommand("achievement", std::make_unique<AchievementCommand>());
     CommandRegistry::getInstance().loadOverrides();
 }
 
@@ -842,17 +841,6 @@ void CommandTableStorage::Init()
     };
     dupe_command_table(arenaCommandTable, _arenaCommandTable);
 
-    static ChatCommand achievementCommandTable[] =
-    {
-#if VERSION_STRING > TBC
-        { "complete",               'm', &ChatHandler::HandleAchievementCompleteCommand,                   "Completes the specified achievement.",                                              nullptr },
-        { "criteria",               'm', &ChatHandler::HandleAchievementCriteriaCommand,                   "Completes the specified achievement criteria.",                                     nullptr },
-        { "reset",                  'm', &ChatHandler::HandleAchievementResetCommand,                      "Resets achievement data from the target.",                                          nullptr },
-#endif
-        { nullptr,                  '0', nullptr,                                                          "",                                                                                  nullptr }
-    };
-    dupe_command_table(achievementCommandTable, _achievementCommandTable);
-
     static ChatCommand vehicleCommandTable[] =
     {
 #ifdef FT_VEHICLES
@@ -914,7 +902,6 @@ void CommandTableStorage::Init()
         { "gogameobject",           'v', &ChatHandler::HandleGoGameObjectSpawnCommand,                     "Teleports you to the gameobject with <spawn_id>.",                                  nullptr },
         { "gostartlocation",        'm', &ChatHandler::HandleGoStartLocationCommand,                       "Teleports you to a starting location",                                              nullptr },
         { "gotrig",                 'v', &ChatHandler::HandleGoTriggerCommand,                             "Teleports you to the areatrigger with <id>.",                                       nullptr },
-        { "achieve",                '0', nullptr,                                                          "",                                                                  achievementCommandTable },
         { "vehicle",                'm', nullptr,                                                          "",                                                                      vehicleCommandTable },
         { "transport",              'm', nullptr,                                                          "",                                                                    transportCommandTable },
         { nullptr,                  '0', nullptr,                                                          "",                                                                                  nullptr }
