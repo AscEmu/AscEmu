@@ -22,7 +22,7 @@ namespace AscEmu::Packets
         //4.3.4
         uint32_t spellId;
 
-        SmsgResurrectRequest() : SmsgResurrectRequest(0, 0, 0, 0)
+        SmsgResurrectRequest() : SmsgResurrectRequest(0, "", 0, 0)
         {
         }
 
