@@ -63,5 +63,3 @@ endif ()
 
 # provide make install rules.
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
-
-unset(LOGON_SRCS)

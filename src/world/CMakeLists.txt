@@ -192,5 +192,3 @@ if (USE_PCH)
 endif ()
 
 install(TARGETS ${EXECUTABLE_NAME} RUNTIME DESTINATION .)
-
-unset(WORLD_SRCS)
