@@ -1,7 +1,7 @@
 # Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name.
-project(collision CXX)
+set(EXECUTABLE_NAME collision)
 
 file(GLOB SRC_MANAGEMENT Management/*.cpp Management/*.h)
 file(GLOB SRC_MAPS Maps/*.cpp Maps/*.h)
@@ -29,10 +29,10 @@ include_directories(
     ${ZLIB_INCLUDE_DIRS}
 )
 
-add_library(${PROJECT_NAME} STATIC ${COLLISION_SRCS})
+add_library(${EXECUTABLE_NAME} STATIC ${COLLISION_SRCS})
 
 # include library dependencies.
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${EXECUTABLE_NAME}
   PUBLIC
     g3dlite
     shared
@@ -40,6 +40,6 @@ target_link_libraries(${PROJECT_NAME}
 
 # generate precompiled header.
 if (USE_PCH)
-    message(STATUS "Generate PCH for ${PROJECT_NAME}")
-    target_precompile_headers(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchCollision.hpp)
+    message(STATUS "Generate PCH for ${EXECUTABLE_NAME}")
+    target_precompile_headers(${EXECUTABLE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchCollision.hpp)
 endif ()

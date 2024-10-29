@@ -1,7 +1,7 @@
 # Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name.
-project(g3dlite CXX)
+set(EXECUTABLE_NAME g3dlite)
 
 set(SRC_G3DLITE
     AABox.cpp
@@ -54,10 +54,10 @@ include_directories(
     ${ZLIB_INCLUDE_DIRS}
 )
 
-add_library(${PROJECT_NAME} STATIC ${SRC_G3DLITE})
+add_library(${EXECUTABLE_NAME} STATIC ${SRC_G3DLITE})
 
 # include library dependencies.
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${EXECUTABLE_NAME}
   PUBLIC
     ${ZLIB_LIBRARIES}
 )

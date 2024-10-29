@@ -1,11 +1,11 @@
 # Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name.
-project(mmaps_generator CXX)
+set(EXECUTABLE_NAME mmaps_generator)
 
 file(GLOB SRC_MMAPS_EXTRACTOR *.cpp *.h)
 
-add_executable(${PROJECT_NAME} ${SRC_MMAPS_EXTRACTOR})
+add_executable(${EXECUTABLE_NAME} ${SRC_MMAPS_EXTRACTOR})
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
@@ -21,7 +21,7 @@ include_directories(
 )
 
 # include library dependencies.
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${EXECUTABLE_NAME}
   PUBLIC
     shared
     g3dlite
@@ -30,4 +30,4 @@ target_link_libraries(${PROJECT_NAME}
     Recast
 )
 
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})
+install(TARGETS ${EXECUTABLE_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})

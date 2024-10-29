@@ -1,11 +1,11 @@
 # Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name.
-project(vmap4_assembler CXX)
+set(EXECUTABLE_NAME vmap4_assembler)
 
 file(GLOB SRC_VMAPS_EXTRACTOR *.cpp *.h)
 
-add_executable(${PROJECT_NAME} ${SRC_VMAPS_EXTRACTOR})
+add_executable(${EXECUTABLE_NAME} ${SRC_VMAPS_EXTRACTOR})
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/src/shared
@@ -18,11 +18,11 @@ include_directories(
 )
 
 # include library dependencies.
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${EXECUTABLE_NAME}
   PUBLIC
     collision
     g3dlite
     ${ZLIB_LIBRARIES}
 )
 
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})
+install(TARGETS ${EXECUTABLE_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})

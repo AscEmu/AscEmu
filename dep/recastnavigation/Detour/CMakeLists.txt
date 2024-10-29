@@ -1,7 +1,7 @@
 # Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name.
-project(Detour CXX)
+set(EXECUTABLE_NAME Detour)
 
 file(GLOB SRC_DETOUR Source/*.cpp Include/*.h)
 
@@ -14,10 +14,10 @@ include_directories(
     ${ZLIB_INCLUDE_DIRS}
 )
 
-add_library(${PROJECT_NAME} STATIC ${DETOUR_SRCS})
+add_library(${EXECUTABLE_NAME} STATIC ${DETOUR_SRCS})
 
 # include library dependencies.
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${EXECUTABLE_NAME}
   PUBLIC
     ${ZLIB_LIBRARIES}
 )

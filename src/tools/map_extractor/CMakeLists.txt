@@ -1,11 +1,11 @@
 # Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name.
-project(map_extractor CXX)
+set(EXECUTABLE_NAME map_extractor)
 
 file(GLOB SRC_MAPS_EXTRACTOR *.cpp *.h)
 
-add_executable(${PROJECT_NAME}
+add_executable(${EXECUTABLE_NAME}
     ${SRC_MAPS_EXTRACTOR}
 )
 
@@ -18,10 +18,10 @@ include_directories(
 )
 
 # include library dependencies.
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${EXECUTABLE_NAME}
   PUBLIC
     dbcfile
     libmpq
 )
 
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})
+install(TARGETS ${EXECUTABLE_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})
