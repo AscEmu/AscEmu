@@ -175,7 +175,7 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 ### New files
 * 2015 | Exceptions/PlayerExceptions.hpp
 * 2015 | Exceptions/Exceptions.hpp
-* 2016 | git_version.h
+* 2016 | git_version.hpp
 * 2017 | ByteConverter.h
 * 2017 | Common.hpp
 * 2017 | Logging/Log.cpp

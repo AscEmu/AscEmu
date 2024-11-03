@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "LuaGlobalFunctions.hpp"
 
 #include "Common.hpp"
-#include "git_version.h"
+#include "git_version.hpp"
 #include "LUAEngine.hpp"
 #include "LuaGlobal.hpp"
 #include "LuaMacros.h"
@@ -284,7 +284,7 @@ int LuaGlobalFunctions::GetClientVersion(lua_State* L)
 
 int LuaGlobalFunctions::GetAERevision(lua_State* L)
 {
-    lua_pushstring(L, BUILD_HASH_STR);
+    lua_pushstring(L, AE_BUILD_HASH);
     return 1;
 }
 

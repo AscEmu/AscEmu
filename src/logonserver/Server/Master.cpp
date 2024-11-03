@@ -20,7 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Auth/AutoPatcher.h"
 #include <Network/Network.h>
 
-#include "git_version.h"
+#include "git_version.hpp"
 #include "Console/LogonConsole.h"
 #include "LogonConf.hpp"
 #include "Database/Database.h"
@@ -216,7 +216,7 @@ void MasterLogon::CheckForDeadSockets()
 
 void MasterLogon::PrintBanner()
 {
-    sLogger.file(AscEmu::Logging::Severity::FAILURE, AscEmu::Logging::MessageType::MINOR, "<< AscEmu {}/{}-{} {} :: Logon Server >>", BUILD_HASH_STR, CONFIG, AE_PLATFORM, AE_ARCHITECTURE);
+    sLogger.file(AscEmu::Logging::Severity::FAILURE, AscEmu::Logging::MessageType::MINOR, "<< AscEmu {}/{}-{} {} :: Logon Server >>", AE_BUILD_HASH, CONFIG, AE_PLATFORM, AE_ARCHITECTURE);
     sLogger.file(AscEmu::Logging::Severity::FAILURE, AscEmu::Logging::MessageType::MINOR, "========================================================");
 }
 
