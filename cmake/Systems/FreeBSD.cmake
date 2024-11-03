@@ -7,7 +7,6 @@ add_definitions(-DUSE_KQUEUE)
 
 # find required libraries
 find_package(ZLIB REQUIRED)
-find_package(PCRE REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(Threads REQUIRED)
 find_package(MySQL REQUIRED)
