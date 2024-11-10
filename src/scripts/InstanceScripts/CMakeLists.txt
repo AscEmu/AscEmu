@@ -6,7 +6,7 @@ if (NOT BUILD_INSTANCESCRIPTS)
 endif ()
 
 # set up our project name.
-project(InstanceScripts CXX)
+set(EXECUTABLE_NAME InstanceScripts)
 
 file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
 
@@ -282,20 +282,20 @@ source_group(Wotlk/VioletHold FILES ${SRC_WOTLK_VIOLETHOLD_SCRIPTS_FILES})
 
 source_group(Cata FILES ${SRC_CATA_SCRIPTS_FILES})
 
-add_library(${PROJECT_NAME} SHARED ${INSTANCESCRIPTS_SRCS})
+add_library(${EXECUTABLE_NAME} SHARED ${INSTANCESCRIPTS_SRCS})
 
 # include library dependencies.
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${EXECUTABLE_NAME}
   PUBLIC
     world
 )
 
 # generate precompiled header.
 if (USE_PCH)
-    message(STATUS "Generate PCH for ${PROJECT_NAME}")
-    target_precompile_headers(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchInstanceScripts.hpp)
+    message(STATUS "Generate PCH for ${EXECUTABLE_NAME}")
+    target_precompile_headers(${EXECUTABLE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchInstanceScripts.hpp)
 endif ()
 
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
+install(TARGETS ${EXECUTABLE_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
 
 unset(INSTANCESCRIPTS_SRCS)

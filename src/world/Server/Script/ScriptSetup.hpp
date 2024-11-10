@@ -9,11 +9,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #ifdef SCRIPTLIB
 
-#include <git_version.h>
+#include <git_version.hpp>
 
 extern "C" SCRIPT_DECL const char* _exp_get_version()
 {
-    return BUILD_HASH_STR;
+    return AE_BUILD_HASH;
 }
 
 #endif

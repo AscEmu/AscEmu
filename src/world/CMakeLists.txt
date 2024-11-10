@@ -1,7 +1,7 @@
 # Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name.
-project(world CXX)
+set(EXECUTABLE_NAME world)
 
 file(GLOB SRC_CHAT_FILES Chat/*.cpp Chat/*.h Chat/*.hpp)
 file(GLOB SRC_COMMAND_FILES Chat/Commands/*.cpp Chat/Commands/*.h Chat/Commands/*.hpp)
@@ -49,7 +49,7 @@ if (WIN32)
     set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/resources.rc")
 endif ()
 
-add_executable(${PROJECT_NAME}
+add_executable(${EXECUTABLE_NAME}
     ${SRC_CHAT_FILES}
     ${SRC_COMMAND_FILES}
     ${SRC_COMMAND_ACCOUNT_FILES}
@@ -153,7 +153,7 @@ source_group(Storage FILES ${SRC_STORAGE_FILES})
 source_group(Storage\\WDB FILES ${SRC_STORAGE_WDB_FILES})
 
 if (WIN32 AND NOT USE_PCH)
-    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/INCREMENTAL:NO")
+    set_target_properties(${EXECUTABLE_NAME} PROPERTIES LINK_FLAGS "/INCREMENTAL:NO")
 endif ()
 
 if (APPLE)
@@ -166,14 +166,14 @@ if (BUILD_LUAENGINE)
     LIST(APPEND WORLD_LINK_EXTRA_LIBS lualib)
 endif()
 
-set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS TRUE)
+set_target_properties(${EXECUTABLE_NAME} PROPERTIES ENABLE_EXPORTS TRUE)
 
-add_dependencies(${PROJECT_NAME} shared g3dlite Detour Recast)
+add_dependencies(${EXECUTABLE_NAME} shared g3dlite Detour Recast)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/WorldConf.h.in ${CMAKE_CURRENT_SOURCE_DIR}/WorldConf.h)
 
 # include library dependencies.
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${EXECUTABLE_NAME}
   PUBLIC
     ${WORLD_LINK_EXTRA_LIBS}
     shared
@@ -187,10 +187,8 @@ unset(WORLD_LINK_EXTRA_LIBS)
 
 # generate precompiled header.
 if (USE_PCH)
-    message(STATUS "Generate PCH for ${PROJECT_NAME}")
-    target_precompile_headers(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchWorld.hpp)
+    message(STATUS "Generate PCH for ${EXECUTABLE_NAME}")
+    target_precompile_headers(${EXECUTABLE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchWorld.hpp)
 endif ()
 
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
-
-unset(WORLD_SRCS)
+install(TARGETS ${EXECUTABLE_NAME} RUNTIME DESTINATION .)

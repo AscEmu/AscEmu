@@ -5,8 +5,6 @@ include_guard(GLOBAL)
 mark_as_advanced(
     git_commit
     git_tag
-    git_time
-    BUILD_HOSTNAME
 )
 
 # extract git revision
@@ -24,18 +22,10 @@ execute_process(
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
-execute_process(
-    COMMAND git log -1 --format=%ct
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    OUTPUT_VARIABLE git_time
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-
 set(ascemu_tag ${git_tag})
-site_name(BUILD_HOSTNAME)
 set(BUILD_USERNAME $ENV{USERNAME})
 
 configure_file(
-    ${CMAKE_SOURCE_DIR}/src/shared/git_version.h.in
-    ${CMAKE_SOURCE_DIR}/src/shared/git_version.h
+    ${CMAKE_SOURCE_DIR}/src/shared/git_version.hpp.in
+    ${CMAKE_SOURCE_DIR}/src/shared/git_version.hpp
 )

@@ -1,0 +1,4 @@
+#pragma once 
+
+#define AE_BUILD_TAG "@git_tag@"
+#define AE_BUILD_HASH "@git_commit@"

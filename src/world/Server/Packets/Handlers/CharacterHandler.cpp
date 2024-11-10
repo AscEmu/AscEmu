@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Common.hpp"
-#include "git_version.h"
+#include "git_version.hpp"
 #include "Chat/ChatDefines.hpp"
 #include "Server/WorldSession.h"
 #include "Server/Packets/CmsgSetFactionAtWar.h"
@@ -583,7 +583,7 @@ void WorldSession::sendServerStats()
 {
     if (worldConfig.server.sendStatsOnJoin)
     {
-        _player->broadcastMessage("Info: %sAscEmu %s/%s-%s-%s %s(www.ascemu.org)", MSG_COLOR_WHITE, BUILD_HASH_STR, CONFIG, AE_PLATFORM, AE_ARCHITECTURE, MSG_COLOR_SEXBLUE);
+        _player->broadcastMessage("Info: %sAscEmu %s/%s-%s-%s %s(www.ascemu.org)", MSG_COLOR_WHITE, AE_BUILD_HASH, CONFIG, AE_PLATFORM, AE_ARCHITECTURE, MSG_COLOR_SEXBLUE);
         _player->broadcastMessage("Online Players: %s%u |rPeak: %s%u|r Accepted Connections: %s%u", MSG_COLOR_SEXBLUE, 
                                    static_cast<uint32_t>(sWorld.getSessionCount()), MSG_COLOR_SEXBLUE, sWorld.getPeakSessionCount(), MSG_COLOR_SEXBLUE, sWorld.getAcceptedConnections());
 

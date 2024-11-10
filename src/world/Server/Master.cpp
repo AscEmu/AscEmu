@@ -58,7 +58,7 @@
 #include "Script/ScriptMgr.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "CommonFilesystem.hpp"
-#include "git_version.h"
+#include "git_version.hpp"
 #include "Logging/Logger.hpp"
 #include <cstdarg>
 #include <iostream>
@@ -729,7 +729,7 @@ void OnCrash(bool Terminate)
 
 void Master::PrintBanner()
 {
-    sLogger.info("<< AscEmu {}/{}-{} {} :: World Server >>", BUILD_HASH_STR, CONFIG, AE_PLATFORM, AE_ARCHITECTURE);
+    sLogger.info("<< AscEmu {}/{}-{} {} :: World Server >>", AE_BUILD_HASH, CONFIG, AE_PLATFORM, AE_ARCHITECTURE);
     sLogger.info("========================================================");
 }
 

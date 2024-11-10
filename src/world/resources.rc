@@ -1,6 +1,6 @@
 #include "WorldConf.h"
 #include "AEVersion.hpp"
-#include "../shared/git_version.h"
+#include "../shared/git_version.hpp"
 
 IDI_APPICON ICON DISCARDABLE "icon.ico"
 
@@ -27,7 +27,7 @@ BEGIN
             VALUE "LegalCopyright", "AscEmu Community"
             VALUE "OriginalFilename", "world.exe"
             VALUE "ProductName", "AE World"
-            VALUE "ProductVersion", BUILD_HASH
+            VALUE "ProductVersion", AE_BUILD_HASH
         END
     END
     BLOCK "VarFileInfo"
