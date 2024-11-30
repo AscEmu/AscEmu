@@ -56,7 +56,7 @@ target_link_libraries(${EXECUTABLE_NAME}
 )
 
 # generate precompiled header.
-if (USE_PCH)
+if (AE_USE_PCH)
     message(STATUS "Generate PCH for ${EXECUTABLE_NAME}")
     target_precompile_headers(${EXECUTABLE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchLogon.hpp)
 endif ()

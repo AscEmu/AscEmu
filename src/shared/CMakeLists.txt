@@ -1,7 +1,7 @@
 # Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name.
-set(EXECUTABLE_NAME shared)
+set(LIBRARY_NAME shared)
 
 file(GLOB SRC_CONFIG_FILES Config/*.cpp Config/*.h Config/*.hpp)
 file(GLOB SRC_CRYPTOGRAPHY_FILES Cryptography/*.cpp Cryptography/*.h Cryptography/*.hpp)
@@ -37,14 +37,6 @@ set(SHARED_SRCS
     ${SRC_LOCAL_DIR}
 )
 
-include_directories(
-    ${OPENSSL_INCLUDE_DIR}
-    ${ZLIB_INCLUDE_DIRS}
-    ${MYSQL_INCLUDE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/dep/utf8cpp
-)
-
 # source group.
 source_group(Config FILES ${SRC_CONFIG_FILES})
 source_group(Cryptography FILES ${SRC_CRYPTOGRAPHY_FILES})
@@ -65,10 +57,18 @@ endif ()
 source_group(Threading FILES ${SRC_THREADING_FILES})
 source_group(Utilities FILES ${SRC_UTILITIES_FILES})
 
-add_library(${EXECUTABLE_NAME} STATIC ${SHARED_SRCS})
+add_library(${LIBRARY_NAME} STATIC ${SHARED_SRCS})
+
+target_include_directories(${LIBRARY_NAME} PUBLIC 
+    ${OPENSSL_INCLUDE_DIR}
+    ${ZLIB_INCLUDE_DIRS}
+    ${MYSQL_INCLUDE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/dep/utf8cpp
+)
 
 # include library dependencies.
-target_link_libraries(${EXECUTABLE_NAME}
+target_link_libraries(${LIBRARY_NAME}
   PUBLIC
     ${ZLIB_LIBRARIES}
     ${MYSQL_LIBRARY}
@@ -81,15 +81,15 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Common.hpp.in ${CMAKE_CURRENT_SOURCE_
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/AEVersion.hpp.in ${CMAKE_CURRENT_SOURCE_DIR}/AEVersion.hpp)
 
 if (APPLE)
-    target_link_libraries(${EXECUTABLE_NAME} c++)
+    target_link_libraries(${LIBRARY_NAME} c++)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFreeBSD")
-    target_link_libraries(${EXECUTABLE_NAME} c++experimental)
+    target_link_libraries(${LIBRARY_NAME} c++experimental)
 endif ()
 
 # generate precompiled header.
-if (USE_PCH)
-    message(STATUS "Generate PCH for ${EXECUTABLE_NAME}")
-    target_precompile_headers(${EXECUTABLE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchShared.hpp)
+if (AE_USE_PCH)
+    message(STATUS "Generate PCH for ${LIBRARY_NAME}")
+    target_precompile_headers(${LIBRARY_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchShared.hpp)
 endif ()
 
 unset(SHARED_SRCS)

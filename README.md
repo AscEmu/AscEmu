@@ -32,7 +32,7 @@ Log into world   | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: 
 Feel free to contribute any corrections but make sure it is useful and tested before opening PRs.
 
 What are "useful" commits?
- 1. Fixing an open issue.
+ 1. Fixing an [open issue](https://github.com/AscEmu/AscEmu/issues).
  2. Related to the milestones.
  3. Making the Framework stable/safer
  4. Adding blizzlike related functions
@@ -61,6 +61,12 @@ HowTo install - detailed guides on our wiki.
 * [Thanks to all](THANKS.md)
 * [Terms of use](TERMS_OF_USE_AGREEMENT.md)
 
+## Special Thanks
+[JetBrains](https://www.jetbrains.com/) - For supporting OpenSource Projects.
+
+## SAST Tools
+[PVS-Studio](https://pvs-studio.com/en/pvs-studio/?utm_source=website&utm_medium=github&utm_campaign=open_source) - Static analyzer for C, C++, C#, and Java code.
+
 <!-- Undercover:start:status -->
 [MasterCircleBadge]: https://circleci.com/gh/AscEmu/AscEmu/tree/master.svg?style=shield
 [DevelopCircleBadge]: https://circleci.com/gh/AscEmu/AscEmu/tree/develop.svg?style=shield
@@ -82,9 +88,3 @@ HowTo install - detailed guides on our wiki.
 [CodefactorUrl]: https://www.codefactor.io/repository/github/ascemu/ascemu
 [OpenhubUrl]: https://www.openhub.net/p/AscEmu
 <!-- Undercover:end:community -->
-
-## Special Thanks
-* [JetBrains - For supporting OpenSource Projects](https://www.jetbrains.com/)
-
-## SAST Tools
-[PVS-Studio](https://pvs-studio.com/en/pvs-studio/?utm_source=website&utm_medium=github&utm_campaign=open_source) - static analyzer for C, C++, C#, and Java code.

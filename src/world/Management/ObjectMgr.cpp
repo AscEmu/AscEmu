@@ -2065,7 +2065,7 @@ void ObjectMgr::loadCreatureMovementOverrides()
     QueryResult* result = WorldDatabase.Query("SELECT SpawnId, Ground, Swim, Flight, Rooted, Chase, Random from creature_movement_override");
     if (!result)
     {
-        sLogger.info("loadCreatureMovementOverrides : Loaded 0 creature movement overrides. DB table `creature_movement_override` is empty!");
+        sLogger.info("CreatureMovementOverrides : Loaded 0 creature movement overrides. DB table `creature_movement_override` is empty!");
         return;
     }
 

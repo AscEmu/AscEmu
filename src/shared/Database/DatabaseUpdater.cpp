@@ -148,7 +148,7 @@ void DatabaseUpdater::applyUpdatesForDatabase(const std::string& database, Datab
 
     // In Windows, recursive_directory_iterator seems to get files sorted but
     // in Linux they are in random order -Appled
-    std::sort(updateFiles.begin(), updateFiles.end());
+    std::ranges::sort(updateFiles);
 
     for (const auto& filePathName : updateFiles)
     {

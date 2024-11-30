@@ -47,7 +47,7 @@ include(${CMAKE_MODULE_PATH}/AEConfigureArch.cmake)
 
 # default definitions
 # -DPREFIX=\"${ASCEMU_SCRIPTLIB_PATH}\"
-add_definitions(-DHAVE_CONFIG_H)
+add_compile_options(-DHAVE_CONFIG_H)
 
 mark_as_advanced(
     ZLIB_LIBRARIES

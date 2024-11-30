@@ -1,5 +1,5 @@
 # Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
-cmake_minimum_required(VERSION 3.29.3)
+cmake_minimum_required(VERSION 3.22)
 
 project(Ascemu)
 

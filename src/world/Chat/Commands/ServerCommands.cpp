@@ -25,6 +25,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Threading/LegacyThreading.h"
 #include "Utilities/Util.hpp"
 
+#include <openssl/opensslv.h>
+#include <openssl/crypto.h>
+
 //.server info
 bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_session)
 {
@@ -54,6 +57,7 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_
     uint32_t active_sessions = uint32_t(sWorld.getSessionCount());
 
     GreenSystemMessage(m_session, "Info: |r%sAscEmu %s/%s-%s-%s %s(www.ascemu.org)", MSG_COLOR_WHITE, AE_BUILD_HASH, CONFIG, AE_PLATFORM, AE_ARCHITECTURE, MSG_COLOR_LIGHTBLUE);
+    GreenSystemMessage(m_session, "Using %s/Library %s", OPENSSL_VERSION_TEXT, SSLeay_version(SSLEAY_VERSION));
     GreenSystemMessage(m_session, "Uptime: |r%s", sWorld.getWorldUptimeString().c_str());
     GreenSystemMessage(m_session, "Active Sessions: |r%u", active_sessions);
     GreenSystemMessage(m_session, "Current GMs: |r%u GMs", online_gm);

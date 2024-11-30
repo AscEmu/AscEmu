@@ -6,7 +6,7 @@ if (NOT BUILD_EVENTSCRIPTS)
 endif ()
 
 # set up our project name.
-set(EXECUTABLE_NAME EventScripts)
+set(LIBRARY_NAME EventScripts)
 
 file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
 
@@ -22,7 +22,9 @@ set(EVENTSCRIPTS_SRCS
     ${SRC_LOCAL_DIR}
 )
 
-include_directories(
+add_library(${LIBRARY_NAME} SHARED ${EVENTSCRIPTS_SRCS})
+
+target_include_directories(${LIBRARY_NAME} PUBLIC 
     ${OPENSSL_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
     ${CMAKE_SOURCE_DIR}/src/collision
@@ -37,20 +39,18 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/dep/utf8cpp
 )
 
-add_library(${EXECUTABLE_NAME} SHARED ${EVENTSCRIPTS_SRCS})
-
 # include library dependencies.
-target_link_libraries(${EXECUTABLE_NAME}
+target_link_libraries(${LIBRARY_NAME}
   PUBLIC
     world
 )
 
 # generate precompiled header.
-if (USE_PCH)
-    message(STATUS "Generate PCH for ${EXECUTABLE_NAME}")
-    target_precompile_headers(${EXECUTABLE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchEventScripts.hpp)
+if (AE_USE_PCH)
+    message(STATUS "Generate PCH for ${LIBRARY_NAME}")
+    target_precompile_headers(${LIBRARY_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchEventScripts.hpp)
 endif ()
 
-install(TARGETS ${EXECUTABLE_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
+install(TARGETS ${LIBRARY_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
 
 unset(EVENTSCRIPTS_SRCS)

@@ -31,7 +31,7 @@ jobs:
           command: |
             mkdir ascemu_classic
             cd ascemu_classic
-            cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DUSE_PCH=1 -DASCEMU_VERSION=Classic
+            cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DAE_USE_PCH=1 -DASCEMU_VERSION=Classic
             cd ..
             cd ascemu_classic
             make -j 4
@@ -66,7 +66,7 @@ jobs:
           command: |
             mkdir ascemu_bc
             cd ascemu_bc
-            cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DUSE_PCH=1 -DASCEMU_VERSION=TBC
+            cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DAE_USE_PCH=1 -DASCEMU_VERSION=TBC
             cd ..
             cd ascemu_bc
             make -j 4
@@ -102,7 +102,7 @@ jobs:
           command: |
             mkdir ascemu_wotlk
             cd ascemu_wotlk
-            cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DUSE_PCH=1 -DASCEMU_VERSION=WotLK
+            cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DAE_USE_PCH=1 -DASCEMU_VERSION=WotLK
             cd ..
             cd ascemu_wotlk
             make -j 4
@@ -138,7 +138,7 @@ jobs:
           command: |
             mkdir ascemu_cata
             cd ascemu_cata
-            cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DUSE_PCH=1 -DASCEMU_VERSION=Cata
+            cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DAE_USE_PCH=1 -DASCEMU_VERSION=Cata
             cd ..
             cd ascemu_cata
             make -j 4
@@ -174,7 +174,7 @@ jobs:
           command: |
             mkdir ascemu_mop
             cd ascemu_mop
-            cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DUSE_PCH=1 -DASCEMU_VERSION=Mop
+            cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_WITH_WARNINGS=0 -DBUILD_TOOLS=0 -DAE_USE_PCH=1 -DASCEMU_VERSION=Mop
             cd ..
             cd ascemu_mop
             make -j 4

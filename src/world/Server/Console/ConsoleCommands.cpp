@@ -26,6 +26,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Threading/LegacyThreading.h"
 #include "Utilities/Util.hpp"
 
+#include <openssl/opensslv.h>
+#include <openssl/crypto.h>
+
 bool handleSendChatAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool /*isWebClient*/)
 {
     if (argumentCount > 0 && consoleInput.empty())
@@ -152,6 +155,7 @@ bool handleServerInfoCommand(BaseConsole* baseConsole, int /*argumentCount*/, st
         baseConsole->Write("Server Information: \r\n");
         baseConsole->Write("======================================================================\r\n");
         baseConsole->Write("Info: AscEmu %s/%s-%s-%s (www.ascemu.org)\r\n", AE_BUILD_HASH, CONFIG, AE_PLATFORM, AE_ARCHITECTURE);
+        baseConsole->Write("Using %s/Library %s\r\n", OPENSSL_VERSION_TEXT, SSLeay_version(SSLEAY_VERSION));
         baseConsole->Write("Uptime: %s\r\n", sWorld.getWorldUptimeString().c_str());
         baseConsole->Write("Current Players: %d (%d GMs, %d queued)\r\n", clientsNum, gmCount, 0);
         baseConsole->Write("Active Thread Count: %u\r\n", ThreadPool.GetActiveThreadCount());

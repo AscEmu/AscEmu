@@ -8,7 +8,7 @@ file(GLOB SRC_TAXI_PATH_DATA *.cpp *.h)
 add_executable(${EXECUTABLE_NAME} ${SRC_TAXI_PATH_DATA})
 
 if (NOT WIN32 AND NOT IS_64BIT)
-    add_definitions(-D_FILE_OFFSET_BITS=64)
+    add_compile_options(-D_FILE_OFFSET_BITS=64)
 endif ()
 
 include_directories(
