@@ -331,12 +331,15 @@ void WorldMap::update(uint32_t t_diff)
 
     // Update Pets
     {
+        const auto diffTime = msTime - m_lastPetUpdateTimer;
         for (auto itr = m_PetStorage.cbegin(); itr != m_PetStorage.cend();)
         {
             Pet* ptr = itr->second;
             ++itr;
-            ptr->Update(t_diff);
+            ptr->Update(diffTime);
         }
+
+        m_lastPetUpdateTimer = msTime;
     }
 
     // Update Players
@@ -1718,8 +1721,13 @@ Pet* WorldMap::getPet(uint32_t guid)
 
 Summon* WorldMap::summonCreature(uint32_t entry, LocationVector pos, WDB::Structures::SummonPropertiesEntry const* properties /*= nullptr*/, uint32_t duration /*= 0*/, Object* summoner /*= nullptr*/, uint32_t spellId /*= 0*/)
 {
-    // Generate a new Guid
-    uint64_t guid = generateCreatureGuid(entry, false);
+    // Generate always a new guid for totems, otherwise the totem bar will get messed up
+    const auto isTotemSummon = properties != nullptr &&
+        (properties->ControlType == SUMMON_CONTROL_TYPE_WILD ||
+            properties->ControlType == SUMMON_CONTROL_TYPE_GUARDIAN ||
+            properties->ControlType == SUMMON_CATEGORY_UNK) &&
+        properties->Type == SUMMONTYPE_TOTEM;
+    uint64_t guid = generateCreatureGuid(entry, !isTotemSummon);
 
     // Phase
     uint32_t phase = 1;

@@ -187,9 +187,14 @@ public:
     uint8_t invisibilityFlag = INVIS_FLAG_NORMAL;
     uint8_t stealthFlag = STEALTH_FLAG_NORMAL;
 
-    // Owner
+    // Returns unit owner
     Unit* getUnitOwner() override;
+    // Returns unit owner
+    Unit const* getUnitOwner() const override;
+    // Returns player owner
     Player* getPlayerOwner() override;
+    // Returns player owner
+    Player const* getPlayerOwner() const override;
 
     // MIT End
 

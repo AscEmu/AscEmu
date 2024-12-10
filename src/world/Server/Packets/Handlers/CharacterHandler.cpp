@@ -368,6 +368,8 @@ uint8_t WorldSession::deleteCharacter(WoWGuid guid)
         CharacterDatabase.Execute("DELETE FROM playerdeletedspells WHERE GUID = %u", guid.getGuidLow());
         CharacterDatabase.Execute("DELETE FROM playerreputations WHERE guid = %u", guid.getGuidLow());
         CharacterDatabase.Execute("DELETE FROM playerskills WHERE GUID = %u", guid.getGuidLow());
+        CharacterDatabase.Execute("DELETE FROM playersummons WHERE ownerguid=%u", guid.getGuidLow());
+        CharacterDatabase.Execute("DELETE FROM playersummonspells WHERE ownerguid=%u", guid.getGuidLow());
 
         sObjectMgr.deleteCachedCharacterInfo(guid.getGuidLow());
         return E_CHAR_DELETE_SUCCESS;
@@ -856,30 +858,28 @@ void WorldSession::characterEnumProc(QueryResult* result)
             }
 #endif
 
-            CreatureProperties const* petInfo = nullptr;
-            uint32_t petLevel = 0;
-
-            if (charEnum.Class == WARLOCK || charEnum.Class == HUNTER)
-            {
-                QueryResult* player_pet_db_result = CharacterDatabase.Query("SELECT entry, level FROM playerpets WHERE ownerguid = %u "
-                    "AND MOD(active, 10) = 1 AND alive = TRUE;", WoWGuid::getGuidLowPartFromUInt64(charEnum.guid));
-                if (player_pet_db_result)
-                {
-                    petLevel = player_pet_db_result->Fetch()[1].asUint32();
-                    petInfo = sMySQLStore.getCreatureProperties(player_pet_db_result->Fetch()[0].asUint32());
-                    delete player_pet_db_result;
-                }
-            }
-
             charEnum.pet_data.display_id = 0;
             charEnum.pet_data.level = 0;
             charEnum.pet_data.family = 0;
 
-            if (petInfo != nullptr)
+            if (charEnum.Class == WARLOCK || charEnum.Class == HUNTER
+#if VERSION_STRING >= WotLK
+                || charEnum.Class == DEATHKNIGHT || charEnum.Class == MAGE
+#endif
+                )
             {
-                charEnum.pet_data.display_id = petInfo->Male_DisplayID;
-                charEnum.pet_data.level = petLevel;
-                charEnum.pet_data.family = petInfo->Family;
+                QueryResult* player_pet_db_result = CharacterDatabase.Query("SELECT entry, model, level FROM playerpets WHERE ownerguid = %u "
+                    "AND active = TRUE AND alive = TRUE LIMIT 1;", WoWGuid::getGuidLowPartFromUInt64(charEnum.guid));
+                if (player_pet_db_result)
+                {
+                    if (const auto petInfo = sMySQLStore.getCreatureProperties(player_pet_db_result->Fetch()[0].asUint32()))
+                    {
+                        charEnum.pet_data.display_id = player_pet_db_result->Fetch()[1].asUint32();
+                        charEnum.pet_data.level = player_pet_db_result->Fetch()[2].asUint32();
+                        charEnum.pet_data.family = petInfo->Family;
+                    }
+                    delete player_pet_db_result;
+                }
             }
 
             QueryResult* item_db_result = CharacterDatabase.Query("SELECT slot, entry, enchantments FROM playeritems "

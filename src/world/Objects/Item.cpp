@@ -241,6 +241,29 @@ void Item::setCreatePlayedTime(uint32_t time) { write(itemData()->create_played_
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// Override Object functions
+
+Unit* Item::getUnitOwner()
+{
+    return m_owner;
+}
+
+Unit const* Item::getUnitOwner() const
+{
+    return m_owner;
+}
+
+Player* Item::getPlayerOwner()
+{
+    return m_owner;
+}
+
+Player const* Item::getPlayerOwner() const
+{
+    return m_owner;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // m_enchantments
 EnchantmentInstance* Item::getEnchantment(EnchantmentSlot slot)
 {

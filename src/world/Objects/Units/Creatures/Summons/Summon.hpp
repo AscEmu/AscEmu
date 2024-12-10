@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Objects/Units/Creatures/Creature.h"
-//#include "Objects/Units/Unit.hpp"
 
 namespace WDB::Structures
 {
@@ -17,15 +16,22 @@ class SERVER_DECL Summon : public Creature
 {
 public:
     Summon(uint64_t guid, WDB::Structures::SummonPropertiesEntry const* properties);
-    ~Summon();
+    virtual ~Summon();
 
-    virtual void load(CreatureProperties const* creatureProperties, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellId);
+    virtual void load(CreatureProperties const* creatureProperties, Unit* unitOwner, LocationVector const& position, uint32_t duration, uint32_t spellId);
 
     virtual void unSummon();
+    void dieAndDisappearOnExpire();
 
     // Despawn Type
     CreatureSummonDespawnType getDespawnType() const;
     void setDespawnType(CreatureSummonDespawnType type);
+
+    // Summon properties
+    WDB::Structures::SummonPropertiesEntry const* getSummonProperties() const;
+
+    bool isSummonActive() const;
+    bool isPermanentSummon() const;
 
     // Duration
     uint32_t getTimeLeft() const;
@@ -35,36 +41,46 @@ public:
     uint32_t getLifeTime() const;
     void setLifeTime(uint32_t time);
 
+    // Resets life time and time left
+    void setNewLifeTime(uint32_t time);
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Override Object functions
-    void OnPushToWorld() override;
+    virtual void OnPushToWorld() override;
     void OnPreRemoveFromWorld() override;
     bool isSummon() const override;
     void onRemoveInRangeObject(Object* object) override;
-    void Update(unsigned long /*time_passed*/);
+    virtual void Update(unsigned long /*time_passed*/) override;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Override Unit functions
     void die(Unit* pAttacker, uint32 damage, uint32 spellid) override;
-    Unit* getUnitOwner() override;          // override creature function
-    Unit* getUnitOwnerOrSelf() override;    // override creature function
-    Player* getPlayerOwner() override;      // override creature function
+    // Returns unit owner
+    Unit* getUnitOwner() override;
+    // Returns unit owner
+    Unit const* getUnitOwner() const override;
+    // Returns player owner
+    Player* getPlayerOwner() override;
+    // Returns player owner
+    Player const* getPlayerOwner() const override;
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // Summoner Unit functions
-    uint64_t getSummonerGuid() const { return m_summonerGuid; }
+protected:
+    void _onUnsummon();
+    bool _hasExtendedDespawnDelayInDeath() const;
 
-    // Summon Information from DBC, when this is nullptr its mostly an Scripted Summon
-    WDB::Structures::SummonPropertiesEntry const* const m_Properties;
-
-private:
-    Unit* getSummonerUnit();
+    Unit* m_unitOwner = nullptr;
+    bool m_summonActive = false;
 
     // This determines how Despawning of our Summon is Handled
     CreatureSummonDespawnType m_despawnType = MANUAL_DESPAWN;
-    uint32_t m_duration = 0;    // Duration Left
-    uint32_t m_lifetime = 0;    // Max Duration
-    uint64_t m_summonerGuid = 0;
+
+    // Summon Information from DBC, when this is nullptr its mostly an Scripted Summon
+    WDB::Structures::SummonPropertiesEntry const* const m_summonProperties;
+
+    // Duration Left
+    uint32_t m_duration = 0;
+    // Max Duration
+    uint32_t m_lifetime = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -76,7 +92,7 @@ public:
     GuardianSummon(uint64_t GUID, WDB::Structures::SummonPropertiesEntry const* properties);
     ~GuardianSummon();
 
-    void load(CreatureProperties const* properties_, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellid) override;
+    void load(CreatureProperties const* properties_, Unit* unitOwner, LocationVector const& position, uint32_t duration, uint32_t spellid) override;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -88,7 +104,7 @@ public:
     CompanionSummon(uint64_t GUID, WDB::Structures::SummonPropertiesEntry const* properties);
     ~CompanionSummon();
 
-    void load(CreatureProperties const* properties_, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellid) override;
+    void load(CreatureProperties const* properties_, Unit* unitOwner, LocationVector const& position, uint32_t duration, uint32_t spellid) override;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -100,7 +116,7 @@ public:
     PossessedSummon(uint64_t GUID, WDB::Structures::SummonPropertiesEntry const* properties);
     ~PossessedSummon();
 
-    void load(CreatureProperties const* properties_, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellid) override;
+    void load(CreatureProperties const* properties_, Unit* unitOwner, LocationVector const& position, uint32_t duration, uint32_t spellid) override;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -112,7 +128,7 @@ public:
     WildSummon(uint64_t GUID, WDB::Structures::SummonPropertiesEntry const* properties);
     ~WildSummon();
 
-    void load(CreatureProperties const* properties_, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellid) override;
+    void load(CreatureProperties const* properties_, Unit* unitOwner, LocationVector const& position, uint32_t duration, uint32_t spellid) override;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -123,7 +139,7 @@ public:
     TotemSummon(uint64_t guid, WDB::Structures::SummonPropertiesEntry const* properties);
     ~TotemSummon();
 
-    void load(CreatureProperties const* properties_, Unit* unitOwner, LocationVector& position, uint32_t duration, uint32_t spellId) override;
+    void load(CreatureProperties const* properties_, Unit* unitOwner, LocationVector const& position, uint32_t duration, uint32_t spellId) override;
 
     void unSummon() override;
 
@@ -131,10 +147,6 @@ public:
     // Override Object functions
     void OnPushToWorld() override;
     bool isTotem() const override;
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // Override Unit functions
-    void die(Unit* /*pAttacker*/, uint32_t /*damage*/, uint32_t /*spellid*/) override;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc

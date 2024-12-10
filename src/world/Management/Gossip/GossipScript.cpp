@@ -339,7 +339,7 @@ void GossipPetTrainer::onHello(Object* object, Player* player)
 
         menu.addItem(GOSSIP_ICON_TRAINER, BEASTTRAINING, 1);
 
-        if (player->getClass() == ::HUNTER && player->getFirstPetFromSummons() != nullptr)
+        if (player->getClass() == ::HUNTER && player->getPet() != nullptr)
             menu.addItem(GOSSIP_ICON_CHAT, PETTRAINER_TALENTRESET, 2);
 
         sQuestMgr.FillQuestMenu(creature, player, menu);

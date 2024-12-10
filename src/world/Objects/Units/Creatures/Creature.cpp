@@ -145,6 +145,11 @@ uint32_t CreatureProperties::getVisibleModelForTriggerNpc() const
     return 17519;
 }
 
+bool CreatureProperties::isExotic() const
+{
+    return (typeFlags & CREATURE_FLAG1_EXOTIC) != 0;
+}
+
 Creature::Creature(uint64_t guid)
 {
     //////////////////////////////////////////////////////////////////////////
@@ -282,6 +287,14 @@ Unit* Creature::getUnitOwner()
     return nullptr;
 }
 
+Unit const* Creature::getUnitOwner() const
+{
+    if (getCharmedByGuid() != 0)
+        return getWorldMapUnit(getCharmedByGuid());
+
+    return nullptr;
+}
+
 Unit* Creature::getUnitOwnerOrSelf()
 {
     if (auto* const unitOwner = getUnitOwner())
@@ -290,7 +303,23 @@ Unit* Creature::getUnitOwnerOrSelf()
     return this;
 }
 
+Unit const* Creature::getUnitOwnerOrSelf() const
+{
+    if (auto* const unitOwner = getUnitOwner())
+        return unitOwner;
+
+    return this;
+}
+
 Player* Creature::getPlayerOwner()
+{
+    if (getCharmedByGuid() != 0)
+        return getWorldMapPlayer(getCharmedByGuid());
+
+    return nullptr;
+}
+
+Player const* Creature::getPlayerOwner() const
 {
     if (getCharmedByGuid() != 0)
         return getWorldMapPlayer(getCharmedByGuid());
@@ -697,10 +726,6 @@ void Creature::updateMovementFlags()
 void Creature::Update(unsigned long time_passed)
 {
     Unit::Update(time_passed);
-
-    // When we are a Summon handle its Update
-    if (isSummon())
-        ToSummon()->Update(time_passed);
 
     // Update Movement
     if (time_passed >= m_movementFlagUpdateTimer)
@@ -2537,10 +2562,7 @@ void Creature::PrepareForRemove()
 
 bool Creature::IsExotic()
 {
-    if ((GetCreatureProperties()->typeFlags & CREATURE_FLAG1_EXOTIC) != 0)
-        return true;
-
-    return false;
+    return creature_properties->isExotic();
 }
 
 bool Creature::isCritter()
@@ -2559,7 +2581,7 @@ void Creature::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 #endif
 
     //general hook for die
-    if (!sHookInterface.OnPreUnitDie(pAttacker, this))
+    if (pAttacker != nullptr && !sHookInterface.OnPreUnitDie(pAttacker, this))
         return;
 
     // on die and an target die proc
@@ -2618,15 +2640,20 @@ void Creature::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
 
     removeAllNonPersistentAuras();
 
-    if (pAttacker->IsInWorld() && pAttacker->isCreature() && dynamic_cast<Creature*>(pAttacker)->GetScript())
+    if (pAttacker != nullptr)
     {
-        dynamic_cast<Creature*>(pAttacker)->GetScript()->_internalOnTargetDied(this);
-        dynamic_cast<Creature*>(pAttacker)->GetScript()->OnTargetDied(this);
+        if (pAttacker->IsInWorld() && pAttacker->isCreature() && dynamic_cast<Creature*>(pAttacker)->GetScript())
+        {
+            dynamic_cast<Creature*>(pAttacker)->GetScript()->_internalOnTargetDied(this);
+            dynamic_cast<Creature*>(pAttacker)->GetScript()->OnTargetDied(this);
+        }
+
+        pAttacker->getAIInterface()->eventOnTargetDied(this);
+        pAttacker->smsg_AttackStop(this);
     }
-    pAttacker->getAIInterface()->eventOnTargetDied(this);
 
-    pAttacker->smsg_AttackStop(this);
-
+    // TODO: npc summons and pets should not unsummon on owner death
+    // correct behaviour needs more investigation
     getSummonInterface()->removeAllSummons();
 
     // Clear Threat
@@ -2636,7 +2663,7 @@ void Creature::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
     getCombatHandler().clearCombat();
 
     // Add Kills if Player is in Vehicle
-    if (pAttacker->isVehicle())
+    if (pAttacker != nullptr && pAttacker->isVehicle())
     {
         Unit* vehicle_owner = getWorldMap()->getUnit(pAttacker->getCharmedByGuid());
 
@@ -2654,11 +2681,11 @@ void Creature::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
         if (Unit* tagger = m_WorldMap->getUnit(getTaggerGuid()))
             looter = tagger->ToPlayer();
     }
-    else if (pAttacker->isPlayer())
+    else if (pAttacker != nullptr && pAttacker->isPlayer())
     {
         looter = pAttacker->ToPlayer();
     }
-    else if (pAttacker->isCreature())
+    else if (pAttacker != nullptr && pAttacker->isCreature())
     {
         looter = pAttacker->getPlayerOwner();
     }   

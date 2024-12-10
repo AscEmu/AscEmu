@@ -15,11 +15,15 @@ This file is released under the MIT license. See README-MIT for more information
 
 #if VERSION_STRING >= WotLK
     #include "AchievementMgr.h"
+#endif
+
 namespace WDB::Structures
 {
+#if VERSION_STRING >= WotLK
     struct DungeonEncounterEntry;
-}
 #endif
+    struct SummonPropertiesEntry;
+}
 
 class Object;
 class Corpse;
@@ -404,7 +408,7 @@ public:
     void generateLevelUpInfo();
     std::shared_ptr<LevelInfo> getLevelInfo(uint32_t _race, uint32_t _class, uint32_t _level);
 
-    std::shared_ptr<Pet> createPet(uint32_t _entry);
+    Pet* createPet(uint32_t _entry, WDB::Structures::SummonPropertiesEntry const* properties);
     void loadPetSpellCooldowns();
     uint32_t getPetSpellCooldown(uint32_t _spellId);
 

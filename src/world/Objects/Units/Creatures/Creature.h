@@ -45,13 +45,13 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Essential functions
 
-    void Update(unsigned long time_passed);             // hides function Unit::Update
+    virtual void Update(unsigned long time_passed);     // hides function Unit::Update
     void AddToWorld();                                  // hides virtual function Object::AddToWorld
     void AddToWorld(WorldMap* pMapMgr);                 // hides virtual function Object::AddToWorld
     // void PushToWorld(WorldMap*);                     // not used
-    void RemoveFromWorld(bool free_guid);               // hides virtual function Unit::RemoveFromWorld
+    virtual void RemoveFromWorld(bool free_guid);       // hides virtual function Unit::RemoveFromWorld
     void OnPrePushToWorld() override;                   // overrides virtual function Unit::OnPrePushToWorld
-    void OnPushToWorld() override;                      // overrides virtual function Unit::OnPushToWorld
+    virtual void OnPushToWorld() override;              // overrides virtual function Unit::OnPushToWorld
     // void OnPreRemoveFromWorld();                     // not used
     // void OnRemoveFromWorld();                        // not used
 
@@ -102,9 +102,18 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Owner
+    // Returns unit charmer or unit owner
     Unit* getUnitOwner() override;
+    // Returns unit charmer or unit owner
+    Unit const* getUnitOwner() const override;
+    // Returns unit charmer, unit owner or self
     Unit* getUnitOwnerOrSelf() override;
+    // Returns unit charmer, unit owner or self
+    Unit const* getUnitOwnerOrSelf() const override;
+    // Returns player charmer or player owner
     Player* getPlayerOwner() override;
+    // Returns player charmer or player owner
+    Player const* getPlayerOwner() const override;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
@@ -174,7 +183,7 @@ public:
         void RemoveFromWorld(bool addrespawnevent, bool free_guid);
 
         // remove auras, guardians, scripts
-        void PrepareForRemove();
+        virtual void PrepareForRemove();
 
         // Creation
         void Create(uint32 mapid, float x, float y, float z, float ang);

@@ -30,16 +30,32 @@ bool ChatHandler::HandlePetCreateCommand(const char* args, WorldSession* m_sessi
         return true;
     }
 
-    selected_player->dismissActivePets();
-    selected_player->removeFieldSummon();
+    if (selected_player->getPet() != nullptr)
+    {
+        RedSystemMessage(m_session, "You must dismiss your current pet.");
+        return true;
+    }
+
+    if (!selected_player->findFreeActivePetSlot().has_value())
+    {
+#if VERSION_STRING < Cata
+        if (selected_player->isClassHunter())
+            RedSystemMessage(m_session, "You must put your current pet to stables.");
+        else
+            RedSystemMessage(m_session, "You must dismiss your inactive pet.");
+#else
+        RedSystemMessage(m_session, "You must have one free active pet slot.");
+#endif
+        return true;
+    }
 
     float followangle = -M_PI_FLOAT * 2;
     LocationVector vector(selected_player->GetPosition());
     vector.x += (3 * (cosf(followangle + selected_player->GetOrientation())));
     vector.y += (3 * (sinf(followangle + selected_player->GetOrientation())));
 
-    const auto pet = sObjectMgr.createPet(entry);
-    if (!pet->CreateAsSummon(entry, creature_proto, nullptr, selected_player, nullptr, 1, 0, &vector, true))
+    const auto pet = sObjectMgr.createPet(entry, nullptr);
+    if (!pet->createAsSummon(creature_proto, nullptr, selected_player, vector, 0, nullptr, 0, PET_TYPE_HUNTER))
     {
         pet->DeleteMe();
         return true;
@@ -65,32 +81,55 @@ bool ChatHandler::HandlePetDismissCommand(const char* /*args*/, WorldSession* m_
 {
     Player* selected_player = GetSelectedPlayer(m_session, false, true);
     Pet* selected_pet = nullptr;
+    Creature* selected_creature = nullptr;
     if (selected_player != nullptr)
     {
-        if (selected_player->getFirstPetFromSummons() == nullptr)
+        if (selected_player->getPet() == nullptr)
         {
             RedSystemMessage(m_session, "Player has no pet.");
             return true;
         }
-        selected_player->dismissActivePets();
+        selected_player->getPet()->unSummon();
     }
     else
     {
-        // no player selected, see if it is a pet
-        Creature* selected_creature = GetSelectedCreature(m_session, false);
+        // no player selected, see if it is a pet or if creature has pet
+        selected_creature = GetSelectedCreature(m_session, false);
         if (selected_creature == nullptr)
             return false;
 
-        if (!selected_creature->isPet())
+        if (selected_creature->isPet())
+        {
+            selected_pet = dynamic_cast<Pet*>(selected_creature);
+            auto* const petOwner = selected_pet->getUnitOwner();
+            if (petOwner == nullptr)
+                return false;
+
+            selected_player = petOwner->isPlayer() ? selected_pet->getPlayerOwner() : nullptr;
+            selected_creature = petOwner->isCreature() ? dynamic_cast<Creature*>(petOwner) : nullptr;
+        }
+        else
+        {
+            if (selected_creature->getPet() == nullptr)
+                return false;
+
+            // Target is creature but not a pet
+            selected_pet = selected_creature->getPet();
+            selected_player = selected_pet->getPlayerOwner();
+        }
+
+        if (selected_pet == nullptr)
             return false;
 
-        selected_pet = static_cast< Pet* >(selected_creature);
-
-        selected_player = selected_pet->getPlayerOwner();
-        selected_pet->Dismiss();
+        selected_pet->unSummon();
     }
 
-    if (selected_player != m_session->GetPlayer())
+    if (selected_creature != nullptr)
+    {
+        GreenSystemMessage(m_session, "Dismissed %s's pet.", selected_creature->GetCreatureProperties()->Name.c_str());
+        sGMLog.writefromsession(m_session, "used dismiss pet command on creature %s", selected_creature->GetCreatureProperties()->Name.c_str());
+    }
+    else if (selected_player != nullptr && selected_player != m_session->GetPlayer())
     {
         GreenSystemMessage(m_session, "Dismissed %s's pet.", selected_player->getName().c_str());
         SystemMessage(selected_player->getSession(), "%s dismissed your pet.", m_session->GetPlayer()->getName().c_str());
@@ -111,7 +150,7 @@ bool ChatHandler::HandlePetRenameCommand(const char* args, WorldSession* m_sessi
     if (selected_player == nullptr)
         return true;
 
-    Pet* selected_pet = selected_player->getFirstPetFromSummons();
+    Pet* selected_pet = selected_player->getPet();
     if (selected_pet == nullptr)
     {
         RedSystemMessage(m_session, "You have no pet.");
@@ -135,7 +174,7 @@ bool ChatHandler::HandlePetRenameCommand(const char* args, WorldSession* m_sessi
         GreenSystemMessage(m_session, "You renamed you pet to %s.", args);
     }
 
-    selected_pet->Rename(args);
+    selected_pet->rename(args);
 
     return true;
 }
@@ -147,7 +186,8 @@ bool ChatHandler::HandlePetAddSpellCommand(const char* args, WorldSession* m_ses
     if (selected_player == nullptr)
         return true;
 
-    if (selected_player->getFirstPetFromSummons() == nullptr)
+    auto* const pet = selected_player->getPet();
+    if (pet == nullptr)
     {
         RedSystemMessage(m_session, "%s has no pet.", selected_player->getName().c_str());
         return true;
@@ -164,11 +204,7 @@ bool ChatHandler::HandlePetAddSpellCommand(const char* args, WorldSession* m_ses
         return true;
     }
 
-    std::list<Pet*> summons = selected_player->getSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
-    {
-        (*itr)->AddSpell(spell_entry, true);
-    }
+    pet->AddSpell(spell_entry, true);
 
     GreenSystemMessage(m_session, "Added spell %u to %s's pet.", SpellId, selected_player->getName().c_str());
 
@@ -182,7 +218,8 @@ bool ChatHandler::HandlePetRemoveSpellCommand(const char* args, WorldSession* m_
     if (selected_player == nullptr)
         return true;
 
-    if (selected_player->getFirstPetFromSummons() == nullptr)
+    auto* const pet = selected_player->getPet();
+    if (pet == nullptr)
     {
         RedSystemMessage(m_session, "%s has no pet.", selected_player->getName().c_str());
         return true;
@@ -199,11 +236,7 @@ bool ChatHandler::HandlePetRemoveSpellCommand(const char* args, WorldSession* m_
         return true;
     }
 
-    std::list<Pet*> summons = selected_player->getSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
-    {
-        (*itr)->RemoveSpell(SpellId);
-    }
+    pet->RemoveSpell(SpellId);
 
     GreenSystemMessage(m_session, "Removed spell %u from %s's pet.", SpellId, selected_player->getName().c_str());
 
@@ -225,7 +258,7 @@ bool ChatHandler::HandlePetSetLevelCommand(const char* args, WorldSession* m_ses
     Pet* selected_pet = nullptr;
     if (selected_player != nullptr)
     {
-        selected_pet = selected_player->getFirstPetFromSummons();
+        selected_pet = selected_player->getPet();
         if (selected_pet == nullptr)
         {
             RedSystemMessage(m_session, "Player has no pet.");
@@ -254,8 +287,8 @@ bool ChatHandler::HandlePetSetLevelCommand(const char* args, WorldSession* m_ses
 
     selected_pet->setLevel(newLevel);
     selected_pet->setPetExperience(0);
-    selected_pet->setPetNextLevelExperience(selected_pet->GetNextLevelXP(newLevel));
-    selected_pet->ApplyStatsForLevel();
+    selected_pet->setPetNextLevelExperience(selected_pet->getNextLevelXp(newLevel));
+    selected_pet->applyStatsForLevel();
     selected_pet->UpdateSpellList();
 
     if (selected_player != m_session->GetPlayer())

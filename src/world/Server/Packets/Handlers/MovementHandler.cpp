@@ -635,8 +635,11 @@ void WorldSession::handleMoveTeleportAckOpcode(WorldPacket& recvPacket)
         _player->setTransferStatus(TRANSFER_NONE);
         _player->speedCheatReset();
 
-        for (auto summon : _player->getSummons())
-            summon->SetPosition(_player->GetPositionX() + 2, _player->GetPositionY() + 2, _player->GetPositionZ(), M_PI_FLOAT);
+        for (const auto& summon : _player->getSummonInterface()->getSummons())
+        {
+            if (!summon->isTotem())
+                summon->SetPosition(_player->GetPositionX() + 2, _player->GetPositionY() + 2, _player->GetPositionZ(), M_PI_FLOAT);
+        }
 
         if (_player->m_sentTeleportPosition.x != 999999.0f)
         {

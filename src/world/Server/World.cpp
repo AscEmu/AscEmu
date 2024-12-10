@@ -696,6 +696,8 @@ bool World::setInitialWorldSettings()
     auto localeString = Util::getLanguagesStringFromId(mDbcLocaleId);
     if (mDbcLocaleId == 0)
         localeString.append("/enUS");
+    else if (mDbcLocaleId == 10)
+        localeString.append("/ptPT");
 
     sLogger.info("World : Using {} DBC locale", localeString);
 #endif

@@ -21,159 +21,155 @@
 #ifndef PET_H
 #define PET_H
 
-#include "Creature.h"
+#include "PetDefines.hpp"
+#include "Summons/Summon.hpp"
+#include "Utilities/utf8String.hpp"
 #include "Macros/PetMacros.hpp"
 
-/* Taken from ItemPetFood.dbc
- * Each value is equal to a flag
- * so 1 << PET_FOOD_BREAD for example
- * will result in a usable value.
- */
-enum PET_FOOD
-{
-    PET_FOOD_NONE,
-    PET_FOOD_MEAT,
-    PET_FOOD_FISH,
-    PET_FOOD_CHEESE,
-    PET_FOOD_BREAD,
-    PET_FOOD_FUNGUS,
-    PET_FOOD_FRUIT,
-    PET_FOOD_RAW_MEAT,      /// not used in pet diet
-    PET_FOOD_RAW_FISH       /// not used in pet diet
-};
+struct PetCache;
 
-enum PetReactState
+namespace WDB::Structures
 {
-    PET_STATE_PASSIVE       = 0,
-    PET_STATE_DEFENSIVE     = 1,
-    PET_STATE_AGGRESSIVE    = 2
-};
-
-enum PetCommands
-{
-    PET_ACTION_STAY     = 0,
-    PET_ACTION_FOLLOW   = 1,
-    PET_ACTION_ATTACK   = 2,
-    PET_ACTION_DISMISS  = 3,
-    PET_ACTION_CASTING  = 4
-};
-
-enum PetActionFeedback : uint8_t
-{
-    PET_FEEDBACK_NONE,
-    PET_FEEDBACK_PET_DEAD,
-    PET_FEEDBACK_NOTHING_TO_ATTACK,
-    PET_FEEDBACK_CANT_ATTACK_TARGET
-};
-
-enum PET_RENAME
-{
-    PET_RENAME_NOT_ALLOWED    = 0x02,
-    PET_RENAME_ALLOWED        = 0x03
-};
-
-enum PetSpells
-{
-    PET_SPELL_PASSIVE   = 0x06000000,
-    PET_SPELL_DEFENSIVE,
-    PET_SPELL_AGRESSIVE,
-    PET_SPELL_STAY      = 0x07000000,
-    PET_SPELL_FOLLOW,
-    PET_SPELL_ATTACK
-};
-
-enum StableState
-{
-    STABLE_STATE_ACTIVE     = 1,
-    STABLE_STATE_PASSIVE    = 2
-};
-
-enum HappinessState
-{
-    UNHAPPY     = 1,
-    CONTENT     = 2,
-    HAPPY       = 3
-};
-
-enum AutoCastEvents
-{
-    AUTOCAST_EVENT_NONE                 = 0,
-    AUTOCAST_EVENT_ATTACK               = 1,
-    AUTOCAST_EVENT_ON_SPAWN             = 2,
-    AUTOCAST_EVENT_OWNER_ATTACKED       = 3,
-    AUTOCAST_EVENT_LEAVE_COMBAT         = 4,
-    AUTOCAST_EVENT_COUNT                = 5
-};
-
-enum PetType
-{
-    HUNTERPET   = 1,
-    WARLOCKPET  = 2,
-};
+    struct SummonPropertiesEntry;
+}
 
 typedef std::map<SpellInfo const*, uint16> PetSpellMap;
-struct PlayerPet;
 
-class SERVER_DECL Pet : public Creature
+class SERVER_DECL Pet : public Summon
 {
-    friend class Player;
-    friend class Creature;
-    friend class WorldSession;
-
     // MIT START
 public:
-    Pet(uint64_t guid);
+    Pet(uint64_t guid, WDB::Structures::SummonPropertiesEntry const* properties);
     ~Pet();
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Essential functions
 
-    void Update(unsigned long /*time_passed*/);         // hides function Creature::Update
-    // void AddToWorld();                               // not used
-    // void AddToWorld(WorldMap* pMapMgr);              // not used
-    // void PushToWorld(WorldMap*);                     // not used
-    void RemoveFromWorld(bool free_guid);               // hides function Creature::RemoveFromWorld
-    // void OnPrePushToWorld();                         // not used
-    void OnPushToWorld();                               // hides function Creature::OnPushToWorld
-    // void OnPreRemoveFromWorld();                     // not used
-    void OnRemoveFromWorld();                           // hides function Object::OnRemoveFromWorld
+    void Update(unsigned long /*time_passed*/) override;    // overrides function Summon::Update
+    // void AddToWorld();                                   // not used
+    // void AddToWorld(WorldMap* pMapMgr);                  // not used
+    // void PushToWorld(WorldMap*);                         // not used
+    // void RemoveFromWorld(bool free_guid);                // not used
+    // void OnPrePushToWorld();                             // not used
+    void OnPushToWorld() override;                          // overrides function Summon::OnPushToWorld
+    // void OnPreRemoveFromWorld();                         // not used
+    // void OnRemoveFromWorld();                            // not used
+
+    // Override superclass method that returns false
+    bool isPet() const override { return true; }
+
+    // Override from Creature class
+    void PrepareForRemove() override;
+    // Override from Creature class
+    void SafeDelete() override;
+
+    // Override from Creature class
+    void setDeathState(DeathState s) override;
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // Owner
-    Unit* getUnitOwner() override;
-    Unit* getUnitOwnerOrSelf() override;                // override creature function
-    Player* getPlayerOwner() override;
+    // General functions
 
-protected:
-    Player* m_Owner = nullptr;
+    // Override from Summon class
+    // NOTE: Pet class should not call this directly, use createAsSummon instead
+    void load(CreatureProperties const* creatureProperties, Unit* unitOwner, LocationVector const& position, uint32_t duration, uint32_t spellId) override;
+
+    // Function excepts there is NO existing summon in same summon slot
+    // Returns false if an error occured. The caller MUST delete us.
+    bool createAsSummon(CreatureProperties const* creatureProperties, Creature* createdFromCreature, Unit* unitOwner, LocationVector const& position, uint32_t duration, SpellInfo const* createdBySpell, uint8_t effIndex, PetTypes type);
+    // Function excepts there is NO existing summon in same summon slot
+    // Returns false if an error occured. The caller MUST delete us.
+    bool loadFromDB(Player* owner, PetCache const* petCache);
+
+    // Updates player pet cache in player class i.e. before save to db
+    void updatePetInfo(bool setPetOffline) const;
+
+    // Permanently removes pet from player
+    void abandonPet();
+    // Unsummons pet but does not set it offline and keeps it active
+    void unSummonTemporarily();
+    // Override from Summon class
+    void unSummon() override;
+
+    // Refers to PetCache::number
+    uint8_t getPetId() const;
+
+    void rename(utf8_string const& newName);
+    utf8_string const& getName() const;
+
+    bool isHunterPet() const;
+
+    void giveXp(uint32_t xp);
+    bool canGainXp() const;
+    uint32_t getNextLevelXp(uint32_t level) const;
+
+    void applyStatsForLevel();
+
+    void setPetAction(PetCommands action);
+    PetCommands getPetAction() const;
+
+    // Hunter pet related
+#if VERSION_STRING < Cata
+    HappinessStates getHappinessState() const;
+    float_t getHappinessDamageMod() const;
+#endif
+    uint8_t getPetDiet() const;
+
+private:
+    // Prepares pet and pushes it to world
+    bool _preparePetForPush(PetCache const* petCache);
+
+    void _setNameForEntry(uint32_t entry, SpellInfo const* createdBySpell);
+    void _setPetDiet();
+
+    utf8_string m_petName;
+    // Refers to PetCache::number
+    uint8_t m_petId = 0;
+    PetTypes m_petType = PET_TYPE_NONE;
+    PetCommands m_petAction = PET_ACTION_FOLLOW;
+    // If pet has duration
+    bool m_petExpires = false;
+
+    // Hunter pet related
+#if VERSION_STRING < Cata
+    uint16_t m_happinessTimer = PET_HAPPINESS_UPDATE_TIMER;
+#endif
+    uint8_t m_petDiet = PET_FOOD_NONE;
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
-    // Misc
-    void giveXp(uint32_t xp);
+    // Spells
 
+    PetSpellMap const& getSpellMap() const;
+
+#if VERSION_STRING < Mop
+    // Talent reset cost in wotlk and cata
+    // Beast training reset cost in classic and tbc
+    uint32_t getUntrainCost();
+#endif
+
+private:
+#if VERSION_STRING < Mop
+    time_t m_talentResetTime = 0;
+    uint32_t m_talentResetCost = 0;
+#endif
+
+public:
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Packets
+
+    void sendActionFeedback(PetActionFeedback feedback);
+
+private:
+    bool m_isScheduledForDeletion = false;
+    bool m_isScheduledForTemporaryUnsummon = false;
+
+public:
     // MIT END
 
-        // Override superclass method that returns false
-        bool isPet() const override { return true; }
-
-        void LoadFromDB(Player* owner, PlayerPet* pi);
-        /// returns false if an error occurred. The caller MUST delete us.
-        bool CreateAsSummon(uint32 entry, CreatureProperties const* properties_, Creature* created_from_creature, Player* owner, SpellInfo const* created_by_spell, uint32 type, uint32 expiretime, LocationVector* Vec = NULL, bool dismiss_old_pet = true);
-
         void InitializeSpells();
-        void InitializeMe(bool first);
         void SendSpellsToOwner();
         void SendCastFailed(uint32 spellid, uint8 fail);
-        void SendActionFeedback(PetActionFeedback value);
         void buildPetSpellList(WorldPacket& data);
-
-        inline void SetPetAction(uint32 act) { m_Action = act; }
-        inline uint32 GetPetAction(void) { return m_Action; }
-
-        inline void SetPetDiet(uint32 diet) { m_Diet = diet; }
-        inline void SetPetDiet();
-        inline uint32 GetPetDiet(void) { return m_Diet; }
 
         inline AI_Spell* GetAISpellForSpellId(uint32 spellid)
         {
@@ -184,18 +180,6 @@ public:
             return NULL;
         }
 
-        void UpdatePetInfo(bool bSetToOffline);
-        void Remove(bool bUpdate, bool bSetOffline);
-        void Dismiss();
-        void setDeathState(DeathState s);
-
-        void PrepareForRemove(bool bUpdate, bool bSetOffline);
-        void DelayedRemove(bool bTime, bool dismiss = false, uint32 delay = PET_DELAYED_REMOVAL_TIME);
-        void Despawn(uint32 delay, uint32 respawntime);
-
-        bool CanGainXP();
-        uint32 GetNextLevelXP(uint32 currentlevel);
-        void ApplyStatsForLevel();
         void ApplySummonLevelAbilities();
         void ApplyPetLevelAbilities();
         void UpdateAP();
@@ -206,21 +190,16 @@ public:
         void AddSpell(SpellInfo const* sp, bool learning, bool showLearnSpell = true);
         void RemoveSpell(SpellInfo const* sp, bool showUnlearnSpell = true);
         void WipeTalents();
-        uint32 GetUntrainCost();
         void SetSpellState(SpellInfo const* sp, uint16 State);
-        uint16 GetSpellState(SpellInfo const* sp);
+        uint16 GetSpellState(SpellInfo const* sp) const;
         bool HasSpell(uint32 SpellID);
         void RemoveSpell(uint32 SpellID);
         void SetSpellState(uint32 SpellID, uint16 State);
-        uint16 GetSpellState(uint32 SpellID);
+        uint16 GetSpellState(uint32 SpellID) const;
 
         AI_Spell* CreateAISpell(SpellInfo const* info);
         inline PetSpellMap* GetSpells() { return &mSpells; }
-        inline bool IsSummonedPet() { return Summon; }
 
-        void SetAutoCastSpell(AI_Spell* sp);
-        void Rename(std::string NewName);
-        inline std::string & GetName() { return m_name; }
         uint32 CanLearnSpell(SpellInfo const* sp);
         void UpdateSpellList(bool showLearnSpells = true);
 
@@ -231,10 +210,7 @@ public:
 
         void HandleAutoCastEvent(AutoCastEvents Type);
         AI_Spell* HandleAutoCastEvent();
-        void SetPetSpellState(uint32 spell, uint16 state);
         void SetAutoCast(AI_Spell* sp, bool on);
-        float GetHappinessDmgMod() { return 0.25f * static_cast<float>(GetHappinessState()) + 0.5f; };
-        bool IsBeingDeleted() { return ScheduledForDeletion; }
 
         std::shared_ptr<Group> getGroup();
 
@@ -242,28 +218,11 @@ public:
 
     protected:
         PetSpellMap mSpells;
-        PlayerPet* mPi = nullptr;
         uint32 ActionBar[10] = {0};
 
         std::map<uint32, AI_Spell*> m_AISpellStore;
 
-        uint32 m_AutoCombatSpell = 0;
-
-        uint32 m_HappinessTimer = PET_HAPPINESS_UPDATE_TIMER;
-        uint32 m_PetNumber = 0;
-        uint32 m_Action = PET_ACTION_FOLLOW;
-        uint32 m_ExpireTime = 0;
-        uint32 m_Diet = 0;
-        time_t reset_time = 0;
-        uint32 reset_cost = 0;
-        bool bExpires = false;
-        bool Summon = false;
-        bool ScheduledForDeletion = false;
-        std::string m_name;
-        HappinessState GetHappinessState();
-        void SetNameForEntry(uint32 entry);
         uint32 GetAutoCastTypeForSpell(SpellInfo const* ent);
-        void SafeDelete();
 
     std::list<AI_Spell*> m_autoCastSpells[AUTOCAST_EVENT_COUNT];
 };

@@ -331,6 +331,8 @@ void Battleground::portPlayer(Player* plr, bool skip_teleport)
 
     plr->setPendingBattleground(nullptr);
     plr->setBattleground(this);
+    plr->setLastBattlegroundPetId(0);
+    plr->setLastBattlegroundPetSpell(0);
 
     if (!plr->isPvpFlagSet())
         plr->setPvpFlag();
@@ -588,6 +590,8 @@ void Battleground::removePlayer(Player* plr, bool logout)
     // Clean-up
     plr->setBattleground(nullptr);
     plr->setFullHealthMana();
+    plr->setLastBattlegroundPetId(0);
+    plr->setLastBattlegroundPetSpell(0);
     m_players[plr->getBgTeam()].erase(plr);
     memset(&plr->m_bgScore, 0, sizeof(BGScore));
 
@@ -796,12 +800,16 @@ Creature* Battleground::spawnSpiritGuide(float x, float y, float z, float o, uin
     pCreature->setMaxHealth(10000);
     pCreature->setMaxPower(POWER_TYPE_MANA, 4868);
     pCreature->setMaxPower(POWER_TYPE_FOCUS, 200);
+#if VERSION_STRING < Cata
     pCreature->setMaxPower(POWER_TYPE_HAPPINESS, 2000000);
+#endif
 
     pCreature->setHealth(100000);
     pCreature->setPower(POWER_TYPE_MANA, 4868);
     pCreature->setPower(POWER_TYPE_FOCUS, 200);
+#if VERSION_STRING < Cata
     pCreature->setPower(POWER_TYPE_HAPPINESS, 2000000);
+#endif
 
     pCreature->setLevel(60);
     pCreature->setFaction(84 - horde);
@@ -927,6 +935,24 @@ void Battleground::eventResurrectPlayers()
                 plr->setPower(POWER_TYPE_MANA, plr->getMaxPower(POWER_TYPE_MANA));
                 plr->setPower(POWER_TYPE_ENERGY, plr->getMaxPower(POWER_TYPE_ENERGY));
                 plr->castSpell(plr, BattlegroundDef::REVIVE_PREPARATION, true);
+
+                // Spawn last active pet
+                if (plr->getLastBattlegroundPetId() != 0)
+                {
+                    plr->spawnPet(plr->getLastBattlegroundPetId());
+                }
+                else if (plr->getLastBattlegroundPetSpell() != 0)
+                {
+                    // TODO: not correct, according to classic spell should not be casted
+                    // instead the pet should just spawn
+                    // Hackfixing for now
+                    plr->addUnitFlags(UNIT_FLAG_NO_REAGANT_COST);
+                    plr->castSpell(plr, plr->getLastBattlegroundPetSpell(), true);
+                    plr->removeUnitFlags(UNIT_FLAG_NO_REAGANT_COST);
+                }
+
+                plr->setLastBattlegroundPetId(0);
+                plr->setLastBattlegroundPetSpell(0);
             }
         }
         i.second.clear();

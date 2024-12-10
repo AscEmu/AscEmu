@@ -46,7 +46,7 @@ namespace AscEmu::Packets
             {
                 packet << player->getGuid();
 
-                auto playerPet = player->getFirstPetFromSummons();
+                auto playerPet = player->getPet();
                 if (playerPet)
                     packet << uint32_t(0x7FFFFFFF);
                 else
@@ -81,7 +81,7 @@ namespace AscEmu::Packets
                 {
                     const auto petPowerType = playerPet->getPowerType();
                     packet << uint64_t(playerPet->getGuid());
-                    packet << playerPet->GetName();
+                    packet << playerPet->getName();
                     packet << uint16_t(playerPet->getDisplayId());
                     packet << uint32_t(playerPet->getHealth());
                     packet << uint32_t(playerPet->getMaxHealth());

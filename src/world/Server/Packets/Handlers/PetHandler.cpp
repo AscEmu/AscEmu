@@ -86,12 +86,20 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
             unitTarget = pet;
     }
 
-    std::list<Pet*> summons = _player->getSummons();
+    // Intentionally create a copy of guardians to avoid invalid iterators later
+    const auto summons = _player->getSummonInterface()->getSummons();
     bool alive_summon = false;
-    for (auto itr = summons.begin(); itr != summons.end();)
+    for (auto itr = summons.cbegin(); itr != summons.cend();)
     {
-        const auto summonedPet = (*itr);
+        const auto guardian = (*itr);
         ++itr;
+
+        if (!guardian->isPet())
+            continue;
+
+        const auto summonedPet = dynamic_cast<Pet*>(guardian);
+        if (summonedPet == nullptr)
+            continue;
 
         if (!summonedPet->isAlive())
             continue;
@@ -102,14 +110,14 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
         {
             case PET_ACTION_ACTION:
             {
-                summonedPet->SetPetAction(srlPacket.misc);
+                summonedPet->setPetAction(static_cast<PetCommands>(srlPacket.misc));
                 switch (srlPacket.misc)
                 {
                     case PET_ACTION_ATTACK:
                     {
                         if (unitTarget == summonedPet || !summonedPet->isValidTarget(unitTarget))
                         {
-                            summonedPet->SendActionFeedback(PET_FEEDBACK_CANT_ATTACK_TARGET);
+                            summonedPet->sendActionFeedback(PET_FEEDBACK_CANT_ATTACK_TARGET);
                             return;
                         }
 
@@ -135,7 +143,7 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
                     break;
                     case PET_ACTION_DISMISS:
                     {
-                        summonedPet->Dismiss();
+                        summonedPet->abandonPet();
                     }
                     break;
                 }
@@ -164,7 +172,7 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
                         {
                             if (unitTarget == summonedPet || !summonedPet->isValidTarget(unitTarget))
                             {
-                                summonedPet->SendActionFeedback(PET_FEEDBACK_CANT_ATTACK_TARGET);
+                                summonedPet->sendActionFeedback(PET_FEEDBACK_CANT_ATTACK_TARGET);
                                 return;
                             }
                         }
@@ -210,7 +218,7 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
     }
 
     if (!alive_summon)
-        pet->SendActionFeedback(PET_FEEDBACK_PET_DEAD);
+        pet->sendActionFeedback(PET_FEEDBACK_PET_DEAD);
 }
 
 void WorldSession::handlePetNameQuery(WorldPacket& recvPacket)
@@ -223,37 +231,93 @@ void WorldSession::handlePetNameQuery(WorldPacket& recvPacket)
     if (pet == nullptr)
         return;
 
-    SendPacket(SmsgPetNameQuery(srlPacket.petNumber, pet->GetName(), pet->getPetNameTimestamp(), 0).serialise().get());
-}
-
-namespace PetStableResult
-{
-    enum
-    {
-        NotEnoughMoney = 1,
-        Error = 6,
-        StableSuccess = 8,
-        UnstableSuccess = 9,
-        BuySuccess = 10
-    };
+    SendPacket(SmsgPetNameQuery(srlPacket.petNumber, pet->getName(), pet->getPetNameTimestamp(), 0).serialise().get());
 }
 
 void WorldSession::handleStablePet(WorldPacket& /*recvPacket*/)
 {
-    const auto pet = _player->getFirstPetFromSummons();
-    if (pet != nullptr && pet->IsSummonedPet())
+    // Get current pet or first active pet
+    std::optional<uint8_t> petId = std::nullopt;
+    if (const auto* pet = _player->getPet())
+    {
+        if (pet->isHunterPet())
+            petId = pet->getPetId();
+    }
+    else
+    {
+        for (const auto& [slot, id] : _player->getPetCachedSlotMap())
+        {
+            if (slot >= PET_SLOT_MAX_ACTIVE_SLOT)
+                break;
+
+            const auto petCache = _player->getPetCache(id);
+            if (petCache == nullptr || petCache->type != PET_TYPE_HUNTER)
+                continue;
+
+            petId = id;
+            break;
+        }
+    }
+
+    if (!petId.has_value())
+    {
+        SendPacket(SmsgStableResult(PetStableResult::Error).serialise().get());
         return;
+    }
 
-    const auto playerPet = _player->getPlayerPet(_player->getUnstabledPetNumber());
-    if (playerPet == nullptr)
+    const auto foundSlot = _player->findFreeStablePetSlot();
+
+    // Check if player has a free stable slot
+    if (!foundSlot.has_value())
+    {
+        SendPacket(SmsgStableResult(PetStableResult::Error).serialise().get());
         return;
+    }
 
-    playerPet->stablestate = STABLE_STATE_PASSIVE;
-
-    if (pet != nullptr)
-        pet->Remove(true, true);
+    if (!_player->tryPutPetToSlot(petId.value(), foundSlot.value()))
+        return;
 
     SendPacket(SmsgStableResult(PetStableResult::StableSuccess).serialise().get());
+}
+
+static void performStableSlotSwap(Player* player, uint8_t petNumber)
+{
+    std::optional<uint8_t> currentPetSlot = std::nullopt;
+    for (const auto& [slot, petId] : player->getPetCachedSlotMap())
+    {
+        if (slot >= PET_SLOT_MAX_ACTIVE_SLOT)
+            break;
+
+        // Get current pet's slot or first active pet's slot
+        if (const auto* currentPet = player->getPet())
+        {
+            if (petId == currentPet->getPetId() && currentPet->isHunterPet())
+            {
+                currentPetSlot = slot;
+                break;
+            }
+        }
+        else
+        {
+            const auto petCache = player->getPetCache(petId);
+            if (petCache == nullptr || petCache->type != PET_TYPE_HUNTER)
+                continue;
+
+            currentPetSlot = slot;
+            break;
+        }
+    }
+
+    if (!currentPetSlot.has_value())
+    {
+        player->sendPacket(SmsgStableResult(PetStableResult::Error).serialise().get());
+        return;
+    }
+
+    if (!player->tryPutPetToSlot(petNumber, currentPetSlot.value()))
+        return;
+
+    player->sendPacket(SmsgStableResult(PetStableResult::UnstableSuccess).serialise().get());
 }
 
 void WorldSession::handleUnstablePet(WorldPacket& recvPacket)
@@ -262,17 +326,45 @@ void WorldSession::handleUnstablePet(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto playerPet = _player->getPlayerPet(srlPacket.petNumber);
-    if (playerPet == nullptr)
+    // Check if player is actually performing a swap
+    const auto foundSlot = _player->findFreeActivePetSlot();
+    if (!foundSlot.has_value())
     {
-        sLogger.failure("PET SYSTEM: Player {} tried to unstable non-existent pet {}", std::to_string(_player->getGuid()), srlPacket.petNumber);
+        // Client sends unstable packet instead of swap packet if current pet is dismissed and player starts from stable slot
+        performStableSlotSwap(_player, srlPacket.petNumber);
         return;
     }
+    else
+    {
+        if (!_player->tryPutPetToSlot(srlPacket.petNumber, foundSlot.value()))
+            return;
 
-    if (playerPet->alive)
-        _player->spawnPet(srlPacket.petNumber);
+        // If pet is taken from first stable slot, client automatically shifts next pet in stables to this first slot
+        // Pre-cata pet slots do not actually exist but we must update our serverside pet slots
+        for (uint8_t i = PET_SLOT_FIRST_STABLE_SLOT; i < PET_SLOT_LAST_STABLE_SLOT; ++i)
+        {
+            if (_player->getStableSlotCount() <= (i - PET_SLOT_FIRST_STABLE_SLOT))
+                break;
 
-    playerPet->stablestate = STABLE_STATE_ACTIVE;
+            if (!_player->hasPetInSlot(i))
+            {
+                // Found empty slot, check if there is pet in next slot and move it to this slot
+                const auto nextPetId = _player->getPetIdFromSlot(i + 1);
+                if (nextPetId.has_value())
+                    _player->tryPutPetToSlot(nextPetId.value(), i);
+            }
+        }
+    }
+
+    // Summon unstabled pet if pet is alive and player is able to summon it
+    if (!_player->isPetRequiringTemporaryUnsummon())
+    {
+        if (const auto petCache = _player->getPetCache(srlPacket.petNumber))
+        {
+            if (petCache->alive)
+                _player->_spawnPet(petCache);
+        }
+    }
 
     SendPacket(SmsgStableResult(PetStableResult::UnstableSuccess).serialise().get());
 }
@@ -283,32 +375,8 @@ void WorldSession::handleStableSwapPet(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto playerPet = _player->getPlayerPet(srlPacket.petNumber);
-    if (playerPet == nullptr)
-    {
-        sLogger.failure("PET SYSTEM: Player {} tried to unstable non-existent pet {}", std::to_string(_player->getGuid()), srlPacket.petNumber);
-        return;
-    }
-
-    const auto pet = _player->getFirstPetFromSummons();
-    if (pet != nullptr && pet->IsSummonedPet())
-        return;
-
-    const auto playerPet2 = _player->getPlayerPet(_player->getUnstabledPetNumber());
-    if (playerPet2 == nullptr)
-        return;
-
-    if (pet != nullptr)
-        pet->Remove(true, true);
-
-    playerPet2->stablestate = STABLE_STATE_PASSIVE;
-
-    if (playerPet->alive)
-        _player->spawnPet(srlPacket.petNumber);
-
-    playerPet->stablestate = STABLE_STATE_ACTIVE;
-
-    SendPacket(SmsgStableResult(PetStableResult::UnstableSuccess).serialise().get());
+    // Pet number in packet is always the pet that is in stables
+    performStableSlotSwap(_player, srlPacket.petNumber);
 }
 
 void WorldSession::handleBuyStableSlot(WorldPacket& /*recvPacket*/)
@@ -341,10 +409,10 @@ void WorldSession::handlePetSetActionOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (!_player->getFirstPetFromSummons())
+    if (!_player->getPet())
         return;
 
-    const auto pet = _player->getFirstPetFromSummons();
+    const auto pet = _player->getPet();
     const auto spellInfo = sSpellMgr.getSpellInfo(srlPacket.spell);
     if (spellInfo == nullptr)
         return;
@@ -353,7 +421,7 @@ void WorldSession::handlePetSetActionOpcode(WorldPacket& recvPacket)
     if (petSpellMap == pet->GetSpells()->end())
         return;
 
-    pet->ActionBar[srlPacket.slot] = srlPacket.spell;
+    pet->SetActionBarSlot(srlPacket.slot, srlPacket.spell);
     pet->SetSpellState(srlPacket.spell, srlPacket.state);
 }
 
@@ -363,26 +431,16 @@ void WorldSession::handlePetRename(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    Pet* pet = nullptr;
-    std::list<Pet*> summons = _player->getSummons();
-    for (auto summon : summons)
-    {
-        if (summon->getGuid() == srlPacket.guid.getRawGuid())
-        {
-            pet = summon;
-            break;
-        }
-    }
-
-    if (pet == nullptr)
+    const auto pet = _player->getPet();
+    if (pet == nullptr || pet->getGuid() != srlPacket.guid.getRawGuid())
         return;
 
     const std::string newName = CharacterDatabase.EscapeString(srlPacket.name);
 
-    pet->Rename(newName);
+    pet->rename(newName);
 
     pet->setSheathType(SHEATH_STATE_MELEE);
-    pet->setPetFlags(PET_RENAME_NOT_ALLOWED);
+    pet->removePetFlags(UNIT_CAN_BE_RENAMED);
 
     if (pet->getPlayerOwner() != nullptr)
     {
@@ -405,11 +463,11 @@ void WorldSession::handlePetRename(WorldPacket& recvPacket)
 
 void WorldSession::handlePetAbandon(WorldPacket& /*recvPacket*/)
 {
-    const auto pet = _player->getFirstPetFromSummons();
+    const auto pet = _player->getPet();
     if (pet == nullptr)
         return;
 
-    pet->Dismiss();
+    pet->abandonPet();
 }
 
 void WorldSession::handlePetUnlearn(WorldPacket& recvPacket)
@@ -418,17 +476,19 @@ void WorldSession::handlePetUnlearn(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto pet = _player->getFirstPetFromSummons();
+    const auto pet = _player->getPet();
     if (pet == nullptr || pet->getGuid() != srlPacket.guid.getRawGuid())
         return;
 
-    const uint32_t untrainCost = pet->GetUntrainCost();
+#if VERSION_STRING < Mop
+    const uint32_t untrainCost = pet->getUntrainCost();
     if (!_player->hasEnoughCoinage(untrainCost))
     {
         sendBuyFailed(_player->getGuid(), 0, 2);
         return;
     }
     _player->modCoinage(-static_cast<int32_t>(untrainCost));
+#endif
 
     pet->WipeTalents();
     pet->setPetTalentPoints(pet->GetTPsForLevel(pet->getLevel()));
@@ -441,20 +501,21 @@ void WorldSession::handlePetSpellAutocast(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
+    const auto pet = _player->getPet();
+    if (pet == nullptr)
+        return;
+
     const auto spellInfo = sSpellMgr.getSpellInfo(srlPacket.spellId);
     if (spellInfo == nullptr)
         return;
 
-    std::list<Pet*> summons = _player->getSummons();
-    for (auto summon : summons)
-    {
-        const auto petSpell = summon->GetSpells()->find(spellInfo);
-        if (petSpell == summon->GetSpells()->end())
-            continue;
+    const auto petSpell = pet->GetSpells()->find(spellInfo);
+    if (petSpell == pet->GetSpells()->end())
+        return;
 
-        summon->SetSpellState(srlPacket.spellId, srlPacket.state > 0 ? AUTOCAST_SPELL_STATE : DEFAULT_SPELL_STATE);
-    }
+    pet->SetSpellState(srlPacket.spellId, srlPacket.state > 0 ? AUTOCAST_SPELL_STATE : DEFAULT_SPELL_STATE);
 }
+
 void WorldSession::handlePetCancelAura(WorldPacket& recvPacket)
 {
     CmsgPetCancelAura srlPacket;
@@ -483,7 +544,7 @@ void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto pet = _player->getFirstPetFromSummons();
+    const auto pet = _player->getPet();
     if (pet == nullptr)
         return;
 
@@ -541,7 +602,7 @@ void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto pet = _player->getFirstPetFromSummons();
+    const auto pet = _player->getPet();
     if (pet == nullptr)
         return;
 
