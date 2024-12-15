@@ -248,7 +248,7 @@ void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
     if (spellInfo == nullptr)
         return;
 
-    if (_player->getFirstPetFromSummons() == nullptr && _player->getCharmGuid() == 0)
+    if (_player->getPet() == nullptr && _player->getCharmGuid() == 0)
     {
         sLogger.failure("Received opcode but player {} has no pet.", _player->getGuidLow());
         return;
@@ -265,7 +265,7 @@ void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
         return;
 
     // If pet is summoned by player
-    if (_player->getFirstPetFromSummons() == petUnit)
+    if (_player->getPet() == petUnit)
     {
         // Check does the pet have the spell
         if (!dynamic_cast<Pet*>(petUnit)->HasSpell(srlPacket.spellId))
@@ -365,15 +365,17 @@ void WorldSession::handleCancelTotem(WorldPacket& recvPacket)
     uint8_t totemSlot;
     recvPacket >> totemSlot;
 
-    if (totemSlot >= SUMMON_SLOT_MINIPET)
+    // Clientside slot is zero indexed
+    totemSlot += 1;
+    if (totemSlot >= MAX_SUMMON_SLOT)
     {
         sLogger.failure("Player {} tried to cancel totem from out of range slot {}, ignored.", _player->getGuidLow(), totemSlot);
         return;
     }
 
-    const auto totem = _player->getTotem(SummonSlot(totemSlot + 1));
-    if (totem != nullptr)
-        totem->unSummon();
+    const auto summon = _player->getSummonInterface()->getSummonInSlot(static_cast<SummonSlot>(totemSlot));
+    if (summon != nullptr)
+        summon->unSummon();
 }
 
 void WorldSession::handleUpdateProjectilePosition(WorldPacket& recvPacket)

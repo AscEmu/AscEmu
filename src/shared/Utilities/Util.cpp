@@ -50,7 +50,7 @@ namespace Util
             return 8;
 
         // Cata
-        if (langstr.compare("ptBR") == 0)
+        if (langstr.compare("ptBR") == 0 || langstr.compare("ptPT") == 0)
             return 10;
 
         // Mop
@@ -74,7 +74,7 @@ namespace Util
             case 7: return "esMX";
             case 8: return "ruRU";
             // Cata
-            case 10: return "ptBR";
+            case 10: return "ptBR"; // also ptPT
             // Mop
             case 11: return "itIT";
 

@@ -396,6 +396,7 @@ public:
     uint32_t m_lastTransportUpdateTimer = 0;
     uint32_t m_lastDynamicUpdateTimer = 0;
     uint32_t m_lastPlayerUpdateTimer = 0;
+    uint32_t m_lastPetUpdateTimer = 0;
     uint32_t m_lastCreatureUpdateTimer = 0;
     uint32_t m_lastGameObjectUpdateTimer = 0;
     uint32_t m_lastSessionUpdateTimer = 0;

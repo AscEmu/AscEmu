@@ -325,15 +325,15 @@ void WorldSession::LogoutPlayer(bool Save)
         _player->m_loadHealth = _player->getHealth();
         _player->m_loadMana = _player->getPower(POWER_TYPE_MANA);
 
-
-        _player->getSummonInterface()->removeAllSummons();
-
-        _player->dismissActivePets();
-
         // _player->SaveAuras();
 
         if (Save)
             _player->saveToDB(false);
+
+        // Remove pet/summons after save so current pet is properly saved
+        // Keep pet active so it will be summoned again when player logs in
+        _player->unSummonPetTemporarily();
+        _player->getSummonInterface()->removeAllSummons();
 
         // Dismounting with removeAllAuras may in certain cases add a player
         // aura,
@@ -1096,8 +1096,8 @@ void WorldSession::registerOpcodeHandler()
     // Pets
     registry.registerOpcode(MSG_LIST_STABLED_PETS, &WorldSession::handleStabledPetList, true, true, true, false, false);
 
-    registry.registerOpcode(CMSG_PET_ACTION, &WorldSession::handlePetAction, true, true, true, false, false);
-    registry.registerOpcode(CMSG_PET_NAME_QUERY, &WorldSession::handlePetNameQuery, true, true, true, false, false);
+    registry.registerOpcode(CMSG_PET_ACTION, &WorldSession::handlePetAction, true, true, true, true, false);
+    registry.registerOpcode(CMSG_PET_NAME_QUERY, &WorldSession::handlePetNameQuery, true, true, true, true, false);
     registry.registerOpcode(CMSG_BUY_STABLE_SLOT, &WorldSession::handleBuyStableSlot, true, true, true, false, false);
     registry.registerOpcode(CMSG_STABLE_PET, &WorldSession::handleStablePet, true, true, true, false, false);
     registry.registerOpcode(CMSG_UNSTABLE_PET, &WorldSession::handleUnstablePet, true, true, true, false, false);

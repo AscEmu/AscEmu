@@ -66,7 +66,7 @@ bool MastersCall(uint8_t effectIndex, Spell* pSpell)
     if (caster == NULL)
         return true;
 
-    Pet* Summon = caster->getFirstPetFromSummons();
+    Pet* Summon = caster->getPet();
     if (Summon == NULL || Summon->isDead())
         return true;
 

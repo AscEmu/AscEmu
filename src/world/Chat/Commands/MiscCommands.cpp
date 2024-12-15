@@ -257,8 +257,7 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
             RedSystemMessage(m_session, "Player %s is not online or does not exist!", args);
             return true;
         }
-        named_player->setHealth(0);
-        named_player->kill();
+        named_player->die(nullptr, 0, 0);
         RedSystemMessage(named_player->getSession(), "You were killed by %s with a GM command.", m_session->GetPlayer()->getName().c_str());
         GreenSystemMessage(m_session, "Killed player %s.", args);
         sGMLog.writefromsession(m_session, "used kill command on Player Name: %s Guid: %s ", named_player->getName().c_str(), std::to_string(named_player->getGuid()).c_str());
@@ -289,7 +288,7 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
                     auto player = static_cast<Player*>(unit_target);
 
                     player->setHealth(0);
-                    player->kill();
+                    player->die(nullptr, 0, 0);
                     RedSystemMessage(player->getSession(), "You were killed by %s with a GM command.", m_session->GetPlayer()->getName().c_str());
                     GreenSystemMessage(m_session, "Killed player %s.", player->getName().c_str());
                     sGMLog.writefromsession(m_session, "used kill command on Player Name: %s Guid: %s", m_session->GetPlayer()->getName().c_str(), std::to_string(player->getGuid()).c_str());

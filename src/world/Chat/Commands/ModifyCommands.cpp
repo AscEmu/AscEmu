@@ -983,6 +983,7 @@ bool ChatHandler::HandleModifyDynamicflags(const char* args, WorldSession* sessi
     return false;
 }
 
+#if VERSION_STRING < Cata
 //.modify happiness
 bool ChatHandler::HandleModifyHappiness(const char* args, WorldSession* session)
 {
@@ -1020,6 +1021,7 @@ bool ChatHandler::HandleModifyHappiness(const char* args, WorldSession* session)
 
     return false;
 }
+#endif
 
 //.modify boundingradius
 bool ChatHandler::HandleModifyBoundingradius(const char* args, WorldSession* session)

@@ -418,7 +418,7 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
         if (unit->isPlayer())
             unitName = dynamic_cast<Player*>(unit)->getName();
         else if (unit->isPet())
-            unitName = dynamic_cast<Pet*>(unit)->GetName();
+            unitName = dynamic_cast<Pet*>(unit)->getName();
         else
             unitName = dynamic_cast<Creature*>(unit)->GetCreatureProperties()->Name;
 
@@ -483,7 +483,7 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
         }
         else if (unit->isPet())
         {
-            unitName = dynamic_cast<Pet*>(unit)->GetName().c_str();
+            unitName = dynamic_cast<Pet*>(unit)->getName().c_str();
             nameLength = static_cast<uint32_t>(strlen(unitName)) + 1;
         }
         else

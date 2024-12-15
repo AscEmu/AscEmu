@@ -271,7 +271,7 @@ public:
         if (pTarget->isPlayer())
             sprintf(msg, "And stay down, %s.", dynamic_cast<Player*>(pTarget)->getName().c_str());
         else if (pTarget->GetTypeFromGUID() == HIGHGUID_TYPE_PET)
-            sprintf(msg, "And stay down, %s.", dynamic_cast<Pet*>(pTarget)->GetName().c_str());
+            sprintf(msg, "And stay down, %s.", dynamic_cast<Pet*>(pTarget)->getName().c_str());
 
         sendChatMessage(CHAT_MSG_MONSTER_YELL, 5781, msg);
     }

@@ -242,6 +242,8 @@ struct CreatureProperties
     uint32_t getInvisibleModelForTriggerNpc() const;
     uint32_t getVisibleModelForTriggerNpc() const;
 
+    bool isExotic() const;
+
     // MIT End
     // APGL Start
 

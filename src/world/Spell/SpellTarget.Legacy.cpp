@@ -77,8 +77,8 @@ void Spell::FillTargetMap(uint32 i)
     /*if (TargetType & SPELL_TARGET_OBJECT_CURTOTEMS && u_caster != NULL)
         for (uint32 i=1; i<5; ++i) //totem slots are 1, 2, 3, 4
         AddTarget(i, TargetType, u_caster->m_summonslot[i]);*/
-    if (TargetType & SPELL_TARGET_OBJECT_CURPET && p_caster != nullptr)
-        AddTarget(i, TargetType, p_caster->getFirstPetFromSummons());
+    if (TargetType & SPELL_TARGET_OBJECT_CURPET && u_caster != nullptr)
+        AddTarget(i, TargetType, u_caster->getPet());
     if (TargetType & SPELL_TARGET_OBJECT_PETOWNER)
     {
         WoWGuid wowGuid;

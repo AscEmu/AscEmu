@@ -292,7 +292,23 @@ Unit* GameObject::getUnitOwner()
     return nullptr;
 }
 
+Unit const* GameObject::getUnitOwner() const
+{
+    if (getCreatedByGuid() != 0)
+        return getWorldMapUnit(getCreatedByGuid());
+
+    return nullptr;
+}
+
 Player* GameObject::getPlayerOwner()
+{
+    if (getCreatedByGuid() != 0)
+        return getWorldMapPlayer(getCreatedByGuid());
+
+    return nullptr;
+}
+
+Player const* GameObject::getPlayerOwner() const
 {
     if (getCreatedByGuid() != 0)
         return getWorldMapPlayer(getCreatedByGuid());

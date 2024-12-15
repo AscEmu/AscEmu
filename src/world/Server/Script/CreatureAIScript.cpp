@@ -801,7 +801,7 @@ void CreatureAIScript::setZoneWideCombat(Creature* creature)
     if (!map->hasPlayers())
         return;
 
-    for (auto player : map->getPlayers())
+    for (const auto& player : map->getPlayers())
     {
         if (Player* plr = player.second)
         {
@@ -810,8 +810,8 @@ void CreatureAIScript::setZoneWideCombat(Creature* creature)
 
             creature->getAIInterface()->onHostileAction(plr);
 
-            for (auto pet : plr->getSummons())
-                creature->getAIInterface()->onHostileAction(pet->ToCreature());
+            for (const auto& summon : plr->getSummonInterface()->getSummons())
+                creature->getAIInterface()->onHostileAction(summon);
 
 #ifdef FT_VEHICLES
             if (Unit* vehicle = plr->getVehicleBase())

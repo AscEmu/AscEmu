@@ -5,8 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "ChatDefines.hpp"
 #include "CommonTypes.hpp"
 #include "AEVersion.hpp"
+#include "Logging/StringFormat.hpp"
 
 #include <string>
 
@@ -392,7 +394,9 @@ public:
     bool HandleModifyFlags(const char* args, WorldSession* session);
     bool HandleModifyFaction(const char* args, WorldSession* session);
     bool HandleModifyDynamicflags(const char* args, WorldSession* session);
+#if VERSION_STRING < Cata
     bool HandleModifyHappiness(const char* args, WorldSession* session);
+#endif
     bool HandleModifyBoundingradius(const char* args, WorldSession* session);
     bool HandleModifyCombatreach(const char* args, WorldSession* session);
     bool HandleModifyEmotestate(const char* args, WorldSession* session);
