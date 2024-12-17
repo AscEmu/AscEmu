@@ -2438,10 +2438,10 @@ std::shared_ptr<LevelInfo> ObjectMgr::getLevelInfo(uint32_t _race, uint32_t _cla
     return nullptr;
 }
 
-std::shared_ptr<Pet> ObjectMgr::createPet(uint32_t _entry)
+Pet* ObjectMgr::createPet(uint32_t _entry, WDB::Structures::SummonPropertiesEntry const* properties)
 {
     const uint32_t guid = ++m_hiPetGuid;
-    return std::make_shared<Pet>(WoWGuid(guid, _entry, HIGHGUID_TYPE_PET));
+    return new Pet(WoWGuid(guid, _entry, HIGHGUID_TYPE_PET), properties);
 }
 
 void ObjectMgr::loadPetSpellCooldowns()

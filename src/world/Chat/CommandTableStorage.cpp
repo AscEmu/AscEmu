@@ -325,7 +325,9 @@ void CommandTableStorage::Init()
         { "flags",                  'm', &ChatHandler::HandleModifyFlags,                                  "Mods flags of the selected target.",                                                nullptr },
         { "faction",                'm', &ChatHandler::HandleModifyFaction,                                "Mods faction template of the selected target.",                                     nullptr },
         { "dynamicflags",           'm', &ChatHandler::HandleModifyDynamicflags,                           "Mods dynamic flags of the selected target.",                                        nullptr },
+#if VERSION_STRING < Cata
         { "happiness",              'm', &ChatHandler::HandleModifyHappiness,                              "Mods happiness value of the selected target.",                                      nullptr },
+#endif
         { "boundingradius",         'm', &ChatHandler::HandleModifyBoundingradius,                         "Mods bounding radius of the selected target.",                                      nullptr },
         { "combatreach",            'm', &ChatHandler::HandleModifyCombatreach,                            "Mods combat reach of the selected target.",                                         nullptr },
         { "emotestate",             'm', &ChatHandler::HandleModifyEmotestate,                             "Mods Unit emote state of the selected target.",                                     nullptr },

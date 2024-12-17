@@ -54,7 +54,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgMoveKnockBack.h"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Creatures/CreatureGroups.h"
-#include "Creatures/Summons/SummonHandler.hpp"
 #include "Management/AchievementMgr.h"
 #include "Management/Group.h"
 #include "Management/ItemInterface.h"
@@ -90,7 +89,7 @@ using namespace AscEmu::Packets;
 Unit::Unit() :
     movespline(new MovementMgr::MoveSpline()),
     i_movementManager(new MovementManager(this)),
-    m_summonInterface(new SummonHandler),
+    m_summonInterface(std::make_unique<SummonHandler>(this)),
     m_combatHandler(this),
     m_aiInterface(new AIInterface())
 {
@@ -104,7 +103,6 @@ Unit::Unit() :
 
     m_lastAiInterfaceUpdateTime = Util::getMSTime();
 
-    m_summonInterface->setUnitOwner(this);
     m_aiInterface->Init(this);
     getThreatManager().initialize();
 }
@@ -164,8 +162,7 @@ Unit::~Unit()
 
     m_singleTargetAura.clear();
 
-    delete m_summonInterface;
-    m_summonInterface = nullptr;
+    m_summonInterface->removeAllSummons();
 
     clearHealthBatch();
 
@@ -317,6 +314,8 @@ void Unit::RemoveFromWorld(bool free_guid)
             unit->Delete();
     }
 #endif
+
+    m_summonInterface->removeAllSummons();
 
     if (m_dynamicObject != nullptr)
         m_dynamicObject->remove();
@@ -1520,6 +1519,8 @@ void Unit::removePvpFlags(uint8_t pvpFlags)
 
 uint8_t Unit::getPetFlags() const { return unitData()->field_bytes_2.s.pet_flag; }
 void Unit::setPetFlags(uint8_t petFlags) { write(unitData()->field_bytes_2.s.pet_flag, petFlags); }
+void Unit::addPetFlags(uint8_t petFlags) { setPetFlags(getPetFlags() | petFlags); }
+void Unit::removePetFlags(uint8_t petFlags) { setPetFlags(getPetFlags() & ~petFlags); }
 
 uint8_t Unit::getShapeShiftForm() const { return unitData()->field_bytes_2.s.shape_shift_form; }
 void Unit::setShapeShiftForm(uint8_t shapeShiftForm) { write(unitData()->field_bytes_2.s.shape_shift_form, shapeShiftForm); }
@@ -2561,23 +2562,14 @@ void Unit::setSpeedRate(UnitSpeedType mtype, float rate, bool current)
     };
 #endif
 
-    if (getObjectTypeId() == TYPEID_PLAYER)
+    if (auto* const plr = isPlayer() ? dynamic_cast<Player*>(this) : nullptr)
     {
         // register forced speed changes for WorldSession::HandleForceSpeedChangeAck
         // and do it only for real sent packets and use run for run/mounted as client expected
-        ++ToPlayer()->m_forced_speed_changes[mtype];
+        ++plr->m_forced_speed_changes[mtype];
 
         if (!isInCombat())
-        {
-            std::list<Pet*> ownerSummons = ToPlayer()->getSummons();
-            if (ownerSummons.size())
-            {
-                for (std::list<Pet*>::iterator itr = ownerSummons.begin(); itr != ownerSummons.end(); ++itr)
-                {
-                    (*itr)->setSpeedRate(mtype, m_UnitSpeedInfo.m_currentSpeedRate[mtype], false);
-                }
-            }
-        }
+            plr->getSummonInterface()->notifyOnOwnerSpeedChange(mtype, m_UnitSpeedInfo.m_currentSpeedRate[mtype], false);
     }
 
     Player* player_mover = getWorldMapPlayer(getCharmedByGuid());
@@ -2638,23 +2630,14 @@ void Unit::setSpeedRate(UnitSpeedType type, float value, bool current)
     // Update Also For Movement Generators
     propagateSpeedChange();
 
-    if (getObjectTypeId() == TYPEID_PLAYER)
+    if (auto* const plr = isPlayer() ? dynamic_cast<Player*>(this) : nullptr)
     {
         // register forced speed changes for WorldSession::HandleForceSpeedChangeAck
         // and do it only for real sent packets and use run for run/mounted as client expected
-        ++ToPlayer()->m_forced_speed_changes[type];
+        ++plr->m_forced_speed_changes[type];
 
         if (!isInCombat())
-        {
-            std::list<Pet*> ownerSummons = ToPlayer()->getSummons();
-            if (ownerSummons.size())
-            {
-                for (std::list<Pet*>::iterator itr = ownerSummons.begin(); itr != ownerSummons.end(); ++itr)
-                {
-                    (*itr)->setSpeedRate(type, m_UnitSpeedInfo.m_currentSpeedRate[type], false);
-                }
-            }
-        }
+            plr->getSummonInterface()->notifyOnOwnerSpeedChange(type, m_UnitSpeedInfo.m_currentSpeedRate[type], false);
     }
 
     WorldPacket data;
@@ -7034,21 +7017,8 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
             }
         }
 
-        if (victim->isPlayer())
-        {
-            // Make victim's pet react to attacker
-            ///\ todo: what about other summons?
-            const auto summons = dynamic_cast<Player*>(victim)->getSummons();
-            for (const auto& pet : summons)
-            {
-                if (pet->getAIInterface()->getReactState() != REACT_PASSIVE)
-                {
-                    // Start Combat
-                    pet->getAIInterface()->onHostileAction(this);
-                    pet->HandleAutoCastEvent(AUTOCAST_EVENT_OWNER_ATTACKED);
-                }
-            }
-        }
+        // Make victim's pets react to attacker
+        victim->getSummonInterface()->notifyOnOwnerAttacked(this);
     }
 
     victim->setStandState(STANDSTATE_STAND);
@@ -7236,13 +7206,12 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
                         if (xp > 0)
                         {
                             tagger->giveXp(xp, getGuid(), true);
-
                             // Give XP to pets also
-                            if (tagger->getFirstPetFromSummons() != nullptr && tagger->getFirstPetFromSummons()->CanGainXP())
+                            if (tagger->getPet() != nullptr && tagger->getPet()->canGainXp())
                             {
-                                xp = CalculateXpToGive(this, tagger->getFirstPetFromSummons());
+                                xp = CalculateXpToGive(this, tagger->getPet());
                                 if (xp > 0)
-                                    tagger->getFirstPetFromSummons()->giveXp(xp);
+                                    tagger->getPet()->giveXp(xp);
                             }
                         }
                     }
@@ -7747,22 +7716,8 @@ uint32_t Unit::_handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageG
             }
         }
 
-        if (isPlayer())
-        {
-            // Make victim's pet react to attacker
-            ///\ todo: what about other summons?
-            const auto summons = dynamic_cast<Player*>(this)->getSummons();
-            for (const auto& pet : summons)
-            {
-                if (pet->getAIInterface()->getReactState() != REACT_PASSIVE)
-                {
-                    // Start Combat
-                    // todo: handle this in pet system
-                    pet->getAIInterface()->onHostileAction(attacker);
-                    pet->HandleAutoCastEvent(AUTOCAST_EVENT_OWNER_ATTACKED);
-                }
-            }
-        }
+        // Make victim's pets react to attacker
+        m_summonInterface->notifyOnOwnerAttacked(attacker);
     }
 
     // Create heal effect for leech effects
@@ -7887,17 +7842,28 @@ DeathState Unit::getDeathState() const { return m_deathState; }
 //////////////////////////////////////////////////////////////////////////////////////////
 // Summons
 
-TotemSummon* Unit::getTotem(SummonSlot slot) const
+Pet* Unit::getPet() const
 {
-    if (slot >= SUMMON_SLOT_MINIPET)
-        return nullptr;
-
-    return getSummonInterface()->getTotemInSlot(slot);
+    return m_summonInterface->getPet();
 }
 
-SummonHandler* Unit::getSummonInterface() const
+TotemSummon* Unit::getTotem(SummonSlot slot) const
 {
-    return m_summonInterface;
+    auto* const totem = m_summonInterface->getSummonInSlot(slot);
+    if (totem == nullptr || !totem->isTotem())
+        return nullptr;
+
+    return dynamic_cast<TotemSummon*>(totem);
+}
+
+SummonHandler* Unit::getSummonInterface()
+{
+    return m_summonInterface.get();
+}
+
+SummonHandler const* Unit::getSummonInterface() const
+{
+    return m_summonInterface.get();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -8413,7 +8379,7 @@ void Unit::exitVehicle(LocationVector const* exitPosition)
 
     // Spawn active Pets
     if (player)
-        player->spawnActivePet();
+        player->summonTemporarilyUnsummonedPet();
 
     // Despawn Accessories
     if (vehicle->getBase()->hasUnitStateFlag(UNIT_STATE_ACCESSORY) && vehicle->getBase()->getObjectTypeId() == TYPEID_UNIT)
@@ -8498,7 +8464,8 @@ void Unit::mount(uint32_t mount, uint32_t VehicleId, uint32_t creatureEntry)
         }
 #endif
         // unsummon pet
-        player->dismissActivePets();
+        if (player->isPetRequiringTemporaryUnsummon())
+            player->unSummonPetTemporarily();
 
         // if we have charmed npc, stun him also (everywhere)
         if (Unit* charm = getWorldMapUnit(getCharmGuid()))
@@ -8518,7 +8485,7 @@ void Unit::mount(uint32_t mount, uint32_t VehicleId, uint32_t creatureEntry)
     removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_MOUNT);
 }
 
-void Unit::dismount()
+void Unit::dismount(bool resummonPet/* = true*/)
 {
     if (!isMounted())
         return;
@@ -8541,6 +8508,10 @@ void Unit::dismount()
             removeAllAurasById(player->getMountSpellId());
             player->setMountSpellId(0);
         }
+
+        //if we had pet then respawn
+        if (resummonPet)
+            player->summonTemporarilyUnsummonedPet();
     }
 
     WorldPacket data(SMSG_DISMOUNT, 8);
@@ -8558,7 +8529,7 @@ void Unit::dismount()
     }
 #endif
 
-    removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_MOUNT);
+    removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_DISMOUNT);
 
     // if we have charmed npc, remove stun also
     if (Unit* charm = getWorldMapUnit(getCharmGuid()))
@@ -8911,7 +8882,7 @@ void Unit::possess(Unit* unitTarget, uint32_t delay)
 
     unitTarget->updateInRangeOppositeFactionSet();
 
-    if (!(unitTarget->isPet() && dynamic_cast<Pet*>(unitTarget) == playerController->getFirstPetFromSummons()))
+    if (!(unitTarget->isPet() && dynamic_cast<Pet*>(unitTarget) == playerController->getPet()))
     {
         WorldPacket data(SMSG_PET_SPELLS, 4 * 4 + 20);
         unitTarget->buildPetSpellList(data);
@@ -8961,7 +8932,7 @@ void Unit::unPossess()
 
     playerController->sendClientControlPacket(unitTarget, 0);
 
-    if (!(unitTarget->isPet() && dynamic_cast<Pet*>(unitTarget) == playerController->getFirstPetFromSummons()))
+    if (!(unitTarget->isPet() && dynamic_cast<Pet*>(unitTarget) == playerController->getPet()))
         playerController->sendEmptyPetSpellList();
 
     setMoveRoot(false);
@@ -9012,17 +8983,6 @@ void Unit::eventModelChange()
         m_modelHalfSize = displayBoundingBox->high[2] / 2;
     else
         m_modelHalfSize = 1.0f;
-}
-
-void Unit::removeFieldSummon()
-{
-    const uint64_t guid = getSummonGuid();
-    if (guid && getWorldMap())
-    {
-        if (Creature* summon = dynamic_cast<Creature*>(getWorldMap()->getUnit(guid)))
-            summon->RemoveFromWorld(false, true);
-        setSummonGuid(0);
-    }
 }
 
 void Unit::aggroPvPGuards()
@@ -9436,11 +9396,11 @@ void Unit::giveGroupXP(Unit* unitVictim, Player* playerInGroup)
                 sEventMgr.ModifyEventTimeLeft(activePlayerList[i], EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000);
             }
 
-            if (plr->getFirstPetFromSummons() && plr->getFirstPetFromSummons()->CanGainXP())
+            if (plr->getPet() && plr->getPet()->canGainXp())
             {
-                const auto petXP = static_cast<uint32_t>(static_cast<float>(CalculateXpToGive(unitVictim, plr->getFirstPetFromSummons())) * xpMod);
+                const auto petXP = static_cast<uint32_t>(static_cast<float>(CalculateXpToGive(unitVictim, plr->getPet())) * xpMod);
                 if (petXP > 0)
-                    plr->getFirstPetFromSummons()->giveXp(petXP);
+                    plr->getPet()->giveXp(petXP);
             }
         }
     }
@@ -10986,9 +10946,11 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 }
             }
 
+#if VERSION_STRING < Cata
             //pet happiness state dmg modifier
-            if (isPet() && !static_cast<Pet*>(this)->IsSummonedPet())
-                dmg.fullDamage = (dmg.fullDamage <= 0) ? 0 : Util::float2int32(dmg.fullDamage * static_cast<Pet*>(this)->GetHappinessDmgMod());
+            if (isPet() && static_cast<Pet*>(this)->isHunterPet())
+                dmg.fullDamage = (dmg.fullDamage <= 0) ? 0 : Util::float2int32(dmg.fullDamage * static_cast<Pet*>(this)->getHappinessDamageMod());
+#endif
 
             if (dmg.fullDamage < 0)
                 dmg.fullDamage = 0;

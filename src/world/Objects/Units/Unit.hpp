@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Data/WoWUnit.hpp"
 #include "ThreatHandler.h"
 #include "CombatHandler.hpp"
+#include "Creatures/Summons/SummonHandler.hpp"
 #include "Management/Loot/Loot.hpp"
 #include "Spell/Definitions/AuraEffects.hpp"
 #include "Spell/Definitions/AuraSlots.hpp"
@@ -47,7 +48,6 @@ namespace MySQLStructure
 class SpellCastTargets;
 struct AbstractFollower;
 enum SummonSlot : uint8_t;
-class SummonHandler;
 struct DamageSplitTarget;
 template <class T>
 using Optional = std::optional<T>;
@@ -58,7 +58,6 @@ class DynamicObject;
 class GameObject;
 class Group;
 class Object;
-class Pet;
 class Spell;
 class SpellProc;
 class TotemSummon;
@@ -371,6 +370,7 @@ public:
     void setAnimationFlags(uint8_t animationFlags);
     //bytes_1 end
 
+    // Note; this is not same as serverside PetCache::number or Pet::m_petId, this is clientside pet number which is pet's low guid
     uint32_t getPetNumber() const;
     void setPetNumber(uint32_t timestamp);
 
@@ -458,6 +458,8 @@ public:
 
     uint8_t getPetFlags() const;
     void setPetFlags(uint8_t petFlags);
+    void addPetFlags(uint8_t petFlags);
+    void removePetFlags(uint8_t petFlags);
 
     uint8_t getShapeShiftForm() const;
     void setShapeShiftForm(uint8_t shapeShiftForm);
@@ -1104,12 +1106,15 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Summons
 
+    // Returns unit's current pet from SummonInterface
+    Pet* getPet() const;
     TotemSummon* getTotem(SummonSlot slot) const;
 
-    SummonHandler* getSummonInterface() const;
+    SummonHandler* getSummonInterface();
+    SummonHandler const* getSummonInterface() const;
 
 private:
-    SummonHandler* m_summonInterface = nullptr;
+    std::unique_ptr<SummonHandler> m_summonInterface = nullptr;
 
 #ifdef FT_VEHICLES
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -1143,7 +1148,7 @@ public:
 
     bool isMounted() const { return hasUnitFlags(UNIT_FLAG_MOUNT); }
     void mount(uint32_t mount, uint32_t vehicleId = 0, uint32_t creatureEntry = 0);
-    void dismount();
+    void dismount(bool resummonPet = true);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Unit Owner
@@ -1209,11 +1214,11 @@ public:
     uint16_t hasNoInterrupt() const { return m_noInterrupt; }
     uint16_t m_noInterrupt = 0;
 
-protected:
     void removeGarbage();
     void addGarbageAura(Aura* aur);
     void addGarbagePet(Pet* pet);
 
+protected:
     std::list<Aura*> m_GarbageAuras;
     std::list<Pet*> m_GarbagePets;
 
@@ -1223,8 +1228,6 @@ public:
     float getChanceToDaze(Unit* target);
 
     void eventModelChange();
-
-    void removeFieldSummon();
 
     void aggroPvPGuards();
 
@@ -1362,12 +1365,15 @@ public:
     int32_t m_rangedDamageTaken = 0;
 
     // Used instead of WoWUnit field
+    // note: this is base damage whereas WoWUnit field is the calculated damage -Appled
     float m_baseDamage[2] = {0};
 
     // Used instead of WoWUnit field
+    // note: this is base damage whereas WoWUnit field is the calculated damage -Appled
     float m_baseOffhandDamage[2] = {0};
 
     // Used instead of WoWUnit field
+    // note: this is base damage whereas WoWUnit field is the calculated damage -Appled
     float m_baseRangedDamage[2] = {0};
 
     // Used in Aura::SpellAuraRAPAttackerBonus

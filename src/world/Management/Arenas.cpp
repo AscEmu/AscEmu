@@ -252,7 +252,7 @@ void Arena::HookOnPlayerKill(Player* _player, Player* _playerVictim)
 {
     if (!m_hasStarted)
     {
-        _player->kill(); //cheater.
+        _player->die(nullptr, 0, 0); //cheater.
         return;
     }
 

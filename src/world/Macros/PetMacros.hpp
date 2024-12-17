@@ -13,7 +13,8 @@ This file is released under the MIT license. See README-MIT for more information
 #define PET_SUCCUBUS 1863
 #define PET_FELHUNTER 417
 #define PET_FELGUARD 17252
-#define SHADOWFIEND 19668
+#define PET_SHADOWFIEND 19668
+#define PET_GHOUL 26125
 
 /// -
 //#define SPIRITWOLF 29264

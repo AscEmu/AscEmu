@@ -2,7 +2,7 @@
 
 Master                                                         | Development
 :------------------------------------------------------------: | :----------------------------------------------------------------:
-[![MasterCircle][MasterCircleBadge]][MasterCircleUrl]          | [![DevelopCircle][DevelopCircleBadge]][DevelopCircleUrl]         |
+[![AscEmu CI](https://github.com/AscEmu/AscEmu/actions/workflows/gcc-linux-test-x64.yml/badge.svg)](https://github.com/AscEmu/AscEmu/actions/workflows/gcc-linux-test-x64.yml)         | [![AscEmu CI](https://github.com/AscEmu/AscEmu/actions/workflows/gcc-linux-test-x64.yml/badge.svg)](https://github.com/AscEmu/AscEmu/actions/workflows/gcc-linux-test-x64.yml)        |
 [![MasterAppYeyor][MasterAppYeyorBadge]][MasterAppYeyorUrl]    | [![DevelopAppYeyor][DevelopAppYeyorBadge]][DevelopAppYeyorUrl]   |
 
 ## Introduction

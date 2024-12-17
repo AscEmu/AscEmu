@@ -5986,7 +5986,7 @@ int LuaUnit::ResetPetTalents(lua_State* /*L*/, Unit* ptr)
         return 0;
     }
 
-    Pet* pet = dynamic_cast<Player*>(ptr)->getFirstPetFromSummons();
+    Pet* pet = dynamic_cast<Player*>(ptr)->getPet();
     if (pet != nullptr)
     {
         pet->WipeTalents();

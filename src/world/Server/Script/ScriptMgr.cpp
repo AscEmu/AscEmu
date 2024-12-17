@@ -807,7 +807,6 @@ CreatureAIScript* ScriptMgr::CreateAIScriptClassForEntry(Creature* pCreature)
 {
     uint32_t entry = pCreature->getEntry();
 
-    std::lock_guard lock(m_creaturesMutex);
     CreatureCreateMap::iterator itr = _creatures.find(entry);
     if (itr == _creatures.end())
         return nullptr;

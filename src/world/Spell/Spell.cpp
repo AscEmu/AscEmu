@@ -27,6 +27,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellPacketFlags.hpp"
 #include "Definitions/SpellState.hpp"
 #include "Definitions/SpellRanged.hpp"
+#include "Definitions/SummonControlTypes.hpp"
 #include "Logging/Logger.hpp"
 #include "Management/Group.h"
 #include "Management/Loot/LootMgr.hpp"
@@ -1941,25 +1942,26 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                         return SPELL_FAILED_DONT_REPORT;
                     }
 
-                    if (p_caster->getFirstPetFromSummons() != nullptr || p_caster->getUnstabledPetNumber() != 0)
+                    if (p_caster->getPet() != nullptr || !p_caster->findFreeActivePetSlot().has_value())
                     {
                         SendTameFailure(PETTAME_ANOTHERSUMMONACTIVE);
                         return SPELL_FAILED_DONT_REPORT;
                     }
 
-                    if (p_caster->getPetCount() >= 5)
+                    if (p_caster->getPetCount() >= PET_SLOT_MAX_TOTAL_PET_COUNT)
                     {
                         SendTameFailure(PETTAME_TOOMANY);
                         return SPELL_FAILED_DONT_REPORT;
                     }
 
+#if VERSION_STRING >= WotLK
                     // Check for Beast Mastery spell with exotic creatures
-                    ///\ todo: move this to spell script
-                    if (!p_caster->hasSpell(53270) && creatureTarget->IsExotic())
+                    if (!p_caster->hasAuraWithAuraEffect(SPELL_AURA_ALLOW_TAME_PET_TYPE) && creatureTarget->IsExotic())
                     {
                         SendTameFailure(PETTAME_CANTCONTROLEXOTIC);
                         return SPELL_FAILED_DONT_REPORT;
                     }
+#endif
 
                     // All good so far, check creature's family
                     const auto creatureFamily = sCreatureFamilyStore.lookupEntry(creatureTarget->GetCreatureProperties()->Family);
@@ -2083,11 +2085,38 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         // Check if spell requires a dead pet
         if (getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_REQ_DEAD_PET)
         {
-            const auto pet = p_caster->getFirstPetFromSummons();
-            if (pet == nullptr)
-                return SPELL_FAILED_NO_PET;
-            if (pet->isAlive())
-                return SPELL_FAILED_TARGET_NOT_DEAD;
+            const auto pet = p_caster->getPet();
+            if (pet != nullptr)
+            {
+                if (pet->isAlive())
+                    return SPELL_FAILED_ALREADY_HAVE_SUMMON;
+            }
+            else
+            {
+                // Find dead pet from any active slot
+                auto foundDeadPet = false;
+                for (const auto& [petSlot, petId] : p_caster->getPetCachedSlotMap())
+                {
+                    if (petSlot >= PET_SLOT_MAX_ACTIVE_SLOT)
+                        break;
+
+                    const auto petCache = p_caster->getPetCache(petId);
+                    if (petCache == nullptr)
+                        continue;
+
+                    if (!petCache->alive)
+                    {
+                        foundDeadPet = true;
+                        // Save pet id for later use
+                        add_damage = petCache->number;
+                        break;
+                    }
+                }
+
+                // todo: probably not correct error message
+                if (!foundDeadPet)
+                    return SPELL_FAILED_BAD_TARGETS;
+            }
         }
 
         // Check if spell effect requires pet target
@@ -2095,7 +2124,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         {
             if (getSpellInfo()->getEffectImplicitTargetA(i) == EFF_TARGET_PET)
             {
-                const auto pet = p_caster->getFirstPetFromSummons();
+                const auto pet = p_caster->getPet();
                 if (pet == nullptr)
                     return m_triggeredByAura ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_NO_PET;
                 else if (!pet->isAlive())
@@ -2428,14 +2457,29 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
 #endif
             } break;
             case SPELL_EFFECT_SUMMON:
+            case SPELL_EFFECT_SUMMON_PET:
             {
-                if (p_caster == nullptr)
+                if (u_caster == nullptr)
                     break;
 
-                if (p_caster->getFirstPetFromSummons() != nullptr && !(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_DISMISS_CURRENT_PET))
-                    return SPELL_FAILED_ALREADY_HAVE_SUMMON;
+                if (u_caster->getPet() != nullptr && !(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_DISMISS_CURRENT_PET))
+                {
+                    if (getSpellInfo()->getEffect(i) == SPELL_EFFECT_SUMMON)
+                    {
+                        // Check from summon properties if this new pet is actually a pet
+                        if (const auto summonProperties = sSummonPropertiesStore.lookupEntry(getSpellInfo()->getEffectMiscValueB(i)))
+                        {
+                            if (summonProperties->ControlType == SUMMON_CONTROL_TYPE_PET || summonProperties->Type == SUMMONTYPE_PET)
+                                return SPELL_FAILED_ALREADY_HAVE_SUMMON;
+                        }
+                    }
+                    else
+                    {
+                        return SPELL_FAILED_ALREADY_HAVE_SUMMON;
+                    }
+                }
 
-                if (p_caster->getCharmGuid() != 0)
+                if (u_caster->getCharmGuid() != 0)
                     return SPELL_FAILED_ALREADY_HAVE_CHARM;
             } break;
             case SPELL_EFFECT_LEAP:
@@ -2447,20 +2491,6 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 // Don't allow these effects in battlegrounds if the battleground hasn't yet started
                 if (p_caster->getBattleground() && !p_caster->getBattleground()->hasStarted())
                     return SPELL_FAILED_TRY_AGAIN;
-            } break;
-            case SPELL_EFFECT_SUMMON_PET:
-            {
-                if (p_caster == nullptr)
-                    break;
-
-                if (p_caster->getFirstPetFromSummons() != nullptr)
-                {
-                    if (!(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_DISMISS_CURRENT_PET))
-                        return SPELL_FAILED_ALREADY_HAVE_SUMMON;
-                }
-
-                if (p_caster->getCharmGuid() != 0)
-                    return SPELL_FAILED_ALREADY_HAVE_CHARM;
             } break;
             case SPELL_EFFECT_OPEN_LOCK:
             case SPELL_EFFECT_OPEN_LOCK_ITEM:
@@ -2672,7 +2702,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (p_caster == nullptr)
                     break;
 
-                const auto pet = p_caster->getFirstPetFromSummons();
+                const auto pet = p_caster->getPet();
                 if (pet == nullptr)
                     return SPELL_FAILED_NO_PET;
 
@@ -2890,7 +2920,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (p_caster == nullptr)
                     return SPELL_FAILED_BAD_TARGETS;
 
-                const auto pet = p_caster->getFirstPetFromSummons();
+                const auto pet = p_caster->getPet();
                 if (pet == nullptr)
                     return SPELL_FAILED_NO_PET;
 
@@ -2908,7 +2938,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     return SPELL_FAILED_BAD_TARGETS;
 
                 // Check if the food type matches pet's diet
-                if (!(pet->GetPetDiet() & (1 << (itemProto->FoodType - 1))))
+                if (!(pet->getPetDiet() & (1 << (itemProto->FoodType - 1))))
                     return SPELL_FAILED_WRONG_PET_FOOD;
 
                 // Check if the food level is at most 30 levels below pet's level
@@ -2920,12 +2950,42 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (p_caster == nullptr)
                     return SPELL_FAILED_NO_PET;
 
-                const auto petTarget = p_caster->getFirstPetFromSummons();
-                if (petTarget == nullptr)
-                    return SPELL_FAILED_NO_PET;
+                // Spells with this attribute were checked already
+                if (!(getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_REQ_DEAD_PET))
+                {
+                    const auto petTarget = p_caster->getPet();
+                    if (petTarget != nullptr)
+                    {
+                        if (petTarget->isAlive())
+                            return SPELL_FAILED_ALREADY_HAVE_SUMMON;
+                    }
+                    else
+                    {
+                        // Find dead pet from any active slot
+                        auto foundDeadPet = false;
+                        for (const auto& [petSlot, petId] : p_caster->getPetCachedSlotMap())
+                        {
+                            if (petSlot >= PET_SLOT_MAX_ACTIVE_SLOT)
+                                break;
 
-                if (petTarget->isAlive())
-                    return SPELL_FAILED_ALREADY_HAVE_SUMMON;
+                            const auto petCache = p_caster->getPetCache(petId);
+                            if (petCache == nullptr)
+                                continue;
+
+                            if (!petCache->alive)
+                            {
+                                foundDeadPet = true;
+                                // Save pet id for later use
+                                add_damage = petCache->number;
+                                break;
+                            }
+                        }
+
+                        // todo: probably not correct error message
+                        if (!foundDeadPet)
+                            return SPELL_FAILED_BAD_TARGETS;
+                    }
+                }
             } break;
             case SPELL_EFFECT_SPELL_STEAL:
             {
@@ -2955,7 +3015,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (target == p_caster)
                     return SPELL_FAILED_BAD_TARGETS;
 
-                if (p_caster->getFirstPetFromSummons() != nullptr && !(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_DISMISS_CURRENT_PET))
+                if (p_caster->getPet() != nullptr && !(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_DISMISS_CURRENT_PET))
                     return SPELL_FAILED_ALREADY_HAVE_SUMMON;
 
                 if (p_caster->getCharmGuid() != 0)
@@ -2996,7 +3056,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
 
                 if (getSpellInfo()->getEffectApplyAuraName(i) == SPELL_AURA_MOD_CHARM)
                 {
-                    if (p_caster != nullptr && p_caster->getFirstPetFromSummons() != nullptr && !(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_DISMISS_CURRENT_PET))
+                    if (p_caster != nullptr && p_caster->getPet() != nullptr && !(getSpellInfo()->getAttributesEx() & ATTRIBUTESEX_DISMISS_CURRENT_PET))
                         return SPELL_FAILED_ALREADY_HAVE_SUMMON;
 
                     // Player can have only one charm at time
@@ -3141,7 +3201,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (p_caster->getCharmedByGuid() != 0)
                     return SPELL_FAILED_CHARMED;
 
-                const auto petTarget = p_caster->getFirstPetFromSummons();
+                const auto petTarget = p_caster->getPet();
                 if (petTarget == nullptr)
                     return SPELL_FAILED_NO_PET;
 
@@ -4262,7 +4322,7 @@ SpellCastResult Spell::checkRange(const bool secondCheck)
     if (getSpellInfo()->getRangeIndex() == 1 || targetUnit == m_caster)
         return SPELL_CAST_SUCCESS;
 
-    if (p_caster != nullptr)
+    if (u_caster != nullptr)
     {
         // If pet is the effect target, check range to pet
         for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
@@ -4270,9 +4330,9 @@ SpellCastResult Spell::checkRange(const bool secondCheck)
             if (getSpellInfo()->getEffectImplicitTargetA(i) != EFF_TARGET_PET)
                 continue;
 
-            if (p_caster->getFirstPetFromSummons() != nullptr)
+            if (u_caster->getPet() != nullptr)
             {
-                targetUnit = p_caster->getFirstPetFromSummons();
+                targetUnit = u_caster->getPet();
                 break;
             }
         }
@@ -5660,9 +5720,19 @@ SpellCastResult Spell::checkExplicitTarget(Object* target, uint32_t requiredTarg
     if (target == nullptr || !target->IsInWorld())
         return SPELL_FAILED_BAD_IMPLICIT_TARGETS;
 
-    // Gameobject target, not item
-    if (!target->isGameObject() && (requiredTargetMask & SPELL_TARGET_REQUIRE_GAMEOBJECT) && !(requiredTargetMask & SPELL_TARGET_REQUIRE_ITEM))
-        return SPELL_FAILED_BAD_TARGETS;
+    // Check if spell requires only gameobject targets
+    if (requiredTargetMask == SPELL_TARGET_REQUIRE_GAMEOBJECT)
+    {
+        if (!target->isGameObject())
+            return SPELL_FAILED_BAD_TARGETS;
+    }
+
+    // Check if spell requires either gameobject or item target
+    if (requiredTargetMask == (SPELL_TARGET_REQUIRE_GAMEOBJECT | SPELL_TARGET_REQUIRE_ITEM))
+    {
+        if (!target->isGameObject() && !target->isItem())
+            return SPELL_FAILED_BAD_TARGETS;
+    }
 
     // Check if spell can target gameobjects
     if (target->isGameObject() && !m_triggeredSpell && !(requiredTargetMask & SPELL_TARGET_OBJECT_SCRIPTED) && !(requiredTargetMask & SPELL_TARGET_REQUIRE_GAMEOBJECT))
@@ -5691,9 +5761,20 @@ SpellCastResult Spell::checkExplicitTarget(Object* target, uint32_t requiredTarg
             return SPELL_FAILED_BAD_TARGETS;
     }
 
-    // Check if spell can target pet
+    // Check if spell requires pet target
     if (requiredTargetMask & SPELL_TARGET_OBJECT_CURPET && !target->isPet())
-        return SPELL_FAILED_BAD_TARGETS;
+    {
+        // If spell also requires item target, check for item
+        if (requiredTargetMask & SPELL_TARGET_REQUIRE_ITEM)
+        {
+            if (!target->isItem())
+                return SPELL_FAILED_BAD_TARGETS;
+        }
+        else
+        {
+            return SPELL_FAILED_BAD_TARGETS;
+        }
+    }
 
     // Area spells cannot target totems or dead units unless spell caster is the target
     if (m_caster != target &&

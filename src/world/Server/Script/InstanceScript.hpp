@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "CommonTypes.hpp"
 #include "AEVersion.hpp"
+#include "ScriptEvent.hpp"
 
 #include <map>
 #include <set>
@@ -197,7 +198,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // script events
 protected:
-    scriptEventMap* scriptEvents;
+    scriptEventMap scriptEvents;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // misc
