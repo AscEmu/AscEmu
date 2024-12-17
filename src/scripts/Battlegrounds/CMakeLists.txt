@@ -1,7 +1,7 @@
 # Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name.
-set(EXECUTABLE_NAME Battlegrounds)
+set(LIBRARY_NAME Battlegrounds)
 
 file(GLOB SRC_ALTERAC_VALLEY AlteracValley/*.cpp AlteracValley/*.h)
 file(GLOB SRC_ARATHI_BASIN ArathiBasin/*.cpp ArathiBasin/*.h)
@@ -38,20 +38,6 @@ set(BATTLEGROUNDS_SRCS
     ${SRC_LOCAL_DIR}
 )
 
-include_directories(
-    ${OPENSSL_INCLUDE_DIR}
-    ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
-    ${CMAKE_SOURCE_DIR}/src/collision
-    ${CMAKE_SOURCE_DIR}/src/collision/Management
-    ${CMAKE_SOURCE_DIR}/src/collision/Maps
-    ${CMAKE_SOURCE_DIR}/src/collision/Models
-    ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
-    ${CMAKE_SOURCE_DIR}/src/shared
-    ${CMAKE_SOURCE_DIR}/src/world
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${ZLIB_INCLUDE_DIRS}
-)
-
 # source group.
 source_group(AlteracValley FILES ${SRC_ALTERAC_VALLEY})
 source_group(ArathiBasin FILES ${SRC_ARATHI_BASIN})
@@ -65,20 +51,34 @@ source_group(RuinsOfLordaeron FILES ${SRC_RUINS_OF_LORDAERON})
 source_group(StrandOfTheAncient FILES ${SRC_STRAND_OF_THE_ANCIENT})
 source_group(WarsongGulch FILES ${SRC_WARSONG_GULCH})
 
-add_library(${EXECUTABLE_NAME} SHARED ${BATTLEGROUNDS_SRCS})
+add_library(${LIBRARY_NAME} SHARED ${BATTLEGROUNDS_SRCS})
+
+target_include_directories(${LIBRARY_NAME} PUBLIC 
+    ${OPENSSL_INCLUDE_DIR}
+    ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
+    ${CMAKE_SOURCE_DIR}/src/collision
+    ${CMAKE_SOURCE_DIR}/src/collision/Management
+    ${CMAKE_SOURCE_DIR}/src/collision/Maps
+    ${CMAKE_SOURCE_DIR}/src/collision/Models
+    ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
+    ${CMAKE_SOURCE_DIR}/src/shared
+    ${CMAKE_SOURCE_DIR}/src/world
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${ZLIB_INCLUDE_DIRS}
+)
 
 # include library dependencies.
-target_link_libraries(${EXECUTABLE_NAME}
+target_link_libraries(${LIBRARY_NAME}
   PUBLIC
     world
 )
 
 # generate precompiled header.
-if (USE_PCH)
-    message(STATUS "Generate PCH for ${EXECUTABLE_NAME}")
-    target_precompile_headers(${EXECUTABLE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchBattleGrounds.hpp)
+if (AE_USE_PCH)
+    message(STATUS "Generate PCH for ${LIBRARY_NAME}")
+    target_precompile_headers(${LIBRARY_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchBattleGrounds.hpp)
 endif ()
 
-install(TARGETS ${EXECUTABLE_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
+install(TARGETS ${LIBRARY_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
 
 unset(BATTLEGROUNDS_SRCS)

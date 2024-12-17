@@ -26,8 +26,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 const uint32_t ARENA_PREPARATION = 32727;
 
-const uint32_t GREEN_TEAM = 0;
-const uint32_t GOLD_TEAM = 1;
+// const uint32_t GREEN_TEAM = 0;
+// const uint32_t GOLD_TEAM = 1;
 
 Arena::Arena(WorldMap* _worldMap, uint32_t _id, uint32_t _levelGroup, uint32_t _arenaType, uint32_t _playersPerSide) : Battleground(_worldMap, _id, _levelGroup, _arenaType)
 {

@@ -5,7 +5,7 @@ message(STATUS "Applying settings for Linux system")
 set(EXTRA_LIBS ${EXTRA_LIBS} dl)
 
 set(LIBS_DIR ${CMAKE_INSTALL_PREFIX}/lib)
-add_definitions(-DUSE_EPOLL)
+add_compile_options(-DUSE_EPOLL)
 
 # find required libraries
 find_package(ZLIB REQUIRED)

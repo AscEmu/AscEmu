@@ -1,7 +1,7 @@
 # Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
 
 # all script libraries have SCRIPTLIB defined.
-add_definitions(-DSCRIPTLIB -DSKIP_ALLOCATOR_SHARING)
+add_compile_options(-DSCRIPTLIB -DSKIP_ALLOCATOR_SHARING)
 
 # add our modules.
 add_subdirectory(Battlegrounds)

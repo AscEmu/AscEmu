@@ -8,7 +8,7 @@ file(GLOB SRC_VMAPS_EXTRACTOR *.cpp *.h)
 add_executable(${EXECUTABLE_NAME} ${SRC_VMAPS_EXTRACTOR})
 
 if (UNIX AND NOT IS_64BIT)
-    add_definitions(-D_FILE_OFFSET_BITS=64)
+    add_compile_options(-D_FILE_OFFSET_BITS=64)
 endif ()
 
 include_directories(

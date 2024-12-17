@@ -152,7 +152,7 @@ source_group(Spell\\Definitions FILES ${SRC_SPELL_DEFINITIONS_FILES})
 source_group(Storage FILES ${SRC_STORAGE_FILES})
 source_group(Storage\\WDB FILES ${SRC_STORAGE_WDB_FILES})
 
-if (WIN32 AND NOT USE_PCH)
+if (WIN32 AND NOT AE_USE_PCH)
     set_target_properties(${EXECUTABLE_NAME} PROPERTIES LINK_FLAGS "/INCREMENTAL:NO")
 endif ()
 
@@ -186,7 +186,7 @@ target_link_libraries(${EXECUTABLE_NAME}
 unset(WORLD_LINK_EXTRA_LIBS)
 
 # generate precompiled header.
-if (USE_PCH)
+if (AE_USE_PCH)
     message(STATUS "Generate PCH for ${EXECUTABLE_NAME}")
     target_precompile_headers(${EXECUTABLE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchWorld.hpp)
 endif ()

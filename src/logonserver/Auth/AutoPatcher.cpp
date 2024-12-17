@@ -39,7 +39,7 @@ void PatchMgr::initialize()
 
     if (!fs::exists(patchDirectory) || !fs::is_directory(patchDirectory))
     {
-        sLogger.failure("No patches found.");
+        sLogger.warning("No patches found.");
         return;
     }
 
