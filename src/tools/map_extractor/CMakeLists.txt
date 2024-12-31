@@ -5,9 +5,7 @@ set(EXECUTABLE_NAME map_extractor)
 
 file(GLOB SRC_MAPS_EXTRACTOR *.cpp *.h)
 
-add_executable(${EXECUTABLE_NAME}
-    ${SRC_MAPS_EXTRACTOR}
-)
+add_executable(${EXECUTABLE_NAME} ${SRC_MAPS_EXTRACTOR})
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/dep/libmpq/libmpq
