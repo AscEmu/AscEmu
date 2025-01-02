@@ -37,7 +37,11 @@ What are "useful" commits?
  3. Making the Framework stable/safer
  4. Adding blizzlike related functions
 
-Anything else like "fun-content" is NOT useful!
+We strive to make all in-game content to be blizzlike!
+
+Feel free to join our [Discord server](https://discord.com/invite/CBdgrh7).
+
+Click on the "⭐ Star" button to help us gain more visibility on Github!
 
 ## Opening new issues
 Be patient with us and give us details.
