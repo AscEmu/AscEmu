@@ -56,7 +56,7 @@ HowTo install - detailed guides on our wiki.
 
 ## Links
 * [Web](http://www.ascemu.org)
-* [Forums](http://www.board.ascemu.org)
+* [Discussions](https://github.com/AscEmu/AscEmu/discussions)
 * [Wiki](https://ascemu.github.io/Wiki/)
 * [World DB](https://github.com/AscEmu/OneDB)
 
