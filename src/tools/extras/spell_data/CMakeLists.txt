@@ -5,6 +5,9 @@ set(EXECUTABLE_NAME spell_data)
 
 file(GLOB SRC_SPELL_DATA *.cpp *.h)
 
+# source group.
+ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
+
 add_executable(${EXECUTABLE_NAME} ${SRC_SPELL_DATA})
 
 if (NOT WIN32 AND NOT IS_64BIT)

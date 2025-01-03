@@ -22,6 +22,9 @@ set(EVENTSCRIPTS_SRCS
     ${SRC_LOCAL_DIR}
 )
 
+# source group.
+ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
+
 add_library(${LIBRARY_NAME} SHARED ${EVENTSCRIPTS_SRCS})
 
 target_include_directories(${LIBRARY_NAME} PUBLIC 

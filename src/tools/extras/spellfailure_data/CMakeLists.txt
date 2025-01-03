@@ -9,6 +9,9 @@ set(SPELLFAILURE_DATA_SRCS
     ${SRC_SPELLFAILURE_DATA}
 )
 
+# source group.
+ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
+
 add_executable(${EXECUTABLE_NAME} ${SPELLFAILURE_DATA_SRCS})
 
 # include library dependencies.

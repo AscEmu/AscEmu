@@ -5,6 +5,9 @@ set(EXECUTABLE_NAME vmap4_assembler)
 
 file(GLOB SRC_VMAPS_EXTRACTOR *.cpp *.h)
 
+# source group.
+ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
+
 add_executable(${EXECUTABLE_NAME} ${SRC_VMAPS_EXTRACTOR})
 
 include_directories(

@@ -5,6 +5,9 @@ set(EXECUTABLE_NAME map_extractor)
 
 file(GLOB SRC_MAPS_EXTRACTOR *.cpp *.h)
 
+# source group.
+ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
+
 add_executable(${EXECUTABLE_NAME}
     ${SRC_MAPS_EXTRACTOR}
 )

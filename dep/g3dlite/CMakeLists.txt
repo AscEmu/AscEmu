@@ -49,6 +49,9 @@ set(SRC_G3DLITE
     Vector4.cpp
 )
 
+# source group.
+ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
+
 add_library(${LIBRARY_NAME} STATIC ${SRC_G3DLITE})
 
 target_include_directories(${LIBRARY_NAME} PUBLIC

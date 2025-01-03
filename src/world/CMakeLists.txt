@@ -49,6 +49,9 @@ if (WIN32)
     set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/resources.rc")
 endif ()
 
+# source group.
+ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
+
 add_executable(${EXECUTABLE_NAME}
     ${SRC_CHAT_FILES}
     ${SRC_COMMAND_FILES}
@@ -109,48 +112,6 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${ZLIB_INCLUDE_DIRS}
 )
-
-# source group.
-source_group(Chat FILES ${SRC_CHAT_FILES})
-source_group(Chat\\Commands FILES ${SRC_COMMAND_FILES})
-source_group(Chat\\Commands\\Account FILES ${SRC_COMMAND_ACCOUNT_FILES})
-source_group(Chat\\Commands\\Achievement FILES ${SRC_COMMAND_ACHIEVEMENT_FILES})
-source_group(Data FILES ${SRC_DATA_FILES})
-source_group(Macros FILES ${SRC_MACROS_FILES})
-source_group(Management FILES ${SRC_MANAGEMENT_FILES})
-source_group(Management\\Battleground FILES ${SRC_MANAGEMENT_BATTLEGROUND_FILES})
-source_group(Management\\Gossip FILES ${SRC_MANAGEMENT_GOSSIP_FILES})
-source_group(Management\\Guild FILES ${SRC_MANAGEMENT_GUILD_FILES})
-source_group(Management\\LFG FILES ${SRC_MANAGEMENT_LFG_FILES})
-source_group(Management\\Loot FILES ${SRC_MANAGEMENT_LOOT_FILES})
-source_group(Management\\ObjectUpdates FILES ${SRC_MANAGEMENT_OBJECTUPDATES_FILES})
-source_group(Management\\Tickets FILES ${SRC_MANAGEMENT_TICKETS_FILES})
-source_group(Map FILES ${SRC_MAP_FILES})
-source_group(Map\\Area FILES ${SRC_MAP_AREA_FILES})
-source_group(Map\\Cells FILES ${SRC_MAP_CELLS_FILES})
-source_group(Map\\Management FILES ${SRC_MAP_MANAGEMENT_FILES})
-source_group(Map\\Maps FILES ${SRC_MAP_MAPS_FILES})
-source_group(Movement FILES ${SRC_MOVEMENT_FILES})
-source_group(Movement\\MovementGenerators FILES ${SRC_MOVEMENT_MOVEMENTGENERATOR_FILES})
-source_group(Movement\\Spline FILES ${SRC_MOVEMENT_SPLINE_FILES})
-source_group(Objects FILES ${SRC_OBJECTS_FILES})
-source_group(Objects\\Units FILES ${SRC_UNITS_FILES})
-source_group(Objects\\Units\\Creatures FILES ${SRC_UNITS_CREATURES_FILES})
-source_group(Objects\\Units\\Creatures\\Summons FILES ${SRC_UNITS_SUMMONS_FILES})
-source_group(Objects\\Units\\Players FILES ${SRC_UNITS_PLAYERS_FILES})
-source_group(Server FILES ${SRC_SERVER_FILES})
-source_group(Server\\Console FILES ${SRC_SERVER_CONSOLE_FILES})
-source_group(Server\\LogonCommClient FILES ${SRC_LOGON_COMMUNICATION_CLIENT_FILES})
-source_group(Server\\Packets FILES ${SRC_PACKET_FILES})
-source_group(Server\\Packets\\Handlers FILES ${SRC_PACKET_HANDLER_FILES})
-source_group(Server\\Packets\\Movement FILES ${SRC_PACKET_MOVEMENT_FILES})
-source_group(Server\\Script FILES ${SRC_SERVER_SCRIPT_FILES})
-source_group(Server\\Warden FILES ${SRC_SERVER_WARDEN_FILES})
-source_group(Spell FILES ${SRC_SPELL_FILES})
-source_group(Spell\\Customization FILES ${SRC_SPELL_CUSTOM_FILES})
-source_group(Spell\\Definitions FILES ${SRC_SPELL_DEFINITIONS_FILES})
-source_group(Storage FILES ${SRC_STORAGE_FILES})
-source_group(Storage\\WDB FILES ${SRC_STORAGE_WDB_FILES})
 
 if (WIN32 AND NOT AE_USE_PCH)
     set_target_properties(${EXECUTABLE_NAME} PROPERTIES LINK_FLAGS "/INCREMENTAL:NO")

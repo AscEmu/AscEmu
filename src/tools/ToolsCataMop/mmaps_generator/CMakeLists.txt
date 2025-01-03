@@ -5,6 +5,9 @@ set(EXECUTABLE_NAME mmaps_generator)
 
 file(GLOB SRC_MMAPS_EXTRACTOR *.cpp *.h)
 
+# source group.
+ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
+
 add_executable(${EXECUTABLE_NAME} ${SRC_MMAPS_EXTRACTOR})
 
 include_directories(

@@ -14,6 +14,9 @@ if (WIN32)
     set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/resources.rc")
 endif ()
 
+# source group.
+ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
+
 add_executable(${EXECUTABLE_NAME}
     ${SRC_AUTH_FILES}
     ${SRC_CONSOLE_FILES}
@@ -32,13 +35,6 @@ include_directories(
     ${MYSQL_INCLUDE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
-
-# source group.
-source_group(Auth FILES ${SRC_AUTH_FILES})
-source_group(Console FILES ${SRC_CONSOLE_FILES})
-source_group(LogonCommServer FILES ${SRC_LOGON_COMM_SERVER_FILES})
-source_group(Realm FILES ${SRC_REALM_FILES})
-source_group(Server FILES ${SRC_SERVER_FILES})
 
 if (APPLE)
     target_link_libraries(${EXECUTABLE_NAME} c++)

@@ -18,6 +18,9 @@ if (UNIX AND NOT IS_64BIT)
     add_compile_options(-D_FILE_OFFSET_BITS=64)
 endif ()
 
+# source group.
+ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
+
 add_library(${LIBRARY_NAME} STATIC ${LIBMPQ_SRCS})
 
 target_include_directories(${LIBRARY_NAME} PUBLIC
