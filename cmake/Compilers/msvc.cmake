@@ -21,7 +21,7 @@ add_compile_options(-D_USE_MATH_DEFINES)
 add_compile_options(-DNOMINMAX)
 
 # set defines for MSVC
-add_compile_options(/std:c++23 /EHa /MP /bigobj)
+add_compile_options(/std:c++20 /EHa /MP /bigobj)
 
 # set build platform specific settings (x86/x64)
 if (NOT IS_64BIT)
