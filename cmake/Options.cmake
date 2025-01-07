@@ -23,6 +23,7 @@ option(BUILD_INSTANCESCRIPTS    "Build ascInstanceScripts."                     
 option(BUILD_GOSSIPSCRIPTS      "Build ascGossipScripts."                                                   ON)
 option(BUILD_QUESTSCRIPTS       "Build ascQuestScripts."                                                    ON)
 option(BUILD_MISCSCRIPTS        "Build ascMiscScripts."                                                     ON)
+option(BUILD_WORLD_PVP_SCRIPTS  "Build ascWorldPvpScripts."                                                 ON)
 option(BUILD_LUAENGINE          "Build LuaEngine."                                                          ON)
 option(BUILD_WITH_WARNINGS      "Enable/Disable warnings on compilation"                                    ON)
 option(AE_USE_PCH               "Enable precompiled headers - it will reduce compilation time"              ON)
