@@ -20,7 +20,7 @@ bool AccountCommandGetId::execute(const std::vector<std::string>& args, WorldSes
 
     sLogonCommHandler.checkIfAccountExist(accountName.c_str(), session->GetAccountNameS(), nullptr, 2);
 
-    sGMLog.write(session, "looked up account id for account {}", accountName);
+    sGMLog.write(session, "looked up account id for account {}", accountName.data());
 
     return true;
 }

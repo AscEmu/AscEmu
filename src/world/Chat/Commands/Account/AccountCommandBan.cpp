@@ -33,7 +33,7 @@ bool AccountCommandBan::execute(const std::vector<std::string>& args, WorldSessi
     session->systemMessage("Account '{}' has been banned until {} for reason : {}.", accountName, Util::GetDateTimeStringFromTimeStamp(bannedUntil), reason);
 
     sWorld.disconnectSessionByAccountName(accountName, session);
-    sGMLog.write(session, "banned account {} until {}", accountName, Util::GetDateTimeStringFromTimeStamp(bannedUntil));
+    sGMLog.write(session, "banned account {} until {}", accountName.data(), Util::GetDateTimeStringFromTimeStamp(bannedUntil).data());
 
     session->systemMessage("Account banned successfully.");
 
