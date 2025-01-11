@@ -25,7 +25,6 @@ This file is released under the MIT license. See README-MIT for more information
 /// -
 #define PET_SPELL_SPAM_COOLDOWN 2000        // applied only to spells that have no cooldown
 
-
 /// -
 #define PET_TALENT_TREE_START 409           // Tenacity
 
@@ -33,7 +32,7 @@ This file is released under the MIT license. See README-MIT for more information
 #define PET_TALENT_TREE_END 411             // Cunning
 
 /// -
-#define PET_DELAYED_REMOVAL_TIME 60000      // 1 min
+//#define PET_DELAYED_REMOVAL_TIME 60000    // 1 min
 
 /// -
 #define DEFAULT_SPELL_STATE 0x8100
