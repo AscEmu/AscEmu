@@ -27,13 +27,18 @@ add_executable(${EXECUTABLE_NAME}
     ${APP_ICON_RESOURCE_WINDOWS}
 )
 
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/Opcodes
+target_include_directories(${EXECUTABLE_NAME} PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/src/shared
     ${ZLIB_INCLUDE_DIRS}
     ${OPENSSL_INCLUDE_DIR}
-    ${MYSQL_INCLUDE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+# include library dependencies.
+target_link_libraries(${EXECUTABLE_NAME} PUBLIC
+    shared
+    ${MYSQL_LIBRARIES}
+    ${ZLIB_LIBRARIES}
 )
 
 if (APPLE)
@@ -43,13 +48,6 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFre
 endif ()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/LogonConf.hpp.in ${CMAKE_CURRENT_SOURCE_DIR}/LogonConf.hpp)
-
-# include library dependencies.
-target_link_libraries(${EXECUTABLE_NAME}
-  PUBLIC
-    shared
-    ${ZLIB_LIBRARIES}
-)
 
 # generate precompiled header.
 if (AE_USE_PCH)

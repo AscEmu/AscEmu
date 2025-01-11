@@ -8,9 +8,7 @@ file(GLOB SRC_MAPS_EXTRACTOR *.cpp *.h)
 # source group.
 ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
 
-add_executable(${EXECUTABLE_NAME}
-    ${SRC_MAPS_EXTRACTOR}
-)
+add_executable(${EXECUTABLE_NAME} ${SRC_MAPS_EXTRACTOR})
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/dep/libmpq/libmpq

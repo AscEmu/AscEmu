@@ -1,9 +1,9 @@
 ﻿# ![logo](http://ascemu.org/images/logo.png)
 
-Master                                                         | Development
-:------------------------------------------------------------: | :----------------------------------------------------------------:
-[![AscEmu CI](https://github.com/AscEmu/AscEmu/actions/workflows/gcc-linux-test-x64.yml/badge.svg)](https://github.com/AscEmu/AscEmu/actions/workflows/gcc-linux-test-x64.yml)         | [![AscEmu CI](https://github.com/AscEmu/AscEmu/actions/workflows/gcc-linux-test-x64.yml/badge.svg)](https://github.com/AscEmu/AscEmu/actions/workflows/gcc-linux-test-x64.yml)        |
-[![MasterAppYeyor][MasterAppYeyorBadge]][MasterAppYeyorUrl]    | [![DevelopAppYeyor][DevelopAppYeyorBadge]][DevelopAppYeyorUrl]   |
+Master                                                      | Development
+:---------------------------------------------------------: | :--------------------------------------------------------------:
+[![AscEmuCI][AscEmuBadge]][AscEmuBadgeUrl]                  | [![AscEmuCI][AscEmuBadge]][AscEmuBadgeUrl]                     |
+[![MasterAppYeyor][MasterAppYeyorBadge]][MasterAppYeyorUrl] | [![DevelopAppYeyor][DevelopAppYeyorBadge]][DevelopAppYeyorUrl] |
 
 ## Introduction
 AscEmu is derived from ArcEmu to keep up the Antrix-Ascent-Arcemu way of Framework.
@@ -37,7 +37,11 @@ What are "useful" commits?
  3. Making the Framework stable/safer
  4. Adding blizzlike related functions
 
-Anything else like "fun-content" is NOT useful!
+We strive to make all in-game content to be blizzlike!
+
+Feel free to join our [Discord server](https://discord.com/invite/CBdgrh7).
+
+Click on the "⭐ Star" button to help us gain more visibility on Github!
 
 ## Opening new issues
 Be patient with us and give us details.
@@ -52,7 +56,7 @@ HowTo install - detailed guides on our wiki.
 
 ## Links
 * [Web](http://www.ascemu.org)
-* [Forums](http://www.board.ascemu.org)
+* [Forums](https://github.com/AscEmu/AscEmu/discussions)
 * [Wiki](https://ascemu.github.io/Wiki/)
 * [World DB](https://github.com/AscEmu/OneDB)
 
@@ -68,13 +72,12 @@ HowTo install - detailed guides on our wiki.
 [PVS-Studio](https://pvs-studio.com/en/pvs-studio/?utm_source=website&utm_medium=github&utm_campaign=open_source) - Static analyzer for C, C++, C#, and Java code.
 
 <!-- Undercover:start:status -->
-[MasterCircleBadge]: https://circleci.com/gh/AscEmu/AscEmu/tree/master.svg?style=shield
-[DevelopCircleBadge]: https://circleci.com/gh/AscEmu/AscEmu/tree/develop.svg?style=shield
+[AscEmuBadge]: https://github.com/AscEmu/AscEmu/actions/workflows/gcc-linux-test-x64.yml/badge.svg
+[AscEmuBadgeUrl]: https://github.com/AscEmu/AscEmu/actions/workflows/gcc-linux-test-x64.yml
+
 [MasterAppYeyorBadge]: https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/master?svg=true
 [DevelopAppYeyorBadge]: https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/develop?svg=true
 
-[MasterCircleUrl]: https://app.circleci.com/pipelines/github/AscEmu/AscEmu?branch=master
-[DevelopCircleUrl]: https://app.circleci.com/pipelines/github/AscEmu/AscEmu?branch=develop
 [MasterAppYeyorUrl]: https://ci.appveyor.com/project/Zyres/ascemu
 [DevelopAppYeyorUrl]: https://ci.appveyor.com/project/Zyres/ascemu
 <!-- Undercover:end:status -->

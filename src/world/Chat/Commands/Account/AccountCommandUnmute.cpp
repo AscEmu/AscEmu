@@ -23,7 +23,7 @@ bool AccountCommandUnmute::execute(const std::vector<std::string>& args, WorldSe
     sLogonCommHandler.setAccountMute(username.c_str(), 0);
 
     session->systemMessage("Account '{}' has been unmuted.", username);
-    sGMLog.write(session, "unmuted account {}", username);
+    sGMLog.write(session, "unmuted account {}", username.data());
 
     WorldSession* targetSession = sWorld.getSessionByAccountName(username);
     if (targetSession)

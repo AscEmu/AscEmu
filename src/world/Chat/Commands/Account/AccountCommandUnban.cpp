@@ -21,7 +21,7 @@ bool AccountCommandUnban::execute(const std::vector<std::string>& args, WorldSes
     sLogonCommHandler.setAccountBanned(accountName.c_str(), 0, "");
     session->systemMessage("Account '{}' has been unbanned. This change will be effective immediately.", accountName);
 
-    sGMLog.write(session, "unbanned account {}", accountName);
+    sGMLog.write(session, "unbanned account {}", accountName.data());
     return true;
 }
 
