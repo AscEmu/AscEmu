@@ -30,7 +30,7 @@ bool AchievementCommandComplete::execute(const std::vector<std::string>& args, W
     {
         selected_player->getAchievementMgr()->gmCompleteAchievement(session, 0, true);
         session->systemMessage("All achievements have now been completed for that player.");
-        sGMLog.writefromsession(session, "completed all achievements for player {}", selected_player->getName());
+        sGMLog.writefromsession(session, "completed all achievements for player {}", selected_player->getName().data());
         return true;
     }
 
@@ -41,7 +41,7 @@ bool AchievementCommandComplete::execute(const std::vector<std::string>& args, W
     if (selected_player->getAchievementMgr()->gmCompleteAchievement(session, achievement_id))
     {
         session->systemMessage("The achievement has now been completed for that player.");
-        sGMLog.write(session, "completed achievement {} for player {}", achievement_id, selected_player->getName());
+        sGMLog.write(session, "completed achievement {} for player {}", achievement_id, selected_player->getName().data());
     }
 
     return true;

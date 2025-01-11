@@ -33,7 +33,7 @@ bool AccountCommandMute::execute(const std::vector<std::string>& args, WorldSess
     session->systemMessage("Account '{}}' has been muted until {}}. The change will be effective immediately.",
         username, bannedString);
 
-    sGMLog.write(session, "mutex account {} until {}", username, bannedString);
+    sGMLog.write(session, "mutex account {} until {}", username.data(), bannedString.data());
 
     WorldSession* pSession = sWorld.getSessionByAccountName(username);
     if (pSession != nullptr)

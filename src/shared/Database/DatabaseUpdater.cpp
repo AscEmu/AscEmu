@@ -201,7 +201,7 @@ void DatabaseUpdater::applyUpdatesForDatabase(const std::string& database, Datab
     // 4. open/parse files and apply to db
     if (!applyNewUpdateFilesStore.empty())
     {
-        sLogger.debug("=========== Applying sql updates from {} ===========", sqlUpdateDir);
+        sLogger.info("=========== Applying sql updates from {} ===========", sqlUpdateDir);
 
         for (const auto execute : applyNewUpdateFilesStore)
         {
@@ -209,7 +209,7 @@ void DatabaseUpdater::applyUpdatesForDatabase(const std::string& database, Datab
 
             if (fs::exists(sqlFile))
             {
-                sLogger.debug("{}", execute.second.fullName);
+                sLogger.info("{}", execute.second.fullName);
                 std::string loadedFile = Util::readFileIntoString(sqlFile);
 
                 // split into seperated string
