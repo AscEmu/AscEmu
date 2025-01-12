@@ -70,7 +70,7 @@
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20241206-00_playerpets";
-static const char* REQUIRED_WORLD_DB_VERSION = "20240904-00_misc";
+static const char* REQUIRED_WORLD_DB_VERSION = "20250112-00_world_db_version";
 
 volatile bool Master::m_stopEvent = false;
 
