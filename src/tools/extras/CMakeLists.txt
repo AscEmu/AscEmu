@@ -1,4 +1,4 @@
-# Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 
 if ("${ASCEMU_VERSION}" STREQUAL "WotLK" OR "${ASCEMU_VERSION}" STREQUAL "TBC" OR "${ASCEMU_VERSION}" STREQUAL "Classic")
     # set our variables
