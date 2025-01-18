@@ -5,6 +5,9 @@ set(EXECUTABLE_NAME creature_data)
 
 file(GLOB SRC_CREATURE_DATA *.cpp *.h)
 
+# source group.
+ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
+
 add_executable(${EXECUTABLE_NAME} ${SRC_CREATURE_DATA})
 
 if (NOT WIN32 AND NOT IS_64BIT)

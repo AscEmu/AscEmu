@@ -42,6 +42,9 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 # get git information
 include(${CMAKE_MODULE_PATH}/AEGitRevision.cmake)
 
+# get group sources 
+include(${CMAKE_MODULE_PATH}/AEGroupSources.cmake)
+
 # apply options settings
 include(${CMAKE_MODULE_PATH}/AEConfigureFiles.cmake)
 

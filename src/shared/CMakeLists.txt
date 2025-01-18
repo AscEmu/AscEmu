@@ -38,24 +38,7 @@ set(SHARED_SRCS
 )
 
 # source group.
-source_group(Config FILES ${SRC_CONFIG_FILES})
-source_group(Cryptography FILES ${SRC_CRYPTOGRAPHY_FILES})
-source_group(Database FILES ${SRC_DATABASE_FILES})
-source_group(Debugging FILES ${SRC_DEBUGGING_FILES})
-source_group(Exceptions FILES ${SRC_EXCEPTIONS_FILES})
-source_group(Logging FILES ${SRC_LOGGING_FILES})
-source_group(Network FILES ${SRC_NETWORK_FILES})
-
-if (WIN32)
-    source_group(Network/IOCP FILES ${SRC_NETWORK_FILES_PLATFORM})
-elseif ((CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFreeBSD") OR APPLE)
-    source_group(Network/KQUEUE FILES ${SRC_NETWORK_FILES_PLATFORM})
-else ()
-    source_group(Network/EPOLL FILES ${SRC_NETWORK_FILES_PLATFORM})
-endif ()
-
-source_group(Threading FILES ${SRC_THREADING_FILES})
-source_group(Utilities FILES ${SRC_UTILITIES_FILES})
+ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_library(${LIBRARY_NAME} STATIC ${SHARED_SRCS})
 

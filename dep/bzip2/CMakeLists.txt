@@ -13,6 +13,9 @@ set(SRC_BZIP2
     randtable.c
 )
 
+# source group.
+ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
+
 add_library(${LIBRARY_NAME} STATIC ${SRC_BZIP2})
 
 target_include_directories(${LIBRARY_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

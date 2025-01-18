@@ -39,17 +39,7 @@ set(BATTLEGROUNDS_SRCS
 )
 
 # source group.
-source_group(AlteracValley FILES ${SRC_ALTERAC_VALLEY})
-source_group(ArathiBasin FILES ${SRC_ARATHI_BASIN})
-source_group(CircleOfBlood FILES ${SRC_CIRCLE_OF_BLOOD})
-source_group(DalaranSewers FILES ${SRC_DALARAN_SEWERS})
-source_group(EyeOfTheStorm FILES ${SRC_EYE_OF_THE_STORM})
-source_group(IsleOfConquest FILES ${SRC_ISLE_OF_CONQUEST})
-source_group(RingOfTrials FILES ${SRC_RING_OF_TRIALS})
-source_group(RingOfValor FILES ${SRC_RING_OF_VALOR})
-source_group(RuinsOfLordaeron FILES ${SRC_RUINS_OF_LORDAERON})
-source_group(StrandOfTheAncient FILES ${SRC_STRAND_OF_THE_ANCIENT})
-source_group(WarsongGulch FILES ${SRC_WARSONG_GULCH})
+ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_library(${LIBRARY_NAME} SHARED ${BATTLEGROUNDS_SRCS})
 

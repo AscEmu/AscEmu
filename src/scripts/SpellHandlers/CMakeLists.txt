@@ -23,6 +23,9 @@ set(headers
     pchSpellHandlers.hpp
 )
 
+# source group.
+ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
+
 add_library(${LIBRARY_NAME} SHARED ${sources} ${headers})
 
 target_include_directories(${LIBRARY_NAME} PUBLIC 
