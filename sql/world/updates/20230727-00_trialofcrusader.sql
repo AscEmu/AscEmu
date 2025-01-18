@@ -2091,4 +2091,4 @@ INSERT INTO `script_spline_chain_waypoints` VALUES ('39814', '2', '0', '14', '30
 INSERT INTO `script_spline_chain_waypoints` VALUES ('39814', '2', '0', '15', '3008.66', '500.079', '89.6627');
 INSERT INTO `script_spline_chain_waypoints` VALUES ('39814', '2', '0', '16', '3003.83', '501.25', '89.4507');
 
-INSERT INTO `world_db_version` (`id`, `LastUpdate`) VALUES ('136', '20230727-00_trialofcrusader');
+INSERT INTO `world_db_version` (`id`, `LastUpdate`) VALUES ('135', '20230727-00_trialofcrusader');
