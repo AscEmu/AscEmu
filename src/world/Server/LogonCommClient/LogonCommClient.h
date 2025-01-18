@@ -33,6 +33,7 @@ class LogonCommClientSocket : public Socket
     uint16 opcode;
 
     AscEmu::RC4Engine _rwCrypto;
+    AscEmu::RC4Engine _sendCrypto;
 
     public:
         LogonCommClientSocket(SOCKET fd);

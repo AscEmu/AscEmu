@@ -31,6 +31,7 @@ class LogonCommServerSocket : public Socket
     uint16 opcode;
     uint32 seed;
 
+    AscEmu::RC4Engine _sendCrypto;
     AscEmu::RC4Engine _rwCrypto;
 
     public:

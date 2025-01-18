@@ -222,14 +222,14 @@ void LogonCommClientSocket::SendPacket(WorldPacket* data, bool no_crypto)
     byteSwapUInt32(&header.size);
 
     if (use_crypto && !no_crypto)
-        _rwCrypto.process((unsigned char*)&header, (unsigned char*)&header, 6);
+        _sendCrypto.process((unsigned char*)&header, (unsigned char*)&header, 6);
 
     bool rv = BurstSend((const uint8*)&header, 6);
 
     if (data->size() > 0 && rv)
     {
         if (use_crypto && !no_crypto)
-            _rwCrypto.process(data->contents(), data->contents(), (unsigned int)data->size());
+            _sendCrypto.process(data->contents(), data->contents(), (unsigned int)data->size());
 
         rv = BurstSend(data->contents(), (uint32)data->size());
     }
@@ -255,6 +255,7 @@ void LogonCommClientSocket::SendChallenge()
     uint8* key = sLogonCommHandler.sql_passhash;
 
     _rwCrypto.setup(key, 20);
+    _sendCrypto.setup(key, 20);
 
     // packets are encrypted from now on
     use_crypto = true;

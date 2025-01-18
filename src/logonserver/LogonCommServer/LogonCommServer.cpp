@@ -283,14 +283,14 @@ void LogonCommServerSocket::SendPacket(WorldPacket* data)
     byteSwapUInt32(&header.size);
 
     if (use_crypto)
-        _rwCrypto.process((unsigned char*)&header, (unsigned char*)&header, 6);
+        _sendCrypto.process((unsigned char*)&header, (unsigned char*)&header, 6);
 
     rv = BurstSend((uint8*)&header, 6);
 
     if (data->size() > 0 && rv)
     {
         if (use_crypto)
-            _rwCrypto.process((unsigned char*)data->contents(), (unsigned char*)data->contents(), (uint32)data->size());
+            _sendCrypto.process((unsigned char*)data->contents(), (unsigned char*)data->contents(), (uint32)data->size());
 
         rv = BurstSend(data->contents(), (uint32)data->size());
     }
@@ -337,7 +337,7 @@ void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
     //sLogger.info(sstext); FIX fmt
 
     _rwCrypto.setup(key, 20);
-
+    _sendCrypto.setup(key, 20);
 
     // packets are encrypted from now on
     use_crypto = true;
