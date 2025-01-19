@@ -2,7 +2,8 @@
 
 Master                                                      | Development
 :---------------------------------------------------------: | :--------------------------------------------------------------:
-[![AscEmuCI][AscEmuBadge]][AscEmuBadgeUrl]                  | [![AscEmuCI][AscEmuBadge]][AscEmuBadgeUrl]                     |
+[![AscEmuClangCI][AscEmuClangBadge]][AscEmuBadgeClangUrl]   | [![AscEmuClangCI][AscEmuClangBadge]][AscEmuBadgeClangUrl]      |
+[![AscEmuGccCI][AscEmuGccBadge]][AscEmuBadgeGccUrl]         | [![AscEmuGccCI][AscEmuGccBadge]][AscEmuBadgeGccUrl]            |
 [![MasterAppYeyor][MasterAppYeyorBadge]][MasterAppYeyorUrl] | [![DevelopAppYeyor][DevelopAppYeyorBadge]][DevelopAppYeyorUrl] |
 
 ## Introduction
@@ -66,20 +67,23 @@ HowTo install - detailed guides on our wiki.
 * [Terms of use](TERMS_OF_USE_AGREEMENT.md)
 
 ## Special Thanks
-[JetBrains](https://www.jetbrains.com/) - For supporting OpenSource Projects.
+[JetBrains](https://www.jetbrains.com/) - For supporting Open Source projects.
 
 ## SAST Tools
 [PVS-Studio](https://pvs-studio.com/en/pvs-studio/?utm_source=website&utm_medium=github&utm_campaign=open_source) - Static analyzer for C, C++, C#, and Java code.
 
 <!-- Undercover:start:status -->
-[AscEmuBadge]: https://github.com/AscEmu/AscEmu/actions/workflows/gcc-linux-test-x64.yml/badge.svg
-[AscEmuBadgeUrl]: https://github.com/AscEmu/AscEmu/actions/workflows/gcc-linux-test-x64.yml
+[AscEmuGccBadge]: https://github.com/AscEmu/AscEmu/actions/workflows/gcc-linux-test-x64.yml/badge.svg
+[AscEmuClangBadge]: https://github.com/AscEmu/AscEmu/actions/workflows/clang-linux-test-x64.yml/badge.svg
 
 [MasterAppYeyorBadge]: https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/master?svg=true
 [DevelopAppYeyorBadge]: https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/develop?svg=true
 
 [MasterAppYeyorUrl]: https://ci.appveyor.com/project/Zyres/ascemu
 [DevelopAppYeyorUrl]: https://ci.appveyor.com/project/Zyres/ascemu
+
+[AscEmuBadgeGccUrl]: https://github.com/AscEmu/AscEmu/actions/workflows/gcc-linux-test-x64.yml
+[AscEmuBadgeClangUrl]: https://github.com/AscEmu/AscEmu/actions/workflows/clang-linux-test-x64.yml
 <!-- Undercover:end:status -->
 
 <!-- Undercover:start:community -->
@@ -91,3 +95,4 @@ HowTo install - detailed guides on our wiki.
 [CodefactorUrl]: https://www.codefactor.io/repository/github/ascemu/ascemu
 [OpenhubUrl]: https://www.openhub.net/p/AscEmu
 <!-- Undercover:end:community -->
+
