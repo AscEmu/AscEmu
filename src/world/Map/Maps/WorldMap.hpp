@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -396,6 +396,7 @@ public:
     uint32_t m_lastTransportUpdateTimer = 0;
     uint32_t m_lastDynamicUpdateTimer = 0;
     uint32_t m_lastPlayerUpdateTimer = 0;
+    uint32_t m_lastPetUpdateTimer = 0;
     uint32_t m_lastCreatureUpdateTimer = 0;
     uint32_t m_lastGameObjectUpdateTimer = 0;
     uint32_t m_lastSessionUpdateTimer = 0;

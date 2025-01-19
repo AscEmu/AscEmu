@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -16,9 +16,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
-#if VERSION_STRING > TBC
 void WorldSession::handleDismissVehicle(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     uint64_t vehicleGUID = _player->getCharmGuid();
 
     if (!vehicleGUID)   // something wrong here...
@@ -29,10 +29,12 @@ void WorldSession::handleDismissVehicle(WorldPacket& recvPacket)
 
     _player->obj_movement_info.readMovementInfo(recvPacket, recvPacket.GetOpcode());
     _player->callExitVehicle();
+#endif
 }
 
 void WorldSession::handleRequestVehiclePreviousSeat(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     if (GetPlayer()->getVehicleBase() == nullptr)
     {
         recvPacket.rfinish();
@@ -47,10 +49,12 @@ void WorldSession::handleRequestVehiclePreviousSeat(WorldPacket& recvPacket)
     }
 
     GetPlayer()->callChangeSeat(-1, false);
+#endif
 }
 
 void WorldSession::handleRequestVehicleNextSeat(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     if (GetPlayer()->getVehicleBase() == nullptr)
     {
         recvPacket.rfinish();
@@ -65,10 +69,12 @@ void WorldSession::handleRequestVehicleNextSeat(WorldPacket& recvPacket)
     }
 
     GetPlayer()->callChangeSeat(-1, true);
+#endif
 }
 
 void WorldSession::handleRequestVehicleSwitchSeat(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     Unit* vehicle_base = GetPlayer()->getVehicleBase();
     if (!vehicle_base)
         return;
@@ -97,10 +103,12 @@ void WorldSession::handleRequestVehicleSwitchSeat(WorldPacket& recvPacket)
             }
         }
     }
+#endif
 }
 
 void WorldSession::handleChangeSeatsOnControlledVehicle([[maybe_unused]]WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     Unit* vehicle_base = GetPlayer()->getVehicleBase();
     if (!vehicle_base)
         return;
@@ -190,10 +198,12 @@ void WorldSession::handleChangeSeatsOnControlledVehicle([[maybe_unused]]WorldPac
                 vehicle_base->getVehicleBase()->handleSpellClick(GetPlayer(), seatId);
     }
 #endif
+#endif
 }
 
 void WorldSession::handleRemoveVehiclePassenger(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     Vehicle* vehicle = _player->getVehicleKit();
     if (!vehicle)
     {
@@ -219,10 +229,12 @@ void WorldSession::handleRemoveVehiclePassenger(WorldPacket& recvPacket)
     if (seat)
         if (seat->isEjectable())
             passengerUnit->callExitVehicle();
+#endif
 }
 
 void WorldSession::handleLeaveVehicle(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING > TBC
     if (Vehicle* vehicle = GetPlayer()->getVehicle())
     {
         if (WDB::Structures::VehicleSeatEntry const* seat = vehicle->getSeatForPassenger(GetPlayer()))
@@ -231,10 +243,12 @@ void WorldSession::handleLeaveVehicle(WorldPacket& /*recvPacket*/)
                 GetPlayer()->callExitVehicle();
         }
     }
+#endif
 }
 
 void WorldSession::handleEnterVehicle(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     CmsgPlayerVehicleEnter srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -250,5 +264,5 @@ void WorldSession::handleEnterVehicle(WorldPacket& recvPacket)
         return;
 
     _player->callEnterVehicle(unit);
-}
 #endif
+}

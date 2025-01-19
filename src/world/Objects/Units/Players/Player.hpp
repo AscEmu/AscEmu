@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -636,17 +636,17 @@ public:
 
     void applyLevelInfo(uint32_t newLevel);
 
-    virtual bool isClassMage();
-    virtual bool isClassDeathKnight();
-    virtual bool isClassPriest();
-    virtual bool isClassRogue();
-    virtual bool isClassShaman();
-    virtual bool isClassHunter();
-    virtual bool isClassWarlock();
-    virtual bool isClassWarrior();
-    virtual bool isClassPaladin();
-    virtual bool isClassMonk();
-    virtual bool isClassDruid();
+    virtual bool isClassMage() const;
+    virtual bool isClassDeathKnight() const;
+    virtual bool isClassPriest() const;
+    virtual bool isClassRogue() const;
+    virtual bool isClassShaman() const;
+    virtual bool isClassHunter() const;
+    virtual bool isClassWarlock() const;
+    virtual bool isClassWarrior() const;
+    virtual bool isClassPaladin() const;
+    virtual bool isClassMonk() const;
+    virtual bool isClassDruid() const;
 
     PlayerTeam getTeam() const;
     PlayerTeam getBgTeam() const;
@@ -659,10 +659,22 @@ public:
     bool isTeamHorde() const;
     bool isTeamAlliance() const;
 
+    // Returns unit charmer
     Unit* getUnitOwner() override;
+    // Returns unit charmer
+    Unit const* getUnitOwner() const override;
+    // Returns unit charmer or self
     Unit* getUnitOwnerOrSelf() override;
+    // Returns unit charmer or self
+    Unit const* getUnitOwnerOrSelf() const override;
+    // Returns player charmer
     Player* getPlayerOwner() override;
+    // Returns player charmer
+    Player const* getPlayerOwner() const override;
+    // Returns player charmer or self
     Player* getPlayerOwnerOrSelf() override;
+    // Returns player charmer or self
+    Player const* getPlayerOwnerOrSelf() const override;
 
     void toggleAfk();
     void toggleDnd();
@@ -1122,10 +1134,9 @@ private:
     uint8_t m_raidDifficulty = 0;
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // Die, Kill, Corpse & Repop
+    // Die, Corpse & Repop
 public:
     void die(Unit* unitAttacker, uint32_t damage, uint32_t spellId) override;
-    void kill();
 
     void setCorpseData(LocationVector position, int32_t instanceId);
     LocationVector getCorpseLocation() const;
@@ -1707,26 +1718,41 @@ private:
     /////////////////////////////////////////////////////////////////////////////////////////
     // Pets/Summons
 public:
-    std::list<Pet*> getSummons();
-    void addPetToSummons(Pet* pet);
-    void removePetFromSummons(Pet* pet);
-    Pet* getFirstPetFromSummons() const;
-
-    PlayerPet* getPlayerPet(uint32_t petId);
-    void addPlayerPet(PlayerPet* pet, uint32_t index);
-    void removePlayerPet(uint32_t petId);
+    PetCache const* getPetCache(uint8_t petId) const;
+    PetCache* getModifiablePetCache(uint8_t petId) const;
+    PetCacheMap const& getPetCacheMap() const;
+    // <Slot, pet id>
+    std::map<uint8_t, uint8_t> const& getPetCachedSlotMap() const;
+    void addPetCache(std::unique_ptr<PetCache> petCache, uint8_t index);
+    void removePetCache(uint8_t petId);
     uint8_t getPetCount() const;
 
-    uint32_t getFreePetNumber() const;
+    uint8_t getFreePetNumber();
+    std::optional<uint8_t> getPetIdFromSlot(uint8_t slot) const;
+    bool hasPetInSlot(uint8_t slot) const;
+    std::optional<uint8_t> findFreeActivePetSlot() const;
+    std::optional<uint8_t> findFreeStablePetSlot() const;
 
-    void spawnPet(uint32_t petId);
-    void spawnActivePet();
-    void dismissActivePets();
+    bool tryPutPetToSlot(uint8_t petId, uint8_t newSlot, bool sendErrors = true);
+
+    // Summons existing pet from PetCache map
+    // Pet must be in active slot
+    void spawnPet(uint8_t petId);
+    // Summons temporarily unsummoned pet if one exists
+    void summonTemporarilyUnsummonedPet();
+    // Unsummons current pet and saves it id for quick re-summon
+    // Used i.e. when entering vehicle, mounting or using taxi
+    void unSummonPetTemporarily();
+    bool isPetRequiringTemporaryUnsummon() const;
+    void setTemporarilyUnsummonedPetsOffline();
+
+    void setLastBattlegroundPetId(uint8_t petId);
+    uint8_t getLastBattlegroundPetId() const;
+    void setLastBattlegroundPetSpell(uint32_t petSpell);
+    uint32_t getLastBattlegroundPetSpell() const;
 
     void setStableSlotCount(uint8_t count);
     uint8_t getStableSlotCount() const;
-
-    uint32_t getUnstabledPetNumber() const;
 
     void eventSummonPet(Pet* summonPet);
     void eventDismissPet();
@@ -1735,11 +1761,17 @@ public:
     void setSummonedObject(Object* summonedObject);
 
 private:
-    std::list<Pet*> m_summons;
-    std::map<uint32_t, PlayerPet*> m_pets;
+    void _spawnPet(PetCache const* petCache);
+
+    PetCacheMap m_cachedPets;
+    // <Slot, pet id>
+    std::map<uint8_t, uint8_t> m_cachedPetSlots;
+
+    uint8_t m_battlegroundLastPetId = 0;
+    uint32_t m_battlegroundLastPetSpell = 0;
 
     uint8_t m_stableSlotCount = 0;
-    uint32_t m_maxPetNumber = 0;
+    uint8_t m_maxPetNumber = 0;
 
     Object* m_summonedObject = nullptr;
 
@@ -1769,6 +1801,7 @@ public:
     void sendDestroyObjectPacket(uint64_t destroyedGuid);
     void sendEquipmentSetUseResultPacket(uint8_t result);
     void sendTotemCreatedPacket(uint8_t slot, uint64_t guid, uint32_t duration, uint32_t spellId);
+    void sendPetTameFailure(uint8_t result) const;
 
     void sendGossipPoiPacket(float posX, float posY, uint32_t icon, uint32_t flags, uint32_t data, std::string name);
     void sendPoiById(uint32_t id);
@@ -2129,7 +2162,7 @@ protected:
 
     void _loadPet(QueryResult* result);
     void _loadPetSpells(QueryResult* result);
-    void _savePet(QueryBuffer* buf);
+    void _savePet(QueryBuffer* buf, bool updateCurrentPetCache = false, Pet* currentPet = nullptr);
     void _savePetSpells(QueryBuffer* buf);
 
     void _eventAttack(bool offhand);

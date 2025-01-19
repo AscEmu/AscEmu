@@ -1,9 +1,10 @@
 ﻿# ![logo](http://ascemu.org/images/logo.png)
 
-Master                                                         | Development
-:------------------------------------------------------------: | :----------------------------------------------------------------:
-[![MasterCircle][MasterCircleBadge]][MasterCircleUrl]          | [![DevelopCircle][DevelopCircleBadge]][DevelopCircleUrl]         |
-[![MasterAppYeyor][MasterAppYeyorBadge]][MasterAppYeyorUrl]    | [![DevelopAppYeyor][DevelopAppYeyorBadge]][DevelopAppYeyorUrl]   |
+Master                                                      | Development
+:---------------------------------------------------------: | :--------------------------------------------------------------:
+[![AscEmuClangCI][AscEmuClangBadge]][AscEmuBadgeClangUrl]   | [![AscEmuClangCI][AscEmuClangBadge]][AscEmuBadgeClangUrl]      |
+[![AscEmuGccCI][AscEmuGccBadge]][AscEmuBadgeGccUrl]         | [![AscEmuGccCI][AscEmuGccBadge]][AscEmuBadgeGccUrl]            |
+[![MasterAppYeyor][MasterAppYeyorBadge]][MasterAppYeyorUrl] | [![DevelopAppYeyor][DevelopAppYeyorBadge]][DevelopAppYeyorUrl] |
 
 ## Introduction
 AscEmu is derived from ArcEmu to keep up the Antrix-Ascent-Arcemu way of Framework.
@@ -32,12 +33,16 @@ Log into world   | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: 
 Feel free to contribute any corrections but make sure it is useful and tested before opening PRs.
 
 What are "useful" commits?
- 1. Fixing an open issue.
+ 1. Fixing an [open issue](https://github.com/AscEmu/AscEmu/issues).
  2. Related to the milestones.
  3. Making the Framework stable/safer
  4. Adding blizzlike related functions
 
-Anything else like "fun-content" is NOT useful!
+We strive to make all in-game content to be blizzlike!
+
+Feel free to join our [Discord server](https://discord.com/invite/CBdgrh7).
+
+Click on the "⭐ Star" button to help us gain more visibility on Github!
 
 ## Opening new issues
 Be patient with us and give us details.
@@ -52,7 +57,7 @@ HowTo install - detailed guides on our wiki.
 
 ## Links
 * [Web](http://www.ascemu.org)
-* [Forums](http://www.board.ascemu.org)
+* [Forums](https://github.com/AscEmu/AscEmu/discussions)
 * [Wiki](https://ascemu.github.io/Wiki/)
 * [World DB](https://github.com/AscEmu/OneDB)
 
@@ -61,16 +66,24 @@ HowTo install - detailed guides on our wiki.
 * [Thanks to all](THANKS.md)
 * [Terms of use](TERMS_OF_USE_AGREEMENT.md)
 
+## Special Thanks
+[JetBrains](https://www.jetbrains.com/) - For supporting Open Source projects.
+
+## SAST Tools
+[PVS-Studio](https://pvs-studio.com/en/pvs-studio/?utm_source=website&utm_medium=github&utm_campaign=open_source) - Static analyzer for C, C++, C#, and Java code.
+
 <!-- Undercover:start:status -->
-[MasterCircleBadge]: https://circleci.com/gh/AscEmu/AscEmu/tree/master.svg?style=shield
-[DevelopCircleBadge]: https://circleci.com/gh/AscEmu/AscEmu/tree/develop.svg?style=shield
+[AscEmuGccBadge]: https://github.com/AscEmu/AscEmu/actions/workflows/gcc-linux-test-x64.yml/badge.svg
+[AscEmuClangBadge]: https://github.com/AscEmu/AscEmu/actions/workflows/clang-linux-test-x64.yml/badge.svg
+
 [MasterAppYeyorBadge]: https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/master?svg=true
 [DevelopAppYeyorBadge]: https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/develop?svg=true
 
-[MasterCircleUrl]: https://app.circleci.com/pipelines/github/AscEmu/AscEmu?branch=master
-[DevelopCircleUrl]: https://app.circleci.com/pipelines/github/AscEmu/AscEmu?branch=develop
 [MasterAppYeyorUrl]: https://ci.appveyor.com/project/Zyres/ascemu
 [DevelopAppYeyorUrl]: https://ci.appveyor.com/project/Zyres/ascemu
+
+[AscEmuBadgeGccUrl]: https://github.com/AscEmu/AscEmu/actions/workflows/gcc-linux-test-x64.yml
+[AscEmuBadgeClangUrl]: https://github.com/AscEmu/AscEmu/actions/workflows/clang-linux-test-x64.yml
 <!-- Undercover:end:status -->
 
 <!-- Undercover:start:community -->
@@ -83,8 +96,3 @@ HowTo install - detailed guides on our wiki.
 [OpenhubUrl]: https://www.openhub.net/p/AscEmu
 <!-- Undercover:end:community -->
 
-## Special Thanks
-* [JetBrains - For supporting OpenSource Projects](https://www.jetbrains.com/)
-
-## SAST Tools
-[PVS-Studio](https://pvs-studio.com/en/pvs-studio/?utm_source=website&utm_medium=github&utm_campaign=open_source) - static analyzer for C, C++, C#, and Java code.

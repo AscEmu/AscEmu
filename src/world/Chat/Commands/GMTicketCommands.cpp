@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -348,7 +348,7 @@ bool ChatHandler::HandleGMTicketAssignToCommand(const char* args, WorldSession* 
         return true;
     }
 
-    if (plr->getSession()->GetPermissionCount() == 0)
+    if (!plr->getSession()->HasGMPermissions())
     {
         chn->say(cplr, "GmTicket:0:Player is not a GM.", cplr, true);
         return true;

@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -187,9 +187,14 @@ public:
     uint8_t invisibilityFlag = INVIS_FLAG_NORMAL;
     uint8_t stealthFlag = STEALTH_FLAG_NORMAL;
 
-    // Owner
+    // Returns unit owner
     Unit* getUnitOwner() override;
+    // Returns unit owner
+    Unit const* getUnitOwner() const override;
+    // Returns player owner
     Player* getPlayerOwner() override;
+    // Returns player owner
+    Player const* getPlayerOwner() const override;
 
     // MIT End
 

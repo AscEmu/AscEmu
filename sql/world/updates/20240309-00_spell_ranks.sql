@@ -9,7 +9,7 @@ AND `proc_effect_trigger_spell_1` IS NULL AND `proc_effect_trigger_spell_2` IS N
 UPDATE `trainer_properties_spellset` SET `deletespell`='0';
 
 -- Update world db version
-INSERT INTO `world_db_version` (`id`, `LastUpdate`) VALUES ('138', '20240309-00_spell_ranks');
+INSERT INTO `world_db_version` (`id`, `LastUpdate`) VALUES ('137', '20240309-00_spell_ranks');
 
 -- Create and populate new spell ranks table
 DROP TABLE IF EXISTS `spell_ranks`;

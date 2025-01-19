@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -1860,7 +1860,7 @@ void Aura::spellAuraEffectAddModifier(AuraEffectModifier* aurEff, bool apply)
     // Hunter's beastmastery talents
     if (aurEff->getAuraEffectType() == SPELL_AURA_ADD_FLAT_MODIFIER)
     {
-        const auto pet = getPlayerOwner()->getFirstPetFromSummons();
+        const auto pet = getPlayerOwner()->getPet();
         if (pet != nullptr)
         {
             switch (getSpellInfo()->getId())

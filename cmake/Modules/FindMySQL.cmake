@@ -88,7 +88,7 @@ if (WIN32)
 
 else()
     find_library(MYSQL_LIBRARY
-        NAMES "mysqlclient" "mysqlclient_r"
+        NAMES "mysqlclient" "mysqlclient_r" "mariadbclient"
         PATHS
             # Generic
             "/usr/lib"

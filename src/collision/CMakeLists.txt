@@ -1,7 +1,7 @@
-# Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name.
-project(collision CXX)
+set(LIBRARY_NAME collision)
 
 file(GLOB SRC_MANAGEMENT Management/*.cpp Management/*.h)
 file(GLOB SRC_MAPS Maps/*.cpp Maps/*.h)
@@ -15,7 +15,12 @@ set(COLLISION_SRCS
     ${SRC_LOCAL_DIR}
 )
 
-include_directories(
+# source group.
+ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
+
+add_library(${LIBRARY_NAME} STATIC ${COLLISION_SRCS})
+
+target_include_directories(${LIBRARY_NAME} PUBLIC 
     ${OPENSSL_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
     ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
@@ -29,17 +34,15 @@ include_directories(
     ${ZLIB_INCLUDE_DIRS}
 )
 
-add_library(${PROJECT_NAME} STATIC ${COLLISION_SRCS})
-
 # include library dependencies.
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${LIBRARY_NAME}
   PUBLIC
     g3dlite
     shared
 )
 
 # generate precompiled header.
-if (USE_PCH)
-    message(STATUS "Generate PCH for ${PROJECT_NAME}")
-    target_precompile_headers(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchCollision.hpp)
+if (AE_USE_PCH)
+    message(STATUS "Generate PCH for ${LIBRARY_NAME}")
+    target_precompile_headers(${LIBRARY_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchCollision.hpp)
 endif ()

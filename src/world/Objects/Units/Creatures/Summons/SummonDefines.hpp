@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -26,8 +26,8 @@ enum SummonType
 
 enum SummonSlot : uint8_t
 {
-    SUMMON_SLOT_PET                 = 0,
-    SUMMON_SLOT_TOTEM_FIRE          = 1,
+    SUMMON_SLOT_NONE                = 0,
+    SUMMON_SLOT_TOTEM_FIRE          = 1,    // Not just totem, seems to be default slot for different summon types
     SUMMON_SLOT_TOTEM_EARTH         = 2,
     SUMMON_SLOT_TOTEM_WATER         = 3,
     SUMMON_SLOT_TOTEM_AIR           = 4,
@@ -35,4 +35,10 @@ enum SummonSlot : uint8_t
     SUMMON_SLOT_QUEST               = 6,
 
     MAX_SUMMON_SLOT
+};
+
+enum SummonCorpseDespawnTimers : uint16_t
+{
+    SUMMON_CORPSE_DESPAWN_DEFAULT_TIMER     = 400,
+    SUMMON_CORPSE_DESPAWN_EXTENDED_TIMER    = 10000
 };

@@ -1,10 +1,12 @@
-# Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name.
-project(world CXX)
+set(EXECUTABLE_NAME world)
 
 file(GLOB SRC_CHAT_FILES Chat/*.cpp Chat/*.h Chat/*.hpp)
 file(GLOB SRC_COMMAND_FILES Chat/Commands/*.cpp Chat/Commands/*.h Chat/Commands/*.hpp)
+file(GLOB SRC_COMMAND_ACCOUNT_FILES Chat/Commands/Account/*.cpp Chat/Commands/Account/*.hpp)
+file(GLOB SRC_COMMAND_ACHIEVEMENT_FILES Chat/Commands/Achievement/*.cpp Chat/Commands/Achievement/*.hpp)
 file(GLOB SRC_DATA_FILES Data/*.cpp Data/*.h Data/*.hpp)
 file(GLOB SRC_MACROS_FILES Macros/*.cpp Macros/*.h Macros/*.hpp)
 file(GLOB SRC_MANAGEMENT_FILES Management/*.cpp Management/*.h Management/*.hpp)
@@ -47,9 +49,14 @@ if (WIN32)
     set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/resources.rc")
 endif ()
 
-set(WORLD_SRCS
+# source group.
+ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
+
+add_executable(${EXECUTABLE_NAME}
     ${SRC_CHAT_FILES}
     ${SRC_COMMAND_FILES}
+    ${SRC_COMMAND_ACCOUNT_FILES}
+    ${SRC_COMMAND_ACHIEVEMENT_FILES}
     ${SRC_DATA_FILES}
     ${SRC_MACROS_FILES}
     ${SRC_MANAGEMENT_FILES}
@@ -87,6 +94,7 @@ set(WORLD_SRCS
     ${SRC_STORAGE_FILES}
     ${SRC_STORAGE_WDB_FILES}
     ${SRC_LOCAL_DIR}
+    ${APP_ICON_RESOURCE_WINDOWS}
 )
 
 include_directories(
@@ -105,50 +113,8 @@ include_directories(
     ${ZLIB_INCLUDE_DIRS}
 )
 
-# source group.
-source_group(Chat FILES ${SRC_CHAT_FILES})
-source_group(Chat\\Commands FILES ${SRC_COMMAND_FILES})
-source_group(Data FILES ${SRC_DATA_FILES})
-source_group(Macros FILES ${SRC_MACROS_FILES})
-source_group(Management FILES ${SRC_MANAGEMENT_FILES})
-source_group(Management\\Battleground FILES ${SRC_MANAGEMENT_BATTLEGROUND_FILES})
-source_group(Management\\Gossip FILES ${SRC_MANAGEMENT_GOSSIP_FILES})
-source_group(Management\\Guild FILES ${SRC_MANAGEMENT_GUILD_FILES})
-source_group(Management\\LFG FILES ${SRC_MANAGEMENT_LFG_FILES})
-source_group(Management\\Loot FILES ${SRC_MANAGEMENT_LOOT_FILES})
-source_group(Management\\ObjectUpdates FILES ${SRC_MANAGEMENT_OBJECTUPDATES_FILES})
-source_group(Management\\Tickets FILES ${SRC_MANAGEMENT_TICKETS_FILES})
-source_group(Map FILES ${SRC_MAP_FILES})
-source_group(Map\\Area FILES ${SRC_MAP_AREA_FILES})
-source_group(Map\\Cells FILES ${SRC_MAP_CELLS_FILES})
-source_group(Map\\Management FILES ${SRC_MAP_MANAGEMENT_FILES})
-source_group(Map\\Maps FILES ${SRC_MAP_MAPS_FILES})
-source_group(Movement FILES ${SRC_MOVEMENT_FILES})
-source_group(Movement\\MovementGenerators FILES ${SRC_MOVEMENT_MOVEMENTGENERATOR_FILES})
-source_group(Movement\\Spline FILES ${SRC_MOVEMENT_SPLINE_FILES})
-source_group(Objects FILES ${SRC_OBJECTS_FILES})
-source_group(Objects\\Units FILES ${SRC_UNITS_FILES})
-source_group(Objects\\Units\\Creatures FILES ${SRC_UNITS_CREATURES_FILES})
-source_group(Objects\\Units\\Creatures\\Summons FILES ${SRC_UNITS_SUMMONS_FILES})
-source_group(Objects\\Units\\Players FILES ${SRC_UNITS_PLAYERS_FILES})
-source_group(Server FILES ${SRC_SERVER_FILES})
-source_group(Server\\Console FILES ${SRC_SERVER_CONSOLE_FILES})
-source_group(Server\\LogonCommClient FILES ${SRC_LOGON_COMMUNICATION_CLIENT_FILES})
-source_group(Server\\Packets FILES ${SRC_PACKET_FILES})
-source_group(Server\\Packets\\Handlers FILES ${SRC_PACKET_HANDLER_FILES})
-source_group(Server\\Packets\\Movement FILES ${SRC_PACKET_MOVEMENT_FILES})
-source_group(Server\\Script FILES ${SRC_SERVER_SCRIPT_FILES})
-source_group(Server\\Warden FILES ${SRC_SERVER_WARDEN_FILES})
-source_group(Spell FILES ${SRC_SPELL_FILES})
-source_group(Spell\\Customization FILES ${SRC_SPELL_CUSTOM_FILES})
-source_group(Spell\\Definitions FILES ${SRC_SPELL_DEFINITIONS_FILES})
-source_group(Storage FILES ${SRC_STORAGE_FILES})
-source_group(Storage\\WDB FILES ${SRC_STORAGE_WDB_FILES})
-
-add_executable(${PROJECT_NAME} ${WORLD_SRCS} ${APP_ICON_RESOURCE_WINDOWS})
-
-if (WIN32 AND NOT USE_PCH)
-    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/INCREMENTAL:NO")
+if (WIN32 AND NOT AE_USE_PCH)
+    set_target_properties(${EXECUTABLE_NAME} PROPERTIES LINK_FLAGS "/INCREMENTAL:NO")
 endif ()
 
 if (APPLE)
@@ -161,14 +127,14 @@ if (BUILD_LUAENGINE)
     LIST(APPEND WORLD_LINK_EXTRA_LIBS lualib)
 endif()
 
-set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS TRUE)
+set_target_properties(${EXECUTABLE_NAME} PROPERTIES ENABLE_EXPORTS TRUE)
 
-add_dependencies(${PROJECT_NAME} shared g3dlite Detour Recast)
+add_dependencies(${EXECUTABLE_NAME} shared g3dlite Detour Recast)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/WorldConf.h.in ${CMAKE_CURRENT_SOURCE_DIR}/WorldConf.h)
 
 # include library dependencies.
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${EXECUTABLE_NAME}
   PUBLIC
     ${WORLD_LINK_EXTRA_LIBS}
     shared
@@ -181,11 +147,9 @@ target_link_libraries(${PROJECT_NAME}
 unset(WORLD_LINK_EXTRA_LIBS)
 
 # generate precompiled header.
-if (USE_PCH)
-    message(STATUS "Generate PCH for ${PROJECT_NAME}")
-    target_precompile_headers(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchWorld.hpp)
+if (AE_USE_PCH)
+    message(STATUS "Generate PCH for ${EXECUTABLE_NAME}")
+    target_precompile_headers(${EXECUTABLE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchWorld.hpp)
 endif ()
 
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
-
-unset(WORLD_SRCS)
+install(TARGETS ${EXECUTABLE_NAME} RUNTIME DESTINATION .)

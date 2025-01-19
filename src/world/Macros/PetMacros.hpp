@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -13,7 +13,8 @@ This file is released under the MIT license. See README-MIT for more information
 #define PET_SUCCUBUS 1863
 #define PET_FELHUNTER 417
 #define PET_FELGUARD 17252
-#define SHADOWFIEND 19668
+#define PET_SHADOWFIEND 19668
+#define PET_GHOUL 26125
 
 /// -
 //#define SPIRITWOLF 29264
@@ -24,7 +25,6 @@ This file is released under the MIT license. See README-MIT for more information
 /// -
 #define PET_SPELL_SPAM_COOLDOWN 2000        // applied only to spells that have no cooldown
 
-
 /// -
 #define PET_TALENT_TREE_START 409           // Tenacity
 
@@ -32,7 +32,7 @@ This file is released under the MIT license. See README-MIT for more information
 #define PET_TALENT_TREE_END 411             // Cunning
 
 /// -
-#define PET_DELAYED_REMOVAL_TIME 60000      // 1 min
+//#define PET_DELAYED_REMOVAL_TIME 60000    // 1 min
 
 /// -
 #define DEFAULT_SPELL_STATE 0x8100

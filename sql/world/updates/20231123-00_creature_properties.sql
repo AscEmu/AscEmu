@@ -176,4 +176,4 @@ DELETE FROM `creature_spawns` WHERE  `id`=460380;
 
 DELETE FROM `creature_spawns` WHERE  `id`=476817;
 
-INSERT INTO `world_db_version` (`id`, `LastUpdate`) VALUES ('137', '20231123-00_creature_properties');
+INSERT INTO `world_db_version` (`id`, `LastUpdate`) VALUES ('136', '20231123-00_creature_properties');

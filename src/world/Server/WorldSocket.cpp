@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -597,9 +597,9 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     recvData >> GMFlags;
     recvData >> AccountFlags;
 
-    const std::string* forcedPermissions = sLogonCommHandler.getPermissionStringForAccountId(AccountID);
-    if (forcedPermissions != nullptr)
-        GMFlags.assign(*forcedPermissions);
+    std::string forcedPermissions = sLogonCommHandler.getPermissionStringForAccountId(AccountID);
+    if (!forcedPermissions.empty())
+        GMFlags = forcedPermissions;
 
     sLogger.debug("InformationRetreiveCallback : got information packet from logon: `{}` ID {} (request {})", AccountName, AccountID, mRequestID);
 

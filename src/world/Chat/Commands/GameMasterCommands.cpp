@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -147,13 +147,13 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
 {
     bool print_headline = true;
 
-    bool is_gamemaster = m_session->GetPermissionCount() != 0;
+    bool is_gamemaster = m_session->hasPermissions();
 
     std::lock_guard guard(sObjectMgr.m_playerLock);
     for (const auto playerPair : sObjectMgr.getPlayerStorage())
     {
         Player* player = playerPair.second;
-        if (player->getSession()->GetPermissionCount())
+        if (player->getSession()->hasPermissions())
         {
             if (!worldConfig.gm.listOnlyActiveGms)
             {

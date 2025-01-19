@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -440,46 +440,23 @@ void Aura::EventUpdateRaidAA(AuraEffectModifier* /*aurEff*/, float r)
 
 void Aura::EventUpdatePetAA(AuraEffectModifier* aurEff, float r)
 {
-    Player* p = nullptr;
-
-    if (m_target->isPlayer())
-        p = static_cast<Player*>(m_target);
-    else
+    const auto pet = m_target->getPet();
+    if (pet == nullptr)
         return;
 
-    std::list< Pet* > pl = p->getSummons();
-    for (std::list< Pet* >::iterator itr = pl.begin(); itr != pl.end(); ++itr)
+    if (m_target->getDistanceSq(pet) > r)
     {
-        Pet* pet = *itr;
-
-        if (p->getDistanceSq(pet) > r)
-            continue;
-
-        if (!pet->isAlive())
-            continue;
-
-        if (pet->hasAurasWithId(m_spellInfo->getId()))
-            continue;
-
+        pet->removeAllAurasByIdForGuid(m_spellInfo->getId(), m_target->getGuid());
+    }
+    else
+    {
+        if (pet->isAlive() && pet->getAuraWithIdForGuid(m_spellInfo->getId(), m_target->getGuid()) == nullptr)
         {
-            Aura* a = sSpellMgr.newAura(m_spellInfo, getTimeLeft(), p, pet, true);
+            Aura* a = sSpellMgr.newAura(m_spellInfo, getTimeLeft(), m_target, pet, true);
             a->m_areaAura = true;
             a->addAuraEffect(aurEff->getAuraEffectType(), aurEff->getEffectDamage(), aurEff->getEffectMiscValue(), aurEff->getEffectPercentModifier(), true, aurEff->getEffectIndex());
             pet->addAura(a);
         }
-    }
-
-    for (std::list< Pet* >::iterator itr = pl.begin(); itr != pl.end();)
-    {
-        std::list< Pet* >::iterator itr2 = itr;
-
-        Pet* pet = *itr2;
-        ++itr;
-
-        if (p->getDistanceSq(pet) <= r)
-            continue;
-
-        pet->removeAllAurasById(m_spellInfo->getId());
     }
 }
 
@@ -742,17 +719,10 @@ void Aura::ClearAATargets()
     }
     targets.clear();
 
-    if (m_target->isPlayer() && m_spellInfo->hasEffect(SPELL_EFFECT_APPLY_PET_AREA_AURA))
+    if (m_spellInfo->hasEffect(SPELL_EFFECT_APPLY_PET_AREA_AURA))
     {
-        Player* p = static_cast<Player*>(m_target);
-
-        std::list< Pet* > pl = p->getSummons();
-        for (std::list< Pet* >::iterator itr = pl.begin(); itr != pl.end(); ++itr)
-        {
-            Pet* pet = *itr;
-
-            pet->removeAllAurasById(spellid);
-        }
+        if (auto* const pet = m_target->getPet())
+            pet->removeAllAurasByIdForGuid(spellid, m_target->getGuid());
     }
 
 #if VERSION_STRING >= TBC
@@ -3204,28 +3174,12 @@ void Aura::SpellAuraMounted(AuraEffectModifier* aurEff, bool apply)
     }
     else
     {
-        p_target->removeUnitFlags(UNIT_FLAG_MOUNT);
-
-#if VERSION_STRING > TBC
-        if (p_target->getVehicleKit())
-        {
-            // Send other players that we are no longer a vehicle
-            p_target->sendMessageToSet(SmsgPlayerVehicleData(p_target->GetNewGUID(), 0).serialise().get(), true);
-
-            // Remove vehicle from player
-            p_target->removeVehicleKit();
-        }
-#endif
-
         p_target->setMountVehicleId(0);
         p_target->setMountSpellId(0);
         p_target->m_flyingAura = 0;
-        m_target->setMountDisplayId(0);
-        //m_target->removeUnitFlags(UNIT_FLAG_MOUNTED_TAXI);
 
-        //if we had pet then respawn
-        p_target->spawnActivePet();
-        p_target->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_DISMOUNT);
+        p_target->dismount();
+
 #if VERSION_STRING > WotLK
         uint32_t amount = 0;
         if (WDB::Structures::MountCapabilityEntry const* mountCapability = m_target->getMountCapability(uint32(getSpellInfo()->getEffectMiscValueB(0))))
@@ -5713,26 +5667,17 @@ void Aura::SpellAuraModPossessPet(AuraEffectModifier* /*aurEff*/, bool apply)
     if (pCaster == nullptr || !pCaster->IsInWorld())
         return;
 
-    if (!m_target->isPet())
+    if (!m_target->isPet() || m_target->getPlayerOwner() != pCaster)
         return;
 
-    std::list<Pet*> summons = pCaster->getSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
+    if (apply)
     {
-        if (*itr == m_target)
-        {
-            if (apply)
-            {
-                pCaster->possess(m_target);
-                pCaster->speedCheatDelay(getTimeLeft());
-            }
-            else
-            {
-                pCaster->unPossess();
-            }
-            break;
-        }
-
+        pCaster->possess(m_target);
+        pCaster->speedCheatDelay(getTimeLeft());
+    }
+    else
+    {
+        pCaster->unPossess();
     }
 }
 

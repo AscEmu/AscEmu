@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -696,6 +696,8 @@ bool World::setInitialWorldSettings()
     auto localeString = Util::getLanguagesStringFromId(mDbcLocaleId);
     if (mDbcLocaleId == 0)
         localeString.append("/enUS");
+    else if (mDbcLocaleId == 10)
+        localeString.append("/ptPT");
 
     sLogger.info("World : Using {} DBC locale", localeString);
 #endif

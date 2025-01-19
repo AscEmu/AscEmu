@@ -1,7 +1,7 @@
-# Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name.
-project(shared CXX)
+set(LIBRARY_NAME shared)
 
 file(GLOB SRC_CONFIG_FILES Config/*.cpp Config/*.h Config/*.hpp)
 file(GLOB SRC_CRYPTOGRAPHY_FILES Cryptography/*.cpp Cryptography/*.h Cryptography/*.hpp)
@@ -37,7 +37,12 @@ set(SHARED_SRCS
     ${SRC_LOCAL_DIR}
 )
 
-include_directories(
+# source group.
+ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
+
+add_library(${LIBRARY_NAME} STATIC ${SHARED_SRCS})
+
+target_include_directories(${LIBRARY_NAME} PUBLIC 
     ${OPENSSL_INCLUDE_DIR}
     ${ZLIB_INCLUDE_DIRS}
     ${MYSQL_INCLUDE_DIR}
@@ -45,30 +50,8 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/dep/utf8cpp
 )
 
-# source group.
-source_group(Config FILES ${SRC_CONFIG_FILES})
-source_group(Cryptography FILES ${SRC_CRYPTOGRAPHY_FILES})
-source_group(Database FILES ${SRC_DATABASE_FILES})
-source_group(Debugging FILES ${SRC_DEBUGGING_FILES})
-source_group(Exceptions FILES ${SRC_EXCEPTIONS_FILES})
-source_group(Logging FILES ${SRC_LOGGING_FILES})
-source_group(Network FILES ${SRC_NETWORK_FILES})
-
-if (WIN32)
-    source_group(Network/IOCP FILES ${SRC_NETWORK_FILES_PLATFORM})
-elseif ((CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFreeBSD") OR APPLE)
-    source_group(Network/KQUEUE FILES ${SRC_NETWORK_FILES_PLATFORM})
-else ()
-    source_group(Network/EPOLL FILES ${SRC_NETWORK_FILES_PLATFORM})
-endif ()
-
-source_group(Threading FILES ${SRC_THREADING_FILES})
-source_group(Utilities FILES ${SRC_UTILITIES_FILES})
-
-add_library(${PROJECT_NAME} STATIC ${SHARED_SRCS})
-
 # include library dependencies.
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${LIBRARY_NAME}
   PUBLIC
     ${ZLIB_LIBRARIES}
     ${MYSQL_LIBRARY}
@@ -81,15 +64,15 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Common.hpp.in ${CMAKE_CURRENT_SOURCE_
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/AEVersion.hpp.in ${CMAKE_CURRENT_SOURCE_DIR}/AEVersion.hpp)
 
 if (APPLE)
-    target_link_libraries(${PROJECT_NAME} c++)
+    target_link_libraries(${LIBRARY_NAME} c++)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFreeBSD")
-    target_link_libraries(${PROJECT_NAME} c++experimental)
+    target_link_libraries(${LIBRARY_NAME} c++experimental)
 endif ()
 
 # generate precompiled header.
-if (USE_PCH)
-    message(STATUS "Generate PCH for ${PROJECT_NAME}")
-    target_precompile_headers(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchShared.hpp)
+if (AE_USE_PCH)
+    message(STATUS "Generate PCH for ${LIBRARY_NAME}")
+    target_precompile_headers(${LIBRARY_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchShared.hpp)
 endif ()
 
 unset(SHARED_SRCS)

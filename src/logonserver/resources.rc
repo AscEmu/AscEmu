@@ -1,4 +1,4 @@
-#include "../shared/git_version.h"
+#include "../shared/git_version.hpp"
 
 IDI_APPICON ICON DISCARDABLE "icon.ico"
 
@@ -25,7 +25,7 @@ BEGIN
             VALUE "LegalCopyright", "AscEmu Community"
             VALUE "OriginalFilename", "logon.exe"
             VALUE "ProductName", "AE Logon"
-            VALUE "ProductVersion", BUILD_HASH
+            VALUE "ProductVersion", AE_BUILD_HASH
         END
     END
     BLOCK "VarFileInfo"

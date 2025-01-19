@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -378,9 +378,10 @@ void WorldSession::handleQuestQueryOpcode(WorldPacket& recvPacket)
     }
 }
 
-#if VERSION_STRING > TBC
+
 void WorldSession::handleQuestPOIQueryOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     CmsgQuestPoiQuery srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -400,8 +401,8 @@ void WorldSession::handleQuestPOIQueryOpcode(WorldPacket& recvPacket)
         sQuestMgr.BuildQuestPOIResponse(data, questId);
 
     SendPacket(&data);
-}
 #endif
+}
 
 void WorldSession::handleQuestgiverCancelOpcode(WorldPacket& /*recvPacket*/)
 {

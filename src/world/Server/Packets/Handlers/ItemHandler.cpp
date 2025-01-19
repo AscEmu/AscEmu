@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -322,7 +322,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
         }
         else
         {
-            if (!_player->getFirstPetFromSummons() || _player->getFirstPetFromSummons()->getEntry() != static_cast<uint32_t>(itemProto->ForcedPetId))
+            if (!_player->getPet() || _player->getPet()->getEntry() != static_cast<uint32_t>(itemProto->ForcedPetId))
             {
                 _player->sendCastFailedPacket(spellInfo->getId(), SPELL_FAILED_BAD_TARGETS, srlPacket.castCount, 0);
                 return;
@@ -390,9 +390,9 @@ void WorldSession::handleSwapItemOpcode(WorldPacket& recvPacket)
         srlPacket.destSlot, srlPacket.srcInventorySlot, srlPacket.srcSlot);
 }
 
-#if VERSION_STRING == WotLK
 void WorldSession::sendRefundInfo(uint64_t GUID)
 {
+#if VERSION_STRING == WotLK
     if (!_player || !_player->IsInWorld())
         return;
 
@@ -438,20 +438,18 @@ void WorldSession::sendRefundInfo(uint64_t GUID)
 
         this->SendPacket(&packet);
     }
-}
 #elif VERSION_STRING >= Cata
-void WorldSession::sendRefundInfo(uint64_t guid)
-{
+
     if (!_player || !_player->IsInWorld())
         return;
 
-    Item* item = _player->getItemInterface()->GetItemByGUID(guid);
+    Item* item = _player->getItemInterface()->GetItemByGUID(GUID);
     if (item == nullptr)
         return;
 
     if (item->isEligibleForRefund())
     {
-        std::pair<time_t, uint32_t> refundEntryPair = _player->getItemInterface()->LookupRefundable(guid);
+        std::pair<time_t, uint32_t> refundEntryPair = _player->getItemInterface()->LookupRefundable(GUID);
 
         if (refundEntryPair.first == 0 || refundEntryPair.second == 0)
             return;
@@ -507,13 +505,13 @@ void WorldSession::sendRefundInfo(uint64_t guid)
 
         SendPacket(&data);
     }
-}
 #endif
+}
 
 // todo : Check for MOP
-#if VERSION_STRING == Cata
 void WorldSession::handleTransmogrifyItems(WorldPacket& recvData)
 {
+#if VERSION_STRING == Cata
     sLogger.debug("Received CMSG_TRANSMOGRIFY_ITEMS");
     Player* player = GetPlayer();
 
@@ -667,10 +665,12 @@ void WorldSession::handleTransmogrifyItems(WorldPacket& recvData)
     // ... unless client was modified
     if (cost) // 0 cost if reverting look
         player->modCoinage(-cost);
+#endif
 }
 
 void WorldSession::handleReforgeItemOpcode(WorldPacket& recvData)
 {
+#if VERSION_STRING == Cata
     uint32_t slot, reforgeEntry;
     ObjectGuid guid;
     uint32_t bag;
@@ -754,20 +754,22 @@ void WorldSession::handleReforgeItemOpcode(WorldPacket& recvData)
 
     item->addEnchantment(reforgeEntry, REFORGE_ENCHANTMENT_SLOT, 0);
     sendReforgeResult(true);
+#endif
 }
 
 void WorldSession::sendReforgeResult(bool success)
 {
+#if VERSION_STRING == Cata
     WorldPacket data(SMSG_REFORGE_RESULT, 1);
     data.writeBit(success);
     data.flushBits();
     SendPacket(&data);
-}
 #endif
+}
 
-#if VERSION_STRING >= WotLK
 void WorldSession::handleItemRefundInfoOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= WotLK
     CmsgItemrefundinfo srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -775,10 +777,12 @@ void WorldSession::handleItemRefundInfoOpcode(WorldPacket& recvPacket)
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ITEMREFUNDINFO.");
 
     this->sendRefundInfo(srlPacket.itemGuid);
+#endif
 }
 
 void WorldSession::handleItemRefundRequestOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= WotLK
     CmsgItemrefundrequest srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -845,8 +849,8 @@ void WorldSession::handleItemRefundRequestOpcode(WorldPacket& recvPacket)
     SendPacket(&packet);
 
     sLogger.debug("Sent SMSG_ITEMREFUNDREQUEST.");
-}
 #endif
+}
 
 bool VerifyBagSlots(int8_t containerSlot, int8_t slot)
 {
@@ -1480,9 +1484,9 @@ void WorldSession::handleAutoEquipItemSlotOpcode(WorldPacket& recvPacket)
     }
 }
 
-#if VERSION_STRING == TBC
 void WorldSession::handleItemQuerySingleOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING == TBC
     CmsgItemQuerySingle srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -1620,10 +1624,9 @@ void WorldSession::handleItemQuerySingleOpcode(WorldPacket& recvPacket)
     data << itemProto->ExistingDuration;                    // 2.4.2 Item duration in seconds
 
     SendPacket(&data);
-}
+
 #else
-void WorldSession::handleItemQuerySingleOpcode(WorldPacket& recvPacket)
-{
+
     CmsgItemQuerySingle srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -1755,8 +1758,8 @@ void WorldSession::handleItemQuerySingleOpcode(WorldPacket& recvPacket)
     data << itemProperties->ItemLimitCategory;
     data << itemProperties->HolidayId;                           // HolidayNames.dbc
     SendPacket(&data);
-}
 #endif
+}
 
 void WorldSession::handleBuyBackOpcode(WorldPacket& recvPacket)
 {
@@ -2731,9 +2734,9 @@ void WorldSession::handleCancelTemporaryEnchantmentOpcode(WorldPacket& recvPacke
     item->removeAllEnchantments(true);
 }
 
-#if VERSION_STRING > Classic
 void WorldSession::handleInsertGemOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > Classic
     CmsgSocketGems srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -2908,8 +2911,8 @@ void WorldSession::handleInsertGemOpcode(WorldPacket& recvPacket)
     }
 
     TargetItem->m_isDirty = true;
-}
 #endif
+}
 
 void WorldSession::handleWrapItemOpcode(WorldPacket& recvPacket)
 {
@@ -3036,9 +3039,9 @@ void WorldSession::handleWrapItemOpcode(WorldPacket& recvPacket)
     dst->saveToDB(srlPacket.destBagSlot, srlPacket.destSlot, false, nullptr);
 }
 
-#if VERSION_STRING > TBC
 void WorldSession::handleEquipmentSetUse(WorldPacket& data)
 {
+#if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_EQUIPMENT_SET_USE");
 
     WoWGuid guid;
@@ -3105,10 +3108,12 @@ void WorldSession::handleEquipmentSetUse(WorldPacket& data)
     }
 
     _player->sendEquipmentSetUseResultPacket(result);
+#endif
 }
 
 void WorldSession::handleEquipmentSetSave(WorldPacket& data)
 {
+#if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_EQUIPMENT_SET_SAVE");
 
     WoWGuid guid;
@@ -3144,10 +3149,12 @@ void WorldSession::handleEquipmentSetSave(WorldPacket& data)
     {
         sLogger.debug("Player {} couldn't store equipment set {} at slot {} ", _player->getGuidLow(), equipmentSet->SetGUID, equipmentSet->SetID);
     }
+#endif
 }
 
 void WorldSession::handleEquipmentSetDelete(WorldPacket& data)
 {
+#if VERSION_STRING > TBC
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_EQUIPMENT_SET_DELETE");
 
     WoWGuid guid;
@@ -3158,9 +3165,9 @@ void WorldSession::handleEquipmentSetDelete(WorldPacket& data)
         sLogger.debug("Equipmentset with GUID {} was successfully deleted.", guid.getGuidLowPart());
     else
         sLogger.debug("Equipmentset with GUID {} couldn't be deleted.", guid.getGuidLowPart());
-
-}
 #endif
+}
+
 
 void WorldSession::sendBuyFailed(uint64_t guid, uint32_t itemid, uint8_t error)
 {

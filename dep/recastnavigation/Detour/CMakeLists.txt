@@ -1,7 +1,7 @@
-# Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name.
-project(Detour CXX)
+set(LIBRARY_NAME Detour)
 
 file(GLOB SRC_DETOUR Source/*.cpp Include/*.h)
 
@@ -9,15 +9,18 @@ set(DETOUR_SRCS
     ${SRC_DETOUR}
 )
 
-include_directories(
+# source group.
+ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
+
+add_library(${LIBRARY_NAME} STATIC ${DETOUR_SRCS})
+
+target_include_directories(${LIBRARY_NAME} PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}/Include
     ${ZLIB_INCLUDE_DIRS}
 )
 
-add_library(${PROJECT_NAME} STATIC ${DETOUR_SRCS})
-
 # include library dependencies.
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${LIBRARY_NAME}
   PUBLIC
     ${ZLIB_LIBRARIES}
 )

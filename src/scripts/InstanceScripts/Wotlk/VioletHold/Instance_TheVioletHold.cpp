@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -149,7 +149,7 @@ void TheVioletHoldScript::UpdateEvent()
     }
 
     // Update Event Timers
-    scriptEvents->updateEvents(getUpdateFrequency(), 0);
+    scriptEvents.updateEvents(getUpdateFrequency(), 0);
 
     // Check Door Integrety
     if (EventState == EncounterStates::InProgress)
@@ -160,7 +160,7 @@ void TheVioletHoldScript::UpdateEvent()
     }
 
     // Events
-    while (uint32_t eventId = scriptEvents->getFinishedEvent())
+    while (uint32_t eventId = scriptEvents.getFinishedEvent())
     {
         switch (eventId)
         {
@@ -214,7 +214,7 @@ void TheVioletHoldScript::UpdateEvent()
             case EVENT_STATE_CHECK:
             {
                 StateCheck();
-                scriptEvents->addEvent(EVENT_STATE_CHECK, 3 * TimeVarsMs::Second);
+                scriptEvents.addEvent(EVENT_STATE_CHECK, 3 * TimeVarsMs::Second);
             } break;
             case EVENT_TIMER1:
             {
@@ -258,7 +258,7 @@ void TheVioletHoldScript::UpdateEvent()
                     }
                 }
 
-                scriptEvents->addEvent(EVENT_TIMER2, 5 * TimeVarsMs::Second);
+                scriptEvents.addEvent(EVENT_TIMER2, 5 * TimeVarsMs::Second);
             } break;
             case EVENT_TIMER2:
             {
@@ -306,7 +306,7 @@ void TheVioletHoldScript::UpdateEvent()
                     }
                 }
 
-                scriptEvents->addEvent(EVENT_TIMER3, 8 * TimeVarsMs::Second);
+                scriptEvents.addEvent(EVENT_TIMER3, 8 * TimeVarsMs::Second);
             } break;
             case EVENT_TIMER3:
             {
@@ -384,7 +384,7 @@ void TheVioletHoldScript::setLocalData(uint32_t type, uint32_t data)
             if (WaveCount)
             {
                 // Add Next Wave
-                scriptEvents->addEvent(EVENT_NEXT_WAVE, (isBossWave(WaveCount - 1) ? 45 : 5) * TimeVarsMs::Second);
+                scriptEvents.addEvent(EVENT_NEXT_WAVE, (isBossWave(WaveCount - 1) ? 45 : 5) * TimeVarsMs::Second);
             }
         } break;
         case DATA_DOOR_INTEGRITY:
@@ -425,8 +425,8 @@ void TheVioletHoldScript::setLocalData(uint32_t type, uint32_t data)
                     getInstance()->getWorldStatesHandler().SetWorldStateForZone(4415, 0, WORLD_STATE_VH_SHOW, 1);
 
                     WaveCount = 1;
-                    scriptEvents->addEvent(EVENT_NEXT_WAVE, 1 * TimeVarsMs::Second);
-                    scriptEvents->addEvent(EVENT_STATE_CHECK, 3 * TimeVarsMs::Second);
+                    scriptEvents.addEvent(EVENT_NEXT_WAVE, 1 * TimeVarsMs::Second);
+                    scriptEvents.addEvent(EVENT_STATE_CHECK, 3 * TimeVarsMs::Second);
 
                     for (uint8_t i = 0; i < ActivationCrystalCount; ++i)
                         if (GameObject* crystal = GetGameObjectByGuid(ActivationCrystalGUIDs[i]))
@@ -519,9 +519,9 @@ void TheVioletHoldScript::spawnPortal()
 
 void TheVioletHoldScript::startCyanigosaIntro()
 {
-    scriptEvents->addEvent(EVENT_CYANIGOSA_INTRO1, 2 * TimeVarsMs::Second);
-    scriptEvents->addEvent(EVENT_CYANIGOSA_INTRO2, 6 * TimeVarsMs::Second);
-    scriptEvents->addEvent(EVENT_CYANIGOSA_INTRO3, 7 * TimeVarsMs::Second);
+    scriptEvents.addEvent(EVENT_CYANIGOSA_INTRO1, 2 * TimeVarsMs::Second);
+    scriptEvents.addEvent(EVENT_CYANIGOSA_INTRO2, 6 * TimeVarsMs::Second);
+    scriptEvents.addEvent(EVENT_CYANIGOSA_INTRO3, 7 * TimeVarsMs::Second);
 }
 
 void TheVioletHoldScript::StateCheck()
@@ -538,7 +538,7 @@ void TheVioletHoldScript::StateCheck()
         Defenseless = true;
         setLocalData(DATA_MAIN_EVENT_STATE, EncounterStates::NotStarted);
 
-        scriptEvents->resetEvents();
+        scriptEvents.resetEvents();
 
         if (Creature* sinclari = getCreatureFromData(DATA_SINCLARI))
         {
@@ -568,7 +568,7 @@ bool TheVioletHoldScript::WipeCheck()
 
 void TheVioletHoldScript::startBossEncounter(uint8_t bossId)
 {
-    scriptEvents->addEvent(EVENT_TIMER1, 3 * TimeVarsMs::Second);
+    scriptEvents.addEvent(EVENT_TIMER1, 3 * TimeVarsMs::Second);
     handleCells(bossId);
 }
 

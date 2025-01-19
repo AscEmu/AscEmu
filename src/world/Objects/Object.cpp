@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -1748,20 +1748,13 @@ void Object::removeObjectFromInRangeSameFactionSet(Object* obj)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Owner
 Unit* Object::getUnitOwner() { return nullptr; }
+Unit const* Object::getUnitOwner() const { return nullptr; }
 Unit* Object::getUnitOwnerOrSelf() { return getUnitOwner(); }
+Unit const* Object::getUnitOwnerOrSelf() const { return getUnitOwner(); }
 Player* Object::getPlayerOwner() { return nullptr; }
+Player const* Object::getPlayerOwner() const { return nullptr; }
 Player* Object::getPlayerOwnerOrSelf() { return getPlayerOwner(); }
-
-Player* Object::getAffectingPlayer()
-{
-    if (!getUnitOwner())
-        return ToPlayer();
-
-    if (Unit* owner = getPlayerOwner())
-        return owner->getPlayerOwnerOrSelf();
-
-    return nullptr;
-}
+Player const* Object::getPlayerOwnerOrSelf() const { return getPlayerOwner(); }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Misc
@@ -3902,8 +3895,8 @@ Standing Object::getEnemyReaction(Object* target)
     if (getUnitOwnerOrSelf() == target->getUnitOwnerOrSelf())
         return Standing::STANDING_FRIENDLY;
 
-    Player* selfPlayerOwner = getAffectingPlayer();
-    Player* targetPlayerOwner = target->getAffectingPlayer();
+    Player* selfPlayerOwner = getPlayerOwnerOrSelf();
+    Player* targetPlayerOwner = target->getPlayerOwnerOrSelf();
 
     // check forced reputation
     // which could be applied by spell auras
@@ -3996,7 +3989,7 @@ Standing Object::getFactionReaction(WDB::Structures::FactionTemplateEntry const*
     if (!targetFactionTemplateEntry)
         return STANDING_NEUTRAL;
 
-    if (Player* targetPlayerOwner = target->getAffectingPlayer())
+    if (Player* targetPlayerOwner = target->getPlayerOwnerOrSelf())
     {
         // check contested flags
         if ((factionTemplateEntry->FactionGroup & FACTION_TEMPLATE_FLAG_CONTESTED_GUARD) &&
@@ -4177,8 +4170,8 @@ bool Object::isValidTarget(Object* target, SpellInfo const* bySpell)
     if (isFriendlyTo(target) || target->isFriendlyTo(this))
         return false;
 
-    Player* playerAffectingAttacker = unit && unit->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) ? getAffectingPlayer() : go ? getAffectingPlayer() : nullptr;
-    Player* playerAffectingTarget = unitTarget && unitTarget->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) ? unitTarget->getAffectingPlayer() : nullptr;
+    Player* playerAffectingAttacker = unit && unit->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) ? getPlayerOwnerOrSelf() : go ? getPlayerOwner() : nullptr;
+    Player* playerAffectingTarget = unitTarget && unitTarget->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) ? unitTarget->getPlayerOwnerOrSelf() : nullptr;
 
     // Not all neutral creatures can be attacked (even some unfriendly faction does not react aggresive to you, like Sporaggar)
     if ((playerAffectingAttacker && !playerAffectingTarget) || (!playerAffectingAttacker && playerAffectingTarget))
@@ -4311,8 +4304,8 @@ bool Object::isValidAssistTarget(Unit* target, SpellInfo const* bySpell)
     {
         if (unit && unit->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
         {
-            Player const* selfPlayerOwner = getAffectingPlayer();
-            Player const* targetPlayerOwner = unitTarget->getAffectingPlayer();
+            Player const* selfPlayerOwner = getPlayerOwnerOrSelf();
+            Player const* targetPlayerOwner = unitTarget->getPlayerOwnerOrSelf();
             if (selfPlayerOwner && targetPlayerOwner)
             {
                 // can't assist player which is dueling someone
@@ -4571,7 +4564,7 @@ void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId,
     }
 }
 
-Object* Object::getWorldMapObject(const uint64 & guid)
+Object* Object::getWorldMapObject(const uint64 & guid) const
 {
     if (!IsInWorld())
         return nullptr;
@@ -4579,7 +4572,7 @@ Object* Object::getWorldMapObject(const uint64 & guid)
     return getWorldMap()->getObject(guid);
 }
 
-Pet* Object::getWorldMapPet(const uint64 & guid)
+Pet* Object::getWorldMapPet(const uint64 & guid) const
 {
     if (!IsInWorld())
         return nullptr;
@@ -4590,7 +4583,7 @@ Pet* Object::getWorldMapPet(const uint64 & guid)
     return getWorldMap()->getPet(wowGuid.getGuidLowPart());
 }
 
-Unit* Object::getWorldMapUnit(const uint64 & guid)
+Unit* Object::getWorldMapUnit(const uint64 & guid) const
 {
     if (!IsInWorld())
         return nullptr;
@@ -4598,7 +4591,7 @@ Unit* Object::getWorldMapUnit(const uint64 & guid)
     return getWorldMap()->getUnit(guid);
 }
 
-Player* Object::getWorldMapPlayer(const uint64 & guid)
+Player* Object::getWorldMapPlayer(const uint64 & guid) const
 {
     if (!IsInWorld())
         return nullptr;
@@ -4609,7 +4602,7 @@ Player* Object::getWorldMapPlayer(const uint64 & guid)
     return getWorldMap()->getPlayer(wowGuid.getGuidLowPart());
 }
 
-Creature* Object::getWorldMapCreature(const uint64 & guid)
+Creature* Object::getWorldMapCreature(const uint64 & guid) const
 {
     if (!IsInWorld())
         return nullptr;
@@ -4620,7 +4613,7 @@ Creature* Object::getWorldMapCreature(const uint64 & guid)
     return getWorldMap()->getCreature(wowGuid.getGuidLowPart());
 }
 
-GameObject* Object::getWorldMapGameObject(const uint64 & guid)
+GameObject* Object::getWorldMapGameObject(const uint64 & guid) const
 {
     if (!IsInWorld())
         return nullptr;
@@ -4631,7 +4624,7 @@ GameObject* Object::getWorldMapGameObject(const uint64 & guid)
     return getWorldMap()->getGameObject(wowGuid.getGuidLowPart());
 }
 
-DynamicObject* Object::getWorldMapDynamicObject(const uint64 & guid)
+DynamicObject* Object::getWorldMapDynamicObject(const uint64 & guid) const
 {
     if (!IsInWorld())
         return nullptr;

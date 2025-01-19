@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -20,7 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Auth/AutoPatcher.h"
 #include <Network/Network.h>
 
-#include "git_version.h"
+#include "git_version.hpp"
 #include "Console/LogonConsole.h"
 #include "LogonConf.hpp"
 #include "Database/Database.h"
@@ -35,7 +35,7 @@ std::atomic<bool> mrunning(true);
 
 ConfigMgr Config;
 
-static const char* REQUIRED_LOGON_DB_VERSION = "20200221-00_utf8mb4_unicode_ci";
+static const char* REQUIRED_LOGON_DB_VERSION = "20250119-00_logon_db_version";
 
 MasterLogon& MasterLogon::getInstance()
 {
@@ -216,7 +216,7 @@ void MasterLogon::CheckForDeadSockets()
 
 void MasterLogon::PrintBanner()
 {
-    sLogger.file(AscEmu::Logging::Severity::FAILURE, AscEmu::Logging::MessageType::MINOR, "<< AscEmu {}/{}-{} {} :: Logon Server >>", BUILD_HASH_STR, CONFIG, AE_PLATFORM, AE_ARCHITECTURE);
+    sLogger.file(AscEmu::Logging::Severity::FAILURE, AscEmu::Logging::MessageType::MINOR, "<< AscEmu {}/{}-{} {} :: Logon Server >>", AE_BUILD_HASH, CONFIG, AE_PLATFORM, AE_ARCHITECTURE);
     sLogger.file(AscEmu::Logging::Severity::FAILURE, AscEmu::Logging::MessageType::MINOR, "========================================================");
 }
 
@@ -341,18 +341,7 @@ bool MasterLogon::StartDb()
 
 bool MasterLogon::CheckDBVersion()
 {
-    QueryResult* versionQuery = sLogonSQL->QueryNA("SELECT LastUpdate FROM logon_db_version;");
-    if (!versionQuery)
-    {
-        sLogger.failure("Database : logon database is missing the table `logon_db_version`. AE will create one for you now!");
-        std::string createTable = "CREATE TABLE `logon_db_version` (`LastUpdate` varchar(255) NOT NULL DEFAULT '', PRIMARY KEY(`LastUpdate`)) ENGINE = InnoDB DEFAULT CHARSET = utf8;";
-        sLogonSQL->ExecuteNA(createTable.c_str());
-
-        std::string insertData = "INSERT INTO `logon_db_version` VALUES ('20180729-00_logon_db_version');";
-        sLogonSQL->ExecuteNA(insertData.c_str());
-    }
-
-    QueryResult* cqr = sLogonSQL->QueryNA("SELECT LastUpdate FROM logon_db_version;");
+    QueryResult* cqr = sLogonSQL->QueryNA("SELECT LastUpdate FROM logon_db_version ORDER BY id DESC LIMIT 1;");
     if (cqr == nullptr)
     {
         sLogger.failure("Database : logon database is missing the table `logon_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");

@@ -1,10 +1,10 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
 #include "Common.hpp"
-#include "git_version.h"
+#include "git_version.hpp"
 #include "Chat/ChatDefines.hpp"
 #include "Server/WorldSession.h"
 #include "Server/Packets/CmsgSetFactionAtWar.h"
@@ -104,10 +104,11 @@ void WorldSession::handleCharDeleteOpcode(WorldPacket& recvPacket)
     SendPacket(SmsgCharDelete(deleteResult).serialise().get());
 }
 
-#if VERSION_STRING > TBC
+
 // \todo port player to a main city of his new faction
 void WorldSession::handleCharFactionOrRaceChange(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     CmsgCharFactionChange srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -184,8 +185,8 @@ void WorldSession::handleCharFactionOrRaceChange(WorldPacket& recvPacket)
         newname.c_str(), newflags, static_cast<uint32_t>(srlPacket.charCreate._race), srlPacket.guid.getGuidLow());
 
     SendPacket(SmsgCharFactionChange(0, srlPacket.guid, srlPacket.charCreate).serialise().get());
-}
 #endif
+}
 
 void WorldSession::handlePlayerLoginOpcode(WorldPacket& recvPacket)
 {
@@ -367,6 +368,8 @@ uint8_t WorldSession::deleteCharacter(WoWGuid guid)
         CharacterDatabase.Execute("DELETE FROM playerdeletedspells WHERE GUID = %u", guid.getGuidLow());
         CharacterDatabase.Execute("DELETE FROM playerreputations WHERE guid = %u", guid.getGuidLow());
         CharacterDatabase.Execute("DELETE FROM playerskills WHERE GUID = %u", guid.getGuidLow());
+        CharacterDatabase.Execute("DELETE FROM playersummons WHERE ownerguid=%u", guid.getGuidLow());
+        CharacterDatabase.Execute("DELETE FROM playersummonspells WHERE ownerguid=%u", guid.getGuidLow());
 
         sObjectMgr.deleteCachedCharacterInfo(guid.getGuidLow());
         return E_CHAR_DELETE_SUCCESS;
@@ -511,9 +514,9 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     sLogonCommHandler.updateAccountCount(GetAccountId(), 1);
 }
 
-#if VERSION_STRING > TBC
 void WorldSession::handleCharCustomizeLooksOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     CmsgCharCustomize srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -555,8 +558,8 @@ void WorldSession::handleCharCustomizeLooksOpcode(WorldPacket& recvPacket)
         srlPacket.createStruct.facialHair);
 
     SendPacket(SmsgCharCustomize(E_RESPONSE_SUCCESS, srlPacket.guid, srlPacket.createStruct).serialise().get());
-}
 #endif
+}
 
 void WorldSession::initGMMyMaster()
 {
@@ -582,7 +585,7 @@ void WorldSession::sendServerStats()
 {
     if (worldConfig.server.sendStatsOnJoin)
     {
-        _player->broadcastMessage("Info: %sAscEmu %s/%s-%s-%s %s(www.ascemu.org)", MSG_COLOR_WHITE, BUILD_HASH_STR, CONFIG, AE_PLATFORM, AE_ARCHITECTURE, MSG_COLOR_SEXBLUE);
+        _player->broadcastMessage("Info: %sAscEmu %s/%s-%s-%s %s(www.ascemu.org)", MSG_COLOR_WHITE, AE_BUILD_HASH, CONFIG, AE_PLATFORM, AE_ARCHITECTURE, MSG_COLOR_SEXBLUE);
         _player->broadcastMessage("Online Players: %s%u |rPeak: %s%u|r Accepted Connections: %s%u", MSG_COLOR_SEXBLUE, 
                                    static_cast<uint32_t>(sWorld.getSessionCount()), MSG_COLOR_SEXBLUE, sWorld.getPeakSessionCount(), MSG_COLOR_SEXBLUE, sWorld.getAcceptedConnections());
 
@@ -855,30 +858,28 @@ void WorldSession::characterEnumProc(QueryResult* result)
             }
 #endif
 
-            CreatureProperties const* petInfo = nullptr;
-            uint32_t petLevel = 0;
-
-            if (charEnum.Class == WARLOCK || charEnum.Class == HUNTER)
-            {
-                QueryResult* player_pet_db_result = CharacterDatabase.Query("SELECT entry, level FROM playerpets WHERE ownerguid = %u "
-                    "AND MOD(active, 10) = 1 AND alive = TRUE;", WoWGuid::getGuidLowPartFromUInt64(charEnum.guid));
-                if (player_pet_db_result)
-                {
-                    petLevel = player_pet_db_result->Fetch()[1].asUint32();
-                    petInfo = sMySQLStore.getCreatureProperties(player_pet_db_result->Fetch()[0].asUint32());
-                    delete player_pet_db_result;
-                }
-            }
-
             charEnum.pet_data.display_id = 0;
             charEnum.pet_data.level = 0;
             charEnum.pet_data.family = 0;
 
-            if (petInfo != nullptr)
+            if (charEnum.Class == WARLOCK || charEnum.Class == HUNTER
+#if VERSION_STRING >= WotLK
+                || charEnum.Class == DEATHKNIGHT || charEnum.Class == MAGE
+#endif
+                )
             {
-                charEnum.pet_data.display_id = petInfo->Male_DisplayID;
-                charEnum.pet_data.level = petLevel;
-                charEnum.pet_data.family = petInfo->Family;
+                QueryResult* player_pet_db_result = CharacterDatabase.Query("SELECT entry, model, level FROM playerpets WHERE ownerguid = %u "
+                    "AND active = TRUE AND alive = TRUE LIMIT 1;", WoWGuid::getGuidLowPartFromUInt64(charEnum.guid));
+                if (player_pet_db_result)
+                {
+                    if (const auto petInfo = sMySQLStore.getCreatureProperties(player_pet_db_result->Fetch()[0].asUint32()))
+                    {
+                        charEnum.pet_data.display_id = player_pet_db_result->Fetch()[1].asUint32();
+                        charEnum.pet_data.level = player_pet_db_result->Fetch()[2].asUint32();
+                        charEnum.pet_data.family = petInfo->Family;
+                    }
+                    delete player_pet_db_result;
+                }
             }
 
             QueryResult* item_db_result = CharacterDatabase.Query("SELECT slot, entry, enchantments FROM playeritems "

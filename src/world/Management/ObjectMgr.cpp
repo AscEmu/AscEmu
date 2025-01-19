@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -2065,7 +2065,7 @@ void ObjectMgr::loadCreatureMovementOverrides()
     QueryResult* result = WorldDatabase.Query("SELECT SpawnId, Ground, Swim, Flight, Rooted, Chase, Random from creature_movement_override");
     if (!result)
     {
-        sLogger.info("loadCreatureMovementOverrides : Loaded 0 creature movement overrides. DB table `creature_movement_override` is empty!");
+        sLogger.info("CreatureMovementOverrides : Loaded 0 creature movement overrides. DB table `creature_movement_override` is empty!");
         return;
     }
 
@@ -2438,10 +2438,10 @@ std::shared_ptr<LevelInfo> ObjectMgr::getLevelInfo(uint32_t _race, uint32_t _cla
     return nullptr;
 }
 
-std::shared_ptr<Pet> ObjectMgr::createPet(uint32_t _entry)
+Pet* ObjectMgr::createPet(uint32_t _entry, WDB::Structures::SummonPropertiesEntry const* properties)
 {
     const uint32_t guid = ++m_hiPetGuid;
-    return std::make_shared<Pet>(WoWGuid(guid, _entry, HIGHGUID_TYPE_PET));
+    return new Pet(WoWGuid(guid, _entry, HIGHGUID_TYPE_PET), properties);
 }
 
 void ObjectMgr::loadPetSpellCooldowns()

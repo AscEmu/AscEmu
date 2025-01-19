@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -80,6 +80,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgLootReleaseResponse.h"
 #include "Server/Packets/SmsgLootRemoved.h"
 #include "Server/Packets/SmsgInstanceReset.h"
+#include "Server/Packets/SmsgStableResult.h"
 #include "Server/World.h"
 #include "Server/WorldSocket.h"
 #include "Server/Packets/SmsgContactList.h"
@@ -249,8 +250,6 @@ Player::~Player()
     if (Player* inviterPlayer = sObjectMgr.getPlayer(getGroupInviterId()))
         inviterPlayer->setGroupInviterId(0);
 
-    dismissActivePets();
-
     if (m_duelPlayer != nullptr)
         m_duelPlayer->m_duelPlayer = nullptr;
 
@@ -281,16 +280,13 @@ Player::~Player()
         delete _voidStorageItems[i];
 #endif
 
-    for (auto pet = m_pets.begin(); pet != m_pets.end(); ++pet)
-        delete pet->second;
-
     delete m_mailBox;
 #if VERSION_STRING > TBC
     delete m_achievementMgr;
 #endif
     delete m_taxi;
 
-    m_pets.clear();
+    m_cachedPets.clear();
     removeGarbageItems();
 }
 
@@ -453,10 +449,6 @@ void Player::Update(unsigned long time_passed)
     if (time_passed >= m_partyUpdateTimer)
     {
         sendUpdateToOutOfRangeGroupMembers();
-
-        // Remove also garbage items
-        removeGarbageItems();
-
         m_partyUpdateTimer = 1000;
     }
     else
@@ -467,6 +459,7 @@ void Player::Update(unsigned long time_passed)
     // Update items
     if (m_itemUpdateTimer >= 1000)
     {
+        removeGarbageItems();
         getItemInterface()->update(m_itemUpdateTimer);
         m_itemUpdateTimer = 0;
     }
@@ -688,6 +681,9 @@ void Player::OnPushToWorld()
         resetTalents();
         m_resetTalents = false;
     }
+
+    summonTemporarilyUnsummonedPet();
+
 #if VERSION_STRING == Mop
     updateVisibility();
 
@@ -735,9 +731,8 @@ void Player::removeFromWorld()
     //clear buyback
     getItemInterface()->EmptyBuyBack();
 
-    getSummonInterface()->removeAllSummons();
-    dismissActivePets();
-    removeFieldSummon();
+    // Keep current pet active, Unit::RemoveFromWorld removes other summons
+    unSummonPetTemporarily();
 
     if (m_summonedObject)
     {
@@ -2055,9 +2050,7 @@ void Player::setPhase(uint8_t command, uint32_t newPhase)
 #endif
     }
 
-    for (auto pet : getSummons())
-        if (pet)
-            pet->setPhase(command, newPhase);
+    getSummonInterface()->setPhase(command, newPhase);
 
     if (Unit* charm = m_WorldMap->getUnit(getCharmGuid()))
         charm->setPhase(command, newPhase);
@@ -2719,11 +2712,11 @@ void Player::applyLevelInfo(uint32_t newLevel)
 
     if (getClass() == WARLOCK)
     {
-        const auto pet = getFirstPetFromSummons();
+        const auto pet = getPet();
         if (pet != nullptr && pet->IsInWorld() && pet->isAlive())
         {
             pet->setLevel(newLevel);
-            pet->ApplyStatsForLevel();
+            pet->applyStatsForLevel();
             pet->UpdateSpellList();
         }
     }
@@ -2733,17 +2726,17 @@ void Player::applyLevelInfo(uint32_t newLevel)
     m_playedTime[0] = 0;
 }
 
-bool Player::isClassMage() { return false; }
-bool Player::isClassDeathKnight() { return false; }
-bool Player::isClassPriest() { return false; }
-bool Player::isClassRogue() { return false; }
-bool Player::isClassShaman() { return false; }
-bool Player::isClassHunter() { return false; }
-bool Player::isClassWarlock() { return false; }
-bool Player::isClassWarrior() { return false; }
-bool Player::isClassPaladin() { return false; }
-bool Player::isClassMonk() { return false; }
-bool Player::isClassDruid() { return false; }
+bool Player::isClassMage() const { return false; }
+bool Player::isClassDeathKnight() const { return false; }
+bool Player::isClassPriest() const { return false; }
+bool Player::isClassRogue() const { return false; }
+bool Player::isClassShaman() const { return false; }
+bool Player::isClassHunter() const { return false; }
+bool Player::isClassWarlock() const { return false; }
+bool Player::isClassWarrior() const { return false; }
+bool Player::isClassPaladin() const { return false; }
+bool Player::isClassMonk() const { return false; }
+bool Player::isClassDruid() const { return false; }
 
 PlayerTeam Player::getTeam() const { return m_team == TEAM_ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE; }
 PlayerTeam Player::getBgTeam() const { return m_bgTeam == TEAM_ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE; }
@@ -2769,7 +2762,23 @@ Unit* Player::getUnitOwner()
     return nullptr;
 }
 
+Unit const* Player::getUnitOwner() const
+{
+    if (getCharmedByGuid() != 0)
+        return getWorldMapUnit(getCharmedByGuid());
+
+    return nullptr;
+}
+
 Unit* Player::getUnitOwnerOrSelf()
+{
+    if (auto* const unitOwner = getUnitOwner())
+        return unitOwner;
+
+    return this;
+}
+
+Unit const* Player::getUnitOwnerOrSelf() const
 {
     if (auto* const unitOwner = getUnitOwner())
         return unitOwner;
@@ -2785,7 +2794,23 @@ Player* Player::getPlayerOwner()
     return nullptr;
 }
 
+Player const* Player::getPlayerOwner() const
+{
+    if (getCharmedByGuid() != 0)
+        return getWorldMapPlayer(getCharmedByGuid());
+
+    return nullptr;
+}
+
 Player* Player::getPlayerOwnerOrSelf()
+{
+    if (auto* const plrOwner = getPlayerOwner())
+        return plrOwner;
+
+    return this;
+}
+
+Player const* Player::getPlayerOwnerOrSelf() const
 {
     if (auto* const plrOwner = getPlayerOwner())
         return plrOwner;
@@ -3122,7 +3147,7 @@ void Player::outPacketToSet(uint16_t opcode, uint16_t length, const void* data, 
         {
             if (m_isGmInvisible)
             {
-                if (player->getSession()->GetPermissionCount() > 0)
+                if (player->getSession()->hasPermissions())
                     player->outPacket(opcode, length, data);
             }
             else
@@ -3156,7 +3181,7 @@ void Player::sendMessageToSet(WorldPacket* data, bool sendToSelf, bool sendToOwn
 
             if (data->GetOpcode() != SMSG_MESSAGECHAT)
             {
-                if (m_isGmInvisible && ((player->getSession()->GetPermissionCount() <= 0)))
+                if (m_isGmInvisible && !player->getSession()->hasPermissions())
                     continue;
 
                 if (player->isVisibleObject(getGuid()))
@@ -5509,7 +5534,7 @@ void Player::_addSpell(uint32_t spellId, uint16_t fromSkill/* = 0*/, bool learni
                 (getShapeShiftMask() == 0 && (spellInfo->getAttributesExB() & ATTRIBUTESEXB_NOT_NEED_SHAPESHIFT)))
             {
                 // TODO: temporarily check for this custom flag, will be removed when spell system handles pets properly!
-                if (((spellInfo->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET) == 0) || (spellInfo->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET && getFirstPetFromSummons() != nullptr))
+                if (((spellInfo->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET) == 0) || (spellInfo->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET && getPet() != nullptr))
                     castSpell(getGuid(), spellInfo, true);
             }
         }
@@ -5949,9 +5974,11 @@ void Player::resetTalents()
             _removeSpell(tmpTalent->RankID[rank], false, false, true, true);
     }
 
-    // Unsummon pet
-    if (getFirstPetFromSummons() != nullptr)
-        getFirstPetFromSummons()->Dismiss();
+    // Unsummon current pet or set temporarily unsummoned pet offline
+    if (getPet() != nullptr)
+        getPet()->unSummon();
+    else
+        setTemporarilyUnsummonedPetsOffline();
 
     // Check offhand
     unEquipOffHandIfRequired();
@@ -6132,8 +6159,8 @@ void Player::smsg_TalentsInfo([[maybe_unused]]bool SendPetTalents)
     data << uint8_t(SendPetTalents ? 1 : 0);
     if (SendPetTalents)
     {
-        if (getFirstPetFromSummons() != nullptr)
-            getFirstPetFromSummons()->SendTalentsToOwner();
+        if (getPet() != nullptr)
+            getPet()->SendTalentsToOwner();
         return;
     }
     else
@@ -6217,9 +6244,11 @@ void Player::activateTalentSpec([[maybe_unused]]uint8_t specId)
     if (specId >= MAX_SPEC_COUNT || m_talentActiveSpec >= MAX_SPEC_COUNT || m_talentActiveSpec == specId)
         return;
 
-    // Dismiss pet
-    if (getFirstPetFromSummons() != nullptr)
-        getFirstPetFromSummons()->Dismiss();
+    // Dismiss current pet or set temporarily unsummoned pet offline
+    if (getPet() != nullptr)
+        getPet()->unSummon();
+    else
+        setTemporarilyUnsummonedPetsOffline();
 
     // Reset action buttons on client
     sendActionBars(2);
@@ -7240,15 +7269,18 @@ uint8_t Player::getRaidDifficulty()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// Die, Kill, Corpse & Repop
+// Die, Corpse & Repop
 void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t /*spellId*/)
 {
+    if (getDeathState() != ALIVE)
+        return;
+
 #ifdef FT_VEHICLES
     callExitVehicle();
 #endif
 
 #if VERSION_STRING > TBC
-    if (isPlayer())
+    if (unitAttacker != nullptr)
     {
         updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DEATH, 1, 0, 0);
         updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DEATH_AT_MAP, GetMapId(), 1, 0);
@@ -7260,11 +7292,14 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t /*spellId*/)
     }
 #endif
 
-    if (!sHookInterface.OnPreUnitDie(unitAttacker, this))
+    if (unitAttacker != nullptr && !sHookInterface.OnPreUnitDie(unitAttacker, this))
         return;
 
-    if (!unitAttacker->isPlayer())
+    if (unitAttacker != nullptr && !unitAttacker->isPlayer())
         calcDeathDurabilityLoss(0.10);
+
+    setDeathState(JUST_DIED);
+    eventDeath();
 
     if (getChannelObjectGuid() != 0)
     {
@@ -7307,7 +7342,16 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t /*spellId*/)
     smsg_AttackStop(unitAttacker);
     eventAttackStop();
 
-    if (m_WorldMap && m_WorldMap->getScript())
+    addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
+    setDynamicFlags(0);
+
+    m_session->SendPacket(SmsgCancelCombat().serialise().get());
+
+    WorldPacket data(SMSG_CANCEL_AUTO_REPEAT, 8);
+    data << GetNewGUID();
+    sendMessageToSet(&data, false);
+
+    if (unitAttacker != nullptr && m_WorldMap && m_WorldMap->getScript())
         m_WorldMap->getScript()->OnPlayerDeath(this, unitAttacker);
 
     uint32_t selfResSpellId = 0;
@@ -7330,19 +7374,30 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t /*spellId*/)
     setSelfResurrectSpell(selfResSpellId);
     setMountDisplayId(0);
 
-    if (unitAttacker->IsInWorld() && unitAttacker->isCreature() && static_cast<Creature*>(unitAttacker)->GetScript())
-        static_cast<Creature*>(unitAttacker)->GetScript()->OnTargetDied(this);
+    if (unitAttacker != nullptr)
+    {
+        if (unitAttacker->IsInWorld() && unitAttacker->isCreature() && static_cast<Creature*>(unitAttacker)->GetScript())
+            static_cast<Creature*>(unitAttacker)->GetScript()->OnTargetDied(this);
 
-    unitAttacker->getAIInterface()->eventOnTargetDied(this);
-    unitAttacker->smsg_AttackStop(this);
+        unitAttacker->getAIInterface()->eventOnTargetDied(this);
+        unitAttacker->smsg_AttackStop(this);
+    }
 
     getCombatHandler().clearCombat();
 
     m_underwaterTime = 0;
     m_underwaterState = 0;
 
+    setMoveRoot(true);
+    sendStopMirrorTimerPacket(MIRROR_TYPE_FATIGUE);
+    sendStopMirrorTimerPacket(MIRROR_TYPE_BREATH);
+    sendStopMirrorTimerPacket(MIRROR_TYPE_FIRE);
+
     getSummonInterface()->removeAllSummons();
-    dismissActivePets();
+
+    // On player death set all pets offline
+    // If player was i.e. mounted with pet inactive when they died its possible to get pet stuck in weird state
+    setTemporarilyUnsummonedPetsOffline();
 
     setHealth(0);
 
@@ -7358,39 +7413,7 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t /*spellId*/)
         }
     }
 
-    kill();
-
     clearHealthBatch();
-
-    if (m_WorldMap->getBaseMap()->isBattlegroundOrArena() && reinterpret_cast<BattlegroundMap*>(m_WorldMap)->getBattleground())
-        reinterpret_cast<BattlegroundMap*>(m_WorldMap)->getBattleground()->HookOnUnitDied(this);
-}
-
-void Player::kill()
-{
-    if (getDeathState() != ALIVE)
-        return;
-
-    setDeathState(JUST_DIED);
-
-    if (m_bg)
-        m_bg->HookOnPlayerDeath(this);
-
-    eventDeath();
-
-    m_session->SendPacket(SmsgCancelCombat().serialise().get());
-
-    WorldPacket data(SMSG_CANCEL_AUTO_REPEAT, 8);
-    data << GetNewGUID();
-    sendMessageToSet(&data, false);
-
-    setMoveRoot(true);
-    sendStopMirrorTimerPacket(MIRROR_TYPE_FATIGUE);
-    sendStopMirrorTimerPacket(MIRROR_TYPE_BREATH);
-    sendStopMirrorTimerPacket(MIRROR_TYPE_FIRE);
-
-    addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
-    setDynamicFlags(0);
 
     if (getClass() == WARRIOR)
         setPower(POWER_TYPE_RAGE, 0);
@@ -7399,12 +7422,11 @@ void Player::kill()
         setPower(POWER_TYPE_RUNIC_POWER, 0);
 #endif
 
-    getSummonInterface()->removeAllSummons();
-    dismissActivePets();
-
-#ifdef FT_VEHICLES
-    callExitVehicle();
-#endif
+    if (m_bg)
+    {
+        m_bg->HookOnUnitDied(this);
+        m_bg->HookOnPlayerDeath(this);
+    }
 
     sHookInterface.OnDeath(this);
 }
@@ -7697,8 +7719,6 @@ void Player::resurrect()
     for (uint8_t i = 0; i < 7; ++i)
         m_schoolImmunityList[i] = 0;
 
-    spawnActivePet();
-
     if (m_bg)
         m_bg->HookOnPlayerResurrect(this);
 }
@@ -7935,7 +7955,7 @@ void Player::sendUpdateToOutOfRangeGroupMembers()
 
     m_groupUpdateFlags = GROUP_UPDATE_FLAG_NONE;
 
-    if (Pet* pet = getFirstPetFromSummons())
+    if (Pet* pet = getPet())
         pet->resetAuraUpdateMaskForRaid();
 }
 
@@ -9113,7 +9133,7 @@ void Player::addToFriendList(std::string name, std::string note)
             return;
         }
 
-        if (targetPlayer->getPlayerInfo()->team != getInitialTeam() && m_session->permissioncount == 0 && !worldConfig.player.isInterfactionFriendsEnabled)
+        if (targetPlayer->getPlayerInfo()->team != getInitialTeam() && !m_session->hasPermissions() && !worldConfig.player.isInterfactionFriendsEnabled)
         {
             m_session->SendPacket(SmsgFriendStatus(FRIEND_ENEMY, targetPlayer->getGuidLow()).serialise().get());
             return;
@@ -9534,10 +9554,14 @@ void Player::sendTalentResetConfirmPacket()
 
 void Player::sendPetUnlearnConfirmPacket()
 {
-    if (getFirstPetFromSummons() == nullptr)
+    if (getPet() == nullptr)
         return;
 
-    m_session->SendPacket(SmsgPetUnlearnConfirm(getFirstPetFromSummons()->getGuid(), getFirstPetFromSummons()->GetUntrainCost()).serialise().get());
+#if VERSION_STRING < Mop
+    m_session->SendPacket(SmsgPetUnlearnConfirm(getPet()->getGuid(), getPet()->getUntrainCost()).serialise().get());
+#else
+    m_session->SendPacket(SmsgPetUnlearnConfirm(getPet()->getGuid(), 0).serialise().get());
+#endif
 }
 
 void Player::sendDungeonDifficultyPacket()
@@ -9594,6 +9618,13 @@ void Player::sendEquipmentSetUseResultPacket(uint8_t result)
 void Player::sendTotemCreatedPacket(uint8_t slot, uint64_t guid, uint32_t duration, uint32_t spellId)
 {
     m_session->SendPacket(SmsgTotemCreated(slot, guid, duration, spellId).serialise().get());
+}
+
+void Player::sendPetTameFailure(uint8_t result) const
+{
+    WorldPacket data(SMSG_PET_TAME_FAILURE, 1);
+    data << uint8_t(result);
+    m_session->SendPacket(&data);
 }
 
 void Player::sendGossipPoiPacket(float posX, float posY, uint32_t icon, uint32_t flags, uint32_t data, std::string name)
@@ -9760,8 +9791,6 @@ void Player::setPvpFlag()
     addPlayerFlags(PLAYER_FLAG_PVP_TIMER);
 
     getSummonInterface()->setPvPFlags(true);
-    for (auto& summon : getSummons())
-        summon->setPvpFlag();
 
     if (getCombatHandler().isInCombat())
         addPlayerFlags(PLAYER_FLAG_PVP_GUARD_ATTACKABLE);
@@ -9779,8 +9808,6 @@ void Player::removePvpFlag()
     removePlayerFlags(PLAYER_FLAG_PVP_TIMER);
 
     getSummonInterface()->setPvPFlags(false);
-    for (auto& summon : getSummons())
-        summon->removePvpFlag();
 }
 
 bool Player::isFfaPvpFlagSet()
@@ -9795,8 +9822,6 @@ void Player::setFfaPvpFlag()
     addPlayerFlags(PLAYER_FLAG_FREE_FOR_ALL_PVP);
 
     getSummonInterface()->setFFAPvPFlags(true);
-    for (auto& summon : getSummons())
-        summon->setFfaPvpFlag();
 }
 
 void Player::removeFfaPvpFlag()
@@ -9806,8 +9831,6 @@ void Player::removeFfaPvpFlag()
     removePlayerFlags(PLAYER_FLAG_FREE_FOR_ALL_PVP);
 
     getSummonInterface()->setFFAPvPFlags(false);
-    for (auto& summon : getSummons())
-        summon->removeFfaPvpFlag();
 }
 
 bool Player::isSanctuaryFlagSet()
@@ -9821,8 +9844,6 @@ void Player::setSanctuaryFlag()
     addPlayerFlags(PLAYER_FLAG_SANCTUARY);
 
     getSummonInterface()->setSanctuaryFlags(true);
-    for (auto& summon : getSummons())
-        summon->setSanctuaryFlag();
 }
 
 void Player::removeSanctuaryFlag()
@@ -9831,8 +9852,6 @@ void Player::removeSanctuaryFlag()
     removePlayerFlags(PLAYER_FLAG_SANCTUARY);
 
     getSummonInterface()->setSanctuaryFlags(false);
-    for (auto& summon : getSummons())
-        summon->removeSanctuaryFlag();
 }
 
 void Player::sendPvpCredit(uint32_t honor, uint64_t victimGuid, uint32_t victimRank)
@@ -11994,7 +12013,7 @@ void Player::endDuel(uint8_t condition)
     eventAttackStop();
     m_duelPlayer->eventAttackStop();
 
-    for (auto& summon : getSummons())
+    for (auto& summon : getSummonInterface()->getSummons())
     {
         summon->getCombatHandler().clearCombat();
         summon->getAIInterface()->setPetOwner(this);
@@ -12003,7 +12022,7 @@ void Player::endDuel(uint8_t condition)
         summon->getThreatManager().removeMeFromThreatLists();
     }
 
-    for (auto& duelingWithSummon : m_duelPlayer->getSummons())
+    for (auto& duelingWithSummon : m_duelPlayer->getSummonInterface()->getSummons())
     {
         duelingWithSummon->getCombatHandler().clearCombat();
         duelingWithSummon->getAIInterface()->setPetOwner(this);
@@ -12048,12 +12067,6 @@ void Player::cancelDuel()
 
     m_duelPlayer->m_duelPlayer = nullptr;
     m_duelPlayer = nullptr;
-
-    for (const auto& summonedPet : getSummons())
-    {
-        if (summonedPet && summonedPet->isAlive())
-            summonedPet->SetPetAction(PET_ACTION_STAY);
-    }
 }
 
 void Player::handleDuelCountdown()
@@ -12232,147 +12245,395 @@ void Player::updateRestState()
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // Pets/Summons
-std::list<Pet*> Player::getSummons() { return m_summons; }
-void Player::addPetToSummons(Pet* pet) { m_summons.push_front(pet); }
 
-void Player::removePetFromSummons(Pet* pet)
+PetCache const* Player::getPetCache(uint8_t petId) const
 {
-    for (auto itr = m_summons.begin(); itr != m_summons.end(); ++itr)
-    {
-        if ((*itr)->getGuid() == pet->getGuid())
-        {
-            m_summons.erase(itr);
-            break;
-        }
-    }
-}
-
-Pet* Player::getFirstPetFromSummons() const
-{
-    if (!m_summons.empty())
-        return m_summons.front();
+    const auto itr = m_cachedPets.find(petId);
+    if (itr != m_cachedPets.cend())
+        return itr->second.get();
 
     return nullptr;
 }
 
-PlayerPet* Player::getPlayerPet(uint32_t petId)
+PetCache* Player::getModifiablePetCache(uint8_t petId) const
 {
-    const auto itr = m_pets.find(petId);
-    if (itr != m_pets.end())
-        return itr->second;
+    const auto itr = m_cachedPets.find(petId);
+    if (itr != m_cachedPets.cend())
+        return itr->second.get();
 
     return nullptr;
 }
 
-void Player::addPlayerPet(PlayerPet* pet, uint32_t index) { m_pets[index] = pet; }
-
-void Player::removePlayerPet(uint32_t petId)
+PetCacheMap const& Player::getPetCacheMap() const
 {
-    const auto itr = m_pets.find(petId);
-    if (itr != m_pets.end())
+    return m_cachedPets;
+}
+
+std::map<uint8_t, uint8_t> const& Player::getPetCachedSlotMap() const
+{
+    return m_cachedPetSlots;
+}
+
+void Player::addPetCache(std::unique_ptr<PetCache> pet, uint8_t index)
+{
+    m_cachedPetSlots.emplace(pet->slot, index);
+    m_cachedPets.emplace(index, std::move(pet));
+}
+
+void Player::removePetCache(uint8_t petId)
+{
+    const auto itr = std::as_const(m_cachedPets).find(petId);
+    if (itr != m_cachedPets.cend())
     {
-        delete itr->second;
-        m_pets.erase(itr);
+        std::erase_if(m_cachedPetSlots, [petId](const auto& slotItr) { return slotItr.second == petId; });
+        m_cachedPets.erase(itr);
     }
+
+    // Pet will be deleted from playerpets table when player is saved
     CharacterDatabase.Execute("DELETE FROM playerpetspells WHERE ownerguid=%u AND petnumber=%u", getGuidLow(), petId);
 }
 
-uint8_t Player::getPetCount() const { return static_cast<uint8_t>(m_pets.size()); }
+uint8_t Player::getPetCount() const { return static_cast<uint8_t>(m_cachedPets.size()); }
 
-uint32_t Player::getFreePetNumber() const
+uint8_t Player::getFreePetNumber()
 {
-    const uint32_t newMax = m_maxPetNumber + 1;
-    for (uint32_t i = 1; i < m_maxPetNumber; ++i)
-        if (!m_pets.contains(i))
+    for (uint8_t i = 1; i < m_maxPetNumber; ++i)
+        if (!m_cachedPets.contains(i))
             return i;
 
-    return newMax;
+    m_maxPetNumber += 1;
+    return m_maxPetNumber;
 }
 
-void Player::spawnPet(uint32_t petId)
+std::optional<uint8_t> Player::getPetIdFromSlot(uint8_t slot) const
 {
-    const auto itr = m_pets.find(petId);
-    if (itr == m_pets.end())
-    {
-        sLogger.failure("PET SYSTEM: {} Tried to load invalid pet {}", std::to_string(getGuid()), petId);
-        return;
-    }
+    const auto itr = m_cachedPetSlots.find(slot);
+    if (itr != m_cachedPetSlots.cend())
+        return itr->second;
 
-    const auto pet = sObjectMgr.createPet(itr->second->entry);
-    pet->LoadFromDB(this, itr->second);
-
-    if (this->isPvpFlagSet())
-        pet->setPvpFlag();
-    else
-        pet->removePvpFlag();
-
-    if (this->isFfaPvpFlagSet())
-        pet->setFfaPvpFlag();
-    else
-        pet->removeFfaPvpFlag();
-
-    if (this->isSanctuaryFlagSet())
-        pet->setSanctuaryFlag();
-    else
-        pet->removeSanctuaryFlag();
-
-    pet->setFaction(this->getFactionTemplate());
-
-    if (itr->second->spellid)
-    {
-        removeAllAurasById(18789);
-        removeAllAurasById(18790);
-        removeAllAurasById(18791);
-        removeAllAurasById(18792);
-        removeAllAurasById(35701);
-    }
+    return std::nullopt;
 }
 
-void Player::spawnActivePet()
+bool Player::hasPetInSlot(uint8_t slot) const
 {
-    if (getFirstPetFromSummons() != nullptr || !isAlive() || !IsInWorld())   //\todo  only hunters for now
-        return;
+    return m_cachedPetSlots.contains(slot);
+}
 
-    for (auto& pet : m_pets)
+std::optional<uint8_t> Player::findFreeActivePetSlot() const
+{
+    std::optional<uint8_t> foundSlot = std::nullopt;
+    for (uint8_t i = PET_SLOT_FIRST_ACTIVE_SLOT; i < PET_SLOT_MAX_ACTIVE_SLOT; ++i)
     {
-        if (pet.second->stablestate == STABLE_STATE_ACTIVE && pet.second->active)
+        if (!hasPetInSlot(i))
         {
-            if (pet.second->alive)
-                spawnPet(pet.first);
+            foundSlot = i;
+            break;
+        }
+    }
+    return foundSlot;
+}
+
+std::optional<uint8_t> Player::findFreeStablePetSlot() const
+{
+    std::optional<uint8_t> foundSlot = std::nullopt;
+    for (uint8_t i = PET_SLOT_FIRST_STABLE_SLOT; i < PET_SLOT_LAST_STABLE_SLOT; ++i)
+    {
+        if (m_stableSlotCount <= (i - PET_SLOT_FIRST_STABLE_SLOT))
+            break;
+
+        if (!hasPetInSlot(i))
+        {
+            foundSlot = i;
+            break;
+        }
+    }
+    return foundSlot;
+}
+
+bool Player::tryPutPetToSlot(uint8_t petId, uint8_t newSlot, bool sendErrors/* = true*/)
+{
+    const auto petItr = std::as_const(m_cachedPets).find(petId);
+    if (petItr == m_cachedPets.cend())
+    {
+        if (sendErrors)
+            sendPacket(SmsgStableResult(PetStableResult::Error).serialise().get());
+
+        return false;
+    }
+
+    // Check if pet is being tried to move to same slot where it is already
+    if (petItr->second->slot == newSlot)
+    {
+        if (sendErrors)
+            sendPacket(SmsgStableResult(PetStableResult::Error).serialise().get());
+
+        return false;
+    }
+
+    auto* oldSlotPet = petItr->second.get();
+    // Pet that possibly exists in new slot
+    PetCache* newSlotPet = nullptr;
+
+    const auto slotItr = std::as_const(m_cachedPetSlots).find(newSlot);
+    if (slotItr != m_cachedPetSlots.cend())
+    {
+        const auto existingPetItr = std::as_const(m_cachedPets).find(slotItr->second);
+        if (existingPetItr != m_cachedPets.cend())
+            newSlotPet = existingPetItr->second.get();
+    }
+
+    const auto isOldSlotActiveSlot = oldSlotPet->slot < PET_SLOT_MAX_ACTIVE_SLOT;
+    const auto isNewSlotActiveSlot = newSlot < PET_SLOT_MAX_ACTIVE_SLOT;
+
+#if VERSION_STRING >= WotLK
+    if (isNewSlotActiveSlot)
+    {
+        // Check if player can have exotic pets when taking pet from stables
+        if (const auto creatureProperties = sMySQLStore.getCreatureProperties(oldSlotPet->entry))
+        {
+            if (creatureProperties->isExotic() && !hasAuraWithAuraEffect(SPELL_AURA_ALLOW_TAME_PET_TYPE))
+            {
+                if (sendErrors)
+                    sendPacket(SmsgStableResult(PetStableResult::ExoticNotAvailable).serialise().get());
+
+                return false;
+            }
+        }
+    }
+
+    if (isOldSlotActiveSlot && !isNewSlotActiveSlot && newSlotPet != nullptr)
+    {
+        // Check also if pet in new slot is exotic if player is swapping pet slots
+        if (const auto creatureProperties = sMySQLStore.getCreatureProperties(newSlotPet->entry))
+        {
+            if (creatureProperties->isExotic() && !hasAuraWithAuraEffect(SPELL_AURA_ALLOW_TAME_PET_TYPE))
+            {
+                if (sendErrors)
+                    sendPacket(SmsgStableResult(PetStableResult::ExoticNotAvailable).serialise().get());
+
+                return false;
+            }
+        }
+    }
+#endif
+
+    if (!isNewSlotActiveSlot)
+    {
+        // Must be hunter pet
+        if (oldSlotPet->type != PET_TYPE_HUNTER)
+        {
+            if (sendErrors)
+                sendPacket(SmsgStableResult(PetStableResult::Error).serialise().get());
+
+            return false;
+        }
+    }
+
+    m_cachedPetSlots.insert_or_assign(newSlot, petId);
+    if (newSlotPet != nullptr)
+        m_cachedPetSlots.insert_or_assign(oldSlotPet->slot, newSlotPet->number);
+    else
+        m_cachedPetSlots.erase(oldSlotPet->slot);
+
+    // Update only slot in pet cache, full update is done in possible summon/unsummon
+    if (newSlotPet != nullptr)
+        newSlotPet->slot = oldSlotPet->slot;
+    oldSlotPet->slot = newSlot;
+
+    auto requiresPetSave = false;
+    if (isOldSlotActiveSlot && !isNewSlotActiveSlot)
+    {
+        // Active pet is put to stables
+        auto* const currentPet = getPet();
+        if (currentPet != nullptr && currentPet->getPetId() == petId)
+        {
+            currentPet->unSummon();
+            if (newSlotPet != nullptr && !isPetRequiringTemporaryUnsummon() && newSlotPet->alive)
+                _spawnPet(newSlotPet);
+        }
+        else
+        {
+            // If this pet was temporary unsummoned make the other pet active as well
+            if (newSlotPet != nullptr)
+                newSlotPet->active = oldSlotPet->active;
+            oldSlotPet->active = false;
+            requiresPetSave = true;
+        }
+    }
+    else if (!isOldSlotActiveSlot && isNewSlotActiveSlot)
+    {
+        // Pet is taken from stables
+        if (newSlotPet != nullptr)
+        {
+            auto* const currentPet = getPet();
+            // Only summon it if it's put to same slot as current summoned pet
+            if (currentPet != nullptr && currentPet->getPetId() == newSlotPet->number)
+            {
+                currentPet->unSummon();
+                if (!isPetRequiringTemporaryUnsummon() && oldSlotPet->alive)
+                    _spawnPet(oldSlotPet);
+            }
+            else
+            {
+                // If pet from new slot was temporary unsummoned make this pet active as well
+                oldSlotPet->active = newSlotPet->active;
+                newSlotPet->active = false;
+                requiresPetSave = true;
+            }
+        }
+        else
+        {
+            requiresPetSave = true;
+        }
+    }
+    else if ((!isOldSlotActiveSlot && !isNewSlotActiveSlot) || (isOldSlotActiveSlot && isNewSlotActiveSlot))
+    {
+        // Pet is either moved inside stables or its active slot was changed
+        // In either case unsummon is not required, just save pets to database
+        requiresPetSave = true;
+    }
+
+    if (requiresPetSave)
+    {
+        // Save only slot and active fields
+        CharacterDatabase.Execute("UPDATE playerpets SET slot = %u, active = %u WHERE ownerguid = %u AND petnumber = %u",
+            oldSlotPet->slot, oldSlotPet->active, getGuidLow(), oldSlotPet->number);
+        if (newSlotPet != nullptr)
+        {
+            CharacterDatabase.Execute("UPDATE playerpets SET slot = %u, active = %u WHERE ownerguid = %u AND petnumber = %u",
+                newSlotPet->slot, newSlotPet->active, getGuidLow(), newSlotPet->number);
+        }
+    }
+
+    return true;
+}
+
+void Player::spawnPet(uint8_t petId)
+{
+    const auto itr = m_cachedPets.find(petId);
+    if (itr == m_cachedPets.cend())
+    {
+        sLogger.failure("Player::spawnPet : {} tried to load invalid pet {}", std::to_string(getGuid()), petId);
+        return;
+    }
+
+    if (itr->second.get()->slot >= PET_SLOT_MAX_ACTIVE_SLOT)
+    {
+        sLogger.debug("Player::spawnPet : {} tried to spawn pet from stable slot {}", std::to_string(getGuid()), std::to_string(itr->second.get()->slot));
+        return;
+    }
+
+    _spawnPet(itr->second.get());
+}
+
+void Player::summonTemporarilyUnsummonedPet()
+{
+    if (getPet() != nullptr)
+        return;
+
+    if (isPetRequiringTemporaryUnsummon())
+        return;
+
+    for (const auto& [slot, petId] : std::as_const(m_cachedPetSlots))
+    {
+        // Just check active slots
+        if (slot >= PET_SLOT_MAX_ACTIVE_SLOT)
+            break;
+
+        auto* const petCache = getModifiablePetCache(petId);
+        if (petCache != nullptr && petCache->active)
+        {
+            // If active pet is not alive it cant be summoned now
+            // Player must explicitly summon and revive it
+            if (petCache->alive)
+                _spawnPet(petCache);
+            else
+                petCache->active = false;
 
             return;
         }
     }
 }
 
-void Player::dismissActivePets()
+void Player::unSummonPetTemporarily()
 {
-    for (auto itr = m_summons.rbegin(); itr != m_summons.rend();)
+    if (getPet() == nullptr)
+        return;
+
+    getPet()->unSummonTemporarily();
+}
+
+bool Player::isPetRequiringTemporaryUnsummon() const
+{
+    if (!IsInWorld() || !isAlive())
+        return true;
+
+    if (isOnTaxi())
+        return true;
+
+    // In classic pets were not despawned when mounted
+    // In tbc and wotlk they despawned, but this was again changed around patch 4.1
+#if VERSION_STRING == TBC || VERSION_STRING == WotLK
+#ifdef FT_VEHICLES
+    if (isMounted() || isOnVehicle())
+#else
+    if (isMounted())
+#endif
     {
-        if (Pet* summon = *itr)
+        if (const auto* const pet = getPet())
         {
-            if (summon->IsSummonedPet())
-                summon->Dismiss();
+            if (!pet->isAlive())
+                return false;
+
+            if (!pet->isPermanentSummon())
+                return false;
+
+            if (m_bg != nullptr && m_bg->isArena())
+                return false;
+
+            // For some reason permanent water elemental is not despawned
+            if (pet->getEntry() == PET_WATER_ELEMENTAL_NEW)
+                return false;
+        }
+
+        return true;
+    }
+#endif
+
+    return false;
+}
+
+void Player::setTemporarilyUnsummonedPetsOffline()
+{
+    const auto copiedCachedSlots = m_cachedPetSlots;
+    for (const auto& [slot, petId] : std::as_const(copiedCachedSlots))
+    {
+        // Just check active slots
+        if (slot >= PET_SLOT_MAX_ACTIVE_SLOT)
+            break;
+
+        auto* const petCache = getModifiablePetCache(petId);
+        if (petCache == nullptr)
+            continue;
+
+        if (petCache->active)
+        {
+            // Summoned pets can be completely deleted since they can be resummoned anyway
+            if (petCache->type == PET_TYPE_HUNTER)
+                petCache->active = false;
             else
-                summon->Remove(true, false);
+                removePetCache(petCache->number);
         }
     }
 }
 
+void Player::setLastBattlegroundPetId(uint8_t petId) { m_battlegroundLastPetId = petId; }
+uint8_t Player::getLastBattlegroundPetId() const { return m_battlegroundLastPetId; }
+void Player::setLastBattlegroundPetSpell(uint32_t petSpell) { m_battlegroundLastPetSpell = petSpell; }
+uint32_t Player::getLastBattlegroundPetSpell() const { return m_battlegroundLastPetSpell; }
+
 void Player::setStableSlotCount(uint8_t count) { m_stableSlotCount = count; }
 uint8_t Player::getStableSlotCount() const { return m_stableSlotCount; }
-
-uint32_t Player::getUnstabledPetNumber() const
-{
-    if (m_pets.empty())
-        return 0;
-
-    for (const auto& petMap : m_pets)
-        if (petMap.second->stablestate == STABLE_STATE_ACTIVE)
-            return petMap.first;
-
-    return 0;
-}
 
 void Player::eventSummonPet(Pet* summonPet)
 {
@@ -12415,6 +12676,26 @@ void Player::eventDismissPet()
 
 Object* Player::getSummonedObject() const { return m_summonedObject; }
 void Player::setSummonedObject(Object* summonedObject) { m_summonedObject = summonedObject; }
+
+void Player::_spawnPet(PetCache const* petCache)
+{
+    const auto pet = sObjectMgr.createPet(petCache->entry, nullptr);
+    if (!pet->loadFromDB(this, petCache))
+    {
+        pet->DeleteMe();
+        return;
+    }
+
+    // TODO: find a better way to handle these -Appled
+    if (petCache->spellid)
+    {
+        removeAllAurasById(18789);
+        removeAllAurasById(18790);
+        removeAllAurasById(18791);
+        removeAllAurasById(18792);
+        removeAllAurasById(35701);
+    }
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Misc
@@ -13487,7 +13768,7 @@ void Player::eventDeath()
     setServersideDrunkValue(0);
 }
 
-void Player::_savePet(QueryBuffer* buf)
+void Player::_savePet(QueryBuffer* buf, bool updateCurrentPetCache/* = false*/, Pet* currentPet/* = nullptr*/)
 {
     // Remove any existing m_playerCreateInfo
     if (buf == nullptr)
@@ -13495,30 +13776,33 @@ void Player::_savePet(QueryBuffer* buf)
     else
         buf->AddQuery("DELETE FROM playerpets WHERE ownerguid = %u", getGuidLow());
 
-    Pet* summon = getFirstPetFromSummons();
-    if (summon && summon->IsInWorld() && summon->getPlayerOwner() == this)    // update PlayerPets array with current pet's m_playerCreateInfo
+    const auto* summon = currentPet != nullptr ? currentPet : getPet();
+    if (summon && summon->IsInWorld())    // update PlayerPets array with current pet's m_playerCreateInfo
     {
-        PlayerPet* pPet = getPlayerPet(summon->m_PetNumber);
-        if (!pPet || pPet->active == false)
-            summon->UpdatePetInfo(true);
-        else
-            summon->UpdatePetInfo(false);
+        if (updateCurrentPetCache)
+        {
+            const auto playerPetCache = getPetCache(summon->getPetId());
+            if (playerPetCache != nullptr && playerPetCache->active)
+                summon->updatePetInfo(false);
+            else
+                summon->updatePetInfo(true);
+        }
 
-        if (!summon->Summon)       // is a pet
+        if (summon->isHunterPet())       // is a pet
         {
             // save pet spellz
-            uint32_t pn = summon->m_PetNumber;
+            auto pn = summon->getPetId();
             if (buf == nullptr)
                 CharacterDatabase.Execute("DELETE FROM playerpetspells WHERE ownerguid=%u AND petnumber=%u", getGuidLow(), pn);
             else
                 buf->AddQuery("DELETE FROM playerpetspells WHERE ownerguid=%u AND petnumber=%u", getGuidLow(), pn);
 
-            for (PetSpellMap::iterator itr = summon->mSpells.begin(); itr != summon->mSpells.end(); ++itr)
+            for (const auto& [spell, state] : summon->getSpellMap())
             {
                 if (buf == nullptr)
-                    CharacterDatabase.Execute("INSERT INTO playerpetspells VALUES(%u, %u, %u, %u)", getGuidLow(), pn, itr->first->getId(), itr->second);
+                    CharacterDatabase.Execute("INSERT INTO playerpetspells VALUES(%u, %u, %u, %u)", getGuidLow(), pn, spell->getId(), state);
                 else
-                    buf->AddQuery("INSERT INTO playerpetspells VALUES(%u, %u, %u, %u)", getGuidLow(), pn, itr->first->getId(), itr->second);
+                    buf->AddQuery("INSERT INTO playerpetspells VALUES(%u, %u, %u, %u)", getGuidLow(), pn, spell->getId(), state);
             }
         }
     }
@@ -13527,37 +13811,115 @@ void Player::_savePet(QueryBuffer* buf)
 
     ss.rdbuf()->str("");
 
-    for (std::map<uint32_t, PlayerPet*>::iterator itr = m_pets.begin(); itr != m_pets.end(); ++itr)
+    std::optional<uint8_t> currentPetId = std::nullopt;
+    if (getPet() != nullptr && getPet()->isPermanentSummon())
+        currentPetId = getPet()->getPetId();
+
+    std::vector<uint8_t> savedPetIds;
+    savedPetIds.reserve(m_cachedPets.size());
+
+    auto foundActivePet = false;
+    for (auto itr = m_cachedPets.cbegin(); itr != m_cachedPets.cend();)
     {
+        auto* petCache = itr->second.get();
+
+        // Do some clean up to pet cache before save
+        if (currentPetId.has_value())
+        {
+            // Set all other pets expect current pet to offline
+            if (petCache->active && petCache->number != currentPetId.value())
+                petCache->active = false;
+
+            // Remove all other cached pets from non-hunters expect current pet
+            if (!isClassHunter() && getPetCount() > 1)
+            {
+                if (petCache->number != currentPetId.value())
+                {
+                    std::erase_if(m_cachedPetSlots, [&petCache](const auto& slotItr) { return slotItr.second == petCache->number; });
+                    itr = m_cachedPets.erase(itr);
+                    continue;
+                }
+            }
+        }
+        else
+        {
+            // There can be only one active pet
+            if (petCache->active)
+            {
+                if (petCache->slot >= PET_SLOT_FIRST_STABLE_SLOT)
+                    petCache->active = false;
+                else if (foundActivePet)
+                    petCache->active = false;
+                else
+                    foundActivePet = true;
+            }
+
+            // Only hunters can have multiple pets saved
+            if (!isClassHunter() && getPetCount() > 1)
+            {
+                if (!petCache->active)
+                {
+                    std::erase_if(m_cachedPetSlots, [&petCache](const auto& slotItr) { return slotItr.second == petCache->number; });
+                    itr = m_cachedPets.erase(itr);
+                    continue;
+                }
+            }
+        }
+
         ss.rdbuf()->str("");
 
         ss << "REPLACE INTO playerpets VALUES('"
             << getGuidLow() << "','"
-            << itr->second->number << "','"
-            << itr->second->name << "','"
-            << itr->second->entry << "','"
-            << itr->second->xp << "','"
-            << (itr->second->active ? 1 : 0) + itr->second->stablestate * 10 << "','"
-            << itr->second->level << "','"
-            << itr->second->actionbar << "','"
-            << itr->second->happinessupdate << "','"
-            << (long)itr->second->reset_time << "','"
-            << itr->second->reset_cost << "','"
-            << itr->second->spellid << "','"
-            << itr->second->petstate << "','"
-            << itr->second->alive << "','"
-            << itr->second->talentpoints << "','"
-            << itr->second->current_power << "','"
-            << itr->second->current_hp << "','"
-            << itr->second->current_happiness << "','"
-            << itr->second->renamable << "','"
-            << itr->second->type << "')";
+            << std::to_string(petCache->number) << "','"
+            << std::to_string(petCache->type) << "','"
+            << petCache->name << "','"
+            << petCache->entry << "','"
+            << petCache->model << "','"
+            << petCache->level << "','"
+            << petCache->xp << "','"
+            << std::to_string(petCache->slot) << "','"
+            << petCache->active << "','"
+            << petCache->alive << "','"
+            << petCache->actionbar << "','"
+            << static_cast<long>(petCache->reset_time) << "','"
+            << petCache->reset_cost << "','"
+            << petCache->spellid << "','"
+            << std::to_string(petCache->petstate) << "','"
+            << petCache->talentpoints << "','"
+            << petCache->current_power << "','"
+            << petCache->current_hp << "','"
+            << petCache->current_happiness << "','"
+            << petCache->renamable << "')";
 
         if (buf == nullptr)
             CharacterDatabase.ExecuteNA(ss.str().c_str());
         else
             buf->AddQueryStr(ss.str());
+
+        savedPetIds.push_back(petCache->number);
+        ++itr;
     }
+
+    // Cleanup as well pet spell table by removing spells from non existant pets
+    ss.rdbuf()->str("");
+    ss << "DELETE FROM playerpetspells WHERE ownerguid=" << getGuidLow();
+    if (!savedPetIds.empty())
+    {
+        ss << " AND petnumber NOT IN (";
+        for (auto itr = savedPetIds.cbegin(); itr != savedPetIds.cend();)
+        {
+            ss << std::to_string(*itr);
+            if (++itr != savedPetIds.cend())
+                ss << ", ";
+            else
+                ss << ")";
+        }
+    }
+
+    if (buf == nullptr)
+        CharacterDatabase.ExecuteNA(ss.str().c_str());
+    else
+        buf->AddQueryStr(ss.str());
 }
 
 void Player::_savePetSpells(QueryBuffer* buf)
@@ -13639,33 +14001,94 @@ void Player::_loadPet(QueryResult* result)
     {
         Field* fields = result->Fetch();
 
-        PlayerPet* pet = new PlayerPet;
-        pet->number = fields[1].asUint32();
-        pet->name = fields[2].asCString();
-        pet->entry = fields[3].asUint32();
+        auto pet = std::make_unique<PetCache>();
+        pet->number = fields[1].asUint8();
+        pet->type = fields[2].asUint8();
+        pet->name = fields[3].asCString();
+        pet->entry = fields[4].asUint32();
 
-        pet->xp = fields[4].asUint32();
-        pet->active = fields[5].asInt8() % 10 > 0 ? true : false;
-        pet->stablestate = fields[5].asInt8() / 10;
+        // Check that creature properties exist
+        const auto creatureProperties = sMySQLStore.getCreatureProperties(pet->entry);
+        if (creatureProperties == nullptr)
+            continue;
+
+        pet->model = fields[5].asUint32();
         pet->level = fields[6].asUint32();
-        pet->actionbar = fields[7].asCString();
-        pet->happinessupdate = fields[8].asUint32();
-        pet->reset_time = fields[9].asUint32();
-        pet->reset_cost = fields[10].asUint32();
-        pet->spellid = fields[11].asUint32();
-        pet->petstate = fields[12].asUint32();
-        pet->alive = fields[13].asBool();
-        pet->talentpoints = fields[14].asUint32();
-        pet->current_power = fields[15].asUint32();
-        pet->current_hp = fields[16].asUint32();
-        pet->current_happiness = fields[17].asUint32();
-        pet->renamable = fields[18].asUint32();
-        pet->type = fields[19].asUint32();
+        pet->xp = fields[7].asUint32();
+        pet->slot = fields[8].asUint8();
+        pet->active = fields[9].asBool();
+        pet->alive = fields[10].asBool();
+        pet->actionbar = fields[11].asCString();
+        pet->reset_time = fields[12].asUint32();
+        pet->reset_cost = fields[13].asUint32();
+        pet->spellid = fields[14].asUint32();
+        pet->petstate = fields[15].asUint8();
+        pet->talentpoints = fields[16].asUint32();
+        pet->current_power = fields[17].asUint32();
+        pet->current_hp = fields[18].asUint32();
+        pet->current_happiness = fields[19].asUint32();
+        pet->renamable = fields[20].asBool();
 
-        m_pets[pet->number] = pet;
+        // Check if there are pets using same slot
+        // Also check for invalid pet slot in classic - wotlk
+        // Could happen when server changes from cata to wotlk
+        if (m_cachedPetSlots.contains(pet->slot)
+#if VERSION_STRING < Cata
+            || (pet->slot >= PET_SLOT_MAX_ACTIVE_SLOT && pet->slot < PET_SLOT_FIRST_STABLE_SLOT)
+#endif
+            )
+        {
+            if (pet->type != PET_TYPE_HUNTER)
+            {
+                // If other than hunter pet has invalid slot or is in duplicate slot, just remove it
+                // They can be resummoned anyway
+                continue;
+            }
+
+#if VERSION_STRING >= Cata
+            auto foundNewSlot = false;
+            if (pet->slot < PET_SLOT_FIRST_STABLE_SLOT)
+            {
+                // Pet is in active slot, try find another active slot
+                const auto freeActiveSlot = findFreeActivePetSlot();
+                if (freeActiveSlot.has_value())
+                {
+                    pet->slot = freeActiveSlot.value();
+                    foundNewSlot = true;
+                }
+            }
+
+            if (!foundNewSlot)
+#endif
+            {
+                // Next try find free stable slot
+                const auto freeStableSlot = findFreeStablePetSlot();
+                if (!freeStableSlot.has_value())
+                {
+                    // There were no free slots left, remove pet
+                    continue;
+                }
+
+                pet->slot = freeStableSlot.value();
+            }
+        }
+
+        if (pet->type != PET_TYPE_HUNTER)
+        {
+            // Skip dead or inactive summoned pets
+            // They should not be saved anyway
+            if (!pet->active || !pet->alive)
+                continue;
+        }
+
+        // Pet in stables cannot be active
+        if (pet->slot >= PET_SLOT_FIRST_STABLE_SLOT && pet->active)
+            pet->active = false;
 
         if (pet->number > m_maxPetNumber)
             m_maxPetNumber = pet->number;
+
+        addPetCache(std::move(pet), pet->number);
     } while (result->NextRow());
 }
 
@@ -14004,7 +14427,7 @@ void Player::saveToDB(bool newCharacter /* =false */)
     // Pets
     if (getClass() == HUNTER || getClass() == WARLOCK)
     {
-        _savePet(buf);
+        _savePet(buf, true);
         _savePetSpells(buf);
     }
     m_nextSave = Util::getMSTime() + worldConfig.getIntRate(INTRATE_SAVE);
@@ -14695,11 +15118,15 @@ void Player::loadFromDBProc(QueryResultVector& results)
     //class fixes
     switch (getClass())
     {
-    case WARLOCK:
-    case HUNTER:
-        _loadPet(results[PlayerQuery::Pets].result);
-        _loadPetSpells(results[PlayerQuery::SummonSpells].result);
-        break;
+        case WARLOCK:
+        case HUNTER:
+#if VERSION_STRING >= WotLK
+        case DEATHKNIGHT:
+        case MAGE:
+#endif
+            _loadPet(results[PlayerQuery::Pets].result);
+            _loadPetSpells(results[PlayerQuery::SummonSpells].result);
+            break;
     }
 
     if (getGuildId())
@@ -15194,7 +15621,7 @@ void Player::updateStats()
     if (res < hp)
         res = hp;
 
-    if (worldConfig.limit.isLimitSystemEnabled && (worldConfig.limit.maxHealthCap > 0) && (res > worldConfig.limit.maxHealthCap) && getSession()->GetPermissionCount() <= 0)   //hacker?
+    if (worldConfig.limit.isLimitSystemEnabled && (worldConfig.limit.maxHealthCap > 0) && (res > worldConfig.limit.maxHealthCap) && !getSession()->hasPermissions())   //hacker?
     {
         std::stringstream dmgLog;
         dmgLog << "has over " << worldConfig.limit.maxArenaPoints << " health " << res;
@@ -15240,7 +15667,7 @@ void Player::updateStats()
         if (res < mana)
             res = mana;
 
-        if (worldConfig.limit.isLimitSystemEnabled && (worldConfig.limit.maxManaCap > 0) && (res > worldConfig.limit.maxManaCap) && getSession()->GetPermissionCount() <= 0)   //hacker?
+        if (worldConfig.limit.isLimitSystemEnabled && (worldConfig.limit.maxManaCap > 0) && (res > worldConfig.limit.maxManaCap) && !getSession()->hasPermissions())   //hacker?
         {
             char logmsg[256];
             snprintf(logmsg, 256, "has over %u mana (%i)", worldConfig.limit.maxManaCap, res);
@@ -15338,22 +15765,6 @@ void Player::onRemoveInRangeObject(Object* object)
 
         setCharmGuid(0);
     }
-
-    // We've just gone out of range of our pet :(
-    std::list<Pet*> summons = getSummons();
-    for (std::list<Pet*>::iterator summon = summons.begin(); summon != summons.end();)
-    {
-        Pet* summonPet = (*summon);
-        ++summon;
-        if (object == summonPet)
-        {
-            summonPet->DelayedRemove(false, false, 1);//delayed otherwise Object::RemoveInRangeObject() will remove twice the Pet from inrangeset. Refer to r3199
-            return;
-        }
-    }
-
-    if (object->getGuid() == getSummonGuid())
-        sEventMgr.AddEvent(static_cast<Unit*>(this), &Unit::removeFieldSummon, EVENT_SUMMON_EXPIRE, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);//otherwise Creature::Update() will access free'd memory
 }
 
 void Player::clearInRangeSets()
@@ -15429,9 +15840,8 @@ void Player::calcResistance(uint8_t type)
 #endif
         setResistance(type, res > 0 ? res : 0);
 
-        std::list<Pet*> summons = getSummons();
-        for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
-            (*itr)->CalcResistance(type);  //Re-calculate pet's too.
+        if (auto* const pet = getPet())
+            pet->CalcResistance(type);  //Re-calculate pet's too.
 
 #if VERSION_STRING >= WotLK
         // Dynamic aura 285 application, adding bonus
@@ -15475,9 +15885,8 @@ void Player::calcStat(uint8_t type)
 
         if (type == STAT_STAMINA || type == STAT_INTELLECT)
         {
-            std::list<Pet*> summons = getSummons();
-            for (std::list<Pet*>::iterator summon = summons.begin(); summon != summons.end(); ++summon)
-                (*summon)->CalcStat(type);  //Re-calculate pet's too
+            if (auto* const pet = getPet())
+                pet->CalcStat(type);  //Re-calculate pet's too
         }
     }
 }
@@ -15513,7 +15922,7 @@ void Player::_Relocate(uint32_t mapid, const LocationVector& v, bool sendpending
     bool sendpacket = (mapid == m_mapId);
     // Dismount before teleport and before being removed from world,
     // otherwise we may spawn the active pet while not being in world.
-    dismount();
+    dismount(false);
 
     MySQLStructure::AreaTrigger const* areaTrigger = nullptr;
     bool check = false;
@@ -15827,9 +16236,6 @@ void Player::completeLoading()
             getSession()->SendPacket(SmsgCorpseReclaimDelay(CORPSE_RECLAIM_TIME_MS).serialise().get());
         }
     }
-
-    if (!isMounted())
-        spawnActivePet();
 
 #if VERSION_STRING > TBC
     // useless logon spell
@@ -16384,9 +16790,8 @@ void Player::calculateDamage()
     setCombatRating(CR_WEAPON_SKILL_RANGED, cr);
 #endif
     // Ranged END
-    std::list<Pet*> summons = getSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
-        (*itr)->calculateDamage();//Re-calculate pet's too
+    if (auto* const pet = getPet())
+        pet->calculateDamage();//Re-calculate pet's too
 }
 
 uint32_t Player::getMainMeleeDamage(uint32_t attackPowerOverride)

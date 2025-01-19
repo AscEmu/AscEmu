@@ -1,7 +1,7 @@
 # Angle bracket includes
 
 # set up our project name.
-project(lualib C)
+set(LIBRARY_NAME lualib)
 
 file(GLOB LUALIB_HEADERS
     "lua/*.h"
@@ -15,9 +15,9 @@ set(LUALIB_SRCS
     ${LUALIB_SOURCES}
 )
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
 # lua static library
-add_library (${PROJECT_NAME} STATIC ${LUALIB_SRCS})
+add_library (${LIBRARY_NAME} STATIC ${LUALIB_SRCS})
+
+target_include_directories(${LIBRARY_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 unset(LUALIB_SRCS)

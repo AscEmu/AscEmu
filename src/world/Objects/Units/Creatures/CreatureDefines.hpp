@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -241,6 +241,8 @@ struct CreatureProperties
     uint32_t getRandomModelId() const;
     uint32_t getInvisibleModelForTriggerNpc() const;
     uint32_t getVisibleModelForTriggerNpc() const;
+
+    bool isExotic() const;
 
     // MIT End
     // APGL Start

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -33,14 +33,17 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
-#if VERSION_STRING >= Cata
+
 void WorldSession::sendEmptyGroupList(Player* player)
 {
+#if VERSION_STRING >= Cata
     player->sendPacket(SmsgGroupList().serialise().get());
+#endif
 }
 
 void WorldSession::handleGroupInviteResponseOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     recvPacket.readBit();                    //unk
     bool acceptInvite = recvPacket.readBit();
 
@@ -88,10 +91,12 @@ void WorldSession::handleGroupInviteResponseOpcode(WorldPacket& recvPacket)
         data << _player->getName().c_str();
         group_inviter->getSession()->SendPacket(&data);
     }
+#endif
 }
 
 void WorldSession::handleGroupSetRolesOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     uint32_t newRole;
 
     recvPacket >> newRole;
@@ -178,10 +183,12 @@ void WorldSession::handleGroupSetRolesOpcode(WorldPacket& recvPacket)
         _player->getGroup()->SendPacketToAll(&data);
     else
         SendPacket(&data);
+#endif
 }
 
 void WorldSession::handleGroupRequestJoinUpdatesOpcode(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING >= Cata
     auto group = _player->getGroup();
     if (group != nullptr)
     {
@@ -191,10 +198,12 @@ void WorldSession::handleGroupRequestJoinUpdatesOpcode(WorldPacket& /*recvPacket
         data << uint64_t(0);  // unk
         SendPacket(&data);
     }
+#endif
 }
 
 void WorldSession::handleGroupRoleCheckBeginOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     auto group = _player->getGroup();
     if (!group)
         return;
@@ -227,12 +236,12 @@ void WorldSession::handleGroupRoleCheckBeginOpcode(WorldPacket& recvPacket)
 
         group->SendPacketToAll(&data);
     }
-}
 #endif
+}
 
-#if VERSION_STRING >= Cata
 void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     ObjectGuid unk_guid;
 
     recvPacket.read_skip<uint32_t>();
@@ -348,7 +357,7 @@ void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (player->getTeam() != _player->getTeam() && _player->getSession()->GetPermissionCount() == 0 && !sWorld.settings.player.isInterfactionGroupEnabled)
+    if (player->getTeam() != _player->getTeam() && !_player->getSession()->hasPermissions() && !sWorld.settings.player.isInterfactionGroupEnabled)
     {
         SendPacket(SmsgPartyCommandResult(0, member_name, ERR_PARTY_WRONG_FACTION).serialise().get());
         return;
@@ -366,7 +375,7 @@ void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (player->isGMFlagSet() && !_player->getSession()->HasPermissions())
+    if (player->isGMFlagSet() && !_player->getSession()->hasPermissions())
     {
         SendPacket(SmsgPartyCommandResult(0, member_name, ERR_PARTY_CANNOT_FIND).serialise().get());
         return;
@@ -420,10 +429,7 @@ void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
     SendPacket(SmsgPartyCommandResult(0, member_name, ERR_PARTY_NO_ERROR).serialise().get());
 
     player->setGroupInviterId(_player->getGuidLow());
-}
 #else
-void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
-{
     CmsgGroupInvite srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -460,7 +466,7 @@ void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (invitedPlayer->getTeam() != _player->getTeam() && _player->getSession()->GetPermissionCount() == 0 && !worldConfig.player.isInterfactionGroupEnabled)
+    if (invitedPlayer->getTeam() != _player->getTeam() && !_player->getSession()->hasPermissions() && !worldConfig.player.isInterfactionGroupEnabled)
     {
         SendPacket(SmsgPartyCommandResult(0, srlPacket.name, ERR_PARTY_WRONG_FACTION).serialise().get());
         return;
@@ -478,7 +484,7 @@ void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (invitedPlayer->isGMFlagSet() && !_player->getSession()->HasPermissions())
+    if (invitedPlayer->isGMFlagSet() && !_player->getSession()->hasPermissions())
     {
         SendPacket(SmsgPartyCommandResult(0, srlPacket.name, ERR_PARTY_CANNOT_FIND).serialise().get());
         return;
@@ -489,8 +495,9 @@ void WorldSession::handleGroupInviteOpcode(WorldPacket& recvPacket)
     SendPacket(SmsgPartyCommandResult(0, srlPacket.name, ERR_PARTY_NO_ERROR).serialise().get());
 
     invitedPlayer->setGroupInviterId(_player->getGuidLow());
-}
 #endif
+}
+
 
 //\brief Not used for cata - the client sends a response
 //       Check out handleGroupInviteResponseOpcode!

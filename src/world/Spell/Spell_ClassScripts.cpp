@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -91,30 +91,12 @@ public:
         {
             if (u_caster)
             {
-                // If someone has a better solutionen, your welcome :-)
-                int totem_ids[32] = {
-                    //Searing Totems
-                    2523, 3902, 3903, 3904, 7400, 7402, 15480, 31162, 31164, 31165,
-                    //Magma Totems
-                    8929, 7464, 7435, 7466, 15484, 31166, 31167,
-                    //Fire Elementel
-                    15439,
-                    //Flametongue Totems
-                    5950, 6012, 7423, 10557, 15485, 31132, 31158, 31133,
-                    //Frost Resistance Totems
-                    5926, 7412, 7413, 15486, 31171, 31172
-                };
-                Unit* totem;
-                for (uint8 i = 0; i < 32; i++)
+                auto* totem = u_caster->getTotem(SUMMON_SLOT_TOTEM_FIRE);
+                if (totem != nullptr)
                 {
-                    totem = u_caster->getSummonInterface()->getSummonWithEntry(totem_ids[i]);   // Get possible firetotem
-                    if (totem != NULL)
-                    {
-                        HasFireTotem = true;
-                        CastSpell(totem);
-                    }
+                    CastSpell(totem);
                 }
-                if (!HasFireTotem)
+                else
                 {
                     *parameter1 = SPELL_EXTRA_ERROR_MUST_HAVE_FIRE_TOTEM;
                     result = SPELL_FAILED_CUSTOM_ERROR;

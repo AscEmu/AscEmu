@@ -1,7 +1,7 @@
-# Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name.
-project(Battlegrounds CXX)
+set(LIBRARY_NAME Battlegrounds)
 
 file(GLOB SRC_ALTERAC_VALLEY AlteracValley/*.cpp AlteracValley/*.h)
 file(GLOB SRC_ARATHI_BASIN ArathiBasin/*.cpp ArathiBasin/*.h)
@@ -38,7 +38,12 @@ set(BATTLEGROUNDS_SRCS
     ${SRC_LOCAL_DIR}
 )
 
-include_directories(
+# source group.
+ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
+
+add_library(${LIBRARY_NAME} SHARED ${BATTLEGROUNDS_SRCS})
+
+target_include_directories(${LIBRARY_NAME} PUBLIC 
     ${OPENSSL_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
     ${CMAKE_SOURCE_DIR}/src/collision
@@ -52,33 +57,18 @@ include_directories(
     ${ZLIB_INCLUDE_DIRS}
 )
 
-# source group.
-source_group(AlteracValley FILES ${SRC_ALTERAC_VALLEY})
-source_group(ArathiBasin FILES ${SRC_ARATHI_BASIN})
-source_group(CircleOfBlood FILES ${SRC_CIRCLE_OF_BLOOD})
-source_group(DalaranSewers FILES ${SRC_DALARAN_SEWERS})
-source_group(EyeOfTheStorm FILES ${SRC_EYE_OF_THE_STORM})
-source_group(IsleOfConquest FILES ${SRC_ISLE_OF_CONQUEST})
-source_group(RingOfTrials FILES ${SRC_RING_OF_TRIALS})
-source_group(RingOfValor FILES ${SRC_RING_OF_VALOR})
-source_group(RuinsOfLordaeron FILES ${SRC_RUINS_OF_LORDAERON})
-source_group(StrandOfTheAncient FILES ${SRC_STRAND_OF_THE_ANCIENT})
-source_group(WarsongGulch FILES ${SRC_WARSONG_GULCH})
-
-add_library(${PROJECT_NAME} SHARED ${BATTLEGROUNDS_SRCS})
-
 # include library dependencies.
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${LIBRARY_NAME}
   PUBLIC
     world
 )
 
 # generate precompiled header.
-if (USE_PCH)
-    message(STATUS "Generate PCH for ${PROJECT_NAME}")
-    target_precompile_headers(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchBattleGrounds.hpp)
+if (AE_USE_PCH)
+    message(STATUS "Generate PCH for ${LIBRARY_NAME}")
+    target_precompile_headers(${LIBRARY_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchBattleGrounds.hpp)
 endif ()
 
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
+install(TARGETS ${LIBRARY_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
 
 unset(BATTLEGROUNDS_SRCS)

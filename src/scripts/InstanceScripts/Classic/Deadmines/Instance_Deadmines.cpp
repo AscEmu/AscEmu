@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -271,7 +271,7 @@ public:
         if (pTarget->isPlayer())
             sprintf(msg, "And stay down, %s.", dynamic_cast<Player*>(pTarget)->getName().c_str());
         else if (pTarget->GetTypeFromGUID() == HIGHGUID_TYPE_PET)
-            sprintf(msg, "And stay down, %s.", dynamic_cast<Pet*>(pTarget)->GetName().c_str());
+            sprintf(msg, "And stay down, %s.", dynamic_cast<Pet*>(pTarget)->getName().c_str());
 
         sendChatMessage(CHAT_MSG_MONSTER_YELL, 5781, msg);
     }

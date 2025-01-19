@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
  * Copyright (c) 2007-2015 Moon++ Team <http://www.moonplusplus.info>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  *
@@ -66,7 +66,7 @@ bool MastersCall(uint8_t effectIndex, Spell* pSpell)
     if (caster == NULL)
         return true;
 
-    Pet* Summon = caster->getFirstPetFromSummons();
+    Pet* Summon = caster->getPet();
     if (Summon == NULL || Summon->isDead())
         return true;
 

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -14,7 +14,11 @@ enum PowerType : int16_t
     POWER_TYPE_RAGE             = 1,
     POWER_TYPE_FOCUS            = 2,
     POWER_TYPE_ENERGY           = 3,
+#if VERSION_STRING < Cata
     POWER_TYPE_HAPPINESS        = 4,
+#else
+    POWER_TYPE_UNK4             = 4,
+#endif
 #if VERSION_STRING >= WotLK
     POWER_TYPE_RUNES            = 5,
     POWER_TYPE_RUNIC_POWER      = 6,

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -493,7 +493,7 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (playerReceiverInfo->name == _player->getName() && !GetPermissionCount())
+    if (playerReceiverInfo->name == _player->getName() && !hasPermissions())
     {
         SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_ERR_CANNOT_SEND_TO_SELF).serialise().get());
         return;
@@ -510,7 +510,7 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
     if (srlPacket.money > 0)
         cost += static_cast<uint32_t>(srlPacket.money); // \todo Change gold functions to uint64
 
-    if (!sMailSystem.MailOption(MAIL_FLAG_DISABLE_POSTAGE_COSTS) && !(GetPermissionCount() && sMailSystem.MailOption(MAIL_FLAG_NO_COST_FOR_GM)))
+    if (!sMailSystem.MailOption(MAIL_FLAG_DISABLE_POSTAGE_COSTS) && !(hasPermissions() && sMailSystem.MailOption(MAIL_FLAG_NO_COST_FOR_GM)))
         cost += srlPacket.itemCount ? 30 * srlPacket.itemCount : 30;
 
     if (!_player->hasEnoughCoinage(cost))
@@ -535,7 +535,7 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
             pItem->saveToDB(INVENTORY_SLOT_NOT_SET, 0, true, nullptr);
             msg.items.push_back(pItem->getGuidLow());
 
-            if (GetPermissionCount() > 0)
+            if (hasPermissions())
                 sGMLog.writefromsession(this, "sent mail with item entry %u to %s", pItem->getEntry(), playerReceiverInfo->name.c_str());
 
             pItem->deleteMe();

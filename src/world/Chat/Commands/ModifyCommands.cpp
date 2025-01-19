@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -983,6 +983,7 @@ bool ChatHandler::HandleModifyDynamicflags(const char* args, WorldSession* sessi
     return false;
 }
 
+#if VERSION_STRING < Cata
 //.modify happiness
 bool ChatHandler::HandleModifyHappiness(const char* args, WorldSession* session)
 {
@@ -1020,6 +1021,7 @@ bool ChatHandler::HandleModifyHappiness(const char* args, WorldSession* session)
 
     return false;
 }
+#endif
 
 //.modify boundingradius
 bool ChatHandler::HandleModifyBoundingradius(const char* args, WorldSession* session)

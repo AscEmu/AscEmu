@@ -1,13 +1,14 @@
-# Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name.
-project(map_extractor CXX)
+set(EXECUTABLE_NAME map_extractor)
 
 file(GLOB SRC_MAPS_EXTRACTOR *.cpp *.h)
 
-set(MAPS_EXTRACTOR_SRCS
-    ${SRC_MAPS_EXTRACTOR}
-)
+# source group.
+ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
+
+add_executable(${EXECUTABLE_NAME} ${SRC_MAPS_EXTRACTOR})
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -17,16 +18,12 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
 )
 
-add_executable(${PROJECT_NAME} ${MAPS_EXTRACTOR_SRCS})
-
-add_dependencies(${PROJECT_NAME} storm)
+add_dependencies(${EXECUTABLE_NAME} storm)
 
 # include library dependencies.
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${EXECUTABLE_NAME}
   PUBLIC
     storm
 )
 
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})
-
-unset(MAPS_EXTRACTOR_SRCS)
+install(TARGETS ${EXECUTABLE_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})

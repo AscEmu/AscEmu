@@ -1,10 +1,10 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
 #include "ConsoleCommands.h"
-#include <git_version.h>
+#include <git_version.hpp>
 #include <iostream>
 #include <sstream>
 
@@ -25,6 +25,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Strings.hpp"
 #include "Threading/LegacyThreading.h"
 #include "Utilities/Util.hpp"
+
+#include <openssl/opensslv.h>
+#include <openssl/crypto.h>
 
 bool handleSendChatAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool /*isWebClient*/)
 {
@@ -136,7 +139,7 @@ bool handleServerInfoCommand(BaseConsole* baseConsole, int /*argumentCount*/, st
         {
             onlineCount++;
             avgLatency += player->getSession()->GetLatency();
-            if (player->getSession()->GetPermissionCount())
+            if (player->getSession()->hasPermissions())
                 gmCount++;
         }
     }
@@ -151,7 +154,8 @@ bool handleServerInfoCommand(BaseConsole* baseConsole, int /*argumentCount*/, st
         baseConsole->Write("======================================================================\r\n");
         baseConsole->Write("Server Information: \r\n");
         baseConsole->Write("======================================================================\r\n");
-        baseConsole->Write("Info: AscEmu %s/%s-%s-%s (www.ascemu.org)\r\n", BUILD_HASH_STR, CONFIG, AE_PLATFORM, AE_ARCHITECTURE);
+        baseConsole->Write("Info: AscEmu %s/%s-%s-%s (www.ascemu.org)\r\n", AE_BUILD_HASH, CONFIG, AE_PLATFORM, AE_ARCHITECTURE);
+        baseConsole->Write("Using %s/Library %s\r\n", OPENSSL_VERSION_TEXT, SSLeay_version(SSLEAY_VERSION));
         baseConsole->Write("Uptime: %s\r\n", sWorld.getWorldUptimeString().c_str());
         baseConsole->Write("Current Players: %d (%d GMs, %d queued)\r\n", clientsNum, gmCount, 0);
         baseConsole->Write("Active Thread Count: %u\r\n", ThreadPool.GetActiveThreadCount());
@@ -179,7 +183,7 @@ bool handleOnlineGmsCommand(BaseConsole* baseConsole, int /*argumentCount*/, std
     for (const auto playerPair : sObjectMgr.getPlayerStorage())
     {
         const Player* player = playerPair.second;
-        if (player->getSession()->GetPermissionCount())
+        if (player->getSession()->hasPermissions())
         {
             baseConsole->Write("| %21s | %15s | %03u ms |\r\n", player->getName().c_str(), player->getSession()->GetPermissions(),
                 player->getSession()->GetLatency());

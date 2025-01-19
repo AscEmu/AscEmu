@@ -1,4 +1,4 @@
-# Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 
 # MSVC >= 19.29
 set(MSVC_SUPPORTS_VERSION 19.29.30140.0)
@@ -11,14 +11,14 @@ endif ()
 
 message(STATUS "Applying settings for ${CMAKE_CXX_COMPILER_ID}")
 
-add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+add_compile_options(-D_CRT_SECURE_NO_WARNINGS)
 
 # windows math include does not define constants by default.
 # set this definition so it does.
 # also set NOMINMAX so the min and max functions are not overwritten with macros.
-add_definitions(-DWIN32_LEAN_AND_MEAN)
-add_definitions(-D_USE_MATH_DEFINES)
-add_definitions(-DNOMINMAX)
+add_compile_options(-DWIN32_LEAN_AND_MEAN)
+add_compile_options(-D_USE_MATH_DEFINES)
+add_compile_options(-DNOMINMAX)
 
 # set defines for MSVC
 add_compile_options(/std:c++20 /EHa /MP /bigobj)

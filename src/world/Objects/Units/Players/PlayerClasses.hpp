@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -44,7 +44,7 @@ public:
         }
     }
 
-    bool isClassDeathKnight() override { return true; }
+    bool isClassDeathKnight() const override { return true; }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Runes
@@ -66,7 +66,7 @@ class Druid : public Player
 public:
     explicit Druid(uint32_t guid) : Player(guid) {}
 
-    bool isClassDruid() override { return true; }
+    bool isClassDruid() const override { return true; }
 };
 
 class Rogue : public Player
@@ -74,7 +74,7 @@ class Rogue : public Player
 public:
     explicit Rogue(uint32_t guid) : Player(guid) {}
 
-    bool isClassRogue() override { return true; }
+    bool isClassRogue() const override { return true; }
 };
 
 class Priest : public Player
@@ -82,7 +82,7 @@ class Priest : public Player
 public:
     explicit Priest(uint32_t guid) : Player(guid) {}
 
-    bool isClassPriest() override { return true; }
+    bool isClassPriest() const override { return true; }
 };
 
 class Paladin : public Player
@@ -90,7 +90,7 @@ class Paladin : public Player
 public:
     explicit Paladin(uint32_t guid) : Player(guid) {}
 
-    bool isClassPaladin() override { return true; }
+    bool isClassPaladin() const override { return true; }
 };
 
 class Warrior : public Player
@@ -98,7 +98,7 @@ class Warrior : public Player
 public:
     explicit Warrior(uint32_t guid) : Player(guid) {}
 
-    bool isClassWarrior() override { return true; }
+    bool isClassWarrior() const override { return true; }
 };
 
 class Warlock : public Player
@@ -106,7 +106,7 @@ class Warlock : public Player
 public:
     explicit Warlock(uint32_t guid) : Player(guid) {}
 
-    bool isClassWarlock() override { return true; }
+    bool isClassWarlock() const override { return true; }
 };
 
 class Mage : public Player
@@ -114,7 +114,7 @@ class Mage : public Player
 public:
     explicit Mage(uint32_t guid) : Player(guid) {}
 
-    bool isClassMage() override { return true; }
+    bool isClassMage() const override { return true; }
 };
 
 class Monk : public Player
@@ -122,7 +122,7 @@ class Monk : public Player
 public:
     explicit Monk(uint32_t guid) : Player(guid) {}
 
-    bool isClassMonk() override { return true; }
+    bool isClassMonk() const override { return true; }
 };
 
 class Hunter : public Player
@@ -130,7 +130,7 @@ class Hunter : public Player
 public:
     explicit Hunter(uint32_t guid) : Player(guid) {}
 
-    bool isClassHunter() override { return true; }
+    bool isClassHunter() const override { return true; }
 };
 
 class Shaman : public Player
@@ -138,5 +138,5 @@ class Shaman : public Player
 public:
     explicit Shaman(uint32_t guid) : Player(guid) {}
 
-    bool isClassShaman() override { return true; }
+    bool isClassShaman() const override { return true; }
 };

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -19,6 +19,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include <set>
 #include <list>
 #include <memory>
+
+#include "Utilities/utf8String.hpp"
 
 class Player;
 class Item;
@@ -946,6 +948,20 @@ struct PlayerCreateInfo
     CreateInfo_LevelstatsVector level_stats;
 };
 
+struct CharCreate
+{
+    utf8_string name;
+    uint8_t _race;
+    uint8_t _class;
+    uint8_t gender;
+    uint8_t skin;
+    uint8_t face;
+    uint8_t hairStyle;
+    uint8_t hairColor;
+    uint8_t facialHair;
+    uint8_t outfitId;
+};
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // CachedCharacterInfo
 class SERVER_DECL CachedCharacterInfo
@@ -991,29 +1007,30 @@ struct FactionReputation
     bool Positive() { return standing >= 0; }
 };
 
-struct PlayerPet
+struct PetCache
 {
-    std::string name;
+    uint8_t number = 0; // Refers to Pet::m_petId
+    uint8_t type = 0;
+    utf8_string name;
     uint32_t entry = 0;
+    uint32_t model = 0;
+    uint32_t level = 0;
     uint32_t xp = 0;
+    uint8_t slot = 0;
     bool active = false;
     bool alive = false;
-    char stablestate = 0;
-    uint32_t number = 0;
-    uint32_t level = 0;
-    uint32_t happinessupdate = 0;
     std::string actionbar;
     time_t reset_time = 0;
     uint32_t reset_cost = 0;
     uint32_t spellid = 0;
-    uint32_t petstate = 0;
+    uint8_t petstate = 0;
     uint32_t talentpoints = 0;
     uint32_t current_power = 0;
     uint32_t current_hp = 0;
     uint32_t current_happiness = 0;
-    uint32_t renamable = 0;
-    uint32_t type = 0;
+    bool renamable = false;
 };
+typedef std::map<uint8_t, std::unique_ptr<PetCache>> PetCacheMap;
 
 struct WeaponModifier
 {

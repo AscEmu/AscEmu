@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -58,7 +58,7 @@
 #include "Script/ScriptMgr.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "CommonFilesystem.hpp"
-#include "git_version.h"
+#include "git_version.hpp"
 #include "Logging/Logger.hpp"
 #include <cstdarg>
 #include <iostream>
@@ -69,8 +69,8 @@
 #include "Utilities/Benchmark.hpp"
 
 // DB version
-static const char* REQUIRED_CHAR_DB_VERSION = "20230710-00_characters_taxi";
-static const char* REQUIRED_WORLD_DB_VERSION = "20240904-00_misc";
+static const char* REQUIRED_CHAR_DB_VERSION = "20250119-00_character_db_version";
+static const char* REQUIRED_WORLD_DB_VERSION = "20250112-00_world_db_version";
 
 volatile bool Master::m_stopEvent = false;
 
@@ -354,7 +354,7 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
 
     sOpcodeTables.initialize();
 
-    WorldSession::InitPacketHandlerTable();
+    WorldSession::registerOpcodeHandler();
 
     if (!sWorld.setInitialWorldSettings())
     {
@@ -563,7 +563,7 @@ bool Master::_CheckDBVersion()
 
     delete wqr;
 
-    QueryResult* cqr = CharacterDatabase.QueryNA("SELECT LastUpdate FROM character_db_version;");
+    QueryResult* cqr = CharacterDatabase.QueryNA("SELECT LastUpdate FROM character_db_version ORDER BY id DESC LIMIT 1;");
     if (cqr == NULL)
     {
         sLogger.fatal("Database : Character database is missing the table `character_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
@@ -729,7 +729,7 @@ void OnCrash(bool Terminate)
 
 void Master::PrintBanner()
 {
-    sLogger.info("<< AscEmu {}/{}-{} {} :: World Server >>", BUILD_HASH_STR, CONFIG, AE_PLATFORM, AE_ARCHITECTURE);
+    sLogger.info("<< AscEmu {}/{}-{} {} :: World Server >>", AE_BUILD_HASH, CONFIG, AE_PLATFORM, AE_ARCHITECTURE);
     sLogger.info("========================================================");
 }
 

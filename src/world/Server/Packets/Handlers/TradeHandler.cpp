@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -116,7 +116,7 @@ void WorldSession::handleInitiateTradeOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (playerTarget->getTeam() != _player->getTeam() && GetPermissionCount() == 0 && !worldConfig.player.isInterfactionTradeEnabled)
+    if (playerTarget->getTeam() != _player->getTeam() && !hasPermissions() && !worldConfig.player.isInterfactionTradeEnabled)
     {
         sendTradeResult(TRADE_STATUS_WRONG_FACTION);
         return;
@@ -572,9 +572,9 @@ void WorldSession::handleClearTradeItem(WorldPacket& recvPacket)
     tradeData->setTradeItem(TradeSlots(srlPacket.tradeSlot), nullptr);
 }
 
-#if VERSION_STRING < Cata
 void WorldSession::handleBusyTrade(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING < Cata
     const auto tradeData = _player->getTradeData();
     if (tradeData == nullptr)
     {
@@ -586,10 +586,12 @@ void WorldSession::handleBusyTrade(WorldPacket& /*recvPacket*/)
     tradeData->getTradeTarget()->getSession()->sendTradeResult(TRADE_STATUS_PLAYER_BUSY);
 
     _player->cancelTrade(false, true);
+#endif
 }
 
 void WorldSession::handleIgnoreTrade(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING < Cata
     const auto tradeData = _player->getTradeData();
     if (tradeData == nullptr)
     {
@@ -602,10 +604,12 @@ void WorldSession::handleIgnoreTrade(WorldPacket& /*recvPacket*/)
 
     // Client sends this opcode after trade is created so TradeData must be cleaned
     _player->cancelTrade(false, true);
+#endif
 }
 
 void WorldSession::handleUnacceptTrade(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING < Cata
     const auto tradeData = _player->getTradeData();
     if (tradeData == nullptr)
         return;
@@ -614,8 +618,8 @@ void WorldSession::handleUnacceptTrade(WorldPacket& /*recvPacket*/)
     tradeData->getTradeTarget()->getSession()->sendTradeResult(TRADE_STATUS_UNACCEPTED);
 
     _player->getTradeData()->setTradeAccepted(false, true);
-}
 #endif
+}
 
 #if VERSION_STRING < Cata
 void WorldSession::sendTradeResult(TradeStatus result, uint64_t guid /*= 0*/)

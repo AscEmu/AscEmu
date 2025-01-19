@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -239,6 +239,29 @@ void Item::setMaxDurability(uint32_t maxDurability) { write(itemData()->max_dura
 uint32_t Item::getCreatePlayedTime() const { return itemData()->create_played_time; }
 void Item::setCreatePlayedTime(uint32_t time) { write(itemData()->create_played_time, time); }
 #endif
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Override Object functions
+
+Unit* Item::getUnitOwner()
+{
+    return m_owner;
+}
+
+Unit const* Item::getUnitOwner() const
+{
+    return m_owner;
+}
+
+Player* Item::getPlayerOwner()
+{
+    return m_owner;
+}
+
+Player const* Item::getPlayerOwner() const
+{
+    return m_owner;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // m_enchantments

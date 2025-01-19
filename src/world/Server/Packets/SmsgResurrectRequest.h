@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -22,7 +22,7 @@ namespace AscEmu::Packets
         //4.3.4
         uint32_t spellId;
 
-        SmsgResurrectRequest() : SmsgResurrectRequest(0, 0, 0, 0)
+        SmsgResurrectRequest() : SmsgResurrectRequest(0, "", 0, 0)
         {
         }
 

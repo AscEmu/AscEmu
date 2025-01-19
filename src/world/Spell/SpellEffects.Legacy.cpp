@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -530,7 +530,7 @@ void Spell::spellEffectSummonTotem(uint8_t /*effIndex*/, WDB::Structures::Summon
     const auto totemSlot = static_cast<SummonSlot>(spe->Slot);
 
     // Generate spawn point
-    const float_t angle = totemSlot > SUMMON_SLOT_PET && totemSlot < SUMMON_SLOT_MINIPET
+    const float_t angle = totemSlot > SUMMON_SLOT_NONE && totemSlot < SUMMON_SLOT_MINIPET
         ? M_PI_FLOAT / static_cast<float>(SUMMON_SLOT_TOTEM_AIR) - (totemSlot * 2 * M_PI_FLOAT / static_cast<float>(SUMMON_SLOT_TOTEM_AIR))
         : 0.0f;
     u_caster->GetPoint(u_caster->GetOrientation() + angle, 3.5f, v.x, v.y, v.z, false);
@@ -903,7 +903,7 @@ void Spell::SpellEffectInstantKill(uint8_t /*effectIndex*/)
         if (!p_caster || (u_caster && u_caster->isPet()))
             return;
 
-        if (p_caster->getSession()->GetPermissionCount() == 0)
+        if (!p_caster->getSession()->hasPermissions())
             return;
     }
 
@@ -3043,13 +3043,13 @@ void Spell::SpellEffectSummonGuardian(uint32 /*i*/, WDB::Structures::SummonPrope
     }
 }
 
-void Spell::SpellEffectSummonTemporaryPet(uint32 /*i*/, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
+void Spell::SpellEffectSummonTemporaryPet(uint32 i, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
 {
     if (p_caster == nullptr)
         return;
 
-    p_caster->dismissActivePets();
-    p_caster->removeFieldSummon();
+    if (p_caster->getPet() != nullptr)
+        p_caster->getPet()->unSummon();
 
     int32 count = 0;
 
@@ -3074,9 +3074,8 @@ void Spell::SpellEffectSummonTemporaryPet(uint32 /*i*/, WDB::Structures::SummonP
         v.x += x;
         v.y += y;
 
-        const auto pet = sObjectMgr.createPet(properties_->Id);
-
-        if (!pet->CreateAsSummon(properties_->Id, ci, nullptr, p_caster, m_spellInfo, 1, static_cast<uint32_t>(getDuration()), &v, false))
+        const auto pet = sObjectMgr.createPet(properties_->Id, spe);
+        if (!pet->createAsSummon(ci, nullptr, p_caster, v, static_cast<uint32_t>(getDuration()), m_spellInfo, i, PET_TYPE_SUMMON))
         {
             pet->DeleteMe();
             break;
@@ -3092,8 +3091,8 @@ void Spell::SpellEffectSummonPossessed(uint32 /*i*/, WDB::Structures::SummonProp
     if (p_caster == nullptr)
         return;
 
-    p_caster->dismissActivePets();
-    p_caster->removeFieldSummon();
+    if (p_caster->getPet() != nullptr)
+        p_caster->getPet()->unSummon();
 
     v.x += (3 * cos(M_PI_FLOAT / 2 + v.o));
     v.y += (3 * cos(M_PI_FLOAT / 2 + v.o));
@@ -4114,7 +4113,7 @@ void Spell::SpellEffectEnchantItem(uint8_t effectIndex) // Enchant Item Permanen
         return;
     }
 
-    if (p_caster->getSession()->GetPermissionCount() > 0)
+    if (p_caster->getSession()->hasPermissions())
         sGMLog.writefromsession(p_caster->getSession(), "enchanted item for %s", m_itemTarget->getOwner()->getName().c_str());
 
     //remove other perm enchantment that was enchanted by profession
@@ -4169,16 +4168,18 @@ void Spell::SpellEffectEnchantItemTemporary(uint8_t effectIndex)  // Enchant Ite
         DetermineSkillUp(static_cast<uint16_t>(skill_line_ability->skilline), m_itemTarget->getItemProperties()->ItemLevel);
 }
 
-void Spell::SpellEffectTameCreature(uint8_t /*effectIndex*/)
+void Spell::SpellEffectTameCreature(uint8_t effectIndex)
 {
     if (m_unitTarget == nullptr || !m_unitTarget->isCreature())
+        return;
+    if (p_caster == nullptr || p_caster->getPet() != nullptr)
         return;
     Creature* tame = static_cast<Creature*>(m_unitTarget);
 
     // Remove target
     tame->getAIInterface()->handleEvent(EVENT_LEAVECOMBAT, p_caster, 0);
-    const auto pet = sObjectMgr.createPet(tame->getEntry());
-    if (!pet->CreateAsSummon(tame->getEntry(), tame->GetCreatureProperties(), tame, p_caster, nullptr, 2, 0))
+    const auto pet = sObjectMgr.createPet(tame->getEntry(), nullptr);
+    if (!pet->createAsSummon(tame->GetCreatureProperties(), tame, p_caster, p_caster->GetPosition(), 0, nullptr, effectIndex, PET_TYPE_HUNTER))
     {
         pet->DeleteMe();//CreateAsSummon() returns false if an error occurred.
     }
@@ -4191,22 +4192,33 @@ void Spell::SpellEffectSummonPet(uint8_t effectIndex) //summon - pet
 
     if (getSpellInfo()->getId() == 883)  // "Call Pet" spell
     {
-        if (p_caster->getFirstPetFromSummons())
+        if (p_caster->getPet() != nullptr)
         {
             sendCastResult(SPELL_FAILED_ALREADY_HAVE_SUMMON);
             return;
         }
 
-        uint32 petno = p_caster->getUnstabledPetNumber();
-        if (petno)
+        const auto foundPetId = p_caster->getPetIdFromSlot(PET_SLOT_FIRST_ACTIVE_SLOT);
+        if (foundPetId.has_value())
         {
-            if (p_caster->getPlayerPet(petno) == nullptr)
+            const auto petno = foundPetId.value();
+            if (p_caster->isPetRequiringTemporaryUnsummon())
+            {
+#if VERSION_STRING < WotLK
+                sendCastResult(SPELL_FAILED_TRY_AGAIN);
+#else
+                sendCastResult(SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW);
+#endif
+                return;
+            }
+
+            if (p_caster->getPetCache(petno) == nullptr)
             {
                 sendCastResult(SPELL_FAILED_ALREADY_HAVE_SUMMON);
                 return;
             }
 
-            if (p_caster->getPlayerPet(petno)->alive)
+            if (p_caster->getPetCache(petno)->alive)
             {
                 p_caster->spawnPet(petno);
             }
@@ -4229,9 +4241,9 @@ void Spell::SpellEffectSummonPet(uint8_t effectIndex) //summon - pet
     //felhunter:     Devour Magic,Paranoia,Spell Lock,  Tainted Blood
 
     // remove old pet
-    Pet* old = static_cast< Player* >(m_caster)->getFirstPetFromSummons();
+    Pet* old = p_caster->getPet();
     if (old)
-        old->Dismiss();
+        old->unSummon();
 
     CreatureProperties const* ci = sMySQLStore.getCreatureProperties(getSpellInfo()->getEffectMiscValue(effectIndex));
     if (ci)
@@ -4246,8 +4258,8 @@ void Spell::SpellEffectSummonPet(uint8_t effectIndex) //summon - pet
             p_caster->removeAllAurasById(35701);
         }
 
-        const auto pet = sObjectMgr.createPet(getSpellInfo()->getEffectMiscValue(effectIndex));
-        if (!pet->CreateAsSummon(getSpellInfo()->getEffectMiscValue(effectIndex), ci, nullptr, p_caster, getSpellInfo(), 2, 0))
+        const auto pet = sObjectMgr.createPet(getSpellInfo()->getEffectMiscValue(effectIndex), nullptr);
+        if (!pet->createAsSummon(ci, nullptr, u_caster, u_caster->GetPosition(), 0, m_spellInfo, effectIndex, PET_TYPE_SUMMON))
         {
             pet->DeleteMe();//CreateAsSummon() returns false if an error occurred.
         }
@@ -4267,7 +4279,7 @@ void Spell::SpellEffectLearnPetSpell(uint8_t effectIndex)
     if (m_unitTarget && m_unitTarget->isPet() && p_caster)
     {
         Pet* pPet = static_cast< Pet* >(m_unitTarget);
-        if (pPet->IsSummonedPet())
+        if (!pPet->isHunterPet())
             p_caster->addSummonSpell(m_unitTarget->getEntry(), getSpellInfo()->getEffectTriggerSpell(effectIndex));
 
         pPet->AddSpell(sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(effectIndex)), true);
@@ -5129,7 +5141,7 @@ void Spell::SpellEffectFeedPet(uint8_t effectIndex)  // Feed Pet
     if (!m_itemTarget || !p_caster)
         return;
 
-    Pet* pPet = p_caster->getFirstPetFromSummons();
+    Pet* pPet = p_caster->getPet();
     if (!pPet)
         return;
 
@@ -5164,9 +5176,9 @@ void Spell::SpellEffectDismissPet(uint8_t /*effectIndex*/)
     // remove pet.. but don't delete so it can be called later
     if (!p_caster) return;
 
-    Pet* pPet = p_caster->getFirstPetFromSummons();
+    Pet* pPet = p_caster->getPet();
     if (!pPet) return;
-    pPet->Remove(true, true);
+    pPet->unSummon();
 }
 
 void Spell::SpellEffectReputation(uint8_t effectIndex)
@@ -5255,22 +5267,47 @@ void Spell::SpellEffectSummonDeadPet(uint8_t /*effectIndex*/)
     //this is pet resurrect
     if (!p_caster)
         return;
-    Pet* pPet = p_caster->getFirstPetFromSummons();
+    Pet* pPet = p_caster->getPet();
     if (pPet)
     {
+        // Pet should teleport to owner's position
+        HandleTeleport(p_caster->GetPosition(), p_caster->GetMapId(), pPet);
         //\note remove all dynamic flags
         pPet->setDynamicFlags(0);
         pPet->setHealth(pPet->getMaxHealth() * damage / 100);
         pPet->setDeathState(ALIVE);
         pPet->getAIInterface()->handleEvent(EVENT_FOLLOWOWNER, pPet, 0);
-        sEventMgr.RemoveEvents(pPet, EVENT_PET_DELAYED_REMOVE);
         pPet->SendSpellsToOwner();
+
+        // Restore unit and pvp flags that were resetted on death
+        if (p_caster->isPvpFlagSet())
+            pPet->setPvpFlag();
+        else
+            pPet->removePvpFlag();
+
+        if (p_caster->isFfaPvpFlagSet())
+            pPet->setFfaPvpFlag();
+        else
+            pPet->removeFfaPvpFlag();
+
+        if (p_caster->isSanctuaryFlagSet())
+            pPet->setSanctuaryFlag();
+        else
+            pPet->removeSanctuaryFlag();
+
+        if (p_caster->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
+            pPet->addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
     }
     else
     {
+        // This was set in canCast so it should exist at this point
+        if (add_damage == 0)
+            return;
 
-        p_caster->spawnPet(p_caster->getUnstabledPetNumber());
-        pPet = p_caster->getFirstPetFromSummons();
+        if (!p_caster->isPetRequiringTemporaryUnsummon())
+            p_caster->spawnPet(static_cast<uint8_t>(add_damage));
+
+        pPet = p_caster->getPet();
         if (pPet == nullptr)//no pets to Revive
             return;
 
@@ -5294,13 +5331,13 @@ void Spell::SpellEffectDestroyAllTotems(uint8_t effectIndex)
     uint32 RetreivedMana = 0;
     uint32 refundpercent = m_spellInfo->getEffectBasePoints(effectIndex) + 1;
 
-    std::vector< uint32 > spellids;
-
-    p_caster->getSummonInterface()->getTotemSpellIds(spellids);
-
-    for (std::vector< uint32 >::iterator itr = spellids.begin(); itr != spellids.end(); ++itr)
+    for (uint8_t i = SUMMON_SLOT_TOTEM_FIRE; i <= SUMMON_SLOT_TOTEM_AIR; ++i)
     {
-        uint32 spellid = *itr;
+        const auto* totem = p_caster->getSummonInterface()->getSummonInSlot(static_cast<SummonSlot>(i));
+        if (totem == nullptr || !totem->isTotem())
+            continue;
+
+        const auto spellid = totem->getCreatedBySpellId();
         SpellInfo const* sp = sSpellMgr.getSpellInfo(spellid);
 
         if (sp != nullptr)
@@ -5316,7 +5353,7 @@ void Spell::SpellEffectDestroyAllTotems(uint8_t effectIndex)
         }
     }
 
-    p_caster->getSummonInterface()->removeAllSummons(true);
+    p_caster->getSummonInterface()->killAllTotems();
     p_caster->energize(p_caster, getSpellInfo()->getId(), RetreivedMana, POWER_TYPE_MANA);
 }
 
@@ -6005,14 +6042,14 @@ void Spell::SpellEffectCreatePet(uint8_t effectIndex)
     if (!m_playerTarget)
         return;
 
-    if (m_playerTarget->getFirstPetFromSummons())
-        m_playerTarget->getFirstPetFromSummons()->Remove(true, true);
+    if (m_playerTarget->getPet())
+        m_playerTarget->getPet()->unSummon();
 
     CreatureProperties const* ci = sMySQLStore.getCreatureProperties(getSpellInfo()->getEffectMiscValue(effectIndex));
     if (ci)
     {
-        const auto pet = sObjectMgr.createPet(getSpellInfo()->getEffectMiscValue(effectIndex));
-        if (!pet->CreateAsSummon(getSpellInfo()->getEffectMiscValue(effectIndex), ci, nullptr, m_playerTarget, getSpellInfo(), 1, 0))
+        const auto pet = sObjectMgr.createPet(getSpellInfo()->getEffectMiscValue(effectIndex), nullptr);
+        if (!pet->createAsSummon(ci, nullptr, m_playerTarget, m_playerTarget->GetPosition(), 0, m_spellInfo, effectIndex, PET_TYPE_HUNTER))
         {
             pet->DeleteMe();//CreateAsSummon() returns false if an error occurred.
         }
@@ -6055,7 +6092,7 @@ void Spell::SpellEffectEnchantItemPrismatic(uint8_t effectIndex)
         return;
     }
 
-    if (p_caster->getSession()->GetPermissionCount() > 0)
+    if (p_caster->getSession()->hasPermissions())
         sGMLog.writefromsession(p_caster->getSession(), "enchanted item for %s", m_itemTarget->getOwner()->getName().c_str());
 
     //remove other socket enchant
@@ -6125,7 +6162,7 @@ void Spell::SpellEffectRenamePet(uint8_t /*effectIndex*/)
         !static_cast< Pet* >(m_unitTarget)->getPlayerOwner() || static_cast< Pet* >(m_unitTarget)->getPlayerOwner()->getClass() != HUNTER)
         return;
 
-    m_unitTarget->setPetFlags(m_unitTarget->getPetFlags() | PET_RENAME_ALLOWED);
+    m_unitTarget->addPetFlags(UNIT_CAN_BE_RENAMED);
 }
 
 void Spell::SpellEffectRestoreHealthPct(uint8_t /*effectIndex*/)

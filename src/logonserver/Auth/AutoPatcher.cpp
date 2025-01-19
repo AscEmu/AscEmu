@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@ void PatchMgr::initialize()
 
     if (!fs::exists(patchDirectory) || !fs::is_directory(patchDirectory))
     {
-        sLogger.failure("No patches found.");
+        sLogger.warning("No patches found.");
         return;
     }
 

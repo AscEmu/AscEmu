@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -108,6 +108,18 @@ public:
 #endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Override Object functions
+
+    // Returns unit owner
+    Unit* getUnitOwner() override;
+    // Returns unit owner
+    Unit const* getUnitOwner() const override;
+    // Returns player owner
+    Player* getPlayerOwner() override;
+    // Returns player owner
+    Player const* getPlayerOwner() const override;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
     // m_enchantments
     EnchantmentInstance* getEnchantment(EnchantmentSlot slot);
     EnchantmentInstance const* getEnchantment(EnchantmentSlot slot) const;
@@ -178,6 +190,7 @@ protected:
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
+    // TODO: remove this and replace it with virtual Object::getPlayerOwner()
     Player* getOwner() const;
     void setOwner(Player* owner);
 

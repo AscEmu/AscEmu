@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -339,7 +339,7 @@ void GossipPetTrainer::onHello(Object* object, Player* player)
 
         menu.addItem(GOSSIP_ICON_TRAINER, BEASTTRAINING, 1);
 
-        if (player->getClass() == ::HUNTER && player->getFirstPetFromSummons() != nullptr)
+        if (player->getClass() == ::HUNTER && player->getPet() != nullptr)
             menu.addItem(GOSSIP_ICON_CHAT, PETTRAINER_TALENTRESET, 2);
 
         sQuestMgr.FillQuestMenu(creature, player, menu);

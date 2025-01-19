@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -26,8 +26,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 const uint32_t ARENA_PREPARATION = 32727;
 
-const uint32_t GREEN_TEAM = 0;
-const uint32_t GOLD_TEAM = 1;
+// const uint32_t GREEN_TEAM = 0;
+// const uint32_t GOLD_TEAM = 1;
 
 Arena::Arena(WorldMap* _worldMap, uint32_t _id, uint32_t _levelGroup, uint32_t _arenaType, uint32_t _playersPerSide) : Battleground(_worldMap, _id, _levelGroup, _arenaType)
 {
@@ -252,7 +252,7 @@ void Arena::HookOnPlayerKill(Player* _player, Player* _playerVictim)
 {
     if (!m_hasStarted)
     {
-        _player->kill(); //cheater.
+        _player->die(nullptr, 0, 0); //cheater.
         return;
     }
 

@@ -1,13 +1,12 @@
-# Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 
 message(STATUS "Applying settings for Linux system")
 
 set(LIBS_DIR ${CMAKE_INSTALL_PREFIX}/lib)
-add_definitions(-DUSE_KQUEUE)
+add_compile_options(-DUSE_KQUEUE)
 
 # find required libraries
 find_package(ZLIB REQUIRED)
-find_package(PCRE REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(Threads REQUIRED)
 find_package(MySQL REQUIRED)

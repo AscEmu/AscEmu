@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -157,7 +157,11 @@ enum AuraEffect : uint32_t
     SPELL_AURA_MOD_RESISTANCE_EXCLUSIVE = 143,                          // Mod Resistance Exclusive
     SPELL_AURA_SAFE_FALL = 144,                                         // Safe Fall
     SPELL_AURA_CHARISMA = 145,                                          // Charisma
+#if VERSION_STRING < WotLK
     SPELL_AURA_PERSUADED = 146,                                         // Persuaded
+#else
+    SPELL_AURA_ALLOW_TAME_PET_TYPE = 146,                               // Allow tame pet type
+#endif
     SPELL_AURA_MECHANIC_IMMUNITY_MASK = 147,                            // Mechanic Immunity Mask
     SPELL_AURA_RETAIN_COMBO_POINTS = 148,                               // Retain Combo Points
     SPELL_AURA_RESIST_PUSHBACK = 149,                                   // Resist Pushback

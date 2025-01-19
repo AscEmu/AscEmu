@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -380,24 +380,24 @@ void WorldSession::handleStabledPetList(WorldPacket& recvPacket)
 
 void WorldSession::sendStabledPetList(uint64_t npcguid)
 {
-    std::vector<PlayerStablePetList> stableList;
-    PlayerStablePetList stablePet;
+    std::map<uint8_t, PlayerStablePet> stableList;
+    PlayerStablePet stablePet;
 
-    for (const auto itr : _player->m_pets)
+    for (const auto& [petId, cachedPet] : _player->getPetCacheMap())
     {
-        stablePet.petNumber = itr.first;
-        stablePet.entry = itr.second->entry;
-        stablePet.level = itr.second->level;
-        stablePet.name = itr.second->name;
-        if (itr.second->stablestate == STABLE_STATE_ACTIVE)
-            stablePet.stableState = STABLE_STATE_ACTIVE;
-        else
-            stablePet.stableState = STABLE_STATE_PASSIVE + 1;
-
-        stableList.push_back(stablePet);
+        stablePet.petNumber = petId;
+        stablePet.entry = cachedPet->entry;
+        stablePet.level = cachedPet->level;
+        stablePet.name.assign(cachedPet->name);
+        stableList.emplace(cachedPet->slot, stablePet);
     }
 
-    SendPacket(MsgListStabledPets(npcguid, static_cast<uint8_t>(_player->m_pets.size()), _player->m_stableSlotCount, stableList).serialise().get());
+#if VERSION_STRING >= Cata
+    // Since cata all stable slots are automatically unlocked
+    SendPacket(MsgListStabledPets(npcguid, PET_SLOT_MAX_STABLE_SLOT, stableList).serialise().get());
+#else
+    SendPacket(MsgListStabledPets(npcguid, _player->m_stableSlotCount, stableList).serialise().get());
+#endif
 }
 
 void WorldSession::sendTrainerList(Creature* creature)

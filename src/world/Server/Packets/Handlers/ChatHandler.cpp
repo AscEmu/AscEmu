@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -56,7 +56,7 @@ bool WorldSession::isSessionMuted()
 
 bool WorldSession::isFloodProtectionTriggered()
 {
-    if (!GetPermissionCount() && worldConfig.chat.linesBeforeProtection)
+    if (!hasPermissions() && worldConfig.chat.linesBeforeProtection)
     {
         if (UNIXTIME >= floodTime)
         {
@@ -152,7 +152,7 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
         }
 
         // GMs speak universal language
-        if (GetPermissionCount() > 0)
+        if (hasPermissions())
         {
             messageLanguage = LANG_UNIVERSAL;
             player_can_speak_language = true;
@@ -397,7 +397,7 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (!GetPermissionCount() && worldConfig.chat.linesBeforeProtection)
+    if (!hasPermissions() && worldConfig.chat.linesBeforeProtection)
     {
         if (UNIXTIME >= floodTime)
         {
@@ -418,7 +418,7 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
         if (unit->isPlayer())
             unitName = dynamic_cast<Player*>(unit)->getName();
         else if (unit->isPet())
-            unitName = dynamic_cast<Pet*>(unit)->GetName();
+            unitName = dynamic_cast<Pet*>(unit)->getName();
         else
             unitName = dynamic_cast<Creature*>(unit)->GetCreatureProperties()->Name;
 
@@ -483,7 +483,7 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
         }
         else if (unit->isPet())
         {
-            unitName = dynamic_cast<Pet*>(unit)->GetName().c_str();
+            unitName = dynamic_cast<Pet*>(unit)->getName().c_str();
             nameLength = static_cast<uint32_t>(strlen(unitName)) + 1;
         }
         else
@@ -550,9 +550,9 @@ void WorldSession::handleEmoteOpcode(WorldPacket& recvPacket)
     sQuestMgr.OnPlayerEmote(_player, srlPacket.emote, guid);
 }
 
-#if VERSION_STRING < Cata
 void WorldSession::handleReportSpamOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING < Cata
     CmsgComplaint srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -561,8 +561,8 @@ void WorldSession::handleReportSpamOpcode(WorldPacket& recvPacket)
         srlPacket.unk1, srlPacket.unk2, srlPacket.unk3, srlPacket.unk4, srlPacket.description);
 
     SendPacket(SmsgComplainResult(0).serialise().get());
-}
 #endif
+}
 
 void WorldSession::handleChatIgnoredOpcode(WorldPacket& recvPacket)
 {

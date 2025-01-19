@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -310,14 +310,20 @@ public:
 
     // Returns unit charmer or unit owner
     virtual Unit* getUnitOwner();
+    // Returns unit charmer or unit owner
+    virtual Unit const* getUnitOwner() const;
     // Returns unit charmer, unit owner or self
     virtual Unit* getUnitOwnerOrSelf();
-    // Returns player charmer and player owner
+    // Returns unit charmer, unit owner or self
+    virtual Unit const* getUnitOwnerOrSelf() const;
+    // Returns player charmer or player owner
     virtual Player* getPlayerOwner();
+    // Returns player charmer or player owner
+    virtual Player const* getPlayerOwner() const;
     // Returns player charmer, player owner or self
     virtual Player* getPlayerOwnerOrSelf();
-
-    Player* getAffectingPlayer();
+    // Returns player charmer, player owner or self
+    virtual Player const* getPlayerOwnerOrSelf() const;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
@@ -450,13 +456,13 @@ public:
         // Only for WorldMap use
         WorldMap* getWorldMap() const { return m_WorldMap; }
 
-        Object* getWorldMapObject(const uint64_t & guid);
-        Pet* getWorldMapPet(const uint64_t & guid);
-        Unit* getWorldMapUnit(const uint64_t & guid);
-        Player* getWorldMapPlayer(const uint64_t & guid);
-        Creature* getWorldMapCreature(const uint64_t & guid);
-        GameObject* getWorldMapGameObject(const uint64_t & guid);
-        DynamicObject* getWorldMapDynamicObject(const uint64_t & guid);
+        Object* getWorldMapObject(const uint64_t & guid) const;
+        Pet* getWorldMapPet(const uint64_t & guid) const;
+        Unit* getWorldMapUnit(const uint64_t & guid) const;
+        Player* getWorldMapPlayer(const uint64_t & guid) const;
+        Creature* getWorldMapCreature(const uint64_t & guid) const;
+        GameObject* getWorldMapGameObject(const uint64_t & guid) const;
+        DynamicObject* getWorldMapDynamicObject(const uint64_t & guid) const;
 
         void SetMapId(uint32 newMap) { m_mapId = newMap; }
         void setZoneId(uint32 newZone);

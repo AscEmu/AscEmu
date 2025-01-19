@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -514,7 +514,7 @@ void AIInterface::enterEvadeMode()
         {
             if (m_Unit->isPet())
             {
-                static_cast<Pet*>(m_Unit)->SetPetAction(PET_ACTION_FOLLOW);
+                static_cast<Pet*>(m_Unit)->setPetAction(PET_ACTION_FOLLOW);
                 if (m_Unit->isAlive() && m_Unit->IsInWorld())
                 {
                     static_cast<Pet*>(m_Unit)->HandleAutoCastEvent(AUTOCAST_EVENT_LEAVE_COMBAT);
@@ -2155,9 +2155,8 @@ void AIInterface::justEnteredCombat(Unit* pUnit)
 {
     if (!isEngaged() && getUnit()->getThreatManager().canHaveThreatList())
         engagementStart(pUnit);
-    // Zyres: this looks pretty wrong - fix it if needed otherwise everything sill start engagement @aaron02
-    // else // maybe add more here this part down is for petAI
-    //    engagementStart(pUnit);
+    else if (getUnit()->isPet()) // maybe add more here this part down is for petAI
+       engagementStart(pUnit);
 }
 
 void AIInterface::engagementStart(Unit* target)

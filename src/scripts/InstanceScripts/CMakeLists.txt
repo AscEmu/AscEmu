@@ -1,4 +1,4 @@
-# Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 
 if (NOT BUILD_INSTANCESCRIPTS)
     message("\tInstanceScripts was skipped because BUILD_INSTANCESCRIPTS is unchecked.")
@@ -6,7 +6,7 @@ if (NOT BUILD_INSTANCESCRIPTS)
 endif ()
 
 # set up our project name.
-project(InstanceScripts CXX)
+set(LIBRARY_NAME InstanceScripts)
 
 file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
 
@@ -186,7 +186,12 @@ set(INSTANCESCRIPTS_SRCS
     ${SRC_CATA_SCRIPTS_FILES}
 )
 
-include_directories(
+# source group.
+ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
+
+add_library(${LIBRARY_NAME} SHARED ${INSTANCESCRIPTS_SRCS})
+
+target_include_directories(${LIBRARY_NAME} PUBLIC 
     ${OPENSSL_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
     ${CMAKE_SOURCE_DIR}/src/collision
@@ -201,101 +206,18 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/dep/utf8cpp
 )
 
-# source group.
-source_group(Classic FILES ${SRC_CLASSIC_SCRIPTS_FILES})
-source_group(Classic/BlackfathomDeeps FILES ${SRC_CLASSIC_BLACKFATHOM_SCRIPTS_FILES})
-source_group(Classic/BlackrockMountain/BlackrockDepths FILES ${SRC_CLASSIC_BLACKROCK_DEPTHS_SCRIPTS_FILES})
-source_group(Classic/BlackrockMountain/BlackrockSpire FILES ${SRC_CLASSIC_BLACKROCK_SPIRE_SCRIPTS_FILES})
-source_group(Classic/BlackrockMountain/BlackwingLair FILES ${SRC_CLASSIC_BLACKWING_LAIR_SCRIPTS_FILES})
-source_group(Classic/BlackrockMountain/MoltenCore FILES ${SRC_CLASSIC_MOLTENCORE_SCRIPTS_FILES})
-source_group(Classic/Deadmines FILES ${SRC_CLASSIC_DEADMINES_SCRIPTS_FILES})
-source_group(Classic/DireMaul FILES ${SRC_CLASSIC_DIREMAUL_SCRIPTS_FILES})
-source_group(Classic/Gnomeregan FILES ${SRC_CLASSIC_GNOME_SCRIPTS_FILES})
-source_group(Classic/Maraudon FILES ${SRC_CLASSIC_MARAUDON_SCRIPTS_FILES})
-source_group(Classic/OnyxiasLair FILES ${SRC_CLASSIC_ONYXIA_SCRIPTS_FILES})
-source_group(Classic/RagefireChasm FILES ${SRC_CLASSIC_RAGEFIRECHASM_SCRIPTS_FILES})
-source_group(Classic/RazorfenDowns FILES ${SRC_CLASSIC_RAZORFEN_SCRIPTS_FILES})
-source_group(Classic/RazorfenKraul FILES ${SRC_CLASSIC_RAZORFENKRAUL_SCRIPTS_FILES})
-source_group(Classic/ScarletMonestary FILES ${SRC_CLASSIC_SCARLETMONES_SCRIPTS_FILES})
-source_group(Classic/Scholomance FILES ${SRC_CLASSIC_SCHOLO_SCRIPTS_FILES})
-source_group(Classic/ShadowfangKeep FILES ${SRC_CLASSIC_SHADOWFANG_SCRIPTS_FILES})
-source_group(Classic/Stratholme FILES ${SRC_CLASSIC_STRATHOLME_SCRIPTS_FILES})
-source_group(Classic/SunkenTemple FILES ${SRC_CLASSIC_SUNKENTEMPLE_SCRIPTS_FILES})
-source_group(Classic/TheStockade FILES ${SRC_CLASSIC_STOCKADE_SCRIPTS_FILES})
-source_group(Classic/Uldaman FILES ${SRC_CLASSIC_ULDAMAN_SCRIPTS_FILES})
-source_group(Classic/WailingCaverns FILES ${SRC_CLASSIC_WAILING_SCRIPTS_FILES})
-source_group(Classic/ZulFarak FILES ${SRC_CLASSIC_ZUL_FARAK_SCRIPTS_FILES})
-source_group(Classic/ZulGurub FILES ${SRC_CLASSIC_ZUL_GURUB_SCRIPTS_FILES})
-
-source_group(Tbc FILES ${SRC_TBC_SCRIPTS_FILES})
-source_group(Tbc/Auchindoun/AuchenauCrypts FILES ${SRC_TBC_AUCHENAICRYPTS_SCRIPTS_FILES})
-source_group(Tbc/Auchindoun/ManaTombs FILES ${SRC_TBC_MANATOMBS_SCRIPTS_FILES})
-source_group(Tbc/Auchindoun/SethekkHalls FILES ${SRC_TBC_SETHEKKHALLS_SCRIPTS_FILES})
-source_group(Tbc/Auchindoun/ShadowLabyrinth FILES ${SRC_TBC_SHADOWLABYRINTH_SCRIPTS_FILES})
-source_group(Tbc/BlackTemple FILES ${SRC_TBC_BLACKTEMPLE_SCRIPTS_FILES})
-source_group(Tbc/CavensOfTime/BattleOfMountHyjal FILES ${SRC_TBC_COTBOFHYJAL_SCRIPTS_FILES})
-source_group(Tbc/CavensOfTime/BlackMorass FILES ${SRC_TBC_COTBLACKMORASS_SCRIPTS_FILES})
-source_group(Tbc/CavensOfTime/OldHillsbradFoothills FILES ${SRC_TBC_COTOLDHILLS_SCRIPTS_FILES})
-source_group(Tbc/CoilfangReservoir/SerpentShrine FILES ${SRC_TBC_COILFANGSERPENTSHRINE_SCRIPTS_FILES})
-source_group(Tbc/CoilfangReservoir/SlavePens FILES ${SRC_TBC_COILFANGSLAVEPENS_SCRIPTS_FILES})
-source_group(Tbc/CoilfangReservoir/SteamVault FILES ${SRC_TBC_COILFANGSTEAMVAULT_SCRIPTS_FILES})
-source_group(Tbc/CoilfangReservoir/Underbog FILES ${SRC_TBC_COILFANGUNDERBOG_SCRIPTS_FILES})
-source_group(Tbc/GruulsLair FILES ${SRC_TBC_GRUULSLAIR_SCRIPTS_FILES})
-source_group(Tbc/HellfireCitadel/BloodFurnace FILES ${SRC_TBC_BLOODFURNACE_SCRIPTS_FILES})
-source_group(Tbc/HellfireCitadel/HellfireRamparts FILES ${SRC_TBC_HELLFIRERAMPARTS_SCRIPTS_FILES})
-source_group(Tbc/HellfireCitadel/MagtheridonsLair FILES ${SRC_TBC_MAGTHERIDONSLAIR_SCRIPTS_FILES})
-source_group(Tbc/HellfireCitadel/ShatteredHalls FILES ${SRC_TBC_SHATTREDHALLS_SCRIPTS_FILES})
-source_group(Tbc/Karazhan FILES ${SRC_TBC_KARAZHAN_SCRIPTS_FILES})
-source_group(Tbc/Sunwell/MagistersTerrace FILES ${SRC_TBC_MAGISTERSTERRACE_SCRIPTS_FILES})
-source_group(Tbc/Sunwell/SunwellPlateau FILES ${SRC_TBC_SUNWELLPLATEAU_SCRIPTS_FILES})
-source_group(Tbc/TempestKeep/Arcatraz FILES ${SRC_TBC_ARCATRAZ_SCRIPTS_FILES})
-source_group(Tbc/TempestKeep/Botanica FILES ${SRC_TBC_BOTANICA_SCRIPTS_FILES})
-source_group(Tbc/TempestKeep/Mechanar FILES ${SRC_TBC_MECHANAR_SCRIPTS_FILES})
-source_group(Tbc/TempestKeep/TheEye FILES ${SRC_TBC_THEEYE_SCRIPTS_FILES})
-source_group(Tbc/ZulAman FILES ${SRC_TBC_ZULAMAN_SCRIPTS_FILES})
-
-source_group(Wotlk FILES ${SRC_WOTLK_SCRIPTS_FILES})
-source_group(Wotlk/AzjolNerub/Ahnkahet FILES ${SRC_WOTLK_AHNKAHETOLDK_SCRIPTS_FILES})
-source_group(Wotlk/AzjolNerub/AzjolNerub FILES ${SRC_WOTLK_AZJOLNERUB_SCRIPTS_FILES})
-source_group(Wotlk/CavernsOfTime FILES ${SRC_WOTLK_COTCULLINGOFSTRAT_SCRIPTS_FILES})
-source_group(Wotlk/ChamberOfAspects/ObsidianSanctum FILES ${SRC_WOTLK_OBSIDUANSANCTUM_SCRIPTS_FILES})
-source_group(Wotlk/ChamberOfAspects/RubySanctum FILES ${SRC_WOTLK_RUBYSANCTUM_SCRIPTS_FILES})
-source_group(Wotlk/CrusadersColiseum/TrialOfTheChampion FILES ${SRC_WOTLK_TRIALOFCHAMPION_SCRIPTS_FILES})
-source_group(Wotlk/CrusadersColiseum/TrialOfTheCrusader FILES ${SRC_WOTLK_TRIALOFCRUSADER_SCRIPTS_FILES})
-source_group(Wotlk/DraktharonKeep FILES ${SRC_WOTLK_DRAKTHARON_SCRIPTS_FILES})
-source_group(Wotlk/FrozenHalls/ForgeOfSouls FILES ${SRC_WOTLK_FORGEOFSOULS_SCRIPTS_FILES})
-source_group(Wotlk/FrozenHalls/HallsOfReflection FILES ${SRC_WOTLK_HALLSOFREFLECTION_SCRIPTS_FILES})
-source_group(Wotlk/FrozenHalls/PitOfSaron FILES ${SRC_WOTLK_PITOFSARON_SCRIPTS_FILES})
-source_group(Wotlk/Gundrak FILES ${SRC_WOTLK_GUNDRAK_SCRIPTS_FILES})
-source_group(Wotlk/IcecrownCitadel FILES ${SRC_WOTLK_ICECROWNCITADEL_SCRIPTS_FILES})
-source_group(Wotlk/Naxxramas FILES ${SRC_WOTLK_NAXXRAMAS_SCRIPTS_FILES})
-source_group(Wotlk/Nexus/EyeOfEternity FILES ${SRC_WOTLK_EYEOFETERNITY_SCRIPTS_FILES})
-source_group(Wotlk/Nexus/Nexus FILES ${SRC_WOTLK_NEXUS_SCRIPTS_FILES})
-source_group(Wotlk/Nexus/Oculus FILES ${SRC_WOTLK_OCULUS_SCRIPTS_FILES})
-source_group(Wotlk/Ulduar/HallsOfLightning FILES ${SRC_WOTLK_HALLSOFLIGHTNING_SCRIPTS_FILES})
-source_group(Wotlk/Ulduar/HallsOfStone FILES ${SRC_WOTLK_HALLSOFSTONE_SCRIPTS_FILES})
-source_group(Wotlk/Ulduar/Ulduar FILES ${SRC_WOTLK_ULDUAR_SCRIPTS_FILES})
-source_group(Wotlk/UtgardeKeep/UtgardeKeep FILES ${SRC_WOTLK_UTGARDEKEEP_SCRIPTS_FILES})
-source_group(Wotlk/UtgardeKeep/UtgradePinnacle FILES ${SRC_WOTLK_UTGARDEPINACLE_SCRIPTS_FILES})
-source_group(Wotlk/VaultOfArchavon FILES ${SRC_WOTLK_VAULTOFARCHAVON_SCRIPTS_FILES})
-source_group(Wotlk/VioletHold FILES ${SRC_WOTLK_VIOLETHOLD_SCRIPTS_FILES})
-
-source_group(Cata FILES ${SRC_CATA_SCRIPTS_FILES})
-
-add_library(${PROJECT_NAME} SHARED ${INSTANCESCRIPTS_SRCS})
-
 # include library dependencies.
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${LIBRARY_NAME}
   PUBLIC
     world
 )
 
 # generate precompiled header.
-if (USE_PCH)
-    message(STATUS "Generate PCH for ${PROJECT_NAME}")
-    target_precompile_headers(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchInstanceScripts.hpp)
+if (AE_USE_PCH)
+    message(STATUS "Generate PCH for ${LIBRARY_NAME}")
+    target_precompile_headers(${LIBRARY_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchInstanceScripts.hpp)
 endif ()
 
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
+install(TARGETS ${LIBRARY_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
 
 unset(INSTANCESCRIPTS_SRCS)

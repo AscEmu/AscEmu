@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -22,7 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <fstream>
 
-#include <git_version.h>
+#include <git_version.hpp>
 
 #include "AchievementScript.hpp"
 #include "DynLib.hpp"
@@ -479,7 +479,7 @@ void ScriptMgr::LoadScripts()
         std::string dllVersion = versionCall();
         uint32_t scriptType = typeCall();
 
-        if (dllVersion != BUILD_HASH_STR)
+        if (dllVersion != AE_BUILD_HASH)
         {
             loadMessageStream << "ERROR: Version mismatch.";
             sLogger.failure(loadMessageStream.str());
@@ -487,7 +487,7 @@ void ScriptMgr::LoadScripts()
             continue;
         }
 
-        loadMessageStream << std::string(BUILD_HASH_STR) << " : ";
+        loadMessageStream << std::string(AE_BUILD_HASH) << " : ";
 
         if ((scriptType & SCRIPT_TYPE_SCRIPT_ENGINE) != 0)
         {
@@ -807,7 +807,6 @@ CreatureAIScript* ScriptMgr::CreateAIScriptClassForEntry(Creature* pCreature)
 {
     uint32_t entry = pCreature->getEntry();
 
-    std::lock_guard lock(m_creaturesMutex);
     CreatureCreateMap::iterator itr = _creatures.find(entry);
     if (itr == _creatures.end())
         return nullptr;

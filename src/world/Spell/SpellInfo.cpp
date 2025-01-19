@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -412,7 +412,9 @@ int32_t SpellInfo::getBasePowerCost(Unit* caster) const
                 case POWER_TYPE_RAGE:
                 case POWER_TYPE_FOCUS:
                 case POWER_TYPE_ENERGY:
+#if VERSION_STRING < Cata
                 case POWER_TYPE_HAPPINESS:
+#endif
                     powerCost += static_cast<int32_t>(caster->getMaxPower(getPowerType()) * getManaCostPercentage() / 100);
                     break;
 #if VERSION_STRING >= WotLK
@@ -643,7 +645,9 @@ uint32_t SpellInfo::getRequiredTargetMaskForEffectTarget(uint32_t implicitTarget
     switch (implicitTarget)
     {
         case EFF_TARGET_NONE:
-            targetMask = SPELL_TARGET_REQUIRE_ITEM | SPELL_TARGET_REQUIRE_GAMEOBJECT;
+            // TODO: this needs more investigation but lots of spells with learn effect, add glyph, enchants,
+            // quest spells etc have this target type, so adding mask for all object types -Appled
+            targetMask = SPELL_TARGET_REQUIRE_ITEM | SPELL_TARGET_REQUIRE_GAMEOBJECT | SPELL_TARGET_REQUIRE_FRIENDLY;
             break;
         case EFF_TARGET_SELF:
             targetMask = SPELL_TARGET_OBJECT_SELF;

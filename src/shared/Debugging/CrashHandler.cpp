@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
  *
  */
 
-#include "git_version.h"
+#include "git_version.hpp"
 
 #include "Debugging/CrashHandler.h"
 #include "CommonFilesystem.hpp"
@@ -311,7 +311,7 @@ int __cdecl HandleCrash(PEXCEPTION_POINTERS pExceptPtrs)
     (void*)mname++;     // Remove the last
     
     sprintf(filename, "CrashDumps\\dump-%s-%s-%u-%u-%u-%u-%u-%u-%u.dmp",
-        mname, BUILD_HASH_STR, pTime->tm_year + 1900, pTime->tm_mon + 1, pTime->tm_mday,
+        mname, AE_BUILD_HASH, pTime->tm_year + 1900, pTime->tm_mon + 1, pTime->tm_mday,
         pTime->tm_hour, pTime->tm_min, pTime->tm_sec, GetCurrentThreadId());
 
 

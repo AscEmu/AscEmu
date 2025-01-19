@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -488,20 +488,20 @@ void WorldSession::handleLfgSetCommentOpcode(WorldPacket& recvPacket)
     sLfgMgr.SetComment(_player->getGuid(), srlPacket.comment);
 }
 
-#if VERSION_STRING >= Cata
 void WorldSession::handleLfgLockInfoOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING >= Cata
     const bool requestFromPlayer = recvPacket.readBit();
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LFG_LOCK_INFO_REQUEST from {}", requestFromPlayer ? "player" : "group");
 
     //\todo handle player lock info and group lock info here
-}
 #endif
+}
 
-#if VERSION_STRING > TBC
 void WorldSession::handleLfgJoinOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     sLogger.debug("CMSG_LFG_JOIN");
 
     if (_player->getGroup() && _player->getGroup()->GetLeader()->guid != _player->getGuid() 
@@ -541,10 +541,12 @@ void WorldSession::handleLfgJoinOpcode(WorldPacket& recvPacket)
     recvPacket >> comment;
     sLogger.debug("CMSG_LFG_JOIN: {}, roles: {}, Dungeons: {}, Comment: {}", _player->getName(), roles, uint8_t(newDungeons.size()), comment);
     sLfgMgr.Join(_player, uint8_t(roles), newDungeons, comment);
+#endif
 }
 
 void WorldSession::handleLfgLeaveOpcode(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING > TBC
     const auto group = _player->getGroup();
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LFG_LEAVE {} in group: {}", _player->getGuid(), group ? 1 : 0);
@@ -552,30 +554,36 @@ void WorldSession::handleLfgLeaveOpcode(WorldPacket& /*recvPacket*/)
     // Check cheating - only leader can leave the queue
     if (!group || group->GetLeader()->guid == _player->getGuid())
         sLfgMgr.Leave(_player, group);
+#endif
 }
 
 void WorldSession::handleLfgSearchOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     CmsgSearchLfgJoin srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_SEARCH_LFG_JOIN for guid {} dungeon entry: {}",
         _player->getGuid(), srlPacket.entry);
+#endif
 }
 
 void WorldSession::handleLfgSearchLeaveOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     CmsgSearchLfgLeave srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_SEARCH_LFG_LEAVE for guid {} dungeonId: {}",
         _player->getGuid(), srlPacket.entry);
+#endif
 }
 
 void WorldSession::handleLfgProposalResultOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     CmsgLfgProposalResult srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -584,10 +592,12 @@ void WorldSession::handleLfgProposalResultOpcode(WorldPacket& recvPacket)
         _player->getGuid(), srlPacket.lfgGroupId, srlPacket.accept ? 1 : 0);
 
     sLfgMgr.UpdateProposal(srlPacket.lfgGroupId, _player->getGuid(), srlPacket.accept);
+#endif
 }
 
 void WorldSession::handleLfgSetRolesOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     CmsgLfgSetRoles srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -599,10 +609,12 @@ void WorldSession::handleLfgSetRolesOpcode(WorldPacket& recvPacket)
 
         sLfgMgr.UpdateRoleCheck(grp->GetGUID(), _player->getGuid(), srlPacket.roles);
     }
+#endif
 }
 
 void WorldSession::handleLfgSetBootVoteOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     CmsgLfgSetBootVote srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -611,10 +623,12 @@ void WorldSession::handleLfgSetBootVoteOpcode(WorldPacket& recvPacket)
         _player->getGuid(), srlPacket.voteFor ? 1 : 0);
 
     sLfgMgr.UpdateBoot(_player, srlPacket.voteFor);
+#endif
 }
 
 void WorldSession::handleLfgPlayerLockInfoRequestOpcode(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING > TBC
     uint64_t guid = _player->getGuid();
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LFD_PLAYER_LOCK_INFO_REQUEST {}", guid);
@@ -692,20 +706,24 @@ void WorldSession::handleLfgPlayerLockInfoRequestOpcode(WorldPacket& /*recvPacke
     }
     BuildPlayerLockDungeonBlock(data, lock);
     SendPacket(&data);
+#endif
 }
 
 void WorldSession::handleLfgTeleportOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING > TBC
     CmsgLfgTeleport srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LFG_TELEPORT guid {} out: {}", _player->getGuid(), srlPacket.teleportOut ? 1 : 0);
     sLfgMgr.TeleportPlayer(_player, srlPacket.teleportOut, true);
+#endif
 }
 
 void WorldSession::handleLfgPartyLockInfoRequestOpcode(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING > TBC
     uint64_t guid = _player->getGuid();
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LFD_PARTY_LOCK_INFO_REQUEST guid {}", guid);
@@ -738,6 +756,5 @@ void WorldSession::handleLfgPartyLockInfoRequestOpcode(WorldPacket& /*recvPacket
     WorldPacket data(SMSG_LFG_PARTY_INFO, 1 + size);
     BuildPartyLockDungeonBlock(data, lockMap);
     SendPacket(&data);
-}
 #endif
-
+}

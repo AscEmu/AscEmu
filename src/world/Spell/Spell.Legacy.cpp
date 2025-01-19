@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+ * Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -1237,11 +1237,7 @@ void Spell::SendResurrectRequest(Player* target)
 void Spell::SendTameFailure(uint8 result)
 {
     if (p_caster != nullptr)
-    {
-        WorldPacket data(SMSG_PET_TAME_FAILURE, 1);
-        data << uint8(result);
-        p_caster->getSession()->SendPacket(&data);
-    }
+        p_caster->sendPetTameFailure(result);
 }
 
 void Spell::HandleAddAura(uint64 guid)

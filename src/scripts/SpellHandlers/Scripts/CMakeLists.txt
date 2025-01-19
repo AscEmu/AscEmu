@@ -1,4 +1,4 @@
-# Copyright (c) 2014-2024 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 
 set(PATH_PREFIX Scripts)
 
@@ -20,6 +20,7 @@ set(SRC_SPELL_SCRIPTS_FILES
     ${PATH_PREFIX}/Warrior.cpp
 )
 
-source_group(Scripts FILES ${SRC_SPELL_SCRIPTS_FILES})
+# source group.
+ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
 
 unset(PATH_PREFIX)
