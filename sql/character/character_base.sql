@@ -1,17 +1,20 @@
 /*
 ********************************************************************
 AscEmu char structure
-Last update: 20210524-00
+Last update: 20250119-00
 *********************************************************************
 */
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
 /*!50503 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+-- table table .account_data
 CREATE TABLE IF NOT EXISTS `account_data` (
   `acct` int NOT NULL,
   `uiconfig0` blob,
@@ -26,10 +29,19 @@ CREATE TABLE IF NOT EXISTS `account_data` (
   PRIMARY KEY (`acct`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `account_data`;
-/*!40000 ALTER TABLE `account_data` DISABLE KEYS */;
-/*!40000 ALTER TABLE `account_data` ENABLE KEYS */;
+-- data table .account_data: ~0 rows (ungefähr)
 
+-- table table .account_instance_times
+CREATE TABLE IF NOT EXISTS `account_instance_times` (
+  `accountId` int unsigned NOT NULL,
+  `instanceId` int unsigned NOT NULL DEFAULT '0',
+  `releaseTime` bigint unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`accountId`,`instanceId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- data table .account_instance_times: ~0 rows (ungefähr)
+
+-- table table .account_permissions
 CREATE TABLE IF NOT EXISTS `account_permissions` (
   `id` int unsigned NOT NULL,
   `permissions` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -37,10 +49,9 @@ CREATE TABLE IF NOT EXISTS `account_permissions` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `account_permissions`;
-/*!40000 ALTER TABLE `account_permissions` DISABLE KEYS */;
-/*!40000 ALTER TABLE `account_permissions` ENABLE KEYS */;
+-- data table .account_permissions: ~0 rows (ungefähr)
 
+-- table table .arenateams
 CREATE TABLE IF NOT EXISTS `arenateams` (
   `id` int NOT NULL,
   `type` int NOT NULL,
@@ -67,10 +78,9 @@ CREATE TABLE IF NOT EXISTS `arenateams` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `arenateams`;
-/*!40000 ALTER TABLE `arenateams` DISABLE KEYS */;
-/*!40000 ALTER TABLE `arenateams` ENABLE KEYS */;
+-- data table .arenateams: ~0 rows (ungefähr)
 
+-- table table .auctions
 CREATE TABLE IF NOT EXISTS `auctions` (
   `auctionId` int NOT NULL AUTO_INCREMENT,
   `auctionhouse` int DEFAULT NULL,
@@ -86,10 +96,9 @@ CREATE TABLE IF NOT EXISTS `auctions` (
   KEY `b` (`auctionhouse`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `auctions`;
-/*!40000 ALTER TABLE `auctions` DISABLE KEYS */;
-/*!40000 ALTER TABLE `auctions` ENABLE KEYS */;
+-- data table .auctions: ~0 rows (ungefähr)
 
+-- table table .banned_char_log
 CREATE TABLE IF NOT EXISTS `banned_char_log` (
   `banned_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `banned_player` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -98,18 +107,16 @@ CREATE TABLE IF NOT EXISTS `banned_char_log` (
   `reason` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `banned_char_log`;
-/*!40000 ALTER TABLE `banned_char_log` DISABLE KEYS */;
-/*!40000 ALTER TABLE `banned_char_log` ENABLE KEYS */;
+-- data table .banned_char_log: ~0 rows (ungefähr)
 
+-- table table .banned_names
 CREATE TABLE IF NOT EXISTS `banned_names` (
   `name` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `banned_names`;
-/*!40000 ALTER TABLE `banned_names` DISABLE KEYS */;
-/*!40000 ALTER TABLE `banned_names` ENABLE KEYS */;
+-- data table .banned_names: ~0 rows (ungefähr)
 
+-- table table .calendar_events
 CREATE TABLE IF NOT EXISTS `calendar_events` (
   `entry` int unsigned NOT NULL DEFAULT '0',
   `creator` int unsigned NOT NULL DEFAULT '0',
@@ -122,10 +129,9 @@ CREATE TABLE IF NOT EXISTS `calendar_events` (
   PRIMARY KEY (`entry`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `calendar_events`;
-/*!40000 ALTER TABLE `calendar_events` DISABLE KEYS */;
-/*!40000 ALTER TABLE `calendar_events` ENABLE KEYS */;
+-- data table .calendar_events: ~0 rows (ungefähr)
 
+-- table table .calendar_invites
 CREATE TABLE IF NOT EXISTS `calendar_invites` (
   `id` bigint unsigned NOT NULL DEFAULT '0',
   `event` bigint unsigned NOT NULL DEFAULT '0',
@@ -138,10 +144,9 @@ CREATE TABLE IF NOT EXISTS `calendar_invites` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `calendar_invites`;
-/*!40000 ALTER TABLE `calendar_invites` DISABLE KEYS */;
-/*!40000 ALTER TABLE `calendar_invites` ENABLE KEYS */;
+-- data table .calendar_invites: ~0 rows (ungefähr)
 
+-- table table .characters
 CREATE TABLE IF NOT EXISTS `characters` (
   `guid` int unsigned NOT NULL DEFAULT '0',
   `acct` int unsigned NOT NULL DEFAULT '0',
@@ -183,6 +188,7 @@ CREATE TABLE IF NOT EXISTS `characters` (
   `bindpositionX` float NOT NULL DEFAULT '0',
   `bindpositionY` float NOT NULL DEFAULT '0',
   `bindpositionZ` float NOT NULL DEFAULT '0',
+  `bindpositionO` float NOT NULL DEFAULT '0',
   `bindmapId` int unsigned NOT NULL DEFAULT '0',
   `bindzoneId` int unsigned NOT NULL DEFAULT '0',
   `isResting` int NOT NULL DEFAULT '0',
@@ -202,8 +208,7 @@ CREATE TABLE IF NOT EXISTS `characters` (
   `entrypointz` float NOT NULL,
   `entrypointo` float NOT NULL,
   `entrypointinstance` int NOT NULL,
-  `taxi_path` int NOT NULL,
-  `taxi_lastnode` int NOT NULL,
+  `taxi_path` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `taxi_mountid` int NOT NULL,
   `transporter` int NOT NULL,
   `transporter_xdiff` float NOT NULL,
@@ -245,10 +250,9 @@ CREATE TABLE IF NOT EXISTS `characters` (
   KEY `c` (`online`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `characters`;
-/*!40000 ALTER TABLE `characters` DISABLE KEYS */;
-/*!40000 ALTER TABLE `characters` ENABLE KEYS */;
+-- data table .characters: ~0 rows (ungefähr)
 
+-- table table .character_achievement
 CREATE TABLE IF NOT EXISTS `character_achievement` (
   `guid` int unsigned NOT NULL DEFAULT '0',
   `achievement` int unsigned NOT NULL DEFAULT '0',
@@ -256,10 +260,9 @@ CREATE TABLE IF NOT EXISTS `character_achievement` (
   PRIMARY KEY (`guid`,`achievement`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `character_achievement`;
-/*!40000 ALTER TABLE `character_achievement` DISABLE KEYS */;
-/*!40000 ALTER TABLE `character_achievement` ENABLE KEYS */;
+-- data table .character_achievement: ~0 rows (ungefähr)
 
+-- table table .character_achievement_progress
 CREATE TABLE IF NOT EXISTS `character_achievement_progress` (
   `guid` int unsigned NOT NULL DEFAULT '0',
   `criteria` int unsigned NOT NULL DEFAULT '0',
@@ -268,21 +271,60 @@ CREATE TABLE IF NOT EXISTS `character_achievement_progress` (
   PRIMARY KEY (`guid`,`criteria`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `character_achievement_progress`;
-/*!40000 ALTER TABLE `character_achievement_progress` DISABLE KEYS */;
-/*!40000 ALTER TABLE `character_achievement_progress` ENABLE KEYS */;
+-- data table .character_achievement_progress: ~0 rows (ungefähr)
 
+-- table table .character_db_version
 CREATE TABLE IF NOT EXISTS `character_db_version` (
+  `id` smallint NOT NULL AUTO_INCREMENT,
   `LastUpdate` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
-  PRIMARY KEY (`LastUpdate`)
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='CharacterDB version';
+
+-- data table .character_db_version: ~13 rows (ungefähr)
+INSERT INTO `character_db_version` (`id`, `LastUpdate`) VALUES
+	(1, '20180427-00_character_db_version'),
+	(2, '20180709-00_guilds'),
+	(3, '20180714-00_guild_tables'),
+	(4, '20180916-00_guild_tables'),
+	(5, '20200221-00_utf8mb4_unicode_ci'),
+	(6, '20201216-00_rename_event_saves'),
+	(7, '20211123-00_character_void_storage'),
+	(8, '20220116-00_characters'),
+	(9, '20220414-00_instances'),
+	(10, '20220415-00_account_instance_times'),
+	(11, '20230710-00_characters_taxi'),
+	(12, '20241206-00_playerpets'),
+	(13, '20250119-00_character_db_version');
+
+-- table table .character_instance
+CREATE TABLE IF NOT EXISTS `character_instance` (
+  `guid` int unsigned NOT NULL DEFAULT '0',
+  `instance` int unsigned NOT NULL DEFAULT '0',
+  `permanent` tinyint unsigned NOT NULL DEFAULT '0',
+  `extendState` tinyint unsigned NOT NULL DEFAULT '1',
+  PRIMARY KEY (`guid`,`instance`),
+  KEY `instance` (`instance`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `character_db_version`;
-/*!40000 ALTER TABLE `character_db_version` DISABLE KEYS */;
-INSERT INTO `character_db_version` (`LastUpdate`) VALUES
-	('20201216-00_rename_event_properties');
-/*!40000 ALTER TABLE `character_db_version` ENABLE KEYS */;
+-- data table .character_instance: ~0 rows (ungefähr)
 
+-- table table .character_void_storage
+CREATE TABLE IF NOT EXISTS `character_void_storage` (
+  `itemId` bigint unsigned NOT NULL,
+  `playerGuid` int unsigned NOT NULL,
+  `itemEntry` mediumint unsigned NOT NULL,
+  `slot` tinyint unsigned NOT NULL,
+  `creatorGuid` int unsigned NOT NULL DEFAULT '0',
+  `randomProperty` int unsigned NOT NULL DEFAULT '0',
+  `suffixFactor` int unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`itemId`),
+  UNIQUE KEY `idx_player_slot` (`playerGuid`,`slot`),
+  KEY `idx_player` (`playerGuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+-- data table .character_void_storage: ~0 rows (ungefähr)
+
+-- table table .charters
 CREATE TABLE IF NOT EXISTS `charters` (
   `charterId` int NOT NULL,
   `charterType` int NOT NULL DEFAULT '0',
@@ -302,10 +344,9 @@ CREATE TABLE IF NOT EXISTS `charters` (
   UNIQUE KEY `leaderGuid` (`charterType`,`leaderGuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `charters`;
-/*!40000 ALTER TABLE `charters` DISABLE KEYS */;
-/*!40000 ALTER TABLE `charters` ENABLE KEYS */;
+-- data table .charters: ~0 rows (ungefähr)
 
+-- table table .clientaddons
 CREATE TABLE IF NOT EXISTS `clientaddons` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -318,20 +359,18 @@ CREATE TABLE IF NOT EXISTS `clientaddons` (
   KEY `index` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `clientaddons`;
-/*!40000 ALTER TABLE `clientaddons` DISABLE KEYS */;
-/*!40000 ALTER TABLE `clientaddons` ENABLE KEYS */;
+-- data table .clientaddons: ~0 rows (ungefähr)
 
+-- table table .command_overrides
 CREATE TABLE IF NOT EXISTS `command_overrides` (
   `command_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `access_level` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`command_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `command_overrides`;
-/*!40000 ALTER TABLE `command_overrides` DISABLE KEYS */;
-/*!40000 ALTER TABLE `command_overrides` ENABLE KEYS */;
+-- data table .command_overrides: ~0 rows (ungefähr)
 
+-- table table .corpses
 CREATE TABLE IF NOT EXISTS `corpses` (
   `guid` bigint unsigned NOT NULL DEFAULT '0',
   `positionX` float NOT NULL DEFAULT '0',
@@ -346,10 +385,9 @@ CREATE TABLE IF NOT EXISTS `corpses` (
   KEY `b` (`instanceId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `corpses`;
-/*!40000 ALTER TABLE `corpses` DISABLE KEYS */;
-/*!40000 ALTER TABLE `corpses` ENABLE KEYS */;
+-- data table .corpses: ~0 rows (ungefähr)
 
+-- table table .equipmentsets
 CREATE TABLE IF NOT EXISTS `equipmentsets` (
   `ownerguid` int unsigned NOT NULL DEFAULT '1',
   `setGUID` int unsigned NOT NULL DEFAULT '1',
@@ -378,10 +416,9 @@ CREATE TABLE IF NOT EXISTS `equipmentsets` (
   PRIMARY KEY (`ownerguid`,`setGUID`,`setid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `equipmentsets`;
-/*!40000 ALTER TABLE `equipmentsets` DISABLE KEYS */;
-/*!40000 ALTER TABLE `equipmentsets` ENABLE KEYS */;
+-- data table .equipmentsets: ~0 rows (ungefähr)
 
+-- table table .gameevent_save
 CREATE TABLE IF NOT EXISTS `gameevent_save` (
   `event_entry` int unsigned NOT NULL,
   `state` tinyint unsigned NOT NULL DEFAULT '0',
@@ -389,10 +426,9 @@ CREATE TABLE IF NOT EXISTS `gameevent_save` (
   PRIMARY KEY (`event_entry`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `gameevent_save`;
-/*!40000 ALTER TABLE `gameevent_save` DISABLE KEYS */;
-/*!40000 ALTER TABLE `gameevent_save` ENABLE KEYS */;
+-- data table .gameevent_save: ~0 rows (ungefähr)
 
+-- table table .gm_survey
 CREATE TABLE IF NOT EXISTS `gm_survey` (
   `survey_id` int unsigned NOT NULL,
   `guid` int unsigned NOT NULL DEFAULT '0',
@@ -402,10 +438,9 @@ CREATE TABLE IF NOT EXISTS `gm_survey` (
   PRIMARY KEY (`survey_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='GM Survey';
 
-DELETE FROM `gm_survey`;
-/*!40000 ALTER TABLE `gm_survey` DISABLE KEYS */;
-/*!40000 ALTER TABLE `gm_survey` ENABLE KEYS */;
+-- data table .gm_survey: ~0 rows (ungefähr)
 
+-- table table .gm_survey_answers
 CREATE TABLE IF NOT EXISTS `gm_survey_answers` (
   `survey_id` int unsigned NOT NULL,
   `question_id` int unsigned NOT NULL DEFAULT '0',
@@ -413,10 +448,9 @@ CREATE TABLE IF NOT EXISTS `gm_survey_answers` (
   PRIMARY KEY (`survey_id`,`question_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='GM Survey';
 
-DELETE FROM `gm_survey_answers`;
-/*!40000 ALTER TABLE `gm_survey_answers` DISABLE KEYS */;
-/*!40000 ALTER TABLE `gm_survey_answers` ENABLE KEYS */;
+-- data table .gm_survey_answers: ~0 rows (ungefähr)
 
+-- table table .gm_tickets
 CREATE TABLE IF NOT EXISTS `gm_tickets` (
   `ticketid` int NOT NULL,
   `playerGuid` int NOT NULL,
@@ -435,10 +469,9 @@ CREATE TABLE IF NOT EXISTS `gm_tickets` (
   UNIQUE KEY `guid_2` (`ticketid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `gm_tickets`;
-/*!40000 ALTER TABLE `gm_tickets` DISABLE KEYS */;
-/*!40000 ALTER TABLE `gm_tickets` ENABLE KEYS */;
+-- data table .gm_tickets: ~0 rows (ungefähr)
 
+-- table table .groups
 CREATE TABLE IF NOT EXISTS `groups` (
   `group_id` int NOT NULL,
   `group_type` tinyint NOT NULL,
@@ -495,10 +528,20 @@ CREATE TABLE IF NOT EXISTS `groups` (
   PRIMARY KEY (`group_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `groups`;
-/*!40000 ALTER TABLE `groups` DISABLE KEYS */;
-/*!40000 ALTER TABLE `groups` ENABLE KEYS */;
+-- data table .groups: ~0 rows (ungefähr)
 
+-- table table .group_instance
+CREATE TABLE IF NOT EXISTS `group_instance` (
+  `guid` int unsigned NOT NULL DEFAULT '0',
+  `instance` int unsigned NOT NULL DEFAULT '0',
+  `permanent` tinyint unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`guid`,`instance`),
+  KEY `instance` (`instance`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- data table .group_instance: ~0 rows (ungefähr)
+
+-- table table .guilds
 CREATE TABLE IF NOT EXISTS `guilds` (
   `guildId` bigint NOT NULL AUTO_INCREMENT,
   `guildName` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
@@ -519,10 +562,9 @@ CREATE TABLE IF NOT EXISTS `guilds` (
   UNIQUE KEY `guildId` (`guildId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `guilds`;
-/*!40000 ALTER TABLE `guilds` DISABLE KEYS */;
-/*!40000 ALTER TABLE `guilds` ENABLE KEYS */;
+-- data table .guilds: ~0 rows (ungefähr)
 
+-- table table .guild_bank_items
 CREATE TABLE IF NOT EXISTS `guild_bank_items` (
   `guildId` int NOT NULL,
   `tabId` int NOT NULL,
@@ -534,10 +576,9 @@ CREATE TABLE IF NOT EXISTS `guild_bank_items` (
   KEY `c` (`slotId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `guild_bank_items`;
-/*!40000 ALTER TABLE `guild_bank_items` DISABLE KEYS */;
-/*!40000 ALTER TABLE `guild_bank_items` ENABLE KEYS */;
+-- data table .guild_bank_items: ~0 rows (ungefähr)
 
+-- table table .guild_bank_logs
 CREATE TABLE IF NOT EXISTS `guild_bank_logs` (
   `guildId` int unsigned NOT NULL DEFAULT '0',
   `logGuid` int unsigned NOT NULL DEFAULT '0' COMMENT 'Log id for this guild',
@@ -554,10 +595,9 @@ CREATE TABLE IF NOT EXISTS `guild_bank_logs` (
   KEY `Idx_LogGuid` (`logGuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `guild_bank_logs`;
-/*!40000 ALTER TABLE `guild_bank_logs` DISABLE KEYS */;
-/*!40000 ALTER TABLE `guild_bank_logs` ENABLE KEYS */;
+-- data table .guild_bank_logs: ~0 rows (ungefähr)
 
+-- table table .guild_bank_rights
 CREATE TABLE IF NOT EXISTS `guild_bank_rights` (
   `guildId` int unsigned NOT NULL DEFAULT '0',
   `tabId` tinyint unsigned NOT NULL DEFAULT '0',
@@ -568,10 +608,9 @@ CREATE TABLE IF NOT EXISTS `guild_bank_rights` (
   KEY `guildid_key` (`guildId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `guild_bank_rights`;
-/*!40000 ALTER TABLE `guild_bank_rights` DISABLE KEYS */;
-/*!40000 ALTER TABLE `guild_bank_rights` ENABLE KEYS */;
+-- data table .guild_bank_rights: ~0 rows (ungefähr)
 
+-- table table .guild_bank_tabs
 CREATE TABLE IF NOT EXISTS `guild_bank_tabs` (
   `guildId` int NOT NULL,
   `tabId` int NOT NULL,
@@ -583,10 +622,9 @@ CREATE TABLE IF NOT EXISTS `guild_bank_tabs` (
   KEY `b` (`tabId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `guild_bank_tabs`;
-/*!40000 ALTER TABLE `guild_bank_tabs` DISABLE KEYS */;
-/*!40000 ALTER TABLE `guild_bank_tabs` ENABLE KEYS */;
+-- data table .guild_bank_tabs: ~0 rows (ungefähr)
 
+-- table table .guild_finder_applicant
 CREATE TABLE IF NOT EXISTS `guild_finder_applicant` (
   `guildId` int unsigned DEFAULT NULL,
   `playerGuid` int unsigned DEFAULT NULL,
@@ -598,10 +636,9 @@ CREATE TABLE IF NOT EXISTS `guild_finder_applicant` (
   UNIQUE KEY `guildId` (`guildId`,`playerGuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `guild_finder_applicant`;
-/*!40000 ALTER TABLE `guild_finder_applicant` DISABLE KEYS */;
-/*!40000 ALTER TABLE `guild_finder_applicant` ENABLE KEYS */;
+-- data table .guild_finder_applicant: ~0 rows (ungefähr)
 
+-- table table .guild_finder_guild_settings
 CREATE TABLE IF NOT EXISTS `guild_finder_guild_settings` (
   `guildId` int unsigned NOT NULL,
   `availability` tinyint unsigned NOT NULL DEFAULT '0',
@@ -613,10 +650,9 @@ CREATE TABLE IF NOT EXISTS `guild_finder_guild_settings` (
   PRIMARY KEY (`guildId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `guild_finder_guild_settings`;
-/*!40000 ALTER TABLE `guild_finder_guild_settings` DISABLE KEYS */;
-/*!40000 ALTER TABLE `guild_finder_guild_settings` ENABLE KEYS */;
+-- data table .guild_finder_guild_settings: ~0 rows (ungefähr)
 
+-- table table .guild_logs
 CREATE TABLE IF NOT EXISTS `guild_logs` (
   `guildId` int unsigned NOT NULL,
   `logGuid` int unsigned NOT NULL COMMENT 'Log id for this guild',
@@ -631,10 +667,9 @@ CREATE TABLE IF NOT EXISTS `guild_logs` (
   KEY `Idx_LogGuid` (`logGuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `guild_logs`;
-/*!40000 ALTER TABLE `guild_logs` DISABLE KEYS */;
-/*!40000 ALTER TABLE `guild_logs` ENABLE KEYS */;
+-- data table .guild_logs: ~0 rows (ungefähr)
 
+-- table table .guild_members
 CREATE TABLE IF NOT EXISTS `guild_members` (
   `guildId` int unsigned NOT NULL,
   `playerid` int unsigned NOT NULL,
@@ -646,10 +681,9 @@ CREATE TABLE IF NOT EXISTS `guild_members` (
   KEY `guildid_rank_key` (`guildId`,`guildRank`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `guild_members`;
-/*!40000 ALTER TABLE `guild_members` DISABLE KEYS */;
-/*!40000 ALTER TABLE `guild_members` ENABLE KEYS */;
+-- data table .guild_members: ~0 rows (ungefähr)
 
+-- table table .guild_members_withdraw
 CREATE TABLE IF NOT EXISTS `guild_members_withdraw` (
   `guid` int unsigned NOT NULL,
   `tab0` int unsigned NOT NULL DEFAULT '0',
@@ -664,10 +698,9 @@ CREATE TABLE IF NOT EXISTS `guild_members_withdraw` (
   PRIMARY KEY (`guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `guild_members_withdraw`;
-/*!40000 ALTER TABLE `guild_members_withdraw` DISABLE KEYS */;
-/*!40000 ALTER TABLE `guild_members_withdraw` ENABLE KEYS */;
+-- data table .guild_members_withdraw: ~0 rows (ungefähr)
 
+-- table table .guild_news_log
 CREATE TABLE IF NOT EXISTS `guild_news_log` (
   `guildId` int unsigned NOT NULL DEFAULT '0',
   `logGuid` int unsigned NOT NULL DEFAULT '0' COMMENT 'Log id for this guild',
@@ -682,10 +715,9 @@ CREATE TABLE IF NOT EXISTS `guild_news_log` (
   KEY `Idx_LogGuid` (`logGuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `guild_news_log`;
-/*!40000 ALTER TABLE `guild_news_log` DISABLE KEYS */;
-/*!40000 ALTER TABLE `guild_news_log` ENABLE KEYS */;
+-- data table .guild_news_log: ~0 rows (ungefähr)
 
+-- table table .guild_ranks
 CREATE TABLE IF NOT EXISTS `guild_ranks` (
   `guildId` int unsigned NOT NULL DEFAULT '0',
   `rankId` int NOT NULL DEFAULT '0',
@@ -707,41 +739,108 @@ CREATE TABLE IF NOT EXISTS `guild_ranks` (
   PRIMARY KEY (`guildId`,`rankId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `guild_ranks`;
-/*!40000 ALTER TABLE `guild_ranks` DISABLE KEYS */;
-/*!40000 ALTER TABLE `guild_ranks` ENABLE KEYS */;
+-- data table .guild_ranks: ~0 rows (ungefähr)
 
-CREATE TABLE IF NOT EXISTS `instanceids` (
-  `playerguid` int unsigned NOT NULL DEFAULT '0',
-  `mapid` int unsigned NOT NULL DEFAULT '0',
-  `mode` int unsigned NOT NULL DEFAULT '0',
-  `instanceid` int unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`playerguid`,`mapid`,`mode`),
-  KEY `ix_instanceid` (`playerguid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Player / InstanceID - Reference Table';
-
-DELETE FROM `instanceids`;
-/*!40000 ALTER TABLE `instanceids` DISABLE KEYS */;
-/*!40000 ALTER TABLE `instanceids` ENABLE KEYS */;
-
-CREATE TABLE IF NOT EXISTS `instances` (
-  `id` int NOT NULL,
-  `mapid` int NOT NULL,
-  `creation` int NOT NULL,
-  `expiration` int NOT NULL,
-  `killed_npc_guids` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `difficulty` int NOT NULL,
-  `creator_group` int NOT NULL,
-  `creator_guid` int NOT NULL,
-  `persistent` tinyint NOT NULL DEFAULT '0',
+-- table table .instance
+CREATE TABLE IF NOT EXISTS `instance` (
+  `id` int unsigned NOT NULL DEFAULT '0',
+  `map` smallint unsigned NOT NULL DEFAULT '0',
+  `resettime` bigint unsigned NOT NULL DEFAULT '0',
+  `difficulty` tinyint unsigned NOT NULL DEFAULT '0',
+  `completedEncounters` int unsigned NOT NULL DEFAULT '0',
+  `data` tinytext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `a` (`mapid`)
+  KEY `map` (`map`),
+  KEY `resettime` (`resettime`),
+  KEY `difficulty` (`difficulty`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `instances`;
-/*!40000 ALTER TABLE `instances` DISABLE KEYS */;
-/*!40000 ALTER TABLE `instances` ENABLE KEYS */;
+-- data table .instance: ~0 rows (ungefähr)
 
+-- table table .instance_reset
+CREATE TABLE IF NOT EXISTS `instance_reset` (
+  `mapid` smallint unsigned NOT NULL DEFAULT '0',
+  `difficulty` tinyint unsigned NOT NULL DEFAULT '0',
+  `resettime` bigint unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`mapid`,`difficulty`),
+  KEY `difficulty` (`difficulty`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- data table .instance_reset: ~71 rows (ungefähr)
+INSERT INTO `instance_reset` (`mapid`, `difficulty`, `resettime`) VALUES
+	(249, 0, 1737345600),
+	(249, 1, 1737345600),
+	(269, 1, 1737345600),
+	(309, 0, 1737345600),
+	(409, 0, 1737345600),
+	(469, 0, 1737345600),
+	(509, 0, 1737345600),
+	(531, 0, 1737345600),
+	(532, 0, 1737345600),
+	(533, 0, 1737345600),
+	(533, 1, 1737345600),
+	(534, 0, 1737345600),
+	(540, 1, 1737345600),
+	(542, 1, 1737345600),
+	(543, 1, 1737345600),
+	(544, 0, 1737345600),
+	(545, 1, 1737345600),
+	(546, 1, 1737345600),
+	(547, 1, 1737345600),
+	(548, 0, 1737345600),
+	(550, 0, 1737345600),
+	(552, 1, 1737345600),
+	(553, 1, 1737345600),
+	(554, 1, 1737345600),
+	(555, 1, 1737345600),
+	(556, 1, 1737345600),
+	(557, 1, 1737345600),
+	(558, 1, 1737345600),
+	(560, 1, 1737345600),
+	(564, 0, 1737345600),
+	(565, 0, 1737345600),
+	(568, 0, 1737345600),
+	(574, 1, 1737345600),
+	(575, 1, 1737345600),
+	(576, 1, 1737345600),
+	(578, 1, 1737345600),
+	(580, 0, 1737345600),
+	(585, 1, 1737345600),
+	(595, 1, 1737345600),
+	(598, 1, 1737345600),
+	(599, 1, 1737345600),
+	(600, 1, 1737345600),
+	(601, 1, 1737345600),
+	(602, 1, 1737345600),
+	(603, 0, 1737345600),
+	(603, 1, 1737345600),
+	(604, 1, 1737345600),
+	(608, 1, 1737345600),
+	(615, 0, 1737345600),
+	(615, 1, 1737345600),
+	(616, 0, 1737345600),
+	(616, 1, 1737345600),
+	(619, 1, 1737345600),
+	(624, 0, 1737345600),
+	(624, 1, 1737345600),
+	(631, 0, 1737345600),
+	(631, 1, 1737345600),
+	(631, 2, 1737345600),
+	(631, 3, 1737345600),
+	(632, 1, 1737345600),
+	(649, 0, 1737345600),
+	(649, 1, 1737345600),
+	(649, 2, 1737345600),
+	(649, 3, 1737345600),
+	(650, 1, 1737345600),
+	(658, 1, 1737345600),
+	(668, 1, 1737345600),
+	(724, 0, 1737345600),
+	(724, 1, 1737345600),
+	(724, 2, 1737345600),
+	(724, 3, 1737345600);
+
+-- table table .lag_reports
 CREATE TABLE IF NOT EXISTS `lag_reports` (
   `lag_id` int unsigned NOT NULL AUTO_INCREMENT,
   `player` int unsigned NOT NULL,
@@ -755,10 +854,9 @@ CREATE TABLE IF NOT EXISTS `lag_reports` (
   PRIMARY KEY (`lag_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `lag_reports`;
-/*!40000 ALTER TABLE `lag_reports` DISABLE KEYS */;
-/*!40000 ALTER TABLE `lag_reports` ENABLE KEYS */;
+-- data table .lag_reports: ~0 rows (ungefähr)
 
+-- table table .lfg_data
 CREATE TABLE IF NOT EXISTS `lfg_data` (
   `guid` bigint NOT NULL,
   `dungeon` int NOT NULL,
@@ -766,10 +864,9 @@ CREATE TABLE IF NOT EXISTS `lfg_data` (
   PRIMARY KEY (`guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `lfg_data`;
-/*!40000 ALTER TABLE `lfg_data` DISABLE KEYS */;
-/*!40000 ALTER TABLE `lfg_data` ENABLE KEYS */;
+-- data table .lfg_data: ~0 rows (ungefähr)
 
+-- table table .mailbox
 CREATE TABLE IF NOT EXISTS `mailbox` (
   `message_id` int NOT NULL DEFAULT '0',
   `message_type` int NOT NULL DEFAULT '0',
@@ -789,10 +886,9 @@ CREATE TABLE IF NOT EXISTS `mailbox` (
   KEY `b` (`player_guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `mailbox`;
-/*!40000 ALTER TABLE `mailbox` DISABLE KEYS */;
-/*!40000 ALTER TABLE `mailbox` ENABLE KEYS */;
+-- data table .mailbox: ~0 rows (ungefähr)
 
+-- table table .playerbugreports
 CREATE TABLE IF NOT EXISTS `playerbugreports` (
   `UID` int unsigned NOT NULL,
   `AccountID` int unsigned NOT NULL,
@@ -803,10 +899,9 @@ CREATE TABLE IF NOT EXISTS `playerbugreports` (
   PRIMARY KEY (`UID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `playerbugreports`;
-/*!40000 ALTER TABLE `playerbugreports` DISABLE KEYS */;
-/*!40000 ALTER TABLE `playerbugreports` ENABLE KEYS */;
+-- data table .playerbugreports: ~0 rows (ungefähr)
 
+-- table table .playercooldowns
 CREATE TABLE IF NOT EXISTS `playercooldowns` (
   `player_guid` int NOT NULL,
   `cooldown_type` int NOT NULL COMMENT '0 is spell, 1 is item, 2 is spell category',
@@ -816,20 +911,18 @@ CREATE TABLE IF NOT EXISTS `playercooldowns` (
   `cooldown_itemid` int NOT NULL COMMENT 'item that cast it'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `playercooldowns`;
-/*!40000 ALTER TABLE `playercooldowns` DISABLE KEYS */;
-/*!40000 ALTER TABLE `playercooldowns` ENABLE KEYS */;
+-- data table .playercooldowns: ~0 rows (ungefähr)
 
+-- table table .playerdeletedspells
 CREATE TABLE IF NOT EXISTS `playerdeletedspells` (
   `GUID` int unsigned NOT NULL,
   `SpellID` int unsigned NOT NULL,
   PRIMARY KEY (`GUID`,`SpellID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `playerdeletedspells`;
-/*!40000 ALTER TABLE `playerdeletedspells` DISABLE KEYS */;
-/*!40000 ALTER TABLE `playerdeletedspells` ENABLE KEYS */;
+-- data table .playerdeletedspells: ~0 rows (ungefähr)
 
+-- table table .playeritems
 CREATE TABLE IF NOT EXISTS `playeritems` (
   `ownerguid` int unsigned NOT NULL DEFAULT '0',
   `guid` bigint NOT NULL AUTO_INCREMENT,
@@ -856,38 +949,37 @@ CREATE TABLE IF NOT EXISTS `playeritems` (
   KEY `itemtext` (`itemtext`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `playeritems`;
-/*!40000 ALTER TABLE `playeritems` DISABLE KEYS */;
-/*!40000 ALTER TABLE `playeritems` ENABLE KEYS */;
+-- data table .playeritems: ~0 rows (ungefähr)
 
+-- table table .playerpets
 CREATE TABLE IF NOT EXISTS `playerpets` (
   `ownerguid` bigint NOT NULL DEFAULT '0',
-  `petnumber` int NOT NULL DEFAULT '0',
+  `petnumber` tinyint unsigned NOT NULL DEFAULT '0',
+  `type` tinyint unsigned NOT NULL DEFAULT '1',
   `name` varchar(21) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `entry` int unsigned NOT NULL DEFAULT '0',
+  `model` int unsigned NOT NULL DEFAULT '0',
+  `level` int unsigned NOT NULL DEFAULT '0',
   `xp` int NOT NULL DEFAULT '0',
+  `slot` tinyint unsigned NOT NULL DEFAULT '0',
   `active` tinyint(1) NOT NULL DEFAULT '0',
-  `level` int NOT NULL DEFAULT '0',
-  `actionbar` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
-  `happinessupdate` int NOT NULL DEFAULT '0',
+  `alive` tinyint unsigned NOT NULL DEFAULT '1',
+  `actionbar` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `reset_time` int unsigned NOT NULL DEFAULT '0',
   `reset_cost` int NOT NULL DEFAULT '0',
   `spellid` int unsigned NOT NULL DEFAULT '0',
-  `petstate` int unsigned NOT NULL DEFAULT '0',
-  `alive` tinyint(1) NOT NULL DEFAULT '1',
+  `petstate` tinyint unsigned NOT NULL DEFAULT '0',
   `talentpoints` int unsigned NOT NULL DEFAULT '0',
   `current_power` int unsigned NOT NULL DEFAULT '1',
   `current_hp` int unsigned NOT NULL DEFAULT '1',
   `current_happiness` int unsigned NOT NULL DEFAULT '1000000',
-  `renamable` int unsigned NOT NULL DEFAULT '1',
-  `type` int unsigned NOT NULL DEFAULT '1',
+  `renamable` tinyint unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`ownerguid`,`petnumber`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `playerpets`;
-/*!40000 ALTER TABLE `playerpets` DISABLE KEYS */;
-/*!40000 ALTER TABLE `playerpets` ENABLE KEYS */;
+-- data table .playerpets: ~0 rows (ungefähr)
 
+-- table table .playerpetspells
 CREATE TABLE IF NOT EXISTS `playerpetspells` (
   `ownerguid` bigint NOT NULL DEFAULT '0',
   `petnumber` int NOT NULL DEFAULT '0',
@@ -897,10 +989,9 @@ CREATE TABLE IF NOT EXISTS `playerpetspells` (
   KEY `b` (`petnumber`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `playerpetspells`;
-/*!40000 ALTER TABLE `playerpetspells` DISABLE KEYS */;
-/*!40000 ALTER TABLE `playerpetspells` ENABLE KEYS */;
+-- data table .playerpetspells: ~0 rows (ungefähr)
 
+-- table table .playerreputations
 CREATE TABLE IF NOT EXISTS `playerreputations` (
   `guid` int unsigned NOT NULL,
   `faction` int unsigned NOT NULL,
@@ -910,10 +1001,9 @@ CREATE TABLE IF NOT EXISTS `playerreputations` (
   PRIMARY KEY (`guid`,`faction`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `playerreputations`;
-/*!40000 ALTER TABLE `playerreputations` DISABLE KEYS */;
-/*!40000 ALTER TABLE `playerreputations` ENABLE KEYS */;
+-- data table .playerreputations: ~0 rows (ungefähr)
 
+-- table table .playerskills
 CREATE TABLE IF NOT EXISTS `playerskills` (
   `GUID` int unsigned NOT NULL,
   `SkillID` int unsigned NOT NULL,
@@ -922,20 +1012,18 @@ CREATE TABLE IF NOT EXISTS `playerskills` (
   PRIMARY KEY (`GUID`,`SkillID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `playerskills`;
-/*!40000 ALTER TABLE `playerskills` DISABLE KEYS */;
-/*!40000 ALTER TABLE `playerskills` ENABLE KEYS */;
+-- data table .playerskills: ~0 rows (ungefähr)
 
+-- table table .playerspells
 CREATE TABLE IF NOT EXISTS `playerspells` (
   `GUID` int unsigned NOT NULL,
   `SpellID` int unsigned NOT NULL,
   PRIMARY KEY (`GUID`,`SpellID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `playerspells`;
-/*!40000 ALTER TABLE `playerspells` DISABLE KEYS */;
-/*!40000 ALTER TABLE `playerspells` ENABLE KEYS */;
+-- data table .playerspells: ~0 rows (ungefähr)
 
+-- table table .playersummons
 CREATE TABLE IF NOT EXISTS `playersummons` (
   `ownerguid` int unsigned NOT NULL DEFAULT '0',
   `entry` int unsigned NOT NULL DEFAULT '0',
@@ -943,10 +1031,9 @@ CREATE TABLE IF NOT EXISTS `playersummons` (
   KEY `a` (`ownerguid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `playersummons`;
-/*!40000 ALTER TABLE `playersummons` DISABLE KEYS */;
-/*!40000 ALTER TABLE `playersummons` ENABLE KEYS */;
+-- data table .playersummons: ~0 rows (ungefähr)
 
+-- table table .playersummonspells
 CREATE TABLE IF NOT EXISTS `playersummonspells` (
   `ownerguid` bigint NOT NULL DEFAULT '0',
   `entryid` int NOT NULL DEFAULT '0',
@@ -954,10 +1041,9 @@ CREATE TABLE IF NOT EXISTS `playersummonspells` (
   KEY `a` (`ownerguid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `playersummonspells`;
-/*!40000 ALTER TABLE `playersummonspells` DISABLE KEYS */;
-/*!40000 ALTER TABLE `playersummonspells` ENABLE KEYS */;
+-- data table .playersummonspells: ~0 rows (ungefähr)
 
+-- table table .questlog
 CREATE TABLE IF NOT EXISTS `questlog` (
   `player_guid` bigint unsigned NOT NULL DEFAULT '0',
   `quest_id` bigint unsigned NOT NULL DEFAULT '0',
@@ -975,23 +1061,34 @@ CREATE TABLE IF NOT EXISTS `questlog` (
   PRIMARY KEY (`player_guid`,`quest_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `questlog`;
-/*!40000 ALTER TABLE `questlog` DISABLE KEYS */;
-/*!40000 ALTER TABLE `questlog` ENABLE KEYS */;
+-- data table .questlog: ~0 rows (ungefähr)
 
+-- table table .respawn
+CREATE TABLE IF NOT EXISTS `respawn` (
+  `type` smallint unsigned NOT NULL,
+  `spawnId` int unsigned NOT NULL,
+  `respawnTime` bigint unsigned NOT NULL,
+  `mapId` smallint unsigned NOT NULL,
+  `instanceId` int unsigned NOT NULL,
+  PRIMARY KEY (`type`,`spawnId`,`instanceId`),
+  KEY `idx_instance` (`instanceId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Stored respawn times';
+
+-- data table .respawn: ~0 rows (ungefähr)
+
+-- table table .server_settings
 CREATE TABLE IF NOT EXISTS `server_settings` (
   `setting_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `setting_value` int NOT NULL,
   PRIMARY KEY (`setting_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `server_settings`;
-/*!40000 ALTER TABLE `server_settings` DISABLE KEYS */;
+-- data table .server_settings: ~2 rows (ungefähr)
 INSERT INTO `server_settings` (`setting_id`, `setting_value`) VALUES
 	('last_arena_update_time', 1455039763),
 	('last_daily_update_time', 0);
-/*!40000 ALTER TABLE `server_settings` ENABLE KEYS */;
 
+-- table table .social_friends
 CREATE TABLE IF NOT EXISTS `social_friends` (
   `character_guid` int NOT NULL,
   `friend_guid` int NOT NULL,
@@ -1001,10 +1098,9 @@ CREATE TABLE IF NOT EXISTS `social_friends` (
   KEY `b` (`friend_guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `social_friends`;
-/*!40000 ALTER TABLE `social_friends` DISABLE KEYS */;
-/*!40000 ALTER TABLE `social_friends` ENABLE KEYS */;
+-- data table .social_friends: ~0 rows (ungefähr)
 
+-- table table .social_ignores
 CREATE TABLE IF NOT EXISTS `social_ignores` (
   `character_guid` int NOT NULL,
   `ignore_guid` int NOT NULL,
@@ -1012,10 +1108,9 @@ CREATE TABLE IF NOT EXISTS `social_ignores` (
   KEY `a` (`character_guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `social_ignores`;
-/*!40000 ALTER TABLE `social_ignores` DISABLE KEYS */;
-/*!40000 ALTER TABLE `social_ignores` ENABLE KEYS */;
+-- data table .social_ignores: ~0 rows (ungefähr)
 
+-- table table .tutorials
 CREATE TABLE IF NOT EXISTS `tutorials` (
   `playerId` bigint unsigned NOT NULL DEFAULT '0',
   `tut0` bigint unsigned NOT NULL DEFAULT '0',
@@ -1029,10 +1124,9 @@ CREATE TABLE IF NOT EXISTS `tutorials` (
   PRIMARY KEY (`playerId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELETE FROM `tutorials`;
-/*!40000 ALTER TABLE `tutorials` DISABLE KEYS */;
-/*!40000 ALTER TABLE `tutorials` ENABLE KEYS */;
+-- data table .tutorials: ~0 rows (ungefähr)
 
+/*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

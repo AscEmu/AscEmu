@@ -1,4 +1,0 @@
-
-UPDATE `creature_properties` SET `build` = "12340" WHERE `entry` IN(16900, 16970, 26490, 26518, 32266, 32266, 32314, 32797, 32266, 38211, 39672, 39757, 39758, 39760, 39763, 39975, 39976, 39977, 39967, 39968, 39969, 39970, 40102, 40101, 40103, 15760);
-
-INSERT INTO `world_db_version` (`id`, `LastUpdate`) VALUES ('113', '20221015_00_startup_missing_data_wotlk');

@@ -69,7 +69,7 @@
 #include "Utilities/Benchmark.hpp"
 
 // DB version
-static const char* REQUIRED_CHAR_DB_VERSION = "20241206-00_playerpets";
+static const char* REQUIRED_CHAR_DB_VERSION = "20250119-00_character_db_version";
 static const char* REQUIRED_WORLD_DB_VERSION = "20250112-00_world_db_version";
 
 volatile bool Master::m_stopEvent = false;
@@ -563,7 +563,7 @@ bool Master::_CheckDBVersion()
 
     delete wqr;
 
-    QueryResult* cqr = CharacterDatabase.QueryNA("SELECT LastUpdate FROM character_db_version;");
+    QueryResult* cqr = CharacterDatabase.QueryNA("SELECT LastUpdate FROM character_db_version ORDER BY id DESC LIMIT 1;");
     if (cqr == NULL)
     {
         sLogger.fatal("Database : Character database is missing the table `character_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
