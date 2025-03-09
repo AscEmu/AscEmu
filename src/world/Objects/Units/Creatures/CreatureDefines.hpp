@@ -288,53 +288,60 @@ enum UNIT_TYPE
 enum NPCFlags : uint32_t
 {
     UNIT_NPC_FLAG_NONE                  = 0x00000000,
-    UNIT_NPC_FLAG_GOSSIP                = 0x00000001,       // 100%
-    UNIT_NPC_FLAG_QUESTGIVER            = 0x00000002,       // 100%
-    UNIT_NPC_FLAG_UNK1                  = 0x00000004,
+    UNIT_NPC_FLAG_GOSSIP                = 0x00000001,   // TITLE has gossip menu DESCRIPTION 100%
+    UNIT_NPC_FLAG_QUESTGIVER            = 0x00000002,   // TITLE is quest giver DESCRIPTION 100%
+    UNIT_NPC_FLAG_ACCOUNT_BANKER        = 0x00000004,   // TITLE is account banker
     UNIT_NPC_FLAG_UNK2                  = 0x00000008,
-    UNIT_NPC_FLAG_TRAINER               = 0x00000010,       // 100%
-    UNIT_NPC_FLAG_TRAINER_CLASS         = 0x00000020,       // 100%
-    UNIT_NPC_FLAG_TRAINER_PROFESSION    = 0x00000040,       // 100%
-    UNIT_NPC_FLAG_VENDOR                = 0x00000080,       // 100%
-    UNIT_NPC_FLAG_VENDOR_AMMO           = 0x00000100,       // 100%, general goods vendor
-    UNIT_NPC_FLAG_VENDOR_FOOD           = 0x00000200,       // 100%
-    UNIT_NPC_FLAG_VENDOR_POISON         = 0x00000400,       // guessed
-    UNIT_NPC_FLAG_VENDOR_REAGENT        = 0x00000800,       // 100%
-    UNIT_NPC_FLAG_REPAIR                = 0x00001000,       // 100%
-    UNIT_NPC_FLAG_FLIGHTMASTER          = 0x00002000,       // 100%
-    UNIT_NPC_FLAG_SPIRITHEALER          = 0x00004000,       // guessed
-    UNIT_NPC_FLAG_SPIRITGUIDE           = 0x00008000,       // guessed
-    UNIT_NPC_FLAG_INNKEEPER             = 0x00010000,       // 100%
-    UNIT_NPC_FLAG_BANKER                = 0x00020000,       // 100%
-    UNIT_NPC_FLAG_PETITIONER            = 0x00040000,       // 100% 0xC0000 = guild petitions, 0x40000 = arena team petitions
-    UNIT_NPC_FLAG_TABARDDESIGNER        = 0x00080000,       // 100%
-    UNIT_NPC_FLAG_BATTLEMASTER          = 0x00100000,       // 100%
-    UNIT_NPC_FLAG_AUCTIONEER            = 0x00200000,       // 100%
-    UNIT_NPC_FLAG_STABLEMASTER          = 0x00400000,       // 100%
-    UNIT_NPC_FLAG_GUILD_BANKER          = 0x00800000,       // cause client to send 997 opcode
-    UNIT_NPC_FLAG_SPELLCLICK            = 0x01000000,       // cause client to send 1015 opcode (spell click)
-    UNIT_NPC_FLAG_PLAYER_VEHICLE        = 0x02000000,       // players with mounts that have vehicle data should have it set
-    UNIT_NPC_FLAG_REFORGER              = 0x08000000,       // reforging
-    UNIT_NPC_FLAG_TRANSMOGRIFIER        = 0x10000000,       // transmogrification
-    UNIT_NPC_FLAG_VAULTKEEPER           = 0x20000000,       // void storage
-    UNIT_NPC_FLAG_DISABLE_REGEN         = 0x40000000,       // custom Disable Creature Health reg
-    UNIT_NPC_FLAG_DISABLE_PWREGEN       = 0x80000000,       // custom Disable Creature Power reg
+    UNIT_NPC_FLAG_TRAINER               = 0x00000010,   // TITLE is trainer DESCRIPTION 100%
+    UNIT_NPC_FLAG_TRAINER_CLASS         = 0x00000020,   // TITLE is class trainer DESCRIPTION 100%
+    UNIT_NPC_FLAG_TRAINER_PROFESSION    = 0x00000040,   // TITLE is profession trainer DESCRIPTION 100%
+    UNIT_NPC_FLAG_VENDOR                = 0x00000080,   // TITLE is vendor (generic) DESCRIPTION 100%
+    UNIT_NPC_FLAG_VENDOR_AMMO           = 0x00000100,   // TITLE is vendor (ammo) DESCRIPTION 100%, general goods vendor
+    UNIT_NPC_FLAG_VENDOR_FOOD           = 0x00000200,   // TITLE is vendor (food) DESCRIPTION 100%
+    UNIT_NPC_FLAG_VENDOR_POISON         = 0x00000400,   // TITLE is vendor (poison) DESCRIPTION guessed
+    UNIT_NPC_FLAG_VENDOR_REAGENT        = 0x00000800,   // TITLE is vendor (reagents) DESCRIPTION 100%
+    UNIT_NPC_FLAG_REPAIR                = 0x00001000,   // TITLE can repair DESCRIPTION 100%
+    UNIT_NPC_FLAG_FLIGHTMASTER          = 0x00002000,   // TITLE is flight master DESCRIPTION 100%
+    UNIT_NPC_FLAG_SPIRIT_HEALER         = 0x00004000,   // TITLE is spirit healer
+    UNIT_NPC_FLAG_AREA_SPIRIT_HEALER    = 0x00008000,   // TITLE is area spirit healer
+    UNIT_NPC_FLAG_INNKEEPER             = 0x00010000,   // TITLE is innkeeper
+    UNIT_NPC_FLAG_BANKER                = 0x00020000,   // TITLE is banker DESCRIPTION 100%
+    UNIT_NPC_FLAG_PETITIONER            = 0x00040000,   // TITLE handles guild/arena petitions DESCRIPTION 100% 0xC0000 = guild petitions, 0x40000 = arena team petitions
+    UNIT_NPC_FLAG_TABARDDESIGNER        = 0x00080000,   // TITLE is guild tabard designer DESCRIPTION 100%
+    UNIT_NPC_FLAG_BATTLEMASTER          = 0x00100000,   // TITLE is battlemaster DESCRIPTION 100%
+    UNIT_NPC_FLAG_AUCTIONEER            = 0x00200000,   // TITLE is auctioneer DESCRIPTION 100%
+    UNIT_NPC_FLAG_STABLEMASTER          = 0x00400000,   // TITLE is stable master DESCRIPTION 100%
+    UNIT_NPC_FLAG_GUILD_BANKER          = 0x00800000,   // TITLE is guild banker DESCRIPTION (cause client to send 997 opcode)
+    UNIT_NPC_FLAG_SPELLCLICK            = 0x01000000,   // TITLE has spell click enabled (cause client to send 1015 opcode (spell click))
+    UNIT_NPC_FLAG_PLAYER_VEHICLE        = 0x02000000,   // TITLE is player vehicle DESCRIPTION players with mounts that have vehicle data should have it set
+    UNIT_NPC_FLAG_MAILBOX               = 0x04000000,   // TITLE is mailbox
+    UNIT_NPC_FLAG_REFORGER              = 0x08000000,   // TITLE reforging
+    UNIT_NPC_FLAG_TRANSMOGRIFIER        = 0x10000000,   // TITLE transmogrification
+    UNIT_NPC_FLAG_VAULTKEEPER           = 0x20000000,   // TITLE is void storage
+
+    /// old
+    UNIT_NPC_FLAG_DISABLE_REGEN         = 0x40000000,   // custom Disable Creature Health reg
+    UNIT_NPC_FLAG_DISABLE_PWREGEN       = 0x80000000,   // custom Disable Creature Power reg
+
+    /// new
+    //UNIT_NPC_FLAG_WILD_BATTLE_PET     = 0x40000000,   // TITLE is wild battle pet DESCRIPTION Pet that player can fight (Battle Pet)
+    //UNIT_NPC_FLAG_BLACK_MARKET        = 0x80000000,   // TITLE is black market
 };
 
 enum CreatureFlag1
 {
-    CREATURE_FLAG1_TAMEABLE             = 0x00000001,       // creature is tameable by hunter
-    CREATURE_FLAG1_GHOST                = 0x00000002,       // creature are also visible for dead players.
-    CREATURE_FLAG1_BOSS                 = 0x00000004,       // creature is a boss "??"
+    CREATURE_FLAG1_TAMEABLE             = 0x00000001,   // creature is tameable by hunter
+    CREATURE_FLAG1_GHOST                = 0x00000002,   // creature are also visible for dead players.
+    CREATURE_FLAG1_BOSS                 = 0x00000004,   // creature is a boss "??"
     CREATURE_FLAG1_UNK3                 = 0x00000008,
     CREATURE_FLAG1_UNK4                 = 0x00000010,
     CREATURE_FLAG1_UNK5                 = 0x00000020,
     CREATURE_FLAG1_UNK6                 = 0x00000040,
-    CREATURE_FLAG1S_DEAD_INTERACT       = 0x00000080,       // player can interact with the creature while creature is dead.
-    CREATURE_FLAG1_HERBLOOT             = 0x00000100,       // lootable by herbalist
-    CREATURE_FLAG1_MININGLOOT           = 0x00000200,       // lootable by miner
-    CREATURE_FLAG1_DONT_LOG_DEATH       = 0x00000400,       // death event will not show up in combat log
-    CREATURE_FLAG1_FIGHT_MOUNTED        = 0x00000800,       // creature keeps mounted by entering combat
+    CREATURE_FLAG1S_DEAD_INTERACT       = 0x00000080,   // player can interact with the creature while creature is dead.
+    CREATURE_FLAG1_HERBLOOT             = 0x00000100,   // lootable by herbalist
+    CREATURE_FLAG1_MININGLOOT           = 0x00000200,   // lootable by miner
+    CREATURE_FLAG1_DONT_LOG_DEATH       = 0x00000400,   // death event will not show up in combat log
+    CREATURE_FLAG1_FIGHT_MOUNTED        = 0x00000800,   // creature keeps mounted by entering combat
     CREATURE_FLAG1_AID_PLAYERS          = 0x00001000,
     CREATURE_FLAG1_UNK13                = 0x00002000,
     CREATURE_FLAG1_UNK14                = 0x00004000,

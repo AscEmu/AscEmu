@@ -834,7 +834,7 @@ Creature* Battleground::spawnSpiritGuide(float x, float y, float z, float o, uin
     pCreature->setChannelSpellId(22011);
     pCreature->setModCastSpeed(1.0f);
 
-    pCreature->setNpcFlags(UNIT_NPC_FLAG_SPIRITGUIDE);
+    pCreature->setNpcFlags(UNIT_NPC_FLAG_AREA_SPIRIT_HEALER);
     pCreature->setSheathType(SHEATH_STATE_MELEE);
     pCreature->setPvpFlags(U_FIELD_BYTES_FLAG_AURAS);
 
