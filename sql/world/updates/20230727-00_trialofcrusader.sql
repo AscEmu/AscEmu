@@ -57,7 +57,7 @@ CREATE TABLE `script_spline_chain_meta` (
   `msUntilNext` int unsigned NOT NULL,
   `velocity` float unsigned DEFAULT '0',
   PRIMARY KEY (`entry`,`chainId`,`splineId`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of script_spline_chain_meta
@@ -401,7 +401,7 @@ CREATE TABLE `script_spline_chain_waypoints` (
   `y` float NOT NULL,
   `z` float NOT NULL,
   PRIMARY KEY (`entry`,`chainId`,`splineId`,`wpId`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of script_spline_chain_waypoints
