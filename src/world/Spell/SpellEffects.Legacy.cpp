@@ -2700,9 +2700,9 @@ void Spell::SpellEffectCreateItem(uint8_t effectIndex)
 
             uint32 discovered_recipe = 0;
 
-            for (std::set<MySQLStructure::ProfessionDiscovery*>::iterator itr = sMySQLStore._professionDiscoveryStore.begin(); itr != sMySQLStore._professionDiscoveryStore.end(); ++itr)
+            for (auto itr = sMySQLStore._professionDiscoveryStore.begin(); itr != sMySQLStore._professionDiscoveryStore.end(); ++itr)
             {
-                MySQLStructure::ProfessionDiscovery* pf = *itr;
+                const auto& pf = *itr;
                 if (spellid == pf->SpellId && p_caster->getSkillLineCurrent(skillLine) >= pf->SkillValue && !p_caster->hasSpell(pf->SpellToDiscover) && Util::checkChance(pf->Chance))
                 {
                     discovered_recipe = pf->SpellToDiscover;
@@ -5096,8 +5096,8 @@ void Spell::SpellEffectDisenchant(uint8_t /*effectIndex*/)
     p_caster->setLootGuid(it->getGuid());
     if (!it->m_loot)
     {
-        it->m_loot = new Loot;
-        sLootMgr.fillItemLoot(p_caster, it->m_loot, it->getEntry(), 0);
+        it->m_loot = std::make_unique<Loot>();
+        sLootMgr.fillItemLoot(p_caster, it->m_loot.get(), it->getEntry(), 0);
     }
 
     sLogger.debugFlag(AscEmu::Logging::LF_SPELL_EFF, "Successfully disenchanted item {}", uint32(it->getEntry()));
@@ -5923,8 +5923,8 @@ void Spell::SpellEffectProspecting(uint8_t /*effectIndex*/)
     p_caster->setLootGuid(m_itemTarget->getGuid());
     if (!m_itemTarget->m_loot)
     {
-        m_itemTarget->m_loot = new Loot;
-        sLootMgr.fillItemLoot(p_caster, m_itemTarget->m_loot, m_itemTarget->getEntry(), 0);
+        m_itemTarget->m_loot = std::make_unique<Loot>();
+        sLootMgr.fillItemLoot(p_caster, m_itemTarget->m_loot.get(), m_itemTarget->getEntry(), 0);
     }
 
     if (m_itemTarget->m_loot->items.size() > 0)
@@ -6140,8 +6140,8 @@ void Spell::SpellEffectMilling(uint8_t /*effectIndex*/)
     p_caster->setLootGuid(m_itemTarget->getGuid());
     if (!m_itemTarget->m_loot)
     {
-        m_itemTarget->m_loot = new Loot;
-        sLootMgr.fillItemLoot(p_caster, m_itemTarget->m_loot, m_itemTarget->getEntry(), 0);
+        m_itemTarget->m_loot = std::make_unique<Loot>();
+        sLootMgr.fillItemLoot(p_caster, m_itemTarget->m_loot.get(), m_itemTarget->getEntry(), 0);
     }
 
     if (m_itemTarget->m_loot->items.size() > 0)

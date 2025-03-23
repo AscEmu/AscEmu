@@ -1883,14 +1883,7 @@ void Aura::SpellAuraReflectSpells(AuraEffectModifier* aurEff, bool apply)
 
     if (apply)
     {
-        ReflectSpellSchool* rss = new ReflectSpellSchool;
-        rss->chance = aurEff->getEffectDamage();
-        rss->spellId = getSpellId();
-        rss->school = -1;
-        rss->charges = m_spellInfo->getProcCharges();
-        rss->infront = false;
-
-        m_target->m_reflectSpellSchool.push_back(rss);
+        m_target->m_reflectSpellSchool.emplace_back(std::make_unique<ReflectSpellSchool>(getSpellId(), m_spellInfo->getProcCharges(), -1, aurEff->getEffectDamage(), false));
     }
 }
 
@@ -3023,19 +3016,13 @@ void Aura::SpellAuraReflectSpellsSchool(AuraEffectModifier* aurEff, bool apply)
 
     if (apply)
     {
-        ReflectSpellSchool* rss = new ReflectSpellSchool;
-        rss->chance = aurEff->getEffectDamage();
-        rss->spellId = getSpellId();
-        rss->infront = false;
-
+        int32_t school = 0;
         if (m_spellInfo->getAttributes() == 0x400D0 && m_spellInfo->getAttributesEx() == 0)
-            rss->school = (int)(log10((float)aurEff->getEffectMiscValue()) / log10((float)2));
+            school = (int)(log10((float)aurEff->getEffectMiscValue()) / log10((float)2));
         else
-            rss->school = m_spellInfo->getFirstSchoolFromSchoolMask();
+            school = m_spellInfo->getFirstSchoolFromSchoolMask();
 
-        rss->charges = 0;
-
-        m_target->m_reflectSpellSchool.push_back(rss);
+        m_target->m_reflectSpellSchool.emplace_back(std::make_unique<ReflectSpellSchool>(getSpellId(), 0, school, aurEff->getEffectDamage(), false));
     }
 }
 
@@ -3358,26 +3345,23 @@ void Aura::SpellAuraSplitDamage(AuraEffectModifier* aurEff, bool apply)
 
     if (source->m_damageSplitTarget != nullptr)
     {
-        delete source->m_damageSplitTarget;
         source->m_damageSplitTarget = nullptr;
     }
 
     if (apply)
     {
-        DamageSplitTarget* ds = new DamageSplitTarget;
+        auto ds = std::make_unique<DamageSplitTarget>();
         ds->m_flatDamageSplit = 0;
         ds->m_spellId = getSpellInfo()->getId();
         ds->m_pctDamageSplit = aurEff->getEffectMiscValue() / 100.0f;
         ds->damage_type = static_cast<uint8>(aurEff->getAuraEffectType());
         ds->creator = (void*)this;
         ds->m_target = destination->getGuid();
-        source->m_damageSplitTarget = ds;
+        source->m_damageSplitTarget = std::move(ds);
     }
     else
     {
-        DamageSplitTarget* ds = source->m_damageSplitTarget;
         source->m_damageSplitTarget = nullptr;
-        delete ds;
     }
 }
 
@@ -3939,29 +3923,18 @@ void Aura::SpellAuraOverrideClassScripts(AuraEffectModifier* aurEff, bool apply)
                             return;
                         }
                     }
-                    classScriptOverride* cso = new classScriptOverride;
-                    cso->aura = 0;
-                    cso->damage = aurEff->getEffectDamage();
-                    cso->effect = 0;
-                    cso->id = aurEff->getEffectMiscValue();
-                    itr->second->push_back(cso);
+
+                    itr->second->emplace_back(std::make_unique<classScriptOverride>(aurEff->getEffectMiscValue(), 0, 0, aurEff->getEffectDamage(), false));
                 }
                 else
                 {
-                    classScriptOverride* cso = new classScriptOverride;
-                    cso->aura = 0;
-                    cso->damage = aurEff->getEffectDamage();
-                    cso->effect = 0;
-                    cso->id = aurEff->getEffectMiscValue();
-                    ScriptOverrideList* lst = new ScriptOverrideList();
-                    lst->push_back(cso);
+                    auto lst = std::make_shared<ScriptOverrideList>();
+                    lst->emplace_back(std::make_unique<classScriptOverride>(aurEff->getEffectMiscValue(), 0, 0, aurEff->getEffectDamage(), false));
 
                     for (; itrSE != itermap->second->end(); ++itrSE)
                     {
-                        plr->m_spellOverrideMap.insert(SpellOverrideMap::value_type((*itrSE)->getId(), lst));
+                        plr->m_spellOverrideMap.emplace((*itrSE)->getId(), lst);
                     }
-
-                    delete lst;
                 }
             }
             else
@@ -4474,20 +4447,19 @@ void Aura::SpellAuraSplitDamageFlat(AuraEffectModifier* aurEff, bool apply)
 {
     if (m_target->m_damageSplitTarget)
     {
-        delete m_target->m_damageSplitTarget;
         m_target->m_damageSplitTarget = nullptr;
     }
 
     if (apply)
     {
-        DamageSplitTarget* ds = new DamageSplitTarget;
+        auto ds = std::make_unique<DamageSplitTarget>();
         ds->m_flatDamageSplit = aurEff->getEffectMiscValue();
         ds->m_spellId = getSpellInfo()->getId();
         ds->m_pctDamageSplit = 0;
         ds->damage_type = static_cast<uint8>(aurEff->getAuraEffectType());
         ds->creator = (void*)this;
         ds->m_target = m_casterGuid;
-        m_target->m_damageSplitTarget = ds;
+        m_target->m_damageSplitTarget = std::move(ds);
         //  printf("registering dmg split %u, amount= %u \n",ds->m_spellId, aurEff->getEffectDamage(), aurEff->getEffectMiscValue(), aurEff->getAuraEffect());
     }
 }

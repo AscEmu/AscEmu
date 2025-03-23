@@ -6,9 +6,43 @@ This file is released under the MIT license. See README-MIT for more information
 #include "TicketMgr.hpp"
 
 #include "Logging/Logger.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Server/Packets/CmsgGmTicketCreate.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/WDB/WDBStores.hpp"
+
+GM_Ticket::GM_Ticket(Player const* player, AscEmu::Packets::CmsgGmTicketCreate const& srlPacket) :
+    deleted(false), assignedToPlayer(0), comment("")
+{
+    guid = static_cast<uint64_t>(sTicketMgr.generateNextTicketId());
+    playerGuid = player->getGuid();
+    name = player->getName();
+    level = player->getLevel();
+    map = srlPacket.map;
+    posX = srlPacket.location.x;
+    posY = srlPacket.location.y;
+    posZ = srlPacket.location.z;
+    message = srlPacket.message;
+    timestamp = static_cast<uint32_t>(UNIXTIME);
+}
+
+GM_Ticket::GM_Ticket(Field const* fields)
+{
+    guid = fields[0].asUint64();
+    playerGuid = fields[1].asUint64();
+    name = fields[2].asCString();
+    level = fields[3].asUint32();
+    map = fields[4].asUint32();
+    posX = fields[5].asFloat();
+    posY = fields[6].asFloat();
+    posZ = fields[7].asFloat();
+    message = fields[8].asCString();
+    timestamp = fields[9].asUint32();
+    deleted = fields[10].asUint32() == 1;
+    assignedToPlayer = fields[11].asUint64();
+    comment = fields[12].asCString();
+}
 
 TicketMgr& TicketMgr::getInstance()
 {
@@ -31,8 +65,7 @@ void TicketMgr::initialize()
 void TicketMgr::finalize()
 {
     sLogger.info("TicketMgr : Deleting GM Tickets...");
-    for (GmTicketList::iterator itr = m_ticketList.begin(); itr != m_ticketList.end(); ++itr)
-        delete(*itr);
+    m_ticketList.clear();
 }
 
 uint32_t TicketMgr::generateNextTicketId()
@@ -40,15 +73,16 @@ uint32_t TicketMgr::generateNextTicketId()
     return ++m_nextTicketId;
 }
 
-void TicketMgr::addGMTicket(GM_Ticket* ticket, bool startup)
+GM_Ticket* TicketMgr::createGMTicket(Player const* player, AscEmu::Packets::CmsgGmTicketCreate const& srlPacket)
 {
-    if (ticket)
-    {
-        m_ticketList.push_back(ticket);
+    auto* ticket = m_ticketList.emplace_back(std::make_unique<GM_Ticket>(player, srlPacket)).get();
+    saveGMTicket(ticket, nullptr);
+    return ticket;
+}
 
-        if (!startup)
-            saveGMTicket(ticket, nullptr);
-    }
+GM_Ticket* TicketMgr::createGMTicket(Field const* fields)
+{
+    return m_ticketList.emplace_back(std::make_unique<GM_Ticket>(fields)).get();
 }
 
 void TicketMgr::loadGMTickets()
@@ -62,24 +96,8 @@ void TicketMgr::loadGMTickets()
 
     do
     {
-        Field* fields = result->Fetch();
+        createGMTicket(result->Fetch());
 
-        GM_Ticket* ticket = new GM_Ticket;
-        ticket->guid = fields[0].asUint64();
-        ticket->playerGuid = fields[1].asUint64();
-        ticket->name = fields[2].asCString();
-        ticket->level = fields[3].asUint32();
-        ticket->map = fields[4].asUint32();
-        ticket->posX = fields[5].asFloat();
-        ticket->posY = fields[6].asFloat();
-        ticket->posZ = fields[7].asFloat();
-        ticket->message = fields[8].asCString();
-        ticket->timestamp = fields[9].asUint32();
-        ticket->deleted = fields[10].asUint32() == 1;
-        ticket->assignedToPlayer = fields[11].asUint64();
-        ticket->comment = fields[12].asCString();
-
-        addGMTicket(ticket, true);
     } while (result->NextRow());
 
     sLogger.info("ObjectMgr : {} active GM Tickets loaded.", result->GetRowCount());
@@ -174,7 +192,7 @@ void TicketMgr::removeGMTicketByPlayer(uint64 playerGuid)
         if ((*i)->playerGuid == playerGuid && !(*i)->deleted)
         {
             (*i)->deleted = true;
-            saveGMTicket((*i), nullptr);
+            saveGMTicket((*i).get(), nullptr);
             break;
         }
     }
@@ -187,7 +205,7 @@ void TicketMgr::removeGMTicket(uint64 ticketGuid)
         if ((*i)->guid == ticketGuid && !(*i)->deleted)
         {
             (*i)->deleted = true;
-            saveGMTicket((*i), nullptr);
+            saveGMTicket((*i).get(), nullptr);
             break;
         }
     }
@@ -211,7 +229,7 @@ GM_Ticket* TicketMgr::getGMTicketByPlayer(uint64 playerGuid)
     {
         if ((*i)->playerGuid == playerGuid && !(*i)->deleted)
         {
-            return (*i);
+            return (*i).get();
         }
     }
     return nullptr;
@@ -223,7 +241,7 @@ GM_Ticket* TicketMgr::getGMTicket(uint64 ticketGuid)
     {
         if ((*i)->guid == ticketGuid)
         {
-            return (*i);
+            return (*i).get();
         }
     }
     return nullptr;

@@ -1014,7 +1014,9 @@ public:
     void cancelTrade(bool sendToSelfAlso, bool silently = false);
 
 private:
-    TradeData* m_TradeData = nullptr;
+    std::unique_ptr<TradeData> m_TradeData;
+
+    std::mutex m_tradeMutex;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Messages
@@ -1110,7 +1112,7 @@ public:
     void applyItemMods(Item* item, int16_t slot, bool apply, bool justBrokedown = false, bool skipStatApply = false);
 
 private:
-    ItemInterface* m_itemInterface = nullptr;
+    std::unique_ptr<ItemInterface> m_itemInterface;
 
     void removeGarbageItems();
     std::list<Item*> m_GarbageItems;
@@ -1235,7 +1237,7 @@ public:
     void initialiseCharters();
 
 private:
-    Charter* m_charters[NUM_CHARTER_TYPES] = {nullptr};
+    std::array<Charter*, NUM_CHARTER_TYPES> m_charters = { nullptr };
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Guild
@@ -1319,7 +1321,7 @@ public:
     uint32_t getInviteArenaTeamId() const;
 
 private:
-    ArenaTeam* m_arenaTeams[NUM_ARENA_TEAM_TYPES] = {nullptr};
+    std::array<ArenaTeam*, NUM_ARENA_TEAM_TYPES> m_arenaTeams = { nullptr };
     uint32_t m_arenaPoints = 0;
     uint32_t m_inviteArenaTeamId = 0;
 
@@ -1437,7 +1439,7 @@ private:
 public:
     void acceptQuest(uint64_t guid, uint32_t quest_id);
 
-    void setQuestLogInSlot(QuestLogEntry* entry, uint32_t slotId);
+    QuestLogEntry* createQuestLogInSlot(QuestProperties const* questProperties, uint8_t slotId);
 
     bool hasAnyQuestInQuestSlot() const;
     bool hasQuestInQuestLog(uint32_t questId) const;
@@ -1483,7 +1485,7 @@ public:
     std::set<uint32_t> getFinishedQuests() const;
 
 private:
-    QuestLogEntry* m_questlog[MAX_QUEST_LOG_SIZE] = {nullptr};
+    std::array<std::unique_ptr<QuestLogEntry>, MAX_QUEST_LOG_SIZE> m_questlog;
 
     mutable std::mutex m_mutextDailies;
     std::set<uint32_t> m_finishedDailies = {};
@@ -1537,7 +1539,7 @@ public:
     void speedCheatReset();
 
 private:
-    SpeedCheatDetector* m_speedCheatDetector;
+    std::unique_ptr<SpeedCheatDetector> m_speedCheatDetector;
 
     //Speed
     //Fly
@@ -1570,7 +1572,7 @@ public:
     VoidStorageItem* getVoidStorageItem(uint64_t id, uint8_t& slot) const;
 
 private:
-    VoidStorageItem* _voidStorageItems[VOID_STORAGE_MAX_SLOT];
+    std::array<std::unique_ptr<VoidStorageItem>, VOID_STORAGE_MAX_SLOT> _voidStorageItems;
 #endif
 
     /////////////////////////////////////////////////////////////////////////////////////////
@@ -1588,10 +1590,10 @@ public:
 
     void initTaxiNodesForLevel();
 
-    TaxiPath* getTaxiData() const { return m_taxi; }
+    TaxiPath* getTaxiData() const { return m_taxi.get(); }
 
 private:
-    TaxiPath* m_taxi = nullptr;
+    std::unique_ptr<TaxiPath> m_taxi;
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // Loot
@@ -1881,7 +1883,7 @@ private:
     uint32_t m_itemUpdateTimer = 0;
 
 #if VERSION_STRING > TBC
-    AchievementMgr* m_achievementMgr;
+    std::unique_ptr<AchievementMgr> m_achievementMgr;
 #endif
 
     uint32_t m_timeSyncCounter = 0;
@@ -2151,7 +2153,7 @@ public:
     // paladin related
     SpellInfo const* m_lastHealSpell = nullptr;
 
-    Mailbox* m_mailBox;
+    std::unique_ptr<Mailbox> m_mailBox;
     bool m_finishingMovesDodge = false;
 
     bool isAttacking() { return m_attacking; }

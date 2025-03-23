@@ -105,6 +105,9 @@ struct AuctionPacketList
 
 struct Auction
 {
+    Auction();
+    Auction(Field const* fields, Item* pItem);
+
     uint32_t Id;
 
     WoWGuid ownerGuid;
@@ -154,7 +157,7 @@ public:
     void updateDeletionQueue();
 
     void removeAuction(Auction* auction);
-    void addAuction(Auction* auction);
+    Auction* addAuction(std::unique_ptr<Auction> auction);
     Auction* getAuction(uint32_t id);
     void queueDeletion(Auction* auction, uint32_t reasonType);
 
@@ -168,7 +171,7 @@ public:
 
 private:
     std::mutex auctionLock;
-    std::unordered_map<uint32_t, Auction*> auctions;
+    std::unordered_map<uint32_t, std::unique_ptr<Auction>> auctions;
 
     std::mutex removalLock;
     std::list<Auction*> removalList;

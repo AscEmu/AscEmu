@@ -13,7 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Server/DatabaseDefinition.hpp"
 
-Charter::Charter(Field* _field)
+Charter::Charter(Field const* _field)
 {
     m_charterId = _field[0].asUint32();
     m_charterType = _field[1].asUint8();
@@ -66,7 +66,7 @@ void Charter::destroy()
             player->unsetCharter(m_charterType);
     }
 
-    delete this;
+    sObjectMgr.removeCharter(this);
 }
 
 uint32_t Charter::getLeaderGuid() const { return m_leaderGuid; }

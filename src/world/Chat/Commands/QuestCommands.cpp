@@ -173,7 +173,7 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
 
                     sGMLog.writefromsession(m_session, "started quest %u [%s] for player %s", questProperties->id, questProperties->title.c_str(), player->getName().c_str());
 
-                    QuestLogEntry* questLogEntry = new QuestLogEntry(questProperties, player, open_slot);
+                    auto* questLogEntry = player->createQuestLogInSlot(questProperties, open_slot);
                     questLogEntry->updatePlayerFields();
 
                     // If the quest should give any items on begin, give them the items.

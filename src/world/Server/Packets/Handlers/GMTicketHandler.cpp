@@ -191,22 +191,7 @@ void WorldSession::handleGMTicketCreateOpcode(WorldPacket& recvPacket)
     // Remove pending tickets
     sTicketMgr.removeGMTicketByPlayer(_player->getGuid());
 
-    auto ticket = new GM_Ticket;
-    ticket->guid = uint64_t(sTicketMgr.generateNextTicketId());
-    ticket->playerGuid = _player->getGuid();
-    ticket->map = srlPacket.map;
-    ticket->posX = srlPacket.location.x;
-    ticket->posY = srlPacket.location.y;
-    ticket->posZ = srlPacket.location.z;
-    ticket->message = srlPacket.message;
-    ticket->timestamp = static_cast<uint32_t>(UNIXTIME);
-    ticket->name = _player->getName();
-    ticket->level = _player->getLevel();
-    ticket->deleted = false;
-    ticket->assignedToPlayer = 0;
-    ticket->comment = "";
-
-    sTicketMgr.addGMTicket(ticket, false);
+    auto* ticket = sTicketMgr.createGMTicket(_player, srlPacket);
 
     SendPacket(SmsgGmTicketCreate(GMTNoErrors).serialise().get());
 

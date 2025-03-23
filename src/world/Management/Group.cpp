@@ -94,8 +94,6 @@ Group::~Group()
         if (SubGroup* sub = GetSubGroup(j))
             delete sub;
     }
-
-    sObjectMgr.removeGroup(m_Id);
 }
 
 void SubGroup::RemovePlayer(CachedCharacterInfo* info)
@@ -347,7 +345,7 @@ void Group::Update()
 
 void Group::Disband()
 {
-    std::lock_guard lock(m_groupLock);
+    m_groupLock.lock();
 
     m_updateblock = true;
 
@@ -366,8 +364,10 @@ void Group::Disband()
         sg->Disband();
     }
 
+    m_groupLock.unlock();
+
     CharacterDatabase.Execute("DELETE FROM `groups` WHERE `group_id` = %u", m_Id);
-    delete this;    // destroy ourselves, the destructor removes from eventmgr and objectmgr.
+    sObjectMgr.removeGroup(m_Id);    // destroy ourselves
 }
 
 void SubGroup::Disband()
@@ -433,7 +433,7 @@ void Group::RemovePlayer(CachedCharacterInfo* info)
 
     Player* pPlayer = sObjectMgr.getPlayer(info->guid);
 
-    std::lock_guard lock(m_groupLock);
+    m_groupLock.lock();
 
     if (m_isqueued)
     {
@@ -464,11 +464,16 @@ void Group::RemovePlayer(CachedCharacterInfo* info)
     info->subGroup = -1;
 
     if (!sg)
+    {
+        m_groupLock.unlock();
         return;
+    }
 
     m_dirty = true;
     sg->RemovePlayer(info);
     --m_MemberCount;
+
+    m_groupLock.unlock();
 
     // remove team member from the instance
     if (pPlayer)
@@ -509,6 +514,8 @@ void Group::RemovePlayer(CachedCharacterInfo* info)
         }
     }
 
+    m_groupLock.lock();
+
     /* eek! ;P */
     Player* newPlayer = nullptr;
     if (m_Looter == info)
@@ -530,6 +537,8 @@ void Group::RemovePlayer(CachedCharacterInfo* info)
         else
             m_Leader = nullptr;
     }
+
+    m_groupLock.unlock();
 
     Update();
 }

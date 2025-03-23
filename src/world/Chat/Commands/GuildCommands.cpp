@@ -51,15 +51,12 @@ bool ChatHandler::HandleGuildCreateCommand(const char* args, WorldSession* m_ses
     Charter tempCharter(0, selected_player->getGuidLow(), CHARTER_TYPE_GUILD);
     tempCharter.setGuildName(std::string(args));
 
-    Guild* guild = new Guild;
-    if (!guild->create(selected_player, std::string(args)))
+    auto* guild = sGuildMgr.createGuild(selected_player, std::string(args));
+    if (guild == nullptr)
     {
-        delete guild;
         SystemMessage(m_session, "Guild not created");
         return true;
     }
-
-    sGuildMgr.addGuild(guild);
 
     GreenSystemMessage(m_session, "Guild created");
     sGMLog.writefromsession(m_session, "Created guild '%s'", args);

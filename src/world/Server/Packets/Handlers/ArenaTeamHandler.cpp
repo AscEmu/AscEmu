@@ -229,7 +229,6 @@ void WorldSession::handleArenaTeamLeaveOpcode(WorldPacket& recvPacket)
     if (arenaTeam->m_leader == _player->getGuidLow() && arenaTeam->m_memberCount == 1)
     {
         arenaTeam->destroy();
-        sObjectMgr.removeArenaTeam(arenaTeam);
         return;
     }
 
@@ -276,7 +275,6 @@ void WorldSession::handleArenaTeamDisbandOpcode(WorldPacket& recvPacket)
     }
 
     arenaTeam->destroy();
-    sObjectMgr.removeArenaTeam(arenaTeam);
 }
 
 void WorldSession::handleArenaTeamPromoteOpcode(WorldPacket& recvPacket)

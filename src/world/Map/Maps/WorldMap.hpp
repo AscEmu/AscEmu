@@ -278,7 +278,7 @@ public:
     Creature* getCreature(uint32_t guid);
     Creature* getSqlIdCreature(uint32_t sqlid);
 
-    std::unordered_map<uint32_t /*leaderSpawnId*/, CreatureGroup*> CreatureGroupHolder;
+    std::unordered_map<uint32_t /*leaderSpawnId*/, std::unique_ptr<CreatureGroup>> CreatureGroupHolder;
 
     // Pets
     Pet* getPet(uint32_t guid);

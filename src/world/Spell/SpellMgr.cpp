@@ -87,6 +87,9 @@ bool SpellArea::fitsToRequirements(Player* player, uint32_t newZone, uint32_t ne
     return true;
 }
 
+SpellMgr::SpellMgr() = default;
+SpellMgr::~SpellMgr() = default;
+
 SpellMgr& SpellMgr::getInstance()
 {
     static SpellMgr mInstance;
@@ -100,12 +103,12 @@ void SpellMgr::initialize()
 
     for (auto& itr : mSpellInfoMapStore)
     {
-        auto spellInfo = itr.second;
+        const auto& spellInfo = itr.second;
 
         // Custom values
         // todo: if possible, get rid of these
-        setSpellEffectAmplitude(spellInfo);
-        setSpellMissingCIsFlags(spellInfo);
+        setSpellEffectAmplitude(spellInfo.get());
+        setSpellMissingCIsFlags(spellInfo.get());
     }
 
     // Hackfixes
@@ -115,16 +118,9 @@ void SpellMgr::initialize()
 void SpellMgr::finalize()
 {
     sLogger.info("SpellMgr : Cleaning up SpellMgr...");
-    for (auto itr = mSpellTargetConstraintMap.begin(); itr != mSpellTargetConstraintMap.end(); ++itr)
-        delete itr->second;
 
     mSpellTargetConstraintMap.clear();
-
-    for (auto itr = mSpellInfoMapStore.begin(); itr != mSpellInfoMapStore.end(); ++itr)
-        delete itr->second;
-
     mSpellInfoMapStore.clear();
-
 }
 
 void SpellMgr::loadSpellDataFromDatabase()
@@ -148,8 +144,8 @@ void SpellMgr::calculateSpellCoefficients()
 {
     for (auto& itr : mSpellInfoMapStore)
     {
-        auto spellInfo = itr.second;
-        setSpellCoefficient(spellInfo);
+        const auto& spellInfo = itr.second;
+        setSpellCoefficient(spellInfo.get());
     }
 }
 
@@ -353,13 +349,13 @@ WDB::Structures::SkillLineAbilityEntry const* SpellMgr::getFirstSkillEntryForSpe
     return nullptr;
 }
 
-SpellTargetConstraint* SpellMgr::getSpellTargetConstraintForSpell(uint32_t spellId) const
+SpellTargetConstraint const* SpellMgr::getSpellTargetConstraintForSpell(uint32_t spellId) const
 {
     const auto itr = mSpellTargetConstraintMap.find(spellId);
     if (itr == mSpellTargetConstraintMap.end())
         return nullptr;
 
-    return itr->second;
+    return itr->second.get();
 }
 
 SpellAreaMapBounds SpellMgr::getSpellAreaMapBounds(uint32_t spellId) const
@@ -444,9 +440,9 @@ SpellInfo const* SpellMgr::getSpellInfo(const uint32_t spellId) const
     if (spellId == 0)
         return nullptr;
 
-    const auto itr = getSpellInfoMap()->find(spellId);
-    if (itr != getSpellInfoMap()->end())
-        return itr->second;
+    const auto itr = mSpellInfoMapStore.find(spellId);
+    if (itr != mSpellInfoMapStore.end())
+        return itr->second.get();
 
     return nullptr;
 }
@@ -485,7 +481,10 @@ void SpellMgr::loadSpellInfoData()
             continue;
 
         auto spell_id = dbcSpellEntry->Id;
-        SpellInfo* spellInfo = new SpellInfo;
+        const auto [spellItr, _] = mSpellInfoMapStore.try_emplace(spell_id, Util::LazyInstanceCreator([] {
+            return std::make_unique<SpellInfo>();
+        }));
+        const auto& spellInfo = spellItr->second;
 
 #if VERSION_STRING == Mop
 
@@ -1025,7 +1024,6 @@ void SpellMgr::loadSpellInfoData()
 #endif
         
 #endif
-        mSpellInfoMapStore.insert({spell_id, spellInfo});
     }
 }
 
@@ -1689,9 +1687,11 @@ void SpellMgr::loadSpellTargetConstraints()
                 const auto spellId = fields[0].asUint32();
                 if (oldspellId != spellId)
                 {
-                    stc = new SpellTargetConstraint;
+                    const auto [stcItr, _] = mSpellTargetConstraintMap.try_emplace(spellId, Util::LazyInstanceCreator([] {
+                        return std::make_unique<SpellTargetConstraint>();
+                    }));
 
-                    mSpellTargetConstraintMap.insert(std::pair(spellId, stc));
+                    stc = stcItr->second.get();
                 }
 
                 const auto type = fields[1].asUint8();
@@ -2352,14 +2352,14 @@ void SpellMgr::setSpellCoefficient(SpellInfo* sp)
 #endif
 }
 
-SpellInfo* SpellMgr::getMutableSpellInfo(const uint32_t spellId)
+SpellInfo* SpellMgr::getMutableSpellInfo(const uint32_t spellId) const
 {
     if (spellId == 0)
         return nullptr;
 
-    const auto itr = getSpellInfoMap()->find(spellId);
-    if (itr != getSpellInfoMap()->end())
-        return itr->second;
+    const auto itr = mSpellInfoMapStore.find(spellId);
+    if (itr != mSpellInfoMapStore.end())
+        return itr->second.get();
 
     return nullptr;
 }

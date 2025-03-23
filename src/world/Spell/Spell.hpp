@@ -212,7 +212,7 @@ protected:
     Creature* m_targetConstraintCreature = nullptr;
     GameObject* m_targetConstraintGameObject = nullptr;
 
-    SpellTargetConstraint* m_targetConstraint;
+    SpellTargetConstraint const* m_targetConstraint;
 
 public:
     //////////////////////////////////////////////////////////////////////////////////////////

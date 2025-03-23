@@ -27,7 +27,7 @@ public:
     void update(uint32_t diff);
     void saveGuilds();
 
-    void addGuild(Guild* guild);
+    Guild* createGuild(Player* guildLeader, std::string const& guildName);
     void removeGuild(uint32_t guildId);
 
     Guild* getGuildById(uint32_t guildId) const;
@@ -53,7 +53,7 @@ public:
     bool firstSave = false;
 
 protected:
-    typedef std::unordered_map<uint32_t, Guild*> GuildContainer;
+    typedef std::unordered_map<uint32_t, std::unique_ptr<Guild>> GuildContainer;
 
     GuildContainer GuildStore;
     std::vector<uint64_t> GuildXPperLevel;

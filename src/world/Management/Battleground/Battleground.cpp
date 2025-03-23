@@ -50,7 +50,7 @@ Battleground::Battleground(WorldMap* worldMap, uint32_t id, uint32_t levelGroup,
 
     for (auto& group : m_groups)
     {
-        group = sObjectMgr.addGroup(std::make_unique<Group>(true));
+        group = sObjectMgr.createGroup();
         group->m_disbandOnNoMembers = false;
         group->ExpandToRaid();
     }
@@ -78,13 +78,7 @@ Battleground::~Battleground()
     sEventMgr.RemoveEvents(this);
     for (auto& m_group : m_groups)
     {
-        for (uint32_t j = 0; j < m_group->GetSubGroupCount(); ++j)
-        {
-            for (const auto itr : m_group->GetSubGroup(j)->getGroupMembers())
-                m_group->RemovePlayer(itr);
-        }
-
-        sObjectMgr.removeGroup(m_group->GetID());
+        m_group->Disband();
         m_group = nullptr;
     }
 

@@ -25,10 +25,12 @@ namespace WDB::Structures
     struct SummonPropertiesEntry;
 }
 
+class Field;
 class Object;
 class Corpse;
 class Charter;
 class ArenaTeam;
+struct ArenaTeamEmblem;
 class SpellInfo;
 class Pet;
 class WorldMap;
@@ -189,7 +191,7 @@ public:
     // Arena Team
     void loadArenaTeams();
 
-    ArenaTeam* addArenaTeam(std::unique_ptr<ArenaTeam> _arenaTeam);
+    ArenaTeam* createArenaTeam(uint8_t type, Player const* leaderPlr, std::string_view name, uint32_t rating, ArenaTeamEmblem const& emblem);
     void removeArenaTeam(ArenaTeam const* _arenaTeam);
 
     ArenaTeam const* getArenaTeamByName(std::string& _name, uint32_t _type) const;
@@ -202,7 +204,7 @@ public:
 
 private:
     std::unordered_map<uint32_t, std::unique_ptr<ArenaTeam>> m_arenaTeams;
-    std::unordered_map<uint32_t, ArenaTeam*> m_arenaTeamMap[3];
+    std::array<std::unordered_map<uint32_t, ArenaTeam*>, NUM_ARENA_TEAM_TYPES> m_arenaTeamMap;
     mutable std::mutex m_arenaTeamLock;
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -218,7 +220,7 @@ public:
     Charter* getCharterByItemGuid(uint64_t _guid) const;
 
 private:
-    std::unordered_map<uint32_t, std::unique_ptr<Charter>> m_charters[NUM_CHARTER_TYPES];
+    std::array<std::unordered_map<uint32_t, std::unique_ptr<Charter>>, NUM_CHARTER_TYPES> m_charters;
     mutable std::mutex m_charterLock;
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -240,9 +242,8 @@ private:
 public:
     void loadCorpsesForInstance(WorldMap* _worldMap);
     Corpse* loadCorpseByGuid(uint32_t _corpseGuid);
-    Corpse* createCorpse();
 
-    Corpse* addCorpse(const std::unique_ptr<Corpse>);
+    Corpse* createCorpse();
     void removeCorpse(const Corpse*);
 
     Corpse* getCorpseByGuid(uint32_t _corpseGuid) const;
@@ -262,7 +263,7 @@ public:
     void loadVendors();
 
     std::vector<CreatureItem>* getVendorList(uint32_t _entry) const;
-    std::vector<CreatureItem>* addVendorList(uint32_t _entry, std::unique_ptr<std::vector<CreatureItem>> _list);
+    std::vector<CreatureItem>* createVendorList(uint32_t _entry);
 
 private:
     std::unordered_map<uint32_t, std::unique_ptr<std::vector<CreatureItem>>> m_vendors;
@@ -315,7 +316,7 @@ public:
 
     uint32_t generateGroupId();
 
-    Group* addGroup(std::unique_ptr<Group> _group);
+    Group* createGroup();
     void removeGroup(uint32_t _groupId);
 
     Group* getGroupByLeader(Player* _player) const;

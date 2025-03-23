@@ -68,7 +68,7 @@ void WorldSession::handleGroupInviteResponseOpcode(WorldPacket& recvPacket)
         }
         else
         {
-            group = sObjectMgr.addGroup(std::make_unique<Group>(true));
+            group = sObjectMgr.createGroup();
             group->m_difficulty = group_inviter->m_dungeonDifficulty;
             group->AddMember(group_inviter->m_playerInfo);
             group->AddMember(_player->m_playerInfo);
@@ -525,7 +525,7 @@ void WorldSession::handleGroupAcceptOpcode(WorldPacket& /*recvPacket*/)
     auto group = player->getGroup();
     if (group == nullptr)
     {
-        group = sObjectMgr.addGroup(std::make_unique<Group>(true));
+        group = sObjectMgr.createGroup();
         group->AddMember(player->getPlayerInfo());
         group->AddMember(_player->getPlayerInfo());
         group->m_difficulty = player->m_dungeonDifficulty;

@@ -119,7 +119,7 @@ private:
     uint32 _latency;
     bool mQueued;
     bool m_nagleEanbled;
-    std::string* m_fullAccountName;
+    std::unique_ptr<std::string> m_fullAccountName;
 
     ByteBuffer mAddonInfoBuffer;
 };

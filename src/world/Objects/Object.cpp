@@ -1024,7 +1024,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
     }
 
     // Create damaging health batch event
-    auto healthBatch = new HealthBatchEvent;
+    auto healthBatch = std::make_unique<HealthBatchEvent>();
     healthBatch->caster = dynamic_cast<Unit*>(this); // can be nullptr
     healthBatch->damageInfo = dmgInfo;
     healthBatch->isPeriodic = isPeriodic;
@@ -1037,7 +1037,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
         healthBatch->leechMultipleValue = spellInfo->getEffectMultipleValue(index);
     }
 
-    victim->addHealthBatchEvent(healthBatch);
+    victim->addHealthBatchEvent(std::move(healthBatch));
 
     // Tagging should happen when damage packets are sent
     const auto plrOwner = getPlayerOwnerOrSelf();
@@ -1382,14 +1382,14 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, b
     }
 
     // Create healing health batch
-    auto healthBatch = new HealthBatchEvent;
+    auto healthBatch = std::make_unique<HealthBatchEvent>();
     healthBatch->caster = dynamic_cast<Unit*>(this); // can be nullptr
     healthBatch->damageInfo = dmgInfo;
     healthBatch->isPeriodic = isPeriodic;
     healthBatch->isHeal = true;
     healthBatch->spellInfo = spellInfo;
 
-    victim->addHealthBatchEvent(healthBatch);
+    victim->addHealthBatchEvent(std::move(healthBatch));
 
     if (isCreatureOrPlayer())
     {

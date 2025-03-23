@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Auth/AuthSocket.h"
+#include <chrono>
 
 namespace AscEmu::Realm
 {

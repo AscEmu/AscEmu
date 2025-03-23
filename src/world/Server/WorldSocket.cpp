@@ -168,12 +168,6 @@ WorldSocket::~WorldSocket()
         mSession->SetSocket(nullptr);
         mSession = nullptr;
     }
-
-    if (m_fullAccountName != nullptr)
-    {
-        delete m_fullAccountName;
-        m_fullAccountName = nullptr;
-    }
 }
 
 void WorldSocket::OnDisconnect()
@@ -564,7 +558,7 @@ void WorldSocket::_HandleAuthSession(std::unique_ptr<WorldPacket> recvPacket)
     }
 
     // shitty hash !
-    m_fullAccountName = new std::string(account);
+    m_fullAccountName = std::make_unique<std::string>(account);
 
     // Set the authentication packet
     pAuthenticationPacket = std::move(recvPacket);
@@ -697,7 +691,6 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
         sha.updateData(*m_fullAccountName);
 
         // this is unused now. we may as well free up the memory.
-        delete m_fullAccountName;
         m_fullAccountName = nullptr;
     }
 

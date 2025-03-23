@@ -23,8 +23,8 @@ namespace WDB::Structures
 class SERVER_DECL ChannelMgr
 {
 private:
-    ChannelMgr() = default;
-    ~ChannelMgr() = default;
+    ChannelMgr();
+    ~ChannelMgr();
 
 public:
     ChannelMgr(ChannelMgr&&) = delete;

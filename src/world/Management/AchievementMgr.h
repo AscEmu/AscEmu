@@ -302,9 +302,11 @@ class SERVER_DECL AchievementMgr
     friend Player;
 
     AchievementMgr(Player* _player);
-    ~AchievementMgr();
 
 public:
+    // Need public for unique_ptr -Appled
+    ~AchievementMgr();
+
     void loadFromDb(QueryResult* _achievementResult, QueryResult* _criteriaResult);
     void saveToDb(QueryBuffer* _buffer);
 

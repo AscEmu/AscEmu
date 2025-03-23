@@ -251,7 +251,7 @@ public:
     uint32_t getSellPrice(uint32_t count);
     void removeFromWorld();
 
-    Loot* m_loot = nullptr;
+    std::unique_ptr<Loot> m_loot;
     bool m_isLocked = false;
     bool m_isDirty = false;
 

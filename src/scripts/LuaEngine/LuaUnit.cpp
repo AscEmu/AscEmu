@@ -4622,7 +4622,7 @@ int LuaUnit::SendLootWindow(lua_State* L, Unit* ptr)
         switch (loot_type)
         {
             case 6:
-                sLootMgr.fillItemLoot(plr, pItem->m_loot, pItem->getEntry(), plr->getWorldMap() ? (plr->getWorldMap()->getDifficulty() ? true : false) : false);
+                sLootMgr.fillItemLoot(plr, pItem->m_loot.get(), pItem->getEntry(), plr->getWorldMap() ? (plr->getWorldMap()->getDifficulty() ? true : false) : false);
                 loot_type2 = 1;
                 break;
             default:

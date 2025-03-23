@@ -1459,7 +1459,7 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
             if (!grp)
             {
                 // todo: where and when is lfg group deleted? -Appled
-                grp = sObjectMgr.addGroup(std::make_unique<Group>(true));
+                grp = sObjectMgr.createGroup();
                 grp->m_disbandOnNoMembers = false;
                 grp->ExpandToLFG();
 

@@ -1459,7 +1459,7 @@ void Creature::AddVendorItem(uint32 itemid, uint32 amount, WDB::Structures::Item
     ci.incrtime = 0;
     ci.extended_cost = ec;
     if (m_SellItems == nullptr)
-        m_SellItems = sObjectMgr.addVendorList(getEntry(), std::make_unique<std::vector<CreatureItem>>());
+        m_SellItems = sObjectMgr.createVendorList(getEntry());
 
     m_SellItems->push_back(ci);
 }
@@ -2821,6 +2821,11 @@ uint32 Creature::GetType()
 void Creature::SetType(uint32 t)
 {
     m_Creature_type = t;
+}
+
+void Creature::setRespawnTime(uint32_t respawn)
+{
+    m_respawnTime = respawn != 0 ? std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) + respawn : 0;
 }
 
 void Creature::buildPetSpellList(WorldPacket& data)

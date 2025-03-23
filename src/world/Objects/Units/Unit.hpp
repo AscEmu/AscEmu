@@ -11,7 +11,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Data/WoWUnit.hpp"
 #include "ThreatHandler.h"
 #include "CombatHandler.hpp"
-#include "Creatures/Summons/SummonHandler.hpp"
 #include "Management/Loot/Loot.hpp"
 #include "Spell/Definitions/AuraEffects.hpp"
 #include "Spell/Definitions/AuraSlots.hpp"
@@ -60,6 +59,7 @@ class Group;
 class Object;
 class Spell;
 class SpellProc;
+class SummonHandler;
 class TotemSummon;
 class Vehicle;
 class MovementManager;
@@ -629,15 +629,15 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement spline
-    MovementMgr::MoveSpline* movespline;
+    std::unique_ptr<MovementMgr::MoveSpline> movespline;
 
     void followerAdded(AbstractFollower* f) { m_followingMe.insert(f); }
     void followerRemoved(AbstractFollower* f) { m_followingMe.erase(f); }
     void removeAllFollowers();
     virtual float getFollowAngle() const { return static_cast<float>(M_PI / 2); }
 
-    MovementManager* getMovementManager() { return i_movementManager; }
-    MovementManager const* getMovementManager() const { return i_movementManager; }
+    MovementManager* getMovementManager() { return i_movementManager.get(); }
+    MovementManager const* getMovementManager() const { return i_movementManager.get(); }
 
     virtual bool canFly();
 
@@ -649,7 +649,7 @@ private:
     std::unordered_set<AbstractFollower*> m_followingMe;
 
 protected:
-    MovementManager* i_movementManager;
+    std::unique_ptr<MovementManager> i_movementManager;
 
     void setFeared(bool apply);
     void setConfused(bool apply);
@@ -681,12 +681,12 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // AI Stuff
 protected:
-    AIInterface* m_aiInterface;
+    std::unique_ptr<AIInterface> m_aiInterface;
     bool m_useAI = false;
     uint32_t m_lastAiInterfaceUpdateTime = 0;
 
 public:
-    AIInterface* getAIInterface() const { return m_aiInterface; }
+    AIInterface* getAIInterface() const { return m_aiInterface.get(); }
 
     void setAItoUse(bool value) { m_useAI = value; }
     bool isAIEnabled() { return m_useAI; }
@@ -1031,7 +1031,7 @@ public:
     void addSimpleEnvironmentalDamageBatchEvent(EnviromentalDamage type, uint32_t damage, uint32_t absorbedDamage = 0);
     // Quick method to create a simple healing health batch event
     void addSimpleHealingBatchEvent(uint32_t heal, Unit* healer = nullptr, SpellInfo const* spellInfo = nullptr);
-    void addHealthBatchEvent(HealthBatchEvent* batch);
+    void addHealthBatchEvent(std::unique_ptr<HealthBatchEvent> batch);
     uint32_t calculateEstimatedOverKillForCombatLog(uint32_t damage) const;
     uint32_t calculateEstimatedOverHealForCombatLog(uint32_t heal) const;
     void clearHealthBatch();
@@ -1079,7 +1079,7 @@ private:
     uint32_t _handleBatchDamage(HealthBatchEvent const* batch, uint32_t* rageGenerated);
     // Handles some things on each healing event in the batch
     uint32_t _handleBatchHealing(HealthBatchEvent const* batch, uint32_t* absorbedHeal);
-    std::vector<HealthBatchEvent*> m_healthBatch;
+    std::vector<std::unique_ptr<HealthBatchEvent>> m_healthBatch;
     uint16_t m_healthBatchTime = HEALTH_BATCH_INTERVAL;
 
     uint32_t m_lastSpellUpdateTime = 0;
@@ -1114,19 +1114,19 @@ public:
     SummonHandler const* getSummonInterface() const;
 
 private:
-    std::unique_ptr<SummonHandler> m_summonInterface = nullptr;
+    std::unique_ptr<SummonHandler> m_summonInterface;
 
 #ifdef FT_VEHICLES
     //////////////////////////////////////////////////////////////////////////////////////////
     // Vehicle
 protected:
-    Vehicle* m_vehicle = nullptr;           // The Unit's own vehicle component
-    Vehicle* m_vehicleKit = nullptr;        // The vehicle the unit is attached to
+    Vehicle* m_vehicle = nullptr;               // The Unit's own vehicle component
+    std::unique_ptr<Vehicle> m_vehicleKit;      // The vehicle the unit is attached to
 
 public:
     bool createVehicleKit(uint32_t id, uint32_t creatureEntry);
     void removeVehicleKit();
-    Vehicle* getVehicleKit() const { return m_vehicleKit; }
+    Vehicle* getVehicleKit() const { return m_vehicleKit.get(); }
     Vehicle* getVehicle() const { return m_vehicle; }
     void setVehicle(Vehicle* vehicle) { m_vehicle = vehicle; }
     bool isOnVehicle(Unit const* vehicle) const;
@@ -1253,10 +1253,10 @@ public:
     void addExtraStrikeTarget(SpellInfo const* spellInfo, uint32_t charges);
 
     uint32_t doDamageSplitTarget(uint32_t res, SchoolMask schoolMask, bool isMeleeDmg);
-    DamageSplitTarget* m_damageSplitTarget = nullptr;
+    std::unique_ptr<DamageSplitTarget> m_damageSplitTarget;
 
     void removeReflect(uint32_t spellId, bool apply);
-    std::list<ReflectSpellSchool*> m_reflectSpellSchool;
+    std::list<std::unique_ptr<ReflectSpellSchool>> m_reflectSpellSchool;
 
     void castOnMeleeSpell();
 
@@ -1445,7 +1445,7 @@ public:
     int32_t m_extraAttacks = 0;
     bool m_extraStrikeTarget = false;
     int32_t m_extraStrikeTargetC = 0;
-    std::list<ExtraStrike*> m_extraStrikeTargets;
+    std::list<std::unique_ptr<ExtraStrike>> m_extraStrikeTargets;
     
     int64_t m_magnetCasterGuid = 0;   // Unit who acts as a magnet for this unit
 

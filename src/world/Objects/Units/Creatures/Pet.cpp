@@ -33,6 +33,7 @@
 #include "Storage/MySQLStructures.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
+#include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/EventMgr.h"

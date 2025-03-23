@@ -343,15 +343,9 @@ void AIInterface::addEmoteFromDatabase(std::vector<MySQLStructure::CreatureAIScr
     {
         if (script.action == actionSendMessage)
         {
-            auto message = std::make_unique<AI_SCRIPT_SENDMESSAGES>();
-
-            message->textId = script.textId;
-            message->canche = script.chance;
-            message->phase = script.phase;
-            message->healthPrecent = script.maxHealth;
-            message->maxCount = script.maxCount;
-
-            emoteVector.push_back(std::move(message));
+            emoteVector.emplace_back(std::make_unique<AI_SCRIPT_SENDMESSAGES>(
+                script.textId, script.chance, script.phase, script.maxHealth, 0, script.maxCount
+            ));
         }
     }
 }

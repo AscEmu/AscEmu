@@ -291,14 +291,12 @@ void LootMgr::addLoot(Loot* loot, uint32_t itemid, std::vector<float> chance, ui
     // check difficulty level
     if (item.chance[lootDifficulty] < 0.0f)
     {
-        delete& item;
         return;
     }
 
     // Bad luck for the entry
     if (!item.roll(0))
     {
-        delete& item;
         return;
     }
 

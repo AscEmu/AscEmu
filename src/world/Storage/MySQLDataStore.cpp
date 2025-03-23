@@ -35,10 +35,7 @@ MySQLDataStore& MySQLDataStore::getInstance()
 
 void MySQLDataStore::finalize()
 {
-    for (auto&& professionDiscovery : _professionDiscoveryStore)
-    {
-        delete professionDiscovery;
-    }
+    _professionDiscoveryStore.clear();
 }
 
 static std::vector<std::string> ascemuTables = { "achievement_reward", "ai_threattospellid", "areatriggers", "auctionhouse", "battlemasters", "creature_ai_scripts", "creature_difficulty", "creature_formations", "creature_group_spawn", "creature_initial_equip", "creature_movement_override", "creature_properties", "creature_properties_movement", "creature_quest_finisher", "creature_quest_starter", "creature_script_waypoints", "creature_spawns", "creature_timed_emotes", "creature_waypoints", "display_bounding_boxes", "event_scripts", "fishing", "gameevent_properties", "gameobject_properties", "gameobject_quest_finisher", "gameobject_quest_item_binding", "gameobject_quest_pickup_binding", "gameobject_quest_starter", "gameobject_spawns", "gameobject_spawns_extra", "gameobject_spawns_overrides", "gameobject_teleports", "gossip_menu", "gossip_menu_items", "gossip_menu_option", "graveyards", "guild_rewards", "guild_xp_for_level", "instance_encounters", "item_pages", "item_properties", "item_quest_association", "item_randomprop_groups", "item_randomsuffix_groups", "itemset_linked_itemsetbonus", "lfg_dungeon_rewards", "locales_creature", "locales_gameobject", "locales_gossip_menu_option", "locales_item", "locales_item_pages", "locales_npc_gossip_texts", "locales_npc_script_text", "locales_quest", "locales_worldbroadcast", "locales_worldmap_info", "locales_worldstring_table", "loot_creatures", "loot_fishing", "loot_gameobjects", "loot_items", "loot_pickpocketing", "loot_skinning", "npc_gossip_properties", "npc_gossip_texts", "npc_script_text", "npc_spellclick_spells", "pet_level_abilities", "petdefaultspells", "player_classlevelstats", "player_levelstats", "player_xp_for_level", "playercreateinfo", "playercreateinfo_bars", "playercreateinfo_items", "playercreateinfo_skills", "playercreateinfo_spell_cast", "playercreateinfo_spell_learn", "points_of_interest", "professiondiscoveries", "quest_poi", "quest_poi_points", "quest_properties", "recall", "reputation_creature_onkill", "reputation_faction_onkill", "reputation_instance_onkill", "spawn_group_id", "spell_area", "spell_coefficient_override", "spell_custom_override", "spell_disable", "spell_disable_trainers", "spell_effects_override", "spell_ranks", "spell_required", "spell_teleport_coords", "spelloverride", "spelltargetconstraints", "totemdisplayids", "trainer_properties", "trainer_properties_spellset", "transport_data", "vehicle_accessories", "vehicle_seat_addon", "vendor_restrictions", "vendors", "weather", "wordfilter_character_names", "wordfilter_chat", "world_db_version", "worldbroadcast", "worldmap_info", "worldstate_templates", "worldstring_tables", "zoneguards" };
@@ -2509,17 +2506,18 @@ void MySQLDataStore::loadPlayerCreateInfoTable()
     do
     {
         Field* fields = player_create_info_result->Fetch();
-        PlayerCreateInfo* playerCreateInfo = new PlayerCreateInfo;
 
         uint8_t _race = fields[0].asUint8();
         uint8_t _class = fields[1].asUint8();
+        _playerCreateInfoStoreNew[_race][_class] = std::make_unique<PlayerCreateInfo>();
+        auto* playerCreateInfo = _playerCreateInfoStoreNew[_race][_class].get();
+
         playerCreateInfo->mapId = fields[2].asUint32();
         playerCreateInfo->zoneId = fields[3].asUint32();
         playerCreateInfo->positionX = fields[4].asFloat();
         playerCreateInfo->positionY = fields[5].asFloat();
         playerCreateInfo->positionZ = fields[6].asFloat();
         playerCreateInfo->orientation = fields[7].asFloat();
-        _playerCreateInfoStoreNew[_race][_class] = playerCreateInfo;
 
         player_create_info_count++;
 
@@ -2553,7 +2551,7 @@ void MySQLDataStore::loadPlayerCreateInfoBars()
 
         if (auto& playerCreateInfo = _playerCreateInfoStoreNew[_race][_class])
         {
-            CreateInfo_ActionBarStruct bar;
+            CreateInfo_ActionBarStruct bar{};
             bar.button = fields[2].asUint8();
             bar.action = fields[3].asUint32();
             bar.type = fields[4].asUint8();
@@ -2606,7 +2604,7 @@ void MySQLDataStore::loadPlayerCreateInfoItems()
 
         if (auto& playerCreateInfo = _playerCreateInfoStoreNew[_race][_class])
         {
-            CreateInfo_ItemStruct itm;
+            CreateInfo_ItemStruct itm{};
             itm.id = item_id;
             itm.slot = fields[3].asUint8();
             itm.amount = fields[4].asUint32();
@@ -2654,7 +2652,7 @@ void MySQLDataStore::loadPlayerCreateInfoSkills()
             continue;
         }
 
-        CreateInfo_SkillStruct tsk;
+        CreateInfo_SkillStruct tsk{};
         tsk.skillid = skill_id;
         tsk.currentval = fields[3].asUint16();
 
@@ -2822,7 +2820,7 @@ void MySQLDataStore::loadPlayerCreateInfoLevelstats()
 
         if (auto& playerCreateInfo = _playerCreateInfoStoreNew[_race][_class])
         {
-            CreateInfo_Levelstats lvl;
+            CreateInfo_Levelstats lvl{};
             lvl.strength = fields[3].asUint32();
             lvl.agility = fields[4].asUint32();
             lvl.stamina = fields[5].asUint32();
@@ -2851,7 +2849,7 @@ void MySQLDataStore::loadPlayerCreateInfoLevelstats()
             if (!sChrClassesStore.lookupEntry(_class))
                 continue;
 
-            auto info = _playerCreateInfoStoreNew[_race][_class];
+            const auto& info = _playerCreateInfoStoreNew[_race][_class];
             if (!info)
                 continue;
 
@@ -2886,7 +2884,7 @@ void MySQLDataStore::loadPlayerCreateInfoClassLevelstats()
             uint32_t _class = fields[0].asUint32();
             uint32_t level = fields[1].asUint32();
 
-            CreateInfo_ClassLevelStats lvl;
+            CreateInfo_ClassLevelStats lvl{};
             lvl.health = fields[2].asUint32();
             lvl.mana = fields[3].asUint32();
 
@@ -2942,7 +2940,7 @@ void MySQLDataStore::loadPlayerCreateInfoClassLevelstats()
 
 PlayerCreateInfo const* MySQLDataStore::getPlayerCreateInfo(uint8_t player_race, uint8_t player_class)
 {
-    return _playerCreateInfoStoreNew[player_race][player_class];
+    return _playerCreateInfoStoreNew[player_race][player_class].get();
 }
 
 CreateInfo_Levelstats const* MySQLDataStore::getPlayerLevelstats(uint32_t level, uint8_t player_race, uint8_t player_class)
@@ -3042,7 +3040,7 @@ void MySQLDataStore::loadSpellOverrideTable()
         uint32_t distinct_override_id = fields[0].asUint32();
 
         QueryResult* spellid_for_overrideid_result = WorldDatabase.Query("SELECT spellId FROM spelloverride WHERE overrideId = %u", distinct_override_id);
-        std::list<SpellInfo const*>* list = new std::list <SpellInfo const*>;
+        auto list = std::make_unique<std::list<SpellInfo const*>>();
         if (spellid_for_overrideid_result != nullptr)
         {
             do
@@ -3063,13 +3061,9 @@ void MySQLDataStore::loadSpellOverrideTable()
             delete spellid_for_overrideid_result;
         }
 
-        if (list->size() == 0)
+        if (!list->empty())
         {
-            delete list;
-        }
-        else
-        {
-            _spellOverrideIdStore.emplace(SpellOverrideIdMap::value_type(distinct_override_id, list));
+            _spellOverrideIdStore.emplace(distinct_override_id, std::move(list));
         }
 
     } while (spelloverride_result->NextRow());
@@ -3697,17 +3691,17 @@ char* MySQLDataStore::getLocalizedItemName(uint32_t entry, uint32_t sessionLocal
     return getLocalizedItem(entry, sessionLocale)->name;
 }
 
-MySQLStructure::RecallStruct const* MySQLDataStore::getRecallByName(const std::string name)
+MySQLStructure::RecallStruct const* MySQLDataStore::getRecallByName(std::string const& name) const
 {
     std::string searchName(name);
     AscEmu::Util::Strings::toLowerCase(searchName);
 
-    for (auto itr : _recallStore)
+    for (const auto& itr : _recallStore)
     {
         std::string recallName(itr->name);
         AscEmu::Util::Strings::toLowerCase(recallName);
         if (recallName == searchName)
-            return itr;
+            return itr.get();
     }
 
     return nullptr;
@@ -4200,12 +4194,11 @@ void MySQLDataStore::loadProfessionDiscoveriesTable()
     do
     {
         Field* fields = result->Fetch();
-        MySQLStructure::ProfessionDiscovery* professionDiscovery = new MySQLStructure::ProfessionDiscovery;
+        auto* professionDiscovery = _professionDiscoveryStore.emplace(std::make_unique<MySQLStructure::ProfessionDiscovery>()).first->get();
         professionDiscovery->SpellId = fields[0].asUint32();
         professionDiscovery->SpellToDiscover = fields[1].asUint32();
         professionDiscovery->SkillValue = fields[2].asUint32();
         professionDiscovery->Chance = fields[3].asFloat();
-        _professionDiscoveryStore.insert(professionDiscovery);
 
         ++load_count;
 
@@ -4563,7 +4556,7 @@ void MySQLDataStore::loadRecallTable()
         do
         {
             Field* fields = recall_result->Fetch();
-            MySQLStructure::RecallStruct* teleCoords = new MySQLStructure::RecallStruct;
+            const auto& teleCoords = _recallStore.emplace_back(std::make_unique<MySQLStructure::RecallStruct>());
 
             teleCoords->name = fields[1].asCString();
             teleCoords->mapId = fields[2].asUint32();
@@ -4571,8 +4564,6 @@ void MySQLDataStore::loadRecallTable()
             teleCoords->location.y = fields[4].asFloat();
             teleCoords->location.z = fields[5].asFloat();
             teleCoords->location.o = fields[6].asFloat();
-
-            _recallStore.push_back(teleCoords);
 
             ++count;
         } while (recall_result->NextRow());
@@ -4602,7 +4593,6 @@ void MySQLDataStore::loadCreatureAIScriptsTable()
     do
     {
         Field* fields = result->Fetch();
-        MySQLStructure::CreatureAIScripts* ai_script = new MySQLStructure::CreatureAIScripts;
 
         uint32_t creature_entry = fields[2].asUint32();
         uint32_t spellId = fields[9].asUint32();
@@ -4611,24 +4601,22 @@ void MySQLDataStore::loadCreatureAIScriptsTable()
         if (getCreatureProperties(creature_entry) == nullptr)
         {
             sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_ai_scripts` includes invalid creature entry {} <skipped>", creature_entry);
-            delete ai_script;
             continue;
         }
 
         if (spellId != 0 && sSpellMgr.getSpellInfo(spellId) == nullptr)
         {
             sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_ai_scripts` includes invalid spellId for creature entry {} <skipped>", spellId, creature_entry);
-            delete ai_script;
             continue;
         }
 
         if (textId != 0 && sMySQLStore.getNpcScriptText(textId) == nullptr)
         {
             sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table `creature_ai_scripts` includes invalid textId for creature entry {} <skipped>", textId, creature_entry);
-            delete ai_script;
             continue;
         }
 
+        const auto& ai_script = _creatureAIScriptStore.emplace(creature_entry, std::make_unique<MySQLStructure::CreatureAIScripts>())->second;
         ai_script->entry = creature_entry;
         ai_script->difficulty = fields[3].asUint8();
         ai_script->phase = fields[4].asUint8();
@@ -4647,8 +4635,6 @@ void MySQLDataStore::loadCreatureAIScriptsTable()
         ai_script->textId = textId;
         ai_script->misc1 = fields[18].asUint32();
 
-        _creatureAIScriptStore.emplace(creature_entry, ai_script);
-
         ++load_count;
     } while (result->NextRow());
 
@@ -4657,13 +4643,13 @@ void MySQLDataStore::loadCreatureAIScriptsTable()
     sLogger.info("MySQLDataLoads : Loaded {} rows from `creature_ai_scripts` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
-std::vector<MySQLStructure::CreatureAIScripts>* MySQLDataStore::getCreatureAiScripts(uint32_t entry)
+std::unique_ptr<std::vector<MySQLStructure::CreatureAIScripts>> MySQLDataStore::getCreatureAiScripts(uint32_t entry)
 {
-    auto result = new std::vector <MySQLStructure::CreatureAIScripts>;
+    auto result = std::make_unique<std::vector<MySQLStructure::CreatureAIScripts>>();
 
     result->clear();
 
-    for (auto itr : _creatureAIScriptStore)
+    for (const auto& itr : _creatureAIScriptStore)
     {
         if (itr.first == entry)
             result->push_back(*itr.second);
@@ -4751,9 +4737,9 @@ void MySQLDataStore::loadCreatureGroupSpawns()
             continue;
         }
 
-        for (const auto creatureSpawnMap : sMySQLStore._creatureSpawnsStore)
+        for (const auto& creatureSpawnMap : sMySQLStore._creatureSpawnsStore)
         {
-            for (const auto creatureSpawn : creatureSpawnMap)
+            for (const auto& creatureSpawn : creatureSpawnMap)
             {
                 if (creatureSpawn->id == spawnId)
                 {

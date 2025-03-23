@@ -92,9 +92,9 @@ bool ChatHandler::HandleGoCreatureSpawnCommand(const char* args, WorldSession* m
         return true;
     }
 
-    for (const auto creatureSpawnMap : sMySQLStore._creatureSpawnsStore)
+    for (const auto& creatureSpawnMap : sMySQLStore._creatureSpawnsStore)
     {
-        for (const auto creatureSpawn : creatureSpawnMap)
+        for (const auto& creatureSpawn : creatureSpawnMap)
         {
             if (creatureSpawn->id == spawn_id)
             {
@@ -118,9 +118,9 @@ bool ChatHandler::HandleGoGameObjectSpawnCommand(const char* args, WorldSession*
         return true;
     }
 
-    for (const auto goSpawnMap : sMySQLStore._gameobjectSpawnsStore)
+    for (const auto& goSpawnMap : sMySQLStore._gameobjectSpawnsStore)
     {
-        for (const auto goSpawn : goSpawnMap)
+        for (const auto& goSpawn : goSpawnMap)
         {
             if (goSpawn->id == spawn_id)
             {

@@ -174,7 +174,8 @@ void ArenaTeam::destroy()
     for (auto& itr : toDestroyMembers)
         removeMember(itr);
 
-    delete this;
+    // TODO: arena team is not removed from db? -Appled
+    sObjectMgr.removeArenaTeam(this);
 }
 
 void ArenaTeam::sendPacket(WorldPacket* data) const

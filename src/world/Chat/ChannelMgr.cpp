@@ -12,12 +12,16 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgChannelNotify.h"
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Strings.hpp"
+#include "Utilities/Util.hpp"
 
 #if VERSION_STRING < Cata
 #include "Server/World.h"
 #endif
 
 using namespace AscEmu::Packets;
+
+ChannelMgr::ChannelMgr() = default;
+ChannelMgr::~ChannelMgr() = default;
 
 ChannelMgr& ChannelMgr::getInstance()
 {
@@ -70,7 +74,7 @@ Channel* ChannelMgr::getOrCreateChannel(std::string name, Player const* player, 
     std::lock_guard<std::mutex> channelGuard(m_mutexChannels);
     const auto teamId = (m_seperateChannels && player) ? player->getTeam() : TEAM_ALLIANCE;
 
-    const auto [channelItr, _] = channelList->try_emplace(name, Util::LazyInstanceCreator([name, teamId, typeId] {
+    const auto [channelItr, _] = channelList->try_emplace(name, Util::LazyInstanceCreator([&name, teamId, typeId] {
         return std::make_unique<Channel>(name, teamId, typeId);
     }));
     return channelItr->second.get();

@@ -147,11 +147,11 @@ void ObjectMgr::loadArenaTeams()
         }
         do
         {
-            auto team = std::make_unique<ArenaTeam>(result->Fetch());
-            if (team->m_id > static_cast<uint32_t>(m_hiArenaTeamId.load()))
-                m_hiArenaTeamId = static_cast<uint32_t>(team->m_id);
+            const auto [arenaItr, _] = m_arenaTeams.emplace(result->Fetch()[0].asUint32(), std::make_unique<ArenaTeam>(result->Fetch()));
+            m_arenaTeamMap[arenaItr->second->m_type].emplace(arenaItr->second->m_id, arenaItr->second.get());
+            if (arenaItr->second->m_id > static_cast<uint32_t>(m_hiArenaTeamId.load()))
+                m_hiArenaTeamId = static_cast<uint32_t>(arenaItr->second->m_id);
 
-            addArenaTeam(std::move(team));
         } while (result->NextRow());
         delete result;
     }
@@ -159,10 +159,23 @@ void ObjectMgr::loadArenaTeams()
     updateArenaTeamRankings();
 }
 
-ArenaTeam* ObjectMgr::addArenaTeam(std::unique_ptr<ArenaTeam> _arenaTeam)
+ArenaTeam* ObjectMgr::createArenaTeam(uint8_t type, Player const* leaderPlr, std::string_view name, uint32_t rating, ArenaTeamEmblem const& emblem)
 {
+    if (leaderPlr == nullptr)
+        return nullptr;
+
     std::lock_guard guard(m_arenaTeamLock);
-    const auto [arenaItr, _] = m_arenaTeams.emplace(_arenaTeam->m_id, std::move(_arenaTeam));
+
+    auto arenaTeam = std::make_unique<ArenaTeam>(type, generateArenaTeamId());
+    arenaTeam->m_leader = leaderPlr->getGuidLow();
+    arenaTeam->m_name = name;
+    arenaTeam->m_emblem = emblem;
+    arenaTeam->m_stats.rating = rating;
+
+    if (!arenaTeam->addMember(leaderPlr->getPlayerInfo()))
+        return nullptr;
+
+    const auto [arenaItr, _] = m_arenaTeams.emplace(arenaTeam->m_id, std::move(arenaTeam));
     m_arenaTeamMap[arenaItr->second->m_type].emplace(arenaItr->second->m_id, arenaItr->second.get());
     return arenaItr->second.get();
 }
@@ -170,8 +183,8 @@ ArenaTeam* ObjectMgr::addArenaTeam(std::unique_ptr<ArenaTeam> _arenaTeam)
 void ObjectMgr::removeArenaTeam(ArenaTeam const* _arenaTeam)
 {
     std::lock_guard guard(m_arenaTeamLock);
-    m_arenaTeams.erase(_arenaTeam->m_id);
     m_arenaTeamMap[_arenaTeam->m_type].erase(_arenaTeam->m_id);
+    m_arenaTeams.erase(_arenaTeam->m_id);
 }
 
 ArenaTeam const* ObjectMgr::getArenaTeamByName(std::string& _name, uint32_t /*type*/) const
@@ -308,11 +321,16 @@ void ObjectMgr::loadCharters()
     {
         do
         {
-            auto charter = std::make_unique<Charter>(result->Fetch());
-            if (charter->getId() > static_cast<int64_t>(m_hiCharterId.load()))
-                m_hiCharterId = charter->getId();
+            const auto* fields = result->Fetch();
+            const auto id = fields[0].asUint32();
+            const auto type = fields[1].asUint8();
+            const auto [itr, _] = m_charters[type].try_emplace(id, Util::LazyInstanceCreator([fields] {
+                return std::make_unique<Charter>(fields);
+            }));
 
-            m_charters[charter->getCharterType()].emplace(charter->getId(), std::move(charter));
+            if (itr->second->getId() > static_cast<int64_t>(m_hiCharterId.load()))
+                m_hiCharterId = itr->second->getId();
+
         } while (result->NextRow());
 
         delete result;
@@ -401,28 +419,10 @@ void ObjectMgr::loadCharacters()
     {
         do
         {
-            Field* fields = result->Fetch();
-            auto cachedCharacterInfo = std::make_unique<CachedCharacterInfo>();
-            cachedCharacterInfo->guid = fields[0].asUint32();
-
-            std::string characterNameDB = fields[1].asCString();
-            AscEmu::Util::Strings::capitalize(characterNameDB);
-
-            cachedCharacterInfo->name = characterNameDB;
-            cachedCharacterInfo->race = fields[2].asUint8();
-            cachedCharacterInfo->cl = fields[3].asUint8();
-            cachedCharacterInfo->lastLevel = fields[4].asUint32();
-            cachedCharacterInfo->gender = fields[5].asUint8();
-            cachedCharacterInfo->lastZone = fields[6].asUint32();
-            cachedCharacterInfo->lastOnline = fields[7].asUint32();
-            cachedCharacterInfo->acct = fields[8].asUint32();
-            cachedCharacterInfo->m_Group = nullptr;
-            cachedCharacterInfo->subGroup = 0;
-            cachedCharacterInfo->m_guild = 0;
-            cachedCharacterInfo->guildRank = GUILD_RANK_NONE;
-            cachedCharacterInfo->team = getSideByRace(cachedCharacterInfo->race);
-
-            addCachedCharacterInfo(std::move(cachedCharacterInfo));
+            const auto* fields = result->Fetch();
+            m_cachedCharacterInfo.try_emplace(fields[0].asUint32(), Util::LazyInstanceCreator([fields] {
+                return std::make_unique<CachedCharacterInfo>(fields);
+            }));
 
         } while (result->NextRow());
         delete result;
@@ -433,7 +433,7 @@ void ObjectMgr::loadCharacters()
 CachedCharacterInfo* ObjectMgr::addCachedCharacterInfo(std::unique_ptr<CachedCharacterInfo> _characterInfo)
 {
     std::lock_guard guard(m_cachedCharacterLock);
-    const auto [itr, _] = m_cachedCharacterInfo.emplace(_characterInfo->guid, std::move(_characterInfo));
+    const auto [itr, _] = m_cachedCharacterInfo.try_emplace(_characterInfo->guid, std::move(_characterInfo));
     return itr->second.get();
 }
 
@@ -499,7 +499,7 @@ void ObjectMgr::loadCorpsesForInstance(WorldMap* _worldMap)
         do
         {
             Field* fields = result->Fetch();
-            auto* corpse = addCorpse(std::make_unique<Corpse>(HIGHGUID_TYPE_CORPSE, fields[0].asUint32()));
+            auto corpse = std::make_unique<Corpse>(HIGHGUID_TYPE_CORPSE, fields[0].asUint32());
             corpse->SetPosition(fields[1].asFloat(), fields[2].asFloat(), fields[3].asFloat(), fields[4].asFloat());
             corpse->setZoneId(fields[5].asUint32());
             corpse->SetMapId(fields[6].asUint32());
@@ -510,6 +510,8 @@ void ObjectMgr::loadCorpsesForInstance(WorldMap* _worldMap)
                 continue;
 
             corpse->PushToWorld(_worldMap);
+            std::lock_guard guard(m_corpseLock);
+            m_corpses.try_emplace(corpse->getGuidLow(), std::move(corpse));
         } while (result->NextRow());
 
         delete result;
@@ -521,7 +523,7 @@ Corpse* ObjectMgr::loadCorpseByGuid(const uint32_t _corpseGuid)
     if (QueryResult* result = CharacterDatabase.Query("SELECT * FROM corpses WHERE guid =%u ", _corpseGuid))
     {
         Field* field = result->Fetch();
-        auto* corpse = addCorpse(std::make_unique<Corpse>(HIGHGUID_TYPE_CORPSE, field[0].asUint32()));
+        auto corpse = std::make_unique<Corpse>(HIGHGUID_TYPE_CORPSE, field[0].asUint32());
         corpse->SetPosition(field[1].asFloat(), field[2].asFloat(), field[3].asFloat(), field[4].asFloat());
         corpse->setZoneId(field[5].asUint32());
         corpse->SetMapId(field[6].asUint32());
@@ -535,7 +537,9 @@ Corpse* ObjectMgr::loadCorpseByGuid(const uint32_t _corpseGuid)
         corpse->AddToWorld();
 
         delete result;
-        return corpse;
+        std::lock_guard guard(m_corpseLock);
+        const auto [itr, _] = m_corpses.try_emplace(corpse->getGuidLow(), std::move(corpse));
+        return itr->second.get();
     }
 
     return nullptr;
@@ -544,14 +548,11 @@ Corpse* ObjectMgr::loadCorpseByGuid(const uint32_t _corpseGuid)
 Corpse* ObjectMgr::createCorpse()
 {
     uint32_t corpseGuid = ++m_hiCorpseGuid;
-    auto* corpse = addCorpse(std::make_unique<Corpse>(HIGHGUID_TYPE_CORPSE, corpseGuid));
-    return corpse;
-}
 
-Corpse* ObjectMgr::addCorpse(std::unique_ptr<Corpse> _corpse)
-{
     std::lock_guard guard(m_corpseLock);
-    const auto [corpseItr, _] = m_corpses.emplace(_corpse->getGuidLow(), std::move(_corpse));
+    const auto [corpseItr, _] = m_corpses.try_emplace(corpseGuid, Util::LazyInstanceCreator([corpseGuid] {
+        return std::make_unique<Corpse>(HIGHGUID_TYPE_CORPSE, corpseGuid);
+    }));
     return corpseItr->second.get();
 }
 
@@ -636,10 +637,7 @@ void ObjectMgr::loadVendors()
         do
         {
             Field* fields = result->Fetch();
-            const auto [vendorItr, _] = m_vendors.try_emplace(fields[0].asUint32(), Util::LazyInstanceCreator([] {
-                return std::make_unique<std::vector<CreatureItem>>();
-            }));
-            items = vendorItr->second.get();
+            items = createVendorList(fields[0].asUint32());
 
             CreatureItem itm{};
             itm.itemid = fields[1].asUint32();
@@ -671,9 +669,11 @@ std::vector<CreatureItem>* ObjectMgr::getVendorList(uint32_t _entry) const
     return itr != m_vendors.cend() ? itr->second.get() : nullptr;
 }
 
-std::vector<CreatureItem>* ObjectMgr::addVendorList(uint32_t _entry, std::unique_ptr<std::vector<CreatureItem>> _list)
+std::vector<CreatureItem>* ObjectMgr::createVendorList(uint32_t _entry)
 {
-    const auto [vendorItr, _] = m_vendors.emplace(_entry, std::move(_list));
+    const auto [vendorItr, _] = m_vendors.try_emplace(_entry, Util::LazyInstanceCreator([] {
+        return std::make_unique<std::vector<CreatureItem>>();
+    }));
     return vendorItr->second.get();
 }
 
@@ -875,7 +875,15 @@ void ObjectMgr::loadReputationModifierTable(const char* _tableName, ReputationMo
     {
         do
         {
-            auto reputationMod = std::make_unique<ReputationMod>();
+            const auto entry = result->Fetch()[0].asUint32();
+
+            const auto [repModItr, createdNew] = _reputationModMap.try_emplace(entry, Util::LazyInstanceCreator([] {
+                return std::make_unique<ReputationModifier>();
+            }));
+            if (createdNew)
+                repModItr->second->entry = entry;
+
+            const auto& reputationMod = repModItr->second->mods.emplace_back(std::make_unique<ReputationMod>());
             if (AscEmu::Util::Strings::isEqual(_tableName, "reputation_creature_onkill"))
             {
                 reputationMod->faction[TEAM_ALLIANCE] = result->Fetch()[1].asUint32();
@@ -892,15 +900,6 @@ void ObjectMgr::loadReputationModifierTable(const char* _tableName, ReputationMo
                 reputationMod->replimit = result->Fetch()[3].asUint32();
             }
 
-            const auto entry = result->Fetch()[0].asUint32();
-
-            const auto [repModItr, createdNew] = _reputationModMap.try_emplace(entry, Util::LazyInstanceCreator([] {
-                return std::make_unique<ReputationModifier>();
-            }));
-            repModItr->second->mods.push_back(std::move(reputationMod));
-            if (createdNew)
-                repModItr->second->entry = entry;
-
         } while (result->NextRow());
         delete result;
     }
@@ -916,8 +915,15 @@ void ObjectMgr::loadInstanceReputationModifiers()
     {
         Field* field = result->Fetch();
 
-        auto reputationMod = std::make_unique<InstanceReputationMod>();
-        reputationMod->mapid = field[0].asUint32();
+        const auto mapId = field[0].asUint32();
+        const auto [repInstanceItr, createdNew] = m_reputationInstance.try_emplace(mapId, Util::LazyInstanceCreator([] {
+            return std::make_unique<InstanceReputationModifier>();
+        }));
+        if (createdNew)
+            repInstanceItr->second->mapid = mapId;
+
+        const auto& reputationMod = repInstanceItr->second->mods.emplace_back(std::make_unique<InstanceReputationMod>());
+        reputationMod->mapid = mapId;
         reputationMod->mob_rep_reward = field[1].asInt32();
         reputationMod->mob_rep_limit = field[2].asUint32();
         reputationMod->boss_rep_reward = field[3].asInt32();
@@ -925,13 +931,6 @@ void ObjectMgr::loadInstanceReputationModifiers()
         reputationMod->faction[TEAM_ALLIANCE] = field[5].asUint32();
         reputationMod->faction[TEAM_HORDE] = field[6].asUint32();
 
-        const auto [repInstanceItr, createdNew] = m_reputationInstance.try_emplace(reputationMod->mapid, Util::LazyInstanceCreator([] {
-            return std::make_unique<InstanceReputationModifier>();
-        }));
-        if (createdNew)
-            repInstanceItr->second->mapid = reputationMod->mapid;
-
-        repInstanceItr->second->mods.push_back(std::move(reputationMod));
     } while (result->NextRow());
     delete result;
 
@@ -1009,8 +1008,9 @@ void ObjectMgr::loadGroups()
         }
         do
         {
-            auto* group = sObjectMgr.addGroup(std::make_unique<Group>(false));
+            auto group = std::make_unique<Group>(false);
             group->LoadFromDB(result->Fetch());
+            m_groups.try_emplace(group->GetID(), std::move(group));
         } while (result->NextRow());
         delete result;
     }
@@ -1064,11 +1064,12 @@ uint32_t ObjectMgr::generateGroupId()
     return groupId;
 }
 
-Group* ObjectMgr::addGroup(std::unique_ptr<Group> _group)
+Group* ObjectMgr::createGroup()
 {
     std::lock_guard guard(m_groupLock);
-    const auto [itr, _] = m_groups.emplace(_group->GetID(), std::move(_group));
-    return itr->second.get();
+    auto group = std::make_unique<Group>(true);
+    const auto [groupItr, _] = m_groups.try_emplace(group->GetID(), std::move(group));
+    return groupItr->second.get();
 }
 
 void ObjectMgr::removeGroup(uint32_t _groupId)
@@ -1742,8 +1743,16 @@ void ObjectMgr::loadTrainers()
         {
             auto* const fields = trainerResult->Fetch();
             const auto entry = fields[0].asUint32();
+            const auto spellCount = static_cast<uint32_t>(getTrainerSpellSetById(fields[12].asUint32())->size());
 
-            auto trainer = std::make_unique<Trainer>();
+            if (spellCount == 0)
+                continue;
+
+            const auto [trainerItr, _] = m_trainers.try_emplace(entry, Util::LazyInstanceCreator([] {
+                return std::make_unique<Trainer>();
+            }));
+
+            auto* trainer = trainerItr->second.get();
             trainer->RequiredSkill = fields[2].asUint16();
             trainer->RequiredSkillLine = fields[3].asUint32();
             trainer->RequiredClass = fields[4].asUint32();
@@ -1769,18 +1778,8 @@ void ObjectMgr::loadTrainers()
             else
                 trainer->UIMessage = normalTalkMessage;
 
-            trainer->SpellCount = static_cast<uint32_t>(getTrainerSpellSetById(trainer->spellset_id)->size());
+            trainer->SpellCount = spellCount;
 
-            // and now we insert it to our lookup table
-            if (trainer->SpellCount == 0)
-            {
-                if (trainer->UIMessage != normalTalkMessage)
-                    trainer->UIMessage.clear();
-
-                continue;
-            }
-
-            m_trainers.emplace(entry, std::move(trainer));
         } while (trainerResult->NextRow());
 
         delete trainerResult;
@@ -2009,10 +2008,10 @@ void ObjectMgr::loadInstanceEncounters()
 
 #if VERSION_STRING <= TBC
         DungeonEncounterList& encounters = m_dungeonEncounterStore[mapId];
-        encounters.push_back(std::make_unique<DungeonEncounter>(EncounterCreditType(creditType), creditEntry));
+        encounters.emplace_back(std::make_unique<DungeonEncounter>(EncounterCreditType(creditType), creditEntry));
 #else
         DungeonEncounterList& encounters = m_dungeonEncounterStore[static_cast<int32_t>(static_cast<uint16_t>(dungeonEncounter->mapId) | (static_cast<uint32_t>(dungeonEncounter->difficulty) << 16))];
-        encounters.push_back(std::make_unique<DungeonEncounter>(dungeonEncounter, EncounterCreditType(creditType), creditEntry, lastEncounterDungeon));
+        encounters.emplace_back(std::make_unique<DungeonEncounter>(dungeonEncounter, EncounterCreditType(creditType), creditEntry, lastEncounterDungeon));
 #endif
         ++count;
     } while (result->NextRow());
@@ -2158,20 +2157,19 @@ void ObjectMgr::loadCreatureTimedEmotes()
     do
     {
         Field* field = result->Fetch();
-        auto timedEmotes = std::make_unique<SpawnTimedEmotes>();
+        uint32_t spawnId = field[0].asUint32();
+
+        const auto [timedEmoteItr, _] = m_timedEmotes.try_emplace(spawnId, Util::LazyInstanceCreator([] {
+            return std::make_unique<TimedEmoteList>();
+        }));
+
+        const auto& timedEmotes = timedEmoteItr->second->emplace_back(std::make_unique<SpawnTimedEmotes>());
         timedEmotes->type = field[2].asUint8();
         timedEmotes->value = field[3].asUint32();
         timedEmotes->msg = field[4].asCString();
         timedEmotes->msg_type = field[5].asUint8();
         timedEmotes->msg_lang = field[6].asUint8();
         timedEmotes->expire_after = field[7].asUint32();
-
-        uint32_t spawnId = field[0].asUint32();
-
-        const auto [timedEmoteItr, _] = m_timedEmotes.try_emplace(spawnId, Util::LazyInstanceCreator([] {
-            return std::make_unique<TimedEmoteList>();
-        }));
-        timedEmoteItr->second->push_back(std::move(timedEmotes));
 
         ++count;
     } while (result->NextRow());
@@ -2217,11 +2215,13 @@ void ObjectMgr::generateLevelUpInfo()
                 continue;
             }
 
-            auto levelMap = std::make_unique<LevelMap>();
+            const auto [lvlMapItr, _] = m_levelInfo.insert_or_assign(std::make_pair(playerRace, playerClass), std::make_unique<LevelMap>());
+            auto* levelMap = lvlMapItr->second.get();
 
             for (uint32_t level = 1; level <= worldConfig.player.playerLevelCap; ++level)
             {
-                auto levelInfo = std::make_unique<LevelInfo>();
+                const auto [lvlInfoItr, _] = levelMap->insert_or_assign(level, std::make_unique<LevelInfo>());
+                auto* levelInfo = lvlInfoItr->second.get();
 
                 if (auto* playerClassLevelstats = sMySQLStore.getPlayerClassLevelStats(level, playerClass))
                 {
@@ -2252,11 +2252,7 @@ void ObjectMgr::generateLevelUpInfo()
 
                     _missingStatLevelData.push_back({ level, playerRace, playerClass });
                 }
-
-                levelMap->insert_or_assign(level, std::move(levelInfo));
             }
-
-            m_levelInfo.insert_or_assign(std::make_pair(playerRace, playerClass), std::move(levelMap));
         }
     }
 

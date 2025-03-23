@@ -20,7 +20,7 @@ ConsoleSocket::ConsoleSocket(SOCKET iFd) :
     isWebClient(false)
 {
     mInputBuffer = new char[ConsoleDefines::localBuffer];
-    mRemoteConsole = new RemoteConsole(this);
+    mRemoteConsole = std::make_unique<RemoteConsole>(this);
 }
 
 ConsoleSocket::~ConsoleSocket()
@@ -28,11 +28,6 @@ ConsoleSocket::~ConsoleSocket()
     if (mInputBuffer != NULL)
     {
         delete[] mInputBuffer;
-    }
-
-    if (mRemoteConsole != nullptr)
-    {
-        delete mRemoteConsole;
     }
 
     if (mRequestId)
@@ -131,7 +126,7 @@ void ConsoleSocket::handleConsoleInput()
                 }
                 default:
                 {
-                    processConsoleInput(mRemoteConsole, mInputBuffer, isWebClient);
+                    processConsoleInput(mRemoteConsole.get(), mInputBuffer, isWebClient);
 
                 } break;
             }

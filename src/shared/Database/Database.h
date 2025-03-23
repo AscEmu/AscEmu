@@ -21,6 +21,7 @@
 #define _DATABASE_H
 
 #include "Field.hpp"
+#include "ThreadSafeQueue.hpp"
 #include "Threading/Queue.h"
 #include "Threading/AEThread.h"
 #include "CommonTypes.hpp"
@@ -141,7 +142,7 @@ class SERVER_DECL Database
         DatabaseConnection* GetFreeConnection();
 
         void PerformQueryBuffer(QueryBuffer* b, DatabaseConnection* ccon);
-        void AddQueryBuffer(QueryBuffer* b);
+        void AddQueryBuffer(std::unique_ptr<QueryBuffer> b);
 
         static Database* CreateDatabaseInterface();
         static void CleanupLibs();
@@ -162,7 +163,7 @@ class SERVER_DECL Database
         virtual QueryResult* _StoreQueryResult(DatabaseConnection* con) = 0;
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        FQueue<QueryBuffer*> query_buffer;
+        ThreadSafeQueue<std::unique_ptr<QueryBuffer>> query_buffer;
 
         //////////////////////////////////////////////////////////////////////////////////////////
         FQueue<char*> queries_queue;
