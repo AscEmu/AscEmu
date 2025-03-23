@@ -96,7 +96,7 @@ class CachedCharacterInfo;
 
 typedef struct
 {
-    std::shared_ptr<CachedCharacterInfo> player_info;
+    CachedCharacterInfo const* player_info;
     Player* player;
 } GroupMember;
 
@@ -119,10 +119,10 @@ public:
     ~SubGroup() = default;
 
     //MIT
-    std::set<std::shared_ptr<CachedCharacterInfo>> getGroupMembers() const { return m_GroupMembers; }
+    std::set<CachedCharacterInfo*> getGroupMembers() const { return m_GroupMembers; }
 
-    bool AddPlayer(std::shared_ptr<CachedCharacterInfo> info);
-    void RemovePlayer(std::shared_ptr<CachedCharacterInfo> info);
+    bool AddPlayer(CachedCharacterInfo* info);
+    void RemovePlayer(CachedCharacterInfo* info);
 
     inline bool IsFull(void)                 { return m_GroupMembers.size() >= MAX_GROUP_SIZE_PARTY; }
     inline size_t GetMemberCount(void)       { return m_GroupMembers.size(); }
@@ -137,7 +137,7 @@ public:
     bool HasMember(uint32 guid);
 
 protected:
-    std::set<std::shared_ptr<CachedCharacterInfo>> m_GroupMembers;
+    std::set<CachedCharacterInfo*> m_GroupMembers;
     Group* m_Parent;
     uint32 m_Id;
 };
@@ -169,8 +169,8 @@ public:
     typedef std::unordered_map<uint32_t, InstanceGroupBind> BoundInstancesMap;
 
     // Adding/Removal Management
-    bool AddMember(std::shared_ptr<CachedCharacterInfo> info, int32 subgroupid = -1);
-    void RemovePlayer(std::shared_ptr<CachedCharacterInfo> info);
+    bool AddMember(CachedCharacterInfo* info, int32 subgroupid = -1);
+    void RemovePlayer(CachedCharacterInfo* info);
 
     // Leaders and Looting
     void SetLeader(Player* pPlayer, bool silent);
@@ -204,13 +204,13 @@ public:
 
     inline uint8 GetMethod(void) { return m_LootMethod; }
     inline uint16 GetThreshold(void) { return m_LootThreshold; }
-    inline std::shared_ptr<CachedCharacterInfo> GetLeader(void) { return m_Leader; }
-    inline std::shared_ptr<CachedCharacterInfo> GetLooter(void) { return m_Looter; }
+    inline CachedCharacterInfo* GetLeader(void) { return m_Leader; }
+    inline CachedCharacterInfo* GetLooter(void) { return m_Looter; }
 
-    void MovePlayer(std::shared_ptr<CachedCharacterInfo> info, uint8 subgroup);
+    void MovePlayer(CachedCharacterInfo* info, uint8 subgroup);
 
     bool HasMember(Player* pPlayer);
-    bool HasMember(std::shared_ptr<CachedCharacterInfo> info);
+    bool HasMember(CachedCharacterInfo* info);
     inline uint32 MemberCount(void) { return m_MemberCount; }
     inline bool IsFull() { return ((m_GroupType == GROUP_TYPE_PARTY && m_MemberCount >= MAX_GROUP_SIZE_PARTY) || (m_GroupType == GROUP_TYPE_RAID && m_MemberCount >= MAX_GROUP_SIZE_RAID)); }
 
@@ -236,13 +236,13 @@ public:
     inline void Unlock() { return m_groupLock.unlock(); }
     bool m_isqueued;
 
-    void SetAssistantLeader(std::shared_ptr<CachedCharacterInfo> pMember);
-    void SetMainTank(std::shared_ptr<CachedCharacterInfo> pMember);
-    void SetMainAssist(std::shared_ptr<CachedCharacterInfo> pMember);
+    void SetAssistantLeader(CachedCharacterInfo* pMember);
+    void SetMainTank(CachedCharacterInfo* pMember);
+    void SetMainAssist(CachedCharacterInfo* pMember);
 
-    inline std::shared_ptr<CachedCharacterInfo> GetAssistantLeader() { return m_assistantLeader; }
-    inline std::shared_ptr<CachedCharacterInfo> GetMainTank() { return m_mainTank; }
-    inline std::shared_ptr<CachedCharacterInfo> GetMainAssist() { return m_mainAssist; }
+    inline CachedCharacterInfo* GetAssistantLeader() { return m_assistantLeader; }
+    inline CachedCharacterInfo* GetMainTank() { return m_mainTank; }
+    inline CachedCharacterInfo* GetMainAssist() { return m_mainAssist; }
 
     InstanceGroupBind* bindToInstance(InstanceSaved* save, bool permanent, bool load = false);
     void unbindInstance(uint32_t mapid, uint8_t difficulty, bool unload = false);
@@ -300,11 +300,11 @@ public:
     void GoOffline(Player* p);
 
 protected:
-    std::shared_ptr<CachedCharacterInfo> m_Leader;
-    std::shared_ptr<CachedCharacterInfo> m_Looter;
-    std::shared_ptr<CachedCharacterInfo> m_assistantLeader;
-    std::shared_ptr<CachedCharacterInfo> m_mainTank;
-    std::shared_ptr<CachedCharacterInfo> m_mainAssist;
+    CachedCharacterInfo* m_Leader;
+    CachedCharacterInfo* m_Looter;
+    CachedCharacterInfo* m_assistantLeader;
+    CachedCharacterInfo* m_mainTank;
+    CachedCharacterInfo* m_mainAssist;
 
     BoundInstancesMap   m_boundInstances[InstanceDifficulty::MAX_DIFFICULTY];
 

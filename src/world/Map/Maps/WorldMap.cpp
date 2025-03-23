@@ -439,7 +439,7 @@ void WorldMap::update(uint32_t t_diff)
                 break;
 
             _corpseDespawnTimes.pop();
-            if (std::shared_ptr<Corpse> pCorpse = sObjectMgr.getCorpseByGuid(static_cast<uint32_t>(next.guid)))
+            if (auto* const pCorpse = sObjectMgr.getCorpseByGuid(static_cast<uint32_t>(next.guid)))
             {
                 if (pCorpse->getWorldMap() != this)
                     break;

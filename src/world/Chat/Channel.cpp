@@ -64,7 +64,7 @@ Channel::~Channel()
     std::lock_guard<std::mutex> guard(m_mutexChannel);
 
     for (const auto& member : m_members)
-        member.first->leftChannel(sChannelMgr.getChannel(m_channelName, member.first));
+        member.first->leftChannel(this);
 }
 
 std::string Channel::getChannelName() const { return m_channelName; }
@@ -126,7 +126,7 @@ void Channel::attemptJoin(Player* plr, std::string password, bool skipCheck/* = 
     m_members.insert(std::make_pair(plr, memberFlags));
     m_mutexChannel.unlock();
 
-    plr->joinedChannel(sChannelMgr.getChannel(m_channelName, plr));
+    plr->joinedChannel(this);
 
     // Announce player join to other members in channel
     if (m_announcePlayers)
@@ -152,7 +152,7 @@ void Channel::leaveChannel(Player* plr, bool sendPacket/* = true*/)
     m_members.erase(itr);
     m_mutexChannel.unlock();
 
-    plr->leftChannel(sChannelMgr.getChannel(m_channelName, plr));
+    plr->leftChannel(this);
 
     // If player is channel owner, find new owner for channel
     if (memberFlags & CHANNEL_MEMBER_FLAG_OWNER)
@@ -168,7 +168,7 @@ void Channel::leaveChannel(Player* plr, bool sendPacket/* = true*/)
 
     // If channel is now empty, delete it
     if (m_members.empty())
-        sChannelMgr.removeChannel(sChannelMgr.getChannel(m_channelName, plr));
+        sChannelMgr.removeChannel(this);
 }
 
 size_t Channel::getMemberCount() const
@@ -299,7 +299,7 @@ void Channel::kickOrBanPlayer(Player* plr, Player* die_player, bool ban)
     die_player->sendPacket(SmsgChannelNotify(CHANNEL_NOTIFY_FLAG_YOULEFT, m_channelName, 0, 0, m_channelId).serialise().get());
 }
 
-void Channel::unBanPlayer(Player* plr, std::shared_ptr<CachedCharacterInfo> bplr)
+void Channel::unBanPlayer(Player* plr, CachedCharacterInfo const* bplr)
 {
     m_mutexChannel.lock();
 

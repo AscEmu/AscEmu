@@ -375,7 +375,7 @@ void Creature::toggleDualwield(bool enable)
     }
 }
 
-std::shared_ptr<std::vector<CreatureItem>> Creature::getSellItems()
+std::vector<CreatureItem>* Creature::getSellItems()
 {
     return m_SellItems;
 }
@@ -1444,7 +1444,7 @@ void Creature::SetCreatureProperties(CreatureProperties const* cp)
     creature_properties = cp;
 }
 
-std::shared_ptr<Trainer> Creature::GetTrainer()
+Trainer const* Creature::GetTrainer()
 {
     return mTrainer;
 }
@@ -1458,11 +1458,9 @@ void Creature::AddVendorItem(uint32 itemid, uint32 amount, WDB::Structures::Item
     ci.max_amount = 0;
     ci.incrtime = 0;
     ci.extended_cost = ec;
-    if (!m_SellItems)
-    {
-        m_SellItems = std::make_shared<std::vector<CreatureItem>>();
-        sObjectMgr.setVendorList(getEntry(), m_SellItems);
-    }
+    if (m_SellItems == nullptr)
+        m_SellItems = sObjectMgr.addVendorList(getEntry(), std::make_unique<std::vector<CreatureItem>>());
+
     m_SellItems->push_back(ci);
 }
 

@@ -5,18 +5,24 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Management/Loot/LootDefines.hpp"
+#include <memory>
+#include <unordered_map>
 #include <vector>
 
 struct Loot;
 struct LootStoreItem;
+class LootTemplate;
 class Player;
 
 typedef std::vector<LootStoreItem> LootStoreItemList;
+typedef std::unordered_map<uint32_t, std::unique_ptr<LootTemplate>> LootTemplateMap;
 
 class LootTemplate
 {
 public:
+    LootTemplate();
+    ~LootTemplate();
+
     // Adds an entry to our LootTempelate
     void addEntry(LootStoreItem& item);
 

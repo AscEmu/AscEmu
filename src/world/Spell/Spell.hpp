@@ -177,7 +177,7 @@ public:
 
     Player* getPlayerTarget() const;
     GameObject* getGameObjectTarget() const;
-    std::shared_ptr<Corpse> getCorpseTarget() const;
+    Corpse* getCorpseTarget() const;
 
     void unsetAllTargets();
 
@@ -205,7 +205,7 @@ private:
     Item* m_itemTarget = nullptr;
     GameObject* m_gameObjTarget = nullptr;
     Player* m_playerTarget = nullptr;
-    std::shared_ptr<Corpse> m_corpseTarget = nullptr;
+    Corpse* m_corpseTarget = nullptr;
 
 protected:
     // Current Targets to be used in effect handler

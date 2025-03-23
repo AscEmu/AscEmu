@@ -173,7 +173,7 @@ using namespace InstanceDifficulty;
 CachedCharacterInfo::~CachedCharacterInfo()
 {
     if (m_Group != nullptr)
-        m_Group->RemovePlayer(sObjectMgr.getCachedCharacterInfo(guid));
+        m_Group->RemovePlayer(this);
 }
 
 Player::Player(uint32_t guid) :
@@ -2849,7 +2849,7 @@ void Player::toggleDnd()
 
 uint32_t* Player::getPlayedTime() { return m_playedTime; }
 
-std::shared_ptr<CachedCharacterInfo> Player::getPlayerInfo() const { return m_playerInfo; }
+CachedCharacterInfo* Player::getPlayerInfo() const { return m_playerInfo; }
 
 void Player::changeLooks(uint64_t guid, uint8_t gender, uint8_t skin, uint8_t face, uint8_t hairStyle, uint8_t hairColor, uint8_t facialHair)
 {
@@ -7848,9 +7848,9 @@ int32_t Player::getBGEntryInstanceId() const { return m_bgEntryData.instanceId; 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Charter
 void Player::unsetCharter(uint8_t charterType) { m_charters[charterType] = nullptr; }
-std::shared_ptr<Charter> Player::getCharter(uint8_t charterType) { return m_charters[charterType]; }
+Charter const* Player::getCharter(uint8_t charterType) { return m_charters[charterType]; }
 
-bool Player::canSignCharter(std::shared_ptr<Charter> charter, Player* requester)
+bool Player::canSignCharter(Charter const* charter, Player* requester)
 {
     if (charter == nullptr || requester == nullptr)
         return false;
@@ -7899,7 +7899,7 @@ bool Player::isAlreadyInvitedToGroup() const { return m_grouIdpInviterId != 0; }
 
 bool Player::isInGroup() const { return m_playerInfo && m_playerInfo->m_Group; }
 
-std::shared_ptr<Group> Player::getGroup() { return m_playerInfo ? m_playerInfo->m_Group : nullptr; }
+Group* Player::getGroup() { return m_playerInfo ? m_playerInfo->m_Group : nullptr; }
 bool Player::isGroupLeader() const
 {
     if (m_playerInfo->m_Group != nullptr)
@@ -7972,7 +7972,7 @@ LocationVector Player::getLastGroupPosition() const { return m_lastGroupPosition
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Channels
-void Player::joinedChannel(std::shared_ptr<Channel> channel)
+void Player::joinedChannel(Channel* channel)
 {
     if (channel == nullptr)
         return;
@@ -7981,7 +7981,7 @@ void Player::joinedChannel(std::shared_ptr<Channel> channel)
     m_channels.insert(channel);
 }
 
-void Player::leftChannel(std::shared_ptr<Channel> channel)
+void Player::leftChannel(Channel* channel)
 {
     if (channel == nullptr)
         return;
@@ -8011,7 +8011,7 @@ void Player::updateChannels()
         if (channelDbc == nullptr)
             continue;
 
-        std::shared_ptr<Channel> oldChannel = nullptr;
+        Channel* oldChannel = nullptr;
 
         m_mutexChannel.lock();
         for (auto _channel : m_channels)
@@ -8057,7 +8057,7 @@ void Player::updateChannels()
 
 void Player::removeAllChannels()
 {
-    std::set<std::shared_ptr<Channel>> removeList;
+    std::set<Channel*> removeList;
     m_mutexChannel.lock();
 
     for (const auto& channel : m_channels)
@@ -8075,14 +8075,14 @@ void Player::removeAllChannels()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // ArenaTeam
-void Player::setArenaTeam(uint8_t type, std::shared_ptr<ArenaTeam> arenaTeam)
+void Player::setArenaTeam(uint8_t type, ArenaTeam* arenaTeam)
 {
     m_arenaTeams[type] = arenaTeam;
 
     if (arenaTeam)
         getSession()->SystemMessage("You are now a member of the arena team'%s'.", arenaTeam->m_name.c_str());
 }
-std::shared_ptr<ArenaTeam> Player::getArenaTeam(uint8_t type) { return m_arenaTeams[type]; }
+ArenaTeam* Player::getArenaTeam(uint8_t type) { return m_arenaTeams[type]; }
 
 bool Player::isInArenaTeam(uint8_t type) const { return m_arenaTeams[type] != nullptr; }
 void Player::initialiseArenaTeam()
@@ -9484,10 +9484,10 @@ void Player::setLoginPosition()
 
 void Player::setPlayerInfoIfNeeded()
 {
-    auto playerInfo = sObjectMgr.getCachedCharacterInfo(getGuidLow());
-    if (playerInfo == nullptr)
+    auto playerInfoPtr = sObjectMgr.getCachedCharacterInfo(getGuidLow());
+    if (playerInfoPtr == nullptr)
     {
-        playerInfo = std::make_shared<CachedCharacterInfo>();
+        auto playerInfo = std::make_unique<CachedCharacterInfo>();
         playerInfo->cl = getClass();
         playerInfo->gender = getGender();
         playerInfo->guid = getGuidLow();
@@ -9503,10 +9503,10 @@ void Player::setPlayerInfoIfNeeded()
         playerInfo->m_Group = nullptr;
         playerInfo->subGroup = 0;
 
-        sObjectMgr.addCachedCharacterInfo(playerInfo);
+        playerInfoPtr = sObjectMgr.addCachedCharacterInfo(std::move(playerInfo));
     }
 
-    m_playerInfo = playerInfo;
+    m_playerInfo = playerInfoPtr;
 }
 
 void Player::setGuildAndGroupInfo()
@@ -10227,7 +10227,7 @@ bool Player::canBuyAt(MySQLStructure::VendorRestrictions const* vendor)
     return true;
 }
 
-bool Player::canTrainAt(std::shared_ptr<Trainer> trainer)
+bool Player::canTrainAt(Trainer const* trainer)
 {
     if (!trainer)
         return false;
@@ -15590,7 +15590,7 @@ void Player::updateStats()
     setAttackPower(attackPower);
     setRangedAttackPower(rangedAttackPower);
 
-    std::shared_ptr<LevelInfo> levelInfo = sObjectMgr.getLevelInfo(this->getRace(), this->getClass(), lev);
+    const auto* levelInfo = sObjectMgr.getLevelInfo(this->getRace(), this->getClass(), lev);
     if (levelInfo != nullptr)
     {
         hpdelta = levelInfo->Stat[2] * 10;

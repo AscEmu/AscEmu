@@ -390,7 +390,7 @@ void BattlegroundManager::eventQueueUpdate()
     this->eventQueueUpdate(false);
 }
 
-uint32_t BattlegroundManager::getArenaGroupQInfo(std::shared_ptr<Group> group, uint8_t type, uint32_t* averageRating)
+uint32_t BattlegroundManager::getArenaGroupQInfo(Group* group, uint8_t type, uint32_t* averageRating)
 {
     uint32_t count = 0;
     uint32_t rating = 0;
@@ -426,7 +426,7 @@ uint32_t BattlegroundManager::getArenaGroupQInfo(std::shared_ptr<Group> group, u
     return arenaTeam->m_id;
 }
 
-void BattlegroundManager::addGroupToArena(Battleground* battleground, std::shared_ptr<Group> group, uint32_t team)
+void BattlegroundManager::addGroupToArena(Battleground* battleground, Group* group, uint32_t team)
 {
     if (group == nullptr || group->GetLeader() == nullptr)
         return;
@@ -453,7 +453,7 @@ void BattlegroundManager::addGroupToArena(Battleground* battleground, std::share
     }
 }
 
-int BattlegroundManager::createArenaType(uint8_t type, std::shared_ptr<Group> group1, std::shared_ptr<Group> group2)
+int BattlegroundManager::createArenaType(uint8_t type, Group* group1, Group* group2)
 {
     const auto arena = dynamic_cast<Arena*>(createInstance(type, BattlegroundDef::LEVEL_GROUP_70));
     if (arena == nullptr)
@@ -791,7 +791,7 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
     }
 
     // Handle paired arena team joining
-    std::shared_ptr<Group> group1, group2;
+    Group* group1, *group2;
     uint32_t teamids[2] = { 0, 0 };
     uint32_t avgRating[2] = { 0, 0 };
     uint32_t n;

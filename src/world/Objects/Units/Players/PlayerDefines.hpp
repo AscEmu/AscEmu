@@ -981,7 +981,7 @@ public:
     time_t lastOnline = 0;
     uint32_t lastZone = 0;
     uint32_t lastLevel = 0;
-    std::shared_ptr<Group> m_Group = nullptr;
+    Group* m_Group = nullptr;
     int8_t subGroup = 0;
 
     uint32_t m_guild = 0;

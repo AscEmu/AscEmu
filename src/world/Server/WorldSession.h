@@ -195,7 +195,7 @@ class SERVER_DECL WorldSession
 
         void LogoutPlayer(bool Save);
 
-        void QueuePacket(std::shared_ptr<WorldPacket> packet);
+        void QueuePacket(std::unique_ptr<WorldPacket> packet);
 
         void OutPacket(uint16_t opcode, uint16_t len, const void* data);
 
@@ -926,7 +926,7 @@ protected:
 
         AccountDataEntry sAccountData[8]{};
 
-        ThreadSafeQueue<std::shared_ptr<WorldPacket>> _recvQueue;
+        ThreadSafeQueue<std::unique_ptr<WorldPacket>> _recvQueue;
         std::string permissions;
 
         bool _loggingOut; // Player is being removed from the game.

@@ -126,7 +126,7 @@ public:
 #endif
     void toggleDualwield(bool);
 
-    std::shared_ptr<std::vector<CreatureItem>> getSellItems();
+    std::vector<CreatureItem>* getSellItems();
 
     uint32_t getWaypointPath() const { return _waypointPathId; }
     void loadPath(uint32_t pathid) { _waypointPathId = pathid; }
@@ -324,7 +324,7 @@ public:
         CreatureProperties const* GetCreatureProperties();
         void SetCreatureProperties(CreatureProperties const* creature_properties);
 
-        std::shared_ptr<Trainer> GetTrainer();
+        Trainer const* GetTrainer();
 
         WDB::Structures::CreatureFamilyEntry const* myFamily = nullptr;
 
@@ -383,13 +383,13 @@ public:
 
         CreatureAIScript* _myScriptClass = nullptr;
         bool m_limbostate = false;
-        std::shared_ptr<Trainer> mTrainer = nullptr;
+        Trainer const* mTrainer = nullptr;
 
         // Movement
         MovementGeneratorType m_defaultMovementType = IDLE_MOTION_TYPE;
 
         // Vendor data
-        std::shared_ptr<std::vector<CreatureItem>> m_SellItems = nullptr;
+        std::vector<CreatureItem>* m_SellItems = nullptr;
 
         // Taxi data
         uint32 mTaxiNode = 0;

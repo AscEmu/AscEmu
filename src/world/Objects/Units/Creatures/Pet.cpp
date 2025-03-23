@@ -2258,7 +2258,7 @@ void Pet::SetAutoCast(AI_Spell* sp, bool on)
     }
 }
 
-std::shared_ptr<Group> Pet::getGroup()
+Group* Pet::getGroup()
 {
     if (auto* plrOwner = getPlayerOwner())
         return plrOwner->getGroup();

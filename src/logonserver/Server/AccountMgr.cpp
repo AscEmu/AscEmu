@@ -39,7 +39,7 @@ void AccountMgr::finalize()
 
 void AccountMgr::addAccount(Field* field)
 {
-    auto account = std::make_shared<Account>();
+    auto account = std::make_unique<Account>();
 
     account->AccountId = field[0].asUint32();
 
@@ -96,10 +96,10 @@ void AccountMgr::addAccount(Field* field)
 
     AscEmu::Util::Strings::toUpperCase(accountName);
 
-    _accountMap[accountName] = account;
+    _accountMap.insert_or_assign(accountName, std::move(account));
 }
 
-std::shared_ptr<Account> AccountMgr::getAccountByName(std::string& Name)
+Account* AccountMgr::getAccountByName(std::string const& Name) const
 {
     std::lock_guard lock(accountMgrMutex);
 
@@ -108,7 +108,7 @@ std::shared_ptr<Account> AccountMgr::getAccountByName(std::string& Name)
     return pAccount;
 }
 
-void AccountMgr::updateAccount(std::shared_ptr<Account> account, Field* field)
+void AccountMgr::updateAccount(Account* account, Field* field) const
 {
     const uint32_t id = field[0].asUint32();
     std::string accountName = field[1].asCString();
@@ -222,16 +222,16 @@ size_t AccountMgr::getCount() const
     return _accountMap.size();
 }
 
-std::map<std::string, std::shared_ptr<Account>> AccountMgr::getAccountMap() const
+std::map<std::string, std::unique_ptr<Account>> const& AccountMgr::getAccountMap() const
 {
     return _accountMap;
 }
 
-std::shared_ptr<Account> AccountMgr::_getAccountByNameLockFree(std::string& Name)
+Account* AccountMgr::_getAccountByNameLockFree(std::string const& Name) const
 {
     const auto itr = _accountMap.find(Name);
     if (itr == _accountMap.end())
         return nullptr;
 
-    return itr->second;
+    return itr->second.get();
 }

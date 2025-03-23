@@ -5437,7 +5437,7 @@ void Spell::SpellEffectAttackMe(uint8_t /*effectIndex*/)
 
 void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
 {
-    std::shared_ptr<Corpse> corpse = nullptr;
+    Corpse* corpse = nullptr;
     if (!m_playerTarget)
     {
         // means we're "skinning" a corpse

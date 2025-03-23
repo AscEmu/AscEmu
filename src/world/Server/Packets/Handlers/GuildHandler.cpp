@@ -712,7 +712,7 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
             return;
         }
 
-        auto arenaTeam = std::make_shared<ArenaTeam>(type, sObjectMgr.generateArenaTeamId());
+        auto arenaTeam = std::make_unique<ArenaTeam>(type, sObjectMgr.generateArenaTeamId());
         arenaTeam->m_name = charter->getGuildName();
         arenaTeam->m_emblem.emblemColour = srlPacket.iconColor;
         arenaTeam->m_emblem.emblemStyle = srlPacket.icon;
@@ -724,10 +724,11 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
 
         if (arenaTeam->addMember(_player->m_playerInfo))
         {
-            // set up the leader
-            _player->setArenaTeam(arenaTeam->m_type, arenaTeam);
+            auto* const arenaTeamPtr = sObjectMgr.addArenaTeam(std::move(arenaTeam));
 
-            sObjectMgr.addArenaTeam(arenaTeam);
+            // set up the leader
+            _player->setArenaTeam(arenaTeamPtr->m_type, arenaTeamPtr);
+
             sObjectMgr.updateArenaTeamRankings();
 
             // set up the members
@@ -735,10 +736,10 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
             {
                 if (const auto info = sObjectMgr.getCachedCharacterInfo(playerGuid))
                 {
-                    if (arenaTeam->addMember(info))
+                    if (arenaTeamPtr->addMember(info))
                     {
                         if (const auto arenaMember = sObjectMgr.getPlayer(playerGuid))
-                            arenaMember->setArenaTeam(arenaTeam->m_type, arenaTeam);
+                            arenaMember->setArenaTeam(arenaTeamPtr->m_type, arenaTeamPtr);
                     }
                 }
             }
@@ -790,7 +791,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
             return;
         }
 
-        std::shared_ptr<ArenaTeam> arenaTeam = sObjectMgr.getArenaTeamByName(srlPacket.name, arena_type);
+        const auto arenaTeam = sObjectMgr.getArenaTeamByName(srlPacket.name, arena_type);
         if (arenaTeam != nullptr)
         {
             sChatHandler.SystemMessage(this, _player->getSession()->LocalizedWorldSrv(ServerString::SS_PETITION_NAME_ALREADY_USED));
@@ -1557,7 +1558,7 @@ void WorldSession::handleGuildFinderGetRecruits(WorldPacket& recvPacket)
         MembershipRequest request = *itr;
         WoWGuid playerGuid(request.getPlayerGUID(), 0, HIGHGUID_TYPE_PLAYER);
 
-        std::shared_ptr<CachedCharacterInfo> info = sObjectMgr.getCachedCharacterInfo(request.getPlayerGUID());
+        const auto* info = sObjectMgr.getCachedCharacterInfo(request.getPlayerGUID());
         std::string name = info->name;
 
         data.writeBits(request.getComment().size(), 11);

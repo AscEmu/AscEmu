@@ -199,7 +199,7 @@ void WorldSession::handleArenaTeamInviteDenyOpcode(WorldPacket& /*recvPacket*/)
         return;
     }
 
-    std::shared_ptr<ArenaTeam> team = sObjectMgr.getArenaTeamById(_player->getInviteArenaTeamId());
+    const auto* team = sObjectMgr.getArenaTeamById(_player->getInviteArenaTeamId());
     if (team == nullptr)
         return;
 

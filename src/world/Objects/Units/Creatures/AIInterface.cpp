@@ -242,7 +242,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
 
     auto scripts = sMySQLStore.getCreatureAiScripts(entry);
 
-    for (auto aiScripts : *scripts)
+    for (const auto& aiScripts : *scripts)
     {
         uint8_t eventId = aiScripts.event;
 
@@ -339,11 +339,11 @@ void AIInterface::initialiseScripts(uint32_t entry)
 
 void AIInterface::addEmoteFromDatabase(std::vector<MySQLStructure::CreatureAIScripts> scripts, definedEmoteVector& emoteVector)
 {
-    for (auto script : scripts)
+    for (const auto& script : scripts)
     {
         if (script.action == actionSendMessage)
         {
-            std::shared_ptr<AI_SCRIPT_SENDMESSAGES> message = std::make_shared<AI_SCRIPT_SENDMESSAGES>();
+            auto message = std::make_unique<AI_SCRIPT_SENDMESSAGES>();
 
             message->textId = script.textId;
             message->canche = script.chance;
@@ -4109,20 +4109,16 @@ bool AIInterface::isValidUnitTarget(Object* pObject, TargetFilter pFilter, float
     return true;
 }
 
-void AIInterface::sendStoredText(definedEmoteVector store, Unit* target)
+void AIInterface::sendStoredText(definedEmoteVector& store, Unit* target)
 {
     float randomChance = Util::getRandomFloat(100.0f);
 
     // Shuffle Around our textIds to randomize it
     if (!store.empty())
     {
-        for (uint16_t i = 0; i < store.size() - 1; ++i)
-        {
-            const auto j = i + rand() % (store.size() - i);
-            std::swap(store[i], store[j]);
-        }
+        Util::randomShuffleVector(&store);
 
-        for (auto mEmotes : store)
+        for (const auto& mEmotes : store)
         {
             if (mEmotes->phase && mEmotes->phase != internalPhase)
                 continue;

@@ -47,7 +47,7 @@ protected:
 
     uint32_t m_zoneId = 0;
 
-    std::shared_ptr<Group> m_groups[2] = { nullptr };
+    Group* m_groups[2] = { nullptr };
 
     uint32_t m_deltaRating[2] = { 0 };
 

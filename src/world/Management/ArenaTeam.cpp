@@ -157,7 +157,7 @@ void ArenaTeam::saveToDB()
 
 void ArenaTeam::destroy()
 {
-    std::vector<std::shared_ptr<CachedCharacterInfo>> toDestroyMembers;
+    std::vector<CachedCharacterInfo const*> toDestroyMembers;
     toDestroyMembers.reserve(m_memberCount);
 
     char buffer[1024];
@@ -189,7 +189,7 @@ void ArenaTeam::sendPacket(WorldPacket* data) const
     }
 }
 
-ArenaTeamMember* ArenaTeam::getMember(std::shared_ptr<CachedCharacterInfo> cachedCharInfo) const
+ArenaTeamMember* ArenaTeam::getMember(CachedCharacterInfo const* cachedCharInfo) const
 {
     for (uint32_t i = 0; i < m_memberCount; ++i)
     {
@@ -209,7 +209,7 @@ ArenaTeamMember* ArenaTeam::getMemberByGuid(uint32_t lowGuid) const
     return nullptr;
 }
 
-bool ArenaTeam::addMember(std::shared_ptr<CachedCharacterInfo> cachedCharInfo)
+bool ArenaTeam::addMember(CachedCharacterInfo const* cachedCharInfo)
 {
     if (!cachedCharInfo)
         return false;
@@ -233,7 +233,7 @@ bool ArenaTeam::addMember(std::shared_ptr<CachedCharacterInfo> cachedCharInfo)
     return true;
 }
 
-bool ArenaTeam::removeMember(std::shared_ptr<CachedCharacterInfo> cachedCharInfo)
+bool ArenaTeam::removeMember(CachedCharacterInfo const* cachedCharInfo)
 {
     if (!cachedCharInfo)
         return false;
@@ -292,7 +292,7 @@ bool ArenaTeam::isMember(uint32_t lowGuid) const
     return false;
 }
 
-void ArenaTeam::setLeader(std::shared_ptr<CachedCharacterInfo> cachedCharInfo)
+void ArenaTeam::setLeader(CachedCharacterInfo const* cachedCharInfo)
 {
     if (cachedCharInfo)
     {

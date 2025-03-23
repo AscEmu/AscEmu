@@ -90,4 +90,35 @@ namespace Util
     unsigned int makeIP(std::string_view _str);
 
     bool parseCIDRBan(uint32_t _ip, uint32_t _mask, uint32_t _maskBits);
+
+    template<class Factory>
+    struct LazyInstanceCreator
+    {
+        /*!
+        * \brief Converts a struct to a specified type using a lazy evaluation approach.
+        *
+        * This struct utilizes an internal lambda factory to generate an instance of the provided type
+        * when a conversion is necessary. It is particularly useful when working with objects and
+        * emplace/try_emplace.
+        *
+        * Important notes:
+        *
+        * - The internal lambda will only be invoked if a conversion is required, ensuring that the
+        * evaluation is lazy and avoids unnecessary overhead. If i.e. emplace operation fails, no
+        * conversion will take place, meaning that resources such as unique_ptr will not be allocated,
+        * preventing even temporary unnecessary memory allocations.
+        *
+        * - Works with both emplace and try_emplace
+        */
+        constexpr LazyInstanceCreator(Factory&& factory) : m_factory(std::move(factory))
+        {
+        }
+
+        constexpr operator auto() const noexcept(std::is_nothrow_invocable_v<const Factory&>)
+        {
+            return m_factory();
+        }
+
+        Factory m_factory;
+    };
 }

@@ -84,27 +84,25 @@ public:
 
     void addAccount(Field* field);
 
-    std::shared_ptr<Account> getAccountByName(std::string& Name);
+    Account* getAccountByName(std::string const& Name) const;
 
-    void updateAccount(std::shared_ptr<Account> account, Field* field);
+    void updateAccount(Account* account, Field* field) const;
     void reloadAccounts(bool silent);
 
     size_t getCount() const;
 
-    std::map<std::string, std::shared_ptr<Account>> getAccountMap() const;
+    std::map<std::string, std::unique_ptr<Account>> const& getAccountMap() const;
 
 private:
+    Account* _getAccountByNameLockFree(std::string const& Name) const;
 
-    std::shared_ptr<Account> _getAccountByNameLockFree(std::string& Name);
-
-    std::map<std::string, std::shared_ptr<Account>> _accountMap;
+    std::map<std::string, std::unique_ptr<Account>> _accountMap;
 
     std::unique_ptr<AscEmu::Threading::AEThread> m_reloadThread;
     uint32_t m_reloadTime;
 
 protected:
-
-    std::mutex accountMgrMutex;
+    mutable std::mutex accountMgrMutex;
 };
 
 #define sAccountMgr AccountMgr::getInstance()

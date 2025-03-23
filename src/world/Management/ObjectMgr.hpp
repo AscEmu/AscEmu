@@ -70,7 +70,7 @@ struct DungeonEncounter
 };
 #endif
 
-typedef std::list<std::shared_ptr<DungeonEncounter>> DungeonEncounterList;
+typedef std::list<std::unique_ptr<DungeonEncounter>> DungeonEncounterList;
 
 //it seems trainerspells should be part of trainer files ;)
 struct TrainerSpell
@@ -159,21 +159,21 @@ struct InstanceReputationMod
 struct ReputationModifier
 {
     uint32_t entry;
-    std::vector<std::shared_ptr<ReputationMod>> mods;
+    std::vector<std::unique_ptr<ReputationMod>> mods;
 };
 
 // reputation/instance
 struct InstanceReputationModifier
 {
     uint32_t mapid;
-    std::vector<std::shared_ptr<InstanceReputationMod>> mods;
+    std::vector<std::unique_ptr<InstanceReputationMod>> mods;
 };
 
 
 class SERVER_DECL ObjectMgr : public EventableObject
 {
-    ObjectMgr() = default;
-    ~ObjectMgr() = default;
+    ObjectMgr();
+    ~ObjectMgr();
 
 public:
     static ObjectMgr& getInstance();
@@ -189,83 +189,83 @@ public:
     // Arena Team
     void loadArenaTeams();
 
-    void addArenaTeam(std::shared_ptr<ArenaTeam> _arenaTeam);
-    void removeArenaTeam(std::shared_ptr<ArenaTeam> _arenaTeam);
+    ArenaTeam* addArenaTeam(std::unique_ptr<ArenaTeam> _arenaTeam);
+    void removeArenaTeam(ArenaTeam const* _arenaTeam);
 
-    std::shared_ptr<ArenaTeam> getArenaTeamByName(std::string& _name, uint32_t _type);
-    std::shared_ptr<ArenaTeam> getArenaTeamById(uint32_t _id);
-    std::shared_ptr<ArenaTeam> getArenaTeamByGuid(uint32_t _guid, uint32_t _type);
+    ArenaTeam const* getArenaTeamByName(std::string& _name, uint32_t _type) const;
+    ArenaTeam* getArenaTeamById(uint32_t _id) const;
+    ArenaTeam* getArenaTeamByGuid(uint32_t _guid, uint32_t _type) const;
 
-    void updateArenaTeamRankings();
-    void updateArenaTeamWeekly();
-    void resetArenaTeamRatings();
+    void updateArenaTeamRankings() const;
+    void updateArenaTeamWeekly() const;
+    void resetArenaTeamRatings() const;
 
 private:
-    std::unordered_map<uint32_t, std::shared_ptr<ArenaTeam>> m_arenaTeams;
-    std::unordered_map<uint32_t, std::shared_ptr<ArenaTeam>> m_arenaTeamMap[3];
-    std::mutex m_arenaTeamLock;
+    std::unordered_map<uint32_t, std::unique_ptr<ArenaTeam>> m_arenaTeams;
+    std::unordered_map<uint32_t, ArenaTeam*> m_arenaTeamMap[3];
+    mutable std::mutex m_arenaTeamLock;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Charter
 public:
     void loadCharters();
-    void removeCharter(const std::shared_ptr<Charter>&);
-    std::shared_ptr<Charter> createCharter(uint32_t _leaderGuid, CharterTypes _type);
+    void removeCharter(Charter const*);
+    Charter* createCharter(uint32_t _leaderGuid, CharterTypes _type);
 
-    std::shared_ptr<Charter> getCharterByName(const std::string& _charterName, CharterTypes _type);
-    std::shared_ptr<Charter> getCharter(uint32_t _charterId, CharterTypes _type);
-    std::shared_ptr<Charter> getCharterByGuid(uint64_t _playerguid, CharterTypes _type);
-    std::shared_ptr<Charter> getCharterByItemGuid(uint64_t _guid);
+    Charter* getCharterByName(const std::string& _charterName, CharterTypes _type) const;
+    Charter const* getCharter(uint32_t _charterId, CharterTypes _type) const;
+    Charter* getCharterByGuid(uint64_t _playerguid, CharterTypes _type) const;
+    Charter* getCharterByItemGuid(uint64_t _guid) const;
 
 private:
-    std::unordered_map<uint32_t, std::shared_ptr<Charter>> m_charters[NUM_CHARTER_TYPES];
-    std::mutex m_charterLock;
+    std::unordered_map<uint32_t, std::unique_ptr<Charter>> m_charters[NUM_CHARTER_TYPES];
+    mutable std::mutex m_charterLock;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // CachedCharacterInfo
 public:
     void loadCharacters();
-    void addCachedCharacterInfo(const std::shared_ptr<CachedCharacterInfo>& _characterInfo);
-    std::shared_ptr<CachedCharacterInfo> getCachedCharacterInfo(uint32_t _playerGuid);
-    std::shared_ptr<CachedCharacterInfo> getCachedCharacterInfoByName(std::string _playerName);
-    void updateCachedCharacterInfoName(const std::shared_ptr<CachedCharacterInfo>& _characterInfo, const std::string& _newName);
+    CachedCharacterInfo* addCachedCharacterInfo(std::unique_ptr<CachedCharacterInfo> _characterInfo);
+    CachedCharacterInfo* getCachedCharacterInfo(uint32_t _playerGuid) const;
+    CachedCharacterInfo* getCachedCharacterInfoByName(std::string _playerName) const;
+    void updateCachedCharacterInfoName(const CachedCharacterInfo* _characterInfo, const std::string& _newName) const;
     void deleteCachedCharacterInfo(uint32_t _playerGuid);
 
 private:
-    std::unordered_map<uint32_t, std::shared_ptr<CachedCharacterInfo>> m_cachedCharacterInfo;
-    std::mutex m_cachedCharacterLock;
+    std::unordered_map<uint32_t, std::unique_ptr<CachedCharacterInfo>> m_cachedCharacterInfo;
+    mutable std::mutex m_cachedCharacterLock;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Corpse
 public:
-    void loadCorpsesForInstance(WorldMap* _worldMap) const;
-    std::shared_ptr<Corpse> loadCorpseByGuid(uint32_t _corpseGuid) const;
-    std::shared_ptr<Corpse> createCorpse();
+    void loadCorpsesForInstance(WorldMap* _worldMap);
+    Corpse* loadCorpseByGuid(uint32_t _corpseGuid);
+    Corpse* createCorpse();
 
-    void addCorpse(const std::shared_ptr<Corpse>&);
-    void removeCorpse(const std::shared_ptr<Corpse>&);
+    Corpse* addCorpse(const std::unique_ptr<Corpse>);
+    void removeCorpse(const Corpse*);
 
-    std::shared_ptr<Corpse> getCorpseByGuid(uint32_t _corpseGuid);
-    std::shared_ptr<Corpse> getCorpseByOwner(uint32_t _playerGuid);
+    Corpse* getCorpseByGuid(uint32_t _corpseGuid) const;
+    Corpse* getCorpseByOwner(uint32_t _playerGuid) const;
 
     void unloadCorpseCollector();
-    void addCorpseDespawnTime(const std::shared_ptr<Corpse>& _corpse);
-    void delinkCorpseForPlayer(const Player* _player);
+    void addCorpseDespawnTime(const Corpse* _corpse) const;
+    void delinkCorpseForPlayer(const Player* _player) const;
 
 private:
-    std::unordered_map<uint32_t, std::shared_ptr<Corpse>> m_corpses;
-    std::mutex m_corpseLock;
+    std::unordered_map<uint32_t, std::unique_ptr<Corpse>> m_corpses;
+    mutable std::mutex m_corpseLock;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Vendors
 public:
     void loadVendors();
 
-    std::shared_ptr<std::vector<CreatureItem>> getVendorList(uint32_t _entry);
-    void setVendorList(uint32_t _entry, std::shared_ptr<std::vector<CreatureItem>> _list);
+    std::vector<CreatureItem>* getVendorList(uint32_t _entry) const;
+    std::vector<CreatureItem>* addVendorList(uint32_t _entry, std::unique_ptr<std::vector<CreatureItem>> _list);
 
 private:
-    std::unordered_map<uint32_t, std::shared_ptr<std::vector<CreatureItem>>> m_vendors;
+    std::unordered_map<uint32_t, std::unique_ptr<std::vector<CreatureItem>>> m_vendors;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Achievement - global achievement information
@@ -294,18 +294,18 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Reputation Mods
 public:
-    typedef std::unordered_map<uint32_t, std::shared_ptr<ReputationModifier>> ReputationModMap;
+    typedef std::unordered_map<uint32_t, std::unique_ptr<ReputationModifier>> ReputationModMap;
     void loadReputationModifiers();
     void loadReputationModifierTable(const char* _tableName, ReputationModMap& _reputationModMap);
     void loadInstanceReputationModifiers();
 
-    std::shared_ptr<ReputationModifier> getReputationModifier(uint32_t _entry, uint32_t _factionId);
+    ReputationModifier const* getReputationModifier(uint32_t _entry, uint32_t _factionId) const;
     bool handleInstanceReputationModifiers(Player* _player, Unit* _unitVictim);
 
 private:
     ReputationModMap m_reputationFaction;
     ReputationModMap m_reputationCreature;
-    std::unordered_map<uint32_t, std::shared_ptr<InstanceReputationModifier>> m_reputationInstance;
+    std::unordered_map<uint32_t, std::unique_ptr<InstanceReputationModifier>> m_reputationInstance;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Group
@@ -315,15 +315,15 @@ public:
 
     uint32_t generateGroupId();
 
-    void addGroup(std::shared_ptr<Group> _group);
+    Group* addGroup(std::unique_ptr<Group> _group);
     void removeGroup(uint32_t _groupId);
 
-    std::shared_ptr<Group> getGroupByLeader(Player* _player);
-    std::shared_ptr<Group> getGroupById(uint32_t _id);
+    Group* getGroupByLeader(Player* _player) const;
+    Group* getGroupById(uint32_t _id) const;
 
 private:
-    std::mutex m_groupLock;
-    std::unordered_map<uint32_t, std::shared_ptr<Group>> m_groups;
+    mutable std::mutex m_groupLock;
+    std::unordered_map<uint32_t, std::unique_ptr<Group>> m_groups;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Player
@@ -381,10 +381,10 @@ public:
     void generateDatabaseGossipOptionAndSubMenu(Object* _object, Player* _player, uint32_t _gossipItemId, uint32_t _gossipMenuId);
 
     void loadTrainerSpellSets();
-    std::shared_ptr<std::vector<TrainerSpell>> getTrainerSpellSetById(uint32_t _id);
+    std::vector<TrainerSpell> const* getTrainerSpellSetById(uint32_t _id) const;
 
     void loadTrainers();
-    std::shared_ptr<Trainer> getTrainer(uint32_t _entry);
+    Trainer const* getTrainer(uint32_t _entry) const;
 
     // Preload CreatureDisplayInfoStore and CreatureModelDataStore to avoid DBC lookup calls
     void loadCreatureDisplayInfo();
@@ -393,20 +393,20 @@ public:
     GameObject* createGameObjectByGuid(uint32_t _id, uint32_t _guid);
 
     void loadInstanceEncounters();
-    DungeonEncounterList const* getDungeonEncounterList(uint32_t _mapId, uint8_t _difficulty);
+    DungeonEncounterList const* getDungeonEncounterList(uint32_t _mapId, uint8_t _difficulty) const;
 
     void loadCreatureMovementOverrides();
     void checkCreatureMovement(uint32_t _id, CreatureMovementData& _creatureMovement);
     CreatureMovementData const* getCreatureMovementOverride(uint32_t _spawnId) const;
 
     void loadWorldStateTemplates();
-    std::shared_ptr<WorldStateMap> getWorldStatesForMap(uint32_t _map) const;
+    WorldStateMap const* getWorldStatesForMap(uint32_t _map) const;
 
     void loadCreatureTimedEmotes();
-    std::shared_ptr<TimedEmoteList> getTimedEmoteList(uint32_t _spawnId);
+    TimedEmoteList* getTimedEmoteList(uint32_t _spawnId) const;
 
     void generateLevelUpInfo();
-    std::shared_ptr<LevelInfo> getLevelInfo(uint32_t _race, uint32_t _class, uint32_t _level);
+    LevelInfo* getLevelInfo(uint32_t _race, uint32_t _class, uint32_t _level) const;
 
     Pet* createPet(uint32_t _entry, WDB::Structures::SummonPropertiesEntry const* properties);
     void loadPetSpellCooldowns();
@@ -430,16 +430,16 @@ public:
 #endif
 
 private:
-    std::unordered_map<uint32_t, std::shared_ptr<std::vector<TrainerSpell>>> m_trainerSpellSet;
-    std::unordered_map<uint32_t, std::shared_ptr<Trainer>> m_trainers;
+    std::unordered_map<uint32_t, std::unique_ptr<std::vector<TrainerSpell>>> m_trainerSpellSet;
+    std::unordered_map<uint32_t, std::unique_ptr<Trainer>> m_trainers;
     std::unordered_map<uint32_t, CreatureDisplayInfoData> m_creatureDisplayInfoData;
     std::unordered_map<uint32_t, DungeonEncounterList>  m_dungeonEncounterStore;
     std::unordered_map<uint32_t, CreatureMovementData> m_creatureMovementOverrides;
-    std::map<uint32_t, std::shared_ptr<WorldStateMap>> m_worldstateTemplates;
-    std::unordered_map<uint32_t, std::shared_ptr<TimedEmoteList>> m_timedEmotes;
+    std::map<uint32_t, std::unique_ptr<WorldStateMap>> m_worldstateTemplates;
+    std::unordered_map<uint32_t, std::unique_ptr<TimedEmoteList>> m_timedEmotes;
 
-    typedef std::map<uint32_t, std::shared_ptr<LevelInfo>> LevelMap;
-    typedef std::map<std::pair<uint32_t, uint32_t>, std::shared_ptr<LevelMap>> LevelInfoMap;
+    typedef std::map<uint32_t, std::unique_ptr<LevelInfo>> LevelMap;
+    typedef std::map<std::pair<uint32_t, uint32_t>, std::unique_ptr<LevelMap>> LevelInfoMap;
     LevelInfoMap m_levelInfo;
 
     std::map<uint32_t, uint32_t> m_petSpellCooldowns;

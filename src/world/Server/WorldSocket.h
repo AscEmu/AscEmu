@@ -58,7 +58,9 @@ private:
 #endif
 
 public:
-    void HandleWoWConnection(std::shared_ptr<WorldPacket> recvPacket);
+#if VERSION_STRING >= Cata
+    void HandleWoWConnection(std::unique_ptr<WorldPacket> recvPacket);
+#endif
 
     void OnConnectTwo();
 
@@ -97,8 +99,8 @@ public:
     void UpdateQueuedPackets();
 
 protected:
-    void _HandleAuthSession(std::shared_ptr<WorldPacket> recvPacket);
-    void _HandlePing(std::shared_ptr<WorldPacket> recvPacket);
+    void _HandleAuthSession(std::unique_ptr<WorldPacket> recvPacket);
+    void _HandlePing(std::unique_ptr<WorldPacket> recvPacket);
 
 private:
     uint32 mOpcode;
@@ -110,8 +112,8 @@ private:
     uint32 mRequestID;
 
     WorldSession* mSession;
-    std::shared_ptr<WorldPacket> pAuthenticationPacket;
-    ThreadSafeQueue<std::shared_ptr<WorldPacket>> _queue;
+    std::unique_ptr<WorldPacket> pAuthenticationPacket;
+    ThreadSafeQueue<std::unique_ptr<WorldPacket>> _queue;
 
     WowCrypt _crypt;
     uint32 _latency;

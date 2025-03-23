@@ -21,14 +21,14 @@ public:
     {
         std::unique_lock lock(m_lock);
 
-        m_queue.push(_element);
+        m_queue.push(std::move(_element));
     }
 
     void pushWait(T _element)
     {
         std::unique_lock lock(m_lock);
 
-        m_queue.push(_element);
+        m_queue.push(std::move(_element));
         m_condition.notify_one();
     }
 
@@ -38,7 +38,7 @@ public:
 
         if (!m_queue.empty())
         {
-            T element = m_queue.front();
+            T element = std::move(m_queue.front());
             m_queue.pop();
             return element;
         }
@@ -52,7 +52,7 @@ public:
 
         m_condition.wait(lock, [this]() { return !m_queue.empty(); });
 
-        T element = m_queue.front();
+        T element = std::move(m_queue.front());
         m_queue.pop();
 
         return element;

@@ -50,7 +50,7 @@ namespace AscEmu::Realm
 
         void loadRealms();
 
-        std::shared_ptr<Realm> getRealmById(uint32_t id) const;
+        Realm* getRealmById(uint32_t id) const;
 
         void setStatusForRealm(uint8_t realm_id, uint8_t status);
 
@@ -76,7 +76,7 @@ namespace AscEmu::Realm
         RealmManager() = default;
         ~RealmManager() = default;
 
-        std::vector<std::shared_ptr<Realm>> realms;
+        std::vector<std::unique_ptr<Realm>> realms;
         std::set<::LogonCommServerSocket*> serverSockets;
         std::mutex serverSocketLock;
         std::mutex realmLock;

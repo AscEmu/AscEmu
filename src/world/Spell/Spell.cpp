@@ -5698,7 +5698,7 @@ Player* Spell::getPlayerTarget() const { return m_playerTarget; }
 
 GameObject* Spell::getGameObjectTarget() const { return m_gameObjTarget; }
 
-std::shared_ptr<Corpse> Spell::getCorpseTarget() const { return m_corpseTarget; }
+Corpse* Spell::getCorpseTarget() const { return m_corpseTarget; }
 
 void Spell::unsetAllTargets()
 {

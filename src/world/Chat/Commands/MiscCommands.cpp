@@ -883,7 +883,7 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession* m_session)
     }
     else
     {
-        std::shared_ptr<CachedCharacterInfo> pinfo = sObjectMgr.getCachedCharacterInfoByName(args);
+        const auto pinfo = sObjectMgr.getCachedCharacterInfoByName(args);
         if (!pinfo)
         {
             char buf[256];
@@ -1207,7 +1207,7 @@ bool ChatHandler::HandleBanCharacterCommand(const char* args, WorldSession* m_se
         return false;
 
     char* pCharacter = (char*)args;
-    std::shared_ptr<CachedCharacterInfo> pInfo = nullptr;
+    CachedCharacterInfo const* pInfo = nullptr;
     char* pReason;
     char* pDuration;
     uint32_t BanTime = 0;

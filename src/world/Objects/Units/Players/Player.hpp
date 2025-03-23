@@ -681,7 +681,7 @@ public:
 
     uint32_t* getPlayedTime();
 
-    std::shared_ptr<CachedCharacterInfo> getPlayerInfo() const;
+    CachedCharacterInfo* getPlayerInfo() const;
 
     static void changeLooks(uint64_t guid, uint8_t gender, uint8_t skin, uint8_t face, uint8_t hairStyle, uint8_t hairColor, uint8_t facialHair);
     static void changeLanguage(uint64_t guid, uint8_t race);
@@ -689,7 +689,7 @@ public:
     void sendInitialLogonPackets();
 
 private:
-    std::shared_ptr<LevelInfo> m_levelInfo = nullptr;
+    LevelInfo const* m_levelInfo = nullptr;
 
     WDB::Structures::ChrRacesEntry const* m_dbcRace = nullptr;
     WDB::Structures::ChrClassesEntry const* m_dbcClass = nullptr;
@@ -711,7 +711,7 @@ private:
     uint32_t m_onlineTime = static_cast<uint32_t>(UNIXTIME);
     uint32_t m_timeLogoff = 0;
 
-    std::shared_ptr<CachedCharacterInfo> m_playerInfo = nullptr;
+    CachedCharacterInfo* m_playerInfo = nullptr;
 
 protected:
     PlayerCreateInfo const* m_playerCreateInfo = nullptr;
@@ -1229,13 +1229,13 @@ private:
     // Charter
 public:
     void unsetCharter(uint8_t charterType);
-    std::shared_ptr<Charter> getCharter(uint8_t charterType);
+    Charter const* getCharter(uint8_t charterType);
 
-    bool canSignCharter(std::shared_ptr<Charter> charter, Player* requester);
+    bool canSignCharter(Charter const* charter, Player* requester);
     void initialiseCharters();
 
 private:
-    std::shared_ptr<Charter> m_charters[NUM_CHARTER_TYPES] = {nullptr};
+    Charter* m_charters[NUM_CHARTER_TYPES] = {nullptr};
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Guild
@@ -1260,7 +1260,7 @@ public:
 
     bool isInGroup() const;
 
-    std::shared_ptr<Group> getGroup();
+    Group* getGroup();
     bool isGroupLeader() const;
 
     int8_t getSubGroupSlot() const;
@@ -1291,21 +1291,21 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Channels
 public:
-    void joinedChannel(std::shared_ptr<Channel> channel);
-    void leftChannel(std::shared_ptr<Channel> channel);
+    void joinedChannel(Channel* channel);
+    void leftChannel(Channel* channel);
 
     void updateChannels();
     void removeAllChannels();
 
 private:
-    std::set<std::shared_ptr<Channel>> m_channels;
+    std::set<Channel*> m_channels;
     mutable std::mutex m_mutexChannel;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Arena
 public:
-    void setArenaTeam(uint8_t type, std::shared_ptr<ArenaTeam> arenaTeam);
-    std::shared_ptr<ArenaTeam> getArenaTeam(uint8_t type);
+    void setArenaTeam(uint8_t type, ArenaTeam* arenaTeam);
+    ArenaTeam* getArenaTeam(uint8_t type);
 
     bool isInArenaTeam(uint8_t type) const;
     void initialiseArenaTeam();
@@ -1319,7 +1319,7 @@ public:
     uint32_t getInviteArenaTeamId() const;
 
 private:
-    std::shared_ptr<ArenaTeam> m_arenaTeams[NUM_ARENA_TEAM_TYPES] = {nullptr};
+    ArenaTeam* m_arenaTeams[NUM_ARENA_TEAM_TYPES] = {nullptr};
     uint32_t m_arenaPoints = 0;
     uint32_t m_inviteArenaTeamId = 0;
 
@@ -1865,7 +1865,7 @@ public:
     void sendWorldStateUpdate(uint32_t worldState, uint32_t value);
 
     bool canBuyAt(MySQLStructure::VendorRestrictions const* vendor);
-    bool canTrainAt(std::shared_ptr<Trainer> trainer);
+    bool canTrainAt(Trainer const* trainer);
 
     void sendCinematicCamera(uint32_t id);
 

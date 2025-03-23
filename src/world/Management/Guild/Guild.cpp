@@ -1484,7 +1484,7 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
         bool ok = false;
         if (sObjectMgr.getCachedCharacterInfo(lowguid))
         {
-            std::shared_ptr<CachedCharacterInfo> info = sObjectMgr.getCachedCharacterInfo(lowguid);
+            const auto info = sObjectMgr.getCachedCharacterInfo(lowguid);
             name = info->name;
             member->setStats(name, static_cast<uint8_t>(info->lastLevel), info->cl, info->lastZone, info->acct, 0);
 
@@ -2684,7 +2684,7 @@ void Guild::GuildMember::resetFlags()
 
 bool Guild::GuildMember::loadGuildMembersFromDB(Field* fields, Field* fields2)
 {
-    std::shared_ptr<CachedCharacterInfo> plr = sObjectMgr.getCachedCharacterInfo((fields[1].asUint32()));
+    const auto plr = sObjectMgr.getCachedCharacterInfo((fields[1].asUint32()));
     if (plr == nullptr)
         return false;
 

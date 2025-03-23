@@ -433,7 +433,7 @@ void WorldSession::doLootRelease(WoWGuid lguid)
     }
     else if (lguid.isCorpse())        // ONLY remove insignia at BG
     {
-        std::shared_ptr<Corpse> corpse = sObjectMgr.getCorpseByGuid(lguid.getGuidLow());
+        auto* corpse = sObjectMgr.getCorpseByGuid(lguid.getGuidLow());
         if (!corpse || !corpse->IsWithinDistInMap(_player, 5.0f))
             return;
 

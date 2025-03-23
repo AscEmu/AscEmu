@@ -60,7 +60,7 @@ bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_sessio
         return true;
     }
 
-    auto arenaTeam = std::make_shared<ArenaTeam>(internalType, sObjectMgr.generateArenaTeamId());
+    auto arenaTeam = std::make_unique<ArenaTeam>(internalType, sObjectMgr.generateArenaTeamId());
     arenaTeam->m_emblem.emblemStyle = 22;
     arenaTeam->m_emblem.emblemColour = 4292133532UL;
     arenaTeam->m_emblem.borderColour = 4294931722UL;
@@ -71,8 +71,8 @@ bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_sessio
 
     if (arenaTeam->addMember(player->getPlayerInfo()))
     {
-        player->setArenaTeam(arenaTeam->m_type, arenaTeam);
-        sObjectMgr.addArenaTeam(arenaTeam);
+        auto* const arenaTeamPtr = sObjectMgr.addArenaTeam(std::move(arenaTeam));
+        player->setArenaTeam(arenaTeamPtr->m_type, arenaTeamPtr);
 
         GreenSystemMessage(m_session, "Arena team created for Player: %s Type: %u", player->getName().c_str(), teamType);
     }
