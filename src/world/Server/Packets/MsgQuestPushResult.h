@@ -31,7 +31,8 @@ namespace AscEmu::Packets
         {
         }
 
-        size_t expectedSize() const { return 9; }
+    protected:
+        size_t expectedSize() const override { return 9; }
 
         bool internalSerialise(WorldPacket& packet) override
         {

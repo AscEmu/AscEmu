@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 
+#include "AEVersion.hpp"
 #include "ManagedPacket.h"
 #include "WorldPacket.h"
 
@@ -27,7 +28,7 @@ namespace AscEmu::Packets
         }
 
         MsgCorspeQuery(uint8_t isFound, uint32_t mapId = 0, LocationVector position = {}, uint32_t corpseMapId = 0, uint32_t unknown = 0, WoWGuid guid = uint64_t(0)) :
-            ManagedPacket(MSG_CORPSE_QUERY, isFound ? 1 + 5 * 4 : 1),
+            ManagedPacket(MSG_CORPSE_QUERY, 0),
             isFound(isFound),
             mapId(mapId),
             position(position),
@@ -36,6 +37,15 @@ namespace AscEmu::Packets
             guid(guid)
         {
         }
+
+    protected:
+#if VERSION_STRING > TBC
+        size_t expectedSize() const override { return isFound ? static_cast<size_t>(1 + 4 + 4 + 4 + 4 + 4 + 4) : 1; }
+#elif VERSION_STRING < Mop
+        size_t expectedSize() const override { return isFound ? static_cast<size_t>(1 + 4 + 4 + 4 + 4 + 4) : 1; }
+#else
+        size_t expectedSize() const override { return isFound ? static_cast<size_t>(1 + 8 + 4 + 4 + 4 + 4 + 4) : static_cast<size_t>(9 + (5 * 4)); }
+#endif
 
         bool internalSerialise(WorldPacket& packet) override
         {

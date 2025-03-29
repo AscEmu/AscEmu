@@ -32,6 +32,8 @@ namespace AscEmu::Packets
         }
 
     protected:
+        size_t expectedSize() const override { return static_cast<size_t>(8 + 4 + 1); }
+
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << guid.getRawGuid() << auctionHouseId << isAuctionHouseEnabled;

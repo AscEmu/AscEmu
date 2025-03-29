@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 
+#include "AEVersion.hpp"
 #include "ManagedPacket.h"
 
 namespace AscEmu::Packets
@@ -24,7 +25,7 @@ namespace AscEmu::Packets
         }
 
         MsgSetRaidDifficulty(uint8_t difficulty, uint32_t unknown, bool isInGroup) :
-            ManagedPacket(MSG_SET_RAID_DIFFICULTY, 0),
+            ManagedPacket(MSG_SET_RAID_DIFFICULTY, 4),
             difficulty(difficulty),
             unknown(unknown),
             isInGroup(isInGroup)
@@ -32,10 +33,11 @@ namespace AscEmu::Packets
         }
 
     protected:
-        size_t expectedSize() const override
-        {
-            return 12;
-        }
+#if VERSION_STRING == Mop
+        size_t expectedSize() const override { return 4; }
+#else
+        size_t expectedSize() const override { return 12; }
+#endif
 
         bool internalSerialise(WorldPacket& packet) override
         {

@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 
+#include "AEVersion.hpp"
 #include "ManagedPacket.h"
 
 namespace AscEmu::Packets
@@ -23,7 +24,7 @@ namespace AscEmu::Packets
         }
 
         MsgChannelStart(WoWGuid casterGuid, uint32_t spellId, uint32_t duration) :
-            ManagedPacket(MSG_CHANNEL_START, 8),
+            ManagedPacket(MSG_CHANNEL_START, 0),
             casterGuid(casterGuid),
             spellId(spellId),
             duration(duration)
@@ -31,6 +32,14 @@ namespace AscEmu::Packets
         }
 
     protected:
+#if VERSION_STRING == Classic
+        size_t expectedSize() const override { return static_cast<size_t>(4 + 4); }
+#elif VERSION_STRING >= TBC
+        size_t expectedSize() const override { return static_cast<size_t>(8 + 4 + 4); }
+#elif VERSION_STRING >= Cata
+        size_t expectedSize() const override { return static_cast<size_t>(8 + 4 + 4 + 1 + 1); }
+#endif
+
         bool internalSerialise(WorldPacket& packet) override
         {
 #if VERSION_STRING >= TBC
