@@ -2587,7 +2587,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     if (lockInfo->locktype[x] == LOCK_KEY_ITEM)
                     {
                         if (i_caster == nullptr || lockInfo->lockmisc[x] == 0)
-                            return SPELL_FAILED_BAD_TARGETS;
+                            continue;
                         // No need to check further on a successful match
                         if (i_caster->getEntry() == lockInfo->lockmisc[x])
                         {

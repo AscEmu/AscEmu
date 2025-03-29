@@ -28,6 +28,8 @@ namespace AscEmu::Packets
         }
 
     protected:
+        size_t expectedSize() const override { return 8; }
+
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << guid.getRawGuid();

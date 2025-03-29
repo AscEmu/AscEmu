@@ -33,16 +33,18 @@ namespace AscEmu::Packets
         }
 
         MsgInspectArenaTeams(uint64_t guid, std::vector<ArenaTeamsList> arenaTeams) :
-            ManagedPacket(MSG_INSPECT_ARENA_TEAMS, 65),
+            ManagedPacket(MSG_INSPECT_ARENA_TEAMS, 8),
             guid(guid),
             arenaTeams(arenaTeams)
         {
         }
 
     protected:
+        size_t expectedSize() const override { return static_cast<size_t>(8 + 2 + 4 + 4 + 4 + 4 + 4) * arenaTeams.size(); }
+
         bool internalSerialise(WorldPacket& packet) override
         {
-            for (const auto teamMembers : arenaTeams)
+            for (const auto& teamMembers : arenaTeams)
             {
                 packet << teamMembers.playerGuid << teamMembers.teamType << teamMembers.teamId << 
                     teamMembers.teamRating << teamMembers.playedWeek << teamMembers.wonWeek << teamMembers.playedSeason;

@@ -645,9 +645,55 @@ uint32_t SpellInfo::getRequiredTargetMaskForEffectTarget(uint32_t implicitTarget
     switch (implicitTarget)
     {
         case EFF_TARGET_NONE:
-            // TODO: this needs more investigation but lots of spells with learn effect, add glyph, enchants,
-            // quest spells etc have this target type, so adding mask for all object types -Appled
-            targetMask = SPELL_TARGET_REQUIRE_ITEM | SPELL_TARGET_REQUIRE_GAMEOBJECT | SPELL_TARGET_REQUIRE_FRIENDLY;
+            // If effect has no implicit target, set one based on effect type
+            switch (Effect[effectIndex])
+            {
+                case SPELL_EFFECT_DODGE:
+                case SPELL_EFFECT_EVADE:
+                case SPELL_EFFECT_PARRY:
+                case SPELL_EFFECT_BLOCK:
+                case SPELL_EFFECT_WEAPON:
+                case SPELL_EFFECT_DEFENSE:
+                case SPELL_EFFECT_ENERGIZE:
+                case SPELL_EFFECT_TRANSFORM_ITEM:
+                case SPELL_EFFECT_SPELL_DEFENSE:
+                case SPELL_EFFECT_LANGUAGE:
+                case SPELL_EFFECT_SPAWN:
+                case SPELL_EFFECT_TRADE_SKILL:
+                case SPELL_EFFECT_STEALTH:
+                case SPELL_EFFECT_DETECT:
+                case SPELL_EFFECT_FORCE_CRITICAL_HIT:
+                case SPELL_EFFECT_GUARANTEE_HIT:
+                case SPELL_EFFECT_PROFICIENCY:
+                case SPELL_EFFECT_USE_GLYPH:
+                case SPELL_EFFECT_ATTACK:
+                case SPELL_EFFECT_SANCTUARY:
+                case SPELL_EFFECT_STUCK:
+                case SPELL_EFFECT_SUMMON_PHANTASM:
+                case SPELL_EFFECT_SELF_RESURRECT:
+                case SPELL_EFFECT_SUMMON_MULTIPLE_TOTEMS:
+                case SPELL_EFFECT_DESTROY_ALL_TOTEMS:
+                case SPELL_EFFECT_SKILL:
+#if VERSION_STRING >= TBC
+                case SPELL_EFFECT_UNKNOWN_131:
+                case SPELL_EFFECT_KILL_CREDIT:
+#if VERSION_STRING >= WotLK
+                case SPELL_EFFECT_DUAL_WIELD_2H:
+#endif
+#endif
+                    targetMask = SPELL_TARGET_OBJECT_SELF;
+                    break;
+                // TODO: possibly wotlk only
+                case SPELL_EFFECT_SUMMON_GUARDIAN:
+#if VERSION_STRING >= Cata
+                case SPELL_EFFECT_UNKNOWN_171:
+                case SPELL_EFFECT_UNKNOWN_179:
+#endif
+                    targetMask = SPELL_TARGET_AREA;
+                    break;
+                default:
+                    break;
+            }
             break;
         case EFF_TARGET_SELF:
             targetMask = SPELL_TARGET_OBJECT_SELF;
@@ -852,6 +898,34 @@ uint32_t SpellInfo::getRequiredTargetMaskForEffect(uint8_t effectIndex, bool get
     // Do not get target mask from B if it's not set
     if (getEffectImplicitTargetB(effectIndex) != EFF_TARGET_NONE)
         targetMask |= getRequiredTargetMaskForEffectTarget(getEffectImplicitTargetB(effectIndex), effectIndex);
+
+    // Add spell cast target flags to mask
+    if (Targets != 0)
+    {
+        if (Targets & TARGET_FLAG_UNIT)
+            targetMask |= SPELL_TARGET_REQUIRE_ATTACKABLE;
+        if (Targets & TARGET_FLAG_ITEM)
+            targetMask |= SPELL_TARGET_REQUIRE_ITEM;
+        if (Targets & TARGET_FLAG_SOURCE_LOCATION)
+            targetMask |= SPELL_TARGET_AREA_SELF;
+        if (Targets & TARGET_FLAG_DEST_LOCATION)
+            targetMask |= SPELL_TARGET_AREA;
+        // TODO: confirm this
+        /*if (Targets & TARGET_FLAG_UNK8)
+            targetMask |= SPELL_TARGET_REQUIRE_ATTACKABLE;*/
+        if (Targets & TARGET_FLAG_UNIT_CASTER)
+            targetMask |= SPELL_TARGET_OBJECT_SELF;
+        if (Targets & TARGET_FLAG_CORPSE)
+            targetMask |= SPELL_TARGET_REQUIRE_ATTACKABLE;
+        if (Targets & TARGET_FLAG_UNIT_CORPSE)
+            targetMask |= SPELL_TARGET_REQUIRE_ATTACKABLE;
+        if (Targets & TARGET_FLAG_OBJECT)
+            targetMask |= SPELL_TARGET_REQUIRE_GAMEOBJECT;
+        if (Targets & TARGET_FLAG_OPEN_LOCK)
+            targetMask |= SPELL_TARGET_REQUIRE_GAMEOBJECT;
+        if (Targets & TARGET_FLAG_CORPSE2)
+            targetMask |= SPELL_TARGET_REQUIRE_FRIENDLY;
+    }
 
     // Remove explicit object target masks if spell has no max range
     if (getExplicitMask)

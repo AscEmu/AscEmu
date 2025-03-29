@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 
+#include "AEVersion.hpp"
 #include "ManagedPacket.h"
 
 namespace AscEmu::Packets
@@ -26,7 +27,7 @@ namespace AscEmu::Packets
         }
 
         MsgInspectHonorStats(uint64_t guid, uint8_t honnorCurrency, uint32_t kills, uint32_t todayContrib, uint32_t yesterdayContrib, uint32_t lifetimeHonorKills) :
-            ManagedPacket(MSG_INSPECT_HONOR_STATS, 13),
+            ManagedPacket(MSG_INSPECT_HONOR_STATS, 8),
             guid(guid),
             honnorCurrency(honnorCurrency),
             kills(kills),
@@ -37,6 +38,14 @@ namespace AscEmu::Packets
         }
 
     protected:
+#if VERSION_STRING == Classic
+        size_t expectedSize() const override { return static_cast<size_t>(8 + 1 + 4); }
+#elif VERSION_STRING < Cata
+        size_t expectedSize() const override { return static_cast<size_t>(8 + 1 + 4 + 4 + 4 + 4); }
+#else
+        size_t expectedSize() const override { return static_cast<size_t>(8 + 1 + 4 + 4); }
+#endif
+
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << guid << honnorCurrency;

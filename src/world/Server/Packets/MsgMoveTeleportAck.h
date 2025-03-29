@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 
+#include "AEVersion.hpp"
 #include "ManagedPacket.h"
 #include "WorldPacket.h"
 
@@ -24,7 +25,11 @@ namespace AscEmu::Packets
         }
 
         MsgMoveTeleportAck(uint32_t flags, uint32_t time) :
+#if VERSION_STRING >= Cata
+            ManagedPacket(MSG_MOVE_TELEPORT_ACK, 4 + 4 + 8),
+#else
             ManagedPacket(MSG_MOVE_TELEPORT_ACK, 8),
+#endif
             flags(flags),
             time(time)
         {
