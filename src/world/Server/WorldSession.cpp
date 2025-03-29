@@ -100,7 +100,7 @@ WorldSession::~WorldSession()
         LogoutPlayer(true);
     }
 
-    std::shared_ptr<WorldPacket> packet;
+    std::unique_ptr<WorldPacket> packet;
 
     while ((packet = _recvQueue.pop()) != nullptr)
     {
@@ -146,7 +146,7 @@ uint8_t WorldSession::Update(uint32_t InstanceID)
             _logoutTime = m_currMsTime + PLAYER_LOGOUT_DELAY;
     }
 
-    std::shared_ptr<WorldPacket> packet;
+    std::unique_ptr<WorldPacket> packet;
 
     while ((packet = _recvQueue.pop()) != nullptr)
     {
@@ -713,10 +713,10 @@ void WorldSession::OutPacket(uint16 opcode, uint16 len, const void* data)
     }
 }
 
-void WorldSession::QueuePacket(std::shared_ptr<WorldPacket> packet)
+void WorldSession::QueuePacket(std::unique_ptr<WorldPacket> packet)
 {
     m_lastPing = static_cast<uint32>(UNIXTIME);
-    _recvQueue.push(packet);
+    _recvQueue.push(std::move(packet));
 }
 
 void WorldSession::Disconnect()

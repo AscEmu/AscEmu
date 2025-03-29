@@ -69,7 +69,7 @@ class AuthSocket : public Socket
     protected:
 
         sAuthLogonChallenge_C m_challenge;
-        std::shared_ptr<Account> m_account;
+        Account* m_account;
         bool m_authenticated;
 
         // BigNumbers for the SRP6 implementation

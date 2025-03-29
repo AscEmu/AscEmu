@@ -44,6 +44,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellTarget.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Creatures/Pet.h"
+#include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 #include "Objects/Units/Creatures/Vehicle.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Movement/Spline/MoveSpline.h"
@@ -87,11 +88,15 @@ This file is released under the MIT license. See README-MIT for more information
 using namespace AscEmu::Packets;
 
 Unit::Unit() :
-    movespline(new MovementMgr::MoveSpline()),
-    i_movementManager(new MovementManager(this)),
+    movespline(std::make_unique<MovementMgr::MoveSpline>()),
+    i_movementManager(std::make_unique<MovementManager>(this)),
     m_summonInterface(std::make_unique<SummonHandler>(this)),
     m_combatHandler(this),
-    m_aiInterface(new AIInterface())
+    m_aiInterface(std::make_unique<AIInterface>()),
+#ifdef FT_VEHICLES
+    m_vehicleKit(nullptr),
+#endif
+    m_damageSplitTarget(nullptr)
 {
     m_objectType |= TYPE_UNIT;
 
@@ -111,15 +116,6 @@ Unit::~Unit()
 {
     removeAllAuras();
 
-    delete movespline;
-    movespline = nullptr;
-
-    delete i_movementManager;
-    i_movementManager = nullptr;
-
-    delete m_aiInterface;
-    m_aiInterface = nullptr;
-
     for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
     {
         if (getCurrentSpell(static_cast<CurrentSpellType>(i)) != nullptr)
@@ -129,23 +125,10 @@ Unit::~Unit()
     for (uint8_t i = 0; i < MAX_SPELLMOD_TYPE; ++i)
         m_spellModifiers[i].clear();
 
-    if (m_damageSplitTarget)
-    {
-        delete m_damageSplitTarget;
-        m_damageSplitTarget = nullptr;
-    }
-
-    // reflects not created by auras need to be deleted manually
-    for (auto reflectSpellSchool = m_reflectSpellSchool.begin(); reflectSpellSchool != m_reflectSpellSchool.end(); ++reflectSpellSchool)
-        delete* reflectSpellSchool;
-
-    m_reflectSpellSchool.clear();
-
     for (auto extraStrikeTarget = m_extraStrikeTargets.begin(); extraStrikeTarget != m_extraStrikeTargets.end(); ++extraStrikeTarget)
     {
-        ExtraStrike* extraStrike = *extraStrikeTarget;
+        const auto& extraStrike = *extraStrikeTarget;
         sLogger.failure("ExtraStrike added to Unit {} by Spell ID {} wasn't removed when removing the Aura", getGuid(), extraStrike->spell_info->getId());
-        delete extraStrike;
     }
     m_extraStrikeTargets.clear();
 
@@ -7269,17 +7252,17 @@ void Unit::takeDamage(Unit* attacker, uint32_t damage, uint32_t spellId)
 
 void Unit::addSimpleDamageBatchEvent(uint32_t damage, Unit* attacker/* = nullptr*/, SpellInfo const* spellInfo/* = nullptr*/)
 {
-    auto batch = new HealthBatchEvent;
+    auto batch = std::make_unique<HealthBatchEvent>();
     batch->caster = attacker;
     batch->damageInfo.realDamage = damage;
     batch->spellInfo = spellInfo;
     
-    addHealthBatchEvent(batch);
+    addHealthBatchEvent(std::move(batch));
 }
 
 void Unit::addSimpleEnvironmentalDamageBatchEvent(EnviromentalDamage type, uint32_t damage, uint32_t absorbedDamage/* = 0*/)
 {
-    auto batch = new HealthBatchEvent;
+    auto batch = std::make_unique<HealthBatchEvent>();
     batch->damageInfo.realDamage = damage;
     batch->isEnvironmentalDamage = true;
     batch->environmentType = type;
@@ -7288,55 +7271,42 @@ void Unit::addSimpleEnvironmentalDamageBatchEvent(EnviromentalDamage type, uint3
     if (type == DAMAGE_FIRE || type == DAMAGE_LAVA)
         batch->damageInfo.absorbedDamage = absorbedDamage;
 
-    addHealthBatchEvent(batch);
+    addHealthBatchEvent(std::move(batch));
 }
 
 void Unit::addSimpleHealingBatchEvent(uint32_t heal, Unit* healer/* = nullptr*/, SpellInfo const* spellInfo/* = nullptr*/)
 {
-    auto batch = new HealthBatchEvent;
+    auto batch = std::make_unique<HealthBatchEvent>();
     batch->caster = healer;
     batch->damageInfo.realDamage = heal;
     batch->spellInfo = spellInfo;
     batch->isHeal = true;
 
-    addHealthBatchEvent(batch);
+    addHealthBatchEvent(std::move(batch));
 }
 
-void Unit::addHealthBatchEvent(HealthBatchEvent* batch)
+void Unit::addHealthBatchEvent(std::unique_ptr<HealthBatchEvent> batch)
 {
-    if (batch != nullptr)
+    if (batch == nullptr)
+        return;
+
+    // Do some checks before adding the health event into batch list
+    if (!isAlive() || !IsInWorld() || m_isInvincible)
+        return;
+
+    if (isPlayer())
     {
-        // Do some checks before adding the health event into batch list
-        if (!isAlive() || !IsInWorld() || m_isInvincible)
-        {
-            delete batch;
+        const auto plr = dynamic_cast<Player*>(this);
+        if (!batch->isHeal && plr->m_cheats.hasGodModeCheat)
             return;
-        }
-
-        if (isPlayer())
-        {
-            const auto plr = dynamic_cast<Player*>(this);
-            if (!batch->isHeal && plr->m_cheats.hasGodModeCheat)
-            {
-                delete batch;
-                return;
-            }
-        }
-        else if (isCreature())
-        {
-            if (dynamic_cast<Creature*>(this)->isSpiritHealer())
-            {
-                delete batch;
-                return;
-            }
-        }
-
-        m_healthBatch.push_back(batch);
     }
-    else
+    else if (isCreature())
     {
-        sLogger.failure("Unit::addHealthBatchEvent tried to add batch for nullptr!");
+        if (dynamic_cast<Creature*>(this)->isSpiritHealer())
+            return;
     }
+
+    m_healthBatch.push_back(std::move(batch));
 }
 
 uint32_t Unit::calculateEstimatedOverKillForCombatLog(uint32_t damage) const
@@ -7399,9 +7369,6 @@ uint32_t Unit::calculateEstimatedOverHealForCombatLog(uint32_t heal) const
 
 void Unit::clearHealthBatch()
 {
-    for (auto& itr : m_healthBatch)
-        delete itr;
-
     m_healthBatch.clear();
 
     // This function is also called on unit death so make sure to remove health based aurastates
@@ -7591,12 +7558,12 @@ void Unit::_updateHealth()
     auto batchItr = m_healthBatch.begin();
     while (batchItr != m_healthBatch.end())
     {
-        auto batch = *batchItr;
+        const auto& batch = *batchItr;
 
         if (batch->isHeal)
         {
             uint32_t absorbedHeal = 0;
-            const auto heal = _handleBatchHealing(batch, &absorbedHeal);
+            const auto heal = _handleBatchHealing(batch.get(), &absorbedHeal);
             healthVal += heal;
 
             const int32_t diff = curHealth + healthVal;
@@ -7610,7 +7577,7 @@ void Unit::_updateHealth()
         else
         {
             uint32_t rageGenerated = 0;
-            const auto damage = _handleBatchDamage(batch, &rageGenerated);
+            const auto damage = _handleBatchDamage(batch.get(), &rageGenerated);
             healthVal -= damage;
 
             singleDamager = batch->caster;
@@ -7627,7 +7594,6 @@ void Unit::_updateHealth()
             }
         }
 
-        delete *batchItr;
         batchItr = m_healthBatch.erase(batchItr);
     }
 
@@ -8094,7 +8060,7 @@ bool Unit::createVehicleKit(uint32_t id, uint32_t creatureEntry)
     if (!vehInfo)
         return false;
 
-    m_vehicleKit = new Vehicle(this, vehInfo, creatureEntry);
+    m_vehicleKit = std::make_unique<Vehicle>(this, vehInfo, creatureEntry);
     m_updateFlag |= UPDATEFLAG_VEHICLE;
     return true;
 }
@@ -8105,8 +8071,6 @@ void Unit::removeVehicleKit()
         return;
 
     m_vehicleKit->deactivate();
-    delete m_vehicleKit;
-
     m_vehicleKit = nullptr;
 
     m_updateFlag &= ~UPDATEFLAG_VEHICLE;
@@ -9112,14 +9076,12 @@ void Unit::eventChill(Unit* unitProcTarget, bool isVictim)
 
 void Unit::removeExtraStrikeTarget(SpellInfo const* spellInfo)
 {
-    for (std::list<ExtraStrike*>::iterator extraStrikeTarget = m_extraStrikeTargets.begin(); extraStrikeTarget != m_extraStrikeTargets.end(); ++extraStrikeTarget)
+    for (auto extraStrikeTarget = m_extraStrikeTargets.begin(); extraStrikeTarget != m_extraStrikeTargets.end(); ++extraStrikeTarget)
     {
-        ExtraStrike* extraStrike = *extraStrikeTarget;
-        if (spellInfo == extraStrike->spell_info)
+        if (spellInfo == (*extraStrikeTarget)->spell_info)
         {
             m_extraStrikeTargetC--;
             m_extraStrikeTargets.erase(extraStrikeTarget);
-            delete extraStrike;
             break;
         }
     }
@@ -9127,7 +9089,7 @@ void Unit::removeExtraStrikeTarget(SpellInfo const* spellInfo)
 
 void Unit::addExtraStrikeTarget(SpellInfo const* spellInfo, uint32_t charges)
 {
-    for (std::list<ExtraStrike*>::iterator extraStrikeTarget = m_extraStrikeTargets.begin(); extraStrikeTarget != m_extraStrikeTargets.end(); ++extraStrikeTarget)
+    for (auto extraStrikeTarget = m_extraStrikeTargets.begin(); extraStrikeTarget != m_extraStrikeTargets.end(); ++extraStrikeTarget)
     {
         //a pointer check or id check ...should be the same
         if (spellInfo == (*extraStrikeTarget)->spell_info)
@@ -9137,30 +9099,23 @@ void Unit::addExtraStrikeTarget(SpellInfo const* spellInfo, uint32_t charges)
         }
     }
 
-    ExtraStrike* extraStrike = new ExtraStrike;
-    extraStrike->spell_info = spellInfo;
-    extraStrike->charges = charges;
-
-    m_extraStrikeTargets.push_back(extraStrike);
-
+    m_extraStrikeTargets.emplace_back(std::make_unique<ExtraStrike>(spellInfo, charges));
     m_extraStrikeTargetC++;
 }
 
 uint32_t Unit::doDamageSplitTarget(uint32_t res, SchoolMask schoolMask, bool isMeleeDmg)
 {
-    DamageSplitTarget* damageSplitTarget = m_damageSplitTarget;
-
-    Unit* splittarget = (getWorldMap() != nullptr) ? getWorldMap()->getUnit(damageSplitTarget->m_target) : nullptr;
+    Unit* splittarget = (getWorldMap() != nullptr) ? getWorldMap()->getUnit(m_damageSplitTarget->m_target) : nullptr;
     if (splittarget != nullptr && res > 0)
     {
         // calculate damage
-        uint32_t tmpsplit = damageSplitTarget->m_flatDamageSplit;
+        uint32_t tmpsplit = m_damageSplitTarget->m_flatDamageSplit;
         if (tmpsplit > res)
             tmpsplit = res;
 
         uint32_t splitdamage = tmpsplit;
         res -= tmpsplit;
-        tmpsplit = Util::float2int32(damageSplitTarget->m_pctDamageSplit * res);
+        tmpsplit = Util::float2int32(m_damageSplitTarget->m_pctDamageSplit * res);
         if (tmpsplit > res)
             tmpsplit = res;
 
@@ -9184,7 +9139,7 @@ uint32_t Unit::doDamageSplitTarget(uint32_t res, SchoolMask schoolMask, bool isM
                 if (splitdamage > splittarget->getHealth())
                     overKill = splitdamage - splittarget->getHealth();
 
-                splittarget->sendSpellNonMeleeDamageLog(this, splittarget, sSpellMgr.getSpellInfo(damageSplitTarget->m_spellId), splitdamage, 0, 0, 0, overKill, false, false);
+                splittarget->sendSpellNonMeleeDamageLog(this, splittarget, sSpellMgr.getSpellInfo(m_damageSplitTarget->m_spellId), splitdamage, 0, 0, 0, overKill, false, false);
             }
         }
     }
@@ -9202,7 +9157,6 @@ void Unit::removeReflect(uint32_t spellId, bool apply)
     {
         if (spellId == (*reflectSpellSchool)->spellId)
         {
-            delete* reflectSpellSchool;
             reflectSpellSchool = m_reflectSpellSchool.erase(reflectSpellSchool);
         }
         else
@@ -11356,12 +11310,12 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     {
         if (dmg.realDamage)
         {
-            auto batch = new HealthBatchEvent;
+            auto batch = std::make_unique<HealthBatchEvent>();
             batch->caster = this;
             batch->damageInfo = dmg;
             batch->spellInfo = ability;
 
-            pVictim->addHealthBatchEvent(batch);
+            pVictim->addHealthBatchEvent(std::move(batch));
             //pVictim->HandleProcDmgShield(PROC_ON_MELEE_ATTACK_VICTIM,this);
             // HandleProcDmgShield(PROC_ON_MELEE_ATTACK_VICTIM,pVictim);
 
@@ -11460,10 +11414,10 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
     {
         m_extraStrikeTarget = true;
 
-        for (std::list<ExtraStrike*>::iterator itx = m_extraStrikeTargets.begin(); itx != m_extraStrikeTargets.end();)
+        for (auto itx = m_extraStrikeTargets.begin(); itx != m_extraStrikeTargets.end();)
         {
-            std::list<ExtraStrike*>::iterator itx2 = itx++;
-            ExtraStrike* ex = *itx2;
+            auto itx2 = itx++;
+            const auto& ex = *itx2;
 
             for (const auto& itr : getInRangeObjectsSet())
             {
@@ -11489,7 +11443,6 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
                 {
                     m_extraStrikeTargetC--;
                     m_extraStrikeTargets.erase(itx2);
-                    delete ex;
                 }
             }
         }

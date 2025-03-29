@@ -63,6 +63,9 @@ std::unique_ptr<BroadcastMgr> broadcastMgr = nullptr;
 
 extern void LoadGameObjectModelList(std::string const& dataPath);
 
+World::World() = default;
+World::~World() = default;
+
 World& World::getInstance()
 {
     static World mInstance;
@@ -96,8 +99,8 @@ void World::initialize()
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // General Functions
-    mEventableObjectHolder = new EventableObjectHolder(WORLD_INSTANCE);
-    m_holder = mEventableObjectHolder;
+    mEventableObjectHolder = std::make_unique<EventableObjectHolder>(WORLD_INSTANCE);
+    m_holder = mEventableObjectHolder.get();
     m_event_Instanceid = mEventableObjectHolder->GetInstanceID();
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -113,8 +116,6 @@ void World::finalize()
     sLogger.info("TransportHandler : unload()");
     sTransportHandler.unload();
 #endif
-    sLogger.info("ObjectMgr : ~ObjectMgr()");
-    sObjectMgr.finalize();
 
     sLogger.info("TicketMgr : ~TicketMgr()");
     sTicketMgr.finalize();
@@ -131,17 +132,14 @@ void World::finalize()
     sLogger.info("WeatherMgr : ~WeatherMgr()");
     sWeatherMgr.finalize();
 
-#if VERSION_STRING >= Cata
-    // todo: shouldn't this be deleted also on other versions?
     sLogger.info("GuildMgr", "~GuildMgr()");
     sGuildMgr.finalize();
-#endif
 
     sLogger.info("MapMgr : ~MapMgr()");
     sMapMgr.shutdown();
 
     sLogger.info("WordFilter : ~WordFilter()");
-    delete g_chatFilter;
+    g_chatFilter = nullptr;
 
     sLogger.info("SpellMgr : ~SpellMgr()");
     sSpellMgr.finalize();
@@ -154,10 +152,13 @@ void World::finalize()
 
     broadcastMgr.reset();
 
-    delete mEventableObjectHolder;
+    mEventableObjectHolder = nullptr;
 
-    for (std::list<SpellInfo const*>::iterator itr = dummySpellList.begin(); itr != dummySpellList.end(); ++itr)
-        delete *itr;
+    dummySpellList.clear();
+
+    // Finalizing ObjectMgr must be last
+    sLogger.info("ObjectMgr : ~ObjectMgr()");
+    sObjectMgr.finalize();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -977,7 +978,7 @@ void World::loadMySQLTablesByTask()
     sCommandTableStorage.Load();
     sLogger.info("WordFilter : Loading...");
 
-    g_chatFilter = new WordFilter();
+    g_chatFilter = std::make_unique<WordFilter>();
 
     sLogger.info("Done. Database loaded in {} ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }

@@ -55,8 +55,8 @@ typedef std::set<WorldSession*> SessionSet;
 class SERVER_DECL World : public EventableObject
 {
 private:
-    World() = default;
-    ~World() = default;
+    World();
+    ~World();
 
 public:
     static World& getInstance();
@@ -198,13 +198,13 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // General Functions
 private:
-    EventableObjectHolder* mEventableObjectHolder;
+    std::unique_ptr<EventableObjectHolder> mEventableObjectHolder;
 #if VERSION_STRING < Cata
     uint8_t mDbcLocaleId = 0;
 #endif
 
 public:
-    std::list<SpellInfo const*> dummySpellList;
+    std::list<std::unique_ptr<SpellInfo>> dummySpellList;
 
     bool setInitialWorldSettings();
     void resetCharacterLoginBannState();

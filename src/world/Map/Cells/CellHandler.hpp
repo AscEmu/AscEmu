@@ -8,6 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CellHandlerDefines.hpp"
 #include "Map/Cells/MapCell.hpp"
 
+#include <memory>
+
 class BaseMap;
 
 template <class Class>
@@ -23,7 +25,7 @@ public:
     Class* createByCoords(float x, float y);
     void remove(uint32_t x, uint32_t y);
 
-    bool allocated(uint32_t x, uint32_t y) { return _cells[x][y] != nullptr; }
+    bool allocated(uint32_t x, uint32_t y) { return _cells != nullptr && (*_cells)[x] != nullptr && (*(*_cells)[x])[y] != nullptr; }
 
     static uint32_t getPosX(float x);
     static uint32_t getPosY(float y);
@@ -33,7 +35,7 @@ public:
 protected:
     void _Init();
 
-    Class*** _cells;
+    std::unique_ptr<std::array<std::unique_ptr<std::array<std::unique_ptr<Class>, Map::Cell::_sizeY>>, Map::Cell::_sizeX>> _cells = nullptr;
 
     BaseMap* _map;
 };
@@ -48,35 +50,28 @@ CellHandler<Class>::CellHandler(BaseMap* map)
 template <class Class>
 void CellHandler<Class>::_Init()
 {
-    _cells = new Class * *[Map::Cell::_sizeX];
+    _cells = std::make_unique<std::array<std::unique_ptr<std::array<std::unique_ptr<Class>, Map::Cell::_sizeY>>, Map::Cell::_sizeX>>();
 
     if (_cells != nullptr)
     {
-        for (uint32_t i = 0; i < Map::Cell::_sizeX; i++)
-        {
-            _cells[i] = nullptr;
-        }
+        std::fill(_cells->begin(), _cells->end(), nullptr);
     }
 }
 
 template <class Class>
 CellHandler<Class>::~CellHandler()
 {
-    if (_cells)
+    if (_cells != nullptr)
     {
         for (uint32_t i = 0; i < Map::Cell::_sizeX; i++)
         {
-            if (!_cells[i])
+            if ((*_cells)[i] == nullptr)
                 continue;
 
-            for (uint32_t j = 0; j < Map::Cell::_sizeY; j++)
-            {
-                if (_cells[i][j])
-                    delete _cells[i][j];
-            }
-            delete[] _cells[i];
+            std::fill((*_cells)[i]->begin(), (*_cells)[i]->end(), nullptr);
+            (*_cells)[i] = nullptr;
         }
-        delete[] _cells;
+        _cells = nullptr;
     }
 }
 
@@ -86,18 +81,20 @@ Class* CellHandler<Class>::create(uint32_t x, uint32_t y)
     if (x >= Map::Cell::_sizeX || y >= Map::Cell::_sizeY)
         return nullptr;
 
-    if (!_cells[x])
+    if (_cells == nullptr)
+        return nullptr;
+
+    if ((*_cells)[x] == nullptr)
     {
-        _cells[x] = new Class * [Map::Cell::_sizeY];
-        memset(_cells[x], 0, sizeof(Class*) * Map::Cell::_sizeY);
+        (*_cells)[x] = std::make_unique<std::array<std::unique_ptr<Class>, Map::Cell::_sizeY>>();
+        std::fill((*_cells)[x]->begin(), (*_cells)[x]->end(), nullptr);
     }
 
-    if (_cells[x][y] == nullptr)
+    if ((*(*_cells)[x])[y] == nullptr)
     {
-        Class* cls = new Class;
-        _cells[x][y] = cls;
+        (*(*_cells)[x])[y] = std::make_unique<Class>();
 
-        return cls;
+        return (*(*_cells)[x])[y].get();
     }
     return nullptr;
 }
@@ -114,24 +111,18 @@ void CellHandler<Class>::remove(uint32_t x, uint32_t y)
     if (x >= Map::Cell::_sizeX || y >= Map::Cell::_sizeY)
         return;
 
-    if (!_cells[x])
+    if (_cells == nullptr || (*_cells)[x] == nullptr)
         return;
 
-    if (_cells[x][y] != nullptr)
-    {
-        Class* cls = _cells[x][y];
-        _cells[x][y] = NULL;
-
-        delete cls;
-    }
+    (*(*_cells)[x])[y] = nullptr;
 }
 
 template <class Class>
 Class* CellHandler<Class>::getCell(uint32_t x, uint32_t y)
 {
-    if (x >= Map::Cell::_sizeX || y >= Map::Cell::_sizeY || !_cells[x])
+    if (x >= Map::Cell::_sizeX || y >= Map::Cell::_sizeY || _cells == nullptr || (*_cells)[x] == nullptr)
         return nullptr;
-    return _cells[x][y];
+    return (*(*_cells)[x])[y].get();
 }
 
 template <class Class>

@@ -128,7 +128,7 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam _winningTeam)
 
             for (std::set<uint32_t>::iterator itr = m_players2[i].begin(); itr != m_players2[i].end(); ++itr)
             {
-                std::shared_ptr<CachedCharacterInfo> info = sObjectMgr.getCachedCharacterInfo(*itr);
+                const auto info = sObjectMgr.getCachedCharacterInfo(*itr);
                 if (info)
                 {
                     ArenaTeamMember* tp = m_teams[i]->getMember(info);
@@ -406,7 +406,7 @@ uint32_t Arena::GetTeamFaction(uint32_t _teamId)
 
 uint8_t Arena::Rated() { return rated_match; }
 uint8_t Arena::GetArenaTeamType() const { return m_arenateamtype; }
-std::shared_ptr<ArenaTeam>* Arena::GetTeams() { return m_teams; }
+ArenaTeam** Arena::GetTeams() { return m_teams; }
 
 LocationVector Arena::GetStartingCoords(uint32_t /*Team*/)
 {

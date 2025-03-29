@@ -58,7 +58,7 @@ public:
     void OnQuestCancelled(Player* pPlayer, QuestProperties const* pQuest);
     void OnQuestFinished(Player* pPlayer, QuestProperties const* pQuest, Object* pQuestGiver);
     void OnHonorableKill(Player* pPlayer, Player* pKilled);
-    void OnArenaFinish(Player* pPlayer, std::shared_ptr<ArenaTeam> pTeam, bool victory, bool rated);
+    void OnArenaFinish(Player* pPlayer, ArenaTeam* pTeam, bool victory, bool rated);
     void OnObjectLoot(Player* pPlayer, Object* pTarget, uint32_t Money, uint32_t ItemId);
     void OnAreaTrigger(Player* pPlayer, uint32_t areaTrigger);
     void OnPostLevelUp(Player* pPlayer);

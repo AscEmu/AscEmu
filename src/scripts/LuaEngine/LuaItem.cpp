@@ -251,7 +251,7 @@ int LuaItem::AddLoot(lua_State* L, Item* ptr)
             WorldDatabase.Execute("REPLACE INTO loot_items VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->getEntry(), itemid, chance, mincount, maxcount);
         delete result;
     }
-    sLootMgr.addLoot(ptr->m_loot, itemid, ichance, mincount, maxcount, ptr->getWorldMap()->getDifficulty());
+    sLootMgr.addLoot(ptr->m_loot.get(), itemid, ichance, mincount, maxcount, ptr->getWorldMap()->getDifficulty());
     return 1;
 }
 

@@ -30,8 +30,8 @@ class SERVER_DECL ScriptMgr
 {
     friend class HookInterface;
 
-    ScriptMgr() = default;
-    ~ScriptMgr() = default;
+    ScriptMgr();
+    ~ScriptMgr();
 
 public:
     static ScriptMgr& getInstance();

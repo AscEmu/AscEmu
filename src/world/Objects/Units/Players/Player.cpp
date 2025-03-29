@@ -170,18 +170,43 @@ using namespace AscEmu::Packets;
 using namespace MapManagement::AreaManagement;
 using namespace InstanceDifficulty;
 
+CachedCharacterInfo::CachedCharacterInfo() = default;
+
+CachedCharacterInfo::CachedCharacterInfo(Field const* fields)
+{
+    guid = fields[0].asUint32();
+
+    std::string characterNameDB = fields[1].asCString();
+    AscEmu::Util::Strings::capitalize(characterNameDB);
+
+    name = characterNameDB;
+    race = fields[2].asUint8();
+    cl = fields[3].asUint8();
+    lastLevel = fields[4].asUint32();
+    gender = fields[5].asUint8();
+    lastZone = fields[6].asUint32();
+    lastOnline = fields[7].asUint32();
+    acct = fields[8].asUint32();
+    m_Group = nullptr;
+    subGroup = 0;
+    m_guild = 0;
+    guildRank = GUILD_RANK_NONE;
+    team = getSideByRace(race);
+}
+
 CachedCharacterInfo::~CachedCharacterInfo()
 {
     if (m_Group != nullptr)
-        m_Group->RemovePlayer(sObjectMgr.getCachedCharacterInfo(guid));
+        m_Group->RemovePlayer(this);
 }
 
 Player::Player(uint32_t guid) :
     m_updateMgr(this, static_cast<size_t>(worldConfig.server.compressionThreshold), 40000, 30000, 1000),
     m_nextSave(Util::getMSTime() + worldConfig.getIntRate(INTRATE_SAVE)),
-    m_mailBox(new Mailbox(guid)),
-    m_speedCheatDetector(new SpeedCheatDetector),
-    m_groupUpdateFlags(GROUP_UPDATE_FLAG_NONE)
+    m_mailBox(std::make_unique<Mailbox>(guid)),
+    m_speedCheatDetector(std::make_unique<SpeedCheatDetector>()),
+    m_groupUpdateFlags(GROUP_UPDATE_FLAG_NONE),
+    m_TradeData(nullptr)
 {
     //////////////////////////////////////////////////////////////////////////
     m_objectType |= TYPE_PLAYER;
@@ -191,10 +216,6 @@ Player::Player(uint32_t guid) :
 
     //\todo Why is there a pointer to the same thing in a derived class? ToDo: sort this out..
     m_uint32Values = _fields;
-
-#if VERSION_STRING > WotLK
-    memset(_voidStorageItems, 0, VOID_STORAGE_MAX_SLOT * sizeof(VoidStorageItem*));
-#endif
     memset(m_uint32Values, 0, (getSizeOfStructure(WoWPlayer)) * sizeof(uint32_t));
     m_updateMask.SetCount(getSizeOfStructure(WoWPlayer));
 
@@ -216,14 +237,20 @@ Player::Player(uint32_t guid) :
     m_sentTeleportPosition.ChangeCoords({ 999999.0f, 999999.0f, 999999.0f });
 
     // Zyres: initialise here because ItemInterface needs the guid from object data
-    m_itemInterface = new ItemInterface(this);
+    m_itemInterface = std::make_unique<ItemInterface>(this);
 #if VERSION_STRING > TBC
-    m_achievementMgr = new AchievementMgr(this);
+    // make_unique does not work with private ctor -Appled
+    m_achievementMgr = std::unique_ptr<AchievementMgr>(new AchievementMgr(this));
 #endif
-    m_taxi = new TaxiPath;
+    m_taxi = std::make_unique<TaxiPath>();
 
     m_underwaterLastDamage = Util::getMSTime();
     m_explorationTimer = Util::getMSTime();
+
+    std::fill(m_questlog.begin(), m_questlog.end(), nullptr);
+#if VERSION_STRING >= Cata
+    std::fill(_voidStorageItems.begin(), _voidStorageItems.end(), nullptr);
+#endif
 
     // Override initialization from Unit class
     getThreatManager().initialize();
@@ -254,37 +281,6 @@ Player::~Player()
         m_duelPlayer->m_duelPlayer = nullptr;
 
     m_duelPlayer = nullptr;
-
-    for (uint8_t i = 0; i < MAX_QUEST_SLOT; ++i)
-    {
-        if (m_questlog[i] != nullptr)
-        {
-            delete m_questlog[i];
-            m_questlog[i] = nullptr;
-        }
-    }
-
-    delete m_itemInterface;
-    m_itemInterface = nullptr;
-
-    for (auto reputation = m_reputation.begin(); reputation != m_reputation.end(); ++reputation)
-        delete reputation->second;
-
-    m_reputation.clear();
-
-    delete m_speedCheatDetector;
-    m_speedCheatDetector = nullptr;
-
-#if VERSION_STRING > WotLK
-    for (uint8_t i = 0; i < VOID_STORAGE_MAX_SLOT; ++i)
-        delete _voidStorageItems[i];
-#endif
-
-    delete m_mailBox;
-#if VERSION_STRING > TBC
-    delete m_achievementMgr;
-#endif
-    delete m_taxi;
 
     m_cachedPets.clear();
     removeGarbageItems();
@@ -2849,7 +2845,7 @@ void Player::toggleDnd()
 
 uint32_t* Player::getPlayedTime() { return m_playedTime; }
 
-std::shared_ptr<CachedCharacterInfo> Player::getPlayerInfo() const { return m_playerInfo; }
+CachedCharacterInfo* Player::getPlayerInfo() const { return m_playerInfo; }
 
 void Player::changeLooks(uint64_t guid, uint8_t gender, uint8_t skin, uint8_t face, uint8_t hairStyle, uint8_t hairColor, uint8_t facialHair)
 {
@@ -3521,7 +3517,7 @@ void Player::initVisibleUpdateBits()
 #endif
 }
 
-void Player::copyAndSendDelayedPacket(WorldPacket* data) { m_updateMgr.queueDelayedPacket(new WorldPacket(*data)); }
+void Player::copyAndSendDelayedPacket(WorldPacket* data) { m_updateMgr.queueDelayedPacket(std::make_unique<WorldPacket>(*data)); }
 
 void Player::setEnteringToWorld() { m_enteringWorld = true; }
 
@@ -3886,16 +3882,8 @@ bool Player::loadReputations(QueryResult* result)
         if (faction == nullptr || faction->RepListId < 0)
             continue;
 
-        auto itr = m_reputation.find(id);
-        if (itr != m_reputation.end())
-            delete itr->second;
-
-        FactionReputation* reputation = new FactionReputation;
-        reputation->baseStanding = basestanding;
-        reputation->standing = standing;
-        reputation->flag = flag;
-        m_reputation[id] = reputation;
-        m_reputationByListId[faction->RepListId] = reputation;
+        const auto [repItr, _] = m_reputation.insert_or_assign(id, std::make_unique<FactionReputation>(standing, flag, basestanding));
+        m_reputationByListId[faction->RepListId] = repItr->second.get();
     } while (result->NextRow());
 
     return true;
@@ -6506,27 +6494,29 @@ Player* Player::getTradeTarget() const
 
 TradeData* Player::getTradeData() const
 {
-    return m_TradeData;
+    return m_TradeData.get();
 }
 
 void Player::cancelTrade(bool sendToSelfAlso, bool silently /*= false*/)
 {
+    // TODO: for some reason client sends multiple trade cancel packets which at some point leads to nullptr trade data
+    // investigate why client sends so many packets but use mutex for now to prevent crashes -Appled
+    std::scoped_lock<std::mutex> guard(m_tradeMutex);
+
     if (m_TradeData != nullptr)
     {
         if (sendToSelfAlso)
             getSession()->sendTradeResult(TRADE_STATUS_CANCELLED);
 
-        auto tradeTarget = m_TradeData->getTradeTarget();
-        if (tradeTarget != nullptr)
+        if (auto* tradeTarget = m_TradeData->getTradeTarget())
         {
+            std::scoped_lock<std::mutex> targetGuard(tradeTarget->m_tradeMutex);
             if (!silently)
                 tradeTarget->getSession()->sendTradeResult(TRADE_STATUS_CANCELLED);
 
-            delete tradeTarget->m_TradeData;
             tradeTarget->m_TradeData = nullptr;
         }
 
-        delete m_TradeData;
         m_TradeData = nullptr;
     }
 }
@@ -6911,7 +6901,7 @@ WDB::Structures::ScalingStatValuesEntry const* Player::getScalingStatValuesFor(I
 
 ItemInterface* Player::getItemInterface() const
 {
-    return m_itemInterface;
+    return m_itemInterface.get();
 }
 
 void Player::removeTempItemEnchantsOnArena()
@@ -6988,32 +6978,23 @@ void Player::applyItemMods(Item* item, int16_t slot, bool apply, bool justBroked
     {
         if (auto itemSetEntry = sItemSetStore.lookupEntry(setId))
         {
-            bool isItemSetCreatedNew = false;
-            ItemSet* itemSet = nullptr;
-
-            std::list<ItemSet>::iterator itemSetListMember;
-            for (itemSetListMember = m_itemSets.begin(); itemSetListMember != m_itemSets.end(); ++itemSetListMember)
-            {
-                if (itemSetListMember->setid == setId)
-                {
-                    itemSet = &(*itemSetListMember);
-                    break;
-                }
-            }
+            auto itemSetListMember = std::find_if(m_itemSets.begin(), m_itemSets.end(),
+                [setId](ItemSet const& itemset) { return itemset.setid == setId; });
 
             if (apply)
             {
-                // create new itemset if item has itemsetentry but not generated set stats
-                if (itemSet == nullptr)
-                {
-                    itemSet = new ItemSet;
-                    itemSet->itemscount = 1;
-                    itemSet->setid = setId;
+                ItemSet* itemSet = nullptr;
 
-                    isItemSetCreatedNew = true;
+                // create new itemset if item has itemsetentry but not generated set stats
+                if (itemSetListMember == m_itemSets.cend())
+                {
+                    // push to m_itemSets if it was not available before.
+                    auto& newItemSet = m_itemSets.emplace_back(setId, 1);
+                    itemSet = &newItemSet;
                 }
                 else
                 {
+                    itemSet = &(*itemSetListMember);
                     itemSet->itemscount++;
                 }
 
@@ -7031,15 +7012,12 @@ void Player::applyItemMods(Item* item, int16_t slot, bool apply, bool justBroked
                         }
                     }
                 }
-
-                // push to m_itemSets if it was not available before.
-                if (itemSetListMember == m_itemSets.end())
-                    m_itemSets.push_back(*itemSet);
             }
             else
             {
-                if (itemSet)
+                if (itemSetListMember != m_itemSets.cend())
                 {
+                    auto* itemSet = &(*itemSetListMember);
                     for (uint8_t itemIndex = 0; itemIndex < 8; ++itemIndex)
                         if (itemSet->itemscount == itemSetEntry->itemscount[itemIndex])
                             removeAllAurasByIdForGuid(itemSetEntry->SpellID[itemIndex], getGuid());
@@ -7048,9 +7026,6 @@ void Player::applyItemMods(Item* item, int16_t slot, bool apply, bool justBroked
                         m_itemSets.erase(itemSetListMember);
                 }
             }
-
-            if (isItemSetCreatedNew)
-                delete itemSet;
         }
         else
         {
@@ -7848,9 +7823,9 @@ int32_t Player::getBGEntryInstanceId() const { return m_bgEntryData.instanceId; 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Charter
 void Player::unsetCharter(uint8_t charterType) { m_charters[charterType] = nullptr; }
-std::shared_ptr<Charter> Player::getCharter(uint8_t charterType) { return m_charters[charterType]; }
+Charter const* Player::getCharter(uint8_t charterType) { return m_charters[charterType]; }
 
-bool Player::canSignCharter(std::shared_ptr<Charter> charter, Player* requester)
+bool Player::canSignCharter(Charter const* charter, Player* requester)
 {
     if (charter == nullptr || requester == nullptr)
         return false;
@@ -7899,7 +7874,7 @@ bool Player::isAlreadyInvitedToGroup() const { return m_grouIdpInviterId != 0; }
 
 bool Player::isInGroup() const { return m_playerInfo && m_playerInfo->m_Group; }
 
-std::shared_ptr<Group> Player::getGroup() { return m_playerInfo ? m_playerInfo->m_Group : nullptr; }
+Group* Player::getGroup() { return m_playerInfo ? m_playerInfo->m_Group : nullptr; }
 bool Player::isGroupLeader() const
 {
     if (m_playerInfo->m_Group != nullptr)
@@ -7972,7 +7947,7 @@ LocationVector Player::getLastGroupPosition() const { return m_lastGroupPosition
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Channels
-void Player::joinedChannel(std::shared_ptr<Channel> channel)
+void Player::joinedChannel(Channel* channel)
 {
     if (channel == nullptr)
         return;
@@ -7981,7 +7956,7 @@ void Player::joinedChannel(std::shared_ptr<Channel> channel)
     m_channels.insert(channel);
 }
 
-void Player::leftChannel(std::shared_ptr<Channel> channel)
+void Player::leftChannel(Channel* channel)
 {
     if (channel == nullptr)
         return;
@@ -8011,7 +7986,7 @@ void Player::updateChannels()
         if (channelDbc == nullptr)
             continue;
 
-        std::shared_ptr<Channel> oldChannel = nullptr;
+        Channel* oldChannel = nullptr;
 
         m_mutexChannel.lock();
         for (auto _channel : m_channels)
@@ -8057,7 +8032,7 @@ void Player::updateChannels()
 
 void Player::removeAllChannels()
 {
-    std::set<std::shared_ptr<Channel>> removeList;
+    std::set<Channel*> removeList;
     m_mutexChannel.lock();
 
     for (const auto& channel : m_channels)
@@ -8075,14 +8050,14 @@ void Player::removeAllChannels()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // ArenaTeam
-void Player::setArenaTeam(uint8_t type, std::shared_ptr<ArenaTeam> arenaTeam)
+void Player::setArenaTeam(uint8_t type, ArenaTeam* arenaTeam)
 {
     m_arenaTeams[type] = arenaTeam;
 
     if (arenaTeam)
         getSession()->SystemMessage("You are now a member of the arena team'%s'.", arenaTeam->m_name.c_str());
 }
-std::shared_ptr<ArenaTeam> Player::getArenaTeam(uint8_t type) { return m_arenaTeams[type]; }
+ArenaTeam* Player::getArenaTeam(uint8_t type) { return m_arenaTeams[type]; }
 
 bool Player::isInArenaTeam(uint8_t type) const { return m_arenaTeams[type] != nullptr; }
 void Player::initialiseArenaTeam()
@@ -8751,7 +8726,7 @@ void Player::acceptQuest(uint64_t guid, uint32_t quest_id)
         }
     }
 
-    auto questLogEntry = new QuestLogEntry(questProperties, this, log_slot);
+    auto* questLogEntry = createQuestLogInSlot(questProperties, log_slot);
     questLogEntry->updatePlayerFields();
 
     // If the quest should give any items on begin, give them the items.
@@ -8811,10 +8786,19 @@ void Player::acceptQuest(uint64_t guid, uint32_t quest_id)
     sHookInterface.OnQuestAccept(this, questProperties, qst_giver);
 }
 
-void Player::setQuestLogInSlot(QuestLogEntry* entry, uint32_t slotId)
+QuestLogEntry* Player::createQuestLogInSlot(QuestProperties const* questProperties, uint8_t slotId)
 {
-    if (slotId < MAX_QUEST_SLOT)
-        m_questlog[slotId] = entry;
+    if (slotId >= MAX_QUEST_LOG_SIZE)
+        return nullptr;
+
+    if (questProperties == nullptr)
+    {
+        m_questlog[slotId] = nullptr;
+        return nullptr;
+    }
+
+    m_questlog[slotId] = std::make_unique<QuestLogEntry>(questProperties, this, slotId);
+    return m_questlog[slotId].get();
 }
 
 bool Player::hasAnyQuestInQuestSlot() const
@@ -8836,11 +8820,11 @@ bool Player::hasQuestInQuestLog(uint32_t questId) const
 
 uint8_t Player::getFreeQuestSlot() const
 {
-    for (uint8_t slotId = 0; slotId < MAX_QUEST_SLOT; ++slotId)
+    for (uint8_t slotId = 0; slotId < MAX_QUEST_LOG_SIZE; ++slotId)
         if (m_questlog[slotId] == nullptr)
             return slotId;
 
-    return MAX_QUEST_SLOT + 1;
+    return MAX_QUEST_LOG_SIZE + 1;
 }
 
 QuestLogEntry* Player::getQuestLogByQuestId(uint32_t questId) const
@@ -8848,15 +8832,15 @@ QuestLogEntry* Player::getQuestLogByQuestId(uint32_t questId) const
     for (auto& questlogSlot : m_questlog)
         if (questlogSlot != nullptr)
             if (questlogSlot->getQuestProperties()->id == questId)
-                return questlogSlot;
+                return questlogSlot.get();
 
     return nullptr;
 }
 
 QuestLogEntry* Player::getQuestLogBySlotId(uint32_t slotId) const
 {
-    if (slotId < MAX_QUEST_SLOT)
-        return m_questlog[slotId];
+    if (slotId < MAX_QUEST_LOG_SIZE)
+        return m_questlog[slotId].get();
 
     return nullptr;
 }
@@ -9484,10 +9468,10 @@ void Player::setLoginPosition()
 
 void Player::setPlayerInfoIfNeeded()
 {
-    auto playerInfo = sObjectMgr.getCachedCharacterInfo(getGuidLow());
-    if (playerInfo == nullptr)
+    m_playerInfo = sObjectMgr.getCachedCharacterInfo(getGuidLow());
+    if (m_playerInfo == nullptr)
     {
-        playerInfo = std::make_shared<CachedCharacterInfo>();
+        auto playerInfo = std::make_unique<CachedCharacterInfo>();
         playerInfo->cl = getClass();
         playerInfo->gender = getGender();
         playerInfo->guid = getGuidLow();
@@ -9503,10 +9487,8 @@ void Player::setPlayerInfoIfNeeded()
         playerInfo->m_Group = nullptr;
         playerInfo->subGroup = 0;
 
-        sObjectMgr.addCachedCharacterInfo(playerInfo);
+        m_playerInfo = sObjectMgr.addCachedCharacterInfo(std::move(playerInfo));
     }
-
-    m_playerInfo = playerInfo;
 }
 
 void Player::setGuildAndGroupInfo()
@@ -10138,7 +10120,7 @@ void Player::tagUnit(Object* object)
 }
 
 #if VERSION_STRING > TBC
-AchievementMgr* Player::getAchievementMgr() { return m_achievementMgr; }
+AchievementMgr* Player::getAchievementMgr() { return m_achievementMgr.get(); }
 #endif
 
 void Player::sendUpdateDataToSet(ByteBuffer* groupBuf, ByteBuffer* nonGroupBuf, bool sendToSelf)
@@ -10227,7 +10209,7 @@ bool Player::canBuyAt(MySQLStructure::VendorRestrictions const* vendor)
     return true;
 }
 
-bool Player::canTrainAt(std::shared_ptr<Trainer> trainer)
+bool Player::canTrainAt(Trainer const* trainer)
 {
     if (!trainer)
         return false;
@@ -10344,7 +10326,7 @@ void Player::loadVoidStorage()
             creatorGuid = 0;
         }
 
-        _voidStorageItems[slot] = new VoidStorageItem(itemId, itemEntry, creatorGuid, randomProperty, suffixFactor);
+        _voidStorageItems[slot] = std::make_unique<VoidStorageItem>(itemId, itemEntry, creatorGuid, randomProperty, suffixFactor);
     } while (result->NextRow());
 }
 
@@ -10410,7 +10392,7 @@ uint8_t Player::addVoidStorageItem(const VoidStorageItem& item)
         return 255;
     }
 
-    _voidStorageItems[slot] = new VoidStorageItem(item.itemId, item.itemEntry,
+    _voidStorageItems[slot] = std::make_unique<VoidStorageItem>(item.itemId, item.itemEntry,
         item.creatorGuid, item.itemRandomPropertyId, item.itemSuffixFactor);
     return slot;
 }
@@ -10430,7 +10412,7 @@ void Player::addVoidStorageItemAtSlot(uint8_t slot, const VoidStorageItem& item)
         return;
     }
 
-    _voidStorageItems[slot] = new VoidStorageItem(item.itemId, item.itemEntry,
+    _voidStorageItems[slot] = std::make_unique<VoidStorageItem>(item.itemId, item.itemEntry,
         item.creatorGuid, item.itemRandomPropertyId, item.itemSuffixFactor);
 }
 
@@ -10442,7 +10424,6 @@ void Player::deleteVoidStorageItem(uint8_t slot)
         return;
     }
 
-    delete _voidStorageItems[slot];
     _voidStorageItems[slot] = nullptr;
 }
 
@@ -10463,7 +10444,7 @@ VoidStorageItem* Player::getVoidStorageItem(uint8_t slot) const
         return nullptr;
     }
 
-    return _voidStorageItems[slot];
+    return _voidStorageItems[slot] != nullptr ? _voidStorageItems[slot].get() : nullptr;
 }
 
 VoidStorageItem* Player::getVoidStorageItem(uint64_t id, uint8_t& slot) const
@@ -10473,7 +10454,7 @@ VoidStorageItem* Player::getVoidStorageItem(uint64_t id, uint8_t& slot) const
         if (_voidStorageItems[i] && _voidStorageItems[i]->itemId == id)
         {
             slot = i;
-            return _voidStorageItems[i];
+            return _voidStorageItems[i].get();
         }
     }
 
@@ -10875,7 +10856,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
         Item* pItem = getItemInterface()->GetItemByGUID(guid);
         if (!pItem)
             return;
-        pLoot = pItem->m_loot;
+        pLoot = pItem->m_loot.get();
         m_currentLoot = pItem->getGuid();
     }
 
@@ -11370,7 +11351,7 @@ void Player::setFactionStanding(uint32_t faction, int32_t value)
 #endif
 
         updateInrangeSetsBasedOnReputation();
-        onModStanding(factionEntry, reputation->second);
+        onModStanding(factionEntry, reputation->second.get());
     }
     else
     {
@@ -11397,7 +11378,7 @@ void Player::setFactionStanding(uint32_t faction, int32_t value)
             reputation->second->standing = newValue;
         }
 
-        onModStanding(factionEntry, reputation->second);
+        onModStanding(factionEntry, reputation->second.get());
     }
 }
 
@@ -11454,7 +11435,7 @@ void Player::modFactionStanding(uint32_t faction, int32_t value)
 #endif
 
         updateInrangeSetsBasedOnReputation();
-        onModStanding(factionEntry, itr->second);
+        onModStanding(factionEntry, itr->second.get());
     }
     else
     {
@@ -11484,7 +11465,7 @@ void Player::modFactionStanding(uint32_t faction, int32_t value)
             itr->second->standing = minReputation;
         else if (itr->second->standing > maxReputation)
             itr->second->standing = maxReputation;
-        onModStanding(factionEntry, itr->second);
+        onModStanding(factionEntry, itr->second.get());
     }
 }
 
@@ -11689,13 +11670,12 @@ bool Player::addNewFaction(WDB::Structures::FactionEntry const* factionEntry, in
             factionEntry->RaceMask[i] == 0 && factionEntry->ClassMask[i] != 0) && 
             (factionEntry->ClassMask[i] & getClassMask() || factionEntry->ClassMask[i] == 0))
         {
-            FactionReputation* factionReputation = new FactionReputation;
-            factionReputation->flag = static_cast<uint8_t>(factionEntry->repFlags[i]);
-            factionReputation->baseStanding = factionEntry->baseRepValue[i];
-            factionReputation->standing = (base) ? factionEntry->baseRepValue[i] : standing;
+            const auto flag = static_cast<uint8_t>(factionEntry->repFlags[i]);
+            const auto baseStanding = factionEntry->baseRepValue[i];
+            const auto m_standing = (base) ? factionEntry->baseRepValue[i] : standing;
 
-            m_reputation[factionEntry->ID] = factionReputation;
-            m_reputationByListId[factionEntry->RepListId] = factionReputation;
+            const auto [repItr, _] = m_reputation.insert_or_assign(factionEntry->ID, std::make_unique<FactionReputation>(m_standing, flag, baseStanding));
+            m_reputationByListId[factionEntry->RepListId] = repItr->second.get();
 
             return true;
         }
@@ -14109,9 +14089,13 @@ void Player::_loadPetSpells(QueryResult* result)
 void Player::saveToDB(bool newCharacter /* =false */)
 {
     bool in_arena = false;
+    std::unique_ptr<QueryBuffer> bufPtr = nullptr;
     QueryBuffer* buf = nullptr;
     if (!newCharacter)
-        buf = new QueryBuffer;
+    {
+        bufPtr = std::make_unique<QueryBuffer>();
+        buf = bufPtr.get();
+    }
 
     if (m_bg != nullptr && m_bg->isArena())
         in_arena = true;
@@ -14436,7 +14420,7 @@ void Player::saveToDB(bool newCharacter /* =false */)
 #endif
 
     if (buf)
-        CharacterDatabase.AddQueryBuffer(buf);
+        CharacterDatabase.AddQueryBuffer(std::move(bufPtr));
 }
 
 void Player::_saveQuestLogEntry(QueryBuffer* buf)
@@ -15284,7 +15268,7 @@ void Player::_loadQuestLogEntry(QueryResult* result)
             if (m_questlog[slot] != nullptr)
                 continue;
 
-            QuestLogEntry* questLogEntry = new QuestLogEntry(questProperties, this, slot);
+            auto* questLogEntry = createQuestLogInSlot(questProperties, slot);
             questLogEntry->loadFromDB(fields);
             questLogEntry->updatePlayerFields();
 
@@ -15590,7 +15574,7 @@ void Player::updateStats()
     setAttackPower(attackPower);
     setRangedAttackPower(rangedAttackPower);
 
-    std::shared_ptr<LevelInfo> levelInfo = sObjectMgr.getLevelInfo(this->getRace(), this->getClass(), lev);
+    const auto* levelInfo = sObjectMgr.getLevelInfo(this->getRace(), this->getClass(), lev);
     if (levelInfo != nullptr)
     {
         hpdelta = levelInfo->Stat[2] * 10;

@@ -12,12 +12,16 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgChannelNotify.h"
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Strings.hpp"
+#include "Utilities/Util.hpp"
 
 #if VERSION_STRING < Cata
 #include "Server/World.h"
 #endif
 
 using namespace AscEmu::Packets;
+
+ChannelMgr::ChannelMgr() = default;
+ChannelMgr::~ChannelMgr() = default;
 
 ChannelMgr& ChannelMgr::getInstance()
 {
@@ -52,36 +56,31 @@ void ChannelMgr::setSeperatedChannels(bool enabled)
     m_seperateChannels = enabled;
 }
 
-std::shared_ptr<Channel> ChannelMgr::getOrCreateChannel(std::string name, Player const* player, uint32_t typeId)
+Channel* ChannelMgr::getOrCreateChannel(std::string name, Player const* player, uint32_t typeId)
 {
     auto channelList = &m_channelList[0];
     if (m_seperateChannels && player && name != worldConfig.getGmClientChannelName())
         channelList = &m_channelList[player->getTeam()];
 
+    {
+        std::lock_guard<std::mutex> configGuard(m_mutexConfig);
+        for (const auto& m_bannedChannel : m_bannedChannels)
+        {
+            if (name == m_bannedChannel)
+                return nullptr;
+        }
+    }
+
     std::lock_guard<std::mutex> channelGuard(m_mutexChannels);
+    const auto teamId = (m_seperateChannels && player) ? player->getTeam() : TEAM_ALLIANCE;
 
-    for (auto& channelListMember : *channelList)
-    {
-        if (name == channelListMember.first)
-            return channelListMember.second;
-    }
-
-    std::lock_guard<std::mutex> configGuard(m_mutexConfig);
-
-    for (auto& m_bannedChannel : m_bannedChannels)
-    {
-        if (name == m_bannedChannel)
-            return nullptr;
-    }
-
-    auto channel = std::make_shared<Channel>(name, (m_seperateChannels && player) ? player->getTeam() : TEAM_ALLIANCE, typeId);
-
-    channelList->insert(make_pair(channel->getChannelName(), channel));
-
-    return channel;
+    const auto [channelItr, _] = channelList->try_emplace(name, Util::LazyInstanceCreator([&name, teamId, typeId] {
+        return std::make_unique<Channel>(name, teamId, typeId);
+    }));
+    return channelItr->second.get();
 }
 
-void ChannelMgr::removeChannel(std::shared_ptr<Channel> channel)
+void ChannelMgr::removeChannel(Channel const* channel)
 {
     if (!channel)
         return;
@@ -94,7 +93,7 @@ void ChannelMgr::removeChannel(std::shared_ptr<Channel> channel)
 
     for (auto channelListMember = channelList->begin(); channelListMember != channelList->end(); ++channelListMember)
     {
-        if (channelListMember->second == channel)
+        if (channelListMember->second.get() == channel)
         {
             channelList->erase(channelListMember);
             return;
@@ -102,7 +101,7 @@ void ChannelMgr::removeChannel(std::shared_ptr<Channel> channel)
     }
 }
 
-std::shared_ptr<Channel> ChannelMgr::getChannel(std::string name, Player const* player) const
+Channel* ChannelMgr::getChannel(std::string name, Player const* player) const
 {
     auto channelList = &m_channelList[0];
     if (m_seperateChannels && player && name != worldConfig.getGmClientChannelName())
@@ -110,16 +109,16 @@ std::shared_ptr<Channel> ChannelMgr::getChannel(std::string name, Player const* 
 
     std::lock_guard<std::mutex> guard(m_mutexChannels);
 
-    for (auto& channelListMember : *channelList)
+    for (const auto& channelListMember : *channelList)
     {
         if (name == channelListMember.first)
-            return channelListMember.second;
+            return channelListMember.second.get();
     }
 
     return nullptr;
 }
 
-std::shared_ptr<Channel> ChannelMgr::getChannel(std::string name, uint32_t team) const
+Channel* ChannelMgr::getChannel(std::string name, uint32_t team) const
 {
     auto channelList = &m_channelList[0];
     if (m_seperateChannels && name != worldConfig.getGmClientChannelName())
@@ -127,10 +126,10 @@ std::shared_ptr<Channel> ChannelMgr::getChannel(std::string name, uint32_t team)
 
     std::lock_guard<std::mutex> guard(m_mutexChannels);
 
-    for (auto& channelListMember : *channelList)
+    for (const auto& channelListMember : *channelList)
     {
         if (name == channelListMember.first)
-            return channelListMember.second;
+            return channelListMember.second.get();
     }
 
     return nullptr;

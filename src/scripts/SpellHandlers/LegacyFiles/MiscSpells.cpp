@@ -60,15 +60,9 @@ bool FrostWarding(uint8_t /*effectIndex*/, Spell* s)
 
     unitTarget->removeReflect(spellId, true);
 
-    ReflectSpellSchool* rss = new ReflectSpellSchool;
-
-    rss->chance = s->getSpellInfo()->getProcChance();
-    rss->spellId = s->getSpellInfo()->getId();
-    rss->school = SCHOOL_FROST;
-    rss->infront = false;
-    rss->charges = 0;
-
-    unitTarget->m_reflectSpellSchool.push_back(rss);
+    unitTarget->m_reflectSpellSchool.emplace_back(std::make_unique<ReflectSpellSchool>(
+        spellId, 0, SCHOOL_FROST, s->getSpellInfo()->getProcChance(), false
+    ));
 
     return true;
 }
@@ -82,15 +76,9 @@ bool MoltenShields(uint8_t /*effectIndex*/, Spell* s)
 
     unitTarget->removeReflect(s->getSpellInfo()->getId(), true);
 
-    ReflectSpellSchool* rss = new ReflectSpellSchool;
-
-    rss->chance = s->getSpellInfo()->getEffectBasePoints(0);
-    rss->spellId = s->getSpellInfo()->getId();
-    rss->school = SCHOOL_FIRE;
-    rss->infront = false;
-    rss->charges = 0;
-
-    unitTarget->m_reflectSpellSchool.push_back(rss);
+    unitTarget->m_reflectSpellSchool.emplace_back(std::make_unique<ReflectSpellSchool>(
+        s->getSpellInfo()->getId(), 0, SCHOOL_FIRE, s->getSpellInfo()->getEffectBasePoints(0), false
+    ));
 
     return true;
 }

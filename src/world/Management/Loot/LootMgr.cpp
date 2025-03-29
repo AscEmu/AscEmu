@@ -234,12 +234,10 @@ void LootMgr::loadLootTables(std::string const& szTableName, LootTemplateMap* Lo
         if (LootTable->empty() || tab->first != entry)
         {
             // Searching the template (in case template Id changed)
-            tab = LootTable->find(entry);
-            if (tab == LootTable->cend())
-            {
-                auto pr = LootTable->insert({ entry, std::make_shared<LootTemplate>() });
-                tab = pr.first;
-            }
+            const auto [tabItr, _] = LootTable->try_emplace(entry, Util::LazyInstanceCreator([] {
+                return std::make_unique<LootTemplate>();
+            }));
+            tab = tabItr;
         }
 
         // Add Item to our Tempelate
@@ -293,14 +291,12 @@ void LootMgr::addLoot(Loot* loot, uint32_t itemid, std::vector<float> chance, ui
     // check difficulty level
     if (item.chance[lootDifficulty] < 0.0f)
     {
-        delete& item;
         return;
     }
 
     // Bad luck for the entry
     if (!item.roll(0))
     {
-        delete& item;
         return;
     }
 

@@ -20,8 +20,7 @@ GuildMgr& GuildMgr::getInstance()
 
 void GuildMgr::finalize()
 {
-    for (auto itr : GuildStore)
-        delete itr.second;
+    GuildStore.clear();
 }
 
 void GuildMgr::update(uint32_t /*diff*/)
@@ -47,9 +46,14 @@ void GuildMgr::saveGuilds()
 #endif
 }
 
-void GuildMgr::addGuild(Guild* guild)
+Guild* GuildMgr::createGuild(Player* guildLeader, std::string const& guildName)
 {
-    GuildStore[guild->getId()] = guild;
+    auto guild = std::make_unique<Guild>();
+    if (!guild->create(guildLeader, guildName))
+        return nullptr;
+
+    const auto [guildItr, _] = GuildStore.emplace(guild->getId(), std::move(guild));
+    return guildItr->second.get();
 }
 
 void GuildMgr::removeGuild(uint32_t guildId)
@@ -61,7 +65,7 @@ Guild* GuildMgr::getGuildById(uint32_t guildId) const
 {
     GuildContainer::const_iterator itr = GuildStore.find(guildId);
     if (itr != GuildStore.end())
-        return itr->second;
+        return itr->second.get();
 
     return nullptr;
 }
@@ -71,7 +75,7 @@ Guild* GuildMgr::getGuildByLeader(uint64_t guid) const
 {
     for (GuildContainer::const_iterator itr = GuildStore.begin(); itr != GuildStore.end(); ++itr)
         if (itr->second->getLeaderGUID() == guid)
-            return itr->second;
+            return itr->second.get();
 
     return nullptr;
 }
@@ -85,7 +89,7 @@ Guild* GuildMgr::getGuildByName(const std::string& guildName) const
         std::string gname = itr->second->getName();
         AscEmu::Util::Strings::toUpperCase(gname);
         if (search == gname)
-            return itr->second;
+            return itr->second.get();
     }
     return nullptr;
 }
@@ -119,15 +123,14 @@ void GuildMgr::loadGuildDataFromDB()
             do
             {
                 Field* fields = result->Fetch();
-                Guild* guild = new Guild();
+                auto guild = std::make_unique<Guild>();
 
                 if (!guild->loadGuildFromDB(fields))
                 {
-                    delete guild;
                     continue;
                 }
 
-                addGuild(guild);
+                GuildStore.emplace(guild->getId(), std::move(guild));
 
                 ++count;
             } while (result->NextRow());
@@ -524,7 +527,7 @@ void GuildMgr::resetTimes(bool week)
 {
     for (auto itr = GuildStore.begin(); itr != GuildStore.end(); ++itr)
     {
-        if (Guild* guild = itr->second)
+        if (const auto& guild = itr->second)
             guild->resetTimes(week);
     }
 }

@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSetActiveMover.h"
 #include "Server/Packets/MovementPacket.h"
 #include "Server/WorldSession.h"
+#include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Objects/Units/Creatures/Vehicle.hpp"
 #include "Map/Cells/CellHandlerDefines.hpp"

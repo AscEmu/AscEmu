@@ -1586,8 +1586,8 @@ void Aura::spellAuraEffectPeriodicLeech(AuraEffectModifier* aurEff, bool apply)
             if (casterUnit->m_soulSiphon.m_amount)
             {
                 // Use std::map to prevent counting duplicate auras (stacked ones, from the same unit)
-                std::map<uint64_t, std::set<uint32_t> *> auras;
-                std::map<uint64_t, std::set<uint32_t> *>::iterator itx, itx2;
+                std::map<uint64_t, std::unique_ptr<std::set<uint32_t>>> auras;
+                std::map<uint64_t, std::unique_ptr<std::set<uint32_t>>>::iterator itx, itx2;
                 int32_t pct;
                 int32_t count = 0;
 
@@ -1619,12 +1619,11 @@ void Aura::spellAuraEffectPeriodicLeech(AuraEffectModifier* aurEff, bool apply)
                     itx = auras.find(aura->getCasterGuid());
                     if (itx == auras.end())
                     {
-                        std::set<uint32_t> *ids = new std::set<uint32_t>;
-                        auras.insert(make_pair(aura->getCasterGuid(), ids));
-                        itx = auras.find(aura->getCasterGuid());
+                        const auto [insertItr, _] = auras.emplace(aura->getCasterGuid(), std::make_unique<std::set<uint32_t>>());
+                        itx = insertItr;
                     }
 
-                    std::set<uint32> *ids = itx->second;
+                    const auto& ids = itx->second;
                     if (ids->find(aura->getSpellId()) == ids->end())
                     {
                         ids->insert(aura->getSpellId());
@@ -1638,7 +1637,6 @@ void Aura::spellAuraEffectPeriodicLeech(AuraEffectModifier* aurEff, bool apply)
                     {
                         itx2 = itx++;
                         count += (int32_t)itx2->second->size();
-                        delete itx2->second;
                     }
                 }
 

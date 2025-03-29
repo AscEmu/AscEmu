@@ -48,6 +48,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Guild/Guild.hpp"
 #endif
 
+ObjectMgr::ObjectMgr() = default;
+ObjectMgr::~ObjectMgr() = default;
+
 ObjectMgr& ObjectMgr::getInstance()
 {
     static ObjectMgr mInstance;
@@ -74,7 +77,7 @@ void ObjectMgr::finalize()
     m_trainers.clear();
 
     sLogger.info("ObjectMgr : Clearing Level Information...");
-    for (const auto levelInfoPair : m_levelInfo)
+    for (const auto& levelInfoPair : m_levelInfo)
         levelInfoPair.second->clear();
 
     m_levelInfo.clear();
@@ -92,9 +95,9 @@ void ObjectMgr::finalize()
     m_reputationInstance.clear();
 
     sLogger.info("ObjectMgr : Deleting Groups...");
-    for (const auto groupPair : m_groups)
+    for (const auto& groupPair : m_groups)
     {
-        auto group = groupPair.second;
+        auto& group = groupPair.second;
         if (group != nullptr)
         {
             for (uint32_t i = 0; i < group->GetSubGroupCount(); ++i)
@@ -144,10 +147,10 @@ void ObjectMgr::loadArenaTeams()
         }
         do
         {
-            const std::shared_ptr<ArenaTeam> team = std::make_shared<ArenaTeam>(result->Fetch());
-            addArenaTeam(team);
-            if (team->m_id > static_cast<uint32_t>(m_hiArenaTeamId.load()))
-                m_hiArenaTeamId = static_cast<uint32_t>(team->m_id);
+            const auto [arenaItr, _] = m_arenaTeams.emplace(result->Fetch()[0].asUint32(), std::make_unique<ArenaTeam>(result->Fetch()));
+            m_arenaTeamMap[arenaItr->second->m_type].emplace(arenaItr->second->m_id, arenaItr->second.get());
+            if (arenaItr->second->m_id > static_cast<uint32_t>(m_hiArenaTeamId.load()))
+                m_hiArenaTeamId = static_cast<uint32_t>(arenaItr->second->m_id);
 
         } while (result->NextRow());
         delete result;
@@ -156,38 +159,52 @@ void ObjectMgr::loadArenaTeams()
     updateArenaTeamRankings();
 }
 
-void ObjectMgr::addArenaTeam(std::shared_ptr<ArenaTeam> _arenaTeam)
+ArenaTeam* ObjectMgr::createArenaTeam(uint8_t type, Player const* leaderPlr, std::string_view name, uint32_t rating, ArenaTeamEmblem const& emblem)
 {
+    if (leaderPlr == nullptr)
+        return nullptr;
+
     std::lock_guard guard(m_arenaTeamLock);
-    m_arenaTeams[_arenaTeam->m_id] = _arenaTeam;
-    m_arenaTeamMap[_arenaTeam->m_type].insert(std::make_pair(_arenaTeam->m_id, _arenaTeam));
+
+    auto arenaTeam = std::make_unique<ArenaTeam>(type, generateArenaTeamId());
+    arenaTeam->m_leader = leaderPlr->getGuidLow();
+    arenaTeam->m_name = name;
+    arenaTeam->m_emblem = emblem;
+    arenaTeam->m_stats.rating = rating;
+
+    if (!arenaTeam->addMember(leaderPlr->getPlayerInfo()))
+        return nullptr;
+
+    const auto [arenaItr, _] = m_arenaTeams.emplace(arenaTeam->m_id, std::move(arenaTeam));
+    m_arenaTeamMap[arenaItr->second->m_type].emplace(arenaItr->second->m_id, arenaItr->second.get());
+    return arenaItr->second.get();
 }
 
-void ObjectMgr::removeArenaTeam(std::shared_ptr<ArenaTeam> _arenaTeam)
+void ObjectMgr::removeArenaTeam(ArenaTeam const* _arenaTeam)
 {
     std::lock_guard guard(m_arenaTeamLock);
-    m_arenaTeams.erase(_arenaTeam->m_id);
     m_arenaTeamMap[_arenaTeam->m_type].erase(_arenaTeam->m_id);
+    m_arenaTeams.erase(_arenaTeam->m_id);
 }
 
-std::shared_ptr<ArenaTeam> ObjectMgr::getArenaTeamByName(std::string& _name, uint32_t /*type*/)
+ArenaTeam const* ObjectMgr::getArenaTeamByName(std::string& _name, uint32_t /*type*/) const
 {
     std::lock_guard guard(m_arenaTeamLock);
     for (auto& arenaTeam : m_arenaTeams)
         if (arenaTeam.second->m_name == _name)
-            return arenaTeam.second;
+            return arenaTeam.second.get();
 
     return nullptr;
 }
 
-std::shared_ptr<ArenaTeam> ObjectMgr::getArenaTeamById(uint32_t _id)
+ArenaTeam* ObjectMgr::getArenaTeamById(uint32_t _id) const
 {
     std::lock_guard guard(m_arenaTeamLock);
     const auto arenaTeam = m_arenaTeams.find(_id);
-    return arenaTeam == m_arenaTeams.end() ? nullptr : arenaTeam->second;
+    return arenaTeam == m_arenaTeams.end() ? nullptr : arenaTeam->second.get();
 }
 
-std::shared_ptr<ArenaTeam> ObjectMgr::getArenaTeamByGuid(uint32_t _guid, uint32_t _type)
+ArenaTeam* ObjectMgr::getArenaTeamByGuid(uint32_t _guid, uint32_t _type) const
 {
     std::lock_guard guard(m_arenaTeamLock);
     for (auto& arenaTeam : m_arenaTeamMap[_type])
@@ -201,23 +218,23 @@ std::shared_ptr<ArenaTeam> ObjectMgr::getArenaTeamByGuid(uint32_t _guid, uint32_
 class ArenaSorter
 {
 public:
-    bool operator()(std::shared_ptr<ArenaTeam> const& _arenaTeamA, std::shared_ptr<ArenaTeam> const& _arenaTeamB) const
+    bool operator()(ArenaTeam const* _arenaTeamA, ArenaTeam const* _arenaTeamB) const
     {
         return (_arenaTeamA->m_stats.rating > _arenaTeamB->m_stats.rating);
     }
 
-    bool operator()(std::shared_ptr<ArenaTeam>& _arenaTeamA, std::shared_ptr<ArenaTeam>& _arenaTeamB) const
+    bool operator()(ArenaTeam* _arenaTeamA, ArenaTeam* _arenaTeamB) const
     {
         return (_arenaTeamA->m_stats.rating > _arenaTeamB->m_stats.rating);
     }
 };
 
-void ObjectMgr::updateArenaTeamRankings()
+void ObjectMgr::updateArenaTeamRankings() const
 {
     std::lock_guard guard(m_arenaTeamLock);
     for (auto& arenaTeams : m_arenaTeamMap)
     {
-        std::vector<std::shared_ptr<ArenaTeam>> ranking;
+        std::vector<ArenaTeam*> ranking;
         ranking.reserve(arenaTeams.size());
 
         for (auto& arenaTeamPair : arenaTeams)
@@ -239,14 +256,14 @@ void ObjectMgr::updateArenaTeamRankings()
     }
 }
 
-void ObjectMgr::updateArenaTeamWeekly()
+void ObjectMgr::updateArenaTeamWeekly() const
 {
     std::lock_guard guard(m_arenaTeamLock);
     for (auto& arenaTeams : m_arenaTeamMap)
     {
         for (const auto& arenaTeamPair : arenaTeams)
         {
-            if (const std::shared_ptr<ArenaTeam> arenaTeam = arenaTeamPair.second)
+            if (auto* const arenaTeam = arenaTeamPair.second)
             {
                 arenaTeam->m_stats.played_week = 0;
                 arenaTeam->m_stats.won_week = 0;
@@ -263,14 +280,14 @@ void ObjectMgr::updateArenaTeamWeekly()
     }
 }
 
-void ObjectMgr::resetArenaTeamRatings()
+void ObjectMgr::resetArenaTeamRatings() const
 {
     std::lock_guard guard(m_arenaTeamLock);
     for (auto& arenaTeams : m_arenaTeamMap)
     {
         for (auto& arenaTeamPair : arenaTeams)
         {
-            if (const std::shared_ptr<ArenaTeam> arenaTeam = arenaTeamPair.second)
+            if (auto* const arenaTeam = arenaTeamPair.second)
             {
                 arenaTeam->m_stats.played_season = 0;
                 arenaTeam->m_stats.played_week = 0;
@@ -304,10 +321,15 @@ void ObjectMgr::loadCharters()
     {
         do
         {
-            auto charter = std::make_shared<Charter>(result->Fetch());
-            m_charters[charter->getCharterType()].insert(std::make_pair(charter->getId(), charter));
-            if (charter->getId() > static_cast<int64_t>(m_hiCharterId.load()))
-                m_hiCharterId = charter->getId();
+            const auto* fields = result->Fetch();
+            const auto id = fields[0].asUint32();
+            const auto type = fields[1].asUint8();
+            const auto [itr, _] = m_charters[type].try_emplace(id, Util::LazyInstanceCreator([fields] {
+                return std::make_unique<Charter>(fields);
+            }));
+
+            if (itr->second->getId() > static_cast<int64_t>(m_hiCharterId.load()))
+                m_hiCharterId = itr->second->getId();
 
         } while (result->NextRow());
 
@@ -316,7 +338,7 @@ void ObjectMgr::loadCharters()
     sLogger.info("ObjectMgr : {} charters loaded.", static_cast<uint32_t>(m_charters[0].size()));
 }
 
-void ObjectMgr::removeCharter(const std::shared_ptr<Charter>& _charter)
+void ObjectMgr::removeCharter(Charter const* _charter)
 {
     if (_charter)
     {
@@ -331,59 +353,58 @@ void ObjectMgr::removeCharter(const std::shared_ptr<Charter>& _charter)
     }
 }
 
-std::shared_ptr<Charter> ObjectMgr::createCharter(uint32_t _leaderGuid, CharterTypes _type)
+Charter* ObjectMgr::createCharter(uint32_t _leaderGuid, CharterTypes _type)
 {
     uint32_t charterId = ++m_hiCharterId;
-    auto charter = std::make_shared<Charter>(charterId, _leaderGuid, _type);
 
     std::lock_guard guard(m_charterLock);
-    m_charters[charter->getCharterType()].insert(std::make_pair(charter->getId(), charter));
+    const auto [charterItr, _] = m_charters[_type].try_emplace(charterId, std::make_unique<Charter>(charterId, _leaderGuid, _type));
 
-    return charter;
+    return charterItr->second.get();
 }
 
-std::shared_ptr<Charter> ObjectMgr::getCharterByName(const std::string& _charterName, const CharterTypes _type)
+Charter* ObjectMgr::getCharterByName(const std::string& _charterName, const CharterTypes _type) const
 {
     std::lock_guard guard(m_charterLock);
 
     for (auto& charterPair : m_charters[_type])
         if (charterPair.second->getGuildName() == _charterName)
-            return charterPair.second;
+            return charterPair.second.get();
 
     return nullptr;
 }
 
-std::shared_ptr<Charter> ObjectMgr::getCharter(const uint32_t _charterId, const CharterTypes _type)
+Charter const* ObjectMgr::getCharter(const uint32_t _charterId, const CharterTypes _type) const
 {
     std::lock_guard guard(m_charterLock);
     const auto charterPair = m_charters[_type].find(_charterId);
-    return charterPair == m_charters[_type].end() ? nullptr : charterPair->second;
+    return charterPair == m_charters[_type].end() ? nullptr : charterPair->second.get();
 }
 
-std::shared_ptr<Charter> ObjectMgr::getCharterByGuid(const uint64_t _playerGuid, const CharterTypes _type)
+Charter* ObjectMgr::getCharterByGuid(const uint64_t _playerGuid, const CharterTypes _type) const
 {
     std::lock_guard guard(m_charterLock);
     for (auto& charterPair : m_charters[_type])
     {
         if (_playerGuid == charterPair.second->getLeaderGuid())
-            return charterPair.second;
+            return charterPair.second.get();
 
         for (const uint32_t playerGuid : charterPair.second->getSignatures())
             if (playerGuid == _playerGuid)
-                return charterPair.second;
+                return charterPair.second.get();
     }
 
     return nullptr;
 }
 
-std::shared_ptr<Charter> ObjectMgr::getCharterByItemGuid(const uint64_t _itemGuid)
+Charter* ObjectMgr::getCharterByItemGuid(const uint64_t _itemGuid) const
 {
     std::lock_guard guard(m_charterLock);
     for (auto& charterType : m_charters)
     {
         for (auto& charterPair : charterType)
             if (charterPair.second->getItemGuid() == _itemGuid)
-                return charterPair.second;
+                return charterPair.second.get();
     }
 
     return nullptr;
@@ -398,28 +419,10 @@ void ObjectMgr::loadCharacters()
     {
         do
         {
-            Field* fields = result->Fetch();
-            const auto cachedCharacterInfo = std::make_shared<CachedCharacterInfo>();
-            cachedCharacterInfo->guid = fields[0].asUint32();
-
-            std::string characterNameDB = fields[1].asCString();
-            AscEmu::Util::Strings::capitalize(characterNameDB);
-
-            cachedCharacterInfo->name = characterNameDB;
-            cachedCharacterInfo->race = fields[2].asUint8();
-            cachedCharacterInfo->cl = fields[3].asUint8();
-            cachedCharacterInfo->lastLevel = fields[4].asUint32();
-            cachedCharacterInfo->gender = fields[5].asUint8();
-            cachedCharacterInfo->lastZone = fields[6].asUint32();
-            cachedCharacterInfo->lastOnline = fields[7].asUint32();
-            cachedCharacterInfo->acct = fields[8].asUint32();
-            cachedCharacterInfo->m_Group = nullptr;
-            cachedCharacterInfo->subGroup = 0;
-            cachedCharacterInfo->m_guild = 0;
-            cachedCharacterInfo->guildRank = GUILD_RANK_NONE;
-            cachedCharacterInfo->team = getSideByRace(cachedCharacterInfo->race);
-
-            m_cachedCharacterInfo[cachedCharacterInfo->guid] = cachedCharacterInfo;
+            const auto* fields = result->Fetch();
+            m_cachedCharacterInfo.try_emplace(fields[0].asUint32(), Util::LazyInstanceCreator([fields] {
+                return std::make_unique<CachedCharacterInfo>(fields);
+            }));
 
         } while (result->NextRow());
         delete result;
@@ -427,47 +430,48 @@ void ObjectMgr::loadCharacters()
     sLogger.info("ObjectMgr : {} players loaded.", static_cast<uint32_t>(m_cachedCharacterInfo.size()));
 }
 
-void ObjectMgr::addCachedCharacterInfo(const std::shared_ptr<CachedCharacterInfo>& _characterInfo)
+CachedCharacterInfo* ObjectMgr::addCachedCharacterInfo(std::unique_ptr<CachedCharacterInfo> _characterInfo)
 {
     std::lock_guard guard(m_cachedCharacterLock);
-    m_cachedCharacterInfo[_characterInfo->guid] = _characterInfo;
+    const auto [itr, _] = m_cachedCharacterInfo.try_emplace(_characterInfo->guid, std::move(_characterInfo));
+    return itr->second.get();
 }
 
-std::shared_ptr<CachedCharacterInfo> ObjectMgr::getCachedCharacterInfo(uint32_t _playerGuid)
+CachedCharacterInfo* ObjectMgr::getCachedCharacterInfo(uint32_t _playerGuid) const
 {
     std::lock_guard guard(m_cachedCharacterLock);
 
     const auto characterPair = m_cachedCharacterInfo.find(_playerGuid);
     if (characterPair != m_cachedCharacterInfo.end())
-        return characterPair->second;
+        return characterPair->second.get();
 
     return nullptr;
 }
 
-std::shared_ptr<CachedCharacterInfo> ObjectMgr::getCachedCharacterInfoByName(std::string _playerName)
+CachedCharacterInfo* ObjectMgr::getCachedCharacterInfoByName(std::string _playerName) const
 {
     std::string searchName = std::string(std::move(_playerName));
     AscEmu::Util::Strings::toLowerCase(searchName);
 
     std::lock_guard guard(m_cachedCharacterLock);
 
-    for (const auto characterPair : m_cachedCharacterInfo)
+    for (const auto& characterPair : m_cachedCharacterInfo)
     {
         std::string characterName = characterPair.second->name;
         AscEmu::Util::Strings::toLowerCase(characterName);
         if (characterName == searchName)
-            return characterPair.second;
+            return characterPair.second.get();
     }
 
     return nullptr;
 }
 
-void ObjectMgr::updateCachedCharacterInfoName(const std::shared_ptr<CachedCharacterInfo>& _characterInfo, const std::string& _newName)
+void ObjectMgr::updateCachedCharacterInfoName(const CachedCharacterInfo* _characterInfo, const std::string& _newName) const
 {
     std::lock_guard guard(m_cachedCharacterLock);
 
     for (const auto& characterPair : m_cachedCharacterInfo)
-        if (_characterInfo == characterPair.second)
+        if (_characterInfo == characterPair.second.get())
             characterPair.second->name = _newName;
 }
 
@@ -479,23 +483,23 @@ void ObjectMgr::deleteCachedCharacterInfo(const uint32_t _playerGuid)
     if (characterPair == m_cachedCharacterInfo.end())
         return;
 
-    const auto characterInfo = characterPair->second;
+    const auto& characterInfo = characterPair->second;
     if (characterInfo->m_Group)
-        characterInfo->m_Group->RemovePlayer(characterInfo);
+        characterInfo->m_Group->RemovePlayer(characterInfo.get());
 
     m_cachedCharacterInfo.erase(characterPair);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Corpse
-void ObjectMgr::loadCorpsesForInstance(WorldMap* _worldMap) const
+void ObjectMgr::loadCorpsesForInstance(WorldMap* _worldMap)
 {
     if (QueryResult* result = CharacterDatabase.Query("SELECT * FROM corpses WHERE instanceid = %u", _worldMap->getInstanceId()))
     {
         do
         {
             Field* fields = result->Fetch();
-            const auto corpse = std::make_shared<Corpse>(HIGHGUID_TYPE_CORPSE, fields[0].asUint32());
+            auto corpse = std::make_unique<Corpse>(HIGHGUID_TYPE_CORPSE, fields[0].asUint32());
             corpse->SetPosition(fields[1].asFloat(), fields[2].asFloat(), fields[3].asFloat(), fields[4].asFloat());
             corpse->setZoneId(fields[5].asUint32());
             corpse->SetMapId(fields[6].asUint32());
@@ -506,18 +510,20 @@ void ObjectMgr::loadCorpsesForInstance(WorldMap* _worldMap) const
                 continue;
 
             corpse->PushToWorld(_worldMap);
+            std::lock_guard guard(m_corpseLock);
+            m_corpses.try_emplace(corpse->getGuidLow(), std::move(corpse));
         } while (result->NextRow());
 
         delete result;
     }
 }
 
-std::shared_ptr<Corpse> ObjectMgr::loadCorpseByGuid(const uint32_t _corpseGuid) const
+Corpse* ObjectMgr::loadCorpseByGuid(const uint32_t _corpseGuid)
 {
     if (QueryResult* result = CharacterDatabase.Query("SELECT * FROM corpses WHERE guid =%u ", _corpseGuid))
     {
         Field* field = result->Fetch();
-        const auto corpse = std::make_shared<Corpse>(HIGHGUID_TYPE_CORPSE, field[0].asUint32());
+        auto corpse = std::make_unique<Corpse>(HIGHGUID_TYPE_CORPSE, field[0].asUint32());
         corpse->SetPosition(field[1].asFloat(), field[2].asFloat(), field[3].asFloat(), field[4].asFloat());
         corpse->setZoneId(field[5].asUint32());
         corpse->SetMapId(field[6].asUint32());
@@ -531,41 +537,39 @@ std::shared_ptr<Corpse> ObjectMgr::loadCorpseByGuid(const uint32_t _corpseGuid) 
         corpse->AddToWorld();
 
         delete result;
-        return corpse;
+        std::lock_guard guard(m_corpseLock);
+        const auto [itr, _] = m_corpses.try_emplace(corpse->getGuidLow(), std::move(corpse));
+        return itr->second.get();
     }
 
     return nullptr;
 }
 
-std::shared_ptr<Corpse> ObjectMgr::createCorpse()
+Corpse* ObjectMgr::createCorpse()
 {
     uint32_t corpseGuid = ++m_hiCorpseGuid;
-    auto corpse = std::make_shared<Corpse>(HIGHGUID_TYPE_CORPSE, corpseGuid);
-    addCorpse(corpse);
 
-    return corpse;
-}
-
-void ObjectMgr::addCorpse(const std::shared_ptr<Corpse>& _corpse)
-{
     std::lock_guard guard(m_corpseLock);
-    m_corpses[_corpse->getGuidLow()] = _corpse;
+    const auto [corpseItr, _] = m_corpses.try_emplace(corpseGuid, Util::LazyInstanceCreator([corpseGuid] {
+        return std::make_unique<Corpse>(HIGHGUID_TYPE_CORPSE, corpseGuid);
+    }));
+    return corpseItr->second.get();
 }
 
-void ObjectMgr::removeCorpse(const std::shared_ptr<Corpse>& _corpse)
+void ObjectMgr::removeCorpse(const Corpse* _corpse)
 {
     std::lock_guard guard(m_corpseLock);
     m_corpses.erase(_corpse->getGuidLow());
 }
 
-std::shared_ptr<Corpse> ObjectMgr::getCorpseByGuid(uint32_t _corpseGuid)
+Corpse* ObjectMgr::getCorpseByGuid(uint32_t _corpseGuid) const
 {
     std::lock_guard guard(m_corpseLock);
     const auto corpsePair = m_corpses.find(_corpseGuid);
-    return corpsePair != m_corpses.end() ? corpsePair->second : nullptr;
+    return corpsePair != m_corpses.end() ? corpsePair->second.get() : nullptr;
 }
 
-std::shared_ptr<Corpse> ObjectMgr::getCorpseByOwner(const uint32_t _playerGuid)
+Corpse* ObjectMgr::getCorpseByOwner(const uint32_t _playerGuid) const
 {
     std::lock_guard guard(m_corpseLock);
     for (const auto& corpsePair : m_corpses)
@@ -574,7 +578,7 @@ std::shared_ptr<Corpse> ObjectMgr::getCorpseByOwner(const uint32_t _playerGuid)
         wowGuid.Init(corpsePair.second->getOwnerGuid());
 
         if (wowGuid.getGuidLowPart() == _playerGuid)
-            return corpsePair.second;
+            return corpsePair.second.get();
     }
 
     return nullptr;
@@ -585,20 +589,20 @@ void ObjectMgr::unloadCorpseCollector()
     std::lock_guard guard(m_corpseLock);
     for (const auto& corpsePair : m_corpses)
     {
-        const auto corpse = corpsePair.second;
+        const auto corpse = corpsePair.second.get();
         if (corpse->IsInWorld())
             corpse->RemoveFromWorld(false);
     }
     m_corpses.clear();
 }
 
-void ObjectMgr::addCorpseDespawnTime(const std::shared_ptr<Corpse>& _corpse)
+void ObjectMgr::addCorpseDespawnTime(const Corpse* _corpse) const
 {
     if (_corpse->IsInWorld())
         _corpse->getWorldMap()->addCorpseDespawn(_corpse->getGuid(), 600000);
 }
 
-void ObjectMgr::delinkCorpseForPlayer(const Player* _player)
+void ObjectMgr::delinkCorpseForPlayer(const Player* _player) const
 {
     if (const auto corpse = getCorpseByOwner(_player->getGuidLow()))
     {
@@ -616,7 +620,7 @@ void ObjectMgr::loadVendors()
     QueryResult* result = sMySQLStore.getWorldDBQuery("SELECT * FROM vendors");
     if (result != nullptr)
     {
-        std::shared_ptr<std::vector<CreatureItem>> items;
+        std::vector<CreatureItem>* items = nullptr;
 
         if (result->GetFieldCount() < 6 + 1)
         {
@@ -633,16 +637,7 @@ void ObjectMgr::loadVendors()
         do
         {
             Field* fields = result->Fetch();
-            auto itr = m_vendors.find(fields[0].asUint32());
-            if (itr == m_vendors.end())
-            {
-                items = std::make_shared<std::vector<CreatureItem>>();
-                m_vendors[fields[0].asUint32()] = items;
-            }
-            else
-            {
-                items = itr->second;
-            }
+            items = createVendorList(fields[0].asUint32());
 
             CreatureItem itm{};
             itm.itemid = fields[1].asUint32();
@@ -668,14 +663,18 @@ void ObjectMgr::loadVendors()
     sLogger.info("ObjectMgr : {} vendors loaded.", static_cast<uint32_t>(m_vendors.size()));
 }
 
-std::shared_ptr<std::vector<CreatureItem>> ObjectMgr::getVendorList(uint32_t _entry)
+std::vector<CreatureItem>* ObjectMgr::getVendorList(uint32_t _entry) const
 {
-    return m_vendors[_entry];
+    const auto itr = m_vendors.find(_entry);
+    return itr != m_vendors.cend() ? itr->second.get() : nullptr;
 }
 
-void ObjectMgr::setVendorList(uint32_t _entry, std::shared_ptr<std::vector<CreatureItem>> _list)
+std::vector<CreatureItem>* ObjectMgr::createVendorList(uint32_t _entry)
 {
-    m_vendors[_entry] = _list;
+    const auto [vendorItr, _] = m_vendors.try_emplace(_entry, Util::LazyInstanceCreator([] {
+        return std::make_unique<std::vector<CreatureItem>>();
+    }));
+    return vendorItr->second.get();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -876,7 +875,15 @@ void ObjectMgr::loadReputationModifierTable(const char* _tableName, ReputationMo
     {
         do
         {
-            auto reputationMod = std::make_shared<ReputationMod>();
+            const auto entry = result->Fetch()[0].asUint32();
+
+            const auto [repModItr, createdNew] = _reputationModMap.try_emplace(entry, Util::LazyInstanceCreator([] {
+                return std::make_unique<ReputationModifier>();
+            }));
+            if (createdNew)
+                repModItr->second->entry = entry;
+
+            const auto& reputationMod = repModItr->second->mods.emplace_back(std::make_unique<ReputationMod>());
             if (AscEmu::Util::Strings::isEqual(_tableName, "reputation_creature_onkill"))
             {
                 reputationMod->faction[TEAM_ALLIANCE] = result->Fetch()[1].asUint32();
@@ -891,21 +898,6 @@ void ObjectMgr::loadReputationModifierTable(const char* _tableName, ReputationMo
                 reputationMod->faction[TEAM_HORDE] = result->Fetch()[4].asUint32();
                 reputationMod->value = result->Fetch()[2].asInt32();
                 reputationMod->replimit = result->Fetch()[3].asUint32();
-            }
-
-            auto itr = _reputationModMap.find(result->Fetch()[0].asUint32());
-            if (itr == _reputationModMap.end())
-            {
-                auto modifier = std::make_shared<ReputationModifier>();
-                modifier->entry = result->Fetch()[0].asUint32();
-
-                modifier->mods.push_back(reputationMod);
-
-                _reputationModMap.insert(std::pair(result->Fetch()[0].asUint32(), modifier));
-            }
-            else
-            {
-                itr->second->mods.push_back(reputationMod);
             }
 
         } while (result->NextRow());
@@ -923,8 +915,15 @@ void ObjectMgr::loadInstanceReputationModifiers()
     {
         Field* field = result->Fetch();
 
-        auto reputationMod = std::make_shared<InstanceReputationMod>();
-        reputationMod->mapid = field[0].asUint32();
+        const auto mapId = field[0].asUint32();
+        const auto [repInstanceItr, createdNew] = m_reputationInstance.try_emplace(mapId, Util::LazyInstanceCreator([] {
+            return std::make_unique<InstanceReputationModifier>();
+        }));
+        if (createdNew)
+            repInstanceItr->second->mapid = mapId;
+
+        const auto& reputationMod = repInstanceItr->second->mods.emplace_back(std::make_unique<InstanceReputationMod>());
+        reputationMod->mapid = mapId;
         reputationMod->mob_rep_reward = field[1].asInt32();
         reputationMod->mob_rep_limit = field[2].asUint32();
         reputationMod->boss_rep_reward = field[3].asInt32();
@@ -932,34 +931,21 @@ void ObjectMgr::loadInstanceReputationModifiers()
         reputationMod->faction[TEAM_ALLIANCE] = field[5].asUint32();
         reputationMod->faction[TEAM_HORDE] = field[6].asUint32();
 
-        auto itr = m_reputationInstance.find(reputationMod->mapid);
-        if (itr == m_reputationInstance.end())
-        {
-            auto modifier = std::make_shared<InstanceReputationModifier>();
-            modifier->mapid = reputationMod->mapid;
-            modifier->mods.push_back(reputationMod);
-            m_reputationInstance.insert(std::make_pair(modifier->mapid, modifier));
-        }
-        else
-        {
-            itr->second->mods.push_back(reputationMod);
-        }
-
     } while (result->NextRow());
     delete result;
 
     sLogger.info("ObjectMgr : {} instance reputation modifiers loaded.", static_cast<uint32_t>(m_reputationInstance.size()));
 }
 
-std::shared_ptr<ReputationModifier> ObjectMgr::getReputationModifier(uint32_t _entry, uint32_t _factionId)
+ReputationModifier const* ObjectMgr::getReputationModifier(uint32_t _entry, uint32_t _factionId) const
 {
     auto reputationPair = m_reputationCreature.find(_entry);
     if (reputationPair != m_reputationCreature.end())
-        return reputationPair->second;
+        return reputationPair->second.get();
 
     reputationPair = m_reputationFaction.find(_factionId);
     if (reputationPair != m_reputationFaction.end())
-        return reputationPair->second;
+        return reputationPair->second.get();
 
     return nullptr;
 }
@@ -1022,9 +1008,9 @@ void ObjectMgr::loadGroups()
         }
         do
         {
-            const auto group = std::make_shared<Group>(false);
-            sObjectMgr.addGroup(group);
+            auto group = std::make_unique<Group>(false);
             group->LoadFromDB(result->Fetch());
+            m_groups.try_emplace(group->GetID(), std::move(group));
         } while (result->NextRow());
         delete result;
     }
@@ -1047,7 +1033,7 @@ void ObjectMgr::loadGroupInstances()
     do
     {
         Field* fields = result->Fetch();
-        std::shared_ptr<Group> group = sObjectMgr.getGroupById(fields[0].asUint32());
+        auto* group = sObjectMgr.getGroupById(fields[0].asUint32());
 
         WDB::Structures::MapEntry const* mapEntry = sMapStore.lookupEntry(fields[1].asUint16());
         if (!mapEntry || !mapEntry->isDungeon())
@@ -1078,10 +1064,12 @@ uint32_t ObjectMgr::generateGroupId()
     return groupId;
 }
 
-void ObjectMgr::addGroup(std::shared_ptr<Group> _group)
+Group* ObjectMgr::createGroup()
 {
     std::lock_guard guard(m_groupLock);
-    m_groups.insert(std::make_pair(_group->GetID(), _group));
+    auto group = std::make_unique<Group>(true);
+    const auto [groupItr, _] = m_groups.try_emplace(group->GetID(), std::move(group));
+    return groupItr->second.get();
 }
 
 void ObjectMgr::removeGroup(uint32_t _groupId)
@@ -1090,24 +1078,24 @@ void ObjectMgr::removeGroup(uint32_t _groupId)
     m_groups.erase(_groupId);
 }
 
-std::shared_ptr<Group> ObjectMgr::getGroupByLeader(Player* pPlayer)
+Group* ObjectMgr::getGroupByLeader(Player* pPlayer) const
 {
     std::lock_guard guard(m_groupLock);
 
     for (auto& m_group : m_groups)
         if (m_group.second->GetLeader() == pPlayer->getPlayerInfo())
-            return m_group.second;
+            return m_group.second.get();
 
     return nullptr;
 }
 
-std::shared_ptr<Group> ObjectMgr::getGroupById(uint32_t _id)
+Group* ObjectMgr::getGroupById(uint32_t _id) const
 {
     std::lock_guard guard(m_groupLock);
 
     const auto itr = m_groups.find(_id);
     if (itr != m_groups.end())
-        return itr->second;
+        return itr->second.get();
 
     return nullptr;
 }
@@ -1648,23 +1636,16 @@ void ObjectMgr::loadTrainerSpellSets()
     auto* const spellSetResult = sMySQLStore.getWorldDBQuery("SELECT * FROM trainer_properties_spellset WHERE min_build <= %u AND max_build >= %u;", VERSION_STRING, VERSION_STRING);
     if (spellSetResult != nullptr)
     {
-        std::shared_ptr<std::vector<TrainerSpell>> trainerSpells;
+        std::vector<TrainerSpell>* trainerSpells = nullptr;
 
         do
         {
             Field* fields = spellSetResult->Fetch();
 
-            auto spellSetPair = m_trainerSpellSet.find(fields[0].asUint32());
-
-            if (spellSetPair == m_trainerSpellSet.end())
-            {
-                trainerSpells = std::make_shared<std::vector<TrainerSpell>>();
-                m_trainerSpellSet[fields[0].asUint32()] = trainerSpells;
-            }
-            else
-            {
-                trainerSpells = spellSetPair->second;
-            }
+            const auto [spellSetItr, _] = m_trainerSpellSet.try_emplace(fields[0].asUint32(), Util::LazyInstanceCreator([] {
+                return std::make_unique<std::vector<TrainerSpell>>();
+            }));
+            trainerSpells = spellSetItr->second.get();
 
             auto* const fields2 = spellSetResult->Fetch();
 
@@ -1745,13 +1726,10 @@ void ObjectMgr::loadTrainerSpellSets()
     }
 }
 
-std::shared_ptr<std::vector<TrainerSpell>> ObjectMgr::getTrainerSpellSetById(uint32_t _id)
+std::vector<TrainerSpell> const* ObjectMgr::getTrainerSpellSetById(uint32_t _id) const
 {
     auto itr = m_trainerSpellSet.find(_id);
-    if (itr == m_trainerSpellSet.end())
-        return {};
-
-    return itr->second;
+    return itr != m_trainerSpellSet.cend() ? itr->second.get() : nullptr;
 }
 
 void ObjectMgr::loadTrainers()
@@ -1765,8 +1743,16 @@ void ObjectMgr::loadTrainers()
         {
             auto* const fields = trainerResult->Fetch();
             const auto entry = fields[0].asUint32();
+            const auto spellCount = static_cast<uint32_t>(getTrainerSpellSetById(fields[12].asUint32())->size());
 
-            std::shared_ptr<Trainer> trainer = std::make_shared<Trainer>();
+            if (spellCount == 0)
+                continue;
+
+            const auto [trainerItr, _] = m_trainers.try_emplace(entry, Util::LazyInstanceCreator([] {
+                return std::make_unique<Trainer>();
+            }));
+
+            auto* trainer = trainerItr->second.get();
             trainer->RequiredSkill = fields[2].asUint16();
             trainer->RequiredSkillLine = fields[3].asUint32();
             trainer->RequiredClass = fields[4].asUint32();
@@ -1792,18 +1778,8 @@ void ObjectMgr::loadTrainers()
             else
                 trainer->UIMessage = normalTalkMessage;
 
-            trainer->SpellCount = static_cast<uint32_t>(getTrainerSpellSetById(trainer->spellset_id)->size());
+            trainer->SpellCount = spellCount;
 
-            // and now we insert it to our lookup table
-            if (trainer->SpellCount == 0)
-            {
-                if (trainer->UIMessage != normalTalkMessage)
-                    trainer->UIMessage.clear();
-
-                continue;
-            }
-
-            m_trainers.insert(std::pair(entry, trainer));
         } while (trainerResult->NextRow());
 
         delete trainerResult;
@@ -1812,13 +1788,13 @@ void ObjectMgr::loadTrainers()
 #endif
 }
 
-std::shared_ptr<Trainer> ObjectMgr::getTrainer(uint32_t _entry)
+Trainer const* ObjectMgr::getTrainer(uint32_t _entry) const
 {
     const auto iter = m_trainers.find(_entry);
     if (iter == m_trainers.end())
         return nullptr;
 
-    return iter->second;
+    return iter->second.get();
 }
 
 void ObjectMgr::loadCreatureDisplayInfo()
@@ -2032,10 +2008,10 @@ void ObjectMgr::loadInstanceEncounters()
 
 #if VERSION_STRING <= TBC
         DungeonEncounterList& encounters = m_dungeonEncounterStore[mapId];
-        encounters.push_back(std::make_shared<DungeonEncounter>(EncounterCreditType(creditType), creditEntry));
+        encounters.emplace_back(std::make_unique<DungeonEncounter>(EncounterCreditType(creditType), creditEntry));
 #else
         DungeonEncounterList& encounters = m_dungeonEncounterStore[static_cast<int32_t>(static_cast<uint16_t>(dungeonEncounter->mapId) | (static_cast<uint32_t>(dungeonEncounter->difficulty) << 16))];
-        encounters.push_back(std::make_shared<DungeonEncounter>(dungeonEncounter, EncounterCreditType(creditType), creditEntry, lastEncounterDungeon));
+        encounters.emplace_back(std::make_unique<DungeonEncounter>(dungeonEncounter, EncounterCreditType(creditType), creditEntry, lastEncounterDungeon));
 #endif
         ++count;
     } while (result->NextRow());
@@ -2043,7 +2019,7 @@ void ObjectMgr::loadInstanceEncounters()
     sLogger.info("ObjectMgr : Loaded {} instance encounters in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
-DungeonEncounterList const* ObjectMgr::getDungeonEncounterList(uint32_t _mapId, uint8_t _difficulty)
+DungeonEncounterList const* ObjectMgr::getDungeonEncounterList(uint32_t _mapId, uint8_t _difficulty) const
 {
 #if VERSION_STRING >= WotLK
     std::unordered_map<uint32_t, DungeonEncounterList>::const_iterator itr = m_dungeonEncounterStore.find(uint32_t(uint16_t(_mapId) | (uint32_t(_difficulty) << 16)));
@@ -2134,8 +2110,7 @@ void ObjectMgr::loadWorldStateTemplates()
         Field* field = result->Fetch();
         uint32_t mapId = field[0].asUint32();
 
-        m_worldstateTemplates.insert(std::make_pair(mapId, std::make_shared<WorldStateMap>()));
-
+        m_worldstateTemplates.emplace(mapId, std::make_unique<WorldStateMap>());
     } while (result->NextRow());
 
     delete result;
@@ -2158,19 +2133,18 @@ void ObjectMgr::loadWorldStateTemplates()
         if (itr == m_worldstateTemplates.end())
             continue;
 
-        itr->second->insert(std::make_pair(zone, worldState));
-
+        itr->second->emplace(zone, worldState);
     } while (result->NextRow());
 
     delete result;
 }
 
-std::shared_ptr<WorldStateMap> ObjectMgr::getWorldStatesForMap(uint32_t _map) const
+WorldStateMap const* ObjectMgr::getWorldStatesForMap(uint32_t _map) const
 {
     const auto itr = m_worldstateTemplates.find(_map);
     if (itr == m_worldstateTemplates.end())
         return nullptr;
-    return itr->second;
+    return itr->second.get();
 }
 
 void ObjectMgr::loadCreatureTimedEmotes()
@@ -2183,27 +2157,19 @@ void ObjectMgr::loadCreatureTimedEmotes()
     do
     {
         Field* field = result->Fetch();
-        auto timedEmotes = std::make_shared<SpawnTimedEmotes>();
+        uint32_t spawnId = field[0].asUint32();
+
+        const auto [timedEmoteItr, _] = m_timedEmotes.try_emplace(spawnId, Util::LazyInstanceCreator([] {
+            return std::make_unique<TimedEmoteList>();
+        }));
+
+        const auto& timedEmotes = timedEmoteItr->second->emplace_back(std::make_unique<SpawnTimedEmotes>());
         timedEmotes->type = field[2].asUint8();
         timedEmotes->value = field[3].asUint32();
         timedEmotes->msg = field[4].asCString();
         timedEmotes->msg_type = field[5].asUint8();
         timedEmotes->msg_lang = field[6].asUint8();
         timedEmotes->expire_after = field[7].asUint32();
-
-        uint32_t spawnId = field[0].asUint32();
-
-        auto timedEmotePair = m_timedEmotes.find(spawnId);
-        if (timedEmotePair == m_timedEmotes.end())
-        {
-            std::shared_ptr<TimedEmoteList> emoteList = std::make_shared<TimedEmoteList>();
-            emoteList->push_back(timedEmotes);
-            m_timedEmotes[spawnId] = emoteList;
-        }
-        else
-        {
-            timedEmotePair->second->push_back(timedEmotes);
-        }
 
         ++count;
     } while (result->NextRow());
@@ -2212,11 +2178,11 @@ void ObjectMgr::loadCreatureTimedEmotes()
     delete result;
 }
 
-std::shared_ptr<TimedEmoteList> ObjectMgr::getTimedEmoteList(uint32_t _spawnId)
+TimedEmoteList* ObjectMgr::getTimedEmoteList(uint32_t _spawnId) const
 {
     const auto timedEmotesPair = m_timedEmotes.find(_spawnId);
     if (timedEmotesPair != m_timedEmotes.end())
-        return timedEmotesPair->second;
+        return timedEmotesPair->second.get();
 
      return nullptr;
 }
@@ -2249,11 +2215,13 @@ void ObjectMgr::generateLevelUpInfo()
                 continue;
             }
 
-            auto levelMap = std::make_shared<LevelMap>();
+            const auto [lvlMapItr, _] = m_levelInfo.insert_or_assign(std::make_pair(playerRace, playerClass), std::make_unique<LevelMap>());
+            auto* levelMap = lvlMapItr->second.get();
 
             for (uint32_t level = 1; level <= worldConfig.player.playerLevelCap; ++level)
             {
-                auto levelInfo = std::make_shared<LevelInfo>();
+                const auto [lvlInfoItr, _] = levelMap->insert_or_assign(level, std::make_unique<LevelInfo>());
+                auto* levelInfo = lvlInfoItr->second.get();
 
                 if (auto* playerClassLevelstats = sMySQLStore.getPlayerClassLevelStats(level, playerClass))
                 {
@@ -2284,11 +2252,7 @@ void ObjectMgr::generateLevelUpInfo()
 
                     _missingStatLevelData.push_back({ level, playerRace, playerClass });
                 }
-
-                levelMap->insert(LevelMap::value_type(level, levelInfo));
             }
-
-            m_levelInfo.insert(LevelInfoMap::value_type(std::make_pair(playerRace, playerClass), levelMap));
         }
     }
 
@@ -2415,7 +2379,7 @@ void ObjectMgr::generateLevelUpInfo()
     sLogger.info("ObjectMgr : {} level up information generated.", (stat_counter + hp_counter));
 }
 
-std::shared_ptr<LevelInfo> ObjectMgr::getLevelInfo(uint32_t _race, uint32_t _class, uint32_t _level)
+LevelInfo* ObjectMgr::getLevelInfo(uint32_t _race, uint32_t _class, uint32_t _level) const
 {
     for (const auto& levelInfoPair : m_levelInfo)
     {
@@ -2431,7 +2395,7 @@ std::shared_ptr<LevelInfo> ObjectMgr::getLevelInfo(uint32_t _race, uint32_t _cla
                 return nullptr;
             }
 
-            return levelInfoMap->second;
+            return levelInfoMap->second.get();
         }
     }
 

@@ -157,7 +157,7 @@ struct SpawnTimedEmotes
     uint32_t expire_after;    // going to nex faze in
 };
 
-typedef std::list<std::shared_ptr<SpawnTimedEmotes>> TimedEmoteList;
+typedef std::list<std::unique_ptr<SpawnTimedEmotes>> TimedEmoteList;
 
 enum MONSTER_SAY_EVENTS
 {

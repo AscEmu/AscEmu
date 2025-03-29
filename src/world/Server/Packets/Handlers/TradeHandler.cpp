@@ -122,8 +122,8 @@ void WorldSession::handleInitiateTradeOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    _player->m_TradeData = new TradeData(_player, playerTarget);
-    playerTarget->m_TradeData = new TradeData(playerTarget, _player);
+    _player->m_TradeData = std::make_unique<TradeData>(_player, playerTarget);
+    playerTarget->m_TradeData = std::make_unique<TradeData>(playerTarget, _player);
 
 #if VERSION_STRING < Cata
     playerTarget->m_session->sendTradeResult(TRADE_STATUS_PROPOSED, _player->getGuid());
@@ -468,10 +468,7 @@ void WorldSession::handleAcceptTrade(WorldPacket& /*recvPacket*/)
     if (traderSpell != nullptr)
         traderSpell->prepare(&traderSpellTargets);
 
-    delete _player->m_TradeData;
     _player->m_TradeData = nullptr;
-
-    delete tradeTarget->m_TradeData;
     tradeTarget->m_TradeData = nullptr;
 
     _player->getSession()->sendTradeResult(TRADE_STATUS_COMPLETE);

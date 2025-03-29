@@ -33,6 +33,7 @@
 #include "Storage/MySQLStructures.h"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
+#include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/EventMgr.h"
@@ -2258,7 +2259,7 @@ void Pet::SetAutoCast(AI_Spell* sp, bool on)
     }
 }
 
-std::shared_ptr<Group> Pet::getGroup()
+Group* Pet::getGroup()
 {
     if (auto* plrOwner = getPlayerOwner())
         return plrOwner->getGroup();

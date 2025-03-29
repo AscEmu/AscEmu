@@ -71,7 +71,7 @@ struct AI_SCRIPT_SENDMESSAGES
     uint32_t maxCount;
 };
 
-typedef std::vector<std::shared_ptr<AI_SCRIPT_SENDMESSAGES>> definedEmoteVector;
+typedef std::vector<std::unique_ptr<AI_SCRIPT_SENDMESSAGES>> definedEmoteVector;
 
 enum ReactStates : uint8_t
 {
@@ -424,7 +424,7 @@ public:
 
     void updateEmotes(unsigned long time_passed);
     void eventAiInterfaceParamsetFinish();
-    std::shared_ptr<TimedEmoteList> timed_emotes;
+    TimedEmoteList* timed_emotes;
 
     bool moveTo(float x, float y, float z, float o = 0.0f, bool running = false);
     void calcDestinationAndMove(Unit* target, float dist);
@@ -540,7 +540,7 @@ private:
     definedEmoteVector mEmotesOnRandomWaypoint;
 
 public:
-    void sendStoredText(definedEmoteVector store, Unit* target);
+    void sendStoredText(definedEmoteVector& store, Unit* target);
 
     Unit* mCurrentSpellTarget;
 
@@ -658,7 +658,7 @@ protected:
 protected:
     bool canEnterCombat;
 
-    std::list<std::shared_ptr<SpawnTimedEmotes>>::iterator next_timed_emote;
+    TimedEmoteList::iterator next_timed_emote;
     uint32_t timed_emote_expire;
 
     bool m_cannotReachTarget;

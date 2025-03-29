@@ -57,10 +57,10 @@ class LogonCommHandler
     typedef std::map<uint32_t, WorldSocket*> ActiveWorldSocketsMap;
     ActiveWorldSocketsMap pending_logons;
 
-    typedef std::set<RealmStructure*> RealmsSet;
+    typedef std::set<std::unique_ptr<RealmStructure>> RealmsSet;
     RealmsSet realms;
 
-    typedef std::set<LogonServerStructure*> LogonServerSet;
+    typedef std::set<std::unique_ptr<LogonServerStructure>> LogonServerSet;
     LogonServerSet servers;
 
     uint32_t idhigh;

@@ -30,7 +30,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
-Item::Item()
+Item::Item() : m_loot(nullptr)
 {
     //////////////////////////////////////////////////////////////////////////
     m_objectType |= TYPE_ITEM;
@@ -63,12 +63,6 @@ Item::Item()
 
 Item::~Item()
 {
-    if (m_loot != nullptr)
-    {
-        delete m_loot;
-        m_loot = nullptr;
-    }
-
     sEventMgr.RemoveEvents(this);
 
 #if VERSION_STRING >= Cata

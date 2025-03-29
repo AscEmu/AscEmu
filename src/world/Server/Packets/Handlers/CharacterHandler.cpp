@@ -488,7 +488,7 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
 
     newPlayer->saveToDB(true);
 
-    const auto playerInfo = std::make_shared<CachedCharacterInfo>();
+    auto playerInfo = std::make_unique<CachedCharacterInfo>();
     playerInfo->guid = newPlayer->getGuidLow();
     utf8_string name = newPlayer->getName();
     AscEmu::Util::Strings::capitalize(name);
@@ -504,7 +504,7 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     playerInfo->guildRank = GUILD_RANK_NONE;
     playerInfo->lastOnline = UNIXTIME;
 
-    sObjectMgr.addCachedCharacterInfo(playerInfo);
+    sObjectMgr.addCachedCharacterInfo(std::move(playerInfo));
 
     newPlayer->m_isReadyToBeRemoved = true;
     delete newPlayer;

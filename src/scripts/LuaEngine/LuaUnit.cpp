@@ -4622,7 +4622,7 @@ int LuaUnit::SendLootWindow(lua_State* L, Unit* ptr)
         switch (loot_type)
         {
             case 6:
-                sLootMgr.fillItemLoot(plr, pItem->m_loot, pItem->getEntry(), plr->getWorldMap() ? (plr->getWorldMap()->getDifficulty() ? true : false) : false);
+                sLootMgr.fillItemLoot(plr, pItem->m_loot.get(), pItem->getEntry(), plr->getWorldMap() ? (plr->getWorldMap()->getDifficulty() ? true : false) : false);
                 loot_type2 = 1;
                 break;
             default:
@@ -5558,7 +5558,7 @@ int LuaUnit::IsInChannel(lua_State* L, Unit* ptr)
     if (!channelName)
         return 0;
 
-    const std::shared_ptr<Channel> channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
+    const auto* channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
     // Channels: "General", "Trade", "LocalDefense", "GuildRecruitment", "LookingForGroup", (or any custom channel)
     if (channel->hasMember(dynamic_cast<Player*>(ptr)))
         lua_pushboolean(L, 1);
@@ -5576,7 +5576,7 @@ int LuaUnit::JoinChannel(lua_State* L, Unit* ptr)
     }
 
     const char* channelName = luaL_checkstring(L, 1);
-    const std::shared_ptr<Channel> channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
+    auto* const channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
     if (!channel)
         return 0;
 
@@ -5598,7 +5598,7 @@ int LuaUnit::LeaveChannel(lua_State* L, Unit* ptr)
     }
 
     const char* channelName = luaL_checkstring(L, 1);
-    const std::shared_ptr<Channel> channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
+    auto* const channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
     if (!channelName || !channel || !channel->hasMember(dynamic_cast<Player*>(ptr)))
         return 0;
 
@@ -5616,7 +5616,7 @@ int LuaUnit::SetChannelName(lua_State* L, Unit* ptr)
 
     const char* currentName = luaL_checkstring(L, 1);
     const char* newName = luaL_checkstring(L, 2);
-    const std::shared_ptr<Channel> channel = sChannelMgr.getChannel(currentName, dynamic_cast<Player*>(ptr));
+    auto* const channel = sChannelMgr.getChannel(currentName, dynamic_cast<Player*>(ptr));
     if (!currentName || !newName || !channel || channel->getChannelName() == newName)
         return 0;
 
@@ -5633,7 +5633,7 @@ int LuaUnit::SetChannelPassword(lua_State* L, Unit* ptr)
 
     const char* channelName = luaL_checkstring(L, 1);
     const char* password = luaL_checkstring(L, 2);
-    const std::shared_ptr<Channel> channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
+    auto* const channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
     if (!password || !channel || channel->getChannelPassword() == password)
         return 0;
 
@@ -5649,7 +5649,7 @@ int LuaUnit::GetChannelPassword(lua_State* L, Unit* ptr)
     }
 
     const char* channelName = luaL_checkstring(L, 1);
-    const std::shared_ptr<Channel> channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
+    const auto* channel = sChannelMgr.getChannel(channelName, dynamic_cast<Player*>(ptr));
     if (!channel)
         return 0;
 
@@ -5667,7 +5667,7 @@ int LuaUnit::KickFromChannel(lua_State* L, Unit* ptr)
 
     const char* channelName = luaL_checkstring(L, 1);
     Player* player = dynamic_cast<Player*>(ptr);
-    const std::shared_ptr<Channel> channel = sChannelMgr.getChannel(channelName, player);
+    auto* const channel = sChannelMgr.getChannel(channelName, player);
     if (!channel)
         return 0;
 
@@ -5684,7 +5684,7 @@ int LuaUnit::BanFromChannel(lua_State* L, Unit* ptr)
 
     const char* channelName = luaL_checkstring(L, 1);
     Player* player = dynamic_cast<Player*>(ptr);
-    const std::shared_ptr<Channel> channel = sChannelMgr.getChannel(channelName, player);
+    auto* const channel = sChannelMgr.getChannel(channelName, player);
     if (!channel)
         return 0;
 
@@ -5701,7 +5701,7 @@ int LuaUnit::UnbanFromChannel(lua_State* L, Unit* ptr)
 
     const char* channelName = luaL_checkstring(L, 1);
     Player* player = dynamic_cast<Player*>(ptr);
-    const std::shared_ptr<Channel> channel = sChannelMgr.getChannel(channelName, player);
+    auto* const channel = sChannelMgr.getChannel(channelName, player);
     if (!channel)
         return 0;
 

@@ -670,7 +670,6 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
                         if (!u_victim->hasAurasWithId(reflectAura->spellId))
                         {
                             // ...do it manually
-                            delete reflectAura;
                             u_victim->m_reflectSpellSchool.remove(reflectAura);
                         }
                         else

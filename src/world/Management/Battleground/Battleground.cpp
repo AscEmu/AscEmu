@@ -50,8 +50,7 @@ Battleground::Battleground(WorldMap* worldMap, uint32_t id, uint32_t levelGroup,
 
     for (auto& group : m_groups)
     {
-        group = std::make_shared<Group>(true);
-        sObjectMgr.addGroup(group);
+        group = sObjectMgr.createGroup();
         group->m_disbandOnNoMembers = false;
         group->ExpandToRaid();
     }
@@ -77,13 +76,10 @@ WorldMap* Battleground::getWorldMap()
 Battleground::~Battleground()
 {
     sEventMgr.RemoveEvents(this);
-    for (const auto& m_group : m_groups)
+    for (auto& m_group : m_groups)
     {
-        for (uint32_t j = 0; j < m_group->GetSubGroupCount(); ++j)
-        {
-            for (const auto itr : m_group->GetSubGroup(j)->getGroupMembers())
-                m_group->RemovePlayer(itr);
-        }
+        m_group->Disband();
+        m_group = nullptr;
     }
 
     m_resurrectMap.clear();
@@ -146,7 +142,7 @@ void Battleground::buildPvPUpdateDataPacket(WorldPacket* data)
         else
         {
             /* Grab some arena teams */
-            std::shared_ptr<ArenaTeam>* teams = dynamic_cast< Arena* >(this)->GetTeams();
+            auto** teams = dynamic_cast< Arena* >(this)->GetTeams();
 
             if (teams[0])
             {

@@ -237,6 +237,8 @@ void Database::dbRunAllQueries()
         _SendQuery(m_dbConnection, query, false);
         delete[] query;
     }
+    // No more queries => free the connection in the thread and reconnect when there are new queries
+    destroyDbConnection();
 }
 
 void Database::queryBufferThreadRunner(AEThread& /*thread*/)
@@ -255,9 +257,10 @@ void Database::queryBufferRunAllQueries()
     while (auto query = query_buffer.pop())
     {
         createQueryBufferConnection();
-        PerformQueryBuffer(query, m_queryBufferConnection);
-        delete query;
+        PerformQueryBuffer(query.get(), m_queryBufferConnection);
     }
+    // No more queries => free the connection in the thread and reconnect when there are new queries
+    destroyQueryBufferConnection();
 }
 
 void QueryBuffer::AddQueryStr(const std::string & str)
@@ -406,15 +409,13 @@ void Database::QueueAsyncQuery(AsyncQuery* query)
     query->Perform();
 }
 
-void Database::AddQueryBuffer(QueryBuffer* b)
+void Database::AddQueryBuffer(std::unique_ptr<QueryBuffer> b)
 {
+    // TODO: qt is always nullptr
     if (qt != NULL)
-        query_buffer.push(b);
+        query_buffer.push(std::move(b));
     else
-    {
-        PerformQueryBuffer(b, NULL);
-        delete b;
-    }
+        PerformQueryBuffer(b.get(), NULL);
 }
 
 void Database::FreeQueryResult(QueryResult* p)

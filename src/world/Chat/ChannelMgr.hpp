@@ -23,8 +23,8 @@ namespace WDB::Structures
 class SERVER_DECL ChannelMgr
 {
 private:
-    ChannelMgr() = default;
-    ~ChannelMgr() = default;
+    ChannelMgr();
+    ~ChannelMgr();
 
 public:
     ChannelMgr(ChannelMgr&&) = delete;
@@ -40,11 +40,11 @@ public:
     void loadConfigSettings();
     void setSeperatedChannels(bool enabled);
 
-    std::shared_ptr<Channel> getOrCreateChannel(std::string name, Player const* player, uint32_t typeId);
-    void removeChannel(std::shared_ptr<Channel> channel);
+    Channel* getOrCreateChannel(std::string name, Player const* player, uint32_t typeId);
+    void removeChannel(Channel const* channel);
 
-    std::shared_ptr<Channel> getChannel(std::string name, Player const* player) const;
-    std::shared_ptr<Channel> getChannel(std::string name, uint32_t team) const;
+    Channel* getChannel(std::string name, Player const* player) const;
+    Channel* getChannel(std::string name, uint32_t team) const;
 
     bool canPlayerJoinDefaultChannel(Player const* player, WDB::Structures::AreaTableEntry const* areaEntry, WDB::Structures::ChatChannelsEntry const* channelDbc) const;
     std::string generateChannelName(WDB::Structures::ChatChannelsEntry const* channelDbc, WDB::Structures::AreaTableEntry const* areaEntry) const;
@@ -53,7 +53,7 @@ public:
     std::vector<std::string> m_minimumChannel;
 
 private:
-    typedef std::map<std::string, std::shared_ptr<Channel>> ChannelList;
+    typedef std::map<std::string, std::unique_ptr<Channel>> ChannelList;
     ChannelList m_channelList[2];
 
     bool m_seperateChannels = false;

@@ -79,9 +79,9 @@ SERVER_DECL Database* Database_Character;
 SERVER_DECL Database* Database_World;
 
 // mainserv defines
-SERVER_DECL SessionLog* GMCommand_Log;
-SERVER_DECL SessionLog* Anticheat_Log;
-SERVER_DECL SessionLog* Player_Log;
+SERVER_DECL std::unique_ptr<SessionLog> GMCommand_Log;
+SERVER_DECL std::unique_ptr<SessionLog> Anticheat_Log;
+SERVER_DECL std::unique_ptr<SessionLog> Player_Log;
 
 ConfigMgr Config;
 
@@ -369,8 +369,8 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
 
     _HookSignals();
 
-    ConsoleThread* console = new ConsoleThread();
-    ThreadPool.ExecuteTask(console);
+    auto console = std::make_unique<ConsoleThread>();
+    ThreadPool.ExecuteTask(console.get());
 
     StartNetworkSubsystem();
 
@@ -427,11 +427,11 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
     sLogonCommHandler.startLogonCommHandler();
 
     // Create listener
-    ListenSocket<WorldSocket> * ls = new ListenSocket<WorldSocket>(worldConfig.listen.listenHost.c_str(), worldConfig.listen.listenPort);
+    auto ls = std::make_unique<ListenSocket<WorldSocket>>(worldConfig.listen.listenHost.c_str(), worldConfig.listen.listenPort);
     bool listnersockcreate = ls->IsOpen();
 #ifdef WIN32
     if (listnersockcreate)
-        ThreadPool.ExecuteTask(ls);
+        ThreadPool.ExecuteTask(ls.get());
 #endif
 
     ShutdownThreadPools(listnersockcreate);
@@ -444,7 +444,6 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
     ThreadPool.ShowStats();
     /* Shut down console system */
     console->stopThread();
-    delete console;
 
     // begin server shutdown
 
@@ -471,8 +470,6 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
     bServerShutdown = true;
     ThreadPool.Shutdown();
 
-    delete ls;
-
     sWorld.logoutAllPlayers();
 
     sLogonCommHandler.finalize();
@@ -489,13 +486,13 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
     sLogger.info("LootMgr : ~LootMgr()");
     sLootMgr.finalize();
 
+    sLogger.info("ChatHandler : ~ChatHandler()");
+    sChatHandler.finalize();
+
     sLogger.info("World : ~World()");
     sWorld.finalize();
 
     sScriptMgr.UnloadScripts();
-
-    sLogger.info("ChatHandler : ~ChatHandler()");
-    sChatHandler.finalize();
 
     sLogger.info("Database : Closing Connections...");
     _StopDB();
@@ -504,9 +501,9 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
     sSocketMgr.finalize();
     sSocketGarbageCollector.finalize();
 
-    delete GMCommand_Log;
-    delete Anticheat_Log;
-    delete Player_Log;
+    GMCommand_Log = nullptr;
+    Anticheat_Log = nullptr;
+    Player_Log = nullptr;
 
     // remove pid
     if (remove("worldserver.pid") != 0)
@@ -755,9 +752,9 @@ void Master::OpenCheatLogFiles()
     bool useTimeStamp = worldConfig.logger.enableTimeStamp;
     std::string logDir = worldConfig.logger.extendedLogsDir;
 
-    Anticheat_Log = new SessionLog(AscEmu::Logging::getFormattedFileName(logDir, "cheaters", useTimeStamp).c_str(), false);
-    GMCommand_Log = new SessionLog(AscEmu::Logging::getFormattedFileName(logDir, "gmcommands", useTimeStamp).c_str(), false);
-    Player_Log = new SessionLog(AscEmu::Logging::getFormattedFileName(logDir, "players", useTimeStamp).c_str(), false);
+    Anticheat_Log = std::make_unique<SessionLog>(AscEmu::Logging::getFormattedFileName(logDir, "cheaters", useTimeStamp).c_str(), false);
+    GMCommand_Log = std::make_unique<SessionLog>(AscEmu::Logging::getFormattedFileName(logDir, "gmcommands", useTimeStamp).c_str(), false);
+    Player_Log = std::make_unique<SessionLog>(AscEmu::Logging::getFormattedFileName(logDir, "players", useTimeStamp).c_str(), false);
 
     if (Anticheat_Log->isSessionLogOpen())
     {

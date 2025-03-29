@@ -212,7 +212,7 @@ public:
         AI_Spell* HandleAutoCastEvent();
         void SetAutoCast(AI_Spell* sp, bool on);
 
-        std::shared_ptr<Group> getGroup();
+        Group* getGroup();
 
         void die(Unit* pAttacker, uint32 damage, uint32 spellid);
 

@@ -103,7 +103,7 @@ bool AddonMgr::ShouldShowInList(std::string name)
     return true;
 }
 
-void AddonMgr::SendAddonInfoPacket(std::shared_ptr<WorldPacket> source, uint32_t /*pos*/, WorldSession* m_session)
+void AddonMgr::SendAddonInfoPacket(WorldPacket* source, uint32_t /*pos*/, WorldSession* m_session)
 {
     WorldPacket returnpacket;
     returnpacket.Initialize(SMSG_ADDON_INFO);    // SMSG_ADDON_INFO

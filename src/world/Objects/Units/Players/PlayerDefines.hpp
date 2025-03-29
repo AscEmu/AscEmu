@@ -34,6 +34,7 @@ struct OnHitSpell;
 class SpellInfo;
 class Aura;
 class Group;
+class Field;
 
 enum PlayerTeam : uint8_t
 {
@@ -967,6 +968,8 @@ struct CharCreate
 class SERVER_DECL CachedCharacterInfo
 {
 public:
+    CachedCharacterInfo();
+    CachedCharacterInfo(Field const* fields);
     ~CachedCharacterInfo();
 
     uint32_t guid = 0;
@@ -981,7 +984,7 @@ public:
     time_t lastOnline = 0;
     uint32_t lastZone = 0;
     uint32_t lastLevel = 0;
-    std::shared_ptr<Group> m_Group = nullptr;
+    Group* m_Group = nullptr;
     int8_t subGroup = 0;
 
     uint32_t m_guild = 0;
@@ -1155,12 +1158,12 @@ private:
     std::array<ActionButton, PLAYER_ACTION_BUTTON_COUNT> mActions = { ActionButton() };
 };
 
-typedef std::set<uint32_t>                              SpellSet;
-typedef std::list<classScriptOverride*>                 ScriptOverrideList;
-typedef std::map<uint32_t, ScriptOverrideList* >        SpellOverrideMap;
-typedef std::map<uint32_t, FactionReputation*>          ReputationMap;
-typedef std::map<uint16_t, PlayerSkill>                 SkillMap;
-typedef std::map<uint32_t, PlayerCooldown>              PlayerCooldownMap;
+typedef std::set<uint32_t>                                      SpellSet;
+typedef std::list<std::unique_ptr<classScriptOverride>>         ScriptOverrideList;
+typedef std::map<uint32_t, std::shared_ptr<ScriptOverrideList>> SpellOverrideMap;
+typedef std::map<uint32_t, std::unique_ptr<FactionReputation>>  ReputationMap;
+typedef std::map<uint16_t, PlayerSkill>                         SkillMap;
+typedef std::map<uint32_t, PlayerCooldown>                      PlayerCooldownMap;
 
 struct PlayerCheat
 {

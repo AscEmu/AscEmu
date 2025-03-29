@@ -42,8 +42,7 @@ using AscEmu::World::Spell::Helpers::decimalToMask;
 
 void SpellMgr::createDummySpell(uint32_t id)
 {
-    SpellInfo* sp = new SpellInfo;
-    memset(sp, 0, sizeof(SpellInfo));
+    auto sp = std::make_unique<SpellInfo>();
     sp->setId(id);
     sp->setAttributes(ATTRIBUTES_NO_CAST | ATTRIBUTES_NO_VISUAL_AURA); //384
     sp->setAttributesEx(ATTRIBUTESEX_UNK30);    //268435456
@@ -55,7 +54,7 @@ void SpellMgr::createDummySpell(uint32_t id)
     sp->setEffect(SPELL_EFFECT_DUMMY, 0);
     sp->setEffectImplicitTargetA(EFF_TARGET_DUEL, 0);
     sp->setEffectDamageMultiplier(1.0f, 0);
-    sWorld.dummySpellList.push_back(sp);
+    sWorld.dummySpellList.push_back(std::move(sp));
 }
 
 void SpellMgr::modifyEffectBasePoints(SpellInfo* sp)
@@ -645,12 +644,9 @@ void SpellMgr::applyHackFixes()
 
     sLogger.info("World : Processing {} spells...", static_cast<uint32_t>(sSpellMgr.getSpellInfoMap()->size()));
 
-    SpellInfo* sp = nullptr;
-
-    for (const auto& it : mSpellInfoMapStore)
+    for (const auto& [_, sp] : mSpellInfoMapStore)
     {
         // Read every SpellEntry row
-        sp = sSpellMgr.getMutableSpellInfo(it.first);
         if (sp == nullptr)
             continue;
 
@@ -764,10 +760,10 @@ void SpellMgr::applyHackFixes()
         }
 
         // DankoDJ: Refactoring session 16/02/2016 new functions
-        modifyEffectBasePoints(sp);
-        setMissingSpellLevel(sp);
-        modifyAuraInterruptFlags(sp);
-        modifyRecoveryTime(sp);
+        modifyEffectBasePoints(sp.get());
+        setMissingSpellLevel(sp.get());
+        modifyAuraInterruptFlags(sp.get());
+        modifyRecoveryTime(sp.get());
 
         // various flight spells
         // these make vehicles and other charmed stuff fliable
@@ -2486,7 +2482,7 @@ void SpellMgr::applyHackFixes()
                 SpellInfo* ritOfSumm = getMutableSpellInfo(ritOfSummId);
                 if (ritOfSumm != NULL)
                 {
-                    memcpy(ritOfSumm, sp, sizeof(SpellInfo));
+                    memcpy(ritOfSumm, sp.get(), sizeof(SpellInfo));
                     ritOfSumm->setId(ritOfSummId);
                 }
             } break;

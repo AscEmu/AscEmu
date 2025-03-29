@@ -198,7 +198,7 @@ void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
         item->m_isDirty = true;
         item->saveToDB(INVENTORY_SLOT_NOT_SET, 0, true, nullptr);
 
-        const auto auction = new Auction;
+        auto auction = std::make_unique<Auction>();
         auction->buyoutPrice = srlPacket.buyoutPrice;
         auction->expireTime = static_cast<uint32_t>(UNIXTIME) + srlPacket.expireTime * MINUTE;
         auction->startPrice = srlPacket.bidMoney;
@@ -211,8 +211,8 @@ void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
         auction->removedType = AUCTION_REMOVE_EXPIRED;
         auction->depositAmount = item_deposit;
 
-        auctionHouse->addAuction(auction);
         auction->saveToDB(auctionHouse->getId());
+        auctionHouse->addAuction(std::move(auction));
 
         _player->sendAuctionCommandResult(nullptr, AUCTION_ACTION_CREATE, AUCTION_ERROR_NONE);
     }

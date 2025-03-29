@@ -1185,7 +1185,6 @@ void WorldSession::handleDestroyItemOpcode(WorldPacket& recvPacket)
             if (auto const charter = _player->m_charters[charterType])
             {
                 charter->destroy();
-                sObjectMgr.removeCharter(charter);
             }
 
             _player->m_charters[charterType] = nullptr;
@@ -3125,7 +3124,7 @@ void WorldSession::handleEquipmentSetSave(WorldPacket& data)
     if (setGUID == 0)
         setGUID = sObjectMgr.generateEquipmentSetId();
 
-    auto equipmentSet = new Arcemu::EquipmentSet();
+    auto equipmentSet = std::make_unique<Arcemu::EquipmentSet>();
 
     equipmentSet->SetGUID = setGUID;
 
@@ -3140,14 +3139,15 @@ void WorldSession::handleEquipmentSetSave(WorldPacket& data)
         equipmentSet->ItemGUID[i] = guid.getGuidLowPart();
     }
 
-    if (_player->getItemInterface()->m_EquipmentSets.AddEquipmentSet(equipmentSet->SetGUID, equipmentSet))
+    const auto setId = equipmentSet->SetID;
+    if (_player->getItemInterface()->m_EquipmentSets.AddEquipmentSet(setGUID, std::move(equipmentSet)))
     {
-        sLogger.debug("Player {} successfully stored equipment set {} at slot {} ", _player->getGuidLow(), equipmentSet->SetGUID, equipmentSet->SetID);
-        _player->sendEquipmentSetSaved(equipmentSet->SetID, equipmentSet->SetGUID);
+        sLogger.debug("Player {} successfully stored equipment set {} at slot {} ", _player->getGuidLow(), setGUID, setId);
+        _player->sendEquipmentSetSaved(setId, setGUID);
     }
     else
     {
-        sLogger.debug("Player {} couldn't store equipment set {} at slot {} ", _player->getGuidLow(), equipmentSet->SetGUID, equipmentSet->SetID);
+        sLogger.debug("Player {} couldn't store equipment set {} at slot {} ", _player->getGuidLow(), setGUID, setId);
     }
 #endif
 }

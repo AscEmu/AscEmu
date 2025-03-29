@@ -375,7 +375,7 @@ void Creature::toggleDualwield(bool enable)
     }
 }
 
-std::shared_ptr<std::vector<CreatureItem>> Creature::getSellItems()
+std::vector<CreatureItem>* Creature::getSellItems()
 {
     return m_SellItems;
 }
@@ -1444,7 +1444,7 @@ void Creature::SetCreatureProperties(CreatureProperties const* cp)
     creature_properties = cp;
 }
 
-std::shared_ptr<Trainer> Creature::GetTrainer()
+Trainer const* Creature::GetTrainer()
 {
     return mTrainer;
 }
@@ -1458,11 +1458,9 @@ void Creature::AddVendorItem(uint32 itemid, uint32 amount, WDB::Structures::Item
     ci.max_amount = 0;
     ci.incrtime = 0;
     ci.extended_cost = ec;
-    if (!m_SellItems)
-    {
-        m_SellItems = std::make_shared<std::vector<CreatureItem>>();
-        sObjectMgr.setVendorList(getEntry(), m_SellItems);
-    }
+    if (m_SellItems == nullptr)
+        m_SellItems = sObjectMgr.createVendorList(getEntry());
+
     m_SellItems->push_back(ci);
 }
 
@@ -2823,6 +2821,11 @@ uint32 Creature::GetType()
 void Creature::SetType(uint32 t)
 {
     m_Creature_type = t;
+}
+
+void Creature::setRespawnTime(uint32_t respawn)
+{
+    m_respawnTime = respawn != 0 ? std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) + respawn : 0;
 }
 
 void Creature::buildPetSpellList(WorldPacket& data)

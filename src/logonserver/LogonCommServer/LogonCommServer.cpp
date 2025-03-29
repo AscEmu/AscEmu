@@ -230,7 +230,7 @@ void LogonCommServerSocket::HandleSessionRequest(WorldPacket & recvData)
 
     // get sessionkey!
     uint32 error = 0;
-    std::shared_ptr<Account> acct = sAccountMgr.getAccountByName(account_name);
+    const auto* acct = sAccountMgr.getAccountByName(account_name);
     if (acct == nullptr || acct->SessionKey == NULL)
         error = 1;          // Unauthorized user.
 
@@ -432,7 +432,7 @@ void LogonCommServerSocket::HandleTestConsoleLogin(WorldPacket & recvData)
 
     data << request;
 
-    std::shared_ptr<Account> pAccount = sAccountMgr.getAccountByName(accountname);
+    const auto* pAccount = sAccountMgr.getAccountByName(accountname);
     if (pAccount == nullptr)
     {
         data << uint32(0);
@@ -475,7 +475,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             // remember we expect this in uppercase
             AscEmu::Util::Strings::toUpperCase(account);
 
-            std::shared_ptr<Account> pAccount = sAccountMgr.getAccountByName(account);
+            auto* pAccount = sAccountMgr.getAccountByName(account);
             if (pAccount == nullptr)
                 return;
 
@@ -519,7 +519,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             // remember we expect this in uppercase
             AscEmu::Util::Strings::toUpperCase(account);
 
-            std::shared_ptr<Account> pAccount = sAccountMgr.getAccountByName(account);
+            auto* pAccount = sAccountMgr.getAccountByName(account);
             if (pAccount == nullptr)
                 return;
 
@@ -690,7 +690,7 @@ void LogonCommServerSocket::HandleRequestCheckAccount(WorldPacket & recvData)
             // remember we expect this in uppercase
             AscEmu::Util::Strings::toUpperCase(account_name);
 
-            std::shared_ptr<Account> account_check = sAccountMgr.getAccountByName(account_name);
+            const auto* account_check = sAccountMgr.getAccountByName(account_name);
             if (account_check == nullptr)
             {
                 // Send packet "account not available"
@@ -725,7 +725,7 @@ void LogonCommServerSocket::HandleRequestCheckAccount(WorldPacket & recvData)
             // remember we expect this in uppercase
             AscEmu::Util::Strings::toUpperCase(account_name);
 
-            std::shared_ptr<Account> account_check = sAccountMgr.getAccountByName(account_name);
+            const auto* account_check = sAccountMgr.getAccountByName(account_name);
             if (account_check == nullptr)
             {
                 // Send packet "account not available"
@@ -750,9 +750,9 @@ void LogonCommServerSocket::HandleRequestCheckAccount(WorldPacket & recvData)
 void LogonCommServerSocket::HandleRequestAllAccounts(WorldPacket& /*recvData*/)
 {
     std::string accountsArray;
-    auto accountMap = sAccountMgr.getAccountMap();
+    const auto& accountMap = sAccountMgr.getAccountMap();
 
-    for (auto const map_itr :  accountMap)
+    for (auto const& map_itr : accountMap)
     {
         std::string gm_flags;
 

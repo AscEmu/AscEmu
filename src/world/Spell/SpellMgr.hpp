@@ -13,6 +13,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/SpellMechanics.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 
+#include <memory>
+
 namespace WDB::Structures
 {
     struct SkillLineAbilityEntry;
@@ -37,7 +39,7 @@ struct SpellArea
     bool fitsToRequirements(Player* player, uint32_t newZone, uint32_t newArea) const;
 };
 
-typedef std::unordered_map<uint32_t, SpellInfo*> SpellInfoMap;
+typedef std::unordered_map<uint32_t, std::unique_ptr<SpellInfo>> SpellInfoMap;
 
 typedef Spell* (*SpellScriptLinker)(Object* Caster, SpellInfo* info, bool triggered, Aura* aur);
 typedef Aura* (*AuraScriptLinker)(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary, Item* i_caster);
@@ -51,7 +53,7 @@ typedef std::pair<SpellsRequiringSpellMap::const_iterator, SpellsRequiringSpellM
 typedef std::pair<SkillSkillAbilityMap::const_iterator, SkillSkillAbilityMap::const_iterator> SkillSkillAbilityMapBounds;
 typedef std::pair<SpellSkillAbilityMap::const_iterator, SpellSkillAbilityMap::const_iterator> SpellSkillAbilityMapBounds;
 
-typedef std::map<uint32_t, SpellTargetConstraint*> SpellTargetConstraintMap;
+typedef std::map<uint32_t, std::unique_ptr<SpellTargetConstraint>> SpellTargetConstraintMap;
 
 typedef std::multimap<uint32_t, SpellArea> SpellAreaMap;
 typedef std::multimap<uint32_t, SpellArea const*> SpellAreaForQuestMap;
@@ -66,8 +68,8 @@ typedef std::pair<SpellAreaForAreaMap::const_iterator, SpellAreaForAreaMap::cons
 class SERVER_DECL SpellMgr
 {
 private:
-    SpellMgr() = default;
-    ~SpellMgr() = default;
+    SpellMgr();
+    ~SpellMgr();
 
 public:
     static SpellMgr& getInstance();
@@ -113,7 +115,7 @@ public:
     // Use forPlayer if you want to see if skill ability entry fits for player
     WDB::Structures::SkillLineAbilityEntry const* getFirstSkillEntryForSpell(uint32_t spellId, Player const* forPlayer = nullptr) const;
 
-    SpellTargetConstraint* getSpellTargetConstraintForSpell(uint32_t spellId) const;
+    SpellTargetConstraint const* getSpellTargetConstraintForSpell(uint32_t spellId) const;
     
     // Spell area maps
     SpellAreaMapBounds getSpellAreaMapBounds(uint32_t spellId) const;
@@ -186,7 +188,7 @@ private:
 
     SpellInfoMap mSpellInfoMapStore;
 
-    SpellInfo* getMutableSpellInfo(const uint32_t spellId);
+    SpellInfo* getMutableSpellInfo(const uint32_t spellId) const;
 
     // Legacy script registerers
     void addSpellBySpellInfo(SpellInfo* info, SpellScriptLinker spellScript);

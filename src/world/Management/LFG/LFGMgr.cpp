@@ -729,7 +729,7 @@ void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDung
     sLogger.debug("{} joined with {} members. dungeons: {}", guid, group ? group->MemberCount() : 1, uint8(dungeons.size()));
 }
 
-void LfgMgr::Leave(Player* player, std::shared_ptr<Group> _group /* = nullptr*/)
+void LfgMgr::Leave(Player* player, Group* _group /* = nullptr*/)
 {
     if (!player && !_group)
         return;
@@ -1458,8 +1458,8 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
 
             if (!grp)
             {
-                grp = std::make_shared<Group>(true);
-                sObjectMgr.addGroup(grp);
+                // todo: where and when is lfg group deleted? -Appled
+                grp = sObjectMgr.createGroup();
                 grp->m_disbandOnNoMembers = false;
                 grp->ExpandToLFG();
 

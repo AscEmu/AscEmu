@@ -24,15 +24,18 @@ void FormationMgr::addCreatureToGroup(uint32_t leaderSpawnId, Creature* creature
 {
     WorldMap* map = creature->getWorldMap();
 
-    auto itr = map->CreatureGroupHolder.find(leaderSpawnId);
-    if (itr != map->CreatureGroupHolder.end())
+    const auto [itr, inserted] = map->CreatureGroupHolder.try_emplace(leaderSpawnId, Util::LazyInstanceCreator([leaderSpawnId] {
+        return std::make_unique<CreatureGroup>(leaderSpawnId);
+    }));
+
+    if (!inserted)
     {
         //Add member to an existing group
         sLogger.debug("FormationMgr : Group found: {}, inserting creature {}, Group InstanceID {}", leaderSpawnId, creature->getGuid(), creature->GetInstanceID());
 
         // With dynamic spawn the creature may have just respawned
         // we need to find previous instance of creature and delete it from the formation, as it'll be invalidated
-        for (auto pair : map->_sqlids_creatures)
+        for (const auto& pair : map->_sqlids_creatures)
         {
             if (pair.first == creature->getSpawnId())
             {
@@ -49,8 +52,6 @@ void FormationMgr::addCreatureToGroup(uint32_t leaderSpawnId, Creature* creature
     {
         //Create new group
         sLogger.debug("FormationMgr : Group not found: {}. Creating new group.", leaderSpawnId);
-        CreatureGroup* group = new CreatureGroup(leaderSpawnId);
-        std::tie(itr, std::ignore) = map->CreatureGroupHolder.emplace(leaderSpawnId, group);
     }
 
     itr->second->addMember(creature);
@@ -69,7 +70,6 @@ void FormationMgr::removeCreatureFromGroup(CreatureGroup* group, Creature* membe
         auto itr = map->CreatureGroupHolder.find(group->getLeaderSpawnId());
         ASSERT(itr != map->CreatureGroupHolder.end() && "Not registered group in map");
         map->CreatureGroupHolder.erase(itr);
-        delete group;
     }
 }
 

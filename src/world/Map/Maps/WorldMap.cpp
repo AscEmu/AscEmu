@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "WorldMap.hpp"
 #include "Objects/DynamicObject.hpp"
+#include "Objects/Units/Creatures/CreatureGroups.h"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Objects/Units/Unit.hpp"
@@ -116,18 +117,18 @@ WorldMap::~WorldMap()
     delete _terrain;
 
     // Remove objects
-    if (_cells)
+    if (_cells != nullptr)
     {
         for (uint32_t i = 0; i < Map::Cell::_sizeX; i++)
         {
-            if (_cells[i] != 0)
+            if ((*_cells)[i] != nullptr)
             {
                 for (uint32_t j = 0; j < Map::Cell::_sizeY; j++)
                 {
-                    if (_cells[i][j] != 0)
+                    if ((*(*_cells)[i])[j] != nullptr)
                     {
-                        _cells[i][j]->_unloadpending = false;
-                        _cells[i][j]->removeObjects();
+                        (*(*_cells)[i])[j]->_unloadpending = false;
+                        (*(*_cells)[i])[j]->removeObjects();
                     }
                 }
             }
@@ -439,7 +440,7 @@ void WorldMap::update(uint32_t t_diff)
                 break;
 
             _corpseDespawnTimes.pop();
-            if (std::shared_ptr<Corpse> pCorpse = sObjectMgr.getCorpseByGuid(static_cast<uint32_t>(next.guid)))
+            if (auto* const pCorpse = sObjectMgr.getCorpseByGuid(static_cast<uint32_t>(next.guid)))
             {
                 if (pCorpse->getWorldMap() != this)
                     break;

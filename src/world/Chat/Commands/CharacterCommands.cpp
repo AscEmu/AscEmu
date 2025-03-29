@@ -1448,7 +1448,7 @@ bool ChatHandler::HandleCharSetNameCommand(const char* args, WorldSession* m_ses
     std::string new_name = new_name_cmd;
     AscEmu::Util::Strings::capitalize(new_name);
 
-    std::shared_ptr<CachedCharacterInfo> pi = sObjectMgr.getCachedCharacterInfoByName(current_name);
+    const auto pi = sObjectMgr.getCachedCharacterInfoByName(current_name);
     if (pi == nullptr)
     {
         RedSystemMessage(m_session, "Player not found with this name.");
@@ -1696,7 +1696,7 @@ bool ChatHandler::HandleCharSetForceRenameCommand(const char* args, WorldSession
         return false;
 
     std::string tmp = std::string(args);
-    std::shared_ptr<CachedCharacterInfo> pi = sObjectMgr.getCachedCharacterInfoByName(tmp);
+    const auto pi = sObjectMgr.getCachedCharacterInfoByName(tmp);
     if (pi == nullptr)
     {
         RedSystemMessage(m_session, "Player with that name not found.");
@@ -1729,7 +1729,7 @@ bool ChatHandler::HandleCharSetCustomizeCommand(const char* args, WorldSession* 
         return false;
 
     std::string tmp = std::string(args);
-    std::shared_ptr<CachedCharacterInfo> pi = sObjectMgr.getCachedCharacterInfoByName(tmp);
+    const auto pi = sObjectMgr.getCachedCharacterInfoByName(tmp);
     if (pi == nullptr)
     {
         RedSystemMessage(m_session, "Player with that name not found.");
@@ -1761,7 +1761,7 @@ bool ChatHandler::HandleCharSetFactionChangeCommand(const char* args, WorldSessi
         return false;
 
     std::string tmp = std::string(args);
-    std::shared_ptr<CachedCharacterInfo> pi = sObjectMgr.getCachedCharacterInfoByName(tmp);
+    const auto pi = sObjectMgr.getCachedCharacterInfoByName(tmp);
     if (pi == nullptr)
     {
         RedSystemMessage(m_session, "Player with that name not found.");
@@ -1793,7 +1793,7 @@ bool ChatHandler::HandleCharSetRaceChangeCommand(const char* args, WorldSession*
         return false;
 
     std::string tmp = std::string(args);
-    std::shared_ptr<CachedCharacterInfo> pi = sObjectMgr.getCachedCharacterInfoByName(tmp);
+    const auto pi = sObjectMgr.getCachedCharacterInfoByName(tmp);
     if (pi == nullptr)
     {
         RedSystemMessage(m_session, "Player with that name not found.");

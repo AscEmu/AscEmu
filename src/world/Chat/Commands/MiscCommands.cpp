@@ -92,9 +92,9 @@ bool ChatHandler::HandleGoCreatureSpawnCommand(const char* args, WorldSession* m
         return true;
     }
 
-    for (const auto creatureSpawnMap : sMySQLStore._creatureSpawnsStore)
+    for (const auto& creatureSpawnMap : sMySQLStore._creatureSpawnsStore)
     {
-        for (const auto creatureSpawn : creatureSpawnMap)
+        for (const auto& creatureSpawn : creatureSpawnMap)
         {
             if (creatureSpawn->id == spawn_id)
             {
@@ -118,9 +118,9 @@ bool ChatHandler::HandleGoGameObjectSpawnCommand(const char* args, WorldSession*
         return true;
     }
 
-    for (const auto goSpawnMap : sMySQLStore._gameobjectSpawnsStore)
+    for (const auto& goSpawnMap : sMySQLStore._gameobjectSpawnsStore)
     {
-        for (const auto goSpawn : goSpawnMap)
+        for (const auto& goSpawn : goSpawnMap)
         {
             if (goSpawn->id == spawn_id)
             {
@@ -883,7 +883,7 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession* m_session)
     }
     else
     {
-        std::shared_ptr<CachedCharacterInfo> pinfo = sObjectMgr.getCachedCharacterInfoByName(args);
+        const auto pinfo = sObjectMgr.getCachedCharacterInfoByName(args);
         if (!pinfo)
         {
             char buf[256];
@@ -1207,7 +1207,7 @@ bool ChatHandler::HandleBanCharacterCommand(const char* args, WorldSession* m_se
         return false;
 
     char* pCharacter = (char*)args;
-    std::shared_ptr<CachedCharacterInfo> pInfo = nullptr;
+    CachedCharacterInfo const* pInfo = nullptr;
     char* pReason;
     char* pDuration;
     uint32_t BanTime = 0;

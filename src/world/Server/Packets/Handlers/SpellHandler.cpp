@@ -13,7 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
-#include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
+#include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"

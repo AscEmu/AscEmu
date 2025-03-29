@@ -47,7 +47,7 @@ public:
     uint32_t GetTeamFaction(uint32_t _teamId);
     uint8_t Rated() override;
     uint8_t GetArenaTeamType() const;
-    std::shared_ptr<ArenaTeam>* GetTeams();
+    ArenaTeam** GetTeams();
     uint32_t CalcDeltaRating(uint32_t _oldRating, uint32_t _opponentRating, bool _outcome);
 
     bool rated_match = false;
@@ -55,7 +55,7 @@ public:
 protected:
     std::set<GameObject*> m_gates;
     GameObject* m_buffs[2] = { nullptr };
-    std::shared_ptr<ArenaTeam> m_teams[2] = { nullptr };
+    ArenaTeam* m_teams[2] = { nullptr };
     uint8_t m_arenateamtype;
     uint32_t m_playersCount[2] = { 0 };
     std::set<uint32_t> m_players2[2];

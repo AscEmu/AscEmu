@@ -54,6 +54,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Unit.hpp"
 #include "Objects/Units/Creatures/CreatureDefines.hpp"
 #include "Objects/Units/Creatures/Pet.h"
+#include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
 #include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Objects/Units/UnitDefines.hpp"
 #include "Objects/Units/Creatures/Corpse.hpp"
@@ -5698,7 +5699,7 @@ Player* Spell::getPlayerTarget() const { return m_playerTarget; }
 
 GameObject* Spell::getGameObjectTarget() const { return m_gameObjTarget; }
 
-std::shared_ptr<Corpse> Spell::getCorpseTarget() const { return m_corpseTarget; }
+Corpse* Spell::getCorpseTarget() const { return m_corpseTarget; }
 
 void Spell::unsetAllTargets()
 {

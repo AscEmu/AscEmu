@@ -42,7 +42,7 @@ void GuildLogHolder::loadEvent(GuildLogEntry* entry)
 
 void GuildLogHolder::addEvent(GuildLogEntry* entry)
 {
-    if (mLog.size() >= mMaxRecords)
+    if (mMaxRecords > 0 && mLog.size() >= mMaxRecords)
     {
         GuildLogEntry* oldEntry = mLog.front();
         delete oldEntry;

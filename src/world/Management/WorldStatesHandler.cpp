@@ -70,7 +70,7 @@ void WorldStatesHandler::BuildInitWorldStatesForZone(uint32_t _zone, uint32_t _a
 #endif
 }
 
-void WorldStatesHandler::InitWorldStates(std::shared_ptr<std::multimap<uint32_t, WorldState>> _states)
+void WorldStatesHandler::InitWorldStates(std::multimap<uint32_t, WorldState> const* _states)
 {
     if (_states == nullptr)
         return;

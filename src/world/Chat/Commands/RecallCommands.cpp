@@ -125,7 +125,7 @@ bool ChatHandler::HandleRecallListCommand(const char* args, WorldSession* m_sess
     std::string search(args);
     AscEmu::Util::Strings::toLowerCase(search);
 
-    for (auto* recall : sMySQLStore.getRecallStore())
+    for (const auto& recall : sMySQLStore.getRecallStore())
     {
         std::string recallName(recall->name);
         AscEmu::Util::Strings::toLowerCase(recallName);

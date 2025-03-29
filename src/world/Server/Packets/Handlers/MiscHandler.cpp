@@ -698,8 +698,8 @@ void WorldSession::handleOpenItemOpcode(WorldPacket& recvPacket)
     _player->setLootGuid(item->getGuid());
     if (item->m_loot == nullptr)
     {
-        item->m_loot = new Loot; //eeeeeek
-        sLootMgr.fillItemLoot(_player, item->m_loot, item->getEntry(), 0);
+        item->m_loot = std::make_unique<Loot>();
+        sLootMgr.fillItemLoot(_player, item->m_loot.get(), item->getEntry(), 0);
     }
     _player->sendLoot(item->getGuid(), LOOT_DISENCHANTING, _player->GetMapId());
 }

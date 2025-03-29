@@ -94,17 +94,15 @@ Group::~Group()
         if (SubGroup* sub = GetSubGroup(j))
             delete sub;
     }
-
-    sObjectMgr.removeGroup(m_Id);
 }
 
-void SubGroup::RemovePlayer(std::shared_ptr<CachedCharacterInfo> info)
+void SubGroup::RemovePlayer(CachedCharacterInfo* info)
 {
     m_GroupMembers.erase(info);
     info->subGroup = -1;
 }
 
-bool SubGroup::AddPlayer(std::shared_ptr<CachedCharacterInfo> info)
+bool SubGroup::AddPlayer(CachedCharacterInfo* info)
 {
     if (IsFull())
         return false;
@@ -133,7 +131,7 @@ SubGroup* Group::FindFreeSubGroup()
     return NULL;
 }
 
-bool Group::AddMember(std::shared_ptr<CachedCharacterInfo> info, int32 subgroupid/* =-1 */)
+bool Group::AddMember(CachedCharacterInfo* info, int32 subgroupid/* =-1 */)
 {
     if (info)
     {
@@ -166,7 +164,7 @@ bool Group::AddMember(std::shared_ptr<CachedCharacterInfo> info, int32 subgroupi
                 if (m_Leader == NULL && pPlayer)
                     m_Leader = info;
 
-                info->m_Group = sObjectMgr.getGroupById(m_Id);
+                info->m_Group = this;
                 info->subGroup = (int8)subgroup->GetID();
 
                 ++m_MemberCount;
@@ -347,7 +345,7 @@ void Group::Update()
 
 void Group::Disband()
 {
-    std::lock_guard lock(m_groupLock);
+    m_groupLock.lock();
 
     m_updateblock = true;
 
@@ -366,13 +364,15 @@ void Group::Disband()
         sg->Disband();
     }
 
+    m_groupLock.unlock();
+
     CharacterDatabase.Execute("DELETE FROM `groups` WHERE `group_id` = %u", m_Id);
-    delete this;    // destroy ourselves, the destructor removes from eventmgr and objectmgr.
+    sObjectMgr.removeGroup(m_Id);    // destroy ourselves
 }
 
 void SubGroup::Disband()
 {
-    for (std::set<std::shared_ptr<CachedCharacterInfo>>::iterator itr = m_GroupMembers.begin(); itr != m_GroupMembers.end();)
+    for (auto itr = m_GroupMembers.begin(); itr != m_GroupMembers.end();)
     {
         if (*itr)
         {
@@ -426,14 +426,14 @@ Player* Group::FindFirstPlayer()
     return nullptr;
 }
 
-void Group::RemovePlayer(std::shared_ptr<CachedCharacterInfo> info)
+void Group::RemovePlayer(CachedCharacterInfo* info)
 {
     if (info == nullptr)
         return;
 
     Player* pPlayer = sObjectMgr.getPlayer(info->guid);
 
-    std::lock_guard lock(m_groupLock);
+    m_groupLock.lock();
 
     if (m_isqueued)
     {
@@ -464,11 +464,16 @@ void Group::RemovePlayer(std::shared_ptr<CachedCharacterInfo> info)
     info->subGroup = -1;
 
     if (!sg)
+    {
+        m_groupLock.unlock();
         return;
+    }
 
     m_dirty = true;
     sg->RemovePlayer(info);
     --m_MemberCount;
+
+    m_groupLock.unlock();
 
     // remove team member from the instance
     if (pPlayer)
@@ -509,6 +514,8 @@ void Group::RemovePlayer(std::shared_ptr<CachedCharacterInfo> info)
         }
     }
 
+    m_groupLock.lock();
+
     /* eek! ;P */
     Player* newPlayer = nullptr;
     if (m_Looter == info)
@@ -530,6 +537,8 @@ void Group::RemovePlayer(std::shared_ptr<CachedCharacterInfo> info)
         else
             m_Leader = nullptr;
     }
+
+    m_groupLock.unlock();
 
     Update();
 }
@@ -605,7 +614,7 @@ bool Group::HasMember(Player* pPlayer)
     if (!pPlayer)
         return false;
 
-    std::set<std::shared_ptr<CachedCharacterInfo>>::iterator itr;
+    std::set<CachedCharacterInfo*>::iterator itr;
 
     std::lock_guard lock(m_groupLock);
 
@@ -623,9 +632,9 @@ bool Group::HasMember(Player* pPlayer)
     return false;
 }
 
-bool Group::HasMember(std::shared_ptr<CachedCharacterInfo> info)
+bool Group::HasMember(CachedCharacterInfo* info)
 {
-    std::set<std::shared_ptr<CachedCharacterInfo>>::iterator itr;
+    std::set<CachedCharacterInfo*>::iterator itr;
     uint8 i = 0;
 
     std::lock_guard lock(m_groupLock);
@@ -641,7 +650,7 @@ bool Group::HasMember(std::shared_ptr<CachedCharacterInfo> info)
     return false;
 }
 
-void Group::MovePlayer(std::shared_ptr<CachedCharacterInfo> info, uint8 subgroup)
+void Group::MovePlayer(CachedCharacterInfo* info, uint8 subgroup)
 {
     if (subgroup >= m_SubGroupCount)
         return;
@@ -728,7 +737,7 @@ void Group::LoadFromDB(Field* fields)
             if (guid == 0)
                 continue;
 
-            std::shared_ptr<CachedCharacterInfo> inf = sObjectMgr.getCachedCharacterInfo(guid);
+            CachedCharacterInfo* inf = sObjectMgr.getCachedCharacterInfo(guid);
             if (inf == NULL)
                 continue;
 
@@ -1128,7 +1137,7 @@ Group* Group::Create()
     return new Group(true);
 }
 
-void Group::SetMainAssist(std::shared_ptr<CachedCharacterInfo> pMember)
+void Group::SetMainAssist(CachedCharacterInfo* pMember)
 {
     if (m_mainAssist == pMember)
         return;
@@ -1138,7 +1147,7 @@ void Group::SetMainAssist(std::shared_ptr<CachedCharacterInfo> pMember)
     Update();
 }
 
-void Group::SetMainTank(std::shared_ptr<CachedCharacterInfo> pMember)
+void Group::SetMainTank(CachedCharacterInfo* pMember)
 {
     if (m_mainTank == pMember)
         return;
@@ -1148,7 +1157,7 @@ void Group::SetMainTank(std::shared_ptr<CachedCharacterInfo> pMember)
     Update();
 }
 
-void Group::SetAssistantLeader(std::shared_ptr<CachedCharacterInfo> pMember)
+void Group::SetAssistantLeader(CachedCharacterInfo* pMember)
 {
     if (m_assistantLeader == pMember)
         return;
@@ -1663,11 +1672,11 @@ void Group::updateLooterGuid(Object* pLootedObject)
         break;
     }
 
-    std::shared_ptr<CachedCharacterInfo> oldLooter = GetLooter();
+    CachedCharacterInfo* oldLooter = GetLooter();
     if (!oldLooter)
         oldLooter = GetLeader();
 
-    std::shared_ptr<CachedCharacterInfo> pNewLooter = nullptr;
+    CachedCharacterInfo* pNewLooter = nullptr;
 
     m_groupLock.lock();
     for (uint8_t i = 0; i < m_SubGroupCount; i++)

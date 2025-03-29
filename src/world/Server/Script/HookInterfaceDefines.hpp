@@ -88,7 +88,7 @@ typedef bool(*ItemScript)(Item* pItem, Player* pPlayer);
 typedef void(*tOnQuestCancel)(Player* pPlayer, QuestProperties const* pQuest);
 typedef void(*tOnQuestFinished)(Player* pPlayer, QuestProperties const* pQuest, Object* pQuestGiver);
 typedef void(*tOnHonorableKill)(Player* pPlayer, Player* pKilled);
-typedef void(*tOnArenaFinish)(Player* pPlayer, std::shared_ptr<ArenaTeam> pTeam, bool victory, bool rated);
+typedef void(*tOnArenaFinish)(Player* pPlayer, ArenaTeam* pTeam, bool victory, bool rated);
 typedef void(*tOnObjectLoot)(Player* pPlayer, Object* pTarget, uint32_t Money, uint32_t ItemId);
 typedef void(*tOnAreaTrigger)(Player* pPlayer, uint32_t areaTrigger);
 typedef void(*tOnPostLevelUp)(Player* pPlayer);
