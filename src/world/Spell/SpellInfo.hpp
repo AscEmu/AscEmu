@@ -198,7 +198,7 @@ public:
 
     uint32_t getRequiredShapeShift() const { return Shapeshifts; }
     uint32_t getShapeshiftExclude() const { return ShapeshiftsExcluded; }
-    uint32_t getTargets() const { return Targets; } // not used!
+    uint32_t getTargets() const { return Targets; }
     uint32_t getTargetCreatureType() const { return TargetCreatureType; }
     uint32_t getRequiresSpellFocus() const { return RequiresSpellFocus; }
     uint32_t getFacingCasterFlags() const { return FacingCasterFlags; }
