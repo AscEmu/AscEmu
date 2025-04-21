@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Creature.h"
 #include "Management/ItemInterface.h"
 #include "Management/Loot/LootMgr.hpp"
+#include "Management/Loot/LootRoll.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Item.hpp"
 #include "Objects/Units/Creatures/Corpse.hpp"

@@ -3284,7 +3284,7 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
                                         // Activate object if player has not started the quest but only if player is also able to start quest
                                         // or if player has the quest and object is the quest ender
                                         if ((questRelation->type & QUESTGIVER_QUEST_START && !target->hasQuestInQuestLog(questProperties->id)
-                                            && sQuestMgr.CalcQuestStatus(gameobject, target, questRelation) >= QuestStatus::AvailableChat) ||
+                                            && sQuestMgr.CalcQuestStatus(gameobject, target, questRelation.get()) >= QuestStatus::AvailableChat) ||
                                             (questRelation->type & QUESTGIVER_QUEST_END && target->hasQuestInQuestLog(questProperties->id)))
                                         {
                                             activeObject = true;

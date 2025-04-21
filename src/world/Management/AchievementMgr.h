@@ -92,7 +92,7 @@ struct AchievementReward
     std::string text;
 };
 
-typedef std::unordered_map<uint32_t, CriteriaProgress*> CriteriaProgressMap;
+typedef std::unordered_map<uint32_t, std::unique_ptr<CriteriaProgress>> CriteriaProgressMap;
 typedef std::unordered_map<uint32_t, time_t> CompletedAchievementMap;
 typedef std::multimap<uint32_t, AchievementReward> AchievementRewardsMap;
 typedef std::pair<AchievementRewardsMap::const_iterator, AchievementRewardsMap::const_iterator> AchievementRewardsMapBounds;

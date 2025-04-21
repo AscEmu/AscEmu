@@ -73,7 +73,7 @@ enum SpellTreeName
 class SkillNameMgr
 {
     public:
-        char** SkillNames;
+        std::unique_ptr<std::unique_ptr<char[]>[]> SkillNames;
         uint32 maxskill;
 
         SkillNameMgr()
@@ -82,8 +82,8 @@ class SkillNameMgr
             maxskill = sSkillLineStore.getNumRows();
 
             /// SkillNames = (char **) malloc(maxskill * sizeof(char *));
-            SkillNames = new char * [maxskill + 1]; //(+1, arrays count from 0.. not 1.)
-            memset(SkillNames, 0, (maxskill + 1) * sizeof(char*));
+            SkillNames = std::make_unique<std::unique_ptr<char[]>[]>(maxskill + 1); //(+1, arrays count from 0.. not 1.)
+            std::fill(SkillNames.get(), SkillNames.get(), nullptr);
 
             for (uint32 i = 0; i < sSkillLineStore.getNumRows(); ++i)
             {
@@ -98,21 +98,13 @@ class SkillNameMgr
                 char* SkillName = skill_line->Name[0];
 #endif
 
-                SkillNames[SkillID] = new char [strlen(SkillName) + 1];
+                SkillNames[SkillID] = std::make_unique<char[]>(strlen(SkillName) + 1);
                 //When the DBCFile gets cleaned up, so does the record data, so make a copy of it..
-                memcpy(SkillNames[SkillID], SkillName, strlen(SkillName) + 1);
+                std::strcpy(SkillNames[SkillID].get(), SkillName);
             }
         }
 
-        ~SkillNameMgr()
-        {
-            for (uint32 i = 0; i <= maxskill; i++)
-            {
-                if (SkillNames[i] != 0)
-                    delete[] SkillNames[i];
-            }
-            delete[] SkillNames;
-        }
+        ~SkillNameMgr() = default;
 };
 
 #endif // SKILLNAMEMGR_H

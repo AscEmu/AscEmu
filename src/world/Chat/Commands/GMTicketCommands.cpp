@@ -79,9 +79,9 @@ bool ChatHandler::HandleGMTicketGetByIdCommand(const char* args, WorldSession* m
         return true;
     }
 
-    char* msg = new char[ticket->message.size() + 1];
-    strcpy(msg, ticket->message.c_str());
-    char* start = msg, *end;
+    auto msg = std::make_unique<char[]>(ticket->message.size() + 1);
+    strcpy(msg.get(), ticket->message.c_str());
+    char* start = msg.get(), *end;
     bool firstLine = true;
     for (;;)
     {
@@ -105,7 +105,6 @@ bool ChatHandler::HandleGMTicketGetByIdCommand(const char* args, WorldSession* m
         ss << "GmTicket " << (firstLine ? "3" : "4") << "," << ticket->name << "," << start;
         chn->say(cplr, ss.str(), cplr, true);
     }
-    delete[] msg;
 
     return true;
 }
@@ -219,9 +218,9 @@ bool ChatHandler::HandleGMTicketGetByIdCommand(const char* args, WorldSession* m
         return true;
     }
 
-    char* msg = new char[ticket->message.size() + 1];
-    strcpy(msg, ticket->message.c_str());
-    char* start = msg, *end;
+    auto msg = std::make_unique<char[]>(ticket->message.size() + 1);
+    strcpy(msg.get(), ticket->message.c_str());
+    char* start = msg.get(), *end;
     bool firstLine = true;
     for (;;)
     {
@@ -249,7 +248,6 @@ bool ChatHandler::HandleGMTicketGetByIdCommand(const char* args, WorldSession* m
         ss << ":" << start;
         chn->say(cplr, ss.str().c_str(), cplr, true);
     }
-    delete[] msg;
 
     return true;
 }

@@ -2451,23 +2451,22 @@ uint32_t ObjectMgr::getPetSpellCooldown(uint32_t _spellId)
     return 0;
 }
 
-Item* ObjectMgr::loadItem(uint32_t _lowGuid)
+std::unique_ptr<Item> ObjectMgr::loadItem(uint32_t _lowGuid)
 {
     QueryResult* result = CharacterDatabase.Query("SELECT * FROM playeritems WHERE guid = %u", _lowGuid);
-    Item* item = nullptr;
+    std::unique_ptr<Item> item = nullptr;
     if (result)
     {
         if (const auto itemProperties = sMySQLStore.getItemProperties(result->Fetch()[2].asUint32()))
         {
             if (itemProperties->InventoryType == INVTYPE_BAG)
             {
-                Container* container = new Container(HIGHGUID_TYPE_CONTAINER, _lowGuid);
-                container->loadFromDB(result->Fetch());
-                item = container;
+                item = std::make_unique<Container>(HIGHGUID_TYPE_CONTAINER, _lowGuid);
+                dynamic_cast<Container*>(item.get())->loadFromDB(result->Fetch());
             }
             else
             {
-                item = new Item;
+                item = std::make_unique<Item>();
                 item->init(HIGHGUID_TYPE_ITEM, _lowGuid);
                 item->loadFromDB(result->Fetch(), nullptr, false);
             }
@@ -2479,7 +2478,7 @@ Item* ObjectMgr::loadItem(uint32_t _lowGuid)
     return item;
 }
 
-Item* ObjectMgr::createItem(uint32_t _entry, Player* _playerOwner)
+std::unique_ptr<Item> ObjectMgr::createItem(uint32_t _entry, Player* _playerOwner)
 {
     ItemProperties const* itemProperties = sMySQLStore.getItemProperties(_entry);
     if (itemProperties == nullptr)
@@ -2487,13 +2486,13 @@ Item* ObjectMgr::createItem(uint32_t _entry, Player* _playerOwner)
 
     if (itemProperties->InventoryType == INVTYPE_BAG)
     {
-        Container* container = new Container(HIGHGUID_TYPE_CONTAINER, generateLowGuid(HIGHGUID_TYPE_CONTAINER));
+        auto container = std::make_unique<Container>(HIGHGUID_TYPE_CONTAINER, generateLowGuid(HIGHGUID_TYPE_CONTAINER));
         container->create(_entry, _playerOwner);
         container->setStackCount(1);
         return container;
     }
 
-    Item* item = new Item;
+    auto item = std::make_unique<Item>();
     item->init(HIGHGUID_TYPE_ITEM, generateLowGuid(HIGHGUID_TYPE_ITEM));
     item->create(_entry, _playerOwner);
     item->setStackCount(1);

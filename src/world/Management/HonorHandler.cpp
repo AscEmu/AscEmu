@@ -190,12 +190,11 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                     const auto PvPTokenID = worldConfig.player.pvpTokenId;
                     if (PvPTokenID > 0)
                     {
-                        Item* PvPTokenItem = sObjectMgr.createItem(PvPTokenID, pAffectedPlayer);
+                        auto PvPTokenItem = sObjectMgr.createItem(PvPTokenID, pAffectedPlayer);
                         if (PvPTokenItem)
                         {
                             PvPTokenItem->addFlags(ITEM_FLAG_SOULBOUND);
-                            if (!pAffectedPlayer->getItemInterface()->AddItemToFreeSlot(PvPTokenItem))
-                                PvPTokenItem->deleteMe();
+                            pAffectedPlayer->getItemInterface()->AddItemToFreeSlot(std::move(PvPTokenItem));
                         }
                     }
                 }

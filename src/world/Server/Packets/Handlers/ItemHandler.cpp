@@ -941,13 +941,13 @@ void WorldSession::handleSplitOpcode(WorldPacket& recvPacket)
         {
             inventoryItem1->modStackCount(-srlPacket.itemCount);
 
-            inventoryItem2 = sObjectMgr.createItem(inventoryItem1->getEntry(), _player);
-            if (inventoryItem2 == nullptr)
+            auto item2Holder = sObjectMgr.createItem(inventoryItem1->getEntry(), _player);
+            if (item2Holder == nullptr)
                 return;
 
-            inventoryItem2->setStackCount(count);
+            item2Holder->setStackCount(count);
             inventoryItem1->m_isDirty = true;
-            inventoryItem2->m_isDirty = true;
+            item2Holder->m_isDirty = true;
 
             int8_t DstSlot = srlPacket.destSlot;
             int8_t DstInvSlot = srlPacket.destInventorySlot;
@@ -963,7 +963,7 @@ void WorldSession::handleSplitOpcode(WorldPacket& recvPacket)
                 else
                 {
                     // Find a free slot
-                    const auto slotResult = _player->getItemInterface()->FindFreeInventorySlot(inventoryItem2->getItemProperties());
+                    const auto slotResult = _player->getItemInterface()->FindFreeInventorySlot(item2Holder->getItemProperties());
                     if (slotResult.Result)
                     {
                         DstSlot = slotResult.Slot;
@@ -973,22 +973,19 @@ void WorldSession::handleSplitOpcode(WorldPacket& recvPacket)
 
                 if (DstSlot == ITEM_NO_SLOT_AVAILABLE)
                 {
-                    _player->getItemInterface()->buildInventoryChangeError(inventoryItem1, inventoryItem2, INV_ERR_COULDNT_SPLIT_ITEMS);
-                    inventoryItem2->deleteFromDB();
-                    inventoryItem2->deleteMe();
-                    inventoryItem2 = nullptr;
+                    _player->getItemInterface()->buildInventoryChangeError(inventoryItem1, item2Holder.get(), INV_ERR_COULDNT_SPLIT_ITEMS);
+                    item2Holder->deleteFromDB();
+                    item2Holder = nullptr;
                 }
             }
 
-            const auto addItemResult = _player->getItemInterface()->SafeAddItem(inventoryItem2, DstInvSlot, DstSlot);
+            const auto [addItemResult, returnedItem] = _player->getItemInterface()->SafeAddItem(std::move(item2Holder), DstInvSlot, DstSlot);
             if (addItemResult == ADD_ITEM_RESULT_ERROR)
             {
                 sLogger.failure("Error while adding item to dstslot");
-                if (inventoryItem2 != nullptr)
+                if (returnedItem != nullptr)
                 {
-                    inventoryItem2->deleteFromDB();
-                    inventoryItem2->deleteMe();
-                    inventoryItem2 = nullptr;
+                    returnedItem->deleteFromDB();
                 };
             }
         }
@@ -1190,14 +1187,14 @@ void WorldSession::handleDestroyItemOpcode(WorldPacket& recvPacket)
             _player->m_charters[charterType] = nullptr;
         }
 
-        Item* pItem = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(srlPacket.srcInventorySlot, srlPacket.srcSlot, false);
+        auto pItem = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(srlPacket.srcInventorySlot, srlPacket.srcSlot, false);
         if (!pItem)
             return;
 
         for (uint8_t i = 0; i < CURRENT_SPELL_MAX; ++i)
         {
             if (_player->getCurrentSpell(CurrentSpellType(i)) != nullptr
-                && _player->getCurrentSpell(CurrentSpellType(i))->getItemCaster() == pItem)
+                && _player->getCurrentSpell(CurrentSpellType(i))->getItemCaster() == pItem.get())
             {
                 _player->getCurrentSpell(CurrentSpellType(i))->setItemCaster(nullptr);
                 _player->interruptSpellWithSpellType(CurrentSpellType(i));
@@ -1205,7 +1202,6 @@ void WorldSession::handleDestroyItemOpcode(WorldPacket& recvPacket)
         }
 
         pItem->deleteFromDB();
-        pItem->deleteMe();
     }
 }
 
@@ -1278,17 +1274,17 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
                     return;
                 }
 
-                offhandweapon = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET,
+                auto offhandWeaponHolder = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET,
                     EQUIPMENT_SLOT_OFFHAND, false);
-                if (offhandweapon == nullptr)
+                if (offhandWeaponHolder == nullptr)
                     return; // should never happen
 
                 // shouldn't happen either.
-                if (!_player->getItemInterface()->SafeAddItem(offhandweapon, result.ContainerSlot, result.Slot)
-                    && !_player->getItemInterface()->AddItemToFreeSlot(offhandweapon))
+                auto [addResult, returnedItem] = _player->getItemInterface()->SafeAddItem(std::move(offhandWeaponHolder), result.ContainerSlot, result.Slot);
+                if (!addResult)
                 {
-                    offhandweapon->deleteMe();
-                    offhandweapon = nullptr;
+                    // TODO: if add fails, should item be sent in mail? now it's destroyed
+                    _player->getItemInterface()->AddItemToFreeSlot(std::move(returnedItem));
                 }
             }
         }
@@ -1307,17 +1303,17 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
                     return;
                 }
 
-                mainhandweapon = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET,
+                auto mainhandWeaponHolder = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET,
                     EQUIPMENT_SLOT_MAINHAND, false);
-                if (mainhandweapon == nullptr)
+                if (mainhandWeaponHolder == nullptr)
                     return; // should never happen
 
                 // shouldn't happen either.
-                if (!_player->getItemInterface()->SafeAddItem(mainhandweapon, result.ContainerSlot, result.Slot)
-                    && !_player->getItemInterface()->AddItemToFreeSlot(mainhandweapon))
+                auto [addResult, returnedItem] = _player->getItemInterface()->SafeAddItem(std::move(mainhandWeaponHolder), result.ContainerSlot, result.Slot);
+                if (!addResult)
                 {
-                    mainhandweapon->deleteMe();
-                    mainhandweapon = nullptr;
+                    // TODO: if add fails, should item be sent in mail? now it's destroyed
+                    _player->getItemInterface()->AddItemToFreeSlot(std::move(returnedItem));
                 }
             }
         }
@@ -1350,27 +1346,24 @@ void WorldSession::handleAutoEquipItemOpcode(WorldPacket& recvPacket)
     }
     else
     {
-        eitem = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(srlPacket.srcInventorySlot, srlPacket.srcSlot, false);
-        Item* oitem = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET, Slot, false);
-        AddItemResult result;
+        auto eItemHolder = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(srlPacket.srcInventorySlot, srlPacket.srcSlot, false);
+        auto oitem = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET, Slot, false);
         if (oitem != nullptr)
         {
-            result = _player->getItemInterface()->SafeAddItem(oitem, srlPacket.srcInventorySlot, srlPacket.srcSlot);
+            const auto [result, _] = _player->getItemInterface()->SafeAddItem(std::move(oitem), srlPacket.srcInventorySlot, srlPacket.srcSlot);
             if (!result)
             {
+                // TODO: if add fails, should item be sent in mail? now it's destroyed
                 sLogger.failure("Error while adding item to SrcSlot");
-                oitem->deleteMe();
-                oitem = nullptr;
             }
         }
-        if (eitem != nullptr)
+        if (eItemHolder != nullptr)
         {
-            result = _player->getItemInterface()->SafeAddItem(eitem, INVENTORY_SLOT_NOT_SET, Slot);
+            const auto [result, _] = _player->getItemInterface()->SafeAddItem(std::move(eItemHolder), INVENTORY_SLOT_NOT_SET, Slot);
             if (!result)
             {
+                // TODO: if add fails, should item be sent in mail? now it's destroyed
                 sLogger.failure("Error while adding item to Slot");
-                eitem->deleteMe();
-                eitem = nullptr;
                 return;
             }
         }
@@ -1454,9 +1447,10 @@ void WorldSession::handleAutoEquipItemSlotOpcode(WorldPacket& recvPacket)
                     _player->getItemInterface()->buildInventoryChangeError(offHand, nullptr, INV_ERR_BAG_FULL);
                     return;
                 }
-                mainHand = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET,
+                auto offHandHolder = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET,
                     EQUIPMENT_SLOT_OFFHAND, false);
-                _player->getItemInterface()->AddItemToFreeSlot(offHand);
+                // TODO: if add fails, should item be sent in mail? now it's destroyed
+                _player->getItemInterface()->AddItemToFreeSlot(std::move(offHandHolder));
                 _player->getItemInterface()->SwapItemSlots(srcSlot, srlPacket.destSlot);   // Now swap Main hand with 2H weapon.
             }
             else
@@ -1804,16 +1798,16 @@ void WorldSession::handleBuyBackOpcode(WorldPacket& recvPacket)
 
         int32_t coins = cost * -1;
         _player->modCoinage(coins);
-        _player->getItemInterface()->RemoveBuyBackItem(srlPacket.buybackSlot);
+        auto itemHolder = _player->getItemInterface()->RemoveBuyBackItem(srlPacket.buybackSlot);
 
         if (!add)
         {
             it->m_isDirty = true;            // save the item again on logout
-            AddItemResult result = _player->getItemInterface()->AddItemToFreeSlot(it);
+            const auto [result, _] = _player->getItemInterface()->AddItemToFreeSlot(std::move(itemHolder));
             if (!result)
             {
+                // TODO: if add fails, should item be sent in mail? now it's destroyed
                 sLogger.failure("Error while adding item to free slot");
-                it->deleteMe();
             }
         }
         else
@@ -1823,7 +1817,6 @@ void WorldSession::handleBuyBackOpcode(WorldPacket& recvPacket)
 
             // delete the item
             it->deleteFromDB();
-            it->deleteMe();
         }
 
 #if VERSION_STRING < Cata
@@ -1926,11 +1919,11 @@ void WorldSession::handleSellItemOpcode(WorldPacket& recvPacket)
     {
         //removing the item from the char's inventory
         //again to remove item from slot
-        item = _player->getItemInterface()->SafeRemoveAndRetreiveItemByGuid(srlPacket.itemGuid, false);
-        if (item)
+        auto itemHolder = _player->getItemInterface()->SafeRemoveAndRetreiveItemByGuid(srlPacket.itemGuid, false);
+        if (itemHolder)
         {
-            _player->getItemInterface()->AddBuyBackItem(item, it->SellPrice * quantity);
-            item->deleteFromDB();
+            itemHolder->deleteFromDB();
+            _player->getItemInterface()->AddBuyBackItem(std::move(itemHolder), it->SellPrice * quantity);
         }
     }
 
@@ -2072,14 +2065,16 @@ void WorldSession::handleBuyItemInSlotOpcode(WorldPacket& recvPacket)
     }
     else
     {
-        pItem = sObjectMgr.createItem(it->ItemId, _player);
-        if (pItem)
+        auto itemHolder = sObjectMgr.createItem(it->ItemId, _player);
+        if (itemHolder)
         {
-            pItem->setStackCount(count_per_stack);
-            pItem->m_isDirty = true;
-            if (!_player->getItemInterface()->SafeAddItem(pItem, bagslot, slot))
+            itemHolder->setStackCount(count_per_stack);
+            itemHolder->m_isDirty = true;
+            pItem = itemHolder.get();
+            const auto [result, returnedItem] = _player->getItemInterface()->SafeAddItem(std::move(itemHolder), bagslot, slot);
+            if (!result)
             {
-                pItem->deleteMe();
+                // TODO: if add fails, should item be sent in mail? now it's destroyed
                 return;
             }
         }
@@ -2196,24 +2191,22 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
 
     if (!addItem)
     {
-        Item* item = sObjectMgr.createItem(creature_item.itemid, _player);
-        if (!item)
+        auto itemHolder = sObjectMgr.createItem(creature_item.itemid, _player);
+        if (!itemHolder)
         {
             _player->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_DONT_OWN_THAT_ITEM);
             return;
         }
 
-        item->m_isDirty = true;
-        item->setStackCount(srlPacket.amount * creature_item.amount);
+        itemHolder->m_isDirty = true;
+        itemHolder->setStackCount(srlPacket.amount * creature_item.amount);
 
         if (slotResult.ContainerSlot == ITEM_NO_SLOT_AVAILABLE)
         {
-            const auto addItemResult = _player->getItemInterface()->SafeAddItem(item, INVENTORY_SLOT_NOT_SET, slotResult.Slot);
-            if (!addItemResult)
-            {
-                item->deleteMe();
-            }
-            else
+            auto* item = itemHolder.get();
+            // TODO: if add fails, should item be sent in mail? now it's destroyed
+            const auto [addItemResult, _] = _player->getItemInterface()->SafeAddItem(std::move(itemHolder), INVENTORY_SLOT_NOT_SET, slotResult.Slot);
+            if (addItemResult == ADD_ITEM_RESULT_OK)
             {
                 if (item->isEligibleForRefund() && item_extended_cost != nullptr)
                 {
@@ -2228,11 +2221,10 @@ void WorldSession::handleBuyItemOpcode(WorldPacket& recvPacket)
         {
             if (Item* bag = _player->getItemInterface()->GetInventoryItem(slotResult.ContainerSlot))
             {
-                if (!dynamic_cast<Container*>(bag)->addItem(slotResult.Slot, item))
-                {
-                    item->deleteMe();
-                }
-                else
+                auto* item = itemHolder.get();
+                // TODO: if add fails, should item be sent in mail? now it's destroyed
+                const auto [addItemResult, _] = dynamic_cast<Container*>(bag)->addItem(slotResult.Slot, std::move(itemHolder));
+                if (addItemResult == ADD_ITEM_RESULT_OK)
                 {
                     if (item->isEligibleForRefund() && item_extended_cost != nullptr)
                     {
@@ -2459,7 +2451,6 @@ void WorldSession::handleAutoStoreBagItemOpcode(WorldPacket& recvPacket)
 
     //source item exists
     int8_t NewSlot = 0;
-    AddItemResult result;
 
     if (srcitem)
     {
@@ -2483,15 +2474,15 @@ void WorldSession::handleAutoStoreBagItemOpcode(WorldPacket& recvPacket)
             else
             {
                 //free space found, remove item and add it to the destination
-                srcitem = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(srlPacket.srcContainerSlot,
+                auto srcItemHolder = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(srlPacket.srcContainerSlot,
                     srlPacket.srcSlot, false);
-                if (srcitem)
+                if (srcItemHolder)
                 {
-                    result = _player->getItemInterface()->SafeAddItem(srcitem, INVENTORY_SLOT_NOT_SET, NewSlot);
+                    const auto [result, _] = _player->getItemInterface()->SafeAddItem(std::move(srcItemHolder), INVENTORY_SLOT_NOT_SET, NewSlot);
                     if (!result)
                     {
+                        // TODO: if add fails, should item be sent in mail? now it's destroyed
                         sLogger.failure("Error while adding item to newslot");
-                        srcitem->deleteMe();
                         return;
                     }
                 }
@@ -2524,15 +2515,15 @@ void WorldSession::handleAutoStoreBagItemOpcode(WorldPacket& recvPacket)
                     }
                     else
                     {
-                        srcitem = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(srlPacket.srcContainerSlot,
+                        auto srcItemHolder = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(srlPacket.srcContainerSlot,
                             srlPacket.srcSlot, false);
-                        if (srcitem != nullptr)
+                        if (srcItemHolder != nullptr)
                         {
-                            result = _player->getItemInterface()->SafeAddItem(srcitem, srlPacket.dstContainerSlot, NewSlot);
+                            const auto [result, _] = _player->getItemInterface()->SafeAddItem(std::move(srcItemHolder), srlPacket.dstContainerSlot, NewSlot);
                             if (!result)
                             {
+                                // TODO: if add fails, should item be sent in mail? now it's destroyed
                                 sLogger.failure("Error while adding item to newslot");
-                                srcitem->deleteMe();
                             }
                         }
                     }
@@ -2669,16 +2660,17 @@ void WorldSession::handleAutoBankItemOpcode(WorldPacket& recvPacket)
     }
     else
     {
-        eitem = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(srlPacket.srcInventorySlot,
+        auto itemHolder = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(srlPacket.srcInventorySlot,
             srlPacket.srcSlot, false);
-        if (eitem == nullptr)
+        if (itemHolder == nullptr)
             return;
 
-        if (!_player->getItemInterface()->SafeAddItem(eitem, slotresult.ContainerSlot, slotresult.Slot))
+        auto [result, returnedItem] = _player->getItemInterface()->SafeAddItem(std::move(itemHolder), slotresult.ContainerSlot, slotresult.Slot);
+        if (!result)
         {
             sLogger.failure("Error while adding item to bank bag!");
-            if (!_player->getItemInterface()->SafeAddItem(eitem, srlPacket.srcInventorySlot, srlPacket.srcSlot))
-                eitem->deleteMe();
+            // TODO: if add fails, should item be sent in mail? now it's destroyed
+            _player->getItemInterface()->SafeAddItem(std::move(returnedItem), srlPacket.srcInventorySlot, srlPacket.srcSlot);
         }
     }
 }
@@ -2706,16 +2698,17 @@ void WorldSession::handleAutoStoreBankItemOpcode(WorldPacket& recvPacket)
     }
     else
     {
-        eitem = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(srlPacket.srcInventorySlot,
+        auto itemHolder = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(srlPacket.srcInventorySlot,
             srlPacket.srcSlot, false);
-        if (eitem == nullptr)
+        if (itemHolder == nullptr)
             return;
 
-        if (!_player->getItemInterface()->AddItemToFreeSlot(eitem))
+        auto [result, returnedItem] = _player->getItemInterface()->AddItemToFreeSlot(std::move(itemHolder));
+        if (!result)
         {
             sLogger.failure("Error while adding item from one of the bank bags to the player bag!");
-            if (!_player->getItemInterface()->SafeAddItem(eitem, srlPacket.srcInventorySlot, srlPacket.srcSlot))
-                eitem->deleteMe();
+            // TODO: if add fails, should item be sent in mail? now it's destroyed
+            _player->getItemInterface()->SafeAddItem(std::move(returnedItem), srlPacket.srcInventorySlot, srlPacket.srcSlot);
         }
     }
 }
@@ -2850,12 +2843,12 @@ void WorldSession::handleInsertGemOpcode(WorldPacket& recvPacket)
 #endif
             }
 
-            it = itemi->SafeRemoveAndRetreiveItemByGuid(srlPacket.gemGuid[i], true);
-            if (!it)
+            auto itemHolder = itemi->SafeRemoveAndRetreiveItemByGuid(srlPacket.gemGuid[i], true);
+            if (!itemHolder)
                 return; //someone sending hacked packets to crash server
 
-            gem_properties = sGemPropertiesStore.lookupEntry(it->getItemProperties()->GemProperties);
-            it->deleteMe();
+            gem_properties = sGemPropertiesStore.lookupEntry(itemHolder->getItemProperties()->GemProperties);
+            itemHolder = nullptr;
 
             if (!gem_properties)
                 continue;
@@ -3077,14 +3070,15 @@ void WorldSession::handleEquipmentSetUse(WorldPacket& data)
             const int8_t equipError = _player->getItemInterface()->CanEquipItemInSlot(destBag, destSlot, item->getItemProperties(), false, false);
             if (equipError == INV_ERR_OK)
             {
-                dstslotitem = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(SrcBagID, SrcSlotID, false);
-                const auto itemResult = _player->getItemInterface()->SafeAddItem(item, destBag, destSlot);
+                auto srcItemHolder = _player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(SrcBagID, SrcSlotID, false);
+                auto [itemResult, returnedItem] = _player->getItemInterface()->SafeAddItem(std::move(srcItemHolder), destBag, destSlot);
                 if (itemResult != ADD_ITEM_RESULT_OK)
                 {
-                    const auto addItemResult = _player->getItemInterface()->SafeAddItem(item, SrcBagID, SrcSlotID);
+                    const auto [addItemResult, returnedItem2] = _player->getItemInterface()->SafeAddItem(std::move(returnedItem), SrcBagID, SrcSlotID);
                     if (!addItemResult)
                     {
-                        sLogger.failure("handleEquipmentSetUse", "Error while adding item {} to player {} twice", item->getEntry(), _player->getName());
+                        // TODO: if add fails, should item be sent in mail? now it's destroyed
+                        sLogger.failure("handleEquipmentSetUse", "Error while adding item {} to player {} twice", returnedItem2->getEntry(), _player->getName());
                         result = 0;
                     }
                     else

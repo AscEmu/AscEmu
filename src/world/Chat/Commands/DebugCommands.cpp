@@ -114,7 +114,7 @@ bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldS
             if (map_cell != nullptr)
                 map_cell->setLoaded();
 
-            for (auto aiSpells : creature->getAIInterface()->mCreatureAISpells)
+            for (const auto& aiSpells : creature->getAIInterface()->mCreatureAISpells)
             {
                 if (aiSpells->fromDB)
                     continue;

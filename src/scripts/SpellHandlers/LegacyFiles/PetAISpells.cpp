@@ -121,43 +121,43 @@ public:
                     getCreature()->setMaxPower(POWER_TYPE_MANA, unitOwner->getMaxPower(POWER_TYPE_MANA));
                     getCreature()->setPower(POWER_TYPE_MANA, unitOwner->getPower(POWER_TYPE_MANA));
 
-                    AI_Spell sp1{};
-                    sp1.entryId = 59638;
-                    sp1.spell = sSpellMgr.getSpellInfo(sp1.entryId);
-                    if (!sp1.spell)
+                    auto sp1 = std::make_unique<AI_Spell>();
+                    sp1->entryId = 59638;
+                    sp1->spell = sSpellMgr.getSpellInfo(sp1->entryId);
+                    if (!sp1->spell)
                         return;
 
-                    sp1.spellType = STYPE_DAMAGE;
-                    sp1.agent = AGENT_SPELL;
-                    sp1.spelltargetType = TTYPE_SINGLETARGET;
-                    sp1.cooldown = 0;
-                    sp1.cooldowntime = 0;
-                    sp1.Misc2 = 0;
-                    sp1.procCount = 0;
-                    sp1.procChance = 100;
-                    sp1.minrange = sp1.spell->getMinRange();
-                    sp1.maxrange = sp1.spell->getMaxRange();
+                    sp1->spellType = STYPE_DAMAGE;
+                    sp1->agent = AGENT_SPELL;
+                    sp1->spelltargetType = TTYPE_SINGLETARGET;
+                    sp1->cooldown = 0;
+                    sp1->cooldowntime = 0;
+                    sp1->Misc2 = 0;
+                    sp1->procCount = 0;
+                    sp1->procChance = 100;
+                    sp1->minrange = sp1->spell->getMinRange();
+                    sp1->maxrange = sp1->spell->getMaxRange();
 
-                    getCreature()->getAIInterface()->addSpellToList(&sp1);
+                    getCreature()->getAIInterface()->addSpellToList(std::move(sp1));
 
-                    AI_Spell sp2{};
-                    sp2.entryId = 59637;
-                    sp2.spell = sSpellMgr.getSpellInfo(sp2.entryId);
-                    if (!sp2.spell)
+                    auto sp2 = std::make_unique<AI_Spell>();
+                    sp2->entryId = 59637;
+                    sp2->spell = sSpellMgr.getSpellInfo(sp2->entryId);
+                    if (!sp2->spell)
                         return;
 
-                    sp2.spellType = STYPE_DAMAGE;
-                    sp2.agent = AGENT_SPELL;
-                    sp2.spelltargetType = TTYPE_SINGLETARGET;
-                    sp2.cooldown = 0;
-                    sp2.cooldowntime = 0;
-                    sp2.Misc2 = 0;
-                    sp2.procCount = 0;
-                    sp2.procChance = 100;
-                    sp2.minrange = sp2.spell->getMinRange();
-                    sp2.maxrange = sp2.spell->getMaxRange();
+                    sp2->spellType = STYPE_DAMAGE;
+                    sp2->agent = AGENT_SPELL;
+                    sp2->spelltargetType = TTYPE_SINGLETARGET;
+                    sp2->cooldown = 0;
+                    sp2->cooldowntime = 0;
+                    sp2->Misc2 = 0;
+                    sp2->procCount = 0;
+                    sp2->procChance = 100;
+                    sp2->minrange = sp2->spell->getMinRange();
+                    sp2->maxrange = sp2->spell->getMaxRange();
 
-                    getCreature()->getAIInterface()->addSpellToList(&sp2);
+                    getCreature()->getAIInterface()->addSpellToList(std::move(sp2));
                 }
             }
         }

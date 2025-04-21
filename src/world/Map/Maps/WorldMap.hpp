@@ -77,7 +77,7 @@ struct RespawnInfo
 
 struct CompareRespawnInfo
 {
-    bool operator()(RespawnInfo* a, RespawnInfo* b)
+    bool operator()(std::unique_ptr<RespawnInfo> const& a, std::unique_ptr<RespawnInfo> const& b)
     {
         if (a == b)
             return false;
@@ -104,12 +104,12 @@ inline bool operator==(const RespawnInfo& a, const RespawnInfo& b)
     return true;
 }
 
-class respawnQueue : public std::priority_queue<RespawnInfo*, std::vector<RespawnInfo*>, CompareRespawnInfo>
+class respawnQueue : public std::priority_queue<std::unique_ptr<RespawnInfo>, std::vector<std::unique_ptr<RespawnInfo>>, CompareRespawnInfo>
 {
 public:
-    bool remove(RespawnInfo* value)
+    bool remove(RespawnInfo const* value)
     {
-        auto it = std::find(this->c.begin(), this->c.end(), value);
+        auto it = std::find_if(this->c.begin(), this->c.end(), [value](std::unique_ptr<RespawnInfo> const& respawn) { return respawn.get() == value; });
         if (it != this->c.end())
         {
             this->c.erase(it);
@@ -169,7 +169,7 @@ public:
 
     void startMapThread();
     void runThread();
-    void shutdownMapThread(bool killThreadOnly = false);
+    void shutdownMapThread();
     void unsafeKillMapThread();
     bool isMapReadyForDelete() const;
 
@@ -244,7 +244,7 @@ public:
     float getGameObjectFloor(uint32_t phasemask, LocationVector pos, float maxSearchDist = 50.0f) const;
 
     // Terrain
-    TerrainHolder* getTerrain() const { return _terrain; }
+    TerrainHolder* getTerrain() const { return _terrain.get(); }
     float getWaterOrGroundLevel(uint32_t phasemask, LocationVector const& pos, float* ground = nullptr, bool swim = false, float collisionHeight = 2.03128f);
     float getGridHeight(float x, float y) const;
     float getHeight(LocationVector const& pos, bool vmap = true, float maxSearchDist = 50.0f) const;
@@ -365,14 +365,12 @@ public:
 
     void unloadAllRespawnInfos();
 
-    void deleteRespawn(RespawnInfo* info);
+    void deleteRespawn(RespawnInfo const* info);
     void deleteRespawnFromDB(SpawnObjectType type, uint32_t spawnId);
 
     void processRespawns();
     bool checkRespawn(RespawnInfo* info);
     void doRespawn(SpawnObjectType type, Object* obj,uint32_t spawnId, float cellX, float cellY);
-
-    void getRespawnInfo(std::vector<RespawnInfo*>& respawnData, SpawnObjectTypeMask types) const;
     RespawnInfo* getRespawnInfo(SpawnObjectType type, uint32_t spawnId) const;
 
     respawnQueue _respawnTimes;
@@ -437,10 +435,10 @@ private:
     bool m_terminateThread = false;
 
     WorldStatesHandler worldstateshandler;
-    MapScriptInterface* ScriptInterface;
+    std::unique_ptr<MapScriptInterface> ScriptInterface;
     bool m_unloadPending = false;
 
-    TerrainHolder* _terrain = nullptr;
+    std::unique_ptr<TerrainHolder> _terrain;
     uint32_t _instanceId;
     uint8_t _instanceSpawnMode = InstanceDifficulty::Difficulties::DUNGEON_NORMAL;
 

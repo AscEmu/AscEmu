@@ -154,8 +154,8 @@ public:
 
 private:
     typedef std::vector<GuildRankInfo> GuildRankInfoStore;
-    typedef std::vector<GuildBankTab*> GuildBankTabsStore;
-    typedef std::map<uint32_t, class GuildMember*> GuildMembersStore;
+    typedef std::vector<std::unique_ptr<GuildBankTab>> GuildBankTabsStore;
+    typedef std::map<uint32_t, std::unique_ptr<GuildMember>> GuildMembersStore;
 
 protected:
     EmblemInfo m_emblemInfo;
@@ -165,9 +165,9 @@ protected:
     GuildMembersStore _guildMembersStore;
     GuildBankTabsStore _guildBankTabsStore;
 
-    GuildLogHolder* mEventLog;
-    GuildLogHolder* mBankEventLog[MAX_GUILD_BANK_TABS + 1];
-    GuildLogHolder* mNewsLog;
+    std::unique_ptr<GuildLogHolder> mEventLog;
+    std::array<std::unique_ptr<GuildLogHolder>, MAX_GUILD_BANK_TABS + 1> mBankEventLog;
+    std::unique_ptr<GuildLogHolder> mNewsLog;
 
 public:
     Guild();
@@ -310,21 +310,21 @@ private:
     inline uint8_t _getPurchasedTabsSize() const { return uint8_t(_guildBankTabsStore.size()); }
 
 public:
-    inline GuildBankTab* getBankTab(uint8_t tabId) { return tabId < _guildBankTabsStore.size() ? _guildBankTabsStore[tabId] : nullptr; }
+    inline GuildBankTab* getBankTab(uint8_t tabId) { return tabId < _guildBankTabsStore.size() ? _guildBankTabsStore[tabId].get() : nullptr; }
 
 private:
-    inline const GuildBankTab* getBankTab(uint8_t tabId) const { return tabId < _guildBankTabsStore.size() ? _guildBankTabsStore[tabId] : nullptr; }
+    inline const GuildBankTab* getBankTab(uint8_t tabId) const { return tabId < _guildBankTabsStore.size() ? _guildBankTabsStore[tabId].get() : nullptr; }
 
     inline const GuildMember* getMember(uint64_t guid) const
     {
         GuildMembersStore::const_iterator itr = _guildMembersStore.find(WoWGuid::getGuidLowPartFromUInt64(guid));
-        return itr != _guildMembersStore.end() ? itr->second : nullptr;
+        return itr != _guildMembersStore.end() ? itr->second.get() : nullptr;
     }
 
     inline GuildMember* getMember(uint64_t guid)
     {
         GuildMembersStore::iterator itr = _guildMembersStore.find(WoWGuid::getGuidLowPartFromUInt64(guid));
-        return itr != _guildMembersStore.end() ? itr->second : nullptr;
+        return itr != _guildMembersStore.end() ? itr->second.get() : nullptr;
     }
 
     inline GuildMember* getMember(std::string const& name)
@@ -333,7 +333,7 @@ private:
         {
             if (itr->second->getName() == name)
             {
-                return itr->second;
+                return itr->second.get();
             }
         }
 
@@ -344,7 +344,7 @@ public:
     std::vector<std::string> getMemberNameList() const
     {
         std::vector<std::string> memberNames;
-        for (const auto members : _guildMembersStore)
+        for (const auto& members : _guildMembersStore)
             memberNames.push_back(members.second->getName());
 
         return memberNames;

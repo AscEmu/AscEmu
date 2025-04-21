@@ -228,14 +228,14 @@ public:
         void _LoadQuests();
         bool HasQuests();
         bool HasQuest(uint32 id, uint32 type);
-        void AddQuest(QuestRelation* Q);
-        void DeleteQuest(QuestRelation* Q);
+        void AddQuest(std::unique_ptr<QuestRelation> Q);
+        void DeleteQuest(QuestRelation const* Q);
         QuestProperties const* FindQuest(uint32 quest_id, uint8 quest_relation);
         uint16 GetQuestRelation(uint32 quest_id);
         uint32 NumOfQuests();
-        std::list<QuestRelation*>::iterator QuestsBegin();
-        std::list<QuestRelation*>::iterator QuestsEnd();
-        void SetQuestList(std::list<QuestRelation*>* qst_lst);
+        std::list<std::unique_ptr<QuestRelation>>::iterator QuestsBegin();
+        std::list<std::unique_ptr<QuestRelation>>::iterator QuestsEnd();
+        void SetQuestList(std::list<std::unique_ptr<QuestRelation>>* qst_lst);
 
         uint32 GetHealthFromSpell();
 
@@ -395,7 +395,7 @@ public:
         uint32 mTaxiNode = 0;
 
         // Quest data
-        std::list<QuestRelation*>* m_quests = nullptr;
+        std::list<std::unique_ptr<QuestRelation>>* m_quests = nullptr;
 
         uint32 m_enslaveCount = 0;
         uint32 m_enslaveSpell = 0;

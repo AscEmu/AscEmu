@@ -185,7 +185,7 @@ bool handleOnlineGmsCommand(BaseConsole* baseConsole, int /*argumentCount*/, std
         const Player* player = playerPair.second;
         if (player->getSession()->hasPermissions())
         {
-            baseConsole->Write("| %21s | %15s | %03u ms |\r\n", player->getName().c_str(), player->getSession()->GetPermissions(),
+            baseConsole->Write("| %21s | %15s | %03u ms |\r\n", player->getName().c_str(), player->getSession()->GetPermissions().get(),
                 player->getSession()->GetLatency());
         }
     }

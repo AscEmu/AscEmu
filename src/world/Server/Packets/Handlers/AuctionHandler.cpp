@@ -45,7 +45,7 @@ void WorldSession::handleAuctionListItems(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AUCTION_LIST_OWNER_ITEMS {} (guidLow)", srlPacket.guid.getGuidLowPart());
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_AUCTION_LIST_ITEMS {} (guidLow)", srlPacket.guid.getGuidLowPart());
 
     const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
     if (creature == nullptr || creature->auctionHouse == nullptr)
@@ -121,9 +121,8 @@ void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
         return;
 
     const auto auctionHouse = creature->auctionHouse;
-    srlPacket.expireTime *= MINUTE;
 
-    switch (srlPacket.expireTime)
+    switch (srlPacket.expireTime * MINUTE)
     {
         case 1 * MIN_AUCTION_TIME:
         case 2 * MIN_AUCTION_TIME:
@@ -184,7 +183,7 @@ void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
 
         _player->modCoinage(-int32(item_deposit));
 
-        const auto item = _player->getItemInterface()->SafeRemoveAndRetreiveItemByGuid(srlPacket.itemGuids[i], false);
+        auto item = _player->getItemInterface()->SafeRemoveAndRetreiveItemByGuid(srlPacket.itemGuids[i], false);
         if (!item)
         {
             _player->sendAuctionCommandResult(nullptr, AUCTION_ACTION_CREATE, AUCTION_ERROR_ITEM);
@@ -206,7 +205,7 @@ void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
         auction->highestBidderGuid = 0;
         auction->Id = sAuctionMgr.generateAuctionId();
         auction->ownerGuid = _player->getGuidLow();
-        auction->auctionItem = item;
+        auction->auctionItem = std::move(item);
         auction->isRemoved = false;
         auction->removedType = AUCTION_REMOVE_EXPIRED;
         auction->depositAmount = item_deposit;

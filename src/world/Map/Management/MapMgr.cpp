@@ -24,6 +24,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Storage/WDB/WDBStructures.hpp"
 
+MapMgr::MapMgr() = default;
+MapMgr::~MapMgr() = default;
+
 MapMgr& MapMgr::getInstance()
 {
     static MapMgr mInstance;
@@ -60,7 +63,6 @@ void MapMgr::shutdown()
     for (auto map = m_WorldMaps.cbegin(); map != m_WorldMaps.cend();)
     {
         map->second->unloadAll(true);
-        delete map->second;
         map = m_WorldMaps.erase(map);
     }
 
@@ -68,15 +70,10 @@ void MapMgr::shutdown()
     for (auto ini = m_InstancedMaps.cbegin(); ini != m_InstancedMaps.cend();)
     {
         ini->second->unloadAll(true);
-        delete ini->second;
         ini = m_InstancedMaps.erase(ini);
     }
 
-    for (auto itr = m_pendingRemoveMaps.cbegin(); itr != m_pendingRemoveMaps.cend();)
-    {
-        delete itr->first;
-        itr = m_pendingRemoveMaps.erase(itr);
-    }
+    m_pendingRemoveMaps.clear();
 }
 
 void MapMgr::removeInstance(uint32_t instanceId)
@@ -89,24 +86,25 @@ void MapMgr::removeInstance(uint32_t instanceId)
     {
         if (ini->second->isUnloadPending())
         {
-            m_InstancedMaps.erase(ini);
+            auto&& mapHolder = std::move(m_InstancedMaps.extract(ini));
+            mapHolder.mapped()->shutdownMapThread();
+            // Wait for thread to finish its work before freeing memory
+            m_pendingRemoveMaps.emplace_back(std::move(mapHolder.mapped()));
         }
     }
 }
 
-void MapMgr::addMapToRemovePool(WorldMap* map, bool killThreadOnly)
+void MapMgr::addMapToRemovePool(WorldMap const* map)
 {
     std::scoped_lock<std::mutex> lock(m_mapsLock);
-    auto itr = m_pendingRemoveMaps.find(map);
-    if (itr != m_pendingRemoveMaps.cend())
+    auto itr = m_WorldMaps.find(map->getBaseMap()->getMapId());
+    if (itr != m_WorldMaps.cend())
     {
-        if (itr->second)
-            itr->second = killThreadOnly;
-
-        return;
+        auto&& mapHolder = std::move(m_WorldMaps.extract(itr));
+        mapHolder.mapped()->shutdownMapThread();
+        // Wait for thread to finish its work before freeing memory
+        m_pendingRemoveMaps.emplace_back(std::move(mapHolder.mapped()));
     }
-
-    m_pendingRemoveMaps.insert(std::make_pair(map, killThreadOnly));
 }
 
 void MapMgr::update()
@@ -114,15 +112,10 @@ void MapMgr::update()
     std::scoped_lock<std::mutex> lock(m_mapsLock);
     for (auto itr = m_pendingRemoveMaps.cbegin(); itr != m_pendingRemoveMaps.cend();)
     {
-        if (itr->first->isMapReadyForDelete())
-        {
-            if (itr->second)
-                itr->first->unsafeKillMapThread();
-            else
-                delete itr->first;
-
+        if ((*itr)->isMapReadyForDelete())
             itr = m_pendingRemoveMaps.erase(itr);
-        }
+        else
+            ++itr;
     }
 }
 
@@ -143,11 +136,11 @@ void MapMgr::createBaseMap(uint32_t mapId)
         if (mapInfo == nullptr)
             return;
 
-        m_BaseMaps[mapId] = new BaseMap(mapId, mapInfo, mapEntry);
+        m_BaseMaps.insert_or_assign(mapId, std::make_unique<BaseMap>(mapId, mapInfo, mapEntry));
 
         if (!mapEntry->instanceable())
         {
-            m_WorldMaps[mapId] = createWorldMap(mapId, worldConfig.server.mapUnloadTime * 1000);
+            m_WorldMaps.insert_or_assign(mapId, createWorldMap(mapId, worldConfig.server.mapUnloadTime * 1000));
         }
     }
 }
@@ -155,10 +148,10 @@ void MapMgr::createBaseMap(uint32_t mapId)
 BaseMap* MapMgr::findBaseMap(uint32_t mapId) const
 {
     const auto& iter = m_BaseMaps.find(mapId);
-    return (iter == m_BaseMaps.end() ? nullptr : iter->second);
+    return (iter == m_BaseMaps.end() ? nullptr : iter->second.get());
 }
 
-WorldMap* MapMgr::createWorldMap(uint32_t mapId, uint32_t unloadTime)
+std::unique_ptr<WorldMap> MapMgr::createWorldMap(uint32_t mapId, uint32_t unloadTime) const
 {
     const auto& baseMap = findBaseMap(mapId);
     if (baseMap == nullptr)
@@ -166,7 +159,7 @@ WorldMap* MapMgr::createWorldMap(uint32_t mapId, uint32_t unloadTime)
 
     sLogger.debug("MapMgr::createWorldMap Create Continent {} for Map {}", baseMap->getMapName(), mapId);
 
-    WorldMap* map = new WorldMap(baseMap, mapId, unloadTime, 0, InstanceDifficulty::Difficulties::DUNGEON_NORMAL);
+    auto map = std::make_unique<WorldMap>(baseMap, mapId, unloadTime, 0, InstanceDifficulty::Difficulties::DUNGEON_NORMAL);
 
     // Load Saved Respawns when existing
     map->loadRespawnTimes();
@@ -183,13 +176,13 @@ WorldMap* MapMgr::createWorldMap(uint32_t mapId, uint32_t unloadTime)
 WorldMap* MapMgr::findWorldMap(uint32_t mapid) const
 {
     const auto& iter = m_WorldMaps.find(mapid);
-    return (iter == m_WorldMaps.end() ? nullptr : iter->second);
+    return (iter == m_WorldMaps.end() ? nullptr : iter->second.get());
 }
 
 InstanceMap* MapMgr::findInstanceMap(uint32_t instanceId) const
 {
     const auto& iter = m_InstancedMaps.find(instanceId);
-    return (iter == m_InstancedMaps.end() ? nullptr : static_cast<InstanceMap*>(iter->second));
+    return (iter == m_InstancedMaps.end() ? nullptr : static_cast<InstanceMap*>(iter->second.get()));
 }
 
 std::list<InstanceMap*> MapMgr::findInstancedMaps(uint32_t mapId)
@@ -199,7 +192,7 @@ std::list<InstanceMap*> MapMgr::findInstancedMaps(uint32_t mapId)
     for (auto const& maps : m_InstancedMaps)
     {
         if (maps.second->getBaseMap()->getMapId() == mapId && maps.second->getBaseMap()->isDungeon())
-            list.push_back(static_cast<InstanceMap*>(maps.second));
+            list.push_back(static_cast<InstanceMap*>(maps.second.get()));
     }
 
     return list;
@@ -324,7 +317,7 @@ InstanceMap* MapMgr::createInstance(uint32_t mapId, uint32_t InstanceId, Instanc
 #endif
     sLogger.debug("MapMgr::createInstance Create {} map instance {} for {} created with difficulty {}", save ? "" : "new ", InstanceId, mapId, difficulty ? "heroic" : "normal");
 
-    InstanceMap* map = new InstanceMap(baseMap, mapId, worldConfig.server.mapUnloadTime * 1000, InstanceId, difficulty, InstanceTeam);
+    auto map = std::make_unique<InstanceMap>(baseMap, mapId, worldConfig.server.mapUnloadTime * 1000, InstanceId, difficulty, InstanceTeam);
 
     // Load Saved Respawns when existing
     map->loadRespawnTimes();
@@ -339,13 +332,18 @@ InstanceMap* MapMgr::createInstance(uint32_t mapId, uint32_t InstanceId, Instanc
     // In Instances we load all Cells
     map->updateAllCells(true);
 
+    // Save pointer to InstanceMap to avoid casting later -Appled
+    auto* instMap = map.get();
     // Add current Instance to our Active Instances
-    m_InstancedMaps[InstanceId] = map;
+    const auto [_, emplaced] = m_InstancedMaps.try_emplace(InstanceId, std::move(map));
+
+    if (!emplaced)
+        return nullptr;
 
     // Scheduling the new map for running
-    map->startMapThread();
+    instMap->startMapThread();
 
-    return map;
+    return instMap;
 }
 
 BattlegroundMap* MapMgr::createBattleground(uint32_t mapId)
@@ -366,7 +364,7 @@ BattlegroundMap* MapMgr::createBattleground(uint32_t mapId)
 
     uint8_t spawnMode = InstanceDifficulty::Difficulties::DUNGEON_NORMAL;
 
-    BattlegroundMap* map = new BattlegroundMap(baseMap, mapId, worldConfig.server.mapUnloadTime * 1000, newInstanceId, spawnMode);
+    auto map = std::make_unique<BattlegroundMap>(baseMap, mapId, worldConfig.server.mapUnloadTime * 1000, newInstanceId, spawnMode);
 
     // Initialize Map Script and Load Static Spawns
     map->initialize();
@@ -374,12 +372,17 @@ BattlegroundMap* MapMgr::createBattleground(uint32_t mapId)
     // In Battlegrounds we load all Cells
     map->updateAllCells(true);
 
-    m_InstancedMaps[newInstanceId] = map;
+    // Save pointer to BattlegroundMap to avoid casting later -Appled
+    auto* bgMap = map.get();
+    const auto [_, emplaced] = m_InstancedMaps.try_emplace(newInstanceId, std::move(map));
+
+    if (!emplaced)
+        return nullptr;
 
     // Scheduling the new map for running
-    map->startMapThread();
+    bgMap->startMapThread();
 
-    return map;
+    return bgMap;
 }
 
 WorldMap* MapMgr::createMap(uint32_t mapId, Player* player, uint32_t instanceId)

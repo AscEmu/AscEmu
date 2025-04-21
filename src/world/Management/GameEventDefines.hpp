@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 
@@ -134,7 +135,7 @@ struct EventGameObjectSpawnsQueryResult
     uint32_t state;
 };
 
-typedef std::map<uint32_t, GameEvent*> GameEvents;
+typedef std::map<uint32_t, std::unique_ptr<GameEvent>> GameEvents;
 typedef std::set<uint16_t> ActiveEvents;
 
 typedef std::map<uint32_t, uint32_t> NPCGuidList;

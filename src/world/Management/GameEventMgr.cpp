@@ -30,7 +30,7 @@ GameEvent* GameEventMgr::GetEventById(uint32 pEventId)
     if (rEvent == mGameEvents.end())
         return nullptr;
     else
-        return rEvent->second;
+        return rEvent->second.get();
 }
 
 void GameEventMgr::StartArenaEvents()
@@ -87,11 +87,9 @@ void GameEventMgr::LoadFromDB()
             dbResult.world_event = GameEventState(field[7].asUint8());
             dbResult.announce = field[8].asUint8();
 
-            GameEvent gameEvent = GameEvent(dbResult);
-
             //if (gameEvent.isValid())
             //{
-                mGameEvents.insert(std::make_pair(dbResult.entry, new GameEvent(dbResult)));
+                mGameEvents.emplace(dbResult.entry, std::make_unique<GameEvent>(dbResult));
                 sLogger.debug("GameEventMgr : {}, Entry: {}, State: {}, Holiday: {} loaded", dbResult.description, dbResult.entry, dbResult.world_event, dbResult.holiday_id);
                 ++pCount;
             //}
@@ -314,9 +312,9 @@ void GameEventMgr::GameEventMgrThread::Update()
     //sLogger.info("GameEventMgr : Tick!");
     auto now = time(0);
 
-    for (auto gameEventPair : sGameEventMgr.mGameEvents)
+    for (const auto& gameEventPair : sGameEventMgr.mGameEvents)
     {
-        GameEvent* gameEvent = gameEventPair.second;
+        GameEvent* gameEvent = gameEventPair.second.get();
 
         // Don't alter manual events
         if (!gameEvent->isValid())

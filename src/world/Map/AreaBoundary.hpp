@@ -7,6 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "LocationVector.h"
 
+#include <memory>
+
 class SERVER_DECL AreaBoundary
 {
 public:
@@ -141,13 +143,13 @@ private:
 class SERVER_DECL BoundaryUnionBoundary : public AreaBoundary
 {
 public:
-    BoundaryUnionBoundary(AreaBoundary const* b1, AreaBoundary const* b2, bool isInverted = false);
+    BoundaryUnionBoundary(std::unique_ptr<AreaBoundary const> b1, std::unique_ptr<AreaBoundary const> b2, bool isInverted = false);
 
 protected:
     virtual ~BoundaryUnionBoundary();
     bool isWithinBoundaryArea(LocationVector const* pos) const override;
 
 private:
-    AreaBoundary const* const _b1;
-    AreaBoundary const* const _b2;
+    std::unique_ptr<AreaBoundary const> const _b1;
+    std::unique_ptr<AreaBoundary const> const _b2;
 };

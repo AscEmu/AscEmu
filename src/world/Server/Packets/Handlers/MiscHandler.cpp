@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/WeatherMgr.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/Loot/LootMgr.hpp"
-#include "Management/Loot/LootRoll.hpp"
+#include "Management/Loot/LootItem.hpp"
 #include "Macros/CorpseMacros.hpp"
 #include "Management/Battleground/Battleground.hpp"
 #include "Server/WorldSocket.h"
@@ -580,7 +580,7 @@ void WorldSession::handleLootRollOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_LOOT_ROLL: {} (objectGuid) {} (slot) {} (choice)", srlPacket.objectGuid.getGuidLow(), srlPacket.slot, srlPacket.choice);
 
-    LootRoll* lootRoll = nullptr;
+    LootItem* lootItem = nullptr;
 
     const HighGuid guidType = srlPacket.objectGuid.getHigh();
 
@@ -600,7 +600,7 @@ void WorldSession::handleLootRollOpcode(WorldPacket& recvPacket)
                 return;
 
             if (gameObject->getGoType() == GAMEOBJECT_TYPE_CHEST)
-                lootRoll = gameObjectLootable->loot.items[srlPacket.slot].roll;
+                lootItem = &gameObjectLootable->loot.items[srlPacket.slot];
         } break;
         case HighGuid::Unit:
         {
@@ -611,16 +611,16 @@ void WorldSession::handleLootRollOpcode(WorldPacket& recvPacket)
             if (srlPacket.slot >= creature->loot.items.size() || creature->loot.items.empty())
                 return;
 
-            lootRoll = creature->loot.items[srlPacket.slot].roll;
+            lootItem = &creature->loot.items[srlPacket.slot];
         } break;
         default:
             return;
     }
 
-    if (lootRoll == nullptr)
+    if (lootItem == nullptr)
         return;
 
-    lootRoll->playerRolled(_player, srlPacket.choice);
+    lootItem->playerRolled(_player, srlPacket.choice);
 }
 
 void WorldSession::handleOpenItemOpcode(WorldPacket& recvPacket)
@@ -842,19 +842,19 @@ void WorldSession::handleUpdateAccountData(WorldPacket& recvPacket)
     }
 
     size_t receivedPackedSize = recvPacket.size() - 8;
-    auto data = new char[srlPacket.uiDecompressedSize + 1];
-    memset(data, 0, srlPacket.uiDecompressedSize + 1);
+    auto data = std::make_unique<char[]>(srlPacket.uiDecompressedSize + 1);
+    memset(data.get(), 0, srlPacket.uiDecompressedSize + 1);
 
     if (srlPacket.uiDecompressedSize > receivedPackedSize)
     {
-        const int32_t ZlibResult = uncompress(reinterpret_cast<uint8_t*>(data), &uid, recvPacket.contents() + 8,
+        const int32_t ZlibResult = uncompress(reinterpret_cast<uint8_t*>(data.get()), &uid, recvPacket.contents() + 8,
             static_cast<uLong>(receivedPackedSize));
 
         switch (ZlibResult)
         {
             case Z_OK:                  //0 no error decompression is OK
             {
-                SetAccountData(srlPacket.uiId, data, false, srlPacket.uiDecompressedSize);
+                SetAccountData(srlPacket.uiId, std::move(data), false, srlPacket.uiDecompressedSize);
                 sLogger.debug("Successfully decompressed account data {} for {}, and updated storage array.",
                     srlPacket.uiId, _player->getName());
             } break;
@@ -865,13 +865,11 @@ void WorldSession::handleUpdateAccountData(WorldPacket& recvPacket)
             case Z_BUF_ERROR:           //-5
             case Z_VERSION_ERROR:       //-6
             {
-                delete[] data;
                 sLogger.failure("Decompression of account data {} for {} FAILED.", srlPacket.uiId, _player->getName());
             } break;
 
             default:
             {
-                delete[] data;
                 sLogger.failure("Decompression gave a unknown error: {:x}, of account data {} for {} FAILED.",
                     ZlibResult, srlPacket.uiId, _player->getName());
             } break;
@@ -879,8 +877,8 @@ void WorldSession::handleUpdateAccountData(WorldPacket& recvPacket)
     }
     else
     {
-        memcpy(data, recvPacket.contents() + 8, srlPacket.uiDecompressedSize);
-        SetAccountData(srlPacket.uiId, data, false, srlPacket.uiDecompressedSize);
+        memcpy(data.get(), recvPacket.contents() + 8, srlPacket.uiDecompressedSize);
+        SetAccountData(srlPacket.uiId, std::move(data), false, srlPacket.uiDecompressedSize);
     }
 
 #if VERSION_STRING > TBC
@@ -922,7 +920,7 @@ void WorldSession::handleRequestAccountData(WorldPacket& recvPacket)
             data.resize(accountDataEntry->sz + 800);
 
             uLongf destSize;
-            if (compress(data.contents() + (sizeof(uint32_t) * 2), &destSize, reinterpret_cast<const uint8_t*>(accountDataEntry->data), accountDataEntry->sz) != Z_OK)
+            if (compress(data.contents() + (sizeof(uint32_t) * 2), &destSize, reinterpret_cast<const uint8_t*>(accountDataEntry->data.get()), accountDataEntry->sz) != Z_OK)
             {
                 sLogger.debug("CMSG_REQUEST_ACCOUNT_DATA: Error while compressing data");
                 return;
@@ -932,7 +930,7 @@ void WorldSession::handleRequestAccountData(WorldPacket& recvPacket)
         }
         else
         {
-            data.append(accountDataEntry->data, accountDataEntry->sz);
+            data.append(accountDataEntry->data.get(), accountDataEntry->sz);
         }
     }
 
@@ -1450,7 +1448,7 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
 
     uint32_t count = recvPacket.readBits(23);
 
-    ObjectGuid* guids = new ObjectGuid[count];
+    auto guids = std::make_unique<ObjectGuid[]>(count);
     for (uint32_t i = 0; i < count; ++i)
     {
         guids[i][0] = recvPacket.readBit();
@@ -1499,7 +1497,7 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
 
     uint32_t count = recvPacket.readBits(21);
 
-    ObjectGuid* guids = new ObjectGuid[count];
+    auto guids = std::make_unique<ObjectGuid[]>(count);
     for (uint32_t i = 0; i < count; ++i)
     {
         guids[i][6] = recvPacket.readBit();
@@ -1548,8 +1546,6 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
         SendPacket(&data);
     }
 #endif
-
-    delete[] guids;
 #endif
 }
 

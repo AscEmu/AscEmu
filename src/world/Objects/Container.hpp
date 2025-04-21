@@ -20,8 +20,10 @@ public:
     void loadFromDB(Field* fields);
     void saveToDB(int8_t slot, bool first, QueryBuffer* buf);
 
-    bool addItem(int16_t slot, Item* item);
-    bool addItemToFreeSlot(Item* item, uint32_t* r_slot);
+    // Returns item in tuple with result if failed to add item, nullptr on success
+    std::tuple<bool, std::unique_ptr<Item>> addItem(int16_t slot, std::unique_ptr<Item> itemHolder);
+    // Returns item in tuple with result if failed to add item, nullptr on success
+    std::tuple<bool, std::unique_ptr<Item>> addItemToFreeSlot(std::unique_ptr<Item> itemHolder, uint32_t* r_slot);
     void forceCreationUpdate(Item* item);
 
     Item* getItem(int16_t slot);
@@ -30,7 +32,7 @@ public:
     bool hasItems() const;
 
     void swapItems(int8_t SrcSlot, int8_t DstSlot);
-    Item* safeRemoveAndRetreiveItemFromSlot(int16_t slot, bool destroy);
+    std::unique_ptr<Item> safeRemoveAndRetreiveItemFromSlot(int16_t slot, bool destroy);
     bool safeFullRemoveItemFromSlot(int16_t slot);
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -46,6 +48,6 @@ public:
     void setSlot(uint16_t slot, uint64_t guid);
 
 protected:
-    Item** m_Slot = nullptr;
+    std::unique_ptr<std::unique_ptr<Item>[]> m_Slot;
     uint32_t __fields[getSizeOfStructure(WoWContainer)] = {0};
 };

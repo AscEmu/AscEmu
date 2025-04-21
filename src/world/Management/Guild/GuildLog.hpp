@@ -7,6 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "WorldPacket.h"
 
+#include <memory>
+
 class GuildLogEntry
 {
 public:
@@ -28,4 +30,4 @@ protected:
     uint64_t mTimestamp;
 };
 
-typedef std::list<GuildLogEntry*> GuildLog;
+typedef std::list<std::unique_ptr<GuildLogEntry>> GuildLog;

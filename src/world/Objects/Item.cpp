@@ -80,6 +80,7 @@ Item::~Item()
 
     if (m_owner != nullptr)
     {
+        m_owner->getItemInterface()->RemoveRefundable(getGuid());
         m_owner->getItemInterface()->removeTemporaryEnchantedItem(this);
 #if VERSION_STRING >= WotLK
         m_owner->getItemInterface()->removeTradeableItem(this);
@@ -1466,14 +1467,6 @@ void Item::deleteFromDB()
     }
 
     CharacterDatabase.Execute("DELETE FROM playeritems WHERE guid = %u", getGuidLow());
-}
-
-void Item::deleteMe()
-{
-    if (this->m_owner != nullptr)
-        this->m_owner->getItemInterface()->RemoveRefundable(this->getGuid());
-
-    delete this;
 }
 
 const static uint16_t arm_skills[7] =

@@ -7,6 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Macros/GuildMacros.hpp"
 
+#include <array>
+
 class Item;
 class WorldSession;
 
@@ -31,13 +33,14 @@ public:
     std::string const& getText() const;
 
     Item* getItem(uint8_t slotId) const;
-    bool setItem(uint8_t slotId, Item* item);
+    std::unique_ptr<Item> getItemHolder(uint8_t slotId);
+    bool setItem(uint8_t slotId, std::unique_ptr<Item> item);
 
 private:
     uint32_t mGuildId;
     uint8_t mTabId;
 
-    Item* mItems[MAX_GUILD_BANK_SLOTS];
+    std::array<std::unique_ptr<Item>, MAX_GUILD_BANK_SLOTS> mItems;
     std::string mName;
     std::string mIcon;
     std::string mText;

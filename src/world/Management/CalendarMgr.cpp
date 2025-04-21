@@ -42,10 +42,9 @@ void CalendarMgr::loadFromDB()
                 time_t date = fields[6].asUint32();
                 uint32_t flags = fields[7].asUint32();
 
-                CalendarEvent* calendarEvent = new CalendarEvent(static_cast<uint32_t>(entry), creator, title, description, type, dungeon, date, flags);
-                m_events.insert(calendarEvent);
+                const auto [eventItr, _] = m_events.emplace(std::make_unique<CalendarEvent>(static_cast<uint32_t>(entry), creator, title, description, type, dungeon, date, flags));
 
-                sLogger.debug("Title {} loaded", calendarEvent->m_title); // remove me ;-)
+                sLogger.debug("Title {} loaded", eventItr->get()->m_title); // remove me ;-)
 
                 ++count;
             }
@@ -82,8 +81,7 @@ void CalendarMgr::loadFromDB()
                 uint32_t rank = fields[6].asUint32();
                 std::string text = fields[7].asCString();
 
-                auto invite = new CalendarInvite(invite_id, event, invitee, sender, status, statustime, rank, text);
-                m_invites[event].push_back(invite);
+                m_invites[event].emplace_back(std::make_unique<CalendarInvite>(invite_id, event, invitee, sender, status, statustime, rank, text));
 
                 ++count;
             }

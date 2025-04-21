@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 OmorTheUnscarredAI::OmorTheUnscarredAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
     // Boundarys
-    getCreature()->getAIInterface()->addBoundary(new CircleBoundary(getCreature()->GetPosition(), 50.0), true);
+    getCreature()->getAIInterface()->addBoundary(std::make_unique<CircleBoundary>(getCreature()->GetPosition(), 50.0), true);
 
     // All
     m_ShieldSpell = addAISpell(SPELL_DEMONIC_SHIELD, 30.0f, TARGET_SELF, 0, 25);

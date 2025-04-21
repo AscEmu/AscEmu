@@ -1590,20 +1590,19 @@ uint32 GameObject_QuestGiver::NumOfQuests()
     return static_cast<uint32>(m_quests->size());
 }
 
-void GameObject_QuestGiver::AddQuest(QuestRelation* Q)
+void GameObject_QuestGiver::AddQuest(std::unique_ptr<QuestRelation> Q)
 {
-    m_quests->push_back(Q);
+    m_quests->push_back(std::move(Q));
 }
 
-void GameObject_QuestGiver::DeleteQuest(QuestRelation* Q)
+void GameObject_QuestGiver::DeleteQuest(QuestRelation const* Q)
 {
-    for (std::list<QuestRelation*>::iterator itr = m_quests->begin(); itr != m_quests->end(); ++itr)
+    for (auto itr = m_quests->begin(); itr != m_quests->end(); ++itr)
     {
-        QuestRelation* qr = *itr;
+        const auto& qr = *itr;
 
         if ((qr->type == Q->type) && (qr->qst == Q->qst))
         {
-            delete qr;
             m_quests->erase(itr);
             break;
         }
@@ -1612,9 +1611,9 @@ void GameObject_QuestGiver::DeleteQuest(QuestRelation* Q)
 
 QuestProperties const* GameObject_QuestGiver::FindQuest(uint32_t quest_id, uint8_t quest_relation)
 {
-    for (std::list<QuestRelation*>::iterator itr = m_quests->begin(); itr != m_quests->end(); ++itr)
+    for (auto itr = m_quests->begin(); itr != m_quests->end(); ++itr)
     {
-        QuestRelation* qr = *itr;
+        const auto& qr = *itr;
 
         if ((qr->qst->id == quest_id) && ((qr->type & quest_relation) != 0))
         {
@@ -1628,9 +1627,9 @@ uint16 GameObject_QuestGiver::GetQuestRelation(uint32_t quest_id)
 {
     uint16 quest_relation = 0;
 
-    for (std::list<QuestRelation*>::iterator itr = m_quests->begin(); itr != m_quests->end(); ++itr)
+    for (auto itr = m_quests->begin(); itr != m_quests->end(); ++itr)
     {
-        QuestRelation* qr = *itr;
+        const auto& qr = *itr;
 
         if ((qr != nullptr) && (qr->qst->id == quest_id))
             quest_relation |= qr->type;
@@ -1639,22 +1638,22 @@ uint16 GameObject_QuestGiver::GetQuestRelation(uint32_t quest_id)
     return quest_relation;
 }
 
-std::list<QuestRelation*>::iterator GameObject_QuestGiver::QuestsBegin()
+std::list<std::unique_ptr<QuestRelation>>::iterator GameObject_QuestGiver::QuestsBegin()
 {
     return m_quests->begin();
 }
 
-std::list<QuestRelation*>::iterator GameObject_QuestGiver::QuestsEnd()
+std::list<std::unique_ptr<QuestRelation>>::iterator GameObject_QuestGiver::QuestsEnd()
 {
     return m_quests->end();
 }
 
-void GameObject_QuestGiver::SetQuestList(std::list<QuestRelation*>* qst_lst)
+void GameObject_QuestGiver::SetQuestList(std::list<std::unique_ptr<QuestRelation>>* qst_lst)
 {
     m_quests = qst_lst;
 }
 
-std::list<QuestRelation*>& GameObject_QuestGiver::getQuestList() const
+std::list<std::unique_ptr<QuestRelation>>& GameObject_QuestGiver::getQuestList() const
 {
     return *m_quests;
 }
@@ -2189,19 +2188,15 @@ void GameObject_FishingNode::_internalUpdateOnState(unsigned long /*timeDiff*/)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Ritual
-GameObject_Ritual::GameObject_Ritual(uint64 GUID) : GameObject(GUID)
+GameObject_Ritual::GameObject_Ritual(uint64 GUID) : GameObject(GUID), Ritual(nullptr)
 {
 }
 
-GameObject_Ritual::~GameObject_Ritual()
-{
-    delete Ritual;
-    Ritual = nullptr;
-}
+GameObject_Ritual::~GameObject_Ritual() = default;
 
 void GameObject_Ritual::InitAI()
 {
-    Ritual = new RitualStruct(gameobject_properties->summoning_ritual.req_participants);
+    Ritual = std::make_unique<RitualStruct>(gameobject_properties->summoning_ritual.req_participants);
 }
 
 void GameObject_Ritual::onUse(Player* player)

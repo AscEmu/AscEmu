@@ -5,11 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <memory>
 #include <vector>
 
 class AreaBoundary;
 
-typedef std::vector<AreaBoundary const*> CreatureBoundary;
+typedef std::vector<std::unique_ptr<AreaBoundary const>> CreatureBoundary;
 
 /// All criteria must be completed for the achievement to be complete.
 #define ACHIEVEMENT_CRITERIA_COMPLETE_FLAG_ALL 2

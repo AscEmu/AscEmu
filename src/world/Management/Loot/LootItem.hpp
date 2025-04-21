@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "LootDefines.hpp"
 
 #include <cstdint>
+#include <memory>
 #include <vector>
 
 namespace WDB::Structures
@@ -61,7 +62,8 @@ struct LootItem
     WDB::Structures::ItemRandomSuffixEntry const* iRandomSuffix = nullptr;
 
     // Lootitem roll ongoing
-    LootRoll* roll = nullptr;
+    std::unique_ptr<LootRoll> roll;
+    void playerRolled(Player* player, uint8_t choice);
 
     // LootItem allowed Players to Loot
     LooterSet allowedLooters;

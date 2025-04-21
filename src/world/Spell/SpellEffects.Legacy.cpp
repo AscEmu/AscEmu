@@ -3623,7 +3623,6 @@ void Spell::SpellEffectOpenLock(uint8_t effectIndex)
 void Spell::SpellEffectTransformItem(uint8_t effectIndex)
 {
     bool result;
-    AddItemResult result2;
 
     if (!i_caster) return;
     uint32 itemid = getSpellInfo()->getEffectItemType(effectIndex);
@@ -3642,18 +3641,17 @@ void Spell::SpellEffectTransformItem(uint8_t effectIndex)
 
     i_caster = nullptr;
 
-    Item* it = sObjectMgr.createItem(itemid, owner);
+    auto it = sObjectMgr.createItem(itemid, owner);
     if (!it) return;
 
     it->setDurability(dur);
     //additem
 
     //additem
-    result2 = owner->getItemInterface()->AddItemToFreeSlot(it);
+    const auto [result2, _] = owner->getItemInterface()->AddItemToFreeSlot(std::move(it));
     if (!result2) //should never get here
     {
         owner->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_BAG_FULL);
-        it->deleteMe();
     }
 }
 
@@ -4094,13 +4092,12 @@ void Spell::SpellEffectEnchantItem(uint8_t effectIndex) // Enchant Item Permanen
             return;
         }
 
-        Item* pItem = sObjectMgr.createItem(itemid, p_caster);
+        auto pItem = sObjectMgr.createItem(itemid, p_caster);
         if (pItem == nullptr)
             return;
 
         p_caster->getItemInterface()->RemoveItemAmt(m_itemTarget->getEntry(), 1);
-        if (!p_caster->getItemInterface()->AddItemToFreeSlot(pItem))
-            pItem->deleteMe();
+        p_caster->getItemInterface()->AddItemToFreeSlot(std::move(pItem));
 
         return;
     }

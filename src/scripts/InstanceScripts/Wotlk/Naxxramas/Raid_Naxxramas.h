@@ -1022,7 +1022,7 @@ DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : Creature
     understudyTaunt->setMinMaxDistance(0.0f, 8.0f);
 
     // Blood Strike
-    auto blood_strike_spell = new AI_Spell;
+    auto blood_strike_spell = std::make_unique<AI_Spell>();
     blood_strike_spell->spell = sSpellMgr.getSpellInfo(DEATH_KNIGHT_UNDERSTUDY_BLOOD_STRIKE);
     blood_strike_spell->agent = AGENT_SPELL;
     blood_strike_spell->entryId = getCreature()->getEntry();
@@ -1037,11 +1037,10 @@ DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : Creature
     blood_strike_spell->Misc2 = 0;
     blood_strike_spell->procChance = 0;
     blood_strike_spell->procCount = 0;
-    getCreature()->getAIInterface()->addSpellToList(blood_strike_spell);
-    delete blood_strike_spell;
+    getCreature()->getAIInterface()->addSpellToList(std::move(blood_strike_spell));
 
     // Bone Barrier
-    auto bone_barrier_spell = new AI_Spell;
+    auto bone_barrier_spell = std::make_unique<AI_Spell>();
     bone_barrier_spell->spell = sSpellMgr.getSpellInfo(DEATH_KNIGHT_UNDERSTUDY_BONE_BARRIER);
     bone_barrier_spell->agent = AGENT_SPELL;
     bone_barrier_spell->entryId = getCreature()->getEntry();
@@ -1056,11 +1055,10 @@ DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : Creature
     bone_barrier_spell->Misc2 = 0;
     bone_barrier_spell->procChance = 0;
     bone_barrier_spell->procCount = 0;
-    getCreature()->getAIInterface()->addSpellToList(bone_barrier_spell);
-    delete bone_barrier_spell;
+    getCreature()->getAIInterface()->addSpellToList(std::move(bone_barrier_spell));
 
     // Taunt
-    auto understudy_taunt_spell = new AI_Spell;
+    auto understudy_taunt_spell = std::make_unique<AI_Spell>();
     understudy_taunt_spell->spell = sSpellMgr.getSpellInfo(DEATH_KNIGHT_UNDERSTUDY_TAUNT);
     understudy_taunt_spell->agent = AGENT_SPELL;
     understudy_taunt_spell->entryId = getCreature()->getEntry();
@@ -1075,8 +1073,7 @@ DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : Creature
     understudy_taunt_spell->Misc2 = 0;
     understudy_taunt_spell->procChance = 0;
     understudy_taunt_spell->procCount = 0;
-    getCreature()->getAIInterface()->addSpellToList(understudy_taunt_spell);
-    delete understudy_taunt_spell;
+    getCreature()->getAIInterface()->addSpellToList(std::move(understudy_taunt_spell));
 
     mRazuviousAI = NULL;
     mIsControlled = false;

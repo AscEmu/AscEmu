@@ -121,17 +121,18 @@ typedef std::list<uint64> LfgGuidList;
 typedef std::map<uint8, LfgGuidList> LfgGuidListMap;
 typedef std::set<Player*> PlayerSet;
 typedef std::list<Player*> LfgPlayerList;
-typedef std::multimap<uint32, LfgReward const*> LfgRewardMap;
+typedef std::multimap<uint32, std::unique_ptr<LfgReward const>> LfgRewardMap;
 typedef std::pair<LfgRewardMap::const_iterator, LfgRewardMap::const_iterator> LfgRewardMapBounds;
 typedef std::map<std::string, LfgAnswer> LfgCompatibleMap;
 typedef std::map<uint64, LfgDungeonSet> LfgDungeonMap;
 typedef std::map<uint64, uint8> LfgRolesMap;
 typedef std::map<uint64, LfgAnswer> LfgAnswerMap;
-typedef std::map<uint64, LfgRoleCheck*> LfgRoleCheckMap;
-typedef std::map<uint64, LfgQueueInfo*> LfgQueueInfoMap;
+typedef std::map<uint64, std::unique_ptr<LfgRoleCheck>> LfgRoleCheckMap;
+typedef std::map<uint64, std::unique_ptr<LfgQueueInfo>> LfgQueueInfoMap;
+typedef std::map<uint64, LfgQueueInfo*> LfgRawQueueInfoMap;
 typedef std::map<uint32, LfgProposal*> LfgProposalMap;
-typedef std::map<uint64, LfgProposalPlayer*> LfgProposalPlayerMap;
-typedef std::map<uint32, LfgPlayerBoot*> LfgPlayerBootMap;
+typedef std::map<uint64, std::unique_ptr<LfgProposalPlayer>> LfgProposalPlayerMap;
+typedef std::map<uint32, std::unique_ptr<LfgPlayerBoot>> LfgPlayerBootMap;
 typedef std::map<uint64, LfgGroupData> LfgGroupDataMap;
 typedef std::map<uint64, LfgPlayerData> LfgPlayerDataMap;
 
@@ -206,11 +207,7 @@ struct LfgProposal
 {
     LfgProposal(uint32 dungeon = 0): dungeonId(dungeon), state(LFG_PROPOSAL_INITIATING), groupLowGuid(0), leader(0), cancelTime(0) {}
 
-    ~LfgProposal()
-    {
-        for (LfgProposalPlayerMap::iterator it = players.begin(); it != players.end(); ++it)
-            delete it->second;
-    };
+    ~LfgProposal() = default;
     uint32 dungeonId;                                      ///< Dungeon to join
     LfgProposalState state;                                ///< State of the proposal
     uint32 groupLowGuid;                                   ///< Proposal group (0 if new)

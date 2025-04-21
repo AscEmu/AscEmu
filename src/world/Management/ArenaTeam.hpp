@@ -93,7 +93,7 @@ public:
     std::string m_name;
     uint32_t m_memberCount;
 
-    ArenaTeamMember* m_members;
+    std::unique_ptr<ArenaTeamMember[]> m_members;
     ArenaTeamEmblem m_emblem;
     ArenaTeamStats m_stats;
 

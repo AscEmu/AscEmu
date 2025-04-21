@@ -22,6 +22,7 @@
 
 #include "ItemInterface.h"
 #include "Management/Loot/LootDefines.hpp"
+#include "Management/Loot/LootItem.hpp"
 #include "Management/Loot/LootRoll.hpp"
 #include "Battleground/BattlegroundMgr.hpp"
 #include "Chat/ChatHandler.hpp"
@@ -55,8 +56,8 @@ Group::Group(bool Assign)
     m_GroupType = GROUP_TYPE_PARTY; // Always init as party
 
     // Create initial subgroup
-    memset(m_SubGroups, 0, sizeof(SubGroup*) * 8);
-    m_SubGroups[0] = new SubGroup(this, 0);
+    std::fill(m_SubGroups.begin(), m_SubGroups.end(), nullptr);
+    m_SubGroups[0] = std::make_unique<SubGroup>(this, 0);
 
     m_Leader = NULL;
     m_Looter = NULL;
@@ -87,14 +88,7 @@ Group::Group(bool Assign)
     updatecounter = 0;
 }
 
-Group::~Group()
-{
-    for (uint32 j = 0; j < m_SubGroupCount; ++j)
-    {
-        if (SubGroup* sub = GetSubGroup(j))
-            delete sub;
-    }
-}
+Group::~Group() = default;
 
 void SubGroup::RemovePlayer(CachedCharacterInfo* info)
 {
@@ -126,7 +120,7 @@ SubGroup* Group::FindFreeSubGroup()
 {
     for (uint32 i = 0; i < m_SubGroupCount; i++)
         if (!m_SubGroups[i]->IsFull())
-            return m_SubGroups[i];
+            return m_SubGroups[i].get();
 
     return NULL;
 }
@@ -147,7 +141,7 @@ bool Group::AddMember(CachedCharacterInfo* info, int32 subgroupid/* =-1 */)
 
         if (!IsFull())
         {
-            SubGroup* subgroup = (subgroupid > 0) ? m_SubGroups[subgroupid] : FindFreeSubGroup();
+            SubGroup* subgroup = (subgroupid > 0) ? m_SubGroups[subgroupid].get() : FindFreeSubGroup();
             if (subgroup == NULL)
             {
                 return false;
@@ -229,7 +223,7 @@ void Group::Update()
 
     for (uint8 i = 0; i < m_SubGroupCount; i++)
     {
-        if (SubGroup* sg1 = m_SubGroups[i])
+        if (SubGroup* sg1 = m_SubGroups[i].get())
         {
             for (const auto characterInfo : sg1->getGroupMembers())
             {
@@ -270,7 +264,7 @@ void Group::Update()
 
                 for (uint8 j = 0; j < m_SubGroupCount; j++)
                 {
-                    if (SubGroup* sg2 = m_SubGroups[j])
+                    if (SubGroup* sg2 = m_SubGroups[j].get())
                     {
                         for (const auto characterInfo2 : sg2->getGroupMembers())
                         {
@@ -360,7 +354,7 @@ void Group::Disband()
 
     for (uint8 i = 0; i < m_SubGroupCount; i++)
     {
-        SubGroup* sg = m_SubGroups[i];
+        SubGroup* sg = m_SubGroups[i].get();
         sg->Disband();
     }
 
@@ -399,7 +393,6 @@ void SubGroup::Disband()
     }
 
     m_Parent->m_SubGroups[m_Id] = nullptr;
-    delete this;
 }
 
 Player* Group::FindFirstPlayer()
@@ -443,7 +436,7 @@ void Group::RemovePlayer(CachedCharacterInfo* info)
 
     SubGroup* sg = nullptr;
     if (info->subGroup >= 0 && info->subGroup < 8)
-        sg = m_SubGroups[info->subGroup];
+        sg = m_SubGroups[info->subGroup].get();
 
     if (!sg || sg->m_GroupMembers.find(info) == sg->m_GroupMembers.end())
     {
@@ -453,7 +446,7 @@ void Group::RemovePlayer(CachedCharacterInfo* info)
             {
                 if (m_SubGroups[i]->m_GroupMembers.find(info) != m_SubGroups[i]->m_GroupMembers.end())
                 {
-                    sg = m_SubGroups[i];
+                    sg = m_SubGroups[i].get();
                     break;
                 }
             }
@@ -560,7 +553,7 @@ void Group::ExpandToRaid()
     m_SubGroupCount = 8;
 
     for (uint8 i = 1; i < m_SubGroupCount; ++i)
-        m_SubGroups[i] = new SubGroup(this, i);
+        m_SubGroups[i] = std::make_unique<SubGroup>(this, i);
 
     m_GroupType = GROUP_TYPE_RAID;
     m_dirty = true;
@@ -663,7 +656,7 @@ void Group::MovePlayer(CachedCharacterInfo* info, uint8 subgroup)
     SubGroup* sg = NULL;
 
     if (info->subGroup > 0 && info->subGroup < 8)
-        sg = m_SubGroups[info->subGroup];
+        sg = m_SubGroups[info->subGroup].get();
 
     if (sg == NULL || sg->m_GroupMembers.find(info) == sg->m_GroupMembers.end())
     {
@@ -673,7 +666,7 @@ void Group::MovePlayer(CachedCharacterInfo* info, uint8 subgroup)
             {
                 if (m_SubGroups[i]->m_GroupMembers.find(info) != m_SubGroups[i]->m_GroupMembers.end())
                 {
-                    sg = m_SubGroups[i];
+                    sg = m_SubGroups[i].get();
                     break;
                 }
             }
@@ -688,7 +681,7 @@ void Group::MovePlayer(CachedCharacterInfo* info, uint8 subgroup)
     sg->RemovePlayer(info);
 
     // Grab the new group, and insert
-    sg = m_SubGroups[subgroup];
+    sg = m_SubGroups[subgroup].get();
     if (!sg->AddPlayer(info))
         RemovePlayer(info);
     else
@@ -726,7 +719,7 @@ void Group::LoadFromDB(Field* fields)
 
     // create groups
     for (uint8 i = 1; i < m_SubGroupCount; ++i)
-        m_SubGroups[i] = new SubGroup(this, i);
+        m_SubGroups[i] = std::make_unique<SubGroup>(this, i);
 
     // assign players into groups
     for (uint8 i = 0; i < m_SubGroupCount; ++i)
@@ -852,9 +845,13 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
 
     if (mask & GROUP_UPDATE_FLAG_PET_POWER_TYPE)            // same for pets
         mask |= (GROUP_UPDATE_FLAG_PET_CUR_POWER | GROUP_UPDATE_FLAG_PET_MAX_POWER);
+    std::unique_ptr<WorldPacket> dataHolder;
     WorldPacket* data = Packet;
     if (!Packet)
-        data = new WorldPacket(SMSG_PARTY_MEMBER_STATS, 500);
+    {
+        dataHolder = std::make_unique<WorldPacket>(SMSG_PARTY_MEMBER_STATS, 500);
+        data = dataHolder.get();
+    }
     if (pPlayer->m_isGmInvisible)
         mask = GROUP_UPDATE_FLAG_STATUS;
     uint32 byteCount = 0;
@@ -1031,9 +1028,6 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
         }
         m_groupLock.unlock();
     }
-
-    if (!Packet)
-        delete data;
 }
 
 void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
@@ -1130,11 +1124,6 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
 bool Group::isRaid() const
 {
     return getGroupType() == GROUP_TYPE_RAID;
-}
-
-Group* Group::Create()
-{
-    return new Group(true);
 }
 
 void Group::SetMainAssist(CachedCharacterInfo* pMember)
@@ -1470,7 +1459,7 @@ void Group::sendGroupLoot(Loot* loot, Object* object, Player* /*plr*/, uint32_t 
             loot->items[itemSlot].is_blocked = true;
 
             // Init Roll
-            item->roll = new LootRoll(60000, MemberCount(), object->getGuid(), itemSlot, item->itemproto->ItemId, factor, uint32_t(ipid), object->getWorldMap());
+            item->roll = std::make_unique<LootRoll>(60000, MemberCount(), object->getGuid(), itemSlot, item->itemproto->ItemId, factor, uint32_t(ipid), object->getWorldMap());
 
             // Send Roll
             WorldPacket data(32);
@@ -1502,7 +1491,7 @@ void Group::sendGroupLoot(Loot* loot, Object* object, Player* /*plr*/, uint32_t 
                         if (loggedInPlayer->getItemInterface()->CanReceiveItem(item->itemproto, item->count) == 0)
                         {
                             if (loggedInPlayer->m_passOnLoot)
-                                item->roll->playerRolled(loggedInPlayer, ROLL_PASS);
+                                item->playerRolled(loggedInPlayer, ROLL_PASS);
                             else
                                 loggedInPlayer->sendPacket(&data);
                         }
@@ -1588,7 +1577,7 @@ void Group::teleport(WorldSession* m_session)
 
     for (uint8 i = 0; i < m_SubGroupCount; i++)
     {
-        if (SubGroup* sg1 = m_SubGroups[i])
+        if (SubGroup* sg1 = m_SubGroups[i].get())
         {
             for (const auto itr1 : sg1->getGroupMembers())
             {
@@ -1725,7 +1714,7 @@ void Group::updateLooterGuid(Object* pLootedObject)
         {
             if (i < 7)
             {
-                const auto nextSubGroup = m_SubGroups[i + 1];
+                const auto nextSubGroup = m_SubGroups[i + 1].get();
                 if (nextSubGroup && nextSubGroup->m_GroupMembers.begin() != nextSubGroup->m_GroupMembers.end())
                 {
                     continue;

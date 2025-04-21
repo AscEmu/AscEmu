@@ -608,12 +608,11 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     BNK.SetBinary(K, 40);
 
 #if VERSION_STRING == TBC
-    uint8 *key = new uint8[20];
-    WowCrypt::generateTbcKey(key, K);
+    auto key = std::make_unique<uint8_t[]>(20);
+    WowCrypt::generateTbcKey(key.get(), K);
 
-    _crypt.setLegacyKey(key, 20);
+    _crypt.setLegacyKey(key.get(), 20);
     _crypt.initLegacyCrypt();
-    delete[] key;
 #elif VERSION_STRING == Classic
     static constexpr uint8_t classicAuthKey[16] = { 0x38, 0xA7, 0x83, 0x15, 
                                                     0xF8, 0x92, 0x25, 0x30, 
@@ -758,9 +757,9 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
                 size_t len = data ? strlen(data) : 0;
                 if (len > 1)
                 {
-                    char* d = new char[len + 1];
-                    memcpy(d, data, len + 1);
-                    pSession->SetAccountData(i, d, true, static_cast<uint32>(len));
+                    auto d = std::make_unique<char[]>(len + 1);
+                    memcpy(d.get(), data, len + 1);
+                    pSession->SetAccountData(i, std::move(d), true, static_cast<uint32>(len));
                 }
             }
 

@@ -22,7 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 TwinsAI::TwinsAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
     // Add Boundary
-    pCreature->getAIInterface()->addBoundary(new CircleBoundary(LocationVector(563.26f, 139.6f), 75.0));
+    pCreature->getAIInterface()->addBoundary(std::make_unique<CircleBoundary>(LocationVector(563.26f, 139.6f), 75.0));
 
     AuraState = 0;
     Weapon = 0;

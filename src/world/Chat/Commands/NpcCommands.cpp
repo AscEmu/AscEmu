@@ -57,7 +57,7 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
     WorldDatabase.Execute("INSERT INTO ai_agents VALUES(%u, 4, %u, %u, %u, %u, %u, %u, %u, %u, %f, %u",
         creature_target->getEntry(), ai_type, procEvent, procChance, maxcount, spellId, spellType, spelltargetType, spellCooldown, floatMisc1, Misc2);
 
-    AI_Spell* ai_spell = new AI_Spell;
+    auto ai_spell = std::make_unique<AI_Spell>();
     ai_spell->agent = static_cast<uint16_t>(ai_type);
     ai_spell->procChance = procChance;
     ai_spell->procCount = maxcount;
@@ -72,7 +72,13 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
     ai_spell->minrange = spell_entry->getMinRange();
     ai_spell->maxrange = spell_entry->getMaxRange();
 
-    const_cast<CreatureProperties*>(creature_target->GetCreatureProperties())->spells.push_back(ai_spell);
+    if (auto* creatureProperties = const_cast<CreatureProperties*>(creature_target->GetCreatureProperties()))
+    {
+        if (!spell_entry->isPassive())
+            creatureProperties->castable_spells.emplace_back(spell_entry->getId());
+        else
+            creatureProperties->start_auras.emplace(spell_entry->getId());
+    }
 
     switch (ai_type)
     {
@@ -86,7 +92,7 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
             creature_target->getAIInterface()->m_canFlee = true;
             break;
         case AGENT_SPELL:
-            creature_target->getAIInterface()->addSpellToList(ai_spell);
+            creature_target->getAIInterface()->addSpellToList(std::move(ai_spell));
             break;
         case AGENT_CALLFORHELP:
             creature_target->getAIInterface()->m_canCallForHelp = true;

@@ -971,9 +971,9 @@ void WorldSession::loadAccountDataProc(QueryResult* result)
         const size_t length = accountData ? strlen(accountData) : 0;
         if (length > 1)
         {
-            char* d = new char[length + 1];
-            memcpy(d, accountData, length + 1);
-            SetAccountData(i, d, true, static_cast<uint32_t>(length));
+            auto d = std::make_unique<char[]>(length + 1);
+            memcpy(d.get(), accountData, length + 1);
+            SetAccountData(i, std::move(d), true, static_cast<uint32_t>(length));
         }
     }
 }

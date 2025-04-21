@@ -8,7 +8,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/MovementDefines.h"
 #include "CellHandlerDefines.hpp"
 
+#include <array>
 #include <cstdio>
+#include <memory>
 #include <atomic>
 #include <mutex>
 
@@ -125,15 +127,15 @@ public:
     // Height Map
     union
     {
-        float* m_heightMap8F = nullptr;
-        uint16_t* m_heightMap8S;
-        uint8_t* m_heightMap8B;
+        std::unique_ptr<float[]> m_heightMap8F = nullptr;
+        std::unique_ptr<uint16_t[]> m_heightMap8S;
+        std::unique_ptr<uint8_t[]> m_heightMap8B;
     };
     union
     {
-        float* m_heightMap9F = nullptr;
-        uint16_t* m_heightMap9S;
-        uint8_t* m_heightMap9B;
+        std::unique_ptr<float[]> m_heightMap9F = nullptr;
+        std::unique_ptr<uint16_t[]> m_heightMap9S;
+        std::unique_ptr<uint8_t[]> m_heightMap9B;
     };
     G3D::Plane * m_minHeightPlanes = nullptr;
     // Height Data
@@ -141,13 +143,13 @@ public:
     float m_tileHeightMultiplier = 0;
 
     // Area Data
-    uint16_t* m_areaMap = nullptr;
+    std::unique_ptr<uint16_t[]> m_areaMap = nullptr;
 
     // Liquid Data
     float m_liquidLevel = INVALID_HEIGHT;
-    uint16_t* m_liquidEntry = nullptr;
-    uint8_t* m_liquidFlags = nullptr;
-    float* m_liquidMap = nullptr;
+    std::unique_ptr<uint16_t[]> m_liquidEntry = nullptr;
+    std::unique_ptr<uint8_t[]> m_liquidFlags = nullptr;
+    std::unique_ptr<float[]> m_liquidMap = nullptr;
     uint16_t m_tileArea = 0;
     uint16_t m_liquidGlobalEntry = 0;
     uint8_t m_liquidGlobalFlags = 0;
@@ -156,7 +158,7 @@ public:
     uint8_t m_liquidWidth = 0;
     uint8_t m_liquidHeight = 0;
 
-    uint16_t* m_holes = nullptr;
+    std::unique_ptr<uint16_t[]> m_holes = nullptr;
 
     TileMap();
     ~TileMap();
@@ -185,8 +187,6 @@ public:
 class TerrainTile
 {
 public:
-    std::atomic<unsigned long> m_refs;
-
     TerrainHolder* m_parent;
     uint32_t m_mapid;
     int32_t m_tx;
@@ -198,9 +198,6 @@ public:
     TerrainTile(TerrainHolder* parent, uint32_t mapid, int32_t x, int32_t y);
     ~TerrainTile();
 
-    void AddRef() { ++m_refs; }
-    void DecRef() { if (--m_refs == 0) delete this; }
-
     void Load();
 };
 
@@ -208,9 +205,9 @@ class TerrainHolder
 {
 public:
     uint32_t m_mapid;
-    TerrainTile* m_tiles[Map::Terrain::TilesCount][Map::Terrain::TilesCount];
-    std::mutex m_lock[Map::Terrain::TilesCount][Map::Terrain::TilesCount];
-    std::atomic<unsigned long> m_tilerefs[Map::Terrain::TilesCount][Map::Terrain::TilesCount];
+    std::array<std::array<std::unique_ptr<TerrainTile>, Map::Terrain::TilesCount>, Map::Terrain::TilesCount> m_tiles;
+    std::array<std::array<std::mutex, Map::Terrain::TilesCount>, Map::Terrain::TilesCount> m_lock;
+    std::array<std::array<std::atomic<unsigned long>, Map::Terrain::TilesCount>, Map::Terrain::TilesCount> m_tilerefs;
 
     /// Our memory saving system for small allocations
     uint32_t TileCountX, TileCountY;
@@ -218,7 +215,7 @@ public:
     uint32_t TileStartY, TileEndY;
 
     /// This holds the offsets of the tile information for each tile.
-    uint32_t TileOffsets[Map::Terrain::TilesCount][Map::Terrain::TilesCount];
+    std::array<std::array<uint32_t, Map::Terrain::TilesCount>, Map::Terrain::TilesCount> TileOffsets;
 
     TerrainHolder(uint32_t mapid);
     ~TerrainHolder();

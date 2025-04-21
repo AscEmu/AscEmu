@@ -33,11 +33,6 @@ void AddonMgr::initialize()
 #if VERSION_STRING < Cata
 void AddonMgr::finalize()
 {
-    KnownAddonsItr itr;
-    for (itr = mKnownAddons.begin(); itr != mKnownAddons.end(); ++itr)
-    {
-        delete itr->second;
-    }
     mKnownAddons.clear();
 }
 
@@ -60,7 +55,7 @@ bool AddonMgr::IsAddonBanned(std::string name, uint64_t crc)
     else
     {
         // New addon. It'll be saved to db at server shutdown.
-        AddonEntry* ent = new AddonEntry;
+        auto ent = std::make_unique<AddonEntry>();
         ent->name = name;
         ent->crc = crc;
         ent->banned = false;    // by default.. we can change this I guess..
@@ -69,7 +64,7 @@ bool AddonMgr::IsAddonBanned(std::string name, uint64_t crc)
 
         sLogger.debug("Discovered new addon {} sent by client.", name);
 
-        mKnownAddons[ent->name] = ent;
+        mKnownAddons.try_emplace(ent->name, std::move(ent));
     }
 
     return false;
@@ -89,7 +84,7 @@ bool AddonMgr::ShouldShowInList(std::string name)
     else
     {
         // New addon. It'll be saved to db at server shutdown.
-        AddonEntry* ent = new AddonEntry;
+        auto ent = std::make_unique<AddonEntry>();
         ent->name = name;
         ent->crc = 0;
         ent->banned = false;    // by default.. we can change this I guess..
@@ -98,7 +93,7 @@ bool AddonMgr::ShouldShowInList(std::string name)
 
         sLogger.debug("Discovered new addon {} sent by client.", name);
 
-        mKnownAddons[ent->name] = ent;
+        mKnownAddons.try_emplace(ent->name, std::move(ent));
     }
     return true;
 }
@@ -273,12 +268,11 @@ void AddonMgr::LoadFromDB()
     }
 
     Field* field;
-    AddonEntry* ent;
 
     do
     {
         field = result->Fetch();
-        ent = new AddonEntry;
+        auto ent = std::make_unique<AddonEntry>();
 
         ent->name = field[1].asCString();
         ent->crc = field[2].asUint64();
@@ -289,7 +283,7 @@ void AddonMgr::LoadFromDB()
         if (result->GetFieldCount() == 5)
             ent->showinlist = (field[4].asUint32() > 0 ? true : false);
 
-        mKnownAddons[ent->name] = ent;
+        mKnownAddons.try_emplace(ent->name, std::move(ent));
 
     }
     while(result->NextRow());

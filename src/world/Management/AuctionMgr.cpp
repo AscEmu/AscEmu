@@ -20,9 +20,8 @@ void AuctionMgr::initialize()
 
 void AuctionMgr::finalize()
 {
-    auto itr = m_auctionHouses.begin();
-    for (; itr != m_auctionHouses.end(); ++itr)
-        delete(*itr);
+    m_auctionHouseEntryMap.clear();
+    m_auctionHouses.clear();
 }
 
 void AuctionMgr::loadAuctionHouses()
@@ -44,10 +43,9 @@ void AuctionMgr::loadAuctionHouses()
         uint32_t c = 0;
         do
         {
-            auto ah = new AuctionHouse(res->Fetch()[0].asUint32());
+            const auto& ah = m_auctionHouses.emplace_back(std::make_unique<AuctionHouse>(res->Fetch()[0].asUint32()));
             ah->loadAuctionsFromDB();
-            m_auctionHouses.push_back(ah);
-            tempmap.insert(std::make_pair(res->Fetch()[0].asUint32(), ah));
+            tempmap.try_emplace(res->Fetch()[0].asUint32(), ah.get());
             if (!((++c) % period))
                 sLogger.info("AuctionHouse : Done {}/{}, {}% complete.", c, res->GetRowCount(), c * 100 / res->GetRowCount());
 
@@ -61,7 +59,7 @@ void AuctionMgr::loadAuctionHouses()
     {
         do
         {
-            m_auctionHouseEntryMap.insert(std::make_pair(res->Fetch()[0].asUint32(), tempmap[res->Fetch()[1].asUint32()]));
+            m_auctionHouseEntryMap.try_emplace(res->Fetch()[0].asUint32(), tempmap[res->Fetch()[1].asUint32()]);
         }
         while (res->NextRow());
         delete res;

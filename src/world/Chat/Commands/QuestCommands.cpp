@@ -181,23 +181,21 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
                     {
                         if (receive_item)
                         {
-                            Item* item = sObjectMgr.createItem(receive_item, player);
+                            auto item = sObjectMgr.createItem(receive_item, player);
                             if (item == nullptr)
                                 return false;
 
-                            if (!player->getItemInterface()->AddItemToFreeSlot(item))
-                                item->deleteMe();
+                            player->getItemInterface()->AddItemToFreeSlot(std::move(item));
                         }
                     }
 
                     if (questProperties->srcitem && questProperties->srcitem != questProperties->receive_items[0])
                     {
-                        Item* item = sObjectMgr.createItem(questProperties->srcitem, player);
+                        auto item = sObjectMgr.createItem(questProperties->srcitem, player);
                         if (item)
                         {
                             item->setStackCount(questProperties->srcitemcount ? questProperties->srcitemcount : 1);
-                            if (!player->getItemInterface()->AddItemToFreeSlot(item))
-                                item->deleteMe();
+                            player->getItemInterface()->AddItemToFreeSlot(std::move(item));
                         }
                     }
 
@@ -375,14 +373,11 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                             }
                             else
                             {
-                                auto* item = sObjectMgr.createItem(qst->reward_item[i], plr);
+                                auto item = sObjectMgr.createItem(qst->reward_item[i], plr);
                                 if (item)
                                 {
                                     item->setStackCount(uint32_t(qst->reward_itemcount[i]));
-                                    if (!plr->getItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
-                                    {
-                                        item->deleteMe();
-                                    }
+                                    plr->getItemInterface()->SafeAddItem(std::move(item), slotresult.ContainerSlot, slotresult.Slot);
                                 }
                             }
                         }
@@ -418,10 +413,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                             if (item)
                             {
                                 item->setStackCount(uint32_t(qst->reward_choiceitemcount[reward_slot]));
-                                if (!plr->getItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
-                                {
-                                    item->deleteMe();
-                                }
+                                plr->getItemInterface()->SafeAddItem(std::move(item), slotresult.ContainerSlot, slotresult.Slot);
                             }
                         }
                     }

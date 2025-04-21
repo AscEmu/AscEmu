@@ -36,8 +36,6 @@ namespace WDB::Structures
     struct CreatureModelDataEntry;
 }
 
-struct AI_Spell;
-
 const uint8 creatureMaxProtoSpells = 8;
 const uint32 creatureMaxInventoryItems = 150;
 
@@ -256,7 +254,6 @@ struct CreatureProperties
     bool m_canRangedAttack;
     std::set<uint32> start_auras;
     std::vector<uint32> castable_spells;
-    std::list<AI_Spell*> spells;
 };
 
 struct CreaturePropertiesMovement

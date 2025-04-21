@@ -1042,7 +1042,7 @@ bool ChatHandler::HandlePlayerInfo(const char* args, WorldSession* m_session)
     BlueSystemMessage(m_session, "%s has played %s at this level", (plr->getGender() ? "She" : "He"), playedLevel);
     BlueSystemMessage(m_session, "and %s overall", playedTotal);
 
-    BlueSystemMessage(m_session, "%s is connecting from account '%s'[%u] with permissions '%s'", (plr->getGender() ? "She" : "He"), sess->GetAccountName().c_str(), sess->GetAccountId(), sess->GetPermissions());
+    BlueSystemMessage(m_session, "%s is connecting from account '%s'[%u] with permissions '%s'", (plr->getGender() ? "She" : "He"), sess->GetAccountName().c_str(), sess->GetAccountId(), sess->GetPermissions().get());
 
     BlueSystemMessage(m_session, "Factiontemplate: %u", plr->getFactionTemplate());
 

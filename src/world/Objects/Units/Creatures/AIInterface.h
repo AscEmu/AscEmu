@@ -431,8 +431,9 @@ public:
 
     // boundary system methods
     bool checkBoundary();
-    CreatureBoundary const getBoundary() const { return _boundary; }
-    void addBoundary(AreaBoundary const* boundary, bool overrideDefault = false, bool negativeBoundaries = false);
+    CreatureBoundary const& getBoundary() const { return _boundary; }
+    // todo: does it really have to be a pointer? -Appled
+    void addBoundary(std::unique_ptr<AreaBoundary const> boundary, bool overrideDefault = false, bool negativeBoundaries = false);
     void setDefaultBoundary();
     void clearBoundary();
     static bool isInBounds(CreatureBoundary const* boundary, LocationVector who);
@@ -626,8 +627,8 @@ public:
     //addAISpell(spellID, Chance, TargetType, Duration (s), waitBeforeNextCast (s))
     CreatureAISpells* addAISpell(uint32_t spellId, float castChance, uint32_t targetType, uint32_t duration = 0, uint32_t cooldown = 0, bool forceRemove = false, bool isTriggered = false);
 
-    std::list<AI_Spell*> m_spells;
-    void addSpellToList(AI_Spell* sp);
+    std::list<std::unique_ptr<AI_Spell>> m_spells;
+    void addSpellToList(std::unique_ptr<AI_Spell> sp);
     AI_Spell* getSpell(uint32_t entry);
     void setNextSpell(uint32_t spellId);
     void removeNextSpell(uint32_t spellId);
@@ -644,7 +645,7 @@ public:
 
     CreatureAISpells* mLastCastedSpell;
 
-    typedef std::vector<CreatureAISpells*> CreatureAISpellsArray;
+    typedef std::vector<std::unique_ptr<CreatureAISpells>> CreatureAISpellsArray;
     CreatureAISpellsArray mCreatureAISpells;
 
     std::unique_ptr<Util::SmallTimeTracker> mSpellWaitTimer;

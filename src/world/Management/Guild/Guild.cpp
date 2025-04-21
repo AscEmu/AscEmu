@@ -124,25 +124,7 @@ void Guild::sendGuildInvitePacket(WorldSession* session, std::string invitedName
 #endif
 }
 
-Guild::~Guild()
-{
-    delete mEventLog;
-    mEventLog = nullptr;
-    delete mNewsLog;
-    mNewsLog = nullptr;
-
-    for (uint8_t tabId = 0; tabId <= MAX_GUILD_BANK_TABS; ++tabId)
-    {
-        delete mBankEventLog[tabId];
-        mBankEventLog[tabId] = nullptr;
-    }
-
-    for (auto itr = _guildMembersStore.begin(); itr != _guildMembersStore.end(); ++itr)
-    {
-        delete itr->second;
-        itr->second = nullptr;
-    }
-}
+Guild::~Guild() = default;
 
 bool Guild::create(Player* pLeader, std::string const& name)
 {
@@ -203,7 +185,7 @@ void Guild::disband()
 
     CharacterDatabase.Execute("DELETE FROM guilds WHERE guildId = %u", m_id);
 
-    CharacterDatabase.Execute("DELETE FROM guildranks WHERE guildId = %u", m_id);
+    CharacterDatabase.Execute("DELETE FROM guild_ranks WHERE guildId = %u", m_id);
 
     CharacterDatabase.Execute("DELETE FROM guild_bank_tabs WHERE guildId = %u", m_id);
 
@@ -324,7 +306,7 @@ void Guild::handleRoster(WorldSession* session)
 
     for (GuildMembersStore::const_iterator itr = _guildMembersStore.begin(); itr != _guildMembersStore.end(); ++itr)
     {
-        GuildMember* member = itr->second;
+        GuildMember* member = itr->second.get();
         size_t pubNoteLength = member->getPublicNote().length();
         size_t offNoteLength = member->getOfficerNote().length();
 
@@ -972,7 +954,7 @@ void Guild::sendNewsUpdate(WorldSession* session)
     for (GuildLog::const_iterator itr = logs->begin(); itr != logs->end(); ++itr)
     {
         data.writeBits(0, 26);
-        ObjectGuid guid = static_cast<GuildNewsLogEntry*>(*itr)->getPlayerGuid();
+        ObjectGuid guid = static_cast<GuildNewsLogEntry*>(itr->get())->getPlayerGuid();
 
         data.writeBit(guid[7]);
         data.writeBit(guid[0]);
@@ -988,7 +970,7 @@ void Guild::sendNewsUpdate(WorldSession* session)
 
     for (GuildLog::const_iterator itr = logs->begin(); itr != logs->end(); ++itr)
     {
-        GuildNewsLogEntry* news = static_cast<GuildNewsLogEntry*>(*itr);
+        GuildNewsLogEntry* news = static_cast<GuildNewsLogEntry*>(itr->get());
         ObjectGuid guid = news->getPlayerGuid();
         data.WriteByteSeq(guid[5]);
 
@@ -1019,7 +1001,7 @@ void Guild::sendBankLog(WorldSession* session, uint8_t tabId) const
 {
     if (tabId < _getPurchasedTabsSize() || tabId == MAX_GUILD_BANK_TABS)
     {
-        GuildLogHolder const* log = mBankEventLog[tabId];
+        GuildLogHolder const* log = mBankEventLog[tabId].get();
 
 #if VERSION_STRING >= Cata
         WorldPacket data(SMSG_GUILD_BANK_LOG_QUERY_RESULT, log->getSize() * (4 * 4 + 1) + 1 + 1);
@@ -1168,7 +1150,7 @@ bool Guild::loadGuildFromDB(Field* fields)
     _guildBankTabsStore.resize(purchasedTabs);
     for (uint8_t i = 0; i < purchasedTabs; ++i)
     {
-        _guildBankTabsStore[i] = new GuildBankTab(m_id, i);
+        _guildBankTabsStore[i] = std::make_unique<GuildBankTab>(m_id, i);
     }
 
     createLogHolders();
@@ -1188,15 +1170,14 @@ void Guild::loadRankFromDB(Field* fields)
 bool Guild::loadMemberFromDB(Field* fields, Field* fields2)
 {
     uint32_t lowguid = fields[1].asUint32();
-    auto member = new GuildMember(m_id, WoWGuid(lowguid, 0, HIGHGUID_TYPE_PLAYER).getRawGuid(), fields[2].asUint8());
+    auto member = std::make_unique<GuildMember>(m_id, WoWGuid(lowguid, 0, HIGHGUID_TYPE_PLAYER).getRawGuid(), fields[2].asUint8());
     if (!member->loadGuildMembersFromDB(fields, fields2))
     {
         CharacterDatabase.Execute("DELETE FROM guild_members WHERE guildId = %u", lowguid);
-        delete member;
         return false;
     }
 
-    _guildMembersStore[lowguid] = member;
+    _guildMembersStore.insert_or_assign(lowguid, std::move(member));
 
     return true;
 }
@@ -1211,7 +1192,7 @@ bool Guild::loadEventLogFromDB(Field* fields)
 {
     if (mEventLog->canInsert())
     {
-        mEventLog->loadEvent(new GuildEventLogEntry(m_id, fields[1].asUint32(), time_t(fields[6].asUint32()),
+        mEventLog->loadEvent(std::make_unique<GuildEventLogEntry>(m_id, fields[1].asUint32(), time_t(fields[6].asUint32()),
                                                     GuildEventLogTypes(fields[2].asUint8()), fields[3].asUint32(),
                                                     fields[4].asUint32(), fields[5].asUint8()));
         return true;
@@ -1227,7 +1208,7 @@ bool Guild::loadBankEventLogFromDB(Field* fields)
     if (dbTabId < _getPurchasedTabsSize() || isMoneyTab)
     {
         uint8_t tabId = isMoneyTab ? uint8_t(MAX_GUILD_BANK_TABS) : dbTabId;
-        GuildLogHolder* pLog = mBankEventLog[tabId];
+        GuildLogHolder* pLog = mBankEventLog[tabId].get();
         if (pLog->canInsert())
         {
             uint32_t guid = fields[2].asUint32();
@@ -1246,7 +1227,7 @@ bool Guild::loadBankEventLogFromDB(Field* fields)
                 return false;
             }
 
-            pLog->loadEvent(new GuildBankEventLogEntry(m_id, guid, time_t(fields[8].asUint32()), dbTabId, eventType, fields[4].asUint32(),
+            pLog->loadEvent(std::make_unique<GuildBankEventLogEntry>(m_id, guid, time_t(fields[8].asUint32()), dbTabId, eventType, fields[4].asUint32(),
                                                         fields[5].asUint32(), fields[6].asUint16(), fields[7].asUint8()));
         }
     }
@@ -1259,7 +1240,7 @@ void Guild::loadGuildNewsLogFromDB(Field* fields)
     if (!mNewsLog->canInsert())
         return;
 
-    mNewsLog->loadEvent(new GuildNewsLogEntry(m_id, fields[1].asUint32(), fields[6].asUint32(), GuildNews(fields[2].asUint8()),
+    mNewsLog->loadEvent(std::make_unique<GuildNewsLogEntry>(m_id, fields[1].asUint32(), fields[6].asUint32(), GuildNews(fields[2].asUint8()),
                                                 fields[3].asUint32(), fields[4].asUint32(), fields[5].asUint32())); 
 }
 
@@ -1420,7 +1401,7 @@ void Guild::massInviteToEvent([[maybe_unused]]WorldSession* session, [[maybe_unu
 
     for (auto itr = _guildMembersStore.begin(); itr != _guildMembersStore.end(); ++itr)
     {
-        GuildMember* member = itr->second;
+        GuildMember* member = itr->second.get();
         uint32_t level = member->getLevel();
 
         if (member->getGUID() != session->GetPlayer()->getGuid() && level >= minLevel && level <= maxLevel && member->isRankNotLower(static_cast<uint8_t>(minRank)))
@@ -1463,11 +1444,12 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
     if (rankId == GUILD_RANK_NONE)
         rankId = _getLowestRankId();
 
-    auto member = new GuildMember(m_id, guid, rankId);
+    auto member = std::make_unique<GuildMember>(m_id, guid, rankId);
+    auto* memberPtr = member.get();
     std::string name;
     if (player)
     {
-        _guildMembersStore[lowguid] = member;
+        _guildMembersStore.insert_or_assign(lowguid, std::move(member));
         player->setGuildId(m_id);
         player->setInvitedByGuildId(0);
         player->setGuildRank(rankId);
@@ -1493,14 +1475,13 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
 
         if (!ok)
         {
-            delete member;
             return false;
         }
 
-        _guildMembersStore[lowguid] = member;
+        _guildMembersStore.insert_or_assign(lowguid, std::move(member));
     }
 
-    member->saveGuildMembersToDB(false);
+    memberPtr->saveGuildMembersToDB(false);
 
     CharacterDatabase.Execute("INSERT INTO guild_members_withdraw VALUES(%u, 0, 0, 0, 0, 0, 0, 0, 0, 0)", m_id);
 
@@ -1528,9 +1509,9 @@ void Guild::deleteMember(uint64_t guid, bool isDisbanding, bool /*isKicked*/)
         for (auto i = _guildMembersStore.begin(); i != _guildMembersStore.end(); ++i)
         {
             if (i->first == lowguid)
-                oldLeader = i->second;
+                oldLeader = i->second.get();
             else if (newLeader == nullptr || newLeader->getRankId() > i->second->getRankId())
-                newLeader = i->second;
+                newLeader = i->second.get();
         }
 
         if (newLeader == nullptr)
@@ -1550,9 +1531,6 @@ void Guild::deleteMember(uint64_t guid, bool isDisbanding, bool /*isKicked*/)
             broadcastEvent(GE_LEFT, guid, { oldLeader->getName() });
         }
     }
-
-    if (GuildMember* member = getMember(guid))
-        delete member;
 
     _guildMembersStore.erase(lowguid);
 
@@ -1613,17 +1591,17 @@ void Guild::setBankTabText(uint8_t tabId, std::string const& text)
 
 void Guild::createLogHolders()
 {
-    mEventLog = new GuildLogHolder(m_id, worldConfig.guild.eventLogCount);
-    mNewsLog = new GuildLogHolder(m_id, worldConfig.guild.newsLogCount);
+    mEventLog = std::make_unique<GuildLogHolder>(m_id, worldConfig.guild.eventLogCount);
+    mNewsLog = std::make_unique<GuildLogHolder>(m_id, worldConfig.guild.newsLogCount);
 
     for (uint8_t tabId = 0; tabId <= MAX_GUILD_BANK_TABS; ++tabId)
-        mBankEventLog[tabId] = new GuildLogHolder(m_id, worldConfig.guild.bankLogCount);
+        mBankEventLog[tabId] = std::make_unique<GuildLogHolder>(m_id, worldConfig.guild.bankLogCount);
 }
 
 void Guild::createNewBankTab()
 {
     uint8_t tabId = _getPurchasedTabsSize();
-    _guildBankTabsStore.push_back(new GuildBankTab(m_id, tabId));
+    _guildBankTabsStore.emplace_back(std::make_unique<GuildBankTab>(m_id, tabId));
 
     CharacterDatabase.Execute("DELETE FROM guild_bank_tabs WHERE guildId = %u AND tabId = %u", m_id, static_cast<uint32_t>(tabId));
 
@@ -1686,7 +1664,6 @@ void Guild::deleteBankItems(bool removeItemsFromDB)
     for (uint8_t tabId = 0; tabId < _getPurchasedTabsSize(); ++tabId)
     {
         _guildBankTabsStore[tabId]->removeBankTabItemFromDB(removeItemsFromDB);
-        delete _guildBankTabsStore[tabId];
         _guildBankTabsStore[tabId] = nullptr;
     }
     _guildBankTabsStore.clear();
@@ -1842,7 +1819,7 @@ inline bool Guild::memberHasTabRights(uint64_t guid, uint8_t tabId, uint32_t rig
 
 inline void Guild::logEvent(GuildEventLogTypes eventType, uint32_t playerGuid1, uint32_t playerGuid2, uint8_t newRank)
 {
-    mEventLog->addEvent(new GuildEventLogEntry(m_id, mEventLog->getNextGUID(), eventType, playerGuid1, playerGuid2, newRank));
+    mEventLog->addEvent(std::make_unique<GuildEventLogEntry>(m_id, mEventLog->getNextGUID(), eventType, playerGuid1, playerGuid2, newRank));
 }
 
 void Guild::logBankEvent(GuildBankEventLogTypes eventType, uint8_t tabId, uint32_t lowguid, uint32_t itemOrMoney, uint16_t itemStackCount, uint8_t destTabId)
@@ -1860,8 +1837,8 @@ void Guild::logBankEvent(GuildBankEventLogTypes eventType, uint8_t tabId, uint32
         dbTabId = GUILD_BANK_MONEY_TAB;
     }
 
-    GuildLogHolder* pLog = mBankEventLog[tabId];
-    pLog->addEvent(new GuildBankEventLogEntry(m_id, pLog->getNextGUID(), eventType, dbTabId, lowguid, itemOrMoney, itemStackCount, destTabId));
+    GuildLogHolder* pLog = mBankEventLog[tabId].get();
+    pLog->addEvent(std::make_unique<GuildBankEventLogEntry>(m_id, pLog->getNextGUID(), eventType, dbTabId, lowguid, itemOrMoney, itemStackCount, destTabId));
 }
 
 void Guild::broadcastEvent(GuildEvents guildEvent, uint64_t guid, std::vector<std::string> vars) const
@@ -2196,9 +2173,10 @@ void Guild::resetTimes(bool weekly)
 void Guild::addGuildNews(uint8_t type, uint64_t guid, uint32_t flags, uint32_t value)
 {
     uint32_t lowGuid = WoWGuid::getGuidLowPartFromUInt64(guid);
-    GuildNewsLogEntry* news = new GuildNewsLogEntry(m_id, mNewsLog->getNextGUID(), GuildNews(type), lowGuid, flags, value);
+    auto newsHolder = std::make_unique<GuildNewsLogEntry>(m_id, mNewsLog->getNextGUID(), GuildNews(type), lowGuid, flags, value);
 
-    mNewsLog->addEvent(news);
+    const auto* news = newsHolder.get();
+    mNewsLog->addEvent(std::move(newsHolder));
 
     WorldPacket data(SMSG_GUILD_NEWS_UPDATE, 7 + 32);
     data.writeBits(1, 21);
@@ -2228,7 +2206,7 @@ void Guild::handleNewsSetSticky(WorldSession* session, uint32_t newsId, bool sti
         return;
     }
 
-    GuildNewsLogEntry* news = static_cast<GuildNewsLogEntry*>(*itr);
+    GuildNewsLogEntry* news = static_cast<GuildNewsLogEntry*>(itr->get());
     news->setSticky(sticky);
 
     sLogger.debug("HandleNewsSetSticky: {} chenged newsId {} sticky to {}", session->GetPlayer()->getName(), newsId, sticky);
@@ -2284,35 +2262,36 @@ void Guild::swapItems(Player* player, uint8_t tabId, uint8_t slotId, uint8_t des
         return;
 
     Item* pItem = getBankTab(tabId)->getItem(slotId);
-    Item* pItem2;
+    std::unique_ptr<Item> pItemHolder;
+    std::unique_ptr<Item> pItem2Holder;
 
     if (memberHasTabRights(player->getGuid(), tabId, GB_RIGHT_DEPOSIT_ITEM) == false)
         return;
 
     if (pItem != nullptr && splitedAmount > 0 && pItem->getStackCount() > splitedAmount)
     {
-        pItem2 = pItem;
+        pItem2Holder = getBankTab(tabId)->getItemHolder(slotId);
 
-        pItem2->modStackCount(-static_cast<int32_t>(splitedAmount));
-        pItem2->setCreatorGuid(0);
-        pItem2->saveToDB(0, 0, true, nullptr);
+        pItem2Holder->modStackCount(-static_cast<int32_t>(splitedAmount));
+        pItem2Holder->setCreatorGuid(0);
+        pItem2Holder->saveToDB(0, 0, true, nullptr);
 
-        pItem = sObjectMgr.createItem(pItem2->getEntry(), player);
-        if (pItem == nullptr)
+        pItemHolder = sObjectMgr.createItem(pItem2Holder->getEntry(), player);
+        if (pItemHolder == nullptr)
             return;
 
-        pItem->setStackCount(splitedAmount);
-        pItem->setCreatorGuid(0);
-        pItem->saveToDB(0, 0, true, nullptr);
+        pItemHolder->setStackCount(splitedAmount);
+        pItemHolder->setCreatorGuid(0);
+        pItemHolder->saveToDB(0, 0, true, nullptr);
     }
     else
     {
-        pItem2 = pItem;
-        pItem = nullptr;
+        pItem2Holder = getBankTab(tabId)->getItemHolder(slotId);
+        pItemHolder = getBankTab(tabId)->getItemHolder(destSlotId);
     }
 
-    getBankTab(destTabId)->setItem(slotId, pItem);
-    getBankTab(destTabId)->setItem(destSlotId, pItem2);
+    getBankTab(destTabId)->setItem(slotId, std::move(pItemHolder));
+    getBankTab(destTabId)->setItem(destSlotId, std::move(pItem2Holder));
 
     SlotIds slots;
     slots.insert(slotId);
@@ -2329,6 +2308,7 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
     Item* pSourceItem = player->getItemInterface()->GetInventoryItem(playerBag, playerSlotId);
     Item* pDestItem = getBankTab(tabId)->getItem(slotId);
     Item* pSourceItem2 = pSourceItem;
+    std::unique_ptr<Item> srcItemHolder;
 
     if (pSourceItem == nullptr)
         return;
@@ -2346,50 +2326,59 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
 
         if (splitedAmount && pSourceItem->getStackCount() > splitedAmount)
         {
-            pSourceItem = sObjectMgr.createItem(pSourceItem2->getEntry(), player);
-            if (pSourceItem == nullptr)
+            srcItemHolder = sObjectMgr.createItem(pSourceItem2->getEntry(), player);
+            if (srcItemHolder == nullptr)
                 return;
 
-            pSourceItem->setStackCount(splitedAmount);
-            pSourceItem->setCreatorGuid(pSourceItem2->getCreatorGuid());
+            srcItemHolder->setStackCount(splitedAmount);
+            srcItemHolder->setCreatorGuid(pSourceItem2->getCreatorGuid());
             pSourceItem2->modStackCount(-static_cast<int32_t>(splitedAmount));
             pSourceItem2->m_isDirty = true;
         }
         else
         {
-            if (player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(playerBag, playerSlotId, false) == nullptr)
+            srcItemHolder = player->getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(playerBag, playerSlotId, false);
+            if (srcItemHolder == nullptr)
                 return;
 
-            pSourceItem->removeFromWorld();
+            srcItemHolder->removeFromWorld();
         }
 
-        if (pSourceItem == nullptr)
+        std::unique_ptr<Item> dstItemHolder = nullptr;
+        if (pDestItem != nullptr)
         {
-            if (pDestItem != nullptr && splitedAmount > 0 && pDestItem->getStackCount() > splitedAmount)
+            if (splitedAmount > 0 && pDestItem->getStackCount() > splitedAmount)
             {
                 pSourceItem2 = pDestItem;
 
                 pSourceItem2->modStackCount(-static_cast<int32_t>(splitedAmount));
                 pSourceItem2->saveToDB(0, 0, true, nullptr);
 
-                pDestItem = sObjectMgr.createItem(pSourceItem2->getEntry(), player);
-                if (pDestItem == nullptr)
+                dstItemHolder = sObjectMgr.createItem(pSourceItem2->getEntry(), player);
+                if (dstItemHolder == nullptr)
                     return;
 
-                pDestItem->setStackCount(splitedAmount);
-                pDestItem->setCreatorGuid(pSourceItem2->getCreatorGuid());
+                dstItemHolder->setStackCount(splitedAmount);
+                dstItemHolder->setCreatorGuid(pSourceItem2->getCreatorGuid());
             }
             else
             {
-                getBankTab(tabId)->setItem(slotId, nullptr);
+                dstItemHolder = getBankTab(tabId)->getItemHolder(slotId);
             }
         }
-        else
-        {
-            getBankTab(tabId)->setItem(slotId, pSourceItem);
 
-            pSourceItem->setOwner(nullptr);
-            pSourceItem->saveToDB(0, 0, true, nullptr);
+        srcItemHolder->setOwner(nullptr);
+        srcItemHolder->saveToDB(0, 0, true, nullptr);
+        getBankTab(tabId)->setItem(slotId, std::move(srcItemHolder));
+
+        if (dstItemHolder != nullptr)
+        {
+            auto [addResult, returnedItem] = player->getItemInterface()->SafeAddItem(std::move(dstItemHolder), playerBag, playerSlotId);
+            if (!addResult)
+            {
+                // TODO: if add fails, should item be sent in mail? now it's destroyed
+                player->getItemInterface()->AddItemToFreeSlot(std::move(returnedItem));
+            }
         }
     }
     else
@@ -2399,19 +2388,19 @@ void Guild::swapItemsWithInventory(Player* player, bool toChar, uint8_t tabId, u
             if (getMemberRemainingSlots(getMember(player->getGuid()), tabId) == 0)
                 return;
 
-            pDestItem->setOwner(player);
-            pDestItem->saveToDB(playerBag, playerSlotId, true, nullptr);
-
-            if (!player->getItemInterface()->SafeAddItem(pDestItem, 0, 0))
-            {
-                if (!player->getItemInterface()->AddItemToFreeSlot(pDestItem))
-                    pDestItem->deleteMe();
-            }
+            auto dstItemHolder = getBankTab(tabId)->getItemHolder(slotId);
+            dstItemHolder->setOwner(player);
+            dstItemHolder->saveToDB(playerBag, playerSlotId, true, nullptr);
 
             logBankEvent(GB_LOG_WITHDRAW_ITEM, tabId, player->getGuidLow(),
-                getBankTab(tabId)->getItem(slotId)->getEntry(), static_cast<uint16_t>(getBankTab(tabId)->getItem(slotId)->getStackCount()));
+                dstItemHolder->getEntry(), static_cast<uint16_t>(dstItemHolder->getStackCount()));
 
-            getBankTab(tabId)->setItem(slotId, nullptr);
+            auto [result, returnedItem] = player->getItemInterface()->SafeAddItem(std::move(dstItemHolder), 0, 0);
+            if (!result)
+            {
+                // TODO: if add fails, should item be sent in mail?
+                player->getItemInterface()->AddItemToFreeSlot(std::move(returnedItem));
+            }
         }
     }
 
@@ -2451,7 +2440,7 @@ void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots, bool sendAllSlo
     {
         data << uint8(slots.size());
         for (auto itr = slots.begin(); itr != slots.end(); ++itr)
-            tab->writeSlotPacket(data, *itr, true);
+            tab->writeSlotPacket(data, *itr, false);
     }
     else
         data << uint8_t(0);
@@ -2577,7 +2566,7 @@ void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots, bool sendAllSlo
             {
                 if (Player* player = itr->second->getPlayerByGuid(itr->second->getGUID()))
                 {
-                    data.put<uint32_t>(rempos, uint32_t(getMemberRemainingSlots(itr->second, tabId)));
+                    data.put<uint32_t>(rempos, uint32_t(getMemberRemainingSlots(itr->second.get(), tabId)));
                     player->getSession()->SendPacket(&data);
                 }
             }

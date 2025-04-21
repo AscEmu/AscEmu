@@ -1833,9 +1833,9 @@ void Pet::RemoveSpell(SpellInfo const* sp, [[maybe_unused]]bool showUnlearnSpell
             }
         }
 
-        for (std::list<AI_Spell*>::iterator it = m_aiInterface->m_spells.begin(); it != m_aiInterface->m_spells.end(); ++it)
+        for (auto it = m_aiInterface->m_spells.begin(); it != m_aiInterface->m_spells.end(); ++it)
         {
-            if ((*it) == itr->second)
+            if ((*it).get() == itr->second)
             {
                 m_aiInterface->m_spells.erase(it);
                 m_aiInterface->removeNextSpell(itr->second->spell->getId());
@@ -1848,14 +1848,12 @@ void Pet::RemoveSpell(SpellInfo const* sp, [[maybe_unused]]bool showUnlearnSpell
     }
     else
     {
-        for (std::list<AI_Spell*>::iterator it = m_aiInterface->m_spells.begin(); it != m_aiInterface->m_spells.end(); ++it)
+        for (auto it = m_aiInterface->m_spells.begin(); it != m_aiInterface->m_spells.end(); ++it)
         {
             if ((*it)->spell == sp)
             {
                 // woot?
-                AI_Spell* spe = *it;
                 m_aiInterface->m_spells.erase(it);
-                delete spe;
                 break;
             }
         }
