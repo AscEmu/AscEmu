@@ -12899,6 +12899,7 @@ void Player::sendRaidInfo()
                 data << uint32_t(nextReset - now);
 
                 data << uint32_t(save->getInstanceId());
+                data << uint32_t(counter);
 #endif
 
                 ++counter;

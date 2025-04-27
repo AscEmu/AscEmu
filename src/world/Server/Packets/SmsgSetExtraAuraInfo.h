@@ -17,17 +17,17 @@ namespace AscEmu::Packets
     class SmsgSetExtraAuraInfo : public ManagedPacket
     {
     public:
-        std::unique_ptr<WoWGuid> guid;
+        const WoWGuid& guid;
         uint8_t aura_slot;
         uint32_t spell_id;
         uint32_t max_duration;
         uint32_t duration;
 
-        SmsgSetExtraAuraInfo() : SmsgSetExtraAuraInfo(nullptr, 0, 0, 0, 0)
+        /*SmsgSetExtraAuraInfo() : SmsgSetExtraAuraInfo(nullptr, 0, 0, 0, 0)
         {
-        }
+        }*/
 
-        SmsgSetExtraAuraInfo(WoWGuid* guid, uint8_t aura_slot, uint32_t spell_id, uint32_t max_duration, uint32_t duration) :
+        SmsgSetExtraAuraInfo(WoWGuid& guid, uint8_t aura_slot, uint32_t spell_id, uint32_t max_duration, uint32_t duration) :
             ManagedPacket(SMSG_SET_EXTRA_AURA_INFO, 0),
             guid(guid),
             aura_slot(aura_slot),
@@ -43,17 +43,12 @@ namespace AscEmu::Packets
             if (!guid)
                 return false;
 
-            packet << *guid << aura_slot << spell_id << max_duration << duration;
+            packet << guid << aura_slot << spell_id << max_duration << duration;
             return true;
         }
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            if (!guid)
-            {
-                guid = std::make_unique<WoWGuid>();
-            }
-            packet >> *guid >> aura_slot >> spell_id >> max_duration >> duration;
             return true;
         }
     };

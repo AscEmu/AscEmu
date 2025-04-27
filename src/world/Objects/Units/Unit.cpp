@@ -5464,12 +5464,13 @@ void Unit::sendAuraUpdate(Aura* aur, bool remove)
         if (isPlayer() && !aur->IsPassive())
             static_cast<Player*>(this)->sendMessageToSet(SmsgUpdateAuraDuration(aur->m_visualSlot, aur->getTimeLeft()).serialise().get(), true);
 #else
+
         if (isPlayer() && !aur->IsPassive() && !(aur->getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_HIDE_DURATION))
         {
             static_cast<Player*>(this)->sendMessageToSet(SmsgUpdateAuraDuration(aur->m_visualSlot, aur->getTimeLeft()).serialise().get(), true);
 
             auto guid = GetNewGUID();
-            static_cast<Player*>(this)->sendMessageToSet(SmsgSetExtraAuraInfo(&guid, aur->m_visualSlot, aur->getSpellId(), aur->getMaxDuration(), aur->getTimeLeft()).serialise().get(), true);
+            static_cast<Player*>(this)->sendMessageToSet(SmsgSetExtraAuraInfo(guid, aur->m_visualSlot, aur->getSpellId(), aur->getMaxDuration(), aur->getTimeLeft()).serialise().get(), true);
         }
 
         const auto caster = aur->GetUnitCaster();
