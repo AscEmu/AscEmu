@@ -19,17 +19,12 @@ ConsoleSocket::ConsoleSocket(SOCKET iFd) :
     mRequestId(0),
     isWebClient(false)
 {
-    mInputBuffer = new char[ConsoleDefines::localBuffer];
+    mInputBuffer = std::make_unique<char[]>(ConsoleDefines::localBuffer);
     mRemoteConsole = std::make_unique<RemoteConsole>(this);
 }
 
 ConsoleSocket::~ConsoleSocket()
 {
-    if (mInputBuffer != NULL)
-    {
-        delete[] mInputBuffer;
-    }
-
     if (mRequestId)
     {
         sConsoleAuthMgr.addRequestIdSocket(mRequestId, nullptr);
@@ -77,10 +72,10 @@ void ConsoleSocket::handleConsoleInput()
     readBuffer.Read(&mInputBuffer[mInputBufferPosition], readLength);
     mInputBufferPosition += readLength;
 
-    char* inputChar = strchr(mInputBuffer, '\n');
+    char* inputChar = strchr(mInputBuffer.get(), '\n');
     while (inputChar != NULL)
     {
-        uint32_t inputLength = (uint32_t)((inputChar + 1) - mInputBuffer);
+        uint32_t inputLength = (uint32_t)((inputChar + 1) - mInputBuffer.get());
         if (*(inputChar - 1) == '\r')
         {
             *(inputChar - 1) = '\0';
@@ -88,20 +83,20 @@ void ConsoleSocket::handleConsoleInput()
 
         *inputChar = '\0';
 
-        if (*mInputBuffer != '\0')
+        if (mInputBuffer[0] != '\0')
         {
             switch (mConsoleSocketState)
             {
                 case ConsoleDefines::RemoteConsoleState::WaitForUsername:
                 {
-                    mConsoleAuthName = std::string(mInputBuffer);
+                    mConsoleAuthName = std::string(mInputBuffer.get());
                     mRemoteConsole->Write("password: ");
                     mConsoleSocketState = ConsoleDefines::RemoteConsoleState::WaitForPassword;
 
                 } break;
                 case ConsoleDefines::RemoteConsoleState::WaitForPassword:
                 {
-                    mConsoleAuthPassword = std::string(mInputBuffer);
+                    mConsoleAuthPassword = std::string(mInputBuffer.get());
                     mRemoteConsole->Write("\r\nAttempting to authenticate. Please wait.\r\n");
 
                     mRequestId = sConsoleAuthMgr.getGeneratedId();
@@ -112,13 +107,13 @@ void ConsoleSocket::handleConsoleInput()
                 } break;
                 case ConsoleDefines::RemoteConsoleState::UserLoggedIn:
                 {
-                    if (AscEmu::Util::Strings::isEqual(mInputBuffer, "quit"))
+                    if (AscEmu::Util::Strings::isEqual(mInputBuffer.get(), "quit"))
                     {
                         Disconnect();
                         break;
                     }
 
-                    if (AscEmu::Util::Strings::isEqual(mInputBuffer, "webclient"))
+                    if (AscEmu::Util::Strings::isEqual(mInputBuffer.get(), "webclient"))
                     {
                         isWebClient = true;
                         break;
@@ -126,7 +121,7 @@ void ConsoleSocket::handleConsoleInput()
                 }
                 default:
                 {
-                    processConsoleInput(mRemoteConsole.get(), mInputBuffer, isWebClient);
+                    processConsoleInput(mRemoteConsole.get(), mInputBuffer.get(), isWebClient);
 
                 } break;
             }
@@ -139,11 +134,11 @@ void ConsoleSocket::handleConsoleInput()
         }
         else
         {
-            memcpy(mInputBuffer, &mInputBuffer[inputLength], mInputBufferPosition - inputLength);
+            memcpy(mInputBuffer.get(), &mInputBuffer[inputLength], mInputBufferPosition - inputLength);
             mInputBufferPosition -= inputLength;
         }
 
-        inputChar = strchr(mInputBuffer, '\n');
+        inputChar = strchr(mInputBuffer.get(), '\n');
     }
 }
 

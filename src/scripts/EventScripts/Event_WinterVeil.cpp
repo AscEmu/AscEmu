@@ -97,16 +97,15 @@ void WinterReveler(Player* pPlayer, Unit* pUnit)
         }
         else
         {
-            Item* item = sObjectMgr.createItem(Winteritem, pPlayer);
+            auto item = sObjectMgr.createItem(Winteritem, pPlayer);
             if (item == nullptr)
                 return;
 
             item->setStackCount(5);
-            auto item_add_result = pPlayer->getItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot);
+            const auto [item_add_result, returnedItem] = pPlayer->getItemInterface()->SafeAddItem(std::move(item), slotresult.ContainerSlot, slotresult.Slot);
             if (!item_add_result)
             {
-                DLLLogDetail("Error while adding item %u to player %s", item->getEntry(), pPlayer->getName().c_str());
-                item->deleteMe();
+                DLLLogDetail("Error while adding item %u to player %s", returnedItem->getEntry(), pPlayer->getName().c_str());
             }
             else
             {

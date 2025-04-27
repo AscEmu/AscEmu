@@ -413,8 +413,8 @@ public:
     void loadPetSpellCooldowns();
     uint32_t getPetSpellCooldown(uint32_t _spellId);
 
-    Item* loadItem(uint32_t _lowGuid);
-    Item* createItem(uint32_t _entry, Player* _playerOwner);
+    std::unique_ptr<Item> loadItem(uint32_t _lowGuid);
+    std::unique_ptr<Item> createItem(uint32_t _entry, Player* _playerOwner);
 
     void setHighestGuids();
     uint32_t generateReportId();

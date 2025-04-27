@@ -14,7 +14,7 @@ namespace WDB
     template <class T>
     class WDBContainer
     {
-        typedef std::list<char*> StringPoolList;
+        typedef std::list<std::unique_ptr<char[]>> StringPoolList;
 
     public:
         WDBContainer() : m_row_count(0), m_field_count(0), m_data_table(nullptr)
@@ -82,7 +82,7 @@ namespace WDB
 
             m_data_table = reinterpret_cast<T*>(dbc_loader.autoProduceData(m_format, m_row_count, m_index_table.as_char));
 
-            m_string_pool_list.push_back(dbc_loader.autoProduceStrings(m_format, reinterpret_cast<char*>(m_data_table)));
+            m_string_pool_list.emplace_back(dbc_loader.autoProduceStrings(m_format, reinterpret_cast<char*>(m_data_table)));
 
             return m_index_table.as_t != NULL;
         }
@@ -98,7 +98,7 @@ namespace WDB
             if (!dbc_loader.load(_dbcFilename, m_format))
                 return false;
 
-            m_string_pool_list.push_back(dbc_loader.autoProduceStrings(m_format, reinterpret_cast<char*>(m_data_table)));
+            m_string_pool_list.emplace_back(dbc_loader.autoProduceStrings(m_format, reinterpret_cast<char*>(m_data_table)));
             return true;
         }
 
@@ -114,7 +114,6 @@ namespace WDB
 
             while (!m_string_pool_list.empty())
             {
-                delete[] m_string_pool_list.front();
                 m_string_pool_list.pop_front();
             }
 

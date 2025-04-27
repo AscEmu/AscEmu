@@ -139,12 +139,13 @@ private:
 
         SlotResult m_result;
         Player* m_pOwner;
-        Item* m_pItems[MAX_INVENTORY_SLOT];
-        Item* m_pBuyBack[MAX_BUYBACK_SLOT];
+        std::array<std::unique_ptr<Item>, MAX_INVENTORY_SLOT> m_pItems;
+        std::array<std::unique_ptr<Item>, MAX_BUYBACK_SLOT> m_pBuyBack;
 
         RefundableMap m_refundableitems;
 
-        AddItemResult m_AddItem(Item* item, int8 ContainerSlot, int16 slot);
+        // Returns item in tuple with result if failed to add item, nullptr on success
+        std::tuple<AddItemResult, std::unique_ptr<Item>> m_AddItem(std::unique_ptr<Item> itemHolder, int8 ContainerSlot, int16 slot);
 
     public:
         Arcemu::EquipmentSetMgr m_EquipmentSets;
@@ -169,13 +170,16 @@ private:
         int16 GetBagSlotByGuid(uint64 guid);
 
         Item* SafeAddItem(uint32 ItemId, int8 ContainerSlot, int16 slot);
-        AddItemResult SafeAddItem(Item* pItem, int8 ContainerSlot, int16 slot);
-        Item* SafeRemoveAndRetreiveItemFromSlot(int8 ContainerSlot, int16 slot, bool destroy);  // doesn't destroy item from memory
-        Item* SafeRemoveAndRetreiveItemByGuid(uint64 guid, bool destroy);
+        // Returns item in tuple with result if failed to add item, nullptr on success
+        std::tuple<AddItemResult, std::unique_ptr<Item>> SafeAddItem(std::unique_ptr<Item> pItem, int8 ContainerSlot, int16 slot);
+        std::unique_ptr<Item> SafeRemoveAndRetreiveItemFromSlot(int8 ContainerSlot, int16 slot, bool destroy);  // doesn't destroy item from memory
+        std::unique_ptr<Item> SafeRemoveAndRetreiveItemByGuid(uint64 guid, bool destroy);
         bool SafeFullRemoveItemFromSlot(int8 ContainerSlot, int16 slot);                        // destroys item fully
         bool SafeFullRemoveItemByGuid(uint64 guid);                                             // destroys item fully
-        AddItemResult AddItemToFreeSlot(Item* item);
-        AddItemResult AddItemToFreeBankSlot(Item* item);
+        // Returns item in tuple with result if failed to add item, nullptr on success
+        std::tuple<AddItemResult, std::unique_ptr<Item>> AddItemToFreeSlot(std::unique_ptr<Item> item);
+        // Returns item in tuple with result if failed to add item, nullptr on success
+        std::tuple<AddItemResult, std::unique_ptr<Item>> AddItemToFreeBankSlot(std::unique_ptr<Item> itemHolder);
 
         Item* FindItemLessMax(uint32 itemid, uint32 cnt, bool IncBank);
         uint32 GetItemCount(uint32 itemid, bool IncBank = false);
@@ -218,12 +222,12 @@ private:
         inline Item* GetBuyBack(int32 slot)
         {
             if (slot >= 0 && slot < MAX_BUYBACK_SLOT)
-                return m_pBuyBack[slot];
+                return m_pBuyBack[slot].get();
             else
                 return nullptr;
         }
-        void AddBuyBackItem(Item* it, uint32 price);
-        void RemoveBuyBackItem(uint8_t index);
+        void AddBuyBackItem(std::unique_ptr<Item> it, uint32 price);
+        std::unique_ptr<Item> RemoveBuyBackItem(uint8_t index);
         void EmptyBuyBack();
         bool IsEquipped(uint32 itemid);
 

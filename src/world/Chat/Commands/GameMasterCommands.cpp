@@ -163,7 +163,7 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
                 if (worldConfig.gm.hidePermissions && !is_gamemaster)
                     SystemMessage(m_session, " - %s", player->getName().c_str());
                 else
-                    SystemMessage(m_session, " - %s [%s]", player->getName().c_str(), player->getSession()->GetPermissions());
+                    SystemMessage(m_session, " - %s [%s]", player->getName().c_str(), player->getSession()->GetPermissions().get());
 
                 print_headline = false;
             }
@@ -177,7 +177,7 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
                     if (worldConfig.gm.hidePermissions && !is_gamemaster)
                         SystemMessage(m_session, " - %s", player->getName().c_str());
                     else
-                        SystemMessage(m_session, " - %s [%s]", player->getName().c_str(), player->getSession()->GetPermissions());
+                        SystemMessage(m_session, " - %s [%s]", player->getName().c_str(), player->getSession()->GetPermissions().get());
 
                     print_headline = false;
                 }

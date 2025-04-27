@@ -68,10 +68,6 @@ public:
 
 private:
     bool unloadIfEmpty();
-    void setToDelete(bool toDelete)
-    {
-        m_toDelete = toDelete;
-    }
   
     PlayerList m_playerList;
     GroupList m_groupList;
@@ -80,7 +76,6 @@ private:
     uint32_t m_mapid;
     InstanceDifficulty::Difficulties m_difficulty;
     bool m_canReset;
-    bool m_toDelete;
 
     std::mutex _playerListLock;
 };
@@ -127,7 +122,7 @@ public:
         bool operator==(InstResetEvent const& e) const { return e.instanceId == instanceId; }
     };
     typedef std::multimap<time_t, InstResetEvent> ResetTimeQueue;
-    typedef std::unordered_map<uint32_t, InstanceSaved*> InstanceSavedMap;
+    typedef std::unordered_map<uint32_t, std::unique_ptr<InstanceSaved>> InstanceSavedMap;
     typedef std::unordered_map<uint32_t, time_t> ResetTimeByMapDifficultyMap;
 
     // Loading

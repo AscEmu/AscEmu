@@ -213,7 +213,7 @@ std::vector<uint32_t> ChampionControllerAI::selectChampions(PlayerTeam playerTea
 FactionChampionsAI::FactionChampionsAI(Creature* pCreature, uint8_t aitype) : CreatureAIScript(pCreature)
 {
     // Add Boundary
-    pCreature->getAIInterface()->addBoundary(new CircleBoundary(LocationVector(563.26f, 139.6f), 75.0));
+    pCreature->getAIInterface()->addBoundary(std::make_unique<CircleBoundary>(LocationVector(563.26f, 139.6f), 75.0));
     mAIType = aitype;
     mTeamInInstance = 0;
 }

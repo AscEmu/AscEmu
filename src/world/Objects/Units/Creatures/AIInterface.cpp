@@ -207,7 +207,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
     // Reset AI Spells
     if (mCreatureAISpells.size())
     {
-        for (auto spell : mCreatureAISpells)
+        for (const auto& spell : mCreatureAISpells)
         {
             spell->mCooldownTimer->resetInterval(spell->mCooldown);
             spell->setCastCount(0);
@@ -378,8 +378,12 @@ void AIInterface::addSpellFromDatabase(std::vector<MySQLStructure::CreatureAIScr
             if (spellCooldown == 0)
                 spellCooldown = spellInfo->getSpellDefaultDuration(nullptr);
 
+            // Ready add to our List
+            if (hasAISpell(spell.spellId))
+                continue;
+
             // Create AI Spell
-            CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, spell.target, spellInfo->getSpellDefaultDuration(nullptr), spellCooldown, false, spell.triggered);
+            const auto& newAISpell = mCreatureAISpells.emplace_back(std::make_unique<CreatureAISpells>(spellInfo, castChance, spell.target, spellInfo->getSpellDefaultDuration(nullptr), spellCooldown, false, spell.triggered));
 
             if (spell.textId)
                 newAISpell->addDBEmote(spell.textId);
@@ -391,10 +395,6 @@ void AIInterface::addSpellFromDatabase(std::vector<MySQLStructure::CreatureAIScr
 
             if (spell.maxHealth)
                 newAISpell->setMinMaxPercentHp(spell.minHealth, spell.maxHealth);
-
-            // Ready add to our List
-            if (!hasAISpell(spell.spellId))
-                mCreatureAISpells.push_back(newAISpell);
         }
         else
             sLogger.debug("Tried to Register Creature AI Spell without a valid Spell Id {}", spell.spellId);
@@ -572,7 +572,7 @@ void AIInterface::updateAIScript(unsigned long time_passed)
     if (getUnit()->isInCombat())
     {
         // Update Internal Spell Timers
-        for (auto spells : mCreatureAISpells)
+        for (const auto& spells : mCreatureAISpells)
         {
             if (!getUnit()->isCastingSpell())
                 spells->mCooldownTimer->updateTimer(time_passed);
@@ -698,9 +698,9 @@ void AIInterface::castAISpell(uint32_t aiSpellId)
     CreatureAISpells* aiSpell = nullptr;
 
     // Lets find the stored Spellinfo
-    for (auto spell : mCreatureAISpells)
+    for (const auto& spell : mCreatureAISpells)
         if (spell->mSpellInfo && spell->mSpellInfo->getId() == aiSpellId)
-            aiSpell = spell;
+            aiSpell = spell.get();
 
     // when no valid Spell is found return
     if (!aiSpell)
@@ -712,7 +712,7 @@ void AIInterface::castAISpell(uint32_t aiSpellId)
 bool AIInterface::hasAISpell(CreatureAISpells* aiSpell)
 {
     // Lets find the stored Spellinfo
-    for (auto spell : mCreatureAISpells)
+    for (const auto& spell : mCreatureAISpells)
         if (spell->mSpellInfo && spell->mSpellInfo->getId() == aiSpell->mSpellInfo->getId())
             return true;
 
@@ -722,7 +722,7 @@ bool AIInterface::hasAISpell(CreatureAISpells* aiSpell)
 bool AIInterface::hasAISpell(uint32_t SpellId)
 {
     // Lets find the stored Spellinfo
-    for (auto spell : mCreatureAISpells)
+    for (const auto& spell : mCreatureAISpells)
         if (spell->mSpellInfo && spell->mSpellInfo->getId() == SpellId)
             return true;
 
@@ -1685,14 +1685,12 @@ void AIInterface::selectCurrentAgent(Unit* target, uint32_t spellid)
     }
 }
 
-void AIInterface::addSpellToList(AI_Spell* sp)
+void AIInterface::addSpellToList(std::unique_ptr<AI_Spell> sp)
 {
     if (!sp || !sp->spell)
         return;
 
-    AI_Spell* sp2 = new AI_Spell;
-    memcpy(sp2, sp, sizeof(AI_Spell));
-    m_spells.push_back(sp2);
+    m_spells.push_back(std::move(sp));
 }
 
 void AIInterface::initializeSpells()
@@ -1715,7 +1713,7 @@ AI_Spell* AIInterface::getSpell(uint32_t entry)
         for (const auto& aiSpell : m_spells)
         {
             if (aiSpell->spell->getId() == entry)
-                return aiSpell;
+                return aiSpell.get();
         }
     }
     return nullptr;
@@ -2914,14 +2912,14 @@ void AIInterface::doImmediateBoundaryCheck() { m_boundaryCheckTime->resetInterva
 
 /*static*/ bool AIInterface::isInBounds(CreatureBoundary const* boundary, LocationVector pos)
 {
-    for (AreaBoundary const* areaBoundary : *boundary)
+    for (const auto& areaBoundary : *boundary)
         if (!areaBoundary->isWithinBoundary(pos))
             return false;
 
     return true;
 }
 
-void AIInterface::addBoundary(AreaBoundary const* boundary, bool overrideDefault/* = false*/, bool negateBoundaries /*= false*/)
+void AIInterface::addBoundary(std::unique_ptr<AreaBoundary const> boundary, bool overrideDefault/* = false*/, bool negateBoundaries /*= false*/)
 {
     if (boundary == nullptr)
         return;
@@ -2933,7 +2931,7 @@ void AIInterface::addBoundary(AreaBoundary const* boundary, bool overrideDefault
         m_disableDynamicBoundary = true;
     }
 
-    _boundary.push_back(boundary);
+    _boundary.push_back(std::move(boundary));
     _negateBoundary = negateBoundaries;
     doImmediateBoundaryCheck();
 }
@@ -2955,14 +2953,11 @@ void AIInterface::setDefaultBoundary()
     clearBoundary();
 
     // Default boundary 50 yards
-    addBoundary(new CircleBoundary(getUnit()->GetPosition(), 50.0f));
+    addBoundary(std::make_unique<CircleBoundary>(getUnit()->GetPosition(), 50.0f));
 }
 
 void AIInterface::clearBoundary()
 {
-    for (auto& boundaryItr : _boundary)
-        delete boundaryItr;
-
     _boundary.clear();
 }
 
@@ -3680,14 +3675,12 @@ CreatureAISpells* AIInterface::addAISpell(uint32_t spellId, float castChance, ui
         if (spellCooldown == 0)
             spellCooldown = spellInfo->getSpellDefaultDuration(nullptr);
 
-        CreatureAISpells* newAISpell = new CreatureAISpells(spellInfo, castChance, targetType, spellDuration, spellCooldown, forceRemove, isTriggered);
-
-        mCreatureAISpells.push_back(newAISpell);
+        const auto& newAISpell = mCreatureAISpells.emplace_back(std::make_unique<CreatureAISpells>(spellInfo, castChance, targetType, spellDuration, spellCooldown, forceRemove, isTriggered));
 
         newAISpell->setdurationTimer(spellDuration);
         newAISpell->setCooldownTimer(spellCooldown);
 
-        return newAISpell;
+        return newAISpell.get();
     }
 
     sLogger.failure("tried to add invalid spell with id {}", spellId);
@@ -3831,7 +3824,7 @@ void AIInterface::UpdateAISpells()
                 // random chance for shuffeld array should do the job
                 if (randomChance < AISpell->mCastChance)
                 {
-                    usedSpell = AISpell;
+                    usedSpell = AISpell.get();
                     break;
                 }
                 else

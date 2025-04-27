@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Skill.hpp"
 #include "Management/Battleground/Battleground.hpp"
 #include "Management/Loot/LootMgr.hpp"
+#include "Management/Loot/LootRoll.hpp"
 #include "Objects/Units/Stats.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Cells/MapCell.hpp"
@@ -1011,19 +1012,17 @@ void Creature::DeleteFromDB()
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Quests
 
-void Creature::AddQuest(QuestRelation* Q)
+void Creature::AddQuest(std::unique_ptr<QuestRelation> Q)
 {
-    m_quests->push_back(Q);
+    m_quests->push_back(std::move(Q));
 }
 
-void Creature::DeleteQuest(QuestRelation* Q)
+void Creature::DeleteQuest(QuestRelation const* Q)
 {
-    std::list<QuestRelation*>::iterator it;
-    for (it = m_quests->begin(); it != m_quests->end(); ++it)
+    for (auto it = m_quests->begin(); it != m_quests->end(); ++it)
     {
         if (((*it)->type == Q->type) && ((*it)->qst == Q->qst))
         {
-            delete(*it);
             m_quests->erase(it);
             break;
         }
@@ -1032,10 +1031,9 @@ void Creature::DeleteQuest(QuestRelation* Q)
 
 QuestProperties const* Creature::FindQuest(uint32 quest_id, uint8 quest_relation)
 {
-    std::list<QuestRelation*>::iterator it;
-    for (it = m_quests->begin(); it != m_quests->end(); ++it)
+    for (auto it = m_quests->begin(); it != m_quests->end(); ++it)
     {
-        QuestRelation* ptr = (*it);
+        const auto& ptr = (*it);
 
         if ((ptr->qst->id == quest_id) && (ptr->type & quest_relation))
         {
@@ -1048,9 +1046,8 @@ QuestProperties const* Creature::FindQuest(uint32 quest_id, uint8 quest_relation
 uint16 Creature::GetQuestRelation(uint32 quest_id)
 {
     uint16 quest_relation = 0;
-    std::list<QuestRelation*>::iterator it;
 
-    for (it = m_quests->begin(); it != m_quests->end(); ++it)
+    for (auto it = m_quests->begin(); it != m_quests->end(); ++it)
     {
         if ((*it)->qst->id == quest_id)
         {
@@ -1065,17 +1062,17 @@ uint32 Creature::NumOfQuests()
     return (uint32)m_quests->size();
 }
 
-std::list<QuestRelation*>::iterator Creature::QuestsBegin()
+std::list<std::unique_ptr<QuestRelation>>::iterator Creature::QuestsBegin()
 {
     return m_quests->begin();
 }
 
-std::list<QuestRelation*>::iterator Creature::QuestsEnd()
+std::list<std::unique_ptr<QuestRelation>>::iterator Creature::QuestsEnd()
 {
     return m_quests->end();
 }
 
-void Creature::SetQuestList(std::list<QuestRelation*>* qst_lst)
+void Creature::SetQuestList(std::list<std::unique_ptr<QuestRelation>>* qst_lst)
 {
     m_quests = qst_lst;
 }
@@ -1103,7 +1100,7 @@ bool Creature::HasQuests()
 bool Creature::HasQuest(uint32 id, uint32 type)
 {
     if (!m_quests) return false;
-    for (std::list<QuestRelation*>::iterator itr = m_quests->begin(); itr != m_quests->end(); ++itr)
+    for (auto itr = m_quests->begin(); itr != m_quests->end(); ++itr)
         {
             if ((*itr)->qst->id == id && (*itr)->type & type)
                 return true;

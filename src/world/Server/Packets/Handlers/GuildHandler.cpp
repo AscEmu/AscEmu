@@ -831,7 +831,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
         }
         else
         {
-            Item* item = sObjectMgr.createItem(item_ids[arena_type], _player);
+            auto item = sObjectMgr.createItem(item_ids[arena_type], _player);
 
             auto const charter = sObjectMgr.createCharter(_player->getGuidLow(), static_cast<CharterTypes>(srlPacket.arenaIndex));
             if (item == nullptr || charter == nullptr)
@@ -846,17 +846,18 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
             item->addFlags(ITEM_FLAG_SOULBOUND);
             item->setEnchantmentId(0, charter->getId());
             item->setPropertySeed(57813883);
-            if (!_player->getItemInterface()->AddItemToFreeSlot(item))
+            auto* itemRawPtr = item.get();
+            const auto [addResult, _] = _player->getItemInterface()->AddItemToFreeSlot(std::move(item));
+            if (!addResult)
             {
                 charter->destroy();
-                item->deleteMe();
                 return;
             }
 
             charter->saveToDB();
 
             _player->sendItemPushResultPacket(false, true, false, _player->getItemInterface()->LastSearchItemBagSlot(),
-                _player->getItemInterface()->LastSearchItemSlot(), 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
+                _player->getItemInterface()->LastSearchItemSlot(), 1, itemRawPtr->getEntry(), itemRawPtr->getPropertySeed(), itemRawPtr->getRandomPropertiesId(), itemRawPtr->getStackCount());
 
             _player->modCoinage(-static_cast<int32_t>(costs[arena_type]));
             _player->m_charters[srlPacket.arenaIndex] = charter;
@@ -905,7 +906,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
         {
             _player->sendPlayObjectSoundPacket(srlPacket.creatureGuid, 6594);
 
-            Item* item = sObjectMgr.createItem(CharterEntry::Guild, _player);
+            auto item = sObjectMgr.createItem(CharterEntry::Guild, _player);
 
             auto const guildCharter = sObjectMgr.createCharter(_player->getGuidLow(), CHARTER_TYPE_GUILD);
             if (item == nullptr || guildCharter == nullptr)
@@ -920,17 +921,18 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
             item->addFlags(ITEM_FLAG_SOULBOUND);
             item->setEnchantmentId(0, guildCharter->getId());
             item->setPropertySeed(57813883);
-            if (!_player->getItemInterface()->AddItemToFreeSlot(item))
+            auto* itemRawPtr = item.get();
+            const auto [addResult, _] = _player->getItemInterface()->AddItemToFreeSlot(std::move(item));
+            if (!addResult)
             {
                 guildCharter->destroy();
-                item->deleteMe();
                 return;
             }
 
             guildCharter->saveToDB();
 
             _player->sendItemPushResultPacket(false, true, false, _player->getItemInterface()->LastSearchItemBagSlot(),
-                _player->getItemInterface()->LastSearchItemSlot(), 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
+                _player->getItemInterface()->LastSearchItemSlot(), 1, itemRawPtr->getEntry(), itemRawPtr->getPropertySeed(), itemRawPtr->getRandomPropertiesId(), itemRawPtr->getStackCount());
 
             _player->m_charters[CHARTER_TYPE_GUILD] = guildCharter;
             _player->modCoinage(-1000);

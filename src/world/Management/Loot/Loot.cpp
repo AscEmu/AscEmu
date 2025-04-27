@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Loot.hpp"
 #include "LootItem.hpp"
+#include "LootRoll.hpp"
 #include "LootTemplate.hpp"
 #include "Management/Group.h"
 #include "Management/ItemProperties.hpp"

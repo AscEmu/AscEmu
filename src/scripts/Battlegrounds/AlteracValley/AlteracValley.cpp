@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "AlteracValley.h"
 
+#include "Management/Loot/LootItem.hpp"
+#include "Management/Loot/LootRoll.hpp"
 #include "Management/HonorHandler.h"
 #include "Management/WorldStates.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
@@ -1317,7 +1319,7 @@ void AlteracValley::HookGenerateLoot(Player* plr, Object* pCorpse)
                     li.roll = nullptr;
 
                     // push to vector
-                    static_cast<Corpse*>(pCorpse)->loot.items.push_back(li);
+                    static_cast<Corpse*>(pCorpse)->loot.items.push_back(std::move(li));
                 }
             }
         }

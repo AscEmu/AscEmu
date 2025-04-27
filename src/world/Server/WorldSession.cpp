@@ -106,11 +106,6 @@ WorldSession::~WorldSession()
     {
     }
 
-    for (uint32 x = 0; x < 8; x++)
-    {
-        delete[]sAccountData[x].data;
-    }
-
     if (_socket)
         _socket->SetSession(nullptr);
 
@@ -375,7 +370,7 @@ void WorldSession::LogoutPlayer(bool Save)
 
                     if (sAccountData[ui].data)
                     {
-                        CharacterDatabase.EscapeLongString(sAccountData[ui].data, sAccountData[ui].sz, ss);
+                        CharacterDatabase.EscapeLongString(sAccountData[ui].data.get(), sAccountData[ui].sz, ss);
                         // ss.write(sAccountData[ui].data,sAccountData[ui].sz);
                     }
                     ss << "\"";
@@ -416,6 +411,13 @@ void WorldSession::LoadSecurity(std::string securitystring)
     permissions = securitystring;
 
     sLogger.debug("Loaded permissions for {}. [{}]", this->GetAccountId(), permissions);
+}
+
+std::unique_ptr<char[]> WorldSession::GetPermissions() const
+{
+    auto charPtr = std::make_unique<char[]>(permissions.size() + 1);
+    std::strcpy(charPtr.get(), permissions.c_str());
+    return charPtr;
 }
 
 bool WorldSession::hasPermissions() const

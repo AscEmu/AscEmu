@@ -275,7 +275,7 @@ void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
     else if (_player->getCharmGuid() == srlPacket.petGuid)
     {
         bool found = false;
-        for (auto aiSpell : petUnit->getAIInterface()->m_spells)
+        for (const auto& aiSpell : petUnit->getAIInterface()->m_spells)
         {
             if (aiSpell->spell->getId() == srlPacket.spellId)
             {

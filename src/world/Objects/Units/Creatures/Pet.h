@@ -26,6 +26,7 @@
 #include "Utilities/utf8String.hpp"
 #include "Macros/PetMacros.hpp"
 
+struct AI_Spell;
 struct PetCache;
 
 namespace WDB::Structures

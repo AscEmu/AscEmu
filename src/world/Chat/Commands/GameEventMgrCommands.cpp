@@ -12,10 +12,9 @@ This file is released under the MIT license. See README-MIT for more information
 bool ChatHandler::HandleEventListEvents(const char* /*args*/, WorldSession* m_session)
 {
     SystemMessage(m_session, "--- Current Active Events ---");
-    auto eventList = sGameEventMgr.mGameEvents;
-    for (auto gameEventPair : eventList)
+    for (const auto& gameEventPair : sGameEventMgr.mGameEvents)
     {
-        auto gameEvent = gameEventPair.second;
+        auto gameEvent = gameEventPair.second.get();
         if (gameEvent->GetState() == GAMEEVENT_ACTIVE)
         {
             SystemMessage(m_session, "%u - %s", gameEvent->event_id, gameEvent->description.c_str());
@@ -39,9 +38,9 @@ bool ChatHandler::HandleEventStartEvent(const char* args, WorldSession* m_sessio
         return false;
     }
 
-    for (auto eventPair : sGameEventMgr.mGameEvents)
+    for (const auto& eventPair : sGameEventMgr.mGameEvents)
     {
-        auto gameEvent = eventPair.second;
+        auto gameEvent = eventPair.second.get();
         if (gameEvent->event_id == eventid)
         {
             SystemMessage(m_session, "Force starting event %u (%s)", gameEvent->event_id, gameEvent->description.c_str());
@@ -64,9 +63,9 @@ bool ChatHandler::HandleEventStopEvent(const char* args, WorldSession* m_session
         return false;
     }
 
-    for (auto eventPair : sGameEventMgr.mGameEvents)
+    for (const auto& eventPair : sGameEventMgr.mGameEvents)
     {
-        auto gameEvent = eventPair.second;
+        auto gameEvent = eventPair.second.get();
         if (gameEvent->event_id == eventid)
         {
             SystemMessage(m_session, "Force stopping event %u (%s)", gameEvent->event_id, gameEvent->description.c_str());
@@ -89,9 +88,9 @@ bool ChatHandler::HandleEventResetEvent(const char* args, WorldSession* m_sessio
         return false;
     }
 
-    for (auto eventPair : sGameEventMgr.mGameEvents)
+    for (const auto& eventPair : sGameEventMgr.mGameEvents)
     {
-        auto gameEvent = eventPair.second;
+        auto gameEvent = eventPair.second.get();
         if (gameEvent->event_id == eventid)
         {
             SystemMessage(m_session, "Clearing flags for event %u (%s)", gameEvent->event_id, gameEvent->description.c_str());
@@ -114,11 +113,10 @@ bool ChatHandler::HandleEventReloadAllEvents(const char* /*args*/, WorldSession*
     auto startTime = Util::TimeNow();
 
     // Stop all events, then clear storage
-    for (auto eventPair : sGameEventMgr.mGameEvents)
+    for (const auto& eventPair : sGameEventMgr.mGameEvents)
     {
-        auto gameEvent = eventPair.second;
+        auto gameEvent = eventPair.second.get();
         gameEvent->StopEvent();
-        delete gameEvent;
     }
 
     // Clear game events

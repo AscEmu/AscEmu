@@ -28,8 +28,8 @@ class SERVER_DECL ChatHandler
     friend class CommandTableStorage;
 
 private:
-    ChatHandler() = default;
-    ~ChatHandler() = default;
+    ChatHandler();
+    ~ChatHandler();
 
 public:
     static ChatHandler& getInstance();
@@ -118,7 +118,7 @@ public:
     std::string MyConvertIntToString(const int arg);
     std::string MyConvertFloatToString(const float arg);
     // For skill related GM commands
-    SkillNameMgr* SkillNameManager;
+    std::unique_ptr<SkillNameMgr> SkillNameManager;
 
     // Admin commands
     bool HandleAdminCastAllCommand(const char* args, WorldSession* m_session);

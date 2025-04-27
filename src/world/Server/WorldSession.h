@@ -30,6 +30,7 @@
 #include "Utilities/CallBack.h"
 #include "Management/AddonMgr.h"
 #include <Utilities/utf8.hpp>
+#include <memory>
 #include <string>
 #include "Logging/StringFormat.hpp"
 
@@ -81,7 +82,7 @@ const uint8_t PER_CHARACTER_CACHE_MASK = 0xEA;
 
 struct AccountDataEntry
 {
-    char* data;
+    std::unique_ptr<char[]> data;
     uint32_t sz;
     bool bIsDirty;
 };
@@ -144,12 +145,7 @@ class SERVER_DECL WorldSession
 
         // GM Permission System
         void LoadSecurity(std::string securitystring);
-        char* GetPermissions() const
-        {
-            char* charPtr = new char[permissions.size() + 1];
-            std::strcpy(charPtr, permissions.c_str());
-            return charPtr;
-        }
+        std::unique_ptr<char[]> GetPermissions() const;
 
     //MIT
     bool hasPermissions() const;
@@ -166,15 +162,12 @@ class SERVER_DECL WorldSession
         }
         void SetPlayer(Player* plr) { _player = plr; }
 
-        void SetAccountData(uint32_t index, char* data, bool initial, uint32_t sz)
+        void SetAccountData(uint32_t index, std::unique_ptr<char[]> data, bool initial, uint32_t sz)
         {
             if (index >= 8)
                 return;
 
-            if (sAccountData[index].data)
-                delete[] sAccountData[index].data;
-
-            sAccountData[index].data = data;
+            sAccountData[index].data = std::move(data);
             sAccountData[index].sz = sz;
 
             if (!initial && !sAccountData[index].bIsDirty)      // Mark as "changed" or "dirty"
@@ -791,7 +784,7 @@ protected:
         //////////////////////////////////////////////////////////////////////////////////////////
         // QuestHandler.cpp
     public:
-        WorldPacket* buildQuestQueryResponse(QuestProperties const* qst);
+        std::unique_ptr<WorldPacket> buildQuestQueryResponse(QuestProperties const* qst);
 
     protected:
         void handleQuestPushResultOpcode(WorldPacket& recvPacket);
@@ -924,7 +917,7 @@ protected:
 
         uint32_t _logoutTime; // time we received a logout request -- wait 20 seconds, and quit
 
-        AccountDataEntry sAccountData[8]{};
+        std::array<AccountDataEntry, 8> sAccountData{};
 
         ThreadSafeQueue<std::unique_ptr<WorldPacket>> _recvQueue;
         std::string permissions;

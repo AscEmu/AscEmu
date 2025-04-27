@@ -106,7 +106,7 @@ struct AuctionPacketList
 struct Auction
 {
     Auction();
-    Auction(Field const* fields, Item* pItem);
+    Auction(Field const* fields, std::unique_ptr<Item> pItem);
 
     uint32_t Id;
 
@@ -126,7 +126,7 @@ struct Auction
     uint32_t depositAmount;
 
     uint32_t expireTime;
-    Item* auctionItem;
+    std::unique_ptr<Item> auctionItem;
 
     void deleteFromDB();
     void saveToDB(uint32_t auctionHouseId);

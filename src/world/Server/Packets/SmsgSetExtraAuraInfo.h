@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include <cstdint>
+#include <memory>
+#include <utility>
 
 #include "ManagedPacket.h"
 
@@ -14,9 +16,8 @@ namespace AscEmu::Packets
 {
     class SmsgSetExtraAuraInfo : public ManagedPacket
     {
-        bool guid_was_allocated;
     public:
-        WoWGuid* guid;
+        std::unique_ptr<WoWGuid> guid;
         uint8_t aura_slot;
         uint32_t spell_id;
         uint32_t max_duration;
@@ -28,7 +29,6 @@ namespace AscEmu::Packets
 
         SmsgSetExtraAuraInfo(WoWGuid* guid, uint8_t aura_slot, uint32_t spell_id, uint32_t max_duration, uint32_t duration) :
             ManagedPacket(SMSG_SET_EXTRA_AURA_INFO, 0),
-            guid_was_allocated(false),
             guid(guid),
             aura_slot(aura_slot),
             spell_id(spell_id),
@@ -37,11 +37,6 @@ namespace AscEmu::Packets
         {
         }
 
-        ~SmsgSetExtraAuraInfo()
-        {
-            if (guid_was_allocated)
-                delete guid;
-        }
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
@@ -56,8 +51,7 @@ namespace AscEmu::Packets
         {
             if (!guid)
             {
-                guid = new WoWGuid;
-                guid_was_allocated = true;
+                guid = std::make_unique<WoWGuid>();
             }
             packet >> *guid >> aura_slot >> spell_id >> max_duration >> duration;
             return true;

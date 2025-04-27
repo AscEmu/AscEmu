@@ -17,7 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 JaraxxusAI::JaraxxusAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
     // Add Boundary
-    pCreature->getAIInterface()->addBoundary(new CircleBoundary(LocationVector(563.26f, 139.6f), 75.0));
+    pCreature->getAIInterface()->addBoundary(std::make_unique<CircleBoundary>(LocationVector(563.26f, 139.6f), 75.0));
 
     setUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC | UNIT_FLAG_IGNORE_PLAYER_COMBAT | UNIT_FLAG_PLUS_MOB);
 

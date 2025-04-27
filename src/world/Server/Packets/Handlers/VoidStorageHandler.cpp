@@ -371,9 +371,10 @@ void WorldSession::handleVoidStorageTransfer(WorldPacket& recvData)
             continue;
         }
 
-        Item* item = sObjectMgr.createItem(itemVS->itemEntry, player);
+        auto itemHolder = sObjectMgr.createItem(itemVS->itemEntry, player);
 
-        AddItemResult msg = player->getItemInterface()->AddItemToFreeSlot(item);
+        auto* item = itemHolder.get();
+        const auto [msg, _] = player->getItemInterface()->AddItemToFreeSlot(std::move(itemHolder));
         if (msg != ADD_ITEM_RESULT_OK)
         {
             sendVoidStorageTransferResult(VOID_TRANSFER_ERROR_INVENTORY_FULL);

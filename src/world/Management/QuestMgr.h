@@ -25,6 +25,7 @@
 #include "QuestProperties.hpp"
 #include "CommonTypes.hpp"
 
+#include <memory>
 #include <vector>
 #include <unordered_map>
 #include <list>
@@ -89,8 +90,8 @@ typedef std::vector<QuestPOI> QuestPOIVector;
 typedef std::unordered_map<uint32, QuestPOIVector> QuestPOIMap;
 
 class Item;
-typedef std::list<QuestRelation*> QuestRelationList;
-typedef std::list<QuestAssociation*> QuestAssociationList;
+typedef std::list<std::unique_ptr<QuestRelation>> QuestRelationList;
+typedef std::list<std::unique_ptr<QuestAssociation>> QuestAssociationList;
 
 // APGL End
 // MIT Start
@@ -217,14 +218,12 @@ public:
         void FillQuestMenu(Creature*, Player*, GossipMenu &);
 
     private:
-        std::unordered_map<uint32, std::list<QuestRelation*>* > m_npc_quests;
-        std::unordered_map<uint32, std::list<QuestRelation*>* > m_obj_quests;
+        std::unordered_map<uint32, std::unique_ptr<QuestRelationList> > m_npc_quests;
+        std::unordered_map<uint32, std::unique_ptr<QuestRelationList> > m_obj_quests;
         std::unordered_map<uint32, std::list<QuestRelation*>* > m_itm_quests;
         QuestPOIMap m_QuestPOIMap;
 
-        std::unordered_map<uint32, std::list<QuestAssociation*>* > m_quest_associations;
-        inline std::unordered_map<uint32, std::list<QuestAssociation*>* >& GetQuestAssociationList()
-        {return m_quest_associations;}
+        std::unordered_map<uint32, std::unique_ptr<QuestAssociationList> > m_quest_associations;
 
         std::unordered_map<uint32, uint32> m_ObjectLootQuestList;
 

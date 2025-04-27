@@ -241,7 +241,6 @@ public:
     void saveToDB(int8_t containerslot, int8_t slot, bool firstsave, QueryBuffer* buf);
     bool loadAuctionItemFromDB(uint64_t guid);
     void deleteFromDB();
-    void deleteMe();
     bool isEligibleForRefund();
 
     uint32_t getChargesLeft() const;

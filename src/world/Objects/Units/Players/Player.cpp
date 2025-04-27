@@ -2549,19 +2549,19 @@ bool Player::create(CharCreate& charCreateContent)
                 //use safeadd only for equipmentset items... all other items will go to a free bag slot.
                 if (itemSlot < INVENTORY_SLOT_BAG_END && (itemProperties->Class == ITEM_CLASS_ARMOR || itemProperties->Class == ITEM_CLASS_WEAPON || itemProperties->Class == ITEM_CLASS_CONTAINER || itemProperties->Class == ITEM_CLASS_QUIVER))
                 {
-                    if (!getItemInterface()->SafeAddItem(item, INVENTORY_SLOT_NOT_SET, itemSlot))
+                    const auto [addResult, _] = getItemInterface()->SafeAddItem(std::move(item), INVENTORY_SLOT_NOT_SET, itemSlot);
+                    if (!addResult)
                     {
                         sLogger.debug("StartOutfit - Item with entry {} can not be added safe to slot {}!", itemId, static_cast<uint32_t>(itemSlot));
-                        item->deleteMe();
                     }
                 }
                 else
                 {
                     item->setStackCount(itemProperties->MaxCount);
-                    if (!getItemInterface()->AddItemToFreeSlot(item))
+                    const auto [addResult, _] = getItemInterface()->AddItemToFreeSlot(std::move(item));
+                    if (!addResult)
                     {
                         sLogger.debug("StartOutfit - Item with entry {} can not be added to a free slot!", itemId);
-                        item->deleteMe();
                     }
                 }
             }
@@ -2578,13 +2578,11 @@ bool Player::create(CharCreate& charCreateContent)
                 item->setStackCount((*is).amount);
                 if ((*is).slot < INVENTORY_SLOT_BAG_END)
                 {
-                    if (!getItemInterface()->SafeAddItem(item, INVENTORY_SLOT_NOT_SET, (*is).slot))
-                        item->deleteMe();
+                    getItemInterface()->SafeAddItem(std::move(item), INVENTORY_SLOT_NOT_SET, (*is).slot);
                 }
                 else
                 {
-                    if (!getItemInterface()->AddItemToFreeSlot(item))
-                        item->deleteMe();
+                    getItemInterface()->AddItemToFreeSlot(std::move(item));
                 }
             }
         }
@@ -3223,10 +3221,10 @@ bool Player::compressAndSendUpdateBuffer(uint32_t size, const uint8_t* update_bu
         return false;
     }
 
-    uint8_t* buffer = new uint8_t[destsize];
+    auto buffer = std::make_unique<uint8_t[]>(destsize);
 
     // set up stream pointers
-    stream.next_out = (Bytef*)buffer + 4;
+    stream.next_out = (Bytef*)buffer.get() + 4;
     stream.avail_out = destsize;
     stream.next_in = (Bytef*)update_buffer;
     stream.avail_in = size;
@@ -3236,7 +3234,6 @@ bool Player::compressAndSendUpdateBuffer(uint32_t size, const uint8_t* update_bu
         stream.avail_in != 0)
     {
         sLogger.failure("deflate failed.");
-        delete[] buffer;
         return false;
     }
 
@@ -3244,7 +3241,6 @@ bool Player::compressAndSendUpdateBuffer(uint32_t size, const uint8_t* update_bu
     if (deflate(&stream, Z_FINISH) != Z_STREAM_END)
     {
         sLogger.failure("deflate failed: did not end stream");
-        delete[] buffer;
         return false;
     }
 
@@ -3252,7 +3248,6 @@ bool Player::compressAndSendUpdateBuffer(uint32_t size, const uint8_t* update_bu
     if (deflateEnd(&stream) != Z_OK)
     {
         sLogger.failure("deflateEnd failed.");
-        delete[] buffer;
         return false;
     }
 
@@ -3260,12 +3255,10 @@ bool Player::compressAndSendUpdateBuffer(uint32_t size, const uint8_t* update_bu
     *(uint32_t*)&buffer[0] = size;
 
 #if VERSION_STRING < Cata
-    m_session->OutPacket(SMSG_COMPRESSED_UPDATE_OBJECT, static_cast<uint16_t>(stream.total_out) + 4, buffer);
+    m_session->OutPacket(SMSG_COMPRESSED_UPDATE_OBJECT, static_cast<uint16_t>(stream.total_out) + 4, buffer.get());
 #else
-    m_session->OutPacket(SMSG_UPDATE_OBJECT, static_cast<uint16_t>(stream.total_out) + 4, buffer);
+    m_session->OutPacket(SMSG_UPDATE_OBJECT, static_cast<uint16_t>(stream.total_out) + 4, buffer.get());
 #endif
-
-    delete[] buffer;
 
     return true;
 }
@@ -6193,7 +6186,7 @@ void Player::smsg_TalentsInfo([[maybe_unused]]bool SendPetTalents)
     data << uint8_t(m_talentActiveSpec); // Which spec is active right now
     data.writeBits(m_talentSpecsCount, 19);
 
-    size_t* wpos = new size_t[m_talentSpecsCount];
+    auto wpos = std::make_unique<size_t[]>(m_talentSpecsCount);
     for (int i = 0; i < m_talentSpecsCount; ++i)
     {
         wpos[i] = data.bitwpos();
@@ -6594,7 +6587,7 @@ void Player::unEquipOffHandIfRequired()
         return;
 
     // Unequip offhand and find a bag slot for it
-    offHandWeapon = getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_OFFHAND, false);
+    auto offHandWeaponHolder = getItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_OFFHAND, false);
     auto result = getItemInterface()->FindFreeInventorySlot(offHandWeapon->getItemProperties());
     if (!result.Result)
     {
@@ -6603,14 +6596,15 @@ void Player::unEquipOffHandIfRequired()
         offHandWeapon->setOwner(nullptr);
         offHandWeapon->saveToDB(INVENTORY_SLOT_NOT_SET, 0, true, nullptr);
         sMailSystem.SendAutomatedMessage(MAIL_TYPE_NORMAL, getGuid(), getGuid(), "There were troubles with your item.", "There were troubles storing your item into your inventory.", 0, 0, offHandWeapon->getGuidLow(), MAIL_STATIONERY_GM);
-        offHandWeapon->deleteMe();
-        offHandWeapon = nullptr;
     }
-    else if (!getItemInterface()->SafeAddItem(offHandWeapon, result.ContainerSlot, result.Slot) && !getItemInterface()->AddItemToFreeSlot(offHandWeapon))
+    else
     {
-        // shouldn't happen
-        offHandWeapon->deleteMe();
-        offHandWeapon = nullptr;
+        auto [addResult, returnedItem] = getItemInterface()->SafeAddItem(std::move(offHandWeaponHolder), result.ContainerSlot, result.Slot);
+        if (!addResult)
+        {
+            // TODO: if add fails, should item be sent in mail? now it's destroyed
+            getItemInterface()->AddItemToFreeSlot(std::move(returnedItem));
+        }
     }
 }
 
@@ -6933,18 +6927,9 @@ void Player::removeTempItemEnchantsOnArena()
             item->removeAllEnchantments(true);
 }
 
-void Player::addGarbageItem(Item* item) { m_GarbageItems.push_back(item); }
+void Player::addGarbageItem(std::unique_ptr<Item> item) { m_GarbageItems.push_back(std::move(item)); }
 
-void Player::removeGarbageItems()
-{
-    for (std::list<Item*>::iterator itr = m_GarbageItems.begin(); itr != m_GarbageItems.end(); ++itr)
-    {
-        Item* it = *itr;
-        delete it;
-    }
-
-    m_GarbageItems.clear();
-}
+void Player::removeGarbageItems() { m_GarbageItems.clear(); }
 
 void Player::applyItemMods(Item* item, int16_t slot, bool apply, bool justBrokedown /* = false */, bool skipStatApply /* = false  */)
 {
@@ -8734,13 +8719,11 @@ void Player::acceptQuest(uint64_t guid, uint32_t quest_id)
     {
         if (receive_item)
         {
-            if (Item* item = sObjectMgr.createItem(receive_item, this))
+            if (auto itemHolder = sObjectMgr.createItem(receive_item, this))
             {
-                if (!getItemInterface()->AddItemToFreeSlot(item))
-                {
-                    item->deleteMe();
-                }
-                else
+                auto* item = itemHolder.get();
+                const auto [addResult, _] = getItemInterface()->AddItemToFreeSlot(std::move(itemHolder));
+                if (addResult == ADD_ITEM_RESULT_OK)
                 {
                     sendItemPushResultPacket(false, true, false,
                         getItemInterface()->LastSearchItemBagSlot(), getItemInterface()->LastSearchItemSlot(),
@@ -8754,11 +8737,10 @@ void Player::acceptQuest(uint64_t guid, uint32_t quest_id)
     {
         if (!qst_giver->isItem() || (qst_giver->getEntry() != questProperties->srcitem))
         {
-            if (Item* item = sObjectMgr.createItem(questProperties->srcitem, this))
+            if (auto item = sObjectMgr.createItem(questProperties->srcitem, this))
             {
                 item->setStackCount(questProperties->srcitemcount ? questProperties->srcitemcount : 1);
-                if (!getItemInterface()->AddItemToFreeSlot(item))
-                    item->deleteMe();
+                getItemInterface()->AddItemToFreeSlot(std::move(item));
             }
         }
     }
@@ -11196,10 +11178,11 @@ Item* Player::storeItem(LootItem const* lootItem)
     if (add == nullptr)
     {
         // Create the Item
-        auto newItem = sObjectMgr.createItem(lootItem->itemId, this);
-        if (newItem == nullptr)
+        auto newItemHolder = sObjectMgr.createItem(lootItem->itemId, this);
+        if (newItemHolder == nullptr)
             return nullptr;
 
+        auto* newItem = newItemHolder.get();
         newItem->setStackCount(lootItem->count);
         newItem->setOwnerGuid(getGuid());
 
@@ -11214,7 +11197,8 @@ Item* Player::storeItem(LootItem const* lootItem)
             newItem->applyRandomProperties(false);
         }
 
-        if (getItemInterface()->SafeAddItem(newItem, slotResult.ContainerSlot, slotResult.Slot))
+        const auto [addResult, _] = getItemInterface()->SafeAddItem(std::move(newItemHolder), slotResult.ContainerSlot, slotResult.Slot);
+        if (addResult)
         {
             sendItemPushResultPacket(false, true, true, slotResult.ContainerSlot, slotResult.Slot, lootItem->count, newItem->getEntry(), newItem->getPropertySeed(), newItem->getRandomPropertiesId(), newItem->getStackCount());
             sQuestMgr.OnPlayerItemPickup(this, newItem);
@@ -11226,7 +11210,6 @@ Item* Player::storeItem(LootItem const* lootItem)
         }
         else
         {
-            newItem->deleteMe();
             return nullptr;
         }
 
@@ -13209,7 +13192,7 @@ void Player::handleSpellLoot(uint32_t itemId)
     Loot loot1;
     sLootMgr.fillItemLoot(this, &loot1, itemId, 0);
 
-    for (auto item : loot1.items)
+    for (const auto& item : loot1.items)
     {
         uint32_t looteditemid = item.itemproto->ItemId;
         uint32_t count = item.count;

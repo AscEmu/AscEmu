@@ -365,9 +365,9 @@ public:
 
     uint32 NumOfQuests();
 
-    void AddQuest(QuestRelation* Q);
+    void AddQuest(std::unique_ptr<QuestRelation> Q);
 
-    void DeleteQuest(QuestRelation* Q);
+    void DeleteQuest(QuestRelation const* Q);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Searches for a QuestRelation in the GO and if found, returns the Quest
@@ -385,26 +385,26 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Returns an iterator to the GO's QuestRelation list beginning
     // \return an iterator to the QuestRelation list's beginning
-    std::list<QuestRelation*>::iterator QuestsBegin();
+    std::list<std::unique_ptr<QuestRelation>>::iterator QuestsBegin();
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Returns an iterator to the GO's QuestRelation list end
     // \return an iterator to the QuestRelation list's end
-    std::list<QuestRelation*>::iterator QuestsEnd();
+    std::list<std::unique_ptr<QuestRelation>>::iterator QuestsEnd();
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Initializes the QuestRelation list with another
-    // \param std::list< QuestRelation* >* qst_lst  -  pointer to the other list
-    void SetQuestList(std::list<QuestRelation*>* qst_lst);
+    // \param std::list< std::unique_ptr<QuestRelation> >* qst_lst  -  pointer to the other list
+    void SetQuestList(std::list<std::unique_ptr<QuestRelation>>* qst_lst);
 
-    std::list<QuestRelation*>& getQuestList() const;
+    std::list<std::unique_ptr<QuestRelation>>& getQuestList() const;
 
 private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Loads the QuestRelations from QuestMgr for this GO
     void LoadQuests();
 
-    std::list<QuestRelation*>* m_quests;
+    std::list<std::unique_ptr<QuestRelation>>* m_quests;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -634,10 +634,10 @@ public:
         }
     };
 
-    RitualStruct* GetRitual() const { return Ritual; }
+    RitualStruct* GetRitual() const { return Ritual.get(); }
 
 private:
-    RitualStruct* Ritual = nullptr;
+    std::unique_ptr<RitualStruct> Ritual;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

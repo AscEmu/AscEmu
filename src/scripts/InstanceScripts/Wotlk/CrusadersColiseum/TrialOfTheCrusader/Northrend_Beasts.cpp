@@ -97,7 +97,7 @@ void CombatStalkerAI::StartIcehowl(CreatureAIFunc pThis)
 NorthrendBeastsAI::NorthrendBeastsAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
     // Add Boundary
-    pCreature->getAIInterface()->addBoundary(new CircleBoundary(LocationVector(563.26f, 139.6f), 75.0));
+    pCreature->getAIInterface()->addBoundary(std::make_unique<CircleBoundary>(LocationVector(563.26f, 139.6f), 75.0));
 }
 
 CreatureAIScript* NorthrendBeastsAI::Create(Creature* pCreature) { return new NorthrendBeastsAI(pCreature); }

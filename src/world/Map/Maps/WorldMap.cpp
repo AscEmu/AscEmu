@@ -49,7 +49,7 @@ using namespace AscEmu::Threading;
 extern bool bServerShutdown;
 
 WorldMap::WorldMap(BaseMap* baseMap, uint32_t id, uint32_t expiry, uint32_t InstanceId, uint8_t SpawnMode) : CellHandler<MapCell>(baseMap), eventHolder(InstanceId), worldstateshandler(id),
-    _terrain(new TerrainHolder(id)), m_unloadTimer(expiry), m_baseMap(baseMap)
+    _terrain(std::make_unique<TerrainHolder>(id)), m_unloadTimer(expiry), m_baseMap(baseMap)
 {
     // Map
     setSpawnMode(SpawnMode);
@@ -59,7 +59,7 @@ WorldMap::WorldMap(BaseMap* baseMap, uint32_t id, uint32_t expiry, uint32_t Inst
     m_event_Instanceid = eventHolder.GetInstanceID();
 
     // Create script interface
-    ScriptInterface = new MapScriptInterface(*this);
+    ScriptInterface = std::make_unique<MapScriptInterface>(*this);
 
     // Set up storage arrays
     m_CreatureStorage.resize(getBaseMap()->CreatureSpawnCount, nullptr);
@@ -108,13 +108,8 @@ WorldMap::~WorldMap()
     m_thread->killAndJoin();
     sEventMgr.RemoveEvents(this);
 
-    if (ScriptInterface != nullptr)
-    {
-        delete ScriptInterface;
-        ScriptInterface = nullptr;
-    }
-
-    delete _terrain;
+    // Prevents a crash on map shutdown -Appled
+    ScriptInterface = nullptr;
 
     // Remove objects
     if (_cells != nullptr)
@@ -204,13 +199,10 @@ void WorldMap::runThread()
         return;
 }
 
-void WorldMap::shutdownMapThread(bool killThreadOnly/* = false*/)
+void WorldMap::shutdownMapThread()
 {
     pInstance = nullptr;
     m_terminateThread = true;
-
-    // Note; map is never deleted if boolean is set to true, only thread is killed and freed
-    sMapMgr.addMapToRemovePool(this, killThreadOnly);
 }
 
 void WorldMap::unsafeKillMapThread()
@@ -463,23 +455,21 @@ void WorldMap::processRespawns()
 
     while (!_respawnTimes.empty())
     {
-        RespawnInfo* next = _respawnTimes.top();
+        RespawnInfo* next = _respawnTimes.top().get();
         if (now < next->time) // done for this tick
             break;
 
         if (checkRespawn(next)) // see if we're allowed to respawn
         {
             // ok, respawn
-            _respawnTimes.pop();
             getRespawnMapForType(next->type).erase(next->spawnId);
             doRespawn(next->type, next->obj, next->spawnId, next->cellX, next->cellY);
-            delete next;
+            _respawnTimes.pop();
         }
         else if (!next->time) // just remove respawn entry without rescheduling
         {
-            _respawnTimes.pop();
             getRespawnMapForType(next->type).erase(next->spawnId);
-            delete next;
+            _respawnTimes.pop();
         }
         else
         {
@@ -508,8 +498,10 @@ void WorldMap::unloadAll(bool onShutdown/* = false*/)
     if (onShutdown)
         return;
 
-    sMapMgr.removeInstance(getInstanceId());
-    shutdownMapThread();
+    if (getInstanceId() == 0)
+        sMapMgr.addMapToRemovePool(this);
+    else
+        sMapMgr.removeInstance(getInstanceId());
 }
 
 void WorldMap::initVisibilityDistance()
@@ -2183,7 +2175,7 @@ bool WorldMap::addRespawn(RespawnInfo const& info)
         auto it = bySpawnIdMap.find(info.spawnId);
         if (it != bySpawnIdMap.end()) // spawnid already has a respawn scheduled
         {
-            RespawnInfo* const existing = it->second;
+            RespawnInfo const* existing = it->second;
             if (info.time <= existing->time) // delete existing in this case
                 deleteRespawn(existing);
             else
@@ -2195,25 +2187,10 @@ bool WorldMap::addRespawn(RespawnInfo const& info)
         sLogger.failure("Invalid respawn info for spawn id ({},{}) being inserted", uint32(info.type), info.spawnId);
     }
 
-    RespawnInfo* ri = new RespawnInfo(info);
-    _respawnTimes.emplace(ri);
-    bySpawnIdMap.emplace(ri->spawnId, ri);
+    auto ri = std::make_unique<RespawnInfo>(info);
+    bySpawnIdMap.emplace(ri->spawnId, ri.get());
+    _respawnTimes.emplace(std::move(ri));
     return true;
-}
-
-static void pushRespawnInfoFrom(std::vector<RespawnInfo*>& data, RespawnInfoMap const& map)
-{
-    data.reserve(data.size() + map.size());
-    for (auto const& pair : map)
-        data.push_back(pair.second);
-}
-
-void WorldMap::getRespawnInfo(std::vector<RespawnInfo*>& respawnData, SpawnObjectTypeMask types) const
-{
-    if (types & SPAWN_TYPEMASK_CREATURE)
-        pushRespawnInfoFrom(respawnData, _creatureRespawnTimesBySpawnId);
-    if (types & SPAWN_TYPEMASK_GAMEOBJECT)
-        pushRespawnInfoFrom(respawnData, _gameObjectRespawnTimesBySpawnId);
 }
 
 RespawnInfo* WorldMap::getRespawnInfo(SpawnObjectType type, uint32_t spawnId) const
@@ -2239,7 +2216,7 @@ void WorldMap::removeRespawnTime(SpawnObjectType type,uint32_t spawnId)
         deleteRespawn(info);
 }
 
-void WorldMap::deleteRespawn(RespawnInfo* info)
+void WorldMap::deleteRespawn(RespawnInfo const* info)
 {
     // Delete from all relevant containers to ensure consistency
     ASSERT(info);
@@ -2251,14 +2228,11 @@ void WorldMap::deleteRespawn(RespawnInfo* info)
     ASSERT(it != range.second);
     spawnMap.erase(it);
 
-    // respawn heap
-    _respawnTimes.remove(info);
-
     // database
     deleteRespawnFromDB(info->type, info->spawnId);
 
-    // then cleanup the object
-    delete info;
+    // respawn heap and cleanup the object
+    _respawnTimes.remove(info);
 }
 
 void WorldMap::deleteRespawnTimesInDB(uint32_t mapId, uint32_t instanceId)
@@ -2373,9 +2347,7 @@ void WorldMap::doRespawn(SpawnObjectType type, Object* object, uint32_t spawnId,
 void WorldMap::addCorpseDespawn(uint64_t guid, time_t time)
 {
     const auto now = Util::getTimeNow();
-
-    CorpseInfo info(now + time, guid);
-    _corpseDespawnTimes.emplace(info);
+    _corpseDespawnTimes.emplace(now + time, guid);
 }
 
 void WorldMap::updateObjects()
@@ -2483,7 +2455,7 @@ void WorldMap::pushToProcessed(Player* plr)
 
 MapScriptInterface* WorldMap::getInterface()
 {
-    return ScriptInterface;
+    return ScriptInterface.get();
 }
 
 WorldStatesHandler& WorldMap::getWorldStatesHandler()

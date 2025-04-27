@@ -14,7 +14,7 @@ namespace AscEmu::Packets
     class SmsgCreatureQueryResponse : public ManagedPacket
     {
     public:
-        CreatureProperties info;
+        CreatureProperties const* info;
         uint32_t entry;
         const char* name;
         const char* subName;
@@ -23,7 +23,7 @@ namespace AscEmu::Packets
         {
         }
 
-        SmsgCreatureQueryResponse(CreatureProperties info, uint32_t entry, const char* name, const char* subName) :
+        SmsgCreatureQueryResponse(CreatureProperties const* info, uint32_t entry, const char* name, const char* subName) :
             ManagedPacket(SMSG_CREATURE_QUERY_RESPONSE, 250),
             info(info),
             entry(entry),
@@ -57,29 +57,29 @@ namespace AscEmu::Packets
                     packet << uint8_t(0);
 #endif
                 packet << subName;
-                packet << info.icon_name << info.typeFlags;
+                packet << info->icon_name << info->typeFlags;
 #if VERSION_STRING > WotLK
                 packet << uint32_t(0);
 #endif
-                packet << info.Type << info.Family << info.Rank;
+                packet << info->Type << info->Family << info->Rank;
 #if VERSION_STRING > TBC
-                packet << info.killcredit[0] << info.killcredit[1];
+                packet << info->killcredit[0] << info->killcredit[1];
 #else
-                packet << uint32_t(0) << info.spelldataid;
+                packet << uint32_t(0) << info->spelldataid;
 #endif
-                packet << info.Male_DisplayID << info.Female_DisplayID << info.Male_DisplayID2 << info.Female_DisplayID2;
+                packet << info->Male_DisplayID << info->Female_DisplayID << info->Male_DisplayID2 << info->Female_DisplayID2;
 #if VERSION_STRING > TBC
-                packet << info.baseAttackMod << info.rangeAttackMod;
+                packet << info->baseAttackMod << info->rangeAttackMod;
 #else
                 packet << float(0) << float(0); //health and power multiplier.
 #endif
-                packet << info.Leader;
+                packet << info->Leader;
 
 #if VERSION_STRING >= WotLK
                 for (uint8_t i = 0; i < 6; ++i)
-                    packet << uint32_t(info.QuestItems[i]);
+                    packet << uint32_t(info->QuestItems[i]);
 
-                packet << info.waypointid;
+                packet << info->waypointid;
 #endif
 
 #if VERSION_STRING > WotLK

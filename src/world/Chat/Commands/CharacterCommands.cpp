@@ -715,28 +715,13 @@ bool ChatHandler::HandleCharAddItemSetCommand(const char* args, WorldSession* m_
         if (it->ItemSet != setid)
             continue;
 
-        auto item = sObjectMgr.createItem(it->ItemId, m_session->GetPlayer());
-        if (item == nullptr)
-            continue;
-
-        if (it->Bonding == ITEM_BIND_ON_PICKUP)
-        {
-            if (it->Flags & ITEM_FLAG_ACCOUNTBOUND)
-                item->addFlags(ITEM_FLAG_ACCOUNTBOUND);
-            else
-                item->addFlags(ITEM_FLAG_SOULBOUND);
-        }
-
-        if (!player->getItemInterface()->AddItemToFreeSlot(item))
+        if (!player->getItemInterface()->AddItemById(it->ItemId, 1, 0))
         {
             m_session->SendNotification("No free slots left!");
-            item->deleteMe();
             return true;
         }
 
         SystemMessage(m_session, "Added item: %s [%u]", it->Name.c_str(), it->ItemId);
-        SlotResult* le = player->getItemInterface()->LastSearchResult();
-        player->sendItemPushResultPacket(false, true, false, le->ContainerSlot, le->Slot, 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
         ++itemset_items_count;
     }
 
@@ -1836,7 +1821,7 @@ bool ChatHandler::HandleCharListSkillsCommand(const char* /*args*/, WorldSession
     {
         if (player_target->hasSkillLine(SkillId))
         {
-            char* SkillName = SkillNameManager->SkillNames[SkillId];
+            char* SkillName = SkillNameManager->SkillNames[SkillId].get();
             if (!SkillName)
             {
                 RedSystemMessage(m_session, "Invalid skill: %u", SkillId);

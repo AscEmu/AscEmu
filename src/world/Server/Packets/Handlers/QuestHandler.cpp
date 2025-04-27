@@ -38,12 +38,12 @@ This file is released under the MIT license. See README-MIT for more information
 using namespace AscEmu::Packets;
 
 #if VERSION_STRING < Cata
-WorldPacket* WorldSession::buildQuestQueryResponse(QuestProperties const* qst)
+std::unique_ptr<WorldPacket> WorldSession::buildQuestQueryResponse(QuestProperties const* qst)
 {
     // 2048 bytes should be more than enough. The fields cost ~200 bytes.
     // better to allocate more at startup than have to realloc the buffer later on.
 
-    WorldPacket* data = new WorldPacket(SMSG_QUEST_QUERY_RESPONSE, 248);
+    auto data = std::make_unique<WorldPacket>(SMSG_QUEST_QUERY_RESPONSE, 248);
     MySQLStructure::LocalesQuest const* lci = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
     uint32_t i;
 
@@ -195,9 +195,9 @@ WorldPacket* WorldSession::buildQuestQueryResponse(QuestProperties const* qst)
     return data;
 }
 #else
-WorldPacket* WorldSession::buildQuestQueryResponse(QuestProperties const* qst)
+std::unique_ptr<WorldPacket> WorldSession::buildQuestQueryResponse(QuestProperties const* qst)
 {
-    WorldPacket* data = new WorldPacket(SMSG_QUEST_QUERY_RESPONSE, 100);
+    auto data = std::make_unique<WorldPacket>(SMSG_QUEST_QUERY_RESPONSE, 100);
     MySQLStructure::LocalesQuest const* lci = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
 
     *data << uint32_t(qst->id);                                        // Quest ID
@@ -368,9 +368,8 @@ void WorldSession::handleQuestQueryOpcode(WorldPacket& recvPacket)
 
     if (const auto questProperties = sMySQLStore.getQuestProperties(srlPacket.questId))
     {
-        WorldPacket* worldPacket = buildQuestQueryResponse(questProperties);
-        SendPacket(worldPacket);
-        delete worldPacket;
+        auto worldPacket = buildQuestQueryResponse(questProperties);
+        SendPacket(worldPacket.get());
     }
     else
     {

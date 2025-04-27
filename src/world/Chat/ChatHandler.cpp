@@ -26,6 +26,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
+ChatHandler::ChatHandler() = default;
+ChatHandler::~ChatHandler() = default;
+
 ChatHandler& ChatHandler::getInstance()
 {
     static ChatHandler mInstance;
@@ -36,13 +39,12 @@ void ChatHandler::initialize()
 {
     sCommandTableStorage.Init();
     sCommandTableStorage.registerCommands();
-    SkillNameManager = new SkillNameMgr;
+    SkillNameManager = std::make_unique<SkillNameMgr>();
 }
 
 void ChatHandler::finalize()
 {
     sCommandTableStorage.Dealloc();
-    delete SkillNameManager;
 }
 
 bool ChatHandler::hasStringAbbr(const char* s1, const char* s2)
@@ -669,7 +671,7 @@ bool ChatHandler::HandleGetSkillLevelCommand(const char* args, WorldSession* m_s
         return false;
     }
 
-    char* SkillName = SkillNameManager->SkillNames[skill];
+    char* SkillName = SkillNameManager->SkillNames[skill].get();
     if (SkillName == nullptr)
     {
         BlueSystemMessage(m_session, "Skill: %u does not exists", skill);

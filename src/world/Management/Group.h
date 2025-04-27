@@ -161,8 +161,6 @@ class SERVER_DECL Group
 public:
     friend class SubGroup;
 
-    static Group* Create();
-
     Group(bool Assign);
     ~Group();
 
@@ -197,7 +195,7 @@ public:
         if (Id >= 8)
             return 0;
 
-        return m_SubGroups[Id];
+        return m_SubGroups[Id].get();
     }
 
     inline uint32 GetSubGroupCount(void) { return m_SubGroupCount; }
@@ -295,7 +293,7 @@ public:
     uint32 GetMembersCount() { return m_MemberCount; }
 
     uint64 GetGUID() { return uint64(GetID()); }
-    SubGroup* m_SubGroups[8];
+    std::array<std::unique_ptr<SubGroup>, 8> m_SubGroups;
     uint8 m_SubGroupCount;
     void GoOffline(Player* p);
 

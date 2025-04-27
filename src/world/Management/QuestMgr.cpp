@@ -242,9 +242,9 @@ uint32 QuestMgr::CalcQuestStatus(Player* plr, uint32 qst)
 uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
 {
     uint32 status = QuestStatus::NotAvailable;
-    std::list<QuestRelation*>::const_iterator itr;
-    std::list<QuestRelation*>::const_iterator q_begin;
-    std::list<QuestRelation*>::const_iterator q_end;
+    QuestRelationList::const_iterator itr;
+    QuestRelationList::const_iterator q_begin;
+    QuestRelationList::const_iterator q_end;
     bool bValid = false;
 
     if (quest_giver->isGameObject())
@@ -309,7 +309,7 @@ uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
 
     for (itr = q_begin; itr != q_end; ++itr)
     {
-        uint32 tmp_status = CalcQuestStatus(quest_giver, plr, *itr); // save a call
+        uint32 tmp_status = CalcQuestStatus(quest_giver, plr, itr->get()); // save a call
         if (tmp_status > status)
             status = tmp_status;
     }
@@ -319,12 +319,12 @@ uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
 
 uint32 QuestMgr::ActiveQuestsCount(Object* quest_giver, Player* plr)
 {
-    std::list<QuestRelation*>::const_iterator itr;
+    QuestRelationList::const_iterator itr;
     std::map<uint32, uint8> tmp_map;
     uint32 questCount = 0;
 
-    std::list<QuestRelation*>::const_iterator q_begin;
-    std::list<QuestRelation*>::const_iterator q_end;
+    QuestRelationList::const_iterator q_begin;
+    QuestRelationList::const_iterator q_end;
     bool bValid = false;
 
     if (quest_giver->isGameObject())
@@ -364,7 +364,7 @@ uint32 QuestMgr::ActiveQuestsCount(Object* quest_giver, Player* plr)
 
     for (itr = q_begin; itr != q_end; ++itr)
     {
-        if (CalcQuestStatus(quest_giver, plr, *itr) >= QuestStatus::AvailableChat)
+        if (CalcQuestStatus(quest_giver, plr, itr->get()) >= QuestStatus::AvailableChat)
         {
             if (tmp_map.find((*itr)->qst->id) == tmp_map.end())
             {
@@ -1055,9 +1055,9 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
 {
     if (!plr || !plr->getSession()) return;
     uint32 status;
-    std::list<QuestRelation*>::iterator it;
-    std::list<QuestRelation*>::iterator st;
-    std::list<QuestRelation*>::iterator ed;
+    QuestRelationList::iterator it;
+    QuestRelationList::iterator st;
+    QuestRelationList::iterator ed;
     std::map<uint32, uint8> tmp_map;
 
     data->Initialize(SMSG_QUESTGIVER_QUEST_LIST);
@@ -1110,7 +1110,7 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
 
     for (it = st; it != ed; ++it)
     {
-        status = CalcQuestStatus(qst_giver, plr, *it);
+        status = CalcQuestStatus(qst_giver, plr, it->get());
         if (status >= QuestStatus::AvailableChat)
         {
             if (tmp_map.find((*it)->qst->id) == tmp_map.end())
@@ -1619,8 +1619,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                                 return;
 
                             item->setStackCount(uint32(qst->reward_itemcount[i]));
-                            if (!plr->getItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
-                                item->deleteMe();
+                            plr->getItemInterface()->SafeAddItem(std::move(item), slotresult.ContainerSlot, slotresult.Slot);
                         }
                     }
                     else
@@ -1657,9 +1656,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                             return;
 
                         item->setStackCount(uint32(qst->reward_choiceitemcount[reward_slot]));
-                        if (!plr->getItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
-                            item->deleteMe();
-
+                        plr->getItemInterface()->SafeAddItem(std::move(item), slotresult.ContainerSlot, slotresult.Slot);
                     }
                 }
                 else
@@ -1731,8 +1728,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                                 return;
 
                             item->setStackCount(uint32(qst->reward_itemcount[i]));
-                            if (!plr->getItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
-                                item->deleteMe();
+                            plr->getItemInterface()->SafeAddItem(std::move(item), slotresult.ContainerSlot, slotresult.Slot);
                         }
                     }
                     else
@@ -1769,8 +1765,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
                             return;
 
                         item->setStackCount(uint32(qst->reward_choiceitemcount[reward_slot]));
-                        if (!plr->getItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
-                            item->deleteMe();
+                        plr->getItemInterface()->SafeAddItem(std::move(item), slotresult.ContainerSlot, slotresult.Slot);
                     }
                 }
                 else
@@ -1878,13 +1873,12 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
             if (qst->MailSendItem != 0)
             {
                 // the way it's done in World::PollMailboxInsertQueue
-                Item* pItem = sObjectMgr.createItem(qst->MailSendItem, NULL);
+                auto pItem = sObjectMgr.createItem(qst->MailSendItem, NULL);
                 if (pItem != NULL)
                 {
                     pItem->setStackCount(1);
                     pItem->saveToDB(0, 0, true, NULL);
                     itemGuid = pItem->getGuid();
-                    pItem->deleteMe();
                 }
             }
 #if VERSION_STRING > Classic
@@ -1921,93 +1915,54 @@ void QuestMgr::LoadGOQuests(GameObject* go)
 
 QuestRelationList* QuestMgr::GetGOQuestList(uint32 entryid)
 {
-    std::unordered_map<uint32, QuestRelationList*> &olist = m_obj_quests;
+    const auto& olist = m_obj_quests;
     const auto itr = olist.find(entryid);
-    return itr == olist.end() ? nullptr : itr->second;
+    return itr == olist.end() ? nullptr : itr->second.get();
 }
 
 QuestRelationList* QuestMgr::GetCreatureQuestList(uint32 entryid)
 {
-    std::unordered_map<uint32, std::list<QuestRelation*>*> &olist = m_npc_quests;
+    const auto& olist = m_npc_quests;
     const auto itr = olist.find(entryid);
-    return itr == olist.end() ? nullptr : itr->second;
+    return itr == olist.end() ? nullptr : itr->second.get();
 }
 
 void QuestMgr::addCreatureQuest(uint32_t _entry, const QuestProperties* _questProp, uint8_t _type)
 {
-    std::unordered_map<uint32_t, std::list<QuestRelation*>*>& questRelationMap = m_npc_quests;
-    std::list<QuestRelation*>* questRelationList;
-    QuestRelation* questRelation = nullptr;
+    const auto [itr, _] = m_npc_quests.try_emplace(_entry, Util::LazyInstanceCreator([] {
+        return std::make_unique<QuestRelationList>();
+    }));
 
-    if (!questRelationMap.contains(_entry))
-    {
-        questRelationList = new std::list<QuestRelation*>;
-        questRelationMap.insert(std::unordered_map<uint32_t, std::list<QuestRelation*>*>::value_type(_entry, questRelationList));
-    }
-    else
-    {
-        questRelationList = questRelationMap.find(_entry)->second;
-    }
-
+    auto* questRelationList = itr->second.get();
     for (const auto& relation : *questRelationList)
     {
         if (relation->qst == _questProp)
         {
-            questRelation = relation;
-            break;
+            relation->type |= _type;
+            return;
         }
     }
 
-    if (questRelation == nullptr)
-    {
-        questRelation = new QuestRelation;
-        questRelation->qst = _questProp;
-        questRelation->type = _type;
-
-        questRelationList->push_back(questRelation);
-    }
-    else
-    {
-        questRelation->type |= _type;
-    }
+    questRelationList->emplace_back(std::make_unique<QuestRelation>(_questProp, _type));
 }
+
 void QuestMgr::addGameObjectQuest(uint32_t _entry, const QuestProperties* _questProp, uint8_t _type)
 {
-    std::unordered_map<uint32_t, std::list<QuestRelation*>* >& questRelationMap = m_obj_quests;
-    std::list<QuestRelation*>* questRelationList;
-    QuestRelation* questRelation = nullptr;
+    const auto [itr, _] = m_obj_quests.try_emplace(_entry, Util::LazyInstanceCreator([] {
+        return std::make_unique<QuestRelationList>();
+    }));
 
-    if (!questRelationMap.contains(_entry))
-    {
-        questRelationList = new std::list <QuestRelation*>;
-        questRelationMap.insert(std::unordered_map<uint32_t, std::list<QuestRelation*>*>::value_type(_entry, questRelationList));
-    }
-    else
-    {
-        questRelationList = questRelationMap.find(_entry)->second;
-    }
-
+    auto* questRelationList = itr->second.get();
     for (const auto& relation : *questRelationList)
     {
         if (relation->qst == _questProp)
         {
-            questRelation = relation;
-            break;
+            relation->type |= _type;
+            return;
         }
     }
 
-    if (questRelation == nullptr)
-    {
-        questRelation = new QuestRelation;
-        questRelation->qst = _questProp;
-        questRelation->type = _type;
-
-        questRelationList->push_back(questRelation);
-    }
-    else
-    {
-        questRelation->type |= _type;
-    }
+    questRelationList->emplace_back(std::make_unique<QuestRelation>(_questProp, _type));
 }
 
 //template <class T> void QuestMgr::_AddQuest(uint32 entryid, QuestProperties const* qst, uint8 type)
@@ -2298,9 +2253,9 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 
     if (questCount == 1)
     {
-        std::list<QuestRelation*>::const_iterator itr;
-        std::list<QuestRelation*>::const_iterator q_begin;
-        std::list<QuestRelation*>::const_iterator q_end;
+        QuestRelationList::const_iterator itr;
+        QuestRelationList::const_iterator q_begin;
+        QuestRelationList::const_iterator q_end;
 
         bool bValid = false;
 
@@ -2339,7 +2294,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
         }
 
         for (itr = q_begin; itr != q_end; ++itr)
-            if (CalcQuestStatus(qst_giver, plr, *itr) >= QuestStatus::AvailableChat)
+            if (CalcQuestStatus(qst_giver, plr, itr->get()) >= QuestStatus::AvailableChat)
                 break;
 
         if (CalcStatus(qst_giver, plr) < QuestStatus::AvailableChat)
@@ -2381,45 +2336,14 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 
 void QuestMgr::finalize()
 {
-    std::unordered_map<uint32, QuestProperties*>::iterator itr1;
     std::unordered_map<uint32, std::list<QuestRelation*>* >::iterator itr2;
     std::list<QuestRelation*>::iterator itr3;
-    std::unordered_map<uint32, std::list<QuestAssociation*>* >::iterator itr4;
-    std::list<QuestAssociation*>::iterator itr5;
 
     // clear relations
-    for (itr2 = m_obj_quests.begin(); itr2 != m_obj_quests.end(); ++itr2)
-    {
-        if (!itr2->second)
-            continue;
-
-        itr3 = itr2->second->begin();
-        for (; itr3 != itr2->second->end(); ++itr3)
-        {
-            delete(*itr3);
-        }
-        itr2->second->clear();
-        delete itr2->second;
-    }
-
     m_obj_quests.clear();
-
-    for (itr2 = m_npc_quests.begin(); itr2 != m_npc_quests.end(); ++itr2)
-    {
-        if (!itr2->second)
-            continue;
-
-        itr3 = itr2->second->begin();
-        for (; itr3 != itr2->second->end(); ++itr3)
-        {
-            delete(*itr3);
-        }
-        itr2->second->clear();
-        delete itr2->second;
-    }
-
     m_npc_quests.clear();
 
+    // todo: m_itm_quests is not used, possibly remove it -Appled
     for (itr2 = m_itm_quests.begin(); itr2 != m_itm_quests.end(); ++itr2)
     {
         if (!itr2->second)
@@ -2434,19 +2358,6 @@ void QuestMgr::finalize()
         delete itr2->second;
     }
     m_itm_quests.clear();
-    for (itr4 = m_quest_associations.begin(); itr4 != m_quest_associations.end(); ++itr4)
-    {
-        if (!itr4->second)
-            continue;
-
-        itr5 = itr4->second->begin();
-        for (; itr5 != itr4->second->end(); ++itr5)
-        {
-            delete(*itr5);
-        }
-        itr4->second->clear();
-        delete itr4->second;
-    }
     // NTY.
     m_quest_associations.clear();
 }
@@ -2772,61 +2683,38 @@ void QuestMgr::LoadExtraQuestStuff()
 
 void QuestMgr::AddItemQuestAssociation(uint32 itemId, QuestProperties const* qst, uint8 item_count)
 {
-    std::unordered_map<uint32, std::list<QuestAssociation*>* > &associationList = GetQuestAssociationList();
-    std::list<QuestAssociation*>* tempList;
-    QuestAssociation* ptr = NULL;
-
     // look for the item in the associationList
-    if (associationList.find(itemId) == associationList.end())
-    {
-        // not found. Create a new entry and QuestAssociationList
-        tempList = new std::list < QuestAssociation* > ;
-        associationList.insert(std::unordered_map<uint32, std::list<QuestAssociation*>* >::value_type(itemId, tempList));
-    }
-    else
-    {
-        // item found, now we'll search through its QuestAssociationList
-        tempList = associationList.find(itemId)->second;
-    }
+    // Create a new QuestAssociationList or search through existing QuestAssociationList
+    const auto [itr, _] = m_quest_associations.try_emplace(itemId, Util::LazyInstanceCreator([] {
+        return std::make_unique<QuestAssociationList>();
+    }));
+
+    auto* tempList = itr->second.get();
 
     // look through this item's QuestAssociationList for a matching quest entry
-    std::list<QuestAssociation*>::iterator it;
-    for (it = tempList->begin(); it != tempList->end(); ++it)
+    for (auto it = tempList->cbegin(); it != tempList->cend(); ++it)
     {
         if ((*it)->qst == qst)
         {
             // matching quest found
-            ptr = (*it);
-            break;
+            // update the QuestAssociation with the new item_count information
+            (*it)->item_count = item_count;
+            sLogger.debug("WARNING: Duplicate entries found in item_quest_association, updating item #{} with new item_count: {}.", itemId, item_count);
+            return;
         }
     }
 
-    // did we find a matching quest?
-    if (ptr == NULL)
-    {
-        // nope, create a new QuestAssociation for this item and quest
-        ptr = new QuestAssociation;
-        ptr->qst = qst;
-        ptr->item_count = item_count;
-
-        tempList->push_back(ptr);
-    }
-    else
-    {
-        // yep, update the QuestAssociation with the new item_count information
-        ptr->item_count = item_count;
-        sLogger.debug("WARNING: Duplicate entries found in item_quest_association, updating item #{} with new item_count: {}.", itemId, item_count);
-    }
+    // create a new QuestAssociation for this item and quest
+    tempList->emplace_back(std::make_unique<QuestAssociation>(qst, item_count));
 }
 
 QuestAssociationList* QuestMgr::GetQuestAssociationListForItemId(uint32 itemId)
 {
-    std::unordered_map<uint32, QuestAssociationList*> &associationList = GetQuestAssociationList();
-    const auto itr = associationList.find(itemId);
-    if (itr == associationList.end())
+    const auto itr = m_quest_associations.find(itemId);
+    if (itr == m_quest_associations.end())
         return nullptr;
 
-    return itr->second;
+    return itr->second.get();
 }
 
 void QuestMgr::OnPlayerEmote(Player* plr, uint32 emoteid, uint64 & victimguid)
@@ -2941,9 +2829,9 @@ void QuestMgr::FillQuestMenu(Creature* giver, Player* plr, GossipMenu & menu)
     uint8 icon;
     if (giver->isQuestGiver() && giver->HasQuests())
     {
-        for (std::list<QuestRelation*>::iterator itr = giver->QuestsBegin(); itr != giver->QuestsEnd(); ++itr)
+        for (auto itr = giver->QuestsBegin(); itr != giver->QuestsEnd(); ++itr)
         {
-            uint32 status = CalcQuestStatus(giver, plr, *itr);
+            uint32 status = CalcQuestStatus(giver, plr, itr->get());
             if (status >= QuestStatus::AvailableChat)
             {
                 const auto questProp = (*itr)->qst;

@@ -77,41 +77,22 @@ void LfgMgr::initialize()
 
 void LfgMgr::finalize()
 {
-    for (LfgRewardMap::iterator itr = m_RewardMap.begin(); itr != m_RewardMap.end(); ++itr)
-    {
-        delete itr->second;
-    }
-
-    for (LfgQueueInfoMap::iterator it = m_QueueInfoMap.begin(); it != m_QueueInfoMap.end(); ++it)
-    {
-        delete it->second;
-    }
+    m_RewardMap.clear();
+    m_QueueInfoMap.clear();
+    m_Boots.clear();
+    m_RoleChecks.clear();
 
     for (LfgProposalMap::iterator it = m_Proposals.begin(); it != m_Proposals.end(); ++it)
     {
         delete it->second;
     }
-
-    for (LfgPlayerBootMap::iterator it = m_Boots.begin(); it != m_Boots.end(); ++it)
-    {
-        delete it->second;
-    }
-
-    for (LfgRoleCheckMap::iterator it = m_RoleChecks.begin(); it != m_RoleChecks.end(); ++it)
-    {
-        delete it->second;
-    }
+    m_Proposals.clear();
 }
 
 /// Load rewards for completing dungeons
 void LfgMgr::LoadRewards()
 {
     auto startTime = Util::TimeNow();
-
-    for (LfgRewardMap::iterator itr = m_RewardMap.begin(); itr != m_RewardMap.end(); ++itr)
-    {
-        delete itr->second;
-    }
 
     m_RewardMap.clear();
 
@@ -165,7 +146,7 @@ void LfgMgr::LoadRewards()
 //#if VERSION_STRING < Cata
         //WDB::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.lookupEntry(dungeonId);
 //#endif
-        m_RewardMap.insert(LfgRewardMap::value_type(dungeonId, new LfgReward(maxLevel, firstQuestId, firstMoneyVar, firstXPVar, otherQuestId, otherMoneyVar, otherXPVar)));
+        m_RewardMap.emplace(dungeonId, std::make_unique<LfgReward>(maxLevel, firstQuestId, firstMoneyVar, firstXPVar, otherQuestId, otherMoneyVar, otherXPVar));
         ++count;
     }
     while (result->NextRow());
@@ -187,7 +168,7 @@ void LfgMgr::Update(uint32 diff)
     for (LfgRoleCheckMap::iterator it = m_RoleChecks.begin(); it != m_RoleChecks.end();)
     {
         LfgRoleCheckMap::iterator itRoleCheck = it++;
-        LfgRoleCheck* roleCheck = itRoleCheck->second;
+        LfgRoleCheck* roleCheck = itRoleCheck->second.get();
         if (currTime < roleCheck->cancelTime)
         {
             continue;
@@ -213,7 +194,6 @@ void LfgMgr::Update(uint32 diff)
                 }
             }
         }
-        delete roleCheck;
         m_RoleChecks.erase(itRoleCheck);
     }
 
@@ -231,7 +211,7 @@ void LfgMgr::Update(uint32 diff)
     for (LfgPlayerBootMap::iterator it = m_Boots.begin(); it != m_Boots.end();)
     {
         LfgPlayerBootMap::iterator itBoot = it++;
-        LfgPlayerBoot* pBoot = itBoot->second;
+        LfgPlayerBoot* pBoot = itBoot->second.get();
         if (pBoot->cancelTime < currTime)
         {
             pBoot->inProgress = false;
@@ -249,7 +229,6 @@ void LfgMgr::Update(uint32 diff)
                 }
             }
 
-            delete pBoot;
             m_Boots.erase(itBoot);
         }
     }
@@ -330,7 +309,7 @@ void LfgMgr::Update(uint32 diff)
         currTime = time(NULL);
         for (LfgQueueInfoMap::const_iterator itQueue = m_QueueInfoMap.begin(); itQueue != m_QueueInfoMap.end(); ++itQueue)
         {
-            LfgQueueInfo* queue = itQueue->second;
+            LfgQueueInfo* queue = itQueue->second.get();
             if (!queue)
             {
                 sLogger.debug("Update: {} queued with null queue info!", itQueue->first);
@@ -419,7 +398,6 @@ bool LfgMgr::RemoveFromQueue(uint64 guid)
     LfgQueueInfoMap::iterator it = m_QueueInfoMap.find(guid);
     if (it != m_QueueInfoMap.end())
     {
-        delete it->second;
         m_QueueInfoMap.erase(it);
         sLogger.debug("{} removed", guid);
         return true;
@@ -655,13 +633,13 @@ void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDung
     if (group)        // Begin rolecheck
     {
         // Create new rolecheck
-        LfgRoleCheck* roleCheck = new LfgRoleCheck();
+        auto roleCheck = std::make_unique<LfgRoleCheck>();
         roleCheck->cancelTime = time_t(time(nullptr)) + LFG_TIME_ROLECHECK;
         roleCheck->state = LFG_ROLECHECK_INITIALITING;
         roleCheck->leader = guid;
         roleCheck->dungeons = dungeons;
         roleCheck->rDungeonId = rDungeonId;
-        m_RoleChecks[gguid] = roleCheck;
+        m_RoleChecks.try_emplace(gguid, std::move(roleCheck));
 
         if (rDungeonId)
         {
@@ -692,7 +670,7 @@ void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDung
     else        // Add player to queue
     {
         // Queue player
-        LfgQueueInfo* pqInfo = new LfgQueueInfo();
+        auto pqInfo = std::make_unique<LfgQueueInfo>();
         pqInfo->joinTime = time_t(time(nullptr));
         pqInfo->roles[player->getGuid()] = roles;
         pqInfo->dungeons = dungeons;
@@ -704,7 +682,7 @@ void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDung
         else
             --pqInfo->dps;
 
-        m_QueueInfoMap[guid] = pqInfo;
+        m_QueueInfoMap.try_emplace(guid, std::move(pqInfo));
 
         // Send update to player
         player->getSession()->sendLfgJoinResult(joinData);
@@ -879,7 +857,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
     uint8 numPlayers = 0;
     uint8 numLfgGroups = 0;
     uint32 groupLowGuid = 0;
-    LfgQueueInfoMap pqInfoMap;
+    LfgRawQueueInfoMap pqInfoMap;
     for (LfgGuidList::const_iterator it = check.begin(); it != check.end() && numLfgGroups < 2 && numPlayers <= 5; ++it)
     {
         uint64 guid = (*it);
@@ -890,7 +868,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
             RemoveFromQueue(guid);
             return false;
         }
-        pqInfoMap[guid] = itQueue->second;
+        pqInfoMap[guid] = itQueue->second.get();
         numPlayers += static_cast<uint8>(itQueue->second->roles.size());
 
         WoWGuid wowGuid;
@@ -939,7 +917,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
     // Player checks
     LfgRolesMap rolesMap;
     uint64 leader = 0;
-    for (LfgQueueInfoMap::const_iterator it = pqInfoMap.begin(); it != pqInfoMap.end(); ++it)
+    for (LfgRawQueueInfoMap::const_iterator it = pqInfoMap.begin(); it != pqInfoMap.end(); ++it)
     {
         for (LfgRolesMap::const_iterator itRoles = it->second->roles.begin(); itRoles != it->second->roles.end(); ++itRoles)
         {
@@ -994,10 +972,10 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
     // Check if there are any compatible dungeon from the selected dungeons
     LfgDungeonSet compatibleDungeons;
 
-    LfgQueueInfoMap::const_iterator itFirst = pqInfoMap.begin();
+    LfgRawQueueInfoMap::const_iterator itFirst = pqInfoMap.begin();
     for (LfgDungeonSet::const_iterator itDungeon = itFirst->second->dungeons.begin(); itDungeon != itFirst->second->dungeons.end(); ++itDungeon)
     {
-        LfgQueueInfoMap::const_iterator itOther = itFirst;
+        LfgRawQueueInfoMap::const_iterator itOther = itFirst;
         ++itOther;
         while (itOther != pqInfoMap.end() && itOther->second->dungeons.find(*itDungeon) != itOther->second->dungeons.end())
         {
@@ -1027,7 +1005,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
         uint8 Tanks_Needed = LFG_TANKS_NEEDED;
         uint8 Healers_Needed = LFG_HEALERS_NEEDED;
         uint8 Dps_Needed = LFG_DPS_NEEDED;
-        for (LfgQueueInfoMap::const_iterator itQueue = pqInfoMap.begin(); itQueue != pqInfoMap.end(); ++itQueue)
+        for (LfgRawQueueInfoMap::const_iterator itQueue = pqInfoMap.begin(); itQueue != pqInfoMap.end(); ++itQueue)
         {
             LfgQueueInfo* queue = itQueue->second;
             for (LfgRolesMap::const_iterator itPlayer = queue->roles.begin(); itPlayer != queue->roles.end(); ++itPlayer)
@@ -1043,7 +1021,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
         }
         for (PlayerSet::const_iterator itPlayers = players.begin(); itPlayers != players.end(); ++itPlayers)
         {
-            for (LfgQueueInfoMap::const_iterator itQueue = pqInfoMap.begin(); itQueue != pqInfoMap.end(); ++itQueue)
+            for (LfgRawQueueInfoMap::const_iterator itQueue = pqInfoMap.begin(); itQueue != pqInfoMap.end(); ++itQueue)
             {
                 LfgQueueInfo* queue = itQueue->second;
                 if (!queue)
@@ -1094,7 +1072,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
     for (itPlayers = players.begin(); itPlayers != players.end(); ++itPlayers)
     {
         uint64 guid = (*itPlayers)->getGuid();
-        LfgProposalPlayer* ppPlayer = new LfgProposalPlayer();
+        auto ppPlayer = std::make_unique<LfgProposalPlayer>();
         if (auto grp = (*itPlayers)->getGroup())
         {
             ppPlayer->groupLowGuid = grp->GetID();
@@ -1105,7 +1083,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
             }
         }
         ppPlayer->role = rolesMap[guid];
-        pProposal->players[guid] = ppPlayer;
+        pProposal->players.try_emplace(guid, std::move(ppPlayer));
     }
     if (numAccept == 5)
         pProposal->state = LFG_PROPOSAL_SUCCESS;
@@ -1123,7 +1101,7 @@ void LfgMgr::UpdateRoleCheck(uint64 gguid, uint64 guid /* = 0 */, uint8 roles /*
     if (itRoleCheck == m_RoleChecks.end())
         return;
 
-    LfgRoleCheck* roleCheck = itRoleCheck->second;
+    LfgRoleCheck* roleCheck = itRoleCheck->second.get();
     bool sendRoleChosen = roleCheck->state != LFG_ROLECHECK_DEFAULT && guid;
 
     if (!guid)
@@ -1197,7 +1175,7 @@ void LfgMgr::UpdateRoleCheck(uint64 gguid, uint64 guid /* = 0 */, uint8 roles /*
     if (roleCheck->state == LFG_ROLECHECK_FINISHED)
     {
         SetState(gguid, LFG_STATE_QUEUED);
-        LfgQueueInfo* pqInfo = new LfgQueueInfo();
+        auto pqInfo = std::make_unique<LfgQueueInfo>();
         pqInfo->joinTime = time_t(time(NULL));
         pqInfo->roles = roleCheck->roles;
         pqInfo->dungeons = roleCheck->dungeons;
@@ -1214,7 +1192,7 @@ void LfgMgr::UpdateRoleCheck(uint64 gguid, uint64 guid /* = 0 */, uint8 roles /*
                 --pqInfo->dps;
         }
 
-        m_QueueInfoMap[gguid] = pqInfo;
+        m_QueueInfoMap.try_emplace(gguid, std::move(pqInfo));
         if (GetState(gguid) != LFG_STATE_NONE)
         {
             LfgGuidList& currentQueue = m_currentQueue[team];
@@ -1227,7 +1205,6 @@ void LfgMgr::UpdateRoleCheck(uint64 gguid, uint64 guid /* = 0 */, uint8 roles /*
     {
         if (roleCheck->state != LFG_ROLECHECK_FINISHED)
             RestoreState(gguid);
-        delete roleCheck;
         m_RoleChecks.erase(itRoleCheck);
     }
 }
@@ -1362,7 +1339,7 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
     LfgProposalPlayerMap::iterator itProposalPlayer = pProposal->players.find(guid);
     if (itProposalPlayer == pProposal->players.end())
         return;
-    LfgProposalPlayer* ppPlayer = itProposalPlayer->second;
+    LfgProposalPlayer* ppPlayer = itProposalPlayer->second.get();
 
     ppPlayer->accept = LfgAnswer(accept);
     sLogger.debug("Player {} of proposal {} selected: {}", guid, proposalId, accept);
@@ -1414,7 +1391,7 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
         // Save wait times before redoing groups
         for (LfgPlayerList::const_iterator it = players.begin(); it != players.end(); ++it)
         {
-            LfgProposalPlayer* player = pProposal->players[(*it)->getGuid()];
+            LfgProposalPlayer* player = pProposal->players[(*it)->getGuid()].get();
 
             WoWGuid wowGuid;
             if ((*it)->getGroup())
@@ -1658,7 +1635,7 @@ void LfgMgr::InitBoot(Group* grp, uint64 kicker, uint64 victim, std::string reas
     uint64 gguid = grp->GetID();
     SetState(gguid, LFG_STATE_BOOT);
 
-    LfgPlayerBoot* pBoot = new LfgPlayerBoot();
+    auto pBoot = std::make_unique<LfgPlayerBoot>();
     pBoot->inProgress = true;
     pBoot->cancelTime = time_t(time(NULL)) + LFG_TIME_BOOT;
     pBoot->reason = reason;
@@ -1692,9 +1669,9 @@ void LfgMgr::InitBoot(Group* grp, uint64 kicker, uint64 victim, std::string reas
 
     // Notify players
     for (PlayerSet::const_iterator it = players.begin(); it != players.end(); ++it)
-        (*it)->getSession()->sendLfgBootPlayer(pBoot);
+        (*it)->getSession()->sendLfgBootPlayer(pBoot.get());
 
-    m_Boots[grp->GetID()] = pBoot;
+    m_Boots.try_emplace(grp->GetID(), std::move(pBoot));
 }
 
 void LfgMgr::UpdateBoot(Player* player, bool accept)
@@ -1713,7 +1690,7 @@ void LfgMgr::UpdateBoot(Player* player, bool accept)
     if (itBoot == m_Boots.end())
         return;
 
-    LfgPlayerBoot* pBoot = itBoot->second;
+    LfgPlayerBoot* pBoot = itBoot->second.get();
     if (!pBoot)
         return;
 
@@ -1774,7 +1751,6 @@ void LfgMgr::UpdateBoot(Player* player, bool accept)
             DecreaseKicksLeft(gguid);
             */
         }
-        delete pBoot;
         m_Boots.erase(itBoot);
     }
 }
@@ -1970,10 +1946,8 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                             if (item)
                             {
                                 item->setStackCount(uint32(qReward->reward_itemcount[i]));
-                                if (!player->getItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
-                                {
-                                    item->deleteMe();
-                                }
+                                // TODO: if add fails, should item be sent in mail? now it's destroyed
+                                player->getItemInterface()->SafeAddItem(std::move(item), slotresult.ContainerSlot, slotresult.Slot);
                             }
                         }
                     }
@@ -2064,10 +2038,8 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                             if (item)
                             {
                                 item->setStackCount(uint32(qReward->reward_itemcount[i]));
-                                if (!player->getItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
-                                {
-                                    item->deleteMe();
-                                }
+                                // TODO: if add fails, should item be sent in mail? now it's destroyed
+                                player->getItemInterface()->SafeAddItem(std::move(item), slotresult.ContainerSlot, slotresult.Slot);
                             }
                         }
                     }
@@ -2142,7 +2114,7 @@ LfgReward const* LfgMgr::GetRandomDungeonReward(uint32 dungeon, uint8 level)
     LfgRewardMapBounds bounds = m_RewardMap.equal_range(dungeon & 0x00FFFFFF);
     for (LfgRewardMap::const_iterator itr = bounds.first; itr != bounds.second; ++itr)
     {
-        rew = itr->second;
+        rew = itr->second.get();
         // ordered properly at loading
         if (itr->second->maxLevel >= level)
             break;

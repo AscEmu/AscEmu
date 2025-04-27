@@ -1107,7 +1107,7 @@ public:
 
     void removeTempItemEnchantsOnArena();
 
-    void addGarbageItem(Item* item);
+    void addGarbageItem(std::unique_ptr<Item> item);
 
     void applyItemMods(Item* item, int16_t slot, bool apply, bool justBrokedown = false, bool skipStatApply = false);
 
@@ -1115,7 +1115,7 @@ private:
     std::unique_ptr<ItemInterface> m_itemInterface;
 
     void removeGarbageItems();
-    std::list<Item*> m_GarbageItems;
+    std::list<std::unique_ptr<Item>> m_GarbageItems;
 
 protected:
     std::list<ItemSet> m_itemSets;

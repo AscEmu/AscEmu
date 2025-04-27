@@ -891,28 +891,9 @@ int LuaUnit::AddItem(lua_State* L, Unit* ptr)
     if (item_proto == nullptr)
         return 0;
 
-    auto item_add = player->getItemInterface()->FindItemLessMax(id, count, false);
-    if (item_add == nullptr)
-    {
-        item_add = sObjectMgr.createItem(id, player);
-        if (item_add == nullptr)
-            return 0;
-
-        item_add->setStackCount(count);
-        if (player->getItemInterface()->AddItemToFreeSlot(item_add))
-            player->sendItemPushResultPacket(false, true, false, player->getItemInterface()->LastSearchItemBagSlot(),
-                player->getItemInterface()->LastSearchItemSlot(), count, item_add->getEntry(), item_add->getPropertySeed(),
-                item_add->getRandomPropertiesId(), item_add->getStackCount());
-    }
-    else
-    {
-        item_add->modStackCount(count);
-        item_add->setDirty();
-        player->sendItemPushResultPacket(false, true, false,
-            static_cast<uint8_t>(player->getItemInterface()->GetBagSlotByGuid(item_add->getGuid())), 0,
-            count, item_add->getEntry(), item_add->getPropertySeed(), item_add->getRandomPropertiesId(), item_add->getStackCount());
-    }
-    PUSH_ITEM(L, item_add);
+    player->getItemInterface()->AddItemById(id, count, 0);
+    // TODO
+    //PUSH_ITEM(L, item_add);
     return 1;
 }
 
@@ -1527,23 +1508,21 @@ int LuaUnit::StartQuest(lua_State* L, Unit* ptr)
         {
             if (questProperties->receive_items[i])
             {
-                Item* item = sObjectMgr.createItem(questProperties->receive_items[i], player);
+                auto item = sObjectMgr.createItem(questProperties->receive_items[i], player);
                 if (item == nullptr)
                     return false;
 
-                if (!player->getItemInterface()->AddItemToFreeSlot(item))
-                    item->deleteMe();
+                player->getItemInterface()->AddItemToFreeSlot(std::move(item));
             }
         }
 
         if (questProperties->srcitem && questProperties->srcitem != questProperties->receive_items[0])
         {
-            Item* item = sObjectMgr.createItem(questProperties->srcitem, player);
+            auto item = sObjectMgr.createItem(questProperties->srcitem, player);
             if (item)
             {
                 item->setStackCount(questProperties->srcitemcount ? questProperties->srcitemcount : 1);
-                if (!player->getItemInterface()->AddItemToFreeSlot(item))
-                    item->deleteMe();
+                player->getItemInterface()->AddItemToFreeSlot(std::move(item));
             }
         }
 
@@ -2245,7 +2224,7 @@ int LuaUnit::SetOutOfCombatRange(lua_State* L, Unit* ptr)
 
     const auto range = static_cast<float>(luaL_checkinteger(L, 1));
     if (range)
-        ptr->getAIInterface()->addBoundary(new CircleBoundary(ptr->GetPosition(), range), true);
+        ptr->getAIInterface()->addBoundary(std::make_unique<CircleBoundary>(ptr->GetPosition(), range), true);
     return 0;
 }
 
@@ -4359,7 +4338,9 @@ int LuaUnit::GetAccountName(lua_State* L, Unit* ptr)
 
 int LuaUnit::GetGmRank(lua_State* L, Unit* ptr)
 {
-    if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
+    // TODO: possibly needs rewrite of LuaEngine to handle unique_ptr<T> -Appled
+
+    /*if (ptr == nullptr || !ptr->IsInWorld() || !ptr->isPlayer())
     {
         return 0;
     }
@@ -4368,7 +4349,7 @@ int LuaUnit::GetGmRank(lua_State* L, Unit* ptr)
     if (level != nullptr)
         lua_pushstring(L, level);
     else
-        lua_pushnil(L);
+        lua_pushnil(L);*/
     return 1;
 }
 

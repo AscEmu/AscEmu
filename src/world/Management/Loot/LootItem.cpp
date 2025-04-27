@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "LootItem.hpp"
 #include "LootMgr.hpp"
+#include "LootRoll.hpp"
 #include "Management/ItemProperties.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/World.h"
@@ -43,6 +44,17 @@ LootItem::LootItem(LootStoreItem const& li)
 
     needs_quest = li.needs_quest;
     starts_quest = li.starts_quest;
+}
+
+void LootItem::playerRolled(Player* player, uint8_t choice)
+{
+    if (roll == nullptr)
+        return;
+
+    // Ensure the roll will be freed properly by handling rolling inside LootItem
+    const auto rollFinished = roll->playerRolled(player, choice);
+    if (rollFinished)
+        roll = nullptr;
 }
 
 bool LootItem::isAllowedForPlayer(Player const* player) const

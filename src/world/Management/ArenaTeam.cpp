@@ -99,10 +99,7 @@ ArenaTeam::ArenaTeam(Field* field)
     }
 }
 
-ArenaTeam::~ArenaTeam()
-{
-    delete[] m_members;
-}
+ArenaTeam::~ArenaTeam() = default;
 
 void ArenaTeam::saveToDB()
 {
@@ -368,8 +365,8 @@ void ArenaTeam::_allocateSlots(uint16_t type)
         return;
     }
 
-    m_members = new ArenaTeamMember[Slots];
-    memset(m_members, 0, sizeof(ArenaTeamMember) * Slots);
+    m_members = std::make_unique<ArenaTeamMember[]>(Slots);
+    std::fill(m_members.get(), m_members.get() + Slots, ArenaTeamMember());
     m_slots = Slots;
     m_memberCount = 0;
 }

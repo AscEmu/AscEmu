@@ -3437,15 +3437,16 @@ void Aura::SpellAuraChannelDeathItem(AuraEffectModifier* aurEff, bool apply)
                 ItemProperties const* proto = sMySQLStore.getItemProperties(itemid);
                 if (pCaster->getItemInterface()->CalculateFreeSlots(proto) > 0)
                 {
-                    Item* item = sObjectMgr.createItem(itemid, pCaster);
-                    if (!item)
+                    auto itemHolder = sObjectMgr.createItem(itemid, pCaster);
+                    if (!itemHolder)
                         return;
 
+                    auto* item = itemHolder.get();
                     item->setCreatorGuid(pCaster->getGuid());
-                    if (!pCaster->getItemInterface()->AddItemToFreeSlot(item))
+                    const auto [addResult, _] = pCaster->getItemInterface()->AddItemToFreeSlot(std::move(itemHolder));
+                    if (!addResult)
                     {
                         pCaster->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
-                        item->deleteMe();
                         return;
                     }
                     SlotResult* lr = pCaster->getItemInterface()->LastSearchResult();

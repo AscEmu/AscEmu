@@ -400,7 +400,7 @@ void WorldSession::sendLfgUpdateProposal(uint32_t proposalId, const LfgProposal*
     if (itPlayer == pProp->players.end())
         return;
 
-    LfgProposalPlayer* ppPlayer = itPlayer->second;
+    LfgProposalPlayer* ppPlayer = itPlayer->second.get();
     const uint32_t pLowGroupGuid = ppPlayer->groupLowGuid;
     const uint32_t dLowGuid = pProp->groupLowGuid;
     uint32_t dungeonId = pProp->dungeonId;
@@ -457,7 +457,7 @@ void WorldSession::sendLfgUpdateProposal(uint32_t proposalId, const LfgProposal*
 
     for (itPlayer = pProp->players.begin(); itPlayer != pProp->players.end(); ++itPlayer)
     {
-        ppPlayer = itPlayer->second;
+        ppPlayer = itPlayer->second.get();
         data << uint32_t(ppPlayer->role);                               // Role
         data << uint8_t(itPlayer->first == guid);                       // Self player
         if (!ppPlayer->groupLowGuid)                                    // Player not it a group

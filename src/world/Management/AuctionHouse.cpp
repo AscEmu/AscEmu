@@ -29,10 +29,10 @@ This file is released under the MIT license. See README-MIT for more information
 using namespace AscEmu::Packets;
 
 Auction::Auction() = default;
-Auction::Auction(Field const* fields, Item* pItem)
+Auction::Auction(Field const* fields, std::unique_ptr<Item> pItem)
 {
     Id = fields[0].asUint32();
-    auctionItem = pItem;
+    auctionItem = std::move(pItem);
     ownerGuid = fields[3].asUint32();
     startPrice = fields[4].asUint32();
     buyoutPrice = fields[5].asUint32();
@@ -139,14 +139,14 @@ void AuctionHouse::loadAuctionsFromDB()
         Field* fields = result->Fetch();
         const auto auctionId = fields[0].asUint32();
 
-        Item* pItem = sObjectMgr.loadItem(fields[2].asUint32());
+        auto pItem = sObjectMgr.loadItem(fields[2].asUint32());
         if (!pItem)
         {
             CharacterDatabase.Execute("DELETE FROM auctions WHERE auctionId=%u", auctionId);
             continue;
         }
 
-        auctions.try_emplace(auctionId, std::make_unique<Auction>(fields, pItem));
+        auctions.try_emplace(auctionId, std::make_unique<Auction>(fields, std::move(pItem)));
     }
     while (result->NextRow());
     delete result;
@@ -270,8 +270,7 @@ void AuctionHouse::removeAuction(Auction* auction)
     }
 
     // Destroy the item from memory (it still remains in the db)
-    if (auction->auctionItem)
-        auction->auctionItem->deleteMe();
+    auction->auctionItem = nullptr;
 
     // Finally destroy the auction instance.
     auction->deleteFromDB();
@@ -513,5 +512,5 @@ void AuctionHouse::sendAuctionList(Player* player, AscEmu::Packets::CmsgAuctionL
         ++totalcount;
     }
 
-    player->sendPacket(SmsgAuctionListResult(static_cast<uint32_t>(auctionPacketList.size()), auctionPacketList, static_cast<uint32_t>(auctionPacketList.size()), 300).serialise().get());
+    player->sendPacket(SmsgAuctionListResult(static_cast<uint32_t>(auctionPacketList.size()), auctionPacketList, totalcount, 300).serialise().get());
 }

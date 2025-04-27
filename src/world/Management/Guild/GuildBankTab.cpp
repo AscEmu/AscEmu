@@ -23,7 +23,7 @@ using namespace AscEmu::Packets;
 
 GuildBankTab::GuildBankTab(uint32_t guildId, uint8_t tabId) : mGuildId(guildId), mTabId(tabId)
 {
-    memset(mItems, 0, MAX_GUILD_BANK_SLOTS * sizeof(Item*));
+    std::fill(mItems.begin(), mItems.end(), nullptr);
 }
 
 void GuildBankTab::loadGuildBankTabFromDB(Field* fields)
@@ -37,14 +37,14 @@ bool GuildBankTab::loadGuildBankTabItemFromDB(Field* fields)
 {
     uint8_t slotId = fields[2].asUint8();
 
-    Item* pItem = sObjectMgr.loadItem(fields[3].asUint32());
+    auto pItem = sObjectMgr.loadItem(fields[3].asUint32());
     if (pItem == nullptr)
     {
         CharacterDatabase.Execute("DELETE FROM guild_bank_items WHERE itemGuid = %u AND guildId = %u AND tabId = %u",
             fields[3].asUint32(), mGuildId, static_cast<uint32_t>(fields[1].asUint8()));
     }
 
-    mItems[slotId] = pItem;
+    mItems[slotId] = std::move(pItem);
     return true;
 }
 
@@ -52,13 +52,12 @@ void GuildBankTab::removeBankTabItemFromDB(bool removeItemsFromDB)
 {
     for (uint8_t slotId = 0; slotId < MAX_GUILD_BANK_SLOTS; ++slotId)
     {
-        if (Item* pItem = mItems[slotId])
+        if (auto& pItem = mItems[slotId])
         {
             pItem->removeFromWorld();
             if (removeItemsFromDB)
                 pItem->deleteFromDB();
 
-            delete pItem;
             pItem = nullptr;
         }
     }
@@ -190,10 +189,21 @@ std::string const& GuildBankTab::getText() const
 
 Item* GuildBankTab::getItem(uint8_t slotId) const
 {
-    return slotId < MAX_GUILD_BANK_SLOTS ? mItems[slotId] : nullptr;
+    return slotId < MAX_GUILD_BANK_SLOTS ? mItems[slotId].get() : nullptr;
 }
 
-bool GuildBankTab::setItem(uint8_t slotId, Item* item)
+std::unique_ptr<Item> GuildBankTab::getItemHolder(uint8_t slotId)
+{
+    if (slotId >= MAX_GUILD_BANK_SLOTS)
+        return nullptr;
+
+    CharacterDatabase.Execute("DELETE FROM guild_bank_items WHERE guildId = %u AND tabId = %u AND slotId = %u", mGuildId, static_cast<uint32_t>(mTabId), static_cast<uint32_t>(slotId));
+
+    std::unique_ptr<Item> tmpHolder = std::move(mItems[slotId]);
+    return tmpHolder;
+}
+
+bool GuildBankTab::setItem(uint8_t slotId, std::unique_ptr<Item> item)
 {
     if (slotId >= MAX_GUILD_BANK_SLOTS && slotId != UNDEFINED_TAB_SLOT)
         return false;
@@ -201,6 +211,7 @@ bool GuildBankTab::setItem(uint8_t slotId, Item* item)
     if (item != nullptr)
     {
         uint32_t slot_id = 0;
+        const auto itemGuid = item->getGuidLow();
         if (slotId == 0 || slotId == UNDEFINED_TAB_SLOT)
         {
             for (uint8_t i = 0; i < MAX_GUILD_BANK_SLOTS; ++i)
@@ -208,13 +219,17 @@ bool GuildBankTab::setItem(uint8_t slotId, Item* item)
                 if (mItems[i] == nullptr)
                 {
                     slot_id = i;
-                    mItems[i] = item;
                     break;
                 }
             }
         }
+        else
+        {
+            slot_id = slotId;
+        }
 
-        CharacterDatabase.Execute("INSERT INTO guild_bank_items VALUES (%u, %u, %u, %u)", mGuildId, static_cast<uint32_t>(mTabId), slot_id, item->getGuidLow());
+        mItems[slot_id] = std::move(item);
+        CharacterDatabase.Execute("INSERT INTO guild_bank_items VALUES (%u, %u, %u, %u)", mGuildId, static_cast<uint32_t>(mTabId), slot_id, itemGuid);
     }
     else
     {
