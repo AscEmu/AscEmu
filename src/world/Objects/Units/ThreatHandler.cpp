@@ -128,7 +128,7 @@ void ThreatReference::unregisterAndFree()
 
 ThreatManager::ThreatManager(Unit* owner) : _owner(owner), _ownerCanHaveThreatList(false), _needClientUpdate(false), _updateTimer(THREAT_UPDATE_INTERVAL), _currentVictimRef(nullptr), _fixateRef(nullptr)
 {
-    for (int8 i = 0; i < TOTAL_SPELL_SCHOOLS; ++i)
+    for (int8_t i = 0; i < TOTAL_SPELL_SCHOOLS; ++i)
         _singleSchoolModifiers[i] = 1.0f;
 }
 

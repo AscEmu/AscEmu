@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "AEVersion.hpp"
 #include "WorldConf.h"
-#include "CommonTypes.hpp"
 #include "CreatureAIScript.hpp"
 #include "Management/GameEvent.hpp"
 #include "Management/ObjectMgr.hpp"

@@ -8,6 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "AEVersion.hpp"
 #include "CommonTypes.hpp"
 
+#include <cstdint>
+
 #ifdef FT_ACHIEVEMENTS
 
 class Object;

@@ -50,7 +50,7 @@ public:
     GameObject* createGOPassenger(MySQLStructure::GameobjectSpawn* data);
 
     // Build Update for Player
-    uint32  buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
+    uint32_t  buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
     void UpdateForMap(WorldMap* map);
 
     // Removes transport from map
@@ -63,8 +63,8 @@ public:
     void calculatePassengerOffset(float& x, float& y, float& z, float* o = nullptr) override;
 
     uint32_t getTransportPeriod() const override { return getLevel(); }
-    void SetPeriod(uint32 period) { setLevel(period); }
-    uint32 GetTimer() const { return m_goValue.PathProgress; }
+    void SetPeriod(uint32_t period) { setLevel(period); }
+    uint32_t GetTimer() const { return m_goValue.PathProgress; }
 
     KeyFrameVec const& GetKeyFrames() const { return _transportInfo->keyFrames; }
 

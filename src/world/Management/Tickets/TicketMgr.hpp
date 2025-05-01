@@ -80,13 +80,13 @@ public:
     void saveGMTicket(GM_Ticket* ticket, QueryBuffer* buf);
     void updateGMTicket(GM_Ticket* ticket);
 
-    void removeGMTicketByPlayer(uint64 playerGuid);
-    void removeGMTicket(uint64 ticketGuid);
-    void closeTicket(uint64 ticketGuid);
-    void deleteGMTicketPermanently(uint64 ticketGuid);
+    void removeGMTicketByPlayer(uint64_t playerGuid);
+    void removeGMTicket(uint64_t ticketGuid);
+    void closeTicket(uint64_t ticketGuid);
+    void deleteGMTicketPermanently(uint64_t ticketGuid);
     void deleteAllRemovedGMTickets();
-    GM_Ticket* getGMTicket(uint64 ticketGuid);
-    GM_Ticket* getGMTicketByPlayer(uint64 playerGuid);
+    GM_Ticket* getGMTicket(uint64_t ticketGuid);
+    GM_Ticket* getGMTicketByPlayer(uint64_t playerGuid);
 
     GmTicketList m_ticketList;
 

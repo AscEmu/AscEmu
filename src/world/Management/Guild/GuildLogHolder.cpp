@@ -58,7 +58,7 @@ void GuildLogHolder::writeLogHolderPacket(WorldPacket& data) const
     data.append(buffer);
 #else
     ByteBuffer buffer;
-    data << uint8(mLog.size());
+    data << uint8_t(mLog.size());
     for (auto itr = mLog.begin(); itr != mLog.end(); ++itr)
         (*itr)->writeGuildLogPacket(data, buffer);
 #endif

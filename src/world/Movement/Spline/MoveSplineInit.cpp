@@ -278,7 +278,7 @@ void MoveSplineInit::SetFacing(float angle)
     args.flags.EnableFacingAngle();
 }
 
-void MoveSplineInit::MovebyPath(PointsArray const& controls, int32 path_offset)
+void MoveSplineInit::MovebyPath(PointsArray const& controls, int32_t path_offset)
 {
     args.path_Idx_offset = path_offset;
     args.path.resize(controls.size());

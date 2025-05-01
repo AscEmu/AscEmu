@@ -110,7 +110,7 @@ bool ConfusedMovementGenerator<T>::doUpdate(T* owner, uint32_t diff)
         MovementMgr::MoveSplineInit init(owner);
         init.MovebyPath(_path->getPath());
         init.SetWalk(true);
-        int32 traveltime = init.Launch();
+        int32_t traveltime = init.Launch();
         _timer->resetInterval(std::max(300u, Util::getRandomUInt(traveltime / 2, traveltime * 2)));
     }
 
@@ -161,7 +161,7 @@ template void ConfusedMovementGenerator<Player>::doInitialize(Player*);
 template void ConfusedMovementGenerator<Creature>::doInitialize(Creature*);
 template void ConfusedMovementGenerator<Player>::doReset(Player*);
 template void ConfusedMovementGenerator<Creature>::doReset(Creature*);
-template bool ConfusedMovementGenerator<Player>::doUpdate(Player*, uint32);
-template bool ConfusedMovementGenerator<Creature>::doUpdate(Creature*, uint32);
+template bool ConfusedMovementGenerator<Player>::doUpdate(Player*, uint32_t);
+template bool ConfusedMovementGenerator<Creature>::doUpdate(Creature*, uint32_t);
 template void ConfusedMovementGenerator<Player>::doDeactivate(Player*);
 template void ConfusedMovementGenerator<Creature>::doDeactivate(Creature*);

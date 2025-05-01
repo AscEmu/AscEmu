@@ -167,7 +167,7 @@ namespace MySQLStructure
         uint32_t waypoint_id;
         std::string origine;
 
-        // sets one of the bytes of an uint32
+        // sets one of the bytes of an uint32_t
         uint32_t setbyte(uint32_t buffer, uint8_t index, uint32_t byte)
         {
             // We don't want a segfault, now do we?

@@ -95,7 +95,7 @@ bool GuildBankTab::writeSlotPacket(WorldPacket& data, uint8_t slotId, bool ignor
     data << uint32_t(itemEntry);
     if (itemEntry)
     {
-        data << uint32(0);
+        data << uint32_t(0);
 
         if (uint32_t random = pItem->getRandomPropertiesId())
         {

@@ -1419,7 +1419,7 @@ LocationVector const FrostWyrmPosA = { -437.409f, 2349.026f, 219.1148f, 1.483120
 
 struct mortarMarksLoc
 {
-    uint32 durationBeforeRefreshing;
+    uint32_t durationBeforeRefreshing;
     LocationVector location;
 };
 
@@ -1440,9 +1440,9 @@ enum MiscInfo
     MAX_BONE_SPIKE_IMMUNE               = 3,
 };
 
-uint32 const SummonEntries[2] = { NPC_CULT_FANATIC, NPC_CULT_ADHERENT };
+uint32_t const SummonEntries[2] = { NPC_CULT_FANATIC, NPC_CULT_ADHERENT };
 
-uint32 const BoneSpikeSummonId[3] = { 69062, 72669, 72670 };
+uint32_t const BoneSpikeSummonId[3] = { 69062, 72669, 72670 };
 
 static uint32_t gunshipIds[] =
 {
@@ -1499,7 +1499,7 @@ public:
     void OnGameObjectPushToWorld(GameObject* pGameObject) override;
     void SetGameobjectStates(GameObject* pGameObject);
     void OnEncounterStateChange(uint32_t entry, uint32_t state) override;
-    void OnAreaTrigger(Player* pPlayer, uint32 pAreaId);
+    void OnAreaTrigger(Player* pPlayer, uint32_t pAreaId);
     void OnPlayerEnter(Player* player) override;
     void UpdateEvent() override;
     void DoAction(int32_t const action) override;

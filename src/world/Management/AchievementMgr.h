@@ -241,8 +241,8 @@ enum AchievementCriteriaTypes : uint8_t
     ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_GUILD             = 134,
     ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILLS_GUILD             = 135,
     ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE_GUILD          = 136,
-    ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_GUILD_CHALLENGE_TYPE     = 138,  //struct { Flag flag; uint32 count; } 1: Guild Dungeon, 2:Guild Challenge, 3:Guild battlefield
-    ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_GUILD_CHALLENGE          = 139,  //struct { uint32 count; } Guild Challenge
+    ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_GUILD_CHALLENGE_TYPE     = 138,  //struct { Flag flag; uint32_t count; } 1: Guild Dungeon, 2:Guild Challenge, 3:Guild battlefield
+    ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_GUILD_CHALLENGE          = 139,  //struct { uint32_t count; } Guild Challenge
     ACHIEVEMENT_CRITERIA_TYPE_TOTAL                             = 140,
 #endif
 };

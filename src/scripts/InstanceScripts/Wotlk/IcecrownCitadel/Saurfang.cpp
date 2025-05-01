@@ -1026,7 +1026,7 @@ void DeathbringerSaurfangAI::DoAction(int32_t const action)
         case PHASE_INTRO_A:
         case PHASE_INTRO_H:
         {     
-            setScriptPhase(uint32(action));
+            setScriptPhase(uint32_t(action));
 
             // Move
             getCreature()->getMovementManager()->movePoint(POINT_SAURFANG, deathbringerPos.getPositionX(), deathbringerPos.getPositionY(), deathbringerPos.getPositionZ());

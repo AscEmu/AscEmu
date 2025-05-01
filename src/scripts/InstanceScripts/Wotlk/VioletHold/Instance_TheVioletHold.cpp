@@ -329,7 +329,7 @@ void TheVioletHoldScript::UpdateEvent()
                         {
                             boss->emote(EMOTE_ONESHOT_ROAR);
 
-                            for (uint32 i = DATA_EREKEM_GUARD_1; i <= DATA_EREKEM_GUARD_2; ++i)
+                            for (uint32_t i = DATA_EREKEM_GUARD_1; i <= DATA_EREKEM_GUARD_2; ++i)
                             {
                                 if (Creature* guard = GetCreatureByGuid(getLocalData(i)))
                                 {
@@ -589,7 +589,7 @@ void TheVioletHoldScript::resetBossEncounter(uint8_t bossId)
         } break;
         case DATA_EREKEM:
         {
-            for (uint32 i = DATA_EREKEM_GUARD_1; i <= DATA_EREKEM_GUARD_2; ++i)
+            for (uint32_t i = DATA_EREKEM_GUARD_1; i <= DATA_EREKEM_GUARD_2; ++i)
             {
                 if (Creature* guard = GetCreatureByGuid(getLocalData(i)))
                 {
@@ -841,7 +841,7 @@ void SinclariAI::Reset()
     summons.despawnAll();
 
     // Spawn All Portals
-    for (uint8 i = 0; i < PortalIntroCount; ++i)
+    for (uint8_t i = 0; i < PortalIntroCount; ++i)
     {
         if (Creature* summon = summonCreature(NPC_TELEPORTATION_PORTAL_INTRO, PortalIntroPositions[i]))
         {
@@ -1037,7 +1037,7 @@ void TrashAI::AIUpdate(unsigned long /*time_passed*/)
     }
 }
 
-void TrashAI::waypointReached(uint32 waypointId, uint32 /*pathId*/)
+void TrashAI::waypointReached(uint32_t waypointId, uint32_t /*pathId*/)
 {
     if (waypointId == mlastWaypointId)
     {
@@ -1087,7 +1087,7 @@ void TrashAI::SetCreatureData(uint32_t type, uint32_t data)
 
         if (path)
         {
-            for (uint32 i = 0; i <= mlastWaypointId; i++)
+            for (uint32_t i = 0; i <= mlastWaypointId; i++)
             {
                 WaypointNode node = WaypointNode(i, path[i].getPositionX() + Util::getRandomInt(-1, 1), path[i].getPositionY() + Util::getRandomInt(-1, 1), path[i].getPositionZ(), 0, 0);
                 node.moveType = WAYPOINT_MOVE_TYPE_RUN;

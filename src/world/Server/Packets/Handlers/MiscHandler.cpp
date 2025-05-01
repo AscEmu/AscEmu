@@ -950,7 +950,7 @@ void WorldSession::handleBugOpcode(WorldPacket& recv_data)
         sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BUG [Suggestion]");
 
     uint64_t accountId = GetAccountId();
-    uint32_t timeStamp = uint32(UNIXTIME);
+    uint32_t timeStamp = uint32_t(UNIXTIME);
     uint32_t reportId = sObjectMgr.generateReportId();
 
     std::stringstream ss;
@@ -2038,7 +2038,7 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
     {
         data << guild->getGUID();
         data << uint32_t(guild->getLevel());
-        data << uint64(guild->getExperience());
+        data << uint64_t(guild->getExperience());
         data << uint32_t(guild->getMembersCount());
     }
 #endif
@@ -2482,7 +2482,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
     sLogger.debug("Sent SMSG_MIRRORIMAGE_DATA");
 }
 
-void WorldSession::sendClientCacheVersion(uint32 version)
+void WorldSession::sendClientCacheVersion(uint32_t version)
 {
 #if VERSION_STRING > TBC
     WorldPacket data(SMSG_CLIENTCACHE_VERSION, 4);
@@ -2491,7 +2491,7 @@ void WorldSession::sendClientCacheVersion(uint32 version)
 #endif
 }
 
-void WorldSession::sendAccountDataTimes(uint32 mask)
+void WorldSession::sendAccountDataTimes(uint32_t mask)
 {
     SendPacket(SmsgAccountDataTimes(static_cast<uint32_t>(UNIXTIME), 1, mask, NUM_ACCOUNT_DATA_TYPES).serialise().get());
 }

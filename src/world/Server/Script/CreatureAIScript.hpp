@@ -38,13 +38,13 @@ public:
     virtual void OnSpellHitTarget(Object* /*target*/, SpellInfo const* /*info*/) {} // Triggers when a casted Spell Hits a Target
     virtual void OnTargetParried(Unit* /*_target*/) {}
     virtual void OnTargetDodged(Unit* /*_target*/) {}
-    virtual void OnTargetBlocked(Unit* /*_target*/, int32 /*_amount*/) {}
-    virtual void OnTargetCritHit(Unit* /*_target*/, int32 /*_amount*/) {}
+    virtual void OnTargetBlocked(Unit* /*_target*/, int32_t /*_amount*/) {}
+    virtual void OnTargetCritHit(Unit* /*_target*/, int32_t /*_amount*/) {}
     virtual void OnTargetDied(Unit* /*_target*/) {}
     virtual void OnParried(Unit* /*_target*/) {}
     virtual void OnDodged(Unit* /*_target*/) {}
-    virtual void OnBlocked(Unit* /*_target*/, int32 /*_amount*/) {}
-    virtual void OnCritHit(Unit* /*_target*/, int32 /*_amount*/) {}
+    virtual void OnBlocked(Unit* /*_target*/, int32_t /*_amount*/) {}
+    virtual void OnCritHit(Unit* /*_target*/, int32_t /*_amount*/) {}
     virtual void OnHit(Unit* /*_target*/, float /*_amount*/) {}
     virtual void OnDied(Unit* /*_killer*/) {}
     virtual void OnAssistTargetDied(Unit* /*_assistTarget*/) {}
@@ -119,9 +119,9 @@ public:
     Creature* getNearestCreature(uint32_t entry);
     Creature* getNearestCreature(float posX, float posY, float posZ, uint32_t entry);
 
-    void GetCreatureListWithEntryInGrid(std::list<Creature*>& container, uint32 entry, float maxSearchRange /*= 250.0f*/);
+    void GetCreatureListWithEntryInGrid(std::list<Creature*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/);
     Creature* findNearestCreature(uint32_t entry, float maxSearchRange /*= 250.0f*/);
-    void GetGameObjectListWithEntryInGrid(std::list<GameObject*>& container, uint32 entry, float maxSearchRange /*= 250.0f*/);
+    void GetGameObjectListWithEntryInGrid(std::list<GameObject*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/);
     GameObject* findNearestGameObject(uint32_t entry, float maxSearchRange /*= 250.0f*/);
 
     float getRangeToObject(Object* object);

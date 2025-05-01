@@ -66,7 +66,7 @@ public:
     void scaleThreat(Unit* target, float factor);
 
     // Modify target's threat by +percent%
-    void modifyThreatByPercent(Unit* target, int32 percent) { if (percent) scaleThreat(target, 0.01f*float(100 + percent)); }
+    void modifyThreatByPercent(Unit* target, int32_t percent) { if (percent) scaleThreat(target, 0.01f*float(100 + percent)); }
 
     // Sets the specified unit's threat to be equal to the highest entry on the threat list
     void matchUnitThreatToHighestThreat(Unit* target);
@@ -204,7 +204,7 @@ private:
     Unit* const _victim;
     OnlineState _online;
     float _baseAmount;
-    int32 _tempModifier;
+    int32_t _tempModifier;
     TauntState _taunted;
 
 public:

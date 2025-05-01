@@ -513,7 +513,7 @@ bool GameObject::create(uint32_t entry, WorldMap* map, uint32_t phase, LocationV
 
     m_model = createModel();
 
-    setGoType(static_cast<uint8>(gameobject_properties->type));
+    setGoType(static_cast<uint8_t>(gameobject_properties->type));
     m_prevGoState = state;
     setState(state);
     setArtKit(0);
@@ -1279,7 +1279,7 @@ void GameObject::SaveToFile(std::stringstream & name)
         << getParentRotation(1) << ","
         << getParentRotation(2) << ","
         << getParentRotation(3) << ","
-        << uint32(getState()) << ","
+        << uint32_t(getState()) << ","
         << getFlags() << ","
         << getFactionTemplate() << ","
         << getScale() << ","
@@ -1442,7 +1442,7 @@ void GameObject_Lootable::getFishLoot(Player* loot_owner, bool getJunk/* = false
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Door
-GameObject_Door::GameObject_Door(uint64 GUID) : GameObject(GUID)
+GameObject_Door::GameObject_Door(uint64_t GUID) : GameObject(GUID)
 { }
 
 GameObject_Door::~GameObject_Door()
@@ -1486,7 +1486,7 @@ void GameObject_Door::_internalUpdateOnState(unsigned long /*timeDiff*/)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Button
-GameObject_Button::GameObject_Button(uint64 GUID) : GameObject(GUID)
+GameObject_Button::GameObject_Button(uint64_t GUID) : GameObject(GUID)
 {
     spell = nullptr;
 }
@@ -1549,7 +1549,7 @@ void GameObject_Button::_internalUpdateOnState(unsigned long /*timeDiff*/)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_QuestGiver
-GameObject_QuestGiver::GameObject_QuestGiver(uint64 GUID) : GameObject(GUID)
+GameObject_QuestGiver::GameObject_QuestGiver(uint64_t GUID) : GameObject(GUID)
 {
     m_quests = NULL;
 }
@@ -1585,9 +1585,9 @@ void GameObject_QuestGiver::onUse(Player* player)
         sQuestMgr.OnActivateQuestGiver(this, player);
 }
 
-uint32 GameObject_QuestGiver::NumOfQuests()
+uint32_t GameObject_QuestGiver::NumOfQuests()
 {
-    return static_cast<uint32>(m_quests->size());
+    return static_cast<uint32_t>(m_quests->size());
 }
 
 void GameObject_QuestGiver::AddQuest(std::unique_ptr<QuestRelation> Q)
@@ -1623,9 +1623,9 @@ QuestProperties const* GameObject_QuestGiver::FindQuest(uint32_t quest_id, uint8
     return nullptr;
 }
 
-uint16 GameObject_QuestGiver::GetQuestRelation(uint32_t quest_id)
+uint16_t GameObject_QuestGiver::GetQuestRelation(uint32_t quest_id)
 {
-    uint16 quest_relation = 0;
+    uint16_t quest_relation = 0;
 
     for (auto itr = m_quests->begin(); itr != m_quests->end(); ++itr)
     {
@@ -1662,7 +1662,7 @@ void GameObject_QuestGiver::LoadQuests() { sQuestMgr.LoadGOQuests(this); }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Chest
-GameObject_Chest::GameObject_Chest(uint64 GUID) : GameObject_Lootable(GUID)
+GameObject_Chest::GameObject_Chest(uint64_t GUID) : GameObject_Lootable(GUID)
 {
     spell = nullptr;
 }
@@ -1759,7 +1759,7 @@ void GameObject_Chest::_internalUpdateOnState(unsigned long /*timeDiff*/)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Trap
-GameObject_Trap::GameObject_Trap(uint64 GUID) : GameObject(GUID)
+GameObject_Trap::GameObject_Trap(uint64_t GUID) : GameObject(GUID)
 {
     spell = NULL;
 }
@@ -1882,7 +1882,7 @@ void GameObject_Chair::onUse(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_SpellFocus
-GameObject_SpellFocus::GameObject_SpellFocus(uint64 GUID) : GameObject(GUID)
+GameObject_SpellFocus::GameObject_SpellFocus(uint64_t GUID) : GameObject(GUID)
 { }
 
 GameObject_SpellFocus::~GameObject_SpellFocus()
@@ -1895,7 +1895,7 @@ void GameObject_SpellFocus::OnPushToWorld()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Goober
-GameObject_Goober::GameObject_Goober(uint64 GUID) : GameObject(GUID)
+GameObject_Goober::GameObject_Goober(uint64_t GUID) : GameObject(GUID)
 {
     spell = NULL;
 }
@@ -2033,7 +2033,7 @@ void GameObject_Camera::onUse(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_FishingNode
-GameObject_FishingNode::GameObject_FishingNode(uint64 GUID) : GameObject_Lootable(GUID)
+GameObject_FishingNode::GameObject_FishingNode(uint64_t GUID) : GameObject_Lootable(GUID)
 {
 }
 
@@ -2188,7 +2188,7 @@ void GameObject_FishingNode::_internalUpdateOnState(unsigned long /*timeDiff*/)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Ritual
-GameObject_Ritual::GameObject_Ritual(uint64 GUID) : GameObject(GUID), Ritual(nullptr)
+GameObject_Ritual::GameObject_Ritual(uint64_t GUID) : GameObject(GUID), Ritual(nullptr)
 {
 }
 
@@ -2321,7 +2321,7 @@ void GameObject_Ritual::onUse(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_SpellCaster
-GameObject_SpellCaster::GameObject_SpellCaster(uint64 GUID) : GameObject(GUID)
+GameObject_SpellCaster::GameObject_SpellCaster(uint64_t GUID) : GameObject(GUID)
 {
     spell = nullptr;
 }
@@ -2379,7 +2379,7 @@ void GameObject_Meetingstone::onUse(Player* player)
         return;
 
     // Use selection
-    Player* pPlayer = sObjectMgr.getPlayer(static_cast<uint32>(player->getTargetGuid()));
+    Player* pPlayer = sObjectMgr.getPlayer(static_cast<uint32_t>(player->getTargetGuid()));
     if (pPlayer == nullptr)
         return;
 
@@ -2430,7 +2430,7 @@ void GameObject_FlagStand::onUse(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_FishingHole
-GameObject_FishingHole::GameObject_FishingHole(uint64 GUID) : GameObject_Lootable(GUID)
+GameObject_FishingHole::GameObject_FishingHole(uint64_t GUID) : GameObject_Lootable(GUID)
 {
 
 }
@@ -2518,7 +2518,7 @@ void GameObject_BarberChair::onUse(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Destructible
-GameObject_Destructible::GameObject_Destructible(uint64 GUID) : GameObject(GUID)
+GameObject_Destructible::GameObject_Destructible(uint64_t GUID) : GameObject(GUID)
 {
     hitpoints = 0;
     maxhitpoints = 0;

@@ -656,7 +656,7 @@ uint32_t Battleground::GetNameID()
     return 34;
 }
 
-int32 Battleground::event_GetInstanceID()
+int32_t Battleground::event_GetInstanceID()
 {
     return m_mapMgr->getInstanceId();
 }

@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <zlib.h>
 
-#include "CommonTypes.hpp"
 #include "Player.hpp"
 
 #include "TradeData.hpp"
@@ -10602,7 +10601,7 @@ bool Player::activateTaxiPathTo(uint32_t taxi_path_id, uint32_t spellid /*= 0*/)
     if (!entry)
         return false;
 
-    std::vector<uint32> nodes;
+    std::vector<uint32_t> nodes;
 
     nodes.resize(2);
     nodes[0] = entry->from;
@@ -10617,7 +10616,7 @@ bool Player::activateTaxiPathTo(uint32_t taxi_path_id, Creature* npc)
     if (!entry)
         return false;
 
-    std::vector<uint32> nodes;
+    std::vector<uint32_t> nodes;
 
     nodes.resize(2);
     nodes[0] = entry->from;
@@ -11477,7 +11476,7 @@ Standing Player::getReputationRankFromStanding(int32_t value)
     return STANDING_HATED;
 }
 
-void Player::applyForcedReaction(uint32 faction_id, Standing rank, bool apply)
+void Player::applyForcedReaction(uint32_t faction_id, Standing rank, bool apply)
 {
     if (apply)
         m_forcedReactions[faction_id] = rank;

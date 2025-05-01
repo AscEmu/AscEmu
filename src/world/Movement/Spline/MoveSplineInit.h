@@ -65,7 +65,7 @@ public:
     // Initializes movement by path
     // @param path - array of points, shouldn't be empty
     // @param pointId - Id of fisrt point of the path. Example: when third path point will be done it will notify that pointId + 3 done
-    void MovebyPath(PointsArray const& path, int32 pointId = 0);
+    void MovebyPath(PointsArray const& path, int32_t pointId = 0);
 
     //  Initializes simple A to B motion, A is current unit's position, B is destination
     void MoveTo(Vector3 const& destination, bool generatePath = true, bool forceDestination = false);

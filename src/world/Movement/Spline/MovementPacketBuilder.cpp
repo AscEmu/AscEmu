@@ -245,8 +245,8 @@ void PacketBuilder::WriteCreateData(MoveSpline const& moveSpline, ByteBuffer& da
             data.WriteByteSeq(facingGuid[0]);
         }
 
-        uint32 nodes = static_cast<uint32_t>(moveSpline.getPath().size());
-        for (uint32 i = 0; i < nodes; ++i)
+        uint32_t nodes = static_cast<uint32_t>(moveSpline.getPath().size());
+        for (uint32_t i = 0; i < nodes; ++i)
         {
             data << float(moveSpline.getPath()[i].z);
             data << float(moveSpline.getPath()[i].x);
@@ -282,7 +282,7 @@ void PacketBuilder::WriteCreateBits(MoveSpline const& moveSpline, ByteBuffer& da
     if (!data.writeBit(!moveSpline.Finalized()))
         return;
 
-    data.writeBits(uint8(moveSpline.spline.mode()), 2);
+    data.writeBits(uint8_t(moveSpline.spline.mode()), 2);
     data.writeBit(moveSpline.splineflags & (MoveSplineFlag::Parabolic | MoveSplineFlag::Animation));
     data.writeBits(moveSpline.getPath().size(), 22);
     switch (moveSpline.splineflags & MoveSplineFlag::Mask_Final_Facing)

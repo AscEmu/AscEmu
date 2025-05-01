@@ -32,17 +32,17 @@
 // ******************************************
 struct map_fileheader
 {
-    uint32 mapMagic;
-    uint32 versionMagic;
-    uint32 buildMagic;
-    uint32 areaMapOffset;
-    uint32 areaMapSize;
-    uint32 heightMapOffset;
-    uint32 heightMapSize;
-    uint32 liquidMapOffset;
-    uint32 liquidMapSize;
-    uint32 holesOffset;
-    uint32 holesSize;
+    uint32_t mapMagic;
+    uint32_t versionMagic;
+    uint32_t buildMagic;
+    uint32_t areaMapOffset;
+    uint32_t areaMapSize;
+    uint32_t heightMapOffset;
+    uint32_t heightMapSize;
+    uint32_t liquidMapOffset;
+    uint32_t liquidMapSize;
+    uint32_t holesOffset;
+    uint32_t holesSize;
 };
 
 #define MAP_HEIGHT_NO_HEIGHT  0x0001
@@ -51,8 +51,8 @@ struct map_fileheader
 
 struct map_heightHeader
 {
-    uint32 fourcc;
-    uint32 flags;
+    uint32_t fourcc;
+    uint32_t flags;
     float  gridHeight;
     float  gridMaxHeight;
 };
@@ -62,13 +62,13 @@ struct map_heightHeader
 
 struct map_liquidHeader
 {
-    uint32 fourcc;
-    uint16 flags;
-    uint16 liquidType;
-    uint8  offsetX;
-    uint8  offsetY;
-    uint8  width;
-    uint8  height;
+    uint32_t fourcc;
+    uint16_t flags;
+    uint16_t liquidType;
+    uint8_t  offsetX;
+    uint8_t  offsetY;
+    uint8_t  width;
+    uint8_t  height;
     float  liquidLevel;
 };
 
@@ -122,7 +122,7 @@ namespace MMAP
     }
 
     /**************************************************************************/
-    void TerrainBuilder::loadMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData &meshData)
+    void TerrainBuilder::loadMap(uint32_t mapID, uint32_t tileX, uint32_t tileY, MeshData &meshData)
     {
         if (loadMap(mapID, tileX, tileY, meshData, ENTIRE))
         {
@@ -134,7 +134,7 @@ namespace MMAP
     }
 
     /**************************************************************************/
-    bool TerrainBuilder::loadMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData &meshData, Spot portion)
+    bool TerrainBuilder::loadMap(uint32_t mapID, uint32_t tileX, uint32_t tileY, MeshData &meshData, Spot portion)
     {
         char mapFileName[255];
         sprintf(mapFileName, "maps/%04u_%02u_%02u.map", mapID, tileY, tileX);
@@ -145,7 +145,7 @@ namespace MMAP
 
         map_fileheader fheader;
         if (fread(&fheader, sizeof(map_fileheader), 1, mapFile) != 1 ||
-            fheader.versionMagic != *((uint32 const*)(MAP_VERSION_MAGIC)))
+            fheader.versionMagic != *((uint32_t const*)(MAP_VERSION_MAGIC)))
         {
             fclose(mapFile);
             printf("%s is the wrong version, please extract new .map files\n", mapFileName);
@@ -171,9 +171,9 @@ namespace MMAP
         }
 
         // data used later
-        uint16 holes[16][16];
+        uint16_t holes[16][16];
         memset(holes, 0, sizeof(holes));
-        uint8 liquid_type[16][16];
+        uint8_t liquid_type[16][16];
         memset(liquid_type, 0, sizeof(liquid_type));
         G3D::Array<int> ltriangles;
         G3D::Array<int> ttriangles;
@@ -187,11 +187,11 @@ namespace MMAP
 
             if (hheader.flags & MAP_HEIGHT_AS_INT8)
             {
-                uint8 v9[V9_SIZE_SQ];
-                uint8 v8[V8_SIZE_SQ];
+                uint8_t v9[V9_SIZE_SQ];
+                uint8_t v8[V8_SIZE_SQ];
                 int count = 0;
-                count += static_cast<int>(fread(v9, sizeof(uint8), V9_SIZE_SQ, mapFile));
-                count += static_cast<int>(fread(v8, sizeof(uint8), V8_SIZE_SQ, mapFile));
+                count += static_cast<int>(fread(v9, sizeof(uint8_t), V9_SIZE_SQ, mapFile));
+                count += static_cast<int>(fread(v8, sizeof(uint8_t), V8_SIZE_SQ, mapFile));
                 if (count != expected)
                     printf("TerrainBuilder::loadMap: Failed to read some data expected %d, read %d\n", expected, count);
 
@@ -205,11 +205,11 @@ namespace MMAP
             }
             else if (hheader.flags & MAP_HEIGHT_AS_INT16)
             {
-                uint16 v9[V9_SIZE_SQ];
-                uint16 v8[V8_SIZE_SQ];
+                uint16_t v9[V9_SIZE_SQ];
+                uint16_t v8[V8_SIZE_SQ];
                 int count = 0;
-                count += static_cast<int>(fread(v9, sizeof(uint16), V9_SIZE_SQ, mapFile));
-                count += static_cast<int>(fread(v8, sizeof(uint16), V8_SIZE_SQ, mapFile));
+                count += static_cast<int>(fread(v9, sizeof(uint16_t), V9_SIZE_SQ, mapFile));
+                count += static_cast<int>(fread(v8, sizeof(uint16_t), V8_SIZE_SQ, mapFile));
                 if (count != expected)
                     printf("TerrainBuilder::loadMap: Failed to read some data expected %d, read %d\n", expected, count);
 
@@ -291,7 +291,7 @@ namespace MMAP
 
             if (!(lheader.flags & MAP_LIQUID_NO_HEIGHT))
             {
-                uint32 toRead = lheader.width * lheader.height;
+                uint32_t toRead = lheader.width * lheader.height;
                 liquid_map = new float [toRead];
                 if (fread(liquid_map, sizeof(float), toRead, mapFile) != toRead)
                     printf("TerrainBuilder::loadMap: Failed to read some data expected 1, read 0\n");
@@ -391,7 +391,7 @@ namespace MMAP
                 // default is true, will change to false if needed
                 useTerrain = true;
                 useLiquid = true;
-                uint8 liquidType = MAP_LIQUID_TYPE_NO_WATER;
+                uint8_t liquidType = MAP_LIQUID_TYPE_NO_WATER;
                 // FIXME: "warning: the address of ‘liquid_type’ will always evaluate as ‘true’"
 
                 // if there is no liquid, don't use liquid
@@ -433,8 +433,8 @@ namespace MMAP
                 if (useLiquid)
                 {
                     float quadHeight = 0;
-                    uint32 validCount = 0;
-                    for(uint32 idx = 0; idx < 3; idx++)
+                    uint32_t validCount = 0;
+                    for(uint32_t idx = 0; idx < 3; idx++)
                     {
                         float h = lverts_copy[ltris[idx]*3 + 1];
                         if (h != INVALID_MAP_LIQ_HEIGHT && h < INVALID_MAP_LIQ_HEIGHT_MAX)
@@ -448,7 +448,7 @@ namespace MMAP
                     if (validCount > 0 && validCount < 3)
                     {
                         quadHeight /= validCount;
-                        for(uint32 idx = 0; idx < 3; idx++)
+                        for(uint32_t idx = 0; idx < 3; idx++)
                         {
                             float h = lverts[ltris[idx]*3 + 1];
                             if (h == INVALID_MAP_LIQ_HEIGHT || h > INVALID_MAP_LIQ_HEIGHT_MAX)
@@ -470,7 +470,7 @@ namespace MMAP
                 {
                     float minLLevel = INVALID_MAP_LIQ_HEIGHT_MAX;
                     float maxLLevel = INVALID_MAP_LIQ_HEIGHT;
-                    for(uint32 x = 0; x < 3; x++)
+                    for(uint32_t x = 0; x < 3; x++)
                     {
                         float h = lverts[ltris[x]*3 + 1];
                         if (minLLevel > h)
@@ -482,7 +482,7 @@ namespace MMAP
 
                     float maxTLevel = INVALID_MAP_LIQ_HEIGHT;
                     float minTLevel = INVALID_MAP_LIQ_HEIGHT_MAX;
-                    for(uint32 x = 0; x < 6; x++)
+                    for(uint32_t x = 0; x < 6; x++)
                     {
                         float h = tverts[ttris[x]*3 + 1];
                         if (maxTLevel < h)
@@ -602,11 +602,11 @@ namespace MMAP
         coord[2] = v[index2];
     }
 
-    static uint16 holetab_h[4] = {0x1111, 0x2222, 0x4444, 0x8888};
-    static uint16 holetab_v[4] = {0x000F, 0x00F0, 0x0F00, 0xF000};
+    static uint16_t holetab_h[4] = {0x1111, 0x2222, 0x4444, 0x8888};
+    static uint16_t holetab_v[4] = {0x000F, 0x00F0, 0x0F00, 0xF000};
 
     /**************************************************************************/
-    bool TerrainBuilder::isHole(int square, const uint16 holes[16][16])
+    bool TerrainBuilder::isHole(int square, const uint16_t holes[16][16])
     {
         int row = square / 128;
         int col = square % 128;
@@ -615,13 +615,13 @@ namespace MMAP
         int holeRow = row % 8 / 2;
         int holeCol = (square - (row * 128 + cellCol * 8)) / 2;
 
-        uint16 hole = holes[cellRow][cellCol];
+        uint16_t hole = holes[cellRow][cellCol];
 
         return (hole & holetab_h[holeCol] & holetab_v[holeRow]) != 0;
     }
 
     /**************************************************************************/
-    uint8 TerrainBuilder::getLiquidType(int square, const uint8 liquid_type[16][16])
+    uint8_t TerrainBuilder::getLiquidType(int square, const uint8_t liquid_type[16][16])
     {
         int row = square / 128;
         int col = square % 128;
@@ -632,7 +632,7 @@ namespace MMAP
     }
 
     /**************************************************************************/
-    bool TerrainBuilder::loadVMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData &meshData)
+    bool TerrainBuilder::loadVMap(uint32_t mapID, uint32_t tileX, uint32_t tileY, MeshData &meshData)
     {
         IVMapManager* vmapManager = new VMapManager2();
         int result = vmapManager->loadMap("vmaps", mapID, tileX, tileY);
@@ -650,13 +650,13 @@ namespace MMAP
                 break;
 
             ModelInstance* models = NULL;
-            uint32 count = 0;
+            uint32_t count = 0;
             instanceTrees[mapID]->getModelInstances(models, count);
 
             if (!models)
                 break;
 
-            for (uint32 i = 0; i < count; ++i)
+            for (uint32_t i = 0; i < count; ++i)
             {
                 ModelInstance instance = models[i];
 
@@ -703,14 +703,14 @@ namespace MMAP
                     {
                         std::vector<G3D::Vector3> liqVerts;
                         std::vector<int> liqTris;
-                        uint32 tilesX, tilesY, vertsX, vertsY;
+                        uint32_t tilesX, tilesY, vertsX, vertsY;
                         G3D::Vector3 corner;
                         liquid->getPosInfo(tilesX, tilesY, corner);
                         vertsX = tilesX + 1;
                         vertsY = tilesY + 1;
-                        uint8* flags = liquid->GetFlagsStorage();
+                        uint8_t* flags = liquid->GetFlagsStorage();
                         float* data = liquid->GetHeightStorage();
-                        uint8 type = NAV_EMPTY;
+                        uint8_t type = NAV_EMPTY;
 
                         // convert liquid type to NavTerrain
                         switch (liquid->GetType() & 3)
@@ -734,8 +734,8 @@ namespace MMAP
                         // flag   = y*tilesY+x
 
                         G3D::Vector3 vert;
-                        for (uint32 x = 0; x < vertsX; ++x)
-                            for (uint32 y = 0; y < vertsY; ++y)
+                        for (uint32_t x = 0; x < vertsX; ++x)
+                            for (uint32_t y = 0; y < vertsY; ++y)
                             {
                                 vert = G3D::Vector3(corner.x + x * GRID_PART_SIZE, corner.y + y * GRID_PART_SIZE, data[y*vertsX + x]);
                                 vert = vert * rotation * scale + position;
@@ -745,9 +745,9 @@ namespace MMAP
                             }
 
                             int idx1, idx2, idx3, idx4;
-                            uint32 square;
-                            for (uint32 x = 0; x < tilesX; ++x)
-                                for (uint32 y = 0; y < tilesY; ++y)
+                            uint32_t square;
+                            for (uint32_t x = 0; x < tilesX; ++x)
+                                for (uint32_t y = 0; y < tilesY; ++y)
                                     if ((flags[x+y*tilesX] & 0x0f) != 0x0f)
                                     {
                                         square = x * tilesY + y;
@@ -766,11 +766,11 @@ namespace MMAP
                                         liqTris.push_back(idx1);
                                     }
 
-                                    uint32 liqOffset = meshData.liquidVerts.size() / 3;
-                                    for (uint32 u = 0; u < liqVerts.size(); ++u)
+                                    uint32_t liqOffset = meshData.liquidVerts.size() / 3;
+                                    for (uint32_t u = 0; u < liqVerts.size(); ++u)
                                         meshData.liquidVerts.append(liqVerts[u].y, liqVerts[u].z, liqVerts[u].x);
 
-                                    for (uint32 u = 0; u < liqTris.size() / 3; ++u)
+                                    for (uint32_t u = 0; u < liqTris.size() / 3; ++u)
                                     {
                                         meshData.liquidTris.append(liqTris[u*3+1] + liqOffset, liqTris[u*3+2] + liqOffset, liqTris[u*3] + liqOffset);
                                         meshData.liquidType.append(type);
@@ -838,7 +838,7 @@ namespace MMAP
     void TerrainBuilder::copyIndices(G3D::Array<int> &source, G3D::Array<int> &dest, int offset)
     {
         int* src = source.getCArray();
-        for (int32 i = 0; i < source.size(); ++i)
+        for (int32_t i = 0; i < source.size(); ++i)
             dest.append(src[i] + offset);
     }
 
@@ -886,7 +886,7 @@ namespace MMAP
     }
 
     /**************************************************************************/
-    void TerrainBuilder::loadOffMeshConnections(uint32 mapID, uint32 tileX, uint32 tileY, MeshData &meshData, const char* offMeshFilePath)
+    void TerrainBuilder::loadOffMeshConnections(uint32_t mapID, uint32_t tileX, uint32_t tileY, MeshData &meshData, const char* offMeshFilePath)
     {
         // no meshfile input given?
         if (offMeshFilePath == NULL)
@@ -905,7 +905,7 @@ namespace MMAP
         while(fgets(buf, 512, fp))
         {
             float p0[3], p1[3];
-            uint32 mid, tx, ty;
+            uint32_t mid, tx, ty;
             float size;
             if (sscanf(buf, "%u %u,%u (%f %f %f) (%f %f %f) %f", &mid, &tx, &ty,
                 &p0[0], &p0[1], &p0[2], &p1[0], &p1[1], &p1[2], &size) != 10)

@@ -117,7 +117,7 @@ public:
 
         template <typename T> void writeBits(T value, size_t bits)
         {
-            for (int32 i = static_cast<int32>(bits - 1); i >= 0; --i)
+            for (int32_t i = static_cast<int32_t>(bits - 1); i >= 0; --i)
                 writeBit((value >> i) & 1);
         }
 
@@ -130,7 +130,7 @@ public:
         void appendPackedTime(time_t time)
         {
             tm* lt = localtime(&time);
-            append<uint32>((lt->tm_year - 100) << 24 | lt->tm_mon << 20 | (lt->tm_mday - 1) << 14 | lt->tm_wday << 11 | lt->tm_hour << 6 | lt->tm_min);
+            append<uint32_t>((lt->tm_year - 100) << 24 | lt->tm_mon << 20 | (lt->tm_mday - 1) << 14 | lt->tm_wday << 11 | lt->tm_hour << 6 | lt->tm_min);
         }
 
         std::string ReadString(uint32_t length)
@@ -533,7 +533,7 @@ public:
 
         template<class T> void append(const T *src, size_t cnt)
         {
-            return append((const uint8 *)src, cnt * sizeof(T));
+            return append((const uint8_t *)src, cnt * sizeof(T));
         }
 
         void append(const uint8_t* src, size_t cnt)
@@ -598,9 +598,9 @@ public:
             memcpy(&_storage[pos], src, cnt);
         }
 
-        template <typename T> void PutBits(size_t pos, T value, uint32 bitCount)
+        template <typename T> void PutBits(size_t pos, T value, uint32_t bitCount)
         {
-            for (uint32 i = 0; i < bitCount; ++i)
+            for (uint32_t i = 0; i < bitCount; ++i)
             {
                 size_t wp = (pos + i) / 8;
                 size_t bit = (pos + i) % 8;
@@ -698,7 +698,7 @@ public:
 
 template <typename T> ByteBuffer & operator<<(ByteBuffer & b, std::vector<T> v)
 {
-    b << reinterpret_cast<uint32>(v.size());
+    b << reinterpret_cast<uint32_t>(v.size());
     for (typename std::vector<T>::iterator i = v.begin(); i != v.end(); ++i)
     {
         b << *i;
@@ -708,7 +708,7 @@ template <typename T> ByteBuffer & operator<<(ByteBuffer & b, std::vector<T> v)
 
 template <typename T> ByteBuffer & operator>>(ByteBuffer & b, std::vector<T> &v)
 {
-    uint32 vsize;
+    uint32_t vsize;
     b >> vsize;
     v.clear();
     while (vsize--)
@@ -722,7 +722,7 @@ template <typename T> ByteBuffer & operator>>(ByteBuffer & b, std::vector<T> &v)
 
 template <typename T> ByteBuffer & operator<<(ByteBuffer & b, std::list<T> v)
 {
-    b << reinterpret_cast<uint32>(v.size());
+    b << reinterpret_cast<uint32_t>(v.size());
     for (typename std::list<T>::iterator i = v.begin(); i != v.end(); ++i)
     {
         b << *i;
@@ -732,7 +732,7 @@ template <typename T> ByteBuffer & operator<<(ByteBuffer & b, std::list<T> v)
 
 template <typename T> ByteBuffer & operator>>(ByteBuffer & b, std::list<T> &v)
 {
-    uint32 vsize;
+    uint32_t vsize;
     b >> vsize;
     v.clear();
     while (vsize--)
@@ -746,7 +746,7 @@ template <typename T> ByteBuffer & operator>>(ByteBuffer & b, std::list<T> &v)
 
 template <typename K, typename V> ByteBuffer & operator<<(ByteBuffer & b, std::map<K, V> &m)
 {
-    b << reinterpret_cast<uint32>(m.size());
+    b << reinterpret_cast<uint32_t>(m.size());
     for (typename std::map<K, V>::iterator i = m.begin(); i != m.end(); ++i)
     {
         b << i->first << i->second;
@@ -756,7 +756,7 @@ template <typename K, typename V> ByteBuffer & operator<<(ByteBuffer & b, std::m
 
 template <typename K, typename V> ByteBuffer & operator>>(ByteBuffer & b, std::map<K, V> &m)
 {
-    uint32 msize;
+    uint32_t msize;
     b >> msize;
     m.clear();
     while (msize--)

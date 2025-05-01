@@ -91,7 +91,7 @@ Transporter* TransportHandler::createTransport(uint32_t entry, WorldMap* map /*=
     }
 
     // create transport...
-    Transporter* trans = new Transporter((uint64)HIGHGUID_TYPE_TRANSPORTER << 32 | entry);
+    Transporter* trans = new Transporter((uint64_t)HIGHGUID_TYPE_TRANSPORTER << 32 | entry);
 
     // ...at first waypoint
 #if VERSION_STRING == Classic
@@ -401,7 +401,7 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
     tmpDist = 0.0f;
     for (int32_t i = static_cast<int32_t>(keyFrames.size()) - 1; i >= 0; i--)
     {
-        int32 j = (i + firstStop) % keyFrames.size();
+        int32_t j = (i + firstStop) % keyFrames.size();
         tmpDist += keyFrames[(j + 1) % keyFrames.size()].DistFromPrev;
         keyFrames[j].DistUntilStop = tmpDist;
         if (keyFrames[j].isStopFrame() || j == firstStop)

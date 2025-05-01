@@ -35,8 +35,6 @@
 #include <queue>
 #include <type_traits>
 
-#include "CommonTypes.hpp"
-
 template <typename T>
 class ProducerConsumerQueue
 {
@@ -128,15 +126,15 @@ namespace MMAP
 {
     struct MapTiles
     {
-        MapTiles() : m_mapId(uint32(-1)), m_tiles(NULL) {}
+        MapTiles() : m_mapId(uint32_t(-1)), m_tiles(NULL) {}
 
-        MapTiles(uint32 id, std::set<uint32>* tiles) : m_mapId(id), m_tiles(tiles) {}
+        MapTiles(uint32_t id, std::set<uint32_t>* tiles) : m_mapId(id), m_tiles(tiles) {}
         ~MapTiles() {}
 
-        uint32 m_mapId;
-        std::set<uint32>* m_tiles;
+        uint32_t m_mapId;
+        std::set<uint32_t>* m_tiles;
 
-        bool operator==(uint32 id)
+        bool operator==(uint32_t id)
         {
             return m_mapId == id;
         }
@@ -177,11 +175,11 @@ namespace MMAP
             ~MapBuilder();
 
             // builds all mmap tiles for the specified map id (ignores skip settings)
-            void buildMap(uint32 mapID);
+            void buildMap(uint32_t mapID);
             void buildMeshFromFile(char* name);
 
             // builds an mmap tile for the specified map and its mesh
-            void buildSingleTile(uint32 mapID, uint32 tileX, uint32 tileY);
+            void buildSingleTile(uint32_t mapID, uint32_t tileX, uint32_t tileY);
 
             // builds list of maps, then builds all of mmap tiles (based on the skip settings)
             void buildAllMaps(unsigned int threads);
@@ -191,29 +189,29 @@ namespace MMAP
         private:
             // detect maps and tiles
             void discoverTiles();
-            std::set<uint32>* getTileList(uint32 mapID);
+            std::set<uint32_t>* getTileList(uint32_t mapID);
 
-            void buildNavMesh(uint32 mapID, dtNavMesh* &navMesh);
+            void buildNavMesh(uint32_t mapID, dtNavMesh* &navMesh);
 
-            void buildTile(uint32 mapID, uint32 tileX, uint32 tileY, dtNavMesh* navMesh);
+            void buildTile(uint32_t mapID, uint32_t tileX, uint32_t tileY, dtNavMesh* navMesh);
 
             // move map building
-            void buildMoveMapTile(uint32 mapID,
-                uint32 tileX,
-                uint32 tileY,
+            void buildMoveMapTile(uint32_t mapID,
+                uint32_t tileX,
+                uint32_t tileY,
                 MeshData &meshData,
                 float bmin[3],
                 float bmax[3],
                 dtNavMesh* navMesh);
 
-            void getTileBounds(uint32 tileX, uint32 tileY,
+            void getTileBounds(uint32_t tileX, uint32_t tileY,
                 float* verts, int vertCount,
                 float* bmin, float* bmax);
-            void getGridBounds(uint32 mapID, uint32 &minX, uint32 &minY, uint32 &maxX, uint32 &maxY) const;
+            void getGridBounds(uint32_t mapID, uint32_t &minX, uint32_t &minY, uint32_t &maxX, uint32_t &maxY) const;
 
-            bool shouldSkipMap(uint32 mapID);
-            bool isTransportMap(uint32 mapID);
-            bool shouldSkipTile(uint32 mapID, uint32 tileX, uint32 tileY);
+            bool shouldSkipMap(uint32_t mapID);
+            bool isTransportMap(uint32_t mapID);
+            bool shouldSkipTile(uint32_t mapID, uint32_t tileX, uint32_t tileY);
 
             TerrainBuilder* m_terrainBuilder;
             TileList m_tiles;

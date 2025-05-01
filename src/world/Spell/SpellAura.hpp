@@ -369,7 +369,7 @@ private:
     SpellInfo const* m_spellInfo = nullptr;
 
 public:
-    Aura(SpellInfo const* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL);
+    Aura(SpellInfo const* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL);
     ~Aura();
 
     bool IsPassive() const;
@@ -577,7 +577,7 @@ public:
     void SpellAuraMeleeHaste(AuraEffectModifier* aurEff, bool apply);
     void SpellAuraReduceEffectDuration(AuraEffectModifier* aurEff, bool apply);
     void HandleAuraControlVehicle(AuraEffectModifier* aurEff, bool apply);
-    void EventPeriodicDrink(uint32 amount);
+    void EventPeriodicDrink(uint32_t amount);
     void SpellAuraMirrorImage(AuraEffectModifier* aurEff, bool apply);
     void SpellAuraModCombatResultChance(AuraEffectModifier* aurEff, bool apply);
     void SpellAuraAddHealth(AuraEffectModifier* aurEff, bool apply);
@@ -598,45 +598,45 @@ public:
     void SpellAuraConvertRune(AuraEffectModifier* aurEff, bool apply);
     void UpdateAuraModDecreaseSpeed(AuraEffectModifier* aurEff);
 
-    void SendDummyModifierLog(std::map<SpellInfo*, uint32> * m, SpellInfo* spellInfo, uint32 i, bool apply, bool pct = false);
+    void SendDummyModifierLog(std::map<SpellInfo*, uint32_t> * m, SpellInfo* spellInfo, uint32_t i, bool apply, bool pct = false);
 
     // Events
-    void EventPeriodicHeal1(uint32);
+    void EventPeriodicHeal1(uint32_t);
 
     void RelocateEvents();
-    int32 event_GetInstanceID();
+    int32_t event_GetInstanceID();
     bool WasCastInDuel() { return m_castInDuel; }
 
     // This stuff can be cached in spellproto.
     bool IsCombatStateAffecting();
 
-    uint32 GetAuraFlags() { return m_flags; }
+    uint32_t GetAuraFlags() { return m_flags; }
 
     AreaAuraList targets;                           // This is only used for AA
-    uint32 m_castedItemId;
-    uint64 itemCasterGUID;
+    uint32_t m_castedItemId;
+    uint64_t itemCasterGUID;
     bool m_areaAura;                                // Area aura stuff -> never passive.
-    uint8 m_visualSlot;
-    uint32 pSpellId;                                // This represents the triggering spell id
+    uint8_t m_visualSlot;
+    uint32_t pSpellId;                              // This represents the triggering spell id
     bool m_castInDuel;
 
 private:
-    uint32 GetCasterFaction() { return m_casterfaction; }
-    void SetCasterFaction(uint32 faction) { m_casterfaction = faction; }
+    uint32_t GetCasterFaction() { return m_casterfaction; }
+    void SetCasterFaction(uint32_t faction) { m_casterfaction = faction; }
 
     bool IsInrange(float x1, float y1, float z1, Object* o, float square_r);
 
 protected:
-    uint32 m_casterfaction;
-    uint32 m_dynamicValue;
-    uint32 m_flags;
+    uint32_t m_casterfaction;
+    uint32_t m_dynamicValue;
+    uint32_t m_flags;
 
-    void SendChannelUpdate(uint32 time, Object* m_caster);
+    void SendChannelUpdate(uint32_t time, Object* m_caster);
 
 public:
     bool m_temporary;                               // Skip saving
     bool m_deleted;
-    int16 m_interrupted;
+    int16_t m_interrupted;
     bool m_ignoreunapply;                           // \\\"special\\\" case, for unapply
 
     inline bool IsInterrupted() { return (m_interrupted >= 0); }

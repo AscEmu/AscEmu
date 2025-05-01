@@ -21,8 +21,7 @@
 #ifndef LOAD_LIB_H
 #define LOAD_LIB_H
 
-#include "../../src/shared/CommonTypes.hpp"
-
+#include <cstdint>
 #include <string>
 
 #define FILE_FORMAT_VERSION 18

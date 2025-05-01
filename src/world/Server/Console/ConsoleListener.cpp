@@ -108,7 +108,7 @@ void RemoteConsole::Write(const char* Format, ...)
     if (*obuf == '\0')
         return;
 
-    m_pSocket->Send((const uint8*)obuf, (uint32)strlen(obuf));
+    m_pSocket->Send((const uint8_t*)obuf, (uint32_t)strlen(obuf));
 }
 
 struct ConsoleCommand

@@ -479,7 +479,7 @@ void WorldSession::handleForceSpeedChangeAck(WorldPacket& recvPacket)
 {
 #if VERSION_STRING < Cata
     /* extract packet */
-    uint32 unk1;
+    uint32_t unk1;
     float  newspeed;
     Unit* mover = _player->m_controledUnit;
 

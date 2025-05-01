@@ -47,7 +47,7 @@ bool ChunkedFile::loadFile(HANDLE mpq, std::string const& fileName, bool log)
     }
 
     data_size = SFileGetFileSize(file, nullptr);
-    data = new uint8[data_size];
+    data = new uint8_t[data_size];
     SFileReadFile(file, data, data_size, nullptr/*bytesRead*/, nullptr);
 
     parseChunks();
@@ -114,14 +114,14 @@ bool IsInterestingChunk(u_map_fcc const& fcc)
 
 void ChunkedFile::parseChunks()
 {
-    uint8* ptr = GetData();
-    // Make sure there's enough data to read u_map_fcc struct and the uint32 size after it
+    uint8_t* ptr = GetData();
+    // Make sure there's enough data to read u_map_fcc struct and the uint32_t size after it
     while (ptr <= GetData() + GetDataSize() - 8)
     {
         u_map_fcc header = *(u_map_fcc*)ptr;
         if (IsInterestingChunk(header))
         {
-            uint32 size = *(uint32*)(ptr + 4);
+            uint32_t size = *(uint32_t*)(ptr + 4);
             if (size <= data_size)
             {
                 std::swap(header.fcc_txt[0], header.fcc_txt[3]);
@@ -159,13 +159,13 @@ FileChunk::~FileChunk()
 
 void FileChunk::parseSubChunks()
 {
-    uint8* ptr = data + 8; // skip self
+    uint8_t* ptr = data + 8; // skip self
     while (ptr < data + size)
     {
         u_map_fcc header = *(u_map_fcc*)ptr;
         if (IsInterestingChunk(header))
         {
-            uint32 subsize = *(uint32*)(ptr + 4);
+            uint32_t subsize = *(uint32_t*)(ptr + 4);
             if (subsize < size)
             {
                 std::swap(header.fcc_txt[0], header.fcc_txt[3]);

@@ -17,7 +17,7 @@
 void SocketMgr::AddSocket(Socket* s)
 {
 #ifdef ENABLE_ANTI_DOS
-    uint32 saddr;
+    uint32_t saddr;
     int i, count;
 
     // Check how many connections we already have from that ip
@@ -100,15 +100,15 @@ void SocketMgr::RemoveSocket(Socket* s)
 
 void SocketMgr::CloseAll()
 {
-    for(uint32 i = 0; i < SOCKET_HOLDER_SIZE; ++i)
+    for(uint32_t i = 0; i < SOCKET_HOLDER_SIZE; ++i)
         if(fds[i] != NULL)
             fds[i]->Delete();
 }
 
 void SocketMgr::SpawnWorkerThreads()
 {
-    uint32 count = 1;
-    for(uint32 i = 0; i < count; ++i)
+    uint32_t count = 1;
+    for(uint32_t i = 0; i < count; ++i)
         ThreadPool.ExecuteTask(new SocketWorkerThread());
 }
 

@@ -54,7 +54,7 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Override Unit functions
-    void die(Unit* pAttacker, uint32 damage, uint32 spellid) override;
+    void die(Unit* pAttacker, uint32_t damage, uint32_t spellid) override;
     // Returns unit owner
     Unit* getUnitOwner() override;
     // Returns unit owner

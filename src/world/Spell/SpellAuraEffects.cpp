@@ -965,7 +965,7 @@ void Aura::spellAuraEffectPeriodicDamage(AuraEffectModifier* aurEff, bool apply)
 
                     //this is so not good, maybe parent spell has more then dmg effect and we use it to calc our new dmg :(
                     aurEff->setEffectDamage(0);
-                    for (uint8 i = 0; i < 3; ++i)
+                    for (uint8_t i = 0; i < 3; ++i)
                     {
                         const auto curVal = aurEff->getEffectDamage();
                         aurEff->setEffectDamage(curVal + (spell->calculateEffect(i) * parentsp->getEffectBasePoints(0) / 100));
@@ -983,7 +983,7 @@ void Aura::spellAuraEffectPeriodicDamage(AuraEffectModifier* aurEff, bool apply)
                 if (!c->isPlayer())
                     break;
 
-                uint32 multiplyer = 0;
+                uint32_t multiplyer = 0;
                 if (pSpellId == 12834)
                     multiplyer = 16; //level 1 of the talent should apply 16 of average melee weapon dmg
                 else if (pSpellId == 12849)
@@ -999,10 +999,10 @@ void Aura::spellAuraEffectPeriodicDamage(AuraEffectModifier* aurEff, bool apply)
                     if (it)
                     {
                         aurEff->setEffectDamage(0);
-                        for (uint8 i = 0; i < MAX_ITEM_PROTO_DAMAGES; ++i)
+                        for (uint8_t i = 0; i < MAX_ITEM_PROTO_DAMAGES; ++i)
                             if (it->getItemProperties()->Damage[i].Type == SCHOOL_NORMAL)
-                                aurEff->setEffectDamage(aurEff->getEffectDamage() + int32((it->getItemProperties()->Damage[i].Min + it->getItemProperties()->Damage[i].Max) / 2));
-                        aurEff->setEffectDamage((int32)multiplyer * aurEff->getEffectDamage() / 100);
+                                aurEff->setEffectDamage(aurEff->getEffectDamage() + int32_t((it->getItemProperties()->Damage[i].Min + it->getItemProperties()->Damage[i].Max) / 2));
+                        aurEff->setEffectDamage((int32_t)multiplyer * aurEff->getEffectDamage() / 100);
                     }
                 }
             }

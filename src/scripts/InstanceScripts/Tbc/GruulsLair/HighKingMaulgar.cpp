@@ -61,7 +61,7 @@ void HighKingMaulgarAI::OnScriptPhaseChange(uint32_t phaseId)
     }
 }
 
-void HighKingMaulgarAI::DoAction(int32 actionId)
+void HighKingMaulgarAI::DoAction(int32_t actionId)
 {
     if (actionId == ACTION_ADD_DEATH)
         sendRandomDBChatMessage(emoteVector, nullptr);

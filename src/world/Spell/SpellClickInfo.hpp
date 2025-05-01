@@ -7,6 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "CommonTypes.hpp"
 
+#include <cstdint>
+
 enum SpellClickUserTypes
 {
     SPELL_CLICK_USER_ANY    = 0,

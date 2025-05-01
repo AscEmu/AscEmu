@@ -50,7 +50,7 @@ void PatchMgr::initialize()
 
         std::string filePath = entry.path().string();
         std::string fileName = entry.path().filename().string();
-        uint32 srcversion;
+        uint32_t srcversion;
         char locality[5] = { 0 };
 
         if (sscanf(fileName.c_str(), "%4s%u.", locality, &srcversion) != 2)
@@ -67,16 +67,16 @@ void PatchMgr::initialize()
         file.seekg(0, std::ios::beg);
 
         Patch* pPatch = new Patch;
-        pPatch->FileSize = static_cast<uint32>(size);
+        pPatch->FileSize = static_cast<uint32_t>(size);
         pPatch->Data = new uint8_t[pPatch->FileSize];
         pPatch->Version = srcversion;
-        for (uint32 i = 0; i < 4; ++i)
+        for (uint32_t i = 0; i < 4; ++i)
         {
             pPatch->Locality[i] = static_cast<char>(std::tolower(locality[i]));
         }
 
         pPatch->Locality[4] = '\0';
-        pPatch->uLocality = *reinterpret_cast<uint32*>(pPatch->Locality);
+        pPatch->uLocality = *reinterpret_cast<uint32_t*>(pPatch->Locality);
 
         if (!file.read(reinterpret_cast<char*>(pPatch->Data), pPatch->FileSize))
         {
@@ -101,16 +101,16 @@ void PatchMgr::initialize()
     }
 }
 
-Patch* PatchMgr::FindPatchForClient(uint32 Version, const char* Locality)
+Patch* PatchMgr::FindPatchForClient(uint32_t Version, const char* Locality)
 {
     char tmplocality[5];
     Patch* fallbackPatch = nullptr;
 
-    for (uint32 i = 0; i < 4; ++i)
+    for (uint32_t i = 0; i < 4; ++i)
         tmplocality[i] = static_cast<char>(tolower(Locality[i]));
 
     tmplocality[4] = 0;
-    uint32 ulocality = *(uint32*)tmplocality;
+    uint32_t ulocality = *(uint32_t*)tmplocality;
 
     for (std::vector<Patch*>::iterator itr = m_patches.begin(); itr != m_patches.end(); ++itr)
     {
@@ -129,7 +129,7 @@ Patch* PatchMgr::FindPatchForClient(uint32 Version, const char* Locality)
     return fallbackPatch;
 }
 
-void PatchMgr::BeginPatchJob(Patch* pPatch, AuthSocket* pClient, uint32 Skip)
+void PatchMgr::BeginPatchJob(Patch* pPatch, AuthSocket* pClient, uint32_t Skip)
 {
     PatchJob* pJob = new PatchJob(pPatch, pClient, Skip);
     pClient->m_patchJob = pJob;
@@ -184,17 +184,17 @@ void PatchMgr::AbortPatchJob(PatchJob* pJob)
 
 struct TransferInitiatePacket
 {
-    uint8 cmd;
-    uint8 strsize;
+    uint8_t cmd;
+    uint8_t strsize;
     char name[6];
-    uint64 filesize;
-    uint8 md5hash[MD5_DIGEST_LENGTH];
+    uint64_t filesize;
+    uint8_t md5hash[MD5_DIGEST_LENGTH];
 };
 
 struct TransferDataPacket
 {
-    uint8 cmd;
-    uint16 chunk_size;
+    uint8_t cmd;
+    uint16_t chunk_size;
 };
 
 #pragma pack(pop)
@@ -212,10 +212,10 @@ bool PatchJob::Update()
     // send 1500 byte chunks
     TransferDataPacket header;
     header.cmd = 0x31;
-    header.chunk_size = static_cast<uint16>((m_bytesLeft > 1500) ? 1500 : m_bytesLeft);
+    header.chunk_size = static_cast<uint16_t>((m_bytesLeft > 1500) ? 1500 : m_bytesLeft);
     //LogDebug("PatchJob : Sending %u byte chunk", header.chunk_size);
 
-    bool result = m_client->BurstSend((const uint8*)&header, sizeof(TransferDataPacket));
+    bool result = m_client->BurstSend((const uint8_t*)&header, sizeof(TransferDataPacket));
     if (result)
     {
         result = m_client->BurstSend(m_dataPointer, header.chunk_size);
@@ -253,7 +253,7 @@ bool PatchMgr::InitiatePatch(Patch* pPatch, AuthSocket* pClient)
 
     // send it to the client
     pClient->BurstBegin();
-    bool result = pClient->BurstSend((const uint8*)&init, sizeof(TransferInitiatePacket));
+    bool result = pClient->BurstSend((const uint8_t*)&init, sizeof(TransferInitiatePacket));
     if (result)
         pClient->BurstPush();
 

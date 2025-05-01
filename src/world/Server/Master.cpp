@@ -363,7 +363,7 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
         return false;
     }
 
-    sWorld.setWorldStartTime((uint32)UNIXTIME);
+    sWorld.setWorldStartTime((uint32_t)UNIXTIME);
 
     worldRunnable = std::move(std::make_unique<WorldRunnable>());
 
@@ -814,7 +814,7 @@ void Master::WritePidFile()
     FILE* fPid = fopen("worldserver.pid", "w");
     if (fPid)
     {
-        uint32 pid;
+        uint32_t pid;
 #ifdef WIN32
         pid = GetCurrentProcessId();
 #else
@@ -827,9 +827,9 @@ void Master::WritePidFile()
 
 void Master::ShutdownThreadPools(bool listnersockcreate)
 {
-    uint32 loopcounter = 0;
+    uint32_t loopcounter = 0;
     auto last_time = Util::TimeNow();
-    uint32 next_printout = Util::getMSTime(), next_send = Util::getMSTime();
+    uint32_t next_printout = Util::getMSTime(), next_send = Util::getMSTime();
 
     while (!m_stopEvent && listnersockcreate)
     {
@@ -908,7 +908,7 @@ void Master::ShutdownThreadPools(bool listnersockcreate)
             if (diff >= m_ShutdownTimer)
                 break;
             else
-                m_ShutdownTimer -= static_cast<uint32>(diff);
+                m_ShutdownTimer -= static_cast<uint32_t>(diff);
         }
 
         if (50 > etime)
@@ -928,7 +928,7 @@ void Master::StartNetworkSubsystem()
 
 void Master::ShutdownLootSystem()
 {
-    sLogger.info("Shutdown : Initiated at {}", Util::GetDateTimeStringFromTimeStamp((uint32)UNIXTIME));
+    sLogger.info("Shutdown : Initiated at {}", Util::GetDateTimeStringFromTimeStamp((uint32_t)UNIXTIME));
 
     if (sLootMgr.isLoading())
     {

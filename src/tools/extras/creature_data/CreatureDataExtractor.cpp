@@ -97,9 +97,9 @@ void InitMPQs()
     }
 }
 
-void replace(std::string &str, const char* find, const char* rep, uint32 limit)
+void replace(std::string &str, const char* find, const char* rep, uint32_t limit)
 {
-    uint32 i = 0;
+    uint32_t i = 0;
     std::string::size_type pos = 0;
     while ((pos = str.find(find, pos)) != std::string::npos)
     {
@@ -118,7 +118,7 @@ struct ModelCache
     M2Header* header;
     M2Attachment* attachments;
     M2Bone* bones;
-    uint16* bonelookups;
+    uint16_t* bonelookups;
 };
 
 int main()
@@ -130,7 +130,7 @@ int main()
     displayInfo.open();
     modelInfo.open();
 
-    std::map<uint32, DBCFile::Record> modelInfoEntries;
+    std::map<uint32_t, DBCFile::Record> modelInfoEntries;
     std::map<std::string, ModelCache> modelCache;
 
     for (DBCFile::Iterator itr = modelInfo.begin(); itr != modelInfo.end(); ++itr)
@@ -145,7 +145,7 @@ int main()
         unsigned int modelentry = itr->getInt(1);
         float modelscale = itr->getFloat(4);
 
-        std::map<uint32, DBCFile::Record>::iterator  modelitr = modelInfoEntries.find(modelentry);
+        std::map<uint32_t, DBCFile::Record>::iterator  modelitr = modelInfoEntries.find(modelentry);
 
         if (modelitr == modelInfoEntries.end())
         {
@@ -165,7 +165,7 @@ int main()
         M2Header* header;
         M2Attachment* attachments;
         M2Bone* bones;
-        uint16* bonelookups;
+        uint16_t* bonelookups;
 
         std::map<std::string, ModelCache>::iterator cacheitr = modelCache.find(modelname);
 
@@ -191,9 +191,9 @@ int main()
             modelf.seek(header->ofsAttachments);
             modelf.read(attachments, header->nAttachments * sizeof(M2Attachment));
 
-            bonelookups = (uint16*)malloc(header->nBoneLookupTable * sizeof(uint16));
+            bonelookups = (uint16_t*)malloc(header->nBoneLookupTable * sizeof(uint16_t));
             modelf.seek(header->ofsBoneLookupTable);
-            modelf.read(bonelookups, header->nBoneLookupTable * sizeof(uint16));
+            modelf.read(bonelookups, header->nBoneLookupTable * sizeof(uint16_t));
 
             bones = (M2Bone*)malloc(header->nBones * sizeof(M2Bone));
             modelf.seek(header->ofsBones);
@@ -215,14 +215,14 @@ int main()
         }
 
         //try and get the bone
-        for (uint32 i = 0; i < header->nAttachments; ++i)
+        for (uint32_t i = 0; i < header->nAttachments; ++i)
         {
             if (attachments[i].bone > header->nBoneLookupTable)
             {
                 printf("Attachment %u requests bonelookup %u (too large, bonelookup table is only %u entries)\n", i, attachments[i].bone, header->nBoneLookupTable);
                 continue;
             }
-            uint16 boneindex = bonelookups[attachments[i].bone];
+            uint16_t boneindex = bonelookups[attachments[i].bone];
             if (boneindex > header->nBones)
             {
                 printf("Attachment %u requests bone %u (too large, bone table is only %u entries)\n", i, boneindex, header->nBones);

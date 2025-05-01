@@ -43,7 +43,7 @@ class GameObject;
 class Spell;
 
 typedef void(Spell::*pSpellEffect)(uint8_t effectIndex);
-typedef void(Spell::*pSpellTarget)(uint32 i, uint32 j);
+typedef void(Spell::*pSpellTarget)(uint32_t i, uint32_t j);
 
 #define GO_FISHING_BOBBER 35591
 
@@ -477,30 +477,30 @@ public:
     friend class DummySpellHandler;
 
     // Fills specified targets at the area of effect
-    void FillSpecifiedTargetsInArea(float srcx, float srcy, float srcz, uint32 ind, uint32 specification);
+    void FillSpecifiedTargetsInArea(float srcx, float srcy, float srcz, uint32_t ind, uint32_t specification);
     // Fills specified targets at the area of effect. We suppose we already inited this spell and know the details
-    void FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float srcz, float range, uint32 specification);
+    void FillSpecifiedTargetsInArea(uint32_t i, float srcx, float srcy, float srcz, float range, uint32_t specification);
     // Fills the targets at the area of effect
-    void FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, float range);
+    void FillAllTargetsInArea(uint32_t i, float srcx, float srcy, float srcz, float range);
     // Fills the targets at the area of effect. We suppose we already inited this spell and know the details
-    void FillAllTargetsInArea(float srcx, float srcy, float srcz, uint32 ind);
+    void FillAllTargetsInArea(float srcx, float srcy, float srcz, uint32_t ind);
     // Fills the targets at the area of effect. We suppose we already inited this spell and know the details
-    void FillAllTargetsInArea(LocationVector& location, uint32 ind);
+    void FillAllTargetsInArea(LocationVector& location, uint32_t ind);
     // Fills the targets at the area of effect. We suppose we already inited this spell and know the details
-    void FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, float range);
+    void FillAllFriendlyInArea(uint32_t i, float srcx, float srcy, float srcz, float range);
     //get single Enemy as target
-    uint64 GetSinglePossibleEnemy(uint32 i, float prange = 0);
+    uint64_t GetSinglePossibleEnemy(uint32_t i, float prange = 0);
     //get single Enemy as target
-    uint64 GetSinglePossibleFriend(uint32 i, float prange = 0);
+    uint64_t GetSinglePossibleFriend(uint32_t i, float prange = 0);
     //generate possible target list for a spell. Use as last resort since it is not accurate
     bool GenerateTargets(SpellCastTargets* store_buff);
     // Fills the target map of the spell packet
-    void FillTargetMap(uint32);
+    void FillTargetMap(uint32_t);
 
     void HandleTargetNoObject();
 
     // See if we hit the target or can it resist (evade/immune/resist on spellgo) (0=success)
-    uint8 DidHit(uint32 effindex, Unit* target);
+    uint8_t DidHit(uint32_t effindex, Unit* target);
     // Casts the spell
     void castMeOld();
 
@@ -508,29 +508,29 @@ public:
     //void TriggerSpell();
 
     // Checks the caster is ready for cast
-    uint8 CanCast(bool);
+    uint8_t CanCast(bool);
 
     // Handles Teleport function
-    void HandleTeleport(LocationVector position, uint32 mapid, Unit* Target);
+    void HandleTeleport(LocationVector position, uint32_t mapid, Unit* Target);
     // Determines how much skill caster going to gain
     void DetermineSkillUp();
     // Increases cast time of the spell
-    void AddTime(uint32 type);
+    void AddTime(uint32_t type);
 
-    uint32 getState() const;
+    uint32_t getState() const;
 
     // Send Packet functions
-    void SendLogExecute(uint32 damage, uint64& targetGuid);
-    void SendInterrupted(uint8 result);
+    void SendLogExecute(uint32_t damage, uint64_t& targetGuid);
+    void SendInterrupted(uint8_t result);
     void SendResurrectRequest(Player* target);
-    void SendTameFailure(uint8 failure);
+    void SendTameFailure(uint8_t failure);
 
-    void HandleAddAura(uint64 guid);
-    uint32 pSpellId;
+    void HandleAddAura(uint64_t guid);
+    uint32_t pSpellId;
     SpellInfo const* ProcedOnSpell;
     SpellCastTargets m_targets;
 
-    void CreateItem(uint32 itemId);
+    void CreateItem(uint32_t itemId);
 
     // Effect Handlers for effectIndex
     void ApplyAreaAura(uint8_t effectIndex);
@@ -555,11 +555,11 @@ public:
 
     virtual void SpellEffectSummon(uint8_t effectIndex);
     void SpellEffectSummonWild(uint8_t effectIndex);
-    void SpellEffectSummonGuardian(uint32 i, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
-    void SpellEffectSummonTemporaryPet(uint32 i, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
-    void SpellEffectSummonPossessed(uint32 i, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
-    void SpellEffectSummonCompanion(uint32 i, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
-    void SpellEffectSummonVehicle(uint32 i, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
+    void SpellEffectSummonGuardian(uint32_t i, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
+    void SpellEffectSummonTemporaryPet(uint32_t i, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
+    void SpellEffectSummonPossessed(uint32_t i, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
+    void SpellEffectSummonCompanion(uint32_t i, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
+    void SpellEffectSummonVehicle(uint32_t i, WDB::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v);
     void SpellEffectLeap(uint8_t effectIndex);
     void SpellEffectEnergize(uint8_t effectIndex);
     void SpellEffectWeaponDmgPerc(uint8_t effectIndex);
@@ -656,30 +656,30 @@ public:
 
     // This returns SPELL_ENTRY_Spell_Dmg_Type where 0 = SPELL_DMG_TYPE_NONE, 1 = SPELL_DMG_TYPE_MAGIC, 2 = SPELL_DMG_TYPE_MELEE, 3 = SPELL_DMG_TYPE_RANGED
     // It should NOT be used for weapon_damage_type which needs: 0 = MELEE, 1 = OFFHAND, 2 = RANGED
-    uint32 GetType();
+    uint32_t GetType();
 
-    uint32 chaindamage;
+    uint32_t chaindamage;
 
     bool IsAspect();
     bool IsSeal();
 
     void InitProtoOverride();
 
-    static uint32 GetBaseThreat(uint32 dmg);
+    static uint32_t GetBaseThreat(uint32_t dmg);
 
-    static uint32 GetMechanic(SpellInfo const* sp);
+    static uint32_t GetMechanic(SpellInfo const* sp);
 
     bool IsStealthSpell();
     bool IsInvisibilitySpell();
 
-    int32 damage;
+    int32_t damage;
     bool m_AreaAura;
-    int32 m_charges;
+    int32_t m_charges;
 
-    int32 damageToHit;
-    uint32 castedItemId;
-    uint8 extra_cast_number;
-    uint32 m_glyphslot;
+    int32_t damageToHit;
+    uint32_t castedItemId;
+    uint8_t extra_cast_number;
+    uint32_t m_glyphslot;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     ///bool DuelSpellNoMoreValid()
@@ -699,35 +699,35 @@ protected:
     /// Spell state's
     bool m_Spell_Failed;            // for 5sr
     bool m_Delayed;
-    uint8 m_DelayStep;              // 3.0.2 - spells can only be delayed twice.
+    uint8_t m_DelayStep;            // 3.0.2 - spells can only be delayed twice.
 
     bool m_IsCastedOnSelf;
 
     uint64_t m_magnetTarget;
 
-    uint32 add_damage;
+    uint32_t add_damage;
 
-    uint8 m_rune_avail_before;
+    uint8_t m_rune_avail_before;
     //void _DamageRangeUpdate();
 
-    virtual int32 DoCalculateEffect(uint32 i, Unit* target, int32 value);
-    virtual void DoAfterHandleEffect(Unit* target, uint32 i);
+    virtual int32_t DoCalculateEffect(uint32_t i, Unit* target, int32_t value);
+    virtual void DoAfterHandleEffect(Unit* target, uint32_t i);
 
 public: // Modified by LUAppArc private->public
     float m_missilePitch;
-    uint32 m_missileTravelTime;
+    uint32_t m_missileTravelTime;
 
-    void SafeAddTarget(std::vector<uint64_t>* tgt, uint64 guid);
+    void SafeAddTarget(std::vector<uint64_t>* tgt, uint64_t guid);
 
     friend class DynamicObject;
-    void DetermineSkillUp(uint16_t skillid, uint32 targetlevel, uint32 multiplicator = 1);
+    void DetermineSkillUp(uint16_t skillid, uint32_t targetlevel, uint32_t multiplicator = 1);
     void DetermineSkillUp(uint16_t skillid);
 
-    bool AddTarget(uint32 i, uint32 TargetType, Object* obj);
-    void AddAOETargets(uint32 i, uint32 TargetType, float r, uint32 maxtargets);
-    void AddPartyTargets(uint32 i, uint32 TargetType, float r, uint32 maxtargets);
-    void AddRaidTargets(uint32 i, uint32 TargetType, float r, uint32 maxtargets, bool partylimit = false);
-    void AddChainTargets(uint32 i, uint32 TargetType, float r, uint32 maxtargets);
-    void AddConeTargets(uint32 i, uint32 TargetType, float r, uint32 maxtargets);
-    void AddScriptedOrSpellFocusTargets(uint32 i, uint32 TargetType, float r, uint32 maxtargets);
+    bool AddTarget(uint32_t i, uint32_t TargetType, Object* obj);
+    void AddAOETargets(uint32_t i, uint32_t TargetType, float r, uint32_t maxtargets);
+    void AddPartyTargets(uint32_t i, uint32_t TargetType, float r, uint32_t maxtargets);
+    void AddRaidTargets(uint32_t i, uint32_t TargetType, float r, uint32_t maxtargets, bool partylimit = false);
+    void AddChainTargets(uint32_t i, uint32_t TargetType, float r, uint32_t maxtargets);
+    void AddConeTargets(uint32_t i, uint32_t TargetType, float r, uint32_t maxtargets);
+    void AddScriptedOrSpellFocusTargets(uint32_t i, uint32_t TargetType, float r, uint32_t maxtargets);
 };

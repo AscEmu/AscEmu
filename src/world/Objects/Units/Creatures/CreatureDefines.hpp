@@ -36,15 +36,15 @@ namespace WDB::Structures
     struct CreatureModelDataEntry;
 }
 
-const uint8 creatureMaxProtoSpells = 8;
-const uint32 creatureMaxInventoryItems = 150;
+const uint8_t creatureMaxProtoSpells = 8;
+const uint32_t creatureMaxInventoryItems = 150;
 
 const time_t vendorItemsUpdate = 3600000;
 
 // APGL End
 // MIT Start
 
-enum class CreatureGroundMovementType : uint8
+enum class CreatureGroundMovementType : uint8_t
 {
     None,
     Run,
@@ -53,7 +53,7 @@ enum class CreatureGroundMovementType : uint8
     Max
 };
 
-enum class CreatureFlightMovementType : uint8
+enum class CreatureFlightMovementType : uint8_t
 {
     None,
     DisableGravity,
@@ -62,7 +62,7 @@ enum class CreatureFlightMovementType : uint8
     Max
 };
 
-enum class CreatureChaseMovementType : uint8
+enum class CreatureChaseMovementType : uint8_t
 {
     Run,
     CanWalk,
@@ -71,7 +71,7 @@ enum class CreatureChaseMovementType : uint8
     Max
 };
 
-enum class CreatureRandomMovementType : uint8
+enum class CreatureRandomMovementType : uint8_t
 {
     Walk,
     CanRun,
@@ -123,11 +123,11 @@ enum creatureguardtype
 
 struct CreatureItem
 {
-    uint32 itemid;
-    uint32 amount;                              /// stack amount.
-    uint32 available_amount;
-    uint32 max_amount;
-    uint32 incrtime;
+    uint32_t itemid;
+    uint32_t amount;                              /// stack amount.
+    uint32_t available_amount;
+    uint32_t max_amount;
+    uint32_t incrtime;
     WDB::Structures::ItemExtendedCostEntry const* extended_cost;
 };
 
@@ -170,64 +170,64 @@ enum MONSTER_SAY_EVENTS
 
 struct CreatureProperties
 {
-    uint32 Id;
-    uint32 killcredit[2];
-    uint32 Male_DisplayID;
-    uint32 Female_DisplayID;
-    uint32 Male_DisplayID2;
-    uint32 Female_DisplayID2;
+    uint32_t Id;
+    uint32_t killcredit[2];
+    uint32_t Male_DisplayID;
+    uint32_t Female_DisplayID;
+    uint32_t Male_DisplayID2;
+    uint32_t Female_DisplayID2;
     std::string Name;
     std::string SubName;
     std::string icon_name;
-    uint32 typeFlags;
-    uint32 Type;
-    uint32 Family;
-    uint32 Rank;
-    uint32 Encounter;
+    uint32_t typeFlags;
+    uint32_t Type;
+    uint32_t Family;
+    uint32_t Rank;
+    uint32_t Encounter;
     float baseAttackMod;
     float rangeAttackMod;
-    uint8  Leader;
-    uint32 MinLevel;
-    uint32 MaxLevel;
-    uint32 Faction;
-    uint32 MinHealth;
-    uint32 MaxHealth;
-    uint32 Mana;
+    uint8_t  Leader;
+    uint32_t MinLevel;
+    uint32_t MaxLevel;
+    uint32_t Faction;
+    uint32_t MinHealth;
+    uint32_t MaxHealth;
+    uint32_t Mana;
     float Scale;
-    uint32 NPCFLags;
-    uint32 AttackTime;
+    uint32_t NPCFLags;
+    uint32_t AttackTime;
     uint8_t attackSchool;
     float MinDamage;
     float MaxDamage;
-    uint32 CanRanged;
-    uint32 RangedAttackTime;
+    uint32_t CanRanged;
+    uint32_t RangedAttackTime;
     float RangedMinDamage;
     float RangedMaxDamage;
-    uint32 RespawnTime;
-    uint32 Resistances[TOTAL_SPELL_SCHOOLS];
+    uint32_t RespawnTime;
+    uint32_t Resistances[TOTAL_SPELL_SCHOOLS];
     float CombatReach;
     float BoundingRadius;
     std::string aura_string;
     bool isBoss;
-    uint32 money;
+    uint32_t money;
     bool isTriggerNpc;
     float walk_speed;       /// base movement
     float run_speed;        /// most of the time mobs use this
     float fly_speed;
-    uint32 extra_a9_flags;
-    uint32 AISpells[creatureMaxProtoSpells];
-    uint32 AISpellsFlags;
-    uint32 modImmunities;
+    uint32_t extra_a9_flags;
+    uint32_t AISpells[creatureMaxProtoSpells];
+    uint32_t AISpellsFlags;
+    uint32_t modImmunities;
     bool isTrainingDummy;
-    uint32 guardtype;
-    uint32 summonguard;
-    uint32 spelldataid;
-    uint32 vehicleid;
+    uint32_t guardtype;
+    uint32_t summonguard;
+    uint32_t spelldataid;
+    uint32_t vehicleid;
     bool rooted;
-    uint32 QuestItems[6];
-    uint32 waypointid;
-    uint32 gossipId;
-    uint32  MovementType;
+    uint32_t QuestItems[6];
+    uint32_t waypointid;
+    uint32_t gossipId;
+    uint32_t  MovementType;
     CreatureMovementData Movement;
 
     std::string lowercase_name;
@@ -246,14 +246,14 @@ struct CreatureProperties
     // APGL Start
 
     //itemslots
-    uint32 itemslot_1;
-    uint32 itemslot_2;
-    uint32 itemslot_3;
+    uint32_t itemslot_1;
+    uint32_t itemslot_2;
+    uint32_t itemslot_3;
 
     // AI Stuff
     bool m_canRangedAttack;
-    std::set<uint32> start_auras;
-    std::vector<uint32> castable_spells;
+    std::set<uint32_t> start_auras;
+    std::vector<uint32_t> castable_spells;
 };
 
 struct CreaturePropertiesMovement
@@ -434,35 +434,35 @@ enum TrainerType
 
 struct GossipOptions
 {
-    uint32 ID;
-    uint32 GossipID;
-    uint16 Icon;
+    uint32_t ID;
+    uint32_t GossipID;
+    uint16_t Icon;
     std::string OptionText;
-    uint32 NextTextID;
-    uint32 Special;
+    uint32_t NextTextID;
+    uint32_t Special;
     float PoiX;
     float PoiY;
-    uint32 PoiIcon;
-    uint32 PoiFlags;
-    uint32 PoiData;
+    uint32_t PoiIcon;
+    uint32_t PoiFlags;
+    uint32_t PoiData;
     std::string PoiName;
-    uint32 BgMapId;
+    uint32_t BgMapId;
 };
 
 struct GossipNpc
 {
     GossipNpc() { pOptions = NULL; }
-    uint32 ID = 0;
-    uint32 EntryId = 0;
-    uint32 TextID = 0;
-    uint32 OptionCount = 0;
+    uint32_t ID = 0;
+    uint32_t EntryId = 0;
+    uint32_t TextID = 0;
+    uint32_t OptionCount = 0;
     GossipOptions* pOptions;
 };
 
 struct trainertype
 {
     const char* partialname;
-    uint32 type;
+    uint32_t type;
 };
 
 static trainertype trainer_types[TRAINER_TYPE_MAX] =

@@ -1627,7 +1627,7 @@ public:
     Standing getFactionStandingRank(uint32_t faction);
     static Standing getReputationRankFromStanding(int32_t value);
 
-    void applyForcedReaction(uint32 faction_id, Standing rank, bool apply);
+    void applyForcedReaction(uint32_t faction_id, Standing rank, bool apply);
     Standing const* getForcedReputationRank(WDB::Structures::FactionTemplateEntry const* factionTemplateEntry) const;
 
     void setFactionAtWar(uint32_t faction, bool set);

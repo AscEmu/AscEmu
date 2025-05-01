@@ -91,7 +91,7 @@ namespace AscEmu::Packets
                 case 3:                     // BGSTATUS_TIME
                     packet << mapId;
 #if VERSION_STRING > TBC
-                    packet << uint64(0);
+                    packet << uint64_t(0);
 #endif
                     packet << uint32_t(0);
                     packet << time;

@@ -36,13 +36,13 @@
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Random.hpp"
 
-void Spell::FillTargetMap(uint32 i)
+void Spell::FillTargetMap(uint32_t i)
 {
     //Spell::prepare() has already a m_caster->IsInWorld() check so if now the caster is no more in world something bad happened.
     if (!m_caster->IsInWorld())
         return;
 
-    uint32 TargetType = 0;
+    uint32_t TargetType = 0;
     TargetType |= getSpellInfo()->getRequiredTargetMaskForEffect(static_cast<uint8_t>(i));
 
     if (TargetType & SPELL_TARGET_NOT_IMPLEMENTED)
@@ -75,7 +75,7 @@ void Spell::FillTargetMap(uint32 i)
         AddAOETargets(i, TargetType, getEffectRadius(i), m_spellInfo->getMaxTargets());
     ///\todo arcemu, doesn't support summon slots?
     /*if (TargetType & SPELL_TARGET_OBJECT_CURTOTEMS && u_caster != NULL)
-        for (uint32 i=1; i<5; ++i) //totem slots are 1, 2, 3, 4
+        for (uint32_t i=1; i<5; ++i) //totem slots are 1, 2, 3, 4
         AddTarget(i, TargetType, u_caster->m_summonslot[i]);*/
     if (TargetType & SPELL_TARGET_OBJECT_CURPET && u_caster != nullptr)
         AddTarget(i, TargetType, u_caster->getPet());
@@ -115,7 +115,7 @@ void Spell::FillTargetMap(uint32 i)
         AddScriptedOrSpellFocusTargets(i, TargetType, getEffectRadius(i), m_spellInfo->getMaxTargets());
 }
 
-void Spell::AddScriptedOrSpellFocusTargets(uint32 i, uint32 targetType, float r, uint32 /*maxtargets*/)
+void Spell::AddScriptedOrSpellFocusTargets(uint32_t i, uint32_t targetType, float r, uint32_t /*maxtargets*/)
 {
     for (const auto& itr : m_caster->getInRangeObjectsSet())
     {
@@ -137,7 +137,7 @@ void Spell::AddScriptedOrSpellFocusTargets(uint32 i, uint32 targetType, float r,
     }
 }
 
-void Spell::AddConeTargets(uint32 i, uint32 targetType, float /*r*/, uint32 maxtargets)
+void Spell::AddConeTargets(uint32_t i, uint32_t targetType, float /*r*/, uint32_t maxtargets)
 {
     std::vector<uint64_t>* list = &m_effectTargets[i];
     for (const auto& itr : m_caster->getInRangeObjectsSet())
@@ -158,7 +158,7 @@ void Spell::AddConeTargets(uint32 i, uint32 targetType, float /*r*/, uint32 maxt
     }
 }
 
-void Spell::AddChainTargets(uint32 i, uint32 targetType, float /*r*/, uint32 /*maxtargets*/)
+void Spell::AddChainTargets(uint32_t i, uint32_t targetType, float /*r*/, uint32_t /*maxtargets*/)
 {
     if (!m_caster->IsInWorld())
         return;
@@ -189,7 +189,7 @@ void Spell::AddChainTargets(uint32 i, uint32 targetType, float /*r*/, uint32 /*m
     if (casterFrom != nullptr && pfirstTargetFrom != nullptr && casterFrom->getGroup() == pfirstTargetFrom->getGroup())
         RaidOnly = true;
 
-    uint32 jumps = m_spellInfo->getEffectChainTarget(static_cast<uint8_t>(i));
+    uint32_t jumps = m_spellInfo->getEffectChainTarget(static_cast<uint8_t>(i));
 
     //range
     range /= jumps; //hacky, needs better implementation!
@@ -224,7 +224,7 @@ void Spell::AddChainTargets(uint32 i, uint32 targetType, float /*r*/, uint32 /*m
     }
 }
 
-void Spell::AddPartyTargets(uint32 i, uint32 targetType, float r, uint32 /*maxtargets*/)
+void Spell::AddPartyTargets(uint32_t i, uint32_t targetType, float r, uint32_t /*maxtargets*/)
 {
     Object* u = m_caster->getWorldMap()->getObject(m_targets.getUnitTargetGuid());
     if (u == nullptr)
@@ -263,7 +263,7 @@ void Spell::AddPartyTargets(uint32 i, uint32 targetType, float r, uint32 /*maxta
     }
 }
 
-void Spell::AddRaidTargets(uint32 i, uint32 targetType, float r, uint32 /*maxtargets*/, bool /*partylimit*/)
+void Spell::AddRaidTargets(uint32_t i, uint32_t targetType, float r, uint32_t /*maxtargets*/, bool /*partylimit*/)
 {
     Object* u = m_caster->getWorldMap()->getObject(m_targets.getUnitTargetGuid());
     if (u == nullptr)
@@ -302,7 +302,7 @@ void Spell::AddRaidTargets(uint32 i, uint32 targetType, float r, uint32 /*maxtar
     }
 }
 
-void Spell::AddAOETargets(uint32 i, uint32 targetType, float r, uint32 maxtargets)
+void Spell::AddAOETargets(uint32_t i, uint32_t targetType, float r, uint32_t maxtargets)
 {
     LocationVector source;
 
@@ -362,7 +362,7 @@ void Spell::AddAOETargets(uint32 i, uint32 targetType, float r, uint32 maxtarget
     }
 }
 
-bool Spell::AddTarget(uint32 i, uint32 TargetType, Object* obj)
+bool Spell::AddTarget(uint32_t i, uint32_t TargetType, Object* obj)
 {
     const auto targetCheck = checkExplicitTarget(obj, TargetType);
     if (targetCheck != SPELL_CAST_SUCCESS)
@@ -452,11 +452,11 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
 
     bool result = false;
 
-    for (uint8 i = 0; i < 3; ++i)
+    for (uint8_t i = 0; i < 3; ++i)
     {
         if (m_spellInfo->getEffect(i) == 0)
             continue;
-        uint32 TargetType = 0;
+        uint32_t TargetType = 0;
         TargetType |= getSpellInfo()->getRequiredTargetMaskForEffect(i);
 
         if (TargetType & (SPELL_TARGET_OBJECT_SELF | SPELL_TARGET_AREA_PARTY | SPELL_TARGET_AREA_RAID))
@@ -576,7 +576,7 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
         {
             //we always use radius(0) for some reason
             bool isInLOS = false;
-            uint8 attempts = 0;
+            uint8_t attempts = 0;
             do
             {
                 //prevent deadlock

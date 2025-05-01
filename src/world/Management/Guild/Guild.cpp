@@ -1880,7 +1880,7 @@ void Guild::sendBankList(WorldSession* session, uint8_t tabId, bool /*withConten
 
     if (session)
     {
-        int32 numSlots = 0;
+        int32_t numSlots = 0;
         if (GuildMember const* member = getMember(session->GetPlayer()->getGuid()))
             numSlots = getRankBankTabSlotsPerDay(member->getRankId(), tabId);
         data.put<uint32_t>(rempos, numSlots);
@@ -2438,7 +2438,7 @@ void Guild::_sendBankContentUpdate(uint8_t tabId, SlotIds slots, bool sendAllSlo
         tab->writeInfoPacket(data);
     else if (!slots.empty())
     {
-        data << uint8(slots.size());
+        data << uint8_t(slots.size());
         for (auto itr = slots.begin(); itr != slots.end(); ++itr)
             tab->writeSlotPacket(data, *itr, false);
     }

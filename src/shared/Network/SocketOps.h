@@ -30,13 +30,13 @@ namespace SocketOps
     bool EnableBuffering(SOCKET fd);
 
     // Set internal buffer size to socket.
-    bool SetRecvBufferSize(SOCKET fd, uint32 size);
+    bool SetRecvBufferSize(SOCKET fd, uint32_t size);
 
     // Set internal buffer size to socket.
-    bool SetSendBufferSize(SOCKET fd, uint32 size);
+    bool SetSendBufferSize(SOCKET fd, uint32_t size);
 
     // Set timeout, in seconds
-    bool SetTimeout(SOCKET fd, uint32 timeout);
+    bool SetTimeout(SOCKET fd, uint32_t timeout);
 
     // Closes socket completely.
     void CloseSocket(SOCKET fd);

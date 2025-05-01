@@ -620,7 +620,7 @@ bool loadDBCs()
             if (WDB::Structures::SpellEntry const* spell = sSpellStore.lookupEntry(i))
             {
                 if (WDB::Structures::SpellCategoriesEntry const* category = spell->GetSpellCategories())
-                    if (uint32 cat = category->Category)
+                    if (uint32_t cat = category->Category)
                         sSpellCategoryStore[cat].insert(i);
             }
         }

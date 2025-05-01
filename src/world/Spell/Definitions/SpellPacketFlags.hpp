@@ -32,7 +32,7 @@ enum SpellPacketFlags : uint32_t
     SPELL_PACKET_FLAGS_UNK80000                 = 0x80000, // 2 functions called (same ones as for ranged but different)
     SPELL_PACKET_FLAGS_UNK100000                = 0x100000,
     SPELL_PACKET_FLAGS_RUNE_UPDATE              = 0x200000, // 2 bytes for the rune cur and rune next flags
-    SPELL_PACKET_FLAGS_UNK400000                = 0x400000, // seems to make server send an uint32 after m_targets.write
+    SPELL_PACKET_FLAGS_UNK400000                = 0x400000, // seems to make server send an uint32_t after m_targets.write
     SPELL_PACKET_FLAGS_UNK800000                = 0x800000,
     SPELL_PACKET_FLAGS_UNK1000000               = 0x1000000,
     SPELL_PACKET_FLAGS_UNK2000000               = 0x2000000,

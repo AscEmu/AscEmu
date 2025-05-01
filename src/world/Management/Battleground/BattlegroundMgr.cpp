@@ -172,7 +172,7 @@ void BattlegroundManager::handleBattlegroundListPacket(WorldSession* session, ui
     }
     else
     {
-        data << uint8(0);
+        data << uint8_t(0);
 
         if (battlegroundType >= BATTLEGROUND_NUM_TYPES) // VLack: Nasty hackers might try to abuse this packet to crash us...
             return;
@@ -522,7 +522,7 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
 
     Arena* arena;
 
-    int32 team;
+    int32_t team;
     uint32_t playerGuid;
     uint32_t factionMap[MAX_PLAYER_TEAMS];
     uint32_t count;
@@ -839,7 +839,7 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
                 if (group2)
                 {
                     teamids[1] = getArenaGroupQInfo(group2, i, &avgRating[1]);
-                    uint32_t delta = abs(static_cast<int32>(avgRating[0]) - static_cast<int32>(avgRating[1]));
+                    uint32_t delta = abs(static_cast<int32_t>(avgRating[0]) - static_cast<int32_t>(avgRating[1]));
                     if (teamids[0] != teamids[1] && delta <= worldConfig.rate.arenaQueueDiff)
                         possibleGroups.push_back(group2->GetID());
                 }

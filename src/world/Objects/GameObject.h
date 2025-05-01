@@ -205,7 +205,7 @@ public:
 
         virtual bool IsLootable() { return false; }
 
-        virtual void Use(uint64 /*GUID*/) {}
+        virtual void Use(uint64_t /*GUID*/) {}
         void CastSpell(uint64_t TargetGUID, SpellInfo const* sp);
         void CastSpell(uint64_t TargetGUID, uint32_t SpellID);
 
@@ -227,11 +227,11 @@ public:
         uint32_t GetGOReqSkill();
         MapCell* m_respawnCell = nullptr;
 
-        void SetOverrides(uint32 go_overrides) { m_overrides = go_overrides; }
-        uint32 GetOverrides() { return m_overrides; }
+        void SetOverrides(uint32_t go_overrides) { m_overrides = go_overrides; }
+        uint32_t GetOverrides() { return m_overrides; }
 
         //\todo serverdie faction can be handled in update.
-        void SetFaction(uint32 id)
+        void SetFaction(uint32_t id)
         {
             setFactionTemplate(id);
             setServersideFaction();
@@ -243,9 +243,9 @@ public:
         GameObjectProperties const* gameobject_properties = nullptr;
 
         GameObjectAIScript* myScript = nullptr;
-        uint32 _fields[getSizeOfStructure(WoWGameObject)];
+        uint32_t _fields[getSizeOfStructure(WoWGameObject)];
 
-        uint32 m_overrides = 0;             //See enum GAMEOBJECT_OVERRIDES!
+        uint32_t m_overrides = 0;             //See enum GAMEOBJECT_OVERRIDES!
 
     //MIT
     public:
@@ -286,7 +286,7 @@ public:
 class GameObject_Lootable : public GameObject
 {
 public:
-    GameObject_Lootable(uint64 GUID) : GameObject(GUID) {}
+    GameObject_Lootable(uint64_t GUID) : GameObject(GUID) {}
     ~GameObject_Lootable() {}
 
     virtual bool HasLoot() = 0;
@@ -319,7 +319,7 @@ protected:
 class GameObject_Door : public GameObject
 {
 public:
-    GameObject_Door(uint64 GUID);
+    GameObject_Door(uint64_t GUID);
     ~GameObject_Door();
 
     void InitAI();
@@ -335,7 +335,7 @@ protected:
 class GameObject_Button : public GameObject
 {
 public:
-    GameObject_Button(uint64 GUID);
+    GameObject_Button(uint64_t GUID);
     ~GameObject_Button();
 
     void InitAI();
@@ -354,7 +354,7 @@ private:
 class GameObject_QuestGiver : public GameObject
 {
 public:
-    GameObject_QuestGiver(uint64 GUID);
+    GameObject_QuestGiver(uint64_t GUID);
     ~GameObject_QuestGiver();
 
     void InitAI();
@@ -363,7 +363,7 @@ public:
 
     void onUse(Player* player) override;
 
-    uint32 NumOfQuests();
+    uint32_t NumOfQuests();
 
     void AddQuest(std::unique_ptr<QuestRelation> Q);
 
@@ -371,16 +371,16 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Searches for a QuestRelation in the GO and if found, returns the Quest
-    // \param uint32 quest_id  -  Identifier of the Quest
-    // \param uint8 quest_relation  -  QuestRelation type
+    // \param uint32_t quest_id  -  Identifier of the Quest
+    // \param uint8_t quest_relation  -  QuestRelation type
     // \return the Quest on success NULL on failure
     QuestProperties const* FindQuest(uint32_t quest_id, uint8_t quest_relation);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Finds the Quest with quest_id in the GO, and returns it's QuestRelation type
-    // \param uint32 quest_id  -  Identifier of the Quest
+    // \param uint32_t quest_id  -  Identifier of the Quest
     // \return Returns the QuestRelation type on success, 0 on failure
-    uint16 GetQuestRelation(uint32_t quest_id);
+    uint16_t GetQuestRelation(uint32_t quest_id);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Returns an iterator to the GO's QuestRelation list beginning
@@ -412,7 +412,7 @@ private:
 class GameObject_Chest : public GameObject_Lootable
 {
 public:
-    GameObject_Chest(uint64 GUID);
+    GameObject_Chest(uint64_t GUID);
     ~GameObject_Chest();
 
     void InitAI();
@@ -437,7 +437,7 @@ private:
 class GameObject_Trap : public GameObject
 {
 public:
-    GameObject_Trap(uint64 GUID);
+    GameObject_Trap(uint64_t GUID);
     ~GameObject_Trap();
 
     void InitAI();
@@ -456,7 +456,7 @@ private:
 class GameObject_Chair : public GameObject
 {
 public:
-    GameObject_Chair(uint64 GUID) : GameObject(GUID){}
+    GameObject_Chair(uint64_t GUID) : GameObject(GUID){}
     ~GameObject_Chair(){};
 
     void onUse(Player* player) override;
@@ -468,7 +468,7 @@ public:
 class GameObject_SpellFocus : public GameObject
 {
 public:
-    GameObject_SpellFocus(uint64 GUID);
+    GameObject_SpellFocus(uint64_t GUID);
     ~GameObject_SpellFocus();
 
     void OnPushToWorld();
@@ -479,7 +479,7 @@ public:
 class GameObject_Goober : public GameObject
 {
 public:
-    GameObject_Goober(uint64 GUID);
+    GameObject_Goober(uint64_t GUID);
     ~GameObject_Goober();
 
     void InitAI();
@@ -510,7 +510,7 @@ protected:
 class GameObject_Camera : public GameObject
 {
 public:
-    GameObject_Camera(uint64 GUID) : GameObject(GUID) {}
+    GameObject_Camera(uint64_t GUID) : GameObject(GUID) {}
     ~GameObject_Camera() {}
 
     void onUse(Player* player) override;
@@ -521,7 +521,7 @@ public:
 class GameObject_FishingNode : public GameObject_Lootable
 {
 public:
-    GameObject_FishingNode(uint64 GUID);
+    GameObject_FishingNode(uint64_t GUID);
     ~GameObject_FishingNode();
 
     void onUse(Player* player) override;
@@ -539,7 +539,7 @@ protected:
 class GameObject_Ritual : public GameObject
 {
 public:
-    GameObject_Ritual(uint64 GUID);
+    GameObject_Ritual(uint64_t GUID);
     ~GameObject_Ritual();
 
     void InitAI();
@@ -645,7 +645,7 @@ private:
 class GameObject_SpellCaster : public GameObject
 {
 public:
-    GameObject_SpellCaster(uint64 GUID);
+    GameObject_SpellCaster(uint64_t GUID);
     ~GameObject_SpellCaster();
 
     void InitAI();
@@ -661,7 +661,7 @@ private:
 class GameObject_Meetingstone : public GameObject
 {
 public:
-    GameObject_Meetingstone(uint64 GUID) : GameObject(GUID) {}
+    GameObject_Meetingstone(uint64_t GUID) : GameObject(GUID) {}
     ~GameObject_Meetingstone() {}
 
     void onUse(Player* player) override;
@@ -672,7 +672,7 @@ public:
 class GameObject_FlagStand : public GameObject
 {
 public:
-    GameObject_FlagStand(uint64 GUID) : GameObject(GUID) {}
+    GameObject_FlagStand(uint64_t GUID) : GameObject(GUID) {}
     ~GameObject_FlagStand() {}
 
     void onUse(Player* player) override;
@@ -683,7 +683,7 @@ public:
 class GameObject_FishingHole : public GameObject_Lootable
 {
 public:
-    GameObject_FishingHole(uint64 GUID);
+    GameObject_FishingHole(uint64_t GUID);
     ~GameObject_FishingHole();
 
     void InitAI();
@@ -708,7 +708,7 @@ private:
 class GameObject_FlagDrop : public GameObject
 {
 public:
-    GameObject_FlagDrop(uint64 GUID) : GameObject(GUID) {}
+    GameObject_FlagDrop(uint64_t GUID) : GameObject(GUID) {}
     ~GameObject_FlagDrop() {}
 
     void onUse(Player* player) override;
@@ -719,7 +719,7 @@ public:
 class GameObject_BarberChair : public GameObject
 {
 public:
-    GameObject_BarberChair(uint64 GUID) : GameObject(GUID) {}
+    GameObject_BarberChair(uint64_t GUID) : GameObject(GUID) {}
     ~GameObject_BarberChair() {}
 
     void onUse(Player* player) override;
@@ -730,7 +730,7 @@ public:
 class SERVER_DECL GameObject_Destructible : public GameObject
 {
 public:
-    GameObject_Destructible(uint64 GUID);
+    GameObject_Destructible(uint64_t GUID);
     ~GameObject_Destructible();
 
     void InitAI();
