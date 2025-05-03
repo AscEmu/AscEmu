@@ -7,6 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "CommonTypes.hpp"
 
+#include <cstdint>
+
 class Creature;
 class Item;
 class Player;

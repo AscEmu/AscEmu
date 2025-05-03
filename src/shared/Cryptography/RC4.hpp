@@ -5,7 +5,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "CommonTypes.hpp"
 #include <algorithm>
 
 namespace AscEmu

@@ -41,7 +41,7 @@ public:
 
     // Overload for member functions with version flags
     template <OpcodeState State = STATUS_LOGGEDIN>
-    void registerOpcode(uint32 opcode, void (WorldSession::* handler)(WorldPacket&), bool classic, bool tbc, bool wotlk, bool cata, bool mop)
+    void registerOpcode(uint32_t opcode, void (WorldSession::* handler)(WorldPacket&), bool classic, bool tbc, bool wotlk, bool cata, bool mop)
     {
         OpcodeEntry entry;
         entry.handler = [handler](WorldSession& session, WorldPacket& packet) {
@@ -59,7 +59,7 @@ public:
 
     // Overload for free functions or lambdas with version flags
     template <OpcodeState State = STATUS_LOGGEDIN>
-    void registerOpcode(uint32 opcode, std::function<void(WorldSession&, WorldPacket&)> handler, bool classic, bool tbc, bool wotlk, bool cata, bool mop)
+    void registerOpcode(uint32_t opcode, std::function<void(WorldSession&, WorldPacket&)> handler, bool classic, bool tbc, bool wotlk, bool cata, bool mop)
     {
         OpcodeEntry entry;
         entry.handler = handler;
@@ -75,14 +75,14 @@ public:
 
     // Overload for member functions without version flags (default to true for all versions)
     template <OpcodeState State = STATUS_LOGGEDIN>
-    void registerOpcode(uint32 opcode, void (WorldSession::* handler)(WorldPacket&))
+    void registerOpcode(uint32_t opcode, void (WorldSession::* handler)(WorldPacket&))
     {
         registerOpcode<State>(opcode, handler, true, true, true, true, true);
     }
 
     // Overload for free functions or lambdas without version flags (default to true for all versions)
     template <OpcodeState State = STATUS_LOGGEDIN>
-    void registerOpcode(uint32 opcode, std::function<void(WorldSession&, WorldPacket&)> handler)
+    void registerOpcode(uint32_t opcode, std::function<void(WorldSession&, WorldPacket&)> handler)
     {
         registerOpcode<State>(opcode, handler, true, true, true, true, true);
     }
@@ -91,5 +91,5 @@ public:
     bool handleOpcode(WorldSession& session, WorldPacket& packet);
 
 private:
-    std::unordered_map<uint32, OpcodeEntry> opcodeHandlers;  // Map of internal IDs to handler functions and states
+    std::unordered_map<uint32_t, OpcodeEntry> opcodeHandlers;  // Map of internal IDs to handler functions and states
 };

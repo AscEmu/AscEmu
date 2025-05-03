@@ -51,7 +51,7 @@
 
 using namespace AscEmu::Packets;
 
-WorldSession::WorldSession(uint32 id, std::string name, WorldSocket* sock) :
+WorldSession::WorldSession(uint32_t id, std::string name, WorldSocket* sock) :
     m_loggingInPlayer(nullptr),
     m_currMsTime(Util::getMSTime()),
     m_lastPing(0),
@@ -86,7 +86,7 @@ WorldSession::WorldSession(uint32 id, std::string name, WorldSocket* sock) :
     isAddonMessageFiltered = false;
 #endif
 
-    for (uint8 x = 0; x < 8; x++)
+    for (uint8_t x = 0; x < 8; x++)
         sAccountData[x].data = nullptr;
 }
 
@@ -185,7 +185,7 @@ uint8_t WorldSession::Update(uint32_t InstanceID)
             LogoutPlayer(true);
     }
 
-    if (m_lastPing + WORLDSOCKET_TIMEOUT < static_cast<uint32>(UNIXTIME))
+    if (m_lastPing + WORLDSOCKET_TIMEOUT < static_cast<uint32_t>(UNIXTIME))
     {
         // Check if the player is in the process of being moved. We can't delete him if we are.
         if (_player && _player->m_beingPushed)
@@ -201,7 +201,7 @@ uint8_t WorldSession::Update(uint32_t InstanceID)
             _socket = nullptr;
         }
 
-        m_lastPing = static_cast<uint32>(UNIXTIME); // Prevent calling this code over and over.
+        m_lastPing = static_cast<uint32_t>(UNIXTIME); // Prevent calling this code over and over.
 
         if (!_logoutTime)
             _logoutTime = m_currMsTime + PLAYER_LOGOUT_DELAY;
@@ -360,7 +360,7 @@ void WorldSession::LogoutPlayer(bool Save)
         {
             std::stringstream ss;
             ss << "UPDATE account_data SET ";
-            for (uint32 ui = 0; ui < 8; ui++)
+            for (uint32_t ui = 0; ui < 8; ui++)
             {
                 if (sAccountData[ui].bIsDirty)
                 {
@@ -454,7 +454,7 @@ bool WorldSession::canUseCommand(const std::string& cmdstr) const
     return hasPermission(cmdstr.c_str());
 }
 
-AccountDataEntry* WorldSession::GetAccountData(uint32 index)
+AccountDataEntry* WorldSession::GetAccountData(uint32_t index)
 {
     if (index < 8)
     {
@@ -554,16 +554,16 @@ void WorldSession::sendSystemMessagePacket(std::string& _message)
     SendPacket(SmsgMessageChat(SystemMessagePacket(_message)).serialise().get());
 }
 
-void WorldSession::SendChatPacket(WorldPacket* data, uint32 langpos, int32 lang, WorldSession* originator)
+void WorldSession::SendChatPacket(WorldPacket* data, uint32_t langpos, int32_t lang, WorldSession* originator)
 {
     if (lang == -1)
-        *reinterpret_cast<uint32*>(& data->contents()[langpos]) = lang;
+        *reinterpret_cast<uint32_t*>(& data->contents()[langpos]) = lang;
     else
     {
         if (CanUseCommand('c') || (originator && originator->CanUseCommand('c')))
-            *reinterpret_cast<uint32*>(& data->contents()[langpos]) = LANG_UNIVERSAL;
+            *reinterpret_cast<uint32_t*>(& data->contents()[langpos]) = LANG_UNIVERSAL;
         else
-            *reinterpret_cast<uint32*>(& data->contents()[langpos]) = lang;
+            *reinterpret_cast<uint32_t*>(& data->contents()[langpos]) = lang;
     }
 
     SendPacket(data);
@@ -585,7 +585,7 @@ char szError[64];
 
 // Returns a gossip menu option indexed by id
 // These strings can be found in gossip_menu_option tables in the database
-const char* WorldSession::LocalizedGossipOption(uint32 id)
+const char* WorldSession::LocalizedGossipOption(uint32_t id)
 {
     MySQLStructure::GossipMenuOption const* wst = sMySQLStore.getGossipMenuOption(id);
     if (!wst)
@@ -608,7 +608,7 @@ const char* WorldSession::LocalizedGossipOption(uint32 id)
 
 // Returns a worldstring indexed by id
 // These strings can be found in the worldstring tables in the database
-const char* WorldSession::LocalizedWorldSrv(uint32 id)
+const char* WorldSession::LocalizedWorldSrv(uint32_t id)
 {
     MySQLStructure::WorldStringTable const* wst = sMySQLStore.getWorldString(id);
     if (!wst)
@@ -629,7 +629,7 @@ const char* WorldSession::LocalizedWorldSrv(uint32 id)
     }
 }
 
-const char* WorldSession::LocalizedMapName(uint32 id)
+const char* WorldSession::LocalizedMapName(uint32_t id)
 {
     MySQLStructure::MapInfo const* mi = sMySQLStore.getWorldMapInfo(id);
     if (!mi)
@@ -650,7 +650,7 @@ const char* WorldSession::LocalizedMapName(uint32 id)
     }
 }
 
-const char* WorldSession::LocalizedBroadCast(uint32 id)
+const char* WorldSession::LocalizedBroadCast(uint32_t id)
 {
     MySQLStructure::WorldBroadCast const* wb = sMySQLStore.getWorldBroadcastById(id);
     if (!wb)
@@ -699,7 +699,7 @@ void WorldSession::SendPacket(WorldPacket* packet)
     }
 }
 
-void WorldSession::OutPacket(uint16 opcode)
+void WorldSession::OutPacket(uint16_t opcode)
 {
     if (_socket && _socket->IsConnected())
     {
@@ -707,7 +707,7 @@ void WorldSession::OutPacket(uint16 opcode)
     }
 }
 
-void WorldSession::OutPacket(uint16 opcode, uint16 len, const void* data)
+void WorldSession::OutPacket(uint16_t opcode, uint16_t len, const void* data)
 {
     if (_socket && _socket->IsConnected())
     {
@@ -717,7 +717,7 @@ void WorldSession::OutPacket(uint16 opcode, uint16 len, const void* data)
 
 void WorldSession::QueuePacket(std::unique_ptr<WorldPacket> packet)
 {
-    m_lastPing = static_cast<uint32>(UNIXTIME);
+    m_lastPing = static_cast<uint32_t>(UNIXTIME);
     _recvQueue.push(std::move(packet));
 }
 

@@ -61,7 +61,7 @@ void TrialOfTheCrusaderInstanceScript::UpdateEvent()
     }
 }
 
-void TrialOfTheCrusaderInstanceScript::OnAreaTrigger(Player* pPlayer, uint32 pAreaId)
+void TrialOfTheCrusaderInstanceScript::OnAreaTrigger(Player* pPlayer, uint32_t pAreaId)
 {
     if (pAreaId == 5475)
     {
@@ -206,7 +206,7 @@ bool TrialOfTheCrusaderInstanceScript::setBossState(uint32_t type, EncounterStat
             {
                 case EncounterStates::Performed:
                 {
-                    uint32 tributeChest = 0;
+                    uint32_t tributeChest = 0;
                     if (getInstance()->getDifficulty() == InstanceDifficulty::RAID_10MAN_HEROIC)
                     {
                         if (TrialCounter >= 50)

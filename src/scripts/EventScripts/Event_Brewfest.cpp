@@ -78,7 +78,7 @@ public:
         addWaypoint(1, createWaypoint(1, 0, WAYPOINT_MOVE_TYPE_WALK, pCreature->GetPosition()));
     }
 
-    void DoAction(int32 const action) override
+    void DoAction(int32_t const action) override
     {
         if(action == 0)
             setWaypointToMove(1, 1);

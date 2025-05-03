@@ -337,17 +337,17 @@ public:
 
         const WoWGuid & GetNewGUID() const { return m_wowGuid; }
 
-    uint32 GetTypeFromGUID() const { return (getGuidHigh() & HIGHGUID_TYPE_MASK); }
-    uint32 GetUIdFromGUID() const { return (getGuidLow() & LOWGUID_ENTRY_MASK); }
+    uint32_t GetTypeFromGUID() const { return (getGuidHigh() & HIGHGUID_TYPE_MASK); }
+    uint32_t GetUIdFromGUID() const { return (getGuidLow() & LOWGUID_ENTRY_MASK); }
 
         // typeFlags
         bool IsType(TYPE type_mask) const { return (type_mask & m_objectType) != 0; }
 
-        uint32 BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, Player* target);
-        uint32 BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask);
+        uint32_t BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, Player* target);
+        uint32_t BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask);
 
-        void BuildFieldUpdatePacket(Player* Target, uint32 Index, uint32 Value);
-        void BuildFieldUpdatePacket(ByteBuffer* buf, uint32 Index, uint32 Value);
+        void BuildFieldUpdatePacket(Player* Target, uint32_t Index, uint32_t Value);
+        void BuildFieldUpdatePacket(ByteBuffer* buf, uint32_t Index, uint32_t Value);
 
         void updatePositionData();
 
@@ -385,10 +385,10 @@ public:
         float GetTransOffsetY() const { return obj_movement_info.transport_position.y; }
         float GetTransOffsetZ() const { return obj_movement_info.transport_position.z; }
         float GetTransOffsetO() const { return obj_movement_info.transport_position.o; }
-        uint32 GetTransTime() const { return obj_movement_info.transport_time; }
+        uint32_t GetTransTime() const { return obj_movement_info.transport_time; }
 #ifdef FT_VEHICLES
         // TODO check if this is in BC
-        uint8 GetTransSeat() const { return obj_movement_info.transport_seat; }
+        uint8_t GetTransSeat() const { return obj_movement_info.transport_seat; }
 #endif
 
         Player* ToPlayer() { if (isPlayer()) return reinterpret_cast<Player*>(this); else return nullptr; }
@@ -449,8 +449,8 @@ public:
 
         // Only for WorldMap use
         MapCell* GetMapCell() const;
-        uint32 GetMapCellX() { return m_mapCell_x; }
-        uint32 GetMapCellY() { return m_mapCell_y; }
+        uint32_t GetMapCellX() { return m_mapCell_x; }
+        uint32_t GetMapCellY() { return m_mapCell_y; }
         // Only for WorldMap use
         void SetMapCell(MapCell* cell);
         // Only for WorldMap use
@@ -464,18 +464,18 @@ public:
         GameObject* getWorldMapGameObject(const uint64_t & guid) const;
         DynamicObject* getWorldMapDynamicObject(const uint64_t & guid) const;
 
-        void SetMapId(uint32 newMap) { m_mapId = newMap; }
-        void setZoneId(uint32 newZone);
+        void SetMapId(uint32_t newMap) { m_mapId = newMap; }
+        void setZoneId(uint32_t newZone);
         void setAreaId(uint32_t area) { m_areaId = area; }
 
-        uint32 GetMapId() const { return m_mapId; }
+        uint32_t GetMapId() const { return m_mapId; }
         const uint32_t & getZoneId() const { return m_zoneId; }
         const uint32_t & getAreaId() const { return m_areaId; }
 
         bool isOutdoors() const { return m_outdoors; }
         ZLiquidStatus getLiquidStatus() const { return m_liquidStatus; }
 
-        void SetNewGuid(uint32 Guid)
+        void SetNewGuid(uint32_t Guid)
         {
             setGuidLow(Guid);
             m_wowGuid.Init(getGuid());
@@ -488,7 +488,7 @@ public:
             m_objectUpdated = false;
         }
 
-        bool HasUpdateField(uint32 index)
+        bool HasUpdateField(uint32_t index)
         {
             if (index < m_valuesCount)
                 return m_updateMask.GetBit(index);
@@ -577,11 +577,11 @@ public:
         virtual float getCollisionHeight() const { return 0.0f; }
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        // void outPacket(uint16 opcode, uint16 len, const void *data)
+        // void outPacket(uint16_t opcode, uint16_t len, const void *data)
         // Sends a packet to the Player
         //
-        // \param uint16 opcode      -   opcode of the packet
-        // \param uint16 len         -   length/size of the packet
+        // \param uint16_t opcode    -   opcode of the packet
+        // \param uint16_t len       -   length/size of the packet
         // \param const void *data   -   the data that needs to be sent
         //
         // \return none
@@ -604,19 +604,19 @@ public:
 
         virtual void sendMessageToSet(WorldPacket* data, bool self, bool myteam_only = false);
         virtual void sendMessageToSet(WorldPacket* data, Player const* /*skipp*/);
-        virtual void outPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool self);
+        virtual void outPacketToSet(uint16_t Opcode, uint16_t Len, const void* Data, bool self);
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        // void SendAIReaction(uint32 reaction = 2)
+        // void SendAIReaction(uint32_t reaction = 2)
         // Notifies the player's clients about the AI reaction of this object
         // (NPC growl for example "aggro sound")
         //
-        // \param uint32 reaction  -  Reaction type
+        // \param uint32_t reaction  -  Reaction type
         //
         // \return none
         //
         //////////////////////////////////////////////////////////////////////////////////////////
-        void SendAIReaction(uint32 reaction = 2);
+        void SendAIReaction(uint32_t reaction = 2);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         //void sendDestroyObjectPacket()
@@ -630,21 +630,21 @@ public:
         //////////////////////////////////////////////////////////////////////////////////////////
         void SendDestroyObject();
 
-        uint16 GetValuesCount() const { return m_valuesCount; }
+        uint16_t GetValuesCount() const { return m_valuesCount; }
 
         MovementInfo obj_movement_info;
 
-        uint32 m_phase = 1;         // This stores the phase, if two objects have the same bit set, then they can see each other. The default phase is 0x1.
+        uint32_t m_phase = 1;         // This stores the phase, if two objects have the same bit set, then they can see each other. The default phase is 0x1.
 
-        uint32 GetPhase() const { return m_phase; }
-        virtual void Phase(uint8 command = PHASE_SET, uint32 newphase = 1);
+        uint32_t GetPhase() const { return m_phase; }
+        virtual void Phase(uint8_t command = PHASE_SET, uint32_t newphase = 1);
 
         // SpellLog packets just to keep the code cleaner and better to read
-        void SendSpellLog(Object* Caster, Object* Target, uint32 Ability, uint8 SpellLogType);
+        void SendSpellLog(Object* Caster, Object* Target, uint32_t Ability, uint8_t SpellLogType);
 
         // object faction
         void setServersideFaction();
-        uint32 getServersideFaction();
+        uint32_t getServersideFaction();
 
         WDB::Structures::FactionTemplateEntry const* m_factionTemplate = nullptr;
         WDB::Structures::FactionEntry const* m_factionEntry = nullptr;
@@ -663,10 +663,10 @@ public:
         bool isValidTarget(Object* target, SpellInfo const* bySpell = nullptr);       // used for findTarget
         bool isValidAssistTarget(Unit* target, SpellInfo const* bySpell = nullptr); // used for Escorts
 
-        void SetInstanceID(int32 instance) { m_instanceId = instance; }
-        int32 GetInstanceID() { return m_instanceId; }
+        void SetInstanceID(int32_t instance) { m_instanceId = instance; }
+        int32_t GetInstanceID() { return m_instanceId; }
 
-        int32 event_GetInstanceID();
+        int32_t event_GetInstanceID();
 
         // Object activation
 
@@ -689,17 +689,17 @@ public:
             delete this;
         }
         // Play's a sound to players in range.
-        void PlaySoundToSet(uint32 sound_entry);
+        void PlaySoundToSet(uint32_t sound_entry);
         // Is the player in a battleground?
         bool IsInBg();
         // What's their faction? Horde/Ally.
-        uint32 GetTeam() const;
+        uint32_t GetTeam() const;
         // Objects directly cannot be in a group.
         //virtual Group* getGroup() { return NULL; }
 
     protected:
-        //void _Create (uint32 guidlow, uint32 guidhigh);
-        void _Create(uint32 mapid, float x, float y, float z, float ang);
+        //void _Create (uint32_t guidlow, uint32_t guidhigh);
+        void _Create(uint32_t mapid, float x, float y, float z, float ang);
 
         // Mark values that need updating for specified player.
         virtual void setUpdateBits(UpdateMask* updateMask, Player* target) const;
@@ -719,10 +719,10 @@ public:
         WoWGuid m_wowGuid;
 
         // Type mask
-        uint16 m_objectType;
+        uint16_t m_objectType;
 
         //update flag
-        uint16 m_updateFlag;
+        uint16_t m_updateFlag;
 
         // indoorcheck
         bool m_outdoors;
@@ -738,8 +738,8 @@ public:
         // Map manager
         WorldMap* m_WorldMap = nullptr;
         // Current map cell row and column
-        uint32 m_mapCell_x = uint32(-1);
-        uint32 m_mapCell_y = uint32(-1);
+        uint32_t m_mapCell_x = uint32_t(-1);
+        uint32_t m_mapCell_y = uint32_t(-1);
 
         // Main Function called by isInFront();
         bool inArc(float Position1X, float Position1Y, float FOV, float Orientation, float Position2X, float Position2Y);
@@ -749,7 +749,7 @@ public:
         LocationVector m_spawnLocation = { 0, 0, 0, 0 };
 
         // Number of properties
-        uint16 m_valuesCount = 0;
+        uint16_t m_valuesCount = 0;
 
         // List of object properties that need updating.
         UpdateMask m_updateMask;
@@ -757,7 +757,7 @@ public:
         // True if object was updated
         bool m_objectUpdated = false;
 
-        int32 m_instanceId = INSTANCEID_NOT_IN_WORLD;
+        int32_t m_instanceId = INSTANCEID_NOT_IN_WORLD;
 
         // Transporters
         Transporter* m_transport = nullptr;

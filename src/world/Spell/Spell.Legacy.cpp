@@ -98,13 +98,13 @@ bool Spell::IsInvisibilitySpell()
     return false;
 }
 
-void Spell::FillSpecifiedTargetsInArea(float srcx, float srcy, float srcz, uint32 ind, uint32 specification)
+void Spell::FillSpecifiedTargetsInArea(float srcx, float srcy, float srcz, uint32_t ind, uint32_t specification)
 {
     FillSpecifiedTargetsInArea(ind, srcx, srcy, srcz, getEffectRadius(ind), specification);
 }
 
 // for the moment we do invisible targets
-void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float srcz, float range, uint32 /*specification*/)
+void Spell::FillSpecifiedTargetsInArea(uint32_t i, float srcx, float srcy, float srcz, float range, uint32_t /*specification*/)
 {
     std::vector<uint64_t>* tmpMap = &m_effectTargets[i];
     //IsStealth()
@@ -162,18 +162,18 @@ void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float s
         }
     }
 }
-void Spell::FillAllTargetsInArea(LocationVector & location, uint32 ind)
+void Spell::FillAllTargetsInArea(LocationVector & location, uint32_t ind)
 {
     FillAllTargetsInArea(ind, location.x, location.y, location.z, getEffectRadius(ind));
 }
 
-void Spell::FillAllTargetsInArea(float srcx, float srcy, float srcz, uint32 ind)
+void Spell::FillAllTargetsInArea(float srcx, float srcy, float srcz, uint32_t ind)
 {
     FillAllTargetsInArea(ind, srcx, srcy, srcz, getEffectRadius(ind));
 }
 
 // We fill all the targets in the area, including the stealth ed one's
-void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, float range)
+void Spell::FillAllTargetsInArea(uint32_t i, float srcx, float srcy, float srcz, float range)
 {
     std::vector<uint64_t>* tmpMap = &m_effectTargets[i];
     float r = range * range;
@@ -244,7 +244,7 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
 }
 
 // We fill all the targets in the area, including the stealthed ones
-void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, float range)
+void Spell::FillAllFriendlyInArea(uint32_t i, float srcx, float srcy, float srcz, float range)
 {
     std::vector<uint64_t>* tmpMap = &m_effectTargets[i];
     float r = range * range;
@@ -307,7 +307,7 @@ void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, 
     }
 }
 
-uint64 Spell::GetSinglePossibleEnemy(uint32 i, float prange)
+uint64_t Spell::GetSinglePossibleEnemy(uint32_t i, float prange)
 {
     float r;
     if (prange)
@@ -361,7 +361,7 @@ uint64 Spell::GetSinglePossibleEnemy(uint32 i, float prange)
     return 0;
 }
 
-uint64 Spell::GetSinglePossibleFriend(uint32 i, float prange)
+uint64_t Spell::GetSinglePossibleFriend(uint32_t i, float prange)
 {
     float r;
     if (prange)
@@ -414,7 +414,7 @@ uint64 Spell::GetSinglePossibleFriend(uint32 i, float prange)
     return 0;
 }
 
-uint8 Spell::DidHit(uint32 effindex, Unit* target)
+uint8_t Spell::DidHit(uint32_t effindex, Unit* target)
 {
     //note resistchance is vise versa, is full hit chance
     Unit* u_victim = target;
@@ -424,7 +424,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
     Player* p_victim = target->isPlayer() ? static_cast<Player*>(target) : NULL;
 
     float baseresist[3] = { 4.0f, 5.0f, 6.0f };
-    int32 lvldiff;
+    int32_t lvldiff;
     float resistchance;
 
 
@@ -712,7 +712,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
     {
         // Immune - IF, and ONLY IF, there is no damage component!
         bool no_damage_component = true;
-        for (uint8 x = 0; x <= 2; x++)
+        for (uint8_t x = 0; x <= 2; x++)
         {
             if (getSpellInfo()->getEffect(x) == SPELL_EFFECT_SCHOOL_DAMAGE
                 || getSpellInfo()->getEffect(x) == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE
@@ -745,10 +745,10 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
     /************************************************************************/
     /* Check if the spell is a melee attack and if it was missed/parried    */
     /************************************************************************/
-    uint32 melee_test_result;
+    uint32_t melee_test_result;
     if (getSpellInfo()->getDmgClass() == SPELL_DMG_TYPE_MELEE || getSpellInfo()->getDmgClass() == SPELL_DMG_TYPE_RANGED)
     {
-        uint32 _type;
+        uint32_t _type;
         if (GetType() == SPELL_DMG_TYPE_RANGED)
             _type = RANGED;
         else
@@ -761,7 +761,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
 
         melee_test_result = u_caster->getSpellDidHitResult(u_victim, _type, this);
         if (melee_test_result != SPELL_DID_HIT_SUCCESS)
-            return (uint8)melee_test_result;
+            return (uint8_t)melee_test_result;
     }
 
     /************************************************************************/
@@ -809,8 +809,8 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
     // school hit resistance: check all schools and take the minimal
     if (p_victim != nullptr && getSpellInfo()->getSchoolMask() > 0)
     {
-        int32 min = 100;
-        for (uint8 i = 0; i < TOTAL_SPELL_SCHOOLS; i++)
+        int32_t min = 100;
+        for (uint8_t i = 0; i < TOTAL_SPELL_SCHOOLS; i++)
         {
             if (getSpellInfo()->getSchoolMask() & (1 << i) && min > p_victim->m_resistHitSpell[i])
                 min = p_victim->m_resistHitSpell[i];
@@ -834,11 +834,11 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
         return SPELL_DID_HIT_RESIST;
     else
     {
-        uint8 res;
+        uint8_t res;
         if (resistchance <= 1.0) //resist chance >=1
-            res = (Util::checkChance(1.0f) ? uint8(SPELL_DID_HIT_RESIST) : uint8(SPELL_DID_HIT_SUCCESS));
+            res = (Util::checkChance(1.0f) ? uint8_t(SPELL_DID_HIT_RESIST) : uint8_t(SPELL_DID_HIT_SUCCESS));
         else
-            res = (Util::checkChance(resistchance) ? uint8(SPELL_DID_HIT_RESIST) : uint8(SPELL_DID_HIT_SUCCESS));
+            res = (Util::checkChance(resistchance) ? uint8_t(SPELL_DID_HIT_RESIST) : uint8_t(SPELL_DID_HIT_SUCCESS));
 
         if (res == SPELL_DID_HIT_SUCCESS)  // proc handling. mb should be moved outside this function
         {
@@ -945,7 +945,7 @@ void Spell::castMeOld()
 
         if (getSpellInfo()->custom_c_is_flags == SPELL_FLAG_IS_DAMAGING)
         {
-            uint32 arcanePotency[] =
+            uint32_t arcanePotency[] =
             {
                 //SPELL_HASH_ARCANE_POTENCY
                 24544,
@@ -988,7 +988,7 @@ void Spell::castMeOld()
                     p_caster->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
                     p_caster->removeAllAurasByAuraEffect(SPELL_AURA_MOD_INVISIBILITY);
 
-                    uint32 divineShield[] =
+                    uint32_t divineShield[] =
                     {
                         //SPELL_HASH_DIVINE_SHIELD
                         642,
@@ -1006,7 +1006,7 @@ void Spell::castMeOld()
                     };
                     p_caster->removeAllAurasById(divineShield);
 
-                    uint32 divineProtection[] =
+                    uint32_t divineProtection[] =
                     {
                         //SPELL_HASH_DIVINE_PROTECTION
                         498,
@@ -1027,7 +1027,7 @@ void Spell::castMeOld()
                     p_caster->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
                     p_caster->removeAllAurasByAuraEffect(SPELL_AURA_MOD_INVISIBILITY);
 
-                    uint32 divineShield[] =
+                    uint32_t divineShield[] =
                     {
                         //SPELL_HASH_DIVINE_SHIELD
                         642,
@@ -1045,7 +1045,7 @@ void Spell::castMeOld()
                     };
                     p_caster->removeAllAurasById(divineShield);
 
-                    uint32 divineProtection[] =
+                    uint32_t divineProtection[] =
                     {
                         //SPELL_HASH_DIVINE_PROTECTION
                         498,
@@ -1098,7 +1098,7 @@ void Spell::castMeOld()
     }
 }
 
-void Spell::AddTime(uint32 type)
+void Spell::AddTime(uint32_t type)
 {
     if (u_caster != nullptr)
     {
@@ -1125,7 +1125,7 @@ void Spell::AddTime(uint32 type)
             // no pushback for some spells
             if ((getSpellInfo()->getInterruptFlags() & CAST_INTERRUPT_PUSHBACK) == 0)
                 return;
-            int32 delay = 500; //0.5 second pushback
+            int32_t delay = 500; //0.5 second pushback
             ++m_DelayStep;
             m_timer += delay;
             if (m_timer > m_castTime)
@@ -1155,7 +1155,7 @@ void Spell::AddTime(uint32 type)
         }
         else if (getSpellInfo()->getChannelInterruptFlags() != 48140)
         {
-            int32 delay = getDuration() / 4; //0.5 second push back
+            int32_t delay = getDuration() / 4; //0.5 second push back
             ++m_DelayStep;
             m_timer -= delay;
             if (m_timer < 0)
@@ -1173,14 +1173,14 @@ void Spell::AddTime(uint32 type)
 }
 
 //\todo: Not called, should be send after targetting
-void Spell::SendLogExecute(uint32 spellDamage, uint64 & targetGuid)
+void Spell::SendLogExecute(uint32_t spellDamage, uint64_t & targetGuid)
 {
     WorldPacket data(SMSG_SPELLLOGEXECUTE, 37);
     data << m_caster->GetNewGUID();
     data << getSpellInfo()->getId();
-    data << uint32(1);
+    data << uint32_t(1);
     data << getSpellInfo()->getSpellVisual(0);
-    data << uint32(1);
+    data << uint32_t(1);
     if (m_caster->getGuid() != targetGuid)
         data << targetGuid;
     if (spellDamage)
@@ -1188,7 +1188,7 @@ void Spell::SendLogExecute(uint32 spellDamage, uint64 & targetGuid)
     m_caster->sendMessageToSet(&data, true);
 }
 
-void Spell::SendInterrupted(uint8 result)
+void Spell::SendInterrupted(uint8_t result)
 {
     SetSpellFailed();
 
@@ -1233,13 +1233,13 @@ void Spell::SendResurrectRequest(Player* target)
     target->setResurrecterGuid(m_caster->getGuid());
 }
 
-void Spell::SendTameFailure(uint8 result)
+void Spell::SendTameFailure(uint8_t result)
 {
     if (p_caster != nullptr)
         p_caster->sendPetTameFailure(result);
 }
 
-void Spell::HandleAddAura(uint64 guid)
+void Spell::HandleAddAura(uint64_t guid)
 {
     Unit* Target = nullptr;
 
@@ -1303,7 +1303,7 @@ void Spell::HandleAddAura(uint64 guid)
         Target->removeAllAurasBySpellType(static_cast<SpellTypes>(getSpellInfo()->custom_BGR_one_buff_on_target), m_caster->getGuid(), getSpellInfo()->getId());
     }
 
-    uint32 spellid = 0;
+    uint32_t spellid = 0;
 
     if ((getSpellInfo()->getMechanicsType() == MECHANIC_INVULNARABLE && getSpellInfo()->getId() != 25771) || getSpellInfo()->getId() == 31884)     // Cast spell Forbearance
     {
@@ -1379,7 +1379,7 @@ void Spell::HandleAddAura(uint64 guid)
             case 52188:
             case 58506:
             {
-                uint32 masterOfSubtlety[] =
+                uint32_t masterOfSubtlety[] =
                 {
                     //SPELL_HASH_MASTER_OF_SUBTLETY
                     31221,
@@ -1395,7 +1395,7 @@ void Spell::HandleAddAura(uint64 guid)
             } break;
             case 62124:
             {
-                uint32 vindication[] =
+                uint32_t vindication[] =
                 {
                     //SPELL_HASH_VINDICATION
                     67,
@@ -1419,7 +1419,7 @@ void Spell::HandleAddAura(uint64 guid)
             } break;
             case 5229:
             {
-                uint32 kingOfTheJungle[] =
+                uint32_t kingOfTheJungle[] =
                 {
                     //SPELL_HASH_KING_OF_THE_JUNGLE
                     48492,
@@ -1457,7 +1457,7 @@ void Spell::HandleAddAura(uint64 guid)
             {
                 if (u_caster != nullptr)
                 {
-                    uint32 theBeastWithin[] =
+                    uint32_t theBeastWithin[] =
                     {
                         //SPELL_HASH_THE_BEAST_WITHIN
                         34471,
@@ -1480,7 +1480,7 @@ void Spell::HandleAddAura(uint64 guid)
             {
                 if (u_caster != nullptr)
                 {
-                    uint32 rapidRecuperation[] =
+                    uint32_t rapidRecuperation[] =
                     {
                         //SPELL_HASH_RAPID_RECUPERATION
                         53228,
@@ -1511,7 +1511,7 @@ void Spell::HandleAddAura(uint64 guid)
         case 12043:
         case 29976:
         {
-            uint32 arcanePotency[] =
+            uint32_t arcanePotency[] =
             {
                 //SPELL_HASH_ARCANE_POTENCY
                 24544,
@@ -1545,7 +1545,7 @@ void Spell::HandleAddAura(uint64 guid)
 
         Spell* spell = sSpellMgr.newSpell(u_caster, spellInfo, true, nullptr);
 
-        uint32 masterOfSubtlety[] =
+        uint32_t masterOfSubtlety[] =
         {
             //SPELL_HASH_MASTER_OF_SUBTLETY
             31221,
@@ -1615,8 +1615,8 @@ void Spell::DetermineSkillUp()
     const auto skillLine = static_cast<uint16_t>(skill_line_ability->skilline);
     if (p_caster->hasSkillLine(skillLine))
     {
-        uint32 amt = p_caster->getSkillLineCurrent(skillLine, false);
-        uint32 max = p_caster->getSkillLineMax(skillLine);
+        uint32_t amt = p_caster->getSkillLineCurrent(skillLine, false);
+        uint32_t max = p_caster->getSkillLineMax(skillLine);
         if (amt >= max)
             return;
         if (amt >= skill_line_ability->grey)   //grey
@@ -1684,13 +1684,13 @@ void Spell::InitProtoOverride()
     m_spellInfo_override = sSpellMgr.getSpellInfo(getSpellInfo()->getId());
 }
 
-uint32 Spell::GetBaseThreat(uint32 dmg)
+uint32_t Spell::GetBaseThreat(uint32_t dmg)
 {
     //there should be a formula to determine what spell cause threat and which don't
     return dmg;
 }
 
-uint32 Spell::GetMechanic(SpellInfo const* sp)
+uint32_t Spell::GetMechanic(SpellInfo const* sp)
 {
     if (sp->getMechanicsType())
         return sp->getMechanicsType();
@@ -1704,7 +1704,7 @@ uint32 Spell::GetMechanic(SpellInfo const* sp)
     return 0;
 }
 
-uint8 Spell::CanCast(bool /*tolerate*/)
+uint8_t Spell::CanCast(bool /*tolerate*/)
 {
     /**
      * Object cast checks
@@ -1900,7 +1900,7 @@ uint8 Spell::CanCast(bool /*tolerate*/)
                 *
                 **********************************************************/
 
-                uint32 facing_flags = getSpellInfo()->getFacingCasterFlags();
+                uint32_t facing_flags = getSpellInfo()->getFacingCasterFlags();
 
                 // Holy shock need enemies be in front of caster
                 switch (getSpellInfo()->getId())
@@ -1947,7 +1947,7 @@ uint8 Spell::CanCast(bool /*tolerate*/)
                 //GetProto()->EffectImplicitTargetA[1] == EFF_TARGET_SELF_FISHING ||
                 //GetProto()->EffectImplicitTargetA[2] == EFF_TARGET_SELF_FISHING)
             {
-                uint32 entry = getSpellInfo()->getEffectMiscValue(0);
+                uint32_t entry = getSpellInfo()->getEffectMiscValue(0);
                 if (entry == GO_FISHING_BOBBER)
                 {
                     WorldMap* map = m_caster->getWorldMap();
@@ -1988,7 +1988,7 @@ uint8 Spell::CanCast(bool /*tolerate*/)
             //check if we are trying to stealth or turn invisible but it is not allowed right now
             if (IsStealthSpell() || IsInvisibilitySpell())
             {
-                uint32 faerieFireFeral[] =
+                uint32_t faerieFireFeral[] =
                 {
                     //SPELL_HASH_FAERIE_FIRE__FERAL_
                     16857,
@@ -1997,7 +1997,7 @@ uint8 Spell::CanCast(bool /*tolerate*/)
                 };
 
                 //if we have Faerie Fire, we cannot stealth or turn invisible
-                uint32 faerieFire[] =
+                uint32_t faerieFire[] =
                 {
                     //SPELL_HASH_FAERIE_FIRE
                     770,
@@ -2023,7 +2023,7 @@ uint8 Spell::CanCast(bool /*tolerate*/)
     return SPELL_CAST_SUCCESS;
 }
 
-int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
+int32_t Spell::DoCalculateEffect(uint32_t i, Unit* target, int32_t value)
 {
     //1 switch: checking spell id. If the spell is not handled in the first block,
     //2nd block of checks is reached. bool handled is initialized as true and set to false in the default: case of each switch.
@@ -2052,7 +2052,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                 }
                 if (target && target->isDazed())
                     value += getSpellInfo()->getEffectBasePoints(1);
-                value += (uint32)(u_caster->getCalculatedRangedAttackPower() * 0.1);
+                value += (uint32_t)(u_caster->getCalculatedRangedAttackPower() * 0.1);
             }
         } break;
 
@@ -2112,7 +2112,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                     {
                         float avgwepdmg = (it->getItemProperties()->Damage[0].Min + it->getItemProperties()->Damage[0].Max) * 0.5f;
                         float wepspd = (it->getItemProperties()->Delay * 0.001f);
-                        int32 dmg = Util::float2int32((avgwepdmg)+p_caster->getCalculatedAttackPower() / 14 * wepspd);
+                        int32_t dmg = Util::float2int32((avgwepdmg)+p_caster->getCalculatedAttackPower() / 14 * wepspd);
 
                         if (target && target->getHealthPct() > 75)
                         {
@@ -2181,7 +2181,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         case 71933:
         {
             if (p_caster != nullptr)
-                value += (uint32)(p_caster->getCalculatedAttackPower() * 0.03f * p_caster->getComboPoints());
+                value += (uint32_t)(p_caster->getCalculatedAttackPower() * 0.03f * p_caster->getComboPoints());
         } break;
 
         // SPELL_HASH_FEROCIOUS_BITE:
@@ -2197,7 +2197,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         {
             if (p_caster != nullptr)
             {
-                value += (uint32)((p_caster->getCalculatedAttackPower() * 0.1526f) + (p_caster->getPower(POWER_TYPE_ENERGY) * getSpellInfo()->getEffectDamageMultiplier(static_cast<uint8_t>(i))));
+                value += (uint32_t)((p_caster->getCalculatedAttackPower() * 0.1526f) + (p_caster->getPower(POWER_TYPE_ENERGY) * getSpellInfo()->getEffectDamageMultiplier(static_cast<uint8_t>(i))));
                 p_caster->setPower(POWER_TYPE_ENERGY, 0);
             }
         } break;
@@ -2260,7 +2260,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
             // WoWWiki says +(0.18 * attack power / number of ticks)
             // Tooltip gives no specific reading, but says ", increased by your attack power.".
             if (u_caster != nullptr && i == 0)
-                value += (uint32)ceilf((u_caster->getCalculatedAttackPower() * 0.07f) / 6);
+                value += (uint32_t)ceilf((u_caster->getCalculatedAttackPower() * 0.07f) / 6);
         } break;
 
         // SPELL_HASH_RUPTURE:
@@ -2286,8 +2286,8 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
             */
             if (p_caster != nullptr && i == 0)
             {
-                int8 cp = p_caster->getComboPoints();
-                value += (uint32)ceilf((u_caster->getCalculatedAttackPower() * 0.04f * cp) / ((6 + (cp << 1)) >> 1));
+                int8_t cp = p_caster->getComboPoints();
+                value += (uint32_t)ceilf((u_caster->getCalculatedAttackPower() * 0.04f * cp) / ((6 + (cp << 1)) >> 1));
             }
         } break;
 
@@ -2479,7 +2479,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
             if (p_caster != nullptr && i == 0)
             {
                 value *= p_caster->getComboPoints();
-                value += (uint32)(p_caster->getCalculatedAttackPower() * (0.09f * p_caster->getComboPoints()));
+                value += (uint32_t)(p_caster->getCalculatedAttackPower() * (0.09f * p_caster->getComboPoints()));
             }
         } break;
 
@@ -2500,7 +2500,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         case 38863:
         {
             if (u_caster != nullptr && i == 0)
-                value += (uint32)ceilf(u_caster->getCalculatedAttackPower() * 0.21f);
+                value += (uint32_t)ceilf(u_caster->getCalculatedAttackPower() * 0.21f);
         } break;
         default:
         {
@@ -2525,7 +2525,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
             case 61782:
             {
                 if (p_caster != nullptr && i == 0 && target != nullptr)
-                    value = int32(0.002 * target->getMaxPower(POWER_TYPE_MANA));
+                    value = int32_t(0.002 * target->getMaxPower(POWER_TYPE_MANA));
                 break;
             }
             default:
@@ -2672,11 +2672,11 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
     return value;
 }
 
-void Spell::DoAfterHandleEffect(Unit* /*target*/, uint32 /*i*/)
+void Spell::DoAfterHandleEffect(Unit* /*target*/, uint32_t /*i*/)
 {
 }
 
-void Spell::HandleTeleport(LocationVector pos, uint32 mapid, Unit* Target)
+void Spell::HandleTeleport(LocationVector pos, uint32_t mapid, Unit* Target)
 {
     if (Target->isPlayer())
     {
@@ -2704,15 +2704,15 @@ void Spell::HandleTeleport(LocationVector pos, uint32 mapid, Unit* Target)
         WorldPacket data(SMSG_MONSTER_MOVE, 50);
 
         data << Target->GetNewGUID();
-        data << uint8(0);
+        data << uint8_t(0);
         data << Target->GetPositionX();
         data << Target->GetPositionY();
         data << Target->GetPositionZ();
         data << Util::getMSTime();
-        data << uint8(0x00);
-        data << uint32(256);
-        data << uint32(1);
-        data << uint32(1);
+        data << uint8_t(0x00);
+        data << uint32_t(256);
+        data << uint32_t(1);
+        data << uint32_t(1);
         data << float(pos.x);
         data << float(pos.y);
         data << float(pos.z);
@@ -2722,7 +2722,7 @@ void Spell::HandleTeleport(LocationVector pos, uint32 mapid, Unit* Target)
     }
 }
 
-void Spell::CreateItem(uint32 itemId)
+void Spell::CreateItem(uint32_t itemId)
 {
     /// Creates number of items equal to a "damage" of the effect
     if (itemId == 0 || p_caster == nullptr)
@@ -2731,9 +2731,9 @@ void Spell::CreateItem(uint32 itemId)
     p_caster->getItemInterface()->AddItemById(itemId, damage, 0);
 }
 
-uint32 Spell::GetType() { return (getSpellInfo()->getDmgClass() == SPELL_DMG_TYPE_NONE ? SPELL_DMG_TYPE_MAGIC : getSpellInfo()->getDmgClass()); }
+uint32_t Spell::GetType() { return (getSpellInfo()->getDmgClass() == SPELL_DMG_TYPE_NONE ? SPELL_DMG_TYPE_MAGIC : getSpellInfo()->getDmgClass()); }
 
-void Spell::DetermineSkillUp(uint16_t skillid, uint32 targetlevel, uint32 multiplicator)
+void Spell::DetermineSkillUp(uint16_t skillid, uint32_t targetlevel, uint32_t multiplicator)
 {
     if (p_caster == nullptr)
         return;
@@ -2741,7 +2741,7 @@ void Spell::DetermineSkillUp(uint16_t skillid, uint32 targetlevel, uint32 multip
     if (p_caster->getSkillUpChance(skillid) < 0.01)
         return;//to prevent getting higher skill than max
 
-    int32 diff = p_caster->getSkillLineCurrent(skillid, false) / 5 - targetlevel;
+    int32_t diff = p_caster->getSkillLineCurrent(skillid, false) / 5 - targetlevel;
 
     if (diff < 0)
         diff = -diff;
@@ -2763,8 +2763,8 @@ void Spell::DetermineSkillUp(uint16_t skillid, uint32 targetlevel, uint32 multip
     {
         p_caster->advanceSkillLine(skillid, static_cast<uint16_t>(Util::float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE))));
 
-        uint32 value = p_caster->getSkillLineCurrent(skillid, true);
-        uint32 spellid = 0;
+        uint32_t value = p_caster->getSkillLineCurrent(skillid, true);
+        uint32_t spellid = 0;
 
         // Lifeblood
         if (skillid == SKILL_HERBALISM)
@@ -2869,8 +2869,8 @@ void Spell::DetermineSkillUp(uint16_t skillid)
     if (skill_line_ability != nullptr && skillid == skill_line_ability->skilline && p_caster->hasSkillLine(skillid))
     {
         float chance = 0.0f;
-        uint32 amt = p_caster->getSkillLineCurrent(skillid, false);
-        uint32 max = p_caster->getSkillLineMax(skillid);
+        uint32_t amt = p_caster->getSkillLineCurrent(skillid, false);
+        uint32_t max = p_caster->getSkillLineMax(skillid);
         if (amt >= max)
             return;
         if (amt >= skill_line_ability->grey)   //grey
@@ -2887,7 +2887,7 @@ void Spell::DetermineSkillUp(uint16_t skillid)
     }
 }
 
-void Spell::SafeAddTarget(std::vector<uint64_t>* tgt, uint64 guid)
+void Spell::SafeAddTarget(std::vector<uint64_t>* tgt, uint64_t guid)
 {
     if (guid == 0)
         return;
@@ -2903,7 +2903,7 @@ void Spell::SafeAddTarget(std::vector<uint64_t>* tgt, uint64 guid)
     tgt->push_back(guid);
 }
 
-uint32 Spell::getState() const
+uint32_t Spell::getState() const
 {
     return m_spellState;
 }

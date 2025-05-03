@@ -6,7 +6,6 @@
  *
  */
 
-#include "CommonTypes.hpp"
 #include "../Network.h"
 
 #ifdef CONFIG_USE_IOCP
@@ -102,7 +101,7 @@ void Socket::SetupReadEvent()
     m_readMutex.release();
 }
 
-void Socket::ReadCallback(uint32 len)
+void Socket::ReadCallback(uint32_t len)
 {
     readBuffer.IncrementWritten(len);
     OnRead();

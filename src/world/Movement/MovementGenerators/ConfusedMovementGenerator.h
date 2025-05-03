@@ -24,7 +24,7 @@ public:
 
     void doInitialize(T*);
     void doReset(T*);
-    bool doUpdate(T*, uint32);
+    bool doUpdate(T*, uint32_t);
     void doDeactivate(T*);
     void doFinalize(T*, bool, bool);
 

@@ -445,7 +445,7 @@ void TaxiMgr::initialize()
 
     // Initialize global taxinodes mask
     // include existed nodes that have at least single not spell base (scripted) path
-    std::set<uint32> spellPaths;
+    std::set<uint32_t> spellPaths;
 
 #if VERSION_STRING > WotLK
     for (uint32_t i = 0; i < sSpellEffectStore.getNumRows(); ++i)

@@ -101,7 +101,7 @@ class SERVER_DECL WorldSession
 
         void SendPacket(WorldPacket* packet);
 
-        void OutPacket(uint16 opcode);
+        void OutPacket(uint16_t opcode);
 
         void Delete();
 
@@ -141,7 +141,7 @@ class SERVER_DECL WorldSession
             }
         }
         bool HasFlag(uint32_t flag) { return (_accountFlags & flag) != 0; }
-        uint32 GetFlags() { return _accountFlags; }
+        uint32_t GetFlags() { return _accountFlags; }
 
         // GM Permission System
         void LoadSecurity(std::string securitystring);
@@ -176,7 +176,7 @@ class SERVER_DECL WorldSession
                 sAccountData[index].bIsDirty = false;
         }
 
-        AccountDataEntry* GetAccountData(uint32 index);
+        AccountDataEntry* GetAccountData(uint32_t index);
 
         void SetLogoutTimer(uint32_t ms)
         {
@@ -619,9 +619,9 @@ protected:
         //////////////////////////////////////////////////////////////////////////////////////////
         // MiscHandler.cpp
     public:
-        void sendAccountDataTimes(uint32 mask);
+        void sendAccountDataTimes(uint32_t mask);
         void sendMOTD();
-        void sendClientCacheVersion(uint32 version);    //> TBC
+        void sendClientCacheVersion(uint32_t version);    //> TBC
 
     protected:
         void handleStandStateChangeOpcode(WorldPacket& recvPacket);
@@ -910,7 +910,7 @@ protected:
         bool has_level_55_char; // death knights
         bool has_dk;
 #endif
-        // uint16 _TEMP_ERR_CREATE_CODE; // increments
+        // uint16_t _TEMP_ERR_CREATE_CODE; // increments
         uint8_t _side;
 
         WoWGuid m_MoverWoWGuid;

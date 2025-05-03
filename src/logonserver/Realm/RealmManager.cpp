@@ -210,7 +210,7 @@ namespace AscEmu::Realm
 
         *reinterpret_cast<uint16_t*>(&data.contents()[1]) = uint16_t(data.size() - 3);
 
-        authSocket->Send(static_cast<const uint8*>(data.contents()), uint32_t(data.size()));
+        authSocket->Send(static_cast<const uint8_t*>(data.contents()), uint32_t(data.size()));
 
         std::list<LogonCommServerSocket*> server_sockets;
 

@@ -2184,7 +2184,7 @@ bool WorldMap::addRespawn(RespawnInfo const& info)
     }
     else
     {
-        sLogger.failure("Invalid respawn info for spawn id ({},{}) being inserted", uint32(info.type), info.spawnId);
+        sLogger.failure("Invalid respawn info for spawn id ({},{}) being inserted", uint32_t(info.type), info.spawnId);
     }
 
     auto ri = std::make_unique<RespawnInfo>(info);
@@ -2817,7 +2817,7 @@ void WorldMap::getFullTerrainStatusForPosition(uint32_t phaseMask, float x, floa
     vmgr->getAreaAndLiquidData(getBaseMap()->getMapId(), x, y, z, reqLiquidType, vmapData);
     _dynamicTree.getAreaAndLiquidData(x, y, z, phaseMask, reqLiquidType, dynData);
 
-    uint32 gridAreaId = 0;
+    uint32_t gridAreaId = 0;
     float gridMapHeight = INVALID_HEIGHT;
     if (gmap)
     {
@@ -2890,11 +2890,11 @@ void WorldMap::getFullTerrainStatusForPosition(uint32_t phaseMask, float x, floa
     data.liquidStatus = LIQUID_MAP_NO_WATER;
     if (wmoData && wmoData->liquidInfo && wmoData->liquidInfo->level > wmoData->floorZ)
     {
-        uint32 liquidType = wmoData->liquidInfo->type;
+        uint32_t liquidType = wmoData->liquidInfo->type;
         if (getBaseMap()->getMapId() == 530 && liquidType == 2) // gotta love blizzard hacks
             liquidType = 15;
 
-        uint32 liquidFlagType = 0;
+        uint32_t liquidFlagType = 0;
         if (WDB::Structures::LiquidTypeEntry const* liquidData = sLiquidTypeStore.lookupEntry(liquidType))
             liquidFlagType = liquidData->Type;
 

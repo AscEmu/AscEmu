@@ -966,7 +966,7 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
     // Incanter's Absorption
     if (victim->isPlayer())
     {
-        uint32 incanterSAbsorption[] =
+        uint32_t incanterSAbsorption[] =
         {
             //SPELL_HASH_INCANTER_S_ABSORPTION
             44394,
@@ -1774,7 +1774,7 @@ void Object::sendGameobjectDespawnAnim()
     return MapManagement::AreaManagement::AreaStorage::getExactArea(getWorldMap(), GetPosition(), GetPhase());
 }
 
-void Object::_Create(uint32 mapid, float x, float y, float z, float ang)
+void Object::_Create(uint32_t mapid, float x, float y, float z, float ang)
 {
     m_mapId = mapid;
     m_position.ChangeCoords({ x, y, z, ang });
@@ -1782,59 +1782,59 @@ void Object::_Create(uint32 mapid, float x, float y, float z, float ang)
     m_lastMapUpdatePosition.ChangeCoords({ x, y, z, ang });
 }
 
-void Object::BuildFieldUpdatePacket(Player* Target, uint32 Index, uint32 Value)
+void Object::BuildFieldUpdatePacket(Player* Target, uint32_t Index, uint32_t Value)
 {
     ByteBuffer buf(500);
-    buf << uint8(UPDATETYPE_VALUES);
+    buf << uint8_t(UPDATETYPE_VALUES);
 #if VERSION_STRING < Mop
     buf << GetNewGUID();
 #else
     buf.append(GetNewGUID());
 #endif
 
-    uint32 mBlocks = Index / 32 + 1;
-    buf << uint8(mBlocks);
+    uint32_t mBlocks = Index / 32 + 1;
+    buf << uint8_t(mBlocks);
 
-    for (uint32 dword_n = mBlocks - 1; dword_n; dword_n--)
-        buf << uint32(0);
+    for (uint32_t dword_n = mBlocks - 1; dword_n; dword_n--)
+        buf << uint32_t(0);
 
-    buf << (((uint32)(1)) << (Index % 32));
+    buf << (((uint32_t)(1)) << (Index % 32));
     buf << Value;
 
     Target->getUpdateMgr().pushUpdateData(&buf, 1);
 }
 
-void Object::BuildFieldUpdatePacket(ByteBuffer* buf, uint32 Index, uint32 Value)
+void Object::BuildFieldUpdatePacket(ByteBuffer* buf, uint32_t Index, uint32_t Value)
 {
-    *buf << uint8(UPDATETYPE_VALUES);
+    *buf << uint8_t(UPDATETYPE_VALUES);
 #if VERSION_STRING < Mop
     *buf << GetNewGUID();
 #else
     buf->append(GetNewGUID());
 #endif
 
-    uint32 mBlocks = Index / 32 + 1;
-    *buf << uint8(mBlocks);
+    uint32_t mBlocks = Index / 32 + 1;
+    *buf << uint8_t(mBlocks);
 
-    for (uint32 dword_n = mBlocks - 1; dword_n; dword_n--)
-        *buf << uint32(0);
+    for (uint32_t dword_n = mBlocks - 1; dword_n; dword_n--)
+        *buf << uint32_t(0);
 
-    *buf << (((uint32)(1)) << (Index % 32));
+    *buf << (((uint32_t)(1)) << (Index % 32));
     *buf << Value;
 }
 
-uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* target)
+uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 {
     UpdateMask updateMask;
     updateMask.SetCount(m_valuesCount);
     setUpdateBits(&updateMask, target);
-    for (uint32 x = 0; x < m_valuesCount; ++x)
+    for (uint32_t x = 0; x < m_valuesCount; ++x)
     {
         if (updateMask.GetBit(x))
         {
             if (m_wowGuid.GetNewGuidLen() > 0)
             {
-                *data << uint8(UPDATETYPE_VALUES);              // update type == update
+                *data << uint8_t(UPDATETYPE_VALUES);              // update type == update
                 *data << m_wowGuid;
 
                 buildValuesUpdate(UPDATETYPE_VALUES, data, &updateMask, target);
@@ -1852,13 +1852,13 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* target)
     return 0;
 }
 
-uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask)
+uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask)
 {
     // returns: update count
     // update type == update
     if (m_wowGuid.GetNewGuidLen() > 0)
     {
-        *buf << uint8(UPDATETYPE_VALUES);
+        *buf << uint8_t(UPDATETYPE_VALUES);
         *buf << m_wowGuid;
 
         buildValuesUpdate(UPDATETYPE_VALUES, buf, mask, nullptr);
@@ -1882,11 +1882,11 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask
 #if VERSION_STRING == Classic
 void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* target)
 {
-    *data << uint8(updateFlags);
+    *data << uint8_t(updateFlags);
 
     if (updateFlags & UPDATEFLAG_LIVING)  //0x20
     {
-        *data << uint32(obj_movement_info.getMovementFlags());
+        *data << uint32_t(obj_movement_info.getMovementFlags());
 
         *data << Util::getMSTime();
 
@@ -1970,17 +1970,17 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* 
     }
 
     if (updateFlags & UPDATEFLAG_HIGHGUID)
-        *data << uint32(GetNewGUID().getGuidHighPart());
+        *data << uint32_t(GetNewGUID().getGuidHighPart());
 
     if (updateFlags & UPDATEFLAG_ALL)
-        *data << uint32(0x1);
+        *data << uint32_t(0x1);
 
     if (updateFlags & UPDATEFLAG_HAS_TARGET)  //0x04
     {
         if (isCreatureOrPlayer())
             FastGUIDPack(*data, static_cast<Unit*>(this)->getTargetGuid()); //some compressed GUID
         else
-            *data << uint64(0);
+            *data << uint64_t(0);
     }
 
     if (updateFlags & UPDATEFLAG_TRANSPORT)   //0x2
@@ -1997,13 +1997,13 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* 
 #if VERSION_STRING == TBC
 void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* target)
 {
-    *data << uint8(updateFlags);
+    *data << uint8_t(updateFlags);
 
     if (updateFlags & UPDATEFLAG_LIVING)  //0x20
     {
-        *data << uint32(obj_movement_info.getMovementFlags());
+        *data << uint32_t(obj_movement_info.getMovementFlags());
 
-        *data << uint8(obj_movement_info.getMovementFlags2());
+        *data << uint8_t(obj_movement_info.getMovementFlags2());
 
         *data << Util::getMSTime();
 
@@ -2019,7 +2019,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* 
             *data << float(GetTransOffsetY());
             *data << float(GetTransOffsetZ());
             *data << float(GetTransOffsetO());
-            *data << uint32(GetTransTime());
+            *data << uint32_t(GetTransTime());
         }
 
         if (obj_movement_info.hasMovementFlag(MovementFlags(MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || obj_movement_info.hasMovementFlag2(MOVEFLAG2_ALLOW_PITCHING))   // 0x2000000+0x0200000 flying/swimming, || sflags & SMOVE_FLAG_ENABLE_PITCH
@@ -2101,19 +2101,19 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* 
         case TYPEID_GAMEOBJECT:
         case TYPEID_DYNAMICOBJECT:
         case TYPEID_CORPSE:
-            *data << uint32(GetNewGUID().getGuidLowPart());
+            *data << uint32_t(GetNewGUID().getGuidLowPart());
             break;
         case TYPEID_UNIT:
-            *data << uint32(0x0000000B);                // unk
+            *data << uint32_t(0x0000000B);                // unk
             break;
         case TYPEID_PLAYER:
             if (updateFlags & UPDATEFLAG_SELF)
-                *data << uint32(0x00000015);            // unk
+                *data << uint32_t(0x00000015);            // unk
             else
-                *data << uint32(0x00000008);            // unk
+                *data << uint32_t(0x00000008);            // unk
             break;
         default:
-            *data << uint32(0x00000000);                // unk
+            *data << uint32_t(0x00000000);                // unk
             break;
         }
     }
@@ -2128,10 +2128,10 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* 
         case TYPEID_GAMEOBJECT:
         case TYPEID_DYNAMICOBJECT:
         case TYPEID_CORPSE:
-            *data << uint32(GetNewGUID().getGuidHighPart()); // GetGUIDHigh()
+            *data << uint32_t(GetNewGUID().getGuidHighPart()); // GetGUIDHigh()
             break;
         default:
-            *data << uint32(0x00000000);                // unk
+            *data << uint32_t(0x00000000);                // unk
             break;
         }
     }
@@ -2141,7 +2141,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* 
         if (isCreatureOrPlayer())
             FastGUIDPack(*data, static_cast<Unit*>(this)->getTargetGuid()); //some compressed GUID
         else
-            *data << uint64(0);
+            *data << uint64_t(0);
     }
 
     if (updateFlags & UPDATEFLAG_TRANSPORT)   //0x2
@@ -2158,13 +2158,13 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint8_t updateFlags, Player* 
 #if VERSION_STRING == WotLK
 void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player* /*target*/)
 {
-    *data << uint16(updateFlags);
+    *data << uint16_t(updateFlags);
 
     if (updateFlags & UPDATEFLAG_LIVING)  //0x20
     {
-        *data << uint32(obj_movement_info.getMovementFlags());
+        *data << uint32_t(obj_movement_info.getMovementFlags());
 
-        *data << uint16(obj_movement_info.getMovementFlags2());
+        *data << uint16_t(obj_movement_info.getMovementFlags2());
 
         *data << Util::getMSTime();
 
@@ -2180,11 +2180,11 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
             *data << float(GetTransOffsetY());
             *data << float(GetTransOffsetZ());
             *data << float(GetTransOffsetO());
-            *data << uint32(GetTransTime());
-            *data << uint8(GetTransSeat());
+            *data << uint32_t(GetTransTime());
+            *data << uint8_t(GetTransSeat());
 
             if (obj_movement_info.hasMovementFlag2(MOVEFLAG2_INTERPOLATED_MOVE))
-                *data << uint32(obj_movement_info.transport_time2);
+                *data << uint32_t(obj_movement_info.transport_time2);
         }
 
         if (obj_movement_info.hasMovementFlag(MovementFlags(MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || obj_movement_info.hasMovementFlag2(MOVEFLAG2_ALLOW_PITCHING))   // 0x2000000+0x0200000 flying/swimming, || sflags & SMOVE_FLAG_ENABLE_PITCH
@@ -2247,7 +2247,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
             if (transport)
                 *data << WoWGuid(transport->getGuid());
             else
-                *data << uint8(0);
+                *data << uint8_t(0);
 
             *data << float(m_position.x);
             *data << float(m_position.y);
@@ -2283,7 +2283,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     }
 
     if (updateFlags & UPDATEFLAG_UNKNOWN)     //0x08
-        *data << uint32(0);
+        *data << uint32_t(0);
 
     if (updateFlags & UPDATEFLAG_LOWGUID)    //0x10
     {
@@ -2295,19 +2295,19 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         case TYPEID_GAMEOBJECT:
         case TYPEID_DYNAMICOBJECT:
         case TYPEID_CORPSE:
-            *data << uint32(GetNewGUID().getGuidLowPart());
+            *data << uint32_t(GetNewGUID().getGuidLowPart());
             break;
         case TYPEID_UNIT:
-            *data << uint32(0x0000000B);                // unk
+            *data << uint32_t(0x0000000B);                // unk
             break;
         case TYPEID_PLAYER:
             if (updateFlags & UPDATEFLAG_SELF)
-                *data << uint32(0x0000002F);            // unk
+                *data << uint32_t(0x0000002F);            // unk
             else
-                *data << uint32(0x00000008);            // unk
+                *data << uint32_t(0x00000008);            // unk
             break;
         default:
-            *data << uint32(0x00000000);                // unk
+            *data << uint32_t(0x00000000);                // unk
             break;
         }
     }
@@ -2317,7 +2317,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         if (isCreatureOrPlayer())
             FastGUIDPack(*data, static_cast<Unit*>(this)->getTargetGuid()); //some compressed GUID
         else
-            *data << uint64(0);
+            *data << uint64_t(0);
     }
 
     if (updateFlags & UPDATEFLAG_TRANSPORT)   //0x2
@@ -2331,7 +2331,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
     if (updateFlags & UPDATEFLAG_VEHICLE)
     {
-        uint32 vehicleid = 0;
+        uint32_t vehicleid = 0;
 
         if (isCreature())
             vehicleid = static_cast<Creature*>(this)->GetCreatureProperties()->vehicleid;
@@ -2339,7 +2339,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
             if (isPlayer())
                 vehicleid = static_cast<Player*>(this)->getMountVehicleId();
 
-        *data << uint32(vehicleid);
+        *data << uint32_t(vehicleid);
         *data << float(GetTransOffsetO());
     }
 
@@ -2539,7 +2539,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
             data->WriteByteSeq(tGuid[5]);
             data->WriteByteSeq(tGuid[7]);
 
-            *data << uint32(obj_movement_info.transport_time);
+            *data << uint32_t(obj_movement_info.transport_time);
             *data << float(normalizeOrientation(GetTransOffsetO()));
 
             if (hasTransportTime2)
@@ -2999,7 +2999,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         data->writeBit(transGuid[1]);
 
         /*if (obj->obj_movement_info.transport_time3 && obj->obj_movement_info.transport_guid)
-            *data << uint32(obj->obj_movement_info.transport_time3);*/
+            *data << uint32_t(obj->obj_movement_info.transport_time3);*/
 
         *data << uint32_t(GetTransTime());
 
@@ -3444,7 +3444,7 @@ void Object::setUpdateBits(UpdateMask* updateMask, Player* /*target*/) const
 
 void Object::setCreateBits(UpdateMask* updateMask, Player* /*target*/) const
 {
-    for (uint32 i = 0; i < m_valuesCount; ++i)
+    for (uint32_t i = 0; i < m_valuesCount; ++i)
         if (m_uint32Values[i] != 0)
             updateMask->SetBit(i);
 }
@@ -3856,7 +3856,7 @@ void Object::setServersideFaction()
     }
     else if (isGameObject())
     {
-        uint32 go_faction_id = static_cast<GameObject*>(this)->getFactionTemplate();
+        uint32_t go_faction_id = static_cast<GameObject*>(this)->getFactionTemplate();
         faction_template = sFactionTemplateStore.lookupEntry(go_faction_id);
         if (go_faction_id != 0)         // faction = 0 means it has no faction.
         {
@@ -3880,7 +3880,7 @@ void Object::setServersideFaction()
     }
 }
 
-uint32 Object::getServersideFaction()
+uint32_t Object::getServersideFaction()
 {
     return m_factionTemplate->Faction;
 }
@@ -4337,7 +4337,7 @@ bool Object::isValidAssistTarget(Unit* target, SpellInfo const* bySpell)
 //////////////////////////////////////////////////////////////////////////////////////////
 /// SpellLog packets just to keep the code cleaner and better to read
 //////////////////////////////////////////////////////////////////////////////////////////
-void Object::SendSpellLog(Object* Caster, Object* Target, uint32 Ability, uint8 SpellLogType)
+void Object::SendSpellLog(Object* Caster, Object* Target, uint32_t Ability, uint8_t SpellLogType)
 {
     if (Caster == nullptr || Target == nullptr || Ability == 0)
         return;
@@ -4345,7 +4345,7 @@ void Object::SendSpellLog(Object* Caster, Object* Target, uint32 Ability, uint8 
     Caster->sendMessageToSet(SmsgSpellLogMiss(Ability, Caster->getGuid(), Target->getGuid(), SpellLogType).serialise().get(), true);
 }
 
-int32 Object::event_GetInstanceID()
+int32_t Object::event_GetInstanceID()
 {
     // \return -1 for non-inworld.. so we get our shit moved to the right thread
     // \return default value is -1, if it's something else then we are/will be soon InWorld.
@@ -4394,7 +4394,7 @@ void Object::deactivate(WorldMap* mgr)
     Active = false;
 }
 
-void Object::setZoneId(uint32 newZone)
+void Object::setZoneId(uint32_t newZone)
 {
     m_zoneId = newZone;
 
@@ -4405,7 +4405,7 @@ void Object::setZoneId(uint32 newZone)
     }
 }
 
-void Object::PlaySoundToSet(uint32 sound_entry)
+void Object::PlaySoundToSet(uint32_t sound_entry)
 {
     sendMessageToSet(SmsgPlaySound(sound_entry).serialise().get(), true);
 }
@@ -4422,7 +4422,7 @@ bool Object::IsInBg()
     return false;
 }
 
-uint32 Object::GetTeam() const
+uint32_t Object::GetTeam() const
 {
 
     switch (m_factionEntry->ID)
@@ -4452,14 +4452,14 @@ uint32 Object::GetTeam() const
         return TEAM_HORDE;
     }
 
-    return static_cast<uint32>(-1);
+    return static_cast<uint32_t>(-1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Manipulates the phase value, see "enum PHASECOMMANDS" in
 /// Object.hpp for a longer explanation!
 //////////////////////////////////////////////////////////////////////////////////////////
-void Object::Phase(uint8 command, uint32 newphase)
+void Object::Phase(uint8_t command, uint32_t newphase)
 {
     switch (command)
     {
@@ -4481,7 +4481,7 @@ void Object::Phase(uint8 command, uint32 newphase)
     }
 }
 
-void Object::outPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool /*self*/)
+void Object::outPacketToSet(uint16_t Opcode, uint16_t Len, const void* Data, bool /*self*/)
 {
     if (!IsInWorld())
         return;
@@ -4564,7 +4564,7 @@ void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId,
     }
 }
 
-Object* Object::getWorldMapObject(const uint64 & guid) const
+Object* Object::getWorldMapObject(const uint64_t & guid) const
 {
     if (!IsInWorld())
         return nullptr;
@@ -4572,7 +4572,7 @@ Object* Object::getWorldMapObject(const uint64 & guid) const
     return getWorldMap()->getObject(guid);
 }
 
-Pet* Object::getWorldMapPet(const uint64 & guid) const
+Pet* Object::getWorldMapPet(const uint64_t & guid) const
 {
     if (!IsInWorld())
         return nullptr;
@@ -4583,7 +4583,7 @@ Pet* Object::getWorldMapPet(const uint64 & guid) const
     return getWorldMap()->getPet(wowGuid.getGuidLowPart());
 }
 
-Unit* Object::getWorldMapUnit(const uint64 & guid) const
+Unit* Object::getWorldMapUnit(const uint64_t & guid) const
 {
     if (!IsInWorld())
         return nullptr;
@@ -4591,7 +4591,7 @@ Unit* Object::getWorldMapUnit(const uint64 & guid) const
     return getWorldMap()->getUnit(guid);
 }
 
-Player* Object::getWorldMapPlayer(const uint64 & guid) const
+Player* Object::getWorldMapPlayer(const uint64_t & guid) const
 {
     if (!IsInWorld())
         return nullptr;
@@ -4602,7 +4602,7 @@ Player* Object::getWorldMapPlayer(const uint64 & guid) const
     return getWorldMap()->getPlayer(wowGuid.getGuidLowPart());
 }
 
-Creature* Object::getWorldMapCreature(const uint64 & guid) const
+Creature* Object::getWorldMapCreature(const uint64_t & guid) const
 {
     if (!IsInWorld())
         return nullptr;
@@ -4613,7 +4613,7 @@ Creature* Object::getWorldMapCreature(const uint64 & guid) const
     return getWorldMap()->getCreature(wowGuid.getGuidLowPart());
 }
 
-GameObject* Object::getWorldMapGameObject(const uint64 & guid) const
+GameObject* Object::getWorldMapGameObject(const uint64_t & guid) const
 {
     if (!IsInWorld())
         return nullptr;
@@ -4624,7 +4624,7 @@ GameObject* Object::getWorldMapGameObject(const uint64 & guid) const
     return getWorldMap()->getGameObject(wowGuid.getGuidLowPart());
 }
 
-DynamicObject* Object::getWorldMapDynamicObject(const uint64 & guid) const
+DynamicObject* Object::getWorldMapDynamicObject(const uint64_t & guid) const
 {
     if (!IsInWorld())
         return nullptr;
@@ -4646,8 +4646,8 @@ void Object::SetMapCell(MapCell* cell)
 {
     if (cell == nullptr)
     {
-        //mapcell coordinates are uint16, so using uint32(-1) will always make GetMapCell() return NULL.
-        m_mapCell_x = m_mapCell_y = uint32(-1);
+        //mapcell coordinates are uint16_t, so using uint32_t(-1) will always make GetMapCell() return NULL.
+        m_mapCell_x = m_mapCell_y = uint32_t(-1);
     }
     else
     {
@@ -4656,7 +4656,7 @@ void Object::SetMapCell(MapCell* cell)
     }
 }
 
-void Object::SendAIReaction(uint32 reaction)
+void Object::SendAIReaction(uint32_t reaction)
 {
     sendMessageToSet(SmsgAiReaction(getGuid(), reaction).serialise().get(), false);
 }

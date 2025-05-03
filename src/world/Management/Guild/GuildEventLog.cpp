@@ -80,15 +80,15 @@ void GuildEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& cont
 #else
 void GuildEventLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer& /*content*/) const
 {
-    data << uint8(mEventType);
+    data << uint8_t(mEventType);
     data << WoWGuid(mPlayerGuid1, 0, HIGHGUID_TYPE_PLAYER);
 
     if (mEventType != GE_LOG_JOIN_GUILD && mEventType != GE_LOG_LEAVE_GUILD)
         data << WoWGuid(mPlayerGuid2, 0, HIGHGUID_TYPE_PLAYER);
 
     if (mEventType == GE_LOG_PROMOTE_PLAYER || mEventType == GE_LOG_DEMOTE_PLAYER)
-        data << uint8(mNewRank);
+        data << uint8_t(mNewRank);
 
-    data << uint32(::time(nullptr) - mTimestamp);
+    data << uint32_t(::time(nullptr) - mTimestamp);
 #endif
 }

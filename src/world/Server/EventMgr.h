@@ -112,21 +112,21 @@ enum EventFlags : uint8_t
 
 struct SERVER_DECL TimedEvent
 {
-    TimedEvent(void* object, CallbackBase* callback, uint32 type, time_t time, uint32 repeat, uint32 flags) :
-        obj(object), cb(callback), eventType(type), eventFlag(static_cast<uint16>(flags)), msTime(time), currTime(time), repeats(static_cast<uint16>(repeat)), deleted(false), instanceId(0), ref(0) {}
+    TimedEvent(void* object, CallbackBase* callback, uint32_t type, time_t time, uint32_t repeat, uint32_t flags) :
+        obj(object), cb(callback), eventType(type), eventFlag(static_cast<uint16_t>(flags)), msTime(time), currTime(time), repeats(static_cast<uint16_t>(repeat)), deleted(false), instanceId(0), ref(0) {}
 
     void* obj;
     CallbackBase* cb;
-    uint32 eventType;
-    uint16 eventFlag;
+    uint32_t eventType;
+    uint16_t eventFlag;
     time_t msTime;
     time_t currTime;
-    uint16 repeats;
+    uint16_t repeats;
     bool deleted;
     int instanceId;
     std::atomic<unsigned long> ref;
 
-    static TimedEvent* Allocate(void* object, CallbackBase* callback, uint32 flags, time_t time, uint32 repeat);
+    static TimedEvent* Allocate(void* object, CallbackBase* callback, uint32_t flags, time_t time, uint32_t repeat);
 
 
     void DecRef()
@@ -143,7 +143,7 @@ struct SERVER_DECL TimedEvent
 
 class EventMgr;
 class EventableObjectHolder;
-typedef std::map<int32, EventableObjectHolder*> HolderMap;
+typedef std::map<int32_t, EventableObjectHolder*> HolderMap;
 
 class SERVER_DECL EventMgr
 {
@@ -162,7 +162,7 @@ class SERVER_DECL EventMgr
         EventMgr& operator=(EventMgr const&) = delete;
 
         template <class Class>
-        void AddEvent(Class* obj, void (Class::*method)(), uint32 type, time_t time, uint32 repeats, uint32 flags)
+        void AddEvent(Class* obj, void (Class::*method)(), uint32_t type, time_t time, uint32_t repeats, uint32_t flags)
         {
             // create a timed event
             TimedEvent* event = new TimedEvent(obj, new CallbackP0<Class>(obj, method), type, time, repeats, flags);
@@ -172,7 +172,7 @@ class SERVER_DECL EventMgr
         }
 
         template <class Class, typename P1>
-        void AddEvent(Class* obj, void (Class::*method)(P1), P1 p1, uint32 type, time_t time, uint32 repeats, uint32 flags)
+        void AddEvent(Class* obj, void (Class::*method)(P1), P1 p1, uint32_t type, time_t time, uint32_t repeats, uint32_t flags)
         {
             // create a timed event
             TimedEvent* event = new TimedEvent(obj, new CallbackP1<Class, P1>(obj, method, p1), type, time, repeats, flags);
@@ -182,7 +182,7 @@ class SERVER_DECL EventMgr
         }
 
         template <class Class, typename P1, typename P2>
-        void AddEvent(Class* obj, void (Class::*method)(P1, P2), P1 p1, P2 p2, uint32 type, time_t time, uint32 repeats, uint32 flags)
+        void AddEvent(Class* obj, void (Class::*method)(P1, P2), P1 p1, P2 p2, uint32_t type, time_t time, uint32_t repeats, uint32_t flags)
         {
             // create a timed event
             TimedEvent* event = new TimedEvent(obj, new CallbackP2<Class, P1, P2>(obj, method, p1, p2), type, time, repeats, flags);
@@ -192,7 +192,7 @@ class SERVER_DECL EventMgr
         }
 
         template <class Class, typename P1, typename P2, typename P3>
-        void AddEvent(Class* obj, void (Class::*method)(P1, P2, P3), P1 p1, P2 p2, P3 p3, uint32 type, time_t time, uint32 repeats, uint32 flags)
+        void AddEvent(Class* obj, void (Class::*method)(P1, P2, P3), P1 p1, P2 p2, P3 p3, uint32_t type, time_t time, uint32_t repeats, uint32_t flags)
         {
             // create a timed event
             TimedEvent* event = new TimedEvent(obj, new CallbackP3<Class, P1, P2, P3>(obj, method, p1, p2, p3), type, time, repeats, flags);
@@ -202,7 +202,7 @@ class SERVER_DECL EventMgr
         }
 
         template <class Class, typename P1, typename P2, typename P3, typename P4>
-        void AddEvent(Class* obj, void (Class::*method)(P1, P2, P3, P4), P1 p1, P2 p2, P3 p3, P4 p4, uint32 type, time_t time, uint32 repeats, uint32 flags)
+        void AddEvent(Class* obj, void (Class::*method)(P1, P2, P3, P4), P1 p1, P2 p2, P3 p3, P4 p4, uint32_t type, time_t time, uint32_t repeats, uint32_t flags)
         {
             // create a timed event
             TimedEvent* event = new TimedEvent(obj, new CallbackP4<Class, P1, P2, P3, P4>(obj, method, p1, p2, p3, p4), type, time, repeats, flags);
@@ -214,33 +214,33 @@ class SERVER_DECL EventMgr
         /// \note Please remember the Aura class will call remove events!
         /// Example: Aura::Virtual_Destructor calls: EventableObject::Virtual_Destructor & sEventMgr.RemoveEvents(this);
 
-        template <class Class> void RemoveEvents(Class* obj) { obj->event_RemoveEvents(static_cast<uint32>(-1)); }
-        template <class Class> void RemoveEvents(Class* obj, int32 type)
+        template <class Class> void RemoveEvents(Class* obj) { obj->event_RemoveEvents(static_cast<uint32_t>(-1)); }
+        template <class Class> void RemoveEvents(Class* obj, int32_t type)
         {
             obj->event_RemoveEvents(type);
         }
 
-        template <class Class> void ModifyEventTimeLeft(Class* obj, uint32 type, time_t time, bool unconditioned = true)
+        template <class Class> void ModifyEventTimeLeft(Class* obj, uint32_t type, time_t time, bool unconditioned = true)
         {
             obj->event_ModifyTimeLeft(type, time, unconditioned);
         }
 
-        template <class Class> void ModifyEventTimeAndTimeLeft(Class* obj, uint32 type, time_t time)
+        template <class Class> void ModifyEventTimeAndTimeLeft(Class* obj, uint32_t type, time_t time)
         {
             obj->event_ModifyTimeAndTimeLeft(type, time);
         }
 
-        template <class Class> void ModifyEventTime(Class* obj, uint32 type, time_t time)
+        template <class Class> void ModifyEventTime(Class* obj, uint32_t type, time_t time)
         {
             obj->event_ModifyTime(type, time);
         }
 
-        template <class Class> bool HasEvent(Class* obj, uint32 type)
+        template <class Class> bool HasEvent(Class* obj, uint32_t type)
         {
             return obj->event_HasEvent(type);
         }
 
-        EventableObjectHolder* GetEventHolder(int32 InstanceId)
+        EventableObjectHolder* GetEventHolder(int32_t InstanceId)
         {
             std::lock_guard<std::mutex> guard(holderLock);
 
@@ -254,14 +254,14 @@ class SERVER_DECL EventMgr
             return itr->second;
         }
 
-        void AddEventHolder(EventableObjectHolder* holder, int32 InstanceId)
+        void AddEventHolder(EventableObjectHolder* holder, int32_t InstanceId)
         {
             std::lock_guard<std::mutex> guard(holderLock);
 
             mHolders.insert(HolderMap::value_type(InstanceId, holder));
         }
 
-        void RemoveEventHolder(int32 InstanceId)
+        void RemoveEventHolder(int32_t InstanceId)
         {
             std::lock_guard<std::mutex> guard(holderLock);
 

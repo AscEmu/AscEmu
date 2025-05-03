@@ -4666,19 +4666,19 @@ void Spell::sendSpellStart()
     bool hasVisualChain = false;
     bool hasAmmoInventoryType = false;
     bool hasAmmoDisplayId = false;
-    uint8 runeCooldownPassedCount = 0;
-    uint8 predictedPowerCount = 0;
+    uint8_t runeCooldownPassedCount = 0;
+    uint8_t predictedPowerCount = 0;
 
     WorldPacket data(SMSG_SPELL_START, 25);
 
     data.writeBits(0, 24); // Miss Count (not used currently in SMSG_SPELL_START)
     data.writeBit(casterGuid[5]);
 
-    //for (uint32 i = 0; i < missCount; ++i)
+    //for (uint32_t i = 0; i < missCount; ++i)
     //{
     //}
 
-    data.writeBit(1); // Unk read int8
+    data.writeBit(1); // Unk read int8_t
     data.writeBit(0); // Fake Bit
     data.writeBit(casterUnitGuid[4]);
     data.writeBit(casterGuid[2]);
@@ -4691,7 +4691,7 @@ void Spell::sendSpellStart()
     data.writeBits(0, 24); // Hit Count (not used currently in SMSG_SPELL_START)
     data.writeBit(casterUnitGuid[7]);
 
-    //for (uint32 i = 0; i < hitCount; ++i)
+    //for (uint32_t i = 0; i < hitCount; ++i)
     //{
     //}
 
@@ -4745,13 +4745,13 @@ void Spell::sendSpellStart()
 
     data.writeBit(casterGuid[1]);
     data.writeBit(!hasPredictedHeal);
-    data.writeBit(1); // Unk read int8
+    data.writeBit(1); // Unk read int8_t
     data.writeBit(!hasCastSchoolImmunities);
     data.writeBit(casterUnitGuid[5]);
     data.writeBit(0); // Fake Bit
     data.writeBits(0, 20); // Extra Target Count (not used currently in SMSG_SPELL_START)
 
-    //for (uint32 i = 0; i < extraTargetCount; ++i)
+    //for (uint32_t i = 0; i < extraTargetCount; ++i)
     //{
     //}
 
@@ -4766,11 +4766,11 @@ void Spell::sendSpellStart()
 
     data.writeBit(casterGuid[0]);
     data.writeBit(casterUnitGuid[3]);
-    data.writeBit(1); // Unk uint8
+    data.writeBit(1); // Unk uint8_t
 
 
 
-    //for (uint32 i = 0; i < missTypeCount; ++i)
+    //for (uint32_t i = 0; i < missTypeCount; ++i)
     //{
     //}
 
@@ -4792,7 +4792,7 @@ void Spell::sendSpellStart()
     data.WriteByteSeq(itemTargetGuid[3]);
     data.WriteByteSeq(itemTargetGuid[5]);
 
-    //for (uint32 i = 0; i < hitCount; ++i)
+    //for (uint32_t i = 0; i < hitCount; ++i)
     //{
     //}
 
@@ -4805,7 +4805,7 @@ void Spell::sendSpellStart()
     data.WriteByteSeq(targetGuid[2]);
     data.WriteByteSeq(targetGuid[0]);
 
-    data << uint32(m_castTime);
+    data << uint32_t(m_castTime);
 
     data.WriteByteSeq(unkGuid[4]);
     data.WriteByteSeq(unkGuid[5]);
@@ -4821,32 +4821,32 @@ void Spell::sendSpellStart()
 
     data.WriteByteSeq(casterGuid[4]);
 
-    //for (uint32 i = 0; i < missCount; ++i)
+    //for (uint32_t i = 0; i < missCount; ++i)
     //{
     //}
 
     if (hasCastSchoolImmunities)
-        data << uint32(0);
+        data << uint32_t(0);
 
     data.WriteByteSeq(casterGuid[2]);
 
     if (hasCastImmunities)
-        data << uint32(0);
+        data << uint32_t(0);
 
     if (hasVisualChain)
     {
-        data << uint32(0);
-        data << uint32(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
     }
 
 
-    data << uint32(0);
+    data << uint32_t(0);
 
     data.WriteByteSeq(casterGuid[5]);
     data.WriteByteSeq(casterGuid[7]);
     data.WriteByteSeq(casterGuid[1]);
 
-    data << uint8(1);
+    data << uint8_t(1);
 
     data.WriteByteSeq(casterUnitGuid[7]);
     data.WriteByteSeq(casterUnitGuid[0]);
@@ -4855,18 +4855,18 @@ void Spell::sendSpellStart()
     data.WriteByteSeq(casterUnitGuid[1]);
 
     if (hasAmmoInventoryType)
-        data << uint8(0);
+        data << uint8_t(0);
 
     if (hasPredictedHeal)
-        data << uint32(0);
+        data << uint32_t(0);
 
     data.WriteByteSeq(casterUnitGuid[6]);
     data.WriteByteSeq(casterUnitGuid[3]);
 
-    data << uint32(m_spellInfo->getId());
+    data << uint32_t(m_spellInfo->getId());
 
     if (hasAmmoDisplayId)
-        data << uint32(0);
+        data << uint32_t(0);
 
     data.WriteByteSeq(casterUnitGuid[4]);
     data.WriteByteSeq(casterUnitGuid[5]);
@@ -4874,7 +4874,7 @@ void Spell::sendSpellStart()
 
 
     if (hasPredictedType)
-        data << uint8(0);
+        data << uint8_t(0);
 
     data.WriteByteSeq(casterGuid[3]);
 
@@ -4985,8 +4985,8 @@ void Spell::sendSpellGo()
     bool hasAmmoDisplayId = false;
     bool hasRunesStateBefore = false;
     bool hasRunesStateAfter = false;
-    uint8 predictedPowerCount = false;
-    uint8 runeCooldownPassedCount = false;
+    uint8_t predictedPowerCount = false;
+    uint8_t runeCooldownPassedCount = false;
 
     WorldPacket data(SMSG_SPELL_GO, 60);
 
@@ -5112,7 +5112,7 @@ void Spell::sendSpellGo()
     data.WriteByteSeq(unkGuid[0]);
 
 
-    data << uint32(Util::getMSTime());
+    data << uint32_t(Util::getMSTime());
 
     data.WriteByteSeq(casterGuid[6]);
     data.WriteByteSeq(casterUnitGuid[7]);
@@ -5120,30 +5120,30 @@ void Spell::sendSpellGo()
 
     if (hasVisualChain)
     {
-        data << uint32(0);
-        data << uint32(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
     }
 
-    data << uint32(0);
+    data << uint32_t(0);
 
     data.WriteByteSeq(casterUnitGuid[6]);
 
     if (hasPredictedType)
-        data << uint8(0);
+        data << uint8_t(0);
 
     data.WriteByteSeq(casterGuid[4]);
     data.WriteByteSeq(casterUnitGuid[1]);
 
     data.WriteByteSeq(casterGuid[0]);
 
-    data << uint8(0);
+    data << uint8_t(0);
 
     data.WriteByteSeq(casterGuid[5]);
     data.WriteByteSeq(casterUnitGuid[2]);
     data.WriteByteSeq(casterGuid[3]);
     data.WriteByteSeq(casterUnitGuid[5]);
 
-    data << uint32(m_spellInfo->getId());
+    data << uint32_t(m_spellInfo->getId());
 
     data.WriteByteSeq(casterUnitGuid[0]);
     data.WriteByteSeq(casterUnitGuid[3]);

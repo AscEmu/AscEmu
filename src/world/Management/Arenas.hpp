@@ -41,7 +41,7 @@ public:
     void HookFlagStand(Player* /*plr*/, GameObject* /*obj*/) override {}
     void HookOnAreaTrigger(Player* _player, uint32_t id) override;
 
-    int32 GetFreeTeam() const;
+    int32_t GetFreeTeam() const;
 
     // Returns the faction of the _teamId
     uint32_t GetTeamFaction(uint32_t _teamId);

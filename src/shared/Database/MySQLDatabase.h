@@ -44,12 +44,12 @@ class SERVER_DECL MySQLDatabase : public Database
 
         bool Initialize(const char* Hostname, unsigned int port,
                         const char* Username, const char* Password, const char* DatabaseName,
-                        uint32 ConnectionCount, uint32 BufferSize, bool useLegacyAuth = false);
+                        uint32_t ConnectionCount, uint32_t BufferSize, bool useLegacyAuth = false);
 
         void Shutdown();
 
         std::string EscapeString(std::string Escape);
-        void EscapeLongString(const char* str, uint32 len, std::stringstream & out);
+        void EscapeLongString(const char* str, uint32_t len, std::stringstream & out);
         std::string EscapeString(const char* esc, DatabaseConnection* con);
 
         bool SupportsReplaceInto() { return true; }
@@ -57,7 +57,7 @@ class SERVER_DECL MySQLDatabase : public Database
 
     protected:
 
-        bool _HandleError(MySQLDatabaseConnection*, uint32 ErrorNumber);
+        bool _HandleError(MySQLDatabaseConnection*, uint32_t ErrorNumber);
         bool _SendQuery(DatabaseConnection* con, const char* Sql, bool Self = false);
 
         void _BeginTransaction(DatabaseConnection* conn);
@@ -72,7 +72,7 @@ class SERVER_DECL MySQLQueryResult : public QueryResult
 {
     public:
 
-        MySQLQueryResult(MYSQL_RES* res, uint32 FieldCount, uint32 RowCount);
+        MySQLQueryResult(MYSQL_RES* res, uint32_t FieldCount, uint32_t RowCount);
         ~MySQLQueryResult();
 
         bool NextRow();

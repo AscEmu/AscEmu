@@ -46,7 +46,7 @@ public:
         float z = 0.0f;
         float o = 0.0f;
 
-        for (uint8 i = 1; i <= 4; i++)
+        for (uint8_t i = 1; i <= 4; i++)
         {
             float ang = Util::getRandomFloat(100.0f) / 100.0f;
             float ran = Util::getRandomFloat(100.0f) / 10.0f;

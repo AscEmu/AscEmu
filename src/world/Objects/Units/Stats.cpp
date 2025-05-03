@@ -73,7 +73,7 @@ bool isGrayLevel(uint32_t attackerLevel, uint32_t victimLevel)
 uint32_t getConColor(uint16_t AttackerLvl, uint16_t VictimLvl)
 {
 #if VERSION_STRING == Classic
-    const uint32 grayLevel[DBC_PLAYER_LEVEL_CAP + 1] =
+    const uint32_t grayLevel[DBC_PLAYER_LEVEL_CAP + 1] =
     {
         0,                                          //0
         0, 0, 0, 0, 0, 0, 1, 2, 3, 4,               //1-10
@@ -86,7 +86,7 @@ uint32_t getConColor(uint16_t AttackerLvl, uint16_t VictimLvl)
 #endif
 
 #if VERSION_STRING == TBC
-    const uint32 grayLevel[DBC_PLAYER_LEVEL_CAP + 1] =
+    const uint32_t grayLevel[DBC_PLAYER_LEVEL_CAP + 1] =
     {
         0,                                          //0
         0, 0, 0, 0, 0, 0, 1, 2, 3, 4,               //1-10
@@ -630,7 +630,7 @@ uint32_t CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32_t weapon_damage_
     // Attack Power increases your base damage-per-second (DPS) by 1 for every 14 attack power.
     // (c) wowwiki
 
-    //type of this UNIT_FIELD_ATTACK_POWER_MODS is unknown, not even uint32 disabled for now.
+    //type of this UNIT_FIELD_ATTACK_POWER_MODS is unknown, not even uint32_t disabled for now.
 
     uint16_t offset;
     Item* it = nullptr;

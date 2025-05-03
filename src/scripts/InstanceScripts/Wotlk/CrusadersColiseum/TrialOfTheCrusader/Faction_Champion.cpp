@@ -101,7 +101,7 @@ void ChampionControllerAI::summonChampions()
     for (uint8_t i = 10; i < 20; i++)
         vChampionJumpTarget.push_back(FactionChampionLoc[i]);
 
-    std::vector<uint32> vChampionEntries = selectChampions(teamInInstance);
+    std::vector<uint32_t> vChampionEntries = selectChampions(teamInInstance);
 
     for (uint8_t i = 0; i < vChampionEntries.size(); ++i)
     {

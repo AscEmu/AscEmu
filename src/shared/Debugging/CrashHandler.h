@@ -32,7 +32,7 @@ void OutputCrashLogLine(const char* format, ...);
 #include "StackWalker.h"
 #include "CircularQueue.h"
 
-extern CircularQueue<uint32, 30> last_spells;
+extern CircularQueue<uint32_t, 30> last_spells;
 
 class CStackWalker : public StackWalker
 {

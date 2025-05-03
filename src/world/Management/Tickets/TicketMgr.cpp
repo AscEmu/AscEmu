@@ -132,9 +132,9 @@ void TicketMgr::saveGMTicket(GM_Ticket* ticket, QueryBuffer* buf)
     ss << ticket->timestamp << ", ";
 
     if (ticket->deleted)
-        ss << uint32(1);
+        ss << uint32_t(1);
     else
-        ss << uint32(0);
+        ss << uint32_t(0);
     ss << ",";
 
     ss << ticket->assignedToPlayer << ", '";
@@ -151,7 +151,7 @@ void TicketMgr::updateGMTicket(GM_Ticket* ticket)
     saveGMTicket(ticket, nullptr);
 }
 
-void TicketMgr::deleteGMTicketPermanently(uint64 ticketGuid)
+void TicketMgr::deleteGMTicketPermanently(uint64_t ticketGuid)
 {
     for (GmTicketList::iterator i = m_ticketList.begin(); i != m_ticketList.end();)
     {
@@ -185,7 +185,7 @@ void TicketMgr::deleteAllRemovedGMTickets()
     CharacterDatabase.Execute("DELETE FROM gm_tickets WHERE deleted=1");
 }
 
-void TicketMgr::removeGMTicketByPlayer(uint64 playerGuid)
+void TicketMgr::removeGMTicketByPlayer(uint64_t playerGuid)
 {
     for (GmTicketList::iterator i = m_ticketList.begin(); i != m_ticketList.end(); ++i)
     {
@@ -198,7 +198,7 @@ void TicketMgr::removeGMTicketByPlayer(uint64 playerGuid)
     }
 }
 
-void TicketMgr::removeGMTicket(uint64 ticketGuid)
+void TicketMgr::removeGMTicket(uint64_t ticketGuid)
 {
     for (GmTicketList::iterator i = m_ticketList.begin(); i != m_ticketList.end(); ++i)
     {
@@ -211,7 +211,7 @@ void TicketMgr::removeGMTicket(uint64 ticketGuid)
     }
 }
 
-void TicketMgr::closeTicket(uint64 ticketGuid)
+void TicketMgr::closeTicket(uint64_t ticketGuid)
 {
     for (GmTicketList::iterator i = m_ticketList.begin(); i != m_ticketList.end(); ++i)
     {
@@ -223,7 +223,7 @@ void TicketMgr::closeTicket(uint64 ticketGuid)
     }
 }
 
-GM_Ticket* TicketMgr::getGMTicketByPlayer(uint64 playerGuid)
+GM_Ticket* TicketMgr::getGMTicketByPlayer(uint64_t playerGuid)
 {
     for (GmTicketList::iterator i = m_ticketList.begin(); i != m_ticketList.end(); ++i)
     {
@@ -235,7 +235,7 @@ GM_Ticket* TicketMgr::getGMTicketByPlayer(uint64 playerGuid)
     return nullptr;
 }
 
-GM_Ticket* TicketMgr::getGMTicket(uint64 ticketGuid)
+GM_Ticket* TicketMgr::getGMTicket(uint64_t ticketGuid)
 {
     for (GmTicketList::iterator i = m_ticketList.begin(); i != m_ticketList.end(); ++i)
     {

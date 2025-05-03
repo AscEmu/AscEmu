@@ -2259,7 +2259,7 @@ void MySQLDataStore::loadSpellClickSpellsTable()
         uint8_t userType = fields[3].asUint8();
         if (userType >= SPELL_CLICK_USER_MAX)
         {
-            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table npc_spellclick_spells creature: {} references unknown user type {}. Skipping entry.", npc_entry, uint32(userType));
+            sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Table npc_spellclick_spells creature: {} references unknown user type {}. Skipping entry.", npc_entry, uint32_t(userType));
             continue;
         }
         uint8_t castFlags = fields[2].asUint8();
@@ -3841,7 +3841,7 @@ void MySQLDataStore::loadLocalesNpcText()
         std::string locString = fields[1].asCString();
         localNpcGossipText.languageCode = Util::getLanguagesIdFromString(locString);
 
-        for (uint8 j = 0; j < 8; ++j)
+        for (uint8_t j = 0; j < 8; ++j)
         {
             localNpcGossipText.texts[j][0] = strdup(fields[2 + (2 * j)].asCString());
             localNpcGossipText.texts[j][1] = strdup(fields[3 + (2 * j)].asCString());
@@ -4140,8 +4140,8 @@ std::string MySQLDataStore::getLocaleGossipTitleOrElse(uint32_t entry, uint32_t 
 //    do
 //    {
 //        Field* fields = result->Fetch();
-//        uint32 entry = fields[0].GetUInt32();
-//        uint32 spell = fields[1].GetUInt32();
+//        uint32_t entry = fields[0].GetUInt32();
+//        uint32_t spell = fields[1].GetUInt32();
 //        const auto spellInfo = sSpellMgr.getSpellInfo(spell);
 //
 //        if (spell && entry && spellInfo)
@@ -4392,7 +4392,7 @@ void MySQLDataStore::loadCreatureSpawns()
     QueryResult* creature_spawn_result = getWorldDBQuery("SELECT * FROM creature_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0", getAEVersion(), getAEVersion());
     if (creature_spawn_result)
     {
-        uint32 creature_spawn_fields = creature_spawn_result->GetFieldCount();
+        uint32_t creature_spawn_fields = creature_spawn_result->GetFieldCount();
         if (creature_spawn_fields != CREATURE_SPAWNS_FIELDCOUNT + 1) // + 1 for additional table loading 'origin'
         {
             sLogger.failure("Table `creature_spawns` has {} columns, but needs {} columns! Skipped!", creature_spawn_fields, CREATURE_SPAWNS_FIELDCOUNT);
@@ -4406,7 +4406,7 @@ void MySQLDataStore::loadCreatureSpawns()
                 MySQLStructure::CreatureSpawn* cspawn = new MySQLStructure::CreatureSpawn;
                 cspawn->id = fields[0].asUint32();
 
-                uint32 creature_entry = fields[3].asUint32();
+                uint32_t creature_entry = fields[3].asUint32();
                 auto creature_properties = sMySQLStore.getCreatureProperties(creature_entry);
                 if (creature_properties == nullptr)
                 {
@@ -4493,7 +4493,7 @@ void MySQLDataStore::loadGameobjectSpawns()
     QueryResult* gobject_spawn_result = getWorldDBQuery("SELECT * FROM gameobject_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0", VERSION_STRING, VERSION_STRING);
     if (gobject_spawn_result)
     {
-        uint32 gobject_spawn_fields = gobject_spawn_result->GetFieldCount();
+        uint32_t gobject_spawn_fields = gobject_spawn_result->GetFieldCount();
         if (gobject_spawn_fields != GO_SPAWNS_FIELDCOUNT + 1) // + 1 for additional table loading 'origin'
         {
             sLogger.failure("Table `gameobject_spawns` has {} columns, but needs {} columns! Skipped!", gobject_spawn_fields, GO_SPAWNS_FIELDCOUNT);
@@ -4505,7 +4505,7 @@ void MySQLDataStore::loadGameobjectSpawns()
             {
                 Field* fields = gobject_spawn_result->Fetch();
                 uint32_t spawnId = fields[0].asUint32();
-                uint32 gameobject_entry = fields[3].asUint32();
+                uint32_t gameobject_entry = fields[3].asUint32();
                 
                 auto gameobject_info = sMySQLStore.getGameObjectProperties(gameobject_entry);
                 if (gameobject_info == nullptr)

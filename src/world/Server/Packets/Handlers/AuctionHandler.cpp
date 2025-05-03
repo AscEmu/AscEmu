@@ -181,7 +181,7 @@ void WorldSession::handleAuctionSellItem(WorldPacket& recvPacket)
             return;
         }
 
-        _player->modCoinage(-int32(item_deposit));
+        _player->modCoinage(-int32_t(item_deposit));
 
         auto item = _player->getItemInterface()->SafeRemoveAndRetreiveItemByGuid(srlPacket.itemGuids[i], false);
         if (!item)

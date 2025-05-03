@@ -34,7 +34,7 @@ namespace WDB::Structures
     struct SummonPropertiesEntry;
 }
 
-typedef std::map<SpellInfo const*, uint16> PetSpellMap;
+typedef std::map<SpellInfo const*, uint16_t> PetSpellMap;
 
 class SERVER_DECL Pet : public Summon
 {
@@ -169,12 +169,12 @@ public:
 
         void InitializeSpells();
         void SendSpellsToOwner();
-        void SendCastFailed(uint32 spellid, uint8 fail);
+        void SendCastFailed(uint32_t spellid, uint8_t fail);
         void buildPetSpellList(WorldPacket& data);
 
-        inline AI_Spell* GetAISpellForSpellId(uint32 spellid)
+        inline AI_Spell* GetAISpellForSpellId(uint32_t spellid)
         {
-            std::map<uint32, AI_Spell*>::iterator itr = m_AISpellStore.find(spellid);
+            std::map<uint32_t, AI_Spell*>::iterator itr = m_AISpellStore.find(spellid);
             if (itr != m_AISpellStore.end())
                 return itr->second;
 
@@ -184,30 +184,30 @@ public:
         void ApplySummonLevelAbilities();
         void ApplyPetLevelAbilities();
         void UpdateAP();
-        void LoadPetAuras(int32 id);
+        void LoadPetAuras(int32_t id);
         void SetDefaultActionbar();
-        void SetActionBarSlot(uint32 slot, uint32 spell) { ActionBar[slot] = spell; }
+        void SetActionBarSlot(uint32_t slot, uint32_t spell) { ActionBar[slot] = spell; }
 
         void AddSpell(SpellInfo const* sp, bool learning, bool showLearnSpell = true);
         void RemoveSpell(SpellInfo const* sp, bool showUnlearnSpell = true);
         void WipeTalents();
-        void SetSpellState(SpellInfo const* sp, uint16 State);
-        uint16 GetSpellState(SpellInfo const* sp) const;
-        bool HasSpell(uint32 SpellID);
-        void RemoveSpell(uint32 SpellID);
-        void SetSpellState(uint32 SpellID, uint16 State);
-        uint16 GetSpellState(uint32 SpellID) const;
+        void SetSpellState(SpellInfo const* sp, uint16_t State);
+        uint16_t GetSpellState(SpellInfo const* sp) const;
+        bool HasSpell(uint32_t SpellID);
+        void RemoveSpell(uint32_t SpellID);
+        void SetSpellState(uint32_t SpellID, uint16_t State);
+        uint16_t GetSpellState(uint32_t SpellID) const;
 
         AI_Spell* CreateAISpell(SpellInfo const* info);
         inline PetSpellMap* GetSpells() { return &mSpells; }
 
-        uint32 CanLearnSpell(SpellInfo const* sp);
+        uint32_t CanLearnSpell(SpellInfo const* sp);
         void UpdateSpellList(bool showLearnSpells = true);
 
         // talents
-        void SendTalentsToOwner();                                                                          // Send talentpoints and talent spells to owner
-        inline uint8 GetTPsForLevel(uint32 level) { return (level >= 20) ? uint8(level - 16) >> 2 : 0; }    // pet gain first talent point at lvl 20, then every 4 lvls another point
-        inline uint8 GetSpentTPs() { return GetTPsForLevel(getLevel()) - this->getPetTalentPoints(); }      // returns amount of spent talent points
+        void SendTalentsToOwner();                                                                              // Send talentpoints and talent spells to owner
+        inline uint8_t GetTPsForLevel(uint32_t level) { return (level >= 20) ? uint8_t(level - 16) >> 2 : 0; }  // pet gain first talent point at lvl 20, then every 4 lvls another point
+        inline uint8_t GetSpentTPs() { return GetTPsForLevel(getLevel()) - this->getPetTalentPoints(); }        // returns amount of spent talent points
 
         void HandleAutoCastEvent(AutoCastEvents Type);
         AI_Spell* HandleAutoCastEvent();
@@ -215,15 +215,15 @@ public:
 
         Group* getGroup();
 
-        void die(Unit* pAttacker, uint32 damage, uint32 spellid);
+        void die(Unit* pAttacker, uint32_t damage, uint32_t spellid);
 
     protected:
         PetSpellMap mSpells;
-        uint32 ActionBar[10] = {0};
+        uint32_t ActionBar[10] = {0};
 
-        std::map<uint32, AI_Spell*> m_AISpellStore;
+        std::map<uint32_t, AI_Spell*> m_AISpellStore;
 
-        uint32 GetAutoCastTypeForSpell(SpellInfo const* ent);
+        uint32_t GetAutoCastTypeForSpell(SpellInfo const* ent);
 
     std::list<AI_Spell*> m_autoCastSpells[AUTOCAST_EVENT_COUNT];
 };

@@ -27,7 +27,7 @@ EventMgr& EventMgr::getInstance()
     return mInstance;
 }
 
-TimedEvent* TimedEvent::Allocate(void* object, CallbackBase* callback, uint32 flags, time_t time, uint32 repeat)
+TimedEvent* TimedEvent::Allocate(void* object, CallbackBase* callback, uint32_t flags, time_t time, uint32_t repeat)
 {
     return new TimedEvent(object, callback, flags, time, repeat, 0);
 }

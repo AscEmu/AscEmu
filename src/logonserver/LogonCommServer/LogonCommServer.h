@@ -21,22 +21,21 @@
 #define __LOGON_COMM_SERVER_H
 
 #include "Cryptography/RC4.hpp"
-#include "CommonTypes.hpp"
 #include "Network/Socket.h"
 #include "zlib.h"
 
 class LogonCommServerSocket : public Socket
 {
-    uint32 remaining;
-    uint16 opcode;
-    uint32 seed;
+    uint32_t remaining;
+    uint16_t opcode;
+    uint32_t seed;
 
     AscEmu::RC4Engine _sendCrypto;
     AscEmu::RC4Engine _rwCrypto;
 
     public:
 
-        uint32 authenticated;
+        uint32_t authenticated;
         bool use_crypto;
 
         LogonCommServerSocket(SOCKET fd);
@@ -66,7 +65,7 @@ class LogonCommServerSocket : public Socket
 
         std::atomic<unsigned long> last_ping;
         bool removed;
-        std::set<uint32> server_ids;
+        std::set<uint32_t> server_ids;
 };
 
 typedef void (LogonCommServerSocket::*logonpacket_handler)(WorldPacket&);

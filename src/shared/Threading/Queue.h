@@ -22,7 +22,6 @@
 #define FQUEUE_H
 
 #include "Mutex.hpp"
-#include "CommonTypes.hpp"
 
 template<class T>
 class FQueue
@@ -31,10 +30,10 @@ class FQueue
         FQueue() { first = last = NULL; size = 0; }
         volatile unsigned int size;
 
-        uint32 get_size()
+        uint32_t get_size()
         {
             lock.acquire();
-            ::uint32 retval = size;
+            ::uint32_t retval = size;
             lock.release();
             return retval;
         }

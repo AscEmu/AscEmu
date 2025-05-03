@@ -112,7 +112,7 @@ void Database::_Initialize()
 
 DatabaseConnection* Database::GetFreeConnection()
 {
-    uint32 i = 0;
+    uint32_t i = 0;
     for (;;)
     {
         DatabaseConnection* con = Connections[((i++) % mConnectionCount)];

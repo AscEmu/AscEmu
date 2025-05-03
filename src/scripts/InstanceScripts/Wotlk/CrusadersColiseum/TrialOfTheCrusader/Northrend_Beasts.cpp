@@ -382,7 +382,7 @@ void SnoboldAI::mountOnBoss()
         cancelFunctionFromScheduler(func_Batter);
         cancelFunctionFromScheduler(func_HeadCrack);
 
-        for (uint8 i = 0; i < Beasts::MAX_SNOBOLDS; i++)
+        for (uint8_t i = 0; i < Beasts::MAX_SNOBOLDS; i++)
         {
             if (!gormok->getVehicleKit()->getPassenger(i))
             {
@@ -1181,7 +1181,7 @@ SpellScriptExecuteState SlimePool::onAuraPeriodicTick(Aura* aur, AuraEffectModif
         return SpellScriptExecuteState::EXECUTE_OK;
 
     ++stackCounter;
-    int32_t const radius = static_cast<int32>(((stackCounter / 60.f) * 0.9f + 0.1f) * 10000.f * 2.f / 3.f);
+    int32_t const radius = static_cast<int32_t>(((stackCounter / 60.f) * 0.9f + 0.1f) * 10000.f * 2.f / 3.f);
 
     SpellInfo const* spellInfo = sSpellMgr.getSpellInfo(aur->getSpellInfo()->getEffectTriggerSpell(aurEff->getEffectIndex()));
     Unit* caster = aur->GetUnitTarget();

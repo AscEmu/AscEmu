@@ -507,7 +507,7 @@ public:
         }
     }
 
-    void DoAction(int32 const action) override
+    void DoAction(int32_t const action) override
     {
         switch (action)
         {

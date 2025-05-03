@@ -637,7 +637,7 @@ void World::sendInstanceMessage(WorldPacket* worldPacket, uint32_t instanceId, W
     {
         if (activeSessions->second->GetPlayer() && activeSessions->second->GetPlayer()->IsInWorld() && activeSessions->second != sendToSelf)
         {
-            if (activeSessions->second->GetPlayer()->GetInstanceID() == static_cast<int32>(instanceId))
+            if (activeSessions->second->GetPlayer()->GetInstanceID() == static_cast<int32_t>(instanceId))
                 activeSessions->second->SendPacket(worldPacket);
         }
     }
@@ -1000,7 +1000,7 @@ void World::Update(unsigned long timePassed)
     updateQueuedSessions(static_cast<uint32_t>(timePassed));
     sMapMgr.update();
     sInstanceMgr.update();
-    sGuildMgr.update(static_cast<uint32>(timePassed));
+    sGuildMgr.update(static_cast<uint32_t>(timePassed));
 }
 
 void World::saveAllPlayersToDb()

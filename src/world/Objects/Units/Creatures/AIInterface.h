@@ -574,9 +574,9 @@ public:
     virtual void movementInform(uint32_t /*type*/, uint32_t /*id*/);
 
     bool canCreatePath(float x, float y, float z);
-    dtStatus findSmoothPath(const float* startPos, const float* endPos, const dtPolyRef* polyPath, const uint32 polyPathSize, float* smoothPath, uint32_t* smoothPathSize, bool & usedOffmesh, const uint32 maxSmoothPathSize, dtNavMesh* mesh, dtNavMeshQuery* query, dtQueryFilter & filter);
-    bool getSteerTarget(const float* startPos, const float* endPos, const float minTargetDist, const dtPolyRef* path, const uint32 pathSize, float* steerPos, unsigned char & steerPosFlag, dtPolyRef & steerPosRef, dtNavMeshQuery* query);
-    uint32 fixupCorridor(dtPolyRef* path, const uint32 npath, const uint32 maxPath, const dtPolyRef* visited, const uint32 nvisited);
+    dtStatus findSmoothPath(const float* startPos, const float* endPos, const dtPolyRef* polyPath, const uint32_t polyPathSize, float* smoothPath, uint32_t* smoothPathSize, bool & usedOffmesh, const uint32_t maxSmoothPathSize, dtNavMesh* mesh, dtNavMeshQuery* query, dtQueryFilter & filter);
+    bool getSteerTarget(const float* startPos, const float* endPos, const float minTargetDist, const dtPolyRef* path, const uint32_t pathSize, float* steerPos, unsigned char & steerPosFlag, dtPolyRef & steerPosRef, dtNavMeshQuery* query);
+    uint32_t fixupCorridor(dtPolyRef* path, const uint32_t npath, const uint32_t maxPath, const dtPolyRef* visited, const uint32_t nvisited);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Waypoint functions

@@ -897,7 +897,7 @@ void WorldSession::characterEnumProc(QueryResult* result)
                     if (itemProperties)
                     {
                         charEnum.player_items[item_slot].displayId = itemProperties->DisplayInfoID;
-                        charEnum.player_items[item_slot].inventoryType = static_cast<uint8>(itemProperties->InventoryType);
+                        charEnum.player_items[item_slot].inventoryType = static_cast<uint8_t>(itemProperties->InventoryType);
 
                         std::string enchant_field = item_db_result->Fetch()[2].asCString();
                         if (!enchant_field.empty())

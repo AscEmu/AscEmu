@@ -962,7 +962,7 @@ void Pet::sendActionFeedback(PetActionFeedback feedback)
 // MIT END
 //////////////////////////////////////////////////////////////////////////////////////////
 
-uint32 Pet::GetAutoCastTypeForSpell(SpellInfo const* ent)
+uint32_t Pet::GetAutoCastTypeForSpell(SpellInfo const* ent)
 {
     switch (ent->getId())
     {
@@ -1246,37 +1246,37 @@ uint32 Pet::GetAutoCastTypeForSpell(SpellInfo const* ent)
 
 void Pet::buildPetSpellList(WorldPacket& data)
 {
-    data << uint64(getGuid());
+    data << uint64_t(getGuid());
 
 #if VERSION_STRING >= WotLK
     if (myFamily != NULL)
-        data << uint16(myFamily->ID);
+        data << uint16_t(myFamily->ID);
     else
-        data << uint16(0);
+        data << uint16_t(0);
 #endif
 
-    data << uint32(0);
-    data << uint8(getAIInterface()->getReactState());       // 0x0 = passive, 0x1 = defensive, 0x2 = aggressive
-    data << uint8(getPetAction());                          // 0x0 = stay, 0x1 = follow, 0x2 = attack
-    data << uint16(0);                                      // flags: 0xFF = disabled pet bar (eg. when pet stunned)
+    data << uint32_t(0);
+    data << uint8_t(getAIInterface()->getReactState());       // 0x0 = passive, 0x1 = defensive, 0x2 = aggressive
+    data << uint8_t(getPetAction());                          // 0x0 = stay, 0x1 = follow, 0x2 = attack
+    data << uint16_t(0);                                      // flags: 0xFF = disabled pet bar (eg. when pet stunned)
 
     // Send the actionbar
-    for (uint8 i = 0; i < 10; i++)
+    for (uint8_t i = 0; i < 10; i++)
     {
         if (ActionBar[i] & 0x4000000)                       // Commands
-            data << uint32(ActionBar[i]);
+            data << uint32_t(ActionBar[i]);
         else
         {
             if (ActionBar[i])
             {
-                data << uint16(ActionBar[i]);
+                data << uint16_t(ActionBar[i]);
                 data << GetSpellState(ActionBar[i]);
             }
             else
             {
-                data << uint16(0);
-                data << uint8(0);
-                data << uint8(i + 5);
+                data << uint16_t(0);
+                data << uint8_t(0);
+                data << uint8_t(i + 5);
             }
         }
     }
@@ -1285,15 +1285,15 @@ void Pet::buildPetSpellList(WorldPacket& data)
     if (!m_petExpires)
     {
         // Send the rest of the spells.
-        data << uint8(mSpells.size());
+        data << uint8_t(mSpells.size());
         for (PetSpellMap::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
         {
-            data << uint16(itr->first->getId());
-            data << uint16(itr->second);
+            data << uint16_t(itr->first->getId());
+            data << uint16_t(itr->second);
         }
     }
 
-    data << uint8(0);
+    data << uint8_t(0);
 }
 
 void Pet::SendSpellsToOwner()
@@ -1301,9 +1301,9 @@ void Pet::SendSpellsToOwner()
     if (m_unitOwner == nullptr || !m_unitOwner->isPlayer())
         return;
 
-    uint16 packetsize;
+    uint16_t packetsize;
     if (!m_petExpires)
-        packetsize = static_cast<uint16>(mSpells.size() * 4 + 59);
+        packetsize = static_cast<uint16_t>(mSpells.size() * 4 + 59);
     else
         packetsize = 62;
 
@@ -1323,19 +1323,19 @@ void Pet::SendTalentsToOwner()
         return;
 
     WorldPacket data(SMSG_UPDATE_TALENT_DATA, 50);
-    data << uint8(1);                               // Pet talent packet identificator
-    data << uint32(getPetTalentPoints());           // Unspent talent points
+    data << uint8_t(1);                               // Pet talent packet identificator
+    data << uint32_t(getPetTalentPoints());           // Unspent talent points
 
-    uint8 count = 0;
+    uint8_t count = 0;
     size_t pos = data.wpos();
-    data << uint8(0);                               // Amount of known talents (will be filled later)
+    data << uint8_t(0);                               // Amount of known talents (will be filled later)
 
     WDB::Structures::CreatureFamilyEntry const* cfe = sCreatureFamilyStore.lookupEntry(GetCreatureProperties()->Family);
-    if (!cfe || static_cast<int32>(cfe->talenttree) < 0)
+    if (!cfe || static_cast<int32_t>(cfe->talenttree) < 0)
         return;
 
     // go through talent trees
-    for (uint32 tte_id = PET_TALENT_TREE_START; tte_id <= PET_TALENT_TREE_END; tte_id++)
+    for (uint32_t tte_id = PET_TALENT_TREE_START; tte_id <= PET_TALENT_TREE_END; tte_id++)
     {
         auto talent_tab = sTalentTabStore.lookupEntry(tte_id);
         if (talent_tab == nullptr)
@@ -1345,7 +1345,7 @@ void Pet::SendTalentsToOwner()
         if (!(talent_tab->PetTalentMask & (1 << cfe->talenttree)))
             continue;
 
-        for (uint32 t_id = 1; t_id < sTalentStore.getNumRows(); t_id++)
+        for (uint32_t t_id = 1; t_id < sTalentStore.getNumRows(); t_id++)
         {
             // get talent entries for our talent tree
             auto talent = sTalentStore.lookupEntry(t_id);
@@ -1356,7 +1356,7 @@ void Pet::SendTalentsToOwner()
                 continue;
 
             // check our spells
-            for (uint8 j = 0; j < 5; j++)
+            for (uint8_t j = 0; j < 5; j++)
                 if (talent->RankID[j] > 0 && HasSpell(talent->RankID[j]))
                 {
                     // if we have the spell, include it in packet
@@ -1369,7 +1369,7 @@ void Pet::SendTalentsToOwner()
         break;
     }
     // fill count of talents
-    data.put< uint8 >(pos, count);
+    data.put< uint8_t >(pos, count);
 
     // send the packet to owner
     if (plrOwner->getSession() != NULL)
@@ -1378,16 +1378,16 @@ void Pet::SendTalentsToOwner()
 #endif
 }
 
-void Pet::SendCastFailed(uint32 spellid, uint8 fail)
+void Pet::SendCastFailed(uint32_t spellid, uint8_t fail)
 {
     auto* plrOwner = getPlayerOwner();
     if (plrOwner == NULL || plrOwner->getSession() == NULL)
         return;
 
     WorldPacket data(SMSG_PET_CAST_FAILED, 6);
-    data << uint8(0);
-    data << uint32(spellid);
-    data << uint8(fail);
+    data << uint8_t(0);
+    data << uint32_t(spellid);
+    data << uint8_t(fail);
     plrOwner->getSession()->SendPacket(&data);
 }
 
@@ -1424,7 +1424,7 @@ AI_Spell* Pet::CreateAISpell(SpellInfo const* info)
     }
 
     // Create an AI_Spell
-    std::map<uint32, AI_Spell*>::iterator itr = m_AISpellStore.find(info->getId());
+    std::map<uint32_t, AI_Spell*>::iterator itr = m_AISpellStore.find(info->getId());
     if (itr != m_AISpellStore.end())
         return itr->second;
 
@@ -1464,7 +1464,7 @@ AI_Spell* Pet::CreateAISpell(SpellInfo const* info)
     else
         sp->spellType = STYPE_DAMAGE;
 
-    sp->spelltargetType = static_cast<uint8>(info->ai_target_type);
+    sp->spelltargetType = static_cast<uint8_t>(info->ai_target_type);
     sp->autocast_type = GetAutoCastTypeForSpell(info);
     sp->procCount = 0;
     m_AISpellStore[info->getId()] = sp;
@@ -1474,19 +1474,19 @@ AI_Spell* Pet::CreateAISpell(SpellInfo const* info)
 
 void Pet::UpdateSpellList(bool showLearnSpells)
 {
-    uint32 s = 0;  // SkillLine 1
-    uint32 s2 = 0; // SkillLine 2
+    uint32_t s = 0;  // SkillLine 1
+    uint32_t s2 = 0; // SkillLine 2
 
     if (creature_properties->spelldataid != 0)
     {
         const auto creature_spell_data = sCreatureSpellDataStore.lookupEntry(creature_properties->spelldataid);
 
-        for (uint8 i = 0; i < 3; ++i)
+        for (uint8_t i = 0; i < 3; ++i)
         {
             if (creature_spell_data == nullptr)
                 continue;
 
-            uint32 spellid = creature_spell_data->Spells[i];
+            uint32_t spellid = creature_spell_data->Spells[i];
             if (spellid != 0)
             {
                 SpellInfo const* sp = sSpellMgr.getSpellInfo(spellid);
@@ -1496,9 +1496,9 @@ void Pet::UpdateSpellList(bool showLearnSpells)
         }
     }
 
-    for (uint8 i = 0; i < 4; ++i)
+    for (uint8_t i = 0; i < 4; ++i)
     {
-        uint32 spellid = creature_properties->AISpells[i];
+        uint32_t spellid = creature_properties->AISpells[i];
         if (spellid != 0)
         {
             SpellInfo const* sp = sSpellMgr.getSpellInfo(spellid);
@@ -1511,10 +1511,10 @@ void Pet::UpdateSpellList(bool showLearnSpells)
     {
         if (auto* plrOwner = getPlayerOwner())
         {
-            std::map<uint32, std::set<uint32>>::iterator it1 = plrOwner->m_summonSpells.find(getEntry());       // Get spells from the owner
+            std::map<uint32_t, std::set<uint32_t>>::iterator it1 = plrOwner->m_summonSpells.find(getEntry());       // Get spells from the owner
             if (it1 != plrOwner->m_summonSpells.end())
             {
-                std::set<uint32>::iterator it2 = it1->second.begin();
+                std::set<uint32_t>::iterator it2 = it1->second.begin();
                 for (; it2 != it1->second.end(); ++it2)
                     AddSpell(sSpellMgr.getSpellInfo(*it2), true, showLearnSpells);
 
@@ -1612,7 +1612,7 @@ void Pet::AddSpell(SpellInfo const* sp, bool learning, bool showLearnSpell)
                 if (itr->first->hasSpellRanks() && itr->first->getRankInfo()->isSpellPartOfThisSpellRankChain(sp))
                 {
                     // replace the action bar
-                    for (uint8 i = 0; i < 10; ++i)
+                    for (uint8_t i = 0; i < 10; ++i)
                     {
                         if (ActionBar[i] == itr->first->getId())
                         {
@@ -1626,7 +1626,7 @@ void Pet::AddSpell(SpellInfo const* sp, bool learning, bool showLearnSpell)
                     AI_Spell* asp = CreateAISpell(sp);
 
                     // apply the spell state
-                    uint16 ss = GetSpellState(itr->first);
+                    uint16_t ss = GetSpellState(itr->first);
                     mSpells[sp] = ss;
                     if (ss == AUTOCAST_SPELL_STATE)
                         SetAutoCast(asp, true);
@@ -1644,7 +1644,7 @@ void Pet::AddSpell(SpellInfo const* sp, bool learning, bool showLearnSpell)
         if (!ab_replace)
         {
             bool has = false;
-            for (uint8 i = 0; i < 10; ++i)
+            for (uint8_t i = 0; i < 10; ++i)
             {
                 if (ActionBar[i] == sp->getId())
                 {
@@ -1655,7 +1655,7 @@ void Pet::AddSpell(SpellInfo const* sp, bool learning, bool showLearnSpell)
 
             if (!has)
             {
-                for (uint8 i = 0; i < 10; ++i)
+                for (uint8_t i = 0; i < 10; ++i)
                 {
                     if (ActionBar[i] == 0)
                     {
@@ -1674,7 +1674,7 @@ void Pet::AddSpell(SpellInfo const* sp, bool learning, bool showLearnSpell)
             if (learning)
             {
                 AI_Spell* asp = CreateAISpell(sp);
-                uint16 ss = (asp->autocast_type > 0) ? AUTOCAST_SPELL_STATE : DEFAULT_SPELL_STATE;
+                uint16_t ss = (asp->autocast_type > 0) ? AUTOCAST_SPELL_STATE : DEFAULT_SPELL_STATE;
                 mSpells[sp] = ss;
                 if (ss == AUTOCAST_SPELL_STATE)
                     SetAutoCast(asp, true);
@@ -1714,13 +1714,13 @@ void Pet::AddSpell(SpellInfo const* sp, bool learning, bool showLearnSpell)
         SendSpellsToOwner();
 }
 
-void Pet::SetSpellState(SpellInfo const* sp, uint16 State)
+void Pet::SetSpellState(SpellInfo const* sp, uint16_t State)
 {
     PetSpellMap::iterator itr = mSpells.find(sp);
     if (itr == mSpells.end())
         return;
 
-    uint16 oldstate = itr->second;
+    uint16_t oldstate = itr->second;
     itr->second = State;
 
     if (State == AUTOCAST_SPELL_STATE || oldstate == AUTOCAST_SPELL_STATE)
@@ -1736,7 +1736,7 @@ void Pet::SetSpellState(SpellInfo const* sp, uint16 State)
     }
 }
 
-uint16 Pet::GetSpellState(SpellInfo const* sp) const
+uint16_t Pet::GetSpellState(SpellInfo const* sp) const
 {
     auto itr = mSpells.find(sp);
     if (itr == mSpells.end())
@@ -1745,24 +1745,24 @@ uint16 Pet::GetSpellState(SpellInfo const* sp) const
     return itr->second;
 }
 
-bool Pet::HasSpell(uint32 SpellID)
+bool Pet::HasSpell(uint32_t SpellID)
 {
     const auto sp = sSpellMgr.getSpellInfo(SpellID);
     if (sp)
         return mSpells.find(sp) != mSpells.end();
     return false;
 }
-void Pet::RemoveSpell(uint32 SpellID)
+void Pet::RemoveSpell(uint32_t SpellID)
 {
     const auto sp = sSpellMgr.getSpellInfo(SpellID);
     if (sp) RemoveSpell(sp);
 }
-void Pet::SetSpellState(uint32 SpellID, uint16 State)
+void Pet::SetSpellState(uint32_t SpellID, uint16_t State)
 {
     const auto sp = sSpellMgr.getSpellInfo(SpellID);
     if (sp) SetSpellState(sp, State);
 }
-uint16 Pet::GetSpellState(uint32 SpellID) const
+uint16_t Pet::GetSpellState(uint32_t SpellID) const
 {
     if (SpellID == 0)
         return DEFAULT_SPELL_STATE;
@@ -1784,7 +1784,7 @@ void Pet::SetDefaultActionbar()
     if (mSpells.size() > 0)
     {
         PetSpellMap::iterator itr = mSpells.begin();
-        uint32 pos = 0;
+        uint32_t pos = 0;
         for (; itr != mSpells.end() && pos < 4; ++itr, ++pos)
             ActionBar[3 + pos] = itr->first->getId();
     }
@@ -1797,7 +1797,7 @@ void Pet::SetDefaultActionbar()
 void Pet::WipeTalents()
 {
 #if VERSION_STRING < Mop
-    for (uint32 i = 0; i < sTalentStore.getNumRows(); i++)
+    for (uint32_t i = 0; i < sTalentStore.getNumRows(); i++)
     {
         auto talent = sTalentStore.lookupEntry(i);
         if (talent == nullptr)
@@ -1806,7 +1806,7 @@ void Pet::WipeTalents()
         if (talent->TalentTree < PET_TALENT_TREE_START || talent->TalentTree > PET_TALENT_TREE_END)   // 409-Tenacity, 410-Ferocity, 411-Cunning
             continue;
 
-        for (uint8 j = 0; j < 5; j++)
+        for (uint8_t j = 0; j < 5; j++)
             if (talent->RankID[j] != 0 && HasSpell(talent->RankID[j]))
                 RemoveSpell(talent->RankID[j]);
     }
@@ -1818,7 +1818,7 @@ void Pet::WipeTalents()
 void Pet::RemoveSpell(SpellInfo const* sp, [[maybe_unused]]bool showUnlearnSpell)
 {
     mSpells.erase(sp);
-    std::map<uint32, AI_Spell*>::iterator itr = m_AISpellStore.find(sp->getId());
+    std::map<uint32_t, AI_Spell*>::iterator itr = m_AISpellStore.find(sp->getId());
     if (itr != m_AISpellStore.end())
     {
         if (itr->second->autocast_type != AUTOCAST_EVENT_NONE)
@@ -1859,7 +1859,7 @@ void Pet::RemoveSpell(SpellInfo const* sp, [[maybe_unused]]bool showUnlearnSpell
         }
     }
     // Remove spell from action bar as well
-    for (uint32 pos = 0; pos < 10; pos++)
+    for (uint32_t pos = 0; pos < 10; pos++)
     {
         if (ActionBar[pos] == sp->getId())
             ActionBar[pos] = 0;
@@ -1876,7 +1876,7 @@ void Pet::RemoveSpell(SpellInfo const* sp, [[maybe_unused]]bool showUnlearnSpell
 
 void Pet::ApplySummonLevelAbilities()
 {
-    uint32 level = getLevel();
+    uint32_t level = getLevel();
     double pet_level = level;
 
     int stat_index = -1; // Determine our stat index.
@@ -1976,11 +1976,11 @@ void Pet::ApplySummonLevelAbilities()
     double pet_arm = base_armor + pet_level * mod_armor;
 
     // Calculate values
-    m_baseStats[STAT_STRENGTH] = (uint32)(pet_str);
-    m_baseStats[STAT_AGILITY] = (uint32)(pet_agi);
-    m_baseStats[STAT_STAMINA] = (uint32)(pet_sta);
-    m_baseStats[STAT_INTELLECT] = (uint32)(pet_int);
-    m_baseStats[STAT_SPIRIT] = (uint32)(pet_spr);
+    m_baseStats[STAT_STRENGTH] = (uint32_t)(pet_str);
+    m_baseStats[STAT_AGILITY] = (uint32_t)(pet_agi);
+    m_baseStats[STAT_STAMINA] = (uint32_t)(pet_sta);
+    m_baseStats[STAT_INTELLECT] = (uint32_t)(pet_int);
+    m_baseStats[STAT_SPIRIT] = (uint32_t)(pet_spr);
 
     double pet_min_dmg = base_min_dmg + pet_level * mod_min_dmg;
     double pet_max_dmg = base_max_dmg + pet_level * mod_max_dmg;
@@ -1988,9 +1988,9 @@ void Pet::ApplySummonLevelAbilities()
     m_baseDamage[1] = float(pet_max_dmg);
 
     // Apply attack power.
-    setAttackPower((uint32)(pet_pwr));
+    setAttackPower((uint32_t)(pet_pwr));
 
-    m_baseResistance[0] = (uint32)(pet_arm);
+    m_baseResistance[0] = (uint32_t)(pet_arm);
     CalcResistance(0);
 
     // Calculate health / mana
@@ -2001,10 +2001,10 @@ void Pet::ApplySummonLevelAbilities()
         sLogger.failure("Pet with entry {} has 0 health !!", getEntry());
         health = 100;
     }
-    setBaseHealth((uint32)(health));
-    setMaxHealth((uint32)(health));
-    setBaseMana((uint32)(mana));
-    setMaxPower(POWER_TYPE_MANA, (uint32)(mana));
+    setBaseHealth((uint32_t)(health));
+    setMaxHealth((uint32_t)(health));
+    setBaseMana((uint32_t)(mana));
+    setMaxPower(POWER_TYPE_MANA, (uint32_t)(mana));
 
     for (uint8_t x = 0; x < 5; ++x)
         CalcStat(x);
@@ -2012,15 +2012,15 @@ void Pet::ApplySummonLevelAbilities()
 
 void Pet::ApplyPetLevelAbilities()
 {
-    uint32 pet_family = GetCreatureProperties()->Family;
-    uint32 level = getLevel();
+    uint32_t pet_family = GetCreatureProperties()->Family;
+    uint32_t level = getLevel();
 
     if (level > worldConfig.player.playerLevelCap)
         level = worldConfig.player.playerLevelCap;
     else if (level < 1)
         level = 1;
 
-    static uint32 family_aura[47] = 
+    static uint32_t family_aura[47] = 
     {
         0     /*0*/,
         17223 /*1*/, 17210 /*2*/, 17129  /*3*/, 17208 /*4*/, 7000  /*5*/, 17212 /*6*/, 17209 /*7*/, 17211 /*8*/, 17214 /*9*/, 0    /*10*/,
@@ -2064,7 +2064,7 @@ void Pet::ApplyPetLevelAbilities()
     LoadPetAuras(-2); // Load all BM auras
 }
 
-void Pet::LoadPetAuras(int32 id)
+void Pet::LoadPetAuras(int32_t id)
 {
     /*
     Talent               | Aura Id
@@ -2079,16 +2079,16 @@ void Pet::LoadPetAuras(int32 id)
     Catlike Reflexes     | 34667
     Serpent's Swiftness  | 34675
     */
-    static uint32 mod_auras[9] = { 8875, 19580, 19581, 19582, 19589, 19591, 34666, 34667, 34675 }; // Beastmastery Talent's auras.
+    static uint32_t mod_auras[9] = { 8875, 19580, 19581, 19582, 19589, 19591, 34666, 34667, 34675 }; // Beastmastery Talent's auras.
 
     if (id == -1) // unload all
     {
-        for (uint32 x = 0; x < 9; ++x)
+        for (uint32_t x = 0; x < 9; ++x)
             removeAllAurasById(mod_auras[x]);
     }
     else if (id == -2) // load all
     {
-        for (uint32 x = 0; x < 9; ++x)
+        for (uint32_t x = 0; x < 9; ++x)
             castSpell(this, mod_auras[x], true);
     }
     else if (mod_auras[id]) // reload one
@@ -2104,18 +2104,18 @@ void Pet::UpdateAP()
     if (m_petType != PET_TYPE_HUNTER || !m_unitOwner->isPlayer())
         return;
 
-    uint32 str = getStat(STAT_STRENGTH);
-    uint32 AP = (str * 2 - 20);
+    uint32_t str = getStat(STAT_STRENGTH);
+    uint32_t AP = (str * 2 - 20);
     if (m_unitOwner != nullptr)
         AP += m_unitOwner->getCalculatedRangedAttackPower() * 22 / 100;
 
-    if (static_cast<int32>(AP) < 0)
+    if (static_cast<int32_t>(AP) < 0)
         AP = 0;
 
     setAttackPower(AP);
 }
 
-uint32 Pet::CanLearnSpell(SpellInfo const* sp)
+uint32_t Pet::CanLearnSpell(SpellInfo const* sp)
 {
     // level requirement
     if (getLevel() < sp->getSpellLevel())
@@ -2132,7 +2132,7 @@ AI_Spell* Pet::HandleAutoCastEvent()
     {
         std::list<AI_Spell*>::iterator itr = itr2;
         ++itr2;
-        uint32 size = (uint32)m_autoCastSpells[AUTOCAST_EVENT_ATTACK].size();
+        uint32_t size = (uint32_t)m_autoCastSpells[AUTOCAST_EVENT_ATTACK].size();
         if (size > 1)
             chance = Util::checkChance(100.0f / size);
 
@@ -2204,7 +2204,7 @@ void Pet::HandleAutoCastEvent(AutoCastEvents Type)
             sLogger.failure("Found corrupted spell at m_autoCastSpells, skipping");
             continue;
         }
-        else if (sp->autocast_type != static_cast<uint32>(Type))
+        else if (sp->autocast_type != static_cast<uint32_t>(Type))
         {
             sLogger.failure("Found corrupted spell ({}) at m_autoCastSpells, skipping", sp->entryId);
             continue;
@@ -2265,7 +2265,7 @@ Group* Pet::getGroup()
     return nullptr;
 }
 
-void Pet::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
+void Pet::die(Unit* pAttacker, uint32_t /*damage*/, uint32_t spellid)
 {
     // general hook for die
     if (pAttacker != nullptr && !sHookInterface.OnPreUnitDie(pAttacker, this))
@@ -2288,11 +2288,11 @@ void Pet::die(Unit* pAttacker, uint32 /*damage*/, uint32 spellid)
         Spell* spl = getCurrentSpell(CURRENT_CHANNELED_SPELL);
         if (spl != nullptr)
         {
-            for (uint8 i = 0; i < 3; i++)
+            for (uint8_t i = 0; i < 3; i++)
             {
                 if (spl->getSpellInfo()->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {
-                    uint64 guid = getChannelObjectGuid();
+                    uint64_t guid = getChannelObjectGuid();
                     DynamicObject* dObj = getWorldMap()->getDynamicObject(WoWGuid::getGuidLowPartFromUInt64(guid));
                     if (!dObj)
                         return;

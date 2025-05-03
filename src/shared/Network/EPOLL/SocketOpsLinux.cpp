@@ -22,45 +22,45 @@ namespace SocketOps
     // Disable blocking send/recv calls.
     bool Nonblocking(SOCKET fd)
     {
-        uint32 arg = 1;
+        uint32_t arg = 1;
         return (::ioctl(fd, FIONBIO, &arg) == 0);
     }
 
     // Disable blocking send/recv calls.
     bool Blocking(SOCKET fd)
     {
-        uint32 arg = 0;
+        uint32_t arg = 0;
         return (ioctl(fd, FIONBIO, &arg) == 0);
     }
 
     // Disable nagle buffering algorithm
     bool DisableBuffering(SOCKET fd)
     {
-        uint32 arg = 1;
+        uint32_t arg = 1;
         return (setsockopt(fd, 0x6, 0x1, (const char*)&arg, sizeof(arg)) == 0);
     }
 
     // Enable nagle buffering algorithm
     bool EnableBuffering(SOCKET fd)
     {
-        uint32 arg = 0;
+        uint32_t arg = 0;
         return (setsockopt(fd, 0x6, 0x1, (const char*)&arg, sizeof(arg)) == 0);
     }
 
     // Set internal buffer size to socket.
-    bool SetSendBufferSize(SOCKET fd, uint32 size)
+    bool SetSendBufferSize(SOCKET fd, uint32_t size)
     {
         return (setsockopt(fd, SOL_SOCKET, SO_SNDBUF, (const char*)&size, sizeof(size)) == 0);
     }
 
     // Set internal buffer size to socket.
-    bool SetRecvBufferSize(SOCKET fd, uint32 size)
+    bool SetRecvBufferSize(SOCKET fd, uint32_t size)
     {
         return (setsockopt(fd, SOL_SOCKET, SO_RCVBUF, (const char*)&size, sizeof(size)) == 0);
     }
 
     // Set internal timeout.
-    bool SetTimeout(SOCKET fd, uint32 timeout)
+    bool SetTimeout(SOCKET fd, uint32_t timeout)
     {
         struct timeval to;
         to.tv_sec = timeout;
@@ -79,7 +79,7 @@ namespace SocketOps
     // Sets reuseaddr
     void ReuseAddr(SOCKET fd)
     {
-        uint32 option = 1;
+        uint32_t option = 1;
         if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (const char*)&option, 4) < 0)
             printf("SO_REUSEADDR setsockopt error\n");
     }

@@ -24,7 +24,7 @@ void Socket::PostEvent(int events, bool oneshot)
         sLogger.warning("kqueue : Could not modify event for fd {}", GetFd());
 }
 
-void Socket::ReadCallback(uint32 len)
+void Socket::ReadCallback(uint32_t len)
 {
     if(IsDeleted() || !IsConnected())
         return;

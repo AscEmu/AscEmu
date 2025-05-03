@@ -26,7 +26,7 @@
 
 MySQLDatabase::~MySQLDatabase()
 {
-    for(int32 i = 0; i < mConnectionCount; ++i)
+    for(int32_t i = 0; i < mConnectionCount; ++i)
     {
         mysql_close(((MySQLDatabaseConnection*)Connections[i])->MySql);
         delete Connections[i];
@@ -49,9 +49,9 @@ void MySQLDatabase::_EndTransaction(DatabaseConnection* conn)
     _SendQuery(conn, "COMMIT", false);
 }
 
-bool MySQLDatabase::Initialize(const char* Hostname, unsigned int port, const char* Username, const char* Password, const char* DatabaseName, uint32 ConnectionCount, uint32 /*BufferSize*/, bool useLegacyAuth)
+bool MySQLDatabase::Initialize(const char* Hostname, unsigned int port, const char* Username, const char* Password, const char* DatabaseName, uint32_t ConnectionCount, uint32_t /*BufferSize*/, bool useLegacyAuth)
 {
-    uint32 i;
+    uint32_t i;
     MYSQL* temp = NULL;
     MYSQL* temp2 = NULL;
     MySQLDatabaseConnection** conns;
@@ -129,7 +129,7 @@ std::string MySQLDatabase::EscapeString(std::string Escape)
     return std::string(ret);
 }
 
-void MySQLDatabase::EscapeLongString(const char* str, uint32 len, std::stringstream & out)
+void MySQLDatabase::EscapeLongString(const char* str, uint32_t len, std::stringstream & out)
 {
     char a2[65536 * 3] = { 0 };
 
@@ -181,7 +181,7 @@ bool MySQLDatabase::_SendQuery(DatabaseConnection* con, const char* Sql, bool Se
     return (result == 0 ? true : false);
 }
 
-bool MySQLDatabase::_HandleError(MySQLDatabaseConnection* con, uint32 ErrorNumber)
+bool MySQLDatabase::_HandleError(MySQLDatabaseConnection* con, uint32_t ErrorNumber)
 {
     // Handle errors that should cause a reconnect to the Database.
     switch(ErrorNumber)
@@ -200,7 +200,7 @@ bool MySQLDatabase::_HandleError(MySQLDatabaseConnection* con, uint32 ErrorNumbe
     return false;
 }
 
-MySQLQueryResult::MySQLQueryResult(MYSQL_RES* res, uint32 FieldCount, uint32 RowCount) : QueryResult(FieldCount, RowCount), mResult(res)
+MySQLQueryResult::MySQLQueryResult(MYSQL_RES* res, uint32_t FieldCount, uint32_t RowCount) : QueryResult(FieldCount, RowCount), mResult(res)
 {
     mCurrentRow = new Field[FieldCount];
 }
@@ -217,7 +217,7 @@ bool MySQLQueryResult::NextRow()
     if(row == NULL)
         return false;
 
-    for(uint32 i = 0; i < mFieldCount; ++i)
+    for(uint32_t i = 0; i < mFieldCount; ++i)
         mCurrentRow[i].setValue(row[i]);
 
     return true;
@@ -228,8 +228,8 @@ QueryResult* MySQLDatabase::_StoreQueryResult(DatabaseConnection* con)
     MySQLQueryResult* res;
     MySQLDatabaseConnection* db = static_cast<MySQLDatabaseConnection*>(con);
     MYSQL_RES* pRes = mysql_store_result(db->MySql);
-    uint32 uRows = (uint32)mysql_affected_rows(db->MySql);
-    uint32 uFields = (uint32)mysql_field_count(db->MySql);
+    uint32_t uRows = (uint32_t)mysql_affected_rows(db->MySql);
+    uint32_t uFields = (uint32_t)mysql_field_count(db->MySql);
 
     if(uRows == 0 || uFields == 0 || pRes == 0)
     {

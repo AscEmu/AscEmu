@@ -95,7 +95,7 @@ void IchronAI::DoAction(int32_t actionId)
             getCreature()->castSpell(getCreature(), Ichron::SPELL_DRAINED, true);
 
             uint32_t damage = getCreature()->getPctFromMaxHealth(30);
-            getCreature()->modHealth(-std::min<int32>(damage, getCreature()->getHealth() - 1));
+            getCreature()->modHealth(-std::min<int32_t>(damage, getCreature()->getHealth() - 1));
 
             for (auto spell : mCreatureAISpells)
             {

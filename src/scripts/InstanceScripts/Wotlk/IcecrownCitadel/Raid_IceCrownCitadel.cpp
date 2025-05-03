@@ -459,7 +459,7 @@ void IceCrownCitadelScript::OnEncounterStateChange(uint32_t entry, uint32_t stat
     }      
 }
 
-void IceCrownCitadelScript::OnAreaTrigger(Player* /*pPlayer*/, uint32 pAreaId)
+void IceCrownCitadelScript::OnAreaTrigger(Player* /*pPlayer*/, uint32_t pAreaId)
 {
     switch(pAreaId)
     {

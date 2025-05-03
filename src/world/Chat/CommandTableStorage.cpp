@@ -112,7 +112,7 @@ ChatCommand* CommandTableStorage::GetReloadCommandTable(const char* name)
 }
 
 #define dupe_command_table(ct, dt) this->dt = (ChatCommand*)allocate_and_copy(sizeof(ct)/* / sizeof(ct[0])*/, ct)
-inline void* allocate_and_copy(uint32 len, void* pointer)
+inline void* allocate_and_copy(uint32_t len, void* pointer)
 {
     void* data = malloc(len);
     memcpy(data, pointer, len);

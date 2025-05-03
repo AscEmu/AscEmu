@@ -335,7 +335,7 @@ namespace WDB
             m_fields_offset[i] = m_fields_offset[i - 1];
             if (_dbcFormat[i - 1] == 'b' || _dbcFormat[i - 1] == 'X') // byte fields
                 m_fields_offset[i] += 1;
-            else                                // 4 byte fields (int32/float/strings)
+            else                                // 4 byte fields (int32_t/float/strings)
                 m_fields_offset[i] += 4;
         }
 

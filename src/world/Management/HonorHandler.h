@@ -21,12 +21,14 @@
 
 #include "CommonTypes.hpp"
 
+#include <cstdint>
+
 class Player;
 
 class SERVER_DECL HonorHandler
 {
 public:
-    static int32 CalculateHonorPointsForKill(uint32_t playerLevel, uint32_t victimLevel);
+    static int32_t CalculateHonorPointsForKill(uint32_t playerLevel, uint32_t victimLevel);
     static void RecalculateHonorFields(Player* pPlayer);
     static void AddHonorPointsToPlayer(Player* pPlayer, uint32_t uAmount);
     static void OnPlayerKilled(Player* pPlayer, Player* pVictim);

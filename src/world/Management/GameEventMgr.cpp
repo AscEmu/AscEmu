@@ -24,7 +24,7 @@ void GameEventMgr::initialize()
     mGameEvents.clear();
 }
 
-GameEvent* GameEventMgr::GetEventById(uint32 pEventId)
+GameEvent* GameEventMgr::GetEventById(uint32_t pEventId)
 {
     auto rEvent = mGameEvents.find(pEventId);
     if (rEvent == mGameEvents.end())
@@ -71,7 +71,7 @@ void GameEventMgr::LoadFromDB()
             return;
         }
 
-        uint32 pCount = 0;
+        uint32_t pCount = 0;
         do
         {
             Field* field = result->Fetch();
@@ -114,13 +114,13 @@ void GameEventMgr::LoadFromDB()
             return;
         }
 
-        uint32 pCount = 0;
+        uint32_t pCount = 0;
         if (result)
         {
             do
             {
                 Field* field = result->Fetch();
-                uint32 event_id = field[0].asUint8();
+                uint32_t event_id = field[0].asUint8();
 
                 auto gameEvent = GetEventById(event_id);
                 if (gameEvent == nullptr)
@@ -158,14 +158,14 @@ void GameEventMgr::LoadFromDB()
             return;
         }
 
-        uint32 pCount = 0;
+        uint32_t pCount = 0;
         if (result)
         {
             do
             {
                 Field* field = result->Fetch();
 
-                uint32 event_id = field[28].asUint32();
+                uint32_t event_id = field[28].asUint32();
 
                 auto gameEvent = GetEventById(event_id);
                 if (gameEvent == nullptr)
@@ -237,13 +237,13 @@ void GameEventMgr::LoadFromDB()
             return;
         }
 
-        uint32 pCount = 0;
+        uint32_t pCount = 0;
         if (result)
         {
             do
             {
                 Field* field = result->Fetch();
-                uint32 event_id = field[14].asUint32();
+                uint32_t event_id = field[14].asUint32();
 
                 auto gameEvent = GetEventById(event_id);
                 if (gameEvent == nullptr)

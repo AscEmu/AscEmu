@@ -24,6 +24,8 @@
 #include "CommonTypes.hpp"
 #include "Debugging/Errors.h"
 
+#include <cstdint>
+
 #define BitCount1(x) ((x) & 1)
 #define BitCount2(x) ( BitCount1(x) + BitCount1((x)>>1) )
 #define BitCount4(x) ( BitCount2(x) + BitCount2((x)>>2) )
@@ -114,7 +116,7 @@ struct ObjectGuid
 
         uint32_t getCounter()
         {
-            return uint32(_data.u64 & UINT64_C(0x00000000FFFFFFFF));
+            return uint32_t(_data.u64 & UINT64_C(0x00000000FFFFFFFF));
         }
 
     private:
