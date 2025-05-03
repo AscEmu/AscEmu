@@ -289,6 +289,12 @@ Player::~Player()
 // Essential functions
 void Player::Update(unsigned long time_passed)
 {
+    if (getSession() && !getSession()->GetSocket())
+    {
+        getSession()->LogoutPlayer(false);
+        return;
+    }
+
     if (!IsInWorld())
         return;
 

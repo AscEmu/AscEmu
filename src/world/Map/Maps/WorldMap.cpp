@@ -875,7 +875,8 @@ void WorldMap::RemoveObject(Object* obj, bool free_guid)
             break;
         default:
         {
-            sLogger.debug("WorldMap::RemoveObject called for invalid type {}.", obj->GetTypeFromGUID());
+            if (!obj->isPlayer())
+                sLogger.debug("WorldMap::RemoveObject called for invalid type {} (not player).", obj->GetTypeFromGUID());
             break;
         }
     }
