@@ -150,7 +150,7 @@ This file is released under the MIT license. See README-MIT for more information
 #if VERSION_STRING == Classic
     #define PLAYER_ACTION_BUTTON_COUNT 120
 #elif VERSION_STRING == TBC
-    #define PLAYER_ACTION_BUTTON_COUNT 120
+    #define PLAYER_ACTION_BUTTON_COUNT 132
 #elif VERSION_STRING == WotLK
     #define PLAYER_ACTION_BUTTON_COUNT 136
 #elif VERSION_STRING == Cata
