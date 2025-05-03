@@ -1920,7 +1920,7 @@ void Player::sendTeleportAckPacket(LocationVector position)
 {
     setTransferStatus(TRANSFER_PENDING);
 
-#if VERSION_STRING < WotLK
+#if VERSION_STRING < TBC
     WorldPacket data(MSG_MOVE_TELEPORT_ACK, 41);
     data << GetNewGUID();
     data << uint32_t(2);
@@ -1941,6 +1941,11 @@ void Player::sendTeleportAckPacket(LocationVector position)
     buildMovementPacket(&data, position.x, position.y, position.z, position.o);
 #endif
     getSession()->SendPacket(&data);
+
+#if VERSION_STRING == TBC
+    sendTeleportPacket(position);
+#endif
+
 }
 
 void Player::onWorldPortAck()
