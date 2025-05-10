@@ -59,6 +59,7 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_
     GreenSystemMessage(m_session, "Info: |r%sAscEmu %s/%s-%s-%s %s(www.ascemu.org)", MSG_COLOR_WHITE, AE_BUILD_HASH, CONFIG, AE_PLATFORM, AE_ARCHITECTURE, MSG_COLOR_LIGHTBLUE);
     GreenSystemMessage(m_session, "Using %s/Library %s", OPENSSL_VERSION_TEXT, SSLeay_version(SSLEAY_VERSION));
     GreenSystemMessage(m_session, "Uptime: |r%s", sWorld.getWorldUptimeString().c_str());
+    GreenSystemMessage(m_session, "Active Branch: |r%s", AE_BUILD_BRANCH);
     GreenSystemMessage(m_session, "Active Sessions: |r%u", active_sessions);
     GreenSystemMessage(m_session, "Current GMs: |r%u GMs", online_gm);
     GreenSystemMessage(m_session, "Current Players: |r%u (%u Peak)", online_gm > 0 ? (online_count - online_gm) : online_count, sWorld.getPeakSessionCount());
@@ -113,7 +114,6 @@ bool ChatHandler::HandleServerSaveCommand(const char* args, WorldSession* m_sess
             return true;
         }
     }
-
 
     if (player_target->m_nextSave < 180000)
     {
