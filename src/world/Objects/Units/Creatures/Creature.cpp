@@ -928,16 +928,16 @@ void Creature::SaveToDB()
         m_spawn->o = m_position.o;
         m_spawn->emote_state = getEmoteState();
         m_spawn->flags = getUnitFlags();
+        m_spawn->pvp_flagged = isPvpFlagSet() ? 1 : 0;
         m_spawn->factionid = getFactionTemplate();
         m_spawn->bytes0 = getBytes0();
-        m_spawn->bytes1 = getBytes1();
-        m_spawn->bytes2 = getBytes2();
         m_spawn->stand_state = getStandState();
         m_spawn->death_state = 0;
         m_spawn->channel_target_creature = 0;
         m_spawn->channel_target_go = 0;
         m_spawn->channel_spell = 0;
         m_spawn->MountedDisplayID = getMountDisplayId();
+        m_spawn->sheath_state = getSheathType();
 
 #if VERSION_STRING < WotLK
         m_spawn->Item1SlotEntry = getVirtualItemEntry(MELEE);
@@ -991,9 +991,8 @@ void Creature::SaveToDB()
         << getDisplayId() << ","
         << getFactionTemplate() << ","
         << getUnitFlags() << ","
+        << (isPvpFlagSet() ? "1" : "0") << ","
         << getBytes0() << ","
-        << getBytes1() << ","
-        << getBytes2() << ","
         << getEmoteState() << ",0,";
 
     ss << m_spawn->channel_spell << ","
@@ -1005,6 +1004,7 @@ void Creature::SaveToDB()
     ss << m_spawn->death_state << ",";
 
     ss << getMountDisplayId() << ","
+        << std::to_string(getSheathType()) << ","
         << m_spawn->Item1SlotEntry << ","
         << m_spawn->Item2SlotEntry << ","
         << m_spawn->Item3SlotEntry << ",";
@@ -1744,10 +1744,14 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8_t mode, MySQLStr
     setBytes0(spawn->bytes0);
 
     // Bytes 1
-    setBytes1(spawn->bytes1);
+    setBytes1(0);
+    setStandState(spawn->stand_state);
 
     // Bytes 2
-    setBytes2(spawn->bytes2);
+    setBytes2(0);
+    setSheathType(spawn->sheath_state);
+    if (spawn->pvp_flagged == 1)
+        setPvpFlag();
 
     ////////////AI
 
@@ -1798,9 +1802,6 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8_t mode, MySQLStr
         m_limbostate = true;
         setDeathState(CORPSE);
     }
-
-    if (spawn->stand_state)
-        setStandState((uint8_t)spawn->stand_state);
 
     m_aiInterface->eventAiInterfaceParamsetFinish();
 

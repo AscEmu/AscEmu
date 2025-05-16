@@ -14272,7 +14272,7 @@ void Player::saveToDB(bool newCharacter /* =false */)
         removePlayerFlags(PLAYER_FLAG_SANCTUARY);
 #endif
 
-    ss << getPlayerFlags() << ", " << getPlayerFieldBytes() << ", ";
+    ss << getPlayerFlags() << ", " << std::to_string(getEnabledActionBars()) << ", ";
 
     // if its an arena, save the entry coords instead of the normal position
     if (in_arena)
@@ -14752,7 +14752,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
     setPlayerGender(getGender());
 
     setPlayerFlags(field[24].asUint32());
-    setPlayerFieldBytes(field[25].asUint32());
+    setEnabledActionBars(field[25].asUint8());
 
     m_position.x = field[26].asFloat();
     m_position.y = field[27].asFloat();

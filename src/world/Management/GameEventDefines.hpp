@@ -97,9 +97,8 @@ struct EventCreatureSpawnsQueryResult
     uint32_t displayid;
     uint32_t faction;
     uint32_t flags;
+    uint8_t pvp_flagged;
     uint32_t bytes0;
-    uint32_t bytes1;
-    uint32_t bytes2;
     uint16_t emote_state;
     uint32_t npc_respawn_link;
     uint32_t channel_spell;
@@ -108,6 +107,7 @@ struct EventCreatureSpawnsQueryResult
     uint8_t standstate;
     uint8_t death_state;
     uint32_t mountdisplayid;
+    uint8_t sheath_state;
     uint32_t slot1item;
     uint32_t slot2item;
     uint32_t slot3item;

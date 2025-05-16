@@ -69,8 +69,8 @@
 #include "Utilities/Benchmark.hpp"
 
 // DB version
-static const char* REQUIRED_CHAR_DB_VERSION = "20250119-00_character_db_version";
-static const char* REQUIRED_WORLD_DB_VERSION = "20250112-00_world_db_version";
+static const char* REQUIRED_CHAR_DB_VERSION = "20250516-00_characters";
+static const char* REQUIRED_WORLD_DB_VERSION = "20250516-00_creature_spawns";
 
 volatile bool Master::m_stopEvent = false;
 
@@ -305,6 +305,9 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
 
     ThreadPool.Startup();
     auto startTime = Util::TimeNow();
+
+    // Call once to initialize EventMgr and to prevent crash on possible startup error -Appled
+    sEventMgr;
 
     sWorld.initialize();
 
