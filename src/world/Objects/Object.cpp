@@ -292,20 +292,20 @@ bool Object::write(const uint64_t& member, uint32_t low, uint32_t high, bool ski
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
-uint64_t Object::getGuid() const { return objectData()->guid; }
+uint64_t Object::getGuid() const { return objectData()->guid.guid; }
 void Object::setGuid(uint64_t guid)
 {
-    write(objectData()->guid, guid);
+    write(objectData()->guid.guid, guid);
     m_wowGuid.Init(guid);
     obj_movement_info.guid = guid;
 }
 void Object::setGuid(uint32_t low, uint32_t high) { setGuid(static_cast<uint64_t>(high) << 32 | low); }
 
-uint32_t Object::getGuidLow() const { return objectData()->guid_parts.low; }
-void Object::setGuidLow(uint32_t low) { setGuid(low, objectData()->guid_parts.high); }
+uint32_t Object::getGuidLow() const { return objectData()->guid.parts.low; }
+void Object::setGuidLow(uint32_t low) { setGuid(low, objectData()->guid.parts.high); }
 
-uint32_t Object::getGuidHigh() const { return objectData()->guid_parts.high; }
-void Object::setGuidHigh(uint32_t high) { setGuid(objectData()->guid_parts.low, high); }
+uint32_t Object::getGuidHigh() const { return objectData()->guid.parts.high; }
+void Object::setGuidHigh(uint32_t high) { setGuid(objectData()->guid.parts.low, high); }
 
 #if VERSION_STRING < Cata
 uint32_t Object::getOType() const { return objectData()->type; }
@@ -343,8 +343,8 @@ void Object::setObjectType(uint8_t objectTypeId)
     write(objectData()->type, static_cast<uint32_t>(m_objectType));
 }
 #else
-uint16_t Object::getOType() const { return objectData()->parts.type; }
-void Object::setOType(uint16_t type) { write(objectData()->parts.type, type); }
+uint16_t Object::getOType() const { return objectData()->field_type.parts.type; }
+void Object::setOType(uint16_t type) { write(objectData()->field_type.parts.type, type); }
 void Object::setObjectType(uint8_t objectTypeId)
 {
     uint16_t object_type = TYPE_OBJECT;
@@ -375,7 +375,7 @@ void Object::setObjectType(uint8_t objectTypeId)
 
     m_objectType = object_type;
     m_objectTypeId = objectTypeId;
-    write(objectData()->parts.type, static_cast<uint16_t>(m_objectType));
+    write(objectData()->field_type.parts.type, static_cast<uint16_t>(m_objectType));
 }
 #endif
 
@@ -383,18 +383,15 @@ uint32_t Object::getEntry() const { return objectData()->entry; }
 void Object::setEntry(uint32_t entry) { write(objectData()->entry, entry); }
 
 #if VERSION_STRING >= Mop
-uint32_t Object::getDynamicField() const { return objectData()->dynamic_field; }
-uint16_t Object::getDynamicFlags() const { return objectData()->dynamic_field_parts.dynamic_flags; }
+uint16_t Object::getDynamicFlags() const { return objectData()->dynamic_field.dynamic_field_parts.dynamic_flags; }
 int16_t Object::getDynamicPathProgress() const
 {
     if (!isGameObject())
         return 0;
 
-    return objectData()->dynamic_field_parts.path_progress;
+    return objectData()->dynamic_field.dynamic_field_parts.path_progress;
 }
-void Object::setDynamicField(uint32_t dynamic) { write(objectData()->dynamic_field, dynamic); }
-void Object::setDynamicField(uint16_t dynamicFlags, int16_t pathProgress) { setDynamicField(static_cast<uint32_t>(pathProgress) << 16 | dynamicFlags); }
-void Object::setDynamicFlags(uint16_t dynamicFlags) { setDynamicField(dynamicFlags, getDynamicPathProgress()); }
+void Object::setDynamicFlags(uint16_t dynamicFlags) { write(objectData()->dynamic_field.dynamic_field_parts.dynamic_flags, dynamicFlags); }
 void Object::addDynamicFlags(uint16_t dynamicFlags) { setDynamicFlags(static_cast<uint16_t>(getDynamicFlags() | dynamicFlags)); }
 void Object::removeDynamicFlags(uint16_t dynamicFlags) { setDynamicFlags(static_cast<uint16_t>(getDynamicFlags() & ~dynamicFlags)); }
 bool Object::hasDynamicFlags(uint16_t dynamicFlags) const { return (getDynamicFlags() & dynamicFlags) != 0; }
@@ -403,7 +400,7 @@ void Object::setDynamicPathProgress(int16_t pathProgress)
     if (!isGameObject())
         return;
 
-    setDynamicField(getDynamicFlags(), pathProgress);
+    write(objectData()->dynamic_field.dynamic_field_parts.path_progress, pathProgress);
 }
 #endif
 
@@ -3100,9 +3097,9 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
 #if VERSION_STRING < WotLK
             updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, animation_progress));
 #elif VERSION_STRING < Mop
-            updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, bytes_1_gameobject.animation_progress));
+            updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, bytes_1.bytes_1_gameobject.animation_progress));
 #else
-            updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, bytes_2_gameobject.animation_progress));
+            updateMask->SetBit(getOffsetForStructuredField(WoWGameObject, bytes_2.bytes_2_gameobject.animation_progress));
 #endif
         }
     }
@@ -4121,11 +4118,13 @@ bool Object::isValidTarget(Object* target, SpellInfo const* bySpell)
     if ((!bySpell || !bySpell->hasAttribute(ATTRIBUTESEXF_UNK26)) && unitTarget && unitTarget->hasUnitFlags(UNIT_FLAG_NOT_SELECTABLE))
         return false;
 
+#if VERSION_STRING >= TBC
     if (Player const* playerAttacker = ToPlayer())
     {
-        if (playerAttacker->hasPlayerFlags(PLAYER_FLAG_UNK3))
+        if (playerAttacker->hasPlayerFlags(PLAYER_FLAG_UNK20))
             return false;
     }
+#endif
 
     // check flags
     if (unitTarget && unitTarget->hasUnitFlags(UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_MOUNTED_TAXI | UNIT_FLAG_IGNORE_CREATURE_COMBAT | UNIT_FLAG_ALIVE))

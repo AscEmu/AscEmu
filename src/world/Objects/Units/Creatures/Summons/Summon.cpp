@@ -90,6 +90,13 @@ void Summon::load(CreatureProperties const* creatureProperties, Unit* unitOwner,
     if (unitOwner->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
         addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
 
+#if VERSION_STRING == TBC
+    if (unitOwner->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
+        setPositiveAuraLimit(POS_AURA_LIMIT_PVP_ATTACKABLE);
+    else
+        setPositiveAuraLimit(POS_AURA_LIMIT_CREATURE);
+#endif
+
     m_unitOwner = unitOwner;
 
     // Non-scripted summons

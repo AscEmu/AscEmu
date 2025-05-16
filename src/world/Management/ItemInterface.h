@@ -123,6 +123,8 @@ public:
     // Inventory error report
     void buildInventoryChangeError(Item const* srcItem, Item const* dstItem, uint8_t inventoryError, uint32_t srcItemId = 0);
 
+    void setOwnerInventoryItem(uint8_t slot, uint64_t guid);
+
     void update(uint32_t timePassed);
 
 private:

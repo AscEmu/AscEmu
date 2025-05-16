@@ -14,14 +14,15 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "WoWObject.hpp"
-#include "GuidData.hpp"
+
+#include <array>
 
 #pragma pack(push, 1)
 
 #if VERSION_STRING == Classic
 
-#define WOWITEM_SPELL_CHARGES_COUNT 5
-#define WOWITEM_ENCHANTMENT_COUNT 7
+static inline constexpr uint8_t WOWITEM_SPELL_CHARGES_COUNT = 5;
+static inline constexpr uint8_t WOWITEM_ENCHANTMENT_COUNT = 7;
 
 //\todo verify this
 struct WoWItem_Enchantment
@@ -39,9 +40,9 @@ struct WoWItem : WoWObject
     guid_union gift_creator_guid;
     uint32_t stack_count;
     uint32_t duration;
-    int32_t spell_charges[WOWITEM_SPELL_CHARGES_COUNT];
+    std::array<int32_t, WOWITEM_SPELL_CHARGES_COUNT> spell_charges;
     uint32_t flags;
-    WoWItem_Enchantment enchantment[WOWITEM_ENCHANTMENT_COUNT];
+    std::array<WoWItem_Enchantment, WOWITEM_ENCHANTMENT_COUNT> enchantment;
     uint32_t property_seed;
     uint32_t random_properties_id;
     uint32_t item_text_id;
@@ -52,8 +53,8 @@ struct WoWItem : WoWObject
 
 #if VERSION_STRING == TBC
 
-#define WOWITEM_SPELL_CHARGES_COUNT 5
-#define WOWITEM_ENCHANTMENT_COUNT 11
+static inline constexpr uint8_t WOWITEM_SPELL_CHARGES_COUNT = 5;
+static inline constexpr uint8_t WOWITEM_ENCHANTMENT_COUNT = 11;
 
 //\todo verify this
 struct WoWItem_Enchantment
@@ -71,9 +72,9 @@ struct WoWItem : WoWObject
     guid_union gift_creator_guid;
     uint32_t stack_count;
     uint32_t duration;
-    int32_t spell_charges[WOWITEM_SPELL_CHARGES_COUNT];
+    std::array<int32_t, WOWITEM_SPELL_CHARGES_COUNT> spell_charges;
     uint32_t flags;
-    WoWItem_Enchantment enchantment[WOWITEM_ENCHANTMENT_COUNT];
+    std::array<WoWItem_Enchantment, WOWITEM_ENCHANTMENT_COUNT> enchantment;
     uint32_t property_seed;
     uint32_t random_properties_id;
     uint32_t item_text_id;
@@ -84,8 +85,8 @@ struct WoWItem : WoWObject
 
 #if VERSION_STRING == WotLK
 
-#define WOWITEM_SPELL_CHARGES_COUNT 5
-#define WOWITEM_ENCHANTMENT_COUNT 12
+static inline constexpr uint8_t WOWITEM_SPELL_CHARGES_COUNT = 5;
+static inline constexpr uint8_t WOWITEM_ENCHANTMENT_COUNT = 12;
 
 struct WoWItem_Enchantment
 {
@@ -102,9 +103,9 @@ struct WoWItem : WoWObject
     guid_union gift_creator_guid;
     uint32_t stack_count;
     uint32_t duration;
-    int32_t spell_charges[WOWITEM_SPELL_CHARGES_COUNT];
+    std::array<int32_t, WOWITEM_SPELL_CHARGES_COUNT> spell_charges;
     uint32_t flags;
-    WoWItem_Enchantment enchantment[WOWITEM_ENCHANTMENT_COUNT];
+    std::array<WoWItem_Enchantment, WOWITEM_ENCHANTMENT_COUNT> enchantment;
     uint32_t property_seed;
     uint32_t random_properties_id;
     uint32_t durability;
@@ -116,8 +117,8 @@ struct WoWItem : WoWObject
 
 #if VERSION_STRING == Cata
 
-#define WOWITEM_SPELL_CHARGES_COUNT 5
-#define WOWITEM_ENCHANTMENT_COUNT 15
+static inline constexpr uint8_t WOWITEM_SPELL_CHARGES_COUNT = 5;
+static inline constexpr uint8_t WOWITEM_ENCHANTMENT_COUNT = 15;
 
 struct WoWItem_Enchantment
 {
@@ -134,9 +135,9 @@ struct WoWItem : WoWObject
     guid_union gift_creator_guid;
     uint32_t stack_count;
     uint32_t duration;
-    int32_t spell_charges[WOWITEM_SPELL_CHARGES_COUNT];
+    std::array<int32_t, WOWITEM_SPELL_CHARGES_COUNT> spell_charges;
     uint32_t flags;
-    WoWItem_Enchantment enchantment[WOWITEM_ENCHANTMENT_COUNT];
+    std::array<WoWItem_Enchantment, WOWITEM_ENCHANTMENT_COUNT> enchantment;
     uint32_t property_seed;
     uint32_t random_properties_id;
     uint32_t durability;
@@ -147,8 +148,8 @@ struct WoWItem : WoWObject
 
 #if VERSION_STRING == Mop
 
-#define WOWITEM_SPELL_CHARGES_COUNT 5
-#define WOWITEM_ENCHANTMENT_COUNT 13
+static inline constexpr uint8_t WOWITEM_SPELL_CHARGES_COUNT = 5;
+static inline constexpr uint8_t WOWITEM_ENCHANTMENT_COUNT = 13;
 
 struct WoWItem_Enchantment
 {
@@ -165,9 +166,9 @@ struct WoWItem : WoWObject
     guid_union gift_creator_guid;
     uint32_t stack_count;
     uint32_t duration;
-    int32_t spell_charges[WOWITEM_SPELL_CHARGES_COUNT];
+    std::array<int32_t, WOWITEM_SPELL_CHARGES_COUNT> spell_charges;
     uint32_t flags;
-    WoWItem_Enchantment enchantment[WOWITEM_ENCHANTMENT_COUNT];
+    std::array<WoWItem_Enchantment, WOWITEM_ENCHANTMENT_COUNT> enchantment;
     uint32_t property_seed;
     uint32_t random_properties_id;
     uint32_t durability;

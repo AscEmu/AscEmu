@@ -160,11 +160,8 @@ public:
     uint32_t getEntry() const;
 
 #if VERSION_STRING >= Mop
-    uint32_t getDynamicField() const;
     uint16_t getDynamicFlags() const;
     int16_t getDynamicPathProgress() const;
-    void setDynamicField(uint32_t dynamic);
-    void setDynamicField(uint16_t dynamicFlags, int16_t pathProgress);
     void setDynamicFlags(uint16_t dynamicFlags);
     void addDynamicFlags(uint16_t dynamicFlags);
     void removeDynamicFlags(uint16_t dynamicFlags);

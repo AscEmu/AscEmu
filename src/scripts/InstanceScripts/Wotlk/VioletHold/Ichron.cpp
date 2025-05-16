@@ -41,7 +41,7 @@ void IchronAI::OnLoad()
     getCreature()->getMovementManager()->moveTargetedHome();
     getCreature()->getAIInterface()->setImmuneToNPC(true);
     getCreature()->getAIInterface()->setImmuneToPC(true);
-    getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
+    getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
 
     /// for some reason ichoron can't walk back to it's water basin on evade
     getCreature()->addUnitStateFlag(UNIT_STATE_IGNORE_PATHFINDING);

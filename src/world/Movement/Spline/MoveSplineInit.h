@@ -52,7 +52,7 @@ public:
 #if VERSION_STRING >= WotLK
     // Plays animation after movement done
     // can't be combined with parabolic movement
-    void SetAnimation(AnimationTier anim);
+    void SetAnimation(UnitBytes1_AnimationFlag anim);
 #endif
 
     // Adds final facing animation
@@ -188,7 +188,7 @@ inline void MoveSplineInit::SetParabolic(float amplitude, float time_shift)
 }
 
 #if VERSION_STRING >= WotLK
-inline void MoveSplineInit::SetAnimation(AnimationTier anim)
+inline void MoveSplineInit::SetAnimation(UnitBytes1_AnimationFlag anim)
 {
     args.time_perc = 0.f;
     args.flags.EnableAnimation(static_cast<uint8_t>(anim));

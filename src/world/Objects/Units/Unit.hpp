@@ -360,14 +360,23 @@ public:
     uint8_t getStandState() const;
     void setStandState(uint8_t standState);
 
+#if VERSION_STRING < WotLK
+    uint8_t getPetLoyalty() const;
+    void setPetLoyalty(uint8_t loyalty);
+#elif VERSION_STRING < Mop
     uint8_t getPetTalentPoints() const;
     void setPetTalentPoints(uint8_t talentPoints);
+#endif
 
     uint8_t getStandStateFlags() const;
     void setStandStateFlags(uint8_t standStateFlags);
+    void addStandStateFlags(uint8_t standStateFlags);
+    void removeStandStateFlags(uint8_t standStateFlags);
 
+#if VERSION_STRING != Classic
     uint8_t getAnimationFlags() const;
     void setAnimationFlags(uint8_t animationFlags);
+#endif
     //bytes_1 end
 
     // Note; this is not same as serverside PetCache::number or Pet::m_petId, this is clientside pet number which is pet's low guid
@@ -451,16 +460,24 @@ public:
     uint8_t getSheathType() const;
     void setSheathType(uint8_t sheathType);
 
+#if VERSION_STRING == TBC
+    uint8_t getPositiveAuraLimit() const;
+    void setPositiveAuraLimit(uint8_t limit);
+#elif VERSION_STRING >= WotLK
     uint8_t getPvpFlags() const;
     void setPvpFlags(uint8_t pvpFlags);
     void addPvpFlags(uint8_t pvpFlags);
     void removePvpFlags(uint8_t pvpFlags);
+#endif
 
+#if VERSION_STRING >= TBC
     uint8_t getPetFlags() const;
     void setPetFlags(uint8_t petFlags);
     void addPetFlags(uint8_t petFlags);
     void removePetFlags(uint8_t petFlags);
+#endif
 
+    //bytes_1 in classic
     uint8_t getShapeShiftForm() const;
     void setShapeShiftForm(uint8_t shapeShiftForm);
     uint32_t getShapeShiftMask() const { return 1 << (getShapeShiftForm() - 1); }
@@ -589,7 +606,6 @@ public:
     void setMoveDisableGravity(bool disable_gravity);
     void setMoveWalk(bool set_walk);
     void setFacing(float newo);     //only working if creature is idle
-    void setAnimationTier(AnimationTier  tier);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // used for handling fall
@@ -1002,15 +1018,15 @@ public:
 
     void sendEnvironmentalDamageLogPacket(uint64_t guid, uint8_t type, uint32_t damage, uint64_t unk = 0);
 
-    virtual bool isPvpFlagSet();
+    virtual bool isPvpFlagSet() const;
     virtual void setPvpFlag();
     virtual void removePvpFlag();
 
-    virtual bool isFfaPvpFlagSet();
+    virtual bool isFfaPvpFlagSet() const;
     virtual void setFfaPvpFlag();
     virtual void removeFfaPvpFlag();
 
-    virtual bool isSanctuaryFlagSet();
+    virtual bool isSanctuaryFlagSet() const;
     virtual void setSanctuaryFlag();
     virtual void removeSanctuaryFlag();
 
@@ -1146,7 +1162,7 @@ public:
     void handleSpellClick(Unit* clicker);
 #endif
 
-    bool isMounted() const { return hasUnitFlags(UNIT_FLAG_MOUNT); }
+    bool isMounted() const;
     void mount(uint32_t mount, uint32_t vehicleId = 0, uint32_t creatureEntry = 0);
     void dismount(bool resummonPet = true);
 

@@ -223,7 +223,11 @@ void DynamicObject::setCasterGuid(uint64_t guid) { write(dynamicObjectData()->ca
 
 //bytes start
 uint8_t DynamicObject::getDynamicType() const { return dynamicObjectData()->dynamicobject_bytes.s.type; }
+#if VERSION_STRING < Cata
 void DynamicObject::setDynamicType(uint8_t type) { write(dynamicObjectData()->dynamicobject_bytes.s.type, type); }
+#else
+void DynamicObject::setDynamicType(uint8_t type) { write(dynamicObjectData()->dynamicobject_bytes.s.type, static_cast<uint32_t>(type)); }
+#endif
 //bytes end
 
 uint32_t DynamicObject::getSpellId() const { return dynamicObjectData()->spell_id; }

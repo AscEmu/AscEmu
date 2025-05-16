@@ -304,13 +304,13 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
 
     uint8_t creature_gender = creature_target->getGender();
     if (creature_gender <= 2)
-        SystemMessage(m_session, "Gender: %s", GENDER[creature_gender]);
+        SystemMessage(m_session, "Gender: %s", GENDER[creature_gender].data());
     else
         SystemMessage(m_session, "Gender: invalid %u", creature_gender);
 
     uint8_t creature_class = creature_target->getClass();
     if (creature_class <= 11)
-        SystemMessage(m_session, "Class: %s", CLASS[creature_class]);
+        SystemMessage(m_session, "Class: %s", CLASS[creature_class].data());
     else
         SystemMessage(m_session, "Class: invalid %u", creature_class);
 
@@ -319,14 +319,19 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     auto powertype = creature_target->getPowerType();
     if (powertype <= 6)
     {
-        SystemMessage(m_session, "Powertype: %s", POWERTYPE[powertype]);
+        SystemMessage(m_session, "Powertype: %s", POWERTYPE[powertype].data());
         SystemMessage(m_session, "Power (cur / max): %u / %u", creature_target->getPower(powertype), creature_target->getMaxPower(powertype));
     }
 
     SystemMessage(m_session, "Damage (min / max): %f / %f", creature_target->getMinDamage(), creature_target->getMaxDamage());
 
+#if VERSION_STRING < WotLK
+    if (creature_target->getPetLoyalty() != 0)
+        SystemMessage(m_session, "Pet loyalty level: %u", creature_target->getPetLoyalty());
+#elif VERSION_STRING < Mop
     if (creature_target->getPetTalentPoints() != 0)
         SystemMessage(m_session, "Free pet talent points: %u", creature_target->getPetTalentPoints());
+#endif
 
     if (creature_target->GetCreatureProperties()->vehicleid > 0)
         SystemMessage(m_session, "VehicleID: %u", creature_target->GetCreatureProperties()->vehicleid);
@@ -341,7 +346,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
 
     uint8_t sheat = creature_target->getSheathType();
     if (sheat <= 2)
-        SystemMessage(m_session, "Sheat state: %s", SHEATSTATE[sheat]);
+        SystemMessage(m_session, "Sheat state: %s", SHEATSTATE[sheat].data());
 
     SystemMessage(m_session, "=================================");
 
@@ -373,28 +378,48 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     //////////////////////////////////////////////////////////////////////////////////////////
     // show byte
     std::stringstream sstext;
-    uint32_t theBytes = creature_target->getBytes0();
     sstext << "UNIT_FIELD_BYTES_0 are:" << '\n';
-    sstext << " -Race: " << uint16_t((uint8_t)theBytes & 0xFF) << '\n';
-    sstext << " -Class: " << uint16_t((uint8_t)(theBytes >> 8) & 0xFF) << '\n';
-    sstext << " -Gender: " << uint16_t((uint8_t)(theBytes >> 16) & 0xFF) << '\n';
-    sstext << " -Power Type: " << uint16_t((uint8_t)(theBytes >> 24) & 0xFF) << '\n';
+    sstext << " -Race: " << std::to_string(creature_target->getRace()) << '\n';
+    sstext << " -Class: " << std::to_string(creature_target->getClass()) << '\n';
+    sstext << " -Gender: " << std::to_string(creature_target->getGender()) << '\n';
+    sstext << " -Power Type: " << std::to_string(creature_target->getPowerType()) << '\n';
     sstext << '\n';
 
-    theBytes = creature_target->getBytes1();
     sstext << "UNIT_FIELD_BYTES_1 are:" << '\n';
-    sstext << " -StandState: " << uint16_t((uint8_t)theBytes & 0xFF) << '\n';
-    sstext << " -Pet TP: " << uint16_t((uint8_t)(theBytes >> 8) & 0xFF) << '\n';
-    sstext << " -StandState Flag: " << uint16_t((uint8_t)(theBytes >> 16) & 0xFF) << '\n';
-    sstext << " -Animation Flag: " << uint16_t((uint8_t)(theBytes >> 24) & 0xFF) << '\n';
+    sstext << " -StandState: " << std::to_string(creature_target->getStandState()) << '\n';
+#if VERSION_STRING < WotLK
+    sstext << " -Pet Loyalty: " << std::to_string(creature_target->getPetLoyalty()) << '\n';
+#elif VERSION_STRING < Mop
+    sstext << " -Pet TP: " << std::to_string(creature_target->getPetTalentPoints()) << '\n';
+#else
+    const auto theBytes = creature_target->getBytes1();
+    sstext << " -Unk1: " << std::to_string(uint16_t((uint8_t)(theBytes >> 8) & 0xFF)) << '\n';
+#endif
+#if VERSION_STRING == Classic
+    sstext << " -ShapeShift Form: " << std::to_string(creature_target->getShapeShiftForm()) << '\n';
+    sstext << " -StandState Flag: " << std::to_string(creature_target->getStandStateFlags()) << '\n';
+#else
+    sstext << " -StandState Flag: " << std::to_string(creature_target->getStandStateFlags()) << '\n';
+    sstext << " -Animation Flag: " << std::to_string(creature_target->getAnimationFlags()) << '\n';
+#endif
     sstext << '\n';
 
-    theBytes = creature_target->getBytes2();
     sstext << "UNIT_FIELD_BYTES_2 are:" << '\n';
-    sstext << " -SheathType: " << uint16_t((uint8_t)theBytes & 0xFF) << '\n';
-    sstext << " -PvP Flag: " << uint16_t((uint8_t)(theBytes >> 8) & 0xFF) << '\n';
-    sstext << " -Pet Flag: " << uint16_t((uint8_t)(theBytes >> 16) & 0xFF) << '\n';
-    sstext << " -ShapeShift Form: " << uint16_t((uint8_t)(theBytes >> 24) & 0xFF) << '\n';
+    sstext << " -SheathType: " << std::to_string(creature_target->getSheathType()) << '\n';
+#if VERSION_STRING == Classic
+    const auto theBytes = creature_target->getBytes2();
+    sstext << " -Unk1: " << uint16_t((uint8_t)(theBytes >> 8) & 0xFF) << '\n';
+    sstext << " -Unk2: " << uint16_t((uint8_t)(theBytes >> 16) & 0xFF) << '\n';
+    sstext << " -Unk3: " << uint16_t((uint8_t)(theBytes >> 24) & 0xFF) << '\n';
+#else
+#if VERSION_STRING == TBC
+    sstext << " -Positive Aura Limit: " << std::to_string(creature_target->getPositiveAuraLimit()) << '\n';
+#else
+    sstext << " -PvP Flag: " << std::to_string(creature_target->getPvpFlags()) << '\n';
+#endif
+    sstext << " -Pet Flag: " << std::to_string(creature_target->getPetFlags()) << '\n';
+    sstext << " -ShapeShift Form: " << std::to_string(creature_target->getShapeShiftForm()) << '\n';
+#endif
     sstext << '\0';
 
     SystemMessage(m_session, "UNIT_FIELD_BYTES =================");
@@ -407,44 +432,48 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     std::string s = GetNpcFlagString(creature_target);
     GreenSystemMessage(m_session, "NpcFlags: %u%s", creature_target->getNpcFlags(), s.c_str());
 
+#if VERSION_STRING >= WotLK
     uint8_t pvp_flags = creature_target->getPvpFlags();
     GreenSystemMessage(m_session, "PvPFlags: %u", pvp_flags);
 
     for (uint32_t i = 0; i < numpvpflags; i++)
         if ((pvp_flags & UnitPvPFlagToName[i].Flag) != 0)
-            GreenSystemMessage(m_session, "%s", UnitPvPFlagToName[i].Name);
+            GreenSystemMessage(m_session, "%s", UnitPvPFlagToName[i].Name.data());
+#endif
 
+#if VERSION_STRING >= TBC
     uint8_t pet_flags = creature_target->getPetFlags();
     if (pet_flags != 0)
     {
         GreenSystemMessage(m_session, "PetFlags: %u", pet_flags);
         for (uint32_t i = 0; i < numpetflags; i++)
             if ((pet_flags & PetFlagToName[i].Flag) != 0)
-                GreenSystemMessage(m_session, "%s", PetFlagToName[i].Name);
+                GreenSystemMessage(m_session, "%s", PetFlagToName[i].Name.data());
     }
+#endif
 
     uint32_t unit_flags = creature_target->getUnitFlags();
     GreenSystemMessage(m_session, "UnitFlags: %u", unit_flags);
 
     for (uint32_t i = 0; i < numflags; i++)
         if ((unit_flags & UnitFlagToName[i].Flag) != 0)
-            GreenSystemMessage(m_session, "-- %s", UnitFlagToName[i].Name);
+            GreenSystemMessage(m_session, "-- %s", UnitFlagToName[i].Name.data());
 
 #if VERSION_STRING > Classic
     uint32_t unit_flags2 = creature_target->getUnitFlags2();
     GreenSystemMessage(m_session, "UnitFlags2: %u", unit_flags2);
-#endif
 
     for (uint32_t i = 0; i < numflags2; i++)
-        if ((unit_flags & UnitFlagToName2[i].Flag) != 0)
-            GreenSystemMessage(m_session, "-- %s", UnitFlagToName2[i].Name);
+        if ((unit_flags2 & UnitFlagToName2[i].Flag) != 0)
+            GreenSystemMessage(m_session, "-- %s", UnitFlagToName2[i].Name.data());
+#endif
 
     uint32_t dyn_flags = creature_target->getDynamicFlags();
     GreenSystemMessage(m_session, "UnitDynamicFlags: %u", dyn_flags);
 
     for (uint32_t i = 0; i < numdynflags; i++)
         if ((dyn_flags & UnitDynFlagToName[i].Flag) != 0)
-            GreenSystemMessage(m_session, "%s", UnitDynFlagToName[i].Name);
+            GreenSystemMessage(m_session, "%s", UnitDynFlagToName[i].Name.data());
 
     GreenSystemMessage(m_session, "=================================");
 

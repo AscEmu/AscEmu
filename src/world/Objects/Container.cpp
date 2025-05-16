@@ -321,6 +321,5 @@ bool Container::safeFullRemoveItemFromSlot(int16_t slot)
 uint32_t Container::getSlotCount() const { return containerData()->slot_count; }
 void Container::setSlotCount(uint32_t count) { write(containerData()->slot_count, count); }
 
-//\todo not used. is it really uint64_t (guid) or is it another value we want to send to the client?
 uint64_t Container::getSlot(uint16_t slot) const { return containerData()->item_slot[slot].guid; }
 void Container::setSlot(uint16_t slot, uint64_t guid) { write(containerData()->item_slot[slot].guid, guid); }

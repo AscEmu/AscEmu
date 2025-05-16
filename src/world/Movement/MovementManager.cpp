@@ -671,7 +671,7 @@ void MovementManager::moveLand(uint32_t id, LocationVector const& pos, Optional<
     MovementMgr::MoveSplineInit init(_owner);
     init.MoveTo(positionToVector3(pos), false);
 #if VERSION_STRING >= WotLK
-    init.SetAnimation(AnimationTier::Ground);
+    init.SetAnimation(ANIMATION_FLAG_GROUND);
 #endif
     if (velocity)
         init.SetVelocity(*velocity);
@@ -683,7 +683,7 @@ void MovementManager::moveTakeoff(uint32_t id, LocationVector const& pos, Option
     MovementMgr::MoveSplineInit init(_owner);
     init.MoveTo(positionToVector3(pos), false);
 #if VERSION_STRING >= WotLK
-    init.SetAnimation(AnimationTier::Hover);
+    init.SetAnimation(ANIMATION_FLAG_HOVER);
 #endif
     if (velocity)
         init.SetVelocity(*velocity);
@@ -831,7 +831,7 @@ void MovementManager::moveCirclePath(float x, float y, float z, float radius, bo
         init.SetFly();
         init.SetCyclic();
 #if VERSION_STRING >= WotLK
-        init.SetAnimation(AnimationTier::Hover);
+        init.SetAnimation(ANIMATION_FLAG_HOVER);
 #endif
     }
     else

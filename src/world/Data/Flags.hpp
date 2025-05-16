@@ -7,8 +7,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "AEVersion.hpp"
 
+#include <cstdint>
+
 #if VERSION_STRING == Classic
-enum TrainerSpellState
+enum TrainerSpellState : uint8_t
 {
     TRAINER_SPELL_GREEN                 = 0,
     TRAINER_SPELL_RED                   = 1,
@@ -16,7 +18,7 @@ enum TrainerSpellState
     TRAINER_SPELL_GREEN_DISABLED        = 10
 };
 
-enum ObjectUpdateFlags
+enum ObjectUpdateFlags : uint16_t
 {
     UPDATEFLAG_NONE                     = 0x0000,
     UPDATEFLAG_SELF                     = 0x0001,
@@ -31,7 +33,7 @@ enum ObjectUpdateFlags
 #endif
 
 #if VERSION_STRING == TBC
-enum TrainerSpellState
+enum TrainerSpellState : uint8_t
 {
     TRAINER_SPELL_GREEN                 = 0,
     TRAINER_SPELL_RED                   = 1,
@@ -39,7 +41,7 @@ enum TrainerSpellState
     TRAINER_SPELL_GREEN_DISABLED        = 10
 };
 
-enum ObjectUpdateFlags
+enum ObjectUpdateFlags : uint16_t
 {
     UPDATEFLAG_NONE                     = 0x0000,
     UPDATEFLAG_SELF                     = 0x0001,
@@ -54,7 +56,7 @@ enum ObjectUpdateFlags
 #endif
 
 #if VERSION_STRING == WotLK
-enum TrainerSpellState
+enum TrainerSpellState : uint8_t
 {
     TRAINER_SPELL_GREEN                 = 0,
     TRAINER_SPELL_RED                   = 1,
@@ -62,7 +64,7 @@ enum TrainerSpellState
     TRAINER_SPELL_GREEN_DISABLED        = 10
 };
 
-enum ObjectUpdateFlags
+enum ObjectUpdateFlags : uint16_t
 {
     UPDATEFLAG_NONE                     = 0x0000,
     UPDATEFLAG_SELF                     = 0x0001,
@@ -84,7 +86,7 @@ enum ObjectUpdateFlags
 #endif
 
 #if VERSION_STRING == Cata
-enum TrainerSpellState
+enum TrainerSpellState : uint8_t
 {
     TRAINER_SPELL_GRAY                  = 0,
     TRAINER_SPELL_GREEN                 = 1,
@@ -92,7 +94,7 @@ enum TrainerSpellState
     TRAINER_SPELL_GREEN_DISABLED        = 10
 };
 
-enum ObjectUpdateFlags
+enum ObjectUpdateFlags : uint32_t
 {
     UPDATEFLAG_NONE                     = 0x00000,
     UPDATEFLAG_SELF                     = 0x00001,
@@ -117,7 +119,7 @@ enum ObjectUpdateFlags
 #endif
 
 #if VERSION_STRING == Mop
-enum TrainerSpellState
+enum TrainerSpellState : uint8_t
 {
     TRAINER_SPELL_GRAY                  = 0,
     TRAINER_SPELL_GREEN                 = 1,
@@ -125,7 +127,7 @@ enum TrainerSpellState
     TRAINER_SPELL_GREEN_DISABLED        = 10
 };
 
-enum ObjectUpdateFlags
+enum ObjectUpdateFlags : uint16_t
 {
     UPDATEFLAG_NONE                     = 0x0000,
     UPDATEFLAG_SELF                     = 0x0001,

@@ -17,9 +17,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma pack(push, 1)
 
-union
+union player_bytes_union
 {
-    struct
+    struct parts
     {
         uint8_t skin_color;
         uint8_t face;
@@ -35,11 +35,11 @@ union
         };
     } s;
     uint32_t raw;
-} typedef player_bytes_union;
+};
 
-union
+union player_bytes_2_union
 {
-    struct
+    struct parts
     {
         union
         {
@@ -58,61 +58,60 @@ union
         uint8_t rest_state;
     } s;
     uint32_t raw;
-} typedef player_bytes_2_union;
-
-union
-{
-    struct
-    {
-        uint8_t gender;
-        uint8_t drunk_value;
-        uint8_t pvp_rank;
-        uint8_t arena_faction;
-    } s;
-    uint32_t raw;
-} typedef player_bytes_3_union;
-
-union
-{
-    struct
-    {
-        uint8_t flags; // not used
-        uint8_t rafLevel; // not used
-        uint8_t actionBarId;
-        uint8_t maxPvpRank; // not used
-    } s;
-    uint32_t raw;
-} typedef player_field_bytes_union;
-
-union
-{
-    struct
-    {
-        uint16_t overrideSpellId;
-        uint8_t ignorePowerRegenPredictionMask; // not used
-        uint8_t auraVision; //not used
-    } s;
-    uint32_t raw;
-} typedef player_field_bytes_2_union;
+};
 
 // Adjusted values.
 #if VERSION_STRING == Classic
-#define WOWPLAYER_QUEST_COUNT 20
-#define WOWPLAYER_VISIBLE_ITEM_COUNT 19
-#define WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT 7
+static inline constexpr uint8_t WOWPLAYER_QUEST_COUNT = 20;
+static inline constexpr uint8_t WOWPLAYER_VISIBLE_ITEM_COUNT = 19;
+static inline constexpr uint8_t WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT = 7;
+static inline constexpr uint8_t WOWPLAYER_INVENTORY_SLOT_COUNT = 23;
+static inline constexpr uint8_t WOWPLAYER_PACK_SLOT_COUNT = 16;
+static inline constexpr uint8_t WOWPLAYER_BANK_SLOT_COUNT = 24;
+static inline constexpr uint8_t WOWPLAYER_BANK_BAG_SLOT_COUNT = 6;
+static inline constexpr uint8_t WOWPLAYER_BUY_BACK_COUNT = 12;
+static inline constexpr uint8_t WOWPLAYER_KEYRING_SLOT_COUNT = 20;
+static inline constexpr uint8_t WOWPLAYER_SKILL_INFO_COUNT = 128;
+static inline constexpr uint8_t WOWPLAYER_EXPLORED_ZONES_COUNT = 64;
+static inline constexpr uint8_t WOWPLAYER_STAT_COUNT = 5;
+static inline constexpr uint8_t WOWPLAYER_SPELL_SCHOOL_COUNT = 7;
+static inline constexpr uint8_t WOWPLAYER_COMBAT_RATING_COUNT = 20;
 
-#define WOWPLAYER_INVENTORY_SLOT_COUNT 23
-#define WOWPLAYER_PACK_SLOT_COUNT 16
-// WOWPLAYER_BANK_SLOT_COUNT and WOWPLAYER_BANK_BAG_SLOT_COUNT are different to TBC. TODO: Verify
-#define WOWPLAYER_BANK_SLOT_COUNT 24
-#define WOWPLAYER_BANK_BAG_SLOT_COUNT 6
-#define WOWPLAYER_VENDOR_BUY_BACK_SLOT_COUNT 12
-#define WOWPLAYER_KEYRING_SLOT_COUNT 20
-#define WOWPLAYER_SKILL_INFO_COUNT 128
-#define WOWPLAYER_EXPLORED_ZONES_COUNT 64
-#define WOWPLAYER_STAT_COUNT 5
-#define WOWPLAYER_SPELL_SCHOOL_COUNT 7
-#define WOWPLAYER_COMBAT_RATING_COUNT 20
+union player_bytes_3_union
+{
+    struct parts
+    {
+        uint8_t gender;
+        uint8_t drunk_value;
+        uint8_t pvp_city_protector_rank; // not used
+        uint8_t pvp_rank;
+    } s;
+    uint32_t raw;
+};
+
+union player_field_bytes_union
+{
+    struct parts
+    {
+        uint8_t misc_flags;
+        uint8_t combo_points; // not used
+        uint8_t enabled_action_bars;
+        uint8_t max_pvp_rank; // not used
+    } s;
+    uint32_t raw;
+};
+
+union player_field_bytes_2_union
+{
+    struct parts
+    {
+        uint8_t unk0; // related to pvp
+        uint8_t aura_vision;
+        uint8_t unk2;
+        uint8_t unk3;
+    } s;
+    uint32_t raw;
+};
 
 struct WoWPlayer_Quest
 {
@@ -125,7 +124,7 @@ struct WoWPlayer_VisibleItem
 {
     uint64_t creator;
     uint32_t entry;
-    uint32_t enchantment[WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT];
+    std::array<uint32_t, WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT> enchantment;
     uint32_t properties;
     uint32_t padding;
 };
@@ -151,20 +150,20 @@ struct WoWPlayer : WoWUnit
     player_bytes_3_union player_bytes_3;
     uint32_t duel_team;
     uint32_t guild_timestamp;
-    WoWPlayer_Quest quests[WOWPLAYER_QUEST_COUNT];
-    WoWPlayer_VisibleItem visible_items[WOWPLAYER_VISIBLE_ITEM_COUNT];
+    std::array<WoWPlayer_Quest, WOWPLAYER_QUEST_COUNT> quests;
+    std::array<WoWPlayer_VisibleItem, WOWPLAYER_VISIBLE_ITEM_COUNT> visible_items;
     // Current player fields say long - client memory dump says int.
-    uint64_t inventory_slot[WOWPLAYER_INVENTORY_SLOT_COUNT];
-    uint64_t pack_slot[WOWPLAYER_PACK_SLOT_COUNT];
-    uint64_t bank_slot[WOWPLAYER_BANK_SLOT_COUNT];
-    uint64_t bank_bag_slot[WOWPLAYER_BANK_BAG_SLOT_COUNT];
-    uint64_t vendor_buy_back_slot[WOWPLAYER_VENDOR_BUY_BACK_SLOT_COUNT];
-    uint64_t key_ring_slot[WOWPLAYER_KEYRING_SLOT_COUNT];
+    std::array<uint64_t, WOWPLAYER_INVENTORY_SLOT_COUNT> inventory_slot;
+    std::array<uint64_t, WOWPLAYER_PACK_SLOT_COUNT> pack_slot;
+    std::array<uint64_t, WOWPLAYER_BANK_SLOT_COUNT> bank_slot;
+    std::array<uint64_t, WOWPLAYER_BANK_BAG_SLOT_COUNT> bank_bag_slot;
+    std::array<uint64_t, WOWPLAYER_BUY_BACK_COUNT> vendor_buy_back_slot;
+    std::array<uint64_t, WOWPLAYER_KEYRING_SLOT_COUNT> key_ring_slot;
     uint64_t farsight_guid;
     uint64_t field_combo_target;
     uint32_t xp;
     uint32_t next_level_xp;
-    WoWPlayer_SkillInfo skill_info[WOWPLAYER_SKILL_INFO_COUNT];
+    std::array<WoWPlayer_SkillInfo, WOWPLAYER_SKILL_INFO_COUNT> skill_info;
     uint32_t character_points_1;
     uint32_t character_points_2;
     uint32_t track_creatures;
@@ -174,22 +173,22 @@ struct WoWPlayer : WoWUnit
     float parry_pct;
     float crit_pct;
     float ranged_crit_pct;
-    uint32_t explored_zones[WOWPLAYER_EXPLORED_ZONES_COUNT];
+    std::array<uint32_t, WOWPLAYER_EXPLORED_ZONES_COUNT> explored_zones;
     uint32_t rest_state_xp;
     uint32_t field_coinage;
-    uint32_t pos_stat[WOWPLAYER_STAT_COUNT];
-    uint32_t neg_stat[WOWPLAYER_STAT_COUNT];
-    uint32_t resistance_buff_mod_positive[WOWPLAYER_SPELL_SCHOOL_COUNT];
-    uint32_t resistance_buff_mod_negative[WOWPLAYER_SPELL_SCHOOL_COUNT];
-    uint32_t field_mod_damage_done_positive[WOWPLAYER_SPELL_SCHOOL_COUNT];
-    uint32_t field_mod_damage_done_negative[WOWPLAYER_SPELL_SCHOOL_COUNT];
-    float field_mod_damage_done_pct[WOWPLAYER_SPELL_SCHOOL_COUNT];
+    std::array<uint32_t, WOWPLAYER_STAT_COUNT> pos_stat;
+    std::array<uint32_t, WOWPLAYER_STAT_COUNT> neg_stat;
+    std::array<uint32_t, WOWPLAYER_SPELL_SCHOOL_COUNT> resistance_buff_mod_positive;
+    std::array<uint32_t, WOWPLAYER_SPELL_SCHOOL_COUNT> resistance_buff_mod_negative;
+    std::array<uint32_t, WOWPLAYER_SPELL_SCHOOL_COUNT> field_mod_damage_done_positive;
+    std::array<uint32_t, WOWPLAYER_SPELL_SCHOOL_COUNT> field_mod_damage_done_negative;
+    std::array<float, WOWPLAYER_SPELL_SCHOOL_COUNT> field_mod_damage_done_pct;
     player_field_bytes_union player_field_bytes;
     uint32_t ammo_id;
     uint32_t self_resurrection_spell;
     uint32_t field_pvp_medals;
-    uint32_t field_buy_back_price[WOWPLAYER_VENDOR_BUY_BACK_SLOT_COUNT];
-    uint32_t field_buy_back_timestamp[WOWPLAYER_VENDOR_BUY_BACK_SLOT_COUNT];
+    std::array<uint32_t, WOWPLAYER_BUY_BACK_COUNT> field_buy_back_price;
+    std::array<uint32_t, WOWPLAYER_BUY_BACK_COUNT> field_buy_back_timestamp;
     uint32_t field_session_kills;
     uint32_t field_yesterday_kills;
     uint32_t field_last_week_kills;
@@ -202,27 +201,62 @@ struct WoWPlayer : WoWUnit
     uint32_t field_last_week_rank;
     player_field_bytes_2_union player_field_bytes_2;
     uint32_t field_watched_faction_idx;
-    uint32_t field_combat_rating[WOWPLAYER_COMBAT_RATING_COUNT];
+    std::array<uint32_t, WOWPLAYER_COMBAT_RATING_COUNT> field_combat_rating;
 };
 #elif VERSION_STRING == TBC
-#define WOWPLAYER_QUEST_COUNT 25
-#define WOWPLAYER_VISIBLE_ITEM_COUNT 19
-#define WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT 11
-#define WOWPLAYER_INVENTORY_SLOT_COUNT 23
-#define WOWPLAYER_PACK_SLOT_COUNT 16
-#define WOWPLAYER_BANK_SLOT_COUNT 28
-#define WOWPLAYER_BANK_BAG_SLOT_COUNT 7
-#define WOWPLAYER_VENDOR_BUY_BACK_SLOT_COUNT 12
-#define WOWPLAYER_KEYRING_SLOT_COUNT 32
-#define WOWPLAYER_VANITY_PET_SLOT_COUNT 18
-#define WOWPLAYER_SKILL_INFO_COUNT 128
-#define WOWPLAYER_SPELL_SCHOOL_COUNT 7
-#define WOWPLAYER_EXPLORED_ZONES_COUNT 128
-#define WOWPLAYER_BUY_BACK_COUNT 12
-#define WOWPLAYER_COMBAT_RATING_COUNT 24
-#define WOWPLAYER_ARENA_TEAM_SLOTS 3
-#define WOWPLAYER_DAILY_QUESTS_COUNT 25
-#define WOWPLAYER_KNOWN_TITLES_SIZE 1
+static inline constexpr uint8_t WOWPLAYER_QUEST_COUNT = 25;
+static inline constexpr uint8_t WOWPLAYER_VISIBLE_ITEM_COUNT = 19;
+static inline constexpr uint8_t WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT = 11;
+static inline constexpr uint8_t WOWPLAYER_INVENTORY_SLOT_COUNT = 23;
+static inline constexpr uint8_t WOWPLAYER_PACK_SLOT_COUNT = 16;
+static inline constexpr uint8_t WOWPLAYER_BANK_SLOT_COUNT = 28;
+static inline constexpr uint8_t WOWPLAYER_BANK_BAG_SLOT_COUNT = 7;
+static inline constexpr uint8_t WOWPLAYER_KEYRING_SLOT_COUNT = 32;
+static inline constexpr uint8_t WOWPLAYER_VANITY_PET_SLOT_COUNT = 18;
+static inline constexpr uint8_t WOWPLAYER_SKILL_INFO_COUNT = 128;
+static inline constexpr uint8_t WOWPLAYER_SPELL_SCHOOL_COUNT = 7;
+static inline constexpr uint8_t WOWPLAYER_EXPLORED_ZONES_COUNT = 128;
+static inline constexpr uint8_t WOWPLAYER_BUY_BACK_COUNT = 12;
+static inline constexpr uint8_t WOWPLAYER_COMBAT_RATING_COUNT = 24;
+static inline constexpr uint8_t WOWPLAYER_ARENA_TEAM_SLOTS = 3;
+static inline constexpr uint8_t WOWPLAYER_DAILY_QUESTS_COUNT = 25;
+static inline constexpr uint8_t WOWPLAYER_KNOWN_TITLES_SIZE = 1;
+
+union player_bytes_3_union
+{
+    struct parts
+    {
+        uint8_t gender;
+        uint8_t drunk_value;
+        uint8_t pvp_rank;
+        uint8_t arena_faction;
+    } s;
+    uint32_t raw;
+};
+
+union player_field_bytes_union
+{
+    struct parts
+    {
+        uint8_t misc_flags;
+        uint8_t raf_level; // not used
+        uint8_t enabled_action_bars;
+        uint8_t max_pvp_rank; // not used
+    } s;
+    uint32_t raw;
+};
+
+union player_field_bytes_2_union
+{
+    struct parts
+    {
+        uint8_t unk0; // same as classic?
+        uint8_t aura_vision;
+        uint8_t unk2;
+        uint8_t unk3;
+    } s;
+    uint32_t raw;
+};
 
 struct WoWPlayer_Quest
 {
@@ -236,7 +270,7 @@ struct WoWPlayer_VisibleItem
 {
     uint64_t creator;
     uint32_t entry;
-    uint32_t enchantment[WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT];
+    std::array<uint32_t, WOWPLAYER_VISIBLE_ITEM_UNK0_COUNT> enchantment;
     uint32_t properties;
     uint32_t padding;
 };
@@ -272,23 +306,23 @@ struct WoWPlayer : WoWUnit
     player_bytes_3_union player_bytes_3;
     uint32_t duel_team;
     uint32_t guild_timestamp;
-    WoWPlayer_Quest quests[WOWPLAYER_QUEST_COUNT];
-    WoWPlayer_VisibleItem visible_items[WOWPLAYER_VISIBLE_ITEM_COUNT];
+    std::array<WoWPlayer_Quest, WOWPLAYER_QUEST_COUNT> quests;
+    std::array<WoWPlayer_VisibleItem, WOWPLAYER_VISIBLE_ITEM_COUNT> visible_items;
     uint32_t chosen_title;
     uint32_t player_padding_0;
     // Current player fields say long - client memory dump says int.
-    uint64_t inventory_slot[WOWPLAYER_INVENTORY_SLOT_COUNT];
-    uint64_t pack_slot[WOWPLAYER_PACK_SLOT_COUNT];
-    uint64_t bank_slot[WOWPLAYER_BANK_SLOT_COUNT];
-    uint64_t bank_bag_slot[WOWPLAYER_BANK_BAG_SLOT_COUNT];
-    uint64_t vendor_buy_back_slot[WOWPLAYER_VENDOR_BUY_BACK_SLOT_COUNT];
-    uint64_t key_ring_slot[WOWPLAYER_KEYRING_SLOT_COUNT];
-    uint64_t vanity_pet_slot[WOWPLAYER_VANITY_PET_SLOT_COUNT];
+    std::array<uint64_t, WOWPLAYER_INVENTORY_SLOT_COUNT> inventory_slot;
+    std::array<uint64_t, WOWPLAYER_PACK_SLOT_COUNT> pack_slot;
+    std::array<uint64_t, WOWPLAYER_BANK_SLOT_COUNT> bank_slot;
+    std::array<uint64_t, WOWPLAYER_BANK_BAG_SLOT_COUNT> bank_bag_slot;
+    std::array<uint64_t, WOWPLAYER_BUY_BACK_COUNT> vendor_buy_back_slot;
+    std::array<uint64_t, WOWPLAYER_KEYRING_SLOT_COUNT> key_ring_slot;
+    std::array<uint64_t, WOWPLAYER_VANITY_PET_SLOT_COUNT> vanity_pet_slot;
     uint64_t farsight_guid;
-    uint64_t field_known_titles[WOWPLAYER_KNOWN_TITLES_SIZE];
+    std::array<uint64_t, WOWPLAYER_KNOWN_TITLES_SIZE> field_known_titles;
     uint32_t xp;
     uint32_t next_level_xp;
-    WoWPlayer_SkillInfo skill_info[WOWPLAYER_SKILL_INFO_COUNT];
+    std::array<WoWPlayer_SkillInfo, WOWPLAYER_SKILL_INFO_COUNT> skill_info;
     uint32_t character_points_1;
     uint32_t character_points_2;
     uint32_t track_creatures;
@@ -301,14 +335,14 @@ struct WoWPlayer : WoWUnit
     float crit_pct;
     float ranged_crit_pct;
     float offhand_crit_pct;
-    float spell_crit_pct[WOWPLAYER_SPELL_SCHOOL_COUNT];
+    std::array<float, WOWPLAYER_SPELL_SCHOOL_COUNT> spell_crit_pct;
     uint32_t shield_block;
-    uint32_t explored_zones[WOWPLAYER_EXPLORED_ZONES_COUNT];
+    std::array<uint32_t, WOWPLAYER_EXPLORED_ZONES_COUNT> explored_zones;
     uint32_t rest_state_xp;
     uint32_t field_coinage;
-    uint32_t field_mod_damage_done_positive[WOWPLAYER_SPELL_SCHOOL_COUNT];
-    uint32_t field_mod_damage_done_negative[WOWPLAYER_SPELL_SCHOOL_COUNT];
-    float field_mod_damage_done_pct[WOWPLAYER_SPELL_SCHOOL_COUNT];
+    std::array<uint32_t, WOWPLAYER_SPELL_SCHOOL_COUNT> field_mod_damage_done_positive;
+    std::array<uint32_t, WOWPLAYER_SPELL_SCHOOL_COUNT> field_mod_damage_done_negative;
+    std::array<float, WOWPLAYER_SPELL_SCHOOL_COUNT> field_mod_damage_done_pct;
     uint32_t field_mod_healing_done;
     uint32_t field_mod_target_resistance;
     uint32_t field_mod_target_physical_resistance;
@@ -316,51 +350,86 @@ struct WoWPlayer : WoWUnit
     uint32_t ammo_id;
     uint32_t self_resurrection_spell;
     uint32_t field_pvp_medals;
-    uint32_t field_buy_back_price[WOWPLAYER_BUY_BACK_COUNT];
-    uint32_t field_buy_back_timestamp[WOWPLAYER_BUY_BACK_COUNT];
-    union
+    std::array<uint32_t, WOWPLAYER_BUY_BACK_COUNT> field_buy_back_price;
+    std::array<uint32_t, WOWPLAYER_BUY_BACK_COUNT> field_buy_back_timestamp;
+    union field_kills_union
     {
-        struct
+        struct parts
         {
             uint16_t kills_today;
             uint16_t kills_yesterday;
         } kills_field_parts;
-        uint32_t field_kills;
-    };
+        uint32_t raw;
+    } field_kills;
     uint32_t field_contribution_today;
     uint32_t field_contribution_yesterday;
     uint32_t field_lifetime_honorable_kills;
     player_field_bytes_2_union player_field_bytes_2;
     uint32_t field_watched_faction_idx;
-    uint32_t field_combat_rating[WOWPLAYER_COMBAT_RATING_COUNT];
-    WoWPlayer_ArenaTeamInfo field_arena_team_info[WOWPLAYER_ARENA_TEAM_SLOTS];
+    std::array<uint32_t, WOWPLAYER_COMBAT_RATING_COUNT> field_combat_rating;
+    std::array<WoWPlayer_ArenaTeamInfo, WOWPLAYER_ARENA_TEAM_SLOTS> field_arena_team_info;
     uint32_t field_honor_currency;
     uint32_t field_arena_currency;
     float field_mod_mana_regen;
     float field_mod_mana_regen_interrupt;
     uint32_t field_max_level;
-    uint32_t field_daily_quests[WOWPLAYER_DAILY_QUESTS_COUNT];
+    std::array<uint32_t, WOWPLAYER_DAILY_QUESTS_COUNT> field_daily_quests;
 };
 #elif VERSION_STRING == WotLK
-#define WOWPLAYER_QUEST_COUNT 25
-#define WOWPLAYER_VISIBLE_ITEM_COUNT 19
-#define WOWPLAYER_EXPLORED_ZONES_COUNT 128
-#define WOWPLAYER_INVENTORY_SLOT_COUNT 23
-#define WOWPLAYER_PACK_SLOT_COUNT 16
-#define WOWPLAYER_BANK_SLOT_COUNT 28
-#define WOWPLAYER_BANK_BAG_SLOT_COUNT 7
-#define WOWPLAYER_KEYRING_SLOT_COUNT 32
-#define WOWPLAYER_CURRENCY_TOKEN_SLOT_COUNT 32
-#define WOWPLAYER_SKILL_INFO_COUNT 128
-#define WOWPLAYER_SPELL_SCHOOL_COUNT 7
-#define WOWPLAYER_BUY_BACK_COUNT 12
-#define WOWPLAYER_COMBAT_RATING_COUNT 25
-#define WOWPLAYER_ARENA_TEAM_SLOTS 3
-#define WOWPLAYER_DAILY_QUESTS_COUNT 25
-#define WOWPLAYER_RUNE_REGEN_COUNT 4
-#define WOWPLAYER_NO_REAGENT_COST_COUNT 3
-#define WOWPLAYER_GLYPH_SLOT_COUNT 6
-#define WOWPLAYER_KNOWN_TITLES_SIZE 3
+static inline constexpr uint8_t WOWPLAYER_QUEST_COUNT = 25;
+static inline constexpr uint8_t WOWPLAYER_VISIBLE_ITEM_COUNT = 19;
+static inline constexpr uint8_t WOWPLAYER_EXPLORED_ZONES_COUNT = 128;
+static inline constexpr uint8_t WOWPLAYER_INVENTORY_SLOT_COUNT = 23;
+static inline constexpr uint8_t WOWPLAYER_PACK_SLOT_COUNT = 16;
+static inline constexpr uint8_t WOWPLAYER_BANK_SLOT_COUNT = 28;
+static inline constexpr uint8_t WOWPLAYER_BANK_BAG_SLOT_COUNT = 7;
+static inline constexpr uint8_t WOWPLAYER_KEYRING_SLOT_COUNT = 32;
+static inline constexpr uint8_t WOWPLAYER_CURRENCY_TOKEN_SLOT_COUNT = 32;
+static inline constexpr uint8_t WOWPLAYER_SKILL_INFO_COUNT = 128;
+static inline constexpr uint8_t WOWPLAYER_SPELL_SCHOOL_COUNT = 7;
+static inline constexpr uint8_t WOWPLAYER_BUY_BACK_COUNT = 12;
+static inline constexpr uint8_t WOWPLAYER_COMBAT_RATING_COUNT = 25;
+static inline constexpr uint8_t WOWPLAYER_ARENA_TEAM_SLOTS = 3;
+static inline constexpr uint8_t WOWPLAYER_DAILY_QUESTS_COUNT = 25;
+static inline constexpr uint8_t WOWPLAYER_RUNE_REGEN_COUNT = 4;
+static inline constexpr uint8_t WOWPLAYER_NO_REAGENT_COST_COUNT = 3;
+static inline constexpr uint8_t WOWPLAYER_GLYPH_SLOT_COUNT = 6;
+static inline constexpr uint8_t WOWPLAYER_KNOWN_TITLES_SIZE = 3;
+
+union player_bytes_3_union
+{
+    struct parts
+    {
+        uint8_t gender;
+        uint8_t drunk_value;
+        uint8_t pvp_rank;
+        uint8_t arena_faction;
+    } s;
+    uint32_t raw;
+};
+
+union player_field_bytes_union
+{
+    struct parts
+    {
+        uint8_t misc_flags;
+        uint8_t raf_level; // not used
+        uint8_t enabled_action_bars;
+        uint8_t max_pvp_rank; // not used
+    } s;
+    uint32_t raw;
+};
+
+union player_field_bytes_2_union
+{
+    struct parts
+    {
+        uint16_t override_spell_id; // not used
+        uint8_t ignore_power_regen_prediction_mask; // not used
+        uint8_t aura_vision;
+    } s;
+    uint32_t raw;
+};
 
 struct WoWPlayer_Quest
 {
@@ -373,15 +442,15 @@ struct WoWPlayer_Quest
 struct WoWPlayer_VisibleItem
 {
     uint32_t entry;
-    union
+    union enchantment_union
     {
-        struct
+        struct parts
         {
             uint16_t perm_enchantment;
             uint16_t temp_enchantment;
         } enchantment_field_parts;
-        uint16_t enchantment[2];
-    };
+        std::array<uint16_t, 2> raw;
+    } enchantment;
 };
 
 struct WoWPlayer_ArenaTeamInfo
@@ -416,24 +485,24 @@ struct WoWPlayer : WoWUnit
     player_bytes_3_union player_bytes_3;
     uint32_t duel_team;
     uint32_t guild_timestamp;
-    WoWPlayer_Quest quests[WOWPLAYER_QUEST_COUNT];
-    WoWPlayer_VisibleItem visible_items[WOWPLAYER_VISIBLE_ITEM_COUNT];
+    std::array<WoWPlayer_Quest, WOWPLAYER_QUEST_COUNT> quests;
+    std::array<WoWPlayer_VisibleItem, WOWPLAYER_VISIBLE_ITEM_COUNT> visible_items;
     uint32_t chosen_title;
     uint32_t inebriation;
     uint32_t player_padding_0;
-    uint64_t inventory_slot[WOWPLAYER_INVENTORY_SLOT_COUNT];
-    uint64_t pack_slot[WOWPLAYER_PACK_SLOT_COUNT];
-    uint64_t bank_slot[WOWPLAYER_BANK_SLOT_COUNT];
-    uint64_t bank_bag_slot[WOWPLAYER_BANK_BAG_SLOT_COUNT];
-    uint64_t vendor_buy_back_slot[WOWPLAYER_BUY_BACK_COUNT];
-    uint64_t key_ring_slot[WOWPLAYER_KEYRING_SLOT_COUNT];
-    uint64_t currencytoken_slot[WOWPLAYER_CURRENCY_TOKEN_SLOT_COUNT];
+    std::array<uint64_t, WOWPLAYER_INVENTORY_SLOT_COUNT> inventory_slot;
+    std::array<uint64_t, WOWPLAYER_PACK_SLOT_COUNT> pack_slot;
+    std::array<uint64_t, WOWPLAYER_BANK_SLOT_COUNT> bank_slot;
+    std::array<uint64_t, WOWPLAYER_BANK_BAG_SLOT_COUNT> bank_bag_slot;
+    std::array<uint64_t, WOWPLAYER_BUY_BACK_COUNT> vendor_buy_back_slot;
+    std::array<uint64_t, WOWPLAYER_KEYRING_SLOT_COUNT> key_ring_slot;
+    std::array<uint64_t, WOWPLAYER_CURRENCY_TOKEN_SLOT_COUNT> currencytoken_slot;
     uint64_t farsight_guid;
-    uint64_t field_known_titles[WOWPLAYER_KNOWN_TITLES_SIZE];
+    std::array<uint64_t, WOWPLAYER_KNOWN_TITLES_SIZE> field_known_titles;
     uint64_t field_known_currencies;
     uint32_t xp;
     uint32_t next_level_xp;
-    WoWPlayer_SkillInfo skill_info[WOWPLAYER_SKILL_INFO_COUNT];
+    std::array<WoWPlayer_SkillInfo, WOWPLAYER_SKILL_INFO_COUNT> skill_info;
     uint32_t character_points_1;
     uint32_t character_points_2;
     uint32_t track_creatures;
@@ -446,15 +515,15 @@ struct WoWPlayer : WoWUnit
     float crit_pct;
     float ranged_crit_pct;
     float offhand_crit_pct;
-    float spell_crit_pct[WOWPLAYER_SPELL_SCHOOL_COUNT];
+    std::array<float, WOWPLAYER_SPELL_SCHOOL_COUNT> spell_crit_pct;
     uint32_t shield_block;
     float shield_block_crit_pct;
-    uint32_t explored_zones[WOWPLAYER_EXPLORED_ZONES_COUNT];
+    std::array<uint32_t, WOWPLAYER_EXPLORED_ZONES_COUNT> explored_zones;
     uint32_t rest_state_xp;
     uint32_t field_coinage;
-    uint32_t field_mod_damage_done_positive[WOWPLAYER_SPELL_SCHOOL_COUNT];
-    uint32_t field_mod_damage_done_negative[WOWPLAYER_SPELL_SCHOOL_COUNT];
-    float field_mod_damage_done_pct[WOWPLAYER_SPELL_SCHOOL_COUNT];
+    std::array<uint32_t, WOWPLAYER_SPELL_SCHOOL_COUNT> field_mod_damage_done_positive;
+    std::array<uint32_t, WOWPLAYER_SPELL_SCHOOL_COUNT> field_mod_damage_done_negative;
+    std::array<float, WOWPLAYER_SPELL_SCHOOL_COUNT> field_mod_damage_done_pct;
     uint32_t field_mod_healing_done;
     uint32_t field_mod_healing_pct;
     uint32_t field_mod_healing_done_pct;
@@ -464,53 +533,93 @@ struct WoWPlayer : WoWUnit
     uint32_t ammo_id;
     uint32_t self_resurrection_spell;
     uint32_t field_pvp_medals;
-    uint32_t field_buy_back_price[WOWPLAYER_BUY_BACK_COUNT];
-    uint32_t field_buy_back_timestamp[WOWPLAYER_BUY_BACK_COUNT];
-    union
+    std::array<uint32_t, WOWPLAYER_BUY_BACK_COUNT> field_buy_back_price;
+    std::array<uint32_t, WOWPLAYER_BUY_BACK_COUNT> field_buy_back_timestamp;
+    union field_kills_union
     {
-        struct
+        struct parts
         {
             uint16_t kills_today;
             uint16_t kills_yesterday;
         } kills_field_parts;
-        uint32_t field_kills;
-    };
+        uint32_t raw;
+    } field_kills;
     uint32_t field_contribution_today;
     uint32_t field_contribution_yesterday;
     uint32_t field_lifetime_honorable_kills;
     player_field_bytes_2_union player_field_bytes_2;
     uint32_t field_watched_faction_idx;
-    uint32_t field_combat_rating[WOWPLAYER_COMBAT_RATING_COUNT];
-    WoWPlayer_ArenaTeamInfo field_arena_team_info[WOWPLAYER_ARENA_TEAM_SLOTS];
+    std::array<uint32_t, WOWPLAYER_COMBAT_RATING_COUNT> field_combat_rating;
+    std::array<WoWPlayer_ArenaTeamInfo, WOWPLAYER_ARENA_TEAM_SLOTS> field_arena_team_info;
     uint32_t field_honor_currency;
     uint32_t field_arena_currency;
     uint32_t field_max_level;
-    uint32_t field_daily_quests[WOWPLAYER_DAILY_QUESTS_COUNT];
-    float rune_regen[WOWPLAYER_RUNE_REGEN_COUNT];
-    uint32_t no_reagent_cost[WOWPLAYER_NO_REAGENT_COST_COUNT];
-    uint32_t field_glyph_slots[WOWPLAYER_GLYPH_SLOT_COUNT];
-    uint32_t field_glyphs[WOWPLAYER_GLYPH_SLOT_COUNT];
+    std::array<uint32_t, WOWPLAYER_DAILY_QUESTS_COUNT> field_daily_quests;
+    std::array<float, WOWPLAYER_RUNE_REGEN_COUNT> rune_regen;
+    std::array<uint32_t, WOWPLAYER_NO_REAGENT_COST_COUNT> no_reagent_cost;
+    std::array<uint32_t, WOWPLAYER_GLYPH_SLOT_COUNT> field_glyph_slots;
+    std::array<uint32_t, WOWPLAYER_GLYPH_SLOT_COUNT> field_glyphs;
     uint32_t glyphs_enabled;
     uint32_t pet_spell_power;
 };
 #elif VERSION_STRING == Cata
-#define WOWPLAYER_EXPLORED_ZONES_COUNT 156
-#define WOWPLAYER_SPELL_SCHOOL_COUNT 7
-#define WOWPLAYER_BUY_BACK_COUNT 12
-#define WOWPLAYER_ARENA_TEAM_SLOTS 3
-#define WOWPLAYER_DAILY_QUESTS_COUNT 25
-#define WOWPLAYER_QUEST_COUNT 50
-#define WOWPLAYER_VISIBLE_ITEM_COUNT 19
-#define WOWPLAYER_INVENTORY_SLOT_COUNT 23
-#define WOWPLAYER_PACK_SLOT_COUNT 16
-#define WOWPLAYER_BANK_SLOT_COUNT 28
-#define WOWPLAYER_BANK_BAG_SLOT_COUNT 7
-#define WOWPLAYER_KEYRING_SLOT_COUNT 32
-#define WOWPLAYER_CURRENCY_TOKEN_SLOT_COUNT 32
-#define WOWPLAYER_NO_REAGENT_COST_COUNT 3
-#define WOWPLAYER_GLYPH_SLOT_COUNT 9
-#define WOWPLAYER_KNOWN_TITLES_SIZE 4
-#define WOWPLAYER_SKILL_INFO_COUNT 128
+static inline constexpr uint8_t WOWPLAYER_EXPLORED_ZONES_COUNT = 156;
+static inline constexpr uint8_t WOWPLAYER_WEAPON_DMG_MULTIPLIER_COUNT = 3;
+static inline constexpr uint8_t WOWPLAYER_SPELL_SCHOOL_COUNT = 7;
+static inline constexpr uint8_t WOWPLAYER_BUY_BACK_COUNT = 12;
+static inline constexpr uint8_t WOWPLAYER_ARENA_TEAM_SLOTS = 3;
+static inline constexpr uint8_t WOWPLAYER_DAILY_QUESTS_COUNT = 25;
+static inline constexpr uint8_t WOWPLAYER_QUEST_COUNT = 50;
+static inline constexpr uint8_t WOWPLAYER_VISIBLE_ITEM_COUNT = 19;
+static inline constexpr uint8_t WOWPLAYER_INVENTORY_SLOT_COUNT = 23;
+static inline constexpr uint8_t WOWPLAYER_PACK_SLOT_COUNT = 16;
+static inline constexpr uint8_t WOWPLAYER_BANK_SLOT_COUNT = 28;
+static inline constexpr uint8_t WOWPLAYER_BANK_BAG_SLOT_COUNT = 7;
+static inline constexpr uint8_t WOWPLAYER_KEYRING_SLOT_COUNT = 32;
+static inline constexpr uint8_t WOWPLAYER_CURRENCY_TOKEN_SLOT_COUNT = 32;
+static inline constexpr uint8_t WOWPLAYER_COMBAT_RATING_COUNT = 26;
+static inline constexpr uint8_t WOWPLAYER_RUNE_REGEN_COUNT = 4;
+static inline constexpr uint8_t WOWPLAYER_NO_REAGENT_COST_COUNT = 3;
+static inline constexpr uint8_t WOWPLAYER_GLYPH_SLOT_COUNT = 9;
+static inline constexpr uint8_t WOWPLAYER_KNOWN_TITLES_SIZE = 4;
+static inline constexpr uint8_t WOWPLAYER_SKILL_INFO_COUNT = 128;
+static inline constexpr uint8_t WOWPLAYER_RESEARCHING_COUNT = 8;
+static inline constexpr uint8_t WOWPLAYER_PROFESSION_SKILL_COUNT = 2;
+
+union player_bytes_3_union
+{
+    struct parts
+    {
+        uint8_t gender;
+        uint8_t drunk_value;
+        uint8_t pvp_rank;
+        uint8_t arena_faction;
+    } s;
+    uint32_t raw;
+};
+
+union player_field_bytes_union
+{
+    struct parts
+    {
+        uint8_t misc_flags;
+        uint8_t raf_level; // not used
+        uint8_t enabled_action_bars;
+        uint8_t max_pvp_rank; // not used
+    } s;
+    uint32_t raw;
+};
+
+union player_field_bytes_2_union
+{
+    struct parts
+    {
+        uint16_t override_spell_id; // not used
+        uint8_t ignore_power_regen_prediction_mask; // not used
+        uint8_t aura_vision;
+    } s;
+    uint32_t raw;
+};
 
 struct WoWPlayer_Quest
 {
@@ -523,15 +632,15 @@ struct WoWPlayer_Quest
 struct WoWPlayer_VisibleItem
 {
     uint32_t entry;
-    union
+    union enchantment_union
     {
-        struct
+        struct parts
         {
             uint16_t perm_enchantment;
             uint16_t temp_enchantment;
         } enchantment_field_parts;
-        uint16_t enchantment[2];
-    };
+        std::array<uint16_t, 2> raw;
+    } enchantment;
 };
 
 struct WoWPlayer_ArenaTeamInfo
@@ -557,33 +666,33 @@ struct WoWPlayer : WoWUnit
     player_bytes_3_union player_bytes_3;
     uint32_t duel_team;
     uint32_t guild_timestamp;
-    WoWPlayer_Quest quests[WOWPLAYER_QUEST_COUNT];
-    WoWPlayer_VisibleItem visible_items[WOWPLAYER_VISIBLE_ITEM_COUNT];
+    std::array<WoWPlayer_Quest, WOWPLAYER_QUEST_COUNT> quests;
+    std::array<WoWPlayer_VisibleItem, WOWPLAYER_VISIBLE_ITEM_COUNT> visible_items;
     uint32_t chosen_title;
     uint32_t inebriation;
     uint32_t player_padding_0;
-    uint64_t inventory_slot[WOWPLAYER_INVENTORY_SLOT_COUNT];
-    uint64_t pack_slot[WOWPLAYER_PACK_SLOT_COUNT];
-    uint64_t bank_slot[WOWPLAYER_BANK_SLOT_COUNT];
-    uint64_t bank_bag_slot[WOWPLAYER_BANK_BAG_SLOT_COUNT];
-    uint64_t vendor_buy_back_slot[WOWPLAYER_BUY_BACK_COUNT];
+    std::array<uint64_t, WOWPLAYER_INVENTORY_SLOT_COUNT> inventory_slot;
+    std::array<uint64_t, WOWPLAYER_PACK_SLOT_COUNT> pack_slot;
+    std::array<uint64_t, WOWPLAYER_BANK_SLOT_COUNT> bank_slot;
+    std::array<uint64_t, WOWPLAYER_BANK_BAG_SLOT_COUNT> bank_bag_slot;
+    std::array<uint64_t, WOWPLAYER_BUY_BACK_COUNT> vendor_buy_back_slot;
     uint64_t farsight_guid;
-    uint64_t field_known_titles[WOWPLAYER_KNOWN_TITLES_SIZE];
+    std::array<uint64_t, WOWPLAYER_KNOWN_TITLES_SIZE> field_known_titles;
     uint32_t xp;
     uint32_t next_level_xp;
 
-    union
+    union skill_info_union
     {
-        struct
+        struct parts
         {
-            uint32_t skill_line[64];
-            uint32_t skill_step[64];
-            uint32_t skill_rank[64];
-            uint32_t skill_max_rank[64];
-            uint32_t skill_mod[64];
-            uint32_t skill_talent[64];
+            std::array<uint32_t, 64> skill_line;
+            std::array<uint32_t, 64> skill_step;
+            std::array<uint32_t, 64> skill_rank;
+            std::array<uint32_t, 64> skill_max_rank;
+            std::array<uint32_t, 64> skill_mod;
+            std::array<uint32_t, 64> skill_talent;
         } skill_info_parts;
-    };
+    } field_skill_info;
 
     uint32_t character_points_1;
     uint32_t track_creatures;
@@ -596,20 +705,20 @@ struct WoWPlayer : WoWUnit
     float crit_pct;
     float ranged_crit_pct;
     float offhand_crit_pct;
-    float spell_crit_pct[WOWPLAYER_SPELL_SCHOOL_COUNT];
+    std::array<float, WOWPLAYER_SPELL_SCHOOL_COUNT> spell_crit_pct;
     uint32_t shield_block;
     float shield_block_crit_pct;
     uint32_t mastery;
-    uint32_t explored_zones[WOWPLAYER_EXPLORED_ZONES_COUNT];
+    std::array<uint32_t, WOWPLAYER_EXPLORED_ZONES_COUNT> explored_zones;
     uint32_t rest_state_xp;
     uint64_t field_coinage;
-    uint32_t field_mod_damage_done_positive[WOWPLAYER_SPELL_SCHOOL_COUNT];
-    uint32_t field_mod_damage_done_negative[WOWPLAYER_SPELL_SCHOOL_COUNT];
-    float field_mod_damage_done_pct[WOWPLAYER_SPELL_SCHOOL_COUNT];
+    std::array<uint32_t, WOWPLAYER_SPELL_SCHOOL_COUNT> field_mod_damage_done_positive;
+    std::array<uint32_t, WOWPLAYER_SPELL_SCHOOL_COUNT> field_mod_damage_done_negative;
+    std::array<float, WOWPLAYER_SPELL_SCHOOL_COUNT> field_mod_damage_done_pct;
     uint32_t field_mod_healing_done;
     float field_mod_healing_pct;
     float field_mod_healing_done_pct;
-    float weapon_dmg_multiplier[3];
+    std::array<float, WOWPLAYER_WEAPON_DMG_MULTIPLIER_COUNT> weapon_dmg_multiplier;
     float mod_spell_power_pct;
     float override_spell_power_by_ap_pct;
     uint32_t field_mod_target_resistance;
@@ -617,34 +726,34 @@ struct WoWPlayer : WoWUnit
     player_field_bytes_union player_field_bytes;
     uint32_t self_resurrection_spell;
     uint32_t field_pvp_medals;
-    uint32_t field_buy_back_price[WOWPLAYER_BUY_BACK_COUNT];
-    uint32_t field_buy_back_timestamp[WOWPLAYER_BUY_BACK_COUNT];
-    union
+    std::array<uint32_t, WOWPLAYER_BUY_BACK_COUNT> field_buy_back_price;
+    std::array<uint32_t, WOWPLAYER_BUY_BACK_COUNT> field_buy_back_timestamp;
+    union field_kills_union
     {
-        struct
+        struct parts
         {
             uint16_t kills_today;
             uint16_t kills_yesterday;
         } kills_field_parts;
-        uint32_t field_kills;
-    };
+        uint32_t raw;
+    } field_kills;
     uint32_t field_lifetime_honorable_kills;
     player_field_bytes_2_union player_field_bytes_2;
     uint32_t field_watched_faction_idx;
-    uint32_t field_combat_rating[26];
-    WoWPlayer_ArenaTeamInfo field_arena_team_info[WOWPLAYER_ARENA_TEAM_SLOTS];
+    std::array<uint32_t, WOWPLAYER_COMBAT_RATING_COUNT> field_combat_rating;
+    std::array<WoWPlayer_ArenaTeamInfo, WOWPLAYER_ARENA_TEAM_SLOTS> field_arena_team_info;
     uint32_t battleground_rating;
     uint32_t field_max_level;
-    uint32_t field_daily_quests[WOWPLAYER_DAILY_QUESTS_COUNT];
-    float rune_regen[4];
-    uint32_t no_reagent_cost[WOWPLAYER_NO_REAGENT_COST_COUNT];
-    uint32_t field_glyph_slots[WOWPLAYER_GLYPH_SLOT_COUNT];
-    uint32_t field_glyphs[WOWPLAYER_GLYPH_SLOT_COUNT];
+    std::array<uint32_t, WOWPLAYER_DAILY_QUESTS_COUNT> field_daily_quests;
+    std::array<float, WOWPLAYER_RUNE_REGEN_COUNT> rune_regen;
+    std::array<uint32_t, WOWPLAYER_NO_REAGENT_COST_COUNT> no_reagent_cost;
+    std::array<uint32_t, WOWPLAYER_GLYPH_SLOT_COUNT> field_glyph_slots;
+    std::array<uint32_t, WOWPLAYER_GLYPH_SLOT_COUNT> field_glyphs;
     uint32_t glyphs_enabled;
     uint32_t pet_spell_power;
-    uint32_t researching[8];
-    uint32_t research_site[8];
-    uint32_t profession_skill_line[2];
+    std::array<uint32_t, WOWPLAYER_RESEARCHING_COUNT> researching;
+    std::array<uint32_t, WOWPLAYER_RESEARCHING_COUNT> research_site;
+    std::array<uint32_t, WOWPLAYER_PROFESSION_SKILL_COUNT> profession_skill_line;
     float ui_hit_mod;
     float ui_hit_spell_mod;
     uint32_t ui_home_realm_time_offset;
@@ -654,22 +763,52 @@ struct WoWPlayer : WoWUnit
     float mod_haste_regen;
 };
 #elif VERSION_STRING == Mop
-#define WOWPLAYER_EXPLORED_ZONES_COUNT 200
-#define WOWPLAYER_SPELL_SCHOOL_COUNT 7
-#define WOWPLAYER_BUY_BACK_COUNT 12
-#define WOWPLAYER_ARENA_TEAM_SLOTS 3
-#define WOWPLAYER_DAILY_QUESTS_COUNT 25
-#define WOWPLAYER_QUEST_COUNT 150
-#define WOWPLAYER_VISIBLE_ITEM_COUNT 19
-#define WOWPLAYER_INVENTORY_SLOT_COUNT 23
-#define WOWPLAYER_PACK_SLOT_COUNT 16
-#define WOWPLAYER_BANK_SLOT_COUNT 28
-#define WOWPLAYER_BANK_BAG_SLOT_COUNT 7
-#define WOWPLAYER_KEYRING_SLOT_COUNT 32
-#define WOWPLAYER_CURRENCY_TOKEN_SLOT_COUNT 32
-#define WOWPLAYER_KNOWN_TITLES_SIZE 5
-#define WOWPLAYER_SKILL_INFO_COUNT 448
-#define WOWPLAYER_NO_REAGENT_COST_COUNT 4
+static inline constexpr uint8_t WOWPLAYER_EXPLORED_ZONES_COUNT = 200;
+static inline constexpr uint8_t WOWPLAYER_WEAPON_DMG_MULTIPLIER_COUNT = 3;
+static inline constexpr uint8_t WOWPLAYER_SPELL_SCHOOL_COUNT = 7;
+static inline constexpr uint8_t WOWPLAYER_BUY_BACK_COUNT = 12;
+static inline constexpr uint8_t WOWPLAYER_ARENA_TEAM_SLOTS = 3;
+static inline constexpr uint8_t WOWPLAYER_DAILY_QUESTS_COUNT = 25;
+static inline constexpr uint8_t WOWPLAYER_QUEST_COUNT = 150;
+static inline constexpr uint8_t WOWPLAYER_VISIBLE_ITEM_COUNT = 19;
+static inline constexpr uint8_t WOWPLAYER_INVENTORY_SLOT_COUNT = 23;
+static inline constexpr uint8_t WOWPLAYER_PACK_SLOT_COUNT = 16;
+static inline constexpr uint8_t WOWPLAYER_BANK_SLOT_COUNT = 28;
+static inline constexpr uint8_t WOWPLAYER_BANK_BAG_SLOT_COUNT = 7;
+static inline constexpr uint8_t WOWPLAYER_KEYRING_SLOT_COUNT = 32;
+static inline constexpr uint8_t WOWPLAYER_CURRENCY_TOKEN_SLOT_COUNT = 32;
+static inline constexpr uint8_t WOWPLAYER_KNOWN_TITLES_SIZE = 5;
+static inline constexpr uint16_t WOWPLAYER_SKILL_INFO_COUNT = 448;
+static inline constexpr uint8_t WOWPLAYER_COMBAT_RATING_COUNT = 27;
+static inline constexpr uint8_t WOWPLAYER_RUNE_REGEN_COUNT = 4;
+static inline constexpr uint8_t WOWPLAYER_NO_REAGENT_COST_COUNT = 4;
+static inline constexpr uint8_t WOWPLAYER_GLYPH_SLOT_COUNT = 6;
+static inline constexpr uint8_t WOWPLAYER_RESEARCHING_COUNT = 8;
+static inline constexpr uint8_t WOWPLAYER_PROFESSION_SKILL_COUNT = 2;
+
+union player_bytes_3_union
+{
+    struct parts
+    {
+        uint8_t gender;
+        uint8_t drunk_value;
+        uint8_t pvp_rank;
+        uint8_t arena_faction;
+    } s;
+    uint32_t raw;
+};
+
+union player_field_bytes_union
+{
+    struct parts
+    {
+        uint8_t misc_flags;
+        uint8_t raf_level; // not used
+        uint8_t enabled_action_bars;
+        uint8_t max_pvp_rank; // not used
+    } s;
+    uint32_t raw;
+};
 
 struct WoWPlayer_Quest
 {
@@ -682,15 +821,15 @@ struct WoWPlayer_Quest
 struct WoWPlayer_VisibleItem
 {
     uint32_t entry;
-    union
+    union enchantment_union
     {
-        struct
+        struct parts
         {
             uint16_t perm_enchantment;
             uint16_t temp_enchantment;
         } enchantment_field_parts;
-        uint16_t enchantment[2];
-    };
+        std::array<uint16_t, 2> raw;
+    } enchantment;
 };
 
 //\todo: guessed structure
@@ -718,39 +857,39 @@ struct WoWPlayer : WoWUnit
     player_bytes_3_union player_bytes_3;
     uint32_t duel_team;
     uint32_t guild_timestamp;
-    WoWPlayer_Quest quests[WOWPLAYER_QUEST_COUNT];
-    WoWPlayer_VisibleItem visible_items[WOWPLAYER_VISIBLE_ITEM_COUNT];
+    std::array<WoWPlayer_Quest, WOWPLAYER_QUEST_COUNT> quests;
+    std::array<WoWPlayer_VisibleItem, WOWPLAYER_VISIBLE_ITEM_COUNT> visible_items;
     uint32_t chosen_title;
     uint32_t inebriation;
     uint32_t virtual_player_realm;
     uint32_t current_spec_id;
     uint32_t taxi_mount_anim_kit_id;
     uint32_t current_battle_pet_breed_quality;
-    uint64_t inventory_slot[WOWPLAYER_INVENTORY_SLOT_COUNT];
-    uint64_t pack_slot[WOWPLAYER_PACK_SLOT_COUNT];
-    uint64_t bank_slot[WOWPLAYER_BANK_SLOT_COUNT];
-    uint64_t bank_bag_slot[WOWPLAYER_BANK_BAG_SLOT_COUNT];
-    uint64_t vendor_buy_back_slot[WOWPLAYER_BUY_BACK_COUNT];
+    std::array<uint64_t, WOWPLAYER_INVENTORY_SLOT_COUNT> inventory_slot;
+    std::array<uint64_t, WOWPLAYER_PACK_SLOT_COUNT> pack_slot;
+    std::array<uint64_t, WOWPLAYER_BANK_SLOT_COUNT> bank_slot;
+    std::array<uint64_t, WOWPLAYER_BANK_BAG_SLOT_COUNT> bank_bag_slot;
+    std::array<uint64_t, WOWPLAYER_BUY_BACK_COUNT> vendor_buy_back_slot;
     uint64_t farsight_guid;
-    uint64_t field_known_titles[WOWPLAYER_KNOWN_TITLES_SIZE];
+    std::array<uint64_t, WOWPLAYER_KNOWN_TITLES_SIZE> field_known_titles;
     uint64_t field_coinage;
     uint32_t xp;
     uint32_t next_level_xp;
 
-    union
+    union skill_info_union
     {
-        struct
+        struct parts
         {
-            uint32_t skill_line[64];
-            uint32_t skill_step[64];
-            uint32_t skill_rank[64];
-            uint32_t skill_starting_rank[64];
-            uint32_t skill_max_rank[64];
-            uint32_t skill_mod[64];
-            uint32_t skill_talent[64];
+            std::array<uint32_t, 64> skill_line;
+            std::array<uint32_t, 64> skill_step;
+            std::array<uint32_t, 64> skill_rank;
+            std::array<uint32_t, 64> skill_starting_rank;
+            std::array<uint32_t, 64> skill_max_rank;
+            std::array<uint32_t, 64> skill_mod;
+            std::array<uint32_t, 64> skill_talent;
         } skill_info_parts;
-        uint32_t skill_info[WOWPLAYER_SKILL_INFO_COUNT];
-    };
+        std::array<uint32_t, WOWPLAYER_SKILL_INFO_COUNT> skill_info;
+    } field_skill_info;
 
     uint32_t character_points_1;
     uint32_t max_talent_tiers;
@@ -766,22 +905,22 @@ struct WoWPlayer : WoWUnit
     float crit_pct;
     float ranged_crit_pct;
     float offhand_crit_pct;
-    float spell_crit_pct[WOWPLAYER_SPELL_SCHOOL_COUNT];
+    std::array<float, WOWPLAYER_SPELL_SCHOOL_COUNT> spell_crit_pct;
     uint32_t shield_block;
     float shield_block_crit_pct;
     uint32_t mastery;
     uint32_t pvp_power_damage;
     uint32_t pvp_power_healing;
-    uint32_t explored_zones[WOWPLAYER_EXPLORED_ZONES_COUNT];
+    std::array<uint32_t, WOWPLAYER_EXPLORED_ZONES_COUNT> explored_zones;
     uint32_t rest_state_xp;
-    uint32_t field_mod_damage_done_positive[WOWPLAYER_SPELL_SCHOOL_COUNT];
-    uint32_t field_mod_damage_done_negative[WOWPLAYER_SPELL_SCHOOL_COUNT];
-    float field_mod_damage_done_pct[WOWPLAYER_SPELL_SCHOOL_COUNT];
+    std::array<uint32_t, WOWPLAYER_SPELL_SCHOOL_COUNT> field_mod_damage_done_positive;
+    std::array<uint32_t, WOWPLAYER_SPELL_SCHOOL_COUNT> field_mod_damage_done_negative;
+    std::array<float, WOWPLAYER_SPELL_SCHOOL_COUNT> field_mod_damage_done_pct;
     uint32_t field_mod_healing_done;
     float field_mod_healing_pct;
     float field_mod_healing_done_pct;
     float field_mod_periodic_healing_done_pct;
-    float weapon_dmg_multiplier[3];
+    std::array<float, WOWPLAYER_WEAPON_DMG_MULTIPLIER_COUNT> weapon_dmg_multiplier;
     float mod_spell_power_pct;
     float mod_resilience_pct;
     float override_spell_power_by_ap_pct;
@@ -791,30 +930,30 @@ struct WoWPlayer : WoWUnit
     player_field_bytes_union player_field_bytes;
     uint32_t self_resurrection_spell;
     uint32_t field_pvp_medals;
-    uint32_t field_buy_back_price[WOWPLAYER_BUY_BACK_COUNT];
-    uint32_t field_buy_back_timestamp[WOWPLAYER_BUY_BACK_COUNT];
-    union
+    std::array<uint32_t, WOWPLAYER_BUY_BACK_COUNT> field_buy_back_price;
+    std::array<uint32_t, WOWPLAYER_BUY_BACK_COUNT> field_buy_back_timestamp;
+    union field_kills_union
     {
-        struct
+        struct parts
         {
             uint16_t kills_today;
             uint16_t kills_yesterday;
         } kills_field_parts;
-        uint32_t field_kills;
-    };
+        uint32_t raw;
+    } field_kills;
     uint32_t field_lifetime_honorable_kills;
     uint32_t field_watched_faction_idx;
-    uint32_t field_combat_rating[27];
-    WoWPlayer_ArenaTeamInfo field_arena_team_info[WOWPLAYER_ARENA_TEAM_SLOTS];
+    std::array<uint32_t, WOWPLAYER_COMBAT_RATING_COUNT> field_combat_rating;
+    std::array<WoWPlayer_ArenaTeamInfo, WOWPLAYER_ARENA_TEAM_SLOTS> field_arena_team_info;
     uint32_t field_max_level;
-    float rune_regen[4];
-    uint32_t no_reagent_cost[WOWPLAYER_NO_REAGENT_COST_COUNT];
-    uint32_t field_glyph_slots[6];
-    uint32_t field_glyphs[6];
+    std::array<float, WOWPLAYER_RUNE_REGEN_COUNT> rune_regen;
+    std::array<uint32_t, WOWPLAYER_NO_REAGENT_COST_COUNT> no_reagent_cost;
+    std::array<uint32_t, WOWPLAYER_GLYPH_SLOT_COUNT> field_glyph_slots;
+    std::array<uint32_t, WOWPLAYER_GLYPH_SLOT_COUNT> field_glyphs;
     uint32_t glyphs_enabled;
     uint32_t pet_spell_power;
-    uint32_t researching[8];
-    uint32_t profession_skill_line[2];
+    std::array<uint32_t, WOWPLAYER_RESEARCHING_COUNT> researching;
+    std::array<uint32_t, WOWPLAYER_PROFESSION_SKILL_COUNT> profession_skill_line;
     float ui_hit_mod;
     float ui_hit_spell_mod;
     uint32_t ui_home_realm_time_offset;

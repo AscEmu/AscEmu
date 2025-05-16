@@ -14,20 +14,21 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "WoWObject.hpp"
-#include "GuidData.hpp"
+
+#include <array>
 
 #pragma pack(push, 1)
 
 #if VERSION_STRING == Classic
 
-#define GAMEOBJECT_ROTATION_COUNT 4
+static inline constexpr uint8_t GAMEOBJECT_ROTATION_COUNT = 4;
 
 struct WoWGameObject : WoWObject
 {
     guid_union object_field_created_by;
     uint32_t display_id;
     uint32_t flags;
-    float rotation[GAMEOBJECT_ROTATION_COUNT];
+    std::array<float, GAMEOBJECT_ROTATION_COUNT> rotation;
     uint32_t state;
     float x;
     float y;
@@ -45,14 +46,14 @@ struct WoWGameObject : WoWObject
 
 #if VERSION_STRING == TBC
 
-#define GAMEOBJECT_ROTATION_COUNT 4
+static inline constexpr uint8_t GAMEOBJECT_ROTATION_COUNT = 4;
 
 struct WoWGameObject : WoWObject
 {
     guid_union object_field_created_by;
     uint32_t display_id;
     uint32_t flags;
-    float rotation[GAMEOBJECT_ROTATION_COUNT];
+    std::array<float, GAMEOBJECT_ROTATION_COUNT> rotation;
     uint32_t state;
     float x;
     float y;
@@ -70,110 +71,110 @@ struct WoWGameObject : WoWObject
 
 #if VERSION_STRING == WotLK
 
-#define GAMEOBJECT_ROTATION_COUNT 4
+static inline constexpr uint8_t GAMEOBJECT_ROTATION_COUNT = 4;
 
 struct WoWGameObject : WoWObject
 {
     guid_union object_field_created_by;
     uint32_t display_id;
     uint32_t flags;
-    float rotation[GAMEOBJECT_ROTATION_COUNT];
-    union
+    std::array<float, GAMEOBJECT_ROTATION_COUNT> rotation;
+    union field_dynamic_union
     {
-        struct
+        struct parts
         {
             uint16_t dyn_flag;
             int16_t path_progress;
         } dynamic_field_parts;
-        uint32_t dynamic;
-    };
+        uint32_t raw;
+    } dynamic;
     uint32_t faction_template;
     uint32_t level;
-    union
+    union gameobject_bytes_union
     {
-        struct
+        struct parts
         {
             uint8_t state;
             uint8_t type;
             uint8_t art_kit;
             uint8_t animation_progress;
         } bytes_1_gameobject;
-        uint32_t bytes_1;
-    };
+        uint32_t raw;
+    } bytes_1;
 };
 #endif
 
 #if VERSION_STRING == Cata
 
-#define GAMEOBJECT_ROTATION_COUNT 4
+static inline constexpr uint8_t GAMEOBJECT_ROTATION_COUNT = 4;
 
 struct WoWGameObject : WoWObject
 {
     guid_union object_field_created_by;
     uint32_t display_id;
     uint32_t flags;
-    float rotation[GAMEOBJECT_ROTATION_COUNT];
-    union
+    std::array<float, GAMEOBJECT_ROTATION_COUNT> rotation;
+    union field_dynamic_union
     {
-        struct
+        struct parts
         {
             uint16_t dyn_flag;
             int16_t path_progress;
         } dynamic_field_parts;
-        uint32_t dynamic;
-    };
+        uint32_t raw;
+    } dynamic;
     uint32_t faction_template;
     uint32_t level;
-    union
+    union gameobject_bytes_union
     {
-        struct
+        struct parts
         {
             uint8_t state;
             uint8_t type;
             uint8_t art_kit;
             uint8_t animation_progress;
         } bytes_1_gameobject;
-        uint32_t bytes_1;
-    };
+        uint32_t raw;
+    } bytes_1;
 };
 #endif
 
 #if VERSION_STRING == Mop
 
-#define GAMEOBJECT_ROTATION_COUNT 4
+static inline constexpr uint8_t GAMEOBJECT_ROTATION_COUNT = 4;
 
 struct WoWGameObject : WoWObject
 {
     guid_union object_field_created_by;
     uint32_t display_id;
     uint32_t flags;
-    float rotation[GAMEOBJECT_ROTATION_COUNT];
+    std::array<float, GAMEOBJECT_ROTATION_COUNT> rotation;
     uint32_t faction_template;
     uint32_t level;
     
-    union
+    union gameobject_bytes_union
     {
-        struct
+        struct parts
         {
             uint8_t state;
             uint8_t type;
             uint8_t unk;
             uint8_t health;
         } bytes_1_gameobject;
-        uint32_t bytes_1;
-    };
+        uint32_t raw;
+    } bytes_1;
 
-    union
+    union gameobject_bytes_2_union
     {
-        struct
+        struct parts
         {
             uint8_t transparency;
             uint8_t art_kit;
             uint8_t unk2;
             uint8_t animation_progress;
         } bytes_2_gameobject;
-        uint32_t bytes_2;
-    };
+        uint32_t raw;
+    } bytes_2;
 };
 #endif
 

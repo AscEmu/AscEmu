@@ -204,10 +204,12 @@ public:
         uint32_t CanLearnSpell(SpellInfo const* sp);
         void UpdateSpellList(bool showLearnSpells = true);
 
+#if VERSION_STRING == WotLK || VERSION_STRING == Cata
         // talents
         void SendTalentsToOwner();                                                                              // Send talentpoints and talent spells to owner
         inline uint8_t GetTPsForLevel(uint32_t level) { return (level >= 20) ? uint8_t(level - 16) >> 2 : 0; }  // pet gain first talent point at lvl 20, then every 4 lvls another point
         inline uint8_t GetSpentTPs() { return GetTPsForLevel(getLevel()) - this->getPetTalentPoints(); }        // returns amount of spent talent points
+#endif
 
         void HandleAutoCastEvent(AutoCastEvents Type);
         AI_Spell* HandleAutoCastEvent();

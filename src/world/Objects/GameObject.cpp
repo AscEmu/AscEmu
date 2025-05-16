@@ -172,13 +172,10 @@ int64_t GameObject::getPackedLocalRotation() const { return m_packedRotation; }
 uint32_t GameObject::getDynamicFlags() const { return gameObjectData()->dynamic; }
 void GameObject::setDynamicFlags(uint32_t dynamicFlags) { write(gameObjectData()->dynamic, dynamicFlags); }
 #elif VERSION_STRING < Mop
-uint32_t GameObject::getDynamicField() const { return gameObjectData()->dynamic; }
-uint16_t GameObject::getDynamicFlags() const { return gameObjectData()->dynamic_field_parts.dyn_flag; }
-int16_t GameObject::getDynamicPathProgress() const { return gameObjectData()->dynamic_field_parts.path_progress; }
-void GameObject::setDynamicField(uint32_t dynamic) { write(gameObjectData()->dynamic, dynamic); }
-void GameObject::setDynamicField(uint16_t dynamicFlags, int16_t pathProgress) { setDynamicField(static_cast<uint32_t>(pathProgress) << 16 | dynamicFlags); }
-void GameObject::setDynamicFlags(uint16_t dynamicFlags) { setDynamicField(dynamicFlags, getDynamicPathProgress()); }
-void GameObject::setDynamicPathProgress(int16_t pathProgress) { setDynamicField(getDynamicFlags(), pathProgress); }
+uint16_t GameObject::getDynamicFlags() const { return gameObjectData()->dynamic.dynamic_field_parts.dyn_flag; }
+int16_t GameObject::getDynamicPathProgress() const { return gameObjectData()->dynamic.dynamic_field_parts.path_progress; }
+void GameObject::setDynamicFlags(uint16_t dynamicFlags) { write(gameObjectData()->dynamic.dynamic_field_parts.dyn_flag, dynamicFlags); }
+void GameObject::setDynamicPathProgress(int16_t pathProgress) { write(gameObjectData()->dynamic.dynamic_field_parts.path_progress, pathProgress); }
 #endif
 
 uint32_t GameObject::getFactionTemplate() const { return gameObjectData()->faction_template; }
@@ -193,7 +190,7 @@ uint8_t GameObject::getState() const
 #if VERSION_STRING <= TBC
     return gameObjectData()->state;
 #elif VERSION_STRING >= WotLK
-    return gameObjectData()->bytes_1_gameobject.state;
+    return gameObjectData()->bytes_1.bytes_1_gameobject.state;
 #endif
 }
 void GameObject::setState(uint8_t state)
@@ -201,7 +198,7 @@ void GameObject::setState(uint8_t state)
 #if VERSION_STRING <= TBC
     write(gameObjectData()->state, static_cast<uint32_t>(state));
 #elif VERSION_STRING >= WotLK
-    write(gameObjectData()->bytes_1_gameobject.state, state);
+    write(gameObjectData()->bytes_1.bytes_1_gameobject.state, state);
 #endif
 }
 
@@ -210,7 +207,7 @@ uint8_t GameObject::getGoType() const
 #if VERSION_STRING <= TBC
     return gameObjectData()->type;
 #elif VERSION_STRING >= WotLK
-    return gameObjectData()->bytes_1_gameobject.type;
+    return gameObjectData()->bytes_1.bytes_1_gameobject.type;
 #endif
 }
 void GameObject::setGoType(uint8_t type)
@@ -218,7 +215,7 @@ void GameObject::setGoType(uint8_t type)
 #if VERSION_STRING <= TBC
     write(gameObjectData()->type, static_cast<uint32_t>(type));
 #elif VERSION_STRING >= WotLK
-    write(gameObjectData()->bytes_1_gameobject.type, type);
+    write(gameObjectData()->bytes_1.bytes_1_gameobject.type, type);
 #endif
 }
 
@@ -228,7 +225,7 @@ uint8_t GameObject::getArtKit() const
 #if VERSION_STRING <= TBC
     return gameObjectData()->art_kit;
 #elif VERSION_STRING >= WotLK
-    return gameObjectData()->bytes_1_gameobject.art_kit;
+    return gameObjectData()->bytes_1.bytes_1_gameobject.art_kit;
 #endif
 }
 void GameObject::setArtKit(uint8_t artkit)
@@ -236,17 +233,17 @@ void GameObject::setArtKit(uint8_t artkit)
 #if VERSION_STRING <= TBC
     write(gameObjectData()->art_kit, static_cast<uint32_t>(artkit));
 #elif VERSION_STRING >= WotLK
-    write(gameObjectData()->bytes_1_gameobject.art_kit, artkit);
+    write(gameObjectData()->bytes_1.bytes_1_gameobject.art_kit, artkit);
 #endif
 }
 #else
 uint8_t GameObject::getArtKit() const
 {
-    return gameObjectData()->bytes_2_gameobject.art_kit;
+    return gameObjectData()->bytes_2.bytes_2_gameobject.art_kit;
 }
 void GameObject::setArtKit(uint8_t artkit)
 {
-    write(gameObjectData()->bytes_2_gameobject.art_kit, artkit);
+    write(gameObjectData()->bytes_2.bytes_2_gameobject.art_kit, artkit);
 }
 #endif
 
@@ -256,7 +253,7 @@ uint8_t GameObject::getAnimationProgress() const
 #if VERSION_STRING <= TBC
     return gameObjectData()->animation_progress;
 #elif VERSION_STRING >= WotLK
-    return gameObjectData()->bytes_1_gameobject.animation_progress;
+    return gameObjectData()->bytes_1.bytes_1_gameobject.animation_progress;
 #endif
 }
 void GameObject::setAnimationProgress(uint8_t progress)
@@ -264,17 +261,17 @@ void GameObject::setAnimationProgress(uint8_t progress)
 #if VERSION_STRING <= TBC
     write(gameObjectData()->animation_progress, static_cast<uint32_t>(progress));
 #elif VERSION_STRING >= WotLK
-    write(gameObjectData()->bytes_1_gameobject.animation_progress, progress);
+    write(gameObjectData()->bytes_1.bytes_1_gameobject.animation_progress, progress);
 #endif
 }
 #else
 uint8_t GameObject::getAnimationProgress() const
 {
-    return gameObjectData()->bytes_2_gameobject.animation_progress;
+    return gameObjectData()->bytes_2.bytes_2_gameobject.animation_progress;
 }
 void GameObject::setAnimationProgress(uint8_t progress)
 {
-    write(gameObjectData()->bytes_2_gameobject.animation_progress, progress);
+    write(gameObjectData()->bytes_2.bytes_2_gameobject.animation_progress, progress);
 }
 #endif
 

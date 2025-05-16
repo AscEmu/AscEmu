@@ -817,7 +817,8 @@ Creature* Battleground::spawnSpiritGuide(float x, float y, float z, float o, uin
 
     pCreature->setVirtualItemSlotId(MELEE, 22802);
 
-    pCreature->setUnitFlags(UNIT_FLAG_PLUS_MOB | UNIT_FLAG_IGNORE_PLAYER_COMBAT | UNIT_FLAG_IGNORE_PLAYER_NPC | UNIT_FLAG_PVP); // 4928
+    pCreature->setUnitFlags(UNIT_FLAG_PLUS_MOB | UNIT_FLAG_IGNORE_PLAYER_COMBAT | UNIT_FLAG_IGNORE_CREATURE_COMBAT); // 832
+    pCreature->setPvpFlag();
 
     pCreature->setBaseAttackTime(MELEE, 2000);
     pCreature->setBaseAttackTime(OFFHAND, 2000);
@@ -832,7 +833,9 @@ Creature* Battleground::spawnSpiritGuide(float x, float y, float z, float o, uin
 
     pCreature->setNpcFlags(UNIT_NPC_FLAG_SPIRITGUIDE);
     pCreature->setSheathType(SHEATH_STATE_MELEE);
-    pCreature->setPvpFlags(U_FIELD_BYTES_FLAG_AURAS);
+#if VERSION_STRING == TBC
+    pCreature->setPositiveAuraLimit(POS_AURA_LIMIT_CREATURE);
+#endif
 
     pCreature->setAItoUse(false);
 
@@ -932,6 +935,7 @@ void Battleground::eventResurrectPlayers()
                 plr->setPower(POWER_TYPE_ENERGY, plr->getMaxPower(POWER_TYPE_ENERGY));
                 plr->castSpell(plr, BattlegroundDef::REVIVE_PREPARATION, true);
 
+#if VERSION_STRING >= TBC
                 // Spawn last active pet
                 if (plr->getLastBattlegroundPetId() != 0)
                 {
@@ -946,6 +950,7 @@ void Battleground::eventResurrectPlayers()
                     plr->castSpell(plr, plr->getLastBattlegroundPetSpell(), true);
                     plr->removeUnitFlags(UNIT_FLAG_NO_REAGANT_COST);
                 }
+#endif
 
                 plr->setLastBattlegroundPetId(0);
                 plr->setLastBattlegroundPetSpell(0);
