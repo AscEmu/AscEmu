@@ -157,6 +157,7 @@ bool handleServerInfoCommand(BaseConsole* baseConsole, int /*argumentCount*/, st
         baseConsole->Write("Info: AscEmu %s/%s-%s-%s (www.ascemu.org)\r\n", AE_BUILD_HASH, CONFIG, AE_PLATFORM, AE_ARCHITECTURE);
         baseConsole->Write("Using %s/Library %s\r\n", OPENSSL_VERSION_TEXT, SSLeay_version(SSLEAY_VERSION));
         baseConsole->Write("Uptime: %s\r\n", sWorld.getWorldUptimeString().c_str());
+        baseConsole->Write("Active Branch: %s\r\n", AE_BUILD_BRANCH);
         baseConsole->Write("Current Players: %d (%d GMs, %d queued)\r\n", clientsNum, gmCount, 0);
         baseConsole->Write("Active Thread Count: %u\r\n", ThreadPool.GetActiveThreadCount());
         baseConsole->Write("Free Thread Count: %u\r\n", ThreadPool.GetFreeThreadCount());
