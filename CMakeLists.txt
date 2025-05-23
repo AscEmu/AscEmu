@@ -9,7 +9,7 @@ include(cmake/Options.cmake)
 # perform system tasks
 include(cmake/CheckSystem.cmake)
 
-# add dependecies
+# add dependencies
 add_subdirectory(dep)
 
 # add executables
