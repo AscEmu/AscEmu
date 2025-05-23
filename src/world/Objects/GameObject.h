@@ -146,11 +146,8 @@ public:
     uint32_t getDynamicFlags() const;
     void setDynamicFlags(uint32_t dynamicFlags);
 #elif VERSION_STRING < Mop
-    uint32_t getDynamicField() const;
     uint16_t getDynamicFlags() const;
     int16_t getDynamicPathProgress() const;
-    void setDynamicField(uint32_t dynamic);
-    void setDynamicField(uint16_t dynamicFlags, int16_t pathProgress);
     void setDynamicFlags(uint16_t dynamicFlags);
     void setDynamicPathProgress(int16_t pathProgress);
 #endif

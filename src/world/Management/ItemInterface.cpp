@@ -270,6 +270,31 @@ void ItemInterface::buildInventoryChangeError(Item const* srcItem, Item const* d
     m_pOwner->sendPacket(SmsgInventoryChangeFailure(inventoryError, srcGuid, destGuid, extraData, sendExtraData).serialise().get());
 }
 
+void ItemInterface::setOwnerInventoryItem(uint8_t slot, uint64_t guid)
+{
+    if (slot < INVENTORY_SLOT_BAG_END)
+        m_pOwner->setInventorySlotItemGuid(slot, guid);
+    else if (slot < INVENTORY_SLOT_ITEM_END)
+        m_pOwner->setPackSlotItemGuid(slot - INVENTORY_SLOT_ITEM_START, guid);
+    else if (slot < BANK_SLOT_ITEM_END)
+        m_pOwner->setBankSlotItemGuid(slot - BANK_SLOT_ITEM_START, guid);
+    else if (slot < BANK_SLOT_BAG_END)
+        m_pOwner->setBankBagSlotItemGuid(slot - BANK_SLOT_BAG_START, guid);
+    else if (slot < BUYBACK_SLOT_END)
+        m_pOwner->setVendorBuybackSlot(slot - BUYBACK_SLOT_START, guid);
+#if VERSION_STRING < Cata
+    else if (slot < INVENTORY_KEYRING_END)
+        m_pOwner->setKeyRingSlotItemGuid(slot - INVENTORY_KEYRING_START, guid);
+#endif
+#if VERSION_STRING == TBC
+    else if (slot < (INVENTORY_KEYRING_END + WOWPLAYER_VANITY_PET_SLOT_COUNT))
+        m_pOwner->setVanityPetSlotItemGuid(slot - INVENTORY_KEYRING_END, guid);
+#elif VERSION_STRING == WotLK
+    else if (slot < CURRENCYTOKEN_SLOT_END)
+        m_pOwner->setCurrencyTokenSlotItemGuid(slot - CURRENCYTOKEN_SLOT_START, guid);
+#endif
+}
+
 void ItemInterface::update(uint32_t timePassed)
 {
     // Update enchantment durations
@@ -513,7 +538,7 @@ std::tuple<AddItemResult, std::unique_ptr<Item>> ItemInterface::m_AddItem(std::u
                 uint32_t count = item->buildCreateUpdateBlockForPlayer(&buf, m_pOwner);
                 m_pOwner->getUpdateMgr().pushCreationData(&buf, count);
             }
-            m_pOwner->setInventorySlotItemGuid(static_cast<uint8_t>(slot), item->getGuid());
+            setOwnerInventoryItem(static_cast<uint8_t>(slot), item->getGuid());
         }
         else
         {
@@ -646,7 +671,7 @@ std::unique_ptr<Item> ItemInterface::SafeRemoveAndRetreiveItemFromSlot(int8_t Co
         {
             pItem->m_isDirty = true;
 
-            m_pOwner->setInventorySlotItemGuid(static_cast<uint8_t>(slot), 0);
+            setOwnerInventoryItem(static_cast<uint8_t>(slot), 0);
 
             sendEnchantDurations(pItem.get());
 
@@ -820,7 +845,7 @@ bool ItemInterface::SafeFullRemoveItemFromSlot(int8_t ContainerSlot, int16_t slo
         {
             pItem->m_isDirty = true;
 
-            m_pOwner->setInventorySlotItemGuid(static_cast<uint8_t>(slot), 0);
+            setOwnerInventoryItem(static_cast<uint8_t>(slot), 0);
 
             sendEnchantDurations(pItem.get());
 
@@ -3303,23 +3328,23 @@ void ItemInterface::SwapItemSlots(int8_t srcslot, int8_t dstslot)
     if (m_pItems[(int)dstslot] != nullptr)
     {
         //sLogger.debug("(SrcItem) PLAYER_FIELD_INV_SLOT_HEAD + {} is now {}" , dstslot , m_pItems[(int)dstslot]->getGuid());
-        m_pOwner->setInventorySlotItemGuid(static_cast<uint8_t>(dstslot), m_pItems[(int)dstslot]->getGuid());
+        setOwnerInventoryItem(static_cast<uint8_t>(dstslot), m_pItems[(int)dstslot]->getGuid());
     }
     else
     {
         //sLogger.debug("(SrcItem) PLAYER_FIELD_INV_SLOT_HEAD + {} is now 0" , dstslot);
-        m_pOwner->setInventorySlotItemGuid(static_cast<uint8_t>(dstslot), 0);
+        setOwnerInventoryItem(static_cast<uint8_t>(dstslot), 0);
     }
 
     if (m_pItems[(int)srcslot] != nullptr)
     {
         //sLogger.debug("(DstItem) PLAYER_FIELD_INV_SLOT_HEAD + {} is now {}" , dstslot , m_pItems[(int)srcslot]->getGuid());
-        m_pOwner->setInventorySlotItemGuid(static_cast<uint8_t>(srcslot), m_pItems[(int)srcslot]->getGuid());
+        setOwnerInventoryItem(static_cast<uint8_t>(srcslot), m_pItems[(int)srcslot]->getGuid());
     }
     else
     {
         //sLogger.debug("(DstItem) PLAYER_FIELD_INV_SLOT_HEAD + {} is now 0" , dstslot);
-        m_pOwner->setInventorySlotItemGuid(static_cast<uint8_t>(srcslot), 0);
+        setOwnerInventoryItem(static_cast<uint8_t>(srcslot), 0);
     }
 
     if (srcslot < INVENTORY_SLOT_BAG_END)    // source item is equipped

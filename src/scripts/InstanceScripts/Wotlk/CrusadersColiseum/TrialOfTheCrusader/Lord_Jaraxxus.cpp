@@ -19,7 +19,7 @@ JaraxxusAI::JaraxxusAI(Creature* pCreature) : CreatureAIScript(pCreature)
     // Add Boundary
     pCreature->getAIInterface()->addBoundary(std::make_unique<CircleBoundary>(LocationVector(563.26f, 139.6f), 75.0));
 
-    setUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC | UNIT_FLAG_IGNORE_PLAYER_COMBAT | UNIT_FLAG_PLUS_MOB);
+    setUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT | UNIT_FLAG_IGNORE_PLAYER_COMBAT | UNIT_FLAG_PLUS_MOB);
 
     addEmoteForEventByIndex(Event_OnCombatStart, jaraxxus::SAY_AGGRO);
     addEmoteForEventByIndex(Event_OnTargetDied, jaraxxus::SAY_KILL_PLAYER);

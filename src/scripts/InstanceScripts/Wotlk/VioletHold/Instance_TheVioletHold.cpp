@@ -321,7 +321,7 @@ void TheVioletHoldScript::UpdateEvent()
                 {
                     boss->getAIInterface()->setImmuneToNPC(false);
                     boss->getAIInterface()->setImmuneToPC(false);
-                    boss->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
+                    boss->removeUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
 
                     switch (bossId)
                     {
@@ -335,7 +335,7 @@ void TheVioletHoldScript::UpdateEvent()
                                 {
                                     guard->getAIInterface()->setImmuneToNPC(false);
                                     guard->getAIInterface()->setImmuneToPC(false);
-                                    guard->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
+                                    guard->removeUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
                                 }
                             }
                         } break;
@@ -365,7 +365,7 @@ void TheVioletHoldScript::UpdateEvent()
                     cyanigosa->castSpell(cyanigosa, SPELL_CYANIGOSA_TRANSFORM, true);
                     cyanigosa->getAIInterface()->setImmuneToNPC(false);
                     cyanigosa->getAIInterface()->setImmuneToPC(false);
-                    cyanigosa->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
+                    cyanigosa->removeUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
                 }
             } break;
             default:
@@ -605,7 +605,7 @@ void TheVioletHoldScript::resetBossEncounter(uint8_t bossId)
                     guard->getMovementManager()->moveTargetedHome();
                     guard->getAIInterface()->setImmuneToNPC(true);
                     guard->getAIInterface()->setImmuneToPC(true);
-                    guard->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
+                    guard->addUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
                 }
             }
         } [[fallthrough]];

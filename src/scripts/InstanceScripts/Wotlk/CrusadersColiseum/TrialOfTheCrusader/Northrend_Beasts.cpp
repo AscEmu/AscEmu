@@ -212,7 +212,7 @@ void NorthrendBeastsAI::initialMove(CreatureAIFunc pThis)
 ///  Gormok
 GormokAI::GormokAI(Creature* pCreature) : NorthrendBeastsAI(pCreature)
 {
-    setUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC | UNIT_FLAG_IGNORE_PLAYER_COMBAT | UNIT_FLAG_PLUS_MOB);
+    setUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT | UNIT_FLAG_IGNORE_PLAYER_COMBAT | UNIT_FLAG_PLUS_MOB);
     getCreature()->setAItoUse(true);
     _setWieldWeapon(true);
 }

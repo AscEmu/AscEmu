@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <map>
 #include <filesystem>
 #include <locale>
+#include <type_traits>
 
 namespace Util
 {
@@ -84,6 +85,36 @@ namespace Util
     uint32_t readMajorVersionFromString(const std::string& fileName);
 
     uint32_t readMinorVersionFromString(const std::string& fileName);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // std::is_specialization_of_v implementation
+
+    // Primary template - not a specialization
+    template <template <typename, typename...> class Template, typename>
+    struct is_specialization_of : std::false_type {};
+
+    // Partial specialization for types with a second parameter as a pack
+    template <template <typename, typename...> class Template, typename T1, typename... Args>
+    struct is_specialization_of<Template, Template<T1, Args...>> : std::true_type {};
+
+    // Helper variable template for convenience
+    template <typename T, template <typename, typename...> class Template>
+    concept is_specialization_of_v = is_specialization_of<Template, T>::value;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // std::is_specialization_of_v implementation for e.g. std::arrays
+
+    // Primary template for types with size_t as the second parameter - not a specialization
+    template <template <typename, size_t> class Template, typename>
+    struct is_size_based_specialization_of : std::false_type {};
+
+    // Partial specialization for types with size_t as the second parameter
+    template <template <typename, size_t> class Template, typename T1, size_t N>
+    struct is_size_based_specialization_of<Template, Template<T1, N>> : std::true_type {};
+
+    // Helper variable template for types with size_t as the second parameter for convenience
+    template <typename T, template <typename, size_t> class Template>
+    concept is_size_based_specialization_of_v = is_size_based_specialization_of<Template, T>::value;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc

@@ -213,7 +213,7 @@ void Unit::Update(unsigned long time_passed)
             {
                 m_powerRegenerationInterruptTime = 0;
 
-#if VERSION_STRING != Classic
+#if VERSION_STRING > TBC
                 if (isPlayer())
                     setUnitFlags2(UNIT_FLAG2_ENABLE_POWER_REGEN);
 #endif
@@ -1016,64 +1016,64 @@ void Unit::setVirtualItemSlotId(uint8_t slot, uint32_t item_id)
     unit_virtual_item_info virtualItemInfo{};
 
     uint32_t displayId = 0;
-    virtualItemInfo.fields.itemClass = 0;
-    virtualItemInfo.fields.itemSubClass = 0;
+    virtualItemInfo.fields.item_class = 0;
+    virtualItemInfo.fields.item_subclass = 0;
     // Seems to be always -1
     virtualItemInfo.fields.unk0 = -1;
     virtualItemInfo.fields.material = 0;
-    virtualItemInfo.fields.inventoryType = 0;
+    virtualItemInfo.fields.inventory_type = 0;
     virtualItemInfo.fields.sheath = 0;
     if (const auto itemProperties = sMySQLStore.getItemProperties(item_id))
     {
         displayId = itemProperties->DisplayInfoID;
-        virtualItemInfo.fields.itemClass = static_cast<uint8_t>(itemProperties->Class);
-        virtualItemInfo.fields.itemSubClass = static_cast<uint8_t>(itemProperties->SubClass);
+        virtualItemInfo.fields.item_class = static_cast<uint8_t>(itemProperties->Class);
+        virtualItemInfo.fields.item_subclass = static_cast<uint8_t>(itemProperties->SubClass);
         virtualItemInfo.fields.material = static_cast<uint8_t>(itemProperties->LockMaterial);
-        virtualItemInfo.fields.inventoryType = static_cast<uint8_t>(itemProperties->InventoryType);
+        virtualItemInfo.fields.inventory_type = static_cast<uint8_t>(itemProperties->InventoryType);
         virtualItemInfo.fields.sheath = static_cast<uint8_t>(itemProperties->SheathID);
     }
     else if (const auto itemDbc = sItemStore.lookupEntry(item_id))
     {
         displayId = itemDbc->DisplayId;
-        virtualItemInfo.fields.inventoryType = static_cast<uint8_t>(itemDbc->InventoryType);
+        virtualItemInfo.fields.inventory_type = static_cast<uint8_t>(itemDbc->InventoryType);
         virtualItemInfo.fields.sheath = static_cast<uint8_t>(itemDbc->Sheath);
 
         // Following values do not exist in dbcs and must be "hackfixed"
         virtualItemInfo.fields.material = ITEM_MATERIAL_METAL;
-        switch (virtualItemInfo.fields.inventoryType)
+        switch (virtualItemInfo.fields.inventory_type)
         {
             case INVTYPE_WEAPON:
             case INVTYPE_WEAPONMAINHAND:
             case INVTYPE_WEAPONOFFHAND:
-                virtualItemInfo.fields.itemClass = ITEM_CLASS_WEAPON;
-                virtualItemInfo.fields.itemSubClass = ITEM_SUBCLASS_WEAPON_SWORD;
+                virtualItemInfo.fields.item_class = ITEM_CLASS_WEAPON;
+                virtualItemInfo.fields.item_subclass = ITEM_SUBCLASS_WEAPON_SWORD;
                 break;
             case INVTYPE_SHIELD:
-                virtualItemInfo.fields.itemClass = ITEM_CLASS_ARMOR;
-                virtualItemInfo.fields.itemSubClass = ITEM_SUBCLASS_ARMOR_SHIELD;
+                virtualItemInfo.fields.item_class = ITEM_CLASS_ARMOR;
+                virtualItemInfo.fields.item_subclass = ITEM_SUBCLASS_ARMOR_SHIELD;
                 break;
             case INVTYPE_RANGED:
-                virtualItemInfo.fields.itemClass = ITEM_CLASS_WEAPON;
-                virtualItemInfo.fields.itemSubClass = ITEM_SUBCLASS_WEAPON_BOW;
+                virtualItemInfo.fields.item_class = ITEM_CLASS_WEAPON;
+                virtualItemInfo.fields.item_subclass = ITEM_SUBCLASS_WEAPON_BOW;
                 break;
             case INVTYPE_RANGEDRIGHT:
-                virtualItemInfo.fields.itemClass = ITEM_CLASS_WEAPON;
-                virtualItemInfo.fields.itemSubClass = ITEM_SUBCLASS_WEAPON_GUN;
+                virtualItemInfo.fields.item_class = ITEM_CLASS_WEAPON;
+                virtualItemInfo.fields.item_subclass = ITEM_SUBCLASS_WEAPON_GUN;
                 break;
             case INVTYPE_2HWEAPON:
-                virtualItemInfo.fields.itemClass = ITEM_CLASS_WEAPON;
+                virtualItemInfo.fields.item_class = ITEM_CLASS_WEAPON;
                 if (virtualItemInfo.fields.sheath == ITEM_SHEATH_STAFF)
-                    virtualItemInfo.fields.itemSubClass = ITEM_SUBCLASS_WEAPON_STAFF;
+                    virtualItemInfo.fields.item_subclass = ITEM_SUBCLASS_WEAPON_STAFF;
                 else
-                    virtualItemInfo.fields.itemSubClass = ITEM_SUBCLASS_WEAPON_TWOHAND_SWORD;
+                    virtualItemInfo.fields.item_subclass = ITEM_SUBCLASS_WEAPON_TWOHAND_SWORD;
                 break;
             case INVTYPE_HOLDABLE:
-                virtualItemInfo.fields.itemClass = ITEM_CLASS_MISCELLANEOUS;
-                virtualItemInfo.fields.itemSubClass = ITEM_SUBCLASS_MISC_JUNK;
+                virtualItemInfo.fields.item_class = ITEM_CLASS_MISCELLANEOUS;
+                virtualItemInfo.fields.item_subclass = ITEM_SUBCLASS_MISC_JUNK;
                 break;
             case INVTYPE_THROWN:
-                virtualItemInfo.fields.itemClass = ITEM_CLASS_WEAPON;
-                virtualItemInfo.fields.itemSubClass = ITEM_SUBCLASS_WEAPON_THROWN;
+                virtualItemInfo.fields.item_class = ITEM_CLASS_WEAPON;
+                virtualItemInfo.fields.item_subclass = ITEM_SUBCLASS_WEAPON_THROWN;
                 break;
             default:
                 return;
@@ -1088,7 +1088,7 @@ void Unit::setVirtualItemSlotId(uint8_t slot, uint32_t item_id)
     {
         dynamic_cast<Creature*>(this)->setVirtualItemEntry(slot, item_id);
         if (slot == OFFHAND)
-            dynamic_cast<Creature*>(this)->toggleDualwield(isProperOffhandWeapon(virtualItemInfo.fields.itemClass, virtualItemInfo.fields.itemSubClass));
+            dynamic_cast<Creature*>(this)->toggleDualwield(isProperOffhandWeapon(virtualItemInfo.fields.item_class, virtualItemInfo.fields.item_subclass));
     }
 
     write(unitData()->virtual_item_slot_display[slot], displayId);
@@ -1122,7 +1122,11 @@ bool Unit::canSwim()
 #endif
     if (isPet() && hasUnitFlags(UNIT_FLAG_PET_IN_COMBAT))
         return true;
+#if VERSION_STRING == Classic
+    return hasUnitFlags(UNIT_FLAG_SWIMMING);
+#else
     return hasUnitFlags(UNIT_FLAG_UNKNOWN_5 | UNIT_FLAG_SWIMMING);
+#endif
 }
 
 #if VERSION_STRING > Classic
@@ -1295,11 +1299,25 @@ uint8_t Unit::getBytes1ByOffset(uint32_t offset) const
         case 0:
             return getStandState();
         case 1:
+#if VERSION_STRING < WotLK
+            return getPetLoyalty();
+#elif VERSION_STRING < Mop
             return getPetTalentPoints();
+#else
+            return unitData()->field_bytes_1.s.unk1;
+#endif
         case 2:
+#if VERSION_STRING == Classic
+            return getShapeShiftForm();
+#else
             return getStandStateFlags();
+#endif
         case 3:
+#if VERSION_STRING == Classic
+            return getStandStateFlags();
+#else
             return getAnimationFlags();
+#endif
         default:
             sLogger.failure("Offset {} is not a valid offset value for byte_1 data (max 3). Returning 0", offset);
             return 0;
@@ -1314,13 +1332,27 @@ void Unit::setBytes1ForOffset(uint32_t offset, uint8_t value)
             setStandState(value);
             break;
         case 1:
+#if VERSION_STRING < WotLK
+            setPetLoyalty(value);
+#elif VERSION_STRING < Mop
             setPetTalentPoints(value);
+#else
+            write(unitData()->field_bytes_1.s.unk1, value);
+#endif
             break;
         case 2:
+#if VERSION_STRING == Classic
+            setShapeShiftForm(value);
+#else
             setStandStateFlags(value);
+#endif
             break;
         case 3:
-            setAnimationTier(AnimationTier(value));
+#if VERSION_STRING == Classic
+            setStandStateFlags(value);
+#else
+            setAnimationFlags(value);
+#endif
             break;
         default:
             sLogger.failure("Offset {} is not a valid offset value for byte_1 data (max 3)", offset);
@@ -1340,14 +1372,28 @@ void Unit::setStandState(uint8_t standState)
         removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_STAND_UP);
 }
 
+#if VERSION_STRING < WotLK
+uint8_t Unit::getPetLoyalty() const { return unitData()->field_bytes_1.s.pet_loyalty; }
+void Unit::setPetLoyalty(uint8_t loyalty) { write(unitData()->field_bytes_1.s.pet_loyalty, loyalty); }
+#elif VERSION_STRING < Mop
 uint8_t Unit::getPetTalentPoints() const { return unitData()->field_bytes_1.s.pet_talent_points; }
 void Unit::setPetTalentPoints(uint8_t talentPoints) { write(unitData()->field_bytes_1.s.pet_talent_points, talentPoints); }
+#endif
+
+#if VERSION_STRING == Classic
+uint8_t Unit::getShapeShiftForm() const { return unitData()->field_bytes_1.s.shape_shift_form; }
+void Unit::setShapeShiftForm(uint8_t shapeShiftForm) { write(unitData()->field_bytes_1.s.shape_shift_form, shapeShiftForm); }
+#endif
 
 uint8_t Unit::getStandStateFlags() const { return unitData()->field_bytes_1.s.stand_state_flag; }
 void Unit::setStandStateFlags(uint8_t standStateFlags) { write(unitData()->field_bytes_1.s.stand_state_flag, standStateFlags); }
+void Unit::addStandStateFlags(uint8_t standStateFlags) { setStandStateFlags(getStandStateFlags() | standStateFlags); }
+void Unit::removeStandStateFlags(uint8_t standStateFlags) { setStandStateFlags(getStandStateFlags() & ~standStateFlags); }
 
+#if VERSION_STRING != Classic
 uint8_t Unit::getAnimationFlags() const { return unitData()->field_bytes_1.s.animation_flag; }
 void Unit::setAnimationFlags(uint8_t animationFlags) { write(unitData()->field_bytes_1.s.animation_flag, animationFlags); }
+#endif
 //bytes_1 end
 
 uint32_t Unit::getPetNumber() const { return unitData()->pet_number; }
@@ -1436,11 +1482,25 @@ uint8_t Unit::getBytes2ByOffset(uint32_t offset) const
         case 0:
             return getSheathType();
         case 1:
+#if VERSION_STRING == Classic
+            return unitData()->field_bytes_2.s.unk1;
+#elif VERSION_STRING == TBC
+            return getPositiveAuraLimit();
+#else
             return getPvpFlags();
+#endif
         case 2:
+#if VERSION_STRING == Classic
+            return unitData()->field_bytes_2.s.unk2;
+#else
             return getPetFlags();
+#endif
         case 3:
+#if VERSION_STRING == Classic
+            return unitData()->field_bytes_2.s.unk3;
+#else
             return getShapeShiftForm();
+#endif
         default:
             sLogger.failure("Offset {} is not a valid offset value for byte_2 data (max 3). Returning 0", offset);
             return 0;
@@ -1455,13 +1515,27 @@ void Unit::setBytes2ForOffset(uint32_t offset, uint8_t value)
             setSheathType(value);
             break;
         case 1:
+#if VERSION_STRING == Classic
+            write(unitData()->field_bytes_2.s.unk1, value);
+#elif VERSION_STRING == TBC
+            setPositiveAuraLimit(value);
+#else
             setPvpFlags(value);
+#endif
             break;
         case 2:
+#if VERSION_STRING == Classic
+            write(unitData()->field_bytes_2.s.unk2, value);
+#else
             setPetFlags(value);
+#endif
             break;
         case 3:
+#if VERSION_STRING == Classic
+            write(unitData()->field_bytes_2.s.unk3, value);
+#else
             setShapeShiftForm(value);
+#endif
             break;
         default:
             sLogger.failure("Offset {} is not a valid offset value for byte_2 data (max 3)", offset);
@@ -1472,15 +1546,14 @@ void Unit::setBytes2ForOffset(uint32_t offset, uint8_t value)
 uint8_t Unit::getSheathType() const { return unitData()->field_bytes_2.s.sheath_type; }
 void Unit::setSheathType(uint8_t sheathType) { write(unitData()->field_bytes_2.s.sheath_type, sheathType); }
 
+#if VERSION_STRING == TBC
+uint8_t Unit::getPositiveAuraLimit() const { return unitData()->field_bytes_2.s.positive_aura_limit; }
+void Unit::setPositiveAuraLimit(uint8_t limit) { write(unitData()->field_bytes_2.s.positive_aura_limit, limit); }
+#elif VERSION_STRING >= WotLK
 uint8_t Unit::getPvpFlags() const { return unitData()->field_bytes_2.s.pvp_flag; }
 void Unit::setPvpFlags(uint8_t pvpFlags)
 {
     write(unitData()->field_bytes_2.s.pvp_flag, pvpFlags);
-
-#if VERSION_STRING == TBC
-    // TODO Fix this later
-    return;
-#endif
 
     // Update pvp flags also to group
     const auto plr = getPlayerOwnerOrSelf();
@@ -1499,7 +1572,9 @@ void Unit::removePvpFlags(uint8_t pvpFlags)
     auto flags = getPvpFlags();
     setPvpFlags(flags &= ~pvpFlags);
 }
+#endif
 
+#if VERSION_STRING >= TBC
 uint8_t Unit::getPetFlags() const { return unitData()->field_bytes_2.s.pet_flag; }
 void Unit::setPetFlags(uint8_t petFlags) { write(unitData()->field_bytes_2.s.pet_flag, petFlags); }
 void Unit::addPetFlags(uint8_t petFlags) { setPetFlags(getPetFlags() | petFlags); }
@@ -1507,6 +1582,7 @@ void Unit::removePetFlags(uint8_t petFlags) { setPetFlags(getPetFlags() & ~petFl
 
 uint8_t Unit::getShapeShiftForm() const { return unitData()->field_bytes_2.s.shape_shift_form; }
 void Unit::setShapeShiftForm(uint8_t shapeShiftForm) { write(unitData()->field_bytes_2.s.shape_shift_form, shapeShiftForm); }
+#endif
 //bytes_2 end
 
 uint32_t Unit::getAttackPower() const { return unitData()->attack_power; }
@@ -2086,12 +2162,14 @@ void Unit::setMoveHover(bool set_hover)
             sendMessageToSet(&data, false);
         }
 
+#if VERSION_STRING >= TBC
         if (hasUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY))
-            setAnimationTier(AnimationTier::Fly);
+            setAnimationFlags(ANIMATION_FLAG_FLY);
         else if (isHovering())
-            setAnimationTier(AnimationTier::Hover);
+            setAnimationFlags(ANIMATION_FLAG_HOVER);
         else
-            setAnimationTier(AnimationTier::Ground);
+            setAnimationFlags(ANIMATION_FLAG_GROUND);
+#endif
     }
 }
 
@@ -2311,11 +2389,11 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
         if (isAlive() && !hasUnitStateFlag(UNIT_STATE_ROOTED))
         {
             if (hasUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY))
-                setAnimationTier(AnimationTier::Fly);
+                setAnimationFlags(ANIMATION_FLAG_FLY);
             else if (isHovering())
-                setAnimationTier(AnimationTier::Hover);
+                setAnimationFlags(ANIMATION_FLAG_HOVER);
             else
-                setAnimationTier(AnimationTier::Ground);
+                setAnimationFlags(ANIMATION_FLAG_GROUND);
         }
 
         if (!movespline->Initialized())
@@ -2464,14 +2542,6 @@ void Unit::handleFall(MovementInfo const& movementInfo)
     }
 
     m_zAxisPosition = 0.0f;
-}
-
-void Unit::setAnimationTier(AnimationTier tier)
-{
-    if (!isCreature())
-        return;
-
-    setAnimationFlags(static_cast<uint8_t>(tier));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -6546,7 +6616,7 @@ bool Unit::isHealthRegenerationInterrupted() const
 #if VERSION_STRING < Cata
 void Unit::interruptPowerRegeneration(uint32_t timeInMS)
 {
-#if VERSION_STRING != Classic
+#if VERSION_STRING > TBC
     if (isPlayer() && !isPowerRegenerationInterrupted())
         removeUnitFlags2(UNIT_FLAG2_ENABLE_POWER_REGEN);
 #endif
@@ -6820,15 +6890,15 @@ void Unit::sendEnvironmentalDamageLogPacket(uint64_t guid, uint8_t type, uint32_
     sendMessageToSet(SmsgEnvironmentalDamageLog(guid, type, damage, unk).serialise().get(), true, false);
 }
 
-bool Unit::isPvpFlagSet() { return false; }
+bool Unit::isPvpFlagSet() const { return false; }
 void Unit::setPvpFlag() {}
 void Unit::removePvpFlag() {}
 
-bool Unit::isFfaPvpFlagSet() { return false; }
+bool Unit::isFfaPvpFlagSet() const { return false; }
 void Unit::setFfaPvpFlag() {}
 void Unit::removeFfaPvpFlag() {}
 
-bool Unit::isSanctuaryFlagSet() { return false; }
+bool Unit::isSanctuaryFlagSet() const { return false; }
 void Unit::setSanctuaryFlag() {}
 void Unit::removeSanctuaryFlag() {}
 
@@ -8403,8 +8473,21 @@ void Unit::handleSpellClick(Unit* clicker)
 }
 #endif
 
+bool Unit::isMounted() const
+{
+#if VERSION_STRING == Classic
+    // TODO
+    return false;
+#else
+    return hasUnitFlags(UNIT_FLAG_MOUNT);
+#endif
+}
+
 void Unit::mount(uint32_t mount, uint32_t VehicleId, uint32_t creatureEntry)
 {
+#if VERSION_STRING == Classic
+    // TODO
+#else
     if (mount)
         setMountDisplayId(mount);
 
@@ -8448,6 +8531,7 @@ void Unit::mount(uint32_t mount, uint32_t VehicleId, uint32_t creatureEntry)
     }
 
     removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_MOUNT);
+#endif
 }
 
 void Unit::dismount(bool resummonPet/* = true*/)
@@ -8455,6 +8539,9 @@ void Unit::dismount(bool resummonPet/* = true*/)
     if (!isMounted())
         return;
 
+#if VERSION_STRING == Classic
+    // TODO
+#else
     setMountDisplayId(0);
     removeUnitFlags(UNIT_FLAG_MOUNT);
 
@@ -8500,6 +8587,7 @@ void Unit::dismount(bool resummonPet/* = true*/)
     if (Unit* charm = getWorldMapUnit(getCharmGuid()))
         if (charm->getObjectTypeId() == TYPEID_UNIT && charm->hasUnitFlags(UNIT_FLAG_STUNNED) && !charm->hasUnitStateFlag(UNIT_STATE_STUNNED))
             charm->removeUnitFlags(UNIT_FLAG_STUNNED);
+#endif
 }
 
 // Returns collisionheight of the unit. If it is 0, it returns DEFAULT_COLLISION_HEIGHT.

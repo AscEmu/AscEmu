@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "AEVersion.hpp"
+#include "GuidData.hpp"
 
 #include <cstdint>
 
@@ -22,16 +23,7 @@ This file is released under the MIT license. See README-MIT for more information
 #if VERSION_STRING < Cata
 struct WoWObject
 {
-    union
-    {
-        struct
-        {
-            uint32_t low;
-            uint32_t high;
-        } guid_parts;
-        uint64_t guid;
-    };
-
+    guid_union guid;
     uint32_t type;
     uint32_t entry;
     float scale_x;
@@ -50,27 +42,18 @@ struct WoWObject
 #elif VERSION_STRING == Cata
 struct WoWObject
 {
-    union
-    {
-        struct
-        {
-            uint32_t low;
-            uint32_t high;
-        } guid_parts;
-        uint64_t guid;
-    };
-
+    guid_union guid;
     uint64_t data;
 
-    union
+    union field_type_union
     {
-        struct
+        struct parts
         {
             uint16_t type;
             uint16_t guild_id;
         } parts;
-        uint32_t raw_parts;
-    };
+        uint32_t raw;
+    } field_type;
 
     uint32_t entry;
     float scale_x;
@@ -89,38 +72,29 @@ struct WoWObject
 #elif VERSION_STRING == Mop
 struct WoWObject
 {
-    union
-    {
-        struct
-        {
-            uint32_t low;
-            uint32_t high;
-        } guid_parts;
-        uint64_t guid;
-    };
-
+    guid_union guid;
     uint64_t data;
 
-    union
+    union field_type_union
     {
-        struct
+        struct parts
         {
             uint16_t type;
             uint16_t guild_id;
         } parts;
-        uint32_t raw_parts;
-    };
+        uint32_t raw;
+    } field_type;
 
     uint32_t entry;
-    union
+    union field_dynamic_union
     {
-        struct
+        struct parts
         {
             uint16_t dynamic_flags;
             int16_t path_progress;
         } dynamic_field_parts;
-        uint32_t dynamic_field;
-    };
+        uint32_t raw;
+    } dynamic_field;
     float scale_x;
 
     void setLowGuid(uint32_t val)

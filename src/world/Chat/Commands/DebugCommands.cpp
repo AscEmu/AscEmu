@@ -84,14 +84,14 @@ bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldS
         creature_spawn->o = session->GetPlayer()->GetOrientation();
         creature_spawn->emote_state = 0;
         creature_spawn->flags = creature_properties->NPCFLags;
+        creature_spawn->pvp_flagged = 0;
         creature_spawn->factionid = creature_properties->Faction;
         creature_spawn->bytes0 = creature_spawn->setbyte(0, 2, gender);
-        creature_spawn->bytes1 = 0;
-        creature_spawn->bytes2 = 0;
         creature_spawn->stand_state = 0;
         creature_spawn->death_state = 0;
         creature_spawn->channel_target_creature = creature_spawn->channel_target_go = creature_spawn->channel_spell = 0;
         creature_spawn->MountedDisplayID = 0;
+        creature_spawn->sheath_state = 0;
 
         creature_spawn->Item1SlotEntry = creature_properties->itemslot_1;
         creature_spawn->Item2SlotEntry = creature_properties->itemslot_2;

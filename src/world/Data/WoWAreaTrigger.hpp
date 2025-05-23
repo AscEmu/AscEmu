@@ -17,8 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma pack(push, 1)
 
-#if VERSION_STRING >= Cata
-#if VERSION_STRING < Mop
+#if VERSION_STRING == Cata
 struct WoWAreaTrigger : WoWObject
 {
     uint32_t spell_id;
@@ -28,7 +27,7 @@ struct WoWAreaTrigger : WoWObject
     float pos_y;
     float pos_z;
 };
-#else
+#elif VERSION_STRING == Mop
 struct WoWAreaTrigger : WoWObject
 {
     guid_union caster_guid;
@@ -37,7 +36,6 @@ struct WoWAreaTrigger : WoWObject
     uint32_t spell_visual_id;
     float scale;
 };
-#endif
 #endif
 
 #pragma pack(pop)

@@ -88,15 +88,15 @@ public:
     bool isTrainingDummy() override;
 
     //pvp helper
-    bool isPvpFlagSet() override;
+    bool isPvpFlagSet() const override;
     void setPvpFlag() override;
     void removePvpFlag() override;
 
-    bool isFfaPvpFlagSet() override;
+    bool isFfaPvpFlagSet() const override;
     void setFfaPvpFlag() override;
     void removeFfaPvpFlag() override;
 
-    bool isSanctuaryFlagSet() override;
+    bool isSanctuaryFlagSet() const override;
     void setSanctuaryFlag() override;
     void removeSanctuaryFlag() override;
 

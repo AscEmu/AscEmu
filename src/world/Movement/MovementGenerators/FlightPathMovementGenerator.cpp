@@ -116,7 +116,9 @@ void FlightPathMovementGenerator::doFinalize(Player* player, bool active, bool /
         player->safeTeleport(_path[getCurrentNode()]->mapid, 0, LocationVector(_path[getCurrentNode()]->x, _path[getCurrentNode()]->y, mapHeight, player->GetOrientation()));
     }
 
-    player->removePlayerFlags(PLAYER_FLAG_UNK2);
+#if VERSION_STRING >= TBC
+    player->removePlayerFlags(PLAYER_FLAG_TAXI_TIME_TEST);
+#endif
 }
 
 void FlightPathMovementGenerator::doReset(Player* player)

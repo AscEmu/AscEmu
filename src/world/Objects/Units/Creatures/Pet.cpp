@@ -350,7 +350,11 @@ void Pet::updatePetInfo(bool setPetOffline) const
     petCache->reset_cost = 0;
     petCache->reset_time = 0;
 #endif
+#if VERSION_STRING == WotLK || VERSION_STRING == Cata
     petCache->talentpoints = getPetTalentPoints();
+#else
+    petCache->talentpoints = 0;
+#endif
     petCache->petstate = getAIInterface()->getReactState();
     petCache->alive = isAlive();
     petCache->current_power = getPower(getPowerType());
@@ -360,7 +364,11 @@ void Pet::updatePetInfo(bool setPetOffline) const
 #else
     petCache->current_happiness = 0;
 #endif
-    petCache->renamable = getPetFlags() & UNIT_CAN_BE_RENAMED ? true : false;
+#if VERSION_STRING == Classic
+    petCache->renamable = hasUnitFlags(UNIT_FLAG_PET_CAN_BE_RENAMED);
+#else
+    petCache->renamable = getPetFlags() & PET_FLAG_CAN_BE_RENAMED ? true : false;
+#endif
 }
 
 void Pet::abandonPet()
@@ -480,10 +488,14 @@ void Pet::giveXp(uint32_t xp)
     if (levelUp)
     {
         setLevel(petLevel);
+#if VERSION_STRING == WotLK || VERSION_STRING == Cata
         setPetTalentPoints(GetTPsForLevel(getLevel()) - GetSpentTPs());
+#endif
         applyStatsForLevel();
         UpdateSpellList();
+#if VERSION_STRING == WotLK || VERSION_STRING == Cata
         SendTalentsToOwner();
+#endif
     }
 
     setPetExperience(newXP);
@@ -674,17 +686,33 @@ bool Pet::_preparePetForPush(PetCache const* petCache)
 #if VERSION_STRING < Cata
             setPower(POWER_TYPE_HAPPINESS, petCache->current_happiness);
 #endif
+#if VERSION_STRING == WotLK || VERSION_STRING == Cata
             setPetTalentPoints(petCache->talentpoints);
+#endif
+
+#if VERSION_STRING == Classic
             if (!petCache->renamable)
-                setPetFlags(UNIT_CAN_BE_ABANDONED);
+                addUnitFlags(UNIT_FLAG_PET_CAN_BE_ABANDONED);
             else
-                setPetFlags(UNIT_CAN_BE_ABANDONED | UNIT_CAN_BE_RENAMED);
+                addUnitFlags(UNIT_FLAG_PET_CAN_BE_ABANDONED | UNIT_FLAG_PET_CAN_BE_RENAMED);
+#else
+            if (!petCache->renamable)
+                setPetFlags(PET_FLAG_CAN_BE_ABANDONED);
+            else
+                setPetFlags(PET_FLAG_CAN_BE_ABANDONED | PET_FLAG_CAN_BE_RENAMED);
+#endif
         }
     }
     else if (isNewSummon && m_petType == PET_TYPE_HUNTER && m_unitOwner->isPlayer())
     {
+#if VERSION_STRING == WotLK || VERSION_STRING == Cata
         setPetTalentPoints(GetTPsForLevel(getLevel()));
-        setPetFlags(UNIT_CAN_BE_ABANDONED | UNIT_CAN_BE_RENAMED);
+#endif
+#if VERSION_STRING == Classic
+        addUnitFlags(UNIT_FLAG_PET_CAN_BE_ABANDONED | UNIT_FLAG_PET_CAN_BE_RENAMED);
+#else
+        setPetFlags(PET_FLAG_CAN_BE_ABANDONED | PET_FLAG_CAN_BE_RENAMED);
+#endif
     }
 
     // loadFromDB() (called by Player::spawnPet()) now always revives the Pet if it was dead.
@@ -837,9 +865,11 @@ bool Pet::_preparePetForPush(PetCache const* petCache)
 
         SendSpellsToOwner();
 
+#if VERSION_STRING == WotLK || VERSION_STRING == Cata
         // Send pet talents
         if (m_petType == PET_TYPE_HUNTER)
             SendTalentsToOwner();
+#endif
 
         // Update player pet data for permanent pets
         if (!m_petExpires)
@@ -1314,10 +1344,9 @@ void Pet::SendSpellsToOwner()
     m_unitOwner->sendPacket(&data);
 }
 
+#if VERSION_STRING == WotLK || VERSION_STRING == Cata
 void Pet::SendTalentsToOwner()
 {
-#if VERSION_STRING < Mop
-#if VERSION_STRING > TBC
     auto* plrOwner = getPlayerOwner();
     if (plrOwner == nullptr)
         return;
@@ -1374,9 +1403,8 @@ void Pet::SendTalentsToOwner()
     // send the packet to owner
     if (plrOwner->getSession() != NULL)
         plrOwner->getSession()->SendPacket(&data);
-#endif
-#endif
 }
+#endif
 
 void Pet::SendCastFailed(uint32_t spellid, uint8_t fail)
 {

@@ -143,17 +143,17 @@ namespace MySQLStructure
         uint32_t displayid;
         uint32_t factionid;
         uint32_t flags;
+        uint8_t pvp_flagged;
         uint32_t bytes0;
-        uint32_t bytes1;
-        uint32_t bytes2;
         uint32_t emote_state;
         //uint32_t respawnNpcLink;
         uint32_t channel_spell;
         uint32_t channel_target_go;
         uint32_t channel_target_creature;
-        uint16_t stand_state;
+        uint8_t stand_state;
         uint32_t death_state;
         uint32_t MountedDisplayID;
+        uint8_t sheath_state;
 
         // store item entry
         uint32_t Item1SlotEntry;

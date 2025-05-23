@@ -1588,9 +1588,11 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         {
             if (!getSpellInfo()->isPassive())
             {
+#if VERSION_STRING >= WotLK
                 // You can't cast other spells if you have the player flag preventing cast
                 if (p_caster->hasPlayerFlags(PLAYER_FLAG_PREVENT_SPELL_CAST))
                     return SPELL_FAILED_SPELL_IN_PROGRESS;
+#endif
 
                 // Check for cooldown
                 if (p_caster->hasSpellOnCooldown(getSpellInfo()))
@@ -2212,7 +2214,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
 
         // Check if spell can be casted while mounted or on a taxi
         // but skip triggered and passive spells
-        if ((p_caster->hasUnitFlags(UNIT_FLAG_MOUNT) || p_caster->hasUnitFlags(UNIT_FLAG_MOUNTED_TAXI)) && !m_triggeredSpell && !getSpellInfo()->isPassive())
+        if ((p_caster->isMounted() || p_caster->hasUnitFlags(UNIT_FLAG_MOUNTED_TAXI)) && !m_triggeredSpell && !getSpellInfo()->isPassive())
         {
             if (p_caster->isOnTaxi())
             {
@@ -3513,7 +3515,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                     {
                         // Check if the weapon slot is disarmed
                         if ((i == EQUIPMENT_SLOT_MAINHAND && p_caster->hasUnitFlags(UNIT_FLAG_DISARMED))
-#if VERSION_STRING >= TBC
+#if VERSION_STRING >= WotLK
                             || (i == EQUIPMENT_SLOT_OFFHAND && p_caster->hasUnitFlags2(UNIT_FLAG2_DISARM_OFFHAND))
                             || (i == EQUIPMENT_SLOT_RANGED && p_caster->hasUnitFlags2(UNIT_FLAG2_DISARM_RANGED))
 #endif
@@ -3539,7 +3541,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                     inventoryItem = p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
                     if (inventoryItem != nullptr)
                     {
-#if VERSION_STRING >= TBC
+#if VERSION_STRING >= WotLK
                         // Check for offhand disarm
                         if (!p_caster->hasUnitFlags2(UNIT_FLAG2_DISARM_OFFHAND))
 #endif
@@ -3641,8 +3643,12 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
     // Check if the spell requires any reagents or tools (skip enchant scrolls)
     if (i_caster == nullptr || !(i_caster->getItemProperties()->Flags & ITEM_FLAG_ENCHANT_SCROLL))
     {
+#if VERSION_STRING == Classic
+        auto checkForReagents = true;
+#else
         // Spells with ATTRIBUTESEXE_REAGENT_REMOVAL attribute won't take reagents if player has UNIT_FLAG_NO_REAGANT_COST flag
         auto checkForReagents = !(getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_REAGENT_REMOVAL && p_caster->hasUnitFlags(UNIT_FLAG_NO_REAGANT_COST));
+#endif
         if (checkForReagents)
         {
 #if VERSION_STRING >= WotLK
@@ -5483,10 +5489,10 @@ void Spell::writeProjectileDataToPacket(WorldPacket *data)
 #else
             // Get the item data from unitdata
             const auto itemData = u_caster->getVirtualItemInfoFields(i);
-            if (itemData.fields.itemClass != ITEM_CLASS_WEAPON)
+            if (itemData.fields.item_class != ITEM_CLASS_WEAPON)
                 continue;
 
-            switch (itemData.fields.itemSubClass)
+            switch (itemData.fields.item_subclass)
             {
                 case ITEM_SUBCLASS_WEAPON_BOW:
                 case ITEM_SUBCLASS_WEAPON_CROSSBOW:
@@ -6085,7 +6091,9 @@ void Spell::removeReagents()
     if (p_caster == nullptr)
         return;
 
+#if VERSION_STRING >= TBC
     if (!(p_caster->hasUnitFlags(UNIT_FLAG_NO_REAGANT_COST) && getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_REAGENT_REMOVAL))
+#endif
     {
         for (uint8_t i = 0; i < MAX_SPELL_REAGENTS; ++i)
         {

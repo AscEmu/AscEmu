@@ -4439,17 +4439,17 @@ void MySQLDataStore::loadCreatureSpawns()
 
                 cspawn->factionid = fields[11].asUint32();
                 cspawn->flags = fields[12].asUint32();
-                cspawn->bytes0 = fields[13].asUint32();
-                cspawn->bytes1 = fields[14].asUint32();
-                cspawn->bytes2 = fields[15].asUint32();
-                cspawn->emote_state = fields[16].asUint32();
-                //cspawn->respawnNpcLink = fields[17].GetUInt32();
-                cspawn->channel_spell = fields[18].asUint32();
-                cspawn->channel_target_go = fields[19].asUint32();
-                cspawn->channel_target_creature = fields[20].asUint32();
-                cspawn->stand_state = fields[21].asUint16();
-                cspawn->death_state = fields[22].asUint32();
-                cspawn->MountedDisplayID = fields[23].asUint32();
+                cspawn->pvp_flagged = fields[13].asUint8();
+                cspawn->bytes0 = fields[14].asUint32();
+                cspawn->emote_state = fields[15].asUint32();
+                //cspawn->respawnNpcLink = fields[16].GetUInt32();
+                cspawn->channel_spell = fields[17].asUint32();
+                cspawn->channel_target_go = fields[18].asUint32();
+                cspawn->channel_target_creature = fields[19].asUint32();
+                cspawn->stand_state = fields[20].asUint8();
+                cspawn->death_state = fields[21].asUint32();
+                cspawn->MountedDisplayID = fields[22].asUint32();
+                cspawn->sheath_state = fields[23].asUint8();
 
                 cspawn->Item1SlotEntry = fields[24].asUint32();
                 cspawn->Item2SlotEntry = fields[25].asUint32();

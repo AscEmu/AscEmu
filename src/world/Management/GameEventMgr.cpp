@@ -145,9 +145,9 @@ void GameEventMgr::LoadFromDB()
     sLogger.info("GameEventMgr : Start loading game event creature spawns");
     {
         const char* loadEventCreatureSpawnsQuery = "SELECT id, entry, map, position_x, position_y, position_z, \
-                                                    orientation, movetype, displayid, faction, flags, bytes0, bytes1, bytes2, \
+                                                    orientation, movetype, displayid, faction, flags, pvp_flagged, bytes0, \
                                                     emote_state, npc_respawn_link, channel_spell, channel_target_sqlid, \
-                                                    channel_target_sqlid_creature, standstate, death_state, mountdisplayid, \
+                                                    channel_target_sqlid_creature, standstate, death_state, mountdisplayid, sheath_state, \
                                                     slot1item, slot2item, slot3item, CanFly, phase, waypoint_group, event_entry \
                                                     FROM creature_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry > 0";
         bool success = false;
@@ -193,17 +193,17 @@ void GameEventMgr::LoadFromDB()
                 dbResult.displayid = field[8].asUint32();
                 dbResult.faction = field[9].asUint32();
                 dbResult.flags = field[10].asUint32();
-                dbResult.bytes0 = field[11].asUint32();
-                dbResult.bytes1 = field[12].asUint32();
-                dbResult.bytes2 = field[13].asUint32();
-                dbResult.emote_state = field[14].asUint16();
-                dbResult.npc_respawn_link = field[15].asUint32();
-                dbResult.channel_spell = field[16].asUint32();
-                dbResult.channel_target_sqlid = field[17].asUint32();
-                dbResult.channel_target_sqlid_creature = field[18].asUint32();
-                dbResult.standstate = field[19].asUint8();
-                dbResult.death_state = field[20].asUint8();
-                dbResult.mountdisplayid = field[21].asUint32();
+                dbResult.pvp_flagged = field[11].asUint8();
+                dbResult.bytes0 = field[12].asUint32();
+                dbResult.emote_state = field[13].asUint16();
+                dbResult.npc_respawn_link = field[14].asUint32();
+                dbResult.channel_spell = field[15].asUint32();
+                dbResult.channel_target_sqlid = field[16].asUint32();
+                dbResult.channel_target_sqlid_creature = field[17].asUint32();
+                dbResult.standstate = field[18].asUint8();
+                dbResult.death_state = field[19].asUint8();
+                dbResult.mountdisplayid = field[20].asUint32();
+                dbResult.sheath_state = field[21].asUint8();
                 dbResult.slot1item = field[22].asUint32();
                 dbResult.slot2item = field[23].asUint32();
                 dbResult.slot3item = field[24].asUint32();

@@ -200,8 +200,8 @@ bool Creature::isClassTrainer() const { return getNpcFlags() & UNIT_NPC_FLAG_TRA
 bool Creature::isProfessionTrainer() const { return getNpcFlags() & UNIT_NPC_FLAG_TRAINER_PROFESSION; }
 bool Creature::isQuestGiver() const { return getNpcFlags() & UNIT_NPC_FLAG_QUESTGIVER; }
 bool Creature::isGossip() const{ return getNpcFlags() & UNIT_NPC_FLAG_GOSSIP; }
-bool Creature::isTaxi() const { return getNpcFlags() & UNIT_NPC_FLAG_FLIGHTMASTER; }
-bool Creature::isCharterGiver() const { return getNpcFlags() & UNIT_NPC_FLAG_PETITIONER; }
+bool Creature::isTaxi() const { return getNpcFlags() & UNIT_NPC_FLAG_TAXI; }
+bool Creature::isCharterGiver() const { return getNpcFlags() & UNIT_NPC_FLAG_CHARTERGIVER; }
 bool Creature::isGuildBank() const { return getNpcFlags() & UNIT_NPC_FLAG_GUILD_BANKER; }
 bool Creature::isBattleMaster() const { return getNpcFlags() & UNIT_NPC_FLAG_BATTLEMASTER; }
 bool Creature::isBanker() const { return getNpcFlags() & UNIT_NPC_FLAG_BANKER; }
@@ -210,11 +210,11 @@ bool Creature::isSpiritHealer() const { return getNpcFlags() & UNIT_NPC_FLAG_SPI
 bool Creature::isTabardDesigner() const { return getNpcFlags() & UNIT_NPC_FLAG_TABARDDESIGNER; }
 bool Creature::isAuctioneer() const { return getNpcFlags() & UNIT_NPC_FLAG_AUCTIONEER; }
 bool Creature::isStableMaster() const { return getNpcFlags() & UNIT_NPC_FLAG_STABLEMASTER; }
-bool Creature::isArmorer() const { return getNpcFlags() & UNIT_NPC_FLAG_REPAIR; }
+bool Creature::isArmorer() const { return getNpcFlags() & UNIT_NPC_FLAG_ARMORER; }
 #if VERSION_STRING >= Cata
 bool Creature::isTransmog() const { return getNpcFlags() & UNIT_NPC_FLAG_TRANSMOGRIFIER; }
 bool Creature::isReforger() const { return getNpcFlags() & UNIT_NPC_FLAG_REFORGER; }
-bool Creature::isVoidStorage() const { return getNpcFlags() & UNIT_NPC_FLAG_VAULTKEEPER; }
+bool Creature::isVoidStorage() const { return getNpcFlags() & UNIT_NPC_FLAG_VOID_STORAGE; }
 #endif
 
 bool Creature::isVehicle() const
@@ -227,54 +227,82 @@ bool Creature::isTrainingDummy()
     return creature_properties->isTrainingDummy;
 }
 
-bool Creature::isPvpFlagSet()
+bool Creature::isPvpFlagSet() const
 {
-    return getPvpFlags() & U_FIELD_BYTES_FLAG_PVP;
+#if VERSION_STRING > TBC
+    return getPvpFlags() & PVP_STATE_FLAG_PVP;
+#else
+    return getUnitFlags() & UNIT_FLAG_PVP;
+#endif
 }
 
 void Creature::setPvpFlag()
 {
-    addPvpFlags(U_FIELD_BYTES_FLAG_PVP);
+#if VERSION_STRING > TBC
+    addPvpFlags(PVP_STATE_FLAG_PVP);
+#else
+    addUnitFlags(UNIT_FLAG_PVP);
+#endif
     getSummonInterface()->setPvPFlags(true);
 }
 
 void Creature::removePvpFlag()
 {
-    removePvpFlags(U_FIELD_BYTES_FLAG_PVP);
+#if VERSION_STRING > TBC
+    removePvpFlags(PVP_STATE_FLAG_PVP);
+#else
+    removeUnitFlags(UNIT_FLAG_PVP);
+#endif
     getSummonInterface()->setPvPFlags(false);
 }
 
-bool Creature::isFfaPvpFlagSet()
+bool Creature::isFfaPvpFlagSet() const
 {
-    return getPvpFlags() & U_FIELD_BYTES_FLAG_FFA_PVP;
+#if VERSION_STRING > TBC
+    return getPvpFlags() & PVP_STATE_FLAG_FFA_PVP;
+#else
+    return false;
+#endif
 }
 
 void Creature::setFfaPvpFlag()
 {
-    addPvpFlags(U_FIELD_BYTES_FLAG_FFA_PVP);
+#if VERSION_STRING > TBC
+    addPvpFlags(PVP_STATE_FLAG_FFA_PVP);
+#endif
     getSummonInterface()->setFFAPvPFlags(true);
 }
 
 void Creature::removeFfaPvpFlag()
 {
-    removePvpFlags(U_FIELD_BYTES_FLAG_FFA_PVP);
+#if VERSION_STRING > TBC
+    removePvpFlags(PVP_STATE_FLAG_FFA_PVP);
+#endif
     getSummonInterface()->setFFAPvPFlags(false);
 }
 
-bool Creature::isSanctuaryFlagSet()
+bool Creature::isSanctuaryFlagSet() const
 {
-    return getPvpFlags() & U_FIELD_BYTES_FLAG_SANCTUARY;
+#if VERSION_STRING > TBC
+    return getPvpFlags() & PVP_STATE_FLAG_SANCTUARY;
+#else
+    return false;
+#endif
 }
 
 void Creature::setSanctuaryFlag()
 {
-    addPvpFlags(U_FIELD_BYTES_FLAG_SANCTUARY);
+#if VERSION_STRING > TBC
+    addPvpFlags(PVP_STATE_FLAG_SANCTUARY);
+#endif
     getSummonInterface()->setSanctuaryFlags(true);
 }
 
 void Creature::removeSanctuaryFlag()
 {
-    removePvpFlags(U_FIELD_BYTES_FLAG_SANCTUARY);
+#if VERSION_STRING > TBC
+    removePvpFlags(PVP_STATE_FLAG_SANCTUARY);
+#endif
     getSummonInterface()->setSanctuaryFlags(false);
 }
 
@@ -900,16 +928,16 @@ void Creature::SaveToDB()
         m_spawn->o = m_position.o;
         m_spawn->emote_state = getEmoteState();
         m_spawn->flags = getUnitFlags();
+        m_spawn->pvp_flagged = isPvpFlagSet() ? 1 : 0;
         m_spawn->factionid = getFactionTemplate();
         m_spawn->bytes0 = getBytes0();
-        m_spawn->bytes1 = getBytes1();
-        m_spawn->bytes2 = getBytes2();
         m_spawn->stand_state = getStandState();
         m_spawn->death_state = 0;
         m_spawn->channel_target_creature = 0;
         m_spawn->channel_target_go = 0;
         m_spawn->channel_spell = 0;
         m_spawn->MountedDisplayID = getMountDisplayId();
+        m_spawn->sheath_state = getSheathType();
 
 #if VERSION_STRING < WotLK
         m_spawn->Item1SlotEntry = getVirtualItemEntry(MELEE);
@@ -963,9 +991,8 @@ void Creature::SaveToDB()
         << getDisplayId() << ","
         << getFactionTemplate() << ","
         << getUnitFlags() << ","
+        << (isPvpFlagSet() ? "1" : "0") << ","
         << getBytes0() << ","
-        << getBytes1() << ","
-        << getBytes2() << ","
         << getEmoteState() << ",0,";
 
     ss << m_spawn->channel_spell << ","
@@ -977,6 +1004,7 @@ void Creature::SaveToDB()
     ss << m_spawn->death_state << ",";
 
     ss << getMountDisplayId() << ","
+        << std::to_string(getSheathType()) << ","
         << m_spawn->Item1SlotEntry << ","
         << m_spawn->Item2SlotEntry << ","
         << m_spawn->Item3SlotEntry << ",";
@@ -1647,6 +1675,12 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8_t mode, MySQLStr
     setCombatReach(creature_properties->CombatReach);
     original_emotestate = spawn->emote_state;
 
+#if VERSION_STRING == TBC
+    // Summons are set in Summon::load
+    if (!isSummon())
+        setPositiveAuraLimit(POS_AURA_LIMIT_CREATURE);
+#endif
+
     // set position
     m_position.ChangeCoords({ spawn->x, spawn->y, spawn->z, spawn->o });
     m_spawnLocation.ChangeCoords({ spawn->x, spawn->y, spawn->z, spawn->o });
@@ -1710,13 +1744,14 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8_t mode, MySQLStr
     setBytes0(spawn->bytes0);
 
     // Bytes 1
-    setStandState(static_cast<uint8_t>((spawn->bytes1) & 0xFF));
-    setPetTalentPoints(static_cast<uint8_t>((spawn->bytes1 >> 8) & 0xFF));
-    setStandStateFlags(static_cast<uint8_t>((spawn->bytes1 >> 16) & 0xFF));
-    setAnimationTier(static_cast<AnimationTier>((spawn->bytes1 >> 24) & 0xFF));
+    setBytes1(0);
+    setStandState(spawn->stand_state);
 
     // Bytes 2
-    setBytes2(spawn->bytes2);
+    setBytes2(0);
+    setSheathType(spawn->sheath_state);
+    if (spawn->pvp_flagged == 1)
+        setPvpFlag();
 
     ////////////AI
 
@@ -1767,9 +1802,6 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8_t mode, MySQLStr
         m_limbostate = true;
         setDeathState(CORPSE);
     }
-
-    if (spawn->stand_state)
-        setStandState((uint8_t)spawn->stand_state);
 
     m_aiInterface->eventAiInterfaceParamsetFinish();
 
@@ -1876,10 +1908,15 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     setMinDamage(creature_properties->MinDamage);
     setMaxDamage(creature_properties->MaxDamage);
 
-
     setFaction(creature_properties->Faction);
     setBoundingRadius(creature_properties->BoundingRadius);
     setCombatReach(creature_properties->CombatReach);
+
+#if VERSION_STRING == TBC
+    // Summons are set in Summon::load
+    if (!isSummon())
+        setPositiveAuraLimit(POS_AURA_LIMIT_CREATURE);
+#endif
 
     original_emotestate = 0;
 

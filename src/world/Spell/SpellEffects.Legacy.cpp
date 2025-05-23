@@ -5294,6 +5294,13 @@ void Spell::SpellEffectSummonDeadPet(uint8_t /*effectIndex*/)
 
         if (p_caster->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
             pPet->addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
+
+#if VERSION_STRING == TBC
+        if (p_caster->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
+            pPet->setPositiveAuraLimit(POS_AURA_LIMIT_PVP_ATTACKABLE);
+        else
+            pPet->setPositiveAuraLimit(POS_AURA_LIMIT_CREATURE);
+#endif
     }
     else
     {
@@ -6159,7 +6166,11 @@ void Spell::SpellEffectRenamePet(uint8_t /*effectIndex*/)
         !static_cast< Pet* >(m_unitTarget)->getPlayerOwner() || static_cast< Pet* >(m_unitTarget)->getPlayerOwner()->getClass() != HUNTER)
         return;
 
-    m_unitTarget->addPetFlags(UNIT_CAN_BE_RENAMED);
+#if VERSION_STRING == Classic
+    m_unitTarget->addUnitFlags(UNIT_FLAG_PET_CAN_BE_RENAMED);
+#else
+    m_unitTarget->addPetFlags(PET_FLAG_CAN_BE_RENAMED);
+#endif
 }
 
 void Spell::SpellEffectRestoreHealthPct(uint8_t /*effectIndex*/)

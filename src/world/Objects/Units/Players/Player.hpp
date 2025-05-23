@@ -174,9 +174,6 @@ public:
     uint8_t getFacialFeatures() const;
     void setFacialFeatures(uint8_t feature);
 
-    uint8_t getBytes2UnknownField() const;
-    void setBytes2UnknownField(uint8_t value);
-
     uint8_t getBankSlots() const;
     void setBankSlots(uint8_t slots);
 
@@ -200,8 +197,10 @@ public:
     uint8_t getPvpRank() const;
     void setPvpRank(uint8_t rank);
 
+#if VERSION_STRING >= TBC
     uint8_t getArenaFaction() const;
     void setArenaFaction(uint8_t faction);
+#endif
     // bytes3 end
     //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -246,8 +245,35 @@ public:
     // VisibleItem end
     //////////////////////////////////////////////////////////////////////////////////////////
 
+    uint64_t getInventorySlotItemGuid(uint8_t slot) const;
+    void setInventorySlotItemGuid(uint8_t slot, uint64_t guid);
+
+    uint64_t getPackSlotItemGuid(uint8_t slot) const;
+    void setPackSlotItemGuid(uint8_t slot, uint64_t guid);
+
+    uint64_t getBankSlotItemGuid(uint8_t slot) const;
+    void setBankSlotItemGuid(uint8_t slot, uint64_t guid);
+
+    uint64_t getBankBagSlotItemGuid(uint8_t slot) const;
+    void setBankBagSlotItemGuid(uint8_t slot, uint64_t guid);
+
     uint64_t getVendorBuybackSlot(uint8_t slot) const;
     void setVendorBuybackSlot(uint8_t slot, uint64_t guid);
+
+#if VERSION_STRING < Cata
+    uint64_t getKeyRingSlotItemGuid(uint8_t slot) const;
+    void setKeyRingSlotItemGuid(uint8_t slot, uint64_t guid);
+#endif
+
+#if VERSION_STRING == TBC
+    uint64_t getVanityPetSlotItemGuid(uint8_t slot) const;
+    void setVanityPetSlotItemGuid(uint8_t slot, uint64_t guid);
+#endif
+
+#if VERSION_STRING == WotLK
+    uint64_t getCurrencyTokenSlotItemGuid(uint8_t slot) const;
+    void setCurrencyTokenSlotItemGuid(uint8_t slot, uint64_t guid);
+#endif
 
     uint64_t getFarsightGuid() const;
     void setFarsightGuid(uint64_t farsightGuid);
@@ -440,8 +466,13 @@ public:
     uint32_t getPlayerFieldBytes() const;
     void setPlayerFieldBytes(uint32_t bytes);
 
-    uint8_t getActionBarId() const;
-    void setActionBarId(uint8_t actionBarId);
+    uint8_t getPlayerFieldBytesMiscFlag() const;
+    void setPlayerFieldBytesMiscFlag(uint8_t miscFlag);
+    void addPlayerFieldBytesMiscFlag(uint8_t miscFlag);
+    void removePlayerFieldBytesMiscFlag(uint8_t miscFlag);
+
+    uint8_t getEnabledActionBars() const;
+    void setEnabledActionBars(uint8_t actionBarId);
     // playerfieldbytes end
 
 #if VERSION_STRING < Cata
@@ -476,6 +507,11 @@ public:
     // playerfieldbytes2 start
     uint32_t getPlayerFieldBytes2() const;
     void setPlayerFieldBytes2(uint32_t bytes);
+
+    uint8_t getAuraVision() const;
+    void setAuraVision(uint8_t auraVision);
+    void addAuraVision(uint8_t auraVision);
+    void removeAuraVision(uint8_t auraVision);
     // playerfieldbytes2 end
 
     uint32_t getCombatRating(uint8_t combatRating) const;
@@ -491,9 +527,6 @@ public:
     void setArenaTeamMemberRank(uint8_t teamSlot, uint32_t rank);
     // field_arena_team_info end
 #endif
-
-    uint64_t getInventorySlotItemGuid(uint8_t index) const;
-    void setInventorySlotItemGuid(uint8_t index, uint64_t guid);
 
 #if VERSION_STRING > Classic
 #if VERSION_STRING < Cata
@@ -1665,7 +1698,7 @@ private:
 public:
     uint16_t getServersideDrunkValue() const;
     void setServersideDrunkValue(uint16_t newDrunkValue, uint32_t itemId = 0);
-    static DrunkenState getDrunkStateByValue(uint16_t value);
+    static PlayerBytes3_DrunkValue getDrunkStateByValue(uint16_t value);
     void handleSobering();
 
 private:
@@ -1834,15 +1867,15 @@ public:
     void sendEmptyPetSpellList();
     void sendInitialWorldstates();
 
-    bool isPvpFlagSet() override;
+    bool isPvpFlagSet() const override;
     void setPvpFlag() override;
     void removePvpFlag() override;
 
-    bool isFfaPvpFlagSet() override;
+    bool isFfaPvpFlagSet() const override;
     void setFfaPvpFlag() override;
     void removeFfaPvpFlag() override;
 
-    bool isSanctuaryFlagSet() override;
+    bool isSanctuaryFlagSet() const override;
     void setSanctuaryFlag() override;
     void removeSanctuaryFlag() override;
 

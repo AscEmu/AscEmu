@@ -312,10 +312,12 @@ public:
     static CreatureAIScript* Create(Creature* c) { return new FrostBroodVanquisherAI(c); }
     explicit FrostBroodVanquisherAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
+#if VERSION_STRING >= TBC
     void OnLoad() override
     {
-        getCreature()->setAnimationTier(AnimationTier::Hover);
+        getCreature()->setAnimationFlags(ANIMATION_FLAG_HOVER);
     }
+#endif
 
     void OnRemovePassenger(Unit* _passenger) override
     {

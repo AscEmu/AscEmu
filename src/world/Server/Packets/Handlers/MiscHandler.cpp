@@ -569,7 +569,7 @@ void WorldSession::handleSetActionBarTogglesOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_SET_ACTIONBAR_TOGGLES: {} (actionbarId)", srlPacket.actionbarId);
 
-    _player->setActionBarId(srlPacket.actionbarId);
+    _player->setEnabledActionBars(srlPacket.actionbarId);
 }
 
 void WorldSession::handleLootRollOpcode(WorldPacket& recvPacket)

@@ -1419,11 +1419,11 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
                 break;
         }
 
-        m_target->setStandStateFlags(UNIT_STAND_FLAGS_CREEP);
+        m_target->addStandStateFlags(UNIT_STAND_FLAGS_CREEP);
 #if VERSION_STRING != Mop
         if (m_target->isPlayer())
             if (const auto player = dynamic_cast<Player*>(m_target))
-                player->setPlayerFieldBytes2(0x2000);
+                player->addAuraVision(AURA_VISION_STEALTH);
 #endif
 
         m_target->removeAllAurasByAuraInterruptFlag(AURA_INTERRUPT_ON_STEALTH | AURA_INTERRUPT_ON_INVINCIBLE);
@@ -1548,12 +1548,12 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
                 break;
             default:
             {
-                m_target->setStandStateFlags(m_target->getStandStateFlags() &~UNIT_STAND_FLAGS_CREEP);
+                m_target->removeStandStateFlags(UNIT_STAND_FLAGS_CREEP);
 
                 if (p_target != nullptr)
                 {
 #if VERSION_STRING != Mop
-                    p_target->setPlayerFieldBytes2(0x2000);
+                    p_target->removeAuraVision(AURA_VISION_STEALTH);
 #endif
                     p_target->sendSpellCooldownEventPacket(m_spellInfo->getId());
 
@@ -1653,7 +1653,7 @@ void Aura::SpellAuraModInvisibility(AuraEffectModifier* aurEff, bool apply)
 #if VERSION_STRING != Mop
             if (getSpellId() == 32612)
                 if (const auto player = dynamic_cast<Player*>(m_target))
-                    player->setPlayerFieldBytes2(0x4000);   //Mage Invis self visual
+                    player->addAuraVision(AURA_VISION_INVISIBILITY);   //Mage Invis self visual
 #endif
         }
 
@@ -1667,7 +1667,7 @@ void Aura::SpellAuraModInvisibility(AuraEffectModifier* aurEff, bool apply)
 #if VERSION_STRING != Mop
             if (getSpellId() == 32612)
                 if (const auto player = dynamic_cast<Player*>(m_target))
-                    player->setPlayerFieldBytes2(0x4000);
+                    player->removeAuraVision(AURA_VISION_INVISIBILITY);
 #endif
         }
     }
@@ -2885,17 +2885,16 @@ void Aura::SpellAuraModDisarm(AuraEffectModifier* aurEff, bool apply)
             field = UnitFlag;
             flag = UNIT_FLAG_DISARMED;
             break;
-#if VERSION_STRING > Classic
+#if VERSION_STRING > TBC
+        // TODO: confirm if this actually exists in tbc -Appled
         case SPELL_AURA_MOD_DISARM_OFFHAND:
             field = UnitFlag2;
             flag = UNIT_FLAG2_DISARM_OFFHAND;
             break;
-#if VERSION_STRING > TBC
         case SPELL_AURA_MOD_DISARM_RANGED:
             field = UnitFlag2;
             flag = UNIT_FLAG2_DISARM_RANGED;
             break;
-#endif
 #endif
         default:
             return;
@@ -4069,9 +4068,9 @@ void Aura::SpellAuraModHealingPCT(AuraEffectModifier* aurEff, bool apply)
 void Aura::SpellAuraUntrackable(AuraEffectModifier* /*aurEff*/, bool apply)
 {
     if (apply)
-        m_target->setStandStateFlags(UNIT_STAND_FLAGS_UNTRACKABLE);
+        m_target->addStandStateFlags(UNIT_STAND_FLAGS_UNTRACKABLE);
     else
-        m_target->setStandStateFlags(m_target->getStandStateFlags() &~UNIT_STAND_FLAGS_UNTRACKABLE);
+        m_target->removeStandStateFlags(UNIT_STAND_FLAGS_UNTRACKABLE);
 }
 
 void Aura::SpellAuraModRangedAttackPower(AuraEffectModifier* aurEff, bool apply)
@@ -5767,6 +5766,7 @@ void Aura::SpellAuraRemoveReagentCost(AuraEffectModifier* /*aurEff*/, bool apply
     if (p_target == nullptr)
         return;
 
+#if VERSION_STRING >= TBC
     if (apply)
     {
         p_target->addUnitFlags(UNIT_FLAG_NO_REAGANT_COST);
@@ -5775,6 +5775,7 @@ void Aura::SpellAuraRemoveReagentCost(AuraEffectModifier* /*aurEff*/, bool apply
     {
         p_target->removeUnitFlags(UNIT_FLAG_NO_REAGANT_COST);
     }
+#endif
 }
 void Aura::SpellAuraBlockMultipleDamage(AuraEffectModifier* aurEff, bool apply)
 {
@@ -5802,6 +5803,7 @@ void Aura::SpellAuraAllowOnlyAbility(AuraEffectModifier* /*aurEff*/, bool apply)
     if (!p_target)
         return;
 
+#if VERSION_STRING >= WotLK
     // Generic
     if (apply)
     {
@@ -5811,6 +5813,7 @@ void Aura::SpellAuraAllowOnlyAbility(AuraEffectModifier* /*aurEff*/, bool apply)
     {
         p_target->removePlayerFlags(PLAYER_FLAG_PREVENT_SPELL_CAST);
     }
+#endif
 }
 
 void Aura::SpellAuraIncreaseAPbyStatPct(AuraEffectModifier* aurEff, bool apply)
