@@ -103,8 +103,6 @@ class SERVER_DECL WorldSession
 
         void OutPacket(uint16_t opcode);
 
-        void Delete();
-
         void SendChatPacket(WorldPacket* data, uint32_t langpos, int32_t lang, WorldSession* originator);
 
         uint32_t m_currMsTime;

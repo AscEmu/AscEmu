@@ -255,7 +255,7 @@ void AddonMgr::LoadFromDB()
 {
     const char* loadClientAddons = "SELECT id, name, crc, banned, showinlist FROM clientaddons";
     bool success = false;
-    QueryResult* result = CharacterDatabase.Query(&success, loadClientAddons);
+    auto result = CharacterDatabase.Query(&success, loadClientAddons);
     if (!success)
     {
         sLogger.failure("Query failed: {}", loadClientAddons);
@@ -287,8 +287,6 @@ void AddonMgr::LoadFromDB()
 
     }
     while(result->NextRow());
-
-    delete result;
 }
 
 void AddonMgr::SaveToDB()
@@ -321,7 +319,7 @@ void AddonMgr::LoadFromDB()
 {
     auto startTime = Util::TimeNow();
 
-    QueryResult* clientAddonsResult = CharacterDatabase.Query("SELECT name, crc FROM clientaddons");
+    auto clientAddonsResult = CharacterDatabase.Query("SELECT name, crc FROM clientaddons");
     if (clientAddonsResult)
     {
         uint32_t knownAddonsCount = 0;
@@ -337,8 +335,6 @@ void AddonMgr::LoadFromDB()
 
             ++knownAddonsCount;
         } while (clientAddonsResult->NextRow());
-
-        delete clientAddonsResult;
 
         sLogger.debug("Loaded {} known addons from table `clientaddons` in {} ms", knownAddonsCount, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)) );
     }
@@ -373,8 +369,6 @@ void AddonMgr::LoadFromDB()
 
             ++bannedAddonsCount;
         } while (clientAddonsResult->NextRow());
-
-        delete clientAddonsResult;
 
         sLogger.debug("Loaded {} banned addons from table `clientaddons` in {} ms", bannedAddonsCount, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     }

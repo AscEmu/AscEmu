@@ -133,7 +133,7 @@ void LootMgr::loadLoot()
 
 void LootMgr::loadLootProp()
 {
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM item_randomprop_groups");
+    auto result = WorldDatabase.Query("SELECT * FROM item_randomprop_groups");
     if (result != nullptr)
     {
         do
@@ -160,7 +160,6 @@ void LootMgr::loadLootProp()
                 itr->second.push_back(std::make_pair(item_random_properties, ch));
             }
         } while (result->NextRow());
-        delete result;
     }
 
     result = WorldDatabase.Query("SELECT * FROM item_randomsuffix_groups");
@@ -190,13 +189,12 @@ void LootMgr::loadLootProp()
                 itr->second.push_back(std::make_pair(item_random_suffix, ch));
             }
         } while (result->NextRow());
-        delete result;
     }
 }
 
 void LootMgr::loadLootTables(std::string const& szTableName, LootTemplateMap* LootTable)
 {
-    QueryResult* result = sMySQLStore.getWorldDBQuery("SELECT * FROM %s ORDER BY entryid ASC", szTableName.c_str());
+    auto result = sMySQLStore.getWorldDBQuery("SELECT * FROM %s ORDER BY entryid ASC", szTableName.c_str());
     if (result == nullptr)
     {
         sLogger.failure("LootMgr::loadLootTables : Loading loot from table {} failed.", szTableName);
@@ -246,7 +244,6 @@ void LootMgr::loadLootTables(std::string const& szTableName, LootTemplateMap* Lo
     } while (result->NextRow());
 
     sLogger.info("{} loot templates loaded from {}", count, szTableName);
-    delete result;
 }
 
 void LootMgr::loadAndGenerateLoot(uint8_t type)

@@ -992,10 +992,9 @@ int LuaGameObject::AddLoot(lua_State* L, GameObject* ptr)
     bool perm = ((luaL_optinteger(L, 4, 0) == 1) ? true : false);
     if (perm)
     {
-        QueryResult* result = WorldDatabase.Query("SELECT * FROM loot_gameobjects WHERE entryid = %u, itemid = %u", ptr->getEntry(), itemid);
+        auto result = WorldDatabase.Query("SELECT * FROM loot_gameobjects WHERE entryid = %u, itemid = %u", ptr->getEntry(), itemid);
         if (!result)
         WorldDatabase.Execute("REPLACE INTO loot_gameobjects VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->getEntry(), itemid, chance, mincount, maxcount);
-        delete result;
     }
     sLootMgr.addLoot(&lt->loot, itemid, ichance, mincount, maxcount, ptr->getWorldMap()->getDifficulty());
     return 0;
@@ -1298,8 +1297,8 @@ int LuaGameObject::RegisterEvent(lua_State* L, GameObject* ptr)
         functionRef = LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 1));
     if (functionRef)
     {
-        TimedEvent* ev = TimedEvent::Allocate(ptr, new CallbackP1<LuaEngine, int>(LuaGlobal::instance()->luaEngine().get(), &LuaEngine::CallFunctionByReference, functionRef), EVENT_LUA_GAMEOBJ_EVENTS, delay, repeats);
-        ptr->event_AddEvent(ev);
+        auto ev = TimedEvent::Allocate(ptr, std::make_unique<CallbackP1<LuaEngine, int>>(LuaGlobal::instance()->luaEngine().get(), &LuaEngine::CallFunctionByReference, functionRef), EVENT_LUA_GAMEOBJ_EVENTS, delay, repeats);
+        ptr->event_AddEvent(std::move(ev));
         std::map<uint64_t, std::set<int>>& objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
         std::map<uint64_t, std::set<int>>::iterator itr = objRefs.find(ptr->getGuid());
         if (itr == objRefs.end())

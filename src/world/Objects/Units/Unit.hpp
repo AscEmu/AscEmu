@@ -135,7 +135,7 @@ struct AuraCheckResponse
 
 typedef std::list<struct ProcTriggerSpellOnSpell> ProcTriggerSpellOnSpellList;
 
-typedef std::array<Aura*, AuraSlots::TOTAL_SLOT_END> AuraArray;
+typedef std::array<std::unique_ptr<Aura>, AuraSlots::TOTAL_SLOT_END> AuraArray;
 typedef std::list<AuraEffectModifier const*> AuraEffectList;
 typedef std::array<AuraEffectList, TOTAL_SPELL_AURAS> AuraEffectListArray;
 typedef std::array<uint32_t /*spellId*/, AuraSlots::NEGATIVE_VISUAL_SLOT_END> VisualAuraArray;
@@ -792,7 +792,7 @@ public:
 private:
     bool m_canDualWield = false;
 
-    std::list<SpellProc*> m_procSpells;
+    std::list<std::unique_ptr<SpellProc>> m_procSpells;
 
     std::list<AuraEffectModifier const*> m_spellModifiers[MAX_SPELLMOD_TYPE];
 
@@ -801,7 +801,7 @@ private:
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Aura
-    void addAura(Aura* aur);
+    void addAura(std::unique_ptr<Aura> aur);
     uint8_t findVisualSlotForAura(Aura const* aur) const;
 
     Aura* getAuraWithId(uint32_t spell_id) const;
@@ -885,18 +885,18 @@ public:
 
 private:
     // Inserts aura into aura containers
-    void _addAura(Aura* aur);
+    void _addAura(std::unique_ptr<Aura> aur);
     // Inserts aura effect into aura effect list
     void _addAuraEffect(AuraEffectModifier const* aurEff);
     // Erases aura from aura containers
-    void _removeAura(Aura* aur);
+    std::unique_ptr<Aura> _removeAura(Aura* aur);
     // Erases aura effect from aura effect list
     void _removeAuraEffect(AuraEffectModifier const* aurEff);
     void _updateAuras(unsigned long diff);
 
     uint32_t m_transformAura = 0;
 
-    AuraArray m_auraList = { nullptr };
+    AuraArray m_auraList;
     AuraEffectListArray m_auraEffectList;
     VisualAuraArray m_auraVisualList = { 0 };
 
@@ -1231,11 +1231,11 @@ public:
     uint16_t m_noInterrupt = 0;
 
     void removeGarbage();
-    void addGarbageAura(Aura* aur);
+    void addGarbageAura(std::unique_ptr<Aura> aur);
     void addGarbagePet(Pet* pet);
 
 protected:
-    std::list<Aura*> m_GarbageAuras;
+    std::list<std::unique_ptr<Aura>> m_GarbageAuras;
     std::list<Pet*> m_GarbagePets;
 
 public:

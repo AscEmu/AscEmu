@@ -61,8 +61,6 @@ namespace AscEmu::Realm
 
                 this->realms.emplace_back(std::move(realm));
             } while (result->NextRow());
-
-            delete result;
         }
         sLogger.info("[RealmManager] Loaded {} realms.", static_cast<uint32_t>(this->realms.size()));
     }

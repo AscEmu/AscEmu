@@ -2886,7 +2886,7 @@ CachedCharacterInfo* Player::getPlayerInfo() const { return m_playerInfo; }
 
 void Player::changeLooks(uint64_t guid, uint8_t gender, uint8_t skin, uint8_t face, uint8_t hairStyle, uint8_t hairColor, uint8_t facialHair)
 {
-    QueryResult* result = CharacterDatabase.Query("SELECT bytes2 FROM `characters` WHERE guid = '%u'", static_cast<uint32_t>(guid));
+    auto result = CharacterDatabase.Query("SELECT bytes2 FROM `characters` WHERE guid = '%u'", static_cast<uint32_t>(guid));
     if (!result)
         return;
 
@@ -2897,8 +2897,6 @@ void Player::changeLooks(uint64_t guid, uint8_t gender, uint8_t skin, uint8_t fa
     player_bytes2 |= facialHair;
 
     CharacterDatabase.Execute("UPDATE `characters` SET gender = '%u', bytes = '%u', bytes2 = '%u' WHERE guid = '%u'", gender, skin | (face << 8) | (hairStyle << 16) | (hairColor << 24), player_bytes2, (uint32_t)guid);
-
-    delete result;
 }
 
 void Player::changeLanguage(uint64_t guid, uint8_t race)
@@ -9086,7 +9084,7 @@ std::set<uint32_t> Player::getFinishedQuests() const { return m_finishedQuests; 
 // Social
 void Player::loadFriendList()
 {
-    if (auto* result = CharacterDatabase.Query("SELECT * FROM social_friends WHERE character_guid = %u", getGuidLow()))
+    if (auto result = CharacterDatabase.Query("SELECT * FROM social_friends WHERE character_guid = %u", getGuidLow()))
     {
         do
         {
@@ -9099,14 +9097,12 @@ void Player::loadFriendList()
             m_socialIFriends.push_back(socialFriend);
 
         } while (result->NextRow());
-
-        delete result;
     }
 }
 
 void Player::loadFriendedByOthersList()
 {
-    if (auto* result = CharacterDatabase.Query("SELECT character_guid FROM social_friends WHERE friend_guid = %u", getGuidLow()))
+    if (auto result = CharacterDatabase.Query("SELECT character_guid FROM social_friends WHERE friend_guid = %u", getGuidLow()))
     {
         do
         {
@@ -9116,14 +9112,12 @@ void Player::loadFriendedByOthersList()
             m_socialFriendedByGuids.push_back(friendedByGuid);
 
         } while (result->NextRow());
-
-        delete result;
     }
 }
 
 void Player::loadIgnoreList()
 {
-    if (auto* result = CharacterDatabase.Query("SELECT * FROM social_ignores WHERE character_guid = %u", getGuidLow()))
+    if (auto result = CharacterDatabase.Query("SELECT * FROM social_ignores WHERE character_guid = %u", getGuidLow()))
     {
         do
         {
@@ -9133,8 +9127,6 @@ void Player::loadIgnoreList()
             m_socialIgnoring.push_back(ignoreGuid);
 
         } while (result->NextRow());
-
-        delete result;
     }
 }
 
@@ -10351,7 +10343,7 @@ void Player::sendTimeSync()
 #if VERSION_STRING > WotLK
 void Player::loadVoidStorage()
 {
-    QueryResult* result = CharacterDatabase.Query("SELECT itemid, itemEntry, slot, creatorGuid, randomProperty, suffixFactor FROM character_void_storage WHERE playerGuid = %u", getGuidLow());
+    auto result = CharacterDatabase.Query("SELECT itemid, itemEntry, slot, creatorGuid, randomProperty, suffixFactor FROM character_void_storage WHERE playerGuid = %u", getGuidLow());
     if (!result)
         return;
 
@@ -14547,7 +14539,7 @@ namespace PlayerQuery
 
 bool Player::loadFromDB(uint32_t guid)
 {
-    AsyncQuery* q = new AsyncQuery(new SQLClassCallbackP0<Player>(this, &Player::loadFromDBProc));
+    auto q = std::make_unique<AsyncQuery>(std::make_unique<SQLClassCallbackP0<Player>>(this, &Player::loadFromDBProc));
 
     q->AddQuery("SELECT * FROM characters WHERE guid = %u AND login_flags = %u", guid, (uint32_t)LOGIN_NO_FLAG); // 0
     q->AddQuery("SELECT * FROM tutorials WHERE playerId = %u", guid); // 1
@@ -14576,7 +14568,7 @@ bool Player::loadFromDB(uint32_t guid)
 
     // queue it!
     setGuidLow(guid);
-    CharacterDatabase.QueueAsyncQuery(q);
+    CharacterDatabase.QueueAsyncQuery(std::move(q));
     return true;
 }
 
@@ -14590,7 +14582,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
         return;
     }
 
-    QueryResult* result = results[PlayerQuery::LoginFlags].result;
+    QueryResult* result = results[PlayerQuery::LoginFlags].result.get();
     if (!result)
     {
         sLogger.failure("Player login query failed! guid = {}", getGuidLow());
@@ -14675,7 +14667,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
 
 #if VERSION_STRING > TBC
     // load achievements before anything else otherwise skills would complete achievements already in the DB, leading to duplicate achievements and criterias(like achievement=126).
-    m_achievementMgr->loadFromDb(results[PlayerQuery::Achievements].result, results[PlayerQuery::AchievementProgress].result);
+    m_achievementMgr->loadFromDb(results[PlayerQuery::Achievements].result.get(), results[PlayerQuery::AchievementProgress].result.get());
 #endif
 
     setInitialPlayerData();
@@ -14707,7 +14699,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
     // Process exploration data.
     loadFieldsFromString(field[10].asCString(), getOffsetForStructuredField(WoWPlayer, explored_zones), WOWPLAYER_EXPLORED_ZONES_COUNT); //10
 
-    loadSkills(results[PlayerQuery::Skills].result);
+    loadSkills(results[PlayerQuery::Skills].result.get());
 
     if (m_firstLogin || m_skills.empty())
     {
@@ -14868,11 +14860,11 @@ void Player::loadFromDBProc(QueryResultVector& results)
     else
         obj_movement_info.clearTransportData();
 
-    loadDeletedSpells(results[PlayerQuery::DeletedSpells].result);
+    loadDeletedSpells(results[PlayerQuery::DeletedSpells].result.get());
 
-    loadSpells(results[PlayerQuery::Spells].result);
+    loadSpells(results[PlayerQuery::Spells].result.get());
 
-    loadReputations(results[PlayerQuery::Reputation].result);
+    loadReputations(results[PlayerQuery::Reputation].result.get());
 
     // Load saved actionbars
     uint32_t Counter = 0;
@@ -15185,8 +15177,8 @@ void Player::loadFromDBProc(QueryResultVector& results)
         case DEATHKNIGHT:
         case MAGE:
 #endif
-            _loadPet(results[PlayerQuery::Pets].result);
-            _loadPetSpells(results[PlayerQuery::SummonSpells].result);
+            _loadPet(results[PlayerQuery::Pets].result.get());
+            _loadPetSpells(results[PlayerQuery::SummonSpells].result.get());
             break;
     }
 
@@ -15195,16 +15187,16 @@ void Player::loadFromDBProc(QueryResultVector& results)
 
     // load properties
     loadTutorials();
-    _loadPlayerCooldowns(results[PlayerQuery::Cooldowns].result);
-    _loadQuestLogEntry(results[PlayerQuery::Questlog].result);
-    getItemInterface()->mLoadItemsFromDatabase(results[PlayerQuery::Items].result);
-    getItemInterface()->m_EquipmentSets.LoadfromDB(results[PlayerQuery::EquipmentSets].result);
+    _loadPlayerCooldowns(results[PlayerQuery::Cooldowns].result.get());
+    _loadQuestLogEntry(results[PlayerQuery::Questlog].result.get());
+    getItemInterface()->mLoadItemsFromDatabase(results[PlayerQuery::Items].result.get());
+    getItemInterface()->m_EquipmentSets.LoadfromDB(results[PlayerQuery::EquipmentSets].result.get());
 
 #if VERSION_STRING > WotLK
     loadVoidStorage();
 #endif
 
-    m_mailBox->Load(results[PlayerQuery::Mailbox].result);
+    m_mailBox->Load(results[PlayerQuery::Mailbox].result.get());
 
     // Saved Instances
     loadBoundInstances();
@@ -16259,7 +16251,7 @@ void Player::completeLoading()
             if (sp->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
                 continue; //do not load auras that only exist while pet exist. We should recast these when pet is created anyway
 
-            Aura* aura = sSpellMgr.newAura(sp, loginaura.dur, this, this, false);
+            auto aura = sSpellMgr.newAura(sp, loginaura.dur, this, this, false);
             for (uint8_t x = 0; x < 3; x++)
             {
                 if (sp->getEffect(x) == SPELL_EFFECT_APPLY_AURA)
@@ -16271,7 +16263,7 @@ void Player::completeLoading()
             if (sp->getProcCharges() > 0 && loginaura.charges > 0)
                 aura->setCharges(static_cast<uint16_t>(loginaura.charges), false);
 
-            this->addAura(aura);
+            this->addAura(std::move(aura));
         }
     }
 

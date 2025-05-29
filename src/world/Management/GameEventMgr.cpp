@@ -61,7 +61,7 @@ void GameEventMgr::LoadFromDB()
     }
     // Loading event_properties
     {
-        QueryResult* result = WorldDatabase.Query("SELECT entry, UNIX_TIMESTAMP(start_time), UNIX_TIMESTAMP(end_time), occurence, "
+        auto result = WorldDatabase.Query("SELECT entry, UNIX_TIMESTAMP(start_time), UNIX_TIMESTAMP(end_time), occurence, "
                                           "length, holiday, description, world_event, announce "
                                           "FROM gameevent_properties WHERE entry > 0 AND min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
         if (!result)
@@ -98,7 +98,6 @@ void GameEventMgr::LoadFromDB()
             //    sLogger.debug("{} game event Entry: {} isn't a world event and has length = 0, thus it can't be used.", dbResult.description, dbResult.entry);
             //}
         } while (result->NextRow());
-        delete result;
         sLogger.info("GameEventMgr : {} events loaded from table event_properties", pCount);
     }
     // Loading event_saves from CharacterDB
@@ -106,7 +105,7 @@ void GameEventMgr::LoadFromDB()
     {
         const char* loadEventSaveQuery = "SELECT event_entry, state, next_start FROM gameevent_save";
         bool success = false;
-        QueryResult* result = CharacterDatabase.Query(&success, loadEventSaveQuery);
+        auto result = CharacterDatabase.Query(&success, loadEventSaveQuery);
 
         if (!success)
         {
@@ -136,7 +135,6 @@ void GameEventMgr::LoadFromDB()
                 ++pCount;
 
             } while (result->NextRow());
-            delete result;
         }
 
         sLogger.info("GameEventMgr : Loaded {} saved events loaded from table gameevent_saves", pCount);
@@ -151,7 +149,7 @@ void GameEventMgr::LoadFromDB()
                                                     slot1item, slot2item, slot3item, CanFly, phase, waypoint_group, event_entry \
                                                     FROM creature_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry > 0";
         bool success = false;
-        QueryResult* result = WorldDatabase.Query(&success, loadEventCreatureSpawnsQuery, VERSION_STRING, VERSION_STRING);
+        auto result = WorldDatabase.Query(&success, loadEventCreatureSpawnsQuery, VERSION_STRING, VERSION_STRING);
         if (!success)
         {
             sLogger.failure("Query failed: {}", loadEventCreatureSpawnsQuery);
@@ -218,7 +216,6 @@ void GameEventMgr::LoadFromDB()
                 //mNPCGuidList.insert(NPCGuidList::value_type(event_id, id));
 
             } while (result->NextRow());
-            delete result;
         }
         sLogger.info("GameEventMgr : {} creature spawns for {} events from table event_creature_spawns loaded.", pCount, static_cast<uint32_t>(mGameEvents.size()));
     }
@@ -230,7 +227,7 @@ void GameEventMgr::LoadFromDB()
                                                       rotation3, spawntimesecs, state, \
                                                       event_entry FROM gameobject_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry > 0;";
         bool success = false;
-        QueryResult* result = WorldDatabase.Query(&success, loadEventGameobjectSpawnsQuery, VERSION_STRING, VERSION_STRING);
+        auto result = WorldDatabase.Query(&success, loadEventGameobjectSpawnsQuery, VERSION_STRING, VERSION_STRING);
         if (!success)
         {
             sLogger.failure("Query failed: {}", loadEventGameobjectSpawnsQuery);
@@ -282,7 +279,6 @@ void GameEventMgr::LoadFromDB()
                 //mGOBGuidList.insert(GOBGuidList::value_type(event_id, id));
 
             } while (result->NextRow());
-            delete result;
         }
         sLogger.info("GameEventMgr : {} gameobject spawns for {} events from table gameobject_spawns loaded.", pCount, mGameEvents.size());
     }

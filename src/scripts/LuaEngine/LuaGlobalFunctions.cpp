@@ -141,47 +141,55 @@ int LuaGlobalFunctions::logcol(lua_State* L)
 
 int LuaGlobalFunctions::WorldDBQuery(lua_State* L)
 {
-    const char* qStr = luaL_checkstring(L, 1);
+    // TODO: possibly needs rewrite of LuaEngine to handle unique_ptr<T> -Appled
+
+    /*const char* qStr = luaL_checkstring(L, 1);
     //uint32_t fID = static_cast<uint32_t>(luaL_optinteger(L, 2, 0)); //column
     //uint32_t rID = static_cast<uint32_t>(luaL_optinteger(L, 3, 0)); //row
     if (!qStr)
         return 0;
-    QueryResult* result = WorldDatabase.Query(qStr);
+    auto result = WorldDatabase.Query(qStr);
     lua_settop(L, 0);
-    PUSH_SQLRESULT(L, result);
+    PUSH_SQLRESULT(L, result);*/
     return 1;
 }
 
 int LuaGlobalFunctions::CharDBQuery(lua_State* L)
 {
-    const char* qStr = luaL_checkstring(L, 1);
+    // TODO: possibly needs rewrite of LuaEngine to handle unique_ptr<T> -Appled
+
+    /*const char* qStr = luaL_checkstring(L, 1);
     //uint32_t fID = static_cast<uint32_t>(luaL_optinteger(L, 2, 0)); //column
     //uint32_t rID = static_cast<uint32_t>(luaL_optinteger(L, 3, 0)); //row
     if (!qStr)
         return 0;
-    QueryResult* result = CharacterDatabase.Query(qStr);
+    auto result = CharacterDatabase.Query(qStr);
     lua_settop(L, 0);
-    PUSH_SQLRESULT(L, result);
+    PUSH_SQLRESULT(L, result);*/
     return 1;
 }
 
 int LuaGlobalFunctions::WorldDBQueryTable(lua_State* L)
 {
-    const char* qStr = luaL_checkstring(L, 1);
+    // TODO: possibly needs rewrite of LuaEngine to handle unique_ptr<T> -Appled
+
+    /*const char* qStr = luaL_checkstring(L, 1);
     lua_newtable(L);
     if (!qStr) return 0;
-    QueryResult* result = WorldDatabase.Query(qStr);
-    PUSH_SQLRESULT(L, result);
+    auto result = WorldDatabase.Query(qStr);
+    PUSH_SQLRESULT(L, result);*/
     return 1;
 }
 
 int LuaGlobalFunctions::CharDBQueryTable(lua_State* L)
 {
-    const char* qStr = luaL_checkstring(L, 1);
+    // TODO: possibly needs rewrite of LuaEngine to handle unique_ptr<T> -Appled
+
+    /*const char* qStr = luaL_checkstring(L, 1);
     lua_newtable(L);
     if (!qStr) return 0;
-    QueryResult* result = CharacterDatabase.Query(qStr);
-    PUSH_SQLRESULT(L, result);
+    auto result = CharacterDatabase.Query(qStr);
+    PUSH_SQLRESULT(L, result);*/
     return 1;
 }
 

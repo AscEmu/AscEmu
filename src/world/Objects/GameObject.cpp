@@ -125,8 +125,6 @@ GameObject::~GameObject()
 {
     sEventMgr.RemoveEvents(this);
 
-    delete m_model;
-
     if (myScript)
     {
         myScript->Destroy();
@@ -761,7 +759,7 @@ private:
     GameObject const* _owner;
 };
 
-GameObjectModel* GameObject::createModel()
+std::unique_ptr<GameObjectModel> GameObject::createModel()
 {
     return GameObjectModel::Create(std::make_unique<GameObjectModelOwnerImpl>(this), worldConfig.server.dataDir);
 }
@@ -788,7 +786,6 @@ void GameObject::updateModel()
     if (m_model)
         if (getWorldMap()->containsGameObjectModel(*m_model))
             getWorldMap()->removeGameObjectModel(*m_model);
-    delete m_model;
     m_model = createModel();
     if (m_model)
         getWorldMap()->insertGameObjectModel(*m_model);

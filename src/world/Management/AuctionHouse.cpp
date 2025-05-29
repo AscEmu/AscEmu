@@ -130,7 +130,7 @@ uint32_t AuctionHouse::getId() const { return auctionHouseEntryDbc ? auctionHous
 
 void AuctionHouse::loadAuctionsFromDB()
 {
-    QueryResult* result = CharacterDatabase.Query("SELECT * FROM auctions WHERE auctionhouse =%u", getId());
+    auto result = CharacterDatabase.Query("SELECT * FROM auctions WHERE auctionhouse =%u", getId());
     if (!result)
         return;
 
@@ -149,7 +149,6 @@ void AuctionHouse::loadAuctionsFromDB()
         auctions.try_emplace(auctionId, std::make_unique<Auction>(fields, std::move(pItem)));
     }
     while (result->NextRow());
-    delete result;
 }
 
 void AuctionHouse::updateAuctions()

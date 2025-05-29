@@ -352,7 +352,7 @@ namespace WDB
         return true;
     }
 
-    char* WDBLoader::autoProduceData(const char* _dbcFormat, uint32_t& _recordCount, char**& _indexTable)
+    std::unique_ptr<char[]> WDBLoader::autoProduceData(const char* _dbcFormat, uint32_t& _recordCount, std::unique_ptr<char*[]>& _indexTable)
     {
         if (strlen(_dbcFormat) != m_field_count) return nullptr;
 
@@ -372,16 +372,16 @@ namespace WDB
 
             ++maxIndex;
             _recordCount = maxIndex;
-            _indexTable = new char*[maxIndex];
-            memset(_indexTable, 0, maxIndex * sizeof(char*));
+            _indexTable = std::make_unique<char*[]>(maxIndex);
+            memset(_indexTable.get(), 0, maxIndex * sizeof(char*));
         }
         else
         {
             _recordCount = m_record_count;
-            _indexTable = new char*[m_record_count];
+            _indexTable = std::make_unique<char*[]>(m_record_count);
         }
 
-        char* data_table = new char[(m_record_count) * recordSize];
+        auto data_table = std::make_unique<char[]>(m_record_count * recordSize);
         uint32_t offset = 0;
 
         for (uint32_t y = 0; y < m_record_count; ++y)

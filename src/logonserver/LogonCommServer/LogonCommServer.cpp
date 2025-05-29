@@ -247,10 +247,10 @@ void LogonCommServerSocket::HandleSessionRequest(WorldPacket & recvData)
         if (!acct->GMFlags)
             data << uint8_t(0);
         else
-            data << acct->GMFlags;
+            data << acct->GMFlags.get();
 
         data << acct->AccountFlags;
-        data.append(acct->SessionKey, 40);
+        data.append(acct->SessionKey.get(), 40);
         data << acct->forcedLanguage;
         data << acct->Muted;
     }
@@ -757,7 +757,7 @@ void LogonCommServerSocket::HandleRequestAllAccounts(WorldPacket& /*recvData*/)
         std::string gm_flags;
 
         if (map_itr.second->GMFlags)
-            gm_flags = map_itr.second->GMFlags;
+            gm_flags = map_itr.second->GMFlags.get();
         else
             gm_flags = "0";
 

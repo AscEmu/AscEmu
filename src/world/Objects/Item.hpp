@@ -27,6 +27,9 @@ struct EnchantmentInstance
 {
     // Durations for temporary enchantments are stored in ItemInterface and WoWItem data
     WDB::Structures::SpellItemEnchantmentEntry const* Enchantment;
+#if VERSION_STRING >= Cata
+    std::unique_ptr<WDB::Structures::SpellItemEnchantmentEntry> customEnchantmentHolder;
+#endif
     bool BonusApplied;
     EnchantmentSlot Slot;
     bool RemoveAtLogout;

@@ -638,7 +638,7 @@ void WorldMap::PushObject(Object* obj)
         }
 
         // Build update-block for player
-        ByteBuffer* buf = 0;
+        std::unique_ptr<ByteBuffer> buf;
         uint32_t count;
         Player* plObj = nullptr;
 
@@ -667,14 +667,14 @@ void WorldMap::PushObject(Object* obj)
                 MapCell* cell = getCell(posX, posY);
                 if (cell)
                 {
-                    updateInRangeSet(obj, plObj, cell, &buf);
+                    updateInRangeSet(obj, plObj, cell, buf);
                 }
             }
         }
 
         // Forced Cells
         for (auto& cell : m_forcedcells)
-            updateInRangeSet(obj, plObj, cell, &buf);
+            updateInRangeSet(obj, plObj, cell, buf);
 
         //Add to the cell's object list
         objCell->addObject(obj);
@@ -742,23 +742,21 @@ void WorldMap::PushObject(Object* obj)
             if (_mapWideStaticObjects.size())
             {
                 uint32_t globalcount = 0;
-                if (!buf)
-                    buf = new ByteBuffer(300);
+                if (buf == nullptr)
+                    buf = std::make_unique<ByteBuffer>(300);
 
                 for (auto _mapWideStaticObject : _mapWideStaticObjects)
                 {
-                    count = _mapWideStaticObject->buildCreateUpdateBlockForPlayer(buf, plObj);
+                    count = _mapWideStaticObject->buildCreateUpdateBlockForPlayer(buf.get(), plObj);
                     globalcount += count;
                 }
                 /*VLack: It seems if we use the same buffer then it is a BAD idea to try and push created data one by one, add them at once!
                        If you try to add them one by one, then as the buffer already contains data, they'll end up repeating some object.
                        Like 6 object updates for Deeprun Tram, but the built package will contain these entries: 2AFD0, 2AFD0, 2AFD1, 2AFD0, 2AFD1, 2AFD2*/
                 if (globalcount > 0)
-                    plObj->getUpdateMgr().pushCreationData(buf, globalcount);
+                    plObj->getUpdateMgr().pushCreationData(buf.get(), globalcount);
             }
         }
-
-        delete buf;
     }
     else
     {
@@ -1254,7 +1252,7 @@ bool WorldMap::isCellActive(uint32_t x, uint32_t y)
     return false;
 }
 
-void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuffer** buf)
+void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, std::unique_ptr<ByteBuffer>& buf)
 {
     if (cell == nullptr)
         return;
@@ -1291,13 +1289,13 @@ void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteB
 
                     if (plObj2->canSee(obj) && !plObj2->isVisibleObject(obj->getGuid()))
                     {
-                        if (!*buf)
-                            *buf = new ByteBuffer(2500);
+                        if (buf == nullptr)
+                            buf = std::make_unique<ByteBuffer>(2500);
 
-                        count = obj->buildCreateUpdateBlockForPlayer(*buf, plObj2);
-                        plObj2->getUpdateMgr().pushCreationData(*buf, count);
+                        count = obj->buildCreateUpdateBlockForPlayer(buf.get(), plObj2);
+                        plObj2->getUpdateMgr().pushCreationData(buf.get(), count);
                         plObj2->addVisibleObject(obj->getGuid());
-                        (*buf)->clear();
+                        buf->clear();
                     }
                 }
                 else if (curObj->isCreatureOrPlayer() && static_cast<Unit*>(curObj)->m_playerControler != nullptr)
@@ -1306,13 +1304,13 @@ void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteB
 
                     if (plObj2->canSee(obj) && !plObj2->isVisibleObject(obj->getGuid()))
                     {
-                        if (!*buf)
-                            *buf = new ByteBuffer(2500);
+                        if (buf == nullptr)
+                            buf = std::make_unique<ByteBuffer>(2500);
 
-                        count = obj->buildCreateUpdateBlockForPlayer(*buf, plObj2);
-                        plObj2->getUpdateMgr().pushCreationData(*buf, count);
+                        count = obj->buildCreateUpdateBlockForPlayer(buf.get(), plObj2);
+                        plObj2->getUpdateMgr().pushCreationData(buf.get(), count);
                         plObj2->addVisibleObject(obj->getGuid());
-                        (*buf)->clear();
+                        buf->clear();
                     }
                 }
 
@@ -1320,13 +1318,13 @@ void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteB
                 {
                     if (plObj->canSee(curObj) && !plObj->isVisibleObject(curObj->getGuid()))
                     {
-                        if (!*buf)
-                            *buf = new ByteBuffer(2500);
+                        if (buf == nullptr)
+                            buf = std::make_unique<ByteBuffer>(2500);
 
-                        count = curObj->buildCreateUpdateBlockForPlayer(*buf, plObj);
-                        plObj->getUpdateMgr().pushCreationData(*buf, count);
+                        count = curObj->buildCreateUpdateBlockForPlayer(buf.get(), plObj);
+                        plObj->getUpdateMgr().pushCreationData(buf.get(), count);
                         plObj->addVisibleObject(curObj->getGuid());
-                        (*buf)->clear();
+                        buf->clear();
                     }
                 }
             }
@@ -1345,13 +1343,13 @@ void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteB
                     }
                     else if (cansee && !isvisible)
                     {
-                        if (!*buf)
-                            *buf = new ByteBuffer(2500);
+                        if (buf == nullptr)
+                            buf = std::make_unique<ByteBuffer>(2500);
 
-                        count = obj->buildCreateUpdateBlockForPlayer(*buf, plObj2);
-                        plObj2->getUpdateMgr().pushCreationData(*buf, count);
+                        count = obj->buildCreateUpdateBlockForPlayer(buf.get(), plObj2);
+                        plObj2->getUpdateMgr().pushCreationData(buf.get(), count);
                         plObj2->addVisibleObject(obj->getGuid());
-                        (*buf)->clear();
+                        buf->clear();
                     }
                 }
                 else if (curObj->isCreatureOrPlayer() && static_cast<Unit*>(curObj)->m_playerControler != nullptr)
@@ -1366,13 +1364,13 @@ void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteB
                     }
                     else if (cansee && !isvisible)
                     {
-                        if (!*buf)
-                            *buf = new ByteBuffer(2500);
+                        if (buf == nullptr)
+                            buf = std::make_unique<ByteBuffer>(2500);
 
-                        count = obj->buildCreateUpdateBlockForPlayer(*buf, plObj2);
-                        plObj2->getUpdateMgr().pushCreationData(*buf, count);
+                        count = obj->buildCreateUpdateBlockForPlayer(buf.get(), plObj2);
+                        plObj2->getUpdateMgr().pushCreationData(buf.get(), count);
                         plObj2->addVisibleObject(obj->getGuid());
-                        (*buf)->clear();
+                        buf->clear();
                     }
                 }
 
@@ -1387,13 +1385,13 @@ void WorldMap::updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteB
                     }
                     else if (cansee && !isvisible)
                     {
-                        if (!*buf)
-                            *buf = new ByteBuffer(2500);
+                        if (buf == nullptr)
+                            buf = std::make_unique<ByteBuffer>(2500);
 
-                        count = curObj->buildCreateUpdateBlockForPlayer(*buf, plObj);
-                        plObj->getUpdateMgr().pushCreationData(*buf, count);
+                        count = curObj->buildCreateUpdateBlockForPlayer(buf.get(), plObj);
+                        plObj->getUpdateMgr().pushCreationData(buf.get(), count);
                         plObj->addVisibleObject(curObj->getGuid());
-                        (*buf)->clear();
+                        buf->clear();
                     }
                 }
             }
@@ -1411,7 +1409,6 @@ void WorldMap::changeObjectLocation(Object* obj)
         return;
 
     Player* plObj = nullptr;
-    ByteBuffer* buf = nullptr;
 
     if (obj->isPlayer())
         plObj = static_cast<Player*>(obj);
@@ -1542,18 +1539,16 @@ void WorldMap::changeObjectLocation(Object* obj)
         startY = cellY > 5 ? cellY - 6 : 0;
     }
 
+    std::unique_ptr<ByteBuffer> buf;
     for (uint32_t posX = startX; posX <= endX; ++posX)
     {
         for (uint32_t posY = startY; posY <= endY; ++posY)
         {
             MapCell* cell = getCell(posX, posY);
             if (cell)
-                updateInRangeSet(obj, plObj, cell, &buf);
+                updateInRangeSet(obj, plObj, cell, buf);
         }
     }
-
-    if (buf)
-        delete buf;
 }
 
 void WorldMap::changeFarsightLocation(Player* plr, DynamicObject* farsight)
@@ -2059,7 +2054,7 @@ void WorldMap::callScriptUpdate()
 void WorldMap::loadRespawnTimes()
 {
     // Load Saved Respawns
-    QueryResult* result = CharacterDatabase.Query("SELECT type, spawnId, respawnTime FROM respawn WHERE mapId = %u AND instanceId = %u", getBaseMap()->getMapId(), getInstanceId());
+    auto result = CharacterDatabase.Query("SELECT type, spawnId, respawnTime FROM respawn WHERE mapId = %u AND instanceId = %u", getBaseMap()->getMapId(), getInstanceId());
     if (!result)
         return;
 

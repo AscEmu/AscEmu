@@ -83,7 +83,7 @@ public:
 
     inline uint32_t GetLatency() { return _latency; }
 
-    void Authenticate();
+    void Authenticate(std::unique_ptr<WorldSession> sessionHolder);
     void InformationRetreiveCallback(WorldPacket & recvData, uint32_t requestid);
 
     void UpdateQueuePosition(uint32_t Position);

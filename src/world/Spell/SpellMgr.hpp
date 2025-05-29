@@ -42,7 +42,7 @@ struct SpellArea
 typedef std::unordered_map<uint32_t, std::unique_ptr<SpellInfo>> SpellInfoMap;
 
 typedef Spell* (*SpellScriptLinker)(Object* Caster, SpellInfo* info, bool triggered, Aura* aur);
-typedef Aura* (*AuraScriptLinker)(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary, Item* i_caster);
+typedef std::unique_ptr<Aura> (*AuraScriptLinker)(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary, Item* i_caster);
 
 typedef std::multimap<uint32_t, uint32_t> SpellRequiredMap;
 typedef std::multimap<uint32_t, uint32_t> SpellsRequiringSpellMap;
@@ -88,7 +88,7 @@ public:
     void loadSpellScripts();
 
     Spell* newSpell(Object* caster, SpellInfo const* info, bool triggered, Aura* aur);
-    Aura* newAura(SpellInfo const* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr);
+    std::unique_ptr<Aura> newAura(SpellInfo const* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr);
 
     // Registering legacy spell scripts (DO NOT USE, use ScriptMgr and SpellScript instead!)
     void addSpellById(uint32_t spellId, SpellScriptLinker spellScript);

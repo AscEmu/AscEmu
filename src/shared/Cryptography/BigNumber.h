@@ -91,7 +91,7 @@ public:
 
 private:
     struct bignum_st* _bn;
-    uint8_t* _array;
+    std::unique_ptr<uint8_t[]> _array;
 };
 
 #endif      //_AUTH_BIGNUMBER_H

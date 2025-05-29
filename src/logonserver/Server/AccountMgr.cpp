@@ -179,7 +179,7 @@ void AccountMgr::reloadAccounts(bool silent)
 
     std::set<std::string> account_list;
 
-    QueryResult* result = sLogonSQL->Query("SELECT id, acc_name, encrypted_password, flags, banned, forceLanguage, muted FROM accounts");
+    auto result = sLogonSQL->Query("SELECT id, acc_name, encrypted_password, flags, banned, forceLanguage, muted FROM accounts");
     if (result)
     {
         do
@@ -198,8 +198,6 @@ void AccountMgr::reloadAccounts(bool silent)
             account_list.insert(accountName);
 
         } while (result->NextRow());
-
-        delete result;
     }
 
     for (auto accounts = _accountMap.begin(); accounts != _accountMap.end();)

@@ -22,10 +22,11 @@
 #define UPDATEMASK_H
 
 #include <cstring>
+#include <memory>
 
 class UpdateMask
 {
-    uint32_t* mUpdateMask;
+    std::unique_ptr<uint32_t[]> mUpdateMask;
     uint32_t mCount; // in values
     uint32_t mBlocks; // in uint32_t blocks
 
@@ -33,28 +34,24 @@ class UpdateMask
         UpdateMask() : mUpdateMask(0), mCount(0), mBlocks(0) { }
         UpdateMask(const UpdateMask & mask) : mUpdateMask(0) { *this = mask; }
 
-        ~UpdateMask()
-        {
-            if (mUpdateMask)
-                delete [] mUpdateMask;
-        }
+        ~UpdateMask() = default;
 
         void SetBit(const uint32_t index)
         {
             if (index < mCount)
-                ((uint8_t*)mUpdateMask)[ index >> 3 ] |= 1 << (index & 0x7);
+                ((uint8_t*)mUpdateMask.get())[ index >> 3 ] |= 1 << (index & 0x7);
         }
 
         void UnsetBit(const uint32_t index)
         {
             if (index < mCount)
-                ((uint8_t*)mUpdateMask)[ index >> 3 ] &= (0xff ^ (1 << (index & 0x7)));
+                ((uint8_t*)mUpdateMask.get())[ index >> 3 ] &= (0xff ^ (1 << (index & 0x7)));
         }
 
         bool GetBit(const uint32_t index) const
         {
             if (index < mCount)
-                return (((uint8_t*)mUpdateMask)[index >> 3] & (1 << (index & 0x7))) != 0;
+                return (((uint8_t*)mUpdateMask.get())[index >> 3] & (1 << (index & 0x7))) != 0;
             return false;
         }
 
@@ -69,13 +66,10 @@ class UpdateMask
 
         inline uint32_t GetLength() const { return (mBlocks * sizeof(uint32_t)); }
         inline uint32_t GetCount() const { return mCount; }
-        inline const uint8_t* GetMask() const { return (uint8_t*)mUpdateMask; }
+        inline const uint8_t* GetMask() const { return (uint8_t*)mUpdateMask.get(); }
 
         void SetCount(uint32_t valuesCount)
         {
-            if (mUpdateMask)
-                delete [] mUpdateMask;
-
             mCount = valuesCount;
             //mBlocks = valuesCount/32 + 1;
             //mBlocks = (valuesCount + 31) / 32;
@@ -83,20 +77,20 @@ class UpdateMask
             if (mCount & 31)
                 ++mBlocks;
 
-            mUpdateMask = new uint32_t[mBlocks];
-            memset(mUpdateMask, 0, mBlocks * sizeof(uint32_t));
+            mUpdateMask = std::make_unique<uint32_t[]>(mBlocks);
+            memset(mUpdateMask.get(), 0, mBlocks * sizeof(uint32_t));
         }
 
         void Clear()
         {
             if (mUpdateMask)
-                memset(mUpdateMask, 0, mBlocks << 2);
+                memset(mUpdateMask.get(), 0, mBlocks << 2);
         }
 
         UpdateMask & operator = (const UpdateMask & mask)
         {
             SetCount(mask.mCount);
-            memcpy(mUpdateMask, mask.mUpdateMask, mBlocks << 2);
+            memcpy(mUpdateMask.get(), mask.mUpdateMask.get(), mBlocks << 2);
 
             return *this;
         }

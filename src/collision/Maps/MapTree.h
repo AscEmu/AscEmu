@@ -46,7 +46,7 @@ namespace VMAP
             uint32_t iMapID;
             bool iIsTiled;
             BIH iTree;
-            ModelInstance* iTreeValues; // the tree entries
+            std::unique_ptr<ModelInstance[]> iTreeValues; // the tree entries
             uint32_t iNTreeValues;
 
             // Store all the map tile idents that are loaded for that map

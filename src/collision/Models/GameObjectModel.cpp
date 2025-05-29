@@ -147,12 +147,11 @@ bool GameObjectModel::initialize(std::unique_ptr<GameObjectModelOwnerBase> model
     return true;
 }
 
-GameObjectModel* GameObjectModel::Create(std::unique_ptr<GameObjectModelOwnerBase> modelOwner, std::string const& dataPath)
+std::unique_ptr<GameObjectModel> GameObjectModel::Create(std::unique_ptr<GameObjectModelOwnerBase> modelOwner, std::string const& dataPath)
 {
-    GameObjectModel* mdl = new GameObjectModel();
+    auto mdl = std::unique_ptr<GameObjectModel>(new GameObjectModel());
     if (!mdl->initialize(std::move(modelOwner), dataPath))
     {
-        delete mdl;
         return nullptr;
     }
 

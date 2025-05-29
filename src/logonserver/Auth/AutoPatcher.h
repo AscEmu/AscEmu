@@ -26,7 +26,7 @@ struct Patch
 {
     uint32_t FileSize;
     uint8_t MD5[16];
-    uint8_t* Data;
+    std::unique_ptr<uint8_t[]> Data;
     uint32_t Version;
     char Locality[5];
     uint32_t uLocality;
@@ -42,7 +42,7 @@ class PatchJob
 
     public:
 
-        PatchJob(Patch* patch, AuthSocket* client, uint32_t skip) : m_patchToSend(patch), m_client(client), m_bytesSent(skip), m_bytesLeft(patch->FileSize - skip), m_dataPointer(patch->Data + skip) {}
+        PatchJob(Patch* patch, AuthSocket* client, uint32_t skip) : m_patchToSend(patch), m_client(client), m_bytesSent(skip), m_bytesLeft(patch->FileSize - skip), m_dataPointer(patch->Data.get() + skip) {}
         inline AuthSocket* GetClient() { return m_client; }
         bool Update();
 };
@@ -70,11 +70,10 @@ class PatchMgr
         bool InitiatePatch(Patch* pPatch, AuthSocket* pClient);
 
     protected:
-
-        std::vector<Patch*> m_patches;
+        std::vector<std::unique_ptr<Patch>> m_patches;
 
         std::mutex m_patchJobLock;
-        std::list<PatchJob*> m_patchJobs;
+        std::list<std::unique_ptr<PatchJob>> m_patchJobs;
 };
 
 #endif  //_AUTOPATCHER_H

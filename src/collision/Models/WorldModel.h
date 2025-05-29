@@ -51,11 +51,11 @@ namespace VMAP
             WmoLiquid& operator=(const WmoLiquid &other);
             bool GetLiquidHeight(const G3D::Vector3 &pos, float &liqHeight) const;
             uint32_t GetType() const { return iType; }
-            float *GetHeightStorage() { return iHeight; }
-            uint8_t *GetFlagsStorage() { return iFlags; }
+            float *GetHeightStorage() { return iHeight.get(); }
+            uint8_t *GetFlagsStorage() { return iFlags.get(); }
             uint32_t GetFileSize();
             bool writeToFile(FILE* wf);
-            static bool readFromFile(FILE* rf, WmoLiquid* &liquid);
+            static bool readFromFile(FILE* rf, std::unique_ptr<WmoLiquid> &liquid);
             void getPosInfo(uint32_t &tilesX, uint32_t &tilesY, G3D::Vector3 &corner) const;
         private:
             WmoLiquid() : iTilesX(0), iTilesY(0), iCorner(), iType(0), iHeight(NULL), iFlags(NULL) { }
@@ -63,23 +63,23 @@ namespace VMAP
             uint32_t iTilesY;
             G3D::Vector3 iCorner; //!< the lower corner
             uint32_t iType;         //!< liquid type
-            float *iHeight;       //!< (tilesX + 1)*(tilesY + 1) height values
-            uint8_t *iFlags;        //!< info if liquid tile is used
+            std::unique_ptr<float[]> iHeight;       //!< (tilesX + 1)*(tilesY + 1) height values
+            std::unique_ptr<uint8_t[]> iFlags;        //!< info if liquid tile is used
     };
 
     /*! holding additional info for WMO group files */
     class GroupModel
     {
         public:
-            GroupModel() : iBound(), iMogpFlags(0), iGroupWMOID(0), iLiquid(NULL) { }
+            GroupModel() : iBound(), iMogpFlags(0), iGroupWMOID(0), iLiquid(nullptr) { }
             GroupModel(const GroupModel &other);
             GroupModel(uint32_t mogpFlags, uint32_t groupWMOID, const G3D::AABox &bound):
-                        iBound(bound), iMogpFlags(mogpFlags), iGroupWMOID(groupWMOID), iLiquid(NULL) { }
-            ~GroupModel() { delete iLiquid; }
+                        iBound(bound), iMogpFlags(mogpFlags), iGroupWMOID(groupWMOID), iLiquid(nullptr) { }
+            ~GroupModel() = default;
 
             //! pass mesh data to object and create BIH. Passed vectors get get swapped with old geometry!
             void setMeshData(std::vector<G3D::Vector3> &vert, std::vector<MeshTriangle> &tri);
-            void setLiquidData(WmoLiquid*& liquid) { iLiquid = liquid; liquid = NULL; }
+            void setLiquidData(std::unique_ptr<WmoLiquid> liquid) { iLiquid = std::move(liquid); }
             bool IntersectRay(const G3D::Ray &ray, float &distance, bool stopAtFirstHit) const;
             bool IsInsideObject(const G3D::Vector3 &pos, const G3D::Vector3 &down, float &z_dist) const;
             bool GetLiquidLevel(const G3D::Vector3 &pos, float &liqHeight) const;
@@ -89,7 +89,7 @@ namespace VMAP
             const G3D::AABox& GetBound() const { return iBound; }
             uint32_t GetMogpFlags() const { return iMogpFlags; }
             uint32_t GetWmoID() const { return iGroupWMOID; }
-            void getMeshData(std::vector<G3D::Vector3>& outVertices, std::vector<MeshTriangle>& outTriangles, WmoLiquid*& liquid);
+            void getMeshData(std::vector<G3D::Vector3>& outVertices, std::vector<MeshTriangle>& outTriangles, WmoLiquid*& liquid) const;
         protected:
             G3D::AABox iBound;
             uint32_t iMogpFlags;// 0x8 outdor; 0x2000 indoor
@@ -97,7 +97,7 @@ namespace VMAP
             std::vector<G3D::Vector3> vertices;
             std::vector<MeshTriangle> triangles;
             BIH meshTree;
-            WmoLiquid* iLiquid;
+            std::unique_ptr<WmoLiquid> iLiquid;
     };
 
     /*! Holds a model (converted M2 or WMO) in its original coordinate space */
@@ -114,7 +114,7 @@ namespace VMAP
             bool GetLocationInfo(const G3D::Vector3 &p, const G3D::Vector3 &down, float &dist, LocationInfo &info) const;
             bool writeFile(const std::string &filename);
             bool readFile(const std::string &filename);
-            void getGroupModels(std::vector<GroupModel>& outGroupModels);
+            std::vector<GroupModel> const& getGroupModels() const;
         protected:
             uint32_t RootWMOID;
             std::vector<GroupModel> groupModels;

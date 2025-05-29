@@ -129,13 +129,13 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Session functions
 private:
-    typedef std::unordered_map<uint32_t, WorldSession*> activeSessionMap;
+    typedef std::unordered_map<uint32_t, std::unique_ptr<WorldSession>> activeSessionMap;
     activeSessionMap mActiveSessionMapStore;
 
     std::mutex mSessionLock;
 
 public:
-    void addSession(WorldSession* worldSession);
+    void addSession(std::unique_ptr<WorldSession> worldSession);
 
     WorldSession* getSessionByAccountId(uint32_t accountId);
     WorldSession* getSessionByAccountName(const std::string& accountName);
@@ -164,7 +164,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Session queue
 private:
-    typedef std::list<WorldSocket*> QueuedWorldSocketList;
+    typedef std::list<std::pair<WorldSocket*, std::unique_ptr<WorldSession>>> QueuedWorldSocketList;
     QueuedWorldSocketList mQueuedSessions;
 
     std::mutex queueMutex;
@@ -175,7 +175,7 @@ public:
     void updateQueuedSessions(uint32_t diff);
     uint32_t getQueuedSessions() { return static_cast<uint32_t>(mQueuedSessions.size()); };
 
-    uint32_t addQueuedSocket(WorldSocket* socket);
+    uint32_t addQueuedSocket(WorldSocket* socket, std::unique_ptr<WorldSession> sessionHolder);
     void removeQueuedSocket(WorldSocket* socket);
 
     uint32_t getQueueUpdateTimer() { return mQueueUpdateTimer; }

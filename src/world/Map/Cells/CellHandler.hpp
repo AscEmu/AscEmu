@@ -85,10 +85,7 @@ Class* CellHandler<Class>::create(uint32_t x, uint32_t y)
         return nullptr;
 
     if ((*_cells)[x] == nullptr)
-    {
         (*_cells)[x] = std::make_unique<std::array<std::unique_ptr<Class>, Map::Cell::_sizeY>>();
-        std::fill((*_cells)[x]->begin(), (*_cells)[x]->end(), nullptr);
-    }
 
     if ((*(*_cells)[x])[y] == nullptr)
     {

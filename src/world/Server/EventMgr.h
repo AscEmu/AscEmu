@@ -112,11 +112,11 @@ enum EventFlags : uint8_t
 
 struct SERVER_DECL TimedEvent
 {
-    TimedEvent(void* object, CallbackBase* callback, uint32_t type, time_t time, uint32_t repeat, uint32_t flags) :
-        obj(object), cb(callback), eventType(type), eventFlag(static_cast<uint16_t>(flags)), msTime(time), currTime(time), repeats(static_cast<uint16_t>(repeat)), deleted(false), instanceId(0), ref(0) {}
+    TimedEvent(void* object, std::unique_ptr<CallbackBase> callback, uint32_t type, time_t time, uint32_t repeat, uint32_t flags) :
+        obj(object), cb(std::move(callback)), eventType(type), eventFlag(static_cast<uint16_t>(flags)), msTime(time), currTime(time), repeats(static_cast<uint16_t>(repeat)), deleted(false), instanceId(0) {}
 
     void* obj;
-    CallbackBase* cb;
+    std::unique_ptr<CallbackBase> cb;
     uint32_t eventType;
     uint16_t eventFlag;
     time_t msTime;
@@ -124,21 +124,8 @@ struct SERVER_DECL TimedEvent
     uint16_t repeats;
     bool deleted;
     int instanceId;
-    std::atomic<unsigned long> ref;
 
-    static TimedEvent* Allocate(void* object, CallbackBase* callback, uint32_t flags, time_t time, uint32_t repeat);
-
-
-    void DecRef()
-    {
-        if (--ref == 0)
-        {
-            delete cb;
-            delete this;
-        }
-    }
-
-    void IncRef() { ++ref; }
+    static std::shared_ptr<TimedEvent> Allocate(void* object, std::unique_ptr<CallbackBase> callback, uint32_t flags, time_t time, uint32_t repeat);
 };
 
 class EventMgr;
@@ -165,50 +152,50 @@ class SERVER_DECL EventMgr
         void AddEvent(Class* obj, void (Class::*method)(), uint32_t type, time_t time, uint32_t repeats, uint32_t flags)
         {
             // create a timed event
-            TimedEvent* event = new TimedEvent(obj, new CallbackP0<Class>(obj, method), type, time, repeats, flags);
+            auto event = std::make_shared<TimedEvent>(obj, std::make_unique<CallbackP0<Class>>(obj, method), type, time, repeats, flags);
 
             // add this to the object's list, updating will all be done later on...
-            obj->event_AddEvent(event);
+            obj->event_AddEvent(std::move(event));
         }
 
         template <class Class, typename P1>
         void AddEvent(Class* obj, void (Class::*method)(P1), P1 p1, uint32_t type, time_t time, uint32_t repeats, uint32_t flags)
         {
             // create a timed event
-            TimedEvent* event = new TimedEvent(obj, new CallbackP1<Class, P1>(obj, method, p1), type, time, repeats, flags);
+            auto event = std::make_shared<TimedEvent>(obj, std::make_unique<CallbackP1<Class, P1>>(obj, method, p1), type, time, repeats, flags);
 
             // add this to the object's list, updating will all be done later on...
-            obj->event_AddEvent(event);
+            obj->event_AddEvent(std::move(event));
         }
 
         template <class Class, typename P1, typename P2>
         void AddEvent(Class* obj, void (Class::*method)(P1, P2), P1 p1, P2 p2, uint32_t type, time_t time, uint32_t repeats, uint32_t flags)
         {
             // create a timed event
-            TimedEvent* event = new TimedEvent(obj, new CallbackP2<Class, P1, P2>(obj, method, p1, p2), type, time, repeats, flags);
+            auto event = std::make_shared<TimedEvent>(obj, std::make_unique<CallbackP2<Class, P1, P2>>(obj, method, p1, p2), type, time, repeats, flags);
 
             // add this to the object's list, updating will all be done later on...
-            obj->event_AddEvent(event);
+            obj->event_AddEvent(std::move(event));
         }
 
         template <class Class, typename P1, typename P2, typename P3>
         void AddEvent(Class* obj, void (Class::*method)(P1, P2, P3), P1 p1, P2 p2, P3 p3, uint32_t type, time_t time, uint32_t repeats, uint32_t flags)
         {
             // create a timed event
-            TimedEvent* event = new TimedEvent(obj, new CallbackP3<Class, P1, P2, P3>(obj, method, p1, p2, p3), type, time, repeats, flags);
+            auto event = std::make_shared<TimedEvent>(obj, std::make_unique<CallbackP3<Class, P1, P2, P3>>(obj, method, p1, p2, p3), type, time, repeats, flags);
 
             // add this to the object's list, updating will all be done later on...
-            obj->event_AddEvent(event);
+            obj->event_AddEvent(std::move(event));
         }
 
         template <class Class, typename P1, typename P2, typename P3, typename P4>
         void AddEvent(Class* obj, void (Class::*method)(P1, P2, P3, P4), P1 p1, P2 p2, P3 p3, P4 p4, uint32_t type, time_t time, uint32_t repeats, uint32_t flags)
         {
             // create a timed event
-            TimedEvent* event = new TimedEvent(obj, new CallbackP4<Class, P1, P2, P3, P4>(obj, method, p1, p2, p3, p4), type, time, repeats, flags);
+            auto event = std::make_shared<TimedEvent>(obj, std::make_unique<CallbackP4<Class, P1, P2, P3, P4>>(obj, method, p1, p2, p3, p4), type, time, repeats, flags);
 
             // add this to the object's list, updating will all be done later on...
-            obj->event_AddEvent(event);
+            obj->event_AddEvent(std::move(event));
         }
 
         /// \note Please remember the Aura class will call remove events!

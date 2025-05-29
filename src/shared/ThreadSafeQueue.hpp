@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include <mutex>
+#include <optional>
 #include <queue>
 #include <condition_variable>
 
@@ -13,9 +14,8 @@ template<class T>
 class ThreadSafeQueue
 {
 public:
-
     ThreadSafeQueue() = default;
-    ~ThreadSafeQueue() {}
+    ~ThreadSafeQueue() = default;
 
     void push(T _element)
     {
@@ -32,7 +32,7 @@ public:
         m_condition.notify_one();
     }
 
-    T pop()
+    std::optional<T> pop()
     {
         std::unique_lock lock(m_lock);
 
@@ -43,7 +43,7 @@ public:
             return element;
         }
 
-        return nullptr;
+        return std::nullopt;
     }
 
     T popWait()
@@ -58,9 +58,14 @@ public:
         return element;
     }
 
-    bool hasItems()
+    bool hasItems() const
     {
         return !m_queue.empty();
+    }
+
+    size_t getSize() const
+    {
+        return m_queue.size();
     }
 
 private:

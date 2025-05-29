@@ -11,7 +11,7 @@ void CommandOverrides::loadOverrides()
 {
     overrides.clear();
 
-    QueryResult* result = CharacterDatabase.Query("SELECT command_name, access_level FROM command_overrides");
+    auto result = CharacterDatabase.Query("SELECT command_name, access_level FROM command_overrides");
     if (!result)
         return;
 
@@ -22,8 +22,6 @@ void CommandOverrides::loadOverrides()
         
         overrides[command] = permission;  // Store in the map
     }
-
-    delete result;
 }
 
 const std::string* CommandOverrides::getOverride(const std::string& command) const

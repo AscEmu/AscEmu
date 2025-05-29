@@ -293,7 +293,7 @@ public:
     void loadAdditionalTableConfig();
 
     // helpers
-    QueryResult* getWorldDBQuery(const char* query, ...);
+    std::unique_ptr<QueryResult> getWorldDBQuery(const char* query, ...);
 
     // loads
     void loadItemPagesTable();

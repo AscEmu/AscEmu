@@ -223,12 +223,12 @@ void SpellProcMgr::addByIds(uint32_t* spellIds, spell_proc_factory_function spel
     }
 }
 
-SpellProc* SpellProcMgr::newSpellProc(Unit* owner, uint32_t spellId, uint32_t origSpellId, uint64_t casterGuid, uint32_t procChance, SpellProcFlags procFlags, SpellExtraProcFlags exProcFlags, uint32_t const* spellFamilyMask, uint32_t const* procClassMask, Aura* createdByAura, Object* obj)
+std::unique_ptr<SpellProc> SpellProcMgr::newSpellProc(Unit* owner, uint32_t spellId, uint32_t origSpellId, uint64_t casterGuid, uint32_t procChance, SpellProcFlags procFlags, SpellExtraProcFlags exProcFlags, uint32_t const* spellFamilyMask, uint32_t const* procClassMask, Aura* createdByAura, Object* obj)
 {
     return newSpellProc(owner, sSpellMgr.getSpellInfo(spellId), sSpellMgr.getSpellInfo(origSpellId), casterGuid, procChance, procFlags, exProcFlags, spellFamilyMask, procClassMask, createdByAura, obj);
 }
 
-SpellProc* SpellProcMgr::newSpellProc(Unit* owner, SpellInfo const* spellInfo, SpellInfo const* origSpellInfo, uint64_t casterGuid, uint32_t procChance, SpellProcFlags procFlags, SpellExtraProcFlags exProcFlags, uint32_t const* spellFamilyMask, uint32_t const* procClassMask, Aura* createdByAura, Object* obj)
+std::unique_ptr<SpellProc> SpellProcMgr::newSpellProc(Unit* owner, SpellInfo const* spellInfo, SpellInfo const* origSpellInfo, uint64_t casterGuid, uint32_t procChance, SpellProcFlags procFlags, SpellExtraProcFlags exProcFlags, uint32_t const* spellFamilyMask, uint32_t const* procClassMask, Aura* createdByAura, Object* obj)
 {
     if (spellInfo == nullptr)
         return nullptr;
@@ -240,11 +240,11 @@ SpellProc* SpellProcMgr::newSpellProc(Unit* owner, SpellInfo const* spellInfo, S
     if (itr != mSpellProc.end())
         ptr = itr->second;
 
-    SpellProc* result = nullptr;
+    std::unique_ptr<SpellProc> result = nullptr;
     if (ptr != nullptr)
-        result = (*ptr)();      // Found, create a new object of this specific class
+        result = (*ptr)();                      // Found, create a new object of this specific class
     else
-        result = new SpellProc; // Not found, create a new object of generic SpellProc
+        result = std::make_unique<SpellProc>(); // Not found, create a new object of generic SpellProc
 
     result->mSpell = spellInfo;
     result->mOrigSpell = origSpellInfo;
@@ -284,7 +284,7 @@ SpellProc* SpellProcMgr::newSpellProc(Unit* owner, SpellInfo const* spellInfo, S
     }
 
     if (sScriptMgr.getSpellScript(spellInfo->getId()) != nullptr)
-        sScriptMgr.callScriptedSpellProcCreate(result, obj);
+        sScriptMgr.callScriptedSpellProcCreate(result.get(), obj);
     else
         result->init(obj);
 

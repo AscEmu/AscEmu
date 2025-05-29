@@ -249,10 +249,7 @@ namespace VMAP
         }
 
         //cleanup:
-        for (MapData::iterator map_iter = mapData.begin(); map_iter != mapData.end(); ++map_iter)
-        {
-            delete map_iter->second;
-        }
+        mapData.clear();
 
         return success;
     }
@@ -303,11 +300,12 @@ namespace VMAP
             if (map_iter == mapData.end())
             {
                 printf("spawning Map %u\n", mapID);
-                mapData[mapID] = current = new MapSpawns();
+                mapData[mapID] = std::make_unique<MapSpawns>();
+                current = mapData[mapID].get();
             }
             else
             {
-                current = (*map_iter).second;
+                current = (*map_iter).second.get();
             }
 
             current->UniqueEntries.emplace(pair<uint32_t, ModelSpawn>(spawn.ID, spawn));
@@ -413,7 +411,7 @@ namespace VMAP
                 GroupModel_Raw& raw_group = raw_model.groupsArray[g];
                 groupsArray.emplace_back(GroupModel(raw_group.mogpflags, raw_group.GroupWMOID, raw_group.bounds ));
                 groupsArray.back().setMeshData(raw_group.vertexArray, raw_group.triangles);
-                groupsArray.back().setLiquidData(raw_group.liquid);
+                groupsArray.back().setLiquidData(std::move(raw_group.liquid));
             }
 
             model.setGroupModels(groupsArray);
@@ -558,15 +556,13 @@ namespace VMAP
         READ_OR_RETURN(&nindexes, sizeof(uint32_t));
         if (nindexes >0)
         {
-            uint16_t *indexarray = new uint16_t[nindexes];
-            READ_OR_RETURN_WITH_DELETE(indexarray, nindexes*sizeof(uint16_t));
+            auto indexarray = std::make_unique<uint16_t[]>(nindexes);
+            READ_OR_RETURN_WITH_DELETE(indexarray.get(), nindexes * sizeof(uint16_t));
             triangles.reserve(nindexes / 3);
             for (uint32_t i = 0; i < nindexes; i += 3)
             {
                 triangles.push_back(MeshTriangle(indexarray[i], indexarray[i + 1], indexarray[i + 2]));
             }
-
-            delete[] indexarray;
         }
 
         // ---- vectors
@@ -578,14 +574,12 @@ namespace VMAP
 
         if (nvectors >0)
         {
-            float *vectorarray = new float[nvectors*3];
-            READ_OR_RETURN_WITH_DELETE(vectorarray, nvectors*sizeof(float)*3);
+            auto vectorarray = std::make_unique<float[]>(nvectors * 3);
+            READ_OR_RETURN_WITH_DELETE(vectorarray.get(), nvectors * sizeof(float) * 3);
             for (uint32_t i = 0; i < nvectors; ++i)
             {
-                vertexArray.push_back(Vector3(vectorarray + 3 * i));
+                vertexArray.push_back(Vector3(vectorarray.get() + 3 * i));
             }
-
-            delete[] vectorarray;
         }
         // ----- liquid
         liquid = 0;
@@ -600,7 +594,7 @@ namespace VMAP
 
             READ_OR_RETURN(&blocksize, sizeof(int));
             READ_OR_RETURN(&hlq, sizeof(WMOLiquidHeader));
-            liquid = new WmoLiquid(hlq.xtiles, hlq.ytiles, Vector3(hlq.pos_x, hlq.pos_y, hlq.pos_z), hlq.type);
+            liquid = std::make_unique<WmoLiquid>(hlq.xtiles, hlq.ytiles, Vector3(hlq.pos_x, hlq.pos_y, hlq.pos_z), hlq.type);
             uint32_t size = hlq.xverts*hlq.yverts;
             READ_OR_RETURN(liquid->GetHeightStorage(), size*sizeof(float));
             size = hlq.xtiles*hlq.ytiles;
@@ -611,10 +605,7 @@ namespace VMAP
     }
 
 
-    GroupModel_Raw::~GroupModel_Raw()
-    {
-        delete liquid;
-    }
+    GroupModel_Raw::~GroupModel_Raw() = default;
 
     bool WorldModel_Raw::Read(const char * path)
     {

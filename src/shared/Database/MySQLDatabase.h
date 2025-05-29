@@ -28,6 +28,7 @@
 
 struct MySQLDatabaseConnection : public DatabaseConnection
 {
+    MySQLDatabaseConnection(MYSQL* _mysql) : MySql(_mysql) {}
     MYSQL* MySql;
 };
 
@@ -64,7 +65,7 @@ class SERVER_DECL MySQLDatabase : public Database
         void _EndTransaction(DatabaseConnection* conn);
         bool _Reconnect(MySQLDatabaseConnection* conn);
 
-        QueryResult* _StoreQueryResult(DatabaseConnection* con);
+        std::unique_ptr<QueryResult> _StoreQueryResult(DatabaseConnection* con) override;
 };
 
 

@@ -643,15 +643,15 @@ namespace MMAP
             if (result == VMAP_LOAD_RESULT_ERROR)
                 break;
 
-            InstanceTreeMap instanceTrees;
-            ((VMapManager2*)vmapManager)->getInstanceMapTree(instanceTrees);
+            const auto& instanceTrees = ((VMapManager2*)vmapManager)->getInstanceMapTree();
 
-            if (!instanceTrees[mapID])
+            auto instItr = instanceTrees.find(mapID);
+            if (instItr == instanceTrees.cend())
                 break;
 
             ModelInstance* models = NULL;
             uint32_t count = 0;
-            instanceTrees[mapID]->getModelInstances(models, count);
+            instItr->second->getModelInstances(models, count);
 
             if (!models)
                 break;
@@ -668,8 +668,7 @@ namespace MMAP
                 // now we have a model to add to the meshdata
                 retval = true;
 
-                std::vector<GroupModel> groupModels;
-                worldModel->getGroupModels(groupModels);
+                const auto& groupModels = worldModel->getGroupModels();
 
                 // all M2s need to have triangle indices reversed
                 bool isM2 = instance.name.find(".m2") != std::string::npos || instance.name.find(".M2") != std::string::npos;
@@ -681,7 +680,7 @@ namespace MMAP
                 position.x -= 32*GRID_SIZE;
                 position.y -= 32*GRID_SIZE;
 
-                for (std::vector<GroupModel>::iterator it = groupModels.begin(); it != groupModels.end(); ++it)
+                for (auto it = groupModels.begin(); it != groupModels.end(); ++it)
                 {
                     std::vector<G3D::Vector3> tempVertices;
                     std::vector<G3D::Vector3> transformedVertices;

@@ -111,12 +111,9 @@ struct DynTreeImpl : public ParentTree/*, public Intersectable*/
     int unbalanced_times;
 };
 
-DynamicMapTree::DynamicMapTree() : impl(new DynTreeImpl()) { }
+DynamicMapTree::DynamicMapTree() : impl(std::make_unique<DynTreeImpl>()) { }
 
-DynamicMapTree::~DynamicMapTree()
-{
-    delete impl;
-}
+DynamicMapTree::~DynamicMapTree() = default;
 
 void DynamicMapTree::insert(const GameObjectModel& mdl)
 {

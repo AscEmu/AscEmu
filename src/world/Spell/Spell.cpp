@@ -246,14 +246,7 @@ Spell::~Spell()
     m_critTargets.clear();
 
     m_usedModifiers.clear();
-
-    for (auto itr = m_pendingAuras.begin(); itr != m_pendingAuras.end();)
-    {
-        if (itr->second.aur)
-            delete itr->second.aur;
-
-        itr = m_pendingAuras.erase(itr);
-    }
+    m_pendingAuras.clear();
 }
 
 

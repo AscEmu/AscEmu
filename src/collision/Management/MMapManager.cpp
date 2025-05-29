@@ -28,8 +28,7 @@ namespace MMAP
     // ######################## MMapManager ########################
     MMapManager::~MMapManager()
     {
-        for (MMapDataSet::iterator i = loadedMMaps.begin(); i != loadedMMaps.end(); ++i)
-            delete i->second;
+        loadedMMaps.clear();
 
         // by now we should not have maps loaded
         // if we had, tiles in MMapData->mmapLoadedTiles, their actual data is lost!
@@ -77,14 +76,13 @@ namespace MMAP
         // load and init dtNavMesh - read parameters from file
         std::string dataDir = worldConfig.server.dataDir + "mmaps/";
         uint32_t pathLen = static_cast<uint32_t>(dataDir.length() + strlen("%04i.mmap") + 1);
-        char *fileName = new char[pathLen];
-        snprintf(fileName, pathLen, (dataDir + "%04i.mmap").c_str(), mapId);
+        auto fileName = std::make_unique<char[]>(pathLen);
+        snprintf(fileName.get(), pathLen, (dataDir + "%04i.mmap").c_str(), mapId);
 
-        FILE* file = fopen(fileName, "rb");
+        FILE* file = fopen(fileName.get(), "rb");
         if (!file)
         {
-            sLogger.debug("MMAP:loadMapData: Error: Could not open mmap file '{}'", fileName);
-            delete [] fileName;
+            sLogger.debug("MMAP:loadMapData: Error: Could not open mmap file '{}'", fileName.get());
             return false;
         }
 
@@ -93,8 +91,7 @@ namespace MMAP
         fclose(file);
         if (count != 1)
         {
-            sLogger.failure("Error: Could not read params from file '{}'", fileName);
-            delete [] fileName;
+            sLogger.failure("Error: Could not read params from file '{}'", fileName.get());
             return false;
         }
 
@@ -103,20 +100,15 @@ namespace MMAP
         if (dtStatusFailed(mesh->init(&params)))
         {
             dtFreeNavMesh(mesh);
-            sLogger.failure("Failed to initialize dtNavMesh for mmap {:04} from file {}", mapId, fileName);
-            delete [] fileName;
+            sLogger.failure("Failed to initialize dtNavMesh for mmap {:04} from file {}", mapId, fileName.get());
             return false;
         }
-
-        delete [] fileName;
 
         sLogger.debug("MMAP:loadMapData: Loaded {:04}.mmap", mapId);
 
         // store inside our map list
-        MMapData* mmap_data = new MMapData(mesh);
-        mmap_data->mmapLoadedTiles.clear();
-
-        itr->second = mmap_data;
+        itr->second = std::make_unique<MMapData>(mesh);
+        itr->second->mmapLoadedTiles.clear();
         return true;
     }
 
@@ -132,7 +124,7 @@ namespace MMAP
             return false;
 
         // get this mmap data
-        MMapData* mmap = loadedMMaps[mapId];
+        MMapData* mmap = loadedMMaps[mapId].get();
         ASSERT(mmap->navMesh);
 
         // check if we already have this tile loaded
@@ -142,18 +134,16 @@ namespace MMAP
 
         // load this tile :: /MMMXXYY.mmtile
         uint32_t pathLen = static_cast<uint32_t>(basePath.length() + strlen("/%04i%02i%02i.mmtile") + 1);
-        char *fileName = new char[pathLen];
+        auto fileName = std::make_unique<char[]>(pathLen);
 
-        snprintf(fileName, pathLen, (basePath + "/%04i%02i%02i.mmtile").c_str(), mapId, x, y);
+        snprintf(fileName.get(), pathLen, (basePath + "/%04i%02i%02i.mmtile").c_str(), mapId, x, y);
 
-        FILE* file = fopen(fileName, "rb");
+        FILE* file = fopen(fileName.get(), "rb");
         if (!file)
         {
-            sLogger.debug("Could not open mmtile file '{}'", fileName);
-            delete [] fileName;
+            sLogger.debug("Could not open mmtile file '{}'", fileName.get());
             return false;
         }
-        delete [] fileName;
 
         // read header
         MmapTileHeader fileHeader;
@@ -215,7 +205,7 @@ namespace MMAP
             return false;
         }
 
-        MMapData* mmap = itr->second;
+        MMapData* mmap = itr->second.get();
 
         // check if we have this tile loaded
         uint32_t packedGridPos = packTileID(x, y);
@@ -258,7 +248,7 @@ namespace MMAP
         }
 
         // unload all tiles from given map
-        MMapData* mmap = itr->second;
+        MMapData* mmap = itr->second.get();
         for (MMapTileSet::iterator i = mmap->mmapLoadedTiles.begin(); i != mmap->mmapLoadedTiles.end(); ++i)
         {
             uint32_t x = (i->first >> 16);
@@ -272,7 +262,6 @@ namespace MMAP
             }
         }
 
-        delete mmap;
         itr->second = nullptr;
         sLogger.debug("MMAP:unloadMap: Unloaded {:04}.mmap", mapId);
 
@@ -290,7 +279,7 @@ namespace MMAP
             return false;
         }
 
-        MMapData* mmap = itr->second;
+        MMapData* mmap = itr->second.get();
         if (mmap->navMeshQueries.find(instanceId) == mmap->navMeshQueries.end())
         {
             sLogger.debug("MMAP:unloadMapInstance: Asked to unload not loaded dtNavMeshQuery mapId {:04} instanceId {}", mapId, instanceId);
@@ -321,7 +310,7 @@ namespace MMAP
         if (itr == loadedMMaps.end())
             return nullptr;
 
-        MMapData* mmap = itr->second;
+        MMapData* mmap = itr->second.get();
         if (mmap->navMeshQueries.find(instanceId) == mmap->navMeshQueries.end())
         {
             // allocate mesh query

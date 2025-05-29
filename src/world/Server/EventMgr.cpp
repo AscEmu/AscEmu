@@ -27,7 +27,7 @@ EventMgr& EventMgr::getInstance()
     return mInstance;
 }
 
-TimedEvent* TimedEvent::Allocate(void* object, CallbackBase* callback, uint32_t flags, time_t time, uint32_t repeat)
+std::shared_ptr<TimedEvent> TimedEvent::Allocate(void* object, std::unique_ptr<CallbackBase> callback, uint32_t flags, time_t time, uint32_t repeat)
 {
-    return new TimedEvent(object, callback, flags, time, repeat, 0);
+    return std::make_shared<TimedEvent>(object, std::move(callback), flags, time, repeat, 0);
 }

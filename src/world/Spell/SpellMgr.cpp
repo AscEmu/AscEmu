@@ -171,7 +171,7 @@ Spell* SpellMgr::newSpell(Object* caster, SpellInfo const* info, bool triggered,
     return new Spell(caster, info, triggered, aur);
 }
 
-Aura* SpellMgr::newAura(SpellInfo const* spellInfo, int32_t duration, Object* caster, Unit* target, bool temporary /*= false*/, Item* i_caster /*= nullptr*/)
+std::unique_ptr<Aura> SpellMgr::newAura(SpellInfo const* spellInfo, int32_t duration, Object* caster, Unit* target, bool temporary /*= false*/, Item* i_caster /*= nullptr*/)
 {
     //\brief... nullptr when downgrading ae from wotlk to tbc (active auras from newer client versions should be removed before entering tbc)
 
@@ -189,7 +189,7 @@ Aura* SpellMgr::newAura(SpellInfo const* spellInfo, int32_t duration, Object* ca
         return (*AuraScriptLinker(&AbsorbAura::Create))(getMutableSpellInfo(spellInfo->getId()), duration, caster, target, temporary, i_caster);
     
     // Standard auras without a script
-    return new Aura(spellInfo, duration, caster, target, temporary, i_caster);
+    return std::make_unique<Aura>(spellInfo, duration, caster, target, temporary, i_caster);
 }
 
 void SpellMgr::addSpellById(const uint32_t spellId, SpellScriptLinker spellScript)
@@ -1191,8 +1191,8 @@ void SpellMgr::loadTalentRanks()
 
 void SpellMgr::loadSpellCoefficientOverride()
 {
-    //                                                  0           1                     2
-    const auto result = WorldDatabase.Query("SELECT spell_id, direct_coefficient, overtime_coefficient "
+    //                                            0           1                     2
+    auto result = WorldDatabase.Query("SELECT spell_id, direct_coefficient, overtime_coefficient "
                                             "FROM spell_coefficient_override WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
 
     if (result == nullptr)
@@ -1221,7 +1221,6 @@ void SpellMgr::loadSpellCoefficientOverride()
             spellInfo->spell_coeff_overtime = overtime_override;
         ++overridenCoeffs;
     } while (result->NextRow());
-    delete result;
 
     sLogger.info("SpellMgr : Loaded {} override values from `spell_coefficient_override` table", overridenCoeffs);
 }
@@ -1316,7 +1315,6 @@ void SpellMgr::loadSpellCustomOverride()
 
         ++overridenSpells;
     } while (result->NextRow());
-    delete result;
 
     sLogger.info("SpellMgr : Loaded {} override values from `spell_custom_override` table", overridenSpells);
 }
@@ -1348,7 +1346,6 @@ void SpellMgr::loadSpellAIThreat()
 
         ++threatCount;
     } while (result->NextRow());
-    delete result;
 
     sLogger.info("SpellMgr : Loaded {} spell ai threat from `ai_threattospellid` table", threatCount);
 }
@@ -1418,7 +1415,6 @@ void SpellMgr::loadSpellEffectOverride()
 
         ++overridenEffects;
     } while (result->NextRow());
-    delete result;
 
     sLogger.info("SpellMgr : Loaded {} spell effect overrides from `spell_effects_override` table", overridenEffects);
 }
@@ -1613,7 +1609,6 @@ void SpellMgr::loadSpellAreas()
 
         ++areaCount;
     } while (result->NextRow());
-    delete result;
 
     sLogger.info("SpellMgr : Loaded {} spell area requirements from `spell_area` table", areaCount);
 }
@@ -1664,8 +1659,6 @@ void SpellMgr::loadSpellRequired()
         mSpellsRequiringSpell.insert(std::pair<uint32_t, uint32_t>(spell_req, spell_id));
         ++count;
     } while (result->NextRow());
-
-    delete result;
 
     sLogger.info("SpellMgr : Loaded {} spell required records from `spell_required` table", count);
 }
@@ -1727,7 +1720,6 @@ void SpellMgr::loadSpellTargetConstraints()
                 oldspellId = spellId;
             }
         } while (result->NextRow());
-        delete result;
     }
 
     sLogger.info("SpellMgr : Loaded {} spell target constraints from `spelltargetconstraints` table", static_cast<uint32_t>(mSpellTargetConstraintMap.size()));
@@ -1742,8 +1734,6 @@ void SpellMgr::loadSpellDisabled()
         {
             mDisabledSpells.insert(result->Fetch()[0].asUint32());
         } while (result->NextRow());
-
-        delete result;
     }
 
     sLogger.info("SpellMgr : Loaded {} disabled spells from `spell_disable` table", static_cast<uint32_t>(mDisabledSpells.size()));
@@ -1894,7 +1884,6 @@ void SpellMgr::loadSpellRanks()
 
         spellRankChain.insert({ rank, spellId });
     } while (result->NextRow());
-    delete result;
 
     // Remember to create a rank chain for last chain as well
     createSpellRankChain();
