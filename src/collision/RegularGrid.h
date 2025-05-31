@@ -26,9 +26,11 @@
 
 #include "Debugging/Errors.h"
 
+#include <array>
+
 template<class Node>
 struct NodeCreator{
-    static Node * makeNode(int /*x*/, int /*y*/) { return new Node();}
+    static std::unique_ptr<Node> makeNode(int /*x*/, int /*y*/) { return std::make_unique<Node>();}
 };
 
 template<class T,
@@ -51,17 +53,11 @@ public:
     typedef G3D::Table<const T*, Node*> MemberTable;
 
     MemberTable memberTable;
-    Node* nodes[CELL_NUMBER][CELL_NUMBER];
+    std::array<std::array<std::unique_ptr<Node>, CELL_NUMBER>, CELL_NUMBER> nodes{};
 
-    RegularGrid2D(){
-        memset(nodes, 0, sizeof(nodes));
-    }
+    RegularGrid2D() = default;
 
-    ~RegularGrid2D(){
-        for (int x = 0; x < CELL_NUMBER; ++x)
-            for (int y = 0; y < CELL_NUMBER; ++y)
-                delete nodes[x][y];
-    }
+    ~RegularGrid2D() = default;
 
     void insert(const T& value)
     {
@@ -83,7 +79,7 @@ public:
     {
         for (int x = 0; x < CELL_NUMBER; ++x)
             for (int y = 0; y < CELL_NUMBER; ++y)
-                if (Node* n = nodes[x][y])
+                if (Node* n = nodes[x][y].get())
                     n->balance();
     }
 
@@ -136,7 +132,7 @@ public:
 
         if (cell == last_cell)
         {
-            if (Node* node = nodes[cell.x][cell.y])
+            if (Node* node = nodes[cell.x][cell.y].get())
                 node->intersectRay(ray, intersectCallback, max_dist);
             return;
         }
@@ -180,7 +176,7 @@ public:
         float tDeltaY = voxel * std::fabs(ky_inv);
         do
         {
-            if (Node* node = nodes[cell.x][cell.y])
+            if (Node* node = nodes[cell.x][cell.y].get())
             {
                 //float enterdist = max_dist;
                 node->intersectRay(ray, intersectCallback, max_dist);
@@ -207,7 +203,7 @@ public:
         Cell cell = Cell::ComputeCell(point.x, point.y);
         if (!cell.isValid())
             return;
-        if (Node* node = nodes[cell.x][cell.y])
+        if (Node* node = nodes[cell.x][cell.y].get())
             node->intersectPoint(point, intersectCallback);
     }
 
@@ -218,7 +214,7 @@ public:
         Cell cell = Cell::ComputeCell(ray.origin().x, ray.origin().y);
         if (!cell.isValid())
             return;
-        if (Node* node = nodes[cell.x][cell.y])
+        if (Node* node = nodes[cell.x][cell.y].get())
             node->intersectRay(ray, intersectCallback, max_dist);
     }
 };

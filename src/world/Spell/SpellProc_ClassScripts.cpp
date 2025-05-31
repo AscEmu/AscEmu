@@ -36,7 +36,7 @@
 class DamageShieldSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new DamageShieldSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<DamageShieldSpellProc>(); }
 
     bool canProc(Unit* /*victim*/, SpellInfo const* /*castingSpell*/) override
     {
@@ -63,7 +63,7 @@ public:
 class JuggernautSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new JuggernautSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<JuggernautSpellProc>(); }
 
     bool canProc(Unit* /*victim*/, SpellInfo const* castingSpell) override
     {
@@ -176,7 +176,7 @@ public:
 class FrostBrandAttackSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new FrostBrandAttackSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<FrostBrandAttackSpellProc>(); }
 
     void init(Object* obj) override
     {
@@ -193,7 +193,7 @@ public:
 class FlametongueWeaponSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new FlametongueWeaponSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<FlametongueWeaponSpellProc>(); }
 
     void init(Object* obj) override
     {
@@ -281,7 +281,7 @@ private:
 class PoisonSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new PoisonSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<PoisonSpellProc>(); }
 
     PoisonSpellProc()
     {
@@ -343,7 +343,7 @@ protected:
 class WoundPoisonSpellProc : public PoisonSpellProc
 {
 public:
-    static SpellProc* Create() { return new WoundPoisonSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<WoundPoisonSpellProc>(); }
 
     void init(Object* obj) override
     {
@@ -356,7 +356,7 @@ public:
 class InstantPoisonSpellProc : public PoisonSpellProc
 {
 public:
-    static SpellProc* Create() { return new InstantPoisonSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<InstantPoisonSpellProc>(); }
 
     void init(Object* obj) override
     {
@@ -369,7 +369,7 @@ public:
 class WaylaySpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new WaylaySpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<WaylaySpellProc>(); }
 
     void init(Object* /*obj*/) override
     {
@@ -383,7 +383,7 @@ public:
 class SpiritTapSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new SpiritTapSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<SpiritTapSpellProc>(); }
 
     void init(Object* /*obj*/) override
     {
@@ -394,7 +394,7 @@ public:
 class ImprovedDevouringPlagueSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new ImprovedDevouringPlagueSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<ImprovedDevouringPlagueSpellProc>(); }
 
     bool doEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32_t /*flag*/, uint32_t /*dmg*/, uint32_t /*abs*/, uint32_t /*weaponDamageType*/) override
     {
@@ -414,7 +414,7 @@ public:
 class EmpoweredRenewSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new EmpoweredRenewSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<EmpoweredRenewSpellProc>(); }
 
     bool doEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32_t /*flag*/, uint32_t /*dmg*/, uint32_t /*abs*/, uint32_t /*weapon_damage_type*/) override
     {
@@ -447,7 +447,7 @@ public:
 class MiserySpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new MiserySpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<MiserySpellProc>(); }
 
     void init(Object* /*obj*/) override
     {
@@ -461,7 +461,7 @@ public:
 class PrayerOfMendingProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new PrayerOfMendingProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<PrayerOfMendingProc>(); }
 
     bool doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32_t /*flag*/, uint32_t /*dmg*/, uint32_t /*abs*/, uint32_t /*weaponDamageType*/) override
     {
@@ -509,7 +509,7 @@ public:
 class SealOfCommandSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new SealOfCommandSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<SealOfCommandSpellProc>(); }
 
     void init(Object* /*obj*/) override
     {
@@ -537,7 +537,7 @@ public:
 class GraceOfTheNaaruSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new GraceOfTheNaaruSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<GraceOfTheNaaruSpellProc>(); }
 
     void init(Object* /*obj*/) override
     {
@@ -548,7 +548,7 @@ public:
 class SpiritualAttunementSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new SpiritualAttunementSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<SpiritualAttunementSpellProc>(); }
 
     bool canProc(Unit* /*victim*/, SpellInfo const* castingSpell) override
     {
@@ -562,7 +562,7 @@ public:
 class PaladinSealsSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new PaladinSealsSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<PaladinSealsSpellProc>(); }
 
     void init(Object* /*obj*/) override
     {
@@ -575,7 +575,7 @@ public:
 class BladeBarrierSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new BladeBarrierSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<BladeBarrierSpellProc>(); }
 
     void init(Object* /*obj*/) override
     {
@@ -602,7 +602,7 @@ private:
 class DeathRuneMasterySpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new DeathRuneMasterySpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<DeathRuneMasterySpellProc>(); }
 
     bool doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32_t /*flag*/, uint32_t /*dmg*/, uint32_t /*abs*/, uint32_t /*weaponDamageType*/) override
     {

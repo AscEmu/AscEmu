@@ -1554,7 +1554,7 @@ void WorldSession::handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/)
 #if VERSION_STRING >= Cata
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REQUEST_CEMETERY_LIST");
 
-    QueryResult* result = WorldDatabase.Query("SELECT id FROM graveyards WHERE faction = %u OR faction = 3;", _player->getTeam());
+    auto result = WorldDatabase.Query("SELECT id FROM graveyards WHERE faction = %u OR faction = 3;", _player->getTeam());
     if (result)
     {
         WorldPacket data(SMSG_REQUEST_CEMETERY_LIST_RESPONSE, 8 * result->GetRowCount());
@@ -1568,7 +1568,6 @@ void WorldSession::handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/)
             Field* field = result->Fetch();
             data << uint32_t(field[0].asUint32());
         } while (result->NextRow());
-        delete result;
 
         SendPacket(&data);
     }
@@ -1722,24 +1721,21 @@ void WorldSession::handleWhoIsOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    QueryResult* resultAcctId = CharacterDatabase.Query("SELECT acct FROM characters WHERE name = '%s'", srlPacket.characterName.c_str());
+    auto resultAcctId = CharacterDatabase.Query("SELECT acct FROM characters WHERE name = '%s'", srlPacket.characterName.c_str());
     if (!resultAcctId)
     {
         SendNotification("%s does not exit!", srlPacket.characterName.c_str());
-        delete resultAcctId;
         return;
     }
 
     Field* fields_acctID = resultAcctId->Fetch();
     const uint32_t accId = fields_acctID[0].asUint32();
-    delete resultAcctId;
 
     //todo: this will not work! no table accounts in character_db!!!
-    QueryResult* accountInfoResult = CharacterDatabase.Query("SELECT acct, login, gm, email, lastip, muted FROM accounts WHERE acct = %u", accId);
+    auto accountInfoResult = CharacterDatabase.Query("SELECT acct, login, gm, email, lastip, muted FROM accounts WHERE acct = %u", accId);
     if (!accountInfoResult)
     {
         SendNotification("Account information for %s not found!", srlPacket.characterName.c_str());
-        delete accountInfoResult;
         return;
     }
 
@@ -1767,8 +1763,6 @@ void WorldSession::handleWhoIsOpcode(WorldPacket& recvPacket)
     std::string acctMuted = fields[5].asCString();
     if (acctMuted.empty())
         acctMuted = "Unknown";
-
-    delete accountInfoResult;
 
     std::string msg = srlPacket.characterName + "'s " + "account information: acctID: " + acctID + ", Name: "
     + acctName + ", Permissions: " + acctPerms + ", E-Mail: " + acctEmail + ", lastIP: " + acctIP + ", Muted: " + acctMuted;

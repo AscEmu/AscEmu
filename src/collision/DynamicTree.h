@@ -21,6 +21,7 @@
 #define _DYNTREE_H
 
 #include <cstdint>
+#include <memory>
 
 namespace G3D
 {
@@ -38,7 +39,7 @@ namespace VMAP
 
 class DynamicMapTree
 {
-    DynTreeImpl *impl;
+    std::unique_ptr<DynTreeImpl> impl;
 
 public:
 

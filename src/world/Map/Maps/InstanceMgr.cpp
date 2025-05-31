@@ -179,7 +179,7 @@ void InstanceMgr::loadResetTimes()
     typedef std::pair<ResetTimeMapDiffInstances::const_iterator, ResetTimeMapDiffInstances::const_iterator> ResetTimeMapDiffInstancesBounds;
     ResetTimeMapDiffInstances mapDiffResetInstances;
 
-    if (QueryResult* result = CharacterDatabase.Query("SELECT id, map, difficulty, resettime FROM instance ORDER BY id ASC"))
+    if (auto result = CharacterDatabase.Query("SELECT id, map, difficulty, resettime FROM instance ORDER BY id ASC"))
     {
         do
         {
@@ -215,7 +215,7 @@ void InstanceMgr::loadResetTimes()
 
     // load the global resettimes for raid and heroic instances
     auto resetHour = static_cast<uint8_t>(worldConfig.instance.relativeDailyHeroicInstanceResetHour);
-    if (QueryResult* result = CharacterDatabase.Query("SELECT mapid, difficulty, resettime FROM instance_reset"))
+    if (auto result = CharacterDatabase.Query("SELECT mapid, difficulty, resettime FROM instance_reset"))
     {
         do
         {

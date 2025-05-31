@@ -28,11 +28,10 @@ void AuctionMgr::loadAuctionHouses()
 {
     sLogger.info("AuctionMgr : Loading Auction Houses...");
 
-    QueryResult* res = CharacterDatabase.Query("SELECT MAX(auctionId) FROM auctions");
+    auto res = CharacterDatabase.Query("SELECT MAX(auctionId) FROM auctions");
     if (res)
     {
         m_maxId = res->Fetch()[0].asUint32();
-        delete res;
     }
 
     res = WorldDatabase.Query("SELECT DISTINCT ahgroup FROM auctionhouse");
@@ -51,7 +50,6 @@ void AuctionMgr::loadAuctionHouses()
 
         }
         while (res->NextRow());
-        delete res;
     }
 
     res = WorldDatabase.Query("SELECT creature_entry, ahgroup FROM auctionhouse");
@@ -62,7 +60,6 @@ void AuctionMgr::loadAuctionHouses()
             m_auctionHouseEntryMap.try_emplace(res->Fetch()[0].asUint32(), tempmap[res->Fetch()[1].asUint32()]);
         }
         while (res->NextRow());
-        delete res;
     }
 }
 

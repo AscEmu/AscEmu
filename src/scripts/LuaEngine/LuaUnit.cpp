@@ -41,6 +41,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgMessageChat.h"
 #include "Server/Script/HookInterface.hpp"
 #include "Spell/Spell.hpp"
+#include "Spell/SpellAura.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
@@ -718,8 +719,8 @@ int LuaUnit::CreateLuaEvent(lua_State* L, Unit* ptr)
 
     if (functionRef)
     {
-        TimedEvent* ev = TimedEvent::Allocate(ptr, new CallbackP1<LuaEngine, int>(LuaGlobal::instance()->luaEngine().get(), &LuaEngine::CallFunctionByReference, functionRef), EVENT_LUA_CREATURE_EVENTS, delay, repeats);
-        ptr->event_AddEvent(ev);
+        auto ev = TimedEvent::Allocate(ptr, std::make_unique<CallbackP1<LuaEngine, int>>(LuaGlobal::instance()->luaEngine().get(), &LuaEngine::CallFunctionByReference, functionRef), EVENT_LUA_CREATURE_EVENTS, delay, repeats);
+        ptr->event_AddEvent(std::move(ev));
         std::map< uint64_t, std::set<int> >& objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
         const std::map< uint64_t, std::set<int> >::iterator itr = objRefs.find(ptr->getGuid());
         if (itr == objRefs.end())
@@ -2027,12 +2028,8 @@ int LuaUnit::QuestAddStarter(lua_State* L, Unit* ptr)
 
     char my_query1[200];
     sprintf(my_query1, "SELECT id FROM creature_quest_starter WHERE id = %d AND quest = %d AND min_build <= %u AND max_build >= %u", quest_giver, quest_id, VERSION_STRING, VERSION_STRING);
-    const QueryResult* selectResult1 = WorldDatabase.Query(my_query1);
-    if (selectResult1)
-    {
-        delete selectResult1; //already has quest
-    }
-    else
+    const auto selectResult1 = WorldDatabase.Query(my_query1);
+    if (selectResult1 == nullptr)
     {
         char my_insert1[200];
         sprintf(my_insert1, "INSERT INTO creature_quest_starter (id, quest) VALUES (%d,%d,%u,%u)", quest_giver, quest_id, VERSION_STRING, VERSION_STRING);
@@ -2076,12 +2073,8 @@ int LuaUnit::QuestAddFinisher(lua_State* L, Unit* ptr)
 
     char my_query1[200];
     sprintf(my_query1, "SELECT id FROM creature_quest_finisher WHERE id = %d AND quest = %d AND min_build <= %u AND max_build >= %u", quest_giver, quest_id, VERSION_STRING, VERSION_STRING);
-    const QueryResult* selectResult1 = WorldDatabase.Query(my_query1);
-    if (selectResult1)
-    {
-        delete selectResult1; //already has quest
-    }
-    else
+    const auto selectResult1 = WorldDatabase.Query(my_query1);
+    if (selectResult1 == nullptr)
     {
         char my_insert1[200];
         sprintf(my_insert1, "INSERT INTO creature_quest_finisher (id, quest, min_build, max_build) VALUES (%d,%d,%u,%u)", quest_giver, quest_id, VERSION_STRING, VERSION_STRING);
@@ -3882,8 +3875,8 @@ int LuaUnit::AddAura(lua_State* L, Unit* ptr)
     const bool temp = CHECK_BOOL(L, 3);
     if (spellid)
     {
-        Aura* aura = sSpellMgr.newAura(sSpellMgr.getSpellInfo(spellid), duration, ptr, ptr, temp);
-        ptr->addAura(aura);
+        auto aura = sSpellMgr.newAura(sSpellMgr.getSpellInfo(spellid), duration, ptr, ptr, temp);
+        ptr->addAura(std::move(aura));
         lua_pushboolean(L, 1);
     }
     else
@@ -4636,10 +4629,9 @@ int LuaUnit::AddLoot(lua_State* L, Unit* ptr)
     const bool perm = ((luaL_optinteger(L, 4, 0) == 1) ? true : false);
     if (perm)
     {
-        const QueryResult* result = WorldDatabase.Query("SELECT * FROM loot_creatures WHERE entryid = %u, itemid = %u", ptr->getEntry(), itemid);
+        const auto result = WorldDatabase.Query("SELECT * FROM loot_creatures WHERE entryid = %u, itemid = %u", ptr->getEntry(), itemid);
         if (!result)
             WorldDatabase.Execute("REPLACE INTO loot_creatures VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->getEntry(), itemid, chance, mincount, maxcount);
-        delete result;
     }
     sLootMgr.addLoot(&ptr->loot, itemid, ichance, mincount, maxcount, ptr->getWorldMap()->getDifficulty());
     return 0;
@@ -6399,10 +6391,12 @@ int LuaUnit::AddAuraObject(lua_State* L, Unit* ptr)
         return 0;
     }
 
-    Aura* aura = CHECK_AURA(L, 1);
+    // TODO: possibly needs rewrite of LuaEngine to handle unique_ptr<T> -Appled
+
+    /*Aura* aura = CHECK_AURA(L, 1);
     if (!aura)
         return 0;
-    ptr->addAura(aura);
+    ptr->addAura(aura);*/
     return 0;
 }
 

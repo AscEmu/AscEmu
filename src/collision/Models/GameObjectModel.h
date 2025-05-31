@@ -75,7 +75,7 @@ public:
     bool getLocationInfo(G3D::Vector3 const& point, VMAP::LocationInfo& info, uint32_t ph_mask) const;
     bool getLiquidLevel(G3D::Vector3 const& point, VMAP::LocationInfo& info, float& liqHeight) const;
 
-    static GameObjectModel* Create(std::unique_ptr<GameObjectModelOwnerBase> modelOwner, std::string const& dataPath);
+    static std::unique_ptr<GameObjectModel> Create(std::unique_ptr<GameObjectModelOwnerBase> modelOwner, std::string const& dataPath);
 
     bool UpdatePosition();
 

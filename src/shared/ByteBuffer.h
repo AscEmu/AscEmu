@@ -26,6 +26,7 @@
 #include "LocationVector.h"
 
 #include <cstdlib>
+#include <memory>
 #include <string>
 #include <vector>
 #include <cstring>
@@ -137,10 +138,9 @@ public:
         {
             if (!length)
                 return std::string();
-            char* buffer = new char[length + 1]();
-            read(reinterpret_cast<uint8_t*>(buffer), length);
-            std::string retval = buffer;
-            delete[] buffer;
+            auto buffer = std::make_unique<char[]>(length + 1);
+            read(reinterpret_cast<uint8_t*>(buffer.get()), length);
+            std::string retval = buffer.get();
             return retval;
         }
 

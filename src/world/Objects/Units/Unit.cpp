@@ -108,6 +108,8 @@ Unit::Unit() :
 
     m_lastAiInterfaceUpdateTime = Util::getMSTime();
 
+    std::fill(m_auraList.begin(), m_auraList.end(), nullptr);
+
     m_aiInterface->Init(this);
     getThreatManager().initialize();
 }
@@ -137,9 +139,6 @@ Unit::~Unit()
         delete tempAura->second;
 
     m_tempAuraMap.clear();
-
-    for (auto procSpell = m_procSpells.begin(); procSpell != m_procSpells.end(); ++procSpell)
-        delete* procSpell;
 
     m_procSpells.clear();
 
@@ -3745,8 +3744,8 @@ SpellProc* Unit::addProcTriggerSpell(SpellInfo const* spellInfo, SpellInfo const
         return spellProc;
 
     // Create new proc since one did not exist
-    spellProc = sSpellProcMgr.newSpellProc(this, spellInfo, originalSpellInfo, casterGuid, procChance, procFlags, exProcFlags, spellFamilyMask, procClassMask, createdByAura, obj);
-    if (spellProc == nullptr)
+    auto spellProcHolder = sSpellProcMgr.newSpellProc(this, spellInfo, originalSpellInfo, casterGuid, procChance, procFlags, exProcFlags, spellFamilyMask, procClassMask, createdByAura, obj);
+    if (spellProcHolder == nullptr)
     {
         if (originalSpellInfo != nullptr)
             sLogger.failure("Unit::addProcTriggerSpell : Spell id {} tried to add a non-existent spell to Unit %p as SpellProc", originalSpellInfo->getId(), fmt::ptr(this));
@@ -3755,7 +3754,8 @@ SpellProc* Unit::addProcTriggerSpell(SpellInfo const* spellInfo, SpellInfo const
         return nullptr;
     }
 
-    m_procSpells.push_back(spellProc);
+    spellProc = spellProcHolder.get();
+    m_procSpells.emplace_back(std::move(spellProcHolder));
     return spellProc;
 }
 
@@ -3764,7 +3764,7 @@ SpellProc* Unit::getProcTriggerSpell(uint32_t spellId, uint64_t casterGuid) cons
     for (const auto& spellProc : m_procSpells)
     {
         if (spellProc->getSpell()->getId() == spellId && (casterGuid == 0 || spellProc->getCasterGuid() == casterGuid))
-            return spellProc;
+            return spellProc.get();
     }
 
     return nullptr;
@@ -3774,7 +3774,7 @@ void Unit::removeProcTriggerSpell(uint32_t spellId, uint64_t casterGuid/* = 0*/,
 {
     for (auto& spellProc : m_procSpells)
     {
-        if (sScriptMgr.callScriptedSpellProcCanDelete(spellProc, spellId, casterGuid, misc))
+        if (sScriptMgr.callScriptedSpellProcCanDelete(spellProc.get(), spellId, casterGuid, misc))
         {
             spellProc->deleteProc();
             return;
@@ -4535,76 +4535,68 @@ bool Unit::hasSpellImmunity(SpellImmunityMask immunityMask) const
 //////////////////////////////////////////////////////////////////////////////////////////
 // Aura
 
-void Unit::addAura(Aura* aur)
+void Unit::addAura(std::unique_ptr<Aura> auraHolder)
 {
-    if (aur == nullptr)
+    if (auraHolder == nullptr)
         return;
 
-    if (!isAlive() && !aur->getSpellInfo()->isDeathPersistent())
-    {
-        delete aur;
+    if (!isAlive() && !auraHolder->getSpellInfo()->isDeathPersistent())
         return;
-    }
 
     // Check school immunity
-    const auto school = aur->getSpellInfo()->getFirstSchoolFromSchoolMask();
-    if (school != SCHOOL_NORMAL && m_schoolImmunityList[school] && aur->getCasterGuid() != getGuid())
+    const auto school = auraHolder->getSpellInfo()->getFirstSchoolFromSchoolMask();
+    if (school != SCHOOL_NORMAL && m_schoolImmunityList[school] && auraHolder->getCasterGuid() != getGuid())
     {
         ///\ todo: notify client that aura did not apply
-        delete aur;
         return;
     }
 
     // Check if aura has effects
-    if (aur->getAppliedEffectCount() == 0)
+    if (auraHolder->getAppliedEffectCount() == 0)
     {
         ///\ todo: notify client that aura did not apply
-        delete aur;
         return;
     }
 
     // Check for flying mount
     // This is already checked in Spell::canCast but this could happen on teleport or login
-    if (isPlayer() && aur->getSpellInfo()->getAttributesExD() & ATTRIBUTESEXD_ONLY_IN_OUTLANDS)
+    if (isPlayer() && auraHolder->getSpellInfo()->getAttributesExD() & ATTRIBUTESEXD_ONLY_IN_OUTLANDS)
     {
         if (!dynamic_cast<Player*>(this)->canUseFlyingMountHere())
         {
-            if (GetMapId() != 571 || !(aur->getSpellInfo()->getAttributesExG() & ATTRIBUTESEXG_IGNORE_COLD_WEATHER_FLYING))
-            {
-                delete aur;
+            if (GetMapId() != 571 || !(auraHolder->getSpellInfo()->getAttributesExG() & ATTRIBUTESEXG_IGNORE_COLD_WEATHER_FLYING))
                 return;
-            }
         }
     }
 
     // Check for single target aura
     ///\ todo: this supports only single auras. Missing paladin seals, warlock curses etc
-    if (aur->getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_SINGLE_TARGET_AURA)
+    if (auraHolder->getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_SINGLE_TARGET_AURA)
     {
         uint64_t previousTargetGuid = 0;
 
-        const auto caster = aur->GetUnitCaster();
+        const auto caster = auraHolder->GetUnitCaster();
         if (caster != nullptr)
         {
-            previousTargetGuid = caster->getSingleTargetGuidForAura(aur->getSpellId());
+            previousTargetGuid = caster->getSingleTargetGuidForAura(auraHolder->getSpellId());
 
             // Check if aura is applied on different unit
-            if (previousTargetGuid != 0 && previousTargetGuid != aur->getOwner()->getGuid())
+            if (previousTargetGuid != 0 && previousTargetGuid != auraHolder->getOwner()->getGuid())
             {
                 const auto previousTarget = getWorldMapUnit(previousTargetGuid);
                 if (previousTarget != nullptr)
-                    previousTarget->removeAllAurasByIdForGuid(aur->getSpellId(), caster->getGuid());
+                    previousTarget->removeAllAurasByIdForGuid(auraHolder->getSpellId(), caster->getGuid());
             }
         }
     }
 
-    const auto spellInfo = aur->getSpellInfo();
+    const auto spellInfo = auraHolder->getSpellInfo();
     uint16_t auraSlot = 0xFFFF;
 
-    if (!aur->IsPassive())
+    if (!auraHolder->IsPassive())
     {
         uint16_t startLimit = 0, endLimit = 0;
-        if (aur->isNegative())
+        if (auraHolder->isNegative())
         {
             startLimit = AuraSlots::NEGATIVE_SLOT_START;
             endLimit = AuraSlots::NEGATIVE_SLOT_END;
@@ -4620,7 +4612,7 @@ void Unit::addAura(Aura* aur)
         // Find available slot for new aura
         for (auto i = startLimit; i < endLimit; ++i)
         {
-            auto* _aura = m_auraList[i];
+            auto* _aura = m_auraList[i].get();
             if (_aura == nullptr)
             {
                 // Found an empty slot
@@ -4632,10 +4624,10 @@ void Unit::addAura(Aura* aur)
             }
 
             // Check if unit has same aura by same caster or is stackable from multiple casters
-            if (_aura->getSpellId() == aur->getSpellId())
+            if (_aura->getSpellId() == auraHolder->getSpellId())
             {
-                if (_aura->getCasterGuid() != aur->getCasterGuid() &&
-                    !aur->getSpellInfo()->isStackableFromMultipleCasters())
+                if (_aura->getCasterGuid() != auraHolder->getCasterGuid() &&
+                    !auraHolder->getSpellInfo()->isStackableFromMultipleCasters())
                     continue;
 
                 // The auras are casted by same unit or aura is stackable from multiple units, reapply all effects
@@ -4646,14 +4638,14 @@ void Unit::addAura(Aura* aur)
                     _aura->removeAuraEffect(x, true);
 
                     // Do not add empty effects
-                    if (aur->getAuraEffect(x)->getAuraEffectType() == SPELL_AURA_NONE)
+                    if (auraHolder->getAuraEffect(x)->getAuraEffectType() == SPELL_AURA_NONE)
                         continue;
 
-                    _aura->addAuraEffect(aur->getAuraEffect(x), true);
+                    _aura->addAuraEffect(auraHolder->getAuraEffect(x), true);
                 }
 
                 // On reapply get duration from new aura
-                _aura->setOriginalDuration(aur->getOriginalDuration());
+                _aura->setOriginalDuration(auraHolder->getOriginalDuration());
 
                 // Refresh duration and apply new stack if stackable
                 _aura->refreshOrModifyStack(false, 1);
@@ -4662,17 +4654,17 @@ void Unit::addAura(Aura* aur)
                 break;
             }
             // If this is a proc spell, it should not remove its mother aura
-            else if (aur->pSpellId != _aura->getSpellId())
+            else if (auraHolder->pSpellId != _aura->getSpellId())
             {
                 // Check for auras by specific type
-                if (aur->getSpellInfo()->getMaxstack() == 0 && spellInfo->custom_BGR_one_buff_on_target > 0 && aur->getSpellInfo()->custom_BGR_one_buff_on_target & spellInfo->custom_BGR_one_buff_on_target)
+                if (auraHolder->getSpellInfo()->getMaxstack() == 0 && spellInfo->custom_BGR_one_buff_on_target > 0 && auraHolder->getSpellInfo()->custom_BGR_one_buff_on_target & spellInfo->custom_BGR_one_buff_on_target)
                 {
-                    deleteAur = hasAuraWithSpellType(static_cast<SpellTypes>(spellInfo->getCustom_BGR_one_buff_on_target()), aur->getCasterGuid(), 0);
+                    deleteAur = hasAuraWithSpellType(static_cast<SpellTypes>(spellInfo->getCustom_BGR_one_buff_on_target()), auraHolder->getCasterGuid(), 0);
                 }
                 // Check for auras with the same name and a different rank
                 else
                 {
-                    AuraCheckResponse checkResponse = auraCheck(spellInfo, _aura, aur->getCaster());
+                    AuraCheckResponse checkResponse = auraCheck(spellInfo, _aura, auraHolder->getCaster());
                     if (checkResponse.Error == AURA_CHECK_RESULT_HIGHER_BUFF_PRESENT)
                     {
                         // Existing aura is stronger, delete new aura
@@ -4692,10 +4684,7 @@ void Unit::addAura(Aura* aur)
         }
 
         if (deleteAur)
-        {
-            delete aur;
             return;
-        }
     }
     else
     {
@@ -4713,18 +4702,16 @@ void Unit::addAura(Aura* aur)
 
     // Could not find an empty slot, remove aura
     if (auraSlot == 0xFFFF)
-    {
-        delete aur;
         return;
-    }
 
     // Find a visual slot for aura
-    const auto visualSlot = findVisualSlotForAura(aur);
+    const auto visualSlot = findVisualSlotForAura(auraHolder.get());
 
-    aur->m_visualSlot = visualSlot;
-    aur->setAuraSlot(auraSlot);
+    auraHolder->m_visualSlot = visualSlot;
+    auraHolder->setAuraSlot(auraSlot);
 
-    _addAura(aur);
+    auto* aur = auraHolder.get();
+    _addAura(std::move(auraHolder));
 
     if (visualSlot < AuraSlots::NEGATIVE_VISUAL_SLOT_END)
     {
@@ -4864,7 +4851,7 @@ Aura* Unit::getAuraWithId(uint32_t spell_id) const
     for (const auto& aur : getAuraList())
     {
         if (aur && aur->getSpellId() == spell_id)
-            return aur;
+            return aur.get();
     }
 
     return nullptr;
@@ -4880,7 +4867,7 @@ Aura* Unit::getAuraWithId(uint32_t const* auraId) const
         for (int i = 0; auraId[i] != 0; ++i)
         {
             if (aur->getSpellId() == auraId[i])
-                return aur;
+                return aur.get();
         }
     }
 
@@ -4897,7 +4884,7 @@ Aura* Unit::getAuraWithIdForGuid(uint32_t const* auraId, uint64_t guid) const
         for (int i = 0; auraId[i] != 0; ++i)
         {
             if (aur->getSpellId() == auraId[i])
-                return aur;
+                return aur.get();
         }
     }
 
@@ -4909,7 +4896,7 @@ Aura* Unit::getAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid) const
     for (const auto& aur : getAuraList())
     {
         if (aur && aur->getSpellId() == spell_id && aur->getCasterGuid() == target_guid)
-            return aur;
+            return aur.get();
     }
 
     return nullptr;
@@ -4931,7 +4918,7 @@ Aura* Unit::getAuraWithVisualSlot(uint8_t visualSlot) const
     for (const auto& aur : getAuraList())
     {
         if (aur && aur->m_visualSlot == visualSlot)
-            return aur;
+            return aur.get();
     }
 
     return nullptr;
@@ -4942,7 +4929,7 @@ Aura* Unit::getAuraWithAuraSlot(uint16_t auraSlot) const
     if (auraSlot >= AuraSlots::TOTAL_SLOT_END)
         return nullptr;
 
-    return m_auraList[auraSlot];
+    return m_auraList[auraSlot].get();
 }
 
 int32_t Unit::getTotalIntDamageForAuraEffect(AuraEffect aura_effect) const
@@ -5743,7 +5730,7 @@ bool Unit::isDazed() const
     return false;
 }
 
-void Unit::_addAura(Aura* aur)
+void Unit::_addAura(std::unique_ptr<Aura> aur)
 {
     if (aur == nullptr)
         return;
@@ -5757,7 +5744,7 @@ void Unit::_addAura(Aura* aur)
         _addAuraEffect(aurEff);
     }
 
-    m_auraList[aur->getAuraSlot()] = aur;
+    m_auraList[aur->getAuraSlot()] = std::move(aur);
 }
 
 void Unit::_addAuraEffect(AuraEffectModifier const* aurEff)
@@ -5768,12 +5755,13 @@ void Unit::_addAuraEffect(AuraEffectModifier const* aurEff)
     m_auraEffectList[aurEff->getAuraEffectType()].push_back(aurEff);
 }
 
-void Unit::_removeAura(Aura* aur)
+std::unique_ptr<Aura> Unit::_removeAura(Aura* aur)
 {
     if (aur == nullptr)
-        return;
+        return nullptr;
 
-    m_auraList[aur->getAuraSlot()] = nullptr;
+    auto&& tmp = std::move(m_auraList[aur->getAuraSlot()]);
+    return tmp;
 }
 
 void Unit::_removeAuraEffect(AuraEffectModifier const* aurEff)
@@ -7470,7 +7458,7 @@ uint32_t Unit::absorbDamage(SchoolMask schoolMask, uint32_t* dmg, bool checkOnly
         if (aur == nullptr || !aur->isAbsorbAura())
             continue;
 
-        AbsorbAura* abs = dynamic_cast<AbsorbAura*>(aur);
+        AbsorbAura* abs = dynamic_cast<AbsorbAura*>(aur.get());
         totalAbsorbedDamage += abs->absorbDamage(schoolMask, dmg, checkOnly);
     }
 
@@ -8860,9 +8848,6 @@ void Unit::buildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
 
 void Unit::removeGarbage()
 {
-    for (auto aur : m_GarbageAuras)
-        delete aur;
-
     for (auto pet : m_GarbagePets)
         delete pet;
 
@@ -8870,9 +8855,9 @@ void Unit::removeGarbage()
     m_GarbagePets.clear();
 }
 
-void Unit::addGarbageAura(Aura* aur)
+void Unit::addGarbageAura(std::unique_ptr<Aura> aur)
 {
-    m_GarbageAuras.push_back(aur);
+    m_GarbageAuras.push_back(std::move(aur));
 }
 
 void Unit::addGarbagePet(Pet* pet)
@@ -11553,12 +11538,10 @@ uint32_t Unit::handleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
 
     std::list<SpellProc*> happenedProcs;
 
-    for (std::list<SpellProc*>::iterator itr = m_procSpells.begin(); itr != m_procSpells.end();)    // Proc Trigger Spells for Victim
+    for (auto itr = m_procSpells.begin(); itr != m_procSpells.end();)    // Proc Trigger Spells for Victim
     {
-        std::list<SpellProc*>::iterator itr2 = itr;
-        ++itr;
-
-        SpellProc* spell_proc = *itr2;
+        auto itr2 = itr++;
+        SpellProc* spell_proc = itr2->get();
 
         // Check if list item was deleted elsewhere, so here it's removed and freed
         if (spell_proc->isDeleted())
@@ -11566,7 +11549,6 @@ uint32_t Unit::handleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
             if (can_delete)
             {
                 m_procSpells.erase(itr2);
-                delete spell_proc;
             }
             continue;
         }

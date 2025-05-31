@@ -39,7 +39,7 @@ namespace WDB
         bool load(const char* _dbcFilename, const char* _dbcFormat);
         bool loadDb2(const char* _dbcFilename, const char* _dbcFormat);
 
-        char* autoProduceData(const char* _dbcFormat, uint32_t& _recordCount, char**& _indexTable);
+        std::unique_ptr<char[]> autoProduceData(const char* _dbcFormat, uint32_t& _recordCount, std::unique_ptr<char*[]>& _indexTable);
         std::unique_ptr<char[]> autoProduceStrings(const char* _dbcFormat, char* _dataTable);
         static int getVersionIdForAEVersion();
         static bool hasFormat(std::string _dbcFile);

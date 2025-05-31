@@ -271,7 +271,7 @@ private:
     struct HitAuraEffect
     {
         uint32_t travelTime = 0;
-        Aura* aur = nullptr;
+        std::unique_ptr<Aura> aur;
     };
 
     struct MissSpellEffect
@@ -318,6 +318,10 @@ private:
     // Stores guids of targets who have handled procs on caster
     std::set<uint64_t> m_doneTargetProcs;
 
+#ifdef _MSC_VER
+    // Need a dummy variable to fix build on MSVC... -Appled
+    std::unique_ptr<Aura> dummyUnusedVariableCompileFix_DoNotUse;
+#endif
     std::map<uint64_t, HitAuraEffect> m_pendingAuras;
     std::map<uint64_t, HitSpellEffect> m_hitEffects;
     std::map<uint64_t, MissSpellEffect> m_missEffects;

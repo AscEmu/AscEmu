@@ -104,8 +104,8 @@ namespace VMAP
     WmoLiquid::WmoLiquid(uint32_t width, uint32_t height, const Vector3 &corner, uint32_t type):
         iTilesX(width), iTilesY(height), iCorner(corner), iType(type)
     {
-        iHeight = new float[(width+1)*(height+1)];
-        iFlags = new uint8_t[width*height];
+        iHeight = std::make_unique<float[]>((width + 1) * (height + 1));
+        iFlags = std::make_unique<uint8_t[]>(width * height);
     }
 
     WmoLiquid::WmoLiquid(const WmoLiquid &other): iHeight(nullptr), iFlags(nullptr)
@@ -113,11 +113,7 @@ namespace VMAP
         *this = other; // use assignment operator...
     }
 
-    WmoLiquid::~WmoLiquid()
-    {
-        delete[] iHeight;
-        delete[] iFlags;
-    }
+    WmoLiquid::~WmoLiquid() = default;
 
     WmoLiquid& WmoLiquid::operator=(const WmoLiquid &other)
     {
@@ -127,19 +123,17 @@ namespace VMAP
         iTilesY = other.iTilesY;
         iCorner = other.iCorner;
         iType = other.iType;
-        delete[] iHeight;
-        delete[] iFlags;
         if (other.iHeight)
         {
-            iHeight = new float[(iTilesX+1)*(iTilesY+1)];
-            memcpy(iHeight, other.iHeight, (iTilesX+1)*(iTilesY+1)*sizeof(float));
+            iHeight = std::make_unique<float[]>((iTilesX + 1) * (iTilesY + 1));
+            memcpy(iHeight.get(), other.iHeight.get(), (iTilesX + 1) * (iTilesY + 1) * sizeof(float));
         }
         else
             iHeight = nullptr;
         if (other.iFlags)
         {
-            iFlags = new uint8_t[iTilesX * iTilesY];
-            memcpy(iFlags, other.iFlags, iTilesX * iTilesY);
+            iFlags = std::make_unique<uint8_t[]>(iTilesX * iTilesY);
+            memcpy(iFlags.get(), other.iFlags.get(), iTilesX * iTilesY);
         }
         else
             iFlags = nullptr;
@@ -212,20 +206,20 @@ namespace VMAP
             fwrite(&iType, sizeof(uint32_t), 1, wf) == 1)
         {
             uint32_t size = (iTilesX + 1) * (iTilesY + 1);
-            if (fwrite(iHeight, sizeof(float), size, wf) == size)
+            if (fwrite(iHeight.get(), sizeof(float), size, wf) == size)
             {
                 size = iTilesX*iTilesY;
-                result = fwrite(iFlags, sizeof(uint8_t), size, wf) == size;
+                result = fwrite(iFlags.get(), sizeof(uint8_t), size, wf) == size;
             }
         }
 
         return result;
     }
 
-    bool WmoLiquid::readFromFile(FILE* rf, WmoLiquid* &out)
+    bool WmoLiquid::readFromFile(FILE* rf, std::unique_ptr<WmoLiquid> &out)
     {
         bool result = false;
-        WmoLiquid* liquid = new WmoLiquid();
+        auto liquid = std::unique_ptr<WmoLiquid>(new WmoLiquid());
 
         if (fread(&liquid->iTilesX, sizeof(uint32_t), 1, rf) == 1 &&
             fread(&liquid->iTilesY, sizeof(uint32_t), 1, rf) == 1 &&
@@ -233,19 +227,17 @@ namespace VMAP
             fread(&liquid->iType, sizeof(uint32_t), 1, rf) == 1)
         {
             uint32_t size = (liquid->iTilesX + 1) * (liquid->iTilesY + 1);
-            liquid->iHeight = new float[size];
-            if (fread(liquid->iHeight, sizeof(float), size, rf) == size)
+            liquid->iHeight = std::make_unique<float[]>(size);
+            if (fread(liquid->iHeight.get(), sizeof(float), size, rf) == size)
             {
                 size = liquid->iTilesX * liquid->iTilesY;
-                liquid->iFlags = new uint8_t[size];
-                result = fread(liquid->iFlags, sizeof(uint8_t), size, rf) == size;
+                liquid->iFlags = std::make_unique<uint8_t[]>(size);
+                result = fread(liquid->iFlags.get(), sizeof(uint8_t), size, rf) == size;
             }
         }
 
-        if (!result)
-            delete liquid;
-        else
-            out = liquid;
+        if (result)
+            out = std::move(liquid);
 
         return result;
     }
@@ -264,7 +256,7 @@ namespace VMAP
         vertices(other.vertices), triangles(other.triangles), meshTree(other.meshTree), iLiquid(nullptr)
     {
         if (other.iLiquid)
-            iLiquid = new WmoLiquid(*other.iLiquid);
+            iLiquid = std::make_unique<WmoLiquid>(*other.iLiquid);
     }
 
     void GroupModel::setMeshData(std::vector<Vector3> &vert, std::vector<MeshTriangle> &tri)
@@ -340,7 +332,6 @@ namespace VMAP
         uint32_t count = 0;
         triangles.clear();
         vertices.clear();
-        delete iLiquid;
         iLiquid = nullptr;
 
         if (result && fread(&iBound, sizeof(G3D::AABox), 1, rf) != 1) result = false;
@@ -428,11 +419,11 @@ namespace VMAP
         return 0;
     }
 
-    void GroupModel::getMeshData(std::vector<G3D::Vector3>& outVertices, std::vector<MeshTriangle>& outTriangles, WmoLiquid*& liquid)
+    void GroupModel::getMeshData(std::vector<G3D::Vector3>& outVertices, std::vector<MeshTriangle>& outTriangles, WmoLiquid*& liquid) const
     {
         outVertices = vertices;
         outTriangles = triangles;
-        liquid = iLiquid;
+        liquid = iLiquid.get();
     }
 
     // ===================== WorldModel ==================================
@@ -617,8 +608,8 @@ namespace VMAP
         return result;
     }
 
-    void WorldModel::getGroupModels(std::vector<GroupModel>& outGroupModels)
+    std::vector<GroupModel> const& WorldModel::getGroupModels() const
     {
-        outGroupModels = groupModels;
+        return groupModels;
     }
 }

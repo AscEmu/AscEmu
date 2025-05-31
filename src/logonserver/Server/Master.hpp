@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 class AuthSocket;
 class Database;
 
-extern Database* sLogonSQL;
+extern std::unique_ptr<Database> sLogonSQL;
 
 extern std::atomic<bool> mrunning;
 

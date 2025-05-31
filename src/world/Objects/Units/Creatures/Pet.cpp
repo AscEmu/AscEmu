@@ -776,7 +776,7 @@ bool Pet::_preparePetForPush(PetCache const* petCache)
     // Summon spells are loaded in UpdateSpellList
     if (!isNewSummon && m_petType == PET_TYPE_HUNTER)
     {
-        auto* query = CharacterDatabase.Query("SELECT * FROM playerpetspells WHERE ownerguid = %u AND petnumber = %u", m_unitOwner->getGuidLow(), m_petId);
+        auto query = CharacterDatabase.Query("SELECT * FROM playerpetspells WHERE ownerguid = %u AND petnumber = %u", m_unitOwner->getGuidLow(), m_petId);
         if (query != nullptr)
         {
             do
@@ -788,7 +788,6 @@ bool Pet::_preparePetForPush(PetCache const* petCache)
                     mSpells.insert({ petSpell, flags });
             } while (query->NextRow());
         }
-        delete query;
     }
 
     switch (getEntry())
@@ -910,11 +909,10 @@ void Pet::_setNameForEntry(uint32_t entry, SpellInfo const* createdBySpell)
         case PET_FELHUNTER:
         case PET_FELGUARD:
         {
-            auto* result = CharacterDatabase.Query("SELECT `name` FROM `playersummons` WHERE `ownerguid`=%u AND `entry`=%d", m_unitOwner->getGuidLow(), entry);
+            auto result = CharacterDatabase.Query("SELECT `name` FROM `playersummons` WHERE `ownerguid`=%u AND `entry`=%d", m_unitOwner->getGuidLow(), entry);
             if (result != nullptr)
             {
                 m_petName.assign(result->Fetch()->asCString());
-                delete result;
             }
             else
             {

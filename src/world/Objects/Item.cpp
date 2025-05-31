@@ -65,17 +65,6 @@ Item::~Item()
 {
     sEventMgr.RemoveEvents(this);
 
-#if VERSION_STRING >= Cata
-    for (auto itr = m_enchantments.begin(); itr != m_enchantments.end(); ++itr)
-    {
-        // These are allocated with new
-        if (itr->second.Slot == REFORGE_ENCHANTMENT_SLOT || itr->second.Slot == TRANSMOGRIFY_ENCHANTMENT_SLOT)
-        {
-            delete itr->second.Enchantment;
-            itr->second.Enchantment = nullptr;
-        }
-    }
-#endif
     m_enchantments.clear();
 
     if (m_owner != nullptr)
@@ -300,16 +289,17 @@ bool Item::addEnchantment(uint32_t enchantmentId, EnchantmentSlot slot, uint32_t
 
     WDB::Structures::SpellItemEnchantmentEntry const* Enchantment = nullptr;
 #if VERSION_STRING >= Cata
+    std::unique_ptr<WDB::Structures::SpellItemEnchantmentEntry> custom_enchant = nullptr;
     switch (slot)
     {
 
         case TRANSMOGRIFY_ENCHANTMENT_SLOT:
         case REFORGE_ENCHANTMENT_SLOT:
         {
-            auto custom_enchant = new WDB::Structures::SpellItemEnchantmentEntry();
+            custom_enchant = std::make_unique<WDB::Structures::SpellItemEnchantmentEntry>();
             custom_enchant->Id = enchantmentId;
 
-            Enchantment = custom_enchant;
+            Enchantment = custom_enchant.get();
         } break;
 
         default:
@@ -329,13 +319,16 @@ bool Item::addEnchantment(uint32_t enchantmentId, EnchantmentSlot slot, uint32_t
     enchantInstance.BonusApplied = false;
     enchantInstance.Slot = slot;
     enchantInstance.Enchantment = Enchantment;
+#if VERSION_STRING >= Cata
+    enchantInstance.customEnchantmentHolder = std::move(custom_enchant);
+#endif
     enchantInstance.RemoveAtLogout = removedAtLogout;
     enchantInstance.RandomSuffix = randomSuffix;
 
     // Set enchantment to item's wowdata fields
     _setEnchantmentDataFields(slot, Enchantment->Id, duration, 0);
 
-    m_enchantments.insert(std::make_pair(slot, enchantInstance));
+    m_enchantments.try_emplace(slot, std::move(enchantInstance));
 
     if (m_owner == nullptr)
         return true;
@@ -377,16 +370,6 @@ void Item::removeEnchantment(EnchantmentSlot slot, bool timerExpired/* = false*/
         applyEnchantmentBonus(slot, false);
 
     _setEnchantmentDataFields(slot, 0, 0, 0);
-
-#if VERSION_STRING >= Cata
-    // These are allocated with new
-    if (slot == REFORGE_ENCHANTMENT_SLOT || slot == TRANSMOGRIFY_ENCHANTMENT_SLOT)
-    {
-        delete itr->second.Enchantment;
-        itr->second.Enchantment = nullptr;
-    }
-#endif
-
     m_enchantments.erase(itr);
 
     if (!timerExpired)

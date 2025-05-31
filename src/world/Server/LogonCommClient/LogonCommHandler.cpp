@@ -101,7 +101,7 @@ void LogonCommHandler::loadAccountPermissions()
 {
     sLogger.info("LogonCommClient : Loading account permissions...");
 
-    QueryResult* result = CharacterDatabase.Query("SELECT id, permissions FROM account_permissions");
+    auto result = CharacterDatabase.Query("SELECT id, permissions FROM account_permissions");
     if (result != nullptr)
     {
         do
@@ -114,8 +114,6 @@ void LogonCommHandler::loadAccountPermissions()
             accountPermissionsStore.insert(make_pair(id, dbPermission));
 
         } while (result->NextRow());
-
-        delete result;
     }
 }
 

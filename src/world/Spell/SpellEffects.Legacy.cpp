@@ -716,7 +716,7 @@ void Spell::ApplyAreaAura(uint8_t effectIndex)
     auto itr = m_pendingAuras.find(m_unitTarget->getGuid());
     if (itr == m_pendingAuras.end())
     {
-        pAura = sSpellMgr.newAura(getSpellInfo(), getDuration(), m_caster, m_unitTarget);
+        auto auraHolder = sSpellMgr.newAura(getSpellInfo(), getDuration(), m_caster, m_unitTarget);
 
         float r = getEffectRadius(effectIndex);
 
@@ -746,19 +746,17 @@ void Spell::ApplyAreaAura(uint8_t effectIndex)
                 break;
         }
 
-        pAura->m_castedItemId = castedItemId;
+        auraHolder->m_castedItemId = castedItemId;
 
-        if (!sEventMgr.HasEvent(pAura, eventtype))      /* only add it once */
-            sEventMgr.AddEvent(pAura, &Aura::EventUpdateAreaAura, effectIndex, r * r, eventtype, 1000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        if (!sEventMgr.HasEvent(auraHolder.get(), eventtype))      /* only add it once */
+            sEventMgr.AddEvent(auraHolder.get(), &Aura::EventUpdateAreaAura, effectIndex, r * r, eventtype, 1000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-        HitAuraEffect hitAura;
-        hitAura.aur = pAura;
-        hitAura.travelTime = 0;
-        m_pendingAuras.insert(std::make_pair(m_unitTarget->getGuid(), hitAura));
+        const auto [itr, _] = m_pendingAuras.try_emplace(m_unitTarget->getGuid(), 0, std::move(auraHolder));
+        pAura = itr->second.aur.get();
     }
     else
     {
-        pAura = itr->second.aur;
+        pAura = itr->second.aur.get();
     }
 
     pAura->addAuraEffect(static_cast<AuraEffect>(getSpellInfo()->getEffectApplyAuraName(effectIndex)), damage, getSpellInfo()->getEffectMiscValue(effectIndex), effectPctModifier[effectIndex], isEffectDamageStatic[effectIndex], effectIndex);
@@ -1888,22 +1886,21 @@ void Spell::SpellEffectApplyAura(uint8_t effectIndex)  // Apply Aura
             return;
         }
 
+        std::unique_ptr<Aura> auraHolder;
         if (g_caster && g_caster->getCreatedByGuid() && g_caster->getUnitOwner())
-            pAura = sSpellMgr.newAura(getSpellInfo(), Duration, g_caster->getUnitOwner(), m_unitTarget, m_triggeredSpell, i_caster);
+            auraHolder = sSpellMgr.newAura(getSpellInfo(), Duration, g_caster->getUnitOwner(), m_unitTarget, m_triggeredSpell, i_caster);
         else
-            pAura = sSpellMgr.newAura(getSpellInfo(), Duration, m_caster, m_unitTarget, m_triggeredSpell, i_caster);
+            auraHolder = sSpellMgr.newAura(getSpellInfo(), Duration, m_caster, m_unitTarget, m_triggeredSpell, i_caster);
 
-        pAura->pSpellId = pSpellId; //this is required for triggered spells
-        pAura->m_castedItemId = castedItemId;
+        auraHolder->pSpellId = pSpellId; //this is required for triggered spells
+        auraHolder->m_castedItemId = castedItemId;
 
-        HitAuraEffect hitAura;
-        hitAura.aur = pAura;
-        hitAura.travelTime = 0;
-        m_pendingAuras.insert(std::make_pair(m_unitTarget->getGuid(), hitAura));
+        const auto [itr, _] = m_pendingAuras.try_emplace(m_unitTarget->getGuid(), 0, std::move(auraHolder));
+        pAura = itr->second.aur.get();
     }
     else
     {
-        pAura = itr->second.aur;
+        pAura = itr->second.aur.get();
     }
     switch (m_spellInfo->getId())
     {
@@ -5891,7 +5888,7 @@ void Spell::SpellEffectSpellSteal(uint8_t /*effectIndex*/)
                     stealedSpells.push_back(aursp->getId());
 
                     uint32_t aurdur = (aur->getTimeLeft() > 120000 ? 120000 : aur->getTimeLeft());
-                    Aura* aura = sSpellMgr.newAura(aursp, aurdur, u_caster, u_caster);
+                    auto aura = sSpellMgr.newAura(aursp, aurdur, u_caster, u_caster);
                     m_unitTarget->removeAllAurasByIdReturnCount(aursp->getId());
                     for (uint8_t j = 0; j < 3; j++)
                     {
@@ -5900,7 +5897,7 @@ void Spell::SpellEffectSpellSteal(uint8_t /*effectIndex*/)
                             aura->addAuraEffect(static_cast<AuraEffect>(aura->getSpellInfo()->getEffectApplyAuraName(j)), aura->getSpellInfo()->getEffectBasePoints(j) + 1, aura->getSpellInfo()->getEffectMiscValue(j), aur->getAuraEffect(j)->getEffectPercentModifier(), true, j);
                         }
                     }
-                    u_caster->addAura(aura);
+                    u_caster->addAura(std::move(aura));
                     break;
                 }
             }

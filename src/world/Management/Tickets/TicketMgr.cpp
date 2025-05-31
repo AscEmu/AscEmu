@@ -57,7 +57,6 @@ void TicketMgr::initialize()
     if (result)
     {
         m_nextTicketId = result->Fetch()[0].asUint32();
-        delete result;
     }
 
     sLogger.info("TicketMgr : HighGuid(TICKET) = {}", m_nextTicketId);
@@ -87,7 +86,7 @@ GM_Ticket* TicketMgr::createGMTicket(Field const* fields)
 
 void TicketMgr::loadGMTickets()
 {
-    QueryResult* result = CharacterDatabase.Query("SELECT ticketid, playerGuid, name, level, map, posX, posY, posZ, message, timestamp, deleted, assignedto, comment FROM gm_tickets");
+    auto result = CharacterDatabase.Query("SELECT ticketid, playerGuid, name, level, map, posX, posY, posZ, message, timestamp, deleted, assignedto, comment FROM gm_tickets");
     if (result == nullptr)
     {
         sLogger.info("TicketMgr : 0 active GM Tickets loaded.");
@@ -101,7 +100,6 @@ void TicketMgr::loadGMTickets()
     } while (result->NextRow());
 
     sLogger.info("ObjectMgr : {} active GM Tickets loaded.", result->GetRowCount());
-    delete result;
 }
 
 void TicketMgr::saveGMTicket(GM_Ticket* ticket, QueryBuffer* buf)

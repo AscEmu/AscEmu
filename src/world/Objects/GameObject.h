@@ -110,7 +110,7 @@ public:
     QuaternionData getWorldRotation() const;
 
     void enableCollision(bool enable);
-    GameObjectModel* m_model = nullptr;
+    std::unique_ptr<GameObjectModel> m_model;
 
     Transporter* ToTransport();
     Transporter const* ToTransport() const;
@@ -250,7 +250,7 @@ public:
         virtual void onUse(Player* /*player*/);
 
     protected:
-        GameObjectModel* createModel();
+        std::unique_ptr<GameObjectModel> createModel();
         void updateModel();
 
         virtual void _internalUpdateOnState(unsigned long timeDiff);

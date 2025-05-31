@@ -222,8 +222,8 @@ void Arena::OnAddPlayer(Player* _player)
         _player->setIsQueuedForBg(false);
 
     // Add the green/gold team flag
-    Aura* aura = sSpellMgr.newAura(sSpellMgr.getSpellInfo((_player->getInitialTeam()) ? 35775 - _player->getBgTeam() : 32725 - _player->getBgTeam()), -1, _player, _player, true);
-    _player->addAura(aura);
+    auto aura = sSpellMgr.newAura(sSpellMgr.getSpellInfo((_player->getInitialTeam()) ? 35775 - _player->getBgTeam() : 32725 - _player->getBgTeam()), -1, _player, _player, true);
+    _player->addAura(std::move(aura));
 
     _player->setFfaPvpFlag();
 

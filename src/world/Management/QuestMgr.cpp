@@ -2510,9 +2510,8 @@ void QuestMgr::LoadExtraQuestStuff()
 
     // load creature starters
     uint32_t entry, quest;
-    QueryResult* pResult = nullptr;
 
-    pResult = sMySQLStore.getWorldDBQuery("SELECT * FROM creature_quest_starter WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
+    auto pResult = sMySQLStore.getWorldDBQuery("SELECT * FROM creature_quest_starter WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
     if (pResult)
     {
         do
@@ -2527,7 +2526,6 @@ void QuestMgr::LoadExtraQuestStuff()
                 sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add starter to npc {} for non-existent quest {} in table creature_quest_starter.", entry, quest);
 
         } while (pResult->NextRow());
-        delete pResult;
     }
 
     pResult = sMySQLStore.getWorldDBQuery("SELECT * FROM creature_quest_finisher WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
@@ -2545,7 +2543,6 @@ void QuestMgr::LoadExtraQuestStuff()
                 sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add finisher to npc {} for non-existent quest {} in table creature_quest_finisher.", entry, quest);
 
         } while (pResult->NextRow());
-        delete pResult;
     }
 
     pResult = sMySQLStore.getWorldDBQuery("SELECT * FROM gameobject_quest_starter WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
@@ -2563,7 +2560,6 @@ void QuestMgr::LoadExtraQuestStuff()
                 sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add starter to go {} for non-existent quest {} in table gameobject_quest_starter.", entry, quest);
 
         } while (pResult->NextRow());
-        delete pResult;
     }
 
     pResult = sMySQLStore.getWorldDBQuery("SELECT * FROM gameobject_quest_finisher WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
@@ -2582,7 +2578,6 @@ void QuestMgr::LoadExtraQuestStuff()
                 sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add finisher to go {} for non-existent quest {} in table gameobject_quest_finisher.", entry, quest);
 
         } while (pResult->NextRow());
-        delete pResult;
     }
 
     //sObjectMgr.ProcessGameobjectQuests();
@@ -2612,12 +2607,11 @@ void QuestMgr::LoadExtraQuestStuff()
             }
         }
         while (pResult->NextRow());
-        delete pResult;
     }
 
     m_QuestPOIMap.clear();
 
-    QueryResult* result = WorldDatabase.Query("SELECT questId, poiId, objIndex, mapId, mapAreaId, floorId, unk3, unk4 FROM quest_poi");
+    auto result = WorldDatabase.Query("SELECT questId, poiId, objIndex, mapId, mapAreaId, floorId, unk3, unk4 FROM quest_poi");
     if (result != NULL)
     {
         uint32_t count = 0;
@@ -2642,11 +2636,9 @@ void QuestMgr::LoadExtraQuestStuff()
         }
         while (result->NextRow());
 
-        delete result;
-
         sLogger.info("QuestMgr : Point Of Interest (POI) data loaded for {} quests.", count);
 
-        QueryResult* points = WorldDatabase.Query("SELECT questId, poiId, x, y FROM quest_poi_points");
+        auto points = WorldDatabase.Query("SELECT questId, poiId, x, y FROM quest_poi_points");
         if (points != NULL)
         {
             count = 0;
@@ -2675,7 +2667,6 @@ void QuestMgr::LoadExtraQuestStuff()
             }
             while (points->NextRow());
 
-            delete points;
             sLogger.info("QuestMgr : {} quest Point Of Interest points loaded.", count);
         }
     }

@@ -236,7 +236,7 @@ public:
     bool getObjectHitPos(uint32_t phasemask, LocationVector pos1, LocationVector pos2, float& rx, float& ry, float& rz, float modifyDist);
 
     // Dynamic Map
-    DynamicMapTree getDynamicTree() const { return _dynamicTree; }
+    DynamicMapTree const& getDynamicTree() const { return _dynamicTree; }
     void balance() { _dynamicTree.balance(); }
     void removeGameObjectModel(GameObjectModel const& model) { _dynamicTree.remove(model); }
     void insertGameObjectModel(GameObjectModel const& model) { _dynamicTree.insert(model); }
@@ -334,7 +334,7 @@ public:
     void unloadCell(uint32_t x, uint32_t y);
     bool isCellActive(uint32_t x, uint32_t y);
 
-    void updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuffer** buf);
+    void updateInRangeSet(Object* obj, Player* plObj, MapCell* cell, std::unique_ptr<ByteBuffer>& buf);
 
     void changeObjectLocation(Object* obj);
     void changeFarsightLocation(Player* plr, DynamicObject* farsight);

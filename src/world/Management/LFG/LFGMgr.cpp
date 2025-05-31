@@ -81,11 +81,6 @@ void LfgMgr::finalize()
     m_QueueInfoMap.clear();
     m_Boots.clear();
     m_RoleChecks.clear();
-
-    for (LfgProposalMap::iterator it = m_Proposals.begin(); it != m_Proposals.end(); ++it)
-    {
-        delete it->second;
-    }
     m_Proposals.clear();
 }
 
@@ -97,7 +92,7 @@ void LfgMgr::LoadRewards()
     m_RewardMap.clear();
 
     // ORDER BY is very important for GetRandomDungeonReward!
-    QueryResult* result = WorldDatabase.Query("SELECT dungeon_id, max_level, quest_id_1, money_var_1, xp_var_1, quest_id_2, money_var_2, xp_var_2 FROM lfg_dungeon_rewards ORDER BY dungeon_id, max_level ASC");
+    auto result = WorldDatabase.Query("SELECT dungeon_id, max_level, quest_id_1, money_var_1, xp_var_1, quest_id_2, money_var_2, xp_var_2 FROM lfg_dungeon_rewards ORDER BY dungeon_id, max_level ASC");
     if (result == nullptr)
     {
         sLogger.failure("Loaded 0 lfg dungeon rewards.DB table `lfg_dungeon_rewards` is empty!\n");
@@ -248,16 +243,17 @@ void LfgMgr::Update(uint32_t diff)
             newToQueue.pop_front();
 
             LfgGuidList temporalList = currentQueue;
-            if (LfgProposal* pProposal = FindNewGroups(firstNew, temporalList)) // Group found!
+            if (auto proposalHolder = FindNewGroups(firstNew, temporalList)) // Group found!
             {
                 // Remove groups in the proposal from new and current queues (not from queue map)
-                for (LfgGuidList::const_iterator itQueue = pProposal->queues.begin(); itQueue != pProposal->queues.end(); ++itQueue)
+                for (LfgGuidList::const_iterator itQueue = proposalHolder->queues.begin(); itQueue != proposalHolder->queues.end(); ++itQueue)
                 {
                     currentQueue.remove(*itQueue);
                     newToQueue.remove(*itQueue);
                 }
 
-                m_Proposals[++m_lfgProposalId] = pProposal;
+                auto* pProposal = proposalHolder.get();
+                m_Proposals[++m_lfgProposalId] = std::move(proposalHolder);
 
                 uint64_t guid = 0;
                 for (LfgProposalPlayerMap::const_iterator itPlayers = pProposal->players.begin(); itPlayers != pProposal->players.end(); ++itPlayers)
@@ -787,11 +783,11 @@ void LfgMgr::OfferContinue(Group* grp)
     }
 }
 
-LfgProposal* LfgMgr::FindNewGroups(LfgGuidList& check, LfgGuidList& all)
+std::unique_ptr<LfgProposal> LfgMgr::FindNewGroups(LfgGuidList& check, LfgGuidList& all)
 {
     sLogger.debug("({}) - all({})", ConcatenateGuids(check), ConcatenateGuids(all));
 
-    LfgProposal* pProposal = nullptr;
+    std::unique_ptr<LfgProposal> pProposal = nullptr;
     if (check.empty() || check.size() > 5 || !CheckCompatibility(check, pProposal))
         return nullptr;
 
@@ -807,7 +803,7 @@ LfgProposal* LfgMgr::FindNewGroups(LfgGuidList& check, LfgGuidList& all)
     return pProposal;
 }
 
-bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
+bool LfgMgr::CheckCompatibility(LfgGuidList check, std::unique_ptr<LfgProposal>& pProposal)
 {
     if (pProposal)                                         // Do not check anything if we already have a proposal
         return false;
@@ -1049,7 +1045,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
 
     // Select a random dungeon from the compatible list
     // Create a new proposal
-    pProposal = new LfgProposal(Util::selectRandomContainerElement(compatibleDungeons));
+    pProposal = std::make_unique<LfgProposal>(Util::selectRandomContainerElement(compatibleDungeons));
     pProposal->cancelTime = time_t(time(NULL)) + LFG_TIME_PROPOSAL;
     pProposal->state = LFG_PROPOSAL_INITIATING;
     pProposal->queues = check;
@@ -1333,7 +1329,7 @@ void LfgMgr::UpdateProposal(uint32_t proposalId, uint64_t guid, bool accept)
     LfgProposalMap::iterator itProposal = m_Proposals.find(proposalId);
     if (itProposal == m_Proposals.end())
         return;
-    LfgProposal* pProposal = itProposal->second;
+    LfgProposal* pProposal = itProposal->second.get();
 
     // Check if proposal have the current player
     LfgProposalPlayerMap::iterator itProposalPlayer = pProposal->players.find(guid);
@@ -1520,14 +1516,13 @@ void LfgMgr::UpdateProposal(uint32_t proposalId, uint64_t guid, bool accept)
         // Update group info
         grp->Update();
 
-        delete pProposal;
         m_Proposals.erase(itProposal);
     }
 }
 
 void LfgMgr::RemoveProposal(LfgProposalMap::iterator itProposal, LfgUpdateType type)
 {
-    LfgProposal* pProposal = itProposal->second;
+    LfgProposal* pProposal = itProposal->second.get();
     pProposal->state = LFG_PROPOSAL_FAILED;
 
     sLogger.debug("Proposal {}, state FAILED, UpdateType {}", itProposal->first, type);
@@ -1624,7 +1619,6 @@ void LfgMgr::RemoveProposal(LfgProposalMap::iterator itProposal, LfgUpdateType t
         AddToQueue(guid, team);                //We have to add each GUID in newQueue to check for a new groups
     }
 
-    delete pProposal;
     m_Proposals.erase(itProposal);
 }
 

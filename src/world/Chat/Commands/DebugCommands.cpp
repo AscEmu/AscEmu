@@ -37,7 +37,7 @@ bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldS
 
     std::vector<uint32_t> creatureEntries;
 
-    QueryResult* creature_spawn_result = WorldDatabase.Query("SELECT entry FROM creature_spawns WHERE map = %u GROUP BY(entry)", map);
+    auto creature_spawn_result = WorldDatabase.Query("SELECT entry FROM creature_spawns WHERE map = %u GROUP BY(entry)", map);
     if (creature_spawn_result)
     {
         {
@@ -48,8 +48,6 @@ bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldS
 
             } while (creature_spawn_result->NextRow());
         }
-
-        delete creature_spawn_result;
     }
 
     //prepare new table for dump
@@ -1258,9 +1256,9 @@ bool ChatHandler::HandleAuraUpdateAdd(const char* args, WorldSession* m_session)
             return true;
         }
         Spell* SpellPtr = sSpellMgr.newSpell(Pl, Sp, false, nullptr);
-        AuraPtr = sSpellMgr.newAura(Sp, SpellPtr->getDuration(), Pl, Pl);
-        SystemMessage(m_session, "SMSG_AURA_UPDATE (add): VisualSlot %u - SpellID %u - Flags %i (0x%04X) - StackCount %i", AuraPtr->m_visualSlot, SpellID, Flags, Flags, StackCount);
-        Pl->addAura(AuraPtr);       // Serves purpose to just add the aura to our auraslots
+        auto auraHolder = sSpellMgr.newAura(Sp, SpellPtr->getDuration(), Pl, Pl);
+        SystemMessage(m_session, "SMSG_AURA_UPDATE (add): VisualSlot %u - SpellID %u - Flags %i (0x%04X) - StackCount %i", auraHolder->m_visualSlot, SpellID, Flags, Flags, StackCount);
+        Pl->addAura(std::move(auraHolder));       // Serves purpose to just add the aura to our auraslots
 
         delete SpellPtr;
     }

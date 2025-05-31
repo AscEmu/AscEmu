@@ -574,7 +574,7 @@ bool ChatHandler::HandleNpcListAIAgentCommand(const char* /*args*/, WorldSession
     if (creature_target == nullptr)
         return true;
 
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM ai_agents where entry=%u", creature_target->getEntry());
+    auto result = WorldDatabase.Query("SELECT * FROM ai_agents where entry=%u", creature_target->getEntry());
     if (result == nullptr)
     {
         RedSystemMessage(m_session, "Selected Creature %s (%u) has no entries in ai_agents table!", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
@@ -587,8 +587,6 @@ bool ChatHandler::HandleNpcListAIAgentCommand(const char* /*args*/, WorldSession
         SystemMessage(m_session, "-- agent: %u | spellId: %u | event: %u | chance: %u | maxcount: %u", fields[1].asUint32(), fields[5].asUint32(), fields[2].asUint32(), fields[3].asUint32(), fields[4].asUint32());
     } while (result->NextRow());
 
-    delete result;
-
     return true;
 }
 
@@ -599,7 +597,7 @@ bool ChatHandler::HandleNpcListLootCommand(const char* args, WorldSession* m_ses
     if (creature_target == nullptr)
         return true;
 
-    QueryResult* loot_result = WorldDatabase.Query("SELECT itemid, normal10percentchance, heroic10percentchance, normal25percentchance, heroic25percentchance, mincount, maxcount FROM loot_creatures WHERE entryid=%u;", creature_target->getEntry());
+    auto loot_result = WorldDatabase.Query("SELECT itemid, normal10percentchance, heroic10percentchance, normal25percentchance, heroic25percentchance, mincount, maxcount FROM loot_creatures WHERE entryid=%u;", creature_target->getEntry());
     if (loot_result != nullptr)
     {
         uint8_t numFound = 0;
@@ -623,7 +621,7 @@ bool ChatHandler::HandleNpcListLootCommand(const char* args, WorldSession* m_ses
 
             ++numFound;
         } while (loot_result->NextRow() && (numFound <= 25));
-        delete loot_result;
+
         if (numFound > 25)
         {
             RedSystemMessage(m_session, "More than 25 results found. Use .npc listloot <min quality> to increase the results.");

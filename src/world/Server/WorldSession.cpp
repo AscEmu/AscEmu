@@ -100,9 +100,7 @@ WorldSession::~WorldSession()
         LogoutPlayer(true);
     }
 
-    std::unique_ptr<WorldPacket> packet;
-
-    while ((packet = _recvQueue.pop()) != nullptr)
+    while (auto packet = _recvQueue.pop())
     {
     }
 
@@ -141,17 +139,15 @@ uint8_t WorldSession::Update(uint32_t InstanceID)
             _logoutTime = m_currMsTime + PLAYER_LOGOUT_DELAY;
     }
 
-    std::unique_ptr<WorldPacket> packet;
-
-    while ((packet = _recvQueue.pop()) != nullptr)
+    while (auto packet = _recvQueue.pop())
     {
-        if (packet != nullptr)
+        if (packet.value() != nullptr)
         {
             // handling opcode
-            OpcodeHandlerRegistry::instance().handleOpcode(*this, *packet);
+            OpcodeHandlerRegistry::instance().handleOpcode(*this, *packet.value());
 
             // set pointer to nullptr since it was processed
-            packet = nullptr;
+            packet.value() = nullptr;
 
             // If we hit this -> means a packet has changed our map.
             if (InstanceID != instanceId)
@@ -567,11 +563,6 @@ void WorldSession::SendChatPacket(WorldPacket* data, uint32_t langpos, int32_t l
     }
 
     SendPacket(data);
-}
-
-void WorldSession::Delete()
-{
-    delete this;
 }
 
 /*

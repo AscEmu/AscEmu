@@ -22,6 +22,7 @@
 #define LOAD_LIB_H
 
 #include <cstdint>
+#include <memory>
 #include <string>
 
 #define FILE_FORMAT_VERSION 18
@@ -50,11 +51,11 @@ struct file_MVER
 
 class FileLoader
 {
-    uint8_t *data;
+    std::unique_ptr<uint8_t[]> data;
     uint32_t data_size;
 public:
     virtual bool prepareLoadedData();
-    uint8_t *GetData()     {return data;}
+    uint8_t *GetData()     {return data.get();}
     uint32_t GetDataSize() {return data_size;}
 
     file_MVER *version;

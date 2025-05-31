@@ -62,7 +62,7 @@ namespace VMAP
         TileMap TileEntries;
     };
 
-    typedef std::map<uint32_t, MapSpawns*> MapData;
+    typedef std::map<uint32_t, std::unique_ptr<MapSpawns>> MapData;
     //===============================================
 
     struct GroupModel_Raw
@@ -74,11 +74,15 @@ namespace VMAP
         uint32_t liquidflags;
         std::vector<MeshTriangle> triangles;
         std::vector<G3D::Vector3> vertexArray;
-        class WmoLiquid* liquid;
+        std::unique_ptr<WmoLiquid> liquid;
 
         GroupModel_Raw() : mogpflags(0), GroupWMOID(0), liquidflags(0),
-            liquid(NULL) { }
+            liquid(nullptr) { }
         ~GroupModel_Raw();
+
+        // Define explicitly for unique_ptr
+        GroupModel_Raw(GroupModel_Raw&&) = default;
+        GroupModel_Raw& operator=(GroupModel_Raw&&) = default;
 
         bool Read(FILE* f);
     };

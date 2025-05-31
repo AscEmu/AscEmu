@@ -126,9 +126,9 @@ public:
         dSpell = sSpellMgr.getSpellInfo(31231);
     }
 
-    static Aura* Create(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
+    static std::unique_ptr<Aura> Create(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
     {
-        return new CheatDeathAura(proto, duration, caster, target, temporary, i_caster);
+        return std::make_unique<CheatDeathAura>(proto, duration, caster, target, temporary, i_caster);
     }
 
     uint32_t absorbDamage(SchoolMask /*School*/, uint32_t* dmg, bool checkOnly) override
@@ -384,9 +384,9 @@ public:
     AntiMagicShellAura(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
         : AbsorbAura(proto, duration, caster, target, temporary, i_caster) {}
 
-    static Aura* Create(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
+    static std::unique_ptr<Aura> Create(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
     {
-        return new AntiMagicShellAura(proto, duration, caster, target, temporary, i_caster);
+        return std::make_unique<AntiMagicShellAura>(proto, duration, caster, target, temporary, i_caster);
     }
 
     int32_t CalcAbsorbAmount(AuraEffectModifier* aurEff)
@@ -411,9 +411,9 @@ public:
     SpellDeflectionAura(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
         : AbsorbAura(proto, duration, caster, target, temporary, i_caster) {}
 
-    static Aura* Create(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
+    static std::unique_ptr<Aura> Create(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
     {
-        return new SpellDeflectionAura(proto, duration, caster, target, temporary, i_caster);
+        return std::make_unique<SpellDeflectionAura>(proto, duration, caster, target, temporary, i_caster);
     }
 
     uint32_t absorbDamage(SchoolMask schoolMask, uint32_t* dmg, bool /*checkOnly*/) override
@@ -456,9 +456,9 @@ public:
     WillOfTheNecropolisAura(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
         : AbsorbAura(proto, duration, caster, target, temporary, i_caster) {}
 
-    static Aura* Create(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
+    static std::unique_ptr<Aura> Create(SpellInfo* proto, int32_t duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = nullptr)
     {
-        return new WillOfTheNecropolisAura(proto, duration, caster, target, temporary, i_caster);
+        return std::make_unique<WillOfTheNecropolisAura>(proto, duration, caster, target, temporary, i_caster);
     }
 
     uint32_t absorbDamage(SchoolMask /*School*/, uint32_t* dmg, bool /*checkOnly*/) override

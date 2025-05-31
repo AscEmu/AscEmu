@@ -452,10 +452,10 @@ void Aura::EventUpdatePetAA(AuraEffectModifier* aurEff, float r)
     {
         if (pet->isAlive() && pet->getAuraWithIdForGuid(m_spellInfo->getId(), m_target->getGuid()) == nullptr)
         {
-            Aura* a = sSpellMgr.newAura(m_spellInfo, getTimeLeft(), m_target, pet, true);
+            auto a = sSpellMgr.newAura(m_spellInfo, getTimeLeft(), m_target, pet, true);
             a->m_areaAura = true;
             a->addAuraEffect(aurEff->getAuraEffectType(), aurEff->getEffectDamage(), aurEff->getEffectMiscValue(), aurEff->getEffectPercentModifier(), true, aurEff->getEffectIndex());
-            pet->addAura(a);
+            pet->addAura(std::move(a));
         }
     }
 }
@@ -618,10 +618,10 @@ void Aura::EventUpdateOwnerAA(AuraEffectModifier* aurEff, float r)
         (c->getDistanceSq(ou) <= r))
     {
 
-        Aura* a = sSpellMgr.newAura(m_spellInfo, getTimeLeft(), c, ou, true);
+        auto a = sSpellMgr.newAura(m_spellInfo, getTimeLeft(), c, ou, true);
         a->m_areaAura = true;
         a->addAuraEffect(aurEff->getAuraEffectType(), aurEff->getEffectDamage(), aurEff->getEffectMiscValue(), aurEff->getEffectPercentModifier(), true, aurEff->getEffectIndex());
-        ou->addAura(a);
+        ou->addAura(std::move(a));
     }
 
 
@@ -697,10 +697,10 @@ void Aura::EventUpdateAreaAura(uint8_t effIndex, float r)
         if (unit->hasAurasWithId(m_spellInfo->getId()))
             continue;
 
-        Aura* a = sSpellMgr.newAura(m_spellInfo, getTimeLeft(), m_target, unit, true);
+        auto a = sSpellMgr.newAura(m_spellInfo, getTimeLeft(), m_target, unit, true);
         a->m_areaAura = true;
         a->addAuraEffect(m_auraEffects[effIndex].getAuraEffectType(), m_auraEffects[effIndex].getEffectDamage(), m_auraEffects[effIndex].getEffectMiscValue(), m_auraEffects[effIndex].getEffectPercentModifier(), true, m_auraEffects[effIndex].getEffectIndex());
-        unit->addAura(a);
+        unit->addAura(std::move(a));
     }
 }
 

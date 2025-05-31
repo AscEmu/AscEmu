@@ -60,7 +60,7 @@ namespace AscEmu::Util::Strings
         return string_vector;
     }
 
-    bool contains(std::string& string, std::string& source)
+    bool contains(std::string const& string, std::string const& source)
     {
         return source.find(string) != std::string::npos;
     }

@@ -1838,7 +1838,7 @@ bool AchievementMgr::showCompletedAchievement(uint32_t _achievementId, const Pla
         case 1427: // Realm First! Grand Master Tailor
         case 1463: // Realm First! Northrend Vanguard: First player on the realm to gain exalted reputation with the Argent Crusade, Wyrmrest Accord, Kirin Tor and Knights of the Ebon Blade.
         {
-            QueryResult* achievementResult = CharacterDatabase.Query("SELECT guid FROM character_achievement WHERE achievement=%u ORDER BY date LIMIT 1", _achievementId);
+            auto achievementResult = CharacterDatabase.Query("SELECT guid FROM character_achievement WHERE achievement=%u ORDER BY date LIMIT 1", _achievementId);
             if (achievementResult != nullptr)
             {
                 Field* field = achievementResult->Fetch();
@@ -1849,11 +1849,9 @@ bool AchievementMgr::showCompletedAchievement(uint32_t _achievementId, const Pla
                     if (firstguid != (uint32_t)_player->getGuid())
                     {
                         // nope, somebody else was first.
-                        delete achievementResult;
                         return false;
                     }
                 }
-                delete achievementResult;
             }
         }
         break;

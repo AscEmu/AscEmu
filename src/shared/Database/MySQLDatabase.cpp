@@ -26,12 +26,11 @@
 
 MySQLDatabase::~MySQLDatabase()
 {
-    for(int32_t i = 0; i < mConnectionCount; ++i)
+    for (const auto& conn : Connections)
     {
-        mysql_close(((MySQLDatabaseConnection*)Connections[i])->MySql);
-        delete Connections[i];
+        if (const auto mysqlConn = dynamic_cast<MySQLDatabaseConnection const*>(conn.get()))
+            mysql_close(mysqlConn->MySql);
     }
-    delete [] Connections;
 }
 
 MySQLDatabase::MySQLDatabase() : Database()
@@ -54,7 +53,6 @@ bool MySQLDatabase::Initialize(const char* Hostname, unsigned int port, const ch
     uint32_t i;
     MYSQL* temp = NULL;
     MYSQL* temp2 = NULL;
-    MySQLDatabaseConnection** conns;
     bool my_true = true;
 
     mHostname = std::string(Hostname);
@@ -65,8 +63,7 @@ bool MySQLDatabase::Initialize(const char* Hostname, unsigned int port, const ch
 
     sLogger.info("MySQLDatabase : Connecting to `{}`, database `{}`...", Hostname, DatabaseName);
 
-    conns = new MySQLDatabaseConnection*[ConnectionCount];
-    Connections = ((DatabaseConnection**)conns);
+    Connections.reserve(ConnectionCount);
     for(i = 0; i < ConnectionCount; ++i)
     {
         temp = mysql_init(NULL);
@@ -105,8 +102,7 @@ bool MySQLDatabase::Initialize(const char* Hostname, unsigned int port, const ch
             return false;
         }
 
-        conns[i] = new MySQLDatabaseConnection;
-        conns[i]->MySql = temp2;
+        Connections.emplace_back(std::make_unique<MySQLDatabaseConnection>(temp2));
     }
 
     Database::_Initialize();
@@ -202,13 +198,12 @@ bool MySQLDatabase::_HandleError(MySQLDatabaseConnection* con, uint32_t ErrorNum
 
 MySQLQueryResult::MySQLQueryResult(MYSQL_RES* res, uint32_t FieldCount, uint32_t RowCount) : QueryResult(FieldCount, RowCount), mResult(res)
 {
-    mCurrentRow = new Field[FieldCount];
+    mCurrentRow = std::make_unique<Field[]>(FieldCount);
 }
 
 MySQLQueryResult::~MySQLQueryResult()
 {
     mysql_free_result(mResult);
-    delete [] mCurrentRow;
 }
 
 bool MySQLQueryResult::NextRow()
@@ -223,9 +218,8 @@ bool MySQLQueryResult::NextRow()
     return true;
 }
 
-QueryResult* MySQLDatabase::_StoreQueryResult(DatabaseConnection* con)
+std::unique_ptr<QueryResult> MySQLDatabase::_StoreQueryResult(DatabaseConnection* con)
 {
-    MySQLQueryResult* res;
     MySQLDatabaseConnection* db = static_cast<MySQLDatabaseConnection*>(con);
     MYSQL_RES* pRes = mysql_store_result(db->MySql);
     uint32_t uRows = (uint32_t)mysql_affected_rows(db->MySql);
@@ -239,7 +233,7 @@ QueryResult* MySQLDatabase::_StoreQueryResult(DatabaseConnection* con)
         return NULL;
     }
 
-    res = new MySQLQueryResult(pRes, uFields, uRows);
+    auto res = std::make_unique<MySQLQueryResult>(pRes, uFields, uRows);
     res->NextRow();
 
     return res;

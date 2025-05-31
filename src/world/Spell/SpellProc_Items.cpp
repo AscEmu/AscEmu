@@ -28,7 +28,7 @@
 class TwinBladesOfAzzinothSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new TwinBladesOfAzzinothSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<TwinBladesOfAzzinothSpellProc>(); }
 
     void init(Object* /*obj*/) override
     {

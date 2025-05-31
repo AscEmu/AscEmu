@@ -121,7 +121,7 @@ inline void* allocate_and_copy(uint32_t len, void* pointer)
 
 void CommandTableStorage::Load()
 {
-    QueryResult* result = CharacterDatabase.Query("SELECT command_name, access_level FROM command_overrides");
+    auto result = CharacterDatabase.Query("SELECT command_name, access_level FROM command_overrides");
     if (!result) return;
 
     do
@@ -130,7 +130,6 @@ void CommandTableStorage::Load()
         const char* level = result->Fetch()[1].asCString();
         Override(name, level);
     } while (result->NextRow());
-    delete result;
 }
 
 void CommandTableStorage::Override(const char* command, const char* level)

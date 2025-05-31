@@ -53,8 +53,8 @@ bool FileLoader::loadFile(std::string const& fileName, bool log)
 
     data_size = mf.getSize();
 
-    data = new uint8_t [data_size];
-    mf.read(data, data_size);
+    data = std::make_unique<uint8_t[]>(data_size);
+    mf.read(data.get(), data_size);
     mf.close();
     if (prepareLoadedData())
         return true;
@@ -68,7 +68,7 @@ bool FileLoader::loadFile(std::string const& fileName, bool log)
 bool FileLoader::prepareLoadedData()
 {
     // Check version
-    version = (file_MVER *) data;
+    version = (file_MVER *) data.get();
     if (version->fcc != MverMagic.fcc)
         return false;
     if (version->ver != FILE_FORMAT_VERSION)
@@ -78,8 +78,7 @@ bool FileLoader::prepareLoadedData()
 
 void FileLoader::free()
 {
-    if (data) delete[] data;
-    data = 0;
+    data = nullptr;
     data_size = 0;
     version = 0;
 }

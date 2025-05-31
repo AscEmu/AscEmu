@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
+#include "Models/GameObjectModel.h"
 #include "Server/Packets/SmsgTransferPending.h"
 #include "Movement/Spline/Spline.h"
 #include "Server/Script/ScriptMgr.hpp"

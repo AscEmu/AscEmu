@@ -66,9 +66,9 @@ void PatchMgr::initialize()
         std::streamsize size = file.tellg();
         file.seekg(0, std::ios::beg);
 
-        Patch* pPatch = new Patch;
+        auto pPatch = std::make_unique<Patch>();
         pPatch->FileSize = static_cast<uint32_t>(size);
-        pPatch->Data = new uint8_t[pPatch->FileSize];
+        pPatch->Data = std::make_unique<uint8_t[]>(pPatch->FileSize);
         pPatch->Version = srcversion;
         for (uint32_t i = 0; i < 4; ++i)
         {
@@ -78,10 +78,9 @@ void PatchMgr::initialize()
         pPatch->Locality[4] = '\0';
         pPatch->uLocality = *reinterpret_cast<uint32_t*>(pPatch->Locality);
 
-        if (!file.read(reinterpret_cast<char*>(pPatch->Data), pPatch->FileSize))
+        if (!file.read(reinterpret_cast<char*>(pPatch->Data.get()), pPatch->FileSize))
         {
             sLogger.failure("Cannot read {}", filePath);
-            delete pPatch;
             continue;
         }
 
@@ -92,12 +91,12 @@ void PatchMgr::initialize()
         // md5hash the file
         MD5Hash md5;
         md5.initialize();
-        md5.updateData(pPatch->Data, pPatch->FileSize);
+        md5.updateData(pPatch->Data.get(), pPatch->FileSize);
         md5.finalize();
         std::memcpy(pPatch->MD5, md5.getDigest(), MD5_DIGEST_LENGTH);
 
         // add the patch to the patchlist
-        m_patches.push_back(pPatch);
+        m_patches.push_back(std::move(pPatch));
     }
 }
 
@@ -112,17 +111,17 @@ Patch* PatchMgr::FindPatchForClient(uint32_t Version, const char* Locality)
     tmplocality[4] = 0;
     uint32_t ulocality = *(uint32_t*)tmplocality;
 
-    for (std::vector<Patch*>::iterator itr = m_patches.begin(); itr != m_patches.end(); ++itr)
+    for (auto itr = m_patches.begin(); itr != m_patches.end(); ++itr)
     {
         // since localities are always 4 bytes we can do a simple int compare,
         // saving a string compare ;)
         if ((*itr)->uLocality == ulocality)
         {
             if (fallbackPatch == nullptr && (*itr)->Version == 0)
-                fallbackPatch = (*itr);
+                fallbackPatch = (*itr).get();
 
             if ((*itr)->Version == Version)
-                return (*itr);
+                return (*itr).get();
         }
     }
 
@@ -131,28 +130,25 @@ Patch* PatchMgr::FindPatchForClient(uint32_t Version, const char* Locality)
 
 void PatchMgr::BeginPatchJob(Patch* pPatch, AuthSocket* pClient, uint32_t Skip)
 {
-    PatchJob* pJob = new PatchJob(pPatch, pClient, Skip);
-    pClient->m_patchJob = pJob;
+    auto pJob = std::make_unique<PatchJob>(pPatch, pClient, Skip);
+    pClient->m_patchJob = pJob.get();
 
     std::lock_guard lock(m_patchJobLock);
-    m_patchJobs.push_back(pJob);
+    m_patchJobs.push_back(std::move(pJob));
 }
 
 void PatchMgr::UpdateJobs()
 {
-    std::list<PatchJob*>::iterator itr;
-
     std::lock_guard lock(m_patchJobLock);
 
-    for (itr = m_patchJobs.begin(); itr != m_patchJobs.end();)
+    for (auto itr = m_patchJobs.begin(); itr != m_patchJobs.end();)
     {
-        std::list<PatchJob*>::iterator itr2 = itr;
+        std::list<std::unique_ptr<PatchJob>>::iterator itr2 = itr;
         ++itr;
 
         if (!(*itr2)->Update())
         {
             (*itr2)->GetClient()->m_patchJob = nullptr;
-            delete(*itr2);
             m_patchJobs.erase(itr2);
         }
     }
@@ -162,15 +158,14 @@ void PatchMgr::AbortPatchJob(PatchJob* pJob)
 {
     std::lock_guard lock(m_patchJobLock);
 
-    for (std::list<PatchJob*>::iterator itr = m_patchJobs.begin(); itr != m_patchJobs.end(); ++itr)
+    for (auto itr = m_patchJobs.begin(); itr != m_patchJobs.end(); ++itr)
     {
-        if ((*itr) == pJob)
+        if ((*itr).get() == pJob)
         {
             m_patchJobs.erase(itr);
             break;
         }
     }
-    delete pJob;
 }
 
 // this is what blizz sends.

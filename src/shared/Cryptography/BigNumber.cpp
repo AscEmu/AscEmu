@@ -25,26 +25,25 @@
 BigNumber::BigNumber()
 {
     _bn = BN_new();
-    _array = NULL;
+    _array = nullptr;
 }
 
 BigNumber::BigNumber(const BigNumber & bn)
 {
     _bn = BN_dup(bn._bn);
-    _array = NULL;
+    _array = nullptr;
 }
 
 BigNumber::BigNumber(uint32_t val)
 {
     _bn = BN_new();
     BN_set_word(_bn, val);
-    _array = NULL;
+    _array = nullptr;
 }
 
 BigNumber::~BigNumber()
 {
     BN_free(_bn);
-    delete[] _array;
 }
 
 void BigNumber::SetDword(uint32_t val)
@@ -164,17 +163,12 @@ uint32_t BigNumber::AsDword()
 
 uint8_t* BigNumber::AsByteArray()
 {
-    if(_array)
-    {
-        delete[] _array;
-        _array = NULL;
-    }
-    _array = new uint8_t[GetNumBytes()];
-    BN_bn2bin(_bn, (unsigned char*)_array);
+    _array = std::make_unique<uint8_t[]>(GetNumBytes());
+    BN_bn2bin(_bn, (unsigned char*)_array.get());
 
-    std::reverse(_array, _array + GetNumBytes());
+    std::reverse(_array.get(), _array.get() + GetNumBytes());
 
-    return _array;
+    return _array.get();
 }
 
 ByteBuffer BigNumber::AsByteBuffer()

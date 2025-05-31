@@ -138,7 +138,7 @@ void DynamicObject::updateTargets()
 
             if (getDistanceSq(target) <= radius)
             {
-                Aura* aura = sSpellMgr.newAura(m_spellInfo, m_aliveDuration, m_unitCaster, target, true);
+                auto aura = sSpellMgr.newAura(m_spellInfo, m_aliveDuration, m_unitCaster, target, true);
                 for (uint8_t i = 0; i < 3; ++i)
                 {
                     if (m_spellInfo->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
@@ -148,7 +148,7 @@ void DynamicObject::updateTargets()
                     }
                 }
 
-                target->addAura(aura);
+                target->addAura(std::move(aura));
 
                 m_targets.insert(target->getGuid());
             }

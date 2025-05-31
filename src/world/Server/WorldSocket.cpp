@@ -156,8 +156,7 @@ WorldSocket::WorldSocket(SOCKET fd)
 
 WorldSocket::~WorldSocket()
 {
-    std::unique_ptr<WorldPacket> pck;
-    while ((pck = _queue.pop()) != nullptr)
+    while (auto pck = _queue.pop())
     {
     }
 
@@ -175,8 +174,7 @@ void WorldSocket::OnDisconnect()
     if (!_queue.hasItems())
         return;
 
-    std::unique_ptr<WorldPacket> pck;
-    while ((pck = _queue.pop()) != nullptr)
+    while (auto pck = _queue.pop())
     {
     }
 
@@ -231,9 +229,9 @@ void WorldSocket::UpdateQueuedPackets()
     if (!_queue.hasItems())
         return;
 
-    std::unique_ptr<WorldPacket> pck;
-    while ((pck = _queue.pop()) != nullptr)
+    while (auto itr = _queue.pop())
     {
+        const auto& pck = itr.value();
         // try to push out as many as you can
         switch (_OutPacket(pck->GetOpcode(), pck->size(), pck->size() ? pck->contents() : nullptr))
         {
@@ -715,9 +713,9 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32_t r
     }
 
     // Allocate session
-    WorldSession* pSession = new WorldSession(AccountID, AccountName, this);
+    auto pSession = std::make_unique<WorldSession>(AccountID, AccountName, this);
 
-    mSession = pSession;
+    mSession = pSession.get();
 
     // aquire delete mutex
     std::lock_guard guard(pSession->deleteMutex);
@@ -746,7 +744,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32_t r
 
     if (worldConfig.server.useAccountData)
     {
-        QueryResult* pResult = CharacterDatabase.Query("SELECT * FROM account_data WHERE acct = %u", AccountID);
+        auto pResult = CharacterDatabase.Query("SELECT * FROM account_data WHERE acct = %u", AccountID);
         if (pResult == nullptr)
             CharacterDatabase.Execute("INSERT INTO account_data VALUES(%u, '', '', '', '', '', '', '', '', '')", AccountID);
         else
@@ -762,8 +760,6 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32_t r
                     pSession->SetAccountData(i, std::move(d), true, static_cast<uint32_t>(len));
                 }
             }
-
-            delete pResult;
         }
     }
 
@@ -773,12 +769,12 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32_t r
     uint32_t playerLimit = worldConfig.getPlayerLimit();
     if ((sWorld.getSessionCount() < playerLimit) || pSession->HasGMPermissions())
     {
-        Authenticate();
+        Authenticate(std::move(pSession));
     }
     else if (playerLimit > 0)
     {
         // Queued, sucker.
-        uint32_t Position = sWorld.addQueuedSocket(this);
+        uint32_t Position = sWorld.addQueuedSocket(this, std::move(pSession));
         mQueued = true;
         sLogger.debug("{} added to queue in position {}", AccountName, Position);
 
@@ -792,13 +788,13 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32_t r
     }
 }
 
-void WorldSocket::Authenticate()
+void WorldSocket::Authenticate(std::unique_ptr<WorldSession> sessionHolder)
 {
     if (pAuthenticationPacket != nullptr)
     {
         mQueued = false;
 
-        if (mSession == nullptr)
+        if (mSession == nullptr || sessionHolder == nullptr)
             return;
 
         SendPacket(SmsgAuthResponse(AuthOkay, ARST_ACCOUNT_DATA).serialise().get());
@@ -816,12 +812,14 @@ void WorldSocket::Authenticate()
 
         pAuthenticationPacket = nullptr;
 
-        sWorld.addSession(mSession);
         sWorld.addGlobalSession(mSession);
+        sWorld.addSession(std::move(sessionHolder));
     }
     else
     {
         sLogger.failure("WorldSocket::Authenticate something tried to Authenticate but packet is invalid (nullptr)");
+        SendPacket(SmsgAuthResponse(AuthRejected, ARST_ONLY_ERROR).serialise().get());
+        Disconnect();
     }
 }
 

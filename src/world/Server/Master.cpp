@@ -25,7 +25,7 @@
 #include "WorldRunnable.h"
 #include "Server/Console/ConsoleThread.h"
 #include "Server/Master.h"
-
+#include "Server/EventMgr.h"
 #include "ConfigMgr.hpp"
 #include "DatabaseDefinition.hpp"
 #include "Server/BroadcastMgr.h"
@@ -75,8 +75,8 @@ static const char* REQUIRED_WORLD_DB_VERSION = "20250516-00_creature_spawns";
 volatile bool Master::m_stopEvent = false;
 
 // Database defines.
-SERVER_DECL Database* Database_Character;
-SERVER_DECL Database* Database_World;
+SERVER_DECL std::unique_ptr<Database> Database_Character;
+SERVER_DECL std::unique_ptr<Database> Database_World;
 
 // mainserv defines
 SERVER_DECL std::unique_ptr<SessionLog> GMCommand_Log;
@@ -530,7 +530,7 @@ bool Master::Run(int /*argc*/, char** /*argv*/)
 
 bool Master::_CheckDBVersion()
 {
-    QueryResult* wqr = WorldDatabase.QueryNA("SELECT LastUpdate FROM world_db_version ORDER BY id DESC LIMIT 1;");
+    auto wqr = WorldDatabase.QueryNA("SELECT LastUpdate FROM world_db_version ORDER BY id DESC LIMIT 1;");
     if (wqr == NULL)
     {
         sLogger.fatal("Database : World database is missing the table `world_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
@@ -557,13 +557,10 @@ bool Master::_CheckDBVersion()
             sLogger.fatal("Database : Your world database is probably too new for this AscEmu version, you need to update your server. Exiting.");
         }
 
-        delete wqr;
         return false;
     }
 
-    delete wqr;
-
-    QueryResult* cqr = CharacterDatabase.QueryNA("SELECT LastUpdate FROM character_db_version ORDER BY id DESC LIMIT 1;");
+    auto cqr = CharacterDatabase.QueryNA("SELECT LastUpdate FROM character_db_version ORDER BY id DESC LIMIT 1;");
     if (cqr == NULL)
     {
         sLogger.fatal("Database : Character database is missing the table `character_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
@@ -587,11 +584,8 @@ bool Master::_CheckDBVersion()
         else
             sLogger.fatal("Database : Your character database is too new for this AscEmu version, you need to update your server. Exiting.");
 
-        delete cqr;
         return false;
     }
-
-    delete cqr;
 
     sLogger.info("Database : Database successfully validated.");
 
@@ -652,10 +646,8 @@ bool Master::_StartDB()
 
 void Master::_StopDB()
 {
-    if (Database_World != NULL)
-        delete Database_World;
-    if (Database_Character != NULL)
-        delete Database_Character;
+    Database_World = nullptr;
+    Database_Character = nullptr;
     Database::CleanupLibs();
 }
 

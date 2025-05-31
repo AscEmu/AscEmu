@@ -30,7 +30,7 @@ This file is released under the MIT license. See README-MIT for more information
 using std::chrono::milliseconds;
 
 // Database impl
-Database* sLogonSQL;
+std::unique_ptr<Database> sLogonSQL;
 std::atomic<bool> mrunning(true);
 
 ConfigMgr Config;
@@ -100,12 +100,13 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
     m_clientMinBuild = 5875;
     m_clientMaxBuild = 15595;
 
-    ThreadPool.ExecuteTask(new LogonConsoleThread);
+    auto logonConsole = std::make_unique<LogonConsoleThread>();
+    ThreadPool.ExecuteTask(logonConsole.get());
 
     sSocketMgr.initialize();
 
-    auto realmlistSocket = new ListenSocket<AuthSocket>(logonConfig.listen.host.c_str(), logonConfig.listen.realmListPort);
-    auto logonServerSocket = new ListenSocket<LogonCommServerSocket>(logonConfig.listen.interServerHost.c_str(), logonConfig.listen.port);
+    auto realmlistSocket = std::make_unique<ListenSocket<AuthSocket>>(logonConfig.listen.host.c_str(), logonConfig.listen.realmListPort);
+    auto logonServerSocket = std::make_unique<ListenSocket<LogonCommServerSocket>>(logonConfig.listen.interServerHost.c_str(), logonConfig.listen.port);
 
     sSocketMgr.SpawnWorkerThreads();
 
@@ -116,8 +117,8 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
     if (isAuthsockCreated && isIntersockCreated)
     {
 #ifdef WIN32
-        ThreadPool.ExecuteTask(realmlistSocket);
-        ThreadPool.ExecuteTask(logonServerSocket);
+        ThreadPool.ExecuteTask(realmlistSocket.get());
+        ThreadPool.ExecuteTask(logonServerSocket.get());
 #endif
         _HookSignals();
 
@@ -170,7 +171,7 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
     sLogger.info("Waiting for database to close..");
     sLogonSQL->EndThreads();
     sLogonSQL->Shutdown();
-    delete sLogonSQL;
+    sLogonSQL = nullptr;
 
     ThreadPool.Shutdown();
 
@@ -183,8 +184,6 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
     sSocketMgr.finalize();
     sSocketGarbageCollector.finalize();
     //delete periodicReloadAccounts;
-    delete realmlistSocket;
-    delete logonServerSocket;
     sLogger.info("Shutdown complete.");
     sLogger.finalize();
 }
@@ -341,7 +340,7 @@ bool MasterLogon::StartDb()
 
 bool MasterLogon::CheckDBVersion()
 {
-    QueryResult* cqr = sLogonSQL->QueryNA("SELECT LastUpdate FROM logon_db_version ORDER BY id DESC LIMIT 1;");
+    auto cqr = sLogonSQL->QueryNA("SELECT LastUpdate FROM logon_db_version ORDER BY id DESC LIMIT 1;");
     if (cqr == nullptr)
     {
         sLogger.failure("Database : logon database is missing the table `logon_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
@@ -365,11 +364,8 @@ bool MasterLogon::CheckDBVersion()
         else
             sLogger.failure("Database : Your logon database is too new for this AscEmu version, you need to update your server. Exiting.");
 
-        delete cqr;
         return false;
     }
-
-    delete cqr;
 
     sLogger.info("Database : Database successfully validated.");
 

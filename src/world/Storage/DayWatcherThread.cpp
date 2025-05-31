@@ -115,11 +115,10 @@ void DayWatcherThread::update_settings()
 void DayWatcherThread::load_settings()
 {
     m_arenaPeriod = get_timeout_from_string(worldConfig.period.arenaUpdate, WEEKLY);
-    QueryResult* result = CharacterDatabase.Query("SELECT setting_value FROM server_settings WHERE setting_id = \'last_arena_update_time\'");
+    auto result = CharacterDatabase.Query("SELECT setting_value FROM server_settings WHERE setting_id = \'last_arena_update_time\'");
     if (result)
     {
         m_lastArenaTime = result->Fetch()[0].asUint32();
-        delete result;
     }
     else
     {
@@ -128,11 +127,10 @@ void DayWatcherThread::load_settings()
     }
 
     m_dailyPeriod = get_timeout_from_string(worldConfig.period.dailyUpdate, DAILY);
-    QueryResult* result2 = CharacterDatabase.Query("SELECT setting_value FROM server_settings WHERE setting_id = \'last_daily_update_time\'");
+    auto result2 = CharacterDatabase.Query("SELECT setting_value FROM server_settings WHERE setting_id = \'last_daily_update_time\'");
     if (result2)
     {
         m_lastDailyTime = result2->Fetch()[0].asUint32();
-        delete result2;
     }
     else
     {
@@ -195,7 +193,7 @@ void DayWatcherThread::update_arena()
 {
     sLogger.info("DayWatcherThread : Running Weekly Arena Point Maintenance...");
 
-    QueryResult* result = CharacterDatabase.Query("SELECT guid, arenaPoints FROM characters");
+    auto result = CharacterDatabase.Query("SELECT guid, arenaPoints FROM characters");
     uint32_t arenapointsPerTeam[3] = { 0 };
     if (result)
     {
@@ -278,7 +276,6 @@ void DayWatcherThread::update_arena()
                 CharacterDatabase.Execute("UPDATE characters SET arenaPoints = %u WHERE guid = %u", arenapoints, guid);
             }
         } while (result->NextRow());
-        delete result;
     }
 
     sObjectMgr.updateArenaTeamWeekly();

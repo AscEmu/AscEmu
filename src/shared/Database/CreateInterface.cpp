@@ -28,7 +28,7 @@ void Database::CleanupLibs()
 }
 
 
-Database* Database::CreateDatabaseInterface()
+std::unique_ptr<Database> Database::CreateDatabaseInterface()
 {
-    return new MySQLDatabase();
+    return std::make_unique<MySQLDatabase>();
 }

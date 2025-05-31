@@ -299,7 +299,6 @@ void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket& recvData)
     auto startTime = Util::TimeNow();
     uint32_t realm_id;
     uint32_t account_id;
-    QueryResult* result;
     std::map<uint32_t, uint8_t> mapping_to_send;
     std::map<uint32_t, uint8_t>::iterator itr;
 
@@ -307,7 +306,7 @@ void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket& recvData)
     recvData >> realm_id;
 
     // fetch the character mapping
-    result = CharacterDatabase.Query("SELECT acct FROM characters");
+    auto result = CharacterDatabase.Query("SELECT acct FROM characters");
 
     if (result)
     {
@@ -321,7 +320,6 @@ void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket& recvData)
                 mapping_to_send.insert(std::make_pair(account_id, static_cast<uint8_t>(1)));
         }
         while (result->NextRow());
-        delete result;
     }
 
     if (!mapping_to_send.size())

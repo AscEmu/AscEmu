@@ -413,7 +413,7 @@ void TaxiMgr::loadTaxiNodeLevelData()
     auto oldMSTime = Util::TimeNow();
 
     //                                               0            1
-    QueryResult* result = WorldDatabase.Query("SELECT TaxiNodeId, `Level` FROM taxi_level_data ORDER BY TaxiNodeId ASC");
+    auto result = WorldDatabase.Query("SELECT TaxiNodeId, `Level` FROM taxi_level_data ORDER BY TaxiNodeId ASC");
 
     if (!result)
     {

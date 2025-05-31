@@ -62,7 +62,7 @@ void WorldSession::handleGMSurveySubmitOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    QueryResult* result = CharacterDatabase.Query("SELECT MAX(survey_id) FROM gm_survey");
+    auto result = CharacterDatabase.Query("SELECT MAX(survey_id) FROM gm_survey");
     if (result == nullptr)
         return;
 

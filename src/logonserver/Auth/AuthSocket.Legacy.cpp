@@ -689,7 +689,7 @@ void AuthSocket::HandleReconnectChallenge()
 
     MD5_CTX ctx;
     MD5_Init(&ctx);
-    MD5_Update(&ctx, m_account->SessionKey, 40);
+    MD5_Update(&ctx, m_account->SessionKey.get(), 40);
     uint8_t buffer[20];
     MD5_Final(buffer, &ctx);
 

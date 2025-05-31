@@ -130,7 +130,7 @@ typedef std::map<uint64_t, LfgAnswer> LfgAnswerMap;
 typedef std::map<uint64_t, std::unique_ptr<LfgRoleCheck>> LfgRoleCheckMap;
 typedef std::map<uint64_t, std::unique_ptr<LfgQueueInfo>> LfgQueueInfoMap;
 typedef std::map<uint64_t, LfgQueueInfo*> LfgRawQueueInfoMap;
-typedef std::map<uint32_t, LfgProposal*> LfgProposalMap;
+typedef std::map<uint32_t, std::unique_ptr<LfgProposal>> LfgProposalMap;
 typedef std::map<uint64_t, std::unique_ptr<LfgProposalPlayer>> LfgProposalPlayerMap;
 typedef std::map<uint32_t, std::unique_ptr<LfgPlayerBoot>> LfgPlayerBootMap;
 typedef std::map<uint64_t, LfgGroupData> LfgGroupDataMap;
@@ -318,9 +318,9 @@ private:
     void RemoveProposal(LfgProposalMap::iterator itProposal, LfgUpdateType type);
 
     // Group Matching
-    LfgProposal* FindNewGroups(LfgGuidList& check, LfgGuidList& all);
+    std::unique_ptr<LfgProposal> FindNewGroups(LfgGuidList& check, LfgGuidList& all);
     bool CheckGroupRoles(LfgRolesMap &groles, bool removeLeaderFlag = true);
-    bool CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal);
+    bool CheckCompatibility(LfgGuidList check, std::unique_ptr<LfgProposal>& pProposal);
     void GetCompatibleDungeons(LfgDungeonSet& dungeons, const PlayerSet& players, LfgLockPartyMap& lockMap);
     void SetCompatibles(std::string concatenatedGuids, bool compatibles);
     LfgAnswer GetCompatibles(std::string concatenatedGuids);

@@ -1249,8 +1249,7 @@ void Spell::HandleAddAura(uint64_t guid)
         return;
 
     //If this aura isn't added correctly it MUST be deleted
-    Aura* aur = itr->second.aur;
-    itr->second.aur = nullptr;
+    auto&& aur = std::move(itr->second.aur);
 
     if (u_caster && u_caster->getGuid() == guid)
         Target = u_caster;
@@ -1259,7 +1258,6 @@ void Spell::HandleAddAura(uint64_t guid)
 
     if (Target == nullptr)
     {
-        delete aur;
         return;
     }
 
@@ -1436,7 +1434,6 @@ void Spell::HandleAddAura(uint64_t guid)
                     const auto spellInfo = sSpellMgr.getSpellInfo(51185);
                     if (!spellInfo)
                     {
-                        delete aur;
                         return;
                     }
 
@@ -1539,7 +1536,6 @@ void Spell::HandleAddAura(uint64_t guid)
         const auto spellInfo = sSpellMgr.getSpellInfo(spellid);
         if (!spellInfo)
         {
-            delete aur;
             return;
         }
 
@@ -1566,11 +1562,10 @@ void Spell::HandleAddAura(uint64_t guid)
     // avoid map corruption (this is impossible, btw)
     if (Target->GetInstanceID() != m_caster->GetInstanceID())
     {
-        delete aur;
         return;
     }
 
-    Target->addAura(aur); // the real spell is added last so the modifier is removed last
+    Target->addAura(std::move(aur)); // the real spell is added last so the modifier is removed last
 }
 
 

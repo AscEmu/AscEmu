@@ -56,24 +56,22 @@ bool DBCFile::open()
     if(fieldCount*4 != recordSize)
         return false;
 
-    data = new unsigned char[recordSize*recordCount+stringSize];
-    stringTable = data + recordSize*recordCount;
+    data = std::make_unique<unsigned char[]>(recordSize * recordCount + stringSize);
+    stringTable = data.get() + recordSize * recordCount;
 
     size_t data_size = recordSize*recordCount+stringSize;
-    if(f.read(data,data_size)!=data_size)
+    if(f.read(data.get(), data_size) != data_size)
         return false;
     f.close();
     return true;
 }
-DBCFile::~DBCFile()
-{
-    delete [] data;
-}
+
+DBCFile::~DBCFile() = default;
 
 DBCFile::Record DBCFile::getRecord(size_t id)
 {
     assert(data);
-    return Record(*this, data + id*recordSize);
+    return Record(*this, data.get() + id * recordSize);
 }
 
 size_t DBCFile::getMaxId()
@@ -92,7 +90,7 @@ size_t DBCFile::getMaxId()
 DBCFile::Iterator DBCFile::begin()
 {
     assert(data);
-    return Iterator(*this, data);
+    return Iterator(*this, data.get());
 }
 DBCFile::Iterator DBCFile::end()
 {

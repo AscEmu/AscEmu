@@ -32,7 +32,7 @@ void IpBanMgr::reload()
     std::lock_guard lock(ipBanMutex);
     _ipBanList.clear();
 
-    QueryResult* result = sLogonSQL->Query("SELECT ip, expire FROM ipbans");
+    auto result = sLogonSQL->Query("SELECT ip, expire FROM ipbans");
     if (result)
     {
         do
@@ -65,7 +65,6 @@ void IpBanMgr::reload()
             _ipBanList.push_back(ipBan);
 
         } while (result->NextRow());
-        delete result;
     }
 }
 
