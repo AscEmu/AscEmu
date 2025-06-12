@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 class CommandOverrides
 {
 public:
-    void loadOverrides();  // Function to load overrides from MySQL
+    void loadOverrides(); // Function to load overrides from MySQL
     const std::string* getOverride(const std::string& command) const;  // Get the override permission for a command
     size_t getSize() const;
 private:
