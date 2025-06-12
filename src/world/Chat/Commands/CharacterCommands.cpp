@@ -14,7 +14,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/Container.hpp"
 #include "Objects/Item.hpp"
-#include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"
