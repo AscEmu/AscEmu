@@ -153,7 +153,7 @@ void TwinsAI::OnReachWP(uint32_t type, uint32_t id)
 {
     if (type == SPLINE_CHAIN_MOTION_TYPE && id == twins::POINT_INITIAL_MOVEMENT)
     {
-        setImmuneToPC(false);
+        setIgnorePlayerCombat(false);
         setReactState(REACT_AGGRESSIVE);
 
         if (getCreature()->getEntry() == NPC_FJOLA_LIGHTBANE)

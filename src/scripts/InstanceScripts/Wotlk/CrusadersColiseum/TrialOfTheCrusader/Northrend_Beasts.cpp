@@ -261,7 +261,7 @@ void GormokAI::Engage(CreatureAIFunc)
     {
         getInstanceScript()->DoAction(ACTION_CLOSE_GATE);
 
-        setImmuneToPC(false);
+        setIgnorePlayerCombat(false);
         setReactState(REACT_AGGRESSIVE);
 
         // Npc that should keep raid in combat while boss change
@@ -601,7 +601,7 @@ void DreadscaleAI::Engage(CreatureAIFunc)
 
         setScriptPhase(Beasts::PHASE_MOBILE);
 
-        setImmuneToPC(false);
+        setIgnorePlayerCombat(false);
         setReactState(REACT_AGGRESSIVE);
         setZoneWideCombat();
         // Spawn Acidmaw and Link our Scripts
@@ -1005,7 +1005,7 @@ void IcehowlAI::addTasks()
 void IcehowlAI::Engage(CreatureAIFunc pThis)
 {
     getInstanceScript()->DoAction(ACTION_CLOSE_GATE);
-    setImmuneToPC(false);
+    setIgnorePlayerCombat(false);
     setScriptPhase(Beasts::PHASE_COMBAT);
     setReactState(REACT_AGGRESSIVE);
     setZoneWideCombat();
@@ -1057,7 +1057,7 @@ void IcehowlAI::Crash(CreatureAIFunc pThis)
 void IcehowlAI::Trample(CreatureAIFunc pThis)
 {
     if (Creature* stalker = getInstanceScript()->getCreatureFromData(DATA_FURIOUS_CHARGE))
-        moveCharge(stalker->GetPositionX(), stalker->GetPositionY(), stalker->GetPositionZ(), 42.0f, Beasts::POINT_ICEHOWL_CHARGE);
+        moveCharge(stalker->GetPosition(), 42.0f, Beasts::POINT_ICEHOWL_CHARGE);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

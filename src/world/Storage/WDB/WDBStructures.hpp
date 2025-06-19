@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "AEVersion.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
-#include "CommonTypes.hpp"
 #include "WDBDefines.hpp"
 
 #include <cstring>
@@ -181,10 +180,10 @@ struct DBCPosition3D
     float Z;
 };
 
-enum MapTypes
+enum MapTypes : uint8_t
 {
-    MAP_COMMON          = 0, // none
-    MAP_INSTANCE        = 1, // party
+    MAP_WORLD           = 0, // none
+    MAP_DUNGEON         = 1, // party
     MAP_RAID            = 2, // raid
     MAP_BATTLEGROUND    = 3, // pvp
     MAP_ARENA           = 4  // arena
@@ -1475,14 +1474,15 @@ namespace WDB::Structures
         uint32_t next_phase_map;                                    // 19
 #endif
 
-        bool isDungeon() const { return map_type == MAP_INSTANCE || map_type == MAP_RAID; }
-        bool isNonRaidDungeon() const { return map_type == MAP_INSTANCE; }
-        bool instanceable() const { return map_type == MAP_INSTANCE || map_type == MAP_RAID || map_type == MAP_BATTLEGROUND; }
+        bool isDungeon() const { return map_type == MAP_DUNGEON; }
         bool isRaid() const { return map_type == MAP_RAID; }
         bool isBattleground() const { return map_type == MAP_BATTLEGROUND; }
-        bool isBattleArena() const { return map_type == MAP_ARENA; }
-        bool isBattlegroundOrArena() const { return map_type == MAP_BATTLEGROUND; }
-        bool isWorldMap() const { return map_type == MAP_COMMON; }
+        bool isArena() const { return map_type == MAP_ARENA; }
+
+        bool isInstanceMap() const { return isDungeon() || isRaid(); }
+        bool isBattlegroundOrArena() const { return isBattleground() || isArena(); }
+        bool isWorldMap() const { return map_type == MAP_WORLD; }
+        bool isInstanceableMap() const { return isInstanceMap() || isBattlegroundOrArena(); }
 
         uint32_t getAddon() const
         {
@@ -2812,7 +2812,7 @@ namespace WDB::Structures
 #endif
 #if VERSION_STRING == Cata
 
-    struct SERVER_DECL SpellEntry
+    struct SpellEntry
     {
         uint32_t Id;                                                // 0
         uint32_t Attributes;                                        // 1
@@ -2944,7 +2944,7 @@ namespace WDB::Structures
 #endif
 #if VERSION_STRING == Mop
 
-    struct SERVER_DECL SpellEntry
+    struct SpellEntry
     {
         uint32_t Id;                                                // 0
         const char* Name;                                           // 21

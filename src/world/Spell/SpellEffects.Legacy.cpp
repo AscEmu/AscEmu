@@ -2442,7 +2442,7 @@ void Spell::SpellEffectResurrect(uint8_t effectIndex) // Resurrect (Flat)
                     }
                     m_unitTarget->setHealth(hlth);
                     m_unitTarget->setPower(POWER_TYPE_MANA, mana);
-                    m_unitTarget->setTaggerGuid(0);
+                    m_unitTarget->setTaggerGuid(nullptr);
                     m_unitTarget->setDeathState(ALIVE);
                     m_unitTarget->loot.clear();
                     static_cast< Creature* >(m_unitTarget)->SetLimboState(false); // we can regenerate health now
@@ -4993,7 +4993,7 @@ void Spell::SpellEffectCharge(uint8_t /*effectIndex*/)
     float speed = G3D::fuzzyGt(getSpellInfo()->getSpeed(), 0.0f) ? getSpellInfo()->getSpeed() : SPEED_CHARGE;
 
     LocationVector pos = m_unitTarget->getFirstCollisionPosition(m_unitTarget->getCombatReach(), m_unitTarget->getRelativeAngle(m_caster));
-    u_caster->getMovementManager()->moveCharge(pos.x, pos.y, pos.z, speed);
+    u_caster->getMovementManager()->moveCharge(pos, speed);
 }
 
 void Spell::SpellEffectKnockBack(uint8_t effectIndex)
@@ -5384,7 +5384,7 @@ void Spell::SpellEffectResurrectNew(uint8_t effectIndex)
                     }
                     m_unitTarget->setHealth(hlth);
                     m_unitTarget->setPower(POWER_TYPE_MANA, mana);
-                    m_unitTarget->setTaggerGuid(0);
+                    m_unitTarget->setTaggerGuid(nullptr);
                     m_unitTarget->setDeathState(ALIVE);
                     m_unitTarget->loot.clear();
                 }
@@ -5801,7 +5801,7 @@ void Spell::SpellEffectStartTaxi(uint8_t effectIndex)
     if (!m_playerTarget || !m_playerTarget->isAlive() || !u_caster)
         return;
 
-    if (!m_unitTarget || m_unitTarget->getObjectTypeId() != TYPEID_PLAYER)
+    if (!m_unitTarget || !m_unitTarget->isPlayer())
         return;
 
     m_unitTarget->ToPlayer()->activateTaxiPathTo(m_spellInfo->getEffectMiscValue(effectIndex), m_spellInfo->getId());

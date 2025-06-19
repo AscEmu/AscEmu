@@ -203,7 +203,7 @@ void Vehicle::applyAllImmunities()
 
 void Vehicle::loadAllAccessories(bool evading)
 {
-    if (getBase()->getObjectTypeId() == TYPEID_PLAYER || !evading)
+    if (getBase()->isPlayer() || !evading)
         removeAllPassengers();
 
     VehicleAccessoryList const* accessories = sObjectMgr.getVehicleAccessories(_creatureEntry);
@@ -384,14 +384,14 @@ Vehicle* Vehicle::removePassenger(Unit* unit)
     ASSERT(seat != Seats.end());
 
     if (seat->second._seatInfo->canEnterOrExit() && ++usableSeatNum)
-        getBase()->setNpcFlags((getBase()->getObjectTypeId() == TYPEID_PLAYER ? UNIT_NPC_FLAG_PLAYER_VEHICLE : UNIT_NPC_FLAG_SPELLCLICK));
+        getBase()->setNpcFlags((getBase()->isPlayer() ? UNIT_NPC_FLAG_PLAYER_VEHICLE : UNIT_NPC_FLAG_SPELLCLICK));
 
     if (seat->second._seatInfo->flags & WDB::Structures::VehicleSeatFlags::VEHICLE_SEAT_FLAG_PASSENGER_NOT_SELECTABLE && !seat->second._passenger.isUnselectable)
         unit->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
 
     seat->second._passenger.reset();
 
-    if (getBase()->getObjectTypeId() == TYPEID_UNIT && unit->getObjectTypeId() == TYPEID_PLAYER && seat->second._seatInfo->flags & WDB::Structures::VehicleSeatFlags::VEHICLE_SEAT_FLAG_CAN_CONTROL)
+    if (getBase()->isCreature() && unit->isPlayer() && seat->second._seatInfo->flags & WDB::Structures::VehicleSeatFlags::VEHICLE_SEAT_FLAG_CAN_CONTROL)
     {
         unit->setCharmGuid(0);
         getBase()->setCharmedByGuid(0);
@@ -552,7 +552,7 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
 
         if (!usableSeatNum)
         {
-            if (getBase()->getObjectTypeId() == TYPEID_PLAYER)
+            if (getBase()->isPlayer())
                 getBase()->removeUnitFlags(UNIT_NPC_FLAG_PLAYER_VEHICLE);
             else
                 getBase()->removeUnitFlags( UNIT_NPC_FLAG_SPELLCLICK);
@@ -601,7 +601,7 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
     }
 
     // handles SMSG_CLIENT_CONTROL
-    if (getBase()->getObjectTypeId() == TYPEID_UNIT && passenger->getObjectTypeId() == TYPEID_PLAYER &&
+    if (getBase()->isCreature() && passenger->isPlayer() &&
         veSeat->hasFlag(WDB::Structures::VehicleSeatFlags::VEHICLE_SEAT_FLAG_CAN_CONTROL))
     {
         passenger->sendPacket(AscEmu::Packets::SmsgControlVehicle().serialise().get());

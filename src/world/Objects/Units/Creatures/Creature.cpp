@@ -438,8 +438,6 @@ void Creature::setDeathState(DeathState s)
 
         setMountDisplayId(0);
 
-        getAIInterface()->setNoSearchAssistance(false);
-
         if (m_enslaveSpell)
             RemoveEnslave();
 
@@ -476,7 +474,7 @@ void Creature::setDeathState(DeathState s)
             setHealth((m_deathState == ALIVE || m_deathState == JUST_RESPAWNED) ? curhealth : 0);
         }
 
-        setTaggerGuid(0);
+        setTaggerGuid(nullptr);
 
         getAIInterface()->setCannotReachTarget(false);
         updateMovementFlags();
@@ -824,7 +822,7 @@ void Creature::OnRemoveCorpse()
 
         getMovementManager()->clear();
 
-        if ((getWorldMap()->getBaseMap()->getMapInfo() && getWorldMap()->getBaseMap()->getMapInfo()->isRaid() && creature_properties->isBoss) || m_noRespawn)
+        if ((getWorldMap()->getBaseMap()->isRaid() && creature_properties->isBoss) || m_noRespawn)
         {
             RemoveFromWorld(false, true);
         }
@@ -880,7 +878,7 @@ void Creature::OnRespawn(WorldMap* m)
 
     removeUnitFlags(UNIT_FLAG_SKINNABLE);
 
-    setTaggerGuid(0);
+    setTaggerGuid(nullptr);
 
     //empty loot
     loot.items.clear();
@@ -1696,9 +1694,9 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8_t mode, MySQLStr
 
     // set if creature can shoot or not.
     if (creature_properties->CanRanged == 1)
-        getAIInterface()->m_canRangedAttack = true;
+        getAIInterface()->setRangedDisabled(false);
     else
-        m_aiInterface->m_canRangedAttack = false;
+        m_aiInterface->setRangedDisabled(true);
 
     // checked at loading
     m_defaultMovementType = MovementGeneratorType(spawn->movetype);
@@ -1934,9 +1932,9 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
 
     // set if creature can shoot or not.
     if (creature_properties->CanRanged == 1)
-        getAIInterface()->m_canRangedAttack = true;
+        getAIInterface()->setRangedDisabled(false);
     else
-        getAIInterface()->m_canRangedAttack = false;
+        getAIInterface()->setRangedDisabled(true);
 
     // checked at loading
     m_defaultMovementType = MovementGeneratorType(IDLE_MOTION_TYPE);
@@ -2126,7 +2124,7 @@ void Creature::OnPushToWorld()
     }
 
     if (m_WorldMap)
-        m_aiInterface->m_is_in_instance = (!m_WorldMap->getBaseMap()->getMapInfo()->isNonInstanceMap()) ? true : false;
+        m_aiInterface->m_is_in_instance = (!m_WorldMap->getBaseMap()->isWorldMap()) ? true : false;
     else
         m_aiInterface->m_is_in_instance = false;
 
@@ -2583,7 +2581,7 @@ void Creature::PrepareForRemove()
         }
     }
 
-    if (getWorldMap()->getBaseMap()->getMapInfo() && getWorldMap()->getBaseMap()->getMapInfo()->isRaid())
+    if (getWorldMap()->getBaseMap()->isRaid())
     {
         if (GetCreatureProperties()->Rank == 3)
         {
@@ -2733,7 +2731,7 @@ void Creature::die(Unit* pAttacker, uint32_t /*damage*/, uint32_t spellid)
                 looter = sObjectMgr.getPlayer(group->GetLooter()->guid);
                 if (looter)
                 {
-                    setTaggerGuid(looter->getGuid()); // set Tagger to the allowed looter.
+                    setTaggerGuid(looter); // set Tagger to the allowed looter.
                     group->sendLooter(this, looter);
                 }
                 else

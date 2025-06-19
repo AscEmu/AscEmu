@@ -154,7 +154,7 @@ public:
     // These two movement types should only be used with creatures having landing/takeoff animations
     void moveLand(uint32_t id, LocationVector const& pos, Optional<float> velocity = {});
     void moveTakeoff(uint32_t id, LocationVector const& pos, Optional<float> velocity = {});
-    void moveCharge(float x, float y, float z, float speed = SPEED_CHARGE, uint32_t id = EVENT_CHARGE, bool generatePath = false);
+    void moveCharge(LocationVector const& pos, float speed = SPEED_CHARGE, uint32_t id = EVENT_CHARGE, bool generatePath = false);
     void moveCharge(PathGenerator const& path, float speed = SPEED_CHARGE);
     void moveKnockbackFrom(float srcX, float srcY, float speedXY, float speedZ);
     void moveJumpTo(float angle, float speedXY, float speedZ);
@@ -167,7 +167,7 @@ public:
     void moveAlongSplineChain(uint32_t pointId, std::vector<SplineChainLink> const& chain, bool walk);
     void resumeSplineChain(SplineChainResumeInfo const& info);
     void moveFall(uint32_t id = 0);
-    void moveSeekAssistance(float x, float y, float z);
+    void moveSeekAssistance(LocationVector const& pos);
     void moveSeekAssistanceDistract(uint32_t timer);
     void moveTaxiFlight(uint32_t path, uint32_t pathnode);
     void moveDistract(uint32_t time, float orientation);

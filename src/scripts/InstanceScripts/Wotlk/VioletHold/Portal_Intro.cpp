@@ -26,7 +26,7 @@ void IntroPortalAI::OnLoad()
     if (!getCreature()->isSummon())
         getCreature()->Despawn(10, 0);
 
-    getCreature()->getAIInterface()->setImmuneToNPC(true);
+    getCreature()->getAIInterface()->setIgnoreCreatureCombat(true);
     getCreature()->setUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
 }
 

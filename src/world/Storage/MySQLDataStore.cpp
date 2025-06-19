@@ -3245,7 +3245,7 @@ MySQLStructure::AreaTrigger const* MySQLDataStore::getMapGoBackTrigger(uint32_t 
     if (!mapEntry || mapEntry->parent_map < 0)
         return nullptr;
 
-    if (mapEntry->isDungeon())
+    if (mapEntry->isInstanceMap())
     {
         auto const* iTemplate = sMySQLStore.getWorldMapInfo(mapId);
 
@@ -3277,7 +3277,7 @@ MySQLStructure::AreaTrigger const* MySQLDataStore::getMapGoBackTrigger(uint32_t 
     if (!mapEntry || mapEntry->repopmapid < 0)
         return nullptr;
 
-    if (mapEntry->isDungeon())
+    if (mapEntry->isInstanceMap())
     {
         auto const* iTemplate = sMySQLStore.getWorldMapInfo(mapId);
 

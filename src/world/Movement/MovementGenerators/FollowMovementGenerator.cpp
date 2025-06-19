@@ -15,7 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 static void doMovementInform(Unit* owner, Unit* target)
 {
-    if (owner->getObjectTypeId() != TYPEID_UNIT)
+    if (!owner->isCreature())
         return;
 
     if (AIInterface* AI = owner->getAIInterface())

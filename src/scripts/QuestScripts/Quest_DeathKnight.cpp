@@ -189,7 +189,7 @@ public:
         playerGUID = 0;
         getCreature()->setFaction(7);
         getCreature()->getAIInterface()->setAllowedToEnterCombat(false);
-        getCreature()->getAIInterface()->setImmuneToPC(true);
+        getCreature()->getAIInterface()->setIgnorePlayerCombat(true);
         getCreature()->getAIInterface()->setReactState(REACT_PASSIVE);
         setScriptPhase(PHASE_CHAINED);
         getCreature()->setStandState(STANDSTATE_KNEEL);
@@ -294,7 +294,7 @@ public:
                     {
                         getCreature()->setFaction(14);
                         getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
-                        getCreature()->getAIInterface()->setImmuneToPC(false);
+                        getCreature()->getAIInterface()->setIgnorePlayerCombat(false);
                         getCreature()->getAIInterface()->setReactState(REACT_AGGRESSIVE);
                         setScriptPhase(PHASE_ATTACKING);
 

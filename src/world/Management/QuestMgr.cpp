@@ -2230,7 +2230,7 @@ void QuestMgr::SetGameObjectLootQuest(uint32_t GO_Entry, uint32_t Item_Entry)
 
 bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 {
-    if (qst_giver->getObjectTypeId() == TYPEID_GAMEOBJECT)
+    if (qst_giver->isGameObject())
     {
         GameObject* gameobject = static_cast<GameObject*>(qst_giver);
         if (gameobject->getGoType() != GAMEOBJECT_TYPE_QUESTGIVER)

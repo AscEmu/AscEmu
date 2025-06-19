@@ -123,7 +123,7 @@ Spell::Spell(Object* _caster, SpellInfo const* _spellInfo, bool _triggered, Aura
     m_spellInfo = _spellInfo;
 
     // Get spell difficulty
-    if (_spellInfo->getSpellDifficultyID() != 0 && _caster->getObjectTypeId() != TYPEID_PLAYER && _caster->getWorldMap() != nullptr)
+    if (_spellInfo->getSpellDifficultyID() != 0 && !_caster->isPlayer() && _caster->getWorldMap() != nullptr)
     {
         auto SpellDiffEntry = sSpellMgr.getSpellInfoByDifficulty(_spellInfo->getSpellDifficultyID(), _caster->getWorldMap()->getDifficulty());
         if (SpellDiffEntry != nullptr)
@@ -259,19 +259,6 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
         sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Object {} is casting spell ID {} while not in world", std::to_string(m_caster->getGuid()), getSpellInfo()->getId());
         delete this;
         return SPELL_FAILED_DONT_REPORT;
-    }
-
-    //\ todo: handle this in creature AI...
-    if (u_caster != nullptr)
-    {
-        if (u_caster->isCreature() || u_caster->isMoving())
-        {
-            if (u_caster->hasUnitStateFlag(UNIT_STATE_FLEEING))
-            {
-                u_caster->addGarbageSpell(this);
-                return SPELL_FAILED_NOT_READY;
-            }
-        }
     }
 
     if (p_caster != nullptr)
@@ -2223,7 +2210,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         // Check if spell can be casted in heroic dungeons or in raids
         if (getSpellInfo()->getAttributesExF() & ATTRIBUTESEXF_NOT_IN_RAIDS_OR_HEROIC_DUNGEONS)
         {
-            if (p_caster->IsInWorld() && p_caster->getWorldMap()->getBaseMap()->getMapInfo() != nullptr && (p_caster->getWorldMap()->getBaseMap()->getMapInfo()->isRaid() || p_caster->getWorldMap()->getDifficulty() == InstanceDifficulty::DUNGEON_HEROIC))
+            if (p_caster->IsInWorld() && (p_caster->getWorldMap()->getBaseMap()->isRaid() || p_caster->getWorldMap()->getDifficulty() == InstanceDifficulty::DUNGEON_HEROIC))
             {
 #if VERSION_STRING < WotLK
                 return SPELL_FAILED_NOT_HERE;
@@ -2778,7 +2765,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     return SPELL_FAILED_CANT_DUEL_WHILE_INVISIBLE;
 
                 // Check if caster is in dungeon or raid
-                if (p_caster->IsInWorld() && p_caster->getWorldMap()->getBaseMap()->getMapInfo() != nullptr && !p_caster->getWorldMap()->getBaseMap()->getMapInfo()->isNonInstanceMap())
+                if (p_caster->IsInWorld() && !p_caster->getWorldMap()->getBaseMap()->isWorldMap())
                     return SPELL_FAILED_NO_DUELING;
 
                 const auto targetPlayer = p_caster->getWorldMapPlayer(m_targets.getUnitTargetGuid());
@@ -2799,7 +2786,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     return SPELL_FAILED_TARGET_NOT_IN_RAID;
 
                 // Check if caster is in an instance map
-                if (p_caster->IsInWorld() && p_caster->getWorldMap()->getBaseMap()->getMapInfo() != nullptr && !p_caster->getWorldMap()->getBaseMap()->getMapInfo()->isNonInstanceMap())
+                if (p_caster->IsInWorld() && !p_caster->getWorldMap()->getBaseMap()->isWorldMap())
                 {
                     if (!p_caster->IsInMap(targetPlayer))
                         return SPELL_FAILED_TARGET_NOT_IN_INSTANCE;
@@ -2817,7 +2804,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     }
 
                     // Check if caster is in a battleground
-                    if (mapInfo->isBattleground() || p_caster->getBattleground())
+                    if (p_caster->getWorldMap()->getBaseMap()->isBattleground() || p_caster->getBattleground())
                     {
 #if VERSION_STRING == Classic
                         return SPELL_FAILED_NOT_HERE;

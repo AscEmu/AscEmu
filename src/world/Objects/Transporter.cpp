@@ -650,7 +650,7 @@ void Transporter::TeleportPlayers(float x, float y, float z, float o, uint32_t n
 {
     for (PassengerSet::iterator itr = _passengers.begin(); itr != _passengers.end(); ++itr)
     {
-        if ((*itr)->getObjectTypeId() == TYPEID_PLAYER)
+        if ((*itr)->isPlayer())
         {
             Player* player = reinterpret_cast<Player*>(*itr);
 

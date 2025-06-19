@@ -547,7 +547,7 @@ int LuaGameObject::GetInstanceID(lua_State* L, GameObject* ptr)
         return 1;
     }
 
-    if (ptr->getWorldMap()->getBaseMap()->getMapInfo()->isNonInstanceMap())
+    if (ptr->getWorldMap()->getBaseMap()->isWorldMap())
         lua_pushnil(L);
     else
         lua_pushinteger(L, ptr->GetInstanceID());
@@ -1005,7 +1005,7 @@ int LuaGameObject::GetDungeonDifficulty(lua_State* L, GameObject* ptr)
     MySQLStructure::MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(ptr->GetMapId());
     if (pMapinfo) //this block = IsInInstace()
     {
-        if (!pMapinfo->isNonInstanceMap())
+        if (!pMapinfo->isWorldMap())
         {
             lua_pushboolean(L, 0);
             return 1;
@@ -1026,7 +1026,7 @@ int LuaGameObject::SetDungeonDifficulty(lua_State* L, GameObject* ptr)
     MySQLStructure::MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(ptr->GetMapId());
     if (pMapinfo) //this block = IsInInstace()
     {
-        if (!pMapinfo->isNonInstanceMap())
+        if (!pMapinfo->isWorldMap())
         {
             lua_pushboolean(L, 0);
             return 1;

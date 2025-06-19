@@ -73,7 +73,7 @@ void InstanceSaved::saveToDB()
     WorldMap* map = sMapMgr.findInstanceMap(m_instanceid);
     if (map)
     {
-        if (map->getBaseMap()->isDungeon())
+        if (map->getBaseMap()->isInstanceMap())
         {
             if (InstanceScript* instanceScript = map->getScript())
             {
@@ -378,7 +378,7 @@ void InstanceMgr::resetSave(InstanceSavedMap::iterator& itr)
 void InstanceMgr::resetInstance(uint32_t mapid, uint32_t instanceId)
 {
     BaseMap const* map = sMapMgr.findBaseMap(mapid);
-    if (!map->instanceable())
+    if (!map->isInstanceableMap())
         return;
 
     InstanceSavedMap::iterator itr = m_instanceSaveById.find(instanceId);
@@ -389,7 +389,7 @@ void InstanceMgr::resetInstance(uint32_t mapid, uint32_t instanceId)
 
     WorldMap* iMap = sMapMgr.findInstanceMap(instanceId);
 
-    if (iMap && iMap->getBaseMap()->isDungeon())
+    if (iMap && iMap->getBaseMap()->isInstanceMap())
         ((InstanceMap*)iMap)->reset(INSTANCE_RESET_RESPAWN_DELAY);
 
     if (iMap)
@@ -409,7 +409,7 @@ void InstanceMgr::resetOrWarnAll(uint32_t mapid, InstanceDifficulty::Difficultie
 {
     // global reset for all instances of the given map
     WDB::Structures::MapEntry const* mapEntry = sMapStore.lookupEntry(mapid);
-    if (!mapEntry->instanceable())
+    if (!mapEntry->isInstanceableMap())
         return;
 
     const auto now = Util::getTimeNow();
@@ -450,7 +450,7 @@ void InstanceMgr::resetOrWarnAll(uint32_t mapid, InstanceDifficulty::Difficultie
 
     for (auto const& map : instances)
     {
-        if (!map->getBaseMap()->isDungeon())
+        if (!map->getBaseMap()->isInstanceMap())
             continue;
 
         if (warn)

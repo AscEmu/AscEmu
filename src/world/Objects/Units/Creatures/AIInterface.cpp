@@ -82,60 +82,18 @@ float spellChanceModifierType[12] =
     1.0f,    // Debuff
 };
 
+static inline constexpr uint16_t TARGET_UPDATE_TIMER = 1500;
+
 AIInterface::AIInterface()
     :
-    m_canRangedAttack(false),
-    m_canFlee(false),
-    m_FleeHealth(0.0f),
-    m_FleeDuration(0),
-    m_canCallForHelp(false),
-    m_CallForHelpHealth(0.0f),
-
-    m_AiCurrentAgent(AGENT_NULL),
-    m_hasFleed(false),
-    m_AlreadyCallAssistance(false),
-    m_AlreadySearchedAssistance(false),
-    m_isEngaged(false),
-    m_reactState(REACT_AGGRESSIVE),
-
-    mIsCombatDisabled(false),
-    mIsMeleeDisabled(false),
-    mIsRangedDisabled(false),
-    mIsCastDisabled(false),
-    mIsTargetingDisabled(false),
-    m_lasttargetPosition(0, 0, 0, 0),
-
-    timed_emotes(nullptr),
-
-    m_Unit(nullptr),
-    m_PetOwner(nullptr),
-    m_target(nullptr),
-    m_isNeutralGuard(false),
-    faction_visibility(0),
-    m_is_in_instance(false),
-    internalPhase(0),
-
-    _negateBoundary(false),
-
-    mShowWayPoints(false),
-    m_UnitToFollow(nullptr),
-
-    m_totemspelltimer(0),
-    m_totemspelltime(0),
-    totemspell(nullptr),
-
-    canEnterCombat(true),
-    timed_emote_expire(0xFFFFFFFF),
-
     m_fleeTimer(std::make_unique<Util::SmallTimeTracker>(0)),
     m_boundaryCheckTime(std::make_unique<Util::SmallTimeTracker>(2500)),
-    m_updateAssistTimer(std::make_unique<Util::SmallTimeTracker>(1500)),
     mSpellWaitTimer(std::make_unique<Util::SmallTimeTracker>(1500)),
-    m_noTargetTimer(std::make_unique<Util::SmallTimeTracker>(4000)),
+    m_noTargetTimer(std::make_unique<Util::SmallTimeTracker>(3000)),
     m_cannotReachTimer(std::make_unique<Util::SmallTimeTracker>(500)),
-    m_updateTargetTimer(std::make_unique<Util::SmallTimeTracker>(1500))
+    m_targetUpdateTimer(std::make_unique<Util::SmallTimeTracker>(1500))
 {
-    _boundary.clear();
+    m_boundaries.clear();
     m_assistTargets.clear();
 
     onLoadScripts.clear();
@@ -160,10 +118,6 @@ AIInterface::AIInterface()
     mEmotesOnCallForHelp.clear();
     mEmotesOnFlee.clear();
     mEmotesOnRandomWaypoint.clear();
-
-    mLastCastedSpell = nullptr;
-    mCurrentSpellTarget = nullptr;
-    setCannotReachTarget(false);
 };
 
 AIInterface::~AIInterface()
@@ -171,7 +125,7 @@ AIInterface::~AIInterface()
     mLastCastedSpell = nullptr;
     mCurrentSpellTarget = nullptr;
     mCreatureAISpells.clear();
-    clearBoundary();
+    m_boundaries.clear();
     onLoadScripts.clear();
     onCombatStartScripts.clear();
     onAIUpdateScripts.clear();
@@ -237,8 +191,8 @@ void AIInterface::initialiseScripts(uint32_t entry)
     mEmotesOnFlee.clear();
     mEmotesOnRandomWaypoint.clear();
 
-    setCanCallForHelp(false);
-    setCanFlee(false);
+    m_canCallForHelp = false;
+    m_canFlee = false;
 
     auto scripts = sMySQLStore.getCreatureAiScripts(entry);
 
@@ -279,8 +233,8 @@ void AIInterface::initialiseScripts(uint32_t entry)
             case onCallForHelp:
             {
                 onCallForHelpScripts.push_back(aiScripts);
-                setCanCallForHelp(true);
-                m_CallForHelpHealth = aiScripts.maxHealth;
+                m_canCallForHelp = true;
+                m_callForHelpHealth = aiScripts.maxHealth;
             } break;
             case onRandomWaypoint:
             {
@@ -293,21 +247,23 @@ void AIInterface::initialiseScripts(uint32_t entry)
             case onFlee:
             {
                 onFleeScripts.push_back(aiScripts);
-                setCanFlee(true);
-                m_FleeHealth = aiScripts.maxHealth;
+                m_canFlee = true;
+                m_fleeHealth = aiScripts.maxHealth;
 
                 // Incase we want a custom Flee Timer
                 if (aiScripts.misc1)
-                    m_FleeDuration = aiScripts.misc1;
+                    m_fleeDuration = aiScripts.misc1;
                 else
-                    m_FleeDuration = 10000;
+                    m_fleeDuration = 10000;
             } break;
             case onTaunt:
             {
                 onTauntScripts.push_back(aiScripts);
             } break;
             default:
+            {
                 sLogger.debugFlag(AscEmu::Logging::LF_SCRIPT_MGR, "unhandled event with eventId {}", eventId);
+            } break;
         }
     }
 
@@ -337,7 +293,7 @@ void AIInterface::initialiseScripts(uint32_t entry)
     addEmoteFromDatabase(onTauntScripts, mEmotesOnTaunt);
 }
 
-void AIInterface::addEmoteFromDatabase(std::vector<MySQLStructure::CreatureAIScripts> scripts, definedEmoteVector& emoteVector)
+void AIInterface::addEmoteFromDatabase(std::vector<MySQLStructure::CreatureAIScripts> const& scripts, definedEmoteVector& emoteVector)
 {
     for (const auto& script : scripts)
     {
@@ -350,54 +306,55 @@ void AIInterface::addEmoteFromDatabase(std::vector<MySQLStructure::CreatureAIScr
     }
 }
 
-void AIInterface::addSpellFromDatabase(std::vector<MySQLStructure::CreatureAIScripts> script)
+void AIInterface::addSpellFromDatabase(std::vector<MySQLStructure::CreatureAIScripts> const& script)
 {
     uint8_t spellCounter = 0;
 
     // Spell Counting for Automated Canche Calculation when needed
-    for (auto spell : script)
+    for (const auto& spell : script)
         if (spell.spellId)
             spellCounter++;
 
     // Add the Spells into our AISpells Array
-    for (auto spell : script)
+    for (const auto& spell : script)
     {
         const auto spellInfo = sSpellMgr.getSpellInfo(spell.spellId);
         float castChance;
 
-        if (spellInfo != nullptr)
+        if (spellInfo == nullptr)
         {
-            if (spell.chance)
-                castChance = spell.chance;
-            else
-                castChance = ((75.0f / static_cast<float_t>(spellCounter)) * spellChanceModifierDispell[spellInfo->getDispelType()] * spellChanceModifierType[spell.spell_type]);
-
-            sLogger.debugFlag(AscEmu::Logging::DebugFlags::LF_SPELL, "spell {} chance {}", spell.spellId, castChance);
-
-            uint32_t spellCooldown = Util::getRandomUInt(spell.cooldownMin, spell.cooldownMax);
-            if (spellCooldown == 0)
-                spellCooldown = spellInfo->getSpellDefaultDuration(nullptr);
-
-            // Ready add to our List
-            if (hasAISpell(spell.spellId))
-                continue;
-
-            // Create AI Spell
-            const auto& newAISpell = mCreatureAISpells.emplace_back(std::make_unique<CreatureAISpells>(spellInfo, castChance, spell.target, spellInfo->getSpellDefaultDuration(nullptr), spellCooldown, false, spell.triggered));
-
-            if (spell.textId)
-                newAISpell->addDBEmote(spell.textId);
-
-            newAISpell->setMaxCastCount(spell.maxCount);
-            newAISpell->scriptType = spell.event;
-            newAISpell->spell_type = AI_SpellType(spell.spell_type);
-            newAISpell->fromDB = true;
-
-            if (spell.maxHealth)
-                newAISpell->setMinMaxPercentHp(spell.minHealth, spell.maxHealth);
-        }
-        else
             sLogger.debug("Tried to Register Creature AI Spell without a valid Spell Id {}", spell.spellId);
+            continue;
+        }
+
+        if (spell.chance)
+            castChance = spell.chance;
+        else
+            castChance = ((75.0f / static_cast<float_t>(spellCounter)) * spellChanceModifierDispell[spellInfo->getDispelType()] * spellChanceModifierType[spell.spell_type]);
+
+        sLogger.debugFlag(AscEmu::Logging::DebugFlags::LF_SPELL, "spell {} chance {}", spell.spellId, castChance);
+
+        auto spellCooldown = Util::getRandomUInt(spell.cooldownMin, spell.cooldownMax);
+        if (spellCooldown == 0)
+            spellCooldown = spellInfo->getSpellDefaultDuration(nullptr);
+
+        // Ready add to our List
+        if (hasAISpell(spell.spellId))
+            continue;
+
+        // Create AI Spell
+        const auto& newAISpell = mCreatureAISpells.emplace_back(std::make_unique<CreatureAISpells>(spellInfo, castChance, spell.target, spellInfo->getSpellDefaultDuration(nullptr), spellCooldown, false, spell.triggered));
+
+        if (spell.textId)
+            newAISpell->addDBEmote(spell.textId);
+
+        newAISpell->setMaxCastCount(spell.maxCount);
+        newAISpell->scriptType = spell.event;
+        newAISpell->spell_type = AI_SpellType(spell.spell_type);
+        newAISpell->fromDB = true;
+
+        if (spell.maxHealth)
+            newAISpell->setMinMaxPercentHp(spell.minHealth, spell.maxHealth);
     }
 }
 
@@ -413,7 +370,7 @@ Unit* AIInterface::getPetOwner() const
 
 Unit* AIInterface::getCurrentTarget() const
 {
-    return m_target;
+    return m_currentTarget;
 }
 
 void AIInterface::handleEvent(uint32_t event, Unit* pUnit, uint32_t misc1)
@@ -425,122 +382,28 @@ void AIInterface::handleEvent(uint32_t event, Unit* pUnit, uint32_t misc1)
         (*this.*AIEventHandlers[event])(pUnit, misc1);
 }
 
-bool AIInterface::canUnitEvade(unsigned long time_passed)
+void AIInterface::update(unsigned long time_passed)
 {
-    // Only Evade when we are not in a Raid
-    if (!getUnit()->getWorldMap()->getBaseMap()->isRaid())
-    {
-        // if we dont have a Valid target go in Evade Mode
-        if (!getCurrentTarget() && !getUnit()->isInEvadeMode())
-        {
-            m_noTargetTimer->updateTimer(time_passed);
-            if (m_noTargetTimer->isTimePassed())
-            {
-                m_noTargetTimer->resetInterval(4000);
-                return true;
-            }
-        }
-
-        // if we cannot reach the Target go in Evade Mode
-        if (canNotReachTarget() && !getUnit()->isInEvadeMode())
-        {
-            m_cannotReachTimer->updateTimer(time_passed);
-            if (m_cannotReachTimer->isTimePassed())
-                return true;
-        }
-    }
-
-    // periodic check to see if the creature has passed an evade boundary
-    if (!getUnit()->isInEvadeMode())
-    {
-        m_boundaryCheckTime->updateTimer(time_passed);
-        if (m_boundaryCheckTime->isTimePassed())
-        {
-            if (checkBoundary())
-            {
-                m_boundaryCheckTime->resetInterval(2500);
-                return false;
-            }
-        }
-    }
-
-    return false;
-}
-
-bool AIInterface::_enterEvadeMode()
-{
-    if (getUnit()->isInEvadeMode())
-        return false;
-
-    //if (getUnit()->isPet())
-    //    return false; aaron02
-
-    if (!getUnit()->isAlive())
-    {
-        engagementOver();
-        handleEvent(EVENT_UNITDIED, getUnit(), 0);
-        return false;
-    }
-
-    engagementOver();
-
-    handleEvent(EVENT_LEAVECOMBAT, getUnit(), 0);
-    return true;
-}
-
-void AIInterface::enterEvadeMode()
-{
-    if (!_enterEvadeMode())
-        return;
-
-    setNoCallAssistance(false);
-
-    // Clear tagger on evade
-    // Reset it here instead of engagementOver so it's not called on unit death
-    m_Unit->setTaggerGuid(0);
-    setCurrentTarget(nullptr);
-    m_Unit->getThreatManager().removeMeFromThreatLists();
-    m_Unit->getThreatManager().clearAllThreat();
-
-    if (m_Unit->isAlive())
-    {
-        if (getPetOwner())
-        {
-            if (m_Unit->isPet())
-            {
-                static_cast<Pet*>(m_Unit)->setPetAction(PET_ACTION_FOLLOW);
-                if (m_Unit->isAlive() && m_Unit->IsInWorld())
-                {
-                    static_cast<Pet*>(m_Unit)->HandleAutoCastEvent(AUTOCAST_EVENT_LEAVE_COMBAT);
-                }
-            }
-            handleEvent(EVENT_FOLLOWOWNER, 0, 0);
-        }
-        else
-        {
-            getUnit()->addUnitStateFlag(UNIT_STATE_EVADING);
-            getUnit()->getMovementManager()->moveTargetedHome();
-        }
-    }
-}
-
-void AIInterface::Update(unsigned long time_passed)
-{
-    if (m_Unit->isPlayer() || m_Unit->getWorldMap() == nullptr)
+    if (m_Unit->isPlayer() || !m_Unit->IsInWorld())
         return;
 
     // Call AIUpdate
     m_Unit->ToCreature()->CallScriptUpdate(time_passed);
 
-    if (getUnit()->hasUnitStateFlag(UNIT_STATE_FLEEING) || !m_Unit->isAIEnabled())
+    if (!m_Unit->isAIEnabled())
         return;
 
-    if (getAllowedToEnterCombat())
+    if (m_canEnterCombat)
     {
-        updateTargets(time_passed);
+        m_targetUpdateTimer->updateTimer(time_passed);
+        if (m_targetUpdateTimer->isTimePassed())
+        {
+            m_targetUpdateTimer->resetInterval(TARGET_UPDATE_TIMER);
+            _updateTargets();
+        }
 
         // When we dont Have Any Targets do Nothing
-        if (!updateTarget())
+        if (!_updateCurrentTarget())
             return;
 
         // Update Database AI Scripts
@@ -556,7 +419,7 @@ void AIInterface::Update(unsigned long time_passed)
     {
         // Wipe targets
         // Remove Combat
-        if (getUnit()->isInCombat())
+        if (m_Unit->isInCombat())
             enterEvadeMode();
     }
 
@@ -569,12 +432,12 @@ void AIInterface::updateAIScript(unsigned long time_passed)
     mSpellWaitTimer->updateTimer(time_passed);
 
     // Update Spells
-    if (getUnit()->isInCombat())
+    if (m_Unit->isInCombat())
     {
         // Update Internal Spell Timers
         for (const auto& spells : mCreatureAISpells)
         {
-            if (!getUnit()->isCastingSpell())
+            if (!m_Unit->isCastingSpell())
                 spells->mCooldownTimer->updateTimer(time_passed);
 
             spells->mDurationTimer->updateTimer(time_passed);
@@ -590,28 +453,27 @@ void AIInterface::updateAIScript(unsigned long time_passed)
 
         switch (actionId)
         {
-        case actionPhaseChange:
-            if (itr->phase > 0 || itr->phase == internalPhase)
-            {
-                if (float(getUnit()->getHealthPct()) <= itr->maxHealth && itr->maxCount)
+            case actionPhaseChange:
+                if (itr->phase > 0 || itr->phase == internalPhase)
                 {
-                    internalPhase = static_cast<uint8_t>(itr->misc1);
-
-                    itr->maxCount = itr->maxCount - 1U;
-
-                    MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(itr->textId);
-                    if (npcScriptText != nullptr)
+                    if (static_cast<float>(m_Unit->getHealthPct()) <= itr->maxHealth && itr->maxCount)
                     {
-                        getUnit()->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text);
+                        internalPhase = static_cast<uint8_t>(itr->misc1);
 
-                        if (npcScriptText->sound != 0)
-                            getUnit()->PlaySoundToSet(npcScriptText->sound);
+                        itr->maxCount = itr->maxCount - 1U;
+
+                        if (const auto npcScriptText = sMySQLStore.getNpcScriptText(itr->textId))
+                        {
+                            m_Unit->sendChatMessage(npcScriptText->type, LANG_UNIVERSAL, npcScriptText->text);
+
+                            if (npcScriptText->sound != 0)
+                                m_Unit->PlaySoundToSet(npcScriptText->sound);
+                        }
                     }
                 }
-            }
-            break;
-        default:
-            break;
+                break;
+            default:
+                break;
         }
     }
 
@@ -619,77 +481,1095 @@ void AIInterface::updateAIScript(unsigned long time_passed)
     sendStoredText(mEmotesOnAIUpdate, nullptr);
 }
 
+void AIInterface::updateEmotes(unsigned long time_passed)
+{
+    if (!m_Unit->getThreatManager().getCurrentVictim() && m_Unit->isAlive())
+    {
+        if (timed_emote_expire <= time_passed)    // note that creature might go idle and time_passed might get big next time ...We do not skip emotes because of lost time
+        {
+            if ((*next_timed_emote)->type == 1)   //standstate
+            {
+                m_Unit->setStandState(static_cast<uint8_t>((*next_timed_emote)->value));
+                m_Unit->setEmoteState(0);
+            }
+            else if ((*next_timed_emote)->type == 2)   //emotestate
+            {
+                m_Unit->setEmoteState((*next_timed_emote)->value);
+                m_Unit->setStandState(STANDSTATE_STAND);
+            }
+            else if ((*next_timed_emote)->type == 3)   //oneshot emote
+            {
+                m_Unit->setEmoteState(0);
+                m_Unit->setStandState(STANDSTATE_STAND);
+                m_Unit->emote(static_cast<EmoteType>((*next_timed_emote)->value));           // Animation
+            }
+
+            if ((*next_timed_emote)->msg.length())
+                m_Unit->sendChatMessage((*next_timed_emote)->msg_type, (*next_timed_emote)->msg_lang, (*next_timed_emote)->msg.c_str());
+
+            timed_emote_expire = (*next_timed_emote)->expire_after; //should we keep lost time ? I think not
+            ++next_timed_emote;
+
+            if (next_timed_emote == timed_emotes->end())
+                next_timed_emote = timed_emotes->begin();
+        }
+        else
+        {
+            timed_emote_expire -= time_passed;
+        }
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Combat
+
+void AIInterface::combatStart(Unit* target)
+{
+    if (!m_Unit->getThreatManager().canHaveThreatList())
+        return;
+
+    if (m_isEngaged)
+    {
+        sLogger.debug("AIInterface::onCombatStart called but creature is already inCombat");
+        return;
+    }
+
+    m_isEngaged = true;
+
+    // dismount if mounted
+    if (m_Unit->isCreature() && !(static_cast<Creature*>(m_Unit)->GetCreatureProperties()->typeFlags & CREATURE_FLAG1_FIGHT_MOUNTED))
+        m_Unit->dismount();
+
+    // make AI group attack
+    if (const auto* group = sMySQLStore.getSpawnGroupDataBySpawn(m_Unit->ToCreature()->getSpawnId()))
+    {
+        for (const auto& members : group->spawns)
+        {
+            if (members.second && members.second->isAlive() && members.second->IsInWorld())
+                members.second->getAIInterface()->onHostileAction(target, nullptr, false);
+        }
+    }
+
+    const auto movetype = m_Unit->getMovementManager()->getCurrentMovementGeneratorType();
+    if (movetype == WAYPOINT_MOTION_TYPE || movetype == POINT_MOTION_TYPE)
+        m_Unit->SetSpawnLocation(m_Unit->GetPosition());
+
+    if (auto* const formation = m_Unit->ToCreature()->getFormation())
+        formation->memberEngagingTarget(m_Unit->ToCreature(), target);
+
+    // find assistance
+    findFriends(64.0f /* 8 yards */);
+
+    setDefaultBoundary();
+
+    handleEvent(EVENT_ENTERCOMBAT, target, 0);
+}
+
+void AIInterface::combatStop()
+{
+    if (!m_isEngaged)
+    {
+        sLogger.debug("AIInterface::onCombatStop called but creature is not inCombat");
+        return;
+    }
+    m_isEngaged = false;
+    m_isEngagedByAssist = false;
+
+    internalPhase = 0;
+    spellEvents.resetEvents();
+    m_UnitToFollow = nullptr;
+    m_cannotReachTarget = false;
+
+    m_hasCalledForHelp = false;
+    m_hasFleed = false;
+    m_fleeState = FLEE_NONE;
+    m_fleeTimer->resetInterval(0);
+    m_AiCurrentAgent = AGENT_NULL;
+
+    m_Unit->getThreatManager().clearAllThreat();
+    m_Unit->getThreatManager().removeMeFromThreatLists();
+
+    attackStop();
+
+    m_assistTargets.clear();
+
+    if (!m_disableDynamicBoundary)
+        m_boundaries.clear();
+
+    // Remove Instance Combat
+    instanceCombatProgress(false);
+}
+
+void AIInterface::onHostileAction(Unit* pUnit, SpellInfo const* spellInfo/* = nullptr*/, bool ignoreThreatRedirects/* = false*/)
+{
+    const auto wasEngaged = m_isEngaged;
+
+    if (m_Unit->getThreatManager().canHaveThreatList())
+    {
+        // Add initial threat
+        m_Unit->getThreatManager().addThreat(pUnit, 0.0f, spellInfo, true, ignoreThreatRedirects);
+    }
+    else if (m_Unit->isPet() && m_currentTarget == nullptr)
+    {
+        // Make pet react to attacker
+        if (m_reactState == REACT_AGGRESSIVE || m_reactState == REACT_DEFENSIVE)
+            attackStartIfCan(pUnit);
+    }
+
+    // Update combat for pure creatures only
+    if (m_Unit->getPlayerOwner() == nullptr)
+        m_Unit->getCombatHandler().onHostileAction(pUnit);
+
+    // Let players know that creature has aggroed them
+    // Pure creature targets do not need this
+    if (pUnit->getPlayerOwnerOrSelf() != nullptr)
+        pUnit->getCombatHandler().takeCombatAction(m_Unit);
+
+    // Send hostile action event if unit was already engaged
+    // no need to send this if unit just started combat
+    if (wasEngaged)
+        handleEvent(EVENT_HOSTILEACTION, pUnit, 0);
+}
+
+void AIInterface::setCurrentTarget(Unit* pUnit) { m_currentTarget = pUnit; }
+
+Unit* AIInterface::findTarget()
+{
+    // find nearest hostile Target to attack
+    if (!m_Unit->IsInWorld())
+        return nullptr;
+
+    //target is immune to all form of attacks, cant attack either.
+    // not attackable creatures sometimes fight enemies in scripted fights though
+    if (m_Unit->hasUnitFlags(UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE))
+        return nullptr;
+
+    if (m_reactState != REACT_AGGRESSIVE)
+        return nullptr;
+
+    // Should not look for new target while creature is in these states
+    if (m_Unit->hasUnitStateFlag(UNIT_STATE_STUNNED | UNIT_STATE_FLEEING | UNIT_STATE_CONFUSED | UNIT_STATE_POLYMORPHED | UNIT_STATE_EVADING))
+        return nullptr;
+
+    Unit* target = nullptr;
+    Unit* critterTarget = nullptr;
+
+    float distance = 999999.0f; // that should do it.. :p
+
+    for (const auto& itr2 : m_Unit->getInRangeObjectsSet())
+    {
+        if (itr2)
+        {
+            if (!itr2->isCreatureOrPlayer())
+                continue;
+
+            Unit* pUnit = static_cast<Unit*>(itr2);
+
+            // Must be hostile, not neutral, to target
+            if (!m_Unit->isHostileTo(pUnit))
+                continue;
+
+            if (!canOwnerAttackUnit(pUnit))
+                continue;
+
+            if (worldConfig.terrainCollision.isCollisionEnabled)
+            {
+                if (!m_Unit->IsWithinLOSInMap(pUnit))
+                    continue;
+            }
+
+            //on blizz there is no Z limit check
+            const float dist = m_Unit->GetDistance2dSq(pUnit);
+
+            if (pUnit->m_factionTemplate != nullptr && pUnit->m_factionTemplate->Faction == 28)// only Attack a critter if there is no other Enemy in range
+            {
+                if (dist < 10.0f)
+                    critterTarget = pUnit;
+
+                continue;
+            }
+
+            if (dist > calcAggroRange(pUnit))
+                continue;
+
+            // Do not aggro flying stuff that cannot be reached
+            if (!m_Unit->canFly() && (m_Unit->getDistanceZ(pUnit) > (3 + m_Unit->getMeleeRange(pUnit))))
+                continue;
+
+            if (dist > distance)     // we want to find the CLOSEST target
+                continue;
+
+            distance = dist;
+            target = pUnit;
+        }
+    }
+
+    if (target == nullptr)
+        target = critterTarget;
+
+    if (target != nullptr)
+        onHostileAction(target);
+
+    return target;
+}
+
+void AIInterface::findFriends(float sqrtRange)
+{
+    auto* const currentTarget = m_currentTarget != nullptr
+        ? m_currentTarget
+        : m_AiCurrentAgent == AGENT_FLEE ? _selectCurrentTarget() : nullptr;
+    if (!m_Unit->IsInWorld() || currentTarget == nullptr)
+        return;
+
+    // Quick check - neutral mob cannot call for assist
+    // TODO: maybe not on periodical pulses, but what if they use call for help or flee agent
+    if (!m_Unit->isHostileTo(currentTarget))
+        return;
+
+    for (const auto& itr : m_Unit->getInRangeObjectsSet())
+    {
+        if (itr != nullptr && itr->isCreature())
+        {
+            Creature* helper = itr->ToCreature();
+            if (isAlreadyAssisting(helper) || helper->getAIInterface()->isAlreadyAssisting(m_Unit))
+                continue;
+
+            if (m_Unit->getDistanceSq(helper) > sqrtRange)
+                continue;
+
+            // Helper must be hostile to current target
+            // Neutral mobs cannot assist other neutral mobs
+            if (!helper->isHostileTo(currentTarget))
+                continue;
+
+            if (!helper->getAIInterface()->canOwnerAssistUnit(m_Unit))
+                continue;
+
+            if (worldConfig.terrainCollision.isCollisionEnabled)
+            {
+                if (!m_Unit->IsWithinLOSInMap(helper))
+                    continue;
+            }
+
+            m_assistTargets.insert(helper);
+
+            if (!helper->isInCombat())
+            {
+                helper->getAIInterface()->setEngagedByAssist();
+                helper->getAIInterface()->onHostileAction(currentTarget);
+            }
+        }
+    }
+}
+
+bool AIInterface::canOwnerAttackUnit(Unit* pUnit) const
+{
+    if (pUnit == nullptr || !pUnit->IsInWorld())
+        return false;
+
+    if (pUnit == m_Unit)
+        return false;
+
+    if (!m_Unit->isAlive() || !pUnit->isAlive())
+        return false;
+
+    if (!m_Unit->isValidTarget(pUnit))
+        return false;
+
+    if (pUnit->hasUnitFlags(UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE))
+        return false;
+
+    if (pUnit->hasUnitStateFlag(UNIT_STATE_UNATTACKABLE))
+        return false;
+
+    // Ignore player owned creatures
+    if (isIgnoringCreatureCombat() && pUnit->isCreature() && !pUnit->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
+        return false;
+
+    // Check also for player owned creatures
+    if (isIgnoringPlayerCombat() && (pUnit->isPlayer() || pUnit->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE)))
+        return false;
+
+    if (m_Unit->isInEvadeMode())
+        return false;
+
+    if (auto* const creatureTarget = pUnit->ToCreature())
+    {
+        if (creatureTarget->GetCreatureProperties()->Type == UNIT_TYPE_NONCOMBAT_PET)
+            return false;
+
+        if (creatureTarget->isInEvadeMode())
+            return false;
+    }
+
+    if (const auto* plrTarget = pUnit->ToPlayer())
+    {
+        if (plrTarget->isGMFlagSet())
+            return false;
+
+        if (plrTarget->m_isGmInvisible)
+            return false;
+
+        if (plrTarget->isOnTaxi())
+            return false;
+    }
+
+    if (!pUnit->isInAccessiblePlaceFor(m_Unit->ToCreature()))
+        return false;
+
+    // Script Interface Function
+    if (m_Unit->ToCreature()->GetScript() != nullptr)
+    {
+        if (!m_Unit->ToCreature()->GetScript()->canAttackTarget(pUnit))
+            return false;
+    }
+
+#if VERSION_STRING == Classic
+    if (pUnit->hasUnitFlags(UNIT_FLAG_FEIGN_DEATH))
+#else
+    if (pUnit->hasUnitFlags(UNIT_FLAG_FEIGN_DEATH) || pUnit->hasUnitFlags2(UNIT_FLAG2_FEIGN_DEATH))
+#endif
+    {
+        // Guards can detect feign death
+        // TODO: other than guards can also detect but its based on chance
+        if (!isGuard())
+            return false;
+    }
+
+#ifdef FT_VEHICLES
+    if (m_Unit->getVehicle() && (m_Unit->isOnVehicle(pUnit) || m_Unit->getVehicle()->getBase()->isOnVehicle(pUnit)))
+        return false;
+#endif
+
+    if (!m_Unit->isCharmed())
+    {
+        if (m_Unit->getWorldMap()->getBaseMap()->isInstanceMap())
+            return true;
+
+        if (!(m_Unit->ToCreature()->GetCreatureProperties()->typeFlags & CREATURE_FLAG1_BOSS) != 0 || m_Unit->hasAuraWithAuraEffect(SPELL_AURA_MOD_TAUNT))
+            return true;
+    }
+
+    // Map Visibility Range but not more than the Distance of 2 Cells
+    auto distance = std::min<float>(m_Unit->getWorldMap()->getVisibilityRange(), Map::Cell::cellSize * 2);
+
+    if (auto* const unit = m_Unit->getUnitOwner())
+    {
+        return pUnit->IsWithinDistInMap(unit, distance);
+    }
+    else
+    {
+        // include sizes for huge npcs
+        distance += m_Unit->getCombatReach() + pUnit->getCombatReach();
+
+        // to prevent creatures in air ignore attacks because distance is already too high...
+        if (m_Unit->ToCreature()->getMovementTemplate().isFlightAllowed())
+            return pUnit->isInDist2d(m_Unit->GetSpawnPosition(), distance);
+        else
+            return pUnit->isInDist(m_Unit->GetSpawnPosition(), distance);
+    }
+}
+
+bool AIInterface::canOwnerAssistUnit(Unit* pUnit) const
+{
+    if (!m_Unit->isAlive())
+        return false;
+
+    // Already in combat
+    if (m_isEngaged)
+        return false;
+
+    if (m_Unit->hasUnitFlags(UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE))
+        return false;
+
+    if (isIgnoringCreatureCombat())
+        return false;
+
+    if (m_Unit->isInEvadeMode())
+        return false;
+
+    auto* const creatureTarget = pUnit->ToCreature();
+    if (creatureTarget != nullptr)
+    {
+        // TODO: is this necessary check? dont think mobs are looking for friends in evade mode
+        if (creatureTarget->isInEvadeMode())
+            return false;
+    }
+
+    if (m_reactState != REACT_AGGRESSIVE)
+        return false;
+
+    // Summons will only assist master
+    if (m_Unit->getUnitOwner() != nullptr)
+        return false;
+
+    // Must be same faction
+    if (m_Unit->getFactionTemplate() != pUnit->getFactionTemplate())
+        return false;
+
+    auto* const creatureUnit = m_Unit->ToCreature();
+    if (creatureUnit != nullptr)
+    {
+        // Beasts can only assist same family beasts
+        if (creatureUnit->GetCreatureProperties()->Type == UNIT_TYPE_BEAST)
+        {
+            if (creatureTarget == nullptr)
+                return false;
+            if (creatureTarget->GetCreatureProperties()->Type != UNIT_TYPE_BEAST)
+                return false;
+            if (creatureTarget->GetCreatureProperties()->Family != creatureUnit->GetCreatureProperties()->Family)
+                return false;
+        }
+    }
+
+    // TODO: if mob has faction 14 it cant call for assist because isFriendlyTo returns always false
+    // because that faction is not friends with itself or any other faction in dbc
+    // hackfix: if faction 14 and mobs are same entry, it can assist -Appled
+    if (creatureUnit != nullptr && creatureTarget != nullptr)
+    {
+        if (creatureUnit->getFactionTemplate() == 14 && creatureUnit->getEntry() == creatureTarget->getEntry())
+            return true;
+    }
+
+    // Logical check
+    if (!m_Unit->isFriendlyTo(pUnit))
+        return false;
+
+    return true;
+}
+
+bool AIInterface::isAlreadyAssisting(Unit const* helper) const
+{
+    return m_assistTargets.find(helper) != m_assistTargets.cend();
+}
+
+bool AIInterface::isEngaged() const { return m_isEngaged; }
+void AIInterface::setEngagedByAssist() { m_isEngagedByAssist = true; }
+
+void AIInterface::enterEvadeMode()
+{
+    if (m_Unit->isInEvadeMode())
+        return;
+
+    // Player pets should not evade but instead stop attacking and return to owner
+    if (m_Unit->isPet() && m_Unit->getPlayerOwner() != nullptr)
+    {
+        // TODO: not handled! -Appled
+        //static_cast<Pet*>(m_Unit)->HandleAutoCastEvent(AUTOCAST_EVENT_LEAVE_COMBAT);
+
+        attackStop();
+        // TODO: not correct, if pet is at stay, it should return to stay location
+        dynamic_cast<Pet*>(m_Unit)->setPetAction(PET_ACTION_FOLLOW);
+        m_PetOwner = m_Unit->getUnitOwner();
+        handleEvent(EVENT_FOLLOWOWNER, nullptr, 0);
+    }
+
+    combatStop();
+
+    if (!m_Unit->isAlive())
+    {
+        handleEvent(EVENT_UNITDIED, m_Unit, 0);
+        return;
+    }
+
+    handleEvent(EVENT_LEAVECOMBAT, m_Unit, 0);
+
+    // Clear tagger on evade
+    // Reset it here instead of combatStop so it's not called on unit death
+    m_Unit->setTaggerGuid(nullptr);
+
+    if (m_Unit->isAlive())
+    {
+        if (m_Unit->getUnitOwner() == nullptr)
+            m_Unit->addUnitStateFlag(UNIT_STATE_EVADING);
+
+        m_Unit->getMovementManager()->moveTargetedHome();
+    }
+}
+
+bool AIInterface::canReachTarget() const { return !m_cannotReachTarget; }
+void AIInterface::setCannotReachTarget(bool cannotReach)
+{
+    if (cannotReach == m_cannotReachTarget)
+        return;
+
+    m_cannotReachTarget = cannotReach;
+    m_cannotReachTimer->resetInterval(5000);
+}
+
+void AIInterface::addBoundary(std::unique_ptr<AreaBoundary const> boundary, bool overrideDefault/* = false*/, bool reverseBoundary /*= false*/)
+{
+    if (boundary == nullptr)
+        return;
+
+    if (overrideDefault && !m_disableDynamicBoundary)
+    {
+        // On first custom boundary, clear existing default/dynamic boundaries
+        m_boundaries.clear();
+        m_disableDynamicBoundary = true;
+    }
+
+    m_boundaries.push_back(std::move(boundary));
+    m_reverseBoundary = reverseBoundary;
+    // Check boundary on next update
+    m_boundaryCheckTime->resetInterval(0);
+}
+
+void AIInterface::setDefaultBoundary()
+{
+    if (m_disableDynamicBoundary)
+        return;
+
+    // Do net set default boundaries to creatures in raids or dungeons
+    // Mobs and bosses will chase players to instance portal unless custom boundaries are set
+    if (m_Unit->getWorldMap()->getBaseMap()->isInstanceMap())
+        return;
+
+    if (m_Unit->isSummon())
+        return;
+
+    // Clear existing boundaries
+    m_boundaries.clear();
+
+    // Default boundary 50 yards
+    addBoundary(std::make_unique<CircleBoundary>(m_Unit->GetPosition(), 50.0f));
+}
+
+bool AIInterface::isWithinBoundary() const
+{
+    return isWithinBoundary(m_Unit->GetPosition());
+}
+
+bool AIInterface::isWithinBoundary(LocationVector const& pos) const
+{
+    if (m_boundaries.empty())
+        return true;
+
+    for (const auto& boundary : m_boundaries)
+    {
+        if (!boundary->isWithinBoundary(pos))
+            return m_reverseBoundary ? true : false;
+    }
+
+    return m_reverseBoundary ? false : true;
+}
+
+bool AIInterface::isIgnoringCreatureCombat() const { return m_Unit->hasUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT); }
+bool AIInterface::isIgnoringPlayerCombat() const { return m_Unit->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT); }
+
+void AIInterface::setIgnoreCreatureCombat(bool apply)
+{
+    if (apply)
+        m_Unit->addUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
+    else
+        m_Unit->removeUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
+}
+
+void AIInterface::setIgnorePlayerCombat(bool apply)
+{
+    if (apply)
+        m_Unit->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+    else
+        m_Unit->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
+}
+
+bool AIInterface::isAllowedToEnterCombat() const { return m_canEnterCombat; }
+
+void AIInterface::setAllowedToEnterCombat(bool value)
+{
+    setIgnoreCreatureCombat(!value);
+    setIgnorePlayerCombat(!value);
+    m_canEnterCombat = value;
+}
+
+void AIInterface::_updateTargets()
+{
+    // While fleeing creature searches for friend from larger radius every 1.5s
+    if (m_AiCurrentAgent == AGENT_FLEE)
+    {
+        _findFriendWhileFleeing();
+        return;
+    }
+    // Do not update target while confused or fleeing but try find friends
+    else if (m_Unit->hasUnitStateFlag(UNIT_STATE_CONFUSED | UNIT_STATE_FLEEING))
+    {
+        findFriends(64.0f /* 8 yards */);
+        return;
+    }
+
+    // Hostile NPCs look for attackable unit every 1.5s when out of combat
+    // When in combat they look for friendly units to assist it every 1.5s
+
+    // Find Target when no Threat List is available
+    if (!m_isEngaged && m_reactState == REACT_AGGRESSIVE)
+        findTarget();
+
+    if (m_isEngaged || m_currentTarget != nullptr)
+    {
+        if (_canEvade())
+        {
+            enterEvadeMode();
+            return;
+        }
+
+        findFriends(64.0f /* 8 yards */);
+
+        // Clear Assist Targets
+        if (m_assistTargets.size())
+        {
+            for (auto i = m_assistTargets.begin(); i != m_assistTargets.end();)
+            {
+                auto i2 = i++;
+                if ((*i2) == nullptr ||
+                    (*i2)->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId() ||
+                    (*i2)->GetMapId() != m_Unit->GetMapId() ||
+                    !(*i2)->isAlive() || m_Unit->getDistanceSq((*i2)) >= 2500.0f ||
+                    (*i2)->isInEvadeMode() || !((*i2)->m_phase & m_Unit->m_phase))
+                {
+                    m_assistTargets.erase(i2);
+                }
+            }
+        }
+    }
+}
+
+bool AIInterface::_updateCurrentTarget()
+{
+    if (!m_isEngaged && m_currentTarget == nullptr)
+        return false;
+
+    if (!m_Unit->isAlive())
+    {
+        combatStop();
+        return false;
+    }
+
+    if (m_reactState != REACT_PASSIVE || (m_Unit->isSummon() && m_Unit->getPlayerOwner() != nullptr))
+    {
+        auto* const victim = _selectCurrentTarget();
+        if (!canOwnerAttackUnit(victim))
+        {
+            // Something has made current target no longer attackable
+            enterEvadeMode();
+            return false;
+        }
+
+        // Someone else has become primary target, attack it
+        if (victim != m_currentTarget)
+            attackStartUnsafe(victim);
+
+        return m_currentTarget != nullptr;
+    }
+    else if (!m_Unit->isInCombat())
+    {
+        enterEvadeMode();
+        return false;
+    }
+    else if (m_currentTarget != nullptr)
+    {
+        attackStop();
+    }
+
+    return true;
+}
+
+Unit* AIInterface::_selectCurrentTarget() const
+{
+    Unit* victim = nullptr;
+    if (m_Unit->getThreatManager().canHaveThreatList())
+        victim = m_Unit->getThreatManager().getCurrentVictim();
+    else
+        victim = m_currentTarget;
+
+    return victim;
+}
+
+bool AIInterface::_canEvade() const
+{
+    // Already evading
+    if (m_Unit->isInEvadeMode())
+        return false;
+
+    // If unit cant find path to target wait 4 seconds before evading
+    if (m_cannotReachTarget && !m_Unit->getWorldMap()->getBaseMap()->isRaid())
+    {
+        m_cannotReachTimer->updateTimer(TARGET_UPDATE_TIMER);
+        if (m_cannotReachTimer->isTimePassed())
+            return true;
+    }
+
+    if (m_currentTarget == nullptr)
+    {
+        // If current target does not exist wait 3 seconds before evading
+        m_noTargetTimer->updateTimer(TARGET_UPDATE_TIMER);
+        if (m_noTargetTimer->isTimePassed())
+        {
+            m_noTargetTimer->resetInterval(3000);
+            return true;
+        }
+    }
+    else
+    {
+        // If current target is not in same map
+        if (m_currentTarget->GetMapId() != m_Unit->GetMapId())
+            return true;
+    }
+
+    // Check boundaries every 3 seconds
+    m_boundaryCheckTime->updateTimer(TARGET_UPDATE_TIMER);
+    if (m_boundaryCheckTime->isTimePassed())
+    {
+        if (!isWithinBoundary(m_Unit->GetPosition()))
+        {
+            m_boundaryCheckTime->resetInterval(3000);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Combat AI
+
+void AIInterface::attackStartIfCan(Unit* target)
+{
+    if (!canOwnerAttackUnit(target))
+        return;
+
+    attackStartUnsafe(target);
+}
+
+void AIInterface::attackStartUnsafe(Unit* target)
+{
+    if (target == nullptr)
+        return;
+
+    if (auto* creatureUnit = m_Unit->ToCreature())
+    {
+        if (creatureUnit->GetScript() != nullptr && creatureUnit->GetScript()->onAttackStart(target))
+            return;
+    }
+
+    if (m_currentTarget != nullptr)
+    {
+        if (m_currentTarget == target)
+        {
+            // Creature is already melee attacking this target
+            if (m_Unit->hasUnitStateFlag(UNIT_STATE_MELEE_ATTACKING))
+                return;
+        }
+        else
+        {
+            // Creature is already attacking someone else
+            m_Unit->interruptSpellWithSpellType(CURRENT_MELEE_SPELL);
+            // TODO: should this be sent since we are switching target?
+            m_Unit->smsg_AttackStop(target);
+        }
+    }
+
+    m_currentTarget = target;
+    m_Unit->setTargetGuid(target->getGuid());
+
+    // updateAgent will set this correctly later
+    m_Unit->addUnitStateFlag(UNIT_STATE_MELEE_ATTACKING);
+
+    const auto wasEngaged = m_isEngaged;
+    onHostileAction(target, nullptr, true);
+
+    if (wasEngaged)
+        m_Unit->smsg_AttackStart(target);
+
+    if (m_Unit->isPet() && m_Unit->getPlayerOwner() != nullptr)
+        m_Unit->addUnitFlags(UNIT_FLAG_PET_IN_COMBAT);
+
+    // Clear distracted state on attacking
+    if (m_Unit->hasUnitStateFlag(UNIT_STATE_DISTRACTED))
+    {
+        m_Unit->removeUnitStateFlag(UNIT_STATE_DISTRACTED);
+        m_Unit->getMovementManager()->clear();
+    }
+    m_Unit->getMovementManager()->moveChase(target);
+}
+
+void AIInterface::attackStop()
+{
+    if (m_currentTarget == nullptr)
+        return;
+
+    auto* const target = m_currentTarget;
+    m_currentTarget = nullptr;
+    m_Unit->setTargetGuid(0);
+
+    m_Unit->removeUnitStateFlag(UNIT_STATE_MELEE_ATTACKING);
+    m_Unit->smsg_AttackStop(target);
+
+    if (m_Unit->isPet() && m_Unit->getPlayerOwner() != nullptr)
+        m_Unit->removeUnitFlags(UNIT_FLAG_PET_IN_COMBAT);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Agent AI
+
+bool AIInterface::canFlee() const
+{
+    if (!m_canFlee)
+        return false;
+
+    // Already fled once
+    if (m_hasFleed)
+        return false;
+
+    if (static_cast<float>(m_Unit->getHealthPct()) > m_fleeHealth)
+        return false;
+
+    if (m_Unit->hasAuraWithAuraEffect(SPELL_AURA_PREVENTS_FLEEING))
+        return false;
+
+    return true;
+}
+
+void AIInterface::setCanFlee(bool value) { m_canFlee = value; }
+
+void AIInterface::stopFleeing()
+{
+    m_reactState = REACT_AGGRESSIVE;
+    m_fleeTimer->resetInterval(0);
+    findFriends(100.0f /* 10 yards */);
+}
+
+bool AIInterface::canCallForHelp() const
+{
+    if (!m_canCallForHelp)
+        return false;
+
+    // Already called for help once
+    if (m_hasCalledForHelp)
+        return false;
+
+    if (static_cast<float>(m_Unit->getHealthPct()) > m_callForHelpHealth)
+        return false;
+
+    return true;
+}
+
+void AIInterface::setCanCallForHelp(bool value) { m_canCallForHelp = value; }
+void AIInterface::setCallForHelpHealth(float health) { m_callForHelpHealth = health; }
+
+void AIInterface::handleAgentFlee(uint32_t p_time)
+{
+    if (m_Unit->isInEvadeMode())
+        return;
+
+    auto* const creatureUnit = m_Unit->ToCreature();
+    if (creatureUnit == nullptr)
+        return;
+
+    m_fleeTimer->updateTimer(p_time);
+    if (m_fleeTimer->isTimePassed() && m_hasFleed)
+    {
+        m_Unit->setControlled(false, UNIT_STATE_FLEEING);
+        m_AiCurrentAgent = AGENT_NULL;
+        m_fleeState = FLEE_NONE;
+    }
+
+    if (m_hasFleed)
+        return;
+
+    m_fleeTimer->resetInterval(m_fleeDuration);
+
+    if (m_Unit->IsInWorld() && creatureUnit->GetScript())
+        creatureUnit->GetScript()->OnFlee(m_currentTarget);
+
+    // On Flee Scripts
+    for (const auto& onFleeScript : onFleeScripts)
+    {
+        if (onFleeScript.action == actionSpell)
+        {
+            castAISpell(onFleeScript.spellId);
+        }
+    }
+
+    // Send a Chatmessage from our AI Scripts or general "%s attempts to run away in fear!"
+    if (!mEmotesOnFlee.empty())
+        sendStoredText(mEmotesOnFlee, m_Unit);
+    else
+        creatureUnit->SendScriptTextChatMessage(9670, m_Unit);
+
+    // Creature starts fleeing movement generator and periodically tries to find a friend nearby
+    // If friend is found, creature will stop fleeing and run towards that friend
+    if (!_findFriendWhileFleeing())
+    {
+        m_fleeState = FLEE_RANDOM_MOVE;
+        m_Unit->setControlled(true, UNIT_STATE_FLEEING);
+    }
+
+    m_hasFleed = true;
+}
+
+void AIInterface::handleAgentCallForHelp()
+{
+    if (m_hasCalledForHelp)
+        return;
+
+    if (m_Unit->isCreature())
+    {
+        // On Call for Help Scripts
+        for (const auto& onCallForHelpScript : onCallForHelpScripts)
+        {
+            if (onCallForHelpScript.action == actionSpell)
+            {
+                castAISpell(onCallForHelpScript.spellId);
+            }
+        }
+
+        // Send a Chatmessage from our AI Scripts
+        sendStoredText(mEmotesOnCallForHelp, m_Unit);
+    }
+
+    if (m_Unit->IsInWorld() && m_Unit->isCreature() && static_cast<Creature*>(m_Unit)->GetScript())
+        static_cast<Creature*>(m_Unit)->GetScript()->OnCallForHelp();
+
+    // TODO: possibly make the range customizable in creature_ai_scripts if need different radiuses
+    findFriends(225.0f /* 15 yards */);
+
+    m_hasCalledForHelp = true;
+}
+
+bool AIInterface::_findFriendWhileFleeing()
+{
+    // Already found a friend
+    if (m_fleeState == FLEE_SEEK_ASSIST)
+        return false;
+
+    // Radius seems very small in Classic but going with 15 yards
+    const float fleeRadius = 15.0f;
+
+    // m_currentTarget is nullptr at this point
+    auto* const currentTarget = _selectCurrentTarget();
+    Creature* helper = nullptr;
+    float distance = 999999.0f;
+    for (const auto& itr : m_Unit->getInRangeObjectsSet())
+    {
+        if (itr != nullptr && itr->isCreature())
+        {
+            auto* candidate = itr->ToCreature();
+            if (isAlreadyAssisting(candidate) || candidate->getAIInterface()->isAlreadyAssisting(m_Unit))
+                continue;
+
+            const auto distToHelper = m_Unit->getDistanceSq(candidate);
+            if (distToHelper > (fleeRadius * fleeRadius))
+                continue;
+
+            if (candidate->isInCombat())
+                continue;
+
+            if (!candidate->isHostileTo(currentTarget))
+                continue;
+
+            if (!candidate->getAIInterface()->canOwnerAssistUnit(m_Unit))
+                continue;
+
+            if (worldConfig.terrainCollision.isCollisionEnabled)
+            {
+                if (!m_Unit->IsWithinLOSInMap(candidate))
+                    continue;
+            }
+
+            // Find the closest candidate
+            if (distToHelper > distance)
+                continue;
+
+            distance = distToHelper;
+            helper = candidate;
+        }
+    }
+
+    if (helper == nullptr)
+        return false;
+
+    // Only remove fleeing movement generator and run towards helper
+    m_fleeState = FLEE_SEEK_ASSIST;
+    m_Unit->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Found helper");
+    m_Unit->getMovementManager()->remove(FLEEING_MOTION_TYPE);
+    // Try position unit 5 yards away from helper
+    auto helperLoc = helper->GetPosition();
+    helper->GetPoint(helper->getAbsoluteAngle(m_Unit), 5.0f, helperLoc.x, helperLoc.y, helperLoc.z);
+    m_Unit->getMovementManager()->moveSeekAssistance(helperLoc);
+    return true;
+}
+
 void AIInterface::castAISpell(CreatureAISpells* aiSpell)
 {
     Unit* target = getCurrentTarget();
     switch (aiSpell->mTargetType)
     {
-    case TARGET_SELF:
-    case TARGET_VARIOUS:
-    {
-        getUnit()->castSpell(getUnit(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
-        mLastCastedSpell = aiSpell;
-    } break;
-    case TARGET_ATTACKING:
-    {
-        getUnit()->castSpell(target, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
-        mCurrentSpellTarget = target;
-        mLastCastedSpell = aiSpell;
-    } break;
-    case TARGET_SOURCE:
-        getUnit()->castSpellLoc(getUnit()->GetPosition(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
-        mLastCastedSpell = aiSpell;
-        break;
-    case TARGET_DESTINATION:
-    {
-        getUnit()->castSpellLoc(target->GetPosition(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
-        mCurrentSpellTarget = target;
-        mLastCastedSpell = aiSpell;
-    } break;
-    case TARGET_RANDOM_FRIEND:
-    case TARGET_RANDOM_SINGLE:
-    case TARGET_RANDOM_DESTINATION:
-    {
-        castSpellOnRandomTarget(aiSpell);
-        mLastCastedSpell = aiSpell;
-    } break;
-    case TARGET_CLOSEST:
-    {
-        mCurrentSpellTarget = getBestUnitTarget(TargetFilter_Closest);
-        mLastCastedSpell = aiSpell;
-        getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
-    } break;
-    case TARGET_FURTHEST:
-    {
-        mCurrentSpellTarget = getBestUnitTarget(TargetFilter_InRangeOnly, 0.0f, 30.0f);
-        mLastCastedSpell = aiSpell;
-        getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
-    } break;
-    case TARGET_CUSTOM:
-    {
-        // nos custom target set, no spell cast.
-        if (aiSpell->getCustomTarget() != nullptr)
+        case TARGET_SELF:
+        case TARGET_VARIOUS:
         {
-            mCurrentSpellTarget = aiSpell->getCustomTarget();
+            getUnit()->castSpell(getUnit(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+            mLastCastedSpell = aiSpell;
+        } break;
+        case TARGET_ATTACKING:
+        {
+            getUnit()->castSpell(target, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+            mCurrentSpellTarget = target;
+            mLastCastedSpell = aiSpell;
+        } break;
+        case TARGET_SOURCE:
+            getUnit()->castSpellLoc(getUnit()->GetPosition(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+            mLastCastedSpell = aiSpell;
+            break;
+        case TARGET_DESTINATION:
+        {
+            getUnit()->castSpellLoc(target->GetPosition(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+            mCurrentSpellTarget = target;
+            mLastCastedSpell = aiSpell;
+        } break;
+        case TARGET_RANDOM_FRIEND:
+        case TARGET_RANDOM_SINGLE:
+        case TARGET_RANDOM_DESTINATION:
+        {
+            castSpellOnRandomTarget(aiSpell);
+            mLastCastedSpell = aiSpell;
+        } break;
+        case TARGET_CLOSEST:
+        {
+            mCurrentSpellTarget = getBestUnitTarget(TargetFilter_Closest);
             mLastCastedSpell = aiSpell;
             getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
-        }
-    } break;
-    case TARGET_FUNCTION:
-    {
-        if (aiSpell->getTargetFunction() != nullptr)
+        } break;
+        case TARGET_FURTHEST:
         {
-            mCurrentSpellTarget = aiSpell->getTargetFunction();
-
-            if (mCurrentSpellTarget)
+            mCurrentSpellTarget = getBestUnitTarget(TargetFilter_InRangeOnly, 0.0f, 30.0f);
+            mLastCastedSpell = aiSpell;
+            getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+        } break;
+        case TARGET_CUSTOM:
+        {
+            // nos custom target set, no spell cast.
+            if (aiSpell->getCustomTarget() != nullptr)
             {
+                mCurrentSpellTarget = aiSpell->getCustomTarget();
                 mLastCastedSpell = aiSpell;
                 getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
             }
+        } break;
+        case TARGET_FUNCTION:
+        {
+            if (aiSpell->getTargetFunction() != nullptr)
+            {
+                mCurrentSpellTarget = aiSpell->getTargetFunction();
+
+                if (mCurrentSpellTarget)
+                {
+                    mLastCastedSpell = aiSpell;
+                    getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+                }
+            }
         }
-    }
-    default:
-        break;
+        default:
+            break;
     }
 }
 
@@ -778,57 +1658,18 @@ void AIInterface::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
 
         switch (AiSpell->mTargetType)
         {
-        case TARGET_RANDOM_FRIEND:
-        case TARGET_RANDOM_SINGLE:
-        {
-            getUnit()->castSpell(randomTarget, AiSpell->mSpellInfo, AiSpell->mIsTriggered);
-            mCurrentSpellTarget = randomTarget;
-        } break;
-        case TARGET_RANDOM_DESTINATION:
-            getUnit()->castSpellLoc(randomTarget->GetPosition(), AiSpell->mSpellInfo, AiSpell->mIsTriggered);
-            break;
+            case TARGET_RANDOM_FRIEND:
+            case TARGET_RANDOM_SINGLE:
+            {
+                getUnit()->castSpell(randomTarget, AiSpell->mSpellInfo, AiSpell->mIsTriggered);
+                mCurrentSpellTarget = randomTarget;
+            } break;
+            case TARGET_RANDOM_DESTINATION:
+                getUnit()->castSpellLoc(randomTarget->GetPosition(), AiSpell->mSpellInfo, AiSpell->mIsTriggered);
+                break;
         }
 
         possibleUnitTargets.clear();
-    }
-}
-
-void AIInterface::updateEmotes(unsigned long time_passed)
-{
-    if (!getUnit()->getThreatManager().getCurrentVictim() && m_Unit->isAlive())
-    {
-        if (timed_emote_expire <= time_passed)    // note that creature might go idle and time_passed might get big next time ...We do not skip emotes because of lost time
-        {
-            if ((*next_timed_emote)->type == 1)   //standstate
-            {
-                m_Unit->setStandState(static_cast<uint8_t>((*next_timed_emote)->value));
-                m_Unit->setEmoteState(0);
-            }
-            else if ((*next_timed_emote)->type == 2)   //emotestate
-            {
-                m_Unit->setEmoteState((*next_timed_emote)->value);
-                m_Unit->setStandState(STANDSTATE_STAND);
-            }
-            else if ((*next_timed_emote)->type == 3)   //oneshot emote
-            {
-                m_Unit->setEmoteState(0);
-                m_Unit->setStandState(STANDSTATE_STAND);
-                m_Unit->emote((EmoteType)(*next_timed_emote)->value);           // Animation
-            }
-
-            if ((*next_timed_emote)->msg.length())
-                m_Unit->sendChatMessage((*next_timed_emote)->msg_type, (*next_timed_emote)->msg_lang, (*next_timed_emote)->msg.c_str());
-
-            timed_emote_expire = (*next_timed_emote)->expire_after; //should we keep lost time ? I think not
-            ++next_timed_emote;
-
-            if (next_timed_emote == timed_emotes->end())
-                next_timed_emote = timed_emotes->begin();
-        }
-        else
-        {
-            timed_emote_expire -= time_passed;
-        }
     }
 }
 
@@ -839,343 +1680,6 @@ void AIInterface::eventAiInterfaceParamsetFinish()
         next_timed_emote = timed_emotes->begin();
         timed_emote_expire = (*next_timed_emote)->expire_after;
     }
-}
-
-void AIInterface::updateTargets(unsigned long time_passed)
-{
-    // Do not update target while confused or fleeing
-    if (getUnit()->hasUnitStateFlag(UNIT_STATE_CONFUSED | UNIT_STATE_FLEEING))
-        return;
-
-    // Hostile NPCs look for attackable unit every 1.5s when out of combat
-    // When in combat they look for friendly units to assist it every 1.5s
-
-    // Find Target when no Threat List is available
-    if (!isEngaged() && hasReactState(REACT_AGGRESSIVE))
-    {
-        m_updateTargetTimer->updateTimer(time_passed);
-        if (m_updateTargetTimer->isTimePassed())
-        {
-            m_updateTargetTimer->resetInterval(1500);
-            findTarget();
-        }
-    }
-
-    if (isEngaged())
-    {
-        m_updateAssistTimer->updateTimer(time_passed);
-
-        if (canUnitEvade(time_passed))
-            enterEvadeMode();
-
-        // Find Assist Targets to assist us in our Fight
-        if (m_updateAssistTimer->isTimePassed())
-        {
-            m_updateAssistTimer->resetInterval(1500);
-
-            // find nearby allies
-            findAssistance();
-
-            // Clear Assist Targets
-            if (m_assistTargets.size())
-            {
-                for (auto i = m_assistTargets.begin(); i != m_assistTargets.end();)
-                {
-                    auto i2 = i++;
-                    if ((*i2) == NULL || (*i2)->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId() ||
-                        !(*i2)->isAlive() || m_Unit->getDistanceSq((*i2)) >= 2500.0f || !(*i2)->getCombatHandler().isInCombat() || !((*i2)->m_phase & m_Unit->m_phase))
-                    {
-                        m_assistTargets.erase(i2);
-                    }
-                }
-            }
-        }
-    }
-
-    // When target is out of Possible Range evade.
-    if (getUnit()->IsInWorld())
-    {
-        if (getCurrentTarget() && getCurrentTarget()->GetMapId() != getUnit()->GetMapId())
-        {
-            if (canUnitEvade(time_passed))
-                enterEvadeMode();
-        }
-        else if (getCurrentTarget() && getCurrentTarget()->getDistance(getUnit()->GetPosition()) > 50.0f && !getUnit()->getWorldMap()->getBaseMap()->instanceable())
-        {
-            if (canUnitEvade(time_passed))
-                enterEvadeMode();
-        }
-    }
-}
-
-bool AIInterface::updateTarget()
-{
-    if (!isEngaged())
-        return false;
-
-    if (!getUnit()->isAlive())
-    {
-        engagementOver();
-        return false;
-    }
-
-    if (!hasReactState(REACT_PASSIVE))
-    {
-        if (Unit* victim = selectTarget())
-        {
-            if (victim != getCurrentTarget())
-                attackStart(victim);
-        }
-
-        return getCurrentTarget() != nullptr;
-    }
-    else if (!getUnit()->isInCombat())
-    {
-        enterEvadeMode();
-        return false;
-    }
-    else if (getCurrentTarget())
-    {
-        attackStop();
-    }
-
-    return true;
-}
-
-void AIInterface::attackStart(Unit* target)
-{
-    if (getUnit()->ToCreature() && getUnit()->ToCreature()->GetScript())
-        if (getUnit()->ToCreature()->GetScript()->onAttackStart(target))
-            return;
-
-    if (target && doInitialAttack(target, true))
-    {
-        // Clear distracted state on attacking
-        if (getUnit()->hasUnitStateFlag(UNIT_STATE_DISTRACTED))
-        {
-            getUnit()->removeUnitStateFlag(UNIT_STATE_DISTRACTED);
-            getUnit()->getMovementManager()->clear();
-        }
-        getUnit()->getMovementManager()->moveChase(target);
-    }
-}
-
-void AIInterface::attackStop()
-{
-    if (!getCurrentTarget())
-        return;
-
-    Unit* target = getCurrentTarget();
-
-    setCurrentTarget(nullptr);
-
-    // Clear Target
-    getUnit()->setTargetGuid(0);
-    getUnit()->removeUnitStateFlag(UNIT_STATE_MELEE_ATTACKING);
-    setNoCallAssistance(false);
-    getUnit()->smsg_AttackStop(target);
-}
-
-bool AIInterface::doInitialAttack(Unit* target, bool isMelee)
-{
-    // no target
-    if (!target)
-        return false;
-
-    // ofcourse we cant Attack ourself
-    if (target == getUnit())
-        return false;
-
-    // dead units can not be attack
-    if (!getUnit()->isAlive() || !target->IsInWorld() || !target->isAlive())
-        return false;
-
-    // cannot attack while evading
-    if (getUnit()->isInEvadeMode())
-        return false;
-
-    // nobody can attack GM when GM Flag is set
-    if (target->isPlayer())
-    {
-        if (target->ToPlayer()->isGMFlagSet())
-            return false;
-    }
-    else
-    {
-        if (target->ToCreature()->isInEvadeMode() || canNotReachTarget())
-            return false;
-    }
-
-    if (getUnit()->hasAuraWithAuraEffect(SPELL_AURA_MOD_UNATTACKABLE))
-        getUnit()->removeAllAurasByAuraEffect(SPELL_AURA_MOD_UNATTACKABLE);
-
-    if (getCurrentTarget())
-    {
-        if (getCurrentTarget() == target)
-        {
-            // switch to melee attack from ranged/spell
-            if (isMelee)
-            {
-                if (!getUnit()->hasUnitStateFlag(UNIT_STATE_MELEE_ATTACKING))
-                {
-                    getUnit()->addUnitStateFlag(UNIT_STATE_MELEE_ATTACKING);
-                    getUnit()->smsg_AttackStart(target);
-                    return true;
-                }
-            }
-            else if (getUnit()->hasUnitStateFlag(UNIT_STATE_MELEE_ATTACKING))
-            {
-                getUnit()->removeUnitStateFlag(UNIT_STATE_MELEE_ATTACKING);
-                getUnit()->smsg_AttackStop(target);
-                return true;
-            }
-            return false;
-        }
-
-        // switch target
-        getUnit()->interruptSpellWithSpellType(CURRENT_MELEE_SPELL);
-        if (!isMelee)
-            getUnit()->removeUnitStateFlag(UNIT_STATE_MELEE_ATTACKING);
-    }
-
-    setCurrentTarget(target);
-
-    // Set our target
-    getUnit()->setTargetGuid(target->getGuid());
-
-    if (isMelee)
-        getUnit()->addUnitStateFlag(UNIT_STATE_MELEE_ATTACKING);
-
-    if (!getUnit()->isCharmed())
-    {
-        onHostileAction(target);
-        getUnit()->SendAIReaction();
-        callAssistance();
-        getUnit()->emote(EMOTE_ONESHOT_NONE);
-    }
-
-    if (isMelee)
-        getUnit()->smsg_AttackStart(target);
-
-    return true;
-}
-
-Unit* AIInterface::selectTarget()
-{
-    Unit* target = nullptr;
-
-    if (getUnit()->getThreatManager().canHaveThreatList())
-    {
-        target = getUnit()->getThreatManager().getCurrentVictim();
-    }
-    else if (!hasReactState(REACT_PASSIVE))
-    {
-        // playerpet target selection
-        target = getTargetForPet();
-        if (!target && getUnit()->isSummon())
-        {
-            if (Unit* owner = getUnit()->ToSummon()->getUnitOwner())
-            {
-                if (owner->isInCombat())
-                    target = owner->getAIInterface()->getTargetForPet();
-            }
-        }
-    }
-    else
-    {
-        return nullptr;
-    }
-
-    if (target && isTargetAcceptable(target) && canOwnerAttackUnit(target))
-        return target;
-
-    auto const& iAuras = getUnit()->getAuraEffectList(SPELL_AURA_MOD_INVISIBILITY);
-    if (!iAuras.empty())
-    {
-        for (auto & aura : iAuras)
-        {
-            if (aura->getAura()->getMaxDuration() == -1)
-            {
-                enterEvadeMode();
-                break;
-            }
-        }
-        return nullptr;
-    }
-
-    // enter in evade mode in other case
-    enterEvadeMode();
-
-    return nullptr;
-}
-
-bool AIInterface::isTargetAcceptable(Unit* target)
-{
-    if (!target)
-        return false;
-
-    if (!target->IsInWorld())
-        return false;
-
-    // if the target cannot be attacked, the target is not acceptable
-#ifdef FT_VEHICLES
-    if (getUnit()->isFriendlyTo(target) || !target->getAIInterface()->isTargetableForAttack(false)
-        || (getUnit()->getVehicle() && (getUnit()->isOnVehicle(target) || getUnit()->getVehicle()->getBase()->isOnVehicle(target))))
-        return false;
-#else
-    if (getUnit()->isFriendlyTo(target) || !target->getAIInterface()->isTargetableForAttack(false))
-        return false;
-#endif
-
-    if (target->hasUnitStateFlag(UNIT_STATE_DIED))
-    {
-#if VERSION_STRING > Classic
-        // guards can detect fake death
-        if (isGuard() && target->hasUnitFlags2(UNIT_FLAG2_FEIGN_DEATH))
-            return true;
-        else
-#endif
-            return false;
-    }
-
-    // if I'm already fighting target, or I'm hostile towards the target, the target is acceptable
-    if (isEngagedBy(target) || getUnit()->isHostileTo(target))
-        return true;
-
-    // if the target's victim is not friendly, or the target is friendly, the target is not acceptable
-    return false;
-}
-
-bool AIInterface::isTargetableForAttack(bool checkFakeDeath)
-{
-    if (!getUnit()->isAlive())
-        return false;
-
-    if (getUnit()->hasUnitFlags(UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE))
-        return false;
-
-    if (getUnit()->isPlayer() && getUnit()->ToPlayer()->isGMFlagSet())
-        return false;
-
-    return !getUnit()->hasUnitStateFlag(UNIT_STATE_UNATTACKABLE) && (!checkFakeDeath || !getUnit()->hasUnitStateFlag(UNIT_STATE_DIED));
-}
-
-Unit* AIInterface::getTargetForPet()
-{
-    if (!isEngaged())
-        return nullptr;
-
-    if (Unit* victim = getCurrentTarget())
-        if ((!getUnit()->isPet() && !getUnit()->getPlayerOwnerOrSelf()) || getUnit()->isInCombatWith(victim))
-            return victim;
-
-    uint64_t ownerGuid = getUnit()->getCharmedByGuid() ? getUnit()->getCharmedByGuid() : getUnit()->getCreatedByGuid();
-    Unit* owner = getUnit()->getWorldMapUnit(ownerGuid);
-
-    if (owner && owner->getTargetGuid())
-        return owner->getWorldMapUnit(owner->getTargetGuid());
-
-    return nullptr;
 }
 
 void AIInterface::updateAgent(uint32_t p_time)
@@ -1405,212 +1909,6 @@ void AIInterface::handleAgentSpell(uint32_t spellId)
     spellEvents.addEvent(spellId, cooldown, AGENT_SPELL);
 }
 
-void AIInterface::handleAgentFlee(uint32_t p_time)
-{
-    if (getUnit()->isInEvadeMode())
-        return;
-
-    m_fleeTimer->updateTimer(p_time);
-    if (m_fleeTimer->isTimePassed())
-    {
-        getUnit()->setControlled(false, UNIT_STATE_FLEEING);
-        setCurrentAgent(AGENT_NULL);
-    }
-
-    if (m_hasFleed)
-        return;
-
-    m_fleeTimer->resetInterval(m_FleeDuration);
-
-    if (m_Unit->IsInWorld() && m_Unit->isCreature() && static_cast<Creature*>(m_Unit)->GetScript())
-        static_cast<Creature*>(m_Unit)->GetScript()->OnFlee(getCurrentTarget());
-
-    getUnit()->setControlled(true, UNIT_STATE_FLEEING);
-
-    std::string msg = "%s attempts to run away in fear!";
-    getUnit()->sendChatMessage(CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, msg);
-
-    // On Flee Scripts
-    for (auto onFleeScript : onFleeScripts)
-    {
-        if (onFleeScript.action == actionSpell)
-        {
-            castAISpell(onFleeScript.spellId);
-        }
-    }
-
-    // Send a Chatmessage from our AI Scripts
-    sendStoredText(mEmotesOnFlee, nullptr);
-
-    m_hasFleed = true;
-}
-
-void AIInterface::handleAgentCallForHelp()
-{
-    setNoCallAssistance(true);
-    callForHelp(30.0f);
-
-    if (m_Unit->isCreature())
-    {
-        // On Call for Help Scripts
-        for (auto onCallForHelpScript : onCallForHelpScripts)
-        {
-            if (onCallForHelpScript.action == actionSpell)
-            {
-                castAISpell(onCallForHelpScript.spellId);
-            }
-        }
-
-        // Send a Chatmessage from our AI Scripts
-        sendStoredText(mEmotesOnCallForHelp, nullptr);
-    }
-
-    if (m_Unit->IsInWorld() && m_Unit->isCreature() && static_cast<Creature*>(m_Unit)->GetScript())
-        static_cast<Creature*>(m_Unit)->GetScript()->OnCallForHelp();
-}
-
-void AIInterface::doFleeToGetAssistance()
-{
-    if (!getCurrentTarget())
-        return;
-
-    if (getUnit()->getAuraWithAuraEffect(SPELL_AURA_PREVENTS_FLEEING))
-        return;
-
-    // maybe move to Config file
-    float radius = 30.0f;
-    if (radius > 0)
-    {
-        Creature* creature = getUnit()->getWorldMap()->getInterface()->getNearestAssistCreatureInCell(getUnit()->ToCreature(), getCurrentTarget(), radius);
-
-        setNoSearchAssistance(true);
-
-        if (!creature)
-            getUnit()->setControlled(true, UNIT_STATE_FLEEING);
-        else
-            getUnit()->getMovementManager()->moveSeekAssistance(creature->GetPositionX(), creature->GetPositionY(), creature->GetPositionZ());
-    }
-}
-
-void AIInterface::callAssistance()
-{
-    if (!m_AlreadyCallAssistance && getCurrentTarget() && !getUnit()->isPet() && !getUnit()->getUnitOwner())
-    {
-        setNoCallAssistance(true);
-
-        // maybe move to Config file
-        float radius = 10.0f;
-
-        if (radius > 0)
-        {
-            Creature* creature = getUnit()->getWorldMap()->getInterface()->getNearestAssistCreatureInCell(getUnit()->ToCreature(), getCurrentTarget(), radius);
-
-            if (creature)
-                creature->getAIInterface()->onHostileAction(getCurrentTarget());
-        }
-    }
-}
-
-void AIInterface::findAssistance()
-{
-    if (!getUnit()->getWorldMap() || !getCurrentTarget())
-        return;
-
-    for (const auto& itr : getUnit()->getInRangeObjectsSet())
-    {
-        if (itr->isCreature())
-        {
-            Creature* helper = itr->ToCreature();
-
-            float DistToMe = getUnit()->CalcDistance(helper);
-
-            if (DistToMe <= 25.0f && helper->isInCombat() && !isAlreadyAssisting(helper)) // Also add targets if already in fight
-                m_assistTargets.insert(helper);
-
-            if (DistToMe <= 10.0f && getUnit()->getWorldMap()->getBaseMap()->getMapInfo()->isInstanceMap()) // only Search additional Attackers in Instanced Maps
-            {
-                if (helper->getAIInterface()->canAssistTo(getUnit(), getCurrentTarget(), false))
-                {
-                    m_assistTargets.insert(helper);
-                    if (!helper->isInCombat())
-                        helper->getAIInterface()->onHostileAction(getCurrentTarget());
-                }
-            }
-        }
-    }
-}
-
-bool AIInterface::isAlreadyAssisting(Creature* helper)
-{
-    if (m_assistTargets.find(helper) != m_assistTargets.end())
-        return true;
-    
-    return false;
-}
-
-void AIInterface::callForHelp(float radius)
-{
-    if (radius <= 0.0f || !isEngaged() || !getUnit()->isAlive() || getUnit()->isPet() || getUnit()->isCharmed())
-        return;
-
-    Unit* target = getUnit()->getThreatManager().getCurrentVictim();
-    if (!target)
-        target = getUnit()->getThreatManager().getAnyTarget();
-
-    if (!target)
-        return;
-
-    // todo
-}
-
-bool AIInterface::canAssistTo(Unit* u, Unit* enemy, bool checkfaction /*= true*/)
-{
-    // is it true?
-    if (!hasReactState(REACT_AGGRESSIVE))
-        return false;
-
-    // we don't need help from zombies :)
-    if (!getUnit()->isAlive())
-        return false;
-
-    // we cannot assist in evade mode
-    if (getUnit()->isInEvadeMode())
-        return false;
-
-    // or if enemy is in evade mode
-    if (enemy->getObjectTypeId() == TYPEID_UNIT && enemy->ToCreature()->isInEvadeMode())
-        return false;
-
-    if (getUnit()->hasUnitFlags(UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE) || isImmuneToNPC())
-        return false;
-
-    // skip fighting creature
-    if (isEngaged())
-        return false;
-
-    // only free creature
-    if (getUnit()->getUnitOwner())
-        return false;
-
-    // only from same creature faction
-    if (checkfaction)
-    {
-        if (getUnit()->getFactionTemplate() != u->getFactionTemplate())
-            return false;
-    }
-    else
-    {
-        if (!getUnit()->isFriendlyTo(u))
-            return false;
-    }
-
-    // skip non hostile to caster enemy creatures
-    if (!getUnit()->isHostileTo(enemy))
-        return false;
-
-    return true;
-}
-
 void AIInterface::selectCurrentAgent(Unit* target, uint32_t spellid)
 {
     // If mob is currently fleeing
@@ -1629,14 +1927,14 @@ void AIInterface::selectCurrentAgent(Unit* target, uint32_t spellid)
     if (this->isCastDisabled() && getCurrentAgent() == AGENT_SPELL)
         setCurrentAgent(AGENT_NULL);
 
-    if (target->isAlive() && !getUnit()->isInEvadeMode())
+    if (target != nullptr && target->isAlive() && !getUnit()->isInEvadeMode())
     {
-        if (canFlee() && !m_hasFleed && ((static_cast<float>(m_Unit->getHealth()) / static_cast<float>(m_Unit->getMaxHealth()) < m_FleeHealth)))
+        if (canFlee())
         {
             setCurrentAgent(AGENT_FLEE);
             return;
         }
-        else if (canCallForHelp() && !m_AlreadyCallAssistance && ((static_cast<float>(m_Unit->getHealth()) / static_cast<float>(m_Unit->getMaxHealth()) < m_CallForHelpHealth)))
+        else if (canCallForHelp())
         {
             setCurrentAgent(AGENT_CALLFORHELP);
             return;
@@ -1798,99 +2096,6 @@ SpellCastTargets AIInterface::setSpellTargets(SpellInfo const* /*spellInfo*/, Un
     return targets;
 }
 
-bool AIInterface::canStartAttack(Unit* target, bool force)
-{
-    if (getUnit()->ToCreature()->GetCreatureProperties()->extra_a9_flags & 2)
-        return false;
-
-    // This set of checks is should be done only for creatures
-    if ((isImmuneToNPC() && !target->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
-        || (isImmuneToPC() && target->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE)))
-        return false;
-
-    // Do not attack non-combat pets
-    if (target->ToCreature() && target->ToCreature()->GetCreatureProperties()->Type == UNIT_TYPE_NONCOMBAT_PET)
-        return false;
-
-    // Dont Aggro Flying stuff we cannot reach
-    if (!getUnit()->canFly() && (getUnit()->getDistanceZ(target) > 3 + getUnit()->getMeleeRange(target)))
-        return false;
-
-    if (!force)
-    {
-        if (!isTargetAcceptable(target))
-            return false;
-
-        if (getUnit()->isNeutralToAll() || !getUnit()->IsWithinDistInMap(target, calcAggroRange(target)))
-            return false;
-    }
-
-    if (!canOwnerAttackUnit(target))
-        return false;
-
-    if (worldConfig.terrainCollision.isCollisionEnabled)
-    {
-        return getUnit()->IsWithinLOSInMap(target);
-    }
-
-    return true;
-}
-
-//function is designed to make a quick check on target to decide if we can attack it
-bool AIInterface::canOwnerAttackUnit(Unit* pUnit)
-{
-    if (!pUnit->IsInWorld())
-        return false;
-
-    if (!getUnit()->isValidTarget(pUnit))
-        return false;
-
-    if (!pUnit->isInAccessiblePlaceFor(getUnit()->ToCreature()))
-        return false;
-
-    // Script Interface Function
-    if (getUnit()->ToCreature()->GetScript())
-    {
-        if (!getUnit()->ToCreature()->GetScript()->canAttackTarget(pUnit))
-            return false;
-    }
-
-    if (getUnit()->isInEvadeMode())
-        return false;
-
-    if (pUnit->ToCreature() && pUnit->ToCreature()->isInEvadeMode())
-        return false;
-
-    if (!getUnit()->isCharmed())
-    {
-        if (getUnit()->getWorldMap()->getBaseMap()->isDungeon())
-            return true;
-
-        if (!(getUnit()->ToCreature()->GetCreatureProperties()->typeFlags & CREATURE_FLAG1_BOSS) != 0 || getUnit()->hasAuraWithAuraEffect(SPELL_AURA_MOD_TAUNT))
-            return true;
-    }
-
-    // Map Visibility Range but not more than the Distance of 2 Cells
-    float distance = std::min<float>(getUnit()->getWorldMap()->getVisibilityRange(), Map::Cell::cellSize * 2);
-
-    uint64_t ownerGuid = getUnit()->getCharmedByGuid() ? getUnit()->getCharmedByGuid() : getUnit()->getCreatedByGuid();
-    if (Unit* unit = getUnit()->getWorldMapUnit(ownerGuid))
-    {
-        return pUnit->IsWithinDistInMap(unit, distance);
-    }
-    else
-    {
-        // include sizes for huge npcs
-        distance += getUnit()->getCombatReach() + pUnit->getCombatReach();
-
-        // to prevent creatures in air ignore attacks because distance is already too high...
-        if (getUnit()->ToCreature()->getMovementTemplate().isFlightAllowed())
-            return pUnit->isInDist2d(getUnit()->GetSpawnPosition(), distance);
-        else
-            return pUnit->isInDist(getUnit()->GetSpawnPosition(), distance);
-    }
-}
-
 float AIInterface::calcCombatRange(Unit* target, bool ranged)
 {
     if (!target)
@@ -1907,74 +2112,6 @@ float AIInterface::calcCombatRange(Unit* target, bool ranged)
     float range = targetradius + selfreach + selfradius + rang;
 
     return range;
-}
-
-Unit* AIInterface::findTarget()
-{
-    // find nearest hostile Target to attack
-    if (m_Unit->getWorldMap() == nullptr)
-        return nullptr;
-
-    Unit* target = nullptr;
-    Unit* critterTarget = nullptr;
-
-    float distance = 999999.0f; // that should do it.. :p
-
-    //target is immune to all form of attacks, cant attack either.
-    // not attackable creatures sometimes fight enemies in scripted fights though
-    if (m_Unit->hasUnitFlags(UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE))
-    {
-        return nullptr;
-    }
-
-    // Should not look for new target while creature is in these states
-    if (getUnit()->hasUnitStateFlag(UNIT_STATE_STUNNED | UNIT_STATE_FLEEING | UNIT_STATE_CONFUSED | UNIT_STATE_POLYMORPHED | UNIT_STATE_EVADING))
-        return nullptr;
-
-    for (const auto& itr2 : m_Unit->getInRangeObjectsSet())
-    {
-        if (itr2)
-        {
-            if (!itr2->isCreatureOrPlayer())
-                continue;
-
-            Unit* pUnit = static_cast<Unit*>(itr2);
-
-            if (!hasReactState(REACT_AGGRESSIVE) || !canStartAttack(pUnit, false))
-                continue;
-
-            //on blizz there is no Z limit check
-            float dist = m_Unit->GetDistance2dSq(pUnit);
-
-            if (pUnit->m_factionTemplate && pUnit->m_factionTemplate->Faction == 28)// only Attack a critter if there is no other Enemy in range
-            {
-                if (dist < 10.0f)
-                    critterTarget = pUnit;
-
-                continue;
-            }
-
-            if (dist > distance)     // we want to find the CLOSEST target
-                continue;
-
-            distance = dist;
-            target = pUnit;
-        }
-    }
-
-    if (!target)
-    {
-        target = critterTarget;
-    }
-
-    if (target)
-    {
-        onHostileAction(target);
-
-        if (const auto targetOwner = target->getUnitOwner())
-            onHostileAction(targetOwner);
-    }
-    return target;
 }
 
 float AIInterface::calcAggroRange(Unit* target)
@@ -2062,12 +2199,12 @@ void AIInterface::updateTotem(uint32_t p_time)
                 )
             {
                 //we set no target and see if we managed to fid a new one
-                m_target = nullptr;
+                m_currentTarget = nullptr;
                 //something happened to our target, pick another one
                 SpellCastTargets targets(0);
                 pSpell->GenerateTargets(&targets);
                 if (targets.getTargetMask() & TARGET_FLAG_UNIT)
-                    m_target = getUnit()->getWorldMapUnit(targets.getUnitTargetGuid());
+                    m_currentTarget = getUnit()->getWorldMapUnit(targets.getUnitTargetGuid());
             }
             nextTarget = getCurrentTarget();
             if (nextTarget)
@@ -2093,151 +2230,6 @@ void AIInterface::updateTotem(uint32_t p_time)
         sLogger.failure("AIInterface::updateTotem tried to update invalid totemspell");
     }
 }
-
-void AIInterface::setImmuneToNPC(bool apply)
-{
-    if (apply)
-    {
-        m_Unit->addUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
-    }
-    else
-    {
-        m_Unit->removeUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
-    }
-}
-
-void AIInterface::setImmuneToPC(bool apply)
-{
-    if (apply)
-    {
-        m_Unit->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-    }
-    else
-    {
-        m_Unit->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT);
-    }
-}
-
-void AIInterface::onHostileAction(Unit* pUnit, SpellInfo const* spellInfo/* = nullptr*/, bool ignoreThreatRedirects/* = false*/)
-{
-    const auto wasEngaged = isEngaged();
-
-    // Add initial threat
-    if (getUnit()->getThreatManager().canHaveThreatList())
-        getUnit()->getThreatManager().addThreat(pUnit, 0.0f, spellInfo, true, ignoreThreatRedirects);
-    else if (getUnit()->isPet())
-        attackStart(pUnit);
-
-    // Update combat for pure creatures only
-    if (getUnit()->getPlayerOwner() == nullptr)
-        getUnit()->getCombatHandler().onHostileAction(pUnit);
-
-    // Let players know that creature has aggroed them
-    // Pure creature targets do not need this
-    if (pUnit->getPlayerOwnerOrSelf() != nullptr)
-        pUnit->getCombatHandler().takeCombatAction(getUnit());
-
-    // Send hostile action event if unit was already engaged
-    // no need to send this if unit just started combat
-    if (wasEngaged)
-        handleEvent(EVENT_HOSTILEACTION, pUnit, 0);
-}
-
-void AIInterface::justEnteredCombat(Unit* pUnit)
-{
-    if (!isEngaged() && getUnit()->getThreatManager().canHaveThreatList())
-        engagementStart(pUnit);
-    else if (getUnit()->isPet()) // maybe add more here this part down is for petAI
-       engagementStart(pUnit);
-}
-
-void AIInterface::engagementStart(Unit* target)
-{
-    if (isEngaged())
-    {
-        sLogger.debug("AIInterface::justEnteredCombat called but creature is already inCombat");
-        return;
-    }
-
-    m_isEngaged = true;
-
-    atEngagementStart(target);
-}
-
-void AIInterface::atEngagementStart(Unit* target)
-{
-    // dismount if mounted
-    if (m_Unit->isCreature() && !(static_cast<Creature*>(m_Unit)->GetCreatureProperties()->typeFlags & CREATURE_FLAG1_FIGHT_MOUNTED))
-        m_Unit->dismount();
-
-    // make AI group attack
-    if (auto group = sMySQLStore.getSpawnGroupDataBySpawn(getUnit()->ToCreature()->getSpawnId()))
-    {
-        for (auto members : group->spawns)
-        {
-            if (members.second && members.second->isAlive() && members.second->IsInWorld())
-                members.second->getAIInterface()->onHostileAction(target, nullptr, false);
-        }
-    }
-
-    MovementGeneratorType const movetype = getUnit()->getMovementManager()->getCurrentMovementGeneratorType();
-    if (movetype == WAYPOINT_MOTION_TYPE || movetype == POINT_MOTION_TYPE)
-        getUnit()->SetSpawnLocation(getUnit()->GetPosition());
-
-    if (CreatureGroup* formation = getUnit()->ToCreature()->getFormation())
-        formation->memberEngagingTarget(getUnit()->ToCreature(), target);
-
-    // find assistance
-    findAssistance();
-
-    setDefaultBoundary();
-
-    handleEvent(EVENT_ENTERCOMBAT, target, 0);
-}
-
-void AIInterface::engagementOver()
-{
-    if (!m_isEngaged)
-    {
-        sLogger.debug("AIInterface::engagementOver called but creature is not inCombat");
-        return;
-    }
-    m_isEngaged = false;
-
-    atEngagementOver();
-}
-
-void AIInterface::atEngagementOver()
-{
-    internalPhase = 0;
-    spellEvents.resetEvents();
-    setUnitToFollow(nullptr);
-    setCannotReachTarget(false);
-    setNoCallAssistance(false);
-    setCurrentTarget(nullptr);
-    getUnit()->setTargetGuid(0);
-
-    m_hasFleed = false;
-    m_fleeTimer->resetInterval(0);
-    setCurrentAgent(AGENT_NULL);
-
-    m_Unit->smsg_AttackStop(nullptr);
-
-    m_Unit->getThreatManager().clearAllThreat();
-    m_Unit->getThreatManager().removeMeFromThreatLists();
-
-    if (!m_disableDynamicBoundary)
-        clearBoundary();
-
-    // Remove Instance Combat
-    instanceCombatProgress(false);
-}
-
-bool AIInterface::isEngaged() { return m_isEngaged; }
-bool AIInterface::isEngagedBy(Unit* who) const { return getUnit()->getThreatManager().canHaveThreatList() ? getUnit()->getThreatManager().isThreatenedBy(who, true) : getUnit()->getCombatHandler().isInPreCombatWithUnit(who); }
-
-bool AIInterface::isImmuneToNPC() { return m_Unit->hasUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT); }
-bool AIInterface::isImmuneToPC() { return m_Unit->hasUnitFlags(UNIT_FLAG_IGNORE_PLAYER_COMBAT); }
 
 void AIInterface::setCreatureProtoDifficulty(uint32_t entry)
 {
@@ -2369,6 +2361,10 @@ void AIInterface::eventHostileAction(Unit* /*pUnit*/, uint32_t /*misc1*/)
 {
     // On hostile action, set new default boundary
     setDefaultBoundary();
+
+    // Assist targets are chained with this owner
+    for (const auto helper : m_assistTargets)
+        helper->getAIInterface()->setDefaultBoundary();
 }
 
 void AIInterface::eventWander(Unit* /*pUnit*/, uint32_t /*misc1*/) { }
@@ -2491,8 +2487,8 @@ void AIInterface::eventEnterCombat(Unit* pUnit, uint32_t /*misc1*/)
     // If the Player is in A Group add all Players to the Threat List
     initGroupThreat(pUnit);
 
-    // Send attack sound
-    if (getUnit()->isCreature())
+    // Send attack sound if not assisting
+    if (getUnit()->isCreature() && !m_isEngagedByAssist)
         getUnit()->SendAIReaction();
 
     // Put mob into combat animation. Take out weapons and start to look serious :P
@@ -2501,11 +2497,11 @@ void AIInterface::eventEnterCombat(Unit* pUnit, uint32_t /*misc1*/)
 
 void AIInterface::instanceCombatProgress(bool activate)
 {
-    if (getUnit()->getWorldMap() && getUnit()->getWorldMap()->getBaseMap()->getMapInfo() && getUnit()->getWorldMap()->getBaseMap()->getMapInfo()->isRaid())
+    if (getUnit()->getWorldMap() && getUnit()->getWorldMap()->getBaseMap()->isRaid())
     {
         if (getUnit()->isCreature())
         {
-            if (static_cast<Creature*>(getUnit())->GetCreatureProperties()->Rank == 3)
+            if (static_cast<Creature*>(getUnit())->GetCreatureProperties()->Rank == ELITE_WORLDBOSS)
             {
                 if (activate)
                     getUnit()->getWorldMap()->addCombatInProgress(getUnit()->getGuid());
@@ -2745,7 +2741,7 @@ void AIInterface::eventUnitDied(Unit* pUnit, uint32_t /*misc1*/)
             }
         }
 
-        if (unitMapMgr->getBaseMap()->getMapInfo() && unitMapMgr->getBaseMap()->getMapInfo()->isRaid())
+        if (unitMapMgr->getBaseMap()->isRaid())
         {
             if (m_Unit->isCreature())
             {
@@ -2865,100 +2861,12 @@ void AIInterface::eventOnTaunt(Unit* pUnit)
     sendStoredText(mEmotesOnTaunt, pUnit);
 }
 
-void AIInterface::setCannotReachTarget(bool cannotReach)
-{
-    if (cannotReach == m_cannotReachTarget)
-        return;
-    m_cannotReachTarget = cannotReach;
-    m_cannotReachTimer->resetInterval(5000);
-}
-
 void AIInterface::initializeReactState()
 {
     if (getUnit()->isTotem() || getUnit()->isCritter() || getUnit()->isTrainingDummy())
         setReactState(REACT_PASSIVE);
     else
         setReactState(REACT_AGGRESSIVE);
-}
-
-bool AIInterface::checkBoundary()
-{
-    if (!isInBoundary(getUnit()->GetPosition()))
-    {
-        enterEvadeMode();
-        return false;
-    }
-
-    return true;
-}
-
-bool AIInterface::isInBoundary(LocationVector who) const
-{
-    if (_boundary.empty())
-        return true;
-
-    return AIInterface::isInBounds(&_boundary, who) != _negateBoundary;
-}
-
-bool AIInterface::isInBoundary() const
-{
-    if (_boundary.empty())
-        return true;
-
-    return AIInterface::isInBounds(&_boundary, getUnit()->GetPosition()) != _negateBoundary;
-}
-
-void AIInterface::doImmediateBoundaryCheck() { m_boundaryCheckTime->resetInterval(0); }
-
-/*static*/ bool AIInterface::isInBounds(CreatureBoundary const* boundary, LocationVector pos)
-{
-    for (const auto& areaBoundary : *boundary)
-        if (!areaBoundary->isWithinBoundary(pos))
-            return false;
-
-    return true;
-}
-
-void AIInterface::addBoundary(std::unique_ptr<AreaBoundary const> boundary, bool overrideDefault/* = false*/, bool negateBoundaries /*= false*/)
-{
-    if (boundary == nullptr)
-        return;
-
-    if (overrideDefault && !m_disableDynamicBoundary)
-    {
-        // On first custom boundary, clear existing default/dynamic boundaries
-        clearBoundary();
-        m_disableDynamicBoundary = true;
-    }
-
-    _boundary.push_back(std::move(boundary));
-    _negateBoundary = negateBoundaries;
-    doImmediateBoundaryCheck();
-}
-
-void AIInterface::setDefaultBoundary()
-{
-    if (m_disableDynamicBoundary)
-        return;
-
-    // Do net set default boundaries to creatures in raids or dungeons
-    // Mobs and bosses will chase players to instance portal unless custom boundaries are set
-    if (m_Unit->getWorldMap()->getBaseMap()->getMapInfo()->isInstanceMap())
-        return;
-
-    if (m_Unit->isPet() || m_Unit->isSummon())
-        return;
-
-    // Clear existing boundaries
-    clearBoundary();
-
-    // Default boundary 50 yards
-    addBoundary(std::make_unique<CircleBoundary>(getUnit()->GetPosition(), 50.0f));
-}
-
-void AIInterface::clearBoundary()
-{
-    _boundary.clear();
 }
 
 void AIInterface::movementInform(uint32_t type, uint32_t id)
@@ -4103,14 +4011,15 @@ void AIInterface::sendStoredText(definedEmoteVector& store, Unit* target)
     // Shuffle Around our textIds to randomize it
     if (!store.empty())
     {
-        Util::randomShuffleVector(&store);
+        if (store.size() > 1)
+            Util::randomShuffleVector(&store);
 
         for (const auto& mEmotes : store)
         {
             if (mEmotes->phase && mEmotes->phase != internalPhase)
                 continue;
 
-            if (mEmotes->healthPrecent && float(getUnit()->getHealthPct()) < mEmotes->healthPrecent)
+            if (mEmotes->healthPrecent && static_cast<float>(getUnit()->getHealthPct()) > mEmotes->healthPrecent)
                 continue;
 
             if (mEmotes->maxCount && mEmotes->count == mEmotes->maxCount)

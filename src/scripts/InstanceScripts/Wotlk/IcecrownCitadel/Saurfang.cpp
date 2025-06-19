@@ -90,7 +90,7 @@ void MuradinSaurfangEvent::AIUpdate(unsigned long time_passed)
                 sendDBChatMessage(SAY_INTRO_ALLIANCE_5_SE);
 
                 // Charge
-                getCreature()->getMovementManager()->moveCharge(chargePos[0].getPositionX(), chargePos[0].getPositionY(), chargePos[0].getPositionZ(), 8.5f, POINT_CHARGE); 
+                getCreature()->getMovementManager()->moveCharge(chargePos[0], 8.5f, POINT_CHARGE);
 
                 for (auto itr = _guardList.begin(); itr != _guardList.end(); ++itr)
                     (*itr)->GetScript()->DoAction(ACTION_CHARGE);
@@ -473,7 +473,7 @@ void OverlordSaurfangEvent::AIUpdate(unsigned long time_passed)
                 sendDBChatMessage(SAY_INTRO_HORDE_8_SE);
 
                 // Charge
-                getCreature()->getMovementManager()->moveCharge(chargePos[0].getPositionX(), chargePos[0].getPositionY(), chargePos[0].getPositionZ(), 8.5f, POINT_CHARGE);
+                getCreature()->getMovementManager()->moveCharge(chargePos[0], 8.5f, POINT_CHARGE);
                 break;
             }
             case EVENT_OUTRO_HORDE_2_SE:   // say
@@ -991,7 +991,7 @@ void DeathbringerSaurfangAI::DamageTaken(Unit* _attacker, uint32_t* damage)
         getCreature()->addUnitStateFlag(UNIT_STATE_EVADING);
 
         getCreature()->getAIInterface()->eventUnitDied(_attacker, 0);
-        getCreature()->getAIInterface()->engagementOver();
+        getCreature()->getAIInterface()->combatStop();
 
         _castAISpell(AchievementSpell);
         _castAISpell(ReputationBossSpell);
@@ -1196,7 +1196,7 @@ void NpcSaurfangEventAI::DoAction(int32_t const action)
         {
             if (_index)
             {
-                getCreature()->getMovementManager()->moveCharge(chargePos[_index].getPositionX(), chargePos[_index].getPositionY(), chargePos[_index].getPositionZ(), 8.5f, POINT_CHARGE);
+                getCreature()->getMovementManager()->moveCharge(chargePos[_index], 8.5f, POINT_CHARGE);
             }
             break;
         }

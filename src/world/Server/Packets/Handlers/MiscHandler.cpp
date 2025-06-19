@@ -496,7 +496,7 @@ void WorldSession::handleDungeonDifficultyOpcode(WorldPacket& recvPacket)
 
     // cannot reset while in an instance
     WorldMap* map = _player->getWorldMap();
-    if (map && map->getBaseMap()->isDungeon())
+    if (map && map->getBaseMap()->isInstanceMap())
         return;
 
     if (const auto group = _player->getGroup())
@@ -528,7 +528,7 @@ void WorldSession::handleRaidDifficultyOpcode(WorldPacket& recvPacket)
 
     // cannot reset while in an instance
     WorldMap* map = _player->getWorldMap();
-    if (map && map->getBaseMap()->isDungeon())
+    if (map && map->getBaseMap()->isInstanceMap())
         return;
 
     if (InstanceDifficulty::Difficulties(srlPacket.difficulty) == _player->getRaidDifficulty())

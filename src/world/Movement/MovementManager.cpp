@@ -563,21 +563,20 @@ void MovementManager::moveTargetedHome()
 
     clear();
 
-    uint64_t ownerGuid = owner->isCharmed() ? owner->getCharmGuid() : owner->getCreatedByGuid();
-    Unit* target = owner->getWorldMapCreature(ownerGuid);
-    if (!target)
+    auto* target = owner->getUnitOwner();
+    if (target == nullptr)
     {
         add(new HomeMovementGenerator<Creature>());
     }
     else
     {
-        add(new FollowMovementGenerator(target, PET_FOLLOW_DIST, PET_FOLLOW_ANGLE));
+        owner->getAIInterface()->handleEvent(EVENT_FOLLOWOWNER, nullptr, 0);
     }
 }
 
 void MovementManager::moveRandom(float wanderDistance)
 {
-    if (_owner->getObjectTypeId() == TYPEID_UNIT)
+    if (_owner->isCreature())
     {
         add(new RandomMovementGenerator<Creature>(wanderDistance), MOTION_SLOT_DEFAULT);
     }
@@ -603,7 +602,7 @@ void MovementManager::moveChase(Unit* target, Optional<ChaseRange> dist, Optiona
 
 void MovementManager::moveConfused()
 {
-    if (_owner->getObjectTypeId() == TYPEID_PLAYER)
+    if (_owner->isPlayer())
     {
         add(new ConfusedMovementGenerator<Player>());
     }
@@ -618,7 +617,7 @@ void MovementManager::moveFleeing(Unit* enemy, uint32_t time)
     if (!enemy)
         return;
 
-    if (_owner->getObjectTypeId() == TYPEID_UNIT)
+    if (_owner->isCreature())
     {
         if (time)
             add(new TimedFleeingMovementGenerator(enemy->getGuid(), time));
@@ -636,7 +635,7 @@ void MovementManager::movePoint(uint32_t id, LocationVector const& pos, bool gen
 
 void MovementManager::movePoint(uint32_t id, float x, float y, float z, bool generatePath, Optional<float> finalOrient)
 {
-    if (_owner->getObjectTypeId() == TYPEID_PLAYER)
+    if (_owner->isPlayer())
     {
         add(new PointMovementGenerator<Player>(id, x, y, z, generatePath, 0.0f, finalOrient));
     }
@@ -690,18 +689,18 @@ void MovementManager::moveTakeoff(uint32_t id, LocationVector const& pos, Option
     add(new GenericMovementGenerator(std::move(init), EFFECT_MOTION_TYPE, id));
 }
 
-void MovementManager::moveCharge(float x, float y, float z, float speed /*= SPEED_CHARGE*/, uint32_t id /*= EVENT_CHARGE*/, bool generatePath /*= false*/)
+void MovementManager::moveCharge(LocationVector const& pos, float speed /*= SPEED_CHARGE*/, uint32_t id /*= EVENT_CHARGE*/, bool generatePath /*= false*/)
 {
-    if (_owner->getObjectTypeId() == TYPEID_PLAYER)
+    if (_owner->isPlayer())
     {
-        PointMovementGenerator<Player>* movement = new PointMovementGenerator<Player>(id, x, y, z, generatePath, speed);
+        PointMovementGenerator<Player>* movement = new PointMovementGenerator<Player>(id, pos.x, pos.y, pos.z, generatePath, speed);
         movement->Priority = MOTION_PRIORITY_HIGHEST;
         movement->BaseUnitState = UNIT_STATE_CHARGING;
         add(movement);
     }
     else
     {
-        PointMovementGenerator<Creature>* movement = new PointMovementGenerator<Creature>(id, x, y, z, generatePath, speed);
+        PointMovementGenerator<Creature>* movement = new PointMovementGenerator<Creature>(id, pos.x, pos.y, pos.z, generatePath, speed);
         movement->Priority = MOTION_PRIORITY_HIGHEST;
         movement->BaseUnitState = UNIT_STATE_CHARGING;
         add(movement);
@@ -712,7 +711,7 @@ void MovementManager::moveCharge(PathGenerator const& path, float speed /*= SPEE
 {
     G3D::Vector3 dest = path.getActualEndPosition();
 
-    moveCharge(dest.x, dest.y, dest.z, speed, EVENT_CHARGE_PREPATH);
+    moveCharge(LocationVector(dest.x, dest.y, dest.z), speed, EVENT_CHARGE_PREPATH);
 
     // Charge movement is not started when using EVENT_CHARGE_PREPATH
     MovementMgr::MoveSplineInit init(_owner);
@@ -724,7 +723,7 @@ void MovementManager::moveCharge(PathGenerator const& path, float speed /*= SPEE
 void MovementManager::moveKnockbackFrom(float srcX, float srcY, float speedXY, float speedZ)
 {
     // This function may make players fall below map
-    if (_owner->getObjectTypeId() == TYPEID_PLAYER)
+    if (_owner->isPlayer())
         return;
 
     if (speedXY < 0.01f)
@@ -754,7 +753,7 @@ void MovementManager::moveKnockbackFrom(float srcX, float srcY, float speedXY, f
 void MovementManager::moveJumpTo(float angle, float speedXY, float speedZ)
 {
     // This function may make players fall below map
-    if (_owner->getObjectTypeId() == TYPEID_PLAYER)
+    if (_owner->isPlayer())
         return;
 
     float x, y, z = _owner->GetPositionZ();
@@ -915,7 +914,7 @@ void MovementManager::moveFall(uint32_t id/* = 0*/)
     _owner->obj_movement_info.setFallTime(0);
 
     // Don't run spline movement for players
-    if (_owner->getObjectTypeId() == TYPEID_PLAYER)
+    if (_owner->isPlayer())
         return;
 
 #if VERSION_STRING >= WotLK
@@ -931,22 +930,18 @@ void MovementManager::moveFall(uint32_t id/* = 0*/)
     add(movement);
 }
 
-void MovementManager::moveSeekAssistance(float x, float y, float z)
+void MovementManager::moveSeekAssistance(LocationVector const& pos)
 {
     if (Creature* creature = _owner->ToCreature())
     {
-        // todo
-        //creature->AttackStop();
-        //creature->CastStop();
-        //creature->DoNotReacquireSpellFocusTarget();
         creature->getAIInterface()->setReactState(REACT_PASSIVE);
-        add(new AssistanceMovementGenerator(EVENT_ASSIST_MOVE, x, y, z));
+        add(new AssistanceMovementGenerator(EVENT_ASSIST_MOVE, pos.x, pos.y, pos.z));
     }
 }
 
 void MovementManager::moveSeekAssistanceDistract(uint32_t time)
 {
-    if (_owner->getObjectTypeId() == TYPEID_UNIT)
+    if (_owner->isCreature())
     {
         add(new AssistanceDistractMovementGenerator(time, _owner->GetOrientation()));
     }
@@ -954,7 +949,7 @@ void MovementManager::moveSeekAssistanceDistract(uint32_t time)
 
 void MovementManager::moveTaxiFlight(uint32_t path, uint32_t pathnode)
 {
-    if (_owner->getObjectTypeId() == TYPEID_PLAYER)
+    if (_owner->isPlayer())
     {
         if (path < sTaxiPathNodesByPath.size())
         {
@@ -1005,7 +1000,7 @@ void MovementManager::moveRotate(uint32_t id, uint32_t time, RotateDirection dir
 
 void MovementManager::moveFormation(Unit* leader, float range, float angle, uint32_t point1, uint32_t point2)
 {
-    if (_owner->getObjectTypeId() == TYPEID_UNIT && leader)
+    if (_owner->isCreature() && leader)
     {
         add(new FormationMovementGenerator(leader, range, angle, point1, point2), MOTION_SLOT_DEFAULT);
     }

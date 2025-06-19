@@ -1813,7 +1813,7 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
 public:
-    bool isGMFlagSet();
+    bool isGMFlagSet() const;
 
     void sendMovie(uint32_t movieId);
 

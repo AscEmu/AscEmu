@@ -201,7 +201,7 @@ bool ChatHandler::HandleAiChargeCommand(const char* /*args*/, WorldSession* sess
     if (selected_unit == nullptr)
         return true;
 
-    selected_unit->getMovementManager()->moveCharge(session->GetPlayer()->GetPositionX(), session->GetPlayer()->GetPositionY(), session->GetPlayer()->GetPositionZ());
+    selected_unit->getMovementManager()->moveCharge(session->GetPlayer()->GetPosition());
     return true;
 }
 

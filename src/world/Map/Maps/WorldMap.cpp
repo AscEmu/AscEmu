@@ -2545,7 +2545,7 @@ float WorldMap::getUpdateDistance(Object* curObj, Object* obj, Player* plObj)
         return no_distance;
 
     // unlimited distance in Instances/Raids
-    if (getBaseMap()->getMapInfo()->isInstanceMap())
+    if (getBaseMap()->isInstanceMap())
         return no_distance;
 
     //If the object announcing its position is a transport, or other special object, then deleting it from visible objects should be avoided. - By: VLack

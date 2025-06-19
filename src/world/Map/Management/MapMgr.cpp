@@ -138,7 +138,7 @@ void MapMgr::createBaseMap(uint32_t mapId)
 
         m_BaseMaps.insert_or_assign(mapId, std::make_unique<BaseMap>(mapId, mapInfo, mapEntry));
 
-        if (!mapEntry->instanceable())
+        if (!mapEntry->isInstanceableMap())
         {
             m_WorldMaps.insert_or_assign(mapId, createWorldMap(mapId, worldConfig.server.mapUnloadTime * 1000));
         }
@@ -191,7 +191,7 @@ std::list<InstanceMap*> MapMgr::findInstancedMaps(uint32_t mapId)
 
     for (auto const& maps : m_InstancedMaps)
     {
-        if (maps.second->getBaseMap()->getMapId() == mapId && maps.second->getBaseMap()->isDungeon())
+        if (maps.second->getBaseMap()->getMapId() == mapId && maps.second->getBaseMap()->isInstanceMap())
             list.push_back(static_cast<InstanceMap*>(maps.second.get()));
     }
 
@@ -205,7 +205,7 @@ WorldMap* MapMgr::findWorldMap(uint32_t mapId, uint32_t instanceId) const
     if (!baseMap)
         return nullptr;
 
-    if (baseMap->instanceable())
+    if (baseMap->isInstanceableMap())
     {
         map = findInstanceMap(instanceId);
     }
@@ -392,7 +392,7 @@ WorldMap* MapMgr::createMap(uint32_t mapId, Player* player, uint32_t instanceId)
 
     if (baseMap)
     {
-        if (baseMap->instanceable())
+        if (baseMap->isInstanceableMap())
         {
             // instance check.
             map = createInstanceForPlayer(mapId, player, instanceId);
@@ -412,11 +412,11 @@ EnterState MapMgr::canPlayerEnter(uint32_t mapid, uint32_t minLevel, Player* pla
     if (!entry)
         return CANNOT_ENTER_NO_ENTRY;
 
-    if (!entry->isDungeon())
+    if (!entry->isInstanceMap())
         return CAN_ENTER;
 
     MySQLStructure::MapInfo const* mapInfo = sMySQLStore.getWorldMapInfo(mapid);
-    if (!mapInfo && mapInfo->isNonInstanceMap())
+    if (!mapInfo && mapInfo->isWorldMap())
         return CANNOT_ENTER_UNINSTANCED_DUNGEON;
 
     InstanceDifficulty::Difficulties targetDifficulty, requestedDifficulty;
@@ -463,7 +463,7 @@ EnterState MapMgr::canPlayerEnter(uint32_t mapid, uint32_t minLevel, Player* pla
         )
         return CANNOT_ENTER_KEY;
 
-    if (!mapInfo->isNonInstanceMap() && player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC && player->getLevel() < mapInfo->minlevel_heroic)
+    if (!entry->isWorldMap() && player->getDungeonDifficulty() >= InstanceDifficulty::DUNGEON_HEROIC && player->getLevel() < mapInfo->minlevel_heroic)
         return CANNOT_ENTER_MIN_LEVEL_HC;
 
     const auto group = player->getGroup();
@@ -492,7 +492,7 @@ EnterState MapMgr::canPlayerEnter(uint32_t mapid, uint32_t minLevel, Player* pla
     }
 
     // players are only allowed to enter 5 instances per hour
-    if (entry->isDungeon() && (!player->getGroup() || (player->getGroup() && !player->getGroup()->isLFGGroup())))
+    if (entry->isInstanceMap() && (!player->getGroup() || (player->getGroup() && !player->getGroup()->isLFGGroup())))
     {
         uint32_t instanceIdToCheck = 0;
         if (InstanceSaved* save = player->getInstanceSave(mapid, entry->isRaid()))

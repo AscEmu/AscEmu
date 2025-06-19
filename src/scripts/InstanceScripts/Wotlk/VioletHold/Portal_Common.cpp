@@ -21,7 +21,7 @@ CreatureAIScript* CommonPortalAI::Create(Creature* pCreature) { return new Commo
 
 void CommonPortalAI::OnLoad()
 {
-    getCreature()->getAIInterface()->setImmuneToNPC(true);
+    getCreature()->getAIInterface()->setIgnoreCreatureCombat(true);
     getCreature()->castSpell(getCreature(), SPELL_PORTAL_PERIODIC, true);
     getCreature()->setUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
 }
