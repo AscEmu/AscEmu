@@ -68,35 +68,33 @@ uint32_t BaseMap::getMapId() const
     return _mapEntry->id;
 }
 
-bool BaseMap::instanceable() const
-{
-    return _mapEntry && _mapEntry->instanceable();
-}
-
 bool BaseMap::isDungeon() const
 {
-    return _mapEntry && _mapEntry->isDungeon();
-}
-
-bool BaseMap::isNonRaidDungeon() const
-{
-    return _mapEntry && _mapEntry->isNonRaidDungeon();
+    if (_mapEntry == nullptr || _mapInfo == nullptr)
+        return false;
+    return _mapEntry->isDungeon() && (_mapInfo->isDungeon() || _mapInfo->isMultimodeDungeon());
 }
 
 bool BaseMap::isRaid() const
 {
-    return _mapEntry && _mapEntry->isRaid();
+    if (_mapEntry == nullptr || _mapInfo == nullptr)
+        return false;
+    return _mapEntry->isRaid() && _mapInfo->isRaid();
 }
 
 bool BaseMap::isBattleground() const
 {
-    return _mapEntry && _mapEntry->isBattleground();
+    if (_mapEntry == nullptr || _mapInfo == nullptr)
+        return false;
+    return _mapEntry->isBattleground() && _mapInfo->isBattlegroundOrArena();
 }
 
-bool BaseMap::isBattleArena() const
+bool BaseMap::isArena() const
 {
 #if VERSION_STRING > Classic
-    return _mapEntry && _mapEntry->isBattleArena();
+    if (_mapEntry == nullptr || _mapInfo == nullptr)
+        return false;
+    return _mapEntry->isArena() && _mapInfo->isBattlegroundOrArena();
 #else
     return false;
 #endif
@@ -104,7 +102,30 @@ bool BaseMap::isBattleArena() const
 
 bool BaseMap::isBattlegroundOrArena() const
 {
-    return _mapEntry && _mapEntry->isBattlegroundOrArena();
+    if (_mapEntry == nullptr || _mapInfo == nullptr)
+        return false;
+    return _mapEntry->isBattlegroundOrArena() && _mapInfo->isBattlegroundOrArena();
+}
+
+bool BaseMap::isWorldMap() const
+{
+    if (_mapEntry == nullptr || _mapInfo == nullptr)
+        return false;
+    return _mapEntry->isWorldMap() && _mapInfo->isWorldMap();
+}
+
+bool BaseMap::isInstanceMap() const
+{
+    if (_mapEntry == nullptr || _mapInfo == nullptr)
+        return false;
+    return _mapEntry->isInstanceMap() && _mapInfo->isInstanceMap();
+}
+
+bool BaseMap::isInstanceableMap() const
+{
+    if (_mapEntry == nullptr || _mapInfo == nullptr)
+        return false;
+    return _mapEntry->isInstanceableMap() && _mapInfo->isInstanceableMap();
 }
 
 bool BaseMap::getEntrancePos(int32_t& mapid, float& x, float& y) const

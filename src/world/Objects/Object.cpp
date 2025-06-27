@@ -1038,9 +1038,9 @@ DamageInfo Object::doSpellDamage(Unit* victim, uint32_t spellId, float_t dmg, ui
 
     // Tagging should happen when damage packets are sent
     const auto plrOwner = getPlayerOwnerOrSelf();
-    if (plrOwner != nullptr && victim->isCreature() && victim->isTaggable())
+    if (plrOwner != nullptr && victim->isCreature() && victim->isTaggableFor(ToUnit()))
     {
-        victim->setTaggerGuid(getGuid());
+        victim->setTaggerGuid(ToUnit());
         plrOwner->tagUnit(victim);
     }
 
@@ -3610,7 +3610,7 @@ bool Object::IsWithinLOSInMap(Object* obj)
         return false;
 
     float ox, oy, oz;
-    if (obj->getObjectTypeId() == TYPEID_PLAYER)
+    if (obj->isPlayer())
     {
         obj->getPosition(ox, oy, oz);
         oz += getCollisionHeight();
@@ -3621,7 +3621,7 @@ bool Object::IsWithinLOSInMap(Object* obj)
     }
 
     float x, y, z;
-    if (getObjectTypeId() == TYPEID_PLAYER)
+    if (isPlayer())
     {
         getPosition(x, y, z);
         z += getCollisionHeight();
@@ -3641,7 +3641,7 @@ bool Object::IsWithinLOS(LocationVector location)
         location.z += getCollisionHeight();
 
         float x, y, z;
-        if (getObjectTypeId() == TYPEID_PLAYER)
+        if (isPlayer())
         {
             getPosition(x, y, z);
             z += getCollisionHeight();
@@ -4138,16 +4138,16 @@ bool Object::isValidTarget(Object* target, SpellInfo const* bySpell)
     // ignore immunity flags when assisting
     if (unitOrOwner && unitTarget && !(isPositiveSpell && bySpell->hasAttribute(ATTRIBUTESEXF_UNK5)))
     {
-        if (!unitOrOwner->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) && unitTarget->getAIInterface()->isImmuneToNPC())
+        if (!unitOrOwner->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) && unitTarget->getAIInterface()->isIgnoringCreatureCombat())
             return false;
 
-        if (!unitTarget->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) && unitOrOwner->getAIInterface()->isImmuneToNPC())
+        if (!unitTarget->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) && unitOrOwner->getAIInterface()->isIgnoringCreatureCombat())
             return false;
 
-        if (unitOrOwner->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) && unitTarget->getAIInterface()->isImmuneToPC())
+        if (unitOrOwner->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) && unitTarget->getAIInterface()->isIgnoringPlayerCombat())
             return false;
 
-        if (unitTarget->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) && unitOrOwner->getAIInterface()->isImmuneToPC())
+        if (unitTarget->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE) && unitOrOwner->getAIInterface()->isIgnoringPlayerCombat())
             return false;
     }
 
@@ -4284,12 +4284,12 @@ bool Object::isValidAssistTarget(Unit* target, SpellInfo const* bySpell)
     {
         if (unit && unit->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
         {
-            if (unitTarget->getAIInterface()->isImmuneToPC())
+            if (unitTarget->getAIInterface()->isIgnoringPlayerCombat())
                 return false;
         }
         else
         {
-            if (unitTarget->getAIInterface()->isImmuneToNPC())
+            if (unitTarget->getAIInterface()->isIgnoringCreatureCombat())
                 return false;
         }
     }
@@ -4411,14 +4411,7 @@ void Object::PlaySoundToSet(uint32_t sound_entry)
 
 bool Object::IsInBg()
 {
-    MySQLStructure::MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(GetMapId());
-
-    if (pMapinfo != nullptr)
-    {
-        return (pMapinfo->isBattleground());
-    }
-
-    return false;
+    return IsInWorld() && getWorldMap()->getBaseMap()->isBattlegroundOrArena();
 }
 
 uint32_t Object::GetTeam() const
@@ -5025,7 +5018,7 @@ void Object::movePositionToFirstCollision(LocationVector &pos, float dist, float
 
 float Object::getMapWaterOrGroundLevel(float x, float y, float z, float* ground/* = nullptr*/)
 {
-    return getWorldMap()->getWaterOrGroundLevel(GetPhase(), LocationVector(x, y, z), ground, getObjectTypeId() == TYPEID_UNIT ? !static_cast<Unit*>(this)->getAuraWithAuraEffect(SPELL_AURA_WATER_WALK) : false);
+    return getWorldMap()->getWaterOrGroundLevel(GetPhase(), LocationVector(x, y, z), ground, isCreature() ? !static_cast<Unit*>(this)->getAuraWithAuraEffect(SPELL_AURA_WATER_WALK) : false);
 }
 
 float Object::getFloorZ()
@@ -5119,7 +5112,7 @@ GameObject* Object::summonGameObject(uint32_t entryID, LocationVector pos, Quate
     }
 
     go->setRespawnTime(spawnTime);
-    if (isPlayer() || (getObjectTypeId() == TYPEID_UNIT && summonType == GO_SUMMON_TIMED_OR_CORPSE_DESPAWN)) //not sure how to handle this
+    if (isPlayer() || (isCreature() && summonType == GO_SUMMON_TIMED_OR_CORPSE_DESPAWN)) //not sure how to handle this
         ToUnit()->addGameObject(go);
     else
         go->setSpawnedByDefault(false);

@@ -116,7 +116,7 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
                 {
                     case PET_ACTION_ATTACK:
                     {
-                        if (unitTarget == summonedPet || !summonedPet->isValidTarget(unitTarget))
+                        if (!summonedPet->getAIInterface()->canOwnerAttackUnit(unitTarget))
                         {
                             summonedPet->sendActionFeedback(PET_FEEDBACK_CANT_ATTACK_TARGET);
                             return;
@@ -124,17 +124,12 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
 
                         summonedPet->getAIInterface()->setPetOwner(_player);
                         summonedPet->getMovementManager()->remove(FOLLOW_MOTION_TYPE);
-                        summonedPet->getAIInterface()->onHostileAction(unitTarget, nullptr, true);
+                        summonedPet->getAIInterface()->attackStartUnsafe(unitTarget);
                     }
                     break;
                     case PET_ACTION_FOLLOW:
                     {
-                        if (summonedPet->hasUnitStateFlag(UNIT_STATE_CHASING))
-                            summonedPet->getMovementManager()->remove(CHASE_MOTION_TYPE);
-
-                        summonedPet->getAIInterface()->setPetOwner(_player);
-                        summonedPet->getAIInterface()->setCurrentTarget(nullptr);
-                        summonedPet->getAIInterface()->handleEvent(EVENT_FOLLOWOWNER, summonedPet, 0);
+                        summonedPet->getAIInterface()->enterEvadeMode();
                     }
                     break;
                     case PET_ACTION_STAY:
@@ -198,14 +193,10 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
             break;
             case PET_ACTION_STATE:
             {
-                if (srlPacket.misc == PET_ACTION_STAY) 
-                {
-                    summonedPet->getThreatManager().clearAllThreat();
-                    summonedPet->getThreatManager().removeMeFromThreatLists();
+                // If set to passive pet should stop attacking and return to owner
+                if (srlPacket.misc == REACT_PASSIVE)
+                    summonedPet->getAIInterface()->enterEvadeMode();
 
-                    summonedPet->getAIInterface()->setPetOwner(_player);
-                    summonedPet->getAIInterface()->handleEvent(EVENT_FOLLOWOWNER, summonedPet, 0);
-                }
                 summonedPet->getAIInterface()->setReactState(ReactStates(srlPacket.misc));
 
             }

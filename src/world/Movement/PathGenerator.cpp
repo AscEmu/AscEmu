@@ -607,7 +607,7 @@ void PathGenerator::createFilter()
     uint16_t includeFlags = 0;
     uint16_t excludeFlags = 0;
 
-    if (_source->getObjectTypeId() == TYPEID_UNIT)
+    if (_source->isCreature())
     {
         Creature* creature = (Creature*)_source;
         if (creature->canWalk())

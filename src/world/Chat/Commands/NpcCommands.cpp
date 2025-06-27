@@ -86,16 +86,16 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
             creature_target->getAIInterface()->setMeleeDisabled(false);
             break;
         case AGENT_RANGED:
-            creature_target->getAIInterface()->m_canRangedAttack = true;
+            creature_target->getAIInterface()->setRangedDisabled(false);
             break;
         case AGENT_FLEE:
-            creature_target->getAIInterface()->m_canFlee = true;
+            creature_target->getAIInterface()->setCanFlee(true);
             break;
         case AGENT_SPELL:
             creature_target->getAIInterface()->addSpellToList(std::move(ai_spell));
             break;
         case AGENT_CALLFORHELP:
-            creature_target->getAIInterface()->m_canCallForHelp = true;
+            creature_target->getAIInterface()->setCanCallForHelp(true);
             break;
         default:
         {

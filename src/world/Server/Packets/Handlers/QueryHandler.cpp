@@ -190,7 +190,7 @@ void WorldSession::handleCorpseQueryOpcode(WorldPacket& /*recvPacket*/)
         return;
 
     const auto mapInfo = sMySQLStore.getWorldMapInfo(corpse->GetMapId());
-    if (mapInfo == nullptr || mapInfo->isNonInstanceMap() || mapInfo->isBattleground())
+    if (mapInfo == nullptr || mapInfo->isWorldMap() || mapInfo->isBattlegroundOrArena())
     {
         SendPacket(MsgCorspeQuery(uint8_t(1), corpse->GetMapId(), corpse->GetPosition(), corpse->GetMapId(), uint32_t(0)).serialise().get());
     }

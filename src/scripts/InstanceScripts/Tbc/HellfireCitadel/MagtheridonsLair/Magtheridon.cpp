@@ -102,8 +102,8 @@ void MagtheridonAI::AIUpdate(unsigned long time_passed)
             break;
         case EVENT_RELEASED:
             getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
-            getCreature()->getAIInterface()->setImmuneToPC(false);
-            getCreature()->getAIInterface()->setImmuneToNPC(false);
+            getCreature()->getAIInterface()->setIgnorePlayerCombat(false);
+            getCreature()->getAIInterface()->setIgnoreCreatureCombat(false);
             getCreature()->removeUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
             setScriptPhase(PHASE_2);
 

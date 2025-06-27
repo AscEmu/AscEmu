@@ -52,13 +52,14 @@ public:
     // MapEntry
     WDB::Structures::MapEntry const* getMapEntry() const { return _mapEntry; }
     uint32_t getMapId() const;
-    bool instanceable() const;
     bool isDungeon() const;
-    bool isNonRaidDungeon() const;
     bool isRaid() const;
     bool isBattleground() const;
-    bool isBattleArena() const;
+    bool isArena() const;
     bool isBattlegroundOrArena() const;
+    bool isWorldMap() const;
+    bool isInstanceMap() const;
+    bool isInstanceableMap() const;
     bool getEntrancePos(int32_t& mapid, float& x, float& y) const;
 
     // Cell

@@ -28,7 +28,7 @@ public:
     // Summons an Explosive Sheep which will charge at a nearby enemy and explode for 135 - 165 damage.
     {
         const auto pos = mTarget->GetPosition();
-        getCreature()->getMovementManager()->moveCharge(pos.x, pos.y, pos.z);
+        getCreature()->getMovementManager()->moveCharge(pos);
         getCreature()->castSpell(getCreature(), 4050, true);
         getCreature()->Despawn(1000, 0); // Despawn since we "exploded"
     }

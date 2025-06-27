@@ -1020,7 +1020,7 @@ void ObjectMgr::loadGroupInstances()
         auto* group = sObjectMgr.getGroupById(fields[0].asUint32());
 
         WDB::Structures::MapEntry const* mapEntry = sMapStore.lookupEntry(fields[1].asUint16());
-        if (!mapEntry || !mapEntry->isDungeon())
+        if (!mapEntry || !mapEntry->isInstanceMap())
         {
             sLogger.failure("Incorrect entry in group_instance table : no dungeon map {}", fields[1].asUint16());
             continue;

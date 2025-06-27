@@ -69,7 +69,7 @@ void InstanceMap::initVisibilityDistance()
 
 void InstanceMap::permBindAllPlayers()
 {
-    if (!getBaseMap()->isDungeon())
+    if (!getBaseMap()->isInstanceMap())
         return;
 
     InstanceSaved* save = sInstanceMgr.getInstanceSave(getInstanceId());
@@ -122,7 +122,7 @@ bool InstanceMap::addPlayerToMap(Player* player)
     // disable unload Timer
     m_unloadTimer = 0;
 
-    if (getBaseMap()->isDungeon())
+    if (getBaseMap()->isInstanceMap())
     {
         const auto group = player->getGroup();
 

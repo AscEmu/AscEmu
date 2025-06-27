@@ -123,7 +123,7 @@ Transporter* TransportHandler::createTransport(uint32_t entry, WorldMap* map /*=
 
     if (const auto mapEntry = sMapStore.lookupEntry(mapId))
     {
-        if (mapEntry->instanceable() != tInfo->inInstance)
+        if (mapEntry->isInstanceableMap() != tInfo->inInstance)
         {
             sLogger.failure("Transport {} attempted creation in instance map (id: {}) but it is not an instanced transport!", entry, mapId);
             delete trans;
@@ -301,7 +301,7 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
         {
             if (const auto map = sMapStore.lookupEntry(*itr))
             {
-                if (map->instanceable())
+                if (map->isInstanceableMap())
                 {
                     sLogger.failure("TransportHandler::generatePath not allowed to create a path to a instance map!");
                     return;
@@ -314,7 +314,7 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
     else
     {
         if (const auto map = sMapStore.lookupEntry(*transport->mapsUsed.begin()))
-            transport->inInstance = map->instanceable();
+            transport->inInstance = map->isInstanceableMap();
     }
 
     // last to first is always "teleport", even for closed paths

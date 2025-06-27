@@ -166,7 +166,7 @@ public:
 
     void moveChase(Unit* target, Optional<ChaseRange> dist = 0.0f, Optional<ChaseAngle> angle = 0.0f);
     void moveJump(LocationVector const& pos, float speedXY, float speedZ, uint32_t id = EVENT_JUMP, bool hasOrientation = false);
-    void moveCharge(float x, float y, float z, float speed = SPEED_CHARGE, uint32_t id = EVENT_CHARGE, bool generatePath = false);
+    void moveCharge(LocationVector const& pos, float speed = SPEED_CHARGE, uint32_t id = EVENT_CHARGE, bool generatePath = false);
     void moveAlongSplineChain(uint32_t pointId, uint16_t dbChainId, bool walk);
     void movePoint(uint32_t id, LocationVector const& pos, bool generatePath = true, Optional<float> finalOrient = {});
     void movePoint(uint32_t id, float x, float y, float z, bool generatePath = true, Optional<float> finalOrient = {});
@@ -220,9 +220,9 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // combat setup
 public:
-    void setImmuneToPC(bool apply);
-    void setImmuneToNPC(bool apply);
-    void setImmuneToAll(bool apply);
+    void setIgnorePlayerCombat(bool apply);
+    void setIgnoreCreatureCombat(bool apply);
+    void setIgnoreAllCombat(bool apply);
     bool canEnterCombat();
     void setCanEnterCombat(bool enterCombat);
     bool _isInCombat();

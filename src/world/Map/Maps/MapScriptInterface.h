@@ -41,9 +41,6 @@ public:
     Creature* findNearestCreature(Object* pObject, uint32_t entry, float maxSearchRange /*= 250.0f*/) const;
 
     void getCreatureListWithEntryInRange(Creature* pCreature, std::list<Creature*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/) const;
-
-    Creature* getNearestAssistCreatureInCell(Creature* pCreature, Unit* enemy, float range /*= 250.0f*/) const;
-
     void getGameObjectListWithEntryInRange(Creature* pCreature, std::list<GameObject*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/) const;
 
     GameObject* findNearestGameObject(Object* pObject, uint32_t entry, float maxSearchRange /*= 250.0f*/) const;

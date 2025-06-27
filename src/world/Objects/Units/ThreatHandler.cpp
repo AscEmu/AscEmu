@@ -60,7 +60,7 @@ bool ThreatReference::shouldBeOffline() const
     if (!_owner->canSee(_victim))
         return true;
 
-    if (!_owner->getAIInterface()->isTargetAcceptable(_victim) || !_owner->getAIInterface()->canOwnerAttackUnit(_victim))
+    if (!_owner->getAIInterface()->canOwnerAttackUnit(_victim))
         return true;
 
     if (!flagsAllowFighting(_owner, _victim) || !flagsAllowFighting(_victim, _owner))
@@ -475,7 +475,7 @@ void ThreatManager::addThreat(Unit* target, float amount, SpellInfo const* spell
     if (!canHaveThreatList())
         return;
 
-    if (!_owner->getAIInterface()->getAllowedToEnterCombat())
+    if (!_owner->getAIInterface()->isAllowedToEnterCombat())
         return;
 
     if (!getOwner()->isAlive())

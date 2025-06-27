@@ -1189,7 +1189,7 @@ void Group::resetInstances(uint8_t method, bool isRaid, Player* SendMsgTo)
         bool isEmpty = true;
         // if the map is loaded, reset it
         WorldMap* map = sMapMgr.findWorldMap(instanceSave->getMapId(), instanceSave->getInstanceId());
-        if (map && map->getBaseMap()->isDungeon() && !(method == INSTANCE_RESET_GROUP_DISBAND && !instanceSave->canReset()))
+        if (map && map->getBaseMap()->isInstanceMap() && !(method == INSTANCE_RESET_GROUP_DISBAND && !instanceSave->canReset()))
         {
             if (instanceSave->canReset())
                 isEmpty = ((InstanceMap*)map)->reset(method);
@@ -1247,7 +1247,7 @@ InstanceGroupBind* Group::getBoundInstance(BaseMap* aMap)
 
 InstanceGroupBind* Group::getBoundInstance(WDB::Structures::MapEntry const* mapEntry)
 {
-    if (!mapEntry || !mapEntry->isDungeon())
+    if (!mapEntry || !mapEntry->isInstanceMap())
         return nullptr;
 
     InstanceDifficulty::Difficulties difficulty = getDifficulty(mapEntry->isRaid());
@@ -1408,7 +1408,7 @@ void Group::SendLootUpdates(Object* o)
                 {
                     Unit* victim = dynamic_cast<Unit*>(o);
 
-                    victim->setTaggerGuid(pLooter->getGuid());
+                    victim->setTaggerGuid(pLooter);
                     pLooter->getUpdateMgr().pushUpdateData(&buf, 1);
                 }
 

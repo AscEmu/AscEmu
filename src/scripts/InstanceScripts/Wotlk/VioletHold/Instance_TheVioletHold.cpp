@@ -319,8 +319,8 @@ void TheVioletHoldScript::UpdateEvent()
 
                 if (Creature* boss = getCreatureFromData(bossId))
                 {
-                    boss->getAIInterface()->setImmuneToNPC(false);
-                    boss->getAIInterface()->setImmuneToPC(false);
+                    boss->getAIInterface()->setIgnoreCreatureCombat(false);
+                    boss->getAIInterface()->setIgnorePlayerCombat(false);
                     boss->removeUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
 
                     switch (bossId)
@@ -333,8 +333,8 @@ void TheVioletHoldScript::UpdateEvent()
                             {
                                 if (Creature* guard = GetCreatureByGuid(getLocalData(i)))
                                 {
-                                    guard->getAIInterface()->setImmuneToNPC(false);
-                                    guard->getAIInterface()->setImmuneToPC(false);
+                                    guard->getAIInterface()->setIgnoreCreatureCombat(false);
+                                    guard->getAIInterface()->setIgnorePlayerCombat(false);
                                     guard->removeUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
                                 }
                             }
@@ -363,8 +363,8 @@ void TheVioletHoldScript::UpdateEvent()
                 {
                     cyanigosa->removeAllAurasById(SPELL_CYANIGOSA_ARCANE_POWER_STATE);
                     cyanigosa->castSpell(cyanigosa, SPELL_CYANIGOSA_TRANSFORM, true);
-                    cyanigosa->getAIInterface()->setImmuneToNPC(false);
-                    cyanigosa->getAIInterface()->setImmuneToPC(false);
+                    cyanigosa->getAIInterface()->setIgnoreCreatureCombat(false);
+                    cyanigosa->getAIInterface()->setIgnorePlayerCombat(false);
                     cyanigosa->removeUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
                 }
             } break;
@@ -603,8 +603,8 @@ void TheVioletHoldScript::resetBossEncounter(uint8_t bossId)
                     }
 
                     guard->getMovementManager()->moveTargetedHome();
-                    guard->getAIInterface()->setImmuneToNPC(true);
-                    guard->getAIInterface()->setImmuneToPC(true);
+                    guard->getAIInterface()->setIgnoreCreatureCombat(true);
+                    guard->getAIInterface()->setIgnorePlayerCombat(true);
                     guard->addUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
                 }
             }

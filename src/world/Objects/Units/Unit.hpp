@@ -1201,13 +1201,14 @@ public:
     //\todo: Zyres: tagging is Creature related, maybe move this to the correct class
 private:
     uint64_t m_taggerGuid = 0;
+    bool m_taggedBySummon = false;
 
 public:
-    void setTaggerGuid(uint64_t guid);
+    void setTaggerGuid(Unit const* tagger);
     uint64_t getTaggerGuid() const;
 
     bool isTagged() const;
-    bool isTaggable() const;
+    bool isTaggableFor(Unit const* unit) const;
 
     bool isTaggedByPlayerOrItsGroup(Player* tagger);
 

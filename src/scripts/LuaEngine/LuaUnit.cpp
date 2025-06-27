@@ -901,7 +901,7 @@ int LuaUnit::AddItem(lua_State* L, Unit* ptr)
 int LuaUnit::GetInstanceID(lua_State* L, Unit* ptr)
 {
     //if(ptr == nullptr || !ptr->IsInWorld() || !ptr->isCreature()) { return 0; }
-    if (!ptr || ptr->getWorldMap() == nullptr || ptr->getWorldMap()->getBaseMap()->getMapInfo()->isNonInstanceMap())
+    if (!ptr || ptr->getWorldMap() == nullptr || ptr->getWorldMap()->getBaseMap()->isWorldMap())
         lua_pushnil(L);
     else
         lua_pushinteger(L, ptr->GetInstanceID());
@@ -3342,7 +3342,7 @@ int LuaUnit::CanCallForHelp(lua_State* L, Unit* ptr)
         return 0;
 
     const bool enabled = CHECK_BOOL(L, 1);
-    ptr->getAIInterface()->m_canCallForHelp = enabled;
+    ptr->getAIInterface()->setCanCallForHelp(enabled);
     return 0;
 }
 
@@ -3352,7 +3352,7 @@ int LuaUnit::CallForHelpHp(lua_State* L, Unit* ptr)
         return 0;
 
     const float hp = CHECK_FLOAT(L, 1);
-    ptr->getAIInterface()->m_CallForHelpHealth = hp;
+    ptr->getAIInterface()->setCallForHelpHealth(hp);
     return 0;
 }
 

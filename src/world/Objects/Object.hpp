@@ -552,7 +552,7 @@ public:
         GameObject* summonGameObject(uint32_t entryID, LocationVector pos, QuaternionData const& rot, uint32_t spawnTime = 0, GOSummonType summonType = GO_SUMMON_TIMED_OR_CORPSE_DESPAWN);
         Creature* summonCreature(uint32_t entry, LocationVector position, CreatureSummonDespawnType despawnType = MANUAL_DESPAWN, uint32_t duration = 0, uint32_t spellId = 0);
 
-        float getDistanceSq(Object* obj)
+        float getDistanceSq(Object const* obj) const
         {
             if (obj->GetMapId() != m_mapId)
                 return 40000.0f;                        // enough for out of range

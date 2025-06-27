@@ -163,7 +163,7 @@ void AnubarakAI::onSummonedCreature(Creature* summon)
             summon->setDisplayId(summon->GetCreatureProperties()->Male_DisplayID);
             if (Unit* target = selectUnitTarget(FilterArgs(TargetFilter_Player)))
             {
-                summon->getAIInterface()->attackStart(target);
+                summon->getAIInterface()->attackStartIfCan(target);
                 addMessage(Message(anubarak::EMOTE_SPIKE, target), DoOnceScheduler());
             }
         } break;
@@ -533,7 +533,7 @@ void SpikeAI::handlePermafrostHit(Creature* pCreature)
 
 void SpikeAI::AIUpdate(unsigned long time_passed)
 {
-    if (!getCreature()->getAIInterface()->updateTarget())
+    if (!getCreature()->getAIInterface()->getCurrentTarget())
     {
         despawn();
         return;
@@ -599,7 +599,7 @@ void SpikeAI::startChase(Unit* target)
     setZoneWideCombat();
     addThreat(target, 1000000.0f);
     getCreature()->getAIInterface()->onHostileAction(target);
-    getCreature()->getAIInterface()->attackStart(target);
+    getCreature()->getAIInterface()->attackStartIfCan(target);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

@@ -304,7 +304,7 @@ void HellfireChannelerAI::OnDied(Unit* /*killer*/)
 
 void HellfireChannelerAI::OnDamageTaken(Unit* /*mAttacker*/, uint32_t /*fAmount*/)
 {
-    if (!getCreature()->getAIInterface()->getAllowedToEnterCombat())
+    if (!getCreature()->getAIInterface()->isAllowedToEnterCombat())
         getCreature()->getAIInterface()->setAllowedToEnterCombat(true);
 }
 

@@ -229,7 +229,7 @@ void Unit::Update(unsigned long time_passed)
             diff = msTime - m_lastAiInterfaceUpdateTime;
             if (diff >= 100)
             {
-                m_aiInterface->Update(diff);
+                m_aiInterface->update(diff);
                 m_lastAiInterfaceUpdateTime = msTime;
             }
         }
@@ -1761,10 +1761,7 @@ float Unit::getMeleeRange(Unit* target)
 
 bool Unit::isInInstance() const
 {
-    if (MySQLStructure::MapInfo const* mapInfo = sMySQLStore.getWorldMapInfo(this->GetMapId()))
-        return !mapInfo->isNonInstanceMap();
-
-    return false;
+    return IsInWorld() && !getWorldMap()->getBaseMap()->isWorldMap();
 }
 
 bool Unit::isInWater() const
@@ -3300,7 +3297,7 @@ void Unit::jumpTo(float speedXY, float speedZ, bool forward, Optional<LocationVe
     if (dest)
         angle += getRelativeAngle(*dest);
 
-    if (getObjectTypeId() == TYPEID_UNIT)
+    if (isCreature())
     {
         getMovementManager()->moveJumpTo(angle, speedXY, speedZ);
     }
@@ -5801,7 +5798,7 @@ bool Unit::canSee(Object* const obj)
     // Get map view distance (WIP: usually 100 yards for open world and 500 yards for instanced maps)
     //\ todo: there are some objects which should be visible even further and some objects which should always be visible
     // should cover all Instances with 5000 * 5000 easyier for far Gameobjects / Creatures to Handle, also Loaded Cells affect the Distance standart 2 Cells equal 500.0f * 500.0f : aaron02
-    const auto viewDistance = getWorldMap()->getBaseMap()->getMapInfo()->isInstanceMap() ? 5000.0f * 5000.0f : getWorldMap()->getVisibilityRange();
+    const auto viewDistance = getWorldMap()->getBaseMap()->isInstanceMap() ? 5000.0f * 5000.0f : getWorldMap()->getVisibilityRange();
     if (obj->isGameObject())
     {
         // TODO: for now, all maps have 500 yard view distance
@@ -7067,9 +7064,9 @@ void Unit::dealDamage(Unit* victim, uint32_t damage, uint32_t spellId, bool remo
 
     // Tagging should happen when damage packets are sent
     const auto plrOwner = getPlayerOwnerOrSelf();
-    if (plrOwner != nullptr && victim->isCreature() && victim->isTaggable())
+    if (plrOwner != nullptr && victim->isCreature() && victim->isTaggableFor(this))
     {
-        victim->setTaggerGuid(getGuid());
+        victim->setTaggerGuid(this);
         plrOwner->tagUnit(victim);
     }
 
@@ -8041,16 +8038,19 @@ void Unit::wipeTargetList()
 //////////////////////////////////////////////////////////////////////////////////////////
 // Tagging (helper for dynamic flags)
 
-void Unit::setTaggerGuid(uint64_t guid)
+void Unit::setTaggerGuid(Unit const* tagger)
 {
-    if (guid)
+    if (tagger != nullptr)
     {
-        this->m_taggerGuid = guid;
-        addDynamicFlags(U_DYN_FLAG_TAGGED_BY_OTHER);
+        this->m_taggerGuid = tagger->getGuid();
+        m_taggedBySummon = tagger->isSummon();
+        if (!m_taggedBySummon)
+            addDynamicFlags(U_DYN_FLAG_TAGGED_BY_OTHER);
     }
     else
     {
         this->m_taggerGuid = 0;
+        m_taggedBySummon = false;
         removeDynamicFlags(U_DYN_FLAG_TAGGED_BY_OTHER);
     }
 }
@@ -8062,15 +8062,30 @@ uint64_t Unit::getTaggerGuid() const
 
 bool Unit::isTagged() const
 {
-    return hasDynamicFlags(U_DYN_FLAG_TAGGED_BY_OTHER);
+    return hasDynamicFlags(U_DYN_FLAG_TAGGED_BY_OTHER) || (m_taggerGuid != 0 && m_taggedBySummon);
 }
 
-bool Unit::isTaggable() const
+bool Unit::isTaggableFor(Unit const* unit) const
 {
-    if (!isPet() && !hasDynamicFlags(U_DYN_FLAG_TAGGED_BY_OTHER))
-        return true;
+    if (isPet())
+        return false;
 
-    return false;
+    if (isTagged())
+    {
+        if (m_taggedBySummon && unit != nullptr)
+        {
+            // If tagged by summon, owner can tag it for themself
+            for (const auto* summon : unit->getSummonInterface()->getSummons())
+            {
+                if (summon->getGuid() == m_taggerGuid)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    return true;
 }
 
 bool Unit::isTaggedByPlayerOrItsGroup(Player* tagger)
@@ -8276,13 +8291,13 @@ void Unit::enterVehicle(Vehicle* vehicle, int8_t seatId)
 
     if (Player* player = ToPlayer())
     {
-        if (vehicle->getBase()->getObjectTypeId() == TYPEID_PLAYER && player->isInCombat())
+        if (vehicle->getBase()->isPlayer() && player->isInCombat())
         {
             vehicle->getBase()->removeAllAurasByAuraEffect(SPELL_AURA_CONTROL_VEHICLE);
             return;
         }
 
-        if (vehicle->getBase()->getObjectTypeId() == TYPEID_UNIT)
+        if (vehicle->getBase()->isCreature())
         {
             // If a player entered a vehicle that is part of a formation, remove it from the formation
             if (CreatureGroup* creatureGroup = vehicle->getBase()->ToCreature()->getFormation())
@@ -8405,7 +8420,7 @@ void Unit::exitVehicle(LocationVector const* exitPosition)
         player->summonTemporarilyUnsummonedPet();
 
     // Despawn Accessories
-    if (vehicle->getBase()->hasUnitStateFlag(UNIT_STATE_ACCESSORY) && vehicle->getBase()->getObjectTypeId() == TYPEID_UNIT)
+    if (vehicle->getBase()->hasUnitStateFlag(UNIT_STATE_ACCESSORY) && vehicle->getBase()->isCreature())
         if ((vehicle->getBase())->getVehicleKit()->getBase() == this)
             vehicle->getBase()->ToCreature()->Despawn(2000, 0);
 
@@ -8505,7 +8520,7 @@ void Unit::mount(uint32_t mount, uint32_t VehicleId, uint32_t creatureEntry)
 
         // if we have charmed npc, stun him also (everywhere)
         if (Unit* charm = getWorldMapUnit(getCharmGuid()))
-            if (charm->getObjectTypeId() == TYPEID_UNIT)
+            if (charm->isCreature())
                 charm->addUnitFlags(UNIT_FLAG_STUNNED);
 
         ByteBuffer guidData;
@@ -8573,7 +8588,7 @@ void Unit::dismount(bool resummonPet/* = true*/)
 
     // if we have charmed npc, remove stun also
     if (Unit* charm = getWorldMapUnit(getCharmGuid()))
-        if (charm->getObjectTypeId() == TYPEID_UNIT && charm->hasUnitFlags(UNIT_FLAG_STUNNED) && !charm->hasUnitStateFlag(UNIT_STATE_STUNNED))
+        if (charm->isCreature() && charm->hasUnitFlags(UNIT_FLAG_STUNNED) && !charm->hasUnitStateFlag(UNIT_STATE_STUNNED))
             charm->removeUnitFlags(UNIT_FLAG_STUNNED);
 #endif
 }
@@ -11405,9 +11420,9 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
 
     // Tagging should happen when damage packets are sent
     const auto plrOwner = getPlayerOwnerOrSelf();
-    if (plrOwner != nullptr && pVictim->isCreature() && pVictim->isTaggable())
+    if (plrOwner != nullptr && pVictim->isCreature() && pVictim->isTaggableFor(this))
     {
-        pVictim->setTaggerGuid(getGuid());
+        pVictim->setTaggerGuid(this);
         plrOwner->tagUnit(pVictim);
     }
 

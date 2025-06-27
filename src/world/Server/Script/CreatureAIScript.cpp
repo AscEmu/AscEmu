@@ -341,7 +341,7 @@ ReactStates CreatureAIScript::getReactState()
 
 void CreatureAIScript::attackStart(Unit* target)
 {
-    _creature->getAIInterface()->attackStart(target);
+    _creature->getAIInterface()->attackStartIfCan(target);
 }
 
 void CreatureAIScript::attackStop()
@@ -388,9 +388,9 @@ void CreatureAIScript::moveJump(LocationVector const& pos, float speedXY, float 
     getMovementManager()->moveJump(pos, speedXY, speedZ, id, hasOrientation);
 }
 
-void CreatureAIScript::moveCharge(float x, float y, float z, float speed /*= SPEED_CHARGE*/, uint32_t id /*= EVENT_CHARGE*/, bool generatePath /*= false*/)
+void CreatureAIScript::moveCharge(LocationVector const& pos, float speed /*= SPEED_CHARGE*/, uint32_t id /*= EVENT_CHARGE*/, bool generatePath /*= false*/)
 {
-    getMovementManager()->moveCharge(x, y, z, speed, id, generatePath);
+    getMovementManager()->moveCharge(pos, speed, id, generatePath);
 }
 
 void CreatureAIScript::moveAlongSplineChain(uint32_t pointId, uint16_t dbChainId, bool walk)
@@ -637,27 +637,27 @@ bool CreatureAIScript::hasWaypoints(uint32_t pathId)
     return false;
 }
 
-void CreatureAIScript::setImmuneToPC(bool apply)
+void CreatureAIScript::setIgnorePlayerCombat(bool apply)
 {
-    _creature->getAIInterface()->setImmuneToPC(apply);
+    _creature->getAIInterface()->setIgnorePlayerCombat(apply);
 }
 
-void CreatureAIScript::setImmuneToNPC(bool apply)
+void CreatureAIScript::setIgnoreCreatureCombat(bool apply)
 {
-    _creature->getAIInterface()->setImmuneToNPC(apply);
+    _creature->getAIInterface()->setIgnoreCreatureCombat(apply);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // combat setup
-void CreatureAIScript::setImmuneToAll(bool apply)
+void CreatureAIScript::setIgnoreAllCombat(bool apply)
 {
-    _creature->getAIInterface()->setImmuneToPC(apply);
-    _creature->getAIInterface()->setImmuneToNPC(apply);
+    _creature->getAIInterface()->setIgnorePlayerCombat(apply);
+    _creature->getAIInterface()->setIgnoreCreatureCombat(apply);
 }
 
 bool CreatureAIScript::canEnterCombat()
 {
-    return _creature->getAIInterface()->getAllowedToEnterCombat();
+    return _creature->getAIInterface()->isAllowedToEnterCombat();
 }
 
 void CreatureAIScript::setCanEnterCombat(bool enterCombat)
@@ -796,7 +796,7 @@ void CreatureAIScript::setZoneWideCombat(Creature* creature)
         creature = _creature;
 
     WorldMap* map = creature->getWorldMap();
-    if (!map || !map->getBaseMap() || !map->getBaseMap()->isDungeon())
+    if (!map || !map->getBaseMap() || !map->getBaseMap()->isInstanceMap())
         return;
 
     if (!map->hasPlayers())

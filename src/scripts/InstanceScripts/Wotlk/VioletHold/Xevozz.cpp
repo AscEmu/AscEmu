@@ -35,8 +35,8 @@ CreatureAIScript* XevozzAI::Create(Creature* pCreature) { return new XevozzAI(pC
 void XevozzAI::OnLoad()
 {
     getCreature()->getMovementManager()->moveTargetedHome();
-    getCreature()->getAIInterface()->setImmuneToNPC(true);
-    getCreature()->getAIInterface()->setImmuneToPC(true);
+    getCreature()->getAIInterface()->setIgnoreCreatureCombat(true);
+    getCreature()->getAIInterface()->setIgnorePlayerCombat(true);
     getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
 }
 

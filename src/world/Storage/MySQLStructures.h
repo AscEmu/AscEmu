@@ -668,12 +668,12 @@ namespace MySQLStructure
 
         bool isDungeon() const { return type == INSTANCE_DUNGEON; }
         bool isRaid() const { return type == INSTANCE_RAID; }
-        bool isBattleground() const { return type == INSTANCE_BATTLEGROUND; }
+        bool isBattlegroundOrArena() const { return type == INSTANCE_BATTLEGROUND; }
         bool isMultimodeDungeon() const { return type == INSTANCE_MULTIMODE; }
 
-        bool isDungeonMap() const { return isDungeon() || isMultimodeDungeon(); }
-        bool isInstanceMap() const { return isDungeonMap() || isRaid(); }
-        bool isNonInstanceMap() const { return type == INSTANCE_NULL; }
+        bool isInstanceMap() const { return isDungeon() || isMultimodeDungeon() || isRaid(); }
+        bool isInstanceableMap() const { return isInstanceMap() || isBattlegroundOrArena(); }
+        bool isWorldMap() const { return type == INSTANCE_NULL; }
     };
 
     //worldstate_templates

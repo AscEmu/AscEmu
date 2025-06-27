@@ -54,7 +54,7 @@ class SERVER_DECL EventableObject
         void event_ModifyTimeAndTimeLeft(uint32_t EventType, time_t Time);
         bool event_HasEvent(uint32_t EventType);
         void event_RemoveByPointer(TimedEvent* ev);
-        int32_t event_GetCurrentInstanceId() { return m_event_Instanceid; }
+        int32_t event_GetCurrentInstanceId() const { return m_event_Instanceid; }
         bool event_GetTimeLeft(uint32_t EventType, time_t* Time);
 
     public:

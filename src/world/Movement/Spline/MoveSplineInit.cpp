@@ -117,9 +117,18 @@ int32_t MoveSplineInit::Launch()
 
         args.velocity = unit->getSpeedRate(SelectSpeedType(moveFlagsForSpeed), true);
 
-        if (unit->isCreature())
-            if (unit->getAIInterface()->alreadyCalledForHelp())
-                args.velocity *= 0.66f;
+        // TODO: move this in Unit::updateSpeed, very hacky to do in splines -Appled
+        if (unit->isCreature() && !unit->isSummon() && unit->m_playerControler == nullptr && !unit->isVehicle() && !unit->isInEvadeMode())
+        {
+            // Bosses that can be slowed will also slow down when hp drops low
+            if (!unit->hasSpellImmunity(SPELL_IMMUNITY_SLOW))
+            {
+                // Units that are below 30% hp will start gradually slow their speed
+                const auto speedReductionPct = std::min(0.0f, (1.66f * (unit->getHealthPct() - 30.0f)));
+                if (speedReductionPct < 0.0f)
+                    args.velocity *= (1.0f + (speedReductionPct / 100.0f));
+            }
+        }
     }
 
 #if VERSION_STRING > TBC

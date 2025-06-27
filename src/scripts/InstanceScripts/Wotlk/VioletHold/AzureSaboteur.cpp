@@ -17,8 +17,8 @@ AzureSaboteurAI::AzureSaboteurAI(Creature* pCreature) : CreatureAIScript(pCreatu
     // Instance Script
     mInstance = getInstanceScript();
 
-    getCreature()->getAIInterface()->setImmuneToNPC(true);
-    getCreature()->getAIInterface()->setImmuneToPC(true);
+    getCreature()->getAIInterface()->setIgnoreCreatureCombat(true);
+    getCreature()->getAIInterface()->setIgnorePlayerCombat(true);
 
     mbossId = 0;
 }

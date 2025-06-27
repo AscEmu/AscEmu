@@ -37,7 +37,7 @@ void JaraxxusAI::InitOrReset()
     else if (getInstanceScript()->getBossState(DATA_JARAXXUS) == EncounterStates::Failed)
     {
         castSpellOnSelf(SPELL_JARAXXUS_CHAINS);
-        setImmuneToPC(true);
+        setIgnorePlayerCombat(true);
         setReactState(REACT_PASSIVE);
     }
 }
@@ -148,7 +148,7 @@ void JaraxxusAI::DoAction(int32_t action)
     else if (action == ACTION_JARAXXUS_ENGAGE)
     {
         _removeAura(SPELL_JARAXXUS_CHAINS);
-        setImmuneToPC(false);
+        setIgnorePlayerCombat(false);
         setReactState(REACT_AGGRESSIVE);
         setZoneWideCombat();
     }
@@ -195,7 +195,7 @@ void JaraxxusAI::faceto(CreatureAIFunc pThis)
 
 void JaraxxusAI::startCombat(CreatureAIFunc pThis)
 {
-    setImmuneToPC(false);
+    setIgnorePlayerCombat(false);
     setReactState(REACT_AGGRESSIVE);
     setZoneWideCombat();
 }

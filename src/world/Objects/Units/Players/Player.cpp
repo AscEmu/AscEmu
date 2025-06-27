@@ -1990,10 +1990,10 @@ void Player::onWorldPortAck()
 {
     WDB::Structures::MapEntry const* mEntry = sMapStore.lookupEntry(GetMapId());
     //only resurrect if player is porting to a instance portal
-    if (mEntry->isDungeon() && isDead())
+    if (mEntry->isInstanceMap() && isDead())
         resurrect();
 
-    if (mEntry->isDungeon())
+    if (mEntry->isInstanceMap())
     {
         // check if this instance has a reset time and send it to player if so
         InstanceDifficulty::Difficulties diff = getDifficulty(mEntry->isRaid());
@@ -7595,7 +7595,7 @@ void Player::repopRequest()
     {
         if (const auto mapInfo = sMySQLStore.getWorldMapInfo(GetMapId()))
         {
-            if (mapInfo->isNonInstanceMap() || mapInfo->isBattleground())
+            if (mapInfo->isWorldMap() || mapInfo->isBattlegroundOrArena())
                 repopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
             else
                 repopAtGraveyard(mapInfo->repopx, mapInfo->repopy, mapInfo->repopz, mapInfo->repopmapid);
@@ -9391,7 +9391,7 @@ void Player::speedCheatReset()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Misc
-bool Player::isGMFlagSet()
+bool Player::isGMFlagSet() const
 {
     return hasPlayerFlags(PLAYER_FLAG_GM);
 }
@@ -10856,7 +10856,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
         // loot was generated and respawntime has passed since then, allow to recreate loot
         // to avoid bugs, this rule covers spawned gameobjects only
         // Don't allow to regenerate chest loot inside instances and raids
-        if (go->isSpawnedByDefault() && go->getLootState() == GO_ACTIVATED && !pLGO->loot.isLooted() && !go->getWorldMap()->getBaseMap()->instanceable() && pLGO->getLootGenerationTime() + go->getRespawnDelay() < Util::getTimeNow())
+        if (go->isSpawnedByDefault() && go->getLootState() == GO_ACTIVATED && !pLGO->loot.isLooted() && !go->getWorldMap()->getBaseMap()->isInstanceableMap() && pLGO->getLootGenerationTime() + go->getRespawnDelay() < Util::getTimeNow())
             go->setLootState(GO_READY);
 
         if (go->getLootState() == GO_READY)
@@ -12767,7 +12767,7 @@ void Player::loadBoundInstances()
             std::string mapname = mapEntry ? mapEntry->map_name[sWorld.getDbcLocaleLanguageId()] : "Unknown";
 #endif
 
-            if (!mapEntry || !mapEntry->isDungeon())
+            if (!mapEntry || !mapEntry->isInstanceMap())
             {
                 sLogger.failure("Player::loadBoundInstances: Player '{}' ({}) has bind to not existed or not dungeon map {} ({})",
                     getName(), getGuid(), mapId, mapname);
@@ -13082,7 +13082,7 @@ void Player::resetInstances(uint8_t method, bool isRaid)
 
         // if the map is loaded, reset it
         WorldMap* map = sMapMgr.findWorldMap(p->getMapId(), p->getInstanceId());
-        if (map && map->getBaseMap()->isDungeon())
+        if (map && map->getBaseMap()->isInstanceMap())
             if (!reinterpret_cast<InstanceMap*>(map)->reset(method))
             {
                 ++itr;
@@ -15203,7 +15203,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
     loadInstanceTimeRestrictions();
 
     // Create Instance when needed
-    if (sMapMgr.findBaseMap(GetMapId()) && sMapMgr.findBaseMap(GetMapId())->instanceable())
+    if (sMapMgr.findBaseMap(GetMapId()) && sMapMgr.findBaseMap(GetMapId())->isInstanceableMap())
     {
         // No Instance Found Lets Create it
         if (!sMapMgr.findWorldMap(GetMapId(), GetInstanceID()))
@@ -15988,7 +15988,7 @@ void Player::_Relocate(uint32_t mapid, const LocationVector& v, bool sendpending
             m_session->SendPacket(SmsgTransferAborted(mapid, INSTANCE_ABORT_NOT_FOUND).serialise().get());
             return;
         }
-        else if (map->getBaseMap()->isDungeon())
+        else if (map->getBaseMap()->isInstanceMap())
         {
             if (auto state = map->cannotEnter(this))
             {
