@@ -52,7 +52,6 @@ target_include_directories(${LIBRARY_NAME} PUBLIC
 
 # include library dependencies.
 target_link_libraries(${LIBRARY_NAME}
-  PUBLIC
     ${ZLIB_LIBRARIES}
     ${MYSQL_LIBRARY}
     ${OPENSSL_LIBRARIES}

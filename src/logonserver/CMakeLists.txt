@@ -35,7 +35,7 @@ target_include_directories(${EXECUTABLE_NAME} PUBLIC
 )
 
 # include library dependencies.
-target_link_libraries(${EXECUTABLE_NAME} PUBLIC
+target_link_libraries(${EXECUTABLE_NAME}
     shared
     ${MYSQL_LIBRARIES}
     ${ZLIB_LIBRARIES}
