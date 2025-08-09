@@ -25,7 +25,7 @@ set(EVENTSCRIPTS_SRCS
 # source group.
 ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
 
-add_library(${LIBRARY_NAME} SHARED ${EVENTSCRIPTS_SRCS})
+add_library(${LIBRARY_NAME} STATIC ${EVENTSCRIPTS_SRCS})
 
 target_include_directories(${LIBRARY_NAME} PUBLIC 
     ${OPENSSL_INCLUDE_DIR}
@@ -44,7 +44,8 @@ target_include_directories(${LIBRARY_NAME} PUBLIC
 
 # include library dependencies.
 target_link_libraries(${LIBRARY_NAME}
-  PUBLIC
+  PRIVATE
+    shared
     world
 )
 

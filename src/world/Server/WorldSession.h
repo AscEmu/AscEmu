@@ -22,7 +22,7 @@
 #define WORLDSESSION_H
 
 #include "Server/Opcodes.hpp"
-#include "ThreadSafeQueue.hpp"
+#include "Threading/ThreadSafeQueue.hpp"
 #include "Server/CharacterErrors.h"
 #include "Objects/Units/Players/PlayerDefines.hpp"
 #include "Data/Flags.hpp"

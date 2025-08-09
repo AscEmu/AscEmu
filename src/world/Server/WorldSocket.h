@@ -25,7 +25,7 @@
 #include "WorldPacket.h"
 #include "Network/Network.h"
 #include "AEVersion.hpp"
-#include "ThreadSafeQueue.hpp"
+#include "Threading/ThreadSafeQueue.hpp"
 
 #include <string>
 

@@ -25,8 +25,8 @@
  // updated: Tuesday, June 16th 2009 - Hasbro
  //////////////////////////////////////////////
 
-#include "Utilities/Util.hpp"
 #include "Utilities/CallBack.h"
+#include "Database.h"
 
 #include <string>
 #include <vector>

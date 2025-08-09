@@ -21,7 +21,7 @@
 #include "WorldSession.h"
 
 #include "DatabaseDefinition.hpp"
-#include "ThreadSafeQueue.hpp"
+#include "Threading/ThreadSafeQueue.hpp"
 #include "WorldPacket.h"
 #include "Objects/Item.hpp"
 #include "Exceptions/PlayerExceptions.hpp"

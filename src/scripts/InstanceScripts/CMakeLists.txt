@@ -189,7 +189,7 @@ set(INSTANCESCRIPTS_SRCS
 # source group.
 ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
 
-add_library(${LIBRARY_NAME} SHARED ${INSTANCESCRIPTS_SRCS})
+add_library(${LIBRARY_NAME} STATIC ${INSTANCESCRIPTS_SRCS})
 
 target_include_directories(${LIBRARY_NAME} PUBLIC 
     ${OPENSSL_INCLUDE_DIR}
@@ -208,7 +208,8 @@ target_include_directories(${LIBRARY_NAME} PUBLIC
 
 # include library dependencies.
 target_link_libraries(${LIBRARY_NAME}
-  PUBLIC
+  PRIVATE
+    shared
     world
 )
 

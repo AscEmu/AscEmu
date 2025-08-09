@@ -1,4 +1,4 @@
-name: AscEmu CI (gcc)
+name: AscEmu CI (Linux::gcc)
 
 on:
   push:

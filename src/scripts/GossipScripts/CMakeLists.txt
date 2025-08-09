@@ -1,31 +1,24 @@
 # Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 
+# сheck if GossipScripts should be built.
 if (NOT BUILD_GOSSIPSCRIPTS)
-    message("\tGossipScripts was skipped because BUILD_GOSSIPSCRIPTS is unchecked.")
+    message(STATUS "GossipScripts was skipped because BUILD_GOSSIPSCRIPTS is unchecked.")
     return()
 endif ()
 
 # set up our project name.
 set(LIBRARY_NAME GossipScripts)
 
-file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
-
-# required for linker.
-set(SRC_GOSSIPSCRIPTS
-    ../../world/Server/ServerState.cpp
-)
-
-set(GOSSIPSCRIPTS_SRCS
-    ${SRC_GOSSIPSCRIPTS}
-    ${SRC_LOCAL_DIR}
-)
+file(GLOB_RECURSE SRC_LOCAL_DIR *.cpp *.h *.hpp)
 
 # source group.
 ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
 
-add_library(${LIBRARY_NAME} SHARED ${GOSSIPSCRIPTS_SRCS})
+# add shared library.
+add_library(${LIBRARY_NAME} STATIC ${SRC_LOCAL_DIR})
 
-target_include_directories(${LIBRARY_NAME} PUBLIC 
+# include directories.
+target_include_directories(${LIBRARY_NAME} PUBLIC
     ${OPENSSL_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
     ${CMAKE_SOURCE_DIR}/src/collision
@@ -39,10 +32,12 @@ target_include_directories(${LIBRARY_NAME} PUBLIC
     ${ZLIB_INCLUDE_DIRS}
 )
 
-# include library dependencies.
+# link required libraries.
 target_link_libraries(${LIBRARY_NAME}
-  PUBLIC
+  PRIVATE
+    shared
     world
+    collision
 )
 
 # generate precompiled header.
@@ -51,6 +46,5 @@ if (AE_USE_PCH)
     target_precompile_headers(${LIBRARY_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/pchGossipScripts.hpp)
 endif ()
 
-install(TARGETS ${LIBRARY_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
-
-unset(GOSSIPSCRIPTS_SRCS)
+# install library.
+install(TARGETS ${LIBRARY_NAME} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})

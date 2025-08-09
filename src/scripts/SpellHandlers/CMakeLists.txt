@@ -26,7 +26,7 @@ set(headers
 # source group.
 ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
 
-add_library(${LIBRARY_NAME} SHARED ${sources} ${headers})
+add_library(${LIBRARY_NAME} STATIC ${sources} ${headers})
 
 target_include_directories(${LIBRARY_NAME} PUBLIC 
     ${OPENSSL_INCLUDE_DIR}
@@ -47,7 +47,8 @@ add_compile_options(-DSCRIPTLIB -DSKIP_ALLOCATOR_SHARING)
 
 # include library dependencies.
 target_link_libraries(${LIBRARY_NAME}
-  PUBLIC
+  PRIVATE
+    shared
     world
 )
 
