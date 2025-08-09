@@ -1,7 +1,7 @@
 # Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 
-# Clang >= 16.0.0
-set(CLANG_SUPPORTS_VERSION 16.0.0)
+# Clang >= 14.0.6
+set(CLANG_SUPPORTS_VERSION 14.0.6)
 # TODO change to 18 when Debian 13 is released
 
 if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS CLANG_SUPPORTS_VERSION)

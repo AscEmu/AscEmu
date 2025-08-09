@@ -47,7 +47,7 @@ protected:
 
     uint32_t m_zoneId = 0;
 
-    std::shared_ptr<Group> m_groups[2] = { nullptr };
+    Group* m_groups[2] = { nullptr };
 
     uint32_t m_deltaRating[2] = { 0 };
 
@@ -127,7 +127,7 @@ public:
     uint32_t getType();
 
     // events should execute in the correct context
-    int32 event_GetInstanceID() override;
+    int32_t event_GetInstanceID() override;
     void eventCreate();
     void eventCountdown();
     void close();

@@ -29,6 +29,7 @@ Worldsocket       | ✔️         | ✔️         | ✔️         | ✔️   
 Char Enum         | ✔️         | ✔️         | ✔️         | ✔️         | ✔️
 Log into world    | ✔️         | ✔️         | ✔️         | ✔️         | ❌
 
+
 ## Contributing
 Feel free to contribute any corrections but make sure it is useful and tested before opening PRs.
 

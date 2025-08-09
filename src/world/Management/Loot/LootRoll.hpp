@@ -13,16 +13,19 @@ class WorldMap;
 class LootRoll : public EventableObject
 {
 public:
+    friend void LootItem::playerRolled(Player*, uint8_t);
+
     LootRoll(uint32_t timer, uint32_t groupcount, uint64_t guid, uint8_t slotid, uint32_t itemid, uint32_t randomsuffixid, uint32_t randompropertyid, WorldMap* mgr);
     ~LootRoll();
 
+private:
     // player rolled on the item
-    void playerRolled(Player* player, uint8_t choice);
+    // returns true/false if roll can be deleted
+    bool playerRolled(Player* player, uint8_t choice);
 
     // finish roll for item
     void finalize();
 
-private:
     std::map<uint32_t, uint8_t> m_NeedRolls;
     std::map<uint32_t, uint8_t> m_GreedRolls;
     std::set<uint32_t> m_passRolls;

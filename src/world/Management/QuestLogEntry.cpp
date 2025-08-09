@@ -52,8 +52,6 @@ void QuestLogEntry::initPlayerData()
         }
     }
 
-    m_player->setQuestLogInSlot(this, m_slot);
-
     if (!m_player->getSession()->m_loggingInPlayer)
         if (const auto questScript = getQuestScript())
             questScript->OnQuestStart(m_player, this);
@@ -275,10 +273,8 @@ void QuestLogEntry::finishAndRemove()
     m_player->setQuestLogRequiredMobOrGoBySlot(m_slot, 0);
     m_player->setQuestLogExpireTimeBySlot(m_slot, 0);
 
-    m_player->setQuestLogInSlot(nullptr, m_slot);
     m_player->addQuestToRemove(m_questProperties->id);
-
-    delete this;
+    m_player->createQuestLogInSlot(nullptr, m_slot);
 }
 
 void QuestLogEntry::sendQuestFailed(bool isTimerExpired /*=false*/)

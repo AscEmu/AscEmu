@@ -97,7 +97,7 @@ void CombatStalkerAI::StartIcehowl(CreatureAIFunc pThis)
 NorthrendBeastsAI::NorthrendBeastsAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
     // Add Boundary
-    pCreature->getAIInterface()->addBoundary(new CircleBoundary(LocationVector(563.26f, 139.6f), 75.0));
+    pCreature->getAIInterface()->addBoundary(std::make_unique<CircleBoundary>(LocationVector(563.26f, 139.6f), 75.0));
 }
 
 CreatureAIScript* NorthrendBeastsAI::Create(Creature* pCreature) { return new NorthrendBeastsAI(pCreature); }
@@ -212,7 +212,7 @@ void NorthrendBeastsAI::initialMove(CreatureAIFunc pThis)
 ///  Gormok
 GormokAI::GormokAI(Creature* pCreature) : NorthrendBeastsAI(pCreature)
 {
-    setUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC | UNIT_FLAG_IGNORE_PLAYER_COMBAT | UNIT_FLAG_PLUS_MOB);
+    setUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT | UNIT_FLAG_IGNORE_PLAYER_COMBAT | UNIT_FLAG_PLUS_MOB);
     getCreature()->setAItoUse(true);
     _setWieldWeapon(true);
 }
@@ -261,7 +261,7 @@ void GormokAI::Engage(CreatureAIFunc)
     {
         getInstanceScript()->DoAction(ACTION_CLOSE_GATE);
 
-        setImmuneToPC(false);
+        setIgnorePlayerCombat(false);
         setReactState(REACT_AGGRESSIVE);
 
         // Npc that should keep raid in combat while boss change
@@ -382,7 +382,7 @@ void SnoboldAI::mountOnBoss()
         cancelFunctionFromScheduler(func_Batter);
         cancelFunctionFromScheduler(func_HeadCrack);
 
-        for (uint8 i = 0; i < Beasts::MAX_SNOBOLDS; i++)
+        for (uint8_t i = 0; i < Beasts::MAX_SNOBOLDS; i++)
         {
             if (!gormok->getVehicleKit()->getPassenger(i))
             {
@@ -601,7 +601,7 @@ void DreadscaleAI::Engage(CreatureAIFunc)
 
         setScriptPhase(Beasts::PHASE_MOBILE);
 
-        setImmuneToPC(false);
+        setIgnorePlayerCombat(false);
         setReactState(REACT_AGGRESSIVE);
         setZoneWideCombat();
         // Spawn Acidmaw and Link our Scripts
@@ -1005,7 +1005,7 @@ void IcehowlAI::addTasks()
 void IcehowlAI::Engage(CreatureAIFunc pThis)
 {
     getInstanceScript()->DoAction(ACTION_CLOSE_GATE);
-    setImmuneToPC(false);
+    setIgnorePlayerCombat(false);
     setScriptPhase(Beasts::PHASE_COMBAT);
     setReactState(REACT_AGGRESSIVE);
     setZoneWideCombat();
@@ -1057,7 +1057,7 @@ void IcehowlAI::Crash(CreatureAIFunc pThis)
 void IcehowlAI::Trample(CreatureAIFunc pThis)
 {
     if (Creature* stalker = getInstanceScript()->getCreatureFromData(DATA_FURIOUS_CHARGE))
-        moveCharge(stalker->GetPositionX(), stalker->GetPositionY(), stalker->GetPositionZ(), 42.0f, Beasts::POINT_ICEHOWL_CHARGE);
+        moveCharge(stalker->GetPosition(), 42.0f, Beasts::POINT_ICEHOWL_CHARGE);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1181,7 +1181,7 @@ SpellScriptExecuteState SlimePool::onAuraPeriodicTick(Aura* aur, AuraEffectModif
         return SpellScriptExecuteState::EXECUTE_OK;
 
     ++stackCounter;
-    int32_t const radius = static_cast<int32>(((stackCounter / 60.f) * 0.9f + 0.1f) * 10000.f * 2.f / 3.f);
+    int32_t const radius = static_cast<int32_t>(((stackCounter / 60.f) * 0.9f + 0.1f) * 10000.f * 2.f / 3.f);
 
     SpellInfo const* spellInfo = sSpellMgr.getSpellInfo(aur->getSpellInfo()->getEffectTriggerSpell(aurEff->getEffectIndex()));
     Unit* caster = aur->GetUnitTarget();

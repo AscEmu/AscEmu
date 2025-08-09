@@ -21,7 +21,8 @@
 #define _DATABASE_H
 
 #include "Field.hpp"
-#include "Threading/Queue.h"
+#include "ThreadSafeQueue.hpp"
+#include "Threading/Mutex.hpp"
 #include "Threading/AEThread.h"
 #include "CommonTypes.hpp"
 #include <string>
@@ -33,26 +34,27 @@ class SQLCallbackBase;
 
 struct DatabaseConnection
 {
+    virtual ~DatabaseConnection() = default;
     Mutex Busy;
 };
 
 struct SERVER_DECL AsyncQueryResult
 {
-    QueryResult* result;
-    char* query;
+    std::unique_ptr<QueryResult> result;
+    std::string query;
 };
 
 class SERVER_DECL AsyncQuery
 {
     friend class Database;
 
-        SQLCallbackBase* func;
+        std::unique_ptr<SQLCallbackBase> func;
         std::vector<AsyncQueryResult> queries;
         Database* db;
 
     public:
 
-        AsyncQuery(SQLCallbackBase* f) : func(f), db(nullptr) {}
+        AsyncQuery(std::unique_ptr<SQLCallbackBase> f);
         ~AsyncQuery();
         void AddQuery(const char* format, ...);
         void Perform();
@@ -61,7 +63,7 @@ class SERVER_DECL AsyncQuery
 
 class SERVER_DECL QueryBuffer
 {
-        std::vector<char*> queries;
+        std::vector<std::string> queries;
     public:
 
         friend class Database;
@@ -108,14 +110,14 @@ class SERVER_DECL Database
         //////////////////////////////////////////////////////////////////////////////////////////
         virtual bool Initialize(const char* Hostname, unsigned int port,
                                 const char* Username, const char* Password, const char* DatabaseName,
-                                uint32 ConnectionCount, uint32 BufferSize, bool useLegacyAuth = false) = 0;
+                                uint32_t ConnectionCount, uint32_t BufferSize, bool useLegacyAuth = false) = 0;
 
         virtual void Shutdown() = 0;
 
-        virtual QueryResult* Query(const char* QueryString, ...);
-        virtual QueryResult* Query(bool *success, const char* QueryString, ...);
-        virtual QueryResult* QueryNA(const char* QueryString);
-        virtual QueryResult* FQuery(const char* QueryString, DatabaseConnection* con);
+        virtual std::unique_ptr<QueryResult> Query(const char* QueryString, ...);
+        virtual std::unique_ptr<QueryResult> Query(bool *success, const char* QueryString, ...);
+        virtual std::unique_ptr<QueryResult> QueryNA(const char* QueryString);
+        virtual std::unique_ptr<QueryResult> FQuery(const char* QueryString, DatabaseConnection* con);
         virtual void FWaitExecute(const char* QueryString, DatabaseConnection* con);
         virtual bool WaitExecute(const char* QueryString, ...);//Wait For Request Completion
         virtual bool WaitExecuteNA(const char* QueryString);//Wait For Request Completion
@@ -127,23 +129,21 @@ class SERVER_DECL Database
 
         const std::string & GetHostName() { return mHostname; }
         const std::string & GetDatabaseName() { return mDatabaseName; }
-        uint32 GetQueueSize() { return queries_queue.get_size(); }
+        size_t GetQueueSize() { return queries_queue.getSize(); }
 
         virtual std::string EscapeString(std::string Escape) = 0;
-        virtual void EscapeLongString(const char* str, uint32 len, std::stringstream & out) = 0;
+        virtual void EscapeLongString(const char* str, uint32_t len, std::stringstream & out) = 0;
         virtual std::string EscapeString(const char* esc, DatabaseConnection* con) = 0;
 
-        void QueueAsyncQuery(AsyncQuery* query);
+        void QueueAsyncQuery(std::unique_ptr<AsyncQuery> query);
         void EndThreads();
-
-        void FreeQueryResult(QueryResult* p);
 
         DatabaseConnection* GetFreeConnection();
 
         void PerformQueryBuffer(QueryBuffer* b, DatabaseConnection* ccon);
-        void AddQueryBuffer(QueryBuffer* b);
+        void AddQueryBuffer(std::unique_ptr<QueryBuffer> b);
 
-        static Database* CreateDatabaseInterface();
+        static std::unique_ptr<Database> CreateDatabaseInterface();
         static void CleanupLibs();
 
         virtual bool SupportsReplaceInto() = 0;
@@ -159,26 +159,26 @@ class SERVER_DECL Database
 
         // actual query function
         virtual bool _SendQuery(DatabaseConnection* con, const char* Sql, bool Self) = 0;
-        virtual QueryResult* _StoreQueryResult(DatabaseConnection* con) = 0;
+        virtual std::unique_ptr<QueryResult> _StoreQueryResult(DatabaseConnection* con) = 0;
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        FQueue<QueryBuffer*> query_buffer;
+        ThreadSafeQueue<std::unique_ptr<QueryBuffer>> query_buffer;
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        FQueue<char*> queries_queue;
-        DatabaseConnection** Connections;
+        ThreadSafeQueue<std::string> queries_queue;
+        std::vector<std::unique_ptr<DatabaseConnection>> Connections;
 
-        uint32 _counter;
+        uint32_t _counter;
         //////////////////////////////////////////////////////////////////////////////////////////
 
-        int32 mConnectionCount;
+        int32_t mConnectionCount;
 
         // For reconnecting a broken connection
         std::string mHostname;
         std::string mUsername;
         std::string mPassword;
         std::string mDatabaseName;
-        uint32 mPort;
+        uint32_t mPort;
 
         QueryThread* qt;
 };
@@ -187,21 +187,20 @@ class SERVER_DECL QueryResult
 {
     public:
 
-        QueryResult(uint32 fields, uint32 rows) : mFieldCount(fields), mRowCount(rows), mCurrentRow(NULL) {}
+        QueryResult(uint32_t fields, uint32_t rows) : mFieldCount(fields), mRowCount(rows), mCurrentRow(NULL) {}
         virtual ~QueryResult() {}
 
         virtual bool NextRow() = 0;
-        void Delete() { delete this; }
 
-        inline Field* Fetch() { return mCurrentRow; }
-        inline uint32 GetFieldCount() const { return mFieldCount; }
-        inline uint32 GetRowCount() const { return mRowCount; }
+        inline Field* Fetch() { return mCurrentRow.get(); }
+        inline uint32_t GetFieldCount() const { return mFieldCount; }
+        inline uint32_t GetRowCount() const { return mRowCount; }
 
     protected:
 
-        uint32 mFieldCount;
-        uint32 mRowCount;
-        Field* mCurrentRow;
+        uint32_t mFieldCount;
+        uint32_t mRowCount;
+        std::unique_ptr<Field[]> mCurrentRow;
 };
 
 #endif      //_DATABASE_H

@@ -21,7 +21,6 @@
 #define AUTHSOCKET_H
 
 #include "AuthStructs.h"
-#include "CommonTypes.hpp"
 #include "Network/Socket.h"
 #include "Cryptography/Sha1.hpp"
 #include "Cryptography/BigNumber.h"
@@ -57,19 +56,19 @@ class AuthSocket : public Socket
         void HandleTransferCancel();
 
         // Server Packet Builders
-        void SendChallengeError(uint8 Error);
-        void SendProofError(uint8 Error, uint8* M2);
+        void SendChallengeError(uint8_t Error);
+        void SendProofError(uint8_t Error, uint8_t* M2);
         inline sAuthLogonChallenge_C* GetChallenge() { return &m_challenge; }
-        inline void SendPacket(const uint8* data, const uint16 len) { Send(data, len); }
+        inline void SendPacket(const uint8_t* data, const uint16_t len) { Send(data, len); }
         void OnDisconnect();
         inline time_t GetLastRecv() { return last_recv; }
         bool removedFromSet;
-        inline uint32 GetAccountID() { return m_account ? m_account->AccountId : 0; }
+        inline uint32_t GetAccountID() { return m_account ? m_account->AccountId : 0; }
 
     protected:
 
         sAuthLogonChallenge_C m_challenge;
-        std::shared_ptr<Account> m_account;
+        Account* m_account;
         bool m_authenticated;
 
         // BigNumbers for the SRP6 implementation

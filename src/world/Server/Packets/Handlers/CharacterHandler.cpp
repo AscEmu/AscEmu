@@ -202,10 +202,10 @@ void WorldSession::handlePlayerLoginOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    const auto query = new AsyncQuery(new SQLClassCallbackP0<WorldSession>(this, &WorldSession::loadPlayerFromDBProc));
+    auto query = std::make_unique<AsyncQuery>(std::make_unique<SQLClassCallbackP0<WorldSession>>(this, &WorldSession::loadPlayerFromDBProc));
     query->AddQuery("SELECT guid,class FROM characters WHERE guid = %u AND login_flags = %u",
         srlPacket.guid.getGuidLow(), static_cast<uint32_t>(LOGIN_NO_FLAG));
-    CharacterDatabase.QueueAsyncQuery(query);
+    CharacterDatabase.QueueAsyncQuery(std::move(query));
 }
 
 void WorldSession::handleCharRenameOpcode(WorldPacket& recvPacket)
@@ -218,7 +218,7 @@ void WorldSession::handleCharRenameOpcode(WorldPacket& recvPacket)
     if (playerInfo == nullptr)
         return;
 
-    QueryResult* result = CharacterDatabase.Query("SELECT login_flags FROM characters WHERE guid = %u AND acct = %u",
+    auto result = CharacterDatabase.Query("SELECT login_flags FROM characters WHERE guid = %u AND acct = %u",
         srlPacket.guid.getGuidLow(), _accountId);
     if (result == nullptr)
         return;
@@ -230,7 +230,7 @@ void WorldSession::handleCharRenameOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    QueryResult* result2 = CharacterDatabase.Query("SELECT COUNT(*) FROM banned_names WHERE name = '%s'",
+    auto result2 = CharacterDatabase.Query("SELECT COUNT(*) FROM banned_names WHERE name = '%s'",
         CharacterDatabase.EscapeString(srlPacket.name).c_str());
     if (result2)
     {
@@ -272,7 +272,7 @@ void WorldSession::loadPlayerFromDBProc(QueryResultVector& results)
         return;
     }
 
-    QueryResult* result = results[0].result;
+    QueryResult* result = results[0].result.get();
     if (result == nullptr)
     {
         SendPacket(SmsgCharacterLoginFailed(E_CHAR_LOGIN_NO_CHARACTER).serialise().get());
@@ -305,12 +305,11 @@ uint8_t WorldSession::deleteCharacter(WoWGuid guid)
     const auto playerInfo = sObjectMgr.getCachedCharacterInfo(guid.getGuidLow());
     if (playerInfo != nullptr && sObjectMgr.getPlayer(playerInfo->guid) == nullptr)
     {
-        QueryResult* result = CharacterDatabase.Query("SELECT name FROM characters WHERE guid = %u AND acct = %u", guid.getGuidLow(), _accountId);
+        auto result = CharacterDatabase.Query("SELECT name FROM characters WHERE guid = %u AND acct = %u", guid.getGuidLow(), _accountId);
         if (!result)
             return E_CHAR_DELETE_FAILED;
 
         std::string name = result->Fetch()[0].asCString();
-        delete result;
 
         if (playerInfo->m_guild)
         {
@@ -488,7 +487,7 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
 
     newPlayer->saveToDB(true);
 
-    const auto playerInfo = std::make_shared<CachedCharacterInfo>();
+    auto playerInfo = std::make_unique<CachedCharacterInfo>();
     playerInfo->guid = newPlayer->getGuidLow();
     utf8_string name = newPlayer->getName();
     AscEmu::Util::Strings::capitalize(name);
@@ -504,7 +503,7 @@ void WorldSession::handleCharCreateOpcode(WorldPacket& recvPacket)
     playerInfo->guildRank = GUILD_RANK_NONE;
     playerInfo->lastOnline = UNIXTIME;
 
-    sObjectMgr.addCachedCharacterInfo(playerInfo);
+    sObjectMgr.addCachedCharacterInfo(std::move(playerInfo));
 
     newPlayer->m_isReadyToBeRemoved = true;
     delete newPlayer;
@@ -528,7 +527,7 @@ void WorldSession::handleCharCustomizeLooksOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    QueryResult* result = CharacterDatabase.Query("SELECT COUNT(*) FROM `banned_names` WHERE name = '%s'",
+    auto result = CharacterDatabase.Query("SELECT COUNT(*) FROM `banned_names` WHERE name = '%s'",
         CharacterDatabase.EscapeString(srlPacket.createStruct.name).c_str());
     if (result)
     {
@@ -868,7 +867,7 @@ void WorldSession::characterEnumProc(QueryResult* result)
 #endif
                 )
             {
-                QueryResult* player_pet_db_result = CharacterDatabase.Query("SELECT entry, model, level FROM playerpets WHERE ownerguid = %u "
+                auto player_pet_db_result = CharacterDatabase.Query("SELECT entry, model, level FROM playerpets WHERE ownerguid = %u "
                     "AND active = TRUE AND alive = TRUE LIMIT 1;", WoWGuid::getGuidLowPartFromUInt64(charEnum.guid));
                 if (player_pet_db_result)
                 {
@@ -878,11 +877,10 @@ void WorldSession::characterEnumProc(QueryResult* result)
                         charEnum.pet_data.level = player_pet_db_result->Fetch()[2].asUint32();
                         charEnum.pet_data.family = petInfo->Family;
                     }
-                    delete player_pet_db_result;
                 }
             }
 
-            QueryResult* item_db_result = CharacterDatabase.Query("SELECT slot, entry, enchantments FROM playeritems "
+            auto item_db_result = CharacterDatabase.Query("SELECT slot, entry, enchantments FROM playeritems "
                 "WHERE ownerguid=%u AND containerslot = '-1' AND slot BETWEEN '0' AND '22'",
                 WoWGuid::getGuidLowPartFromUInt64(charEnum.guid));
 
@@ -897,7 +895,7 @@ void WorldSession::characterEnumProc(QueryResult* result)
                     if (itemProperties)
                     {
                         charEnum.player_items[item_slot].displayId = itemProperties->DisplayInfoID;
-                        charEnum.player_items[item_slot].inventoryType = static_cast<uint8>(itemProperties->InventoryType);
+                        charEnum.player_items[item_slot].inventoryType = static_cast<uint8_t>(itemProperties->InventoryType);
 
                         std::string enchant_field = item_db_result->Fetch()[2].asCString();
                         if (!enchant_field.empty())
@@ -930,7 +928,6 @@ void WorldSession::characterEnumProc(QueryResult* result)
                         }
                     }
                 } while (item_db_result->NextRow());
-                delete item_db_result;
             }
 
             // save data to serialize it in packet serialisation SmsgEnumCharactersResult.
@@ -946,7 +943,7 @@ void WorldSession::characterEnumProc(QueryResult* result)
 
 void WorldSession::handleCharEnumOpcode(WorldPacket& /*recvPacket*/)
 {
-    const auto asyncQuery = new AsyncQuery(new SQLClassCallbackP1<World, uint32_t>(&sWorld,
+    auto asyncQuery = std::make_unique<AsyncQuery>(std::make_unique<SQLClassCallbackP1<World, uint32_t>>(&sWorld,
         &World::sendCharacterEnumToAccountSession, GetAccountId()));
 
     asyncQuery->AddQuery("SELECT guid, level, race, class, gender, bytes, bytes2, name, positionX, positionY, "
@@ -954,7 +951,7 @@ void WorldSession::handleCharEnumOpcode(WorldPacket& /*recvPacket*/)
         "FROM characters LEFT JOIN guild_members ON characters.guid = guild_members.playerid WHERE acct=%u ORDER BY guid LIMIT 10",
         GetAccountId());
 
-    CharacterDatabase.QueueAsyncQuery(asyncQuery);
+    CharacterDatabase.QueueAsyncQuery(std::move(asyncQuery));
 }
 
 void WorldSession::loadAccountDataProc(QueryResult* result)
@@ -971,9 +968,9 @@ void WorldSession::loadAccountDataProc(QueryResult* result)
         const size_t length = accountData ? strlen(accountData) : 0;
         if (length > 1)
         {
-            char* d = new char[length + 1];
-            memcpy(d, accountData, length + 1);
-            SetAccountData(i, d, true, static_cast<uint32_t>(length));
+            auto d = std::make_unique<char[]>(length + 1);
+            memcpy(d.get(), accountData, length + 1);
+            SetAccountData(i, std::move(d), true, static_cast<uint32_t>(length));
         }
     }
 }

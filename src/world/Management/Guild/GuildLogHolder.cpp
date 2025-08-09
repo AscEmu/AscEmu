@@ -12,13 +12,7 @@ GuildLogHolder::GuildLogHolder(uint32_t guildId, uint32_t maxRecords) : mGuildId
 {
 }
 
-GuildLogHolder::~GuildLogHolder()
-{
-    for (GuildLog::iterator itr = mLog.begin(); itr != mLog.end(); ++itr)
-    {
-        delete (*itr);
-    }
-}
+GuildLogHolder::~GuildLogHolder() = default;
 
 uint8_t GuildLogHolder::getSize() const
 {
@@ -30,28 +24,26 @@ bool GuildLogHolder::canInsert() const
     return mLog.size() < mMaxRecords;
 }
 
-void GuildLogHolder::loadEvent(GuildLogEntry* entry)
+void GuildLogHolder::loadEvent(std::unique_ptr<GuildLogEntry> entry)
 {
     if (mNextGUID == uint32_t(UNK_EVENT_LOG_GUID))
     {
         mNextGUID = entry->getGUID();
     }
 
-    mLog.push_front(entry);
+    mLog.push_front(std::move(entry));
 }
 
-void GuildLogHolder::addEvent(GuildLogEntry* entry)
+void GuildLogHolder::addEvent(std::unique_ptr<GuildLogEntry> entry)
 {
-    if (mLog.size() >= mMaxRecords)
+    if (mMaxRecords > 0 && mLog.size() >= mMaxRecords)
     {
-        GuildLogEntry* oldEntry = mLog.front();
-        delete oldEntry;
         mLog.pop_front();
     }
 
-    mLog.push_back(entry);
-
     entry->saveGuildLogToDB();
+
+    mLog.push_back(std::move(entry));
 }
 
 void GuildLogHolder::writeLogHolderPacket(WorldPacket& data) const
@@ -66,7 +58,7 @@ void GuildLogHolder::writeLogHolderPacket(WorldPacket& data) const
     data.append(buffer);
 #else
     ByteBuffer buffer;
-    data << uint8(mLog.size());
+    data << uint8_t(mLog.size());
     for (auto itr = mLog.begin(); itr != mLog.end(); ++itr)
         (*itr)->writeGuildLogPacket(data, buffer);
 #endif

@@ -172,7 +172,7 @@ void BattlegroundManager::handleBattlegroundListPacket(WorldSession* session, ui
     }
     else
     {
-        data << uint8(0);
+        data << uint8_t(0);
 
         if (battlegroundType >= BATTLEGROUND_NUM_TYPES) // VLack: Nasty hackers might try to abuse this packet to crash us...
             return;
@@ -390,7 +390,7 @@ void BattlegroundManager::eventQueueUpdate()
     this->eventQueueUpdate(false);
 }
 
-uint32_t BattlegroundManager::getArenaGroupQInfo(std::shared_ptr<Group> group, uint8_t type, uint32_t* averageRating)
+uint32_t BattlegroundManager::getArenaGroupQInfo(Group* group, uint8_t type, uint32_t* averageRating)
 {
     uint32_t count = 0;
     uint32_t rating = 0;
@@ -426,7 +426,7 @@ uint32_t BattlegroundManager::getArenaGroupQInfo(std::shared_ptr<Group> group, u
     return arenaTeam->m_id;
 }
 
-void BattlegroundManager::addGroupToArena(Battleground* battleground, std::shared_ptr<Group> group, uint32_t team)
+void BattlegroundManager::addGroupToArena(Battleground* battleground, Group* group, uint32_t team)
 {
     if (group == nullptr || group->GetLeader() == nullptr)
         return;
@@ -453,7 +453,7 @@ void BattlegroundManager::addGroupToArena(Battleground* battleground, std::share
     }
 }
 
-int BattlegroundManager::createArenaType(uint8_t type, std::shared_ptr<Group> group1, std::shared_ptr<Group> group2)
+int BattlegroundManager::createArenaType(uint8_t type, Group* group1, Group* group2)
 {
     const auto arena = dynamic_cast<Arena*>(createInstance(type, BattlegroundDef::LEVEL_GROUP_70));
     if (arena == nullptr)
@@ -522,7 +522,7 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
 
     Arena* arena;
 
-    int32 team;
+    int32_t team;
     uint32_t playerGuid;
     uint32_t factionMap[MAX_PLAYER_TEAMS];
     uint32_t count;
@@ -791,7 +791,7 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
     }
 
     // Handle paired arena team joining
-    std::shared_ptr<Group> group1, group2;
+    Group* group1, *group2;
     uint32_t teamids[2] = { 0, 0 };
     uint32_t avgRating[2] = { 0, 0 };
     uint32_t n;
@@ -839,7 +839,7 @@ void BattlegroundManager::eventQueueUpdate(bool forceStart)
                 if (group2)
                 {
                     teamids[1] = getArenaGroupQInfo(group2, i, &avgRating[1]);
-                    uint32_t delta = abs(static_cast<int32>(avgRating[0]) - static_cast<int32>(avgRating[1]));
+                    uint32_t delta = abs(static_cast<int32_t>(avgRating[0]) - static_cast<int32_t>(avgRating[1]));
                     if (teamids[0] != teamids[1] && delta <= worldConfig.rate.arenaQueueDiff)
                         possibleGroups.push_back(group2->GetID());
                 }

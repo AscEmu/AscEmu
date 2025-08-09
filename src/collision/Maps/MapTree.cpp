@@ -98,7 +98,7 @@ namespace VMAP
 
     bool StaticMapTree::getAreaInfo(Vector3 &pos, uint32_t &flags, int32_t &adtId, int32_t &rootId, int32_t &groupId) const
     {
-        AreaInfoCallback intersectionCallBack(iTreeValues);
+        AreaInfoCallback intersectionCallBack(iTreeValues.get());
         iTree.intersectPoint(pos, intersectionCallBack);
         if (intersectionCallBack.aInfo.result)
         {
@@ -114,7 +114,7 @@ namespace VMAP
 
     bool StaticMapTree::GetLocationInfo(const Vector3 &pos, LocationInfo &info) const
     {
-        LocationInfoCallback intersectionCallBack(iTreeValues, info);
+        LocationInfoCallback intersectionCallBack(iTreeValues.get(), info);
         iTree.intersectPoint(pos, intersectionCallBack);
         return intersectionCallBack.result;
     }
@@ -131,10 +131,7 @@ namespace VMAP
 
     //=========================================================
     //! Make sure to call unloadMap() to unregister acquired model references before destroying
-    StaticMapTree::~StaticMapTree()
-    {
-        delete[] iTreeValues;
-    }
+    StaticMapTree::~StaticMapTree() = default;
 
     //=========================================================
     /**
@@ -145,7 +142,7 @@ namespace VMAP
     bool StaticMapTree::getIntersectionTime(const G3D::Ray& pRay, float &pMaxDist, bool pStopAtFirstHit) const
     {
         float distance = pMaxDist;
-        MapRayCallback intersectionCallBack(iTreeValues);
+        MapRayCallback intersectionCallBack(iTreeValues.get());
         iTree.intersectRay(pRay, intersectionCallBack, distance, pStopAtFirstHit);
         if (intersectionCallBack.didHit())
             pMaxDist = distance;
@@ -291,7 +288,7 @@ namespace VMAP
             readChunk(rf, chunk, "NODE", 4) && iTree.readFromFile(rf))
         {
             iNTreeValues = iTree.primCount();
-            iTreeValues = new ModelInstance[iNTreeValues];
+            iTreeValues = std::make_unique<ModelInstance[]>(iNTreeValues);
             success = readChunk(rf, chunk, "GOBJ", 4);
         }
 
@@ -477,7 +474,7 @@ namespace VMAP
 
     void StaticMapTree::getModelInstances(ModelInstance* &models, uint32_t &count)
     {
-        models = iTreeValues;
+        models = iTreeValues.get();
         count = iNTreeValues;
     }
 }

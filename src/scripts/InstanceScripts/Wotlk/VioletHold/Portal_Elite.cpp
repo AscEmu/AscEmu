@@ -22,7 +22,7 @@ CreatureAIScript* ElitePortalAI::Create(Creature* pCreature) { return new EliteP
 
 void ElitePortalAI::OnLoad()
 {
-    getCreature()->getAIInterface()->setImmuneToNPC(true);
+    getCreature()->getAIInterface()->setIgnoreCreatureCombat(true);
     getCreature()->setUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
 }
 

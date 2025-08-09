@@ -27,8 +27,7 @@ InstanceSaved::InstanceSaved(uint32_t mapId, uint32_t instanceId, InstanceDiffic
     m_instanceid(instanceId),
     m_mapid(mapId),
     m_difficulty(difficulty),
-    m_canReset(canReset),
-    m_toDelete(false)
+    m_canReset(canReset)
 {
 }
 
@@ -44,18 +43,13 @@ void InstanceSaved::addPlayer(Player* player)
 
 bool InstanceSaved::removePlayer(Player* player)
 {
-    bool isStillValid = false;
     {
         std::scoped_lock<std::mutex> lock(_playerListLock);
         m_playerList.remove(player);
-        isStillValid = unloadIfEmpty();
     }
 
     //delete here if needed, after releasing the lock
-    if (m_toDelete)
-        delete this;
-
-    return isStillValid;
+    return unloadIfEmpty();
 }
 
 void InstanceSaved::addGroup(Group* group)
@@ -66,10 +60,7 @@ void InstanceSaved::addGroup(Group* group)
 bool InstanceSaved::removeGroup(Group* group)
 {
     m_groupList.remove(group);
-    bool isStillValid = unloadIfEmpty();
-    if (m_toDelete)
-        delete this;
-    return isStillValid;
+    return unloadIfEmpty();
 }
 
 void InstanceSaved::saveToDB()
@@ -82,7 +73,7 @@ void InstanceSaved::saveToDB()
     WorldMap* map = sMapMgr.findInstanceMap(m_instanceid);
     if (map)
     {
-        if (map->getBaseMap()->isDungeon())
+        if (map->getBaseMap()->isInstanceMap())
         {
             if (InstanceScript* instanceScript = map->getScript())
             {
@@ -188,7 +179,7 @@ void InstanceMgr::loadResetTimes()
     typedef std::pair<ResetTimeMapDiffInstances::const_iterator, ResetTimeMapDiffInstances::const_iterator> ResetTimeMapDiffInstancesBounds;
     ResetTimeMapDiffInstances mapDiffResetInstances;
 
-    if (QueryResult* result = CharacterDatabase.Query("SELECT id, map, difficulty, resettime FROM instance ORDER BY id ASC"))
+    if (auto result = CharacterDatabase.Query("SELECT id, map, difficulty, resettime FROM instance ORDER BY id ASC"))
     {
         do
         {
@@ -224,7 +215,7 @@ void InstanceMgr::loadResetTimes()
 
     // load the global resettimes for raid and heroic instances
     auto resetHour = static_cast<uint8_t>(worldConfig.instance.relativeDailyHeroicInstanceResetHour);
-    if (QueryResult* result = CharacterDatabase.Query("SELECT mapid, difficulty, resettime FROM instance_reset"))
+    if (auto result = CharacterDatabase.Query("SELECT mapid, difficulty, resettime FROM instance_reset"))
     {
         do
         {
@@ -350,7 +341,7 @@ void InstanceMgr::resetSave(InstanceSavedMap::iterator& itr)
     {
         if (InstancePlayerBind* bind = player->getBoundInstance(itr->second->getMapId(), itr->second->getDifficulty()))
         {
-            ASSERT(bind->save == itr->second);
+            ASSERT(bind->save == itr->second.get());
             if (bind->perm && bind->extendState) // permanent and not already expired
             {
                 bind->extendState = bind->extendState == EXTEND_STATE_EXTENDED ? EXTEND_STATE_NORMAL : EXTEND_STATE_EXPIRED;
@@ -374,7 +365,6 @@ void InstanceMgr::resetSave(InstanceSavedMap::iterator& itr)
 
     if (shouldDelete)
     {
-        delete itr->second;
         itr = m_instanceSaveById.erase(itr);
     }
     else
@@ -388,7 +378,7 @@ void InstanceMgr::resetSave(InstanceSavedMap::iterator& itr)
 void InstanceMgr::resetInstance(uint32_t mapid, uint32_t instanceId)
 {
     BaseMap const* map = sMapMgr.findBaseMap(mapid);
-    if (!map->instanceable())
+    if (!map->isInstanceableMap())
         return;
 
     InstanceSavedMap::iterator itr = m_instanceSaveById.find(instanceId);
@@ -399,7 +389,7 @@ void InstanceMgr::resetInstance(uint32_t mapid, uint32_t instanceId)
 
     WorldMap* iMap = sMapMgr.findInstanceMap(instanceId);
 
-    if (iMap && iMap->getBaseMap()->isDungeon())
+    if (iMap && iMap->getBaseMap()->isInstanceMap())
         ((InstanceMap*)iMap)->reset(INSTANCE_RESET_RESPAWN_DELAY);
 
     if (iMap)
@@ -419,7 +409,7 @@ void InstanceMgr::resetOrWarnAll(uint32_t mapid, InstanceDifficulty::Difficultie
 {
     // global reset for all instances of the given map
     WDB::Structures::MapEntry const* mapEntry = sMapStore.lookupEntry(mapid);
-    if (!mapEntry->instanceable())
+    if (!mapEntry->isInstanceableMap())
         return;
 
     const auto now = Util::getTimeNow();
@@ -460,7 +450,7 @@ void InstanceMgr::resetOrWarnAll(uint32_t mapid, InstanceDifficulty::Difficultie
 
     for (auto const& map : instances)
     {
-        if (!map->getBaseMap()->isDungeon())
+        if (!map->getBaseMap()->isInstanceMap())
             continue;
 
         if (warn)
@@ -522,12 +512,12 @@ InstanceSaved* InstanceMgr::addInstanceSave(uint32_t mapId, uint32_t instanceId,
 
     sLogger.debug("InstanceMgr::addInstanceSave: mapid = {}, instanceid = {}", mapId, instanceId);
 
-    InstanceSaved* save = new InstanceSaved(mapId, instanceId, difficulty, resetTime, canReset);
+    auto save = std::make_unique<InstanceSaved>(mapId, instanceId, difficulty, resetTime, canReset);
     if (!load)
         save->saveToDB();
 
-    m_instanceSaveById[instanceId] = save;
-    return save;
+    const auto [itr, _] = m_instanceSaveById.try_emplace(instanceId, std::move(save));
+    return itr->second.get();
 }
 
 void InstanceMgr::deleteInstanceFromDB(uint32_t instanceid)
@@ -548,7 +538,6 @@ void InstanceMgr::removeInstanceSave(uint32_t InstanceId)
             CharacterDatabase.Execute("UPDATE instance SET resettime = %u WHERE id = %u", uint64_t(resettime), InstanceId);
         }
 
-        itr->second->setToDelete(true);
         m_instanceSaveById.erase(itr);
     }
 }
@@ -558,15 +547,13 @@ void InstanceMgr::unloadInstanceSave(uint32_t InstanceId)
     if (InstanceSaved* save = getInstanceSave(InstanceId))
     {
         save->unloadIfEmpty();
-        if (save->m_toDelete)
-            delete save;
     }
 }
 
 InstanceSaved* InstanceMgr::getInstanceSave(uint32_t InstanceId)
 {
     InstanceSavedMap::iterator itr = m_instanceSaveById.find(InstanceId);
-    return itr != m_instanceSaveById.end() ? itr->second : nullptr;
+    return itr != m_instanceSaveById.end() ? itr->second.get() : nullptr;
 }
 
 void InstanceMgr::addResetEvent(bool add, time_t time, InstResetEvent event)

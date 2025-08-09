@@ -6,8 +6,10 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Map/Cells/TerrainMgr.hpp"
-#include <vector>
+#include <array>
+#include <memory>
 #include <string>
+#include <vector>
 
 namespace WDB::Structures
 {
@@ -50,13 +52,14 @@ public:
     // MapEntry
     WDB::Structures::MapEntry const* getMapEntry() const { return _mapEntry; }
     uint32_t getMapId() const;
-    bool instanceable() const;
     bool isDungeon() const;
-    bool isNonRaidDungeon() const;
     bool isRaid() const;
     bool isBattleground() const;
-    bool isBattleArena() const;
+    bool isArena() const;
     bool isBattlegroundOrArena() const;
+    bool isWorldMap() const;
+    bool isInstanceMap() const;
+    bool isInstanceableMap() const;
     bool getEntrancePos(int32_t& mapid, float& x, float& y) const;
 
     // Cell
@@ -77,5 +80,5 @@ private:
    
     std::string name;
 
-    CellSpawns** spawns[Map::Cell::_sizeX];
+    std::array<std::unique_ptr<std::array<std::unique_ptr<CellSpawns>, Map::Cell::_sizeY>>, Map::Cell::_sizeX> spawns = { nullptr };
 };

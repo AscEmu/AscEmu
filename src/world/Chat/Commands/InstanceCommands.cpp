@@ -124,7 +124,7 @@ bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m
             ss << " (" << MSG_COLOR_CYAN << GetDifficultyString(instance->getDifficulty()) << "|r)";
         }
 
-        if (instance->getBaseMap()->getMapInfo()->isRaid())
+        if (instance->getBaseMap()->isRaid())
         {
             ss << " (" << MSG_COLOR_CYAN << GetRaidDifficultyString(instance->getDifficulty()) << "|r)";
         }

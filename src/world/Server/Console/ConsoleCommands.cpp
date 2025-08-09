@@ -157,6 +157,7 @@ bool handleServerInfoCommand(BaseConsole* baseConsole, int /*argumentCount*/, st
         baseConsole->Write("Info: AscEmu %s/%s-%s-%s (www.ascemu.org)\r\n", AE_BUILD_HASH, CONFIG, AE_PLATFORM, AE_ARCHITECTURE);
         baseConsole->Write("Using %s/Library %s\r\n", OPENSSL_VERSION_TEXT, SSLeay_version(SSLEAY_VERSION));
         baseConsole->Write("Uptime: %s\r\n", sWorld.getWorldUptimeString().c_str());
+        baseConsole->Write("Active Branch: %s\r\n", AE_BUILD_BRANCH);
         baseConsole->Write("Current Players: %d (%d GMs, %d queued)\r\n", clientsNum, gmCount, 0);
         baseConsole->Write("Active Thread Count: %u\r\n", ThreadPool.GetActiveThreadCount());
         baseConsole->Write("Free Thread Count: %u\r\n", ThreadPool.GetFreeThreadCount());
@@ -185,7 +186,7 @@ bool handleOnlineGmsCommand(BaseConsole* baseConsole, int /*argumentCount*/, std
         const Player* player = playerPair.second;
         if (player->getSession()->hasPermissions())
         {
-            baseConsole->Write("| %21s | %15s | %03u ms |\r\n", player->getName().c_str(), player->getSession()->GetPermissions(),
+            baseConsole->Write("| %21s | %15s | %03u ms |\r\n", player->getName().c_str(), player->getSession()->GetPermissions().get(),
                 player->getSession()->GetLatency());
         }
     }
@@ -470,7 +471,7 @@ bool handleSendMailGold(BaseConsole* baseConsole, int argumentCount, std::string
     std::cout << body << " check" << "\n";
     std::cout << gold << " check" << "\n";
 
-    if (QueryResult* result = CharacterDatabase.Query("SELECT guid FROM characters WHERE name = '%s'", charName.c_str()))
+    if (auto result = CharacterDatabase.Query("SELECT guid FROM characters WHERE name = '%s'", charName.c_str()))
     {
         uint64_t guid = result->Fetch()[0].asUint64();
         sMailSystem.SendAutomatedMessage(MAIL_TYPE_NORMAL, guid, guid, subject, body, gold, 0, 0, MAIL_STATIONERY_GM);

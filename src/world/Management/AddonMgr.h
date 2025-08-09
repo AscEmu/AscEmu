@@ -50,7 +50,7 @@ struct AddonEntry
     bool showinlist;
 };
 
-typedef std::map<std::string, AddonEntry*> KnownAddons;
+typedef std::map<std::string, std::unique_ptr<AddonEntry>> KnownAddons;
 typedef KnownAddons::iterator KnownAddonsItr;
 
 typedef std::map<std::string, ByteBuffer> AddonData;
@@ -155,7 +155,7 @@ public:
     void LoadFromDB();
     void SaveToDB();
 
-    void SendAddonInfoPacket(std::shared_ptr<WorldPacket> source, uint32_t pos, WorldSession* m_session);
+    void SendAddonInfoPacket(WorldPacket* source, uint32_t pos, WorldSession* m_session);
     bool AppendPublicKey(WorldPacket& data, std::string& AddonName, uint32_t CRC);
 
 private:

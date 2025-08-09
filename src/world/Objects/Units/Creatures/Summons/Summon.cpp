@@ -90,6 +90,13 @@ void Summon::load(CreatureProperties const* creatureProperties, Unit* unitOwner,
     if (unitOwner->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
         addUnitFlags(UNIT_FLAG_PVP_ATTACKABLE);
 
+#if VERSION_STRING == TBC
+    if (unitOwner->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
+        setPositiveAuraLimit(POS_AURA_LIMIT_PVP_ATTACKABLE);
+    else
+        setPositiveAuraLimit(POS_AURA_LIMIT_CREATURE);
+#endif
+
     m_unitOwner = unitOwner;
 
     // Non-scripted summons
@@ -315,7 +322,7 @@ void Summon::onRemoveInRangeObject(Object* object)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Override Unit functions
-void Summon::die(Unit* pAttacker, uint32 damage, uint32 spellid)
+void Summon::die(Unit* pAttacker, uint32_t damage, uint32_t spellid)
 {
     Creature::die(pAttacker, damage, spellid);
 

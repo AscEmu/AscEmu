@@ -29,8 +29,8 @@ class Player;
 class SERVER_DECL MapMgr
 {
 private:
-    MapMgr() = default;
-    ~MapMgr() = default;
+    MapMgr();
+    ~MapMgr();
 
 public:
     MapMgr(MapMgr&&) = delete;
@@ -46,7 +46,7 @@ public:
     EnterState canPlayerEnter(uint32_t mapid, uint32_t minLevel, Player* player, bool loginCheck = false);
     void shutdown();
     void removeInstance(uint32_t instanceId);
-    void addMapToRemovePool(WorldMap* map, bool killThreadOnly);
+    void addMapToRemovePool(WorldMap const* map);
     void update();
 
     // BaseMaps
@@ -54,7 +54,7 @@ public:
     BaseMap* findBaseMap(uint32_t mapId) const;
 
     // WorldMap
-    WorldMap* createWorldMap(uint32_t mapId, uint32_t unloadTime);
+    std::unique_ptr<WorldMap> createWorldMap(uint32_t mapId, uint32_t unloadTime) const;
     WorldMap* findWorldMap(uint32_t mapId) const;
 
     // InstanceMap
@@ -72,10 +72,10 @@ public:
     UniqueNumberPool instanceIdPool;
 
 private:
-    typedef std::unordered_map<uint32_t, BaseMap*> BaseMapContainer;
-    typedef std::unordered_map<uint32_t, WorldMap*> WorldMapContainer;
-    typedef std::unordered_map<uint32_t, WorldMap*> InstancedMapContainer;
-    typedef std::unordered_map<WorldMap*, bool /*killThreadOnly*/> MapRemovePool;
+    typedef std::unordered_map<uint32_t, std::unique_ptr<BaseMap>> BaseMapContainer;
+    typedef std::unordered_map<uint32_t, std::unique_ptr<WorldMap>> WorldMapContainer;
+    typedef std::unordered_map<uint32_t, std::unique_ptr<WorldMap>> InstancedMapContainer;
+    typedef std::list<std::unique_ptr<WorldMap>> MapRemovePool;
 
     uint32_t lastMapMgrUpdate = Util::getMSTime();
 

@@ -20,8 +20,13 @@ namespace InstanceDifficulty
         RAID_25MAN_HEROIC       = 3,
 
         MAX_DUNGEON_DIFFICULTY  = 2,
+#if VERSION_STRING > TBC
         MAX_RAID_DIFFICULTY     = 4,
         MAX_DIFFICULTY          = 4
+#else
+        MAX_RAID_DIFFICULTY     = 2,
+        MAX_DIFFICULTY          = 2
+#endif
     };
 }
 

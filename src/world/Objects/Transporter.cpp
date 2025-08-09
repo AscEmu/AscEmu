@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
+#include "Models/GameObjectModel.h"
 #include "Server/Packets/SmsgTransferPending.h"
 #include "Movement/Spline/Spline.h"
 #include "Server/Script/ScriptMgr.hpp"
@@ -649,7 +650,7 @@ void Transporter::TeleportPlayers(float x, float y, float z, float o, uint32_t n
 {
     for (PassengerSet::iterator itr = _passengers.begin(); itr != _passengers.end(); ++itr)
     {
-        if ((*itr)->getObjectTypeId() == TYPEID_PLAYER)
+        if ((*itr)->isPlayer())
         {
             Player* player = reinterpret_cast<Player*>(*itr);
 

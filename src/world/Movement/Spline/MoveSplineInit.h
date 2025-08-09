@@ -52,7 +52,7 @@ public:
 #if VERSION_STRING >= WotLK
     // Plays animation after movement done
     // can't be combined with parabolic movement
-    void SetAnimation(AnimationTier anim);
+    void SetAnimation(UnitBytes1_AnimationFlag anim);
 #endif
 
     // Adds final facing animation
@@ -65,7 +65,7 @@ public:
     // Initializes movement by path
     // @param path - array of points, shouldn't be empty
     // @param pointId - Id of fisrt point of the path. Example: when third path point will be done it will notify that pointId + 3 done
-    void MovebyPath(PointsArray const& path, int32 pointId = 0);
+    void MovebyPath(PointsArray const& path, int32_t pointId = 0);
 
     //  Initializes simple A to B motion, A is current unit's position, B is destination
     void MoveTo(Vector3 const& destination, bool generatePath = true, bool forceDestination = false);
@@ -188,7 +188,7 @@ inline void MoveSplineInit::SetParabolic(float amplitude, float time_shift)
 }
 
 #if VERSION_STRING >= WotLK
-inline void MoveSplineInit::SetAnimation(AnimationTier anim)
+inline void MoveSplineInit::SetAnimation(UnitBytes1_AnimationFlag anim)
 {
     args.time_perc = 0.f;
     args.flags.EnableAnimation(static_cast<uint8_t>(anim));

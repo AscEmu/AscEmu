@@ -52,15 +52,8 @@ void LogonCommHandler::initialize()
 
 void LogonCommHandler::finalize()
 {
-    for (std::set<LogonServerStructure*>::iterator itr = servers.begin(); itr != servers.end(); ++itr)
-    {
-        delete(*itr);
-    }
-
-    for (std::set<RealmStructure*>::iterator itr = realms.begin(); itr != realms.end(); ++itr)
-    {
-        delete(*itr);
-    }
+    servers.clear();
+    realms.clear();
 }
 
 class LogonCommWatcherThread : public ThreadBase
@@ -108,7 +101,7 @@ void LogonCommHandler::loadAccountPermissions()
 {
     sLogger.info("LogonCommClient : Loading account permissions...");
 
-    QueryResult* result = CharacterDatabase.Query("SELECT id, permissions FROM account_permissions");
+    auto result = CharacterDatabase.Query("SELECT id, permissions FROM account_permissions");
     if (result != nullptr)
     {
         do
@@ -121,17 +114,15 @@ void LogonCommHandler::loadAccountPermissions()
             accountPermissionsStore.insert(make_pair(id, dbPermission));
 
         } while (result->NextRow());
-
-        delete result;
     }
 }
 
 void LogonCommHandler::connectToLogonServer()
 {
     sLogger.info("LogonCommClient : Attempting to connect to logon server...");
-    for (std::set<LogonServerStructure*>::iterator itr = servers.begin(); itr != servers.end(); ++itr)
+    for (auto itr = servers.begin(); itr != servers.end(); ++itr)
     {
-        tryLogonServerConnection(*itr);
+        tryLogonServerConnection((*itr).get());
     }
 }
 
@@ -224,7 +215,7 @@ LogonCommClientSocket* LogonCommHandler::createReturnLogonServerConnection(std::
 
 void LogonCommHandler::addRealmToRealmlist(LogonCommClientSocket* Socket)
 {
-    for (const auto realm : realms)
+    for (const auto& realm : realms)
     {
         WorldPacket data(LRCMSG_REALM_REGISTER_REQUEST, 100);
 
@@ -421,12 +412,12 @@ void LogonCommHandler::removeUnauthedClientSocket(uint32_t id)
 
 void LogonCommHandler::loadRealmsConfiguration()
 {
-    LogonServerStructure* logonServer = new LogonServerStructure;
+    auto logonServer = std::make_unique<LogonServerStructure>();
     logonServer->id = idhigh++;
     logonServer->name = worldConfig.logonServer.name;
     logonServer->address = worldConfig.logonServer.address;
     logonServer->port = (uint32_t)worldConfig.logonServer.port;
-    servers.insert(logonServer);
+    servers.insert(std::move(logonServer));
 
     uint32_t realmcount = (uint32_t)worldConfig.logonServer.realmCount;
     if (realmcount == 0)
@@ -440,7 +431,7 @@ void LogonCommHandler::loadRealmsConfiguration()
             std::stringstream realmString;
             realmString << "Realm" << i;
 
-            RealmStructure* realmStructure = new RealmStructure;
+            auto realmStructure = std::make_unique<RealmStructure>();
             Config.MainConfig.tryGetInt(realmString.str(), "Id", &realmStructure->id);
             Config.MainConfig.tryGetString(realmString.str(), "Name", &realmStructure->name);
             Config.MainConfig.tryGetString(realmString.str(), "Address", &realmStructure->address);
@@ -475,7 +466,7 @@ void LogonCommHandler::loadRealmsConfiguration()
             }
 
             realmStructure->icon = _realmType;
-            realms.insert(realmStructure);
+            realms.insert(std::move(realmStructure));
         }
     }
 }

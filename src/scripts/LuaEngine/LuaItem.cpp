@@ -246,12 +246,11 @@ int LuaItem::AddLoot(lua_State* L, Item* ptr)
     bool perm = ((luaL_optinteger(L, 4, 0) == 1) ? true : false);
     if (perm)
     {
-        QueryResult* result = WorldDatabase.Query("SELECT * FROM loot_items WHERE entryid = %u, itemid = %u", ptr->getEntry(), itemid);
+        auto result = WorldDatabase.Query("SELECT * FROM loot_items WHERE entryid = %u, itemid = %u", ptr->getEntry(), itemid);
         if (!result)
             WorldDatabase.Execute("REPLACE INTO loot_items VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->getEntry(), itemid, chance, mincount, maxcount);
-        delete result;
     }
-    sLootMgr.addLoot(ptr->m_loot, itemid, ichance, mincount, maxcount, ptr->getWorldMap()->getDifficulty());
+    sLootMgr.addLoot(ptr->m_loot.get(), itemid, ichance, mincount, maxcount, ptr->getWorldMap()->getDifficulty());
     return 1;
 }
 
@@ -441,9 +440,11 @@ int LuaItem::Remove(lua_State* /*L*/, Item* ptr)
 
 int LuaItem::Create(lua_State* L, Item* /*ptr*/)
 {
-    uint32_t id = CHECK_ULONG(L, 1);
+    // TODO: possibly needs rewrite of LuaEngine to handle unique_ptr<T> -Appled
+
+    /*uint32_t id = CHECK_ULONG(L, 1);
     uint32_t stackcount = CHECK_ULONG(L, 2);
-    Item* pItem = sObjectMgr.createItem(id, NULL);
+    auto pItem = sObjectMgr.createItem(id, NULL);
     if (!pItem)
     {
         lua_pushnil(L);
@@ -451,7 +452,7 @@ int LuaItem::Create(lua_State* L, Item* /*ptr*/)
     }
     pItem->setStackCount(stackcount);
     pItem->saveToDB(0, 0, true, NULL);
-    PUSH_ITEM(L, pItem);
+    PUSH_ITEM(L, pItem);*/
     return 1;
 }
 

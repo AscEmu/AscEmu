@@ -54,6 +54,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Unit.hpp"
 #include "Objects/Units/Creatures/CreatureDefines.hpp"
 #include "Objects/Units/Creatures/Pet.h"
+#include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
 #include "Objects/Units/Players/PlayerClasses.hpp"
 #include "Objects/Units/UnitDefines.hpp"
 #include "Objects/Units/Creatures/Corpse.hpp"
@@ -122,7 +123,7 @@ Spell::Spell(Object* _caster, SpellInfo const* _spellInfo, bool _triggered, Aura
     m_spellInfo = _spellInfo;
 
     // Get spell difficulty
-    if (_spellInfo->getSpellDifficultyID() != 0 && _caster->getObjectTypeId() != TYPEID_PLAYER && _caster->getWorldMap() != nullptr)
+    if (_spellInfo->getSpellDifficultyID() != 0 && !_caster->isPlayer() && _caster->getWorldMap() != nullptr)
     {
         auto SpellDiffEntry = sSpellMgr.getSpellInfoByDifficulty(_spellInfo->getSpellDifficultyID(), _caster->getWorldMap()->getDifficulty());
         if (SpellDiffEntry != nullptr)
@@ -245,14 +246,7 @@ Spell::~Spell()
     m_critTargets.clear();
 
     m_usedModifiers.clear();
-
-    for (auto itr = m_pendingAuras.begin(); itr != m_pendingAuras.end();)
-    {
-        if (itr->second.aur)
-            delete itr->second.aur;
-
-        itr = m_pendingAuras.erase(itr);
-    }
+    m_pendingAuras.clear();
 }
 
 
@@ -265,19 +259,6 @@ SpellCastResult Spell::prepare(SpellCastTargets* targets)
         sLogger.debugFlag(AscEmu::Logging::LF_SPELL, "Object {} is casting spell ID {} while not in world", std::to_string(m_caster->getGuid()), getSpellInfo()->getId());
         delete this;
         return SPELL_FAILED_DONT_REPORT;
-    }
-
-    //\ todo: handle this in creature AI...
-    if (u_caster != nullptr)
-    {
-        if (u_caster->isCreature() || u_caster->isMoving())
-        {
-            if (u_caster->hasUnitStateFlag(UNIT_STATE_FLEEING))
-            {
-                u_caster->addGarbageSpell(this);
-                return SPELL_FAILED_NOT_READY;
-            }
-        }
     }
 
     if (p_caster != nullptr)
@@ -1587,9 +1568,11 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         {
             if (!getSpellInfo()->isPassive())
             {
+#if VERSION_STRING >= WotLK
                 // You can't cast other spells if you have the player flag preventing cast
                 if (p_caster->hasPlayerFlags(PLAYER_FLAG_PREVENT_SPELL_CAST))
                     return SPELL_FAILED_SPELL_IN_PROGRESS;
+#endif
 
                 // Check for cooldown
                 if (p_caster->hasSpellOnCooldown(getSpellInfo()))
@@ -2211,7 +2194,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
 
         // Check if spell can be casted while mounted or on a taxi
         // but skip triggered and passive spells
-        if ((p_caster->hasUnitFlags(UNIT_FLAG_MOUNT) || p_caster->hasUnitFlags(UNIT_FLAG_MOUNTED_TAXI)) && !m_triggeredSpell && !getSpellInfo()->isPassive())
+        if ((p_caster->isMounted() || p_caster->hasUnitFlags(UNIT_FLAG_MOUNTED_TAXI)) && !m_triggeredSpell && !getSpellInfo()->isPassive())
         {
             if (p_caster->isOnTaxi())
             {
@@ -2227,7 +2210,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
         // Check if spell can be casted in heroic dungeons or in raids
         if (getSpellInfo()->getAttributesExF() & ATTRIBUTESEXF_NOT_IN_RAIDS_OR_HEROIC_DUNGEONS)
         {
-            if (p_caster->IsInWorld() && p_caster->getWorldMap()->getBaseMap()->getMapInfo() != nullptr && (p_caster->getWorldMap()->getBaseMap()->getMapInfo()->isRaid() || p_caster->getWorldMap()->getDifficulty() == InstanceDifficulty::DUNGEON_HEROIC))
+            if (p_caster->IsInWorld() && (p_caster->getWorldMap()->getBaseMap()->isRaid() || p_caster->getWorldMap()->getDifficulty() == InstanceDifficulty::DUNGEON_HEROIC))
             {
 #if VERSION_STRING < WotLK
                 return SPELL_FAILED_NOT_HERE;
@@ -2586,7 +2569,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     if (lockInfo->locktype[x] == LOCK_KEY_ITEM)
                     {
                         if (i_caster == nullptr || lockInfo->lockmisc[x] == 0)
-                            return SPELL_FAILED_BAD_TARGETS;
+                            continue;
                         // No need to check further on a successful match
                         if (i_caster->getEntry() == lockInfo->lockmisc[x])
                         {
@@ -2782,7 +2765,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     return SPELL_FAILED_CANT_DUEL_WHILE_INVISIBLE;
 
                 // Check if caster is in dungeon or raid
-                if (p_caster->IsInWorld() && p_caster->getWorldMap()->getBaseMap()->getMapInfo() != nullptr && !p_caster->getWorldMap()->getBaseMap()->getMapInfo()->isNonInstanceMap())
+                if (p_caster->IsInWorld() && !p_caster->getWorldMap()->getBaseMap()->isWorldMap())
                     return SPELL_FAILED_NO_DUELING;
 
                 const auto targetPlayer = p_caster->getWorldMapPlayer(m_targets.getUnitTargetGuid());
@@ -2803,7 +2786,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     return SPELL_FAILED_TARGET_NOT_IN_RAID;
 
                 // Check if caster is in an instance map
-                if (p_caster->IsInWorld() && p_caster->getWorldMap()->getBaseMap()->getMapInfo() != nullptr && !p_caster->getWorldMap()->getBaseMap()->getMapInfo()->isNonInstanceMap())
+                if (p_caster->IsInWorld() && !p_caster->getWorldMap()->getBaseMap()->isWorldMap())
                 {
                     if (!p_caster->IsInMap(targetPlayer))
                         return SPELL_FAILED_TARGET_NOT_IN_INSTANCE;
@@ -2821,7 +2804,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                     }
 
                     // Check if caster is in a battleground
-                    if (mapInfo->isBattleground() || p_caster->getBattleground())
+                    if (p_caster->getWorldMap()->getBaseMap()->isBattleground() || p_caster->getBattleground())
                     {
 #if VERSION_STRING == Classic
                         return SPELL_FAILED_NOT_HERE;
@@ -3512,7 +3495,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                     {
                         // Check if the weapon slot is disarmed
                         if ((i == EQUIPMENT_SLOT_MAINHAND && p_caster->hasUnitFlags(UNIT_FLAG_DISARMED))
-#if VERSION_STRING >= TBC
+#if VERSION_STRING >= WotLK
                             || (i == EQUIPMENT_SLOT_OFFHAND && p_caster->hasUnitFlags2(UNIT_FLAG2_DISARM_OFFHAND))
                             || (i == EQUIPMENT_SLOT_RANGED && p_caster->hasUnitFlags2(UNIT_FLAG2_DISARM_RANGED))
 #endif
@@ -3538,7 +3521,7 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
                     inventoryItem = p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
                     if (inventoryItem != nullptr)
                     {
-#if VERSION_STRING >= TBC
+#if VERSION_STRING >= WotLK
                         // Check for offhand disarm
                         if (!p_caster->hasUnitFlags2(UNIT_FLAG2_DISARM_OFFHAND))
 #endif
@@ -3640,8 +3623,12 @@ SpellCastResult Spell::checkItems(uint32_t* parameter1, uint32_t* parameter2) co
     // Check if the spell requires any reagents or tools (skip enchant scrolls)
     if (i_caster == nullptr || !(i_caster->getItemProperties()->Flags & ITEM_FLAG_ENCHANT_SCROLL))
     {
+#if VERSION_STRING == Classic
+        auto checkForReagents = true;
+#else
         // Spells with ATTRIBUTESEXE_REAGENT_REMOVAL attribute won't take reagents if player has UNIT_FLAG_NO_REAGANT_COST flag
         auto checkForReagents = !(getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_REAGENT_REMOVAL && p_caster->hasUnitFlags(UNIT_FLAG_NO_REAGANT_COST));
+#endif
         if (checkForReagents)
         {
 #if VERSION_STRING >= WotLK
@@ -4665,19 +4652,19 @@ void Spell::sendSpellStart()
     bool hasVisualChain = false;
     bool hasAmmoInventoryType = false;
     bool hasAmmoDisplayId = false;
-    uint8 runeCooldownPassedCount = 0;
-    uint8 predictedPowerCount = 0;
+    uint8_t runeCooldownPassedCount = 0;
+    uint8_t predictedPowerCount = 0;
 
     WorldPacket data(SMSG_SPELL_START, 25);
 
     data.writeBits(0, 24); // Miss Count (not used currently in SMSG_SPELL_START)
     data.writeBit(casterGuid[5]);
 
-    //for (uint32 i = 0; i < missCount; ++i)
+    //for (uint32_t i = 0; i < missCount; ++i)
     //{
     //}
 
-    data.writeBit(1); // Unk read int8
+    data.writeBit(1); // Unk read int8_t
     data.writeBit(0); // Fake Bit
     data.writeBit(casterUnitGuid[4]);
     data.writeBit(casterGuid[2]);
@@ -4690,7 +4677,7 @@ void Spell::sendSpellStart()
     data.writeBits(0, 24); // Hit Count (not used currently in SMSG_SPELL_START)
     data.writeBit(casterUnitGuid[7]);
 
-    //for (uint32 i = 0; i < hitCount; ++i)
+    //for (uint32_t i = 0; i < hitCount; ++i)
     //{
     //}
 
@@ -4744,13 +4731,13 @@ void Spell::sendSpellStart()
 
     data.writeBit(casterGuid[1]);
     data.writeBit(!hasPredictedHeal);
-    data.writeBit(1); // Unk read int8
+    data.writeBit(1); // Unk read int8_t
     data.writeBit(!hasCastSchoolImmunities);
     data.writeBit(casterUnitGuid[5]);
     data.writeBit(0); // Fake Bit
     data.writeBits(0, 20); // Extra Target Count (not used currently in SMSG_SPELL_START)
 
-    //for (uint32 i = 0; i < extraTargetCount; ++i)
+    //for (uint32_t i = 0; i < extraTargetCount; ++i)
     //{
     //}
 
@@ -4765,11 +4752,11 @@ void Spell::sendSpellStart()
 
     data.writeBit(casterGuid[0]);
     data.writeBit(casterUnitGuid[3]);
-    data.writeBit(1); // Unk uint8
+    data.writeBit(1); // Unk uint8_t
 
 
 
-    //for (uint32 i = 0; i < missTypeCount; ++i)
+    //for (uint32_t i = 0; i < missTypeCount; ++i)
     //{
     //}
 
@@ -4791,7 +4778,7 @@ void Spell::sendSpellStart()
     data.WriteByteSeq(itemTargetGuid[3]);
     data.WriteByteSeq(itemTargetGuid[5]);
 
-    //for (uint32 i = 0; i < hitCount; ++i)
+    //for (uint32_t i = 0; i < hitCount; ++i)
     //{
     //}
 
@@ -4804,7 +4791,7 @@ void Spell::sendSpellStart()
     data.WriteByteSeq(targetGuid[2]);
     data.WriteByteSeq(targetGuid[0]);
 
-    data << uint32(m_castTime);
+    data << uint32_t(m_castTime);
 
     data.WriteByteSeq(unkGuid[4]);
     data.WriteByteSeq(unkGuid[5]);
@@ -4820,32 +4807,32 @@ void Spell::sendSpellStart()
 
     data.WriteByteSeq(casterGuid[4]);
 
-    //for (uint32 i = 0; i < missCount; ++i)
+    //for (uint32_t i = 0; i < missCount; ++i)
     //{
     //}
 
     if (hasCastSchoolImmunities)
-        data << uint32(0);
+        data << uint32_t(0);
 
     data.WriteByteSeq(casterGuid[2]);
 
     if (hasCastImmunities)
-        data << uint32(0);
+        data << uint32_t(0);
 
     if (hasVisualChain)
     {
-        data << uint32(0);
-        data << uint32(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
     }
 
 
-    data << uint32(0);
+    data << uint32_t(0);
 
     data.WriteByteSeq(casterGuid[5]);
     data.WriteByteSeq(casterGuid[7]);
     data.WriteByteSeq(casterGuid[1]);
 
-    data << uint8(1);
+    data << uint8_t(1);
 
     data.WriteByteSeq(casterUnitGuid[7]);
     data.WriteByteSeq(casterUnitGuid[0]);
@@ -4854,18 +4841,18 @@ void Spell::sendSpellStart()
     data.WriteByteSeq(casterUnitGuid[1]);
 
     if (hasAmmoInventoryType)
-        data << uint8(0);
+        data << uint8_t(0);
 
     if (hasPredictedHeal)
-        data << uint32(0);
+        data << uint32_t(0);
 
     data.WriteByteSeq(casterUnitGuid[6]);
     data.WriteByteSeq(casterUnitGuid[3]);
 
-    data << uint32(m_spellInfo->getId());
+    data << uint32_t(m_spellInfo->getId());
 
     if (hasAmmoDisplayId)
-        data << uint32(0);
+        data << uint32_t(0);
 
     data.WriteByteSeq(casterUnitGuid[4]);
     data.WriteByteSeq(casterUnitGuid[5]);
@@ -4873,7 +4860,7 @@ void Spell::sendSpellStart()
 
 
     if (hasPredictedType)
-        data << uint8(0);
+        data << uint8_t(0);
 
     data.WriteByteSeq(casterGuid[3]);
 
@@ -4984,8 +4971,8 @@ void Spell::sendSpellGo()
     bool hasAmmoDisplayId = false;
     bool hasRunesStateBefore = false;
     bool hasRunesStateAfter = false;
-    uint8 predictedPowerCount = false;
-    uint8 runeCooldownPassedCount = false;
+    uint8_t predictedPowerCount = false;
+    uint8_t runeCooldownPassedCount = false;
 
     WorldPacket data(SMSG_SPELL_GO, 60);
 
@@ -5111,7 +5098,7 @@ void Spell::sendSpellGo()
     data.WriteByteSeq(unkGuid[0]);
 
 
-    data << uint32(Util::getMSTime());
+    data << uint32_t(Util::getMSTime());
 
     data.WriteByteSeq(casterGuid[6]);
     data.WriteByteSeq(casterUnitGuid[7]);
@@ -5119,30 +5106,30 @@ void Spell::sendSpellGo()
 
     if (hasVisualChain)
     {
-        data << uint32(0);
-        data << uint32(0);
+        data << uint32_t(0);
+        data << uint32_t(0);
     }
 
-    data << uint32(0);
+    data << uint32_t(0);
 
     data.WriteByteSeq(casterUnitGuid[6]);
 
     if (hasPredictedType)
-        data << uint8(0);
+        data << uint8_t(0);
 
     data.WriteByteSeq(casterGuid[4]);
     data.WriteByteSeq(casterUnitGuid[1]);
 
     data.WriteByteSeq(casterGuid[0]);
 
-    data << uint8(0);
+    data << uint8_t(0);
 
     data.WriteByteSeq(casterGuid[5]);
     data.WriteByteSeq(casterUnitGuid[2]);
     data.WriteByteSeq(casterGuid[3]);
     data.WriteByteSeq(casterUnitGuid[5]);
 
-    data << uint32(m_spellInfo->getId());
+    data << uint32_t(m_spellInfo->getId());
 
     data.WriteByteSeq(casterUnitGuid[0]);
     data.WriteByteSeq(casterUnitGuid[3]);
@@ -5482,10 +5469,10 @@ void Spell::writeProjectileDataToPacket(WorldPacket *data)
 #else
             // Get the item data from unitdata
             const auto itemData = u_caster->getVirtualItemInfoFields(i);
-            if (itemData.fields.itemClass != ITEM_CLASS_WEAPON)
+            if (itemData.fields.item_class != ITEM_CLASS_WEAPON)
                 continue;
 
-            switch (itemData.fields.itemSubClass)
+            switch (itemData.fields.item_subclass)
             {
                 case ITEM_SUBCLASS_WEAPON_BOW:
                 case ITEM_SUBCLASS_WEAPON_CROSSBOW:
@@ -5698,7 +5685,7 @@ Player* Spell::getPlayerTarget() const { return m_playerTarget; }
 
 GameObject* Spell::getGameObjectTarget() const { return m_gameObjTarget; }
 
-std::shared_ptr<Corpse> Spell::getCorpseTarget() const { return m_corpseTarget; }
+Corpse* Spell::getCorpseTarget() const { return m_corpseTarget; }
 
 void Spell::unsetAllTargets()
 {
@@ -6084,7 +6071,9 @@ void Spell::removeReagents()
     if (p_caster == nullptr)
         return;
 
+#if VERSION_STRING >= TBC
     if (!(p_caster->hasUnitFlags(UNIT_FLAG_NO_REAGANT_COST) && getSpellInfo()->getAttributesExE() & ATTRIBUTESEXE_REAGENT_REMOVAL))
+#endif
     {
         for (uint8_t i = 0; i < MAX_SPELL_REAGENTS; ++i)
         {

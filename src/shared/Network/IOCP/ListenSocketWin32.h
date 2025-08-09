@@ -21,7 +21,7 @@ template<class T>
 class SERVER_DECL ListenSocket : public ThreadBase
 {
 public:
-    ListenSocket(const char* ListenAddress, uint32 Port)
+    ListenSocket(const char* ListenAddress, uint32_t Port)
     {
         m_socket = WSASocketW(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
         SocketOps::ReuseAddr(m_socket);
@@ -105,7 +105,7 @@ private:
     struct sockaddr_in m_address;
     struct sockaddr_in m_tempAddress;
     bool m_opened;
-    uint32 len;
+    uint32_t len;
     SOCKET aSocket;
     T* socket;
     HANDLE m_cp;

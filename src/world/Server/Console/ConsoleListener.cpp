@@ -32,7 +32,7 @@
 #include "ConsoleAuthMgr.h"
 #include "Threading/LegacyThreadBase.h"
 
-ListenSocket<ConsoleSocket>* g_pListenSocket = nullptr;
+std::unique_ptr<ListenSocket<ConsoleSocket>> g_pListenSocket = nullptr;
 
 void ConsoleAuthCallback(uint32_t request, uint32_t result)
 {
@@ -70,13 +70,11 @@ bool StartConsoleListener()
     std::string consoleListenHost = worldConfig.remoteConsole.host;
     uint32_t consoleListenPort = worldConfig.remoteConsole.port;
 
-    g_pListenSocket = new ListenSocket<ConsoleSocket>(consoleListenHost.c_str(), consoleListenPort);
+    g_pListenSocket = std::make_unique<ListenSocket<ConsoleSocket>>(consoleListenHost.c_str(), consoleListenPort);
 
     if (g_pListenSocket->IsOpen() == false)
     {
         g_pListenSocket->Close();
-
-        delete g_pListenSocket;
         g_pListenSocket = nullptr;
 
         return false;
@@ -89,7 +87,7 @@ bool StartConsoleListener()
 #ifdef WIN32
 ThreadBase* GetConsoleListener()
 {
-    return static_cast<ThreadBase*>(g_pListenSocket);
+    return static_cast<ThreadBase*>(g_pListenSocket.get());
 }
 #endif
 
@@ -110,7 +108,7 @@ void RemoteConsole::Write(const char* Format, ...)
     if (*obuf == '\0')
         return;
 
-    m_pSocket->Send((const uint8*)obuf, (uint32)strlen(obuf));
+    m_pSocket->Send((const uint8_t*)obuf, (uint32_t)strlen(obuf));
 }
 
 struct ConsoleCommand

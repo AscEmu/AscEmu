@@ -64,7 +64,7 @@ public:
     //
     // \return none
     ////////////////////////////////////////////////////////////////////////////////////////////
-    void InitWorldStates(std::shared_ptr<std::multimap<uint32_t, WorldState>> _states);
+    void InitWorldStates(std::multimap<uint32_t, WorldState> const* _states);
 
     void setObserver(WorldStatesObserver* _observer);
 

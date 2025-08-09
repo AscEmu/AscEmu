@@ -42,8 +42,7 @@ using AscEmu::World::Spell::Helpers::decimalToMask;
 
 void SpellMgr::createDummySpell(uint32_t id)
 {
-    SpellInfo* sp = new SpellInfo;
-    memset(sp, 0, sizeof(SpellInfo));
+    auto sp = std::make_unique<SpellInfo>();
     sp->setId(id);
     sp->setAttributes(ATTRIBUTES_NO_CAST | ATTRIBUTES_NO_VISUAL_AURA); //384
     sp->setAttributesEx(ATTRIBUTESEX_UNK30);    //268435456
@@ -55,7 +54,7 @@ void SpellMgr::createDummySpell(uint32_t id)
     sp->setEffect(SPELL_EFFECT_DUMMY, 0);
     sp->setEffectImplicitTargetA(EFF_TARGET_DUEL, 0);
     sp->setEffectDamageMultiplier(1.0f, 0);
-    sWorld.dummySpellList.push_back(sp);
+    sWorld.dummySpellList.push_back(std::move(sp));
 }
 
 void SpellMgr::modifyEffectBasePoints(SpellInfo* sp)
@@ -108,7 +107,7 @@ void SpellMgr::setMissingSpellLevel(SpellInfo* sp)
     //stupid spell ranking problem
     if (sp->getSpellLevel() == 0)
     {
-        uint32 new_level = 0;
+        uint32_t new_level = 0;
 
         // 16/03/08 Zyres: just replaced name assignes with spell ids. \todo remove not teachable spells.
         switch (sp->getId())
@@ -421,7 +420,7 @@ void SpellMgr::setMissingSpellLevel(SpellInfo* sp)
 
         if (new_level != 0)
         {
-            uint32 teachspell = 0;
+            uint32_t teachspell = 0;
             if (sp->getEffect(0) == SPELL_EFFECT_LEARN_SPELL)
                 teachspell = sp->getEffectTriggerSpell(0);
             else if (sp->getEffect(1) == SPELL_EFFECT_LEARN_SPELL)
@@ -453,7 +452,7 @@ void SpellMgr::modifyAuraInterruptFlags(SpellInfo* sp)
     // HACK FIX: Break roots/fear on damage.. this needs to be fixed properly!
     if (!(sp->getAuraInterruptFlags() & AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN))
     {
-        for (uint8 z = 0; z < 3; ++z)
+        for (uint8_t z = 0; z < 3; ++z)
         {
             if (sp->getEffectApplyAuraName(z) == SPELL_AURA_MOD_FEAR || sp->getEffectApplyAuraName(z) == SPELL_AURA_MOD_ROOT)
             {
@@ -645,12 +644,9 @@ void SpellMgr::applyHackFixes()
 
     sLogger.info("World : Processing {} spells...", static_cast<uint32_t>(sSpellMgr.getSpellInfoMap()->size()));
 
-    SpellInfo* sp = nullptr;
-
-    for (const auto& it : mSpellInfoMapStore)
+    for (const auto& [_, sp] : mSpellInfoMapStore)
     {
         // Read every SpellEntry row
-        sp = sSpellMgr.getMutableSpellInfo(it.first);
         if (sp == nullptr)
             continue;
 
@@ -675,7 +671,7 @@ void SpellMgr::applyHackFixes()
             case 62317:     // Devastate
             case 69902:     // Devastate
             {
-                uint32 temp;
+                uint32_t temp;
                 float ftemp;
                 temp = sp->getEffect(1);
                 sp->setEffect(sp->getEffect(2), 1);
@@ -741,7 +737,7 @@ void SpellMgr::applyHackFixes()
                 break;
         }
 
-        for (uint8 b = 0; b < 3; ++b)
+        for (uint8_t b = 0; b < 3; ++b)
         {
             if (sp->getEffectTriggerSpell(b) != 0 && sSpellMgr.getSpellInfo(sp->getEffectTriggerSpell(b)) == NULL)
             {
@@ -764,10 +760,10 @@ void SpellMgr::applyHackFixes()
         }
 
         // DankoDJ: Refactoring session 16/02/2016 new functions
-        modifyEffectBasePoints(sp);
-        setMissingSpellLevel(sp);
-        modifyAuraInterruptFlags(sp);
-        modifyRecoveryTime(sp);
+        modifyEffectBasePoints(sp.get());
+        setMissingSpellLevel(sp.get());
+        modifyAuraInterruptFlags(sp.get());
+        modifyRecoveryTime(sp.get());
 
         // various flight spells
         // these make vehicles and other charmed stuff fliable
@@ -912,7 +908,7 @@ void SpellMgr::applyHackFixes()
             case 61411:     // Shield of Righteousness Rank 2
             {
                 sp->setEffect(SPELL_EFFECT_DUMMY, 0);
-                sp->setEffect(SPELL_EFFECT_NULL, 1);          //hacks, handling it in Spell::SpellEffectSchoolDMG(uint32 i)
+                sp->setEffect(SPELL_EFFECT_NULL, 1);          //hacks, handling it in Spell::SpellEffectSchoolDMG(uint32_t i)
                 sp->setEffect(SPELL_EFFECT_SCHOOL_DAMAGE, 2); //hack
             } break;
 
@@ -1586,7 +1582,7 @@ void SpellMgr::applyHackFixes()
 
             case 20608:   //Reincarnation
             {
-                for (uint8 i = 0; i < 8; ++i)
+                for (uint8_t i = 0; i < 8; ++i)
                 {
                     if (sp->getReagent(i))
                     {
@@ -2346,7 +2342,7 @@ void SpellMgr::applyHackFixes()
             // Major Domo - Damage Shield
             case 21075:
             {
-                for (uint8 i = 0; i < 3; ++i)
+                for (uint8_t i = 0; i < 3; ++i)
                 {
                     if (sp->getEffectImplicitTargetA(i) > 0)
                         sp->setEffectImplicitTargetA(EFF_TARGET_ALL_FRIENDLY_IN_AREA, i);
@@ -2486,7 +2482,7 @@ void SpellMgr::applyHackFixes()
                 SpellInfo* ritOfSumm = getMutableSpellInfo(ritOfSummId);
                 if (ritOfSumm != NULL)
                 {
-                    memcpy(ritOfSumm, sp, sizeof(SpellInfo));
+                    memcpy(ritOfSumm, sp.get(), sizeof(SpellInfo));
                     ritOfSumm->setId(ritOfSummId);
                 }
             } break;

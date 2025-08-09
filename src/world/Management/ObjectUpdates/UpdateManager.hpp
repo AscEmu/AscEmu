@@ -55,5 +55,5 @@ public:
     void pushUpdateData(ByteBuffer* data, uint32_t updateCount);
     void processPendingUpdates();
 
-    void queueDelayedPacket(WorldPacket* packet);
+    void queueDelayedPacket(std::unique_ptr<WorldPacket> packet);
 };

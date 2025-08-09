@@ -5,13 +5,26 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <string>
 #include <list>
+#include <memory>
+#include <string>
 
 #include "CommonTypes.hpp"
 
+class Field;
+class Player;
+class QueryBuffer;
+
+namespace AscEmu::Packets
+{
+    class CmsgGmTicketCreate;
+}
+
 struct GM_Ticket
 {
+    GM_Ticket(Player const* player, AscEmu::Packets::CmsgGmTicketCreate const& srlPacket);
+    GM_Ticket(Field const* fields);
+
     uint64_t guid;
     uint64_t playerGuid;
     std::string name;
@@ -42,9 +55,7 @@ enum
     GM_TICKET_CHAT_OPCODE_ONLINESTATE = 11
 };
 
-typedef std::list<GM_Ticket*> GmTicketList;
-
-class QueryBuffer;
+typedef std::list<std::unique_ptr<GM_Ticket>> GmTicketList;
 
 class SERVER_DECL TicketMgr
 {
@@ -63,18 +74,19 @@ public:
     TicketMgr& operator=(TicketMgr const&) = delete;
 
     uint32_t generateNextTicketId();
-    void addGMTicket(GM_Ticket* ticket, bool startup);
+    GM_Ticket* createGMTicket(Player const* player, AscEmu::Packets::CmsgGmTicketCreate const& srlPacket);
+    GM_Ticket* createGMTicket(Field const* fields);
     void loadGMTickets();
     void saveGMTicket(GM_Ticket* ticket, QueryBuffer* buf);
     void updateGMTicket(GM_Ticket* ticket);
 
-    void removeGMTicketByPlayer(uint64 playerGuid);
-    void removeGMTicket(uint64 ticketGuid);
-    void closeTicket(uint64 ticketGuid);
-    void deleteGMTicketPermanently(uint64 ticketGuid);
+    void removeGMTicketByPlayer(uint64_t playerGuid);
+    void removeGMTicket(uint64_t ticketGuid);
+    void closeTicket(uint64_t ticketGuid);
+    void deleteGMTicketPermanently(uint64_t ticketGuid);
     void deleteAllRemovedGMTickets();
-    GM_Ticket* getGMTicket(uint64 ticketGuid);
-    GM_Ticket* getGMTicketByPlayer(uint64 playerGuid);
+    GM_Ticket* getGMTicket(uint64_t ticketGuid);
+    GM_Ticket* getGMTicketByPlayer(uint64_t playerGuid);
 
     GmTicketList m_ticketList;
 

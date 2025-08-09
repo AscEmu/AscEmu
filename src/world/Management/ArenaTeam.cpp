@@ -99,10 +99,7 @@ ArenaTeam::ArenaTeam(Field* field)
     }
 }
 
-ArenaTeam::~ArenaTeam()
-{
-    delete[] m_members;
-}
+ArenaTeam::~ArenaTeam() = default;
 
 void ArenaTeam::saveToDB()
 {
@@ -157,7 +154,7 @@ void ArenaTeam::saveToDB()
 
 void ArenaTeam::destroy()
 {
-    std::vector<std::shared_ptr<CachedCharacterInfo>> toDestroyMembers;
+    std::vector<CachedCharacterInfo const*> toDestroyMembers;
     toDestroyMembers.reserve(m_memberCount);
 
     char buffer[1024];
@@ -174,7 +171,8 @@ void ArenaTeam::destroy()
     for (auto& itr : toDestroyMembers)
         removeMember(itr);
 
-    delete this;
+    // TODO: arena team is not removed from db? -Appled
+    sObjectMgr.removeArenaTeam(this);
 }
 
 void ArenaTeam::sendPacket(WorldPacket* data) const
@@ -189,7 +187,7 @@ void ArenaTeam::sendPacket(WorldPacket* data) const
     }
 }
 
-ArenaTeamMember* ArenaTeam::getMember(std::shared_ptr<CachedCharacterInfo> cachedCharInfo) const
+ArenaTeamMember* ArenaTeam::getMember(CachedCharacterInfo const* cachedCharInfo) const
 {
     for (uint32_t i = 0; i < m_memberCount; ++i)
     {
@@ -209,7 +207,7 @@ ArenaTeamMember* ArenaTeam::getMemberByGuid(uint32_t lowGuid) const
     return nullptr;
 }
 
-bool ArenaTeam::addMember(std::shared_ptr<CachedCharacterInfo> cachedCharInfo)
+bool ArenaTeam::addMember(CachedCharacterInfo const* cachedCharInfo)
 {
     if (!cachedCharInfo)
         return false;
@@ -233,7 +231,7 @@ bool ArenaTeam::addMember(std::shared_ptr<CachedCharacterInfo> cachedCharInfo)
     return true;
 }
 
-bool ArenaTeam::removeMember(std::shared_ptr<CachedCharacterInfo> cachedCharInfo)
+bool ArenaTeam::removeMember(CachedCharacterInfo const* cachedCharInfo)
 {
     if (!cachedCharInfo)
         return false;
@@ -292,7 +290,7 @@ bool ArenaTeam::isMember(uint32_t lowGuid) const
     return false;
 }
 
-void ArenaTeam::setLeader(std::shared_ptr<CachedCharacterInfo> cachedCharInfo)
+void ArenaTeam::setLeader(CachedCharacterInfo const* cachedCharInfo)
 {
     if (cachedCharInfo)
     {
@@ -367,8 +365,8 @@ void ArenaTeam::_allocateSlots(uint16_t type)
         return;
     }
 
-    m_members = new ArenaTeamMember[Slots];
-    memset(m_members, 0, sizeof(ArenaTeamMember) * Slots);
+    m_members = std::make_unique<ArenaTeamMember[]>(Slots);
+    std::fill(m_members.get(), m_members.get() + Slots, ArenaTeamMember());
     m_slots = Slots;
     m_memberCount = 0;
 }

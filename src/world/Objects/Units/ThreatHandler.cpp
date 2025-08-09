@@ -60,7 +60,7 @@ bool ThreatReference::shouldBeOffline() const
     if (!_owner->canSee(_victim))
         return true;
 
-    if (!_owner->getAIInterface()->isTargetAcceptable(_victim) || !_owner->getAIInterface()->canOwnerAttackUnit(_victim))
+    if (!_owner->getAIInterface()->canOwnerAttackUnit(_victim))
         return true;
 
     if (!flagsAllowFighting(_owner, _victim) || !flagsAllowFighting(_victim, _owner))
@@ -124,12 +124,11 @@ void ThreatReference::unregisterAndFree()
 {
     _owner->getThreatManager().purgeThreatListRef(_victim->getGuid());
     _victim->getThreatManager().purgeThreatenedByMeRef(_owner->getGuid());
-    delete this;
 }
 
 ThreatManager::ThreatManager(Unit* owner) : _owner(owner), _ownerCanHaveThreatList(false), _needClientUpdate(false), _updateTimer(THREAT_UPDATE_INTERVAL), _currentVictimRef(nullptr), _fixateRef(nullptr)
 {
-    for (int8 i = 0; i < TOTAL_SPELL_SCHOOLS; ++i)
+    for (int8_t i = 0; i < TOTAL_SPELL_SCHOOLS; ++i)
         _singleSchoolModifiers[i] = 1.0f;
 }
 
@@ -193,7 +192,7 @@ Unit* ThreatManager::getSecondMostHated()
 {
     if (getThreatListSize() >= 2)
     {
-        ThreatReference* ref = (*std::next(_sortedThreatList.begin()));
+        const auto& ref = (*std::next(_sortedThreatList.begin()));
         if (ref)
             return ref->getOwner();
         else
@@ -212,7 +211,7 @@ Unit* ThreatManager::getLastVictim() const
 
 Unit* ThreatManager::getAnyTarget() const
 {
-    for (ThreatReference const* ref : _sortedThreatList)
+    for (const auto& ref : _sortedThreatList)
         if (!ref->isOffline())
             return ref->getVictim();
     return nullptr;
@@ -247,38 +246,38 @@ ThreatReference const* ThreatManager::reselectVictim()
     if (oldVictimRef && oldVictimRef->isOffline())
         oldVictimRef = nullptr;
     // in 99% of cases - we won't need to actually look at anything beyond the first element
-    ThreatReference const* highest = _sortedThreatList.front();
+    const auto& highest = _sortedThreatList.front();
 
     // if the highest reference is offline, the entire list is offline, and we indicate this
     if (!highest->isAvailable())
         return nullptr;
     // if we have no old victim, or old victim is still highest, then highest is our target and we're done
-    if (!oldVictimRef || highest == oldVictimRef)
-        return highest;
+    if (!oldVictimRef || highest.get() == oldVictimRef)
+        return highest.get();
     // if highest threat doesn't break 110% of old victim, nothing below it is going to do so either; new victim = old victim and done
-    if (!ThreatManager::compareReferencesLT(oldVictimRef, highest, 1.1f))
+    if (!ThreatManager::compareReferencesLT(oldVictimRef, highest.get(), 1.1f))
         return oldVictimRef;
     // if highest threat breaks 130%, it's our new target regardless of range (and we're done)
-    if (ThreatManager::compareReferencesLT(oldVictimRef, highest, 1.3f))
-        return highest;
+    if (ThreatManager::compareReferencesLT(oldVictimRef, highest.get(), 1.3f))
+        return highest.get();
     // if it doesn't break 130%, we need to check if it's melee - if yes, it breaks 110% (we checked earlier) and is our new target
     if (_owner->canReachWithAttack(highest->_victim))
-        return highest;
+        return highest.get();
     // If we get here, highest threat is ranged, but below 130% of current - there might be a melee that breaks 110% below us somewhere, so now we need to actually look at the next highest element
     // luckily, this is a heap, so getting the next highest element is O(log n), and we're just gonna do that repeatedly until we've seen enough targets (or find a target)
     auto it = _sortedThreatList.begin(), end = _sortedThreatList.end();
     while (it != end)
     {
-        ThreatReference const* next = *it;
+        const auto& next = *it;
         // if we've found current victim, we're done (nothing above is higher, and nothing below can be higher)
-        if (next == oldVictimRef)
-            return next;
+        if (next.get() == oldVictimRef)
+            return next.get();
         // if next isn't above 110% threat, then nothing below it can be either - we're done, old victim stays
-        if (!ThreatManager::compareReferencesLT(oldVictimRef, next, 1.1f))
+        if (!ThreatManager::compareReferencesLT(oldVictimRef, next.get(), 1.1f))
             return oldVictimRef;
         // if next is melee, he's above 110% and our new victim
         if (_owner->canReachWithAttack(next->_victim))
-            return next;
+            return next.get();
         // otherwise the next highest target may still be a melee above 110% and we need to look further
         ++it;
     }
@@ -303,7 +302,7 @@ void ThreatManager::fixateTarget(Unit* target)
         auto it = _myThreatListEntries.find(target->getGuid());
         if (it != _myThreatListEntries.end())
         {
-            _fixateRef = it->second;
+            _fixateRef = it->second.get();
             return;
         }
     }
@@ -446,7 +445,7 @@ bool ThreatManager::isThreatListEmpty(bool includeOffline) const
 {
     if (includeOffline)
         return _sortedThreatList.empty();
-    for (ThreatReference const* ref : _sortedThreatList)
+    for (const auto& ref : _sortedThreatList)
         if (ref->isAvailable())
             return false;
     return true;
@@ -476,7 +475,7 @@ void ThreatManager::addThreat(Unit* target, float amount, SpellInfo const* spell
     if (!canHaveThreatList())
         return;
 
-    if (!_owner->getAIInterface()->getAllowedToEnterCombat())
+    if (!_owner->getAIInterface()->isAllowedToEnterCombat())
         return;
 
     if (!getOwner()->isAlive())
@@ -545,7 +544,7 @@ void ThreatManager::addThreat(Unit* target, float amount, SpellInfo const* spell
     auto it = _myThreatListEntries.find(target->getGuid());
     if (it != _myThreatListEntries.end())
     {
-        ThreatReference* const ref = it->second;
+        const auto& ref = it->second;
         // SUPPRESSED threat states don't go back to ONLINE until threat is caused by them (retail behavior)
         if (ref->getOnlineState() == ThreatReference::ONLINE_STATE_SUPPRESSED)
             if (!ref->shouldBeSuppressed())
@@ -561,7 +560,8 @@ void ThreatManager::addThreat(Unit* target, float amount, SpellInfo const* spell
     }
 
     // ok, we're now in combat - create the threat list reference and push it to the respective managers
-    ThreatReference* ref = new ThreatReference(this, target);
+    // std::make_shared does not work with private ctors -Appled
+    auto ref = std::shared_ptr<ThreatReference>(new ThreatReference(this, target));
     putThreatListRef(target->getGuid(), ref);
     target->getThreatManager().putThreatenedByMeRef(_owner->getGuid(), ref);
 
@@ -586,7 +586,7 @@ std::vector<ThreatReference*> ThreatManager::getModifiableThreatList()
     std::vector<ThreatReference*> list;
     list.reserve(_myThreatListEntries.size());
     for (auto it = _sortedThreatList.begin(), end = _sortedThreatList.end(); it != end; ++it)
-        list.push_back(*it);
+        list.push_back((*it).get());
     return list;
 }
 
@@ -603,15 +603,15 @@ void ThreatManager::matchUnitThreatToHighestThreat(Unit* target)
         return;
 
     auto it = _sortedThreatList.begin(), end = _sortedThreatList.end();
-    ThreatReference const* highest = *it;
+    ThreatReference const* highest = (*it).get();
     if (!highest->isAvailable())
         return;
 
     if (highest->isTaunting() && ((++it) != end)) // might need to skip this - max threat could be the preceding element (there is only one taunt element)
     {
-        ThreatReference const* a = *it;
+        const auto& a = *it;
         if (a->isAvailable() && a->getThreat() > highest->getThreat())
-            highest = a;
+            highest = a.get();
     }
 
     addThreat(target, highest->getThreat() - getThreat(target, true), nullptr, true, true);
@@ -656,7 +656,7 @@ void ThreatManager::clearThreat(Unit* target)
 {
     auto it = _myThreatListEntries.find(target->getGuid());
     if (it != _myThreatListEntries.end())
-        clearThreat(it->second);
+        clearThreat(it->second.get());
 }
 
 void ThreatManager::clearThreat(ThreatReference* ref)
@@ -746,7 +746,7 @@ void ThreatManager::sendThreatListToClients(bool newHighest) const
     size_t countPos = data.wpos();
     data << uint32_t(0); // placeholder
     uint32_t count = 0;
-    for (ThreatReference const* ref : _sortedThreatList)
+    for (const auto& ref : _sortedThreatList)
     {
         if (!ref->isAvailable())
             continue;
@@ -760,7 +760,7 @@ void ThreatManager::sendThreatListToClients(bool newHighest) const
     _owner->sendMessageToSet(&data, false);
 }
 
-void ThreatManager::putThreatListRef(uint64_t const& guid, ThreatReference* ref)
+void ThreatManager::putThreatListRef(uint64_t const& guid, std::shared_ptr<ThreatReference> ref)
 {
     _needClientUpdate = true;
     auto& inMap = _myThreatListEntries[guid];
@@ -775,18 +775,19 @@ void ThreatManager::purgeThreatListRef(uint64_t const& guid)
     auto it = _myThreatListEntries.find(guid);
     if (it == _myThreatListEntries.end())
         return;
-    ThreatReference* ref = it->second;
-    _myThreatListEntries.erase(it);
-    _sortedThreatList.remove(ref);
-    heapNotifyChanged();
 
-    if (_fixateRef == ref)
+    const auto& ref = it->second;
+    if (_fixateRef == ref.get())
         _fixateRef = nullptr;
-    if (_currentVictimRef == ref)
+    if (_currentVictimRef == ref.get())
         _currentVictimRef = nullptr;
+
+    _sortedThreatList.remove(ref);
+    _myThreatListEntries.erase(it);
+    heapNotifyChanged();
 }
 
-void ThreatManager::putThreatenedByMeRef(uint64_t const& guid, ThreatReference* ref)
+void ThreatManager::putThreatenedByMeRef(uint64_t const& guid, std::shared_ptr<ThreatReference> ref)
 {
     auto& inMap = _threatenedByMe[guid];
     ASSERT(!inMap && "Duplicate threatened-by-me reference being inserted - memory leak!");
@@ -803,5 +804,5 @@ void ThreatManager::purgeThreatenedByMeRef(uint64_t const& guid)
 void ThreatManager::heapNotifyChanged()
 {
     if (_sortedThreatList.size())
-        _sortedThreatList.sort([](ThreatReference* a, ThreatReference* b) -> bool { return a->getThreat() > b->getThreat(); });
+        _sortedThreatList.sort([](std::shared_ptr<ThreatReference> const& a, std::shared_ptr<ThreatReference> const& b) -> bool { return a->getThreat() > b->getThreat(); });
 }

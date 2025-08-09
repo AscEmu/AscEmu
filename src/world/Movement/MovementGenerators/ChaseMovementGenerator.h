@@ -34,7 +34,7 @@ public:
     void unitSpeedChanged() override;
 
 private:
-    static constexpr uint32 RANGE_CHECK_INTERVAL = 100; // time (ms) until we attempt to recalculate
+    static constexpr uint32_t RANGE_CHECK_INTERVAL = 100; // time (ms) until we attempt to recalculate
 
     Optional<ChaseRange> const _range;
     Optional<ChaseAngle> const _angle;

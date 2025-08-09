@@ -62,7 +62,7 @@ void WorldSession::handleGMSurveySubmitOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    QueryResult* result = CharacterDatabase.Query("SELECT MAX(survey_id) FROM gm_survey");
+    auto result = CharacterDatabase.Query("SELECT MAX(survey_id) FROM gm_survey");
     if (result == nullptr)
         return;
 
@@ -118,7 +118,7 @@ void WorldSession::handleGMTicketUpdateOpcode(WorldPacket& recvPacket)
     }
 
 #ifndef GM_TICKET_MY_MASTER_COMPATIBLE
-    std::shared_ptr<Channel> channel = sChannelMgr.getChannel(sWorld.getGmClientChannel(), _player);
+    auto channel = sChannelMgr.getChannel(sWorld.getGmClientChannel(), _player);
     if (channel != nullptr)
     {
         std::stringstream ss;
@@ -139,7 +139,7 @@ void WorldSession::handleGMTicketDeleteOpcode(WorldPacket& /*recvPacket*/)
 
     SendPacket(SmsgGmTicketDeleteTicket(GMTTicketRemoved).serialise().get());
 
-    std::shared_ptr<Channel> channel = sChannelMgr.getChannel(worldConfig.getGmClientChannelName(), _player);
+    auto channel = sChannelMgr.getChannel(worldConfig.getGmClientChannelName(), _player);
     if (channel != nullptr && ticket != nullptr)
     {
         std::stringstream ss;
@@ -191,27 +191,12 @@ void WorldSession::handleGMTicketCreateOpcode(WorldPacket& recvPacket)
     // Remove pending tickets
     sTicketMgr.removeGMTicketByPlayer(_player->getGuid());
 
-    auto ticket = new GM_Ticket;
-    ticket->guid = uint64_t(sTicketMgr.generateNextTicketId());
-    ticket->playerGuid = _player->getGuid();
-    ticket->map = srlPacket.map;
-    ticket->posX = srlPacket.location.x;
-    ticket->posY = srlPacket.location.y;
-    ticket->posZ = srlPacket.location.z;
-    ticket->message = srlPacket.message;
-    ticket->timestamp = static_cast<uint32_t>(UNIXTIME);
-    ticket->name = _player->getName();
-    ticket->level = _player->getLevel();
-    ticket->deleted = false;
-    ticket->assignedToPlayer = 0;
-    ticket->comment = "";
-
-    sTicketMgr.addGMTicket(ticket, false);
+    auto* ticket = sTicketMgr.createGMTicket(_player, srlPacket);
 
     SendPacket(SmsgGmTicketCreate(GMTNoErrors).serialise().get());
 
     // send message indicating new ticket
-    std::shared_ptr<Channel> channel = sChannelMgr.getChannel(worldConfig.getGmClientChannelName(), _player);
+    auto channel = sChannelMgr.getChannel(worldConfig.getGmClientChannelName(), _player);
     if (channel != nullptr)
     {
         std::stringstream ss;

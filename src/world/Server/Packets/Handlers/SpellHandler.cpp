@@ -13,7 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Creatures/Summons/Summon.hpp"
 #include "Objects/Units/Creatures/AIInterface.h"
-#include "Objects/Units/Creatures/Summons/SummonDefines.hpp"
+#include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
@@ -275,7 +275,7 @@ void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
     else if (_player->getCharmGuid() == srlPacket.petGuid)
     {
         bool found = false;
-        for (auto aiSpell : petUnit->getAIInterface()->m_spells)
+        for (const auto& aiSpell : petUnit->getAIInterface()->m_spells)
         {
             if (aiSpell->spell->getId() == srlPacket.spellId)
             {

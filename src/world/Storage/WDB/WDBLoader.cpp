@@ -15,16 +15,12 @@ namespace WDB
     WDBLoader::WDBLoader() : m_record_size(0), m_record_count(0), m_field_count(0), m_string_size(0), m_fields_offset(nullptr), m_data(nullptr), m_string_table(nullptr)
     { }
 
-    WDBLoader::~WDBLoader()
-    {
-        delete[] m_data;
-        delete[] m_fields_offset;
-    }
+    WDBLoader::~WDBLoader() = default;
 
     WDB::WDBRecord WDBLoader::getRecord(size_t record_id) const
     {
         assert(m_data);
-        return {m_data + record_id * m_record_size};
+        return {m_data.get() + record_id * m_record_size};
     }
 
     uint32_t WDB::WDBLoader::getNumRows() const
@@ -149,7 +145,6 @@ namespace WDB
         uint32_t header;
         if (m_data)
         {
-            delete[] m_data;
             m_data = nullptr;
         }
 
@@ -199,7 +194,7 @@ namespace WDB
             return false;
         }
 
-        m_fields_offset = new uint32_t[m_field_count];
+        m_fields_offset = std::make_unique<uint32_t[]>(m_field_count);
         m_fields_offset[0] = 0;
 
         for (uint32_t i = 1; i < m_field_count; ++i)
@@ -217,10 +212,10 @@ namespace WDB
             }
         }
 
-        m_data = new unsigned char[m_record_size * m_record_count + m_string_size];
-        m_string_table = m_data + m_record_size * m_record_count;
+        m_data = std::make_unique<unsigned char[]>(m_record_size * m_record_count + m_string_size);
+        m_string_table = m_data.get() + m_record_size * m_record_count;
 
-        if (fread(m_data, m_record_size * m_record_count + m_string_size, 1, file) != 1)
+        if (fread(m_data.get(), m_record_size * m_record_count + m_string_size, 1, file) != 1)
         {
             fclose(file);
             return false;
@@ -235,7 +230,6 @@ namespace WDB
         uint32_t header = 48;
         if (m_data)
         {
-            delete[] m_data;
             m_data = nullptr;
         }
 
@@ -334,21 +328,21 @@ namespace WDB
             return false;
         }
 
-        m_fields_offset = new uint32_t[m_field_count];
+        m_fields_offset = std::make_unique<uint32_t[]>(m_field_count);
         m_fields_offset[0] = 0;
         for (uint32_t i = 1; i < m_field_count; i++)
         {
             m_fields_offset[i] = m_fields_offset[i - 1];
             if (_dbcFormat[i - 1] == 'b' || _dbcFormat[i - 1] == 'X') // byte fields
                 m_fields_offset[i] += 1;
-            else                                // 4 byte fields (int32/float/strings)
+            else                                // 4 byte fields (int32_t/float/strings)
                 m_fields_offset[i] += 4;
         }
 
-        m_data = new unsigned char[m_record_size * m_record_count + m_string_size];
-        m_string_table = m_data + m_record_size * m_record_count;
+        m_data = std::make_unique<unsigned char[]>(m_record_size * m_record_count + m_string_size);
+        m_string_table = m_data.get() + m_record_size * m_record_count;
 
-        if (fread(m_data, m_record_size * m_record_count + m_string_size, 1, file) != 1)
+        if (fread(m_data.get(), m_record_size * m_record_count + m_string_size, 1, file) != 1)
         {
             fclose(file);
             return false;
@@ -358,7 +352,7 @@ namespace WDB
         return true;
     }
 
-    char* WDBLoader::autoProduceData(const char* _dbcFormat, uint32_t& _recordCount, char**& _indexTable)
+    std::unique_ptr<char[]> WDBLoader::autoProduceData(const char* _dbcFormat, uint32_t& _recordCount, std::unique_ptr<char*[]>& _indexTable)
     {
         if (strlen(_dbcFormat) != m_field_count) return nullptr;
 
@@ -378,16 +372,16 @@ namespace WDB
 
             ++maxIndex;
             _recordCount = maxIndex;
-            _indexTable = new char*[maxIndex];
-            memset(_indexTable, 0, maxIndex * sizeof(char*));
+            _indexTable = std::make_unique<char*[]>(maxIndex);
+            memset(_indexTable.get(), 0, maxIndex * sizeof(char*));
         }
         else
         {
             _recordCount = m_record_count;
-            _indexTable = new char*[m_record_count];
+            _indexTable = std::make_unique<char*[]>(m_record_count);
         }
 
-        char* data_table = new char[(m_record_count) * recordSize];
+        auto data_table = std::make_unique<char[]>(m_record_count * recordSize);
         uint32_t offset = 0;
 
         for (uint32_t y = 0; y < m_record_count; ++y)
@@ -436,13 +430,13 @@ namespace WDB
         return data_table;
     }
 
-    char* WDBLoader::autoProduceStrings(const char* _dbcFormat, char* _dataTable)
+    std::unique_ptr<char[]> WDBLoader::autoProduceStrings(const char* _dbcFormat, char* _dataTable)
     {
         if (strlen(_dbcFormat) != m_field_count)
             return nullptr;
 
-        char* string_pool = new char[m_string_size];
-        memcpy(string_pool, m_string_table, m_string_size);
+        auto string_pool = std::make_unique<char[]>(m_string_size);
+        memcpy(string_pool.get(), m_string_table, m_string_size);
 
         uint32_t offset = 0;
 
@@ -469,7 +463,7 @@ namespace WDB
                         if (!*slot || !**slot)
                         {
                             const char* st = this->getRecord(y).getString(x, m_field_count, this->getOffset(x), m_string_size, m_string_table);
-                            *slot = string_pool + (st - (const char*)m_string_table);
+                            *slot = string_pool.get() + (st - (const char*)m_string_table);
                         }
                         offset += sizeof (char*);
                         break;

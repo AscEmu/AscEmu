@@ -36,7 +36,7 @@
 class DamageShieldSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new DamageShieldSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<DamageShieldSpellProc>(); }
 
     bool canProc(Unit* /*victim*/, SpellInfo const* /*castingSpell*/) override
     {
@@ -46,7 +46,7 @@ public:
         return true;
     }
 
-    bool doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, uint32 /*weaponDamageType*/) override
+    bool doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32_t /*flag*/, uint32_t /*dmg*/, uint32_t /*abs*/, uint32_t /*weaponDamageType*/) override
     {
         Player* plr = static_cast<Player*>(getProcOwner());
 
@@ -63,7 +63,7 @@ public:
 class JuggernautSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new JuggernautSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<JuggernautSpellProc>(); }
 
     bool canProc(Unit* /*victim*/, SpellInfo const* castingSpell) override
     {
@@ -176,7 +176,7 @@ public:
 class FrostBrandAttackSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new FrostBrandAttackSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<FrostBrandAttackSpellProc>(); }
 
     void init(Object* obj) override
     {
@@ -193,7 +193,7 @@ public:
 class FlametongueWeaponSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new FlametongueWeaponSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<FlametongueWeaponSpellProc>(); }
 
     void init(Object* obj) override
     {
@@ -208,7 +208,7 @@ public:
 
         mItemGUID = obj->getGuid();
         damage = 0;
-        uint32 wp_speed;
+        uint32_t wp_speed;
         Item* item = static_cast< Item* >(obj);
         EnchantmentInstance* enchant = item->getEnchantment(TEMP_ENCHANTMENT_SLOT);
         if (enchant != nullptr)
@@ -238,7 +238,7 @@ public:
         }
     }
 
-    bool canDeleteProc(uint32 spellId, uint64 casterGuid = 0, uint64 misc = 0) override //in this case misc is the item guid.
+    bool canDeleteProc(uint32_t spellId, uint64_t casterGuid = 0, uint64_t misc = 0) override //in this case misc is the item guid.
     {
         if (getSpell()->getId() == spellId && getCasterGuid() == casterGuid && misc == mItemGUID && !isDeleted())
             return true;
@@ -253,7 +253,7 @@ public:
         return false;
     }
 
-    bool doEffect(Unit* /*victim*/, SpellInfo const* /*CastingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, uint32 weaponDamageType) override
+    bool doEffect(Unit* /*victim*/, SpellInfo const* /*CastingSpell*/, uint32_t /*flag*/, uint32_t /*dmg*/, uint32_t /*abs*/, uint32_t weaponDamageType) override
     {
         Item* item;
 
@@ -272,7 +272,7 @@ public:
     }
 
 private:
-    uint64 mItemGUID;
+    uint64_t mItemGUID;
     int damage;
 };
 
@@ -281,7 +281,7 @@ private:
 class PoisonSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new PoisonSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<PoisonSpellProc>(); }
 
     PoisonSpellProc()
     {
@@ -302,7 +302,7 @@ public:
             setProcChance(static_cast<Item*>(obj)->getItemProperties()->Delay * mProcPerMinute / 600);
     }
 
-    bool canDeleteProc(uint32 spellId, uint64 casterGuid = 0, uint64 misc = 0) override//in this case misc is the item guid.
+    bool canDeleteProc(uint32_t spellId, uint64_t casterGuid = 0, uint64_t misc = 0) override//in this case misc is the item guid.
     {
         if (getSpell()->getId() == spellId && getCasterGuid() == casterGuid && misc == mItemGUID && !isDeleted())
             return true;
@@ -320,7 +320,7 @@ public:
     }
 
     // Allow proc only if proccing hand is the one where poison was applied
-    bool doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, uint32 weaponDamageType) override
+    bool doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32_t /*flag*/, uint32_t /*dmg*/, uint32_t /*abs*/, uint32_t weaponDamageType) override
     {
         Item* item;
 
@@ -336,14 +336,14 @@ public:
     }
 
 protected:
-    uint64 mItemGUID;
-    uint32 mProcPerMinute;
+    uint64_t mItemGUID;
+    uint32_t mProcPerMinute;
 };
 
 class WoundPoisonSpellProc : public PoisonSpellProc
 {
 public:
-    static SpellProc* Create() { return new WoundPoisonSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<WoundPoisonSpellProc>(); }
 
     void init(Object* obj) override
     {
@@ -356,7 +356,7 @@ public:
 class InstantPoisonSpellProc : public PoisonSpellProc
 {
 public:
-    static SpellProc* Create() { return new InstantPoisonSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<InstantPoisonSpellProc>(); }
 
     void init(Object* obj) override
     {
@@ -369,7 +369,7 @@ public:
 class WaylaySpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new WaylaySpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<WaylaySpellProc>(); }
 
     void init(Object* /*obj*/) override
     {
@@ -383,7 +383,7 @@ public:
 class SpiritTapSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new SpiritTapSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<SpiritTapSpellProc>(); }
 
     void init(Object* /*obj*/) override
     {
@@ -394,9 +394,9 @@ public:
 class ImprovedDevouringPlagueSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new ImprovedDevouringPlagueSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<ImprovedDevouringPlagueSpellProc>(); }
 
-    bool doEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, uint32 /*weaponDamageType*/) override
+    bool doEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32_t /*flag*/, uint32_t /*dmg*/, uint32_t /*abs*/, uint32_t /*weaponDamageType*/) override
     {
         // Get dmg amt for 1 tick
         const uint32_t dmg = castingSpell->calculateEffectValue(0);
@@ -414,9 +414,9 @@ public:
 class EmpoweredRenewSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new EmpoweredRenewSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<EmpoweredRenewSpellProc>(); }
 
-    bool doEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, uint32 /*weapon_damage_type*/) override
+    bool doEffect(Unit* /*victim*/, SpellInfo const* castingSpell, uint32_t /*flag*/, uint32_t /*dmg*/, uint32_t /*abs*/, uint32_t /*weapon_damage_type*/) override
     {
         // Get heal amt for 1 tick
         const uint32_t dmg = castingSpell->calculateEffectValue(0);
@@ -447,7 +447,7 @@ public:
 class MiserySpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new MiserySpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<MiserySpellProc>(); }
 
     void init(Object* /*obj*/) override
     {
@@ -461,9 +461,9 @@ public:
 class PrayerOfMendingProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new PrayerOfMendingProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<PrayerOfMendingProc>(); }
 
-    bool doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, uint32 /*weaponDamageType*/) override
+    bool doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32_t /*flag*/, uint32_t /*dmg*/, uint32_t /*abs*/, uint32_t /*weaponDamageType*/) override
     {
         Aura* aura = getProcOwner()->getAuraWithId(getSpell()->getId());
         if (aura == nullptr)
@@ -481,7 +481,7 @@ public:
 
         caster->castSpell(getProcOwner(), 33110, forcedBasePoints, true);
 
-        int32 count = getProcOwner()->getAuraCountForId(getSpell()->getId());
+        int32_t count = getProcOwner()->getAuraCountForId(getSpell()->getId());
 
         if (count <= 1)
             return true;
@@ -509,7 +509,7 @@ public:
 class SealOfCommandSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new SealOfCommandSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<SealOfCommandSpellProc>(); }
 
     void init(Object* /*obj*/) override
     {
@@ -522,7 +522,7 @@ public:
         if (!getProcOwner()->isPlayer())
             return;
 
-        uint32 weapspeed = 1;
+        uint32_t weapspeed = 1;
 
         auto item = static_cast<Player*>(getProcOwner())->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
         if (item != nullptr)
@@ -537,7 +537,7 @@ public:
 class GraceOfTheNaaruSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new GraceOfTheNaaruSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<GraceOfTheNaaruSpellProc>(); }
 
     void init(Object* /*obj*/) override
     {
@@ -548,7 +548,7 @@ public:
 class SpiritualAttunementSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new SpiritualAttunementSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<SpiritualAttunementSpellProc>(); }
 
     bool canProc(Unit* /*victim*/, SpellInfo const* castingSpell) override
     {
@@ -562,7 +562,7 @@ public:
 class PaladinSealsSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new PaladinSealsSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<PaladinSealsSpellProc>(); }
 
     void init(Object* /*obj*/) override
     {
@@ -575,7 +575,7 @@ public:
 class BladeBarrierSpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new BladeBarrierSpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<BladeBarrierSpellProc>(); }
 
     void init(Object* /*obj*/) override
     {
@@ -602,17 +602,17 @@ private:
 class DeathRuneMasterySpellProc : public SpellProc
 {
 public:
-    static SpellProc* Create() { return new DeathRuneMasterySpellProc(); }
+    static std::unique_ptr<SpellProc> Create() { return std::make_unique<DeathRuneMasterySpellProc>(); }
 
-    bool doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32 /*flag*/, uint32 /*dmg*/, uint32 /*abs*/, uint32 /*weaponDamageType*/) override
+    bool doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32_t /*flag*/, uint32_t /*dmg*/, uint32_t /*abs*/, uint32_t /*weaponDamageType*/) override
     {
         DeathKnight* dk = static_cast<DeathKnight*>(getProcOwner());
 
         if (dk->GetRuneType(dk->GetLastUsedUnitSlot()) == RUNE_DEATH)
             return true;
 
-        uint8 count = 2;
-        for (uint8 x = 0; x < MAX_RUNES && count; ++x)
+        uint8_t count = 2;
+        for (uint8_t x = 0; x < MAX_RUNES && count; ++x)
             if ((dk->GetRuneType(x) == RUNE_FROST || dk->GetRuneType(x) == RUNE_UNHOLY) && !dk->GetRuneIsUsed(x))
             {
                 dk->ConvertRune(x, RUNE_DEATH);
@@ -639,7 +639,7 @@ void SpellProcMgr::SetupSpellProcClassScripts()
     //////////////////////////////////////////////////////////////////////////////////////////
     // Shaman
     // SPELL_HASH_FROSTBRAND_ATTACK
-    uint32 frostbrandAttack[] =
+    uint32_t frostbrandAttack[] =
     {
         8034,
         8037,
@@ -662,7 +662,7 @@ void SpellProcMgr::SetupSpellProcClassScripts()
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Rogue
-    uint32 woundPoison[] =
+    uint32_t woundPoison[] =
     {
         // SPELL_HASH_WOUND_POISON_VII
         57975,
@@ -695,7 +695,7 @@ void SpellProcMgr::SetupSpellProcClassScripts()
     };
     addByIds(woundPoison, &WoundPoisonSpellProc::Create);
 
-    uint32 instantPoison[] =
+    uint32_t instantPoison[] =
     {
         // SPELL_HASH_INSTANT_POISON_IX
         57965,
@@ -731,7 +731,7 @@ void SpellProcMgr::SetupSpellProcClassScripts()
     };
     addByIds(instantPoison, &InstantPoisonSpellProc::Create);
 
-    uint32 deadlyPoison[] =
+    uint32_t deadlyPoison[] =
     {
         // SPELL_HASH_DEADLY_POISON_IX
         57970,
@@ -793,7 +793,7 @@ void SpellProcMgr::SetupSpellProcClassScripts()
     };
     addByIds(deadlyPoison, &PoisonSpellProc::Create);
 
-    uint32 cripplingPoison[] =
+    uint32_t cripplingPoison[] =
     {
         //SPELL_HASH_CRIPPLING_POISON
         3408,
@@ -805,7 +805,7 @@ void SpellProcMgr::SetupSpellProcClassScripts()
     };
     addByIds(cripplingPoison, &PoisonSpellProc::Create);
 
-    uint32 mindNumbingPoison[] =
+    uint32_t mindNumbingPoison[] =
     {
         //SPELL_HASH_MIND_NUMBING_POISON
         5760,
@@ -817,7 +817,7 @@ void SpellProcMgr::SetupSpellProcClassScripts()
     };
     addByIds(mindNumbingPoison, &PoisonSpellProc::Create);
 
-    uint32 waylay[] =
+    uint32_t waylay[] =
     {
         //SPELL_HASH_WAYLAY
         51692,
@@ -829,7 +829,7 @@ void SpellProcMgr::SetupSpellProcClassScripts()
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Priest
-    uint32 improvedDevouringPlague[] =
+    uint32_t improvedDevouringPlague[] =
     {
         //SPELL_HASH_IMPROVED_DEVOURING_PLAGUE
         63625,
@@ -841,7 +841,7 @@ void SpellProcMgr::SetupSpellProcClassScripts()
     };
     addByIds(improvedDevouringPlague, &ImprovedDevouringPlagueSpellProc::Create);
 
-    uint32 empoweredRenew[] =
+    uint32_t empoweredRenew[] =
     {
         //SPELL_HASH_EMPOWERED_RENEW
         63534,
@@ -852,7 +852,7 @@ void SpellProcMgr::SetupSpellProcClassScripts()
     };
     addByIds(empoweredRenew, &EmpoweredRenewSpellProc::Create);
 
-    uint32 misery[] =
+    uint32_t misery[] =
     {
         //SPELL_HASH_MISERY
         33191,
@@ -865,7 +865,7 @@ void SpellProcMgr::SetupSpellProcClassScripts()
     };
     addByIds(misery, &MiserySpellProc::Create);
 
-    uint32 prayerOfMending[] =
+    uint32_t prayerOfMending[] =
     {
         //SPELL_HASH_PRAYER_OF_MENDING
         33076,
@@ -883,7 +883,7 @@ void SpellProcMgr::SetupSpellProcClassScripts()
     };
     addByIds(prayerOfMending, &PrayerOfMendingProc::Create);
 
-    uint32 spiritTap[] =
+    uint32_t spiritTap[] =
     {
         //SPELL_HASH_SPIRIT_TAP
         15270,
@@ -896,7 +896,7 @@ void SpellProcMgr::SetupSpellProcClassScripts()
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Paladin
-    uint32 sealOfCommand[] =
+    uint32_t sealOfCommand[] =
     {
         //SPELL_HASH_SEAL_OF_COMMAND
         20375,
@@ -918,7 +918,7 @@ void SpellProcMgr::SetupSpellProcClassScripts()
 
     addById(43742, &GraceOfTheNaaruSpellProc::Create);
 
-    uint32 spiritualAttunement[] =
+    uint32_t spiritualAttunement[] =
     {
         //SPELL_HASH_SPIRITUAL_ATTUNEMENT
         31785,
@@ -936,7 +936,7 @@ void SpellProcMgr::SetupSpellProcClassScripts()
     // DeathKnight
     addById(50806, &DeathRuneMasterySpellProc::Create);
 
-    uint32 bladeBarrier[] =
+    uint32_t bladeBarrier[] =
     {
         //SPELL_HASH_BLADE_BARRIER
         49182,

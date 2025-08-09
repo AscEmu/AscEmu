@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/AchievementMgr.h"
 #include "Units/Players/Player.hpp"
 
-Container::Container(uint32_t high, uint32_t low) : Item()
+Container::Container(uint32_t high, uint32_t low) : Item(), m_Slot(nullptr)
 {
     m_objectType |= TYPE_ITEM | TYPE_CONTAINER;
     m_objectTypeId = TYPEID_CONTAINER;
@@ -30,10 +30,8 @@ Container::~Container()
     for (uint8_t i = 0; i < m_itemProperties->ContainerSlots; ++i)
     {
         if (m_Slot[i] && m_Slot[i]->getOwner() == m_owner)
-            m_Slot[i]->deleteMe();
+            m_Slot[i] = nullptr;
     }
-
-    delete[] m_Slot;
 }
 
 void Container::create(uint32_t itemid, Player* owner)
@@ -51,8 +49,9 @@ void Container::create(uint32_t itemid, Player* owner)
         setStackCount(1);
         setSlotCount(m_itemProperties->ContainerSlots);
 
-        m_Slot = new Item * [m_itemProperties->ContainerSlots];
-        memset(m_Slot, 0, sizeof(Item*) * (m_itemProperties->ContainerSlots));
+        m_Slot = std::make_unique<std::unique_ptr<Item>[]>(m_itemProperties->ContainerSlots);
+        for (uint16_t i = 0; i < m_itemProperties->ContainerSlots; ++i)
+            m_Slot[i] = nullptr;
 
         m_owner = owner;
     }
@@ -82,8 +81,9 @@ void Container::loadFromDB(Field* fields)
 
         setSlotCount(m_itemProperties->ContainerSlots);
 
-        m_Slot = new Item * [m_itemProperties->ContainerSlots];
-        memset(m_Slot, 0, sizeof(Item*) * (m_itemProperties->ContainerSlots));
+        m_Slot = std::make_unique<std::unique_ptr<Item>[]>(m_itemProperties->ContainerSlots);
+        for (uint16_t i = 0; i < m_itemProperties->ContainerSlots; ++i)
+            m_Slot[i] = nullptr;
     }
     else
     {
@@ -103,21 +103,22 @@ void Container::saveToDB(int8_t slot, bool first, QueryBuffer* buf)
     }
 }
 
-bool Container::addItem(int16_t slot, Item* item)
+std::tuple<bool, std::unique_ptr<Item>> Container::addItem(int16_t slot, std::unique_ptr<Item> itemHolder)
 {
     if (slot < 0 || (uint32_t)slot >= getItemProperties()->ContainerSlots)
-        return false;
+        return { false, std::move(itemHolder) };
 
     if (m_Slot[slot])
     {
-        sLogger.failure("Container::addItem: Bad container item {} slot {}", item->getGuidLow(), slot);
-        return false;
+        sLogger.failure("Container::addItem: Bad container item {} slot {}", itemHolder->getGuidLow(), slot);
+        return { false, std::move(itemHolder) };
     }
 
     if (!m_owner)
-        return false;
+        return { false, std::move(itemHolder) };
 
-    m_Slot[slot] = item;
+    auto* item = itemHolder.get();
+    m_Slot[slot] = std::move(itemHolder);
     item->m_isDirty = true;
 
     item->setContainer(this);
@@ -135,16 +136,17 @@ bool Container::addItem(int16_t slot, Item* item)
 
     forceCreationUpdate(item);
 
-    return true;
+    return { true, nullptr };
 }
 
-bool Container::addItemToFreeSlot(Item* item, uint32_t* r_slot)
+std::tuple<bool, std::unique_ptr<Item>> Container::addItemToFreeSlot(std::unique_ptr<Item> itemHolder, uint32_t* r_slot)
 {
     for (uint8_t slot = 0; slot < getItemProperties()->ContainerSlots; ++slot)
     {
         if (!m_Slot[slot])
         {
-            m_Slot[slot] = item;
+            auto* item = itemHolder.get();
+            m_Slot[slot] = std::move(itemHolder);
             item->m_isDirty = true;
 
             item->setContainer(this);
@@ -157,10 +159,10 @@ bool Container::addItemToFreeSlot(Item* item, uint32_t* r_slot)
             if (r_slot)
                 *r_slot = slot;
 
-            return true;
+            return { true, nullptr };
         }
     }
-    return false;
+    return { false, std::move(itemHolder) };
 }
 
 void Container::forceCreationUpdate(Item* item)
@@ -181,7 +183,7 @@ void Container::forceCreationUpdate(Item* item)
 Item* Container::getItem(int16_t slot)
 {
     if (slot >= 0 && static_cast<uint32_t>(slot) < getItemProperties()->ContainerSlots)
-        return m_Slot[slot];
+        return m_Slot[slot].get();
     else
         return nullptr;
 }
@@ -238,9 +240,9 @@ void Container::swapItems(int8_t SrcSlot, int8_t DstSlot)
         }
     }
 
-    Item* temp = m_Slot[SrcSlot];
-    m_Slot[SrcSlot] = m_Slot[DstSlot];
-    m_Slot[DstSlot] = temp;
+    std::unique_ptr<Item> temp = std::move(m_Slot[SrcSlot]);
+    m_Slot[SrcSlot] = std::move(m_Slot[DstSlot]);
+    m_Slot[DstSlot] = std::move(temp);
 
     if (m_Slot[DstSlot])
     {
@@ -263,19 +265,19 @@ void Container::swapItems(int8_t SrcSlot, int8_t DstSlot)
     }
 }
 
-Item* Container::safeRemoveAndRetreiveItemFromSlot(int16_t slot, bool destroy)
+std::unique_ptr<Item> Container::safeRemoveAndRetreiveItemFromSlot(int16_t slot, bool destroy)
 {
     if (slot < 0 || static_cast<uint32_t>(slot) >= getItemProperties()->ContainerSlots)
         return nullptr;
 
-    Item* item = m_Slot[slot];
-    if (!item || item == this)
+    Item* rawItem = m_Slot[slot].get();
+    if (!rawItem || rawItem == this)
         return nullptr;
 
-    if (item->getOwner() != m_owner)
+    if (rawItem->getOwner() != m_owner)
         return nullptr;
 
-    m_Slot[slot] = nullptr;
+    std::unique_ptr<Item> item = std::move(m_Slot[slot]);
     setSlot(slot, 0);
 
     item->setContainer(nullptr);
@@ -296,11 +298,11 @@ bool Container::safeFullRemoveItemFromSlot(int16_t slot)
     if (slot < 0 || static_cast<uint32_t>(slot) >= getItemProperties()->ContainerSlots)
         return false;
 
-    Item* item = m_Slot[slot];
-    if (!item || item == this)
+    Item* rawItem = m_Slot[slot].get();
+    if (!rawItem || rawItem == this)
         return false;
 
-    m_Slot[slot] = nullptr;
+    std::unique_ptr<Item> item = std::move(m_Slot[slot]);
 
     setSlot(slot, 0);
     item->setContainer(nullptr);
@@ -309,7 +311,6 @@ bool Container::safeFullRemoveItemFromSlot(int16_t slot)
         item->removeFromWorld();
 
     item->deleteFromDB();
-    item->deleteMe();
 
     return true;
 }
@@ -320,6 +321,5 @@ bool Container::safeFullRemoveItemFromSlot(int16_t slot)
 uint32_t Container::getSlotCount() const { return containerData()->slot_count; }
 void Container::setSlotCount(uint32_t count) { write(containerData()->slot_count, count); }
 
-//\todo not used. is it really uint64_t (guid) or is it another value we want to send to the client?
 uint64_t Container::getSlot(uint16_t slot) const { return containerData()->item_slot[slot].guid; }
 void Container::setSlot(uint16_t slot, uint64_t guid) { write(containerData()->item_slot[slot].guid, guid); }

@@ -14,7 +14,7 @@ class Field;
 class Charter
 {
 public:
-    Charter(Field* _field);
+    Charter(Field const* _field);
     Charter(uint32_t _id, uint32_t _leaderGuid, uint8_t _type);
     ~Charter();
 

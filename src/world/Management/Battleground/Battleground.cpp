@@ -50,8 +50,7 @@ Battleground::Battleground(WorldMap* worldMap, uint32_t id, uint32_t levelGroup,
 
     for (auto& group : m_groups)
     {
-        group = std::make_shared<Group>(true);
-        sObjectMgr.addGroup(group);
+        group = sObjectMgr.createGroup();
         group->m_disbandOnNoMembers = false;
         group->ExpandToRaid();
     }
@@ -77,13 +76,10 @@ WorldMap* Battleground::getWorldMap()
 Battleground::~Battleground()
 {
     sEventMgr.RemoveEvents(this);
-    for (const auto& m_group : m_groups)
+    for (auto& m_group : m_groups)
     {
-        for (uint32_t j = 0; j < m_group->GetSubGroupCount(); ++j)
-        {
-            for (const auto itr : m_group->GetSubGroup(j)->getGroupMembers())
-                m_group->RemovePlayer(itr);
-        }
+        m_group->Disband();
+        m_group = nullptr;
     }
 
     m_resurrectMap.clear();
@@ -146,7 +142,7 @@ void Battleground::buildPvPUpdateDataPacket(WorldPacket* data)
         else
         {
             /* Grab some arena teams */
-            std::shared_ptr<ArenaTeam>* teams = dynamic_cast< Arena* >(this)->GetTeams();
+            auto** teams = dynamic_cast< Arena* >(this)->GetTeams();
 
             if (teams[0])
             {
@@ -660,7 +656,7 @@ uint32_t Battleground::GetNameID()
     return 34;
 }
 
-int32 Battleground::event_GetInstanceID()
+int32_t Battleground::event_GetInstanceID()
 {
     return m_mapMgr->getInstanceId();
 }
@@ -821,7 +817,8 @@ Creature* Battleground::spawnSpiritGuide(float x, float y, float z, float o, uin
 
     pCreature->setVirtualItemSlotId(MELEE, 22802);
 
-    pCreature->setUnitFlags(UNIT_FLAG_PLUS_MOB | UNIT_FLAG_IGNORE_PLAYER_COMBAT | UNIT_FLAG_IGNORE_PLAYER_NPC | UNIT_FLAG_PVP); // 4928
+    pCreature->setUnitFlags(UNIT_FLAG_PLUS_MOB | UNIT_FLAG_IGNORE_PLAYER_COMBAT | UNIT_FLAG_IGNORE_CREATURE_COMBAT); // 832
+    pCreature->setPvpFlag();
 
     pCreature->setBaseAttackTime(MELEE, 2000);
     pCreature->setBaseAttackTime(OFFHAND, 2000);
@@ -836,7 +833,9 @@ Creature* Battleground::spawnSpiritGuide(float x, float y, float z, float o, uin
 
     pCreature->setNpcFlags(UNIT_NPC_FLAG_SPIRITGUIDE);
     pCreature->setSheathType(SHEATH_STATE_MELEE);
-    pCreature->setPvpFlags(U_FIELD_BYTES_FLAG_AURAS);
+#if VERSION_STRING == TBC
+    pCreature->setPositiveAuraLimit(POS_AURA_LIMIT_CREATURE);
+#endif
 
     pCreature->setAItoUse(false);
 
@@ -936,6 +935,7 @@ void Battleground::eventResurrectPlayers()
                 plr->setPower(POWER_TYPE_ENERGY, plr->getMaxPower(POWER_TYPE_ENERGY));
                 plr->castSpell(plr, BattlegroundDef::REVIVE_PREPARATION, true);
 
+#if VERSION_STRING >= TBC
                 // Spawn last active pet
                 if (plr->getLastBattlegroundPetId() != 0)
                 {
@@ -950,6 +950,7 @@ void Battleground::eventResurrectPlayers()
                     plr->castSpell(plr, plr->getLastBattlegroundPetSpell(), true);
                     plr->removeUnitFlags(UNIT_FLAG_NO_REAGANT_COST);
                 }
+#endif
 
                 plr->setLastBattlegroundPetId(0);
                 plr->setLastBattlegroundPetSpell(0);

@@ -38,13 +38,13 @@ public:
     virtual void OnSpellHitTarget(Object* /*target*/, SpellInfo const* /*info*/) {} // Triggers when a casted Spell Hits a Target
     virtual void OnTargetParried(Unit* /*_target*/) {}
     virtual void OnTargetDodged(Unit* /*_target*/) {}
-    virtual void OnTargetBlocked(Unit* /*_target*/, int32 /*_amount*/) {}
-    virtual void OnTargetCritHit(Unit* /*_target*/, int32 /*_amount*/) {}
+    virtual void OnTargetBlocked(Unit* /*_target*/, int32_t /*_amount*/) {}
+    virtual void OnTargetCritHit(Unit* /*_target*/, int32_t /*_amount*/) {}
     virtual void OnTargetDied(Unit* /*_target*/) {}
     virtual void OnParried(Unit* /*_target*/) {}
     virtual void OnDodged(Unit* /*_target*/) {}
-    virtual void OnBlocked(Unit* /*_target*/, int32 /*_amount*/) {}
-    virtual void OnCritHit(Unit* /*_target*/, int32 /*_amount*/) {}
+    virtual void OnBlocked(Unit* /*_target*/, int32_t /*_amount*/) {}
+    virtual void OnCritHit(Unit* /*_target*/, int32_t /*_amount*/) {}
     virtual void OnHit(Unit* /*_target*/, float /*_amount*/) {}
     virtual void OnDied(Unit* /*_killer*/) {}
     virtual void OnAssistTargetDied(Unit* /*_assistTarget*/) {}
@@ -119,9 +119,9 @@ public:
     Creature* getNearestCreature(uint32_t entry);
     Creature* getNearestCreature(float posX, float posY, float posZ, uint32_t entry);
 
-    void GetCreatureListWithEntryInGrid(std::list<Creature*>& container, uint32 entry, float maxSearchRange /*= 250.0f*/);
+    void GetCreatureListWithEntryInGrid(std::list<Creature*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/);
     Creature* findNearestCreature(uint32_t entry, float maxSearchRange /*= 250.0f*/);
-    void GetGameObjectListWithEntryInGrid(std::list<GameObject*>& container, uint32 entry, float maxSearchRange /*= 250.0f*/);
+    void GetGameObjectListWithEntryInGrid(std::list<GameObject*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/);
     GameObject* findNearestGameObject(uint32_t entry, float maxSearchRange /*= 250.0f*/);
 
     float getRangeToObject(Object* object);
@@ -166,7 +166,7 @@ public:
 
     void moveChase(Unit* target, Optional<ChaseRange> dist = 0.0f, Optional<ChaseAngle> angle = 0.0f);
     void moveJump(LocationVector const& pos, float speedXY, float speedZ, uint32_t id = EVENT_JUMP, bool hasOrientation = false);
-    void moveCharge(float x, float y, float z, float speed = SPEED_CHARGE, uint32_t id = EVENT_CHARGE, bool generatePath = false);
+    void moveCharge(LocationVector const& pos, float speed = SPEED_CHARGE, uint32_t id = EVENT_CHARGE, bool generatePath = false);
     void moveAlongSplineChain(uint32_t pointId, uint16_t dbChainId, bool walk);
     void movePoint(uint32_t id, LocationVector const& pos, bool generatePath = true, Optional<float> finalOrient = {});
     void movePoint(uint32_t id, float x, float y, float z, bool generatePath = true, Optional<float> finalOrient = {});
@@ -220,9 +220,9 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////
     // combat setup
 public:
-    void setImmuneToPC(bool apply);
-    void setImmuneToNPC(bool apply);
-    void setImmuneToAll(bool apply);
+    void setIgnorePlayerCombat(bool apply);
+    void setIgnoreCreatureCombat(bool apply);
+    void setIgnoreAllCombat(bool apply);
     bool canEnterCombat();
     void setCanEnterCombat(bool enterCombat);
     bool _isInCombat();

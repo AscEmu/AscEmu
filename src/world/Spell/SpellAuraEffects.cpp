@@ -965,7 +965,7 @@ void Aura::spellAuraEffectPeriodicDamage(AuraEffectModifier* aurEff, bool apply)
 
                     //this is so not good, maybe parent spell has more then dmg effect and we use it to calc our new dmg :(
                     aurEff->setEffectDamage(0);
-                    for (uint8 i = 0; i < 3; ++i)
+                    for (uint8_t i = 0; i < 3; ++i)
                     {
                         const auto curVal = aurEff->getEffectDamage();
                         aurEff->setEffectDamage(curVal + (spell->calculateEffect(i) * parentsp->getEffectBasePoints(0) / 100));
@@ -983,7 +983,7 @@ void Aura::spellAuraEffectPeriodicDamage(AuraEffectModifier* aurEff, bool apply)
                 if (!c->isPlayer())
                     break;
 
-                uint32 multiplyer = 0;
+                uint32_t multiplyer = 0;
                 if (pSpellId == 12834)
                     multiplyer = 16; //level 1 of the talent should apply 16 of average melee weapon dmg
                 else if (pSpellId == 12849)
@@ -999,10 +999,10 @@ void Aura::spellAuraEffectPeriodicDamage(AuraEffectModifier* aurEff, bool apply)
                     if (it)
                     {
                         aurEff->setEffectDamage(0);
-                        for (uint8 i = 0; i < MAX_ITEM_PROTO_DAMAGES; ++i)
+                        for (uint8_t i = 0; i < MAX_ITEM_PROTO_DAMAGES; ++i)
                             if (it->getItemProperties()->Damage[i].Type == SCHOOL_NORMAL)
-                                aurEff->setEffectDamage(aurEff->getEffectDamage() + int32((it->getItemProperties()->Damage[i].Min + it->getItemProperties()->Damage[i].Max) / 2));
-                        aurEff->setEffectDamage((int32)multiplyer * aurEff->getEffectDamage() / 100);
+                                aurEff->setEffectDamage(aurEff->getEffectDamage() + int32_t((it->getItemProperties()->Damage[i].Min + it->getItemProperties()->Damage[i].Max) / 2));
+                        aurEff->setEffectDamage((int32_t)multiplyer * aurEff->getEffectDamage() / 100);
                     }
                 }
             }
@@ -1586,8 +1586,8 @@ void Aura::spellAuraEffectPeriodicLeech(AuraEffectModifier* aurEff, bool apply)
             if (casterUnit->m_soulSiphon.m_amount)
             {
                 // Use std::map to prevent counting duplicate auras (stacked ones, from the same unit)
-                std::map<uint64_t, std::set<uint32_t> *> auras;
-                std::map<uint64_t, std::set<uint32_t> *>::iterator itx, itx2;
+                std::map<uint64_t, std::unique_ptr<std::set<uint32_t>>> auras;
+                std::map<uint64_t, std::unique_ptr<std::set<uint32_t>>>::iterator itx, itx2;
                 int32_t pct;
                 int32_t count = 0;
 
@@ -1619,12 +1619,11 @@ void Aura::spellAuraEffectPeriodicLeech(AuraEffectModifier* aurEff, bool apply)
                     itx = auras.find(aura->getCasterGuid());
                     if (itx == auras.end())
                     {
-                        std::set<uint32_t> *ids = new std::set<uint32_t>;
-                        auras.insert(make_pair(aura->getCasterGuid(), ids));
-                        itx = auras.find(aura->getCasterGuid());
+                        const auto [insertItr, _] = auras.emplace(aura->getCasterGuid(), std::make_unique<std::set<uint32_t>>());
+                        itx = insertItr;
                     }
 
-                    std::set<uint32> *ids = itx->second;
+                    const auto& ids = itx->second;
                     if (ids->find(aura->getSpellId()) == ids->end())
                     {
                         ids->insert(aura->getSpellId());
@@ -1638,7 +1637,6 @@ void Aura::spellAuraEffectPeriodicLeech(AuraEffectModifier* aurEff, bool apply)
                     {
                         itx2 = itx++;
                         count += (int32_t)itx2->second->size();
-                        delete itx2->second;
                     }
                 }
 

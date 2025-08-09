@@ -37,7 +37,7 @@ bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldS
 
     std::vector<uint32_t> creatureEntries;
 
-    QueryResult* creature_spawn_result = WorldDatabase.Query("SELECT entry FROM creature_spawns WHERE map = %u GROUP BY(entry)", map);
+    auto creature_spawn_result = WorldDatabase.Query("SELECT entry FROM creature_spawns WHERE map = %u GROUP BY(entry)", map);
     if (creature_spawn_result)
     {
         {
@@ -48,8 +48,6 @@ bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldS
 
             } while (creature_spawn_result->NextRow());
         }
-
-        delete creature_spawn_result;
     }
 
     //prepare new table for dump
@@ -84,14 +82,14 @@ bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldS
         creature_spawn->o = session->GetPlayer()->GetOrientation();
         creature_spawn->emote_state = 0;
         creature_spawn->flags = creature_properties->NPCFLags;
+        creature_spawn->pvp_flagged = 0;
         creature_spawn->factionid = creature_properties->Faction;
         creature_spawn->bytes0 = creature_spawn->setbyte(0, 2, gender);
-        creature_spawn->bytes1 = 0;
-        creature_spawn->bytes2 = 0;
         creature_spawn->stand_state = 0;
         creature_spawn->death_state = 0;
         creature_spawn->channel_target_creature = creature_spawn->channel_target_go = creature_spawn->channel_spell = 0;
         creature_spawn->MountedDisplayID = 0;
+        creature_spawn->sheath_state = 0;
 
         creature_spawn->Item1SlotEntry = creature_properties->itemslot_1;
         creature_spawn->Item2SlotEntry = creature_properties->itemslot_2;
@@ -114,7 +112,7 @@ bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldS
             if (map_cell != nullptr)
                 map_cell->setLoaded();
 
-            for (auto aiSpells : creature->getAIInterface()->mCreatureAISpells)
+            for (const auto& aiSpells : creature->getAIInterface()->mCreatureAISpells)
             {
                 if (aiSpells->fromDB)
                     continue;
@@ -203,7 +201,7 @@ bool ChatHandler::HandleAiChargeCommand(const char* /*args*/, WorldSession* sess
     if (selected_unit == nullptr)
         return true;
 
-    selected_unit->getMovementManager()->moveCharge(session->GetPlayer()->GetPositionX(), session->GetPlayer()->GetPositionY(), session->GetPlayer()->GetPositionZ());
+    selected_unit->getMovementManager()->moveCharge(session->GetPlayer()->GetPosition());
     return true;
 }
 
@@ -1258,9 +1256,9 @@ bool ChatHandler::HandleAuraUpdateAdd(const char* args, WorldSession* m_session)
             return true;
         }
         Spell* SpellPtr = sSpellMgr.newSpell(Pl, Sp, false, nullptr);
-        AuraPtr = sSpellMgr.newAura(Sp, SpellPtr->getDuration(), Pl, Pl);
-        SystemMessage(m_session, "SMSG_AURA_UPDATE (add): VisualSlot %u - SpellID %u - Flags %i (0x%04X) - StackCount %i", AuraPtr->m_visualSlot, SpellID, Flags, Flags, StackCount);
-        Pl->addAura(AuraPtr);       // Serves purpose to just add the aura to our auraslots
+        auto auraHolder = sSpellMgr.newAura(Sp, SpellPtr->getDuration(), Pl, Pl);
+        SystemMessage(m_session, "SMSG_AURA_UPDATE (add): VisualSlot %u - SpellID %u - Flags %i (0x%04X) - StackCount %i", auraHolder->m_visualSlot, SpellID, Flags, Flags, StackCount);
+        Pl->addAura(std::move(auraHolder));       // Serves purpose to just add the aura to our auraslots
 
         delete SpellPtr;
     }

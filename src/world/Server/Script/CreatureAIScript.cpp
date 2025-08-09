@@ -18,6 +18,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Objects/Units/Creatures/Pet.h"
+#include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Opcodes.hpp"
 #include "Spell/Spell.hpp"
@@ -199,7 +200,7 @@ Creature* CreatureAIScript::getNearestCreature(float posX, float posY, float pos
     return _creature->getWorldMap()->getInterface()->getCreatureNearestCoords(posX, posY, posZ, entry);
 }
 
-void CreatureAIScript::GetCreatureListWithEntryInGrid(std::list<Creature*>& container, uint32 entry, float maxSearchRange /*= 250.0f*/)
+void CreatureAIScript::GetCreatureListWithEntryInGrid(std::list<Creature*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/)
 {
     if (_creature->getWorldMap()->getInterface() == nullptr)
         return;
@@ -215,7 +216,7 @@ Creature* CreatureAIScript::findNearestCreature(uint32_t entry, float maxSearchR
     return _creature->getWorldMap()->getInterface()->findNearestCreature(_creature, entry, maxSearchRange);
 }
 
-void CreatureAIScript::GetGameObjectListWithEntryInGrid(std::list<GameObject*>& container, uint32 entry, float maxSearchRange /*= 250.0f*/)
+void CreatureAIScript::GetGameObjectListWithEntryInGrid(std::list<GameObject*>& container, uint32_t entry, float maxSearchRange /*= 250.0f*/)
 {
     if (_creature->getWorldMap()->getInterface() == nullptr)
         return;
@@ -340,7 +341,7 @@ ReactStates CreatureAIScript::getReactState()
 
 void CreatureAIScript::attackStart(Unit* target)
 {
-    _creature->getAIInterface()->attackStart(target);
+    _creature->getAIInterface()->attackStartIfCan(target);
 }
 
 void CreatureAIScript::attackStop()
@@ -387,9 +388,9 @@ void CreatureAIScript::moveJump(LocationVector const& pos, float speedXY, float 
     getMovementManager()->moveJump(pos, speedXY, speedZ, id, hasOrientation);
 }
 
-void CreatureAIScript::moveCharge(float x, float y, float z, float speed /*= SPEED_CHARGE*/, uint32_t id /*= EVENT_CHARGE*/, bool generatePath /*= false*/)
+void CreatureAIScript::moveCharge(LocationVector const& pos, float speed /*= SPEED_CHARGE*/, uint32_t id /*= EVENT_CHARGE*/, bool generatePath /*= false*/)
 {
-    getMovementManager()->moveCharge(x, y, z, speed, id, generatePath);
+    getMovementManager()->moveCharge(pos, speed, id, generatePath);
 }
 
 void CreatureAIScript::moveAlongSplineChain(uint32_t pointId, uint16_t dbChainId, bool walk)
@@ -591,10 +592,10 @@ void CreatureAIScript::setWaypointToMove(uint32_t pathId, uint32_t pWaypointId)
     {
 #if VERSION_STRING >= WotLK
     case WAYPOINT_MOVE_TYPE_LAND:
-        init.SetAnimation(AnimationTier::Ground);
+        init.SetAnimation(ANIMATION_FLAG_GROUND);
         break;
     case WAYPOINT_MOVE_TYPE_TAKEOFF:
-        init.SetAnimation(AnimationTier::Hover);
+        init.SetAnimation(ANIMATION_FLAG_HOVER);
         break;
 #endif
     case WAYPOINT_MOVE_TYPE_RUN:
@@ -636,27 +637,27 @@ bool CreatureAIScript::hasWaypoints(uint32_t pathId)
     return false;
 }
 
-void CreatureAIScript::setImmuneToPC(bool apply)
+void CreatureAIScript::setIgnorePlayerCombat(bool apply)
 {
-    _creature->getAIInterface()->setImmuneToPC(apply);
+    _creature->getAIInterface()->setIgnorePlayerCombat(apply);
 }
 
-void CreatureAIScript::setImmuneToNPC(bool apply)
+void CreatureAIScript::setIgnoreCreatureCombat(bool apply)
 {
-    _creature->getAIInterface()->setImmuneToNPC(apply);
+    _creature->getAIInterface()->setIgnoreCreatureCombat(apply);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // combat setup
-void CreatureAIScript::setImmuneToAll(bool apply)
+void CreatureAIScript::setIgnoreAllCombat(bool apply)
 {
-    _creature->getAIInterface()->setImmuneToPC(apply);
-    _creature->getAIInterface()->setImmuneToNPC(apply);
+    _creature->getAIInterface()->setIgnorePlayerCombat(apply);
+    _creature->getAIInterface()->setIgnoreCreatureCombat(apply);
 }
 
 bool CreatureAIScript::canEnterCombat()
 {
-    return _creature->getAIInterface()->getAllowedToEnterCombat();
+    return _creature->getAIInterface()->isAllowedToEnterCombat();
 }
 
 void CreatureAIScript::setCanEnterCombat(bool enterCombat)
@@ -795,7 +796,7 @@ void CreatureAIScript::setZoneWideCombat(Creature* creature)
         creature = _creature;
 
     WorldMap* map = creature->getWorldMap();
-    if (!map || !map->getBaseMap() || !map->getBaseMap()->isDungeon())
+    if (!map || !map->getBaseMap() || !map->getBaseMap()->isInstanceMap())
         return;
 
     if (!map->hasPlayers())

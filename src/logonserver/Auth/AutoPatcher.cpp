@@ -50,7 +50,7 @@ void PatchMgr::initialize()
 
         std::string filePath = entry.path().string();
         std::string fileName = entry.path().filename().string();
-        uint32 srcversion;
+        uint32_t srcversion;
         char locality[5] = { 0 };
 
         if (sscanf(fileName.c_str(), "%4s%u.", locality, &srcversion) != 2)
@@ -66,22 +66,21 @@ void PatchMgr::initialize()
         std::streamsize size = file.tellg();
         file.seekg(0, std::ios::beg);
 
-        Patch* pPatch = new Patch;
-        pPatch->FileSize = static_cast<uint32>(size);
-        pPatch->Data = new uint8_t[pPatch->FileSize];
+        auto pPatch = std::make_unique<Patch>();
+        pPatch->FileSize = static_cast<uint32_t>(size);
+        pPatch->Data = std::make_unique<uint8_t[]>(pPatch->FileSize);
         pPatch->Version = srcversion;
-        for (uint32 i = 0; i < 4; ++i)
+        for (uint32_t i = 0; i < 4; ++i)
         {
             pPatch->Locality[i] = static_cast<char>(std::tolower(locality[i]));
         }
 
         pPatch->Locality[4] = '\0';
-        pPatch->uLocality = *reinterpret_cast<uint32*>(pPatch->Locality);
+        pPatch->uLocality = *reinterpret_cast<uint32_t*>(pPatch->Locality);
 
-        if (!file.read(reinterpret_cast<char*>(pPatch->Data), pPatch->FileSize))
+        if (!file.read(reinterpret_cast<char*>(pPatch->Data.get()), pPatch->FileSize))
         {
             sLogger.failure("Cannot read {}", filePath);
-            delete pPatch;
             continue;
         }
 
@@ -92,67 +91,64 @@ void PatchMgr::initialize()
         // md5hash the file
         MD5Hash md5;
         md5.initialize();
-        md5.updateData(pPatch->Data, pPatch->FileSize);
+        md5.updateData(pPatch->Data.get(), pPatch->FileSize);
         md5.finalize();
         std::memcpy(pPatch->MD5, md5.getDigest(), MD5_DIGEST_LENGTH);
 
         // add the patch to the patchlist
-        m_patches.push_back(pPatch);
+        m_patches.push_back(std::move(pPatch));
     }
 }
 
-Patch* PatchMgr::FindPatchForClient(uint32 Version, const char* Locality)
+Patch* PatchMgr::FindPatchForClient(uint32_t Version, const char* Locality)
 {
     char tmplocality[5];
     Patch* fallbackPatch = nullptr;
 
-    for (uint32 i = 0; i < 4; ++i)
+    for (uint32_t i = 0; i < 4; ++i)
         tmplocality[i] = static_cast<char>(tolower(Locality[i]));
 
     tmplocality[4] = 0;
-    uint32 ulocality = *(uint32*)tmplocality;
+    uint32_t ulocality = *(uint32_t*)tmplocality;
 
-    for (std::vector<Patch*>::iterator itr = m_patches.begin(); itr != m_patches.end(); ++itr)
+    for (auto itr = m_patches.begin(); itr != m_patches.end(); ++itr)
     {
         // since localities are always 4 bytes we can do a simple int compare,
         // saving a string compare ;)
         if ((*itr)->uLocality == ulocality)
         {
             if (fallbackPatch == nullptr && (*itr)->Version == 0)
-                fallbackPatch = (*itr);
+                fallbackPatch = (*itr).get();
 
             if ((*itr)->Version == Version)
-                return (*itr);
+                return (*itr).get();
         }
     }
 
     return fallbackPatch;
 }
 
-void PatchMgr::BeginPatchJob(Patch* pPatch, AuthSocket* pClient, uint32 Skip)
+void PatchMgr::BeginPatchJob(Patch* pPatch, AuthSocket* pClient, uint32_t Skip)
 {
-    PatchJob* pJob = new PatchJob(pPatch, pClient, Skip);
-    pClient->m_patchJob = pJob;
+    auto pJob = std::make_unique<PatchJob>(pPatch, pClient, Skip);
+    pClient->m_patchJob = pJob.get();
 
     std::lock_guard lock(m_patchJobLock);
-    m_patchJobs.push_back(pJob);
+    m_patchJobs.push_back(std::move(pJob));
 }
 
 void PatchMgr::UpdateJobs()
 {
-    std::list<PatchJob*>::iterator itr;
-
     std::lock_guard lock(m_patchJobLock);
 
-    for (itr = m_patchJobs.begin(); itr != m_patchJobs.end();)
+    for (auto itr = m_patchJobs.begin(); itr != m_patchJobs.end();)
     {
-        std::list<PatchJob*>::iterator itr2 = itr;
+        std::list<std::unique_ptr<PatchJob>>::iterator itr2 = itr;
         ++itr;
 
         if (!(*itr2)->Update())
         {
             (*itr2)->GetClient()->m_patchJob = nullptr;
-            delete(*itr2);
             m_patchJobs.erase(itr2);
         }
     }
@@ -162,15 +158,14 @@ void PatchMgr::AbortPatchJob(PatchJob* pJob)
 {
     std::lock_guard lock(m_patchJobLock);
 
-    for (std::list<PatchJob*>::iterator itr = m_patchJobs.begin(); itr != m_patchJobs.end(); ++itr)
+    for (auto itr = m_patchJobs.begin(); itr != m_patchJobs.end(); ++itr)
     {
-        if ((*itr) == pJob)
+        if ((*itr).get() == pJob)
         {
             m_patchJobs.erase(itr);
             break;
         }
     }
-    delete pJob;
 }
 
 // this is what blizz sends.
@@ -184,17 +179,17 @@ void PatchMgr::AbortPatchJob(PatchJob* pJob)
 
 struct TransferInitiatePacket
 {
-    uint8 cmd;
-    uint8 strsize;
+    uint8_t cmd;
+    uint8_t strsize;
     char name[6];
-    uint64 filesize;
-    uint8 md5hash[MD5_DIGEST_LENGTH];
+    uint64_t filesize;
+    uint8_t md5hash[MD5_DIGEST_LENGTH];
 };
 
 struct TransferDataPacket
 {
-    uint8 cmd;
-    uint16 chunk_size;
+    uint8_t cmd;
+    uint16_t chunk_size;
 };
 
 #pragma pack(pop)
@@ -212,10 +207,10 @@ bool PatchJob::Update()
     // send 1500 byte chunks
     TransferDataPacket header;
     header.cmd = 0x31;
-    header.chunk_size = static_cast<uint16>((m_bytesLeft > 1500) ? 1500 : m_bytesLeft);
+    header.chunk_size = static_cast<uint16_t>((m_bytesLeft > 1500) ? 1500 : m_bytesLeft);
     //LogDebug("PatchJob : Sending %u byte chunk", header.chunk_size);
 
-    bool result = m_client->BurstSend((const uint8*)&header, sizeof(TransferDataPacket));
+    bool result = m_client->BurstSend((const uint8_t*)&header, sizeof(TransferDataPacket));
     if (result)
     {
         result = m_client->BurstSend(m_dataPointer, header.chunk_size);
@@ -253,7 +248,7 @@ bool PatchMgr::InitiatePatch(Patch* pPatch, AuthSocket* pClient)
 
     // send it to the client
     pClient->BurstBegin();
-    bool result = pClient->BurstSend((const uint8*)&init, sizeof(TransferInitiatePacket));
+    bool result = pClient->BurstSend((const uint8_t*)&init, sizeof(TransferInitiatePacket));
     if (result)
         pClient->BurstPush();
 

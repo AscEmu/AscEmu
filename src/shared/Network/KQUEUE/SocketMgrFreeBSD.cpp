@@ -67,19 +67,19 @@ void SocketMgr::RemoveSocket(Socket* s)
 
 void SocketMgr::CloseAll()
 {
-    for(uint32 i = 0; i < SOCKET_HOLDER_SIZE; ++i)
+    for(uint32_t i = 0; i < SOCKET_HOLDER_SIZE; ++i)
         if(fds[i] != NULL)
             fds[i]->Delete();
 }
 
 void SocketMgr::SpawnWorkerThreads()
 {
-    uint32 count = 1;
-    for(uint32 i = 0; i < count; ++i)
+    uint32_t count = 1;
+    for(uint32_t i = 0; i < count; ++i)
         ThreadPool.ExecuteTask(new SocketWorkerThread());
 }
 
-uint32 SocketMgr::GetSocketCount()
+uint32_t SocketMgr::GetSocketCount()
 {
     return socket_count.load();
 }

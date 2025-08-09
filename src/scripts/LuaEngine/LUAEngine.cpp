@@ -561,9 +561,9 @@ static int CreateLuaEvent(lua_State* L)
     {
         lua_settop(L, 1);
         int functionRef = luaL_ref(L, LUA_REGISTRYINDEX);
-        TimedEvent* ev = TimedEvent::Allocate(&sWorld, new CallbackP1<LuaEngine, int>(LuaGlobal::instance()->luaEngine().get(), &LuaEngine::CallFunctionByReference, functionRef), 0, delay, repeats);
+        auto ev = TimedEvent::Allocate(&sWorld, std::make_unique<CallbackP1<LuaEngine, int>>(LuaGlobal::instance()->luaEngine().get(), &LuaEngine::CallFunctionByReference, functionRef), 0, delay, repeats);
         ev->eventType = LUA_EVENTS_END + functionRef; //Create custom reference by adding the ref number to the max lua event type to get a unique reference for every function.
-        sWorld.event_AddEvent(ev);
+        sWorld.event_AddEvent(std::move(ev));
         LuaGlobal::instance()->luaEngine()->getFunctionRefs().insert(functionRef);
         lua_pushinteger(L, functionRef);
     }
@@ -907,8 +907,8 @@ static int SuspendLuaThread(lua_State* L)
     if (ref == LUA_REFNIL || ref == LUA_NOREF)
         return luaL_error(L, "Error in SuspendLuaThread! Failed to create a valid reference.");
 
-    TimedEvent* evt = TimedEvent::Allocate(thread, new CallbackP1<LuaEngine, int>(LuaGlobal::instance()->luaEngine().get(), &LuaEngine::ResumeLuaThread, ref), 0, waitime, 1);
-    sWorld.event_AddEvent(evt);
+    auto evt = TimedEvent::Allocate(thread, std::make_unique<CallbackP1<LuaEngine, int>>(LuaGlobal::instance()->luaEngine().get(), &LuaEngine::ResumeLuaThread, ref), 0, waitime, 1);
+    sWorld.event_AddEvent(std::move(evt));
     lua_remove(L, 1); // remove thread object
     lua_remove(L, 1); // remove timer.
                       //All that remains now are the extra arguments passed to this function.
@@ -943,12 +943,12 @@ static int RegisterTimedEvent(lua_State* L)  //in this case, L == lu
         return luaL_error(L, "Error in RegisterTimedEvent! Failed to create a valid reference.");
     }
 
-    TimedEvent* te = TimedEvent::Allocate(LuaGlobal::instance()->luaEngine().get(), new CallbackP2<LuaEngine, const char*, int>(LuaGlobal::instance()->luaEngine().get(), &LuaEngine::HyperCallFunction, funcName, ref), EVENT_LUA_TIMED, delay, repeats);
-    EventInfoHolder* ek = new EventInfoHolder;
+    auto te = TimedEvent::Allocate(LuaGlobal::instance()->luaEngine().get(), std::make_unique<CallbackP2<LuaEngine, const char*, int>>(LuaGlobal::instance()->luaEngine().get(), &LuaEngine::HyperCallFunction, funcName, ref), EVENT_LUA_TIMED, delay, repeats);
+    auto ek = std::make_unique<EventInfoHolder>();
     ek->funcName = funcName;
     ek->te = te;
-    LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.insert(std::pair<int, EventInfoHolder*>(ref, ek));
-    LuaGlobal::instance()->luaEngine()->LuaEventMgr.event_AddEvent(te);
+    LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.try_emplace(ref, std::move(ek));
+    LuaGlobal::instance()->luaEngine()->LuaEventMgr.event_AddEvent(std::move(te));
     lua_settop(L, 0);
     lua_pushnumber(L, ref);
     return 1;
@@ -1823,7 +1823,7 @@ public:
 
         RELEASE_LOCK
         uint32_t iid = getCreature()->GetInstanceID();
-        if (getCreature()->getWorldMap() == nullptr || getCreature()->getWorldMap()->getBaseMap()->getMapInfo()->isNonInstanceMap())
+        if (getCreature()->getWorldMap() == nullptr || getCreature()->getWorldMap()->getBaseMap()->isWorldMap())
             iid = 0;
 
         WoWGuid wowGuid;

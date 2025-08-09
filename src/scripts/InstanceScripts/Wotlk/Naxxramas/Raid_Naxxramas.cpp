@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/InstanceScript.hpp"
+#include "Spell/SpellAura.hpp"
 #include "Utilities/Random.hpp"
 
 //const uint32_t CN_THADDIUS = 15928;
@@ -408,8 +409,8 @@ void NaxxramasWorshipperAI::OnDied(Unit* /*pKiller*/)
             // Should be applied on Grand Widow, but is on the enemies - to script ?
             //ApplyAura(NAXXRAMAS_WORSHIPPER_WIDOW_EMBRACE);
             // I don't like the way we apply it
-            Aura* WidowEmbrace = sSpellMgr.newAura(sSpellMgr.getSpellInfo(NAXXRAMAS_WORSHIPPER_WIDOW_EMBRACE), 30000, getCreature(), mGrandWidow->getCreature());
-            getCreature()->addAura(WidowEmbrace);
+            auto WidowEmbrace = sSpellMgr.newAura(sSpellMgr.getSpellInfo(NAXXRAMAS_WORSHIPPER_WIDOW_EMBRACE), 30000, getCreature(), mGrandWidow->getCreature());
+            getCreature()->addAura(std::move(WidowEmbrace));
 
             // Not sure about new Frenzy Timer
             mGrandWidow->_resetTimer(mGrandWidow->mFrenzyTimer, 60000 + Util::getRandomUInt(20) * 1000);

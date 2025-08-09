@@ -34,7 +34,7 @@ public:
     uint32_t getSound(uint32_t effect, float density);
 
 private:
-    std::map<uint32_t, WeatherInfo*> m_zoneWeathers;
+    std::map<uint32_t, std::unique_ptr<WeatherInfo>> m_zoneWeathers;
 };
 
 class WeatherInfo : public EventableObject

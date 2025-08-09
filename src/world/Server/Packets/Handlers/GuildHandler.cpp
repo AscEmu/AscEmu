@@ -662,16 +662,14 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
             return;
         }
 
-        const auto guild = new Guild;
-        if (!guild->create(_player, playerCharter->getGuildName()))
+        auto* guild = sGuildMgr.createGuild(_player, playerCharter->getGuildName());
+        if (guild == nullptr)
         {
-            delete guild;
             return;
         }
 
         _player->m_charters[CHARTER_TYPE_GUILD] = nullptr;
         playerCharter->destroy();
-        sObjectMgr.removeCharter(playerCharter);
 
         _player->getItemInterface()->RemoveItemAmt(CharterEntry::Guild, 1);
         sHookInterface.OnGuildCreate(_player, guild);
@@ -712,22 +710,14 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
             return;
         }
 
-        auto arenaTeam = std::make_shared<ArenaTeam>(type, sObjectMgr.generateArenaTeamId());
-        arenaTeam->m_name = charter->getGuildName();
-        arenaTeam->m_emblem.emblemColour = srlPacket.iconColor;
-        arenaTeam->m_emblem.emblemStyle = srlPacket.icon;
-        arenaTeam->m_emblem.borderColour = srlPacket.borderColor;
-        arenaTeam->m_emblem.borderStyle = srlPacket.border;
-        arenaTeam->m_emblem.backgroundColour = srlPacket.background;
-        arenaTeam->m_leader = _player->getGuidLow();
-        arenaTeam->m_stats.rating = 1500;
+        ArenaTeamEmblem emblem{ .emblemStyle = srlPacket.icon, .emblemColour = srlPacket.iconColor,
+            .borderStyle = srlPacket.border, .borderColour = srlPacket.borderColor, .backgroundColour = srlPacket.background };
 
-        if (arenaTeam->addMember(_player->m_playerInfo))
+        if (auto* const arenaTeam = sObjectMgr.createArenaTeam(type, _player, charter->getGuildName(), 1500, emblem))
         {
             // set up the leader
             _player->setArenaTeam(arenaTeam->m_type, arenaTeam);
 
-            sObjectMgr.addArenaTeam(arenaTeam);
             sObjectMgr.updateArenaTeamRankings();
 
             // set up the members
@@ -746,7 +736,6 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
             _player->getItemInterface()->SafeFullRemoveItemByGuid(srlPacket.itemGuid);
             _player->m_charters[charter->getCharterType()] = nullptr;
             charter->destroy();
-            sObjectMgr.removeCharter(charter);
         }
         
     }
@@ -771,7 +760,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    Creature* creature = _player->getWorldMap()->getCreature(srlPacket.creatureGuid.getGuidLow());
+    Creature* creature = _player->getWorldMap()->getCreature(srlPacket.creatureGuid.getGuidLowPart());
     if (!creature)
     {
         Disconnect();
@@ -790,7 +779,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
             return;
         }
 
-        std::shared_ptr<ArenaTeam> arenaTeam = sObjectMgr.getArenaTeamByName(srlPacket.name, arena_type);
+        const auto arenaTeam = sObjectMgr.getArenaTeamByName(srlPacket.name, arena_type);
         if (arenaTeam != nullptr)
         {
             sChatHandler.SystemMessage(this, _player->getSession()->LocalizedWorldSrv(ServerString::SS_PETITION_NAME_ALREADY_USED));
@@ -842,7 +831,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
         }
         else
         {
-            Item* item = sObjectMgr.createItem(item_ids[arena_type], _player);
+            auto item = sObjectMgr.createItem(item_ids[arena_type], _player);
 
             auto const charter = sObjectMgr.createCharter(_player->getGuidLow(), static_cast<CharterTypes>(srlPacket.arenaIndex));
             if (item == nullptr || charter == nullptr)
@@ -857,18 +846,18 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
             item->addFlags(ITEM_FLAG_SOULBOUND);
             item->setEnchantmentId(0, charter->getId());
             item->setPropertySeed(57813883);
-            if (!_player->getItemInterface()->AddItemToFreeSlot(item))
+            auto* itemRawPtr = item.get();
+            const auto [addResult, _] = _player->getItemInterface()->AddItemToFreeSlot(std::move(item));
+            if (!addResult)
             {
                 charter->destroy();
-                sObjectMgr.removeCharter(charter);
-                item->deleteMe();
                 return;
             }
 
             charter->saveToDB();
 
             _player->sendItemPushResultPacket(false, true, false, _player->getItemInterface()->LastSearchItemBagSlot(),
-                _player->getItemInterface()->LastSearchItemSlot(), 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
+                _player->getItemInterface()->LastSearchItemSlot(), 1, itemRawPtr->getEntry(), itemRawPtr->getPropertySeed(), itemRawPtr->getRandomPropertiesId(), itemRawPtr->getStackCount());
 
             _player->modCoinage(-static_cast<int32_t>(costs[arena_type]));
             _player->m_charters[srlPacket.arenaIndex] = charter;
@@ -917,7 +906,7 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
         {
             _player->sendPlayObjectSoundPacket(srlPacket.creatureGuid, 6594);
 
-            Item* item = sObjectMgr.createItem(CharterEntry::Guild, _player);
+            auto item = sObjectMgr.createItem(CharterEntry::Guild, _player);
 
             auto const guildCharter = sObjectMgr.createCharter(_player->getGuidLow(), CHARTER_TYPE_GUILD);
             if (item == nullptr || guildCharter == nullptr)
@@ -932,18 +921,18 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
             item->addFlags(ITEM_FLAG_SOULBOUND);
             item->setEnchantmentId(0, guildCharter->getId());
             item->setPropertySeed(57813883);
-            if (!_player->getItemInterface()->AddItemToFreeSlot(item))
+            auto* itemRawPtr = item.get();
+            const auto [addResult, _] = _player->getItemInterface()->AddItemToFreeSlot(std::move(item));
+            if (!addResult)
             {
                 guildCharter->destroy();
-                sObjectMgr.removeCharter(guildCharter);
-                item->deleteMe();
                 return;
             }
 
             guildCharter->saveToDB();
 
             _player->sendItemPushResultPacket(false, true, false, _player->getItemInterface()->LastSearchItemBagSlot(),
-                _player->getItemInterface()->LastSearchItemSlot(), 1, item->getEntry(), item->getPropertySeed(), item->getRandomPropertiesId(), item->getStackCount());
+                _player->getItemInterface()->LastSearchItemSlot(), 1, itemRawPtr->getEntry(), itemRawPtr->getPropertySeed(), itemRawPtr->getRandomPropertiesId(), itemRawPtr->getStackCount());
 
             _player->m_charters[CHARTER_TYPE_GUILD] = guildCharter;
             _player->modCoinage(-1000);
@@ -1169,9 +1158,9 @@ void WorldSession::handleAutoDeclineGuildInvites(WorldPacket& recvPacket)
     bool enabled = enable > 0 ? true : false;
 
     if (enabled)
-        _player->addPlayerFlags(PLAYER_FLAGS_AUTO_DECLINE_GUILD);
+        _player->addPlayerFlags(PLAYER_FLAG_DECLINE_GUILD_INVITES);
     else
-        _player->removePlayerFlags(PLAYER_FLAGS_AUTO_DECLINE_GUILD);
+        _player->removePlayerFlags(PLAYER_FLAG_DECLINE_GUILD_INVITES);
 #endif
 }
 
@@ -1557,7 +1546,7 @@ void WorldSession::handleGuildFinderGetRecruits(WorldPacket& recvPacket)
         MembershipRequest request = *itr;
         WoWGuid playerGuid(request.getPlayerGUID(), 0, HIGHGUID_TYPE_PLAYER);
 
-        std::shared_ptr<CachedCharacterInfo> info = sObjectMgr.getCachedCharacterInfo(request.getPlayerGUID());
+        const auto* info = sObjectMgr.getCachedCharacterInfo(request.getPlayerGUID());
         std::string name = info->name;
 
         data.writeBits(request.getComment().size(), 11);

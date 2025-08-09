@@ -30,8 +30,8 @@
 struct TimedEvent;
 class EventableObjectHolder;
 
-typedef std::list<TimedEvent*> EventList;
-typedef std::multimap<uint32_t, TimedEvent*> EventMap;
+typedef std::list<std::shared_ptr<TimedEvent>> EventList;
+typedef std::multimap<uint32_t, std::shared_ptr<TimedEvent>> EventMap;
 
 #define EVENT_REMOVAL_FLAG_ALL 0xFFFFFFFF
 #define WORLD_INSTANCE -1
@@ -54,7 +54,7 @@ class SERVER_DECL EventableObject
         void event_ModifyTimeAndTimeLeft(uint32_t EventType, time_t Time);
         bool event_HasEvent(uint32_t EventType);
         void event_RemoveByPointer(TimedEvent* ev);
-        int32_t event_GetCurrentInstanceId() { return m_event_Instanceid; }
+        int32_t event_GetCurrentInstanceId() const { return m_event_Instanceid; }
         bool event_GetTimeLeft(uint32_t EventType, time_t* Time);
 
     public:
@@ -64,21 +64,17 @@ class SERVER_DECL EventableObject
         virtual ~EventableObject();
 
         bool event_HasEvents() { return m_events.size() > 0 ? true : false; }
-        void event_AddEvent(TimedEvent* ptr);
+        void event_AddEvent(std::shared_ptr<TimedEvent> ptr);
         void event_Relocate();
 
         /// this func needs to be implemented by all eventable classes. use it to retrieve the instance id that it needs to attach itself to.
         virtual int32_t event_GetInstanceID() { return WORLD_INSTANCE; }
-
-        void AddRef();
-        void DecRef();
 
     protected:
         int32_t m_event_Instanceid;
         std::mutex m_lock;
         EventMap m_events;
         EventableObjectHolder* m_holder;
-        volatile long m_refs;
 };
 
 
@@ -99,7 +95,7 @@ class EventableObjectHolder
 
         void Update(time_t time_difference);
 
-        void AddEvent(TimedEvent* ev);
+        void AddEvent(std::shared_ptr<TimedEvent> ev);
         void AddObject(EventableObject* obj);
 
         uint32_t GetInstanceID() { return mInstanceId; }
@@ -110,7 +106,7 @@ class EventableObjectHolder
         EventList m_events;
 
         std::mutex m_insertPoolLock;
-        typedef std::list<TimedEvent*> InsertableQueue;
+        typedef std::list<std::shared_ptr<TimedEvent>> InsertableQueue;
         InsertableQueue m_insertPool;
 };
 

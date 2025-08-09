@@ -125,8 +125,6 @@ GameObject::~GameObject()
 {
     sEventMgr.RemoveEvents(this);
 
-    delete m_model;
-
     if (myScript)
     {
         myScript->Destroy();
@@ -172,13 +170,10 @@ int64_t GameObject::getPackedLocalRotation() const { return m_packedRotation; }
 uint32_t GameObject::getDynamicFlags() const { return gameObjectData()->dynamic; }
 void GameObject::setDynamicFlags(uint32_t dynamicFlags) { write(gameObjectData()->dynamic, dynamicFlags); }
 #elif VERSION_STRING < Mop
-uint32_t GameObject::getDynamicField() const { return gameObjectData()->dynamic; }
-uint16_t GameObject::getDynamicFlags() const { return gameObjectData()->dynamic_field_parts.dyn_flag; }
-int16_t GameObject::getDynamicPathProgress() const { return gameObjectData()->dynamic_field_parts.path_progress; }
-void GameObject::setDynamicField(uint32_t dynamic) { write(gameObjectData()->dynamic, dynamic); }
-void GameObject::setDynamicField(uint16_t dynamicFlags, int16_t pathProgress) { setDynamicField(static_cast<uint32_t>(pathProgress) << 16 | dynamicFlags); }
-void GameObject::setDynamicFlags(uint16_t dynamicFlags) { setDynamicField(dynamicFlags, getDynamicPathProgress()); }
-void GameObject::setDynamicPathProgress(int16_t pathProgress) { setDynamicField(getDynamicFlags(), pathProgress); }
+uint16_t GameObject::getDynamicFlags() const { return gameObjectData()->dynamic.dynamic_field_parts.dyn_flag; }
+int16_t GameObject::getDynamicPathProgress() const { return gameObjectData()->dynamic.dynamic_field_parts.path_progress; }
+void GameObject::setDynamicFlags(uint16_t dynamicFlags) { write(gameObjectData()->dynamic.dynamic_field_parts.dyn_flag, dynamicFlags); }
+void GameObject::setDynamicPathProgress(int16_t pathProgress) { write(gameObjectData()->dynamic.dynamic_field_parts.path_progress, pathProgress); }
 #endif
 
 uint32_t GameObject::getFactionTemplate() const { return gameObjectData()->faction_template; }
@@ -193,7 +188,7 @@ uint8_t GameObject::getState() const
 #if VERSION_STRING <= TBC
     return gameObjectData()->state;
 #elif VERSION_STRING >= WotLK
-    return gameObjectData()->bytes_1_gameobject.state;
+    return gameObjectData()->bytes_1.bytes_1_gameobject.state;
 #endif
 }
 void GameObject::setState(uint8_t state)
@@ -201,7 +196,7 @@ void GameObject::setState(uint8_t state)
 #if VERSION_STRING <= TBC
     write(gameObjectData()->state, static_cast<uint32_t>(state));
 #elif VERSION_STRING >= WotLK
-    write(gameObjectData()->bytes_1_gameobject.state, state);
+    write(gameObjectData()->bytes_1.bytes_1_gameobject.state, state);
 #endif
 }
 
@@ -210,7 +205,7 @@ uint8_t GameObject::getGoType() const
 #if VERSION_STRING <= TBC
     return gameObjectData()->type;
 #elif VERSION_STRING >= WotLK
-    return gameObjectData()->bytes_1_gameobject.type;
+    return gameObjectData()->bytes_1.bytes_1_gameobject.type;
 #endif
 }
 void GameObject::setGoType(uint8_t type)
@@ -218,7 +213,7 @@ void GameObject::setGoType(uint8_t type)
 #if VERSION_STRING <= TBC
     write(gameObjectData()->type, static_cast<uint32_t>(type));
 #elif VERSION_STRING >= WotLK
-    write(gameObjectData()->bytes_1_gameobject.type, type);
+    write(gameObjectData()->bytes_1.bytes_1_gameobject.type, type);
 #endif
 }
 
@@ -228,7 +223,7 @@ uint8_t GameObject::getArtKit() const
 #if VERSION_STRING <= TBC
     return gameObjectData()->art_kit;
 #elif VERSION_STRING >= WotLK
-    return gameObjectData()->bytes_1_gameobject.art_kit;
+    return gameObjectData()->bytes_1.bytes_1_gameobject.art_kit;
 #endif
 }
 void GameObject::setArtKit(uint8_t artkit)
@@ -236,17 +231,17 @@ void GameObject::setArtKit(uint8_t artkit)
 #if VERSION_STRING <= TBC
     write(gameObjectData()->art_kit, static_cast<uint32_t>(artkit));
 #elif VERSION_STRING >= WotLK
-    write(gameObjectData()->bytes_1_gameobject.art_kit, artkit);
+    write(gameObjectData()->bytes_1.bytes_1_gameobject.art_kit, artkit);
 #endif
 }
 #else
 uint8_t GameObject::getArtKit() const
 {
-    return gameObjectData()->bytes_2_gameobject.art_kit;
+    return gameObjectData()->bytes_2.bytes_2_gameobject.art_kit;
 }
 void GameObject::setArtKit(uint8_t artkit)
 {
-    write(gameObjectData()->bytes_2_gameobject.art_kit, artkit);
+    write(gameObjectData()->bytes_2.bytes_2_gameobject.art_kit, artkit);
 }
 #endif
 
@@ -256,7 +251,7 @@ uint8_t GameObject::getAnimationProgress() const
 #if VERSION_STRING <= TBC
     return gameObjectData()->animation_progress;
 #elif VERSION_STRING >= WotLK
-    return gameObjectData()->bytes_1_gameobject.animation_progress;
+    return gameObjectData()->bytes_1.bytes_1_gameobject.animation_progress;
 #endif
 }
 void GameObject::setAnimationProgress(uint8_t progress)
@@ -264,17 +259,17 @@ void GameObject::setAnimationProgress(uint8_t progress)
 #if VERSION_STRING <= TBC
     write(gameObjectData()->animation_progress, static_cast<uint32_t>(progress));
 #elif VERSION_STRING >= WotLK
-    write(gameObjectData()->bytes_1_gameobject.animation_progress, progress);
+    write(gameObjectData()->bytes_1.bytes_1_gameobject.animation_progress, progress);
 #endif
 }
 #else
 uint8_t GameObject::getAnimationProgress() const
 {
-    return gameObjectData()->bytes_2_gameobject.animation_progress;
+    return gameObjectData()->bytes_2.bytes_2_gameobject.animation_progress;
 }
 void GameObject::setAnimationProgress(uint8_t progress)
 {
-    write(gameObjectData()->bytes_2_gameobject.animation_progress, progress);
+    write(gameObjectData()->bytes_2.bytes_2_gameobject.animation_progress, progress);
 }
 #endif
 
@@ -513,7 +508,7 @@ bool GameObject::create(uint32_t entry, WorldMap* map, uint32_t phase, LocationV
 
     m_model = createModel();
 
-    setGoType(static_cast<uint8>(gameobject_properties->type));
+    setGoType(static_cast<uint8_t>(gameobject_properties->type));
     m_prevGoState = state;
     setState(state);
     setArtKit(0);
@@ -764,7 +759,7 @@ private:
     GameObject const* _owner;
 };
 
-GameObjectModel* GameObject::createModel()
+std::unique_ptr<GameObjectModel> GameObject::createModel()
 {
     return GameObjectModel::Create(std::make_unique<GameObjectModelOwnerImpl>(this), worldConfig.server.dataDir);
 }
@@ -791,7 +786,6 @@ void GameObject::updateModel()
     if (m_model)
         if (getWorldMap()->containsGameObjectModel(*m_model))
             getWorldMap()->removeGameObjectModel(*m_model);
-    delete m_model;
     m_model = createModel();
     if (m_model)
         getWorldMap()->insertGameObjectModel(*m_model);
@@ -1279,7 +1273,7 @@ void GameObject::SaveToFile(std::stringstream & name)
         << getParentRotation(1) << ","
         << getParentRotation(2) << ","
         << getParentRotation(3) << ","
-        << uint32(getState()) << ","
+        << uint32_t(getState()) << ","
         << getFlags() << ","
         << getFactionTemplate() << ","
         << getScale() << ","
@@ -1442,7 +1436,7 @@ void GameObject_Lootable::getFishLoot(Player* loot_owner, bool getJunk/* = false
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Door
-GameObject_Door::GameObject_Door(uint64 GUID) : GameObject(GUID)
+GameObject_Door::GameObject_Door(uint64_t GUID) : GameObject(GUID)
 { }
 
 GameObject_Door::~GameObject_Door()
@@ -1486,7 +1480,7 @@ void GameObject_Door::_internalUpdateOnState(unsigned long /*timeDiff*/)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Button
-GameObject_Button::GameObject_Button(uint64 GUID) : GameObject(GUID)
+GameObject_Button::GameObject_Button(uint64_t GUID) : GameObject(GUID)
 {
     spell = nullptr;
 }
@@ -1549,7 +1543,7 @@ void GameObject_Button::_internalUpdateOnState(unsigned long /*timeDiff*/)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_QuestGiver
-GameObject_QuestGiver::GameObject_QuestGiver(uint64 GUID) : GameObject(GUID)
+GameObject_QuestGiver::GameObject_QuestGiver(uint64_t GUID) : GameObject(GUID)
 {
     m_quests = NULL;
 }
@@ -1585,25 +1579,24 @@ void GameObject_QuestGiver::onUse(Player* player)
         sQuestMgr.OnActivateQuestGiver(this, player);
 }
 
-uint32 GameObject_QuestGiver::NumOfQuests()
+uint32_t GameObject_QuestGiver::NumOfQuests()
 {
-    return static_cast<uint32>(m_quests->size());
+    return static_cast<uint32_t>(m_quests->size());
 }
 
-void GameObject_QuestGiver::AddQuest(QuestRelation* Q)
+void GameObject_QuestGiver::AddQuest(std::unique_ptr<QuestRelation> Q)
 {
-    m_quests->push_back(Q);
+    m_quests->push_back(std::move(Q));
 }
 
-void GameObject_QuestGiver::DeleteQuest(QuestRelation* Q)
+void GameObject_QuestGiver::DeleteQuest(QuestRelation const* Q)
 {
-    for (std::list<QuestRelation*>::iterator itr = m_quests->begin(); itr != m_quests->end(); ++itr)
+    for (auto itr = m_quests->begin(); itr != m_quests->end(); ++itr)
     {
-        QuestRelation* qr = *itr;
+        const auto& qr = *itr;
 
         if ((qr->type == Q->type) && (qr->qst == Q->qst))
         {
-            delete qr;
             m_quests->erase(itr);
             break;
         }
@@ -1612,9 +1605,9 @@ void GameObject_QuestGiver::DeleteQuest(QuestRelation* Q)
 
 QuestProperties const* GameObject_QuestGiver::FindQuest(uint32_t quest_id, uint8_t quest_relation)
 {
-    for (std::list<QuestRelation*>::iterator itr = m_quests->begin(); itr != m_quests->end(); ++itr)
+    for (auto itr = m_quests->begin(); itr != m_quests->end(); ++itr)
     {
-        QuestRelation* qr = *itr;
+        const auto& qr = *itr;
 
         if ((qr->qst->id == quest_id) && ((qr->type & quest_relation) != 0))
         {
@@ -1624,13 +1617,13 @@ QuestProperties const* GameObject_QuestGiver::FindQuest(uint32_t quest_id, uint8
     return nullptr;
 }
 
-uint16 GameObject_QuestGiver::GetQuestRelation(uint32_t quest_id)
+uint16_t GameObject_QuestGiver::GetQuestRelation(uint32_t quest_id)
 {
-    uint16 quest_relation = 0;
+    uint16_t quest_relation = 0;
 
-    for (std::list<QuestRelation*>::iterator itr = m_quests->begin(); itr != m_quests->end(); ++itr)
+    for (auto itr = m_quests->begin(); itr != m_quests->end(); ++itr)
     {
-        QuestRelation* qr = *itr;
+        const auto& qr = *itr;
 
         if ((qr != nullptr) && (qr->qst->id == quest_id))
             quest_relation |= qr->type;
@@ -1639,22 +1632,22 @@ uint16 GameObject_QuestGiver::GetQuestRelation(uint32_t quest_id)
     return quest_relation;
 }
 
-std::list<QuestRelation*>::iterator GameObject_QuestGiver::QuestsBegin()
+std::list<std::unique_ptr<QuestRelation>>::iterator GameObject_QuestGiver::QuestsBegin()
 {
     return m_quests->begin();
 }
 
-std::list<QuestRelation*>::iterator GameObject_QuestGiver::QuestsEnd()
+std::list<std::unique_ptr<QuestRelation>>::iterator GameObject_QuestGiver::QuestsEnd()
 {
     return m_quests->end();
 }
 
-void GameObject_QuestGiver::SetQuestList(std::list<QuestRelation*>* qst_lst)
+void GameObject_QuestGiver::SetQuestList(std::list<std::unique_ptr<QuestRelation>>* qst_lst)
 {
     m_quests = qst_lst;
 }
 
-std::list<QuestRelation*>& GameObject_QuestGiver::getQuestList() const
+std::list<std::unique_ptr<QuestRelation>>& GameObject_QuestGiver::getQuestList() const
 {
     return *m_quests;
 }
@@ -1663,7 +1656,7 @@ void GameObject_QuestGiver::LoadQuests() { sQuestMgr.LoadGOQuests(this); }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Chest
-GameObject_Chest::GameObject_Chest(uint64 GUID) : GameObject_Lootable(GUID)
+GameObject_Chest::GameObject_Chest(uint64_t GUID) : GameObject_Lootable(GUID)
 {
     spell = nullptr;
 }
@@ -1760,7 +1753,7 @@ void GameObject_Chest::_internalUpdateOnState(unsigned long /*timeDiff*/)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Trap
-GameObject_Trap::GameObject_Trap(uint64 GUID) : GameObject(GUID)
+GameObject_Trap::GameObject_Trap(uint64_t GUID) : GameObject(GUID)
 {
     spell = NULL;
 }
@@ -1883,7 +1876,7 @@ void GameObject_Chair::onUse(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_SpellFocus
-GameObject_SpellFocus::GameObject_SpellFocus(uint64 GUID) : GameObject(GUID)
+GameObject_SpellFocus::GameObject_SpellFocus(uint64_t GUID) : GameObject(GUID)
 { }
 
 GameObject_SpellFocus::~GameObject_SpellFocus()
@@ -1896,7 +1889,7 @@ void GameObject_SpellFocus::OnPushToWorld()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Goober
-GameObject_Goober::GameObject_Goober(uint64 GUID) : GameObject(GUID)
+GameObject_Goober::GameObject_Goober(uint64_t GUID) : GameObject(GUID)
 {
     spell = NULL;
 }
@@ -2034,7 +2027,7 @@ void GameObject_Camera::onUse(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_FishingNode
-GameObject_FishingNode::GameObject_FishingNode(uint64 GUID) : GameObject_Lootable(GUID)
+GameObject_FishingNode::GameObject_FishingNode(uint64_t GUID) : GameObject_Lootable(GUID)
 {
 }
 
@@ -2189,19 +2182,15 @@ void GameObject_FishingNode::_internalUpdateOnState(unsigned long /*timeDiff*/)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Ritual
-GameObject_Ritual::GameObject_Ritual(uint64 GUID) : GameObject(GUID)
+GameObject_Ritual::GameObject_Ritual(uint64_t GUID) : GameObject(GUID), Ritual(nullptr)
 {
 }
 
-GameObject_Ritual::~GameObject_Ritual()
-{
-    delete Ritual;
-    Ritual = nullptr;
-}
+GameObject_Ritual::~GameObject_Ritual() = default;
 
 void GameObject_Ritual::InitAI()
 {
-    Ritual = new RitualStruct(gameobject_properties->summoning_ritual.req_participants);
+    Ritual = std::make_unique<RitualStruct>(gameobject_properties->summoning_ritual.req_participants);
 }
 
 void GameObject_Ritual::onUse(Player* player)
@@ -2326,7 +2315,7 @@ void GameObject_Ritual::onUse(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_SpellCaster
-GameObject_SpellCaster::GameObject_SpellCaster(uint64 GUID) : GameObject(GUID)
+GameObject_SpellCaster::GameObject_SpellCaster(uint64_t GUID) : GameObject(GUID)
 {
     spell = nullptr;
 }
@@ -2384,7 +2373,7 @@ void GameObject_Meetingstone::onUse(Player* player)
         return;
 
     // Use selection
-    Player* pPlayer = sObjectMgr.getPlayer(static_cast<uint32>(player->getTargetGuid()));
+    Player* pPlayer = sObjectMgr.getPlayer(static_cast<uint32_t>(player->getTargetGuid()));
     if (pPlayer == nullptr)
         return;
 
@@ -2435,7 +2424,7 @@ void GameObject_FlagStand::onUse(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_FishingHole
-GameObject_FishingHole::GameObject_FishingHole(uint64 GUID) : GameObject_Lootable(GUID)
+GameObject_FishingHole::GameObject_FishingHole(uint64_t GUID) : GameObject_Lootable(GUID)
 {
 
 }
@@ -2523,7 +2512,7 @@ void GameObject_BarberChair::onUse(Player* player)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Destructible
-GameObject_Destructible::GameObject_Destructible(uint64 GUID) : GameObject(GUID)
+GameObject_Destructible::GameObject_Destructible(uint64_t GUID) : GameObject(GUID)
 {
     hitpoints = 0;
     maxhitpoints = 0;

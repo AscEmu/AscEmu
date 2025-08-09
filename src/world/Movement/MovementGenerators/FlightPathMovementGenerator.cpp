@@ -37,7 +37,7 @@ void FlightPathMovementGenerator::loadPath(Player* player)
 {
     _pointsForPathSwitch.clear();
     std::deque<uint32_t> const& taxi = player->getTaxiData()->getPath();
-    for (uint32 src = 0, dst = 1; dst < taxi.size(); src = dst++)
+    for (uint32_t src = 0, dst = 1; dst < taxi.size(); src = dst++)
     {
         uint32_t path, cost;
         sTaxiMgr.getTaxiPath(taxi[src], taxi[dst], path, cost);
@@ -50,7 +50,7 @@ void FlightPathMovementGenerator::loadPath(Player* player)
             WDB::Structures::TaxiPathNodeEntry const* start = nodes[0];
             WDB::Structures::TaxiPathNodeEntry const* end = nodes[nodes.size() - 1];
             bool passedPreviousSegmentProximityCheck = false;
-            for (uint32 i = 0; i < nodes.size(); ++i)
+            for (uint32_t i = 0; i < nodes.size(); ++i)
             {
                 if (passedPreviousSegmentProximityCheck || !src || _path.empty() || isNodeIncludedInShortenedPath(_path[_path.size() - 1], nodes[i]))
                 {
@@ -116,7 +116,9 @@ void FlightPathMovementGenerator::doFinalize(Player* player, bool active, bool /
         player->safeTeleport(_path[getCurrentNode()]->mapid, 0, LocationVector(_path[getCurrentNode()]->x, _path[getCurrentNode()]->y, mapHeight, player->GetOrientation()));
     }
 
-    player->removePlayerFlags(PLAYER_FLAG_UNK2);
+#if VERSION_STRING >= TBC
+    player->removePlayerFlags(PLAYER_FLAG_TAXI_TIME_TEST);
+#endif
 }
 
 void FlightPathMovementGenerator::doReset(Player* player)
@@ -201,7 +203,7 @@ void FlightPathMovementGenerator::setCurrentNodeAfterTeleport()
 void FlightPathMovementGenerator::doEventIfAny(Player* player, WDB::Structures::TaxiPathNodeEntry const* node, bool departure)
 {
 #if VERSION_STRING >= TBC
-    if (uint32 eventid = departure ? node->departureEventID : node->arivalEventID)
+    if (uint32_t eventid = departure ? node->departureEventID : node->arivalEventID)
     {
         sLogger.debug("FlightPathMovementGenerator:: Taxi {} event {} of node {} of path {} for player {}", departure ? "departure" : "arrival", eventid, node->NodeIndex, node->pathId, player->getName());
     }

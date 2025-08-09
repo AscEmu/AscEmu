@@ -93,12 +93,12 @@ namespace WDB
         if (WDB::WDBLoader::hasFormat(_dbcFilename))
         {
             std::string format = WDB::WDBLoader::getFormat(_dbcFilename);
-            char* writable = new char[format.size() + 1];
-            std::copy(format.begin(), format.end(), writable);
+            auto writable = std::make_unique<char[]>(format.size() + 1);
+            std::copy(format.begin(), format.end(), writable.get());
             writable[format.size()] = '\0'; // don't forget the terminating 0
 
 
-            _storage.setFormat(writable);
+            _storage.setFormat(std::move(writable));
         }
 
         if (WDB::WDBLoader::getFormatRecordSize(_storage.getFormat()) == NULL)

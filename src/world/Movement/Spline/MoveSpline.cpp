@@ -161,7 +161,7 @@ struct FallInitializer
 {
     FallInitializer(float _start_elevation) : start_elevation(_start_elevation) { }
     float start_elevation;
-    inline int32_t operator()(Spline<int32>& s, int32_t i)
+    inline int32_t operator()(Spline<int32_t>& s, int32_t i)
     {
         return static_cast<int32_t>(MovementMgr::computeFallTime(start_elevation - s.getPoint(i + 1).z, false) * 1000.f);
     }
@@ -177,7 +177,7 @@ struct CommonInitializer
     CommonInitializer(float _velocity) : velocityInv(1000.f/_velocity), time(minimal_duration) { }
     float velocityInv;
     int32_t time;
-    inline int32_t operator()(Spline<int32>& s, int32_t i)
+    inline int32_t operator()(Spline<int32_t>& s, int32_t i)
     {
         time += static_cast<int32_t>(s.SegLength(i) * velocityInv);
         return time;

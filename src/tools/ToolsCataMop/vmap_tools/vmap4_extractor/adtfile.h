@@ -59,10 +59,10 @@ typedef struct
 {
     double v9[9][9];
     double v8[8][8];
-    uint16 area_id;
+    uint16_t area_id;
     //Liquid *lq;
     float waterlevel[9][9];
-    uint8 flag;
+    uint8_t flag;
 }chunk;
 
 typedef struct
@@ -72,39 +72,39 @@ typedef struct
 
 struct MapChunkHeader
 {
-    uint32 flags;
-    uint32 ix;
-    uint32 iy;
-    uint32 nLayers;
-    uint32 nDoodadRefs;
-    uint32 ofsHeight;
-    uint32 ofsNormal;
-    uint32 ofsLayer;
-    uint32 ofsRefs;
-    uint32 ofsAlpha;
-    uint32 sizeAlpha;
-    uint32 ofsShadow;
-    uint32 sizeShadow;
-    uint32 areaid;
-    uint32 nMapObjRefs;
-    uint32 holes;
-    uint16 s1;
-    uint16 s2;
-    uint32 d1;
-    uint32 d2;
-    uint32 d3;
-    uint32 predTex;
-    uint32 nEffectDoodad;
-    uint32 ofsSndEmitters;
-    uint32 nSndEmitters;
-    uint32 ofsLiquid;
-    uint32 sizeLiquid;
+    uint32_t flags;
+    uint32_t ix;
+    uint32_t iy;
+    uint32_t nLayers;
+    uint32_t nDoodadRefs;
+    uint32_t ofsHeight;
+    uint32_t ofsNormal;
+    uint32_t ofsLayer;
+    uint32_t ofsRefs;
+    uint32_t ofsAlpha;
+    uint32_t sizeAlpha;
+    uint32_t ofsShadow;
+    uint32_t sizeShadow;
+    uint32_t areaid;
+    uint32_t nMapObjRefs;
+    uint32_t holes;
+    uint16_t s1;
+    uint16_t s2;
+    uint32_t d1;
+    uint32_t d2;
+    uint32_t d3;
+    uint32_t predTex;
+    uint32_t nEffectDoodad;
+    uint32_t ofsSndEmitters;
+    uint32_t nSndEmitters;
+    uint32_t ofsLiquid;
+    uint32_t sizeLiquid;
     float  zpos;
     float  xpos;
     float  ypos;
-    uint32 textureId;
-    uint32 props;
-    uint32 effectId;
+    uint32_t textureId;
+    uint32_t props;
+    uint32_t effectId;
 };
 
 
@@ -122,7 +122,7 @@ public:
     int nMDX;
     std::string* WmoInstanceNames;
     std::string* ModelInstanceNames;
-    bool init(uint32 map_num, uint32 tileX, uint32 tileY);
+    bool init(uint32_t map_num, uint32_t tileX, uint32_t tileY);
 };
 
 char const* GetPlainName(char const* FileName);

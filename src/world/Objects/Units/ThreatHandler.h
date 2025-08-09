@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/School.hpp"
 
 #include <array>
+#include <memory>
 #include <vector>
 #include <list>
 #include <unordered_map>
@@ -65,7 +66,7 @@ public:
     void scaleThreat(Unit* target, float factor);
 
     // Modify target's threat by +percent%
-    void modifyThreatByPercent(Unit* target, int32 percent) { if (percent) scaleThreat(target, 0.01f*float(100 + percent)); }
+    void modifyThreatByPercent(Unit* target, int32_t percent) { if (percent) scaleThreat(target, 0.01f*float(100 + percent)); }
 
     // Sets the specified unit's threat to be equal to the highest entry on the threat list
     void matchUnitThreatToHighestThreat(Unit* target);
@@ -115,14 +116,14 @@ private:
     static float calculateModifiedThreat(Unit* owner, float threat, Unit* victim, SpellInfo const* spell, Spell* castingSpell = nullptr);
 
     // Attacking me
-    void putThreatListRef(uint64_t const& guid, ThreatReference* ref);
+    void putThreatListRef(uint64_t const& guid, std::shared_ptr<ThreatReference> ref);
     void purgeThreatListRef(uint64_t const& guid);
 
     bool _needClientUpdate;
     uint32_t _updateTimer;
 
-    std::list<ThreatReference*> _sortedThreatList;
-    std::unordered_map<uint64_t, ThreatReference*> _myThreatListEntries;
+    std::list<std::shared_ptr<ThreatReference>> _sortedThreatList;
+    std::unordered_map<uint64_t, std::shared_ptr<ThreatReference>> _myThreatListEntries;
     std::list<uint64_t> _tauntEffects;
 
     // picks a new victim
@@ -133,9 +134,9 @@ private:
     ThreatReference const* _fixateRef;
 
     // Attaked from me
-    void putThreatenedByMeRef(uint64_t const& guid, ThreatReference* ref);
+    void putThreatenedByMeRef(uint64_t const& guid, std::shared_ptr<ThreatReference> ref);
     void purgeThreatenedByMeRef(uint64_t const& guid);
-    std::unordered_map<uint64_t, ThreatReference*> _threatenedByMe; // these refs are entries for myself on other units' threat lists 
+    std::unordered_map<uint64_t, std::shared_ptr<ThreatReference>> _threatenedByMe; // these refs are entries for myself on other units' threat lists 
     std::array<float, TOTAL_SPELL_SCHOOLS> _singleSchoolModifiers; // most spells are single school - we pre-calculate these and store them
     mutable std::unordered_map<std::underlying_type<SchoolMask>::type, float> _multiSchoolModifiers; // these are calculated on demand
 
@@ -203,7 +204,7 @@ private:
     Unit* const _victim;
     OnlineState _online;
     float _baseAmount;
-    int32 _tempModifier;
+    int32_t _tempModifier;
     TauntState _taunted;
 
 public:

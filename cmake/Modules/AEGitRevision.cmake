@@ -4,7 +4,7 @@ include_guard(GLOBAL)
 # mark variables as advanced to not get them in gui
 mark_as_advanced(
     git_commit
-    git_tag
+    git_branch
 )
 
 # extract git revision
@@ -18,11 +18,11 @@ execute_process(
 execute_process(
     COMMAND git rev-parse --abbrev-ref HEAD
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    OUTPUT_VARIABLE git_tag
+    OUTPUT_VARIABLE git_branch
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
-set(ascemu_tag ${git_tag})
+set(ascemu_branch ${git_branch})
 set(BUILD_USERNAME $ENV{USERNAME})
 
 configure_file(

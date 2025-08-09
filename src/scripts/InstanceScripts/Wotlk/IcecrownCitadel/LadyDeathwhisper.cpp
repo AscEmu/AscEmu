@@ -304,7 +304,7 @@ void LadyDeathwhisperAI::AIUpdate(unsigned long time_passed)
 void LadyDeathwhisperAI::SummonWavePhaseOne()
 {    
     uint8_t addIndex1 = waveCounter & 1;
-    uint8_t addIndex2 = uint8(addIndex1 ^ 1);
+    uint8_t addIndex2 = uint8_t(addIndex1 ^ 1);
 
     // Todo summon Darnavan when weekly quest is active
     if (waveCounter)

@@ -31,44 +31,44 @@
 
 class wdt_MWMO{
     union{
-        uint32 fcc;
+        uint32_t fcc;
         char   fcc_txt[4];
     };
 public:
-    uint32 size;
+    uint32_t size;
     bool prepareLoadedData();
 };
 
 class wdt_MPHD{
     union{
-        uint32 fcc;
+        uint32_t fcc;
         char   fcc_txt[4];
     };
 public:
-    uint32 size;
+    uint32_t size;
 
-    uint32 data1;
-    uint32 data2;
-    uint32 data3;
-    uint32 data4;
-    uint32 data5;
-    uint32 data6;
-    uint32 data7;
-    uint32 data8;
+    uint32_t data1;
+    uint32_t data2;
+    uint32_t data3;
+    uint32_t data4;
+    uint32_t data5;
+    uint32_t data6;
+    uint32_t data7;
+    uint32_t data8;
     bool   prepareLoadedData();
 };
 
 class wdt_MAIN{
     union{
-        uint32 fcc;
+        uint32_t fcc;
         char   fcc_txt[4];
     };
 public:
-    uint32 size;
+    uint32_t size;
 
     struct adtData{
-        uint32 exist;
-        uint32 data1;
+        uint32_t exist;
+        uint32_t data1;
     } adt_list[64][64];
 
     bool   prepareLoadedData();

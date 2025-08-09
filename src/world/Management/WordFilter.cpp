@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 
-WordFilter* g_chatFilter;
+std::unique_ptr<WordFilter> g_chatFilter;
 
 WordFilter::WordFilter() {}
 

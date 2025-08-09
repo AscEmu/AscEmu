@@ -10,7 +10,7 @@
 
 #ifdef CONFIG_USE_EPOLL
 
-void Socket::PostEvent(uint32 events)
+void Socket::PostEvent(uint32_t events)
 {
     int epoll_fd = sSocketMgr.GetEpollFd();
 
@@ -24,7 +24,7 @@ void Socket::PostEvent(uint32 events)
         sLogger.warning("epoll : Could not post event on fd {}", m_fd);
 }
 
-void Socket::ReadCallback(uint32 len)
+void Socket::ReadCallback(uint32_t len)
 {
     if(IsDeleted() || !IsConnected())
         return;

@@ -22,62 +22,54 @@
 #define UPDATEMASK_H
 
 #include <cstring>
-
-#include "CommonTypes.hpp"
+#include <memory>
 
 class UpdateMask
 {
-    uint32* mUpdateMask;
-    uint32 mCount; // in values
-    uint32 mBlocks; // in uint32 blocks
+    std::unique_ptr<uint32_t[]> mUpdateMask;
+    uint32_t mCount; // in values
+    uint32_t mBlocks; // in uint32_t blocks
 
     public:
         UpdateMask() : mUpdateMask(0), mCount(0), mBlocks(0) { }
         UpdateMask(const UpdateMask & mask) : mUpdateMask(0) { *this = mask; }
 
-        ~UpdateMask()
-        {
-            if (mUpdateMask)
-                delete [] mUpdateMask;
-        }
+        ~UpdateMask() = default;
 
-        void SetBit(const uint32 index)
+        void SetBit(const uint32_t index)
         {
             if (index < mCount)
-                ((uint8*)mUpdateMask)[ index >> 3 ] |= 1 << (index & 0x7);
+                ((uint8_t*)mUpdateMask.get())[ index >> 3 ] |= 1 << (index & 0x7);
         }
 
-        void UnsetBit(const uint32 index)
+        void UnsetBit(const uint32_t index)
         {
             if (index < mCount)
-                ((uint8*)mUpdateMask)[ index >> 3 ] &= (0xff ^ (1 << (index & 0x7)));
+                ((uint8_t*)mUpdateMask.get())[ index >> 3 ] &= (0xff ^ (1 << (index & 0x7)));
         }
 
-        bool GetBit(const uint32 index) const
+        bool GetBit(const uint32_t index) const
         {
             if (index < mCount)
-                return (((uint8*)mUpdateMask)[index >> 3] & (1 << (index & 0x7))) != 0;
+                return (((uint8_t*)mUpdateMask.get())[index >> 3] & (1 << (index & 0x7))) != 0;
             return false;
         }
 
-        uint32 GetUpdateBlockCount() const
+        uint32_t GetUpdateBlockCount() const
         {
-            uint32 x;
+            uint32_t x;
             for (x = mBlocks - 1; x; x--)
                 if (mUpdateMask[x])break;
             return (x + 1);
         }
-        inline uint32 GetBlockCount() const {return mBlocks;}
+        inline uint32_t GetBlockCount() const {return mBlocks;}
 
-        inline uint32 GetLength() const { return (mBlocks * sizeof(uint32)); }
-        inline uint32 GetCount() const { return mCount; }
-        inline const uint8* GetMask() const { return (uint8*)mUpdateMask; }
+        inline uint32_t GetLength() const { return (mBlocks * sizeof(uint32_t)); }
+        inline uint32_t GetCount() const { return mCount; }
+        inline const uint8_t* GetMask() const { return (uint8_t*)mUpdateMask.get(); }
 
-        void SetCount(uint32 valuesCount)
+        void SetCount(uint32_t valuesCount)
         {
-            if (mUpdateMask)
-                delete [] mUpdateMask;
-
             mCount = valuesCount;
             //mBlocks = valuesCount/32 + 1;
             //mBlocks = (valuesCount + 31) / 32;
@@ -85,20 +77,20 @@ class UpdateMask
             if (mCount & 31)
                 ++mBlocks;
 
-            mUpdateMask = new uint32[mBlocks];
-            memset(mUpdateMask, 0, mBlocks * sizeof(uint32));
+            mUpdateMask = std::make_unique<uint32_t[]>(mBlocks);
+            memset(mUpdateMask.get(), 0, mBlocks * sizeof(uint32_t));
         }
 
         void Clear()
         {
             if (mUpdateMask)
-                memset(mUpdateMask, 0, mBlocks << 2);
+                memset(mUpdateMask.get(), 0, mBlocks << 2);
         }
 
         UpdateMask & operator = (const UpdateMask & mask)
         {
             SetCount(mask.mCount);
-            memcpy(mUpdateMask, mask.mUpdateMask, mBlocks << 2);
+            memcpy(mUpdateMask.get(), mask.mUpdateMask.get(), mBlocks << 2);
 
             return *this;
         }
@@ -106,14 +98,14 @@ class UpdateMask
         void operator &= (const UpdateMask & mask)
         {
             if (mask.mCount <= mCount)
-                for (uint32 i = 0; i < mBlocks; i++)
+                for (uint32_t i = 0; i < mBlocks; i++)
                     mUpdateMask[i] &= mask.mUpdateMask[i];
         }
 
         void operator |= (const UpdateMask & mask)
         {
             if (mask.mCount <= mCount)
-                for (uint32 i = 0; i < mBlocks; i++)
+                for (uint32_t i = 0; i < mBlocks; i++)
                     mUpdateMask[i] |= mask.mUpdateMask[i];
         }
 

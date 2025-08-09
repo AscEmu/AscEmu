@@ -43,7 +43,7 @@ private:
 public:
     ModelHeader header;
     Vec3D* vertices;
-    uint16* indices;
+    uint16_t* indices;
 
     bool open();
     bool ConvertToVMAPModel(char const* outfilename);
@@ -55,13 +55,13 @@ public:
 class ModelInstance
 {
 public:
-    uint32 id;
+    uint32_t id;
     Vec3D pos, rot;
-    uint16 scale, flags;
+    uint16_t scale, flags;
     float sc;
 
     ModelInstance() : id(0), scale(0), flags(0), sc(0.0f) {}
-    ModelInstance(MPQFile& f, char const* ModelInstName, uint32 mapID, uint32 tileX, uint32 tileY, FILE* pDirfile);
+    ModelInstance(MPQFile& f, char const* ModelInstName, uint32_t mapID, uint32_t tileX, uint32_t tileY, FILE* pDirfile);
 
 };
 

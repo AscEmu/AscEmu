@@ -72,7 +72,7 @@ public:
     typedef std::unordered_map<uint32_t, CreatureProperties> CreaturePropertiesContainer;
     typedef std::unordered_map<uint32_t, CreaturePropertiesMovement> CreaturePropertiesMovementContainer;
 
-    typedef std::multimap<uint32_t, MySQLStructure::CreatureAIScripts*> AIScriptsMap;
+    typedef std::multimap<uint32_t, std::unique_ptr<MySQLStructure::CreatureAIScripts>> AIScriptsMap;
 
     typedef std::unordered_map<uint32_t, GameObjectProperties> GameObjectPropertiesContainer;
     typedef std::unordered_map<uint32_t, QuestProperties> QuestPropertiesContainer;
@@ -107,7 +107,7 @@ public:
 
     typedef std::vector<uint32_t> PlayerXPperLevel;
 
-    typedef std::map<uint32_t, std::list<SpellInfo const*>*> SpellOverrideIdMap;
+    typedef std::map<uint32_t, std::unique_ptr<std::list<SpellInfo const*>>> SpellOverrideIdMap;
 
     typedef std::map<uint32_t, uint32_t> NpcGossipTextIdMap;
 
@@ -138,7 +138,7 @@ public:
 
     //typedef std::map<uint32_t, std::set<SpellInfo const*>> PetDefaultSpellsMap;     Zyres 2017/07/16 not used
 
-    typedef std::set<MySQLStructure::ProfessionDiscovery*> ProfessionDiscoverySet;
+    typedef std::set<std::unique_ptr<MySQLStructure::ProfessionDiscovery>> ProfessionDiscoverySet;
 
     typedef std::unordered_map<uint32_t, MySQLStructure::TransportData> TransportDataContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::TransportEntrys> TransportEntryContrainer;
@@ -150,7 +150,7 @@ public:
     typedef std::vector<MySQLStructure::CreatureSpawn*> CreatureSpawnsMap;
     typedef std::vector<MySQLStructure::GameobjectSpawn*> GameobjectSpawnsMap;
 
-    typedef std::vector<MySQLStructure::RecallStruct*> RecallMap;
+    typedef std::vector<std::unique_ptr<MySQLStructure::RecallStruct>> RecallMap;
 
     // helper
     MySQLStructure::ItemPage const* getItemPage(uint32_t entry);
@@ -245,7 +245,7 @@ public:
     MySQLStructure::AreaTrigger const* getMapEntranceTrigger(uint32_t mapId);
     MySQLStructure::AreaTrigger const* getMapGoBackTrigger(uint32_t mapId);
 
-    std::vector<MySQLStructure::CreatureAIScripts>* getCreatureAiScripts(uint32_t entry);
+    std::unique_ptr<std::vector<MySQLStructure::CreatureAIScripts>> getCreatureAiScripts(uint32_t entry);
 
     SpawnGroupTemplateData* getSpawnGroupDataBySpawn(uint32_t spawnId);
     SpawnGroupTemplateData* getSpawnGroupDataByGroup(uint32_t groupId);
@@ -277,8 +277,8 @@ public:
     
     GossipMenuInitMap const* getGossipMenuInitTextId() { return &_gossipMenuInitStore; }
 
-    RecallMap getRecallStore() const { return _recallStore; }
-    MySQLStructure::RecallStruct const* getRecallByName(std::string name);
+    RecallMap const& getRecallStore() const { return _recallStore; }
+    MySQLStructure::RecallStruct const* getRecallByName(std::string const& name) const;
 
     bool isCharacterNameAllowed(std::string charName);
 
@@ -293,7 +293,7 @@ public:
     void loadAdditionalTableConfig();
 
     // helpers
-    QueryResult* getWorldDBQuery(const char* query, ...);
+    std::unique_ptr<QueryResult> getWorldDBQuery(const char* query, ...);
 
     // loads
     void loadItemPagesTable();
@@ -432,8 +432,8 @@ public:
 
     ItemSetDefinedSetBonusContainer _definedItemSetBonusStore;
 
-    PlayerCreateInfo* _playerCreateInfoStoreNew[DBC_NUM_RACES][MAX_PLAYER_CLASSES] = {0};
-    CreateInfo_ClassLevelStatsVector _playerClassLevelStatsStore[MAX_PLAYER_CLASSES];
+    std::array<std::array<std::unique_ptr<PlayerCreateInfo>, MAX_PLAYER_CLASSES>, DBC_NUM_RACES> _playerCreateInfoStoreNew = {{ nullptr }};
+    std::array<CreateInfo_ClassLevelStatsVector, MAX_PLAYER_CLASSES> _playerClassLevelStatsStore;
     PlayerXPperLevel _playerXPperLevelStore;
 
     SpellOverrideIdMap _spellOverrideIdStore;
@@ -474,8 +474,8 @@ public:
     GossipMenuInitMap _gossipMenuInitStore;
     GossipMenuItemsContainer _gossipMenuItemsStores;
 
-    CreatureSpawnsMap _creatureSpawnsStore[MAX_NUM_MAPS + 1];
-    GameobjectSpawnsMap _gameobjectSpawnsStore[MAX_NUM_MAPS + 1];
+    std::array<CreatureSpawnsMap, (MAX_NUM_MAPS + 1)> _creatureSpawnsStore;
+    std::array<GameobjectSpawnsMap, (MAX_NUM_MAPS + 1)> _gameobjectSpawnsStore;
 
     RecallMap _recallStore;
 };

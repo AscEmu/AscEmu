@@ -53,7 +53,7 @@ namespace AscEmu::Realm
                 const uint32_t realmCount = result->GetRowCount();
                 this->realms.reserve(realmCount);
 
-                auto realm = std::make_shared<Realm>();
+                auto realm = std::make_unique<Realm>();
                 realm->id = field[0].asUint32();
                 realm->password = field[1].asCString();
                 realm->status = field[2].asUint8();
@@ -61,18 +61,16 @@ namespace AscEmu::Realm
 
                 this->realms.emplace_back(std::move(realm));
             } while (result->NextRow());
-
-            delete result;
         }
         sLogger.info("[RealmManager] Loaded {} realms.", static_cast<uint32_t>(this->realms.size()));
     }
 
-    std::shared_ptr<Realm> RealmManager::getRealmById(uint32_t id) const
+    Realm* RealmManager::getRealmById(uint32_t id) const
     {
         for (const auto& realm : this->realms)
         {
             if (realm->id == id)
-                return realm;
+                return realm.get();
         }
 
         return nullptr;
@@ -82,7 +80,7 @@ namespace AscEmu::Realm
     {
         if (this->realms.empty())
         {
-            auto realm = std::make_shared<Realm>();
+            auto realm = std::make_unique<Realm>();
             realm->id = realm_id;
             realm->status = status;
             realm->lastPing = ::Util::TimeNow();
@@ -146,7 +144,7 @@ namespace AscEmu::Realm
             data << uint16_t(this->realms.size());
 
         std::unordered_map<uint32_t, uint8_t>::iterator it;
-        for (const auto realm : this->realms)
+        for (const auto& realm : this->realms)
         {
             if (realm->gameBuild == authSocket->GetChallenge()->build)
             {
@@ -210,7 +208,7 @@ namespace AscEmu::Realm
 
         *reinterpret_cast<uint16_t*>(&data.contents()[1]) = uint16_t(data.size() - 3);
 
-        authSocket->Send(static_cast<const uint8*>(data.contents()), uint32_t(data.size()));
+        authSocket->Send(static_cast<const uint8_t*>(data.contents()), uint32_t(data.size()));
 
         std::list<LogonCommServerSocket*> server_sockets;
 

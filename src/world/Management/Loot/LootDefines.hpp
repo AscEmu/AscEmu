@@ -5,11 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include <memory>
 #include <set>
-#include <unordered_map>
-
-class LootTemplate;
 
 #define MAX_NR_LOOT_ITEMS 16
 #define MAX_NR_LOOT_QUESTITEMS 32
@@ -17,7 +13,6 @@ class LootTemplate;
 #define MAX_NR_LOOT_NONEQUIPABLE 3
 
 typedef std::set<uint32_t> LooterSet;
-typedef std::unordered_map<uint32_t, std::shared_ptr<LootTemplate>> LootTemplateMap;
 
 enum PartyLootMethod
 {

@@ -27,6 +27,9 @@ struct EnchantmentInstance
 {
     // Durations for temporary enchantments are stored in ItemInterface and WoWItem data
     WDB::Structures::SpellItemEnchantmentEntry const* Enchantment;
+#if VERSION_STRING >= Cata
+    std::unique_ptr<WDB::Structures::SpellItemEnchantmentEntry> customEnchantmentHolder;
+#endif
     bool BonusApplied;
     EnchantmentSlot Slot;
     bool RemoveAtLogout;
@@ -241,7 +244,6 @@ public:
     void saveToDB(int8_t containerslot, int8_t slot, bool firstsave, QueryBuffer* buf);
     bool loadAuctionItemFromDB(uint64_t guid);
     void deleteFromDB();
-    void deleteMe();
     bool isEligibleForRefund();
 
     uint32_t getChargesLeft() const;
@@ -251,7 +253,7 @@ public:
     uint32_t getSellPrice(uint32_t count);
     void removeFromWorld();
 
-    Loot* m_loot = nullptr;
+    std::unique_ptr<Loot> m_loot;
     bool m_isLocked = false;
     bool m_isDirty = false;
 

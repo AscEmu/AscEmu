@@ -43,7 +43,7 @@ class LogonConsole
 {
     friend class LogonConsoleThread;
 
-    AscEmu::Threading::AEThread* m_demoThread;
+    std::unique_ptr<AscEmu::Threading::AEThread> m_demoThread;
     int m_demoCounter = 0;
 
     void demoTicker(AscEmu::Threading::AEThread& thread);

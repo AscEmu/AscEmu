@@ -341,7 +341,7 @@ void WorldSession::handleVoidStorageTransfer(WorldPacket& recvData)
         Item* item = player->getItemInterface()->GetItemByGUID(*itr);
         if (!item)
         {
-            sLogger.debug("handleVoidStorageTransfer - Player (GUID: {}, name: {}) wants to deposit an invalid item (item guid: %I64u).", player->getGuidLow(), player->getName(), uint64(*itr));
+            sLogger.debug("handleVoidStorageTransfer - Player (GUID: {}, name: {}) wants to deposit an invalid item (item guid: %I64u).", player->getGuidLow(), player->getName(), uint64_t(*itr));
             continue;
         }
 
@@ -367,17 +367,18 @@ void WorldSession::handleVoidStorageTransfer(WorldPacket& recvData)
         VoidStorageItem* itemVS = player->getVoidStorageItem(*itr, slot);
         if (!itemVS)
         {
-            sLogger.debug("handleVoidStorageTransfer - Player (GUID: {}, name: {}) tried to withdraw an invalid item (id: %I64u)", player->getGuidLow(), player->getName(), uint64(*itr));
+            sLogger.debug("handleVoidStorageTransfer - Player (GUID: {}, name: {}) tried to withdraw an invalid item (id: %I64u)", player->getGuidLow(), player->getName(), uint64_t(*itr));
             continue;
         }
 
-        Item* item = sObjectMgr.createItem(itemVS->itemEntry, player);
+        auto itemHolder = sObjectMgr.createItem(itemVS->itemEntry, player);
 
-        AddItemResult msg = player->getItemInterface()->AddItemToFreeSlot(item);
+        auto* item = itemHolder.get();
+        const auto [msg, _] = player->getItemInterface()->AddItemToFreeSlot(std::move(itemHolder));
         if (msg != ADD_ITEM_RESULT_OK)
         {
             sendVoidStorageTransferResult(VOID_TRANSFER_ERROR_INVENTORY_FULL);
-            sLogger.debug("handleVoidStorageTransfer - Player (GUID: {}, name: {}) couldn't withdraw item id %I64u because inventory was full.", player->getGuidLow(), player->getName(), uint64(*itr));
+            sLogger.debug("handleVoidStorageTransfer - Player (GUID: {}, name: {}) couldn't withdraw item id %I64u because inventory was full.", player->getGuidLow(), player->getName(), uint64_t(*itr));
             return;
         }
 
@@ -555,7 +556,7 @@ void WorldSession::handleVoidSwapItem(WorldPacket& recvData)
     uint8_t oldSlot;
     if (!player->getVoidStorageItem(itemId, oldSlot))
     {
-        sLogger.debug("handleVoidSwapItem - Player (GUID: {}, name: {}) requested swapping an invalid item (slot: {}, itemid: %I64u).", player->getGuidLow(), player->getName(), newSlot, uint64(itemId));
+        sLogger.debug("handleVoidSwapItem - Player (GUID: {}, name: {}) requested swapping an invalid item (slot: {}, itemid: %I64u).", player->getGuidLow(), player->getName(), newSlot, uint64_t(itemId));
         return;
     }
 

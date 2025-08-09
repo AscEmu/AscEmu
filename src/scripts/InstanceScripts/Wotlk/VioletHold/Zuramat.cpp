@@ -33,9 +33,9 @@ CreatureAIScript* ZuramatAI::Create(Creature* pCreature) { return new ZuramatAI(
 void ZuramatAI::OnLoad()
 {
     getCreature()->getMovementManager()->moveTargetedHome();
-    getCreature()->getAIInterface()->setImmuneToNPC(true);
-    getCreature()->getAIInterface()->setImmuneToPC(true);
-    getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
+    getCreature()->getAIInterface()->setIgnoreCreatureCombat(true);
+    getCreature()->getAIInterface()->setIgnorePlayerCombat(true);
+    getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
 }
 
 void ZuramatAI::OnCombatStop(Unit* /*_target*/)

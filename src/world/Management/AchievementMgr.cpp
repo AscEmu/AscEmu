@@ -42,9 +42,6 @@ using namespace AscEmu::Packets;
 AchievementMgr::AchievementMgr(Player* _player) : m_player(_player), isCharacterLoading(true) {}
 AchievementMgr::~AchievementMgr()
 {
-    for (const auto iterCriteriaProgress : m_criteriaProgress)
-        delete iterCriteriaProgress.second;
-
     m_criteriaProgress.clear();
     m_completedAchievements.clear();
 }
@@ -72,8 +69,7 @@ void AchievementMgr::loadFromDb(QueryResult* _achievementResult, QueryResult* _c
             uint32_t progress_id = field[0].asUint32();
             if (m_criteriaProgress[progress_id] == nullptr)
             {
-                const auto progress = new CriteriaProgress(progress_id, field[1].asUint32(), static_cast<time_t>(field[2].asUint64()));
-                m_criteriaProgress[progress_id] = progress;
+                m_criteriaProgress[progress_id] = std::make_unique<CriteriaProgress>(progress_id, field[1].asUint32(), static_cast<time_t>(field[2].asUint64()));
             }
             else
                 sLogger.failure("Duplicate criteria progress {} for player {}, skipping", progress_id, m_player->getGuidLow());
@@ -148,9 +144,9 @@ void AchievementMgr::saveToDb(QueryBuffer* _buffer)
         ss << "INSERT INTO character_achievement_progress VALUES ";
 
         bool first = true;
-        for (auto iterCriteriaProgress : m_criteriaProgress)
+        for (const auto& iterCriteriaProgress : m_criteriaProgress)
         {
-            if (canSaveAchievementProgressToDB(iterCriteriaProgress.second))
+            if (canSaveAchievementProgressToDB(iterCriteriaProgress.second.get()))
             {
                 // only save some progresses, others will be updated when character logs in
                 if (ss.str().length() >= 16000)
@@ -1007,19 +1003,11 @@ bool AchievementMgr::updateAchievementCriteria(Player* _player, int32_t _criteri
         return false;
     }
 
-    auto criteriaProgressItr = m_criteriaProgress.find(_criteriaId);
-    CriteriaProgress* progress;
-    if (criteriaProgressItr == m_criteriaProgress.end())
-    {
-        // not in progress map
-        progress = new CriteriaProgress(_criteriaId, 0);
-        m_criteriaProgress[_criteriaId] = progress;
-    }
-    else
-    {
-        progress = criteriaProgressItr->second;
-    }
+    const auto [itr, _] = m_criteriaProgress.try_emplace(_criteriaId, Util::LazyInstanceCreator([_criteriaId] {
+        return std::make_unique<CriteriaProgress>(_criteriaId, 0);
+    }));
 
+    auto* progress = itr->second.get();
     progress->counter = progress->counter + _count;
     sendCriteriaUpdate(progress);
     completedCriteria(criteria);
@@ -1031,10 +1019,10 @@ bool AchievementMgr::updateAchievementCriteria(Player* _player, int32_t _criteri
 uint32_t AchievementMgr::getCriteriaProgressCount()
 {
     uint32_t criteriapc = 0;
-    for (auto iterCriteriaProgress : m_criteriaProgress)
+    for (const auto& iterCriteriaProgress : m_criteriaProgress)
     {
         //AchievementEntry const *achievement = dbcAchievementStore.lookupEntry(iterCriteriaProgress.second->id);
-        if (canSendAchievementProgress(iterCriteriaProgress.second))
+        if (canSendAchievementProgress(iterCriteriaProgress.second.get()))
             ++criteriapc;
     }
     return criteriapc;
@@ -1117,19 +1105,11 @@ bool AchievementMgr::gmCompleteCriteria(WorldSession* _gmSession, uint32_t _crit
         return false;
     }
 
-    auto criteriaProgressIter = m_criteriaProgress.find(_criteriaId);
-    CriteriaProgress* progress;
-    if (criteriaProgressIter == m_criteriaProgress.end())
-    {
-        // not in progress map
-        progress = new CriteriaProgress(_criteriaId, 0);
-        m_criteriaProgress[_criteriaId] = progress;
-    }
-    else
-    {
-        progress = criteriaProgressIter->second;
-    }
+    const auto [itr, _] = m_criteriaProgress.try_emplace(_criteriaId, Util::LazyInstanceCreator([_criteriaId] {
+        return std::make_unique<CriteriaProgress>(_criteriaId, 0);
+    }));
 
+    auto* progress = itr->second.get();
     progress->counter = criteria->raw.field4;
     sendCriteriaUpdate(progress);
     completedCriteria(criteria);
@@ -1143,10 +1123,9 @@ void AchievementMgr::gmResetCriteria(uint32_t _criteriaId, bool _finishAll/* = f
 {
     if (_finishAll)
     {
-        for (const auto criteriaProgress : m_criteriaProgress)
+        for (const auto& criteriaProgress : m_criteriaProgress)
         {
             getPlayer()->sendPacket(SmsgCriteriaDeleted(criteriaProgress.first).serialise().get());
-            delete criteriaProgress.second;
         }
 
         m_criteriaProgress.clear();
@@ -1237,7 +1216,7 @@ void AchievementMgr::sendAllAchievementData(Player* _player)
             // achievement progress to send to self
             if (_player == m_player)
             {
-                if (canSendAchievementProgress(progressIter->second))
+                if (canSendAchievementProgress(progressIter->second.get()))
                 {
                     data << uint32_t(progressIter->first);
                     data.appendPackGUID(progressIter->second->counter);
@@ -1306,7 +1285,7 @@ void AchievementMgr::sendAllAchievementData(Player* _player)
     WorldPacket data(SMSG_ALL_ACHIEVEMENT_DATA, 4 + numAchievements * (4 + 4) + 4 + numCriteria * (4 + 4 + 4 + 4 + 8 + 8));
     data.writeBits(numCriteria, 21);
 
-    for (auto progressIter : m_criteriaProgress)
+    for (const auto& progressIter : m_criteriaProgress)
     {
         WDB::Structures::AchievementCriteriaEntry const* acEntry = sAchievementCriteriaStore.lookupEntry(progressIter.first);
         if (!acEntry)
@@ -1401,7 +1380,7 @@ void AchievementMgr::sendRespondInspectAchievements(Player* _player)
     data.writeBits(numCriteria, 21);
     data.writeBit(guid[2]);
 
-    for (auto progressIter : m_criteriaProgress)
+    for (const auto& progressIter : m_criteriaProgress)
     {
         WDB::Structures::AchievementCriteriaEntry const* acEntry = sAchievementCriteriaStore.lookupEntry(progressIter.first);
         if (!acEntry)
@@ -1502,7 +1481,7 @@ void AchievementMgr::sendAllAchievementData(Player* _player)
     WorldPacket data(SMSG_ALL_ACHIEVEMENT_DATA, 4 + numAchievements * (4 + 4) + 4 + numCriteria * (4 + 4 + 4 + 4 + 8 + 8));
     data.writeBits(numCriteria, 21);
 
-    for (auto progressIter : m_criteriaProgress)
+    for (const auto& progressIter : m_criteriaProgress)
     {
         WDB::Structures::AchievementCriteriaEntry const* acEntry = sAchievementCriteriaStore.lookupEntry(progressIter.first);
         if (!acEntry)
@@ -1620,7 +1599,7 @@ void AchievementMgr::sendRespondInspectAchievements(Player* _player)
     data.writeBits(numCriteria, 21);
     data.writeBit(guid[2]);
 
-    for (auto progressIter : m_criteriaProgress)
+    for (const auto& progressIter : m_criteriaProgress)
     {
         WDB::Structures::AchievementCriteriaEntry const* acEntry = sAchievementCriteriaStore.lookupEntry(progressIter.first);
         if (!acEntry)
@@ -1859,7 +1838,7 @@ bool AchievementMgr::showCompletedAchievement(uint32_t _achievementId, const Pla
         case 1427: // Realm First! Grand Master Tailor
         case 1463: // Realm First! Northrend Vanguard: First player on the realm to gain exalted reputation with the Argent Crusade, Wyrmrest Accord, Kirin Tor and Knights of the Ebon Blade.
         {
-            QueryResult* achievementResult = CharacterDatabase.Query("SELECT guid FROM character_achievement WHERE achievement=%u ORDER BY date LIMIT 1", _achievementId);
+            auto achievementResult = CharacterDatabase.Query("SELECT guid FROM character_achievement WHERE achievement=%u ORDER BY date LIMIT 1", _achievementId);
             if (achievementResult != nullptr)
             {
                 Field* field = achievementResult->Fetch();
@@ -1870,11 +1849,9 @@ bool AchievementMgr::showCompletedAchievement(uint32_t _achievementId, const Pla
                     if (firstguid != (uint32_t)_player->getGuid())
                     {
                         // nope, somebody else was first.
-                        delete achievementResult;
                         return false;
                     }
                 }
-                delete achievementResult;
             }
         }
         break;
@@ -1937,7 +1914,7 @@ void AchievementMgr::giveAchievementReward(WDB::Structures::AchievementEntry con
         std::string messageBody = Reward->text;
 
         //Create Item
-        Item* item = sObjectMgr.createItem(Reward->itemId, getPlayer());
+        auto item = sObjectMgr.createItem(Reward->itemId, getPlayer());
 
         if (Reward->itemId == 0)
         {
@@ -1950,7 +1927,6 @@ void AchievementMgr::giveAchievementReward(WDB::Structures::AchievementEntry con
             sMailSystem.SendCreatureGameobjectMail(MAIL_TYPE_CREATURE, sender, receiver, messageSubject, messageBody, 0, 0, item->getGuid(), 0, MAIL_CHECK_MASK_HAS_BODY, MAIL_DEFAULT_EXPIRATION_TIME);
 
             //removing pItem
-            item->deleteMe();
             item = nullptr;
 
             //removing sender
@@ -1974,8 +1950,6 @@ void AchievementMgr::sendAchievementEarned(WDB::Structures::AchievementEntry con
     if (_entry == nullptr || isCharacterLoading)
         return;
 
-    uint32_t* guidList = nullptr;
-
     // Send Achievement message to everyone currently on the server
     if (_entry->flags & (ACHIEVEMENT_FLAG_REALM_FIRST_KILL | ACHIEVEMENT_FLAG_REALM_FIRST_REACH))
     {
@@ -1993,7 +1967,7 @@ void AchievementMgr::sendAchievementEarned(WDB::Structures::AchievementEntry con
         uint32_t guidCount = 0;
         uint32_t guidIndex;
         // allocate enough space
-        guidList = new uint32_t[sWorld.getSessionCount() + 256];
+        auto guidList = std::make_unique<uint32_t[]>(sWorld.getSessionCount() + 256);
 
         bool alreadySent;
 
@@ -2083,8 +2057,6 @@ void AchievementMgr::sendAchievementEarned(WDB::Structures::AchievementEntry con
     data << uint32_t(0);
 
     getPlayer()->getSession()->SendPacket(&data);
-
-    delete[] guidList;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -2210,12 +2182,12 @@ void AchievementMgr::setCriteriaProgress(WDB::Structures::AchievementCriteriaEnt
         if (_newValue < 1)
             return;
 
-        progress = new CriteriaProgress(_entry->ID, _newValue);
-        m_criteriaProgress[_entry->ID] = progress;
+        const auto [progressItr, _] = m_criteriaProgress.try_emplace(_entry->ID, std::make_unique<CriteriaProgress>(_entry->ID, _newValue));
+        progress = progressItr->second.get();
     }
     else
     {
-        progress = m_criteriaProgress[_entry->ID];
+        progress = m_criteriaProgress[_entry->ID].get();
         if (progress->counter == static_cast<uint32_t>(_newValue))
             return;
 
@@ -2239,12 +2211,12 @@ void AchievementMgr::updateCriteriaProgress(WDB::Structures::AchievementCriteria
         if (_updateByValue < 1)
             return;
 
-        progress = new CriteriaProgress(_entry->ID, _updateByValue);
-        m_criteriaProgress[_entry->ID] = progress;
+        const auto [progressItr, _] = m_criteriaProgress.try_emplace(_entry->ID, std::make_unique<CriteriaProgress>(_entry->ID, _updateByValue));
+        progress = progressItr->second.get();
     }
     else
     {
-        progress = m_criteriaProgress[_entry->ID];
+        progress = m_criteriaProgress[_entry->ID].get();
         progress->counter += _updateByValue;
     }
 
@@ -2290,7 +2262,7 @@ bool AchievementMgr::isCompletedCriteria(WDB::Structures::AchievementCriteriaEnt
     if (criteriaProgressIter == m_criteriaProgress.end())
         return false;
 
-    const CriteriaProgress* progress = criteriaProgressIter->second;
+    const CriteriaProgress* progress = criteriaProgressIter->second.get();
     if (progress->counter < 1)
         return false;
 

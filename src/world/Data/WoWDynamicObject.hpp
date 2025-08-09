@@ -17,9 +17,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma pack(push, 1)
 
-union
+#if VERSION_STRING == Classic
+union dynamic_bytes_union
 {
-    struct
+    struct parts
     {
         uint8_t type;
         uint8_t unk1;
@@ -27,9 +28,8 @@ union
         uint8_t unk3;
     } s;
     uint32_t raw;
-} typedef dynamic_bytes_union;
+};
 
-#if VERSION_STRING == Classic
 struct WoWDynamicObject : WoWObject
 {
     uint64_t caster_guid;
@@ -45,6 +45,18 @@ struct WoWDynamicObject : WoWObject
 #endif
 
 #if VERSION_STRING == TBC
+union dynamic_bytes_union
+{
+    struct parts
+    {
+        uint8_t type;
+        uint8_t unk1;
+        uint8_t unk2;
+        uint8_t unk3;
+    } s;
+    uint32_t raw;
+};
+
 struct WoWDynamicObject : WoWObject
 {
     uint64_t caster_guid;
@@ -60,6 +72,18 @@ struct WoWDynamicObject : WoWObject
 #endif
 
 #if VERSION_STRING == WotLK
+union dynamic_bytes_union
+{
+    struct parts
+    {
+        uint8_t type;
+        uint8_t unk1;
+        uint8_t unk2;
+        uint8_t unk3;
+    } s;
+    uint32_t raw;
+};
+
 struct WoWDynamicObject : WoWObject
 {
     uint64_t caster_guid;
@@ -71,6 +95,17 @@ struct WoWDynamicObject : WoWObject
 #endif
 
 #if VERSION_STRING == Cata
+union dynamic_bytes_union
+{
+    // todo: verify bits
+    struct parts
+    {
+        uint32_t spell_visual_id : 28; // not used
+        uint32_t type : 4;
+    } s;
+    uint32_t raw;
+};
+
 struct WoWDynamicObject : WoWObject
 {
     uint64_t caster_guid;
@@ -82,6 +117,17 @@ struct WoWDynamicObject : WoWObject
 #endif
 
 #if VERSION_STRING == Mop
+union dynamic_bytes_union
+{
+    // todo: verify bits
+    struct parts
+    {
+        uint32_t spell_visual_id : 28; // not used
+        uint32_t type : 4;
+    } s;
+    uint32_t raw;
+};
+
 struct WoWDynamicObject : WoWObject
 {
     uint64_t caster_guid;

@@ -91,7 +91,7 @@ Transporter* TransportHandler::createTransport(uint32_t entry, WorldMap* map /*=
     }
 
     // create transport...
-    Transporter* trans = new Transporter((uint64)HIGHGUID_TYPE_TRANSPORTER << 32 | entry);
+    Transporter* trans = new Transporter((uint64_t)HIGHGUID_TYPE_TRANSPORTER << 32 | entry);
 
     // ...at first waypoint
 #if VERSION_STRING == Classic
@@ -123,7 +123,7 @@ Transporter* TransportHandler::createTransport(uint32_t entry, WorldMap* map /*=
 
     if (const auto mapEntry = sMapStore.lookupEntry(mapId))
     {
-        if (mapEntry->instanceable() != tInfo->inInstance)
+        if (mapEntry->isInstanceableMap() != tInfo->inInstance)
         {
             sLogger.failure("Transport {} attempted creation in instance map (id: {}) but it is not an instanced transport!", entry, mapId);
             delete trans;
@@ -301,7 +301,7 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
         {
             if (const auto map = sMapStore.lookupEntry(*itr))
             {
-                if (map->instanceable())
+                if (map->isInstanceableMap())
                 {
                     sLogger.failure("TransportHandler::generatePath not allowed to create a path to a instance map!");
                     return;
@@ -314,7 +314,7 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
     else
     {
         if (const auto map = sMapStore.lookupEntry(*transport->mapsUsed.begin()))
-            transport->inInstance = map->instanceable();
+            transport->inInstance = map->isInstanceableMap();
     }
 
     // last to first is always "teleport", even for closed paths
@@ -401,7 +401,7 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
     tmpDist = 0.0f;
     for (int32_t i = static_cast<int32_t>(keyFrames.size()) - 1; i >= 0; i--)
     {
-        int32 j = (i + firstStop) % keyFrames.size();
+        int32_t j = (i + firstStop) % keyFrames.size();
         tmpDist += keyFrames[(j + 1) % keyFrames.size()].DistFromPrev;
         keyFrames[j].DistUntilStop = tmpDist;
         if (keyFrames[j].isStopFrame() || j == firstStop)

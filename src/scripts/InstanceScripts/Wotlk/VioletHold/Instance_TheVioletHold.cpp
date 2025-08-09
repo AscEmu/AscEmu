@@ -319,9 +319,9 @@ void TheVioletHoldScript::UpdateEvent()
 
                 if (Creature* boss = getCreatureFromData(bossId))
                 {
-                    boss->getAIInterface()->setImmuneToNPC(false);
-                    boss->getAIInterface()->setImmuneToPC(false);
-                    boss->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
+                    boss->getAIInterface()->setIgnoreCreatureCombat(false);
+                    boss->getAIInterface()->setIgnorePlayerCombat(false);
+                    boss->removeUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
 
                     switch (bossId)
                     {
@@ -329,13 +329,13 @@ void TheVioletHoldScript::UpdateEvent()
                         {
                             boss->emote(EMOTE_ONESHOT_ROAR);
 
-                            for (uint32 i = DATA_EREKEM_GUARD_1; i <= DATA_EREKEM_GUARD_2; ++i)
+                            for (uint32_t i = DATA_EREKEM_GUARD_1; i <= DATA_EREKEM_GUARD_2; ++i)
                             {
                                 if (Creature* guard = GetCreatureByGuid(getLocalData(i)))
                                 {
-                                    guard->getAIInterface()->setImmuneToNPC(false);
-                                    guard->getAIInterface()->setImmuneToPC(false);
-                                    guard->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
+                                    guard->getAIInterface()->setIgnoreCreatureCombat(false);
+                                    guard->getAIInterface()->setIgnorePlayerCombat(false);
+                                    guard->removeUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
                                 }
                             }
                         } break;
@@ -363,9 +363,9 @@ void TheVioletHoldScript::UpdateEvent()
                 {
                     cyanigosa->removeAllAurasById(SPELL_CYANIGOSA_ARCANE_POWER_STATE);
                     cyanigosa->castSpell(cyanigosa, SPELL_CYANIGOSA_TRANSFORM, true);
-                    cyanigosa->getAIInterface()->setImmuneToNPC(false);
-                    cyanigosa->getAIInterface()->setImmuneToPC(false);
-                    cyanigosa->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
+                    cyanigosa->getAIInterface()->setIgnoreCreatureCombat(false);
+                    cyanigosa->getAIInterface()->setIgnorePlayerCombat(false);
+                    cyanigosa->removeUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
                 }
             } break;
             default:
@@ -589,7 +589,7 @@ void TheVioletHoldScript::resetBossEncounter(uint8_t bossId)
         } break;
         case DATA_EREKEM:
         {
-            for (uint32 i = DATA_EREKEM_GUARD_1; i <= DATA_EREKEM_GUARD_2; ++i)
+            for (uint32_t i = DATA_EREKEM_GUARD_1; i <= DATA_EREKEM_GUARD_2; ++i)
             {
                 if (Creature* guard = GetCreatureByGuid(getLocalData(i)))
                 {
@@ -603,9 +603,9 @@ void TheVioletHoldScript::resetBossEncounter(uint8_t bossId)
                     }
 
                     guard->getMovementManager()->moveTargetedHome();
-                    guard->getAIInterface()->setImmuneToNPC(true);
-                    guard->getAIInterface()->setImmuneToPC(true);
-                    guard->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
+                    guard->getAIInterface()->setIgnoreCreatureCombat(true);
+                    guard->getAIInterface()->setIgnorePlayerCombat(true);
+                    guard->addUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
                 }
             }
         } [[fallthrough]];
@@ -841,7 +841,7 @@ void SinclariAI::Reset()
     summons.despawnAll();
 
     // Spawn All Portals
-    for (uint8 i = 0; i < PortalIntroCount; ++i)
+    for (uint8_t i = 0; i < PortalIntroCount; ++i)
     {
         if (Creature* summon = summonCreature(NPC_TELEPORTATION_PORTAL_INTRO, PortalIntroPositions[i]))
         {
@@ -1037,7 +1037,7 @@ void TrashAI::AIUpdate(unsigned long /*time_passed*/)
     }
 }
 
-void TrashAI::waypointReached(uint32 waypointId, uint32 /*pathId*/)
+void TrashAI::waypointReached(uint32_t waypointId, uint32_t /*pathId*/)
 {
     if (waypointId == mlastWaypointId)
     {
@@ -1087,7 +1087,7 @@ void TrashAI::SetCreatureData(uint32_t type, uint32_t data)
 
         if (path)
         {
-            for (uint32 i = 0; i <= mlastWaypointId; i++)
+            for (uint32_t i = 0; i <= mlastWaypointId; i++)
             {
                 WaypointNode node = WaypointNode(i, path[i].getPositionX() + Util::getRandomInt(-1, 1), path[i].getPositionY() + Util::getRandomInt(-1, 1), path[i].getPositionZ(), 0, 0);
                 node.moveType = WAYPOINT_MOVE_TYPE_RUN;

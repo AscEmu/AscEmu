@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgSetActiveMover.h"
 #include "Server/Packets/MovementPacket.h"
 #include "Server/WorldSession.h"
+#include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Objects/Units/Creatures/Vehicle.hpp"
 #include "Map/Cells/CellHandlerDefines.hpp"
@@ -478,7 +479,7 @@ void WorldSession::handleForceSpeedChangeAck(WorldPacket& recvPacket)
 {
 #if VERSION_STRING < Cata
     /* extract packet */
-    uint32 unk1;
+    uint32_t unk1;
     float  newspeed;
     Unit* mover = _player->m_controledUnit;
 

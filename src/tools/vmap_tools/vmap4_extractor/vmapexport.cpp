@@ -55,7 +55,7 @@ typedef struct
 }map_id;
 
 map_id * map_ids;
-uint16 *LiqType = 0;
+uint16_t *LiqType = 0;
 uint32_t map_count;
 char output_path[128]=".";
 char input_path[1024]=".";
@@ -97,10 +97,10 @@ void ReadLiquidTypeTableDBC()
 
     size_t LiqType_count = dbc.getRecordCount();
     size_t LiqType_maxid = dbc.getRecord(LiqType_count - 1).getUInt(0);
-    LiqType = new uint16[LiqType_maxid + 1];
-    memset(LiqType, 0xff, (LiqType_maxid + 1) * sizeof(uint16));
+    LiqType = new uint16_t[LiqType_maxid + 1];
+    memset(LiqType, 0xff, (LiqType_maxid + 1) * sizeof(uint16_t));
 
-    for(uint32 x = 0; x < LiqType_count; ++x)
+    for(uint32_t x = 0; x < LiqType_count; ++x)
         LiqType[dbc.getRecord(x).getUInt(0)] = dbc.getRecord(x).getUInt(3);
 
     printf("Done! (%u LiqTypes loaded)\n", (unsigned int)LiqType_count);
@@ -179,7 +179,7 @@ bool ExtractSingleWmo(std::string& fname)
     //printf("root has %d groups\n", froot->nGroups);
     if (froot.nGroups !=0)
     {
-        for (uint32 i = 0; i < froot.nGroups; ++i)
+        for (uint32_t i = 0; i < froot.nGroups; ++i)
         {
             char temp[1024];
             strncpy(temp, fname.c_str(), 1024);

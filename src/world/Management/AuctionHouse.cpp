@@ -28,6 +28,23 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
+Auction::Auction() = default;
+Auction::Auction(Field const* fields, std::unique_ptr<Item> pItem)
+{
+    Id = fields[0].asUint32();
+    auctionItem = std::move(pItem);
+    ownerGuid = fields[3].asUint32();
+    startPrice = fields[4].asUint32();
+    buyoutPrice = fields[5].asUint32();
+    expireTime = fields[6].asUint32();
+    highestBidderGuid = fields[7].asUint32();
+    highestBid = fields[8].asUint32();
+    depositAmount = fields[9].asUint32();
+
+    removedType = AUCTION_REMOVE_EXPIRED;
+    isRemoved = false;
+}
+
 void Auction::deleteFromDB()
 {
     CharacterDatabase.WaitExecute("DELETE FROM auctions WHERE auctionId = %u", Id);
@@ -107,50 +124,31 @@ AuctionHouse::AuctionHouse(uint32_t id)
     }
 }
 
-AuctionHouse::~AuctionHouse()
-{
-    for (auto itr = auctions.begin(); itr != auctions.end(); ++itr)
-        delete itr->second;
-}
+AuctionHouse::~AuctionHouse() = default;
 
 uint32_t AuctionHouse::getId() const { return auctionHouseEntryDbc ? auctionHouseEntryDbc->id : 0; }
 
 void AuctionHouse::loadAuctionsFromDB()
 {
-    QueryResult* result = CharacterDatabase.Query("SELECT * FROM auctions WHERE auctionhouse =%u", getId());
+    auto result = CharacterDatabase.Query("SELECT * FROM auctions WHERE auctionhouse =%u", getId());
     if (!result)
         return;
 
     do
     {
         Field* fields = result->Fetch();
-        auto auction = new Auction;
-        auction->Id = fields[0].asUint32();
+        const auto auctionId = fields[0].asUint32();
 
-        Item* pItem = sObjectMgr.loadItem(fields[2].asUint32());
+        auto pItem = sObjectMgr.loadItem(fields[2].asUint32());
         if (!pItem)
         {
-            CharacterDatabase.Execute("DELETE FROM auctions WHERE auctionId=%u", auction->Id);
-            delete auction;
+            CharacterDatabase.Execute("DELETE FROM auctions WHERE auctionId=%u", auctionId);
             continue;
         }
 
-        auction->auctionItem = pItem;
-        auction->ownerGuid = fields[3].asUint32();
-        auction->startPrice = fields[4].asUint32();
-        auction->buyoutPrice = fields[5].asUint32();
-        auction->expireTime = fields[6].asUint32();
-        auction->highestBidderGuid = fields[7].asUint32();
-        auction->highestBid = fields[8].asUint32();
-        auction->depositAmount = fields[9].asUint32();
-
-        auction->removedType = AUCTION_REMOVE_EXPIRED;
-        auction->isRemoved = false;
-
-        auctions.insert(std::unordered_map<uint32_t, Auction*>::value_type(auction->Id, auction));
+        auctions.try_emplace(auctionId, std::make_unique<Auction>(fields, std::move(pItem)));
     }
     while (result->NextRow());
-    delete result;
 }
 
 void AuctionHouse::updateAuctions()
@@ -161,15 +159,18 @@ void AuctionHouse::updateAuctions()
     auto const time = static_cast<uint32_t>(UNIXTIME);
     for (auto itr = auctions.begin(); itr != auctions.end();)
     {
-        auto auction = itr->second;
+        const auto& auction = itr->second;
         ++itr;
+
+        if (auction->isRemoved)
+            continue;
 
         if (time >= auction->expireTime)
         {
             if (auction->highestBidderGuid.getGuidLow() == 0)
             {
                 auction->removedType = AUCTION_REMOVE_EXPIRED;
-                this->sendAuctionExpiredNotificationPacket(auction);
+                this->sendAuctionExpiredNotificationPacket(auction.get());
             }
             else
             {
@@ -177,7 +178,7 @@ void AuctionHouse::updateAuctions()
             }
 
             auction->isRemoved = true;
-            removalList.push_back(auction);
+            removalList.push_back(auction.get());
         }
     }
 }
@@ -188,8 +189,7 @@ void AuctionHouse::updateDeletionQueue()
 
     for (auto auction : removalList)
     {
-        if (!auction->isRemoved)
-            removeAuction(auction);
+        removeAuction(auction);
     }
 
     removalList.clear();
@@ -268,27 +268,26 @@ void AuctionHouse::removeAuction(Auction* auction)
         break;
     }
 
+    // Destroy the item from memory (it still remains in the db)
+    auction->auctionItem = nullptr;
+
+    // Finally destroy the auction instance.
+    auction->deleteFromDB();
+
     // Remove the auction from the hashmap.
     auctionLock.lock();
     auctions.erase(auction->Id);
     auctionLock.unlock();
-
-    // Destroy the item from memory (it still remains in the db)
-    if (auction->auctionItem)
-        auction->auctionItem->deleteMe();
-
-    // Finally destroy the auction instance.
-    auction->deleteFromDB();
-    delete auction;
 }
 
-void AuctionHouse::addAuction(Auction* auction)
+Auction* AuctionHouse::addAuction(std::unique_ptr<Auction> auction)
 {
     std::lock_guard<std::mutex> guard(auctionLock);
 
-    auctions.insert(std::unordered_map<uint32_t, Auction*>::value_type(auction->Id, auction));
+    const auto [itr, _] = auctions.try_emplace(auction->Id, std::move(auction));
 
-    sLogger.debug("AuctionHouse : {}: Add auction {}, expire@ {}.", auctionHouseEntryDbc->id, auction->Id, auction->expireTime);
+    sLogger.debug("AuctionHouse : {}: Add auction {}, expire@ {}.", auctionHouseEntryDbc->id, itr->second->Id, itr->second->expireTime);
+    return itr->second.get();
 }
 
 Auction* AuctionHouse::getAuction(uint32_t id)
@@ -296,7 +295,7 @@ Auction* AuctionHouse::getAuction(uint32_t id)
     std::lock_guard<std::mutex> guard(auctionLock);
 
     const auto auctionsMap = auctions.find(id);
-    const auto auction = auctionsMap == auctions.end() ? nullptr : auctionsMap->second;
+    const auto auction = auctionsMap == auctions.end() ? nullptr : auctionsMap->second.get();
 
     return auction;
 }
@@ -322,7 +321,7 @@ void AuctionHouse::sendOwnerListPacket(Player* player, WorldPacket* /*packet*/)
 
     for (auto& itr : auctions)
     {
-        auto auction = itr.second;
+        const auto& auction = itr.second;
         if (auction->ownerGuid == player->getGuid())
         {
             if (auction->isRemoved)
@@ -341,7 +340,7 @@ void AuctionHouse::updateOwner(uint32_t oldGuid, uint32_t newGuid)
 
     for (auto& itr : auctions)
     {
-        auto auction = itr.second;
+        const auto& auction = itr.second;
         if (auction->ownerGuid.getGuidLow() == oldGuid)
             auction->ownerGuid = newGuid;
 
@@ -361,7 +360,7 @@ void AuctionHouse::sendBidListPacket(Player* player, WorldPacket* /*packet*/)
 
     for (auto itr = auctions.begin(); itr != auctions.end(); ++itr)
     {
-        auto auction = itr->second;
+        const auto& auction = itr->second;
         if (auction->highestBidderGuid == player->getGuid())
         {
             if (auction->isRemoved)
@@ -512,5 +511,5 @@ void AuctionHouse::sendAuctionList(Player* player, AscEmu::Packets::CmsgAuctionL
         ++totalcount;
     }
 
-    player->sendPacket(SmsgAuctionListResult(static_cast<uint32_t>(auctionPacketList.size()), auctionPacketList, static_cast<uint32_t>(auctionPacketList.size()), 300).serialise().get());
+    player->sendPacket(SmsgAuctionListResult(static_cast<uint32_t>(auctionPacketList.size()), auctionPacketList, totalcount, 300).serialise().get());
 }

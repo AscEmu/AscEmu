@@ -63,6 +63,9 @@ std::unique_ptr<BroadcastMgr> broadcastMgr = nullptr;
 
 extern void LoadGameObjectModelList(std::string const& dataPath);
 
+World::World() = default;
+World::~World() = default;
+
 World& World::getInstance()
 {
     static World mInstance;
@@ -96,8 +99,8 @@ void World::initialize()
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // General Functions
-    mEventableObjectHolder = new EventableObjectHolder(WORLD_INSTANCE);
-    m_holder = mEventableObjectHolder;
+    mEventableObjectHolder = std::make_unique<EventableObjectHolder>(WORLD_INSTANCE);
+    m_holder = mEventableObjectHolder.get();
     m_event_Instanceid = mEventableObjectHolder->GetInstanceID();
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -113,8 +116,6 @@ void World::finalize()
     sLogger.info("TransportHandler : unload()");
     sTransportHandler.unload();
 #endif
-    sLogger.info("ObjectMgr : ~ObjectMgr()");
-    sObjectMgr.finalize();
 
     sLogger.info("TicketMgr : ~TicketMgr()");
     sTicketMgr.finalize();
@@ -131,17 +132,14 @@ void World::finalize()
     sLogger.info("WeatherMgr : ~WeatherMgr()");
     sWeatherMgr.finalize();
 
-#if VERSION_STRING >= Cata
-    // todo: shouldn't this be deleted also on other versions?
     sLogger.info("GuildMgr", "~GuildMgr()");
     sGuildMgr.finalize();
-#endif
 
     sLogger.info("MapMgr : ~MapMgr()");
     sMapMgr.shutdown();
 
     sLogger.info("WordFilter : ~WordFilter()");
-    delete g_chatFilter;
+    g_chatFilter = nullptr;
 
     sLogger.info("SpellMgr : ~SpellMgr()");
     sSpellMgr.finalize();
@@ -154,10 +152,13 @@ void World::finalize()
 
     broadcastMgr.reset();
 
-    delete mEventableObjectHolder;
+    mEventableObjectHolder = nullptr;
 
-    for (std::list<SpellInfo const*>::iterator itr = dummySpellList.begin(); itr != dummySpellList.end(); ++itr)
-        delete *itr;
+    dummySpellList.clear();
+
+    // Finalizing ObjectMgr must be last
+    sLogger.info("ObjectMgr : ~ObjectMgr()");
+    sObjectMgr.finalize();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -284,13 +285,14 @@ float World::getRAMUsage()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Session functions
-void World::addSession(WorldSession* worldSession)
+void World::addSession(std::unique_ptr<WorldSession> sessionHolder)
 {
-    if (worldSession)
+    if (sessionHolder)
     {
         std::lock_guard<std::mutex> guard(mSessionLock);
 
-        mActiveSessionMapStore[worldSession->GetAccountId()] = worldSession;
+        auto* worldSession = sessionHolder.get();
+        mActiveSessionMapStore[sessionHolder->GetAccountId()] = std::move(sessionHolder);
 
         if (static_cast<uint32_t>(mActiveSessionMapStore.size()) > getPeakSessionCount())
             setNewPeakSessionCount(static_cast<uint32_t>(mActiveSessionMapStore.size()));
@@ -309,7 +311,7 @@ WorldSession* World::getSessionByAccountId(uint32_t accountId)
 
     auto activeSessions = mActiveSessionMapStore.find(accountId);
     if (activeSessions != mActiveSessionMapStore.end())
-        worldSession = activeSessions->second;
+        worldSession = activeSessions->second.get();
 
 
     return worldSession;
@@ -325,7 +327,7 @@ WorldSession* World::getSessionByAccountName(const std::string& accountName)
     {
         if (accountName == activeSessions->second->GetAccountName())
         {
-            worldSession = activeSessions->second;
+            worldSession = activeSessions->second.get();
             break;
         }
     }
@@ -337,14 +339,14 @@ void World::sendCharacterEnumToAccountSession(QueryResultVector& results, uint32
 {
     WorldSession* worldSession = getSessionByAccountId(accountId);
     if (worldSession != nullptr)
-        worldSession->characterEnumProc(results[0].result);
+        worldSession->characterEnumProc(results[0].result.get());
 }
 
 void World::loadAccountDataProcForId(QueryResultVector& results, uint32_t accountId)
 {
     WorldSession* worldSession = getSessionByAccountId(accountId);
     if (worldSession != nullptr)
-        worldSession->loadAccountDataProc(results[0].result);
+        worldSession->loadAccountDataProc(results[0].result.get());
 }
 
 size_t World::getSessionCount()
@@ -361,8 +363,6 @@ void World::deleteSession(WorldSession* worldSession)
     std::lock_guard<std::mutex> guard(mSessionLock);
 
     mActiveSessionMapStore.erase(worldSession->GetAccountId());
-
-    delete worldSession;
 }
 
 void World::deleteSessions(std::list<WorldSession*>& slist)
@@ -374,12 +374,6 @@ void World::deleteSessions(std::list<WorldSession*>& slist)
         WorldSession* session = *sessionList;
         mActiveSessionMapStore.erase(session->GetAccountId());
     }
-
-    for (auto sessionList = slist.begin(); sessionList != slist.end(); ++sessionList)
-    {
-        WorldSession* session = *sessionList;
-        delete session;
-    }
 }
 
 void World::disconnectSessionByAccountName(const std::string& accountName, WorldSession* worldSession)
@@ -390,7 +384,7 @@ void World::disconnectSessionByAccountName(const std::string& accountName, World
 
     for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
-        WorldSession* session = activeSessions->second;
+        WorldSession* session = activeSessions->second.get();
         if (accountName == session->GetAccountName())
         {
             isUserFound = true;
@@ -413,7 +407,7 @@ void World::disconnectSessionByIp(const std::string& ipString, WorldSession* wor
 
     for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
-        WorldSession* session = activeSessions->second;
+        WorldSession* session = activeSessions->second.get();
         if (!session->GetSocket())
             continue;
 
@@ -440,7 +434,7 @@ void World::disconnectSessionByPlayerName(const std::string& playerName, WorldSe
 
     for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
-        WorldSession* session = activeSessions->second;
+        WorldSession* session = activeSessions->second.get();
         if (!session->GetPlayer())
             continue;
 
@@ -512,13 +506,14 @@ void World::updateQueuedSessions(uint32_t diff)
         while (mActiveSessionMapStore.size() < settings.getPlayerLimit() && getQueuedSessions())
         {
             QueuedWorldSocketList::iterator iter = mQueuedSessions.begin();
-            WorldSocket* QueuedSocket = *iter;
+            WorldSocket* QueuedSocket = (*iter).first;
+            auto&& sessionHolder = std::move((*iter).second);
             mQueuedSessions.erase(iter);
 
-            if (QueuedSocket->GetSession())
+            if (QueuedSocket->GetSession() && sessionHolder != nullptr)
             {
                 std::lock_guard guard(QueuedSocket->GetSession()->deleteMutex);
-                QueuedSocket->Authenticate();
+                QueuedSocket->Authenticate(std::move(sessionHolder));
             }
         }
 
@@ -531,7 +526,7 @@ void World::updateQueuedSessions(uint32_t diff)
         uint32_t queuPosition = 1;
         while (iter != mQueuedSessions.end())
         {
-            (*iter)->UpdateQueuePosition(queuPosition++);
+            (*iter).first->UpdateQueuePosition(queuPosition++);
             if (iter == mQueuedSessions.end())
                 break;
 
@@ -544,11 +539,11 @@ void World::updateQueuedSessions(uint32_t diff)
     }
 }
 
-uint32_t World::addQueuedSocket(WorldSocket* socket)
+uint32_t World::addQueuedSocket(WorldSocket* socket, std::unique_ptr<WorldSession> sessionHolder)
 {
     std::lock_guard lock(queueMutex);
 
-    mQueuedSessions.push_back(socket);
+    mQueuedSessions.emplace_back(socket, std::move(sessionHolder));
 
     return getQueuedSessions();
 }
@@ -559,7 +554,7 @@ void World::removeQueuedSocket(WorldSocket* socket)
 
     for (QueuedWorldSocketList::iterator iter = mQueuedSessions.begin(); iter != mQueuedSessions.end(); ++iter)
     {
-        if ((*iter) == socket)
+        if ((*iter).first == socket)
         {
             mQueuedSessions.erase(iter);
             return;
@@ -577,7 +572,7 @@ void World::sendMessageToOnlineGms(const std::string& message, WorldSession* sen
 
     for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
-        if (activeSessions->second->GetPlayer() && activeSessions->second->GetPlayer()->IsInWorld() && activeSessions->second != sendToSelf)
+        if (activeSessions->second->GetPlayer() && activeSessions->second->GetPlayer()->IsInWorld() && activeSessions->second.get() != sendToSelf)
         {
             if (activeSessions->second->CanUseCommand('u'))
                 activeSessions->second->SendPacket(data.get());
@@ -609,7 +604,7 @@ void World::sendGlobalMessage(WorldPacket* worldPacket, WorldSession* sendToSelf
     for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
         if (activeSessions->second->GetPlayer() && activeSessions->second->GetPlayer()->IsInWorld()
-            && activeSessions->second != sendToSelf && (team == 3 || activeSessions->second->GetPlayer()->GetTeam() == team))
+            && activeSessions->second.get() != sendToSelf && (team == 3 || activeSessions->second->GetPlayer()->GetTeam() == team))
             activeSessions->second->SendPacket(worldPacket);
     }
 }
@@ -620,7 +615,7 @@ void World::sendZoneMessage(WorldPacket* worldPacket, uint32_t zoneId, WorldSess
 
     for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
-        if (activeSessions->second->GetPlayer() && activeSessions->second->GetPlayer()->IsInWorld() && activeSessions->second != sendToSelf)
+        if (activeSessions->second->GetPlayer() && activeSessions->second->GetPlayer()->IsInWorld() && activeSessions->second.get() != sendToSelf)
         {
             if (activeSessions->second->GetPlayer()->getZoneId() == zoneId)
                 activeSessions->second->SendPacket(worldPacket);
@@ -634,9 +629,9 @@ void World::sendInstanceMessage(WorldPacket* worldPacket, uint32_t instanceId, W
 
     for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
-        if (activeSessions->second->GetPlayer() && activeSessions->second->GetPlayer()->IsInWorld() && activeSessions->second != sendToSelf)
+        if (activeSessions->second->GetPlayer() && activeSessions->second->GetPlayer()->IsInWorld() && activeSessions->second.get() != sendToSelf)
         {
-            if (activeSessions->second->GetPlayer()->GetInstanceID() == static_cast<int32>(instanceId))
+            if (activeSessions->second->GetPlayer()->GetInstanceID() == static_cast<int32_t>(instanceId))
                 activeSessions->second->SendPacket(worldPacket);
         }
     }
@@ -977,7 +972,7 @@ void World::loadMySQLTablesByTask()
     sCommandTableStorage.Load();
     sLogger.info("WordFilter : Loading...");
 
-    g_chatFilter = new WordFilter();
+    g_chatFilter = std::make_unique<WordFilter>();
 
     sLogger.info("Done. Database loaded in {} ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -999,7 +994,7 @@ void World::Update(unsigned long timePassed)
     updateQueuedSessions(static_cast<uint32_t>(timePassed));
     sMapMgr.update();
     sInstanceMgr.update();
-    sGuildMgr.update(static_cast<uint32>(timePassed));
+    sGuildMgr.update(static_cast<uint32_t>(timePassed));
 }
 
 void World::saveAllPlayersToDb()
@@ -1030,7 +1025,7 @@ void World::playSoundToAllPlayers(uint32_t soundId)
 
     for (activeSessionMap::iterator itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
     {
-        WorldSession* worldSession = itr->second;
+        WorldSession* worldSession = itr->second.get();
         if ((worldSession->GetPlayer() != nullptr) && worldSession->GetPlayer()->IsInWorld())
             worldSession->SendPacket(AscEmu::Packets::SmsgPlaySound(soundId).serialise().get());
     }
@@ -1045,7 +1040,7 @@ void World::logoutAllPlayers()
     sLogger.info("World : Deleting sessions...");
     for (activeSessionMap::iterator i = mActiveSessionMapStore.begin(); i != mActiveSessionMapStore.end();)
     {
-        WorldSession* worldSession = i->second;
+        WorldSession* worldSession = i->second.get();
         ++i;
         deleteSession(worldSession);
     }

@@ -24,7 +24,7 @@ namespace AscEmu::Packets
         }
 
         MsgRaidReadyCheck(uint64_t guid, uint8_t isReady, bool isRequest) :
-            ManagedPacket(MSG_RAID_READY_CHECK, 9),
+            ManagedPacket(MSG_RAID_READY_CHECK, 1),
             isReady(isReady),
             guid(guid),
             isRequest(isRequest)
@@ -32,6 +32,8 @@ namespace AscEmu::Packets
         }
 
     protected:
+        size_t expectedSize() const override { return isRequest ? 8 : 9; }
+
         bool internalSerialise(WorldPacket& packet) override
         {
             if (isRequest)

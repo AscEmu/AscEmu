@@ -144,16 +144,16 @@ void CThreadPool::ShowStats()
 void CThreadPool::IntegrityCheck()
 {
     _mutex.acquire();
-    int32 gobbled = _threadsEaten;
+    int32_t gobbled = _threadsEaten;
 
     if(gobbled < 0)
     {
         // this means we requested more threads than we had in the pool last time.
         // spawn "gobbled" + THREAD_RESERVE extra threads.
-        uint32 new_threads = abs(gobbled) + THREAD_RESERVE;
+        uint32_t new_threads = abs(gobbled) + THREAD_RESERVE;
         _threadsEaten = 0;
 
-        for(uint32 i = 0; i < new_threads; ++i)
+        for(uint32_t i = 0; i < new_threads; ++i)
             StartThread(NULL);
 
         sLogger.debug("ThreadPool : (gobbled < 0) Spawning {} threads.", new_threads);
@@ -162,8 +162,8 @@ void CThreadPool::IntegrityCheck()
     {
         // this means while we didn't run out of threads, we were getting damn low.
         // spawn enough threads to keep the reserve amount up.
-        uint32 new_threads = (THREAD_RESERVE - gobbled);
-        for(uint32 i = 0; i < new_threads; ++i)
+        uint32_t new_threads = (THREAD_RESERVE - gobbled);
+        for(uint32_t i = 0; i < new_threads; ++i)
             StartThread(NULL);
 
         sLogger.debug("ThreadPool : (gobbled <= 5) Spawning {} threads.", new_threads);
@@ -172,7 +172,7 @@ void CThreadPool::IntegrityCheck()
     {
         // this means we had "excess" threads sitting around doing nothing.
         // lets kill some of them off.
-        uint32 kill_count = (gobbled - THREAD_RESERVE);
+        uint32_t kill_count = (gobbled - THREAD_RESERVE);
         KillFreeThreads(kill_count);
         _threadsEaten -= kill_count;
         sLogger.debug("ThreadPool : (gobbled > 5) Killing {} threads.", kill_count);
@@ -190,13 +190,13 @@ void CThreadPool::IntegrityCheck()
     _mutex.release();
 }
 
-void CThreadPool::KillFreeThreads(uint32 count)
+void CThreadPool::KillFreeThreads(uint32_t count)
 {
     sLogger.debug("ThreadPool : Killing {} excess threads.", count);
     _mutex.acquire();
     Thread* t;
     ThreadSet::iterator itr;
-    uint32 i;
+    uint32_t i;
     for(i = 0, itr = m_freeThreads.begin(); i < count && itr != m_freeThreads.end(); ++i, ++itr)
     {
         t = *itr;
@@ -213,8 +213,8 @@ void CThreadPool::Shutdown()
     _mutex.acquire();
     size_t tcount = m_activeThreads.size() + m_freeThreads.size();        // exit all
     sLogger.debug("ThreadPool : Shutting down {} threads.", tcount);
-    KillFreeThreads((uint32)m_freeThreads.size());
-    _threadsToExit += (uint32)m_activeThreads.size();
+    KillFreeThreads((uint32_t)m_freeThreads.size());
+    _threadsToExit += (uint32_t)m_activeThreads.size();
 
     for(std::set< Thread* >::iterator itr = m_activeThreads.begin(); itr != m_activeThreads.end(); ++itr)
     {
@@ -263,7 +263,7 @@ static unsigned long WINAPI thread_proc(void* param)
 {
     Thread* t = (Thread*)param;
     t->SetupMutex.acquire();
-    uint32 tid = t->ControlInterface.GetId();
+    uint32_t tid = t->ControlInterface.GetId();
     bool ht = (t->ExecutionTarget != NULL);
     t->SetupMutex.release();
     sLogger.debug("Thread {} started.", t->ControlInterface.GetId());

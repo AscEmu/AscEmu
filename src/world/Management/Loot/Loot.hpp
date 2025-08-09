@@ -5,8 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "LootDefines.hpp"
 #include "LootItem.hpp"
+#include "LootTemplate.hpp"
 #include "Map/Maps/InstanceDefines.hpp"
 
 #include <map>
@@ -29,7 +29,7 @@ struct Personaltem
 };
 
 typedef std::vector<Personaltem> PersonaltemList;
-typedef std::map<uint32_t, std::shared_ptr<PersonaltemList>> PersonaltemMap;
+typedef std::map<uint32_t, std::unique_ptr<PersonaltemList>> PersonaltemMap;
 
 struct Loot
 {

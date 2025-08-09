@@ -20,6 +20,7 @@
 #ifndef DBCFILE_H
 #define DBCFILE_H
 #include <cassert>
+#include <memory>
 #include <string>
 
 class DBCFile
@@ -134,7 +135,7 @@ private:
     size_t recordCount;
     size_t fieldCount;
     size_t stringSize;
-    unsigned char *data;
+    std::unique_ptr<unsigned char[]> data;
     unsigned char *stringTable;
 };
 

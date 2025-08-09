@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Loot.hpp"
 #include "LootItem.hpp"
+#include "LootRoll.hpp"
 #include "LootTemplate.hpp"
 #include "Management/Group.h"
 #include "Management/ItemProperties.hpp"
@@ -288,7 +289,7 @@ void Loot::fillNotNormalLootFor(Player* player, bool presentAtLooting)
         if (items.size() == MAX_NR_LOOT_ITEMS)
             return;
 
-        auto personalList = std::make_shared<PersonaltemList>();
+        auto personalList = std::make_unique<PersonaltemList>();
 
         for (uint8_t i = 0; i < quest_items.size(); ++i)
         {
@@ -313,14 +314,14 @@ void Loot::fillNotNormalLootFor(Player* player, bool presentAtLooting)
         }
 
         if (!personalList->empty())
-            PlayerQuestItems[plguid] = personalList;
+            PlayerQuestItems[plguid] = std::move(personalList);
     }
 
     // Add Free For All Items
     personaltem = std::as_const(PlayerFFAItems).find(plguid);
     if (personaltem == PlayerFFAItems.cend())
     {
-        auto personalList = std::make_shared<PersonaltemList>();
+        auto personalList = std::make_unique<PersonaltemList>();
 
         for (uint8_t i = 0; i < items.size(); ++i)
         {
@@ -333,7 +334,7 @@ void Loot::fillNotNormalLootFor(Player* player, bool presentAtLooting)
         }
 
         if (!personalList->empty())
-            PlayerFFAItems[plguid] = personalList;
+            PlayerFFAItems[plguid] = std::move(personalList);
     }
 
     // Add NonQuest and Non FFA Items

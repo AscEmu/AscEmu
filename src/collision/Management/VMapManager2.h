@@ -54,17 +54,17 @@ namespace VMAP
     class ManagedModel
     {
         public:
-            ManagedModel() : iModel(nullptr), iRefCount(0) { }
-            void setModel(WorldModel* model) { iModel = model; }
-            WorldModel* getModel() { return iModel; }
+            ManagedModel();
+            void setModel(std::unique_ptr<WorldModel> model);
+            WorldModel* getModel() { return iModel.get(); }
             void incRefCount() { ++iRefCount; }
             int decRefCount() { return --iRefCount; }
         protected:
-            WorldModel* iModel;
+            std::unique_ptr<WorldModel> iModel;
             int iRefCount;
     };
 
-    typedef std::unordered_map<uint32_t, StaticMapTree*> InstanceTreeMap;
+    typedef std::unordered_map<uint32_t, std::unique_ptr<StaticMapTree>> InstanceTreeMap;
     typedef std::unordered_map<std::string, ManagedModel> ModelFileMap;
 
     enum DisableTypes
@@ -130,7 +130,7 @@ namespace VMAP
             }
             virtual bool existsMap(const char* basePath, unsigned int mapId, int x, int y) override;
 
-            void getInstanceMapTree(InstanceTreeMap &instanceMapTree);
+            InstanceTreeMap const& getInstanceMapTree() const;
 
             typedef uint32_t(*GetLiquidFlagsFn)(uint32_t liquidType);
             GetLiquidFlagsFn GetLiquidFlagsPtr;

@@ -21,8 +21,10 @@
 
 #include <array>
 #include <map>
+#include <memory>
 #include <string>
 
+class Field;
 class WorldPacket;
 class QueryBuffer;
 class QueryResult;
@@ -51,6 +53,7 @@ namespace Arcemu
             for (uint32_t i = 0; i < ItemGUID.size(); ++i)
                 ItemGUID[i] = 0;
         }
+        EquipmentSet(Field const* fields);
     };
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -60,7 +63,7 @@ namespace Arcemu
     /// Value   - EquipmentSet*  - pointer to an EquipmentSet structure
     ///
     //////////////////////////////////////////////////////////////////////////////////////////
-    typedef std::map<uint32_t, EquipmentSet*> EquipmentSetStorage;
+    typedef std::map<uint32_t, std::unique_ptr<EquipmentSet>> EquipmentSetStorage;
 
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -96,7 +99,7 @@ namespace Arcemu
             /// \returns true on success, false on failure.
             ///
             //////////////////////////////////////////////////////////////////////////////////////////
-            bool AddEquipmentSet(uint32_t setGUID, EquipmentSet* set);
+            bool AddEquipmentSet(uint32_t setGUID, std::unique_ptr<EquipmentSet> set);
 
 
             //////////////////////////////////////////////////////////////////////////////////////////

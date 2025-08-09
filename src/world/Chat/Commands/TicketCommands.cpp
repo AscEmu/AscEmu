@@ -22,7 +22,7 @@ using namespace AscEmu::Packets;
 
 bool ChatHandler::HandleTicketListCommand(const char* /*args*/, WorldSession* m_session)
 {
-    QueryResult* result = CharacterDatabase.Query("SELECT * FROM gm_tickets WHERE deleted=0");
+    auto result = CharacterDatabase.Query("SELECT * FROM gm_tickets WHERE deleted=0");
 
     if (!result)
         return false;
@@ -38,8 +38,6 @@ bool ChatHandler::HandleTicketListCommand(const char* /*args*/, WorldSession* m_
             << " | Opened: " << Util::GetDateStringFromSeconds((uint32_t)UNIXTIME - fields[9].asUint32())
             << '\n';
     } while (result->NextRow());
-
-    delete result;
 
     SendMultilineMessage(m_session, sstext.str().c_str());
 
@@ -48,7 +46,7 @@ bool ChatHandler::HandleTicketListCommand(const char* /*args*/, WorldSession* m_
 
 bool ChatHandler::HandleTicketListAllCommand(const char* /*args*/, WorldSession* m_session)
 {
-    QueryResult* result = CharacterDatabase.Query("SELECT * FROM gm_tickets");
+    auto result = CharacterDatabase.Query("SELECT * FROM gm_tickets");
 
     if (!result)
         return false;
@@ -64,8 +62,6 @@ bool ChatHandler::HandleTicketListAllCommand(const char* /*args*/, WorldSession*
             << " | Opened: " << Util::GetDateStringFromSeconds((uint32_t)UNIXTIME - fields[9].asUint32())
             << '\n';
     } while (result->NextRow());
-
-    delete result;
 
     SendMultilineMessage(m_session, sstext.str().c_str());
 
@@ -82,7 +78,7 @@ bool ChatHandler::HandleTicketGetCommand(const char* args, WorldSession* m_sessi
 
     uint32_t ticketID = std::stoul(args);
 
-    QueryResult* result = CharacterDatabase.Query("SELECT * FROM gm_tickets WHERE ticketid = %u", ticketID);
+    auto result = CharacterDatabase.Query("SELECT * FROM gm_tickets WHERE ticketid = %u", ticketID);
 
     if (!result)
         return false;
@@ -93,8 +89,6 @@ bool ChatHandler::HandleTicketGetCommand(const char* args, WorldSession* m_sessi
     sstext << "Ticket ID: " << ticketID << " | Player: " << fields[2].asCString() << '\n'
             << "======= Content =======" << '\n'
             << fields[8].asCString() << '\n';
-
-    delete result;
 
     SendMultilineMessage(m_session, sstext.str().c_str());
 
@@ -137,7 +131,7 @@ bool ChatHandler::HandleTicketCloseCommand(const char* args, WorldSession* m_ses
 
     Player* player = m_session->GetPlayer();
 
-    QueryResult* result = CharacterDatabase.Query("SELECT * FROM gm_tickets WHERE ticketid = %u AND deleted = 0", ticketID);
+    auto result = CharacterDatabase.Query("SELECT * FROM gm_tickets WHERE ticketid = %u AND deleted = 0", ticketID);
     if (!result)
     {
         RedSystemMessage(m_session, "Ticket %u is already closed!", ticketID);
@@ -177,7 +171,6 @@ bool ChatHandler::HandleTicketCloseCommand(const char* args, WorldSession* m_ses
     CharacterDatabase.Execute("UPDATE gm_tickets SET deleted = 1, comment = 'GM: %s %s', assignedto = %u WHERE ticketid = %u", player->getName().c_str(), comment, player->getGuid(), ticketID);
     GreenSystemMessage(m_session, "Ticket %u is now closed and assigned to you.", ticketID);
     sGMLog.writefromsession(m_session, "closed ticket %u ", ticketID);
-    delete result;
     return true;
 }
 
@@ -191,14 +184,12 @@ bool ChatHandler::HandleTicketDeleteCommand(const char* args, WorldSession* m_se
 
     uint32_t ticketID = std::stoul(args);
 
-    QueryResult* result = CharacterDatabase.Query("SELECT * FROM gm_tickets WHERE ticketid = %u AND deleted = 1", ticketID);
+    auto result = CharacterDatabase.Query("SELECT * FROM gm_tickets WHERE ticketid = %u AND deleted = 1", ticketID);
     if (!result)
     {
         RedSystemMessage(m_session, "Ticket %u is not available in gm_tickets table or not closed!", ticketID);
         return false;
     }
-
-    delete result;
 
     CharacterDatabase.Execute("DELETE FROM gm_tickets WHERE ticketid = %u", ticketID);
     GreenSystemMessage(m_session, "Ticket %u is deleted", ticketID);

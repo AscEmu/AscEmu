@@ -85,7 +85,7 @@ void WorldSession::handleCreatureQueryOpcode(WorldPacket& recvData)
     const auto subName = loc ? loc->subName : creature_info->SubName.c_str();
 
     sLogger.debug("Received SMSG_CREATURE_QUERY_RESPONSE for entry: {}", srlPacket.entry);
-    SendPacket(SmsgCreatureQueryResponse(*creature_info, srlPacket.entry, name, subName).serialise().get());
+    SendPacket(SmsgCreatureQueryResponse(creature_info, srlPacket.entry, name, subName).serialise().get());
 }
 
 void WorldSession::handleQueryTimeOpcode(WorldPacket& /*recvPacket*/)
@@ -190,7 +190,7 @@ void WorldSession::handleCorpseQueryOpcode(WorldPacket& /*recvPacket*/)
         return;
 
     const auto mapInfo = sMySQLStore.getWorldMapInfo(corpse->GetMapId());
-    if (mapInfo == nullptr || mapInfo->isNonInstanceMap() || mapInfo->isBattleground())
+    if (mapInfo == nullptr || mapInfo->isWorldMap() || mapInfo->isBattlegroundOrArena())
     {
         SendPacket(MsgCorspeQuery(uint8_t(1), corpse->GetMapId(), corpse->GetPosition(), corpse->GetMapId(), uint32_t(0)).serialise().get());
     }

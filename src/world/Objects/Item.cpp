@@ -30,7 +30,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
-Item::Item()
+Item::Item() : m_loot(nullptr)
 {
     //////////////////////////////////////////////////////////////////////////
     m_objectType |= TYPE_ITEM;
@@ -63,29 +63,13 @@ Item::Item()
 
 Item::~Item()
 {
-    if (m_loot != nullptr)
-    {
-        delete m_loot;
-        m_loot = nullptr;
-    }
-
     sEventMgr.RemoveEvents(this);
 
-#if VERSION_STRING >= Cata
-    for (auto itr = m_enchantments.begin(); itr != m_enchantments.end(); ++itr)
-    {
-        // These are allocated with new
-        if (itr->second.Slot == REFORGE_ENCHANTMENT_SLOT || itr->second.Slot == TRANSMOGRIFY_ENCHANTMENT_SLOT)
-        {
-            delete itr->second.Enchantment;
-            itr->second.Enchantment = nullptr;
-        }
-    }
-#endif
     m_enchantments.clear();
 
     if (m_owner != nullptr)
     {
+        m_owner->getItemInterface()->RemoveRefundable(getGuid());
         m_owner->getItemInterface()->removeTemporaryEnchantedItem(this);
 #if VERSION_STRING >= WotLK
         m_owner->getItemInterface()->removeTradeableItem(this);
@@ -170,7 +154,7 @@ void Item::modStackCount(int32_t mod)
 }
 
 #ifdef AE_TBC
-void Item::setTextId(const uint32 textId)
+void Item::setTextId(const uint32_t textId)
 {
     write(itemData()->item_text_id, textId);
 }
@@ -305,16 +289,17 @@ bool Item::addEnchantment(uint32_t enchantmentId, EnchantmentSlot slot, uint32_t
 
     WDB::Structures::SpellItemEnchantmentEntry const* Enchantment = nullptr;
 #if VERSION_STRING >= Cata
+    std::unique_ptr<WDB::Structures::SpellItemEnchantmentEntry> custom_enchant = nullptr;
     switch (slot)
     {
 
         case TRANSMOGRIFY_ENCHANTMENT_SLOT:
         case REFORGE_ENCHANTMENT_SLOT:
         {
-            auto custom_enchant = new WDB::Structures::SpellItemEnchantmentEntry();
+            custom_enchant = std::make_unique<WDB::Structures::SpellItemEnchantmentEntry>();
             custom_enchant->Id = enchantmentId;
 
-            Enchantment = custom_enchant;
+            Enchantment = custom_enchant.get();
         } break;
 
         default:
@@ -334,13 +319,16 @@ bool Item::addEnchantment(uint32_t enchantmentId, EnchantmentSlot slot, uint32_t
     enchantInstance.BonusApplied = false;
     enchantInstance.Slot = slot;
     enchantInstance.Enchantment = Enchantment;
+#if VERSION_STRING >= Cata
+    enchantInstance.customEnchantmentHolder = std::move(custom_enchant);
+#endif
     enchantInstance.RemoveAtLogout = removedAtLogout;
     enchantInstance.RandomSuffix = randomSuffix;
 
     // Set enchantment to item's wowdata fields
     _setEnchantmentDataFields(slot, Enchantment->Id, duration, 0);
 
-    m_enchantments.insert(std::make_pair(slot, enchantInstance));
+    m_enchantments.try_emplace(slot, std::move(enchantInstance));
 
     if (m_owner == nullptr)
         return true;
@@ -382,16 +370,6 @@ void Item::removeEnchantment(EnchantmentSlot slot, bool timerExpired/* = false*/
         applyEnchantmentBonus(slot, false);
 
     _setEnchantmentDataFields(slot, 0, 0, 0);
-
-#if VERSION_STRING >= Cata
-    // These are allocated with new
-    if (slot == REFORGE_ENCHANTMENT_SLOT || slot == TRANSMOGRIFY_ENCHANTMENT_SLOT)
-    {
-        delete itr->second.Enchantment;
-        itr->second.Enchantment = nullptr;
-    }
-#endif
-
     m_enchantments.erase(itr);
 
     if (!timerExpired)
@@ -1472,14 +1450,6 @@ void Item::deleteFromDB()
     }
 
     CharacterDatabase.Execute("DELETE FROM playeritems WHERE guid = %u", getGuidLow());
-}
-
-void Item::deleteMe()
-{
-    if (this->m_owner != nullptr)
-        this->m_owner->getItemInterface()->RemoveRefundable(this->getGuid());
-
-    delete this;
 }
 
 const static uint16_t arm_skills[7] =

@@ -16,7 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 void DatabaseUpdater::initBaseIfNeeded(const std::string& dbName, const std::string& dbBaseType, Database& dbPointer)
 {
-    QueryResult* dbResult = dbPointer.Query("SHOW TABLES FROM %s", dbName.c_str());
+    auto dbResult = dbPointer.Query("SHOW TABLES FROM %s", dbName.c_str());
     if (dbResult == nullptr)
     {
         sLogger.info("Database: Your Database {} has no tables. AE is setting up the database for you.", dbName);
@@ -36,7 +36,7 @@ void DatabaseUpdater::initBaseIfNeeded(const std::string& dbName, const std::str
         while (currentProgress < 1.0f)
         {
             // calc percentage
-            const uint32_t sendQueues = queue - dbPointer.GetQueueSize();
+            const size_t sendQueues = queue - dbPointer.GetQueueSize();
             currentProgress = static_cast<float>(sendQueues) / static_cast<float>(queue);
 
             std::cout << "Creating '" << dbName << "' : ";
@@ -119,7 +119,7 @@ void DatabaseUpdater::applyUpdatesForDatabase(const std::string& database, Datab
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // 1. get current version
-    QueryResult* result = dbPointer.Query("SELECT LastUpdate FROM %s_db_version ORDER BY LastUpdate DESC LIMIT 1", database.c_str());
+    auto result = dbPointer.Query("SELECT LastUpdate FROM %s_db_version ORDER BY LastUpdate DESC LIMIT 1", database.c_str());
 
     if (!result)
     {

@@ -91,8 +91,8 @@ class BIH
             buildData dat;
             dat.maxPrims = leafSize;
             dat.numPrims = static_cast<uint32_t>(primitives.size());
-            dat.indices = new uint32_t[dat.numPrims];
-            dat.primBound = new G3D::AABox[dat.numPrims];
+            dat.indices = std::make_unique<uint32_t[]>(dat.numPrims);
+            dat.primBound = std::make_unique<G3D::AABox[]>(dat.numPrims);
             getBounds(primitives[0], bounds);
             for (uint32_t i=0; i<dat.numPrims; ++i)
             {
@@ -111,8 +111,6 @@ class BIH
                 objects[i] = dat.indices[i];
             //nObjects = dat.numPrims;
             tree = tempTree;
-            delete[] dat.primBound;
-            delete[] dat.indices;
         }
 
         uint32_t primCount() const { return static_cast<uint32_t>(objects.size()); }
@@ -344,8 +342,8 @@ class BIH
 
         struct buildData
         {
-            uint32_t *indices;
-            G3D::AABox *primBound;
+            std::unique_ptr<uint32_t[]> indices;
+            std::unique_ptr<G3D::AABox[]> primBound;
             uint32_t numPrims;
             int maxPrims;
         };

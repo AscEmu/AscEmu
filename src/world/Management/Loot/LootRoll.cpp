@@ -94,21 +94,18 @@ void LootRoll::finalize()
 
     if (pLoot == nullptr)
     {
-        delete this;
         return;
     }
 
     if (_slotid >= pLoot->items.size())
     {
-        delete this;
         return;
     }
 
-    pLoot->items.at(_slotid).roll = nullptr;
     const auto amt = pLoot->items.at(_slotid).count;
     if (amt == 0)
     {
-        delete this;
+        pLoot->items.at(_slotid).roll = nullptr;
         return;
     }
 
@@ -131,11 +128,9 @@ void LootRoll::finalize()
         /* item can now be looted by anyone :) */
         pLoot->items.at(_slotid).is_passed = true;
         pLoot->items.at(_slotid).is_blocked = false;
-        delete this;
+        pLoot->items.at(_slotid).roll = nullptr;
         return;
     }
-
-    pLoot->items.at(_slotid).roll = nullptr;
 
     if (_player->isInGroup())
         _player->getGroup()->SendPacketToAll(SmsgLootRollWon(_guid, _slotid, _itemid, _randomsuffixid, _randompropertyid, _player->getGuid(), highest, hightype).serialise().get());
@@ -165,14 +160,14 @@ void LootRoll::finalize()
 
     pLoot->itemRemoved(_slotid);
     --pLoot->unlootedCount;
-    delete this;
+    pLoot->items.at(_slotid).roll = nullptr;
 }
 
-void LootRoll::playerRolled(Player* player, uint8_t choice)
+bool LootRoll::playerRolled(Player* player, uint8_t choice)
 {
     // don't allow cheaters
     if (m_NeedRolls.find(player->getGuidLow()) != m_NeedRolls.cend() || m_GreedRolls.find(player->getGuidLow()) != m_GreedRolls.cend())
-        return;
+        return false;
 
     auto roll = static_cast<uint8_t>(Util::getRandomUInt(99) + 1);
     switch (choice)
@@ -203,5 +198,8 @@ void LootRoll::playerRolled(Player* player, uint8_t choice)
     {
         // kill event early
         finalize();
+        return true;
     }
+
+    return false;
 }

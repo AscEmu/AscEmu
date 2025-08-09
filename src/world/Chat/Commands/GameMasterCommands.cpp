@@ -32,8 +32,10 @@ bool ChatHandler::HandleGMActiveCommand(const char* args, WorldSession* m_sessio
     }
     else
     {
+#if VERSION_STRING >= WotLK
         if (player->hasPlayerFlags(PLAYER_FLAG_DEVELOPER))
             HandleGMDevTagCommand("no_notice", m_session);
+#endif
 
         SystemMessage(m_session, "GM Flag set.");
         BlueSystemMessage(m_session, "<GM> will now appear above your name and in chat messages until you use this command again.");
@@ -120,6 +122,7 @@ bool ChatHandler::HandleGMDevTagCommand(const char* args, WorldSession* m_sessio
     auto player = m_session->GetPlayer();
     bool toggle_no_notice = std::string(args) == "no_notice" ? true : false;
 
+#if VERSION_STRING >= WotLK
     if (player->hasPlayerFlags(PLAYER_FLAG_DEVELOPER))
     {
         if (!toggle_no_notice)
@@ -138,6 +141,7 @@ bool ChatHandler::HandleGMDevTagCommand(const char* args, WorldSession* m_sessio
         BlueSystemMessage(m_session, "<DEV> will now appear above your name and in chat messages until you use this command again.");
         player->addPlayerFlags(PLAYER_FLAG_DEVELOPER);
     }
+#endif
 
     return true;
 }
@@ -163,7 +167,7 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
                 if (worldConfig.gm.hidePermissions && !is_gamemaster)
                     SystemMessage(m_session, " - %s", player->getName().c_str());
                 else
-                    SystemMessage(m_session, " - %s [%s]", player->getName().c_str(), player->getSession()->GetPermissions());
+                    SystemMessage(m_session, " - %s [%s]", player->getName().c_str(), player->getSession()->GetPermissions().get());
 
                 print_headline = false;
             }
@@ -177,7 +181,7 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
                     if (worldConfig.gm.hidePermissions && !is_gamemaster)
                         SystemMessage(m_session, " - %s", player->getName().c_str());
                     else
-                        SystemMessage(m_session, " - %s [%s]", player->getName().c_str(), player->getSession()->GetPermissions());
+                        SystemMessage(m_session, " - %s [%s]", player->getName().c_str(), player->getSession()->GetPermissions().get());
 
                     print_headline = false;
                 }

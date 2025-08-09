@@ -11,19 +11,19 @@ This file is released under the MIT license. See README-MIT for more information
 struct Account
 {
     uint32_t AccountId;
-    char* GMFlags;
+    std::unique_ptr<char[]> GMFlags;
     uint8_t AccountFlags;
     uint32_t Banned;
     uint8_t SrpHash[20]; // the encrypted password field, reversed
-    uint8_t* SessionKey;
+    std::unique_ptr<uint8_t[]> SessionKey;
     std::string* UsernamePtr;
     std::string forcedLanguage;
     uint32_t Muted;
 
     Account()
     {
-        GMFlags = NULL;
-        SessionKey = NULL;
+        GMFlags = nullptr;
+        SessionKey = nullptr;
         AccountId = 0;
         AccountFlags = 0;
         Banned = 0;
@@ -32,34 +32,28 @@ struct Account
         UsernamePtr = nullptr;
     }
 
-    ~Account()
-    {
-        delete[] GMFlags;
-        delete[] SessionKey;
-    }
+    ~Account() = default;
 
     void SetGMFlags(const char* flags)
     {
-        delete[] GMFlags;
-
         size_t len = strlen(flags);
         if (len == 0 || (len == 1 && flags[0] == '0'))
         {
             // no flags
-            GMFlags = NULL;
+            GMFlags = nullptr;
             return;
         }
 
-        GMFlags = new char[len + 1];
-        memcpy(GMFlags, flags, len);
+        GMFlags = std::make_unique<char[]>(len + 1);
+        memcpy(GMFlags.get(), flags, len);
         GMFlags[len] = 0;
     }
 
     void SetSessionKey(const uint8_t* key)
     {
-        if (SessionKey == NULL)
-            SessionKey = new uint8_t[40];
-        memcpy(SessionKey, key, 40);
+        if (SessionKey == nullptr)
+            SessionKey = std::make_unique<uint8_t[]>(40);
+        memcpy(SessionKey.get(), key, 40);
     }
 
     bool forcedLocale;
@@ -84,27 +78,25 @@ public:
 
     void addAccount(Field* field);
 
-    std::shared_ptr<Account> getAccountByName(std::string& Name);
+    Account* getAccountByName(std::string const& Name) const;
 
-    void updateAccount(std::shared_ptr<Account> account, Field* field);
+    void updateAccount(Account* account, Field* field) const;
     void reloadAccounts(bool silent);
 
     size_t getCount() const;
 
-    std::map<std::string, std::shared_ptr<Account>> getAccountMap() const;
+    std::map<std::string, std::unique_ptr<Account>> const& getAccountMap() const;
 
 private:
+    Account* _getAccountByNameLockFree(std::string const& Name) const;
 
-    std::shared_ptr<Account> _getAccountByNameLockFree(std::string& Name);
-
-    std::map<std::string, std::shared_ptr<Account>> _accountMap;
+    std::map<std::string, std::unique_ptr<Account>> _accountMap;
 
     std::unique_ptr<AscEmu::Threading::AEThread> m_reloadThread;
     uint32_t m_reloadTime;
 
 protected:
-
-    std::mutex accountMgrMutex;
+    mutable std::mutex accountMgrMutex;
 };
 
 #define sAccountMgr AccountMgr::getInstance()

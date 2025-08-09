@@ -34,6 +34,7 @@ struct OnHitSpell;
 class SpellInfo;
 class Aura;
 class Group;
+class Field;
 
 enum PlayerTeam : uint8_t
 {
@@ -273,7 +274,7 @@ enum Standing : uint8_t
     STANDING_EXALTED
 };
 
-enum PlayerFlags
+enum PlayerFlags : uint32_t
 {
     PLAYER_FLAG_NONE                    = 0x00000000,
     PLAYER_FLAG_PARTY_LEADER            = 0x00000001, // (TODO: implement for all versions) Informs players outside of your group who is your group leader
@@ -283,34 +284,57 @@ enum PlayerFlags
     PLAYER_FLAG_DEATH_WORLD_ENABLE      = 0x00000010, // Adds death glow to the world
     PLAYER_FLAG_RESTING                 = 0x00000020, // Applies rested state on your character portrait
     PLAYER_FLAG_ADMIN                   = 0x00000040, // Unknown effect in 3.3.5a
-    PLAYER_FLAG_FREE_FOR_ALL_PVP        = 0x00000080, // Unknown in 3.3.5a, pre-wotlk FFA-pvp tag
+#if VERSION_STRING < WotLK
+    PLAYER_FLAG_FREE_FOR_ALL_PVP        = 0x00000080, // Applies FFA-pvp tag
+#else
+    PLAYER_FLAG_UNK8                    = 0x00000080,
+#endif
     PLAYER_FLAG_PVP_GUARD_ATTACKABLE    = 0x00000100, // Player will be attacked by neutral guards
     PLAYER_FLAG_PVP_TOGGLE              = 0x00000200, // Toggles PvP combat on/off
     PLAYER_FLAG_NOHELM                  = 0x00000400, // Hides helm
     PLAYER_FLAG_NOCLOAK                 = 0x00000800, // Hides cloak
     PLAYER_FLAG_PLAYED_3_HOURS          = 0x00001000, // Obsolete: "You have more than 3 hours of online time. You will receive 1/2 money and XP during this period."
     PLAYER_FLAG_PLAYED_5_HOURS          = 0x00002000, // Obsolete: "You have more than 5 hours of online time. You will not be able to gain loot, XP, or complete quests."
-    PLAYER_FLAG_UNK1                    = 0x00004000,
-    // TBC flags begin (needs verification)
+#if VERSION_STRING > Classic
+    PLAYER_FLAG_UNK15                   = 0x00004000,
+#if VERSION_STRING == TBC
+    PLAYER_FLAG_UNK16                   = 0x00008000,
+#else
     PLAYER_FLAG_DEVELOPER               = 0x00008000, // <Dev> tag ingame
+#endif
+#if VERSION_STRING == TBC
     PLAYER_FLAG_SANCTUARY               = 0x00010000, // Makes player unattackable, added in sanctuary areas
-    PLAYER_FLAG_UNK2                    = 0x00020000, // Toggles 'Taxi Time Test' and FPS counter, unused
-    // WoTLK flags begin
+#else
+    PLAYER_FLAG_UNK17                   = 0x00010000,
+#endif
+    PLAYER_FLAG_TAXI_TIME_TEST          = 0x00020000, // Toggles 'Taxi Time Test' and FPS counter, unused
+#if VERSION_STRING == TBC
+    PLAYER_FLAG_UNK19                   = 0x00040000,
+#else
     PLAYER_FLAG_PVP_TIMER               = 0x00040000, // PvP timer after toggling manually PvP combat state off
-    PLAYER_FLAG_UNK3                    = 0x00080000,
-    PLAYER_FLAG_UNK4                    = 0x00100000,
-    PLAYER_FLAG_UNK5                    = 0x00200000,
-    PLAYER_FLAG_UNK6                    = 0x00400000,
+#endif
+    PLAYER_FLAG_UNK20                   = 0x00080000,
+    PLAYER_FLAG_UNK21                   = 0x00100000,
+    PLAYER_FLAG_UNK22                   = 0x00200000,
+    PLAYER_FLAG_UNK23                   = 0x00400000,
+#if VERSION_STRING > TBC
     PLAYER_FLAG_PREVENT_SPELL_CAST      = 0x00800000, // Prevents spell casting but excludes auto attack, used by Bladestorm for example
+#if VERSION_STRING < Mop
     PLAYER_FLAG_PREVENT_MELEE_SPELLS    = 0x01000000, // Prevents melee spell casting and includes auto attack, unused?
+#else
+    PLAYER_FLAG_BATTLE_PET              = 0x01000000, // Related to Battle Pets
+#endif
     PLAYER_FLAG_NO_XP                   = 0x02000000, // (TODO: implement this and remove variable from player class) Disables XP gain and hides XP bar
-    // Cataclysm flags begin (needs verification)
-    PLAYER_FLAG_UNK7                    = 0x04000000,
-    PLAYER_FLAGS_AUTO_DECLINE_GUILD     = 0x08000000,
-    PLAYER_FLAGS_GUILD_LVL_ENABLED      = 0x10000000,
-    PLAYER_FLAGS_VOID_UNLOCKED          = 0x20000000,
-    PLAYER_FLAG_UNK9                    = 0x40000000,
-    PLAYER_FLAG_UNK10                   = 0x80000000
+    PLAYER_FLAG_UNK27                   = 0x04000000,
+#if VERSION_STRING > WotLK
+    PLAYER_FLAG_DECLINE_GUILD_INVITES   = 0x08000000, // Automatically declines guild invites
+    PLAYER_FLAG_GUILD_LVL_ENABLED       = 0x10000000, // ??
+    PLAYER_FLAG_VOID_STORAGE_UNLOCKED   = 0x20000000, // Player has bought Void Storage
+    PLAYER_FLAG_UNK31                   = 0x40000000,
+    PLAYER_FLAG_UNK32                   = 0x80000000
+#endif
+#endif
+#endif
 };
 
 enum CustomizeFlags
@@ -425,13 +449,48 @@ enum ModType
     MOD_SPELL     = 2
 };
 
-enum DrunkenState
+// byte value (PLAYER_BYTES_3, 1)
+enum PlayerBytes3_DrunkValue : uint8_t
 {
-    DRUNKEN_SOBER    = 0,
-    DRUNKEN_TIPSY    = 1,
-    DRUNKEN_DRUNK    = 2,
-    DRUNKEN_SMASHED  = 3
+    DRUNKEN_SOBER                      = 0x00,
+    DRUNKEN_TIPSY                      = 0x01,
+    DRUNKEN_DRUNK                      = 0x02,
+    DRUNKEN_SMASHED                    = 0x03
 };
+
+// byte value (PLAYER_FIELD_BYTES, 0)
+enum PlayerFieldBytes_MiscFlags : uint8_t
+{
+    PLAYER_MISC_FLAG_NONE              = 0x00,
+    PLAYER_MISC_FLAG_UNK1              = 0x01,
+    PLAYER_MISC_FLAG_UNK2              = 0x02,
+    PLAYER_MISC_FLAG_UNK3              = 0x04,
+    PLAYER_MISC_FLAG_SHOW_RELEASE_TIME = 0x08, // Displays time when spirit is released
+    PLAYER_MISC_FLAG_UNK5              = 0x10,
+    PLAYER_MISC_FLAG_UNK6              = 0x20,
+    PLAYER_MISC_FLAG_UNK7              = 0x40,
+    PLAYER_MISC_FLAG_UNK8              = 0x80,
+    PLAYER_MISC_FLAG_ALL               = 0xFF
+};
+
+#if VERSION_STRING < Mop
+// byte value
+// classic - tbc (PLAYER_FIELD_BYTES2, 1)
+// wotlk - cata (PLAYER_FIELD_BYTES2, 3)
+enum PlayerFieldBytes2_AuraVision : uint8_t
+{
+    AURA_VISION_NONE                   = 0x00,
+    AURA_VISION_UNK1                   = 0x01,
+    AURA_VISION_UNK2                   = 0x02,
+    AURA_VISION_UNK3                   = 0x04,
+    AURA_VISION_UNK4                   = 0x08,
+    AURA_VISION_UNK5                   = 0x10,
+    AURA_VISION_STEALTH                = 0x20,
+    AURA_VISION_INVISIBILITY           = 0x40,
+    AURA_VISION_UNK8                   = 0x80,
+    AURA_VISION_ALL                    = 0xFF
+};
+#endif
 
 /**
     TalentTree table
@@ -655,12 +714,21 @@ enum PlayerCombatRating : uint8_t
     CR_WEAPON_SKILL_OFFHAND             = 21,
     CR_WEAPON_SKILL_RANGED              = 22,   // Not used
     CR_EXPERTISE                        = 23,
+#if VERSION_STRING >= WotLK
     CR_ARMOR_PENETRATION                = 24,
+#endif
 #if VERSION_STRING >= Cata
     CR_MASTERY                          = 25,
-    MAX_PCR                             = 26
+#endif
+#if VERSION_STRING >= Mop
+    CR_PVP_POWER                        = 26,
+#endif
+
+#if VERSION_STRING == Classic
+    // TODO: sort out fields properly for classic
+    MAX_PCR                             = 20
 #else
-    MAX_PCR                             = 25
+    MAX_PCR
 #endif
 };
 
@@ -967,6 +1035,8 @@ struct CharCreate
 class SERVER_DECL CachedCharacterInfo
 {
 public:
+    CachedCharacterInfo();
+    CachedCharacterInfo(Field const* fields);
     ~CachedCharacterInfo();
 
     uint32_t guid = 0;
@@ -981,7 +1051,7 @@ public:
     time_t lastOnline = 0;
     uint32_t lastZone = 0;
     uint32_t lastLevel = 0;
-    std::shared_ptr<Group> m_Group = nullptr;
+    Group* m_Group = nullptr;
     int8_t subGroup = 0;
 
     uint32_t m_guild = 0;
@@ -1155,12 +1225,12 @@ private:
     std::array<ActionButton, PLAYER_ACTION_BUTTON_COUNT> mActions = { ActionButton() };
 };
 
-typedef std::set<uint32_t>                              SpellSet;
-typedef std::list<classScriptOverride*>                 ScriptOverrideList;
-typedef std::map<uint32_t, ScriptOverrideList* >        SpellOverrideMap;
-typedef std::map<uint32_t, FactionReputation*>          ReputationMap;
-typedef std::map<uint16_t, PlayerSkill>                 SkillMap;
-typedef std::map<uint32_t, PlayerCooldown>              PlayerCooldownMap;
+typedef std::set<uint32_t>                                      SpellSet;
+typedef std::list<std::unique_ptr<classScriptOverride>>         ScriptOverrideList;
+typedef std::map<uint32_t, std::shared_ptr<ScriptOverrideList>> SpellOverrideMap;
+typedef std::map<uint32_t, std::unique_ptr<FactionReputation>>  ReputationMap;
+typedef std::map<uint16_t, PlayerSkill>                         SkillMap;
+typedef std::map<uint32_t, PlayerCooldown>                      PlayerCooldownMap;
 
 struct PlayerCheat
 {

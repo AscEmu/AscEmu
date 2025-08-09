@@ -68,7 +68,7 @@ void SpellCastTargets::read(WorldPacket& data, uint64_t caster)
         return;
     }
 
-    if (m_targetMask & (TARGET_FLAG_OBJECT | TARGET_FLAG_OBJECT_CASTER))
+    if (m_targetMask & (TARGET_FLAG_OBJECT | TARGET_FLAG_OPEN_LOCK))
     {
         WoWGuid guid;
         data >> guid;
@@ -135,7 +135,7 @@ void SpellCastTargets::write(WorldPacket& data) const
 {
     data << m_targetMask;
 
-    if (m_targetMask & (TARGET_FLAG_OBJECT | TARGET_FLAG_OBJECT_CASTER))
+    if (m_targetMask & (TARGET_FLAG_OBJECT | TARGET_FLAG_OPEN_LOCK))
     {
         FastGUIDPack(data, m_gameObjectTargetGuid);
     }

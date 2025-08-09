@@ -459,7 +459,7 @@ void IceCrownCitadelScript::OnEncounterStateChange(uint32_t entry, uint32_t stat
     }      
 }
 
-void IceCrownCitadelScript::OnAreaTrigger(Player* /*pPlayer*/, uint32 pAreaId)
+void IceCrownCitadelScript::OnAreaTrigger(Player* /*pPlayer*/, uint32_t pAreaId)
 {
     switch(pAreaId)
     {
@@ -966,7 +966,7 @@ CreatureAIScript* NerubarBroodkeeperAI::Create(Creature* pCreature) { return new
 void NerubarBroodkeeperAI::OnLoad()
 {
     setDisableGravity(true);
-    setImmuneToAll(true);
+    setIgnoreAllCombat(true);
     getCreature()->setEmoteState(EMOTE_STATE_CUSTOM_SPELL_03);
 }
 
@@ -990,7 +990,7 @@ void NerubarBroodkeeperAI::OnReachWP(uint32_t type, uint32_t id)
 {
     if (type == EFFECT_MOTION_TYPE && id == POINT_LAND)
     {
-        setImmuneToAll(false);
+        setIgnoreAllCombat(false);
         setDisableGravity(false);
 
         // Hackfix shouldnt be needed :/

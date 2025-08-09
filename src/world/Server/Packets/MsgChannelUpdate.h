@@ -22,13 +22,15 @@ namespace AscEmu::Packets
         }
 
         MsgChannelUpdate(WoWGuid casterGuid, uint32_t time) :
-            ManagedPacket(MSG_CHANNEL_UPDATE, 8 + 4),
+            ManagedPacket(MSG_CHANNEL_UPDATE, 0),
             casterGuid(casterGuid),
             time(time)
         {
         }
 
     protected:
+        size_t expectedSize() const override { return static_cast<size_t>(8 + 4); }
+
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << casterGuid << time;

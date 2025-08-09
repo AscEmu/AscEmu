@@ -57,7 +57,7 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
     WorldDatabase.Execute("INSERT INTO ai_agents VALUES(%u, 4, %u, %u, %u, %u, %u, %u, %u, %u, %f, %u",
         creature_target->getEntry(), ai_type, procEvent, procChance, maxcount, spellId, spellType, spelltargetType, spellCooldown, floatMisc1, Misc2);
 
-    AI_Spell* ai_spell = new AI_Spell;
+    auto ai_spell = std::make_unique<AI_Spell>();
     ai_spell->agent = static_cast<uint16_t>(ai_type);
     ai_spell->procChance = procChance;
     ai_spell->procCount = maxcount;
@@ -72,7 +72,13 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
     ai_spell->minrange = spell_entry->getMinRange();
     ai_spell->maxrange = spell_entry->getMaxRange();
 
-    const_cast<CreatureProperties*>(creature_target->GetCreatureProperties())->spells.push_back(ai_spell);
+    if (auto* creatureProperties = const_cast<CreatureProperties*>(creature_target->GetCreatureProperties()))
+    {
+        if (!spell_entry->isPassive())
+            creatureProperties->castable_spells.emplace_back(spell_entry->getId());
+        else
+            creatureProperties->start_auras.emplace(spell_entry->getId());
+    }
 
     switch (ai_type)
     {
@@ -80,16 +86,16 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
             creature_target->getAIInterface()->setMeleeDisabled(false);
             break;
         case AGENT_RANGED:
-            creature_target->getAIInterface()->m_canRangedAttack = true;
+            creature_target->getAIInterface()->setRangedDisabled(false);
             break;
         case AGENT_FLEE:
-            creature_target->getAIInterface()->m_canFlee = true;
+            creature_target->getAIInterface()->setCanFlee(true);
             break;
         case AGENT_SPELL:
-            creature_target->getAIInterface()->addSpellToList(ai_spell);
+            creature_target->getAIInterface()->addSpellToList(std::move(ai_spell));
             break;
         case AGENT_CALLFORHELP:
-            creature_target->getAIInterface()->m_canCallForHelp = true;
+            creature_target->getAIInterface()->setCanCallForHelp(true);
             break;
         default:
         {
@@ -298,13 +304,13 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
 
     uint8_t creature_gender = creature_target->getGender();
     if (creature_gender <= 2)
-        SystemMessage(m_session, "Gender: %s", GENDER[creature_gender]);
+        SystemMessage(m_session, "Gender: %s", GENDER[creature_gender].data());
     else
         SystemMessage(m_session, "Gender: invalid %u", creature_gender);
 
     uint8_t creature_class = creature_target->getClass();
     if (creature_class <= 11)
-        SystemMessage(m_session, "Class: %s", CLASS[creature_class]);
+        SystemMessage(m_session, "Class: %s", CLASS[creature_class].data());
     else
         SystemMessage(m_session, "Class: invalid %u", creature_class);
 
@@ -313,14 +319,19 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     auto powertype = creature_target->getPowerType();
     if (powertype <= 6)
     {
-        SystemMessage(m_session, "Powertype: %s", POWERTYPE[powertype]);
+        SystemMessage(m_session, "Powertype: %s", POWERTYPE[powertype].data());
         SystemMessage(m_session, "Power (cur / max): %u / %u", creature_target->getPower(powertype), creature_target->getMaxPower(powertype));
     }
 
     SystemMessage(m_session, "Damage (min / max): %f / %f", creature_target->getMinDamage(), creature_target->getMaxDamage());
 
+#if VERSION_STRING < WotLK
+    if (creature_target->getPetLoyalty() != 0)
+        SystemMessage(m_session, "Pet loyalty level: %u", creature_target->getPetLoyalty());
+#elif VERSION_STRING < Mop
     if (creature_target->getPetTalentPoints() != 0)
         SystemMessage(m_session, "Free pet talent points: %u", creature_target->getPetTalentPoints());
+#endif
 
     if (creature_target->GetCreatureProperties()->vehicleid > 0)
         SystemMessage(m_session, "VehicleID: %u", creature_target->GetCreatureProperties()->vehicleid);
@@ -335,7 +346,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
 
     uint8_t sheat = creature_target->getSheathType();
     if (sheat <= 2)
-        SystemMessage(m_session, "Sheat state: %s", SHEATSTATE[sheat]);
+        SystemMessage(m_session, "Sheat state: %s", SHEATSTATE[sheat].data());
 
     SystemMessage(m_session, "=================================");
 
@@ -367,28 +378,48 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     //////////////////////////////////////////////////////////////////////////////////////////
     // show byte
     std::stringstream sstext;
-    uint32_t theBytes = creature_target->getBytes0();
     sstext << "UNIT_FIELD_BYTES_0 are:" << '\n';
-    sstext << " -Race: " << uint16_t((uint8_t)theBytes & 0xFF) << '\n';
-    sstext << " -Class: " << uint16_t((uint8_t)(theBytes >> 8) & 0xFF) << '\n';
-    sstext << " -Gender: " << uint16_t((uint8_t)(theBytes >> 16) & 0xFF) << '\n';
-    sstext << " -Power Type: " << uint16_t((uint8_t)(theBytes >> 24) & 0xFF) << '\n';
+    sstext << " -Race: " << std::to_string(creature_target->getRace()) << '\n';
+    sstext << " -Class: " << std::to_string(creature_target->getClass()) << '\n';
+    sstext << " -Gender: " << std::to_string(creature_target->getGender()) << '\n';
+    sstext << " -Power Type: " << std::to_string(creature_target->getPowerType()) << '\n';
     sstext << '\n';
 
-    theBytes = creature_target->getBytes1();
     sstext << "UNIT_FIELD_BYTES_1 are:" << '\n';
-    sstext << " -StandState: " << uint16_t((uint8_t)theBytes & 0xFF) << '\n';
-    sstext << " -Pet TP: " << uint16_t((uint8_t)(theBytes >> 8) & 0xFF) << '\n';
-    sstext << " -StandState Flag: " << uint16_t((uint8_t)(theBytes >> 16) & 0xFF) << '\n';
-    sstext << " -Animation Flag: " << uint16_t((uint8_t)(theBytes >> 24) & 0xFF) << '\n';
+    sstext << " -StandState: " << std::to_string(creature_target->getStandState()) << '\n';
+#if VERSION_STRING < WotLK
+    sstext << " -Pet Loyalty: " << std::to_string(creature_target->getPetLoyalty()) << '\n';
+#elif VERSION_STRING < Mop
+    sstext << " -Pet TP: " << std::to_string(creature_target->getPetTalentPoints()) << '\n';
+#else
+    const auto theBytes = creature_target->getBytes1();
+    sstext << " -Unk1: " << std::to_string(uint16_t((uint8_t)(theBytes >> 8) & 0xFF)) << '\n';
+#endif
+#if VERSION_STRING == Classic
+    sstext << " -ShapeShift Form: " << std::to_string(creature_target->getShapeShiftForm()) << '\n';
+    sstext << " -StandState Flag: " << std::to_string(creature_target->getStandStateFlags()) << '\n';
+#else
+    sstext << " -StandState Flag: " << std::to_string(creature_target->getStandStateFlags()) << '\n';
+    sstext << " -Animation Flag: " << std::to_string(creature_target->getAnimationFlags()) << '\n';
+#endif
     sstext << '\n';
 
-    theBytes = creature_target->getBytes2();
     sstext << "UNIT_FIELD_BYTES_2 are:" << '\n';
-    sstext << " -SheathType: " << uint16_t((uint8_t)theBytes & 0xFF) << '\n';
-    sstext << " -PvP Flag: " << uint16_t((uint8_t)(theBytes >> 8) & 0xFF) << '\n';
-    sstext << " -Pet Flag: " << uint16_t((uint8_t)(theBytes >> 16) & 0xFF) << '\n';
-    sstext << " -ShapeShift Form: " << uint16_t((uint8_t)(theBytes >> 24) & 0xFF) << '\n';
+    sstext << " -SheathType: " << std::to_string(creature_target->getSheathType()) << '\n';
+#if VERSION_STRING == Classic
+    const auto theBytes = creature_target->getBytes2();
+    sstext << " -Unk1: " << uint16_t((uint8_t)(theBytes >> 8) & 0xFF) << '\n';
+    sstext << " -Unk2: " << uint16_t((uint8_t)(theBytes >> 16) & 0xFF) << '\n';
+    sstext << " -Unk3: " << uint16_t((uint8_t)(theBytes >> 24) & 0xFF) << '\n';
+#else
+#if VERSION_STRING == TBC
+    sstext << " -Positive Aura Limit: " << std::to_string(creature_target->getPositiveAuraLimit()) << '\n';
+#else
+    sstext << " -PvP Flag: " << std::to_string(creature_target->getPvpFlags()) << '\n';
+#endif
+    sstext << " -Pet Flag: " << std::to_string(creature_target->getPetFlags()) << '\n';
+    sstext << " -ShapeShift Form: " << std::to_string(creature_target->getShapeShiftForm()) << '\n';
+#endif
     sstext << '\0';
 
     SystemMessage(m_session, "UNIT_FIELD_BYTES =================");
@@ -401,44 +432,48 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     std::string s = GetNpcFlagString(creature_target);
     GreenSystemMessage(m_session, "NpcFlags: %u%s", creature_target->getNpcFlags(), s.c_str());
 
+#if VERSION_STRING >= WotLK
     uint8_t pvp_flags = creature_target->getPvpFlags();
     GreenSystemMessage(m_session, "PvPFlags: %u", pvp_flags);
 
     for (uint32_t i = 0; i < numpvpflags; i++)
         if ((pvp_flags & UnitPvPFlagToName[i].Flag) != 0)
-            GreenSystemMessage(m_session, "%s", UnitPvPFlagToName[i].Name);
+            GreenSystemMessage(m_session, "%s", UnitPvPFlagToName[i].Name.data());
+#endif
 
+#if VERSION_STRING >= TBC
     uint8_t pet_flags = creature_target->getPetFlags();
     if (pet_flags != 0)
     {
         GreenSystemMessage(m_session, "PetFlags: %u", pet_flags);
         for (uint32_t i = 0; i < numpetflags; i++)
             if ((pet_flags & PetFlagToName[i].Flag) != 0)
-                GreenSystemMessage(m_session, "%s", PetFlagToName[i].Name);
+                GreenSystemMessage(m_session, "%s", PetFlagToName[i].Name.data());
     }
+#endif
 
     uint32_t unit_flags = creature_target->getUnitFlags();
     GreenSystemMessage(m_session, "UnitFlags: %u", unit_flags);
 
     for (uint32_t i = 0; i < numflags; i++)
         if ((unit_flags & UnitFlagToName[i].Flag) != 0)
-            GreenSystemMessage(m_session, "-- %s", UnitFlagToName[i].Name);
+            GreenSystemMessage(m_session, "-- %s", UnitFlagToName[i].Name.data());
 
 #if VERSION_STRING > Classic
     uint32_t unit_flags2 = creature_target->getUnitFlags2();
     GreenSystemMessage(m_session, "UnitFlags2: %u", unit_flags2);
-#endif
 
     for (uint32_t i = 0; i < numflags2; i++)
-        if ((unit_flags & UnitFlagToName2[i].Flag) != 0)
-            GreenSystemMessage(m_session, "-- %s", UnitFlagToName2[i].Name);
+        if ((unit_flags2 & UnitFlagToName2[i].Flag) != 0)
+            GreenSystemMessage(m_session, "-- %s", UnitFlagToName2[i].Name.data());
+#endif
 
     uint32_t dyn_flags = creature_target->getDynamicFlags();
     GreenSystemMessage(m_session, "UnitDynamicFlags: %u", dyn_flags);
 
     for (uint32_t i = 0; i < numdynflags; i++)
         if ((dyn_flags & UnitDynFlagToName[i].Flag) != 0)
-            GreenSystemMessage(m_session, "%s", UnitDynFlagToName[i].Name);
+            GreenSystemMessage(m_session, "%s", UnitDynFlagToName[i].Name.data());
 
     GreenSystemMessage(m_session, "=================================");
 
@@ -539,7 +574,7 @@ bool ChatHandler::HandleNpcListAIAgentCommand(const char* /*args*/, WorldSession
     if (creature_target == nullptr)
         return true;
 
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM ai_agents where entry=%u", creature_target->getEntry());
+    auto result = WorldDatabase.Query("SELECT * FROM ai_agents where entry=%u", creature_target->getEntry());
     if (result == nullptr)
     {
         RedSystemMessage(m_session, "Selected Creature %s (%u) has no entries in ai_agents table!", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
@@ -552,8 +587,6 @@ bool ChatHandler::HandleNpcListAIAgentCommand(const char* /*args*/, WorldSession
         SystemMessage(m_session, "-- agent: %u | spellId: %u | event: %u | chance: %u | maxcount: %u", fields[1].asUint32(), fields[5].asUint32(), fields[2].asUint32(), fields[3].asUint32(), fields[4].asUint32());
     } while (result->NextRow());
 
-    delete result;
-
     return true;
 }
 
@@ -564,7 +597,7 @@ bool ChatHandler::HandleNpcListLootCommand(const char* args, WorldSession* m_ses
     if (creature_target == nullptr)
         return true;
 
-    QueryResult* loot_result = WorldDatabase.Query("SELECT itemid, normal10percentchance, heroic10percentchance, normal25percentchance, heroic25percentchance, mincount, maxcount FROM loot_creatures WHERE entryid=%u;", creature_target->getEntry());
+    auto loot_result = WorldDatabase.Query("SELECT itemid, normal10percentchance, heroic10percentchance, normal25percentchance, heroic25percentchance, mincount, maxcount FROM loot_creatures WHERE entryid=%u;", creature_target->getEntry());
     if (loot_result != nullptr)
     {
         uint8_t numFound = 0;
@@ -588,7 +621,7 @@ bool ChatHandler::HandleNpcListLootCommand(const char* args, WorldSession* m_ses
 
             ++numFound;
         } while (loot_result->NextRow() && (numFound <= 25));
-        delete loot_result;
+
         if (numFound > 25)
         {
             RedSystemMessage(m_session, "More than 25 results found. Use .npc listloot <min quality> to increase the results.");
@@ -739,14 +772,14 @@ bool ChatHandler::HandleNpcSpawnCommand(const char* args, WorldSession* m_sessio
     creature_spawn->o = m_session->GetPlayer()->GetOrientation();
     creature_spawn->emote_state = 0;
     creature_spawn->flags = creature_properties->NPCFLags;
+    creature_spawn->pvp_flagged = 0;
     creature_spawn->factionid = creature_properties->Faction;
     creature_spawn->bytes0 = creature_spawn->setbyte(0, 2, gender);
-    creature_spawn->bytes1 = 0;
-    creature_spawn->bytes2 = 0;
     creature_spawn->stand_state = 0;
     creature_spawn->death_state = 0;
     creature_spawn->channel_target_creature = creature_spawn->channel_target_go = creature_spawn->channel_spell = 0;
     creature_spawn->MountedDisplayID = 0;
+    creature_spawn->sheath_state = 0;
 
     creature_spawn->Item1SlotEntry = creature_properties->itemslot_1;
     creature_spawn->Item2SlotEntry = creature_properties->itemslot_2;

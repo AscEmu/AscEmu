@@ -97,13 +97,13 @@ void AuthSocket::HandleChallenge()
     }
 
     // Check the rest of the packet is complete.
-    uint8* ReceiveBuffer = (uint8*)readBuffer.GetBufferStart();
+    uint8_t* ReceiveBuffer = (uint8_t*)readBuffer.GetBufferStart();
 
-    uint16 full_size = *(uint16*)&ReceiveBuffer[2];
+    uint16_t full_size = *(uint16_t*)&ReceiveBuffer[2];
 
     sLogger.info("[AuthChallenge] got header, body is {} bytes", full_size);
 
-    if (readBuffer.GetSize() < uint32(full_size + 4))
+    if (readBuffer.GetSize() < uint32_t(full_size + 4))
     {
         sLogger.failure("[AuthChallenge] Packet is smaller than expected, refusing to handle");
         return;
@@ -122,7 +122,7 @@ void AuthSocket::HandleChallenge()
     readBuffer.Read(&m_challenge, full_size + 4);
 
     // Check client build.
-    uint16 client_build = m_challenge.build;
+    uint16_t client_build = m_challenge.build;
 
     switch (client_build)
     {
@@ -132,11 +132,11 @@ void AuthSocket::HandleChallenge()
         case 15595:
         case 18414:
         {
-            sLogger.debug("Client with valid build {} connected", (uint32)client_build);
+            sLogger.debug("Client with valid build {} connected", (uint32_t)client_build);
         }break;
         default:
         {
-            sLogger.debug("Client {} has unsupported game version. Clientbuild: {}", GetRemoteIP(), (uint32)client_build);
+            sLogger.debug("Client {} has unsupported game version. Clientbuild: {}", GetRemoteIP(), (uint32_t)client_build);
             SendChallengeError(CE_WRONG_BUILD_NUMBER);
         }break;
     }
@@ -162,7 +162,7 @@ void AuthSocket::HandleChallenge()
 
         LogDebug("Patch : elected patch %u%s for client.", m_patch->Version, m_patch->Locality);
 
-        uint8 response[119] =
+        uint8_t response[119] =
         {
             0x00, 0x00, 0x00, 0x72, 0x50, 0xa7, 0xc9, 0x27, 0x4a, 0xfa, 0xb8, 0x77, 0x80, 0x70, 0x22,
             0xda, 0xb8, 0x3b, 0x06, 0x50, 0x53, 0x4a, 0x16, 0xe2, 0x65, 0xba, 0xe4, 0x43, 0x6f, 0xe3,
@@ -282,7 +282,7 @@ void AuthSocket::HandleChallenge()
     // in our case the multiplier parameters, k = 3
 
     b.SetRand(152);
-    uint8 k = 3;
+    uint8_t k = 3;
 
     BigNumber gmod = g.ModExp(b, N);
     B = ((v * k) + gmod) % N;
@@ -305,7 +305,7 @@ void AuthSocket::HandleChallenge()
     memcpy(challenge.unk3, unk.AsByteArray(), 16);
     challenge.unk4 = 0;
 
-    Send(reinterpret_cast<uint8*>(&challenge), sizeof(sAuthLogonChallenge_S));
+    Send(reinterpret_cast<uint8_t*>(&challenge), sizeof(sAuthLogonChallenge_S));
 }
 
 void AuthSocket::HandleProof()
@@ -322,7 +322,7 @@ void AuthSocket::HandleProof()
         //RemoveReadBufferBytes(75,false);
         readBuffer.Remove(75);
         sLogger.debug("[AuthLogonProof] Intitiating PatchJob");
-        uint8 bytes[2] = { 0x01, 0x0a };
+        uint8_t bytes[2] = { 0x01, 0x0a };
         Send(bytes, 2);
         PatchMgr::getInstance().InitiatePatch(m_patch, this);
         return;
@@ -334,7 +334,7 @@ void AuthSocket::HandleProof()
     sLogger.debug("[AuthLogonProof] Interleaving and checking proof...");
 
     sAuthLogonProof_C lp;
-    //Read(sizeof(sAuthLogonProof_C), (uint8*)&lp);
+    //Read(sizeof(sAuthLogonProof_C), (uint8_t*)&lp);
     readBuffer.Read(&lp, sizeof(sAuthLogonProof_C));
 
     // SRP6 //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -362,9 +362,9 @@ void AuthSocket::HandleProof()
 
     // Generate M
     // M = H(H(N) xor H(g), H(I), s, A, B, K) according to http://srp.stanford.edu/design.html
-    uint8 t[32];
-    uint8 t1[16];
-    uint8 vK[40];
+    uint8_t t[32];
+    uint8_t t1[16];
+    uint8_t vK[40];
     memcpy(t, S.AsByteArray(), 32);
     for (int i = 0; i < 16; i++)
     {
@@ -390,7 +390,7 @@ void AuthSocket::HandleProof()
     }
     m_sessionkey.SetBinary(vK, 40);
 
-    uint8 hash[20];
+    uint8_t hash[20];
 
     sha.initialize();
     sha.updateBigNumbers(&N, NULL);
@@ -407,7 +407,7 @@ void AuthSocket::HandleProof()
     t3.SetBinary(hash, 20);
 
     sha.initialize();
-    sha.updateData((const uint8*)m_account->UsernamePtr->c_str(), (int)m_account->UsernamePtr->size());
+    sha.updateData((const uint8_t*)m_account->UsernamePtr->c_str(), (int)m_account->UsernamePtr->size());
     sha.finalize();
 
     BigNumber t4;
@@ -450,18 +450,18 @@ void AuthSocket::HandleProof()
     sLogonSQL->Execute("UPDATE accounts SET lastlogin=NOW(), lastip='%s' WHERE id = %u;", GetRemoteIP().c_str(), m_account->AccountId);
 }
 
-void AuthSocket::SendChallengeError(uint8 Error)
+void AuthSocket::SendChallengeError(uint8_t Error)
 {
-    uint8 buffer[3];
+    uint8_t buffer[3];
     buffer[0] = buffer[1] = 0;
     buffer[2] = Error;
 
     Send(buffer, 3);
 }
 
-void AuthSocket::SendProofError(uint8 Error, uint8* M2)
+void AuthSocket::SendProofError(uint8_t Error, uint8_t* M2)
 {
-    uint8 buffer[32];
+    uint8_t buffer[32];
     memset(buffer, 0, 32);
 
     buffer[0] = 1;
@@ -469,7 +469,7 @@ void AuthSocket::SendProofError(uint8 Error, uint8* M2)
     if (M2 == 0)
     {
 
-        *(uint32*)&buffer[2] = 3;
+        *(uint32_t*)&buffer[2] = 3;
 
         Send(buffer, 6);
         return;
@@ -559,7 +559,7 @@ void AuthSocket::OnRead()
         return;
     }
 
-    uint8 Command = *(uint8*)readBuffer.GetBufferStart();
+    uint8_t Command = *(uint8_t*)readBuffer.GetBufferStart();
     last_recv = UNIXTIME;
     if (Command < MAX_AUTH_CMD && Handlers[Command] != NULL)
     {
@@ -584,11 +584,11 @@ void AuthSocket::HandleReconnectChallenge()
         return;
 
     // Check the rest of the packet is complete.
-    uint8* ReceiveBuffer = /*GetReadBuffer(0)*/(uint8*)readBuffer.GetBufferStart();
-    uint16 full_size = *(uint16*)&ReceiveBuffer[2];
+    uint8_t* ReceiveBuffer = /*GetReadBuffer(0)*/(uint8_t*)readBuffer.GetBufferStart();
+    uint16_t full_size = *(uint16_t*)&ReceiveBuffer[2];
     sLogger.info("[AuthChallenge] got header, body is {} bytes", full_size);
 
-    if (readBuffer.GetSize() < (uint32)full_size + 4)
+    if (readBuffer.GetSize() < (uint32_t)full_size + 4)
         return;
 
     // Copy the data into our cached challenge structure
@@ -689,15 +689,15 @@ void AuthSocket::HandleReconnectChallenge()
 
     MD5_CTX ctx;
     MD5_Init(&ctx);
-    MD5_Update(&ctx, m_account->SessionKey, 40);
-    uint8 buffer[20];
+    MD5_Update(&ctx, m_account->SessionKey.get(), 40);
+    uint8_t buffer[20];
     MD5_Final(buffer, &ctx);
 
     ByteBuffer buf;
-    buf << uint16(2);
+    buf << uint16_t(2);
     buf.append(buffer, 20);
-    buf << uint64(0);
-    buf << uint64(0);
+    buf << uint64_t(0);
+    buf << uint64_t(0);
     Send(buf.contents(), 2);
 }
 
@@ -707,7 +707,7 @@ void AuthSocket::HandleReconnectProof()
     printf("Len: %u\n", this->GetReadBufferSize());
     ByteBuffer buf(58);
     buf.resize(58);
-    Read(58, const_cast<uint8*>(buf.contents()));
+    Read(58, const_cast<uint8_t*>(buf.contents()));
     buf.hexlike();*/
 
     if (!m_account)
@@ -723,14 +723,14 @@ void AuthSocket::HandleReconnectProof()
         if (m_challenge.build == 5875)
         {
             ByteBuffer buffer;
-            buffer << uint8(3);
-            buffer << uint8(0);
-            buffer << uint16(0);
-            Send(buffer.contents(), static_cast<uint32>(buffer.size()));
+            buffer << uint8_t(3);
+            buffer << uint8_t(0);
+            buffer << uint16_t(0);
+            Send(buffer.contents(), static_cast<uint32_t>(buffer.size()));
         }
         else
         {
-            uint8 buffer[4];
+            uint8_t buffer[4];
             buffer[0] = 3;
             buffer[1] = 0;
             buffer[2] = 1;
@@ -740,8 +740,8 @@ void AuthSocket::HandleReconnectProof()
     }
     else
     {
-        uint32 x = 3;
-        Send((const uint8*)&x, 4);
+        uint32_t x = 3;
+        Send((const uint8_t*)&x, 4);
     }
 }
 
@@ -764,13 +764,13 @@ void AuthSocket::HandleTransferResume()
 
     //RemoveReadBufferBytes(1,false);
     readBuffer.Remove(1);
-    uint64 size;
-    //Read(8,(uint8*)&size);
+    uint64_t size;
+    //Read(8,(uint8_t*)&size);
     readBuffer.Read(&size, 8);
     if (size >= m_patch->FileSize)
         return;
 
-    PatchMgr::getInstance().BeginPatchJob(m_patch, this, (uint32)size);
+    PatchMgr::getInstance().BeginPatchJob(m_patch, this, (uint32_t)size);
 }
 
 void AuthSocket::HandleTransferCancel()

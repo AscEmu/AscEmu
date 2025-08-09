@@ -214,7 +214,7 @@ enum Creatures
     NPC_ANUBARAK                        = 34564
 };
 
-static uint32 NPC_BARRET[] =
+static uint32_t NPC_BARRET[] =
 {
     NPC_BARRETT_BEASTS,
     NPC_BARRETT_BEASTS_HC,
@@ -500,7 +500,7 @@ public:
 
     void UpdateEvent() override;
 
-    void OnAreaTrigger(Player* pPlayer, uint32 pAreaId) override;
+    void OnAreaTrigger(Player* pPlayer, uint32_t pAreaId) override;
 
     void OnPlayerEnter(Player* player) override;
     void OnPlayerDeath(Player* /*pVictim*/, Unit* /*pKiller*/) override;
@@ -600,7 +600,7 @@ public:
 
 protected:
     TrialOfTheCrusaderInstanceScript* mInstance;
-    uint32 mFactionLeaderData;
+    uint32_t mFactionLeaderData;
     bool mJormungarsSummoned;
     bool mIcehowlSummoned;
 };

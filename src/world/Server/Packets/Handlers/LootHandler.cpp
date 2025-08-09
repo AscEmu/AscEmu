@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Creature.h"
 #include "Management/ItemInterface.h"
 #include "Management/Loot/LootMgr.hpp"
+#include "Management/Loot/LootRoll.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Item.hpp"
 #include "Objects/Units/Creatures/Corpse.hpp"
@@ -56,7 +57,7 @@ Loot* WorldSession::getItemLootFromHighGuidType(WoWGuid wowGuid)
         case HighGuid::Item:
         {
             if (const auto item = _player->getItemInterface()->GetItemByGUID(wowGuid.getRawGuid()))
-                return item->m_loot;
+                return item->m_loot.get();
 
             return nullptr;
         }
@@ -177,7 +178,7 @@ Loot* WorldSession::getMoneyLootFromHighGuidType(WoWGuid wowGuid)
         case HighGuid::Item:
         {
             if (const auto item = _player->getItemInterface()->GetItemByGUID(wowGuid.getRawGuid()))
-                return item->m_loot;
+                return item->m_loot.get();
 
             return nullptr;
         }
@@ -433,7 +434,7 @@ void WorldSession::doLootRelease(WoWGuid lguid)
     }
     else if (lguid.isCorpse())        // ONLY remove insignia at BG
     {
-        std::shared_ptr<Corpse> corpse = sObjectMgr.getCorpseByGuid(lguid.getGuidLow());
+        auto* corpse = sObjectMgr.getCorpseByGuid(lguid.getGuidLow());
         if (!corpse || !corpse->IsWithinDistInMap(_player, 5.0f))
             return;
 
@@ -453,7 +454,6 @@ void WorldSession::doLootRelease(WoWGuid lguid)
             {
                 if (item->m_loot->isLooted())
                 {
-                    delete item->m_loot;
                     item->m_loot = nullptr;
                 }
             }

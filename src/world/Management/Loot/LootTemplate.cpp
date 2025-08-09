@@ -11,6 +11,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Random.hpp"
 #include "Utilities/Util.hpp"
 
+LootTemplate::LootTemplate() = default;
+LootTemplate::~LootTemplate() = default;
+
 void LootTemplate::addEntry(LootStoreItem& item)
 {
     Entries.push_back(item);

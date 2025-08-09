@@ -51,7 +51,7 @@ private:
     std::string filename;
 public:
     unsigned int col;
-    uint32 nTextures, nGroups, nP, nLights, nModels, nDoodads, nDoodadSets, RootWMOID, liquidType;
+    uint32_t nTextures, nGroups, nP, nLights, nModels, nDoodads, nDoodadSets, RootWMOID, liquidType;
     float bbcorn1[3];
     float bbcorn2[3];
 
@@ -74,8 +74,8 @@ struct WMOLiquidHeader
 
 struct WMOLiquidVert
 {
-    uint16 unk1;
-    uint16 unk2;
+    uint16_t unk1;
+    uint16_t unk2;
     float height;
 };
 
@@ -89,10 +89,10 @@ public:
     // MOGP
 
     char* MOPY;
-    uint16* MOVI;
-    uint16* MoviEx;
+    uint16_t* MOVI;
+    uint16_t* MoviEx;
     float* MOVT;
-    uint16* MOBA;
+    uint16_t* MOBA;
     int* MobaEx;
     WMOLiquidHeader* hlq;
     WMOLiquidVert* LiquEx;
@@ -101,17 +101,17 @@ public:
     int mogpFlags;
     float bbcorn1[3];
     float bbcorn2[3];
-    uint16 moprIdx;
-    uint16 moprNItems;
-    uint16 nBatchA;
-    uint16 nBatchB;
-    uint32 nBatchC, fogIdx, liquidType, groupWMOID;
+    uint16_t moprIdx;
+    uint16_t moprNItems;
+    uint16_t nBatchA;
+    uint16_t nBatchB;
+    uint32_t nBatchC, fogIdx, liquidType, groupWMOID;
 
     int mopy_size, moba_size;
     int LiquEx_size;
     unsigned int nVertices; // number when loaded
     int nTriangles; // number when loaded
-    uint32 liquflags;
+    uint32_t liquflags;
 
     WMOGroup(std::string const& filename);
     ~WMOGroup();
@@ -131,9 +131,9 @@ public:
     int doodadset;
     Vec3D pos;
     Vec3D pos2, pos3, rot;
-    uint32 indx, id, d2, d3;
+    uint32_t indx, id, d2, d3;
 
-    WMOInstance(MPQFile&f, char const* WmoInstName, uint32 mapID, uint32 tileX, uint32 tileY, FILE* pDirfile);
+    WMOInstance(MPQFile&f, char const* WmoInstName, uint32_t mapID, uint32_t tileX, uint32_t tileY, FILE* pDirfile);
 
     static void reset();
 };

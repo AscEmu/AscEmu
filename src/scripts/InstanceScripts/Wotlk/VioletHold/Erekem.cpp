@@ -52,9 +52,9 @@ CreatureAIScript* ErekemAI::Create(Creature* pCreature) { return new ErekemAI(pC
 void ErekemAI::OnLoad()
 {
     getCreature()->getMovementManager()->moveTargetedHome();
-    getCreature()->getAIInterface()->setImmuneToNPC(true);
-    getCreature()->getAIInterface()->setImmuneToPC(true);
-    getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
+    getCreature()->getAIInterface()->setIgnoreCreatureCombat(true);
+    getCreature()->getAIInterface()->setIgnorePlayerCombat(true);
+    getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
 }
 
 void ErekemAI::AIUpdate(unsigned long /*time_passed*/)

@@ -22,7 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 TwinsAI::TwinsAI(Creature* pCreature) : CreatureAIScript(pCreature)
 {
     // Add Boundary
-    pCreature->getAIInterface()->addBoundary(new CircleBoundary(LocationVector(563.26f, 139.6f), 75.0));
+    pCreature->getAIInterface()->addBoundary(std::make_unique<CircleBoundary>(LocationVector(563.26f, 139.6f), 75.0));
 
     AuraState = 0;
     Weapon = 0;
@@ -67,8 +67,8 @@ void TwinsAI::OnCombatStart(Unit*)
     if (CreatureAIScript* pSister = getLinkedCreatureAIScript())
     {
         SpellInfo const* spellInfo = sSpellMgr.getSpellInfo(MyEmphatySpellId);
-        Aura* pAura = sSpellMgr.newAura(spellInfo, (int32_t)GetDuration(sSpellDurationStore.lookupEntry(spellInfo->getDurationIndex())), getCreature(), pSister->getCreature());
-        getCreature()->addAura(pAura);
+        auto pAura = sSpellMgr.newAura(spellInfo, (int32_t)GetDuration(sSpellDurationStore.lookupEntry(spellInfo->getDurationIndex())), getCreature(), pSister->getCreature());
+        getCreature()->addAura(std::move(pAura));
         setZoneWideCombat(pSister->getCreature());
     }
 
@@ -153,7 +153,7 @@ void TwinsAI::OnReachWP(uint32_t type, uint32_t id)
 {
     if (type == SPLINE_CHAIN_MOTION_TYPE && id == twins::POINT_INITIAL_MOVEMENT)
     {
-        setImmuneToPC(false);
+        setIgnorePlayerCombat(false);
         setReactState(REACT_AGGRESSIVE);
 
         if (getCreature()->getEntry() == NPC_FJOLA_LIGHTBANE)

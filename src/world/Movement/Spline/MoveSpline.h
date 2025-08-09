@@ -120,7 +120,7 @@ public:
 
 #if VERSION_STRING >= WotLK
     bool HasAnimation() const { return splineflags.animation; }
-    AnimationTier GetAnimationTier() const { return static_cast<AnimationTier>(splineflags.animTier); }
+    UnitBytes1_AnimationFlag GetAnimationTier() const { return static_cast<UnitBytes1_AnimationFlag>(splineflags.animTier); }
 #endif
 
     bool onTransport;

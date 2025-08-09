@@ -28,9 +28,9 @@ CreatureAIScript* LavanthorAI::Create(Creature* pCreature) { return new Lavantho
 void LavanthorAI::OnLoad()
 {
     getCreature()->getMovementManager()->moveTargetedHome();
-    getCreature()->getAIInterface()->setImmuneToNPC(true);
-    getCreature()->getAIInterface()->setImmuneToPC(true);
-    getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
+    getCreature()->getAIInterface()->setIgnoreCreatureCombat(true);
+    getCreature()->getAIInterface()->setIgnorePlayerCombat(true);
+    getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
 }
 
 void LavanthorAI::OnDied(Unit* /*_killer*/)

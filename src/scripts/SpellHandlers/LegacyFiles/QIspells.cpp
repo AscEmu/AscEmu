@@ -3036,7 +3036,7 @@ bool CastFishingNet(uint8_t /*effectIndex*/, Spell* pSpell)
     return true;
 }
 
-uint32 const pathSize = 22;
+uint32_t const pathSize = 22;
 G3D::Vector3 const InducingVisionPath[pathSize] =
 {
     { -2240.52f, -407.11f, -9.42f },

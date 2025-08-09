@@ -23,5 +23,5 @@ public:
 
 protected:
     BasePath _path;
-    uint32 _currentNode;
+    uint32_t _currentNode;
 };

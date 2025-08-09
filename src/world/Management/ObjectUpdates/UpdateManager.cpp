@@ -88,11 +88,11 @@ void UpdateManager::processPendingUpdates()
     m_owner->sendTimeSync();
 }
 
-void UpdateManager::queueDelayedPacket(WorldPacket * packet)
+void UpdateManager::queueDelayedPacket(std::unique_ptr<WorldPacket> packet)
 {
     std::lock_guard packet_guard(m_mutexDelayedPackets);
 
-    m_delayedPackets.emplace_back(std::unique_ptr<WorldPacket>(packet));
+    m_delayedPackets.emplace_back(std::move(packet));
 }
 
 size_t UpdateManager::calculateBufferSize() const

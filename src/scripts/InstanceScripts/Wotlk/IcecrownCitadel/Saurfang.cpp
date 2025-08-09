@@ -90,7 +90,7 @@ void MuradinSaurfangEvent::AIUpdate(unsigned long time_passed)
                 sendDBChatMessage(SAY_INTRO_ALLIANCE_5_SE);
 
                 // Charge
-                getCreature()->getMovementManager()->moveCharge(chargePos[0].getPositionX(), chargePos[0].getPositionY(), chargePos[0].getPositionZ(), 8.5f, POINT_CHARGE); 
+                getCreature()->getMovementManager()->moveCharge(chargePos[0], 8.5f, POINT_CHARGE);
 
                 for (auto itr = _guardList.begin(); itr != _guardList.end(); ++itr)
                     (*itr)->GetScript()->DoAction(ACTION_CHARGE);
@@ -153,7 +153,7 @@ void MuradinSaurfangEvent::AIUpdate(unsigned long time_passed)
                 if (outroNpc && outroNpc->GetScript())
                 {
                     outroNpc->GetScript()->setCanEnterCombat(false);
-                    outroNpc->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
+                    outroNpc->addUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
                     outroNpc->GetScript()->DoAction(ACTION_START_OUTRO);
                 }
 
@@ -473,7 +473,7 @@ void OverlordSaurfangEvent::AIUpdate(unsigned long time_passed)
                 sendDBChatMessage(SAY_INTRO_HORDE_8_SE);
 
                 // Charge
-                getCreature()->getMovementManager()->moveCharge(chargePos[0].getPositionX(), chargePos[0].getPositionY(), chargePos[0].getPositionZ(), 8.5f, POINT_CHARGE);
+                getCreature()->getMovementManager()->moveCharge(chargePos[0], 8.5f, POINT_CHARGE);
                 break;
             }
             case EVENT_OUTRO_HORDE_2_SE:   // say
@@ -852,7 +852,7 @@ void DeathbringerSaurfangAI::Reset()
     _dead = false;
 
     setCanEnterCombat(false);
-    getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
+    getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
 
     getCreature()->setPower(POWER_TYPE_ENERGY, 0);
     _castAISpell(ZeroPowerSpell);
@@ -899,7 +899,7 @@ void DeathbringerSaurfangAI::AIUpdate(unsigned long time_passed)
                 sendDBChatMessage(SAY_DEATHBRINGER_INTRO_ALLIANCE_7);
                 _castAISpell(GripOfAgonySpell);
                 setCanEnterCombat(true);
-                getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
+                getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
                 break;
             }
             case EVENT_INTRO_HORDE_2_SE:
@@ -919,7 +919,7 @@ void DeathbringerSaurfangAI::AIUpdate(unsigned long time_passed)
                 sendDBChatMessage(SAY_DEATHBRINGER_INTRO_HORDE_9);
                 _castAISpell(GripOfAgonySpell);
                 setCanEnterCombat(true);
-                getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
+                getCreature()->removeUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
                 break;
             }
             case EVENT_INTRO_FINISH_SE:
@@ -991,7 +991,7 @@ void DeathbringerSaurfangAI::DamageTaken(Unit* _attacker, uint32_t* damage)
         getCreature()->addUnitStateFlag(UNIT_STATE_EVADING);
 
         getCreature()->getAIInterface()->eventUnitDied(_attacker, 0);
-        getCreature()->getAIInterface()->engagementOver();
+        getCreature()->getAIInterface()->combatStop();
 
         _castAISpell(AchievementSpell);
         _castAISpell(ReputationBossSpell);
@@ -1001,7 +1001,7 @@ void DeathbringerSaurfangAI::DamageTaken(Unit* _attacker, uint32_t* damage)
 
         // Prepare for Outro
         getCreature()->addUnitFlags(UNIT_FLAG_NOT_SELECTABLE);
-        getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
+        getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
 
         Creature* Commander = mInstance->getInstance()->getInterface()->findNearestCreature(getCreature(), mInstance->getInstance()->getTeamIdInInstance() ? NPC_SE_HIGH_OVERLORD_SAURFANG : NPC_SE_MURADIN_BRONZEBEARD, 250.0f);
         if (Commander)
@@ -1026,7 +1026,7 @@ void DeathbringerSaurfangAI::DoAction(int32_t const action)
         case PHASE_INTRO_A:
         case PHASE_INTRO_H:
         {     
-            setScriptPhase(uint32(action));
+            setScriptPhase(uint32_t(action));
 
             // Move
             getCreature()->getMovementManager()->movePoint(POINT_SAURFANG, deathbringerPos.getPositionX(), deathbringerPos.getPositionY(), deathbringerPos.getPositionZ());
@@ -1196,7 +1196,7 @@ void NpcSaurfangEventAI::DoAction(int32_t const action)
         {
             if (_index)
             {
-                getCreature()->getMovementManager()->moveCharge(chargePos[_index].getPositionX(), chargePos[_index].getPositionY(), chargePos[_index].getPositionZ(), 8.5f, POINT_CHARGE);
+                getCreature()->getMovementManager()->moveCharge(chargePos[_index], 8.5f, POINT_CHARGE);
             }
             break;
         }

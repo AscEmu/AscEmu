@@ -22,14 +22,14 @@ namespace AscEmu::Packets
         uint64_t playerGuid;
         uint8_t icon;
         uint64_t guid;
-        std::shared_ptr<Group> group;
+        Group const* group;
 
         MsgRaidTargetUpdate() : MsgRaidTargetUpdate(0, 0, 0, 0, nullptr)
         {
         }
 
-        MsgRaidTargetUpdate(uint8_t option, uint64_t playerGuid, uint8_t icon, uint64_t guid, std::shared_ptr<Group> group) :
-            ManagedPacket(MSG_RAID_TARGET_UPDATE, 0),
+        MsgRaidTargetUpdate(uint8_t option, uint64_t playerGuid, uint8_t icon, uint64_t guid, Group const* group) :
+            ManagedPacket(MSG_RAID_TARGET_UPDATE, 1),
             option(option),
             playerGuid(playerGuid),
             icon(icon),
@@ -39,6 +39,8 @@ namespace AscEmu::Packets
         }
 
     protected:
+        size_t expectedSize() const override { return 1 + static_cast<size_t>(option == 0 ? 17 : (9 * iconCount)); }
+
         bool internalSerialise(WorldPacket& packet) override
         {
             packet << option;

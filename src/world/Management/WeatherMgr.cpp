@@ -91,23 +91,20 @@ WeatherMgr& WeatherMgr::getInstance()
 
 void WeatherMgr::finalize()
 {
-    for (auto& m_zoneWeather : m_zoneWeathers)
-        delete m_zoneWeather.second;
-
     m_zoneWeathers.clear();
 }
 
 void WeatherMgr::loadFromDB()
 {
     sLogger.info("Loading Weather...");
-    QueryResult* result = WorldDatabase.Query("SELECT zoneId,high_chance,high_type,med_chance,med_type,low_chance,low_type FROM weather");
+    auto result = WorldDatabase.Query("SELECT zoneId,high_chance,high_type,med_chance,med_type,low_chance,low_type FROM weather");
     if (!result)
         return;
 
     do
     {
         Field* fields = result->Fetch();
-        WeatherInfo* weatherInfo = new WeatherInfo;
+        auto weatherInfo = std::make_unique<WeatherInfo>();
         weatherInfo->m_zoneId = fields[0].asUint32();
         weatherInfo->m_effectValues[0] = fields[1].asUint32();  // high_chance
         weatherInfo->m_effectValues[1] = fields[2].asUint32();  // high_type
@@ -115,14 +112,12 @@ void WeatherMgr::loadFromDB()
         weatherInfo->m_effectValues[3] = fields[4].asUint32();  // med_type
         weatherInfo->m_effectValues[4] = fields[5].asUint32();  // low_chance
         weatherInfo->m_effectValues[5] = fields[6].asUint32();  // low_type
-        m_zoneWeathers[weatherInfo->m_zoneId] = weatherInfo;
+        const auto [itr, _] = m_zoneWeathers.try_emplace(fields[0].asUint32(), std::move(weatherInfo));
 
-        weatherInfo->_generateWeather();
+        itr->second->_generateWeather();
     }
     while (result->NextRow());
     sLogger.info("WeatherMgr : Loaded weather information for {} zones.", result->GetRowCount());
-
-    delete result;
 }
 
 void WeatherMgr::sendWeather(Player* plr)

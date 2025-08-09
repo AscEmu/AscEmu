@@ -41,7 +41,7 @@ void ChampionControllerAI::DoAction(int32_t action)
                 {
                     summon->getAIInterface()->setReactState(REACT_AGGRESSIVE);
                     summon->removeUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
-                    summon->getAIInterface()->setImmuneToPC(false);
+                    summon->getAIInterface()->setIgnorePlayerCombat(false);
                 }
             }
         } break;
@@ -101,7 +101,7 @@ void ChampionControllerAI::summonChampions()
     for (uint8_t i = 10; i < 20; i++)
         vChampionJumpTarget.push_back(FactionChampionLoc[i]);
 
-    std::vector<uint32> vChampionEntries = selectChampions(teamInInstance);
+    std::vector<uint32_t> vChampionEntries = selectChampions(teamInInstance);
 
     for (uint8_t i = 0; i < vChampionEntries.size(); ++i)
     {
@@ -112,7 +112,7 @@ void ChampionControllerAI::summonChampions()
             summons.summon(champion);
             champion->getAIInterface()->setReactState(REACT_PASSIVE);
             champion->setUnitFlags(UNIT_FLAG_NON_ATTACKABLE);
-            champion->getAIInterface()->setImmuneToPC(false);
+            champion->getAIInterface()->setIgnorePlayerCombat(false);
 
             if (teamInInstance == TEAM_ALLIANCE)
             {
@@ -213,7 +213,7 @@ std::vector<uint32_t> ChampionControllerAI::selectChampions(PlayerTeam playerTea
 FactionChampionsAI::FactionChampionsAI(Creature* pCreature, uint8_t aitype) : CreatureAIScript(pCreature)
 {
     // Add Boundary
-    pCreature->getAIInterface()->addBoundary(new CircleBoundary(LocationVector(563.26f, 139.6f), 75.0));
+    pCreature->getAIInterface()->addBoundary(std::make_unique<CircleBoundary>(LocationVector(563.26f, 139.6f), 75.0));
     mAIType = aitype;
     mTeamInInstance = 0;
 }
@@ -235,22 +235,15 @@ bool FactionChampionsAI::onAttackStart(Unit* target)
     if (!target)
         return true;
 
-    if (target && getCreature()->getAIInterface()->doInitialAttack(target, true))
+    if (target)
     {
+        getCreature()->getAIInterface()->attackStartIfCan(target);
         getCreature()->getThreatManager().addThreat(target, 10.0f, nullptr, true, true);
 
         if (mAIType == champions::AI_MELEE || mAIType == champions::AI_PET)
             moveChase(target);
         else
             moveChase(target, 20.0f);
-
-        // Clear distracted state on attacking
-        if (getCreature()->hasUnitStateFlag(UNIT_STATE_DISTRACTED))
-        {
-            getCreature()->removeUnitStateFlag(UNIT_STATE_DISTRACTED);
-            getMovementManager()->clear();
-        }
-        
     }
 
     return true;

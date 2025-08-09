@@ -38,9 +38,9 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // handle console input
 private:
-    RemoteConsole* mRemoteConsole;
+    std::unique_ptr<RemoteConsole> mRemoteConsole;
 
-    char* mInputBuffer;
+    std::unique_ptr<char[]> mInputBuffer;
     bool isWebClient;
 
     uint32_t mInputBufferLength;

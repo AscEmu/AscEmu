@@ -30,6 +30,7 @@
 #include "Utilities/CallBack.h"
 #include "Management/AddonMgr.h"
 #include <Utilities/utf8.hpp>
+#include <memory>
 #include <string>
 #include "Logging/StringFormat.hpp"
 
@@ -81,7 +82,7 @@ const uint8_t PER_CHARACTER_CACHE_MASK = 0xEA;
 
 struct AccountDataEntry
 {
-    char* data;
+    std::unique_ptr<char[]> data;
     uint32_t sz;
     bool bIsDirty;
 };
@@ -100,9 +101,7 @@ class SERVER_DECL WorldSession
 
         void SendPacket(WorldPacket* packet);
 
-        void OutPacket(uint16 opcode);
-
-        void Delete();
+        void OutPacket(uint16_t opcode);
 
         void SendChatPacket(WorldPacket* data, uint32_t langpos, int32_t lang, WorldSession* originator);
 
@@ -140,16 +139,11 @@ class SERVER_DECL WorldSession
             }
         }
         bool HasFlag(uint32_t flag) { return (_accountFlags & flag) != 0; }
-        uint32 GetFlags() { return _accountFlags; }
+        uint32_t GetFlags() { return _accountFlags; }
 
         // GM Permission System
         void LoadSecurity(std::string securitystring);
-        char* GetPermissions() const
-        {
-            char* charPtr = new char[permissions.size() + 1];
-            std::strcpy(charPtr, permissions.c_str());
-            return charPtr;
-        }
+        std::unique_ptr<char[]> GetPermissions() const;
 
     //MIT
     bool hasPermissions() const;
@@ -166,15 +160,12 @@ class SERVER_DECL WorldSession
         }
         void SetPlayer(Player* plr) { _player = plr; }
 
-        void SetAccountData(uint32_t index, char* data, bool initial, uint32_t sz)
+        void SetAccountData(uint32_t index, std::unique_ptr<char[]> data, bool initial, uint32_t sz)
         {
             if (index >= 8)
                 return;
 
-            if (sAccountData[index].data)
-                delete[] sAccountData[index].data;
-
-            sAccountData[index].data = data;
+            sAccountData[index].data = std::move(data);
             sAccountData[index].sz = sz;
 
             if (!initial && !sAccountData[index].bIsDirty)      // Mark as "changed" or "dirty"
@@ -183,7 +174,7 @@ class SERVER_DECL WorldSession
                 sAccountData[index].bIsDirty = false;
         }
 
-        AccountDataEntry* GetAccountData(uint32 index);
+        AccountDataEntry* GetAccountData(uint32_t index);
 
         void SetLogoutTimer(uint32_t ms)
         {
@@ -195,7 +186,7 @@ class SERVER_DECL WorldSession
 
         void LogoutPlayer(bool Save);
 
-        void QueuePacket(std::shared_ptr<WorldPacket> packet);
+        void QueuePacket(std::unique_ptr<WorldPacket> packet);
 
         void OutPacket(uint16_t opcode, uint16_t len, const void* data);
 
@@ -626,9 +617,9 @@ protected:
         //////////////////////////////////////////////////////////////////////////////////////////
         // MiscHandler.cpp
     public:
-        void sendAccountDataTimes(uint32 mask);
+        void sendAccountDataTimes(uint32_t mask);
         void sendMOTD();
-        void sendClientCacheVersion(uint32 version);    //> TBC
+        void sendClientCacheVersion(uint32_t version);    //> TBC
 
     protected:
         void handleStandStateChangeOpcode(WorldPacket& recvPacket);
@@ -791,7 +782,7 @@ protected:
         //////////////////////////////////////////////////////////////////////////////////////////
         // QuestHandler.cpp
     public:
-        WorldPacket* buildQuestQueryResponse(QuestProperties const* qst);
+        std::unique_ptr<WorldPacket> buildQuestQueryResponse(QuestProperties const* qst);
 
     protected:
         void handleQuestPushResultOpcode(WorldPacket& recvPacket);
@@ -917,16 +908,16 @@ protected:
         bool has_level_55_char; // death knights
         bool has_dk;
 #endif
-        // uint16 _TEMP_ERR_CREATE_CODE; // increments
+        // uint16_t _TEMP_ERR_CREATE_CODE; // increments
         uint8_t _side;
 
         WoWGuid m_MoverWoWGuid;
 
         uint32_t _logoutTime; // time we received a logout request -- wait 20 seconds, and quit
 
-        AccountDataEntry sAccountData[8]{};
+        std::array<AccountDataEntry, 8> sAccountData{};
 
-        ThreadSafeQueue<std::shared_ptr<WorldPacket>> _recvQueue;
+        ThreadSafeQueue<std::unique_ptr<WorldPacket>> _recvQueue;
         std::string permissions;
 
         bool _loggingOut; // Player is being removed from the game.

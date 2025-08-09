@@ -124,7 +124,7 @@ void WorldSession::handleTaxiQueryAvaibleNodesOpcode(WorldPacket& recvPacket)
     sLogger.debug("WORLD: Received CMSG_TAXIQUERYAVAILABLENODES");
 
     // cheating checks
-    Creature* unit = GetPlayer()->getCreatureWhenICanInteract(WoWGuid(srlPacket.creatureGuid), UNIT_NPC_FLAG_FLIGHTMASTER);
+    Creature* unit = GetPlayer()->getCreatureWhenICanInteract(WoWGuid(srlPacket.creatureGuid), UNIT_NPC_FLAG_TAXI);
     if (!unit)
     {
         SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_TaxiTooFarAway).serialise().get());
@@ -153,7 +153,7 @@ void WorldSession::handleEnabletaxiOpcode(WorldPacket& recvPacket)
     sLogger.debug("WORLD: Received CMSG_ENABLETAXI");
 
     // cheating checks
-    Creature* unit = GetPlayer()->getCreatureWhenICanInteract(srlPacket.creatureGuid, UNIT_NPC_FLAG_FLIGHTMASTER);
+    Creature* unit = GetPlayer()->getCreatureWhenICanInteract(srlPacket.creatureGuid, UNIT_NPC_FLAG_TAXI);
     if (!unit)
     {
         SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_TaxiTooFarAway).serialise().get());
@@ -177,7 +177,7 @@ void WorldSession::handleActivateTaxiOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ACTIVATE_TAXI");
 
-    Creature* npc = GetPlayer()->getCreatureWhenICanInteract(srlPacket.guid, UNIT_NPC_FLAG_FLIGHTMASTER);
+    Creature* npc = GetPlayer()->getCreatureWhenICanInteract(srlPacket.guid, UNIT_NPC_FLAG_TAXI);
     if (!npc)
     {
         SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_TaxiTooFarAway).serialise().get());
@@ -208,7 +208,7 @@ void WorldSession::handleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_ACTIVATE_TAXI_EXPRESS");
 
-    Creature* npc = GetPlayer()->getCreatureWhenICanInteract(srlPacket.guid, UNIT_NPC_FLAG_FLIGHTMASTER);
+    Creature* npc = GetPlayer()->getCreatureWhenICanInteract(srlPacket.guid, UNIT_NPC_FLAG_TAXI);
     if (!npc)
     {
         SendPacket(SmsgActivateTaxiReply(TaxiNodeError::ERR_TaxiTooFarAway).serialise().get());

@@ -20,7 +20,7 @@ void CalendarMgr::loadFromDB()
     {
         const char* loadCalendarEvents = "SELECT entry, creator, title, description, type, dungeon, date, flags FROM calendar_events";
         bool success = false;
-        QueryResult* result = CharacterDatabase.Query(&success, loadCalendarEvents);
+        auto result = CharacterDatabase.Query(&success, loadCalendarEvents);
         if (!success)
         {
             sLogger.failure("Query failed: {}", loadCalendarEvents);
@@ -42,15 +42,13 @@ void CalendarMgr::loadFromDB()
                 time_t date = fields[6].asUint32();
                 uint32_t flags = fields[7].asUint32();
 
-                CalendarEvent* calendarEvent = new CalendarEvent(static_cast<uint32_t>(entry), creator, title, description, type, dungeon, date, flags);
-                m_events.insert(calendarEvent);
+                const auto [eventItr, _] = m_events.emplace(std::make_unique<CalendarEvent>(static_cast<uint32_t>(entry), creator, title, description, type, dungeon, date, flags));
 
-                sLogger.debug("Title {} loaded", calendarEvent->m_title); // remove me ;-)
+                sLogger.debug("Title {} loaded", eventItr->get()->m_title); // remove me ;-)
 
                 ++count;
             }
             while (result->NextRow());
-            delete result;
 
             sLogger.info("CalendarMgr : {} calendar events loaded from table calendar_events", count);
         }
@@ -60,7 +58,7 @@ void CalendarMgr::loadFromDB()
     {
         const char* loadCalendarInvites = "SELECT `id`, `event`, `invitee`, `sender`, `status`, `statustime`, `rank`, `text` FROM `calendar_invites`";
         bool success = false;
-        QueryResult* result = CharacterDatabase.Query(&success, loadCalendarInvites);
+        auto result = CharacterDatabase.Query(&success, loadCalendarInvites);
         if (!success)
         {
             sLogger.failure("Query failed: {}", loadCalendarInvites);
@@ -82,13 +80,11 @@ void CalendarMgr::loadFromDB()
                 uint32_t rank = fields[6].asUint32();
                 std::string text = fields[7].asCString();
 
-                auto invite = new CalendarInvite(invite_id, event, invitee, sender, status, statustime, rank, text);
-                m_invites[event].push_back(invite);
+                m_invites[event].emplace_back(std::make_unique<CalendarInvite>(invite_id, event, invitee, sender, status, statustime, rank, text));
 
                 ++count;
             }
             while (result->NextRow());
-            delete result;
             sLogger.info("CalendarMgr : Loaded {} calendar invites", count);
         }
     }

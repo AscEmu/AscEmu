@@ -113,6 +113,22 @@ void TaxiPath::initTaxiNodesForLevel(uint32_t race, uint32_t chrClass, uint8_t l
             setTaximaskNode(94);
             break;
 #endif
+#if VERSION_STRING >= Cata
+        case RACE_GOBLIN:
+            setTaximaskNode(23);
+            break;
+        case RACE_WORGEN:
+            setTaximaskNode(2);
+            break;
+#endif
+#if VERSION_STRING >= Mop   
+        case RACE_PANDAREN_ALLIANCE:
+            setTaximaskNode(2);
+            break;
+        case RACE_PANDAREN_HORDE:
+            setTaximaskNode(23);
+            break;
+#endif
         default:
             break;
     }
@@ -397,7 +413,7 @@ void TaxiMgr::loadTaxiNodeLevelData()
     auto oldMSTime = Util::TimeNow();
 
     //                                               0            1
-    QueryResult* result = WorldDatabase.Query("SELECT TaxiNodeId, `Level` FROM taxi_level_data ORDER BY TaxiNodeId ASC");
+    auto result = WorldDatabase.Query("SELECT TaxiNodeId, `Level` FROM taxi_level_data ORDER BY TaxiNodeId ASC");
 
     if (!result)
     {
@@ -445,7 +461,7 @@ void TaxiMgr::initialize()
 
     // Initialize global taxinodes mask
     // include existed nodes that have at least single not spell base (scripted) path
-    std::set<uint32> spellPaths;
+    std::set<uint32_t> spellPaths;
 
 #if VERSION_STRING > WotLK
     for (uint32_t i = 0; i < sSpellEffectStore.getNumRows(); ++i)

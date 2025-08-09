@@ -68,9 +68,7 @@ void WorldSession::handleGroupInviteResponseOpcode(WorldPacket& recvPacket)
         }
         else
         {
-            // Added into ObjectMgr, should not leak memory
-            group = std::make_shared<Group>(true);
-            sObjectMgr.addGroup(group);
+            group = sObjectMgr.createGroup();
             group->m_difficulty = group_inviter->m_dungeonDifficulty;
             group->AddMember(group_inviter->m_playerInfo);
             group->AddMember(_player->m_playerInfo);
@@ -527,8 +525,7 @@ void WorldSession::handleGroupAcceptOpcode(WorldPacket& /*recvPacket*/)
     auto group = player->getGroup();
     if (group == nullptr)
     {
-        group = std::make_shared<Group>(true);
-        sObjectMgr.addGroup(group);
+        group = sObjectMgr.createGroup();
         group->AddMember(player->getPlayerInfo());
         group->AddMember(_player->getPlayerInfo());
         group->m_difficulty = player->m_dungeonDifficulty;
@@ -853,7 +850,7 @@ void WorldSession::handleGroupPromote(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    std::shared_ptr<CachedCharacterInfo> playerInfo = nullptr;
+    CachedCharacterInfo* playerInfo = nullptr;
 
     if (srlPacket.isActivated)
         playerInfo = sObjectMgr.getCachedCharacterInfo(srlPacket.guid.getGuidLow());

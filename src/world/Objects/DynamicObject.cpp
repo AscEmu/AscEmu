@@ -138,7 +138,7 @@ void DynamicObject::updateTargets()
 
             if (getDistanceSq(target) <= radius)
             {
-                Aura* aura = sSpellMgr.newAura(m_spellInfo, m_aliveDuration, m_unitCaster, target, true);
+                auto aura = sSpellMgr.newAura(m_spellInfo, m_aliveDuration, m_unitCaster, target, true);
                 for (uint8_t i = 0; i < 3; ++i)
                 {
                     if (m_spellInfo->getEffect(i) == SPELL_EFFECT_PERSISTENT_AREA_AURA)
@@ -148,7 +148,7 @@ void DynamicObject::updateTargets()
                     }
                 }
 
-                target->addAura(aura);
+                target->addAura(std::move(aura));
 
                 m_targets.insert(target->getGuid());
             }
@@ -223,7 +223,11 @@ void DynamicObject::setCasterGuid(uint64_t guid) { write(dynamicObjectData()->ca
 
 //bytes start
 uint8_t DynamicObject::getDynamicType() const { return dynamicObjectData()->dynamicobject_bytes.s.type; }
+#if VERSION_STRING < Cata
 void DynamicObject::setDynamicType(uint8_t type) { write(dynamicObjectData()->dynamicobject_bytes.s.type, type); }
+#else
+void DynamicObject::setDynamicType(uint8_t type) { write(dynamicObjectData()->dynamicobject_bytes.s.type, static_cast<uint32_t>(type)); }
+#endif
 //bytes end
 
 uint32_t DynamicObject::getSpellId() const { return dynamicObjectData()->spell_id; }

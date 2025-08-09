@@ -14,12 +14,12 @@ namespace WDB
     template <class T>
     class WDBContainer
     {
-        typedef std::list<char*> StringPoolList;
+        typedef std::list<std::unique_ptr<char[]>> StringPoolList;
 
     public:
         WDBContainer() : m_row_count(0), m_field_count(0), m_data_table(nullptr)
         {
-            m_index_table.as_t = NULL;
+            m_index_table.as_t = nullptr;
         }
 
         ~WDBContainer()
@@ -47,14 +47,14 @@ namespace WDB
             return m_row_count;
         }
 
-        void setFormat(const char* _format)
+        void setFormat(std::unique_ptr<const char[]> _format)
         {
-            m_format = _format;
+            m_format = std::move(_format);
         }
 
         char const* getFormat() const
         {
-            return m_format;
+            return m_format.get();
         }
 
         uint32_t getFieldCount() const
@@ -71,50 +71,47 @@ namespace WDB
 
             // Only continue if load is successful
             if (fileSuffix == ".dbc")
-                if (!dbc_loader.load(_dbcFilename, m_format))
+                if (!dbc_loader.load(_dbcFilename, m_format.get()))
                     return false;
 
             if (fileSuffix == ".db2")
-                if (!dbc_loader.loadDb2(_dbcFilename, m_format))
+                if (!dbc_loader.loadDb2(_dbcFilename, m_format.get()))
                     return false;
 
             m_field_count = dbc_loader.getNumColumns();
 
-            m_data_table = reinterpret_cast<T*>(dbc_loader.autoProduceData(m_format, m_row_count, m_index_table.as_char));
+            m_data_table = dbc_loader.autoProduceData(m_format.get(), m_row_count, m_index_table.as_char);
 
-            m_string_pool_list.push_back(dbc_loader.autoProduceStrings(m_format, reinterpret_cast<char*>(m_data_table)));
+            m_string_pool_list.emplace_back(dbc_loader.autoProduceStrings(m_format.get(), m_data_table.get()));
 
-            return m_index_table.as_t != NULL;
+            return m_index_table.as_t != nullptr;
         }
 
         bool loadStringsFrom(char const* _dbcFilename)
         {
             // DBCs must already be loaded using Load
-            if (!m_index_table.as_t)
+            if (m_index_table.as_t == nullptr)
                 return false;
 
             WDB::WDBLoader dbc_loader;
             // Only continue if Load was successful
-            if (!dbc_loader.load(_dbcFilename, m_format))
+            if (!dbc_loader.load(_dbcFilename, m_format.get()))
                 return false;
 
-            m_string_pool_list.push_back(dbc_loader.autoProduceStrings(m_format, reinterpret_cast<char*>(m_data_table)));
+            m_string_pool_list.emplace_back(dbc_loader.autoProduceStrings(m_format.get(), m_data_table.get()));
             return true;
         }
 
         void clear()
         {
-            if (!m_index_table.as_t)
+            if (m_index_table.as_t == nullptr)
                 return;
 
-            delete[] reinterpret_cast<char*>(m_index_table.as_t);
-            m_index_table.as_t = NULL;
-            delete[] reinterpret_cast<char*>(m_data_table);
-            m_data_table = NULL;
+            m_index_table.as_t = nullptr;
+            m_data_table = nullptr;
 
             while (!m_string_pool_list.empty())
             {
-                delete[] m_string_pool_list.front();
                 m_string_pool_list.pop_front();
             }
 
@@ -122,17 +119,20 @@ namespace WDB
         }
 
     private:
-        char const* m_format;
+        std::unique_ptr<const char[]> m_format;
         uint32_t m_row_count;
         uint32_t m_field_count;
 
-        union
+        union IndexTableUnion
         {
             T** as_t;
-            char** as_char;
+            std::unique_ptr<char*[]> as_char;
+
+            IndexTableUnion() : as_t(nullptr) {}
+            ~IndexTableUnion() {}
         } m_index_table;
 
-        T* m_data_table;
+        std::unique_ptr<char[]> m_data_table;
         StringPoolList m_string_pool_list;
 
         WDBContainer(WDBContainer const& _right) = delete;

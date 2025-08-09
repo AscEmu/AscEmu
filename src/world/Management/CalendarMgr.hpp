@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <memory>
 #include <utility>
 #include <vector>
 #include <set>
@@ -87,8 +88,8 @@ struct CalendarInvite
     std::string m_text;
 };
 
-typedef std::vector<CalendarInvite*> CalendarInviteStore;
-typedef std::set<CalendarEvent*> CalendarEventStore;
+typedef std::vector<std::unique_ptr<CalendarInvite>> CalendarInviteStore;
+typedef std::set<std::unique_ptr<CalendarEvent>> CalendarEventStore;
 typedef std::map<uint64_t /* eventId */, CalendarInviteStore > CalendarEventInviteStore;
 
 class CalendarMgr

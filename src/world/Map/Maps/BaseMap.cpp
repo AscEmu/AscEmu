@@ -16,8 +16,6 @@ This file is released under the MIT license. See README-MIT for more information
 BaseMap::BaseMap(uint32_t mapId, MySQLStructure::MapInfo const* mapInfo, WDB::Structures::MapEntry const* mapEntry) :
         _mapEntry(mapEntry), _mapInfo(mapInfo), _mapId(mapId)
 {
-    memset(spawns, 0, sizeof(CellSpawns*) * Map::Cell::_sizeX);
-
     //new stuff Load Spawns
     loadSpawns(false);
 
@@ -38,19 +36,15 @@ BaseMap::~BaseMap()
         {
             for (uint32_t y = 0; y < Map::Cell::_sizeY; y++)
             {
-                if (spawns[x][y])
+                if ((*spawns[x])[y])
                 {
-                    CellSpawns* sp = spawns[x][y];
+                    CellSpawns* sp = (*spawns[x])[y].get();
                     for (CreatureSpawnList::iterator i = sp->CreatureSpawns.begin(); i != sp->CreatureSpawns.end(); ++i)
                         delete(*i);
                     for (GameobjectSpawnList::iterator it = sp->GameobjectSpawns.begin(); it != sp->GameobjectSpawns.end(); ++it)
                         delete(*it);
-
-                    delete sp;
-                    spawns[x][y] = NULL;
                 }
             }
-            delete[] spawns[x];
         }
     }
 
@@ -74,35 +68,33 @@ uint32_t BaseMap::getMapId() const
     return _mapEntry->id;
 }
 
-bool BaseMap::instanceable() const
-{
-    return _mapEntry && _mapEntry->instanceable();
-}
-
 bool BaseMap::isDungeon() const
 {
-    return _mapEntry && _mapEntry->isDungeon();
-}
-
-bool BaseMap::isNonRaidDungeon() const
-{
-    return _mapEntry && _mapEntry->isNonRaidDungeon();
+    if (_mapEntry == nullptr || _mapInfo == nullptr)
+        return false;
+    return _mapEntry->isDungeon() && (_mapInfo->isDungeon() || _mapInfo->isMultimodeDungeon());
 }
 
 bool BaseMap::isRaid() const
 {
-    return _mapEntry && _mapEntry->isRaid();
+    if (_mapEntry == nullptr || _mapInfo == nullptr)
+        return false;
+    return _mapEntry->isRaid() && _mapInfo->isRaid();
 }
 
 bool BaseMap::isBattleground() const
 {
-    return _mapEntry && _mapEntry->isBattleground();
+    if (_mapEntry == nullptr || _mapInfo == nullptr)
+        return false;
+    return _mapEntry->isBattleground() && _mapInfo->isBattlegroundOrArena();
 }
 
-bool BaseMap::isBattleArena() const
+bool BaseMap::isArena() const
 {
 #if VERSION_STRING > Classic
-    return _mapEntry && _mapEntry->isBattleArena();
+    if (_mapEntry == nullptr || _mapInfo == nullptr)
+        return false;
+    return _mapEntry->isArena() && _mapInfo->isBattlegroundOrArena();
 #else
     return false;
 #endif
@@ -110,7 +102,30 @@ bool BaseMap::isBattleArena() const
 
 bool BaseMap::isBattlegroundOrArena() const
 {
-    return _mapEntry && _mapEntry->isBattlegroundOrArena();
+    if (_mapEntry == nullptr || _mapInfo == nullptr)
+        return false;
+    return _mapEntry->isBattlegroundOrArena() && _mapInfo->isBattlegroundOrArena();
+}
+
+bool BaseMap::isWorldMap() const
+{
+    if (_mapEntry == nullptr || _mapInfo == nullptr)
+        return false;
+    return _mapEntry->isWorldMap() && _mapInfo->isWorldMap();
+}
+
+bool BaseMap::isInstanceMap() const
+{
+    if (_mapEntry == nullptr || _mapInfo == nullptr)
+        return false;
+    return _mapEntry->isInstanceMap() && _mapInfo->isInstanceMap();
+}
+
+bool BaseMap::isInstanceableMap() const
+{
+    if (_mapEntry == nullptr || _mapInfo == nullptr)
+        return false;
+    return _mapEntry->isInstanceableMap() && _mapInfo->isInstanceableMap();
 }
 
 bool BaseMap::getEntrancePos(int32_t& mapid, float& x, float& y) const
@@ -132,44 +147,43 @@ void BaseMap::loadSpawns(bool reload)
         {
             for (uint32_t y = 0; y < Map::Cell::_sizeY; y++)
             {
-                if (spawns[x][y])
+                if ((*spawns[x])[y])
                 {
-                    CellSpawns* sp = spawns[x][y];
+                    CellSpawns* sp = (*spawns[x])[y].get();
                     for (CreatureSpawnList::iterator i = sp->CreatureSpawns.begin(); i != sp->CreatureSpawns.end(); ++i)
                         delete(*i);
                     for (GameobjectSpawnList::iterator it = sp->GameobjectSpawns.begin(); it != sp->GameobjectSpawns.end(); ++it)
                         delete(*it);
 
-                    delete sp;
-                    spawns[x][y] = NULL;
+                    (*spawns[x])[y] = nullptr;
                 }
             }
         }
     }
 
     CreatureSpawnCount = 0;
-    for (auto cspawn : sMySQLStore._creatureSpawnsStore[this->_mapId])
+    for (const auto& cspawn : sMySQLStore._creatureSpawnsStore[this->_mapId])
     {
         if (!sMySQLStore.isTransportMap(this->_mapId))
         {
             uint32_t cellx = CellHandler<MapMgr>::getPosX(cspawn->x);
             uint32_t celly = CellHandler<MapMgr>::getPosY(cspawn->y);
-            if (!spawns[cellx])
+            if (spawns[cellx] == nullptr)
             {
-                spawns[cellx] = new CellSpawns * [Map::Cell::_sizeY];
-                memset(spawns[cellx], 0, sizeof(CellSpawns*) * Map::Cell::_sizeY);
+                spawns[cellx] = std::make_unique<std::array<std::unique_ptr<CellSpawns>, Map::Cell::_sizeY>>();
+                std::fill(spawns[cellx]->begin(), spawns[cellx]->end(), nullptr);
             }
 
-            if (!spawns[cellx][celly])
-                spawns[cellx][celly] = new CellSpawns;
+            if ((*spawns[cellx])[celly] == nullptr)
+                (*spawns[cellx])[celly] = std::make_unique<CellSpawns>();
 
-            spawns[cellx][celly]->CreatureSpawns.push_back(cspawn);
+            (*spawns[cellx])[celly]->CreatureSpawns.push_back(cspawn);
             ++CreatureSpawnCount;
         }
     }
 
     GameObjectSpawnCount = 0;
-    for (auto go_spawn : sMySQLStore._gameobjectSpawnsStore[this->_mapId])
+    for (const auto& go_spawn : sMySQLStore._gameobjectSpawnsStore[this->_mapId])
     {
         GameObjectOverrides m_overrides = GAMEOBJECT_NORMAL_DISTANCE;
         if (GameObjectProperties const* gameobject_properties = sMySQLStore.getGameObjectProperties(go_spawn->entry))
@@ -190,16 +204,16 @@ void BaseMap::loadSpawns(bool reload)
             {
                 uint32_t cellx = CellHandler<MapMgr>::getPosX(go_spawn->spawnPoint.x);
                 uint32_t celly = CellHandler<MapMgr>::getPosY(go_spawn->spawnPoint.y);
-                if (spawns[cellx] == NULL)
+                if (spawns[cellx] == nullptr)
                 {
-                    spawns[cellx] = new CellSpawns * [Map::Cell::_sizeY];
-                    memset(spawns[cellx], 0, sizeof(CellSpawns*) * Map::Cell::_sizeY);
+                    spawns[cellx] = std::make_unique<std::array<std::unique_ptr<CellSpawns>, Map::Cell::_sizeY>>();
+                    std::fill(spawns[cellx]->begin(), spawns[cellx]->end(), nullptr);
                 }
 
-                if (!spawns[cellx][celly])
-                    spawns[cellx][celly] = new CellSpawns;
+                if ((*spawns[cellx])[celly] == nullptr)
+                    (*spawns[cellx])[celly] = std::make_unique<CellSpawns>();
 
-                spawns[cellx][celly]->GameobjectSpawns.push_back(go_spawn);
+                (*spawns[cellx])[celly]->GameobjectSpawns.push_back(go_spawn);
 
                 ++GameObjectSpawnCount;
             } break;
@@ -225,7 +239,7 @@ CellSpawns* BaseMap::getSpawnsList(uint32_t cellx, uint32_t celly)
         if (spawns[cellx] == nullptr)
             return nullptr;
 
-        return spawns[cellx][celly];
+        return (*spawns[cellx])[celly].get();
     }
 
     sLogger.failure("BaseMap::getSpawnsList invalid cell count! x: {} (max: {}) y:{} (max: {})", cellx, Map::Cell::_sizeX, celly, Map::Cell::_sizeY);
@@ -238,13 +252,13 @@ CellSpawns* BaseMap::getSpawnsListAndCreate(uint32_t cellx, uint32_t celly)
     {
         if (spawns[cellx] == nullptr)
         {
-            spawns[cellx] = new CellSpawns * [Map::Cell::_sizeY];
-            memset(spawns[cellx], 0, sizeof(CellSpawns*) * Map::Cell::_sizeY);
+            spawns[cellx] = std::make_unique<std::array<std::unique_ptr<CellSpawns>, Map::Cell::_sizeY>>();
+            std::fill(spawns[cellx]->begin(), spawns[cellx]->end(), nullptr);
         }
 
-        if (spawns[cellx][celly] == nullptr)
-            spawns[cellx][celly] = new CellSpawns;
-        return spawns[cellx][celly];
+        if ((*spawns[cellx])[celly] == nullptr)
+            (*spawns[cellx])[celly] = std::make_unique<CellSpawns>();
+        return (*spawns[cellx])[celly].get();
     }
 
     sLogger.failure("BaseMap::getSpawnsListAndCreate invalid cell count! x: {} (max: {}) y:{} (max: {})", cellx, Map::Cell::_sizeX, celly, Map::Cell::_sizeY);

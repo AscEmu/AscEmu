@@ -46,6 +46,7 @@ void WorldStatesHandler::BuildInitWorldStatesForZone(uint32_t _zone, uint32_t _a
     _data << uint32_t(_zone);
     _data << uint32_t(_area);
 
+#if VERSION_STRING > TBC
     const auto itr = m_worldStates.find(_zone);
     if (itr != m_worldStates.end())
     {
@@ -62,15 +63,31 @@ void WorldStatesHandler::BuildInitWorldStatesForZone(uint32_t _zone, uint32_t _a
         _data << uint16_t(2);
     }
 
-#if VERSION_STRING > TBC
+
     _data << uint32_t(3191);
     _data << uint32_t(worldConfig.arena.arenaSeason);
     _data << uint32_t(3901);
     _data << uint32_t(worldConfig.arena.arenaProgress);
+#else
+    uint32_t count = 0;
+    size_t count_pos = _data.wpos();
+    _data << uint16_t(0);
+
+    {
+        _data << uint32_t(3191);
+        if (worldConfig.arena.arenaSeason > 6)
+            _data << uint32_t(6);
+        else
+            _data << uint32_t(worldConfig.arena.arenaSeason);
+
+        ++count;
+    }
+
+    _data.put<uint16_t>(count_pos, count);
 #endif
 }
 
-void WorldStatesHandler::InitWorldStates(std::shared_ptr<std::multimap<uint32_t, WorldState>> _states)
+void WorldStatesHandler::InitWorldStates(std::multimap<uint32_t, WorldState> const* _states)
 {
     if (_states == nullptr)
         return;

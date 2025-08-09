@@ -28,52 +28,46 @@
 #include "WorldPacket.h"
 #include "Logging/Logger.hpp"
 #include "Server/DatabaseDefinition.hpp"
+#include "Utilities/Util.hpp"
 
 namespace Arcemu
 {
-    EquipmentSetMgr::~EquipmentSetMgr()
+    EquipmentSet::EquipmentSet(Field const* fields)
     {
-        for (EquipmentSetStorage::iterator itr = EquipmentSets.begin(); itr != EquipmentSets.end(); ++itr)
-            delete itr->second;
-
-        EquipmentSets.clear();
+        SetGUID = fields[1].asUint32();
+        SetID = fields[2].asUint32();
+        SetName = fields[3].asCString();
+        IconName = fields[4].asCString();
+        for (uint32_t i = 0; i < ItemGUID.size(); ++i)
+            ItemGUID[i] = fields[5 + i].asUint32();
     }
 
-    EquipmentSet* EquipmentSetMgr::GetEquipmentSet(uint32 id)
+    EquipmentSetMgr::~EquipmentSetMgr() = default;
+
+    EquipmentSet* EquipmentSetMgr::GetEquipmentSet(uint32_t id)
     {
         EquipmentSetStorage::iterator itr;
 
         itr = EquipmentSets.find(id);
 
         if (itr != EquipmentSets.end())
-            return itr->second;
+            return itr->second.get();
         else
             return NULL;
     }
 
-    bool EquipmentSetMgr::AddEquipmentSet(uint32 setGUID, EquipmentSet* set)
+    bool EquipmentSetMgr::AddEquipmentSet(uint32_t setGUID, std::unique_ptr<EquipmentSet> set)
     {
-        std::pair< EquipmentSetStorage::iterator, bool > retval;
-
-        retval = EquipmentSets.emplace(std::pair< uint32, EquipmentSet* >(setGUID, set));
-
+        const auto retval = EquipmentSets.emplace(setGUID, std::move(set));
         return retval.second;
     }
 
-    bool EquipmentSetMgr::DeleteEquipmentSet(uint32 setGUID)
+    bool EquipmentSetMgr::DeleteEquipmentSet(uint32_t setGUID)
     {
-        EquipmentSetStorage::iterator itr;
-
-        itr = EquipmentSets.find(setGUID);
-
+        auto itr = EquipmentSets.find(setGUID);
         if (itr != EquipmentSets.end())
         {
-            EquipmentSet* set = itr->second;
-
             EquipmentSets.erase(itr);
-            delete set;
-            set = NULL;
-
             return true;
         }
         else
@@ -85,7 +79,7 @@ namespace Arcemu
         if (result == NULL)
             return false;
 
-        uint32 setcount = 0;
+        uint32_t setcount = 0;
 
         do
         {
@@ -97,18 +91,11 @@ namespace Arcemu
 
             Field* fields = result->Fetch();
 
-            EquipmentSet* set = new EquipmentSet();
-            set->SetGUID = fields[1].asUint32();
-            set->SetID = fields[2].asUint32();
-            set->SetName = fields[3].asCString();
-            set->IconName = fields[4].asCString();
+            EquipmentSets.try_emplace(fields[1].asUint32(), Util::LazyInstanceCreator([fields] {
+                return std::make_unique<EquipmentSet>(fields);
+            }));
 
-            for (uint32 i = 0; i < set->ItemGUID.size(); ++i)
-                set->ItemGUID[i] = fields[5 + i].asUint32();
-
-            EquipmentSets.emplace(std::pair< uint32, EquipmentSet* >(set->SetGUID, set));
             setcount++;
-
         }
         while (result->NextRow());
 
@@ -128,7 +115,7 @@ namespace Arcemu
 
         for (EquipmentSetStorage::iterator itr = EquipmentSets.begin(); itr != EquipmentSets.end(); ++itr)
         {
-            EquipmentSet* set = itr->second;
+            const auto& set = itr->second;
 
             std::stringstream ss;
 
@@ -139,7 +126,7 @@ namespace Arcemu
             ss << CharacterDatabase.EscapeString(set->SetName) << "','";
             ss << set->IconName << "'";
 
-            for (uint32 j = 0; j < set->ItemGUID.size(); ++j)
+            for (uint32_t j = 0; j < set->ItemGUID.size(); ++j)
             {
                 ss << ",'";
                 ss << set->ItemGUID[j];
@@ -156,20 +143,20 @@ namespace Arcemu
 
     void EquipmentSetMgr::FillEquipmentSetListPacket(WorldPacket& data)
     {
-        data << uint32(EquipmentSets.size());
+        data << uint32_t(EquipmentSets.size());
 
         for (EquipmentSetStorage::iterator itr = EquipmentSets.begin(); itr != EquipmentSets.end(); ++itr)
         {
-            EquipmentSet* set = itr->second;
+            const auto& set = itr->second;
 
-            data << WoWGuid(uint64(set->SetGUID));
-            data << uint32(set->SetID);
+            data << WoWGuid(uint64_t(set->SetGUID));
+            data << uint32_t(set->SetID);
             data << std::string(set->SetName);
             data << std::string(set->IconName);
 
-            for (uint32 i = 0; i < set->ItemGUID.size(); ++i)
+            for (uint32_t i = 0; i < set->ItemGUID.size(); ++i)
             {
-                data << WoWGuid(uint64(WoWGuid::createItemGuid(set->ItemGUID[i])));
+                data << WoWGuid(uint64_t(WoWGuid::createItemGuid(set->ItemGUID[i])));
             }
         }
     }

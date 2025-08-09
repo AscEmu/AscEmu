@@ -23,6 +23,7 @@
 #include "DetourNavMesh.h"
 #include "DetourNavMeshQuery.h"
 
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -54,7 +55,7 @@ namespace MMAP
     };
 
 
-    typedef std::unordered_map<uint32_t, MMapData*> MMapDataSet;
+    typedef std::unordered_map<uint32_t, std::unique_ptr<MMapData>> MMapDataSet;
 
     // singleton class
     // holds all all access to mmap loading unloading and meshes

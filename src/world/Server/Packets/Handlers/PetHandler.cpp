@@ -21,6 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgPetActionSound.h"
 #include "Server/WorldSession.h"
 #include "Objects/Units/Creatures/Pet.h"
+#include "Objects/Units/Creatures/Summons/SummonHandler.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Movement/MovementDefines.h"
 #include "Movement/MovementManager.h"
@@ -115,7 +116,7 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
                 {
                     case PET_ACTION_ATTACK:
                     {
-                        if (unitTarget == summonedPet || !summonedPet->isValidTarget(unitTarget))
+                        if (!summonedPet->getAIInterface()->canOwnerAttackUnit(unitTarget))
                         {
                             summonedPet->sendActionFeedback(PET_FEEDBACK_CANT_ATTACK_TARGET);
                             return;
@@ -123,17 +124,12 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
 
                         summonedPet->getAIInterface()->setPetOwner(_player);
                         summonedPet->getMovementManager()->remove(FOLLOW_MOTION_TYPE);
-                        summonedPet->getAIInterface()->onHostileAction(unitTarget, nullptr, true);
+                        summonedPet->getAIInterface()->attackStartUnsafe(unitTarget);
                     }
                     break;
                     case PET_ACTION_FOLLOW:
                     {
-                        if (summonedPet->hasUnitStateFlag(UNIT_STATE_CHASING))
-                            summonedPet->getMovementManager()->remove(CHASE_MOTION_TYPE);
-
-                        summonedPet->getAIInterface()->setPetOwner(_player);
-                        summonedPet->getAIInterface()->setCurrentTarget(nullptr);
-                        summonedPet->getAIInterface()->handleEvent(EVENT_FOLLOWOWNER, summonedPet, 0);
+                        summonedPet->getAIInterface()->enterEvadeMode();
                     }
                     break;
                     case PET_ACTION_STAY:
@@ -197,14 +193,10 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
             break;
             case PET_ACTION_STATE:
             {
-                if (srlPacket.misc == PET_ACTION_STAY) 
-                {
-                    summonedPet->getThreatManager().clearAllThreat();
-                    summonedPet->getThreatManager().removeMeFromThreatLists();
+                // If set to passive pet should stop attacking and return to owner
+                if (srlPacket.misc == REACT_PASSIVE)
+                    summonedPet->getAIInterface()->enterEvadeMode();
 
-                    summonedPet->getAIInterface()->setPetOwner(_player);
-                    summonedPet->getAIInterface()->handleEvent(EVENT_FOLLOWOWNER, summonedPet, 0);
-                }
                 summonedPet->getAIInterface()->setReactState(ReactStates(srlPacket.misc));
 
             }
@@ -440,7 +432,11 @@ void WorldSession::handlePetRename(WorldPacket& recvPacket)
     pet->rename(newName);
 
     pet->setSheathType(SHEATH_STATE_MELEE);
-    pet->removePetFlags(UNIT_CAN_BE_RENAMED);
+#if VERSION_STRING == Classic
+    pet->removeUnitFlags(UNIT_FLAG_PET_CAN_BE_RENAMED);
+#else
+    pet->removePetFlags(PET_FLAG_CAN_BE_RENAMED);
+#endif
 
     if (pet->getPlayerOwner() != nullptr)
     {
@@ -491,8 +487,10 @@ void WorldSession::handlePetUnlearn(WorldPacket& recvPacket)
 #endif
 
     pet->WipeTalents();
+#if VERSION_STRING == WotLK || VERSION_STRING == Cata
     pet->setPetTalentPoints(pet->GetTPsForLevel(pet->getLevel()));
     pet->SendTalentsToOwner();
+#endif
 }
 
 void WorldSession::handlePetSpellAutocast(WorldPacket& recvPacket)

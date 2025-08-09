@@ -21,22 +21,21 @@
 
 namespace VMAP
 {
-    VMapManager2* gVMapManager = nullptr;
+    std::unique_ptr<VMapManager2> gVMapManager = nullptr;
 
     //===============================================
     // just return the instance
     VMapManager2* VMapFactory::createOrGetVMapManager()
     {
         if (gVMapManager == nullptr)
-            gVMapManager= new VMapManager2();                // should be taken from config ... Please change if you like :-)
-        return gVMapManager;
+            gVMapManager = std::make_unique<VMapManager2>();                // should be taken from config ... Please change if you like :-)
+        return gVMapManager.get();
     }
 
     //===============================================
     // delete all internal data structures
     void VMapFactory::clear()
     {
-        delete gVMapManager;
         gVMapManager = nullptr;
     }
 }

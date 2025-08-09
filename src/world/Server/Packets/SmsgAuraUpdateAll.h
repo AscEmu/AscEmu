@@ -117,7 +117,7 @@ namespace AscEmu::Packets
 
                 if (auras.flags & AFLAG_SEND_EFFECT_AMOUNT)
                 {
-                    uint8 effCount = 0;
+                    uint8_t effCount = 0;
                     if (auras.flags & 0x01) // AFLAG_EFFECT_1
                         effCount++;
 
@@ -169,20 +169,20 @@ namespace AscEmu::Packets
                     packet.WriteByteSeq(casterGuid[7]);
                 }
 
-                packet << uint8(auras.flags);
-                packet << uint16(auras.level);
-                packet << uint32(auras.spellId);
+                packet << uint8_t(auras.flags);
+                packet << uint16_t(auras.level);
+                packet << uint32_t(auras.spellId);
 
                 if (auras.flags & AFLAG_DURATION)
                 {
-                    packet << uint32(auras.duration);   //maxduration
-                    packet << uint32(auras.duration);
+                    packet << uint32_t(auras.duration);   //maxduration
+                    packet << uint32_t(auras.duration);
                 }
 
                 // send stack amount for aura which could be stacked (never 0 - causes incorrect display) or charges
                 // stack amount has priority over charges (checked on retail with spell 50262)
-                packet << uint8(auras.stackCount);
-                packet << uint32(0);    //effekt mask
+                packet << uint8_t(auras.stackCount);
+                packet << uint32_t(0);    //effekt mask
 
                 if (auras.flags & AFLAG_SEND_EFFECT_AMOUNT)
                 {
@@ -203,7 +203,7 @@ namespace AscEmu::Packets
 
                 }
 
-                packet << uint8(auras.visualSlot);
+                packet << uint8_t(auras.visualSlot);
             }
 
             packet.WriteByteSeq(targetGuid[2]);

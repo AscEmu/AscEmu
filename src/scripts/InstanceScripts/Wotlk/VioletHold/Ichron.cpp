@@ -39,9 +39,9 @@ void IchronAI::OnLoad()
     initialize();
 
     getCreature()->getMovementManager()->moveTargetedHome();
-    getCreature()->getAIInterface()->setImmuneToNPC(true);
-    getCreature()->getAIInterface()->setImmuneToPC(true);
-    getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_PLAYER_NPC);
+    getCreature()->getAIInterface()->setIgnoreCreatureCombat(true);
+    getCreature()->getAIInterface()->setIgnorePlayerCombat(true);
+    getCreature()->addUnitFlags(UNIT_FLAG_IGNORE_CREATURE_COMBAT);
 
     /// for some reason ichoron can't walk back to it's water basin on evade
     getCreature()->addUnitStateFlag(UNIT_STATE_IGNORE_PATHFINDING);
@@ -95,7 +95,7 @@ void IchronAI::DoAction(int32_t actionId)
             getCreature()->castSpell(getCreature(), Ichron::SPELL_DRAINED, true);
 
             uint32_t damage = getCreature()->getPctFromMaxHealth(30);
-            getCreature()->modHealth(-std::min<int32>(damage, getCreature()->getHealth() - 1));
+            getCreature()->modHealth(-std::min<int32_t>(damage, getCreature()->getHealth() - 1));
 
             for (auto spell : mCreatureAISpells)
             {

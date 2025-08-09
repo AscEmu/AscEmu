@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <map>
 #include <filesystem>
 #include <locale>
+#include <type_traits>
 
 namespace Util
 {
@@ -86,8 +87,69 @@ namespace Util
     uint32_t readMinorVersionFromString(const std::string& fileName);
 
     //////////////////////////////////////////////////////////////////////////////////////////
+    // std::is_specialization_of_v implementation
+
+    // Primary template - not a specialization
+    template <template <typename, typename...> class Template, typename>
+    struct is_specialization_of : std::false_type {};
+
+    // Partial specialization for types with a second parameter as a pack
+    template <template <typename, typename...> class Template, typename T1, typename... Args>
+    struct is_specialization_of<Template, Template<T1, Args...>> : std::true_type {};
+
+    // Helper variable template for convenience
+    template <typename T, template <typename, typename...> class Template>
+    concept is_specialization_of_v = is_specialization_of<Template, T>::value;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // std::is_specialization_of_v implementation for e.g. std::arrays
+
+    // Primary template for types with size_t as the second parameter - not a specialization
+    template <template <typename, size_t> class Template, typename>
+    struct is_size_based_specialization_of : std::false_type {};
+
+    // Partial specialization for types with size_t as the second parameter
+    template <template <typename, size_t> class Template, typename T1, size_t N>
+    struct is_size_based_specialization_of<Template, Template<T1, N>> : std::true_type {};
+
+    // Helper variable template for types with size_t as the second parameter for convenience
+    template <typename T, template <typename, size_t> class Template>
+    concept is_size_based_specialization_of_v = is_size_based_specialization_of<Template, T>::value;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Misc
     unsigned int makeIP(std::string_view _str);
 
     bool parseCIDRBan(uint32_t _ip, uint32_t _mask, uint32_t _maskBits);
+
+    template<class Factory>
+    struct LazyInstanceCreator
+    {
+        /*!
+        * \brief Converts a struct to a specified type using a lazy evaluation approach.
+        *
+        * This struct utilizes an internal lambda factory to generate an instance of the provided type
+        * when a conversion is necessary. It is particularly useful when working with objects and
+        * emplace/try_emplace.
+        *
+        * Important notes:
+        *
+        * - The internal lambda will only be invoked if a conversion is required, ensuring that the
+        * evaluation is lazy and avoids unnecessary overhead. If i.e. emplace operation fails, no
+        * conversion will take place, meaning that resources such as unique_ptr will not be allocated,
+        * preventing even temporary unnecessary memory allocations.
+        *
+        * - Works with both emplace and try_emplace
+        */
+        constexpr LazyInstanceCreator(Factory&& factory) : m_factory(std::move(factory))
+        {
+        }
+
+        constexpr operator auto() const noexcept(std::is_nothrow_invocable_v<const Factory&>)
+        {
+            return m_factory();
+        }
+
+        Factory m_factory;
+    };
 }
