@@ -22,12 +22,12 @@ AscEmu supports several versions as listed below. We achieved to handle differen
 
 Beside our multiversion-core we developed our world database with this attitude. Compared to other projects we are still a small project but with one core and database we are able to work on different versions at the same time. Beside all that we are able to show the changes to the game side by side in our code and database.
 
-Description      | Classic            | TBC                | WotLK              | Cata               | MoP
-:--------------: | :----------------: | :----------------: | :----------------: | :----------------: | :------------:
-Authentification | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:
-Worldsocket      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:
-Char Enum        | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:
-Log into world   | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :x:
+Description       | Classic    | TBC        | WotLK      | Cata       | MoP
+:---------------: | :--------: | :--------: | :--------: | :--------: | :--------:
+Authentification  | ✔️         | ✔️         | ✔️         | ✔️         | ✔️
+Worldsocket       | ✔️         | ✔️         | ✔️         | ✔️         | ✔️
+Char Enum         | ✔️         | ✔️         | ✔️         | ✔️         | ✔️
+Log into world    | ✔️         | ✔️         | ✔️         | ✔️         | ❌
 
 ## Contributing
 Feel free to contribute any corrections but make sure it is useful and tested before opening PRs.
@@ -42,7 +42,7 @@ We strive to make all in-game content to be blizzlike!
 
 Feel free to join our [Discord server](https://discord.com/invite/CBdgrh7).
 
-Click on the "⭐ Star" button to help us gain more visibility on Github!
+Click on the "🌟 Star" button to help us gain more visibility on Github!
 
 ## Opening new issues
 Be patient with us and give us details.
@@ -53,6 +53,7 @@ Be patient with us and give us details.
 ## Install
 HowTo install - detailed guides on our wiki.
 * [Linux](https://ascemu.github.io/Wiki/docs/installation/linux/)
+* [macOS](https://ascemu.github.io/Wiki/docs/installation/macOS/)
 * [Windows](https://ascemu.github.io/Wiki/docs/installation/windows/)
 
 ## Links
