@@ -45,7 +45,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChannelMgr.hpp"
 #include "Chat/ChatCommand.hpp"
 #include "Chat/ChatDefines.hpp"
-#include "Chat/CommandTableStorage.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Macros/AIInterfaceMacros.hpp"
 #include "Macros/CreatureMacros.hpp"

@@ -15,6 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "PerformanceCounter.hpp"
 #include "Utilities/CallBack.h"
+#include "Chat/CommandTableStorage.hpp"
 
 class WorldPacket;
 class WorldSocket;

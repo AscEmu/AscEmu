@@ -13,7 +13,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CommandOverrides.hpp"
 #include "Logging/Logger.hpp"
 
-
 // Register a main command
 void CommandRegistry::registerCommand(const std::string& name, CommandPtr command)
 {
@@ -93,5 +92,5 @@ bool CommandRegistry::executeCommand(const std::string& fullCommand, WorldSessio
         return command->execute(args, session);
     }
 
-    return false;  // Command not found
+    return false; // Command not found
 }

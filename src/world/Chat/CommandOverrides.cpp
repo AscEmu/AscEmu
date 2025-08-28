@@ -20,7 +20,7 @@ void CommandOverrides::loadOverrides()
         std::string command(result->Fetch()[0].asCString());
         std::string permission(result->Fetch()[1].asCString());
         
-        overrides[command] = permission;  // Store in the map
+        overrides[command] = permission; // Store in the map
     }
 }
 
@@ -28,9 +28,9 @@ const std::string* CommandOverrides::getOverride(const std::string& command) con
 {
     auto it = overrides.find(command);
     if (it != overrides.end())
-        return &it->second;  // Return the override permission
+        return &it->second; // Return the override permission
 
-    return nullptr;  // No override found
+    return nullptr; // No override found
 }
 
 size_t CommandOverrides::getSize() const
