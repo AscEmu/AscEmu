@@ -1910,8 +1910,13 @@ void AchievementMgr::giveAchievementReward(WDB::Structures::AchievementEntry con
 
         uint32_t sender = Reward->sender;
         uint64_t receiver = getPlayer()->getGuid();
-        std::string messageSubject = Reward->subject;
-        std::string messageBody = Reward->text;
+
+        const auto loc = (getPlayer()->getSession()->language > 0) ? sMySQLStore.getLocalizedAchievementReward(_entry->ID, getPlayer()->getGender(), getPlayer()->getSession()->language) : nullptr;
+        const auto subject = loc ? loc->subject : Reward->subject;
+        const auto rewardText = loc ? loc->text : Reward->text;
+
+        std::string messageSubject = subject;
+        std::string messageBody = rewardText;
 
         //Create Item
         auto item = sObjectMgr.createItem(Reward->itemId, getPlayer());

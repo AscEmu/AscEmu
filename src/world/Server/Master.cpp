@@ -70,7 +70,7 @@
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20250516-00_characters";
-static const char* REQUIRED_WORLD_DB_VERSION = "20250516-00_creature_spawns";
+static const char* REQUIRED_WORLD_DB_VERSION = "20250829-00_missing_locales_tables";
 
 volatile bool Master::m_stopEvent = false;
 

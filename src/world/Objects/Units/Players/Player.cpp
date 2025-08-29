@@ -9653,7 +9653,12 @@ void Player::sendGossipPoiPacket(float posX, float posY, uint32_t icon, uint32_t
 void Player::sendPoiById(uint32_t id)
 {
     if (const auto pPoi = sMySQLStore.getPointOfInterest(id))
-        sendGossipPoiPacket(pPoi->x, pPoi->y, pPoi->icon, pPoi->flags, pPoi->data, pPoi->iconName);
+    {
+        const auto loc = (m_session->language > 0) ? sMySQLStore.getLocalizedPointsOfInterest(id, m_session->language) : nullptr;
+        const auto name = loc ? loc->iconName : pPoi->iconName;
+
+        sendGossipPoiPacket(pPoi->x, pPoi->y, pPoi->icon, pPoi->flags, pPoi->data, name);
+    }
 }
 
 void Player::sendStopMirrorTimerPacket(MirrorTimerTypes type)

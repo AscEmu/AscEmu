@@ -336,6 +336,16 @@ namespace MySQLStructure
 
     //lfg_dungeon_rewards
 
+    //locales_achievement_reward
+    struct LocalesAchievementReward
+    {
+        uint32_t entry;
+        uint32_t languageCode;
+        uint32_t gender;
+        char* subject;
+        char* text;
+    };
+
     //locales_creature
     struct LocalesCreature
     {
@@ -392,6 +402,14 @@ namespace MySQLStructure
         uint32_t entry;
         uint32_t languageCode;
         char* texts[8][2];
+    };
+
+    //locales_points_of_interest
+    struct LocalesPointsOfInterest
+    {
+        uint32_t entry;
+        uint32_t languageCode;
+        char* iconName;
     };
 
     //locales_quest
@@ -563,7 +581,6 @@ namespace MySQLStructure
         uint32_t race_specific_id;
     };
 
-    //trainer_defs
     //trainer_spells
 
     //transport_data

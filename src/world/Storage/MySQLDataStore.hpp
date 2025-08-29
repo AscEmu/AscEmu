@@ -122,6 +122,7 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // locales
+    typedef std::vector<MySQLStructure::LocalesAchievementReward> LocalesAchievementRewardContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::LocalesCreature> LocalesCreatureContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::LocalesGameobject> LocalesGameobjectContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::LocalesGossipMenuOption> LocalesGossipMenuOptionContainer;
@@ -129,6 +130,7 @@ public:
     typedef std::unordered_map<uint32_t, MySQLStructure::LocalesItemPages> LocalesItemPagesContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::LocalesNpcScriptText> LocalesNpcScriptTextContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::LocalesNpcGossipText> LocalesNpcGossipTextContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::LocalesPointsOfInterest> LocalesPointsOfInterestContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::LocalesQuest> LocalesQuestContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::LocalesWorldbroadcast> LocalesWorldbroadcastContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::LocalesWorldmapInfo> LocalesWorldmapInfoContainer;
@@ -256,6 +258,7 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // locales
+    MySQLStructure::LocalesAchievementReward const* getLocalizedAchievementReward(uint32_t entry, uint32_t gender, uint32_t sessionLocale);
     MySQLStructure::LocalesCreature const* getLocalizedCreature(uint32_t entry, uint32_t sessionLocale);
     MySQLStructure::LocalesGameobject const* getLocalizedGameobject(uint32_t entry, uint32_t sessionLocale);
     MySQLStructure::LocalesGossipMenuOption const* getLocalizedGossipMenuOption(uint32_t entry, uint32_t sessionLocale);
@@ -264,6 +267,7 @@ public:
     MySQLStructure::LocalesItemPages const* getLocalizedItemPages(uint32_t entry, uint32_t sessionLocale);
     MySQLStructure::LocalesNpcScriptText const* getLocalizedNpcScriptText(uint32_t entry, uint32_t sessionLocale);
     MySQLStructure::LocalesNpcGossipText const* getLocalizedNpcGossipText(uint32_t entry, uint32_t sessionLocale) const;
+    MySQLStructure::LocalesPointsOfInterest const* getLocalizedPointsOfInterest(uint32_t entry, uint32_t sessionLocale);
     MySQLStructure::LocalesQuest const* getLocalizedQuest(uint32_t entry, uint32_t sessionLocale);
     MySQLStructure::LocalesWorldbroadcast const* getLocalizedWorldbroadcast(uint32_t entry, uint32_t sessionLocale);
     MySQLStructure::LocalesWorldmapInfo const* getLocalizedWorldmapInfo(uint32_t entry, uint32_t sessionLocale);
@@ -365,6 +369,7 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // locales
+    void loadLocalesAchievementReward();
     void loadLocalesCreature();
     void loadLocalesGameobject();
     void loadLocalesGossipMenuOption();
@@ -372,6 +377,7 @@ public:
     void loadLocalesItemPages();
     void loadLocalesNpcScriptText();
     void loadLocalesNpcText();
+    void loadLocalesPointsOfInterest();
     void loadLocalesQuest();
     void loadLocalesWorldbroadcast();
     void loadLocalesWorldmapInfo();
@@ -451,6 +457,7 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // locales
+    LocalesAchievementRewardContainer _localesAchievementRewardStore;
     LocalesCreatureContainer _localesCreatureStore;
     LocalesGameobjectContainer _localesGameobjectStore;
     LocalesGossipMenuOptionContainer _localesGossipMenuOptionStore;
@@ -458,6 +465,7 @@ public:
     LocalesItemPagesContainer _localesItemPagesStore;
     LocalesNpcScriptTextContainer _localesNpcScriptTextStore;
     LocalesNpcGossipTextContainer _localesNpcGossipTextStore;
+    LocalesPointsOfInterestContainer _localesPointsOfInterestStore;
     LocalesQuestContainer _localesQuestStore;
     LocalesWorldbroadcastContainer _localesWorldbroadcastStore;
     LocalesWorldmapInfoContainer _localesWorldmapInfoStore;

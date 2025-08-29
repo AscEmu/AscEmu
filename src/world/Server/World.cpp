@@ -882,6 +882,7 @@ void World::loadMySQLStores()
     sMySQLStore.loadWordFilterCharacterNames();
     sMySQLStore.loadWordFilterChat();
 
+    sMySQLStore.loadLocalesAchievementReward();
     sMySQLStore.loadLocalesCreature();
     sMySQLStore.loadLocalesGameobject();
     sMySQLStore.loadLocalesGossipMenuOption();
@@ -889,6 +890,7 @@ void World::loadMySQLStores()
     sMySQLStore.loadLocalesItemPages();
     sMySQLStore.loadLocalesNpcScriptText();
     sMySQLStore.loadLocalesNpcText();
+    sMySQLStore.loadLocalesPointsOfInterest();
     sMySQLStore.loadLocalesQuest();
     sMySQLStore.loadLocalesWorldbroadcast();
     sMySQLStore.loadLocalesWorldmapInfo();

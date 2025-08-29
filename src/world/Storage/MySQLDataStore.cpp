@@ -38,7 +38,7 @@ void MySQLDataStore::finalize()
     _professionDiscoveryStore.clear();
 }
 
-static std::vector<std::string> ascemuTables = { "achievement_reward", "ai_threattospellid", "areatriggers", "auctionhouse", "battlemasters", "creature_ai_scripts", "creature_difficulty", "creature_formations", "creature_group_spawn", "creature_initial_equip", "creature_movement_override", "creature_properties", "creature_properties_movement", "creature_quest_finisher", "creature_quest_starter", "creature_script_waypoints", "creature_spawns", "creature_timed_emotes", "creature_waypoints", "display_bounding_boxes", "event_scripts", "fishing", "gameevent_properties", "gameobject_properties", "gameobject_quest_finisher", "gameobject_quest_item_binding", "gameobject_quest_pickup_binding", "gameobject_quest_starter", "gameobject_spawns", "gameobject_spawns_extra", "gameobject_spawns_overrides", "gameobject_teleports", "gossip_menu", "gossip_menu_items", "gossip_menu_option", "graveyards", "guild_rewards", "guild_xp_for_level", "instance_encounters", "item_pages", "item_properties", "item_quest_association", "item_randomprop_groups", "item_randomsuffix_groups", "itemset_linked_itemsetbonus", "lfg_dungeon_rewards", "locales_creature", "locales_gameobject", "locales_gossip_menu_option", "locales_item", "locales_item_pages", "locales_npc_gossip_texts", "locales_npc_script_text", "locales_quest", "locales_worldbroadcast", "locales_worldmap_info", "locales_worldstring_table", "loot_creatures", "loot_fishing", "loot_gameobjects", "loot_items", "loot_pickpocketing", "loot_skinning", "npc_gossip_properties", "npc_gossip_texts", "npc_script_text", "npc_spellclick_spells", "pet_level_abilities", "petdefaultspells", "player_classlevelstats", "player_levelstats", "player_xp_for_level", "playercreateinfo", "playercreateinfo_bars", "playercreateinfo_items", "playercreateinfo_skills", "playercreateinfo_spell_cast", "playercreateinfo_spell_learn", "points_of_interest", "professiondiscoveries", "quest_poi", "quest_poi_points", "quest_properties", "recall", "reputation_creature_onkill", "reputation_faction_onkill", "reputation_instance_onkill", "spawn_group_id", "spell_area", "spell_coefficient_override", "spell_custom_override", "spell_disable", "spell_disable_trainers", "spell_effects_override", "spell_ranks", "spell_required", "spell_teleport_coords", "spelloverride", "spelltargetconstraints", "totemdisplayids", "trainer_properties", "trainer_properties_spellset", "transport_data", "vehicle_accessories", "vehicle_seat_addon", "vendor_restrictions", "vendors", "weather", "wordfilter_character_names", "wordfilter_chat", "world_db_version", "worldbroadcast", "worldmap_info", "worldstate_templates", "worldstring_tables", "zoneguards" };
+static std::vector<std::string> ascemuTables = { "achievement_reward", "ai_threattospellid", "areatriggers", "auctionhouse", "battlemasters", "creature_ai_scripts", "creature_difficulty", "creature_formations", "creature_group_spawn", "creature_initial_equip", "creature_movement_override", "creature_properties", "creature_properties_movement", "creature_quest_finisher", "creature_quest_starter", "creature_script_waypoints", "creature_spawns", "creature_timed_emotes", "creature_waypoints", "display_bounding_boxes", "event_scripts", "fishing", "gameevent_properties", "gameobject_properties", "gameobject_quest_finisher", "gameobject_quest_item_binding", "gameobject_quest_pickup_binding", "gameobject_quest_starter", "gameobject_spawns", "gameobject_spawns_extra", "gameobject_spawns_overrides", "gameobject_teleports", "gossip_menu", "gossip_menu_items", "gossip_menu_option", "graveyards", "guild_rewards", "guild_xp_for_level", "instance_encounters", "item_pages", "item_properties", "item_quest_association", "item_randomprop_groups", "item_randomsuffix_groups", "itemset_linked_itemsetbonus", "lfg_dungeon_rewards", "locales_achievement_reward", "locales_creature", "locales_gameobject", "locales_gossip_menu_option", "locales_item", "locales_item_pages", "locales_npc_gossip_texts", "locales_npc_script_text", "locales_points_of_interest", "locales_quest", "locales_worldbroadcast", "locales_worldmap_info", "locales_worldstring_table", "loot_creatures", "loot_fishing", "loot_gameobjects", "loot_items", "loot_pickpocketing", "loot_skinning", "npc_gossip_properties", "npc_gossip_texts", "npc_script_text", "npc_spellclick_spells", "pet_level_abilities", "petdefaultspells", "player_classlevelstats", "player_levelstats", "player_xp_for_level", "playercreateinfo", "playercreateinfo_bars", "playercreateinfo_items", "playercreateinfo_skills", "playercreateinfo_spell_cast", "playercreateinfo_spell_learn", "points_of_interest", "professiondiscoveries", "quest_poi", "quest_poi_points", "quest_properties", "recall", "reputation_creature_onkill", "reputation_faction_onkill", "reputation_instance_onkill", "spawn_group_id", "spell_area", "spell_coefficient_override", "spell_custom_override", "spell_disable", "spell_disable_trainers", "spell_effects_override", "spell_ranks", "spell_required", "spell_teleport_coords", "spelloverride", "spelltargetconstraints", "totemdisplayids", "trainer_properties", "trainer_properties_spellset", "transport_data", "vehicle_accessories", "vehicle_seat_addon", "vendor_restrictions", "vendors", "weather", "wordfilter_character_names", "wordfilter_chat", "world_db_version", "worldbroadcast", "worldmap_info", "worldstate_templates", "worldstring_tables", "zoneguards" };
 
 void MySQLDataStore::loadAdditionalTableConfig()
 {
@@ -3397,6 +3397,60 @@ void MySQLDataStore::loadWordFilterChat()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // locales
+
+void MySQLDataStore::loadLocalesAchievementReward()
+{
+    auto startTime = Util::TimeNow();
+    //                                          0       1          2           3       4
+    auto result = WorldDatabase.Query("SELECT entry, gender, language_code, subject, text FROM locales_achievement_reward");
+    if (result == nullptr)
+    {
+        sLogger.info("MySQLDataLoads : Table `locales_achievement_reward` is empty!");
+        return;
+    }
+
+    sLogger.info("MySQLDataLoads : Table `locales_achievement_reward` has {} columns", result->GetFieldCount());
+
+    uint32_t load_count = 0;
+    uint32_t i = 0;
+    do
+    {
+        ++i;
+        Field* fields = result->Fetch();
+
+        MySQLStructure::LocalesAchievementReward localAchievementReward;
+
+        localAchievementReward.entry = fields[0].asUint32();
+        localAchievementReward.gender = fields[1].asUint32();
+        std::string locString = fields[2].asCString();
+        localAchievementReward.languageCode = Util::getLanguagesIdFromString(locString);
+        localAchievementReward.subject = strdup(fields[3].asCString());
+        localAchievementReward.text = strdup(fields[4].asCString());
+
+        _localesAchievementRewardStore.push_back(localAchievementReward);
+
+        ++load_count;
+
+    } while (result->NextRow());
+
+    sLogger.info("MySQLDataLoads : Loaded {} rows from `locales_achievement_reward` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
+
+MySQLStructure::LocalesAchievementReward const* MySQLDataStore::getLocalizedAchievementReward(uint32_t entry, uint32_t gender, uint32_t sessionLocale)
+{
+    for (auto localesAchievementReward : _localesAchievementRewardStore)
+    {
+        if (localesAchievementReward.entry == entry && localesAchievementReward.languageCode == sessionLocale)
+        {
+            if (localesAchievementReward.gender == gender || localesAchievementReward.gender == 2)
+            {
+                return &localesAchievementReward;
+            }
+        }
+    }
+    return nullptr;
+}
+
 void MySQLDataStore::loadLocalesCreature()
 {
     auto startTime = Util::TimeNow();
@@ -3770,6 +3824,57 @@ void MySQLDataStore::loadLocalesNpcText()
 MySQLStructure::LocalesNpcGossipText const* MySQLDataStore::getLocalizedNpcGossipText(uint32_t entry, uint32_t sessionLocale) const
 {
     for (LocalesNpcGossipTextContainer::const_iterator itr = _localesNpcGossipTextStore.begin(); itr != _localesNpcGossipTextStore.end(); ++itr)
+    {
+        if (itr->second.entry == entry)
+        {
+            if (itr->second.languageCode == sessionLocale)
+            {
+                return &itr->second;
+            }
+        }
+    }
+    return nullptr;
+}
+
+void MySQLDataStore::loadLocalesPointsOfInterest()
+{
+    auto startTime = Util::TimeNow();
+    //                                          0         1             2
+    auto result = WorldDatabase.Query("SELECT entry, language_code, icon_name FROM locales_points_of_interest");
+    if (result == nullptr)
+    {
+        sLogger.info("MySQLDataLoads : Table `locales_points_of_interest` is empty!");
+        return;
+    }
+
+    sLogger.info("MySQLDataLoads : Table `locales_points_of_interest` has {} columns", result->GetFieldCount());
+
+    _localesPointsOfInterestStore.rehash(result->GetRowCount());
+
+    uint32_t load_count = 0;
+    uint32_t i = 0;
+    do
+    {
+        ++i;
+        Field* fields = result->Fetch();
+
+        MySQLStructure::LocalesPointsOfInterest& localPointsOfInterest = _localesPointsOfInterestStore[i];
+
+        localPointsOfInterest.entry = fields[0].asUint32();
+        std::string locString = fields[1].asCString();
+        localPointsOfInterest.languageCode = Util::getLanguagesIdFromString(locString);
+        localPointsOfInterest.iconName = strdup(fields[2].asCString());
+
+        ++load_count;
+
+    } while (result->NextRow());
+
+    sLogger.info("MySQLDataLoads : Loaded {} rows from `locales_points_of_interest` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
+
+MySQLStructure::LocalesPointsOfInterest const* MySQLDataStore::getLocalizedPointsOfInterest(uint32_t entry, uint32_t sessionLocale)
+{
+    for (LocalesPointsOfInterestContainer::const_iterator itr = _localesPointsOfInterestStore.begin(); itr != _localesPointsOfInterestStore.end(); ++itr)
     {
         if (itr->second.entry == entry)
         {
