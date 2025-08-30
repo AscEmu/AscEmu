@@ -306,9 +306,7 @@ bool ChatHandler::HandleReloadAreaTriggersCommand(const char* /*args*/, WorldSes
 bool ChatHandler::HandleReloadCommandOverridesCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto startTime = Util::TimeNow();
-    sCommandTableStorage.Dealloc();
-    sCommandTableStorage.Init();
-    sCommandTableStorage.Load();
+    sCommandTableStorage.loadOverridePermission();
 
     GreenSystemMessage(m_session, "CharactersDB 'command_overrides' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;

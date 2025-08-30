@@ -13,105 +13,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/DatabaseDefinition.hpp"
 #include "Utilities/Strings.hpp"
 
-CommandTableStorage& CommandTableStorage::getInstance()
-{
-    static CommandTableStorage mInstance;
-    return mInstance;
-}
-
-ChatCommand* CommandTableStorage::GetSubCommandTable(const char* name)
-{
-    if (AscEmu::Util::Strings::isEqual(name, "modify"))
-        return _modifyCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "waypoint"))
-        return _waypointCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "event"))
-        return _eventCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "debug"))
-        return _debugCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "gmTicket"))
-        return _GMTicketCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "ticket"))
-        return _TicketCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "gobject"))
-        return _GameObjectCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "battleground"))
-        return _BattlegroundCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "npc"))
-        return _NPCCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "account"))
-        return _accountCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "cheat"))
-        return _CheatCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "quest"))
-        return _questCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "pet"))
-        return _petCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "recall"))
-        return _recallCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "guild"))
-        return _GuildCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "gm"))
-        return _gmCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "server"))
-        return _serverCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "character"))
-        return _characterCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "lookup"))
-        return _lookupCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "admin"))
-        return _adminCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "kick"))
-        return _kickCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "ban"))
-        return _banCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "unban"))
-        return _unbanCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "instance"))
-        return _instanceCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "arena"))
-        return _arenaCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "achieve"))
-        return _achievementCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "vehicle"))
-        return _vehicleCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "transport"))
-        return _transportCommandTable;
-    return nullptr;
-}
-
-ChatCommand* CommandTableStorage::GetCharSubCommandTable(const char* name)
-{
-    if (AscEmu::Util::Strings::isEqual(name, "add"))
-        return _characterAddCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "set"))
-        return _characterSetCommandTable;
-    if (AscEmu::Util::Strings::isEqual(name, "list"))
-        return _characterListCommandTable;
-    return nullptr;
-}
-
-ChatCommand* CommandTableStorage::GetNPCSubCommandTable(const char* name)
-{
-    if (AscEmu::Util::Strings::isEqual(name, "set"))
-        return _NPCSetCommandTable;
-    return nullptr;
-}
-
-ChatCommand* CommandTableStorage::GetGOSubCommandTable(const char* name)
-{
-    if (AscEmu::Util::Strings::isEqual(name, "set"))
-        return _GameObjectSetCommandTable;
-    return nullptr;
-}
-
-ChatCommand* CommandTableStorage::GetReloadCommandTable(const char* name)
-{
-    if (AscEmu::Util::Strings::isEqual(name, "reload"))
-        return _reloadTableCommandTable;
-    return nullptr;
-}
-
 #define dupe_command_table(ct, dt) this->dt = (ChatCommand*)allocate_and_copy(sizeof(ct)/* / sizeof(ct[0])*/, ct)
 inline void* allocate_and_copy(uint32_t len, void* pointer)
 {
@@ -120,175 +21,7 @@ inline void* allocate_and_copy(uint32_t len, void* pointer)
     return data;
 }
 
-void CommandTableStorage::Load()
-{
-    auto result = CharacterDatabase.Query("SELECT command_name, access_level FROM command_overrides");
-    if (!result) return;
-
-    do
-    {
-        const char* name = result->Fetch()[0].asCString();
-        const char* level = result->Fetch()[1].asCString();
-        Override(name, level);
-    } while (result->NextRow());
-}
-
-void CommandTableStorage::Override(const char* command, const char* level)
-{
-    std::stringstream command_stream(command);
-    std::string main_command;
-    std::string sub_command;
-    std::string sec_sub_command;
-
-    command_stream >> main_command;
-    command_stream >> sub_command;
-    command_stream >> sec_sub_command;
-
-    if (sec_sub_command.empty())
-    {
-        if (sub_command.empty())
-        {
-            ChatCommand* p = &_commandTable[0];
-            while (p->Name != 0)
-            {
-                std::string curr_table(p->Name);
-                if (!curr_table.compare(main_command))
-                {
-                    p->CommandGroup = level[0];
-                    sLogger.debug("Changing command level of .`{}` to %c.", main_command, level[0]);
-                    break;
-                }
-                ++p;
-            }
-        }
-        else
-        {
-            ChatCommand* p = &_commandTable[0];
-            while (p->Name != 0)
-            {
-                std::string curr_table(p->Name);
-                if (!curr_table.compare(main_command))
-                {
-                    ChatCommand* p2 = p->ChildCommands;
-                    while (p2->Name != 0)
-                    {
-                        std::string curr_subcommand(p2->Name);
-                        if (!curr_subcommand.compare(sub_command))
-                        {
-                            p2->CommandGroup = level[0];
-                            sLogger.debug("Changing command level of .`{} {}` to %c.", main_command, sub_command, level[0]);
-                            break;
-                        }
-                        ++p2;
-                    }
-                }
-                ++p;
-            }
-        }
-    }
-    else
-    {
-        ChatCommand* p = &_commandTable[0];
-        while (p->Name != 0)
-        {
-            std::string curr_table(p->Name);
-            if (!curr_table.compare(main_command))
-            {
-                ChatCommand* p2 = p->ChildCommands;
-                while (p2->Name != 0)
-                {
-                    std::string curr_subcommand(p2->Name);
-                    if (!curr_subcommand.compare(sub_command))
-                    {
-                        ChatCommand* p3 = nullptr;
-                        if (AscEmu::Util::Strings::isEqual(main_command.c_str(), "character"))
-                        {
-                            if (AscEmu::Util::Strings::isEqual(sub_command.c_str(), "add"))
-                                p3 = &_characterAddCommandTable[0];
-                            else if (AscEmu::Util::Strings::isEqual(sub_command.c_str(), "set"))
-                                p3 = &_characterSetCommandTable[0];
-                            else if (AscEmu::Util::Strings::isEqual(sub_command.c_str(), "list"))
-                                p3 = &_characterListCommandTable[0];
-                        }
-                        else if (AscEmu::Util::Strings::isEqual(main_command.c_str(), "npc"))
-                        {
-                            if (AscEmu::Util::Strings::isEqual(sub_command.c_str(), "set"))
-                                p3 = &_NPCSetCommandTable[0];
-                        }
-                        else if (AscEmu::Util::Strings::isEqual(main_command.c_str(), "gameobject"))
-                        {
-                            if (AscEmu::Util::Strings::isEqual(sub_command.c_str(), "set"))
-                                p3 = &_GameObjectSetCommandTable[0];
-                        }
-                        else if (AscEmu::Util::Strings::isEqual(main_command.c_str(), "server"))
-                        {
-                            if (AscEmu::Util::Strings::isEqual(sub_command.c_str(), "reload"))
-                                p3 = &_reloadTableCommandTable[0];
-                        }
-
-                        if (p3 == nullptr)
-                            break;
-
-                        while (p3->Name != 0)
-                        {
-                            std::string curr_sec_subcommand(p3->Name);
-                            if (!curr_sec_subcommand.compare(sec_sub_command))
-                            {
-                                p3->CommandGroup = level[0];
-                                sLogger.debug("Changing command level of .`{} {} {}` to %c.", main_command, sub_command, sec_sub_command, level[0]);
-                                break;
-                            }
-                            ++p3;
-                        }
-                    }
-                    ++p2;
-                }
-            }
-            ++p;
-        }
-    }
-}
-
-void CommandTableStorage::Dealloc()
-{
-    free(_modifyCommandTable);
-    free(_debugCommandTable);
-    free(_eventCommandTable);
-    free(_waypointCommandTable);
-    free(_GMTicketCommandTable);
-    free(_TicketCommandTable);
-    free(_GuildCommandTable);
-    free(_GameObjectCommandTable);
-    free(_GameObjectSetCommandTable);
-    free(_BattlegroundCommandTable);
-    free(_NPCCommandTable);
-    free(_NPCSetCommandTable);
-    free(_CheatCommandTable);
-    free(_accountCommandTable);
-    free(_petCommandTable);
-    free(_recallCommandTable);
-    free(_questCommandTable);
-    free(_serverCommandTable);
-    free(_reloadTableCommandTable);
-    free(_gmCommandTable);
-    free(_characterCommandTable);
-    free(_characterAddCommandTable);
-    free(_characterSetCommandTable);
-    free(_characterListCommandTable);
-    free(_lookupCommandTable);
-    free(_adminCommandTable);
-    free(_kickCommandTable);
-    free(_banCommandTable);
-    free(_unbanCommandTable);
-    free(_instanceCommandTable);
-    free(_arenaCommandTable);
-    free(_achievementCommandTable);
-    free(_vehicleCommandTable);
-    free(_transportCommandTable);
-    free(_commandTable);
-}
-
-void CommandTableStorage::Init()
+CommandTableStorage::CommandTableStorage()
 {
     static ChatCommand modifyCommandTable[] =
     {
@@ -996,4 +729,270 @@ void CommandTableStorage::Init()
         ++p_reloadtable;
     }
 }
+CommandTableStorage::~CommandTableStorage()
+{
+    free(_modifyCommandTable);
+    free(_debugCommandTable);
+    free(_eventCommandTable);
+    free(_waypointCommandTable);
+    free(_GMTicketCommandTable);
+    free(_TicketCommandTable);
+    free(_GuildCommandTable);
+    free(_GameObjectCommandTable);
+    free(_GameObjectSetCommandTable);
+    free(_BattlegroundCommandTable);
+    free(_NPCCommandTable);
+    free(_NPCSetCommandTable);
+    free(_CheatCommandTable);
+    free(_accountCommandTable);
+    free(_petCommandTable);
+    free(_recallCommandTable);
+    free(_questCommandTable);
+    free(_serverCommandTable);
+    free(_reloadTableCommandTable);
+    free(_gmCommandTable);
+    free(_characterCommandTable);
+    free(_characterAddCommandTable);
+    free(_characterSetCommandTable);
+    free(_characterListCommandTable);
+    free(_lookupCommandTable);
+    free(_adminCommandTable);
+    free(_kickCommandTable);
+    free(_banCommandTable);
+    free(_unbanCommandTable);
+    free(_instanceCommandTable);
+    free(_arenaCommandTable);
+    free(_achievementCommandTable);
+    free(_vehicleCommandTable);
+    free(_transportCommandTable);
+    free(_commandTable);
+}
 
+CommandTableStorage& CommandTableStorage::getInstance()
+{
+    static CommandTableStorage mInstance;
+    return mInstance;
+}
+
+void CommandTableStorage::loadOverridePermission()
+{
+    auto result = CharacterDatabase.Query("SELECT command_name, access_level FROM command_overrides");
+    if (!result)
+        return;
+
+    do
+    {
+        const char* command = result->Fetch()[0].asCString();
+        const char* level = result->Fetch()[1].asCString();
+        overridePermission(command, level);
+    } while (result->NextRow());
+}
+
+void CommandTableStorage::overridePermission(const char* command, const char* level)
+{
+    std::stringstream command_stream(command);
+    std::string main_command;
+    std::string sub_command;
+    std::string sec_sub_command;
+
+    command_stream >> main_command;
+    command_stream >> sub_command;
+    command_stream >> sec_sub_command;
+
+    if (sec_sub_command.empty())
+    {
+        if (sub_command.empty())
+        {
+            ChatCommand* p = &_commandTable[0];
+            while (p->Name != 0)
+            {
+                std::string curr_table(p->Name);
+                if (!curr_table.compare(main_command))
+                {
+                    p->CommandGroup = level[0];
+                    sLogger.debug("Changing command level of .`{}` to %s.", main_command, level[0]);
+                    break;
+                }
+                ++p;
+            }
+        }
+        else
+        {
+            ChatCommand* p = &_commandTable[0];
+            while (p->Name != 0)
+            {
+                std::string curr_table(p->Name);
+                if (!curr_table.compare(main_command))
+                {
+                    ChatCommand* p2 = p->ChildCommands;
+                    while (p2->Name != 0)
+                    {
+                        std::string curr_subcommand(p2->Name);
+                        if (!curr_subcommand.compare(sub_command))
+                        {
+                            p2->CommandGroup = level[0];
+                            sLogger.debug("Changing command level of .`{} {}` to %s.", main_command, sub_command, level[0]);
+                            break;
+                        }
+                        ++p2;
+                    }
+                }
+                ++p;
+            }
+        }
+    }
+    else
+    {
+        ChatCommand* p = &_commandTable[0];
+        while (p->Name != 0)
+        {
+            std::string curr_table(p->Name);
+            if (!curr_table.compare(main_command))
+            {
+                ChatCommand* p2 = p->ChildCommands;
+                while (p2->Name != 0)
+                {
+                    std::string curr_subcommand(p2->Name);
+                    if (!curr_subcommand.compare(sub_command))
+                    {
+                        ChatCommand* p3 = nullptr;
+                        if (AscEmu::Util::Strings::isEqual(main_command.c_str(), "character"))
+                        {
+                            if (AscEmu::Util::Strings::isEqual(sub_command.c_str(), "add"))
+                                p3 = &_characterAddCommandTable[0];
+                            else if (AscEmu::Util::Strings::isEqual(sub_command.c_str(), "set"))
+                                p3 = &_characterSetCommandTable[0];
+                            else if (AscEmu::Util::Strings::isEqual(sub_command.c_str(), "list"))
+                                p3 = &_characterListCommandTable[0];
+                        }
+                        else if (AscEmu::Util::Strings::isEqual(main_command.c_str(), "npc"))
+                        {
+                            if (AscEmu::Util::Strings::isEqual(sub_command.c_str(), "set"))
+                                p3 = &_NPCSetCommandTable[0];
+                        }
+                        else if (AscEmu::Util::Strings::isEqual(main_command.c_str(), "gameobject"))
+                        {
+                            if (AscEmu::Util::Strings::isEqual(sub_command.c_str(), "set"))
+                                p3 = &_GameObjectSetCommandTable[0];
+                        }
+                        else if (AscEmu::Util::Strings::isEqual(main_command.c_str(), "server"))
+                        {
+                            if (AscEmu::Util::Strings::isEqual(sub_command.c_str(), "reload"))
+                                p3 = &_reloadTableCommandTable[0];
+                        }
+
+                        if (p3 == nullptr)
+                            break;
+
+                        while (p3->Name != 0)
+                        {
+                            std::string curr_sec_subcommand(p3->Name);
+                            if (!curr_sec_subcommand.compare(sec_sub_command))
+                            {
+                                p3->CommandGroup = level[0];
+                                sLogger.debug("Changing command level of .`{} {} {}` to %c.", main_command, sub_command, sec_sub_command, level[0]);
+                                break;
+                            }
+                            ++p3;
+                        }
+                    }
+                    ++p2;
+                }
+            }
+            ++p;
+        }
+    }
+}
+
+ChatCommand* CommandTableStorage::GetSubCommandTable(const char* name)
+{
+    if (AscEmu::Util::Strings::isEqual(name, "modify"))
+        return _modifyCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "waypoint"))
+        return _waypointCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "event"))
+        return _eventCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "debug"))
+        return _debugCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "gmTicket"))
+        return _GMTicketCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "ticket"))
+        return _TicketCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "gobject"))
+        return _GameObjectCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "battleground"))
+        return _BattlegroundCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "npc"))
+        return _NPCCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "account"))
+        return _accountCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "cheat"))
+        return _CheatCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "quest"))
+        return _questCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "pet"))
+        return _petCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "recall"))
+        return _recallCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "guild"))
+        return _GuildCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "gm"))
+        return _gmCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "server"))
+        return _serverCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "character"))
+        return _characterCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "lookup"))
+        return _lookupCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "admin"))
+        return _adminCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "kick"))
+        return _kickCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "ban"))
+        return _banCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "unban"))
+        return _unbanCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "instance"))
+        return _instanceCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "arena"))
+        return _arenaCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "achieve"))
+        return _achievementCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "vehicle"))
+        return _vehicleCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "transport"))
+        return _transportCommandTable;
+    return nullptr;
+}
+
+ChatCommand* CommandTableStorage::GetCharSubCommandTable(const char* name)
+{
+    if (AscEmu::Util::Strings::isEqual(name, "add"))
+        return _characterAddCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "set"))
+        return _characterSetCommandTable;
+    if (AscEmu::Util::Strings::isEqual(name, "list"))
+        return _characterListCommandTable;
+    return nullptr;
+}
+
+ChatCommand* CommandTableStorage::GetNPCSubCommandTable(const char* name)
+{
+    if (AscEmu::Util::Strings::isEqual(name, "set"))
+        return _NPCSetCommandTable;
+    return nullptr;
+}
+
+ChatCommand* CommandTableStorage::GetGOSubCommandTable(const char* name)
+{
+    if (AscEmu::Util::Strings::isEqual(name, "set"))
+        return _GameObjectSetCommandTable;
+    return nullptr;
+}
+
+ChatCommand* CommandTableStorage::GetReloadCommandTable(const char* name)
+{
+    if (AscEmu::Util::Strings::isEqual(name, "reload"))
+        return _reloadTableCommandTable;
+    return nullptr;
+}

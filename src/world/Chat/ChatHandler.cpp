@@ -35,13 +35,11 @@ ChatHandler& ChatHandler::getInstance()
 
 void ChatHandler::initialize()
 {
-    sCommandTableStorage.Init();
     SkillNameManager = std::make_unique<SkillNameMgr>();
 }
 
 void ChatHandler::finalize()
 {
-    sCommandTableStorage.Dealloc();
 }
 
 bool ChatHandler::hasStringAbbr(const char* s1, const char* s2)

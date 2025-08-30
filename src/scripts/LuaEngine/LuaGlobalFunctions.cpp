@@ -226,9 +226,7 @@ int LuaGlobalFunctions::ReloadTable(lua_State* L)
     {
         if (AscEmu::Util::Strings::isEqual(TableName, "command_overrides"))    // Command Overrides
         {
-            sCommandTableStorage.Dealloc();
-            sCommandTableStorage.Init();
-            sCommandTableStorage.Load();
+            sCommandTableStorage.loadOverridePermission();
         }
     }
     return 0;

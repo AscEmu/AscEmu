@@ -11,6 +11,22 @@ class ChatCommand;
 
 class SERVER_DECL CommandTableStorage
 {
+    CommandTableStorage();
+    ~CommandTableStorage();
+
+public:
+    static CommandTableStorage& getInstance();
+
+    CommandTableStorage(CommandTableStorage&&) = delete;
+    CommandTableStorage(CommandTableStorage const&) = delete;
+    CommandTableStorage& operator=(CommandTableStorage&&) = delete;
+    CommandTableStorage& operator=(CommandTableStorage const&) = delete;
+
+    void loadOverridePermission();
+    void overridePermission(const char* command, const char* level);
+    inline ChatCommand* Get() { return _commandTable; }
+
+private:
     ChatCommand* _modifyCommandTable;
     ChatCommand* _debugCommandTable;
     ChatCommand* _eventCommandTable;
@@ -53,23 +69,6 @@ class SERVER_DECL CommandTableStorage
     ChatCommand* GetGOSubCommandTable(const char* name);
     ChatCommand* GetReloadCommandTable(const char* name);
 
-private:
-    CommandTableStorage() = default;
-    ~CommandTableStorage() = default;
-
-public:
-    static CommandTableStorage& getInstance();
-
-    CommandTableStorage(CommandTableStorage&&) = delete;
-    CommandTableStorage(CommandTableStorage const&) = delete;
-    CommandTableStorage& operator=(CommandTableStorage&&) = delete;
-    CommandTableStorage& operator=(CommandTableStorage const&) = delete;
-
-    void Init();
-    void Dealloc();
-    void Load();
-    void Override(const char* command, const char* level);
-    inline ChatCommand* Get() { return _commandTable; }
 };
 
 #define sCommandTableStorage CommandTableStorage::getInstance()

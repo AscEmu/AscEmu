@@ -971,7 +971,7 @@ void World::loadMySQLTablesByTask()
     sGameEventMgr.LoadFromDB();
     sCalendarMgr.loadFromDB();
 
-    sCommandTableStorage.Load();
+    sCommandTableStorage.loadOverridePermission();
     sLogger.info("WordFilter : Loading...");
 
     g_chatFilter = std::make_unique<WordFilter>();
