@@ -24,6 +24,7 @@ class SERVER_DECL CommandTableStorage
     ChatCommand* _NPCSetCommandTable;
     ChatCommand* _NPCCommandTable;
     ChatCommand* _CheatCommandTable;
+    ChatCommand* _accountCommandTable;
     ChatCommand* _petCommandTable;
     ChatCommand* _recallCommandTable;
     ChatCommand* _questCommandTable;
@@ -41,6 +42,7 @@ class SERVER_DECL CommandTableStorage
     ChatCommand* _unbanCommandTable;
     ChatCommand* _instanceCommandTable;
     ChatCommand* _arenaCommandTable;
+    ChatCommand* _achievementCommandTable;
     ChatCommand* _vehicleCommandTable;
     ChatCommand* _transportCommandTable;
     ChatCommand* _commandTable;
@@ -62,8 +64,6 @@ public:
     CommandTableStorage(CommandTableStorage const&) = delete;
     CommandTableStorage& operator=(CommandTableStorage&&) = delete;
     CommandTableStorage& operator=(CommandTableStorage const&) = delete;
-
-    void registerCommands();
 
     void Init();
     void Dealloc();

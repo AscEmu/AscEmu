@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "git_version.hpp"
 #include "Chat/ChatDefines.hpp"
 #include "Chat/ChatHandler.hpp"
-#include "Chat/CommandRegistry.hpp"
 #include "Chat/CommandTableStorage.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"
@@ -309,7 +308,6 @@ bool ChatHandler::HandleReloadCommandOverridesCommand(const char* /*args*/, Worl
     auto startTime = Util::TimeNow();
     sCommandTableStorage.Dealloc();
     sCommandTableStorage.Init();
-    sCommandTableStorage.registerCommands();
     sCommandTableStorage.Load();
 
     GreenSystemMessage(m_session, "CharactersDB 'command_overrides' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));

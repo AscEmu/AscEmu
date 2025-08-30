@@ -3,7 +3,6 @@ Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Account/AccountCommandBan.hpp"
 #include "Chat/ChatDefines.hpp"
 #include "Chat/ChatHandler.hpp"
 #include "Logging/Logger.hpp"
@@ -1327,12 +1326,9 @@ bool ChatHandler::HandleBanAllCommand(const char* args, WorldSession* m_session)
     char pIPCmd[256];
     snprintf(pIPCmd, 254, "%s %s %s", pIP.c_str(), pDuration, pReason);
     HandleIPBanCommand(pIPCmd, m_session);
-
-    AccountCommandBan banCommand;
-    if (banCommand.execute({pAcc, pDuration, pReason }, m_session))
-        greenSystemMessage(m_session, "Execute account ban for '{}'.", pAcc);
-    else
-        redSystemMessage(m_session, "Cant execute account ban for '{}'", pAcc);
+    char pAccCmd[256];
+    snprintf(pAccCmd, 254, "%s %s %s", pAcc.c_str(), pDuration, pReason);
+    handleAccountBannedCommand(pAccCmd, m_session);
 
     return true;
 }

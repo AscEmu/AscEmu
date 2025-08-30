@@ -120,6 +120,23 @@ public:
     // For skill related GM commands
     std::unique_ptr<SkillNameMgr> SkillNameManager;
 
+    // AccountCommands
+    bool handleAccountCreate(const char* args, WorldSession* m_session);
+    bool handleAccountChangePassword(const char* args, WorldSession* m_session);
+    bool handleAccountBannedCommand(const char* args, WorldSession* m_session);
+    bool handleAccountSetGMCommand(const char* args, WorldSession* m_session);
+    bool handleAccountUnbanCommand(const char* args, WorldSession* m_session);
+    bool handleAccountMuteCommand(const char* args, WorldSession* m_session);
+    bool handleAccountUnmuteCommand(const char* args, WorldSession* m_session);
+    bool handleAccountGetAccountID(const char* args, WorldSession* m_session);
+
+#if VERSION_STRING > TBC
+    // Achievement
+    bool handleAchievementCompleteCommand(const char* args, WorldSession* m_session);
+    bool handleAchievementCriteriaCommand(const char* args, WorldSession* m_session);
+    bool handleAchievementResetCommand(const char* args, WorldSession* m_session);
+#endif
+
     // Admin commands
     bool HandleAdminCastAllCommand(const char* args, WorldSession* m_session);
     bool HandleAdminDispelAllCommand(const char* args, WorldSession* m_session);

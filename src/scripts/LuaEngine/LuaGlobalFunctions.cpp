@@ -228,7 +228,6 @@ int LuaGlobalFunctions::ReloadTable(lua_State* L)
         {
             sCommandTableStorage.Dealloc();
             sCommandTableStorage.Init();
-            sCommandTableStorage.registerCommands();
             sCommandTableStorage.Load();
         }
     }
