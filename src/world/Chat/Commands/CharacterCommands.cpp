@@ -1388,45 +1388,33 @@ bool ChatHandler::HandleCharSetLevelCommand(const char* args, WorldSession* m_se
 //.character set name
 bool ChatHandler::HandleCharSetNameCommand(const char* args, WorldSession* m_session)
 {
-    if (strlen(args) > 100)
+    if (!args)
         return false;
 
-    char current_name[100];
-    char new_name_cmd[100];
+    constexpr std::size_t maxNameLength = 100;
 
-    if (sscanf(args, "%s %s", current_name, new_name_cmd) != 2)
+    std::string current_name;
+    std::string new_name_cmd;
+
+    std::istringstream iss(std::string{ args });
+
+    if (!(iss >> current_name >> new_name_cmd))
         return false;
 
-    static const char* bannedCharacters = "\t\v\b\f\a\n\r\\\"\'\? <>[](){}_=+-|/!@#$%^&*~`.,0123456789\0";
-    static const char* allowedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-    size_t nlen = strlen(new_name_cmd);
-
-    for (size_t i = 0; i < nlen; ++i)
+    if (current_name.empty() || current_name.size() > maxNameLength ||
+        new_name_cmd.empty() || new_name_cmd.size() > maxNameLength)
     {
-        const char* p = allowedCharacters;
-        for (; *p != 0; ++p)
-        {
-            if (new_name_cmd[i] == *p)
-                goto cont;
-        }
-        RedSystemMessage(m_session, "That name is invalid or contains invalid characters.");
-        return true;
-    cont:
-        continue;
+        return false;
     }
 
-    for (size_t i = 0; i < nlen; ++i)
-    {
-        const char* p = bannedCharacters;
-        while (*p != 0 && new_name_cmd[i] != *p && new_name_cmd[i] != 0)
-            ++p;
+    auto isAlphaAscii = [](unsigned char c) {
+        return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+        };
 
-        if (*p != 0)
-        {
-            RedSystemMessage(m_session, "That name is invalid or contains invalid characters.");
-            return true;
-        }
+    if (!std::all_of(new_name_cmd.begin(), new_name_cmd.end(), isAlphaAscii))
+    {
+        RedSystemMessage(m_session, "That name is invalid or contains invalid characters.");
+        return true;
     }
 
     std::string new_name = new_name_cmd;

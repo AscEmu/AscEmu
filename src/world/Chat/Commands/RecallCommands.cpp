@@ -152,12 +152,17 @@ bool ChatHandler::HandleRecallListCommand(const char* args, WorldSession* m_sess
 //.recall portplayer
 bool ChatHandler::HandleRecallPortPlayerCommand(const char* args, WorldSession* m_session)
 {
-    char location[255];
-    char playerName[255];
-    if (sscanf(args, "%s %s", playerName, location) != 2)
+    if (!args || !*args)
         return false;
 
-    Player* player = sObjectMgr.getPlayer(playerName, false);
+    std::istringstream iss(std::string{ args });
+    std::string playerName;
+    std::string location;
+
+    if (!(iss >> playerName >> location))
+        return false;
+
+    Player* player = sObjectMgr.getPlayer(playerName.c_str(), false);
     if (!player)
         return false;
 

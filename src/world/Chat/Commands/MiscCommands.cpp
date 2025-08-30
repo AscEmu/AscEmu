@@ -1095,14 +1095,17 @@ bool ChatHandler::HandleUnBanCharacterCommand(const char* args, WorldSession* m_
     if (!*args)
         return false;
 
-    char Character[255];
-    if (sscanf(args, "%s", Character) != 1)
+    std::string character;
+
+    std::istringstream iss(std::string{ args });
+
+    if (!(iss >> character))
     {
-        RedSystemMessage(m_session, "A character name and reason is required.");
+        RedSystemMessage(m_session, "A character name is required.");
         return true;
     }
 
-    Player* pPlayer = sObjectMgr.getPlayer(Character, false);
+    Player* pPlayer = sObjectMgr.getPlayer(character.c_str(), false);
     if (pPlayer != nullptr)
     {
         GreenSystemMessage(m_session, "Unbanned player %s ingame.", pPlayer->getName().c_str());
@@ -1110,13 +1113,13 @@ bool ChatHandler::HandleUnBanCharacterCommand(const char* args, WorldSession* m_
     }
     else
     {
-        GreenSystemMessage(m_session, "Player %s not found ingame.", Character);
+        GreenSystemMessage(m_session, "Player %s not found ingame.", character.c_str());
     }
 
-    CharacterDatabase.Execute("UPDATE characters SET banned = 0 WHERE name = '%s'", CharacterDatabase.EscapeString(std::string(Character)).c_str());
+    CharacterDatabase.Execute("UPDATE characters SET banned = 0 WHERE name = '%s'", CharacterDatabase.EscapeString(character).c_str());
 
-    SystemMessage(m_session, "Unbanned character %s in database.", Character);
-    sGMLog.writefromsession(m_session, "unbanned %s", Character);
+    SystemMessage(m_session, "Unbanned character %s in database.", character.c_str());
+    sGMLog.writefromsession(m_session, "unbanned %s", character.c_str());
 
     return true;
 }
