@@ -93,32 +93,32 @@ bool ChatHandler::ExecuteCommandInTable(ChatCommand* table, const char* text, Wo
     if (!cmd.length())
         return false;
 
-    for (uint32_t i = 0; table[i].Name != NULL; i++)
+    for (uint32_t i = 0; table[i].command != NULL; i++)
     {
-        if (!hasStringAbbr(table[i].Name, cmd.c_str()))
+        if (!hasStringAbbr(table[i].command, cmd.c_str()))
             continue;
 
-        if (table[i].CommandGroup != '0' && !m_session->CanUseCommand(table[i].CommandGroup))
+        if (table[i].commandPermission != '0' && !m_session->CanUseCommand(table[i].commandPermission))
             continue;
 
-        if (table[i].ChildCommands != NULL)
+        if (table[i].childCommands != NULL)
         {
-            if (!ExecuteCommandInTable(table[i].ChildCommands, text, m_session))
+            if (!ExecuteCommandInTable(table[i].childCommands, text, m_session))
             {
-                if (!table[i].Help.empty())
+                if (!table[i].help.empty())
                 {
-                    SendMultilineMessage(m_session, table[i].Help.c_str());
+                    SendMultilineMessage(m_session, table[i].help.c_str());
                 }
                 else
                 {
                     GreenSystemMessage(m_session, "Available Subcommands:");
-                    for (uint32_t k = 0; table[i].ChildCommands[k].Name; k++)
+                    for (uint32_t k = 0; table[i].childCommands[k].command; k++)
                     {
-                        if (table[i].ChildCommands[k].CommandGroup == '0' || (table[i].ChildCommands[k].CommandGroup != '0'
-                            && m_session->CanUseCommand(table[i].ChildCommands[k].CommandGroup)))
+                        if (table[i].childCommands[k].commandPermission == '0' || (table[i].childCommands[k].commandPermission != '0'
+                            && m_session->CanUseCommand(table[i].childCommands[k].commandPermission)))
                         {
-                            BlueSystemMessage(m_session, " %s - %s", table[i].ChildCommands[k].Name,
-                                table[i].ChildCommands[k].Help.size() ? table[i].ChildCommands[k].Help.c_str() : "No Help Available");
+                            BlueSystemMessage(m_session, " %s - %s", table[i].childCommands[k].command,
+                                table[i].childCommands[k].help.size() ? table[i].childCommands[k].help.c_str() : "No Help Available");
                         }
                     }
                 }
@@ -129,10 +129,10 @@ bool ChatHandler::ExecuteCommandInTable(ChatCommand* table, const char* text, Wo
 
         if (!(this->*(table[i].Handler))(text, m_session))
         {
-            if (!table[i].Help.empty())
-                SendMultilineMessage(m_session, table[i].Help.c_str());
+            if (!table[i].help.empty())
+                SendMultilineMessage(m_session, table[i].help.c_str());
             else
-                RedSystemMessage(m_session, "Incorrect syntax specified. Try .help %s for the correct syntax.", table[i].Name);
+                RedSystemMessage(m_session, "Incorrect syntax specified. Try .help %s for the correct syntax.", table[i].command);
         }
 
         return true;
@@ -507,28 +507,28 @@ std::string ChatHandler::MyConvertFloatToString(const float arg)
 
 bool ChatHandler::ShowHelpForCommand(WorldSession* m_session, ChatCommand* table, const char* cmd)
 {
-    for (uint32_t i = 0; table[i].Name != NULL; i++)
+    for (uint32_t i = 0; table[i].command != NULL; i++)
     {
-        if (!hasStringAbbr(table[i].Name, cmd))
+        if (!hasStringAbbr(table[i].command, cmd))
             continue;
 
-        if (m_session->CanUseCommand(table[i].CommandGroup))
+        if (m_session->CanUseCommand(table[i].commandPermission))
             continue;
 
-        if (table[i].ChildCommands != NULL)
+        if (table[i].childCommands != NULL)
         {
             cmd = strtok(NULL, " ");
-            if (cmd && ShowHelpForCommand(m_session, table[i].ChildCommands, cmd))
+            if (cmd && ShowHelpForCommand(m_session, table[i].childCommands, cmd))
                 return true;
         }
 
-        if (table[i].Help.empty())
+        if (table[i].help.empty())
         {
             SystemMessage(m_session, "There is no help for that command");
             return true;
         }
 
-        SendMultilineMessage(m_session, table[i].Help.c_str());
+        SendMultilineMessage(m_session, table[i].help.c_str());
 
         return true;
     }
@@ -562,41 +562,41 @@ bool ChatHandler::HandleCommandsCommand(const char* args, WorldSession* m_sessio
 
     output = "Available commands: \n\n";
 
-    for (uint32_t i = 0; table[i].Name != NULL; i++)
+    for (uint32_t i = 0; table[i].command != NULL; i++)
     {
-        if (*args && !hasStringAbbr(table[i].Name, args))
+        if (*args && !hasStringAbbr(table[i].command, args))
             continue;
 
-        if (table[i].CommandGroup != '0' && !m_session->CanUseCommand(table[i].CommandGroup))
+        if (table[i].commandPermission != '0' && !m_session->CanUseCommand(table[i].commandPermission))
             continue;
 
-        switch (table[i].CommandGroup)
+        switch (table[i].commandPermission)
         {
             case 'z':
             {
                 output += "|cffff6060";
-                output += table[i].Name;
+                output += table[i].command;
                 output += "|r, ";
             }
             break;
             case 'm':
             {
                 output += "|cff00ffff";
-                output += table[i].Name;
+                output += table[i].command;
                 output += ", ";
             }
             break;
             case 'c':
             {
                 output += "|cff00ff00";
-                output += table[i].Name;
+                output += table[i].command;
                 output += "|r, ";
             }
             break;
             default:
             {
                 output += "|cff00ccff";
-                output += table[i].Name;
+                output += table[i].command;
                 output += "|r, ";
             }
             break;

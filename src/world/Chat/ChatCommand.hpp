@@ -12,13 +12,13 @@ class WorldSession;
 class ChatCommand
 {
 public:
-    const char* Name;
+    const char* command;
 
-    char CommandGroup;
+    char commandPermission;
 
     bool (ChatHandler::*Handler)(const char* args, WorldSession* m_session);
 
-    std::string Help;
+    std::string help;
 
-    ChatCommand* ChildCommands;
+    ChatCommand* childCommands;
 };

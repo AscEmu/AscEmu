@@ -666,65 +666,65 @@ CommandTableStorage::CommandTableStorage()
 
     // set the correct pointers.
     ChatCommand* p = &_commandTable[0];
-    while (p->Name != 0)
+    while (p->command != 0)
     {
-        if (p->ChildCommands != 0)
+        if (p->childCommands != 0)
         {
             // set the correct pointer.
-            if (ChatCommand* np = GetSubCommandTable(p->Name))
-                p->ChildCommands = np;
+            if (ChatCommand* np = GetSubCommandTable(p->command))
+                p->childCommands = np;
         }
         ++p;
     }
 
     // set subcommand for .npc command table.
     ChatCommand* p_char = &_characterCommandTable[0];
-    while (p_char->Name != 0)
+    while (p_char->command != 0)
     {
-        if (p_char->ChildCommands != 0)
+        if (p_char->childCommands != 0)
         {
             // set the correct pointer.
-            if (ChatCommand* np_char = GetCharSubCommandTable(p_char->Name))
-                p_char->ChildCommands = np_char;
+            if (ChatCommand* np_char = GetCharSubCommandTable(p_char->command))
+                p_char->childCommands = np_char;
         }
         ++p_char;
     }
 
     // set subcommand for .npc command table.
     ChatCommand* p_npc = &_NPCCommandTable[0];
-    while (p_npc->Name != 0)
+    while (p_npc->command != 0)
     {
-        if (p_npc->ChildCommands != 0)
+        if (p_npc->childCommands != 0)
         {
             // set the correct pointer.
-            if (ChatCommand* np_npc = GetNPCSubCommandTable(p_npc->Name))
-                p_npc->ChildCommands = np_npc;
+            if (ChatCommand* np_npc = GetNPCSubCommandTable(p_npc->command))
+                p_npc->childCommands = np_npc;
         }
         ++p_npc;
     }
 
     // set subcommand for .gobject command table.
     ChatCommand* p_gobject = &_GameObjectCommandTable[0];
-    while (p_gobject->Name != 0)
+    while (p_gobject->command != 0)
     {
-        if (p_gobject->ChildCommands != 0)
+        if (p_gobject->childCommands != 0)
         {
             // Set the correct pointer.
-            if (ChatCommand* np_gobject = GetGOSubCommandTable(p_gobject->Name))
-                p_gobject->ChildCommands = np_gobject;
+            if (ChatCommand* np_gobject = GetGOSubCommandTable(p_gobject->command))
+                p_gobject->childCommands = np_gobject;
         }
         ++p_gobject;
     }
 
     // set subcommand for .reload command table.
     ChatCommand* p_reloadtable = &_reloadTableCommandTable[0];
-    while (p_reloadtable->Name != 0)
+    while (p_reloadtable->command != 0)
     {
-        if (p_reloadtable->ChildCommands != 0)
+        if (p_reloadtable->childCommands != 0)
         {
             // set the correct pointer.
-            if (ChatCommand* np_reloadtable = GetReloadCommandTable(p_reloadtable->Name))
-                p_reloadtable->ChildCommands = np_reloadtable;
+            if (ChatCommand* np_reloadtable = GetReloadCommandTable(p_reloadtable->command))
+                p_reloadtable->childCommands = np_reloadtable;
         }
         ++p_reloadtable;
     }
@@ -804,12 +804,12 @@ void CommandTableStorage::overridePermission(const char* command, const char* le
         if (sub_command.empty())
         {
             ChatCommand* p = &_commandTable[0];
-            while (p->Name != 0)
+            while (p->command != 0)
             {
-                std::string curr_table(p->Name);
+                std::string curr_table(p->command);
                 if (!curr_table.compare(main_command))
                 {
-                    p->CommandGroup = level[0];
+                    p->commandPermission = level[0];
                     sLogger.debug("Changing command level of .`{}` to %s.", main_command, level[0]);
                     break;
                 }
@@ -819,18 +819,18 @@ void CommandTableStorage::overridePermission(const char* command, const char* le
         else
         {
             ChatCommand* p = &_commandTable[0];
-            while (p->Name != 0)
+            while (p->command != 0)
             {
-                std::string curr_table(p->Name);
+                std::string curr_table(p->command);
                 if (!curr_table.compare(main_command))
                 {
-                    ChatCommand* p2 = p->ChildCommands;
-                    while (p2->Name != 0)
+                    ChatCommand* p2 = p->childCommands;
+                    while (p2->command != 0)
                     {
-                        std::string curr_subcommand(p2->Name);
+                        std::string curr_subcommand(p2->command);
                         if (!curr_subcommand.compare(sub_command))
                         {
-                            p2->CommandGroup = level[0];
+                            p2->commandPermission = level[0];
                             sLogger.debug("Changing command level of .`{} {}` to %s.", main_command, sub_command, level[0]);
                             break;
                         }
@@ -844,15 +844,15 @@ void CommandTableStorage::overridePermission(const char* command, const char* le
     else
     {
         ChatCommand* p = &_commandTable[0];
-        while (p->Name != 0)
+        while (p->command != 0)
         {
-            std::string curr_table(p->Name);
+            std::string curr_table(p->command);
             if (!curr_table.compare(main_command))
             {
-                ChatCommand* p2 = p->ChildCommands;
-                while (p2->Name != 0)
+                ChatCommand* p2 = p->childCommands;
+                while (p2->command != 0)
                 {
-                    std::string curr_subcommand(p2->Name);
+                    std::string curr_subcommand(p2->command);
                     if (!curr_subcommand.compare(sub_command))
                     {
                         ChatCommand* p3 = nullptr;
@@ -884,12 +884,12 @@ void CommandTableStorage::overridePermission(const char* command, const char* le
                         if (p3 == nullptr)
                             break;
 
-                        while (p3->Name != 0)
+                        while (p3->command != 0)
                         {
-                            std::string curr_sec_subcommand(p3->Name);
+                            std::string curr_sec_subcommand(p3->command);
                             if (!curr_sec_subcommand.compare(sec_sub_command))
                             {
-                                p3->CommandGroup = level[0];
+                                p3->commandPermission = level[0];
                                 sLogger.debug("Changing command level of .`{} {} {}` to %c.", main_command, sub_command, sec_sub_command, level[0]);
                                 break;
                             }
