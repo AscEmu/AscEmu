@@ -194,10 +194,10 @@ bool ChatHandler::executeCommandFlat(std::string_view text, WorldSession* m_sess
         return true;
     };
 
-    // We now match EXACTLY the number of words the user typed (no auto-descend).
-    const size_t wantedDepth = tokens.size();
+    // find deepest matching command (multi-token abbrev)
     const ChatCommandNEW* chosen = nullptr;
-    std::string chosenCmd;
+    std::string           chosenCmd;
+    size_t                matchedDepth = 0;
 
     const auto& reg = sCommandTableStorage.Get();
 
@@ -212,18 +212,16 @@ bool ChatHandler::executeCommandFlat(std::string_view text, WorldSession* m_sess
             std::istringstream is(e.command);
             for (std::string w; is >> w; ) words.push_back(std::move(w));
         }
-        if (words.size() != wantedDepth)
-            continue;            // <-- exact depth only
-
         if (words.empty())
             continue;
 
+        // cannot be deeper than what the user typed
+        if (words.size() > tokens.size())
+            continue;
+
         // first word must equal the resolved top-level exactly (case-insensitive)
-        if (words[0].size() != top.size())
-        {
-            bool eq = false;
-            if (words[0].size() == top.size())
-                eq = true; // dead code; kept for clarity
+        if (words[0].size() != top.size()) {
+            // fast-path size check (kept to mirror your structure)
         }
         {
             bool eq = true;
@@ -235,14 +233,13 @@ bool ChatHandler::executeCommandFlat(std::string_view text, WorldSession* m_sess
                     break;
                 }
             }
-
             if (!eq)
                 continue;
         }
 
         // remaining words (if any) are matched by abbreviation
         bool ok = true;
-        for (size_t i = 1; i < wantedDepth; ++i)
+        for (size_t i = 1; i < words.size(); ++i)
         {
             if (!istarts_with(words[i], tokens[i]))
             {
@@ -258,12 +255,16 @@ bool ChatHandler::executeCommandFlat(std::string_view text, WorldSession* m_sess
         if (perm != '0' && !m_session->CanUseCommand(perm))
             continue;
 
-        chosen = &e;
-        chosenCmd = e.command;
-        break; // first exact-depth match wins
+        // prefer deepest match
+        if (words.size() > matchedDepth)
+        {
+            chosen     = &e;
+            chosenCmd  = e.command;
+            matchedDepth = words.size();
+        }
     }
 
-    // If there is no exact-depth entry, treat it as a node: show its children.
+    // If there is no matching entry, treat it as a node prefix: show its children.
     if (!chosen)
     {
         // Build the prefix string: <top> + remaining typed tokens (as text),
@@ -315,7 +316,8 @@ bool ChatHandler::executeCommandFlat(std::string_view text, WorldSession* m_sess
         return true;
     }
 
-    // Exact-depth entry found → either node (no handler) or leaf (handler)
+    // Exact/deepest entry found → either node (no handler) or leaf (handler)
+
     if (!chosen->handler)
     {
         if (!chosen->help.empty())
@@ -359,12 +361,11 @@ bool ChatHandler::executeCommandFlat(std::string_view text, WorldSession* m_sess
         return true;
     }
 
-    // pass "args" = everything after the N words the user typed (not after full command!),
-    // because we matched exact depth.
+    // pass "args" = everything after the matchedDepth words (not after all tokens!)
     std::string_view args = text;
     {
         size_t consumed = 0, seen = 0;
-        while (consumed < text.size() && seen < tokens.size())
+        while (consumed < text.size() && seen < matchedDepth)
         {
             while (consumed < text.size() && std::isspace(static_cast<unsigned char>(text[consumed])))
                 ++consumed;
@@ -374,7 +375,8 @@ bool ChatHandler::executeCommandFlat(std::string_view text, WorldSession* m_sess
 
             ++seen;
         }
-        while (consumed < text.size() && std::isspace(static_cast<unsigned char>(text[consumed]))) ++consumed;
+        while (consumed < text.size() && std::isspace(static_cast<unsigned char>(text[consumed])))
+            ++consumed;
         args = text.substr(consumed);
     }
 
