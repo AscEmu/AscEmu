@@ -1351,9 +1351,6 @@ bool ChatHandler::HandleCharSetItemsRepairedCommand(const char* /*args*/, WorldS
 //.character set level
 bool ChatHandler::HandleCharSetLevelCommand(const char* args, WorldSession* m_session)
 {
-    if (!args || !*args)
-        return false;
-
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
         return true;

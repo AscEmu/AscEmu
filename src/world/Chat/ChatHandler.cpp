@@ -380,6 +380,20 @@ bool ChatHandler::executeCommandFlat(std::string_view text, WorldSession* m_sess
         args = text.substr(consumed);
     }
 
+    // check if min argument count was reached
+    const size_t argc = countWords(args);
+
+    if (argc < chosen->minArgCount)
+    {
+        if (!chosen->help.empty())
+            SendMultilineMessage(m_session, chosen->help.c_str());
+        else
+            RedSystemMessage(m_session, "Incorrect syntax specified. Try .help %s for the correct syntax.", chosenCmd.c_str());
+
+        return true;
+    }
+
+    // actually execute the command
     const bool ok = chosen->handler(this, args, m_session);
     if (!ok)
     {
@@ -432,20 +446,6 @@ int ChatHandler::ParseCommands(const char* text, WorldSession* session)
     if (text[1] == '.')
         return 0;
 
-    // Leaving this here for refactoring char* args in command handling functions to std::string
-    {
-        std::string input(text);
-
-        if (!input.length())
-            return 0;
-
-        // Check if the command exists in the new system first
-        const std::string fullCommand(input.begin() + 1, input.end());  // Remove the leading '.' or '!'
-        //if (CommandRegistry::getInstance().executeCommand(fullCommand, session))
-        //    return 1;  // Command was handled by the new system
-    }
-
-    // Fallback to the old system
     text++;
 
     try

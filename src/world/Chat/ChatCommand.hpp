@@ -21,28 +21,52 @@ struct ChatCommandNEW
 
     std::string command;
     std::string commandPermission;
+    size_t minArgCount;
     HandlerFn handler;
     std::string help;
 
     // Legacy executable with function linker and help (args as const char*)
-    ChatCommandNEW(const char* cmd, std::string perm, HandlerFn fn, std::string helpText)
-        : command(cmd ? cmd : ""), commandPermission(std::move(perm)),
+    ChatCommandNEW(const char* cmd, std::string perm, size_t args, HandlerFn fn, std::string helpText)
+        : command(cmd ? cmd : ""), commandPermission(std::move(perm)), minArgCount(args),
           handler(std::move(fn)), help(std::move(helpText)) {}
 
     // Modern executable with function linker and help (args as std::string_view)
-    ChatCommandNEW(std::string cmd, std::string perm, HandlerFn fn, std::string helpText)
-        : command(std::move(cmd)), commandPermission(std::move(perm)),
+    ChatCommandNEW(std::string cmd, std::string perm, size_t args, HandlerFn fn, std::string helpText)
+        : command(std::move(cmd)), commandPermission(std::move(perm)), minArgCount(args),
           handler(std::move(fn)), help(std::move(helpText)) {}
 
     // Helper functions for first level commands without handler and help
-    ChatCommandNEW(const char* cmd, std::string perm = "0")
-        : command(cmd ? cmd : ""), commandPermission(std::move(perm)),
+    ChatCommandNEW(const char* cmd, std::string perm, size_t args = 0)
+        : command(cmd ? cmd : ""), commandPermission(std::move(perm)), minArgCount(args),
           handler(nullptr), help() {}
 
-    ChatCommandNEW(std::string cmd, std::string perm = "0")
-        : command(std::move(cmd)), commandPermission(std::move(perm)),
+    ChatCommandNEW(std::string cmd, std::string perm, size_t args = 0)
+        : command(std::move(cmd)), commandPermission(std::move(perm)), minArgCount(args),
           handler(nullptr), help() {}
 };
+
+inline size_t countWords(const char* argz)
+{
+    if (!argz)
+        return 0;
+
+    size_t count = 0;
+    bool inWord = false;
+
+    for (const char* p = argz; *p; ++p)
+    {
+        if (std::isspace(static_cast<unsigned char>(*p)))
+        {
+            inWord = false;
+        }
+        else if (!inWord)
+        {
+            inWord = true;
+            ++count;
+        }
+    }
+    return count;
+}
 
 // Legacy wrapper 
 inline ChatCommandNEW::HandlerFn
@@ -58,6 +82,26 @@ wrap(bool (ChatHandler::*pm)(const char*, WorldSession*))
 
         return (self->*pm)(argz, sess);
     };
+}
+
+inline size_t countWords(std::string_view sv)
+{
+    size_t count = 0;
+    bool inWord = false;
+
+    for (char c : sv)
+    {
+        if (std::isspace(static_cast<unsigned char>(c)))
+        {
+            inWord = false;
+        }
+        else if (!inWord)
+        {
+            inWord = true;
+            ++count;
+        }
+    }
+    return count;
 }
 
 // Modern wrapper - bool(ChatHandler::*)(std::string_view, WorldSession*)
