@@ -101,12 +101,11 @@ public:
     bool resolveTopLevelAbbrev(std::string_view tok0, WorldSession* s, std::string& outTop) const;
     bool executeCommandFlat(std::string_view text, WorldSession* m_session);
     bool executeCommand(std::string_view text, WorldSession* m_session);
-    bool showHelpForCommand(WorldSession* m_session, const char* args);
 
     void SendHighlightedName(WorldSession* m_session, const char* prefix, const char* full_name, std::string & lowercase_name, std::string & highlight, uint32_t id);
     void SendItemLinkToPlayer(ItemProperties const* iProto, WorldSession* pSession, bool ItemCount, Player* owner, uint32_t language = 0/*LANG_UNIVERSAL*/);
-    bool handleHelpCommand(const char* args, WorldSession* m_session);
-    bool handleCommandsCommand(const char* args, WorldSession* m_session);
+    
+    
     bool handleGetSkillLevelCommand(const char* args, WorldSession* m_session);
 
     // Helper
@@ -509,6 +508,9 @@ public:
     bool HandleStopTransport(const char* args, WorldSession* m_session);
 
     // MiscCommands
+    bool handleCommandsCommand(const char* args, WorldSession* m_session);
+    bool showHelpForCommand(WorldSession* m_session, const char* args);
+    bool handleHelpCommand(const char* args, WorldSession* m_session);
     bool HandleKillCommand(const char* args, WorldSession* m_session);
     bool HandleReviveCommand(const char* args, WorldSession* m_session);
     bool HandleUnrootCommand(const char* /*args*/, WorldSession* m_session);
