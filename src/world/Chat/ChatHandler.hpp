@@ -104,9 +104,6 @@ public:
 
     void SendHighlightedName(WorldSession* m_session, const char* prefix, const char* full_name, std::string & lowercase_name, std::string & highlight, uint32_t id);
     void SendItemLinkToPlayer(ItemProperties const* iProto, WorldSession* pSession, bool ItemCount, Player* owner, uint32_t language = 0/*LANG_UNIVERSAL*/);
-    
-    
-    bool handleGetSkillLevelCommand(const char* args, WorldSession* m_session);
 
     // Helper
     static Player* GetSelectedPlayer(WorldSession* m_session, bool showerror = true, bool auto_self = false);

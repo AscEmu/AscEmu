@@ -801,44 +801,6 @@ uint16_t GetItemIDFromLink(const char* itemlink, uint32_t* itemid)
     return (ptr - itemlink) & 0x0000ffff;
 }
 
-/// DGM: Get skill level command for getting information about a skill
-bool ChatHandler::handleGetSkillLevelCommand(const char* args, WorldSession* m_session)
-{
-    char* pSkill = strtok((char*)args, " ");
-    if (!pSkill)
-        return false;
-
-    uint16_t skill = static_cast<uint16_t>(std::stoul(pSkill));
-    Player* plr = GetSelectedPlayer(m_session, true, true);
-    if (!plr)
-        return false;
-
-    if (skill > SkillNameManager->maxskill)
-    {
-        BlueSystemMessage(m_session, "Skill: %u does not exists", skill);
-        return false;
-    }
-
-    char* SkillName = SkillNameManager->SkillNames[skill].get();
-    if (SkillName == nullptr)
-    {
-        BlueSystemMessage(m_session, "Skill: %u does not exists", skill);
-        return false;
-    }
-
-    if (!plr->hasSkillLine(skill))
-    {
-        BlueSystemMessage(m_session, "Player does not have %s skill.", SkillName);
-        return false;
-    }
-
-    uint32_t nobonus = plr->getSkillLineCurrent(skill, false);
-    uint32_t bonus = plr->getSkillLineCurrent(skill, true) - nobonus;
-    uint32_t max = plr->getSkillLineMax(skill);
-    BlueSystemMessage(m_session, "Player's %s skill has level: %u maxlevel: %u. (+ %u bonus)", SkillName, nobonus, max, bonus);
-    return true;
-}
-
 int32_t GetSpellIDFromLink(const char* spelllink)
 {
     if (spelllink == NULL)
