@@ -95,16 +95,18 @@ public:
         colorSystemMessage(_session, MSG_COLOR_LIGHTBLUE, _format, std::forward<Args>(_args)...);
     }
 
-    bool hasStringAbbr(const char* s1, const char* s2);
     void SendMultilineMessage(WorldSession* m_session, const char* str);
 
-    bool ExecuteCommandInTable(ChatCommand* table, const char* text, WorldSession* m_session);
-    bool ShowHelpForCommand(WorldSession* m_session, ChatCommand* table, const char* cmd);
+    bool resolveTopLevelAbbrev(std::string_view tok0, WorldSession* s, std::string& outTop) const;
+    bool executeCommandFlat(std::string_view text, WorldSession* m_session);
+    bool executeCommand(std::string_view text, WorldSession* m_session);
+    bool showHelpForCommand(WorldSession* m_session, const char* args);
+
     void SendHighlightedName(WorldSession* m_session, const char* prefix, const char* full_name, std::string & lowercase_name, std::string & highlight, uint32_t id);
     void SendItemLinkToPlayer(ItemProperties const* iProto, WorldSession* pSession, bool ItemCount, Player* owner, uint32_t language = 0/*LANG_UNIVERSAL*/);
-    bool HandleHelpCommand(const char* args, WorldSession* m_session);
-    bool HandleCommandsCommand(const char* args, WorldSession* m_session);
-    bool HandleGetSkillLevelCommand(const char* args, WorldSession* m_session);
+    bool handleHelpCommand(const char* args, WorldSession* m_session);
+    bool handleCommandsCommand(const char* args, WorldSession* m_session);
+    bool handleGetSkillLevelCommand(const char* args, WorldSession* m_session);
 
     // Helper
     static Player* GetSelectedPlayer(WorldSession* m_session, bool showerror = true, bool auto_self = false);

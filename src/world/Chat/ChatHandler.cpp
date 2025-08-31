@@ -42,24 +42,6 @@ void ChatHandler::finalize()
 {
 }
 
-bool ChatHandler::hasStringAbbr(const char* s1, const char* s2)
-{
-    for (;;)
-    {
-        if (!*s2)
-            return true;
-        
-        if (!*s1)
-            return false;
-        
-        if (tolower(*s1) != tolower(*s2))
-            return false;
-
-        s1++;
-        s2++;
-    }
-}
-
 void ChatHandler::SendMultilineMessage(WorldSession* m_session, const char* str)
 {
     char* start = (char*)str, *end;
@@ -77,67 +59,357 @@ void ChatHandler::SendMultilineMessage(WorldSession* m_session, const char* str)
         SystemMessage(m_session, start);
 }
 
-bool ChatHandler::ExecuteCommandInTable(ChatCommand* table, const char* text, WorldSession* m_session)
+// Resolve the 1st token to a unique top-level command word (case-insensitive, abbreviation).
+// Returns true and writes 'outTop' on unique match (with permission), otherwise false.
+// Top-level == registry entries whose command has exactly one word.
+bool ChatHandler::resolveTopLevelAbbrev(std::string_view tok0, WorldSession* s, std::string& outTop) const
 {
-    std::string cmd = "";
+    auto &reg = sCommandTableStorage.Get();
 
-    // get command
-    while(*text != ' ' && *text != '\0')
+    auto lo = [](char c){
+        return static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+        };
+    auto istarts_with = [&](std::string_view a, std::string_view b){
+        if (b.size() > a.size())
+            return false;
+
+        for (size_t i=0; i<b.size(); ++i)
+            if (lo(a[i]) != lo(b[i]))
+                return false;
+
+        return true;
+    };
+
+    std::vector<std::string> matches;
+
+    for (const auto& e : reg)
     {
-        cmd += *text;
-        text++;
-    }
-
-    while(*text == ' ') text++;  // skip whitespace
-
-    if (!cmd.length())
-        return false;
-
-    for (uint32_t i = 0; table[i].command != NULL; i++)
-    {
-        if (!hasStringAbbr(table[i].command, cmd.c_str()))
+        if (e.command.empty())
             continue;
 
-        if (table[i].commandPermission != '0' && !m_session->CanUseCommand(table[i].commandPermission))
+        // split command into words (top-level == exactly 1 word)
+        std::istringstream is(e.command);
+        std::string w0, more;
+        if (!(is >> w0) || (is >> more))
+            continue; // not exactly one word
+
+        const char perm = e.commandPermission.empty() ? '0' : e.commandPermission[0];
+        if (perm != '0' && !s->CanUseCommand(perm))
             continue;
 
-        if (table[i].childCommands != NULL)
+        // exact (case-insensitive) wins immediately
+        if (w0.size() == tok0.size())
         {
-            if (!ExecuteCommandInTable(table[i].childCommands, text, m_session))
+            bool eq = true;
+            for (size_t i=0; i<w0.size(); ++i)
             {
-                if (!table[i].help.empty())
+                if (lo(w0[i]) != lo(tok0[i]))
                 {
-                    SendMultilineMessage(m_session, table[i].help.c_str());
-                }
-                else
-                {
-                    GreenSystemMessage(m_session, "Available Subcommands:");
-                    for (uint32_t k = 0; table[i].childCommands[k].command; k++)
-                    {
-                        if (table[i].childCommands[k].commandPermission == '0' || (table[i].childCommands[k].commandPermission != '0'
-                            && m_session->CanUseCommand(table[i].childCommands[k].commandPermission)))
-                        {
-                            BlueSystemMessage(m_session, " %s - %s", table[i].childCommands[k].command,
-                                table[i].childCommands[k].help.size() ? table[i].childCommands[k].help.c_str() : "No Help Available");
-                        }
-                    }
+                    eq = false;
+                    break;
                 }
             }
 
-            return true;
+            if (eq)
+            {
+                outTop = w0;
+                return true;
+            }
         }
 
-        if (!(this->*(table[i].Handler))(text, m_session))
+        // abbreviation candidate
+        if (istarts_with(w0, tok0))
+            matches.push_back(std::move(w0));
+    }
+
+    if (matches.size() == 1)
+    {
+        outTop = matches[0];
+        return true;
+    }
+
+    return false; // unknown or ambiguous
+}
+
+
+bool ChatHandler::executeCommandFlat(std::string_view text, WorldSession* m_session)
+{
+    // strip leading spaces + optional dot
+    {
+        size_t i = 0;
+        while (i < text.size() && std::isspace(static_cast<unsigned char>(text[i])))
+            ++i;
+
+        if (i < text.size() && text[i] == '.')
+            ++i;
+
+        while (i < text.size() && std::isspace(static_cast<unsigned char>(text[i])))
+            ++i;
+
+        text.remove_prefix(i);
+    }
+
+    if (text.empty())
+        return false;
+
+    // split input into tokens (views)
+    std::vector<std::string_view> tokens;
+    {
+        size_t p = 0;
+        while (p < text.size())
         {
-            if (!table[i].help.empty())
-                SendMultilineMessage(m_session, table[i].help.c_str());
-            else
-                RedSystemMessage(m_session, "Incorrect syntax specified. Try .help %s for the correct syntax.", table[i].command);
+            while (p < text.size() && std::isspace(static_cast<unsigned char>(text[p])))
+                ++p;
+
+            if (p >= text.size())
+                break;
+
+            size_t q = p;
+            while (q < text.size() && !std::isspace(static_cast<unsigned char>(text[q])))
+                ++q;
+
+            tokens.emplace_back(text.substr(p, q - p));
+            p = q;
         }
+    }
+    if (tokens.empty())
+        return false;
+
+    // resolve only the first token to a top-level command
+    std::string top;
+    if (!resolveTopLevelAbbrev(tokens[0], m_session, top))
+        return false; // unknown or ambiguous top-level
+
+    auto lo = [](char c){
+        return static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+        };
+    auto istarts_with = [&](std::string_view a, std::string_view b){
+        if (b.size() > a.size())
+            return false;
+
+        for (size_t i=0; i<b.size(); ++i)
+            if (lo(a[i]) != lo(b[i]))
+                return false;
+
+        return true;
+    };
+
+    // We now match EXACTLY the number of words the user typed (no auto-descend).
+    const size_t wantedDepth = tokens.size();
+    const ChatCommandNEW* chosen = nullptr;
+    std::string chosenCmd;
+
+    const auto& reg = sCommandTableStorage.Get();
+
+    for (const auto& e : reg)
+    {
+        if (e.command.empty())
+            continue;
+
+        // split command into words
+        std::vector<std::string> words;
+        {
+            std::istringstream is(e.command);
+            for (std::string w; is >> w; ) words.push_back(std::move(w));
+        }
+        if (words.size() != wantedDepth)
+            continue;            // <-- exact depth only
+
+        if (words.empty())
+            continue;
+
+        // first word must equal the resolved top-level exactly (case-insensitive)
+        if (words[0].size() != top.size())
+        {
+            bool eq = false;
+            if (words[0].size() == top.size())
+                eq = true; // dead code; kept for clarity
+        }
+        {
+            bool eq = true;
+            for (size_t i=0; i<top.size(); ++i)
+            {
+                if (lo(words[0][i]) != lo(top[i]))
+                {
+                    eq = false;
+                    break;
+                }
+            }
+
+            if (!eq)
+                continue;
+        }
+
+        // remaining words (if any) are matched by abbreviation
+        bool ok = true;
+        for (size_t i = 1; i < wantedDepth; ++i)
+        {
+            if (!istarts_with(words[i], tokens[i]))
+            {
+                ok = false;
+                break;
+            }
+        }
+
+        if (!ok)
+            continue;
+
+        const char perm = e.commandPermission.empty() ? '0' : e.commandPermission[0];
+        if (perm != '0' && !m_session->CanUseCommand(perm))
+            continue;
+
+        chosen = &e;
+        chosenCmd = e.command;
+        break; // first exact-depth match wins
+    }
+
+    // If there is no exact-depth entry, treat it as a node: show its children.
+    if (!chosen)
+    {
+        // Build the prefix string: <top> + remaining typed tokens (as text),
+        // but do NOT auto-append anything else.
+        std::string prefix = top;
+        for (size_t i = 1; i < tokens.size(); ++i)
+        {
+            prefix.push_back(' ');
+            prefix.append(tokens[i].data(), tokens[i].size());
+        }
+        std::string prefixWithSpace = prefix + ' ';
+
+        // List subcommands under this prefix the user can use.
+        bool any = false;
+        for (const auto& sub : reg)
+        {
+            if (sub.command.size() <= prefixWithSpace.size())
+                continue;
+
+            // case-insensitive startswith on the whole prefix string
+            bool starts = true;
+            for (size_t k = 0; k < prefixWithSpace.size(); ++k)
+            {
+                if (lo(sub.command[k]) != lo(prefixWithSpace[k]))
+                {
+                    starts = false;
+                    break;
+                }
+            }
+
+            if (!starts)
+                continue;
+
+            const char p = sub.commandPermission.empty() ? '0' : sub.commandPermission[0];
+            if (p != '0' && !m_session->CanUseCommand(p))
+                continue;
+
+            const char* help = sub.help.empty() ? "No Help Available" : sub.help.c_str();
+            BlueSystemMessage(m_session, " %s - %s", sub.command.substr(prefixWithSpace.size()).c_str(), help);
+
+            any = true;
+        }
+
+        if (!any)
+            SystemMessage(m_session, "There is no help for that command");
+        else
+            GreenSystemMessage(m_session, "Available Subcommands:");
 
         return true;
     }
-    return false;
+
+    // Exact-depth entry found → either node (no handler) or leaf (handler)
+    if (!chosen->handler)
+    {
+        if (!chosen->help.empty())
+            SendMultilineMessage(m_session, chosen->help.c_str());
+        else
+            GreenSystemMessage(m_session, "Available Subcommands:");
+
+        const std::string prefix = chosenCmd + ' ';
+        bool any = false;
+
+        for (const auto& sub : reg)
+        {
+            if (sub.command.size() <= prefix.size())
+                continue;
+
+            bool starts = true;
+            for (size_t k = 0; k < prefix.size(); ++k)
+            {
+                if (lo(sub.command[k]) != lo(prefix[k]))
+                {
+                    starts = false;
+                    break;
+                }
+            }
+
+            if (!starts)
+                continue;
+
+            const char p = sub.commandPermission.empty() ? '0' : sub.commandPermission[0];
+            if (p != '0' && !m_session->CanUseCommand(p))
+                continue;
+
+            const char* help = sub.help.empty() ? "No Help Available" : sub.help.c_str();
+            BlueSystemMessage(m_session, " %s - %s", sub.command.substr(prefix.size()).c_str(), help);
+            any = true;
+        }
+
+        if (!any && chosen->help.empty())
+            SystemMessage(m_session, "There is no help for that command");
+
+        return true;
+    }
+
+    // pass "args" = everything after the N words the user typed (not after full command!),
+    // because we matched exact depth.
+    std::string_view args = text;
+    {
+        size_t consumed = 0, seen = 0;
+        while (consumed < text.size() && seen < tokens.size())
+        {
+            while (consumed < text.size() && std::isspace(static_cast<unsigned char>(text[consumed])))
+                ++consumed;
+
+            while (consumed < text.size() && !std::isspace(static_cast<unsigned char>(text[consumed])))
+                ++consumed;
+
+            ++seen;
+        }
+        while (consumed < text.size() && std::isspace(static_cast<unsigned char>(text[consumed]))) ++consumed;
+        args = text.substr(consumed);
+    }
+
+    const bool ok = chosen->handler(this, args, m_session);
+    if (!ok)
+    {
+        if (!chosen->help.empty())
+            SendMultilineMessage(m_session, chosen->help.c_str());
+        else
+            RedSystemMessage(m_session, "Incorrect syntax specified. Try .help %s for the correct syntax.", chosenCmd.c_str());
+    }
+
+    return true;
+}
+
+bool ChatHandler::executeCommand(std::string_view text, WorldSession* m_session)
+{
+    // strip leading spaces
+    size_t i = 0;
+    while (i < text.size() && text[i] == ' ')
+        ++i;
+
+    // optional leading dot
+    if (i < text.size() && text[i] == '.')
+        ++i;
+
+    // spaces after the dot
+    while (i < text.size() && text[i] == ' ')
+        ++i;
+
+    text.remove_prefix(i);
+    if (text.empty())
+        return false;
+
+    return executeCommandFlat(text, m_session);
 }
 
 int ChatHandler::ParseCommands(const char* text, WorldSession* session)
@@ -176,7 +448,7 @@ int ChatHandler::ParseCommands(const char* text, WorldSession* session)
 
     try
     {
-        bool success = ExecuteCommandInTable(sCommandTableStorage.Get(), text, session);
+        bool success = executeCommand(text, session);
         if (!success)
         {
             SystemMessage(session, "There is no such command, or you do not have access to it.");
@@ -505,101 +777,245 @@ std::string ChatHandler::MyConvertFloatToString(const float arg)
     return out.str();
 }
 
-bool ChatHandler::ShowHelpForCommand(WorldSession* m_session, ChatCommand* table, const char* cmd)
+bool ChatHandler::showHelpForCommand(WorldSession* m_session, const char* args)
 {
-    for (uint32_t i = 0; table[i].command != NULL; i++)
+    auto &reg = sCommandTableStorage.Get();
+
+    // normalize input: strip leading spaces and an optional dot
+    std::string_view sv = args ? std::string_view(args) : std::string_view{};
+    size_t i = 0;
+
+    while (i < sv.size() && std::isspace(static_cast<unsigned char>(sv[i])))
+        ++i;
+
+    if (i < sv.size() && sv[i] == '.')
+        ++i;
+
+    while (i < sv.size() && std::isspace(static_cast<unsigned char>(sv[i])))
+        ++i;
+
+    sv.remove_prefix(i);
+    if (sv.empty())
+        return false;
+
+    // split input into tokens (views)
+    std::vector<std::string_view> tokens;
     {
-        if (!hasStringAbbr(table[i].command, cmd))
-            continue;
-
-        if (m_session->CanUseCommand(table[i].commandPermission))
-            continue;
-
-        if (table[i].childCommands != NULL)
+        size_t p = 0;
+        while (p < sv.size())
         {
-            cmd = strtok(NULL, " ");
-            if (cmd && ShowHelpForCommand(m_session, table[i].childCommands, cmd))
-                return true;
+            while (p < sv.size() && std::isspace(static_cast<unsigned char>(sv[p])))
+                ++p;
+
+            if (p >= sv.size())
+                break;
+
+            size_t q = p;
+            while (q < sv.size() && !std::isspace(static_cast<unsigned char>(sv[q])))
+                ++q;
+
+            tokens.emplace_back(sv.substr(p, q - p));
+            p = q;
+        }
+    }
+
+    if (tokens.empty())
+        return false;
+
+    // resolve ONLY the first token to a top-level command
+    std::string top;
+    if (!resolveTopLevelAbbrev(tokens[0], m_session, top))
+        return false; // unknown/ambiguous top-level
+
+    auto lo = [](char c) {
+        return static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+        };
+
+    auto istarts_with = [&](std::string_view a, std::string_view b) {
+        if (b.size() > a.size())
+            return false;
+
+        for (size_t k = 0; k < b.size(); ++k)
+            if (lo(a[k]) != lo(b[k]))
+                return false;
+
+        return true;
+    };
+
+    // exact depth we want help for (do NOT auto-descend)
+    const size_t wantedDepth = tokens.size();
+
+    // Try to find an entry exactly at that depth: first word == resolved top-level,
+    // the remaining words are matched by abbreviation.
+    const ChatCommandNEW* match = nullptr;
+    std::string matchCmd;
+
+    for (const auto& e : reg)
+    {
+        if (e.command.empty())
+            continue;
+
+        // split command into words
+        std::vector<std::string> words;
+        {
+            std::istringstream is(e.command);
+            for (std::string w; is >> w; )
+                words.push_back(std::move(w));
         }
 
-        if (table[i].help.empty())
+        if (words.size() != wantedDepth)
+            continue;     // exact depth only
+
+        if (words.empty())
+            continue;
+
+        // first word must equal resolved top (case-insensitive)
+        if (words[0].size() != top.size())
         {
+            // handled below by per-char compare anyway
+        }
+        {
+            bool eq = true;
+            for (size_t k=0; k<top.size(); ++k)
+                if (lo(words[0][k]) != lo(top[k])) { eq = false; break; }
+            if (!eq) continue;
+        }
+
+        // remaining words matched by abbreviation
+        bool ok = true;
+        for (size_t w = 1; w < wantedDepth; ++w)
+        {
+            if (!istarts_with(words[w], tokens[w]))
+            {
+                ok = false;
+                break;
+            }
+        }
+
+        if (!ok)
+            continue;
+
+        const char perm = e.commandPermission.empty() ? '0' : e.commandPermission[0];
+        if (perm != '0' && !m_session->CanUseCommand(perm))
+            continue;
+
+        match = &e;
+        matchCmd = e.command;
+        break;
+    }
+
+    if (match)
+    {
+        // exact-depth entry exists → show its help (or say there is none)
+        if (!match->help.empty())
+            SendMultilineMessage(m_session, match->help.c_str());
+        else
             SystemMessage(m_session, "There is no help for that command");
-            return true;
-        }
-
-        SendMultilineMessage(m_session, table[i].help.c_str());
 
         return true;
     }
 
-    return false;
-}
-
-bool ChatHandler::HandleHelpCommand(const char* args, WorldSession* m_session)
-{
-    if (!*args)
-        return false;
-
-    char* cmd = strtok((char*)args, " ");
-    if (!cmd)
-        return false;
-
-    if (!ShowHelpForCommand(m_session, sCommandTableStorage.Get(), cmd))
+    // No exact-depth entry → treat as a node: list children under that prefix.
+    // Build the typed prefix string: <top> + the typed (abbrev) tokens joined by spaces.
+    std::string typedPrefix = top;
+    for (size_t t = 1; t < tokens.size(); ++t)
     {
-        RedSystemMessage(m_session, "Sorry, no help was found for this command, or that command does not exist.");
+        typedPrefix.push_back(' ');
+        typedPrefix.append(tokens[t].data(), tokens[t].size());
     }
+
+    // But for listing children we need the *resolved* prefix (first word = resolved top),
+    // without auto-resolving further words. So children start with "<top> ".
+    const std::string listPrefix = top + ' ';
+
+    bool any = false;
+    for (const auto &cmd : reg)
+    {
+        if (cmd.command.size() <= listPrefix.size())
+            continue;
+
+        // starts with "<top> " (case-insensitive)
+        bool starts = true;
+        for (size_t k = 0; k < listPrefix.size(); ++k)
+        {
+            if (lo(cmd.command[k]) != lo(listPrefix[k]))
+            {
+                starts = false;
+                break;
+            }
+        }
+
+        if (!starts)
+            continue;
+
+        const char perm = cmd.commandPermission.empty() ? '0' : cmd.commandPermission[0];
+        if (perm != '0' && !m_session->CanUseCommand(perm))
+            continue;
+
+        // show only the remainder after "<top> "
+        const char* help = cmd.help.empty() ? "No Help Available" : cmd.help.c_str();
+
+        BlueSystemMessage(m_session, " %s - %s", cmd.command.substr(listPrefix.size()).c_str(), help);
+
+        any = true;
+    }
+
+    if (!any)
+        SystemMessage(m_session, "There is no help for that command");
+    else
+        GreenSystemMessage(m_session, "Available Subcommands:");
 
     return true;
 }
 
-bool ChatHandler::HandleCommandsCommand(const char* args, WorldSession* m_session)
-{
-    ChatCommand* table = sCommandTableStorage.Get();
 
+bool ChatHandler::handleHelpCommand(const char* args, WorldSession* m_session)
+{
+    if (!args || !*args)
+        return false;
+
+    if (!showHelpForCommand(m_session, args))
+        RedSystemMessage(m_session, "Sorry, no help was found for this command, or that command does not exist.");
+
+    return true;
+}
+
+bool ChatHandler::handleCommandsCommand(const char* args, WorldSession* m_session)
+{
     std::string output;
     uint32_t count = 0;
 
     output = "Available commands: \n\n";
 
-    for (uint32_t i = 0; table[i].command != NULL; i++)
+    for (const auto table : sCommandTableStorage.Get())
     {
-        if (*args && !hasStringAbbr(table[i].command, args))
+        std::string top;
+        if (*args && !resolveTopLevelAbbrev(args, m_session, top))
             continue;
 
-        if (table[i].commandPermission != '0' && !m_session->CanUseCommand(table[i].commandPermission))
-            continue;
-
-        switch (table[i].commandPermission)
+        if (table.commandPermission == "z")
         {
-            case 'z':
-            {
-                output += "|cffff6060";
-                output += table[i].command;
-                output += "|r, ";
-            }
-            break;
-            case 'm':
-            {
-                output += "|cff00ffff";
-                output += table[i].command;
-                output += ", ";
-            }
-            break;
-            case 'c':
-            {
-                output += "|cff00ff00";
-                output += table[i].command;
-                output += "|r, ";
-            }
-            break;
-            default:
-            {
-                output += "|cff00ccff";
-                output += table[i].command;
-                output += "|r, ";
-            }
-            break;
+            output += "|cffff6060";
+            output += table.command;
+            output += "|r, ";
+        }
+        else if (table.commandPermission == "m")
+        {
+            output += "|cff00ffff";
+            output += table.command;
+            output += "|r, ";
+        }
+        else if (table.commandPermission == "c")
+        {
+            output += "|cff00ff00";
+            output += table.command;
+            output += "|r, ";
+        }
+        else
+        {
+            output += "|cff00ccff";
+            output += table.command;
+            output += "|r, ";
         }
 
         count++;
@@ -649,7 +1065,7 @@ uint16_t GetItemIDFromLink(const char* itemlink, uint32_t* itemid)
 }
 
 /// DGM: Get skill level command for getting information about a skill
-bool ChatHandler::HandleGetSkillLevelCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::handleGetSkillLevelCommand(const char* args, WorldSession* m_session)
 {
     char* pSkill = strtok((char*)args, " ");
     if (!pSkill)
