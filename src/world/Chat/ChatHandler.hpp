@@ -97,6 +97,7 @@ public:
 
     void SendMultilineMessage(WorldSession* m_session, const char* str);
 
+    std::optional<std::string_view> normalizeCommandInput(const char* raw);
     bool resolveTopLevelAbbrev(std::string_view tok0, WorldSession* s, std::string& outTop) const;
     bool executeCommandFlat(std::string_view text, WorldSession* m_session);
     bool executeCommand(std::string_view text, WorldSession* m_session);

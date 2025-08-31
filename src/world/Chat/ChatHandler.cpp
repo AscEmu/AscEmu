@@ -59,6 +59,39 @@ void ChatHandler::SendMultilineMessage(WorldSession* m_session, const char* str)
         SystemMessage(m_session, start);
 }
 
+// normalize command input once while parsing that should be enough (was in 4 places before)
+std::optional<std::string_view> ChatHandler::normalizeCommandInput(const char* raw)
+{
+    if (!raw)
+        return std::nullopt;
+
+    // skip leading whitespace
+    const char* p = raw;
+    while (*p && std::isspace(static_cast<unsigned char>(*p)))
+        ++p;
+
+    // must start with '.' or '!'
+    if (*p != '.' && *p != '!')
+        return std::nullopt;
+
+    // reject ".."
+    if (p[1] == '.')
+        return std::nullopt;
+
+    // skip the sigil
+    ++p;
+
+    // spaces after sigil
+    while (*p && std::isspace(static_cast<unsigned char>(*p)))
+        ++p;
+
+    if (*p == '\0')
+        return std::nullopt;
+
+    // build string_view to the end
+    return std::string_view{ p, std::strlen(p) };
+}
+
 // Resolve the 1st token to a unique top-level command word (case-insensitive, abbreviation).
 // Returns true and writes 'outTop' on unique match (with permission), otherwise false.
 // Top-level == registry entries whose command has exactly one word.
@@ -134,21 +167,6 @@ bool ChatHandler::resolveTopLevelAbbrev(std::string_view tok0, WorldSession* s, 
 
 bool ChatHandler::executeCommandFlat(std::string_view text, WorldSession* m_session)
 {
-    // strip leading spaces + optional dot
-    {
-        size_t i = 0;
-        while (i < text.size() && std::isspace(static_cast<unsigned char>(text[i])))
-            ++i;
-
-        if (i < text.size() && text[i] == '.')
-            ++i;
-
-        while (i < text.size() && std::isspace(static_cast<unsigned char>(text[i])))
-            ++i;
-
-        text.remove_prefix(i);
-    }
-
     if (text.empty())
         return false;
 
@@ -408,23 +426,6 @@ bool ChatHandler::executeCommandFlat(std::string_view text, WorldSession* m_sess
 
 bool ChatHandler::executeCommand(std::string_view text, WorldSession* m_session)
 {
-    // strip leading spaces
-    size_t i = 0;
-    while (i < text.size() && text[i] == ' ')
-        ++i;
-
-    // optional leading dot
-    if (i < text.size() && text[i] == '.')
-        ++i;
-
-    // spaces after the dot
-    while (i < text.size() && text[i] == ' ')
-        ++i;
-
-    text.remove_prefix(i);
-    if (text.empty())
-        return false;
-
     return executeCommandFlat(text, m_session);
 }
 
@@ -439,18 +440,13 @@ int ChatHandler::ParseCommands(const char* text, WorldSession* session)
     if (!session->HasGMPermissions() && worldConfig.server.requireGmForCommands)
         return 0;
 
-    if (text[0] != '!' && text[0] != '.') // let's not confuse users
+    auto normalized = normalizeCommandInput(text);
+    if (!normalized)
         return 0;
-
-    /* skip '..' :P that pisses me off */
-    if (text[1] == '.')
-        return 0;
-
-    text++;
 
     try
     {
-        bool success = executeCommand(text, session);
+        bool success = executeCommand(*normalized, session);
         if (!success)
         {
             SystemMessage(session, "There is no such command, or you do not have access to it.");
@@ -790,7 +786,8 @@ bool ChatHandler::showHelpForCommand(WorldSession* m_session, const char* args)
     while (i < sv.size() && std::isspace(static_cast<unsigned char>(sv[i])))
         ++i;
 
-    if (i < sv.size() && sv[i] == '.')
+    // be consequent if you allow '.' or '!' in the normalization, you need to allow it here too 
+    if (i < sv.size() && (sv[i] == '.' || sv[i] == '!'))
         ++i;
 
     while (i < sv.size() && std::isspace(static_cast<unsigned char>(sv[i])))
@@ -1029,11 +1026,6 @@ bool ChatHandler::handleCommandsCommand(const char* args, WorldSession* m_sessio
     }
     if (count)
         output += "\n";
-
-
-    //FillSystemMessageData(&data, table[i].Name);
-    //m_session->sendPacket(&data);
-    //}
 
     SendMultilineMessage(m_session, output.c_str());
 
