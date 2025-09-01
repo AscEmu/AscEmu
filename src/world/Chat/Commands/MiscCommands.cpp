@@ -150,7 +150,7 @@ bool ChatHandler::showHelpForCommand(WorldSession* m_session, const char* args)
 
     // Try to find an entry exactly at that depth: first word == resolved top-level,
     // the remaining words are matched by abbreviation.
-    const ChatCommandNEW* match = nullptr;
+    const ChatCommand* match = nullptr;
     std::string matchCmd;
 
     for (const auto& e : reg)

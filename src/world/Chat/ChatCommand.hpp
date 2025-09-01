@@ -15,7 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 class ChatHandler;
 class WorldSession;
 
-struct ChatCommandNEW
+struct ChatCommand
 {
     using HandlerFn = std::function<bool(ChatHandler*, std::string_view, WorldSession*)>;
 
@@ -26,21 +26,21 @@ struct ChatCommandNEW
     std::string help;
 
     // Legacy executable with function linker and help (args as const char*)
-    ChatCommandNEW(const char* cmd, std::string perm, size_t args, HandlerFn fn, std::string helpText)
+    ChatCommand(const char* cmd, std::string perm, size_t args, HandlerFn fn, std::string helpText)
         : command(cmd ? cmd : ""), commandPermission(std::move(perm)), minArgCount(args),
           handler(std::move(fn)), help(std::move(helpText)) {}
 
     // Modern executable with function linker and help (args as std::string_view)
-    ChatCommandNEW(std::string cmd, std::string perm, size_t args, HandlerFn fn, std::string helpText)
+    ChatCommand(std::string cmd, std::string perm, size_t args, HandlerFn fn, std::string helpText)
         : command(std::move(cmd)), commandPermission(std::move(perm)), minArgCount(args),
           handler(std::move(fn)), help(std::move(helpText)) {}
 
     // Helper functions for first level commands without handler and help
-    ChatCommandNEW(const char* cmd, std::string perm, size_t args = 0)
+    ChatCommand(const char* cmd, std::string perm, size_t args = 0)
         : command(cmd ? cmd : ""), commandPermission(std::move(perm)), minArgCount(args),
           handler(nullptr), help() {}
 
-    ChatCommandNEW(std::string cmd, std::string perm, size_t args = 0)
+    ChatCommand(std::string cmd, std::string perm, size_t args = 0)
         : command(std::move(cmd)), commandPermission(std::move(perm)), minArgCount(args),
           handler(nullptr), help() {}
 };
@@ -69,7 +69,7 @@ inline size_t countWords(const char* argz)
 }
 
 // Legacy wrapper 
-inline ChatCommandNEW::HandlerFn
+inline ChatCommand::HandlerFn
 wrap(bool (ChatHandler::*pm)(const char*, WorldSession*))
 {
     return [pm](ChatHandler* self, std::string_view sv, WorldSession* sess) -> bool {
@@ -105,7 +105,7 @@ inline size_t countWords(std::string_view sv)
 }
 
 // Modern wrapper - bool(ChatHandler::*)(std::string_view, WorldSession*)
-inline ChatCommandNEW::HandlerFn
+inline ChatCommand::HandlerFn
 wrap(bool (ChatHandler::*pm)(std::string_view, WorldSession*))
 {
     return [pm](ChatHandler* self, std::string_view sv, WorldSession* sess) -> bool {

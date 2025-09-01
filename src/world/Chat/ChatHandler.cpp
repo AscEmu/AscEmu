@@ -213,7 +213,7 @@ bool ChatHandler::executeCommandFlat(std::string_view text, WorldSession* m_sess
     };
 
     // find deepest matching command (multi-token abbrev)
-    const ChatCommandNEW* chosen = nullptr;
+    const ChatCommand* chosen = nullptr;
     std::string           chosenCmd;
     size_t                matchedDepth = 0;
 
