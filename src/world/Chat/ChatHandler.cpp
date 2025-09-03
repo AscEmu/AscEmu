@@ -632,24 +632,6 @@ const char* ChatHandler::GetRaidDifficultyString(uint8_t diff)
     }
 }
 
-void ChatHandler::ColorSystemMessage(WorldSession* m_session, const char* colorcode, const char* message, ...)
-{
-    if (!message)
-        return;
-
-    va_list ap;
-    va_start(ap, message);
-    char msg1[1024];
-    vsnprintf(msg1, 1024, message, ap);
-    va_end(ap);
-
-    char msg[1024];
-    snprintf(msg, 1024, "%s%s|r", colorcode, msg1);
-
-    if (m_session != NULL)
-        m_session->SendPacket(SmsgMessageChat(SystemMessagePacket(msg)).serialise().get());
-}
-
 void ChatHandler::RedSystemMessage(WorldSession* m_session, const char* message, ...)
 {
     if (!message)

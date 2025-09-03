@@ -42,7 +42,6 @@ public:
 
     int ParseCommands(const char* text, WorldSession* session);
 
-    void ColorSystemMessage(WorldSession* m_session, const char* colorcode, const char* message, ...);
     static void RedSystemMessage(WorldSession* m_session, const char* message, ...);
     static void GreenSystemMessage(WorldSession* m_session, const char* message, ...);
 
