@@ -52,11 +52,11 @@ void ChatHandler::SendMultilineMessage(WorldSession* m_session, const char* str)
             break;
 
         *end = '\0';
-        SystemMessage(m_session, start);
+        systemMessage(m_session, start);
         start = end + 1;
     }
     if (*start != '\0')
-        SystemMessage(m_session, start);
+        systemMessage(m_session, start);
 }
 
 // normalize command input once while parsing that should be enough (was in 4 places before)
@@ -326,7 +326,7 @@ bool ChatHandler::executeCommandFlat(std::string_view text, WorldSession* m_sess
         }
 
         if (!any)
-            SystemMessage(m_session, "There is no help for that command");
+            systemMessage(m_session, "There is no help for that command");
         else
             GreenSystemMessage(m_session, "Available Subcommands:");
 
@@ -373,7 +373,7 @@ bool ChatHandler::executeCommandFlat(std::string_view text, WorldSession* m_sess
         }
 
         if (!any && chosen->help.empty())
-            SystemMessage(m_session, "There is no help for that command");
+            systemMessage(m_session, "There is no help for that command");
 
         return true;
     }
@@ -448,7 +448,7 @@ int ChatHandler::ParseCommands(const char* text, WorldSession* session)
         bool success = executeCommand(*normalized, session);
         if (!success)
         {
-            SystemMessage(session, "There is no such command, or you do not have access to it.");
+            systemMessage(session, "There is no such command, or you do not have access to it.");
         }
     }
     catch (AscEmu::Exception::PlayerNotFoundException& e)
@@ -570,13 +570,13 @@ uint32_t ChatHandler::GetSelectedWayPointId(WorldSession* m_session)
 
     if (guid == 0)
     {
-        SystemMessage(m_session, "No selection.");
+        systemMessage(m_session, "No selection.");
         return 0;
     }
 
     if (!wowGuid.isWaypoint())
     {
-        SystemMessage(m_session, "You should select a Waypoint.");
+        systemMessage(m_session, "You should select a Waypoint.");
         return 0;
     }
 
@@ -630,21 +630,6 @@ const char* ChatHandler::GetRaidDifficultyString(uint8_t diff)
         default:
             return "unknown";
     }
-}
-
-void ChatHandler::SystemMessage(WorldSession* m_session, const char* message, ...)
-{
-    if (!message)
-        return;
-
-    va_list ap;
-    va_start(ap, message);
-    char msg1[1024];
-    vsnprintf(msg1, 1024, message, ap);
-    va_end(ap);
-
-    if (m_session != NULL)
-        m_session->SendPacket(SmsgMessageChat(SystemMessagePacket(msg1)).serialise().get());
 }
 
 void ChatHandler::ColorSystemMessage(WorldSession* m_session, const char* colorcode, const char* message, ...)
@@ -809,22 +794,22 @@ void ChatHandler::SendItemLinkToPlayer(ItemProperties const* iProto, WorldSessio
         //int8_t slot = owner->getItemInterface()->GetInventorySlotById(iProto->ItemId); //DISABLED due to being a retarded concept
         if (iProto->ContainerSlots > 0)
         {
-            SystemMessage(pSession, "Item %u %s Count %u ContainerSlots %u", iProto->ItemId, sMySQLStore.getItemLinkByProto(iProto, language).c_str(), count, iProto->ContainerSlots);
+            systemMessage(pSession, "Item {} {} Count {} ContainerSlots {}", iProto->ItemId, sMySQLStore.getItemLinkByProto(iProto, language), count, iProto->ContainerSlots);
         }
         else
         {
-            SystemMessage(pSession, "Item %u %s Count %u", iProto->ItemId, sMySQLStore.getItemLinkByProto(iProto, language).c_str(), count);
+            systemMessage(pSession, "Item {} {} Count {}", iProto->ItemId, sMySQLStore.getItemLinkByProto(iProto, language), count);
         }
     }
     else
     {
         if (iProto->ContainerSlots > 0)
         {
-            SystemMessage(pSession, "Item %u %s ContainerSlots %u", iProto->ItemId, sMySQLStore.getItemLinkByProto(iProto, language).c_str(), iProto->ContainerSlots);
+            systemMessage(pSession, "Item {} {} ContainerSlots {}", iProto->ItemId, sMySQLStore.getItemLinkByProto(iProto, language), iProto->ContainerSlots);
         }
         else
         {
-            SystemMessage(pSession, "Item %u %s", iProto->ItemId, sMySQLStore.getItemLinkByProto(iProto, language).c_str());
+            systemMessage(pSession, "Item {} {}", iProto->ItemId, sMySQLStore.getItemLinkByProto(iProto, language));
         }
     }
 }
@@ -851,5 +836,5 @@ void ChatHandler::SendHighlightedName(WorldSession* m_session, const char* prefi
     if (remaining > 0)
         strncat(message, (fullname.c_str() + offset + highlight_length), remaining);
 
-    SystemMessage(m_session, message);
+    systemMessage(m_session, message);
 }

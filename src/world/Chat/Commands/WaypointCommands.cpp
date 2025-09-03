@@ -22,18 +22,18 @@ bool ChatHandler::HandleWayPointAddCommand(const char* args, WorldSession* m_ses
 
     if (player->m_aiInterfaceWaypoint != nullptr)
     {
-        SystemMessage(m_session, "Using Previous Unit.");
+        systemMessage(m_session, "Using Previous Unit.");
         ai = player->m_aiInterfaceWaypoint;
         if (!ai)
         {
-            SystemMessage(m_session, "Invalid Creature, please select another one.");
+            systemMessage(m_session, "Invalid Creature, please select another one.");
             return true;
         }
 
         creature_target = static_cast<Creature*>(ai->getUnit());
         if (creature_target == nullptr || creature_target->isPet())
         {
-            SystemMessage(m_session, "Invalid Creature, please select another one.");
+            systemMessage(m_session, "Invalid Creature, please select another one.");
             return true;
         }
     }
@@ -92,7 +92,7 @@ bool ChatHandler::HandleWayPointAddCommand(const char* args, WorldSession* m_ses
 
     // Save Our New Waypoint
     sWaypointMgr->addWayPoint(pathId, waypoint, true);
-    SystemMessage(m_session, "Waypoint %u added to Creature %s.", waypoint.id, creature_target->GetCreatureProperties()->Name.c_str());
+    systemMessage(m_session, "Waypoint {} added to Creature {}.", waypoint.id, creature_target->GetCreatureProperties()->Name);
 
     if (showing)
         ai->activateShowWayPoints(player, false);
@@ -108,7 +108,7 @@ bool ChatHandler::HandleWayPointDeleteCommand(const char* /*args*/, WorldSession
     AIInterface* ai = player->m_aiInterfaceWaypoint;
     if (ai == nullptr || !ai->getUnit())
     {
-        SystemMessage(m_session, "Invalid Creature, please select another one.");
+        systemMessage(m_session, "Invalid Creature, please select another one.");
         return true;
     }
 
@@ -120,11 +120,11 @@ bool ChatHandler::HandleWayPointDeleteCommand(const char* /*args*/, WorldSession
 
         sWaypointMgr->deleteWayPointById(ai->getUnit()->ToCreature()->getWaypointPath(), wpid);
 
-        SystemMessage(m_session, "Waypoint %u deleted.", wpid);
+        systemMessage(m_session, "Waypoint {} deleted.", wpid);
     }
     else
     {
-        SystemMessage(m_session, "Invalid Waypoint.");
+        systemMessage(m_session, "Invalid Waypoint.");
     }
     return true;
 }
@@ -165,11 +165,11 @@ bool ChatHandler::HandleWayPointHideCommand(const char* /*args*/, WorldSession* 
     }
     else
     {
-        SystemMessage(m_session, "Waypoints for that Unit are not Visible.");
+        systemMessage(m_session, "Waypoints for that Unit are not Visible.");
         return true;
     }
 
-    SystemMessage(m_session, "Hiding Waypoints for creature_spawn %u", creature_target->GetSQL_id());
+    systemMessage(m_session, "Hiding Waypoints for creature_spawn {}", creature_target->GetSQL_id());
     return true;
 }
 
@@ -203,13 +203,11 @@ bool ChatHandler::HandleWayPointShowCommand(const char* args, WorldSession* m_se
     else
     {
         if (ai->isShowWayPointsActive() == true)
-        {
-            SystemMessage(m_session, "Waypoints Already Showing.");
-        }
+            systemMessage(m_session, "Waypoints Already Showing.");
         else
             ai->activateShowWayPoints(m_session->GetPlayer(), Backwards);
     }
 
-    SystemMessage(m_session, "Showing waypoints for creature %u", creature_target->GetSQL_id());
+    systemMessage(m_session, "Showing waypoints for creature {}", creature_target->GetSQL_id());
     return true;
 }

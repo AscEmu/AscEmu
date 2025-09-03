@@ -22,7 +22,7 @@ bool ChatHandler::HandleGMActiveCommand(const char* args, WorldSession* m_sessio
     {
         if (!toggle_no_notice)
         {
-            SystemMessage(m_session, "GM Flag removed.");
+            systemMessage(m_session, "GM Flag removed.");
             blueSystemMessage(m_session, "<GM> Will no longer show in chat messages or above your name until you use this command again.");
         }
         player->removePlayerFlags(PLAYER_FLAG_GM);
@@ -37,7 +37,7 @@ bool ChatHandler::HandleGMActiveCommand(const char* args, WorldSession* m_sessio
             HandleGMDevTagCommand("no_notice", m_session);
 #endif
 
-        SystemMessage(m_session, "GM Flag set.");
+        systemMessage(m_session, "GM Flag set.");
         blueSystemMessage(m_session, "<GM> will now appear above your name and in chat messages until you use this command again.");
         player->addPlayerFlags(PLAYER_FLAG_GM);
         player->setFaction(35);
@@ -127,7 +127,7 @@ bool ChatHandler::HandleGMDevTagCommand(const char* args, WorldSession* m_sessio
     {
         if (!toggle_no_notice)
         {
-            SystemMessage(m_session, "DEV Flag removed.");
+            systemMessage(m_session, "DEV Flag removed.");
             blueSystemMessage(m_session, "<DEV> Will no longer show in chat messages or above your name until you use this command again.");
         }
         player->removePlayerFlags(PLAYER_FLAG_DEVELOPER);
@@ -137,7 +137,7 @@ bool ChatHandler::HandleGMDevTagCommand(const char* args, WorldSession* m_sessio
         if (player->isGMFlagSet())
             HandleGMActiveCommand("no_notice", m_session);
 
-        SystemMessage(m_session, "DEV Flag set.");
+        systemMessage(m_session, "DEV Flag set.");
         blueSystemMessage(m_session, "<DEV> will now appear above your name and in chat messages until you use this command again.");
         player->addPlayerFlags(PLAYER_FLAG_DEVELOPER);
     }
@@ -165,9 +165,9 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
                     GreenSystemMessage(m_session, "The following GMs are on this server:");
 
                 if (worldConfig.gm.hidePermissions && !is_gamemaster)
-                    SystemMessage(m_session, " - %s", player->getName().c_str());
+                    systemMessage(m_session, " - {}", player->getName());
                 else
-                    SystemMessage(m_session, " - %s [%s]", player->getName().c_str(), player->getSession()->GetPermissions().get());
+                    systemMessage(m_session, " - {} [{}]", player->getName(), player->getSession()->GetPermissions().get());
 
                 print_headline = false;
             }
@@ -179,15 +179,15 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
                         GreenSystemMessage(m_session, "The following GMs are active on this server:");
 
                     if (worldConfig.gm.hidePermissions && !is_gamemaster)
-                        SystemMessage(m_session, " - %s", player->getName().c_str());
+                        systemMessage(m_session, " - {}", player->getName());
                     else
-                        SystemMessage(m_session, " - %s [%s]", player->getName().c_str(), player->getSession()->GetPermissions().get());
+                        systemMessage(m_session, " - {} [{}]", player->getName(), player->getSession()->GetPermissions().get());
 
                     print_headline = false;
                 }
                 else
                 {
-                    SystemMessage(m_session, "No GMs are currently logged in on this server.");
+                    systemMessage(m_session, "No GMs are currently logged in on this server.");
                     print_headline = false;
                 }
             }
@@ -197,9 +197,9 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
     if (print_headline)
     {
         if (!worldConfig.gm.listOnlyActiveGms)
-            SystemMessage(m_session, "No GMs are currently logged in on this server.");
+            systemMessage(m_session, "No GMs are currently logged in on this server.");
         else
-            SystemMessage(m_session, "No GMs are currently active on this server.");
+            systemMessage(m_session, "No GMs are currently active on this server.");
     }
 
     return true;

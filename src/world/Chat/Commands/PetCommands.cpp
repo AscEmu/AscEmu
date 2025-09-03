@@ -132,7 +132,7 @@ bool ChatHandler::HandlePetDismissCommand(const char* /*args*/, WorldSession* m_
     else if (selected_player != nullptr && selected_player != m_session->GetPlayer())
     {
         GreenSystemMessage(m_session, "Dismissed %s's pet.", selected_player->getName().c_str());
-        SystemMessage(selected_player->getSession(), "%s dismissed your pet.", m_session->GetPlayer()->getName().c_str());
+        systemMessage(selected_player->getSession(), "{} dismissed your pet.", m_session->GetPlayer()->getName());
         sGMLog.writefromsession(m_session, "used dismiss pet command on player %s", selected_player->getName().c_str());
     }
     else
@@ -166,7 +166,7 @@ bool ChatHandler::HandlePetRenameCommand(const char* args, WorldSession* m_sessi
     if (selected_player != m_session->GetPlayer())
     {
         GreenSystemMessage(m_session, "Renamed %s's pet to %s.", selected_player->getName().c_str(), args);
-        SystemMessage(selected_player->getSession(), "%s renamed your pet to %s.", m_session->GetPlayer()->getName().c_str(), args);
+        systemMessage(selected_player->getSession(), "{} renamed your pet to {}.", m_session->GetPlayer()->getName(), args);
         sGMLog.writefromsession(m_session, "renamed %s's pet to %s", selected_player->getName().c_str(), args);
     }
     else
@@ -294,7 +294,7 @@ bool ChatHandler::HandlePetSetLevelCommand(const char* args, WorldSession* m_ses
     if (selected_player != m_session->GetPlayer())
     {
         GreenSystemMessage(m_session, "Set %s's pet to level %u.", selected_player->getName().c_str(), static_cast<uint32_t>(newLevel));
-        SystemMessage(selected_player->getSession(), "%s set your pet to level %u.", m_session->GetPlayer()->getName().c_str(), static_cast<uint32_t>(newLevel));
+        systemMessage(selected_player->getSession(), "{} set your pet to level {}.", m_session->GetPlayer()->getName(), newLevel);
         sGMLog.writefromsession(m_session, "leveled %s's pet to %u", selected_player->getName().c_str(), static_cast<uint32_t>(newLevel));
     }
     else

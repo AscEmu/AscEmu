@@ -40,7 +40,7 @@ bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_sessio
     auto player = GetSelectedPlayer(m_session, true, true);
     if (sscanf(args, "%u %[^\n]", &teamType, teamName) != 2)
     {
-        SystemMessage(m_session, "Invalid syntax. Usage: .arena createteam <type> <name>");
+        systemMessage(m_session, "Invalid syntax. Usage: .arena createteam <type> <name>");
         return true;
     }
 
@@ -50,7 +50,7 @@ bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_sessio
 
     if (player == nullptr)
     {
-        SystemMessage(m_session, "Selected player not found!");
+        systemMessage(m_session, "Selected player not found!");
         return true;
     }
 
@@ -79,7 +79,7 @@ bool ChatHandler::HandleArenaSetTeamLeader(const char* args, WorldSession* m_ses
     auto player = GetSelectedPlayer(m_session, true, true);
     if (sscanf(args, "%u", &team_type) != 1)
     {
-        SystemMessage(m_session, "Invalid syntax. Usage: .arena setteamleader <type>");
+        systemMessage(m_session, "Invalid syntax. Usage: .arena setteamleader <type>");
         return true;
     }
 
@@ -89,7 +89,7 @@ bool ChatHandler::HandleArenaSetTeamLeader(const char* args, WorldSession* m_ses
 
     if (player == nullptr)
     {
-        SystemMessage(m_session, "Selected player not found!");
+        systemMessage(m_session, "Selected player not found!");
         return true;
     }
 

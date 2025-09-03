@@ -695,3 +695,26 @@ void ChatHandler::sendModifySystemMessage(WorldSession* session, Unit* unitTarge
         }
     }
 }
+
+void ChatHandler::sendModifySystemMessage(WorldSession* session, Unit* unitTarget, std::string modType, float newValue, float oldValue)
+{
+    if (unitTarget->isPlayer())
+    {
+        if (const auto player = dynamic_cast<Player*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify %s from %f to %f on %s (%u)", modType.c_str(), oldValue, newValue, player->getName().c_str(), player->getGuidLow());
+
+            blueSystemMessage(session, "You modify '{}' of {} from {} to {}.", modType, player->getName(), oldValue, newValue);
+            GreenSystemMessage(player->getSession(), "%s modify your %s from %u to %u.", modType.c_str(), session->GetPlayer()->getName().c_str(), oldValue, newValue);
+        }
+    }
+    else if (unitTarget->isCreature())
+    {
+        if (auto creature = dynamic_cast<Creature*>(unitTarget))
+        {
+            sGMLog.writefromsession(session, "used modify %s from %f to %f on %s (%u)", modType.c_str(), oldValue, newValue, creature->GetCreatureProperties()->Name.c_str(), creature->GetCreatureProperties()->Id);
+
+            blueSystemMessage(session, "You modify '{}' of {} from {} to {}.", modType, creature->GetCreatureProperties()->Name, oldValue, newValue);
+        }
+    }
+}

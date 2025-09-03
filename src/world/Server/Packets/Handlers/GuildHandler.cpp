@@ -699,7 +699,7 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
 
         if (_player->getArenaTeam(charter->getCharterType() - 1U) != nullptr)
         {
-            sChatHandler.SystemMessage(this, LocalizedWorldSrv(ServerString::SS_ALREADY_ARENA_TEAM));
+            sChatHandler.systemMessage(this, LocalizedWorldSrv(ServerString::SS_ALREADY_ARENA_TEAM));
             return;
         }
 
@@ -782,13 +782,13 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
         const auto arenaTeam = sObjectMgr.getArenaTeamByName(srlPacket.name, arena_type);
         if (arenaTeam != nullptr)
         {
-            sChatHandler.SystemMessage(this, _player->getSession()->LocalizedWorldSrv(ServerString::SS_PETITION_NAME_ALREADY_USED));
+            sChatHandler.systemMessage(this, _player->getSession()->LocalizedWorldSrv(ServerString::SS_PETITION_NAME_ALREADY_USED));
             return;
         }
 
         if (sObjectMgr.getCharterByName(srlPacket.name, static_cast<CharterTypes>(srlPacket.arenaIndex)))
         {
-            sChatHandler.SystemMessage(this, _player->getSession()->LocalizedWorldSrv(ServerString::SS_PETITION_NAME_ALREADY_USED));
+            sChatHandler.systemMessage(this, _player->getSession()->LocalizedWorldSrv(ServerString::SS_PETITION_NAME_ALREADY_USED));
             return;
         }
 

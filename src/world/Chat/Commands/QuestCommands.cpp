@@ -291,7 +291,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
 
                 if (giver_id == 0)
                 {
-                    SystemMessage(m_session, "Unable to find quest giver creature or object.");
+                    systemMessage(m_session, "Unable to find quest giver creature or object.");
                 }
                 else
                 {
@@ -670,7 +670,7 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
         wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
         if (wowGuid.getRawGuid() == 0)
         {
-            SystemMessage(m_session, "You must target an npc or specify an id.");
+            systemMessage(m_session, "You must target an npc or specify an id.");
             return true;
         }
 
@@ -679,13 +679,13 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
         {
             if (!unit->isQuestGiver())
             {
-                SystemMessage(m_session, "Unit is not a valid quest giver.");
+                systemMessage(m_session, "Unit is not a valid quest giver.");
                 return true;
             }
 
             if (!unit->HasQuests())
             {
-                SystemMessage(m_session, "NPC does not have any quests.");
+                systemMessage(m_session, "NPC does not have any quests.");
                 return true;
             }
 
@@ -762,20 +762,20 @@ bool ChatHandler::HandleQuestAddStartCommand(const char* args, WorldSession* m_s
 
     if (wowGuid.getGuidLowPart() == 0)
     {
-        SystemMessage(m_session, "You must target an npc.");
+        systemMessage(m_session, "You must target an npc.");
         return false;
     }
 
     Creature* unit = m_session->GetPlayer()->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
     if (!unit)
     {
-        SystemMessage(m_session, "You must target an npc.");
+        systemMessage(m_session, "You must target an npc.");
         return false;
     }
 
     if (!unit->isQuestGiver())
     {
-        SystemMessage(m_session, "Unit is not a valid quest giver.");
+        systemMessage(m_session, "Unit is not a valid quest giver.");
         return false;
     }
 
@@ -790,7 +790,7 @@ bool ChatHandler::HandleQuestAddStartCommand(const char* args, WorldSession* m_s
     QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id);
     if (qst == nullptr)
     {
-        SystemMessage(m_session, "Invalid quest selected, unable to add quest to the specified NPC.");
+        systemMessage(m_session, "Invalid quest selected, unable to add quest to the specified NPC.");
         return false;
     }
 
@@ -800,7 +800,7 @@ bool ChatHandler::HandleQuestAddStartCommand(const char* args, WorldSession* m_s
     auto selectResult1 = WorldDatabase.Query(my_query1.c_str(), VERSION_STRING, VERSION_STRING);
     if (selectResult1)
     {
-        SystemMessage(m_session, "Quest was already found for the specified NPC.");
+        systemMessage(m_session, "Quest was already found for the specified NPC.");
     }
     else
     {
@@ -845,20 +845,20 @@ bool ChatHandler::HandleQuestAddFinishCommand(const char* args, WorldSession* m_
 
     if (wowGuid.getRawGuid() == 0)
     {
-        SystemMessage(m_session, "You must target an npc.");
+        systemMessage(m_session, "You must target an npc.");
         return false;
     }
 
     Creature* unit = m_session->GetPlayer()->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
     if (!unit)
     {
-        SystemMessage(m_session, "You must target an npc.");
+        systemMessage(m_session, "You must target an npc.");
         return false;
     }
 
     if (!unit->isQuestGiver())
     {
-        SystemMessage(m_session, "Unit is not a valid quest giver.");
+        systemMessage(m_session, "Unit is not a valid quest giver.");
         return false;
     }
 
@@ -873,7 +873,7 @@ bool ChatHandler::HandleQuestAddFinishCommand(const char* args, WorldSession* m_
     QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id);
     if (qst == nullptr)
     {
-        SystemMessage(m_session, "Invalid quest selected, unable to add quest to the specified NPC.");
+        systemMessage(m_session, "Invalid quest selected, unable to add quest to the specified NPC.");
         return false;
     }
 
@@ -883,7 +883,7 @@ bool ChatHandler::HandleQuestAddFinishCommand(const char* args, WorldSession* m_
     auto selectResult1 = WorldDatabase.Query(my_query1.c_str(), VERSION_STRING, VERSION_STRING);
     if (selectResult1)
     {
-        SystemMessage(m_session, "Quest was already found for the specified NPC.");
+        systemMessage(m_session, "Quest was already found for the specified NPC.");
     }
     else
     {
@@ -941,20 +941,20 @@ bool ChatHandler::HandleQuestDelStartCommand(const char* args, WorldSession* m_s
 
     if (wowGuid.getRawGuid() == 0)
     {
-        SystemMessage(m_session, "You must target an npc.");
+        systemMessage(m_session, "You must target an npc.");
         return false;
     }
 
     Creature* unit = m_session->GetPlayer()->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
     if (!unit)
     {
-        SystemMessage(m_session, "You must target an npc.");
+        systemMessage(m_session, "You must target an npc.");
         return false;
     }
 
     if (!unit->isQuestGiver())
     {
-        SystemMessage(m_session, "Unit is not a valid quest giver.");
+        systemMessage(m_session, "Unit is not a valid quest giver.");
         return false;
     }
 
@@ -969,7 +969,7 @@ bool ChatHandler::HandleQuestDelStartCommand(const char* args, WorldSession* m_s
     QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id);
     if (qst == nullptr)
     {
-        SystemMessage(m_session, "Invalid Quest selected.");
+        systemMessage(m_session, "Invalid Quest selected.");
         return false;
     }
 
@@ -979,7 +979,7 @@ bool ChatHandler::HandleQuestDelStartCommand(const char* args, WorldSession* m_s
     auto selectResult1 = WorldDatabase.Query(my_query1.c_str(), VERSION_STRING, VERSION_STRING);
     if (selectResult1 == nullptr)
     {
-        SystemMessage(m_session, "Quest was NOT found for the specified NPC.");
+        systemMessage(m_session, "Quest was NOT found for the specified NPC.");
         return false;
     }
 
@@ -1021,20 +1021,20 @@ bool ChatHandler::HandleQuestDelFinishCommand(const char* args, WorldSession* m_
     wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
     if (wowGuid.getGuidLowPart() == 0)
     {
-        SystemMessage(m_session, "You must target an npc.");
+        systemMessage(m_session, "You must target an npc.");
         return false;
     }
 
     Creature* unit = m_session->GetPlayer()->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
     if (!unit)
     {
-        SystemMessage(m_session, "You must target an npc.");
+        systemMessage(m_session, "You must target an npc.");
         return false;
     }
 
     if (!unit->isQuestGiver())
     {
-        SystemMessage(m_session, "Unit is not a valid quest giver.");
+        systemMessage(m_session, "Unit is not a valid quest giver.");
         return false;
     }
 
@@ -1049,7 +1049,7 @@ bool ChatHandler::HandleQuestDelFinishCommand(const char* args, WorldSession* m_
     QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id);
     if (qst == nullptr)
     {
-        SystemMessage(m_session, "Invalid Quest selected.");
+        systemMessage(m_session, "Invalid Quest selected.");
         return false;
     }
 
@@ -1059,7 +1059,7 @@ bool ChatHandler::HandleQuestDelFinishCommand(const char* args, WorldSession* m_
     auto selectResult1 = WorldDatabase.Query(my_query1.c_str(), VERSION_STRING, VERSION_STRING);
     if (selectResult1 == nullptr)
     {
-        SystemMessage(m_session, "Quest was NOT found for the specified NPC.");
+        systemMessage(m_session, "Quest was NOT found for the specified NPC.");
         return true;
     }
 
@@ -1406,7 +1406,7 @@ bool ChatHandler::HandleQuestRemoveCommand(const char* args, WorldSession* m_ses
     else
         recout = "Invalid quest selected, unable to remove.\n\n";
 
-    SystemMessage(m_session, recout.c_str());
+    systemMessage(m_session, recout.c_str());
 
     return true;
 }

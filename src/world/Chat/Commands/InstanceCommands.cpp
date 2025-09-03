@@ -247,9 +247,9 @@ bool ChatHandler::HandleResetAllInstancesCommand(const char* args, WorldSession*
             return true;
     }
 
-    SystemMessage(m_session, "Trying to reset all instances of player %s...", player->getName().c_str());
+    systemMessage(m_session, "Trying to reset all instances of player {}...", player->getName());
     player->resetInstances(INSTANCE_RESET_ALL, false);
-    SystemMessage(m_session, "...done");
+    systemMessage(m_session, "...done");
 
     sGMLog.writefromsession(m_session, "used reset all instances command on %s,", player->getName().c_str());
     return true;
@@ -275,13 +275,13 @@ bool ChatHandler::HandleShutdownInstanceCommand(const char* args, WorldSession* 
         return true;
     }
 
-    SystemMessage(m_session, "Attempting to shutdown instance with id %u...", instanceId);
+    systemMessage(m_session, "Attempting to shutdown instance with id {}...", instanceId);
 
     // Remove all Players
     instance->removeAllPlayers();
     instance->setUnloadPending(true);
 
-    SystemMessage(m_session, "...done");
+    systemMessage(m_session, "...done");
 
     sGMLog.writefromsession(m_session, "used shutdown instance command on instance %u,", instanceId);
     return true;

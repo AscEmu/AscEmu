@@ -230,7 +230,7 @@ void BattlegroundManager::handleBattlegroundJoin(WorldSession* session, WorldPac
         const auto itr = m_instances[srlPacket.bgType].find(srlPacket.instanceId);
         if (itr == m_instances[srlPacket.bgType].end())
         {
-            sChatHandler.SystemMessage(session, session->LocalizedWorldSrv(SS_JOIN_INVALID_INSTANCE));
+            sChatHandler.systemMessage(session, session->LocalizedWorldSrv(SS_JOIN_INVALID_INSTANCE));
             return;
         }
     }
@@ -1139,7 +1139,7 @@ void BattlegroundManager::deleteBattleground(Battleground* battleground)
         {
             if (plr->getQueuedBgInstanceId() == battleground->getId())
             {
-                sChatHandler.SystemMessage(plr->getSession(), plr->getSession()->LocalizedWorldSrv(SS_QUEUE_BG_INSTANCE_ID_NO_VALID_LONGER_EXISTS), battleground->getId());
+                sChatHandler.systemMessage(plr->getSession(), plr->getSession()->LocalizedWorldSrv(SS_QUEUE_BG_INSTANCE_ID_NO_VALID_LONGER_EXISTS), battleground->getId());
                 sendBattlefieldStatus(plr, BattlegroundDef::STATUS_NOFLAGS, 0, 0, 0, 0, 0);
                 plr->setIsQueuedForBg(false);
                 m_queuedPlayers[type][levelGroup].erase(it2);

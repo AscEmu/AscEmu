@@ -8578,7 +8578,7 @@ void Player::removeFromBgQueue()
         return;
 
     m_pendingBattleground->removePendingPlayer(this);
-    sChatHandler.SystemMessage(m_session, getSession()->LocalizedWorldSrv(ServerString::SS_BG_REMOVE_QUEUE_INF));
+    sChatHandler.systemMessage(m_session, getSession()->LocalizedWorldSrv(ServerString::SS_BG_REMOVE_QUEUE_INF));
 }
 
 bool Player::hasWonRbgToday() const { return this->m_hasWonRbgToday; }
@@ -16003,7 +16003,7 @@ void Player::_Relocate(uint32_t mapid, const LocationVector& v, bool sendpending
                         m_session->SendPacket(SmsgTransferAborted(mapid, INSTANCE_ABORT_HEROIC_MODE_NOT_AVAILABLE).serialise().get());
                         break;
                     case CANNOT_ENTER_INSTANCE_BIND_MISMATCH:
-                        sChatHandler.SystemMessage(m_session, "Another group is already inside this instance of the dungeon.");
+                        sChatHandler.systemMessage(m_session, "Another group is already inside this instance of the dungeon.");
                         break;
                     case CANNOT_ENTER_TOO_MANY_INSTANCES:
                         m_session->SendPacket(SmsgTransferAborted(mapid, INSTANCE_ABORT_TOO_MANY).serialise().get());

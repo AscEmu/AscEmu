@@ -21,7 +21,7 @@ bool ChatHandler::HandleGetTransporterTime(const char* /*args*/, WorldSession* m
         return true;
     }
 
-    SystemMessage(m_session, "Current period: %dms", transporter->GetTransportTemplate()->pathTime);
+    systemMessage(m_session, "Current period: {}ms", transporter->GetTransportTemplate()->pathTime);
 
     return true;
 }
@@ -38,12 +38,12 @@ bool ChatHandler::HandleGetTransporterInfo(const char* /*args*/, WorldSession* m
     auto gameobject_info = sMySQLStore.getGameObjectProperties(transporter->getEntry());
     if (gameobject_info != nullptr)
     {
-        SystemMessage(m_session, "Entry: %u", gameobject_info->entry);
-        SystemMessage(m_session, "Name: %s", gameobject_info->name.c_str());
-        SystemMessage(m_session, "Path: %u", gameobject_info->mo_transport.taxi_path_id);
-        SystemMessage(m_session, "Time on Path: %u", transporter->GetTimer());
-        SystemMessage(m_session, "Period: %u", transporter->GetTransportTemplate()->pathTime);
-        SystemMessage(m_session, "Current WP: %u", transporter->getCurrentFrame());
+        systemMessage(m_session, "Entry: {}", gameobject_info->entry);
+        systemMessage(m_session, "Name: {}", gameobject_info->name.c_str());
+        systemMessage(m_session, "Path: {}", gameobject_info->mo_transport.taxi_path_id);
+        systemMessage(m_session, "Time on Path: {}", transporter->GetTimer());
+        systemMessage(m_session, "Period: {}", transporter->GetTransportTemplate()->pathTime);
+        systemMessage(m_session, "Current WP: {}", transporter->getCurrentFrame());
     }
 
     return true;

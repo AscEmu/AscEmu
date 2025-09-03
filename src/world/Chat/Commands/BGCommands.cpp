@@ -17,7 +17,7 @@ bool ChatHandler::HandleBGForceInitQueueCommand(const char* /*args*/, WorldSessi
 {
     sBattlegroundManager.eventQueueUpdate(true);
 
-    SystemMessage(m_session, "Forcing initialization of all battlegrounds. Done.");
+    systemMessage(m_session, "Forcing initialization of all battlegrounds. Done.");
 
     return true;
 }
@@ -27,7 +27,7 @@ bool ChatHandler::HandleBGGetQueueCommand(const char* /*args*/, WorldSession* m_
 {
     sBattlegroundManager.handleGetBattlegroundQueueCommand(m_session);
 
-    SystemMessage(m_session, "Getting battleground queue. Done.");
+    systemMessage(m_session, "Getting battleground queue. Done.");
 
     return true;
 }

@@ -270,7 +270,7 @@ void DayWatcherThread::update_arena()
 
                     // update fields (no uint lock)
                     sEventMgr.AddEvent(player, &Player::updateArenaPoints, EVENT_PLAYER_UPDATE, 100, 1, 0);
-                    sChatHandler.SystemMessage(player->getSession(), "Your arena points have been updated! Check your PvP tab!");
+                    sChatHandler.systemMessage(player->getSession(), "Your arena points have been updated! Check your PvP tab!");
                 }
 
                 CharacterDatabase.Execute("UPDATE characters SET arenaPoints = %u WHERE guid = %u", arenapoints, guid);

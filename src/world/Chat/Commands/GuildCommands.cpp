@@ -31,10 +31,7 @@ bool ChatHandler::HandleGuildCreateCommand(const char* args, WorldSession* m_ses
 
     if (strlen(args) > 75)
     {
-        // send message to user
-        char buf[256];
-        snprintf((char*)buf, 256, "The name was too long by %u", (uint32_t)strlen(args) - 75);
-        SystemMessage(m_session, buf);
+        systemMessage(m_session, "The name was too long by {}", uint32_t(strlen(args) - 75));
         return true;
     }
 
@@ -42,7 +39,7 @@ bool ChatHandler::HandleGuildCreateCommand(const char* args, WorldSession* m_ses
     {
         if (!isalpha(args[i]) && args[i] != ' ')
         {
-            SystemMessage(m_session, "Error, name can only contain chars A-Z and a-z.");
+            systemMessage(m_session, "Error, name can only contain chars A-Z and a-z.");
             return true;
         }
     }
@@ -53,7 +50,7 @@ bool ChatHandler::HandleGuildCreateCommand(const char* args, WorldSession* m_ses
     auto* guild = sGuildMgr.createGuild(selected_player, std::string(args));
     if (guild == nullptr)
     {
-        SystemMessage(m_session, "Guild not created");
+        systemMessage(m_session, "Guild not created");
         return true;
     }
 

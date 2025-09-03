@@ -52,7 +52,7 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
         return true;
     }
 
-    SystemMessage(m_session, "Added agent_type %u for spell %u to creature %s (%u).", ai_type, spellId, creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
+    systemMessage(m_session, "Added agent_type {} for spell {} to creature {} ({}).", ai_type, spellId, creature_target->GetCreatureProperties()->Name, creature_target->getEntry());
     sGMLog.writefromsession(m_session, "added agent_type %u for spell %u to creature %s (%u).", ai_type, spellId, creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
     WorldDatabase.Execute("INSERT INTO ai_agents VALUES(%u, 4, %u, %u, %u, %u, %u, %u, %u, %u, %f, %u",
         creature_target->getEntry(), ai_type, procEvent, procChance, maxcount, spellId, spellType, spelltargetType, spellCooldown, floatMisc1, Misc2);
@@ -224,7 +224,7 @@ bool ChatHandler::HandleNpcDeleteCommand(const char* /*args*/, WorldSession* m_s
 
     if (creature_target->isPet())
     {
-        SystemMessage(m_session, "You can't delete a pet.");
+        systemMessage(m_session, "You can't delete a pet.");
         return true;
     }
 
@@ -293,62 +293,62 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
 
     uint32_t guid = WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayer()->getTargetGuid());
 
-    SystemMessage(m_session, "Showing Creature info of %s =============", creature_target->GetCreatureProperties()->Name.c_str());
+    systemMessage(m_session, "Showing Creature info of {} =============", creature_target->GetCreatureProperties()->Name);
     RedSystemMessage(m_session, "EntryID: %d", creature_target->getEntry());
     RedSystemMessage(m_session, "SpawnID: %d", creature_target->GetSQL_id());
-    SystemMessage(m_session, "GUID: %u", guid);
-    SystemMessage(m_session, "Faction: %u", creature_target->getFactionTemplate());
-    SystemMessage(m_session, "Phase: %u", creature_target->GetPhase());
+    systemMessage(m_session, "GUID: {}", guid);
+    systemMessage(m_session, "Faction: {}", creature_target->getFactionTemplate());
+    systemMessage(m_session, "Phase: {}", creature_target->GetPhase());
 
-    SystemMessage(m_session, "DisplayID: %u", creature_target->getDisplayId());
+    systemMessage(m_session, "DisplayID: {}", creature_target->getDisplayId());
 
     uint8_t creature_gender = creature_target->getGender();
     if (creature_gender <= 2)
-        SystemMessage(m_session, "Gender: %s", GENDER[creature_gender].data());
+        systemMessage(m_session, "Gender: {}", GENDER[creature_gender].data());
     else
-        SystemMessage(m_session, "Gender: invalid %u", creature_gender);
+        systemMessage(m_session, "Gender: invalid {}", creature_gender);
 
     uint8_t creature_class = creature_target->getClass();
     if (creature_class <= 11)
-        SystemMessage(m_session, "Class: %s", CLASS[creature_class].data());
+        systemMessage(m_session, "Class: {}", CLASS[creature_class].data());
     else
-        SystemMessage(m_session, "Class: invalid %u", creature_class);
+        systemMessage(m_session, "Class: invalid {}", creature_class);
 
-    SystemMessage(m_session, "Health (cur / max): %u / %u", creature_target->getHealth(), creature_target->getMaxHealth());
+    systemMessage(m_session, "Health (cur / max): {} / {}", creature_target->getHealth(), creature_target->getMaxHealth());
 
     auto powertype = creature_target->getPowerType();
     if (powertype <= 6)
     {
-        SystemMessage(m_session, "Powertype: %s", POWERTYPE[powertype].data());
-        SystemMessage(m_session, "Power (cur / max): %u / %u", creature_target->getPower(powertype), creature_target->getMaxPower(powertype));
+        systemMessage(m_session, "Powertype: {}", POWERTYPE[powertype].data());
+        systemMessage(m_session, "Power (cur / max): {} / {}", creature_target->getPower(powertype), creature_target->getMaxPower(powertype));
     }
 
-    SystemMessage(m_session, "Damage (min / max): %f / %f", creature_target->getMinDamage(), creature_target->getMaxDamage());
+    systemMessage(m_session, "Damage (min / max): {} / {}", creature_target->getMinDamage(), creature_target->getMaxDamage());
 
 #if VERSION_STRING < WotLK
     if (creature_target->getPetLoyalty() != 0)
-        SystemMessage(m_session, "Pet loyalty level: %u", creature_target->getPetLoyalty());
+        systemMessage(m_session, "Pet loyalty level: {}", creature_target->getPetLoyalty());
 #elif VERSION_STRING < Mop
     if (creature_target->getPetTalentPoints() != 0)
-        SystemMessage(m_session, "Free pet talent points: %u", creature_target->getPetTalentPoints());
+        systemMessage(m_session, "Free pet talent points: {}", creature_target->getPetTalentPoints());
 #endif
 
     if (creature_target->GetCreatureProperties()->vehicleid > 0)
-        SystemMessage(m_session, "VehicleID: %u", creature_target->GetCreatureProperties()->vehicleid);
+        systemMessage(m_session, "VehicleID: {}", creature_target->GetCreatureProperties()->vehicleid);
 
     if (creature_target->m_factionTemplate)
-        SystemMessage(m_session, "Combat Support: 0x%.3X", creature_target->m_factionTemplate->FriendlyMask);
+        systemMessage(m_session, "Combat Support: {}", creature_target->m_factionTemplate->FriendlyMask);
 
     if (creature_target->getCombatHandler().isInCombat())
-        SystemMessage(m_session, "Is in combat!");
+        systemMessage(m_session, "Is in combat!");
     else
-        SystemMessage(m_session, "Not in combat!");
+        systemMessage(m_session, "Not in combat!");
 
     uint8_t sheat = creature_target->getSheathType();
     if (sheat <= 2)
-        SystemMessage(m_session, "Sheat state: %s", SHEATSTATE[sheat].data());
+        systemMessage(m_session, "Sheat state: {}", SHEATSTATE[sheat].data());
 
-    SystemMessage(m_session, "=================================");
+    systemMessage(m_session, "=================================");
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // resistance
@@ -422,9 +422,9 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
 #endif
     sstext << '\0';
 
-    SystemMessage(m_session, "UNIT_FIELD_BYTES =================");
+    systemMessage(m_session, "UNIT_FIELD_BYTES =================");
     SendMultilineMessage(m_session, sstext.str().c_str());
-    SystemMessage(m_session, "=================================");
+    systemMessage(m_session, "=================================");
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // flags
@@ -486,14 +486,14 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
 
     if (unit_owner != nullptr)
     {
-        SystemMessage(m_session, "Owner/Summoner ===================");
+        systemMessage(m_session, "Owner/Summoner ===================");
 
         if (unit_owner->isPlayer())
-            SystemMessage(m_session, "Owner is Player: %s", static_cast<Player*>(unit_owner)->getName().c_str());
+            systemMessage(m_session, "Owner is Player: {}", static_cast<Player*>(unit_owner)->getName());
         if (unit_owner->isPet())
-            SystemMessage(m_session, "Owner is Pet: %s", static_cast<Creature*>(unit_owner)->GetCreatureProperties()->Name.c_str());
+            systemMessage(m_session, "Owner is Pet: {}", static_cast<Creature*>(unit_owner)->GetCreatureProperties()->Name);
         if (unit_owner->isCreature())
-            SystemMessage(m_session, "Owner is Creature: %s", static_cast<Creature*>(unit_owner)->GetCreatureProperties()->Name.c_str());
+            systemMessage(m_session, "Owner is Creature: {}", static_cast<Creature*>(unit_owner)->GetCreatureProperties()->Name);
 
         owner_header_set = true;
     }
@@ -503,27 +503,27 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     {
         if (!owner_header_set)
         {
-            SystemMessage(m_session, "Owner/Summoner ===================");
+            systemMessage(m_session, "Owner/Summoner ===================");
             owner_header_set = true;
         }
 
         if (creature_target->getCreatedByGuid())
-            SystemMessage(m_session, "Creator GUID: %u", WoWGuid::getGuidLowPartFromUInt64(creature_target->getCreatedByGuid()));
+            systemMessage(m_session, "Creator GUID: {}", WoWGuid::getGuidLowPartFromUInt64(creature_target->getCreatedByGuid()));
         if (creature_target->getSummonedByGuid())
-            SystemMessage(m_session, "Summoner GUID: %u", WoWGuid::getGuidLowPartFromUInt64(creature_target->getSummonedByGuid()));
+            systemMessage(m_session, "Summoner GUID: {}", WoWGuid::getGuidLowPartFromUInt64(creature_target->getSummonedByGuid()));
         if (creature_target->getCharmedByGuid())
-            SystemMessage(m_session, "Charmer GUID: %u", WoWGuid::getGuidLowPartFromUInt64(creature_target->getCharmedByGuid()));
+            systemMessage(m_session, "Charmer GUID: {}", WoWGuid::getGuidLowPartFromUInt64(creature_target->getCharmedByGuid()));
         if (creature_target->getCreatedBySpellId())
-            SystemMessage(m_session, "Creator Spell: %u", WoWGuid::getGuidLowPartFromUInt64(creature_target->getCreatedBySpellId()));
+            systemMessage(m_session, "Creator Spell: {}", WoWGuid::getGuidLowPartFromUInt64(creature_target->getCreatedBySpellId()));
     }
 
     if (owner_header_set)
-        SystemMessage(m_session, "=================================");
+        systemMessage(m_session, "=================================");
 
     if (creature_target->m_spawn != nullptr)
-        SystemMessage(m_session, "Is part of table: %s", creature_target->m_spawn->origine.c_str());
+        systemMessage(m_session, "Is part of table: {}", creature_target->m_spawn->origine);
     else
-        SystemMessage(m_session, "Is spawnd by an internal script");
+        systemMessage(m_session, "Is spawnd by an internal script");
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // equipment
@@ -542,24 +542,24 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     // transport
     if (auto transporter = creature_target->GetTransport())
     {
-        SystemMessage(m_session, "Creature is on Transporter!");
+        systemMessage(m_session, "Creature is on Transporter!");
 #if VERSION_STRING < Cata
         if (creature_target->obj_movement_info.hasMovementFlag(MOVEFLAG_TRANSPORT))
-            SystemMessage(m_session, "Creature has MovementFlag MOVEFLAG_TRANSPORT");
+            systemMessage(m_session, "Creature has MovementFlag MOVEFLAG_TRANSPORT");
         else
-            SystemMessage(m_session, "!!!!!!!!! NO MovementFlag MOVEFLAG_TRANSPORT !!!!!!!!!!!!");
+            systemMessage(m_session, "!!!!!!!!! NO MovementFlag MOVEFLAG_TRANSPORT !!!!!!!!!!!!");
 #endif
     }
 
     if (sScriptMgr.has_creature_script(creature_target->getEntry()))
-        SystemMessage(m_session, "Creature has C++/LUA script");
+        systemMessage(m_session, "Creature has C++/LUA script");
     else
-        SystemMessage(m_session, "Creature doesn't have C++/LUA script");
+        systemMessage(m_session, "Creature doesn't have C++/LUA script");
 
     if (sScriptMgr.has_creature_gossip(creature_target->getEntry()))
-        SystemMessage(m_session, "Creature has C++/LUA gossip script");
+        systemMessage(m_session, "Creature has C++/LUA gossip script");
     else
-        SystemMessage(m_session, "Creature doesn't have C++/LUA gossip script");
+        systemMessage(m_session, "Creature doesn't have C++/LUA gossip script");
 
     RedSystemMessage(m_session, "EntryID: %d", creature_target->getEntry());
     RedSystemMessage(m_session, "SpawnID: %d", creature_target->GetSQL_id());
@@ -580,11 +580,11 @@ bool ChatHandler::HandleNpcListAIAgentCommand(const char* /*args*/, WorldSession
         RedSystemMessage(m_session, "Selected Creature %s (%u) has no entries in ai_agents table!", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
         return true;
     }
-    SystemMessage(m_session, "Agent list for Creature %s (%u)", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
+    systemMessage(m_session, "Agent list for Creature {} ({})", creature_target->GetCreatureProperties()->Name, creature_target->getEntry());
     do
     {
         Field* fields = result->Fetch();
-        SystemMessage(m_session, "-- agent: %u | spellId: %u | event: %u | chance: %u | maxcount: %u", fields[1].asUint32(), fields[5].asUint32(), fields[2].asUint32(), fields[3].asUint32(), fields[4].asUint32());
+        systemMessage(m_session, "-- agent: {} | spellId: {} | event: {} | chance: {} | maxcount: {}", fields[1].asUint32(), fields[5].asUint32(), fields[2].asUint32(), fields[3].asUint32(), fields[4].asUint32());
     } while (result->NextRow());
 
     return true;
@@ -606,7 +606,7 @@ bool ChatHandler::HandleNpcListLootCommand(const char* args, WorldSession* m_ses
         if (*args)
             minQuality = std::stoul(args);
 
-        SystemMessage(m_session, "Listing loot for Creature %s (%u)", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
+        systemMessage(m_session, "Listing loot for Creature {} ({})", creature_target->GetCreatureProperties()->Name, creature_target->getEntry());
 
         do
         {
@@ -617,19 +617,15 @@ bool ChatHandler::HandleNpcListLootCommand(const char* args, WorldSession* m_ses
                 continue;
 
             RedSystemMessage(m_session, "ItemID: %u %s", item_proto->ItemId, sMySQLStore.getItemLinkByProto(item_proto, m_session->language).c_str());
-            SystemMessage(m_session, "-- N10 (%3.2lf) N25 (%3.2lf) H10 (%3.2lf) H25 (%3.2lf) min/max (%u/%u)", field[1].asFloat(), field[3].asFloat(), field[2].asFloat(), field[4].asFloat(), field[5].asUint32(), field[6].asUint32());
+            systemMessage(m_session, "-- N10 ({}) N25 ({}) H10 ({}) H25 ({}) min/max ({}/{})", field[1].asFloat(), field[3].asFloat(), field[2].asFloat(), field[4].asFloat(), field[5].asUint32(), field[6].asUint32());
 
             ++numFound;
         } while (loot_result->NextRow() && (numFound <= 25));
 
         if (numFound > 25)
-        {
             RedSystemMessage(m_session, "More than 25 results found. Use .npc listloot <min quality> to increase the results.");
-        }
         else
-        {
-            SystemMessage(m_session, "%hhu results found.", numFound);
-        }
+            systemMessage(m_session, "{} results found.", numFound);
     }
     else
     {
@@ -741,9 +737,7 @@ bool ChatHandler::HandleNpcSelectCommand(const char* /*args*/, WorldSession* m_s
     }
 
     player->setTargetGuid(near_creature->getGuid());
-    std::stringstream message;
-    message << "Nearest Creature " << near_creature->GetCreatureProperties()->Name << " spawnID: " << near_creature->spawnid << " GUID: " << near_creature->getGuid() << " selected";
-    SystemMessage(m_session, message.str().c_str());
+    systemMessage(m_session, "Nearest Creature {} spawnID: {} GUID: {} selected", near_creature->GetCreatureProperties()->Name, near_creature->spawnid, near_creature->getGuid());
     return true;
 }
 
@@ -880,14 +874,14 @@ bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* 
 
     if (wowGuid.getRawGuid() == 0)
     {
-        SystemMessage(m_session, "No selection.");
+        systemMessage(m_session, "No selection.");
         return true;
     }
 
     Creature* selected_creature = m_session->GetPlayer()->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
     if (selected_creature == nullptr)
     {
-        SystemMessage(m_session, "You should select a creature.");
+        systemMessage(m_session, "You should select a creature.");
         return true;
     }
 
@@ -900,7 +894,7 @@ bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* 
 
     if (amount == -1)
     {
-        SystemMessage(m_session, "You need to specify an amount.");
+        systemMessage(m_session, "You need to specify an amount.");
         return true;
     }
 
@@ -912,7 +906,7 @@ bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* 
     auto item_extended_cost = (costid > 0) ? sItemExtendedCostStore.lookupEntry(costid) : nullptr;
     if (costid > 0 && sItemExtendedCostStore.lookupEntry(costid) == nullptr)
     {
-        SystemMessage(m_session, "You've entered invalid extended cost id.");
+        systemMessage(m_session, "You've entered invalid extended cost id.");
         return true;
     }
 
@@ -942,7 +936,7 @@ bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* 
     uint64_t guid = m_session->GetPlayer()->getTargetGuid();
     if (guid == 0)
     {
-        SystemMessage(m_session, "No selection.");
+        systemMessage(m_session, "No selection.");
         return true;
     }
 #endif
@@ -960,14 +954,14 @@ bool ChatHandler::HandleNpcVendorRemoveItemCommand(const char* args, WorldSessio
     wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
     if (wowGuid.getRawGuid() == 0)
     {
-        SystemMessage(m_session, "No selection.");
+        systemMessage(m_session, "No selection.");
         return true;
     }
 
     Creature* selected_creature = m_session->GetPlayer()->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
     if (selected_creature == nullptr)
     {
-        SystemMessage(m_session, "You should select a creature.");
+        systemMessage(m_session, "You should select a creature.");
         return true;
     }
 

@@ -180,111 +180,111 @@ bool ChatHandler::HandleGOInfoCommand(const char* /*args*/, WorldSession* m_sess
         return true;
     }
 
-    SystemMessage(m_session, "%s Information:", MSG_COLOR_SUBWHITE);
-    SystemMessage(m_session, "%s SpawnID:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->m_spawn != nullptr ? gameobject->m_spawn->id : 0);
-    SystemMessage(m_session, "%s Entry:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getEntry());
-    SystemMessage(m_session, "%s GUID:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getGuidLow());
-    SystemMessage(m_session, "%s Model:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getDisplayId());
-    SystemMessage(m_session, "%s State:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getState());
-    SystemMessage(m_session, "%s flags:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getFlags());
-    SystemMessage(m_session, "%s dynflags:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getDynamicFlags());
-    SystemMessage(m_session, "%s faction:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getFactionTemplate());
-    SystemMessage(m_session, "%s phase:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetPhase());
+    systemMessage(m_session, "======== {} Information =======", MSG_COLOR_SUBWHITE);
+    systemMessage(m_session, "{} SpawnID:{}{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->m_spawn != nullptr ? gameobject->m_spawn->id : 0);
+    systemMessage(m_session, "{} Entry:{}{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getEntry());
+    systemMessage(m_session, "{} GUID:{}{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getGuidLow());
+    systemMessage(m_session, "{} Model:{}{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getDisplayId());
+    systemMessage(m_session, "{} State:{}{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getState());
+    systemMessage(m_session, "{} flags:{}{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getFlags());
+    systemMessage(m_session, "{} dynflags:{}{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getDynamicFlags());
+    systemMessage(m_session, "{} faction:{}{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getFactionTemplate());
+    systemMessage(m_session, "{} phase:{}{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetPhase());
 
-    char gotypetxt[50];
+    std::string gotypetxt;
     switch (gameobject->getGoType())
     {
         case GAMEOBJECT_TYPE_DOOR:
-            strcpy(gotypetxt, "Door");
+            gotypetxt = "Door";
             break;
         case GAMEOBJECT_TYPE_BUTTON:
-            strcpy(gotypetxt, "Button");
+            gotypetxt = "Button";
             break;
         case GAMEOBJECT_TYPE_QUESTGIVER:
-            strcpy(gotypetxt, "Quest Giver");
+            gotypetxt = "Quest Giver";
             break;
         case GAMEOBJECT_TYPE_CHEST:
-            strcpy(gotypetxt, "Chest");
+            gotypetxt = "Chest";
             break;
         case GAMEOBJECT_TYPE_BINDER:
-            strcpy(gotypetxt, "Binder");
+            gotypetxt = "Binder";
             break;
         case GAMEOBJECT_TYPE_GENERIC:
-            strcpy(gotypetxt, "Generic");
+            gotypetxt = "Generic";
             break;
         case GAMEOBJECT_TYPE_TRAP:
-            strcpy(gotypetxt, "Trap");
+            gotypetxt = "Trap";
             break;
         case GAMEOBJECT_TYPE_CHAIR:
-            strcpy(gotypetxt, "Chair");
+            gotypetxt = "Chair";
             break;
         case GAMEOBJECT_TYPE_SPELL_FOCUS:
-            strcpy(gotypetxt, "Spell Focus");
+            gotypetxt = "Spell Focus";
             break;
         case GAMEOBJECT_TYPE_TEXT:
-            strcpy(gotypetxt, "Text");
+            gotypetxt = "Text";
             break;
         case GAMEOBJECT_TYPE_GOOBER:
-            strcpy(gotypetxt, "Goober");
+            gotypetxt = "Goober";
             break;
         case GAMEOBJECT_TYPE_TRANSPORT:
-            strcpy(gotypetxt, "Transport");
+            gotypetxt = "Transport";
             break;
         case GAMEOBJECT_TYPE_AREADAMAGE:
-            strcpy(gotypetxt, "Area Damage");
+            gotypetxt = "Area Damage";
             break;
         case GAMEOBJECT_TYPE_CAMERA:
-            strcpy(gotypetxt, "Camera");
+            gotypetxt = "Camera";
             break;
         case GAMEOBJECT_TYPE_MAP_OBJECT:
-            strcpy(gotypetxt, "Map Object");
+            gotypetxt = "Map Object";
             break;
         case GAMEOBJECT_TYPE_MO_TRANSPORT:
-            strcpy(gotypetxt, "Mo Transport");
+            gotypetxt = "Mo Transport";
             break;
         case GAMEOBJECT_TYPE_DUEL_ARBITER:
-            strcpy(gotypetxt, "Duel Arbiter");
+            gotypetxt = "Duel Arbiter";
             break;
         case GAMEOBJECT_TYPE_FISHINGNODE:
-            strcpy(gotypetxt, "Fishing Node");
+            gotypetxt = "Fishing Node";
             break;
         case GAMEOBJECT_TYPE_RITUAL:
-            strcpy(gotypetxt, "Ritual");
+            gotypetxt = "Ritual";
             break;
         case GAMEOBJECT_TYPE_MAILBOX:
-            strcpy(gotypetxt, "Mailbox");
+            gotypetxt = "Mailbox";
             break;
         case GAMEOBJECT_TYPE_AUCTIONHOUSE:
-            strcpy(gotypetxt, "Auction House");
+            gotypetxt = "Auction House";
             break;
         case GAMEOBJECT_TYPE_GUARDPOST:
-            strcpy(gotypetxt, "Guard Post");
+            gotypetxt = "Guard Post";
             break;
         case GAMEOBJECT_TYPE_SPELLCASTER:
-            strcpy(gotypetxt, "Spell Caster");
+            gotypetxt = "Spell Caster";
             break;
         case GAMEOBJECT_TYPE_MEETINGSTONE:
-            strcpy(gotypetxt, "Meeting Stone");
+            gotypetxt = "Meeting Stone";
             break;
         case GAMEOBJECT_TYPE_FLAGSTAND:
-            strcpy(gotypetxt, "Flag Stand");
+            gotypetxt = "Flag Stand";
             break;
         case GAMEOBJECT_TYPE_FISHINGHOLE:
-            strcpy(gotypetxt, "Fishing Hole");
+            gotypetxt = "Fishing Hole";
             break;
         case GAMEOBJECT_TYPE_FLAGDROP:
-            strcpy(gotypetxt, "Flag Drop");
+            gotypetxt = "Flag Drop";
             break;
         case GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING:
-            strcpy(gotypetxt, "Destructible Building");
+            gotypetxt = "Destructible Building";
             break;
         default:
-            strcpy(gotypetxt, "Unknown.");
+            gotypetxt = "Unknown.";
             break;
     }
-    SystemMessage(m_session, "%s Type:%s%u -- %s", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getGoType(), gotypetxt);
+    systemMessage(m_session, "{} Type:{}{} -- {}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getGoType(), gotypetxt);
 
-    SystemMessage(m_session, "%s Distance:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->CalcDistance(m_session->GetPlayer()));
+    systemMessage(m_session, "{} Distance:{}{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->CalcDistance(m_session->GetPlayer()));
 
     GameObjectProperties const* gameobject_info = sMySQLStore.getGameObjectProperties(gameobject->getEntry());
     if (!gameobject_info)
@@ -294,30 +294,30 @@ bool ChatHandler::HandleGOInfoCommand(const char* /*args*/, WorldSession* m_sess
     }
 
 
-    SystemMessage(m_session, "%s Name:%s%s", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject_info->name.c_str());
+    systemMessage(m_session, "{} Name:{}{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject_info->name);
 
-    SystemMessage(m_session, "%s Size:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getScale());
-    SystemMessage(m_session, "%s X:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetPositionX());
-    SystemMessage(m_session, "%s Y:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetPositionY());
-    SystemMessage(m_session, "%s Z:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetPositionZ());
-    SystemMessage(m_session, "%s Orientation:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetOrientation());
-    SystemMessage(m_session, "%s Rotation 0:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getParentRotation(0));
-    SystemMessage(m_session, "%s Rotation 1:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getParentRotation(1));
-    SystemMessage(m_session, "%s Rotation 2:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getParentRotation(2));
-    SystemMessage(m_session, "%s Rotation 3:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getParentRotation(3));
+    systemMessage(m_session, "{} Size:{}{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getScale());
+    systemMessage(m_session, "{} X:{}{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetPositionX());
+    systemMessage(m_session, "{} Y:{}{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetPositionY());
+    systemMessage(m_session, "{} Z:{}{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetPositionZ());
+    systemMessage(m_session, "{} Orientation:{}{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetOrientation());
+    systemMessage(m_session, "{} Rotation 0:{}{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getParentRotation(0));
+    systemMessage(m_session, "{} Rotation 1:{}{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getParentRotation(1));
+    systemMessage(m_session, "{} Rotation 2:{}{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getParentRotation(2));
+    systemMessage(m_session, "{} Rotation 3:{}{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->getParentRotation(3));
 
     GameObject_Destructible* dgo = dynamic_cast<GameObject_Destructible*>(gameobject);
     if (gameobject_info->type == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
     {
-        SystemMessage(m_session, "%s HP:%s%u/%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, dgo->GetHP(), dgo->GetMaxHP());
+        systemMessage(m_session, "{} HP:{}{}/{}", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, dgo->GetHP(), dgo->GetMaxHP());
     }
 
-    SystemMessage(m_session, "=================================");
+    systemMessage(m_session, "=================================");
 
     if (gameobject->m_spawn != nullptr)
-        SystemMessage(m_session, "Is part of table: %s", gameobject->m_spawn->origine.c_str());
+        systemMessage(m_session, "Is part of table: {}", gameobject->m_spawn->origine);
     else
-        SystemMessage(m_session, "Is spawnd by an internal script");
+        systemMessage(m_session, "Is spawnd by an internal script");
 
     return true;
 }

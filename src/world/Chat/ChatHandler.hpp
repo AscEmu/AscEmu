@@ -42,7 +42,6 @@ public:
 
     int ParseCommands(const char* text, WorldSession* session);
 
-    void SystemMessage(WorldSession* m_session, const char* message, ...);
     void ColorSystemMessage(WorldSession* m_session, const char* colorcode, const char* message, ...);
     static void RedSystemMessage(WorldSession* m_session, const char* message, ...);
     static void GreenSystemMessage(WorldSession* m_session, const char* message, ...);
@@ -419,6 +418,7 @@ public:
     bool HandleModifyBytes2(const char* args, WorldSession* session);
 
     void sendModifySystemMessage(WorldSession* session, Unit* unitTarget, std::string modType, uint32_t newValue, uint32_t oldValue);
+    void sendModifySystemMessage(WorldSession* session, Unit* unitTarget, std::string modType, float newValue, float oldValue);
 
     // NPC Commands
     bool HandleNpcAddAgentCommand(const char* args, WorldSession* m_session);

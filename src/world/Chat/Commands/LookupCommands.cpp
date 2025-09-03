@@ -336,7 +336,7 @@ bool ChatHandler::HandleLookupCreatureCommand(const char* args, WorldSession* m_
             std::string names_lower = it->lowercase_name;
             if (AscEmu::Util::Strings::contains(x, names_lower) || localizedFound)
             {
-                SystemMessage(m_session, "ID: %u |cfffff000%s", it->Id, it->Name.c_str());
+                systemMessage(m_session, "ID: {} {}{}", it->Id, MSG_COLOR_YELLOW, it->Name);
                 ++count;
 
                 if (count == 25)
