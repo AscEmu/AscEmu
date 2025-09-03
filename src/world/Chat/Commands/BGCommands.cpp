@@ -35,7 +35,7 @@ bool ChatHandler::HandleBGGetQueueCommand(const char* /*args*/, WorldSession* m_
 //.battleground info
 bool ChatHandler::HandleBGInfoCommand(const char* /*args*/, WorldSession* m_session)
 {
-    RedSystemMessage(m_session, ".battleground info command not implemented yet!");
+    redSystemMessage(m_session, ".battleground info command not implemented yet!");
 
     return true;
 }
@@ -45,7 +45,7 @@ bool ChatHandler::HandleBGLeaveCommand(const char* /*args*/, WorldSession* m_ses
 {
     if (!m_session->GetPlayer()->getBattleground())
     {
-        RedSystemMessage(m_session, "You are not in a battleground.");
+        redSystemMessage(m_session, "You are not in a battleground.");
         return true;
     }
 
@@ -76,7 +76,7 @@ bool ChatHandler::HandleBGMenuCommand(const char* args, WorldSession* m_session)
 //.battleground pause
 bool ChatHandler::HandleBGPauseCommand(const char* /*args*/, WorldSession* m_session)
 {
-    RedSystemMessage(m_session, ".battleground pause command not implemented yet!");
+    redSystemMessage(m_session, ".battleground pause command not implemented yet!");
 
     return true;
 }
@@ -89,7 +89,7 @@ bool ChatHandler::HandleBGPlaySoundCommand(const char* args, WorldSession* m_ses
 
     if (!m_session->GetPlayer()->getBattleground())
     {
-        RedSystemMessage(m_session, "You are not in a battleground.");
+        redSystemMessage(m_session, "You are not in a battleground.");
         return true;
     }
 
@@ -111,7 +111,7 @@ bool ChatHandler::HandleBGSendStatusCommand(const char* args, WorldSession* m_se
 //.battleground setscore
 bool ChatHandler::HandleBGSetScoreCommand(const char* /*args*/, WorldSession* m_session)
 {
-    RedSystemMessage(m_session, ".battleground setscore command not implemented yet!");
+    redSystemMessage(m_session, ".battleground setscore command not implemented yet!");
 
     return true;
 }
@@ -122,8 +122,8 @@ bool ChatHandler::HandleBGSetWorldStateCommand(const char* args, WorldSession* m
     uint32_t id, val;
     if (sscanf(args, "%u %u", &id, &val) != 2)
     {
-        RedSystemMessage(m_session, ".battleground setworldstate rquires at least 2 values!");
-        RedSystemMessage(m_session, " e.g. .battleground setworldstate <worldstate_id> <value>");
+        redSystemMessage(m_session, ".battleground setworldstate rquires at least 2 values!");
+        redSystemMessage(m_session, " e.g. .battleground setworldstate <worldstate_id> <value>");
         return true;
     }
 
@@ -139,8 +139,8 @@ bool ChatHandler::HandleBGSetWorldStatesCommand(const char* args, WorldSession* 
     uint32_t first, last, val;
     if (sscanf(args, "%u %u %u", &first, &last, &val) != 3)
     {
-        RedSystemMessage(m_session, ".battleground setworldstates rquires at least 3 values!");
-        RedSystemMessage(m_session, " e.g. .battleground setworldstates <start_worldstate_id> <end_worldstate_id> <value>");
+        redSystemMessage(m_session, ".battleground setworldstates rquires at least 3 values!");
+        redSystemMessage(m_session, " e.g. .battleground setworldstates <start_worldstate_id> <end_worldstate_id> <value>");
         return true;
     }
 
@@ -156,7 +156,7 @@ bool ChatHandler::HandleBGStartCommand(const char* /*args*/, WorldSession* m_ses
 {
     if (!m_session->GetPlayer()->getBattleground())
     {
-        RedSystemMessage(m_session, "You are not in a battleground.");
+        redSystemMessage(m_session, "You are not in a battleground.");
         return true;
     }
 

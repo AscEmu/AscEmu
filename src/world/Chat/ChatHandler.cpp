@@ -328,7 +328,7 @@ bool ChatHandler::executeCommandFlat(std::string_view text, WorldSession* m_sess
         if (!any)
             systemMessage(m_session, "There is no help for that command");
         else
-            GreenSystemMessage(m_session, "Available Subcommands:");
+            greenSystemMessage(m_session, "Available Subcommands:");
 
         return true;
     }
@@ -340,7 +340,7 @@ bool ChatHandler::executeCommandFlat(std::string_view text, WorldSession* m_sess
         if (!chosen->help.empty())
             SendMultilineMessage(m_session, chosen->help.c_str());
         else
-            GreenSystemMessage(m_session, "Available Subcommands:");
+            greenSystemMessage(m_session, "Available Subcommands:");
 
         const std::string prefix = chosenCmd + ' ';
         bool any = false;
@@ -405,7 +405,7 @@ bool ChatHandler::executeCommandFlat(std::string_view text, WorldSession* m_sess
         if (!chosen->help.empty())
             SendMultilineMessage(m_session, chosen->help.c_str());
         else
-            RedSystemMessage(m_session, "Incorrect syntax specified. Try .help %s for the correct syntax.", chosenCmd.c_str());
+            redSystemMessage(m_session, "Incorrect syntax specified. Try .help %s for the correct syntax.", chosenCmd.c_str());
 
         return true;
     }
@@ -417,7 +417,7 @@ bool ChatHandler::executeCommandFlat(std::string_view text, WorldSession* m_sess
         if (!chosen->help.empty())
             SendMultilineMessage(m_session, chosen->help.c_str());
         else
-            RedSystemMessage(m_session, "Incorrect syntax specified. Try .help %s for the correct syntax.", chosenCmd.c_str());
+            redSystemMessage(m_session, "Incorrect syntax specified. Try .help %s for the correct syntax.", chosenCmd.c_str());
     }
 
     return true;
@@ -489,13 +489,13 @@ Player* ChatHandler::GetSelectedPlayer(WorldSession* m_session, bool showerror, 
     {
         if (auto_self)
         {
-            GreenSystemMessage(m_session, "Auto-targeting self.");
+            m_session->systemMessage("Auto-targeting self.");
             player_target = m_session->GetPlayer();
         }
         else
         {
             if (showerror)
-                RedSystemMessage(m_session, "This command requires a selected player.");
+                m_session->systemMessage("This command requires a selected player.");
 
             return nullptr;
         }
@@ -536,7 +536,7 @@ Creature* ChatHandler::GetSelectedCreature(WorldSession* m_session, bool showerr
     if (creature == nullptr || is_invalid_type)
     {
         if (showerror)
-            RedSystemMessage(m_session, "This command requires a selected a creature.");
+            redSystemMessage(m_session, "This command requires a selected a creature.");
 
         return nullptr;
     }
@@ -555,7 +555,7 @@ Unit* ChatHandler::GetSelectedUnit(WorldSession* m_session, bool showerror)
     if (unit == nullptr)
     {
         if (showerror)
-            RedSystemMessage(m_session, "You need to select a unit!");
+            redSystemMessage(m_session, "You need to select a unit!");
         return nullptr;
     }
 
@@ -630,42 +630,6 @@ const char* ChatHandler::GetRaidDifficultyString(uint8_t diff)
         default:
             return "unknown";
     }
-}
-
-void ChatHandler::RedSystemMessage(WorldSession* m_session, const char* message, ...)
-{
-    if (!message)
-        return;
-
-    va_list ap;
-    va_start(ap, message);
-    char msg1[1024];
-    vsnprintf(msg1, 1024, message, ap);
-    va_end(ap);
-
-    char msg[1024];
-    snprintf(msg, 1024, "%s%s|r", MSG_COLOR_LIGHTRED/*MSG_COLOR_RED*/, msg1);
-
-    if (m_session != NULL)
-        m_session->SendPacket(SmsgMessageChat(SystemMessagePacket(msg)).serialise().get());
-}
-
-void ChatHandler::GreenSystemMessage(WorldSession* m_session, const char* message, ...)
-{
-    if (!message)
-        return;
-
-    va_list ap;
-    va_start(ap, message);
-    char msg1[1024];
-    vsnprintf(msg1, 1024, message, ap);
-    va_end(ap);
-
-    char msg[1024];
-    snprintf(msg, 1024, "%s%s|r", MSG_COLOR_GREEN, msg1);
-
-    if (m_session != NULL)
-        m_session->SendPacket(SmsgMessageChat(SystemMessagePacket(msg)).serialise().get());
 }
 
 void ChatHandler::sendSystemMessagePacket(WorldSession* _session, std::string& _message)

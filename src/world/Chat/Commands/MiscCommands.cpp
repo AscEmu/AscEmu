@@ -266,7 +266,7 @@ bool ChatHandler::showHelpForCommand(WorldSession* m_session, const char* args)
     if (!any)
         systemMessage(m_session, "There is no help for that command");
     else
-        GreenSystemMessage(m_session, "Available Subcommands:");
+        greenSystemMessage(m_session, "Available Subcommands:");
 
     return true;
 }
@@ -278,7 +278,7 @@ bool ChatHandler::handleHelpCommand(const char* args, WorldSession* m_session)
         return false;
 
     if (!showHelpForCommand(m_session, args))
-        RedSystemMessage(m_session, "Sorry, no help was found for this command, or that command does not exist.");
+        redSystemMessage(m_session, "Sorry, no help was found for this command, or that command does not exist.");
 
     return true;
 }
@@ -292,20 +292,20 @@ bool ChatHandler::HandleMountCommand(const char* args, WorldSession* m_session)
 
     if (!args)
     {
-        RedSystemMessage(m_session, "No model specified!");
+        redSystemMessage(m_session, "No model specified!");
         return true;
     }
 
     uint32_t modelid = std::stoul(args);
     if (!modelid)
     {
-        RedSystemMessage(m_session, "No model specified!");
+        redSystemMessage(m_session, "No model specified!");
         return true;
     }
 
     if (unit_target->getMountDisplayId() != 0)
     {
-        RedSystemMessage(m_session, "Target is already mounted.");
+        redSystemMessage(m_session, "Target is already mounted.");
         return true;
     }
 
@@ -326,7 +326,7 @@ bool ChatHandler::HandleDismountCommand(const char* /*args*/, WorldSession* m_se
 
     if (unit_target->getMountDisplayId() == 0)
     {
-        RedSystemMessage(m_session, "Target is not mounted.");
+        redSystemMessage(m_session, "Target is not mounted.");
         return true;
     }
 
@@ -345,7 +345,7 @@ bool ChatHandler::HandleGoCreatureSpawnCommand(const char* args, WorldSession* m
     uint32_t spawn_id;
     if (sscanf(args, "%u", &spawn_id) != 1)
     {
-        RedSystemMessage(m_session, "Command must be in format: .gocreature <creature_spawnid>.");
+        redSystemMessage(m_session, "Command must be in format: .gocreature <creature_spawnid>.");
         return true;
     }
 
@@ -361,7 +361,7 @@ bool ChatHandler::HandleGoCreatureSpawnCommand(const char* args, WorldSession* m
         }
     }
 
-    RedSystemMessage(m_session, "No creature found in creature_spawns table with id %u.", spawn_id);
+    redSystemMessage(m_session, "No creature found in creature_spawns table with id {}.", spawn_id);
     return true;
 }
 
@@ -371,7 +371,7 @@ bool ChatHandler::HandleGoGameObjectSpawnCommand(const char* args, WorldSession*
     uint32_t spawn_id;
     if (sscanf(args, "%u", &spawn_id) != 1)
     {
-        RedSystemMessage(m_session, "Command must be in format: .gogameobject <gameobject_spawnid>.");
+        redSystemMessage(m_session, "Command must be in format: .gogameobject <gameobject_spawnid>.");
         return true;
     }
 
@@ -387,7 +387,7 @@ bool ChatHandler::HandleGoGameObjectSpawnCommand(const char* args, WorldSession*
         }
     }
 
-    RedSystemMessage(m_session, "No gameobject found in gameobject_spawns table with id %u.", spawn_id);
+    redSystemMessage(m_session, "No gameobject found in gameobject_spawns table with id {}.", spawn_id);
     return true;
 }
 
@@ -438,9 +438,9 @@ bool ChatHandler::HandleGoStartLocationCommand(const char* args, WorldSession* m
         else
         {
 #if VERSION_STRING >= Cata
-            RedSystemMessage(m_session, "Invalid start location! Valid locations are: human, dwarf, gnome, nightelf, draenei, orc, troll, goblin, tauren, undead, bloodelf, worgen, deathknight");
+            redSystemMessage(m_session, "Invalid start location! Valid locations are: human, dwarf, gnome, nightelf, draenei, orc, troll, goblin, tauren, undead, bloodelf, worgen, deathknight");
 #else
-            RedSystemMessage(m_session, "Invalid start location! Valid locations are: human, dwarf, gnome, nightelf, draenei, orc, troll, tauren, undead, bloodelf, deathknight");
+            redSystemMessage(m_session, "Invalid start location! Valid locations are: human, dwarf, gnome, nightelf, draenei, orc, troll, tauren, undead, bloodelf, deathknight");
 #endif
             return true;
         }
@@ -462,11 +462,11 @@ bool ChatHandler::HandleGoStartLocationCommand(const char* args, WorldSession* m
 
     if (player_info == nullptr)
     {
-        RedSystemMessage(m_session, "Internal error: Could not find create info for race %u and class %u.", raceid, classid);
+        redSystemMessage(m_session, "Internal error: Could not find create info for race {} and class {}.", raceid, classid);
         return false;
     }
 
-    GreenSystemMessage(m_session, "Teleporting %s to %s starting location.", player_target->getName().c_str(), race.c_str());
+    greenSystemMessage(m_session, "Teleporting {} to {} starting location.", player_target->getName(), race);
 
     player_target->safeTeleport(player_info->mapId, 0, LocationVector(player_info->positionX, player_info->positionY, player_info->positionZ));
     return true;
@@ -480,15 +480,15 @@ bool ChatHandler::HandleGoTriggerCommand(const char* args, WorldSession* m_sessi
 
     if (sscanf(args, "%u %d", &trigger_id, &instance_id) < 1)
     {
-        RedSystemMessage(m_session, "Command must be at least in format: .gotrig <trigger_id>.");
-        RedSystemMessage(m_session, "You can use: .gotrig <trigger_id> <instance_id>");
+        redSystemMessage(m_session, "Command must be at least in format: .gotrig <trigger_id>.");
+        redSystemMessage(m_session, "You can use: .gotrig <trigger_id> <instance_id>");
         return true;
     }
 
     auto area_trigger_entry = sAreaTriggerStore.lookupEntry(trigger_id);
     if (area_trigger_entry == nullptr)
     {
-        RedSystemMessage(m_session, "Could not find trigger %s", args);
+        redSystemMessage(m_session, "Could not find trigger {}", args);
         return true;
     }
 
@@ -511,12 +511,12 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
         auto named_player = sObjectMgr.getPlayer(args, false);
         if (named_player == nullptr)
         {
-            RedSystemMessage(m_session, "Player %s is not online or does not exist!", args);
+            redSystemMessage(m_session, "Player {} is not online or does not exist!", args);
             return true;
         }
         named_player->die(nullptr, 0, 0);
-        RedSystemMessage(named_player->getSession(), "You were killed by %s with a GM command.", m_session->GetPlayer()->getName().c_str());
-        GreenSystemMessage(m_session, "Killed player %s.", args);
+        redSystemMessage(named_player->getSession(), "You were killed by {} with a GM command.", m_session->GetPlayer()->getName());
+        greenSystemMessage(m_session, "Killed player {}.", args);
         sGMLog.writefromsession(m_session, "used kill command on Player Name: %s Guid: %s ", named_player->getName().c_str(), std::to_string(named_player->getGuid()).c_str());
     }
     else
@@ -536,7 +536,7 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
                     Spell* spell = sSpellMgr.newSpell(m_session->GetPlayer(), kill_spell, true, 0);
                     spell->prepare(&targets);
 
-                    GreenSystemMessage(m_session, "Killed Creature %s.", creature->GetCreatureProperties()->Name.c_str());
+                    greenSystemMessage(m_session, "Killed Creature {}.", creature->GetCreatureProperties()->Name);
                     sGMLog.writefromsession(m_session, "used kill command on Creature %u [%s], spawn ID: %u", creature->getEntry(), creature->GetCreatureProperties()->Name.c_str(), creature->spawnid);
                     break;
                 }
@@ -546,22 +546,22 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
 
                     player->setHealth(0);
                     player->die(nullptr, 0, 0);
-                    RedSystemMessage(player->getSession(), "You were killed by %s with a GM command.", m_session->GetPlayer()->getName().c_str());
-                    GreenSystemMessage(m_session, "Killed player %s.", player->getName().c_str());
+                    redSystemMessage(player->getSession(), "You were killed by {} with a GM command.", m_session->GetPlayer()->getName());
+                    greenSystemMessage(m_session, "Killed player {}.", player->getName());
                     sGMLog.writefromsession(m_session, "used kill command on Player Name: %s Guid: %s", m_session->GetPlayer()->getName().c_str(), std::to_string(player->getGuid()).c_str());
                     break;
                 }
                 default:
-                    RedSystemMessage(m_session, "Something went wrong while killing a unit with this command!");
+                    redSystemMessage(m_session, "Something went wrong while killing a unit with this command!");
                     break;
 
             }
         }
         else
         {
-            RedSystemMessage(m_session, "No selected target or player name set.");
-            RedSystemMessage(m_session, "Use .kill on an selected unit (player/creature)");
-            RedSystemMessage(m_session, "Use .kill <playername> to kill players");
+            redSystemMessage(m_session, "No selected target or player name set.");
+            redSystemMessage(m_session, "Use .kill on an selected unit (player/creature)");
+            redSystemMessage(m_session, "Use .kill <playername> to kill players");
             return true;
         }
 
@@ -582,7 +582,7 @@ bool ChatHandler::HandleReviveCommand(const char* args, WorldSession* m_session)
 
     if (reviveTarget == nullptr)
     {
-        RedSystemMessage(m_session, "Player not found!");
+        redSystemMessage(m_session, "Player not found!");
         return true;
     }
 
@@ -593,7 +593,7 @@ bool ChatHandler::HandleReviveCommand(const char* args, WorldSession* m_session)
         reviveTarget->resurrect();
 
         if (!revivedSelf)
-            GreenSystemMessage(m_session, "Player %s revived.", reviveTarget->getName().c_str());
+            greenSystemMessage(m_session, "Player {} revived.", reviveTarget->getName());
     }
 
     reviveTarget->setFullHealthMana();
@@ -662,9 +662,9 @@ bool ChatHandler::HandleKickByNameCommand(const char* args, WorldSession* m_sess
 {
     if (!args)
     {
-        RedSystemMessage(m_session, "A player name is required!");
-        RedSystemMessage(m_session, "Usage: .kick player <player_name>");
-        RedSystemMessage(m_session, "Optional: .kick player <player_name> <reason>");
+        redSystemMessage(m_session, "A player name is required!");
+        redSystemMessage(m_session, "Usage: .kick player <player_name>");
+        redSystemMessage(m_session, "Optional: .kick player <player_name> <reason>");
         return true;
     }
 
@@ -683,7 +683,7 @@ bool ChatHandler::HandleKickByNameCommand(const char* args, WorldSession* m_sess
 
         if (!m_session->CanUseCommand('z') && player_target->getSession()->CanUseCommand('z'))
         {
-            RedSystemMessage(m_session, "You cannot kick %s, a GM whose permissions outrank yours.", player_target->getName().c_str());
+            redSystemMessage(m_session, "You cannot kick {}, a GM whose permissions outrank yours.", player_target->getName());
             return true;
         }
 
@@ -698,7 +698,7 @@ bool ChatHandler::HandleKickByNameCommand(const char* args, WorldSession* m_sess
         player_target->kickFromServer(6000);
         return true;
     }
-    RedSystemMessage(m_session, "Player is not online at the moment.");
+    redSystemMessage(m_session, "Player is not online at the moment.");
 
     return true;
 }
@@ -708,8 +708,8 @@ bool ChatHandler::HandleKKickBySessionCommand(const char* args, WorldSession* m_
 {
     if (!args)
     {
-        RedSystemMessage(m_session, "A account name is required!");
-        RedSystemMessage(m_session, "Usage: .kick account <account_name>");
+        redSystemMessage(m_session, "A account name is required!");
+        redSystemMessage(m_session, "Usage: .kick account <account_name>");
         return true;
     }
 
@@ -719,7 +719,7 @@ bool ChatHandler::HandleKKickBySessionCommand(const char* args, WorldSession* m_
     {
         if (!m_session->CanUseCommand('z') && player_target->getSession()->CanUseCommand('z'))
         {
-            RedSystemMessage(m_session, "You cannot kick %s, a GM whose permissions outrank yours.", player_target->getName().c_str());
+            redSystemMessage(m_session, "You cannot kick {}, a GM whose permissions outrank yours.", player_target->getName());
             return true;
         }
 
@@ -728,7 +728,7 @@ bool ChatHandler::HandleKKickBySessionCommand(const char* args, WorldSession* m_
     }
     else
     {
-        RedSystemMessage(m_session, "Player is not online at the moment.");
+        redSystemMessage(m_session, "Player is not online at the moment.");
     }
 
     return true;
@@ -739,8 +739,8 @@ bool ChatHandler::HandleKickByIPCommand(const char* args, WorldSession* m_sessio
 {
     if (!args || strlen(args) < 8)
     {
-        RedSystemMessage(m_session, "An IP is required!");
-        RedSystemMessage(m_session, "Usage: .kick ip <AN.IP.ADD.RES>");
+        redSystemMessage(m_session, "An IP is required!");
+        redSystemMessage(m_session, "Usage: .kick ip <AN.IP.ADD.RES>");
         return true;
     }
 
@@ -758,13 +758,13 @@ bool ChatHandler::HandleWorldPortCommand(const char* args, WorldSession* m_sessi
 
     if (sscanf(args, "%u %f %f %f %f", &mapid, &x, &y, &z, &o) < 4)
     {
-        RedSystemMessage(m_session, "You have to use at least .worldport <mapid> <x> <y> <z>");
+        redSystemMessage(m_session, "You have to use at least .worldport <mapid> <x> <y> <z>");
         return true;
     }
 
     if (x >= Map::Terrain::_maxX || x <= Map::Terrain::_minX || y <= Map::Terrain::_minY || y >= Map::Terrain::_maxY)
     {
-        RedSystemMessage(m_session, "<x> <y> value is out of range!");
+        redSystemMessage(m_session, "<x> <y> value is out of range!");
         return true;
     }
 
@@ -853,12 +853,12 @@ bool ChatHandler::HandleInvincibleCommand(const char* /*args*/, WorldSession* m_
 
         if (selected_player != m_session->GetPlayer())
         {
-            GreenSystemMessage(selected_player->getSession(), "%s turns your invincibility off", m_session->GetPlayer()->getName().c_str());
+            greenSystemMessage(selected_player->getSession(), "{} turns your invincibility off", m_session->GetPlayer()->getName());
             sGMLog.writefromsession(m_session, "turns invincibility off for %s", selected_player->getName().c_str());
         }
         else
         {
-            GreenSystemMessage(m_session, "Invincibility is now off");
+            greenSystemMessage(m_session, "Invincibility is now off");
         }
     }
     else
@@ -867,12 +867,12 @@ bool ChatHandler::HandleInvincibleCommand(const char* /*args*/, WorldSession* m_
 
         if (selected_player != m_session->GetPlayer())
         {
-            GreenSystemMessage(selected_player->getSession(), "%s turns your invincibility on", m_session->GetPlayer()->getName().c_str());
+            greenSystemMessage(selected_player->getSession(), "{} turns your invincibility on", m_session->GetPlayer()->getName());
             sGMLog.writefromsession(m_session, "turns invincibility on for %s", selected_player->getName().c_str());
         }
         else
         {
-            GreenSystemMessage(m_session, "Invincibility is now on");
+            greenSystemMessage(m_session, "Invincibility is now on");
         }
     }
 
@@ -898,12 +898,12 @@ bool ChatHandler::HandleInvisibleCommand(const char* /*args*/, WorldSession* m_s
 
         if (selected_player != m_session->GetPlayer())
         {
-            GreenSystemMessage(selected_player->getSession(), "%s turns your invisibility and invincibility off", m_session->GetPlayer()->getName().c_str());
+            greenSystemMessage(selected_player->getSession(), "{} turns your invisibility and invincibility off", m_session->GetPlayer()->getName());
             sGMLog.writefromsession(m_session, "turns invisibility and invincibility off for %s", selected_player->getName().c_str());
         }
         else
         {
-            GreenSystemMessage(m_session, "Invisibility and Invincibility are now off");
+            greenSystemMessage(m_session, "Invisibility and Invincibility are now off");
         }
     }
     else
@@ -918,12 +918,12 @@ bool ChatHandler::HandleInvisibleCommand(const char* /*args*/, WorldSession* m_s
 
         if (selected_player != m_session->GetPlayer())
         {
-            GreenSystemMessage(selected_player->getSession(), "%s turns your invisibility and invincibility on", m_session->GetPlayer()->getName().c_str());
+            greenSystemMessage(selected_player->getSession(), "{} turns your invisibility and invincibility on", m_session->GetPlayer()->getName());
             sGMLog.writefromsession(m_session, "turns invisibility and invincibility on for %s", selected_player->getName().c_str());
         }
         else
         {
-            GreenSystemMessage(m_session, "Invisibility and Invincibility are now on");
+            greenSystemMessage(m_session, "Invisibility and Invincibility are now on");
         }
     }
 
@@ -1077,7 +1077,7 @@ bool ChatHandler::HandleBlockAppearCommand(const char* args, WorldSession* m_ses
         else
         {
             m_session->GetPlayer()->disableAppearing(true);
-            GreenSystemMessage(m_session, "Appear blocking is now enabled");
+            greenSystemMessage(m_session, "Appear blocking is now enabled");
         }
     }
     else if (AscEmu::Util::Strings::isEqual(args, "off"))
@@ -1085,7 +1085,7 @@ bool ChatHandler::HandleBlockAppearCommand(const char* args, WorldSession* m_ses
         if (m_session->GetPlayer()->isAppearingDisabled())
         {
             m_session->GetPlayer()->disableAppearing(false);
-            GreenSystemMessage(m_session, "Appear blocking is now disabled");
+            greenSystemMessage(m_session, "Appear blocking is now disabled");
         }
         else
         {
@@ -1163,7 +1163,7 @@ bool ChatHandler::HandleBlockSummonCommand(const char* args, WorldSession* m_ses
         else
         {
             m_session->GetPlayer()->disableSummoning(true);
-            GreenSystemMessage(m_session, "Summon blocking is now enabled");
+            greenSystemMessage(m_session, "Summon blocking is now enabled");
         }
     }
     else if (AscEmu::Util::Strings::isEqual(args, "off"))
@@ -1171,7 +1171,7 @@ bool ChatHandler::HandleBlockSummonCommand(const char* args, WorldSession* m_ses
         if (m_session->GetPlayer()->isSummoningDisabled())
         {
             m_session->GetPlayer()->disableSummoning(false);
-            GreenSystemMessage(m_session, "Summon blocking is now disabled");
+            greenSystemMessage(m_session, "Summon blocking is now disabled");
         }
         else
         {
@@ -1191,7 +1191,7 @@ bool ChatHandler::HandlePlayerInfo(const char* args, WorldSession* m_session)
         plr = sObjectMgr.getPlayer(args, false);
         if (!plr)
         {
-            RedSystemMessage(m_session, "Unable to locate player %s.", args);
+            redSystemMessage(m_session, "Unable to locate player {}.", args);
             return true;
         }
     }
@@ -1201,12 +1201,12 @@ bool ChatHandler::HandlePlayerInfo(const char* args, WorldSession* m_session)
     if (!plr) return true;
     if (!plr->getSession())
     {
-        RedSystemMessage(m_session, "ERROR: this player hasn't got any session !");
+        redSystemMessage(m_session, "ERROR: this player hasn't got any session !");
         return true;
     }
     if (!plr->getSession()->GetSocket())
     {
-        RedSystemMessage(m_session, "ERROR: this player hasn't got any socket !");
+        redSystemMessage(m_session, "ERROR: this player hasn't got any socket !");
         return true;
     }
     WorldSession* sess = plr->getSession();
@@ -1281,7 +1281,7 @@ bool ChatHandler::HandlePlayerInfo(const char* args, WorldSession* m_session)
     }
     snprintf(playedTotal, 64, "[%d days, %d hours, %d minutes, %d seconds]", days, hours, mins, seconds);
 
-    GreenSystemMessage(m_session, "%s is a %s %s %s", plr->getName().c_str(), (plr->getGender() ? "Female" : "Male"), races[plr->getRace()], classes[plr->getClass()]);
+    greenSystemMessage(m_session, "{} is a {} {} {}", plr->getName(), (plr->getGender() ? "Female" : "Male"), races[plr->getRace()], classes[plr->getClass()]);
 
     blueSystemMessage(m_session, "{} has played {} at this level", (plr->getGender() ? "She" : "He"), playedLevel);
     blueSystemMessage(m_session, "and {} overall", playedTotal);
@@ -1323,7 +1323,7 @@ bool ChatHandler::HandleIPUnBanCommand(const char* args, WorldSession* m_session
 
     if (pIp.find("/") == std::string::npos)
     {
-        RedSystemMessage(m_session, "Lack of CIDR address assumes a 32bit match (if you don't understand, don't worry, it worked)");
+        redSystemMessage(m_session, "Lack of CIDR address assumes a 32bit match (if you don't understand, don't worry, it worked)");
         pIp.append("/32");
     }
 
@@ -1345,19 +1345,19 @@ bool ChatHandler::HandleUnBanCharacterCommand(const char* args, WorldSession* m_
 
     if (!(iss >> character))
     {
-        RedSystemMessage(m_session, "A character name is required.");
+        redSystemMessage(m_session, "A character name is required.");
         return true;
     }
 
     Player* pPlayer = sObjectMgr.getPlayer(character.c_str(), false);
     if (pPlayer != nullptr)
     {
-        GreenSystemMessage(m_session, "Unbanned player %s ingame.", pPlayer->getName().c_str());
+        greenSystemMessage(m_session, "Unbanned player {} ingame.", pPlayer->getName());
         pPlayer->unsetBanned();
     }
     else
     {
-        GreenSystemMessage(m_session, "Player %s not found ingame.", character.c_str());
+        greenSystemMessage(m_session, "Player {} not found ingame.", character);
     }
 
     CharacterDatabase.Execute("UPDATE characters SET banned = 0 WHERE name = '%s'", CharacterDatabase.EscapeString(character).c_str());
@@ -1417,7 +1417,7 @@ bool ChatHandler::HandleIPBanCommand(const char* args, WorldSession* m_session)
     if (sscanf(pIp, "%3u.%3u.%3u.%3u", &o1, &o2, &o3, &o4) != 4
         || o1 > 255 || o2 > 255 || o3 > 255 || o4 > 255)
     {
-        RedSystemMessage(m_session, "Invalid IPv4 address [%s]", pIp);
+        redSystemMessage(m_session, "Invalid IPv4 address [{}]", pIp);
         return true;    // error in syntax, but we wont remind client of command usage
     }
 
@@ -1433,7 +1433,7 @@ bool ChatHandler::HandleIPBanCommand(const char* args, WorldSession* m_session)
 
     if (i == std::string::npos)
     {
-        RedSystemMessage(m_session, "Lack of CIDR address assumes a 32bit match (if you don't understand, don't worry, it worked)");
+        redSystemMessage(m_session, "Lack of CIDR address assumes a 32bit match (if you don't understand, don't worry, it worked)");
         IP.append("/32");
     }
 
@@ -1537,25 +1537,25 @@ bool ChatHandler::HandleBanAllCommand(const char* args, WorldSession* m_session)
     pBanned = sObjectMgr.getPlayer(pCharacter, false);
     if (!pBanned || !pBanned->IsInWorld())
     {
-        RedSystemMessage(m_session, "Player \'%s\' is not online or does not exists!", pCharacter);
+        redSystemMessage(m_session, "Player \'{}\' is not online or does not exists!", pCharacter);
         return true;
     }
 
     if (pBanned == m_session->GetPlayer())
     {
-        RedSystemMessage(m_session, "You cannot ban yourself!");
+        redSystemMessage(m_session, "You cannot ban yourself!");
         return true;
     }
 
     if (pBanned->getSession() == nullptr)
     {
-        RedSystemMessage(m_session, "Player does not have a session!");
+        redSystemMessage(m_session, "Player does not have a session!");
         return true;
     }
 
     if (pBanned->getSession()->GetSocket() == nullptr)
     {
-        RedSystemMessage(m_session, "Player does not have a socket!");
+        redSystemMessage(m_session, "Player does not have a socket!");
         return true;
     }
 
@@ -1563,7 +1563,7 @@ bool ChatHandler::HandleBanAllCommand(const char* args, WorldSession* m_session)
     pIP = pBanned->getSession()->GetSocket()->GetRemoteIP();
     if (pIP == m_session->GetSocket()->GetRemoteIP())
     {
-        RedSystemMessage(m_session, "That player has the same IP as you - ban failed");
+        redSystemMessage(m_session, "That player has the same IP as you - ban failed");
         return true;
     }
 

@@ -67,7 +67,7 @@ bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldS
         auto creature_properties = sMySQLStore.getCreatureProperties(entry);
         if (creature_properties == nullptr)
         {
-            RedSystemMessage(session, "Creature with entry %u is not a valid entry (no properties information in database)", entry);
+            redSystemMessage(session, "Creature with entry {} is not a valid entry (no properties information in database)", entry);
             return true;
         }
 
@@ -341,12 +341,12 @@ bool ChatHandler::HandleDebugHover(const char* /*args*/, WorldSession* m_session
 
     if (selected_unit->hasUnitMovementFlag(MOVEFLAG_HOVER))
     {
-        GreenSystemMessage(m_session, "Unset Hover for target.");
+        greenSystemMessage(m_session, "Unset Hover for target.");
         selected_unit->setMoveHover(false);
     }
     else
     {
-        GreenSystemMessage(m_session, "Set Hover for target.");
+        greenSystemMessage(m_session, "Set Hover for target.");
         selected_unit->setMoveHover(true);
     }
 
@@ -360,7 +360,7 @@ bool ChatHandler::HandleDebugState(const char* /*args*/, WorldSession* m_session
     if (selected_unit == nullptr)
         return false;
 
-    GreenSystemMessage(m_session, "Display unitStateFlag: %u", selected_unit->getUnitStateFlags());
+    greenSystemMessage(m_session, "Display unitStateFlag: {}", selected_unit->getUnitStateFlags());
     
     return true;
 }
@@ -374,12 +374,12 @@ bool ChatHandler::HandleDebugSwim(const char* /*args*/, WorldSession* m_session)
 
     if (selected_creature->hasUnitMovementFlag(MOVEFLAG_SWIMMING))
     {
-        GreenSystemMessage(m_session, "Unset Swim for creature %s.", selected_creature->GetCreatureProperties()->Name.c_str());
+        greenSystemMessage(m_session, "Unset Swim for creature {}.", selected_creature->GetCreatureProperties()->Name);
         selected_creature->setMoveSwim(false);
     }
     else
     {
-        GreenSystemMessage(m_session, "Set Swim for creature %s.", selected_creature->GetCreatureProperties()->Name.c_str());
+        greenSystemMessage(m_session, "Set Swim for creature {}.", selected_creature->GetCreatureProperties()->Name);
         selected_creature->setMoveSwim(true);
     }
 
@@ -395,12 +395,12 @@ bool ChatHandler::HandleDebugFly(const char* /*args*/, WorldSession* m_session)
 
     if (selected_creature->hasUnitMovementFlag(MOVEFLAG_CAN_FLY))
     {
-        GreenSystemMessage(m_session, "Unset Fly for creature %s.", selected_creature->GetCreatureProperties()->Name.c_str());
+        greenSystemMessage(m_session, "Unset Fly for creature {}.", selected_creature->GetCreatureProperties()->Name);
         selected_creature->setMoveCanFly(false);
     }
     else
     {
-        GreenSystemMessage(m_session, "Set Fly for creature %s.", selected_creature->GetCreatureProperties()->Name.c_str());
+        greenSystemMessage(m_session, "Set Fly for creature {}.", selected_creature->GetCreatureProperties()->Name);
         selected_creature->setMoveCanFly(true);
     }
     return true;
@@ -415,12 +415,12 @@ bool ChatHandler::HandleDebugDisableGravity(const char* /*args*/, WorldSession* 
 
     if (selected_unit->hasUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY))
     {
-        GreenSystemMessage(m_session, "Enable Gravity for target.");
+        greenSystemMessage(m_session, "Enable Gravity for target.");
         selected_unit->setMoveDisableGravity(false);
     }
     else
     {
-        GreenSystemMessage(m_session, "Disable Gravity  for target.");
+        greenSystemMessage(m_session, "Disable Gravity for target.");
         selected_unit->setMoveDisableGravity(true);
     }
 
@@ -436,12 +436,12 @@ bool ChatHandler::HandleDebugWaterWalk(const char* /*args*/, WorldSession* m_ses
 
     if (selected_unit->hasUnitMovementFlag(MOVEFLAG_WATER_WALK))
     {
-        GreenSystemMessage(m_session, "Disable WaterWalking for target.");
+        greenSystemMessage(m_session, "Disable WaterWalking for target.");
         selected_unit->setMoveLandWalk();
     }
     else
     {
-        GreenSystemMessage(m_session, "Enabled WaterWalking for target.");
+        greenSystemMessage(m_session, "Enabled WaterWalking for target.");
         selected_unit->setMoveWaterWalk();
     }
 
@@ -457,12 +457,12 @@ bool ChatHandler::HandleDebugFeatherFall(const char* /*args*/, WorldSession* m_s
 
     if (selected_unit->hasUnitMovementFlag(MOVEFLAG_FEATHER_FALL))
     {
-        GreenSystemMessage(m_session, "Disable FeatherFall for target.");
+        greenSystemMessage(m_session, "Disable FeatherFall for target.");
         selected_unit->setMoveNormalFall();
     }
     else
     {
-        GreenSystemMessage(m_session, "Enabled FeatherFall for target.");
+        greenSystemMessage(m_session, "Enabled FeatherFall for target.");
         selected_unit->setMoveFeatherFall();
     }
 
@@ -475,7 +475,7 @@ bool ChatHandler::HandleDebugSpeed(const char* args, WorldSession* m_session)
     float speed = float(atof(args));
     if (speed == 0.0f || speed > 255.0f || speed < 0.1f)
     {
-        RedSystemMessage(m_session, "Invalid speed set. Value range 0.1f ... 255.0f Use .debug speed <speed>");
+        redSystemMessage(m_session, "Invalid speed set. Value range 0.1f ... 255.0f Use .debug speed <speed>");
         return true;
     }
 
@@ -501,7 +501,7 @@ bool ChatHandler::HandleDebugPVPCreditCommand(const char* args, WorldSession* m_
     uint32_t points;
     if (sscanf(args, "%u %u", &rank, &points) != 2)
     {
-        RedSystemMessage(m_session, "Command must be in format <rank> <points>.");
+        redSystemMessage(m_session, "Command must be in format <rank> <points>.");
         return true;
     }
 
@@ -511,7 +511,7 @@ bool ChatHandler::HandleDebugPVPCreditCommand(const char* args, WorldSession* m_
 
     points *= 10;
 
-    GreenSystemMessage(m_session, "Building packet with Rank %u, Points %u, for Player %s.", rank, points, player_target->getName().c_str());
+    greenSystemMessage(m_session, "Building packet with Rank {}, Points {}, for Player {}.", rank, points, player_target->getName());
 
     m_session->GetPlayer()->sendPvpCredit(points, player_target->getGuid(), rank);
 
@@ -526,7 +526,7 @@ bool ChatHandler::HandleDebugSetUnitByteCommand(const char* args, WorldSession* 
     uint32_t value;
     if (sscanf(args, "%u %u %u", &bytes, &offset, &value) != 3)
     {
-        RedSystemMessage(m_session, "Command must be in format <bytes> <offset> <value>.");
+        redSystemMessage(m_session, "Command must be in format <bytes> <offset> <value>.");
         return true;
     }
 
@@ -553,12 +553,12 @@ bool ChatHandler::HandleDebugSetUnitByteCommand(const char* args, WorldSession* 
         } break;
         default:
         {
-            RedSystemMessage(m_session, "Bytes %u are not existent. Choose from 0, 1 or 2", bytes);
+            redSystemMessage(m_session, "Bytes {} are not existent. Choose from 0, 1 or 2", bytes);
             return true;
         }
     }
 
-    GreenSystemMessage(m_session, "Unit Bytes %u Offset %u set to Value %u", bytes, offset, value);
+    greenSystemMessage(m_session, "Unit Bytes {} Offset {} set to Value {}", bytes, offset, value);
 
     return true;
 }
@@ -569,7 +569,7 @@ bool ChatHandler::HandleDebugSetPlayerFlagsCommand(const char* args, WorldSessio
     uint32_t flags;
     if (sscanf(args, "%u", &flags) != 1)
     {
-        RedSystemMessage(m_session, "Command must contain at least 1 flag.");
+        redSystemMessage(m_session, "Command must contain at least 1 flag.");
         return true;
     }
 
@@ -581,7 +581,7 @@ bool ChatHandler::HandleDebugSetPlayerFlagsCommand(const char* args, WorldSessio
 
     player_target->addPlayerFlags(flags);
 
-    GreenSystemMessage(m_session, "Player flag %u added (before %u)", flags, current_flags);
+    greenSystemMessage(m_session, "Player flag {} added (before {})", flags, current_flags);
 
     return true;
 }
@@ -595,7 +595,7 @@ bool ChatHandler::HandleDebugGetPlayerFlagsCommand(const char* /*args*/, WorldSe
 
     const auto current_flags = player_target->getPlayerFlags();
 
-    GreenSystemMessage(m_session, "Current player flags: %u", current_flags);
+    greenSystemMessage(m_session, "Current player flags: {}", current_flags);
 
     return true;
 }
@@ -612,7 +612,7 @@ bool ChatHandler::HandlePlayMovie(const char* args, WorldSession* m_session)
     selected_player->sendMovie(movie);
 
     if (selected_player != m_session->GetPlayer())
-        GreenSystemMessage(selected_player->getSession(), "Movie started for player %s", selected_player->getName().c_str());
+        greenSystemMessage(selected_player->getSession(), "Movie started for player {}", selected_player->getName());
 
     return true;
 }
@@ -627,7 +627,7 @@ bool ChatHandler::HandleSendCastFailed(const char* args, WorldSession* m_session
     uint32_t fail = std::stoul(args);
     if (fail > SPELL_FAILED_UNKNOWN)
     {
-        RedSystemMessage(m_session, "Argument %u is out of range!", fail);
+        redSystemMessage(m_session, "Argument {} is out of range!", fail);
         return false;
     }
     selected_player->sendCastFailedPacket(1, static_cast<uint8_t>(fail), 0, 0);
@@ -654,7 +654,7 @@ bool ChatHandler::HandleDebugSetWeatherCommand(const char* args, WorldSession* m
 
     if (sscanf(args, "%u %f", &type, &density) != 2)
     {
-        RedSystemMessage(m_session, "Command must be in format <type> <density>.");
+        redSystemMessage(m_session, "Command must be in format <type> <density>.");
         return true;
     }
 
@@ -665,7 +665,7 @@ bool ChatHandler::HandleDebugSetWeatherCommand(const char* args, WorldSession* m
 
     sWeatherMgr.sendWeatherForPlayer(type, density, m_session->GetPlayer());
 
-    GreenSystemMessage(m_session, "Weather changed to %u with density %f", type, density);
+    greenSystemMessage(m_session, "Weather changed to {} with density {}", type, density);
 
     return true;
 }
@@ -679,7 +679,7 @@ bool ChatHandler::HandleDebugDumpMovementCommand(const char* /*args*/, WorldSess
 
         systemMessage(session, "Position: [{}, {}, {}, {}]", me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
         systemMessage(session, "On transport: {}", me->obj_movement_info.transport_guid != 0 ? "yes" : "no");
-        systemMessage(session, "Transport GUID: {}", me->obj_movement_info.transport_guid);
+        systemMessage(session, "Transport GUID: {}", uint64_t(me->obj_movement_info.transport_guid)); //important cast since versions >= Cata use ObjectGuid instead of uint64_t
         systemMessage(session, "Transport relative position: [{}, {}, {}, {}]", me->obj_movement_info.transport_position.x,
             me->obj_movement_info.transport_position.y, me->obj_movement_info.transport_position.z, me->obj_movement_info.transport_position.o);
 
@@ -950,7 +950,7 @@ bool ChatHandler::HandleAggroRangeCommand(const char* /*args*/, WorldSession* m_
 
     float aggroRange = unit->getAIInterface()->calcAggroRange(m_session->GetPlayer());
 
-    GreenSystemMessage(m_session, "Aggrorange is %f", aggroRange);
+    greenSystemMessage(m_session, "Aggrorange is {}", aggroRange);
 
     return true;
 }
@@ -1125,7 +1125,7 @@ bool ChatHandler::HandleUpdateWorldStateCommand(const char *args, WorldSession* 
 {
     if (*args == '\0')
     {
-        RedSystemMessage(session, "You need to specify the worldstate field and the new value.");
+        redSystemMessage(session, "You need to specify the worldstate field and the new value.");
         return true;
     }
 
@@ -1137,14 +1137,14 @@ bool ChatHandler::HandleUpdateWorldStateCommand(const char *args, WorldSession* 
     ss >> field;
     if (ss.fail())
     {
-        RedSystemMessage(session, "You need to specify the worldstate field and the new value.");
+        redSystemMessage(session, "You need to specify the worldstate field and the new value.");
         return true;
     }
 
     ss >> state;
     if (ss.fail())
     {
-        RedSystemMessage(session, "You need to specify the worldstate field and the new value.");
+        redSystemMessage(session, "You need to specify the worldstate field and the new value.");
         return true;
     }
 
@@ -1440,7 +1440,7 @@ bool ChatHandler::HandleCastSpellCommand(const char* args, WorldSession* m_sessi
         target = GetSelectedCreature(m_session, false);
     if (!target)
     {
-        RedSystemMessage(m_session, "Must select a char or creature.");
+        redSystemMessage(m_session, "Must select a char or creature.");
         return false;
     }
 
@@ -1448,7 +1448,7 @@ bool ChatHandler::HandleCastSpellCommand(const char* args, WorldSession* m_sessi
     SpellInfo const* spellentry = sSpellMgr.getSpellInfo(spellid);
     if (!spellentry)
     {
-        RedSystemMessage(m_session, "Invalid spell id!");
+        redSystemMessage(m_session, "Invalid spell id!");
         return false;
     }
 
@@ -1481,7 +1481,7 @@ bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_ses
         target = GetSelectedCreature(m_session, false);
     if (!target)
     {
-        RedSystemMessage(m_session, "Must select a char or creature.");
+        redSystemMessage(m_session, "Must select a char or creature.");
         return false;
     }
 
@@ -1489,7 +1489,7 @@ bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_ses
     SpellInfo const* spellentry = sSpellMgr.getSpellInfo(spellId);
     if (!spellentry)
     {
-        RedSystemMessage(m_session, "Invalid spell id!");
+        redSystemMessage(m_session, "Invalid spell id!");
         return false;
     }
     blueSystemMessage(m_session, "Casting spell {} on target.", spellId);
@@ -1540,7 +1540,7 @@ bool ChatHandler::HandleCastSelfCommand(const char* args, WorldSession* m_sessio
         target = GetSelectedCreature(m_session, false);
     if (!target)
     {
-        RedSystemMessage(m_session, "Must select a char or creature.");
+        redSystemMessage(m_session, "Must select a char or creature.");
         return false;
     }
 
@@ -1548,7 +1548,7 @@ bool ChatHandler::HandleCastSelfCommand(const char* args, WorldSession* m_sessio
     SpellInfo const* spellentry = sSpellMgr.getSpellInfo(spellid);
     if (!spellentry)
     {
-        RedSystemMessage(m_session, "Invalid spell id!");
+        redSystemMessage(m_session, "Invalid spell id!");
         return false;
     }
 

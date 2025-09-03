@@ -311,12 +311,12 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
 
                     if (questGiver)
                     {
-                        GreenSystemMessage(m_session, "Found a quest_giver creature.");
+                        greenSystemMessage(m_session, "Found a quest_giver creature.");
                         sQuestMgr.OnActivateQuestGiver(questGiver, plr);
                         sQuestMgr.GiveQuestRewardReputation(plr, qst, questGiver);
                     }
                     else
-                        RedSystemMessage(m_session, "Unable to find quest_giver object.");
+                        redSystemMessage(m_session, "Unable to find quest_giver object.");
                 }
 
                 questLog->finishAndRemove();
@@ -488,7 +488,7 @@ bool ChatHandler::HandleQuestFailCommand(const char *args, WorldSession* m_sessi
         return true;
     }
 
-    RedSystemMessage(m_session, "quest %u not found in player's questlog", questId);
+    redSystemMessage(m_session, "quest {} not found in player's questlog", questId);
     return false;
 
 }
@@ -539,7 +539,7 @@ bool ChatHandler::HandleQuestItemCommand(const char* args, WorldSession* m_sessi
 
         if (count == 25)
         {
-            RedSystemMessage(m_session, "More than 25 results returned. aborting.");
+            redSystemMessage(m_session, "More than 25 results returned. aborting.");
             break;
         }
     }
@@ -736,7 +736,7 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
 
             if (count == 25)
             {
-                RedSystemMessage(m_session, "More than 25 results returned. aborting.");
+                redSystemMessage(m_session, "More than 25 results returned. aborting.");
                 break;
             }
         }

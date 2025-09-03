@@ -42,9 +42,6 @@ public:
 
     int ParseCommands(const char* text, WorldSession* session);
 
-    static void RedSystemMessage(WorldSession* m_session, const char* message, ...);
-    static void GreenSystemMessage(WorldSession* m_session, const char* message, ...);
-
     void sendSystemMessagePacket(WorldSession* _session, std::string& _message);
 
     // Variadic template version of systemMessage

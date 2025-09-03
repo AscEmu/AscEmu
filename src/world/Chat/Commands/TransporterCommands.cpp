@@ -17,7 +17,7 @@ bool ChatHandler::HandleGetTransporterTime(const char* /*args*/, WorldSession* m
         transporter->GetTimer();
     else
     {
-        RedSystemMessage(m_session, "You must be on a transport to use this command.");
+        redSystemMessage(m_session, "You must be on a transport to use this command.");
         return true;
     }
 
@@ -31,7 +31,7 @@ bool ChatHandler::HandleGetTransporterInfo(const char* /*args*/, WorldSession* m
     auto transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.transport_guid));
     if (transporter == nullptr)
     {
-        RedSystemMessage(m_session, "You must be on a transport to use this command.");
+        redSystemMessage(m_session, "You must be on a transport to use this command.");
         return true;
     }
 
@@ -55,7 +55,7 @@ bool ChatHandler::HandleStopTransport(const char* /*args*/, WorldSession* m_sess
     if (transporter)
         transporter->EnableMovement(false, m_session->GetPlayer()->getWorldMap());
     else
-        RedSystemMessage(m_session, "You must be on a transport to use this command.");
+        redSystemMessage(m_session, "You must be on a transport to use this command.");
     
     return true;
 }
@@ -66,7 +66,7 @@ bool ChatHandler::HandleStartTransport(const char* /*args*/, WorldSession* m_ses
     if (transport)
         transport->EnableMovement(true, m_session->GetPlayer()->getWorldMap());
     else
-        RedSystemMessage(m_session, "You must be on a transport to use this command.");
+        redSystemMessage(m_session, "You must be on a transport to use this command.");
 
     return true;
 }

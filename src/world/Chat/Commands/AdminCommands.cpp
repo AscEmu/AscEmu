@@ -23,7 +23,7 @@ bool ChatHandler::HandleAdminCastAllCommand(const char* args, WorldSession* m_se
 {
     if (!args)
     {
-        RedSystemMessage(m_session, "No spellid specified.");
+        redSystemMessage(m_session, "No spellid specified.");
         return true;
     }
 
@@ -31,7 +31,7 @@ bool ChatHandler::HandleAdminCastAllCommand(const char* args, WorldSession* m_se
     SpellInfo const* spell_entry = sSpellMgr.getSpellInfo(spell_id);
     if (!spell_entry)
     {
-        RedSystemMessage(m_session, "Spell %u is not a valid spell!", spell_id);
+        redSystemMessage(m_session, "Spell {} is not a valid spell!", spell_id);
         return true;
     }
 
@@ -40,7 +40,7 @@ bool ChatHandler::HandleAdminCastAllCommand(const char* args, WorldSession* m_se
         if (spell_entry->getEffect(i) == SPELL_EFFECT_LEARN_SPELL)
         {
             sGMLog.writefromsession(m_session, "used learn spell stopped %u", spell_id);
-            RedSystemMessage(m_session, "Learn spell specified.");
+            redSystemMessage(m_session, "Learn spell specified.");
             return true;
         }
     }

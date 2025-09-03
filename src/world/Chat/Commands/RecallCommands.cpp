@@ -63,7 +63,7 @@ bool ChatHandler::HandleRecallAddCommand(const char* args, WorldSession* m_sessi
 
     if (const auto recall = sMySQLStore.getRecallByName(args))
     {
-        RedSystemMessage(m_session, "Name in use, please use another name for your location.");
+        redSystemMessage(m_session, "Name in use, please use another name for your location.");
         return true;
     }
 
@@ -83,10 +83,8 @@ bool ChatHandler::HandleRecallAddCommand(const char* args, WorldSession* m_sessi
 
     sMySQLStore.loadRecallTable();
 
-    char buf[256];
-    snprintf((char*)buf, 256, "Added location to DB with MapID: %u, X: %f, Y: %f, Z: %f, O: %f",
+    greenSystemMessage(m_session, "Added location to DB with MapID: {}, X: {}, Y: {}, Z: {}, O: {}",
              player->GetMapId(), player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetOrientation());
-    GreenSystemMessage(m_session, buf);
 
     sGMLog.writefromsession(m_session, "used recall add, added \'%s\' location to database.", args);
 
@@ -103,7 +101,7 @@ bool ChatHandler::HandleRecallDelCommand(const char* args, WorldSession* m_sessi
     {
         WorldDatabase.Execute("DELETE FROM recall WHERE name = %s;", recall->name.c_str());
 
-        GreenSystemMessage(m_session, "Recall location removed.");
+        greenSystemMessage(m_session, "Recall location removed.");
         sGMLog.writefromsession(m_session, "used recall delete, removed \'%s\' location from database.", args);
 
         sMySQLStore.loadRecallTable();

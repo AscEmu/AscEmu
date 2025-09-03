@@ -19,7 +19,7 @@ bool ChatHandler::HandleVehicleEjectPassengerCommand(const char* args, WorldSess
 {
     if (!args)
     {
-        RedSystemMessage(session, "You need to specify a seat number.");
+        redSystemMessage(session, "You need to specify a seat number.");
         return false;
     }
 
@@ -28,14 +28,14 @@ bool ChatHandler::HandleVehicleEjectPassengerCommand(const char* args, WorldSess
     Player* p = session->GetPlayer();
     if (p->getTargetGuid() == 0)
     {
-        RedSystemMessage(session, "You need to select a vehicle.");
+        redSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
 
     Unit* u = p->getWorldMap()->getUnit(p->getTargetGuid());
     if (u == nullptr)
     {
-        RedSystemMessage(session, "You need to select a vehicle.");
+        redSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
 
@@ -53,18 +53,18 @@ bool ChatHandler::HandleVehicleEjectAllPassengersCommand(const char* /*args*/, W
     Player* p = session->GetPlayer();
     if (p->getTargetGuid() == 0)
     {
-        RedSystemMessage(session, "You need to select a vehicle.");
+        redSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
     Unit* u = p->getWorldMap()->getUnit(p->getTargetGuid());
     if (u == nullptr)
     {
-        RedSystemMessage(session, "You need to select a vehicle.");
+        redSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
     if (u->getVehicleKit() == nullptr)
     {
-        RedSystemMessage(session, "You need to select a vehicle.");
+        redSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
     u->getVehicleKit()->removeAllPassengers();
@@ -77,18 +77,18 @@ bool ChatHandler::HandleVehicleInstallAccessoriesCommand(const char* /*args*/, W
     Player* p = session->GetPlayer();
     if (p->getTargetGuid() == 0)
     {
-        RedSystemMessage(session, "You need to select a vehicle.");
+        redSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
     Unit* u = p->getWorldMap()->getUnit(p->getTargetGuid());
     if (u == nullptr)
     {
-        RedSystemMessage(session, "You need to select a vehicle.");
+        redSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
     if (u->getVehicleKit() == nullptr)
     {
-        RedSystemMessage(session, "You need to select a vehicle.");
+        redSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
     u->getVehicleKit()->loadAllAccessories(false);
@@ -103,35 +103,35 @@ bool ChatHandler::HandleVehicleAddPassengerCommand(const char* args, WorldSessio
     ss >> creature_entry;
     if (ss.fail())
     {
-        RedSystemMessage(session, "You need to specify a creature id.");
+        redSystemMessage(session, "You need to specify a creature id.");
         return false;
     }
     if (session->GetPlayer()->getTargetGuid() == 0)
     {
-        RedSystemMessage(session, "You need to select a vehicle.");
+        redSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
     Unit* u = session->GetPlayer()->getWorldMap()->getUnit(session->GetPlayer()->getTargetGuid());
     if (u == nullptr)
     {
-        RedSystemMessage(session, "You need to select a vehicle.");
+        redSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
     if (u->getVehicleKit() == nullptr)
     {
-        RedSystemMessage(session, "You need to select a vehicle.");
+        redSystemMessage(session, "You need to select a vehicle.");
         return false;
     }
     if (!u->getVehicleKit()->hasEmptySeat())
     {
-        RedSystemMessage(session, "That vehicle has no more empty seats.");
+        redSystemMessage(session, "That vehicle has no more empty seats.");
         return false;
     }
 
     CreatureProperties const* cp = sMySQLStore.getCreatureProperties(creature_entry);
     if (cp == nullptr)
     {
-        RedSystemMessage(session, "Creature %u doesn't exist in the database", creature_entry);
+        redSystemMessage(session, "Creature {} doesn't exist in the database", creature_entry);
         return false;
     }
     Creature* c = u->getWorldMap()->createCreature(creature_entry);

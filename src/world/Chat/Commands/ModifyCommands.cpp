@@ -682,7 +682,7 @@ void ChatHandler::sendModifySystemMessage(WorldSession* session, Unit* unitTarge
             sGMLog.writefromsession(session, "used modify %s from %u to %u on %s (%u)", modType.c_str(), oldValue, newValue, player->getName().c_str(), player->getGuidLow());
 
             blueSystemMessage(session, "You modify '{}' of {} from {} to {}.", modType, player->getName(), oldValue, newValue);
-            GreenSystemMessage(player->getSession(), "%s modify your %s from %u to %u.", modType.c_str(), session->GetPlayer()->getName().c_str(), oldValue, newValue);
+            greenSystemMessage(player->getSession(), "{} modify your {} from {} to {}.", session->GetPlayer()->getName(), modType, oldValue, newValue);
         }
     }
     else if (unitTarget->isCreature())
@@ -705,7 +705,7 @@ void ChatHandler::sendModifySystemMessage(WorldSession* session, Unit* unitTarge
             sGMLog.writefromsession(session, "used modify %s from %f to %f on %s (%u)", modType.c_str(), oldValue, newValue, player->getName().c_str(), player->getGuidLow());
 
             blueSystemMessage(session, "You modify '{}' of {} from {} to {}.", modType, player->getName(), oldValue, newValue);
-            GreenSystemMessage(player->getSession(), "%s modify your %s from %u to %u.", modType.c_str(), session->GetPlayer()->getName().c_str(), oldValue, newValue);
+            greenSystemMessage(player->getSession(), "{} modify your {} from {} to {}.", session->GetPlayer()->getName(), modType, oldValue, newValue);
         }
     }
     else if (unitTarget->isCreature())

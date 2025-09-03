@@ -189,8 +189,8 @@ bool ChatHandler::HandleWayPointShowCommand(const char* args, WorldSession* m_se
     {
         if (ai->isShowWayPointsActive() == true)
         {
-            RedSystemMessage(m_session, "Some one else is also Viewing this Creatures WayPoints.");
-            RedSystemMessage(m_session, "Viewing WayPoints at the same time as some one else can cause undesireble results.");
+            redSystemMessage(m_session, "Some one else is also Viewing this Creatures WayPoints.");
+            redSystemMessage(m_session, "Viewing WayPoints at the same time as some one else can cause undesireble results.");
             return true;
         }
 

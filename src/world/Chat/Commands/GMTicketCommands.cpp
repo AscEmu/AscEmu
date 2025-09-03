@@ -69,13 +69,13 @@ bool ChatHandler::HandleGMTicketGetByIdCommand(const char* args, WorldSession* m
     Player* plr = sObjectMgr.getPlayer(args, false);
     if (plr == nullptr)
     {
-        RedSystemMessage(m_session, "Player not found.");
+        redSystemMessage(m_session, "Player not found.");
         return true;
     }
     GM_Ticket* ticket = sTicketMgr.getGMTicketByPlayer(plr->getGuid());
     if (ticket == nullptr || ticket->deleted)
     {
-        RedSystemMessage(m_session, "Ticket not found.");
+        redSystemMessage(m_session, "Ticket not found.");
         return true;
     }
 
@@ -122,13 +122,13 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
     Player* plr = sObjectMgr.getPlayer(args, true);
     if (plr == nullptr)
     {
-        RedSystemMessage(m_session, "Player not found.");
+        redSystemMessage(m_session, "Player not found.");
         return true;
     }
     GM_Ticket* ticket = sTicketMgr.getGMTicketByPlayer(plr->getGuid());
     if (ticket == nullptr || ticket->deleted)
     {
-        RedSystemMessage(m_session, "Ticket not found.");
+        redSystemMessage(m_session, "Ticket not found.");
         return true;
     }
 
@@ -202,7 +202,7 @@ bool ChatHandler::HandleGMTicketGetByIdCommand(const char* args, WorldSession* m
     uint64_t ticketGuid = (args ? atoi(args) : 0);
     if (!ticketGuid)
     {
-        RedSystemMessage(m_session, "You must specify a ticket id.");
+        redSystemMessage(m_session, "You must specify a ticket id.");
         return true;
     }
 
@@ -548,9 +548,9 @@ bool ChatHandler::HandleGMTicketToggleTicketSystemStatusCommand(const char* /*ar
     sWorld.toggleGmTicketStatus();
 
     if (sWorld.getGmTicketStatus())
-        GreenSystemMessage(m_session, "TicketSystem enabled.");
+        greenSystemMessage(m_session, "TicketSystem enabled.");
     else
-        GreenSystemMessage(m_session, "TicketSystem disabled.");
+        greenSystemMessage(m_session, "TicketSystem disabled.");
 
     return true;
 }

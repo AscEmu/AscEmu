@@ -55,21 +55,21 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_
 
     uint32_t active_sessions = uint32_t(sWorld.getSessionCount());
 
-    GreenSystemMessage(m_session, "Info: |r%sAscEmu %s/%s-%s-%s %s(www.ascemu.org)", MSG_COLOR_WHITE, AE_BUILD_HASH, CONFIG, AE_PLATFORM, AE_ARCHITECTURE, MSG_COLOR_LIGHTBLUE);
-    GreenSystemMessage(m_session, "Using %s/Library %s", OPENSSL_VERSION_TEXT, SSLeay_version(SSLEAY_VERSION));
-    GreenSystemMessage(m_session, "Uptime: |r%s", sWorld.getWorldUptimeString().c_str());
-    GreenSystemMessage(m_session, "Active Branch: |r%s", AE_BUILD_BRANCH);
-    GreenSystemMessage(m_session, "Active Sessions: |r%u", active_sessions);
-    GreenSystemMessage(m_session, "Current GMs: |r%u GMs", online_gm);
-    GreenSystemMessage(m_session, "Current Players: |r%u (%u Peak)", online_gm > 0 ? (online_count - online_gm) : online_count, sWorld.getPeakSessionCount());
-    GreenSystemMessage(m_session, "Active Thread Count: |r%u", ThreadPool.GetActiveThreadCount());
-    GreenSystemMessage(m_session, "Free Thread Count: |r%u", ThreadPool.GetFreeThreadCount());
-    GreenSystemMessage(m_session, "Average Latency: |r%.3fms", online_count > 0 ? (latency_avg / online_count) : latency_avg);
-    GreenSystemMessage(m_session, "CPU Usage: %3.2f %%", sWorld.getCPUUsage());
-    GreenSystemMessage(m_session, "RAM Usage: %6.2f MB", sWorld.getRAMUsage());
-    GreenSystemMessage(m_session, "SQL Query Cache Size (World): |r%u queries delayed", WorldDatabase.GetQueueSize());
-    GreenSystemMessage(m_session, "SQL Query Cache Size (Character): |r%u queries delayed", CharacterDatabase.GetQueueSize());
-    GreenSystemMessage(m_session, "Socket Count: |r%u", sSocketMgr.GetSocketCount());
+    greenSystemMessage(m_session, "Info: |r{}AscEmu {}/{}-{}-{} {}(www.ascemu.org)", MSG_COLOR_WHITE, AE_BUILD_HASH, CONFIG, AE_PLATFORM, AE_ARCHITECTURE, MSG_COLOR_LIGHTBLUE);
+    greenSystemMessage(m_session, "Using {}/Library {}", OPENSSL_VERSION_TEXT, SSLeay_version(SSLEAY_VERSION));
+    greenSystemMessage(m_session, "Uptime: |r{}", sWorld.getWorldUptimeString().c_str());
+    greenSystemMessage(m_session, "Active Branch: |r{}", AE_BUILD_BRANCH);
+    greenSystemMessage(m_session, "Active Sessions: |r{}", active_sessions);
+    greenSystemMessage(m_session, "Current GMs: |r{} GMs", online_gm);
+    greenSystemMessage(m_session, "Current Players: |r{} ({} Peak)", online_gm > 0 ? (online_count - online_gm) : online_count, sWorld.getPeakSessionCount());
+    greenSystemMessage(m_session, "Active Thread Count: |r{}", ThreadPool.GetActiveThreadCount());
+    greenSystemMessage(m_session, "Free Thread Count: |r{}", ThreadPool.GetFreeThreadCount());
+    greenSystemMessage(m_session, "Average Latency: |r{}ms", online_count > 0 ? (latency_avg / online_count) : latency_avg);
+    greenSystemMessage(m_session, "CPU Usage: {}%", sWorld.getCPUUsage());
+    greenSystemMessage(m_session, "RAM Usage: {} MB", sWorld.getRAMUsage());
+    greenSystemMessage(m_session, "SQL Query Cache Size (World): |r{} queries delayed", WorldDatabase.GetQueueSize());
+    greenSystemMessage(m_session, "SQL Query Cache Size (Character): |r{} queries delayed", CharacterDatabase.GetQueueSize());
+    greenSystemMessage(m_session, "Socket Count: |r{}", sSocketMgr.GetSocketCount());
 
     return true;
 }
@@ -98,9 +98,9 @@ bool ChatHandler::HandleServerSaveCommand(const char* args, WorldSession* m_sess
         player_target = GetSelectedPlayer(m_session, false, false);
         if (player_target == nullptr)
         {
-            RedSystemMessage(m_session, "You need to target or name a player!");
-            RedSystemMessage(m_session, "Use: .server save (on a targeted player)");
-            RedSystemMessage(m_session, "or: .server save <playername>");
+            redSystemMessage(m_session, "You need to target or name a player!");
+            redSystemMessage(m_session, "Use: .server save (on a targeted player)");
+            redSystemMessage(m_session, "or: .server save <playername>");
             return true;
         }
     }
@@ -109,7 +109,7 @@ bool ChatHandler::HandleServerSaveCommand(const char* args, WorldSession* m_sess
         player_target = sObjectMgr.getPlayer(args, false);
         if (player_target == nullptr)
         {
-            RedSystemMessage(m_session, "A player with name %s is not online / does not exist!", args);
+            redSystemMessage(m_session, "A player with name {} is not online / does not exist!", args);
             return true;
         }
     }
@@ -117,11 +117,11 @@ bool ChatHandler::HandleServerSaveCommand(const char* args, WorldSession* m_sess
     if (player_target->m_nextSave < 180000)
     {
         player_target->saveToDB(false);
-        GreenSystemMessage(m_session, "Player %s saved to DB", player_target->getName().c_str());
+        greenSystemMessage(m_session, "Player {} saved to DB", player_target->getName());
     }
     else
     {
-        RedSystemMessage(m_session, "You can only save once every 3 minutes.");
+        redSystemMessage(m_session, "You can only save once every 3 minutes.");
     }
 
     return true;
@@ -161,12 +161,12 @@ bool ChatHandler::HandleServerSetMotdCommand(const char* args, WorldSession* m_s
 {
     if (!args || strlen(args) < 5)
     {
-        RedSystemMessage(m_session, "You must specify a message.");
-        RedSystemMessage(m_session, ".server setmotd <message>");
+        redSystemMessage(m_session, "You must specify a message.");
+        redSystemMessage(m_session, ".server setmotd <message>");
         return true;
     }
 
-    GreenSystemMessage(m_session, "Motd has been set to: %s", args);
+    greenSystemMessage(m_session, "Motd has been set to: {}", args);
     sGMLog.writefromsession(m_session, "Set MOTD to %s", args);
     worldConfig.setMessageOfTheDay(args);
 
@@ -212,7 +212,7 @@ bool ChatHandler::HandleServerCancelShutdownCommand(const char* /*args*/, WorldS
 {
     if (!sMaster.m_ShutdownEvent)
     {
-        RedSystemMessage(m_session, "There is no Shutdown/Restart to cancel!");
+        redSystemMessage(m_session, "There is no Shutdown/Restart to cancel!");
         return true;
     }
 
@@ -280,7 +280,7 @@ bool ChatHandler::HandleReloadGameobjectsCommand(const char* /*args*/, WorldSess
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadGameObjectPropertiesTable();
-    GreenSystemMessage(m_session, "WorldDB gameobjects tables reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    greenSystemMessage(m_session, "WorldDB gameobjects tables reloaded in {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -289,7 +289,7 @@ bool ChatHandler::HandleReloadCreaturesCommand(const char* /*args*/, WorldSessio
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadCreaturePropertiesTable();
-    GreenSystemMessage(m_session, "WorldDB creature tables reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    greenSystemMessage(m_session, "WorldDB creature tables reloaded in {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -298,7 +298,7 @@ bool ChatHandler::HandleReloadAreaTriggersCommand(const char* /*args*/, WorldSes
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadAreaTriggerTable();
-    GreenSystemMessage(m_session, "WorldDB table 'areatriggers' reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    greenSystemMessage(m_session, "WorldDB table 'areatriggers' reloaded in {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -308,7 +308,7 @@ bool ChatHandler::HandleReloadCommandOverridesCommand(const char* /*args*/, Worl
     auto startTime = Util::TimeNow();
     sCommandTableStorage.loadOverridePermission();
 
-    GreenSystemMessage(m_session, "CharactersDB 'command_overrides' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    greenSystemMessage(m_session, "CharactersDB 'command_overrides' table reloaded in {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -317,7 +317,7 @@ bool ChatHandler::HandleReloadFishingCommand(const char* /*args*/, WorldSession*
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadFishingTable();
-    GreenSystemMessage(m_session, "WorldDB 'fishing' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    greenSystemMessage(m_session, "WorldDB 'fishing' table reloaded in {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -326,7 +326,7 @@ bool ChatHandler::HandleReloadGossipMenuOptionCommand(const char* /*args*/, Worl
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadGossipMenuOptionTable();
-    GreenSystemMessage(m_session, "WorldDB 'gossip_menu_option' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    greenSystemMessage(m_session, "WorldDB 'gossip_menu_option' table reloaded in {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -335,7 +335,7 @@ bool ChatHandler::HandleReloadGraveyardsCommand(const char* /*args*/, WorldSessi
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadGraveyardsTable();
-    GreenSystemMessage(m_session, "WorldDB 'graveyards' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    greenSystemMessage(m_session, "WorldDB 'graveyards' table reloaded in {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -344,7 +344,7 @@ bool ChatHandler::HandleReloadItemsCommand(const char* /*args*/, WorldSession* m
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadItemPropertiesTable();
-    GreenSystemMessage(m_session, "WorldDB table 'items' reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    greenSystemMessage(m_session, "WorldDB table 'items' reloaded in {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -353,7 +353,7 @@ bool ChatHandler::HandleReloadItempagesCommand(const char* /*args*/, WorldSessio
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadItemPagesTable();
-    GreenSystemMessage(m_session, "WorldDB 'itempages' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    greenSystemMessage(m_session, "WorldDB 'itempages' table reloaded in {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -362,7 +362,7 @@ bool ChatHandler::HandleReloadNpcScriptTextCommand(const char* /*args*/, WorldSe
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadNpcScriptTextTable();
-    GreenSystemMessage(m_session, "WorldDB 'npc_script_text' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    greenSystemMessage(m_session, "WorldDB 'npc_script_text' table reloaded in {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -371,7 +371,7 @@ bool ChatHandler::HandleReloadNpcTextCommand(const char* /*args*/, WorldSession*
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadNpcTextTable();
-    GreenSystemMessage(m_session, "WorldDB 'npc_gossip_text' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    greenSystemMessage(m_session, "WorldDB 'npc_gossip_text' table reloaded in {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -380,7 +380,7 @@ bool ChatHandler::HandleReloadPetLevelAbilitiesCommand(const char* /*args*/, Wor
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadPetLevelAbilitiesTable();
-    GreenSystemMessage(m_session, "WorldDB 'pet_level_abilities' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    greenSystemMessage(m_session, "WorldDB 'pet_level_abilities' table reloaded in {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -389,7 +389,7 @@ bool ChatHandler::HandleReloadPlayerXpForLevelCommand(const char* /*args*/, Worl
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadPlayerXpToLevelTable();
-    GreenSystemMessage(m_session, "WorldDB 'player_xp_for_level' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    greenSystemMessage(m_session, "WorldDB 'player_xp_for_level' table reloaded in {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -398,7 +398,7 @@ bool ChatHandler::HandleReloadPointsOfInterestCommand(const char* /*args*/, Worl
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadPointsOfInterestTable();
-    GreenSystemMessage(m_session, "WorldDB 'points_of_interest' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    greenSystemMessage(m_session, "WorldDB 'points_of_interest' table reloaded in {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -407,7 +407,7 @@ bool ChatHandler::HandleReloadQuestsCommand(const char* /*args*/, WorldSession* 
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadQuestPropertiesTable();
-    GreenSystemMessage(m_session, "WorldDB 'quest_properties' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    greenSystemMessage(m_session, "WorldDB 'quest_properties' table reloaded in {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -416,7 +416,7 @@ bool ChatHandler::HandleReloadTeleportCoordsCommand(const char* /*args*/, WorldS
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadTeleportCoordsTable();
-    GreenSystemMessage(m_session, "WorldDB 'teleport_coords' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    greenSystemMessage(m_session, "WorldDB 'teleport_coords' table reloaded in {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -425,7 +425,7 @@ bool ChatHandler::HandleReloadWorldbroadcastCommand(const char* /*args*/, WorldS
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadBroadcastTable();
-    GreenSystemMessage(m_session, "WorldDB 'worldbroadcast' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    greenSystemMessage(m_session, "WorldDB 'worldbroadcast' table reloaded in {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -434,7 +434,7 @@ bool ChatHandler::HandleReloadWorldmapInfoCommand(const char* /*args*/, WorldSes
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadWorldMapInfoTable();
-    GreenSystemMessage(m_session, "WorldDB 'worldmap_info' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    greenSystemMessage(m_session, "WorldDB 'worldmap_info' table reloaded in {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -443,7 +443,7 @@ bool ChatHandler::HandleReloadWorldstringTablesCommand(const char* /*args*/, Wor
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadWorldStringsTable();
-    GreenSystemMessage(m_session, "WorldDB 'worldstring_tables' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    greenSystemMessage(m_session, "WorldDB 'worldstring_tables' table reloaded in {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -452,7 +452,7 @@ bool ChatHandler::HandleReloadZoneguardsCommand(const char* /*args*/, WorldSessi
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadZoneGuardsTable();
-    GreenSystemMessage(m_session, "WorldDB 'zoneguards' table reloaded in %u ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    greenSystemMessage(m_session, "WorldDB 'zoneguards' table reloaded in {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -461,6 +461,6 @@ bool ChatHandler::HandleServerReloadScriptsCommand(const char* /*args*/, WorldSe
 {
     auto startTime = Util::TimeNow();
     sScriptMgr.ReloadScriptEngines();
-    GreenSystemMessage(m_session, "Scripts reloaded in %u my.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    greenSystemMessage(m_session, "Scripts reloaded in {} my.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }

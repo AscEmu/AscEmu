@@ -80,12 +80,12 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
 
     if (x.length() < 4)
     {
-        RedSystemMessage(m_session, "Your search string must be at least 4 characters long.");
+        redSystemMessage(m_session, "Your search string must be at least 4 characters long.");
         return true;
     }
 
     AscEmu::Util::Strings::toLowerCase(x);
-    GreenSystemMessage(m_session, "Starting search of achievement `%s`...", x.c_str());
+    greenSystemMessage(m_session, "Starting search of achievement `{}`...", x);
     auto startTime = Util::TimeNow();
     uint32_t i, j, numFound = 0;
     std::string y, recout;
@@ -189,7 +189,7 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
                 SendMultilineMessage(m_session, recout.c_str());
                 if (++numFound >= 25)
                 {
-                    RedSystemMessage(m_session, "More than 25 results found.");
+                    redSystemMessage(m_session, "More than 25 results found.");
                     break;
                 }
             }
@@ -282,7 +282,7 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
                 SendMultilineMessage(m_session, recout.c_str());
                 if (++numFound >= 25)
                 {
-                    RedSystemMessage(m_session, "More than 25 results found.");
+                    redSystemMessage(m_session, "More than 25 results found.");
                     break;
                 }
             }
@@ -308,7 +308,7 @@ bool ChatHandler::HandleLookupCreatureCommand(const char* args, WorldSession* m_
     AscEmu::Util::Strings::toLowerCase(x);
     if (x.length() < 4)
     {
-        RedSystemMessage(m_session, "Your search string must be at least 4 characters long.");
+        redSystemMessage(m_session, "Your search string must be at least 4 characters long.");
         return true;
     }
 
@@ -341,7 +341,7 @@ bool ChatHandler::HandleLookupCreatureCommand(const char* args, WorldSession* m_
 
                 if (count == 25)
                 {
-                    RedSystemMessage(m_session, "More than 25 results returned. aborting.");
+                    redSystemMessage(m_session, "More than 25 results returned. aborting.");
                     break;
                 }
             }
@@ -349,7 +349,7 @@ bool ChatHandler::HandleLookupCreatureCommand(const char* args, WorldSession* m_
     }
 
     if (count == 0)
-        RedSystemMessage(m_session, "No results returned. aborting.");
+        redSystemMessage(m_session, "No results returned. aborting.");
 
     blueSystemMessage(m_session, "Search completed in {} ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
@@ -365,11 +365,11 @@ bool ChatHandler::HandleLookupFactionCommand(const char* args, WorldSession* m_s
     AscEmu::Util::Strings::toLowerCase(x);
     if (x.length() < 4)
     {
-        RedSystemMessage(m_session, "Your search string must be at least 4 characters long.");
+        redSystemMessage(m_session, "Your search string must be at least 4 characters long.");
         return true;
     }
 
-    GreenSystemMessage(m_session, "Starting search of faction `%s`...", x.c_str());
+    greenSystemMessage(m_session, "Starting search of faction `{}`...", x);
     auto startTime = Util::TimeNow();
     uint32_t count = 0;
     for (uint32_t index = 0; index < sFactionStore.getNumRows(); ++index)
@@ -393,14 +393,14 @@ bool ChatHandler::HandleLookupFactionCommand(const char* args, WorldSession* m_s
                 ++count;
                 if (count == 25)
                 {
-                    RedSystemMessage(m_session, "More than 25 results returned. aborting.");
+                    redSystemMessage(m_session, "More than 25 results returned. aborting.");
                     break;
                 }
             }
         }
     }
 
-    GreenSystemMessage(m_session, "Search completed in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    greenSystemMessage(m_session, "Search completed in {} ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -414,7 +414,7 @@ bool ChatHandler::HandleLookupItemCommand(const char* args, WorldSession* m_sess
     AscEmu::Util::Strings::toLowerCase(x);
     if (x.length() < 4)
     {
-        RedSystemMessage(m_session, "Your search string must be at least 4 characters long.");
+        redSystemMessage(m_session, "Your search string must be at least 4 characters long.");
         return true;
     }
 
@@ -447,14 +447,14 @@ bool ChatHandler::HandleLookupItemCommand(const char* args, WorldSession* m_sess
             ++count;
             if (count == 25)
             {
-                RedSystemMessage(m_session, "More than 25 results returned. aborting.");
+                redSystemMessage(m_session, "More than 25 results returned. aborting.");
                 break;
             }
         }
     }
 
     if (count == 0)
-        RedSystemMessage(m_session, "No results returned. aborting.");
+        redSystemMessage(m_session, "No results returned. aborting.");
 
     blueSystemMessage(m_session, "Search completed in {} ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
@@ -469,7 +469,7 @@ bool ChatHandler::HandleLookupObjectCommand(const char* args, WorldSession* m_se
     std::string x = std::string(args);
     AscEmu::Util::Strings::toLowerCase(x);
 
-    GreenSystemMessage(m_session, "Starting search of object `%s`...", x.c_str());
+    greenSystemMessage(m_session, "Starting search of object `{}`...", x);
     auto startTime = Util::TimeNow();
     GameObjectProperties const* gameobject_info;
     uint32_t count = 0;
@@ -500,7 +500,7 @@ bool ChatHandler::HandleLookupObjectCommand(const char* args, WorldSession* m_se
             ++count;
             if (count == 25 || count > 25)
             {
-                RedSystemMessage(m_session, "More than 25 results returned. aborting.");
+                redSystemMessage(m_session, "More than 25 results returned. aborting.");
                 break;
             }
         }
@@ -526,7 +526,7 @@ bool ChatHandler::HandleLookupQuestCommand(const char* args, WorldSession* m_ses
     AscEmu::Util::Strings::toLowerCase(search_string);
     if (search_string.length() < 4)
     {
-        RedSystemMessage(m_session, "Your search string must be at least 4 characters long.");
+        redSystemMessage(m_session, "Your search string must be at least 4 characters long.");
         return true;
     }
 
@@ -573,7 +573,7 @@ bool ChatHandler::HandleLookupQuestCommand(const char* args, WorldSession* m_ses
             ++count;
             if (count == 25)
             {
-                RedSystemMessage(m_session, "More than 25 results returned. aborting.");
+                redSystemMessage(m_session, "More than 25 results returned. aborting.");
                 break;
             }
         }
@@ -600,11 +600,11 @@ bool ChatHandler::HandleLookupSpellCommand(const char* args, WorldSession* m_ses
     AscEmu::Util::Strings::toLowerCase(x);
     if (x.length() < 4)
     {
-        RedSystemMessage(m_session, "Your search string must be at least 4 characters long.");
+        redSystemMessage(m_session, "Your search string must be at least 4 characters long.");
         return true;
     }
 
-    GreenSystemMessage(m_session, "Starting search of spell `%s`...", x.c_str());
+    greenSystemMessage(m_session, "Starting search of spell `{}`...", x);
     auto startTime = Util::TimeNow();
     uint32_t count = 0;
     std::string recout;
@@ -635,13 +635,13 @@ bool ChatHandler::HandleLookupSpellCommand(const char* args, WorldSession* m_ses
             ++count;
             if (count == 25)
             {
-                RedSystemMessage(m_session, "More than 25 results returned. aborting.");
+                redSystemMessage(m_session, "More than 25 results returned. aborting.");
                 break;
             }
         }
     }
 
-    GreenSystemMessage(m_session, "Search completed in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    greenSystemMessage(m_session, "Search completed in {} ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }
 
@@ -655,11 +655,11 @@ bool ChatHandler::HandleLookupSkillCommand(const char* args, WorldSession* m_ses
     AscEmu::Util::Strings::toLowerCase(x);
     if (x.length() < 4)
     {
-        RedSystemMessage(m_session, "Your search string must be at least 4 characters long.");
+        redSystemMessage(m_session, "Your search string must be at least 4 characters long.");
         return true;
     }
 
-    GreenSystemMessage(m_session, "Starting search of skill `%s`...", x.c_str());
+    greenSystemMessage(m_session, "Starting search of skill `{}`...", x);
     auto startTime = Util::TimeNow();
     uint32_t count = 0;
     for (uint32_t index = 0; index < sSkillLineStore.getNumRows(); ++index)
@@ -684,12 +684,12 @@ bool ChatHandler::HandleLookupSkillCommand(const char* args, WorldSession* m_ses
             ++count;
             if (count == 25)
             {
-                RedSystemMessage(m_session, "More than 25 results returned. aborting.");
+                redSystemMessage(m_session, "More than 25 results returned. aborting.");
                 break;
             }
         }
     }
 
-    GreenSystemMessage(m_session, "Search completed in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    greenSystemMessage(m_session, "Search completed in {} ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;
 }

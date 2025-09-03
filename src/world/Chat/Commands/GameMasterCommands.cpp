@@ -52,15 +52,15 @@ bool ChatHandler::HandleGMAllowWhispersCommand(const char* args, WorldSession* m
 {
     if (args == 0)
     {
-        RedSystemMessage(m_session, "No playername set.");
-        RedSystemMessage(m_session, "Use .gm allowwhispers <playername>");
+        redSystemMessage(m_session, "No playername set.");
+        redSystemMessage(m_session, "Use .gm allowwhispers <playername>");
         return true;
     }
 
     const auto playerTarget = sObjectMgr.getPlayer(args, false);
     if (playerTarget == nullptr)
     {
-        RedSystemMessage(m_session, "Player %s not found.", args);
+        redSystemMessage(m_session, "Player %s not found.", args);
         return true;
     }
 
@@ -76,8 +76,8 @@ bool ChatHandler::HandleGMAnnounceCommand(const char* args, WorldSession* m_sess
 {
     if (!*args)
     {
-        RedSystemMessage(m_session, "No announce set.");
-        RedSystemMessage(m_session, "Use .gm announce <your text>");
+        redSystemMessage(m_session, "No announce set.");
+        redSystemMessage(m_session, "Use .gm announce <your text>");
         return true;
     }
 
@@ -97,15 +97,15 @@ bool ChatHandler::HandleGMBlockWhispersCommand(const char* args, WorldSession* m
 {
     if (args == 0)
     {
-        RedSystemMessage(m_session, "No playername set.");
-        RedSystemMessage(m_session, "Use .gm blockwhispers <playername>");
+        redSystemMessage(m_session, "No playername set.");
+        redSystemMessage(m_session, "Use .gm blockwhispers <playername>");
         return true;
     }
 
     auto playerTarget = sObjectMgr.getPlayer(args, false);
     if (playerTarget == nullptr)
     {
-        RedSystemMessage(m_session, "Player %s not found.", args);
+        redSystemMessage(m_session, "Player {} not found.", args);
         return true;
     }
 
@@ -162,7 +162,7 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
             if (!worldConfig.gm.listOnlyActiveGms)
             {
                 if (print_headline)
-                    GreenSystemMessage(m_session, "The following GMs are on this server:");
+                    greenSystemMessage(m_session, "The following GMs are on this server:");
 
                 if (worldConfig.gm.hidePermissions && !is_gamemaster)
                     systemMessage(m_session, " - {}", player->getName());
@@ -176,7 +176,7 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
                 if (player->isGMFlagSet())
                 {
                     if (print_headline)
-                        GreenSystemMessage(m_session, "The following GMs are active on this server:");
+                        greenSystemMessage(m_session, "The following GMs are active on this server:");
 
                     if (worldConfig.gm.hidePermissions && !is_gamemaster)
                         systemMessage(m_session, " - {}", player->getName());
@@ -210,8 +210,8 @@ bool ChatHandler::HandleGMLogCommentCommand(const char* args, WorldSession* m_se
 {
     if (!args)
     {
-        RedSystemMessage(m_session, "No logcomment set.");
-        RedSystemMessage(m_session, "Use .gm logcomment <your comment message>");
+        redSystemMessage(m_session, "No logcomment set.");
+        redSystemMessage(m_session, "Use .gm logcomment <your comment message>");
         return true;
     }
 

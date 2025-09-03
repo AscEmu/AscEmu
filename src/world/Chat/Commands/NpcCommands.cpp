@@ -41,14 +41,14 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
 
     if (sscanf(args, "%u %u %u %u %u %u %u %u %f %u", &ai_type, &procEvent, &procChance, &maxcount, &spellId, &spellType, &spelltargetType, &spellCooldown, &floatMisc1, &Misc2) != 10)
     {
-        RedSystemMessage(m_session, "Command must be in format: .npc add trainerspell <ai_type> <procEvent> <procChance> <maxcount> <spellId> <spellType> <spelltarget_overwrite> <spellCooldown> <floatMisc1> <Misc2>.");
+        redSystemMessage(m_session, "Command must be in format: .npc add trainerspell <ai_type> <procEvent> <procChance> <maxcount> <spellId> <spellType> <spelltarget_overwrite> <spellCooldown> <floatMisc1> <Misc2>.");
         return true;
     }
 
     auto spell_entry = sSpellMgr.getSpellInfo(spellId);
     if (spell_entry == nullptr)
     {
-        RedSystemMessage(m_session, "Spell %u is not invalid!", spellId);
+        redSystemMessage(m_session, "Spell {} is not invalid!", spellId);
         return true;
     }
 
@@ -99,7 +99,7 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
             break;
         default:
         {
-            RedSystemMessage(m_session, "Invalid ai_type %u", ai_type);
+            redSystemMessage(m_session, "Invalid ai_type {}", ai_type);
             break;
         }
     }
@@ -184,14 +184,14 @@ bool ChatHandler::HandleNpcCastCommand(const char* args, WorldSession* m_session
     uint32_t spell_id;
     if (sscanf(args, "%u", &spell_id) != 1)
     {
-        RedSystemMessage(m_session, "Command must be in format: .npc cast <spellid>.");
+        redSystemMessage(m_session, "Command must be in format: .npc cast <spellid>.");
         return true;
     }
 
     auto spell_entry = sSpellMgr.getSpellInfo(spell_id);
     if (spell_entry == nullptr)
     {
-        RedSystemMessage(m_session, "Invalid Spell ID: %u !", spell_id);
+        redSystemMessage(m_session, "Invalid Spell ID: {} !", spell_id);
         return true;
     }
 
@@ -294,8 +294,8 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     uint32_t guid = WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayer()->getTargetGuid());
 
     systemMessage(m_session, "Showing Creature info of {} =============", creature_target->GetCreatureProperties()->Name);
-    RedSystemMessage(m_session, "EntryID: %d", creature_target->getEntry());
-    RedSystemMessage(m_session, "SpawnID: %d", creature_target->GetSQL_id());
+    redSystemMessage(m_session, "EntryID: {}", creature_target->getEntry());
+    redSystemMessage(m_session, "SpawnID: {}", creature_target->GetSQL_id());
     systemMessage(m_session, "GUID: {}", guid);
     systemMessage(m_session, "Faction: {}", creature_target->getFactionTemplate());
     systemMessage(m_session, "Phase: {}", creature_target->GetPhase());
@@ -357,22 +357,22 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
         creature_target->getResistance(SCHOOL_FROST) || creature_target->getResistance(SCHOOL_SHADOW) ||
         creature_target->getResistance(SCHOOL_ARCANE))
     {
-        GreenSystemMessage(m_session, "Resistance =======================");
+        greenSystemMessage(m_session, "Resistance =======================");
         if (creature_target->getResistance(SCHOOL_NORMAL))
-            GreenSystemMessage(m_session, "-- Armor: %u", creature_target->getResistance(SCHOOL_NORMAL));
+            greenSystemMessage(m_session, "-- Armor: {}", creature_target->getResistance(SCHOOL_NORMAL));
         if (creature_target->getResistance(SCHOOL_HOLY))
-            GreenSystemMessage(m_session, "-- Holy: %u", creature_target->getResistance(SCHOOL_HOLY));
+            greenSystemMessage(m_session, "-- Holy: {}", creature_target->getResistance(SCHOOL_HOLY));
         if (creature_target->getResistance(SCHOOL_FIRE))
-            GreenSystemMessage(m_session, "-- Fire: %u", creature_target->getResistance(SCHOOL_FIRE));
+            greenSystemMessage(m_session, "-- Fire: {}", creature_target->getResistance(SCHOOL_FIRE));
         if (creature_target->getResistance(SCHOOL_NATURE))
-            GreenSystemMessage(m_session, "-- Nature: %u", creature_target->getResistance(SCHOOL_NATURE));
+            greenSystemMessage(m_session, "-- Nature: {}", creature_target->getResistance(SCHOOL_NATURE));
         if (creature_target->getResistance(SCHOOL_FROST))
-            GreenSystemMessage(m_session, "-- Frost: %u", creature_target->getResistance(SCHOOL_FROST));
+            greenSystemMessage(m_session, "-- Frost: {}", creature_target->getResistance(SCHOOL_FROST));
         if (creature_target->getResistance(SCHOOL_SHADOW))
-            GreenSystemMessage(m_session, "-- Shadow: %u", creature_target->getResistance(SCHOOL_SHADOW));
+            greenSystemMessage(m_session, "-- Shadow: {}", creature_target->getResistance(SCHOOL_SHADOW));
         if (creature_target->getResistance(SCHOOL_ARCANE))
-            GreenSystemMessage(m_session, "-- Arcane: %u", creature_target->getResistance(SCHOOL_ARCANE));
-        GreenSystemMessage(m_session, "=================================");
+            greenSystemMessage(m_session, "-- Arcane: {}", creature_target->getResistance(SCHOOL_ARCANE));
+        greenSystemMessage(m_session, "=================================");
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -428,54 +428,54 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // flags
-    GreenSystemMessage(m_session, "Flags ============================");
+    greenSystemMessage(m_session, "Flags ============================");
     std::string s = GetNpcFlagString(creature_target);
-    GreenSystemMessage(m_session, "NpcFlags: %u%s", creature_target->getNpcFlags(), s.c_str());
+    greenSystemMessage(m_session, "NpcFlags: {}{}", creature_target->getNpcFlags(), s);
 
 #if VERSION_STRING >= WotLK
     uint8_t pvp_flags = creature_target->getPvpFlags();
-    GreenSystemMessage(m_session, "PvPFlags: %u", pvp_flags);
+    greenSystemMessage(m_session, "PvPFlags: {}", pvp_flags);
 
     for (uint32_t i = 0; i < numpvpflags; i++)
         if ((pvp_flags & UnitPvPFlagToName[i].Flag) != 0)
-            GreenSystemMessage(m_session, "%s", UnitPvPFlagToName[i].Name.data());
+            greenSystemMessage(m_session, "{}", UnitPvPFlagToName[i].Name.data());
 #endif
 
 #if VERSION_STRING >= TBC
     uint8_t pet_flags = creature_target->getPetFlags();
     if (pet_flags != 0)
     {
-        GreenSystemMessage(m_session, "PetFlags: %u", pet_flags);
+        greenSystemMessage(m_session, "PetFlags: {}", pet_flags);
         for (uint32_t i = 0; i < numpetflags; i++)
             if ((pet_flags & PetFlagToName[i].Flag) != 0)
-                GreenSystemMessage(m_session, "%s", PetFlagToName[i].Name.data());
+                greenSystemMessage(m_session, "{}", PetFlagToName[i].Name.data());
     }
 #endif
 
     uint32_t unit_flags = creature_target->getUnitFlags();
-    GreenSystemMessage(m_session, "UnitFlags: %u", unit_flags);
+    greenSystemMessage(m_session, "UnitFlags: {}", unit_flags);
 
     for (uint32_t i = 0; i < numflags; i++)
         if ((unit_flags & UnitFlagToName[i].Flag) != 0)
-            GreenSystemMessage(m_session, "-- %s", UnitFlagToName[i].Name.data());
+            greenSystemMessage(m_session, "-- {}", UnitFlagToName[i].Name.data());
 
 #if VERSION_STRING > Classic
     uint32_t unit_flags2 = creature_target->getUnitFlags2();
-    GreenSystemMessage(m_session, "UnitFlags2: %u", unit_flags2);
+    greenSystemMessage(m_session, "UnitFlags2: {}", unit_flags2);
 
     for (uint32_t i = 0; i < numflags2; i++)
         if ((unit_flags2 & UnitFlagToName2[i].Flag) != 0)
-            GreenSystemMessage(m_session, "-- %s", UnitFlagToName2[i].Name.data());
+            greenSystemMessage(m_session, "-- {}", UnitFlagToName2[i].Name.data());
 #endif
 
     uint32_t dyn_flags = creature_target->getDynamicFlags();
-    GreenSystemMessage(m_session, "UnitDynamicFlags: %u", dyn_flags);
+    greenSystemMessage(m_session, "UnitDynamicFlags: {}", dyn_flags);
 
     for (uint32_t i = 0; i < numdynflags; i++)
         if ((dyn_flags & UnitDynFlagToName[i].Flag) != 0)
-            GreenSystemMessage(m_session, "%s", UnitDynFlagToName[i].Name.data());
+            greenSystemMessage(m_session, "{}", UnitDynFlagToName[i].Name.data());
 
-    GreenSystemMessage(m_session, "=================================");
+    greenSystemMessage(m_session, "=================================");
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // owner/summoner
@@ -527,15 +527,15 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // equipment
-    GreenSystemMessage(m_session, "Equipment ============================");
+    greenSystemMessage(m_session, "Equipment ============================");
 #if VERSION_STRING < WotLK
-    GreenSystemMessage(m_session, "-- Melee: %u", creature_target->getVirtualItemEntry(MELEE));
-    GreenSystemMessage(m_session, "-- Offhand: %u", creature_target->getVirtualItemEntry(OFFHAND));
-    GreenSystemMessage(m_session, "-- Ranged: %u", creature_target->getVirtualItemEntry(RANGED));
+    greenSystemMessage(m_session, "-- Melee: {}", creature_target->getVirtualItemEntry(MELEE));
+    greenSystemMessage(m_session, "-- Offhand: {}", creature_target->getVirtualItemEntry(OFFHAND));
+    greenSystemMessage(m_session, "-- Ranged: {}", creature_target->getVirtualItemEntry(RANGED));
 #else
-    GreenSystemMessage(m_session, "-- Melee: %u", creature_target->getVirtualItemSlotId(MELEE));
-    GreenSystemMessage(m_session, "-- Offhand: %u", creature_target->getVirtualItemSlotId(OFFHAND));
-    GreenSystemMessage(m_session, "-- Ranged: %u", creature_target->getVirtualItemSlotId(RANGED));
+    greenSystemMessage(m_session, "-- Melee: {}", creature_target->getVirtualItemSlotId(MELEE));
+    greenSystemMessage(m_session, "-- Offhand: {}", creature_target->getVirtualItemSlotId(OFFHAND));
+    greenSystemMessage(m_session, "-- Ranged: {}", creature_target->getVirtualItemSlotId(RANGED));
 #endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -561,8 +561,8 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     else
         systemMessage(m_session, "Creature doesn't have C++/LUA gossip script");
 
-    RedSystemMessage(m_session, "EntryID: %d", creature_target->getEntry());
-    RedSystemMessage(m_session, "SpawnID: %d", creature_target->GetSQL_id());
+    redSystemMessage(m_session, "EntryID: {}", creature_target->getEntry());
+    redSystemMessage(m_session, "SpawnID: {}", creature_target->GetSQL_id());
 
     return true;
 }
@@ -577,7 +577,7 @@ bool ChatHandler::HandleNpcListAIAgentCommand(const char* /*args*/, WorldSession
     auto result = WorldDatabase.Query("SELECT * FROM ai_agents where entry=%u", creature_target->getEntry());
     if (result == nullptr)
     {
-        RedSystemMessage(m_session, "Selected Creature %s (%u) has no entries in ai_agents table!", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
+        redSystemMessage(m_session, "Selected Creature {} ({}) has no entries in ai_agents table!", creature_target->GetCreatureProperties()->Name, creature_target->getEntry());
         return true;
     }
     systemMessage(m_session, "Agent list for Creature {} ({})", creature_target->GetCreatureProperties()->Name, creature_target->getEntry());
@@ -616,20 +616,20 @@ bool ChatHandler::HandleNpcListLootCommand(const char* args, WorldSession* m_ses
             if (item_proto == nullptr || item_proto->Quality < minQuality)
                 continue;
 
-            RedSystemMessage(m_session, "ItemID: %u %s", item_proto->ItemId, sMySQLStore.getItemLinkByProto(item_proto, m_session->language).c_str());
+            redSystemMessage(m_session, "ItemID: {} {}", item_proto->ItemId, sMySQLStore.getItemLinkByProto(item_proto, m_session->language));
             systemMessage(m_session, "-- N10 ({}) N25 ({}) H10 ({}) H25 ({}) min/max ({}/{})", field[1].asFloat(), field[3].asFloat(), field[2].asFloat(), field[4].asFloat(), field[5].asUint32(), field[6].asUint32());
 
             ++numFound;
         } while (loot_result->NextRow() && (numFound <= 25));
 
         if (numFound > 25)
-            RedSystemMessage(m_session, "More than 25 results found. Use .npc listloot <min quality> to increase the results.");
+            redSystemMessage(m_session, "More than 25 results found. Use .npc listloot <min quality> to increase the results.");
         else
             systemMessage(m_session, "{} results found.", numFound);
     }
     else
     {
-        RedSystemMessage(m_session, "No loot in loot_creatures table for %s (%u).", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
+        redSystemMessage(m_session, "No loot in loot_creatures table for {} ({}).", creature_target->GetCreatureProperties()->Name, creature_target->getEntry());
     }
     return true;
 }
@@ -674,7 +674,7 @@ bool ChatHandler::HandleNpcRespawnCommand(const char* /*args*/, WorldSession* m_
     }
     else
     {
-        RedSystemMessage(m_session, "You must select a creature's corpse with a valid spawnid.");
+        redSystemMessage(m_session, "You must select a creature's corpse with a valid spawnid.");
         return true;
     }
 
@@ -704,7 +704,7 @@ bool ChatHandler::HandleNpcSayCommand(const char* args, WorldSession* m_session)
 
     if (!args)
     {
-        RedSystemMessage(m_session, "No text set. Use .npc say <text>!");
+        redSystemMessage(m_session, "No text set. Use .npc say <text>!");
         return true;
     }
 
@@ -732,7 +732,7 @@ bool ChatHandler::HandleNpcSelectCommand(const char* /*args*/, WorldSession* m_s
 
     if (near_creature == nullptr)
     {
-        RedSystemMessage(m_session, "No inrange creatures found.");
+        redSystemMessage(m_session, "No inrange creatures found.");
         return true;
     }
 
@@ -751,7 +751,7 @@ bool ChatHandler::HandleNpcSpawnCommand(const char* args, WorldSession* m_sessio
     auto creature_properties = sMySQLStore.getCreatureProperties(entry);
     if (creature_properties == nullptr)
     {
-        RedSystemMessage(m_session, "Creature with entry %u is not a valid entry (no properties information in database)", entry);
+        redSystemMessage(m_session, "Creature with entry {} is not a valid entry (no properties information in database)", entry);
         return true;
     }
 
@@ -816,7 +816,7 @@ bool ChatHandler::HandleNpcYellCommand(const char* args, WorldSession* m_session
 
     if (!args)
     {
-        RedSystemMessage(m_session, "No text set. Use .npc say <text>!");
+        redSystemMessage(m_session, "No text set. Use .npc say <text>!");
         return true;
     }
 
@@ -834,7 +834,7 @@ bool ChatHandler::HandlePossessCommand(const char* /*args*/, WorldSession* m_ses
     {
         if (unit_target->isPet() || unit_target->getCreatedByGuid() != 0)
         {
-            RedSystemMessage(m_session, "You can not possess a pet!");
+            redSystemMessage(m_session, "You can not possess a pet!");
             return false;
         }
         if (unit_target->isPlayer())
@@ -852,7 +852,7 @@ bool ChatHandler::HandlePossessCommand(const char* /*args*/, WorldSession* m_ses
     }
     else
     {
-        RedSystemMessage(m_session, "You must select a Player/Creature.");
+        redSystemMessage(m_session, "You must select a Player/Creature.");
         return false;
     }
 
@@ -924,7 +924,7 @@ bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* 
     }
     else
     {
-        RedSystemMessage(m_session, "Item %u not found in database", item);
+        redSystemMessage(m_session, "Item {} not found in database", item);
     }
 
     sGMLog.writefromsession(m_session, "added item %u to vendor %u", item, selected_creature->getEntry());
@@ -985,7 +985,7 @@ bool ChatHandler::HandleNpcVendorRemoveItemCommand(const char* args, WorldSessio
     }
     else
     {
-        RedSystemMessage(m_session, "Item %u not found in vendorlist.", itemguid);
+        redSystemMessage(m_session, "Item {} not found in vendorlist.", itemguid);
     }
 
     return true;
@@ -1011,7 +1011,7 @@ bool ChatHandler::HandleUnPossessCommand(const char* /*args*/, WorldSession* m_s
     }
     else
     {
-        RedSystemMessage(m_session, "You must select a Player/Creature.");
+        redSystemMessage(m_session, "You must select a Player/Creature.");
         return false;
     }
 
@@ -1049,7 +1049,7 @@ bool ChatHandler::HandleNpcSetCanFlyCommand(const char* /*args*/, WorldSession* 
         if (creature_target->m_spawn != nullptr)
             WorldDatabase.Execute("UPDATE %s SET CanFly = 1 WHERE id = %u AND min_build <= %u AND max_build >= %u", creature_target->m_spawn->origine.c_str(), creature_target->spawnid, VERSION_STRING, VERSION_STRING);
 
-        GreenSystemMessage(m_session, "CanFly permanent set from 0 to 1 for Creature %s (%u).", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
+        greenSystemMessage(m_session, "CanFly permanent set from 0 to 1 for Creature {} ({}).", creature_target->GetCreatureProperties()->Name, creature_target->spawnid);
         sGMLog.writefromsession(m_session, "changed npc CanFly for creature_spawns ID: %u [%s] from 0 to 1", creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str());
     }
     else
@@ -1059,7 +1059,7 @@ bool ChatHandler::HandleNpcSetCanFlyCommand(const char* /*args*/, WorldSession* 
         if (creature_target->m_spawn != nullptr)
             WorldDatabase.Execute("UPDATE %s SET CanFly = 0 WHERE id = %u AND min_build <= %u AND max_build >= %u", creature_target->m_spawn->origine.c_str(), creature_target->spawnid, VERSION_STRING, VERSION_STRING);
 
-        GreenSystemMessage(m_session, "CanFly permanent set from 1 to 0 for Creature %s (%u).", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
+        greenSystemMessage(m_session, "CanFly permanent set from 1 to 0 for Creature {} ({}).", creature_target->GetCreatureProperties()->Name, creature_target->spawnid);
         sGMLog.writefromsession(m_session, "changed npc CanFly for creature_spawns ID: %u [%s] from 1 to 0", creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str());
     }
     return true;
@@ -1073,8 +1073,8 @@ bool ChatHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_ses
 
     if (sscanf(args, "%hhu %u", &equipment_slot, &item_id) != 2)
     {
-        RedSystemMessage(m_session, "Command must be in format: .npc add equipment <slot> <item_id>.");
-        RedSystemMessage(m_session, "Slots: (0)melee, (1)offhand, (2)ranged");
+        redSystemMessage(m_session, "Command must be in format: .npc add equipment <slot> <item_id>.");
+        redSystemMessage(m_session, "Slots: (0)melee, (1)offhand, (2)ranged");
         return true;
     }
 
@@ -1085,7 +1085,7 @@ bool ChatHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_ses
     auto item_entry = sItemStore.lookupEntry(item_id);
     if (item_entry == nullptr)
     {
-        RedSystemMessage(m_session, "Item ID: %u is not a valid item!", item_id);
+        redSystemMessage(m_session, "Item ID: {} is not a valid item!", item_id);
         return true;
     }
 
@@ -1102,7 +1102,7 @@ bool ChatHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_ses
         {
             if (creature_target->m_spawn != nullptr)
                 creature_target->m_spawn->Item1SlotEntry = item_id;
-            GreenSystemMessage(m_session, "Melee slot successfull changed from %u to %u for Creature %s", previousValue, item_id, creature_target->GetCreatureProperties()->Name.c_str());
+            greenSystemMessage(m_session, "Melee slot successfull changed from {} to {} for Creature {}", previousValue, item_id, creature_target->GetCreatureProperties()->Name);
             sGMLog.writefromsession(m_session, "changed melee slot from %u to %u for creature spawn %u", previousValue, item_id, creature_target->spawnid);
             break;
         }
@@ -1110,7 +1110,7 @@ bool ChatHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_ses
         {
             if (creature_target->m_spawn != nullptr)
                 creature_target->m_spawn->Item2SlotEntry = item_id;
-            GreenSystemMessage(m_session, "Offhand slot successfull changed from %u to %u for Creature %s", previousValue, item_id, creature_target->GetCreatureProperties()->Name.c_str());
+            greenSystemMessage(m_session, "Offhand slot successfull changed from {} to {} for Creature {}", previousValue, item_id, creature_target->GetCreatureProperties()->Name);
             sGMLog.writefromsession(m_session, "changed offhand slot from %u to %u for creature spawn %u", previousValue, item_id, creature_target->spawnid);
             break;
         }
@@ -1118,13 +1118,13 @@ bool ChatHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_ses
         {
             if (creature_target->m_spawn != nullptr)
                 creature_target->m_spawn->Item3SlotEntry = item_id;
-            GreenSystemMessage(m_session, "Ranged slot successfull changed from %u to %u for Creature %s", previousValue, item_id, creature_target->GetCreatureProperties()->Name.c_str());
+            greenSystemMessage(m_session, "Ranged slot successfull changed from {} to {} for Creature {}", previousValue, item_id, creature_target->GetCreatureProperties()->Name);
             sGMLog.writefromsession(m_session, "changed ranged slot from %u to %u for creature spawn %u", previousValue, item_id, creature_target->spawnid);
             break;
         }
         default:
         {
-            RedSystemMessage(m_session, "Slot: %u is not a valid slot! Use: (0)melee, (1)offhand, (2)ranged.", equipment_slot);
+            redSystemMessage(m_session, "Slot: {} is not a valid slot! Use: (0)melee, (1)offhand, (2)ranged.", equipment_slot);
             return true;
         }
     }
@@ -1141,8 +1141,8 @@ bool ChatHandler::HandleNpcSetEmoteCommand(const char* args, WorldSession* m_ses
 
     if (sscanf(args, "%u", &emote) != 1)
     {
-        RedSystemMessage(m_session, "Command must be at least in format: .npc set emote <emote>.");
-        RedSystemMessage(m_session, "Use the following format to save the emote: .npc set emote <emote> 1.");
+        redSystemMessage(m_session, "Command must be at least in format: .npc set emote <emote>.");
+        redSystemMessage(m_session, "Use the following format to save the emote: .npc set emote <emote> 1.");
         return true;
     }
 
@@ -1156,7 +1156,7 @@ bool ChatHandler::HandleNpcSetEmoteCommand(const char* args, WorldSession* m_ses
     if (creature_target->m_spawn != nullptr)
         WorldDatabase.Execute("UPDATE %s SET emote_state = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", creature_target->m_spawn->origine.c_str(), emote, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
 
-    GreenSystemMessage(m_session, "Emote permanent set from %u to %u for spawn ID: %u.", old_emote, emote, creature_target->spawnid);
+    greenSystemMessage(m_session, "Emote permanent set from {} to {} for spawn ID: {}.", old_emote, emote, creature_target->spawnid);
     sGMLog.writefromsession(m_session, "changed npc emote of %s ID: %u from %u to %u", creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str(), old_emote, emote);
     return true;
 }
@@ -1191,8 +1191,8 @@ bool ChatHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession* m_ses
     uint32_t npc_flags;
     if (sscanf(args, "%u", &npc_flags) < 1)
     {
-        RedSystemMessage(m_session, "You need to define the flag value!");
-        RedSystemMessage(m_session, ".npc set flags <npc_flag>");
+        redSystemMessage(m_session, "You need to define the flag value!");
+        redSystemMessage(m_session, ".npc set flags <npc_flag>");
         return true;
     }
 
@@ -1206,7 +1206,7 @@ bool ChatHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession* m_ses
     if (creature_target->m_spawn != nullptr)
         WorldDatabase.Execute("UPDATE %s SET flags = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", creature_target->m_spawn->origine.c_str(), npc_flags, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
 
-    GreenSystemMessage(m_session, "Flags changed in spawns table from %u to %u for spawn ID: %u. You may need to clean your client cache.", old_npc_flags, npc_flags, creature_target->spawnid);
+    greenSystemMessage(m_session, "Flags changed in spawns table from {} to {} for spawn ID: {}. You may need to clean your client cache.", old_npc_flags, npc_flags, creature_target->spawnid);
     sGMLog.writefromsession(m_session, "changed npc flags of %s ID: %u from %u to %u", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid, old_npc_flags, npc_flags);
 
     return true;
@@ -1219,8 +1219,8 @@ bool ChatHandler::HandleNpcSetPhaseCommand(const char* args, WorldSession* m_ses
 
     if (sscanf(args, "%u", &npc_phase) < 1)
     {
-        RedSystemMessage(m_session, "You need to define the phase!");
-        RedSystemMessage(m_session, ".npc set phase <npc_phase>");
+        redSystemMessage(m_session, "You need to define the phase!");
+        redSystemMessage(m_session, ".npc set phase <npc_phase>");
         return true;
     }
 
@@ -1235,7 +1235,7 @@ bool ChatHandler::HandleNpcSetPhaseCommand(const char* args, WorldSession* m_ses
         WorldDatabase.Execute("UPDATE %s SET phase = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", creature_target->m_spawn->origine.c_str(), npc_phase, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
 
 
-    GreenSystemMessage(m_session, "Phase changed in spawns table from %u to %u for spawn ID: %u.", old_npc_phase, npc_phase, creature_target->spawnid);
+    greenSystemMessage(m_session, "Phase changed in spawns table from {} to {} for spawn ID: {}.", old_npc_phase, npc_phase, creature_target->spawnid);
     sGMLog.writefromsession(m_session, "changed npc phase of %s ID: %u from %u to %u", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid, old_npc_phase, npc_phase);
 
     return true;
@@ -1248,8 +1248,8 @@ bool ChatHandler::HandleNpcSetStandstateCommand(const char* args, WorldSession* 
 
     if (sscanf(args, "%hhu", &standstate) < 1)
     {
-        RedSystemMessage(m_session, "You must specify a standstate value.");
-        RedSystemMessage(m_session, ".npc set standstate <standstate>");
+        redSystemMessage(m_session, "You must specify a standstate value.");
+        redSystemMessage(m_session, ".npc set standstate <standstate>");
         return true;
     }
 
@@ -1263,7 +1263,7 @@ bool ChatHandler::HandleNpcSetStandstateCommand(const char* args, WorldSession* 
     if (creature_target->m_spawn != nullptr)
         WorldDatabase.Execute("UPDATE %s SET standstate = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", creature_target->m_spawn->origine.c_str(), standstate, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
 
-    GreenSystemMessage(m_session, "Standstate changed in spawns table from %u to %u for spawn ID: %u.", old_standstate, standstate, creature_target->spawnid);
+    greenSystemMessage(m_session, "Standstate changed in spawns table from {} to {} for spawn ID: {}.", old_standstate, standstate, creature_target->spawnid);
     sGMLog.writefromsession(m_session, "changed npc standstate of %s ID: %u from %u to %u", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid, old_standstate, standstate);
     
     return true;
@@ -1276,8 +1276,8 @@ bool ChatHandler::HandleNpcChangeEntry(const char* args, WorldSession* m_session
 
     if (sscanf(args, "%u", &entry) < 1)
     {
-        RedSystemMessage(m_session, "You must specify a entry value.");
-        RedSystemMessage(m_session, ".npc set entry <entry>");
+        redSystemMessage(m_session, "You must specify a entry value.");
+        redSystemMessage(m_session, ".npc set entry <entry>");
         return true;
     }
 
@@ -1288,7 +1288,7 @@ bool ChatHandler::HandleNpcChangeEntry(const char* args, WorldSession* m_session
     uint32_t old_entry = creature_target->getEntry();
     creature_target->updateEntry(entry);
 
-    GreenSystemMessage(m_session, "CreatureEntry temporarily set from %u to %u for spawn ID: %u.", old_entry, entry, creature_target->spawnid);
+    greenSystemMessage(m_session, "CreatureEntry temporarily set from {} to {} for spawn ID: {}.", old_entry, entry, creature_target->spawnid);
 
     return true;
 }
