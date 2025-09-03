@@ -5,11 +5,21 @@ set(LIBRARY_NAME Battlegrounds)
 
 file(GLOB_RECURSE SRC_LOCAL_DIR *.cpp *.h *.hpp)
 
+# required for linker.
+set(SRC_BATTLEGROUNDS
+    ../../world/Server/ServerState.cpp
+    ../../world/Spell/SpellCastTargets.cpp
+)
+
+set(BATTLEGROUNDS_SRCS
+    ${SRC_BATTLEGROUNDS}
+    ${SRC_LOCAL_DIR}
+)
 # source group.
 ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
 
 # add shared library.
-add_library(${LIBRARY_NAME} STATIC ${SRC_LOCAL_DIR})
+add_library(${LIBRARY_NAME} SHARED ${BATTLEGROUNDS_SRCS})
 
 # include directories.
 set(BATTLEGROUNDS_INCLUDES

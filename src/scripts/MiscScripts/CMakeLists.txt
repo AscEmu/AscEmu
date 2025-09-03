@@ -23,7 +23,7 @@ set(MISCSCRIPTS_SRCS
 # source group.
 ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
 
-add_library(${LIBRARY_NAME} STATIC ${MISCSCRIPTS_SRCS})
+add_library(${LIBRARY_NAME} SHARED ${MISCSCRIPTS_SRCS})
 
 target_include_directories(${LIBRARY_NAME} PUBLIC 
     ${OPENSSL_INCLUDE_DIR}

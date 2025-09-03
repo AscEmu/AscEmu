@@ -9,13 +9,23 @@ endif ()
 # set up our project name.
 set(LIBRARY_NAME GossipScripts)
 
-file(GLOB_RECURSE SRC_LOCAL_DIR *.cpp *.h *.hpp)
+file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
+
+# required for linker.
+set(SRC_GOSSIPSCRIPTS
+    ../../world/Server/ServerState.cpp
+)
+
+set(GOSSIPSCRIPTS_SRCS
+    ${SRC_GOSSIPSCRIPTS}
+    ${SRC_LOCAL_DIR}
+)
 
 # source group.
 ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
 
 # add shared library.
-add_library(${LIBRARY_NAME} STATIC ${SRC_LOCAL_DIR})
+add_library(${LIBRARY_NAME} SHARED ${GOSSIPSCRIPTS_SRCS})
 
 # include directories.
 target_include_directories(${LIBRARY_NAME} PUBLIC
@@ -47,4 +57,4 @@ if (AE_USE_PCH)
 endif ()
 
 # install library.
-install(TARGETS ${LIBRARY_NAME} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
+install(TARGETS ${LIBRARY_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})

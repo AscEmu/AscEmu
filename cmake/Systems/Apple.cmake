@@ -7,6 +7,8 @@ set(CMAKE_MACOSX_RPATH TRUE)
 
 add_compile_options(-DUSE_KQUEUE)
 
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -undefined dynamic_lookup")
+
 # find required libraries
 find_package(ZLIB REQUIRED)
 find_package(OpenSSL REQUIRED)

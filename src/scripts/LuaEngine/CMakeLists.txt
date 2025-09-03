@@ -25,7 +25,7 @@ set(LUAENGINE_SRCS
 # source group.
 ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
 
-add_library(${LIBRARY_NAME} STATIC ${LUAENGINE_SRCS})
+add_library(${LIBRARY_NAME} SHARED ${LUAENGINE_SRCS})
 
 target_include_directories(${LIBRARY_NAME} PUBLIC 
     ${OPENSSL_INCLUDE_DIR}
