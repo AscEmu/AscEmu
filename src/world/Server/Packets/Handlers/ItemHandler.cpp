@@ -2299,9 +2299,8 @@ void WorldSession::sendInventoryList(Creature* unit)
 {
     if (!unit->HasItems())
     {
-        sChatHandler.BlueSystemMessage(_player->getSession(),
-            "No sell template found. Report this to database's devs: %d (%s)",
-            unit->getEntry(), unit->GetCreatureProperties()->Name.c_str());
+        sChatHandler.blueSystemMessage(_player->getSession(), "No sell template found. Report this to database's devs: {} ({})",
+            unit->getEntry(), unit->GetCreatureProperties()->Name);
         sLogger.failure("'{}' discovered that a creature with entry {} ({}) has no sell template.",
             _player->getName(), unit->getEntry(), unit->GetCreatureProperties()->Name);
         GossipMenu::senGossipComplete(_player);

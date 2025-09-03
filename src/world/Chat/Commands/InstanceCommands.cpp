@@ -66,7 +66,7 @@ bool ChatHandler::HandleCountCreaturesCommand(const char* args, WorldSession* m_
 //.instance exit
 bool ChatHandler::HandleExitInstanceCommand(const char* /*args*/, WorldSession* m_session)
 {
-    BlueSystemMessage(m_session, "Attempting to exit from instance...");
+    blueSystemMessage(m_session, "Attempting to exit from instance...");
 
     bool result = m_session->GetPlayer()->exitInstance();
     if (!result)

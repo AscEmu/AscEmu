@@ -66,7 +66,7 @@ bool ChatHandler::HandleAdminCastAllCommand(const char* args, WorldSession* m_se
         }
     }
 
-    BlueSystemMessage(m_session, "Casted spell %u on all players!", spell_id);
+    blueSystemMessage(m_session, "Casted spell {} on all players!", spell_id);
     return true;
 }
 
@@ -103,7 +103,7 @@ bool ChatHandler::HandleAdminDispelAllCommand(const char* args, WorldSession* m_
     }
     sGMLog.writefromsession(m_session, "used mass dispel");
 
-    BlueSystemMessage(m_session, "Dispel action done.");
+    blueSystemMessage(m_session, "Dispel action done.");
     return true;
 }
 
@@ -171,7 +171,7 @@ bool ChatHandler::HandleAdminPlayGlobalSoundCommand(const char* args, WorldSessi
 
     sWorld.playSoundToAllPlayers(sound_id);
 
-    BlueSystemMessage(m_session, "Broadcasted sound %u to server.", sound_id);
+    blueSystemMessage(m_session, "Broadcasted sound {} to server.", sound_id);
 
     sGMLog.writefromsession(m_session, "used play all command soundid %u", sound_id);
 

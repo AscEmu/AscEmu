@@ -164,7 +164,6 @@ bool ChatHandler::resolveTopLevelAbbrev(std::string_view tok0, WorldSession* s, 
     return false; // unknown or ambiguous
 }
 
-
 bool ChatHandler::executeCommandFlat(std::string_view text, WorldSession* m_session)
 {
     if (text.empty())
@@ -320,8 +319,8 @@ bool ChatHandler::executeCommandFlat(std::string_view text, WorldSession* m_sess
             if (p != '0' && !m_session->CanUseCommand(p))
                 continue;
 
-            const char* help = sub.help.empty() ? "No Help Available" : sub.help.c_str();
-            BlueSystemMessage(m_session, " %s - %s", sub.command.substr(prefixWithSpace.size()).c_str(), help);
+            auto help = sub.help.empty() ? "No Help Available" : sub.help;
+            blueSystemMessage(m_session, " {} - {}", sub.command.substr(prefixWithSpace.size()), help);
 
             any = true;
         }
@@ -368,8 +367,8 @@ bool ChatHandler::executeCommandFlat(std::string_view text, WorldSession* m_sess
             if (p != '0' && !m_session->CanUseCommand(p))
                 continue;
 
-            const char* help = sub.help.empty() ? "No Help Available" : sub.help.c_str();
-            BlueSystemMessage(m_session, " %s - %s", sub.command.substr(prefix.size()).c_str(), help);
+            auto help = sub.help.empty() ? "No Help Available" : sub.help;
+            blueSystemMessage(m_session, " {} - {}", sub.command.substr(prefix.size()), help);
             any = true;
         }
 
@@ -697,24 +696,6 @@ void ChatHandler::GreenSystemMessage(WorldSession* m_session, const char* messag
 
     char msg[1024];
     snprintf(msg, 1024, "%s%s|r", MSG_COLOR_GREEN, msg1);
-
-    if (m_session != NULL)
-        m_session->SendPacket(SmsgMessageChat(SystemMessagePacket(msg)).serialise().get());
-}
-
-void ChatHandler::BlueSystemMessage(WorldSession* m_session, const char* message, ...)
-{
-    if (!message)
-        return;
-
-    va_list ap;
-    va_start(ap, message);
-    char msg1[1024];
-    vsnprintf(msg1, 1024, message, ap);
-    va_end(ap);
-
-    char msg[1024];
-    snprintf(msg, 1024, "%s%s|r", MSG_COLOR_LIGHTBLUE, msg1);
 
     if (m_session != NULL)
         m_session->SendPacket(SmsgMessageChat(SystemMessagePacket(msg)).serialise().get());

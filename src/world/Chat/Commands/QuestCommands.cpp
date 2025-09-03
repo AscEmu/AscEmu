@@ -1353,12 +1353,12 @@ bool ChatHandler::HandleQuestFinisherSpawnCommand(const char* args, WorldSession
 
 bool ChatHandler::HandleQuestLoadCommand(const char* /*args*/, WorldSession* m_session)
 {
-    BlueSystemMessage(m_session, "Load of quests from the database has been initiated ...");
+    blueSystemMessage(m_session, "Load of quests from the database has been initiated ...");
     auto startTime = Util::TimeNow();
 
     sQuestMgr.LoadExtraQuestStuff();
 
-    BlueSystemMessage(m_session, "Load completed in %u ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    blueSystemMessage(m_session, "Load completed in {} ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
     WoWGuid wowGuid;
     wowGuid.Init(m_session->GetPlayer()->getTargetGuid());

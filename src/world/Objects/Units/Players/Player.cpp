@@ -2374,7 +2374,7 @@ void Player::eventKickFromServer()
         else
             m_kickDelay -= 1000;
 
-        sChatHandler.BlueSystemMessage(getSession(), "You will be removed from the server in %u seconds.", m_kickDelay / 1000);
+        sChatHandler.blueSystemMessage(getSession(), "You will be removed from the server in {} seconds.", m_kickDelay / 1000);
     }
     else
     {

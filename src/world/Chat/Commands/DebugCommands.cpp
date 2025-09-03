@@ -315,9 +315,9 @@ bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_sess
     uint32_t attackerscount = static_cast<uint32_t>(selected_unit->getThreatManager().getThreatListSize());
 
     if (selected_unit->isCreature())
-        BlueSystemMessage(m_session, "Showing creature moveinfo for %s", static_cast<Creature*>(selected_unit)->GetCreatureProperties()->Name.c_str());
+        blueSystemMessage(m_session, "Showing creature moveinfo for {}", static_cast<Creature*>(selected_unit)->GetCreatureProperties()->Name);
     else
-        BlueSystemMessage(m_session, "Showing player moveinfo for %s", static_cast<Player*>(selected_unit)->getName().c_str());
+        blueSystemMessage(m_session, "Showing player moveinfo for {}", static_cast<Player*>(selected_unit)->getName());
 
     SystemMessage(m_session, "=== Facing ===");
     SystemMessage(m_session, "Target is in front: %u", creature_in_front);
@@ -483,7 +483,7 @@ bool ChatHandler::HandleDebugSpeed(const char* args, WorldSession* m_session)
     if (selected_unit == nullptr)
         return false;
 
-    BlueSystemMessage(m_session, "Setting speeds of selected unit to %3.2f.", speed);
+    blueSystemMessage(m_session, "Setting speeds of selected unit to {}.", speed);
 
     selected_unit->setSpeedRate(TYPE_WALK, speed, true);
     selected_unit->setSpeedRate(TYPE_RUN, (speed + speed / 2), true);
@@ -1176,7 +1176,7 @@ bool ChatHandler::HandleInitWorldStatesCommand(const char* /*args*/, WorldSessio
     if (zone == 0)
         zone = p->getAreaId();
 
-    BlueSystemMessage(session, "Sending initial worldstates for zone %u", zone);
+    blueSystemMessage(session, "Sending initial worldstates for zone {}", zone);
 
     p->sendInitialWorldstates();
 
@@ -1192,7 +1192,7 @@ bool ChatHandler::HandleClearWorldStatesCommand(const char* /*args*/, WorldSessi
     if (zone == 0)
         zone = p->getAreaId();
 
-    BlueSystemMessage(session, "Clearing worldstates for zone %u", zone);
+    blueSystemMessage(session, "Clearing worldstates for zone {}", zone);
 
     WorldPacket data(SMSG_INIT_WORLD_STATES, 16);
 
@@ -1468,7 +1468,7 @@ bool ChatHandler::HandleCastSpellCommand(const char* args, WorldSession* m_sessi
 
     Spell* sp = sSpellMgr.newSpell(caster, spellentry, false, nullptr);
 
-    BlueSystemMessage(m_session, "Casting spell %d on target.", spellid);
+    blueSystemMessage(m_session, "Casting spell {} on target.", spellid);
     SpellCastTargets targets(target->getGuid());
     sp->prepare(&targets);
 
@@ -1506,7 +1506,7 @@ bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_ses
         RedSystemMessage(m_session, "Invalid spell id!");
         return false;
     }
-    BlueSystemMessage(m_session, "Casting spell %d on target.", spellId);
+    blueSystemMessage(m_session, "Casting spell {} on target.", spellId);
 
     WorldPacket data;
 
@@ -1568,7 +1568,7 @@ bool ChatHandler::HandleCastSelfCommand(const char* args, WorldSession* m_sessio
 
     Spell* sp = sSpellMgr.newSpell(target, spellentry, false, nullptr);
 
-    BlueSystemMessage(m_session, "Target is casting spell %d on himself.", spellid);
+    blueSystemMessage(m_session, "Target is casting spell {} on himself.", spellid);
     SpellCastTargets targets(target->getGuid());
     sp->prepare(&targets);
 

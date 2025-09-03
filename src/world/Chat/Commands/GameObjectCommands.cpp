@@ -129,13 +129,13 @@ bool ChatHandler::HandleGOEnableCommand(const char* /*args*/, WorldSession* m_se
     {
         // Deactivate
         gameobject->setDynamicFlags(GO_DYN_FLAG_NONE);
-        BlueSystemMessage(m_session, "Gameobject deactivated.");
+        blueSystemMessage(m_session, "Gameobject deactivated.");
     }
     else
     {
         // /Activate
         gameobject->setDynamicFlags(GO_DYN_FLAG_INTERACTABLE);
-        BlueSystemMessage(m_session, "Gameobject activated.");
+        blueSystemMessage(m_session, "Gameobject activated.");
     }
 
     sGMLog.writefromsession(m_session, "activated/deactivated gameobject %s, entry %u", sMySQLStore.getGameObjectProperties(gameobject->getEntry())->name.c_str(), gameobject->getEntry());
@@ -165,7 +165,7 @@ bool ChatHandler::HandleGOExportCommand(const char* args, WorldSession* m_sessio
 
     gameobject->SaveToFile(name);
 
-    BlueSystemMessage(m_session, "Go saved to: %s", name.str().c_str());
+    blueSystemMessage(m_session, "Go saved to: {}", name.str());
 
     return true;
 }
@@ -373,12 +373,12 @@ bool ChatHandler::HandleGOOpenCommand(const char* /*args*/, WorldSession* m_sess
     if (gameobject->getState() != GO_STATE_OPEN)
     {
         gameobject->setState(GO_STATE_OPEN);
-        BlueSystemMessage(m_session, "Gameobject opened.");
+        blueSystemMessage(m_session, "Gameobject opened.");
     }
     else
     {
         gameobject->setState(GO_STATE_CLOSED);
-        BlueSystemMessage(m_session, "Gameobject closed.");
+        blueSystemMessage(m_session, "Gameobject closed.");
     }
 
     return true;
@@ -406,7 +406,7 @@ bool ChatHandler::HandleGORebuildCommand(const char* /*args*/, WorldSession* ses
 
     dgo->Rebuild();
 
-    BlueSystemMessage(session, "GameObject has been rebuilt.");
+    blueSystemMessage(session, "GameObject has been rebuilt.");
     GreenSystemMessage(session, "Old hitpoints: %u New hitpoints %u", oldHitPoints, dgo->GetHP());
 
     return true;

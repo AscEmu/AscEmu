@@ -239,7 +239,7 @@ bool ChatHandler::HandleNpcDeleteCommand(const char* /*args*/, WorldSession* m_s
         uint32_t spawn_id = creature_target->spawnid;
         if (spawn_id != 0)
         {
-            BlueSystemMessage(m_session, "Creature %s (%u) deleted from creature_spawn table.", creature_target->GetCreatureProperties()->Name.c_str(), spawn_id);
+            blueSystemMessage(m_session, "Creature {} ({}) deleted from creature_spawn table.", creature_target->GetCreatureProperties()->Name, spawn_id);
             sGMLog.writefromsession(m_session, "used npc delete on creature %s (%u), pos %f %f %f", creature_target->GetCreatureProperties()->Name.c_str(), spawn_id, creature_target->GetPositionX(), creature_target->GetPositionY(), creature_target->GetPositionZ());
             creature_target->DeleteFromDB();
         }
@@ -662,7 +662,7 @@ bool ChatHandler::HandleNpcRespawnCommand(const char* /*args*/, WorldSession* m_
     {
         sEventMgr.RemoveEvents(creature_target, EVENT_CREATURE_RESPAWN);
 
-        BlueSystemMessage(m_session, "Respawning Creature: `%s` with entry: %u on map: %u spawnid: %u", creature_target->GetCreatureProperties()->Name.c_str(),
+        blueSystemMessage(m_session, "Respawning Creature: `{}` with entry: {} on map: {} spawnid: {}", creature_target->GetCreatureProperties()->Name,
             creature_target->getEntry(), creature_target->getWorldMap()->getBaseMap()->getMapId(), creature_target->spawnid);
         sGMLog.writefromsession(m_session, "respawned Creature: `%s` with entry: %u on map: %u sqlid: %u", creature_target->GetCreatureProperties()->Name.c_str(),
             creature_target->getEntry(), creature_target->getWorldMap()->getBaseMap()->getMapId(), creature_target->spawnid);
@@ -805,7 +805,7 @@ bool ChatHandler::HandleNpcSpawnCommand(const char* args, WorldSession* m_sessio
 
         creature->SaveToDB();
 
-        BlueSystemMessage(m_session, "Spawned a creature `%s` with entry %u at %f %f %f on map %u", creature_properties->Name.c_str(),
+        blueSystemMessage(m_session, "Spawned a creature `{}` with entry {} at {} {} {} on map {}", creature_properties->Name,
             entry, creature_spawn->x, creature_spawn->y, creature_spawn->z, m_session->GetPlayer()->GetMapId());
         sGMLog.writefromsession(m_session, "spawned a %s at %u %f %f %f", creature_properties->Name.c_str(), m_session->GetPlayer()->GetMapId(),
             creature_spawn->x, creature_spawn->y, creature_spawn->z);
@@ -846,13 +846,13 @@ bool ChatHandler::HandlePossessCommand(const char* /*args*/, WorldSession* m_ses
         if (unit_target->isPlayer())
         {
             auto player = static_cast<Player*>(unit_target);
-            BlueSystemMessage(m_session, "Player %s selected.", player->getName().c_str());
+            blueSystemMessage(m_session, "Player {} selected.", player->getName());
             sGMLog.writefromsession(m_session, "used possess command on PLAYER %s", player->getName().c_str());
         }
         else if (unit_target->isCreature())
         {
             auto creature = static_cast<Creature*>(unit_target);
-            BlueSystemMessage(m_session, "Creature %s selected.", creature->GetCreatureProperties()->Name.c_str());
+            blueSystemMessage(m_session, "Creature {} selected.", creature->GetCreatureProperties()->Name);
             sGMLog.writefromsession(m_session, "used possess command on Creature %s spawn_id %u", creature->GetCreatureProperties()->Name.c_str(), creature->GetSQL_id());
         }
     }
@@ -924,9 +924,9 @@ bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* 
         selected_creature->AddVendorItem(item, amount, item_extended_cost);
 
         if (costid > 0)
-            BlueSystemMessage(m_session, "Item %u (%s) added to vendorlist with extended cost %u.", item, tmpItem->Name.c_str(), costid);
+            blueSystemMessage(m_session, "Item {} ({}) added to vendorlist with extended cost %u.", item, tmpItem->Name, costid);
         else
-            BlueSystemMessage(m_session, "Item %u (%s) added to vendorlist.", item, tmpItem->Name.c_str());
+            blueSystemMessage(m_session, "Item {} ({}) added to vendorlist.", item, tmpItem->Name);
     }
     else
     {
@@ -980,15 +980,13 @@ bool ChatHandler::HandleNpcVendorRemoveItemCommand(const char* args, WorldSessio
         WorldDatabase.Execute("DELETE FROM vendors WHERE entry = %u AND item = %u", creatureId, itemguid);
 
         selected_creature->RemoveVendorItem(itemguid);
+
         ItemProperties const* tmpItem = sMySQLStore.getItemProperties(itemguid);
         if (tmpItem)
-        {
-            BlueSystemMessage(m_session, "Item %u (%s) deleted from list.", itemguid, tmpItem->Name.c_str());
-        }
+            blueSystemMessage(m_session, "Item {} ({}) deleted from list.", itemguid, tmpItem->Name);
         else
-        {
-            BlueSystemMessage(m_session, "Item %u deleted from list.", itemguid);
-        }
+            blueSystemMessage(m_session, "Item {} deleted from list.", itemguid);
+
         sGMLog.writefromsession(m_session, "removed item %u from vendor %u", itemguid, creatureId);
     }
     else
@@ -1009,12 +1007,12 @@ bool ChatHandler::HandleUnPossessCommand(const char* /*args*/, WorldSession* m_s
         if (unit_target->isPlayer())
         {
             auto player = static_cast<Player*>(unit_target);
-            BlueSystemMessage(m_session, "Player %s is no longer possessed by you.", player->getName().c_str());
+            blueSystemMessage(m_session, "Player {} is no longer possessed by you.", player->getName());
         }
         else if (unit_target->isCreature())
         {
             auto creature = static_cast<Creature*>(unit_target);
-            BlueSystemMessage(m_session, "Creature %s is no longer possessed by you.", creature->GetCreatureProperties()->Name.c_str());
+            blueSystemMessage(m_session, "Creature {} is no longer possessed by you.", creature->GetCreatureProperties()->Name);
         }
     }
     else
@@ -1177,7 +1175,7 @@ bool ChatHandler::HandleNpcSetFormationMasterCommand(const char* /*args*/, World
         return true;
 
     m_session->GetPlayer()->m_formationMaster = creature_target;
-    BlueSystemMessage(m_session, "Formation Master set to %s spawn ID: %u.", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
+    blueSystemMessage(m_session, "Formation Master set to {} spawn ID: {}.", creature_target->GetCreatureProperties()->Name, creature_target->spawnid);
     return true;
 }
 

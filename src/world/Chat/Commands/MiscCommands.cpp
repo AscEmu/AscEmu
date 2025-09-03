@@ -256,9 +256,9 @@ bool ChatHandler::showHelpForCommand(WorldSession* m_session, const char* args)
             continue;
 
         // show only the remainder after "<top> "
-        const char* help = cmd.help.empty() ? "No Help Available" : cmd.help.c_str();
+        auto help = cmd.help.empty() ? "No Help Available" : cmd.help;
 
-        BlueSystemMessage(m_session, " %s - %s", cmd.command.substr(listPrefix.size()).c_str(), help);
+        blueSystemMessage(m_session, " {} - {}", cmd.command.substr(listPrefix.size()), help);
 
         any = true;
     }
@@ -311,7 +311,7 @@ bool ChatHandler::HandleMountCommand(const char* args, WorldSession* m_session)
 
     unit_target->setMountDisplayId(modelid);
 
-    BlueSystemMessage(m_session, "Now mounted with model %d.", modelid);
+    blueSystemMessage(m_session, "Now mounted with model {}.", modelid);
     sGMLog.writefromsession(m_session, "used mount command to model %u", modelid);
 
     return true;
@@ -335,7 +335,7 @@ bool ChatHandler::HandleDismountCommand(const char* /*args*/, WorldSession* m_se
 
     unit_target->setMountDisplayId(0);
 
-    BlueSystemMessage(m_session, "Target is now unmounted.");
+    blueSystemMessage(m_session, "Target is now unmounted.");
     return true;
 }
 
@@ -493,7 +493,7 @@ bool ChatHandler::HandleGoTriggerCommand(const char* args, WorldSession* m_sessi
     }
 
     m_session->GetPlayer()->safeTeleport(area_trigger_entry->mapid, instance_id, LocationVector(area_trigger_entry->x, area_trigger_entry->y, area_trigger_entry->z, area_trigger_entry->box_radius));
-    BlueSystemMessage(m_session, "Teleported to trigger %u on [%u][%.2f][%.2f][%.2f]", area_trigger_entry->id, area_trigger_entry->mapid, area_trigger_entry->x, area_trigger_entry->y, area_trigger_entry->z);
+    blueSystemMessage(m_session, "Teleported to trigger {} on [{}][{}][{}][{}]", area_trigger_entry->id, area_trigger_entry->mapid, area_trigger_entry->x, area_trigger_entry->y, area_trigger_entry->z);
     return true;
 }
 
@@ -619,12 +619,12 @@ bool ChatHandler::HandleRootCommand(const char* /*args*/, WorldSession* m_sessio
     if (unit->isPlayer())
     {
         SystemMessage(m_session, "Rooting Player %s.", static_cast<Player*>(unit)->getName().c_str());
-        BlueSystemMessage(static_cast<Player*>(unit)->getSession(), "You have been rooted by %s.", m_session->GetPlayer()->getName().c_str());
+        blueSystemMessage(static_cast<Player*>(unit)->getSession(), "You have been rooted by {}.", m_session->GetPlayer()->getName());
         sGMLog.writefromsession(m_session, "rooted player %s", static_cast<Player*>(unit)->getName().c_str());
     }
     else
     {
-        BlueSystemMessage(m_session, "Rooting Creature %s.", static_cast<Creature*>(unit)->GetCreatureProperties()->Name.c_str());
+        blueSystemMessage(m_session, "Rooting Creature {}.", static_cast<Creature*>(unit)->GetCreatureProperties()->Name);
         sGMLog.writefromsession(m_session, "rooted creature %s", static_cast<Creature*>(unit)->GetCreatureProperties()->Name.c_str());
     }
 
@@ -642,13 +642,13 @@ bool ChatHandler::HandleUnrootCommand(const char* /*args*/, WorldSession* m_sess
 
     if (unit->isPlayer())
     {
-        SystemMessage(m_session, "Unrooting Player %s.", static_cast<Player*>(unit)->getName().c_str());
-        BlueSystemMessage(static_cast<Player*>(unit)->getSession(), "You have been unrooted by %s.", m_session->GetPlayer()->getName().c_str());
+        SystemMessage(m_session, "Unrooting Player {}.", static_cast<Player*>(unit)->getName());
+        blueSystemMessage(static_cast<Player*>(unit)->getSession(), "You have been unrooted by %s.", m_session->GetPlayer()->getName().c_str());
         sGMLog.writefromsession(m_session, "unrooted player %s", static_cast<Player*>(unit)->getName().c_str());
     }
     else
     {
-        BlueSystemMessage(m_session, "Unrooting Creature %s.", static_cast<Creature*>(unit)->GetCreatureProperties()->Name.c_str());
+        blueSystemMessage(m_session, "Unrooting Creature {}.", static_cast<Creature*>(unit)->GetCreatureProperties()->Name);
         sGMLog.writefromsession(m_session, "unrooted creature %s", static_cast<Creature*>(unit)->GetCreatureProperties()->Name.c_str());
     }
 
@@ -678,7 +678,7 @@ bool ChatHandler::HandleKickByNameCommand(const char* args, WorldSession* m_sess
         if (reason)
             kickreason = reason;
 
-        BlueSystemMessage(m_session, "Attempting to kick %s from the server for \'%s\'.", player_target->getName().c_str(), kickreason.c_str());
+        blueSystemMessage(m_session, "Attempting to kick {} from the server for '{}'.", player_target->getName(), kickreason);
         sGMLog.writefromsession(m_session, "Kicked player %s from the server for %s", player_target->getName().c_str(), kickreason.c_str());
 
         if (!m_session->CanUseCommand('z') && player_target->getSession()->CanUseCommand('z'))
@@ -1076,7 +1076,7 @@ bool ChatHandler::HandleBlockAppearCommand(const char* args, WorldSession* m_ses
     {
         if (m_session->GetPlayer()->isAppearingDisabled())
         {
-            BlueSystemMessage(m_session, "Appear blocking is already enabled");
+            blueSystemMessage(m_session, "Appear blocking is already enabled");
         }
         else
         {
@@ -1093,7 +1093,7 @@ bool ChatHandler::HandleBlockAppearCommand(const char* args, WorldSession* m_ses
         }
         else
         {
-            BlueSystemMessage(m_session, "Appear blocking is already disabled");
+            blueSystemMessage(m_session, "Appear blocking is already disabled");
         }
     }
 
@@ -1171,7 +1171,7 @@ bool ChatHandler::HandleBlockSummonCommand(const char* args, WorldSession* m_ses
     {
         if (m_session->GetPlayer()->isSummoningDisabled())
         {
-            BlueSystemMessage(m_session, "Summon blocking is already enabled");
+            blueSystemMessage(m_session, "Summon blocking is already enabled");
         }
         else
         {
@@ -1188,7 +1188,7 @@ bool ChatHandler::HandleBlockSummonCommand(const char* args, WorldSession* m_ses
         }
         else
         {
-            BlueSystemMessage(m_session, "Summon blocking is already disabled");
+            blueSystemMessage(m_session, "Summon blocking is already disabled");
         }
     }
 
@@ -1296,12 +1296,12 @@ bool ChatHandler::HandlePlayerInfo(const char* args, WorldSession* m_session)
 
     GreenSystemMessage(m_session, "%s is a %s %s %s", plr->getName().c_str(), (plr->getGender() ? "Female" : "Male"), races[plr->getRace()], classes[plr->getClass()]);
 
-    BlueSystemMessage(m_session, "%s has played %s at this level", (plr->getGender() ? "She" : "He"), playedLevel);
-    BlueSystemMessage(m_session, "and %s overall", playedTotal);
+    blueSystemMessage(m_session, "{} has played {} at this level", (plr->getGender() ? "She" : "He"), playedLevel);
+    blueSystemMessage(m_session, "and {} overall", playedTotal);
 
-    BlueSystemMessage(m_session, "%s is connecting from account '%s'[%u] with permissions '%s'", (plr->getGender() ? "She" : "He"), sess->GetAccountName().c_str(), sess->GetAccountId(), sess->GetPermissions().get());
+    blueSystemMessage(m_session, "{} is connecting from account '{}'[{}] with permissions '{}'", (plr->getGender() ? "She" : "He"), sess->GetAccountName(), sess->GetAccountId(), sess->GetPermissions().get());
 
-    BlueSystemMessage(m_session, "Factiontemplate: %u", plr->getFactionTemplate());
+    blueSystemMessage(m_session, "Factiontemplate: {}", plr->getFactionTemplate());
 
     std::string clientFlags = "WoW";
 
@@ -1320,9 +1320,9 @@ bool ChatHandler::HandlePlayerInfo(const char* args, WorldSession* m_session)
     else if (sess->HasFlag(ACCOUNT_FLAG_XPACK_01))
         clientFlags += " The Burning Crusade";
 
-    BlueSystemMessage(m_session, "%s uses %s (build %u)", (plr->getGender() ? "She" : "He"), clientFlags.c_str(), sess->GetClientBuild());
+    blueSystemMessage(m_session, "{} uses {} (build {})", (plr->getGender() ? "She" : "He"), clientFlags, sess->GetClientBuild());
 
-    BlueSystemMessage(m_session, "%s IP is '%s', and has a latency of %ums", (plr->getGender() ? "Her" : "His"), sess->GetSocket()->GetRemoteIP().c_str(), sess->GetLatency());
+    blueSystemMessage(m_session, "{} IP is '{}', and has a latency of {}ms", (plr->getGender() ? "Her" : "His"), sess->GetSocket()->GetRemoteIP(), sess->GetLatency());
 
     return true;
 }

@@ -46,7 +46,6 @@ public:
     void ColorSystemMessage(WorldSession* m_session, const char* colorcode, const char* message, ...);
     static void RedSystemMessage(WorldSession* m_session, const char* message, ...);
     static void GreenSystemMessage(WorldSession* m_session, const char* message, ...);
-    void BlueSystemMessage(WorldSession* m_session, const char* message, ...);
 
     void sendSystemMessagePacket(WorldSession* _session, std::string& _message);
 
@@ -418,6 +417,8 @@ public:
     bool HandleModifyBytes0(const char* args, WorldSession* session);
     bool HandleModifyBytes1(const char* args, WorldSession* session);
     bool HandleModifyBytes2(const char* args, WorldSession* session);
+
+    void sendModifySystemMessage(WorldSession* session, Unit* unitTarget, std::string modType, uint32_t newValue, uint32_t oldValue);
 
     // NPC Commands
     bool HandleNpcAddAgentCommand(const char* args, WorldSession* m_session);

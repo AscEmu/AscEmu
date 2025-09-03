@@ -500,8 +500,8 @@ std::tuple<AddItemResult, std::unique_ptr<Item>> ItemInterface::m_AddItem(std::u
             SlotResult result = this->FindFreeInventorySlot(itemHolder->getItemProperties());
 
             // send message to player
-            sChatHandler.BlueSystemMessage(m_pOwner->getSession(), "A duplicated item, `%s` was found in your inventory. We've attempted to add it to a free slot in your inventory, if there is none this will fail. It will be attempted again the next time you log on.",
-                itemHolder->getItemProperties()->Name.c_str());
+            sChatHandler.blueSystemMessage(m_pOwner->getSession(), "A duplicated item, `{}` was found in your inventory. We've attempted to add it to a free slot in your inventory, if there is none this will fail. It will be attempted again the next time you log on.",
+                itemHolder->getItemProperties()->Name);
             if (result.Result == true)
             {
                 // Found a new slot for that item.

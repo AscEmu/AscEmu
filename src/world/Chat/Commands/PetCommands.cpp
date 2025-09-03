@@ -64,13 +64,13 @@ bool ChatHandler::HandlePetCreateCommand(const char* args, WorldSession* m_sessi
     if (selected_player != m_session->GetPlayer())
     {
         sGMLog.writefromsession(m_session, "used created pet with entry %u for player %s", entry, selected_player->getName().c_str());
-        BlueSystemMessage(m_session, "Pet with entry %u created for player %s.", entry, selected_player->getName().c_str());
-        BlueSystemMessage(selected_player->getSession(), "%s created a pet with entry %u for you.", m_session->GetPlayer()->getName().c_str(), entry);
+        blueSystemMessage(m_session, "Pet with entry {} created for player {}.", entry, selected_player->getName());
+        blueSystemMessage(selected_player->getSession(), "{} created a pet with entry {} for you.", m_session->GetPlayer()->getName(), entry);
 
     }
     else
     {
-        BlueSystemMessage(m_session, "Pet with entry %u created.", entry);
+        blueSystemMessage(m_session, "Pet with entry {} created.", entry);
     }
 
     return true;
