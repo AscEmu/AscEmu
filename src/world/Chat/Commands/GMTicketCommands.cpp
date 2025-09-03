@@ -257,7 +257,7 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
     uint64_t ticketGuid = (args ? atoi(args) : 0);
     if (!ticketGuid)
     {
-        RedSystemMessage(m_session, "You must specify a ticket id.");
+        redSystemMessage(m_session, "You must specify a ticket id.");
         return true;
     }
 
@@ -299,7 +299,7 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
     // Response - Send GM Survey
     plr->getSession()->sendPacket(SmsgGmTicketStatusUpdate(3).serialise().get());
 
-    SystemMessageToPlr(plr, "You have been selected to fill out a GM Performance Survey. Please respond truthfully to the questions that you are asked and include the Game Masters name to your comment.");
+    systemMessage(plr->getSession(), "You have been selected to fill out a GM Performance Survey. Please respond truthfully to the questions that you are asked and include the Game Masters name to your comment.");
     return true;
 }
 
@@ -315,7 +315,7 @@ bool ChatHandler::HandleGMTicketAssignToCommand(const char* args, WorldSession* 
     ticketGuid = atoi(guidString);
     if (!ticketGuid)
     {
-        RedSystemMessage(m_session, "You must specify a ticket id.");
+        redSystemMessage(m_session, "You must specify a ticket id.");
         return true;
     }
 
@@ -387,7 +387,7 @@ bool ChatHandler::HandleGMTicketAssignToCommand(const char* args, WorldSession* 
     //data << unit64(2);//assignedToGM |0 - ticket is not currently assigned to a gm | 1 - ticket is assigned to a normal gm |    2 - ticket is in the escalation queue
     //data << uint64_t(1);//openedByGM | 0 - ticket has never been opened by a gm | 1 - ticket has been opened by a gm
     //mplr->getSession()->sendPacket(&data);
-    SystemMessageToPlr(mplr, "SYSTEM: Your ticket has been escalated. A Senior Game Master will be with you shortly!");
+    systemMessage(mplr->getSession(), "SYSTEM: Your ticket has been escalated. A Senior Game Master will be with you shortly!");
     return true;
 }
 
@@ -396,7 +396,7 @@ bool ChatHandler::HandleGMTicketReleaseCommand(const char* args, WorldSession* m
     uint64_t ticketGuid = (args ? atoi(args) : 0);
     if (!ticketGuid)
     {
-        RedSystemMessage(m_session, "You must specify a ticket id.");
+        redSystemMessage(m_session, "You must specify a ticket id.");
         return true;
     }
 
@@ -455,7 +455,7 @@ bool ChatHandler::HandleGMTicketCommentCommand(const char* args, WorldSession* m
     ticketGuid = atoi(guidString);
     if (!ticketGuid)
     {
-        RedSystemMessage(m_session, "You must specify a ticket id.");
+        redSystemMessage(m_session, "You must specify a ticket id.");
         return true;
     }
 
@@ -495,7 +495,7 @@ bool ChatHandler::HandleGMTicketDeletePermanentCommand(const char* args, WorldSe
     uint64_t ticketGuid = (args ? atoi(args) : 0);
     if (!ticketGuid)
     {
-        RedSystemMessage(m_session, "You must specify a ticket id.");
+        redSystemMessage(m_session, "You must specify a ticket id.");
         return true;
     }
 
@@ -535,7 +535,7 @@ bool ChatHandler::HandleGMTicketDeletePermanentCommand(const char* args, WorldSe
         // Response - Send GM Survey
         plr->getSession()->sendPacket(SmsgGmTicketStatusUpdate(3).serialise().get());
 
-        SystemMessageToPlr(plr, "You have been selected to fill out a GM Performance Survey. Please respond truthfully to the questions that you are asked and include the Game Masters name to your comment.");
+        systemMessage(plr->getSession(), "You have been selected to fill out a GM Performance Survey. Please respond truthfully to the questions that you are asked and include the Game Masters name to your comment.");
     }
 
     return true;

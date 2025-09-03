@@ -695,7 +695,7 @@ bool ChatHandler::HandleCharAddItemSetCommand(const char* args, WorldSession* m_
     /*auto item_set_list = sObjectMgr.GetListForItemSet(setid);
     if (!item_set_list)
     {
-        RedSystemMessage(m_session, "Invalid item set.");
+        redSystemMessage(m_session, "Invalid item set.");
         return true;
     }*/
 
@@ -1656,7 +1656,7 @@ bool ChatHandler::HandleCharSetTitleCommand(const char* args, WorldSession* m_se
 
     return true;
 #else
-    RedSystemMessage(m_session, "This command is not available for Classic!");
+    redSystemMessage(m_session, "This command is not available for Classic!");
     return true;
 #endif
 }

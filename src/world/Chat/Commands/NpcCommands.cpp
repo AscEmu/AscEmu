@@ -132,27 +132,27 @@ bool ChatHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession
 
     if (sscanf(args, "%u %u %u %u %u", &spellid, &cost, &reqspell, &reqlevel, &delspell) != 5)
     {
-        RedSystemMessage(m_session, "Command must be in format: .npc add trainerspell <spell_id> <cost> <required_spell> <required_player_level> <delete_spell_id>.");
+        redSystemMessage(m_session, "Command must be in format: .npc add trainerspell <spell_id> <cost> <required_spell> <required_player_level> <delete_spell_id>.");
         return true;
     }
 
     auto creature_trainer = creature_target->GetTrainer();
     if (creature_trainer == nullptr)
     {
-        RedSystemMessage(m_session, "%s (%u) is not a trainer!", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
+        redSystemMessage(m_session, "{} ({}) is not a trainer!", creature_target->GetCreatureProperties()->Name, creature_target->getEntry());
         return true;
     }
 
     auto learn_spell = sSpellMgr.getSpellInfo(spellid);
     if (learn_spell == nullptr)
     {
-        RedSystemMessage(m_session, "Invalid spell %u.", spellid);
+        redSystemMessage(m_session, "Invalid spell {}.", spellid);
         return true;
     }
 
     if (learn_spell->getEffect(0) == SPELL_EFFECT_INSTANT_KILL || learn_spell->getEffect(1) == SPELL_EFFECT_INSTANT_KILL || learn_spell->getEffect(2) == SPELL_EFFECT_INSTANT_KILL)
     {
-        RedSystemMessage(m_session, "You are not allowed to learn spells with instant kill effect!");
+        redSystemMessage(m_session, "You are not allowed to learn spells with instant kill effect!");
         return true;
     }
 
@@ -166,7 +166,7 @@ bool ChatHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession
     creature_trainer->Spells.push_back(sp);
     creature_trainer->SpellCount++;
 
-    SystemMessage(m_session, "Added spell %s (%u) to trainer %s (%u).", learn_spell->getName().c_str(), learn_spell->getId(), creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
+    systemMessage(m_session, "Added spell {} ({}) to trainer {} ({}).", learn_spell->getName(), learn_spell->getId(), creature_target->GetCreatureProperties()->Name, creature_target->getEntry());
     sGMLog.writefromsession(m_session, "added spell  %s (%u) to trainer %s (%u)", learn_spell->getName().c_str(), learn_spell->getId(), creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
     WorldDatabase.Execute("REPLACE INTO trainer_spells VALUES(%u, %u, %u, %u, %u, %u, %u, %u, %u, %u)",
         creature_target->getEntry(), 0, learn_spell->getId(), cost, reqspell, 0, 0, reqlevel, delspell, 0);*/
