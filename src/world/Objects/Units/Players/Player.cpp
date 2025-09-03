@@ -2491,7 +2491,7 @@ bool Player::create(CharCreate& charCreateContent)
     if (auto playerClassLevelStats = sMySQLStore.getPlayerClassLevelStats(1, charCreateContent._class))
         setMaxHealth(playerClassLevelStats->health);
     else
-        sLogger.failure("No class levelstatd found!");
+        sLogger.failure("No class levelstats found!");
 
     if (const auto raceEntry = sChrRacesStore.lookupEntry(charCreateContent._race))
         setFaction(raceEntry->faction_id);

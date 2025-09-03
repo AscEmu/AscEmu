@@ -2814,8 +2814,10 @@ void MySQLDataStore::loadPlayerCreateInfoClassLevelstats()
 {
     auto startTime = Util::TimeNow();
 
+    // Zyres: load highest gamebuild version from table, otherwise we will have dead new characters
     //                                                                 0      1        2          3
-    auto player_classlevelstats_result = WorldDatabase.Query("SELECT class, level, BaseHealth, BaseMana FROM player_classlevelstats WHERE build = %u", VERSION_STRING);
+    auto player_classlevelstats_result = WorldDatabase.Query("SELECT class, level, BaseHealth, BaseMana FROM player_classlevelstats base "
+        "WHERE build=(SELECT MAX(build) FROM player_classlevelstats buildspecific WHERE base.class = buildspecific.class AND base.level = buildspecific.level AND build <= %u)", VERSION_STRING);
 
     if (player_classlevelstats_result)
     {
@@ -2843,9 +2845,7 @@ void MySQLDataStore::loadPlayerCreateInfoClassLevelstats()
     }
     else
     {
-#if VERSION_STRING < Cata
         sLogger.info("MySQLDataLoads : Table `player_classlevelstats` is empty!");
-#endif
     }
 
 #if VERSION_STRING > WotLK
