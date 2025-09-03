@@ -158,7 +158,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
         return;
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    /// Set up some vars to simplify code
+    /// Set up some vars to simplify code. We use the internal opcode id for Multiversion support
     // Zyres: save the opcode here for better handling
     const auto opcode = sOpcodeTables.getInternalIdForHex(recvData.GetOpcode());
 

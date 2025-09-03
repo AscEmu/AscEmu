@@ -40,7 +40,11 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+#if VERSION_STRING <= WotLK
             packet << guid << type << damage << unk;
+#else       //                                    Absorbed     Resisted
+            packet << guid << type << damage << int32_t(0) << int32_t(0);
+#endif
             return true;
         }
 

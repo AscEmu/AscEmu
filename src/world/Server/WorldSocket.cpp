@@ -273,12 +273,12 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint16_t opcode, size_t len, const void
     sWorldPacketLog.logPacket(static_cast<uint32_t>(len), opcode, static_cast<const uint8_t*>(data), 1, (mSession ? mSession->GetAccountId() : 0));
 
 #if VERSION_STRING >= Cata
-    ServerPktHeader Header(uint32_t(len + 2), sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), opcode));
+    ServerPktHeader Header(uint32_t(len + 2), sOpcodeTables.getHexValueForVersionId(opcode));
 #else
     // Encrypt the packet
     // First, create the header.
     ServerPktHeader Header;
-    Header.cmd = sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), opcode);
+    Header.cmd = sOpcodeTables.getHexValueForVersionId(opcode);
     Header.size = ntohs((uint16_t)len + 2);
 #endif
 
@@ -365,13 +365,13 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32_t opcode, size_t len, const void
 
     if (_crypt.isInitialized())
     {
-        AuthPktHeader authPktHeader(static_cast<uint32_t>(len), sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), opcode));
+        AuthPktHeader authPktHeader(static_cast<uint32_t>(len), sOpcodeTables.getHexValueForVersionId(opcode));
         _crypt.encryptWotlkSend(reinterpret_cast<uint8_t*>(&authPktHeader.raw), 4);
         rv = BurstSend(reinterpret_cast<const uint8_t*>(&authPktHeader.raw), 4);
     }
     else
     {
-        ServerPktHeader serverPktHeader(static_cast<uint32_t>(len + 2), sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), opcode));
+        ServerPktHeader serverPktHeader(static_cast<uint32_t>(len + 2), sOpcodeTables.getHexValueForVersionId(opcode));
         rv = BurstSend(reinterpret_cast<const uint8_t*>(&serverPktHeader.header), serverPktHeader.headerLength);
     }
 
@@ -953,7 +953,7 @@ void WorldSocket::OnRead()
             }
         }
 
-        auto packet = std::make_unique<WorldPacket>(sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), mOpcode), mSize);
+        auto packet = std::make_unique<WorldPacket>(sOpcodeTables.getHexValueForVersionId(mOpcode), mSize);
         packet->resize(mSize);
 
         if (mRemaining > 0)
@@ -1020,7 +1020,7 @@ void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* dat
         default:
         {
             sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[{}]: {} {} (0x{:03X}) of {} bytes.", direction ? "SERVER" : "CLIENT", direction ? "sent" : "received",
-                sOpcodeTables.getNameForInternalId(opcode), sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), opcode), len);
+                sOpcodeTables.getNameForInternalId(opcode), sOpcodeTables.getHexValueForVersionId(opcode), len);
         } break;
     }
 
@@ -1033,7 +1033,7 @@ void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* dat
         uint16_t lenght = static_cast<uint16_t>(len);
 
         fprintf(mPacketLogFile, "{%s} Packet: (0x%04X) %s PacketSize = %u stamp = %u accountid = %u\n", (direction ? "SERVER" : "CLIENT"), 
-            sOpcodeTables.getHexValueForVersionId(sOpcodeTables.getVersionIdForAEVersion(), opcode),
+            sOpcodeTables.getHexValueForVersionId(opcode),
             sOpcodeTables.getNameForInternalId(opcode).c_str(), lenght, Util::getMSTime(), accountid);
 
         fprintf(mPacketLogFile, "|------------------------------------------------|----------------|\n");
