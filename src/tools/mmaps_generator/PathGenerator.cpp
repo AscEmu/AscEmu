@@ -248,7 +248,7 @@ int main(int argc, char** argv)
 {
     unsigned int threads = std::thread::hardware_concurrency();
     int mapnum = -1;
-    float maxAngle = 70.0f;
+    float maxAngle = 55.0f;
     int tileX = -1, tileY = -1;
     bool skipLiquid = false,
          skipContinents = false,
