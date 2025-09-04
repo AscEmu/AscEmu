@@ -30,31 +30,35 @@ namespace AscEmu::Packets
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
+#if VERSION_STRING <= Cata
             packet << guid;
+#else
+
+            WoWGuid wowGuid;
+            wowGuid.Init(guid);
+            packet.writeBit(wowGuid[2]);
+            packet.writeBit(wowGuid[4]);
+            packet.writeBit(wowGuid[3]);
+            packet.writeBit(wowGuid[6]);
+            packet.writeBit(wowGuid[5]);
+            packet.writeBit(wowGuid[1]);
+            packet.writeBit(wowGuid[7]);
+            packet.writeBit(wowGuid[0]);
+
+            packet.WriteByteSeq(wowGuid[7]);
+            packet.WriteByteSeq(wowGuid[0]);
+            packet.WriteByteSeq(wowGuid[5]);
+            packet.WriteByteSeq(wowGuid[3]);
+            packet.WriteByteSeq(wowGuid[6]);
+            packet.WriteByteSeq(wowGuid[1]);
+            packet.WriteByteSeq(wowGuid[4]);
+            packet.WriteByteSeq(wowGuid[2]);
+#endif
             return true;
         }
 
         bool internalDeserialise(WorldPacket& /*packet*/) override
         {
-            // data.writeBit(guid[2]);
-            // data.writeBit(guid[4]);
-            // data.writeBit(guid[3]);
-            // data.writeBit(guid[6]);
-            // data.writeBit(guid[5]);
-            // data.writeBit(guid[1]);
-            // data.writeBit(guid[7]);
-            // data.writeBit(guid[0]);
-
-            // data.WriteByteSeq(guid[7]);
-            // data.WriteByteSeq(guid[0]);
-            // data.WriteByteSeq(guid[5]);
-            // data.WriteByteSeq(guid[3]);
-            // data.WriteByteSeq(guid[6]);
-            // data.WriteByteSeq(guid[1]);
-            // data.WriteByteSeq(guid[4]);
-            // data.WriteByteSeq(guid[2]);
-
-            // SendPacket(&data);
             return false;
         }
     };
