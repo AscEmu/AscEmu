@@ -1140,6 +1140,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(MSG_SET_DUNGEON_DIFFICULTY, &WorldSession::handleDungeonDifficultyOpcode, true, true, true, true, false);
     registry.registerOpcode(MSG_SET_RAID_DIFFICULTY, &WorldSession::handleRaidDifficultyOpcode, false, false, true, true, false);
     registry.registerOpcode(CMSG_INSTANCE_LOCK_RESPONSE, &WorldSession::handleInstanceLockResponse, false, false, true, false, false);
+    registry.registerOpcode(CMSG_VIOLENCE_LEVEL, &WorldSession::handleViolenceLevel, false, false, false, true, false);
 
     // Misc
     registry.registerOpcode(CMSG_OPEN_ITEM, &WorldSession::handleOpenItemOpcode, true, true, true, true, false);

@@ -2531,3 +2531,9 @@ void WorldSession::handleInstanceLockResponse(WorldPacket& recvPacket)
 
     _player->setPendingBind(0, 0);
 }
+
+void WorldSession::handleViolenceLevel(WorldPacket& recvPacket)
+{
+    uint8_t violenceLevel;
+    recvPacket >> violenceLevel;
+}

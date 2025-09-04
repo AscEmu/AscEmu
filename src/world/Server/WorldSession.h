@@ -642,6 +642,7 @@ protected:
         void handleDungeonDifficultyOpcode(WorldPacket& recvPacket);
         void handleRaidDifficultyOpcode(WorldPacket& recvPacket);
         void handleInstanceLockResponse(WorldPacket& recvPacket);
+        void handleViolenceLevel(WorldPacket& recvPacket);                  //>= Cata
         void handleSetAutoLootPassOpcode(WorldPacket& recvPacket);
         void handleSetActionBarTogglesOpcode(WorldPacket& recvPacket);
         void handleLootRollOpcode(WorldPacket& recvPacket);
