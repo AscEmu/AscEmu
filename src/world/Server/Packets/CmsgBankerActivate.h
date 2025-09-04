@@ -35,30 +35,33 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+#if VERSION_STRING <= Cata
             uint64_t unpackedGuid;
             packet >> unpackedGuid;
             guid.Init(unpackedGuid);
+#else
+
+            WoWGuid guid;
+            guid[4] = packet.readBit();
+            guid[5] = packet.readBit();
+            guid[0] = packet.readBit();
+            guid[6] = packet.readBit();
+            guid[1] = packet.readBit();
+            guid[2] = packet.readBit();
+            guid[7] = packet.readBit();
+            guid[3] = packet.readBit();
+
+            packet.ReadByteSeq(guid[1]);
+            packet.ReadByteSeq(guid[7]);
+            packet.ReadByteSeq(guid[2]);
+            packet.ReadByteSeq(guid[5]);
+            packet.ReadByteSeq(guid[6]);
+            packet.ReadByteSeq(guid[3]);
+            packet.ReadByteSeq(guid[0]);
+            packet.ReadByteSeq(guid[4]);
+#endif
             return true;
 
-            // uint64_t guid;
-
-            // guid[4] = recvData.readBit();
-            // guid[5] = recvData.readBit();
-            // guid[0] = recvData.readBit();
-            // guid[6] = recvData.readBit();
-            // guid[1] = recvData.readBit();
-            // guid[2] = recvData.readBit();
-            // guid[7] = recvData.readBit();
-            // guid[3] = recvData.readBit();
-
-            // recvData.ReadByteSeq(guid[1]);
-            // recvData.ReadByteSeq(guid[7]);
-            // recvData.ReadByteSeq(guid[2]);
-            // recvData.ReadByteSeq(guid[5]);
-            // recvData.ReadByteSeq(guid[6]);
-            // recvData.ReadByteSeq(guid[3]);
-            // recvData.ReadByteSeq(guid[0]);
-            // recvData.ReadByteSeq(guid[4]);
         }
     };
 }
