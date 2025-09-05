@@ -39,7 +39,11 @@ public:
     void registerArenaFactory(uint32_t map, ArenaFactoryMethod method);
     void registerMapForBgType(uint32_t type, uint32_t map);
 
+#if VERSION_STRING <= WotLK
     void handleBattlegroundListPacket(WorldSession* session, uint32_t battlegroundType, uint8_t from = 0);
+#else
+    void handleBattlegroundListPacket(WoWGuid& wowGuid, WorldSession* session, uint32_t battlegroundType);
+#endif
     void handleArenaJoin(WorldSession* session, uint32_t battlegroundType, uint8_t asGroup, uint8_t ratedMatch);
     void handleGetBattlegroundQueueCommand(WorldSession* session);
     void handleBattlegroundJoin(WorldSession* session, WorldPacket& packet);

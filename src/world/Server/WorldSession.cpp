@@ -80,7 +80,8 @@ WorldSession::WorldSession(uint32_t id, std::string name, WorldSocket* sock) :
     floodLines(0),
     floodTime(UNIXTIME),
     language(0),
-    m_muted(0)
+    m_muted(0),
+    m_loginTime(0)
 {
 #if VERSION_STRING >= Cata
     isAddonMessageFiltered = false;
@@ -117,6 +118,9 @@ uint8_t WorldSession::Update(uint32_t InstanceID)
 
     if (!((++_updatecount) % 2) && _socket)
         _socket->UpdateQueuedPackets();
+
+    if (m_loginTime == 0)
+        m_loginTime = Util::getMSTime();
 
     if (InstanceID != instanceId)
     {
@@ -214,6 +218,7 @@ void WorldSession::LogoutPlayer(bool Save)
         return;
 
     _loggingOut = true;
+    m_loginTime = 0;
 
     if (_player != nullptr)
     {
@@ -1107,7 +1112,7 @@ void WorldSession::registerOpcodeHandler()
     // Battlegrounds
     registry.registerOpcode(CMSG_BATTLEFIELD_PORT, &WorldSession::handleBattlefieldPortOpcode, true, true, true, false, false);
     registry.registerOpcode(CMSG_BATTLEFIELD_STATUS, &WorldSession::handleBattlefieldStatusOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_BATTLEFIELD_LIST, &WorldSession::handleBattlefieldListOpcode, true, true, true, true, false);
+    registry.registerOpcode<STATUS_LOGGEDIN>(CMSG_BATTLEFIELD_LIST, &WorldSession::handleBattlefieldListOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_BATTLEMASTER_HELLO, &WorldSession::handleBattleMasterHelloOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_BATTLEMASTER_JOIN_ARENA, &WorldSession::handleArenaJoinOpcode, true, true, true, false, false);
     registry.registerOpcode(CMSG_BATTLEMASTER_JOIN, &WorldSession::handleBattleMasterJoinOpcode, true, true, true, true, false);

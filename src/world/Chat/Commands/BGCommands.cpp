@@ -68,7 +68,13 @@ bool ChatHandler::HandleBGMenuCommand(const char* args, WorldSession* m_session)
     if (selected_player == nullptr)
         return true;
 
+#if VERSION_STRING <= WotLK
     sBattlegroundManager.handleBattlegroundListPacket(selected_player->getSession(), type);
+#else
+    WoWGuid guid;
+    guid.Init(uint64_t(0));
+    sBattlegroundManager.handleBattlegroundListPacket(guid, selected_player->getSession(), type);
+#endif
 
     return true;
 }

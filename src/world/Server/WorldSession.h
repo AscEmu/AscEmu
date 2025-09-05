@@ -107,6 +107,7 @@ class SERVER_DECL WorldSession
 
         uint32_t m_currMsTime;
         uint32_t m_lastPing;
+        uint32_t m_loginTime;
 
         uint32_t GetAccountId() const { return _accountId; }
         Player* GetPlayer() { return _player; }

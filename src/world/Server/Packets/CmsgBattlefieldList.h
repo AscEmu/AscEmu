@@ -37,7 +37,11 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+#if VERSION_STRING <= WotLK
             packet >> bgType >> fromType;
+#else
+            packet >> bgType;
+#endif
             return true;
         }
     };

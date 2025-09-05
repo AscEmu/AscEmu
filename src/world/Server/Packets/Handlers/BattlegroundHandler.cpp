@@ -145,7 +145,13 @@ void WorldSession::handleBattlefieldListOpcode(WorldPacket& recvPacket)
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_BATTLEFIELD_LIST: {} (bgType), {} (fromType)", srlPacket.bgType, srlPacket.fromType);
 
+#if VERSION_STRING <= WotLK
     sBattlegroundManager.handleBattlegroundListPacket(this, srlPacket.bgType, srlPacket.fromType);
+ #else
+    WoWGuid guid;
+    guid.Init(uint64_t(0));
+    sBattlegroundManager.handleBattlegroundListPacket(guid, this, srlPacket.bgType);
+#endif
 }
 
 void WorldSession::handleBattleMasterHelloOpcode(WorldPacket& recvPacket)
@@ -268,6 +274,8 @@ void WorldSession::sendBattlegroundList(Creature* creature, uint32_t mapId)
     if (creature == nullptr)
         return;
 
+    WoWGuid guid;
+
     uint32_t battlegroundType = BattlegroundDef::TYPE_WARSONG_GULCH;
     if (mapId == 0)
     {
@@ -278,7 +286,10 @@ void WorldSession::sendBattlegroundList(Creature* creature, uint32_t mapId)
         else
         {
             if (const auto battleMaster = sMySQLStore.getBattleMaster(creature->GetCreatureProperties()->Id))
+            {
                 battlegroundType = battleMaster->battlegroundId;
+                guid.Init(creature->getGuid());
+            }
         }
     }
     else
@@ -286,9 +297,12 @@ void WorldSession::sendBattlegroundList(Creature* creature, uint32_t mapId)
         battlegroundType = mapId;
     }
 
+#if VERSION_STRING <= WotLK
     sBattlegroundManager.handleBattlegroundListPacket(this, battlegroundType);
+#else
+    sBattlegroundManager.handleBattlegroundListPacket(guid, this, battlegroundType);
+#endif
 }
-
 
 void WorldSession::handleRequestRatedBgInfoOpcode(WorldPacket& recvPacket)
 {

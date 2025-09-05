@@ -71,27 +71,11 @@ void BattlegroundManager::registerMapForBgType(uint32_t type, uint32_t map)
     m_bgMaps[type] = map;
 }
 
+#if VERSION_STRING <= WotLK
 void BattlegroundManager::handleBattlegroundListPacket(WorldSession* session, uint32_t battlegroundType, uint8_t from)
 {
-    //todo: Zyres correct packet - Serialise
+
     WorldPacket data(SMSG_BATTLEFIELD_LIST, 18);
-#if VERSION_STRING >= Cata
-    ObjectGuid guid;
-
-    // Send 0 instead of GUID when using the BG UI instead of Battlemaster
-    if (from == 0)
-        guid = session->GetPlayer()->getGuid();
-    else
-        guid = 0;
-
-    data << uint32_t(0);
-    data << uint32_t(0);
-    data << uint32_t(0);
-    data << uint32_t(battlegroundType);
-    data << uint32_t(0);
-    data << uint32_t(0);
-    data << uint32_t(0);
-#endif
 
 #if VERSION_STRING == WotLK
     // Send 0 instead of GUID when using the BG UI instead of Battlemaster
@@ -102,9 +86,7 @@ void BattlegroundManager::handleBattlegroundListPacket(WorldSession* session, ui
 
     data << from;
     data << uint32_t(battlegroundType);                                     // typeid
-#endif
 
-#if VERSION_STRING >= WotLK
     data << uint8_t(0);                                                     // unk
     data << uint8_t(0);                                                     // unk
 
@@ -160,7 +142,7 @@ void BattlegroundManager::handleBattlegroundListPacket(WorldSession* session, ui
     }
 
     data.put<uint32_t>(pos, Count);
-#else
+#elif VERSION_STRING <= TBC
 
     data << uint64_t(session->GetPlayer()->getGuid());
     data << uint32_t(battlegroundType);
@@ -199,6 +181,70 @@ void BattlegroundManager::handleBattlegroundListPacket(WorldSession* session, ui
 
     session->SendPacket(&data);
 }
+#else
+void BattlegroundManager::handleBattlegroundListPacket(WoWGuid& wowGuid, WorldSession* session, uint32_t battlegroundType)
+{
+    // Zyres: For some reason client requests bg list on login after reaching level 10
+    // patiently wait 5 seconds after login. This issue is located in the client standard addons.
+    if (session->m_currMsTime - session->m_loginTime < 5 * 1000)
+        return;
+
+    std::vector<uint32_t> _bgList;
+
+    std::lock_guard instanceLock(m_instanceLock);
+    for (auto itr : m_instances[battlegroundType])
+    {
+        if (itr.second->CanPlayerJoin(session->GetPlayer(), battlegroundType) && !itr.second->hasEnded())
+        {
+            if (session->GetPlayer()->getLevelGrouping() != itr.second->getLevelGroup())
+                continue;
+            _bgList.push_back(itr.second->getId());
+        }
+    }
+
+    WorldPacket data(SMSG_BATTLEFIELD_LIST, 38 + _bgList.size());
+
+    data << int32_t(0);
+    data << int32_t(0);
+    data << int32_t(0);
+    data << int32_t(battlegroundType);
+    data << int32_t(0);
+    data << int32_t(0);
+    data << int32_t(0);
+    data << uint8_t(80);
+    data << uint8_t(10);
+
+    data.writeBit(wowGuid[0]);
+    data.writeBit(wowGuid[1]);
+    data.writeBit(wowGuid[7]);
+    data.writeBit(0);
+    data.writeBit(0);
+    data.writeBits(_bgList.size(), 24);
+    data.writeBit(wowGuid[6]);
+    data.writeBit(wowGuid[4]);
+    data.writeBit(wowGuid[2]);
+    data.writeBit(wowGuid[3]);
+    data.writeBit(1);
+    data.writeBit(wowGuid[5]);
+    data.writeBit(0);
+    data.flushBits();
+
+    data.WriteByteSeq(wowGuid[6]);
+    data.WriteByteSeq(wowGuid[1]);
+    data.WriteByteSeq(wowGuid[7]);
+    data.WriteByteSeq(wowGuid[5]);
+
+    for (int32_t bgId : _bgList)
+        data << int32_t(bgId);
+
+    data.WriteByteSeq(wowGuid[0]);
+    data.WriteByteSeq(wowGuid[2]);
+    data.WriteByteSeq(wowGuid[4]);
+    data.WriteByteSeq(wowGuid[3]);
+
+    session->SendPacket(&data);
+}
+#endif
 
 void BattlegroundManager::handleBattlegroundJoin(WorldSession* session, WorldPacket& packet)
 {
