@@ -40,9 +40,7 @@ target_include_directories(${LIBRARY_NAME} PUBLIC ${BATTLEGROUNDS_INCLUDES})
 
 # include library dependencies.
 target_link_libraries(${LIBRARY_NAME}
-  PRIVATE
-    collision
-    shared
+  PUBLIC
     world
 )
 

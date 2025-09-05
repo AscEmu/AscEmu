@@ -5,4 +5,3 @@
 #include <atomic>
 #include "Common.hpp"
 #include "Threading/ConditionVariable.h"
-

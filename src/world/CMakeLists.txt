@@ -65,7 +65,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/WorldConf.h.in ${CMAKE_CURRENT_SOURCE
 
 # include library dependencies.
 target_link_libraries(${EXECUTABLE_NAME}
-  PRIVATE
+  PUBLIC
     shared
     collision
     g3dlite

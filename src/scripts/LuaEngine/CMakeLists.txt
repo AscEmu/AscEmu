@@ -45,8 +45,7 @@ target_include_directories(${LIBRARY_NAME} PUBLIC
 
 # include library dependencies.
 target_link_libraries(${LIBRARY_NAME}
-  PRIVATE
-    shared
+  PUBLIC
     world
     lualib
 )

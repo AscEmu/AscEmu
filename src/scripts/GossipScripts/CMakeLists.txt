@@ -44,10 +44,8 @@ target_include_directories(${LIBRARY_NAME} PUBLIC
 
 # link required libraries.
 target_link_libraries(${LIBRARY_NAME}
-  PRIVATE
-    shared
+  PUBLIC
     world
-    collision
 )
 
 # generate precompiled header.
