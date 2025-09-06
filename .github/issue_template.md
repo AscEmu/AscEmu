@@ -1,12 +1,19 @@
 **Description**: 
-
+<!--
+    Required information:
+    - npc/quest/item/spell/spawn ID
+    - worldport location (mapid x y z)
+	- Example on how it should work (youtube, wowhead)
+    - NOTE Without these information as text, the issue wont be fixed! A screenshot or general issues e.g. "Missing spawns" or "Instances WotLK broken" is not helpful at all.
+-->
 
 
 **Steps to reproduce the problem**:
-1. 
-2. 
-3. 
-4.
+<!--
+    How to reproduce it:
+    - Be specific, describe what you've done to trigger the issue.
+-->
+
 
 **Expansion version**: <!-- (Add / Remove lines if necessary) -->
 <!--
