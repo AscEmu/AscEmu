@@ -1,8 +1,8 @@
-name: AscEmu CI (clang)
+﻿name: AscEmu CI (clang)
 
 on:
   push:
-    branches: [ master, develop ]
+    branches: [ master, develop, nix-compile-time ]
   pull_request:
     branches: [ develop ]
 

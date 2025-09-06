@@ -1,8 +1,8 @@
-name: AscEmu CI (gcc)
+﻿name: AscEmu CI (gcc)
 
 on:
   push:
-    branches: [ master, develop ]
+    branches: [ master, develop, nix-compile-time ]
   pull_request:
     branches: [ develop ]
 
