@@ -20,9 +20,6 @@ class Player;
 class Unit;
 struct ItemProperties;
 
-int32_t GetSpellIDFromLink(const char* spelllink);
-uint16_t GetItemIDFromLink(const char* itemlink, uint32_t* itemid);
-
 class SERVER_DECL ChatCommandHandler
 {
     friend class CommandTableStorage;
@@ -97,19 +94,17 @@ public:
     bool executeCommand(std::string_view text, WorldSession* m_session);
 
     void SendHighlightedName(WorldSession* m_session, const char* prefix, const char* full_name, std::string & lowercase_name, std::string & highlight, uint32_t id);
-    void SendItemLinkToPlayer(ItemProperties const* iProto, WorldSession* pSession, bool ItemCount, Player* owner, uint32_t language = 0/*LANG_UNIVERSAL*/);
 
     // Helper
     static Player* GetSelectedPlayer(WorldSession* m_session, bool showerror = true, bool auto_self = false);
     Creature* GetSelectedCreature(WorldSession* m_session, bool showerror = true);
     Unit* GetSelectedUnit(WorldSession* m_session, bool showerror = true);
     uint32_t GetSelectedWayPointId(WorldSession* m_session);
-    std::string GetNpcFlagString(Creature* creature);
+
     const char* GetMapTypeString(uint8_t type);
     const char* GetDifficultyString(uint8_t difficulty);
     const char* GetRaidDifficultyString(uint8_t diff);
-    std::string MyConvertIntToString(const int arg);
-    std::string MyConvertFloatToString(const float arg);
+
     // For skill related GM commands
     std::unique_ptr<SkillNameMgr> SkillNameManager;
 
@@ -169,6 +164,9 @@ public:
     bool HandleCheatTriggerpassCommand(const char* /*args*/, WorldSession* m_session);
 
     // Character
+    int32_t getSpellIDFromLink(const char* spelllink);
+    uint16_t getItemIDFromLink(const char* itemlink, uint32_t* itemid);
+
     bool HandleCharClearCooldownsCommand(const char* /*args*/, WorldSession* m_session);
     bool HandleCharDeMorphCommand(const char* /*args*/, WorldSession* m_session);
     bool HandleCharLevelUpCommand(const char* args, WorldSession* m_session);
@@ -372,6 +370,9 @@ public:
     bool HandleLookupAchievementCommand(const char* args, WorldSession* m_session);
     bool HandleLookupCreatureCommand(const char* args, WorldSession* m_session);
     bool HandleLookupFactionCommand(const char* args, WorldSession* m_session);
+
+    void sendItemLinkToPlayer(ItemProperties const* iProto, WorldSession* pSession, bool ItemCount, Player* owner, uint32_t language = 0/*LANG_UNIVERSAL*/);
+
     bool HandleLookupItemCommand(const char* args, WorldSession* m_session);
     bool HandleLookupObjectCommand(const char* args, WorldSession* m_session);
     bool HandleLookupQuestCommand(const char* args, WorldSession* m_session);
@@ -418,6 +419,8 @@ public:
     void sendModifySystemMessage(WorldSession* session, Unit* unitTarget, std::string modType, float newValue, float oldValue);
 
     // NPC Commands
+    std::string getNpcFlagString(Creature* creature);
+
     bool HandleNpcAddAgentCommand(const char* args, WorldSession* m_session);
     bool HandleNpcAppearCommand(const char * _, WorldSession * __);
     bool HandleNpcAddTrainerSpellCommand(const char* args, WorldSession* m_session);

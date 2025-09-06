@@ -516,8 +516,8 @@ bool ChatCommandHandler::HandleQuestItemCommand(const char* args, WorldSession* 
     {
         Field* fields = result->Fetch();
         uint32_t id = fields[0].asUint32();
-        std::string itemid = MyConvertIntToString(id);
-        std::string itemcnt = MyConvertIntToString(fields[1].asUint32());
+        std::string itemid = std::to_string(id);
+        std::string itemcnt = std::to_string(fields[1].asUint32());
         auto tmpItem = sMySQLStore.getItemProperties(id);
         if (tmpItem != nullptr)
         {
@@ -561,7 +561,7 @@ bool ChatCommandHandler::HandleQuestGiverCommand(const char* args, WorldSession*
     if (objectResult1)
     {
         Field* fields = objectResult1->Fetch();
-        std::string creatureId1 = MyConvertIntToString(fields[0].asUint32());
+        std::string creatureId1 = std::to_string(fields[0].asUint32());
 
         std::string creatureName1 = "N/A";
         CreatureProperties const* creatureResult1 = sMySQLStore.getCreatureProperties(std::stoul(creatureId1.c_str()));
@@ -612,7 +612,7 @@ bool ChatCommandHandler::HandleQuestGiverCommand(const char* args, WorldSession*
     if (objectResult2)
     {
         Field* fields = objectResult2->Fetch();
-        std::string itemId2 = MyConvertIntToString(fields[0].asUint32());
+        std::string itemId2 = std::to_string(fields[0].asUint32());
 
         std::string itemName2 = "N/A";
         ItemProperties const* itemResult2 = sMySQLStore.getItemProperties(std::stoul(itemId2.c_str()));
@@ -721,7 +721,7 @@ bool ChatCommandHandler::HandleQuestListCommand(const char* args, WorldSession* 
             if (qst == nullptr)
                 continue;
 
-            std::string qid = MyConvertIntToString(quest_id);
+            std::string qid = std::to_string(quest_id);
             std::string qname = qst->title;
 
             recout = "|cff00ccff";
@@ -794,7 +794,7 @@ bool ChatCommandHandler::HandleQuestAddStartCommand(const char* args, WorldSessi
         return false;
     }
 
-    std::string quest_giver = MyConvertIntToString(unit->getEntry());
+    std::string quest_giver = std::to_string(unit->getEntry());
 
     std::string my_query1 = "SELECT id FROM creature_quest_starter WHERE id = " + quest_giver + " AND quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
     auto selectResult1 = WorldDatabase.Query(my_query1.c_str(), VERSION_STRING, VERSION_STRING);
@@ -877,7 +877,7 @@ bool ChatCommandHandler::HandleQuestAddFinishCommand(const char* args, WorldSess
         return false;
     }
 
-    std::string quest_giver = MyConvertIntToString(unit->getEntry());
+    std::string quest_giver = std::to_string(unit->getEntry());
 
     std::string my_query1 = "SELECT id FROM creature_quest_finisher WHERE id = " + quest_giver + " AND quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
     auto selectResult1 = WorldDatabase.Query(my_query1.c_str(), VERSION_STRING, VERSION_STRING);
@@ -973,7 +973,7 @@ bool ChatCommandHandler::HandleQuestDelStartCommand(const char* args, WorldSessi
         return false;
     }
 
-    std::string quest_giver = MyConvertIntToString(unit->getEntry());
+    std::string quest_giver = std::to_string(unit->getEntry());
 
     std::string my_query1 = "SELECT id FROM creature_quest_starter WHERE id = " + quest_giver + " AND quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
     auto selectResult1 = WorldDatabase.Query(my_query1.c_str(), VERSION_STRING, VERSION_STRING);
@@ -1053,7 +1053,7 @@ bool ChatCommandHandler::HandleQuestDelFinishCommand(const char* args, WorldSess
         return false;
     }
 
-    std::string quest_giver = MyConvertIntToString(unit->getEntry());
+    std::string quest_giver = std::to_string(unit->getEntry());
 
     std::string my_query1 = "SELECT id FROM creature_quest_finisher WHERE id = " + quest_giver + " AND quest = " + std::string(args) + " AND min_build <= %u AND max_build >= %u";
     auto selectResult1 = WorldDatabase.Query(my_query1.c_str(), VERSION_STRING, VERSION_STRING);
@@ -1119,7 +1119,7 @@ bool ChatCommandHandler::HandleQuestFinisherCommand(const char* args, WorldSessi
     if (objectResult1)
     {
         Field* fields = objectResult1->Fetch();
-        std::string creatureId1 = MyConvertIntToString(fields[0].asUint32());
+        std::string creatureId1 = std::to_string(fields[0].asUint32());
 
         std::string creatureName1 = "N/A";
         CreatureProperties const* creatureResult1 = sMySQLStore.getCreatureProperties(std::stoul(creatureId1.c_str()));
@@ -1170,7 +1170,7 @@ bool ChatCommandHandler::HandleQuestFinisherCommand(const char* args, WorldSessi
     if (objectResult2)
     {
         Field* fields = objectResult2->Fetch();
-        std::string itemId2 = MyConvertIntToString(fields[0].asUint32());
+        std::string itemId2 = std::to_string(fields[0].asUint32());
 
         std::string itemName2 = "N/A";
         ItemProperties const* itemResult2 = sMySQLStore.getItemProperties(std::stoul(itemId2.c_str()));
@@ -1231,7 +1231,7 @@ bool ChatCommandHandler::HandleQuestStarterSpawnCommand(const char* args, WorldS
     if (objectResult)
     {
         Field* fields = objectResult->Fetch();
-        starterId = MyConvertIntToString(fields[0].asUint32());
+        starterId = std::to_string(fields[0].asUint32());
     }
     else
     {
@@ -1298,7 +1298,7 @@ bool ChatCommandHandler::HandleQuestFinisherSpawnCommand(const char* args, World
     if (objectResult)
     {
         Field* fields = objectResult->Fetch();
-        finisherId = MyConvertIntToString(fields[0].asUint32());
+        finisherId = std::to_string(fields[0].asUint32());
     }
     else
     {

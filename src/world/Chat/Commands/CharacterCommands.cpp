@@ -106,6 +106,46 @@ bool ChatCommandHandler::HandleCharLevelUpCommand(const char* args, WorldSession
     return true;
 }
 
+int32_t ChatCommandHandler::getSpellIDFromLink(const char* spelllink)
+{
+    if (spelllink == NULL)
+        return 0;
+
+    const char* ptr = strstr(spelllink, "|Hspell:");
+    if (ptr == NULL)
+    {
+        return 0;
+    }
+
+    return std::stoul(ptr + 8);       // spell id is just past "|Hspell:" (8 bytes)
+}
+
+uint16_t ChatCommandHandler::getItemIDFromLink(const char* itemlink, uint32_t* itemid)
+{
+    if (itemlink == NULL)
+    {
+        *itemid = 0;
+        return 0;
+    }
+    uint16_t slen = (uint16_t)strlen(itemlink);
+    const char* ptr = strstr(itemlink, "|Hitem:");
+    if (ptr == NULL)
+    {
+        *itemid = 0;
+        return slen;
+    }
+    ptr += 7;                       // item id is just past "|Hitem:" (7 bytes)
+    *itemid = atoi(ptr);
+    ptr = strstr(itemlink, "|r");   // the end of the item link
+    if (ptr == NULL)                // item link was invalid
+    {
+        *itemid = 0;
+        return slen;
+    }
+    ptr += 2;
+    return (ptr - itemlink) & 0x0000ffff;
+}
+
 //.character unlearn
 bool ChatCommandHandler::HandleCharUnlearnCommand(const char* args, WorldSession* m_session)
 {
@@ -116,7 +156,7 @@ bool ChatCommandHandler::HandleCharUnlearnCommand(const char* args, WorldSession
     uint32_t spell_id = std::stoul(args);
     if (spell_id == 0)
     {
-        spell_id = GetSpellIDFromLink(args);
+        spell_id = getSpellIDFromLink(args);
         if (spell_id == 0)
         {
             redSystemMessage(m_session, "You must specify a spell id.");
@@ -546,7 +586,7 @@ bool ChatCommandHandler::HandleCharLearnCommand(const char* args, WorldSession* 
     uint32_t spell = std::stoul(args);
     if (spell == 0)
     {
-        spell = GetSpellIDFromLink(args);
+        spell = getSpellIDFromLink(args);
     }
 
     spell_entry = sSpellMgr.getSpellInfo(spell);
@@ -630,7 +670,7 @@ bool ChatCommandHandler::HandleCharAddItemCommand(const char* args, WorldSession
     int32_t numadded = 0;
 
     // check for item link
-    uint16_t ofs = GetItemIDFromLink(args, &itemid);
+    uint16_t ofs = getItemIDFromLink(args, &itemid);
 
     if (itemid)
     {
@@ -1895,7 +1935,7 @@ bool ChatCommandHandler::HandleCharListItemsCommand(const char* /*args*/, WorldS
         if (!(*itr))
             return false;
         itemcount++;
-        SendItemLinkToPlayer((*itr)->getItemProperties(), m_session, true, player_target, m_session->language);
+        sendItemLinkToPlayer((*itr)->getItemProperties(), m_session, true, player_target, m_session->language);
     }
     itr.EndSearch();
 

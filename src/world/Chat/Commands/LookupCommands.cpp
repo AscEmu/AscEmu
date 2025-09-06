@@ -404,6 +404,32 @@ bool ChatCommandHandler::HandleLookupFactionCommand(const char* args, WorldSessi
     return true;
 }
 
+void ChatCommandHandler::sendItemLinkToPlayer(ItemProperties const* iProto, WorldSession* pSession, bool ItemCount, Player* owner, uint32_t language)
+{
+    if (!iProto || !pSession)
+        return;
+
+    if (ItemCount && owner == NULL)
+        return;
+
+    if (ItemCount)
+    {
+        int8_t count = static_cast<int8_t>(owner->getItemInterface()->GetItemCount(iProto->ItemId, true));
+        //int8_t slot = owner->getItemInterface()->GetInventorySlotById(iProto->ItemId); //DISABLED due to being a retarded concept
+        if (iProto->ContainerSlots > 0)
+            systemMessage(pSession, "Item {} {} Count {} ContainerSlots {}", iProto->ItemId, sMySQLStore.getItemLinkByProto(iProto, language), count, iProto->ContainerSlots);
+        else
+            systemMessage(pSession, "Item {} {} Count {}", iProto->ItemId, sMySQLStore.getItemLinkByProto(iProto, language), count);
+    }
+    else
+    {
+        if (iProto->ContainerSlots > 0)
+            systemMessage(pSession, "Item {} {} ContainerSlots {}", iProto->ItemId, sMySQLStore.getItemLinkByProto(iProto, language), iProto->ContainerSlots);
+        else
+            systemMessage(pSession, "Item {} {}", iProto->ItemId, sMySQLStore.getItemLinkByProto(iProto, language));
+    }
+}
+
 //.lookup item
 bool ChatCommandHandler::HandleLookupItemCommand(const char* args, WorldSession* m_session)
 {
@@ -443,7 +469,7 @@ bool ChatCommandHandler::HandleLookupItemCommand(const char* args, WorldSession*
         std::string proto_lower = it->lowercase_name;
         if (AscEmu::Util::Strings::contains(x, proto_lower) || localizedFound)
         {
-            SendItemLinkToPlayer(it, m_session, false, 0, localizedFound ? m_session->language : 0);
+            sendItemLinkToPlayer(it, m_session, false, 0, localizedFound ? m_session->language : 0);
             ++count;
             if (count == 25)
             {
@@ -557,14 +583,14 @@ bool ChatCommandHandler::HandleLookupQuestCommand(const char* args, WorldSession
 
         if (AscEmu::Util::Strings::contains(search_string, lower_quest_title) || localizedFound)
         {
-            std::string questid = MyConvertIntToString(quest->id);
+            std::string questid = std::to_string(quest->id);
             std::string questtitle = localizedFound ? (li ? li->title : "") : quest->title;
             // send quest link
             recout = questid;
             recout += ": |cff00ccff|Hquest:";
             recout += questid;
             recout += ":";
-            recout += MyConvertIntToString(quest->min_level);
+            recout += std::to_string(quest->min_level);
             recout += "|h[";
             recout += questtitle;
             recout += "]|h|r";

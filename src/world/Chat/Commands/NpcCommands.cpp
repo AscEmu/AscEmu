@@ -284,6 +284,41 @@ bool ChatCommandHandler::HandleNpcFollowCommand(const char* /*args*/, WorldSessi
     return true;
 }
 
+std::string ChatCommandHandler::getNpcFlagString(Creature* creature)
+{
+    std::string s = "";
+    if (creature->isBattleMaster())
+        s.append(" (Battlemaster)");
+    if (creature->isTrainer())
+        s.append(" (Trainer)");
+    if (creature->isProfessionTrainer())
+        s.append(" (Profession Trainer)");
+    if (creature->isQuestGiver())
+        s.append(" (Quests)");
+    if (creature->isGossip())
+        s.append(" (Gossip)");
+    if (creature->isTaxi())
+        s.append(" (Taxi)");
+    if (creature->isCharterGiver())
+        s.append(" (Charter)");
+    if (creature->isGuildBank())
+        s.append(" (Guild Bank)");
+    if (creature->isSpiritHealer())
+        s.append(" (Spirit Healer)");
+    if (creature->isInnkeeper())
+        s.append(" (Innkeeper)");
+    if (creature->isTabardDesigner())
+        s.append(" (Tabard Designer)");
+    if (creature->isAuctioneer())
+        s.append(" (Auctioneer)");
+    if (creature->isStableMaster())
+        s.append(" (Stablemaster)");
+    if (creature->isArmorer())
+        s.append(" (Armorer)");
+
+    return s;
+}
+
 //.npc info
 bool ChatCommandHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_session)
 {
@@ -429,7 +464,7 @@ bool ChatCommandHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession
     //////////////////////////////////////////////////////////////////////////////////////////
     // flags
     greenSystemMessage(m_session, "Flags ============================");
-    std::string s = GetNpcFlagString(creature_target);
+    std::string s = getNpcFlagString(creature_target);
     greenSystemMessage(m_session, "NpcFlags: {}{}", creature_target->getNpcFlags(), s);
 
 #if VERSION_STRING >= WotLK
