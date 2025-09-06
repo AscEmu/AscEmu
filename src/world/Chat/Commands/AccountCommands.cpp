@@ -3,7 +3,7 @@ Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Utilities/Util.hpp"
 
-bool ChatHandler::handleAccountCreate(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::handleAccountCreate(const char* args, WorldSession* m_session)
 {
     if (!*args)
         return false;
@@ -30,7 +30,7 @@ bool ChatHandler::handleAccountCreate(const char* args, WorldSession* m_session)
     return true;
 }
 
-bool ChatHandler::handleAccountSetGMCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::handleAccountSetGMCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
         return false;
@@ -49,7 +49,7 @@ bool ChatHandler::handleAccountSetGMCommand(const char* args, WorldSession* m_se
     return true;
 }
 
-bool ChatHandler::handleAccountMuteCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::handleAccountMuteCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
         return false;
@@ -84,7 +84,7 @@ bool ChatHandler::handleAccountMuteCommand(const char* args, WorldSession* m_ses
     return true;
 }
 
-bool ChatHandler::handleAccountUnmuteCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::handleAccountUnmuteCommand(const char* args, WorldSession* m_session)
 {
     sLogonCommHandler.setAccountMute(args, 0);
 
@@ -129,7 +129,7 @@ void ParseAccBanArgs(char* args, char** BanDuration, char** BanReason)
     *BanReason = pReason;
 }
 
-bool ChatHandler::handleAccountBannedCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::handleAccountBannedCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
         return false;
@@ -158,7 +158,7 @@ bool ChatHandler::handleAccountBannedCommand(const char* args, WorldSession* m_s
     return true;
 }
 
-bool ChatHandler::handleAccountUnbanCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::handleAccountUnbanCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
         return false;
@@ -171,7 +171,7 @@ bool ChatHandler::handleAccountUnbanCommand(const char* args, WorldSession* m_se
     return true;
 }
 
-bool ChatHandler::handleAccountChangePassword(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::handleAccountChangePassword(const char* args, WorldSession* m_session)
 {
     if (!*args)
         return false;
@@ -198,7 +198,7 @@ bool ChatHandler::handleAccountChangePassword(const char* args, WorldSession* m_
     return true;
 }
 
-bool ChatHandler::handleAccountGetAccountID(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::handleAccountGetAccountID(const char* args, WorldSession* m_session)
 {
     if (!*args)
     {

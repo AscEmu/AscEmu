@@ -3,7 +3,7 @@ Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "ChatHandler.hpp"
+#include "ChatCommandHandler.hpp"
 
 #include "ChatCommand.hpp"
 #include "CommandTableStorage.hpp"
@@ -24,25 +24,25 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
-ChatHandler::ChatHandler() = default;
-ChatHandler::~ChatHandler() = default;
+ChatCommandHandler::ChatCommandHandler() = default;
+ChatCommandHandler::~ChatCommandHandler() = default;
 
-ChatHandler& ChatHandler::getInstance()
+ChatCommandHandler& ChatCommandHandler::getInstance()
 {
-    static ChatHandler mInstance;
+    static ChatCommandHandler mInstance;
     return mInstance;
 }
 
-void ChatHandler::initialize()
+void ChatCommandHandler::initialize()
 {
     SkillNameManager = std::make_unique<SkillNameMgr>();
 }
 
-void ChatHandler::finalize()
+void ChatCommandHandler::finalize()
 {
 }
 
-void ChatHandler::SendMultilineMessage(WorldSession* m_session, const char* str)
+void ChatCommandHandler::SendMultilineMessage(WorldSession* m_session, const char* str)
 {
     char* start = (char*)str, *end;
     for (;;)
@@ -60,7 +60,7 @@ void ChatHandler::SendMultilineMessage(WorldSession* m_session, const char* str)
 }
 
 // normalize command input once while parsing that should be enough (was in 4 places before)
-std::optional<std::string_view> ChatHandler::normalizeCommandInput(const char* raw)
+std::optional<std::string_view> ChatCommandHandler::normalizeCommandInput(const char* raw)
 {
     if (!raw)
         return std::nullopt;
@@ -95,9 +95,9 @@ std::optional<std::string_view> ChatHandler::normalizeCommandInput(const char* r
 // Resolve the 1st token to a unique top-level command word (case-insensitive, abbreviation).
 // Returns true and writes 'outTop' on unique match (with permission), otherwise false.
 // Top-level == registry entries whose command has exactly one word.
-bool ChatHandler::resolveTopLevelAbbrev(std::string_view tok0, WorldSession* s, std::string& outTop) const
+bool ChatCommandHandler::resolveTopLevelAbbrev(std::string_view tok0, WorldSession* s, std::string& outTop) const
 {
-    auto &reg = sCommandTableStorage.Get();
+    auto &reg = sCommandTableStorage.getCommandRegistry();
 
     auto lo = [](char c){
         return static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
@@ -164,7 +164,7 @@ bool ChatHandler::resolveTopLevelAbbrev(std::string_view tok0, WorldSession* s, 
     return false; // unknown or ambiguous
 }
 
-bool ChatHandler::executeCommandFlat(std::string_view text, WorldSession* m_session)
+bool ChatCommandHandler::executeCommandFlat(std::string_view text, WorldSession* m_session)
 {
     if (text.empty())
         return false;
@@ -216,7 +216,7 @@ bool ChatHandler::executeCommandFlat(std::string_view text, WorldSession* m_sess
     std::string           chosenCmd;
     size_t                matchedDepth = 0;
 
-    const auto& reg = sCommandTableStorage.Get();
+    const auto& reg = sCommandTableStorage.getCommandRegistry();
 
     for (const auto& e : reg)
     {
@@ -423,12 +423,12 @@ bool ChatHandler::executeCommandFlat(std::string_view text, WorldSession* m_sess
     return true;
 }
 
-bool ChatHandler::executeCommand(std::string_view text, WorldSession* m_session)
+bool ChatCommandHandler::executeCommand(std::string_view text, WorldSession* m_session)
 {
     return executeCommandFlat(text, m_session);
 }
 
-int ChatHandler::ParseCommands(const char* text, WorldSession* session)
+int ChatCommandHandler::ParseCommands(const char* text, WorldSession* session)
 {
     if (!session)
         return 0;
@@ -460,7 +460,7 @@ int ChatHandler::ParseCommands(const char* text, WorldSession* session)
     return 1;
 }
 
-Player* ChatHandler::GetSelectedPlayer(WorldSession* m_session, bool showerror, bool auto_self)
+Player* ChatCommandHandler::GetSelectedPlayer(WorldSession* m_session, bool showerror, bool auto_self)
 {
     if (m_session == nullptr)
         return nullptr;
@@ -508,7 +508,7 @@ Player* ChatHandler::GetSelectedPlayer(WorldSession* m_session, bool showerror, 
     return player_target;
 }
 
-Creature* ChatHandler::GetSelectedCreature(WorldSession* m_session, bool showerror)
+Creature* ChatCommandHandler::GetSelectedCreature(WorldSession* m_session, bool showerror)
 {
     if (m_session == nullptr)
         return nullptr;
@@ -544,7 +544,7 @@ Creature* ChatHandler::GetSelectedCreature(WorldSession* m_session, bool showerr
     return creature;
 }
 
-Unit* ChatHandler::GetSelectedUnit(WorldSession* m_session, bool showerror)
+Unit* ChatCommandHandler::GetSelectedUnit(WorldSession* m_session, bool showerror)
 {
     if (m_session == nullptr || m_session->GetPlayer() == nullptr)
         return nullptr;
@@ -562,7 +562,7 @@ Unit* ChatHandler::GetSelectedUnit(WorldSession* m_session, bool showerror)
     return unit;
 }
 
-uint32_t ChatHandler::GetSelectedWayPointId(WorldSession* m_session)
+uint32_t ChatCommandHandler::GetSelectedWayPointId(WorldSession* m_session)
 {
     uint64_t guid = m_session->GetPlayer()->getTargetGuid();
     WoWGuid wowGuid;
@@ -583,7 +583,7 @@ uint32_t ChatHandler::GetSelectedWayPointId(WorldSession* m_session)
     return WoWGuid::getGuidLowPartFromUInt64(guid);
 }
 
-const char* ChatHandler::GetMapTypeString(uint8_t type)
+const char* ChatCommandHandler::GetMapTypeString(uint8_t type)
 {
     switch (type)
     {
@@ -602,7 +602,7 @@ const char* ChatHandler::GetMapTypeString(uint8_t type)
     }
 }
 
-const char* ChatHandler::GetDifficultyString(uint8_t difficulty)
+const char* ChatCommandHandler::GetDifficultyString(uint8_t difficulty)
 {
     switch (difficulty)
     {
@@ -615,7 +615,7 @@ const char* ChatHandler::GetDifficultyString(uint8_t difficulty)
     }
 }
 
-const char* ChatHandler::GetRaidDifficultyString(uint8_t diff)
+const char* ChatCommandHandler::GetRaidDifficultyString(uint8_t diff)
 {
     switch (diff)
     {
@@ -632,13 +632,13 @@ const char* ChatHandler::GetRaidDifficultyString(uint8_t diff)
     }
 }
 
-void ChatHandler::sendSystemMessagePacket(WorldSession* _session, std::string& _message)
+void ChatCommandHandler::sendSystemMessagePacket(WorldSession* _session, std::string& _message)
 {
     if (_session != nullptr)
         _session->SendPacket(SmsgMessageChat(SystemMessagePacket(_message)).serialise().get());
 }
 
-std::string ChatHandler::GetNpcFlagString(Creature* creature)
+std::string ChatCommandHandler::GetNpcFlagString(Creature* creature)
 {
     std::string s = "";
     if (creature->isBattleMaster())
@@ -673,14 +673,14 @@ std::string ChatHandler::GetNpcFlagString(Creature* creature)
     return s;
 }
 
-std::string ChatHandler::MyConvertIntToString(const int arg)
+std::string ChatCommandHandler::MyConvertIntToString(const int arg)
 {
     std::stringstream out;
     out << arg;
     return out.str();
 }
 
-std::string ChatHandler::MyConvertFloatToString(const float arg)
+std::string ChatCommandHandler::MyConvertFloatToString(const float arg)
 {
     std::stringstream out;
     out << arg;
@@ -727,7 +727,7 @@ int32_t GetSpellIDFromLink(const char* spelllink)
     return std::stoul(ptr + 8);       // spell id is just past "|Hspell:" (8 bytes)
 }
 
-void ChatHandler::SendItemLinkToPlayer(ItemProperties const* iProto, WorldSession* pSession, bool ItemCount, Player* owner, uint32_t language)
+void ChatCommandHandler::SendItemLinkToPlayer(ItemProperties const* iProto, WorldSession* pSession, bool ItemCount, Player* owner, uint32_t language)
 {
     if (!iProto || !pSession)
         return;
@@ -760,7 +760,7 @@ void ChatHandler::SendItemLinkToPlayer(ItemProperties const* iProto, WorldSessio
     }
 }
 
-void ChatHandler::SendHighlightedName(WorldSession* m_session, const char* prefix, const char* full_name, std::string & lowercase_name, std::string & highlight, uint32_t id)
+void ChatCommandHandler::SendHighlightedName(WorldSession* m_session, const char* prefix, const char* full_name, std::string & lowercase_name, std::string & highlight, uint32_t id)
 {
     char message[1024];
     char start[50];

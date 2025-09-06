@@ -40,7 +40,7 @@
 #include "OpcodeTable.hpp"
 #include "World.h"
 #include "WorldSession.h"
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 
 #if VERSION_STRING == Mop
 #include "Data/WoWDynamicObject.hpp"

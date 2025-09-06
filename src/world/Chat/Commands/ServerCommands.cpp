@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Common.hpp"
 #include "git_version.hpp"
 #include "Chat/ChatDefines.hpp"
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 #include "Chat/CommandTableStorage.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"
@@ -28,7 +28,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <openssl/crypto.h>
 
 //.server info
-bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint16_t online_gm = 0;
     uint16_t online_count = 0;
@@ -75,7 +75,7 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_
 }
 
 //.server rehash
-bool ChatHandler::HandleServerRehashCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleServerRehashCommand(const char* /*args*/, WorldSession* m_session)
 {
     std::stringstream teamAnnounce;
     teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->getName().c_str();
@@ -89,7 +89,7 @@ bool ChatHandler::HandleServerRehashCommand(const char* /*args*/, WorldSession* 
 }
 
 //.server save
-bool ChatHandler::HandleServerSaveCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleServerSaveCommand(const char* args, WorldSession* m_session)
 {
     Player* player_target = nullptr;
 
@@ -128,7 +128,7 @@ bool ChatHandler::HandleServerSaveCommand(const char* args, WorldSession* m_sess
 }
 
 //.server saveall
-bool ChatHandler::HandleServerSaveAllCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleServerSaveAllCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto start_time = Util::TimeNow();
     uint32_t online_count = 0;
@@ -157,7 +157,7 @@ bool ChatHandler::HandleServerSaveAllCommand(const char* /*args*/, WorldSession*
 }
 
 //.server setmotd
-bool ChatHandler::HandleServerSetMotdCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleServerSetMotdCommand(const char* args, WorldSession* m_session)
 {
     if (!args || strlen(args) < 5)
     {
@@ -174,7 +174,7 @@ bool ChatHandler::HandleServerSetMotdCommand(const char* args, WorldSession* m_s
 }
 
 //.server shutdown
-bool ChatHandler::HandleServerShutdownCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleServerShutdownCommand(const char* args, WorldSession* m_session)
 {
     uint32_t shutdowntime;
     if (!args)
@@ -208,7 +208,7 @@ bool ChatHandler::HandleServerShutdownCommand(const char* args, WorldSession* m_
 }
 
 //.server cancelshutdown
-bool ChatHandler::HandleServerCancelShutdownCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleServerCancelShutdownCommand(const char* /*args*/, WorldSession* m_session)
 {
     if (!sMaster.m_ShutdownEvent)
     {
@@ -241,7 +241,7 @@ bool ChatHandler::HandleServerCancelShutdownCommand(const char* /*args*/, WorldS
 }
 
 //.server restart
-bool ChatHandler::HandleServerRestartCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleServerRestartCommand(const char* args, WorldSession* m_session)
 {
     uint32_t shutdowntime;
     if (!args)
@@ -276,7 +276,7 @@ bool ChatHandler::HandleServerRestartCommand(const char* args, WorldSession* m_s
 //////////////////////////////////////////////////////////////////////////////////////////
 // .server reload commands
 //.server reload gameobjects
-bool ChatHandler::HandleReloadGameobjectsCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleReloadGameobjectsCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadGameObjectPropertiesTable();
@@ -285,7 +285,7 @@ bool ChatHandler::HandleReloadGameobjectsCommand(const char* /*args*/, WorldSess
 }
 
 //.server reload creatures
-bool ChatHandler::HandleReloadCreaturesCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleReloadCreaturesCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadCreaturePropertiesTable();
@@ -294,7 +294,7 @@ bool ChatHandler::HandleReloadCreaturesCommand(const char* /*args*/, WorldSessio
 }
 
 //.server reload areatriggers
-bool ChatHandler::HandleReloadAreaTriggersCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleReloadAreaTriggersCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadAreaTriggerTable();
@@ -303,7 +303,7 @@ bool ChatHandler::HandleReloadAreaTriggersCommand(const char* /*args*/, WorldSes
 }
 
 //.server reload command_overrides
-bool ChatHandler::HandleReloadCommandOverridesCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleReloadCommandOverridesCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto startTime = Util::TimeNow();
     sCommandTableStorage.loadOverridePermission();
@@ -313,7 +313,7 @@ bool ChatHandler::HandleReloadCommandOverridesCommand(const char* /*args*/, Worl
 }
 
 //.server reload fishing
-bool ChatHandler::HandleReloadFishingCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleReloadFishingCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadFishingTable();
@@ -322,7 +322,7 @@ bool ChatHandler::HandleReloadFishingCommand(const char* /*args*/, WorldSession*
 }
 
 //.server reload gossip_menu_option
-bool ChatHandler::HandleReloadGossipMenuOptionCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleReloadGossipMenuOptionCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadGossipMenuOptionTable();
@@ -331,7 +331,7 @@ bool ChatHandler::HandleReloadGossipMenuOptionCommand(const char* /*args*/, Worl
 }
 
 //.server reload graveyards
-bool ChatHandler::HandleReloadGraveyardsCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleReloadGraveyardsCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadGraveyardsTable();
@@ -340,7 +340,7 @@ bool ChatHandler::HandleReloadGraveyardsCommand(const char* /*args*/, WorldSessi
 }
 
 //.server reload items
-bool ChatHandler::HandleReloadItemsCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleReloadItemsCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadItemPropertiesTable();
@@ -349,7 +349,7 @@ bool ChatHandler::HandleReloadItemsCommand(const char* /*args*/, WorldSession* m
 }
 
 //.server reload itempages
-bool ChatHandler::HandleReloadItempagesCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleReloadItempagesCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadItemPagesTable();
@@ -358,7 +358,7 @@ bool ChatHandler::HandleReloadItempagesCommand(const char* /*args*/, WorldSessio
 }
 
 //.server reload npc_script_text
-bool ChatHandler::HandleReloadNpcScriptTextCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleReloadNpcScriptTextCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadNpcScriptTextTable();
@@ -367,7 +367,7 @@ bool ChatHandler::HandleReloadNpcScriptTextCommand(const char* /*args*/, WorldSe
 }
 
 //.server reload npc_gossip_text
-bool ChatHandler::HandleReloadNpcTextCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleReloadNpcTextCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadNpcTextTable();
@@ -376,7 +376,7 @@ bool ChatHandler::HandleReloadNpcTextCommand(const char* /*args*/, WorldSession*
 }
 
 //.server reload pet_level_abilities
-bool ChatHandler::HandleReloadPetLevelAbilitiesCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleReloadPetLevelAbilitiesCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadPetLevelAbilitiesTable();
@@ -385,7 +385,7 @@ bool ChatHandler::HandleReloadPetLevelAbilitiesCommand(const char* /*args*/, Wor
 }
 
 //.server reload player_xp_for_level
-bool ChatHandler::HandleReloadPlayerXpForLevelCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleReloadPlayerXpForLevelCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadPlayerXpToLevelTable();
@@ -394,7 +394,7 @@ bool ChatHandler::HandleReloadPlayerXpForLevelCommand(const char* /*args*/, Worl
 }
 
 //.server reload points_of_interest
-bool ChatHandler::HandleReloadPointsOfInterestCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleReloadPointsOfInterestCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadPointsOfInterestTable();
@@ -403,7 +403,7 @@ bool ChatHandler::HandleReloadPointsOfInterestCommand(const char* /*args*/, Worl
 }
 
 //.server reload quests
-bool ChatHandler::HandleReloadQuestsCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleReloadQuestsCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadQuestPropertiesTable();
@@ -412,7 +412,7 @@ bool ChatHandler::HandleReloadQuestsCommand(const char* /*args*/, WorldSession* 
 }
 
 //.server reload teleport_coords
-bool ChatHandler::HandleReloadTeleportCoordsCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleReloadTeleportCoordsCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadTeleportCoordsTable();
@@ -421,7 +421,7 @@ bool ChatHandler::HandleReloadTeleportCoordsCommand(const char* /*args*/, WorldS
 }
 
 //.server reload worldbroadcast
-bool ChatHandler::HandleReloadWorldbroadcastCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleReloadWorldbroadcastCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadBroadcastTable();
@@ -430,7 +430,7 @@ bool ChatHandler::HandleReloadWorldbroadcastCommand(const char* /*args*/, WorldS
 }
 
 //.server reload worldmap_info
-bool ChatHandler::HandleReloadWorldmapInfoCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleReloadWorldmapInfoCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadWorldMapInfoTable();
@@ -439,7 +439,7 @@ bool ChatHandler::HandleReloadWorldmapInfoCommand(const char* /*args*/, WorldSes
 }
 
 //.server reload worldstring_tables
-bool ChatHandler::HandleReloadWorldstringTablesCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleReloadWorldstringTablesCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadWorldStringsTable();
@@ -448,7 +448,7 @@ bool ChatHandler::HandleReloadWorldstringTablesCommand(const char* /*args*/, Wor
 }
 
 //.server reload zoneguards
-bool ChatHandler::HandleReloadZoneguardsCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleReloadZoneguardsCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadZoneGuardsTable();
@@ -457,7 +457,7 @@ bool ChatHandler::HandleReloadZoneguardsCommand(const char* /*args*/, WorldSessi
 }
 
 //.server reloadscripts
-bool ChatHandler::HandleServerReloadScriptsCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleServerReloadScriptsCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto startTime = Util::TimeNow();
     sScriptMgr.ReloadScriptEngines();

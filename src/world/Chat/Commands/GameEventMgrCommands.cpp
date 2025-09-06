@@ -3,13 +3,13 @@ Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 #include "Management/GameEvent.hpp"
 #include "Management/GameEventMgr.hpp"
 #include "Utilities/Util.hpp"
 
 //.event list
-bool ChatHandler::HandleEventListEvents(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleEventListEvents(const char* /*args*/, WorldSession* m_session)
 {
     systemMessage(m_session, "--- Current Active Events ---");
     for (const auto& gameEventPair : sGameEventMgr.mGameEvents)
@@ -29,7 +29,7 @@ bool ChatHandler::HandleEventListEvents(const char* /*args*/, WorldSession* m_se
 }
 
 //.event start
-bool ChatHandler::HandleEventStartEvent(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleEventStartEvent(const char* args, WorldSession* m_session)
 {
     uint32_t eventid = atoi(args);
     if (eventid == 0)
@@ -54,7 +54,7 @@ bool ChatHandler::HandleEventStartEvent(const char* args, WorldSession* m_sessio
 }
 
 //.event stop
-bool ChatHandler::HandleEventStopEvent(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleEventStopEvent(const char* args, WorldSession* m_session)
 {
     uint32_t eventid = atoi(args);
     if (eventid == 0)
@@ -79,7 +79,7 @@ bool ChatHandler::HandleEventStopEvent(const char* args, WorldSession* m_session
 }
 
 //.event reset
-bool ChatHandler::HandleEventResetEvent(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleEventResetEvent(const char* args, WorldSession* m_session)
 {
     uint32_t eventid = atoi(args);
     if (eventid == 0)
@@ -107,7 +107,7 @@ bool ChatHandler::HandleEventResetEvent(const char* args, WorldSession* m_sessio
 }
 
 //.event reload
-bool ChatHandler::HandleEventReloadAllEvents(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleEventReloadAllEvents(const char* /*args*/, WorldSession* m_session)
 {
     systemMessage(m_session, "Beginning reload of all game events");
     auto startTime = Util::TimeNow();

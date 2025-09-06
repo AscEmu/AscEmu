@@ -3,7 +3,7 @@ Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 #include "Management/AchievementMgr.h"
 #include "Management/QuestProperties.hpp"
 #include "Objects/GameObjectProperties.hpp"
@@ -31,7 +31,7 @@ This file is released under the MIT license. See README-MIT for more information
 //.lookup achievement criteria string : searches for "string" in achievement criteria name
 //.lookup achievement all string : searches for "string" in achievement name, description, reward, and critiera
 //////////////////////////////////////////////////////////////////////////////////////////
-bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* args, [[maybe_unused]]WorldSession* m_session)
+bool ChatCommandHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* args, [[maybe_unused]]WorldSession* m_session)
 {
 #if VERSION_STRING > TBC
     if (!*args)
@@ -299,7 +299,7 @@ bool ChatHandler::HandleLookupAchievementCommand([[maybe_unused]]const char* arg
 }
 
 //.lookup creature
-bool ChatHandler::HandleLookupCreatureCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleLookupCreatureCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
         return false;
@@ -356,7 +356,7 @@ bool ChatHandler::HandleLookupCreatureCommand(const char* args, WorldSession* m_
 }
 
 //.lookup faction
-bool ChatHandler::HandleLookupFactionCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleLookupFactionCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
         return false;
@@ -405,7 +405,7 @@ bool ChatHandler::HandleLookupFactionCommand(const char* args, WorldSession* m_s
 }
 
 //.lookup item
-bool ChatHandler::HandleLookupItemCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleLookupItemCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
         return false;
@@ -461,7 +461,7 @@ bool ChatHandler::HandleLookupItemCommand(const char* args, WorldSession* m_sess
 }
 
 //.lookup object
-bool ChatHandler::HandleLookupObjectCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleLookupObjectCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
         return false;
@@ -517,7 +517,7 @@ bool ChatHandler::HandleLookupObjectCommand(const char* args, WorldSession* m_se
 }
 
 //.lookup quest
-bool ChatHandler::HandleLookupQuestCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleLookupQuestCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
         return false;
@@ -591,7 +591,7 @@ bool ChatHandler::HandleLookupQuestCommand(const char* args, WorldSession* m_ses
 }
 
 //.lookup spell
-bool ChatHandler::HandleLookupSpellCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleLookupSpellCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
         return false;
@@ -646,7 +646,7 @@ bool ChatHandler::HandleLookupSpellCommand(const char* args, WorldSession* m_ses
 }
 
 //.lookup skill
-bool ChatHandler::HandleLookupSkillCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleLookupSkillCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
         return false;

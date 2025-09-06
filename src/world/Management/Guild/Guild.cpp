@@ -8,7 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "GuildBankEventLog.hpp"
 #include "GuildEventLog.hpp"
 #include "GuildNewsLog.hpp"
-#include "Chat/ChatHandler.hpp"
 #include "Logging/Logger.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"

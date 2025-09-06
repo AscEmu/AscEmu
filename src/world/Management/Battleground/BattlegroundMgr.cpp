@@ -8,7 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Arenas.hpp"
 #include "Management/ArenaTeam.hpp"
 #include "Map/Management/MapMgr.hpp"
-#include "Chat/ChatHandler.hpp"
 #include "Logging/Logger.hpp"
 #include "Management/Group.h"
 #include "Management/ObjectMgr.hpp"
@@ -276,7 +275,7 @@ void BattlegroundManager::handleBattlegroundJoin(WorldSession* session, WorldPac
         const auto itr = m_instances[srlPacket.bgType].find(srlPacket.instanceId);
         if (itr == m_instances[srlPacket.bgType].end())
         {
-            sChatHandler.systemMessage(session, session->LocalizedWorldSrv(SS_JOIN_INVALID_INSTANCE));
+            session->systemMessage(session->LocalizedWorldSrv(SS_JOIN_INVALID_INSTANCE));
             return;
         }
     }

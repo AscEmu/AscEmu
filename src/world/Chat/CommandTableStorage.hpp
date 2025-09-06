@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 struct ChatCommand;
 
-class SERVER_DECL CommandTableStorage
+class CommandTableStorage
 {
     CommandTableStorage();
     ~CommandTableStorage();
@@ -25,7 +25,7 @@ public:
     void loadOverridePermission();
     void overridePermission(const char* command, const char* level);
 
-    inline const std::vector<ChatCommand>& Get() const { return m_commandRegistry; }
+    inline const std::vector<ChatCommand>& getCommandRegistry() const { return m_commandRegistry; }
 
 private:
 

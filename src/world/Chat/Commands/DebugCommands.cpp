@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "VMapFactory.h"
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 #include "Logging/Logger.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Management/WeatherMgr.hpp"
@@ -29,7 +29,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Narrow.hpp"
 #include "Utilities/Util.hpp"
 
-bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldSession* session)
 {
     uint32_t map = uint32_t(atoi(args));
     if (map == 0)
@@ -158,7 +158,7 @@ bool ChatHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args, WorldS
     return true;
 }
 
-bool ChatHandler::HandleDoPercentDamageCommand(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleDoPercentDamageCommand(const char* args, WorldSession* session)
 {
     Creature* selected_unit = GetSelectedCreature(session);
     if (selected_unit == nullptr)
@@ -179,7 +179,7 @@ bool ChatHandler::HandleDoPercentDamageCommand(const char* args, WorldSession* s
     return true;
 }
 
-bool ChatHandler::HandleSetScriptPhaseCommand(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleSetScriptPhaseCommand(const char* args, WorldSession* session)
 {
     Creature* selected_unit = GetSelectedCreature(session);
     if (selected_unit == nullptr)
@@ -195,7 +195,7 @@ bool ChatHandler::HandleSetScriptPhaseCommand(const char* args, WorldSession* se
     return true;
 }
 
-bool ChatHandler::HandleAiChargeCommand(const char* /*args*/, WorldSession* session)
+bool ChatCommandHandler::HandleAiChargeCommand(const char* /*args*/, WorldSession* session)
 {
     Unit* selected_unit = GetSelectedUnit(session);
     if (selected_unit == nullptr)
@@ -205,7 +205,7 @@ bool ChatHandler::HandleAiChargeCommand(const char* /*args*/, WorldSession* sess
     return true;
 }
 
-bool ChatHandler::HandleAiKnockbackCommand(const char* /*args*/, WorldSession* session)
+bool ChatCommandHandler::HandleAiKnockbackCommand(const char* /*args*/, WorldSession* session)
 {
     Unit* selected_unit = GetSelectedUnit(session);
     if (selected_unit == nullptr)
@@ -217,7 +217,7 @@ bool ChatHandler::HandleAiKnockbackCommand(const char* /*args*/, WorldSession* s
     return true;
 }
 
-bool ChatHandler::HandleAiJumpCommand(const char* /*args*/, WorldSession* session)
+bool ChatCommandHandler::HandleAiJumpCommand(const char* /*args*/, WorldSession* session)
 {
     Unit* selected_unit = GetSelectedUnit(session);
     if (selected_unit == nullptr)
@@ -229,7 +229,7 @@ bool ChatHandler::HandleAiJumpCommand(const char* /*args*/, WorldSession* sessio
     return true;
 }
 
-bool ChatHandler::HandleAiFallingCommand(const char* /*args*/, WorldSession* session)
+bool ChatCommandHandler::HandleAiFallingCommand(const char* /*args*/, WorldSession* session)
 {
     Unit* selected_unit = GetSelectedUnit(session);
     if (selected_unit == nullptr)
@@ -239,7 +239,7 @@ bool ChatHandler::HandleAiFallingCommand(const char* /*args*/, WorldSession* ses
     return true;
 }
 
-bool ChatHandler::HandleMoveToSpawnCommand(const char* /*args*/, WorldSession* session)
+bool ChatCommandHandler::HandleMoveToSpawnCommand(const char* /*args*/, WorldSession* session)
 {
     Unit* selected_unit = GetSelectedUnit(session);
     if (selected_unit == nullptr)
@@ -250,7 +250,7 @@ bool ChatHandler::HandleMoveToSpawnCommand(const char* /*args*/, WorldSession* s
     return true;
 }
 
-bool ChatHandler::HandlePositionCommand(const char* /*args*/, WorldSession* session)
+bool ChatCommandHandler::HandlePositionCommand(const char* /*args*/, WorldSession* session)
 {
     Creature* selected_unit = GetSelectedCreature(session);
     if (selected_unit == nullptr)
@@ -275,7 +275,7 @@ bool ChatHandler::HandlePositionCommand(const char* /*args*/, WorldSession* sess
     return true;
 }
 
-bool ChatHandler::HandleSetOrientationCommand(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleSetOrientationCommand(const char* args, WorldSession* session)
 {
     Creature* selected_unit = GetSelectedCreature(session);
     if (selected_unit == nullptr)
@@ -293,14 +293,14 @@ bool ChatHandler::HandleSetOrientationCommand(const char* args, WorldSession* se
     return true;
 }
 
-bool ChatHandler::HandleDebugDumpState(const char* /*args*/, WorldSession* session)
+bool ChatCommandHandler::HandleDebugDumpState(const char* /*args*/, WorldSession* session)
 {
     auto state = ServerState::instance();
     systemMessage(session, "Delta: {}", static_cast<uint32_t>(state->getDelta()));
     return true;
 }
 
-bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_session)
 {
     Unit* selected_unit = GetSelectedUnit(m_session);
     if (selected_unit == nullptr)
@@ -333,7 +333,7 @@ bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_sess
 }
 
 //.debug hover
-bool ChatHandler::HandleDebugHover(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleDebugHover(const char* /*args*/, WorldSession* m_session)
 {
     Unit* selected_unit = GetSelectedUnit(m_session);
     if (selected_unit == nullptr)
@@ -354,7 +354,7 @@ bool ChatHandler::HandleDebugHover(const char* /*args*/, WorldSession* m_session
 }
 
 //.debug states
-bool ChatHandler::HandleDebugState(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleDebugState(const char* /*args*/, WorldSession* m_session)
 {
     Unit* selected_unit = GetSelectedUnit(m_session);
     if (selected_unit == nullptr)
@@ -366,7 +366,7 @@ bool ChatHandler::HandleDebugState(const char* /*args*/, WorldSession* m_session
 }
 
 //.debug swim
-bool ChatHandler::HandleDebugSwim(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleDebugSwim(const char* /*args*/, WorldSession* m_session)
 {
     Creature* selected_creature = GetSelectedCreature(m_session);
     if (selected_creature == nullptr)
@@ -387,7 +387,7 @@ bool ChatHandler::HandleDebugSwim(const char* /*args*/, WorldSession* m_session)
 }
 
 //.debug fly
-bool ChatHandler::HandleDebugFly(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleDebugFly(const char* /*args*/, WorldSession* m_session)
 {
     Creature* selected_creature = GetSelectedCreature(m_session);
     if (selected_creature == nullptr)
@@ -407,7 +407,7 @@ bool ChatHandler::HandleDebugFly(const char* /*args*/, WorldSession* m_session)
 }
 
 //.debug disablegravity
-bool ChatHandler::HandleDebugDisableGravity(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleDebugDisableGravity(const char* /*args*/, WorldSession* m_session)
 {
     Unit* selected_unit = GetSelectedUnit(m_session);
     if (selected_unit == nullptr)
@@ -428,7 +428,7 @@ bool ChatHandler::HandleDebugDisableGravity(const char* /*args*/, WorldSession* 
 }
 
 //.debug waterwalk
-bool ChatHandler::HandleDebugWaterWalk(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleDebugWaterWalk(const char* /*args*/, WorldSession* m_session)
 {
     Unit* selected_unit = GetSelectedUnit(m_session);
     if (selected_unit == nullptr)
@@ -449,7 +449,7 @@ bool ChatHandler::HandleDebugWaterWalk(const char* /*args*/, WorldSession* m_ses
 }
 
 //.debug featherfall
-bool ChatHandler::HandleDebugFeatherFall(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleDebugFeatherFall(const char* /*args*/, WorldSession* m_session)
 {
     Unit* selected_unit = GetSelectedUnit(m_session);
     if (selected_unit == nullptr)
@@ -470,7 +470,7 @@ bool ChatHandler::HandleDebugFeatherFall(const char* /*args*/, WorldSession* m_s
 }
 
 //.debug speed
-bool ChatHandler::HandleDebugSpeed(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleDebugSpeed(const char* args, WorldSession* m_session)
 {
     float speed = float(atof(args));
     if (speed == 0.0f || speed > 255.0f || speed < 0.1f)
@@ -495,7 +495,7 @@ bool ChatHandler::HandleDebugSpeed(const char* args, WorldSession* m_session)
 }
 
 //.debug pvpcredit
-bool ChatHandler::HandleDebugPVPCreditCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleDebugPVPCreditCommand(const char* args, WorldSession* m_session)
 {
     uint32_t rank;
     uint32_t points;
@@ -519,7 +519,7 @@ bool ChatHandler::HandleDebugPVPCreditCommand(const char* args, WorldSession* m_
 }
 
 //.debug setunitbyte
-bool ChatHandler::HandleDebugSetUnitByteCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleDebugSetUnitByteCommand(const char* args, WorldSession* m_session)
 {
     uint32_t bytes;
     uint32_t offset;
@@ -564,7 +564,7 @@ bool ChatHandler::HandleDebugSetUnitByteCommand(const char* args, WorldSession* 
 }
 
 //.debug setplayerflag
-bool ChatHandler::HandleDebugSetPlayerFlagsCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleDebugSetPlayerFlagsCommand(const char* args, WorldSession* m_session)
 {
     uint32_t flags;
     if (sscanf(args, "%u", &flags) != 1)
@@ -587,7 +587,7 @@ bool ChatHandler::HandleDebugSetPlayerFlagsCommand(const char* args, WorldSessio
 }
 
 //.debug getplayerflag
-bool ChatHandler::HandleDebugGetPlayerFlagsCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleDebugGetPlayerFlagsCommand(const char* /*args*/, WorldSession* m_session)
 {
     const auto player_target = GetSelectedPlayer(m_session, true);
     if (player_target == nullptr)
@@ -601,7 +601,7 @@ bool ChatHandler::HandleDebugGetPlayerFlagsCommand(const char* /*args*/, WorldSe
 }
 
 //.playmovie
-bool ChatHandler::HandlePlayMovie(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandlePlayMovie(const char* args, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
     if (selected_player == nullptr)
@@ -618,7 +618,7 @@ bool ChatHandler::HandlePlayMovie(const char* args, WorldSession* m_session)
 }
 
 //.sendfail
-bool ChatHandler::HandleSendCastFailed(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleSendCastFailed(const char* args, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
     if (selected_player == nullptr)
@@ -635,7 +635,7 @@ bool ChatHandler::HandleSendCastFailed(const char* args, WorldSession* m_session
     return true;
 }
 
-bool ChatHandler::HandleDebugSendCreatureMove(const char* /*args*/, WorldSession * m_session)
+bool ChatCommandHandler::HandleDebugSendCreatureMove(const char* /*args*/, WorldSession * m_session)
 {
     const auto target = GetSelectedUnit(m_session);
     if (!target)
@@ -647,7 +647,7 @@ bool ChatHandler::HandleDebugSendCreatureMove(const char* /*args*/, WorldSession
 }
 
 //.debug setweather
-bool ChatHandler::HandleDebugSetWeatherCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleDebugSetWeatherCommand(const char* args, WorldSession* m_session)
 {
     uint32_t type;
     float density;
@@ -671,7 +671,7 @@ bool ChatHandler::HandleDebugSetWeatherCommand(const char* args, WorldSession* m
 }
 
 //.debug dumpmovement
-bool ChatHandler::HandleDebugDumpMovementCommand(const char* /*args*/, WorldSession* session)
+bool ChatCommandHandler::HandleDebugDumpMovementCommand(const char* /*args*/, WorldSession* session)
 {
     try
     {
@@ -692,7 +692,7 @@ bool ChatHandler::HandleDebugDumpMovementCommand(const char* /*args*/, WorldSess
 }
 
 //.debug infront
-bool ChatHandler::HandleDebugInFrontCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleDebugInFrontCommand(const char* /*args*/, WorldSession* m_session)
 {
     Object* obj;
 
@@ -716,7 +716,7 @@ bool ChatHandler::HandleDebugInFrontCommand(const char* /*args*/, WorldSession* 
 }
 
 //.debug showreact
-bool ChatHandler::HandleShowReactionCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleShowReactionCommand(const char* args, WorldSession* m_session)
 {
     Object* obj = nullptr;
 
@@ -748,7 +748,7 @@ bool ChatHandler::HandleShowReactionCommand(const char* args, WorldSession* m_se
 }
 
 //.debug dist
-bool ChatHandler::HandleDistanceCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleDistanceCommand(const char* /*args*/, WorldSession* m_session)
 {
     Object* obj;
 
@@ -773,7 +773,7 @@ bool ChatHandler::HandleDistanceCommand(const char* /*args*/, WorldSession* m_se
 }
 
 //.debug aimove
-bool ChatHandler::HandleAIMoveCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleAIMoveCommand(const char* args, WorldSession* m_session)
 {
     Creature* creature = nullptr;
     auto player = m_session->GetPlayer();
@@ -894,7 +894,7 @@ bool ChatHandler::HandleAIMoveCommand(const char* args, WorldSession* m_session)
 }
 
 //.debug face
-bool ChatHandler::HandleFaceCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleFaceCommand(const char* args, WorldSession* m_session)
 {
     Object* obj = nullptr;
 
@@ -928,7 +928,7 @@ bool ChatHandler::HandleFaceCommand(const char* args, WorldSession* m_session)
 }
 
 //.debug landwalk
-bool ChatHandler::HandleDebugLandWalk(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleDebugLandWalk(const char* /*args*/, WorldSession* m_session)
 {
     Player* chr = GetSelectedPlayer(m_session, true, true);
     if (chr == nullptr)
@@ -942,7 +942,7 @@ bool ChatHandler::HandleDebugLandWalk(const char* /*args*/, WorldSession* m_sess
 }
 
 //.debug aggrorange
-bool ChatHandler::HandleAggroRangeCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleAggroRangeCommand(const char* /*args*/, WorldSession* m_session)
 {
     Unit* unit = GetSelectedUnit(m_session, true);
     if (unit == nullptr)
@@ -956,7 +956,7 @@ bool ChatHandler::HandleAggroRangeCommand(const char* /*args*/, WorldSession* m_
 }
 
 //.debug knockback
-bool ChatHandler::HandleKnockBackCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleKnockBackCommand(const char* args, WorldSession* m_session)
 {
     float f = args ? (float)atof(args) : 0.0f;
     if (f == 0.0f)
@@ -972,7 +972,7 @@ bool ChatHandler::HandleKnockBackCommand(const char* args, WorldSession* m_sessi
 }
 
 //.debug fade
-bool ChatHandler::HandleFadeCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleFadeCommand(const char* args, WorldSession* m_session)
 {
     Unit* target = m_session->GetPlayer()->getWorldMap()->getUnit(m_session->GetPlayer()->getTargetGuid());
     if (!target)
@@ -989,7 +989,7 @@ bool ChatHandler::HandleFadeCommand(const char* args, WorldSession* m_session)
 }
 
 //.debug threatMod
-bool ChatHandler::HandleThreatModCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleThreatModCommand(const char* args, WorldSession* m_session)
 {
     Unit* target = m_session->GetPlayer()->getWorldMap()->getUnit(m_session->GetPlayer()->getTargetGuid());
     if (!target)
@@ -1006,7 +1006,7 @@ bool ChatHandler::HandleThreatModCommand(const char* args, WorldSession* m_sessi
 }
 
 //.debug movefall
-bool ChatHandler::HandleMoveFallCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleMoveFallCommand(const char* /*args*/, WorldSession* m_session)
 {
     Unit* target = m_session->GetPlayer()->getWorldMap()->getUnit(m_session->GetPlayer()->getTargetGuid());
     if (!target)
@@ -1023,7 +1023,7 @@ bool ChatHandler::HandleMoveFallCommand(const char* /*args*/, WorldSession* m_se
 }
 
 //.debug threatList
-bool ChatHandler::HandleThreatListCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleThreatListCommand(const char* /*args*/, WorldSession* m_session)
 {
     Unit* target = nullptr;
     target = m_session->GetPlayer()->getWorldMap()->getUnit(m_session->GetPlayer()->getTargetGuid());
@@ -1049,7 +1049,7 @@ bool ChatHandler::HandleThreatListCommand(const char* /*args*/, WorldSession* m_
 }
 
 //.debug dumpcoords
-bool ChatHandler::HandleDebugDumpCoordsCommmand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleDebugDumpCoordsCommmand(const char* /*args*/, WorldSession* m_session)
 {
     Player* p = m_session->GetPlayer();
     //char buffer[200] = {0};
@@ -1064,7 +1064,7 @@ bool ChatHandler::HandleDebugDumpCoordsCommmand(const char* /*args*/, WorldSessi
 }
 
 //.debug spawnwar
-bool ChatHandler::HandleDebugSpawnWarCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleDebugSpawnWarCommand(const char* args, WorldSession* m_session)
 {
     uint32_t count, npcid;
     uint32_t health = 0;
@@ -1121,7 +1121,7 @@ bool ChatHandler::HandleDebugSpawnWarCommand(const char* args, WorldSession* m_s
 }
 
 //.debug updateworldstate
-bool ChatHandler::HandleUpdateWorldStateCommand(const char *args, WorldSession* session)
+bool ChatCommandHandler::HandleUpdateWorldStateCommand(const char *args, WorldSession* session)
 {
     if (*args == '\0')
     {
@@ -1154,7 +1154,7 @@ bool ChatHandler::HandleUpdateWorldStateCommand(const char *args, WorldSession* 
 }
 
 //.debug initworldstates
-bool ChatHandler::HandleInitWorldStatesCommand(const char* /*args*/, WorldSession* session)
+bool ChatCommandHandler::HandleInitWorldStatesCommand(const char* /*args*/, WorldSession* session)
 {
     Player* p = session->GetPlayer();
 
@@ -1170,7 +1170,7 @@ bool ChatHandler::HandleInitWorldStatesCommand(const char* /*args*/, WorldSessio
 }
 
 //.debug clearworldstates
-bool ChatHandler::HandleClearWorldStatesCommand(const char* /*args*/, WorldSession* session)
+bool ChatCommandHandler::HandleClearWorldStatesCommand(const char* /*args*/, WorldSession* session)
 {
     Player* p = session->GetPlayer();
 
@@ -1193,7 +1193,7 @@ bool ChatHandler::HandleClearWorldStatesCommand(const char* /*args*/, WorldSessi
 }
 
 //.debug auraremove
-bool ChatHandler::HandleAuraUpdateRemove(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleAuraUpdateRemove(const char* args, WorldSession* m_session)
 {
     if (!args)
         return false;
@@ -1215,7 +1215,7 @@ bool ChatHandler::HandleAuraUpdateRemove(const char* args, WorldSession* m_sessi
 }
 
 //.debug auraupdate
-bool ChatHandler::HandleAuraUpdateAdd(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleAuraUpdateAdd(const char* args, WorldSession* m_session)
 {
     if (!args)
         return false;
@@ -1260,7 +1260,7 @@ float CalculateDistance(float x1, float y1, float z1, float x2, float y2, float 
 }
 
 //.debug calcdist
-bool ChatHandler::HandleSimpleDistanceCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleSimpleDistanceCommand(const char* args, WorldSession* m_session)
 {
     float toX, toY, toZ;
     if (sscanf(args, "%f %f %f", &toX, &toY, &toZ) != 3)
@@ -1281,7 +1281,7 @@ bool ChatHandler::HandleSimpleDistanceCommand(const char* args, WorldSession* m_
 }
 
 //.debug rangecheck
-bool ChatHandler::HandleRangeCheckCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleRangeCheckCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint64_t guid = m_session->GetPlayer()->getTargetGuid();
     m_session->SystemMessage("=== RANGE CHECK ===");
@@ -1308,7 +1308,7 @@ bool ChatHandler::HandleRangeCheckCommand(const char* /*args*/, WorldSession* m_
 }
 
 //.debug testindoor
-bool ChatHandler::HandleCollisionTestIndoor(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCollisionTestIndoor(const char* /*args*/, WorldSession* m_session)
 {
     if (worldConfig.terrainCollision.isCollisionEnabled)
     {
@@ -1324,7 +1324,7 @@ bool ChatHandler::HandleCollisionTestIndoor(const char* /*args*/, WorldSession* 
 }
 
 //.debug testlos
-bool ChatHandler::HandleCollisionTestLOS(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCollisionTestLOS(const char* /*args*/, WorldSession* m_session)
 {
     if (worldConfig.terrainCollision.isCollisionEnabled)
     {
@@ -1353,7 +1353,7 @@ bool ChatHandler::HandleCollisionTestLOS(const char* /*args*/, WorldSession* m_s
 }
 
 //.debug getheight
-bool ChatHandler::HandleCollisionGetHeight(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCollisionGetHeight(const char* /*args*/, WorldSession* m_session)
 {
     if (worldConfig.terrainCollision.isCollisionEnabled)
     {
@@ -1385,7 +1385,7 @@ bool ChatHandler::HandleCollisionGetHeight(const char* /*args*/, WorldSession* m
 }
 
 //.debug deathstate
-bool ChatHandler::HandleGetDeathState(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleGetDeathState(const char* /*args*/, WorldSession* m_session)
 {
     Player* SelectedPlayer = GetSelectedPlayer(m_session, true, true);
     if (!SelectedPlayer)
@@ -1432,7 +1432,7 @@ SpellCastTargets SetTargets(SpellInfo const* /*sp*/, uint32_t /*type*/, uint32_t
 };
 
 //.debug castspell
-bool ChatHandler::HandleCastSpellCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCastSpellCommand(const char* args, WorldSession* m_session)
 {
     Unit* caster = m_session->GetPlayer();
     Unit* target = GetSelectedPlayer(m_session, true, true);
@@ -1473,7 +1473,7 @@ bool ChatHandler::HandleCastSpellCommand(const char* args, WorldSession* m_sessi
 }
 
 //.debug castspellne
-bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_session)
 {
     Unit* caster = m_session->GetPlayer();
     Unit* target = GetSelectedPlayer(m_session, true, true);
@@ -1533,7 +1533,7 @@ bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_ses
 }
 
 //.debug castself
-bool ChatHandler::HandleCastSelfCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCastSelfCommand(const char* args, WorldSession* m_session)
 {
     Unit* target = GetSelectedPlayer(m_session, true, true);
     if (!target)

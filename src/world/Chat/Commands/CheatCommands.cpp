@@ -3,13 +3,13 @@ Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSession.h"
 #include "Server/WorldSessionLog.hpp"
 
 //.cheat list
-bool ChatHandler::HandleCheatListCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCheatListCommand(const char* /*args*/, WorldSession* m_session)
 {
     const auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
@@ -59,7 +59,7 @@ bool ChatHandler::HandleCheatListCommand(const char* /*args*/, WorldSession* m_s
 }
 
 //.cheat taxi
-bool ChatHandler::HandleCheatTaxiCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCheatTaxiCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
@@ -101,7 +101,7 @@ bool ChatHandler::HandleCheatTaxiCommand(const char* /*args*/, WorldSession* m_s
 }
 
 //.cheat cooldown
-bool ChatHandler::HandleCheatCooldownCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCheatCooldownCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
@@ -144,7 +144,7 @@ bool ChatHandler::HandleCheatCooldownCommand(const char* /*args*/, WorldSession*
 }
 
 //.cheat casttime
-bool ChatHandler::HandleCheatCastTimeCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCheatCastTimeCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
@@ -185,7 +185,7 @@ bool ChatHandler::HandleCheatCastTimeCommand(const char* /*args*/, WorldSession*
 }
 
 //.cheat power
-bool ChatHandler::HandleCheatPowerCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCheatPowerCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
@@ -226,7 +226,7 @@ bool ChatHandler::HandleCheatPowerCommand(const char* /*args*/, WorldSession* m_
 }
 
 //.cheat god
-bool ChatHandler::HandleCheatGodCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCheatGodCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
@@ -267,7 +267,7 @@ bool ChatHandler::HandleCheatGodCommand(const char* /*args*/, WorldSession* m_se
 }
 
 //.cheat fly
-bool ChatHandler::HandleCheatFlyCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCheatFlyCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
@@ -310,7 +310,7 @@ bool ChatHandler::HandleCheatFlyCommand(const char* /*args*/, WorldSession* m_se
 }
 
 //.cheat aurastack
-bool ChatHandler::HandleCheatAuraStackCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCheatAuraStackCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
@@ -351,7 +351,7 @@ bool ChatHandler::HandleCheatAuraStackCommand(const char* /*args*/, WorldSession
 }
 
 //.cheat itemstack
-bool ChatHandler::HandleCheatItemStackCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCheatItemStackCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
@@ -392,7 +392,7 @@ bool ChatHandler::HandleCheatItemStackCommand(const char* /*args*/, WorldSession
 }
 
 //.cheat triggerpass
-bool ChatHandler::HandleCheatTriggerpassCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCheatTriggerpassCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)

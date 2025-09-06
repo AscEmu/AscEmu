@@ -26,7 +26,6 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Spell/Definitions/AuraInterruptFlags.hpp"
-#include "Chat/ChatHandler.hpp"
 #include "Logging/Logger.hpp"
 #include "Management/Group.h"
 #include "Management/ObjectMgr.hpp"
@@ -297,7 +296,7 @@ void Battleground::portPlayer(Player* plr, bool skip_teleport)
 
     if (m_hasEnded)
     {
-        sChatHandler.systemMessage(plr->getSession(), plr->getSession()->LocalizedWorldSrv(ServerString::SS_YOU_CANNOT_JOIN_BG_AS_IT_HAS_ALREADY_ENDED));
+        plr->getSession()->systemMessage(plr->getSession()->LocalizedWorldSrv(ServerString::SS_YOU_CANNOT_JOIN_BG_AS_IT_HAS_ALREADY_ENDED));
         sBattlegroundManager.sendBattlefieldStatus(plr, BattlegroundDef::STATUS_NOFLAGS, 0, 0, 0, 0, 0);
         plr->setPendingBattleground(nullptr);
         return;

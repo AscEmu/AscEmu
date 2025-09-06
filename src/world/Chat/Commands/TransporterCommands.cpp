@@ -3,14 +3,14 @@ Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 #include "Objects/GameObjectProperties.hpp"
 #include "Objects/Transporter.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSession.h"
 #include "Storage/MySQLDataStore.hpp"
 
-bool ChatHandler::HandleGetTransporterTime(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleGetTransporterTime(const char* /*args*/, WorldSession* m_session)
 {
     auto transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.transport_guid));
     if (transporter)
@@ -26,7 +26,7 @@ bool ChatHandler::HandleGetTransporterTime(const char* /*args*/, WorldSession* m
     return true;
 }
 
-bool ChatHandler::HandleGetTransporterInfo(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleGetTransporterInfo(const char* /*args*/, WorldSession* m_session)
 {
     auto transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.transport_guid));
     if (transporter == nullptr)
@@ -49,7 +49,7 @@ bool ChatHandler::HandleGetTransporterInfo(const char* /*args*/, WorldSession* m
     return true;
 }
 
-bool ChatHandler::HandleStopTransport(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleStopTransport(const char* /*args*/, WorldSession* m_session)
 {
     auto transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.transport_guid));
     if (transporter)
@@ -60,7 +60,7 @@ bool ChatHandler::HandleStopTransport(const char* /*args*/, WorldSession* m_sess
     return true;
 }
 
-bool ChatHandler::HandleStartTransport(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleStartTransport(const char* /*args*/, WorldSession* m_session)
 {
     Transporter* transport = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(m_session->GetPlayerOrThrow()->obj_movement_info.transport_guid));
     if (transport)
@@ -71,7 +71,7 @@ bool ChatHandler::HandleStartTransport(const char* /*args*/, WorldSession* m_ses
     return true;
 }
 
-bool ChatHandler::HandleSpawnInstanceTransport(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleSpawnInstanceTransport(const char* args, WorldSession* m_session)
 {
     char* pEntry = strtok(const_cast<char*>(args), " ");
     if (!pEntry)

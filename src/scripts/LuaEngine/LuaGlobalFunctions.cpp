@@ -213,22 +213,22 @@ int LuaGlobalFunctions::SendWorldMessage(lua_State* L)
 
 int LuaGlobalFunctions::ReloadTable(lua_State* L)
 {
-    const char* TableName = luaL_checkstring(L, 1);
-    if (AscEmu::Util::Strings::isEqual(TableName, "spell_disable"))
-    {
-        sSpellMgr.reloadSpellDisabled();
-    }
-    else if (AscEmu::Util::Strings::isEqual(TableName, "vendors"))
-    {
-        sObjectMgr.loadVendors();
-    }
-    else
-    {
-        if (AscEmu::Util::Strings::isEqual(TableName, "command_overrides"))    // Command Overrides
-        {
-            sCommandTableStorage.loadOverridePermission();
-        }
-    }
+    //const char* TableName = luaL_checkstring(L, 1);
+    //if (AscEmu::Util::Strings::isEqual(TableName, "spell_disable"))
+    //{
+    //    sSpellMgr.reloadSpellDisabled();
+    //}
+    //else if (AscEmu::Util::Strings::isEqual(TableName, "vendors"))
+    //{
+    //    sObjectMgr.loadVendors();
+    //}
+    //else
+    //{
+    //    if (AscEmu::Util::Strings::isEqual(TableName, "command_overrides"))    // Command Overrides
+    //    {
+    //        sCommandTableStorage.loadOverridePermission();
+    //    }
+    //}
     return 0;
 }
 

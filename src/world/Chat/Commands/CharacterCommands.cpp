@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Chat/ChatDefines.hpp"
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 #include "Management/HonorHandler.h"
 #include "Management/ItemInterface.h"
 #include "Management/ObjectMgr.hpp"
@@ -29,7 +29,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Strings.hpp"
 
 //.character clearcooldowns
-bool ChatHandler::HandleCharClearCooldownsCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharClearCooldownsCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
@@ -47,7 +47,7 @@ bool ChatHandler::HandleCharClearCooldownsCommand(const char* /*args*/, WorldSes
 }
 
 //.character demorph
-bool ChatHandler::HandleCharDeMorphCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharDeMorphCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
@@ -59,7 +59,7 @@ bool ChatHandler::HandleCharDeMorphCommand(const char* /*args*/, WorldSession* m
 }
 
 //.character levelup
-bool ChatHandler::HandleCharLevelUpCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharLevelUpCommand(const char* args, WorldSession* m_session)
 {
     uint32_t levels = atoi(args);
 
@@ -107,7 +107,7 @@ bool ChatHandler::HandleCharLevelUpCommand(const char* args, WorldSession* m_ses
 }
 
 //.character unlearn
-bool ChatHandler::HandleCharUnlearnCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharUnlearnCommand(const char* args, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
@@ -139,7 +139,7 @@ bool ChatHandler::HandleCharUnlearnCommand(const char* args, WorldSession* m_ses
 }
 
 //.character learnskill
-bool ChatHandler::HandleCharLearnSkillCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharLearnSkillCommand(const char* args, WorldSession* m_session)
 {
     uint16_t skill;
     uint16_t min;
@@ -189,7 +189,7 @@ bool ChatHandler::HandleCharLearnSkillCommand(const char* args, WorldSession* m_
 }
 
 //.character advanceskill
-bool ChatHandler::HandleCharAdvanceSkillCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharAdvanceSkillCommand(const char* args, WorldSession* m_session)
 {
     uint16_t skill;
     uint16_t amount;
@@ -225,7 +225,7 @@ bool ChatHandler::HandleCharAdvanceSkillCommand(const char* args, WorldSession* 
 }
 
 //.character removeskill
-bool ChatHandler::HandleCharRemoveSkillCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharRemoveSkillCommand(const char* args, WorldSession* m_session)
 {
     if (!args)
     {
@@ -260,7 +260,7 @@ bool ChatHandler::HandleCharRemoveSkillCommand(const char* args, WorldSession* m
 }
 
 //.character removeauras
-bool ChatHandler::HandleCharRemoveAurasCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharRemoveAurasCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
@@ -280,7 +280,7 @@ bool ChatHandler::HandleCharRemoveAurasCommand(const char* /*args*/, WorldSessio
 }
 
 //.character removesickness
-bool ChatHandler::HandleCharRemoveSickessCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharRemoveSickessCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
@@ -303,7 +303,7 @@ bool ChatHandler::HandleCharRemoveSickessCommand(const char* /*args*/, WorldSess
 }
 
 //.character learn
-bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharLearnCommand(const char* args, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
     if (selected_player == nullptr)
@@ -581,7 +581,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
 //////////////////////////////////////////////////////////////////////////////////////////
 // .character add commands
 //.character add honorpoints
-bool ChatHandler::HandleCharAddHonorPointsCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharAddHonorPointsCommand(const char* args, WorldSession* m_session)
 {
     uint32_t honor_amount = args ? std::stoul(args) : 1;
 
@@ -600,7 +600,7 @@ bool ChatHandler::HandleCharAddHonorPointsCommand(const char* args, WorldSession
 
 
 //.character add honorkill
-bool ChatHandler::HandleCharAddHonorKillCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharAddHonorKillCommand(const char* args, WorldSession* m_session)
 {
     uint32_t kill_amount = args ? std::stoul(args) : 1;
     auto player_target = GetSelectedPlayer(m_session, true, true);
@@ -622,7 +622,7 @@ bool ChatHandler::HandleCharAddHonorKillCommand(const char* args, WorldSession* 
 }
 
 //.character add item
-bool ChatHandler::HandleCharAddItemCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharAddItemCommand(const char* args, WorldSession* m_session)
 {
     uint32_t itemid = 0;
     uint32_t count = 1;
@@ -679,7 +679,7 @@ bool ChatHandler::HandleCharAddItemCommand(const char* args, WorldSession* m_ses
 }
 
 //.character add itemset
-bool ChatHandler::HandleCharAddItemSetCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharAddItemSetCommand(const char* args, WorldSession* m_session)
 {
     int32_t setid = atoi(args);
     if (!setid)
@@ -733,7 +733,7 @@ bool ChatHandler::HandleCharAddItemSetCommand(const char* args, WorldSession* m_
 }
 
 //.character add copper
-bool ChatHandler::HandleCharAddCopperCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharAddCopperCommand(const char* args, WorldSession* m_session)
 {
     if (*args == 0)
     {
@@ -794,7 +794,7 @@ bool ChatHandler::HandleCharAddCopperCommand(const char* args, WorldSession* m_s
 }
 
 //.character add silver
-bool ChatHandler::HandleCharAddSilverCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharAddSilverCommand(const char* args, WorldSession* m_session)
 {
     if (*args == 0)
     {
@@ -854,7 +854,7 @@ bool ChatHandler::HandleCharAddSilverCommand(const char* args, WorldSession* m_s
 }
 
 //.character add gold
-bool ChatHandler::HandleCharAddGoldCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharAddGoldCommand(const char* args, WorldSession* m_session)
 {
     if (*args == 0)
     {
@@ -914,7 +914,7 @@ bool ChatHandler::HandleCharAddGoldCommand(const char* args, WorldSession* m_ses
 
 #if VERSION_STRING >= TBC // support classic
 //.character resetskills
-bool ChatHandler::HandleCharResetSkillsCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharResetSkillsCommand(const char* /*args*/, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
     if (selected_player == nullptr)
@@ -943,7 +943,7 @@ bool ChatHandler::HandleCharResetSkillsCommand(const char* /*args*/, WorldSessio
 #endif
 
 //.character removeitem
-bool ChatHandler::HandleCharRemoveItemCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharRemoveItemCommand(const char* args, WorldSession* m_session)
 {
     uint32_t item_id;
     int32_t count, ocount;
@@ -997,7 +997,7 @@ bool ChatHandler::HandleCharRemoveItemCommand(const char* args, WorldSession* m_
 }
 
 //.character resettalents
-bool ChatHandler::HandleCharResetTalentsCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharResetTalentsCommand(const char* /*args*/, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
     if (selected_player == nullptr)
@@ -1020,7 +1020,7 @@ bool ChatHandler::HandleCharResetTalentsCommand(const char* /*args*/, WorldSessi
 }
 
 //.character advanceallskills
-bool ChatHandler::HandleAdvanceAllSkillsCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleAdvanceAllSkillsCommand(const char* args, WorldSession* m_session)
 {
     auto amt = static_cast<uint16_t>(std::stoul(args));
     if (!amt)
@@ -1049,7 +1049,7 @@ bool ChatHandler::HandleAdvanceAllSkillsCommand(const char* args, WorldSession* 
 }
 
 //.character increaseweaponskill
-bool ChatHandler::HandleCharIncreaseWeaponSkill(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharIncreaseWeaponSkill(const char* args, WorldSession* m_session)
 {
     char* pMin = strtok((char*)args, " ");
     uint16_t cnt = 0;
@@ -1176,7 +1176,7 @@ bool ChatHandler::HandleCharIncreaseWeaponSkill(const char* args, WorldSession* 
 }
 
 //.character resetreputation
-bool ChatHandler::HandleCharResetReputationCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharResetReputationCommand(const char* /*args*/, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
     if (selected_player == nullptr)
@@ -1199,7 +1199,7 @@ bool ChatHandler::HandleCharResetReputationCommand(const char* /*args*/, WorldSe
 }
 
 //.character resetspells
-bool ChatHandler::HandleCharResetSpellsCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharResetSpellsCommand(const char* /*args*/, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
     if (selected_player == nullptr)
@@ -1224,7 +1224,7 @@ bool ChatHandler::HandleCharResetSpellsCommand(const char* /*args*/, WorldSessio
 //////////////////////////////////////////////////////////////////////////////////////////
 // .character set commands
 //.character set allexplored
-bool ChatHandler::HandleCharSetAllExploredCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharSetAllExploredCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
@@ -1246,7 +1246,7 @@ bool ChatHandler::HandleCharSetAllExploredCommand(const char* /*args*/, WorldSes
 }
 
 //.character set gender
-bool ChatHandler::HandleCharSetGenderCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharSetGenderCommand(const char* args, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
@@ -1293,7 +1293,7 @@ bool ChatHandler::HandleCharSetGenderCommand(const char* args, WorldSession* m_s
 }
 
 //.character set itemsrepaired
-bool ChatHandler::HandleCharSetItemsRepairedCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharSetItemsRepairedCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
@@ -1349,7 +1349,7 @@ bool ChatHandler::HandleCharSetItemsRepairedCommand(const char* /*args*/, WorldS
 }
 
 //.character set level
-bool ChatHandler::HandleCharSetLevelCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharSetLevelCommand(const char* args, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
@@ -1386,7 +1386,7 @@ bool ChatHandler::HandleCharSetLevelCommand(const char* args, WorldSession* m_se
 }
 
 //.character set name
-bool ChatHandler::HandleCharSetNameCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharSetNameCommand(const char* args, WorldSession* m_session)
 {
     if (!args)
         return false;
@@ -1454,7 +1454,7 @@ bool ChatHandler::HandleCharSetNameCommand(const char* args, WorldSession* m_ses
 }
 
 //.character set phase
-bool ChatHandler::HandleCharSetPhaseCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharSetPhaseCommand(const char* args, WorldSession* m_session)
 {
     uint32_t phase = atoi(args);
     if (phase == 0)
@@ -1484,7 +1484,7 @@ bool ChatHandler::HandleCharSetPhaseCommand(const char* args, WorldSession* m_se
 }
 
 //.character set speed
-bool ChatHandler::HandleCharSetSpeedCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharSetSpeedCommand(const char* args, WorldSession* m_session)
 {
     float speed = float(atof(args));
     if (speed == 0.0f || speed > 255.0f || speed < 0.1f)
@@ -1517,7 +1517,7 @@ bool ChatHandler::HandleCharSetSpeedCommand(const char* args, WorldSession* m_se
 }
 
 //.character set standing
-bool ChatHandler::HandleCharSetStandingCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharSetStandingCommand(const char* args, WorldSession* m_session)
 {
     uint32_t faction;
     int32_t standing;
@@ -1550,7 +1550,7 @@ bool ChatHandler::HandleCharSetStandingCommand(const char* args, WorldSession* m
 }
 
 //.character set talentpoints
-bool ChatHandler::HandleCharSetTalentpointsCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharSetTalentpointsCommand(const char* args, WorldSession* m_session)
 {
     if (!args)
     {
@@ -1610,7 +1610,7 @@ bool ChatHandler::HandleCharSetTalentpointsCommand(const char* args, WorldSessio
 }
 
 //.character set title
-bool ChatHandler::HandleCharSetTitleCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharSetTitleCommand(const char* args, WorldSession* m_session)
 {
 #if VERSION_STRING > Classic
     auto player_target = GetSelectedPlayer(m_session, true, true);
@@ -1662,7 +1662,7 @@ bool ChatHandler::HandleCharSetTitleCommand(const char* args, WorldSession* m_se
 }
 
 //.character set forcerename
-bool ChatHandler::HandleCharSetForceRenameCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharSetForceRenameCommand(const char* args, WorldSession* m_session)
 {
     if (strlen(args) > 100)
         return false;
@@ -1694,7 +1694,7 @@ bool ChatHandler::HandleCharSetForceRenameCommand(const char* args, WorldSession
 }
 
 //.character set customize
-bool ChatHandler::HandleCharSetCustomizeCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharSetCustomizeCommand(const char* args, WorldSession* m_session)
 {
     // prevent buffer overflow
     if (strlen(args) > 100)
@@ -1726,7 +1726,7 @@ bool ChatHandler::HandleCharSetCustomizeCommand(const char* args, WorldSession* 
 }
 
 //.character set factionchange
-bool ChatHandler::HandleCharSetFactionChangeCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharSetFactionChangeCommand(const char* args, WorldSession* m_session)
 {
     // prevent buffer overflow
     if (strlen(args) > 100)
@@ -1758,7 +1758,7 @@ bool ChatHandler::HandleCharSetFactionChangeCommand(const char* args, WorldSessi
 }
 
 //.character set racechange
-bool ChatHandler::HandleCharSetRaceChangeCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharSetRaceChangeCommand(const char* args, WorldSession* m_session)
 {
     // prevent buffer overflow
     if (strlen(args) > 100)
@@ -1792,7 +1792,7 @@ bool ChatHandler::HandleCharSetRaceChangeCommand(const char* args, WorldSession*
 //////////////////////////////////////////////////////////////////////////////////////////
 // .character list commands
 //.character list skills
-bool ChatHandler::HandleCharListSkillsCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharListSkillsCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
@@ -1824,7 +1824,7 @@ bool ChatHandler::HandleCharListSkillsCommand(const char* /*args*/, WorldSession
 }
 
 //.character list spells
-bool ChatHandler::handleCharListSpellsCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::handleCharListSpellsCommand(const char* args, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
@@ -1862,7 +1862,7 @@ bool ChatHandler::handleCharListSpellsCommand(const char* args, WorldSession* m_
 }
 
 //.character list standing
-bool ChatHandler::HandleCharListStandingCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharListStandingCommand(const char* args, WorldSession* m_session)
 {
     uint32_t faction = atoi(args);
     auto player_target = GetSelectedPlayer(m_session, true, true);
@@ -1880,7 +1880,7 @@ bool ChatHandler::HandleCharListStandingCommand(const char* args, WorldSession* 
 }
 
 //.character list items
-bool ChatHandler::HandleCharListItemsCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharListItemsCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
@@ -1903,7 +1903,7 @@ bool ChatHandler::HandleCharListItemsCommand(const char* /*args*/, WorldSession*
 }
 
 //.character list kills
-bool ChatHandler::HandleCharListKillsCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharListKillsCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)
@@ -1918,7 +1918,7 @@ bool ChatHandler::HandleCharListKillsCommand(const char* /*args*/, WorldSession*
 }
 
 //.character list instances
-bool ChatHandler::HandleCharListInstanceCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleCharListInstanceCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
     if (player_target == nullptr)

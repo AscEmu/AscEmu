@@ -3,7 +3,7 @@ Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 #include "Logging/Logger.hpp"
 #include "Movement/MovementManager.h"
 #include "Movement/WaypointManager.h"
@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 
 //.waypoint add
-bool ChatHandler::HandleWayPointAddCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleWayPointAddCommand(const char* args, WorldSession* m_session)
 {
     AIInterface* ai = nullptr;
     Creature* creature_target = nullptr;
@@ -101,7 +101,7 @@ bool ChatHandler::HandleWayPointAddCommand(const char* args, WorldSession* m_ses
 }
 
 //.waypoint delete
-bool ChatHandler::HandleWayPointDeleteCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleWayPointDeleteCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32_t wpid = GetSelectedWayPointId(m_session);
     Player* player = m_session->GetPlayer();
@@ -130,7 +130,7 @@ bool ChatHandler::HandleWayPointDeleteCommand(const char* /*args*/, WorldSession
 }
 
 //.waypoint deleteall
-bool ChatHandler::HandleWayPointDeleteAllCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleWayPointDeleteAllCommand(const char* /*args*/, WorldSession* m_session)
 {
     Creature* creature_target = GetSelectedCreature(m_session, true);
     Player* player = m_session->GetPlayer();
@@ -147,7 +147,7 @@ bool ChatHandler::HandleWayPointDeleteAllCommand(const char* /*args*/, WorldSess
 }
 
 //.waypoint hide
-bool ChatHandler::HandleWayPointHideCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleWayPointHideCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
@@ -174,7 +174,7 @@ bool ChatHandler::HandleWayPointHideCommand(const char* /*args*/, WorldSession* 
 }
 
 //.waypoint show
-bool ChatHandler::HandleWayPointShowCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleWayPointShowCommand(const char* args, WorldSession* m_session)
 {
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)

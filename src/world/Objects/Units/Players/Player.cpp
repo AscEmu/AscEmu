@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "TradeData.hpp"
 #include "Chat/ChatDefines.hpp"
-#include "Chat/ChatHandler.hpp"
 #include "Data/WoWPlayer.hpp"
 #include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
@@ -2374,7 +2373,7 @@ void Player::eventKickFromServer()
         else
             m_kickDelay -= 1000;
 
-        sChatHandler.blueSystemMessage(getSession(), "You will be removed from the server in {} seconds.", m_kickDelay / 1000);
+        getSession()->systemMessage("You will be removed from the server in {} seconds.", m_kickDelay / 1000);
     }
     else
     {
@@ -8578,7 +8577,7 @@ void Player::removeFromBgQueue()
         return;
 
     m_pendingBattleground->removePendingPlayer(this);
-    sChatHandler.systemMessage(m_session, getSession()->LocalizedWorldSrv(ServerString::SS_BG_REMOVE_QUEUE_INF));
+    m_session->systemMessage(getSession()->LocalizedWorldSrv(ServerString::SS_BG_REMOVE_QUEUE_INF));
 }
 
 bool Player::hasWonRbgToday() const { return this->m_hasWonRbgToday; }

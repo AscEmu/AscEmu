@@ -28,7 +28,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Packets/SmsgAreaTriggerMessage.h"
 #include "Packets/SmsgZoneUnderAttack.h"
 #include "OpcodeTable.hpp"
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 #include "Management/GameEventMgr.hpp"
 #include "Objects/Units/Creatures/CreatureGroups.h"
 #include "Objects/Units/Creatures/AIInterface.h"

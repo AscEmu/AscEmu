@@ -3,7 +3,7 @@ Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 #include "Management/Charter.hpp"
 #include "Management/Guild/Guild.hpp"
 #include "Management/Guild/GuildMgr.hpp"
@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSessionLog.hpp"
 
 //.guild create
-bool ChatHandler::HandleGuildCreateCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGuildCreateCommand(const char* args, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
     if (selected_player == nullptr)
@@ -60,7 +60,7 @@ bool ChatHandler::HandleGuildCreateCommand(const char* args, WorldSession* m_ses
 }
 
 //.guild disband
-bool ChatHandler::HandleGuildDisbandCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleGuildDisbandCommand(const char* /*args*/, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
     if (selected_player == nullptr)
@@ -79,7 +79,7 @@ bool ChatHandler::HandleGuildDisbandCommand(const char* /*args*/, WorldSession* 
 }
 
 #if VERSION_STRING >= Cata
-bool ChatHandler::HandleGuildInfoCommand(const char* /*args*/, WorldSession* session)
+bool ChatCommandHandler::HandleGuildInfoCommand(const char* /*args*/, WorldSession* session)
 {
     Player* selected_player = GetSelectedPlayer(session, true, true);
     if (selected_player == nullptr)
@@ -101,7 +101,7 @@ bool ChatHandler::HandleGuildInfoCommand(const char* /*args*/, WorldSession* ses
 #endif
 
 //.guild join
-bool ChatHandler::HandleGuildJoinCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGuildJoinCommand(const char* args, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
     if (selected_player == nullptr)
@@ -138,7 +138,7 @@ bool ChatHandler::HandleGuildJoinCommand(const char* args, WorldSession* m_sessi
 }
 
 //.guild listmembers
-bool ChatHandler::HandleGuildListMembersCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleGuildListMembersCommand(const char* /*args*/, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
     if (selected_player == nullptr)
@@ -155,7 +155,7 @@ bool ChatHandler::HandleGuildListMembersCommand(const char* /*args*/, WorldSessi
 }
 
 //.guild rename
-bool ChatHandler::HandleRenameGuildCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleRenameGuildCommand(const char* args, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
     if (selected_player == nullptr)
@@ -184,7 +184,7 @@ bool ChatHandler::HandleRenameGuildCommand(const char* args, WorldSession* m_ses
 }
 
 //.guild removeplayer
-bool ChatHandler::HandleGuildRemovePlayerCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleGuildRemovePlayerCommand(const char* /*args*/, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
     if (selected_player == nullptr)

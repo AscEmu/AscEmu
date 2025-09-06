@@ -3,7 +3,7 @@ Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Stats.h"
 #include "Objects/Units/Unit.hpp"
@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/PowerType.hpp"
 
 //.modify hp
-bool ChatHandler::HandleModifyHp(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyHp(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -37,7 +37,7 @@ bool ChatHandler::HandleModifyHp(const char* args, WorldSession* session)
 }
 
 //.modify mana
-bool ChatHandler::HandleModifyMana(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyMana(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -60,7 +60,7 @@ bool ChatHandler::HandleModifyMana(const char* args, WorldSession* session)
 }
 
 //.modify rage
-bool ChatHandler::HandleModifyRage(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyRage(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -83,7 +83,7 @@ bool ChatHandler::HandleModifyRage(const char* args, WorldSession* session)
 }
 
 //.modify energy
-bool ChatHandler::HandleModifyEnergy(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyEnergy(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -107,7 +107,7 @@ bool ChatHandler::HandleModifyEnergy(const char* args, WorldSession* session)
 
 #if VERSION_STRING >= WotLK
 //.modify runicpower
-bool ChatHandler::HandleModifyRunicpower(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyRunicpower(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -131,7 +131,7 @@ bool ChatHandler::HandleModifyRunicpower(const char* args, WorldSession* session
 #endif
 
 //.modify strength
-bool ChatHandler::HandleModifyStrength(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyStrength(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -151,7 +151,7 @@ bool ChatHandler::HandleModifyStrength(const char* args, WorldSession* session)
 }
 
 //.modify agility
-bool ChatHandler::HandleModifyAgility(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyAgility(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -171,7 +171,7 @@ bool ChatHandler::HandleModifyAgility(const char* args, WorldSession* session)
 }
 
 //.modify intelligence
-bool ChatHandler::HandleModifyIntelligence(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyIntelligence(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -191,7 +191,7 @@ bool ChatHandler::HandleModifyIntelligence(const char* args, WorldSession* sessi
 }
 
 //.modify spirit
-bool ChatHandler::HandleModifySpirit(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifySpirit(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -211,7 +211,7 @@ bool ChatHandler::HandleModifySpirit(const char* args, WorldSession* session)
 }
 
 //.modify armor
-bool ChatHandler::HandleModifyArmor(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyArmor(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -231,7 +231,7 @@ bool ChatHandler::HandleModifyArmor(const char* args, WorldSession* session)
 }
 
 //.modify holy
-bool ChatHandler::HandleModifyHoly(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyHoly(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -251,7 +251,7 @@ bool ChatHandler::HandleModifyHoly(const char* args, WorldSession* session)
 }
 
 //.modify fire
-bool ChatHandler::HandleModifyFire(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyFire(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -271,7 +271,7 @@ bool ChatHandler::HandleModifyFire(const char* args, WorldSession* session)
 }
 
 //.modify nature
-bool ChatHandler::HandleModifyNature(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyNature(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -291,7 +291,7 @@ bool ChatHandler::HandleModifyNature(const char* args, WorldSession* session)
 }
 
 //.modify frost
-bool ChatHandler::HandleModifyFrost(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyFrost(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -311,7 +311,7 @@ bool ChatHandler::HandleModifyFrost(const char* args, WorldSession* session)
 }
 
 //.modify shadow
-bool ChatHandler::HandleModifyShadow(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyShadow(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -331,7 +331,7 @@ bool ChatHandler::HandleModifyShadow(const char* args, WorldSession* session)
 }
 
 //.modify arcane
-bool ChatHandler::HandleModifyArcane(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyArcane(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -351,7 +351,7 @@ bool ChatHandler::HandleModifyArcane(const char* args, WorldSession* session)
 }
 
 //.modify damage
-bool ChatHandler::HandleModifyDamage(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyDamage(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -372,7 +372,7 @@ bool ChatHandler::HandleModifyDamage(const char* args, WorldSession* session)
 }
 
 //.modify ap
-bool ChatHandler::HandleModifyAp(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyAp(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -392,7 +392,7 @@ bool ChatHandler::HandleModifyAp(const char* args, WorldSession* session)
 }
 
 //.modify rangeap
-bool ChatHandler::HandleModifyRangeap(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyRangeap(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -412,7 +412,7 @@ bool ChatHandler::HandleModifyRangeap(const char* args, WorldSession* session)
 }
 
 //.modify scale
-bool ChatHandler::HandleModifyScale(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyScale(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -432,7 +432,7 @@ bool ChatHandler::HandleModifyScale(const char* args, WorldSession* session)
 }
 
 //.modify nativedisplayid
-bool ChatHandler::HandleModifyNativedisplayid(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyNativedisplayid(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -452,7 +452,7 @@ bool ChatHandler::HandleModifyNativedisplayid(const char* args, WorldSession* se
 }
 
 //.modify displayid
-bool ChatHandler::HandleModifyDisplayid(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyDisplayid(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -472,7 +472,7 @@ bool ChatHandler::HandleModifyDisplayid(const char* args, WorldSession* session)
 }
 
 //.modify flags
-bool ChatHandler::HandleModifyFlags(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyFlags(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -492,7 +492,7 @@ bool ChatHandler::HandleModifyFlags(const char* args, WorldSession* session)
 }
 
 //.modify faction
-bool ChatHandler::HandleModifyFaction(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyFaction(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -512,7 +512,7 @@ bool ChatHandler::HandleModifyFaction(const char* args, WorldSession* session)
 }
 
 //.modify dynamicflags
-bool ChatHandler::HandleModifyDynamicflags(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyDynamicflags(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -533,7 +533,7 @@ bool ChatHandler::HandleModifyDynamicflags(const char* args, WorldSession* sessi
 
 #if VERSION_STRING < Cata
 //.modify happiness
-bool ChatHandler::HandleModifyHappiness(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyHappiness(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -554,7 +554,7 @@ bool ChatHandler::HandleModifyHappiness(const char* args, WorldSession* session)
 #endif
 
 //.modify boundingradius
-bool ChatHandler::HandleModifyBoundingradius(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyBoundingradius(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -574,7 +574,7 @@ bool ChatHandler::HandleModifyBoundingradius(const char* args, WorldSession* ses
 }
 
 //.modify combatreach
-bool ChatHandler::HandleModifyCombatreach(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyCombatreach(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -594,7 +594,7 @@ bool ChatHandler::HandleModifyCombatreach(const char* args, WorldSession* sessio
 }
 
 //.modify emotestate
-bool ChatHandler::HandleModifyEmotestate(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyEmotestate(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -614,7 +614,7 @@ bool ChatHandler::HandleModifyEmotestate(const char* args, WorldSession* session
 }
 
 //.modify bytes0
-bool ChatHandler::HandleModifyBytes0(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyBytes0(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -634,7 +634,7 @@ bool ChatHandler::HandleModifyBytes0(const char* args, WorldSession* session)
 }
 
 //.modify bytes1
-bool ChatHandler::HandleModifyBytes1(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyBytes1(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -654,7 +654,7 @@ bool ChatHandler::HandleModifyBytes1(const char* args, WorldSession* session)
 }
 
 //.modify bytes2
-bool ChatHandler::HandleModifyBytes2(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleModifyBytes2(const char* args, WorldSession* session)
 {
     if (!args)
         return true;
@@ -673,7 +673,7 @@ bool ChatHandler::HandleModifyBytes2(const char* args, WorldSession* session)
     return false;
 }
 
-void ChatHandler::sendModifySystemMessage(WorldSession* session, Unit* unitTarget, std::string modType, uint32_t newValue, uint32_t oldValue)
+void ChatCommandHandler::sendModifySystemMessage(WorldSession* session, Unit* unitTarget, std::string modType, uint32_t newValue, uint32_t oldValue)
 {
     if (unitTarget->isPlayer())
     {
@@ -696,7 +696,7 @@ void ChatHandler::sendModifySystemMessage(WorldSession* session, Unit* unitTarge
     }
 }
 
-void ChatHandler::sendModifySystemMessage(WorldSession* session, Unit* unitTarget, std::string modType, float newValue, float oldValue)
+void ChatCommandHandler::sendModifySystemMessage(WorldSession* session, Unit* unitTarget, std::string modType, float newValue, float oldValue)
 {
     if (unitTarget->isPlayer())
     {

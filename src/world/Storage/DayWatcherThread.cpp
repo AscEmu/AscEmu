@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ArenaTeam.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "DayWatcherThread.h"
-#include "Chat/ChatHandler.hpp"
 #include "Logging/Log.hpp"
 #include "Logging/Logger.hpp"
 #include "Objects/Units/Players/Player.hpp"
@@ -270,7 +269,7 @@ void DayWatcherThread::update_arena()
 
                     // update fields (no uint lock)
                     sEventMgr.AddEvent(player, &Player::updateArenaPoints, EVENT_PLAYER_UPDATE, 100, 1, 0);
-                    sChatHandler.systemMessage(player->getSession(), "Your arena points have been updated! Check your PvP tab!");
+                    player->getSession()->systemMessage("Your arena points have been updated! Check your PvP tab!");
                 }
 
                 CharacterDatabase.Execute("UPDATE characters SET arenaPoints = %u WHERE guid = %u", arenapoints, guid);

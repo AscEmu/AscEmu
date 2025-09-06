@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Logging/StringFormat.hpp"
 
 #include <string>
+#include <optional>
 
 class SkillNameMgr;
 class Creature;
@@ -22,23 +23,23 @@ struct ItemProperties;
 int32_t GetSpellIDFromLink(const char* spelllink);
 uint16_t GetItemIDFromLink(const char* itemlink, uint32_t* itemid);
 
-class SERVER_DECL ChatHandler
+class SERVER_DECL ChatCommandHandler
 {
     friend class CommandTableStorage;
 
 private:
-    ChatHandler();
-    ~ChatHandler();
+    ChatCommandHandler();
+    ~ChatCommandHandler();
 
 public:
-    static ChatHandler& getInstance();
+    static ChatCommandHandler& getInstance();
     void initialize();
     void finalize();
 
-    ChatHandler(ChatHandler&&) = delete;
-    ChatHandler(ChatHandler const&) = delete;
-    ChatHandler& operator=(ChatHandler&&) = delete;
-    ChatHandler& operator=(ChatHandler const&) = delete;
+    ChatCommandHandler(ChatCommandHandler&&) = delete;
+    ChatCommandHandler(ChatCommandHandler const&) = delete;
+    ChatCommandHandler& operator=(ChatCommandHandler&&) = delete;
+    ChatCommandHandler& operator=(ChatCommandHandler const&) = delete;
 
     int ParseCommands(const char* text, WorldSession* session);
 
@@ -586,4 +587,4 @@ public:
     bool HandleWayPointShowCommand(const char* args, WorldSession* m_session);
 };
 
-#define sChatHandler ChatHandler::getInstance()
+#define sChatHandler ChatCommandHandler::getInstance()

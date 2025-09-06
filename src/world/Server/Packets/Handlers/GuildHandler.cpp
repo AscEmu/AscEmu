@@ -3,7 +3,6 @@ Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Chat/ChatHandler.hpp"
 #include "Logging/Logger.hpp"
 #include "Management/ArenaTeam.hpp"
 #include "Management/Charter.hpp"
@@ -699,7 +698,7 @@ void WorldSession::handleCharterTurnInCharter(WorldPacket& recvPacket)
 
         if (_player->getArenaTeam(charter->getCharterType() - 1U) != nullptr)
         {
-            sChatHandler.systemMessage(this, LocalizedWorldSrv(ServerString::SS_ALREADY_ARENA_TEAM));
+            systemMessage(LocalizedWorldSrv(ServerString::SS_ALREADY_ARENA_TEAM));
             return;
         }
 
@@ -782,13 +781,13 @@ void WorldSession::handleCharterBuy(WorldPacket& recvPacket)
         const auto arenaTeam = sObjectMgr.getArenaTeamByName(srlPacket.name, arena_type);
         if (arenaTeam != nullptr)
         {
-            sChatHandler.systemMessage(this, _player->getSession()->LocalizedWorldSrv(ServerString::SS_PETITION_NAME_ALREADY_USED));
+           systemMessage(_player->getSession()->LocalizedWorldSrv(ServerString::SS_PETITION_NAME_ALREADY_USED));
             return;
         }
 
         if (sObjectMgr.getCharterByName(srlPacket.name, static_cast<CharterTypes>(srlPacket.arenaIndex)))
         {
-            sChatHandler.systemMessage(this, _player->getSession()->LocalizedWorldSrv(ServerString::SS_PETITION_NAME_ALREADY_USED));
+            systemMessage(_player->getSession()->LocalizedWorldSrv(ServerString::SS_PETITION_NAME_ALREADY_USED));
             return;
         }
 

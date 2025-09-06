@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/Units/Creatures/Pet.h"
 #include "Chat/ChatDefines.hpp"
 #include "Server/Script/ScriptMgr.hpp"
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 
 #include "Logging/Logger.hpp"
 #include "Management/Group.h"

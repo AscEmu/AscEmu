@@ -3,7 +3,7 @@ Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Creatures/Pet.h"
 #include "Objects/Units/Players/Player.hpp"
@@ -13,7 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 
 //.pet create
-bool ChatHandler::HandlePetCreateCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandlePetCreateCommand(const char* args, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
     if (selected_player == nullptr)
@@ -77,7 +77,7 @@ bool ChatHandler::HandlePetCreateCommand(const char* args, WorldSession* m_sessi
 }
 
 //.pet dismiss
-bool ChatHandler::HandlePetDismissCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandlePetDismissCommand(const char* /*args*/, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, false, true);
     Pet* selected_pet = nullptr;
@@ -144,7 +144,7 @@ bool ChatHandler::HandlePetDismissCommand(const char* /*args*/, WorldSession* m_
 }
 
 //.pet rename
-bool ChatHandler::HandlePetRenameCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandlePetRenameCommand(const char* args, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
     if (selected_player == nullptr)
@@ -180,7 +180,7 @@ bool ChatHandler::HandlePetRenameCommand(const char* args, WorldSession* m_sessi
 }
 
 //.pet addspell
-bool ChatHandler::HandlePetAddSpellCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandlePetAddSpellCommand(const char* args, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
     if (selected_player == nullptr)
@@ -212,7 +212,7 @@ bool ChatHandler::HandlePetAddSpellCommand(const char* args, WorldSession* m_ses
 }
 
 //.pet removespell
-bool ChatHandler::HandlePetRemoveSpellCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandlePetRemoveSpellCommand(const char* args, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
     if (selected_player == nullptr)
@@ -244,7 +244,7 @@ bool ChatHandler::HandlePetRemoveSpellCommand(const char* args, WorldSession* m_
 }
 
 //.pet setlevel
-bool ChatHandler::HandlePetSetLevelCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandlePetSetLevelCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
         return false;

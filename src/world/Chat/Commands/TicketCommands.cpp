@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <sstream>
 
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 #include "Logging/Log.hpp"
 #include "Management/MailMgr.h"
 #include "Management/ObjectMgr.hpp"
@@ -20,7 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 using namespace AscEmu::Packets;
 
-bool ChatHandler::HandleTicketListCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleTicketListCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto result = CharacterDatabase.Query("SELECT * FROM gm_tickets WHERE deleted=0");
 
@@ -44,7 +44,7 @@ bool ChatHandler::HandleTicketListCommand(const char* /*args*/, WorldSession* m_
     return true;
 }
 
-bool ChatHandler::HandleTicketListAllCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleTicketListAllCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto result = CharacterDatabase.Query("SELECT * FROM gm_tickets");
 
@@ -68,7 +68,7 @@ bool ChatHandler::HandleTicketListAllCommand(const char* /*args*/, WorldSession*
     return true;
 }
 
-bool ChatHandler::HandleTicketGetCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleTicketGetCommand(const char* args, WorldSession* m_session)
 {
     if (!args)
     {
@@ -109,7 +109,7 @@ void ParseTicketArgs(char* args, char** insertComment)
     *insertComment = Comment;
 }
 
-bool ChatHandler::HandleTicketCloseCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleTicketCloseCommand(const char* args, WorldSession* m_session)
 {
     if (!args)
     {
@@ -174,7 +174,7 @@ bool ChatHandler::HandleTicketCloseCommand(const char* args, WorldSession* m_ses
     return true;
 }
 
-bool ChatHandler::HandleTicketDeleteCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleTicketDeleteCommand(const char* args, WorldSession* m_session)
 {
     if (!args)
     {

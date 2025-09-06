@@ -3,7 +3,6 @@ Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Chat/ChatHandler.hpp"
 #include "Logging/Logger.hpp"
 #include "Management/AchievementMgr.h"
 #include "Management/Charter.hpp"
@@ -2299,7 +2298,7 @@ void WorldSession::sendInventoryList(Creature* unit)
 {
     if (!unit->HasItems())
     {
-        sChatHandler.blueSystemMessage(_player->getSession(), "No sell template found. Report this to database's devs: {} ({})",
+        _player->getSession()->systemMessage("No sell template found. Report this to database's devs: {} ({})",
             unit->getEntry(), unit->GetCreatureProperties()->Name);
         sLogger.failure("'{}' discovered that a creature with entry {} ({}) has no sell template.",
             _player->getName(), unit->getEntry(), unit->GetCreatureProperties()->Name);

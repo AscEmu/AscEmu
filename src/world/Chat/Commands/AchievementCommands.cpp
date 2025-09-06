@@ -3,7 +3,7 @@ Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 #include "Management/AchievementMgr.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSessionLog.hpp"
@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #if VERSION_STRING > TBC
 //.achieve complete
-bool ChatHandler::handleAchievementCompleteCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::handleAchievementCompleteCommand(const char* args, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
     if (selected_player == nullptr)
@@ -43,7 +43,7 @@ bool ChatHandler::handleAchievementCompleteCommand(const char* args, WorldSessio
 }
 
 //.achieve criteria
-bool ChatHandler::handleAchievementCriteriaCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::handleAchievementCriteriaCommand(const char* args, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
     if (selected_player == nullptr)
@@ -75,7 +75,7 @@ bool ChatHandler::handleAchievementCriteriaCommand(const char* args, WorldSessio
 }
 
 //.achieve reset
-bool ChatHandler::handleAchievementResetCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::handleAchievementResetCommand(const char* args, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
     if (selected_player == nullptr)

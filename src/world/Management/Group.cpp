@@ -25,7 +25,7 @@
 #include "Management/Loot/LootItem.hpp"
 #include "Management/Loot/LootRoll.hpp"
 #include "Battleground/BattlegroundMgr.hpp"
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 #include "Management/LFG/LFGMgr.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Spell/SpellAura.hpp"

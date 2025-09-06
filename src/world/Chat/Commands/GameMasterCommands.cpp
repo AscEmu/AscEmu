@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <sstream>
 
 #include "Chat/ChatDefines.hpp"
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/World.h"
@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSessionLog.hpp"
 
 //.gm active
-bool ChatHandler::HandleGMActiveCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGMActiveCommand(const char* args, WorldSession* m_session)
 {
     auto player = m_session->GetPlayer();
     bool toggle_no_notice = std::string(args) == "no_notice" ? true : false;
@@ -48,7 +48,7 @@ bool ChatHandler::HandleGMActiveCommand(const char* args, WorldSession* m_sessio
 }
 
 //.gm allowwhispers
-bool ChatHandler::HandleGMAllowWhispersCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGMAllowWhispersCommand(const char* args, WorldSession* m_session)
 {
     if (args == 0)
     {
@@ -72,7 +72,7 @@ bool ChatHandler::HandleGMAllowWhispersCommand(const char* args, WorldSession* m
 }
 
 //.gm announce
-bool ChatHandler::HandleGMAnnounceCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGMAnnounceCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
     {
@@ -93,7 +93,7 @@ bool ChatHandler::HandleGMAnnounceCommand(const char* args, WorldSession* m_sess
 }
 
 //.gm blockwhispers
-bool ChatHandler::HandleGMBlockWhispersCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGMBlockWhispersCommand(const char* args, WorldSession* m_session)
 {
     if (args == 0)
     {
@@ -117,7 +117,7 @@ bool ChatHandler::HandleGMBlockWhispersCommand(const char* args, WorldSession* m
 }
 
 //.gm devtag
-bool ChatHandler::HandleGMDevTagCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGMDevTagCommand(const char* args, WorldSession* m_session)
 {
     auto player = m_session->GetPlayer();
     bool toggle_no_notice = std::string(args) == "no_notice" ? true : false;
@@ -147,7 +147,7 @@ bool ChatHandler::HandleGMDevTagCommand(const char* args, WorldSession* m_sessio
 }
 
 //.gm list
-bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_session)
 {
     bool print_headline = true;
 
@@ -206,7 +206,7 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
 }
 
 //.gm logcomment
-bool ChatHandler::HandleGMLogCommentCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGMLogCommentCommand(const char* args, WorldSession* m_session)
 {
     if (!args)
     {

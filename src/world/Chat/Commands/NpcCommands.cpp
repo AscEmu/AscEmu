@@ -3,7 +3,7 @@ Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Movement/MovementManager.h"
 #include "Objects/Units/Creatures/Creature.h"
@@ -21,7 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStructures.hpp"
 
 //.npc addagent
-bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_session)
 {
     //new
     auto creature_target = GetSelectedCreature(m_session, true);
@@ -106,7 +106,7 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
     return true;
 }
 
-bool ChatHandler::HandleNpcAppearCommand(const char* /*_*/, WorldSession* session)
+bool ChatCommandHandler::HandleNpcAppearCommand(const char* /*_*/, WorldSession* session)
 {
     const auto target = GetSelectedCreature(session);
     if (!target) {
@@ -118,7 +118,7 @@ bool ChatHandler::HandleNpcAppearCommand(const char* /*_*/, WorldSession* sessio
 }
 
 //.npc addtrainerspell
-bool ChatHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession* m_session)
 {
     /*auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
@@ -175,7 +175,7 @@ bool ChatHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession
 }
 
 //.npc cast
-bool ChatHandler::HandleNpcCastCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcCastCommand(const char* args, WorldSession* m_session)
 {
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
@@ -202,7 +202,7 @@ bool ChatHandler::HandleNpcCastCommand(const char* args, WorldSession* m_session
 }
 
 //.npc come
-bool ChatHandler::HandleNpcComeCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcComeCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
@@ -216,7 +216,7 @@ bool ChatHandler::HandleNpcComeCommand(const char* /*args*/, WorldSession* m_ses
 }
 
 //.npc delete
-bool ChatHandler::HandleNpcDeleteCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcDeleteCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
@@ -273,7 +273,7 @@ bool ChatHandler::HandleNpcDeleteCommand(const char* /*args*/, WorldSession* m_s
 }
 
 //.npc follow
-bool ChatHandler::HandleNpcFollowCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcFollowCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
@@ -285,7 +285,7 @@ bool ChatHandler::HandleNpcFollowCommand(const char* /*args*/, WorldSession* m_s
 }
 
 //.npc info
-bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
@@ -568,7 +568,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
 }
 
 //.npc listagent
-bool ChatHandler::HandleNpcListAIAgentCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcListAIAgentCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
@@ -591,7 +591,7 @@ bool ChatHandler::HandleNpcListAIAgentCommand(const char* /*args*/, WorldSession
 }
 
 //.npc listloot
-bool ChatHandler::HandleNpcListLootCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcListLootCommand(const char* args, WorldSession* m_session)
 {
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
@@ -635,7 +635,7 @@ bool ChatHandler::HandleNpcListLootCommand(const char* args, WorldSession* m_ses
 }
 
 //.npc stopfollow
-bool ChatHandler::HandleNpcStopFollowCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcStopFollowCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
@@ -648,7 +648,7 @@ bool ChatHandler::HandleNpcStopFollowCommand(const char* /*args*/, WorldSession*
 }
 
 //.npc respawn
-bool ChatHandler::HandleNpcRespawnCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcRespawnCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
@@ -682,7 +682,7 @@ bool ChatHandler::HandleNpcRespawnCommand(const char* /*args*/, WorldSession* m_
 }
 
 //.npc return
-bool ChatHandler::HandleNpcReturnCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcReturnCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
@@ -696,7 +696,7 @@ bool ChatHandler::HandleNpcReturnCommand(const char* /*args*/, WorldSession* m_s
 }
 
 //.npc say
-bool ChatHandler::HandleNpcSayCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcSayCommand(const char* args, WorldSession* m_session)
 {
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
@@ -714,7 +714,7 @@ bool ChatHandler::HandleNpcSayCommand(const char* args, WorldSession* m_session)
 }
 
 //.npc select
-bool ChatHandler::HandleNpcSelectCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcSelectCommand(const char* /*args*/, WorldSession* m_session)
 {
     Creature* near_creature = nullptr;
     float dist = 999999.0f;
@@ -742,7 +742,7 @@ bool ChatHandler::HandleNpcSelectCommand(const char* /*args*/, WorldSession* m_s
 }
 
 //.npc spawn
-bool ChatHandler::HandleNpcSpawnCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcSpawnCommand(const char* args, WorldSession* m_session)
 {
     uint32_t entry = std::stoul(args);
     if (entry == 0)
@@ -808,7 +808,7 @@ bool ChatHandler::HandleNpcSpawnCommand(const char* args, WorldSession* m_sessio
 }
 
 //.npc yell
-bool ChatHandler::HandleNpcYellCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcYellCommand(const char* args, WorldSession* m_session)
 {
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
@@ -827,7 +827,7 @@ bool ChatHandler::HandleNpcYellCommand(const char* args, WorldSession* m_session
 
 // Zyres: following commands are for units
 //.npc possess
-bool ChatHandler::HandlePossessCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandlePossessCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto unit_target = GetSelectedUnit(m_session);
     if (unit_target != nullptr)
@@ -862,7 +862,7 @@ bool ChatHandler::HandlePossessCommand(const char* /*args*/, WorldSession* m_ses
 }
 
 //.npc vendoradditem
-bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* m_session)
 {
 #if VERSION_STRING < Cata
     char* pitem = strtok(const_cast<char*>(args), " ");
@@ -944,7 +944,7 @@ bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* 
 }
 
 //.npc vendorremoveitem
-bool ChatHandler::HandleNpcVendorRemoveItemCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcVendorRemoveItemCommand(const char* args, WorldSession* m_session)
 {
     char* iguid = strtok((char*)args, " ");
     if (!iguid)
@@ -992,7 +992,7 @@ bool ChatHandler::HandleNpcVendorRemoveItemCommand(const char* args, WorldSessio
 }
 
 //.npc unpossess
-bool ChatHandler::HandleUnPossessCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleUnPossessCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto unit_target = GetSelectedUnit(m_session);
 
@@ -1021,7 +1021,7 @@ bool ChatHandler::HandleUnPossessCommand(const char* /*args*/, WorldSession* m_s
 }
 
 //.npc showtimers
-bool ChatHandler::HandleNpcShowTimersCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcShowTimersCommand(const char* /*args*/, WorldSession* m_session)
 {
     Creature* creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
@@ -1036,7 +1036,7 @@ bool ChatHandler::HandleNpcShowTimersCommand(const char* /*args*/, WorldSession*
 //////////////////////////////////////////////////////////////////////////////////////////
 // .npc set commands
 //.npc set canfly
-bool ChatHandler::HandleNpcSetCanFlyCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcSetCanFlyCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
@@ -1066,7 +1066,7 @@ bool ChatHandler::HandleNpcSetCanFlyCommand(const char* /*args*/, WorldSession* 
 }
 
 //.npc set equip
-bool ChatHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_session)
 {
     uint8_t equipment_slot;
     uint32_t item_id;
@@ -1135,7 +1135,7 @@ bool ChatHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_ses
 }
 
 //.npc set emote
-bool ChatHandler::HandleNpcSetEmoteCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcSetEmoteCommand(const char* args, WorldSession* m_session)
 {
     uint32_t emote;
 
@@ -1162,7 +1162,7 @@ bool ChatHandler::HandleNpcSetEmoteCommand(const char* args, WorldSession* m_ses
 }
 
 //.npc set formationmaster
-bool ChatHandler::HandleNpcSetFormationMasterCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcSetFormationMasterCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
@@ -1174,19 +1174,19 @@ bool ChatHandler::HandleNpcSetFormationMasterCommand(const char* /*args*/, World
 }
 
 //.npc set formationslave
-bool ChatHandler::HandleNpcSetFormationSlaveCommand(const char* /*args*/, WorldSession* /*m_session*/)
+bool ChatCommandHandler::HandleNpcSetFormationSlaveCommand(const char* /*args*/, WorldSession* /*m_session*/)
 {
     return true;
 }
 
 //.npc set formationclear
-bool ChatHandler::HandleNpcSetFormationClearCommand(const char* /*args*/, WorldSession* /*m_session*/)
+bool ChatCommandHandler::HandleNpcSetFormationClearCommand(const char* /*args*/, WorldSession* /*m_session*/)
 {
     return true;
 }
 
 //.npc set flags
-bool ChatHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession* m_session)
 {
     uint32_t npc_flags;
     if (sscanf(args, "%u", &npc_flags) < 1)
@@ -1213,7 +1213,7 @@ bool ChatHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession* m_ses
 }
 
 //.npc set phase
-bool ChatHandler::HandleNpcSetPhaseCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcSetPhaseCommand(const char* args, WorldSession* m_session)
 {
     uint32_t npc_phase;
 
@@ -1242,7 +1242,7 @@ bool ChatHandler::HandleNpcSetPhaseCommand(const char* args, WorldSession* m_ses
 }
 
 //.npc set standstate
-bool ChatHandler::HandleNpcSetStandstateCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcSetStandstateCommand(const char* args, WorldSession* m_session)
 {
     uint8_t standstate;
 
@@ -1270,7 +1270,7 @@ bool ChatHandler::HandleNpcSetStandstateCommand(const char* args, WorldSession* 
 }
 
 //.npc set entry
-bool ChatHandler::HandleNpcChangeEntry(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleNpcChangeEntry(const char* args, WorldSession* m_session)
 {
     uint32_t entry;
 

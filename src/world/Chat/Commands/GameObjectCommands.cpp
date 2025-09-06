@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Chat/ChatDefines.hpp"
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 #include "Map/Management/MapMgr.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/GameObject.h"
@@ -17,7 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStores.hpp"
 
 //.gobject damage
-bool ChatHandler::HandleGODamageCommand(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleGODamageCommand(const char* args, WorldSession* session)
 {
     uint32_t damage = 0;
     uint32_t spellid = 0;
@@ -64,7 +64,7 @@ bool ChatHandler::HandleGODamageCommand(const char* args, WorldSession* session)
 }
 
 //.gobject delete
-bool ChatHandler::HandleGODeleteCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleGODeleteCommand(const char* /*args*/, WorldSession* m_session)
 {
     GameObject* selected_gobject = m_session->GetPlayer()->getSelectedGo();
     if (selected_gobject == nullptr)
@@ -116,7 +116,7 @@ bool ChatHandler::HandleGODeleteCommand(const char* /*args*/, WorldSession* m_se
 }
 
 //.gobject enable
-bool ChatHandler::HandleGOEnableCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleGOEnableCommand(const char* /*args*/, WorldSession* m_session)
 {
     GameObject* gameobject = m_session->GetPlayer()->getSelectedGo();
     if (gameobject == nullptr)
@@ -144,7 +144,7 @@ bool ChatHandler::HandleGOEnableCommand(const char* /*args*/, WorldSession* m_se
 }
 
 //.gobject export
-bool ChatHandler::HandleGOExportCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGOExportCommand(const char* args, WorldSession* m_session)
 {
     if (!m_session->GetPlayer()->getSelectedGo())
         return false;
@@ -171,7 +171,7 @@ bool ChatHandler::HandleGOExportCommand(const char* args, WorldSession* m_sessio
 }
 
 //.gobject info
-bool ChatHandler::HandleGOInfoCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleGOInfoCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto gameobject = m_session->GetPlayer()->getSelectedGo();
     if (!gameobject)
@@ -323,7 +323,7 @@ bool ChatHandler::HandleGOInfoCommand(const char* /*args*/, WorldSession* m_sess
 }
 
 //.gobject movehere
-bool ChatHandler::HandleGOMoveHereCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleGOMoveHereCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto gameobject = m_session->GetPlayer()->getSelectedGo();
     if (gameobject == nullptr)
@@ -361,7 +361,7 @@ bool ChatHandler::HandleGOMoveHereCommand(const char* /*args*/, WorldSession* m_
 }
 
 //.gobject open
-bool ChatHandler::HandleGOOpenCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleGOOpenCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto gameobject = m_session->GetPlayer()->getSelectedGo();
     if (gameobject == nullptr)
@@ -385,7 +385,7 @@ bool ChatHandler::HandleGOOpenCommand(const char* /*args*/, WorldSession* m_sess
 }
 
 //.gobject rebuild
-bool ChatHandler::HandleGORebuildCommand(const char* /*args*/, WorldSession* session)
+bool ChatCommandHandler::HandleGORebuildCommand(const char* /*args*/, WorldSession* session)
 {
     auto gameobject = session->GetPlayer()->getSelectedGo();
     if (gameobject == nullptr)
@@ -413,7 +413,7 @@ bool ChatHandler::HandleGORebuildCommand(const char* /*args*/, WorldSession* ses
 }
 
 //.gobject rotate
-bool ChatHandler::HandleGORotateCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGORotateCommand(const char* args, WorldSession* m_session)
 {
     char Axis;
     float deg;
@@ -463,7 +463,7 @@ bool ChatHandler::HandleGORotateCommand(const char* args, WorldSession* m_sessio
 }
 
 //.gobject select
-bool ChatHandler::HandleGOSelectCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGOSelectCommand(const char* args, WorldSession* m_session)
 {
     GameObject* GObj = nullptr;
     GameObject* GObjs = m_session->GetPlayer()->getSelectedGo();
@@ -536,7 +536,7 @@ bool ChatHandler::HandleGOSelectCommand(const char* args, WorldSession* m_sessio
 }
 
 //.gobject selectguid
-bool ChatHandler::HandleGOSelectGuidCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGOSelectGuidCommand(const char* args, WorldSession* m_session)
 {
     uint32_t guid = 0;
     if (sscanf(args, "%u", &guid) != 1)
@@ -559,7 +559,7 @@ bool ChatHandler::HandleGOSelectGuidCommand(const char* args, WorldSession* m_se
 }
 
 //.gobject spawn
-bool ChatHandler::HandleGOSpawnCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGOSpawnCommand(const char* args, WorldSession* m_session)
 {
     uint32_t go_entry = 0;
     if (sscanf(args, "%u", &go_entry) < 1)
@@ -591,7 +591,7 @@ bool ChatHandler::HandleGOSpawnCommand(const char* args, WorldSession* m_session
 //////////////////////////////////////////////////////////////////////////////////////////
 // .gobject set commands
 //.gobject set animprogress
-bool ChatHandler::HandleGOSetAnimProgressCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGOSetAnimProgressCommand(const char* args, WorldSession* m_session)
 {
     uint32_t animprogress;
 
@@ -616,7 +616,7 @@ bool ChatHandler::HandleGOSetAnimProgressCommand(const char* args, WorldSession*
 }
 
 //.gobject set faction
-bool ChatHandler::HandleGOSetFactionCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGOSetFactionCommand(const char* args, WorldSession* m_session)
 {
     uint32_t go_faction = 0;
     if (sscanf(args, "%u", &go_faction) < 1)
@@ -657,7 +657,7 @@ bool ChatHandler::HandleGOSetFactionCommand(const char* args, WorldSession* m_se
 }
 
 //.gobject set flags
-bool ChatHandler::HandleGOSetFlagsCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGOSetFlagsCommand(const char* args, WorldSession* m_session)
 {
     uint32_t go_flags;
 
@@ -691,7 +691,7 @@ bool ChatHandler::HandleGOSetFlagsCommand(const char* args, WorldSession* m_sess
 }
 
 //.gobject set overrides
-bool ChatHandler::HandleGOSetOverridesCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGOSetOverridesCommand(const char* args, WorldSession* m_session)
 {
     uint32_t go_override;
     if (sscanf(args, "%u", &go_override) < 1)
@@ -731,7 +731,7 @@ bool ChatHandler::HandleGOSetOverridesCommand(const char* args, WorldSession* m_
 
 
 //.gobject set phase
-bool ChatHandler::HandleGOSetPhaseCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGOSetPhaseCommand(const char* args, WorldSession* m_session)
 {
     uint32_t phase;
 
@@ -772,7 +772,7 @@ bool ChatHandler::HandleGOSetPhaseCommand(const char* args, WorldSession* m_sess
 }
 
 //.gobject set scale
-bool ChatHandler::HandleGOSetScaleCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGOSetScaleCommand(const char* args, WorldSession* m_session)
 {
     float scale = 0.0f;
     if (sscanf(args, "%f", &scale) < 1)
@@ -811,7 +811,7 @@ bool ChatHandler::HandleGOSetScaleCommand(const char* args, WorldSession* m_sess
 }
 
 //.gobject set state
-bool ChatHandler::HandleGOSetStateCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGOSetStateCommand(const char* args, WorldSession* m_session)
 {
     uint32_t go_state;
 

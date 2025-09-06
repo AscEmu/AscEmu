@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Chat/ChatDefines.hpp"
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 #include "Management/Battleground/Battleground.hpp"
 #include "Management/Battleground/BattlegroundMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"
@@ -13,7 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WorldStrings.h"
 
 //.battleground forceinitqueue
-bool ChatHandler::HandleBGForceInitQueueCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleBGForceInitQueueCommand(const char* /*args*/, WorldSession* m_session)
 {
     sBattlegroundManager.eventQueueUpdate(true);
 
@@ -23,7 +23,7 @@ bool ChatHandler::HandleBGForceInitQueueCommand(const char* /*args*/, WorldSessi
 }
 
 //.battleground getqueue
-bool ChatHandler::HandleBGGetQueueCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleBGGetQueueCommand(const char* /*args*/, WorldSession* m_session)
 {
     sBattlegroundManager.handleGetBattlegroundQueueCommand(m_session);
 
@@ -33,7 +33,7 @@ bool ChatHandler::HandleBGGetQueueCommand(const char* /*args*/, WorldSession* m_
 }
 
 //.battleground info
-bool ChatHandler::HandleBGInfoCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleBGInfoCommand(const char* /*args*/, WorldSession* m_session)
 {
     redSystemMessage(m_session, ".battleground info command not implemented yet!");
 
@@ -41,7 +41,7 @@ bool ChatHandler::HandleBGInfoCommand(const char* /*args*/, WorldSession* m_sess
 }
 
 //.battleground leave
-bool ChatHandler::HandleBGLeaveCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleBGLeaveCommand(const char* /*args*/, WorldSession* m_session)
 {
     if (!m_session->GetPlayer()->getBattleground())
     {
@@ -55,7 +55,7 @@ bool ChatHandler::HandleBGLeaveCommand(const char* /*args*/, WorldSession* m_ses
 }
 
 //.battleground menu
-bool ChatHandler::HandleBGMenuCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleBGMenuCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
         return false;
@@ -80,7 +80,7 @@ bool ChatHandler::HandleBGMenuCommand(const char* args, WorldSession* m_session)
 }
 
 //.battleground pause
-bool ChatHandler::HandleBGPauseCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleBGPauseCommand(const char* /*args*/, WorldSession* m_session)
 {
     redSystemMessage(m_session, ".battleground pause command not implemented yet!");
 
@@ -88,7 +88,7 @@ bool ChatHandler::HandleBGPauseCommand(const char* /*args*/, WorldSession* m_ses
 }
 
 //.battleground playsound
-bool ChatHandler::HandleBGPlaySoundCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleBGPlaySoundCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
         return false;
@@ -104,7 +104,7 @@ bool ChatHandler::HandleBGPlaySoundCommand(const char* args, WorldSession* m_ses
 }
 
 //.battleground sendstatus
-bool ChatHandler::HandleBGSendStatusCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleBGSendStatusCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
         return false;
@@ -115,7 +115,7 @@ bool ChatHandler::HandleBGSendStatusCommand(const char* args, WorldSession* m_se
 }
 
 //.battleground setscore
-bool ChatHandler::HandleBGSetScoreCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleBGSetScoreCommand(const char* /*args*/, WorldSession* m_session)
 {
     redSystemMessage(m_session, ".battleground setscore command not implemented yet!");
 
@@ -123,7 +123,7 @@ bool ChatHandler::HandleBGSetScoreCommand(const char* /*args*/, WorldSession* m_
 }
 
 //.battleground setworldstate
-bool ChatHandler::HandleBGSetWorldStateCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleBGSetWorldStateCommand(const char* args, WorldSession* m_session)
 {
     uint32_t id, val;
     if (sscanf(args, "%u %u", &id, &val) != 2)
@@ -140,7 +140,7 @@ bool ChatHandler::HandleBGSetWorldStateCommand(const char* args, WorldSession* m
 }
 
 //.battleground setworldstates
-bool ChatHandler::HandleBGSetWorldStatesCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleBGSetWorldStatesCommand(const char* args, WorldSession* m_session)
 {
     uint32_t first, last, val;
     if (sscanf(args, "%u %u %u", &first, &last, &val) != 3)
@@ -158,7 +158,7 @@ bool ChatHandler::HandleBGSetWorldStatesCommand(const char* args, WorldSession* 
 }
 
 //.battleground start
-bool ChatHandler::HandleBGStartCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleBGStartCommand(const char* /*args*/, WorldSession* m_session)
 {
     if (!m_session->GetPlayer()->getBattleground())
     {

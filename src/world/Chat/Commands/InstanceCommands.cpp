@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Chat/ChatDefines.hpp"
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 #include "Logging/Logger.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Map/Management/MapMgr.hpp"
@@ -20,7 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 using namespace AscEmu::Packets;
 
 //.instance create
-bool ChatHandler::HandleCreateInstanceCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCreateInstanceCommand(const char* args, WorldSession* m_session)
 {
     Player* plr = GetSelectedPlayer(m_session, true, true);
     if (plr == nullptr)
@@ -48,7 +48,7 @@ bool ChatHandler::HandleCreateInstanceCommand(const char* args, WorldSession* m_
 }
 
 //.instance countcreature
-bool ChatHandler::HandleCountCreaturesCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleCountCreaturesCommand(const char* args, WorldSession* m_session)
 {
     Player* plr = m_session->GetPlayer();
     if (plr == nullptr)
@@ -64,7 +64,7 @@ bool ChatHandler::HandleCountCreaturesCommand(const char* args, WorldSession* m_
 }
 
 //.instance exit
-bool ChatHandler::HandleExitInstanceCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleExitInstanceCommand(const char* /*args*/, WorldSession* m_session)
 {
     blueSystemMessage(m_session, "Attempting to exit from instance...");
 
@@ -78,7 +78,7 @@ bool ChatHandler::HandleExitInstanceCommand(const char* /*args*/, WorldSession* 
 }
 
 //.instance info
-bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m_session)
 {
     Player* plr = m_session->GetPlayer();
     if (plr == nullptr)
@@ -162,7 +162,7 @@ bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m
 }
 
 //.instance reset
-bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_session)
 {
     uint32_t instanceId;
     int argc = 1;
@@ -223,7 +223,7 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
 }
 
 //.instance resetall
-bool ChatHandler::HandleResetAllInstancesCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleResetAllInstancesCommand(const char* args, WorldSession* m_session)
 {
     bool is_name_set = false;
     Player* player;
@@ -256,7 +256,7 @@ bool ChatHandler::HandleResetAllInstancesCommand(const char* args, WorldSession*
 }
 
 //.instance shutdown
-bool ChatHandler::HandleShutdownInstanceCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleShutdownInstanceCommand(const char* args, WorldSession* m_session)
 {
     uint32_t instanceId = (args ? atoi(args) : 0);
     if (instanceId == 0)
@@ -288,7 +288,7 @@ bool ChatHandler::HandleShutdownInstanceCommand(const char* args, WorldSession* 
 }
 
 //.instance showtimers
-bool ChatHandler::HandleShowTimersCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleShowTimersCommand(const char* /*args*/, WorldSession* m_session)
 {
     Player* player = m_session->GetPlayer();
     if (player == nullptr)

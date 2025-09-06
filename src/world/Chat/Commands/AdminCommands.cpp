@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Chat/ChatDefines.hpp"
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 #include "Logging/Log.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"
@@ -19,7 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellEffects.hpp"
 
 //.admin castall
-bool ChatHandler::HandleAdminCastAllCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleAdminCastAllCommand(const char* args, WorldSession* m_session)
 {
     if (!args)
     {
@@ -71,7 +71,7 @@ bool ChatHandler::HandleAdminCastAllCommand(const char* args, WorldSession* m_se
 }
 
 //.admin dispellall
-bool ChatHandler::HandleAdminDispelAllCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleAdminDispelAllCommand(const char* args, WorldSession* m_session)
 {
     uint32_t pos = 0;
     if (*args)
@@ -108,7 +108,7 @@ bool ChatHandler::HandleAdminDispelAllCommand(const char* args, WorldSession* m_
 }
 
 //.admin masssummon
-bool ChatHandler::HandleAdminMassSummonCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleAdminMassSummonCommand(const char* args, WorldSession* m_session)
 {
     sObjectMgr.m_playerLock.lock();
 
@@ -160,7 +160,7 @@ bool ChatHandler::HandleAdminMassSummonCommand(const char* args, WorldSession* m
 }
 
 //.admin playall
-bool ChatHandler::HandleAdminPlayGlobalSoundCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleAdminPlayGlobalSoundCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
         return false;

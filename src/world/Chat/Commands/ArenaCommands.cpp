@@ -3,12 +3,12 @@ Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 #include "Management/ArenaTeam.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"
 
-uint8_t ChatHandler::GetArenaTeamInternalType(uint32_t type, WorldSession* m_session)
+uint8_t ChatCommandHandler::GetArenaTeamInternalType(uint32_t type, WorldSession* m_session)
 {
     uint8_t internal_type;
     switch (type)
@@ -32,7 +32,7 @@ uint8_t ChatHandler::GetArenaTeamInternalType(uint32_t type, WorldSession* m_ses
     return internal_type;
 }
 
-bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_session)
 {
     uint32_t teamType;
     char teamName[1000];
@@ -72,7 +72,7 @@ bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_sessio
     return true;
 }
 
-bool ChatHandler::HandleArenaSetTeamLeader(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleArenaSetTeamLeader(const char* args, WorldSession* m_session)
 {
     uint32_t team_type;
 
@@ -107,7 +107,7 @@ bool ChatHandler::HandleArenaSetTeamLeader(const char* args, WorldSession* m_ses
     return true;
 }
 
-bool ChatHandler::HandleArenaTeamResetAllRatings(const char* /*args*/, WorldSession* /*m_session*/)
+bool ChatCommandHandler::HandleArenaTeamResetAllRatings(const char* /*args*/, WorldSession* /*m_session*/)
 {
     sObjectMgr.resetArenaTeamRatings();
 

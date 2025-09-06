@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <sstream>
 
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Creatures/Vehicle.hpp"
@@ -15,7 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #ifdef FT_VEHICLES
 //.vehicle ejectpassenger
-bool ChatHandler::HandleVehicleEjectPassengerCommand(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleVehicleEjectPassengerCommand(const char* args, WorldSession* session)
 {
     if (!args)
     {
@@ -48,7 +48,7 @@ bool ChatHandler::HandleVehicleEjectPassengerCommand(const char* args, WorldSess
 }
 
 //.vehicle ejectallpassengers
-bool ChatHandler::HandleVehicleEjectAllPassengersCommand(const char* /*args*/, WorldSession* session)
+bool ChatCommandHandler::HandleVehicleEjectAllPassengersCommand(const char* /*args*/, WorldSession* session)
 {
     Player* p = session->GetPlayer();
     if (p->getTargetGuid() == 0)
@@ -72,7 +72,7 @@ bool ChatHandler::HandleVehicleEjectAllPassengersCommand(const char* /*args*/, W
 }
 
 //.vehicle installaccessories
-bool ChatHandler::HandleVehicleInstallAccessoriesCommand(const char* /*args*/, WorldSession* session)
+bool ChatCommandHandler::HandleVehicleInstallAccessoriesCommand(const char* /*args*/, WorldSession* session)
 {
     Player* p = session->GetPlayer();
     if (p->getTargetGuid() == 0)
@@ -96,7 +96,7 @@ bool ChatHandler::HandleVehicleInstallAccessoriesCommand(const char* /*args*/, W
 }
 
 //.vehicle addpassenger
-bool ChatHandler::HandleVehicleAddPassengerCommand(const char* args, WorldSession* session)
+bool ChatCommandHandler::HandleVehicleAddPassengerCommand(const char* args, WorldSession* session)
 {
     std::stringstream ss(args);
     uint32_t creature_entry;

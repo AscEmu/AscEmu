@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Management/Tickets/TicketMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"
@@ -20,7 +20,7 @@ using namespace AscEmu::Packets;
 
 #ifdef GM_TICKET_MY_MASTER_COMPATIBLE
 
-bool ChatHandler::HandleGMTicketListCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleGMTicketListCommand(const char* /*args*/, WorldSession* m_session)
 {
     Player* cplr = m_session->GetPlayer();
 
@@ -56,7 +56,7 @@ bool ChatHandler::HandleGMTicketListCommand(const char* /*args*/, WorldSession* 
     return true;
 }
 
-bool ChatHandler::HandleGMTicketGetByIdCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGMTicketGetByIdCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
         return false;
@@ -109,7 +109,7 @@ bool ChatHandler::HandleGMTicketGetByIdCommand(const char* args, WorldSession* m
     return true;
 }
 
-bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
         return false;
@@ -152,10 +152,10 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
 
 #else
 
-void ChatHandler::SendGMSurvey()
+void ChatCommandHandler::SendGMSurvey()
 {}
 
-bool ChatHandler::HandleGMTicketListCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGMTicketListCommand(const char* args, WorldSession* m_session)
 {
     Player* cplr = m_session->GetPlayer();
 
@@ -197,7 +197,7 @@ bool ChatHandler::HandleGMTicketListCommand(const char* args, WorldSession* m_se
     return true;
 }
 
-bool ChatHandler::HandleGMTicketGetByIdCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGMTicketGetByIdCommand(const char* args, WorldSession* m_session)
 {
     uint64_t ticketGuid = (args ? atoi(args) : 0);
     if (!ticketGuid)
@@ -252,7 +252,7 @@ bool ChatHandler::HandleGMTicketGetByIdCommand(const char* args, WorldSession* m
     return true;
 }
 
-bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession* m_session)
 {
     uint64_t ticketGuid = (args ? atoi(args) : 0);
     if (!ticketGuid)
@@ -304,7 +304,7 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
 }
 
 
-bool ChatHandler::HandleGMTicketAssignToCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGMTicketAssignToCommand(const char* args, WorldSession* m_session)
 {
     uint64_t ticketGuid;
     char guidString[100], name[100];
@@ -391,7 +391,7 @@ bool ChatHandler::HandleGMTicketAssignToCommand(const char* args, WorldSession* 
     return true;
 }
 
-bool ChatHandler::HandleGMTicketReleaseCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGMTicketReleaseCommand(const char* args, WorldSession* m_session)
 {
     uint64_t ticketGuid = (args ? atoi(args) : 0);
     if (!ticketGuid)
@@ -436,7 +436,7 @@ bool ChatHandler::HandleGMTicketReleaseCommand(const char* args, WorldSession* m
     return true;
 }
 
-bool ChatHandler::HandleGMTicketCommentCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGMTicketCommentCommand(const char* args, WorldSession* m_session)
 {
     uint64_t ticketGuid;
     int argc = 1;
@@ -490,7 +490,7 @@ bool ChatHandler::HandleGMTicketCommentCommand(const char* args, WorldSession* m
     return true;
 }
 
-bool ChatHandler::HandleGMTicketDeletePermanentCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleGMTicketDeletePermanentCommand(const char* args, WorldSession* m_session)
 {
     uint64_t ticketGuid = (args ? atoi(args) : 0);
     if (!ticketGuid)
@@ -543,7 +543,7 @@ bool ChatHandler::HandleGMTicketDeletePermanentCommand(const char* args, WorldSe
 
 #endif
 
-bool ChatHandler::HandleGMTicketToggleTicketSystemStatusCommand(const char* /*args*/, WorldSession* m_session)
+bool ChatCommandHandler::HandleGMTicketToggleTicketSystemStatusCommand(const char* /*args*/, WorldSession* m_session)
 {
     sWorld.toggleGmTicketStatus();
 

@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <sstream>
 
 #include "Chat/ChatDefines.hpp"
-#include "Chat/ChatHandler.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 #include "Management/ObjectMgr.hpp"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/DatabaseDefinition.hpp"
@@ -17,7 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Strings.hpp"
 
 //.recall port
-bool ChatHandler::HandleRecallGoCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleRecallGoCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
         return false;
@@ -35,7 +35,7 @@ bool ChatHandler::HandleRecallGoCommand(const char* args, WorldSession* m_sessio
 }
 
 //.recall portus
-bool ChatHandler::HandleRecallPortUsCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleRecallPortUsCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
         return false;
@@ -56,7 +56,7 @@ bool ChatHandler::HandleRecallPortUsCommand(const char* args, WorldSession* m_se
 }
 
 //.recall add
-bool ChatHandler::HandleRecallAddCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleRecallAddCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
         return false;
@@ -92,7 +92,7 @@ bool ChatHandler::HandleRecallAddCommand(const char* args, WorldSession* m_sessi
 }
 
 //.recall del
-bool ChatHandler::HandleRecallDelCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleRecallDelCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
         return false;
@@ -113,7 +113,7 @@ bool ChatHandler::HandleRecallDelCommand(const char* args, WorldSession* m_sessi
 }
 
 //.recall list
-bool ChatHandler::HandleRecallListCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleRecallListCommand(const char* args, WorldSession* m_session)
 {
     uint32_t count = 0;
 
@@ -148,7 +148,7 @@ bool ChatHandler::HandleRecallListCommand(const char* args, WorldSession* m_sess
 }
 
 //.recall portplayer
-bool ChatHandler::HandleRecallPortPlayerCommand(const char* args, WorldSession* m_session)
+bool ChatCommandHandler::HandleRecallPortPlayerCommand(const char* args, WorldSession* m_session)
 {
     if (!args || !*args)
         return false;

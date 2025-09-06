@@ -12,12 +12,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include <sstream>
 #include <iterator>
 
-class ChatHandler;
+class ChatCommandHandler;
 class WorldSession;
 
 struct ChatCommand
 {
-    using HandlerFn = std::function<bool(ChatHandler*, std::string_view, WorldSession*)>;
+    using HandlerFn = std::function<bool(ChatCommandHandler*, std::string_view, WorldSession*)>;
 
     std::string command;
     std::string commandPermission;
@@ -70,9 +70,9 @@ inline size_t countWords(const char* argz)
 
 // Legacy wrapper 
 inline ChatCommand::HandlerFn
-wrap(bool (ChatHandler::*pm)(const char*, WorldSession*))
+wrap(bool (ChatCommandHandler::*pm)(const char*, WorldSession*))
 {
-    return [pm](ChatHandler* self, std::string_view sv, WorldSession* sess) -> bool {
+    return [pm](ChatCommandHandler* self, std::string_view sv, WorldSession* sess) -> bool {
         std::vector<char> buf;
         buf.reserve(sv.size() + 1);
         buf.insert(buf.end(), sv.begin(), sv.end());
@@ -104,11 +104,11 @@ inline size_t countWords(std::string_view sv)
     return count;
 }
 
-// Modern wrapper - bool(ChatHandler::*)(std::string_view, WorldSession*)
+// Modern wrapper - bool(ChatCommandHandler::*)(std::string_view, WorldSession*)
 inline ChatCommand::HandlerFn
-wrap(bool (ChatHandler::*pm)(std::string_view, WorldSession*))
+wrap(bool (ChatCommandHandler::*pm)(std::string_view, WorldSession*))
 {
-    return [pm](ChatHandler* self, std::string_view sv, WorldSession* sess) -> bool {
+    return [pm](ChatCommandHandler* self, std::string_view sv, WorldSession* sess) -> bool {
         return (self->*pm)(sv, sess);
     };
 }
