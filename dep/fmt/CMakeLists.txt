@@ -16,7 +16,7 @@ function(add_headers VAR)
     set(${VAR} ${headers} PARENT_SCOPE)
 endfunction()
 
-# Define the fmt library, its includes and the needed defines.
+# collect all public fmt headers.
 add_headers(FMT_HEADERS
     args.h
     chrono.h
@@ -32,23 +32,30 @@ add_headers(FMT_HEADERS
     std.h
     xchar.h)
 
+# collect source files.
 set(FMT_SOURCES
     src/format.cc
     src/os.cc)
 
+# define the main fmt library (static).
 add_library(fmt STATIC ${FMT_SOURCES} ${FMT_HEADERS})
 
+# provide an alias target for modern CMake usage (fmt::fmt).
+add_library(fmt::fmt ALIAS fmt)
+
+# enable locale support if available
 if (HAVE_STRTOD_L)
     target_compile_definitions(fmt
         PUBLIC
             FMT_LOCALE)
 endif()
 
-# Define FMT_CONSTEVAL for current using in c++20
+# define FMT_CONSTEVAL for C++20 usage.
 target_compile_definitions(fmt
     PUBLIC
         FMT_CONSTEVAL=)
 
+# add include directory for public headers.
 target_include_directories(fmt
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include)
