@@ -10,10 +10,11 @@ title: ⚙ [Support Request]
 
 
 **Steps to reproduce**: 
-1. 
-2. 
-3. 
-4.
+<!--
+    How to reproduce it:
+    - Be specific, describe what you've done to trigger the issue.
+-->
+
 
 **Expansion version**: <!-- (Add / Remove lines if necessary) -->
 <!--
