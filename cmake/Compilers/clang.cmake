@@ -62,8 +62,15 @@ if(NOT DEFINED FAST_LINKER_CONFIGURED)
   endif()
 
   # Faster debug/relink: Split DWARF + better debug index
-  add_compile_options($<$<CONFIG:Debug,RelWithDebInfo>:-gsplit-dwarf -fdebug-types-section>)
-  add_link_options($<$<CONFIG:Debug,RelWithDebInfo>:-Wl,--gdb-index>)
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    add_compile_options($<$<CONFIG:Debug>:-gsplit-dwarf -fdebug-types-section>)
+    add_compile_options($<$<CONFIG:RelWithDebInfo>:-gsplit-dwarf -fdebug-types-section>)
+  elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options($<$<CONFIG:Debug>:-gsplit-dwarf>)
+    add_compile_options($<$<CONFIG:RelWithDebInfo>:-gsplit-dwarf>)
+  endif()
+  add_link_options($<$<CONFIG:Debug>:-Wl,--gdb-index>)
+  add_link_options($<$<CONFIG:RelWithDebInfo>:-Wl,--gdb-index>)
 
   # Minor I/O improvement on compile
   add_compile_options(-pipe)
