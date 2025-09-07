@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/ItemDefines.hpp"
 
 #include <string>
+#include <math.h>
 
 class Spell;
 
