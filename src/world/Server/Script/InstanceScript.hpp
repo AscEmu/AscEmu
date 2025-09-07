@@ -38,7 +38,7 @@ class SERVER_DECL InstanceScript
 {
 public:
     InstanceScript(WorldMap* pMapMgr);
-    virtual ~InstanceScript() {}
+    virtual ~InstanceScript();
 
     // Procedures that had been here before
     virtual GameObject* GetObjectForOpenLock(Player* /*pCaster*/, Spell* /*pSpell*/, SpellInfo const* /*pSpellEntry*/) { return NULL; }

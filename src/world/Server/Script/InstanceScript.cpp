@@ -30,6 +30,8 @@ InstanceScript::InstanceScript(WorldMap* pMapMgr) : mInstance(pMapMgr)
     registerUpdateEvent();
 }
 
+InstanceScript::~InstanceScript() = default;
+
 #if VERSION_STRING > TBC
 // Update Achievement Criteria for all players in instance
 void InstanceScript::updateAchievementCriteria(AchievementCriteriaTypes type, uint32_t miscValue1 /*= 0*/, uint32_t miscValue2 /*= 0*/, Unit* unit /*= nullptr*/)
