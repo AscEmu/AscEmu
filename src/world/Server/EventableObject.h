@@ -26,6 +26,7 @@
 #include <map>
 #include <mutex>
 #include <set>
+#include <memory>
 
 struct TimedEvent;
 class EventableObjectHolder;
