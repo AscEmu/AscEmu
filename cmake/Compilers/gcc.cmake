@@ -36,25 +36,24 @@ if(NOT DEFINED FAST_LINKER_CONFIGURED)
 
   # Try LLD first
   execute_process(
-    COMMAND ${CMAKE_C_COMPILER} -fuse-ld=lld -Wl --version
-    OUTPUT_VARIABLE _ldver_lld
+    COMMAND ${CMAKE_C_COMPILER} -fuse-ld=lld
+    OUTPUT_VARIABLE LD_VERSION
     ERROR_QUIET
   )
-  if("${_ldver_lld}" MATCHES "LLD")
-    add_link_options(-fuse-ld=lld)
-    # Enable ICF (identical code folding) outside Debug to reduce size and sometimes link time
-    add_link_options($<$<NOT:$<CONFIG:Debug>>:-Wl --icf=all>)
+  if("${LD_VERSION}" MATCHES "LLD")
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=lld")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fuse-ld=lld")
     message(STATUS "Linker: Using LLD")
   else()
     # Fallback to gold
     execute_process(
-      COMMAND ${CMAKE_C_COMPILER} -fuse-ld=gold -Wl --version
-      OUTPUT_VARIABLE _ldver_gold
+      COMMAND ${CMAKE_C_COMPILER} -fuse-ld=gold
+      OUTPUT_VARIABLE LD_VERSION
       ERROR_QUIET
     )
-    if("${_ldver_gold}" MATCHES "GNU gold")
-      add_link_options(-fuse-ld=gold -Wl --threads)
-      add_link_options($<$<NOT:$<CONFIG:Debug>>:-Wl --icf=safe>)
+    if("${LD_VERSION}" MATCHES "GNU gold")
+      set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold)
+      set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fuse-ld=gold")
       message(STATUS "Linker: Using GNU gold")
     else()
       message(STATUS "Linker: Using system default")
