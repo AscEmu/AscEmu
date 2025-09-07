@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "SpellScript.hpp"
 #include "CommonTypes.hpp"
 #include "Storage/WDB/WDBDefines.hpp"
-
+#include <cstdint>
 #include <optional>
 #include <string>
 
