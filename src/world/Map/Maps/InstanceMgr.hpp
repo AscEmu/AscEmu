@@ -14,6 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <map>
 #include <mutex>
 #include <unordered_map>
+#include <memory>
 
 class Group;
 class Player;
