@@ -36,43 +36,44 @@ if(NOT DEFINED FAST_LINKER_CONFIGURED)
 
   # Try LLD first
   execute_process(
-    COMMAND ${CMAKE_C_COMPILER} -fuse-ld=lld -Wl,--version
-    OUTPUT_VARIABLE _ldver_lld
+    COMMAND ${CMAKE_C_COMPILER} -fuse-ld=lld -Wl,--version 
+    OUTPUT_VARIABLE LD_VERSION
     ERROR_QUIET
   )
-  if("${_ldver_lld}" MATCHES "LLD")
-    add_link_options(-fuse-ld=lld)
-    # Enable ICF (identical code folding) outside Debug to reduce size and sometimes link time
-    add_link_options($<$<NOT:$<CONFIG:Debug>>:-Wl,--icf=all>)
+  if("${LD_VERSION}" MATCHES "LLD")
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=lld")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fuse-ld=lld")
     message(STATUS "Linker: Using LLD")
   else()
     # Fallback to gold
     execute_process(
-      COMMAND ${CMAKE_C_COMPILER} -fuse-ld=gold -Wl,--version
-      OUTPUT_VARIABLE _ldver_gold
+      COMMAND ${CMAKE_C_COMPILER} -fuse-ld=gold -Wl,--version 
+      OUTPUT_VARIABLE LD_VERSION
       ERROR_QUIET
     )
-    if("${_ldver_gold}" MATCHES "GNU gold")
-      add_link_options(-fuse-ld=gold -Wl,--threads)
-      add_link_options($<$<NOT:$<CONFIG:Debug>>:-Wl,--icf=safe>)
+    if("${LD_VERSION}" MATCHES "GNU gold")
+      set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold")
+      set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fuse-ld=gold")
       message(STATUS "Linker: Using GNU gold")
     else()
       message(STATUS "Linker: Using system default")
     endif()
   endif()
 
-  # Faster debug/relink: Split DWARF + better debug index
-  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    add_compile_options($<$<CONFIG:Debug>:-gsplit-dwarf -fdebug-types-section>)
-    add_compile_options($<$<CONFIG:RelWithDebInfo>:-gsplit-dwarf -fdebug-types-section>)
-  elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    add_compile_options($<$<CONFIG:Debug>:-gsplit-dwarf>)
-    add_compile_options($<$<CONFIG:RelWithDebInfo>:-gsplit-dwarf>)
-  endif()
-  add_link_options($<$<CONFIG:Debug>:-Wl,--gdb-index>)
-  add_link_options($<$<CONFIG:RelWithDebInfo>:-Wl,--gdb-index>)
-
   # Minor I/O improvement on compile
   add_compile_options(-pipe)
 endif()
 # ==== End fast linker block ====
+
+# === Debug info & faster relinks (single-config friendly) ===
+# Avoid generator-expressions for Debug+RelWithDebInfo to prevent misparsing.
+if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    add_compile_options(-gsplit-dwarf -fdebug-types-section)
+    add_link_options(-Wl --gdb-index)
+  elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(-gsplit-dwarf)
+    add_link_options(-Wl --gdb-index)
+  endif()
+endif()
+# === End debug info block ===
