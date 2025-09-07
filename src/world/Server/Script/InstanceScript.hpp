@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CommonTypes.hpp"
 #include "AEVersion.hpp"
 #include "ScriptEvent.hpp"
+#include "ScriptMgrDefines.hpp"
 #include <cstdint>
 #include <map>
 #include <set>
@@ -18,7 +19,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 enum AchievementCriteriaTypes : uint8_t;
 enum EncounterCreditType : uint8_t;
-struct BossInfo;
 enum EncounterStates : uint8_t;
 struct ObjectData;
 class Object;
@@ -38,7 +38,7 @@ class SERVER_DECL InstanceScript
 {
 public:
     InstanceScript(WorldMap* pMapMgr);
-    virtual ~InstanceScript();
+    virtual ~InstanceScript() {}
 
     // Procedures that had been here before
     virtual GameObject* GetObjectForOpenLock(Player* /*pCaster*/, Spell* /*pSpell*/, SpellInfo const* /*pSpellEntry*/) { return NULL; }
