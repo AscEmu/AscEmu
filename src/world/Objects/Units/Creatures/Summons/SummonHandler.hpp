@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "CommonTypes.hpp"
 #include "SummonDefines.hpp"
-
+#include <cstdint>
 #include <array>
 #include <vector>
 
