@@ -16,7 +16,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/WaypointManager.h"
 #include "Objects/Units/Creatures/AIInterface.h"
 #include "Utilities/Random.hpp"
-#include "Utilities/TimeTracker.hpp"
 
 WaypointMovementGenerator<Creature>::WaypointMovementGenerator(uint32_t pathId, bool repeating) : _nextMoveTime(std::make_unique<Util::SmallTimeTracker>(0)), _pathId(pathId), _repeating(repeating), _loadedFromDB(true)
 {

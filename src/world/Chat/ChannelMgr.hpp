@@ -10,6 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include <map>
 #include <mutex>
 #include <vector>
+#include <string>
+#include <memory>
 
 class Player;
 class Channel;

@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CommonTypes.hpp"
 #include "HookInterfaceDefines.hpp"
 #include "Spell/SpellScriptDefines.hpp"
-
+#include <cstdint>
 #include <mutex>
 
 struct DamageInfo;

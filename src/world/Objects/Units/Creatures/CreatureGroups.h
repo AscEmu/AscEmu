@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include <unordered_map>
-
+#include <cstdint>
 #include "CommonTypes.hpp"
 
 enum GroupAIFlags

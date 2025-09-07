@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <set>
 #include <vector>
 #include <string>
+#include <cstdint>
 
 class GameObject;
 class Creature;

@@ -23,6 +23,7 @@
 #include "CommonTypes.hpp"
 #include <string>
 #include <optional>
+#include <cstdint>
 
  //! Optional helper class to wrap optional values within.
 template <class T>

@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Definitions/ProcFlags.hpp"
 #include "Definitions/SpellFailure.hpp"
 #include "SpellScriptDefines.hpp"
-
+#include <cstdint>
 #include <vector>
 #include <math.h>
 

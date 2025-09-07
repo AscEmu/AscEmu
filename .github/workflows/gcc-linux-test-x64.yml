@@ -1,8 +1,8 @@
-name: AscEmu CI (gcc)
+﻿name: AscEmu CI (gcc)
 
 on:
   push:
-    branches: [ master, develop ]
+    branches: [ master, develop, nix-compile-time ]
   pull_request:
     branches: [ develop ]
 
@@ -11,15 +11,19 @@ jobs:
   Classic:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4.2.2
+    - name: Check out repo
+      uses: actions/checkout@v4.2.2
+
     - name: Setup Environment
       run: |
-        sudo apt-get update && sudo apt-get install -y zlib1g-dev
-        sudo apt-get update && sudo apt-get install -y libssl-dev
-        sudo apt-get update && sudo apt-get install -y libpcre3-dev
-        sudo apt-get update && sudo apt-get install -y libbz2-dev
-        sudo apt-get update && sudo apt-get install -y default-libmysqlclient-dev
-        sudo apt-get update && sudo apt-get install -y libmysql++-dev
+        sudo apt-get update
+        sudo apt-get install -y zlib1g-dev
+        sudo apt-get install -y libssl-dev
+        sudo apt-get install -y libpcre3-dev
+        sudo apt-get install -y libbz2-dev
+        sudo apt-get install -y default-libmysqlclient-dev
+        sudo apt-get install -y libmysql++-dev
+        sudo apt-get install -y lld
     - name: AscEmu Build Classic
       run: |
         gcc --version
@@ -34,15 +38,19 @@ jobs:
   TBC:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4.2.2
+    - name: Check out repo
+      uses: actions/checkout@v4.2.2
+
     - name: Setup Environment
       run: |
-        sudo apt-get update && sudo apt-get install -y zlib1g-dev
-        sudo apt-get update && sudo apt-get install -y libssl-dev
-        sudo apt-get update && sudo apt-get install -y libpcre3-dev
-        sudo apt-get update && sudo apt-get install -y libbz2-dev
-        sudo apt-get update && sudo apt-get install -y default-libmysqlclient-dev
-        sudo apt-get update && sudo apt-get install -y libmysql++-dev
+        sudo apt-get update
+        sudo apt-get install -y zlib1g-dev
+        sudo apt-get install -y libssl-dev
+        sudo apt-get install -y libpcre3-dev
+        sudo apt-get install -y libbz2-dev
+        sudo apt-get install -y default-libmysqlclient-dev
+        sudo apt-get install -y libmysql++-dev
+        sudo apt-get install -y lld
     - name: AscEmu Build TBC
       run: |
         gcc --version
@@ -57,15 +65,19 @@ jobs:
   WotLK:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4.2.2
+    - name: Check out repo
+      uses: actions/checkout@v4.2.2
+
     - name: Setup Environment
       run: |
-        sudo apt-get update && sudo apt-get install -y zlib1g-dev
-        sudo apt-get update && sudo apt-get install -y libssl-dev
-        sudo apt-get update && sudo apt-get install -y libpcre3-dev
-        sudo apt-get update && sudo apt-get install -y libbz2-dev
-        sudo apt-get update && sudo apt-get install -y default-libmysqlclient-dev
-        sudo apt-get update && sudo apt-get install -y libmysql++-dev
+        sudo apt-get update
+        sudo apt-get install -y zlib1g-dev
+        sudo apt-get install -y libssl-dev
+        sudo apt-get install -y libpcre3-dev
+        sudo apt-get install -y libbz2-dev
+        sudo apt-get install -y default-libmysqlclient-dev
+        sudo apt-get install -y libmysql++-dev
+        sudo apt-get install -y lld
     - name: AscEmu Build WotLK
       run: |
         gcc --version
@@ -80,15 +92,19 @@ jobs:
   Cata:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4.2.2
+    - name: Check out repo
+      uses: actions/checkout@v4.2.2
+
     - name: Setup Environment
       run: |
-        sudo apt-get update && sudo apt-get install -y zlib1g-dev
-        sudo apt-get update && sudo apt-get install -y libssl-dev
-        sudo apt-get update && sudo apt-get install -y libpcre3-dev
-        sudo apt-get update && sudo apt-get install -y libbz2-dev
-        sudo apt-get update && sudo apt-get install -y default-libmysqlclient-dev
-        sudo apt-get update && sudo apt-get install -y libmysql++-dev
+        sudo apt-get update
+        sudo apt-get install -y zlib1g-dev
+        sudo apt-get install -y libssl-dev
+        sudo apt-get install -y libpcre3-dev
+        sudo apt-get install -y libbz2-dev
+        sudo apt-get install -y default-libmysqlclient-dev
+        sudo apt-get install -y libmysql++-dev
+        sudo apt-get install -y lld
     - name: AscEmu Build Cata
       run: |
         gcc --version
@@ -103,15 +119,19 @@ jobs:
   Mop:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4.2.2
+    - name: Check out repo
+      uses: actions/checkout@v4.2.2
+
     - name: Setup Environment
       run: |
-        sudo apt-get update && sudo apt-get install -y zlib1g-dev
-        sudo apt-get update && sudo apt-get install -y libssl-dev
-        sudo apt-get update && sudo apt-get install -y libpcre3-dev
-        sudo apt-get update && sudo apt-get install -y libbz2-dev
-        sudo apt-get update && sudo apt-get install -y default-libmysqlclient-dev
-        sudo apt-get update && sudo apt-get install -y libmysql++-dev
+        sudo apt-get update
+        sudo apt-get install -y zlib1g-dev
+        sudo apt-get install -y libssl-dev
+        sudo apt-get install -y libpcre3-dev
+        sudo apt-get install -y libbz2-dev
+        sudo apt-get install -y default-libmysqlclient-dev
+        sudo apt-get install -y libmysql++-dev
+        sudo apt-get install -y lld
     - name: AscEmu Build Mop
       run: |
         gcc --version

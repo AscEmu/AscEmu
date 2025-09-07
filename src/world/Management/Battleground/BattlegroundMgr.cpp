@@ -1184,7 +1184,7 @@ void BattlegroundManager::deleteBattleground(Battleground* battleground)
         {
             if (plr->getQueuedBgInstanceId() == battleground->getId())
             {
-                sChatHandler.systemMessage(plr->getSession(), plr->getSession()->LocalizedWorldSrv(SS_QUEUE_BG_INSTANCE_ID_NO_VALID_LONGER_EXISTS), battleground->getId());
+                plr->getSession()->systemMessage(plr->getSession()->LocalizedWorldSrv(SS_QUEUE_BG_INSTANCE_ID_NO_VALID_LONGER_EXISTS), battleground->getId());
                 sendBattlefieldStatus(plr, BattlegroundDef::STATUS_NOFLAGS, 0, 0, 0, 0, 0);
                 plr->setIsQueuedForBg(false);
                 m_queuedPlayers[type][levelGroup].erase(it2);
