@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include <set>
+#include <cstdint>
 
 #define MAX_NR_LOOT_ITEMS 16
 #define MAX_NR_LOOT_QUESTITEMS 32
