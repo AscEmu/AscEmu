@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 #include <memory>
 #include <unordered_map>
+#include <vector>
 
 class AuctionHouse;
 
