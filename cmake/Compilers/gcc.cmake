@@ -52,7 +52,7 @@ if(NOT DEFINED FAST_LINKER_CONFIGURED)
       ERROR_QUIET
     )
     if("${LD_VERSION}" MATCHES "GNU gold")
-      set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold)
+      set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold")
       set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fuse-ld=gold")
       message(STATUS "Linker: Using GNU gold")
     else()
