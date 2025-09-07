@@ -36,7 +36,7 @@ if(NOT DEFINED FAST_LINKER_CONFIGURED)
 
   # Try LLD first
   execute_process(
-    COMMAND ${CMAKE_C_COMPILER} -fuse-ld=lld
+    COMMAND ${CMAKE_C_COMPILER} -fuse-ld=lld -Wl,--version 
     OUTPUT_VARIABLE LD_VERSION
     ERROR_QUIET
   )
@@ -47,7 +47,7 @@ if(NOT DEFINED FAST_LINKER_CONFIGURED)
   else()
     # Fallback to gold
     execute_process(
-      COMMAND ${CMAKE_C_COMPILER} -fuse-ld=gold
+      COMMAND ${CMAKE_C_COMPILER} -fuse-ld=gold -Wl,--version 
       OUTPUT_VARIABLE LD_VERSION
       ERROR_QUIET
     )
