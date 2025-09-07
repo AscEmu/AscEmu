@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <memory>
 #include <unordered_map>
 #include <cstdint>
+#include <math.h>
 
 class Aura;
 class Object;
