@@ -7,11 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Movement/MovementGenerator.h"
 #include "PathMovementBase.h"
-
-namespace Util
-{
-    struct SmallTimeTracker;
-}
+#include "Utilities/TimeTracker.hpp"
+#include <memory>
 
 class Creature;
 class Unit;
