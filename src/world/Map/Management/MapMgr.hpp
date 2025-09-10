@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/InstanceDefines.hpp"
 #include <mutex>
 #include <unordered_map>
+#include <list>
 
 enum PlayerTeam : uint8_t;
 

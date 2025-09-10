@@ -20,6 +20,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "AIUtils.hpp"
 #include "CreatureAISummonList.hpp"
 #include <memory>
+#include <cstdint>
 
 class Creature;
 struct FilterArgs;

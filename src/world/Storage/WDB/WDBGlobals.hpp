@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "WDBContainer.hpp"
 #include "WDBLoader.hpp"
-
+#include <cstring>
 #include <filesystem>
 #include <iostream>
 

@@ -3455,7 +3455,8 @@ void MySQLDataStore::loadLocalesCreature()
 {
     auto startTime = Util::TimeNow();
     //                                        0         1          2      3
-    auto result = WorldDatabase.Query("SELECT id, language_code, name, subname FROM locales_creature");
+    auto result = WorldDatabase.Query("SELECT id, language_code, name, subname FROM locales_creature base "
+        "WHERE build=(SELECT MAX(build) FROM locales_creature buildspecific WHERE base.id = buildspecific.id AND build <= %u)", VERSION_STRING);
     if (result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `locales_creature` is empty!");

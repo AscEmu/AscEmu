@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "AEVersion.hpp"
-
+#include <memory>
 #include <mutex>
 #include <vector>
 #include <unordered_map>

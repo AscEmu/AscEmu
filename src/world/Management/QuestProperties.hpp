@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <set>
 #include <string>
+#include <cstdint>
 
 #define DEFINE_QUEST_REPEATABLE 1
 #define DEFINE_QUEST_REPEATABLE_DAILY 2

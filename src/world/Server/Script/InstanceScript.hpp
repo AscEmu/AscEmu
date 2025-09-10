@@ -8,7 +8,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CommonTypes.hpp"
 #include "AEVersion.hpp"
 #include "ScriptEvent.hpp"
-
+#include "ScriptMgrDefines.hpp"
+#include <cstdint>
 #include <map>
 #include <set>
 #include <string>
@@ -18,7 +19,6 @@ This file is released under the MIT license. See README-MIT for more information
 
 enum AchievementCriteriaTypes : uint8_t;
 enum EncounterCreditType : uint8_t;
-struct BossInfo;
 enum EncounterStates : uint8_t;
 struct ObjectData;
 class Object;

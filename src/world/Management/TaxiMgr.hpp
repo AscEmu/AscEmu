@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <deque>
 #include <map>
 #include <unordered_map>
+#include <utility>
 
 class ByteBuffer;
 class LocationVector;

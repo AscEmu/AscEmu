@@ -826,6 +826,37 @@ uint8_t World::getDbcLocaleLanguageId() const
 }
 #endif
 
+inline void runParallel(const std::vector<std::function<void()>>& tasks)
+{
+    if (tasks.empty())
+        return;
+
+    std::atomic<bool> had_error{false};
+    std::exception_ptr first_exc = nullptr;
+    std::mutex exc_mtx;
+
+    std::vector<std::thread> threads;
+    threads.reserve(tasks.size());
+
+    for (auto fn : tasks)
+    {
+        threads.emplace_back([&, fn]{
+            try {
+                fn();
+            } catch (...) {
+                had_error = true;
+                std::lock_guard<std::mutex> lk(exc_mtx);
+                if (!first_exc) first_exc = std::current_exception();
+            }
+        });
+    }
+    for (auto &t : threads)
+        t.join();
+
+    if (had_error && first_exc)
+        std::rethrow_exception(first_exc);
+}
+
 void World::loadMySQLStores()
 {
     auto startTime = Util::TimeNow();
@@ -841,64 +872,72 @@ void World::loadMySQLStores()
     sMySQLStore.loadGameObjectQuestItemBindingTable();
     sMySQLStore.loadGameObjectQuestPickupBindingTable();
 
-    sMySQLStore.loadCreatureDifficultyTable();
-    sMySQLStore.loadDisplayBoundingBoxesTable();
-    sMySQLStore.loadVendorRestrictionsTable();
+    runParallel({
+        []{
+            sMySQLStore.loadCreatureDifficultyTable();
+            sMySQLStore.loadDisplayBoundingBoxesTable();
+            sMySQLStore.loadVendorRestrictionsTable();
+        },
+        []{
+            sMySQLStore.loadNpcTextTable();
+            sMySQLStore.loadNpcScriptTextTable();
+            sMySQLStore.loadGossipMenuOptionTable();
+            sMySQLStore.loadGraveyardsTable();
+            sMySQLStore.loadTeleportCoordsTable();
+            sMySQLStore.loadFishingTable();
+            sMySQLStore.loadWorldMapInfoTable();
+            sMySQLStore.loadZoneGuardsTable();
+            sMySQLStore.loadBattleMastersTable();
+            sMySQLStore.loadTotemDisplayIdsTable();
+            sMySQLStore.loadSpellClickSpellsTable();
+        },
+        []{
+            sMySQLStore.loadWorldStringsTable();
+            sMySQLStore.loadPointsOfInterestTable();
+            sMySQLStore.loadItemSetLinkedSetBonusTable();
+            sMySQLStore.loadCreatureInitialEquipmentTable();
+        },
+        []{
+            sMySQLStore.loadPlayerCreateInfoTable();
+            sMySQLStore.loadPlayerCreateInfoBars();
+            sMySQLStore.loadPlayerCreateInfoItems();
+            sMySQLStore.loadPlayerCreateInfoSkills();
+            sMySQLStore.loadPlayerCreateInfoSpellLearn();
+            sMySQLStore.loadPlayerCreateInfoSpellCast();
+            sMySQLStore.loadPlayerCreateInfoLevelstats();
+            sMySQLStore.loadPlayerCreateInfoClassLevelstats();
+            sMySQLStore.loadPlayerXpToLevelTable();
+        },
+        []{
+            sMySQLStore.loadSpellOverrideTable();
 
-    sMySQLStore.loadNpcTextTable();
-    sMySQLStore.loadNpcScriptTextTable();
-    sMySQLStore.loadGossipMenuOptionTable();
-    sMySQLStore.loadGraveyardsTable();
-    sMySQLStore.loadTeleportCoordsTable();
-    sMySQLStore.loadFishingTable();
-    sMySQLStore.loadWorldMapInfoTable();
-    sMySQLStore.loadZoneGuardsTable();
-    sMySQLStore.loadBattleMastersTable();
-    sMySQLStore.loadTotemDisplayIdsTable();
-    sMySQLStore.loadSpellClickSpellsTable();
+            sMySQLStore.loadNpcGossipTextIdTable();
+            sMySQLStore.loadPetLevelAbilitiesTable();
+            sMySQLStore.loadBroadcastTable();
 
-    sMySQLStore.loadWorldStringsTable();
-    sMySQLStore.loadPointsOfInterestTable();
-    sMySQLStore.loadItemSetLinkedSetBonusTable();
-    sMySQLStore.loadCreatureInitialEquipmentTable();
+            sMySQLStore.loadAreaTriggerTable();
+            sMySQLStore.loadWordFilterCharacterNames();
+            sMySQLStore.loadWordFilterChat();
+        },
+        []{
+            sMySQLStore.loadLocalesAchievementReward();
+            sMySQLStore.loadLocalesCreature();
+            sMySQLStore.loadLocalesGameobject();
+            sMySQLStore.loadLocalesGossipMenuOption();
+            sMySQLStore.loadLocalesItem();
+            sMySQLStore.loadLocalesItemPages();
+            sMySQLStore.loadLocalesNpcScriptText();
+            sMySQLStore.loadLocalesNpcText();
+            sMySQLStore.loadLocalesPointsOfInterest();
+            sMySQLStore.loadLocalesQuest();
+            sMySQLStore.loadLocalesWorldbroadcast();
+            sMySQLStore.loadLocalesWorldmapInfo();
+            sMySQLStore.loadLocalesWorldStringTable();
 
-    sMySQLStore.loadPlayerCreateInfoTable();
-    sMySQLStore.loadPlayerCreateInfoBars();
-    sMySQLStore.loadPlayerCreateInfoItems();
-    sMySQLStore.loadPlayerCreateInfoSkills();
-    sMySQLStore.loadPlayerCreateInfoSpellLearn();
-    sMySQLStore.loadPlayerCreateInfoSpellCast();
-    sMySQLStore.loadPlayerCreateInfoLevelstats();
-    sMySQLStore.loadPlayerCreateInfoClassLevelstats();
-    sMySQLStore.loadPlayerXpToLevelTable();
-
-    sMySQLStore.loadSpellOverrideTable();
-
-    sMySQLStore.loadNpcGossipTextIdTable();
-    sMySQLStore.loadPetLevelAbilitiesTable();
-    sMySQLStore.loadBroadcastTable();
-
-    sMySQLStore.loadAreaTriggerTable();
-    sMySQLStore.loadWordFilterCharacterNames();
-    sMySQLStore.loadWordFilterChat();
-
-    sMySQLStore.loadLocalesAchievementReward();
-    sMySQLStore.loadLocalesCreature();
-    sMySQLStore.loadLocalesGameobject();
-    sMySQLStore.loadLocalesGossipMenuOption();
-    sMySQLStore.loadLocalesItem();
-    sMySQLStore.loadLocalesItemPages();
-    sMySQLStore.loadLocalesNpcScriptText();
-    sMySQLStore.loadLocalesNpcText();
-    sMySQLStore.loadLocalesPointsOfInterest();
-    sMySQLStore.loadLocalesQuest();
-    sMySQLStore.loadLocalesWorldbroadcast();
-    sMySQLStore.loadLocalesWorldmapInfo();
-    sMySQLStore.loadLocalesWorldStringTable();
-
-    //sMySQLStore.loadDefaultPetSpellsTable();      Zyres 2017/07/16 not used
-    sMySQLStore.loadProfessionDiscoveriesTable();
-
+            //sMySQLStore.loadDefaultPetSpellsTable();      Zyres 2017/07/16 not used
+            sMySQLStore.loadProfessionDiscoveriesTable();
+        }
+        });
     sMySQLStore.loadTransportDataTable();
     sMySQLStore.loadTransportEntrys();
     sMySQLStore.loadGossipMenuItemsTable();
@@ -922,56 +961,62 @@ void World::loadMySQLTablesByTask()
     sTicketMgr.initialize();
     sGameEventMgr.initialize();
 
+    runParallel({
+        []{
+            sObjectMgr.generateLevelUpInfo();
+            sObjectMgr.loadCharacters();
 
-    sObjectMgr.generateLevelUpInfo();
-    sObjectMgr.loadCharacters();
-
-    sMySQLStore.loadCreatureSpawns();
-    sMySQLStore.loadGameobjectSpawns();
-    sMySQLStore.loadGameObjectSpawnsExtraTable();
-    sMySQLStore.loadGameObjectSpawnsOverrideTable();
-
-    sMySQLStore.loadCreatureGroupSpawns();
-    sMySQLStore.loadCreatureSplineChains();
-
-    sObjectMgr.loadInstanceEncounters();
-    sObjectMgr.loadCreatureTimedEmotes();
-    sObjectMgr.loadVendors();
-    sObjectMgr.loadTrainerSpellSets();
-    sObjectMgr.loadTrainers();
-    sObjectMgr.loadPetSpellCooldowns();
-    sObjectMgr.loadCharters();
-    sTicketMgr.loadGMTickets();
-    sObjectMgr.setHighestGuids();
-    sObjectMgr.loadReputationModifiers();
-    sObjectMgr.loadGroups();
-    sObjectMgr.loadGroupInstances();
-    sObjectMgr.loadArenaTeams();
+            sMySQLStore.loadCreatureSpawns();
+            sMySQLStore.loadGameobjectSpawns();
+            sMySQLStore.loadGameObjectSpawnsExtraTable();
+            sMySQLStore.loadGameObjectSpawnsOverrideTable();
+        },
+        []{
+            sMySQLStore.loadCreatureGroupSpawns();
+            sMySQLStore.loadCreatureSplineChains();
+        },
+        []{
+            sObjectMgr.loadInstanceEncounters();
+            sObjectMgr.loadCreatureTimedEmotes();
+            sObjectMgr.loadVendors();
+            sObjectMgr.loadTrainerSpellSets();
+            sObjectMgr.loadTrainers();
+            sObjectMgr.loadPetSpellCooldowns();
+            sObjectMgr.loadCharters();
+            sTicketMgr.loadGMTickets();
+            sObjectMgr.setHighestGuids();
+            sObjectMgr.loadReputationModifiers();
+            sObjectMgr.loadGroups();
+            sObjectMgr.loadGroupInstances();
+            sObjectMgr.loadArenaTeams();
 #ifdef FT_VEHICLES
-    sObjectMgr.loadVehicleAccessories();
-    sObjectMgr.loadVehicleSeatAddon();
+            sObjectMgr.loadVehicleAccessories();
+            sObjectMgr.loadVehicleSeatAddon();
 #endif
-    sObjectMgr.loadWorldStateTemplates();
+            sObjectMgr.loadWorldStateTemplates();
 
 #if VERSION_STRING > TBC
-    sObjectMgr.loadAchievementRewards();
+            sObjectMgr.loadAchievementRewards();
 #endif
-
-    sLootMgr.loadAndGenerateLoot(0);
-    sLootMgr.loadAndGenerateLoot(1);
-    sLootMgr.loadAndGenerateLoot(2);
-    sLootMgr.loadAndGenerateLoot(3);
-    sLootMgr.loadAndGenerateLoot(4);
-    sLootMgr.loadAndGenerateLoot(5);
-
-    sQuestMgr.LoadExtraQuestStuff();
-    sObjectMgr.loadEventScripts();
-    sWeatherMgr.loadFromDB();
-    sAddonMgr.LoadFromDB();
-    sGameEventMgr.LoadFromDB();
-    sCalendarMgr.loadFromDB();
-
-    sCommandTableStorage.loadOverridePermission();
+        },
+        []{
+            sLootMgr.loadAndGenerateLoot(0);
+            sLootMgr.loadAndGenerateLoot(1);
+            sLootMgr.loadAndGenerateLoot(2);
+            sLootMgr.loadAndGenerateLoot(3);
+            sLootMgr.loadAndGenerateLoot(4);
+            sLootMgr.loadAndGenerateLoot(5);
+        },
+        []{
+            sQuestMgr.LoadExtraQuestStuff();
+            sObjectMgr.loadEventScripts();
+            sWeatherMgr.loadFromDB();
+            sAddonMgr.LoadFromDB();
+            sGameEventMgr.LoadFromDB();
+            sCalendarMgr.loadFromDB();
+            sCommandTableStorage.loadOverridePermission();
+        }
+    });
     sLogger.info("WordFilter : Loading...");
 
     g_chatFilter = std::make_unique<WordFilter>();
