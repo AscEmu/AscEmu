@@ -1,0 +1,175 @@
+name: AscEmu CI (MacOS::clang)
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+
+  Classic:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Setup Environment
+      run: |
+        brew update
+        for pkg in mysql openssl mysql-client cmake ninja; do
+          brew ls --versions $pkg || brew install $pkg
+        done
+        brew config
+
+    - name: AscEmu Build Classic
+      run: |
+        clang --version
+        cmake --version
+        ninja --version
+        mkdir ascemu_build_classic
+        cd ascemu_build_classic
+        cmake .. \
+          -GNinja \
+          -DCMAKE_C_COMPILER=clang \
+          -DCMAKE_CXX_COMPILER=clang++ \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DBUILD_WITH_WARNINGS=0 \
+          -DBUILD_TOOLS=0 \
+          -DMYSQL_INCLUDE_DIR=$(brew --prefix mysql)/include/mysql \
+          -DMYSQL_LIBRARY=$(brew --prefix mysql)/lib/libmysqlclient.dylib \
+          -DASCEMU_VERSION=Classic
+        ninja -j$(sysctl -n hw.ncpu)
+        sudo ninja install
+
+  TBC:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Setup Environment
+      run: |
+        brew update
+        for pkg in mysql openssl mysql-client cmake ninja; do
+          brew ls --versions $pkg || brew install $pkg
+        done
+        brew config
+
+    - name: AscEmu Build TBC
+      run: |
+        clang --version
+        cmake --version
+        ninja --version
+        mkdir ascemu_build_tbc
+        cd ascemu_build_tbc
+        cmake .. \
+          -GNinja \
+          -DCMAKE_C_COMPILER=clang \
+          -DCMAKE_CXX_COMPILER=clang++ \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DBUILD_WITH_WARNINGS=0 \
+          -DBUILD_TOOLS=0 \
+          -DMYSQL_INCLUDE_DIR=$(brew --prefix mysql)/include/mysql \
+          -DMYSQL_LIBRARY=$(brew --prefix mysql)/lib/libmysqlclient.dylib \
+          -DASCEMU_VERSION=TBC
+        ninja -j$(sysctl -n hw.ncpu)
+        sudo ninja install
+
+  WotLK:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Setup Environment
+      run: |
+        brew update
+        for pkg in mysql openssl mysql-client cmake ninja; do
+          brew ls --versions $pkg || brew install $pkg
+        done
+        brew config
+
+    - name: AscEmu Build WotLK
+      run: |
+        clang --version
+        cmake --version
+        ninja --version
+        mkdir ascemu_build_wotlk
+        cd ascemu_build_wotlk
+        cmake .. \
+          -GNinja \
+          -DCMAKE_C_COMPILER=clang \
+          -DCMAKE_CXX_COMPILER=clang++ \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DBUILD_WITH_WARNINGS=0 \
+          -DBUILD_TOOLS=0 \
+          -DMYSQL_INCLUDE_DIR=$(brew --prefix mysql)/include/mysql \
+          -DMYSQL_LIBRARY=$(brew --prefix mysql)/lib/libmysqlclient.dylib \
+          -DASCEMU_VERSION=WotLK
+        ninja -j$(sysctl -n hw.ncpu)
+        sudo ninja install
+
+  Cata:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Setup Environment
+      run: |
+        brew update
+        for pkg in mysql openssl mysql-client cmake ninja; do
+          brew ls --versions $pkg || brew install $pkg
+        done
+        brew config
+
+    - name: AscEmu Build Cata
+      run: |
+        clang --version
+        cmake --version
+        ninja --version
+        mkdir ascemu_build_cata
+        cd ascemu_build_cata
+        cmake .. \
+          -GNinja \
+          -DCMAKE_C_COMPILER=clang \
+          -DCMAKE_CXX_COMPILER=clang++ \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DBUILD_WITH_WARNINGS=0 \
+          -DBUILD_TOOLS=0 \
+          -DMYSQL_INCLUDE_DIR=$(brew --prefix mysql)/include/mysql \
+          -DMYSQL_LIBRARY=$(brew --prefix mysql)/lib/libmysqlclient.dylib \
+          -DASCEMU_VERSION=Cata
+        ninja -j$(sysctl -n hw.ncpu)
+        sudo ninja install
+
+  Mop:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Setup Environment
+      run: |
+        brew update
+        for pkg in mysql openssl mysql-client cmake ninja; do
+          brew ls --versions $pkg || brew install $pkg
+        done
+        brew config
+
+    - name: AscEmu Build Mop
+      run: |
+        clang --version
+        cmake --version
+        ninja --version
+        mkdir ascemu_build_mop
+        cd ascemu_build_mop
+        cmake .. \
+          -GNinja \
+          -DCMAKE_C_COMPILER=clang \
+          -DCMAKE_CXX_COMPILER=clang++ \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DBUILD_WITH_WARNINGS=0 \
+          -DBUILD_TOOLS=0 \
+          -DMYSQL_INCLUDE_DIR=$(brew --prefix mysql)/include/mysql \
+          -DMYSQL_LIBRARY=$(brew --prefix mysql)/lib/libmysqlclient.dylib \
+          -DASCEMU_VERSION=Mop
+        ninja -j$(sysctl -n hw.ncpu)
+        sudo ninja install
+ 

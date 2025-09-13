@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Cells/MapCell.hpp"
 
 #include <memory>
+#include <algorithm>
 
 class BaseMap;
 

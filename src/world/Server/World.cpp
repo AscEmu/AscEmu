@@ -53,6 +53,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStores.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
 
+#include <exception>
+
 #if VERSION_STRING >= Cata
 #include "Management/Guild/GuildFinderMgr.hpp"
 #endif
