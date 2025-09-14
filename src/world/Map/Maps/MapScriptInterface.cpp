@@ -108,30 +108,63 @@ GameObject* MapScriptInterface::findNearestGoWithType(Object* o, uint32_t type)
 
 Creature* MapScriptInterface::findNearestCreature(Object* pObject, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
 {
-    MapCell* pCell = m_worldMap.getCell(m_worldMap.getPosX(pObject->GetPositionX()), m_worldMap.getPosY(pObject->GetPositionY()));
-    if (pCell == nullptr)
+    if (!pObject || maxSearchRange <= 0.0f)
         return nullptr;
 
-    float CurrentDist = 0;
-    float r = FLT_MAX;
-    Creature* target = nullptr;
+    const float ox = pObject->GetPositionX();
+    const float oy = pObject->GetPositionY();
+    const float r2 = maxSearchRange * maxSearchRange;
 
-    ObjectSet::const_iterator iter = pCell->Begin();
-    for (; iter != pCell->End(); ++iter)
+    const int cx = m_worldMap.getPosX(ox);
+    const int cy = m_worldMap.getPosY(oy);
+
+    const float cellSizeX = Map::Cell::_sizeX;
+    const float cellSizeY = Map::Cell::_sizeY;
+
+    const int rx = cellSizeX > 0.0f ? static_cast<int>(std::ceil(maxSearchRange / cellSizeX)) : 1;
+    const int ry = cellSizeY > 0.0f ? static_cast<int>(std::ceil(maxSearchRange / cellSizeY)) : 1;
+
+    Creature* target = nullptr;
+    float bestD2 = std::numeric_limits<float>::infinity();
+
+    for (int ix = cx - rx; ix <= cx + rx; ++ix)
     {
-        if ((*iter)->isCreature() && (*iter)->getEntry() == entry)
+        for (int iy = cy - ry; iy <= cy + ry; ++iy)
         {
-            CurrentDist = (*iter)->CalcDistance(pObject);
-            if (CurrentDist <= maxSearchRange)
+            MapCell* cell = m_worldMap.getCell(ix, iy);
+            if (!cell)
+                continue;
+
+            for (auto it = cell->Begin(); it != cell->End(); ++it)
             {
-                if (CurrentDist < r)
+                Object* obj = *it;
+                if (!obj || !obj->isCreature())
+                    continue;
+
+                if (obj->getEntry() != entry)
+                    continue;
+
+                Creature* go = static_cast<Creature*>(obj);
+
+                const float dx = go->GetPositionX() - ox;
+                const float dy = go->GetPositionY() - oy;
+                const float d2 = dx * dx + dy * dy;
+
+                if (d2 > r2)
+                    continue;
+
+                if (d2 < bestD2)
                 {
-                    r = CurrentDist;
-                    target = static_cast<Creature*>((*iter));
+                    bestD2 = d2;
+                    target = go;
+
+                    if (bestD2 <= 1e-6f)
+                        return target;
                 }
             }
         }
     }
+
     return target;
 }
 
@@ -167,30 +200,63 @@ void MapScriptInterface::getGameObjectListWithEntryInRange(Creature* pCreature, 
 
 GameObject* MapScriptInterface::findNearestGameObject(Object* pObject, uint32_t entry, float maxSearchRange /*= 250.0f*/) const
 {
-    MapCell* pCell = m_worldMap.getCell(m_worldMap.getPosX(pObject->GetPositionX()), m_worldMap.getPosY(pObject->GetPositionY()));
-    if (pCell == nullptr)
+    if (!pObject || maxSearchRange <= 0.0f)
         return nullptr;
 
-    float CurrentDist = 0;
-    float r = FLT_MAX;
-    GameObject* target = nullptr;
+    const float ox = pObject->GetPositionX();
+    const float oy = pObject->GetPositionY();
+    const float r2 = maxSearchRange * maxSearchRange;
 
-    ObjectSet::const_iterator iter = pCell->Begin();
-    for (; iter != pCell->End(); ++iter)
+    const int cx = m_worldMap.getPosX(ox);
+    const int cy = m_worldMap.getPosY(oy);
+
+    const float cellSizeX = Map::Cell::_sizeX;
+    const float cellSizeY = Map::Cell::_sizeY;
+
+    const int rx = cellSizeX > 0.0f ? static_cast<int>(std::ceil(maxSearchRange / cellSizeX)) : 1;
+    const int ry = cellSizeY > 0.0f ? static_cast<int>(std::ceil(maxSearchRange / cellSizeY)) : 1;
+
+    GameObject* target = nullptr;
+    float bestD2 = std::numeric_limits<float>::infinity();
+
+    for (int ix = cx - rx; ix <= cx + rx; ++ix)
     {
-        if ((*iter)->isGameObject() && (*iter)->getEntry() == entry)
+        for (int iy = cy - ry; iy <= cy + ry; ++iy)
         {
-            CurrentDist = (*iter)->CalcDistance(pObject);
-            if (CurrentDist <= maxSearchRange)
+            MapCell* cell = m_worldMap.getCell(ix, iy);
+            if (!cell)
+                continue;
+
+            for (auto it = cell->Begin(); it != cell->End(); ++it)
             {
-                if (CurrentDist < r)
+                Object* obj = *it;
+                if (!obj || !obj->isGameObject())
+                    continue;
+
+                if (obj->getEntry() != entry)
+                    continue;
+
+                GameObject* go = static_cast<GameObject*>(obj);
+
+                const float dx = go->GetPositionX() - ox;
+                const float dy = go->GetPositionY() - oy;
+                const float d2 = dx * dx + dy * dy;
+
+                if (d2 > r2)
+                    continue;
+
+                if (d2 < bestD2)
                 {
-                    r = CurrentDist;
-                    target = static_cast<GameObject*>((*iter));
+                    bestD2 = d2;
+                    target = go;
+
+                    if (bestD2 <= 1e-6f)
+                        return target;
                 }
             }
         }
     }
+
     return target;
 }
 
