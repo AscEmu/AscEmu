@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Utilities/Util.hpp>
 #include <iostream>
 #include <regex>
+#include <algorithm>
 
 #include "Threading/LegacyThreadPool.h"
 

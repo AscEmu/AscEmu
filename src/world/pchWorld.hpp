@@ -72,7 +72,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Management/MapMgrDefines.hpp"
 #include "Map/Maps/BaseMap.hpp"
 #include "Map/Maps/BattleGroundMap.hpp"
-#include "Map/Maps/InstanceDefines.hpp"
 #include "Map/Maps/InstanceMap.hpp"
 #include "Map/Maps/InstanceMgr.hpp"
 #include "Map/Maps/MapScriptInterface.h"
