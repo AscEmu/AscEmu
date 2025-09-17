@@ -225,6 +225,7 @@ public:
     bool HandleCharListInstanceCommand(const char* /*args*/, WorldSession* m_session);
 
     // Debug
+    bool HandleMoveDB2ItemsToDB(const char* args, WorldSession* session);
     bool HandleDebugDumpState(const char* args, WorldSession* session);
     bool HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_session);
     bool HandleDebugHover(const char* /*args*/, WorldSession* m_session);
