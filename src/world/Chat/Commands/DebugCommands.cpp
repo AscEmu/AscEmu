@@ -32,20 +32,22 @@ This file is released under the MIT license. See README-MIT for more information
 
 bool ChatCommandHandler::HandleMoveDB2ItemsToDB(const char* args, WorldSession* session)
 {
+#if VERSION_STRING >= Cata
     std::string dumpTable = "CREATE TABLE IF NOT EXISTS `item_dump` (`entry` INT NOT NULL, `class` INT NOT NULL, `subclass` INT NOT NULL, `material` INT NOT NULL, `displayId` INT NOT NULL, `inventoryType` INT NOT NULL, `sheath` INT NOT NULL, PRIMARY KEY (`entry`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
     auto result = WorldDatabase.Query(dumpTable.c_str());
 
-        for (uint32_t i = 0; i <= 79999; ++i)
+    for (uint32_t i = 0; i <= 79999; ++i)
+    {
+        if (auto* item = sItemStore.lookupEntry(i))
         {
-            if (auto* item = sItemStore.lookupEntry(i))
+            if (sMySQLStore.getItemProperties(i) == nullptr)
             {
-                if (sMySQLStore.getItemProperties(i) == nullptr)
-                {
-                    std::string insertQuery = std::format("INSERT INTO `item_dump` (`entry`, `class`, `subclass`, `material`, `displayId`, `inventoryType`, `sheath`) VALUES ({}, {}, {}, {}, {}, {}, {});", item->ID, item->Class, item->SubClass, item->Material, item->DisplayId, item->InventoryType, item->Sheath);
-                    WorldDatabase.Query(insertQuery.c_str());
-                }
+                std::string insertQuery = std::format("INSERT INTO `item_dump` (`entry`, `class`, `subclass`, `material`, `displayId`, `inventoryType`, `sheath`) VALUES ({}, {}, {}, {}, {}, {}, {});", item->ID, item->Class, item->SubClass, item->Material, item->DisplayId, item->InventoryType, item->Sheath);
+                WorldDatabase.Query(insertQuery.c_str());
             }
         }
+    }
+#endif
     return true;
 
 }
