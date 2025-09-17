@@ -90,24 +90,6 @@ public:
     }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////
-// Lazy Peons
-class PeonSleepingAI : public CreatureAIScript
-{
-public:
-    static CreatureAIScript* Create(Creature* c) { return new PeonSleepingAI(c); }
-    explicit PeonSleepingAI(Creature* pCreature) : CreatureAIScript(pCreature)
-    {
-        RegisterAIUpdateEvent(3000 + Util::getRandomUInt(180000));
-    };
-
-    void AIUpdate() override
-    {
-        getCreature()->castSpell(getCreature(), 17743, true);
-        RemoveAIUpdateEvent();
-    };
-};
-
 class KirithAI : public CreatureAIScript
 {
 public:
@@ -490,7 +472,6 @@ void SetupMiscCreatures(ScriptMgr* mgr)
     mgr->register_creature_script(11120, &CrimsonHammersmith::Create);
     mgr->register_creature_script(5894, &Corrupt_Minor_Manifestation_Water_Dead::Create);
     mgr->register_creature_script(3425, &SavannahProwler::Create);
-    mgr->register_creature_script(10556, &PeonSleepingAI::Create);
     mgr->register_creature_script(7728, &KirithAI::Create);
 
     //////////////////////////////////////////////////////////////////////////////////////////

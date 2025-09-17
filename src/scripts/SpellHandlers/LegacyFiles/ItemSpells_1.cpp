@@ -205,40 +205,6 @@ bool BanishExile(uint8_t effectIndex, Spell* pSpell)
     return true;
 }
 
-bool ForemansBlackjack(uint8_t /*effectIndex*/, Spell* pSpell)
-{
-    Unit* target = pSpell->getUnitTarget();
-    if (!pSpell->getPlayerCaster() || !target || !target->isCreature())
-        return true;
-
-    // check to see that we have the correct creature
-    Creature* c_target = static_cast<Creature*>(target);
-    if (c_target->getEntry() != 10556 || !c_target->hasAurasWithId(17743))
-        return true;
-
-    // Start moving again
-    if (target->getAIInterface())
-        target->stopMoving();
-
-    // Remove Zzz aura
-    c_target->removeAllAuras();
-
-    pSpell->getPlayerCaster()->sendPlayObjectSoundPacket(c_target->getGuid(), 6197);
-
-    // send chat message
-    char msg[100];
-    sprintf(msg, "Ow! Ok, I'll get back to work, %s", pSpell->getPlayerCaster()->getName().c_str());
-    target->sendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg);
-
-    c_target->emote(EMOTE_STATE_WORK_CHOPWOOD);
-
-    // Add timed event to return lazy peon to Zzz after 5-10 minutes (spell 17743)
-    SpellInfo const* pSpellEntry = sSpellMgr.getSpellInfo(17743);
-    sEventMgr.AddEvent(target, &Unit::eventCastSpell, target, pSpellEntry, EVENT_UNK, 300000 + Util::getRandomUInt(300000), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-
-    return true;
-}
-
 bool NetherWraithBeacon(uint8_t /*effectIndex*/, Spell* pSpell)
 {
     if (!pSpell->getPlayerCaster())
@@ -932,7 +898,6 @@ void SetupLegacyItemSpells_1(ScriptMgr* mgr)
     mgr->register_dummy_spell(13120, &NetOMatic);                   // Net-o-Matic
     uint32_t BanishExileIds[] = { 4130, 4131, 4132, 0 };
     mgr->register_dummy_spell(BanishExileIds, &BanishExile);        // Essence of the Exile Quest
-    mgr->register_dummy_spell(19938, &ForemansBlackjack);           // Lazy Peons Quest
     mgr->register_dummy_spell(39105, &NetherWraithBeacon);          // Spellfire Tailor Quest
     mgr->register_dummy_spell(30458, &NighInvulnBelt);              // Nigh Invulnerability Belt
 

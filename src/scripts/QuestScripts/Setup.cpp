@@ -41,6 +41,7 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
     SetupBlastedLands(mgr);
     SetupBloodmystIsle(mgr);
     SetupBurningSteppes(mgr);
+    SetupDurotar(mgr);
     SetupDesolace(mgr);
     SetupDragonblight(mgr);
     SetupDuskwood(mgr);
