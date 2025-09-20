@@ -1,10 +1,11 @@
 ﻿# ![logo](http://ascemu.org/images/logo.png)
 
-Master                                                      | Development
-:---------------------------------------------------------: | :--------------------------------------------------------------:
-[![AscEmuClangCI][AscEmuClangBadge]][AscEmuBadgeClangUrl]   | [![AscEmuClangCI][AscEmuClangBadge]][AscEmuBadgeClangUrl]      |
-[![AscEmuGccCI][AscEmuGccBadge]][AscEmuBadgeGccUrl]         | [![AscEmuGccCI][AscEmuGccBadge]][AscEmuBadgeGccUrl]            |
-[![MasterAppYeyor][MasterAppYeyorBadge]][MasterAppYeyorUrl] | [![DevelopAppYeyor][DevelopAppYeyorBadge]][DevelopAppYeyorUrl] |
+Master                                                                       | Development
+:--------------------------------------------------------------------------: | :-------------------------------------------------------------------------------:
+[![AscEmuClangCI][AscEmuClangMasterMacOSBadge]][AscEmuBadgeClangMacOSUrl]    | [![AscEmuClangCI][AscEmuClangDevelopMacOSBadge]][AscEmuBadgeClangMacOSUrl]      |
+[![AscEmuClangCI][AscEmuClangMasterLinuxBadge]][AscEmuBadgeClangLinuxUrl]    | [![AscEmuClangCI][AscEmuClangDevelopLinuxBadge]][AscEmuBadgeClangLinuxUrl]      |
+[![AscEmuGccCI][AscEmuGccMasterLinuxBadge]][AscEmuBadgeGccLinuxUrl]          | [![AscEmuGccCI][AscEmuGccDevelopLinuxBadge]][AscEmuBadgeGccLinuxUrl]            |
+[![AppYeyorMaster][AppYeyorMasterBadge]][AppYeyorMasterUrl]                  | [![AppYeyorDevelop][AppYeyorDevelopBadge]][AppYeyorDevelopUrl]                  |
 
 ## Introduction
 AscEmu is derived from ArcEmu to keep up the Antrix-Ascent-Arcemu way of Framework.
@@ -75,17 +76,24 @@ HowTo install - detailed guides on our wiki.
 [PVS-Studio](https://pvs-studio.com/en/pvs-studio/?utm_source=website&utm_medium=github&utm_campaign=open_source) - Static analyzer for C, C++, C#, and Java code.
 
 <!-- Undercover:start:status -->
-[AscEmuGccBadge]: https://github.com/AscEmu/AscEmu/actions/workflows/gcc-linux-test-x64.yml/badge.svg
-[AscEmuClangBadge]: https://github.com/AscEmu/AscEmu/actions/workflows/clang-linux-test-x64.yml/badge.svg
+[AscEmuClangMasterMacOSBadge]: https://github.com/AscEmu/AscEmu/actions/workflows/clang-macos-test-x64.yml/badge.svg?branch=master
+[AscEmuClangDevelopMacOSBadge]: https://github.com/AscEmu/AscEmu/actions/workflows/clang-macos-test-x64.yml/badge.svg?branch=develop
 
-[MasterAppYeyorBadge]: https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/master?svg=true
-[DevelopAppYeyorBadge]: https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/develop?svg=true
+[AscEmuClangMasterLinuxBadge]: https://github.com/AscEmu/AscEmu/actions/workflows/clang-linux-test-x64.yml/badge.svg?branch=master
+[AscEmuClangDevelopLinuxBadge]: https://github.com/AscEmu/AscEmu/actions/workflows/clang-linux-test-x64.yml/badge.svg?branch=develop
 
-[MasterAppYeyorUrl]: https://ci.appveyor.com/project/Zyres/ascemu
-[DevelopAppYeyorUrl]: https://ci.appveyor.com/project/Zyres/ascemu
+[AscEmuGccMasterLinuxBadge]: https://github.com/AscEmu/AscEmu/actions/workflows/gcc-linux-test-x64.yml/badge.svg?branch=master
+[AscEmuGccDevelopLinuxBadge]: https://github.com/AscEmu/AscEmu/actions/workflows/gcc-linux-test-x64.yml/badge.svg?branch=develop
 
-[AscEmuBadgeGccUrl]: https://github.com/AscEmu/AscEmu/actions/workflows/gcc-linux-test-x64.yml
-[AscEmuBadgeClangUrl]: https://github.com/AscEmu/AscEmu/actions/workflows/clang-linux-test-x64.yml
+[AppYeyorMasterBadge]: https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/master?svg=true
+[AppYeyorDevelopBadge]: https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/develop?svg=true
+
+[AppYeyorMasterUrl]: https://ci.appveyor.com/project/Zyres/ascemu
+[AppYeyorDevelopUrl]: https://ci.appveyor.com/project/Zyres/ascemu
+
+[AscEmuBadgeGccLinuxUrl]: https://github.com/AscEmu/AscEmu/actions/workflows/gcc-linux-test-x64.yml
+[AscEmuBadgeClangLinuxUrl]: https://github.com/AscEmu/AscEmu/actions/workflows/clang-linux-test-x64.yml
+[AscEmuBadgeClangMacOSUrl]: https://github.com/AscEmu/AscEmu/actions/workflows/clang-macos-test-x64.yml
 <!-- Undercover:end:status -->
 
 <!-- Undercover:start:community -->
