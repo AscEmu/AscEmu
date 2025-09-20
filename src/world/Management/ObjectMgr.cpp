@@ -615,15 +615,10 @@ void ObjectMgr::loadVendors()
     {
         std::vector<CreatureItem>* items = nullptr;
 
-        if (result->GetFieldCount() < 6 + 1)
+        if (result->GetFieldCount() < 6 + 2)
         {
-            sLogger.failure("Invalid format in vendors ({}/6) columns, not enough data to proceed.", result->GetFieldCount());
+            sLogger.failure("Invalid format in vendors ({}/8) columns, not enough data to proceed.", result->GetFieldCount());
             return;
-        }
-
-        if (result->GetFieldCount() > 6 + 1)
-        {
-            sLogger.failure("Invalid format in vendors ({}/6) columns, loading anyway because we have enough data", result->GetFieldCount());
         }
 
         do
