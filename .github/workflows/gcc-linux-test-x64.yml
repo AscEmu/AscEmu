@@ -2,7 +2,7 @@ name: AscEmu CI (Linux::gcc)
 
 on:
   push:
-    branches: [ master, develop, nix-compile-time ]
+    branches: [ master, develop ]
   pull_request:
     branches: [ develop ]
 
@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Check out repo
-      uses: actions/checkout@v4.2.2
+      uses: actions/checkout@v5
 
     - name: Setup Environment
       run: |
@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Check out repo
-      uses: actions/checkout@v4.2.2
+      uses: actions/checkout@v5
 
     - name: Setup Environment
       run: |
@@ -66,7 +66,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Check out repo
-      uses: actions/checkout@v4.2.2
+      uses: actions/checkout@v5
 
     - name: Setup Environment
       run: |
@@ -93,7 +93,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Check out repo
-      uses: actions/checkout@v4.2.2
+      uses: actions/checkout@v5
 
     - name: Setup Environment
       run: |
@@ -120,7 +120,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Check out repo
-      uses: actions/checkout@v4.2.2
+      uses: actions/checkout@v5
 
     - name: Setup Environment
       run: |
