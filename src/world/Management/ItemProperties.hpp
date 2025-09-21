@@ -41,18 +41,18 @@ struct ItemProperties
     uint32_t Unique;
     uint32_t MaxCount;
     uint32_t ContainerSlots; // uint8_t
-    uint32_t itemstatscount;
-    ItemStat Stats[MAX_ITEM_PROTO_STATS];
+    uint32_t itemstatscount = 0;
+    ItemStat Stats[MAX_ITEM_PROTO_STATS] = {0,0};
     uint32_t ScalingStatsEntry;
     uint32_t ScalingStatsFlag;
     ItemDamage Damage[MAX_ITEM_PROTO_DAMAGES];
     uint32_t Armor;
-    uint32_t HolyRes;
-    uint32_t FireRes;
-    uint32_t NatureRes;
-    uint32_t FrostRes;
-    uint32_t ShadowRes;
-    uint32_t ArcaneRes;
+    uint32_t HolyRes = 0;
+    uint32_t FireRes = 0;
+    uint32_t NatureRes = 0;
+    uint32_t FrostRes = 0;
+    uint32_t ShadowRes = 0;
+    uint32_t ArcaneRes = 0;
     uint32_t Delay;
     uint32_t AmmoType;
     float Range;

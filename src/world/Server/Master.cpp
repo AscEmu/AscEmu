@@ -70,7 +70,7 @@
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20250516-00_characters";
-static const char* REQUIRED_WORLD_DB_VERSION = "20250920-02_loot_creatures_cata";
+static const char* REQUIRED_WORLD_DB_VERSION = "20250921-00_item_properties_stats";
 
 volatile bool Master::m_stopEvent = false;
 

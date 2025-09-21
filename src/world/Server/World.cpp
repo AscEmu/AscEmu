@@ -867,6 +867,7 @@ void World::loadMySQLStores()
 
     sMySQLStore.loadItemPagesTable();
     sMySQLStore.loadItemPropertiesTable();
+    sMySQLStore.loadItemPropertiesStatsTable();
     sMySQLStore.loadCreaturePropertiesMovementTable();
     sMySQLStore.loadCreaturePropertiesTable();
     sMySQLStore.loadGameObjectPropertiesTable();
