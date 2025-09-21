@@ -344,6 +344,7 @@ bool ChatCommandHandler::HandleReloadItemsCommand(const char* /*args*/, WorldSes
 {
     auto startTime = Util::TimeNow();
     sMySQLStore.loadItemPropertiesTable();
+    sMySQLStore.loadItemPropertiesSpellsTable();
     sMySQLStore.loadItemPropertiesStatsTable();
     greenSystemMessage(m_session, "WorldDB table 'items' reloaded in {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     return true;

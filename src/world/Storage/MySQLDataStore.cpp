@@ -291,19 +291,9 @@ void MySQLDataStore::loadItemPropertiesTable()
         itemProperties.AmmoType = fields[37].asUint32();
         itemProperties.Range = fields[38].asFloat();
 
-        for (uint8_t i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
-        {
-            itemProperties.Spells[i].Id = fields[39 + i * 6].asUint32();
-            itemProperties.Spells[i].Trigger = fields[40 + i * 6].asUint32();
-            itemProperties.Spells[i].Charges = fields[41 + i * 6].asInt32();
-            itemProperties.Spells[i].Cooldown = fields[42 + i * 6].asInt32();
-            itemProperties.Spells[i].Category = fields[43 + i * 6].asUint32();
-            itemProperties.Spells[i].CategoryCooldown = fields[44 + i * 6].asInt32();
-        }
-
-        itemProperties.Bonding = fields[69].asUint32();
-        itemProperties.Description = fields[70].asCString();
-        uint32_t page_id = fields[71].asUint32();
+        itemProperties.Bonding = fields[39].asUint32();
+        itemProperties.Description = fields[40].asCString();
+        uint32_t page_id = fields[41].asUint32();
         if (page_id != 0)
         {
             MySQLStructure::ItemPage const* item_page = getItemPage(page_id);
@@ -322,36 +312,36 @@ void MySQLDataStore::loadItemPropertiesTable()
             itemProperties.PageId = page_id;
         }
 
-        itemProperties.PageLanguage = fields[72].asUint32();
-        itemProperties.PageMaterial = fields[73].asUint32();
-        itemProperties.QuestId = fields[74].asUint32();
-        itemProperties.LockId = fields[75].asUint32();
-        itemProperties.LockMaterial = fields[76].asUint32(true);
-        itemProperties.SheathID = fields[77].asUint32();
-        itemProperties.RandomPropId = fields[78].asUint32();
-        itemProperties.RandomSuffixId = fields[79].asUint32();
-        itemProperties.Block = fields[80].asUint32();
-        itemProperties.ItemSet = fields[81].asInt32();
-        itemProperties.MaxDurability = fields[82].asUint32();
-        itemProperties.ZoneNameID = fields[83].asUint32();
-        itemProperties.MapID = fields[84].asUint32();
-        itemProperties.BagFamily = fields[85].asUint32();
-        itemProperties.TotemCategory = fields[86].asUint32();
+        itemProperties.PageLanguage = fields[42].asUint32();
+        itemProperties.PageMaterial = fields[43].asUint32();
+        itemProperties.QuestId = fields[44].asUint32();
+        itemProperties.LockId = fields[45].asUint32();
+        itemProperties.LockMaterial = fields[46].asUint32(true);
+        itemProperties.SheathID = fields[47].asUint32();
+        itemProperties.RandomPropId = fields[48].asUint32();
+        itemProperties.RandomSuffixId = fields[49].asUint32();
+        itemProperties.Block = fields[50].asUint32();
+        itemProperties.ItemSet = fields[51].asInt32();
+        itemProperties.MaxDurability = fields[52].asUint32();
+        itemProperties.ZoneNameID = fields[53].asUint32();
+        itemProperties.MapID = fields[54].asUint32();
+        itemProperties.BagFamily = fields[55].asUint32();
+        itemProperties.TotemCategory = fields[56].asUint32();
 
         for (uint8_t i = 0; i < MAX_ITEM_PROTO_SOCKETS; ++i)
         {
-            itemProperties.Sockets[i].SocketColor = uint32_t(fields[87 + i * 2].asUint8());
-            itemProperties.Sockets[i].Unk = fields[88 + i * 2].asUint32();
+            itemProperties.Sockets[i].SocketColor = uint32_t(fields[57 + i * 2].asUint8());
+            itemProperties.Sockets[i].Unk = fields[58 + i * 2].asUint32();
         }
 
-        itemProperties.SocketBonus = fields[93].asUint32();
-        itemProperties.GemProperties = fields[94].asUint32();
-        itemProperties.DisenchantReqSkill = fields[95].asInt32();
-        itemProperties.ArmorDamageModifier = fields[96].asFloat();
-        itemProperties.ExistingDuration = fields[97].asUint32();
-        itemProperties.ItemLimitCategory = fields[98].asUint32();
-        itemProperties.HolidayId = fields[99].asUint32();
-        itemProperties.FoodType = fields[100].asUint32();
+        itemProperties.SocketBonus = fields[63].asUint32();
+        itemProperties.GemProperties = fields[64].asUint32();
+        itemProperties.DisenchantReqSkill = fields[65].asInt32();
+        itemProperties.ArmorDamageModifier = fields[66].asFloat();
+        itemProperties.ExistingDuration = fields[67].asUint32();
+        itemProperties.ItemLimitCategory = fields[68].asUint32();
+        itemProperties.HolidayId = fields[69].asUint32();
+        itemProperties.FoodType = fields[70].asUint32();
 
         //lowercase
         std::string lower_case_name = itemProperties.Name;
@@ -487,6 +477,83 @@ void MySQLDataStore::loadItemPropertiesTable()
     sLogger.info("MySQLDataLoads : Loaded {} item_properties in {} ms!", item_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
+void MySQLDataStore::loadItemPropertiesSpellsTable()
+{
+    auto startTime = Util::TimeNow();
+
+    uint32_t spell_count = 0;
+
+    auto item_result = getWorldDBQuery("SELECT * FROM item_properties_spells base "
+        "WHERE build=(SELECT MAX(build) FROM item_properties_spells spec WHERE base.entry = spec.entry AND build <= %u)", VERSION_STRING);
+
+    if (item_result == nullptr)
+    {
+        sLogger.info("MySQLDataLoads : Table `item_properties_spells` is empty!");
+        return;
+    }
+
+    sLogger.info("MySQLDataLoads : Table `item_properties_spells` has {} columns", item_result->GetFieldCount());
+
+    struct LoadItemSpell
+    {
+        uint32_t trigger;
+        int32_t charges;
+        int32_t cooldown;
+        uint32_t category;
+        int32_t categoryCooldown;
+    };
+
+    std::map<uint32_t, std::unordered_map<uint32_t, LoadItemSpell>> tempSpellStore;
+    do
+    {
+        Field* fields = item_result->Fetch();
+
+        uint32_t entry = fields[0].asUint32();
+        uint32_t spellid = fields[2].asUint32();
+
+        LoadItemSpell spellData;
+        spellData.trigger = fields[3].asUint32();
+        spellData.charges = fields[4].asInt32();
+        spellData.cooldown = fields[5].asInt32();
+        spellData.category = fields[6].asUint32();
+        spellData.categoryCooldown = fields[7].asInt32();
+
+        tempSpellStore[entry][spellid] = spellData;
+
+        ++spell_count;
+    } while (item_result->NextRow());
+
+    sLogger.info("MySQLDataLoads : Loaded {} item_properties_spells in {} ms!", spell_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+
+
+    startTime = Util::TimeNow();
+    uint32_t assignedCount = 0;
+
+    for (const auto& [entry, bySpellId] : tempSpellStore)
+    {
+        ItemProperties& ip = _itemPropertiesStore[entry];
+
+        size_t i = 0;
+        for (const auto& [spellId, data] : bySpellId)
+        {
+            if (i >= MAX_ITEM_PROTO_SPELLS)
+                break;
+
+            ip.Spells[i].Id = spellId;
+            ip.Spells[i].Trigger = data.trigger;
+            ip.Spells[i].Charges = data.charges;
+            ip.Spells[i].Cooldown = data.cooldown;
+            ip.Spells[i].Category = data.category;
+            ip.Spells[i].CategoryCooldown = data.categoryCooldown;
+
+            ++i;
+            ++assignedCount;
+        }
+    }
+
+    sLogger.info("MySQLDataLoads : assigned {} spells to item_properties in {} ms!", assignedCount, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+}
+
 void MySQLDataStore::loadItemPropertiesStatsTable()
 {
     auto startTime = Util::TimeNow();
@@ -579,7 +646,7 @@ void MySQLDataStore::loadItemPropertiesStatsTable()
         itemProperties.itemstatscount = count;
     }
 
-    sLogger.info("MySQLDataLoads : assigned {} stats in {} ms!", assignedCount, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    sLogger.info("MySQLDataLoads : assigned {} stats to item_properties in {} ms!", assignedCount, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
 
 ItemProperties const* MySQLDataStore::getItemProperties(uint32_t entry)

@@ -693,12 +693,12 @@ struct SocketInfo
 
 struct ItemSpell
 {
-    uint32_t Id;
-    uint32_t Trigger;
-    int32_t Charges;
-    int32_t Cooldown;
-    uint32_t Category;
-    int32_t CategoryCooldown;
+    uint32_t Id = 0;
+    uint32_t Trigger = 0;
+    int32_t Charges = 0;
+    int32_t Cooldown = -1;
+    uint32_t Category = 0;
+    int32_t CategoryCooldown = -1;
 };
 
 struct ItemDamage
@@ -710,6 +710,6 @@ struct ItemDamage
 
 struct ItemStat
 {
-    uint32_t Type;
-    int32_t Value;
+    uint32_t Type = 0;
+    int32_t Value = 0;
 };

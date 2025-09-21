@@ -63,27 +63,27 @@ WHERE stat_type10 <> 0;
 REPLACE INTO item_properties_stats (entry, build, type, value)
 SELECT entry, build, 53, holy_res
 FROM item_properties
-WHERE holy_res <> 0
+WHERE holy_res <> 0;
 
 REPLACE INTO item_properties_stats (entry, build, type, value)
 SELECT entry, build, 55, fire_res
 FROM item_properties
-WHERE fire_res <> 0
+WHERE fire_res <> 0;
 
 REPLACE INTO item_properties_stats (entry, build, type, value)
 SELECT entry, build, 52, nature_res
 FROM item_properties
-WHERE nature_res <> 0
+WHERE nature_res <> 0;
 
 REPLACE INTO item_properties_stats (entry, build, type, value)
 SELECT entry, build, 54, frost_res
 FROM item_properties
-WHERE frost_res <> 0
+WHERE frost_res <> 0;
 
 REPLACE INTO item_properties_stats (entry, build, type, value)
 SELECT entry, build, 56, shadow_res
 FROM item_properties
-WHERE shadow_res <> 0
+WHERE shadow_res <> 0;
 
 REPLACE INTO item_properties_stats (entry, build, type, value)
 SELECT entry, build, 51, arcane_res

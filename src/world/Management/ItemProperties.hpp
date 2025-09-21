@@ -42,7 +42,7 @@ struct ItemProperties
     uint32_t MaxCount;
     uint32_t ContainerSlots; // uint8_t
     uint32_t itemstatscount = 0;
-    ItemStat Stats[MAX_ITEM_PROTO_STATS] = {0,0};
+    ItemStat Stats[MAX_ITEM_PROTO_STATS];
     uint32_t ScalingStatsEntry;
     uint32_t ScalingStatsFlag;
     ItemDamage Damage[MAX_ITEM_PROTO_DAMAGES];

@@ -303,6 +303,7 @@ public:
     void loadItemPagesTable();
     void addItemPage(uint32_t _entry, std::string _text, uint32_t _nextPage = 0);
     void loadItemPropertiesTable();
+    void loadItemPropertiesSpellsTable();
     void loadItemPropertiesStatsTable();
 
     void loadCreaturePropertiesMovementTable();
