@@ -6,7 +6,7 @@ CREATE TABLE `item_properties_stats` (
   `type` tinyint unsigned NOT NULL DEFAULT '0',
   `value` smallint NOT NULL DEFAULT '0',
   UNIQUE KEY `item_properties_stats_entry_IDX` (`entry`,`build`,`type`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- move stats to seperated table
 
