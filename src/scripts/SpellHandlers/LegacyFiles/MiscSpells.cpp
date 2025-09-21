@@ -200,10 +200,9 @@ bool NorthRendInscriptionResearch(uint8_t /*effectIndex*/, Spell* s)
         std::vector<uint32_t> discoverableGlyphs;
 
         // how many of these are the right type (minor/major) of glyph, and learnable by the player
-        const auto skillBounds = sSpellMgr.getSkillEntryForSkillBounds(SKILL_INSCRIPTION);
-        for (auto skillItr = skillBounds.first; skillItr != skillBounds.second; ++skillItr)
+        const auto skillRange = sSpellMgr.getSkillEntryRangeForSkill(SKILL_INSCRIPTION);
+        for (const auto& [_, skill_line_ability] : skillRange)
         {
-            auto skill_line_ability = skillItr->second;
             if (skill_line_ability->next == 0)
             {
                 SpellInfo const* se1 = sSpellMgr.getSpellInfo(skill_line_ability->spell);

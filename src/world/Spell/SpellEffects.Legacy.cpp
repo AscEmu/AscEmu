@@ -4276,7 +4276,7 @@ void Spell::SpellEffectLearnPetSpell(uint8_t effectIndex)
         if (!pPet->isHunterPet())
             p_caster->addSummonSpell(m_unitTarget->getEntry(), getSpellInfo()->getEffectTriggerSpell(effectIndex));
 
-        pPet->AddSpell(sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(effectIndex)), true);
+        pPet->addSpell(sSpellMgr.getSpellInfo(getSpellInfo()->getEffectTriggerSpell(effectIndex)));
 
         // Send Packet
         /*      WorldPacket data(SMSG_SET_EXTRA_AURA_INFO_OBSOLETE, 22);
@@ -5271,7 +5271,7 @@ void Spell::SpellEffectSummonDeadPet(uint8_t /*effectIndex*/)
         pPet->setHealth(pPet->getMaxHealth() * damage / 100);
         pPet->setDeathState(ALIVE);
         pPet->getAIInterface()->handleEvent(EVENT_FOLLOWOWNER, pPet, 0);
-        pPet->SendSpellsToOwner();
+        pPet->sendSpellsToController(p_caster, pPet->getTimeLeft());
 
         // Restore unit and pvp flags that were resetted on death
         if (p_caster->isPvpFlagSet())

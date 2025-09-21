@@ -22,8 +22,8 @@ void LootTemplate::addEntry(LootStoreItem& item)
 void LootTemplate::generateLoot(Loot& loot, uint8_t lootDifficulty) const
 {
     // Randomize our Loot
-    auto lootEntries = Entries;
-    Util::randomShuffleVector(&lootEntries);
+    LootStoreItemList lootEntries = Entries;
+    Util::randomShuffleVector(lootEntries);
 
     // Rolling items
     for (const auto& lootStoreItem : lootEntries)

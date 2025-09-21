@@ -1275,7 +1275,7 @@ void BoilingBlood::filterEffectTargets(Spell* spell, uint8_t /*effectIndex*/, st
     // Should be casted on 3 random targets
     if (effectTargets->size() > 3)
     {
-        Util::randomShuffleVector(effectTargets);
+        Util::randomShuffleVector(*effectTargets);
         effectTargets->erase(effectTargets->begin() + 3, effectTargets->end());
     }
 }

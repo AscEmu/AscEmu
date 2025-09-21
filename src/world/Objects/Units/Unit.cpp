@@ -159,7 +159,11 @@ void Unit::Update(unsigned long time_passed)
     const auto msTime = Util::getMSTime();
 
     auto diff = msTime - m_lastSpellUpdateTime;
-    if (diff >= 100)
+    if (m_lastSpellUpdateTime == 0)
+    {
+        m_lastSpellUpdateTime = msTime;
+    }
+    else if (diff >= 100)
     {
         // Spells and auras are updated every 100ms
         _UpdateSpells(diff);
@@ -227,7 +231,11 @@ void Unit::Update(unsigned long time_passed)
         if (m_aiInterface != nullptr)
         {
             diff = msTime - m_lastAiInterfaceUpdateTime;
-            if (diff >= 100)
+            if (m_lastAiInterfaceUpdateTime == 0)
+            {
+                m_lastAiInterfaceUpdateTime = msTime;
+            }
+            else if (diff >= 100)
             {
                 m_aiInterface->update(diff);
                 m_lastAiInterfaceUpdateTime = msTime;
@@ -365,11 +373,6 @@ void Unit::OnPushToWorld()
 
 void Unit::die(Unit* /*pAttacker*/, uint32_t /*damage*/, uint32_t /*spellid*/)
 {}
-
-void Unit::buildPetSpellList(WorldPacket& data)
-{
-    data << static_cast<uint64_t>(0);
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // WoWData
@@ -3558,58 +3561,58 @@ void Unit::setDualWield(bool enable)
     }
 }
 
-void Unit::castSpell(uint64_t targetGuid, uint32_t spellId, bool triggered/* = false*/)
+SpellCastResult Unit::castSpell(uint64_t targetGuid, uint32_t spellId, bool triggered/* = false*/)
 {
     const SpellForcedBasePoints forcedBasePoints;
-    castSpell(targetGuid, spellId, forcedBasePoints, triggered);
+    return castSpell(targetGuid, spellId, forcedBasePoints, triggered);
 }
 
-void Unit::castSpell(Unit* target, uint32_t spellId, bool triggered/* = false*/)
+SpellCastResult Unit::castSpell(Unit* target, uint32_t spellId, bool triggered/* = false*/)
 {
     const SpellForcedBasePoints forcedBasePoints;
-    castSpell(target, spellId, forcedBasePoints, triggered);
+    return castSpell(target, spellId, forcedBasePoints, triggered);
 }
 
-void Unit::castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, bool triggered/* = false*/)
+SpellCastResult Unit::castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, bool triggered/* = false*/)
 {
     if (spellInfo == nullptr)
-        return;
+        return SPELL_FAILED_UNKNOWN;
 
     const SpellForcedBasePoints forcedBasePoints;
-    castSpell(targetGuid, spellInfo, forcedBasePoints, triggered);
+    return castSpell(targetGuid, spellInfo, forcedBasePoints, triggered);
 }
 
-void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, bool triggered/* = false*/)
+SpellCastResult Unit::castSpell(Unit* target, SpellInfo const* spellInfo, bool triggered/* = false*/)
 {
     if (spellInfo == nullptr)
-        return;
+        return SPELL_FAILED_UNKNOWN;
     
     const SpellForcedBasePoints forcedBasePoints;
-    castSpell(target, spellInfo, forcedBasePoints, triggered);
+    return castSpell(target, spellInfo, forcedBasePoints, triggered);
 }
 
-void Unit::castSpell(uint64_t targetGuid, uint32_t spellId, SpellForcedBasePoints forcedBasepoints, bool triggered/* = false*/)
+SpellCastResult Unit::castSpell(uint64_t targetGuid, uint32_t spellId, SpellForcedBasePoints forcedBasepoints, bool triggered/* = false*/)
 {
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
     if (spellInfo == nullptr)
-        return;
+        return SPELL_FAILED_UNKNOWN;
 
-    castSpell(targetGuid, spellInfo, forcedBasepoints, triggered);
+    return castSpell(targetGuid, spellInfo, forcedBasepoints, triggered);
 }
 
-void Unit::castSpell(Unit* target, uint32_t spellId, SpellForcedBasePoints forcedBasepoints, bool triggered/* = false*/)
+SpellCastResult Unit::castSpell(Unit* target, uint32_t spellId, SpellForcedBasePoints forcedBasepoints, bool triggered/* = false*/)
 {
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
     if (spellInfo == nullptr)
-        return;
+        return SPELL_FAILED_UNKNOWN;
 
-    castSpell(target, spellInfo, forcedBasepoints, triggered);
+    return castSpell(target, spellInfo, forcedBasepoints, triggered);
 }
 
-void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasePoints, int32_t spellCharges, bool triggered/* = false*/)
+SpellCastResult Unit::castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasePoints, int32_t spellCharges, bool triggered/* = false*/)
 {
     if (spellInfo == nullptr)
-        return;
+        return SPELL_FAILED_UNKNOWN;
 
     Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
     newSpell->forced_basepoints = std::make_shared<SpellForcedBasePoints>(forcedBasePoints);
@@ -3625,34 +3628,34 @@ void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePo
         newSpell->GenerateTargets(&targets);
 
     // Prepare the spell
-    newSpell->prepare(&targets);
+    return newSpell->prepare(&targets);
 }
 
-void Unit::castSpell(SpellCastTargets targets, uint32_t spellId, bool triggered/* = false*/)
+SpellCastResult Unit::castSpell(SpellCastTargets targets, uint32_t spellId, bool triggered/* = false*/)
 {
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
-    castSpell(targets, spellInfo, triggered);
+    return castSpell(targets, spellInfo, triggered);
 }
 
-void Unit::castSpell(SpellCastTargets targets, SpellInfo const* spellInfo, bool triggered/* = false*/)
+SpellCastResult Unit::castSpell(SpellCastTargets targets, SpellInfo const* spellInfo, bool triggered/* = false*/)
 {
     if (spellInfo == nullptr)
-        return;
+        return SPELL_FAILED_UNKNOWN;
 
     Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
-    newSpell->prepare(&targets);
+    return newSpell->prepare(&targets);
 }
 
-void Unit::castSpellLoc(const LocationVector location, uint32_t spellId, bool triggered/* = false*/)
+SpellCastResult Unit::castSpellLoc(const LocationVector location, uint32_t spellId, bool triggered/* = false*/)
 {
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
-    castSpellLoc(location, spellInfo, triggered);
+    return castSpellLoc(location, spellInfo, triggered);
 }
 
-void Unit::castSpellLoc(const LocationVector location, SpellInfo const* spellInfo, bool triggered/* = false*/)
+SpellCastResult Unit::castSpellLoc(const LocationVector location, SpellInfo const* spellInfo, bool triggered/* = false*/)
 {
     if (spellInfo == nullptr)
-        return;
+        return SPELL_FAILED_UNKNOWN;
 
     SpellCastTargets targets;
     targets.setDestination(location);
@@ -3660,7 +3663,7 @@ void Unit::castSpellLoc(const LocationVector location, SpellInfo const* spellInf
 
     // Prepare the spell
     Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
-    newSpell->prepare(&targets);
+    return newSpell->prepare(&targets);
 }
 
 void Unit::eventCastSpell(Unit* target, SpellInfo const* spellInfo)
@@ -3672,10 +3675,10 @@ void Unit::eventCastSpell(Unit* target, SpellInfo const* spellInfo)
         sLogger.failure("Unit::eventCastSpell tried to cast invalid spell with no spellInfo (nullptr)");
 }
 
-void Unit::castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasepoints, bool triggered)
+SpellCastResult Unit::castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasepoints, bool triggered)
 {
     if (spellInfo == nullptr)
-        return;
+        return SPELL_FAILED_UNKNOWN;
 
     Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
     newSpell->forced_basepoints = std::make_shared<SpellForcedBasePoints>(forcedBasepoints);
@@ -3683,13 +3686,13 @@ void Unit::castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, SpellForce
     SpellCastTargets targets(targetGuid);
 
     // Prepare the spell
-    newSpell->prepare(&targets);
+    return newSpell->prepare(&targets);
 }
 
-void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasepoints, bool triggered)
+SpellCastResult Unit::castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasepoints, bool triggered)
 {
     if (spellInfo == nullptr)
-        return;
+        return SPELL_FAILED_UNKNOWN;
 
     Spell* newSpell = sSpellMgr.newSpell(this, spellInfo, triggered, nullptr);
     newSpell->forced_basepoints = std::make_shared<SpellForcedBasePoints>(forcedBasepoints);
@@ -3704,7 +3707,7 @@ void Unit::castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePo
         newSpell->GenerateTargets(&targets);
 
     // Prepare the spell
-    newSpell->prepare(&targets);
+    return newSpell->prepare(&targets);
 }
 
 SpellProc* Unit::addProcTriggerSpell(uint32_t spellId, uint32_t originalSpellId, uint64_t casterGuid, uint32_t procChance, SpellProcFlags procFlags, SpellExtraProcFlags exProcFlags, uint32_t const* spellFamilyMask, uint32_t const* procClassMask/* = nullptr*/, Aura* createdByAura/* = nullptr*/, Object* obj/* = nullptr*/)
@@ -4910,6 +4913,23 @@ Aura* Unit::getAuraWithAuraEffect(AuraEffect aura_effect) const
     return getAuraEffectList(aura_effect).front()->getAura();
 }
 
+Aura* Unit::getAuraWithAuraEffectForGuid(AuraEffect aura_effect, uint64_t guid) const
+{
+    if (aura_effect >= TOTAL_SPELL_AURAS)
+        return nullptr;
+
+    if (m_auraEffectList[aura_effect].empty())
+        return nullptr;
+
+    for (const auto& aurEff : m_auraEffectList[aura_effect])
+    {
+        if (aurEff->getAura()->getCasterGuid() == guid)
+            return aurEff->getAura();
+    }
+
+    return nullptr;
+}
+
 Aura* Unit::getAuraWithVisualSlot(uint8_t visualSlot) const
 {
     for (const auto& aur : getAuraList())
@@ -5009,12 +5029,54 @@ bool Unit::hasAurasWithId(uint32_t const* auraId) const
     return false;
 }
 
+bool Unit::hasAurasWithIdForGuid(uint32_t auraId, uint64_t guid) const
+{
+    for (const auto& aur : m_auraList)
+    {
+        if (aur && aur->getSpellId() == auraId && aur->getCasterGuid() == guid)
+            return true;
+    }
+
+    return false;
+}
+
+bool Unit::hasAurasWithIdForGuid(uint32_t const* auraId, uint64_t guid) const
+{
+    for (const auto& aur : m_auraList)
+    {
+        if (aur == nullptr)
+            continue;
+
+        for (int i = 0; auraId[i] != 0; ++i)
+        {
+            if (aur->getSpellId() == auraId[i] && aur->getCasterGuid() == guid)
+                return true;
+        }
+    }
+
+    return false;
+}
+
 bool Unit::hasAuraWithAuraEffect(AuraEffect type) const
 {
     if (type >= TOTAL_SPELL_AURAS)
         return false;
 
     return !getAuraEffectList(type).empty();
+}
+
+bool Unit::hasAuraWithAuraEffectForGuid(AuraEffect type, uint64_t guid) const
+{
+    if (type >= TOTAL_SPELL_AURAS)
+        return false;
+
+    for (const auto& aurEff : m_auraEffectList[type])
+    {
+        if (aurEff->getAura()->getCasterGuid() == guid)
+            return true;
+    }
+
+    return false;
 }
 
 bool Unit::hasAuraWithMechanic(SpellMechanic mechanic) const
@@ -8937,9 +8999,8 @@ void Unit::possess(Unit* unitTarget, uint32_t delay)
 
     if (!(unitTarget->isPet() && dynamic_cast<Pet*>(unitTarget) == playerController->getPet()))
     {
-        WorldPacket data(SMSG_PET_SPELLS, 4 * 4 + 20);
-        unitTarget->buildPetSpellList(data);
-        playerController->getSession()->SendPacket(&data);
+        if (auto* creatureTarget = unitTarget->ToCreature())
+            creatureTarget->sendSpellsToController(playerController, 0);
     }
 }
 
@@ -13011,10 +13072,9 @@ uint32_t Unit::handleProc(uint32_t flag, Unit* victim, SpellInfo const* CastingS
 
                 //only trigger effect for specified spells
                 auto _continue = false;
-                const auto spellSkillBounds = sSpellMgr.getSkillEntryForSpellBounds(CastingSpell->getId());
-                for (auto spellSkillItr = spellSkillBounds.first; spellSkillItr != spellSkillBounds.second; ++spellSkillItr)
+                const auto spellSkillRange = sSpellMgr.getSkillEntryRangeForSpell(CastingSpell->getId());
+                for (const auto& [_, skill_line_ability] : spellSkillRange)
                 {
-                    auto skill_line_ability = spellSkillItr->second;
                     if (skill_line_ability->skilline != SKILL_DESTRUCTION)
                     {
                         _continue = true;

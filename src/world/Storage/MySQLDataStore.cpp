@@ -3552,7 +3552,7 @@ void MySQLDataStore::loadLocalesAchievementReward()
 
 MySQLStructure::LocalesAchievementReward const* MySQLDataStore::getLocalizedAchievementReward(uint32_t entry, uint32_t gender, uint32_t sessionLocale)
 {
-    for (auto localesAchievementReward : _localesAchievementRewardStore)
+    for (const auto& localesAchievementReward : _localesAchievementRewardStore)
     {
         if (localesAchievementReward.entry == entry && localesAchievementReward.languageCode == sessionLocale)
         {

@@ -5,15 +5,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-//#include "Spell.hpp"
-//#include "SpellAura.hpp"
-//#include "SpellInfo.hpp"
-#include "SpellTargetConstraint.hpp"
-//#include "Storage/WDB/WDBStructures.hpp"
 #include "Definitions/SpellMechanics.hpp"
 #include "Objects/Units/Players/PlayerDefines.hpp"
+#include "SpellTargetConstraint.hpp"
 
 #include <memory>
+#include <ranges>
 
 namespace WDB::Structures
 {
@@ -48,10 +45,10 @@ typedef std::multimap<uint32_t, uint32_t> SpellRequiredMap;
 typedef std::multimap<uint32_t, uint32_t> SpellsRequiringSpellMap;
 typedef std::unordered_multimap<uint16_t, WDB::Structures::SkillLineAbilityEntry const*> SkillSkillAbilityMap;
 typedef std::unordered_multimap<uint32_t, WDB::Structures::SkillLineAbilityEntry const*> SpellSkillAbilityMap;
-typedef std::pair<SpellRequiredMap::const_iterator, SpellRequiredMap::const_iterator> SpellRequiredMapBounds;
-typedef std::pair<SpellsRequiringSpellMap::const_iterator, SpellsRequiringSpellMap::const_iterator> SpellsRequiringSpellMapBounds;
-typedef std::pair<SkillSkillAbilityMap::const_iterator, SkillSkillAbilityMap::const_iterator> SkillSkillAbilityMapBounds;
-typedef std::pair<SpellSkillAbilityMap::const_iterator, SpellSkillAbilityMap::const_iterator> SpellSkillAbilityMapBounds;
+using SpellRequiredMapRange = std::ranges::subrange<SpellRequiredMap::const_iterator>;
+using SpellsRequiringSpellMapRange = std::ranges::subrange<SpellsRequiringSpellMap::const_iterator>;
+using SkillSkillAbilityMapRange = std::ranges::subrange<SkillSkillAbilityMap::const_iterator>;
+using SpellSkillAbilityMapRange = std::ranges::subrange<SpellSkillAbilityMap::const_iterator>;
 
 typedef std::map<uint32_t, std::unique_ptr<SpellTargetConstraint>> SpellTargetConstraintMap;
 
@@ -98,9 +95,9 @@ public:
     SpellMechanic const* getCrowdControlMechanicList(bool includeSilence) const;
 
     // Spell required
-    SpellRequiredMapBounds getSpellsRequiredForSpellBounds(uint32_t spellId) const;
+    SpellRequiredMapRange getSpellsRequiredRangeForSpell(uint32_t spellId) const;
     SpellsRequiringSpellMap getSpellsRequiringSpell() const;
-    SpellsRequiringSpellMapBounds getSpellsRequiringSpellBounds(uint32_t spellId) const;
+    SpellsRequiringSpellMapRange getSpellsRequiringSpellRange(uint32_t spellId) const;
     bool isSpellRequiringSpell(uint32_t spellId, uint32_t requiredSpellId) const;
     uint32_t getSpellRequired(uint32_t spellId) const;
 
@@ -109,9 +106,9 @@ public:
 
     // Skills
     // Returns skill ability entries by spell id
-    SpellSkillAbilityMapBounds getSkillEntryForSpellBounds(uint32_t spellId) const;
+    SpellSkillAbilityMapRange getSkillEntryRangeForSpell(uint32_t spellId) const;
     // Returns skill ability entries by skill id
-    SkillSkillAbilityMapBounds getSkillEntryForSkillBounds(uint16_t skillId) const;
+    SkillSkillAbilityMapRange getSkillEntryRangeForSkill(uint16_t skillId) const;
     // Use forPlayer if you want to see if skill ability entry fits for player
     WDB::Structures::SkillLineAbilityEntry const* getFirstSkillEntryForSpell(uint32_t spellId, Player const* forPlayer = nullptr) const;
 

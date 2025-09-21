@@ -1199,7 +1199,7 @@ void Spell::SendInterrupted(uint8_t result)
     Player* plr = p_caster;
     if (plr == nullptr && m_caster->isPet())
     {
-        static_cast<Pet*>(m_caster)->SendCastFailed(getSpellInfo()->getId(), result);
+        static_cast<Pet*>(m_caster)->sendPetCastFailed(getSpellInfo()->getId(), result);
     }
     else
     {

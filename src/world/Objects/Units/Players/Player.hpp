@@ -1926,7 +1926,6 @@ private:
 
 public:
     void buildFlagUpdateForNonGroupSet(uint32_t index, uint32_t flag);
-    void buildPetSpellList(WorldPacket& data) override;
 
     void modifyBonuses(uint32_t type, int32_t val, bool apply);
     void calcExpertise();

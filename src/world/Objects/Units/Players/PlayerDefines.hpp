@@ -17,6 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <unordered_map>
 #include <mutex>
 #include <set>
+#include <unordered_set>
 #include <list>
 #include <memory>
 
@@ -1225,7 +1226,7 @@ private:
     std::array<ActionButton, PLAYER_ACTION_BUTTON_COUNT> mActions = { ActionButton() };
 };
 
-typedef std::set<uint32_t>                                      SpellSet;
+typedef std::unordered_set<uint32_t>                            SpellSet;
 typedef std::list<std::unique_ptr<classScriptOverride>>         ScriptOverrideList;
 typedef std::map<uint32_t, std::shared_ptr<ScriptOverrideList>> SpellOverrideMap;
 typedef std::map<uint32_t, std::unique_ptr<FactionReputation>>  ReputationMap;

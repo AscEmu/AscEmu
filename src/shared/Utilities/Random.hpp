@@ -56,12 +56,12 @@ namespace Util
     // Container helper functions
 
     template<typename T>
-    inline void randomShuffleVector(std::vector<T>* vector)
+    inline void randomShuffleVector(std::vector<T>& vector)
     {
         std::random_device rd;
         std::mt19937 mt(rd());
 
-        std::shuffle(vector->begin(), vector->end(), mt);
+        std::shuffle(vector.begin(), vector.end(), mt);
     }
 
     template <class C>

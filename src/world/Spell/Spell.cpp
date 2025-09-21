@@ -2693,9 +2693,9 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (newSpell == nullptr)
                     return SPELL_FAILED_NOT_KNOWN;
 
-                const auto learnStatus = pet->CanLearnSpell(newSpell);
-                if (learnStatus != 0)
-                    return SpellCastResult(learnStatus);
+                const auto learnStatus = pet->canLearnSpell(newSpell);
+                if (learnStatus != SPELL_CAST_SUCCESS)
+                    return learnStatus;
             } break;
             case SPELL_EFFECT_POWER_BURN:
             case SPELL_EFFECT_POWER_DRAIN:

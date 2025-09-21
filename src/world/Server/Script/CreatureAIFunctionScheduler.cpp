@@ -177,7 +177,7 @@ void CreatureAIFunctionScheduler::update(unsigned long time_passed)
     // Randomize the order of functions
     // Warning when 2 functions have 2 seconds timer the first always would executes before the second one...
     // Randomizing the order could lead to unexpected behaviour when u rely on the order of insertion
-    Util::randomShuffleVector(&mCreatureAIFunctions);
+    Util::randomShuffleVector(mCreatureAIFunctions);
 
     // Delete functions marked for removal
     mCreatureAIFunctions.erase(std::remove_if(mCreatureAIFunctions.begin(), mCreatureAIFunctions.end(), [](const auto& function) {

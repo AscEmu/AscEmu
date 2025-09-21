@@ -722,10 +722,10 @@ void ObjectMgr::loadAchievementRewards()
         }
 
         bool dup = false;
-        AchievementRewardsMapBounds bounds = m_achievementRewards.equal_range(entry);
-        for (AchievementRewardsMap::const_iterator iter = bounds.first; iter != bounds.second; ++iter)
+        auto bounds = m_achievementRewards.equal_range(entry);
+        for (const auto& iter : std::ranges::subrange(bounds.first, bounds.second))
         {
-            if (iter->second.gender == GENDER_NONE || reward.gender == GENDER_NONE)
+            if (iter.second.gender == GENDER_NONE || reward.gender == GENDER_NONE)
             {
                 dup = true;
                 sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "ObjectMgr : Achievement reward {} must have single GENDER_NONE ({}), ignore duplicate case", entry, GENDER_NONE);
@@ -813,11 +813,11 @@ void ObjectMgr::loadCompletedAchievements()
 
 AchievementReward const* ObjectMgr::getAchievementReward(uint32_t _entry, uint8_t _gender)
 {
-    AchievementRewardsMapBounds bounds = m_achievementRewards.equal_range(_entry);
-    for (AchievementRewardsMap::const_iterator iter = bounds.first; iter != bounds.second; ++iter)
+    auto bounds = m_achievementRewards.equal_range(_entry);
+    for (const auto& [_, reward] : std::ranges::subrange(bounds.first, bounds.second))
     {
-        if (iter->second.gender == 2 || iter->second.gender == _gender)
-            return &iter->second;
+        if (reward.gender == 2 || reward.gender == _gender)
+            return &reward;
     }
     return nullptr;
 }
@@ -1474,8 +1474,8 @@ void ObjectMgr::generateDatabaseGossipMenu(Object* _object, uint32_t _gossipMenu
     sQuestMgr.FillQuestMenu(dynamic_cast<Creature*>(_object), _player, menu);
 
     typedef MySQLDataStore::GossipMenuItemsContainer::iterator GossipMenuItemsIterator;
-    std::pair<GossipMenuItemsIterator, GossipMenuItemsIterator> gossipEqualRange = sMySQLStore._gossipMenuItemsStores.equal_range(_gossipMenuId);
-    for (GossipMenuItemsIterator itr = gossipEqualRange.first; itr != gossipEqualRange.second; ++itr)
+    auto gossipEqualRange = sMySQLStore._gossipMenuItemsStores.equal_range(_gossipMenuId);
+    for (const auto& itr : std::ranges::subrange(gossipEqualRange.first, gossipEqualRange.second))
     {
         // check requirements
         // 0 = none
@@ -1484,9 +1484,9 @@ void ObjectMgr::generateDatabaseGossipMenu(Object* _object, uint32_t _gossipMenu
         // 3 = canGainXP
         // 4 = canNotGainXP
 
-        if (itr->first == _gossipMenuId)
+        if (itr.first == _gossipMenuId)
         {
-            auto& gossipMenuItem = itr->second;
+            auto& gossipMenuItem = itr.second;
             if (gossipMenuItem.requirementType == 1 && !_player->hasQuestInQuestLog(gossipMenuItem.requirementData))
                 continue;
 
@@ -1520,10 +1520,10 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* _object, Player* 
     // bool openSubMenu = true;
 
     typedef MySQLDataStore::GossipMenuItemsContainer::iterator GossipMenuItemsIterator;
-    std::pair<GossipMenuItemsIterator, GossipMenuItemsIterator> gossipEqualRange = sMySQLStore._gossipMenuItemsStores.equal_range(_gossipMenuId);
-    for (GossipMenuItemsIterator itr = gossipEqualRange.first; itr != gossipEqualRange.second; ++itr)
+    auto gossipEqualRange = sMySQLStore._gossipMenuItemsStores.equal_range(_gossipMenuId);
+    for (const auto& itr : std::ranges::subrange(gossipEqualRange.first, gossipEqualRange.second))
     {
-        if (itr->second.itemOrder == _gossipItemId)
+        if (itr.second.itemOrder == _gossipItemId)
         {
             // onChooseAction
             // 0 = None
@@ -1536,28 +1536,28 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* _object, Player* 
 
             // onChooseData
             // depending on Action...
-            switch (itr->second.onChooseAction)
+            switch (itr.second.onChooseAction)
             {
             case 1:
             {
-                generateDatabaseGossipMenu(_object, itr->second.nextGossipMenu, _player, itr->second.nextGossipMenuText);
+                generateDatabaseGossipMenu(_object, itr.second.nextGossipMenu, _player, itr.second.nextGossipMenuText);
 
-                if (itr->second.onChooseData != 0)
-                    _player->sendPoiById(itr->second.onChooseData);
+                if (itr.second.onChooseData != 0)
+                    _player->sendPoiById(itr.second.onChooseData);
 
             } break;
             case 2:
             {
-                if (itr->second.onChooseData != 0)
+                if (itr.second.onChooseData != 0)
                 {
-                    _player->castSpell(_player, sSpellMgr.getSpellInfo(itr->second.onChooseData), true);
+                    _player->castSpell(_player, sSpellMgr.getSpellInfo(itr.second.onChooseData), true);
                     GossipMenu::senGossipComplete(_player);
                 }
 
             } break;
             case 3:
             {
-                if (itr->second.onChooseData != 0)
+                if (itr.second.onChooseData != 0)
                 {
                     if (_object->isCreature())
                         _player->getSession()->sendTaxiMenu(_object->ToCreature());
@@ -1568,12 +1568,12 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* _object, Player* 
             } break;
             case 4:
             {
-                if (itr->second.onChooseData != 0)
+                if (itr.second.onChooseData != 0)
                 {
-                    if (_player->getFactionStanding(itr->second.onChooseData) >= static_cast<int32_t>(itr->second.onChooseData2))
-                        _player->castSpell(_player, sSpellMgr.getSpellInfo(itr->second.onChooseData3), true);
+                    if (_player->getFactionStanding(itr.second.onChooseData) >= static_cast<int32_t>(itr.second.onChooseData2))
+                        _player->castSpell(_player, sSpellMgr.getSpellInfo(itr.second.onChooseData3), true);
                     else
-                        _player->broadcastMessage(_player->getSession()->LocalizedWorldSrv(itr->second.onChooseData4));
+                        _player->broadcastMessage(_player->getSession()->LocalizedWorldSrv(itr.second.onChooseData4));
 
                     GossipMenu::senGossipComplete(_player);
                 }
@@ -1586,16 +1586,16 @@ void ObjectMgr::generateDatabaseGossipOptionAndSubMenu(Object* _object, Player* 
             } break;
             case 6:
             {
-                if (_player->hasEnoughCoinage(itr->second.onChooseData))
+                if (_player->hasEnoughCoinage(itr.second.onChooseData))
                 {
-                    _player->modCoinage(-static_cast<int32_t>(itr->second.onChooseData));
+                    _player->modCoinage(-static_cast<int32_t>(itr.second.onChooseData));
                     _player->toggleXpGain();
                     GossipMenu::senGossipComplete(_player);
                 }
             } break;
             default: // action 0
             {
-                generateDatabaseGossipMenu(_object, itr->second.nextGossipMenu, _player, itr->second.nextGossipMenuText);
+                generateDatabaseGossipMenu(_object, itr.second.nextGossipMenu, _player, itr.second.nextGossipMenuText);
             } break;
             }
         }
@@ -1674,18 +1674,18 @@ void ObjectMgr::loadTrainerSpellSets()
 
             // Add all required spells
             const auto spellInfo = ts.castRealSpell != nullptr ? ts.castSpell : ts.learnSpell;
-            const auto requiredSpells = sSpellMgr.getSpellsRequiredForSpellBounds(spellInfo->getId());
-            for (auto itr = requiredSpells.first; itr != requiredSpells.second; ++itr)
+            const auto requiredSpells = sSpellMgr.getSpellsRequiredRangeForSpell(spellInfo->getId());
+            for (const auto& itr : requiredSpells)
             {
-                for (uint8_t i = 0; i < 3; ++i)
+                for (auto& requiredSpell : ts.requiredSpell)
                 {
-                    if (ts.requiredSpell[i] == itr->second)
+                    if (requiredSpell == itr.second)
                         break;
 
-                    if (ts.requiredSpell[i] != 0)
+                    if (requiredSpell != 0)
                         continue;
 
-                    ts.requiredSpell[i] = itr->second;
+                    requiredSpell = itr.second;
                     break;
                 }
             }
@@ -2405,9 +2405,10 @@ uint32_t ObjectMgr::getPetSpellCooldown(uint32_t _spellId)
 
     if (const auto spellInfo = sSpellMgr.getSpellInfo(_spellId))
     {
-        if (spellInfo->getRecoveryTime() > spellInfo->getCategoryRecoveryTime())
-            return spellInfo->getRecoveryTime();
-        return spellInfo->getCategoryRecoveryTime();
+        if (spellInfo->getRecoveryTime() != 0 || spellInfo->getCategoryRecoveryTime() != 0)
+            return std::max(spellInfo->getRecoveryTime(), spellInfo->getCategoryRecoveryTime());
+
+        return spellInfo->getStartRecoveryTime();
     }
 
     return 0;

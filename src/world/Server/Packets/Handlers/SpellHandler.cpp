@@ -267,7 +267,7 @@ void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
     if (_player->getPet() == petUnit)
     {
         // Check does the pet have the spell
-        if (!dynamic_cast<Pet*>(petUnit)->HasSpell(srlPacket.spellId))
+        if (!dynamic_cast<Pet*>(petUnit)->hasSpell(srlPacket.spellId))
             return;
     }
     // If pet is charmed or possessed by player

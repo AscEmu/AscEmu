@@ -26,19 +26,22 @@
 #include "Utilities/utf8String.hpp"
 #include "Macros/PetMacros.hpp"
 
+// MIT START
+
 struct AI_Spell;
+class CreatureAISpells;
 struct PetCache;
+enum SpellCastResult : uint8_t;
 
 namespace WDB::Structures
 {
     struct SummonPropertiesEntry;
 }
 
-typedef std::map<SpellInfo const*, uint16_t> PetSpellMap;
+using PetSpellMap = std::unordered_map<uint32_t, uint8_t>;
 
 class SERVER_DECL Pet : public Summon
 {
-    // MIT START
 public:
     Pet(uint64_t guid, WDB::Structures::SummonPropertiesEntry const* properties);
     ~Pet();
@@ -63,6 +66,12 @@ public:
     void PrepareForRemove() override;
     // Override from Creature class
     void SafeDelete() override;
+
+    // Override from Creature class
+    void sendSpellsToController(Unit* controller, uint32_t duration) override;
+
+    // TODO: make it virtual -Appled
+    Group* getGroup();
 
     // Override from Creature class
     void setDeathState(DeathState s) override;
@@ -130,6 +139,9 @@ private:
     // If pet has duration
     bool m_petExpires = false;
 
+    bool m_isScheduledForDeletion = false;
+    bool m_isScheduledForTemporaryUnsummon = false;
+
     // Hunter pet related
 #if VERSION_STRING < Cata
     uint16_t m_happinessTimer = PET_HAPPINESS_UPDATE_TIMER;
@@ -142,6 +154,23 @@ public:
 
     PetSpellMap const& getSpellMap() const;
 
+    bool hasSpell(uint32_t spellId) const;
+    void addSpell(SpellInfo const* spellInfo, bool silently = false);
+    bool removeSpell(uint32_t spellId, bool silently = false);
+    SpellCastResult canLearnSpell(SpellInfo const* spellInfo) const;
+
+    void updateSpellList(bool onSummon = false);
+
+    uint8_t getSpellState(uint32_t spellId) const;
+    void setSpellState(uint32_t spellId, uint8_t state, std::optional<uint32_t> actionSlotId = std::nullopt);
+
+    void setActionBarSlot(uint8_t slot, uint32_t spellId, uint8_t state);
+
+#if VERSION_STRING == WotLK || VERSION_STRING == Cata
+    uint8_t getTotalTalentPoints() const;
+    uint8_t getSpentTalentPoints() const;
+#endif
+
 #if VERSION_STRING < Mop
     // Talent reset cost in wotlk and cata
     // Beast training reset cost in classic and tbc
@@ -149,6 +178,18 @@ public:
 #endif
 
 private:
+    PetSpellMap mSpells;
+
+    void _addSpell(SpellInfo const* spellInfo, bool silently, uint8_t spellState);
+    // Returns true/false if removed spell and its spell state
+    std::tuple<bool, uint8_t> _removeSpell(uint32_t spellId, bool silently = false, bool removingPreviousRanks = false);
+
+    CreatureAISpells* _createAISpell(SpellInfo const* spellInfo);
+    void _removeAISpell(uint32_t spellId);
+
+    void _setDefaultActionBar();
+    std::array<PetActionButtonData, PET_MAX_ACTION_BAR_SLOT> m_actionBar = { 0 };
+
 #if VERSION_STRING < Mop
     time_t m_talentResetTime = 0;
     uint32_t m_talentResetCost = 0;
@@ -159,72 +200,29 @@ public:
     // Packets
 
     void sendActionFeedback(PetActionFeedback feedback);
-
-private:
-    bool m_isScheduledForDeletion = false;
-    bool m_isScheduledForTemporaryUnsummon = false;
+    void sendPetCastFailed(uint32_t spellId, uint8_t reason);
 
 public:
     // MIT END
-
-        void InitializeSpells();
-        void SendSpellsToOwner();
-        void SendCastFailed(uint32_t spellid, uint8_t fail);
-        void buildPetSpellList(WorldPacket& data);
-
-        inline AI_Spell* GetAISpellForSpellId(uint32_t spellid)
-        {
-            std::map<uint32_t, AI_Spell*>::iterator itr = m_AISpellStore.find(spellid);
-            if (itr != m_AISpellStore.end())
-                return itr->second;
-
-            return NULL;
-        }
 
         void ApplySummonLevelAbilities();
         void ApplyPetLevelAbilities();
         void UpdateAP();
         void LoadPetAuras(int32_t id);
-        void SetDefaultActionbar();
-        void SetActionBarSlot(uint32_t slot, uint32_t spell) { ActionBar[slot] = spell; }
 
-        void AddSpell(SpellInfo const* sp, bool learning, bool showLearnSpell = true);
-        void RemoveSpell(SpellInfo const* sp, bool showUnlearnSpell = true);
         void WipeTalents();
-        void SetSpellState(SpellInfo const* sp, uint16_t State);
-        uint16_t GetSpellState(SpellInfo const* sp) const;
-        bool HasSpell(uint32_t SpellID);
-        void RemoveSpell(uint32_t SpellID);
-        void SetSpellState(uint32_t SpellID, uint16_t State);
-        uint16_t GetSpellState(uint32_t SpellID) const;
-
-        AI_Spell* CreateAISpell(SpellInfo const* info);
-        inline PetSpellMap* GetSpells() { return &mSpells; }
-
-        uint32_t CanLearnSpell(SpellInfo const* sp);
-        void UpdateSpellList(bool showLearnSpells = true);
 
 #if VERSION_STRING == WotLK || VERSION_STRING == Cata
         // talents
         void SendTalentsToOwner();                                                                              // Send talentpoints and talent spells to owner
-        inline uint8_t GetTPsForLevel(uint32_t level) { return (level >= 20) ? uint8_t(level - 16) >> 2 : 0; }  // pet gain first talent point at lvl 20, then every 4 lvls another point
-        inline uint8_t GetSpentTPs() { return GetTPsForLevel(getLevel()) - this->getPetTalentPoints(); }        // returns amount of spent talent points
 #endif
 
         void HandleAutoCastEvent(AutoCastEvents Type);
         AI_Spell* HandleAutoCastEvent();
-        void SetAutoCast(AI_Spell* sp, bool on);
-
-        Group* getGroup();
 
         void die(Unit* pAttacker, uint32_t damage, uint32_t spellid);
 
     protected:
-        PetSpellMap mSpells;
-        uint32_t ActionBar[10] = {0};
-
-        std::map<uint32_t, AI_Spell*> m_AISpellStore;
-
         uint32_t GetAutoCastTypeForSpell(SpellInfo const* ent);
 
     std::list<AI_Spell*> m_autoCastSpells[AUTOCAST_EVENT_COUNT];
