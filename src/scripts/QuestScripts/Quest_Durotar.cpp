@@ -4,10 +4,13 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
+#include "Management/QuestLogEntry.hpp"
 #include "Map/Maps/MapScriptInterface.h"
+#include "Objects/GameObject.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Server/Script/QuestScript.hpp"
+#include "Utilities/Random.hpp"
 
 #include <numbers>
 
@@ -38,7 +41,8 @@ public:
     void InitOrReset() override
     {
         getCreature()->setEmoteState(EMOTE_ONESHOT_NONE);
-        addAIFunction([this](CreatureAIFunc pThis) { castSpellOnSelf(SPELL_BUFF_SLEEP); }, DoOnceScheduler(1s));
+        // Hackfix for Updatemgr
+        addAIFunction([this](CreatureAIFunc pThis) { startSleeping(); }, DoOnceScheduler(1s));
     }
 
     void OnReachWP(uint32_t /*type*/, uint32_t id) override
@@ -52,7 +56,7 @@ public:
         else if (id == Random)
         {
             // Random Position Reached go Back to Sleep
-            castSpellOnSelf(SPELL_BUFF_SLEEP);
+            startSleeping();
         }
     }
 
@@ -64,7 +68,15 @@ public:
         if (spellId != SPELL_AWAKEN_PEON)
             return;
 
+        removeAllFunctionsFromScheduler();
         handleWakeUp(caster);
+    }
+
+    void startSleeping()
+    {
+        castSpellOnSelf(SPELL_BUFF_SLEEP);
+        // Start working after aura expires by itself
+        addAIFunction([this](CreatureAIFunc PThis) { handleWakeUp(nullptr); }, DoOnceScheduler(2min));
     }
 
     void handleMoveRandom(CreatureAIFunc pThis)
@@ -90,12 +102,16 @@ public:
         // Remove Zzz aura
         _removeAura(SPELL_BUFF_SLEEP);
 
-        // Send chat Message
-        sendDBChatMessageByIndex(0, caster);
+        // Caster is nullptr when peon wakes by itself
+        if (caster != nullptr)
+        {
+            // Send chat Message
+            sendDBChatMessageByIndex(0, caster);
 
-        // Hackfix, clear AffectedUnits for Player. Quest Increment happens trough CastedSpell in QuestMgr.
-        if (auto* questLog = caster->ToPlayer()->getQuestLogByQuestId(QUEST_LAZY_PEONS))
-            questLog->clearAffectedUnits();
+            // Hackfix, clear AffectedUnits for Player. Quest Increment happens trough CastedSpell in QuestMgr.
+            if (auto* questLog = caster->ToPlayer()->getQuestLogByQuestId(QUEST_LAZY_PEONS))
+                questLog->clearAffectedUnits();
+        }
 
         // Move to closest wood pile
         if (GameObject* Lumberpile = findNearestGameObject(GO_LUMBERPILE, SEARCH_RADIUS))
