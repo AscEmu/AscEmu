@@ -5964,7 +5964,7 @@ int LuaUnit::ResetPetTalents(lua_State* /*L*/, Unit* ptr)
     {
         pet->WipeTalents();
 #if VERSION_STRING == WotLK || VERSION_STRING == Cata
-        pet->setPetTalentPoints(pet->GetTPsForLevel(pet->getLevel()));
+        pet->setPetTalentPoints(pet->getTotalTalentPoints());
         pet->SendTalentsToOwner();
 #endif
     }

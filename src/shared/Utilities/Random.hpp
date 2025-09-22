@@ -11,6 +11,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace Util
 {
+    // Use always this instead of creating new mt19937!
+    std::mt19937& getRandomEngine();
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Random number helper functions
 
@@ -56,12 +59,10 @@ namespace Util
     // Container helper functions
 
     template<typename T>
-    inline void randomShuffleVector(std::vector<T>* vector)
+    inline void randomShuffleVector(std::vector<T>& vector)
     {
-        std::random_device rd;
-        std::mt19937 mt(rd());
-
-        std::shuffle(vector->begin(), vector->end(), mt);
+        auto& engine = getRandomEngine();
+        std::shuffle(vector.begin(), vector.end(), engine);
     }
 
     template <class C>

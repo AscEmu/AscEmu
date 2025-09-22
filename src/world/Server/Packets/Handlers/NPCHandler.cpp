@@ -490,11 +490,14 @@ void WorldSession::sendTrainerList(Creature* creature)
             if (requiredSpellCount >= maxRequiredCount)
                 break;
 
-            const auto requiredSpells = sSpellMgr.getSpellsRequiredForSpellBounds(requiredSpell);
-            for (auto itr = requiredSpells.first; itr != requiredSpells.second && requiredSpellCount <= maxRequiredCount; ++itr)
+            const auto requiredSpells = sSpellMgr.getSpellsRequiredRangeForSpell(requiredSpell);
+            for (const auto& itr : requiredSpells)
             {
-                data << uint32_t(itr->second);
+                data << uint32_t(itr.second);
                 ++requiredSpellCount;
+
+                if (requiredSpellCount > maxRequiredCount)
+                    break;
             }
 
             if (requiredSpellCount >= maxRequiredCount)
@@ -556,10 +559,10 @@ TrainerSpellState WorldSession::trainerGetSpellStatus(TrainerSpell const* traine
         if (!_player->hasSpell(spellId))
             return TRAINER_SPELL_RED;
 
-        const auto spellsRequired = sSpellMgr.getSpellsRequiredForSpellBounds(spellId);
-        for (auto itr = spellsRequired.first; itr != spellsRequired.second; ++itr)
+        const auto spellsRequired = sSpellMgr.getSpellsRequiredRangeForSpell(spellId);
+        for (const auto& itr : spellsRequired)
         {
-            if (!_player->hasSpell(itr->second))
+            if (!_player->hasSpell(itr.second))
                 return TRAINER_SPELL_RED;
         }
     }

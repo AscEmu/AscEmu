@@ -938,20 +938,7 @@ void Aura::SpellAuraModCharm(AuraEffectModifier* aurEff, bool apply)
 
         if (caster->getSession())   // crashfix
         {
-            WorldPacket data(SMSG_PET_SPELLS, 500);
-            data << target->getGuid();
-            data << uint16_t(0);
-            data << uint32_t(0x1000);
-            data << uint32_t(0x100);
-            data << uint32_t(PET_SPELL_ATTACK);
-            data << uint32_t(PET_SPELL_FOLLOW);
-            data << uint32_t(PET_SPELL_STAY);
-            for (uint8_t i = 0; i < 4; i++)
-                data << uint32_t(0);
-            data << uint32_t(PET_SPELL_AGRESSIVE);
-            data << uint32_t(PET_SPELL_DEFENSIVE);
-            data << uint32_t(PET_SPELL_PASSIVE);
-            caster->getSession()->SendPacket(&data);
+            target->sendSpellsToController(caster, getMaxDuration());
             target->SetEnslaveSpell(m_spellInfo->getId());
         }
     }
@@ -967,9 +954,7 @@ void Aura::SpellAuraModCharm(AuraEffectModifier* aurEff, bool apply)
         if (caster->getSession() != nullptr)   // crashfix
         {
             caster->setCharmGuid(0);
-            WorldPacket data(SMSG_PET_SPELLS, 8);
-            data << uint64_t(0);
-            caster->getSession()->SendPacket(&data);
+            caster->sendEmptyPetSpellList();
             target->SetEnslaveSpell(0);
         }
     }

@@ -204,7 +204,7 @@ bool ChatCommandHandler::HandlePetAddSpellCommand(const char* args, WorldSession
         return true;
     }
 
-    pet->AddSpell(spell_entry, true);
+    pet->addSpell(spell_entry);
 
     greenSystemMessage(m_session, "Added spell {} to {}'s pet.", SpellId, selected_player->getName());
 
@@ -236,7 +236,7 @@ bool ChatCommandHandler::HandlePetRemoveSpellCommand(const char* args, WorldSess
         return true;
     }
 
-    pet->RemoveSpell(SpellId);
+    pet->removeSpell(SpellId);
 
     greenSystemMessage(m_session, "Removed spell {} from {}'s pet.", SpellId, selected_player->getName());
 
@@ -289,7 +289,7 @@ bool ChatCommandHandler::HandlePetSetLevelCommand(const char* args, WorldSession
     selected_pet->setPetExperience(0);
     selected_pet->setPetNextLevelExperience(selected_pet->getNextLevelXp(newLevel));
     selected_pet->applyStatsForLevel();
-    selected_pet->UpdateSpellList();
+    selected_pet->updateSpellList();
 
     if (selected_player != m_session->GetPlayer())
     {

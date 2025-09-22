@@ -271,9 +271,10 @@ SpellMechanic const* SpellMgr::getCrowdControlMechanicList([[maybe_unused]]bool 
     }
 }
 
-SpellRequiredMapBounds SpellMgr::getSpellsRequiredForSpellBounds(uint32_t spellId) const
+SpellRequiredMapRange SpellMgr::getSpellsRequiredRangeForSpell(uint32_t spellId) const
 {
-    return mSpellRequired.equal_range(spellId);
+    const auto [begin, end] = mSpellRequired.equal_range(spellId);
+    return std::ranges::subrange(begin, end);
 }
 
 SpellsRequiringSpellMap SpellMgr::getSpellsRequiringSpell() const
@@ -281,17 +282,18 @@ SpellsRequiringSpellMap SpellMgr::getSpellsRequiringSpell() const
     return mSpellsRequiringSpell;
 }
 
-SpellsRequiringSpellMapBounds SpellMgr::getSpellsRequiringSpellBounds(uint32_t spellId) const
+SpellsRequiringSpellMapRange SpellMgr::getSpellsRequiringSpellRange(uint32_t spellId) const
 {
-    return mSpellsRequiringSpell.equal_range(spellId);
+    const auto [begin, end] = mSpellsRequiringSpell.equal_range(spellId);
+    return std::ranges::subrange(begin, end);
 }
 
 bool SpellMgr::isSpellRequiringSpell(uint32_t spellId, uint32_t requiredSpellId) const
 {
-    auto spellsRequiringSpell = getSpellsRequiringSpellBounds(requiredSpellId);
-    for (auto itr = spellsRequiringSpell.first; itr != spellsRequiringSpell.second; ++itr)
+    auto spellsRequiringSpell = getSpellsRequiringSpellRange(requiredSpellId);
+    for (const auto& itr : spellsRequiringSpell)
     {
-        if (itr->second == spellId)
+        if (itr.second == spellId)
             return true;
     }
 
@@ -318,22 +320,23 @@ void SpellMgr::reloadSpellDisabled()
     loadSpellDisabled();
 }
 
-SpellSkillAbilityMapBounds SpellMgr::getSkillEntryForSpellBounds(uint32_t spellId) const
+SpellSkillAbilityMapRange SpellMgr::getSkillEntryRangeForSpell(uint32_t spellId) const
 {
-    return mSpellSkillsMap.equal_range(spellId);
+    const auto [begin, end] = mSpellSkillsMap.equal_range(spellId);
+    return std::ranges::subrange(begin, end);
 }
 
-SkillSkillAbilityMapBounds SpellMgr::getSkillEntryForSkillBounds(uint16_t skillId) const
+SkillSkillAbilityMapRange SpellMgr::getSkillEntryRangeForSkill(uint16_t skillId) const
 {
-    return mSkillSpellsMap.equal_range(skillId);
+    const auto [begin, end] = mSkillSpellsMap.equal_range(skillId);
+    return std::ranges::subrange(begin, end);
 }
 
 WDB::Structures::SkillLineAbilityEntry const* SpellMgr::getFirstSkillEntryForSpell(uint32_t spellId, Player const* forPlayer/* = nullptr*/) const
 {
-    const auto spellSkillBounds = getSkillEntryForSpellBounds(spellId);
-    for (auto spellSkillItr = spellSkillBounds.first; spellSkillItr != spellSkillBounds.second; ++spellSkillItr)
+    const auto spellSkillRange = getSkillEntryRangeForSpell(spellId);
+    for (const auto& [_, skillEntry] : spellSkillRange)
     {
-        const auto skillEntry = spellSkillItr->second;
         if (forPlayer != nullptr)
         {
             if (skillEntry->race_mask != 0 && !(skillEntry->race_mask & forPlayer->getRaceMask()))

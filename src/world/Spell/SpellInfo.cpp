@@ -1171,10 +1171,9 @@ bool SpellInfo::canKnowOnlySingleRank() const
 
     const auto isSpellAutoLearnedFromSkill = [](uint32_t spellId) -> bool
     {
-        const auto spellBounds = sSpellMgr.getSkillEntryForSpellBounds(spellId);
-        for (auto spellItr = spellBounds.first; spellItr != spellBounds.second; ++spellItr)
+        const auto spellRange = sSpellMgr.getSkillEntryRangeForSpell(spellId);
+        for (const auto& [_, skillEntry] : spellRange)
         {
-            const auto skillEntry = spellItr->second;
             if (skillEntry->acquireMethod != 1)
                 continue;
             if (skillEntry->minSkillLineRank > 0)

@@ -7,6 +7,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace Util
 {
+    std::mt19937& getRandomEngine()
+    {
+        static std::random_device rd;
+        static std::mt19937 mt(rd());
+        return mt;
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Random number helper functions
 
@@ -17,10 +24,9 @@ namespace Util
 
     int getRandomInt(int start, int end)
     {
-        std::random_device rd;
-        std::mt19937 mt(rd());
+        auto& engine = getRandomEngine();
         std::uniform_int_distribution<int> dist(start, end);
-        return dist(mt);
+        return dist(engine);
     }
 
     uint32_t getRandomUInt(uint32_t end)
@@ -30,10 +36,9 @@ namespace Util
 
     uint32_t getRandomUInt(uint32_t start, uint32_t end)
     {
-        std::random_device rd;
-        std::mt19937 mt(rd());
+        auto& engine = getRandomEngine();
         std::uniform_int_distribution<uint32_t> dist(start, end);
-        return dist(mt);
+        return dist(engine);
     }
 
     float getRandomFloat(float end)
@@ -43,10 +48,9 @@ namespace Util
 
     float getRandomFloat(float start, float end)
     {
-        std::random_device rd;
-        std::mt19937 mt(rd());
+        auto& engine = getRandomEngine();
         std::uniform_real_distribution<float> dist(start, end);
-        return dist(mt);
+        return dist(engine);
     }
 
     bool checkChance(uint32_t val)

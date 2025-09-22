@@ -8,6 +8,38 @@ This file is released under the MIT license. See README-MIT for more information
 #include "AEVersion.hpp"
 #include <cstdint>
 
+static inline constexpr int32_t PET_HAPPINESS_UPDATE_VALUE = 333000;
+static inline constexpr uint16_t PET_HAPPINESS_UPDATE_TIMER = 7500;
+
+static inline constexpr uint8_t PET_MAX_ACTION_BAR_SLOT = 10;
+
+union PetActionButtonData
+{
+    struct Parts
+    {
+        uint32_t spellId : 24;
+        uint32_t state   : 8;
+    } parts;
+    uint32_t raw;
+};
+
+enum PetEntries : uint32_t
+{
+    PET_WATER_ELEMENTAL                 = 510,
+    PET_WATER_ELEMENTAL_NEW             = 37994,
+    PET_IMP                             = 416,
+    PET_VOIDWALKER                      = 1860,
+    PET_SUCCUBUS                        = 1863,
+    PET_FELHUNTER                       = 417,
+    PET_INFERNAL                        = 89,
+    PET_DOOMGUARD                       = 11859,
+    PET_FELGUARD                        = 17252,
+    PET_SHADOWFIEND                     = 19668,
+    PET_GHOUL                           = 26125,
+    PET_DANCING_RUNEWEAPON              = 27893,
+    PET_SPIRITWOLF                      = 29264
+};
+
 /* Taken from ItemPetFood.dbc
  * Each value is equal to a flag
  * so 1 << PET_FOOD_BREAD for example
@@ -26,6 +58,7 @@ enum PetFoodDiets : uint8_t
     PET_FOOD_RAW_FISH                   /// not used in pet diet
 };
 
+// Used with PET_SPELL_STATE_SET_REACT
 enum PetReactStates : uint8_t
 {
     PET_STATE_PASSIVE                   = 0,
@@ -33,6 +66,7 @@ enum PetReactStates : uint8_t
     PET_STATE_AGGRESSIVE                = 2
 };
 
+// Used with PET_SPELL_STATE_SET_ACTION
 enum PetCommands : uint8_t
 {
     PET_ACTION_STAY                     = 0,
@@ -50,14 +84,15 @@ enum PetActionFeedback : uint8_t
     PET_FEEDBACK_CANT_ATTACK_TARGET
 };
 
-enum PetSpells : uint32_t
+enum PetSpellState : uint8_t
 {
-    PET_SPELL_PASSIVE                   = 0x06000000,
-    PET_SPELL_DEFENSIVE,
-    PET_SPELL_AGRESSIVE,
-    PET_SPELL_STAY                      = 0x07000000,
-    PET_SPELL_FOLLOW,
-    PET_SPELL_ATTACK
+    PET_SPELL_STATE_PASSIVE             = 0x01, // passive spell
+    PET_SPELL_STATE_SET_REACT           = 0x06,
+    PET_SPELL_STATE_SET_ACTION          = 0x07,
+
+    PET_SPELL_STATE_DEFAULT             = 0x81, // castable spell
+    PET_SPELL_STATE_AUTOCAST            = 0xC1, // enabled autocast
+    PET_SPELL_STATE_NOT_SPELL           = 0x04  // react or action
 };
 
 enum PetSlots : uint8_t

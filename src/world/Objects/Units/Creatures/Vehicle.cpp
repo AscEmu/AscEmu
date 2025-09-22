@@ -612,18 +612,15 @@ bool Vehicle::tryAddPassenger(Unit* passenger, SeatMap::iterator &Seat)
         getBase()->setCharmedByGuid(passenger->getGuid());
         getBase()->addUnitFlags(UNIT_FLAG_PLAYER_CONTROLLED_CREATURE);
 
-        WorldPacket spells(SMSG_PET_SPELLS, 100);
-        getBase()->buildPetSpellList(spells);
-        passenger->sendPacket(&spells);
+        if (auto* c = getBase()->ToCreature())
+        {
+            // set Correct Faction
+            c->setFaction(passenger->getFactionTemplate());
+
+            c->sendSpellsToController(passenger, 0);
+        }
 
         static_cast<Player*>(passenger)->setMover(getBase());
-
-        // set Correct Faction
-        if (getBase()->isCreature())
-        {
-            Creature* c = static_cast<Creature*>(getBase());
-            c->setFaction(passenger->getFactionTemplate());
-        }
     }
 
     passenger->setTargetGuid(0);

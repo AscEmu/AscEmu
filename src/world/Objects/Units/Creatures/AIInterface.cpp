@@ -88,7 +88,8 @@ AIInterface::AIInterface()
     :
     m_fleeTimer(std::make_unique<Util::SmallTimeTracker>(0)),
     m_boundaryCheckTime(std::make_unique<Util::SmallTimeTracker>(2500)),
-    mSpellWaitTimer(std::make_unique<Util::SmallTimeTracker>(1500)),
+    mSpellWaitTimer(std::make_unique<Util::SmallTimeTracker>(AISPELL_GLOBAL_COOLDOWN)),
+    m_outOfCombatSpellTimer(std::make_unique<Util::SmallTimeTracker>(AISPELL_GLOBAL_COOLDOWN)),
     m_noTargetTimer(std::make_unique<Util::SmallTimeTracker>(3000)),
     m_cannotReachTimer(std::make_unique<Util::SmallTimeTracker>(500)),
     m_targetUpdateTimer(std::make_unique<Util::SmallTimeTracker>(1500))
@@ -404,7 +405,12 @@ void AIInterface::update(unsigned long time_passed)
 
         // When we dont Have Any Targets do Nothing
         if (!_updateCurrentTarget())
+        {
+            // Handle autocasted summon spells that dont require combat
+            if (m_Unit->isSummon() && m_Unit->getPlayerOwner() != nullptr)
+                updateOutOfCombatSpells(time_passed);
             return;
+        }
 
         // Update Database AI Scripts
         updateAIScript(time_passed);
@@ -432,7 +438,7 @@ void AIInterface::updateAIScript(unsigned long time_passed)
     mSpellWaitTimer->updateTimer(time_passed);
 
     // Update Spells
-    if (m_Unit->isInCombat())
+    if (m_Unit->isInCombat() || m_Unit->isPet())
     {
         // Update Internal Spell Timers
         for (const auto& spells : mCreatureAISpells)
@@ -602,6 +608,10 @@ void AIInterface::combatStop()
 
 void AIInterface::onHostileAction(Unit* pUnit, SpellInfo const* spellInfo/* = nullptr*/, bool ignoreThreatRedirects/* = false*/)
 {
+    // Do not aggro self
+    if (m_Unit == pUnit)
+        return;
+
     const auto wasEngaged = m_isEngaged;
 
     if (m_Unit->getThreatManager().canHaveThreatList())
@@ -1499,30 +1509,161 @@ bool AIInterface::_findFriendWhileFleeing()
     return true;
 }
 
-void AIInterface::castAISpell(CreatureAISpells* aiSpell)
+//////////////////////////////////////////////////////////////////////////////////////////
+// Spells
+CreatureAISpellsArray const& AIInterface::getCreatureAISpells() const
+{
+    return mCreatureAISpells;
+}
+
+CreatureAISpells* AIInterface::getAISpell(uint32_t spellId) const
+{
+    const auto itr = std::find_if(mCreatureAISpells.cbegin(), mCreatureAISpells.cend(), [spellId](const auto& aiSpell) {
+        return aiSpell->mSpellInfo->getId() == spellId;
+    });
+    return itr != mCreatureAISpells.cend() ? itr->get() : nullptr;
+}
+
+CreatureAISpells* AIInterface::addAISpell(uint32_t spellId, float castChance, uint32_t targetType, uint32_t durationInSec/* = 0*/, uint32_t cooldownInSec/* = 0*/, bool forceRemove/* = false*/, bool isTriggered/* = false*/)
+{
+    const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
+    if (spellInfo == nullptr)
+    {
+        sLogger.failure("AIInterface::addAISpell : Tried to create AI spell with invalid spell id {}", spellId);
+        return nullptr;
+    }
+
+    auto spellDuration = durationInSec * 1000;
+    if (spellDuration == 0)
+        spellDuration = spellInfo->getSpellDefaultDuration(nullptr);
+
+    const auto spellCooldown = cooldownInSec * 1000;
+
+    const auto& newAISpell = mCreatureAISpells.emplace_back(std::make_unique<CreatureAISpells>(
+        spellInfo, castChance, targetType, spellDuration, spellCooldown, forceRemove, isTriggered
+    ));
+
+    newAISpell->setdurationTimer(spellDuration);
+    newAISpell->setCooldownTimer(spellCooldown);
+
+    return newAISpell.get();
+}
+
+void AIInterface::removeAISpell(uint32_t spellId)
+{
+    std::erase_if(mCreatureAISpells, [spellId](const auto& spell) {
+        return spell->mSpellInfo->getId() == spellId;
+    });
+}
+
+void AIInterface::updateOutOfCombatSpells(unsigned long time_passed)
+{
+    mSpellWaitTimer->updateTimer(time_passed);
+    m_outOfCombatSpellTimer->updateTimer(time_passed);
+    if (!m_outOfCombatSpellTimer->isTimePassed() || !mSpellWaitTimer->isTimePassed())
+        return;
+
+    for (const auto& aiSpell : mCreatureAISpells)
+    {
+        // cleanup exeeded spells
+        if (_cleanUpExpiredAISpell(aiSpell.get()))
+            continue;
+        // Only self or function target spells
+        if (aiSpell->mTargetType != TARGET_SELF && aiSpell->mTargetType != TARGET_FUNCTION)
+            continue;
+        // Skip spells with cooldown longer than duration
+        if (aiSpell->mCooldown > 0 && aiSpell->mDuration < aiSpell->mCooldown)
+            continue;
+        // Check chance
+        if (!Util::checkChance(aiSpell->mCastChance))
+            continue;
+
+        auto* const spellTarget = aiSpell->mTargetType == TARGET_SELF ?
+            m_Unit :
+            aiSpell->getTargetFunction();
+        if (spellTarget == nullptr)
+            continue;
+
+        // Check if target has this aura with full effects
+        auto allEffectsOnTarget = false;
+        for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        {
+            if (aiSpell->mSpellInfo->doesEffectApplyAura(i))
+            {
+                const auto effName = aiSpell->mSpellInfo->getEffectApplyAuraName(i);
+                auto foundAurEff = false;
+                for (const auto& aurEff : spellTarget->getAuraEffectList(static_cast<AuraEffect>(effName)))
+                {
+                    const auto* aur = aurEff->getAura();
+                    if (aur->getSpellId() != aiSpell->mSpellInfo->getId())
+                        continue;
+                    if (aur->getCasterGuid() == m_Unit->getGuid())
+                    {
+                        foundAurEff = true;
+                        break;
+                    }
+                }
+
+                allEffectsOnTarget = foundAurEff;
+                // This effect was not on target
+                if (!allEffectsOnTarget)
+                    break;
+            }
+        }
+        if (allEffectsOnTarget)
+            continue;
+
+        // Spell/aura may be casted
+        // TODO: make one function castAIspell that sets cooldowns etc and removes duplicate code
+        // also need to handle cast result
+        mCurrentSpellTarget = spellTarget;
+        mLastCastedSpell = aiSpell.get();
+        m_Unit->castSpell(spellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+        mSpellWaitTimer->resetInterval(AISPELL_GLOBAL_COOLDOWN);
+        break;
+    }
+
+    m_outOfCombatSpellTimer->resetInterval(AISPELL_GLOBAL_COOLDOWN);
+}
+
+bool AIInterface::_cleanUpExpiredAISpell(CreatureAISpells const* aiSpell) const
+{
+    // stop spells and remove aura in case of duration
+    if (aiSpell->mDurationTimer->isTimePassed() && aiSpell->mForceRemoveAura)
+    {
+        m_Unit->interruptSpell(aiSpell->mSpellInfo->getId());
+        m_Unit->removeAllAurasById(aiSpell->mSpellInfo->getId());
+        return true;
+    }
+
+    return false;
+}
+
+SpellCastResult AIInterface::castAISpell(CreatureAISpells* aiSpell)
 {
     Unit* target = getCurrentTarget();
+    SpellCastResult castResult = SPELL_FAILED_ERROR;
     switch (aiSpell->mTargetType)
     {
         case TARGET_SELF:
         case TARGET_VARIOUS:
         {
-            getUnit()->castSpell(getUnit(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+            castResult = getUnit()->castSpell(getUnit(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
             mLastCastedSpell = aiSpell;
         } break;
         case TARGET_ATTACKING:
         {
-            getUnit()->castSpell(target, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+            castResult = getUnit()->castSpell(target, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
             mCurrentSpellTarget = target;
             mLastCastedSpell = aiSpell;
         } break;
         case TARGET_SOURCE:
-            getUnit()->castSpellLoc(getUnit()->GetPosition(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+            castResult = getUnit()->castSpellLoc(getUnit()->GetPosition(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
             mLastCastedSpell = aiSpell;
             break;
         case TARGET_DESTINATION:
         {
-            getUnit()->castSpellLoc(target->GetPosition(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+            castResult = getUnit()->castSpellLoc(target->GetPosition(), aiSpell->mSpellInfo, aiSpell->mIsTriggered);
             mCurrentSpellTarget = target;
             mLastCastedSpell = aiSpell;
         } break;
@@ -1530,20 +1671,20 @@ void AIInterface::castAISpell(CreatureAISpells* aiSpell)
         case TARGET_RANDOM_SINGLE:
         case TARGET_RANDOM_DESTINATION:
         {
-            castSpellOnRandomTarget(aiSpell);
+            castResult = castSpellOnRandomTarget(aiSpell);
             mLastCastedSpell = aiSpell;
         } break;
         case TARGET_CLOSEST:
         {
             mCurrentSpellTarget = getBestUnitTarget(TargetFilter_Closest);
             mLastCastedSpell = aiSpell;
-            getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+            castResult = getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
         } break;
         case TARGET_FURTHEST:
         {
             mCurrentSpellTarget = getBestUnitTarget(TargetFilter_InRangeOnly, 0.0f, 30.0f);
             mLastCastedSpell = aiSpell;
-            getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+            castResult = getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
         } break;
         case TARGET_CUSTOM:
         {
@@ -1552,7 +1693,7 @@ void AIInterface::castAISpell(CreatureAISpells* aiSpell)
             {
                 mCurrentSpellTarget = aiSpell->getCustomTarget();
                 mLastCastedSpell = aiSpell;
-                getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+                castResult = getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
             }
         } break;
         case TARGET_FUNCTION:
@@ -1564,16 +1705,21 @@ void AIInterface::castAISpell(CreatureAISpells* aiSpell)
                 if (mCurrentSpellTarget)
                 {
                     mLastCastedSpell = aiSpell;
-                    getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
+                    castResult = getUnit()->castSpell(mCurrentSpellTarget, aiSpell->mSpellInfo, aiSpell->mIsTriggered);
                 }
             }
-        }
+        } break;
         default:
-            break;
+            return castResult;
     }
+
+    // Temp code to set cooldown -Appled
+    aiSpell->mDurationTimer->resetInterval(aiSpell->mDuration);
+    aiSpell->mCooldownTimer->resetInterval(aiSpell->mCooldown);
+    return castResult;
 }
 
-void AIInterface::castAISpell(uint32_t aiSpellId)
+SpellCastResult AIInterface::castAISpell(uint32_t aiSpellId)
 {
     CreatureAISpells* aiSpell = nullptr;
 
@@ -1584,9 +1730,9 @@ void AIInterface::castAISpell(uint32_t aiSpellId)
 
     // when no valid Spell is found return
     if (!aiSpell)
-        return;
+        return SPELL_FAILED_ERROR;
 
-    castAISpell(aiSpell);
+    return castAISpell(aiSpell);
 }
 
 bool AIInterface::hasAISpell(CreatureAISpells* aiSpell)
@@ -1609,10 +1755,10 @@ bool AIInterface::hasAISpell(uint32_t SpellId)
     return false;
 }
 
-void AIInterface::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
+SpellCastResult AIInterface::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
 {
     if (AiSpell == nullptr)
-        return;
+        return SPELL_FAILED_ERROR;
 
     // helper for following code
     bool isTargetRandFriend = (AiSpell->mTargetType == TARGET_RANDOM_FRIEND ? true : false);
@@ -1647,30 +1793,34 @@ void AIInterface::castSpellOnRandomTarget(CreatureAISpells* AiSpell)
 
         // no targets in our range for hp range and firendly targets
         if (possibleUnitTargets.empty())
-            return;
+            return SPELL_FAILED_BAD_IMPLICIT_TARGETS;
 
         // get a random target
         uint32_t randomIndex = Util::getRandomUInt(0, static_cast<uint32_t>(possibleUnitTargets.size() - 1));
         Unit* randomTarget = possibleUnitTargets[randomIndex];
 
         if (randomTarget == nullptr)
-            return;
+            return SPELL_FAILED_BAD_IMPLICIT_TARGETS;
 
+        SpellCastResult castResult = SPELL_FAILED_ERROR;
         switch (AiSpell->mTargetType)
         {
             case TARGET_RANDOM_FRIEND:
             case TARGET_RANDOM_SINGLE:
             {
-                getUnit()->castSpell(randomTarget, AiSpell->mSpellInfo, AiSpell->mIsTriggered);
+                castResult = getUnit()->castSpell(randomTarget, AiSpell->mSpellInfo, AiSpell->mIsTriggered);
                 mCurrentSpellTarget = randomTarget;
             } break;
             case TARGET_RANDOM_DESTINATION:
-                getUnit()->castSpellLoc(randomTarget->GetPosition(), AiSpell->mSpellInfo, AiSpell->mIsTriggered);
+                castResult = getUnit()->castSpellLoc(randomTarget->GetPosition(), AiSpell->mSpellInfo, AiSpell->mIsTriggered);
                 break;
         }
 
         possibleUnitTargets.clear();
+        return castResult;
     }
+
+    return SPELL_FAILED_ERROR;
 }
 
 void AIInterface::eventAiInterfaceParamsetFinish()
@@ -3570,32 +3720,6 @@ Unit* CreatureAISpells::getCustomTarget()
     return mCustomTargetCreature;
 }
 
-CreatureAISpells* AIInterface::addAISpell(uint32_t spellId, float castChance, uint32_t targetType, uint32_t duration /*= 0*/, uint32_t cooldown /*= 0*/, bool forceRemove /*= false*/, bool isTriggered /*= false*/)
-{
-    const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
-    if (spellInfo != nullptr)
-    {
-        uint32_t spellDuration = duration * 1000;
-        if (spellDuration == 0)
-            spellDuration = spellInfo->getSpellDefaultDuration(nullptr);
-
-        uint32_t spellCooldown = cooldown * 1000;
-        if (spellCooldown == 0)
-            spellCooldown = spellInfo->getSpellDefaultDuration(nullptr);
-
-        const auto& newAISpell = mCreatureAISpells.emplace_back(std::make_unique<CreatureAISpells>(spellInfo, castChance, targetType, spellDuration, spellCooldown, forceRemove, isTriggered));
-
-        newAISpell->setdurationTimer(spellDuration);
-        newAISpell->setCooldownTimer(spellCooldown);
-
-        return newAISpell.get();
-    }
-
-    sLogger.failure("tried to add invalid spell with id {}", spellId);
-
-    return nullptr;
-}
-
 void AIInterface::UpdateAISpells()
 {
     if (mLastCastedSpell)
@@ -3642,12 +3766,7 @@ void AIInterface::UpdateAISpells()
     {
         if (AISpell != nullptr)
         {
-            // stop spells and remove aura in case of duration
-            if (AISpell->mDurationTimer->isTimePassed() && AISpell->mForceRemoveAura)
-            {
-                getUnit()->interruptSpell();
-                getUnit()->removeAllAurasById(AISpell->mSpellInfo->getId());
-            }
+            _cleanUpExpiredAISpell(AISpell.get());
         }
     }
 
@@ -3656,16 +3775,10 @@ void AIInterface::UpdateAISpells()
     {
         CreatureAISpells* usedSpell = nullptr;
 
-        float randomChance = Util::getRandomFloat(100.0f);
-
         // Shuffle Around our Spells to randomize the cast
-        if (mCreatureAISpells.size())
+        if (mCreatureAISpells.size() > 1)
         {
-            for (uint16_t i = 0; i < mCreatureAISpells.size() - 1; ++i)
-            {
-                const auto j = i + rand() % (mCreatureAISpells.size() - i);
-                std::swap(mCreatureAISpells[i], mCreatureAISpells[j]);
-            }
+            Util::randomShuffleVector(mCreatureAISpells);
         }
 
         for (const auto& AISpell : mCreatureAISpells)
@@ -3730,7 +3843,7 @@ void AIInterface::UpdateAISpells()
                     break;
 
                 // random chance for shuffeld array should do the job
-                if (randomChance < AISpell->mCastChance)
+                if (Util::checkChance(AISpell->mCastChance))
                 {
                     usedSpell = AISpell.get();
                     break;
@@ -3810,10 +3923,9 @@ void AIInterface::UpdateAISpells()
             // send announcements on casttime beginn
             usedSpell->sendAnnouncement(getUnit());
 
-            uint32_t casttime = (GetCastTime(sSpellCastTimesStore.lookupEntry(usedSpell->mSpellInfo->getCastingTimeIndex())) ? GetCastTime(sSpellCastTimesStore.lookupEntry(usedSpell->mSpellInfo->getCastingTimeIndex())) : 500);
-
             // reset cast wait timer
-            mSpellWaitTimer->resetInterval(casttime);
+            const auto spellCastTime = GetCastTime(sSpellCastTimesStore.lookupEntry(usedSpell->mSpellInfo->getCastingTimeIndex()));
+            mSpellWaitTimer->resetInterval(std::max(AISPELL_GLOBAL_COOLDOWN, spellCastTime));
 
             // reset spell timers to cleanup exceeded spells
             usedSpell->mDurationTimer->resetInterval(usedSpell->mDuration);
@@ -4012,7 +4124,7 @@ void AIInterface::sendStoredText(definedEmoteVector& store, Unit* target)
     if (!store.empty())
     {
         if (store.size() > 1)
-            Util::randomShuffleVector(&store);
+            Util::randomShuffleVector(store);
 
         for (const auto& mEmotes : store)
         {

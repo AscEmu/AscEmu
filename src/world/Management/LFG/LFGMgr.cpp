@@ -2105,12 +2105,12 @@ LfgReward const* LfgMgr::GetRandomDungeonReward(uint32_t dungeon, uint8_t level)
 {
     sLogger.debug("Get Reward dungeon id = {} level = {}", dungeon, level);
     LfgReward const* rew = NULL;
-    LfgRewardMapBounds bounds = m_RewardMap.equal_range(dungeon & 0x00FFFFFF);
-    for (LfgRewardMap::const_iterator itr = bounds.first; itr != bounds.second; ++itr)
+    auto bounds = m_RewardMap.equal_range(dungeon & 0x00FFFFFF);
+    for (const auto& itr : std::ranges::subrange(bounds.first, bounds.second))
     {
-        rew = itr->second.get();
+        rew = itr.second.get();
         // ordered properly at loading
-        if (itr->second->maxLevel >= level)
+        if (itr.second->maxLevel >= level)
             break;
     }
 

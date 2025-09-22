@@ -38,7 +38,7 @@ void SummonHandler::addSummonToHandler(Summon* summon)
             if (m_pet != nullptr)
             {
                 m_owner->setSummonGuid(m_pet->getGuid());
-                m_pet->SendSpellsToOwner();
+                m_pet->sendSpellsToController(m_owner, m_pet->getTimeLeft());
             }
         }
         return;
@@ -60,7 +60,7 @@ void SummonHandler::addSummonToHandler(Summon* summon)
         case SUMMON_SLOT_MINIPET:
         case SUMMON_SLOT_QUEST:
         {
-            const uint8_t slot = summon->getSummonProperties()->Slot - 1;
+            const uint8_t slot = static_cast<uint8_t>(summon->getSummonProperties()->Slot) - 1;
 
             // Send summon to totem bar
             if (summon->getSummonProperties()->Slot != SUMMON_SLOT_MINIPET)
@@ -100,20 +100,20 @@ void SummonHandler::removeSummonFromHandler(Summon* summon)
             if (!m_summons.empty())
             {
                 Summon* newCurrentPet = nullptr;
-                for (const auto& summon : m_summons)
+                for (const auto& existingSummon : m_summons)
                 {
-                    if (!summon->isPet() || !summon->isAlive())
+                    if (!existingSummon->isPet() || !existingSummon->isAlive())
                         continue;
 
-                    if (summon->isPermanentSummon())
+                    if (existingSummon->isPermanentSummon())
                     {
-                        newCurrentPet = summon;
+                        newCurrentPet = existingSummon;
                         break;
                     }
                     else if (newCurrentPet == nullptr)
                     {
                         // Use possibly this pet but try find permanent pet
-                        newCurrentPet = summon;
+                        newCurrentPet = existingSummon;
                     }
                 }
 
@@ -124,7 +124,7 @@ void SummonHandler::removeSummonFromHandler(Summon* summon)
                     if (m_pet != nullptr)
                     {
                         m_owner->setSummonGuid(m_pet->getGuid());
-                        m_pet->SendSpellsToOwner();
+                        m_pet->sendSpellsToController(m_owner, m_pet->getTimeLeft());
                     }
                 }
             }
@@ -155,7 +155,7 @@ void SummonHandler::removeSummonFromHandler(Summon* summon)
         case SUMMON_SLOT_MINIPET:
         case SUMMON_SLOT_QUEST:
         {
-            const uint8_t slot = summon->getSummonProperties()->Slot - 1;
+            const uint8_t slot = static_cast<uint8_t>(summon->getSummonProperties()->Slot) - 1;
             m_summonSlots[slot] = nullptr;
         } break;
         default:
@@ -267,7 +267,7 @@ void SummonHandler::notifyOnPetDeath(Summon* pet)
             if (m_pet != nullptr)
             {
                 m_owner->setSummonGuid(m_pet->getGuid());
-                m_pet->SendSpellsToOwner();
+                m_pet->sendSpellsToController(m_owner, m_pet->getTimeLeft());
             }
             break;
         }

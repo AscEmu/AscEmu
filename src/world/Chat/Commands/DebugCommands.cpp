@@ -135,7 +135,7 @@ bool ChatCommandHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args,
             if (map_cell != nullptr)
                 map_cell->setLoaded();
 
-            for (const auto& aiSpells : creature->getAIInterface()->mCreatureAISpells)
+            for (const auto& aiSpells : creature->getAIInterface()->getCreatureAISpells())
             {
                 if (aiSpells->fromDB)
                     continue;

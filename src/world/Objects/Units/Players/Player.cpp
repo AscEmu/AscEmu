@@ -79,6 +79,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgLootRemoved.h"
 #include "Server/Packets/SmsgInstanceReset.h"
 #include "Server/Packets/SmsgStableResult.h"
+#include "Server/Packets/SmsgPetSpells.h"
 #include "Server/World.h"
 #include "Server/WorldSocket.h"
 #include "Server/Packets/SmsgContactList.h"
@@ -2749,7 +2750,7 @@ void Player::applyLevelInfo(uint32_t newLevel)
         {
             pet->setLevel(newLevel);
             pet->applyStatsForLevel();
-            pet->UpdateSpellList();
+            pet->updateSpellList();
         }
     }
 
@@ -3938,7 +3939,7 @@ void Player::addSpell(uint32_t spellId, uint16_t fromSkill/* = 0*/)
 
 void Player::addDeletedSpell(uint32_t spellId)
 {
-    m_deletedSpellSet.insert(spellId);
+    m_deletedSpellSet.emplace(spellId);
 }
 
 bool Player::removeSpell(uint32_t spellId, bool moveToDeleted)
@@ -4060,7 +4061,7 @@ void Player::resetSpells()
 void Player::addShapeShiftSpell(uint32_t spellId)
 {
     SpellInfo const* spellInfo = sSpellMgr.getSpellInfo(spellId);
-    m_shapeshiftSpells.insert(spellId);
+    m_shapeshiftSpells.emplace(spellId);
 
     if (spellInfo->getRequiredShapeShift() && getShapeShiftMask() & spellInfo->getRequiredShapeShift())
     {
@@ -4088,33 +4089,24 @@ void Player::sendAvailSpells(WDB::Structures::SpellShapeshiftFormEntry const* sh
         if (!shapeshiftFormEntry)
             return;
 
-        WorldPacket data(SMSG_PET_SPELLS, 8 * 4 + 20);
-        data << getGuid();
-        data << uint32_t(0);
-        data << uint32_t(0);
-        data << uint8_t(0);
-        data << uint8_t(0);
-        data << uint16_t(0);
-
         // Send the spells
-        for (uint8_t i = 0; i < 8; i++)
+        SmsgPetActionsArray actions{};
+        for (uint8_t i = 0; i < 8; ++i)
         {
-#if VERSION_STRING > Classic
-            data << uint16_t(shapeshiftFormEntry->spells[i]);
+#if VERSION_STRING >= TBC
+            actions[i] = packPetActionButtonData(shapeshiftFormEntry->spells[i], PET_SPELL_STATE_DEFAULT);
+#else
+            actions[i] = 0;
 #endif
-            data << uint16_t(DEFAULT_SPELL_STATE);
         }
+        actions[8] = 0;
+        actions[9] = 0;
 
-        data << uint8_t(1);
-        data << uint8_t(0);
-        getSession()->SendPacket(&data);
+        getSession()->SendPacket(SmsgPetSpells(getGuid(), 0, 0, 0, 0, 0, std::move(actions), SmsgPetSpellsVector()).serialise().get());
     }
     else
     {
-        WorldPacket data(SMSG_PET_SPELLS, 10);
-        data << uint64_t(0);
-        data << uint32_t(0);
-        getSession()->SendPacket(&data);
+        sendEmptyPetSpellList();
     }
 }
 
@@ -4278,19 +4270,17 @@ void Player::setDualWield2H(bool enable)
 
 bool Player::isSpellFitByClassAndRace(uint32_t spell_id) const
 {
-    const auto spellSkillBounds = sSpellMgr.getSkillEntryForSpellBounds(spell_id);
+    const auto spellSkillRange = sSpellMgr.getSkillEntryRangeForSpell(spell_id);
 
     // If spell does not exist in sSkillLineAbilityStore assume it fits for player
-    if (spellSkillBounds.first == spellSkillBounds.second)
+    if (spellSkillRange.empty())
         return true;
 
     const auto raceMask = getRaceMask();
     const auto classMask = getClassMask();
 
-    for (auto spellSkillItr = spellSkillBounds.first; spellSkillItr != spellSkillBounds.second; ++spellSkillItr)
+    for (const auto& [_, skillEntry] : spellSkillRange)
     {
-        const auto skillEntry = spellSkillItr->second;
-
         // skip wrong race skills
         if (skillEntry->race_mask > 0 && !(skillEntry->race_mask & raceMask))
             continue;
@@ -4988,10 +4978,9 @@ void Player::learnSkillSpells(uint16_t skillLine, uint16_t currentValue)
     const auto raceMask = getRaceMask();
     const auto classMask = getClassMask();
 
-    const auto skillBounds = sSpellMgr.getSkillEntryForSkillBounds(skillLine);
-    for (auto skillItr = skillBounds.first; skillItr != skillBounds.second; ++skillItr)
+    const auto skillRange = sSpellMgr.getSkillEntryRangeForSkill(skillLine);
+    for (const auto& [_, skillEntry] : skillRange)
     {
-        const auto skillEntry = skillItr->second;
         if (skillEntry->acquireMethod != 1 && skillEntry->acquireMethod != 2)
             continue;
 
@@ -5155,11 +5144,9 @@ void Player::removeSkillLine(uint16_t skillLine)
 
 void Player::removeSkillSpells(uint16_t skillLine)
 {
-    const auto skillBounds = sSpellMgr.getSkillEntryForSkillBounds(skillLine);
-    for (auto skillItr = skillBounds.first; skillItr != skillBounds.second; ++skillItr)
+    const auto skillRange = sSpellMgr.getSkillEntryRangeForSkill(skillLine);
+    for (const auto& [_, skillEntry] : skillRange)
     {
-        const auto skillEntry = skillItr->second;
-
         // Check also from deleted spells
         if (!removeSpell(skillEntry->spell, false))
             removeDeletedSpell(skillEntry->spell);
@@ -5507,26 +5494,22 @@ void Player::_addSpell(uint32_t spellId, uint16_t fromSkill/* = 0*/, bool learni
     {
         // If spell can have only one rank known move all previous ranks to deleted spells
         const auto* previousRank = spellInfo->getRankInfo()->getPreviousSpell();
-        auto hadPreviousRank = false;
+        const auto moveToDeleted = !spellInfo->isTalent();
+        const auto silently = !spellInfo->isTalent();
         while (previousRank != nullptr)
         {
-            const auto moveToDeleted = !spellInfo->isTalent();
-            const auto silently = !spellInfo->isTalent();
             if (_removeSpell(previousRank->getId(), moveToDeleted, silently, true))
             {
                 if (!spellInfo->isTalent())
-                    hadPreviousRank = true;
+                    supercededSpellId = previousRank->getId();
                 break;
             }
 
             previousRank = previousRank->getRankInfo()->getPreviousSpell();
         }
-
-        if (hadPreviousRank)
-            supercededSpellId = previousRank->getId();
     }
 
-    m_spellSet.insert(spellInfo->getId());
+    m_spellSet.emplace(spellInfo->getId());
 
     if (IsInWorld())
     {
@@ -5565,11 +5548,9 @@ void Player::_addSpell(uint32_t spellId, uint16_t fromSkill/* = 0*/, bool learni
         const auto raceMask = getRaceMask();
         const auto classMask = getClassMask();
 
-        const auto spellSkillBounds = sSpellMgr.getSkillEntryForSpellBounds(spellId);
-        for (auto spellSkillItr = spellSkillBounds.first; spellSkillItr != spellSkillBounds.second; ++spellSkillItr)
+        const auto spellSkillRange = sSpellMgr.getSkillEntryRangeForSpell(spellId);
+        for (const auto& [_, skillEntry] : spellSkillRange)
         {
-            const auto skillEntry = spellSkillItr->second;
-
             if (skillEntry->race_mask > 0 && !(skillEntry->race_mask & raceMask))
                 continue;
 
@@ -5643,7 +5624,7 @@ bool Player::_removeSpell(uint32_t spellId, bool moveToDeleted, bool silently/* 
     removeAllAurasByIdForGuid(spellId, getGuid());
 
     if (moveToDeleted)
-        m_deletedSpellSet.insert(spellId);
+        m_deletedSpellSet.emplace(spellId);
 
     const auto* const spellInfo = sSpellMgr.getSpellInfo(spellId);
     auto activatedPreviousRank = false;
@@ -9778,9 +9759,7 @@ void Player::sendEquipmentSetSaved(uint32_t setId, uint32_t setGuid)
 
 void Player::sendEmptyPetSpellList()
 {
-    WorldPacket data(SMSG_PET_SPELLS, 8);
-    data << uint64_t(0);
-    m_session->SendPacket(&data);
+    m_session->SendPacket(SmsgPetSpells(0).serialise().get());
 }
 
 void Player::sendInitialWorldstates()
@@ -13455,7 +13434,7 @@ bool Player::loadDeletedSpells(QueryResult* result)
         if (sSpellMgr.isSpellDisabled(spellid))
             continue;
 
-        m_deletedSpellSet.insert(spellid);
+        m_deletedSpellSet.emplace(spellid);
     } while (result->NextRow());
 
     return true;
@@ -13537,11 +13516,6 @@ bool Player::saveSkills(bool newCharacter, QueryBuffer* buf)
     }
 
     return true;
-}
-
-void Player::buildPetSpellList(WorldPacket& data)
-{
-    data << uint64_t(0);
 }
 
 void Player::_castSpellArea()
@@ -13842,9 +13816,9 @@ void Player::_savePet(QueryBuffer* buf, bool updateCurrentPetCache/* = false*/, 
             for (const auto& [spell, state] : summon->getSpellMap())
             {
                 if (buf == nullptr)
-                    CharacterDatabase.Execute("INSERT INTO playerpetspells VALUES(%u, %u, %u, %u)", getGuidLow(), pn, spell->getId(), state);
+                    CharacterDatabase.Execute("INSERT INTO playerpetspells VALUES(%u, %u, %u, %u)", getGuidLow(), pn, spell, state);
                 else
-                    buf->AddQuery("INSERT INTO playerpetspells VALUES(%u, %u, %u, %u)", getGuidLow(), pn, spell->getId(), state);
+                    buf->AddQuery("INSERT INTO playerpetspells VALUES(%u, %u, %u, %u)", getGuidLow(), pn, spell, state);
             }
         }
     }
@@ -16164,10 +16138,9 @@ void Player::clearCooldownsOnLine(uint32_t skillLine, uint32_t calledFrom)
         if (spellId == calledFrom)
             continue;
 
-        const auto spellSkillBounds = sSpellMgr.getSkillEntryForSpellBounds(spellId);
-        for (auto spellSkillItr = spellSkillBounds.first; spellSkillItr != spellSkillBounds.second; ++spellSkillItr)
+        const auto spellSkillRange = sSpellMgr.getSkillEntryRangeForSpell(spellId);
+        for (const auto& [_, skill_line_ability] : spellSkillRange)
         {
-            auto skill_line_ability = spellSkillItr->second;
             if (skill_line_ability->skilline == skillLine)
                 clearCooldownForSpell(spellId);
         }

@@ -72,6 +72,7 @@ namespace MovementMgr
 }
 
 enum MovementGeneratorType : uint8_t;
+enum SpellCastResult : uint8_t;
 
 struct HealthBatchEvent
 {
@@ -163,7 +164,6 @@ public: //\todo Zyres: public fpr LuaEngine, sort out why
     // void OnPreRemoveFromWorld();                                         // not used
     // void OnRemoveFromWorld();                                            // not used
     virtual void die(Unit* pAttacker, uint32_t damage, uint32_t spellid);
-    virtual void buildPetSpellList(WorldPacket& data);
 
 private:
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -733,21 +733,21 @@ public:
     bool canDualWield() const;
     void setDualWield(bool enable);
 
-    void castSpell(uint64_t targetGuid, uint32_t spellId, bool triggered = false);
-    void castSpell(Unit* target, uint32_t spellId, bool triggered = false);
-    void castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, bool triggered = false);
-    void castSpell(Unit* target, SpellInfo const* spellInfo, bool triggered = false);
-    void castSpell(uint64_t targetGuid, uint32_t spellId, SpellForcedBasePoints forcedBasepoints, bool triggered = false);
-    void castSpell(Unit* target, uint32_t spellId, SpellForcedBasePoints forcedBasePoints, bool triggered = false);
-    void castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasePoints, int32_t spellCharges, bool triggered = false);
-    void castSpell(SpellCastTargets targets, uint32_t spellId, bool triggered = false);
-    void castSpell(SpellCastTargets targets, SpellInfo const* spellInfo, bool triggered = false);
-    void castSpellLoc(const LocationVector location, uint32_t spellId, bool triggered = false);
-    void castSpellLoc(const LocationVector location, SpellInfo const* spellInfo, bool triggered = false);
+    SpellCastResult castSpell(uint64_t targetGuid, uint32_t spellId, bool triggered = false);
+    SpellCastResult castSpell(Unit* target, uint32_t spellId, bool triggered = false);
+    SpellCastResult castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, bool triggered = false);
+    SpellCastResult castSpell(Unit* target, SpellInfo const* spellInfo, bool triggered = false);
+    SpellCastResult castSpell(uint64_t targetGuid, uint32_t spellId, SpellForcedBasePoints forcedBasepoints, bool triggered = false);
+    SpellCastResult castSpell(Unit* target, uint32_t spellId, SpellForcedBasePoints forcedBasePoints, bool triggered = false);
+    SpellCastResult castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasePoints, int32_t spellCharges, bool triggered = false);
+    SpellCastResult castSpell(SpellCastTargets targets, uint32_t spellId, bool triggered = false);
+    SpellCastResult castSpell(SpellCastTargets targets, SpellInfo const* spellInfo, bool triggered = false);
+    SpellCastResult castSpellLoc(const LocationVector location, uint32_t spellId, bool triggered = false);
+    SpellCastResult castSpellLoc(const LocationVector location, SpellInfo const* spellInfo, bool triggered = false);
     void eventCastSpell(Unit* target, SpellInfo const* spellInfo);
 
-    void castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasepoints, bool triggered);
-    void castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasepoints, bool triggered);
+    SpellCastResult castSpell(uint64_t targetGuid, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasepoints, bool triggered);
+    SpellCastResult castSpell(Unit* target, SpellInfo const* spellInfo, SpellForcedBasePoints forcedBasepoints, bool triggered);
 
     SpellProc* addProcTriggerSpell(uint32_t spellId, uint32_t originalSpellId, uint64_t casterGuid, uint32_t procChance, SpellProcFlags procFlags, SpellExtraProcFlags exProcFlags, uint32_t const* spellFamilyMask, uint32_t const* procClassMask = nullptr, Aura* createdByAura = nullptr, Object* obj = nullptr);
     // Gets proc chance and proc flags from spellInfo
@@ -809,6 +809,7 @@ public:
     Aura* getAuraWithIdForGuid(uint32_t const* auraId, uint64_t guid) const;
     Aura* getAuraWithIdForGuid(uint32_t spell_id, uint64_t guid) const;
     Aura* getAuraWithAuraEffect(AuraEffect aura_effect) const;
+    Aura* getAuraWithAuraEffectForGuid(AuraEffect aura_effect, uint64_t guid) const;
     Aura* getAuraWithVisualSlot(uint8_t visualSlot) const;
     // Note; this is internal serverside aura slot, not the slot in client
     // For clientside slot use getAuraWithVisualSlot
@@ -825,7 +826,10 @@ public:
 
     bool hasAurasWithId(uint32_t auraId) const;
     bool hasAurasWithId(uint32_t const* auraId) const;
+    bool hasAurasWithIdForGuid(uint32_t auraId, uint64_t guid) const;
+    bool hasAurasWithIdForGuid(uint32_t const* auraId, uint64_t guid) const;
     bool hasAuraWithAuraEffect(AuraEffect type) const;
+    bool hasAuraWithAuraEffectForGuid(AuraEffect type, uint64_t guid) const;
     bool hasAuraWithMechanic(SpellMechanic mechanic) const;
     bool hasAuraWithSpellType(SpellTypes type, uint64_t casterGuid = 0, uint32_t skipSpellId = 0) const;
 

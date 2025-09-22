@@ -57,6 +57,8 @@ public:
 
     void OnLoaded();
 
+    virtual void sendSpellsToController(Unit* controller, uint32_t duration);
+
     GameEvent * mEvent = nullptr;
 
     // npc flag helper
@@ -283,8 +285,6 @@ public:
 
         void OnRemoveCorpse();
         void OnRespawn(WorldMap* m);
-
-        void buildPetSpellList(WorldPacket & data);
 
     private:
         // Waypoint path

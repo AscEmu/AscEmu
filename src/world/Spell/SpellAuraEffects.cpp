@@ -1602,10 +1602,9 @@ void Aura::spellAuraEffectPeriodicLeech(AuraEffectModifier* aurEff, bool apply)
                         continue;
 
                     auto _continue = false;
-                    const auto spellSkillBounds = sSpellMgr.getSkillEntryForSpellBounds(aura->getSpellId());
-                    for (auto spellSkillItr = spellSkillBounds.first; spellSkillItr != spellSkillBounds.second; ++spellSkillItr)
+                    const auto spellSkillRange = sSpellMgr.getSkillEntryRangeForSpell(aura->getSpellId());
+                    for (const auto& [_, skill_line_ability] : spellSkillRange)
                     {
-                        auto skill_line_ability = spellSkillItr->second;
                         if (skill_line_ability->skilline != SKILL_AFFLICTION)
                         {
                             _continue = true;

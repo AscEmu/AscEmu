@@ -38,6 +38,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/EventScript.hpp"
 #include "Server/Script/HookInterface.hpp"
 #include "Server/Script/InstanceScript.hpp"
+#include "Server/Packets/SmsgPetSpells.h"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellInfo.hpp"
 #include "Storage/WDB/WDBStores.hpp"
@@ -98,7 +99,7 @@ uint32_t CreatureProperties::getRandomModelId() const
         return 0;
     }
 
-    Util::randomShuffleVector(&modelIds);
+    Util::randomShuffleVector(modelIds);
     return modelIds.front();
 }
 
@@ -192,6 +193,61 @@ Creature::~Creature()
 
     if (m_escorter)
         m_escorter = nullptr;
+}
+
+void Creature::sendSpellsToController(Unit* controller, uint32_t duration)
+{
+    if (controller == nullptr)
+        return;
+
+    const uint16_t flags = isVehicle() ? 0x0800 : 0;
+
+    // Send the actionbar
+    AscEmu::Packets::SmsgPetActionsArray actions{};
+    if (isVehicle())
+    {
+        auto itr = creature_properties->castable_spells.cbegin();
+        for (uint8_t i = 0; i < 10; ++i)
+        {
+            if (itr != creature_properties->castable_spells.cend())
+            {
+                actions[i] = AscEmu::Packets::packPetActionButtonData(*itr, PET_SPELL_STATE_DEFAULT);
+                ++itr;
+            }
+            else
+            {
+                actions[i] = 0;
+            }
+        }
+    }
+    else
+    {
+        actions[0] = AscEmu::Packets::packPetActionButtonData(PET_ACTION_ATTACK, PET_SPELL_STATE_SET_ACTION);
+        actions[1] = AscEmu::Packets::packPetActionButtonData(PET_ACTION_FOLLOW, PET_SPELL_STATE_SET_ACTION);
+        actions[2] = AscEmu::Packets::packPetActionButtonData(PET_ACTION_STAY, PET_SPELL_STATE_SET_ACTION);
+
+        auto itr = creature_properties->castable_spells.cbegin();
+        for (uint8_t i = 3; i < 7; ++i)
+        {
+            if (itr != creature_properties->castable_spells.cend())
+            {
+                actions[i] = AscEmu::Packets::packPetActionButtonData(*itr, PET_SPELL_STATE_DEFAULT);
+                ++itr;
+            }
+            else
+            {
+                actions[i] = 0;
+            }
+        }
+
+        actions[7] = AscEmu::Packets::packPetActionButtonData(PET_STATE_AGGRESSIVE, PET_SPELL_STATE_SET_REACT);
+        actions[8] = AscEmu::Packets::packPetActionButtonData(PET_STATE_DEFENSIVE, PET_SPELL_STATE_SET_REACT);
+        actions[9] = AscEmu::Packets::packPetActionButtonData(PET_STATE_PASSIVE, PET_SPELL_STATE_SET_REACT);
+    }
+
+    const auto familyId = static_cast<uint16_t>(creature_properties->Family);
+    controller->sendPacket(AscEmu::Packets::SmsgPetSpells(getGuid(), familyId, duration,
+        PET_STATE_PASSIVE, PET_ACTION_FOLLOW, flags, std::move(actions), AscEmu::Packets::SmsgPetSpellsVector()).serialise().get());
 }
 
 bool Creature::isVendor() const { return getNpcFlags() & UNIT_NPC_FLAG_VENDOR; }
@@ -1218,13 +1274,7 @@ void Creature::EnslaveExpire()
     {
         caster->setCharmGuid(0);
         caster->setSummonGuid(0);
-
-        WorldPacket data(SMSG_PET_SPELLS, 8);
-
-        data << uint64_t(0);
-        data << uint32_t(0);
-
-        caster->sendPacket(&data);
+        caster->sendEmptyPetSpellList();
     }
     setCharmedByGuid(0);
     setSummonedByGuid(0);
@@ -2858,42 +2908,6 @@ void Creature::SetType(uint32_t t)
 void Creature::setRespawnTime(uint32_t respawn)
 {
     m_respawnTime = respawn != 0 ? std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) + respawn : 0;
-}
-
-void Creature::buildPetSpellList(WorldPacket& data)
-{
-    data << uint64_t(getGuid());
-    data << uint16_t(creature_properties->Family);
-    data << uint32_t(0);
-
-    if (!isVehicle())
-        data << uint32_t(0);
-    else
-        data << uint32_t(0x8000101);
-
-    std::vector<uint32_t>::const_iterator itr = creature_properties->castable_spells.begin();
-
-    // Send the actionbar
-    for (uint8_t i = 0; i < 10; ++i)
-    {
-        if (itr != creature_properties->castable_spells.end())
-        {
-            const auto spell = *itr;
-            const uint32_t actionButton = uint32_t(spell) | uint32_t(i + 8) << 24;
-            data << uint32_t(actionButton);
-            ++itr;
-        }
-        else
-        {
-            data << uint16_t(0);
-            data << uint8_t(0);
-            data << uint8_t(i + 8);
-        }
-    }
-
-    data << uint8_t(0);
-    // cooldowns
-    data << uint8_t(0);
 }
 
 CreatureMovementData const& Creature::getMovementTemplate()

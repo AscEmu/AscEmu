@@ -37,6 +37,7 @@ class CreatureGroup;
 class SpellInfo;
 
 enum MovementGeneratorType : uint8_t;
+enum SpellCastResult : uint8_t;
 
 enum AI_SCRIPT_EVENT_TYPES
 {
@@ -236,10 +237,12 @@ public:
     Unit* getCustomTarget();
 };
 
-class SpellInfo;
+using CreatureAISpellsArray = std::vector<std::unique_ptr<CreatureAISpells>>;
+using UnitArray = std::vector<Unit*>;
 
-const uint32_t AISPELL_ANY_DIFFICULTY = 4;
-typedef std::vector<Unit*> UnitArray;
+static inline constexpr uint32_t AISPELL_ANY_DIFFICULTY = 4;
+// Global spell cooldown or minimum time in millis to wait between spells
+static inline constexpr uint32_t AISPELL_GLOBAL_COOLDOWN = 1200;
 
 enum TargetFilter : uint32_t
 {
@@ -427,6 +430,25 @@ private:
     bool m_canCallForHelp = false;
     float m_callForHelpHealth = 0.0f;
     bool m_hasCalledForHelp = false;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Spells
+public:
+    CreatureAISpellsArray const& getCreatureAISpells() const;
+
+    CreatureAISpells* getAISpell(uint32_t spellId) const;
+    CreatureAISpells* addAISpell(uint32_t spellId, float castChance, uint32_t targetType, uint32_t durationInSec = 0, uint32_t cooldownInSec = 0, bool forceRemove = false, bool isTriggered = false);
+    void removeAISpell(uint32_t spellId);
+
+    // Used only with player summons for now
+    void updateOutOfCombatSpells(unsigned long time_passed);
+
+private:
+    CreatureAISpellsArray mCreatureAISpells;
+
+    bool _cleanUpExpiredAISpell(CreatureAISpells const* aiSpell) const;
+
+    std::unique_ptr<Util::SmallTimeTracker> m_outOfCombatSpellTimer;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // AI Agent functions
@@ -628,7 +650,6 @@ public:
     SpellCastTargets setSpellTargets(SpellInfo const* spellInfo, Unit* target, uint8_t targettype) const;
 
     //addAISpell(spellID, Chance, TargetType, Duration (s), waitBeforeNextCast (s))
-    CreatureAISpells* addAISpell(uint32_t spellId, float castChance, uint32_t targetType, uint32_t duration = 0, uint32_t cooldown = 0, bool forceRemove = false, bool isTriggered = false);
 
     std::list<std::unique_ptr<AI_Spell>> m_spells;
     void addSpellToList(std::unique_ptr<AI_Spell> sp);
@@ -639,17 +660,14 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // spell
 
-    void castAISpell(CreatureAISpells* aiSpell);
-    void castAISpell(uint32_t aiSpellId);
+    SpellCastResult castAISpell(CreatureAISpells* aiSpell);
+    SpellCastResult castAISpell(uint32_t aiSpellId);
     bool hasAISpell(CreatureAISpells* aiSpell);
     bool hasAISpell(uint32_t SpellId);
-    void castSpellOnRandomTarget(CreatureAISpells* AiSpell);
+    SpellCastResult castSpellOnRandomTarget(CreatureAISpells* AiSpell);
     void UpdateAISpells();
 
     CreatureAISpells* mLastCastedSpell = nullptr;
-
-    typedef std::vector<std::unique_ptr<CreatureAISpells>> CreatureAISpellsArray;
-    CreatureAISpellsArray mCreatureAISpells;
 
     std::unique_ptr<Util::SmallTimeTracker> mSpellWaitTimer;
 

@@ -36,6 +36,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/EventMgr.h"
 #include "Spell/SpellInfo.hpp"
 #include "Spell/SpellMgr.hpp"
+#include "Spell/SpellTarget.h"
 #include "Storage/WDB/WDBStructures.hpp"
 
 using namespace AscEmu::Packets;
@@ -48,13 +49,13 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
 
     if (srlPacket.guid.isUnit())
     {
-        const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLowPart());
+        const auto creature = _player->getWorldMapCreature(srlPacket.guid.getGuidLowPart());
         if (creature == nullptr)
             return;
 
-        if (srlPacket.action == PET_ACTION_ACTION)
+        if (srlPacket.buttonData.parts.state == PET_SPELL_STATE_SET_ACTION)
         {
-            switch (srlPacket.misc)
+            switch (srlPacket.buttonData.parts.spellId)
             {
                 case PET_ACTION_ATTACK:
                 {
@@ -75,20 +76,20 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
         return;
     }
 
-    const auto pet = _player->getWorldMap()->getPet(srlPacket.guid.getGuidLowPart());
+    const auto pet = _player->getWorldMapPet(srlPacket.guid.getGuidLowPart());
     if (pet == nullptr)
         return;
 
     Unit* unitTarget = nullptr;
-    if (srlPacket.action == PET_ACTION_SPELL || srlPacket.action == PET_ACTION_SPELL_1 || srlPacket.action == PET_ACTION_SPELL_2 || (srlPacket.action == PET_ACTION_ACTION && srlPacket.misc == PET_ACTION_ATTACK))
+    if (srlPacket.buttonData.parts.state & PET_SPELL_STATE_DEFAULT || (srlPacket.buttonData.parts.state == PET_SPELL_STATE_SET_ACTION && srlPacket.buttonData.parts.spellId == PET_ACTION_ATTACK))
     {
-        unitTarget = _player->getWorldMap()->getUnit(srlPacket.targetguid);
+        unitTarget = _player->getWorldMapUnit(srlPacket.targetguid);
         if (unitTarget == nullptr)
             unitTarget = pet;
     }
 
     // Intentionally create a copy of guardians to avoid invalid iterators later
-    const auto summons = _player->getSummonInterface()->getSummons();
+    const std::vector<Summon*> summons = _player->getSummonInterface()->getSummons();
     bool alive_summon = false;
     for (auto itr = summons.cbegin(); itr != summons.cend();)
     {
@@ -107,12 +108,12 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
 
         alive_summon = true;
         const uint64_t summonedPetGuid = summonedPet->getGuid();
-        switch (srlPacket.action)
+        switch (srlPacket.buttonData.parts.state)
         {
-            case PET_ACTION_ACTION:
+            case PET_SPELL_STATE_SET_ACTION:
             {
-                summonedPet->setPetAction(static_cast<PetCommands>(srlPacket.misc));
-                switch (srlPacket.misc)
+                summonedPet->setPetAction(static_cast<PetCommands>(srlPacket.buttonData.parts.spellId));
+                switch (srlPacket.buttonData.parts.spellId)
                 {
                     case PET_ACTION_ATTACK:
                     {
@@ -146,63 +147,75 @@ void WorldSession::handlePetAction(WorldPacket& recvPacket)
             }
             break;
 
-            case PET_ACTION_SPELL_2:
-            case PET_ACTION_SPELL_1:
-            case PET_ACTION_SPELL:
+            case PET_SPELL_STATE_PASSIVE:
+            case PET_SPELL_STATE_DEFAULT:
+            case PET_SPELL_STATE_AUTOCAST:
             {
-                const auto spellInfo = sSpellMgr.getSpellInfo(srlPacket.misc);
-                if (spellInfo == nullptr)
+                const auto spellInfo = sSpellMgr.getSpellInfo(srlPacket.buttonData.parts.spellId);
+                if (spellInfo == nullptr || spellInfo->isPassive())
                     return;
 
-                const auto aiSpell = summonedPet->GetAISpellForSpellId(spellInfo->getId());
+                if (!summonedPet->hasSpell(spellInfo->getId()))
+                    return;
+
+                // If spell is autocasted check cooldown from ai spell data
+                // TODO: pet cooldowns are not saved for non autocasted spells!
+                auto* const aiSpell = summonedPet->getAIInterface()->getAISpell(spellInfo->getId());
                 if (aiSpell != nullptr)
                 {
-                    if (aiSpell->cooldowntime &&Util::getMSTime() < aiSpell->cooldowntime)
+                    if (!aiSpell->mCooldownTimer->isTimePassed())
                     {
-                        summonedPet->SendCastFailed(srlPacket.misc, SPELL_FAILED_NOT_READY);
+                        summonedPet->sendPetCastFailed(srlPacket.buttonData.parts.spellId, SPELL_FAILED_NOT_READY);
                         return;
                     }
-                    else
+                }
+
+                // Check target for hostile spells
+                const auto spellTargetMask = spellInfo->getRequiredTargetMask(true);
+                if (spellTargetMask & SPELL_TARGET_REQUIRE_ATTACKABLE && !(spellTargetMask & SPELL_TARGET_REQUIRE_FRIENDLY))
+                {
+                    if (!summonedPet->getAIInterface()->canOwnerAttackUnit(unitTarget))
                     {
-                        if (aiSpell->spellType != STYPE_BUFF)
-                        {
-                            if (unitTarget == summonedPet || !summonedPet->isValidTarget(unitTarget))
-                            {
-                                summonedPet->sendActionFeedback(PET_FEEDBACK_CANT_ATTACK_TARGET);
-                                return;
-                            }
-                        }
-
-                        if (aiSpell->autocast_type != AUTOCAST_EVENT_ATTACK)
-                        {
-                            if (aiSpell->autocast_type == AUTOCAST_EVENT_OWNER_ATTACKED)
-                                summonedPet->castSpell(_player, aiSpell->spell, false);
-                            else
-                                summonedPet->castSpell(summonedPet, aiSpell->spell, false);
-                        }
-                        else
-                        {
-                            summonedPet->getThreatManager().clearAllThreat();
-                            summonedPet->getThreatManager().removeMeFromThreatLists();
-
-                            summonedPet->getAIInterface()->onHostileAction(unitTarget, aiSpell->spell, true);
-                        }
+                        summonedPet->sendActionFeedback(PET_FEEDBACK_CANT_ATTACK_TARGET);
+                        return;
                     }
+                }
+
+                SpellCastResult castResult = SPELL_FAILED_ERROR;
+                if (aiSpell != nullptr)
+                {
+                    // TODO: target cannot be changed?
+                    castResult = summonedPet->getAIInterface()->castAISpell(aiSpell);
+                }
+                else
+                {
+                    castResult = summonedPet->castSpell(unitTarget, spellInfo);
+                }
+
+                if (castResult != SPELL_CAST_SUCCESS)
+                {
+                    summonedPet->sendPetCastFailed(spellInfo->getId(), castResult);
+                    return;
+                }
+
+                if (spellTargetMask & SPELL_TARGET_REQUIRE_ATTACKABLE && !(spellTargetMask & SPELL_TARGET_REQUIRE_FRIENDLY))
+                {
+                    summonedPet->getAIInterface()->onHostileAction(unitTarget, nullptr, true);
                 }
             }
             break;
-            case PET_ACTION_STATE:
+            case PET_SPELL_STATE_SET_REACT:
             {
                 // If set to passive pet should stop attacking and return to owner
-                if (srlPacket.misc == REACT_PASSIVE)
+                if (srlPacket.buttonData.parts.spellId == REACT_PASSIVE)
                     summonedPet->getAIInterface()->enterEvadeMode();
 
-                summonedPet->getAIInterface()->setReactState(ReactStates(srlPacket.misc));
+                summonedPet->getAIInterface()->setReactState(ReactStates(srlPacket.buttonData.parts.spellId));
 
             }
             break;
             default:
-                sLogger.debug("WARNING: Unknown pet action received. Action = {}, Misc = {}", srlPacket.action, srlPacket.misc);
+                sLogger.debug("WARNING: Unknown pet action received. State = {}, Spell = {}", static_cast<uint32_t>(srlPacket.buttonData.parts.state), static_cast<uint32_t>(srlPacket.buttonData.parts.spellId));
             break;
         }
 
@@ -219,7 +232,7 @@ void WorldSession::handlePetNameQuery(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto pet = _player->getWorldMap()->getPet(srlPacket.guid.getGuidLowPart());
+    const auto pet = _player->getWorldMapPet(srlPacket.guid.getGuidLowPart());
     if (pet == nullptr)
         return;
 
@@ -401,20 +414,48 @@ void WorldSession::handlePetSetActionOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    if (!_player->getPet())
+    if (srlPacket.srcSlot >= PET_MAX_ACTION_BAR_SLOT || srlPacket.dstSlot >= PET_MAX_ACTION_BAR_SLOT)
         return;
 
-    const auto pet = _player->getPet();
-    const auto spellInfo = sSpellMgr.getSpellInfo(srlPacket.spell);
-    if (spellInfo == nullptr)
+    auto* const pet = _player->getPet();
+    if (pet == nullptr)
         return;
 
-    const auto petSpellMap = pet->GetSpells()->find(spellInfo);
-    if (petSpellMap == pet->GetSpells()->end())
+    // Prevent removing action or react button from bar
+    if (srlPacket.srcButton.parts.state & PET_SPELL_STATE_NOT_SPELL && srlPacket.dstButton.raw == 0)
         return;
 
-    pet->SetActionBarSlot(srlPacket.slot, srlPacket.spell);
-    pet->SetSpellState(srlPacket.spell, srlPacket.state);
+    const auto handleButton = [pet](uint32_t slot, PetActionButtonData const& button) -> void
+    {
+        if (button.parts.state == PET_SPELL_STATE_PASSIVE || button.parts.state == PET_SPELL_STATE_DEFAULT || button.parts.state == PET_SPELL_STATE_AUTOCAST)
+        {
+            if (button.parts.spellId == 0)
+            {
+                // Emptied a slot
+                pet->setActionBarSlot(slot, 0, 0);
+                return;
+            }
+
+            if (!pet->hasSpell(button.parts.spellId))
+                return;
+
+            // Updates actionbar as well
+            pet->setSpellState(button.parts.spellId, button.parts.state, slot);
+        }
+        else
+        {
+            // Client seems to send sometimes weird data or packet structure is still not correct
+            if (button.parts.state != PET_SPELL_STATE_SET_REACT && button.parts.state != PET_SPELL_STATE_SET_ACTION)
+                pet->setActionBarSlot(slot, 0, 0);
+            else
+                pet->setActionBarSlot(slot, button.parts.spellId, button.parts.state);
+        }
+    };
+
+    handleButton(srlPacket.srcSlot, srlPacket.srcButton);
+    // Handle swap case
+    if (srlPacket.dstButton.raw != 0)
+        handleButton(srlPacket.dstSlot, srlPacket.dstButton);
 }
 
 void WorldSession::handlePetRename(WorldPacket& recvPacket)
@@ -488,7 +529,7 @@ void WorldSession::handlePetUnlearn(WorldPacket& recvPacket)
 
     pet->WipeTalents();
 #if VERSION_STRING == WotLK || VERSION_STRING == Cata
-    pet->setPetTalentPoints(pet->GetTPsForLevel(pet->getLevel()));
+    pet->setPetTalentPoints(pet->getTotalTalentPoints());
     pet->SendTalentsToOwner();
 #endif
 }
@@ -507,11 +548,10 @@ void WorldSession::handlePetSpellAutocast(WorldPacket& recvPacket)
     if (spellInfo == nullptr)
         return;
 
-    const auto petSpell = pet->GetSpells()->find(spellInfo);
-    if (petSpell == pet->GetSpells()->end())
+    if (!pet->hasSpell(spellInfo->getId()))
         return;
 
-    pet->SetSpellState(srlPacket.spellId, srlPacket.state > 0 ? AUTOCAST_SPELL_STATE : DEFAULT_SPELL_STATE);
+    pet->setSpellState(srlPacket.spellId, srlPacket.state > 0 ? PET_SPELL_STATE_AUTOCAST : PET_SPELL_STATE_DEFAULT);
 }
 
 void WorldSession::handlePetCancelAura(WorldPacket& recvPacket)
@@ -524,7 +564,7 @@ void WorldSession::handlePetCancelAura(WorldPacket& recvPacket)
     if (spellInfo != nullptr && spellInfo->getAttributes() & static_cast<uint32_t>(ATTRIBUTES_CANT_CANCEL))
         return;
 
-    const auto creature = _player->getWorldMap()->getCreature(srlPacket.guid.getGuidLow());
+    const auto creature = _player->getWorldMapCreature(srlPacket.guid.getGuidLow());
 #ifdef FT_VEHICLES
     if (creature != nullptr && (creature->getPlayerOwner() == _player  || _player->getVehicleKit() && _player->getVehicleKit()->isControler(_player)))
         creature->removeAllAurasById(srlPacket.spellId);
@@ -564,7 +604,7 @@ void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
         {
             if (i != 0)
             {
-                if (pet->HasSpell(i))
+                if (pet->hasSpell(i))
                 {
                     req_ok = true;
                     break;
@@ -575,19 +615,14 @@ void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
             return;
     }
 
-    if (pet->GetSpentTPs() < (talent->Row * 3))
+    if (pet->getSpentTalentPoints() < (talent->Row * 3))
         return;
-
-    if (srlPacket.talentCol > 0 && talent->RankID[srlPacket.talentCol - 1] != 0)
-        pet->RemoveSpell(talent->RankID[srlPacket.talentCol - 1]);
 
     const auto spellInfo = sSpellMgr.getSpellInfo(talent->RankID[srlPacket.talentCol]);
     if (spellInfo != nullptr)
     {
-        pet->AddSpell(spellInfo, true);
+        pet->addSpell(spellInfo);
         pet->setPetTalentPoints(pet->getPetTalentPoints() - 1);
-
-        SendPacket(SmsgPetLearnedSpell(spellInfo->getId()).serialise().get());
     }
 
     pet->SendTalentsToOwner();
@@ -625,7 +660,7 @@ void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
         {
             if (i != 0)
             {
-                if (pet->HasSpell(i))
+                if (pet->hasSpell(i))
                 {
                     req_ok = true;
                     break;
@@ -636,16 +671,13 @@ void WorldSession::handlePetLearnTalent(WorldPacket& recvPacket)
             return;
     }
 
-    if (pet->GetSpentTPs() < (talentEntry->Row * 3))
+    if (pet->getSpentTalentPoints() < (talentEntry->Row * 3))
         return;
-
-    if (srlPacket.talentCol > 0 && talentEntry->RankID[srlPacket.talentCol - 1] != 0)
-        pet->RemoveSpell(talentEntry->RankID[srlPacket.talentCol - 1]);
 
     const auto spellInfo = sSpellMgr.getSpellInfo(talentEntry->RankID[srlPacket.talentCol]);
     if (spellInfo != nullptr)
     {
-        pet->AddSpell(spellInfo, true);
+        pet->addSpell(spellInfo);
         pet->setPetTalentPoints(pet->getPetTalentPoints() - 1);
     }
 
@@ -673,7 +705,7 @@ void WorldSession::handleDismissCritter(WorldPacket& recvPacket)
         return;
     }
 
-    const auto unit = _player->getWorldMap()->getUnit(srlPacket.guid.getRawGuid());
+    const auto unit = _player->getWorldMapUnit(srlPacket.guid.getRawGuid());
     if (unit != nullptr)
         unit->Delete();
 
