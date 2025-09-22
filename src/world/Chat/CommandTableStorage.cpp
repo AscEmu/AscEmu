@@ -140,7 +140,8 @@ CommandTableStorage::CommandTableStorage()
         {"commands",                      "0", 0, wrap(&ChatCommandHandler::handleCommandsCommand),             "Shows commands" },
 
         {"debug",                         "0", 0 },
-        {"debug dumpitems",               "d", 0, wrap(&ChatCommandHandler::HandleMoveDB2ItemsToDB), "Dumps hardcoded aispells to cmdline for creatures on map X" },
+        {"debug dumpitemset",             "d", 0, wrap(&ChatCommandHandler::HandleMoveDBCItemSetsToDB),             "Dumps DBC itemset bonus to database" },
+        {"debug dumpitems",               "d", 0, wrap(&ChatCommandHandler::HandleMoveDB2ItemsToDB),                "Dumps DB2 items to database" },
         {"debug dumpscripts",             "d", 0, wrap(&ChatCommandHandler::HandleMoveHardcodedScriptsToDBCommand), "Dumps hardcoded aispells to cmdline for creatures on map X" },
         {"debug sendcreaturemove",        "d", 0, wrap(&ChatCommandHandler::HandleDebugSendCreatureMove),           "Requests the target creature moves to you using movement manager." },
         {"debug dopctdamage",             "z", 0, wrap(&ChatCommandHandler::HandleDoPercentDamageCommand),          "Do percent damage to creature target" },

@@ -30,6 +30,28 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Utilities/Util.hpp"
 #include "Storage/WDB/WDBGlobals.hpp"
 
+bool ChatCommandHandler::HandleMoveDBCItemSetsToDB(const char* args, WorldSession* session)
+{
+#if VERSION_STRING >= Cata
+    std::string dumpTable = "CREATE TABLE IF NOT EXISTS `item_sets_dump` (`id` INT NOT NULL, `item1` INT NOT NULL, `item2` INT NOT NULL, `item3` INT NOT NULL, `item4` INT NOT NULL, `item5` INT NOT NULL, `item6` INT NOT NULL, `item7` INT NOT NULL, `item8` INT NOT NULL, `item9` INT NOT NULL, `item10` INT NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
+    auto result = WorldDatabase.Query(dumpTable.c_str());
+
+    for (uint32_t i = 0; i <= 960; ++i)
+    {
+        if (auto* item = sItemSetStore.lookupEntry(i))
+        {
+            if (sMySQLStore.getItemProperties(i) == nullptr)
+            {
+                std::string insertQuery = std::format("INSERT INTO `item_sets_dump` (`id`, `item1`, `item2`, `item3`, `item4`, `item5`, `item6`, `item7`, `item8`, `item9`, `item10`) VALUES ({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {});", item->id, item->itemid[0], item->itemid[1], item->itemid[2], item->itemid[3], item->itemid[4], item->itemid[5], item->itemid[6], item->itemid[7], item->itemid[8], item->itemid[9]);
+                WorldDatabase.Query(insertQuery.c_str());
+            }
+        }
+    }
+#endif
+    return true;
+
+}
+
 bool ChatCommandHandler::HandleMoveDB2ItemsToDB(const char* args, WorldSession* session)
 {
 #if VERSION_STRING >= Cata
