@@ -2335,8 +2335,8 @@ int8_t ItemInterface::CanEquipItemInSlot(int8_t DstInvSlot, int8_t slot, ItemPro
             if (proto->RequiredSkillRank > m_pOwner->getSkillLineCurrent(proto->RequiredSkill, true))
                 return INV_ERR_SKILL_ISNT_HIGH_ENOUGH;
 
-        if (proto->RequiredSkillSubRank)
-            if (!m_pOwner->hasSpell(proto->RequiredSkillSubRank))
+        if (proto->RequiredSpell)
+            if (!m_pOwner->hasSpell(proto->RequiredSpell))
                 return INV_ERR_NO_REQUIRED_PROFICIENCY;
 
         // You are dead !

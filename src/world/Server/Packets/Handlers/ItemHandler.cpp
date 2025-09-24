@@ -137,7 +137,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
         }
     }
 
-    if (itemProto->RequiredSkillSubRank != 0 && !_player->hasSpell(itemProto->RequiredSkillSubRank))
+    if (itemProto->RequiredSpell != 0 && !_player->hasSpell(itemProto->RequiredSpell))
     {
         _player->getItemInterface()->buildInventoryChangeError(tmpItem, nullptr, INV_ERR_NO_REQUIRED_PROFICIENCY);
         return;
@@ -1528,7 +1528,7 @@ void WorldSession::handleItemQuerySingleOpcode(WorldPacket& recvPacket)
     data << itemProto->RequiredLevel;
     data << uint32_t(itemProto->RequiredSkill);
     data << itemProto->RequiredSkillRank;
-    data << itemProto->RequiredSkillSubRank;
+    data << itemProto->RequiredSpell;
     data << itemProto->RequiredPlayerRank1;
     data << itemProto->RequiredPlayerRank2;
     data << itemProto->RequiredFaction;
@@ -1668,7 +1668,7 @@ void WorldSession::handleItemQuerySingleOpcode(WorldPacket& recvPacket)
     data << itemProperties->RequiredLevel;
     data << uint32_t(itemProperties->RequiredSkill);
     data << itemProperties->RequiredSkillRank;
-    data << itemProperties->RequiredSkillSubRank;
+    data << itemProperties->RequiredSpell;
     data << itemProperties->RequiredPlayerRank1;
     data << itemProperties->RequiredPlayerRank2;
     data << itemProperties->RequiredFaction;

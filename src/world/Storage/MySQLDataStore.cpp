@@ -267,7 +267,7 @@ void MySQLDataStore::loadItemPropertiesTable()
         itemProperties.RequiredLevel = fields[16].asUint32();
         itemProperties.RequiredSkill = fields[17].asUint16();
         itemProperties.RequiredSkillRank = fields[18].asUint32();
-        itemProperties.RequiredSkillSubRank = fields[19].asUint32();
+        itemProperties.RequiredSpell = fields[19].asUint32();
         itemProperties.RequiredPlayerRank1 = fields[20].asUint32();
         itemProperties.RequiredPlayerRank2 = fields[21].asUint32();
         itemProperties.RequiredFaction = fields[22].asUint32();
