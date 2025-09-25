@@ -60,3 +60,36 @@ uint32_t ItemProperties::getBuyPriceForItem(uint32_t count, uint32_t factionStan
 
     return cost * count;
 }
+
+void ItemProperties::addStat(uint32_t type, int32_t value)
+{
+    if (type <= ITEM_MOD_EXTRA_ARMOR && generalStatsMap.size() < MAX_ITEM_PROTO_STATS)
+        generalStatsMap[type] = value;
+    
+    if (type >= ITEM_MOD_HOLY_RESISTANCE && type <= ITEM_MOD_ARCANE_RESISTANCE)
+        resistanceStatsMap[type] = value;
+}
+
+int32_t ItemProperties::getStat(uint32_t type) const
+{
+    if (type <= ITEM_MOD_EXTRA_ARMOR)
+    {
+        auto itr = generalStatsMap.find(type);
+        if (itr != generalStatsMap.end())
+            return itr->second;
+    }
+
+    if (type >= ITEM_MOD_HOLY_RESISTANCE && type <= ITEM_MOD_ARCANE_RESISTANCE)
+    {
+        auto itr = resistanceStatsMap.find(type);
+        if (itr != resistanceStatsMap.end())
+            return itr->second;
+    }
+
+    return 0;
+}
+
+bool ItemProperties::hasStat(uint32_t type) const
+{
+    return generalStatsMap.find(type) != generalStatsMap.end();
+}

@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <string>
 #include <math.h>
+#include <map>
 
 class Spell;
 
@@ -41,18 +42,18 @@ struct ItemProperties
     uint32_t Unique;
     uint32_t MaxCount;
     uint32_t ContainerSlots; // uint8_t
-    uint32_t itemstatscount = 0;
-    ItemStat Stats[MAX_ITEM_PROTO_STATS];
+    //uint32_t itemstatscount = 0;
+    //ItemStat Stats[MAX_ITEM_PROTO_STATS];
     uint32_t ScalingStatsEntry;
     uint32_t ScalingStatsFlag;
     ItemDamage Damage[MAX_ITEM_PROTO_DAMAGES];
     uint32_t Armor;
-    uint32_t HolyRes = 0;
+    /*uint32_t HolyRes = 0;
     uint32_t FireRes = 0;
     uint32_t NatureRes = 0;
     uint32_t FrostRes = 0;
     uint32_t ShadowRes = 0;
-    uint32_t ArcaneRes = 0;
+    uint32_t ArcaneRes = 0;*/
     uint32_t Delay;
     uint32_t AmmoType;
     float Range;
@@ -100,6 +101,13 @@ struct ItemProperties
     bool isRangedWeapon() const;
 
     uint32_t getBuyPriceForItem(uint32_t count, uint32_t factionStanding) const;
+
+    std::map<uint32_t, int32_t> generalStatsMap;
+    std::map<uint32_t, int32_t> resistanceStatsMap;
+
+    void addStat(uint32_t type, int32_t value);
+    int32_t getStat(uint32_t type) const;
+    bool hasStat(uint32_t type) const;
 };
 
 struct ItemSet

@@ -1009,10 +1009,8 @@ bool Item::hasStats() const
     if (getRandomPropertiesId() != 0)
         return true;
 
-    ItemProperties const* proto = getItemProperties();
-    for (uint8_t i = 0; i < MAX_ITEM_PROTO_STATS; ++i)
-        if (proto->Stats[i].Value != 0)
-            return true;
+    if (ItemProperties const* proto = getItemProperties())
+        return proto->generalStatsMap.size() > 0;
 
     return false;
 }
@@ -1171,10 +1169,8 @@ bool Item::isTradeableWith(Player* player)
 #if VERSION_STRING == Cata
 int32_t Item::getReforgableStat(ItemModType statType) const
 {
-    ItemProperties const* proto = getItemProperties();
-    for (uint32_t i = 0; i < MAX_ITEM_PROTO_STATS; ++i)
-        if (ItemModType(proto->Stats[i].Type) == statType)
-            return proto->Stats[i].Value;
+    if (ItemProperties const* proto = getItemProperties())
+        return proto->hasStat(statType);
     
     int32_t randomPropId = getRandomPropertiesId();
     if (!randomPropId)

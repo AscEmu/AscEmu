@@ -6652,6 +6652,9 @@ void Player::calculateHeirloomBonus(ItemProperties const* proto, int16_t slot, b
     if (!ssd || !ssvrow)
         return;
 
+    std::map<uint32_t, int32_t> tempStats;
+
+    // Loop through 10 proto stats and try to find matching scaling stats
     for (uint32_t id = 0; id < MAX_ITEM_PROTO_STATS; ++id)
     {
         uint32_t statType = 0;
@@ -6663,153 +6666,170 @@ void Player::calculateHeirloomBonus(ItemProperties const* proto, int16_t slot, b
                 continue;
             statType = ssd->stat[id];
             val = (ssvrow->getScalingStatDistributionMultiplier(proto->ScalingStatsFlag) * ssd->statmodifier[id]) / 10000;
-        }
-        else
-        {
-            if (id >= proto->itemstatscount)
-                continue;
 
-            statType = proto->Stats[id].Type;
-            val = proto->Stats[id].Value;
+            tempStats[statType] = val;
         }
+    }
+
+    // Loop through general stats from db and add all types not found
+    for (auto generalStats : proto->generalStatsMap)
+    {
+        if (tempStats.size() < MAX_ITEM_PROTO_STATS)
+        {
+            if (tempStats.find(generalStats.first) == tempStats.end())
+                tempStats[generalStats.first] = generalStats.second;
+        }
+    }
+
+    // Loop through all collected stats and apply them
+    auto it = tempStats.begin();
+    for (uint32_t id = 0; id < MAX_ITEM_PROTO_STATS; ++id)
+    {
+        uint32_t statType = it->first;
+        int32_t val = it->second;
 
         if (val == 0)
+        {
+            ++it;
             continue;
+        }
 
         switch (statType)
         {
-        case ITEM_MOD_MANA:
-            modifyBonuses(ITEM_MOD_MANA, val, apply);
-            break;
-        case ITEM_MOD_HEALTH:                           // modify HP
-            modifyBonuses(ITEM_MOD_HEALTH, val, apply);
-            break;
-        case ITEM_MOD_AGILITY:                          // modify agility
-            modifyBonuses(ITEM_MOD_AGILITY, val, apply);
-            break;
-        case ITEM_MOD_STRENGTH:                         //modify strength
-            modifyBonuses(ITEM_MOD_STRENGTH, val, apply);
-            break;
-        case ITEM_MOD_INTELLECT:                        //modify intellect
-            modifyBonuses(ITEM_MOD_INTELLECT, val, apply);
-            break;
-        case ITEM_MOD_SPIRIT:                           //modify spirit
-            modifyBonuses(ITEM_MOD_SPIRIT, val, apply);
-            break;
-        case ITEM_MOD_STAMINA:                          //modify stamina
-            modifyBonuses(ITEM_MOD_STAMINA, val, apply);
-            break;
-        case ITEM_MOD_DEFENSE_RATING:
-            modifyBonuses(ITEM_MOD_DEFENSE_RATING, val, apply);
-            break;
-        case ITEM_MOD_DODGE_RATING:
-            modifyBonuses(ITEM_MOD_DODGE_RATING, val, apply);
-            break;
-        case ITEM_MOD_PARRY_RATING:
-            modifyBonuses(ITEM_MOD_PARRY_RATING, val, apply);
-            break;
-        case ITEM_MOD_SHIELD_BLOCK_RATING:
-            modifyBonuses(ITEM_MOD_SHIELD_BLOCK_RATING, val, apply);
-            break;
-        case ITEM_MOD_MELEE_HIT_RATING:
-            modifyBonuses(ITEM_MOD_MELEE_HIT_RATING, val, apply);
-            break;
-        case ITEM_MOD_RANGED_HIT_RATING:
-            modifyBonuses(ITEM_MOD_RANGED_HIT_RATING, val, apply);
-            break;
-        case ITEM_MOD_SPELL_HIT_RATING:
-            modifyBonuses(ITEM_MOD_SPELL_HIT_RATING, val, apply);
-            break;
-        case ITEM_MOD_MELEE_CRITICAL_STRIKE_RATING:
-            modifyBonuses(ITEM_MOD_MELEE_CRITICAL_STRIKE_RATING, val, apply);
-            break;
-        case ITEM_MOD_RANGED_CRITICAL_STRIKE_RATING:
-            modifyBonuses(ITEM_MOD_RANGED_CRITICAL_STRIKE_RATING, val, apply);
-            break;
-        case ITEM_MOD_SPELL_CRITICAL_STRIKE_RATING:
-            modifyBonuses(ITEM_MOD_SPELL_CRITICAL_STRIKE_RATING, val, apply);
-            break;
-        case ITEM_MOD_MELEE_HIT_AVOIDANCE_RATING:
-            modifyBonuses(ITEM_MOD_MELEE_HIT_AVOIDANCE_RATING, val, apply);
-            break;
-        case ITEM_MOD_RANGED_HIT_AVOIDANCE_RATING:
-            modifyBonuses(ITEM_MOD_RANGED_HIT_AVOIDANCE_RATING, val, apply);
-            break;
-        case ITEM_MOD_SPELL_HIT_AVOIDANCE_RATING:
-            modifyBonuses(ITEM_MOD_SPELL_HIT_AVOIDANCE_RATING, val, apply);
-            break;
-        case ITEM_MOD_MELEE_CRITICAL_AVOIDANCE_RATING:
-            modifyBonuses(ITEM_MOD_MELEE_CRITICAL_AVOIDANCE_RATING, val, apply);
-            break;
-        case ITEM_MOD_RANGED_CRITICAL_AVOIDANCE_RATING:
-            modifyBonuses(ITEM_MOD_RANGED_CRITICAL_AVOIDANCE_RATING, val, apply);
-            break;
-        case ITEM_MOD_SPELL_CRITICAL_AVOIDANCE_RATING:
-            modifyBonuses(ITEM_MOD_SPELL_CRITICAL_AVOIDANCE_RATING, val, apply);
-            break;
-        case ITEM_MOD_MELEE_HASTE_RATING:
-            modifyBonuses(ITEM_MOD_MELEE_HASTE_RATING, val, apply);
-            break;
-        case ITEM_MOD_RANGED_HASTE_RATING:
-            modifyBonuses(ITEM_MOD_RANGED_HASTE_RATING, val, apply);
-            break;
-        case ITEM_MOD_SPELL_HASTE_RATING:
-            modifyBonuses(ITEM_MOD_SPELL_HASTE_RATING, val, apply);
-            break;
-        case ITEM_MOD_HIT_RATING:
-            modifyBonuses(ITEM_MOD_HIT_RATING, val, apply);
-            break;
-        case ITEM_MOD_CRITICAL_STRIKE_RATING:
-            modifyBonuses(ITEM_MOD_CRITICAL_STRIKE_RATING, val, apply);
-            break;
-        case ITEM_MOD_HIT_AVOIDANCE_RATING:
-            modifyBonuses(ITEM_MOD_HIT_AVOIDANCE_RATING, val, apply);
-            break;
-        case ITEM_MOD_CRITICAL_AVOIDANCE_RATING:
-            modifyBonuses(ITEM_MOD_CRITICAL_AVOIDANCE_RATING, val, apply);
-            break;
-        case ITEM_MOD_RESILIENCE_RATING:
-            modifyBonuses(ITEM_MOD_RESILIENCE_RATING, val, apply);
-            break;
-        case ITEM_MOD_HASTE_RATING:
-            modifyBonuses(ITEM_MOD_HASTE_RATING, val, apply);
-            break;
-        case ITEM_MOD_EXPERTISE_RATING:
-            modifyBonuses(ITEM_MOD_EXPERTISE_RATING, val, apply);
-            break;
-        case ITEM_MOD_ATTACK_POWER:
-            modifyBonuses(ITEM_MOD_ATTACK_POWER, val, apply);
-            break;
-        case ITEM_MOD_RANGED_ATTACK_POWER:
-            modifyBonuses(ITEM_MOD_RANGED_ATTACK_POWER, val, apply);
-            break;
-        case ITEM_MOD_MANA_REGENERATION:
-            modifyBonuses(ITEM_MOD_MANA_REGENERATION, val, apply);
-            break;
-        case ITEM_MOD_ARMOR_PENETRATION_RATING:
-            modifyBonuses(ITEM_MOD_ARMOR_PENETRATION_RATING, val, apply);
-            break;
-        case ITEM_MOD_SPELL_POWER:
-            modifyBonuses(ITEM_MOD_SPELL_POWER, val, apply);
-            break;
-        case ITEM_MOD_HEALTH_REGEN:
-            modifyBonuses(ITEM_MOD_HEALTH_REGEN, val, apply);
-            break;
-        case ITEM_MOD_SPELL_PENETRATION:
-            modifyBonuses(ITEM_MOD_SPELL_PENETRATION, val, apply);
-            break;
-        case ITEM_MOD_BLOCK_VALUE:
-            modifyBonuses(ITEM_MOD_BLOCK_VALUE, val, apply);
-            break;
-            // deprecated item mods
-        case ITEM_MOD_SPELL_HEALING_DONE:
-        case ITEM_MOD_SPELL_DAMAGE_DONE:
-            modifyBonuses(ITEM_MOD_SPELL_HEALING_DONE, val, apply);
-            modifyBonuses(ITEM_MOD_SPELL_DAMAGE_DONE, val, apply);
-            break;
-        default:
-            break;
+            case ITEM_MOD_MANA:
+                modifyBonuses(ITEM_MOD_MANA, val, apply);
+                break;
+            case ITEM_MOD_HEALTH:                           // modify HP
+                modifyBonuses(ITEM_MOD_HEALTH, val, apply);
+                break;
+            case ITEM_MOD_AGILITY:                          // modify agility
+                modifyBonuses(ITEM_MOD_AGILITY, val, apply);
+                break;
+            case ITEM_MOD_STRENGTH:                         //modify strength
+                modifyBonuses(ITEM_MOD_STRENGTH, val, apply);
+                break;
+            case ITEM_MOD_INTELLECT:                        //modify intellect
+                modifyBonuses(ITEM_MOD_INTELLECT, val, apply);
+                break;
+            case ITEM_MOD_SPIRIT:                           //modify spirit
+                modifyBonuses(ITEM_MOD_SPIRIT, val, apply);
+                break;
+            case ITEM_MOD_STAMINA:                          //modify stamina
+                modifyBonuses(ITEM_MOD_STAMINA, val, apply);
+                break;
+            case ITEM_MOD_DEFENSE_RATING:
+                modifyBonuses(ITEM_MOD_DEFENSE_RATING, val, apply);
+                break;
+            case ITEM_MOD_DODGE_RATING:
+                modifyBonuses(ITEM_MOD_DODGE_RATING, val, apply);
+                break;
+            case ITEM_MOD_PARRY_RATING:
+                modifyBonuses(ITEM_MOD_PARRY_RATING, val, apply);
+                break;
+            case ITEM_MOD_SHIELD_BLOCK_RATING:
+                modifyBonuses(ITEM_MOD_SHIELD_BLOCK_RATING, val, apply);
+                break;
+            case ITEM_MOD_MELEE_HIT_RATING:
+                modifyBonuses(ITEM_MOD_MELEE_HIT_RATING, val, apply);
+                break;
+            case ITEM_MOD_RANGED_HIT_RATING:
+                modifyBonuses(ITEM_MOD_RANGED_HIT_RATING, val, apply);
+                break;
+            case ITEM_MOD_SPELL_HIT_RATING:
+                modifyBonuses(ITEM_MOD_SPELL_HIT_RATING, val, apply);
+                break;
+            case ITEM_MOD_MELEE_CRITICAL_STRIKE_RATING:
+                modifyBonuses(ITEM_MOD_MELEE_CRITICAL_STRIKE_RATING, val, apply);
+                break;
+            case ITEM_MOD_RANGED_CRITICAL_STRIKE_RATING:
+                modifyBonuses(ITEM_MOD_RANGED_CRITICAL_STRIKE_RATING, val, apply);
+                break;
+            case ITEM_MOD_SPELL_CRITICAL_STRIKE_RATING:
+                modifyBonuses(ITEM_MOD_SPELL_CRITICAL_STRIKE_RATING, val, apply);
+                break;
+            case ITEM_MOD_MELEE_HIT_AVOIDANCE_RATING:
+                modifyBonuses(ITEM_MOD_MELEE_HIT_AVOIDANCE_RATING, val, apply);
+                break;
+            case ITEM_MOD_RANGED_HIT_AVOIDANCE_RATING:
+                modifyBonuses(ITEM_MOD_RANGED_HIT_AVOIDANCE_RATING, val, apply);
+                break;
+            case ITEM_MOD_SPELL_HIT_AVOIDANCE_RATING:
+                modifyBonuses(ITEM_MOD_SPELL_HIT_AVOIDANCE_RATING, val, apply);
+                break;
+            case ITEM_MOD_MELEE_CRITICAL_AVOIDANCE_RATING:
+                modifyBonuses(ITEM_MOD_MELEE_CRITICAL_AVOIDANCE_RATING, val, apply);
+                break;
+            case ITEM_MOD_RANGED_CRITICAL_AVOIDANCE_RATING:
+                modifyBonuses(ITEM_MOD_RANGED_CRITICAL_AVOIDANCE_RATING, val, apply);
+                break;
+            case ITEM_MOD_SPELL_CRITICAL_AVOIDANCE_RATING:
+                modifyBonuses(ITEM_MOD_SPELL_CRITICAL_AVOIDANCE_RATING, val, apply);
+                break;
+            case ITEM_MOD_MELEE_HASTE_RATING:
+                modifyBonuses(ITEM_MOD_MELEE_HASTE_RATING, val, apply);
+                break;
+            case ITEM_MOD_RANGED_HASTE_RATING:
+                modifyBonuses(ITEM_MOD_RANGED_HASTE_RATING, val, apply);
+                break;
+            case ITEM_MOD_SPELL_HASTE_RATING:
+                modifyBonuses(ITEM_MOD_SPELL_HASTE_RATING, val, apply);
+                break;
+            case ITEM_MOD_HIT_RATING:
+                modifyBonuses(ITEM_MOD_HIT_RATING, val, apply);
+                break;
+            case ITEM_MOD_CRITICAL_STRIKE_RATING:
+                modifyBonuses(ITEM_MOD_CRITICAL_STRIKE_RATING, val, apply);
+                break;
+            case ITEM_MOD_HIT_AVOIDANCE_RATING:
+                modifyBonuses(ITEM_MOD_HIT_AVOIDANCE_RATING, val, apply);
+                break;
+            case ITEM_MOD_CRITICAL_AVOIDANCE_RATING:
+                modifyBonuses(ITEM_MOD_CRITICAL_AVOIDANCE_RATING, val, apply);
+                break;
+            case ITEM_MOD_RESILIENCE_RATING:
+                modifyBonuses(ITEM_MOD_RESILIENCE_RATING, val, apply);
+                break;
+            case ITEM_MOD_HASTE_RATING:
+                modifyBonuses(ITEM_MOD_HASTE_RATING, val, apply);
+                break;
+            case ITEM_MOD_EXPERTISE_RATING:
+                modifyBonuses(ITEM_MOD_EXPERTISE_RATING, val, apply);
+                break;
+            case ITEM_MOD_ATTACK_POWER:
+                modifyBonuses(ITEM_MOD_ATTACK_POWER, val, apply);
+                break;
+            case ITEM_MOD_RANGED_ATTACK_POWER:
+                modifyBonuses(ITEM_MOD_RANGED_ATTACK_POWER, val, apply);
+                break;
+            case ITEM_MOD_MANA_REGENERATION:
+                modifyBonuses(ITEM_MOD_MANA_REGENERATION, val, apply);
+                break;
+            case ITEM_MOD_ARMOR_PENETRATION_RATING:
+                modifyBonuses(ITEM_MOD_ARMOR_PENETRATION_RATING, val, apply);
+                break;
+            case ITEM_MOD_SPELL_POWER:
+                modifyBonuses(ITEM_MOD_SPELL_POWER, val, apply);
+                break;
+            case ITEM_MOD_HEALTH_REGEN:
+                modifyBonuses(ITEM_MOD_HEALTH_REGEN, val, apply);
+                break;
+            case ITEM_MOD_SPELL_PENETRATION:
+                modifyBonuses(ITEM_MOD_SPELL_PENETRATION, val, apply);
+                break;
+            case ITEM_MOD_BLOCK_VALUE:
+                modifyBonuses(ITEM_MOD_BLOCK_VALUE, val, apply);
+                break;
+                // deprecated item mods
+            case ITEM_MOD_SPELL_HEALING_DONE:
+            case ITEM_MOD_SPELL_DAMAGE_DONE:
+                modifyBonuses(ITEM_MOD_SPELL_HEALING_DONE, val, apply);
+                modifyBonuses(ITEM_MOD_SPELL_DAMAGE_DONE, val, apply);
+                break;
+            default:
+                break;
         }
+
+        ++it;
     }
 
     // Apply Spell Power from ScalingStatValue if set
@@ -7036,50 +7056,39 @@ void Player::applyItemMods(Item* item, int16_t slot, bool apply, bool justBroked
         }
     }
 
-    //\todo: structure itemProperties to make this a for loop
-    if (itemProperties->FireRes)
+    for (auto resistanceStat : itemProperties->resistanceStatsMap)
     {
-        if (apply)
-            m_flatResistanceModifierPos[2] += itemProperties->FireRes;
-        else
-            m_flatResistanceModifierPos[2] -= itemProperties->FireRes;
-        calcResistance(2);
-    }
+        uint8_t spellSchool = SCHOOL_NORMAL;
+        switch (resistanceStat.first)
+        {
+            case ITEM_MOD_HOLY_RESISTANCE:
+                spellSchool = SCHOOL_HOLY;
+                break;
+            case ITEM_MOD_FIRE_RESISTANCE:
+                spellSchool = SCHOOL_FIRE;
+                break;
+            case ITEM_MOD_NATURE_RESISTANCE:
+                spellSchool = SCHOOL_NATURE;
+                break;
+            case ITEM_MOD_FROST_RESISTANCE:
+                spellSchool = SCHOOL_FROST;
+                break;
+            case ITEM_MOD_SHADOW_RESISTANCE:
+                spellSchool = SCHOOL_SHADOW;
+                break;
+            case ITEM_MOD_ARCANE_RESISTANCE:
+                spellSchool = SCHOOL_ARCANE;
+                break;
+            default:
+                continue;
+        }
 
-    if (itemProperties->NatureRes)
-    {
         if (apply)
-            m_flatResistanceModifierPos[3] += itemProperties->NatureRes;
+            m_flatResistanceModifierPos[spellSchool] += resistanceStat.second;
         else
-            m_flatResistanceModifierPos[3] -= itemProperties->NatureRes;
-        calcResistance(3);
-    }
+            m_flatResistanceModifierPos[spellSchool] -= resistanceStat.second;
 
-    if (itemProperties->FrostRes)
-    {
-        if (apply)
-            m_flatResistanceModifierPos[4] += itemProperties->FrostRes;
-        else
-            m_flatResistanceModifierPos[4] -= itemProperties->FrostRes;
-        calcResistance(4);
-    }
-
-    if (itemProperties->ShadowRes)
-    {
-        if (apply)
-            m_flatResistanceModifierPos[5] += itemProperties->ShadowRes;
-        else
-            m_flatResistanceModifierPos[5] -= itemProperties->ShadowRes;
-        calcResistance(5);
-    }
-
-    if (itemProperties->ArcaneRes)
-    {
-        if (apply)
-            m_flatResistanceModifierPos[6] += itemProperties->ArcaneRes;
-        else
-            m_flatResistanceModifierPos[6] -= itemProperties->ArcaneRes;
-        calcResistance(6);
+        calcResistance(spellSchool);
     }
 
 #if VERSION_STRING > TBC
@@ -7090,11 +7099,9 @@ void Player::applyItemMods(Item* item, int16_t slot, bool apply, bool justBroked
     else
 #endif
     {
-        for (uint8_t statsIndex = 0; statsIndex < itemProperties->itemstatscount; ++statsIndex)
-        {
-            int32_t val = itemProperties->Stats[statsIndex].Value;
-            modifyBonuses(itemProperties->Stats[statsIndex].Type, val, apply);
-        }
+        // apply general stat mods
+        for (auto stats : itemProperties->generalStatsMap)
+            modifyBonuses(stats.first, stats.second, apply);
 
         if (itemProperties->Armor)
         {

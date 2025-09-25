@@ -599,51 +599,15 @@ void MySQLDataStore::loadItemPropertiesStatsTable()
 
         ItemProperties& itemProperties = _itemPropertiesStore[entry];
 
-        uint8_t count = 0;
         for (const auto& kv : typeMap)
         {
             uint32_t type = kv.first;
             int32_t value = kv.second;
 
-            if (type <= ITEM_MOD_EXTRA_ARMOR)
-            {
-                if (count < MAX_ITEM_PROTO_STATS)
-                {
-                    itemProperties.Stats[count].Type  = type;
-                    itemProperties.Stats[count].Value = value;
-                    ++count;
-                    ++assignedCount;
-                }
-            }
-            else
-            {
-                switch (type)
-                {
-                    case ITEM_MOD_HOLY_RESISTANCE:
-                        itemProperties.HolyRes = value;
-                        break;
-                    case ITEM_MOD_FIRE_RESISTANCE:
-                        itemProperties.FireRes = value;
-                        break;
-                    case ITEM_MOD_NATURE_RESISTANCE:
-                        itemProperties.NatureRes = value;
-                        break;
-                    case ITEM_MOD_FROST_RESISTANCE:
-                        itemProperties.FrostRes = value;
-                        break;
-                    case ITEM_MOD_SHADOW_RESISTANCE:
-                        itemProperties.ShadowRes = value;
-                        break;
-                    case ITEM_MOD_ARCANE_RESISTANCE:
-                        itemProperties.ArcaneRes = value;
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
+            itemProperties.addStat(type, value);
 
-        itemProperties.itemstatscount = count;
+            ++assignedCount;
+        }
     }
 
     sLogger.info("MySQLDataLoads : assigned {} stats to item_properties in {} ms!", assignedCount, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));

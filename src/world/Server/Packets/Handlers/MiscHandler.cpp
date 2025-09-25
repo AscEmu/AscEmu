@@ -1348,11 +1348,33 @@ void WorldSession::sendItemSparseDb2Reply(uint32_t entry)
     buff << int32_t(0);                                         // stackable
     buff << uint32_t(proto->ContainerSlots);
 
-    for (uint32_t x = 0; x < MAX_ITEM_PROTO_STATS; ++x)
-        buff << uint32_t(proto->Stats[x].Type);
+    auto it = proto->generalStatsMap.begin();
+    for (uint8_t i = 0; i < MAX_ITEM_PROTO_STATS; ++i)
+    {
+        if (it != proto->generalStatsMap.end())
+        {
+            data << it->first;
+            ++it;
+        }
+        else
+        {
+            data << uint32_t(0);
+        }
+    }
 
-    for (uint32_t x = 0; x < MAX_ITEM_PROTO_STATS; ++x)
-        buff << int32_t(proto->Stats[x].Value);
+    auto it2 = proto->generalStatsMap.begin();
+    for (uint8_t i = 0; i < MAX_ITEM_PROTO_STATS; ++i)
+    {
+        if (it2 != proto->generalStatsMap.end())
+        {
+            data << it2->second;
+            ++it;
+        }
+        else
+        {
+            data << int32_t(0);
+        }
+    }
 
     for (uint32_t x = 0; x < MAX_ITEM_PROTO_STATS; ++x)
         buff << int32_t(0);                                     // unk
