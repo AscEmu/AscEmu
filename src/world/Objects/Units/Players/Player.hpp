@@ -659,6 +659,8 @@ public:
     utf8_string getName() const;
     void setName(std::string name);
 
+    const DeclinedNamesArray& getDeclinedNames() const;
+
     uint32_t getLoginFlag() const;
     void setLoginFlag(uint32_t flag);
 
@@ -730,6 +732,7 @@ private:
     uint32_t m_classicMaxLevel = 60;
 
     utf8_string m_name;
+    DeclinedNamesArray m_declinedNames;
 
     uint32_t m_loginFlag = LOGIN_NO_FLAG;
 
@@ -1973,6 +1976,9 @@ public:
 
     bool saveReputations(bool newCharacter, QueryBuffer* buf);
     bool saveSkills(bool newCharacter, QueryBuffer* buf);
+
+    void loadDeclinedNames(QueryResult* result);
+    void saveDeclinedNames(DeclinedNamesArray const& declinedNames);
 
     bool m_firstLogin = false;
 

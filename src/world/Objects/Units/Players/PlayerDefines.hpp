@@ -38,6 +38,10 @@ class Aura;
 class Group;
 class Field;
 
+static inline constexpr uint8_t MAX_DECLINED_NAMES = 5;
+static inline constexpr uint8_t MAX_DECLINED_NAME_LENGTH = 15;
+using DeclinedNamesArray = std::array<std::string, MAX_DECLINED_NAMES>;
+
 enum PlayerTeam : uint8_t
 {
     TEAM_ALLIANCE = 0,

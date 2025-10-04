@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 
 #include "ManagedPacket.h"
+#include "Objects/Units/Players/PlayerDefines.hpp"
 #include "WorldPacket.h"
 
 namespace AscEmu::Packets
@@ -16,15 +17,17 @@ namespace AscEmu::Packets
     public:
         uint64_t guid;
         std::string name;
+        DeclinedNamesArray declinedNames;
 
-        CmsgSetPlayerDeclinedNames() : CmsgSetPlayerDeclinedNames(0, "")
+        CmsgSetPlayerDeclinedNames() : CmsgSetPlayerDeclinedNames(0, "", DeclinedNamesArray())
         {
         }
 
-        CmsgSetPlayerDeclinedNames(uint64_t guid, std::string name) :
-            ManagedPacket(CMSG_SET_PLAYER_DECLINED_NAMES, 8),
+        CmsgSetPlayerDeclinedNames(uint64_t guid, std::string name, DeclinedNamesArray&& declinedNames) :
+            ManagedPacket(CMSG_SET_PLAYER_DECLINED_NAMES, 8 + 1 + 1 + 1 + 1 + 1 + 1),
             guid(guid),
-            name(name)
+            name(name),
+            declinedNames(std::move(declinedNames))
         {
         }
 
@@ -36,6 +39,8 @@ namespace AscEmu::Packets
         bool internalDeserialise(WorldPacket& packet) override
         {
             packet >> guid >> name;
+            for (uint8_t i = 0; i < MAX_DECLINED_NAMES; ++i)
+                packet >> declinedNames[i];
             return true;
         }
     };
