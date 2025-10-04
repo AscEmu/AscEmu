@@ -14,19 +14,9 @@ namespace AscEmu::Packets
     class CmsgSetPlayerDeclinedNames : public ManagedPacket
     {
     public:
-        uint64_t guid;
-        std::string name;
+        std::array<std::string, 5/*MAX_DECLINED_NAME_CASES*/> declined;
 
-        CmsgSetPlayerDeclinedNames() : CmsgSetPlayerDeclinedNames(0, "")
-        {
-        }
-
-        CmsgSetPlayerDeclinedNames(uint64_t guid, std::string name) :
-            ManagedPacket(CMSG_SET_PLAYER_DECLINED_NAMES, 8),
-            guid(guid),
-            name(name)
-        {
-        }
+        CmsgSetPlayerDeclinedNames() : ManagedPacket(CMSG_SET_PLAYER_DECLINED_NAMES, 0) {}
 
         bool internalSerialise(WorldPacket& /*packet*/) override
         {
@@ -35,7 +25,9 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> guid >> name;
+            for (uint8_t i = 0; i < 5/*MAX_DECLINED_NAME_CASES*/; ++i)
+                packet >> declined[i];
+
             return true;
         }
     };

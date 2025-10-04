@@ -741,7 +741,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode<STATUS_AUTHED>(CMSG_CHAR_RACE_CHANGE, &WorldSession::handleCharFactionOrRaceChange, false, false, true, false, false);
 
     // declined names (Cyrillic client)
-    registry.registerOpcode<STATUS_AUTHED>(CMSG_SET_PLAYER_DECLINED_NAMES, &WorldSession::handleSetPlayerDeclinedNamesOpcode, false, true, true, true, true);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_SET_PLAYER_DECLINED_NAMES, &WorldSession::handleDeclinedPlayerNameOpcode, false, true, true, true, true);
 
     registry.registerOpcode<STATUS_AUTHED>(CMSG_PLAYER_LOGIN, &WorldSession::handlePlayerLoginOpcode, true, true, true, true, true);
 

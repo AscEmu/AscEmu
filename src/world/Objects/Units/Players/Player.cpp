@@ -14540,16 +14540,18 @@ bool Player::loadFromDB(uint32_t guid)
     q->AddQuery("SELECT character_guid FROM social_friends WHERE friend_guid = %u", guid); // 9
     q->AddQuery("SELECT ignore_guid FROM social_ignores WHERE character_guid = %u", guid); // 10
 
-
     q->AddQuery("SELECT * FROM equipmentsets WHERE ownerguid = %u", guid);  // 11
     q->AddQuery("SELECT faction, flag, basestanding, standing FROM playerreputations WHERE guid = %u", guid); //12
     q->AddQuery("SELECT SpellID FROM playerspells WHERE GUID = %u", guid);  // 13
     q->AddQuery("SELECT SpellID FROM playerdeletedspells WHERE GUID = %u", guid);  // 14
     q->AddQuery("SELECT SkillID, CurrentValue, MaximumValue FROM playerskills WHERE GUID = %u", guid);  // 15
 
-    //Achievements
+    // achievements
     q->AddQuery("SELECT achievement, date FROM character_achievement WHERE guid = '%u'", guid); // 16
     q->AddQuery("SELECT criteria, counter, date FROM character_achievement_progress WHERE guid = '%u'", guid); // 17
+
+	// declined names
+    q->AddQuery("SELECT genitive, dative, accusative, instrumental, prepositional FROM character_declinedname WHERE guid = %u", guid);
 
     // queue it!
     setGuidLow(guid);
@@ -14785,7 +14787,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
     m_taxi->loadTaxiMask(field[32].asCString());
     initTaxiNodesForLevel();
 
-    m_banned = field[33].asUint32();      //Character ban
+    m_banned = field[33].asUint32(); // Character ban
     m_banreason = field[34].asCString();
     m_timeLogoff = field[35].asUint32();
     //field[36].GetUInt32();    online
@@ -14850,6 +14852,9 @@ void Player::loadFromDBProc(QueryResultVector& results)
     loadSpells(results[PlayerQuery::Spells].result.get());
 
     loadReputations(results[PlayerQuery::Reputation].result.get());
+
+    if (results.size() >= 18)
+        LoadDeclinedNamesFromResult(0);
 
     // Load saved actionbars
     uint32_t Counter = 0;
@@ -16922,4 +16927,47 @@ Creature* Player::getCreatureWhenICanInteract(WoWGuid const& guid, uint32_t npcf
         return nullptr;
 
     return creature;
+}
+
+void Player::LoadDeclinedNames()
+{
+    auto result = CharacterDatabase.Query(
+        "SELECT genitive, dative, accusative, instrumental, prepositional "
+        "FROM character_declinedname WHERE guid = %u",
+        static_cast<uint32_t>(getGuid()));
+
+    if (!result)
+    {
+        for (auto& s : m_declinedNames) s.clear();
+        return;
+    }
+
+    auto fields = result->Fetch();
+    for (uint8_t i = 0; i < 5/*MAX_DECLINED_NAME_CASES*/; ++i)
+        m_declinedNames[i] = fields[i].asCString();
+}
+
+void Player::SaveDeclinedNames(const std::array<std::string, 5/*MAX_DECLINED_NAME_CASES*/>& declined)
+{
+    CharacterDatabase.Execute(
+        "REPLACE INTO `character_declinedname` "
+        "(guid, genitive, dative, accusative, instrumental, prepositional) "
+        "VALUES (%u, '%s','%s','%s','%s','%s')",
+        static_cast<uint32_t>(getGuid()),
+        declined[0].c_str(),
+        declined[1].c_str(),
+        declined[2].c_str(),
+        declined[3].c_str(),
+        declined[4].c_str()
+    );
+}
+
+void Player::LoadDeclinedNamesFromResult(QueryResult* result)
+{
+    if (!result || result->GetRowCount() == 0)
+        return;
+
+    Field* f = result->Fetch();
+    for (int i = 0; i < 5/*MAX_DECLINED_NAME_CASES*/; ++i)
+        m_declinedNames[i] = f[i].asCString();
 }

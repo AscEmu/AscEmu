@@ -101,6 +101,15 @@ struct WoWPlayer;
 class SERVER_DECL Player : public Unit
 {
 public:
+    void LoadDeclinedNames();
+    void SaveDeclinedNames(const std::array<std::string, 5/*MAX_DECLINED_NAME_CASES*/>& declined);
+
+    const std::string& getDeclinedName(uint8_t idx) const { return m_declinedNames[idx]; }
+	void LoadDeclinedNamesFromResult(QueryResult* result);
+
+	std::string m_declinedNames[5]; // genitive, dative, accusative, instrumental, prepositional
+
+public:
     friend class WorldSession;
     friend class Pet;
 
