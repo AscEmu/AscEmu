@@ -105,9 +105,9 @@ public:
     void SaveDeclinedNames(const std::array<std::string, 5/*MAX_DECLINED_NAME_CASES*/>& declined);
 
     const std::string& getDeclinedName(uint8_t idx) const { return m_declinedNames[idx]; }
+	void LoadDeclinedNamesFromResult(QueryResult* result);
 
-private:
-    std::array<std::string, 5/*MAX_DECLINED_NAME_CASES*/> m_declinedNames;
+	std::string m_declinedNames[5]; // genitive, dative, accusative, instrumental, prepositional
 
 public:
     friend class WorldSession;

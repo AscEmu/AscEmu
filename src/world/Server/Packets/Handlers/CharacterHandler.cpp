@@ -760,27 +760,31 @@ void WorldSession::fullLogin(Player* player)
 
 void WorldSession::handleDeclinedPlayerNameOpcode(WorldPacket& recvPacket)
 {
-    CmsgSetPlayerDeclinedNames srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
-        return;
+    uint64_t guid;
+    std::string declined[5/*MAX_DECLINED_NAME_CASES*/];
 
-    Player* player = GetPlayer();
-    if (!player)
-        return;
+    recvPacket >> guid;
+    for (int i = 0; i < 5/*MAX_DECLINED_NAME_CASES*/; ++i)
+        recvPacket >> declined[i];
 
-    for (uint8_t i = 0; i < 5/*MAX_DECLINED_NAME_CASES*/; ++i)
+    for (int i = 0; i < 5/*MAX_DECLINED_NAME_CASES*/; ++i)
     {
-        if (srlPacket.declined[i].size() > 15/*MAX_DECLINED_NAME_LENGTH*/)
-            srlPacket.declined[i].resize(15/*MAX_DECLINED_NAME_LENGTH*/);
-
-        CharacterDatabase.EscapeString(srlPacket.declined[i]);
+        if (declined[i].length() > 15/*MAX_DECLINED_NAME_LENGTH*/)
+            declined[i] = declined[i].substr(0, 15/*MAX_DECLINED_NAME_LENGTH*/);
+        CharacterDatabase.EscapeString(declined[i]);
     }
 
-    player->SaveDeclinedNames(srlPacket.declined);
+    CharacterDatabase.Execute(
+        "INSERT INTO character_declinedname (guid, genitive, dative, accusative, instrumental, prepositional) "
+        "VALUES (%u, '%s','%s','%s','%s','%s') "
+        "ON DUPLICATE KEY UPDATE "
+        "genitive='%s', dative='%s', accusative='%s', instrumental='%s', prepositional='%s'",
+        static_cast<uint32_t>(guid),
+        declined[0].c_str(), declined[1].c_str(), declined[2].c_str(), declined[3].c_str(), declined[4].c_str(),
+        declined[0].c_str(), declined[1].c_str(), declined[2].c_str(), declined[3].c_str(), declined[4].c_str()
+    );
 
-    sLogger.debug("Declined names saved for player GUID {}", player->getGuid());
-
-    SendPacket(SmsgSetPlayerDeclinedNamesResult(0, player->getGuid()).serialise().get());
+    SendPacket(SmsgSetPlayerDeclinedNamesResult(0, guid).serialise().get());
 }
 
 void WorldSession::characterEnumProc(QueryResult* result)
