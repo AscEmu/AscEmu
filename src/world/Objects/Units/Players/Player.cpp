@@ -14217,6 +14217,8 @@ void Player::saveToDB(bool newCharacter /* =false */)
 
     if (buf)
         CharacterDatabase.AddQueryBuffer(std::move(bufPtr));
+
+    saveDeclinedNames();
 }
 
 void Player::_saveQuestLogEntry(QueryBuffer* buf)
@@ -14591,6 +14593,8 @@ void Player::loadFromDBProc(QueryResultVector& results)
     loadSpells(results[PlayerQuery::Spells].result.get());
 
     loadReputations(results[PlayerQuery::Reputation].result.get());
+
+	loadDeclinedNames();
 
     // Load saved actionbars
     uint32_t Counter = 0;
@@ -16663,4 +16667,55 @@ Creature* Player::getCreatureWhenICanInteract(WoWGuid const& guid, uint32_t npcf
         return nullptr;
 
     return creature;
+}
+
+void Player::loadDeclinedNames()
+{
+    uint32_t guid = getGuidLow();
+
+    auto result = CharacterDatabase.Query(
+        "SELECT genitive, dative, accusative, instrumental, prepositional "
+        "FROM character_declinedname WHERE guid = %u",
+        guid);
+
+    if (!result)
+    {
+        CharacterDatabase.Execute(
+            "INSERT INTO character_declinedname "
+            "(guid, genitive, dative, accusative, instrumental, prepositional) "
+            "VALUES (%u, '', '', '', '', '')",
+            guid);
+
+        for (auto& n : m_declinedNames)
+            n.clear();
+
+        return;
+    }
+
+    Field* f = result->Fetch();
+    if (f)
+    {
+        for (int i = 0; i < 5/*MAX_DECLINED_NAME_CASES*/; ++i)
+            m_declinedNames[i] = f[i].asCString();
+    }
+}
+
+void Player::saveDeclinedNames()
+{
+    uint32_t guid = getGuidLow();
+
+    CharacterDatabase.Execute(
+        "INSERT INTO character_declinedname "
+        "(guid, genitive, dative, accusative, instrumental, prepositional) "
+        "VALUES (%u, '%s', '%s', '%s', '%s', '%s') "
+        "ON DUPLICATE KEY UPDATE "
+        "genitive=VALUES(genitive), dative=VALUES(dative), "
+        "accusative=VALUES(accusative), instrumental=VALUES(instrumental), "
+        "prepositional=VALUES(prepositional)",
+        guid,
+        CharacterDatabase.EscapeString(m_declinedNames[0]).c_str(),
+        CharacterDatabase.EscapeString(m_declinedNames[1]).c_str(),
+        CharacterDatabase.EscapeString(m_declinedNames[2]).c_str(),
+        CharacterDatabase.EscapeString(m_declinedNames[3]).c_str(),
+        CharacterDatabase.EscapeString(m_declinedNames[4]).c_str());
 }

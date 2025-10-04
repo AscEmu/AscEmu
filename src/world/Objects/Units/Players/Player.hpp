@@ -22,6 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Utilities/utf8.hpp>
 
 #include <mutex>
+#include <array>
 
 #include "Utilities/CallBack.h"
 
@@ -100,6 +101,14 @@ struct WoWPlayer;
 
 class SERVER_DECL Player : public Unit
 {
+private:
+    std::array<std::string, 5> m_declinedNames;
+
+public:
+    const std::array<std::string, 5>& getDeclinedNames() const { return m_declinedNames; }
+    void loadDeclinedNames();
+    void saveDeclinedNames();
+
 public:
     friend class WorldSession;
     friend class Pet;
