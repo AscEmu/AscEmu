@@ -77,7 +77,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (tmpItem->getGuid() != srlPacket.itemGuid)
+    if (tmpItem->getGuid() != srlPacket.itemGuid.getRawGuid())
     {
         _player->getItemInterface()->buildInventoryChangeError(nullptr, nullptr, INV_ERR_ITEM_NOT_FOUND);
         return;
