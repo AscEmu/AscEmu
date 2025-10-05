@@ -14399,6 +14399,7 @@ void Player::loadFromDBProc(QueryResultVector& results)
 #endif
 
     setInitialPlayerData();
+    loadDeclinedNames();
 
     // set xp
     setXp(field[8].asUint32());
@@ -14593,8 +14594,6 @@ void Player::loadFromDBProc(QueryResultVector& results)
     loadSpells(results[PlayerQuery::Spells].result.get());
 
     loadReputations(results[PlayerQuery::Reputation].result.get());
-
-	loadDeclinedNames();
 
     // Load saved actionbars
     uint32_t Counter = 0;
@@ -16696,7 +16695,10 @@ void Player::loadDeclinedNames()
     if (f)
     {
         for (int i = 0; i < 5/*MAX_DECLINED_NAME_CASES*/; ++i)
+		{
             m_declinedNames[i] = f[i].asCString();
+			sLogger.debug("Declined name {} = '{}'", i, m_declinedNames[i]);
+		}
     }
 }
 
