@@ -68,6 +68,9 @@ struct MovementInfo
         float sinAngle;
         float cosAngle;
         float xyspeed;
+#if VERSION_STRING >= Mop
+        float zspeed;
+#endif
     };
     JumpInfo const& getJumpInfo() const { return jump_info; }
 
@@ -173,6 +176,9 @@ struct MovementInfo
 #if VERSION_STRING >= WotLK
     uint8_t transport_seat;
     uint32_t transport_time2;
+#endif
+#if VERSION_STRING >= Mop
+    uint32_t transport_time3;
 #endif
 
 #if VERSION_STRING >= Cata

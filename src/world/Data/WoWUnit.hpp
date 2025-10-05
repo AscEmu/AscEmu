@@ -487,7 +487,7 @@ struct WoWUnit : WoWObject
 static inline constexpr uint8_t WOWUNIT_VIRTUAL_ITEM_SLOT_DISPLAY_COUNT = 3;
 static inline constexpr uint8_t WOWUNIT_POWER_COUNT = 5;
 static inline constexpr uint8_t WOWUNIT_SPELL_SCHOOL_COUNT = 7;
-static inline constexpr uint8_t WOWUNIT_ATTACK_TIME_COUNT = 2;
+static inline constexpr uint8_t WOWUNIT_ATTACK_TIME_COUNT = 3;
 static inline constexpr uint8_t WOWUNIT_STAT_COUNT = 5;
 
 union field_bytes_1_union
@@ -552,8 +552,7 @@ struct WoWUnit : WoWObject
     uint32_t unit_flags;
     uint32_t unit_flags_2;
     uint32_t aura_state;
-    std::array<uint32_t, WOWUNIT_ATTACK_TIME_COUNT> base_attack_time;  //0 = melee, 1 = offhand
-    uint32_t ranged_attack_time;
+    std::array<uint32_t, WOWUNIT_ATTACK_TIME_COUNT> base_attack_time;  //0 = melee, 1 = offhand, 2 = ranged
     float bounding_radius;
     float combat_reach;
     uint32_t display_id;

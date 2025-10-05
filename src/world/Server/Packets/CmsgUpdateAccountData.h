@@ -39,16 +39,32 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+#if VERSION_STRING <= Cata
             packet >> uiId;
-#if VERSION_STRING >= Cata
+    #if VERSION_STRING == Cata
             packet >> uiTimestamp;
-#endif
+    #endif
             packet >> uiDecompressedSize;
+
             if (uiDecompressedSize >= 0xFFFF)
             {
                 packet.rfinish();
                 return false;
             }
+#else // Mop
+            packet >> uiDecompressedSize;
+            packet >> uiTimestamp;
+            packet >> uiDecompressedSize;
+            uiId = packet.readBits(3);
+
+            if (uiDecompressedSize >= 0xFFFF)
+            {
+                packet.rfinish();
+                return false;
+            }
+
+		          packet.rfinish();
+#endif
 
             return true;
         }
