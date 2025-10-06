@@ -41,7 +41,7 @@ namespace AscEmu::Packets
         {
             uint64_t unpacked_guid;
             packet >> unpacked_guid >> spellId >> state;
-            guid.Init(unpacked_guid);
+            guid.init(unpacked_guid);
             return true;
         }
     };

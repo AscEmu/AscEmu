@@ -40,7 +40,7 @@ namespace AscEmu::Packets
         {
             uint64_t unpackedGuid;
             packet >> unpackedGuid >> questId >> rewardSlot;
-            questgiverGuid.Init(unpackedGuid);
+            questgiverGuid.init(unpackedGuid);
             return true;
         }
     };

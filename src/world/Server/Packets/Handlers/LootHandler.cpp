@@ -13,7 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Objects/GameObject.h"
 #include "Map/Management/MapMgr.hpp"
-#include "WoWGuid.h"
+#include "WoWGuid.hpp"
 #include "Logging/Logger.hpp"
 #include "Management/Group.h"
 #include "Objects/Units/Creatures/Creature.h"
@@ -88,7 +88,7 @@ void WorldSession::handleAutostoreLootItemOpcode(WorldPacket& recvPacket)
     Item* lootItem = nullptr;
 
     WoWGuid wowGuid;
-    wowGuid.Init(_player->getLootGuid());
+    wowGuid.init(_player->getLootGuid());
 
     auto loot = getItemLootFromHighGuidType(wowGuid);
     if (loot == nullptr)
@@ -210,7 +210,7 @@ void WorldSession::handleLootMoneyOpcode(WorldPacket& /*recvPacket*/)
     Unit* pt = nullptr;
 
     WoWGuid wowGuid;
-    wowGuid.Init(_player->getLootGuid());
+    wowGuid.init(_player->getLootGuid());
 
     auto loot = getItemLootFromHighGuidType(wowGuid);
     if (loot == nullptr)
@@ -541,7 +541,7 @@ void WorldSession::handleLootMasterGiveOpcode(WorldPacket& recvPacket)
     Loot* loot = nullptr;
 
     WoWGuid lootGuid;
-    lootGuid.Init(_player->getLootGuid());
+    lootGuid.init(_player->getLootGuid());
 
     if (lootGuid.isUnit())
     {

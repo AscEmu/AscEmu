@@ -61,7 +61,7 @@ namespace AscEmu::Packets
             packet >> arenaIndex;
             packet.read_skip<uint32_t>();
 
-            creatureGuid.Init(unpackedGuid);
+            creatureGuid.init(unpackedGuid);
             return true;
         }
     };

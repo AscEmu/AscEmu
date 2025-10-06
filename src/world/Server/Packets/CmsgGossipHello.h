@@ -43,7 +43,7 @@ namespace AscEmu::Packets
 #if VERSION_STRING <= Cata
             uint64_t unpackedGuid;
             packet >> unpackedGuid;
-            guid.Init(unpackedGuid);
+            guid.init(unpackedGuid);
 #else
 
             WoWGuid guid;

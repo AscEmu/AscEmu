@@ -475,7 +475,7 @@ public:
         void SetNewGuid(uint32_t Guid)
         {
             setGuidLow(Guid);
-            m_wowGuid.Init(getGuid());
+            m_wowGuid.init(getGuid());
         }
 
         ////////////////////////////////////////

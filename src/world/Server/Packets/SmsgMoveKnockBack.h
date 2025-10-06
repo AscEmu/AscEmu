@@ -47,7 +47,7 @@ namespace AscEmu::Packets
 #if VERSION_STRING < Cata
             packet << guid << time << cos << sin << horizontal << vertical;
 #else
-            ObjectGuid objectGuid = guid.getRawGuid();
+            WoWGuid objectGuid = guid.getRawGuid();
 
             packet.WriteByteMask(objectGuid[0]);
             packet.WriteByteMask(objectGuid[3]);

@@ -36,7 +36,7 @@ namespace AscEmu::Packets
         {
             uint64_t unpackedGuid;
             packet >> unpackedGuid;
-            questGiverGuid.Init(unpackedGuid);
+            questGiverGuid.init(unpackedGuid);
             return true;
         }
     };

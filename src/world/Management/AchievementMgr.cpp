@@ -1279,8 +1279,8 @@ void AchievementMgr::sendAllAchievementData(Player* _player)
     size_t numAchievements = std::count_if(m_completedAchievements.begin(), m_completedAchievements.end(), isVisible);
 
     ByteBuffer criteriaData(m_criteriaProgress.size() * (4 + 4 + 4 + 4 + 8 + 8));
-    ObjectGuid guid = m_player->getGuid();
-    ObjectGuid counter;
+    WoWGuid guid = m_player->getGuid();
+    WoWGuid counter;
 
     WorldPacket data(SMSG_ALL_ACHIEVEMENT_DATA, 4 + numAchievements * (4 + 4) + 4 + numCriteria * (4 + 4 + 4 + 4 + 8 + 8));
     data.writeBits(numCriteria, 21);
@@ -1363,8 +1363,8 @@ void AchievementMgr::sendRespondInspectAchievements(Player* _player)
 {
     VisibleAchievementPred isVisible;
 
-    ObjectGuid guid = m_player->getGuid();
-    ObjectGuid counter;
+    WoWGuid guid = m_player->getGuid();
+    WoWGuid counter;
 
     size_t numCriteria = m_criteriaProgress.size();
     size_t numAchievements = std::count_if(m_completedAchievements.begin(), m_completedAchievements.end(), isVisible);
@@ -1475,8 +1475,8 @@ void AchievementMgr::sendAllAchievementData(Player* _player)
 
     ByteBuffer criteriaData(m_criteriaProgress.size() * (4 + 4 + 4 + 4 + 8 + 8));
     ByteBuffer completedData(numAchievements * (4 + 4 + 4 + 4 + 8));
-    ObjectGuid guid = m_player->getGuid();
-    ObjectGuid counter;
+    WoWGuid guid = m_player->getGuid();
+    WoWGuid counter;
 
     WorldPacket data(SMSG_ALL_ACHIEVEMENT_DATA, 4 + numAchievements * (4 + 4) + 4 + numCriteria * (4 + 4 + 4 + 4 + 8 + 8));
     data.writeBits(numCriteria, 21);
@@ -1582,8 +1582,8 @@ void AchievementMgr::sendRespondInspectAchievements(Player* _player)
 {
     VisibleAchievementPred isVisible;
 
-    ObjectGuid guid = m_player->getGuid();
-    ObjectGuid counter;
+    WoWGuid guid = m_player->getGuid();
+    WoWGuid counter;
 
     size_t numCriteria = m_criteriaProgress.size();
     size_t numAchievements = std::count_if(m_completedAchievements.begin(), m_completedAchievements.end(), isVisible);

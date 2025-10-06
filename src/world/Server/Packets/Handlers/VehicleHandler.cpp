@@ -175,7 +175,7 @@ void WorldSession::handleChangeSeatsOnControlledVehicle([[maybe_unused]]WorldPac
     movementInfo.readMovementInfo(recvPacket, recvPacket.GetOpcode(), &extra);
     vehicle_base->obj_movement_info = movementInfo;
 
-    ObjectGuid accessory = extra.Data.guid;
+    WoWGuid accessory = extra.Data.guid;
     int8_t seatId = extra.Data.byteData;
 
     if (vehicle_base->getGuid() != movementInfo.guid)

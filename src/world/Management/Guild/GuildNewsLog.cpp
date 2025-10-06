@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "GuildLog.hpp"
 #include "GuildNewsLog.hpp"
-#include "WoWGuid.h"
+#include "WoWGuid.hpp"
 #include "Objects/Object.hpp"
 #include "Server/DatabaseDefinition.hpp"
 
@@ -66,7 +66,7 @@ void GuildNewsLogEntry::saveGuildLogToDB() const
 void GuildNewsLogEntry::writeGuildLogPacket(WorldPacket& data, ByteBuffer&) const
 {
     data.writeBits(0, 26);
-    ObjectGuid guid = getPlayerGuid();
+    WoWGuid guid = getPlayerGuid();
 
     data.writeBit(guid[7]);
     data.writeBit(guid[0]);

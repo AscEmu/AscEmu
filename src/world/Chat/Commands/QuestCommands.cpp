@@ -667,7 +667,7 @@ bool ChatCommandHandler::HandleQuestListCommand(const char* args, WorldSession* 
     else
     {
         WoWGuid wowGuid;
-        wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
+        wowGuid.init(m_session->GetPlayer()->getTargetGuid());
         if (wowGuid.getRawGuid() == 0)
         {
             systemMessage(m_session, "You must target an npc or specify an id.");
@@ -758,7 +758,7 @@ bool ChatCommandHandler::HandleQuestAddStartCommand(const char* args, WorldSessi
         return false;
 
     WoWGuid wowGuid;
-    wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
+    wowGuid.init(m_session->GetPlayer()->getTargetGuid());
 
     if (wowGuid.getGuidLowPart() == 0)
     {
@@ -841,7 +841,7 @@ bool ChatCommandHandler::HandleQuestAddFinishCommand(const char* args, WorldSess
         return false;
 
     WoWGuid wowGuid;
-    wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
+    wowGuid.init(m_session->GetPlayer()->getTargetGuid());
 
     if (wowGuid.getRawGuid() == 0)
     {
@@ -937,7 +937,7 @@ bool ChatCommandHandler::HandleQuestDelStartCommand(const char* args, WorldSessi
         return false;
 
     WoWGuid wowGuid;
-    wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
+    wowGuid.init(m_session->GetPlayer()->getTargetGuid());
 
     if (wowGuid.getRawGuid() == 0)
     {
@@ -1018,7 +1018,7 @@ bool ChatCommandHandler::HandleQuestDelFinishCommand(const char* args, WorldSess
         return false;
 
     WoWGuid wowGuid;
-    wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
+    wowGuid.init(m_session->GetPlayer()->getTargetGuid());
     if (wowGuid.getGuidLowPart() == 0)
     {
         systemMessage(m_session, "You must target an npc.");
@@ -1361,7 +1361,7 @@ bool ChatCommandHandler::HandleQuestLoadCommand(const char* /*args*/, WorldSessi
     blueSystemMessage(m_session, "Load completed in {} ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
     WoWGuid wowGuid;
-    wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
+    wowGuid.init(m_session->GetPlayer()->getTargetGuid());
 
     if (wowGuid.getRawGuid() == 0)
         return true;

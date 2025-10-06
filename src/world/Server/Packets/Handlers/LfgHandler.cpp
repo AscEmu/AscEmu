@@ -261,7 +261,7 @@ void WorldSession::sendLfgRoleCheckUpdate(const LfgRoleCheck* pRoleCheck)
         data << uint32_t(roles);                                        // Roles
 
         WoWGuid wowGuid;
-        wowGuid.Init(guid);
+        wowGuid.init(guid);
 
         Player* player = sObjectMgr.getPlayer(wowGuid.getGuidLowPart());
         data << uint8_t(player ? player->getLevel() : 0);               // Level
@@ -272,7 +272,7 @@ void WorldSession::sendLfgRoleCheckUpdate(const LfgRoleCheck* pRoleCheck)
                 continue;
 
             WoWGuid guidItr;
-            guidItr.Init(rolePair.first);
+            guidItr.init(rolePair.first);
 
             guid = rolePair.first;
             roles = rolePair.second;

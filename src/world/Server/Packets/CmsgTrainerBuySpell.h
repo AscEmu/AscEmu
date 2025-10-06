@@ -44,7 +44,7 @@ namespace AscEmu::Packets
             packet >> trainerId;
 #endif
             packet >> spellId;
-            guid.Init(unpackedGuid);
+            guid.init(unpackedGuid);
             return true;
         }
     };

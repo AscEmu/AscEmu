@@ -82,7 +82,7 @@ void Spell::FillTargetMap(uint32_t i)
     if (TargetType & SPELL_TARGET_OBJECT_PETOWNER)
     {
         WoWGuid wowGuid;
-        wowGuid.Init(m_targets.getUnitTargetGuid());
+        wowGuid.init(m_targets.getUnitTargetGuid());
         if (wowGuid.isPet())
         {
             Pet* p = m_caster->getWorldMap()->getPet(wowGuid.getGuidLowPart());

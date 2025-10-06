@@ -37,7 +37,7 @@ namespace AscEmu::Packets
         {
             uint64_t unpackedGuid;
             packet >> unpackedGuid;
-            guid.Init(unpackedGuid);
+            guid.init(unpackedGuid);
             return true;
         }
     };

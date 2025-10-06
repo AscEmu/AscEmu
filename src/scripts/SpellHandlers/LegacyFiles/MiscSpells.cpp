@@ -290,7 +290,7 @@ bool WaitingToResurrect(uint8_t /*effectIndex*/, Aura* a, bool apply)
     uint64_t crtguid = p_target->getAreaSpiritHealerGuid();
 
     WoWGuid wowGuid;
-    wowGuid.Init(crtguid);
+    wowGuid.init(crtguid);
 
     Creature* pCreature = p_target->IsInWorld() ? p_target->getWorldMap()->getCreature(wowGuid.getGuidLowPart()) : nullptr;
 

@@ -96,7 +96,7 @@ namespace AscEmu::Packets
                 }
             }
 #else
-            ObjectGuid targetGuid = guid.getRawGuid();
+            WoWGuid targetGuid = guid.getRawGuid();
 
             for (const auto& auras : aura_updates)
 
@@ -136,7 +136,7 @@ namespace AscEmu::Packets
 
                 if (!(auras.flags & AFLAG_IS_CASTER))
                 {
-                    ObjectGuid casterGuid = auras.casterGuid.getRawGuid();
+                    WoWGuid casterGuid = auras.casterGuid.getRawGuid();
                     packet.writeBit(casterGuid[3]);
                     packet.writeBit(casterGuid[4]);
                     packet.writeBit(casterGuid[6]);
@@ -158,7 +158,7 @@ namespace AscEmu::Packets
             {
                 if (!(auras.flags & AFLAG_IS_CASTER))
                 {
-                    ObjectGuid casterGuid = auras.casterGuid.getRawGuid();
+                    WoWGuid casterGuid = auras.casterGuid.getRawGuid();
                     packet.WriteByteSeq(casterGuid[3]);
                     packet.WriteByteSeq(casterGuid[2]);
                     packet.WriteByteSeq(casterGuid[1]);

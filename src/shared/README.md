@@ -21,7 +21,6 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2014 | CommonTypes.hpp
 * 2014 | CommonHelpers.hpp
 * 2014 | CommonDefines.hpp
-* 2008 | WoWGuid.h
 * 2008 | WorldPacket.h
 * 2008 | Threading/LegacyThreadPool.h
 * 2008 | Threading/LegacyThreadPool.cpp
@@ -174,6 +173,9 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2008 | Common.Legacy.h
 * 2008 | Threading/Mutex.h
 
+### Removed on 05 Oct 2025
+* 2008 | WoWGuid.h
+
 ### New files
 * 2015 | Exceptions/PlayerExceptions.hpp
 * 2015 | Exceptions/Exceptions.hpp
@@ -214,3 +216,4 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2024 | Cryptography/RC4.hpp
 * 2024 | Threading/Mutex.hpp
 * 2024 | Threading/Mutex.cpp
+* 2025 | WoWGuid.hpp

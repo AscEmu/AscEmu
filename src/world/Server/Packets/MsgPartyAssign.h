@@ -41,7 +41,7 @@ namespace AscEmu::Packets
         {
             uint64_t unpackedGuid;
             packet >> promoteType >> isActivated >> unpackedGuid;
-            guid.Init(unpackedGuid);
+            guid.init(unpackedGuid);
             return true;
         }
     };

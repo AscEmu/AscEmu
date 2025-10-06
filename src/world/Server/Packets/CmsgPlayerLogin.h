@@ -39,7 +39,7 @@ namespace AscEmu::Packets
             uint64_t unpackedGuid;
             packet >> unpackedGuid;
 #elif VERSION_STRING == Cata
-            ObjectGuid unpackedGuid;
+            WoWGuid unpackedGuid;
             unpackedGuid[2] = packet.readBit();
             unpackedGuid[3] = packet.readBit();
             unpackedGuid[0] = packet.readBit();
@@ -58,7 +58,7 @@ namespace AscEmu::Packets
             packet.ReadByteSeq(unpackedGuid[1]);
             packet.ReadByteSeq(unpackedGuid[4]);
 #elif VERSION_STRING == Mop
-            ObjectGuid unpackedGuid;
+            WoWGuid unpackedGuid;
             float unknown;
             packet >> unknown;
 
@@ -80,7 +80,7 @@ namespace AscEmu::Packets
             packet.ReadByteSeq(unpackedGuid[7]);
             packet.ReadByteSeq(unpackedGuid[3]);
 #endif
-            guid.Init(unpackedGuid);
+            guid.init(unpackedGuid);
             return true;
         }
     };

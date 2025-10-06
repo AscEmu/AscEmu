@@ -42,7 +42,7 @@ namespace AscEmu::Packets
                 charCreate.hairColor >> charCreate.hairStyle >> charCreate.facialHair >>
                 charCreate.face >> charCreate._race;
 
-            guid.Init(unpackedGuid);
+            guid.init(unpackedGuid);
             return true;
         }
 #endif

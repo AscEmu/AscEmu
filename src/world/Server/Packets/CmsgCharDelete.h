@@ -42,7 +42,7 @@ namespace AscEmu::Packets
             uint64_t unpackedGuid;
             packet >> unpackedGuid;
 #else
-            ObjectGuid unpackedGuid;
+            WoWGuid unpackedGuid;
 
             unpackedGuid[1] = packet.readBit();
             unpackedGuid[3] = packet.readBit();
@@ -62,7 +62,7 @@ namespace AscEmu::Packets
             packet.ReadByteSeq(unpackedGuid[2]);
             packet.ReadByteSeq(unpackedGuid[5]);
 #endif
-            guid.Init(unpackedGuid);
+            guid.init(unpackedGuid);
             return true;
         }
     };

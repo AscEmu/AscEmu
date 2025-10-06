@@ -568,7 +568,7 @@ Corpse* ObjectMgr::getCorpseByOwner(const uint32_t _playerGuid) const
     for (const auto& corpsePair : m_corpses)
     {
         WoWGuid wowGuid;
-        wowGuid.Init(corpsePair.second->getOwnerGuid());
+        wowGuid.init(corpsePair.second->getOwnerGuid());
 
         if (wowGuid.getGuidLowPart() == _playerGuid)
             return corpsePair.second.get();

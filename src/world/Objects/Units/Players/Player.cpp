@@ -1385,7 +1385,7 @@ void Player::sendForceMovePacket(UnitSpeedType speed_type, float speed)
 void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
 {
     WorldPacket data;
-    ObjectGuid guid = getGuid();
+    WoWGuid guid = getGuid();
 
     switch (speed_type)
     {
@@ -1907,7 +1907,7 @@ void Player::sendTeleportPacket(LocationVector position)
     if (getObjectTypeId() == TYPEID_UNIT)
         SetPosition(pos);
 
-    ObjectGuid guid = getGuid();
+    WoWGuid guid = getGuid();
 
     WorldPacket data(SMSG_MOVE_UPDATE_TELEPORT, 38);
     obj_movement_info.writeMovementInfo(data, SMSG_MOVE_UPDATE_TELEPORT);
@@ -3073,7 +3073,7 @@ void Player::sendInitialLogonPackets()
     data.writeBits(0, 21);
     getSession()->SendPacket(&data);
 
-    ObjectGuid guid = getGuid();
+    WoWGuid guid = getGuid();
     data.Initialize(SMSG_MOVE_SET_ACTIVE_MOVER);
     data.writeBit(guid[5]);
     data.writeBit(guid[1]);
@@ -8650,7 +8650,7 @@ void Player::acceptQuest(uint64_t guid, uint32_t quest_id)
     Object* qst_giver = nullptr;
 
     WoWGuid wowGuid;
-    wowGuid.Init(guid);
+    wowGuid.init(guid);
 
     if (wowGuid.isUnit())
     {
@@ -9424,7 +9424,7 @@ void Player::logIntoBattleground()
 bool Player::logOntoTransport()
 {
     bool success = true;
-    if (obj_movement_info.transport_guid != 0)
+    if (!obj_movement_info.transport_guid.isEmpty())
     {
         const auto transporter = sTransportHandler.getTransporter(WoWGuid::getGuidLowPartFromUInt64(obj_movement_info.transport_guid));
         if (transporter)
@@ -10282,11 +10282,11 @@ void Player::sendCinematicCamera(uint32_t id)
 
 void Player::setMover(Unit* target)
 {
-    m_session->m_MoverWoWGuid.Init(target->getGuid());
+    m_session->m_MoverWoWGuid.init(target->getGuid());
     m_controledUnit = target;
 
 #if VERSION_STRING > WotLK
-    ObjectGuid guid = target->getGuid();
+    WoWGuid guid = target->getGuid();
 
     WorldPacket data(SMSG_MOVE_SET_ACTIVE_MOVER, 9);
     data.writeBit(guid[5]);
@@ -10796,7 +10796,7 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
     Loot* pLoot = nullptr;
 
     WoWGuid wowGuid;
-    wowGuid.Init(guid);
+    wowGuid.init(guid);
 
     if (wowGuid.isUnit())
     {
@@ -11917,7 +11917,7 @@ void Player::testDuelBoundary()
         return;
 
     WoWGuid wowGuid;
-    wowGuid.Init(getDuelArbiter());
+    wowGuid.init(getDuelArbiter());
 
     if (GameObject* goFlag = getWorldMap()->getGameObject(wowGuid.getGuidLowPart()))
     {
@@ -11955,7 +11955,7 @@ void Player::testDuelBoundary()
 void Player::endDuel(uint8_t condition)
 {
     WoWGuid wowGuid;
-    wowGuid.Init(getDuelArbiter());
+    wowGuid.init(getDuelArbiter());
 
     if (m_duelState == DUEL_STATE_FINISHED)
     {
@@ -12074,7 +12074,7 @@ void Player::endDuel(uint8_t condition)
 void Player::cancelDuel()
 {
     WoWGuid wowGuid;
-    wowGuid.Init(getDuelArbiter());
+    wowGuid.init(getDuelArbiter());
 
     const auto goFlag = getWorldMap()->getGameObject(wowGuid.getGuidLowPart());
     if (goFlag)

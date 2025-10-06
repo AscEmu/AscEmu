@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "GuildLog.hpp"
 #include "GuildBankEventLog.hpp"
-#include "WoWGuid.h"
+#include "WoWGuid.hpp"
 #include "Server/DatabaseDefinition.hpp"
 
 

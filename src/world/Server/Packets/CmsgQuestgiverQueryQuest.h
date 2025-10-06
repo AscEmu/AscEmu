@@ -44,7 +44,7 @@ namespace AscEmu::Packets
 #if VERSION_STRING > TBC
             packet >> unknown;
 #endif
-            guid.Init(unpackedGuid);
+            guid.init(unpackedGuid);
             return true;
         }
     };

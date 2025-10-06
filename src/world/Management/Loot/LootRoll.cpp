@@ -73,7 +73,7 @@ void LootRoll::finalize()
 
     Loot* pLoot = nullptr;
     WoWGuid wowGuid;
-    wowGuid.Init(_guid);
+    wowGuid.init(_guid);
 
     if (wowGuid.isUnit())
     {

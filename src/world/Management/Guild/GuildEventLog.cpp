@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "GuildLog.hpp"
 #include "GuildEventLog.hpp"
-#include "WoWGuid.h"
+#include "WoWGuid.hpp"
 #include "Server/DatabaseDefinition.hpp"
 
 GuildEventLogEntry::GuildEventLogEntry(uint32_t guildId, uint32_t guid, GuildEventLogTypes eventType, uint32_t playerGuid1, uint32_t playerGuid2, uint8_t newRank) :

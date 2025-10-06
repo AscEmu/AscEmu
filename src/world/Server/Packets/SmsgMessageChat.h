@@ -121,10 +121,10 @@ namespace AscEmu::Packets
                     break;
             }
 #else
-            ObjectGuid target = 0;
-            ObjectGuid source = 0;
-            ObjectGuid unkGuid = 0;
-            ObjectGuid unkGuid2 = 0;
+            WoWGuid target = 0;
+            WoWGuid source = 0;
+            WoWGuid unkGuid = 0;
+            WoWGuid unkGuid2 = 0;
 
             packet.writeBit(1);
             packet.writeBit(0);

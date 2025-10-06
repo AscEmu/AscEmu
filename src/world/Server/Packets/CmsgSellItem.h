@@ -41,7 +41,7 @@ namespace AscEmu::Packets
         {
             uint64_t rawGuid;
             packet >> rawGuid >> itemGuid >> amount;
-            vendorGuid.Init(rawGuid);
+            vendorGuid.init(rawGuid);
             return true;
         }
     };

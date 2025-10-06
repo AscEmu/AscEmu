@@ -1827,7 +1827,7 @@ public:
             iid = 0;
 
         WoWGuid wowGuid;
-        wowGuid.Init(getCreature()->getGuid());
+        wowGuid.init(getCreature()->getGuid());
 
         LuaGlobal::instance()->m_onLoadInfo.push_back(getCreature()->GetMapId());
         LuaGlobal::instance()->m_onLoadInfo.push_back(iid);

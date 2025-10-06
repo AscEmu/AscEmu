@@ -470,7 +470,7 @@ Player* ChatCommandHandler::GetSelectedPlayer(WorldSession* m_session, bool show
     uint64_t guid = m_session->GetPlayer()->getTargetGuid();
 
     WoWGuid wowGuid;
-    wowGuid.Init(guid);
+    wowGuid.init(guid);
 
     switch (wowGuid.getHigh())
     {
@@ -516,7 +516,7 @@ Creature* ChatCommandHandler::GetSelectedCreature(WorldSession* m_session, bool 
     Creature* creature = nullptr;
     bool is_invalid_type = false;
     WoWGuid wowGuid;
-    wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
+    wowGuid.init(m_session->GetPlayer()->getTargetGuid());
 
     switch(wowGuid.getHigh())
     {
@@ -566,7 +566,7 @@ uint32_t ChatCommandHandler::GetSelectedWayPointId(WorldSession* m_session)
 {
     uint64_t guid = m_session->GetPlayer()->getTargetGuid();
     WoWGuid wowGuid;
-    wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
+    wowGuid.init(m_session->GetPlayer()->getTargetGuid());
 
     if (guid == 0)
     {

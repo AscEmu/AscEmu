@@ -4546,7 +4546,7 @@ int LuaUnit::SendLootWindow(lua_State* L, Unit* ptr)
     plr->setLootGuid(guid);
 
     WoWGuid wowGuid;
-    wowGuid.Init(guid);
+    wowGuid.init(guid);
 
     if (wowGuid.isUnit())
     {

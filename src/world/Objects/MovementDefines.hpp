@@ -4441,7 +4441,7 @@ public:
 
     struct
     {
-        ObjectGuid guid;
+        WoWGuid guid;
         float floatData;
         int8_t byteData;
     } Data;

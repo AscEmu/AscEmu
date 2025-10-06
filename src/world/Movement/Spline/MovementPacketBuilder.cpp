@@ -234,7 +234,7 @@ void PacketBuilder::WriteCreateData(MoveSpline const& moveSpline, ByteBuffer& da
             data << moveSpline.facing.angle;
         else if (splineFlags.final_target)
         {
-            ObjectGuid facingGuid = moveSpline.facing.target;
+            WoWGuid facingGuid = moveSpline.facing.target;
             data.WriteByteSeq(facingGuid[5]);
             data.WriteByteSeq(facingGuid[3]);
             data.WriteByteSeq(facingGuid[7]);
@@ -289,7 +289,7 @@ void PacketBuilder::WriteCreateBits(MoveSpline const& moveSpline, ByteBuffer& da
     {
     case MoveSplineFlag::Final_Target:
     {
-        ObjectGuid targetGuid = moveSpline.facing.target;
+        WoWGuid targetGuid = moveSpline.facing.target;
         data.writeBits(2, 2);
         data.writeBit(targetGuid[4]);
         data.writeBit(targetGuid[3]);

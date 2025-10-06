@@ -38,9 +38,9 @@ namespace AscEmu::Packets
 #if VERSION_STRING <= Cata
             uint64_t unpackedGuid;
             packet >> unpackedGuid;
-            guid.Init(unpackedGuid);
+            guid.init(unpackedGuid);
 #elif VERSION_STRING == Mop
-            ObjectGuid npcGuid;
+            WoWGuid npcGuid;
             npcGuid[0] = packet.readBit();
             npcGuid[5] = packet.readBit();
             npcGuid[4] = packet.readBit();
@@ -58,6 +58,8 @@ namespace AscEmu::Packets
             packet.ReadByteSeq(npcGuid[1]);
             packet.ReadByteSeq(npcGuid[5]);
             packet.ReadByteSeq(npcGuid[6]);
+
+            guid.init(npcGuid);
 #endif
             return true;
         }

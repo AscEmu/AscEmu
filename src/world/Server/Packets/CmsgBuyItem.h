@@ -56,7 +56,7 @@ namespace AscEmu::Packets
 #if VERSION_STRING <= TBC
             packet >> rawGuid >> itemEntry >> amount;
 #endif
-            sourceGuid.Init(rawGuid);
+            sourceGuid.init(rawGuid);
             return true;
         }
     };

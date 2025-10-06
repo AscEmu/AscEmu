@@ -36,7 +36,7 @@ namespace AscEmu::Packets
             packet << uint8_t(0);
 #endif
 #else
-            ObjectGuid oGuid = guid;
+            WoWGuid oGuid = guid;
 
             packet.writeBit(oGuid[3]);
             packet.writeBit(oGuid[2]);

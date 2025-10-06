@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "VMapFactory.h"
 #include "MMapFactory.h"
 #include "Macros/MapsMacros.hpp"
-#include "shared/WoWGuid.h"
+#include "shared/WoWGuid.hpp"
 #include "MapScriptInterface.h"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Map/Management/MapMgr.hpp"
@@ -1912,7 +1912,7 @@ Unit* WorldMap::getUnit(const uint64_t& guid)
         return nullptr;
 
     WoWGuid wowGuid;
-    wowGuid.Init(guid);
+    wowGuid.init(guid);
 
     switch (wowGuid.getHigh())
     {
@@ -1934,7 +1934,7 @@ Object* WorldMap::getObject(const uint64_t& guid)
         return nullptr;
 
     WoWGuid wowGuid;
-    wowGuid.Init(guid);
+    wowGuid.init(guid);
 
     switch (wowGuid.getHigh())
     {

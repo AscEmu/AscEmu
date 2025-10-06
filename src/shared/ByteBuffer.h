@@ -22,7 +22,7 @@
 
 #include "CommonTypes.hpp"
 #include "CommonHelpers.hpp"
-#include "WoWGuid.h"
+#include "WoWGuid.hpp"
 #include "LocationVector.h"
 
 #include <cstdlib>
@@ -285,8 +285,8 @@ public:
 
         ByteBuffer& operator << (const WoWGuid& value)
         {
-            append<uint8_t>(value.GetNewGuidMask());
-            append(const_cast<uint8_t*>(value.GetNewGuid()), value.GetNewGuidLen());
+            append<uint8_t>(value.getNewGuidMask());
+            append(const_cast<uint8_t*>(value.getNewGuid()), value.getNewGuidLen());
             return *this;
         }
 
@@ -386,14 +386,14 @@ public:
             return *this;
         }
 
-        ByteBuffer& operator >> (WoWGuid& value)
+        ByteBuffer& operator >> (WoWGuid& _guid)
         {
             uint8_t mask = read<uint8_t>();
-            value.Init(static_cast<uint8_t>(mask));
+            _guid.init(static_cast<uint8_t>(mask));
             for (int i = 0; i < BitCount8(mask); i++)
             {
                 uint8_t field = read<uint8_t>();
-                value.AppendField(field);
+                _guid.appendField(field);
             }
             return *this;
         }

@@ -43,7 +43,7 @@ namespace AscEmu::Packets
         {
             uint64_t unpacked_guid;
             packet >> unpacked_guid >> category >> asGroup >> ratedMatch;
-            guid.Init(unpacked_guid);
+            guid.init(unpacked_guid);
             return true;
         }
     };

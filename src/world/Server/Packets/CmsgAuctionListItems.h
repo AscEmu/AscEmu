@@ -59,7 +59,7 @@ namespace AscEmu::Packets
         {
             uint64_t unpacked_guid;
             packet >> unpacked_guid;
-            guid.Init(unpacked_guid);
+            guid.init(unpacked_guid);
 
             packet >> listFrom;
             packet >> searchedName;

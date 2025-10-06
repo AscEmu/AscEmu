@@ -49,7 +49,7 @@ namespace AscEmu::Packets
         {
             uint64_t unpackedGuid;
             packet >> unpackedGuid >> gossip_id >> option;
-            guid.Init(unpackedGuid);
+            guid.init(unpackedGuid);
 
             if (packet.rpos() != packet.wpos())
                 packet >> input;

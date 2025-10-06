@@ -56,7 +56,7 @@ void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvPacket)
 #endif
 
     if (srlPacket.guid.getRawGuid() == 0)
-        m_MoverWoWGuid.Init(_player->getGuid());
+        m_MoverWoWGuid.init(_player->getGuid());
     else
         m_MoverWoWGuid = srlPacket.guid;
 #endif
@@ -134,7 +134,7 @@ bool WorldSession::isHackDetectedInMovementData(uint16_t opcode)
 
     // Speed
     // implement worldConfig.antiHack.isSpeedHackCkeckEnabled
-    if (_player->isOnTaxi() && _player->obj_movement_info.transport_guid == 0 && !_player->getSession()->hasPermissions())
+    if (_player->isOnTaxi() && _player->obj_movement_info.transport_guid.isEmpty() && !_player->getSession()->hasPermissions())
     {
         // simplified: just take the fastest speed. less chance of fuckups too
         // get the "normal speeds" not the changed ones!
@@ -661,5 +661,5 @@ void WorldSession::handleMoveNotActiveMoverOpcode(WorldPacket& recvPacket)
     if (guid != uint64_t(0) && guid == _player->getCharmGuid())
         m_MoverWoWGuid = guid;
     else
-        m_MoverWoWGuid.Init(_player->getGuid());
+        m_MoverWoWGuid.init(_player->getGuid());
 }

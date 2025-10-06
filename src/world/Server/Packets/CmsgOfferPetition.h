@@ -40,7 +40,7 @@ namespace AscEmu::Packets
             uint64_t unpackedGuid;
             packet.read_skip<uint32_t>();
             packet >> itemGuid >> unpackedGuid;
-            playerGuid.Init(unpackedGuid);
+            playerGuid.init(unpackedGuid);
             return true;
         }
     };

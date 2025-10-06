@@ -72,7 +72,7 @@ bool ChatCommandHandler::HandleBGMenuCommand(const char* args, WorldSession* m_s
     sBattlegroundManager.handleBattlegroundListPacket(selected_player->getSession(), type);
 #else
     WoWGuid guid;
-    guid.Init(uint64_t(0));
+    guid.init(uint64_t(0));
     sBattlegroundManager.handleBattlegroundListPacket(guid, selected_player->getSession(), type);
 #endif
 

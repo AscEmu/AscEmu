@@ -1635,7 +1635,7 @@ bool SymbolOfLife(uint8_t /*effectIndex*/, Spell* pSpell) // Alliance ress. ques
         return true;
 
     WoWGuid wowGuid;
-    wowGuid.Init(plr->getTargetGuid());
+    wowGuid.init(plr->getTargetGuid());
 
     Creature* target = plr->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
 
@@ -1697,7 +1697,7 @@ bool FilledShimmeringVessel(uint8_t /*effectIndex*/, Spell* pSpell) // Blood Elf
     Player* plr = pSpell->getPlayerCaster();
 
     WoWGuid wowGuid;
-    wowGuid.Init(plr->getTargetGuid());
+    wowGuid.init(plr->getTargetGuid());
 
     Creature* target = plr->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
     if (target == nullptr)
@@ -2125,7 +2125,7 @@ bool TheSeersRelic(uint8_t /*effectIndex*/, Spell* pSpell)
         return true;
 
     WoWGuid wowGuid;
-    wowGuid.Init(pPlayer->getTargetGuid());
+    wowGuid.init(pPlayer->getTargetGuid());
 
     Creature* pTarget = pPlayer->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
     if (pTarget == nullptr)
@@ -2763,7 +2763,7 @@ bool ForceofNeltharakuSpell(uint8_t /*effectIndex*/, Spell* pSpell) // Becoming 
     Player* pPlayer = pSpell->getPlayerCaster();
 
     WoWGuid wowGuid;
-    wowGuid.Init(pPlayer->getTargetGuid());
+    wowGuid.init(pPlayer->getTargetGuid());
     Creature* pTarget = pPlayer->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
 
     if (pTarget == nullptr)
@@ -2806,7 +2806,7 @@ bool ShatariTorch(uint8_t /*effectIndex*/, Spell* pSpell)
 
     Player* plr = pSpell->getPlayerCaster();
     WoWGuid wowGuid;
-    wowGuid.Init(plr->getTargetGuid());
+    wowGuid.init(plr->getTargetGuid());
     Creature* target = plr->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
 
     if (target == nullptr)
@@ -2864,7 +2864,7 @@ bool SpragglesCanteen(uint8_t /*effectIndex*/, Spell* pSpell)
 
     Player* plr = pSpell->getPlayerCaster();
     WoWGuid wowGuid;
-    wowGuid.Init(plr->getTargetGuid());
+    wowGuid.init(plr->getTargetGuid());
 
     Creature* target = plr->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
     if (target == nullptr)

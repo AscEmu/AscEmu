@@ -47,7 +47,7 @@ namespace AscEmu::Packets
         {
             uint64_t unpackedGuid;
             packet >> unpackedGuid >> itemId >> vendorSlot >> bagGuid >> slot >> amount;
-            srcGuid.Init(unpackedGuid);
+            srcGuid.init(unpackedGuid);
             return true;
         }
     };

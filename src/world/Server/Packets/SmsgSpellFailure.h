@@ -37,7 +37,7 @@ namespace AscEmu::Packets
         {
 #if VERSION_STRING == Mop
 
-            ObjectGuid guid = casterGuid.getRawGuid();
+            WoWGuid guid = casterGuid.getRawGuid();
             packet.writeBit(guid[7]);
             packet.writeBit(guid[3]);
             packet.writeBit(guid[6]);

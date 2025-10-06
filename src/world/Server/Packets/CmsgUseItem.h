@@ -54,22 +54,22 @@ namespace AscEmu::Packets
 #elif VERSION_STRING == TBC
             packet >> containerIndex >> inventorySlot >> spellIndex >> castCount >> itemGuidRaw;
             //packet >> SpellCastTargets; <- in handleUseItemOpcode;
-            itemGuid.Init(itemGuidRaw);
+            itemGuid.init(itemGuidRaw);
 #elif VERSION_STRING == WotLK
             packet >> containerIndex >> inventorySlot >> castCount >> spellId >> itemGuidRaw >> glyphIndex >> castFlags;
             //packet >> SpellCastTargets; <- in handleUseItemOpcode;
             //packet >> projectilePitch >> projectileSpeed >> hasMovementData; <- in handleUseItemOpcode;
-            itemGuid.Init(itemGuidRaw);
+            itemGuid.init(itemGuidRaw);
 #elif VERSION_STRING == Cata
             packet >> containerIndex >> inventorySlot >> castCount >> spellId >> itemGuidRaw >> glyphIndex >> castFlags;
             //packet >> SpellCastTargets; <- in handleUseItemOpcode;
             //packet >> projectilePitch >> projectileSpeed >> hasMovementData; <- in handleUseItemOpcode;
-            itemGuid.Init(itemGuidRaw);
+            itemGuid.init(itemGuidRaw);
 #elif VERSION_STRING == Mop
             packet >> containerIndex >> inventorySlot >> castCount >> spellId >> itemGuidRaw >> glyphIndex >> castFlags;
             //packet >> SpellCastTargets; <- in handleUseItemOpcode;
             //packet >> projectilePitch >> projectileSpeed >> hasMovementData; <- in handleUseItemOpcode;
-            itemGuid.Init(itemGuidRaw);
+            itemGuid.init(itemGuidRaw);
 #endif
             return true;
         }

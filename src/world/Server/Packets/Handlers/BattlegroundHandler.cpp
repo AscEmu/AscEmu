@@ -149,7 +149,7 @@ void WorldSession::handleBattlefieldListOpcode(WorldPacket& recvPacket)
     sBattlegroundManager.handleBattlegroundListPacket(this, srlPacket.bgType, srlPacket.fromType);
  #else
     WoWGuid guid;
-    guid.Init(uint64_t(0));
+    guid.init(uint64_t(0));
     sBattlegroundManager.handleBattlegroundListPacket(guid, this, srlPacket.bgType);
 #endif
 }
@@ -288,7 +288,7 @@ void WorldSession::sendBattlegroundList(Creature* creature, uint32_t mapId)
             if (const auto battleMaster = sMySQLStore.getBattleMaster(creature->GetCreatureProperties()->Id))
             {
                 battlegroundType = battleMaster->battlegroundId;
-                guid.Init(creature->getGuid());
+                guid.init(creature->getGuid());
             }
         }
     }

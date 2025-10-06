@@ -35,7 +35,7 @@ namespace AscEmu::Packets
 #else
 
             WoWGuid wowGuid;
-            wowGuid.Init(guid);
+            wowGuid.init(guid);
             packet.writeBit(wowGuid[2]);
             packet.writeBit(wowGuid[4]);
             packet.writeBit(wowGuid[3]);

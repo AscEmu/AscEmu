@@ -643,7 +643,7 @@ int LuaGlobalFunctions::GetInstanceCreature(lua_State* L)
     if (guid)
     {
         WoWGuid wowGuid;
-        wowGuid.Init(guid);
+        wowGuid.init(guid);
         pCreature = pInstance->getCreature(wowGuid.getGuidLowPart());
     }
     else

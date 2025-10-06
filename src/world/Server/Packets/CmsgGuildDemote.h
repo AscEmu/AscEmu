@@ -26,13 +26,13 @@ namespace AscEmu::Packets
         {
         }
 #else
-        ObjectGuid guid;
+        WoWGuid guid;
 
         CmsgGuildDemote() : CmsgGuildDemote(0)
         {
         }
 
-        CmsgGuildDemote(ObjectGuid guid) :
+        CmsgGuildDemote(WoWGuid guid) :
             ManagedPacket(CMSG_GUILD_DEMOTE, 8),
             guid(guid)
         {

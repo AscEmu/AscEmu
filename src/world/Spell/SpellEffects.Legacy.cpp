@@ -2453,7 +2453,7 @@ void Spell::SpellEffectResurrect(uint8_t effectIndex) // Resurrect (Flat)
         }
 
         WoWGuid wowGuid;
-        wowGuid.Init(m_corpseTarget->getOwnerGuid());
+        wowGuid.init(m_corpseTarget->getOwnerGuid());
 
         m_playerTarget = sObjectMgr.getPlayer(wowGuid.getGuidLowPart());
         if (!m_playerTarget) return;
@@ -5394,7 +5394,7 @@ void Spell::SpellEffectResurrectNew(uint8_t effectIndex)
         }
 
         WoWGuid wowGuid;
-        wowGuid.Init(m_corpseTarget->getOwnerGuid());
+        wowGuid.init(m_corpseTarget->getOwnerGuid());
 
         m_playerTarget = sObjectMgr.getPlayer(wowGuid.getGuidLowPart());
         if (!m_playerTarget) return;
@@ -5483,7 +5483,7 @@ void Spell::SpellEffectSkinPlayerCorpse(uint8_t /*effectIndex*/)
     {
         // find the corpses' owner
         WoWGuid wowGuid;
-        wowGuid.Init(corpse->getOwnerGuid());
+        wowGuid.init(corpse->getOwnerGuid());
 
         Player* owner = sObjectMgr.getPlayer(wowGuid.getGuidLowPart());
         if (owner)

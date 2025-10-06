@@ -40,9 +40,9 @@ namespace AscEmu::Packets
 #if VERSION_STRING < Cata
             uint64_t unpacked_guid;
             packet >> unpacked_guid >> unk1;
-            guid.Init(unpacked_guid);
+            guid.init(unpacked_guid);
 #else
-            ObjectGuid playerGuid;
+            WoWGuid playerGuid;
 
             packet >> unk1;
 
@@ -64,7 +64,7 @@ namespace AscEmu::Packets
             packet.ReadByteSeq(playerGuid[7]);
             packet.ReadByteSeq(playerGuid[2]);
 
-            guid.Init(playerGuid);
+            guid.init(playerGuid);
 #endif
             return true;
         }

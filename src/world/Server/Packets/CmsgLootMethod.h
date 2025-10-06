@@ -41,7 +41,7 @@ namespace AscEmu::Packets
         {
             uint64_t unpackedGuid;
             packet >> method >> unpackedGuid >> threshold;
-            guid.Init(unpackedGuid);
+            guid.init(unpackedGuid);
             return true;
         }
     };

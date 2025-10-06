@@ -52,7 +52,7 @@ namespace AscEmu::Packets
         {
             uint64_t unpacked_guid;
             packet >> spam_type >> unpacked_guid;
-            spammer_guid.Init(unpacked_guid);
+            spammer_guid.init(unpacked_guid);
 
             if (spam_type == 0)
                 packet >> unk1 >> unk2 >> unk3;

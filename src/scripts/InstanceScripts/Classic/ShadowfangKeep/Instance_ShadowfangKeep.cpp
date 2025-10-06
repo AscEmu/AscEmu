@@ -324,7 +324,7 @@ public:
     void OnCreaturePushToWorld(Creature* pCreature) override
     {
         WoWGuid wowGuid;
-        wowGuid.Init(pCreature->getGuid());
+        wowGuid.init(pCreature->getGuid());
 
         switch (pCreature->getEntry())
         {

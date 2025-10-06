@@ -30,7 +30,7 @@ void WorldSession::handleVoidStorageUnlock(WorldPacket& recvData)
 
     Player* player = GetPlayer();
 
-    ObjectGuid npcGuid;
+    WoWGuid npcGuid;
     npcGuid[4] = recvData.readBit();
     npcGuid[5] = recvData.readBit();
     npcGuid[3] = recvData.readBit();
@@ -80,7 +80,7 @@ void WorldSession::handleVoidStorageQuery(WorldPacket& recvData)
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_VOID_STORAGE_QUERY");
     Player* player = GetPlayer();
 
-    ObjectGuid npcGuid;
+    WoWGuid npcGuid;
     npcGuid[4] = recvData.readBit();
     npcGuid[0] = recvData.readBit();
     npcGuid[5] = recvData.readBit();
@@ -136,8 +136,8 @@ void WorldSession::handleVoidStorageQuery(WorldPacket& recvData)
         if (!item)
             continue;
 
-        ObjectGuid itemId = item->itemId;
-        ObjectGuid creatorGuid = item->creatorGuid;
+        WoWGuid itemId = item->itemId;
+        WoWGuid creatorGuid = item->creatorGuid;
 
         data.writeBit(creatorGuid[3]);
         data.writeBit(itemId[5]);
@@ -200,7 +200,7 @@ void WorldSession::handleVoidStorageTransfer(WorldPacket& recvData)
 
     // Read everything
 
-    ObjectGuid npcGuid;
+    WoWGuid npcGuid;
     npcGuid[1] = recvData.readBit();
 
     uint32_t countDeposit = recvData.readBits(26);
@@ -211,7 +211,7 @@ void WorldSession::handleVoidStorageTransfer(WorldPacket& recvData)
         return;
     }
 
-    std::vector<ObjectGuid> itemGuids(countDeposit);
+    std::vector<WoWGuid> itemGuids(countDeposit);
     for (uint32_t i = 0; i < countDeposit; ++i)
     {
         itemGuids[i][4] = recvData.readBit();
@@ -239,7 +239,7 @@ void WorldSession::handleVoidStorageTransfer(WorldPacket& recvData)
         return;
     }
 
-    std::vector<ObjectGuid> itemIds(countWithdraw);
+    std::vector<WoWGuid> itemIds(countWithdraw);
     for (uint32_t i = 0; i < countWithdraw; ++i)
     {
         itemIds[i][4] = recvData.readBit();
@@ -336,7 +336,7 @@ void WorldSession::handleVoidStorageTransfer(WorldPacket& recvData)
 
     std::pair<VoidStorageItem, uint8_t> depositItems[VOID_STORAGE_MAX_DEPOSIT];
     uint8_t depositCount = 0;
-    for (std::vector<ObjectGuid>::iterator itr = itemGuids.begin(); itr != itemGuids.end(); ++itr)
+    for (std::vector<WoWGuid>::iterator itr = itemGuids.begin(); itr != itemGuids.end(); ++itr)
     {
         Item* item = player->getItemInterface()->GetItemByGUID(*itr);
         if (!item)
@@ -361,7 +361,7 @@ void WorldSession::handleVoidStorageTransfer(WorldPacket& recvData)
 
     VoidStorageItem withdrawItems[VOID_STORAGE_MAX_WITHDRAW];
     uint8_t withdrawCount = 0;
-    for (std::vector<ObjectGuid>::iterator itr = itemIds.begin(); itr != itemIds.end(); ++itr)
+    for (std::vector<WoWGuid>::iterator itr = itemIds.begin(); itr != itemIds.end(); ++itr)
     {
         uint8_t slot;
         VoidStorageItem* itemVS = player->getVoidStorageItem(*itr, slot);
@@ -398,8 +398,8 @@ void WorldSession::handleVoidStorageTransfer(WorldPacket& recvData)
 
     for (uint8_t i = 0; i < depositCount; ++i)
     {
-        ObjectGuid itemId = depositItems[i].first.itemId;
-        ObjectGuid creatorGuid = depositItems[i].first.creatorGuid;
+        WoWGuid itemId = depositItems[i].first.itemId;
+        WoWGuid creatorGuid = depositItems[i].first.creatorGuid;
         data.writeBit(creatorGuid[7]);
         data.writeBit(itemId[7]);
         data.writeBit(itemId[4]);
@@ -420,7 +420,7 @@ void WorldSession::handleVoidStorageTransfer(WorldPacket& recvData)
 
     for (uint8_t i = 0; i < withdrawCount; ++i)
     {
-        ObjectGuid itemId = withdrawItems[i].itemId;
+        WoWGuid itemId = withdrawItems[i].itemId;
         data.writeBit(itemId[1]);
         data.writeBit(itemId[7]);
         data.writeBit(itemId[3]);
@@ -435,7 +435,7 @@ void WorldSession::handleVoidStorageTransfer(WorldPacket& recvData)
 
     for (uint8_t i = 0; i < withdrawCount; ++i)
     {
-        ObjectGuid itemId = withdrawItems[i].itemId;
+        WoWGuid itemId = withdrawItems[i].itemId;
         data.WriteByteSeq(itemId[3]);
         data.WriteByteSeq(itemId[1]);
         data.WriteByteSeq(itemId[0]);
@@ -448,8 +448,8 @@ void WorldSession::handleVoidStorageTransfer(WorldPacket& recvData)
 
     for (uint8_t i = 0; i < depositCount; ++i)
     {
-        ObjectGuid itemId = depositItems[i].first.itemId;
-        ObjectGuid creatorGuid = depositItems[i].first.creatorGuid;
+        WoWGuid itemId = depositItems[i].first.itemId;
+        WoWGuid creatorGuid = depositItems[i].first.creatorGuid;
 
         data << uint32_t(depositItems[i].first.itemSuffixFactor);
 
@@ -494,8 +494,8 @@ void WorldSession::handleVoidSwapItem(WorldPacket& recvData)
 
     Player* player = GetPlayer();
     uint32_t newSlot;
-    ObjectGuid npcGuid;
-    ObjectGuid itemId;
+    WoWGuid npcGuid;
+    WoWGuid itemId;
 
     recvData >> newSlot;
 
@@ -562,7 +562,7 @@ void WorldSession::handleVoidSwapItem(WorldPacket& recvData)
 
     bool usedSrcSlot = player->getVoidStorageItem(oldSlot) != nullptr; // should be always true
     bool usedDestSlot = player->getVoidStorageItem(newSlot) != nullptr;
-    ObjectGuid itemIdDest;
+    WoWGuid itemIdDest;
     if (usedDestSlot)
         itemIdDest = player->getVoidStorageItem(newSlot)->itemId;
 

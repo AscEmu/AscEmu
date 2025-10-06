@@ -46,7 +46,7 @@ namespace AscEmu::Packets
 #if VERSION_STRING <= TBC
             uint64_t rawGuid;
             packet >> rawGuid;
-            guid.Init(rawGuid);
+            guid.init(rawGuid);
 #endif
 
 #if VERSION_STRING == WotLK
@@ -56,7 +56,7 @@ namespace AscEmu::Packets
 #if VERSION_STRING >= Cata
             packet >> flags >> time;
 
-            ObjectGuid cataGuid;
+            WoWGuid cataGuid;
             cataGuid[5] = packet.readBit();
             cataGuid[0] = packet.readBit();
             cataGuid[1] = packet.readBit();
@@ -75,7 +75,7 @@ namespace AscEmu::Packets
             packet.ReadByteSeq(cataGuid[3]);
             packet.ReadByteSeq(cataGuid[0]);
 
-            guid.Init(cataGuid);
+            guid.init(cataGuid);
 #endif
             return true;
         }

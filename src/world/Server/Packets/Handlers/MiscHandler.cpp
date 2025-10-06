@@ -1149,7 +1149,7 @@ void WorldSession::handleCorpseReclaimOpcode(WorldPacket& recvPacket)
         return;
 
     WoWGuid wowGuid;
-    wowGuid.Init(corpse->getOwnerGuid());
+    wowGuid.init(corpse->getOwnerGuid());
 
     if (wowGuid.getGuidLowPart() != _player->getGuidLow() && corpse->getFlags() == 5)
     {
@@ -1206,7 +1206,7 @@ void WorldSession::handleTimeSyncRespOpcode(WorldPacket& recvPacket)
 void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
 {
 #if VERSION_STRING >= Cata
-    ObjectGuid guid;
+    WoWGuid guid;
 
 #if VERSION_STRING == Cata
     guid[6] = recvPacket.readBit();
@@ -1470,7 +1470,7 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
 
     uint32_t count = recvPacket.readBits(23);
 
-    auto guids = std::make_unique<ObjectGuid[]>(count);
+    auto guids = std::make_unique<WoWGuid[]>(count);
     for (uint32_t i = 0; i < count; ++i)
     {
         guids[i][0] = recvPacket.readBit();
@@ -1519,7 +1519,7 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
 
     uint32_t count = recvPacket.readBits(21);
 
-    auto guids = std::make_unique<ObjectGuid[]>(count);
+    auto guids = std::make_unique<WoWGuid[]>(count);
     for (uint32_t i = 0; i < count; ++i)
     {
         guids[i][6] = recvPacket.readBit();

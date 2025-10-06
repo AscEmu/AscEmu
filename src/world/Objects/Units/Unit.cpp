@@ -2693,7 +2693,7 @@ void Unit::setSpeedRate(UnitSpeedType type, float value, bool current)
     }
 
     WorldPacket data;
-    ObjectGuid guid = getGuid();
+    WoWGuid guid = getGuid();
 
     switch (type)
     {

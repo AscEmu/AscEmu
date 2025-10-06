@@ -723,8 +723,8 @@ bool ChatCommandHandler::HandleDebugDumpMovementCommand(const char* /*args*/, Wo
         auto me = session->GetPlayerOrThrow();
 
         systemMessage(session, "Position: [{}, {}, {}, {}]", me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
-        systemMessage(session, "On transport: {}", me->obj_movement_info.transport_guid != 0 ? "yes" : "no");
-        systemMessage(session, "Transport GUID: {}", uint64_t(me->obj_movement_info.transport_guid)); //important cast since versions >= Cata use ObjectGuid instead of uint64_t
+        systemMessage(session, "On transport: {}", !me->obj_movement_info.transport_guid.isEmpty() ? "yes" : "no");
+        systemMessage(session, "Transport GUID: {}", uint64_t(me->obj_movement_info.transport_guid));
         systemMessage(session, "Transport relative position: [{}, {}, {}, {}]", me->obj_movement_info.transport_position.x,
             me->obj_movement_info.transport_position.y, me->obj_movement_info.transport_position.z, me->obj_movement_info.transport_position.o);
 
@@ -766,7 +766,7 @@ bool ChatCommandHandler::HandleShowReactionCommand(const char* args, WorldSessio
     Object* obj = nullptr;
 
     WoWGuid wowGuid;
-    wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
+    wowGuid.init(m_session->GetPlayer()->getTargetGuid());
 
     if (wowGuid.getRawGuid() != 0)
     {
@@ -823,7 +823,7 @@ bool ChatCommandHandler::HandleAIMoveCommand(const char* args, WorldSession* m_s
     Creature* creature = nullptr;
     auto player = m_session->GetPlayer();
     WoWGuid wowGuid;
-    wowGuid.Init(player->getTargetGuid());
+    wowGuid.init(player->getTargetGuid());
     if (wowGuid.getRawGuid() != 0)
     {
         creature = player->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
@@ -944,7 +944,7 @@ bool ChatCommandHandler::HandleFaceCommand(const char* args, WorldSession* m_ses
     Object* obj = nullptr;
 
     WoWGuid wowGuid;
-    wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
+    wowGuid.init(m_session->GetPlayer()->getTargetGuid());
 
     if (wowGuid.getRawGuid() != 0)
     {
@@ -1079,7 +1079,7 @@ bool ChatCommandHandler::HandleThreatListCommand(const char* /*args*/, WorldSess
     }
 
     WoWGuid wowGuid;
-    wowGuid.Init(m_session->GetPlayer()->getTargetGuid());
+    wowGuid.init(m_session->GetPlayer()->getTargetGuid());
 
     std::stringstream sstext;
     sstext << "threatlist of creature: " << wowGuid.getGuidLowPart() << " " << wowGuid.getGuidHighPart() << '\n';

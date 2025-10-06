@@ -460,7 +460,7 @@ void WorldSession::sendRefundInfo(uint64_t GUID)
         ItemProperties const* item_properties = item->getItemProperties();
         item->addFlags(ITEM_FLAG_REFUNDABLE);
 
-        ObjectGuid objectGuid = item->getGuid();
+        WoWGuid objectGuid = item->getGuid();
         WorldPacket data(SMSG_ITEMREFUNDINFO, 68);
         data.writeBit(objectGuid[3]);
         data.writeBit(objectGuid[5]);
@@ -524,7 +524,7 @@ void WorldSession::handleTransmogrifyItems(WorldPacket& recvData)
         return;
     }
 
-    std::vector<ObjectGuid> itemGuids(count, ObjectGuid(0));
+    std::vector<WoWGuid> itemGuids(count, 0);
     std::vector<uint32_t> newEntries(count, 0);
     std::vector<uint32_t> slots(count, 0);
 
@@ -540,7 +540,7 @@ void WorldSession::handleTransmogrifyItems(WorldPacket& recvData)
         itemGuids[i][1] = recvData.readBit();
     }
 
-    ObjectGuid npcGuid;
+    WoWGuid npcGuid;
     npcGuid[7] = recvData.readBit();
     npcGuid[3] = recvData.readBit();
     npcGuid[5] = recvData.readBit();
@@ -671,7 +671,7 @@ void WorldSession::handleReforgeItemOpcode(WorldPacket& recvData)
 {
 #if VERSION_STRING == Cata
     uint32_t slot, reforgeEntry;
-    ObjectGuid guid;
+    WoWGuid guid;
     uint32_t bag;
     Player* player = GetPlayer();
 
@@ -2283,7 +2283,7 @@ void WorldSession::handleListInventoryOpcode(WorldPacket& recvPacket)
         return;
 
     WoWGuid wowGuid;
-    wowGuid.Init(srlPacket.guid);
+    wowGuid.init(srlPacket.guid);
 
     Creature* unit = _player->getWorldMap()->getCreature(wowGuid.getGuidLowPart());
     if (unit == nullptr)
@@ -2414,7 +2414,7 @@ void WorldSession::sendInventoryList(Creature* unit)
 #if VERSION_STRING < Cata
     data.contents()[8] = static_cast<uint8_t>(counter);
 #else
-    ObjectGuid guid = unit->getGuid();
+    WoWGuid guid = unit->getGuid();
 
     data.SetOpcode(SMSG_LIST_INVENTORY);
     data.writeBit(guid[1]);
@@ -3058,7 +3058,7 @@ void WorldSession::handleEquipmentSetUse(WorldPacket& data)
 
     for (int8_t i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
     {
-        guid.Clear();
+        guid.clear();
 
         data >> guid;
         data >> SrcBagID;
@@ -3143,7 +3143,7 @@ void WorldSession::handleEquipmentSetSave(WorldPacket& data)
 
     for (uint32_t i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
     {
-        guid.Clear();
+        guid.clear();
         data >> guid;
         equipmentSet->ItemGUID[i] = guid.getGuidLowPart();
     }
