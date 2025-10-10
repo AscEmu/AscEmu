@@ -30,7 +30,7 @@ namespace AscEmu::Packets
         {
             packet << mapSize;
             for (const auto& reactions : reactionMap)
-                packet << reactions.first << reactions.second;
+                packet << reactions.first << static_cast<uint32_t>(reactions.second);
 
             return true;
         }

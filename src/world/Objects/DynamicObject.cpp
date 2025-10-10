@@ -95,8 +95,8 @@ void DynamicObject::create(Unit* caster, Spell* spell, LocationVector lv, uint32
 
     m_aliveDuration = duration;
     m_unitCaster = caster;
-    m_factionTemplate = caster->m_factionTemplate;
-    m_factionEntry = caster->m_factionEntry;
+    m_factionTemplate = caster->getServersideFactionTemplate();
+    m_factionEntry = caster->getServersideFactionEntry();
     m_phase = caster->GetPhase();
 
     if (spell->g_caster)
@@ -129,7 +129,7 @@ void DynamicObject::updateTargets()
 
             Unit* target = static_cast<Unit*>(object);
 
-            if (!m_unitCaster->isValidTarget(target, m_spellInfo))
+            if (!m_unitCaster->isValidAttackableTarget(target, m_spellInfo))
                 continue;
 
             // skip units already hit, their range will be tested later

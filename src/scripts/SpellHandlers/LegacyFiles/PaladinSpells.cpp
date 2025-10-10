@@ -46,7 +46,7 @@ bool HolyShock(uint8_t /*effectIndex*/, Spell* pSpell)
 
     uint32_t spell_id = 0;
 
-    if (caster->isValidTarget(target))
+    if (caster->isValidAttackableTarget(target))
     {
         // Cast offensive Holy Shock
         switch (pSpell->getSpellInfo()->getId())

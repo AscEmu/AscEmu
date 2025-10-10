@@ -1295,7 +1295,7 @@ public:
 
     bool isInGroup() const;
 
-    Group* getGroup();
+    Group* getGroup() const;
     bool isGroupLeader() const;
 
     int8_t getSubGroupSlot() const;
@@ -1653,20 +1653,18 @@ private:
     // Reputation/faction
 public:
     void setFactionStanding(uint32_t faction, int32_t value);
-    int32_t getFactionStanding(uint32_t faction);
-    int32_t getBaseFactionStanding(uint32_t faction);
+    std::optional<int32_t> getFactionStanding(uint32_t faction) const;
+    std::optional<int32_t> getBaseFactionStanding(uint32_t faction) const;
     void modFactionStanding(uint32_t faction, int32_t value);
     
-    Standing getFactionStandingRank(uint32_t faction);
-    static Standing getReputationRankFromStanding(int32_t value);
+    Standing getFactionStandingRank(uint32_t faction) const;
 
     void applyForcedReaction(uint32_t faction_id, Standing rank, bool apply);
-    Standing const* getForcedReputationRank(WDB::Structures::FactionTemplateEntry const* factionTemplateEntry) const;
+    std::optional<Standing> getForcedReputationRank(WDB::Structures::FactionTemplateEntry const* factionTemplateEntry) const;
 
     void setFactionAtWar(uint32_t faction, bool set);
-    bool isFactionAtWar(WDB::Structures::FactionEntry const* factionEntry) const;
 
-    bool isHostileBasedOnReputation(WDB::Structures::FactionEntry const* factionEntry);
+    bool isHostileBasedOnReputation(WDB::Structures::FactionEntry const* factionEntry, bool skipForcedReactions = false) const;
     void updateInrangeSetsBasedOnReputation();
 
     void onKillUnitReputation(Unit* unit, bool innerLoop);
@@ -1675,7 +1673,7 @@ public:
     void setFactionInactive(uint32_t faction, bool set);
     bool addNewFaction(WDB::Structures::FactionEntry const* factionEntry, int32_t standing, bool base);
     void onModStanding(WDB::Structures::FactionEntry const* factionEntry, FactionReputation* reputation);
-    uint32_t getExaltedCount();
+    uint32_t getExaltedCount() const;
 
     void sendSmsgInitialFactions();
     void initialiseReputation();
@@ -1689,7 +1687,7 @@ public:
 private:
     ReputationMap m_reputation;
     int32_t m_pctReputationMod = 0;
-    FactionReputation* m_reputationByListId[128] = { nullptr };
+    std::array<FactionReputation*, PLAYER_REPUTATION_COUNT> m_reputationByListId = { nullptr };
 
     uint32_t m_championingFactionId = 0;
 

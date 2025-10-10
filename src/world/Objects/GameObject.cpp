@@ -915,7 +915,7 @@ void GameObject::Update(unsigned long time_passed)
                         {
                             if (radius > itr->getDistance(this->GetPosition()))
                             {
-                                if (itr->isCreatureOrPlayer() && this->isValidTarget(itr))
+                                if (itr->isCreatureOrPlayer() && this->isValidAttackableTarget(itr))
                                     target = itr->ToUnit();
                             }
                         }

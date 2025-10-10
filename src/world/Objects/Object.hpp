@@ -56,10 +56,10 @@ class Aura;
 class UpdateMask;
 class EventableObject;
 enum ZLiquidStatus : uint32_t;
-enum Standing : uint8_t;
+enum class Standing : uint8_t;
 
-#define MAX_INTERACTION_RANGE 5.0f
-float const DEFAULT_COLLISION_HEIGHT = 2.03128f; // Most common value in dbc
+static inline constexpr float MAX_INTERACTION_RANGE = 5.0f;
+static inline constexpr float DEFAULT_COLLISION_HEIGHT = 2.03128f; // Most common value in dbc
 
 enum CurrentSpellType : uint8_t
 {
@@ -303,6 +303,29 @@ public:
     void removeObjectFromInRangeSameFactionSet(Object* obj);
 
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Object faction
+protected:
+    WDB::Structures::FactionTemplateEntry const* m_factionTemplate = nullptr;
+    WDB::Structures::FactionEntry const* m_factionEntry = nullptr;
+
+public:
+    void setServersideFaction();
+    uint32_t getServersideFaction() const;
+
+    WDB::Structures::FactionTemplateEntry const* getServersideFactionTemplate() const;
+    WDB::Structures::FactionEntry const* getServersideFactionEntry() const;
+
+    Standing getFactionStandingWith(Object const* target) const;
+
+    bool isHostileTo(Object const* target) const;
+    bool isFriendlyTo(Object const* target) const;
+    bool isNeutralTo(Object const* target) const;
+    bool isNeutralToAll() const;
+
+    bool isValidAttackableTarget(Object const* target, SpellInfo const* bySpell = nullptr) const;
+    bool isValidAssistableTarget(Object const* target, SpellInfo const* bySpell = nullptr) const;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
     // Owner
 
     // Returns unit charmer or unit owner
@@ -433,15 +456,15 @@ public:
         float getDistanceZ(Object const* obj) const;
 
         // Distance Calculation
-        float CalcDistance(Object* Ob);
-        float CalcDistance(float ObX, float ObY, float ObZ);
-        float CalcDistance(Object* Oa, Object* Ob);
-        float CalcDistance(Object* Oa, float ObX, float ObY, float ObZ);
-        float CalcDistance(float OaX, float OaY, float OaZ, float ObX, float ObY, float ObZ);
+        float CalcDistance(Object const* Ob) const;
+        float CalcDistance(float ObX, float ObY, float ObZ) const;
+        float CalcDistance(Object const* Oa, Object const* Ob) const;
+        float CalcDistance(Object const* Oa, float ObX, float ObY, float ObZ) const;
+        float CalcDistance(float OaX, float OaY, float OaZ, float ObX, float ObY, float ObZ) const;
         // NYS: scriptdev2
-        bool IsInMap(Object* obj) { return GetMapId() == obj->GetMapId() && GetInstanceID() == obj->GetInstanceID(); }
+        bool IsInMap(Object const* obj) const { return GetMapId() == obj->GetMapId() && GetInstanceID() == obj->GetInstanceID(); }
         bool IsWithinDistInMap(Object* obj, const float dist2compare) const;
-        bool IsWithinLOSInMap(Object* obj);
+        bool IsWithinLOSInMap(Object const* obj) const;
         bool IsWithinLOS(LocationVector location);
 
         // Only for WorldMap use
@@ -496,7 +519,7 @@ public:
         bool isInRange(Object* target, float range);
 
         // Use this to Check if a object is in front of another object.
-        bool isInFront(Object* target);
+        bool isInFront(Object const* target) const;
         // Use this to Check if a object is in back of another object.
         bool isInBack(Object* target);
         // Check to see if an object is in front of a target in a specified arc (in degrees)
@@ -639,29 +662,8 @@ public:
         // SpellLog packets just to keep the code cleaner and better to read
         void SendSpellLog(Object* Caster, Object* Target, uint32_t Ability, uint8_t SpellLogType);
 
-        // object faction
-        void setServersideFaction();
-        uint32_t getServersideFaction();
-
-        WDB::Structures::FactionTemplateEntry const* m_factionTemplate = nullptr;
-        WDB::Structures::FactionEntry const* m_factionEntry = nullptr;
-
-        Standing getEnemyReaction(Object* target);
-        Standing getFactionReaction(WDB::Structures::FactionTemplateEntry const* factionTemplateEntry, Object* target);
-
-        bool isHostileTo(Object* target);
-        bool IsHostileToPlayers();
-
-        bool isFriendlyTo(Object* target);
-
-        bool isNeutralTo(Object* target) const;
-        bool isNeutralToAll() const;
-
-        bool isValidTarget(Object* target, SpellInfo const* bySpell = nullptr);       // used for findTarget
-        bool isValidAssistTarget(Unit* target, SpellInfo const* bySpell = nullptr); // used for Escorts
-
         void SetInstanceID(int32_t instance) { m_instanceId = instance; }
-        int32_t GetInstanceID() { return m_instanceId; }
+        int32_t GetInstanceID() const { return m_instanceId; }
 
         int32_t event_GetInstanceID();
 
@@ -691,8 +693,6 @@ public:
         bool IsInBg();
         // What's their faction? Horde/Ally.
         uint32_t GetTeam() const;
-        // Objects directly cannot be in a group.
-        //virtual Group* getGroup() { return NULL; }
 
     protected:
         //void _Create (uint32_t guidlow, uint32_t guidhigh);

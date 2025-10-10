@@ -904,7 +904,7 @@ void AchievementMgr::updateAchievementCriteria(AchievementCriteriaTypes _type)
                 setCriteriaProgress(achievementCriteria, (int32_t)getPlayer()->getFinishedQuests().size());
                 break;
             case ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION:
-                setCriteriaProgress(achievementCriteria, getPlayer()->getFactionStanding(achievementCriteria->gain_reputation.factionID));
+                setCriteriaProgress(achievementCriteria, getPlayer()->getFactionStanding(achievementCriteria->gain_reputation.factionID).value_or(0));
                 break;
             case ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION:
                 setCriteriaProgress(achievementCriteria, getPlayer()->getExaltedCount());

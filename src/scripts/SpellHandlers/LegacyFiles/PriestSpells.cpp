@@ -69,7 +69,7 @@ bool Penance(uint8_t /*effectIndex*/, Spell* pSpell)
             break;
     }
 
-    if (player->isValidTarget(target))   // Do holy damage
+    if (player->isValidAttackableTarget(target))   // Do holy damage
     {
         // First tick is instant.
         player->castSpell(target, hostileSpell[0], true);

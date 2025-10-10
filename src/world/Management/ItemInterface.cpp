@@ -2296,7 +2296,7 @@ int8_t ItemInterface::CanEquipItemInSlot(int8_t DstInvSlot, int8_t slot, ItemPro
         // Check to see if we have the reqs for that reputation
         if (proto->RequiredFaction)
         {
-            Standing current_standing = Player::getReputationRankFromStanding(m_pOwner->getFactionStanding(proto->RequiredFaction));
+            Standing current_standing = getReputationRankFromStanding(m_pOwner->getFactionStanding(proto->RequiredFaction).value_or(0));
             if (current_standing < (Standing)proto->RequiredFactionStanding)       // Not enough rep rankage..
                 return INV_ERR_ITEM_REPUTATION_NOT_ENOUGH;
         }
@@ -2774,8 +2774,8 @@ void ItemInterface::BuyItem(ItemProperties const* item, uint32_t total_amount, C
 {
     if (item->BuyPrice)
     {
-        uint32_t factionStanding = m_pOwner->getFactionStandingRank(pVendor->m_factionTemplate->Faction);
-        uint32_t itemprice = item->getBuyPriceForItem(total_amount, factionStanding);
+        auto factionStanding = m_pOwner->getFactionStandingRank(pVendor->getServersideFaction());
+        uint32_t itemprice = item->getBuyPriceForItem(total_amount, static_cast<uint8_t>(factionStanding));
         if (!m_pOwner->hasEnoughCoinage(itemprice))
             m_pOwner->setCoinage(0);
         else
@@ -2837,8 +2837,8 @@ int8_t ItemInterface::CanAffordItem(ItemProperties const* item, uint32_t amount,
 
     if (item->BuyPrice)
     {
-        uint32_t factionStanding = m_pOwner->getFactionStandingRank(pVendor->m_factionTemplate->Faction);
-        uint32_t price = item->getBuyPriceForItem(amount, factionStanding) * amount;
+        auto factionStanding = m_pOwner->getFactionStandingRank(pVendor->getServersideFaction());
+        uint32_t price = item->getBuyPriceForItem(amount, static_cast<uint8_t>(factionStanding)) * amount;
         if (!m_pOwner->hasEnoughCoinage(price))
         {
             return INV_ERR_NOT_ENOUGH_MONEY;
@@ -2851,7 +2851,7 @@ int8_t ItemInterface::CanAffordItem(ItemProperties const* item, uint32_t amount,
         if (!factdbc || factdbc->RepListId < 0)
             return INV_ERR_OK;
 
-        if (m_pOwner->getReputationRankFromStanding(m_pOwner->getFactionStanding(item->RequiredFaction)) < (int32_t)item->RequiredFactionStanding)
+        if (getReputationRankFromStanding(m_pOwner->getFactionStanding(item->RequiredFaction).value_or(0)) < static_cast<Standing>(item->RequiredFactionStanding))
         {
             return INV_ERR_ITEM_REPUTATION_NOT_ENOUGH;
         }

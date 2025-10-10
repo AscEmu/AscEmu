@@ -321,7 +321,7 @@ public:
 
         void CallScriptUpdate(unsigned long time_passed);
 
-        CreatureProperties const* GetCreatureProperties();
+        CreatureProperties const* GetCreatureProperties() const;
         void SetCreatureProperties(CreatureProperties const* creature_properties);
 
         Trainer const* GetTrainer();

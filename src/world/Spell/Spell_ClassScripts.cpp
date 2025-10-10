@@ -355,7 +355,7 @@ public:
             {
                 Unit* target = m_caster->getWorldMap()->getUnit(m_targets.getUnitTargetGuid());
 
-                if (target == NULL || !(m_caster->isValidTarget(target) || target->getRace() == RACE_UNDEAD))
+                if (target == NULL || !(m_caster->isValidAttackableTarget(target) || target->getRace() == RACE_UNDEAD))
                     result = SPELL_FAILED_BAD_TARGETS;
             }
         }

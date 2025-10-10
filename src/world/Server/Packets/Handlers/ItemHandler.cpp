@@ -157,7 +157,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
             return;
     }
 
-    if (itemProto->RequiredFaction && uint32_t(_player->getFactionStanding(itemProto->RequiredFaction)) < itemProto->RequiredFactionStanding)
+    if (itemProto->RequiredFaction && getReputationRankFromStanding(_player->getFactionStanding(itemProto->RequiredFaction).value_or(0)) < static_cast<Standing>(itemProto->RequiredFactionStanding))
     {
         _player->getItemInterface()->buildInventoryChangeError(tmpItem, nullptr, INV_ERR_ITEM_REPUTATION_NOT_ENOUGH);
         return;
@@ -2303,7 +2303,7 @@ void WorldSession::handleListInventoryOpcode(WorldPacket& recvPacket)
     unit->pauseMovement(180000);
     unit->SetSpawnLocation(unit->GetPosition());
 
-    _player->onTalkReputation(unit->m_factionEntry);
+    _player->onTalkReputation(unit->getServersideFactionEntry());
 
     if (_player->canBuyAt(vendor))
         sendInventoryList(unit);
@@ -2363,8 +2363,8 @@ void WorldSession::sendInventoryList(Creature* unit)
                 uint32_t price = 0;
                 if (sellItem.extended_cost == nullptr || curItem->HasFlag2(ITEM_FLAG2_EXT_COST_REQUIRES_GOLD))
                 {
-                    uint32_t factionStanding = _player->getFactionStandingRank(unit->m_factionTemplate->Faction);
-                    price = curItem->getBuyPriceForItem(1, factionStanding);
+                    auto factionStanding = _player->getFactionStandingRank(unit->getServersideFaction());
+                    price = curItem->getBuyPriceForItem(1, static_cast<uint8_t>(factionStanding));
                 }
 
 #if VERSION_STRING < Cata

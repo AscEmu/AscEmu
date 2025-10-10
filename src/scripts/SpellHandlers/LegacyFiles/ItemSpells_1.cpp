@@ -161,7 +161,7 @@ bool HolidayCheer(uint8_t effectIndex, Spell* pSpell)
         else
             continue;
 
-        if (pSpell->getCaster()->CalcDistance(target) > dist || pSpell->getCaster()->isValidTarget(target))
+        if (pSpell->getCaster()->CalcDistance(target) > dist || pSpell->getCaster()->isValidAttackableTarget(target))
             continue;
 
         target->emote(EMOTE_ONESHOT_LAUGH);
@@ -699,7 +699,7 @@ bool ShrinkRay(uint8_t /*effectIndex*/, Spell* s)
                     if (u->getTargetGuid() != s->getPlayerCaster()->getGuid())
                         continue;
 
-                    if (!s->getPlayerCaster()->isValidTarget(u))
+                    if (!s->getPlayerCaster()->isValidAttackableTarget(u))
                         continue;
 
                     s->getPlayerCaster()->castSpell(u, spellids[spellindex], true);

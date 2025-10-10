@@ -5732,11 +5732,11 @@ SpellCastResult Spell::checkExplicitTarget(Object* target, uint32_t requiredTarg
     }
 
     // Check if spell can target friendly unit
-    if (requiredTargetMask & SPELL_TARGET_REQUIRE_FRIENDLY && !m_caster->isFriendlyTo(target))
+    if (requiredTargetMask & SPELL_TARGET_REQUIRE_FRIENDLY && !m_caster->isValidAssistableTarget(target, m_spellInfo))
         return SPELL_FAILED_BAD_TARGETS;
 
     // Check if spell can target attackable unit
-    if (requiredTargetMask & SPELL_TARGET_REQUIRE_ATTACKABLE && !(requiredTargetMask & SPELL_TARGET_AREA_SELF && m_caster == target) && !m_caster->isValidTarget(target, getSpellInfo()))
+    if (requiredTargetMask & SPELL_TARGET_REQUIRE_ATTACKABLE && !m_caster->isValidAttackableTarget(target, m_spellInfo))
         return SPELL_FAILED_BAD_TARGETS;
 
     // Check if spell can only target players

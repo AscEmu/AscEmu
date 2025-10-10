@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "AEVersion.hpp"
 #include "Macros/ItemMacros.hpp"
 #include "Macros/PlayerMacros.hpp"
 #include "Management/Skill.hpp"
@@ -253,27 +254,55 @@ enum RankTitles : uint16_t
     PVPTITLE_END                            = 143
 };
 
-/*
-Exalted             1,000     Access to racial mounts. Capped at 999.7
-Revered             21,000    Heroic mode keys for Outland dungeons
-Honored             12,000    10% discount from faction vendors
-Friendly            6,000
-Neutral             3,000
-Unfriendly          3,000     Cannot buy, sell or interact.
-Hostile             3,000     You will always be attacked on sight
-Hated               36,000
-*/
-enum Standing : uint8_t
+enum class Standing : uint8_t
 {
-    STANDING_HATED,
-    STANDING_HOSTILE,
-    STANDING_UNFRIENDLY,
-    STANDING_NEUTRAL,
-    STANDING_FRIENDLY,
-    STANDING_HONORED,
-    STANDING_REVERED,
-    STANDING_EXALTED
+    HATED,              // Hated         36,000
+    HOSTILE,            // Hostile       3,000     You will always be attacked on sight
+    UNFRIENDLY,         // Unfriendly    3,000     Cannot buy, sell or interact.
+    NEUTRAL,            // Neutral       3,000
+    FRIENDLY,           // Friendly      6,000
+    HONORED,            // Honored       12,000    10% discount from faction vendors
+    REVERED,            // Revered       21,000    Heroic mode keys for Outland dungeons
+    EXALTED             // Exalted       1,000     Access to racial mounts. Capped at 999.7
 };
+
+namespace StandingValues
+{
+    enum Values : int32_t
+    {
+        NEUTRAL         = 0,                    // 0/3000 Neutral
+
+        UNFRIENDLY      = NEUTRAL - 3000,       // 0/3000 Unfriendly
+        HOSTILE         = UNFRIENDLY - 3000,    // 0/3000 Hostile
+        HATED           = HOSTILE - 36000,      // 0/36000 Hated
+
+        FRIENDLY        = NEUTRAL + 3000,       // 0/6000 Friendly
+        HONORED         = FRIENDLY + 6000,      // 0/12000 Honored
+        REVERED         = HONORED + 12000,      // 0/21000 Revered
+        EXALTED         = REVERED + 21000,      // 0/1000 Exalted
+        MAX_EXALTED     = EXALTED + 999,        // 999/1000 Exalted
+    };
+}
+
+static inline constexpr Standing getReputationRankFromStanding(int32_t value)
+{
+    if (value >= StandingValues::EXALTED)
+        return Standing::EXALTED;
+    if (value >= StandingValues::REVERED)
+        return Standing::REVERED;
+    if (value >= StandingValues::HONORED)
+        return Standing::HONORED;
+    if (value >= StandingValues::FRIENDLY)
+        return Standing::FRIENDLY;
+    if (value >= StandingValues::NEUTRAL)
+        return Standing::NEUTRAL;
+    if (value > StandingValues::UNFRIENDLY)
+        return Standing::UNFRIENDLY;
+    if (value > StandingValues::HOSTILE)
+        return Standing::HOSTILE;
+
+    return Standing::HATED;
+}
 
 enum PlayerFlags : uint32_t
 {
@@ -1074,9 +1103,58 @@ struct FactionReputation
     int32_t standing;
     uint8_t flag;
     int32_t baseStanding;
-    int32_t CalcStanding() { return standing - baseStanding; }
-    bool Positive() { return standing >= 0; }
+
+    inline constexpr int32_t calcStanding() const { return standing - baseStanding; }
+    inline constexpr bool isPositive() const { return standing >= 0; }
+    inline constexpr bool canToggleAtWar() const { return !(flag & FACTION_FLAG_DISABLE_ATWAR); }
+    inline constexpr bool isAtWar() const { return flag & FACTION_FLAG_AT_WAR; }
+    inline constexpr bool isForcedInvisible() const { return flag & FACTION_FLAG_FORCED_INVISIBLE; }
+    inline constexpr bool isVisible() const { return flag & FACTION_FLAG_VISIBLE; }
+    inline constexpr bool isHidden() const { return flag & FACTION_FLAG_HIDDEN; }
+    inline constexpr bool isInactive() const { return flag & FACTION_FLAG_INACTIVE; }
+
+    inline constexpr bool setAtWar(bool set)
+    {
+        if (set && !isAtWar())
+            flag |= FACTION_FLAG_AT_WAR;
+        else if (!set && isAtWar())
+            flag &= ~FACTION_FLAG_AT_WAR;
+        else
+            return false;
+        return true;
+    }
+
+    inline constexpr bool setVisible(bool set)
+    {
+        if (isForcedInvisible() || isHidden())
+            return false;
+        if (set && !isVisible())
+            flag |= FACTION_FLAG_VISIBLE;
+        else if (!set && isVisible())
+            flag &= ~FACTION_FLAG_VISIBLE;
+        else
+            return false;
+        return true;
+    }
+
+    inline constexpr bool setInactive(bool set)
+    {
+        if (set && !isInactive())
+            flag |= FACTION_FLAG_INACTIVE;
+        else if (!set && isInactive())
+            flag &= ~FACTION_FLAG_INACTIVE;
+        else
+            return false;
+        return true;
+    }
 };
+
+// TODO: use posssibly more describe naming
+#if VERSION_STRING >= Mop
+static inline constexpr uint16_t PLAYER_REPUTATION_COUNT = 256;
+#else
+static inline constexpr uint8_t PLAYER_REPUTATION_COUNT = 128;
+#endif
 
 struct PetCache
 {

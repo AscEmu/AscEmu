@@ -44,6 +44,8 @@ public:
     // Resets life time and time left
     void setNewLifeTime(uint32_t time);
 
+    Group* getGroup() const;
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Override Object functions
     virtual void OnPushToWorld() override;

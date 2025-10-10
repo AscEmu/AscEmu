@@ -1909,8 +1909,8 @@ bool ChatCommandHandler::HandleCharListStandingCommand(const char* args, WorldSe
     if (player_target == nullptr)
         return true;
 
-    int32_t standing = player_target->getFactionStanding(faction);
-    int32_t bstanding = player_target->getBaseFactionStanding(faction);
+    int32_t standing = player_target->getFactionStanding(faction).value_or(0);
+    int32_t bstanding = player_target->getBaseFactionStanding(faction).value_or(0);
 
     systemMessage(m_session, "==== {} standing ====", player_target->getName());
     systemMessage(m_session, "Reputation for faction {}:", faction);

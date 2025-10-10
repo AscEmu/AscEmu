@@ -2319,7 +2319,7 @@ void Aura::SpellAuraModSchoolImmunity(AuraEffectModifier* aurEff, bool apply)
         Unit* c = GetUnitCaster();
         if (c)
         {
-            if (c->isValidTarget(m_target))
+            if (c->isValidAttackableTarget(m_target))
                 mPositive = false;
             else mPositive = true;
         }

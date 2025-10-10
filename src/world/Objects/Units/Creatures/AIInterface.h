@@ -346,7 +346,7 @@ public:
     void findFriends(float sqrtRange);
 
     bool canOwnerAttackUnit(Unit* pUnit) const;
-    bool canOwnerAssistUnit(Unit* pUnit) const;
+    bool canOwnerAssistUnit(Unit const* pUnit) const;
     bool isAlreadyAssisting(Unit const* helper) const;
 
     bool isEngaged() const;

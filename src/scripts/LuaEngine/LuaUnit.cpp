@@ -1136,7 +1136,7 @@ int LuaUnit::CanAttack(lua_State* L, Unit* ptr)
     if (!target)
         return 0;
 
-    if (ptr->isValidTarget(target))
+    if (ptr->isValidAttackableTarget(target))
         lua_pushboolean(L, 1);
     else
         lua_pushboolean(L, 0);
@@ -3591,28 +3591,28 @@ int LuaUnit::GetFactionStanding(lua_State* L, Unit* ptr)
     {
         switch (dynamic_cast<Player*>(ptr)->getFactionStandingRank(faction))
         {
-            case STANDING_HATED:
+            case Standing::HATED:
                 lua_pushstring(L, "Hated");
                 break;
-            case STANDING_HOSTILE:
+            case Standing::HOSTILE:
                 lua_pushstring(L, "Hostile");
                 break;
-            case STANDING_UNFRIENDLY:
+            case Standing::UNFRIENDLY:
                 lua_pushstring(L, "Unfriendly");
                 break;
-            case STANDING_NEUTRAL:
+            case Standing::NEUTRAL:
                 lua_pushstring(L, "Neutral");
                 break;
-            case STANDING_FRIENDLY:
+            case Standing::FRIENDLY:
                 lua_pushstring(L, "Friendly");
                 break;
-            case STANDING_HONORED:
+            case Standing::HONORED:
                 lua_pushstring(L, "Honored");
                 break;
-            case STANDING_REVERED:
+            case Standing::REVERED:
                 lua_pushstring(L, "Revered");
                 break;
-            case STANDING_EXALTED:
+            case Standing::EXALTED:
                 lua_pushstring(L, "Exalted");
                 break;
         }
@@ -3703,7 +3703,7 @@ int LuaUnit::GetStanding(lua_State* L, Unit* ptr)
 
     const uint32_t faction = static_cast<uint32_t>(luaL_checkinteger(L, 1));
     if (faction)
-        lua_pushinteger(L, dynamic_cast<Player*>(ptr)->getFactionStanding(faction));
+        lua_pushinteger(L, dynamic_cast<Player*>(ptr)->getFactionStanding(faction).value_or(0));
     return 1;
 }
 
@@ -6353,7 +6353,7 @@ int LuaUnit::IsHostile(lua_State* L, Unit* ptr)
 int LuaUnit::IsAttackable(lua_State* L, Unit* ptr)
 {
     Object* B = CHECK_OBJECT(L, 1);
-    lua_pushboolean(L, ptr->isValidTarget(B));
+    lua_pushboolean(L, ptr->isValidAttackableTarget(B));
     return 1;
 }
 
