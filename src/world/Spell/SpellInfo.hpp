@@ -143,7 +143,7 @@ public:
     bool isTalent() const;
     // Returns true if spell is found in Talent.dbc and is part of pet talent trees
     bool isPetTalent() const;
-    bool isAllowingDeadTarget() const;
+    bool isCastableOnDeadTarget() const;
     bool isDeathPersistent() const;
     bool isChanneled() const;
     bool isRangedAutoRepeat() const;

@@ -41,6 +41,7 @@ public:
     void read(WorldPacket& data, uint64_t caster);
     void write(WorldPacket& data) const;
 
+    bool isEmpty() const;
     bool hasSource() const;
     bool hasDestination() const;
     bool isTradeItem() const;

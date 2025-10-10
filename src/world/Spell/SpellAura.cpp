@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Spell/Spell.hpp"
 #include "Spell/SpellInfo.hpp"
+#include "Spell/SpellTarget.h"
 #include "SpellCastTargets.hpp"
 #include "Definitions/SpellCastTargetFlags.hpp"
 #include "Definitions/SpellIsFlags.hpp"
@@ -981,40 +982,56 @@ void Aura::periodicTick(AuraEffectModifier* aurEff)
 
             auto* const originalCaster = GetUnitCaster();
             Unit* casterUnit = nullptr;
-            auto* target = getOwner();
+
+            if (originalCaster == nullptr)
+            {
+                sLogger.failure("Aura::periodicTick : Unit caster not existing for periodic effect in aura id {}", getSpellId());
+                return;
+            }
 
             // Note; some spells might need a spell script here to set correct caster and target
 
             if (triggerInfo->isTriggerSpellCastedByCaster(getSpellInfo()))
                 casterUnit = originalCaster;
             else
-                casterUnit = target;
+                casterUnit = m_target;
+
+            SpellCastTargets spellTargets(0);
 
             // If spell is channeled, periodic target should be the channel object
-            if (originalCaster != nullptr && getSpellInfo()->isChanneled())
+            if (getSpellInfo()->isChanneled())
             {
-                target = originalCaster->getWorldMapUnit(originalCaster->getChannelObjectGuid());
-                if (target == nullptr)
-                    target = getOwner();
-            }
+                const auto* const channelTarget = originalCaster->getWorldMapObject(originalCaster->getChannelObjectGuid());
+                const auto targetMask = triggerInfo->getRequiredTargetMask(true);
+                if (targetMask & SPELL_TARGET_AREA_MASK && !(targetMask & SPELL_TARGET_AREA_SELF))
+                    spellTargets.setDestination(channelTarget != nullptr ? channelTarget->GetPosition() : m_target->GetPosition());
 
-            if (casterUnit != nullptr)
-            {
-                Spell* triggerSpell = sSpellMgr.newSpell(casterUnit, triggerInfo, true, this);
-#if VERSION_STRING >= TBC
-                if (aurEff->getAuraEffectType() == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE)
+                if (targetMask & SPELL_TARGET_AREA_SELF)
+                    spellTargets.setSource(originalCaster->GetPosition());
+
+                if (channelTarget != nullptr && channelTarget->isCreatureOrPlayer())
+                    spellTargets.setUnitTarget(channelTarget->getGuid());
+
+                if (spellTargets.isEmpty())
                 {
-                    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                        triggerSpell->forced_basepoints->set(i, customDamage);
+                    sLogger.failure("SpellAura::periodicTick : Periodic effect has no channel target or not handled in aura id {}", getSpellId());
+                    return;
                 }
-#endif
-
-                SpellCastTargets spellTargets(0);
-                spellTargets.addTargetMask(TARGET_FLAG_UNIT);
-                spellTargets.setUnitTarget(target->getGuid());
-
-                triggerSpell->prepare(&spellTargets);
             }
+            else
+            {
+                spellTargets.setUnitTarget(m_target->getGuid());
+            }
+
+            Spell* triggerSpell = sSpellMgr.newSpell(casterUnit, triggerInfo, true, this);
+#if VERSION_STRING >= TBC
+            if (aurEff->getAuraEffectType() == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE)
+            {
+                for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                    triggerSpell->forced_basepoints->set(i, customDamage);
+            }
+#endif
+            triggerSpell->prepare(&spellTargets);
         } break;
         case SPELL_AURA_PERIODIC_ENERGIZE:
         {

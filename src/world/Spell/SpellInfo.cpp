@@ -899,34 +899,6 @@ uint32_t SpellInfo::getRequiredTargetMaskForEffect(uint8_t effectIndex, bool get
     if (getEffectImplicitTargetB(effectIndex) != EFF_TARGET_NONE)
         targetMask |= getRequiredTargetMaskForEffectTarget(getEffectImplicitTargetB(effectIndex), effectIndex);
 
-    // Add spell cast target flags to mask
-    if (Targets != 0)
-    {
-        if (Targets & TARGET_FLAG_UNIT)
-            targetMask |= SPELL_TARGET_REQUIRE_ATTACKABLE;
-        if (Targets & TARGET_FLAG_ITEM)
-            targetMask |= SPELL_TARGET_REQUIRE_ITEM;
-        if (Targets & TARGET_FLAG_SOURCE_LOCATION)
-            targetMask |= SPELL_TARGET_AREA_SELF;
-        if (Targets & TARGET_FLAG_DEST_LOCATION)
-            targetMask |= SPELL_TARGET_AREA;
-        // TODO: confirm this
-        /*if (Targets & TARGET_FLAG_UNK8)
-            targetMask |= SPELL_TARGET_REQUIRE_ATTACKABLE;*/
-        if (Targets & TARGET_FLAG_UNIT_CASTER)
-            targetMask |= SPELL_TARGET_OBJECT_SELF;
-        if (Targets & TARGET_FLAG_CORPSE)
-            targetMask |= SPELL_TARGET_REQUIRE_ATTACKABLE;
-        if (Targets & TARGET_FLAG_UNIT_CORPSE)
-            targetMask |= SPELL_TARGET_REQUIRE_ATTACKABLE;
-        if (Targets & TARGET_FLAG_OBJECT)
-            targetMask |= SPELL_TARGET_REQUIRE_GAMEOBJECT;
-        if (Targets & TARGET_FLAG_OPEN_LOCK)
-            targetMask |= SPELL_TARGET_REQUIRE_GAMEOBJECT;
-        if (Targets & TARGET_FLAG_CORPSE2)
-            targetMask |= SPELL_TARGET_REQUIRE_FRIENDLY;
-    }
-
     // Remove explicit object target masks if spell has no max range
     if (getExplicitMask)
     {
@@ -956,6 +928,34 @@ uint32_t SpellInfo::getRequiredTargetMask(bool getExplicitMask) const
             continue;
 
         fullMask |= getRequiredTargetMaskForEffect(i, getExplicitMask);
+    }
+
+    // Add spell cast target flags to mask
+    if (Targets != 0)
+    {
+        if (Targets & TARGET_FLAG_UNIT)
+            fullMask |= SPELL_TARGET_REQUIRE_ATTACKABLE;
+        if (Targets & TARGET_FLAG_ITEM)
+            fullMask |= SPELL_TARGET_REQUIRE_ITEM;
+        if (Targets & TARGET_FLAG_SOURCE_LOCATION)
+            fullMask |= SPELL_TARGET_AREA_SELF;
+        if (Targets & TARGET_FLAG_DEST_LOCATION)
+            fullMask |= SPELL_TARGET_AREA;
+        // TODO: confirm this
+        /*if (Targets & TARGET_FLAG_UNK8)
+            fullMask |= SPELL_TARGET_REQUIRE_ATTACKABLE;*/
+        if (Targets & TARGET_FLAG_UNIT_CASTER)
+            fullMask |= SPELL_TARGET_OBJECT_SELF;
+        if (Targets & TARGET_FLAG_CORPSE)
+            fullMask |= SPELL_TARGET_REQUIRE_ATTACKABLE;
+        if (Targets & TARGET_FLAG_UNIT_CORPSE)
+            fullMask |= SPELL_TARGET_REQUIRE_ATTACKABLE;
+        if (Targets & TARGET_FLAG_OBJECT)
+            fullMask |= SPELL_TARGET_REQUIRE_GAMEOBJECT;
+        if (Targets & TARGET_FLAG_OPEN_LOCK)
+            fullMask |= SPELL_TARGET_REQUIRE_GAMEOBJECT;
+        if (Targets & TARGET_FLAG_CORPSE2)
+            fullMask |= SPELL_TARGET_REQUIRE_FRIENDLY;
     }
 
     return fullMask;
@@ -1116,9 +1116,9 @@ bool SpellInfo::isPetTalent() const
     return m_isPetTalent;
 }
 
-bool SpellInfo::isAllowingDeadTarget() const
+bool SpellInfo::isCastableOnDeadTarget() const
 {
-    return hasAttribute(ATTRIBUTESEXB_CAN_BE_CASTED_ON_DEAD_TARGET) || Targets & (SpellCastTargetFlags::TARGET_FLAG_CORPSE | SpellCastTargetFlags::TARGET_FLAG_CORPSE2 | SpellCastTargetFlags::TARGET_FLAG_UNIT_CORPSE);
+    return hasAttribute(ATTRIBUTESEXB_CAN_BE_CASTED_ON_DEAD_TARGET) || Targets & (TARGET_FLAG_CORPSE | TARGET_FLAG_CORPSE2 | TARGET_FLAG_UNIT_CORPSE);
 }
 
 bool SpellInfo::isDeathPersistent() const

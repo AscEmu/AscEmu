@@ -1861,16 +1861,6 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 if (getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_CANT_TARGET_TAGGED && target->isTagged() && !target->isTaggedByPlayerOrItsGroup(p_caster))
                     return SPELL_FAILED_CANT_CAST_ON_TAPPED;
 
-                // GM flagged players should be immune to other players' casts, but not their own
-                if (target->isPlayer() && (dynamic_cast<Player*>(target)->hasPlayerFlags(PLAYER_FLAG_GM) || dynamic_cast<Player*>(target)->m_isGmInvisible))
-                {
-#if VERSION_STRING == Classic
-                    return SPELL_FAILED_BAD_TARGETS;
-#else
-                    return SPELL_FAILED_BM_OR_INVISGOD;
-#endif
-                }
-
                 // Check if target can be tamed
                 if (getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_TAME_BEAST)
                 {
@@ -1997,8 +1987,7 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
             }
 
             // Check if spell can be casted on dead target
-            if (!((getSpellInfo()->getTargets() & (TARGET_FLAG_CORPSE | TARGET_FLAG_CORPSE2 | TARGET_FLAG_UNIT_CORPSE)) ||
-                getSpellInfo()->getAttributesExB() & ATTRIBUTESEXB_CAN_BE_CASTED_ON_DEAD_TARGET) && !target->isAlive())
+            if (!m_spellInfo->isCastableOnDeadTarget() && !target->isAlive())
                 return SPELL_FAILED_TARGETS_DEAD;
 
             if (target->hasAuraWithAuraEffect(SPELL_AURA_SPIRIT_OF_REDEMPTION))
@@ -2042,13 +2031,6 @@ SpellCastResult Spell::canCast(const bool secondCheck, uint32_t* parameter1, uin
                 // unless it's a summoning spell
                 if (targetPlayer->isOnTaxi() && !getSpellInfo()->hasEffect(SPELL_EFFECT_SUMMON_PLAYER))
                     return SPELL_FAILED_BAD_TARGETS;
-            }
-            else if (getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_TARGET_ONLY_PLAYERS)
-            {
-                // Check only single target spells here
-                // Spell target system handles this for area spells
-                if (!(explicitTargetMask & SPELL_TARGET_AREA_MASK))
-                    return SPELL_FAILED_TARGET_NOT_PLAYER;
             }
 
             // Check if target has stronger aura active
@@ -5704,6 +5686,10 @@ GameObject* Spell::getTargetConstraintGameObject() const { return m_targetConstr
 
 SpellCastResult Spell::checkExplicitTarget(Object* target, uint32_t requiredTargetMask) const
 {
+    // Do not check explicit target for area spells in canCast
+    if (m_spellState == SPELL_STATE_PREPARING && requiredTargetMask & SPELL_TARGET_AREA_MASK && !(requiredTargetMask & SPELL_TARGET_AREA_CURTARGET))
+        return SPELL_CAST_SUCCESS;
+
     if (target == nullptr || !target->IsInWorld())
         return SPELL_FAILED_BAD_IMPLICIT_TARGETS;
 
@@ -5729,6 +5715,22 @@ SpellCastResult Spell::checkExplicitTarget(Object* target, uint32_t requiredTarg
     if (target->isItem() && !m_triggeredSpell && !(requiredTargetMask & SPELL_TARGET_REQUIRE_ITEM))
         return SPELL_FAILED_BAD_TARGETS;
 
+    // GM flagged players should be immune to other players' casts, but not their own
+    if (const auto* const playerTarget = target->ToPlayer())
+    {
+        if (u_caster == nullptr || u_caster->getPlayerOwnerOrSelf() != playerTarget)
+        {
+            if (playerTarget->hasPlayerFlags(PLAYER_FLAG_GM) || playerTarget->m_isGmInvisible)
+            {
+#if VERSION_STRING == Classic
+                return SPELL_FAILED_BAD_TARGETS;
+#else
+                return SPELL_FAILED_BM_OR_INVISGOD;
+#endif
+            }
+        }
+    }
+
     // Check if spell can target friendly unit
     if (requiredTargetMask & SPELL_TARGET_REQUIRE_FRIENDLY && !m_caster->isFriendlyTo(target))
         return SPELL_FAILED_BAD_TARGETS;
@@ -5736,6 +5738,10 @@ SpellCastResult Spell::checkExplicitTarget(Object* target, uint32_t requiredTarg
     // Check if spell can target attackable unit
     if (requiredTargetMask & SPELL_TARGET_REQUIRE_ATTACKABLE && !(requiredTargetMask & SPELL_TARGET_AREA_SELF && m_caster == target) && !m_caster->isValidTarget(target, getSpellInfo()))
         return SPELL_FAILED_BAD_TARGETS;
+
+    // Check if spell can only target players
+    if (m_spellInfo->getAttributesExC() & ATTRIBUTESEXC_TARGET_ONLY_PLAYERS && !target->isPlayer())
+        return SPELL_FAILED_TARGET_NOT_PLAYER;
 
     if (requiredTargetMask & SPELL_TARGET_OBJECT_TARCLASS)
     {
