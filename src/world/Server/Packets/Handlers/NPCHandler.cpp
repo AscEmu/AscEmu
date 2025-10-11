@@ -244,7 +244,7 @@ void WorldSession::handleGossipHelloOpcode(WorldPacket& recvPacket)
         if (_player->isStealthed())
             _player->removeAllAurasByAuraEffect(SPELL_AURA_MOD_STEALTH);
 
-        _player->onTalkReputation(creature->m_factionEntry);
+        _player->onTalkReputation(creature->getServersideFactionEntry());
 
         if (const auto script = GossipScript::getInterface(creature))
             script->onHello(creature, _player);
@@ -359,7 +359,7 @@ void WorldSession::handleTrainerListOpcode(WorldPacket& recvPacket)
     if (creature == nullptr)
         return;
 
-    _player->onTalkReputation(creature->m_factionEntry);
+    _player->onTalkReputation(creature->getServersideFactionEntry());
     sendTrainerList(creature);
 }
 

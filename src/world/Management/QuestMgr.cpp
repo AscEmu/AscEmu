@@ -1514,8 +1514,8 @@ void QuestMgr::GiveQuestRewardReputation(Player* plr, QuestProperties const* qst
 
             // Let's do this properly. Determine the faction of the creature, and give reputation to his faction.
             if (qst_giver->isCreature())
-                if (qst_giver->m_factionEntry != NULL)
-                    fact = qst_giver->m_factionEntry->ID;
+                if (qst_giver->getServersideFactionEntry() != NULL)
+                    fact = qst_giver->getServersideFactionEntry()->ID;
             if (qst_giver->isGameObject())
                 fact = static_cast< GameObject* >(qst_giver)->getFactionTemplate();
         }

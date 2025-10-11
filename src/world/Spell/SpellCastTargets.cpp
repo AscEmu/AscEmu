@@ -168,6 +168,12 @@ void SpellCastTargets::write(WorldPacket& data) const
     }
 }
 
+bool SpellCastTargets::isEmpty() const
+{
+    return m_gameObjectTargetGuid == 0 && m_unitTargetGuid == 0 && m_itemTargetGuid == 0 && unkuint64_1 == 0 &&
+        unkuint64_2 == 0 && !hasSource() && !hasDestination();
+}
+
 bool SpellCastTargets::hasSource() const
 {
     return (getTargetMask() & TARGET_FLAG_SOURCE_LOCATION) != 0;

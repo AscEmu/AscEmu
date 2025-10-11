@@ -371,8 +371,8 @@ bool ChatCommandHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession
     if (creature_target->GetCreatureProperties()->vehicleid > 0)
         systemMessage(m_session, "VehicleID: {}", creature_target->GetCreatureProperties()->vehicleid);
 
-    if (creature_target->m_factionTemplate)
-        systemMessage(m_session, "Combat Support: {}", creature_target->m_factionTemplate->FriendlyMask);
+    if (creature_target->getServersideFactionTemplate())
+        systemMessage(m_session, "Combat Support: {}", creature_target->getServersideFactionTemplate()->FriendlyMask);
 
     if (creature_target->getCombatHandler().isInCombat())
         systemMessage(m_session, "Is in combat!");

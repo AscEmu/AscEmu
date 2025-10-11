@@ -278,6 +278,17 @@ void Summon::setNewLifeTime(uint32_t time)
     m_duration = time;
 }
 
+Group* Summon::getGroup() const
+{
+    if (const auto* const unitOwner = getUnitOwner())
+    {
+        if (const auto* const plrOwner = unitOwner->getPlayerOwnerOrSelf())
+            return plrOwner->getGroup();
+    }
+
+    return nullptr;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Override Object functions
 void Summon::OnPushToWorld()

@@ -70,9 +70,6 @@ public:
     // Override from Creature class
     void sendSpellsToController(Unit* controller, uint32_t duration) override;
 
-    // TODO: make it virtual -Appled
-    Group* getGroup();
-
     // Override from Creature class
     void setDeathState(DeathState s) override;
 

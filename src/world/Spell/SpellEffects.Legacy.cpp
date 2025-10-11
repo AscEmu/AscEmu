@@ -1772,7 +1772,7 @@ void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
         {
             /* try to get a selection */
             m_unitTarget = m_caster->getWorldMap()->getUnit(m_targets.getUnitTargetGuid());
-            if ((!m_unitTarget) || !p_caster->isValidTarget(m_unitTarget, getSpellInfo()) || (m_unitTarget->CalcDistance(p_caster) > 28.0f))
+            if ((!m_unitTarget) || !p_caster->isValidAttackableTarget(m_unitTarget, getSpellInfo()) || (m_unitTarget->CalcDistance(p_caster) > 28.0f))
             {
                 return;
             }
@@ -3381,7 +3381,7 @@ void Spell::SpellEffectTriggerMissile(uint8_t effectIndex) // Trigger Missile
 
         if (std::sqrt(r) > spellRadius) continue;
 
-        if (!m_caster->isValidTarget(itr))   //Fix Me: only enemy targets?
+        if (!m_caster->isValidAttackableTarget(itr))   //Fix Me: only enemy targets?
             continue;
 
         Spell* sp = sSpellMgr.newSpell(m_caster, spInfo, true, nullptr);
@@ -3796,7 +3796,7 @@ void Spell::SpellEffectDispel(uint8_t effectIndex) // Dispel
 
     uint16_t start, end;
 
-    if (u_caster->isValidTarget(m_unitTarget) || getSpellInfo()->getEffectMiscValue(effectIndex) == DISPEL_STEALTH)    // IsAttackable returns false for stealthed
+    if (u_caster->isValidAttackableTarget(m_unitTarget) || getSpellInfo()->getEffectMiscValue(effectIndex) == DISPEL_STEALTH)    // IsAttackable returns false for stealthed
     {
         start = AuraSlots::POSITIVE_SLOT_START;
         end = AuraSlots::POSITIVE_SLOT_END;
@@ -5863,7 +5863,7 @@ void Spell::SpellEffectSpellSteal(uint8_t /*effectIndex*/)
     }
 
     uint16_t start, end;
-    if (u_caster->isValidTarget(m_unitTarget))
+    if (u_caster->isValidAttackableTarget(m_unitTarget))
     {
         start = AuraSlots::POSITIVE_SLOT_START;
         end = AuraSlots::POSITIVE_SLOT_END;

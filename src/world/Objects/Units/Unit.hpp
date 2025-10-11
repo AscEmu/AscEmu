@@ -907,7 +907,7 @@ private:
 public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Visibility system
-    bool canSee(Object* const obj);
+    bool canSee(Object const* obj) const;
 
     // Stealth
     int32_t getStealthLevel(StealthFlag flag) const;

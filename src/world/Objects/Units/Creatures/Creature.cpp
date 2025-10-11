@@ -1507,7 +1507,7 @@ void Creature::CallScriptUpdate(unsigned long time_passed)
         _myScriptClass->_internalAIUpdate(time_passed);
 }
 
-CreatureProperties const* Creature::GetCreatureProperties()
+CreatureProperties const* Creature::GetCreatureProperties() const
 {
     return creature_properties;
 }

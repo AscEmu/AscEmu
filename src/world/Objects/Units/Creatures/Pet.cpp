@@ -191,14 +191,6 @@ void Pet::sendSpellsToController(Unit* controller, uint32_t duration)
         m_petAction, petFlags, std::move(petActions), std::move(petSpells)).serialise().get());
 }
 
-Group* Pet::getGroup()
-{
-    if (auto* plrOwner = getPlayerOwner())
-        return plrOwner->getGroup();
-
-    return nullptr;
-}
-
 void Pet::setDeathState(DeathState s)
 {
     Summon::setDeathState(s);
@@ -1346,7 +1338,7 @@ CreatureAISpells* Pet::_createAISpell(SpellInfo const* spellInfo)
     {
         targetType = TARGET_SOURCE;
     }
-    else if (spellTargetMask & SPELL_TARGET_AREA_CURTARGET)
+    else if (spellTargetMask & SPELL_TARGET_AREA)
     {
         targetType = TARGET_DESTINATION;
     }

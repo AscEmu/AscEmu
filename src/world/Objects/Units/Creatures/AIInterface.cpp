@@ -774,36 +774,16 @@ void AIInterface::findFriends(float sqrtRange)
 
 bool AIInterface::canOwnerAttackUnit(Unit* pUnit) const
 {
-    if (pUnit == nullptr || !pUnit->IsInWorld())
-        return false;
-
-    if (pUnit == m_Unit)
+    if (pUnit == nullptr)
         return false;
 
     if (!m_Unit->isAlive() || !pUnit->isAlive())
         return false;
 
-    if (!m_Unit->isValidTarget(pUnit))
-        return false;
-
-    if (pUnit->hasUnitFlags(UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE))
-        return false;
-
-    if (pUnit->hasUnitStateFlag(UNIT_STATE_UNATTACKABLE))
-        return false;
-
-    // Ignore player owned creatures
-    if (isIgnoringCreatureCombat() && pUnit->isCreature() && !pUnit->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE))
-        return false;
-
-    // Check also for player owned creatures
-    if (isIgnoringPlayerCombat() && (pUnit->isPlayer() || pUnit->hasUnitFlags(UNIT_FLAG_PVP_ATTACKABLE)))
-        return false;
-
     if (m_Unit->isInEvadeMode())
         return false;
 
-    if (auto* const creatureTarget = pUnit->ToCreature())
+    if (const auto* const creatureTarget = pUnit->ToCreature())
     {
         if (creatureTarget->GetCreatureProperties()->Type == UNIT_TYPE_NONCOMBAT_PET)
             return false;
@@ -812,17 +792,14 @@ bool AIInterface::canOwnerAttackUnit(Unit* pUnit) const
             return false;
     }
 
-    if (const auto* plrTarget = pUnit->ToPlayer())
+    if (const auto* const plrTarget = pUnit->ToPlayer())
     {
-        if (plrTarget->isGMFlagSet())
-            return false;
-
-        if (plrTarget->m_isGmInvisible)
-            return false;
-
         if (plrTarget->isOnTaxi())
             return false;
     }
+
+    if (!m_Unit->isValidAttackableTarget(pUnit))
+        return false;
 
     if (!pUnit->isInAccessiblePlaceFor(m_Unit->ToCreature()))
         return false;
@@ -845,11 +822,6 @@ bool AIInterface::canOwnerAttackUnit(Unit* pUnit) const
         if (!isGuard())
             return false;
     }
-
-#ifdef FT_VEHICLES
-    if (m_Unit->getVehicle() && (m_Unit->isOnVehicle(pUnit) || m_Unit->getVehicle()->getBase()->isOnVehicle(pUnit)))
-        return false;
-#endif
 
     if (!m_Unit->isCharmed())
     {
@@ -880,8 +852,11 @@ bool AIInterface::canOwnerAttackUnit(Unit* pUnit) const
     }
 }
 
-bool AIInterface::canOwnerAssistUnit(Unit* pUnit) const
+bool AIInterface::canOwnerAssistUnit(Unit const* pUnit) const
 {
+    if (pUnit == nullptr)
+        return false;
+
     if (!m_Unit->isAlive())
         return false;
 
@@ -889,16 +864,10 @@ bool AIInterface::canOwnerAssistUnit(Unit* pUnit) const
     if (m_isEngaged)
         return false;
 
-    if (m_Unit->hasUnitFlags(UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE))
-        return false;
-
-    if (isIgnoringCreatureCombat())
-        return false;
-
     if (m_Unit->isInEvadeMode())
         return false;
 
-    auto* const creatureTarget = pUnit->ToCreature();
+    const auto* const creatureTarget = pUnit->ToCreature();
     if (creatureTarget != nullptr)
     {
         // TODO: is this necessary check? dont think mobs are looking for friends in evade mode
@@ -917,7 +886,7 @@ bool AIInterface::canOwnerAssistUnit(Unit* pUnit) const
     if (m_Unit->getFactionTemplate() != pUnit->getFactionTemplate())
         return false;
 
-    auto* const creatureUnit = m_Unit->ToCreature();
+    const auto* const creatureUnit = m_Unit->ToCreature();
     if (creatureUnit != nullptr)
     {
         // Beasts can only assist same family beasts
@@ -932,17 +901,7 @@ bool AIInterface::canOwnerAssistUnit(Unit* pUnit) const
         }
     }
 
-    // TODO: if mob has faction 14 it cant call for assist because isFriendlyTo returns always false
-    // because that faction is not friends with itself or any other faction in dbc
-    // hackfix: if faction 14 and mobs are same entry, it can assist -Appled
-    if (creatureUnit != nullptr && creatureTarget != nullptr)
-    {
-        if (creatureUnit->getFactionTemplate() == 14 && creatureUnit->getEntry() == creatureTarget->getEntry())
-            return true;
-    }
-
-    // Logical check
-    if (!m_Unit->isFriendlyTo(pUnit))
+    if (!pUnit->isValidAssistableTarget(m_Unit))
         return false;
 
     return true;
@@ -2344,7 +2303,7 @@ void AIInterface::updateTotem(uint32_t p_time)
                 (!m_Unit->getWorldMap()->getUnit(nextTarget->getGuid()) ||
                     !nextTarget->isAlive() ||
                     !(m_Unit->isInRange(nextTarget->GetPosition(), pSpell->getSpellInfo()->custom_base_range_or_radius_sqr)) ||
-                    !m_Unit->isValidTarget(nextTarget, pSpell->getSpellInfo())
+                    !m_Unit->isValidAttackableTarget(nextTarget, pSpell->getSpellInfo())
                     )
                 )
             {
