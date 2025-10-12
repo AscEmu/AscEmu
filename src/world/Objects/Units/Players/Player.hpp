@@ -557,10 +557,6 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement/Position
 public:
-#if VERSION_STRING >= Cata
-    void sendForceMovePacket(UnitSpeedType speed_type, float speed);
-    void sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed);
-#endif
     void resendSpeed();
 
     bool isMoving() const;

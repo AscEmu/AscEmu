@@ -430,7 +430,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     data << sessionMovementInfo;
     mover->sendMessageToSet(&data, _player);
 
-#else
+#else // TBC and Classic
 
     // Zyres NOTE: versions older than WotLK do not send us the guid within the movement packet (needed for the packet send to other players)
     // but we should already received the active mover

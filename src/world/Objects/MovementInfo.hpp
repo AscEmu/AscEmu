@@ -21,7 +21,7 @@ struct MovementInfo
         , transport_seat(0), transport_time2(0)
 #endif
 #if VERSION_STRING >= Cata
-        , byte_parameter(0)
+        , transport_time3(0)
 #endif
          {
         transport_guid = 0;
@@ -53,10 +53,6 @@ struct MovementInfo
 
     void setFallTime(uint32_t val) { fall_time = val; }
 
-#if VERSION_STRING >= Cata
-    int8_t getByteParam() const { return byte_parameter; }
-#endif
-
     struct JumpInfo
     {
         JumpInfo() : velocity(0.f), sinAngle(0.f), cosAngle(0.f), xyspeed(0.f) { }
@@ -65,9 +61,6 @@ struct MovementInfo
         float sinAngle;
         float cosAngle;
         float xyspeed;
-#if VERSION_STRING >= Mop
-        float zspeed;
-#endif
     };
     JumpInfo const& getJumpInfo() const { return jump_info; }
 
@@ -118,13 +111,8 @@ struct MovementInfo
 #endif
     }
 
-#if VERSION_STRING < Cata
     void readMovementInfo(ByteBuffer& data, uint16_t opcode);
-    void writeMovementInfo(ByteBuffer& data, uint16_t opcode, float custom_speed = 0.f) const;
-#else
-    void readMovementInfo(ByteBuffer& data, uint16_t opcode, ExtraMovementStatusElement* extras = nullptr);
-    void writeMovementInfo(ByteBuffer& data, uint16_t opcode, float custom_speed = 0.f, ExtraMovementStatusElement* extras = nullptr) const;
-#endif
+    void writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool withGuid = true) const;
 
     uint32_t flags;
 
@@ -165,12 +153,8 @@ struct MovementInfo
     uint8_t transport_seat;
     uint32_t transport_time2;
 #endif
-#if VERSION_STRING >= Mop
-    uint32_t transport_time3;
-#endif
-
 #if VERSION_STRING >= Cata
-    int8_t byte_parameter;
+    uint32_t transport_time3;
 #endif
 };
 

@@ -117,87 +117,40 @@ void WorldSession::handleChangeSeatsOnControlledVehicle([[maybe_unused]]WorldPac
     if (!seat->canSwitchFromSeat())
         return;
 
-#if VERSION_STRING < Cata
     CmsgChangeSeatsOnControlledVehicle srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
 
+#if VERSION_STRING < Cata
     uint64_t guid = srlPacket.sourceGuid;               // current vehicle guid
+#endif
     uint64_t accessory = srlPacket.destinationGuid;     // accessory guid
 
     vehicle_base->obj_movement_info = srlPacket.movementInfo;
     int8_t seatId = srlPacket.seat;
 
+#if VERSION_STRING < Cata
     if (vehicle_base->getGuid() != guid)
         return;
-
-    if (!accessory)
-    {
-        GetPlayer()->callChangeSeat(seatId, seatId > 0); // prev/next
-    }
-    else if (Unit* vehUnit = GetPlayer()->getWorldMapUnit(accessory))
-    {
-        if (Vehicle* vehicle = vehUnit->getVehicleKit())
-            if (vehicle->hasEmptySeat(seatId))
-                vehUnit->handleSpellClick(GetPlayer(), seatId);
-    }
-    else
-    {
-        if (vehicle_base->getVehicle())
-            if (vehicle_base->getVehicle()->hasEmptySeat(seatId))
-                vehicle_base->getVehicleBase()->handleSpellClick(GetPlayer(), seatId);
-    }
-
-#else
-    static MovementStatusElements const accessoryGuid[] =
-    {
-        MSEExtraInt8,
-        MSEGuidBit2,
-        MSEGuidBit4,
-        MSEGuidBit7,
-        MSEGuidBit6,
-        MSEGuidBit5,
-        MSEGuidBit0,
-        MSEGuidBit1,
-        MSEGuidBit3,
-        MSEGuidByte6,
-        MSEGuidByte1,
-        MSEGuidByte2,
-        MSEGuidByte5,
-        MSEGuidByte3,
-        MSEGuidByte0,
-        MSEGuidByte4,
-        MSEGuidByte7,
-    };
-
-    ExtraMovementStatusElement extra(accessoryGuid);
-    MovementInfo movementInfo;
-    movementInfo.readMovementInfo(recvPacket, recvPacket.GetOpcode(), &extra);
-    vehicle_base->obj_movement_info = movementInfo;
-
-    WoWGuid accessory = extra.Data.guid;
-    int8_t seatId = extra.Data.byteData;
-
-    if (vehicle_base->getGuid() != movementInfo.guid)
-        return;
-
-    if (!accessory)
-    {
-        GetPlayer()->callChangeSeat(seatId, seatId > 0); // prev/next
-    }
-    else if (Unit* vehUnit = GetPlayer()->getWorldMapUnit(accessory))
-    {
-        if (Vehicle* vehicle = vehUnit->getVehicleKit())
-            if (vehicle->hasEmptySeat(seatId))
-                vehUnit->handleSpellClick(GetPlayer(), seatId);
-    }
-    else
-    {
-        if (vehicle_base->getVehicle())
-            if (vehicle_base->getVehicle()->hasEmptySeat(seatId))
-                vehicle_base->getVehicleBase()->handleSpellClick(GetPlayer(), seatId);
-    }
 #endif
+
+    if (!accessory)
+    {
+        GetPlayer()->callChangeSeat(seatId, seatId > 0); // prev/next
+    }
+    else if (Unit* vehUnit = GetPlayer()->getWorldMapUnit(accessory))
+    {
+        if (Vehicle* vehicle = vehUnit->getVehicleKit())
+            if (vehicle->hasEmptySeat(seatId))
+                vehUnit->handleSpellClick(GetPlayer(), seatId);
+    }
+    else
+    {
+        if (vehicle_base->getVehicle())
+            if (vehicle_base->getVehicle()->hasEmptySeat(seatId))
+                vehicle_base->getVehicleBase()->handleSpellClick(GetPlayer(), seatId);
+    }
+
 #endif
 }
 
