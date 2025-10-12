@@ -84,15 +84,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgUpdateAuraDuration.h"
 #include "Server/Packets/SmsgSetExtraAuraInfo.h"
 #endif
-#include "Server/Packets/SmsgSplineSetWalkSpeed.h"
-#include "Server/Packets/SmsgSplineSetRunSpeed.h"
-#include "Server/Packets/SmsgSplineSetRunBackSpeed.h"
-#include "Server/Packets/SmsgSplineSetSwimSpeed.h"
-#include "Server/Packets/SmsgSplineSetSwimBackSpeed.h"
-#include "Server/Packets/SmsgSplineSetTurnRate.h"
-#include "Server/Packets/SmsgSplineSetFlightSpeed.h"
-#include "Server/Packets/SmsgSplineSetFlightBackSpeed.h"
-#include "Server/Packets/SmsgSplineSetPitchRate.h"
 #include <Server/Packets/MsgMoveSetWalkSpeed.h>
 #include <Server/Packets/MsgMoveSetRunSpeed.h>
 #include <Server/Packets/MsgMoveSetRunBackSpeed.h>
@@ -111,6 +102,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Server/Packets/SmsgForceFlightSpeedChange.h>
 #include <Server/Packets/SmsgForceFlightBackSpeedChange.h>
 #include <Server/Packets/SmsgForcePitchRateChange.h>
+#include <Server/Packets/SmsgMoveSetUnset.h>
+#include <Server/Packets/SmsgSplineMoveSetUnset.h>
+#include <Server/Packets/SmsgSplineSetSpeed.h>
 
 using namespace AscEmu::Packets;
 
@@ -2022,25 +2016,12 @@ void Unit::setMoveWaterWalk()
 
     if (isPlayer())
     {
-        WorldPacket data(SMSG_MOVE_WATER_WALK, 12);
-#if VERSION_STRING < Cata
-        data << GetNewGUID();
-        data << uint32_t(0);
-#else
-        obj_movement_info.writeMovementInfo(data, SMSG_MOVE_WATER_WALK);
-#endif
-        sendMessageToSet(&data, true);
+        sendMessageToSet(SmsgMoveSetUnset(GetNewGUID(), SMSG_MOVE_WATER_WALK).serialise().get(), true);
     }
 
     if (isCreature())
     {
-        WorldPacket data(SMSG_SPLINE_MOVE_WATER_WALK, 9);
-#if VERSION_STRING < Cata
-        data << GetNewGUID();
-#else
-        obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_WATER_WALK);
-#endif
-        sendMessageToSet(&data, false);
+        sendMessageToSet(SmsgSplineMoveSetUnset(GetNewGUID(), SMSG_SPLINE_MOVE_WATER_WALK).serialise().get(), false);
     }
 }
 
@@ -2050,25 +2031,12 @@ void Unit::setMoveLandWalk()
 
     if (isPlayer())
     {
-        WorldPacket data(SMSG_MOVE_LAND_WALK, 12);
-#if VERSION_STRING < Cata
-        data << GetNewGUID();
-        data << uint32_t(0);
-#else
-        obj_movement_info.writeMovementInfo(data, SMSG_MOVE_LAND_WALK);
-#endif
-        sendMessageToSet(&data, true);
+        sendMessageToSet(SmsgMoveSetUnset(GetNewGUID(), SMSG_MOVE_LAND_WALK).serialise().get(), true);
     }
 
     if (isCreature())
     {
-        WorldPacket data(SMSG_SPLINE_MOVE_LAND_WALK, 9);
-#if VERSION_STRING < Cata
-        data << GetNewGUID();
-#else
-        obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_LAND_WALK);
-#endif
-        sendMessageToSet(&data, false);
+        sendMessageToSet(SmsgSplineMoveSetUnset(GetNewGUID(), SMSG_SPLINE_MOVE_LAND_WALK).serialise().get(), false);
     }
 }
 
@@ -2078,25 +2046,12 @@ void Unit::setMoveFeatherFall()
 
     if (isPlayer())
     {
-        WorldPacket data(SMSG_MOVE_FEATHER_FALL, 12);
-#if VERSION_STRING < Cata
-        data << GetNewGUID();
-        data << uint32_t(0);
-#else
-        obj_movement_info.writeMovementInfo(data, SMSG_MOVE_FEATHER_FALL);
-#endif
-        sendMessageToSet(&data, true);
+        sendMessageToSet(SmsgMoveSetUnset(GetNewGUID(), SMSG_MOVE_FEATHER_FALL).serialise().get(), true);
     }
 
     if (isCreature())
     {
-        WorldPacket data(SMSG_SPLINE_MOVE_FEATHER_FALL, 9);
-#if VERSION_STRING < Cata
-        data << GetNewGUID();
-#else
-        obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_FEATHER_FALL);
-#endif
-        sendMessageToSet(&data, false);
+        sendMessageToSet(SmsgSplineMoveSetUnset(GetNewGUID(), SMSG_SPLINE_MOVE_FEATHER_FALL).serialise().get(), false);
     }
 }
 
@@ -2106,25 +2061,12 @@ void Unit::setMoveNormalFall()
 
     if (isPlayer())
     {
-        WorldPacket data(SMSG_MOVE_NORMAL_FALL, 12);
-#if VERSION_STRING < Cata
-        data << GetNewGUID();
-        data << uint32_t(0);
-#else
-        obj_movement_info.writeMovementInfo(data, SMSG_MOVE_NORMAL_FALL);
-#endif
-        sendMessageToSet(&data, true);
+        sendMessageToSet(SmsgMoveSetUnset(GetNewGUID(), SMSG_MOVE_NORMAL_FALL).serialise().get(), true);
     }
 
     if (isCreature())
     {
-        WorldPacket data(SMSG_SPLINE_MOVE_NORMAL_FALL, 9);
-#if VERSION_STRING < Cata
-        data << GetNewGUID();
-#else
-        obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_NORMAL_FALL);
-#endif
-        sendMessageToSet(&data, false);
+        sendMessageToSet(SmsgSplineMoveSetUnset(GetNewGUID(), SMSG_SPLINE_MOVE_NORMAL_FALL).serialise().get(), false);
     }
 }
 
@@ -2135,28 +2077,12 @@ void Unit::setMoveHover(bool set_hover)
         if (set_hover)
         {
             addUnitMovementFlag(MOVEFLAG_HOVER);
-
-            WorldPacket data(SMSG_MOVE_SET_HOVER, 13);
-#if VERSION_STRING < Cata
-            data << GetNewGUID();
-            data << uint32_t(0);
-#else
-            obj_movement_info.writeMovementInfo(data, SMSG_MOVE_SET_HOVER);
-#endif
-            sendMessageToSet(&data, true);
+            sendMessageToSet(SmsgMoveSetUnset(GetNewGUID(), SMSG_MOVE_SET_HOVER).serialise().get(), true);
         }
         else
         {
             removeUnitMovementFlag(MOVEFLAG_HOVER);
-
-            WorldPacket data(SMSG_MOVE_UNSET_HOVER, 13);
-#if VERSION_STRING < Cata
-            data << GetNewGUID();
-            data << uint32_t(0);
-#else
-            obj_movement_info.writeMovementInfo(data, SMSG_MOVE_UNSET_HOVER);
-#endif
-            sendMessageToSet(&data, true);
+            sendMessageToSet(SmsgMoveSetUnset(GetNewGUID(), SMSG_MOVE_UNSET_HOVER).serialise().get(), true);
         }
     }
 
@@ -2166,26 +2092,12 @@ void Unit::setMoveHover(bool set_hover)
         if (set_hover)
         {
             addUnitMovementFlag(MOVEFLAG_HOVER);
-
-            WorldPacket data(SMSG_SPLINE_MOVE_SET_HOVER, 10);
-#if VERSION_STRING < Cata
-            data << GetNewGUID();
-#else
-            obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_SET_HOVER);
-#endif
-            sendMessageToSet(&data, false);
+            sendMessageToSet(SmsgSplineMoveSetUnset(GetNewGUID(), SMSG_SPLINE_MOVE_SET_HOVER).serialise().get(), false);
         }
         else
         {
             removeUnitMovementFlag(MOVEFLAG_HOVER);
-
-            WorldPacket data(SMSG_SPLINE_MOVE_UNSET_HOVER, 10);
-#if VERSION_STRING < Cata
-            data << GetNewGUID();
-#else
-            obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_UNSET_HOVER);
-#endif
-            sendMessageToSet(&data, false);
+            sendMessageToSet(SmsgSplineMoveSetUnset(GetNewGUID(), SMSG_SPLINE_MOVE_UNSET_HOVER).serialise().get(), false);
         }
 
 #if VERSION_STRING >= TBC
@@ -2209,16 +2121,7 @@ void Unit::setMoveCanFly(bool set_fly)
 
             // Remove falling flag if set
             removeUnitMovementFlag(MOVEFLAG_FALLING);
-
-            WorldPacket data(SMSG_MOVE_SET_CAN_FLY, 13);
-#if VERSION_STRING < Cata
-            data << GetNewGUID();
-            data << uint32_t(2);
-#else
-            obj_movement_info.writeMovementInfo(data, SMSG_MOVE_SET_CAN_FLY);
-#endif
-
-            sendMessageToSet(&data, true);
+            sendMessageToSet(SmsgMoveSetUnset(GetNewGUID(), SMSG_MOVE_SET_CAN_FLY).serialise().get(), true);
         }
         else
         {
@@ -2228,16 +2131,7 @@ void Unit::setMoveCanFly(bool set_fly)
             removeUnitMovementFlag(MOVEFLAG_DESCENDING);
 #endif
             removeUnitMovementFlag(MOVEFLAG_ASCENDING);
-
-            WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
-#if VERSION_STRING < Cata
-            data << GetNewGUID();
-            data << uint32_t(5);
-#else
-            obj_movement_info.writeMovementInfo(data, SMSG_MOVE_UNSET_CAN_FLY);
-#endif
-
-            sendMessageToSet(&data, true);
+            sendMessageToSet(SmsgMoveSetUnset(GetNewGUID(), SMSG_MOVE_UNSET_CAN_FLY).serialise().get(), true);
         }
     }
 
@@ -2259,13 +2153,10 @@ void Unit::setMoveCanFly(bool set_fly)
         if (!movespline->Initialized())
             return;
 
-        WorldPacket data(set_fly ? SMSG_SPLINE_MOVE_SET_FLYING : SMSG_SPLINE_MOVE_UNSET_FLYING, 10);
-#if VERSION_STRING < Cata
-        data << GetNewGUID();
-#else
-        obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_SET_FLYING);
-#endif
-        sendMessageToSet(&data, false);
+        if (set_fly)
+            sendMessageToSet(SmsgSplineMoveSetUnset(GetNewGUID(), SMSG_SPLINE_MOVE_SET_FLYING).serialise().get(), false);
+        else
+            sendMessageToSet(SmsgSplineMoveSetUnset(GetNewGUID(), SMSG_SPLINE_MOVE_UNSET_FLYING).serialise().get(), false);
     }
 }
 
@@ -2277,29 +2168,13 @@ void Unit::setMoveRoot(bool set_root)
         {
             addUnitMovementFlag(MOVEFLAG_ROOTED);
             stopMoving();
-
-            WorldPacket data(SMSG_FORCE_MOVE_ROOT, 12);
-#if VERSION_STRING < Cata
-            data << GetNewGUID();
-            data << uint32_t(0);
-#else
-            obj_movement_info.writeMovementInfo(data, SMSG_FORCE_MOVE_ROOT);
-#endif
-            sendMessageToSet(&data, true);
+            sendMessageToSet(SmsgMoveSetUnset(GetNewGUID(), SMSG_FORCE_MOVE_ROOT).serialise().get(), true);
         }
         else
         {
             removeUnitMovementFlag(MOVEFLAG_ROOTED);
             stopMoving();
-
-            WorldPacket data(SMSG_FORCE_MOVE_UNROOT, 12);
-#if VERSION_STRING < Cata
-            data << GetNewGUID();
-            data << uint32_t(0);
-#else
-            obj_movement_info.writeMovementInfo(data, SMSG_FORCE_MOVE_UNROOT);
-#endif
-            sendMessageToSet(&data, true);
+            sendMessageToSet(SmsgMoveSetUnset(GetNewGUID(), SMSG_FORCE_MOVE_UNROOT).serialise().get(), true);
         }
     }
 
@@ -2309,26 +2184,12 @@ void Unit::setMoveRoot(bool set_root)
         {
             stopMoving();
             addUnitMovementFlag(MOVEFLAG_ROOTED);
-
-            WorldPacket data(SMSG_SPLINE_MOVE_ROOT, 9);
-#if VERSION_STRING < Cata
-            data << GetNewGUID();
-#else
-            obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_ROOT);
-#endif
-            sendMessageToSet(&data, true);
+            sendMessageToSet(SmsgSplineMoveSetUnset(GetNewGUID(), SMSG_SPLINE_MOVE_ROOT).serialise().get(), true);
         }
         else
         {
             removeUnitMovementFlag(MOVEFLAG_ROOTED);
-
-            WorldPacket data(SMSG_SPLINE_MOVE_UNROOT, 9);
-#if VERSION_STRING < Cata
-            data << GetNewGUID();
-#else
-            obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_UNROOT);
-#endif
-            sendMessageToSet(&data, true);
+            sendMessageToSet(SmsgSplineMoveSetUnset(GetNewGUID(), SMSG_SPLINE_MOVE_UNROOT).serialise().get(), true);
         }
     }
 }
@@ -2340,26 +2201,12 @@ void Unit::setMoveSwim(bool set_swim)
         if (set_swim)
         {
             addUnitMovementFlag(MOVEFLAG_SWIMMING);
-
-            WorldPacket data(SMSG_SPLINE_MOVE_START_SWIM, 10);
-#if VERSION_STRING < Cata
-            data << GetNewGUID();
-#else
-            obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_START_SWIM);
-#endif
-            sendMessageToSet(&data, false);
+            sendMessageToSet(SmsgSplineMoveSetUnset(GetNewGUID(), SMSG_SPLINE_MOVE_START_SWIM).serialise().get(), false);
         }
         else
         {
             removeUnitMovementFlag(MOVEFLAG_SWIMMING);
-
-            WorldPacket data(SMSG_SPLINE_MOVE_STOP_SWIM, 10);
-#if VERSION_STRING < Cata
-            data << GetNewGUID();
-#else
-            obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_STOP_SWIM);
-#endif
-            sendMessageToSet(&data, false);
+            sendMessageToSet(SmsgSplineMoveSetUnset(GetNewGUID(), SMSG_SPLINE_MOVE_STOP_SWIM).serialise().get(), false);
         }
     }
 }
@@ -2372,28 +2219,12 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
         if (disable_gravity)
         {
             addUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY);
-
-            WorldPacket data(SMSG_MOVE_GRAVITY_DISABLE, 13);
-#if VERSION_STRING < Cata
-            data << GetNewGUID();
-            data << uint32_t(0);
-#else
-            obj_movement_info.writeMovementInfo(data, SMSG_MOVE_GRAVITY_DISABLE);
-#endif
-            sendMessageToSet(&data, true);
+            sendMessageToSet(SmsgMoveSetUnset(GetNewGUID(), SMSG_MOVE_GRAVITY_DISABLE).serialise().get(), true);
         }
         else
         {
             removeUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY);
-
-            WorldPacket data(SMSG_MOVE_GRAVITY_ENABLE, 13);
-#if VERSION_STRING < Cata
-            data << GetNewGUID();
-            data << uint32_t(0);
-#else
-            obj_movement_info.writeMovementInfo(data, SMSG_MOVE_GRAVITY_ENABLE);
-#endif
-            sendMessageToSet(&data, true);
+            sendMessageToSet(SmsgMoveSetUnset(GetNewGUID(), SMSG_MOVE_GRAVITY_ENABLE).serialise().get(), true);
         }
     }
 
@@ -2425,13 +2256,10 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
         if (!movespline->Initialized())
             return;
 
-        WorldPacket data(disable_gravity ? SMSG_SPLINE_MOVE_GRAVITY_DISABLE : SMSG_SPLINE_MOVE_GRAVITY_ENABLE, 10);
-#if VERSION_STRING < Cata
-        data << GetNewGUID();
-#else
-        obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_GRAVITY_DISABLE);
-#endif
-        sendMessageToSet(&data, false);
+        if (disable_gravity)
+            sendMessageToSet(SmsgSplineMoveSetUnset(GetNewGUID(), SMSG_SPLINE_MOVE_GRAVITY_DISABLE).serialise().get(), false);
+        else
+            sendMessageToSet(SmsgSplineMoveSetUnset(GetNewGUID(), SMSG_SPLINE_MOVE_GRAVITY_ENABLE).serialise().get(), false);
     }
 #endif
 }
@@ -2445,26 +2273,12 @@ void Unit::setMoveWalk(bool set_walk)
         if (set_walk)
         {
             addUnitMovementFlag(MOVEFLAG_WALK);
-
-            WorldPacket data(SMSG_SPLINE_MOVE_SET_WALK_MODE, 10);
-#if VERSION_STRING < Cata
-            data << GetNewGUID();
-#else
-            obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_SET_WALK_MODE);
-#endif
-            sendMessageToSet(&data, false);
+            sendMessageToSet(SmsgSplineMoveSetUnset(GetNewGUID(), SMSG_SPLINE_MOVE_SET_WALK_MODE).serialise().get(), false);
         }
         else
         {
             removeUnitMovementFlag(MOVEFLAG_WALK);
-
-            WorldPacket data(SMSG_SPLINE_MOVE_SET_RUN_MODE, 10);
-#if VERSION_STRING < Cata
-            data << GetNewGUID();
-#else
-            obj_movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_SET_RUN_MODE);
-#endif
-            sendMessageToSet(&data, false);
+            sendMessageToSet(SmsgSplineMoveSetUnset(GetNewGUID(), SMSG_SPLINE_MOVE_SET_RUN_MODE).serialise().get(), false);
         }
     }
 }
@@ -2600,9 +2414,9 @@ void Unit::setSpeedRate(UnitSpeedType mtype, float rate, bool current)
 
     // Spline packets are for units controlled by AI. "Force speed change" (wrongly named opcodes) and "move set speed" packets are for units controlled by a player.
 
-    /* Zyres: keep this as a reference to the old logic. On Cata SMSG_FORCE and MSG_MOVE opcodes where flipped.
+    // Zyres: keep this as a reference to the old logic. On Cata SMSG_FORCE and MSG_MOVE opcodes where flipped.
     static Opcodes const moveTypeToOpcode[MAX_SPEED_TYPE][3] =
-    {   ->send to all players               ->send to player                        ->send to all but player
+    {//   ->send to all players               ->send to player                        ->send to all but player
         {SMSG_SPLINE_SET_WALK_SPEED,        SMSG_FORCE_WALK_SPEED_CHANGE,           MSG_MOVE_SET_WALK_SPEED         },
         {SMSG_SPLINE_SET_RUN_SPEED,         SMSG_FORCE_RUN_SPEED_CHANGE,            MSG_MOVE_SET_RUN_SPEED          },
         {SMSG_SPLINE_SET_RUN_BACK_SPEED,    SMSG_FORCE_RUN_BACK_SPEED_CHANGE,       MSG_MOVE_SET_RUN_BACK_SPEED     },
@@ -2612,7 +2426,7 @@ void Unit::setSpeedRate(UnitSpeedType mtype, float rate, bool current)
         {SMSG_SPLINE_SET_FLIGHT_SPEED,      SMSG_FORCE_FLIGHT_SPEED_CHANGE,         MSG_MOVE_SET_FLIGHT_SPEED       },
         {SMSG_SPLINE_SET_FLIGHT_BACK_SPEED, SMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE,    MSG_MOVE_SET_FLIGHT_BACK_SPEED  },
         {SMSG_SPLINE_SET_PITCH_RATE,        SMSG_FORCE_PITCH_RATE_CHANGE,           MSG_MOVE_SET_PITCH_RATE         },
-    };*/
+    };
 
     if (auto* const plr = isPlayer() ? dynamic_cast<Player*>(this) : nullptr)
     {
@@ -2675,41 +2489,10 @@ void Unit::setSpeedRate(UnitSpeedType mtype, float rate, bool current)
                 break;
         }
     }
-    else // unit controlled by AI.
+    else // unit controlled by AI
     {
-        // send notification to every clients.
-        switch (mtype)
-        {
-            case TYPE_WALK:
-                sendMessageToSet(SmsgSplineSetWalkSpeed(GetNewGUID(), rate).serialise().get(), true);
-                break;
-            case TYPE_RUN:
-                sendMessageToSet(SmsgSplineSetRunSpeed(GetNewGUID(), rate).serialise().get(), true);
-                break;
-            case TYPE_RUN_BACK:
-                sendMessageToSet(SmsgSplineSetRunBackSpeed(GetNewGUID(), rate).serialise().get(), true);
-                break;
-            case TYPE_SWIM:
-                sendMessageToSet(SmsgSplineSetSwimSpeed(GetNewGUID(), rate).serialise().get(), true);
-                break;
-            case TYPE_SWIM_BACK:
-                sendMessageToSet(SmsgSplineSetSwimBackSpeed(GetNewGUID(), rate).serialise().get(), true);
-                break;
-            case TYPE_TURN_RATE:
-                sendMessageToSet(SmsgSplineSetTurnRate(GetNewGUID(), rate).serialise().get(), true);
-                break;
-            case TYPE_FLY:
-                sendMessageToSet(SmsgSplineSetFlightSpeed(GetNewGUID(), rate).serialise().get(), true);
-                break;
-            case TYPE_FLY_BACK:
-                sendMessageToSet(SmsgSplineSetFlightBackSpeed(GetNewGUID(), rate).serialise().get(), true);
-                break;
-            case TYPE_PITCH_RATE:
-                sendMessageToSet(SmsgSplineSetPitchRate(GetNewGUID(), rate).serialise().get(), true);
-                break;
-            default:
-                break;
-        }
+        // send notification to all clients
+        sendMessageToSet(SmsgSplineSetSpeed(GetNewGUID(), rate, moveTypeToOpcode[mtype][0]).serialise().get(), true);
     }
 }
 
@@ -2929,11 +2712,7 @@ void Unit::setStunned(bool apply)
         if (isPlayer())
         {
             setStandState(STANDSTATE_STAND);
-
-            WorldPacket data(SMSG_FORCE_MOVE_ROOT, 10);
-            data << GetNewGUID();
-            data << 0;
-            sendMessageToSet(&data, true);
+            setMoveRoot(true);
         }
         else
         {
@@ -2956,10 +2735,7 @@ void Unit::setStunned(bool apply)
         {
             if (isPlayer())
             {
-                WorldPacket data(SMSG_FORCE_MOVE_UNROOT, 10);
-                data << GetNewGUID();
-                data << 0;
-                sendMessageToSet(&data, true);
+                setMoveRoot(false);
             }
             else
             {
@@ -3051,49 +2827,6 @@ void Unit::updateSplinePosition()
         loc.orientation = GetOrientation();
 
     SetPosition(loc.x, loc.y, loc.z, loc.orientation);
-}
-
-void Unit::sendMoveSplinePaket(UnitSpeedType speedType)
-{
-    WorldPacket data(12);
-
-    switch (speedType)
-    {
-        case TYPE_WALK:
-            data.Initialize(SMSG_SPLINE_SET_WALK_SPEED);
-            break;
-        case TYPE_RUN:
-            data.Initialize(SMSG_SPLINE_SET_RUN_SPEED);
-            break;
-        case TYPE_RUN_BACK:
-            data.Initialize(SMSG_SPLINE_SET_RUN_BACK_SPEED);
-            break;
-        case TYPE_SWIM:
-            data.Initialize(SMSG_SPLINE_SET_SWIM_SPEED);
-            break;
-        case TYPE_SWIM_BACK:
-            data.Initialize(SMSG_SPLINE_SET_SWIM_BACK_SPEED);
-            break;
-        case TYPE_TURN_RATE:
-            data.Initialize(SMSG_SPLINE_SET_TURN_RATE);
-            break;
-        case TYPE_FLY:
-            data.Initialize(SMSG_SPLINE_SET_FLIGHT_SPEED);
-            break;
-        case TYPE_FLY_BACK:
-            data.Initialize(SMSG_SPLINE_SET_FLIGHT_BACK_SPEED);
-            break;
-#if VERSION_STRING > TBC
-        case TYPE_PITCH_RATE:
-            data.Initialize(SMSG_SPLINE_SET_PITCH_RATE);
-            break;
-#endif
-    }
-
-    data << GetNewGUID();
-    data << float(getSpeedRate(speedType, true));
-
-    sendMessageToSet(&data, false);
 }
 
 void Unit::disableSpline()

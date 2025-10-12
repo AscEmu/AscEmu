@@ -678,7 +678,6 @@ private:
     int32_t m_splineSyncTimer = 5000;
 
 public:
-    void sendMoveSplinePaket(UnitSpeedType speed_type);
     void disableSpline();
     bool isSplineEnabled() const;
 
