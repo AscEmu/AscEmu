@@ -164,6 +164,9 @@ This file is released under the MIT license. See README-MIT for more information
 #if VERSION_STRING > TBC
     #include "Management/AchievementMgr.h"
 #endif
+#include <Server/Packets/SmsgMoveUpdateTeleport.h>
+#include <Server/Packets/MsgMoveTeleport.h>
+#include <Server/Packets/MsgMoveTeleportAck.h>
 
 using namespace AscEmu::Packets;
 using namespace MapManagement::AreaManagement;
@@ -1712,63 +1715,14 @@ uint32_t Player::getTeleportState() const { return m_teleportState; }
 
 void Player::sendTeleportPacket(LocationVector position)
 {
-#if VERSION_STRING < Cata
-    WorldPacket data2(MSG_MOVE_TELEPORT, 38);
-    data2.append(GetNewGUID());
-    buildMovementPacket(&data2, position.x, position.y, position.z, position.o);
-    sendMessageToSet(&data2, false);
-    SetPosition(position);
-#else
+    sendPacket(MsgMoveTeleport(GetNewGUID(), position, obj_movement_info).serialise().get());
+
     LocationVector oldPos = LocationVector(GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
-    LocationVector pos = position;
 
-    if (getObjectTypeId() == TYPEID_UNIT)
-        SetPosition(pos);
+    SetPosition(position.x, position.y, position.z, position.o);
 
-    WoWGuid guid = getGuid();
-
-    WorldPacket data(SMSG_MOVE_UPDATE_TELEPORT, 38);
-    obj_movement_info.writeMovementInfo(data, SMSG_MOVE_UPDATE_TELEPORT);
-
-    if (getObjectTypeId() == TYPEID_PLAYER)
-    {
-        WorldPacket data2(MSG_MOVE_TELEPORT, 38);
-        data2.writeBit(guid[6]);
-        data2.writeBit(guid[0]);
-        data2.writeBit(guid[3]);
-        data2.writeBit(guid[2]);
-        data2.writeBit(0); // unk
-        //\TODO add transport
-        data2.writeBit(uint64_t(0)); // transport guid
-        data2.writeBit(guid[1]);
-
-        data2.writeBit(guid[4]);
-        data2.writeBit(guid[7]);
-        data2.writeBit(guid[5]);
-        data2.flushBits();
-
-        data2 << uint32_t(0); // unk
-        data2.WriteByteSeq(guid[1]);
-        data2.WriteByteSeq(guid[2]);
-        data2.WriteByteSeq(guid[3]);
-        data2.WriteByteSeq(guid[5]);
-        data2 << float(GetPositionX());
-        data2.WriteByteSeq(guid[4]);
-        data2 << float(GetOrientation());
-        data2.WriteByteSeq(guid[7]);
-        data2 << float(GetPositionZ());
-        data2.WriteByteSeq(guid[0]);
-        data2.WriteByteSeq(guid[6]);
-        data2 << float(GetPositionY());
-        sendPacket(&data2);
-    }
-
-    if (getObjectTypeId() == TYPEID_PLAYER)
-        SetPosition(pos);
-    else
-        SetPosition(oldPos);
-
-    sendMessageToSet(&data, false);
+#if VERSION_STRING >= Cata
+    sendMessageToSet(SmsgMoveUpdateTeleport(GetNewGUID(), obj_movement_info).serialise().get(), false);
 #endif
 }
 
@@ -1776,27 +1730,7 @@ void Player::sendTeleportAckPacket(LocationVector position)
 {
     setTransferStatus(TRANSFER_PENDING);
 
-#if VERSION_STRING < TBC
-    WorldPacket data(MSG_MOVE_TELEPORT_ACK, 41);
-    data << GetNewGUID();
-    data << uint32_t(2);
-    data << uint32_t(0);
-    data << uint8_t(0);
-
-    data << float(0);
-    data << position.x;
-    data << position.y;
-    data << position.z;
-    data << position.o;
-    data << uint16_t(2);
-    data << uint8_t(0);
-#else
-    WorldPacket data(MSG_MOVE_TELEPORT_ACK, 41);
-    data << GetNewGUID();
-    data << uint32_t(0);
-    buildMovementPacket(&data, position.x, position.y, position.z, position.o);
-#endif
-    getSession()->SendPacket(&data);
+    getSession()->SendPacket(MsgMoveTeleportAck(GetNewGUID(), position, obj_movement_info).serialise().get());
 
 #if VERSION_STRING == TBC
     sendTeleportPacket(position);
@@ -15790,6 +15724,8 @@ void Player::_Relocate(uint32_t mapid, const LocationVector& v, bool sendpending
     speedCheatReset();
 
     m_zAxisPosition = 0.0f;
+
+    setTransferStatus(TRANSFER_NONE);
 }
 
 #ifdef AE_TBC

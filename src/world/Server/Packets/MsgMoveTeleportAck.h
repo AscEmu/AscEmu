@@ -17,43 +17,53 @@ namespace AscEmu::Packets
     {
     public:
         WoWGuid guid;
+        LocationVector lv;
+        MovementInfo mi;
         uint32_t flags;
         uint32_t time;
 
-        MsgMoveTeleportAck() : MsgMoveTeleportAck(0, 0)
+        MsgMoveTeleportAck() : MsgMoveTeleportAck(WoWGuid(), LocationVector(), MovementInfo())
         {
         }
 
-        MsgMoveTeleportAck(uint32_t flags, uint32_t time) :
-#if VERSION_STRING >= Cata
+        MsgMoveTeleportAck(WoWGuid guid, LocationVector lv, MovementInfo mi) :
             ManagedPacket(MSG_MOVE_TELEPORT_ACK, 4 + 4 + 8),
-#else
-            ManagedPacket(MSG_MOVE_TELEPORT_ACK, 8),
-#endif
-            flags(flags),
-            time(time)
+            guid(guid),
+            lv(lv),
+            mi(mi)
         {
         }
 
     protected:
-        bool internalSerialise(WorldPacket& /*packet*/) override
+        bool internalSerialise(WorldPacket& packet) override
         {
-            return false;
+#if VERSION_STRING < TBC
+            packet << guid;
+            packet << uint32_t(2);
+            packet << uint32_t(0);
+            packet << uint8_t(0);
+            packet << float(0);
+            packet << lv.x;
+            packet << lv.y;
+            packet << lv.z;
+            packet << lv.o;
+            packet << uint16_t(2);
+            packet << uint8_t(0);
+#elif VERSION_STRING <= WotLK
+            mi.position = lv;
+            packet << guid;
+            packet << uint32_t(0);
+            mi.writeMovementInfo(packet, 0, false);
+#endif
+            return true;
         }
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-#if VERSION_STRING <= TBC
-            uint64_t rawGuid;
-            packet >> rawGuid;
-            guid.init(rawGuid);
-#endif
+#if VERSION_STRING <= WotLK
+            packet >> guid >> flags >> time;
 
-#if VERSION_STRING == WotLK
-            packet >> guid;
-#endif
-
-#if VERSION_STRING >= Cata
+#else // Cata and Mop
             packet >> flags >> time;
 
             WoWGuid cataGuid;
