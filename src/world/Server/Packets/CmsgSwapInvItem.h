@@ -37,7 +37,11 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+#if VERSION_STRING < Mop
             packet >> destSlot >> srcSlot;
+#else
+            packet >> srcSlot >> destSlot ;
+#endif
             return true;
         }
     };

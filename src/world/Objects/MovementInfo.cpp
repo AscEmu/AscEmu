@@ -2075,6 +2075,7 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode)
         } break;
         case MSG_MOVE_HEARTBEAT:
         {
+#if VERSION_STRING == Cata
             data >> position.z;
             data >> position.x;
             data >> position.y;
@@ -2083,32 +2084,49 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode)
             status_info.hasFallData = data.readBit();
             hasMovementFlags2 = !data.readBit();
             hasTransportData = data.readBit();
+
             guid[7] = data.readBit();
             guid[1] = data.readBit();
             guid[0] = data.readBit();
             guid[4] = data.readBit();
             guid[2] = data.readBit();
+
             status_info.hasOrientation = !data.readBit();
+
             guid[5] = data.readBit();
             guid[3] = data.readBit();
+
             status_info.hasSplineElevation = !data.readBit();
             status_info.hasSpline = data.readBit();
             data.readBit();
+
             guid[6] = data.readBit();
+
             hasMovementFlags = !data.readBit();
-            if (hasTransportData) status_info.hasTransportTime3 = data.readBit();
-            if (hasTransportData) transport_guid[4] = data.readBit();
-            if (hasTransportData) transport_guid[2] = data.readBit();
-            if (hasTransportData) status_info.hasTransportTime2 = data.readBit();
-            if (hasTransportData) transport_guid[5] = data.readBit();
-            if (hasTransportData) transport_guid[7] = data.readBit();
-            if (hasTransportData) transport_guid[6] = data.readBit();
-            if (hasTransportData) transport_guid[0] = data.readBit();
-            if (hasTransportData) transport_guid[3] = data.readBit();
-            if (hasTransportData) transport_guid[1] = data.readBit();
-            if (status_info.hasFallData) status_info.hasFallDirection = data.readBit();
-            if (hasMovementFlags) flags = data.readBits(30);
-            if (hasMovementFlags2) flags2 = static_cast<uint16_t>(data.readBits(12));
+
+            if (hasTransportData)
+            {
+                status_info.hasTransportTime3 = data.readBit();
+                transport_guid[4] = data.readBit();
+                transport_guid[2] = data.readBit();
+                status_info.hasTransportTime2 = data.readBit();
+                transport_guid[5] = data.readBit();
+                transport_guid[7] = data.readBit();
+                transport_guid[6] = data.readBit();
+                transport_guid[0] = data.readBit();
+                transport_guid[3] = data.readBit();
+                transport_guid[1] = data.readBit();
+            }
+
+            if (status_info.hasFallData)
+                status_info.hasFallDirection = data.readBit();
+
+            if (hasMovementFlags)
+                flags = data.readBits(30);
+
+            if (hasMovementFlags2)
+                flags2 = static_cast<uint16_t>(data.readBits(12));
+
             data.ReadByteSeq(guid[3]);
             data.ReadByteSeq(guid[6]);
             data.ReadByteSeq(guid[1]);
@@ -2117,31 +2135,173 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode)
             data.ReadByteSeq(guid[5]);
             data.ReadByteSeq(guid[0]);
             data.ReadByteSeq(guid[4]);
-            if (hasTransportData) data >> transport_position.z;
-            if (hasTransportData) data >> transport_seat;
-            if (hasTransportData) data >> transport_position.o;
-            if (hasTransportData) data.ReadByteSeq(transport_guid[4]);
-            if (hasTransportData) data >> transport_position.y;
-            if (hasTransportData) data >> transport_time;
-            if (hasTransportData) data >> transport_position.x;
-            if (hasTransportData) data.ReadByteSeq(transport_guid[5]);
-            if (hasTransportData) data.ReadByteSeq(transport_guid[1]);
-            if (hasTransportData) data.ReadByteSeq(transport_guid[3]);
-            if (hasTransportData) data.ReadByteSeq(transport_guid[7]);
-            if (hasTransportData && status_info.hasTransportTime3) data >> fall_time;
-            if (hasTransportData && status_info.hasTransportTime2) data >> transport_time2;
-            if (hasTransportData) data.ReadByteSeq(transport_guid[2]);
-            if (hasTransportData) data.ReadByteSeq(transport_guid[0]);
-            if (hasTransportData) data.ReadByteSeq(transport_guid[6]);
-            if (status_info.hasOrientation) data >> position.o;
-            if (status_info.hasFallData) data >> jump_info.velocity;
-            if (status_info.hasFallData) data >> fall_time;
-            if (status_info.hasFallData && status_info.hasFallDirection) data >> jump_info.xyspeed;
-            if (status_info.hasFallData && status_info.hasFallDirection) data >> jump_info.sinAngle;
-            if (status_info.hasFallData && status_info.hasFallDirection) data >> jump_info.cosAngle;
-            if (status_info.hasPitch) data >> pitch_rate;
-            if (status_info.hasSplineElevation) data >> spline_elevation;
-            if (status_info.hasTimeStamp)  data >> update_time;
+
+            if (hasTransportData)
+            {
+                data >> transport_position.z;
+                data >> transport_seat;
+                data >> transport_position.o;
+                data.ReadByteSeq(transport_guid[4]);
+                data >> transport_position.y;
+                data >> transport_time;
+                data >> transport_position.x;
+                data.ReadByteSeq(transport_guid[5]);
+                data.ReadByteSeq(transport_guid[1]);
+                data.ReadByteSeq(transport_guid[3]);
+                data.ReadByteSeq(transport_guid[7]);
+
+                if (status_info.hasTransportTime3)
+                    data >> transport_time3;
+
+                if (status_info.hasTransportTime2)
+                    data >> transport_time2;
+
+                data.ReadByteSeq(transport_guid[2]);
+                data.ReadByteSeq(transport_guid[0]);
+                data.ReadByteSeq(transport_guid[6]);
+            }
+
+            if (status_info.hasOrientation)
+                data >> position.o;
+
+            if (status_info.hasFallData)
+            {
+                data >> jump_info.velocity;
+                data >> fall_time;
+
+                if (status_info.hasFallDirection)
+                {
+                    data >> jump_info.xyspeed;
+                    data >> jump_info.sinAngle;
+                    data >> jump_info.cosAngle;
+                }
+            }
+
+            if (status_info.hasPitch)
+                data >> pitch_rate;
+
+            if (status_info.hasSplineElevation)
+                data >> spline_elevation;
+
+            if (status_info.hasTimeStamp)
+                data >> update_time;
+#else // Mop
+            uint32_t forcesCount;
+
+            data >> position.z;
+            data >> position.x;
+            data >> position.y;
+            forcesCount = data.readBits(22);
+            hasMovementFlags = !data.readBit();
+            data.readBit();
+            data.readBit();
+            guid[3] = data.readBit();
+            guid[6] = data.readBit();
+            status_info.hasPitch = !data.readBit();
+            data.readBit();
+            data.readBit();
+            guid[7] = data.readBit();
+            guid[2] = data.readBit();
+            guid[4] = data.readBit();
+            hasMovementFlags2 = !data.readBit();
+            status_info.hasOrientation = !data.readBit();
+            status_info.hasTimeStamp = !data.readBit();
+            hasTransportData = data.readBit();
+            status_info.hasFallData = data.readBit();
+            guid[5] = data.readBit();
+            status_info.hasSplineElevation = !data.readBit();
+            guid[1] = data.readBit();
+            guid[0] = data.readBit();
+
+            if (hasTransportData)
+            {
+                transport_guid[5] = data.readBit();
+                transport_guid[3] = data.readBit();
+                transport_guid[6] = data.readBit();
+                transport_guid[0] = data.readBit();
+                transport_guid[7] = data.readBit();
+                status_info.hasTransportTime3 = data.readBit();
+                transport_guid[1] = data.readBit();
+                transport_guid[2] = data.readBit();
+                transport_guid[4] = data.readBit();
+                status_info.hasTransportTime2 = data.readBit();
+            }
+
+            if (hasMovementFlags)
+                flags = data.readBits(30);
+
+            if (status_info.hasFallData)
+                status_info.hasFallDirection = data.readBit();
+
+            if (hasMovementFlags2)
+                flags2 = static_cast<uint16_t>(data.readBits(13));
+
+            data.ReadByteSeq(guid[2]);
+            data.ReadByteSeq(guid[3]);
+            data.ReadByteSeq(guid[6]);
+            data.ReadByteSeq(guid[1]);
+            data.ReadByteSeq(guid[4]);
+            data.ReadByteSeq(guid[7]);
+
+            for (uint32_t i = 0; i < forcesCount; i++)
+                    data.read_skip<uint32_t>();
+
+            data.ReadByteSeq(guid[5]);
+            data.ReadByteSeq(guid[0]);
+
+            if (status_info.hasFallData)
+            {
+                if (status_info.hasFallDirection)
+                {
+                    data >> jump_info.sinAngle;
+                    data >> jump_info.cosAngle;
+                    data >> jump_info.xyspeed;
+                }
+
+                data >> jump_info.velocity;
+                data >> fall_time;
+            }
+
+            if (hasTransportData)
+            {
+                data.ReadByteSeq(transport_guid[1]);
+                data.ReadByteSeq(transport_guid[3]);
+                data.ReadByteSeq(transport_guid[2]);
+                data.ReadByteSeq(transport_guid[0]);
+
+                if (status_info.hasTransportTime3)
+                    data >> transport_time3;
+
+                data >> transport_seat;
+                data.ReadByteSeq(transport_guid[7]);
+                data >> transport_position.x;
+                data.ReadByteSeq(transport_guid[4]);
+
+                if (status_info.hasTransportTime2)
+                    data >> transport_time2;
+
+                data >> transport_position.y;
+                data.ReadByteSeq(transport_guid[6]);
+                data.ReadByteSeq(transport_guid[5]);
+                data >> transport_position.z;
+                data >> transport_time;
+                data >> transport_position.o;
+            }
+
+            //counter
+
+            if (status_info.hasOrientation)
+                data >> position.o;
+
+            if (status_info.hasPitch)
+                data >> pitch_rate;
+
+            if (status_info.hasTimeStamp)
+                data >> update_time;
+
+            if (status_info.hasSplineElevation)
+                data >> spline_elevation;
+#endif
 
         } break;
         case CMSG_MOVE_KNOCK_BACK_ACK:
@@ -2595,6 +2755,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
         } break;
         case SMSG_PLAYER_MOVE:
         {
+#if VERSION_STRING == Cata
             data.writeBit(status_info.hasFallData);
             data.writeBit(guid[3]);
             data.writeBit(guid[6]);
@@ -2603,7 +2764,10 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             data.writeBit(!status_info.hasTimeStamp);
             data.writeBit(guid[0]);
             data.writeBit(guid[1]);
-            if (flags2) data.writeBits(flags2, 12);
+
+            if (flags2)
+                data.writeBits(flags2, 12);
+
             data.writeBit(guid[7]);
             data.writeBit(!flags);
             data.writeBit(!status_info.hasOrientation);
@@ -2611,57 +2775,212 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             data.writeBit(!status_info.hasSplineElevation);
             data.writeBit(false);
             data.writeBit(guid[4]);
-            if (status_info.hasFallData) data.writeBit(status_info.hasFallDirection);
+
+            if (status_info.hasFallData)
+                data.writeBit(status_info.hasFallDirection);
+
             data.writeBit(guid[5]);
             data.writeBit(hasTransportData);
-            if (flags) data.writeBits(flags, 30);
-            if (hasTransportData) data.writeBit(transport_guid[3]);
-            if (hasTransportData) data.writeBit(status_info.hasTransportTime3);
-            if (hasTransportData) data.writeBit(transport_guid[6]);
-            if (hasTransportData) data.writeBit(transport_guid[1]);
-            if (hasTransportData) data.writeBit(transport_guid[7]);
-            if (hasTransportData) data.writeBit(transport_guid[0]);
-            if (hasTransportData) data.writeBit(transport_guid[4]);
-            if (hasTransportData) data.writeBit(status_info.hasTransportTime2);
-            if (hasTransportData) data.writeBit(transport_guid[5]);
-            if (hasTransportData) data.writeBit(transport_guid[2]);
+
+            if (flags)
+                data.writeBits(flags, 30);
+
+            if (hasTransportData)
+            {
+                data.writeBit(transport_guid[3]);
+                data.writeBit(status_info.hasTransportTime3);
+                data.writeBit(transport_guid[6]);
+                data.writeBit(transport_guid[1]);
+                data.writeBit(transport_guid[7]);
+                data.writeBit(transport_guid[0]);
+                data.writeBit(transport_guid[4]);
+                data.writeBit(status_info.hasTransportTime2);
+                data.writeBit(transport_guid[5]);
+                data.writeBit(transport_guid[2]);
+            }
+
             data.writeBit(!status_info.hasPitch);
+
             data.WriteByteSeq(guid[5]);
-            if (status_info.hasFallData && status_info.hasFallDirection) data << float(jump_info.xyspeed);
-            if (status_info.hasFallData && status_info.hasFallDirection) data << float(jump_info.cosAngle);
-            if (status_info.hasFallData && status_info.hasFallDirection) data << float(jump_info.sinAngle);
-            if (status_info.hasFallData) data << float(jump_info.velocity);
-            if (status_info.hasFallData) data << uint32_t(fall_time);
-            if (status_info.hasSplineElevation) data << float(spline_elevation);
+
+            if (status_info.hasFallData)
+            {
+                if (status_info.hasFallDirection)
+                {
+                    data << float(jump_info.xyspeed);
+                    data << float(jump_info.cosAngle);
+                    data << float(jump_info.sinAngle);
+                }
+
+                data << float(jump_info.velocity);
+                data << uint32_t(fall_time);
+            }
+
+            if (status_info.hasSplineElevation)
+                data << float(spline_elevation);
+
             data.WriteByteSeq(guid[7]);
             data << float(position.y);
             data.WriteByteSeq(guid[3]);
-            if (hasTransportData && status_info.hasTransportTime3) data << uint32_t(transport_time3);
-            if (hasTransportData) data.WriteByteSeq(transport_guid[6]);
-            if (hasTransportData) data << int8_t(transport_seat);
-            if (hasTransportData) data.WriteByteSeq(transport_guid[5]);
-            if (hasTransportData) data << float(transport_position.x);
-            if (hasTransportData) data.WriteByteSeq(transport_guid[1]);
-            if (hasTransportData) data << float(normalizeOrientation(transport_position.o));
-            if (hasTransportData) data.WriteByteSeq(transport_guid[2]);
-            if (hasTransportData && status_info.hasTransportTime2) data << uint32_t(transport_time2);
-            if (hasTransportData) data.WriteByteSeq(transport_guid[0]);
-            if (hasTransportData) data << float(transport_position.z);
-            if (hasTransportData) data.WriteByteSeq(transport_guid[7]);
-            if (hasTransportData) data.WriteByteSeq(transport_guid[4]);
-            if (hasTransportData) data.WriteByteSeq(transport_guid[3]);
-            if (hasTransportData) data << float(transport_position.y);
-            if (hasTransportData) data << uint32_t(transport_time);
+
+            if (hasTransportData)
+            {
+                if (status_info.hasTransportTime3)
+                    data << uint32_t(transport_time3);
+
+                data.WriteByteSeq(transport_guid[6]);
+                data << int8_t(transport_seat);
+                data.WriteByteSeq(transport_guid[5]);
+                data << float(transport_position.x);
+                data.WriteByteSeq(transport_guid[1]);
+                data << float(normalizeOrientation(transport_position.o));
+                data.WriteByteSeq(transport_guid[2]);
+
+                if (status_info.hasTransportTime2)
+                    data << uint32_t(transport_time2);
+
+                data.WriteByteSeq(transport_guid[0]);
+                data << float(transport_position.z);
+                data.WriteByteSeq(transport_guid[7]);
+                data.WriteByteSeq(transport_guid[4]);
+                data.WriteByteSeq(transport_guid[3]);
+                data << float(transport_position.y);
+                data << uint32_t(transport_time);
+            }
+
             data.WriteByteSeq(guid[4]);
             data << float(position.x);
             data.WriteByteSeq(guid[6]);
             data << float(position.z);
-            if (status_info.hasTimeStamp) data << Util::getMSTime();
+
+            if (status_info.hasTimeStamp)
+                data << Util::getMSTime();
+
             data.WriteByteSeq(guid[2]);
-            if (status_info.hasPitch) data << float(pitch_rate);
+            if (status_info.hasPitch)
+                data << float(pitch_rate);
+
             data.WriteByteSeq(guid[0]);
-            if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
+
+            if (status_info.hasOrientation)
+                data << float(normalizeOrientation(position.o));
+
             data.WriteByteSeq(guid[1]);
+#else // Mop
+            data.writeBit(!status_info.hasPitch);
+            data.writeBit(guid[2]);
+            data.writeBit(0);
+            data.writeBit(0);
+            data.writeBit(guid[0]);
+            data.writeBit(!status_info.hasOrientation);
+            data.writeBit(status_info.hasFallData);
+            data.writeBit(false);
+            data.writeBit(guid[3]);
+            if (status_info.hasFallData)
+                data.writeBit(status_info.hasFallDirection);
+
+            data.writeBit(hasTransportData);
+            data.writeBit(guid[4]);
+
+            if (hasTransportData)
+            {
+                data.writeBit(transport_guid[5]);
+                data.writeBit(transport_guid[4]);
+                data.writeBit(transport_guid[7]);
+                data.writeBit(transport_guid[2]);
+                data.writeBit(transport_guid[6]);
+                data.writeBit(status_info.hasTransportTime2);
+                data.writeBit(transport_guid[3]);
+                data.writeBit(transport_guid[1]);
+                data.writeBit(status_info.hasTransportTime3);
+                data.writeBit(transport_guid[0]);
+            }
+
+            data.writeBit(!status_info.hasSplineElevation);
+            data.writeBit(!flags);
+            data.writeBit(0);
+
+            if (flags)
+                data.writeBits(flags, 30);
+
+            data.writeBit(!flags2);
+            data.writeBit(guid[7]);
+            data.writeBit(guid[1]);
+
+            if (status_info.hasTimeStamp)
+                data << Util::getMSTime();
+
+            if (flags2)
+                data.writeBits(flags2, 13);
+
+            data.writeBit(guid[5]);
+
+            data.writeBits(0, 22);
+            data.writeBit(guid[6]);
+            data << float(position.y);
+
+            if (hasTransportData)
+            {
+                data.WriteByteSeq(transport_guid[7]);
+
+                if (status_info.hasTransportTime2)
+                    data << uint32_t(transport_time2);
+
+                data << float(transport_position.x);
+                data.WriteByteSeq(transport_guid[5]);
+                data << int8_t(transport_seat);
+                data.WriteByteSeq(transport_guid[2]);
+                data.WriteByteSeq(transport_guid[0]);
+                data.WriteByteSeq(transport_guid[3]);
+                data << uint32_t(transport_time);
+                data.WriteByteSeq(transport_guid[4]);
+                data << float(transport_position.z);
+                data.WriteByteSeq(transport_guid[1]);
+                data << float(transport_position.y);
+                data << float(normalizeOrientation(transport_position.o));
+                data.WriteByteSeq(transport_guid[6]);
+
+                if (status_info.hasTransportTime3)
+                    data << uint32_t(transport_time3);
+            }
+            data.WriteByteSeq(guid[5]);
+            data.WriteByteSeq(guid[1]);
+            data << float(transport_position.z);
+
+            if (status_info.hasTimeStamp)
+                data << Util::getMSTime();
+
+            if (status_info.hasOrientation)
+                data << float(normalizeOrientation(position.o));
+
+            data.WriteByteSeq(guid[3]);
+            if (status_info.hasFallData)
+            {
+                if (status_info.hasFallDirection)
+                {
+                    data << float(jump_info.sinAngle);
+                    data << float(jump_info.xyspeed);
+                    data << float(jump_info.cosAngle);
+                }
+                data << float(jump_info.velocity);
+                data << uint32_t(fall_time);
+            }
+            data.WriteByteSeq(guid[0]);
+
+            if (status_info.hasPitch)
+                data << float(pitch_rate);
+
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[6]);
+
+            if (status_info.hasSplineElevation)
+                data << float(spline_elevation);
+
+            data.writeBits(0, 22);
+            data << float(transport_position.x);
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[7]);
+#endif
 
         } break;
         case MSG_MOVE_START_BACKWARD:

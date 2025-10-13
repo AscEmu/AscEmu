@@ -5066,6 +5066,16 @@ void Player::updateGlyphs()
         if (glyphSlot->Slot > 0)
             setGlyphSlot(static_cast<uint16_t>(glyphSlot->Slot - 1), glyphSlot->Id);
     }
+#elif VERSION_STRING == Mop
+    for (uint32_t i = 0; i < sGlyphSlotStore.getNumRows(); ++i)
+    {
+        const auto glyphSlot = sGlyphSlotStore.lookupEntry(i);
+        if (glyphSlot == nullptr)
+            continue;
+
+        if (glyphSlot->Slot > 0)
+            setGlyphSlot(static_cast<uint16_t>(glyphSlot->Slot - 1), glyphSlot->Id);
+    }
 #else
     uint16_t slot = 0;
     for (uint32_t i = 0; i < sGlyphSlotStore.getNumRows(); ++i)
