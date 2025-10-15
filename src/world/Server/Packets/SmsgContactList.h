@@ -64,9 +64,9 @@ namespace AscEmu::Packets
             for (const auto listMember : contactMemberList)
             {
                 packet << listMember.guid;
-#if VERSION_STRING == Mop
+    #if VERSION_STRING == Mop
                 packet << uint32_t(0) << uint32_t(0);
-#endif
+    #endif
                 packet << listMember.flag << listMember.note;
 
                 if (listMember.flag & 0x1)
@@ -75,8 +75,8 @@ namespace AscEmu::Packets
                     if (listMember.isOnline)
                         packet << listMember.zoneId << listMember.level << listMember.playerClass;
                 }
-#endif
             }
+#endif
 
             return true;
         }
