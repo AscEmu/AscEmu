@@ -54,6 +54,7 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+#if VERSION_STRING < Mop
             packet << guid;
             packet << aura_updates.visualSlot;
 
@@ -91,7 +92,114 @@ namespace AscEmu::Packets
                         packet << aura_updates.effAmount[2];
                 }
             }
+#else // Mop
+            WoWGuid targetGuid = guid.getRawGuid();
 
+            packet.writeBit(targetGuid[7]);
+            packet.writeBit(0);
+            packet.writeBits(1, 24);
+            packet.writeBit(targetGuid[6]);
+            packet.writeBit(targetGuid[1]);
+            packet.writeBit(targetGuid[3]);
+            packet.writeBit(targetGuid[0]);
+            packet.writeBit(targetGuid[4]);
+            packet.writeBit(targetGuid[2]);
+            packet.writeBit(targetGuid[5]);
+            packet.writeBit(1);
+
+            if (aura_updates.flags & AFLAG_SEND_EFFECT_AMOUNT)
+            {
+                uint8_t effCount = 0;
+                if (aura_updates.flags & AFLAG_EFFECT_1)
+                    effCount++;
+
+                if (aura_updates.flags & AFLAG_EFFECT_2)
+                    effCount++;
+
+                if (aura_updates.flags & AFLAG_EFFECT_3)
+                    effCount++;
+
+                packet.writeBits(effCount, 22);
+            }
+            else
+                packet.writeBits(0, 22);
+
+            packet.writeBit(!(aura_updates.flags & AFLAG_IS_CASTER));
+
+            if (!(aura_updates.flags & AFLAG_IS_CASTER))
+            {
+                WoWGuid casterGuid = aura_updates.casterGuid.getRawGuid();
+                packet.writeBit(casterGuid[3]);
+                packet.writeBit(casterGuid[4]);
+                packet.writeBit(casterGuid[6]);
+                packet.writeBit(casterGuid[1]);
+                packet.writeBit(casterGuid[5]);
+                packet.writeBit(casterGuid[2]);
+                packet.writeBit(casterGuid[0]);
+                packet.writeBit(casterGuid[7]);
+            }
+
+            packet.writeBits(0, 22);
+            packet.writeBit(aura_updates.flags & AFLAG_DURATION);
+            packet.writeBit(aura_updates.flags & AFLAG_DURATION);
+
+            packet.flushBits();
+
+            if (!(aura_updates.flags & AFLAG_IS_CASTER))
+            {
+                WoWGuid casterGuid = aura_updates.casterGuid.getRawGuid();
+                packet.WriteByteSeq(casterGuid[3]);
+                packet.WriteByteSeq(casterGuid[2]);
+                packet.WriteByteSeq(casterGuid[1]);
+                packet.WriteByteSeq(casterGuid[6]);
+                packet.WriteByteSeq(casterGuid[4]);
+                packet.WriteByteSeq(casterGuid[0]);
+                packet.WriteByteSeq(casterGuid[5]);
+                packet.WriteByteSeq(casterGuid[7]);
+            }
+
+            packet << uint8_t(aura_updates.flags);
+            packet << uint16_t(aura_updates.level);
+            packet << uint32_t(aura_updates.spellId);
+
+            if (aura_updates.flags & AFLAG_DURATION)
+            {
+                packet << uint32_t(aura_updates.duration);
+                packet << uint32_t(aura_updates.duration);
+            }
+
+            packet << uint8_t(aura_updates.stackCount);
+            packet << uint32_t(0);
+
+            if (aura_updates.flags & AFLAG_SEND_EFFECT_AMOUNT)
+            {
+                if (aura_updates.flags & AFLAG_EFFECT_1)
+                    packet << float(aura_updates.effAmount[0]);
+                else
+                    packet << float(0.f);
+
+                if (aura_updates.flags & AFLAG_EFFECT_2)
+                    packet << float(aura_updates.effAmount[1]);
+                else
+                    packet << float(0.f);
+
+                if (aura_updates.flags & AFLAG_EFFECT_3)
+                    packet << float(aura_updates.effAmount[2]);
+                else
+                    packet << float(0.f);
+            }
+
+            packet << uint8_t(aura_updates.visualSlot);
+
+            packet.WriteByteSeq(targetGuid[2]);
+            packet.WriteByteSeq(targetGuid[6]);
+            packet.WriteByteSeq(targetGuid[7]);
+            packet.WriteByteSeq(targetGuid[1]);
+            packet.WriteByteSeq(targetGuid[3]);
+            packet.WriteByteSeq(targetGuid[4]);
+            packet.WriteByteSeq(targetGuid[0]);
+            packet.WriteByteSeq(targetGuid[5]);
+#endif
             return true;
         }
 

@@ -26,8 +26,10 @@ namespace AscEmu::Packets
 //Zyres: Due to wrong understanding of these opcodes the logic gets turned around here
 #if VERSION_STRING < Cata
             ManagedPacket(SMSG_FORCE_TURN_RATE_CHANGE, 0),
-#else
+#elif VERSION_STRING == Cata
             ManagedPacket(MSG_MOVE_SET_TURN_RATE, 0),
+#elif VERSION_STRING == Mop
+            ManagedPacket(SMSG_MOVE_SET_TURN_RATE, 0),
 #endif
             guid(guid),
             rate(rate)
@@ -63,8 +65,25 @@ namespace AscEmu::Packets
             packet << uint32_t(0);
             packet.WriteByteSeq(guid[6]);
             packet.WriteByteSeq(guid[4]);
-            
-#else // TODO Mop
+#else // Mop
+            packet.writeBit(guid[6]);
+            packet.writeBit(guid[5]);
+            packet.writeBit(guid[1]);
+            packet.writeBit(guid[4]);
+            packet.writeBit(guid[0]);
+            packet.writeBit(guid[7]);
+            packet.writeBit(guid[3]);
+            packet.writeBit(guid[2]);
+            packet << float(rate);
+            packet.WriteByteSeq(guid[7]);
+            packet.WriteByteSeq(guid[3]);
+            packet.WriteByteSeq(guid[5]);
+            packet.WriteByteSeq(guid[0]);
+            packet.WriteByteSeq(guid[4]);
+            packet.WriteByteSeq(guid[6]);
+            packet.WriteByteSeq(guid[2]);
+            packet << uint32_t(0);
+            packet.WriteByteSeq(guid[1]);
 #endif
             return true;
         }

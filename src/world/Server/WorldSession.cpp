@@ -547,12 +547,16 @@ void WorldSession::SystemMessage(const char* format, ...)
     vsnprintf(buffer, 1024, format, ap);
     va_end(ap);
 
+#if VERSION_STRING < Mop
     SendPacket(SmsgMessageChat(SystemMessagePacket(buffer)).serialise().get());
+#endif
 }
 
 void WorldSession::sendSystemMessagePacket(std::string& _message)
 {
+#if VERSION_STRING < Mop
     SendPacket(SmsgMessageChat(SystemMessagePacket(_message)).serialise().get());
+#endif
 }
 
 void WorldSession::SendChatPacket(WorldPacket* data, uint32_t langpos, int32_t lang, WorldSession* originator)
@@ -1143,7 +1147,9 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_SELF_RES, &WorldSession::handleSelfResurrect, true, true, true, false, false);
     registry.registerOpcode(MSG_RANDOM_ROLL, &WorldSession::handleRandomRollOpcode, true, true, true, false, false);
     registry.registerOpcode(MSG_SET_DUNGEON_DIFFICULTY, &WorldSession::handleDungeonDifficultyOpcode, true, true, true, true, false);
+    registry.registerOpcode(CMSG_SET_DUNGEON_DIFFICULTY, &WorldSession::handleDungeonDifficultyOpcode, false, false, false, false, true);
     registry.registerOpcode(MSG_SET_RAID_DIFFICULTY, &WorldSession::handleRaidDifficultyOpcode, false, false, true, true, false);
+    registry.registerOpcode(CMSG_SET_RAID_DIFFICULTY, &WorldSession::handleRaidDifficultyOpcode, false, false, false, false, true);
     registry.registerOpcode(CMSG_INSTANCE_LOCK_RESPONSE, &WorldSession::handleInstanceLockResponse, false, false, true, false, false);
     registry.registerOpcode(CMSG_VIOLENCE_LEVEL, &WorldSession::handleViolenceLevel, false, false, false, true, false);
 
@@ -1226,7 +1232,7 @@ void WorldSession::registerOpcodeHandler()
     // new since cata
     registry.registerOpcode<STATUS_AUTHED>(CMSG_OBJECT_UPDATE_FAILED, &WorldSession::handleObjectUpdateFailedOpcode, false, false, false, true, true);
     registry.registerOpcode<STATUS_AUTHED>(CMSG_LOADING_SCREEN_NOTIFY, &WorldSession::handleLoadScreenOpcode, false, false, false, true, true);
-    registry.registerOpcode<STATUS_AUTHED>(CMSG_TIME_SYNC_RESPONSE, &WorldSession::handleTimeSyncRespOpcode, false, false, false, true, false);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_TIME_SYNC_RESPONSE, &WorldSession::handleTimeSyncRespOpcode, false, false, false, true, true);
     registry.registerOpcode(CMSG_MOVE_SET_CAN_FLY, &WorldSession::handleMovementOpcodes, false, false, false, true, false);
     registry.registerOpcode(CMSG_FORCE_PITCH_RATE_CHANGE_ACK, &WorldSession::handleAcknowledgementOpcodes, false, false, false, true, false);
     registry.registerOpcode(CMSG_MESSAGECHAT_SAY, &WorldSession::handleMessageChatOpcode, false, false, false, true, false);
@@ -1285,7 +1291,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_REPORT, &WorldSession::handleReportOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_REPORT_PLAYER, &WorldSession::handleReportPlayerOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_REQUEST_CEMETERY_LIST, &WorldSession::handleRequestCemeteryListOpcode, false, false, false, true, false);
-    registry.registerOpcode(CMSG_REQUEST_HOTFIX, &WorldSession::handleRequestHotfix, false, false, false, true, false);
+    registry.registerOpcode(CMSG_REQUEST_HOTFIX, &WorldSession::handleRequestHotfix, false, false, false, true, true);
     registry.registerOpcode(CMSG_RETURN_TO_GRAVEYARD, &WorldSession::handleReturnToGraveyardOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_SUGGESTION_SUBMIT, &WorldSession::handleSuggestionOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_LOG_DISCONNECT, &WorldSession::handleLogDisconnectOpcode, false, false, false, true, false);

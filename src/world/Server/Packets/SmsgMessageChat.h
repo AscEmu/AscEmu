@@ -120,112 +120,112 @@ namespace AscEmu::Packets
                     packet << uint32_t(message.length() + 1) << message << flag;
                     break;
             }
-#else
-            WoWGuid target = 0;
-            WoWGuid source = 0;
-            WoWGuid unkGuid = 0;
-            WoWGuid unkGuid2 = 0;
+#else // TODO Mop
+            //WoWGuid target = 0;
+            //WoWGuid source = 0;
+            //WoWGuid unkGuid = 0;
+            //WoWGuid unkGuid2 = 0;
 
-            packet.writeBit(1);
-            packet.writeBit(0);
-            packet.writeBit(0);
-            packet.writeBit(1);
-            packet.writeBit(0);
-            packet.writeBit(1);
-            packet.writeBit(1);
-            packet.writeBit(1);
+            //packet.writeBit(1);
+            //packet.writeBit(0);
+            //packet.writeBit(0);
+            //packet.writeBit(1);
+            //packet.writeBit(0);
+            //packet.writeBit(1);
+            //packet.writeBit(1);
+            //packet.writeBit(1);
 
-            packet.writeBit(unkGuid[0]);
-            packet.writeBit(unkGuid[1]);
-            packet.writeBit(unkGuid[5]);
-            packet.writeBit(unkGuid[4]);
-            packet.writeBit(unkGuid[3]);
-            packet.writeBit(unkGuid[2]);
-            packet.writeBit(unkGuid[6]);
-            packet.writeBit(unkGuid[7]);
+            //packet.writeBit(unkGuid[0]);
+            //packet.writeBit(unkGuid[1]);
+            //packet.writeBit(unkGuid[5]);
+            //packet.writeBit(unkGuid[4]);
+            //packet.writeBit(unkGuid[3]);
+            //packet.writeBit(unkGuid[2]);
+            //packet.writeBit(unkGuid[6]);
+            //packet.writeBit(unkGuid[7]);
 
-            packet.writeBit(0);
+            //packet.writeBit(0);
 
-            packet.writeBit(source[7]);
-            packet.writeBit(source[6]);
-            packet.writeBit(source[1]);
-            packet.writeBit(source[4]);
-            packet.writeBit(source[0]);
-            packet.writeBit(source[2]);
-            packet.writeBit(source[3]);
-            packet.writeBit(source[5]);
+            //packet.writeBit(source[7]);
+            //packet.writeBit(source[6]);
+            //packet.writeBit(source[1]);
+            //packet.writeBit(source[4]);
+            //packet.writeBit(source[0]);
+            //packet.writeBit(source[2]);
+            //packet.writeBit(source[3]);
+            //packet.writeBit(source[5]);
 
-            packet.writeBit(0);
-            packet.writeBit(0); // Send Language
-            packet.writeBit(1);
+            //packet.writeBit(0);
+            //packet.writeBit(0); // Send Language
+            //packet.writeBit(1);
 
-            packet.writeBit(target[0]);
-            packet.writeBit(target[3]);
-            packet.writeBit(target[7]);
-            packet.writeBit(target[2]);
-            packet.writeBit(target[1]);
-            packet.writeBit(target[5]);
-            packet.writeBit(target[4]);
-            packet.writeBit(target[6]);
+            //packet.writeBit(target[0]);
+            //packet.writeBit(target[3]);
+            //packet.writeBit(target[7]);
+            //packet.writeBit(target[2]);
+            //packet.writeBit(target[1]);
+            //packet.writeBit(target[5]);
+            //packet.writeBit(target[4]);
+            //packet.writeBit(target[6]);
 
-            packet.writeBit(1);
-            packet.writeBit(0);
-            packet.writeBits(message.length(), 12);
-            packet.writeBit(1);
-            packet.writeBit(1);
-            packet.writeBit(0);
+            //packet.writeBit(1);
+            //packet.writeBit(0);
+            //packet.writeBits(message.length(), 12);
+            //packet.writeBit(1);
+            //packet.writeBit(1);
+            //packet.writeBit(0);
 
-            packet.writeBit(unkGuid2[2]);
-            packet.writeBit(unkGuid2[5]);
-            packet.writeBit(unkGuid2[7]);
-            packet.writeBit(unkGuid2[4]);
-            packet.writeBit(unkGuid2[0]);
-            packet.writeBit(unkGuid2[1]);
-            packet.writeBit(unkGuid2[3]);
-            packet.writeBit(unkGuid2[6]);
+            //packet.writeBit(unkGuid2[2]);
+            //packet.writeBit(unkGuid2[5]);
+            //packet.writeBit(unkGuid2[7]);
+            //packet.writeBit(unkGuid2[4]);
+            //packet.writeBit(unkGuid2[0]);
+            //packet.writeBit(unkGuid2[1]);
+            //packet.writeBit(unkGuid2[3]);
+            //packet.writeBit(unkGuid2[6]);
 
-            packet.flushBits();
+            //packet.flushBits();
 
-            packet.WriteByteSeq(unkGuid2[4]);
-            packet.WriteByteSeq(unkGuid2[5]);
-            packet.WriteByteSeq(unkGuid2[7]);
-            packet.WriteByteSeq(unkGuid2[3]);
-            packet.WriteByteSeq(unkGuid2[2]);
-            packet.WriteByteSeq(unkGuid2[6]);
-            packet.WriteByteSeq(unkGuid2[0]);
-            packet.WriteByteSeq(unkGuid2[1]);
+            //packet.WriteByteSeq(unkGuid2[4]);
+            //packet.WriteByteSeq(unkGuid2[5]);
+            //packet.WriteByteSeq(unkGuid2[7]);
+            //packet.WriteByteSeq(unkGuid2[3]);
+            //packet.WriteByteSeq(unkGuid2[2]);
+            //packet.WriteByteSeq(unkGuid2[6]);
+            //packet.WriteByteSeq(unkGuid2[0]);
+            //packet.WriteByteSeq(unkGuid2[1]);
 
-            packet.WriteByteSeq(target[4]);
-            packet.WriteByteSeq(target[7]);
-            packet.WriteByteSeq(target[1]);
-            packet.WriteByteSeq(target[5]);
-            packet.WriteByteSeq(target[0]);
-            packet.WriteByteSeq(target[6]);
-            packet.WriteByteSeq(target[2]);
-            packet.WriteByteSeq(target[3]);
+            //packet.WriteByteSeq(target[4]);
+            //packet.WriteByteSeq(target[7]);
+            //packet.WriteByteSeq(target[1]);
+            //packet.WriteByteSeq(target[5]);
+            //packet.WriteByteSeq(target[0]);
+            //packet.WriteByteSeq(target[6]);
+            //packet.WriteByteSeq(target[2]);
+            //packet.WriteByteSeq(target[3]);
 
-            packet << uint8_t(type);
+            //packet << uint8_t(type);
 
-            packet.WriteByteSeq(unkGuid[1]);
-            packet.WriteByteSeq(unkGuid[3]);
-            packet.WriteByteSeq(unkGuid[4]);
-            packet.WriteByteSeq(unkGuid[6]);
-            packet.WriteByteSeq(unkGuid[0]);
-            packet.WriteByteSeq(unkGuid[2]);
-            packet.WriteByteSeq(unkGuid[5]);
-            packet.WriteByteSeq(unkGuid[7]);
+            //packet.WriteByteSeq(unkGuid[1]);
+            //packet.WriteByteSeq(unkGuid[3]);
+            //packet.WriteByteSeq(unkGuid[4]);
+            //packet.WriteByteSeq(unkGuid[6]);
+            //packet.WriteByteSeq(unkGuid[0]);
+            //packet.WriteByteSeq(unkGuid[2]);
+            //packet.WriteByteSeq(unkGuid[5]);
+            //packet.WriteByteSeq(unkGuid[7]);
 
-            packet.WriteByteSeq(source[2]);
-            packet.WriteByteSeq(source[5]);
-            packet.WriteByteSeq(source[3]);
-            packet.WriteByteSeq(source[6]);
-            packet.WriteByteSeq(source[7]);
-            packet.WriteByteSeq(source[4]);
-            packet.WriteByteSeq(source[1]);
-            packet.WriteByteSeq(source[0]);
+            //packet.WriteByteSeq(source[2]);
+            //packet.WriteByteSeq(source[5]);
+            //packet.WriteByteSeq(source[3]);
+            //packet.WriteByteSeq(source[6]);
+            //packet.WriteByteSeq(source[7]);
+            //packet.WriteByteSeq(source[4]);
+            //packet.WriteByteSeq(source[1]);
+            //packet.WriteByteSeq(source[0]);
 
-            packet << uint8_t(language);
-            packet.WriteString(message);
+            //packet << uint8_t(language);
+            //packet.WriteString(message);
 #endif
 
             return true;

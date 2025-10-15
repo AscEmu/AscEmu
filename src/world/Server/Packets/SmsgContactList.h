@@ -47,11 +47,19 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+#if VERSION_STRING == Classic
+            packet << uint8_t(listCount);
+            for (const auto listMember : contactMemberList)
+            {
+                packet << listMember.guid;
+                packet << listMember.isOnline;
+                if (listMember.isOnline)
+                    packet << listMember.zoneId << listMember.level << listMember.playerClass;
+            }
+#endif
+
 #if VERSION_STRING > Classic
             packet << socialFlag << listCount;
-#else
-            packet << uint8_t(listCount);
-#endif
 
             for (const auto listMember : contactMemberList)
             {
@@ -59,16 +67,13 @@ namespace AscEmu::Packets
 #if VERSION_STRING == Mop
                 packet << uint32_t(0) << uint32_t(0);
 #endif
-#if VERSION_STRING > Classic
                 packet << listMember.flag << listMember.note;
 
                 if (listMember.flag & 0x1)
                 {
-#endif
                     packet << listMember.isOnline;
                     if (listMember.isOnline)
                         packet << listMember.zoneId << listMember.level << listMember.playerClass;
-#if VERSION_STRING > Classic
                 }
 #endif
             }

@@ -35,9 +35,9 @@ namespace AscEmu::Packets
         {
 #if VERSION_STRING < Mop
             packet << time << gameSpeed;
-#if VERSION_STRING > TBC
+    #if VERSION_STRING > TBC
             packet << uint32_t(0);
-#endif
+    #endif
 #else
             packet << uint32_t(0) << time << uint32_t(0) << time << gameSpeed;
 #endif

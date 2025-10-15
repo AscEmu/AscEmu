@@ -45,6 +45,11 @@ namespace AscEmu::Packets
         {
 #if VERSION_STRING == Mop
             packet << spellId << errorMsg << multiCast;
+            packet.writeBit(1);
+            packet.writeBit(1);
+            packet.flushBits();
+
+            packet.writeBits(0, extra2 ? 2 : 1);
             if (extra1 || extra2)
                 packet << extra1;
 

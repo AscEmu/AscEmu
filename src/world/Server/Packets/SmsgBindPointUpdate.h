@@ -42,10 +42,6 @@ namespace AscEmu::Packets
             return true;
         }
 
-        bool internalDeserialise(WorldPacket& packet) override
-        {
-            packet >> pos.x >> pos.y >> pos.z >> map_id >> zone_id;
-            return true;
-        }
+        bool internalDeserialise(WorldPacket& packet) override { return false; }
     };
 }

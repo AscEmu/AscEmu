@@ -37,7 +37,10 @@ namespace AscEmu::Packets
 
         bool internalSerialise(WorldPacket& packet) override
         {
+#if VERSION_STRING < Mop
             packet << difficulty << isHeroic;
+#else
+#endif
             return true;
         }
 

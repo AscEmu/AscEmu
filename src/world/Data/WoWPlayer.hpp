@@ -878,6 +878,7 @@ struct WoWPlayer : WoWUnit
 
     union skill_info_union
     {
+        std::array<uint32_t, WOWPLAYER_SKILL_INFO_COUNT> skill_id;
         struct parts
         {
             std::array<uint32_t, 64> skill_line;
@@ -888,7 +889,6 @@ struct WoWPlayer : WoWUnit
             std::array<uint32_t, 64> skill_mod;
             std::array<uint32_t, 64> skill_talent;
         } skill_info_parts;
-        std::array<uint32_t, WOWPLAYER_SKILL_INFO_COUNT> skill_info;
     } field_skill_info;
 
     uint32_t character_points_1;

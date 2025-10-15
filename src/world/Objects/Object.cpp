@@ -525,9 +525,7 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
 
     // this will cache automatically if needed
     buildValuesUpdate(updateType, data, &updateMask, target);
-#if VERSION_STRING == Mop
-    *data << uint8_t(0);
-#endif
+
     // Update count
     return 1;
 }
@@ -2393,9 +2391,7 @@ uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* targe
                 *data << m_wowGuid;
 
                 buildValuesUpdate(UPDATETYPE_VALUES, data, &updateMask, target);
-#if VERSION_STRING == Mop
-                * data << uint8_t(0);
-#endif
+
                 return 1;
             }
 
@@ -2417,9 +2413,7 @@ uint32_t Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* ma
         *buf << m_wowGuid;
 
         buildValuesUpdate(UPDATETYPE_VALUES, buf, mask, nullptr);
-#if VERSION_STRING == Mop
-        * buf << uint8_t(0);
-#endif
+
         // 1 update.
         return 1;
     }
@@ -3398,7 +3392,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
         if (isSplineEnabled)
         {
-            //Movement::PacketBuilder::WriteCreateBits(*unit->movespline, *data);
+            MovementMgr::PacketBuilder::WriteCreateData(*unit->movespline, *data);
         }
 
         data->writeBit(!obj_movement_info.getMovementFlags2());
@@ -3428,21 +3422,16 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
     if (updateFlags & UPDATEFLAG_HAS_TARGET)
     {
-        if (isCreatureOrPlayer())
-        {
-            WoWGuid victimGuid = static_cast<Unit*>(this)->getTargetGuid();
+        WoWGuid victimGuid = static_cast<Unit*>(this)->getTargetGuid();
 
-            data->writeBit(victimGuid[4]);
-            data->writeBit(victimGuid[6]);
-            data->writeBit(victimGuid[5]);
-            data->writeBit(victimGuid[2]);
-            data->writeBit(victimGuid[0]);
-            data->writeBit(victimGuid[1]);
-            data->writeBit(victimGuid[3]);
-            data->writeBit(victimGuid[7]);
-        }
-        else
-            data->writeBits(0, 8);
+        data->writeBit(victimGuid[4]);
+        data->writeBit(victimGuid[6]);
+        data->writeBit(victimGuid[5]);
+        data->writeBit(victimGuid[2]);
+        data->writeBit(victimGuid[0]);
+        data->writeBit(victimGuid[1]);
+        data->writeBit(victimGuid[3]);
+        data->writeBit(victimGuid[7]);
     }
 
     data->flushBits();
@@ -3483,7 +3472,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
         if (isSplineEnabled)
         {
-            //Movement::PacketBuilder::WriteCreateBytes(*unit->movespline, *data);
+            MovementMgr::PacketBuilder::WriteCreateData(*unit->movespline, *data);
         }
 
         *data << float(unit->getSpeedRate(TYPE_FLY, true));
@@ -3553,8 +3542,8 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         data->writeBit(transGuid[4]);
         data->writeBit(transGuid[1]);
 
-        /*if (obj->obj_movement_info.transport_time3 && obj->obj_movement_info.transport_guid)
-            *data << uint32_t(obj->obj_movement_info.transport_time3);*/
+        if (obj_movement_info.transport_time3 && obj_movement_info.transport_guid)
+            *data << obj_movement_info.transport_time3;
 
         *data << uint32_t(GetTransTime());
 
@@ -3570,26 +3559,16 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
     if (updateFlags & UPDATEFLAG_HAS_TARGET)
     {
-        if (isCreatureOrPlayer())
-        {
-            WoWGuid victimGuid = static_cast<Unit*>(this)->getTargetGuid();
+        WoWGuid victimGuid = static_cast<Unit*>(this)->getTargetGuid();
 
-            data->WriteByteSeq(victimGuid[7]);
-            data->WriteByteSeq(victimGuid[1]);
-            data->WriteByteSeq(victimGuid[5]);
-            data->WriteByteSeq(victimGuid[2]);
-            data->WriteByteSeq(victimGuid[6]);
-            data->WriteByteSeq(victimGuid[3]);
-            data->WriteByteSeq(victimGuid[0]);
-            data->WriteByteSeq(victimGuid[4]);
-        }
-        else
-        {
-            for (uint8_t i = 0; i < 8; ++i)
-            {
-                *data << uint8_t(0);
-            }
-        }
+        data->WriteByteSeq(victimGuid[7]);
+        data->WriteByteSeq(victimGuid[1]);
+        data->WriteByteSeq(victimGuid[5]);
+        data->WriteByteSeq(victimGuid[2]);
+        data->WriteByteSeq(victimGuid[6]);
+        data->WriteByteSeq(victimGuid[3]);
+        data->WriteByteSeq(victimGuid[0]);
+        data->WriteByteSeq(victimGuid[4]);
     }
 
     if (updateFlags & UPDATEFLAG_VEHICLE)

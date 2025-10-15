@@ -1515,7 +1515,10 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
     recvPacket >> type;
 
     if (type != DB2_REPLY_ITEM && type != DB2_REPLY_SPARSE)
+    {
+        recvPacket.rfinish();
         return;
+    }
 
     uint32_t count = recvPacket.readBits(21);
 
@@ -1545,19 +1548,19 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
         recvPacket.ReadByteSeq(guids[i][2]);
         recvPacket.ReadByteSeq(guids[i][3]);
 
-        /*switch (type)
+        switch (type)
         {
-            case DB2_REPLY_ITEM:
-                SendItemDb2Reply(entry);
+            /*case DB2_REPLY_ITEM:
+                sendItemDb2Reply(entry);
                 break;
             case DB2_REPLY_SPARSE:
-                SendItemSparseDb2Reply(entry);
-                break;
+                sendItemSparseDb2Reply(entry);
+                break;*/
             default:
                 sLogger.debug("Received unknown hotfix type {}", type);
                 recvPacket.clear();
                 break;
-        }*/
+        }
 
         WorldPacket data(SMSG_DB_REPLY, 16);
         data << uint32_t(entry);

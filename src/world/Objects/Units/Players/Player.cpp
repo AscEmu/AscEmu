@@ -570,8 +570,10 @@ void Player::OnPushToWorld()
     m_beingPushed = false;
     addItemsToWorld();
 
+#if VERSION_STRING < Mop
     // set fly if cheat is active
     setMoveCanFly(m_cheats.hasFlyCheat);
+#endif
 
     getMovementManager()->initialize();
 
@@ -597,6 +599,7 @@ void Player::OnPushToWorld()
     m_enteringWorld = false;
     m_teleportState = 0;
 
+#if VERSION_STRING < Mop
     // can only fly in outlands or northrend (northrend requires cold weather flying)
     if (m_flyingAura && ((m_mapId != 530) && (m_mapId != 571 || !hasSpell(54197) && getDeathState() == ALIVE)))
     {
@@ -606,6 +609,7 @@ void Player::OnPushToWorld()
 
     // send weather
     sWeatherMgr.sendWeather(this);
+#endif
 
     setHealth(m_loadHealth > getMaxHealth() ? getMaxHealth() : m_loadHealth);
     if (getPowerType() == POWER_TYPE_MANA)
@@ -697,7 +701,7 @@ void Player::OnPushToWorld()
 
     data.Initialize(SMSG_BATTLE_PET_JOURNAL);
     data.writeBits(0, 19);
-    data.writeBit(1);
+    data.writeBit(0);
     data.writeBits(0, 25);
     data.flushBits();
     data << uint16_t(0);
@@ -708,8 +712,10 @@ void Player::OnPushToWorld()
 
 #endif
 
+#if VERSION_STRING < Mop
     sendTaxiNodeStatusMultiple();
     continueTaxiFlight();
+#endif
 }
 
 void Player::removeFromWorld()
@@ -3119,7 +3125,7 @@ void Player::initVisibleUpdateBits()
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, unit_flags_2));
 
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredArrayField(WoWUnit, base_attack_time, 0));
-    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredArrayField(WoWUnit, base_attack_time, 1) + 1);
+    Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredArrayField(WoWUnit, base_attack_time, 1));
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, bounding_radius));
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, combat_reach));
     Player::m_visibleUpdateMask.SetBit(getOffsetForStructuredField(WoWUnit, display_id));
@@ -5961,7 +5967,7 @@ void Player::smsg_TalentsInfo([[maybe_unused]]bool SendPetTalents)
     }
     getSession()->SendPacket(&data);
 #endif
-#else
+#else // Mop
     WorldPacket data(SMSG_UPDATE_TALENT_DATA, 50);
     data << uint8_t(m_talentActiveSpec); // Which spec is active right now
     data.writeBits(m_talentSpecsCount, 19);
@@ -6319,7 +6325,9 @@ void Player::broadcastMessage(const char* Format, ...)
     vsnprintf(Message, 1024, Format, list);
     va_end(list);
 
+#if VERSION_STRING < Mop
     m_session->SendPacket(SmsgMessageChat(SystemMessagePacket(Message)).serialise().get());
+#endif
 }
 
 void Player::sendAreaTriggerMessage(const char* message, ...)
@@ -9352,7 +9360,9 @@ void Player::sendResetFailedNotify(uint32_t mapid)
 
 void Player::sendInstanceDifficultyPacket(uint8_t difficulty)
 {
+#if VERSION_STRING < Mop
     m_session->SendPacket(SmsgInstanceDifficulty(difficulty).serialise().get());
+#endif
 }
 
 void Player::sendNewDrunkStatePacket(uint32_t state, uint32_t itemId)
@@ -11882,7 +11892,9 @@ void Player::giveXp(uint32_t xp, const uint64_t& guid, bool allowBonus)
 
 void Player::sendLogXpGainPacket(uint64_t guid, uint32_t normalXp, uint32_t restedXp, bool type)
 {
+#if VERSION_STRING < Mop
     m_session->SendPacket(SmsgLogXpGain(guid, normalXp, restedXp, type).serialise().get());
+#endif
 }
 
 void Player::toggleXpGain() { m_isXpGainAllowed ? m_isXpGainAllowed = false : m_isXpGainAllowed = true; }
@@ -12713,10 +12725,11 @@ void Player::sendInstanceResetWarning(uint32_t mapid, InstanceDifficulty::Diffic
     else
         type = RAID_INSTANCE_WARNING_MIN_SOON;
 
+#if VERSION_STRING <= Cata
     WorldPacket data(SMSG_RAID_INSTANCE_MESSAGE, 4 + 4 + 4 + 4);
     data << uint32_t(type);
     data << uint32_t(mapid);
-    data << uint32_t(difficulty);   // difficulty
+    data << uint32_t(difficulty);
     data << uint32_t(time);
 
     if (type == RAID_INSTANCE_WELCOME)
@@ -12724,6 +12737,16 @@ void Player::sendInstanceResetWarning(uint32_t mapid, InstanceDifficulty::Diffic
         data << uint8_t(0); // is locked
         data << uint8_t(0); // is extended, ignored if prev field is 0
     }
+#else // Mop
+    WorldPacket data(SMSG_RAID_INSTANCE_MESSAGE, 4 + 4 + 4 + 4);
+    data.writeBit(0); // is locked
+    data.writeBit(0); // is extended, ignored if prev field is 0
+    data.flushBits();
+    data << uint32_t(mapid);
+    data << uint8_t(type);
+    data << uint32_t(time);
+    data << uint32_t(difficulty);
+#endif
 
     sendPacket(&data);
 }

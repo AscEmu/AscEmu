@@ -3902,7 +3902,7 @@ void Unit::sendAttackerStateUpdate(const WoWGuid& attackerGuid, const WoWGuid& v
 
     sendMessageToSet(&data, true);
 }
-#else
+#else // Classic
 void Unit::sendAttackerStateUpdate(const WoWGuid& attackerGuid, const WoWGuid& victimGuid, HitStatus hitStatus, uint32_t damage, [[maybe_unused]] uint32_t overKill, DamageInfo damageInfo, uint32_t absorbedDamage, VisualState visualState, uint32_t blockedDamage, [[maybe_unused]] uint32_t rageGain)
 {
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Status {}, damage {}", uint32_t(hitStatus), damage);

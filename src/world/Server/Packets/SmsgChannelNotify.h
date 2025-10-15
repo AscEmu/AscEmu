@@ -71,7 +71,7 @@ namespace AscEmu::Packets
                     packet << playerName;
                 break;
                 case CHANNEL_NOTIFY_FLAG_YOUJOINED:
-#if VERSION_STRING == Classic
+#if VERSION_STRING >= Classic
                     packet << extraFlag << uint32_t(0);
 #else
                     packet << extraFlag << channelId << uint32_t(0);
