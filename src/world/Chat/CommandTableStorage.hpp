@@ -29,7 +29,6 @@ public:
     inline const std::vector<ChatCommand>& getCommandRegistry() const { return m_commandRegistry; }
 
 private:
-
     std::vector<ChatCommand> m_commandRegistry;
 
 };

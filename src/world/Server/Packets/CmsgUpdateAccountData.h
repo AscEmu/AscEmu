@@ -63,7 +63,7 @@ namespace AscEmu::Packets
                 return false;
             }
 
-		          packet.rfinish();
+            packet.rfinish();
 #endif
 
             return true;

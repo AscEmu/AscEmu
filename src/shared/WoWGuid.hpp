@@ -65,7 +65,6 @@ enum class HighGuid : uint64_t
 class SERVER_DECL WoWGuid
 {
 public:
-
     WoWGuid() noexcept { clear(); }
     WoWGuid(uint64_t guid) noexcept { init(guid); }
     WoWGuid(WoWGuid const& other) noexcept { init(other._raw.value); }
