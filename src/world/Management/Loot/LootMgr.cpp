@@ -217,7 +217,7 @@ void LootMgr::loadLootTables(std::string const& szTableName, LootTemplateMap* Lo
         chance.push_back(fields[4].asFloat());
         chance.push_back(fields[5].asFloat());
         uint32_t mincount = fields[6].asUint32();
-        uint32_t maxcount = fields[7].asUint8();
+        uint32_t maxcount = fields[7].asUint32();
 
         const auto itemProto = sMySQLStore.getItemProperties(itemId);
         if (itemProto == nullptr)

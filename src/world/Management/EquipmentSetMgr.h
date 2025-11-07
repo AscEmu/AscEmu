@@ -24,6 +24,8 @@
 #include <memory>
 #include <string>
 
+#include "Objects/ItemDefines.hpp"
+
 class Field;
 class WorldPacket;
 class QueryBuffer;
@@ -37,22 +39,14 @@ namespace Arcemu
     //////////////////////////////////////////////////////////////////////////////////////////
     struct EquipmentSet
     {
-        uint32_t SetGUID;
-        uint32_t SetID;
+        uint32_t SetGUID = 0;
+        uint32_t SetID = 0;
         std::string SetName;
         std::string IconName;
-        std::array<uint32_t, 19> ItemGUID;
+        std::array<uint32_t, EQUIPMENT_SLOT_END> ItemGUID = {};
 
-        EquipmentSet()
-        {
-            SetGUID = 0;
-            SetID = 0;
-            SetName = "";
-            IconName = "";
+        EquipmentSet() = default;
 
-            for (uint32_t i = 0; i < ItemGUID.size(); ++i)
-                ItemGUID[i] = 0;
-        }
         EquipmentSet(Field const* fields);
     };
 
