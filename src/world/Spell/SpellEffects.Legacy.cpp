@@ -655,7 +655,7 @@ void Spell::spellEffectScriptEffect(uint8_t effectIndex)
     if (sScriptMgr.HandleScriptedSpellEffect(m_spellInfo->getId(), effectIndex, this))
         return;
 
-    sLogger.failure("Spell::spellEffectScriptEffect : Spell {} ({}) has a scripted effect index (%hhu), but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName(), effectIndex);
+    sLogger.failure("Spell::spellEffectScriptEffect : Spell {} ({}) has a scripted effect index ({}), but no handler for it.", m_spellInfo->getId(), m_spellInfo->getName(), effectIndex);
 }
 
 void Spell::spellEffectSkill(uint8_t effectIndex)
