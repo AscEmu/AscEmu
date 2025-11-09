@@ -251,7 +251,7 @@ void MySQLDataStore::loadItemPropertiesTable()
         itemProperties.ItemId = entry;
         itemProperties.Class = fields[2].asUint32();
         itemProperties.SubClass = fields[3].asUint16();
-        itemProperties.unknown_bc = fields[4].asUint32(true);
+        itemProperties.unknown_bc = fields[4].asInt32();
         itemProperties.Name = fields[5].asCString();
         itemProperties.DisplayInfoID = fields[6].asUint32();
         itemProperties.Quality = fields[7].asUint32();
@@ -261,8 +261,8 @@ void MySQLDataStore::loadItemPropertiesTable()
         itemProperties.SellPrice = fields[11].asUint32();
 
         itemProperties.InventoryType = fields[12].asUint32();
-        itemProperties.AllowableClass = fields[13].asUint32(true);
-        itemProperties.AllowableRace = fields[14].asUint32(true);
+        itemProperties.AllowableClass = fields[13].asInt32();
+        itemProperties.AllowableRace = fields[14].asInt32();
         itemProperties.ItemLevel = fields[15].asUint32();
         itemProperties.RequiredLevel = fields[16].asUint32();
         itemProperties.RequiredSkill = fields[17].asUint16();
@@ -316,7 +316,7 @@ void MySQLDataStore::loadItemPropertiesTable()
         itemProperties.PageMaterial = fields[43].asUint32();
         itemProperties.QuestId = fields[44].asUint32();
         itemProperties.LockId = fields[45].asUint32();
-        itemProperties.LockMaterial = fields[46].asUint32(true);
+        itemProperties.LockMaterial = fields[46].asInt32();
         itemProperties.SheathID = fields[47].asUint32();
         itemProperties.RandomPropId = fields[48].asUint32();
         itemProperties.RandomSuffixId = fields[49].asUint32();
@@ -1085,7 +1085,7 @@ void MySQLDataStore::loadGameObjectPropertiesTable()
         gameobjecProperties.raw.parameter_3 = fields[10].asUint32();
         gameobjecProperties.raw.parameter_4 = fields[11].asUint32();
         gameobjecProperties.raw.parameter_5 = fields[12].asUint32();
-        gameobjecProperties.raw.parameter_6 = fields[13].asUint32();
+        gameobjecProperties.raw.parameter_6 = fields[13].asInt32();
         gameobjecProperties.raw.parameter_7 = fields[14].asUint32();
         gameobjecProperties.raw.parameter_8 = fields[15].asUint32();
         gameobjecProperties.raw.parameter_9 = fields[16].asUint32();

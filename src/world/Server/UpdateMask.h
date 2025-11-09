@@ -21,8 +21,10 @@
 #ifndef UPDATEMASK_H
 #define UPDATEMASK_H
 
+#include <algorithm>
 #include <cstring>
 #include <memory>
+#include <span>
 
 class UpdateMask
 {
@@ -31,27 +33,27 @@ class UpdateMask
     uint32_t mBlocks; // in uint32_t blocks
 
     public:
-        UpdateMask() : mUpdateMask(0), mCount(0), mBlocks(0) { }
-        UpdateMask(const UpdateMask & mask) : mUpdateMask(0) { *this = mask; }
+        UpdateMask() : mUpdateMask(nullptr), mCount(0), mBlocks(0) { }
+        UpdateMask(const UpdateMask & mask) : mUpdateMask(nullptr) { *this = mask; }
 
         ~UpdateMask() = default;
 
         void SetBit(const uint32_t index)
         {
             if (index < mCount)
-                ((uint8_t*)mUpdateMask.get())[ index >> 3 ] |= 1 << (index & 0x7);
+                reinterpret_cast<uint8_t*>(mUpdateMask.get())[ index >> 3 ] |= 1 << (index & 0x7);
         }
 
         void UnsetBit(const uint32_t index)
         {
             if (index < mCount)
-                ((uint8_t*)mUpdateMask.get())[ index >> 3 ] &= (0xff ^ (1 << (index & 0x7)));
+                reinterpret_cast<uint8_t*>(mUpdateMask.get())[ index >> 3 ] &= (0xff ^ (1 << (index & 0x7)));
         }
 
         bool GetBit(const uint32_t index) const
         {
             if (index < mCount)
-                return (((uint8_t*)mUpdateMask.get())[index >> 3] & (1 << (index & 0x7))) != 0;
+                return (reinterpret_cast<uint8_t*>(mUpdateMask.get())[index >> 3] & (1 << (index & 0x7))) != 0;
             return false;
         }
 
@@ -66,7 +68,7 @@ class UpdateMask
 
         inline uint32_t GetLength() const { return (mBlocks * sizeof(uint32_t)); }
         inline uint32_t GetCount() const { return mCount; }
-        inline const uint8_t* GetMask() const { return (uint8_t*)mUpdateMask.get(); }
+        inline const uint8_t* GetMask() const { return reinterpret_cast<uint8_t*>(mUpdateMask.get()); }
 
         void SetCount(uint32_t valuesCount)
         {
@@ -83,14 +85,28 @@ class UpdateMask
 
         void Clear()
         {
-            if (mUpdateMask)
-                memset(mUpdateMask.get(), 0, mBlocks << 2);
+            if (mBlocks == 0)
+                return;
+
+            std::span mask_span(mUpdateMask.get(), mBlocks);
+            std::ranges::fill(mask_span, 0);
         }
 
         UpdateMask & operator = (const UpdateMask & mask)
         {
+            if (this == &mask)
+            {
+                return *this;
+            }
+
             SetCount(mask.mCount);
-            memcpy(mUpdateMask.get(), mask.mUpdateMask.get(), mBlocks << 2);
+
+            if (mBlocks > 0)
+            {
+                std::span<const uint32_t> source(mask.mUpdateMask.get(), mBlocks);
+                std::span<uint32_t> destination(mUpdateMask.get(), mBlocks);
+                std::ranges::copy(source, destination.begin());
+            }
 
             return *this;
         }
@@ -113,8 +129,7 @@ class UpdateMask
         {
             if (mask.mCount <= mCount)
             {
-                UpdateMask newmask;
-                newmask = *this;
+	            UpdateMask newmask = *this;
                 newmask &= mask;
 
                 return newmask;
@@ -126,8 +141,7 @@ class UpdateMask
         {
             if (mask.mCount <= mCount)
             {
-                UpdateMask newmask;
-                newmask = *this;
+	            UpdateMask newmask = *this;
                 newmask |= mask;
 
                 return newmask;

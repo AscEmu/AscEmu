@@ -19,7 +19,7 @@ struct ItemProperties
     uint32_t ItemId;
     uint32_t Class;
     uint16_t SubClass;
-    uint32_t unknown_bc;
+    int32_t unknown_bc;
     std::string Name;
     uint32_t DisplayInfoID;
     uint32_t Quality;
@@ -28,8 +28,8 @@ struct ItemProperties
     uint32_t BuyPrice;
     uint32_t SellPrice;
     uint32_t InventoryType;
-    uint32_t AllowableClass;
-    uint32_t AllowableRace;
+    int32_t AllowableClass;
+    int32_t AllowableRace;
     uint32_t ItemLevel;
     uint32_t RequiredLevel;
     uint16_t RequiredSkill;
@@ -65,7 +65,7 @@ struct ItemProperties
     uint32_t PageMaterial;
     uint32_t QuestId; // id of the quest that this item starts (not required quest)
     uint32_t LockId;
-    uint32_t LockMaterial;
+    int32_t LockMaterial;
     uint32_t SheathID;
     uint32_t RandomPropId;
     uint32_t RandomSuffixId;

@@ -342,7 +342,7 @@ struct GameObjectProperties
             uint32_t parameter_3;
             uint32_t parameter_4;
             uint32_t parameter_5;
-            uint32_t parameter_6;
+            int32_t parameter_6;
             uint32_t parameter_7;
             uint32_t parameter_8;
             uint32_t parameter_9;

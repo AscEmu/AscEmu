@@ -352,9 +352,11 @@ bool ChatCommandHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession
     systemMessage(m_session, "Health (cur / max): {} / {}", creature_target->getHealth(), creature_target->getMaxHealth());
 
     auto powertype = creature_target->getPowerType();
-    if (powertype <= 6)
+    constexpr auto powertype_count = std::size(POWERTYPE);
+
+    if (auto powertype_index = static_cast<int>(powertype); powertype_index >= 0 && std::cmp_less(powertype_index, powertype_count))
     {
-        systemMessage(m_session, "Powertype: {}", POWERTYPE[powertype].data());
+        systemMessage(m_session, "Powertype: {}", POWERTYPE[static_cast<size_t>(powertype_index)].data());
         systemMessage(m_session, "Power (cur / max): {} / {}", creature_target->getPower(powertype), creature_target->getMaxPower(powertype));
     }
 
@@ -1235,7 +1237,11 @@ bool ChatCommandHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession
     if (creature_target == nullptr)
         return false;
 
-    uint32_t old_npc_flags = creature_target->getNpcFlags();
+	#if VERSION_STRING < Mop
+		uint32_t old_npc_flags = creature_target->getNpcFlags();
+	#else
+		uint64_t old_npc_flags = creature_target->getNpcFlags();
+	#endif
     creature_target->addNpcFlags(npc_flags);
 
     if (creature_target->m_spawn != nullptr)
