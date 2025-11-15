@@ -871,7 +871,7 @@ INSERT INTO `locales_creature` (id, language_code, name, subname) VALUES (4359, 
 INSERT INTO `locales_creature` (id, language_code, name, subname) VALUES (1420, 'ruRU', 'Жаба', '');
 INSERT INTO `locales_creature` (id, language_code, name, subname) VALUES (4376, 'ruRU', 'Паук Мглистой пещеры', '');
 INSERT INTO `locales_creature` (id, language_code, name, subname) VALUES (9552, 'ruRU', 'Занара', 'Торговка луками');
--- test
+
 INSERT INTO `locales_creature` (id, language_code, name, subname) VALUES (4952, 'ruRU', 'Тераморский боевой манекен', '');
 INSERT INTO `locales_creature` (id, language_code, name, subname) VALUES (24007, 'ruRU', 'Мельничный курьер', '');
 INSERT INTO `locales_creature` (id, language_code, name, subname) VALUES (4413, 'ruRU', 'Паук-темножвал', '');
@@ -1555,7 +1555,7 @@ INSERT INTO `locales_creature` (id, language_code, name, subname) VALUES (34882,
 INSERT INTO `locales_creature` (id, language_code, name, subname) VALUES (33467, 'ruRU', 'Чемпион Луносвета', '');
 INSERT INTO `locales_creature` (id, language_code, name, subname) VALUES (33474, 'ruRU', 'Чемпион Сен''джина', '');
 INSERT INTO `locales_creature` (id, language_code, name, subname) VALUES (33763, 'ruRU', 'Селлиан Первый Луч', 'Мастер над оружием');
-INSERT INTO `locales_creature` (id, language_code, name, subname) VALUES (33272, 'ruRU', 'Манекен для стремительной атаки', ''); -- test
+INSERT INTO `locales_creature` (id, language_code, name, subname) VALUES (33272, 'ruRU', 'Манекен для стремительной атаки', '');
 INSERT INTO `locales_creature` (id, language_code, name, subname) VALUES (33654, 'ruRU', 'Айре Звездочет', 'Хозяйка ночных саблезубов');
 INSERT INTO `locales_creature` (id, language_code, name, subname) VALUES (33868, 'ruRU', 'Тингийок', 'Прохладительные напитки');
 INSERT INTO `locales_creature` (id, language_code, name, subname) VALUES (33225, 'ruRU', 'Маршал Якоб Алерий', 'Абсолютный чемпион Штормграда');
