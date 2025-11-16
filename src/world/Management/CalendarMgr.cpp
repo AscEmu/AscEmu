@@ -3,6 +3,8 @@ Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#if VERSION_STRING > TBC // sch: added in the 3.0.2 content patch
+
 #include "CalendarMgr.hpp"
 #include "Database/Database.h"
 #include "Logging/Logger.hpp"
@@ -89,3 +91,4 @@ void CalendarMgr::loadFromDB()
         }
     }
 }
+#endif
