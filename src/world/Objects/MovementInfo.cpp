@@ -2674,7 +2674,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
 #else // >= Cata
     bool hasTransportData = !transport_guid.isEmpty();
 
-    switch (sOpcodeTables.getInternalIdForHex(opcode))
+    switch (opcode)
     {
         case SMSG_MOVE_UPDATE_KNOCK_BACK:
         {
