@@ -82,6 +82,7 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode)
 
     switch (sOpcodeTables.getInternalIdForHex(opcode))
     {
+#if VERSION_STRING == Cata
         case CMSG_CAST_SPELL:
         case CMSG_PET_CAST_SPELL:
         case CMSG_USE_ITEM:
@@ -2073,6 +2074,7 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode)
             if (status_info.hasPitch) data >> pitch_rate;
 
         } break;
+#endif
         case MSG_MOVE_HEARTBEAT:
         {
 #if VERSION_STRING == Cata
@@ -2304,6 +2306,7 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode)
 #endif
 
         } break;
+#if VERSION_STRING == Cata
         case CMSG_MOVE_KNOCK_BACK_ACK:
         {
             data >> position.y;
@@ -2595,6 +2598,7 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode)
             if (status_info.hasOrientation) data >> position.o;
 
         } break;
+#endif
         default:
             sLogger.failure("Unsupported MovementInfo::Read for 0x{:X} ({})!", opcode, sOpcodeTables.getInternalIdForHex(opcode));
             break;
@@ -2676,6 +2680,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
 
     switch (opcode)
     {
+#if VERSION_STRING == Cata
         case SMSG_MOVE_UPDATE_KNOCK_BACK:
         {
             data.writeBit(false);
@@ -2753,6 +2758,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
 
 
         } break;
+#endif
         case SMSG_PLAYER_MOVE:
         {
 #if VERSION_STRING == Cata
@@ -2983,6 +2989,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
 #endif
 
         } break;
+#if VERSION_STRING == Cata
         case MSG_MOVE_START_BACKWARD:
         {
             data << float(position.x);
@@ -4688,6 +4695,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
 
         } break;
+#endif
         default:
             sLogger.failure("Unsupported MovementInfo::Write for 0x{:X} ({})!", opcode, sOpcodeTables.getInternalIdForHex(opcode));
             break;

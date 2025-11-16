@@ -5205,6 +5205,7 @@ void Unit::sendAuraUpdate(Aura* aur, bool remove)
 
 void Unit::sendFullAuraUpdate()
 {
+#if VERSION_STRING < Mop
 #if VERSION_STRING >= WotLK
     auto packetData = SmsgAuraUpdateAll(getGuid(), {});
     auto updates = 0u;
@@ -5261,6 +5262,7 @@ void Unit::sendFullAuraUpdate()
 
     sendMessageToSet(packetData.serialise().get(), true);
     sLogger.debug("Unit::sendFullAuraUpdate : Updated {} auras for guid {}", updates, getGuid());
+#endif
 #endif
 }
 

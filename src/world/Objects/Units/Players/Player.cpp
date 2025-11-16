@@ -2794,6 +2794,12 @@ void Player::sendInitialLogonPackets()
 #if VERSION_STRING == Mop
     m_session->SendPacket(SmsgBindPointUpdate(getBindPosition(), getBindMapId(), getBindZoneId()).serialise().get());
 
+    std::vector<uint32_t> tutorials;
+    for (auto tutorial : m_tutorials)
+        tutorials.push_back(tutorial);
+
+    m_session->SendPacket(SmsgTutorialFlags(tutorials).serialise().get());
+
     smsg_TalentsInfo(false);
 
     WorldPacket data(SMSG_WORLD_SERVER_INFO, 4 + 4 + 1 + 1);
@@ -2810,7 +2816,7 @@ void Player::sendInitialLogonPackets()
 
     sendSmsgInitialSpells();
 
-    m_session->SendPacket(SmsgSendUnlearnSpells().serialise().get());
+    getSession()->SendPacket(SmsgSendUnlearnSpells().serialise().get());
 
     sendActionBars(0);
 
@@ -2821,6 +2827,10 @@ void Player::sendInitialLogonPackets()
     getSession()->SendPacket(&data);
 
     m_session->SendPacket(SmsgLoginSetTimeSpeed(Util::getGameTime(), 0.0166666669777748f).serialise().get());
+
+    updateSpeed();
+
+    m_session->SendPacket(SmsgUpdateWorldState(0xC77, worldConfig.arena.arenaProgress, 0xF3D, worldConfig.arena.arenaSeason).serialise().get());
 
     data.Initialize(SMSG_SET_FORCED_REACTIONS, 1 + 4 + 4);
     data.writeBits(0, 6);
@@ -11452,6 +11462,7 @@ uint32_t Player::getExaltedCount() const
 void Player::sendSmsgInitialFactions()
 {
 #if VERSION_STRING == Mop
+    uint32_t repListId = 0;
     ByteBuffer buffer;
 
     WorldPacket data(SMSG_INITIALIZE_FACTIONS, PLAYER_REPUTATION_COUNT * (1 + 4) + 32);

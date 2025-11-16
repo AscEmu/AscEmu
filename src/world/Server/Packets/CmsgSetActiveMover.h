@@ -41,9 +41,50 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+#if VERSION_STRING == Cata
+            guid[7] = packet.readBit();
+            guid[2] = packet.readBit();
+            guid[1] = packet.readBit();
+            guid[0] = packet.readBit();
+            guid[4] = packet.readBit();
+            guid[5] = packet.readBit();
+            guid[6] = packet.readBit();
+            guid[3] = packet.readBit();
+
+            packet.ReadByteSeq(guid[3]);
+            packet.ReadByteSeq(guid[2]);
+            packet.ReadByteSeq(guid[4]);
+            packet.ReadByteSeq(guid[0]);
+            packet.ReadByteSeq(guid[5]);
+            packet.ReadByteSeq(guid[1]);
+            packet.ReadByteSeq(guid[6]);
+            packet.ReadByteSeq(guid[7]);
+#elif VERSION_STRING == Mop
+
+            packet.readBit(); // unk
+
+            guid[3] = packet.readBit();
+            guid[0] = packet.readBit();
+            guid[2] = packet.readBit();
+            guid[1] = packet.readBit();
+            guid[5] = packet.readBit();
+            guid[4] = packet.readBit();
+            guid[7] = packet.readBit();
+            guid[6] = packet.readBit();
+
+            packet.ReadByteSeq(guid[3]);
+            packet.ReadByteSeq(guid[4]);
+            packet.ReadByteSeq(guid[5]);
+            packet.ReadByteSeq(guid[2]);
+            packet.ReadByteSeq(guid[7]);
+            packet.ReadByteSeq(guid[0]);
+            packet.ReadByteSeq(guid[1]);
+            packet.ReadByteSeq(guid[6]);
+#else
             uint64_t unpacked_guid;
             packet >> unpacked_guid;
             guid = WoWGuid(unpacked_guid);
+#endif
             return true;
         }
     };

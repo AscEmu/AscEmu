@@ -80,6 +80,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Random.hpp"
 #include "Utilities/Strings.hpp"
+#include <Server/Packets/SmsgClearTarget.h>
 
 using namespace AscEmu::Packets;
 
@@ -1574,9 +1575,9 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
 
 void WorldSession::handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/)
 {
-#if VERSION_STRING >= Cata
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REQUEST_CEMETERY_LIST");
 
+#if VERSION_STRING == Cata
     auto result = WorldDatabase.Query("SELECT id FROM graveyards WHERE faction = %u OR faction = 3;", _player->getTeam());
     if (result)
     {
@@ -1586,6 +1587,21 @@ void WorldSession::handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/)
         data.writeBits(result->GetRowCount(), 24);
         data.flushBits();
 
+        do
+        {
+            Field* field = result->Fetch();
+            data << uint32_t(field[0].asUint32());
+        } while (result->NextRow());
+
+        SendPacket(&data);
+    }
+#else // Mop
+    auto result = WorldDatabase.Query("SELECT id FROM graveyards WHERE faction = %u OR faction = 3;", _player->getTeam());
+    if (result)
+    {
+        WorldPacket data(SMSG_REQUEST_CEMETERY_LIST_RESPONSE, 8 * result->GetRowCount());
+        data.writeBits(result->GetRowCount(), 22);
+        data.writeBit(false); // triggered gossip
         do
         {
             Field* field = result->Fetch();
@@ -2268,6 +2284,12 @@ void WorldSession::handleUnregisterAddonPrefixesOpcode(WorldPacket& /*recvPacket
 
     mRegisteredAddonPrefixesVector.clear();
 #endif
+}
+
+void WorldSession::handleClearTargetOpcode(WorldPacket& /*recvPacket*/)
+{
+    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received handleClearTargetOpcode");
+    SendPacket(SmsgClearTarget().serialise().get());
 }
 
 void WorldSession::handleAddonRegisteredPrefixesOpcode(WorldPacket& recvPacket)

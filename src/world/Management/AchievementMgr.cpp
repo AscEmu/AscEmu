@@ -1483,13 +1483,6 @@ void AchievementMgr::sendAllAchievementData(Player* _player)
 
     for (const auto& progressIter : m_criteriaProgress)
     {
-        WDB::Structures::AchievementCriteriaEntry const* acEntry = sAchievementCriteriaStore.lookupEntry(progressIter.first);
-        if (!acEntry)
-            continue;
-
-        if (!sAchievementStore.lookupEntry(acEntry->referredAchievement))
-            continue;
-
         counter = uint64_t(progressIter.second->counter);
 
         data.writeBit(counter[3]);
@@ -1509,7 +1502,6 @@ void AchievementMgr::sendAllAchievementData(Player* _player)
         data.writeBit(counter[4]);
         data.writeBits(0, 4);
         data.writeBit(counter[6]);
-
 
         criteriaData.WriteByteSeq(counter[7]);
         criteriaData << uint32_t(0);                                // timer 1
@@ -1533,7 +1525,7 @@ void AchievementMgr::sendAllAchievementData(Player* _player)
         criteriaData.appendPackedTime(progressIter.second->date);   // criteria date
     }
 
-    data.writeBits(m_completedAchievements.size(), 20);
+    data.writeBits(numAchievements, 20);
     for (auto completeIter : m_completedAchievements)
     {
         if (!isVisible(completeIter))

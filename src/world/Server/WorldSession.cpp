@@ -789,7 +789,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_MOVE_SET_FLY, &WorldSession::handleMovementOpcodes, true, true, true, false, false);
     registry.registerOpcode(MSG_MOVE_STOP_ASCEND, &WorldSession::handleMovementOpcodes, true, true, true, true, false);
     registry.registerOpcode(CMSG_MOVE_NOT_ACTIVE_MOVER, &WorldSession::handleMoveNotActiveMoverOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_SET_ACTIVE_MOVER, &WorldSession::handleSetActiveMoverOpcode, false, true, true, false, false);
+    registry.registerOpcode(CMSG_SET_ACTIVE_MOVER, &WorldSession::handleSetActiveMoverOpcode, false, true, true, true, true);
     registry.registerOpcode(CMSG_MOVE_CHNG_TRANSPORT, &WorldSession::handleMovementOpcodes, true, true, true, true, false);
 
     // ACK
@@ -1290,7 +1290,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(SMSG_GMTICKET_GETTICKET, &WorldSession::handleGMTicketToggleSystemStatusOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_REPORT, &WorldSession::handleReportOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_REPORT_PLAYER, &WorldSession::handleReportPlayerOpcode, false, false, false, true, false);
-    registry.registerOpcode(CMSG_REQUEST_CEMETERY_LIST, &WorldSession::handleRequestCemeteryListOpcode, false, false, false, true, false);
+    registry.registerOpcode(CMSG_REQUEST_CEMETERY_LIST, &WorldSession::handleRequestCemeteryListOpcode, false, false, false, true, true);
     registry.registerOpcode(CMSG_REQUEST_HOTFIX, &WorldSession::handleRequestHotfix, false, false, false, true, true);
     registry.registerOpcode(CMSG_RETURN_TO_GRAVEYARD, &WorldSession::handleReturnToGraveyardOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_SUGGESTION_SUBMIT, &WorldSession::handleSuggestionOpcode, false, false, false, true, false);
@@ -1299,4 +1299,6 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_QUERY_BATTLEFIELD_STATE, &WorldSession::Unhandled, false, false, false, true, false);
     registry.registerOpcode(CMSG_ADDON_REGISTERED_PREFIXES, &WorldSession::handleAddonRegisteredPrefixesOpcode, false, false, false, true, true);
     registry.registerOpcode(CMSG_UNREGISTER_ALL_ADDON_PREFIXES, &WorldSession::handleUnregisterAddonPrefixesOpcode, false, false, false, true, true);
+
+    registry.registerOpcode(SMSG_CLEAR_TARGET, &WorldSession::handleClearTargetOpcode, false, false, false, false, true);
 }

@@ -703,6 +703,7 @@ protected:
 
     protected:
         void handleUnregisterAddonPrefixesOpcode(WorldPacket& /*recvPacket*/);  //>= Cata
+        void handleClearTargetOpcode(WorldPacket& /*recvPacket*/);   //>= Mop
         void handleAddonRegisteredPrefixesOpcode(WorldPacket& recvPacket);  //>= Cata
         void handleReportOpcode(WorldPacket& recvPacket);                   //>= Cata
         void handleReportPlayerOpcode(WorldPacket& recvPacket);             //>= Cata

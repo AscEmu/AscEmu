@@ -33,7 +33,6 @@ using namespace AscEmu::Packets;
 
 void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvPacket)
 {
-#if VERSION_STRING < Cata
     CmsgSetActiveMover srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -41,7 +40,8 @@ void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvPacket)
     if (srlPacket.guid == m_MoverWoWGuid.getRawGuid())
         return;
 
-#if VERSION_STRING > TBC
+#if VERSION_STRING < Cata
+    #if VERSION_STRING > TBC
     if (_player->getCharmGuid() != srlPacket.guid.getRawGuid() || _player->getGuid() != srlPacket.guid.getRawGuid())
     {
         auto bad_packet = true;
@@ -53,7 +53,7 @@ void WorldSession::handleSetActiveMoverOpcode(WorldPacket& recvPacket)
         if (bad_packet)
             return;
     }
-#endif
+    #endif
 
     if (srlPacket.guid.getRawGuid() == 0)
         m_MoverWoWGuid.init(_player->getGuid());
