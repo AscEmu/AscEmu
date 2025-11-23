@@ -17,17 +17,16 @@ namespace AscEmu::Packets
     public:
         uint64_t guid;
         std::string name;
-        DeclinedNamesArray declinedNames;
+        std::array<std::string, 5> declinedNames;
 
-        CmsgSetPlayerDeclinedNames() : CmsgSetPlayerDeclinedNames(0, "", DeclinedNamesArray())
+        CmsgSetPlayerDeclinedNames() : CmsgSetPlayerDeclinedNames(0, "")
         {
         }
 
-        CmsgSetPlayerDeclinedNames(uint64_t guid, std::string name, DeclinedNamesArray&& declinedNames) :
-            ManagedPacket(CMSG_SET_PLAYER_DECLINED_NAMES, 8 + 1 + 1 + 1 + 1 + 1 + 1),
+        CmsgSetPlayerDeclinedNames(uint64_t guid, std::string name) :
+            ManagedPacket(CMSG_SET_PLAYER_DECLINED_NAMES, 8),
             guid(guid),
-            name(name),
-            declinedNames(std::move(declinedNames))
+            name(name)
         {
         }
 
@@ -39,9 +38,18 @@ namespace AscEmu::Packets
         bool internalDeserialise(WorldPacket& packet) override
         {
             packet >> guid >> name;
-            for (uint8_t i = 0; i < MAX_DECLINED_NAMES; ++i)
+            for (size_t i = 0; i < declinedNames.size(); i++)
+            {
+                if (packet.rpos() >= packet.size())
+                {
+                    declinedNames[i].clear();
+                    continue;
+                }
+
                 packet >> declinedNames[i];
-            return true;
+            }
+
+        return true;
         }
     };
 }
