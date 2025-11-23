@@ -249,8 +249,7 @@ public:
                 case 4:
                 {
                     mRazuunPhase = -1;
-                    _removeTimer(mRazuunTimer);
-                    despawn(0, 0);
+                    despawn(1, 0);
                 }
                 break;
             }
