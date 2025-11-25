@@ -652,7 +652,7 @@ void BoneSlice::filterEffectTargets(Spell* /*spell*/, uint8_t effectIndex, std::
     targetCount = static_cast<uint32_t>(effectTargets->size());
 }
 
-void BoneSlice::afterSpellEffect(Spell* spell, uint8_t effIndex)
+void BoneSlice::afterSpellEffect(Spell* spell, uint8_t effIndex, DamageInfo const& /*damageInfo*/)
 {
     if (effIndex != EFF_INDEX_0)
         return;

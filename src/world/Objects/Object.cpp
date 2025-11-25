@@ -1261,7 +1261,7 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, b
             } break;
             case 54172: //Paladin - Divine Storm heal effect
             {
-                int dmg = (int)CalculateDamage(casterUnit, victim, MELEE, nullptr, sSpellMgr.getSpellInfo(53385));    //1 hit
+                int dmg = (int)CalculateDamage(casterUnit, victim, MELEE, sSpellMgr.getSpellInfo(53385));    //1 hit
                 int target = 0;
 
                 for (const auto& itr : casterUnit->getInRangeObjectsSet())

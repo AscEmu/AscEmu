@@ -623,7 +623,7 @@ uint32_t GainStat(uint16_t level, uint8_t playerclass, uint8_t Stat)
     return gain;
 }
 
-uint32_t CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32_t weapon_damage_type, const uint32_t* /*spellgroup*/, SpellInfo const* ability)   // spellid is used only for 2-3 spells, that have AP bonus
+uint32_t CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32_t weapon_damage_type, SpellInfo const* ability)   // spellid is used only for 2-3 spells, that have AP bonus
 {
     ///\todo Some awesome formula to determine how much damage to deal consider this is melee damage weapon_damage_type: 0 = melee, 1 = offhand(dualwield), 2 = ranged
 

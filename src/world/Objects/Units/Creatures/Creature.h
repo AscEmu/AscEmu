@@ -308,9 +308,9 @@ public:
         void SetEnslaveSpell(uint32_t spellId);
         bool RemoveEnslave();
 
-        int32_t GetDamageDoneMod(uint16_t school) override;
+        int32_t GetDamageDoneMod(uint8_t school) const override;
 
-        float GetDamageDonePctMod(uint16_t school) override;
+        float GetDamageDonePctMod(uint8_t school) const override;
 
         bool IsPickPocketed();
 

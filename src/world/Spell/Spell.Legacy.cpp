@@ -2410,57 +2410,6 @@ int32_t Spell::DoCalculateEffect(uint32_t i, Unit* target, int32_t value)
             }
         } break;
 
-        // SPELL_HASH_SEAL_OF_RIGHTEOUSNESS:
-        case 20154:
-        case 21084:
-        case 25742:
-        {
-            if (p_caster != nullptr)
-            {
-                Item* mit = p_caster->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                if (mit != nullptr)
-                    value = (p_caster->getCalculatedAttackPower() * 22 + p_caster->getModDamageDonePositive(SCHOOL_HOLY) * 44) * mit->getItemProperties()->Delay / 1000000;
-            }
-        } break;
-
-        // SPELL_HASH_BLOOD_CORRUPTION:
-        case 53742:
-        // SPELL_HASH_HOLY_VENGEANCE:
-        case 31803:
-        {
-            if (p_caster != nullptr)
-                value = (p_caster->getCalculatedAttackPower() * 25 + p_caster->getModDamageDonePositive(SCHOOL_HOLY) * 13) / 1000;
-        } break;
-
-        // SPELL_HASH_JUDGEMENT:
-        case 10321:
-        case 23590:
-        case 23591:
-        case 35170:
-        case 41467:
-        case 43838:
-        case 54158:
-        {
-            if (p_caster != nullptr)
-                value += (p_caster->getCalculatedAttackPower() * 16 + p_caster->getModDamageDonePositive(SCHOOL_HOLY) * 25) / 100;
-        } break;
-
-        // SPELL_HASH_JUDGEMENT_OF_RIGHTEOUSNESS:
-        case 20187:
-        {
-            if (p_caster != nullptr)
-                value += (p_caster->getCalculatedAttackPower() * 2 + p_caster->getModDamageDonePositive(SCHOOL_HOLY) * 32) / 100;
-        } break;
-
-        // SPELL_HASH_JUDGEMENT_OF_VENGEANCE:
-        case 31804:
-        // SPELL_HASH_JUDGEMENT_OF_CORRUPTION:
-        case 53733:
-        {
-            if (p_caster != nullptr)
-                value += (p_caster->getCalculatedAttackPower() * 14 + p_caster->getModDamageDonePositive(SCHOOL_HOLY) * 22) / 100;
-        } break;
-
         // SPELL_HASH_ENVENOM:
         case 32645:
         case 32684:

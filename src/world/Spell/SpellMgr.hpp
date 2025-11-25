@@ -127,6 +127,11 @@ public:
 
     SpellInfo const* getSpellInfo(const uint32_t spellId) const;
     SpellInfo const* getSpellInfoByDifficulty(const uint32_t spellDifficultyId, const uint8_t difficulty) const;
+    // Returns SpellInfo of the same rank as originalSpell from providedSpell
+    // If originalSpell or providedSpell has no ranks, returns providedSpell
+    // Returns nullptr if either originalSpell or providedSpell does not exist
+    // Returns nullptr as well if providedSpell has no same rank
+    SpellInfo const* getEquivalentSpellRankFor(SpellInfo const* originalSpell, SpellInfo const* providedSpell) const;
     SpellInfoMap const* getSpellInfoMap() const { return &mSpellInfoMapStore; }
 
 private:

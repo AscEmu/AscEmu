@@ -40,7 +40,7 @@ public:
             return SpellScriptEffectDamage::DAMAGE_DEFAULT;
 
         // Calculate healing done here so correct percent modifiers are applied
-        *dmg = static_cast<int32_t>(std::ceil(spell->getUnitCaster()->applySpellHealingBonus(spell->getSpellInfo(), *dmg, 1.0f, false, spell)));
+        *dmg = static_cast<int32_t>(std::round(spell->getUnitCaster()->applySpellHealingBonus(spell->getSpellInfo(), *dmg, 1.0f, false, spell)));
         return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;
     }
 
@@ -96,23 +96,13 @@ public:
 class LightningShieldDummy : public SpellScript
 {
 public:
-    SpellInfo const* getDamageSpellForDummyRank(SpellInfo const* dummyInfo) const
-    {
-        const auto* dmgInfo = sSpellMgr.getSpellInfo(SPELL_LIGHTNING_SHIELD_DMG_R1);
-        if (!dummyInfo->hasSpellRanks() || dmgInfo == nullptr || !dmgInfo->hasSpellRanks())
-            return dmgInfo;
-
-        const auto dummyRank = dummyInfo->getRankInfo()->getRank();
-        return dmgInfo->getRankInfo()->getSpellWithRank(dummyRank);
-    }
-
     SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* dmg) override
     {
         if (effIndex != EFF_INDEX_0 || spell->getUnitCaster() == nullptr)
             return SpellScriptEffectDamage::DAMAGE_DEFAULT;
 
         // Calculate damage done here so correct percent modifiers are applied
-        *dmg = static_cast<int32_t>(std::ceil(spell->getUnitCaster()->applySpellDamageBonus(spell->getSpellInfo(), *dmg, 1.0f, false, spell)));
+        *dmg = static_cast<int32_t>(std::round(spell->getUnitCaster()->applySpellDamageBonus(spell->getSpellInfo(), *dmg, 1.0f, false, spell)));
         return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;
     }
 
@@ -121,7 +111,7 @@ public:
         if (!apply)
             return SpellScriptExecuteState::EXECUTE_OK;
 
-        const auto damageSpell = getDamageSpellForDummyRank(aur->getSpellInfo());
+        const auto damageSpell = sSpellMgr.getEquivalentSpellRankFor(aur->getSpellInfo(), sSpellMgr.getSpellInfo(SPELL_LIGHTNING_SHIELD_DMG_R1));
         if (damageSpell == nullptr)
             return SpellScriptExecuteState::EXECUTE_PREVENT;
 
@@ -137,7 +127,7 @@ public:
 
     void onAuraRemove(Aura* aur, AuraRemoveMode /*mode*/) override
     {
-        if (const auto damageSpell = getDamageSpellForDummyRank(aur->getSpellInfo()))
+        if (const auto damageSpell = sSpellMgr.getEquivalentSpellRankFor(aur->getSpellInfo(), sSpellMgr.getSpellInfo(SPELL_LIGHTNING_SHIELD_DMG_R1)))
             aur->getOwner()->removeProcTriggerSpell(damageSpell->getId(), aur->getCasterGuid());
     }
 };

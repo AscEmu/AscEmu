@@ -157,7 +157,7 @@ public:
     SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* dmg) override;
     SpellCastResult onCanCast(Spell* spell, uint32_t* /*parameter1*/, uint32_t* /*parameter2*/) override;
     void filterEffectTargets(Spell* /*spell*/, uint8_t effectIndex, std::vector<uint64_t>* effectTargets) override;
-    void afterSpellEffect(Spell* spell, uint8_t effIndex) override;
+    void afterSpellEffect(Spell* spell, uint8_t effIndex, DamageInfo const& damageInfo) override;
 
     uint32_t targetCount;
 };

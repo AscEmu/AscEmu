@@ -49,7 +49,7 @@ SERVER_DECL bool isGrayLevel(uint32_t attackerLevel, uint32_t victimLevel);
 SERVER_DECL uint32_t getConColor(uint16_t AttackerLvl, uint16_t VictimLvl);
 SERVER_DECL uint32_t CalculateXpToGive(Unit* pVictim, Unit* pAttacker);
 SERVER_DECL uint32_t CalculateStat(uint16_t level, double a3, double a2, double a1, double a0);
-SERVER_DECL uint32_t CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32_t weapon_damage_type, const uint32_t* spellgroup, SpellInfo const* ability);
+SERVER_DECL uint32_t CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32_t weapon_damage_type, SpellInfo const* ability);
 SERVER_DECL uint32_t GainStat(uint16_t level, uint8_t playerclass, uint8_t Stat);
 SERVER_DECL bool isEven(int num);
 

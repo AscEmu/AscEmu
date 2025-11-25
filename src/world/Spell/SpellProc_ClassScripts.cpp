@@ -506,34 +506,6 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Paladin ProcScripts
-class SealOfCommandSpellProc : public SpellProc
-{
-public:
-    static std::unique_ptr<SpellProc> Create() { return std::make_unique<SealOfCommandSpellProc>(); }
-
-    void init(Object* /*obj*/) override
-    {
-        // default chance of proc
-        setProcChance(25);
-
-        setProcFlags(PROC_ON_DONE_MELEE_HIT);
-
-        /* The formula for SoC proc rate is: [ 7 / (60 / Weapon Speed) - from wowwiki */
-        if (!getProcOwner()->isPlayer())
-            return;
-
-        uint32_t weapspeed = 1;
-
-        auto item = static_cast<Player*>(getProcOwner())->getItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-        if (item != nullptr)
-            weapspeed = item->getItemProperties()->Delay;
-
-        setProcChance(7 * weapspeed / 600);
-        if (getProcChance() >= 50)
-            setProcChance(50);
-    }
-};
-
 class GraceOfTheNaaruSpellProc : public SpellProc
 {
 public:
@@ -556,17 +528,6 @@ public:
             return false;
 
         return true;
-    }
-};
-
-class PaladinSealsSpellProc : public SpellProc
-{
-public:
-    static std::unique_ptr<SpellProc> Create() { return std::make_unique<PaladinSealsSpellProc>(); }
-
-    void init(Object* /*obj*/) override
-    {
-        this->setProcFlags(PROC_ON_DONE_MELEE_HIT);
     }
 };
 
@@ -896,26 +857,6 @@ void SpellProcMgr::SetupSpellProcClassScripts()
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Paladin
-    uint32_t sealOfCommand[] =
-    {
-        //SPELL_HASH_SEAL_OF_COMMAND
-        20375,
-        20424,
-        29385,
-        33127,
-        41469,
-        42058,
-        57769,
-        57770,
-        66004,
-        68020,
-        68021,
-        68022,
-        69403,
-        0
-    };
-    addByIds(sealOfCommand, &SealOfCommandSpellProc::Create);
-
     addById(43742, &GraceOfTheNaaruSpellProc::Create);
 
     uint32_t spiritualAttunement[] =
@@ -927,10 +868,6 @@ void SpellProcMgr::SetupSpellProcClassScripts()
         0
     };
     addByIds(spiritualAttunement, &SpiritualAttunementSpellProc::Create);
-
-    addById(20167, &PaladinSealsSpellProc::Create);
-    addById(20168, &PaladinSealsSpellProc::Create);
-    addById(20170, &PaladinSealsSpellProc::Create);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // DeathKnight

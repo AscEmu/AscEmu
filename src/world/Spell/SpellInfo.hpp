@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "SpellScript.hpp"
 #include "CommonTypes.hpp"
 #include "Storage/WDB/WDBDefines.hpp"
+#include <array>
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -116,6 +117,7 @@ public:
     // Note; this can cause false positives if aura has multiple effects
     // Use isAuraEffectAffectingSpell in that case to check individual effects
     bool isAffectingSpell(SpellInfo const* spellInfo) const;
+    // This function assumes spell family names match
     bool isEffectIndexAffectingSpell(uint8_t effIndex, SpellInfo const* spellInfo) const;
     bool isAuraEffectAffectingSpell(AuraEffect auraEffect, SpellInfo const* spellInfo) const;
 
@@ -273,7 +275,7 @@ public:
     uint32_t getSpellFamilyName() const { return SpellFamilyName; }
 
     uint32_t getSpellFamilyFlags(uint8_t idx) const;
-    uint32_t const* getSpellFamilyFlags() const { return SpellFamilyFlags; }
+    std::array<uint32_t, 3> const& getSpellFamilyFlags() const { return SpellFamilyFlags; }
 
     uint32_t getMaxTargets() const { return MaxTargets; }
     uint32_t getDmgClass() const { return DmgClass; }
@@ -566,7 +568,7 @@ private:
     uint32_t MaxTargetLevel = 0;
     // Data from SpellClassOptions.dbc (in Cataclysm)
     uint32_t SpellFamilyName = 0;
-    uint32_t SpellFamilyFlags[MAX_SPELL_EFFECTS];
+    std::array<uint32_t, 3> SpellFamilyFlags;
     // Data from SpellTargetRestrictions.dbc (in Cataclysm)
     uint32_t MaxTargets = 0;
     // Data from SpellCategories.dbc (in Cataclysm)

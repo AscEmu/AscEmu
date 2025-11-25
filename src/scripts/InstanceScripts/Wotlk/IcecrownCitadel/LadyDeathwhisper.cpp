@@ -526,7 +526,7 @@ void CultFanaticAI::OnLoad()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Spell: Cultist Dark Martyrdom
-void DarkMartyrdom::afterSpellEffect(Spell* spell, uint8_t effIndex)
+void DarkMartyrdom::afterSpellEffect(Spell* spell, uint8_t effIndex, DamageInfo const& /*damageInfo*/)
 {
     if (effIndex != EFF_INDEX_0)
         return;

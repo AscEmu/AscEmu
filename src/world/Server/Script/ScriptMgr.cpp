@@ -136,13 +136,13 @@ SpellScriptCheckDummy ScriptMgr::callScriptedSpellOnDummyOrScriptedEffect(Spell*
     return spellScript->onDummyOrScriptedEffect(spell, effectIndex);
 }
 
-void ScriptMgr::callScriptedSpellAfterSpellEffect(Spell* spell, uint8_t effectIndex)
+void ScriptMgr::callScriptedSpellAfterSpellEffect(Spell* spell, uint8_t effectIndex, DamageInfo const& damageInfo)
 {
     const auto spellScript = getSpellScript(spell->getSpellInfo()->getId());
     if (spellScript == nullptr)
         return;
 
-    spellScript->afterSpellEffect(spell, effectIndex);
+    spellScript->afterSpellEffect(spell, effectIndex, damageInfo);
 }
 
 void ScriptMgr::callScriptedAuraOnCreate(Aura* aur)

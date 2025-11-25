@@ -50,7 +50,7 @@ public:
     // Called on a dummy or scripted spell effect
     virtual SpellScriptCheckDummy onDummyOrScriptedEffect(Spell* spell, uint8_t effIndex);
     // Called after spell effect is handled
-    virtual void afterSpellEffect(Spell* spell, uint8_t effIndex);
+    virtual void afterSpellEffect(Spell* spell, uint8_t effIndex, DamageInfo const& damageInfo);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Aura

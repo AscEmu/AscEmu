@@ -473,6 +473,18 @@ SpellInfo const* SpellMgr::getSpellInfoByDifficulty([[maybe_unused]]const uint32
 #endif
 }
 
+SpellInfo const* SpellMgr::getEquivalentSpellRankFor(SpellInfo const* originalSpell, SpellInfo const* providedSpell) const
+{
+    if (originalSpell == nullptr || providedSpell == nullptr)
+        return nullptr;
+
+    if (!originalSpell->hasSpellRanks() || !providedSpell->hasSpellRanks())
+        return providedSpell;
+
+    const auto originalRank = originalSpell->getRankInfo()->getRank();
+    return providedSpell->getRankInfo()->getSpellWithRank(originalRank);
+}
+
 // Private methods
 
 void SpellMgr::loadSpellInfoData()
