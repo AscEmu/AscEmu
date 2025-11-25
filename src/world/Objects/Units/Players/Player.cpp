@@ -1790,9 +1790,8 @@ void Player::indoorCheckUpdate(uint32_t time)
                 if (isMounted() && !m_taxi->getCurrentTaxiPath())
                     dismount();
 
-                for (uint16_t x = AuraSlots::POSITIVE_SLOT_START; x < AuraSlots::POSITIVE_SLOT_END; ++x)
+                for (const auto& aur : getPositiveAuraRange())
                 {
-                    auto* const aur = getAuraWithAuraSlot(x);
                     if (aur && aur->getSpellInfo()->getAttributes() & ATTRIBUTES_ONLY_OUTDOORS)
                         aur->removeAura();
                 }
@@ -5399,7 +5398,7 @@ bool Player::_removeSpell(uint32_t spellId, bool moveToDeleted, bool silently/* 
     }
 
     m_spellSet.erase(itr);
-    removeAllAurasByIdForGuid(spellId, getGuid());
+    removeAllAurasById(spellId, getGuid());
 
     if (moveToDeleted)
         m_deletedSpellSet.emplace(spellId);
@@ -5449,7 +5448,7 @@ bool Player::_removeSpell(uint32_t spellId, bool moveToDeleted, bool silently/* 
                 break;
             case SPELL_EFFECT_TRIGGER_SPELL:
                 if (const auto triggerSpellId = spellInfo->getEffectTriggerSpell(i))
-                    removeAllAurasByIdForGuid(triggerSpellId, getGuid());
+                    removeAllAurasById(triggerSpellId, getGuid());
                 break;
 #if VERSION_STRING >= WotLK
             case SPELL_EFFECT_DUAL_WIELD_2H:
@@ -6823,7 +6822,7 @@ void Player::applyItemMods(Item* item, int16_t slot, bool apply, bool justBroked
                     auto* itemSet = &(*itemSetListMember);
                     for (uint8_t itemIndex = 0; itemIndex < 8; ++itemIndex)
                         if (itemSet->itemscount == itemSetEntry->itemscount[itemIndex])
-                            removeAllAurasByIdForGuid(itemSetEntry->SpellID[itemIndex], getGuid());
+                            removeAllAurasById(itemSetEntry->SpellID[itemIndex], getGuid());
 
                     if (!(--itemSet->itemscount))
                         m_itemSets.erase(itemSetListMember);
@@ -6999,9 +6998,9 @@ void Player::applyItemMods(Item* item, int16_t slot, bool apply, bool justBroked
 
     if (!apply)
     {
-        for (uint16_t posIndex = AuraSlots::POSITIVE_SLOT_START; posIndex < AuraSlots::POSITIVE_SLOT_END; ++posIndex)
+        for (const auto& m_aura : getPositiveAuraRange())
         {
-            if (auto* const m_aura = this->getAuraWithAuraSlot(posIndex))
+            if (m_aura != nullptr)
                 if (m_aura->m_castedItemId && m_aura->m_castedItemId == itemProperties->ItemId)
                     m_aura->removeAura();
         }
@@ -11693,9 +11692,8 @@ void Player::endDuel(uint8_t condition)
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_DUEL_COUNTDOWN);
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_DUEL_BOUNDARY_CHECK);
 
-    for (uint16_t x = AuraSlots::NEGATIVE_SLOT_START; x < AuraSlots::NEGATIVE_SLOT_END; ++x)
+    for (const auto& aur : getNegativeAuraRange())
     {
-        auto* const aur = getAuraWithAuraSlot(x);
         if (aur == nullptr)
             continue;
 
@@ -11711,9 +11709,8 @@ void Player::endDuel(uint8_t condition)
     sEventMgr.RemoveEvents(m_duelPlayer, EVENT_PLAYER_DUEL_BOUNDARY_CHECK);
     sEventMgr.RemoveEvents(m_duelPlayer, EVENT_PLAYER_DUEL_COUNTDOWN);
 
-    for (uint16_t x = AuraSlots::NEGATIVE_SLOT_START; x < AuraSlots::NEGATIVE_SLOT_END; ++x)
+    for (const auto& aur : m_duelPlayer->getNegativeAuraRange())
     {
-        auto* const aur = m_duelPlayer->getAuraWithAuraSlot(x);
         if (aur == nullptr)
             continue;
         if (aur->WasCastInDuel())
@@ -12380,7 +12377,7 @@ void Player::eventSummonPet(Pet* summonPet)
             {
                 if (spellInfo->custom_c_is_flags & SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER)
                 {
-                    this->removeAllAurasByIdForGuid(spellId, this->getGuid());
+                    this->removeAllAurasById(spellId, this->getGuid());
                     SpellCastTargets targets(this->getGuid());
                     Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, nullptr);
                     spell->prepare(&targets);
@@ -12388,7 +12385,7 @@ void Player::eventSummonPet(Pet* summonPet)
 
                 if (spellInfo->custom_c_is_flags & SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET)
                 {
-                    this->removeAllAurasByIdForGuid(spellId, this->getGuid());
+                    this->removeAllAurasById(spellId, this->getGuid());
                     SpellCastTargets targets(summonPet->getGuid());
                     Spell* spell = sSpellMgr.newSpell(this, spellInfo, true, nullptr);
                     spell->prepare(&targets);
@@ -13280,9 +13277,9 @@ void Player::_castSpellArea()
 
 
     // Remove of Spells
-    for (uint16_t i = AuraSlots::TOTAL_SLOT_START; i < AuraSlots::TOTAL_SLOT_END; ++i)
+    for (const auto& aur : getAuraList())
     {
-        if (auto* const aur = getAuraWithAuraSlot(i))
+        if (aur != nullptr)
         {
             if (sSpellMgr.checkLocation(aur->getSpellInfo(), ZoneId, AreaId, this) == false)
             {
@@ -16288,6 +16285,7 @@ void Player::saveAuras(std::stringstream& ss)
     uint16_t prevX = 0;
 
     // save all auras why only just positive?
+    //for (const auto& aur : getRemovableAuraRange())
     for (uint16_t x = AuraSlots::REMOVABLE_SLOT_START; x < AuraSlots::REMOVABLE_SLOT_END; x++)
     {
         auto* const aur = getAuraWithAuraSlot(x);

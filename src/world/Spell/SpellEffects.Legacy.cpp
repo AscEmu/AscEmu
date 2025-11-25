@@ -3794,28 +3794,26 @@ void Spell::SpellEffectDispel(uint8_t effectIndex) // Dispel
     if (u_caster == nullptr || m_unitTarget == nullptr)
         return;
 
-    uint16_t start, end;
+    AuraRange auraRange;
 
     if (u_caster->isValidAttackableTarget(m_unitTarget) || getSpellInfo()->getEffectMiscValue(effectIndex) == DISPEL_STEALTH)    // IsAttackable returns false for stealthed
     {
-        start = AuraSlots::POSITIVE_SLOT_START;
-        end = AuraSlots::POSITIVE_SLOT_END;
+        auraRange = m_unitTarget->getPositiveAuraRange();
         if (m_unitTarget->m_schoolImmunityList[getSpellInfo()->getFirstSchoolFromSchoolMask()])
             return;
     }
     else
     {
-        start = AuraSlots::NEGATIVE_SLOT_START;
-        end = AuraSlots::NEGATIVE_SLOT_END;
+        auraRange = m_unitTarget->getNegativeAuraRange();
     }
 
     SpellInfo const* aursp;
     std::list< uint32_t > dispelledSpells;
     bool finish = false;
 
-    for (uint16_t x = start; x < end; x++)
+    for (const auto& aur : auraRange)
     {
-        if (auto* const aur = m_unitTarget->getAuraWithAuraSlot(x))
+        if (aur != nullptr)
         {
             bool AuraRemoved = false;
             aursp = aur->getSpellInfo();
@@ -5566,9 +5564,9 @@ void Spell::SpellEffectDummyMelee(uint8_t /*effectIndex*/)   // Normalized Weapo
             //count the number of sunder armors on target
             uint32_t sunder_count = 0;
             SpellInfo const* spellInfo = nullptr;
-            for (uint16_t x = AuraSlots::NEGATIVE_SLOT_START; x < AuraSlots::NEGATIVE_SLOT_END; ++x)
+            for (const auto& aur : m_unitTarget->getNegativeAuraRange())
             {
-                if (const auto* aur = m_unitTarget->getAuraWithAuraSlot(x))
+                if (aur != nullptr)
                 {
                     switch (aur->getSpellInfo()->getId())
                     {
@@ -5862,20 +5860,19 @@ void Spell::SpellEffectSpellSteal(uint8_t /*effectIndex*/)
             p_caster->togglePvP();
     }
 
-    uint16_t start, end;
+    AuraRange auraRange;
     if (u_caster->isValidAttackableTarget(m_unitTarget))
     {
-        start = AuraSlots::POSITIVE_SLOT_START;
-        end = AuraSlots::POSITIVE_SLOT_END;
+        auraRange = m_unitTarget->getPositiveAuraRange();
     }
     else
         return;
 
     std::list< uint32_t > stealedSpells;
 
-    for (auto x = start; x < end; x++)
+    for (const auto& aur : auraRange)
     {
-        if (auto* const aur = m_unitTarget->getAuraWithAuraSlot(x))
+        if (aur != nullptr)
         {
             SpellInfo const* aursp = aur->getSpellInfo();
 

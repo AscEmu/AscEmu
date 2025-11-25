@@ -486,9 +486,8 @@ void Group::RemovePlayer(CachedCharacterInfo* info)
         }
 
         //Remove some party auras.
-        for (uint16_t i = AuraSlots::POSITIVE_SLOT_START; i < AuraSlots::POSITIVE_SLOT_END; i++)
+        for (const auto& aur : pPlayer->getPositiveAuraRange())
         {
-            auto* const aur = pPlayer->getAuraWithAuraSlot(i);
             if (aur && aur->m_areaAura)
             {
                 Object* caster = aur->getCaster();

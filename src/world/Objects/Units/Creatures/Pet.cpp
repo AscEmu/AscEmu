@@ -1276,7 +1276,7 @@ std::tuple<bool, uint8_t> Pet::_removeSpell(uint32_t spellId, [[maybe_unused]]bo
     const auto spellState = itr->second;
 
     mSpells.erase(itr);
-    removeAllAurasByIdForGuid(spellId, getGuid());
+    removeAllAurasById(spellId, getGuid());
 
     const auto* const spellInfo = sSpellMgr.getSpellInfo(spellId);
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
@@ -1290,7 +1290,7 @@ std::tuple<bool, uint8_t> Pet::_removeSpell(uint32_t spellId, [[maybe_unused]]bo
                 break;
             case SPELL_EFFECT_TRIGGER_SPELL:
                 if (const auto triggerSpellId = spellInfo->getEffectTriggerSpell(i))
-                    removeAllAurasByIdForGuid(triggerSpellId, getGuid());
+                    removeAllAurasById(triggerSpellId, getGuid());
                 break;
             default:
                 break;

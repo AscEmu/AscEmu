@@ -1230,7 +1230,7 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, b
             case 75382:
             {
                 //Tidal Waves
-                casterUnit->removeAllAurasByIdForGuid(53390, casterUnit->getGuid());
+                casterUnit->removeAllAurasById(53390, casterUnit->getGuid());
             }
             //SPELL_HASH_CHAIN_HEAL
             case 1064:
@@ -1257,7 +1257,7 @@ DamageInfo Object::doSpellHealing(Unit* victim, uint32_t spellId, float_t amt, b
             case 75370:
             {
                 //Maelstrom Weapon
-                casterUnit->removeAllAurasByIdForGuid(53817, casterUnit->getGuid());
+                casterUnit->removeAllAurasById(53817, casterUnit->getGuid());
             } break;
             case 54172: //Paladin - Divine Storm heal effect
             {

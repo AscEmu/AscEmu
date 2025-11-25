@@ -356,13 +356,13 @@ void Unit::RemoveFromWorld(bool free_guid)
 
     Object::RemoveFromWorld(free_guid);
 
-    for (uint16_t x = AuraSlots::TOTAL_SLOT_START; x < AuraSlots::TOTAL_SLOT_END; ++x)
+    for (const auto& aura : m_auraList)
     {
-        if (auto* const aura = getAuraWithAuraSlot(x))
+        if (aura != nullptr)
         {
             if (aura->m_deleted)
             {
-                m_auraList[x] = nullptr;
+                aura->removeAura();
                 continue;
             }
             aura->RelocateEvents();
@@ -373,7 +373,7 @@ void Unit::RemoveFromWorld(bool free_guid)
 
 void Unit::OnPushToWorld()
 {
-    for (const auto& aura : getAuraList())
+    for (const auto& aura : m_auraList)
     {
         if (aura != nullptr)
             aura->RelocateEvents();
@@ -3065,9 +3065,9 @@ void Unit::removeDiminishingReturnTimer(SpellInfo const* spell)
     causing corruption on the diminishAura counter and locking the entire diminishing group.
     So it's better to check the active auras one by one*/
     m_diminishAuraCount[group] = 0;
-    for (uint16_t x = AuraSlots::NEGATIVE_SLOT_START; x < AuraSlots::NEGATIVE_SLOT_END; ++x)
+    for (const auto& aur : getNegativeAuraRange())
     {
-        if (const auto* aur = getAuraWithAuraSlot(x))
+        if (aur != nullptr)
         {
             aura_group = sSpellMgr.getDiminishingGroup(aur->getSpellInfo()->getId());
             if (aura_group == status)
@@ -4136,7 +4136,7 @@ void Unit::addAura(std::unique_ptr<Aura> auraHolder)
             {
                 const auto previousTarget = getWorldMapUnit(previousTargetGuid);
                 if (previousTarget != nullptr)
-                    previousTarget->removeAllAurasByIdForGuid(auraHolder->getSpellId(), caster->getGuid());
+                    previousTarget->removeAllAurasById(auraHolder->getSpellId(), caster->getGuid());
             }
         }
     }
@@ -4146,22 +4146,16 @@ void Unit::addAura(std::unique_ptr<Aura> auraHolder)
 
     if (!auraHolder->IsPassive())
     {
-        uint16_t startLimit = 0, endLimit = 0;
+        std::pair<uint16_t, uint16_t> auraSlots;
         if (auraHolder->isNegative())
-        {
-            startLimit = AuraSlots::NEGATIVE_SLOT_START;
-            endLimit = AuraSlots::NEGATIVE_SLOT_END;
-        }
+            auraSlots = { AuraSlots::NEGATIVE_SLOT_START, AuraSlots::NEGATIVE_SLOT_END };
         else
-        {
-            startLimit = AuraSlots::POSITIVE_SLOT_START;
-            endLimit = AuraSlots::POSITIVE_SLOT_END;
-        }
+            auraSlots = { AuraSlots::POSITIVE_SLOT_START, AuraSlots::POSITIVE_SLOT_END };
 
         auto deleteAur = false;
 
         // Find available slot for new aura
-        for (auto i = startLimit; i < endLimit; ++i)
+        for (auto i = auraSlots.first; i < auraSlots.second; ++i)
         {
             auto* _aura = m_auraList[i].get();
             if (_aura == nullptr)
@@ -4227,7 +4221,7 @@ void Unit::addAura(std::unique_ptr<Aura> auraHolder)
                         // Remove the weaker aura
                         _aura->removeAura();
                         // Restart search
-                        i = startLimit;
+                        i = auraSlots.first;
                         continue;
                     }
                 }
@@ -4397,44 +4391,45 @@ uint8_t Unit::findVisualSlotForAura(Aura const* aur) const
     return visualSlot;
 }
 
-Aura* Unit::getAuraWithId(uint32_t spell_id) const
+Aura* Unit::getAuraWithId(uint32_t spell_id, uint64_t casterGuid/* = 0*/) const
 {
-    for (const auto& aur : getAuraList())
+    const auto* const spellInfo = sSpellMgr.getSpellInfo(spell_id);
+    if (spellInfo == nullptr)
+        return nullptr;
+
+    AuraRange auraRange;
+    if (spellInfo->isPassive())
+        auraRange = getPassiveAuraRange();
+    else if (spellInfo->isNegativeAura())
+        auraRange = getNegativeAuraRange();
+    else
+        auraRange = getPositiveAuraRange();
+
+    for (const auto& aur : auraRange)
     {
-        if (aur && aur->getSpellId() == spell_id)
-            return aur.get();
+        if (aur != nullptr && aur->getSpellId() == spell_id)
+        {
+            if (casterGuid == 0 || aur->getCasterGuid() == casterGuid)
+                return aur.get();
+        }
     }
 
     return nullptr;
 }
 
-Aura* Unit::getAuraWithId(uint32_t const* auraId) const
+Aura* Unit::getAuraWithId(uint32_t const* auraIds, uint64_t casterGuid/* = 0*/) const
 {
-    for (const auto& aur : getAuraList())
+    for (const auto& aur : m_auraList)
     {
         if (aur == nullptr)
             continue;
 
-        for (int i = 0; auraId[i] != 0; ++i)
-        {
-            if (aur->getSpellId() == auraId[i])
-                return aur.get();
-        }
-    }
-
-    return nullptr;
-}
-
-Aura* Unit::getAuraWithIdForGuid(uint32_t const* auraId, uint64_t guid) const
-{
-    for (const auto& aur : getAuraList())
-    {
-        if (aur == nullptr || aur->getCasterGuid() != guid)
+        if (casterGuid != 0 && aur->getCasterGuid() != casterGuid)
             continue;
 
-        for (int i = 0; auraId[i] != 0; ++i)
+        for (int i = 0; auraIds[i] != 0; ++i)
         {
-            if (aur->getSpellId() == auraId[i])
+            if (aur->getSpellId() == auraIds[i])
                 return aur.get();
         }
     }
@@ -4442,39 +4437,21 @@ Aura* Unit::getAuraWithIdForGuid(uint32_t const* auraId, uint64_t guid) const
     return nullptr;
 }
 
-Aura* Unit::getAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid) const
-{
-    for (const auto& aur : getAuraList())
-    {
-        if (aur && aur->getSpellId() == spell_id && aur->getCasterGuid() == target_guid)
-            return aur.get();
-    }
-
-    return nullptr;
-}
-
-Aura* Unit::getAuraWithAuraEffect(AuraEffect aura_effect) const
+Aura* Unit::getAuraWithAuraEffect(AuraEffect aura_effect, uint64_t casterGuid/* = 0*/) const
 {
     if (aura_effect >= TOTAL_SPELL_AURAS)
         return nullptr;
 
-    if (getAuraEffectList(aura_effect).empty())
+    const auto& aurEffs = m_auraEffectList[aura_effect];
+    if (aurEffs.empty())
         return nullptr;
 
-    return getAuraEffectList(aura_effect).front()->getAura();
-}
+    if (casterGuid == 0)
+        return aurEffs.front()->getAura();
 
-Aura* Unit::getAuraWithAuraEffectForGuid(AuraEffect aura_effect, uint64_t guid) const
-{
-    if (aura_effect >= TOTAL_SPELL_AURAS)
-        return nullptr;
-
-    if (m_auraEffectList[aura_effect].empty())
-        return nullptr;
-
-    for (const auto& aurEff : m_auraEffectList[aura_effect])
+    for (const auto& aurEff : aurEffs)
     {
-        if (aurEff->getAura()->getCasterGuid() == guid)
+        if (aurEff->getAura()->getCasterGuid() == casterGuid)
             return aurEff->getAura();
     }
 
@@ -4483,9 +4460,9 @@ Aura* Unit::getAuraWithAuraEffectForGuid(AuraEffect aura_effect, uint64_t guid) 
 
 Aura* Unit::getAuraWithVisualSlot(uint8_t visualSlot) const
 {
-    for (const auto& aur : getAuraList())
+    for (const auto& aur : m_auraList)
     {
-        if (aur && aur->m_visualSlot == visualSlot)
+        if (aur != nullptr && aur->m_visualSlot == visualSlot)
             return aur.get();
     }
 
@@ -4503,7 +4480,7 @@ Aura* Unit::getAuraWithAuraSlot(uint16_t auraSlot) const
 int32_t Unit::getTotalIntDamageForAuraEffect(AuraEffect aura_effect) const
 {
     int32_t totalDamage = 0;
-    for (const auto& aurEff : getAuraEffectList(aura_effect))
+    for (const auto& aurEff : m_auraEffectList[aura_effect])
         totalDamage += aurEff->getEffectDamage();
 
     return totalDamage;
@@ -4512,7 +4489,7 @@ int32_t Unit::getTotalIntDamageForAuraEffect(AuraEffect aura_effect) const
 int32_t Unit::getTotalIntDamageForAuraEffectByMiscValue(AuraEffect aura_effect, int32_t miscValue) const
 {
     int32_t totalDamage = 0;
-    for (const auto& aurEff : getAuraEffectList(aura_effect))
+    for (const auto& aurEff : m_auraEffectList[aura_effect])
     {
         if (aurEff->getEffectMiscValue() == miscValue)
             totalDamage += aurEff->getEffectDamage();
@@ -4524,7 +4501,7 @@ int32_t Unit::getTotalIntDamageForAuraEffectByMiscValue(AuraEffect aura_effect, 
 float_t Unit::getTotalFloatDamageForAuraEffect(AuraEffect aura_effect) const
 {
     float_t totalDamage = 0.0f;
-    for (const auto& aurEff : getAuraEffectList(aura_effect))
+    for (const auto& aurEff : m_auraEffectList[aura_effect])
         totalDamage += aurEff->getEffectFloatDamage();
 
     return totalDamage;
@@ -4533,7 +4510,7 @@ float_t Unit::getTotalFloatDamageForAuraEffect(AuraEffect aura_effect) const
 float_t Unit::getTotalFloatDamageForAuraEffectByMiscValue(AuraEffect aura_effect, int32_t miscValue) const
 {
     float_t totalDamage = 0.0f;
-    for (const auto& aurEff : getAuraEffectList(aura_effect))
+    for (const auto& aurEff : m_auraEffectList[aura_effect])
     {
         if (aurEff->getEffectMiscValue() == miscValue)
             totalDamage += aurEff->getEffectFloatDamage();
@@ -4552,87 +4529,24 @@ float_t Unit::getTotalPctMultiplierForAuraEffectByMiscValue(AuraEffect aura_effe
     return 1.0f + (getTotalFloatDamageForAuraEffectByMiscValue(aura_effect, miscValue) / 100.0f);
 }
 
-bool Unit::hasAurasWithId(uint32_t auraId) const
+bool Unit::hasAurasWithId(uint32_t auraId, uint64_t casterGuid/* = 0*/) const
 {
-    for (const auto& aur : getAuraList())
-    {
-        if (aur && aur->getSpellId() == auraId)
-            return true;
-    }
-
-    return false;
+    return getAuraWithId(auraId, casterGuid) != nullptr;
 }
 
-bool Unit::hasAurasWithId(uint32_t const* auraId) const
+bool Unit::hasAurasWithId(uint32_t const* auraIds, uint64_t casterGuid/* = 0*/) const
 {
-    for (const auto& aur : getAuraList())
-    {
-        if (aur == nullptr)
-            continue;
-
-        for (int i = 0; auraId[i] != 0; ++i)
-        {
-            if (aur->getSpellId() == auraId[i])
-                return true;
-        }
-    }
-
-    return false;
+    return getAuraWithId(auraIds, casterGuid) != nullptr;
 }
 
-bool Unit::hasAurasWithIdForGuid(uint32_t auraId, uint64_t guid) const
+bool Unit::hasAuraWithAuraEffect(AuraEffect type, uint64_t casterGuid/* = 0*/) const
 {
-    for (const auto& aur : m_auraList)
-    {
-        if (aur && aur->getSpellId() == auraId && aur->getCasterGuid() == guid)
-            return true;
-    }
-
-    return false;
-}
-
-bool Unit::hasAurasWithIdForGuid(uint32_t const* auraId, uint64_t guid) const
-{
-    for (const auto& aur : m_auraList)
-    {
-        if (aur == nullptr)
-            continue;
-
-        for (int i = 0; auraId[i] != 0; ++i)
-        {
-            if (aur->getSpellId() == auraId[i] && aur->getCasterGuid() == guid)
-                return true;
-        }
-    }
-
-    return false;
-}
-
-bool Unit::hasAuraWithAuraEffect(AuraEffect type) const
-{
-    if (type >= TOTAL_SPELL_AURAS)
-        return false;
-
-    return !getAuraEffectList(type).empty();
-}
-
-bool Unit::hasAuraWithAuraEffectForGuid(AuraEffect type, uint64_t guid) const
-{
-    if (type >= TOTAL_SPELL_AURAS)
-        return false;
-
-    for (const auto& aurEff : m_auraEffectList[type])
-    {
-        if (aurEff->getAura()->getCasterGuid() == guid)
-            return true;
-    }
-
-    return false;
+    return getAuraWithAuraEffect(type, casterGuid) != nullptr;
 }
 
 bool Unit::hasAuraWithMechanic(SpellMechanic mechanic) const
 {
-    for (const auto& aur : getAuraList())
+    for (const auto& aur : m_auraList)
     {
         if (aur == nullptr)
             continue;
@@ -4660,7 +4574,7 @@ bool Unit::hasAuraWithMechanic(SpellMechanic mechanic) const
 bool Unit::hasAuraWithSpellType(SpellTypes type, uint64_t casterGuid/* = 0*/, uint32_t skipSpellId/* = 0*/) const
 {
     const uint64_t sGuid = type == SPELL_TYPE_BLESSING || type == SPELL_TYPE_WARRIOR_SHOUT ? casterGuid : 0;
-    for (const auto& aur : getAuraList())
+    for (const auto& aur : m_auraList)
     {
         if (aur == nullptr)
             continue;
@@ -4723,18 +4637,14 @@ void Unit::removeAuraStateAndAuras(AuraState state)
         removeAuraState(static_cast<uint32_t>(1 << (state - 1)));
 
         // Remove self-applied auras requiring this aurastate
-        uint16_t startLimit = AuraSlots::TOTAL_SLOT_START;
-        uint16_t endLimit = AuraSlots::TOTAL_SLOT_END;
+        std::pair<uint16_t, uint16_t> auraSlots{ AuraSlots::TOTAL_SLOT_START, AuraSlots::TOTAL_SLOT_END };
         // Do not remove non-passive enrage effects
         if (state == AURASTATE_FLAG_ENRAGED)
-        {
-            startLimit = AuraSlots::PASSIVE_SLOT_START;
-            endLimit = AuraSlots::PASSIVE_SLOT_END;
-        }
+            auraSlots = { AuraSlots::PASSIVE_SLOT_START, AuraSlots::PASSIVE_SLOT_END };
 
-        for (auto i = startLimit; i < endLimit; ++i)
+        const auto auraRange = std::ranges::subrange(m_auraList.cbegin() + auraSlots.first, m_auraList.cbegin() + auraSlots.second);
+        for (const auto& aur : auraRange)
         {
-            auto* const aur = getAuraWithAuraSlot(i);
             if (aur == nullptr)
                 continue;
             if (aur->getCasterGuid() != getGuid())
@@ -4751,10 +4661,10 @@ uint32_t Unit::getAuraCountForId(uint32_t auraId) const
 {
     uint32_t auraCount = 0;
 
-    for (const auto& aur : getAuraList())
+    for (const auto& aur : m_auraList)
     {
-        if (aur && aur->getSpellId() == auraId)
-            ++auraCount;
+        if (aur != nullptr && aur->getSpellId() == auraId)
+            auraCount += aur->getStackCount();
     }
 
     return auraCount;
@@ -4765,14 +4675,14 @@ uint32_t Unit::getAuraCountForEffect(AuraEffect aura_effect) const
     if (aura_effect >= TOTAL_SPELL_AURAS)
         return 0;
 
-    return static_cast<uint32_t>(getAuraEffectList(aura_effect).size());
+    return static_cast<uint32_t>(m_auraEffectList[aura_effect].size());
 }
 
 uint32_t Unit::getAuraCountWithDispelType(DispelType type, uint64_t casterGuid/* = 0*/) const
 {
     uint32_t auraCount = 0;
 
-    for (const auto& aur : getAuraList())
+    for (const auto& aur : m_auraList)
     {
         if (aur == nullptr)
             continue;
@@ -4781,37 +4691,53 @@ uint32_t Unit::getAuraCountWithDispelType(DispelType type, uint64_t casterGuid/*
             continue;
 
         if (aur->getSpellInfo()->getDispelType() == type)
-            ++auraCount;
+            auraCount += aur->getStackCount();
     }
 
     return auraCount;
 }
 
-void Unit::removeAllAuras()
+void Unit::removeAllAuras() const
 {
-    for (uint16_t i = AuraSlots::TOTAL_SLOT_START; i < AuraSlots::TOTAL_SLOT_END; ++i)
+    for (const auto& aur : m_auraList)
     {
-        if (auto* const aur = getAuraWithAuraSlot(i))
+        if (aur != nullptr)
             aur->removeAura();
     }
 }
 
-void Unit::removeAllAurasById(uint32_t auraId, AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
+void Unit::removeAllAurasById(uint32_t auraId, uint64_t casterGuid/*= 0*/, AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/) const
 {
-    for (uint16_t i = AuraSlots::TOTAL_SLOT_START; i < AuraSlots::TOTAL_SLOT_END; ++i)
+    const auto* const spellInfo = sSpellMgr.getSpellInfo(auraId);
+    if (spellInfo == nullptr)
+        return;
+
+    AuraRange auraRange;
+    if (spellInfo->isPassive())
+        auraRange = getPassiveAuraRange();
+    else if (spellInfo->isNegativeAura())
+        auraRange = getNegativeAuraRange();
+    else
+        auraRange = getPositiveAuraRange();
+
+    for (const auto& aur : auraRange)
     {
-        auto* const aur = getAuraWithAuraSlot(i);
-        if (aur && aur->getSpellId() == auraId)
-            aur->removeAura(mode);
+        if (aur != nullptr && aur->getSpellId() == auraId)
+        {
+            if (casterGuid == 0 || aur->getCasterGuid() == casterGuid)
+                aur->removeAura(mode);
+        }
     }
 }
 
-void Unit::removeAllAurasById(uint32_t const* auraId, AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
+void Unit::removeAllAurasById(uint32_t const* auraId, uint64_t casterGuid/* = 0*/, AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/) const
 {
-    for (uint16_t i = AuraSlots::TOTAL_SLOT_START; i < AuraSlots::TOTAL_SLOT_END; ++i)
+    for (const auto& aur : m_auraList)
     {
-        auto* const aur = getAuraWithAuraSlot(i);
         if (aur == nullptr)
+            continue;
+
+        if (casterGuid != 0 && aur->getCasterGuid() != casterGuid)
             continue;
 
         for (int x = 0; auraId[x] != 0; ++x)
@@ -4822,27 +4748,10 @@ void Unit::removeAllAurasById(uint32_t const* auraId, AuraRemoveMode mode/* = AU
     }
 }
 
-void Unit::removeAllAurasByIdForGuid(uint32_t auraId, uint64_t guid, AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
+void Unit::removeAllAurasByAuraInterruptFlag(uint32_t auraInterruptFlag, uint32_t skipSpellId/* = 0*/) const
 {
-    for (uint16_t i = AuraSlots::TOTAL_SLOT_START; i < AuraSlots::TOTAL_SLOT_END; ++i)
+    for (const auto& aur : m_auraList)
     {
-        auto* const aur = getAuraWithAuraSlot(i);
-        if (aur == nullptr)
-            continue;
-
-        if (guid != 0 && aur->getCasterGuid() != guid)
-            continue;
-
-        if (aur->getSpellId() == auraId)
-            aur->removeAura(mode);
-    }
-}
-
-void Unit::removeAllAurasByAuraInterruptFlag(uint32_t auraInterruptFlag, uint32_t skipSpellId/* = 0*/)
-{
-    for (uint16_t i = AuraSlots::TOTAL_SLOT_START; i < AuraSlots::TOTAL_SLOT_END; ++i)
-    {
-        auto* const aur = getAuraWithAuraSlot(i);
         if (aur == nullptr)
             continue;
 
@@ -4854,12 +4763,12 @@ void Unit::removeAllAurasByAuraInterruptFlag(uint32_t auraInterruptFlag, uint32_
     }
 }
 
-void Unit::removeAllAurasByAuraEffect(AuraEffect effect, uint32_t skipSpell/* = 0*/, bool removeOnlyEffect/* = false*/, uint64_t casterGuid/* = 0*/, AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
+void Unit::removeAllAurasByAuraEffect(AuraEffect effect, uint32_t skipSpell/* = 0*/, bool removeOnlyEffect/* = false*/, uint64_t casterGuid/* = 0*/, AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/) const
 {
     if (!hasAuraWithAuraEffect(effect))
         return;
 
-    const auto& aurEffList = getAuraEffectList(effect);
+    const auto& aurEffList = m_auraEffectList[effect];
     for (auto itr = aurEffList.cbegin(); itr != aurEffList.cend();)
     {
         const auto aurEff = *itr;
@@ -4879,14 +4788,15 @@ void Unit::removeAllAurasByAuraEffect(AuraEffect effect, uint32_t skipSpell/* = 
     }
 }
 
-void Unit::removeAllAurasBySpellMechanic(SpellMechanic mechanic, bool negativeOnly/* = true*/)
+void Unit::removeAllAurasBySpellMechanic(SpellMechanic mechanic, bool negativeOnly/* = true*/) const
 {
-    const uint16_t start = negativeOnly ? AuraSlots::NEGATIVE_SLOT_START : AuraSlots::TOTAL_SLOT_START;
-    const uint16_t end = negativeOnly ? AuraSlots::NEGATIVE_SLOT_END : AuraSlots::TOTAL_SLOT_END;
+    std::pair<uint16_t, uint16_t> auraSlots{ AuraSlots::TOTAL_SLOT_START, AuraSlots::TOTAL_SLOT_END };
+    if (negativeOnly)
+        auraSlots = { AuraSlots::NEGATIVE_SLOT_START, AuraSlots::NEGATIVE_SLOT_END };
 
-    for (auto i = start; i < end; ++i)
+    const auto auraRange = std::ranges::subrange(m_auraList.cbegin() + auraSlots.first, m_auraList.cbegin() + auraSlots.second);
+    for (const auto& aur : auraRange)
     {
-        auto* const aur = getAuraWithAuraSlot(i);
         if (aur == nullptr)
             continue;
 
@@ -4909,14 +4819,15 @@ void Unit::removeAllAurasBySpellMechanic(SpellMechanic mechanic, bool negativeOn
     }
 }
 
-void Unit::removeAllAurasBySpellMechanic(SpellMechanic const* mechanic, bool negativeOnly/* = true*/)
+void Unit::removeAllAurasBySpellMechanic(SpellMechanic const* mechanic, bool negativeOnly/* = true*/) const
 {
-    const uint16_t start = negativeOnly ? AuraSlots::NEGATIVE_SLOT_START : AuraSlots::TOTAL_SLOT_START;
-    const uint16_t end = negativeOnly ? AuraSlots::NEGATIVE_SLOT_END : AuraSlots::TOTAL_SLOT_END;
+    std::pair<uint16_t, uint16_t> auraSlots{ AuraSlots::TOTAL_SLOT_START, AuraSlots::TOTAL_SLOT_END };
+    if (negativeOnly)
+        auraSlots = { AuraSlots::NEGATIVE_SLOT_START, AuraSlots::NEGATIVE_SLOT_END };
 
-    for (auto i = start; i < end; ++i)
+    const auto auraRange = std::ranges::subrange(m_auraList.cbegin() + auraSlots.first, m_auraList.cbegin() + auraSlots.second);
+    for (const auto& aur : auraRange)
     {
-        auto* const aur = getAuraWithAuraSlot(i);
         if (aur == nullptr)
             continue;
 
@@ -4942,12 +4853,11 @@ void Unit::removeAllAurasBySpellMechanic(SpellMechanic const* mechanic, bool neg
     }
 }
 
-void Unit::removeAllAurasBySpellType(SpellTypes type, uint64_t casterGuid/* = 0*/, uint32_t skipSpellId/* = 0*/)
+void Unit::removeAllAurasBySpellType(SpellTypes type, uint64_t casterGuid/* = 0*/, uint32_t skipSpellId/* = 0*/) const
 {
     const uint64_t sGuid = type >= SPELL_TYPE_BLESSING ? casterGuid : 0;
-    for (uint16_t i = AuraSlots::TOTAL_SLOT_START; i < AuraSlots::TOTAL_SLOT_END; ++i)
+    for (const auto& aur : m_auraList)
     {
-        auto* const aur = getAuraWithAuraSlot(i);
         if (aur == nullptr)
             continue;
 
@@ -4962,15 +4872,16 @@ void Unit::removeAllAurasBySpellType(SpellTypes type, uint64_t casterGuid/* = 0*
     }
 }
 
-void Unit::removeAllAurasBySchoolMask(SchoolMask schoolMask, bool negativeOnly/* = true*/, bool isImmune/* = false*/)
+void Unit::removeAllAurasBySchoolMask(SchoolMask schoolMask, bool negativeOnly/* = true*/, bool isImmune/* = false*/) const
 {
-    for (uint16_t i = AuraSlots::TOTAL_SLOT_START; i < AuraSlots::TOTAL_SLOT_END; ++i)
-    {
-        auto* const aur = getAuraWithAuraSlot(i);
-        if (aur == nullptr)
-            continue;
+    std::pair<uint16_t, uint16_t> auraSlots{ AuraSlots::TOTAL_SLOT_START, AuraSlots::TOTAL_SLOT_END };
+    if (negativeOnly)
+        auraSlots = { AuraSlots::NEGATIVE_SLOT_START, AuraSlots::NEGATIVE_SLOT_END };
 
-        if (negativeOnly && !aur->isNegative())
+    const auto auraRange = std::ranges::subrange(m_auraList.cbegin() + auraSlots.first, m_auraList.cbegin() + auraSlots.second);
+    for (const auto& aur : auraRange)
+    {
+        if (aur == nullptr)
             continue;
 
         if (!(aur->getSpellInfo()->getSchoolMask() & schoolMask))
@@ -4981,51 +4892,73 @@ void Unit::removeAllAurasBySchoolMask(SchoolMask schoolMask, bool negativeOnly/*
     }
 }
 
-void Unit::removeAllNegativeAuras()
+void Unit::removeAllNegativeAuras() const
 {
-    for (uint16_t i = AuraSlots::NEGATIVE_SLOT_START; i < AuraSlots::NEGATIVE_SLOT_END; ++i)
+    for (const auto& aur : getNegativeAuraRange())
     {
-        if (auto* const aur = getAuraWithAuraSlot(i))
+        if (aur != nullptr)
             aur->removeAura();
     }
 }
 
-void Unit::removeAllPositiveAuras()
+void Unit::removeAllPositiveAuras() const
 {
-    for (uint16_t i = AuraSlots::POSITIVE_SLOT_START; i < AuraSlots::POSITIVE_SLOT_END; ++i)
+    for (const auto& aur : getPositiveAuraRange())
     {
-        if (auto* const aur = getAuraWithAuraSlot(i))
+        if (aur != nullptr)
             aur->removeAura();
     }
 }
 
-void Unit::removeAllNonPersistentAuras()
+void Unit::removeAllNonPersistentAuras() const
 {
-    for (uint16_t i = AuraSlots::REMOVABLE_SLOT_START; i < AuraSlots::REMOVABLE_SLOT_END; ++i)
+    const auto removableAuras = std::ranges::subrange(m_auraList.cbegin() + AuraSlots::REMOVABLE_SLOT_START, m_auraList.cbegin() + AuraSlots::REMOVABLE_SLOT_END);
+    for (const auto& aur : removableAuras)
     {
-        auto* const aur = getAuraWithAuraSlot(i);
-        if (aur && !aur->getSpellInfo()->isDeathPersistent())
+        if (aur != nullptr && !aur->getSpellInfo()->isDeathPersistent())
             aur->removeAura();
     }
 }
 
-void Unit::removeAuraByItemGuid(uint32_t auraId, uint64_t itemGuid)
+void Unit::removeAuraByItemGuid(uint32_t auraId, uint64_t itemGuid) const
 {
-    for (uint16_t i = AuraSlots::TOTAL_SLOT_START; i < AuraSlots::TOTAL_SLOT_END; ++i)
+    const auto* const spellInfo = sSpellMgr.getSpellInfo(auraId);
+    if (spellInfo == nullptr)
+        return;
+
+    AuraRange auraRange;
+    if (spellInfo->isPassive())
+        auraRange = getPassiveAuraRange();
+    else if (spellInfo->isNegativeAura())
+        auraRange = getNegativeAuraRange();
+    else
+        auraRange = getPositiveAuraRange();
+
+    for (const auto& aur : auraRange)
     {
-        auto* const aur = getAuraWithAuraSlot(i);
-        if (aur && aur->getSpellId() == auraId && aur->itemCasterGUID == itemGuid)
+        if (aur != nullptr && aur->getSpellId() == auraId && aur->itemCasterGUID == itemGuid)
             aur->removeAura();
     }
 }
 
-uint32_t Unit::removeAllAurasByIdReturnCount(uint32_t auraId, AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/)
+uint32_t Unit::removeAllAurasByIdReturnCount(uint32_t auraId, AuraRemoveMode mode/* = AURA_REMOVE_BY_SERVER*/) const
 {
+    const auto* const spellInfo = sSpellMgr.getSpellInfo(auraId);
+    if (spellInfo == nullptr)
+        return 0;
+
+    AuraRange auraRange;
+    if (spellInfo->isPassive())
+        auraRange = getPassiveAuraRange();
+    else if (spellInfo->isNegativeAura())
+        auraRange = getNegativeAuraRange();
+    else
+        auraRange = getPositiveAuraRange();
+
     uint32_t res = 0;
-    for (uint16_t i = AuraSlots::TOTAL_SLOT_START; i < AuraSlots::TOTAL_SLOT_END; ++i)
+    for (const auto& aur : auraRange)
     {
-        auto* const aur = getAuraWithAuraSlot(i);
-        if (aur && aur->getSpellInfo()->getId() == auraId)
+        if (aur != nullptr && aur->getSpellInfo()->getId() == auraId)
         {
             aur->removeAura(mode);
             ++res;
@@ -5035,7 +4968,7 @@ uint32_t Unit::removeAllAurasByIdReturnCount(uint32_t auraId, AuraRemoveMode mod
     return res;
 }
 
-uint64_t Unit::getSingleTargetGuidForAura(uint32_t spell)
+uint64_t Unit::getSingleTargetGuidForAura(uint32_t spell) const
 {
     auto itr = m_singleTargetAura.find(spell);
 
@@ -5045,7 +4978,7 @@ uint64_t Unit::getSingleTargetGuidForAura(uint32_t spell)
         return 0;
 }
 
-uint64_t Unit::getSingleTargetGuidForAura(uint32_t const* spellIds, uint32_t* index)
+uint64_t Unit::getSingleTargetGuidForAura(uint32_t const* spellIds, uint32_t* index) const
 {
     for (uint8_t i = 0; ; i++)
     {
@@ -5080,9 +5013,9 @@ void Unit::removeSingleTargetGuidForAura(uint32_t spellId)
         m_singleTargetAura.erase(itr);
 }
 
-void Unit::clearAllAreaAuraTargets()
+void Unit::clearAllAreaAuraTargets() const
 {
-    for (const auto& aur : getAuraList())
+    for (const auto& aur : m_auraList)
     {
         // Aura is area aura but it was not casted by this unit
         if (aur == nullptr || aur->m_areaAura)
@@ -5093,11 +5026,10 @@ void Unit::clearAllAreaAuraTargets()
     }
 }
 
-void Unit::removeAllAreaAurasCastedByOther()
+void Unit::removeAllAreaAurasCastedByOther() const
 {
-    for (uint16_t i = AuraSlots::TOTAL_SLOT_START; i < AuraSlots::TOTAL_SLOT_END; ++i)
+    for (const auto& aur : m_auraList)
     {
-        auto* const aur = getAuraWithAuraSlot(i);
         if (aur == nullptr)
             continue;
 
@@ -5210,7 +5142,7 @@ void Unit::sendFullAuraUpdate()
     auto packetData = SmsgAuraUpdateAll(getGuid(), {});
     auto updates = 0u;
 
-    for (const auto& aur : getAuraList())
+    for (const auto& aur : m_auraList)
     {
         if (aur == nullptr)
             continue;
@@ -5302,6 +5234,31 @@ AuraArray const& Unit::getAuraList() const
     return m_auraList;
 }
 
+AuraRange Unit::getPassiveAuraRange() const
+{
+    return std::ranges::subrange(m_auraList.cbegin() + AuraSlots::PASSIVE_SLOT_START, m_auraList.cbegin() + AuraSlots::PASSIVE_SLOT_END);
+}
+
+AuraRange Unit::getPositiveAuraRange() const
+{
+    return std::ranges::subrange(m_auraList.cbegin() + AuraSlots::POSITIVE_SLOT_START, m_auraList.cbegin() + AuraSlots::POSITIVE_SLOT_END);
+}
+
+AuraRange Unit::getNegativeAuraRange() const
+{
+    return std::ranges::subrange(m_auraList.cbegin() + AuraSlots::NEGATIVE_SLOT_START, m_auraList.cbegin() + AuraSlots::NEGATIVE_SLOT_END);
+}
+
+AuraRange Unit::getRemovableAuraRange() const
+{
+    return std::ranges::subrange(m_auraList.cbegin() + AuraSlots::POSITIVE_SLOT_START, m_auraList.cbegin() + AuraSlots::NEGATIVE_SLOT_END);
+}
+
+AuraRange Unit::getPassiveAndPositiveAuraRange() const
+{
+    return std::ranges::subrange(m_auraList.cbegin() + AuraSlots::PASSIVE_SLOT_START, m_auraList.cbegin() + AuraSlots::POSITIVE_SLOT_END);
+}
+
 AuraEffectList const& Unit::getAuraEffectList(AuraEffect effect) const
 {
     return m_auraEffectList[effect];
@@ -5312,12 +5269,11 @@ VisualAuraArray const& Unit::getVisualAuraList() const
     return m_auraVisualList;
 }
 
-bool Unit::isPoisoned()
+bool Unit::isPoisoned() const
 {
-    for (uint16_t x = AuraSlots::NEGATIVE_SLOT_START; x < AuraSlots::NEGATIVE_SLOT_END; ++x)
+    for (const auto& aur : getNegativeAuraRange())
     {
-        const auto* aur = getAuraWithAuraSlot(x);
-        if (aur && aur->getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_POISON)
+        if (aur != nullptr && aur->getSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_POISON)
             return true;
     }
 
@@ -5326,14 +5282,14 @@ bool Unit::isPoisoned()
 
 bool Unit::isDazed() const
 {
-    for (const auto& aur : getAuraList())
+    for (const auto& aur : m_auraList)
     {
-        if (aur)
+        if (aur != nullptr)
         {
             if (aur->getSpellInfo()->getMechanicsType() == MECHANIC_ENSNARED)
                 return true;
 
-            for (uint8_t y = 0; y < 3;++y)
+            for (uint8_t y = 0; y < MAX_SPELL_EFFECTS; ++y)
                 if (aur->getSpellInfo()->getEffectMechanic(y) == MECHANIC_ENSNARED)
                     return true;
         }
@@ -5367,7 +5323,7 @@ void Unit::_addAuraEffect(AuraEffectModifier const* aurEff)
     m_auraEffectList[aurEff->getAuraEffectType()].push_back(aurEff);
 }
 
-std::unique_ptr<Aura> Unit::_removeAura(Aura* aur)
+std::unique_ptr<Aura> Unit::_removeAura(Aura const* aur)
 {
     if (aur == nullptr)
         return nullptr;
@@ -5384,11 +5340,11 @@ void Unit::_removeAuraEffect(AuraEffectModifier const* aurEff)
     m_auraEffectList[aurEff->getAuraEffectType()].remove(aurEff);
 }
 
-void Unit::_updateAuras(unsigned long diff)
+void Unit::_updateAuras(unsigned long diff) const
 {
-    for (uint16_t i = AuraSlots::TOTAL_SLOT_START; i < AuraSlots::TOTAL_SLOT_END; ++i)
+    for (const auto& aur : m_auraList)
     {
-        if (auto* const aur = getAuraWithAuraSlot(i))
+        if (aur != nullptr)
             aur->update(diff);
     }
 }
@@ -6494,14 +6450,18 @@ void Unit::removeSanctuaryFlag() {}
 void Unit::restoreDisplayId()
 {
     // Standard transform aura
-    Aura* transform = nullptr;
+    Aura const* transform = nullptr;
     // Mostly a negative transform
-    Aura* forcedTransform = nullptr;
+    Aura const* forcedTransform = nullptr;
 
-    const auto& transformAuraList = getAuraEffectList(SPELL_AURA_TRANSFORM);
+    const auto& transformAuraList = m_auraEffectList[SPELL_AURA_TRANSFORM];
     for (auto itr = transformAuraList.crbegin(); itr != transformAuraList.crend(); ++itr)
     {
-        auto* const aur = (*itr)->getAura();
+        const auto* const aur = (*itr)->getAura();
+        // Impossible, but make compiler happy -Appled
+        if (aur == nullptr)
+            continue;
+
         if (transform == nullptr)
             transform = aur;
 
@@ -7054,7 +7014,7 @@ uint32_t Unit::absorbDamage(SchoolMask schoolMask, uint32_t* dmg, bool checkOnly
         return 0;
 
     uint32_t totalAbsorbedDamage = 0;
-    for (auto& aur : getAuraList())
+    for (auto& aur : m_auraList)
     {
         if (aur == nullptr || !aur->isAbsorbAura())
             continue;
@@ -9121,9 +9081,9 @@ void Unit::calculateResistanceReduction(Unit* unitVictim, DamageInfo* damageInfo
 bool Unit::removeAurasByHeal()
 {
     bool result = false;
-    for (uint16_t x = AuraSlots::TOTAL_SLOT_START; x < AuraSlots::TOTAL_SLOT_END; x++)
+    for (const auto& aur : m_auraList)
     {
-        if (auto* const aur = getAuraWithAuraSlot(x))
+        if (aur != nullptr)
         {
             switch (aur->getSpellId())
             {
@@ -9170,15 +9130,14 @@ bool Unit::auraActionIf(AuraAction* auraAction, AuraCondition* auraCondition)
 {
     bool done = false;
 
-    for (uint16_t i = AuraSlots::TOTAL_SLOT_START; i < AuraSlots::TOTAL_SLOT_END; ++i)
+    for (const auto& aura : m_auraList)
     {
-        Aura* aura = getAuraWithAuraSlot(i);
         if (aura == nullptr)
             continue;
 
-        if ((*auraCondition)(aura))
+        if ((*auraCondition)(aura.get()))
         {
-            (*auraAction)(aura);
+            (*auraAction)(aura.get());
             done = true;
         }
     }
@@ -9223,9 +9182,8 @@ AuraCheckResponse Unit::auraCheck(SpellInfo const* spellInfo, Object* /*caster*/
         return auraCheckResponse;
 
     // look for spells with same namehash
-    for (uint16_t x = AuraSlots::TOTAL_SLOT_START; x < AuraSlots::TOTAL_SLOT_END; x++)
+    for (const auto& aura : m_auraList)
     {
-        Aura* aura = getAuraWithAuraSlot(x);
         if (aura != nullptr)
         {
             if (!spellInfo->getRankInfo()->isSpellPartOfThisSpellRankChain(aura->getSpellId()))
