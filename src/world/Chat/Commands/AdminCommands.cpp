@@ -85,20 +85,10 @@ bool ChatCommandHandler::HandleAdminDispelAllCommand(const char* args, WorldSess
         Player* player = playerPair.second;
         if (player->getSession() && player->IsInWorld())
         {
-            if (player->getWorldMap() != m_session->GetPlayer()->getWorldMap())
-            {
-                if (pos)
-                    sEventMgr.AddEvent(static_cast<Unit*>(player), &Unit::removeAllPositiveAuras, EVENT_PLAYER_CHECKFORCHEATS, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-                else
-                    sEventMgr.AddEvent(static_cast<Unit*>(player), &Unit::removeAllNegativeAuras, EVENT_PLAYER_CHECKFORCHEATS, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-            }
+            if (pos)
+                player->removeAllPositiveAuras();
             else
-            {
-                if (pos)
-                    player->removeAllPositiveAuras();
-                else
-                    player->removeAllNegativeAuras();
-            }
+                player->removeAllNegativeAuras();
         }
     }
     sGMLog.writefromsession(m_session, "used mass dispel");

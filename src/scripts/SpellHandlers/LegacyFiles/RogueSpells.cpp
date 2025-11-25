@@ -116,9 +116,8 @@ bool CloakOfShadows(uint8_t /*effectIndex*/, Spell* s)
     if (!unitTarget || !unitTarget->isAlive())
         return false;
 
-    for (uint16_t j = AuraSlots::NEGATIVE_SLOT_START; j < AuraSlots::NEGATIVE_SLOT_END; ++j)
+    for (const auto& pAura : unitTarget->getNegativeAuraRange())
     {
-        auto pAura = unitTarget->getAuraWithAuraSlot(j);
         if (pAura != NULL
             && !(pAura->getSpellInfo()->getAttributes() & ATTRIBUTES_IGNORE_INVULNERABILITY)
             && pAura->getSpellInfo()->getFirstSchoolFromSchoolMask() != 0

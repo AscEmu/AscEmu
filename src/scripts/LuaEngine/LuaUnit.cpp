@@ -6010,9 +6010,9 @@ int LuaUnit::HasNegativeAura(lua_State* L, Unit* ptr)
     {
         lua_pushboolean(L, 0); return 1;
     }
-    for (uint16_t x = AuraSlots::NEGATIVE_SLOT_START; x < AuraSlots::NEGATIVE_SLOT_END; ++x)
+    for (const auto& aur : ptr->getNegativeAuraRange())
     {
-        if (ptr->getAuraWithAuraSlot(x))
+        if (aur != nullptr)
             RET_BOOL(true)
     }
     RET_BOOL(false)
@@ -6025,9 +6025,9 @@ int LuaUnit::HasPositiveAura(lua_State* L, Unit* ptr)
         return 0;
     }
 
-    for (uint16_t x = AuraSlots::POSITIVE_SLOT_START; x < AuraSlots::POSITIVE_SLOT_END; ++x)
+    for (const auto& aur : ptr->getPositiveAuraRange())
     {
-        if (ptr->getAuraWithAuraSlot(x))
+        if (aur != nullptr)
             RET_BOOL(true)
     }
     RET_BOOL(false)

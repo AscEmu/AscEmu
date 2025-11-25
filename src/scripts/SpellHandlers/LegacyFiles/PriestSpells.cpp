@@ -137,7 +137,7 @@ bool PainAndSufferingProc(uint8_t /*effectIndex*/, Spell* pSpell)
         72319,
         0
     };
-    Aura* aura = target->getAuraWithIdForGuid(shadowWordPain, caster->getGuid());
+    Aura* aura = target->getAuraWithId(shadowWordPain, caster->getGuid());
     if (aura == nullptr)
         return true;
 

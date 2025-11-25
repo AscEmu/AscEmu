@@ -188,9 +188,9 @@ void Arena::OnAddPlayer(Player* _player)
     _player->m_deathVision = true;
 
     // remove all buffs (exclude talents, include flasks)
-    for (uint16_t x = AuraSlots::REMOVABLE_SLOT_START; x < AuraSlots::REMOVABLE_SLOT_END; x++)
+    for (const auto& aur : _player->getRemovableAuraRange())
     {
-        if (auto* const aur = _player->getAuraWithAuraSlot(x))
+        if (aur != nullptr)
         {
             if (!aur->getSpellInfo()->getDurationIndex() && aur->getSpellInfo()->getAttributesExC() & ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD)
                 continue;

@@ -136,10 +136,11 @@ struct AuraCheckResponse
 
 typedef std::list<struct ProcTriggerSpellOnSpell> ProcTriggerSpellOnSpellList;
 
-typedef std::array<std::unique_ptr<Aura>, AuraSlots::TOTAL_SLOT_END> AuraArray;
-typedef std::list<AuraEffectModifier const*> AuraEffectList;
-typedef std::array<AuraEffectList, TOTAL_SPELL_AURAS> AuraEffectListArray;
-typedef std::array<uint32_t /*spellId*/, AuraSlots::NEGATIVE_VISUAL_SLOT_END> VisualAuraArray;
+using AuraArray = std::array<std::unique_ptr<Aura>, AuraSlots::TOTAL_SLOT_END>;
+using AuraRange = std::ranges::subrange<AuraArray::const_iterator, AuraArray::const_iterator, std::ranges::subrange_kind::sized>;
+using AuraEffectList = std::list<AuraEffectModifier const*>;
+using AuraEffectListArray = std::array<AuraEffectList, TOTAL_SPELL_AURAS>;
+using VisualAuraArray = std::array<uint32_t/*spellId*/, AuraSlots::NEGATIVE_VISUAL_SLOT_END>;
 
 struct WoWUnit;
 
@@ -803,12 +804,9 @@ public:
     void addAura(std::unique_ptr<Aura> aur);
     uint8_t findVisualSlotForAura(Aura const* aur) const;
 
-    Aura* getAuraWithId(uint32_t spell_id) const;
-    Aura* getAuraWithId(uint32_t const* auraId) const;
-    Aura* getAuraWithIdForGuid(uint32_t const* auraId, uint64_t guid) const;
-    Aura* getAuraWithIdForGuid(uint32_t spell_id, uint64_t guid) const;
-    Aura* getAuraWithAuraEffect(AuraEffect aura_effect) const;
-    Aura* getAuraWithAuraEffectForGuid(AuraEffect aura_effect, uint64_t guid) const;
+    Aura* getAuraWithId(uint32_t spell_id, uint64_t casterGuid = 0) const;
+    Aura* getAuraWithId(uint32_t const* auraIds, uint64_t casterGuid = 0) const;
+    Aura* getAuraWithAuraEffect(AuraEffect aura_effect, uint64_t casterGuid = 0) const;
     Aura* getAuraWithVisualSlot(uint8_t visualSlot) const;
     // Note; this is internal serverside aura slot, not the slot in client
     // For clientside slot use getAuraWithVisualSlot
@@ -823,12 +821,9 @@ public:
     // Returns 1.0f if there are no provided aura effects
     float_t getTotalPctMultiplierForAuraEffectByMiscValue(AuraEffect aura_effect, int32_t miscValue) const;
 
-    bool hasAurasWithId(uint32_t auraId) const;
-    bool hasAurasWithId(uint32_t const* auraId) const;
-    bool hasAurasWithIdForGuid(uint32_t auraId, uint64_t guid) const;
-    bool hasAurasWithIdForGuid(uint32_t const* auraId, uint64_t guid) const;
-    bool hasAuraWithAuraEffect(AuraEffect type) const;
-    bool hasAuraWithAuraEffectForGuid(AuraEffect type, uint64_t guid) const;
+    bool hasAurasWithId(uint32_t auraId, uint64_t casterGuid = 0) const;
+    bool hasAurasWithId(uint32_t const* auraIds, uint64_t casterGuid = 0) const;
+    bool hasAuraWithAuraEffect(AuraEffect type, uint64_t casterGuid = 0) const;
     bool hasAuraWithMechanic(SpellMechanic mechanic) const;
     bool hasAuraWithSpellType(SpellTypes type, uint64_t casterGuid = 0, uint32_t skipSpellId = 0) const;
 
@@ -840,34 +835,33 @@ public:
     uint32_t getAuraCountForEffect(AuraEffect aura_effect) const;
     uint32_t getAuraCountWithDispelType(DispelType type, uint64_t casterGuid = 0) const;
 
-    void removeAllAuras();
-    void removeAllAurasById(uint32_t auraId, AuraRemoveMode mode = AURA_REMOVE_BY_SERVER);
-    void removeAllAurasById(uint32_t const* auraId, AuraRemoveMode mode = AURA_REMOVE_BY_SERVER);
+    void removeAllAuras() const;
+    void removeAllAurasById(uint32_t auraId, uint64_t casterGuid = 0, AuraRemoveMode mode = AURA_REMOVE_BY_SERVER) const;
+    void removeAllAurasById(uint32_t const* auraId, uint64_t casterGuid = 0, AuraRemoveMode mode = AURA_REMOVE_BY_SERVER) const;
 
-    void eventRemoveAura(uint32_t spellId) { removeAllAurasById(spellId); }
+    void eventRemoveAura(uint32_t spellId) const { removeAllAurasById(spellId); }
 
-    void removeAllAurasByIdForGuid(uint32_t auraId, uint64_t guid, AuraRemoveMode mode = AURA_REMOVE_BY_SERVER);
-    void removeAllAurasByAuraInterruptFlag(uint32_t auraInterruptFlag, uint32_t skipSpellId = 0);
+    void removeAllAurasByAuraInterruptFlag(uint32_t auraInterruptFlag, uint32_t skipSpellId = 0) const;
     // Can remove only the effect from aura, or (by default) entire aura
-    void removeAllAurasByAuraEffect(AuraEffect effect, uint32_t skipSpell = 0, bool removeOnlyEffect = false, uint64_t casterGuid = 0, AuraRemoveMode mode = AURA_REMOVE_BY_SERVER);
-    void removeAllAurasBySpellMechanic(SpellMechanic mechanic, bool negativeOnly = true);
-    void removeAllAurasBySpellMechanic(SpellMechanic const* mechanic, bool negativeOnly = true);
-    void removeAllAurasBySpellType(SpellTypes type, uint64_t casterGuid = 0, uint32_t skipSpellId = 0);
-    void removeAllAurasBySchoolMask(SchoolMask schoolMask, bool negativeOnly = true, bool isImmune = false);
-    void removeAllNegativeAuras();
+    void removeAllAurasByAuraEffect(AuraEffect effect, uint32_t skipSpell = 0, bool removeOnlyEffect = false, uint64_t casterGuid = 0, AuraRemoveMode mode = AURA_REMOVE_BY_SERVER) const;
+    void removeAllAurasBySpellMechanic(SpellMechanic mechanic, bool negativeOnly = true) const;
+    void removeAllAurasBySpellMechanic(SpellMechanic const* mechanic, bool negativeOnly = true) const;
+    void removeAllAurasBySpellType(SpellTypes type, uint64_t casterGuid = 0, uint32_t skipSpellId = 0) const;
+    void removeAllAurasBySchoolMask(SchoolMask schoolMask, bool negativeOnly = true, bool isImmune = false) const;
+    void removeAllNegativeAuras() const;
     // Does not remove passive auras
-    void removeAllPositiveAuras();
-    void removeAllNonPersistentAuras();
-    void removeAuraByItemGuid(uint32_t auraId, uint64_t itemguid);
-    uint32_t removeAllAurasByIdReturnCount(uint32_t auraId, AuraRemoveMode mode = AURA_REMOVE_BY_SERVER);
+    void removeAllPositiveAuras() const;
+    void removeAllNonPersistentAuras() const;
+    void removeAuraByItemGuid(uint32_t auraId, uint64_t itemguid) const;
+    uint32_t removeAllAurasByIdReturnCount(uint32_t auraId, AuraRemoveMode mode = AURA_REMOVE_BY_SERVER) const;
 
-    uint64_t getSingleTargetGuidForAura(uint32_t spellId);
-    uint64_t getSingleTargetGuidForAura(uint32_t const* spellIds, uint32_t* index);
+    uint64_t getSingleTargetGuidForAura(uint32_t spellId) const;
+    uint64_t getSingleTargetGuidForAura(uint32_t const* spellIds, uint32_t* index) const;
     void setSingleTargetGuidForAura(uint32_t spellId, uint64_t guid);
     void removeSingleTargetGuidForAura(uint32_t spellId);
 
-    void clearAllAreaAuraTargets();
-    void removeAllAreaAurasCastedByOther();
+    void clearAllAreaAuraTargets() const;
+    void removeAllAreaAurasCastedByOther() const;
 
     uint32_t getTransformAura() const;
     void setTransformAura(uint32_t auraId);
@@ -880,10 +874,16 @@ public:
     bool sendPeriodicAuraLog(const WoWGuid& casterGuid, const WoWGuid& targetGuid, SpellInfo const* spellInfo, uint32_t amount, uint32_t overKillOrOverHeal, uint32_t absorbed, uint32_t resisted, AuraEffect auraEffect, bool isCritical, uint32_t miscValue = 0, float gainMultiplier = 0.0f);
 
     AuraArray const& getAuraList() const;
+    AuraRange getPassiveAuraRange() const;
+    AuraRange getPositiveAuraRange() const;
+    AuraRange getNegativeAuraRange() const;
+    // Positive + negative auras
+    AuraRange getRemovableAuraRange() const;
+    AuraRange getPassiveAndPositiveAuraRange() const;
     AuraEffectList const& getAuraEffectList(AuraEffect effect) const;
     VisualAuraArray const& getVisualAuraList() const;
 
-    bool isPoisoned();
+    bool isPoisoned() const;
     bool isDazed() const;
 
 private:
@@ -892,10 +892,10 @@ private:
     // Inserts aura effect into aura effect list
     void _addAuraEffect(AuraEffectModifier const* aurEff);
     // Erases aura from aura containers
-    std::unique_ptr<Aura> _removeAura(Aura* aur);
+    std::unique_ptr<Aura> _removeAura(Aura const* aur);
     // Erases aura effect from aura effect list
     void _removeAuraEffect(AuraEffectModifier const* aurEff);
-    void _updateAuras(unsigned long diff);
+    void _updateAuras(unsigned long diff) const;
 
     uint32_t m_transformAura = 0;
 

@@ -1146,7 +1146,7 @@ void Spell::finish(bool successful)
                 target = getPlayerCaster()->getWorldMapUnit(getPlayerCaster()->getTargetGuid());
 
             if (target != nullptr)
-                target->removeAllAurasByIdForGuid(getSpellInfo()->getId(), getCaster()->getGuid());
+                target->removeAllAurasById(getSpellInfo()->getId(), getCaster()->getGuid());
         }
 
         if (getSpellInfo()->hasEffect(SPELL_EFFECT_SUMMON_OBJECT))
@@ -1418,7 +1418,7 @@ void Spell::cancel()
                         channelTarget = getPlayerCaster()->getWorldMapUnit(getPlayerCaster()->getTargetGuid());
 
                     if (channelTarget != nullptr)
-                        channelTarget->removeAllAurasByIdForGuid(getSpellInfo()->getId(), getCaster()->getGuid());
+                        channelTarget->removeAllAurasById(getSpellInfo()->getId(), getCaster()->getGuid());
 
                     // Remove dynamic objects (area aura effects from Blizzard, Rain of Fire etc)
                     if (m_AreaAura)
@@ -1442,7 +1442,7 @@ void Spell::cancel()
                         removeCastItem();
                 }
 
-                getUnitCaster()->removeAllAurasByIdForGuid(getSpellInfo()->getId(), getCaster()->getGuid());
+                getUnitCaster()->removeAllAurasById(getSpellInfo()->getId(), getCaster()->getGuid());
             }
         } break;
         case SPELL_STATE_CASTED:
@@ -4568,7 +4568,7 @@ void Spell::sendChannelUpdate(const uint32_t time, const uint32_t diff/* = 0*/)
             if (diff > 0)
             {
                 const auto casterGuid = u_caster->getGuid();
-                const auto aur = u_caster->getAuraWithIdForGuid(getSpellInfo()->getId(), casterGuid);
+                const auto aur = u_caster->getAuraWithId(getSpellInfo()->getId(), casterGuid);
                 const auto target = u_caster->getWorldMapUnit(channelGuid);
 
                 if (aur != nullptr)
@@ -4576,7 +4576,7 @@ void Spell::sendChannelUpdate(const uint32_t time, const uint32_t diff/* = 0*/)
 
                 if (target != nullptr)
                 {
-                    const auto targetAur = target->getAuraWithIdForGuid(getSpellInfo()->getId(), casterGuid);
+                    const auto targetAur = target->getAuraWithId(getSpellInfo()->getId(), casterGuid);
                     if (targetAur != nullptr)
                         targetAur->update(diff, true);
                 }
@@ -4599,7 +4599,7 @@ void Spell::sendChannelUpdate(const uint32_t time, const uint32_t diff/* = 0*/)
 
             // Channel ended, remove the aura
             //\ todo: if aura is stackable, need to remove only one stack from aura instead of whole aura!
-            u_caster->removeAllAurasByIdForGuid(getSpellInfo()->getId(), u_caster->getGuid());
+            u_caster->removeAllAurasById(getSpellInfo()->getId(), u_caster->getGuid());
         }
     }
 

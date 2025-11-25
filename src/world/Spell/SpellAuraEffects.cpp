@@ -1494,9 +1494,8 @@ void Aura::spellAuraEffectModShapeshift(AuraEffectModifier* aurEff, bool apply)
     }
 
     // Remove auras which unit should not have anymore
-    for (uint16_t i = AuraSlots::PASSIVE_SLOT_START; i < AuraSlots::POSITIVE_SLOT_END; ++i)
+    for (const auto& aur : getOwner()->getPassiveAndPositiveAuraRange())
     {
-        auto* const aur = getOwner()->getAuraWithAuraSlot(i);
         if (aur == nullptr)
             continue;
 
@@ -1592,9 +1591,8 @@ void Aura::spellAuraEffectPeriodicLeech(AuraEffectModifier* aurEff, bool apply)
                 int32_t count = 0;
 
                 auras.clear();
-                for (uint16_t i = AuraSlots::TOTAL_SLOT_START; i < AuraSlots::TOTAL_SLOT_END; ++i)
+                for (const auto& aura : m_target->getAuraList())
                 {
-                    Aura* aura = m_target->getAuraWithAuraSlot(i);
                     if (aura == nullptr)
                         continue;
 

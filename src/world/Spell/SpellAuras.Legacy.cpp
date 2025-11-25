@@ -446,11 +446,11 @@ void Aura::EventUpdatePetAA(AuraEffectModifier* aurEff, float r)
 
     if (m_target->getDistanceSq(pet) > r)
     {
-        pet->removeAllAurasByIdForGuid(m_spellInfo->getId(), m_target->getGuid());
+        pet->removeAllAurasById(m_spellInfo->getId(), m_target->getGuid());
     }
     else
     {
-        if (pet->isAlive() && pet->getAuraWithIdForGuid(m_spellInfo->getId(), m_target->getGuid()) == nullptr)
+        if (pet->isAlive() && pet->getAuraWithId(m_spellInfo->getId(), m_target->getGuid()) == nullptr)
         {
             auto a = sSpellMgr.newAura(m_spellInfo, getTimeLeft(), m_target, pet, true);
             a->m_areaAura = true;
@@ -722,7 +722,7 @@ void Aura::ClearAATargets()
     if (m_spellInfo->hasEffect(SPELL_EFFECT_APPLY_PET_AREA_AURA))
     {
         if (auto* const pet = m_target->getPet())
-            pet->removeAllAurasByIdForGuid(spellid, m_target->getGuid());
+            pet->removeAllAurasById(spellid, m_target->getGuid());
     }
 
 #if VERSION_STRING >= TBC
@@ -1569,9 +1569,8 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
             case 52188:
             case 58506:
             {
-                for (uint16_t x = AuraSlots::POSITIVE_SLOT_START; x < AuraSlots::POSITIVE_SLOT_END; ++x)
+                for (const auto& aur : m_target->getPositiveAuraRange())
                 {
-                    auto* const aur = m_target->getAuraWithAuraSlot(x);
                     if (aur == nullptr)
                         continue;
 
@@ -1604,8 +1603,8 @@ void Aura::SpellAuraModStealth(AuraEffectModifier* aurEff, bool apply)
                             aur->setTimeLeft(tmp_duration);
                             aur->refreshOrModifyStack();
 
-                            sEventMgr.ModifyEventTimeLeft(aur, EVENT_AURA_REMOVE, tmp_duration);
-                            sEventMgr.AddEvent(aur, &Aura::removeAura, AURA_REMOVE_ON_EXPIRE, EVENT_AURA_REMOVE, tmp_duration, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT | EVENT_FLAG_DELETES_OBJECT);
+                            sEventMgr.ModifyEventTimeLeft(aur.get(), EVENT_AURA_REMOVE, tmp_duration);
+                            sEventMgr.AddEvent(aur.get(), &Aura::removeAura, AURA_REMOVE_ON_EXPIRE, EVENT_AURA_REMOVE, tmp_duration, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT | EVENT_FLAG_DELETES_OBJECT);
                         }
                     }
                 }
@@ -2262,10 +2261,9 @@ void Aura::SpellAuraModSchoolImmunity(AuraEffectModifier* aurEff, bool apply)
                 if (!m_target->isAlive())
                     return;
 
-                for (uint16_t i = AuraSlots::NEGATIVE_SLOT_START; i < AuraSlots::NEGATIVE_SLOT_END; ++i)
+                for (const auto& pAura : m_target->getNegativeAuraRange())
                 {
-                    auto* const pAura = m_target->getAuraWithAuraSlot(i);
-                    if (pAura != this &&
+                    if (pAura.get() != this &&
                         pAura != nullptr &&
                         !pAura->IsPassive() &&
                         pAura->isNegative() &&
@@ -2367,9 +2365,8 @@ void Aura::SpellAuraModDispelImmunity(AuraEffectModifier* aurEff, bool apply)
 
         if (apply)
         {
-            for (uint16_t x = AuraSlots::POSITIVE_SLOT_START; x < AuraSlots::POSITIVE_SLOT_END; ++x)
+            for (const auto& aur : m_target->getPositiveAuraRange())
             {
-                auto* const aur = m_target->getAuraWithAuraSlot(x);
                 // HACK FIX FOR: 41425 and 25771
                 if (aur && aur->getSpellId() != 41425 && aur->getSpellId() != 25771)
                     if (aur->getSpellInfo()->getDispelType() == (uint32_t)aurEff->getEffectMiscValue())

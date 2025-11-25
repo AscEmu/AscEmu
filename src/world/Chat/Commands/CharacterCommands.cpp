@@ -307,9 +307,9 @@ bool ChatCommandHandler::HandleCharRemoveAurasCommand(const char* /*args*/, Worl
         return true;
 
     blueSystemMessage(m_session, "Removing all auras...");
-    for (uint16_t i = AuraSlots::REMOVABLE_SLOT_START; i < AuraSlots::REMOVABLE_SLOT_END; ++i)
+    for (const auto& aur : player_target->getRemovableAuraRange())
     {
-        if (auto* const aur = player_target->getAuraWithAuraSlot(i))
+        if (aur != nullptr)
             aur->removeAura();
     }
 
