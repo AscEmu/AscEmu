@@ -839,42 +839,6 @@ void SpellMgr::applyHackFixes()
 
         switch (sp->getId())
         {
-            // SPELL_HASH_SEAL_OF_COMMAND
-            case 20375:     // Seal of Command - School/dmg_type
-            case 20424:
-            case 29385:
-            case 33127:
-            case 41469:
-            case 42058:
-            case 57769:
-            case 57770:
-            case 66004:
-            case 68020:
-            case 68021:
-            case 68022:
-            case 69403:
-            {
-                sp->setDmgClass(SPELL_DMG_TYPE_MAGIC); //heh, crazy spell uses melee/ranged/magic dmg type for 1 spell. Now which one is correct ?
-            } break;
-
-            // SPELL_HASH_JUDGEMENT_OF_COMMAND
-            case 20425:
-            case 20467:
-            case 29386:
-            case 32778:
-            case 33554:
-            case 41368:
-            case 41470:
-            case 66005:
-            case 68017:
-            case 68018:
-            case 68019:
-            case 71551:
-            {
-                sp->setDmgClass(SPELL_DMG_TYPE_MAGIC);
-            } break;
-
-
             // SPELL_HASH_BLESSING_OF_PROTECTION
             case 41450:
             // SPELL_HASH_DIVINE_PROTECTION

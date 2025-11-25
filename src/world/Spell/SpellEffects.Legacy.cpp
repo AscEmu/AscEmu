@@ -1137,8 +1137,6 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
             {
                 if (p_caster != nullptr)
                 {
-                    if (!m_unitTarget->isStunned())
-                        dmg = dmg >> 1;
                     if (p_caster->hasAurasWithId(34258))
                         p_caster->castSpell(p_caster, 34260, true);
                     if ((p_caster->hasAurasWithId(53696) || p_caster->hasAurasWithId(53695)))
@@ -1569,12 +1567,6 @@ void Spell::SpellEffectSchoolDMG(uint8_t effectIndex) // dmg school
                     if (p_caster->hasAurasWithId(37186))
                         dmg = 33;
                 }
-            }break;
-
-            case 25742:
-            {
-                if (p_caster != nullptr)
-                    dmg = static_cast<uint32_t>(std::round(p_caster->getBaseAttackTime(MELEE) / 1000 * ((0.022 * (p_caster->getCalculatedAttackPower()) + (0.044 * (p_caster->GetDamageDoneMod(1))))) + m_spellInfo->getEffectBasePoints(effectIndex)));
             }break;
             case 19434:
             case 20900:
@@ -3266,7 +3258,7 @@ void Spell::SpellEffectWeaponDmgPerc(uint8_t effectIndex) // Weapon Percent dama
 
     if (GetType() == SPELL_DMG_TYPE_MAGIC)
     {
-        auto dmg = CalculateDamage(u_caster, m_unitTarget, MELEE, nullptr, getSpellInfo()) * damage / 100.0f;
+        auto dmg = CalculateDamage(u_caster, m_unitTarget, MELEE, getSpellInfo()) * damage / 100.0f;
 
         // Get bonus damage from spell power and attack power
         if (!isEffectDamageStatic[effectIndex])

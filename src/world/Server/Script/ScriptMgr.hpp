@@ -55,7 +55,7 @@ public:
     SpellScriptEffectDamage callScriptedSpellDoCalculateEffect(Spell* spell, uint8_t effectIndex, int32_t* damage) const;
     SpellScriptExecuteState callScriptedSpellBeforeSpellEffect(Spell* spell, uint8_t effectIndex) const;
     SpellScriptCheckDummy callScriptedSpellOnDummyOrScriptedEffect(Spell* spell, uint8_t effectIndex) const;
-    void callScriptedSpellAfterSpellEffect(Spell* spell, uint8_t effectIndex);
+    void callScriptedSpellAfterSpellEffect(Spell* spell, uint8_t effectIndex, DamageInfo const& damageInfo);
 
     // Aura script hooks
     void callScriptedAuraOnCreate(Aura* aur);

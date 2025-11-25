@@ -443,8 +443,9 @@ public:
     void setModDamageDoneNegative(uint16_t school, uint32_t value);
     void modModDamageDoneNegative(uint16_t school, int32_t value);
 
-    float getModDamageDonePct(uint8_t shool) const;
-    void setModDamageDonePct(float damagePct, uint8_t shool);
+    float getModDamageDonePct(uint8_t school) const;
+    void setModDamageDonePct(float damagePct, uint8_t school);
+    void modModDamageDonePct(float damagePct, uint8_t school);
 
 #if VERSION_STRING >= TBC
     uint32_t getModHealingDone() const;
@@ -1930,7 +1931,7 @@ public:
     void calculateDamage() override;
     float m_offhandDmgMod = 0.5f;
 
-    int32_t GetDamageDoneMod(uint16_t school) override
+    int32_t GetDamageDoneMod(uint8_t school) const override
     {
         if (school >= TOTAL_SPELL_SCHOOLS)
             return 0;
@@ -1938,12 +1939,12 @@ public:
         return static_cast<int32_t>(getModDamageDonePositive(school)) - static_cast<int32_t>(getModDamageDoneNegative(school));
     }
 
-    float GetDamageDonePctMod(uint16_t school) override
+    float GetDamageDonePctMod(uint8_t school) const override
     {
         if (school >= TOTAL_SPELL_SCHOOLS)
             return 0;
 
-        return getModDamageDonePct(static_cast<uint8_t>(school));
+        return getModDamageDonePct(school);
     }
 
     uint32_t getMainMeleeDamage(uint32_t attackPowerOverride); // I need this for windfury

@@ -923,7 +923,7 @@ void Spell::handleHittedEffect(const uint64_t targetGuid, uint8_t effIndex, int3
     if (scriptResult != SpellScriptExecuteState::EXECUTE_PREVENT)
         (*this.*SpellEffectsHandler[effectId])(effIndex);
 
-    sScriptMgr.callScriptedSpellAfterSpellEffect(this, effIndex);
+    sScriptMgr.callScriptedSpellAfterSpellEffect(this, effIndex, m_targetDamageInfo);
 
     // Create proc events
     if (isTargetDamageInfoSet)
@@ -1501,11 +1501,11 @@ int32_t Spell::calculateEffect(uint8_t effIndex)
             switch (getSpellInfo()->getEffect(effIndex))
             {
                 case SPELL_EFFECT_SCHOOL_DAMAGE:
-                    value = static_cast<int32_t>(std::ceil(getUnitCaster()->applySpellDamageBonus(getSpellInfo(), value, 1.0f, false, this)));
+                    value = static_cast<int32_t>(std::round(getUnitCaster()->applySpellDamageBonus(getSpellInfo(), value, 1.0f, false, this)));
                     break;
                 case SPELL_EFFECT_HEAL:
                 case SPELL_EFFECT_HEAL_MECHANICAL:
-                    value = static_cast<int32_t>(std::ceil(getUnitCaster()->applySpellHealingBonus(getSpellInfo(), value, 1.0f, false, this)));
+                    value = static_cast<int32_t>(std::round(getUnitCaster()->applySpellHealingBonus(getSpellInfo(), value, 1.0f, false, this)));
                     break;
                 default:
                     break;

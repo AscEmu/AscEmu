@@ -39,7 +39,7 @@ SpellScriptCheckDummy SpellScript::onDummyOrScriptedEffect(Spell* /*spell*/, uin
     return SpellScriptCheckDummy::DUMMY_NOT_HANDLED;
 }
 
-void SpellScript::afterSpellEffect(Spell* /*spell*/, uint8_t /*effectIndex*/) {}
+void SpellScript::afterSpellEffect(Spell* /*spell*/, uint8_t /*effectIndex*/, DamageInfo const& /*damageInfo*/) {}
 
 // Aura hooks
 

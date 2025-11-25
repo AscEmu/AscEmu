@@ -3384,7 +3384,7 @@ float_t Unit::applySpellHealingBonus(SpellInfo const* spellInfo, int32_t baseHea
     else
     {
         bonusHeal = static_cast<float_t>(m_healDoneMod[school]);
-        bonusAp = static_cast<float_t>(getAttackPower());
+        bonusAp = static_cast<float_t>(getCalculatedAttackPower());
     }
 
     // Get spell coefficient value
@@ -3554,7 +3554,7 @@ float_t Unit::applySpellDamageBonus(SpellInfo const* spellInfo, int32_t baseDmg,
     if (aur != nullptr)
         bonusAp = static_cast<float_t>(aur->getAttackPowerBonus());
     else
-        bonusAp = static_cast<float_t>(getAttackPower());
+        bonusAp = static_cast<float_t>(getCalculatedAttackPower());
 
     if (bonusAp > 0.0f)
     {
@@ -10469,9 +10469,9 @@ DamageInfo Unit::strike(Unit* pVictim, WeaponDamageType weaponType, SpellInfo co
             else
             {
                 if (dmg.weaponType == MELEE && ability)
-                    dmg.fullDamage = CalculateDamage(this, pVictim, MELEE, ability->getSpellFamilyFlags(), ability);
+                    dmg.fullDamage = CalculateDamage(this, pVictim, MELEE, ability);
                 else
-                    dmg.fullDamage = CalculateDamage(this, pVictim, dmg.weaponType, 0, ability);
+                    dmg.fullDamage = CalculateDamage(this, pVictim, dmg.weaponType, ability);
             }
 
             if (pct_dmg_mod > 0)

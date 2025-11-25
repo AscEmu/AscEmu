@@ -114,5 +114,5 @@ protected:
 class DarkMartyrdom : public SpellScript
 {
 public:
-    void afterSpellEffect(Spell* spell, uint8_t effIndex) override;
+    void afterSpellEffect(Spell* spell, uint8_t effIndex, DamageInfo const& damageInfo) override;
 };

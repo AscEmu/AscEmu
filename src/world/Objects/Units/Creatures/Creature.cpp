@@ -2432,7 +2432,7 @@ float Creature::GetBaseParry()
     return 5.0f;
 }
 
-int32_t Creature::GetDamageDoneMod(uint16_t school)
+int32_t Creature::GetDamageDoneMod(uint8_t school) const
 {
     if (school >= TOTAL_SPELL_SCHOOLS)
         return 0;
@@ -2440,7 +2440,7 @@ int32_t Creature::GetDamageDoneMod(uint16_t school)
     return ModDamageDone[ school ];
 }
 
-float Creature::GetDamageDonePctMod(uint16_t school)
+float Creature::GetDamageDonePctMod(uint8_t school) const
 {
     if (school >= TOTAL_SPELL_SCHOOLS)
         return 0;

@@ -1215,8 +1215,9 @@ uint32_t Player::getModDamageDoneNegative(uint16_t school) const { return player
 void Player::setModDamageDoneNegative(uint16_t school, uint32_t value) { write(playerData()->field_mod_damage_done_negative[school], value); }
 void Player::modModDamageDoneNegative(uint16_t school, int32_t value) { setModDamageDoneNegative(school, getModDamageDoneNegative(school) + value); }
 
-float Player::getModDamageDonePct(uint8_t shool) const { return playerData()->field_mod_damage_done_pct[shool]; }
-void Player::setModDamageDonePct(float damagePct, uint8_t shool) { write(playerData()->field_mod_damage_done_pct[shool], damagePct); }
+float Player::getModDamageDonePct(uint8_t school) const { return playerData()->field_mod_damage_done_pct[school]; }
+void Player::setModDamageDonePct(float damagePct, uint8_t school) { write(playerData()->field_mod_damage_done_pct[school], damagePct); }
+void Player::modModDamageDonePct(float damagePct, uint8_t school) { setModDamageDonePct(getModDamageDonePct(school) + damagePct, school); }
 
 #if VERSION_STRING >= TBC
 uint32_t Player::getModHealingDone() const { return playerData()->field_mod_healing_done; }

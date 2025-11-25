@@ -817,7 +817,7 @@ void Aura::_calculateAttackPowerBonus()
     }
 
     // Get snapshot of caster's current attack power
-    m_attackPowerBonus = casterUnit->getAttackPower();
+    m_attackPowerBonus = casterUnit->getCalculatedAttackPower();
 }
 
 void Aura::_calculateSpellHaste()
@@ -1277,7 +1277,7 @@ uint32_t AbsorbAura::calcAbsorbAmount(AuraEffectModifier* aurEff)
     if (unitCaster != nullptr && !aurEff->isEffectDamageStatic())
     {
         // Apply spell power coefficient
-        val = static_cast<int32_t>(std::ceil(unitCaster->applySpellDamageBonus(getSpellInfo(), val, aurEff->getEffectPercentModifier(), false, nullptr, aurEff->getAura())));
+        val = static_cast<int32_t>(std::round(unitCaster->applySpellDamageBonus(getSpellInfo(), val, aurEff->getEffectPercentModifier(), false, nullptr, aurEff->getAura())));
     }
 
     return static_cast<uint32_t>(val);

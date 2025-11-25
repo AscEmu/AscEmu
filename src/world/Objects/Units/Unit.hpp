@@ -1363,8 +1363,8 @@ public:
     // Used in Aura::SpellAuraReduceEffectDuration
     int32_t m_mechanicDurationPctMod[28] = {0};
 
-    virtual int32_t GetDamageDoneMod(uint16_t /*school*/) { return 0; }
-    virtual float GetDamageDonePctMod(uint16_t /*school*/) { return 0; }
+    virtual int32_t GetDamageDoneMod(uint8_t /*school*/) const { return 0; }
+    virtual float GetDamageDonePctMod(uint8_t /*school*/) const { return 0; }
 
     // Used in Aura::SpellAuraModDamageTaken & Unit:strike
     int32_t m_damageTakenMod[TOTAL_SPELL_SCHOOLS] = {0};

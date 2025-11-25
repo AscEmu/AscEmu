@@ -164,7 +164,7 @@ public:
         if (victim == nullptr)
             return SpellScriptExecuteState::EXECUTE_PREVENT;
 
-        absorbAmount = static_cast<uint32_t>(std::ceil(damageInfo.realDamage * spellProc->getOverrideEffectDamage(EFF_INDEX_0) / 100.0f));
+        absorbAmount = static_cast<uint32_t>(std::round(damageInfo.realDamage * spellProc->getOverrideEffectDamage(EFF_INDEX_0) / 100.0f));
         // Patch 3.1.0: Divine Aegis effects will now stack, however the amount absorbed cannot exceed 125 * level(of the target).
         if (absorbAmount > (victim->getLevel() * 125))
             absorbAmount = victim->getLevel() * 125;
@@ -415,16 +415,16 @@ public:
     SpellScriptExecuteState onDoProcEffect(SpellProc* spellProc, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, DamageInfo damageInfo) override
     {
         const auto healPct = spellProc->getOverrideEffectDamage(EFF_INDEX_0);
-        selfHeal = static_cast<uint32_t>(std::ceil(damageInfo.realDamage * healPct / 100.0f));
+        selfHeal = static_cast<uint32_t>(std::round(damageInfo.realDamage * healPct / 100.0f));
 
 #if VERSION_STRING >= Mop
         // TODO: Mop
 #elif VERSION_STRING == Cata
         const auto partyHealPct = std::round(healPct / 2.0f);
-        partyHeal = static_cast<uint32_t>(std::ceil(damageInfo.realDamage * partyHealPct / 100.0f));
+        partyHeal = static_cast<uint32_t>(std::round(damageInfo.realDamage * partyHealPct / 100.0f));
 #elif VERSION_STRING == WotLK
         const auto partyHealPct = std::round(healPct / 5.0f);
-        partyHeal = static_cast<uint32_t>(std::ceil(damageInfo.realDamage * partyHealPct / 100.0f));
+        partyHeal = static_cast<uint32_t>(std::round(damageInfo.realDamage * partyHealPct / 100.0f));
 #endif
 
         if (selfHeal == 0)
@@ -537,7 +537,7 @@ public:
     SpellScriptExecuteState onDoProcEffect(SpellProc* spellProc, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, [[maybe_unused]]DamageInfo damageInfo) override
     {
 #if VERSION_STRING == TBC
-        manaReturn = static_cast<uint32_t>(std::ceil(damageInfo.realDamage * spellProc->getOverrideEffectDamage(EFF_INDEX_0) / 100.0f));
+        manaReturn = static_cast<uint32_t>(std::round(damageInfo.realDamage * spellProc->getOverrideEffectDamage(EFF_INDEX_0) / 100.0f));
         return SpellScriptExecuteState::EXECUTE_OK;
 #elif VERSION_STRING < Mop
         const auto caster = spellProc->getProcOwner()->getWorldMapUnit(spellProc->getCasterGuid());
