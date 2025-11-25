@@ -65,18 +65,24 @@ bool SpellProc::canDeleteProc(uint32_t spellId, uint64_t casterGuid, uint64_t /*
 
 bool SpellProc::checkClassMask(SpellInfo const* castingSpell) const
 {
-    if (mProcClassMask[0] == 0 && mProcClassMask[1] == 0 && mProcClassMask[2] == 0)
+    // Does not proc on any specific spell
+    if (std::ranges::all_of(mProcClassMask, [](uint32_t mask) { return mask == 0; }))
         return true;
 
-    if (castingSpell->getSpellFamilyFlags(0) == 0 && castingSpell->getSpellFamilyFlags(1) == 0 && castingSpell->getSpellFamilyFlags(2) == 0)
+    if (castingSpell->getSpellFamilyName() != mProcFamilyName)
         return false;
 
-    if (((castingSpell->getSpellFamilyFlags(0) == 0) || (mProcClassMask[0] & castingSpell->getSpellFamilyFlags(0))) &&
-        ((castingSpell->getSpellFamilyFlags(1) == 0) || (mProcClassMask[1] & castingSpell->getSpellFamilyFlags(1))) &&
-        ((castingSpell->getSpellFamilyFlags(2) == 0) || (mProcClassMask[2] & castingSpell->getSpellFamilyFlags(2))))
-        return true;
+    if (std::ranges::all_of(castingSpell->getSpellFamilyFlags(), [](uint32_t mask) { return mask == 0; }))
+        return false;
 
-    return false;
+    // Not spell effect count, it's spell mask field count
+    for (uint8_t i = 0; i < 3; ++i)
+    {
+        if (castingSpell->getSpellFamilyFlags(i) > 0 && !(mProcClassMask[i] & castingSpell->getSpellFamilyFlags(i)))
+            return false;
+    }
+
+    return true;
 }
 
 bool SpellProc::doEffect(Unit* /*victim*/, SpellInfo const* /*castingSpell*/, uint32_t /*flag*/, uint32_t /*dmg*/, uint32_t /*abs*/, uint32_t /*weaponDamageType*/)
@@ -108,6 +114,10 @@ void SpellProc::castSpell(Unit* victim, SpellInfo const* castingSpell)
             caster = getProcOwner();
         else
             caster = getProcOwner()->getWorldMapUnit(getCasterGuid());
+    }
+    else if (isCastedByProcInitiator())
+    {
+        caster = victim;
     }
 
     if (caster == nullptr)
@@ -154,6 +164,10 @@ uint32_t SpellProc::getProcClassMask(uint8_t i) const { return mProcClassMask[i]
 
 void SpellProc::setProcClassMask(uint8_t i, uint32_t mask) { mProcClassMask[i] = mask; }
 
+SpellFamily SpellProc::getProcFamilyName() const { return mProcFamilyName; }
+
+void SpellProc::setProcFamilyName(SpellFamily name) { mProcFamilyName = name; }
+
 void SpellProc::setProcFlags(SpellProcFlags procFlags) { mProcFlags = procFlags; }
 
 void SpellProc::setExtraProcFlags(SpellExtraProcFlags extraProcFlags) { mExtraProcFlags = extraProcFlags; }
@@ -172,6 +186,9 @@ void SpellProc::setLastTriggerTime(uint32_t time) { mLastTrigger = time; }
 
 bool SpellProc::isCastedByProcCreator() const { return m_castedByProcCreator; }
 void SpellProc::setCastedByProcCreator(bool enable) { m_castedByProcCreator = enable; }
+
+bool SpellProc::isCastedByProcInitiator() const { return m_castedByProcInitiator; }
+void SpellProc::setCastedByProcInitiator(bool enable) { m_castedByProcInitiator = enable; }
 
 bool SpellProc::isCastedOnProcOwner() const { return m_castOnProcOwner; }
 void SpellProc::setCastedOnProcOwner(bool enable) { m_castOnProcOwner = enable; }
@@ -269,6 +286,9 @@ std::unique_ptr<SpellProc> SpellProcMgr::newSpellProc(Unit* owner, SpellInfo con
         result->mGroupRelation[1] = 0;
         result->mGroupRelation[2] = 0;
     }
+
+    if (origSpellInfo != nullptr)
+        result->mProcFamilyName = static_cast<SpellFamily>(origSpellInfo->getSpellFamilyName());
 
     if (procClassMask != nullptr)
     {

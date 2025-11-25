@@ -36,11 +36,17 @@ class EarthShieldDummy : public SpellScript
 public:
     SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* dmg) override
     {
-        if (effIndex != EFF_INDEX_0 || spell->getUnitCaster() == nullptr)
+        if (effIndex != EFF_INDEX_0 || spell->getUnitCaster() == nullptr || spell->getUnitTarget() == nullptr)
             return SpellScriptEffectDamage::DAMAGE_DEFAULT;
 
         // Calculate healing done here so correct percent modifiers are applied
-        *dmg = static_cast<int32_t>(std::round(spell->getUnitCaster()->applySpellHealingBonus(spell->getSpellInfo(), *dmg, 1.0f, false, spell)));
+#if VERSION_STRING == TBC
+        // Casted by the unit who owns the aura
+        *dmg = static_cast<int32_t>(std::round(spell->getUnitTarget()->applySpellHealingBonus(spell->getUnitCaster(), spell->getSpellInfo(), effIndex, *dmg, 1.0f, false, spell)));
+#else // Wotlk+
+        // Casted by the shaman
+        *dmg = static_cast<int32_t>(std::round(spell->getUnitCaster()->applySpellHealingBonus(spell->getUnitCaster(), spell->getSpellInfo(), effIndex, *dmg, 1.0f, false, spell)));
+#endif
         return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;
     }
 
@@ -66,7 +72,9 @@ class EarthShield : public ElementalShield
 public:
     void onCreateSpellProc(SpellProc* spellProc, Object* obj) override
     {
+#if VERSION_STRING >= WotLK
         spellProc->setCastedByProcCreator(true);
+#endif
         spellProc->setCastedOnProcOwner(true);
 
         ElementalShield::onCreateSpellProc(spellProc, obj);
@@ -102,7 +110,7 @@ public:
             return SpellScriptEffectDamage::DAMAGE_DEFAULT;
 
         // Calculate damage done here so correct percent modifiers are applied
-        *dmg = static_cast<int32_t>(std::round(spell->getUnitCaster()->applySpellDamageBonus(spell->getSpellInfo(), *dmg, 1.0f, false, spell)));
+        *dmg = static_cast<int32_t>(std::round(spell->getUnitCaster()->applySpellDamageBonus(spell->getUnitCaster(), spell->getSpellInfo(), effIndex, *dmg, 1.0f, false, spell)));
         return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;
     }
 

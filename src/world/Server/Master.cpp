@@ -70,7 +70,7 @@
 
 // DB version
 static const char* REQUIRED_CHAR_DB_VERSION = "20250921-00_playerpets";
-static const char* REQUIRED_WORLD_DB_VERSION = "20251123-00_creature_properties";
+static const char* REQUIRED_WORLD_DB_VERSION = "20251125-00_spell_coefficient_override";
 
 volatile bool Master::m_stopEvent = false;
 

@@ -480,7 +480,8 @@ public:
                 spellProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
 #elif VERSION_STRING == Mop
             // Should proc only when this aura deals damage
-            auto procMask = aur->getSpellInfo()->getSpellFamilyFlags();
+            const auto& spellFamilyMask = aur->getSpellInfo()->getSpellFamilyFlags();
+            uint32_t procMask[3] = { spellFamilyMask[0], spellFamilyMask[1], spellFamilyMask[2] };
             aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_VAMPIRIC_TOUCH_MANA), aur, aur->getCasterGuid(), procMask);
 #else
             // Should proc only on Mind Blast

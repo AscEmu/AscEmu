@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "CommonTypes.hpp"
 #include "Definitions/ProcFlags.hpp"
+#include "Definitions/SpellFamily.hpp"
 #include <memory>
 #include <unordered_map>
 #include <cstdint>
@@ -82,6 +83,9 @@ public:
     uint32_t getProcClassMask(uint8_t i) const;
     void setProcClassMask(uint8_t i, uint32_t mask);
 
+    SpellFamily getProcFamilyName() const;
+    void setProcFamilyName(SpellFamily name);
+
     void setProcFlags(SpellProcFlags procFlags);
     void setExtraProcFlags(SpellExtraProcFlags extraProcFlags);
 
@@ -96,6 +100,9 @@ public:
 
     bool isCastedByProcCreator() const;
     void setCastedByProcCreator(bool);
+
+    bool isCastedByProcInitiator() const;
+    void setCastedByProcInitiator(bool);
 
     bool isCastedOnProcOwner() const;
     void setCastedOnProcOwner(bool);
@@ -144,12 +151,21 @@ private:
     // not by the unit (proc owner) who has Earth Shield
     bool m_castedByProcCreator = false;
 
+    // If set true, the proc spell is casted by the unit who is the victim/initiator for proc
+    // By default, the proc owner casts the spell
+    // Example: TBC Paladin Judgement of Light; the heal spell should be casted by the player who attacks (initiator) the judged target (proc owner)
+    bool m_castedByProcInitiator = false;
+
     // If set true, the proc spell is casted on the proc owner, not on victim
     // By default, the spell is casted on victim
     bool m_castOnProcOwner = false;
 
     // Mask used to compare with casting spell's family mask
     uint32_t mProcClassMask[3] = { 0, 0, 0 };
+
+    // Must match with casting spell's family name if procClassMask is used
+    // By default this is mOrigSpell's family name
+    SpellFamily mProcFamilyName = SPELLFAMILY_GENERIC;
 
     // Mask used on spell effect
     uint32_t mGroupRelation[3] = { 0, 0, 0 };

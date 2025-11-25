@@ -137,7 +137,7 @@ struct AuraCheckResponse
 typedef std::list<struct ProcTriggerSpellOnSpell> ProcTriggerSpellOnSpellList;
 
 using AuraArray = std::array<std::unique_ptr<Aura>, AuraSlots::TOTAL_SLOT_END>;
-using AuraRange = std::ranges::subrange<AuraArray::const_iterator, AuraArray::const_iterator, std::ranges::subrange_kind::sized>;
+using AuraRange = std::ranges::subrange<AuraArray::const_iterator>;
 using AuraEffectList = std::list<AuraEffectModifier const*>;
 using AuraEffectListArray = std::array<AuraEffectList, TOTAL_SPELL_AURAS>;
 using VisualAuraArray = std::array<uint32_t/*spellId*/, AuraSlots::NEGATIVE_VISUAL_SLOT_END>;
@@ -761,8 +761,8 @@ public:
     void removeProcTriggerSpell(uint32_t spellId, uint64_t casterGuid = 0, uint64_t misc = 0);
     void clearProcCooldowns();
 
-    float_t applySpellDamageBonus(SpellInfo const* spellInfo, int32_t baseDmg, float_t effectPctModifier = 1.0f, bool isPeriodic = false, Spell* castingSpell = nullptr, Aura* aur = nullptr);
-    float_t applySpellHealingBonus(SpellInfo const* spellInfo, int32_t baseHeal, float_t effectPctModifier = 1.0f, bool isPeriodic = false, Spell* castingSpell = nullptr, Aura* aur = nullptr);
+    float_t applySpellDamageBonus(Unit* originalCaster, SpellInfo const* spellInfo, uint8_t effectIndex, int32_t baseDmg, float_t effectPctModifier = 1.0f, bool isPeriodic = false, Spell* castingSpell = nullptr, Aura* aur = nullptr);
+    float_t applySpellHealingBonus(Unit* originalCaster, SpellInfo const* spellInfo, uint8_t effectIndex, int32_t baseHeal, float_t effectPctModifier = 1.0f, bool isPeriodic = false, Spell* castingSpell = nullptr, Aura* aur = nullptr);
 
     float_t getCriticalChanceForDamageSpell(Spell* spell, Aura* aura, Unit* target);
     float_t getCriticalChanceForHealSpell(Spell* spell, Aura* aura, Unit* target);

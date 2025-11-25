@@ -1828,7 +1828,7 @@ namespace WDB::Structures
         uint32_t EffectApplyAuraName;                               // 4
         uint32_t EffectAmplitude;                                   // 5
         int32_t EffectBasePoints;                                   // 6
-        float EffectBonusMultiplier;                                // 7
+        float EffectSpellPowerCoefficient;                          // 7
         float EffectDamageMultiplier;                               // 8
         uint32_t EffectChainTarget;                                 // 9
         int32_t EffectDieSides;                                     // 10
@@ -2803,7 +2803,7 @@ namespace WDB::Structures
         uint32_t RuneCostID;                                        // 226
         //uint32_t SpellMissileID;                                  // 227 not used
         //uint32_t PowerDisplayId;                                  // 228 not used
-        float EffectBonusMultiplier[MAX_SPELL_EFFECTS];             // 229 - 231
+        float EffectSpellPowerCoefficient[MAX_SPELL_EFFECTS];       // 229 - 231
         //uint32_t SpellDescriptionVariable;                        // 232 not used
         uint32_t SpellDifficultyId;                                 // 233
     };
@@ -2844,7 +2844,7 @@ namespace WDB::Structures
         //uint32_t spellMissileID;                                  // 27
         //uint32_t spellDescriptionVariableID;                      // 28
         uint32_t SpellDifficultyId;                                 // 29
-        //float unk_1;                                              // 30
+        float AttackPowerCoefficient;                               // 30
         uint32_t SpellScalingId;                                    // 31 SpellScaling.dbc
         uint32_t SpellAuraOptionsId;                                // 32 SpellAuraOptions.dbc
         uint32_t SpellAuraRestrictionsId;                           // 33 SpellAuraRestrictions.dbc
@@ -2947,31 +2947,31 @@ namespace WDB::Structures
     struct SpellEntry
     {
         uint32_t Id;                                                // 0
-        const char* Name;                                           // 21
-        const char* Rank;                                           // 22
-        //char* Description;                                        // 23 not used
-        //char* BuffDescription;                                    // 24 not used
-        uint32_t RuneCostID;                                        // 26
-        //uint32_t spellMissileID;                                  // 27
-        //uint32_t spellDescriptionVariableID;                      // 28
-        float unk_1;                                                // 30
-        uint32_t SpellScalingId;                                    // 31 SpellScaling.dbc
-        uint32_t SpellAuraOptionsId;                                // 32 SpellAuraOptions.dbc
-        uint32_t SpellAuraRestrictionsId;                           // 33 SpellAuraRestrictions.dbc
-        uint32_t SpellCastingRequirementsId;                        // 34 SpellCastingRequirements.dbc
-        uint32_t SpellCategoriesId;                                 // 35 SpellCategories.dbc
-        uint32_t SpellClassOptionsId;                               // 36 SpellClassOptions.dbc
-        uint32_t SpellCooldownsId;                                  // 37 SpellCooldowns.dbc
-        uint32_t SpellEquippedItemsId;                              // 39 SpellEquippedItems.dbc
-        uint32_t SpellInterruptsId;                                 // 40 SpellInterrupts.dbc
-        uint32_t SpellLevelsId;                                     // 41 SpellLevels.dbc
-        //uint32_t SpellPowerId;                                    // 42 SpellPower.dbc
-        uint32_t SpellReagentsId;                                   // 43 SpellReagents.dbc
-        uint32_t SpellShapeshiftId;                                 // 44 SpellShapeshift.dbc
-        uint32_t SpellTargetRestrictionsId;                         // 45 SpellTargetRestrictions.dbc
-        uint32_t SpellTotemsId;                                     // 46 SpellTotems.dbc
-        uint32_t ResearchProject;                                   // 47 ResearchProject.dbc
-        uint32_t SpellMiscId;                                       // 24 SpellMisc.dbc
+        const char* Name;                                           // 1
+        const char* Rank;                                           // 2
+        //char* Description;                                        // 3 not used
+        //char* BuffDescription;                                    // 4 not used
+        uint32_t RuneCostID;                                        // 5
+        //uint32_t spellMissileID;                                  // 6
+        //uint32_t spellDescriptionVariableID;                      // 7
+        float AttackPowerCoefficient;                               // 8
+        uint32_t SpellScalingId;                                    // 9 SpellScaling.dbc
+        uint32_t SpellAuraOptionsId;                                // 10 SpellAuraOptions.dbc
+        uint32_t SpellAuraRestrictionsId;                           // 11 SpellAuraRestrictions.dbc
+        uint32_t SpellCastingRequirementsId;                        // 12 SpellCastingRequirements.dbc
+        uint32_t SpellCategoriesId;                                 // 13 SpellCategories.dbc
+        uint32_t SpellClassOptionsId;                               // 14 SpellClassOptions.dbc
+        uint32_t SpellCooldownsId;                                  // 15 SpellCooldowns.dbc
+        uint32_t SpellEquippedItemsId;                              // 16 SpellEquippedItems.dbc
+        uint32_t SpellInterruptsId;                                 // 17 SpellInterrupts.dbc
+        uint32_t SpellLevelsId;                                     // 18 SpellLevels.dbc
+        //uint32_t SpellPowerId;                                    // 19 SpellPower.dbc
+        uint32_t SpellReagentsId;                                   // 20 SpellReagents.dbc
+        uint32_t SpellShapeshiftId;                                 // 21 SpellShapeshift.dbc
+        uint32_t SpellTargetRestrictionsId;                         // 22 SpellTargetRestrictions.dbc
+        uint32_t SpellTotemsId;                                     // 23 SpellTotems.dbc
+        uint32_t ResearchProject;                                   // 24 ResearchProject.dbc
+        uint32_t SpellMiscId;                                       // 25 SpellMisc.dbc
 
         // struct access functions
         SpellAuraOptionsEntry const* GetSpellAuraOptions() const;

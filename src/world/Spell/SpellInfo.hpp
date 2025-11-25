@@ -291,10 +291,12 @@ public:
     uint32_t getSchoolMask() const { return SchoolMask; }
     uint32_t getRuneCostID() const { return RuneCostID; }
 
-    float getEffectBonusMultiplier(uint8_t idx) const;
-    float const* getEffectBonusMultiplier() const { return EffectBonusMultiplier; }
+    float getEffectSpellPowerCoefficient(uint8_t idx) const;
+    std::array<float, MAX_SPELL_EFFECTS> const& getEffectSpellPowerCoefficients() const { return EffectSpellPowerCoefficient; }
 
     uint32_t getSpellDifficultyID() const { return SpellDifficultyId; }
+
+    float getAttackPowerCoefficient() const { return AttackPowerCoefficient; }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Custom values
@@ -434,9 +436,11 @@ private:
     void setSchoolMask(uint32_t value) { SchoolMask = value; } // used in HackFixes.cpp
     void setRuneCostID(uint32_t value) { RuneCostID = value; }
 
-    void setEffectBonusMultiplier(float value, uint8_t idx);
+    void setEffectSpellPowerCoefficient(float value, uint8_t idx);
 
     void setSpellDifficultyID(uint32_t value) { SpellDifficultyId = value; }
+
+    void setAttackPowerCoefficient(float value) { AttackPowerCoefficient = value; }
 
 #if VERSION_STRING >= Cata
     void setEffectRadiusMaxIndex(uint32_t value, uint8_t idx);
@@ -586,9 +590,11 @@ private:
     uint32_t SchoolMask = 0;
     uint32_t RuneCostID = 0;
     // Data from SpellEffect.dbc (in Cataclysm)
-    float EffectBonusMultiplier[MAX_SPELL_EFFECTS];
+    std::array<float, MAX_SPELL_EFFECTS> EffectSpellPowerCoefficient;
     // Data from SpellDifficulty.dbc (in Cataclysm)
     uint32_t SpellDifficultyId = 0;
+    // Data from Spell.dbc (in Cataclysm)
+    float AttackPowerCoefficient = 0.0f;
 
     // Spell rank data
     std::optional<SpellRankInfo> m_spellRankInfo = std::nullopt;
@@ -619,20 +625,6 @@ public:
     uint32_t SpellTargetRestrictionsId = 0;                   // SpellTargetRestrictions.dbc
     uint32_t SpellTotemsId = 0;                               // SpellTotems.dbc
 #endif
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // Spell coefficients
-
-    // Direct damage or direct heal coefficient
-    float_t spell_coeff_direct = -1.0f;
-
-    // Damage or healing over-time coefficient (NOTE: This is per tick)
-    float_t spell_coeff_overtime = -1.0f;
-
-    // Attack power coefficient (only set in SQL table spell_coefficient_override)
-    float_t spell_ap_coeff_direct = 0.0f;
-    // This is per tick
-    float_t spell_ap_coeff_overtime = 0.0f;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Custom values

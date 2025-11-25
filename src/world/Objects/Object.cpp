@@ -22,7 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/Definitions/SpellMechanics.hpp"
 #include "Spell/Definitions/SpellState.hpp"
 #include <Spell/Definitions/AuraInterruptFlags.hpp>
-
+#include "Spell/SpellTarget.h"
 #include "GameObject.h"
 #include "GameObjectProperties.hpp"
 #include "Transporter.hpp"

@@ -5,7 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-enum SpellFamily
+#include <cstdint>
+
+enum SpellFamily : uint8_t
 {
     SPELLFAMILY_GENERIC     = 0,
     SPELLFAMILY_UNK1        = 1,    // events, holidays

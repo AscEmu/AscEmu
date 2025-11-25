@@ -292,23 +292,6 @@ bool BladedArmor(uint8_t /*effectIndex*/, Spell* /*s*/)
     return true;
 }
 
-bool DeathAndDecay(uint8_t effectIndex, Aura* pAura, bool apply)
-{
-    if (apply)
-    {
-        Player* caster = pAura->GetPlayerCaster();
-        if (caster == NULL)
-            return true;
-
-        SpellForcedBasePoints forcedBasePoints;
-        forcedBasePoints.set(EFF_INDEX_0, static_cast<uint32_t>(pAura->getEffectDamage(effectIndex) + caster->getCalculatedAttackPower() * 0.064));
-
-        caster->castSpell(pAura->getOwner(), 52212, forcedBasePoints, true);
-    }
-
-    return true;
-}
-
 bool Hysteria(uint8_t effectIndex, Aura* pAura, bool apply)
 {
     if (!apply)
@@ -393,11 +376,6 @@ void SetupLegacyDeathKnightSpells(ScriptMgr* mgr)
         0
     };
     mgr->register_dummy_spell(bladedarmorids, &BladedArmor);
-
-    mgr->register_dummy_aura(43265, &DeathAndDecay);
-    mgr->register_dummy_aura(49936, &DeathAndDecay);
-    mgr->register_dummy_aura(49937, &DeathAndDecay);
-    mgr->register_dummy_aura(49938, &DeathAndDecay);
 
     mgr->register_dummy_aura(49016, &Hysteria);
 

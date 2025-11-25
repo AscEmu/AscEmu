@@ -1501,11 +1501,11 @@ int32_t Spell::calculateEffect(uint8_t effIndex)
             switch (getSpellInfo()->getEffect(effIndex))
             {
                 case SPELL_EFFECT_SCHOOL_DAMAGE:
-                    value = static_cast<int32_t>(std::round(getUnitCaster()->applySpellDamageBonus(getSpellInfo(), value, 1.0f, false, this)));
+                    value = static_cast<int32_t>(std::round(getUnitCaster()->applySpellDamageBonus(u_caster, getSpellInfo(), effIndex, value, 1.0f, false, this)));
                     break;
                 case SPELL_EFFECT_HEAL:
                 case SPELL_EFFECT_HEAL_MECHANICAL:
-                    value = static_cast<int32_t>(std::round(getUnitCaster()->applySpellHealingBonus(getSpellInfo(), value, 1.0f, false, this)));
+                    value = static_cast<int32_t>(std::round(getUnitCaster()->applySpellHealingBonus(u_caster, getSpellInfo(), effIndex, value, 1.0f, false, this)));
                     break;
                 default:
                     break;
