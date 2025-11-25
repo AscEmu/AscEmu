@@ -3262,7 +3262,7 @@ void Spell::SpellEffectWeaponDmgPerc(uint8_t effectIndex) // Weapon Percent dama
 
         // Get bonus damage from spell power and attack power
         if (!isEffectDamageStatic[effectIndex])
-            dmg = getUnitCaster()->applySpellDamageBonus(getSpellInfo(), static_cast<int32_t>(dmg), effectPctModifier[effectIndex], false, this);
+            dmg = getUnitCaster()->applySpellDamageBonus(u_caster, getSpellInfo(), effectIndex, static_cast<int32_t>(dmg), effectPctModifier[effectIndex], false, this);
 
         m_targetDamageInfo = u_caster->doSpellDamage(m_unitTarget, getSpellInfo()->getId(), dmg, effectIndex, m_triggeredSpell, false, false, isForcedCrit, this);
         isTargetDamageInfoSet = true;

@@ -103,7 +103,7 @@ SpellInfo::SpellInfo()
 #endif
         SpellFamilyFlags[i] = 0;
         EffectDamageMultiplier[i] = 0.0f;
-        EffectBonusMultiplier[i] = 0.0f;
+        EffectSpellPowerCoefficient[i] = 0.0f;
     }
 
     for (uint8_t i = 0; i < 2; ++i)
@@ -336,15 +336,22 @@ bool SpellInfo::isAffectingSpell(SpellInfo const* spellInfo) const
 
 bool SpellInfo::isEffectIndexAffectingSpell(uint8_t effIndex, SpellInfo const* spellInfo) const
 {
+    // TODO: confirm this if should be true or false
+    if (std::ranges::all_of(EffectSpellClassMask[effIndex], [](uint32_t mask) { return mask == 0; }))
+        return false;
+
+    if (std::ranges::all_of(spellInfo->getSpellFamilyFlags(), [](uint32_t mask) { return mask == 0; }))
+        return false;
+
     // It's not spell effect count, it's spell mask field count
     for (uint8_t i = 0; i < 3; ++i)
     {
         // If any of the indexes contain same mask, the spells affect each other
-        if (EffectSpellClassMask[effIndex][i] > 0 && (EffectSpellClassMask[effIndex][i] & spellInfo->SpellFamilyFlags[i]))
-            return true;
+        if (spellInfo->getSpellFamilyFlags(i) > 0 && !(EffectSpellClassMask[effIndex][i] & spellInfo->getSpellFamilyFlags(i)))
+            return false;
     }
 
-    return false;
+    return true;
 }
 
 bool SpellInfo::isAuraEffectAffectingSpell(AuraEffect auraEffect, SpellInfo const* spellInfo) const
@@ -352,7 +359,7 @@ bool SpellInfo::isAuraEffectAffectingSpell(AuraEffect auraEffect, SpellInfo cons
     if (spellInfo->SpellFamilyName != SpellFamilyName)
         return false;
 
-    uint8_t effIndex = 255;
+    std::optional<uint8_t> effIndex;
 
     // Find effect index for the aura effect
     for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
@@ -365,10 +372,10 @@ bool SpellInfo::isAuraEffectAffectingSpell(AuraEffect auraEffect, SpellInfo cons
     }
 
     // Aura did not have this aura effect
-    if (effIndex == 255)
+    if (!effIndex.has_value())
         return false;
 
-    return isEffectIndexAffectingSpell(effIndex, spellInfo);
+    return isEffectIndexAffectingSpell(effIndex.value(), spellInfo);
 }
 
 bool SpellInfo::hasValidPowerType() const
@@ -1698,7 +1705,7 @@ uint32_t SpellInfo::getTotemCategory(uint8_t idx) const
 }
 #endif
 
-float SpellInfo::getEffectBonusMultiplier(uint8_t idx) const
+float SpellInfo::getEffectSpellPowerCoefficient(uint8_t idx) const
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
@@ -1706,7 +1713,7 @@ float SpellInfo::getEffectBonusMultiplier(uint8_t idx) const
         return 0;
     }
 
-    return EffectBonusMultiplier[idx];
+    return EffectSpellPowerCoefficient[idx];
 }
 
 uint32_t SpellInfo::getEffectCustomFlag(uint8_t idx) const
@@ -1986,7 +1993,7 @@ void SpellInfo::setTotemCategory(uint32_t category, uint8_t idx)
 }
 #endif
 
-void SpellInfo::setEffectBonusMultiplier(float value, uint8_t idx)
+void SpellInfo::setEffectSpellPowerCoefficient(float value, uint8_t idx)
 {
     if (idx >= MAX_SPELL_EFFECTS)
     {
@@ -1994,7 +2001,7 @@ void SpellInfo::setEffectBonusMultiplier(float value, uint8_t idx)
         return;
     }
 
-    EffectBonusMultiplier[idx] = value;
+    EffectSpellPowerCoefficient[idx] = value;
 }
 
 #if VERSION_STRING >= Cata

@@ -1983,16 +1983,6 @@ void SpellMgr::applyHackFixes()
             } break;
 #endif
 
-            // DEATH AND DECAY
-            case 49937:
-            case 49936:
-            case 49938:
-            case 43265:
-            {
-                sp->setEffectApplyAuraName(SPELL_AURA_PERIODIC_DAMAGE, 0);
-                sp->setEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA, 0);
-            } break;
-
             // Vengeance
             case 93099:
             {

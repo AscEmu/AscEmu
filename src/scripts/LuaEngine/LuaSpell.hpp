@@ -139,8 +139,6 @@ inline LuaSpellEntry luaSpellVars[] =
     { "ThreatForSpellCoef", 3, offsetof(SpellInfo, custom_ThreatForSpellCoef) },
     { "base_range_or_radius_sqr", 3, offsetof(SpellInfo, custom_base_range_or_radius_sqr) },
     { "cone_width", 3, offsetof(SpellInfo, cone_width) },
-    { "spell_coeff_direct", 3, offsetof(SpellInfo, spell_coeff_direct) },
-    { "spell_coeff_overtime", 3, offsetof(SpellInfo, spell_coeff_overtime) },
     { "ai_target_type", 0, offsetof(SpellInfo, ai_target_type) },
     { "self_cast_only", 2, offsetof(SpellInfo, custom_self_cast_only) },
     //{ "apply_on_shapeshift_change", 2, offsetof(SpellInfo, custom_apply_on_shapeshift_change) },

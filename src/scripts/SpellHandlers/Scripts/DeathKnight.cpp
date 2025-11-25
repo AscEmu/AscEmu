@@ -22,6 +22,8 @@ enum DeathknightSpells
     SPELL_BLOOD_PRESENCE_HEAL               = 50475,
     SPELL_BUTCHERY_ENERGIZE                 = 50163,
     SPELL_BUTCHERY_R1                       = 48979,
+    SPELL_DEATH_AND_DECAY_DAMAGE            = 52212,
+    SPELL_DEATH_AND_DECAY_R1                = 43265,
     SPELL_DEATH_RUNE_MASTERY_BLOOD          = 50806,
     SPELL_DEATH_RUNE_MASTERY_R1             = 49467,
 #if VERSION_STRING == WotLK
@@ -69,26 +71,25 @@ public:
         Aura const* improvedUnholyPresence = nullptr;
 
         // Get all auras in single loop
-        for (uint16_t i = AuraSlots::PASSIVE_SLOT_START; i < AuraSlots::PASSIVE_SLOT_END; ++i)
+        for (const auto& unitAura : aur->getOwner()->getPassiveAuraRange())
         {
-            const auto* const unitAura = aur->getOwner()->getAuraWithAuraSlot(i);
             if (unitAura == nullptr)
                 continue;
 
             if (unitAura->getSpellId() == SPELL_IMPROVED_BLOOD_PRESENCE_R2)
-                improvedBloodPresence = unitAura;
+                improvedBloodPresence = unitAura.get();
             if (improvedBloodPresence == nullptr && unitAura->getSpellId() == SPELL_IMPROVED_BLOOD_PRESENCE_R1)
-                improvedBloodPresence = unitAura;
+                improvedBloodPresence = unitAura.get();
 
             if (unitAura->getSpellId() == SPELL_IMPROVED_FROST_PRESENCE_R2)
-                improvedFrostPresence = unitAura;
+                improvedFrostPresence = unitAura.get();
             if (improvedFrostPresence == nullptr && unitAura->getSpellId() == SPELL_IMPROVED_FROST_PRESENCE_R1)
-                improvedFrostPresence = unitAura;
+                improvedFrostPresence = unitAura.get();
 
             if (unitAura->getSpellId() == SPELL_IMPROVED_UNHOLY_PRESENCE_R2)
-                improvedUnholyPresence = unitAura;
+                improvedUnholyPresence = unitAura.get();
             if (improvedUnholyPresence == nullptr && unitAura->getSpellId() == SPELL_IMPROVED_UNHOLY_PRESENCE_R1)
-                improvedUnholyPresence = unitAura;
+                improvedUnholyPresence = unitAura.get();
         }
 
         // Cast Improved Blood Presence in Frost and Unholy presences
@@ -224,6 +225,22 @@ public:
 };
 #endif
 
+class DeathAndDecay : public SpellScript
+{
+public:
+    SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool /*apply*/) override
+    {
+        auto* const caster = aur->GetUnitCaster();
+        if (caster == nullptr)
+            return SpellScriptCheckDummy::DUMMY_OK;
+
+        SpellForcedBasePoints forcedBasePoints;
+        forcedBasePoints.set(EFF_INDEX_0, aurEff->getEffectDamage());
+        caster->castSpell(aur->getOwner(), SPELL_DEATH_AND_DECAY_DAMAGE, forcedBasePoints, true);
+        return SpellScriptCheckDummy::DUMMY_OK;
+    }
+};
+
 #if VERSION_STRING == WotLK
 class DeathRuneMastery : public SpellScript
 {
@@ -332,6 +349,8 @@ void setupDeathKnightSpells(ScriptMgr* mgr)
 #if VERSION_STRING < Mop
     mgr->register_spell_script(SPELL_BUTCHERY_R1, new Butchery);
 #endif
+
+    mgr->register_spell_script(SPELL_DEATH_AND_DECAY_R1, new DeathAndDecay);
 
 #if VERSION_STRING == WotLK
     mgr->register_spell_script(SPELL_DEATH_RUNE_MASTERY_R1, new DeathRuneMastery);

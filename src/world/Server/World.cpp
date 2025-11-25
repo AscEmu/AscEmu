@@ -739,7 +739,9 @@ bool World::setInitialWorldSettings()
     logEntitySize();
 
     sSpellMgr.loadSpellDataFromDatabase();
+#if VERSION_STRING < WotLK
     sSpellMgr.calculateSpellCoefficients();
+#endif
 
 #if VERSION_STRING > TBC
     sLogger.info("World : Starting Achievement System...");

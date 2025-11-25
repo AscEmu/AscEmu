@@ -4,7 +4,10 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Setup.h"
+#include "Management/ItemInterface.h"
+#include "Objects/Item.hpp"
 #include "Objects/Units/Unit.hpp"
+#include "Objects/Units/Players/Player.hpp"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellAura.hpp"
 #include "Spell/SpellInfo.hpp"
@@ -388,7 +391,13 @@ class JudgementOfLightHeal : public SpellScript
 public:
     void onCreateSpellProc(SpellProc* spellProc, Object* /*obj*/) override
     {
+#if VERSION_STRING < WotLK
+        // Casted by attacker
+        spellProc->setCastedByProcInitiator(true);
+#else // Wotlk
+        // Casted by paladin
         spellProc->setCastedByProcCreator(true);
+#endif
     }
 
 #if VERSION_STRING == WotLK
@@ -416,13 +425,13 @@ public:
 class JudgementOfVengeanceCorruptionTruthDamage : public SpellScript
 {
 public:
-    SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t /*effIndex*/, int32_t* damage) override
+    SpellScriptEffectDamage doCalculateEffect(Spell* spell, [[maybe_unused]]uint8_t effIndex, int32_t* damage) override
     {
         const auto dotSpell = spell->getSpellInfo()->getId() == SPELL_JUDGEMENT_OF_CORRUPTION ?
             SPELL_BLOOD_CORRUPTION :
             SPELL_HOLY_VENGEANCE;
 
-        if (dotSpell == 0 || spell->getUnitCaster() == nullptr || spell->getUnitTarget() == nullptr)
+        if (spell->getUnitCaster() == nullptr || spell->getUnitTarget() == nullptr)
             return SpellScriptEffectDamage::DAMAGE_DEFAULT;
 
         // todo: confirm if can be judged from other paladins dots
@@ -438,14 +447,13 @@ public:
         return SpellScriptEffectDamage::DAMAGE_DEFAULT;
 #else // Wotlk and cata
         // Calculate bonuses here to increase damage properly
-        *damage += (spell->getSpellInfo()->spell_coeff_direct * spell->getUnitCaster()->GetDamageDoneMod(SCHOOL_HOLY)) +
-            (spell->getSpellInfo()->spell_ap_coeff_direct * spell->getUnitCaster()->getCalculatedAttackPower());
+        *damage = static_cast<int32_t>(std::round(spell->getUnitCaster()->applySpellDamageBonus(spell->getUnitCaster(), spell->getSpellInfo(), effIndex, *damage, 1.0f, false, spell)));
 #if VERSION_STRING == WotLK
         // One stack increases damage by 10%
-        *damage *= (100 + (10 * auraCount)) / 100;
+        *damage = *damage * (100 + (10 * auraCount)) / 100;
 #else // Cata
         // One stack increases damage by 20%
-        *damage *= (100 + (20 * auraCount)) / 100;
+        *damage = *damage * (100 + (20 * auraCount)) / 100;
 #endif
         return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;
 #endif
@@ -491,7 +499,13 @@ class JudgementOfWisdomMana : public SpellScript
 public:
     void onCreateSpellProc(SpellProc* spellProc, Object* /*obj*/) override
     {
+#if VERSION_STRING < WotLK
+        // Casted by attacker
+        spellProc->setCastedByProcInitiator(true);
+#else // Wotlk
+        // Casted by paladin
         spellProc->setCastedByProcCreator(true);
+#endif
     }
 
     bool canProc(SpellProc* /*spellProc*/, Unit* victim, SpellInfo const* /*castingSpell*/, DamageInfo /*dmg*/) override
@@ -529,30 +543,38 @@ class SealOfBloodAndMartyrDummy : public SpellScript
 public:
     SpellScriptCheckDummy onAuraDummyEffect(Aura* aur, AuraEffectModifier* aurEff, bool apply) override
     {
-        const auto damageSpellId = aur->getSpellId() == SPELL_SEAL_OF_THE_MARTYR_DUMMY ?
-            SPELL_SEAL_OF_THE_MARTYR_DAMAGE :
-            SPELL_SEAL_OF_BLOOD_DAMAGE;
-
-        const auto backfireSpellId = aur->getSpellId() == SPELL_SEAL_OF_THE_MARTYR_DUMMY ?
-            SPELL_SEAL_OF_THE_MARTYR_BACKFIRE :
-            SPELL_SEAL_OF_BLOOD_BACKFIRE;
-
-        if (apply)
+        if (aurEff->getEffectIndex() == EFF_INDEX_0)
         {
-            aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(damageSpellId), aur, aur->getCasterGuid());
+            const auto damageSpellId = aur->getSpellId() == SPELL_SEAL_OF_THE_MARTYR_DUMMY ?
+                SPELL_SEAL_OF_THE_MARTYR_DAMAGE :
+                SPELL_SEAL_OF_BLOOD_DAMAGE;
 
-            // Create a custom proc for the backfire effect that procs on damage spell
-            auto* const backfireProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(backfireSpellId), aur->getSpellInfo(), aur->getCasterGuid(), 100, PROC_ON_DONE_MELEE_SPELL_HIT, nullptr, aur);
-            backfireProc->setProcClassMask(EFF_INDEX_0, 0x0);
-            backfireProc->setProcClassMask(EFF_INDEX_1, 0x400);
-            backfireProc->setProcClassMask(EFF_INDEX_2, 0x0);
-            backfireProc->setOverrideEffectDamage(EFF_INDEX_0, aurEff->getEffectDamage());
-            backfireProc->setCastedOnProcOwner(true);
+            if (apply)
+                aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(damageSpellId), aur, aur->getCasterGuid());
+            else
+                aur->getOwner()->removeProcTriggerSpell(damageSpellId, aur->getCasterGuid());
         }
-        else
+        else if (aurEff->getEffectIndex() == EFF_INDEX_1)
         {
-            aur->getOwner()->removeProcTriggerSpell(damageSpellId, aur->getCasterGuid());
-            aur->getOwner()->removeProcTriggerSpell(backfireSpellId, aur->getCasterGuid());
+            const auto backfireSpellId = aur->getSpellId() == SPELL_SEAL_OF_THE_MARTYR_DUMMY ?
+                SPELL_SEAL_OF_THE_MARTYR_BACKFIRE :
+                SPELL_SEAL_OF_BLOOD_BACKFIRE;
+
+            if (apply)
+            {
+                // Create a custom proc for the backfire effect that procs on damage spell
+                auto* const backfireProc = aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(backfireSpellId), aur->getSpellInfo(), aur->getCasterGuid(), 100, PROC_ON_DONE_MELEE_SPELL_HIT, nullptr, aur);
+                backfireProc->setProcClassMask(EFF_INDEX_0, 0x0);
+                backfireProc->setProcClassMask(EFF_INDEX_1, 0x400);
+                backfireProc->setProcClassMask(EFF_INDEX_2, 0x0);
+                // Add to 2nd index so calculated damage can be put in 1st index
+                backfireProc->setOverrideEffectDamage(EFF_INDEX_1, aurEff->getEffectDamage());
+                backfireProc->setCastedOnProcOwner(true);
+            }
+            else
+            {
+                aur->getOwner()->removeProcTriggerSpell(backfireSpellId, aur->getCasterGuid());
+            }
         }
 
         return SpellScriptCheckDummy::DUMMY_OK;
@@ -573,9 +595,15 @@ public:
         return damageInfo.realDamage > 0;
     }
 
+    bool canProcOnTriggered(SpellProc* /*spellProc*/, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, Aura* /*triggeredFromAura*/) override
+    {
+        // The spell that is triggering this proc is also a triggered spell
+        return true;
+    }
+
     SpellScriptExecuteState onDoProcEffect(SpellProc* spellProc, Unit* /*victim*/, SpellInfo const* /*castingSpell*/, DamageInfo damageInfo) override
     {
-        const auto backfireDmg = static_cast<int32_t>(std::round(damageInfo.realDamage * spellProc->getOverrideEffectDamage(EFF_INDEX_0) / 100));
+        const auto backfireDmg = static_cast<int32_t>(std::round(damageInfo.realDamage * spellProc->getOverrideEffectDamage(EFF_INDEX_1) / 100));
         spellProc->setOverrideEffectDamage(EFF_INDEX_0, std::max(backfireDmg, 1));
         return SpellScriptExecuteState::EXECUTE_OK;
     }
@@ -651,7 +679,7 @@ public:
 
 #if VERSION_STRING == Cata
     // Stun effect was replaced by damage effect in Cata
-    SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t /*effIndex*/, int32_t* damage) override
+    SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* damage) override
     {
         const auto* const unitCaster = spell->getUnitCaster();
         if (unitCaster == nullptr)
@@ -664,7 +692,10 @@ public:
                 speed = mainhandWeapon->getItemProperties()->Delay / 1000.0f;
         }
         // Weapon speed * (0.005 * AP + 0.01 * SPH)
-        *damage = static_cast<int32_t>(std::round(speed * (0.005f * unitCaster->getCalculatedAttackPower() + 0.01f * unitCaster->GetDamageDoneMod(SCHOOL_HOLY))));
+        const auto spCoeff = spell->getSpellInfo()->getEffectSpellPowerCoefficient(effIndex);
+        const auto apCoeff = spell->getSpellInfo()->getAttackPowerCoefficient();
+        *damage = static_cast<int32_t>(std::round(speed * (apCoeff * unitCaster->getCalculatedAttackPower() + spCoeff * unitCaster->GetDamageDoneMod(SCHOOL_HOLY))));
+        return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;
     }
 #endif
 };
@@ -682,6 +713,7 @@ public:
         // 8.5 PPM according to wowhead comment from patch 4.2.2
         spellProc->setProcsPerMinute(8.5f);
 #endif
+        spellProc->setCastedOnProcOwner(true);
     }
 };
 
@@ -725,7 +757,7 @@ public:
 class SealOfRighteousnessDamage : public SpellScript
 {
 public:
-    SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t /*effIndex*/, int32_t* damage) override
+    SpellScriptEffectDamage doCalculateEffect(Spell* spell, uint8_t effIndex, int32_t* damage) override
     {
         const auto* const unitCaster = spell->getUnitCaster();
         if (unitCaster == nullptr)
@@ -736,36 +768,27 @@ public:
         if (mainHandWeapon != nullptr)
             speed = mainHandWeapon->getItemProperties()->Delay / 1000.f;
 
+        auto spellCoeff = spell->getSpellInfo()->getEffectSpellPowerCoefficient(effIndex);
 #if VERSION_STRING < WotLK
-        float_t output = 0.0f, spellCoeff = 0.0f;
+        float_t baseDamage = 0.0f;
         if (mainHandWeapon != nullptr && mainHandWeapon->getItemProperties()->InventoryType == INVTYPE_2HWEAPON)
         {
             // Two handed weapon
-            output = 1.2f * (*damage * speed / 100.f) + 0.03f * (unitCaster->getMaxDamage() + unitCaster->getMinDamage()) / 2 + 1;
-            spellCoeff = 0.108f;
+            baseDamage = 1.2f * (*damage * speed / 100.f) + 0.03f * (unitCaster->getMaxDamage() + unitCaster->getMinDamage()) / 2 + 1;
         }
         else
         {
             // One handed weapon
-            output = 0.85f * (*damage * speed / 100.f) + 0.03f * (unitCaster->getMaxDamage() + unitCaster->getMinDamage()) / 2 - 1;
-            spellCoeff = 0.092f;
+            baseDamage = 0.852f * (*damage * speed / 100.f) + 0.03f * (unitCaster->getMaxDamage() + unitCaster->getMinDamage()) / 2 - 1;
+            spellCoeff *= 0.852f;
         }
 
-        // Add low level penalty
-        const auto* const dummySpell = sSpellMgr.getSpellInfo(spell->pSpellId);
-        if (dummySpell != nullptr && dummySpell->getBaseLevel() <= 20)
-        {
-            const float_t penalty = 1.0f - ((20.0f - dummySpell->getBaseLevel()) * 0.0375f);
-            spellCoeff *= penalty;
-        }
-
-        *damage = static_cast<int32_t>(std::round(output + (spellCoeff * unitCaster->GetDamageDoneMod(SCHOOL_HOLY))));
-#elif VERSION_STRING == WotLK
-        // Weapon speed * (0.022 * AP + 0.044 * SPH)
-        *damage = static_cast<int32_t>(std::round(speed * (0.022f * unitCaster->getCalculatedAttackPower() + 0.044f * unitCaster->GetDamageDoneMod(SCHOOL_HOLY))));
-#elif VERSION_STRING == Cata
-        // Weapon speed * (0.011 * AP + 0.022 * SPH)
-        *damage = static_cast<int32_t>(std::round(speed * (0.011f * unitCaster->getCalculatedAttackPower() + 0.022f * unitCaster->GetDamageDoneMod(SCHOOL_HOLY))));
+        *damage = static_cast<int32_t>(std::round(baseDamage + (spellCoeff * unitCaster->GetDamageDoneMod(SCHOOL_HOLY))));
+#else
+        // Wotlk: Weapon speed * (0.022 * AP + 0.044 * SPH)
+        // Cata: Weapon speed * (0.011 * AP + 0.022 * SPH)
+        const auto apCoeff = spell->getSpellInfo()->getAttackPowerCoefficient();
+        *damage = static_cast<int32_t>(std::round(speed * (apCoeff * unitCaster->getCalculatedAttackPower() + spellCoeff * unitCaster->GetDamageDoneMod(SCHOOL_HOLY))));
 #endif
         return SpellScriptEffectDamage::DAMAGE_NO_BONUSES;
     }
@@ -781,18 +804,28 @@ public:
         if (aurEff->getEffectIndex() != EFF_INDEX_1)
             return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
 
-        auto* const playerOwner = aur->getPlayerOwner();
-        if (playerOwner == nullptr)
-            return SpellScriptExecuteState::EXECUTE_NOT_HANDLED;
-
         // Aura effect makes attack speed 40% faster
-        // but aura should also make paladin deal 40% less damage
+        // but aura should also make paladin deal less damage per swing
+        // However DPS should remain same before the AP bonus
+        // so my calculations give ~28.57% for dmg reduction
 
-        // TODO: probably not the correct way to do this
-        if (apply)
-            playerOwner->modModDamageDonePct(-aurEff->getEffectDamage(), SCHOOL_NORMAL);
-        else
-            playerOwner->modModDamageDonePct(aurEff->getEffectDamage(), SCHOOL_NORMAL);
+        constexpr float_t dmgReductionPct = 0.2857143f;
+        if (auto* const playerOwner = aur->getPlayerOwner())
+        {
+            if (apply)
+                playerOwner->m_damageDone.try_emplace(aur->getSpellId(), -1, -1, -dmgReductionPct);
+            else
+                playerOwner->m_damageDone.erase(aur->getSpellId());
+
+            // Display to client
+            playerOwner->modModDamageDonePct(apply ? -dmgReductionPct : dmgReductionPct, SCHOOL_NORMAL);
+        }
+        else if (auto* const creatureOwner = aur->getOwner()->ToCreature())
+        {
+            creatureOwner->ModDamageDonePct[SCHOOL_NORMAL] += apply ? -dmgReductionPct : dmgReductionPct;
+        }
+
+        return SpellScriptExecuteState::EXECUTE_OK;
     }
 };
 #endif
@@ -941,6 +974,7 @@ public:
     {
         // 15 PPM
         proc->setProcsPerMinute(15.f);
+        proc->setCastedOnProcOwner(true);
     }
 };
 #endif
@@ -1044,7 +1078,7 @@ void setupPaladinSpells(ScriptMgr* mgr)
 #endif
 
 #if VERSION_STRING >= Mop
-    mgr->register_spell_script(SPELL_SEAL_OF_COMMAND_DUMMY, new SealOfCommandDummy);
+    mgr->register_spell_script(SPELL_SEAL_OF_COMMAND_DUMMY_R1, new SealOfCommandDummy);
 #endif
 #if VERSION_STRING < WotLK || VERSION_STRING == Cata
     mgr->register_spell_script(SPELL_SEAL_OF_COMMAND_DAMAGE, new SealOfCommandDamage);
@@ -1061,7 +1095,15 @@ void setupPaladinSpells(ScriptMgr* mgr)
 
     mgr->register_spell_script(SPELL_SEAL_OF_RIGHTEOUSNESS_DUMMY_R1, new SealOfRighteousnessDummy);
 #if VERSION_STRING < Mop
-    mgr->register_spell_script(SPELL_SEAL_OF_RIGHTEOUSNESS_DAMAGE_R1, new SealOfRighteousnessDamage);
+    uint32_t sealOfRighteousnessDamage[] =
+    {
+        SPELL_SEAL_OF_RIGHTEOUSNESS_DAMAGE_R1,
+#if VERSION_STRING == Cata
+        SPELL_SEAL_OF_RIGHTEOUSNESS_DAMAGE_AOE,
+#endif
+        0
+    };
+    mgr->register_spell_script(sealOfRighteousnessDamage, new SealOfRighteousnessDamage);
 #endif
 
 #if VERSION_STRING < WotLK
