@@ -1,4 +1,4 @@
-# Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 
 # сheck if GossipScripts should be built.
 if (NOT BUILD_GOSSIPSCRIPTS)
