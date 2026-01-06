@@ -366,8 +366,8 @@ void Arena::UpdatePlayerCounts()
     if (this->hasEnded())
         return;
 
-    setWorldState(WORLDSTATE_ARENA__GREEN_PLAYER_COUNT, m_playersCount[0]);
-    setWorldState(WORLDSTATE_ARENA__GOLD_PLAYER_COUNT, m_playersCount[1]);
+    setWorldState(WORLDSTATE_ARENA_GREEN_PLAYER_COUNT, m_playersCount[0]);
+    setWorldState(WORLDSTATE_ARENA_GOLD_PLAYER_COUNT, m_playersCount[1]);
 
     if (!m_hasStarted)
         return;
