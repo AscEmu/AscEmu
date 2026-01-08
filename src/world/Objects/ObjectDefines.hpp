@@ -100,7 +100,7 @@ enum GameObject_State : uint8_t
 {
     GO_STATE_OPEN                   = 0,
     GO_STATE_CLOSED                 = 1,
-    GO_STATE_ALTERNATIVE_OPEN       = 2
+    GO_STATE_OPEN_ALTERNATIVE       = 2
 };
 
 struct QuaternionData

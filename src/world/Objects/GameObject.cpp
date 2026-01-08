@@ -1161,7 +1161,7 @@ void GameObject::switchDoorOrButton(bool activate, bool alternative /* = false *
         removeFlags(GO_FLAG_NONSELECTABLE);
 
     if (getState() == GO_STATE_CLOSED)
-        setState(alternative ? GO_STATE_ALTERNATIVE_OPEN : GO_STATE_OPEN);
+        setState(alternative ? GO_STATE_OPEN_ALTERNATIVE : GO_STATE_OPEN);
     else
         setState(GO_STATE_CLOSED);
 }
