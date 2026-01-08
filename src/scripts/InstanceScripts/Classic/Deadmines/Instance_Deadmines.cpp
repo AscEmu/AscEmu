@@ -91,8 +91,8 @@ public:
             case Deadmines::GO_DEFIAS_CANNON:
             {
                 GameObject* pDoor4 = GetGameObjectByGuid(mIronCladDoor_GUID);
-                if (pDoor4 != nullptr && pDoor4->getState() != GO_STATE_ALTERNATIVE_OPEN)
-                    pDoor4->setState(GO_STATE_ALTERNATIVE_OPEN);
+                if (pDoor4 != nullptr && pDoor4->getState() != GO_STATE_OPEN_ALTERNATIVE)
+                    pDoor4->setState(GO_STATE_OPEN_ALTERNATIVE);
             }
             break;
             case Deadmines::GO_FACTORY_DOOR_LEVER:
@@ -106,7 +106,7 @@ public:
             {
                 GameObject* pDoor6 = GetGameObjectByGuid(mFactoryDoor_GUID);
                 //Door can be opened by lever if state isn't 2
-                if (pDoor6 != nullptr && pDoor6->getState() != GO_STATE_ALTERNATIVE_OPEN)
+                if (pDoor6 != nullptr && pDoor6->getState() != GO_STATE_OPEN_ALTERNATIVE)
                     pDoor6->setState(pDoor6->getState() == GO_STATE_CLOSED ? GO_STATE_OPEN  : GO_STATE_CLOSED);
             }
             break;

@@ -5,7 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-class ScriptMgr;
+#include "AEVersion.hpp"
+#include "Server/Script/ScriptMgr.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // setup

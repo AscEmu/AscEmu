@@ -158,11 +158,13 @@ enum WorldStates
     // WORLDSTATE_NA_WYVERN_SW_HORDE                                     = 2668,
     // WORLDSTATE_NA_WYVERN_SW_ALLIANCE                                  = 2669,
     // WORLDSTATE_NA_WYVERN_SW_NEUTRAL_A                                 = 2670,
-    // WORLDSTATE_NA_HALAA_NEUTRAL                                       = 2671,
-    // WORLDSTATE_NA_HALAA_HORDE                                         = 2672,
-    // WORLDSTATE_NA_HALAA_ALLIANCE                                      = 2673,
-    // WORLDSTATE_NA_HALAA_ALLIANCE_ASSAULTED                            = 2676,
-    // WORLDSTATE_NA_HALAA_HORDE_ASSAULTED                               = 2677,
+
+    WORLDSTATE_NA_HALAA_NEUTRAL                                          = 2671,
+    WORLDSTATE_NA_HALAA_HORDE                                            = 2672,
+    WORLDSTATE_NA_HALAA_ALLIANCE                                         = 2673,
+    WORLDSTATE_NA_HALAA_ALLIANCE_ASSAULTED                               = 2676,
+    WORLDSTATE_NA_HALAA_HORDE_ASSAULTED                                  = 2677,
+
     // WORLDSTATE_TK_ZONE_CAPTURABLE_UI                                  = 2620,
     // WORLDSTATE_TK_ALLIANCE_TOWER_COUNT                                = 2621,
     // WORLDSTATE_TK_HORDE_TOWER_COUNT                                   = 2622,
