@@ -14,24 +14,29 @@ namespace AscEmu::Packets
     class SmsgSetPlayerDeclinedNamesResult : public ManagedPacket
     {
     public:
-        uint32_t error;
-        uint64_t guid;
+        uint8_t result;
 
-        SmsgSetPlayerDeclinedNamesResult() : SmsgSetPlayerDeclinedNamesResult(0, 0)
+        enum Result : uint8_t
+        {
+            OK              = 0,
+            ERROR_INVALID   = 1,
+            // ERROR_NOT_FOUND = 2
+        };
+
+        SmsgSetPlayerDeclinedNamesResult() : SmsgSetPlayerDeclinedNamesResult(OK)
         {
         }
 
-        SmsgSetPlayerDeclinedNamesResult(uint32_t error, uint64_t guid) :
-            ManagedPacket(SMSG_SET_PLAYER_DECLINED_NAMES_RESULT, 12),
-            error(error),
-            guid(guid)
+        SmsgSetPlayerDeclinedNamesResult(uint8_t result) :
+            ManagedPacket(SMSG_SET_PLAYER_DECLINED_NAMES_RESULT, 1),
+            result(result)
         {
         }
 
     protected:
         bool internalSerialise(WorldPacket& packet) override
         {
-            packet << error << guid;
+            packet << result;
             return true;
         }
 

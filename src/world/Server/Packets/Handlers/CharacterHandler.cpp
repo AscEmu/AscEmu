@@ -764,10 +764,19 @@ void WorldSession::handleSetPlayerDeclinedNamesOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    //\todo check utf8 and cyrillic chars
-    const uint32_t error = 0;     // 0 = success, 1 = error
+    for (auto& name : srlPacket.declinedNames)
+    {
+        if (name.length() > MAX_DECLINED_NAME_LENGTH)
+            name.resize(MAX_DECLINED_NAME_LENGTH);
+    }
 
-    SendPacket(SmsgSetPlayerDeclinedNamesResult(error, srlPacket.guid).serialise().get());
+    uint8_t result = SmsgSetPlayerDeclinedNamesResult::OK;
+
+    /*if (auto result : srlPacket.declinedNames)
+        result = SmsgSetPlayerDeclinedNamesResult::ERROR_INVALID;*/
+
+    GetPlayer()->saveDeclinedNames(srlPacket.declinedNames);
+    SendPacket(SmsgSetPlayerDeclinedNamesResult(result).serialise().get());
 }
 
 void WorldSession::characterEnumProc(QueryResult* result)

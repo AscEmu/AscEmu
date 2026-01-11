@@ -2397,6 +2397,8 @@ WDB::Structures::ChrClassesEntry const* Player::getDbcClassEntry() { return m_db
 utf8_string Player::getName() const { return m_name; }
 void Player::setName(utf8_string name) { m_name = name; }
 
+const DeclinedNamesArray& Player::getDeclinedNames() const { return m_declinedNames; }
+
 uint32_t Player::getLoginFlag() const { return m_loginFlag; }
 void Player::setLoginFlag(uint32_t flag) { m_loginFlag = flag; }
 
@@ -13242,6 +13244,43 @@ bool Player::saveSkills(bool newCharacter, QueryBuffer* buf)
     return true;
 }
 
+void Player::loadDeclinedNames(QueryResult* result)
+{
+    if (result == nullptr)
+    {
+        for (auto& name : m_declinedNames)
+            name.clear();
+        return;
+    }
+
+    Field* f = result->Fetch();
+    for (uint8_t i = 0; i < MAX_DECLINED_NAMES; ++i)
+        m_declinedNames[i].assign(f[i].asCString());
+}
+
+void Player::saveDeclinedNames(DeclinedNamesArray const& declinedNames)
+{
+    for (uint8_t i = 0; i < MAX_DECLINED_NAMES; ++i)
+    {
+        m_declinedNames[i].assign(CharacterDatabase.EscapeString(declinedNames[i]));
+    }
+
+    CharacterDatabase.Execute(
+        "INSERT INTO character_declinedname "
+        "(guid, genitive, dative, accusative, instrumental, prepositional) "
+        "VALUES (%u, '%s', '%s', '%s', '%s', '%s') "
+        "ON DUPLICATE KEY UPDATE "
+        "genitive=VALUES(genitive), dative=VALUES(dative), "
+        "accusative=VALUES(accusative), instrumental=VALUES(instrumental), "
+        "prepositional=VALUES(prepositional)",
+        getGuidLow(),
+        m_declinedNames[0].c_str(),
+        m_declinedNames[1].c_str(),
+        m_declinedNames[2].c_str(),
+        m_declinedNames[3].c_str(),
+        m_declinedNames[4].c_str());
+}
+
 void Player::_castSpellArea()
 {
     if (!IsInWorld())
@@ -14235,7 +14274,8 @@ namespace PlayerQuery
         DeletedSpells = 14,
         Skills = 15,
         Achievements = 16,
-        AchievementProgress = 17
+        AchievementProgress = 17,
+        DeclinedNames = 18
     };
 }
 
@@ -14267,6 +14307,9 @@ bool Player::loadFromDB(uint32_t guid)
     //Achievements
     q->AddQuery("SELECT achievement, date FROM character_achievement WHERE guid = '%u'", guid); // 16
     q->AddQuery("SELECT criteria, counter, date FROM character_achievement_progress WHERE guid = '%u'", guid); // 17
+
+    // Declined names
+    q->AddQuery("SELECT genitive, dative, accusative, instrumental, prepositional FROM character_declinedname WHERE guid = '%u'", guid); // 18
 
     // queue it!
     setGuidLow(guid);
@@ -14567,6 +14610,8 @@ void Player::loadFromDBProc(QueryResultVector& results)
     loadSpells(results[PlayerQuery::Spells].result.get());
 
     loadReputations(results[PlayerQuery::Reputation].result.get());
+
+    loadDeclinedNames(results[PlayerQuery::DeclinedNames].result.get());
 
     // Load saved actionbars
     uint32_t Counter = 0;
