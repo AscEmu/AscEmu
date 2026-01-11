@@ -1,4 +1,4 @@
-# Copyright (c) 2014-2025 AscEmu Team <http://www.ascemu.org>
+# Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 
 # all script libraries have SCRIPTLIB defined.
 add_compile_options(-DSCRIPTLIB -DSKIP_ALLOCATOR_SHARING)

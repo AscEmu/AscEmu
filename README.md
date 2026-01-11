@@ -70,10 +70,8 @@ HowTo install - detailed guides on our wiki.
 * [Terms of use](TERMS_OF_USE_AGREEMENT.md)
 
 ## Special Thanks
-[JetBrains](https://www.jetbrains.com/) - For supporting Open Source projects.
-
-## SAST Tools
-[PVS-Studio](https://pvs-studio.com/en/pvs-studio/?utm_source=website&utm_medium=github&utm_campaign=open_source) - Static analyzer for C, C++, C#, and Java code.
+* [JetBrains](https://www.jetbrains.com/) - For supporting Open Source projects.
+* [PVS-Studio](https://pvs-studio.com/en/pvs-studio/?utm_source=website&utm_medium=github&utm_campaign=open_source) - Static analyzer for C, C++, C#, and Java code.
 
 <!-- Undercover:start:status -->
 [AscEmuClangMasterMacOSBadge]: https://github.com/AscEmu/AscEmu/actions/workflows/clang-macos-test-x64.yml/badge.svg?branch=master
