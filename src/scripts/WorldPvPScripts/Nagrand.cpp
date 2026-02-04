@@ -6,15 +6,21 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.hpp"
 #include "Server/Script/HookInterfaceDefines.hpp"
 #include "Server/Script/GameObjectAIScript.hpp"
+#include "Server/Script/CreatureAIScript.hpp"
 
 #include "Objects/Units/Players/Player.hpp"
+#include "Objects/Units/Creatures/Creature.h"
 #include "Map/Maps/WorldMap.hpp"
 #include "Management/WorldStatesHandler.hpp"
 #include "Management/WorldStates.hpp"
 #include "Objects/GameObject.h"
 #include "Server/Master.h"
+#include "Server/Opcodes.hpp"
+#include "Chat/ChatCommandHandler.hpp"
 
 #include <cstdint>
+#include <vector>
+#include <cmath>
 
 ////////////////////////////////////////////////////////////////////////////////
 // zone
@@ -33,6 +39,10 @@ constexpr uint32_t GO_HALAA_CAPTURE = 182210;
 constexpr uint32_t SPELL_ALLIANCE_BUFF = 35001;
 constexpr uint32_t SPELL_HORDE_BUFF = 35002;
 
+// token spells (honorable kill reward)
+constexpr uint32_t SPELL_HALAA_TOKEN_ALLIANCE = 33005;
+constexpr uint32_t SPELL_HALAA_TOKEN_HORDE = 33004;
+
 // halaa banner position
 constexpr float HALAA_X = -1572.62f;
 constexpr float HALAA_Y = 7945.14f;
@@ -44,14 +54,23 @@ constexpr float CAPTURE_RADIUS = 50.0f;
 constexpr uint32_t CAPTURE_TICK_MS = 2000;
 constexpr uint32_t CAPTURE_HALAA_SPEED = 5; // % per tick
 
-// global state
-static uint32_t sZoneOwner = OWNER_NONE;
-static uint32_t sCaptureProgress = 50; // = 50 (neutral)
+// distance for honorable kill token award
+constexpr float HALAA_PVP_DISTANCE = 300.0f;
 
 // artkit
 constexpr uint32_t ARTKIT_HALAA_HORDE = 1;
 constexpr uint32_t ARTKIT_HALAA_ALLIANCE = 2;
 constexpr uint32_t ARTKIT_HALAA_NEUTRAL = 21;
+
+// guard npcs
+constexpr uint32_t NPC_HALAA_GUARD_HORDE = 18192;
+constexpr uint32_t NPC_HALAA_GUARD_ALLIANCE = 18256;
+constexpr uint32_t HALAA_GUARD_COUNT = 15;
+
+// global state
+static uint32_t sZoneOwner = OWNER_NONE;
+static uint32_t sCaptureProgress = 50; // = 50 (neutral)
+static uint32_t halaaGuards = 0;
 
 ////////////////////////////////////////////////////////////////////////////////
 // helpers
@@ -78,6 +97,23 @@ static void Nagrand_UpdatePlayersBuff(WorldMap* map)
     }
 }
 
+static void Nagrand_RecountHalaaGuards(WorldMap* map)
+{
+    uint32_t alive = 0;
+
+    for (Creature* c : map->getCreatures())
+    {
+        if (!c || !c->isAlive())
+            continue;
+
+        if (c->getEntry() == NPC_HALAA_GUARD_ALLIANCE || c->getEntry() == NPC_HALAA_GUARD_HORDE)
+            ++alive;
+    }
+
+    halaaGuards = std::min(alive, HALAA_GUARD_COUNT);
+    map->getWorldStatesHandler().SetWorldStateForZone(NAGRAND_ZONE_ID, 0, WORLDSTATE_NA_GUARD_UI_VALUE, halaaGuards);
+}
+
 static void setBannerArtKit(GameObject* go)
 {
     if (!go)
@@ -101,10 +137,7 @@ static void Nagrand_RespawnHalaaBanner(WorldMap* map)
         {
             setBannerArtKit(go);
             if (!go->IsInWorld())
-            {
-                map->AddObject(go);
-                go->OnPushToWorld();
-            }
+                go->PushToWorld(map);
         }
     }
 }
@@ -122,15 +155,21 @@ static void Nagrand_InitHalaaWorldStates(WorldMap* map)
 
     ws.SetWorldStateForZone(NAGRAND_ZONE_ID, 0, WORLDSTATE_NA_HALAA_ALLIANCE_ASSAULTED, 0);
     ws.SetWorldStateForZone(NAGRAND_ZONE_ID, 0, WORLDSTATE_NA_HALAA_HORDE_ASSAULTED, 0);
+
+    if (sZoneOwner != OWNER_NONE)
+    {
+        ws.SetWorldStateForZone(NAGRAND_ZONE_ID, 0, WORLDSTATE_NA_GUARD_UI_VALUE, halaaGuards);
+        ws.SetWorldStateForZone(NAGRAND_ZONE_ID, 0, WORLDSTATE_NA_GUARDS_TOTAL, HALAA_GUARD_COUNT);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// capture Progress
+// capture progress
 static void Nagrand_UpdateCaptureProgress(WorldMap* map, uint32_t capturingTeam)
 {
     if (!map)
         return;
-    
+
     if (sZoneOwner == capturingTeam)
         return;
 
@@ -174,6 +213,7 @@ static void Nagrand_UpdateCaptureProgress(WorldMap* map, uint32_t capturingTeam)
 
         Nagrand_UpdatePlayersBuff(map);
         Nagrand_RespawnHalaaBanner(map);
+        Nagrand_RecountHalaaGuards(map);
 
         // DLLLogDetail("Halaa captured by %s!", team == OWNER_ALLIANCE ? "Alliance" : "Horde");
     }
@@ -181,6 +221,68 @@ static void Nagrand_UpdateCaptureProgress(WorldMap* map, uint32_t capturingTeam)
 
 ////////////////////////////////////////////////////////////////////////////////
 // halaa banner
+class HalaaGuardAI : public CreatureAIScript
+{
+public:
+    explicit HalaaGuardAI(Creature* creature) : CreatureAIScript(creature) {}
+    static CreatureAIScript* Create(Creature* creature) { return new HalaaGuardAI(creature); }
+
+    void OnLoad() override
+    {
+        WorldMap* map = getCreature() ? getCreature()->getWorldMap() : nullptr;
+        if (!map)
+            return;
+
+        if (halaaGuards < HALAA_GUARD_COUNT)
+            ++halaaGuards;
+
+        Nagrand_RecountHalaaGuards(map);
+    }
+
+    void OnDied(Unit* /*killer*/) override
+    {
+        WorldMap* map = getCreature() ? getCreature()->getWorldMap() : nullptr;
+        if (!map)
+            return;
+
+        if (halaaGuards > 0)
+            --halaaGuards;
+
+        Nagrand_RecountHalaaGuards(map);
+    }
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// stubs (Wyvern/Roost/BombWagon AI)
+class DestroyedWyvernRoostAI : public GameObjectAIScript
+{
+public:
+    explicit DestroyedWyvernRoostAI(GameObject* go) : GameObjectAIScript(go) {}
+    static GameObjectAIScript* Create(GameObject* go) { return new DestroyedWyvernRoostAI(go); }
+    void OnSpawn() override {}
+    void OnActivate(Player* /*player*/) override {}
+};
+
+class WyvernRoostAI : public GameObjectAIScript
+{
+public:
+    explicit WyvernRoostAI(GameObject* go) : GameObjectAIScript(go) {}
+    static GameObjectAIScript* Create(GameObject* go) { return new WyvernRoostAI(go); }
+    void OnSpawn() override {}
+    void OnActivate(Player* /*player*/) override {}
+};
+
+class BombWagonAI : public GameObjectAIScript
+{
+public:
+    explicit BombWagonAI(GameObject* go) : GameObjectAIScript(go) {}
+    static GameObjectAIScript* Create(GameObject* go) { return new BombWagonAI(go); }
+    void OnSpawn() override {}
+    void OnActivate(Player* /*player*/) override {}
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// halaa banner GO
 class NagrandHalaaBannerGO : public GameObjectAIScript
 {
 public:
@@ -213,7 +315,7 @@ public:
 
     void AIUpdate() override
     {
-        if (!_gameobject)
+        if (!_gameobject || !_gameobject->IsInWorld())
             return;
 
         WorldMap* map = _gameobject->getWorldMap();
@@ -230,12 +332,16 @@ public:
             if (!plr || plr->getZoneId() != NAGRAND_ZONE_ID)
                 continue;
 
-            float distance = _gameobject->getDistance(plr);
+            float dx = plr->GetPositionX() - HALAA_X;
+            float dy = plr->GetPositionY() - HALAA_Y;
+            float distance = sqrtf(dx*dx + dy*dy);
+
             if (distance > CAPTURE_RADIUS || plr->IsFlying())
             {
+                plr->sendWorldStateUpdate(WORLDSTATE_NA_ALLIANCE_UI_SHOW, 0);
+                plr->sendWorldStateUpdate(WORLDSTATE_NA_HORDE_UI_SHOW, 0);
                 plr->sendWorldStateUpdate(WORLDSTATE_NA_HALAA_ALLIANCE_ASSAULTED, 0);
                 plr->sendWorldStateUpdate(WORLDSTATE_NA_HALAA_HORDE_ASSAULTED, 0);
-                continue;
             }
 
             if (plr->isAlive() && !plr->isInvisible() && !plr->isStealthed() && plr->isPvpFlagSet())
@@ -269,6 +375,8 @@ public:
 
             for (Player* plr : playersInRange)
             {
+                plr->sendWorldStateUpdate(WORLDSTATE_NA_ALLIANCE_UI_SHOW, 0);
+                plr->sendWorldStateUpdate(WORLDSTATE_NA_HORDE_UI_SHOW, 0);
                 plr->sendWorldStateUpdate(WORLDSTATE_NA_HALAA_ALLIANCE_ASSAULTED, 0);
                 plr->sendWorldStateUpdate(WORLDSTATE_NA_HALAA_HORDE_ASSAULTED, 0);
             }
@@ -279,23 +387,26 @@ public:
         {
             if (!plr)
                 continue;
+
             if (sZoneOwner == OWNER_ALLIANCE || sZoneOwner == OWNER_HORDE)
             {
+                plr->sendWorldStateUpdate(WORLDSTATE_NA_ALLIANCE_UI_SHOW, 0);
+                plr->sendWorldStateUpdate(WORLDSTATE_NA_HORDE_UI_SHOW, 0);
                 plr->sendWorldStateUpdate(WORLDSTATE_NA_HALAA_ALLIANCE_ASSAULTED, 0);
                 plr->sendWorldStateUpdate(WORLDSTATE_NA_HALAA_HORDE_ASSAULTED, 0);
             }
-            else
+
+            if (allianceCount > 0 && hordeCount == 0)
             {
-                if (allianceCount > 0 && hordeCount == 0)
-                {
-                    plr->sendWorldStateUpdate(WORLDSTATE_NA_HALAA_ALLIANCE_ASSAULTED, sCaptureProgress);
-                    plr->sendWorldStateUpdate(WORLDSTATE_NA_HALAA_HORDE_ASSAULTED, 0);
-                }
-                else if (hordeCount > 0 && allianceCount == 0)
-                {
-                    plr->sendWorldStateUpdate(WORLDSTATE_NA_HALAA_HORDE_ASSAULTED, sCaptureProgress);
-                    plr->sendWorldStateUpdate(WORLDSTATE_NA_HALAA_ALLIANCE_ASSAULTED, 0);
-                }
+                plr->sendWorldStateUpdate(WORLDSTATE_NA_ALLIANCE_UI_SHOW, 1);
+                plr->sendWorldStateUpdate(WORLDSTATE_NA_HALAA_ALLIANCE_ASSAULTED, sCaptureProgress);
+                plr->sendWorldStateUpdate(WORLDSTATE_NA_HORDE_UI_SHOW, 0);
+            }
+            else if (hordeCount > 0 && allianceCount == 0)
+            {
+                plr->sendWorldStateUpdate(WORLDSTATE_NA_HORDE_UI_SHOW, 1);
+                plr->sendWorldStateUpdate(WORLDSTATE_NA_HALAA_HORDE_ASSAULTED, sCaptureProgress);
+                plr->sendWorldStateUpdate(WORLDSTATE_NA_ALLIANCE_UI_SHOW, 0);
             }
         }
     }
@@ -336,12 +447,54 @@ static void Nagrand_OnZoneChange(Player* player, uint32_t newZone, uint32_t oldZ
     }
 }
 
+static void Nagrand_OnLogout(Player* player)
+{
+    if (!player)
+        return;
+    player->removeAllAurasById(SPELL_ALLIANCE_BUFF);
+    player->removeAllAurasById(SPELL_HORDE_BUFF);
+}
+
+static void Nagrand_OnHonorableKill(Player* killer, Player* victim)
+{
+    if (!killer || !victim)
+        return;
+    if (killer->getZoneId() != NAGRAND_ZONE_ID)
+        return;
+
+    float dx = killer->GetPositionX() - HALAA_X;
+    float dy = killer->GetPositionY() - HALAA_Y;
+    float dz = killer->GetPositionZ() - HALAA_Z;
+    float dist2 = dx*dx + dy*dy + dz*dz;
+    if (dist2 > HALAA_PVP_DISTANCE * HALAA_PVP_DISTANCE)
+        return;
+
+    if (killer->GetTeam() == TEAM_ALLIANCE)
+        killer->castSpell(killer, SPELL_HALAA_TOKEN_ALLIANCE, false);
+    else
+        killer->castSpell(killer, SPELL_HALAA_TOKEN_HORDE, false);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // setup
 void SetupNagrand(ScriptMgr* mgr)
 {
+    // hooks
     mgr->register_hook(SERVER_HOOK_EVENT_ON_ENTER_WORLD, (void*)&Nagrand_OnPlayerEnterWorld);
     mgr->register_hook(SERVER_HOOK_EVENT_ON_ZONE, (void*)&Nagrand_OnZoneChange);
+    mgr->register_hook(SERVER_HOOK_EVENT_ON_LOGOUT, (void*)&Nagrand_OnLogout);
+    mgr->register_hook(SERVER_HOOK_EVENT_ON_HONORABLE_KILL, (void*)&Nagrand_OnHonorableKill);
+
+    // go script
     mgr->register_gameobject_script(GO_HALAA_CAPTURE, &NagrandHalaaBannerGO::Create);
+
+    // guard creatures
+    mgr->register_creature_script(NPC_HALAA_GUARD_ALLIANCE, &HalaaGuardAI::Create);
+    mgr->register_creature_script(NPC_HALAA_GUARD_HORDE, &HalaaGuardAI::Create);
+
+    // stubs (Wyvern/Roost/BombWagon AI)
+    // mgr->register_gameobject_script(WYVERN_ROOST_ID, &WyvernRoostAI::Create);
+    // mgr->register_gameobject_script(DESTROYED_ROOST_ID, &DestroyedWyvernRoostAI::Create);
+    // mgr->register_gameobject_script(BOMB_WAGON_ID, &BombWagonAI::Create);
 }
 

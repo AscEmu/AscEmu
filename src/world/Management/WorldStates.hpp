@@ -118,9 +118,14 @@ enum WorldStates
     // WORLDSTATE_HF_BROKENHILL_NEUTRAL                                  = 2485,
     // WORLDSTATE_HF_SHOW_HORDE_TOWERS                                   = 2489,
     // WORLDSTATE_HF_SHOW_ALLIANCE_TOWERS                                = 2490,
-    // WORLDSTATE_NA_GUARD_UI_VALUE                                      = 2491,
-    // WORLDSTATE_NA_ALLIANCE_UI_SHOW                                    = 2502,
-    // WORLDSTATE_NA_HORDE_UI_SHOW                                       = 2503,
+
+    WORLDSTATE_NA_GUARD_UI_VALUE                                         = 2491,
+    WORLDSTATE_NA_GUARDS_TOTAL                                           = 2493,
+    WORLDSTATE_NA_HALAA_PROGRESS                                         = 2494,
+    WORLDSTATE_NA_HALAA_GUARDS                                           = 2495,
+    WORLDSTATE_NA_ALLIANCE_UI_SHOW                                       = 2502,
+    WORLDSTATE_NA_HORDE_UI_SHOW                                          = 2503,
+
     // WORLDSTATE_TK_NEUTRAL_TIMER                                       = 2508,
     // WORLDSTATE_TK_HOUR_TIMER_SET                                      = 2509,
     // WORLDSTATE_TK_MINUTE_X1_TIMER_SET                                 = 2510,
