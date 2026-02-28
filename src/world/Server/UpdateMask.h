@@ -129,7 +129,7 @@ class UpdateMask
         {
             if (mask.mCount <= mCount)
             {
-	            UpdateMask newmask = *this;
+                UpdateMask newmask = *this;
                 newmask &= mask;
 
                 return newmask;
@@ -141,7 +141,7 @@ class UpdateMask
         {
             if (mask.mCount <= mCount)
             {
-	            UpdateMask newmask = *this;
+                UpdateMask newmask = *this;
                 newmask |= mask;
 
                 return newmask;

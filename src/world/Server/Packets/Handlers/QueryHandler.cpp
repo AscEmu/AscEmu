@@ -43,7 +43,7 @@ void WorldSession::handleNameQueryOpcode(WorldPacket& recvData)
         return;
 
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_NAME_QUERY for: {}", info->name);
-    SendPacket(SmsgQueryPlayernameResponse(srlPacket.guid, info->name, info->race, info->gender, info->cl).serialise().get());
+    SendPacket(SmsgQueryPlayernameResponse(srlPacket.guid, info->name, info->race, info->gender, info->cl, static_cast<uint8_t>(info->lastLevel), info->declinedNames).serialise().get());
 }
 
 void WorldSession::handleGameObjectQueryOpcode(WorldPacket& recvData)

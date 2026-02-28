@@ -248,7 +248,7 @@ namespace VMAP
         /// @todo check magic number when implemented...
         char tiled;
         char chunk[8];
-        if (!readChunk(rf, chunk, VMAP_MAGIC, 8) || fread(&tiled, sizeof(char), 1, rf) != 1)
+        if (!readChunk(rf, chunk, AE_VMAP_MAGIC, 8) || fread(&tiled, sizeof(char), 1, rf) != 1)
         {
             fclose(rf);
             return false;
@@ -261,7 +261,7 @@ namespace VMAP
                 success = false;
             else
             {
-                if (!readChunk(tf, chunk, VMAP_MAGIC, 8))
+                if (!readChunk(tf, chunk, AE_VMAP_MAGIC, 8))
                     success = false;
                 fclose(tf);
             }
@@ -284,7 +284,7 @@ namespace VMAP
         char chunk[8];
         char tiled = '\0';
 
-        if (readChunk(rf, chunk, VMAP_MAGIC, 8) && fread(&tiled, sizeof(char), 1, rf) == 1 &&
+        if (readChunk(rf, chunk, AE_VMAP_MAGIC, 8) && fread(&tiled, sizeof(char), 1, rf) == 1 &&
             readChunk(rf, chunk, "NODE", 4) && iTree.readFromFile(rf))
         {
             iNTreeValues = iTree.primCount();
@@ -359,7 +359,7 @@ namespace VMAP
         {
             char chunk[8];
 
-            if (!readChunk(tf, chunk, VMAP_MAGIC, 8))
+            if (!readChunk(tf, chunk, AE_VMAP_MAGIC, 8))
                 result = false;
             uint32_t numSpawns = 0;
             if (result && fread(&numSpawns, sizeof(uint32_t), 1, tf) != 1)
@@ -434,7 +434,7 @@ namespace VMAP
             {
                 bool result=true;
                 char chunk[8];
-                if (!readChunk(tf, chunk, VMAP_MAGIC, 8))
+                if (!readChunk(tf, chunk, AE_VMAP_MAGIC, 8))
                     result = false;
                 uint32_t numSpawns;
                 if (fread(&numSpawns, sizeof(uint32_t), 1, tf) != 1)

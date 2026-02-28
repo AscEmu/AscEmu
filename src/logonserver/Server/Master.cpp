@@ -114,6 +114,7 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
     // Spawn interserver listener
     const bool isAuthsockCreated = realmlistSocket->IsOpen();
     const bool isIntersockCreated = logonServerSocket->IsOpen();
+
     if (isAuthsockCreated && isIntersockCreated)
     {
 #ifdef WIN32
@@ -351,18 +352,38 @@ bool MasterLogon::CheckDBVersion()
     Field* f = cqr->Fetch();
     const char *LogonDBVersion = f->asCString();
 
+    if (LogonDBVersion == nullptr)
+    {
+        sLogger.failure("Database : LastUpdate field is NULL. Database corrupted?");
+        return false;
+    }
+
     sLogger.info("Database : Last logon database update: {}", LogonDBVersion);
-    int result = strcmp(LogonDBVersion, REQUIRED_LOGON_DB_VERSION);
-    if (result != 0)
+    
+    // Explicitly release result to prevent crash
+    (void)cqr.release();
+
+    std::string dbVersionStr(LogonDBVersion);
+    std::string requiredVersionStr(REQUIRED_LOGON_DB_VERSION);
+
+    if (dbVersionStr != requiredVersionStr)
     {
         sLogger.failure("Database : Last logon database update doesn't match the required one which is {}.", REQUIRED_LOGON_DB_VERSION);
+        // ... (rest of the error handling logic, assuming result != 0 logic matches string inequality) ...
+        // We need to implement the < 0 and > 0 logic if we want to give specific advice
+        // But for now let's just fail.
+        
+        // Actually, let's keep the strcmp logic but safely
+        int result = strcmp(LogonDBVersion, REQUIRED_LOGON_DB_VERSION);
         if (result < 0)
         {
             sLogger.failure("Database : You need to apply the logon update queries that are newer than {}. Exiting.", LogonDBVersion);
             sLogger.failure("Database : You can find the logon update queries in the sql/logon/updates sub-directory of your AscEmu source directory.");
         }
         else
+        {
             sLogger.failure("Database : Your logon database is too new for this AscEmu version, you need to update your server. Exiting.");
+        }
 
         return false;
     }

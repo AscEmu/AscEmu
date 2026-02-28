@@ -145,25 +145,52 @@ void TileMap::loadHeightData(FILE* f, TileMapHeader& header)
     }
 }
 
-void TileMap::loadLiquidData(FILE* f, TileMapHeader& header)
+void TileMap::loadLiquidData(FILE* f, TileMapHeader& header, bool LiquidFormat)
 {
-    TileMapLiquidHeader liquidHeader;
-
     if (fseek(f, header.liquidMapOffset, SEEK_SET) != 0)
         return;
 
-    if (fread(&liquidHeader, sizeof(liquidHeader), 1, f) != 1)
-        return;
+    uint8_t liquidFlagsByte = 0;
 
-    m_liquidGlobalEntry = liquidHeader.liquidType;
-    m_liquidGlobalFlags = liquidHeader.liquidFlags;
-    m_liquidOffX = liquidHeader.offsetX;
-    m_liquidOffY = liquidHeader.offsetY;
-    m_liquidWidth = liquidHeader.width;
-    m_liquidHeight = liquidHeader.height;
-    m_liquidLevel = liquidHeader.liquidLevel;
+    if (LiquidFormat)
+    {
+        uint32_t fourcc;
+        uint16_t flags16;
+        uint16_t liquidType16;
+        uint8_t offsetX, offsetY, width, height;
+        float liquidLevel;
+        if (fread(&fourcc, sizeof(fourcc), 1, f) != 1 ||
+            fread(&flags16, sizeof(flags16), 1, f) != 1 ||
+            fread(&liquidType16, sizeof(liquidType16), 1, f) != 1 ||
+            fread(&offsetX, 1, 1, f) != 1 || fread(&offsetY, 1, 1, f) != 1 ||
+            fread(&width, 1, 1, f) != 1 || fread(&height, 1, 1, f) != 1 ||
+            fread(&liquidLevel, sizeof(liquidLevel), 1, f) != 1)
+            return;
+        m_liquidGlobalEntry = liquidType16;
+        m_liquidGlobalFlags = static_cast<uint8_t>(flags16 >> 8);
+        m_liquidOffX = offsetX;
+        m_liquidOffY = offsetY;
+        m_liquidWidth = width;
+        m_liquidHeight = height;
+        m_liquidLevel = liquidLevel;
+        liquidFlagsByte = static_cast<uint8_t>(flags16 & 0xFF);
+    }
+    else
+    {
+        TileMapLiquidHeader liquidHeader;
+        if (fread(&liquidHeader, sizeof(liquidHeader), 1, f) != 1)
+            return;
+        m_liquidGlobalEntry = liquidHeader.liquidType;
+        m_liquidGlobalFlags = liquidHeader.liquidFlags;
+        m_liquidOffX = liquidHeader.offsetX;
+        m_liquidOffY = liquidHeader.offsetY;
+        m_liquidWidth = liquidHeader.width;
+        m_liquidHeight = liquidHeader.height;
+        m_liquidLevel = liquidHeader.liquidLevel;
+        liquidFlagsByte = liquidHeader.flags;
+    }
 
-    if (!(liquidHeader.flags & MAP_LIQUID_NO_TYPE))
+    if (!(liquidFlagsByte & MAP_LIQUID_NO_TYPE))
     {
         m_liquidEntry = std::make_unique<uint16_t[]>(16 * 16);
         if (fread(m_liquidEntry.get(), sizeof(uint16_t), 16 * 16, f) != 16 * 16)
@@ -174,7 +201,7 @@ void TileMap::loadLiquidData(FILE* f, TileMapHeader& header)
             return;
     }
 
-    if (!(liquidHeader.flags & MAP_LIQUID_NO_HEIGHT))
+    if (!(liquidFlagsByte & MAP_LIQUID_NO_HEIGHT))
     {
         m_liquidMap = std::make_unique<float[]>(m_liquidWidth * m_liquidHeight);
         if (fread(m_liquidMap.get(), sizeof(float), m_liquidWidth * m_liquidHeight, f) != 16 * 16)

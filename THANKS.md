@@ -31,4 +31,5 @@ people are awsome:
 - Sdyessdev (Taft)
 - sanctum32
 - Viste
+- VladimirEve
 - Zyres

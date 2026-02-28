@@ -1237,11 +1237,11 @@ bool ChatCommandHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession
     if (creature_target == nullptr)
         return false;
 
-	#if VERSION_STRING < Mop
-		uint32_t old_npc_flags = creature_target->getNpcFlags();
-	#else
-		uint64_t old_npc_flags = creature_target->getNpcFlags();
-	#endif
+    #if VERSION_STRING < Mop
+        uint32_t old_npc_flags = creature_target->getNpcFlags();
+    #else
+        uint64_t old_npc_flags = creature_target->getNpcFlags();
+    #endif
     creature_target->addNpcFlags(npc_flags);
 
     if (creature_target->m_spawn != nullptr)

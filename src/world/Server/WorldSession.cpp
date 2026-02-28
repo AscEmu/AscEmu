@@ -210,6 +210,30 @@ uint8_t WorldSession::Update(uint32_t InstanceID)
     return 0;
 }
 
+uint8_t WorldSession::ProcessQueuedPackets(uint32_t InstanceID)
+{
+    if (InstanceID != instanceId)
+        return 2;
+    uint32_t processed = 0;
+    sLogger.info("WORLD: ProcessQueuedPackets called (InstanceID={}, instanceId={})", InstanceID, instanceId);
+    while (auto packet = _recvQueue.pop())
+    {
+        if (packet.value() != nullptr)
+        {
+            OpcodeHandlerRegistry::instance().handleOpcode(*this, *packet.value());
+            packet.value() = nullptr;
+            ++processed;
+            if (InstanceID != instanceId)
+                return 2;
+            if (bDeleted)
+                return 1;
+        }
+    }
+    if (processed > 0)
+        sLogger.info("WORLD: ProcessQueuedPackets processed {} packets (instanceId={})", processed, instanceId);
+    return 0;
+}
+
 void WorldSession::LogoutPlayer(bool Save)
 {
     Player* pPlayer = _player;
@@ -828,8 +852,8 @@ void WorldSession::registerOpcodeHandler()
     // Player Interaction
     registry.registerOpcode(CMSG_WHO, &WorldSession::handleWhoOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_WHOIS, &WorldSession::handleWhoIsOpcode, true, false, true, true, false);
-    registry.registerOpcode(CMSG_LOGOUT_REQUEST, &WorldSession::handleLogoutRequestOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_PLAYER_LOGOUT, &WorldSession::handlePlayerLogoutOpcode, true, true, true, false, false);
+    registry.registerOpcode(CMSG_LOGOUT_REQUEST, &WorldSession::handleLogoutRequestOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_PLAYER_LOGOUT, &WorldSession::handlePlayerLogoutOpcode, true, true, true, false, true);
     registry.registerOpcode(CMSG_LOGOUT_CANCEL, &WorldSession::handleLogoutCancelOpcode, true, true, true, true, false);
     // registry.registerOpcode(CMSG_LOGOUT_CANCEL].status = STATUS_LOGGEDIN_RECENTLY_LOGGOUT, false, false, true, false, false);
 

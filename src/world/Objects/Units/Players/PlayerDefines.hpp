@@ -825,10 +825,17 @@ struct CharEnumData
 
     CharEnum_Pet pet_data;
     PlayerItem player_items[DBC_PLAYER_ITEMS];
+    std::vector<std::string> declinedNames;
 };
 
+#if VERSION_STRING >= Mop
+    constexpr uint8_t ClassRaceCombinationsCount = 109;
+#else
+    constexpr uint8_t ClassRaceCombinationsCount = 91;
+#endif
+
 // table taken from https://wow.gamepedia.com/Class
-static const uint32_t ClassRaceCombinations[91][3] =
+static const uint32_t ClassRaceCombinations[ClassRaceCombinationsCount][3] =
 {
     //WARRIOR
     {1, 1, 4044},
@@ -931,6 +938,15 @@ static const uint32_t ClassRaceCombinations[91][3] =
     {11, 6, 4044},
     {11, 8, 13164},
     {11, 22, 13164},
+#if VERSION_STRING >= Mop
+    // Pandaren (24=Neutral, 25=Alliance, 26=Horde): Warrior, Hunter, Rogue, Priest, Mage, Monk (build < 18414)
+    {1, 24, 18413},  {1, 25, 18413},  {1, 26, 18413},
+    {3, 24, 18413},  {3, 25, 18413},  {3, 26, 18413},
+    {4, 24, 18413},  {4, 25, 18413},  {4, 26, 18413},
+    {5, 24, 18413},  {5, 25, 18413},  {5, 26, 18413},
+    {8, 24, 18413},  {8, 25, 18413},  {8, 26, 18413},
+    {10, 24, 18413}, {10, 25, 18413}, {10, 26, 18413},
+#endif
 };
 
 inline uint32_t getAEVersion()
@@ -940,7 +956,7 @@ inline uint32_t getAEVersion()
 
 inline bool isClassRaceCombinationPossible(uint8_t _class, uint8_t _race)
 {
-    for (uint8_t i = 0; i < 91; ++i)
+    for (uint8_t i = 0; i < ClassRaceCombinationsCount; ++i)
     {
         if (ClassRaceCombinations[i][0] == _class && ClassRaceCombinations[i][1] == _race)
         {
@@ -962,7 +978,15 @@ static inline uint8_t getSideByRace(uint8_t race)
         case RACE_GNOME:
         case RACE_DRAENEI:
         case RACE_WORGEN:
+#if VERSION_STRING >= Mop
+        case RACE_PANDAREN_ALLIANCE:
+#endif
             return TEAM_ALLIANCE;
+#if VERSION_STRING >= Mop
+        case RACE_PANDAREN_NEUTRAL:
+            return 255; // neutral, not yet chosen
+        case RACE_PANDAREN_HORDE:
+#endif
         default:
             return TEAM_HORDE;
     }
@@ -1086,6 +1110,7 @@ public:
 
     uint32_t m_guild = 0;
     uint32_t guildRank = 0;
+    std::vector<std::string> declinedNames;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

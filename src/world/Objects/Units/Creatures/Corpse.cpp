@@ -72,7 +72,7 @@ void Corpse::setCorpseDataFromDbString(std::string dbString)
         switch (countPosition)
         {
             case 0: setGuid(std::stoull(stringValue)); break;
-            case 1: setOType(std::stoul(stringValue)); break;
+            case 1: setOType((uint16_t)std::stoul(stringValue)); break;
             case 2: setEntry(std::stoul(stringValue)); break;
             case 3: setScale(std::stof(stringValue)); break;
 

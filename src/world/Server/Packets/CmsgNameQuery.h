@@ -17,28 +17,57 @@ namespace AscEmu::Packets
     public:
         WoWGuid guid;
 
-        CmsgNameQuery() : CmsgNameQuery(0)
-        {
-        }
-
-        CmsgNameQuery(uint64_t guid) :
-            ManagedPacket(CMSG_NAME_QUERY, 8),
-            guid(guid)
-        {
-        }
+#if VERSION_STRING == Mop
+        uint32_t realmID = 0;
+        CmsgNameQuery() : ManagedPacket(CMSG_NAME_QUERY, 0) {}
+#else
+        CmsgNameQuery() : ManagedPacket(CMSG_NAME_QUERY, 8) {}
+#endif
 
     protected:
-        bool internalSerialise(WorldPacket& packet) override
+        bool internalDeserialise(WorldPacket& packet) override
         {
-            packet << guid.getRawGuid();
+            uint8_t mask[8] = { 0 };
+#if VERSION_STRING == Mop
+            packet >> realmID;
+
+            for (int i = 0; i < 8; ++i)
+                mask[i] = packet.readBit();
+
+            packet.flushBits();
+
+            uint8_t guidBytes[8] = {0};
+
+            for (int i = 0; i < 8; ++i)
+                if (mask[i])
+                    packet >> guidBytes[i];
+#endif
+            uint64_t fullGuid;
+            memcpy(&fullGuid, guidBytes, 8);
+            guid.init(fullGuid);
+
             return true;
         }
 
-        bool internalDeserialise(WorldPacket& packet) override
+        bool internalSerialise(WorldPacket& packet) override
         {
-            uint64_t unpacked_guid;
-            packet >> unpacked_guid;
-            guid.init(unpacked_guid);
+#if VERSION_STRING == Mop
+            packet << uint32_t(realmID);
+
+            uint64_t fullGuid = guid.getRawGuid();
+            uint8_t* bytes = reinterpret_cast<uint8_t*>(&fullGuid);
+
+            for (int i = 0; i < 8; ++i)
+                packet.writeBit(bytes[i] != 0);
+
+            packet.flushBits();
+
+            for (int i = 0; i < 8; ++i)
+                if (bytes[i] != 0)
+                    packet << bytes[i];
+#else
+            packet << guid.getRawGuid();
+#endif
             return true;
         }
     };

@@ -194,6 +194,10 @@ CachedCharacterInfo::CachedCharacterInfo(Field const* fields)
     m_guild = 0;
     guildRank = GUILD_RANK_NONE;
     team = getSideByRace(race);
+
+    // Load declined names if they exist (requires separate query usually, but maybe we can lazy load or do it here if possible, 
+    // but constructor from fields is used in ObjectMgr::loadCharacters where we iterate a result set)
+    // For now we initialize empty.
 }
 
 CachedCharacterInfo::~CachedCharacterInfo()
@@ -562,6 +566,15 @@ void Player::OnPushToWorld()
 
     // Process create packet
     processPendingUpdates();
+
+#if VERSION_STRING == Mop
+    // MoP: process any CMSG_OBJECT_UPDATE_FAILED (0x1061) already in queue so resend runs in same tick.
+    if (m_session)
+        m_session->ProcessQueuedPackets(static_cast<uint32_t>(GetInstanceID()));
+    // MoP: 0x1061 often arrive after create send; schedule a second drain in 150ms.
+    if (m_session)
+        sEventMgr.AddEvent(this, &Player::eventProcessQueuedPacketsMoP, EVENT_PLAYER_MOP_PROCESS_QUEUE, 150, 1, 0);
+#endif
 
     if (m_teleportState == 2)   // Worldport Ack
         onWorldPortAck();
@@ -2841,26 +2854,29 @@ void Player::sendInitialLogonPackets()
     data.writeBits(0, 21);
     getSession()->SendPacket(&data);
 
-    WoWGuid guid = getGuid();
-    data.Initialize(SMSG_MOVE_SET_ACTIVE_MOVER);
-    data.writeBit(guid[5]);
-    data.writeBit(guid[1]);
-    data.writeBit(guid[4]);
-    data.writeBit(guid[2]);
-    data.writeBit(guid[3]);
-    data.writeBit(guid[7]);
-    data.writeBit(guid[0]);
-    data.writeBit(guid[6]);
+    // MoP: send before AddToWorld (like panda-core SendInitialPacketsBeforeAddToMap -> SetMover). Client expects this before player create.
+    {
+        WoWGuid guid = getGuid();
+        data.Initialize(SMSG_MOVE_SET_ACTIVE_MOVER, 9);
+        data.writeBit(guid[5]);
+        data.writeBit(guid[1]);
+        data.writeBit(guid[4]);
+        data.writeBit(guid[2]);
+        data.writeBit(guid[3]);
+        data.writeBit(guid[7]);
+        data.writeBit(guid[0]);
+        data.writeBit(guid[6]);
 
-    data.WriteByteSeq(guid[4]);
-    data.WriteByteSeq(guid[6]);
-    data.WriteByteSeq(guid[2]);
-    data.WriteByteSeq(guid[0]);
-    data.WriteByteSeq(guid[3]);
-    data.WriteByteSeq(guid[7]);
-    data.WriteByteSeq(guid[5]);
-    data.WriteByteSeq(guid[1]);
-    getSession()->SendPacket(&data);
+        data.WriteByteSeq(guid[4]);
+        data.WriteByteSeq(guid[6]);
+        data.WriteByteSeq(guid[2]);
+        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(guid[3]);
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(guid[1]);
+        getSession()->SendPacket(&data);
+    }
 
 #else
     m_session->SendPacket(SmsgBindPointUpdate(getBindPosition(), getBindMapId(), getBindZoneId()).serialise().get());
@@ -13297,6 +13313,82 @@ void Player::processPendingUpdates()
     m_updateMgr.processPendingUpdates();
 }
 
+void Player::resendCreateAndActiveMoverForMoP()
+{
+#if VERSION_STRING == Mop
+    if (!m_session)
+        return;
+    if (!IsInWorld())
+    {
+        sLogger.info("WORLD: resend create+active mover skipped for {} (player not InWorld yet)", getName());
+        return;
+    }
+    constexpr uint32_t kMaxObjectUpdateFailedResends = 5u;
+    if (m_objectUpdateFailedResendCount >= kMaxObjectUpdateFailedResends)
+    {
+        sLogger.failure("WORLD: MoP player create rejected {} times by client for {}; stopping resend (client may need correct SMSG_UPDATE_OBJECT format)", kMaxObjectUpdateFailedResends, getName());
+        return;
+    }
+    const uint32_t now = Util::getMSTime();
+    // First resend is always allowed (m_lastObjectUpdateFailedResend==0); then throttle 1.5s
+    if (m_lastObjectUpdateFailedResend != 0 && (now - m_lastObjectUpdateFailedResend < 1500u))
+    {
+        sLogger.debug("resendCreateAndActiveMoverForMoP: throttled for {}", getName());
+        return;
+    }
+    m_lastObjectUpdateFailedResend = now;
+    ++m_objectUpdateFailedResendCount;
+
+    sLogger.info("WORLD: resending LOGIN_VERIFY_WORLD + SetActiveMover + create for {} (attempt {}/{})", getName(), m_objectUpdateFailedResendCount, kMaxObjectUpdateFailedResends);
+    // MoP: send in order client may expect — verify world first, then mover, then create (mirrors panda-core flow).
+    sendLoginVerifyWorldPacket(GetMapId(), GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
+
+    WoWGuid guid = getGuid();
+    WorldPacket data(SMSG_MOVE_SET_ACTIVE_MOVER, 9);
+    data.writeBit(guid[5]);
+    data.writeBit(guid[1]);
+    data.writeBit(guid[4]);
+    data.writeBit(guid[2]);
+    data.writeBit(guid[3]);
+    data.writeBit(guid[7]);
+    data.writeBit(guid[0]);
+    data.writeBit(guid[6]);
+    data.WriteByteSeq(guid[4]);
+    data.WriteByteSeq(guid[6]);
+    data.WriteByteSeq(guid[2]);
+    data.WriteByteSeq(guid[0]);
+    data.WriteByteSeq(guid[3]);
+    data.WriteByteSeq(guid[7]);
+    data.WriteByteSeq(guid[5]);
+    data.WriteByteSeq(guid[1]);
+    m_session->SendPacket(&data);
+
+    ByteBuffer pbuf(10000);
+    const uint32_t count = buildCreateUpdateBlockForPlayer(&pbuf, this);
+    sLogger.info("WORLD: resend create block for {} size={} bytes (attempt {}/{})", getName(), pbuf.size(), m_objectUpdateFailedResendCount, kMaxObjectUpdateFailedResends);
+    getUpdateMgr().pushCreationData(&pbuf, count);
+    processPendingUpdates();
+
+    // MoP: client may be waiting for CUF profiles after create to finish loading (Trinity SendInitialPacketsAfterAddToMap).
+    WorldPacket cuf(SMSG_LOAD_CUF_PROFILES, 1);
+    cuf.writeBits(0, 20);
+    cuf.flushBits();
+    sendPacket(&cuf);
+
+    // MoP: schedule one delayed retry in 2s (after throttle) in case client missed the first resend; stop when cap reached.
+    if (m_objectUpdateFailedResendCount < kMaxObjectUpdateFailedResends)
+        sEventMgr.AddEvent(this, &Player::resendCreateAndActiveMoverForMoP, EVENT_PLAYER_MOP_PROCESS_QUEUE, 2000, 1, 0);
+#endif
+}
+
+void Player::eventProcessQueuedPacketsMoP()
+{
+#if VERSION_STRING == Mop
+    if (m_session && IsInWorld())
+        m_session->ProcessQueuedPackets(static_cast<uint32_t>(GetInstanceID()));
+#endif
+}
+
 void Player::eventTalentHearthOfWildChange(bool apply)
 {
     if (!m_hearthOfWildPct)
@@ -15995,8 +16087,11 @@ void Player::completeLoading()
 
 #if VERSION_STRING > TBC
     // useless logon spell
-    Spell* logonspell = sSpellMgr.newSpell(this, sSpellMgr.getSpellInfo(836), false, nullptr);
-    logonspell->prepare(&targets);
+    if (const auto logonSpellInfo = sSpellMgr.getSpellInfo(836))
+    {
+        if (auto logonspell = sSpellMgr.newSpell(this, logonSpellInfo, false, nullptr))
+            logonspell->prepare(&targets);
+    }
 #endif
 
     if (isBanned())

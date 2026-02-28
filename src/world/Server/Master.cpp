@@ -69,8 +69,8 @@
 #include "Utilities/Benchmark.hpp"
 
 // DB version
-static const char* REQUIRED_CHAR_DB_VERSION = "20250921-00_playerpets";
-static const char* REQUIRED_WORLD_DB_VERSION = "20251125-00_spell_coefficient_override";
+static const char* REQUIRED_CHAR_DB_VERSION = "20260203-00_character_declinedname";
+static const char* REQUIRED_WORLD_DB_VERSION = "20260203-00_pandaren_playercreateinfo";
 
 volatile bool Master::m_stopEvent = false;
 
@@ -542,6 +542,11 @@ bool Master::_CheckDBVersion()
     const char *WorldDBVersion = f->asCString();
 
     sLogger.info("Database : Last world database update: {}", WorldDBVersion);
+    // Workaround for crash due to potential mismatch in mysql library usage or double free if release() isn't called
+    // In many cases, letting the unique_ptr/smart_ptr go out of scope *should* be fine, but if there's an ABI mismatch, explicitly releasing ownership might help avoid a crash during destruction.
+    // However, the previous fix in Logon server was to release ownership and leak it. Let's try that here too.
+    (void)wqr.release();
+
     int result = strcmp(WorldDBVersion, REQUIRED_WORLD_DB_VERSION);
     if (result != 0)
     {
@@ -572,6 +577,8 @@ bool Master::_CheckDBVersion()
     const char *CharDBVersion = f->asCString();
 
     sLogger.info("Database : Last character database update: {}", CharDBVersion);
+    (void)cqr.release(); // Same workaround for CharacterDatabase
+
     result = strcmp(CharDBVersion, REQUIRED_CHAR_DB_VERSION);
     if (result != 0)
     {

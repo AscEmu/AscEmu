@@ -41,24 +41,32 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+            sLogger.info("DEBUG: CmsgSetActiveMover deserialise. Size: {}", packet.size());
 #if VERSION_STRING == Cata
-            guid[7] = packet.readBit();
-            guid[2] = packet.readBit();
-            guid[1] = packet.readBit();
-            guid[0] = packet.readBit();
-            guid[4] = packet.readBit();
-            guid[5] = packet.readBit();
-            guid[6] = packet.readBit();
-            guid[3] = packet.readBit();
+            try {
+                guid[7] = packet.readBit();
+                guid[2] = packet.readBit();
+                guid[1] = packet.readBit();
+                guid[0] = packet.readBit();
+                guid[4] = packet.readBit();
+                guid[5] = packet.readBit();
+                guid[6] = packet.readBit();
+                guid[3] = packet.readBit();
 
-            packet.ReadByteSeq(guid[3]);
-            packet.ReadByteSeq(guid[2]);
-            packet.ReadByteSeq(guid[4]);
-            packet.ReadByteSeq(guid[0]);
-            packet.ReadByteSeq(guid[5]);
-            packet.ReadByteSeq(guid[1]);
-            packet.ReadByteSeq(guid[6]);
-            packet.ReadByteSeq(guid[7]);
+                packet.ReadByteSeq(guid[3]);
+                packet.ReadByteSeq(guid[2]);
+                packet.ReadByteSeq(guid[4]);
+                packet.ReadByteSeq(guid[0]);
+                packet.ReadByteSeq(guid[5]);
+                packet.ReadByteSeq(guid[1]);
+                packet.ReadByteSeq(guid[6]);
+                packet.ReadByteSeq(guid[7]);
+                
+                sLogger.info("DEBUG: CmsgSetActiveMover GUID parsed: 0x{:X}", guid.getRawGuid());
+            } catch (...) {
+                sLogger.failure("DEBUG: CmsgSetActiveMover exception");
+                return false;
+            }
 #elif VERSION_STRING == Mop
 
             packet.readBit(); // unk

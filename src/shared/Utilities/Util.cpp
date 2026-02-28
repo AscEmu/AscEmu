@@ -354,14 +354,30 @@ namespace Util
         std::map<uint32_t, std::string> directoryContentMap;
 
         uint32_t count = 0;
-        for (auto& p : std::filesystem::recursive_directory_iterator(pathName))
-        {
-            const std::string filePathName = p.path().string();
+        try {
+            if (!std::filesystem::exists(pathName)) {
+                // If directory doesn't exist, just return empty map
+                return directoryContentMap;
+            }
 
-            if (!specialSuffix.empty())
+            for (auto& p : std::filesystem::recursive_directory_iterator(pathName))
             {
-                if (filePathName.size() >= specialSuffix.size() &&
-                    filePathName.compare(filePathName.size() - specialSuffix.size(), specialSuffix.size(), specialSuffix) == 0)
+                const std::string filePathName = p.path().string();
+
+                if (!specialSuffix.empty())
+                {
+                    if (filePathName.size() >= specialSuffix.size() &&
+                        filePathName.compare(filePathName.size() - specialSuffix.size(), specialSuffix.size(), specialSuffix) == 0)
+                    {
+                        std::string fileName = filePathName;
+                        if (!withPath)
+                            fileName.erase(0, pathName.size());
+
+                        directoryContentMap.emplace(std::pair<uint32_t, std::string>(count, fileName));
+                        ++count;
+                    }
+                }
+                else
                 {
                     std::string fileName = filePathName;
                     if (!withPath)
@@ -371,15 +387,8 @@ namespace Util
                     ++count;
                 }
             }
-            else
-            {
-                std::string fileName = filePathName;
-                if (!withPath)
-                    fileName.erase(0, pathName.size());
-
-                directoryContentMap.emplace(std::pair<uint32_t, std::string>(count, fileName));
-                ++count;
-            }
+        } catch (const std::exception&) {
+            // Prevent crash on filesystem errors
         }
 
         return directoryContentMap;

@@ -196,6 +196,8 @@ class SERVER_DECL WorldSession
         void Disconnect();
 
         uint8_t Update(uint32_t InstanceID);
+        /// Process recv queue once (e.g. from map thread right after sending create packet for MoP).
+        uint8_t ProcessQueuedPackets(uint32_t InstanceID);
 
         void SendNotification(const char* message, ...);
 

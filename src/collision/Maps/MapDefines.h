@@ -23,7 +23,7 @@
 #include "DetourNavMesh.h"
 
 const uint32_t MMAP_MAGIC = 0x4d4d4150; // 'MMAP'
-#define MMAP_VERSION 5
+#define MMAP_VERSION 6
 
 #define NO_WMO_HEIGHT -200000
 

@@ -262,10 +262,10 @@ void WorldSession::handleAuctionPlaceBid(WorldPacket& recvPacket)
     {
         char subject[100];
         snprintf(subject, 100, "%u:0:0", static_cast<int>(auction->auctionItem->getEntry()));
-        sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, auctionHouse->getId(), auction->highestBidderGuid, subject, "", auction->highestBid, 0, 0, MAIL_STATIONERY_AUCTION);
+        sMailSystem.SendAutomatedMessage(MAIL_TYPE_AUCTION, auctionHouse->getId(), auction->highestBidderGuid.getGuidLow(), subject, "", static_cast<uint32_t>(auction->highestBid), 0, 0, MAIL_STATIONERY_AUCTION);
 
         if (auction->highestBidderGuid != _player->getGuid())
-            auctionHouse->sendAuctionOutBidNotificationPacket(auction, _player->getGuid(), srlPacket.price);
+            auctionHouse->sendAuctionOutBidNotificationPacket(auction, _player->getGuidLow(), static_cast<uint32_t>(srlPacket.price));
     }
 
     if (auction->buyoutPrice == srlPacket.price)

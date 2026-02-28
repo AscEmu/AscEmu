@@ -128,7 +128,8 @@ bool LogonConsoleThread::runThread()
         // Make sure our buffer is clean to avoid Array bounds overflow
         memset(cmd, 0, sizeof(cmd));
         // Read in single line from "stdin"
-        fgets(cmd, 80, stdin);
+        if (fgets(cmd, 80, stdin) == nullptr)
+            break;
 
         if (kill)
             break;
@@ -143,7 +144,7 @@ bool LogonConsoleThread::runThread()
     }
 
     sLogonConsole._thread = nullptr;
-    return true;
+    return false;
 }
 ///////////////////////////////////////////////////////////////////////////////
 // Protected methods:

@@ -423,6 +423,20 @@ void ObjectMgr::loadCharacters()
 
         } while (result->NextRow());
     }
+
+    if (auto resultDeclined = CharacterDatabase.Query("SELECT guid, genitive, dative, accusative, instrumental, prepositional FROM character_declinedname"))
+    {
+        do
+        {
+            Field* fields = resultDeclined->Fetch();
+            if (auto* info = getCachedCharacterInfo(fields[0].asUint32()))
+            {
+                for (uint8_t i = 1; i < 6; ++i)
+                    info->declinedNames.push_back(fields[i].asCString());
+            }
+        } while (resultDeclined->NextRow());
+    }
+
     sLogger.info("ObjectMgr : {} players loaded.", static_cast<uint32_t>(m_cachedCharacterInfo.size()));
 }
 

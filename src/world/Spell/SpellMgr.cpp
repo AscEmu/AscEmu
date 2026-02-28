@@ -641,7 +641,7 @@ void SpellMgr::loadSpellInfoData()
         {
             spellInfo->setManaCost(dbcSpellEntry->GetSpellPower()->manaCost);
             spellInfo->setManaCostPerlevel(dbcSpellEntry->GetSpellPower()->manaCostPerlevel);
-            spellInfo->setManaCostPercentage(dbcSpellEntry->GetSpellPower()->ManaCostPercentageFloat);
+            spellInfo->setManaCostPercentage((uint32_t)dbcSpellEntry->GetSpellPower()->ManaCostPercentageFloat);
             spellInfo->setManaPerSecond(dbcSpellEntry->GetSpellPower()->manaPerSecond);
             spellInfo->setManaPerSecondPerLevel(dbcSpellEntry->GetSpellPower()->manaPerSecondPerLevel);
         }

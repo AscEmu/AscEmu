@@ -538,7 +538,7 @@ namespace VMAP
         if (!wf)
             return false;
 
-        bool result = fwrite(VMAP_MAGIC, 1, 8, wf) == 8;
+        bool result = fwrite(AE_VMAP_MAGIC, 1, 8, wf) == 8;
         if (result && fwrite("WMOD", 1, 4, wf) != 4)
             result = false;
         size_t chunkSize = sizeof(uint32_t) + sizeof(uint32_t);
@@ -581,7 +581,7 @@ namespace VMAP
         uint32_t chunkSize = 0;
         uint32_t count = 0;
         char chunk[8];                          // Ignore the added magic header
-        if (!readChunk(rf, chunk, VMAP_MAGIC, 8)) result = false;
+        if (!readChunk(rf, chunk, AE_VMAP_MAGIC, 8)) result = false;
 
         if (result && !readChunk(rf, chunk, "WMOD", 4)) result = false;
         if (result && fread(&chunkSize, sizeof(uint32_t), 1, rf) != 1) result = false;

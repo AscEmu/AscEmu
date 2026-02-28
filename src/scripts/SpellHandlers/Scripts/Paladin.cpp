@@ -620,9 +620,15 @@ public:
             return SpellScriptCheckDummy::DUMMY_OK;
 
         if (apply)
+        {
             aur->getOwner()->addProcTriggerSpell(sSpellMgr.getSpellInfo(SPELL_SEAL_OF_COMMAND_DAMAGE), aur, aur->getCasterGuid());
+        }
         else
+        {
             aur->getOwner()->removeProcTriggerSpell(SPELL_SEAL_OF_COMMAND_DAMAGE, aur->getCasterGuid());
+        }
+
+        return SpellScriptCheckDummy::DUMMY_OK;
     }
 };
 #endif

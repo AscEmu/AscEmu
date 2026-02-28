@@ -198,7 +198,7 @@ uint32_t WDB::Structures::SpellEntry::GetManaCostPercentage() const
 #if VERSION_STRING == Cata
     return power ? power->ManaCostPercentage : 0;
 #else
-    return power ? power->ManaCostPercentageFloat : 0;
+    return power ? (uint32_t)power->ManaCostPercentageFloat : 0;
 #endif
 }
 

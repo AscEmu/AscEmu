@@ -167,7 +167,7 @@ public:
 
     void loadAreaData(FILE* f, TileMapHeader& header);
     void loadHeightData(FILE* f, TileMapHeader& header);
-    void loadLiquidData(FILE* f, TileMapHeader& header);
+    void loadLiquidData(FILE* f, TileMapHeader& header, bool LiquidFormat = false);
     void loadHolesData(FILE* f, TileMapHeader& header);
     bool isHole(int row, int column) const;
 

@@ -23,6 +23,11 @@ void DatabaseUpdater::initBaseIfNeeded(const std::string& dbName, const std::str
         sLogger.info("Database: Your Database {} has no tables. AE is setting up the database for you.", dbName);
         setupDatabase(dbBaseType, dbPointer);
     }
+    else
+    {
+         // INTENTIONAL LEAK to avoid crash in mysql_free_result
+         (void)dbResult.release();
+    }
 
     // save 100% (current queue)
     if (auto const queue = dbPointer.GetQueueSize())
@@ -129,9 +134,18 @@ void DatabaseUpdater::applyUpdatesForDatabase(const std::string& database, Datab
     }
 
     Field* fields = result->Fetch();
+    if (!fields) {
+        return;
+    }
+
     const std::string dbLastUpdate = fields[0].asCString();
 
     sLogger.info("Database {} Version : {}", database, dbLastUpdate);
+    
+    // INTENTIONAL LEAK to avoid crash in mysql_free_result due to DLL version mismatch
+    // The underlying MYSQL_RES and QueryResult object will not be freed.
+    // This is a workaround for the server crash on startup.
+    (void)result.release();
 
     const auto lastUpdateMajor = Util::readMajorVersionFromString(dbLastUpdate);
     const auto lastUpdateMinor = Util::readMinorVersionFromString(dbLastUpdate);
@@ -143,10 +157,12 @@ void DatabaseUpdater::applyUpdatesForDatabase(const std::string& database, Datab
     uint32_t count = 0;
     std::vector<std::string> updateFiles;
 
-    for (auto& p : fs::recursive_directory_iterator(sqlUpdateDir))
-    {
-        const std::string filePathName = p.path().string();
-        updateFiles.push_back(filePathName);
+    if (fs::exists(sqlUpdateDir)) {
+         for (auto& p : fs::recursive_directory_iterator(sqlUpdateDir))
+         {
+             const std::string filePathName = p.path().string();
+             updateFiles.push_back(filePathName);
+         }
     }
 
     // In Windows, recursive_directory_iterator seems to get files sorted but

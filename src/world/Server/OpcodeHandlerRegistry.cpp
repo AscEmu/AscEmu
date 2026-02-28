@@ -49,7 +49,8 @@ bool OpcodeHandlerRegistry::handleOpcode(WorldSession& session, WorldPacket& pac
 
     // Log unhandled opcodes in the new system
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[Session] Unhandled opcode in the new system: Internal ID: 0x{:04X}, Raw Opcode: 0x{:04X}, Name {}", internalId, rawOpcode, opcodeName);
-
+    if (internalId == 1004 || rawOpcode == 0x1061)
+        sLogger.info("WORLD: CMSG_OBJECT_UPDATE_FAILED (0x1061) has no handler / was not dispatched. internalId={}, versionId={}", internalId, sOpcodeTables.getVersionIdForAEVersion());
 
     // No handler found for this internal ID
     return false;

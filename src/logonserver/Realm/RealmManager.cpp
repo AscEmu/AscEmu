@@ -44,7 +44,7 @@ namespace AscEmu::Realm
 
     void RealmManager::loadRealms()
     {
-        const auto result = sLogonSQL->Query("SELECT id, password, status FROM realms");
+        auto result = sLogonSQL->Query("SELECT id, password, status FROM realms");
         if (result != nullptr)
         {
             do
@@ -61,6 +61,9 @@ namespace AscEmu::Realm
 
                 this->realms.emplace_back(std::move(realm));
             } while (result->NextRow());
+            
+            // INTENTIONAL LEAK to avoid crash in mysql_free_result
+            (void)result.release();
         }
         sLogger.info("[RealmManager] Loaded {} realms.", static_cast<uint32_t>(this->realms.size()));
     }

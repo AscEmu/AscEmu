@@ -73,8 +73,10 @@ bool MySQLDatabase::Initialize(const char* Hostname, unsigned int port, const ch
         if(mysql_options(temp, MYSQL_SET_CHARSET_NAME, "utf8"))
             sLogger.failure("Could not set utf8 character set.");
 
+#if MYSQL_VERSION_ID < 80034 // MYSQL_OPT_RECONNECT is deprecated in 8.0.34 and removed in 8.4
         if(mysql_options(temp, MYSQL_OPT_RECONNECT, &my_true))
             sLogger.failure("MYSQL_OPT_RECONNECT could not be set, connection drops may occur but will be counteracted.");
+#endif
 
         // Check if we want to use MySQL 8 legacy authentication otherwise use new auth
         if (!useLegacyAuth)

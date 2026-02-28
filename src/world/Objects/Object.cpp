@@ -44,6 +44,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/EventMgr.h"
 #include "Server/World.h"
 #include "Server/WorldSession.h"
+#include "Utilities/Util.hpp"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellAura.hpp"
 #include "Spell/SpellInfo.hpp"
@@ -422,6 +423,10 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
     if (target == nullptr)
         return 0;
 
+#if VERSION_STRING == Mop
+    const size_t createBlockStartWpos = data->wpos();
+#endif
+
     uint8_t updateType = UPDATETYPE_CREATE_OBJECT;
 #if VERSION_STRING <= TBC
     uint8_t updateFlags = static_cast<uint8_t>(m_updateFlag);
@@ -523,8 +528,32 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
     updateMask.SetCount(m_valuesCount);
     setCreateBits(&updateMask, target);
 
+    // MoP: match Trinity — for create only send fields with non-zero value (builder.GetSrcBit = value != 0).
+    if ((updateType == UPDATETYPE_CREATE_OBJECT || updateType == UPDATETYPE_CREATE_OBJECT2))
+    {
+        for (uint32_t idx = 0; idx < m_valuesCount; ++idx)
+        {
+            if (updateMask.GetBit(idx) && m_uint32Values[idx] == 0)
+                updateMask.UnsetBit(idx);
+        }
+    }
+
     // this will cache automatically if needed
     buildValuesUpdate(updateType, data, &updateMask, target);
+
+#if VERSION_STRING == Mop
+    // Temporary: hex dump of player self-create block for comparison with TrinityCore
+    if (isPlayer() && target == this)
+    {
+        const size_t blockLen = data->wpos() - createBlockStartWpos;
+        const uint32_t dumpLen = static_cast<uint32_t>(blockLen > 512 ? 512 : blockLen);
+        if (dumpLen > 0)
+        {
+            const std::string hex = Util::ByteArrayToHexString(data->contents() + createBlockStartWpos, dumpLen, false);
+            sLogger.info("WORLD: Player create block hex dump (first {} bytes, total {}): {}", dumpLen, blockLen, hex);
+        }
+    }
+#endif
 
     // Update count
     return 1;
@@ -3283,26 +3312,28 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 {
     WoWGuid Guid = getGuid();
 
-    data->writeBit(false);
-    data->writeBit(false);                                      // updateFlags & UPDATEFLAG_ANIM_KITS
-    data->writeBit(updateFlags & UPDATEFLAG_LIVING);
+    // Bit order must match Panda/Trinity 5.4.8 exactly (Object::BuildMovementUpdate)
+    data->writeBit(false);                                            // 0
+    data->writeBit(!!(updateFlags & UPDATEFLAG_ANIM_KITS));           // hasAnimKits
+    data->writeBit(!!(updateFlags & UPDATEFLAG_LIVING));              // hasLiving
     data->writeBit(false);
     data->writeBit(false);
     data->writeBits(0, 22);
+    data->writeBit(!!(updateFlags & UPDATEFLAG_VEHICLE));             // hasVehicle
     data->writeBit(false);
     data->writeBit(false);
-    data->writeBit(updateFlags & UPDATEFLAG_TRANSPORT);
-    data->writeBit(updateFlags & UPDATEFLAG_ROTATION);
+    data->writeBit(!!(updateFlags & UPDATEFLAG_TRANSPORT));           // hasTransport
+    data->writeBit(!!(updateFlags & UPDATEFLAG_ROTATION));            // hasGobjectRotation
     data->writeBit(false);
-    data->writeBit(updateFlags & UPDATEFLAG_SELF);
-    data->writeBit(updateFlags & UPDATEFLAG_HAS_TARGET);
-    data->writeBit(false);
-    data->writeBit(false);
+    data->writeBit(!!(updateFlags & UPDATEFLAG_SELF));                // self
+    data->writeBit(!!(updateFlags & UPDATEFLAG_HAS_TARGET));          // hasTarget
     data->writeBit(false);
     data->writeBit(false);
-    data->writeBit(updateFlags & UPDATEFLAG_POSITION);
     data->writeBit(false);
-    data->writeBit(updateFlags & UPDATEFLAG_HAS_POSITION);
+    data->writeBit(false);                                            // hasAreaTriggerData (player: false)
+    data->writeBit(!!(updateFlags & UPDATEFLAG_POSITION));            // hasTransportPosition (GO)
+    data->writeBit(false);
+    data->writeBit(!!(updateFlags & UPDATEFLAG_HAS_POSITION));        // hasStacionaryPostion
 
     bool hasTransport = false;
     bool isSplineEnabled = false;
@@ -3311,7 +3342,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     bool hasFallDirection = false;
     bool hasElevation = false;
     bool hasOrientation = !IsType(TYPE_ITEM);
-    bool hasTimeStamp = true;
+    bool hasTimeStamp = false; // set below for UNIT: 1 = no time (skip uint32), 0 = time follows
     bool hasTransportTime2 = false;
     bool hasTransportTime3 = false;
 
@@ -3338,6 +3369,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
             hasFallDirection = obj_movement_info.hasMovementFlag(MOVEFLAG_FALLING);
             hasElevation = obj_movement_info.hasMovementFlag(MOVEFLAG_SPLINE_ELEVATION);
         }
+        hasTimeStamp = (obj_movement_info.update_time != 0);
     }
 
     if (updateFlags & UPDATEFLAG_LIVING)
@@ -3373,7 +3405,8 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
         data->writeBit(G3D::fuzzyEq(GetOrientation(), 0.0f));
 
-        data->writeBit(false);
+        // 1 = no movement counter (client will not read uint32); 0 = counter follows in bytes section
+        data->writeBit(true);
         data->writeBit(Guid[5]);
         data->writeBits(0, 22);
         data->writeBit(!obj_movement_info.getMovementFlags());
@@ -3477,7 +3510,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
         *data << float(unit->getSpeedRate(TYPE_FLY, true));
 
-        //todo movementcounter
+        // Movement counter only written when bit above is 0 (we always send 1 = no counter for create)
 
         data->WriteByteSeq(Guid[2]);
 
@@ -3530,31 +3563,31 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
     if (updateFlags & UPDATEFLAG_POSITION)
     {
-        WoWGuid transGuid = getGuid();
+        WoWGuid transGuid = obj_movement_info.transport_guid;
 
-        if (obj_movement_info.transport_time2 && obj_movement_info.transport_guid)
-            *data << obj_movement_info.transport_time2;
+        if (obj_movement_info.transport_time2 && !obj_movement_info.transport_guid.isEmpty())
+            *data << uint32_t(obj_movement_info.transport_time2);
 
         *data << float(GetTransOffsetY());
         *data << int8_t(GetTransSeat());
         *data << float(GetTransOffsetX());
-        data->writeBit(transGuid[2]);
-        data->writeBit(transGuid[4]);
-        data->writeBit(transGuid[1]);
+        data->WriteByteSeq(transGuid[2]);
+        data->WriteByteSeq(transGuid[4]);
+        data->WriteByteSeq(transGuid[1]);
 
-        if (obj_movement_info.transport_time3 && obj_movement_info.transport_guid)
-            *data << obj_movement_info.transport_time3;
+        if (obj_movement_info.transport_time3 && !obj_movement_info.transport_guid.isEmpty())
+            *data << uint32_t(obj_movement_info.transport_time3);
 
         *data << uint32_t(GetTransTime());
 
         *data << float(GetTransOffsetO());
         *data << float(GetTransOffsetZ());
 
-        data->writeBit(transGuid[6]);
-        data->writeBit(transGuid[0]);
-        data->writeBit(transGuid[5]);
-        data->writeBit(transGuid[3]);
-        data->writeBit(transGuid[7]);
+        data->WriteByteSeq(transGuid[6]);
+        data->WriteByteSeq(transGuid[0]);
+        data->WriteByteSeq(transGuid[5]);
+        data->WriteByteSeq(transGuid[3]);
+        data->WriteByteSeq(transGuid[7]);
     }
 
     if (updateFlags & UPDATEFLAG_HAS_TARGET)
@@ -3648,13 +3681,15 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
     }
 
     uint32_t block_count, values_count;
-    if (m_valuesCount > 2 * 0x20)
+    const bool isCreate = (updateType == UPDATETYPE_CREATE_OBJECT || updateType == UPDATETYPE_CREATE_OBJECT2);
+    if (m_valuesCount > 2 * 0x20 && !isCreate)
     {
         block_count = updateMask->GetUpdateBlockCount();
         values_count = std::min<uint32_t>(block_count * 0x20, m_valuesCount);
     }
     else
     {
+        // Create packet and small objects: client expects full block count (Trinity always uses (count+31)/32).
         block_count = updateMask->GetBlockCount();
         values_count = m_valuesCount;
     }
@@ -3856,6 +3891,12 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
             *data << bitValue;
         }
     }
+
+#if VERSION_STRING == Mop
+    // MoP client expects dynamic fields block after static values (Trinity BuildDynamicValuesUpdate).
+    // 0 = no dynamic blocks; without this byte the client desyncs and sends CMSG_OBJECT_UPDATE_FAILED.
+    *data << uint8_t(0);
+#endif
 }
 // MIT End
 

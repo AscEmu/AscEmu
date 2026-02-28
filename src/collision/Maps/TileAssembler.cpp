@@ -138,7 +138,7 @@ namespace VMAP
             }
 
             //general info
-            if (success && fwrite(VMAP_MAGIC, 1, 8, mapfile) != 8)
+            if (success && fwrite(AE_VMAP_MAGIC, 1, 8, mapfile) != 8)
             {
                 success = false;
             }
@@ -198,7 +198,7 @@ namespace VMAP
                 if (FILE* tilefile = fopen(tilefilename.str().c_str(), "wb"))
                 {
                     // file header
-                    if (success && fwrite(VMAP_MAGIC, 1, 8, tilefile) != 8)
+                    if (success && fwrite(AE_VMAP_MAGIC, 1, 8, tilefile) != 8)
                     {
                         success = false;
                     }
@@ -623,7 +623,7 @@ namespace VMAP
         // Function fread does not terminate string ident
         READ_OR_RETURN(&ident, 8);
 
-        CMP_OR_RETURN(ident, RAW_VMAP_MAGIC);
+        CMP_OR_RETURN(ident, AE_RAW_VMAP_MAGIC);
 
         // we have to read one int. This is needed during the export and we have to skip it here
         uint32_t tempNVectors;

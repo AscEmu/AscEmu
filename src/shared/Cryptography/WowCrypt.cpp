@@ -8,6 +8,38 @@ This file is released under the MIT license. See README-MIT for more information
 #include <algorithm>
 #include <cassert>
 #include <openssl/hmac.h>
+#include <openssl/opensslv.h>
+
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
+#include <openssl/evp.h>
+#include <openssl/params.h>
+#include <openssl/core_names.h>
+
+void HmacCompat(const EVP_MD* evp_md, const void* key, int key_len,
+                const unsigned char* d, size_t n, unsigned char* md,
+                unsigned int* md_len)
+{
+    EVP_MAC* mac = EVP_MAC_fetch(NULL, "HMAC", NULL);
+    EVP_MAC_CTX* ctx = EVP_MAC_CTX_new(mac);
+
+    const char* digest_name = EVP_MD_get0_name(evp_md);
+    OSSL_PARAM params[2];
+    params[0] = OSSL_PARAM_construct_utf8_string("digest", (char*)digest_name, 0);
+    params[1] = OSSL_PARAM_construct_end();
+
+    EVP_MAC_init(ctx, (const unsigned char*)key, key_len, params);
+    EVP_MAC_update(ctx, d, n);
+
+    size_t out_l = 0;
+    EVP_MAC_final(ctx, md, &out_l, EVP_MD_size(evp_md));
+    if (md_len) *md_len = (unsigned int)out_l;
+
+    EVP_MAC_CTX_free(ctx);
+    EVP_MAC_free(mac);
+}
+#else
+#define HmacCompat HMAC
+#endif
 
 #include "Sha1.hpp"
 
@@ -44,10 +76,10 @@ void WowCrypt::initWotlkCrypt(uint8_t* key)
     uint8_t pass[1024] = { 0 };
     uint32_t mdLength;
 
-    HMAC(EVP_sha1(), send, seedLenght, key, 40, decryptHash, &mdLength);
+    HmacCompat(EVP_sha1(), send, seedLenght, key, 40, decryptHash, &mdLength);
     assert(mdLength == SHA_DIGEST_LENGTH);
 
-    HMAC(EVP_sha1(), recv, seedLenght, key, 40, encryptHash, &mdLength);
+    HmacCompat(EVP_sha1(), recv, seedLenght, key, 40, encryptHash, &mdLength);
     assert(mdLength == SHA_DIGEST_LENGTH);
 
     m_clientWotlkDecrypt.setup(decryptHash, SHA_DIGEST_LENGTH);
@@ -70,10 +102,10 @@ void WowCrypt::initMopCrypt(uint8_t* key)
     uint8_t pass[1024] = { 0 };
     uint32_t mdLength;
 
-    HMAC(EVP_sha1(), send, seedLenght, key, 40, decryptHash, &mdLength);
+    HmacCompat(EVP_sha1(), send, seedLenght, key, 40, decryptHash, &mdLength);
     assert(mdLength == SHA_DIGEST_LENGTH);
 
-    HMAC(EVP_sha1(), recv, seedLenght, key, 40, encryptHash, &mdLength);
+    HmacCompat(EVP_sha1(), recv, seedLenght, key, 40, encryptHash, &mdLength);
     assert(mdLength == SHA_DIGEST_LENGTH);
 
     m_clientWotlkDecrypt.setup(decryptHash, SHA_DIGEST_LENGTH);

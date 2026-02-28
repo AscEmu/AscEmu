@@ -104,6 +104,7 @@ void LogonCommHandler::loadAccountPermissions()
     auto result = CharacterDatabase.Query("SELECT id, permissions FROM account_permissions");
     if (result != nullptr)
     {
+        mapLock.acquire();
         do
         {
             uint32_t id = result->Fetch()[0].asUint32();
@@ -114,6 +115,7 @@ void LogonCommHandler::loadAccountPermissions()
             accountPermissionsStore.insert(make_pair(id, dbPermission));
 
         } while (result->NextRow());
+        mapLock.release();
     }
 }
 
@@ -235,12 +237,14 @@ void LogonCommHandler::addRealmToRealmlist(LogonCommClientSocket* Socket)
 
 void LogonCommHandler::setAccountPermission(uint32_t acct, std::string perm)
 {
+    mapLock.acquire();
     AccountPermissionMap::iterator itr = accountPermissionsStore.find(acct);
     if (itr != accountPermissionsStore.end())
         accountPermissionsStore.erase(acct);
 
     sLogger.info("LogonCommClient : Permission set to {} for account {}", perm, acct);
     accountPermissionsStore.insert(make_pair(acct, perm));
+    mapLock.release();
 }
 
 void LogonCommHandler::removeAccountPermission(uint32_t acct)
@@ -250,11 +254,13 @@ void LogonCommHandler::removeAccountPermission(uint32_t acct)
 
 std::string LogonCommHandler::getPermissionStringForAccountId(uint32_t username)
 {
+    mapLock.acquire();
     std::string permission = "";
     AccountPermissionMap::iterator itr = accountPermissionsStore.find(username);
     if (itr != accountPermissionsStore.end())
         permission = itr->second;
 
+    mapLock.release();
     return permission;
 }
 

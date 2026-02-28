@@ -437,12 +437,14 @@ void ScriptMgr::LoadScripts()
     {
         std::stringstream loadMessageStream;
         auto fileName = modulePath + content.second;
+
         auto dynLib = std::make_unique<Arcemu::DynLib>(fileName.c_str());
 
         loadMessageStream << dynLib->GetName() << " : ";
 
         if (!dynLib->Load())
         {
+            sLogger.failure("Failed to load library: {}. GetLastError: {}", fileName, GetLastError()); // Standard windows error
             loadMessageStream << "ERROR: Cannot open library.";
             sLogger.failure(loadMessageStream.str());
             continue;
@@ -493,10 +495,16 @@ void ScriptMgr::LoadScripts()
         }
         else
         {
-            registerCall(this);
-            dynamiclibs.push_back(std::move(dynLib));
-
-            loadMessageStream << "loaded";
+            // Check if registerCall is valid before calling
+            if (registerCall) {
+                registerCall(this);
+                dynamiclibs.push_back(std::move(dynLib));
+                loadMessageStream << "loaded";
+            } else {
+                loadMessageStream << "ERROR: Invalid register call!";
+                sLogger.failure(loadMessageStream.str());
+                continue;
+            }
         }
         sLogger.info(loadMessageStream.str());
 

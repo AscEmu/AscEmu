@@ -93,12 +93,21 @@ public:
     uint32_t getInternalIdForHex(uint16_t hex)
     {
         auto versionId = getVersionIdForAEVersion();
+        uint32_t firstMatch = 0;
 
         for (const auto table : _versionHexTable[versionId])
-            if (table.hexValue == hex)
+        {
+            if (table.hexValue != hex)
+                continue;
+            if (firstMatch == 0)
+                firstMatch = table.internalId;
+            // For incoming client packets, prefer CMSG over SMSG when hex collides (e.g. MoP 0x1061 = CLEAR_TARGET + OBJECT_UPDATE_FAILED)
+            auto it = multiversionOpcodeStore.find(table.internalId);
+            if (it != multiversionOpcodeStore.end() && it->second.name.size() >= 4 &&
+                it->second.name[0] == 'C' && it->second.name[1] == 'M' && it->second.name[2] == 'S' && it->second.name[3] == 'G')
                 return table.internalId;
-
-        return 0;
+        }
+        return firstMatch;
     }
 
     std::string getNameForOpcode(uint16_t hex)
