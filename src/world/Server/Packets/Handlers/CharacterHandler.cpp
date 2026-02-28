@@ -603,27 +603,6 @@ void WorldSession::fullLogin(Player* player)
     SetPlayer(player);
     m_MoverWoWGuid.init(player->getGuid());
 
-#if VERSION_STRING == Mop
-    // Send SMSG_LOGIN_VERIFY_WORLD - Critical for MoP login to proceed past loading screen
-    SendPacket(SmsgLoginVerifyWorld(player->GetMapId(), { player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetOrientation() }).serialise().get());
-    sLogger.debug("Sent SMSG_LOGIN_VERIFY_WORLD for player {}", player->getName());
-
-    // Send SMSG_PVP_SEASON
-    WorldPacket pvpSeason(SMSG_PVP_SEASON, 8);
-    pvpSeason << uint32_t(0); // Previous Season
-    pvpSeason << uint32_t(1); // Current Season
-    SendPacket(&pvpSeason);
-    sLogger.debug("Sent SMSG_PVP_SEASON for player {}", player->getName());
-
-    // Send SMSG_ACCOUNT_DATA_TIMES - Essential for loading screen to finish
-    sendAccountDataTimes(PER_CHARACTER_CACHE_MASK);
-
-    // Send SMSG_UI_TIME - Required for TimeManager and other addons that use server time
-    WorldPacket uiTime(SMSG_UI_TIME, 4);
-    uiTime << uint32_t(time(nullptr));
-    SendPacket(&uiTime);
-#endif
-
     //////////////////////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -813,7 +792,7 @@ void WorldSession::handleSetPlayerDeclinedNamesOpcode(WorldPacket& recvPacket)
 
 void WorldSession::characterEnumProc(QueryResult* result)
 {
-    sLogger.info("DEBUG: characterEnumProc called. Result: {}", result ? "Yes" : "No");
+    sLogger.debug("DEBUG: characterEnumProc called. Result: {}", result ? "Yes" : "No");
     std::vector<CharEnumData> enumData;
 
 #if VERSION_STRING > TBC
@@ -979,14 +958,14 @@ void WorldSession::characterEnumProc(QueryResult* result)
         } while (result->NextRow());
     }
 
-    sLogger.debug("Character Enum Built in {} ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
-    sLogger.info("DEBUG: Sending SmsgEnumCharactersResult with {} chars", charRealCount);
+    sLogger.info("Character Enum Built in {} ms.", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
+    sLogger.debug("DEBUG: Sending SmsgEnumCharactersResult with {} chars", charRealCount);
     SendPacket(SmsgEnumCharactersResult(charRealCount, enumData).serialise().get());
 }
 
 void WorldSession::handleCharEnumOpcode(WorldPacket& /*recvPacket*/)
 {
-    sLogger.info("DEBUG: handleCharEnumOpcode called");
+    sLogger.debug("DEBUG: handleCharEnumOpcode called");
     auto asyncQuery = std::make_unique<AsyncQuery>(std::make_unique<SQLClassCallbackP1<World, uint32_t>>(&sWorld,
         &World::sendCharacterEnumToAccountSession, GetAccountId()));
 

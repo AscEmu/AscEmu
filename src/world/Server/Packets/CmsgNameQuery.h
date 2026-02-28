@@ -39,13 +39,19 @@ namespace AscEmu::Packets
             uint8_t guidBytes[8] = {0};
 
             for (int i = 0; i < 8; ++i)
+            {
                 if (mask[i])
                     packet >> guidBytes[i];
-#endif
-            uint64_t fullGuid;
+            }
+
+            uint64_t fullGuid = 0;
             memcpy(&fullGuid, guidBytes, 8);
             guid.init(fullGuid);
-
+#else
+            uint64_t fullGuid;
+            packet >> fullGuid;
+            guid.init(fullGuid);
+#endif
             return true;
         }
 

@@ -542,7 +542,6 @@ uint32_t Object::buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* targe
     buildValuesUpdate(updateType, data, &updateMask, target);
 
 #if VERSION_STRING == Mop
-    // Temporary: hex dump of player self-create block for comparison with TrinityCore
     if (isPlayer() && target == this)
     {
         const size_t blockLen = data->wpos() - createBlockStartWpos;

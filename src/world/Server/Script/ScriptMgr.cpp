@@ -444,7 +444,9 @@ void ScriptMgr::LoadScripts()
 
         if (!dynLib->Load())
         {
+#ifdef WIN32
             sLogger.failure("Failed to load library: {}. GetLastError: {}", fileName, GetLastError()); // Standard windows error
+#endif
             loadMessageStream << "ERROR: Cannot open library.";
             sLogger.failure(loadMessageStream.str());
             continue;

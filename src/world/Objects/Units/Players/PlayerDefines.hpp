@@ -951,7 +951,7 @@ static const uint32_t ClassRaceCombinations[ClassRaceCombinationsCount][3] =
 
 inline uint32_t getAEVersion()
 {
-    return static_cast<uint32_t>(BUILD_VERSION);
+    return BUILD_VERSION;
 }
 
 inline bool isClassRaceCombinationPossible(uint8_t _class, uint8_t _race)

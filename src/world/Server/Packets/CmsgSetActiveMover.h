@@ -41,7 +41,7 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            sLogger.info("DEBUG: CmsgSetActiveMover deserialise. Size: {}", packet.size());
+            sLogger.debug("DEBUG: CmsgSetActiveMover deserialise. Size: {}", packet.size());
 #if VERSION_STRING == Cata
             try {
                 guid[7] = packet.readBit();
@@ -62,7 +62,7 @@ namespace AscEmu::Packets
                 packet.ReadByteSeq(guid[6]);
                 packet.ReadByteSeq(guid[7]);
                 
-                sLogger.info("DEBUG: CmsgSetActiveMover GUID parsed: 0x{:X}", guid.getRawGuid());
+                sLogger.debug("DEBUG: CmsgSetActiveMover GUID parsed: 0x{:X}", guid.getRawGuid());
             } catch (...) {
                 sLogger.failure("DEBUG: CmsgSetActiveMover exception");
                 return false;

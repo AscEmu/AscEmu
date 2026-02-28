@@ -5,9 +5,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <cstdint>
 #include <unordered_map>
 #include <functional>
 #include <optional>
+#include <string>
 #include "WorldPacket.h"
 #include "OpcodeTable.hpp"
 
@@ -89,6 +91,7 @@ public:
 
     // Handles the incoming packet using the internal ID
     bool handleOpcode(WorldSession& session, WorldPacket& packet);
+    static void logUnhandledOpcode(uint16_t rawOpcode, uint32_t internalId, const std::string& name);
 
 private:
     std::unordered_map<uint32_t, OpcodeEntry> opcodeHandlers;  // Map of internal IDs to handler functions and states
