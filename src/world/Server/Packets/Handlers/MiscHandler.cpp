@@ -1641,29 +1641,7 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
         recvPacket.ReadByteSeq(guids[i][2]);
         recvPacket.ReadByteSeq(guids[i][3]);
 
-        switch (type)
-        {
-            /*case DB2_REPLY_ITEM:
-                sendItemDb2Reply(entry);
-                break;
-            case DB2_REPLY_SPARSE:
-                sendItemSparseDb2Reply(entry);
-                break;*/
-            default:
-                sLogger.debug("Received unknown hotfix type {}", type);
-                //recvPacket.clear();
-                break;
-        }
-
-        /*
-        WorldPacket data(SMSG_DB_REPLY, 16);
-        data << uint32_t(entry);
-        data << uint32_t(time(NULL));
-        data << uint32_t(type);
-        data << uint32_t(0);
-
-        SendPacket(&data);
-        */
+        sLogger.debug("Received unknown hotfix type {}", type);
     }
 #endif
 #endif
