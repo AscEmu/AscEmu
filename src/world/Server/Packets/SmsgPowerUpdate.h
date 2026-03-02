@@ -51,6 +51,8 @@ namespace AscEmu::Packets
 
             packet.writeBits(1, 21);
 
+            packet.flushBits();
+
             packet.WriteByteSeq(guid[7]);
             packet.WriteByteSeq(guid[0]);
             packet.WriteByteSeq(guid[5]);

@@ -41,6 +41,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/OpcodeTable.hpp"
 #include "Server/World.h"
 #include "Server/WorldSessionLog.hpp"
+#include "Server/Packets/SmsgLoginVerifyWorld.h"
 #include "Server/Script/HookInterface.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Server/Script/ScriptMgr.hpp"
@@ -594,12 +595,22 @@ void WorldSession::sendServerStats()
 
 void WorldSession::fullLogin(Player* player)
 {
-    sLogger.debug("WorldSession : Fully loading player {}", player->getGuidLow());
+    sLogger.debug("WorldSession : Fully loading player {} ({})", player->getName(), player->getGuidLow());
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // basic setup
     SetPlayer(player);
     m_MoverWoWGuid.init(player->getGuid());
+
+#if VERSION_STRING == Mop
+    // Send SMSG_ACCOUNT_DATA_TIMES - Essential for loading screen to finish
+    sendAccountDataTimes(PER_CHARACTER_CACHE_MASK);
+
+    // Send SMSG_UI_TIME - Required for TimeManager and other addons that use server time
+    WorldPacket uiTime(SMSG_UI_TIME, 4);
+    uiTime << static_cast<uint32_t>(time(nullptr));
+    SendPacket(&uiTime);
+#endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -762,9 +773,25 @@ void WorldSession::handleSetPlayerDeclinedNamesOpcode(WorldPacket& recvPacket)
 {
     CmsgSetPlayerDeclinedNames srlPacket;
     if (!srlPacket.deserialise(recvPacket))
+    {
+        sLogger.debug("CMSG_SET_PLAYER_DECLINED_NAMES: deserialise failed (packet size %u)", static_cast<unsigned>(recvPacket.size()));
         return;
+    }
+
+    if (srlPacket.declinedNames.size() != 5)
+    {
+        sLogger.debug("CMSG_SET_PLAYER_DECLINED_NAMES: expected 5 declined names, got %u", static_cast<unsigned>(srlPacket.declinedNames.size()));
+        return;
+    }
 
     //\todo check utf8 and cyrillic chars
+    CharacterDatabase.Execute("REPLACE INTO character_declinedname (guid, genitive, dative, accusative, instrumental, prepositional) VALUES (%u, '%s', '%s', '%s', '%s', '%s')",
+        WoWGuid::getGuidLowPartFromUInt64(srlPacket.guid),
+        CharacterDatabase.EscapeString(srlPacket.declinedNames[0]).c_str(),
+        CharacterDatabase.EscapeString(srlPacket.declinedNames[1]).c_str(),
+        CharacterDatabase.EscapeString(srlPacket.declinedNames[2]).c_str(),
+        CharacterDatabase.EscapeString(srlPacket.declinedNames[3]).c_str(),
+        CharacterDatabase.EscapeString(srlPacket.declinedNames[4]).c_str());
     const uint32_t error = 0;     // 0 = success, 1 = error
 
     SendPacket(SmsgSetPlayerDeclinedNamesResult(error, srlPacket.guid).serialise().get());
@@ -772,6 +799,7 @@ void WorldSession::handleSetPlayerDeclinedNamesOpcode(WorldPacket& recvPacket)
 
 void WorldSession::characterEnumProc(QueryResult* result)
 {
+    sLogger.info("DEBUG: characterEnumProc called. Result: {}", result ? "Yes" : "No");
     std::vector<CharEnumData> enumData;
 
 #if VERSION_STRING > TBC
@@ -796,10 +824,12 @@ void WorldSession::characterEnumProc(QueryResult* result)
             charEnum.race = fields[2].asUint8();
             charEnum.Class = fields[3].asUint8();
 
-            if (!isClassRaceCombinationPossible(charEnum.Class, charEnum.race))
+            if (!isClassRaceCombinationPossible(static_cast<Classes>(charEnum.Class), static_cast<Races>(charEnum.race)))
             {
                 sLogger.debug("Class {} and race {} is not a valid combination for Version {} - skipped",
-                    charEnum.Class, charEnum.race, VERSION_STRING);
+                    static_cast<uint32_t>(charEnum.Class),
+                    static_cast<uint32_t>(charEnum.race),
+                    VERSION_STRING);
                 continue;
             }
 
@@ -943,6 +973,7 @@ void WorldSession::characterEnumProc(QueryResult* result)
 
 void WorldSession::handleCharEnumOpcode(WorldPacket& /*recvPacket*/)
 {
+    sLogger.info("DEBUG: handleCharEnumOpcode called");
     auto asyncQuery = std::make_unique<AsyncQuery>(std::make_unique<SQLClassCallbackP1<World, uint32_t>>(&sWorld,
         &World::sendCharacterEnumToAccountSession, GetAccountId()));
 

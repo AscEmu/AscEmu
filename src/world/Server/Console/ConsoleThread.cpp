@@ -34,7 +34,8 @@ bool ConsoleThread::runThread()
     while (mStopConsoleThread != true)
     {
         std::string cmdInputText;
-        std::getline(std::cin, cmdInputText);
+        if (!std::getline(std::cin, cmdInputText))
+            break;
 
         if (cmdInputText.empty())
             continue;

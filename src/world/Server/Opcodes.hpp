@@ -3513,5 +3513,5 @@ static std::map<uint32_t, MultiversionOpcodeTable> multiversionOpcodeStore =
 {SMSG_LOAD_EQUIPMENT_SET, {0x18, "SMSG_LOAD_EQUIPMENT_SET", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x18E2/*Mop*/}}},
 {SMSG_BATTLE_PET_JOURNAL, {0x18, "SMSG_BATTLE_PET_JOURNAL", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x1542/*Mop*/}}},
 {SMSG_BATTLE_PET_JOURNAL_LOCK_ACQUIRED, {0x18, "SMSG_BATTLE_PET_JOURNAL_LOCK_ACQUIRED", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x1A0F/*Mop*/}}},
-{SMSG_REALM_NAME_QUERY_RESPONSE, {0x1F, "SMSG_REALM_NAME_QUERY_RESPONSE", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x063E/*Mop*/}}},
+{SMSG_REALM_NAME_QUERY_RESPONSE, {0x1F, "SMSG_REALM_NAME_QUERY_RESPONSE", OpcodeDevelopmentState::Unchecked, {0,/*Classic*/ 0,/*BC*/ 0,/*WotLK*/ 0,/*Cata*/ 0x063E/*Mop*/}}}
 };

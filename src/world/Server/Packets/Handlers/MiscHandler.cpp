@@ -289,6 +289,39 @@ void WorldSession::handleTutorialReset(WorldPacket& /*recvPacket*/)
 
 void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)
 {
+#if VERSION_STRING == Mop
+    sLogger.info("DEBUG: handleLogoutRequestOpcode called (MoP)");
+    bool instantLogout = _player->m_isResting || _player->isOnTaxi() ||
+        (hasPermissions() && worldConfig.player.enableInstantLogoutForAccessType > 0);
+
+    uint32_t reason = 0;
+    if (_player->getCombatHandler().isInCombat() && !_player->m_isResting)
+        reason = 1; // combat
+    else if (_player->IsFalling())
+        reason = 3; // falling
+    else if (_player->m_duelPlayer != nullptr)
+        reason = 2; // duel
+
+    if (!sHookInterface.OnLogoutRequest(_player))
+        reason = 1;
+
+    SendPacket(SmsgLogoutResponse(reason, instantLogout).serialise().get());
+
+    if (reason)
+        return;
+
+    if (instantLogout)
+    {
+        LogoutPlayer(true);
+        return;
+    }
+
+    _player->setMoveRoot(true);
+    LoggingOut = true;
+    _player->addUnitFlags(UNIT_FLAG_LOCK_PLAYER);
+    _player->setStandState(STANDSTATE_SIT);
+    SetLogoutTimer(PLAYER_LOGOUT_DELAY);
+#else
     if (!sHookInterface.OnLogoutRequest(_player))
     {
         SendPacket(SmsgLogoutResponse(true).serialise().get());
@@ -329,6 +362,7 @@ void WorldSession::handleLogoutRequestOpcode(WorldPacket& /*recvPacket*/)
     _player->setStandState(STANDSTATE_SIT);
 
     SetLogoutTimer(PLAYER_LOGOUT_DELAY);
+#endif
 }
 
 void WorldSession::handleSetSheathedOpcode(WorldPacket& recvPacket)
@@ -1123,13 +1157,20 @@ void WorldSession::handleLogoutCancelOpcode(WorldPacket& /*recvPacket*/)
     sLogger.debug("Sent SMSG_LOGOUT_CANCEL_ACK");
 }
 
-void WorldSession::handlePlayerLogoutOpcode(WorldPacket& /*recvPacket*/)
+void WorldSession::handlePlayerLogoutOpcode(WorldPacket& recvPacket)
 {
+#if VERSION_STRING == Mop
+    // MoP client sends 0x1349 (CMSG_LOGOUT_REQUEST); if it is mapped as CMSG_PLAYER_LOGOUT (internal 75), handle as logout request
+    sLogger.info("DEBUG: handlePlayerLogoutOpcode called (MoP) - delegating to handleLogoutRequestOpcode");
+    handleLogoutRequestOpcode(recvPacket);
+    return;
+#else
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_PLAYER_LOGOUT");
     if (!HasGMPermissions())
         SendNotification("You do not have permission to perform that function.");
     else
         LogoutPlayer(true);
+#endif
 }
 
 void WorldSession::handleCorpseReclaimOpcode(WorldPacket& recvPacket)
@@ -1204,7 +1245,54 @@ void WorldSession::handleTimeSyncRespOpcode(WorldPacket& recvPacket)
 
 void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
 {
+    sLogger.info("WORLD: handleObjectUpdateFailedOpcode ENTERED size={}", static_cast<unsigned>(recvPacket.size()));
 #if VERSION_STRING >= Cata
+    // Cata/MoP: 8 bits + 8 bytes for GUID. If packet is smaller (e.g. MoP sends 1–3 bytes),
+   // treat as "our" object failed; for MoP resend create + SetActiveMover so client can finish loading.
+   // Don't require isEnteringWorld() — by the time we process the packet it may already be false.
+    const size_t minSizeForGuid = 9u;
+    if (recvPacket.size() < minSizeForGuid)
+    {
+        Player* target = _player != nullptr ? _player : m_loggingInPlayer;
+        sLogger.info("WORLD: CMSG_OBJECT_UPDATE_FAILED small packet size {}, _player={}, target={}", static_cast<unsigned>(recvPacket.size()), _player != nullptr ? "set" : "null", target != nullptr ? "set" : "null");
+#if VERSION_STRING == Mop
+        if (target != nullptr)
+        {
+            // size==2 may be packed GUID (1 byte mask + 1 byte): client reports which object failed.
+            if (recvPacket.size() >= 2u)
+            {
+                uint8_t mask = recvPacket.read<uint8_t>();
+                uint8_t field = recvPacket.read<uint8_t>();
+                WoWGuid failedGuid;
+                failedGuid.init(mask, &field);
+                if (failedGuid == target->getGuid())
+                {
+                    sLogger.info("WORLD: MoP resend create+active mover for {}", target->getName());
+                    target->resendCreateAndActiveMoverForMoP();
+                }
+                else if (Item* item = target->getItemInterface()->GetItemByGUID(failedGuid.getRawGuid()))
+                {
+                    ByteBuffer buf(2500);
+                    uint32_t count = item->buildCreateUpdateBlockForPlayer(&buf, target);
+                    target->getUpdateMgr().pushCreationData(&buf, count);
+                    target->processPendingUpdates();
+                    sLogger.debug("WORLD: MoP resend create for item guid {}", failedGuid.getRawGuid());
+                }
+                else
+                {
+                    sLogger.debug("WORLD: MoP OBJECT_UPDATE_FAILED size=2 guid {} not player and not found as item, resend player create", failedGuid.getRawGuid());
+                    target->resendCreateAndActiveMoverForMoP();
+                }
+            }
+            else
+            {
+                sLogger.info("WORLD: MoP resend create+active mover for {}", target->getName());
+                target->resendCreateAndActiveMoverForMoP();
+            }
+        }
+#endif
+        return;
+    }
     WoWGuid guid;
 
 #if VERSION_STRING == Cata
@@ -1252,6 +1340,12 @@ void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
 
     if (_player->getGuid() == guid)
     {
+        // Do not disconnect during world enter: client may send this transiently before full load.
+        if (_player->isEnteringWorld())
+        {
+            sLogger.debug("handleObjectUpdateFailedOpcode : ignored for player entering world");
+            return;
+        }
         LogoutPlayer(true);
         return;
     }
@@ -1557,10 +1651,11 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
                 break;*/
             default:
                 sLogger.debug("Received unknown hotfix type {}", type);
-                recvPacket.clear();
+                //recvPacket.clear();
                 break;
         }
 
+        /*
         WorldPacket data(SMSG_DB_REPLY, 16);
         data << uint32_t(entry);
         data << uint32_t(time(NULL));
@@ -1568,6 +1663,7 @@ void WorldSession::handleRequestHotfix(WorldPacket& recvPacket)
         data << uint32_t(0);
 
         SendPacket(&data);
+        */
     }
 #endif
 #endif
@@ -2226,21 +2322,17 @@ void WorldSession::sendAddonInfo()
     {
         if (!itr.usePublicKeyOrCRC)
         {
-            size_t pos = data.wpos();
             for (int i = 0; i < 256; i++)
-                data << uint8_t(0);
-
-            for (int i = 0; i < 256; i++)
-                data.put(pos + publicKeyOrder[i], PublicKey[i]);
+                data << PublicKey[publicKeyOrder[i]];
         }
 
         if (itr.enabled)
         {
-            data << uint8_t(itr.enabled);
-            data << uint64_t(0); // sch: normal value - uint32_t
+            data << itr.enabled;
+            data << static_cast<uint32_t>(0);
         }
 
-        data << uint8_t(itr.state);
+        data << itr.state;
     }
 
     m_addonList.clear();

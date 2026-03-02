@@ -827,110 +827,158 @@ struct CharEnumData
     PlayerItem player_items[DBC_PLAYER_ITEMS];
 };
 
+
+struct ClassRaceCombination {
+    Classes charClass;
+    Races charRace;
+    uint32_t minAeVersion;
+};
+
 // table taken from https://wow.gamepedia.com/Class
-static const uint32_t ClassRaceCombinations[91][3] =
-{
-    //WARRIOR
-    {1, 1, 4044},
-    {1, 2, 4044},
-    {1, 3, 4044},
-    {1, 4, 4044},
-    {1, 5, 4044},
-    {1, 6, 4044},
-    {1, 7, 4044},
-    {1, 8, 4044},
-    {1, 9, 13164},
-    {1, 10, 13164},
-    {1, 11, 6080},
-    {1, 22, 13164},
-    //PALADIN
-    {2, 1, 4044},
-    {2, 3, 4044},
-    {2, 6, 13164},
-    {2, 10, 6080},
-    {2, 11, 6080},
-    //HUNTER
-    {3, 1, 13164},
-    {3, 2, 4044},
-    {3, 3, 4044},
-    {3, 4, 4044},
-    {3, 5, 13164},
-    {3, 6, 4044},
-    {3, 8, 4044},
-    {3, 9, 13164},
-    {3, 10, 6080},
-    {3, 11, 6080},
-    {3, 22, 13164},
-    //ROGUE
-    {4, 1, 4044},
-    {4, 2, 4044},
-    {4, 3, 4044},
-    {4, 4, 4044},
-    {4, 5, 4044},
-    {4, 7, 4044},
-    {4, 8, 4044},
-    {4, 9, 13164},
-    {4, 10, 6080},
-    {4, 22, 13164},
-    //PRIEST
-    {5, 1, 4044},
-    {5, 3, 4044},
-    {5, 4, 4044},
-    {5, 5, 4044},
-    {5, 6, 13164},
-    {5, 7, 13164},
-    {5, 8, 4044},
-    {5, 9, 13164},
-    {5, 10, 6080},
-    {5, 11, 6080},
-    {5, 22, 13164},
-    //DEATHKNIGHT
-    {6, 1, 9056},
-    {6, 2, 9056},
-    {6, 3, 9056},
-    {6, 4, 9056},
-    {6, 5, 9056},
-    {6, 6, 9056},
-    {6, 7, 9056},
-    {6, 8, 9056},
-    {6, 9, 13164},
-    {6, 10, 9056},
-    {6, 11, 9056},
-    {6, 22, 13164},
-    //SHAMAN
-    {7, 2, 4044},
-    {7, 3, 13164},
-    {7, 6, 4044},
-    {7, 8, 4044},
-    {7, 9, 13164},
-    {7, 11, 6080},
-    //MAGE
-    {8, 1, 4044},
-    {8, 2, 13164},
-    {8, 3, 13164},
-    {8, 4, 13164},
-    {8, 5, 4044},
-    {8, 7, 4044},
-    {8, 8, 4044},
-    {8, 9, 13164},
-    {8, 10, 6080},
-    {8, 11, 6080},
-    {8, 22, 13164},
-    //WARLOCK
-    {9, 1, 4044},
-    {9, 2, 4044},
-    {9, 3, 13164},
-    {9, 5, 4044},
-    {9, 7, 4044},
-    {9, 8, 13164},
-    {9, 9, 13164},
-    {9, 10, 6080},
-    {9, 22, 13164},
-    //DRUID
-    {11, 4, 4044},
-    {11, 6, 4044},
-    {11, 8, 13164},
-    {11, 22, 13164},
+constexpr ClassRaceCombination ClassRaceCombinations[] = {
+    // WARRIOR
+    {WARRIOR, RACE_HUMAN, Classic},
+    {WARRIOR, RACE_ORC, Classic},
+    {WARRIOR, RACE_DWARF, Classic},
+    {WARRIOR, RACE_NIGHTELF, Classic},
+    {WARRIOR, RACE_UNDEAD, Classic},
+    {WARRIOR, RACE_TAUREN, Classic},
+    {WARRIOR, RACE_GNOME, Classic},
+    {WARRIOR, RACE_TROLL, Classic},
+    {WARRIOR, RACE_GOBLIN, Cata},
+    {WARRIOR, RACE_BLOODELF, Cata},
+    {WARRIOR, RACE_DRAENEI, TBC},
+    {WARRIOR, RACE_WORGEN, Cata},
+    {WARRIOR, RACE_PANDAREN_NEUTRAL, Mop},
+    {WARRIOR, RACE_PANDAREN_ALLIANCE, Mop},
+    {WARRIOR, RACE_PANDAREN_HORDE, Mop},
+
+    // PALADIN
+    {PALADIN, RACE_HUMAN, Classic},
+    {PALADIN, RACE_DWARF, Classic},
+    {PALADIN, RACE_TAUREN, Cata},
+    {PALADIN, RACE_BLOODELF, TBC},
+    {PALADIN, RACE_DRAENEI, TBC},
+
+    // HUNTER
+    {HUNTER, RACE_HUMAN, Cata},
+    {HUNTER, RACE_ORC, Classic},
+    {HUNTER, RACE_DWARF, Classic},
+    {HUNTER, RACE_NIGHTELF, Classic},
+    {HUNTER, RACE_UNDEAD, Cata},
+    {HUNTER, RACE_TAUREN, Classic},
+    {HUNTER, RACE_TROLL, Classic},
+    {HUNTER, RACE_GOBLIN, Cata},
+    {HUNTER, RACE_BLOODELF, TBC},
+    {HUNTER, RACE_DRAENEI, TBC},
+    {HUNTER, RACE_WORGEN, Cata},
+    {HUNTER, RACE_PANDAREN_NEUTRAL, Mop},
+    {HUNTER, RACE_PANDAREN_ALLIANCE, Mop},
+    {HUNTER, RACE_PANDAREN_HORDE, Mop},
+
+    // ROGUE
+    {ROGUE, RACE_HUMAN, Classic},
+    {ROGUE, RACE_ORC, Classic},
+    {ROGUE, RACE_DWARF, Classic},
+    {ROGUE, RACE_NIGHTELF, Classic},
+    {ROGUE, RACE_UNDEAD, Classic},
+    {ROGUE, RACE_GNOME, Classic},
+    {ROGUE, RACE_TROLL, Classic},
+    {ROGUE, RACE_GOBLIN, Cata},
+    {ROGUE, RACE_BLOODELF, TBC},
+    {ROGUE, RACE_WORGEN, Cata},
+    {ROGUE, RACE_PANDAREN_NEUTRAL, Mop},
+    {ROGUE, RACE_PANDAREN_ALLIANCE, Mop},
+    {ROGUE, RACE_PANDAREN_HORDE, Mop},
+
+    // PRIEST
+    {PRIEST, RACE_HUMAN, Classic},
+    {PRIEST, RACE_DWARF, Classic},
+    {PRIEST, RACE_NIGHTELF, Classic},
+    {PRIEST, RACE_UNDEAD, Classic},
+    {PRIEST, RACE_TAUREN, Cata},
+    {PRIEST, RACE_GNOME, Cata},
+    {PRIEST, RACE_TROLL, Classic},
+    {PRIEST, RACE_GOBLIN, Cata},
+    {PRIEST, RACE_BLOODELF, TBC},
+    {PRIEST, RACE_DRAENEI, TBC},
+    {PRIEST, RACE_WORGEN, Cata},
+    {PRIEST, RACE_PANDAREN_NEUTRAL, Mop},
+    {PRIEST, RACE_PANDAREN_ALLIANCE, Mop},
+    {PRIEST, RACE_PANDAREN_HORDE, Mop},
+
+    // DEATHKNIGHT
+    {DEATHKNIGHT, RACE_HUMAN, WotLK},
+    {DEATHKNIGHT, RACE_ORC, WotLK},
+    {DEATHKNIGHT, RACE_DWARF, WotLK},
+    {DEATHKNIGHT, RACE_NIGHTELF, WotLK},
+    {DEATHKNIGHT, RACE_UNDEAD, WotLK},
+    {DEATHKNIGHT, RACE_TAUREN, WotLK},
+    {DEATHKNIGHT, RACE_GNOME, WotLK},
+    {DEATHKNIGHT, RACE_TROLL, WotLK},
+    {DEATHKNIGHT, RACE_GOBLIN, Cata},
+    {DEATHKNIGHT, RACE_BLOODELF, WotLK},
+    {DEATHKNIGHT, RACE_DRAENEI, WotLK},
+    {DEATHKNIGHT, RACE_WORGEN, Cata},
+
+    // SHAMAN
+    {SHAMAN, RACE_ORC, Classic},
+    {SHAMAN, RACE_DWARF, Cata},
+    {SHAMAN, RACE_TAUREN, Classic},
+    {SHAMAN, RACE_TROLL, Classic},
+    {SHAMAN, RACE_GOBLIN, Cata},
+    {SHAMAN, RACE_DRAENEI, TBC},
+    {SHAMAN, RACE_PANDAREN_NEUTRAL, Mop},
+    {SHAMAN, RACE_PANDAREN_ALLIANCE, Mop},
+    {SHAMAN, RACE_PANDAREN_HORDE, Mop},
+
+    // MAGE
+    {MAGE, RACE_HUMAN, Classic},
+    {MAGE, RACE_ORC, Cata},
+    {MAGE, RACE_DWARF, Cata},
+    {MAGE, RACE_NIGHTELF, Cata},
+    {MAGE, RACE_UNDEAD, Classic},
+    {MAGE, RACE_GNOME, Classic},
+    {MAGE, RACE_TROLL, Classic},
+    {MAGE, RACE_GOBLIN, Cata},
+    {MAGE, RACE_BLOODELF, TBC},
+    {MAGE, RACE_DRAENEI, TBC},
+    {MAGE, RACE_WORGEN, Cata},
+    {MAGE, RACE_PANDAREN_NEUTRAL, Mop},
+    {MAGE, RACE_PANDAREN_ALLIANCE, Mop},
+    {MAGE, RACE_PANDAREN_HORDE, Mop},
+
+    // WARLOCK
+    {WARLOCK, RACE_HUMAN, Classic},
+    {WARLOCK, RACE_ORC, Classic},
+    {WARLOCK, RACE_DWARF, Cata},
+    {WARLOCK, RACE_UNDEAD, Classic},
+    {WARLOCK, RACE_GNOME, Classic},
+    {WARLOCK, RACE_TROLL, Cata},
+    {WARLOCK, RACE_GOBLIN, Cata},
+    {WARLOCK, RACE_BLOODELF, TBC},
+    {WARLOCK, RACE_WORGEN, Cata},
+
+    // MONK
+    {MONK, RACE_HUMAN, Mop},
+    {MONK, RACE_ORC, Mop},
+    {MONK, RACE_DWARF, Mop},
+    {MONK, RACE_NIGHTELF, Mop},
+    {MONK, RACE_UNDEAD, Mop},
+    {MONK, RACE_TAUREN, Mop},
+    {MONK, RACE_GNOME, Mop},
+    {MONK, RACE_TROLL, Mop},
+    {MONK, RACE_BLOODELF, Mop},
+    {MONK, RACE_DRAENEI, Mop},
+    {MONK, RACE_PANDAREN_NEUTRAL, Mop},
+    {MONK, RACE_PANDAREN_ALLIANCE, Mop},
+    {MONK, RACE_PANDAREN_HORDE, Mop},
+
+    // DRUID
+    {DRUID, RACE_NIGHTELF, Classic},
+    {DRUID, RACE_TAUREN, Classic},
+    {DRUID, RACE_TROLL, Cata},
+    {DRUID, RACE_WORGEN, Cata}
 };
 
 inline uint32_t getAEVersion()
@@ -938,9 +986,10 @@ inline uint32_t getAEVersion()
     return static_cast<uint32_t>(BUILD_VERSION);
 }
 
+/*
 inline bool isClassRaceCombinationPossible(uint8_t _class, uint8_t _race)
 {
-    for (uint8_t i = 0; i < 91; ++i)
+    for (uint8_t i = 0; i < 122; ++i)
     {
         if (ClassRaceCombinations[i][0] == _class && ClassRaceCombinations[i][1] == _race)
         {
@@ -950,6 +999,16 @@ inline bool isClassRaceCombinationPossible(uint8_t _class, uint8_t _race)
     }
 
     return false;
+}
+*/
+
+[[nodiscard]] inline bool isClassRaceCombinationPossible(Classes _class, Races _race)
+{
+    return std::ranges::any_of(ClassRaceCombinations, [=](const auto& combo) {
+        return combo.charClass == _class &&
+            combo.charRace == _race &&
+            combo.minAeVersion <= getAEVersion();
+        });
 }
 
 static inline uint8_t getSideByRace(uint8_t race)
@@ -962,7 +1021,11 @@ static inline uint8_t getSideByRace(uint8_t race)
         case RACE_GNOME:
         case RACE_DRAENEI:
         case RACE_WORGEN:
+        case RACE_PANDAREN_ALLIANCE:
             return TEAM_ALLIANCE;
+        case RACE_PANDAREN_NEUTRAL:
+            return 255; // TODO : Add to enum
+        case RACE_PANDAREN_HORDE:
         default:
             return TEAM_HORDE;
     }
@@ -1086,6 +1149,7 @@ public:
 
     uint32_t m_guild = 0;
     uint32_t guildRank = 0;
+    std::vector<std::string> declinedNames;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
