@@ -11,7 +11,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Skill.hpp"
 #include "CommonTypes.hpp"
 
+#include <algorithm>
 #include <array>
+#include <cstdint>
 #include <ctime>
 #include <string>
 #include <map>
@@ -21,6 +23,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <unordered_set>
 #include <list>
 #include <memory>
+#include <vector>
 
 #include "Utilities/utf8String.hpp"
 
@@ -983,24 +986,8 @@ constexpr ClassRaceCombination ClassRaceCombinations[] = {
 
 inline uint32_t getAEVersion()
 {
-    return static_cast<uint32_t>(BUILD_VERSION);
+    return BUILD_VERSION;
 }
-
-/*
-inline bool isClassRaceCombinationPossible(uint8_t _class, uint8_t _race)
-{
-    for (uint8_t i = 0; i < 122; ++i)
-    {
-        if (ClassRaceCombinations[i][0] == _class && ClassRaceCombinations[i][1] == _race)
-        {
-            if (ClassRaceCombinations[i][2] < getAEVersion())
-                return true;
-        }
-    }
-
-    return false;
-}
-*/
 
 [[nodiscard]] inline bool isClassRaceCombinationPossible(Classes _class, Races _race)
 {
