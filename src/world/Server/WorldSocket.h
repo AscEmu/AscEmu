@@ -122,6 +122,9 @@ private:
     std::unique_ptr<std::string> m_fullAccountName;
 
     ByteBuffer mAddonInfoBuffer;
+#if VERSION_STRING >= Cata
+    bool m_HandshakeReceived;
+#endif
 };
 
 static inline void FastGUIDPack(ByteBuffer & buf, const uint64_t & oldguid)

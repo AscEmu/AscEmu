@@ -15,16 +15,15 @@ namespace AscEmu::Packets
     {
     public:
         uint64_t guid;
-        std::string name;
+        std::vector<std::string> declinedNames;
 
-        CmsgSetPlayerDeclinedNames() : CmsgSetPlayerDeclinedNames(0, "")
+        CmsgSetPlayerDeclinedNames() : CmsgSetPlayerDeclinedNames(0)
         {
         }
 
-        CmsgSetPlayerDeclinedNames(uint64_t guid, std::string name) :
+        CmsgSetPlayerDeclinedNames(uint64_t guid) :
             ManagedPacket(CMSG_SET_PLAYER_DECLINED_NAMES, 8),
-            guid(guid),
-            name(name)
+            guid(guid)
         {
         }
 
@@ -35,8 +34,46 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> guid >> name;
+            declinedNames.clear();
+#if VERSION_STRING == Mop
+            WoWGuid unpackedGuid;
+            unpackedGuid[0] = packet.readBit();
+            unpackedGuid[2] = packet.readBit();
+            unpackedGuid[1] = packet.readBit();
+            unpackedGuid[7] = packet.readBit();
+            unpackedGuid[5] = packet.readBit();
+            unpackedGuid[6] = packet.readBit();
+            unpackedGuid[4] = packet.readBit();
+            unpackedGuid[3] = packet.readBit();
+
+            uint32_t nameLength[5];
+            for (int i = 0; i < 5; ++i)
+                nameLength[i] = packet.readBits(7);
+
+            for (int i = 0; i < 5; ++i)
+                declinedNames.push_back(nameLength[i] ? packet.ReadString(nameLength[i]) : std::string());
+
+            packet.ReadByteSeq(unpackedGuid[0]);
+            packet.ReadByteSeq(unpackedGuid[7]);
+            packet.ReadByteSeq(unpackedGuid[3]);
+            packet.ReadByteSeq(unpackedGuid[6]);
+            packet.ReadByteSeq(unpackedGuid[4]);
+            packet.ReadByteSeq(unpackedGuid[2]);
+            packet.ReadByteSeq(unpackedGuid[1]);
+            packet.ReadByteSeq(unpackedGuid[5]);
+
+            guid = unpackedGuid.getRawGuid();
             return true;
+#else
+            packet >> guid;
+            for (int i = 0; i < 5; ++i)
+            {
+                std::string name;
+                packet >> name;
+                declinedNames.push_back(name);
+            }
+            return true;
+#endif
         }
     };
 }

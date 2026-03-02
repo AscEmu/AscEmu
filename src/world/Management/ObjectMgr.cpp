@@ -423,6 +423,19 @@ void ObjectMgr::loadCharacters()
 
         } while (result->NextRow());
     }
+
+    if (auto resultDeclined = CharacterDatabase.Query("SELECT guid, genitive, dative, accusative, instrumental, prepositional FROM character_declinedname"))
+    {
+        do
+        {
+            Field* fields = resultDeclined->Fetch();
+            if (auto* info = getCachedCharacterInfo(fields[0].asUint32()))
+            {
+                for (uint8_t i = 1; i < 6; ++i)
+                    info->declinedNames.push_back(fields[i].asCString());
+            }
+        } while (resultDeclined->NextRow());
+    }
     sLogger.info("ObjectMgr : {} players loaded.", static_cast<uint32_t>(m_cachedCharacterInfo.size()));
 }
 
@@ -2153,9 +2166,9 @@ void ObjectMgr::generateLevelUpInfo()
 {
     struct MissingLevelData
     {
-        uint32_t _level;
-        uint8_t _race;
-        uint8_t _class;
+        uint32_t _level{0};
+        uint8_t _race{};
+        uint8_t _class{};
     };
 
     std::vector<MissingLevelData> _missingHealthLevelData;
@@ -2163,16 +2176,20 @@ void ObjectMgr::generateLevelUpInfo()
 
     uint32_t levelstat_counter = 0;
     uint32_t class_levelstat_counter = 0;
-    for (uint8_t playerClass = WARRIOR; playerClass < MAX_PLAYER_CLASSES; ++playerClass)
+
+    for (uint8_t currentClass = WARRIOR; currentClass < MAX_PLAYER_CLASSES; ++currentClass)
     {
-        for (uint8_t playerRace = RACE_HUMAN; playerRace < DBC_NUM_RACES; ++playerRace)
+        auto playerClass = static_cast<Classes>(currentClass);
+        for (uint8_t currentRace = RACE_HUMAN; currentRace < DBC_NUM_RACES; ++currentRace)
         {
+            auto playerRace = static_cast<Races>(currentRace);
             if (!isClassRaceCombinationPossible(playerClass, playerRace))
             {
-                if (sMySQLStore.getPlayerLevelstats(1, playerRace, playerClass))
+                if (sMySQLStore.getPlayerLevelstats(1, currentRace, currentClass))
                 {
-                    sLogger.info("ObjectMgr : Invalid class/race combination! {} class and {} race.", uint32_t(playerClass), uint32_t(playerRace));
-                    sLogger.info("ObjectMgr : But class/race values for level 1 in db!");
+                    sLogger.info("ObjectMgr : Invalid class/race combination (Class: {}, Race: {}), but level 1 values exist in DB!",
+                        static_cast<uint32_t>(playerClass),
+                        static_cast<uint32_t>(playerRace));
                 }
                 continue;
             }
@@ -2195,7 +2212,7 @@ void ObjectMgr::generateLevelUpInfo()
                 {
                     levelInfo->HP = 0;
                     levelInfo->Mana = 0;
-                    _missingHealthLevelData.push_back({ level, playerRace, playerClass });
+                    _missingHealthLevelData.push_back({ level, currentRace, currentClass });
                 }
 
                 if (auto* playerLevelstats = sMySQLStore.getPlayerLevelstats(level, playerRace, playerClass))
@@ -2212,7 +2229,7 @@ void ObjectMgr::generateLevelUpInfo()
                     for (unsigned int& id : levelInfo->Stat)
                         id = 0;
 
-                    _missingStatLevelData.push_back({ level, playerRace, playerClass });
+                    _missingStatLevelData.push_back({ level, currentRace, currentClass });
                 }
             }
         }

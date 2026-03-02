@@ -34,16 +34,42 @@ void WorldSession::handleNameQueryOpcode(WorldPacket& recvData)
     CmsgNameQuery srlPacket;
     if (!srlPacket.deserialise(recvData))
     {
+        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Failed to deserialize CMSG_NAME_QUERY.");
         Disconnect();
         return;
     }
 
-    const auto info = sObjectMgr.getCachedCharacterInfo(srlPacket.guid.getGuidLow());
-    if (!info)
-        return;
+    SmsgQueryPlayerNameResponse response;
+    response.guid = srlPacket.guid;
 
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_NAME_QUERY for: {}", info->name);
-    SendPacket(SmsgQueryPlayernameResponse(srlPacket.guid, info->name, info->race, info->gender, info->cl).serialise().get());
+    if (const auto info = sObjectMgr.getCachedCharacterInfo(srlPacket.guid.getGuidLow()))
+    {
+        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_NAME_QUERY for: {}", info->name);
+
+        response.hasData = true;
+        response.player_name = info->name;
+        response.race = info->race;
+        response.gender = info->gender;
+        response.class_ = info->cl;
+        response.level = static_cast<uint8_t>(info->lastLevel);
+
+        response.realmId = 0;
+        response.accountId = GetAccountId();
+
+        // Falls euer Cache 'declinedNames' hat:
+        // response.hasDeclinedNames = true;
+        // response.declinedNames = info->declinedNames;
+    }
+    else
+    {
+        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "CMSG_NAME_QUERY for unknown GUID: {}", srlPacket.guid.getGuidLow());
+        response.hasData = false;
+    }
+
+    if (auto responsePacket = response.serialise())
+    {
+        SendPacket(responsePacket.get());
+    }
 }
 
 void WorldSession::handleGameObjectQueryOpcode(WorldPacket& recvData)

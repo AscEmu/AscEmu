@@ -41,6 +41,7 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+            sLogger.info("DEBUG: CmsgSetActiveMover deserialise. Size: {}", packet.size());
 #if VERSION_STRING == Cata
             guid[7] = packet.readBit();
             guid[2] = packet.readBit();

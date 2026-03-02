@@ -47,9 +47,28 @@ bool OpcodeHandlerRegistry::handleOpcode(WorldSession& session, WorldPacket& pac
         }
     }
 
-    // Log unhandled opcodes in the new system
-    sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "[Session] Unhandled opcode in the new system: Internal ID: 0x{:04X}, Raw Opcode: 0x{:04X}, Name {}", internalId, rawOpcode, opcodeName);
+    // TODO: Implement the opcode handler for the unhandled opcodes instead of ignoring them. For now, ignore some opcodes that are expected to be unhandled or have no handler in the new system to reduce log spam.
+    bool ignoreLog = false;
+    switch (rawOpcode)
+    {
+    case 0x0000: // CMSG_BOOTME
+    case 0x0040: // CMSG_VIOLENCE_LEVEL
+    case 0x0150: // CMSG_MOVE_TIME_SKIPPED
+    case 0x03F6: // CMSG_REQUEST_PLAYED_TIME
+    case 0x15A9: // CMSG_VOICE_SESSION_ENABLE
+    case 0x15AB: // CMSG_WORLD_STATE_UI_TIMER_UPDATE
+        ignoreLog = true;
+        break;
+    default:
+        ignoreLog = false;
+        break;
+    }
 
+    if (!ignoreLog)
+    {
+        // Log unhandled opcodes in the new system
+        sLogger.warning("[Session] Unhandled opcode: Internal ID : 0x{:04X}, Raw Opcode : 0x{:04X}, Name{}", internalId, rawOpcode, opcodeName);
+    }
 
     // No handler found for this internal ID
     return false;
