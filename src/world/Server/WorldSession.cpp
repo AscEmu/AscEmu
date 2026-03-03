@@ -1189,7 +1189,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_COMPLAIN, &WorldSession::handleReportSpamOpcode, true, false, true, false, false);
     registry.registerOpcode(CMSG_GAMEOBJ_REPORT_USE, &WorldSession::handleGameobjReportUseOpCode, false, false, true, true, false);
     registry.registerOpcode(CMSG_PET_CAST_SPELL, &WorldSession::handlePetCastSpell, true, true, true, true, false);
-    registry.registerOpcode<STATUS_AUTHED>(CMSG_WORLD_STATE_UI_TIMER_UPDATE, &WorldSession::handleWorldStateUITimerUpdate, false, false, true, true, false);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_WORLD_STATE_UI_TIMER_UPDATE, &WorldSession::handleWorldStateUITimerUpdate, false, false, true, true, true);
     registry.registerOpcode(CMSG_SET_TAXI_BENCHMARK_MODE, &WorldSession::handleSetTaxiBenchmarkOpcode, true, false, true, true, false);
     registry.registerOpcode(CMSG_UNLEARN_SKILL, &WorldSession::handleUnlearnSkillOpcode, true, true, true, true, false);
 

@@ -601,17 +601,6 @@ void WorldSession::fullLogin(Player* player)
     // basic setup
     SetPlayer(player);
     m_MoverWoWGuid.init(player->getGuid());
-
-#if VERSION_STRING == Mop
-    // Send SMSG_ACCOUNT_DATA_TIMES - Essential for loading screen to finish
-    sendAccountDataTimes(PER_CHARACTER_CACHE_MASK);
-
-    // Send SMSG_UI_TIME - Required for TimeManager and other addons that use server time
-    WorldPacket uiTime(SMSG_UI_TIME, 4);
-    uiTime << static_cast<uint32_t>(time(nullptr));
-    SendPacket(&uiTime);
-#endif
-
     //////////////////////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////////////
