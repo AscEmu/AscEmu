@@ -42,6 +42,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/OpcodeTable.hpp"
 #include "Server/World.h"
 #include "Server/WorldSessionLog.hpp"
+#include "Server/Packets/SmsgLoginVerifyWorld.h"
 #include "Server/Script/HookInterface.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Server/Script/ScriptMgr.hpp"
@@ -817,10 +818,12 @@ void WorldSession::characterEnumProc(QueryResult* result)
             charEnum.race = fields[2].asUint8();
             charEnum.Class = fields[3].asUint8();
 
-            if (!isClassRaceCombinationPossible(charEnum.Class, charEnum.race))
+            if (!isClassRaceCombinationPossible(static_cast<Classes>(charEnum.Class), static_cast<Races>(charEnum.race)))
             {
                 sLogger.debug("Class {} and race {} is not a valid combination for Version {} - skipped",
-                    charEnum.Class, charEnum.race, VERSION_STRING);
+                    static_cast<uint32_t>(charEnum.Class),
+                    static_cast<uint32_t>(charEnum.race),
+                    VERSION_STRING);
                 continue;
             }
 

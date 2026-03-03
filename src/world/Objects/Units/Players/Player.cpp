@@ -9256,33 +9256,16 @@ bool Player::logOntoTransport()
 
 void Player::setLoginPosition()
 {
-    bool startOnGMIsland = false;
     if (m_session->HasGMPermissions() && m_firstLogin && sWorld.settings.gm.isStartOnGmIslandEnabled)
-        startOnGMIsland = true;
-
-    uint32_t mapId = 1;
-    float orientation = 0;
-    float position_x = 16222.6f;
-    float position_y = 16265.9f;
-    float position_z = 14.2085f;
-
-    if (startOnGMIsland)
     {
-        m_position.ChangeCoords({ position_x, position_y, position_z, orientation });
-        m_mapId = mapId;
+        // Set position to GM Island for GMs logging in for the first time if enabled in config
+        m_mapId = 1;
+        m_position.ChangeCoords({ 16222.6f, 16265.9f, 14.2085f, 0.0f });
 
         setBindPoint(GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation(), GetMapId(), getZoneId());
     }
-    else
-    {
-        mapId = GetMapId();
-        orientation = GetOrientation();
-        position_x = GetPositionX();
-        position_y = GetPositionY();
-        position_z = GetPositionZ();
-    }
 
-    sendLoginVerifyWorldPacket(mapId, position_x, position_y, position_z, orientation);
+    sendLoginVerifyWorldPacket();
 }
 
 void Player::setPlayerInfoIfNeeded()
@@ -9494,9 +9477,9 @@ void Player::sendSpellModifierPacket(uint8_t spellType, std::vector<std::pair<ui
 }
 #endif
 
-void Player::sendLoginVerifyWorldPacket(uint32_t mapId, float posX, float posY, float posZ, float orientation)
+void Player::sendLoginVerifyWorldPacket()
 {
-    m_session->SendPacket(SmsgLoginVerifyWorld(mapId, LocationVector(posX, posY, posZ, orientation)).serialise().get());
+    m_session->SendPacket(SmsgLoginVerifyWorld(this).serialise().get());
 }
 
 void Player::sendMountResultPacket(uint32_t result)
@@ -13340,8 +13323,8 @@ void Player::resendCreateAndActiveMoverForMoP()
     ++m_objectUpdateFailedResendCount;
 
     sLogger.info("WORLD: resending LOGIN_VERIFY_WORLD + SetActiveMover + create for {} (attempt {}/{})", getName(), m_objectUpdateFailedResendCount, kMaxObjectUpdateFailedResends);
-    // MoP: send in order client may expect — verify world first, then mover, then create (mirrors panda-core flow).
-    sendLoginVerifyWorldPacket(GetMapId(), GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
+    // MoP: send in order client may expect - verify world first, then mover, then create (mirrors panda-core flow).
+    sendLoginVerifyWorldPacket();
 
     WoWGuid guid = getGuid();
     WorldPacket data(SMSG_MOVE_SET_ACTIVE_MOVER, 9);

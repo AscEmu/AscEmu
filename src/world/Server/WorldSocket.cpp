@@ -536,8 +536,6 @@ void WorldSocket::_HandleAuthSession(std::unique_ptr<WorldPacket> recvPacket)
         recvPacket->readBit();
         uint32_t accountNameLength = recvPacket->readBits(12);
 
-        sLogger.debug("DEBUG: UseIPv6: {}, Account Length: {}", useIPv6, accountNameLength);
-
         account = recvPacket->ReadString(accountNameLength);
         sLogger.debug("DEBUG: Parsed Account: '{}'", account);
     }

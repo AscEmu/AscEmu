@@ -1854,7 +1854,7 @@ public:
 #else
     void sendSpellModifierPacket(uint8_t spellType, std::vector<std::pair<uint8_t, float>> modValues, bool isPct);
 #endif
-    void sendLoginVerifyWorldPacket(uint32_t mapId, float posX, float posY, float posZ, float orientation);
+    void sendLoginVerifyWorldPacket();
     void sendMountResultPacket(uint32_t result);
     void sendDismountResultPacket(uint32_t result);
 

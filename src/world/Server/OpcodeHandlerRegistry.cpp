@@ -52,9 +52,7 @@ bool OpcodeHandlerRegistry::handleOpcode(WorldSession& session, WorldPacket& pac
 
 void OpcodeHandlerRegistry::logUnhandledOpcode(uint16_t rawOpcode, uint32_t internalId, const std::string& name)
 {
-    static const std::set<uint16_t> ignoredOpcodes = {
-        0x0000, 0x0040, 0x0150, 0x03F6, 0x15A9, 0x15AB
-    };
+    static const std::set<uint16_t> ignoredOpcodes = { 0x0000, 0x0040, 0x0150, 0x03F6, 0x15A9, 0x15AB };
 
     if (ignoredOpcodes.contains(rawOpcode))
         return;

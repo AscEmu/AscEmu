@@ -214,6 +214,7 @@ uint8_t WorldSession::ProcessQueuedPackets(uint32_t InstanceID)
 {
     if (InstanceID != instanceId)
         return 2;
+
     uint32_t processed = 0;
     sLogger.info("WORLD: ProcessQueuedPackets called (InstanceID={}, instanceId={})", InstanceID, instanceId);
     while (auto packet = _recvQueue.pop())

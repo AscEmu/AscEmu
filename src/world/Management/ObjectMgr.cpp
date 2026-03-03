@@ -2154,9 +2154,9 @@ void ObjectMgr::generateLevelUpInfo()
 {
     struct MissingLevelData
     {
-        uint32_t _level;
-        uint8_t _race;
-        uint8_t _class;
+        uint32_t _level{ 0 };
+        uint8_t _race{};
+        uint8_t _class{};
     };
 
     std::vector<MissingLevelData> _missingHealthLevelData;
@@ -2164,16 +2164,20 @@ void ObjectMgr::generateLevelUpInfo()
 
     uint32_t levelstat_counter = 0;
     uint32_t class_levelstat_counter = 0;
-    for (uint8_t playerClass = WARRIOR; playerClass < MAX_PLAYER_CLASSES; ++playerClass)
+
+    for (uint8_t currentClass = WARRIOR; currentClass < MAX_PLAYER_CLASSES; ++currentClass)
     {
-        for (uint8_t playerRace = RACE_HUMAN; playerRace < DBC_NUM_RACES; ++playerRace)
+        auto playerClass = static_cast<Classes>(currentClass);
+        for (uint8_t currentRace = RACE_HUMAN; currentRace < DBC_NUM_RACES; ++currentRace)
         {
+            auto playerRace = static_cast<Races>(currentRace);
             if (!isClassRaceCombinationPossible(playerClass, playerRace))
             {
-                if (sMySQLStore.getPlayerLevelstats(1, playerRace, playerClass))
+                if (sMySQLStore.getPlayerLevelstats(1, currentRace, currentClass))
                 {
-                    sLogger.info("ObjectMgr : Invalid class/race combination! {} class and {} race.", uint32_t(playerClass), uint32_t(playerRace));
-                    sLogger.info("ObjectMgr : But class/race values for level 1 in db!");
+                    sLogger.info("ObjectMgr : Invalid class/race combination (Class: {}, Race: {}), but level 1 values exist in DB!",
+                        static_cast<uint32_t>(playerClass),
+                        static_cast<uint32_t>(playerRace));
                 }
                 continue;
             }
@@ -2196,7 +2200,7 @@ void ObjectMgr::generateLevelUpInfo()
                 {
                     levelInfo->HP = 0;
                     levelInfo->Mana = 0;
-                    _missingHealthLevelData.push_back({ level, playerRace, playerClass });
+                    _missingHealthLevelData.push_back({ level, currentRace, currentClass });
                 }
 
                 if (auto* playerLevelstats = sMySQLStore.getPlayerLevelstats(level, playerRace, playerClass))
@@ -2213,7 +2217,7 @@ void ObjectMgr::generateLevelUpInfo()
                     for (unsigned int& id : levelInfo->Stat)
                         id = 0;
 
-                    _missingStatLevelData.push_back({ level, playerRace, playerClass });
+                    _missingStatLevelData.push_back({ level, currentRace, currentClass });
                 }
             }
         }
@@ -2231,89 +2235,89 @@ void ObjectMgr::generateLevelUpInfo()
         // use legacy gaining
         switch (missingHP._class)
         {
-            case WARRIOR:
-                if (missingHP._level < 13) TotalHealthGain += 19;
-                else if (missingHP._level < 36) TotalHealthGain += missingHP._level + 6;
-                else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 206;
-                else TotalHealthGain += 2 * missingHP._level - 30;
-                break;
-            case HUNTER:
-                if (missingHP._level < 13) TotalHealthGain += 17;
-                else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 161;
-                else TotalHealthGain += missingHP._level + 4;
+        case WARRIOR:
+            if (missingHP._level < 13) TotalHealthGain += 19;
+            else if (missingHP._level < 36) TotalHealthGain += missingHP._level + 6;
+            else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 206;
+            else TotalHealthGain += 2 * missingHP._level - 30;
+            break;
+        case HUNTER:
+            if (missingHP._level < 13) TotalHealthGain += 17;
+            else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 161;
+            else TotalHealthGain += missingHP._level + 4;
 
-                if (missingHP._level < 11) TotalManaGain += 29;
-                else if (missingHP._level < 27) TotalManaGain += missingHP._level + 18;
-                else if (missingHP._level > 60) TotalManaGain += missingHP._level + 150;
-                else TotalManaGain += 45;
-                break;
-            case ROGUE:
-                if (missingHP._level < 15) TotalHealthGain += 17;
-                else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 191;
-                else TotalHealthGain += missingHP._level + 2;
-                break;
-            case DRUID:
-                if (missingHP._level < 17) TotalHealthGain += 17;
-                else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 176;
-                else TotalHealthGain += missingHP._level;
+            if (missingHP._level < 11) TotalManaGain += 29;
+            else if (missingHP._level < 27) TotalManaGain += missingHP._level + 18;
+            else if (missingHP._level > 60) TotalManaGain += missingHP._level + 150;
+            else TotalManaGain += 45;
+            break;
+        case ROGUE:
+            if (missingHP._level < 15) TotalHealthGain += 17;
+            else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 191;
+            else TotalHealthGain += missingHP._level + 2;
+            break;
+        case DRUID:
+            if (missingHP._level < 17) TotalHealthGain += 17;
+            else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 176;
+            else TotalHealthGain += missingHP._level;
 
-                if (missingHP._level < 26) TotalManaGain += missingHP._level + 20;
-                else if (missingHP._level > 60) TotalManaGain += missingHP._level + 150;
-                else TotalManaGain += 45;
-                break;
-            case MAGE:
-                if (missingHP._level < 23) TotalHealthGain += 15;
-                else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 190;
-                else TotalHealthGain += missingHP._level - 8;
+            if (missingHP._level < 26) TotalManaGain += missingHP._level + 20;
+            else if (missingHP._level > 60) TotalManaGain += missingHP._level + 150;
+            else TotalManaGain += 45;
+            break;
+        case MAGE:
+            if (missingHP._level < 23) TotalHealthGain += 15;
+            else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 190;
+            else TotalHealthGain += missingHP._level - 8;
 
-                if (missingHP._level < 28) TotalManaGain += missingHP._level + 23;
-                else if (missingHP._level > 60) TotalManaGain += missingHP._level + 115;
-                else TotalManaGain += 51;
-                break;
-            case SHAMAN:
-                if (missingHP._level < 16) TotalHealthGain += 17;
-                else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 157;
-                else TotalHealthGain += missingHP._level + 1;
+            if (missingHP._level < 28) TotalManaGain += missingHP._level + 23;
+            else if (missingHP._level > 60) TotalManaGain += missingHP._level + 115;
+            else TotalManaGain += 51;
+            break;
+        case SHAMAN:
+            if (missingHP._level < 16) TotalHealthGain += 17;
+            else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 157;
+            else TotalHealthGain += missingHP._level + 1;
 
-                if (missingHP._level < 22) TotalManaGain += missingHP._level + 19;
-                else if (missingHP._level > 60) TotalManaGain += missingHP._level + 175;
-                else TotalManaGain += 49;
-                break;
-            case WARLOCK:
-                if (missingHP._level < 17) TotalHealthGain += 17;
-                else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 192;
-                else TotalHealthGain += missingHP._level - 2;
+            if (missingHP._level < 22) TotalManaGain += missingHP._level + 19;
+            else if (missingHP._level > 60) TotalManaGain += missingHP._level + 175;
+            else TotalManaGain += 49;
+            break;
+        case WARLOCK:
+            if (missingHP._level < 17) TotalHealthGain += 17;
+            else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 192;
+            else TotalHealthGain += missingHP._level - 2;
 
-                if (missingHP._level < 30) TotalManaGain += missingHP._level + 21;
-                else if (missingHP._level > 60) TotalManaGain += missingHP._level + 121;
-                else TotalManaGain += 51;
-                break;
-            case PALADIN:
-                if (missingHP._level < 14) TotalHealthGain += 18;
-                else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 167;
-                else TotalHealthGain += missingHP._level + 4;
+            if (missingHP._level < 30) TotalManaGain += missingHP._level + 21;
+            else if (missingHP._level > 60) TotalManaGain += missingHP._level + 121;
+            else TotalManaGain += 51;
+            break;
+        case PALADIN:
+            if (missingHP._level < 14) TotalHealthGain += 18;
+            else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 167;
+            else TotalHealthGain += missingHP._level + 4;
 
-                if (missingHP._level < 30) TotalManaGain += missingHP._level + 17;
-                else if (missingHP._level > 60) TotalManaGain += missingHP._level + 131;
-                else TotalManaGain += 42;
-                break;
-            case PRIEST:
-                if (missingHP._level < 21) TotalHealthGain += 15;
-                else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 157;
-                else TotalHealthGain += missingHP._level - 6;
+            if (missingHP._level < 30) TotalManaGain += missingHP._level + 17;
+            else if (missingHP._level > 60) TotalManaGain += missingHP._level + 131;
+            else TotalManaGain += 42;
+            break;
+        case PRIEST:
+            if (missingHP._level < 21) TotalHealthGain += 15;
+            else if (missingHP._level > 60) TotalHealthGain += missingHP._level + 157;
+            else TotalHealthGain += missingHP._level - 6;
 
-                if (missingHP._level < 22) TotalManaGain += missingHP._level + 22;
-                else if (missingHP._level < 32) TotalManaGain += missingHP._level + 37;
-                else if (missingHP._level > 60) TotalManaGain += missingHP._level + 207;
-                else TotalManaGain += 54;
-                break;
-            case DEATHKNIGHT:
-                TotalHealthGain += 92;
-                break;
-            default:
-                TotalHealthGain += 15;
-                TotalManaGain += 45;
-                break;
+            if (missingHP._level < 22) TotalManaGain += missingHP._level + 22;
+            else if (missingHP._level < 32) TotalManaGain += missingHP._level + 37;
+            else if (missingHP._level > 60) TotalManaGain += missingHP._level + 207;
+            else TotalManaGain += 54;
+            break;
+        case DEATHKNIGHT:
+            TotalHealthGain += 92;
+            break;
+        default:
+            TotalHealthGain += 15;
+            TotalManaGain += 45;
+            break;
         }
 
         if (auto level_info = sObjectMgr.getLevelInfo(missingHP._race, missingHP._class, missingHP._level))
