@@ -69,7 +69,7 @@
 #include "Utilities/Benchmark.hpp"
 
 // DB version
-static const char* REQUIRED_CHAR_DB_VERSION = "20260203-00_character_declinedname";
+static const char* REQUIRED_CHAR_DB_VERSION = "20250921-00_playerpets";
 static const char* REQUIRED_WORLD_DB_VERSION = "20260203-00_pandaren_playercreateinfo";
 
 volatile bool Master::m_stopEvent = false;
