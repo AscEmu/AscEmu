@@ -46,13 +46,6 @@ struct ClientPktHeader
     uint32_t cmd;
 };
 
-struct ClientPktHeaderCata
-{
-    uint16_t size;
-    uint32_t cmd;
-};
-#pragma pack(pop)
-
 struct AuthPktHeader
 {
     AuthPktHeader(uint32_t _size, uint32_t _opcode) : raw(_size << 13 | _opcode & 0x01FFF) {}
@@ -139,9 +132,7 @@ struct ServerPktHeader
 #endif
 
 // MIT End
-#if VERSION_STRING != Mop
 #pragma pack(pop)
-#endif
 
 WorldSocket::WorldSocket(SOCKET fd)
     :
@@ -160,7 +151,7 @@ WorldSocket::WorldSocket(SOCKET fd)
     mQueued(false),
     m_nagleEanbled(false),
     m_fullAccountName(nullptr)
-#if VERSION_STRING >= Cata
+#if VERSION_STRING == Mop
     , m_HandshakeReceived(false)
 #endif
 {
@@ -183,7 +174,6 @@ WorldSocket::~WorldSocket()
 
 void WorldSocket::OnDisconnect()
 {
-    sLogger.info("DEBUG: WorldSocket::OnDisconnect called for socket {}", GetFd());
     if (!_queue.hasItems())
         return;
 
@@ -421,14 +411,9 @@ void WorldSocket::OnConnect()
     BurstPush();
     BurstEnd();
 #else
-    const std::string handshake = "WORLD OF WARCRAFT CONNECTION - SERVER TO CLIENT";
-    uint16_t size = htons((uint16_t)handshake.length());
-
-    BurstBegin();
-    BurstSend((const uint8_t*)&size, 2);
-    BurstSend((const uint8_t*)handshake.c_str(), (uint32_t)handshake.length());
-    BurstPush();
-    BurstEnd();
+    WorldPacket packet(MSG_VERIFY_CONNECTIVITY, 46);
+    packet << "RLD OF WARCRAFT CONNECTION - SERVER TO CLIENT";
+    SendPacket(&packet);
 #endif
 }
 
@@ -441,23 +426,11 @@ void WorldSocket::OnConnectTwo()
 
 void WorldSocket::_HandleAuthSession(std::unique_ptr<WorldPacket> recvPacket)
 {
-    sLogger.info("DEBUG: _HandleAuthSession called");
 #if VERSION_STRING == Mop
     std::string account;
     uint32_t addonSize;
 
     _latency = Util::getMSTime() - _latency;
-
-    std::string hexDump;
-    const uint8_t* pData = recvPacket->contents();
-    size_t pLen = recvPacket->size();
-    char buf[10];
-    for (size_t i = 0; i < pLen && i < 128; ++i)
-    {
-        snprintf(buf, sizeof(buf), "%02X ", pData[i]);
-        hexDump += buf;
-    }
-    sLogger.info("DEBUG: AuthSession Size: {}, Dump: {}", static_cast<uint32_t>(pLen), hexDump);
 
     try
     {
@@ -492,7 +465,6 @@ void WorldSocket::_HandleAuthSession(std::unique_ptr<WorldPacket> recvPacket)
         *recvPacket >> AuthDigest[10];
 
         *recvPacket >> addonSize;
-        sLogger.info("DEBUG: Addon Size: {}", addonSize);
 
         if (addonSize)
         {
@@ -505,12 +477,10 @@ void WorldSocket::_HandleAuthSession(std::unique_ptr<WorldPacket> recvPacket)
             recvPacket->read(static_cast<uint8_t*>(mAddonInfoBuffer.contents()), addonSize);
         }
 
-        bool unkBit = recvPacket->readBit();
-        const auto accountNameLength = recvPacket->readBits(11);
+        recvPacket->readBit();
 
-        sLogger.info("DEBUG: UnkBit: {}, Account Length: {}", unkBit, accountNameLength);
+        const auto accountNameLength = recvPacket->readBits(11);
         account = recvPacket->ReadString(accountNameLength);
-        sLogger.info("DEBUG: Parsed Account: '{}'", account);
     }
 #elif VERSION_STRING == Cata
     std::string account;
@@ -709,7 +679,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32_t r
     if (recvData.rpos() != recvData.wpos())
     {
         lang.resize(4);
-        recvData.read((uint8_t*)lang.data(), 4);
+        recvData.read(reinterpret_cast<uint8_t*>(lang.data()), 4);
     }
 #endif
 
@@ -778,7 +748,6 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32_t r
 #endif
     {
         // AUTH_UNKNOWN_ACCOUNT = 21
-        sLogger.info("DEBUG: AuthDigest mismatch! Client sent different digest than calculated.");
         SendPacket(SmsgAuthResponse(AuthUnknownAccount, ARST_ONLY_ERROR).serialise().get());
         return;
     }
@@ -818,12 +787,10 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32_t r
         auto pResult = CharacterDatabase.Query("SELECT * FROM account_data WHERE acct = %u", AccountID);
         if (pResult == nullptr)
         {
-            sLogger.debug("DEBUG: No account_data found, inserting default.");
             CharacterDatabase.Execute("INSERT INTO account_data VALUES(%u, '', '', '', '', '', '', '', '', '')", AccountID);
         }
         else
         {
-            sLogger.debug("DEBUG: account_data found, processing.");
             Field* fields = pResult->Fetch();
             for (uint8_t i = 0; i < 8; ++i)
             {
@@ -843,7 +810,6 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32_t r
 
     // Check for queue.
     uint32_t playerLimit = worldConfig.getPlayerLimit();
-    sLogger.info("DEBUG: Checking queue. Sessions: {}, Limit: {}", sWorld.getSessionCount(), playerLimit);
     if ((sWorld.getSessionCount() < playerLimit) || pSession->HasGMPermissions())
     {
         Authenticate(std::move(pSession));
@@ -872,17 +838,10 @@ void WorldSocket::Authenticate(std::unique_ptr<WorldSession> sessionHolder)
         mQueued = false;
 
         if (mSession == nullptr || sessionHolder == nullptr)
-        {
-            sLogger.info("DEBUG: Authenticate failed - mSession or sessionHolder is null");
             return;
-        }
 
-#if VERSION_STRING == Mop
-        sLogger.info("DEBUG: Sending AuthOkay for MoP (ARST_ACCOUNT_DATA)");
         SendPacket(SmsgAuthResponse(AuthOkay, ARST_ACCOUNT_DATA).serialise().get());
-#else
-        SendPacket(SmsgAuthResponse(AuthOkay, ARST_ACCOUNT_DATA).serialise().get());
-#endif
+
 
 #if VERSION_STRING < Cata
         sAddonMgr.SendAddonInfoPacket(pAuthenticationPacket.get(), static_cast<uint32_t>(pAuthenticationPacket->rpos()), mSession);
@@ -971,134 +930,14 @@ void WorldSocket::OnRead()
 {
     for (;;)
     {
-#if VERSION_STRING == Mop
-        if (mRemaining == 0)
+        if (mRemaining == 0 && !ProcessHeader())
         {
-            if (!m_HandshakeReceived)
-            {
-                // Handshake packet has NO Opcode field (only Size 2 bytes + String)
-                if (readBuffer.GetSize() < 2)
-                {
-                    return;
-                }
-
-                uint16_t size;
-                readBuffer.Read(&size, 2);
-                // size = ntohs(size); // Mop handshake size is Little Endian on the wire
-
-                mRemaining = mSize = size;
-                mOpcode = MSG_VERIFY_CONNECTIVITY;
-
-                m_HandshakeReceived = true;
-
-                sLogger.info("DEBUG: MoP Handshake Header. Size: {}", mSize);
-            }
-            else if (_crypt.isInitialized())
-            {
-                if (readBuffer.GetSize() < 4)
-                {
-                    return;
-                }
-
-                AuthPktHeader authPktHeader(0, 0);
-                readBuffer.Read(reinterpret_cast<uint8_t*>(&authPktHeader.raw), 4);
-                _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&authPktHeader.raw), 4);
-
-                mRemaining = mSize = authPktHeader.getSize();
-                mOpcode = sOpcodeTables.getInternalIdForHex(authPktHeader.getOpcode());
-            }
-            else
-            {
-                if (readBuffer.GetSize() < 6)
-                {
-                    return;
-                }
-
-                ClientPktHeader clientPktHeader;
-                readBuffer.Read(reinterpret_cast<uint8_t*>(&clientPktHeader), 6);
-                _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&clientPktHeader), sizeof(ClientPktHeader));
-
-                mRemaining = mSize = clientPktHeader.size -= 4;
-                mOpcode = sOpcodeTables.getInternalIdForHex(clientPktHeader.cmd);
-            }
+            return;
         }
-#elif VERSION_STRING == Cata
-        // Check for the header if we don't have any bytes to wait for.
-        if (mRemaining == 0)
+
+        if (mRemaining > 0 && readBuffer.GetSize() < mRemaining)
         {
-            if (!m_HandshakeReceived)
-            {
-                // Handshake packet has NO Opcode field (only Size 2 bytes + String)
-                if (readBuffer.GetSize() < 2)
-                {
-                    return;
-                }
-
-                uint16_t size;
-                readBuffer.Read(&size, 2);
-                size = ntohs(size);
-
-                mRemaining = mSize = size;
-                mOpcode = MSG_VERIFY_CONNECTIVITY; // 0x4F57
-
-                m_HandshakeReceived = true;
-
-                sLogger.info("DEBUG: Handshake Header. Size: {}", mSize);
-            }
-            else
-            {
-                if (readBuffer.GetSize() < sizeof(ClientPktHeaderCata))
-                {
-                    // No header in the packet, let's wait.
-                    return;
-                }
-
-                // Copy from packet buffer into header local var
-                ClientPktHeaderCata Header;
-                readBuffer.Read(&Header, sizeof(ClientPktHeaderCata));
-
-                // Decrypt the header
-                _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&Header), sizeof(ClientPktHeaderCata));
-
-                mRemaining = mSize = ntohs(Header.size) - 4;
-                mOpcode = sOpcodeTables.getInternalIdForHex(Header.cmd);
-
-                sLogger.info("DEBUG: Packet Header. Size: {}, Opcode: 0x{:X}", mSize, Header.cmd);
-            }
-        }
-#else
-        // Check for the header if we don't have any bytes to wait for.
-        if (mRemaining == 0)
-        {
-            if (readBuffer.GetSize() < 6)
-            {
-                // No header in the packet, let's wait.
-                return;
-            }
-
-            // Copy from packet buffer into header local var
-            ClientPktHeader Header;
-            readBuffer.Read(&Header, 6);
-
-            // Decrypt the header
-#if VERSION_STRING < WotLK
-            _crypt.decryptLegacyReceive((uint8_t*)&Header, sizeof(ClientPktHeader));
-#else
-            _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&Header), sizeof(ClientPktHeader));
-#endif
-
-            mRemaining = mSize = ntohs(Header.size) - 4;
-            mOpcode = sOpcodeTables.getInternalIdForHex(Header.cmd);
-        }
-#endif
-
-        if (mRemaining > 0)
-        {
-            if (readBuffer.GetSize() < mRemaining)
-            {
-                // We have a fragmented packet. Wait for the complete one before proceeding.
-                return;
-            }
+            return;
         }
 
         auto packet = std::make_unique<WorldPacket>(sOpcodeTables.getHexValueForVersionId(mOpcode), mSize);
@@ -1106,47 +945,100 @@ void WorldSocket::OnRead()
 
         if (mRemaining > 0)
         {
-            // Copy from packet buffer into our actual buffer.
-            ///Read(mRemaining, (uint8_t*)Packet->contents());
             readBuffer.Read(packet->contents(), mRemaining);
         }
 
-        //sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received Packet. Opcode: 0x{:X} (internal: {}), Size: {}", packet->GetOpcode(), mOpcode, mSize);
         sWorldPacketLog.logPacket(mSize, mOpcode, mSize ? packet->contents() : nullptr, 0, (mSession ? mSession->GetAccountId() : 0));
-        mRemaining = mSize = /*mOpcode =*/ 0;
 
-        // Check for packets that we handle
-        switch (sOpcodeTables.getInternalIdForHex(packet->GetOpcode()))
-        {
-            case CMSG_PING:
-            {
-                _HandlePing(std::move(packet));
-            } break;
-#if VERSION_STRING >= Cata
-            case MSG_VERIFY_CONNECTIVITY: // MSG_WOW_CONNECTION
-            {
-                HandleWoWConnection(std::move(packet));
-            } break;
+        mRemaining = mSize = 0;
+
+        DispatchPacket(std::move(packet));
+    }
+}
+
+bool WorldSocket::ProcessHeader()
+{
+#if VERSION_STRING == Mop
+    if (!m_HandshakeReceived)
+    {
+        if (readBuffer.GetSize() < 2) return false;
+
+        uint16_t size;
+        readBuffer.Read(&size, 2);
+
+        mRemaining = mSize = size;
+        mOpcode = MSG_VERIFY_CONNECTIVITY;
+        m_HandshakeReceived = true;
+
+        sLogger.info("DEBUG: MoP Handshake Header. Size: {}", mSize);
+        return true;
+    }
+
+    if (_crypt.isInitialized())
+    {
+        if (readBuffer.GetSize() < 4) return false;
+
+        AuthPktHeader authPktHeader(0, 0);
+        readBuffer.Read(reinterpret_cast<uint8_t*>(&authPktHeader.raw), 4);
+        _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&authPktHeader.raw), 4);
+
+        mRemaining = mSize = authPktHeader.getSize();
+        mOpcode = sOpcodeTables.getInternalIdForHex(authPktHeader.getOpcode());
+        return true;
+    }
+
+    if (readBuffer.GetSize() < 6) return false;
+
+    ClientPktHeader clientPktHeader;
+    readBuffer.Read(reinterpret_cast<uint8_t*>(&clientPktHeader), 6);
+    _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&clientPktHeader), sizeof(ClientPktHeader));
+
+    mRemaining = mSize = clientPktHeader.size -= 4;
+    mOpcode = sOpcodeTables.getInternalIdForHex(clientPktHeader.cmd);
+    return true;
+#else
+    if (readBuffer.GetSize() < 6) return false;
+
+    ClientPktHeader header;
+    readBuffer.Read(&header, 6);
+
+#if VERSION_STRING < WotLK
+    _crypt.decryptLegacyReceive(reinterpret_cast<uint8_t*>(&header), sizeof(ClientPktHeader));
+#else
+    _crypt.decryptWotlkReceive(reinterpret_cast<uint8_t*>(&header), sizeof(ClientPktHeader));
 #endif
-            case CMSG_AUTH_SESSION:
-            {
-                _HandleAuthSession(std::move(packet));
-            } break;
-            default:
-            {
-                if (mSession)
-                    mSession->QueuePacket(std::move(packet));
-                else
-                    packet = nullptr;
-            } break;
-        }
+
+    mRemaining = mSize = ntohs(header.size) - 4;
+    mOpcode = sOpcodeTables.getInternalIdForHex(header.cmd);
+    return true;
+#endif
+}
+
+void WorldSocket::DispatchPacket(std::unique_ptr<WorldPacket> packet)
+{
+    switch (sOpcodeTables.getInternalIdForHex(packet->GetOpcode()))
+    {
+    case CMSG_PING:
+        _HandlePing(std::move(packet));
+        break;
+#if VERSION_STRING >= Cata
+    case MSG_VERIFY_CONNECTIVITY:
+        HandleWoWConnection(std::move(packet));
+        break;
+#endif
+    case CMSG_AUTH_SESSION:
+        _HandleAuthSession(std::move(packet));
+        break;
+    default:
+        if (mSession)
+            mSession->QueuePacket(std::move(packet));
+        break;
     }
 }
 
 #if VERSION_STRING >= Cata
 void WorldSocket::HandleWoWConnection(std::unique_ptr<WorldPacket> recvPacket)
 {
-    sLogger.info("DEBUG: HandleWoWConnection called");
     std::string ClientToServerMsg;
     *recvPacket >> ClientToServerMsg;
 

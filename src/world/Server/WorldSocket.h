@@ -89,6 +89,8 @@ public:
     void UpdateQueuePosition(uint32_t Position);
 
     void OnRead();
+    bool ProcessHeader();
+    void DispatchPacket(std::unique_ptr<WorldPacket> packet);
     void OnConnect();
     void OnDisconnect();
 
