@@ -55,10 +55,6 @@ void WorldSession::handleNameQueryOpcode(WorldPacket& recvData)
 
         response.realmId = 0;
         response.accountId = GetAccountId();
-
-        // Falls euer Cache 'declinedNames' hat:
-        // response.hasDeclinedNames = true;
-        // response.declinedNames = info->declinedNames;
     }
     else
     {
