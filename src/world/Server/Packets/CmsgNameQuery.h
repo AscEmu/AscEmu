@@ -16,10 +16,10 @@ namespace AscEmu::Packets
     {
     public:
         WoWGuid guid;
-        bool bit14 = false;
-        bool bit1C = false;
-        uint32_t unk = 0;
-        uint32_t unk1 = 0;
+        bool hasVirtualRealm = false;  // bit14 
+        bool hasNativeRealm = false;  // bit1C
+        uint32_t virtualRealmId = 0;
+        uint32_t nativeRealmId = 0;
 
         CmsgNameQuery() : ManagedPacket(CMSG_NAME_QUERY, 0)
         {
@@ -29,6 +29,7 @@ namespace AscEmu::Packets
         bool internalSerialise(WorldPacket& packet) override
         {
 #if VERSION_STRING == Mop
+            // CMSGis only received by the server, not sent. Therefore, no serialization is necessary for MoP here.
             return false;
 #else
             packet << guid.getRawGuid();
@@ -39,17 +40,19 @@ namespace AscEmu::Packets
         bool internalDeserialise(WorldPacket& packet) override
         {
 #if VERSION_STRING == Mop
+            // Reading the GUID bitmask
             guid[4] = packet.readBit();
-            bit14 = packet.readBit();
+            hasVirtualRealm = packet.readBit();
             guid[6] = packet.readBit();
             guid[0] = packet.readBit();
             guid[7] = packet.readBit();
             guid[1] = packet.readBit();
-            bit1C = packet.readBit();
+            hasNativeRealm = packet.readBit();
             guid[5] = packet.readBit();
             guid[2] = packet.readBit();
             guid[3] = packet.readBit();
 
+            // Reading the GUID bytes
             packet.ReadByteSeq(guid[7]);
             packet.ReadByteSeq(guid[5]);
             packet.ReadByteSeq(guid[1]);
@@ -59,11 +62,12 @@ namespace AscEmu::Packets
             packet.ReadByteSeq(guid[0]);
             packet.ReadByteSeq(guid[4]);
 
-            if (bit14)
-                packet >> unk;
+            // virtual and native realm addresses
+            if (hasVirtualRealm)
+                packet >> virtualRealmId;
 
-            if (bit1C)
-                packet >> unk1;
+            if (hasNativeRealm)
+                packet >> nativeRealmId;
 
             return true;
 #else
