@@ -5,7 +5,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <array>
 #include <cstdint>
+#include <string>
+#include "AEVersion.hpp"
+#include "Server/Opcodes.hpp"
+#include "WorldPacket.h"
+#include "WoWGuid.hpp"
 
 #include "ManagedPacket.h"
 
@@ -16,20 +22,19 @@ namespace AscEmu::Packets
     public:
         static constexpr uint8_t MAX_DECLINED_NAME_CASES = 5;
 
+        std::array<std::string, MAX_DECLINED_NAME_CASES> declinedNames;
+        std::string player_name;
         WoWGuid guid;
-
-        bool hasData = false;
 
         uint32_t realmId = 0;
         uint32_t accountId = 0;
 
-        std::string player_name;
         uint8_t race = 0;
         uint8_t gender = 0;
         uint8_t class_ = 0;
         uint8_t level = 0;
-        std::array<std::string, MAX_DECLINED_NAME_CASES> declinedNames;
-
+        
+        bool hasData = false;
         bool hasDeclinedNames = false;
 
         SmsgQueryPlayerNameResponse() : ManagedPacket(SMSG_QUERY_PLAYER_NAME_RESPONSE, 0)

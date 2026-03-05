@@ -762,25 +762,9 @@ void WorldSession::handleSetPlayerDeclinedNamesOpcode(WorldPacket& recvPacket)
 {
     CmsgSetPlayerDeclinedNames srlPacket;
     if (!srlPacket.deserialise(recvPacket))
-    {
-        sLogger.debug("CMSG_SET_PLAYER_DECLINED_NAMES: deserialise failed (packet size %u)", static_cast<unsigned>(recvPacket.size()));
         return;
-    }
-
-    if (srlPacket.declinedNames.size() != 5)
-    {
-        sLogger.debug("CMSG_SET_PLAYER_DECLINED_NAMES: expected 5 declined names, got %u", static_cast<unsigned>(srlPacket.declinedNames.size()));
-        return;
-    }
 
     //\todo check utf8 and cyrillic chars
-    CharacterDatabase.Execute("REPLACE INTO character_declinedname (guid, genitive, dative, accusative, instrumental, prepositional) VALUES (%u, '%s', '%s', '%s', '%s', '%s')",
-        WoWGuid::getGuidLowPartFromUInt64(srlPacket.guid),
-        CharacterDatabase.EscapeString(srlPacket.declinedNames[0]).c_str(),
-        CharacterDatabase.EscapeString(srlPacket.declinedNames[1]).c_str(),
-        CharacterDatabase.EscapeString(srlPacket.declinedNames[2]).c_str(),
-        CharacterDatabase.EscapeString(srlPacket.declinedNames[3]).c_str(),
-        CharacterDatabase.EscapeString(srlPacket.declinedNames[4]).c_str());
     const uint32_t error = 0;     // 0 = success, 1 = error
 
     SendPacket(SmsgSetPlayerDeclinedNamesResult(error, srlPacket.guid).serialise().get());
