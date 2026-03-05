@@ -3,16 +3,20 @@ Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include <cstdint>
+#include <vector>
+#include <AEVersion.hpp>
 #include "Server/Packets/CmsgNameQuery.h"
 #include "Server/Packets/CmsgGameobjectQuery.h"
 #include "Server/Packets/SmsgQueryPlayernameResponse.h"
 #include "Server/Packets/SmsgGameobjectQueryResponse.h"
 #include "Server/Packets/SmsgQueryTimeResponse.h"
+#include "LocationVector.h"
 #include "Logging/Log.hpp"
 #include "Logging/Logger.hpp"
+#include <Logging/Severity.hpp>
 #include "Management/ObjectMgr.hpp"
 #include "Management/QuestMgr.h"
-#include "Objects/Units/Creatures/Corpse.hpp"
 #include "Objects/Units/Creatures/Creature.h"
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/WorldSession.h"
@@ -26,6 +30,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/CmsgItemNameQuery.h"
 #include "Server/Packets/SmsgItemNameQueryResponse.h"
 #include "Server/Packets/MsgCorpseQuery.h"
+#include "WorldPacket.h"
 
 using namespace AscEmu::Packets;
 
@@ -44,7 +49,8 @@ void WorldSession::handleNameQueryOpcode(WorldPacket& recvData)
 
     if (const auto info = sObjectMgr.getCachedCharacterInfo(srlPacket.guid.getGuidLow()))
     {
-        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_NAME_QUERY for: {}", info->name);
+        sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_NAME_QUERY for name: {}, race: {}, gender: {}, class: {}, level: {}",
+            info->name, info->race, info->gender, info->cl, info->lastLevel);
 
         response.hasData = true;
         response.player_name = info->name;
@@ -53,8 +59,8 @@ void WorldSession::handleNameQueryOpcode(WorldPacket& recvData)
         response.class_ = info->cl;
         response.level = static_cast<uint8_t>(info->lastLevel);
 
-        response.realmId = 0;
-        response.accountId = GetAccountId();
+        response.realmId = srlPacket.virtualRealmId;
+        response.accountId = srlPacket.nativeRealmId;
     }
     else
     {

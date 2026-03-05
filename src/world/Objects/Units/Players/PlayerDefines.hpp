@@ -1136,7 +1136,6 @@ public:
 
     uint32_t m_guild = 0;
     uint32_t guildRank = 0;
-    std::vector<std::string> declinedNames;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
