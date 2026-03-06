@@ -772,7 +772,7 @@ void WorldSession::handleSetPlayerDeclinedNamesOpcode(WorldPacket& recvPacket)
 
 void WorldSession::characterEnumProc(QueryResult* result)
 {
-    sLogger.info("DEBUG: characterEnumProc called. Result: {}", result ? "Yes" : "No");
+    sLogger.debug("characterEnumProc called. Result: {}", result ? "Yes" : "No");
     std::vector<CharEnumData> enumData;
 
 #if VERSION_STRING > TBC
@@ -946,7 +946,7 @@ void WorldSession::characterEnumProc(QueryResult* result)
 
 void WorldSession::handleCharEnumOpcode(WorldPacket& /*recvPacket*/)
 {
-    sLogger.info("DEBUG: handleCharEnumOpcode called");
+    sLogger.debug("handleCharEnumOpcode called");
     auto asyncQuery = std::make_unique<AsyncQuery>(std::make_unique<SQLClassCallbackP1<World, uint32_t>>(&sWorld,
         &World::sendCharacterEnumToAccountSession, GetAccountId()));
 

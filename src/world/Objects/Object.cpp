@@ -3870,7 +3870,7 @@ void Object::buildValuesUpdate(uint8_t updateType, ByteBuffer* data, UpdateMask*
     }
 
 #if VERSION_STRING == Mop
-    * data << static_cast<uint8_t>(0);
+    *data << static_cast<uint8_t>(0);
 #endif
 }
 // MIT End

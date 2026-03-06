@@ -13289,9 +13289,9 @@ void Player::processPendingUpdates()
     m_updateMgr.processPendingUpdates();
 }
 
+#if VERSION_STRING == Mop
 void Player::resendCreateAndActiveMoverForMoP()
 {
-#if VERSION_STRING == Mop
     if (!m_session)
         return;
     if (!IsInWorld())
@@ -13354,16 +13354,15 @@ void Player::resendCreateAndActiveMoverForMoP()
     // MoP: schedule one delayed retry in 2s (after throttle) in case client missed the first resend; stop when cap reached.
     if (m_objectUpdateFailedResendCount < kMaxObjectUpdateFailedResends)
         sEventMgr.AddEvent(this, &Player::resendCreateAndActiveMoverForMoP, EVENT_PLAYER_MOP_PROCESS_QUEUE, 2000, 1, 0);
-#endif
+
 }
 
 void Player::eventProcessQueuedPacketsMoP()
 {
-#if VERSION_STRING == Mop
     if (m_session && IsInWorld())
         m_session->ProcessQueuedPackets(static_cast<uint32_t>(GetInstanceID()));
-#endif
 }
+#endif
 
 void Player::eventTalentHearthOfWildChange(bool apply)
 {

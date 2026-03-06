@@ -762,10 +762,12 @@ public:
     void sendDelayedPacket(WorldPacket* data, bool deleteDataOnSend);
 
     void processPendingUpdates();
+#if VERSION_STRING == Mop
     /// MoP: resend player create + SMSG_MOVE_SET_ACTIVE_MOVER when client reports object update failed during world enter.
     void resendCreateAndActiveMoverForMoP();
     /// MoP: event callback to process session queue again after 150ms (catches 0x1061 that arrive after create send).
     void eventProcessQueuedPacketsMoP();
+#endif
     bool compressAndSendUpdateBuffer(uint32_t size, const uint8_t* update_buffer);
     uint32_t buildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target) override;
 
@@ -785,8 +787,10 @@ private:
     UpdateManager m_updateMgr;
 
     bool m_enteringWorld = false;
+#if VERSION_STRING == Mop
     uint32_t m_lastObjectUpdateFailedResend = 0;  // throttle for MoP resend create
     uint32_t m_objectUpdateFailedResendCount = 0; // cap resends to avoid infinite loop when client rejects player create
+#endif
 
 protected:
     WorldSession* m_session = nullptr;
