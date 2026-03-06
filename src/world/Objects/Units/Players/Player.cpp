@@ -784,6 +784,7 @@ uint64_t Player::getDuelArbiter() const { return playerData()->duel_arbiter; }
 void Player::setDuelArbiter(uint64_t guid) { write(playerData()->duel_arbiter, guid); }
 
 uint32_t Player::getPlayerFlags() const { return playerData()->player_flags; }
+
 void Player::setPlayerFlags(uint32_t flags)
 {
     write(playerData()->player_flags, flags);
@@ -799,6 +800,7 @@ void Player::setPlayerFlags(uint32_t flags)
 
     addGroupUpdateFlag(GROUP_UPDATE_FLAG_STATUS);
 }
+
 void Player::addPlayerFlags(uint32_t flags) { setPlayerFlags(getPlayerFlags() | flags); }
 void Player::removePlayerFlags(uint32_t flags) { setPlayerFlags(getPlayerFlags() & ~flags); }
 bool Player::hasPlayerFlags(uint32_t flags) const { return (getPlayerFlags() & flags) != 0; }
@@ -811,6 +813,7 @@ uint32_t Player::getGuildId() const
     return static_cast<uint32_t>(objectData()->data);
 #endif
 }
+
 void Player::setGuildId(uint32_t guildId)
 {
 #if VERSION_STRING < Cata
@@ -947,6 +950,7 @@ uint16_t Player::getVisibleItemEnchantment(uint32_t slot, uint8_t pos) const
 
     return playerData()->visible_items[slot].enchantment.raw[pos];
 }
+
 void Player::setVisibleItemEnchantment(uint32_t slot, uint8_t pos, uint16_t enchantment)
 {
     if (pos > TEMP_ENCHANTMENT_SLOT)
@@ -1202,6 +1206,7 @@ void Player::modCoinage(int32_t coinage)
 uint64_t Player::getCoinage() const { return playerData()->field_coinage; }
 void Player::setCoinage(uint64_t coinage) { write(playerData()->field_coinage, coinage); }
 bool Player::hasEnoughCoinage(uint64_t coinage) const { return getCoinage() >= coinage; }
+
 void Player::modCoinage(int64_t coinage)
 {
     setCoinage(getCoinage() + coinage);
@@ -1344,6 +1349,7 @@ void Player::resendSpeed()
         m_resendSpeed = false;
     }
 }
+
 bool Player::isMoving() const { return m_isMoving; }
 
 uint32_t Player::getMountSpellId() const { return m_mountSpellId; }
@@ -1751,7 +1757,6 @@ void Player::sendTeleportAckPacket(LocationVector position)
 #if VERSION_STRING == TBC
     sendTeleportPacket(position);
 #endif
-
 }
 
 void Player::onWorldPortAck()
@@ -3362,6 +3367,7 @@ void Player::setUpdateBits(UpdateMask* updateMask, Player* target) const
 //////////////////////////////////////////////////////////////////////////////////////////
 // Visiblility
 void Player::addVisibleObject(uint64_t guid) { m_visibleObjects.insert(guid); }
+
 void Player::removeVisibleObject(uint64_t guid)
 {
     if (isVisibleObject(guid))
@@ -3373,6 +3379,7 @@ void Player::removeVisibleObject(uint64_t guid)
 #endif
     }
 }
+
 bool Player::isVisibleObject(uint64_t guid) { return m_visibleObjects.contains(guid); }
 
 void Player::removeIfVisiblePushOutOfRange(uint64_t guid)
@@ -4343,7 +4350,6 @@ bool Player::hasSpellWithAuraNameAndBasePoints(uint32_t auraName, uint32_t baseP
                     return true;
             }
         }
-
     }
 
     return false;
@@ -4435,7 +4441,6 @@ void Player::_loadPlayerCooldowns(QueryResult* result)
         playerCooldown.ItemId = itemid;
         playerCooldown.SpellId = spellid;
         m_cooldownMap[type].insert(std::make_pair(misc, playerCooldown));
-
     } while (result->NextRow());
 }
 
@@ -6954,7 +6959,6 @@ void Player::applyItemMods(Item* item, int16_t slot, bool apply, bool justBroked
                     SpellCastTargets targets(getGuid());
                     spell->castedItemId = item->getEntry();
                     spell->prepare(&targets);
-
                 }
                 else if (itemSpell.Trigger == CHANCE_ON_HIT)
                 {
@@ -7674,6 +7678,7 @@ bool Player::isAlreadyInvitedToGroup() const { return m_grouIdpInviterId != 0; }
 bool Player::isInGroup() const { return m_playerInfo && m_playerInfo->m_Group; }
 
 Group* Player::getGroup() const { return m_playerInfo ? m_playerInfo->m_Group : nullptr; }
+
 bool Player::isGroupLeader() const
 {
     if (m_playerInfo->m_Group != nullptr)
@@ -7856,9 +7861,11 @@ void Player::setArenaTeam(uint8_t type, ArenaTeam* arenaTeam)
     if (arenaTeam)
         getSession()->SystemMessage("You are now a member of the arena team'%s'.", arenaTeam->m_name.c_str());
 }
+
 ArenaTeam* Player::getArenaTeam(uint8_t type) { return m_arenaTeams[type]; }
 
 bool Player::isInArenaTeam(uint8_t type) const { return m_arenaTeams[type] != nullptr; }
+
 void Player::initialiseArenaTeam()
 {
     for (uint8_t i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
@@ -8668,16 +8675,19 @@ void Player::addQuestIdToFinishedDailies(uint32_t questId)
     std::lock_guard<std::mutex> lock(m_mutextDailies);
     m_finishedDailies.insert(questId);
 }
+
 std::set<uint32_t> Player::getFinishedDailies() const
 {
     std::lock_guard<std::mutex> lock(m_mutextDailies);
     return m_finishedDailies;
 }
+
 bool Player::hasQuestInFinishedDailies(uint32_t questId) const
 {
     std::lock_guard<std::mutex> lock(m_mutextDailies);
     return m_finishedDailies.find(questId) != m_finishedDailies.end();
 }
+
 void Player::resetFinishedDailies()
 {
     std::lock_guard<std::mutex> lock(m_mutextDailies);
@@ -8871,7 +8881,6 @@ void Player::loadFriendList()
             socialFriend.note = socialField[2].asCString();
 
             m_socialIFriends.push_back(socialFriend);
-
         } while (result->NextRow());
     }
 }
@@ -8886,7 +8895,6 @@ void Player::loadFriendedByOthersList()
             uint32_t friendedByGuid= socialField[0].asUint32();
 
             m_socialFriendedByGuids.push_back(friendedByGuid);
-
         } while (result->NextRow());
     }
 }
@@ -8901,7 +8909,6 @@ void Player::loadIgnoreList()
             uint32_t ignoreGuid = ignoreField[1].asUint32();
 
             m_socialIgnoring.push_back(ignoreGuid);
-
         } while (result->NextRow());
     }
 }
@@ -9063,7 +9070,6 @@ void Player::sendFriendLists(uint32_t flags)
             if (maxCount >= 50)
                 break;
         }
-
     }
 
     if (flags & 0x02)    // ignore
@@ -10578,7 +10584,6 @@ void Player::sendLoot(uint64_t guid, uint8_t loot_type, uint32_t mapId)
         if (!pCreature)return;
         pLoot = &pCreature->loot;
         m_currentLoot = pCreature->getGuid();
-
     }
     else if (wowGuid.isGameObject())
     {
@@ -11570,6 +11575,7 @@ void Player::handleSobering()
 /////////////////////////////////////////////////////////////////////////////////////////
 // Duel
 Player* Player::getDuelPlayer() const { return m_duelPlayer; }
+
 void Player::requestDuel(Player* target)
 {
     if (m_duelPlayer != nullptr)
@@ -12493,7 +12499,6 @@ void Player::loadBoundInstances()
             // since non permanent binds are always solo bind, they can always be reset
             if (InstanceSaved* save = sInstanceMgr.addInstanceSave(mapId, instanceId, InstanceDifficulty::Difficulties(difficulty), resetTime, !perm, true))
                 bindToInstance(save, perm, extendState, true);
-
         } while (result->NextRow());
     }
 }
@@ -12988,6 +12993,7 @@ void Player::displayTimerList()
         if (instance->getScript())
             instance->getScript()->displayTimerList(this);
 }
+
 void Player::displayCreatureSetForEntry(uint32_t _creatureEntry)
 {
     if (InstanceMap* instance = sMapMgr.findInstanceMap(GetInstanceID()))
@@ -13354,7 +13360,6 @@ void Player::resendCreateAndActiveMoverForMoP()
     // MoP: schedule one delayed retry in 2s (after throttle) in case client missed the first resend; stop when cap reached.
     if (m_objectUpdateFailedResendCount < kMaxObjectUpdateFailedResends)
         sEventMgr.AddEvent(this, &Player::resendCreateAndActiveMoverForMoP, EVENT_PLAYER_MOP_PROCESS_QUEUE, 2000, 1, 0);
-
 }
 
 void Player::eventProcessQueuedPacketsMoP()
@@ -15109,7 +15114,6 @@ void Player::_loadQuestLogEntry(QueryResult* result)
             auto* questLogEntry = createQuestLogInSlot(questProperties, slot);
             questLogEntry->loadFromDB(fields);
             questLogEntry->updatePlayerFields();
-
         } while (result->NextRow());
     }
 }
@@ -16213,15 +16217,12 @@ void Player::modifyBonuses(uint32_t type, int32_t val, bool apply)
         break;
         case ITEM_MOD_MELEE_CRITICAL_AVOIDANCE_RATING:
         {
-
         } break;
         case ITEM_MOD_RANGED_CRITICAL_AVOIDANCE_RATING:
         {
-
         } break;
         case ITEM_MOD_SPELL_CRITICAL_AVOIDANCE_RATING:
         {
-
         } break;
         case ITEM_MOD_MELEE_HASTE_RATING:
         {
@@ -16261,7 +16262,6 @@ void Player::modifyBonuses(uint32_t type, int32_t val, bool apply)
         break;
         case ITEM_MOD_CRITICAL_AVOIDANCE_RATING:
         {
-
         } break;
         case ITEM_MOD_EXPERTISE_RATING:
         {
@@ -16612,7 +16612,6 @@ void Player::calculateDamage()
             if (itr != m_wratings.end())
                 cr = itr->second;
         }
-
     }
     //\todo investigate
 #if VERSION_STRING != Classic
