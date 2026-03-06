@@ -210,7 +210,7 @@ uint8_t WorldSession::Update(uint32_t InstanceID)
     return 0;
 }
 
-uint8_t WorldSession::ProcessQueuedPackets(uint32_t InstanceID)
+uint8_t WorldSession::processQueuedPackets(uint32_t InstanceID)
 {
     if (InstanceID != instanceId)
         return 2;

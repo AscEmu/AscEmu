@@ -566,7 +566,7 @@ void Player::OnPushToWorld()
 #if VERSION_STRING == Mop
     // MoP: process any CMSG_OBJECT_UPDATE_FAILED (0x1061) already in queue so resend runs in same tick.
     if (m_session)
-        m_session->ProcessQueuedPackets(static_cast<uint32_t>(GetInstanceID()));
+        m_session->processQueuedPackets(static_cast<uint32_t>(GetInstanceID()));
     // MoP: 0x1061 often arrive after create send; schedule a second drain in 150ms.
     if (m_session)
         sEventMgr.AddEvent(this, &Player::eventProcessQueuedPacketsMoP, EVENT_PLAYER_MOP_PROCESS_QUEUE, 150, 1, 0);
@@ -13365,7 +13365,7 @@ void Player::resendCreateAndActiveMoverForMoP()
 void Player::eventProcessQueuedPacketsMoP()
 {
     if (m_session && IsInWorld())
-        m_session->ProcessQueuedPackets(static_cast<uint32_t>(GetInstanceID()));
+        m_session->processQueuedPackets(static_cast<uint32_t>(GetInstanceID()));
 }
 #endif
 
