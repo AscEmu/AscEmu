@@ -96,3 +96,4 @@ INSERT INTO `playercreateinfo_items` (`race`, `class`, `protoid`, `slotid`, `amo
 (26, 10, 48, 6, 1, @mop_build);
 
 INSERT INTO `world_db_version` (`id`, `LastUpdate`) VALUES ('159', '20260203-00_pandaren_playercreateinfo');
+
