@@ -831,14 +831,16 @@ struct CharEnumData
 };
 
 
-struct ClassRaceCombination {
+struct ClassRaceCombination 
+{
     Classes charClass;
     Races charRace;
     uint32_t minAeVersion;
 };
 
 // table taken from https://wow.gamepedia.com/Class
-constexpr ClassRaceCombination ClassRaceCombinations[] = {
+constexpr ClassRaceCombination ClassRaceCombinations[] = 
+{
     // WARRIOR
     {WARRIOR, RACE_HUMAN, Classic},
     {WARRIOR, RACE_ORC, Classic},

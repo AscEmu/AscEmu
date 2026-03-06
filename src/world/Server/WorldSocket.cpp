@@ -470,7 +470,7 @@ void WorldSocket::_HandleAuthSession(std::unique_ptr<WorldPacket> recvPacket)
         {
             if (recvPacket->rpos() + addonSize > recvPacket->size())
             {
-                sLogger.failure("DEBUG: Addon size overflow packet size!");
+                sLogger.failure("Addon size overflow packet size!");
                 return;
             }
             mAddonInfoBuffer.resize(addonSize);
@@ -610,7 +610,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32_t r
     recvData >> GMFlags;
     recvData >> AccountFlags;
 
-    sLogger.info("DEBUG: InfoRetreiveCallback - Account: '{}', ID: {}, GMFlags: '{}', Flags: {}", AccountName, AccountID, GMFlags, AccountFlags);
+    sLogger.debug("InfoRetreiveCallback - Account: '{}', ID: {}, GMFlags: '{}', Flags: {}", AccountName, AccountID, GMFlags, AccountFlags);
 
     std::string forcedPermissions = sLogonCommHandler.getPermissionStringForAccountId(AccountID);
     if (!forcedPermissions.empty())
@@ -842,7 +842,6 @@ void WorldSocket::Authenticate(std::unique_ptr<WorldSession> sessionHolder)
 
         SendPacket(SmsgAuthResponse(AuthOkay, ARST_ACCOUNT_DATA).serialise().get());
 
-
 #if VERSION_STRING < Cata
         sAddonMgr.SendAddonInfoPacket(pAuthenticationPacket.get(), static_cast<uint32_t>(pAuthenticationPacket->rpos()), mSession);
 #else
@@ -970,7 +969,7 @@ bool WorldSocket::ProcessHeader()
         mOpcode = MSG_VERIFY_CONNECTIVITY;
         m_HandshakeReceived = true;
 
-        sLogger.info("DEBUG: MoP Handshake Header. Size: {}", mSize);
+        sLogger.debug("MoP Handshake Header. Size: {}", mSize);
         return true;
     }
 
@@ -1018,21 +1017,21 @@ void WorldSocket::DispatchPacket(std::unique_ptr<WorldPacket> packet)
 {
     switch (sOpcodeTables.getInternalIdForHex(packet->GetOpcode()))
     {
-    case CMSG_PING:
-        _HandlePing(std::move(packet));
-        break;
+        case CMSG_PING:
+            _HandlePing(std::move(packet));
+            break;
 #if VERSION_STRING >= Cata
-    case MSG_VERIFY_CONNECTIVITY:
-        HandleWoWConnection(std::move(packet));
-        break;
+        case MSG_VERIFY_CONNECTIVITY:
+            HandleWoWConnection(std::move(packet));
+            break;
 #endif
-    case CMSG_AUTH_SESSION:
-        _HandleAuthSession(std::move(packet));
-        break;
-    default:
-        if (mSession)
-            mSession->QueuePacket(std::move(packet));
-        break;
+        case CMSG_AUTH_SESSION:
+            _HandleAuthSession(std::move(packet));
+            break;
+        default:
+            if (mSession)
+                mSession->QueuePacket(std::move(packet));
+            break;
     }
 }
 
