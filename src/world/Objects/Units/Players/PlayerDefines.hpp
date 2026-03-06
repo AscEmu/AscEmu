@@ -45,7 +45,8 @@ enum PlayerTeam : uint8_t
 {
     TEAM_ALLIANCE = 0,
     TEAM_HORDE    = 1,
-    MAX_PLAYER_TEAMS
+    MAX_PLAYER_TEAMS,
+    TEAM_NEUTRAL  = 255
 };
 
 enum Team : uint32_t
@@ -1013,7 +1014,7 @@ static inline uint8_t getSideByRace(uint8_t race)
         case RACE_PANDAREN_ALLIANCE:
             return TEAM_ALLIANCE;
         case RACE_PANDAREN_NEUTRAL:
-            return 255; // TODO : Add to enum
+            return TEAM_NEUTRAL;
         case RACE_PANDAREN_HORDE:
         default:
             return TEAM_HORDE;

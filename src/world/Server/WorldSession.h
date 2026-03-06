@@ -196,7 +196,7 @@ class SERVER_DECL WorldSession
         void Disconnect();
 
         uint8_t Update(uint32_t InstanceID);
-        uint8_t ProcessQueuedPackets(uint32_t InstanceID);
+        uint8_t processQueuedPackets(uint32_t InstanceID);
 
         void SendNotification(const char* message, ...);
 

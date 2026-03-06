@@ -929,7 +929,7 @@ void WorldSocket::OnRead()
 {
     for (;;)
     {
-        if (mRemaining == 0 && !ProcessHeader())
+        if (mRemaining == 0 && !processHeader())
         {
             return;
         }
@@ -951,11 +951,11 @@ void WorldSocket::OnRead()
 
         mRemaining = mSize = 0;
 
-        DispatchPacket(std::move(packet));
+        dispatchPacket(std::move(packet));
     }
 }
 
-bool WorldSocket::ProcessHeader()
+bool WorldSocket::processHeader()
 {
 #if VERSION_STRING == Mop
     if (!m_HandshakeReceived)
@@ -1013,7 +1013,7 @@ bool WorldSocket::ProcessHeader()
 #endif
 }
 
-void WorldSocket::DispatchPacket(std::unique_ptr<WorldPacket> packet)
+void WorldSocket::dispatchPacket(std::unique_ptr<WorldPacket> packet)
 {
     switch (sOpcodeTables.getInternalIdForHex(packet->GetOpcode()))
     {
