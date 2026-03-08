@@ -16,14 +16,21 @@ namespace AscEmu::Packets
     {
 #if VERSION_STRING > TBC
     public:
-        uint8_t roles;
+#if VERSION_STRING < Mop
+        using RolesType = uint8_t;
+        static constexpr uint16_t PacketSize = 1;
+#else
+        using RolesType = uint32_t;
+        static constexpr uint16_t PacketSize = 5;
+#endif
+        RolesType roles;
 
         CmsgLfgSetRoles() : CmsgLfgSetRoles(0)
         {
         }
 
-        CmsgLfgSetRoles(uint8_t roles) :
-            ManagedPacket(CMSG_LFG_SET_ROLES, 1),
+        CmsgLfgSetRoles(RolesType roles) :
+            ManagedPacket(CMSG_LFG_SET_ROLES, PacketSize),
             roles(roles)
         {
         }
@@ -37,6 +44,9 @@ namespace AscEmu::Packets
         bool internalDeserialise(WorldPacket& packet) override
         {
             packet >> roles;
+#if VERSION_STRING >= Mop
+            packet.read_skip<uint8_t>();
+#endif
             return true;
         }
 #endif
