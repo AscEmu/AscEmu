@@ -944,7 +944,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_SEARCH_LFG_JOIN, &WorldSession::handleLfgSearchOpcode, false, false, true, false, false);
     registry.registerOpcode(CMSG_SEARCH_LFG_LEAVE, &WorldSession::handleLfgSearchLeaveOpcode, false, false, true, false, false);
     registry.registerOpcode(CMSG_LFG_PROPOSAL_RESULT, &WorldSession::handleLfgProposalResultOpcode, false, false, true, false, false);
-    registry.registerOpcode(CMSG_LFG_SET_ROLES, &WorldSession::handleLfgSetRolesOpcode, false, false, true, false, false);
+    registry.registerOpcode(CMSG_LFG_SET_ROLES, &WorldSession::handleLfgSetRolesOpcode, false, false, true, false, true);
     registry.registerOpcode(CMSG_LFG_SET_BOOT_VOTE, &WorldSession::handleLfgSetBootVoteOpcode, false, false, true, false, false);
     registry.registerOpcode(CMSG_LFD_PLAYER_LOCK_INFO_REQUEST, &WorldSession::handleLfgPlayerLockInfoRequestOpcode, false, false, true, false, false);
     registry.registerOpcode(CMSG_LFG_TELEPORT, &WorldSession::handleLfgTeleportOpcode, false, false, true, false, false);
