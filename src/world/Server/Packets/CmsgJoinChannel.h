@@ -46,6 +46,7 @@ namespace AscEmu::Packets
 #if VERSION_STRING < Cata
             packet >> dbcId >> unk >> channelName >> password;
 #else
+#if VERSION_STRING == Cata
             packet >> dbcId;
 
             packet.readBit();       // has voice
@@ -56,6 +57,19 @@ namespace AscEmu::Packets
 
             channelName = packet.ReadString(channelLength);
             password = packet.ReadString(passwordLength);
+#else // Mop
+            packet >> dbcId;
+
+            packet.readBit();       // has voice
+
+            const uint32_t channelLength = packet.readBits(7);
+            const uint32_t passwordLength = packet.readBits(7);
+
+            packet.readBit();       // zone update
+
+            channelName = packet.ReadString(channelLength);
+            password = packet.ReadString(passwordLength);
+#endif
 #endif
             return true;
         }

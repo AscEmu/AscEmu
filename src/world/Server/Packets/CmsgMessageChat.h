@@ -107,6 +107,7 @@ namespace AscEmu::Packets
                 default: break;
             }
 #else
+#if VERSION_STRING == Cata
             type = getMessageTypeForOpcode(sOpcodeTables.getInternalIdForHex(packet.GetOpcode()));
             if (type == 0xFF)
                 return false;
@@ -171,6 +172,73 @@ namespace AscEmu::Packets
                 } break;
                 default: break;
             }
+#else // Mop
+
+            type = getMessageTypeForOpcode(sOpcodeTables.getInternalIdForHex(packet.GetOpcode()));
+            if (type == 0xFF)
+                return false;
+
+            //get language
+            switch (type)
+            {
+                case CHAT_MSG_SAY:
+                case CHAT_MSG_YELL:
+                case CHAT_MSG_CHANNEL:
+                case CHAT_MSG_WHISPER:
+                case CHAT_MSG_GUILD:
+                case CHAT_MSG_OFFICER:
+                case CHAT_MSG_PARTY:
+                case CHAT_MSG_RAID:
+                case CHAT_MSG_BATTLEGROUND:
+                case CHAT_MSG_RAID_WARNING:
+                    packet >> language;
+                    break;
+                default: break;
+            }
+
+            if (language >= NUM_LANGUAGES)
+                return false;
+
+            uint32_t textLength = 0;
+            uint32_t receiverLength = 0;
+
+            switch (type)
+            {
+                case CHAT_MSG_EMOTE:
+                case CHAT_MSG_SAY:
+                case CHAT_MSG_YELL:
+                case CHAT_MSG_PARTY:
+                case CHAT_MSG_PARTY_LEADER:
+                case CHAT_MSG_RAID:
+                case CHAT_MSG_RAID_LEADER:
+                case CHAT_MSG_RAID_WARNING:
+                case CHAT_MSG_GUILD:
+                case CHAT_MSG_OFFICER:
+                case CHAT_MSG_BATTLEGROUND:
+                case CHAT_MSG_BATTLEGROUND_LEADER:
+                case CHAT_MSG_AFK:
+                case CHAT_MSG_DND:
+                    textLength = packet.readBits(8);
+                    message = packet.ReadString(textLength);
+                    break;
+                case CHAT_MSG_WHISPER:
+                {
+                    receiverLength = packet.readBits(9);
+                    textLength = packet.readBits(8);
+                    destination = packet.ReadString(receiverLength);
+                    message = packet.ReadString(textLength);
+
+                } break;
+                case CHAT_MSG_CHANNEL:
+                {
+                    receiverLength = packet.readBits(9);
+                    textLength = packet.readBits(8);
+                    message = packet.ReadString(textLength);
+                    destination = packet.ReadString(receiverLength);
+                } break;
+                default: break;
+            }
+#endif
 
 #endif
 

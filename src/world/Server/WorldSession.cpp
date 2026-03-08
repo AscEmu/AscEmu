@@ -898,9 +898,9 @@ void WorldSession::registerOpcodeHandler()
     //registry.registerOpcode(SMSG_BARBER_SHOP_RESULT, &WorldSession::handleBarberShopResult, false, false, true, false, false);
 
     // Channels
-    registry.registerOpcode(CMSG_JOIN_CHANNEL, &WorldSession::handleChannelJoin, false, true, true, true, false);
-    registry.registerOpcode(CMSG_LEAVE_CHANNEL, &WorldSession::handleChannelLeave, true, true, true, true, false);
-    registry.registerOpcode(CMSG_CHANNEL_LIST, &WorldSession::handleChannelList, true, true, true, true, false);
+    registry.registerOpcode(CMSG_JOIN_CHANNEL, &WorldSession::handleChannelJoin, false, true, true, true, true);
+    registry.registerOpcode(CMSG_LEAVE_CHANNEL, &WorldSession::handleChannelLeave, true, true, true, true, true);
+    registry.registerOpcode(CMSG_CHANNEL_LIST, &WorldSession::handleChannelList, true, true, true, true, true);
     registry.registerOpcode(CMSG_CHANNEL_PASSWORD, &WorldSession::handleChannelPassword, true, true, true, true, false);
     registry.registerOpcode(CMSG_CHANNEL_SET_OWNER, &WorldSession::handleChannelSetOwner, true, true, true, true, false);
     registry.registerOpcode(CMSG_CHANNEL_OWNER, &WorldSession::handleChannelOwner, true, true, true, true, false);
@@ -1194,7 +1194,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_UNLEARN_SKILL, &WorldSession::handleUnlearnSkillOpcode, true, true, true, true, false);
 
     // Chat
-    registry.registerOpcode(CMSG_CHAT_IGNORED, &WorldSession::handleChatIgnoredOpcode, true, false, true, true, false);
+    registry.registerOpcode(CMSG_CHAT_IGNORED, &WorldSession::handleChatIgnoredOpcode, true, false, true, true, true);
     registry.registerOpcode(CMSG_SET_CHANNEL_WATCH, &WorldSession::handleChatChannelWatchOpcode, true, false, true, true, false);
 
     // Arenas
@@ -1260,9 +1260,9 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode<STATUS_AUTHED>(CMSG_TIME_SYNC_RESPONSE, &WorldSession::handleTimeSyncRespOpcode, false, false, false, true, true);
     registry.registerOpcode(CMSG_MOVE_SET_CAN_FLY, &WorldSession::handleMovementOpcodes, false, false, false, true, false);
     registry.registerOpcode(CMSG_FORCE_PITCH_RATE_CHANGE_ACK, &WorldSession::handleAcknowledgementOpcodes, false, false, false, true, false);
-    registry.registerOpcode(CMSG_MESSAGECHAT_SAY, &WorldSession::handleMessageChatOpcode, false, false, false, true, false);
+    registry.registerOpcode(CMSG_MESSAGECHAT_SAY, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
     registry.registerOpcode(CMSG_MESSAGECHAT_YELL, &WorldSession::handleMessageChatOpcode, false, false, false, true, false);
-    registry.registerOpcode(CMSG_MESSAGECHAT_CHANNEL, &WorldSession::handleMessageChatOpcode, false, false, false, true, false);
+    registry.registerOpcode(CMSG_MESSAGECHAT_CHANNEL, &WorldSession::handleMessageChatOpcode, false, false, false, true, true);
     registry.registerOpcode(CMSG_MESSAGECHAT_WHISPER, &WorldSession::handleMessageChatOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_MESSAGECHAT_GUILD, &WorldSession::handleMessageChatOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_MESSAGECHAT_OFFICER, &WorldSession::handleMessageChatOpcode, false, false, false, true, false);

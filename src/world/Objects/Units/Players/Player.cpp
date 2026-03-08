@@ -6349,9 +6349,7 @@ void Player::broadcastMessage(const char* Format, ...)
     vsnprintf(Message, 1024, Format, list);
     va_end(list);
 
-#if VERSION_STRING < Mop
     m_session->SendPacket(SmsgMessageChat(SystemMessagePacket(Message)).serialise().get());
-#endif
 }
 
 void Player::sendAreaTriggerMessage(const char* message, ...)

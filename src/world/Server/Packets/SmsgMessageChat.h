@@ -120,112 +120,184 @@ namespace AscEmu::Packets
                     packet << uint32_t(message.length() + 1) << message << flag;
                     break;
             }
-#else // TODO Mop
-            //WoWGuid target = 0;
-            //WoWGuid source = 0;
-            //WoWGuid unkGuid = 0;
-            //WoWGuid unkGuid2 = 0;
+#else // Mop
+            bool hasSenderName = false;
+            bool hasReceiverName = false;
+            bool hasChannelName = false;
+            bool hasLanguage = language > 0;
+            bool hasAchievement = (type == CHAT_MSG_ACHIEVEMENT || type == CHAT_MSG_GUILD_ACHIEVEMENT) && achievementId;
+            bool isAddon = false;
 
-            //packet.writeBit(1);
-            //packet.writeBit(0);
-            //packet.writeBit(0);
-            //packet.writeBit(1);
-            //packet.writeBit(0);
-            //packet.writeBit(1);
-            //packet.writeBit(1);
-            //packet.writeBit(1);
+            WoWGuid unkGuid = 0;
+            WoWGuid unkGuid2 = 0;
 
-            //packet.writeBit(unkGuid[0]);
-            //packet.writeBit(unkGuid[1]);
-            //packet.writeBit(unkGuid[5]);
-            //packet.writeBit(unkGuid[4]);
-            //packet.writeBit(unkGuid[3]);
-            //packet.writeBit(unkGuid[2]);
-            //packet.writeBit(unkGuid[6]);
-            //packet.writeBit(unkGuid[7]);
+            switch (type)
+            {
+                case CHAT_MSG_MONSTER_SAY:
+                case CHAT_MSG_MONSTER_PARTY:
+                case CHAT_MSG_MONSTER_YELL:
+                case CHAT_MSG_MONSTER_WHISPER:
+                case CHAT_MSG_MONSTER_EMOTE:
+                case CHAT_MSG_RAID_BOSS_EMOTE:
+                case CHAT_MSG_WHISPER_MOB:
+                {
+                    hasSenderName = true;
+                    if (receiverGuid && !receiverGuid.isPlayer() && !receiverGuid.isPet() && type != CHAT_MSG_WHISPER_MOB)
+                        hasReceiverName = true;
+                } break;
+                case CHAT_MSG_BG_EVENT_NEUTRAL:
+                case CHAT_MSG_BG_EVENT_ALLIANCE:
+                case CHAT_MSG_BG_EVENT_HORDE:
+                {
+                    if (receiverGuid && !receiverGuid.isPlayer())
+                        hasReceiverName = true;
+                } break;
+                case CHAT_MSG_CHANNEL:
+                {
+                    hasChannelName = true;
+                    hasSenderName = true;
+                } break;
+                default:
+                    break;
+            }
 
-            //packet.writeBit(0);
+            packet.writeBit(!hasSenderName);
+            packet.writeBit(0);     // hide chatlog
 
-            //packet.writeBit(source[7]);
-            //packet.writeBit(source[6]);
-            //packet.writeBit(source[1]);
-            //packet.writeBit(source[4]);
-            //packet.writeBit(source[0]);
-            //packet.writeBit(source[2]);
-            //packet.writeBit(source[3]);
-            //packet.writeBit(source[5]);
+            if (hasSenderName)
+                packet.writeBits(senderName.length(), 11);
 
-            //packet.writeBit(0);
-            //packet.writeBit(0); // Send Language
-            //packet.writeBit(1);
+            packet.writeBit(0);
+            packet.writeBit(!hasChannelName);
+            packet.writeBit(0);
+            packet.writeBit(1);
+            packet.writeBit(!flag);
+            packet.writeBit(1);
 
-            //packet.writeBit(target[0]);
-            //packet.writeBit(target[3]);
-            //packet.writeBit(target[7]);
-            //packet.writeBit(target[2]);
-            //packet.writeBit(target[1]);
-            //packet.writeBit(target[5]);
-            //packet.writeBit(target[4]);
-            //packet.writeBit(target[6]);
+            packet.writeBit(unkGuid[0]);
+            packet.writeBit(unkGuid[1]);
+            packet.writeBit(unkGuid[5]);
+            packet.writeBit(unkGuid[4]);
+            packet.writeBit(unkGuid[3]);
+            packet.writeBit(unkGuid[2]);
+            packet.writeBit(unkGuid[6]);
+            packet.writeBit(unkGuid[7]);
 
-            //packet.writeBit(1);
-            //packet.writeBit(0);
-            //packet.writeBits(message.length(), 12);
-            //packet.writeBit(1);
-            //packet.writeBit(1);
-            //packet.writeBit(0);
+            if (flag)
+                packet.writeBits(flag, 9);
 
-            //packet.writeBit(unkGuid2[2]);
-            //packet.writeBit(unkGuid2[5]);
-            //packet.writeBit(unkGuid2[7]);
-            //packet.writeBit(unkGuid2[4]);
-            //packet.writeBit(unkGuid2[0]);
-            //packet.writeBit(unkGuid2[1]);
-            //packet.writeBit(unkGuid2[3]);
-            //packet.writeBit(unkGuid2[6]);
+            packet.writeBit(0);
 
-            //packet.flushBits();
+            packet.writeBit(receiverGuid[7]);
+            packet.writeBit(receiverGuid[6]);
+            packet.writeBit(receiverGuid[1]);
+            packet.writeBit(receiverGuid[4]);
+            packet.writeBit(receiverGuid[0]);
+            packet.writeBit(receiverGuid[2]);
+            packet.writeBit(receiverGuid[3]);
+            packet.writeBit(receiverGuid[5]);
 
-            //packet.WriteByteSeq(unkGuid2[4]);
-            //packet.WriteByteSeq(unkGuid2[5]);
-            //packet.WriteByteSeq(unkGuid2[7]);
-            //packet.WriteByteSeq(unkGuid2[3]);
-            //packet.WriteByteSeq(unkGuid2[2]);
-            //packet.WriteByteSeq(unkGuid2[6]);
-            //packet.WriteByteSeq(unkGuid2[0]);
-            //packet.WriteByteSeq(unkGuid2[1]);
+            packet.writeBit(0);
+            packet.writeBit(!hasLanguage);
+            packet.writeBit(!isAddon);
 
-            //packet.WriteByteSeq(target[4]);
-            //packet.WriteByteSeq(target[7]);
-            //packet.WriteByteSeq(target[1]);
-            //packet.WriteByteSeq(target[5]);
-            //packet.WriteByteSeq(target[0]);
-            //packet.WriteByteSeq(target[6]);
-            //packet.WriteByteSeq(target[2]);
-            //packet.WriteByteSeq(target[3]);
+            packet.writeBit(senderGuid[0]);
+            packet.writeBit(senderGuid[3]);
+            packet.writeBit(senderGuid[7]);
+            packet.writeBit(senderGuid[2]);
+            packet.writeBit(senderGuid[1]);
+            packet.writeBit(senderGuid[5]);
+            packet.writeBit(senderGuid[4]);
+            packet.writeBit(senderGuid[6]);
 
-            //packet << uint8_t(type);
+            packet.writeBit(!hasAchievement);
+            packet.writeBit(!message.length());
 
-            //packet.WriteByteSeq(unkGuid[1]);
-            //packet.WriteByteSeq(unkGuid[3]);
-            //packet.WriteByteSeq(unkGuid[4]);
-            //packet.WriteByteSeq(unkGuid[6]);
-            //packet.WriteByteSeq(unkGuid[0]);
-            //packet.WriteByteSeq(unkGuid[2]);
-            //packet.WriteByteSeq(unkGuid[5]);
-            //packet.WriteByteSeq(unkGuid[7]);
+            if (hasChannelName)
+                packet.writeBits(receiverName.length(), 7);
 
-            //packet.WriteByteSeq(source[2]);
-            //packet.WriteByteSeq(source[5]);
-            //packet.WriteByteSeq(source[3]);
-            //packet.WriteByteSeq(source[6]);
-            //packet.WriteByteSeq(source[7]);
-            //packet.WriteByteSeq(source[4]);
-            //packet.WriteByteSeq(source[1]);
-            //packet.WriteByteSeq(source[0]);
+            if (message.length())
+                packet.writeBits(message.length(), 12);
 
-            //packet << uint8_t(language);
-            //packet.WriteString(message);
+            packet.writeBit(!hasReceiverName);
+
+            //writeBits addon name
+
+            packet.writeBit(1);
+
+            if (hasReceiverName)
+                packet.writeBits(receiverName.length(), 11);
+
+            packet.writeBit(0);
+
+            packet.writeBit(unkGuid2[2]);
+            packet.writeBit(unkGuid2[5]);
+            packet.writeBit(unkGuid2[7]);
+            packet.writeBit(unkGuid2[4]);
+            packet.writeBit(unkGuid2[0]);
+            packet.writeBit(unkGuid2[1]);
+            packet.writeBit(unkGuid2[3]);
+            packet.writeBit(unkGuid2[6]);
+
+            packet.flushBits();
+
+            packet.WriteByteSeq(unkGuid2[4]);
+            packet.WriteByteSeq(unkGuid2[5]);
+            packet.WriteByteSeq(unkGuid2[7]);
+            packet.WriteByteSeq(unkGuid2[3]);
+            packet.WriteByteSeq(unkGuid2[2]);
+            packet.WriteByteSeq(unkGuid2[6]);
+            packet.WriteByteSeq(unkGuid2[0]);
+            packet.WriteByteSeq(unkGuid2[1]);
+
+            if (hasChannelName)
+                packet.WriteString(receiverName);
+
+            //write addon string
+
+            packet.WriteByteSeq(senderGuid[4]);
+            packet.WriteByteSeq(senderGuid[7]);
+            packet.WriteByteSeq(senderGuid[1]);
+            packet.WriteByteSeq(senderGuid[5]);
+            packet.WriteByteSeq(senderGuid[0]);
+            packet.WriteByteSeq(senderGuid[6]);
+            packet.WriteByteSeq(senderGuid[2]);
+            packet.WriteByteSeq(senderGuid[3]);
+
+            packet << uint8_t(type);
+
+            if (hasAchievement)
+                packet << achievementId;
+
+            packet.WriteByteSeq(unkGuid[1]);
+            packet.WriteByteSeq(unkGuid[3]);
+            packet.WriteByteSeq(unkGuid[4]);
+            packet.WriteByteSeq(unkGuid[6]);
+            packet.WriteByteSeq(unkGuid[0]);
+            packet.WriteByteSeq(unkGuid[2]);
+            packet.WriteByteSeq(unkGuid[5]);
+            packet.WriteByteSeq(unkGuid[7]);
+
+            packet.WriteByteSeq(receiverGuid[2]);
+            packet.WriteByteSeq(receiverGuid[5]);
+            packet.WriteByteSeq(receiverGuid[3]);
+            packet.WriteByteSeq(receiverGuid[6]);
+            packet.WriteByteSeq(receiverGuid[7]);
+            packet.WriteByteSeq(receiverGuid[4]);
+            packet.WriteByteSeq(receiverGuid[1]);
+            packet.WriteByteSeq(receiverGuid[0]);
+
+            if (hasLanguage)
+                packet << uint8_t(language);
+
+            if (message.length())
+                packet.WriteString(message);
+
+            if (hasReceiverName)
+                packet.WriteString(receiverName);
+
+            if (hasSenderName)
+                packet.WriteString(senderName);
 #endif
 
             return true;
