@@ -893,7 +893,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_MESSAGECHAT, &WorldSession::handleMessageChatOpcode, false, true, true, false, false);
     registry.registerOpcode(CMSG_EMOTE, &WorldSession::handleEmoteOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_TEXT_EMOTE, &WorldSession::handleTextEmoteOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_INSPECT, &WorldSession::handleInspectOpcode, true, true, true, true, false);
+    registry.registerOpcode(CMSG_INSPECT, &WorldSession::handleInspectOpcode, true, true, true, true, true);
     // clearly wrong naming!
     //registry.registerOpcode(SMSG_BARBER_SHOP_RESULT, &WorldSession::handleBarberShopResult, false, false, true, false, false);
 
