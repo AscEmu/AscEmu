@@ -35,7 +35,31 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+#if VERSION_STRING <= Cata
             packet >> guid;
+#else // Mop
+            WoWGuid packetGuid;
+
+            packetGuid[0] = packet.readBit();
+            packetGuid[3] = packet.readBit();
+            packetGuid[7] = packet.readBit();
+            packetGuid[2] = packet.readBit();
+            packetGuid[5] = packet.readBit();
+            packetGuid[1] = packet.readBit();
+            packetGuid[4] = packet.readBit();
+            packetGuid[6] = packet.readBit();
+
+            packet.ReadByteSeq(packetGuid[3]);
+            packet.ReadByteSeq(packetGuid[5]);
+            packet.ReadByteSeq(packetGuid[2]);
+            packet.ReadByteSeq(packetGuid[4]);
+            packet.ReadByteSeq(packetGuid[1]);
+            packet.ReadByteSeq(packetGuid[6]);
+            packet.ReadByteSeq(packetGuid[0]);
+            packet.ReadByteSeq(packetGuid[7]);
+
+            guid = packetGuid.getRawGuid();
+#endif
             return true;
         }
     };

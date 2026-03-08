@@ -2022,7 +2022,6 @@ void WorldSession::handleGameObjectUse(WorldPacket& recvPacket)
 
 void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
 {
-#if VERSION_STRING < Mop
     CmsgInspect srlPacket;
     if (!srlPacket.deserialise(recvPacket))
         return;
@@ -2041,6 +2040,7 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
     if (_player->m_comboPoints)
         _player->updateComboPoints();
 
+#if VERSION_STRING < Mop
     ByteBuffer packedGuid;
     WorldPacket data(SMSG_INSPECT_TALENT, 1000);
     packedGuid.appendPackGUID(inspectedPlayer->getGuid());
@@ -2149,9 +2149,193 @@ void WorldSession::handleInspectOpcode(WorldPacket& recvPacket)
         data << uint32_t(guild->getMembersCount());
     }
 #endif
+#else // Mop
+    uint32_t talentPoints = 41;
+    uint32_t slotCount = 0;
+    uint32_t glyphCount = 0;
+    uint32_t talentCount = 0;
+
+    WoWGuid guid = inspectedPlayer->getGuid();
+    Guild* guild = sGuildMgr.getGuildById(inspectedPlayer->getGuildId());
+    WoWGuid guildGuid = guild ? guild->getGUID() : 0;
+
+    WorldPacket data(SMSG_INSPECT_RESULTS_UPDATE, 1000);
+    ByteBuffer enchantData;
+
+    data.writeBit(guild ? 1 :0);
+    data.writeBit(guid[2]);
+
+    if (guild)
+    {
+        data.writeBit(guildGuid[7]);
+        data.writeBit(guildGuid[0]);
+        data.writeBit(guildGuid[5]);
+        data.writeBit(guildGuid[3]);
+        data.writeBit(guildGuid[2]);
+        data.writeBit(guildGuid[4]);
+        data.writeBit(guildGuid[6]);
+        data.writeBit(guildGuid[1]);
+    }
+
+    data.writeBit(guid[4]);
+    data.writeBit(guid[3]);
+    data.writeBit(guid[5]);
+    data.writeBit(guid[7]);
+
+    size_t slotCountBitPos = data.bitwpos();
+    data.writeBits(0, 20);
+
+    data.writeBit(guid[0]);
+
+    auto itemInterface = inspectedPlayer->getItemInterface();
+    for (uint32_t itemSlot = EQUIPMENT_SLOT_START; itemSlot < EQUIPMENT_SLOT_END; ++itemSlot)
+    {
+        const auto inventoryItem = itemInterface->GetInventoryItem(static_cast<uint16_t>(itemSlot));
+        if (!inventoryItem)
+            continue;
+
+        ++slotCount;
+
+        WoWGuid creatorGuid = inventoryItem->getCreatorGuid();
+        uint32_t enchantCount = 0;
+
+        data.writeBit(creatorGuid[1]);
+        data.writeBit(0); // unk1
+        data.writeBit(0);
+        data.writeBit(creatorGuid[3]);
+
+        size_t enchCountBitPos = data.bitwpos();
+        data.writeBits(0, 21);
+
+        data.writeBit(creatorGuid[2]);
+        data.writeBit(creatorGuid[6]);
+        data.writeBit(creatorGuid[4]);
+
+        data.writeBit(0); // unk2
+
+        data.writeBit(creatorGuid[0]);
+        data.writeBit(creatorGuid[5]);
+        data.writeBit(creatorGuid[7]);
+
+        enchantData.WriteByteSeq(creatorGuid[3]);
+        enchantData << uint32_t(0);
+
+        for (uint8_t enchantSlot = 0; enchantSlot < MAX_ENCHANTMENT_SLOT; ++enchantSlot)
+        {
+            uint32_t enchantId = inventoryItem->getEnchantmentId(enchantSlot);
+
+            if (!enchantId)
+                continue;
+
+            ++enchantCount;
+            enchantData << enchantId;
+            enchantData << uint8_t(enchantSlot);
+        }
+
+        data.PutBits(enchCountBitPos, enchantCount, 21);
+
+        enchantData << inventoryItem->getEntry();
+
+        enchantData.WriteByteSeq(creatorGuid[6]);
+        enchantData.WriteByteSeq(creatorGuid[4]);
+        enchantData.WriteByteSeq(creatorGuid[7]);
+        enchantData.WriteByteSeq(creatorGuid[2]);
+
+        enchantData.WriteByteSeq(creatorGuid[5]);
+
+        enchantData << uint8_t(itemSlot);
+
+        enchantData.WriteByteSeq(creatorGuid[0]);
+        enchantData.WriteByteSeq(creatorGuid[1]);
+    }
+
+    data.PutBits(slotCountBitPos, slotCount, 20);
+
+    size_t glyphCountBitPos = data.bitwpos();
+    data.writeBits(0, 23);
+
+    size_t talentCountBitPos = data.bitwpos();
+    data.writeBits(0, 23);
+
+    data.writeBit(guid[6]);
+    data.writeBit(guid[1]);
+    data.flushBits();
+
+    data.WriteByteSeq(guid[1]);
+    data.WriteByteSeq(guid[4]);
+    data.WriteByteSeq(guid[2]);
+
+    data.append(enchantData);
+
+    if (guild)
+    {
+        data.WriteByteSeq(guildGuid[6]);
+        data.WriteByteSeq(guildGuid[2]);
+        data.WriteByteSeq(guildGuid[5]);
+        data.WriteByteSeq(guildGuid[0]);
+
+        data << uint32_t(guild->getMembersCount());
+
+        data.WriteByteSeq(guildGuid[4]);
+        data.WriteByteSeq(guildGuid[7]);
+
+        data << uint64_t(guild->getExperience());
+
+        data.WriteByteSeq(guildGuid[1]);
+
+        data << uint32_t(guild->getLevel());
+
+        data.WriteByteSeq(guildGuid[3]);
+    }
+
+    data.WriteByteSeq(guid[5]);
+
+    const PlayerSpec playerSpec = inspectedPlayer->m_specs[inspectedPlayer->m_talentActiveSpec];
+
+    for (const auto& glyph : playerSpec.getGlyphs())
+    {
+        if (glyph)
+        {
+            ++glyphCount;
+            data << glyph;
+        }
+    }
+
+    data.PutBits(glyphCountBitPos, glyphCount, 23);
+
+    data.WriteByteSeq(guid[0]);
+
+    data << uint32_t(inspectedPlayer->getActiveSpec().getTalentPoints());
+
+    const auto talentTabIds = getTalentTabPages(inspectedPlayer->getClass());
+    for (uint8_t i = 0; i < 3; ++i)
+    {
+        const uint32_t talentTabId = talentTabIds[i];
+        for (uint32_t j = 0; j < sTalentStore.getNumRows(); ++j)
+        {
+            const auto talentInfo = sTalentStore.lookupEntry(j);
+            if (talentInfo == nullptr)
+                continue;
+
+            if (talentInfo->playerClass != inspectedPlayer->getClass())
+                continue;
+
+            if (!inspectedPlayer->hasSpell(talentInfo->SpellId))
+                continue;
+
+            data << uint16_t(talentInfo->TalentID);
+            ++talentCount;
+        }
+    }
+
+    data.PutBits(talentCountBitPos, talentCount, 23);
+
+    data.WriteByteSeq(guid[7]);
+    data.WriteByteSeq(guid[3]);
+    data.WriteByteSeq(guid[6]);
+#endif
 
     SendPacket(&data);
-#endif
 }
 
 
