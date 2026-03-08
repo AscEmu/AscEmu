@@ -381,83 +381,6 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
     }
 }
 
-#if VERSION_STRING < Cata
-void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
-{
-    if (!_player->isAlive())
-        return;
-
-    CmsgTextEmote srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
-        return;
-
-    if (m_muted && m_muted >= static_cast<uint32_t>(UNIXTIME))
-    {
-        SystemMessage("Your voice is currently muted by a moderator.");
-        return;
-    }
-
-    if (!hasPermissions() && worldConfig.chat.linesBeforeProtection)
-    {
-        if (UNIXTIME >= floodTime)
-        {
-            floodLines = 0;
-            floodTime = UNIXTIME + worldConfig.chat.secondsBeforeProtectionReset;
-        }
-
-        if (++floodLines > worldConfig.chat.linesBeforeProtection)
-            return;
-    }
-
-    uint32_t nameLength = 1;
-    std::string unitName;
-
-    auto unit = _player->getWorldMap()->getUnit(srlPacket.guid);
-    if (unit != nullptr)
-    {
-        if (unit->isPlayer())
-            unitName = dynamic_cast<Player*>(unit)->getName();
-        else if (unit->isPet())
-            unitName = dynamic_cast<Pet*>(unit)->getName();
-        else
-            unitName = dynamic_cast<Creature*>(unit)->GetCreatureProperties()->Name;
-
-        nameLength = static_cast<uint32_t>(unitName.length() + 1);
-    }
-
-    if (const auto emoteTextEntry = sEmotesTextStore.lookupEntry(srlPacket.text_emote))
-    {
-        sHookInterface.OnEmote(_player, emoteTextEntry->textid, unit);
-        if (unit)
-        {
-            if (unit->IsInWorld() && unit->isCreature() && dynamic_cast<Creature*>(unit)->GetScript())
-                dynamic_cast<Creature*>(unit)->GetScript()->OnEmote(_player, static_cast<EmoteType>(emoteTextEntry->textid));
-        }
-
-        switch (emoteTextEntry->textid)
-        {
-            case EMOTE_STATE_SLEEP:
-            case EMOTE_STATE_SIT:
-            case EMOTE_STATE_KNEEL:
-            case EMOTE_STATE_DANCE:
-            {
-                _player->setEmoteState(emoteTextEntry->textid);
-            } break;
-            default:
-                break;
-        }
-
-        _player->sendMessageToSet(SmsgEmote(emoteTextEntry->textid, _player->getGuid()).serialise().get(), true);
-
-        _player->sendMessageToSet(SmsgTextEmote(nameLength, unitName, srlPacket.text_emote, _player->getGuid(), srlPacket.unk).serialise().get(), true);
-
-#if VERSION_STRING > TBC
-        _player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, srlPacket.text_emote, 0, 0);
-#endif
-        sQuestMgr.OnPlayerEmote(_player, srlPacket.text_emote, srlPacket.guid);
-    }
-}
-#else
 void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
 {
     if (!_player->isAlive())
@@ -470,69 +393,91 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
     if (isSessionMuted() || isFloodProtectionTriggered())
         return;
 
-    const char* unitName = " ";
     WoWGuid targetGuid = 0;
     uint32_t nameLength = 1;
+    std::string unitName;
 
-    Unit* unit = _player->getWorldMap()->getUnit(srlPacket.guid);
+    auto unit = _player->getWorldMap()->getUnit(srlPacket.guid);
     if (unit)
     {
         targetGuid = unit->getGuid();
 
         if (unit->isPlayer())
         {
-            unitName = dynamic_cast<Player*>(unit)->getName().c_str();
-            nameLength = static_cast<uint32_t>(strlen(unitName)) + 1;
+            unitName = dynamic_cast<Player*>(unit)->getName();
+            nameLength = static_cast<uint32_t>(unitName.length()) + 1;
         }
         else if (unit->isPet())
         {
-            unitName = dynamic_cast<Pet*>(unit)->getName().c_str();
-            nameLength = static_cast<uint32_t>(strlen(unitName)) + 1;
+            unitName = dynamic_cast<Pet*>(unit)->getName();
+            nameLength = static_cast<uint32_t>(unitName.length()) + 1;
         }
         else
         {
             auto creature = dynamic_cast<Creature*>(unit);
-            unitName = creature->GetCreatureProperties()->Name.c_str();
-            nameLength = static_cast<uint32_t>(strlen(unitName)) + 1;
+            unitName = creature->GetCreatureProperties()->Name;
+            nameLength = static_cast<uint32_t>(unitName.length()) + 1;
         }
     }
 
-    WDB::Structures::EmotesTextEntry const* emoteTextEntry = sEmotesTextStore.lookupEntry(srlPacket.text_emote);
-    if (emoteTextEntry == nullptr)
-        return;
-
-    sHookInterface.OnEmote(_player, static_cast<EmoteType>(emoteTextEntry->textid), unit);
-    if (unit)
+    if (const auto emoteTextEntry = sEmotesTextStore.lookupEntry(srlPacket.text_emote))
     {
-        if (unit->IsInWorld() && unit->isCreature() && static_cast<Creature*>(unit)->GetScript())
-            static_cast<Creature*>(unit)->GetScript()->OnEmote(_player, static_cast<EmoteType>(emoteTextEntry->textid));
-    }
-
-    switch (emoteTextEntry->textid)
-    {
-        case EMOTE_STATE_READ:
-        case EMOTE_STATE_DANCE:
+        sHookInterface.OnEmote(_player, emoteTextEntry->textid, unit);
+        if (unit)
         {
-            _player->setEmoteState(emoteTextEntry->textid);
-        } break;
-        case EMOTE_STATE_SLEEP:
-        case EMOTE_STATE_SIT:
-        case EMOTE_STATE_KNEEL:
-        case EMOTE_ONESHOT_NONE:
-            break;
-        default:
+            if (unit->IsInWorld() && unit->isCreature() && dynamic_cast<Creature*>(unit)->GetScript())
+                dynamic_cast<Creature*>(unit)->GetScript()->OnEmote(_player, static_cast<EmoteType>(emoteTextEntry->textid));
+        }
+
+    #if VERSION_STRING < Cata
+        switch (emoteTextEntry->textid)
         {
-            _player->emote(static_cast<EmoteType>(emoteTextEntry->textid));
-        } break;
-    }
+            case EMOTE_STATE_SLEEP:
+            case EMOTE_STATE_SIT:
+            case EMOTE_STATE_KNEEL:
+            case EMOTE_STATE_DANCE:
+            {
+                _player->setEmoteState(emoteTextEntry->textid);
+            } break;
+            default:
+                break;
+        }
+    #else // >=Cata
+        switch (emoteTextEntry->textid)
+        {
+            case EMOTE_STATE_READ:
+            case EMOTE_STATE_DANCE:
+            {
+                _player->setEmoteState(emoteTextEntry->textid);
+            } break;
+            case EMOTE_STATE_SLEEP:
+            case EMOTE_STATE_SIT:
+            case EMOTE_STATE_KNEEL:
+            case EMOTE_ONESHOT_NONE:
+                break;
+            default:
+            {
+                _player->emote(static_cast<EmoteType>(emoteTextEntry->textid));
+            } break;
+        }
+    #endif
 
-    _player->sendMessageToSet(SmsgTextEmote(nameLength, unitName, srlPacket.text_emote, _player->getGuid(), srlPacket.numEmote, targetGuid).serialise().get(), true);
+    #if VERSION_STRING < Cata
+        _player->sendMessageToSet(SmsgEmote(emoteTextEntry->textid, _player->getGuid()).serialise().get(), true);
+    #endif
 
-    _player->getAchievementMgr()->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, srlPacket.text_emote, 0, 0);
+        _player->sendMessageToSet(SmsgTextEmote(nameLength, unitName, srlPacket.text_emote, _player->getGuid(), srlPacket.numEmote, targetGuid).serialise().get(), true);
 
-    sQuestMgr.OnPlayerEmote(_player, srlPacket.text_emote, srlPacket.guid);
-}
+#if VERSION_STRING > TBC
+    #if VERSION_STRING == WotLK
+        _player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, srlPacket.text_emote, 0, 0);
+    #else
+        _player->getAchievementMgr()->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, srlPacket.text_emote, 0, 0);
+    #endif
 #endif
+        sQuestMgr.OnPlayerEmote(_player, srlPacket.text_emote, srlPacket.guid);
+    }
+}
 
 void WorldSession::handleEmoteOpcode(WorldPacket& recvPacket)
 {
