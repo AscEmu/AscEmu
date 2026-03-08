@@ -779,7 +779,7 @@ void WorldSession::registerOpcodeHandler()
     // Queries
     registry.registerOpcode(MSG_CORPSE_QUERY, &WorldSession::handleCorpseQueryOpcode, false, true, true, true, false);
     registry.registerOpcode(CMSG_NAME_QUERY, &WorldSession::handleNameQueryOpcode, true, true, true, true, true);
-    registry.registerOpcode(CMSG_QUERY_TIME, &WorldSession::handleQueryTimeOpcode, false, true, true, true, false);
+    registry.registerOpcode(CMSG_QUERY_TIME, &WorldSession::handleQueryTimeOpcode, false, true, true, true, true);
     registry.registerOpcode(CMSG_CREATURE_QUERY, &WorldSession::handleCreatureQueryOpcode, false, true, true, true, false);
     registry.registerOpcode(CMSG_GAMEOBJECT_QUERY, &WorldSession::handleGameObjectQueryOpcode, false, true, true, true, false);
     registry.registerOpcode(CMSG_PAGE_TEXT_QUERY, &WorldSession::handlePageTextQueryOpcode, false, true, true, false, false);
@@ -855,7 +855,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_WHOIS, &WorldSession::handleWhoIsOpcode, true, false, true, true, false);
     registry.registerOpcode(CMSG_LOGOUT_REQUEST, &WorldSession::handleLogoutRequestOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_PLAYER_LOGOUT, &WorldSession::handlePlayerLogoutOpcode, true, true, true, false, true);
-    registry.registerOpcode(CMSG_LOGOUT_CANCEL, &WorldSession::handleLogoutCancelOpcode, true, true, true, true, false);
+    registry.registerOpcode(CMSG_LOGOUT_CANCEL, &WorldSession::handleLogoutCancelOpcode, true, true, true, true, true);
     // registry.registerOpcode(CMSG_LOGOUT_CANCEL].status = STATUS_LOGGEDIN_RECENTLY_LOGGOUT, false, false, true, false, false);
 
     registry.registerOpcode(CMSG_ZONEUPDATE, &WorldSession::handleZoneupdate, true, true, true, true, false);
@@ -891,8 +891,8 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_REQUEST_PLAYED_TIME, &WorldSession::handlePlayedTimeOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_SETSHEATHED, &WorldSession::handleSetSheathedOpcode, true, true, true, true, false);
     registry.registerOpcode(CMSG_MESSAGECHAT, &WorldSession::handleMessageChatOpcode, false, true, true, false, false);
-    registry.registerOpcode(CMSG_EMOTE, &WorldSession::handleEmoteOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_TEXT_EMOTE, &WorldSession::handleTextEmoteOpcode, true, true, true, true, false);
+    registry.registerOpcode(CMSG_EMOTE, &WorldSession::handleEmoteOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_TEXT_EMOTE, &WorldSession::handleTextEmoteOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_INSPECT, &WorldSession::handleInspectOpcode, true, true, true, true, true);
     // clearly wrong naming!
     //registry.registerOpcode(SMSG_BARBER_SHOP_RESULT, &WorldSession::handleBarberShopResult, false, false, true, false, false);
@@ -1025,7 +1025,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_IGNORE_TRADE, &WorldSession::handleIgnoreTrade, true, true, true, false, false);
     registry.registerOpcode(CMSG_ACCEPT_TRADE, &WorldSession::handleAcceptTrade, true, true, true, true, false);
     registry.registerOpcode(CMSG_UNACCEPT_TRADE, &WorldSession::handleUnacceptTrade, true, true, true, false, false);
-    registry.registerOpcode(CMSG_CANCEL_TRADE, &WorldSession::handleCancelTrade, true, true, true, true, false);
+    registry.registerOpcode(CMSG_CANCEL_TRADE, &WorldSession::handleCancelTrade, true, true, true, true, true);
     registry.registerOpcode(CMSG_SET_TRADE_ITEM, &WorldSession::handleSetTradeItem, true, true, true, true, false);
     registry.registerOpcode(CMSG_CLEAR_TRADE_ITEM, &WorldSession::handleClearTradeItem, true, true, true, true, false);
     registry.registerOpcode(CMSG_SET_TRADE_GOLD, &WorldSession::handleSetTradeGold, true, true, true, true, false);
@@ -1151,7 +1151,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(MSG_BATTLEGROUND_PLAYER_POSITIONS, &WorldSession::handleBattlegroundPlayerPositionsOpcode, true, true, true, false, false);
     registry.registerOpcode(MSG_PVP_LOG_DATA, &WorldSession::handlePVPLogDataOpcode, true, true, true, false, false);
     registry.registerOpcode(MSG_INSPECT_HONOR_STATS, &WorldSession::handleInspectHonorStatsOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_SET_ACTIONBAR_TOGGLES, &WorldSession::handleSetActionBarTogglesOpcode, true, true, true, true, false);
+    registry.registerOpcode(CMSG_SET_ACTIONBAR_TOGGLES, &WorldSession::handleSetActionBarTogglesOpcode, true, true, true, true, true);
     //registry.registerOpcode(CMSG_BATTLEFIELD_MGR_ENTRY_INVITE_RESPONSE, &WorldSession::HandleBgInviteResponse, false, false, true, false, false);
 
     // GM Ticket System
@@ -1180,7 +1180,7 @@ void WorldSession::registerOpcodeHandler()
 
     // Misc
     registry.registerOpcode(CMSG_OPEN_ITEM, &WorldSession::handleOpenItemOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_COMPLETE_CINEMATIC, &WorldSession::handleCompleteCinematic, true, true, true, true, false);
+    registry.registerOpcode(CMSG_COMPLETE_CINEMATIC, &WorldSession::handleCompleteCinematic, true, true, true, true, true);
     registry.registerOpcode(CMSG_NEXT_CINEMATIC_CAMERA, &WorldSession::handleNextCinematic, true, false, true, true, false);
     registry.registerOpcode(CMSG_MOUNTSPECIAL_ANIM, &WorldSession::handleMountSpecialAnimOpcode, true, true, true, false, false);
     registry.registerOpcode(CMSG_TOGGLE_CLOAK, &WorldSession::handleToggleCloakOpcode, true, true, true, false, false);
@@ -1223,7 +1223,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_EJECT_PASSENGER, &WorldSession::handleRemoveVehiclePassenger, false, false, true, true, false);
 
     // Unsorted
-    registry.registerOpcode<STATUS_AUTHED>(CMSG_READY_FOR_ACCOUNT_DATA_TIMES, &WorldSession::handleReadyForAccountDataTimes, false, false, true, true, false);
+    registry.registerOpcode<STATUS_AUTHED>(CMSG_READY_FOR_ACCOUNT_DATA_TIMES, &WorldSession::handleReadyForAccountDataTimes, false, false, true, true, true);
 
     registry.registerOpcode(CMSG_OPT_OUT_OF_LOOT, &WorldSession::handleSetAutoLootPassOpcode, true, true, true, false, false);
     registry.registerOpcode(CMSG_REMOVE_GLYPH, &WorldSession::handleRemoveGlyph, false, false, true, false, false);
@@ -1319,7 +1319,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_REQUEST_HOTFIX, &WorldSession::handleRequestHotfix, false, false, false, true, true);
     registry.registerOpcode(CMSG_RETURN_TO_GRAVEYARD, &WorldSession::handleReturnToGraveyardOpcode, false, false, false, true, false);
     registry.registerOpcode(CMSG_SUGGESTION_SUBMIT, &WorldSession::handleSuggestionOpcode, false, false, false, true, false);
-    registry.registerOpcode(CMSG_LOG_DISCONNECT, &WorldSession::handleLogDisconnectOpcode, false, false, false, true, false);
+    registry.registerOpcode(CMSG_LOG_DISCONNECT, &WorldSession::handleLogDisconnectOpcode, false, false, false, true, true);
     registry.registerOpcode(CMSG_PET_LEVEL_CHEAT, &WorldSession::Unhandled, false, false, false, true, false);
     registry.registerOpcode(CMSG_QUERY_BATTLEFIELD_STATE, &WorldSession::Unhandled, false, false, false, true, false);
     registry.registerOpcode(CMSG_ADDON_REGISTERED_PREFIXES, &WorldSession::handleAddonRegisteredPrefixesOpcode, false, false, false, true, true);

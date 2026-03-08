@@ -471,11 +471,14 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
         return;
 
     const char* unitName = " ";
+    WoWGuid targetGuid = 0;
     uint32_t nameLength = 1;
 
     Unit* unit = _player->getWorldMap()->getUnit(srlPacket.guid);
     if (unit)
     {
+        targetGuid = unit->getGuid();
+
         if (unit->isPlayer())
         {
             unitName = dynamic_cast<Player*>(unit)->getName().c_str();
@@ -523,7 +526,7 @@ void WorldSession::handleTextEmoteOpcode(WorldPacket& recvPacket)
         } break;
     }
 
-    _player->sendMessageToSet(SmsgTextEmote(nameLength, unitName, srlPacket.text_emote, _player->getGuid(), srlPacket.unk).serialise().get(), true);
+    _player->sendMessageToSet(SmsgTextEmote(nameLength, unitName, srlPacket.text_emote, _player->getGuid(), srlPacket.numEmote, targetGuid).serialise().get(), true);
 
     _player->getAchievementMgr()->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, srlPacket.text_emote, 0, 0);
 
