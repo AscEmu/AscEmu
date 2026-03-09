@@ -64,35 +64,47 @@ enum ChatMsg : uint8_t
 
 enum Languages
 {
-    LANG_ADDON          = -1,
-    LANG_UNIVERSAL      = 0x00,
-    LANG_ORCISH         = 0x01,
-    LANG_DARNASSIAN     = 0x02,
-    LANG_TAURAHE        = 0x03,
-    LANG_DWARVISH       = 0x06,
-    LANG_COMMON         = 0x07,
-    LANG_DEMONIC        = 0x08,
-    LANG_TITAN          = 0x09,
-    LANG_THELASSIAN     = 0x0A,
-    LANG_DRACONIC       = 0x0B,
-    LANG_KALIMAG        = 0x0C,
-    LANG_GNOMISH        = 0x0D,
-    LANG_TROLL          = 0x0E,
-    LANG_GUTTERSPEAK    = 0x21,
-    LANG_DRAENEI        = 0x23,
+    LANG_ADDON              = -1,
+    LANG_UNIVERSAL          = 0x000,
+    LANG_ORCISH             = 0x001,
+    LANG_DARNASSIAN         = 0x002,
+    LANG_TAURAHE            = 0x003,
+    LANG_DWARVISH           = 0x006,
+    LANG_COMMON             = 0x007,
+    LANG_DEMONIC            = 0x008,
+    LANG_TITAN              = 0x009,
+    LANG_THELASSIAN         = 0x00A,
+    LANG_DRACONIC           = 0x00B,
+    LANG_KALIMAG            = 0x00C,
+    LANG_GNOMISH            = 0x00D,
+    LANG_TROLL              = 0x00E,
+    LANG_GUTTERSPEAK        = 0x021,
+    LANG_DRAENEI            = 0x023,
 #if VERSION_STRING < Cata
-    NUM_LANGUAGES       = 0x24
-#else
-    LANG_ZOMBIE         = 0x24,
-    LANG_GNOMISH_BINARY = 0x25,
-    LANG_GOBLIN_BINARY  = 0x26,
-    LANG_WORGEN         = 0x27,
-    LANG_GOBLIN         = 0x28,
-    NUM_LANGUAGES       = 0x29
+    NUM_LANGUAGES           = 0x024
+#else // >= Cata
+    LANG_ZOMBIE             = 0x024,
+    LANG_GNOMISH_BINARY     = 0x025,
+    LANG_GOBLIN_BINARY      = 0x026,
+    LANG_WORGEN             = 0x027,
+    LANG_GOBLIN             = 0x028,
+#if VERSION_STRING == Cata
+    NUM_LANGUAGES           = 0x029
+#else // == Mop
+    LANG_PANDAREN_NEUTRAL   = 0x02A,
+    LANG_PANDAREN_ALLIANCE  = 0x02B,
+    LANG_PANDAREN_HORDE     = 0x02C,
+    LANG_RIKKITUN           = 0x0A8,
+    NUM_LANGUAGES           = 0x0A9
 #endif
-    //LANG_PANDAREN_NEUTRAL ,
-    //LANG_PANDAREN_ALLIANCE ,
-    //LANG_PANDAREN_HORDE
+#endif
+};
+
+struct LanguageSkillSpell
+{
+    Languages languageId;
+    uint32_t skillId;
+    uint32_t spellId;
 };
 
 #define MSG_COLOR_LIGHTRED          "|cffff6060"

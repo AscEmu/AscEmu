@@ -78,52 +78,49 @@ bool WorldSession::isFloodProtectionTriggered()
     return false;
 }
 
-static const uint16_t LanguageSkills[NUM_LANGUAGES] =
+std::vector<LanguageSkillSpell> languageSpellSkillStore =
 {
-    0,          // UNIVERSAL        0x00
-    109,        // ORCISH           0x01
-    113,        // DARNASSIAN       0x02
-    115,        // TAURAHE          0x03
-    0,          // -                0x04
-    0,          // -                0x05
-    111,        // DWARVISH         0x06
-    98,         // COMMON           0x07
-    139,        // DEMON TONGUE     0x08
-    140,        // TITAN            0x09
-    137,        // THALSSIAN        0x0A
-    138,        // DRACONIC         0x0B
-    0,          // KALIMAG          0x0C
-    313,        // GNOMISH          0x0D
-    315,        // TROLL            0x0E
-    0,          // -                0x0F
-    0,          // -                0x10
-    0,          // -                0x11
-    0,          // -                0x12
-    0,          // -                0x13
-    0,          // -                0x14
-    0,          // -                0x15
-    0,          // -                0x16
-    0,          // -                0x17
-    0,          // -                0x18
-    0,          // -                0x19
-    0,          // -                0x1A
-    0,          // -                0x1B
-    0,          // -                0x1C
-    0,          // -                0x1D
-    0,          // -                0x1E
-    0,          // -                0x1F
-    0,          // -                0x20
-    673,        // GUTTERSPEAK      0x21
-    0,          // -                0x22
-    759,        // DRAENEI          0x23
+     { LANG_ADDON,               0,                                   0 }
+    ,{ LANG_UNIVERSAL,           0,                                   0 }
+    ,{ LANG_ORCISH,              SKILL_LANG_ORCISH,                 669 }
+    ,{ LANG_DARNASSIAN,          SKILL_LANG_DARNASSIAN,             671 }
+    ,{ LANG_TAURAHE,             SKILL_LANG_TAURAHE,                670 }
+    ,{ LANG_DWARVISH,            SKILL_LANG_DWARVEN,                672 }
+    ,{ LANG_COMMON,              SKILL_LANG_COMMON,                 668 }
+    ,{ LANG_DEMONIC,             SKILL_LANG_DEMON_TONGUE,           815 }
+    ,{ LANG_TITAN,               SKILL_LANG_TITAN,                  816 }
+    ,{ LANG_THELASSIAN,          SKILL_LANG_THALASSIAN,             813 }
+    ,{ LANG_DRACONIC,            SKILL_LANG_DRACONIC,               814 }
+    ,{ LANG_KALIMAG,             SKILL_LANG_OLD_TONGUE,             817 }
+    ,{ LANG_GNOMISH,             SKILL_LANG_GNOMISH,               7340 }
+    ,{ LANG_TROLL,               SKILL_LANG_TROLL,                 7341 }
+    ,{ LANG_GUTTERSPEAK,         SKILL_LANG_GUTTERSPEAK,          17737 }
+#if VERSION_STRING >= TBC
+    ,{ LANG_DRAENEI,             SKILL_LANG_DRAENEI,              29932 }
 #if VERSION_STRING >= Cata
-    0,          // ZOMBIE           0x24
-    0,          // GNOMISH_BINAR    0x25
-    0,          // GOBLIN_BINARY    0x26
-    791,        // WORGEN           0x27
-    792,        // GOBLIN           0x28
+    ,{ LANG_ZOMBIE,              0,                                   0 }
+    ,{ LANG_GNOMISH_BINARY,      0,                                   0 }
+    ,{ LANG_GOBLIN_BINARY,       0,                                   0 }
+    ,{ LANG_WORGEN,              SKILL_LANG_GILNEAN,              69270 }
+    ,{ LANG_GOBLIN,              SKILL_LANG_GOBLIN,               69269 }
+#if VERSION_STRING == Mop
+    ,{ LANG_PANDAREN_NEUTRAL,    SKILL_LANG_PANDAREN_NEUTRAL,    108127 }
+    ,{ LANG_PANDAREN_ALLIANCE,   SKILL_LANG_PANDAREN_ALLIANCE,   108130 }
+    ,{ LANG_PANDAREN_HORDE,      SKILL_LANG_PANDAREN_HORDE,      108131 }
+#endif
+#endif
 #endif
 };
+
+LanguageSkillSpell getLanguageSkillSpell(uint8_t language)
+{
+    for (const auto& languageSkillSpell : languageSpellSkillStore)
+    {
+        if (languageSkillSpell.languageId == language)
+            return languageSkillSpell;
+    }
+    return { LANG_UNIVERSAL, 0, 0 };
+}
 
 void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
 {
@@ -136,8 +133,11 @@ void WorldSession::handleMessageChatOpcode(WorldPacket& recvPacket)
 
     if (messageLanguage != LANG_ADDON)
     {
-        if (const auto language_skill = LanguageSkills[messageLanguage])
-            player_can_speak_language = _player->hasSkillLine(language_skill);
+        if (messageLanguage <= languageSpellSkillStore.size())
+        {
+            if (auto languageSkill = getLanguageSkillSpell(messageLanguage).skillId)
+                player_can_speak_language = _player->hasSkillLine(languageSkill);
+        }
 
         if (worldConfig.player.isInterfactionChatEnabled)
         {
