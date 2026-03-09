@@ -902,7 +902,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_LEAVE_CHANNEL, &WorldSession::handleChannelLeave, true, true, true, true, true);
     registry.registerOpcode(CMSG_CHANNEL_LIST, &WorldSession::handleChannelList, true, true, true, true, true);
     registry.registerOpcode(CMSG_CHANNEL_PASSWORD, &WorldSession::handleChannelPassword, true, true, true, true, false);
-    registry.registerOpcode(CMSG_CHANNEL_SET_OWNER, &WorldSession::handleChannelSetOwner, true, true, true, true, false);
+    registry.registerOpcode(CMSG_CHANNEL_SET_OWNER, &WorldSession::handleChannelSetOwner, true, true, true, true, true);
     registry.registerOpcode(CMSG_CHANNEL_OWNER, &WorldSession::handleChannelOwner, true, true, true, true, false);
     registry.registerOpcode(CMSG_CHANNEL_MODERATOR, &WorldSession::handleChannelModerator, true, true, true, true, false);
     registry.registerOpcode(CMSG_CHANNEL_UNMODERATOR, &WorldSession::handleChannelUnmoderator, true, true, true, true, false);
