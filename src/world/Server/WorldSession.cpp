@@ -1233,7 +1233,7 @@ void WorldSession::registerOpcodeHandler()
     // Calendar - Unhandled
     registry.registerOpcode(CMSG_CALENDAR_GET_CALENDAR, &WorldSession::handleCalendarGetCalendar, false, false, true, true, false);
     registry.registerOpcode(CMSG_CALENDAR_COMPLAIN, &WorldSession::handleCalendarComplain, false, false, true, false, false);
-    registry.registerOpcode(CMSG_CALENDAR_GET_NUM_PENDING, &WorldSession::handleCalendarGetNumPending, false, false, true, true, false);
+    registry.registerOpcode(CMSG_CALENDAR_GET_NUM_PENDING, &WorldSession::handleCalendarGetNumPending, false, false, true, true, true);
     registry.registerOpcode(CMSG_CALENDAR_ADD_EVENT, &WorldSession::handleCalendarAddEvent, false, false, true, false, false);
 
     registry.registerOpcode(CMSG_CALENDAR_GET_EVENT, &WorldSession::handleCalendarGetEvent, false, false, true, false, false);
