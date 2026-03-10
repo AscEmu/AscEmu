@@ -6,9 +6,152 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Logging/Logger.hpp"
 #include "MovementInfo.hpp"
 #include "Server/OpcodeTable.hpp"
+#include "MovementTemplates.hpp"
 
 void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode)
 {
+#if VERSION_STRING == Mop
+    uint32_t internalOpcodeId = sOpcodeTables.getInternalIdForHex(opcode);
+    std::span<const MovementElement> elements = MoPMovement::getMovementTemplate(internalOpcodeId);
+
+    if (elements.empty())
+    {
+        sLogger.failure("Unhandled MoP Movement Opcode: {} (Raw: 0x{:X})", internalOpcodeId, opcode);
+        return;
+    }
+
+    bool hasMovementFlags = false;
+    bool hasMovementFlags2 = false;
+    bool hasTransportData = false;
+    bool hasCounter = false;
+    uint32_t forcesCount = 0;
+
+    // Zero out memory to prevent server validation from rejecting garbage floats!
+    position.x = 0.0f;
+    position.y = 0.0f;
+    position.z = 0.0f;
+    position.o = 0.0f;
+    pitch_rate = 0.0f;
+    spline_elevation = 0.0f;
+    fall_time = 0;
+    jump_info.velocity = 0.0f;
+    jump_info.cosAngle = 0.0f;
+    jump_info.sinAngle = 0.0f;
+    jump_info.xyspeed = 0.0f;
+        
+    for (const MovementElement element : elements)
+    {
+        switch (element)
+        {
+        case MovementElement::PositionX:   data >> position.x; break;
+        case MovementElement::PositionY:   data >> position.y; break;
+        case MovementElement::PositionZ:   data >> position.z; break;
+        case MovementElement::Orientation: if (status_info.hasOrientation) data >> position.o; break;
+        case MovementElement::Pitch:       if (status_info.hasPitch) data >> pitch_rate; break;
+        case MovementElement::SplineElevation: if (status_info.hasSplineElevation) data >> spline_elevation; break;
+        case MovementElement::Timestamp:   if (status_info.hasTimeStamp) data >> update_time; break;
+
+            // --- Basic Bits ---
+        case MovementElement::HasMovementFlags:   hasMovementFlags = !data.readBit(); break;
+        case MovementElement::HasMovementFlags2:  hasMovementFlags2 = !data.readBit(); break;
+        case MovementElement::HasTimestamp:       status_info.hasTimeStamp = !data.readBit(); break;
+        case MovementElement::HasFallData:        status_info.hasFallData = data.readBit(); break;
+        case MovementElement::HasPitch:           status_info.hasPitch = !data.readBit(); break;
+        case MovementElement::HasOrientation:     status_info.hasOrientation = !data.readBit(); break;
+        case MovementElement::HasSpline:          status_info.hasSpline = data.readBit(); break;
+        case MovementElement::HasSplineElevation: status_info.hasSplineElevation = !data.readBit(); break;
+        case MovementElement::HasTransportData:   hasTransportData = data.readBit(); break;
+        case MovementElement::HasCounter:         hasCounter = !data.readBit(); break;
+        case MovementElement::ZeroBit:            data.readBit(); break;
+
+            // --- CONDITIONAL BITS (Here was the bug!) ---
+        case MovementElement::HasFallDirection:
+            if (status_info.hasFallData) status_info.hasFallDirection = data.readBit();
+            break;
+
+            // --- Player Guid Bits ---
+        case MovementElement::HasGuidByte0: guid[0] = data.readBit(); break;
+        case MovementElement::HasGuidByte1: guid[1] = data.readBit(); break;
+        case MovementElement::HasGuidByte2: guid[2] = data.readBit(); break;
+        case MovementElement::HasGuidByte3: guid[3] = data.readBit(); break;
+        case MovementElement::HasGuidByte4: guid[4] = data.readBit(); break;
+        case MovementElement::HasGuidByte5: guid[5] = data.readBit(); break;
+        case MovementElement::HasGuidByte6: guid[6] = data.readBit(); break;
+        case MovementElement::HasGuidByte7: guid[7] = data.readBit(); break;
+
+            // --- Transport Guid Bits (CONDITIONAL!) ---
+        case MovementElement::HasTransportGuidByte0: if (hasTransportData) transport_guid[0] = data.readBit(); break;
+        case MovementElement::HasTransportGuidByte1: if (hasTransportData) transport_guid[1] = data.readBit(); break;
+        case MovementElement::HasTransportGuidByte2: if (hasTransportData) transport_guid[2] = data.readBit(); break;
+        case MovementElement::HasTransportGuidByte3: if (hasTransportData) transport_guid[3] = data.readBit(); break;
+        case MovementElement::HasTransportGuidByte4: if (hasTransportData) transport_guid[4] = data.readBit(); break;
+        case MovementElement::HasTransportGuidByte5: if (hasTransportData) transport_guid[5] = data.readBit(); break;
+        case MovementElement::HasTransportGuidByte6: if (hasTransportData) transport_guid[6] = data.readBit(); break;
+        case MovementElement::HasTransportGuidByte7: if (hasTransportData) transport_guid[7] = data.readBit(); break;
+        case MovementElement::HasTransportTime2:     if (hasTransportData) status_info.hasTransportTime2 = data.readBit(); break;
+        case MovementElement::HasTransportTime3:     if (hasTransportData) status_info.hasTransportTime3 = data.readBit(); break;
+
+            // --- Values dependent on Bits ---
+        case MovementElement::MovementFlags:  if (hasMovementFlags) flags = data.readBits(30); break;
+        case MovementElement::MovementFlags2: if (hasMovementFlags2) flags2 = static_cast<uint16_t>(data.readBits(13)); break;
+        case MovementElement::ForcesCount:    forcesCount = data.readBits(22); break;
+
+            // --- Player Guid Bytes ---
+        case MovementElement::GuidByte0: data.ReadByteSeq(guid[0]); break;
+        case MovementElement::GuidByte1: data.ReadByteSeq(guid[1]); break;
+        case MovementElement::GuidByte2: data.ReadByteSeq(guid[2]); break;
+        case MovementElement::GuidByte3: data.ReadByteSeq(guid[3]); break;
+        case MovementElement::GuidByte4: data.ReadByteSeq(guid[4]); break;
+        case MovementElement::GuidByte5: data.ReadByteSeq(guid[5]); break;
+        case MovementElement::GuidByte6: data.ReadByteSeq(guid[6]); break;
+        case MovementElement::GuidByte7: data.ReadByteSeq(guid[7]); break;
+
+            // --- Transport Values (CONDITIONAL) ---
+        case MovementElement::TransportGuidByte0: if (hasTransportData) data.ReadByteSeq(transport_guid[0]); break;
+        case MovementElement::TransportGuidByte1: if (hasTransportData) data.ReadByteSeq(transport_guid[1]); break;
+        case MovementElement::TransportGuidByte2: if (hasTransportData) data.ReadByteSeq(transport_guid[2]); break;
+        case MovementElement::TransportGuidByte3: if (hasTransportData) data.ReadByteSeq(transport_guid[3]); break;
+        case MovementElement::TransportGuidByte4: if (hasTransportData) data.ReadByteSeq(transport_guid[4]); break;
+        case MovementElement::TransportGuidByte5: if (hasTransportData) data.ReadByteSeq(transport_guid[5]); break;
+        case MovementElement::TransportGuidByte6: if (hasTransportData) data.ReadByteSeq(transport_guid[6]); break;
+        case MovementElement::TransportGuidByte7: if (hasTransportData) data.ReadByteSeq(transport_guid[7]); break;
+
+        case MovementElement::TransportPositionX:   if (hasTransportData) data >> transport_position.x; break;
+        case MovementElement::TransportPositionY:   if (hasTransportData) data >> transport_position.y; break;
+        case MovementElement::TransportPositionZ:   if (hasTransportData) data >> transport_position.z; break;
+        case MovementElement::TransportOrientation: if (hasTransportData) data >> transport_position.o; break;
+        case MovementElement::TransportSeat:        if (hasTransportData) data >> transport_seat; break;
+        case MovementElement::TransportTime:        if (hasTransportData) data >> transport_time; break;
+        case MovementElement::TransportTime2:       if (hasTransportData && status_info.hasTransportTime2) data >> transport_time2; break;
+        case MovementElement::TransportTime3:       if (hasTransportData && status_info.hasTransportTime3) data >> fall_time; break;
+
+            // --- Fall Data Values ---
+        case MovementElement::FallTime:            if (status_info.hasFallData) data >> fall_time; break;
+        case MovementElement::FallVerticalSpeed:   if (status_info.hasFallData) data >> jump_info.velocity; break;
+        case MovementElement::FallCosAngle:        if (status_info.hasFallData && status_info.hasFallDirection) data >> jump_info.cosAngle; break;
+        case MovementElement::FallSinAngle:        if (status_info.hasFallData && status_info.hasFallDirection) data >> jump_info.sinAngle; break;
+        case MovementElement::FallHorizontalSpeed: if (status_info.hasFallData && status_info.hasFallDirection) data >> jump_info.xyspeed; break;
+
+            // --- Forces & Misc ---
+        case MovementElement::Forces:
+            for (uint32_t i = 0; i < forcesCount; ++i) data.read_skip<uint32_t>();
+            break;
+        case MovementElement::Counter:
+            if (hasCounter) data.read_skip<uint32_t>();
+            break;
+
+        default: break;
+        }
+    }
+    
+    sLogger.debug("MoP Movement [Opcode: {}] successfully parsed:", internalOpcodeId);
+    sLogger.debug("-> X: {:.3f}, Y: {:.3f}, Z: {:.3f}, O: {:.3f}", position.x, position.y, position.z, position.o);
+
+    if (hasMovementFlags)
+    {
+        sLogger.debug("-> MovementFlags: 0x{:X}", flags);
+    }
+#else
 #if VERSION_STRING == Classic
 
     data >> flags >> update_time >> position >> position.o;
@@ -2604,6 +2747,7 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode)
             sLogger.failure("Unsupported MovementInfo::Read for 0x{:X} ({})!", opcode, sOpcodeTables.getInternalIdForHex(opcode));
             break;
     }
+#endif
 #endif
 }
 

@@ -182,7 +182,10 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 #if VERSION_STRING > TBC
     // wotlk check
     if (sessionMovementInfo.guid != mover->getGuid())
+    {
+        sLogger.debug("Movement dropped: GUID mismatch! Packet GUID vs Mover GUID");
         return;
+    }
 #endif
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -191,11 +194,12 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
         bool out_of_bounds = false;
         out_of_bounds = out_of_bounds || sessionMovementInfo.position.y < Map::Terrain::_minY;
         out_of_bounds = out_of_bounds || sessionMovementInfo.position.y > Map::Terrain::_maxY;
-        out_of_bounds = out_of_bounds || sessionMovementInfo.position.x > Map::Terrain::_maxX;
+        out_of_bounds = out_of_bounds || sessionMovementInfo.position.x < Map::Terrain::_minX;
         out_of_bounds = out_of_bounds || sessionMovementInfo.position.x > Map::Terrain::_maxX;
 
         if (out_of_bounds)
         {
+            sLogger.debug("Movement dropped: Out of Bounds!");
             Disconnect();
             return;
         }
@@ -223,6 +227,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     /// hack detected?
     if (isHackDetectedInMovementData(opcode))
     {
+        sLogger.debug("Movement dropped: Anti-Cheat triggered!");
         return;
     }
 
@@ -464,6 +469,7 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
 
     //////////////////////////////////////////////////////////////////////////////////////////
     /// Update our Server position
+    sLogger.debug("SUCCESS: Reached SetPosition! Updating server coordinates.");
     mover->SetPosition(sessionMovementInfo.position.x, sessionMovementInfo.position.y, sessionMovementInfo.position.z, sessionMovementInfo.position.o);
 }
 
