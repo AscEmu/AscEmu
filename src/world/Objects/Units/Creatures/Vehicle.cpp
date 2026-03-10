@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/ObjectMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Spell/SpellAura.hpp"
-#include "Spell/Definitions/PowerType.hpp"
 #include "Server/Packets/SmsgControlVehicle.h"
 #include "Server/Script/CreatureAIScript.hpp"
 #include "Movement/MovementManager.h"
@@ -111,18 +110,18 @@ void Vehicle::initMovementFlags()
 void Vehicle::initVehiclePowerTypes()
 {
     // Set Correct Power Type
-    switch (_vehicleInfo->powerType)
+    switch (static_cast<VehiclePower>(_vehicleInfo->powerType))
     {
-        case POWER_TYPE_STEAM:
-        case POWER_TYPE_HEAT:
-        case POWER_TYPE_BLOOD:
-        case POWER_TYPE_OOZE:
-        case POWER_TYPE_WRATH:
+        case VehiclePower::STEAM:
+        case VehiclePower::HEAT:
+        case VehiclePower::BLOOD:
+        case VehiclePower::OOZE:
+        case VehiclePower::WRATH:
             _owner->setPowerType(POWER_TYPE_ENERGY);
             _owner->setMaxPower(POWER_TYPE_ENERGY, 100);
             _owner->setPower(POWER_TYPE_ENERGY, 100);
             break;
-        case POWER_TYPE_PYRITE:
+        case VehiclePower::PYRITE:
             _owner->setPowerType(POWER_TYPE_ENERGY);
             _owner->setMaxPower(POWER_TYPE_ENERGY, 50);
             _owner->setPower(POWER_TYPE_ENERGY, 50);

@@ -480,6 +480,25 @@ void Unit::setClass(uint8_t class_) { write(unitData()->field_bytes_0.s.unit_cla
 uint8_t Unit::getGender() const { return unitData()->field_bytes_0.s.gender; }
 void Unit::setGender(uint8_t gender) { write(unitData()->field_bytes_0.s.gender, gender); }
 
+#if VERSION_STRING == Mop
+PowerType Unit::getPowerType() const { return static_cast<PowerType>(unitData()->display_power); }
+void Unit::setPowerType(uint8_t powerType)
+{
+    write(static_cast<uint8_t>(unitData()->display_power), powerType); // TODO: Check if this works correctly, might need to be changed to write(unitData()->display_power, powerType) instead
+
+#if VERSION_STRING == TBC
+    // TODO Fix this later
+    return;
+#endif
+
+    // Update power type also to group
+    const auto plr = getPlayerOwnerOrSelf();
+    if (plr == nullptr || !plr->IsInWorld() || plr->getGroup() == nullptr)
+        return;
+
+    plr->addGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_POWER_TYPE : GROUP_UPDATE_FLAG_PET_POWER_TYPE);
+}
+#else
 PowerType Unit::getPowerType() const { return static_cast<PowerType>(unitData()->field_bytes_0.s.power_type); }
 void Unit::setPowerType(uint8_t powerType)
 {
@@ -497,6 +516,7 @@ void Unit::setPowerType(uint8_t powerType)
 
     plr->addGroupUpdateFlag(isPlayer() ? GROUP_UPDATE_FLAG_POWER_TYPE : GROUP_UPDATE_FLAG_PET_POWER_TYPE);
 }
+#endif
 //bytes_0 end
 
 uint32_t Unit::getHealth() const { return unitData()->health; }
