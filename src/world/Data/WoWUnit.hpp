@@ -19,6 +19,20 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma pack(push, 1)
 
+#if VERSION_STRING == Mop
+union field_bytes_0_union
+{
+    struct parts
+    {
+        uint8_t race;
+        uint8_t unit_class;
+        uint8_t class_spec;
+        uint8_t gender;
+    } s;
+
+    uint32_t raw;
+};
+#else
 union field_bytes_0_union
 {
     struct parts
@@ -28,8 +42,10 @@ union field_bytes_0_union
         uint8_t gender;
         uint8_t power_type;
     } s;
+
     uint32_t raw;
 };
+#endif
 
 union unit_virtual_item_info
 {
@@ -42,6 +58,7 @@ union unit_virtual_item_info
         uint8_t inventory_type;
         uint8_t sheath;
     } fields;
+
     uint64_t raw;
 };
 
@@ -499,6 +516,7 @@ union field_bytes_1_union
         uint8_t stand_state_flag;
         uint8_t animation_flag;
     } s;
+
     uint32_t raw;
 };
 
@@ -511,6 +529,7 @@ union field_bytes_2_union
         uint8_t pet_flag;
         uint8_t shape_shift_form;
     } s;
+
     uint32_t raw;
 };
 

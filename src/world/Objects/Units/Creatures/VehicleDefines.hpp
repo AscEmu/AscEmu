@@ -11,6 +11,55 @@ This file is released under the MIT license. See README-MIT for more information
 #include <unordered_map>
 #include <cstdint>
 
+enum class VehiclePower : uint32_t
+{
+    STEAM               = 61,
+    PYRITE              = 41,
+    HEAT                = 101,
+    OOZE                = 121,
+    BLOOD               = 141,
+    WRATH               = 142,
+#if VERSION_STRING == Mop
+    ARCANE_ENERGY       = 143,
+    LIFE_ENERGY         = 144,
+    SUN_ENERGY          = 145,
+    SWING_VELOCITY      = 146,
+    SHADOWFLAME_ENERGY  = 147,
+    BLUE_POWER          = 148,
+    PURPLE_POWER        = 149,
+    GREEN_POWER         = 150,
+    ORANGE_POWER        = 151,
+    ENERGY_2            = 153,
+    ARCANEENERGY        = 161,
+    WIND_1              = 162,
+    WIND_2              = 163,
+    WIND_3              = 164,
+    FUEL                = 165,
+    SUN_POWER           = 166,
+    TWILIGHT_ENERGY     = 169,
+    VENOM               = 174,
+    ORANGE_2            = 176,
+    CONSUMING_FLAME     = 177,
+    PYROCLASTIC_FRENZY  = 178,
+    FLASHFIRE           = 179,
+    FEL_ENERGY          = 181,
+    BACK_HEAT           = 183,
+    JADE_POWER          = 187,
+    COBALT_POWER        = 188,
+    JASPER_POWER        = 189,
+    AMETHYST_POWER      = 190,
+    ARCANE_ENERGY_2     = 191,
+    RED_POWER           = 192,
+    RED_2               = 196,
+    WILLPOWER           = 198,
+    DARK_POWER          = 199,
+    GOLD_POWER          = 200,
+    RESONANCE           = 201,
+    SHA_ENERGY          = 203,
+    FOOD                = 206
+#endif
+};
+
 enum VehicleStatus
 {
     STATUS_NONE                     = 0,
@@ -60,8 +109,9 @@ struct PassengerInfo
 struct VehicleSeatAddon
 {
     VehicleSeatAddon() = default;
-    VehicleSeatAddon(float orientatonOffset, LocationVector exitLv, uint8_t param) :
-        seatOrientationOffset(orientatonOffset), exitLocation(exitLv), exitParameter(VehicleExitParameters(param)) { }
+
+    VehicleSeatAddon(float orientationOffset, LocationVector exitLv, uint8_t param) :
+        seatOrientationOffset(orientationOffset), exitLocation(exitLv), exitParameter(static_cast<VehicleExitParameters>(param)) { }
 
     float seatOrientationOffset = 0.f;
     LocationVector exitLocation = { 0.f, 0.f, 0.f, 0.f };
@@ -98,6 +148,7 @@ struct VehicleAccessory
 {
     VehicleAccessory(uint32_t entry, int8_t seatId, bool isMinion, uint8_t summonType, uint32_t summonTime) :
         accessoryEntry(entry), isMinion(isMinion), summonTime(summonTime), seatId(seatId), summonedType(summonType) { }
+
     uint32_t accessoryEntry;
     bool isMinion;
     uint32_t summonTime;
