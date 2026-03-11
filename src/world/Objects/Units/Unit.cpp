@@ -484,12 +484,7 @@ void Unit::setGender(uint8_t gender) { write(unitData()->field_bytes_0.s.gender,
 PowerType Unit::getPowerType() const { return static_cast<PowerType>(unitData()->display_power); }
 void Unit::setPowerType(uint8_t powerType)
 {
-    write(static_cast<uint8_t>(unitData()->display_power), powerType); // TODO: Check if this works correctly, might need to be changed to write(unitData()->display_power, powerType) instead
-
-#if VERSION_STRING == TBC
-    // TODO Fix this later
-    return;
-#endif
+    write(unitData()->display_power, static_cast<uint32_t>(powerType));
 
     // Update power type also to group
     const auto plr = getPlayerOwnerOrSelf();
