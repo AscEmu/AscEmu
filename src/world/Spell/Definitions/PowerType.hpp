@@ -17,7 +17,7 @@ enum PowerType : int16_t
 #if VERSION_STRING < Cata
     POWER_TYPE_HAPPINESS        = 4,
 #elif VERSION_STRING == Mop
-    POWER_TYPE_HAPPINESS        = 4,
+    POWER_TYPE_LIGHT_FORCE      = 4, // MoP: A part of the Force that should be used by monks (removed in MoP Beta)
 #else
     POWER_TYPE_UNK4             = 4,
 #endif
@@ -32,11 +32,12 @@ enum PowerType : int16_t
     POWER_TYPE_ALTERNATIVE      = 10, // Every player class has this, used in quests
 #endif
 #if VERSION_STRING >= Mop
-    POWER_TYPE_CHI              = 12,
-    POWER_TYPE_SHADOW_ORBS      = 13,
-    POWER_TYPE_BURNING_EMBERS   = 14,
-    POWER_TYPE_DEMONIC_FURY     = 15,
-    POWER_TYPE_ARCANE_CHARGES   = 16,
+    POWER_TYPE_DARK_FORCE       = 11, // MoP: A part of the Force that should be used by monks (removed in MoP Beta)
+    POWER_TYPE_CHI              = 12, // MoP: Used by monks
+    POWER_TYPE_SHADOW_ORBS      = 13, // MoP: Used by shadow priests
+    POWER_TYPE_BURNING_EMBERS   = 14, // MoP: Used by destruction warlocks
+    POWER_TYPE_DEMONIC_FURY     = 15, // MoP: Used by demonology warlocks
+    POWER_TYPE_ARCANE_CHARGES   = 16, // MoP: Used by arcane mages
 #endif
     TOTAL_PLAYER_POWER_TYPES
 };
