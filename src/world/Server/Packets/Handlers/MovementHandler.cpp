@@ -423,12 +423,14 @@ void WorldSession::handleMovementOpcodes(WorldPacket& recvData)
     //////////////////////////////////////////////////////////////////////////////////////////
     /// send our move to all inrange players
 
-#if VERSION_STRING >= Cata
-
+#if VERSION_STRING == Cata
     WorldPacket data(SMSG_PLAYER_MOVE, recvData.size());
     data << sessionMovementInfo;
     mover->sendMessageToSet(&data, false);
-
+#elif VERSION_STRING == Mop
+    WorldPacket data(SMSG_PLAYER_MOVE, recvData.size());
+    sessionMovementInfo.writeMovementInfo(data, SMSG_PLAYER_MOVE);
+    mover->sendMessageToSet(&data, _player);
 #elif VERSION_STRING == WotLK
 
     WorldPacket data(opcode, recvData.size());

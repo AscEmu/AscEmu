@@ -64,7 +64,7 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode)
         case MovementElement::HasCounter:         hasCounter = !data.readBit(); break;
         case MovementElement::ZeroBit:            data.readBit(); break;
 
-            // --- CONDITIONAL BITS (Here was the bug!) ---
+            // --- CONDITIONAL BITS ---
         case MovementElement::HasFallDirection:
             if (status_info.hasFallData) status_info.hasFallDirection = data.readBit();
             break;
@@ -79,7 +79,7 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode)
         case MovementElement::HasGuidByte6: guid[6] = data.readBit(); break;
         case MovementElement::HasGuidByte7: guid[7] = data.readBit(); break;
 
-            // --- Transport Guid Bits (CONDITIONAL!) ---
+            // --- Transport Guid Bits ---
         case MovementElement::HasTransportGuidByte0: if (hasTransportData) transport_guid[0] = data.readBit(); break;
         case MovementElement::HasTransportGuidByte1: if (hasTransportData) transport_guid[1] = data.readBit(); break;
         case MovementElement::HasTransportGuidByte2: if (hasTransportData) transport_guid[2] = data.readBit(); break;
@@ -106,7 +106,7 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode)
         case MovementElement::GuidByte6: data.ReadByteSeq(guid[6]); break;
         case MovementElement::GuidByte7: data.ReadByteSeq(guid[7]); break;
 
-            // --- Transport Values (CONDITIONAL) ---
+            // --- Transport Values ---
         case MovementElement::TransportGuidByte0: if (hasTransportData) data.ReadByteSeq(transport_guid[0]); break;
         case MovementElement::TransportGuidByte1: if (hasTransportData) data.ReadByteSeq(transport_guid[1]); break;
         case MovementElement::TransportGuidByte2: if (hasTransportData) data.ReadByteSeq(transport_guid[2]); break;
@@ -2753,6 +2753,138 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode)
 
 void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool withGuid/* = true*/) const
 {
+#if VERSION_STRING == Mop
+    uint32_t internalOpcodeId = (opcode == SMSG_PLAYER_MOVE) ? SMSG_PLAYER_MOVE : sOpcodeTables.getInternalIdForHex(opcode);
+    std::span<const MovementElement> elements = MoPMovement::getMovementTemplate(internalOpcodeId);
+
+    if (elements.empty())
+    {
+        sLogger.failure("Unhandled MoP Movement Write Opcode: {} (Raw: 0x{:X})", internalOpcodeId, opcode);
+        return;
+    }
+
+    bool hasMovementFlags = (flags != 0);
+    bool hasMovementFlags2 = (flags2 != 0);
+    bool hasCounter = false;
+    uint32_t forcesCount = 0;
+
+    // Check if we are on a transport (if any byte of the transport_guid is set)
+    bool hasTransportData = false;
+    for (uint32_t i = 0; i < 8; ++i)
+    {
+        if (transport_guid[i] != 0)
+        {
+            hasTransportData = true;
+            break;
+        }
+    }
+
+    for (const MovementElement element : elements)
+    {
+        switch (element)
+        {
+            // --- Position & Orientation Floats ---
+        case MovementElement::PositionX:   data << position.x; break;
+        case MovementElement::PositionY:   data << position.y; break;
+        case MovementElement::PositionZ:   data << position.z; break;
+        case MovementElement::Orientation: if (status_info.hasOrientation) data << position.o; break;
+        case MovementElement::Pitch:       if (status_info.hasPitch) data << pitch_rate; break;
+        case MovementElement::SplineElevation: if (status_info.hasSplineElevation) data << spline_elevation; break;
+        case MovementElement::Timestamp:   if (status_info.hasTimeStamp) data << update_time; break;
+
+            // --- Basic Bits ---
+        case MovementElement::HasMovementFlags:   data.writeBit(!hasMovementFlags); break;
+        case MovementElement::HasMovementFlags2:  data.writeBit(!hasMovementFlags2); break;
+        case MovementElement::HasTimestamp:       data.writeBit(!status_info.hasTimeStamp); break;
+        case MovementElement::HasFallData:        data.writeBit(status_info.hasFallData); break;
+        case MovementElement::HasPitch:           data.writeBit(!status_info.hasPitch); break;
+        case MovementElement::HasOrientation:     data.writeBit(!status_info.hasOrientation); break;
+        case MovementElement::HasSpline:          data.writeBit(status_info.hasSpline); break;
+        case MovementElement::HasSplineElevation: data.writeBit(!status_info.hasSplineElevation); break;
+        case MovementElement::HasTransportData:   data.writeBit(hasTransportData); break;
+        case MovementElement::HasCounter:         data.writeBit(!hasCounter); break;
+        case MovementElement::ZeroBit:            data.writeBit(false); break; // Always 0
+
+            // --- CONDITIONAL BITS ---
+        case MovementElement::HasFallDirection:
+            if (status_info.hasFallData) data.writeBit(status_info.hasFallDirection);
+            break;
+
+            // --- Player Guid Bits ---
+        case MovementElement::HasGuidByte0: data.writeBit(guid[0] != 0); break;
+        case MovementElement::HasGuidByte1: data.writeBit(guid[1] != 0); break;
+        case MovementElement::HasGuidByte2: data.writeBit(guid[2] != 0); break;
+        case MovementElement::HasGuidByte3: data.writeBit(guid[3] != 0); break;
+        case MovementElement::HasGuidByte4: data.writeBit(guid[4] != 0); break;
+        case MovementElement::HasGuidByte5: data.writeBit(guid[5] != 0); break;
+        case MovementElement::HasGuidByte6: data.writeBit(guid[6] != 0); break;
+        case MovementElement::HasGuidByte7: data.writeBit(guid[7] != 0); break;
+
+            // --- Transport Guid Bits ---
+        case MovementElement::HasTransportGuidByte0: if (hasTransportData) data.writeBit(transport_guid[0] != 0); break;
+        case MovementElement::HasTransportGuidByte1: if (hasTransportData) data.writeBit(transport_guid[1] != 0); break;
+        case MovementElement::HasTransportGuidByte2: if (hasTransportData) data.writeBit(transport_guid[2] != 0); break;
+        case MovementElement::HasTransportGuidByte3: if (hasTransportData) data.writeBit(transport_guid[3] != 0); break;
+        case MovementElement::HasTransportGuidByte4: if (hasTransportData) data.writeBit(transport_guid[4] != 0); break;
+        case MovementElement::HasTransportGuidByte5: if (hasTransportData) data.writeBit(transport_guid[5] != 0); break;
+        case MovementElement::HasTransportGuidByte6: if (hasTransportData) data.writeBit(transport_guid[6] != 0); break;
+        case MovementElement::HasTransportGuidByte7: if (hasTransportData) data.writeBit(transport_guid[7] != 0); break;
+        case MovementElement::HasTransportTime2:     if (hasTransportData) data.writeBit(status_info.hasTransportTime2); break;
+        case MovementElement::HasTransportTime3:     if (hasTransportData) data.writeBit(status_info.hasTransportTime3); break;
+
+            // --- Values dependent on Bits ---
+        case MovementElement::MovementFlags:  if (hasMovementFlags) data.writeBits(flags, 30); break;
+        case MovementElement::MovementFlags2: if (hasMovementFlags2) data.writeBits(flags2, 13); break;
+        case MovementElement::ForcesCount:    data.writeBits(forcesCount, 22); break;
+
+            // --- Player Guid Bytes ---
+        case MovementElement::GuidByte0: if (guid[0] != 0) data.WriteByteSeq(guid[0]); break;
+        case MovementElement::GuidByte1: if (guid[1] != 0) data.WriteByteSeq(guid[1]); break;
+        case MovementElement::GuidByte2: if (guid[2] != 0) data.WriteByteSeq(guid[2]); break;
+        case MovementElement::GuidByte3: if (guid[3] != 0) data.WriteByteSeq(guid[3]); break;
+        case MovementElement::GuidByte4: if (guid[4] != 0) data.WriteByteSeq(guid[4]); break;
+        case MovementElement::GuidByte5: if (guid[5] != 0) data.WriteByteSeq(guid[5]); break;
+        case MovementElement::GuidByte6: if (guid[6] != 0) data.WriteByteSeq(guid[6]); break;
+        case MovementElement::GuidByte7: if (guid[7] != 0) data.WriteByteSeq(guid[7]); break;
+
+            // --- Transport Values ---
+        case MovementElement::TransportGuidByte0: if (hasTransportData && transport_guid[0] != 0) data.WriteByteSeq(transport_guid[0]); break;
+        case MovementElement::TransportGuidByte1: if (hasTransportData && transport_guid[1] != 0) data.WriteByteSeq(transport_guid[1]); break;
+        case MovementElement::TransportGuidByte2: if (hasTransportData && transport_guid[2] != 0) data.WriteByteSeq(transport_guid[2]); break;
+        case MovementElement::TransportGuidByte3: if (hasTransportData && transport_guid[3] != 0) data.WriteByteSeq(transport_guid[3]); break;
+        case MovementElement::TransportGuidByte4: if (hasTransportData && transport_guid[4] != 0) data.WriteByteSeq(transport_guid[4]); break;
+        case MovementElement::TransportGuidByte5: if (hasTransportData && transport_guid[5] != 0) data.WriteByteSeq(transport_guid[5]); break;
+        case MovementElement::TransportGuidByte6: if (hasTransportData && transport_guid[6] != 0) data.WriteByteSeq(transport_guid[6]); break;
+        case MovementElement::TransportGuidByte7: if (hasTransportData && transport_guid[7] != 0) data.WriteByteSeq(transport_guid[7]); break;
+
+        case MovementElement::TransportPositionX:   if (hasTransportData) data << transport_position.x; break;
+        case MovementElement::TransportPositionY:   if (hasTransportData) data << transport_position.y; break;
+        case MovementElement::TransportPositionZ:   if (hasTransportData) data << transport_position.z; break;
+        case MovementElement::TransportOrientation: if (hasTransportData) data << transport_position.o; break;
+        case MovementElement::TransportSeat:        if (hasTransportData) data << transport_seat; break;
+        case MovementElement::TransportTime:        if (hasTransportData) data << transport_time; break;
+        case MovementElement::TransportTime2:       if (hasTransportData && status_info.hasTransportTime2) data << transport_time2; break;
+        case MovementElement::TransportTime3:       if (hasTransportData && status_info.hasTransportTime3) data << fall_time; break;
+
+            // --- Fall Data Values ---
+        case MovementElement::FallTime:            if (status_info.hasFallData) data << fall_time; break;
+        case MovementElement::FallVerticalSpeed:   if (status_info.hasFallData) data << jump_info.velocity; break;
+        case MovementElement::FallCosAngle:        if (status_info.hasFallData && status_info.hasFallDirection) data << jump_info.cosAngle; break;
+        case MovementElement::FallSinAngle:        if (status_info.hasFallData && status_info.hasFallDirection) data << jump_info.sinAngle; break;
+        case MovementElement::FallHorizontalSpeed: if (status_info.hasFallData && status_info.hasFallDirection) data << jump_info.xyspeed; break;
+
+            // --- Forces & Misc ---
+        case MovementElement::Forces:
+            for (uint32_t i = 0; i < forcesCount; ++i) data << static_cast<uint32_t>(0); // Dummy default
+            break;
+        case MovementElement::Counter:
+            if (hasCounter) data << static_cast<uint32_t>(0);
+            break;
+
+        default: break;
+        }
+    }
+#else
 #if VERSION_STRING == Classic
     if (withGuid)
         data << guid;
@@ -4846,5 +4978,6 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             break;
     }
 
+#endif
 #endif
 }
