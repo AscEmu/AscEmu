@@ -29,6 +29,8 @@ namespace AscEmu::Packets
         uint32_t glyphIndex = 0;    // since 12340
         uint8_t castFlags = 0;      // since 12340
 
+        uint32_t targetFlags = 0;
+
         CmsgUseItem() : CmsgUseItem(0, 0)
         {
         }
@@ -48,24 +50,27 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+#if VERSION_STRING < Mop
 #if VERSION_STRING == Classic
             packet >> containerIndex >> inventorySlot >> spellIndex;
-            //packet >> SpellCastTargets; <- in handleUseItemOpcode;
-#elif VERSION_STRING == TBC
+#endif
+#if VERSION_STRING == TBC
             packet >> containerIndex >> inventorySlot >> spellIndex >> castCount >> itemGuidRaw;
-            //packet >> SpellCastTargets; <- in handleUseItemOpcode;
             itemGuid.init(itemGuidRaw);
-#elif VERSION_STRING == WotLK
+#endif
+#if VERSION_STRING == WotLK
             packet >> containerIndex >> inventorySlot >> castCount >> spellId >> itemGuidRaw >> glyphIndex >> castFlags;
-            //packet >> SpellCastTargets; <- in handleUseItemOpcode;
             //packet >> projectilePitch >> projectileSpeed >> hasMovementData; <- in handleUseItemOpcode;
             itemGuid.init(itemGuidRaw);
-#elif VERSION_STRING == Cata
+#endif
+#if VERSION_STRING == Cata
             packet >> containerIndex >> inventorySlot >> castCount >> spellId >> itemGuidRaw >> glyphIndex >> castFlags;
-            //packet >> SpellCastTargets; <- in handleUseItemOpcode;
             //packet >> projectilePitch >> projectileSpeed >> hasMovementData; <- in handleUseItemOpcode;
             itemGuid.init(itemGuidRaw);
-#elif VERSION_STRING == Mop
+#endif
+            packet >> targetFlags;
+
+#else // Mop
             packet >> containerIndex >> inventorySlot >> castCount >> spellId >> itemGuidRaw >> glyphIndex >> castFlags;
             //packet >> SpellCastTargets; <- in handleUseItemOpcode;
             //packet >> projectilePitch >> projectileSpeed >> hasMovementData; <- in handleUseItemOpcode;

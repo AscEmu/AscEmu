@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include <cstdint>
-
 #include "ManagedPacket.h"
 
 namespace AscEmu::Packets
@@ -14,20 +13,23 @@ namespace AscEmu::Packets
     class CmsgCastSpell : public ManagedPacket
     {
     public:
-        uint32_t spell_id;
-        uint8_t cast_count;
-        uint8_t flags;
+        uint32_t spellId;
+        uint8_t castCount;
+        uint8_t castFlags;
+
+        uint32_t targetFlags = 0;
+
         uint32_t glyphSlot = 0;
 
         CmsgCastSpell() : CmsgCastSpell(0, 0, 0)
         {
         }
 
-        CmsgCastSpell(uint32_t spell_id, uint8_t cast_count, uint8_t flags) :
+        CmsgCastSpell(uint32_t _spellId, uint8_t _castCount, uint8_t _flags) :
             ManagedPacket(CMSG_CAST_SPELL, 0),
-            spell_id(spell_id),
-            cast_count(cast_count),
-            flags(flags)
+            spellId(_spellId),
+            castCount(_castCount),
+            castFlags(_flags)
         {
         }
 
@@ -44,14 +46,17 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+#if VERSION_STRING < Mop
 #if VERSION_STRING <= TBC
-            packet >> spell_id >> cast_count;
+            packet >> spellId >> castCount;
 #elif VERSION_STRING == WotLK
-            packet >> cast_count >> spell_id >> flags;
+            packet >> castCount >> spellId >> castFlags;
 #elif VERSION_STRING == Cata
-            packet >> cast_count >> spell_id >> glyphSlot >> flags;
-#elif VERSION_STRING == Mop
-            packet >> cast_count >> spell_id >> glyphSlot >> flags;
+            packet >> castCount >> spellId >> glyphSlot >> castFlags;
+#endif
+            packet >> targetFlags;
+
+#else // Mop
 #endif
             return true;
         }

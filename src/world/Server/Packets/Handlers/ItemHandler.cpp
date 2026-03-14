@@ -292,7 +292,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
         spellToLearn = itemProto->Spells[1].Id;
     }
 
-    SpellCastTargets targets(recvPacket, _player->getGuid());
+    SpellCastTargets targets(recvPacket, _player->getGuid(), srlPacket.targetFlags);
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
     if (spellInfo == nullptr)
     {

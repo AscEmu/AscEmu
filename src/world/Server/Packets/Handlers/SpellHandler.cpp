@@ -132,20 +132,20 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    const auto spellInfo = getSpellInfo(srlPacket.spell_id);
+    const auto spellInfo = getSpellInfo(srlPacket.spellId);
     if (spellInfo == nullptr)
         return;
 
-    SpellCastTargets targets(recvPacket, _player->getGuid());
+    SpellCastTargets targets(recvPacket, _player->getGuid(), srlPacket.targetFlags);
     Spell* spell = sSpellMgr.newSpell(_player, spellInfo, false, nullptr);
-    spell->extra_cast_number = srlPacket.cast_count;
+    spell->extra_cast_number = srlPacket.castCount;
 
 #if VERSION_STRING >= Cata
     spell->m_glyphslot = srlPacket.glyphSlot;
 #endif
 
     // Some spell cast packets include more data
-    if (srlPacket.flags & 0x02)
+    if (srlPacket.castFlags & 0x02)
     {
         float projectilePitch, projectileSpeed;
         uint8_t hasMovementData; // 1 or 0
@@ -332,7 +332,7 @@ void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
         return;
     }
 
-    SpellCastTargets targets(recvPacket, srlPacket.petGuid);
+    SpellCastTargets targets(recvPacket, srlPacket.petGuid, srlPacket.targetFlags);
     Spell* spell = sSpellMgr.newSpell(petUnit, spellInfo, false, nullptr);
     spell->extra_cast_number = srlPacket.castCount;
 

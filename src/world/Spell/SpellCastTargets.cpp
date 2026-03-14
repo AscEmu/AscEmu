@@ -28,9 +28,9 @@ m_unitTargetGuid(unitTarget)
 {
 }
 
-SpellCastTargets::SpellCastTargets(WorldPacket& data, uint64_t caster)
+SpellCastTargets::SpellCastTargets(WorldPacket& data, uint64_t caster, uint32_t _flags)
 {
-    read(data, caster);
+    read(data, caster, _flags);
 }
 
 SpellCastTargets& SpellCastTargets::operator=(const SpellCastTargets& target)
@@ -56,11 +56,11 @@ SpellCastTargets::~SpellCastTargets()
     m_strTarget.clear();
 }
 
-void SpellCastTargets::read(WorldPacket& data, uint64_t caster)
+void SpellCastTargets::read(WorldPacket& data, uint64_t caster, uint32_t _flags)
 {
     reset();
 
-    data >> m_targetMask;
+    m_targetMask = _flags;
 
     if (m_targetMask == TARGET_FLAG_SELF)
     {

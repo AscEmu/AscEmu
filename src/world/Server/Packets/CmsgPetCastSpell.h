@@ -20,6 +20,8 @@ namespace AscEmu::Packets
         uint32_t spellId;
         uint8_t castFlags;
 
+        uint32_t targetFlags = 0;
+
         CmsgPetCastSpell() : CmsgPetCastSpell(0, 0, 0, 0)
         {
         }
@@ -41,7 +43,7 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> petGuid >> castCount >> spellId >> castFlags;
+            packet >> petGuid >> castCount >> spellId >> castFlags >> targetFlags;
             return true;
         }
     };
