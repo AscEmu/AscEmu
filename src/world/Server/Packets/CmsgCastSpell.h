@@ -50,6 +50,8 @@ namespace AscEmu::Packets
             packet >> cast_count >> spell_id >> flags;
 #elif VERSION_STRING == Cata
             packet >> cast_count >> spell_id >> glyphSlot >> flags;
+#elif VERSION_STRING == Mop
+            packet >> cast_count >> spell_id >> glyphSlot >> flags;
 #endif
             return true;
         }

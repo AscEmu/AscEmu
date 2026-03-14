@@ -84,48 +84,57 @@ void WorldSession::handleSpellClick(WorldPacket& recvPacket)
     }*/
 }
 
-void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
+const SpellInfo* WorldSession::getSpellInfo(uint32_t _spellId) const
 {
-    CmsgCastSpell srlPacket;
-    if (!srlPacket.deserialise(recvPacket))
-        return;
-
-    const auto spellInfo = sSpellMgr.getSpellInfo(srlPacket.spell_id);
+    const auto spellInfo = sSpellMgr.getSpellInfo(_spellId);
     if (spellInfo == nullptr)
     {
-        sLogger.failure("Unknown spell id {} in handleCastSpellOpcode().", srlPacket.spell_id);
-        return;
+        sLogger.failure("Unknown spell id {} in handleCastSpellOpcode().", _spellId);
+        return nullptr;
     }
 
     // Check does player have the spell
-    if (!_player->hasSpell(srlPacket.spell_id))
+    if (!_player->hasSpell(_spellId))
     {
-        sCheatLog.writefromsession(this, "WORLD: Player %u tried to cast spell %u but player does not have it.", _player->getGuidLow(), srlPacket.spell_id);
-        sLogger.info("WORLD: Player {} tried to cast spell {} but player does not have it.", _player->getGuidLow(), srlPacket.spell_id);
-        return;
+        sCheatLog.writefromsession(_player->getSession(), "WORLD: Player %u tried to cast spell %u but player does not have it.", _player->getGuidLow(), _spellId);
+        sLogger.info("WORLD: Player {} tried to cast spell {} but player does not have it.", _player->getGuidLow(), _spellId);
+        return nullptr;
     }
 
     // Check is player trying to cast a passive spell
     if (spellInfo->isPassive())
     {
-        sCheatLog.writefromsession(this, "WORLD: Player %u tried to cast a passive spell %u, ignored", _player->getGuidLow(), srlPacket.spell_id);
-        sLogger.info("WORLD: Player {} tried to cast a passive spell {}, ignored", _player->getGuidLow(), srlPacket.spell_id);
-        return;
+        sCheatLog.writefromsession(_player->getSession(), "WORLD: Player %u tried to cast a passive spell %u, ignored", _player->getGuidLow(), _spellId);
+        sLogger.info("WORLD: Player {} tried to cast a passive spell {}, ignored", _player->getGuidLow(), _spellId);
+        return nullptr;
     }
 
     // Check are we already casting this autorepeat spell
     if (spellInfo->isRangedAutoRepeat() && _player->getCurrentSpell(CURRENT_AUTOREPEAT_SPELL) != nullptr
        && spellInfo == _player->getCurrentSpell(CURRENT_AUTOREPEAT_SPELL)->getSpellInfo())
     {
-        return;
+        return nullptr;
     }
 
     // TODO: move this check to new Spell::prepare() and clean it
     if (_player->isCastingSpell(true, true, spellInfo->getId() == 75))
     {
-        _player->sendCastFailedPacket(srlPacket.spell_id, SPELL_FAILED_SPELL_IN_PROGRESS, srlPacket.cast_count, 0);
-        return;
+        _player->sendCastFailedPacket(_spellId, SPELL_FAILED_SPELL_IN_PROGRESS, 0, 0);
+        return nullptr;
     }
+
+    return spellInfo;
+}
+
+void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
+{
+    CmsgCastSpell srlPacket;
+    if (!srlPacket.deserialise(recvPacket))
+        return;
+
+    const auto spellInfo = getSpellInfo(srlPacket.spell_id);
+    if (spellInfo == nullptr)
+        return;
 
     SpellCastTargets targets(recvPacket, _player->getGuid());
     Spell* spell = sSpellMgr.newSpell(_player, spellInfo, false, nullptr);

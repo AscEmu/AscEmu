@@ -823,6 +823,8 @@ protected:
         //////////////////////////////////////////////////////////////////////////////////////////
         // SpellHandler.cpp
         void handleSpellClick(WorldPacket& recvPacket);
+
+        const SpellInfo* getSpellInfo(uint32_t _spellId) const;
         void handleCastSpellOpcode(WorldPacket& recvPacket);
         void handleCancelCastOpcode(WorldPacket& recvPacket);
         void handleCancelAuraOpcode(WorldPacket& recvPacket);
