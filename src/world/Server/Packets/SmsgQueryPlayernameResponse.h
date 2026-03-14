@@ -34,7 +34,7 @@ namespace AscEmu::Packets
         uint8_t class_ = 0;
         uint8_t level = 0;
         
-        bool hasData = false;
+        bool hasData = true;
         bool hasDeclinedNames = false;
 
         SmsgQueryPlayerNameResponse() : ManagedPacket(SMSG_QUERY_PLAYER_NAME_RESPONSE, 0)
@@ -70,7 +70,7 @@ namespace AscEmu::Packets
             packet.WriteByteSeq(guid[1]);
             packet.WriteByteSeq(guid[2]);
 
-            packet << static_cast<uint8_t>(hasData ? 0 : 1);
+            packet << static_cast<uint8_t>(!hasData);
 
             if (hasData)
             {
