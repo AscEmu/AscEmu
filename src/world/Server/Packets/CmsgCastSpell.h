@@ -20,7 +20,14 @@ namespace AscEmu::Packets
 
         SpellCastTargets targets;
 
-        uint32_t glyphSlot = 0;
+        uint32_t glyphSlot = 0;     // since 15595
+
+        bool hasAdditionalData = false;
+
+        float projectilePitch = 0.0f;
+        float projectileSpeed = 0.0f;
+
+        bool hasMovementData = false;
 
         CmsgCastSpell() : CmsgCastSpell(0, 0, 0)
         {
@@ -56,6 +63,12 @@ namespace AscEmu::Packets
             packet >> castCount >> spellId >> glyphSlot >> castFlags;
 #endif
             targets.read(packet);
+
+            if (castFlags & 0x02)
+            {
+                hasAdditionalData = true;
+                packet >> projectilePitch >> projectileSpeed >> hasMovementData;
+            }
 
 
 #else // Mop

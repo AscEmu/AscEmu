@@ -343,31 +343,27 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     spell->m_glyphslot = srlPacket.glyphIndex;
 
     // Some spell cast packets include more data
-    if (srlPacket.castFlags & 0x02)
+    if (srlPacket.hasAdditionalData)
     {
-        float projectilePitch, projectileSpeed;
-        uint8_t hasMovementData; // 1 or 0
-        recvPacket >> projectilePitch >> projectileSpeed >> hasMovementData;
-
         LocationVector const spellDestination = srlPacket.targets.getDestination();
         LocationVector const spellSource = srlPacket.targets.getSource();
         float const deltaX = spellDestination.x - spellSource.x; // Calculate change of x position
         float const deltaY = spellDestination.y - spellSource.y; // Calculate change of y position
 
         uint32_t travelTime = 0;
-        if ((projectilePitch != M_PI / 4) && (projectilePitch != -M_PI / 4)) // No division by zero
+        if ((srlPacket.projectilePitch != M_PI / 4) && (srlPacket.projectilePitch != -M_PI / 4)) // No division by zero
         {
             // Calculate projectile's travel time by using Pythagorean theorem to get distance from delta X and delta Y, and divide that with the projectile's velocity
-            travelTime = static_cast<uint32_t>((sqrtf(deltaX * deltaX + deltaY * deltaY) / (cosf(projectilePitch) * projectileSpeed)) * 1000);
+            travelTime = static_cast<uint32_t>((sqrtf(deltaX * deltaX + deltaY * deltaY) / (cosf(srlPacket.projectilePitch) * srlPacket.projectileSpeed)) * 1000);
         }
 
-        if (hasMovementData)
+        if (srlPacket.hasMovementData)
         {
             recvPacket.SetOpcode(recvPacket.read<uint16_t>()); // MSG_MOVE_STOP
             handleMovementOpcodes(recvPacket);
         }
 
-        spell->m_missilePitch = projectilePitch;
+        spell->m_missilePitch = srlPacket.projectilePitch;
         spell->m_missileTravelTime = travelTime;
     }
 #endif

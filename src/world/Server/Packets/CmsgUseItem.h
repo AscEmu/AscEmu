@@ -32,6 +32,13 @@ namespace AscEmu::Packets
 
         SpellCastTargets targets;
 
+        bool hasAdditionalData = false;
+
+        float projectilePitch = 0.0f;
+        float projectileSpeed = 0.0f;
+
+        bool hasMovementData = false;
+
         CmsgUseItem() : CmsgUseItem(0, 0)
         {
         }
@@ -70,6 +77,12 @@ namespace AscEmu::Packets
             itemGuid.init(itemGuidRaw);
 #endif
             targets.read(packet);
+
+            if (castFlags & 0x02)
+            {
+                hasAdditionalData = true;
+                packet >> projectilePitch >> projectileSpeed >> hasMovementData;
+            }
 
 #else // Mop
             packet >> containerIndex >> inventorySlot >> castCount >> spellId >> itemGuidRaw >> glyphIndex >> castFlags;
