@@ -28,11 +28,6 @@ m_unitTargetGuid(unitTarget)
 {
 }
 
-SpellCastTargets::SpellCastTargets(WorldPacket& data, uint64_t caster, uint32_t _flags)
-{
-    read(data, caster, _flags);
-}
-
 SpellCastTargets& SpellCastTargets::operator=(const SpellCastTargets& target)
 {
     m_gameObjectTargetGuid = target.getGameObjectTargetGuid();
@@ -56,17 +51,14 @@ SpellCastTargets::~SpellCastTargets()
     m_strTarget.clear();
 }
 
-void SpellCastTargets::read(WorldPacket& data, uint64_t caster, uint32_t _flags)
+void SpellCastTargets::read(WorldPacket& data)
 {
     reset();
 
-    m_targetMask = _flags;
+    data >> m_targetMask;
 
     if (m_targetMask == TARGET_FLAG_SELF)
-    {
-        m_unitTargetGuid = caster;
         return;
-    }
 
     if (m_targetMask & (TARGET_FLAG_OBJECT | TARGET_FLAG_OPEN_LOCK))
     {

@@ -56,6 +56,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellInfo.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "Objects/Units/Creatures/AIInterface.h"
 
 using namespace AscEmu::Packets;
 
@@ -292,7 +293,9 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
         spellToLearn = itemProto->Spells[1].Id;
     }
 
-    SpellCastTargets targets(recvPacket, _player->getGuid(), srlPacket.targetFlags);
+    if (srlPacket.targets.getTargetMask() == TARGET_SELF)
+        srlPacket.targets.setUnitTarget(_player->getGuid());
+
     const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
     if (spellInfo == nullptr)
     {
@@ -313,7 +316,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     {
         if (itemProto->ForcedPetId == 0)
         {
-            if (targets.getUnitTargetGuid() != _player->getGuid())
+            if (srlPacket.targets.getUnitTargetGuid() != _player->getGuid())
             {
                 _player->sendCastFailedPacket(spellInfo->getId(), SPELL_FAILED_BAD_TARGETS, srlPacket.castCount, 0);
                 return;
@@ -346,8 +349,8 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
         uint8_t hasMovementData; // 1 or 0
         recvPacket >> projectilePitch >> projectileSpeed >> hasMovementData;
 
-        LocationVector const spellDestination = targets.getDestination();
-        LocationVector const spellSource = targets.getSource();
+        LocationVector const spellDestination = srlPacket.targets.getDestination();
+        LocationVector const spellSource = srlPacket.targets.getSource();
         float const deltaX = spellDestination.x - spellSource.x; // Calculate change of x position
         float const deltaY = spellDestination.y - spellSource.y; // Calculate change of y position
 
@@ -369,7 +372,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
     }
 #endif
 
-    spell->prepare(&targets);
+    spell->prepare(&srlPacket.targets);
 
 #ifdef FT_ACHIEVEMENTS
     _player->updateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_USE_ITEM, itemProto->ItemId, 0, 0);

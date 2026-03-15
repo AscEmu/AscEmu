@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include "WorldPacket.h"
+#include "Spell/SpellCastTargets.hpp"
 
 namespace AscEmu::Packets
 {
@@ -29,7 +30,7 @@ namespace AscEmu::Packets
         uint32_t glyphIndex = 0;    // since 12340
         uint8_t castFlags = 0;      // since 12340
 
-        uint32_t targetFlags = 0;
+        SpellCastTargets targets;
 
         CmsgUseItem() : CmsgUseItem(0, 0)
         {
@@ -68,7 +69,7 @@ namespace AscEmu::Packets
             //packet >> projectilePitch >> projectileSpeed >> hasMovementData; <- in handleUseItemOpcode;
             itemGuid.init(itemGuidRaw);
 #endif
-            packet >> targetFlags;
+            targets.read(packet);
 
 #else // Mop
             packet >> containerIndex >> inventorySlot >> castCount >> spellId >> itemGuidRaw >> glyphIndex >> castFlags;

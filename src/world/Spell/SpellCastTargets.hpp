@@ -34,11 +34,10 @@ private:
 public:
     SpellCastTargets() = default;
     SpellCastTargets(uint64_t unitTarget);
-    SpellCastTargets(WorldPacket& data, uint64_t caster, uint32_t _flags);
     SpellCastTargets& operator=(const SpellCastTargets& target);
     ~SpellCastTargets();
 
-    void read(WorldPacket& data, uint64_t caster, uint32_t _flags);
+    void read(WorldPacket& data);
     void write(WorldPacket& data) const;
 
     bool isEmpty() const;

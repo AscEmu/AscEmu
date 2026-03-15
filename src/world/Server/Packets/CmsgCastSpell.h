@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 #include "ManagedPacket.h"
+#include "Spell/SpellCastTargets.hpp"
 
 namespace AscEmu::Packets
 {
@@ -17,7 +18,7 @@ namespace AscEmu::Packets
         uint8_t castCount;
         uint8_t castFlags;
 
-        uint32_t targetFlags = 0;
+        SpellCastTargets targets;
 
         uint32_t glyphSlot = 0;
 
@@ -54,7 +55,8 @@ namespace AscEmu::Packets
 #elif VERSION_STRING == Cata
             packet >> castCount >> spellId >> glyphSlot >> castFlags;
 #endif
-            packet >> targetFlags;
+            targets.read(packet);
+
 
 #else // Mop
 #endif

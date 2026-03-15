@@ -31,6 +31,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgItemNameQueryResponse.h"
 #include "Server/Packets/MsgCorpseQuery.h"
 #include "WorldPacket.h"
+#include "Objects/Units/Creatures/Corpse.hpp"
 
 using namespace AscEmu::Packets;
 

@@ -136,7 +136,9 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
     if (spellInfo == nullptr)
         return;
 
-    SpellCastTargets targets(recvPacket, _player->getGuid(), srlPacket.targetFlags);
+    if (srlPacket.targets.getTargetMask() == TARGET_SELF)
+        srlPacket.targets.setUnitTarget(_player->getGuid());
+
     Spell* spell = sSpellMgr.newSpell(_player, spellInfo, false, nullptr);
     spell->extra_cast_number = srlPacket.castCount;
 
@@ -151,8 +153,8 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
         uint8_t hasMovementData; // 1 or 0
         recvPacket >> projectilePitch >> projectileSpeed >> hasMovementData;
 
-        LocationVector const spellDestination = targets.getDestination();
-        LocationVector const spellSource = targets.getSource();
+        LocationVector const spellDestination = srlPacket.targets.getDestination();
+        LocationVector const spellSource = srlPacket.targets.getSource();
         float const deltaX = spellDestination.x - spellSource.x; // Calculate change of x position
         float const deltaY = spellDestination.y - spellSource.y; // Calculate change of y position
 
@@ -178,7 +180,7 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
         spell->m_missileTravelTime = travelTime;
     }
 
-    spell->prepare(&targets);
+    spell->prepare(&srlPacket.targets);
 }
 
 void WorldSession::handleCancelCastOpcode(WorldPacket& recvPacket)
@@ -332,7 +334,9 @@ void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
         return;
     }
 
-    SpellCastTargets targets(recvPacket, srlPacket.petGuid, srlPacket.targetFlags);
+    if (srlPacket.targets.getTargetMask() == TARGET_SELF)
+        srlPacket.targets.setUnitTarget(srlPacket.petGuid);
+
     Spell* spell = sSpellMgr.newSpell(petUnit, spellInfo, false, nullptr);
     spell->extra_cast_number = srlPacket.castCount;
 
@@ -343,8 +347,8 @@ void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
         uint8_t hasMovementData; // 1 or 0
         recvPacket >> projectilePitch >> projectileSpeed >> hasMovementData;
 
-        LocationVector const spellDestination = targets.getDestination();
-        LocationVector const spellSource = targets.getSource();
+        LocationVector const spellDestination = srlPacket.targets.getDestination();
+        LocationVector const spellSource = srlPacket.targets.getSource();
         float const deltaX = spellDestination.x - spellSource.x; // Calculate change of x position
         float const deltaY = spellDestination.y - spellSource.y; // Calculate change of y position
 
@@ -365,7 +369,7 @@ void WorldSession::handlePetCastSpell(WorldPacket& recvPacket)
         spell->m_missileTravelTime = travelTime;
     }
 
-    spell->prepare(&targets);
+    spell->prepare(&srlPacket.targets);
 }
 
 void WorldSession::handleCancelTotem(WorldPacket& recvPacket)

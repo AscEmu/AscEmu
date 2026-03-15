@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "ManagedPacket.h"
 #include "WorldPacket.h"
+#include "Spell/SpellCastTargets.hpp"
 
 namespace AscEmu::Packets
 {
@@ -20,7 +21,7 @@ namespace AscEmu::Packets
         uint32_t spellId;
         uint8_t castFlags;
 
-        uint32_t targetFlags = 0;
+        SpellCastTargets targets;
 
         CmsgPetCastSpell() : CmsgPetCastSpell(0, 0, 0, 0)
         {
@@ -43,7 +44,9 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
-            packet >> petGuid >> castCount >> spellId >> castFlags >> targetFlags;
+            packet >> petGuid >> castCount >> spellId >> castFlags;
+            targets.read(packet);
+
             return true;
         }
     };
