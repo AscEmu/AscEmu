@@ -155,6 +155,9 @@ struct MovementInfo
 #endif
 #if VERSION_STRING >= Cata
     uint32_t transport_time3;
+    bool hasTransportData = false;
+    bool hasMovementFlags = false;
+    bool hasMovementFlags2 = false;
 #endif
 };
 

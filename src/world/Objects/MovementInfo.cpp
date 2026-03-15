@@ -78,10 +78,6 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode)
         data >> spline_elevation;
 
 #else // >= Cata
-    bool hasTransportData = false,
-        hasMovementFlags = false,
-        hasMovementFlags2 = false;
-
     switch (sOpcodeTables.getInternalIdForHex(opcode))
     {
 #if VERSION_STRING == Cata
@@ -92,37 +88,63 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode)
             data >> position.z;
             data >> position.y;
             data >> position.x;
+
             status_info.hasFallData = data.readBit();
             status_info.hasTimeStamp = !data.readBit();
             status_info.hasOrientation = !data.readBit();
             status_info.hasSpline = data.readBit();
+
             data.readBit();
+
             guid[6] = data.readBit();
             guid[4] = data.readBit();
+
             hasMovementFlags2 = !data.readBit();
+
             guid[3] = data.readBit();
             guid[5] = data.readBit();
+
             status_info.hasSplineElevation = !data.readBit();
             status_info.hasPitch = !data.readBit();
+
             guid[7] = data.readBit();
+
             hasTransportData = data.readBit();
+
             guid[2] = data.readBit();
+
             hasMovementFlags = !data.readBit();
+
             guid[1] = data.readBit();
             guid[0] = data.readBit();
-            if (hasTransportData) transport_guid[6] = data.readBit();
-            if (hasTransportData) transport_guid[2] = data.readBit();
-            if (hasTransportData) transport_guid[5] = data.readBit();
-            if (hasTransportData) status_info.hasTransportTime2 = data.readBit();
-            if (hasTransportData) transport_guid[7] = data.readBit();
-            if (hasTransportData) transport_guid[4] = data.readBit();
-            if (hasTransportData) status_info.hasTransportTime3 = data.readBit();
-            if (hasTransportData) transport_guid[0] = data.readBit();
-            if (hasTransportData) transport_guid[1] = data.readBit();
-            if (hasTransportData) transport_guid[3] = data.readBit();
-            if (hasMovementFlags2) flags2 = static_cast<uint16_t>(data.readBits(12));
-            if (hasMovementFlags) flags = data.readBits(30);
-            if (status_info.hasFallData) status_info.hasFallDirection = data.readBit();
+
+            if (hasTransportData)
+            {
+                transport_guid[6] = data.readBit();
+                transport_guid[2] = data.readBit();
+                transport_guid[5] = data.readBit();
+
+                status_info.hasTransportTime2 = data.readBit();
+
+                transport_guid[7] = data.readBit();
+                transport_guid[4] = data.readBit();
+
+                status_info.hasTransportTime3 = data.readBit();
+
+                transport_guid[0] = data.readBit();
+                transport_guid[1] = data.readBit();
+                transport_guid[3] = data.readBit();
+            }
+
+            if (hasMovementFlags2)
+                flags2 = static_cast<uint16_t>(data.readBits(12));
+
+            if (hasMovementFlags)
+                flags = data.readBits(30);
+
+            if (status_info.hasFallData)
+                status_info.hasFallDirection = data.readBit();
+
             data.ReadByteSeq(guid[1]);
             data.ReadByteSeq(guid[4]);
             data.ReadByteSeq(guid[7]);
@@ -131,32 +153,62 @@ void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode)
             data.ReadByteSeq(guid[2]);
             data.ReadByteSeq(guid[5]);
             data.ReadByteSeq(guid[6]);
-            if (hasTransportData) data >> transport_seat;
-            if (hasTransportData) data >> transport_position.o;
-            if (hasTransportData) data >> transport_time;
-            if (hasTransportData) data.ReadByteSeq(transport_guid[6]);
-            if (hasTransportData) data.ReadByteSeq(transport_guid[5]);
-            if (hasTransportData && status_info.hasTransportTime3) data >> fall_time;
-            if (hasTransportData) data >> transport_position.x;
-            if (hasTransportData) data.ReadByteSeq(transport_guid[4]);
-            if (hasTransportData) data >> transport_position.z;
-            if (hasTransportData) data.ReadByteSeq(transport_guid[2]);
-            if (hasTransportData) data.ReadByteSeq(transport_guid[0]);
-            if (hasTransportData && status_info.hasTransportTime2) data >> transport_time2;
-            if (hasTransportData) data.ReadByteSeq(transport_guid[1]);
-            if (hasTransportData) data.ReadByteSeq(transport_guid[3]);
-            if (hasTransportData) data >> transport_position.y;
-            if (hasTransportData) data.ReadByteSeq(transport_guid[7]);
-            if (status_info.hasOrientation) data >> position.o;
-            if (status_info.hasSplineElevation) data >> spline_elevation;
-            if (status_info.hasFallData) data >> fall_time;
-            if (status_info.hasFallData && status_info.hasFallDirection) data >> jump_info.xyspeed;
-            if (status_info.hasFallData && status_info.hasFallDirection) data >> jump_info.cosAngle;
-            if (status_info.hasFallData && status_info.hasFallDirection) data >> jump_info.sinAngle;
-            if (status_info.hasFallData) data >> jump_info.velocity;
-            if (status_info.hasTimeStamp)  data >> update_time;
-            if (status_info.hasPitch) data >> pitch_rate;
 
+            if (hasTransportData)
+            {
+                data >> transport_seat;
+                data >> transport_position.o;
+                data >> transport_time;
+
+                data.ReadByteSeq(transport_guid[6]);
+                data.ReadByteSeq(transport_guid[5]);
+
+                if (status_info.hasTransportTime3)
+                    data >> fall_time;
+
+                data >> transport_position.x;
+
+                data.ReadByteSeq(transport_guid[4]);
+
+                data >> transport_position.z;
+
+                data.ReadByteSeq(transport_guid[2]);
+                data.ReadByteSeq(transport_guid[0]);
+
+                if (status_info.hasTransportTime2)
+                    data >> transport_time2;
+
+                data.ReadByteSeq(transport_guid[1]);
+                data.ReadByteSeq(transport_guid[3]);
+
+                data >> transport_position.y;
+
+                data.ReadByteSeq(transport_guid[7]);
+            }
+
+            if (status_info.hasOrientation)
+                data >> position.o;
+
+            if (status_info.hasSplineElevation)
+                data >> spline_elevation;
+
+            if (status_info.hasFallData)
+            {
+                data >> fall_time;
+                if (status_info.hasFallDirection)
+                {
+                    data >> jump_info.xyspeed;
+                    data >> jump_info.cosAngle;
+                    data >> jump_info.sinAngle;
+                }
+                data >> jump_info.velocity;
+            }
+
+            if (status_info.hasTimeStamp)
+                data >> update_time;
+
+            if (status_info.hasPitch)
+                data >> pitch_rate;
         } break;
         case CMSG_MOVE_CHNG_TRANSPORT:
         {
