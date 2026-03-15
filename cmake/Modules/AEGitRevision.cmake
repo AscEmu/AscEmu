@@ -23,7 +23,6 @@ execute_process(
 )
 
 set(ascemu_branch ${git_branch})
-set(BUILD_USERNAME $ENV{USERNAME})
 
 configure_file(
     ${CMAKE_SOURCE_DIR}/src/shared/git_version.hpp.in
