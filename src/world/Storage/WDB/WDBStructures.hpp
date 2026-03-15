@@ -2965,13 +2965,12 @@ namespace WDB::Structures
         uint32_t SpellEquippedItemsId;                              // 16 SpellEquippedItems.dbc
         uint32_t SpellInterruptsId;                                 // 17 SpellInterrupts.dbc
         uint32_t SpellLevelsId;                                     // 18 SpellLevels.dbc
-        //uint32_t SpellPowerId;                                    // 19 SpellPower.dbc
-        uint32_t SpellReagentsId;                                   // 20 SpellReagents.dbc
-        uint32_t SpellShapeshiftId;                                 // 21 SpellShapeshift.dbc
-        uint32_t SpellTargetRestrictionsId;                         // 22 SpellTargetRestrictions.dbc
-        uint32_t SpellTotemsId;                                     // 23 SpellTotems.dbc
-        uint32_t ResearchProject;                                   // 24 ResearchProject.dbc
-        uint32_t SpellMiscId;                                       // 25 SpellMisc.dbc
+        uint32_t SpellReagentsId;                                   // 19 SpellReagents.db2
+        uint32_t SpellShapeshiftId;                                 // 20 SpellShapeshift.dbc
+        uint32_t SpellTargetRestrictionsId;                         // 21 SpellTargetRestrictions.dbc
+        uint32_t SpellTotemsId;                                     // 22 SpellTotems.dbc
+        uint32_t ResearchProject;                                   // 23 ResearchProject.dbc
+        uint32_t SpellMiscId;                                       // 24 SpellMisc.dbc
 
         // struct access functions
         SpellAuraOptionsEntry const* GetSpellAuraOptions() const;

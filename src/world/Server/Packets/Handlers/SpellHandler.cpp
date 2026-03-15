@@ -178,10 +178,26 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
 void WorldSession::handleCancelCastOpcode(WorldPacket& recvPacket)
 {
     uint32_t spellId;
+#if VERSION_STRING == Mop
+    uint8_t counter;
+
+    bool hasCounter = !recvPacket.readBit();
+    bool hasSpellId = !recvPacket.readBit();
+
+    recvPacket.flushBits();
+
+    if (hasSpellId)
+        recvPacket >> spellId;
+
+    if (hasCounter)
+        recvPacket >> counter;
+
+#else
 #if VERSION_STRING > TBC
     recvPacket.read_skip<uint8_t>(); // Increments with every HandleCancelCast packet, unused
 #endif
     recvPacket >> spellId;
+#endif
 
     if (_player->isCastingSpell())
     {

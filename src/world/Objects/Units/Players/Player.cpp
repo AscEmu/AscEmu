@@ -5606,6 +5606,47 @@ void Player::_updateSkillBonusFields(const PlayerSkillFieldPosition fieldPositio
 // Talents
 void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
 {
+#if VERSION_STRING == Mop
+    auto talentInfo = sTalentStore.lookupEntry(talentId);
+    if (talentInfo == nullptr)
+        return;
+
+    uint32_t maxTalentRow = playerData()->max_talent_tiers;
+
+    if (talentInfo->playerClass != getClass())
+        return;
+
+    if (talentInfo->Row > maxTalentRow)
+        return;
+
+    // Check if player has already a spell in column
+    for (uint32_t i = 0; i < sTalentStore.getNumRows(); ++i)
+    {
+        if (auto talent = sTalentStore.lookupEntry(i))
+        {
+            if (talentInfo->Row == talent->Row && hasSpell(talent->SpellId))
+                return;
+        }
+    }
+
+    uint32_t spellId = talentInfo->SpellId;
+    if (spellId == 0)
+        return;
+
+    // Check if player already has the talent spell
+    if (hasSpell(spellId))
+        return;
+
+    const auto spellInfo = sSpellMgr.getSpellInfo(spellId);
+    if (spellInfo == nullptr)
+        return;
+
+    _addSpell(spellId, 0, false);
+
+    // Add the new talent to player talent map
+    getActiveSpec().addTalent(talentId, static_cast<uint8_t>(talentRank));
+
+#else // < Mop
     auto curTalentPoints = getActiveSpec().getTalentPoints();
     if (curTalentPoints == 0)
         return;
@@ -5616,7 +5657,7 @@ void Player::learnTalent(uint32_t talentId, uint32_t talentRank)
     auto talentInfo = sTalentStore.lookupEntry(talentId);
     if (talentInfo == nullptr)
         return;
-#if VERSION_STRING < Mop
+
     if (sSpellMgr.isSpellDisabled(talentInfo->RankID[talentRank]))
     {
         if (IsInWorld())
@@ -7124,7 +7165,28 @@ void Player::die(Unit* unitAttacker, uint32_t /*damage*/, uint32_t /*spellId*/)
     m_session->SendPacket(SmsgCancelCombat().serialise().get());
 
     WorldPacket data(SMSG_CANCEL_AUTO_REPEAT, 8);
+#if VERSION_STRING == Mop
+    WoWGuid guid = GetNewGUID();
+    data.writeBit(guid[1]);
+    data.writeBit(guid[3]);
+    data.writeBit(guid[0]);
+    data.writeBit(guid[4]);
+    data.writeBit(guid[6]);
+    data.writeBit(guid[7]);
+    data.writeBit(guid[5]);
+    data.writeBit(guid[2]);
+
+    data.WriteByteSeq(guid[7]);
+    data.WriteByteSeq(guid[6]);
+    data.WriteByteSeq(guid[2]);
+    data.WriteByteSeq(guid[5]);
+    data.WriteByteSeq(guid[0]);
+    data.WriteByteSeq(guid[4]);
+    data.WriteByteSeq(guid[1]);
+    data.WriteByteSeq(guid[3]);
+#else
     data << GetNewGUID();
+#endif
     sendMessageToSet(&data, false);
 
     if (unitAttacker != nullptr && m_WorldMap && m_WorldMap->getScript())
