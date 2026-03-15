@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Logging/Logger.hpp"
 #include "MovementInfo.hpp"
 #include "Server/OpcodeTable.hpp"
+#include "Utilities/Util.hpp"
 
 void MovementInfo::readMovementInfo(ByteBuffer& data, uint16_t opcode)
 {

@@ -28,7 +28,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Utilities/Narrow.hpp"
 #include "Utilities/Util.hpp"
-#include "Storage/WDB/WDBGlobals.hpp"
+#include "Storage/WDB/WDBStores.hpp"
+#include "Storage/WDB/WDBStructures.hpp"
 
 bool ChatCommandHandler::HandleMoveDBCItemSetsToDB(const char* args, WorldSession* session)
 {
