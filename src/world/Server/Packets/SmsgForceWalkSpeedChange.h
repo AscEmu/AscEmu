@@ -144,6 +144,7 @@ namespace AscEmu::Packets
 
             packet << float(rate);
 #else // TODO: Mop
+
 #endif
             return true;
         }

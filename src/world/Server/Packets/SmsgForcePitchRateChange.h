@@ -50,7 +50,9 @@ namespace AscEmu::Packets
             mi.writeMovementInfo(addition, 0, false);
             packet.append(addition);
 #elif VERSION_STRING == Cata // TODO: Cata
+
 #else // TODO: Mop
+
 #endif
             return true;
         }

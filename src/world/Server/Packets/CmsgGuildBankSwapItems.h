@@ -22,11 +22,11 @@ namespace AscEmu::Packets
         uint32_t itemEntry;
         uint32_t splitedAmount = 0;
 
-        //banktobank specific
+        // banktobank specific
         uint8_t destTabId = 0;
         uint8_t destSlotId = 0;
 
-        //banktoplayer specific
+        // banktoplayer specific
         uint8_t playerBag = 0;
         uint8_t playerSlotId = 255;
         uint8_t toCharNum = 1;

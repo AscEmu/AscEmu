@@ -41,7 +41,7 @@ namespace AscEmu::Packets
         {
             packet << victimGuid << attackerGuid << spellId << damage << schoolMask;
 #if VERSION_STRING >= Cata
-            packet << uint32_t(0);  // resisted damage
+            packet << uint32_t(0); // resisted damage
 #endif
             return true;
         }

@@ -410,7 +410,7 @@ void WorldSocket::OnConnect()
     BurstSend(reinterpret_cast<const uint8_t*>(handshake.c_str()), static_cast<uint32_t>(handshake.length()));
     BurstPush();
     BurstEnd();
-#else
+#else // Cata
     WorldPacket packet(MSG_VERIFY_CONNECTIVITY, 46);
     packet << "RLD OF WARCRAFT CONNECTION - SERVER TO CLIENT";
     SendPacket(&packet);
