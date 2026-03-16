@@ -42,7 +42,7 @@ namespace {
         }
 
         // Return directly to allow proper stack unwinding instead of hard exit()
-        return sMaster().Run(argc, argv) ? 0 : -1;
+        return sMaster().run(argc, argv) ? 0 : -1;
     }
 
 #else
@@ -59,7 +59,7 @@ namespace {
 
         try
         {
-            exitCode = sMaster().Run(argc, argv) ? 0 : 1;
+            exitCode = sMaster().run(argc, argv) ? 0 : 1;
         }
         catch (const std::exception& e)
         {

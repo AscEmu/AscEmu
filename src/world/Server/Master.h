@@ -38,7 +38,7 @@ public:
     bool isRestartActive() const { return m_restartEvent; }
 
     void initialize();
-    bool Run(int argc, char** argv);
+    bool run(int argc, char** argv);
 
     void openCheatLogFiles();    
     void ShutdownThreadPools(bool listenerSockCreate);
