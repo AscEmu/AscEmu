@@ -200,9 +200,7 @@ bool ChatCommandHandler::HandleServerShutdownCommand(const char* args, WorldSess
     sWorld.sendAreaTriggerMessage(worldAnnounce.str());
 
     shutdowntime *= 1000;
-    sMaster.m_ShutdownTimer = shutdowntime;
-    sMaster.m_ShutdownEvent = true;
-    sMaster.m_restartEvent = false;
+    sMaster().triggerShutdown(shutdowntime, false);
 
     return true;
 }
@@ -210,14 +208,14 @@ bool ChatCommandHandler::HandleServerShutdownCommand(const char* args, WorldSess
 //.server cancelshutdown
 bool ChatCommandHandler::HandleServerCancelShutdownCommand(const char* /*args*/, WorldSession* m_session)
 {
-    if (!sMaster.m_ShutdownEvent)
+    if (!sMaster().isShutdownActive())
     {
         redSystemMessage(m_session, "There is no Shutdown/Restart to cancel!");
         return true;
     }
 
     std::stringstream teamAnnounce;
-    if (sMaster.m_restartEvent)
+    if (sMaster().isRestartActive())
     {
         teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->getName().c_str();
         teamAnnounce << "|h[" << m_session->GetPlayer()->getName().c_str() << "]|h:" << MSG_COLOR_YELLOW << " canceled server restart!";
@@ -231,11 +229,9 @@ bool ChatCommandHandler::HandleServerCancelShutdownCommand(const char* /*args*/,
     sWorld.sendMessageToOnlineGms(teamAnnounce.str());
     sGMLog.writefromsession(m_session, "canceled server shutdown");
 
-    sWorld.sendGlobalMessage(AscEmu::Packets::SmsgServerMessage(sMaster.m_restartEvent ? SERVER_MSG_RESTART_CANCELLED : SERVER_MSG_SHUTDOWN_CANCELLED).serialise().get());
+    sWorld.sendGlobalMessage(AscEmu::Packets::SmsgServerMessage(sMaster().isRestartActive() ? SERVER_MSG_RESTART_CANCELLED : SERVER_MSG_SHUTDOWN_CANCELLED).serialise().get());
 
-    sMaster.m_ShutdownTimer = 5000;
-    sMaster.m_ShutdownEvent = false;
-    sMaster.m_restartEvent = false;
+    sMaster().cancelShutdown();
 
     return true;
 }
@@ -266,9 +262,7 @@ bool ChatCommandHandler::HandleServerRestartCommand(const char* args, WorldSessi
     sWorld.sendAreaTriggerMessage(worldAnnounce.str());
 
     shutdowntime *= 1000;
-    sMaster.m_ShutdownTimer = shutdowntime;
-    sMaster.m_ShutdownEvent = true;
-    sMaster.m_restartEvent = true;
+    sMaster().triggerShutdown(shutdowntime, true);
 
     return true;
 }

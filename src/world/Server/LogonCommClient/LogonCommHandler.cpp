@@ -128,7 +128,7 @@ void LogonCommHandler::connectToLogonServer()
 
 void LogonCommHandler::tryLogonServerConnection(LogonServerStructure* server)
 {
-    if (sMaster.m_ShutdownEvent == true && sMaster.m_ShutdownTimer <= 120000)
+    if (sMaster().isShutdownActive() && sMaster().getShutdownTimer() <= 120000)
     {
         return;
     }
@@ -159,7 +159,7 @@ void LogonCommHandler::tryLogonServerConnection(LogonServerStructure* server)
             return;
         }
 
-        Arcemu::Sleep(50);
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
 
     if (logonCommSocket->authenticated != 1)
@@ -194,7 +194,7 @@ void LogonCommHandler::tryLogonServerConnection(LogonServerStructure* server)
             logonCommSocket->Disconnect();
             break;
         }
-        Arcemu::Sleep(50);
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
 
     if (!server->isRegistered)
@@ -203,7 +203,7 @@ void LogonCommHandler::tryLogonServerConnection(LogonServerStructure* server)
     }
 
     // Wait for all realms to register
-    Arcemu::Sleep(200);
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
     sLogger.info("LogonCommClient : Logonserver latency is {}ms.", logonCommSocket->latency);
 }

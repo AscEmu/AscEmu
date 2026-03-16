@@ -6,54 +6,96 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "CommonTypes.hpp"
+#include "WorldRunnable.h"
 #include <cstdint>
 #include <string>
+#include <iostream>
+#include <cstdio>
+
+// Forward Declarations
+class SessionLog;
+class Database;
 
 class SERVER_DECL Master
 {
-private:
-    Master() = default;
-    ~Master() = default;
-
 public:
     static Master& getInstance();
-    void initialize();
 
     Master(Master&&) = delete;
     Master(Master const&) = delete;
     Master& operator=(Master&&) = delete;
     Master& operator=(Master const&) = delete;
 
+    Database& getWorldDatabase() const { return *databaseWorld; }
+    Database& getCharacterDatabase() const { return *databaseCharacter; }
+
+    SessionLog& getAnticheatLog() const { return *anticheatLog; }
+    SessionLog& getGmCommandLog() const { return *gmCommandLog; }
+    SessionLog& getPlayerLog() const { return *playerLog; }
+
+    uint32_t getShutdownTimer() const { return m_ShutdownTimer; }
+    bool isShutdownActive() const { return m_ShutdownEvent; }
+    bool isRestartActive() const { return m_restartEvent; }
+
+    void initialize();
     bool Run(int argc, char** argv);
-    void PrintBanner();
-    bool LoadWorldConfiguration(std::string config_file);
-    void OpenCheatLogFiles();
-    void StartNetworkSubsystem();
-    void StartRemoteConsole();
-    void WritePidFile();
 
-    void ShutdownThreadPools(bool listnersockcreate);
-    void ShutdownLootSystem();
-    bool m_ShutdownEvent;
-    uint32_t m_ShutdownTimer;
+    void openCheatLogFiles();    
+    void ShutdownThreadPools(bool listenerSockCreate);
+    void triggerShutdown(uint32_t timerMs, bool restart);
+    void cancelShutdown();
 
-    static volatile bool m_stopEvent;
-    bool m_restartEvent;
+    template <typename... Args>
+    static void libLog(const char* format, Args... args)
+    {
+        // Suppress the format literal warning since this is a dynamic wrapper
+        // NOLINTNEXTLINE(format-nonliteral)
+        int size = std::snprintf(nullptr, 0, format, args...);
 
-    // lib Log
-    void libLog(const char* format, ...);
+        if (size > 0)
+        {
+            std::string message(size, '\0');
+            // NOLINTNEXTLINE(format-nonliteral)
+            std::snprintf(message.data(), size + 1, format, args...);
+
+            std::cout << message << '\n';
+        }
+    }
 
 private:
-    bool _StartDB();
-    void _StopDB();
-    bool _CheckDBVersion();
+    Master() = default;
+    ~Master();
 
-    void _HookSignals();
-    void _UnhookSignals();
-
+    static bool _StartDB();
+    static void _StopDB();
+    static bool _CheckDBVersion();
     static void _OnSignal(int s);
+    static void _UnhookSignals();
+    static void _HookSignals();
+
+    void updatePeriodicStats(uint32_t currentLoop) const;
+    void updateServerTime() const;
+    bool processShutdownSequence(long long diff, uint32_t& next_printout, uint32_t& next_send);
+
+    bool m_ShutdownEvent{ false };
+    uint32_t m_ShutdownTimer{0};
+    bool m_restartEvent{false};
+
+    std::atomic<bool> stopEvent{false};
+    std::atomic<bool> serverShutdown{ false };
+
+    std::unique_ptr<WorldRunnable> worldRunnable;
+
+    std::unique_ptr<Database> databaseWorld;
+    std::unique_ptr<Database> databaseCharacter;
+
+    std::unique_ptr<SessionLog> gmCommandLog;
+    std::unique_ptr<SessionLog> anticheatLog;
+    std::unique_ptr<SessionLog> playerLog;
 };
 
-#define sMaster Master::getInstance()
+inline Master& sMaster() {
+    return Master::getInstance();
+}
 
-#define DLLLogDetail(msg, ...) sMaster.libLog(msg, ##__VA_ARGS__)
+#define DLLLogDetail(msg, ...) sMaster().libLog(msg, ##__VA_ARGS__)

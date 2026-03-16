@@ -7,13 +7,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "CommonTypes.hpp"
 #include <memory>
+#include "Master.h"
 
 class SessionLog;
 
-extern SERVER_DECL std::unique_ptr<SessionLog> Anticheat_Log;
-extern SERVER_DECL std::unique_ptr<SessionLog> GMCommand_Log;
-extern SERVER_DECL std::unique_ptr<SessionLog> Player_Log;
-
-#define sCheatLog (*Anticheat_Log)
-#define sGMLog (*GMCommand_Log)
-#define sPlrLog (*Player_Log)
+#define sCheatLog (sMaster().getAnticheatLog())
+#define sGMLog (sMaster().getGmCommandLog())
+#define sPlrLog (sMaster().getPlayerLog())

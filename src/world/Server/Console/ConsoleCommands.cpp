@@ -115,8 +115,7 @@ bool handleAccountPermission(BaseConsole* baseConsole, int argumentCount, std::s
 
 bool handleCancelShutdownCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool /*isWebClient*/)
 {
-    sMaster.m_ShutdownTimer = 5000;
-    sMaster.m_ShutdownEvent = false;
+    sMaster().cancelShutdown();
 
     baseConsole->Write("Shutdown has been canceled.\r\n");
 
@@ -312,9 +311,7 @@ bool handleShutDownServerCommand(BaseConsole* baseConsole, int /*argumentCount*/
     {
         delay = atoi(consoleInput.c_str());
     }
-
-    sMaster.m_ShutdownTimer = delay * 1000;
-    sMaster.m_ShutdownEvent = true;
+    sMaster().triggerShutdown(delay * 1000, false);
     baseConsole->Write("Shutdown has initiated.\r\n");
 
     return true;

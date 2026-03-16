@@ -15,4 +15,4 @@ public:
     ConfigFile ClusterConfig;
 };
 
-extern SERVER_DECL ConfigMgr Config;
+inline ConfigMgr Config;

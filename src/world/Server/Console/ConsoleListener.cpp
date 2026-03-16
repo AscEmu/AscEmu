@@ -84,7 +84,7 @@ bool StartConsoleListener()
     return true;
 }
 
-#ifdef WIN32
+#ifdef _WIN32
 ThreadBase* GetConsoleListener()
 {
     return static_cast<ThreadBase*>(g_pListenSocket.get());
