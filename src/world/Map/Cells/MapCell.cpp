@@ -17,13 +17,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/WorldMap.hpp"
 #include "Objects/GameObjectProperties.hpp"
 #include "Server/EventMgr.h"
+#include "Server/Master.h"
 #include "Server/World.h"
 #include "Storage/MySQLDataStore.hpp"
 
 std::mutex m_cellloadLock;
 uint32_t m_celltilesLoaded[MAX_NUM_MAPS][64][64];
-
-extern bool bServerShutdown;
 
 MapCell::~MapCell()
 {
@@ -185,7 +184,7 @@ void MapCell::removeObjects()
         ++objects_iterator;
 
         //If MapUnloadTime is non-zero, a transport could get deleted here (when it arrives to a cell that's scheduled to be unloaded because players left from it), so don't delete it! - By: VLack aka. VLsoft
-        if (!bServerShutdown && obj->isGameObject() && static_cast<GameObject*>(obj)->GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT)
+        if (!sMaster().isShutdownActive() && obj->isGameObject() && static_cast<GameObject*>(obj)->GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT)
             continue;
 
         if (obj->IsActive())

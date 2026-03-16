@@ -41,36 +41,40 @@ void SocketMgr::SpawnWorkerThreads()
 
 bool SocketWorkerThread::runThread()
 {
-    THREAD_TRY_EXECUTION
-
-    HANDLE cp = sSocketMgr.GetCompletionPort();
-    DWORD len;
-    Socket* s;
-    OverlappedStruct* ov;
-    LPOVERLAPPED ol_ptr;
-
-    while(true)
+    try
     {
-#ifndef _WIN64
-        if(!GetQueuedCompletionStatus(cp, &len, (LPDWORD)&s, &ol_ptr, 10000))
-#else
-        if(!GetQueuedCompletionStatus(cp, &len, (PULONG_PTR)&s, &ol_ptr, 10000))
-#endif
-            continue;
+        HANDLE completionPort = sSocketMgr.GetCompletionPort();
+        DWORD bytesTransferred = 0;
+        ULONG_PTR completionKey = 0;
+        LPOVERLAPPED overlappedPtr = nullptr;
 
-        ov = CONTAINING_RECORD(ol_ptr, OverlappedStruct, m_overlap);
-
-        if(ov->m_event == SOCKET_IO_THREAD_SHUTDOWN)
+        while(true)
         {
-            delete ov;
-            return true;
+            // ULONG_PTR handles both 32-bit and 64-bit architectures automatically
+            if (!GetQueuedCompletionStatus(completionPort, &bytesTransferred, &completionKey, &overlappedPtr, 10000))
+                continue;
+
+            Socket* socket = reinterpret_cast<Socket*>(completionKey);
+            OverlappedStruct* overlapped = CONTAINING_RECORD(overlappedPtr, OverlappedStruct, m_overlap);
+
+            if(overlapped->m_event == SOCKET_IO_THREAD_SHUTDOWN)
+            {
+                delete overlapped; // Clean up the shutdown signal object
+                return true;
+            }
+
+            if(overlapped->m_event < NUM_SOCKET_IO_EVENTS)
+                ophandlers[overlapped->m_event](socket, bytesTransferred);
         }
-
-        if(ov->m_event < NUM_SOCKET_IO_EVENTS)
-            ophandlers[ov->m_event](s, len);
     }
-
-    THREAD_HANDLE_CRASH
+    catch (const std::exception& e)
+    {
+        sLogger.failure("SocketWorkerThread stopped due to C++ exception: {}", e.what());
+    }
+    catch (...)
+    {
+        sLogger.failure("SocketWorkerThread stopped due to an unknown C++ exception.");
+    }
 
     return true;
 }

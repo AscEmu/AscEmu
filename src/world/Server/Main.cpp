@@ -23,60 +23,66 @@
 #include "ServerState.h"
 #include "Threading/LegacyThreadPool.h"
 
-#ifndef WIN32
+#ifndef _WIN32
 #include <sys/resource.h>
 #endif
 
-#ifndef WIN32
-int unix_main(int argc, char** argv)
-{
-    rlimit rl;
-    if (getrlimit(RLIMIT_CORE, &rl) == -1)
-        printf("getrlimit failed. This could be problem.\n");
-    else
+namespace {
+#ifndef _WIN32
+    int unixMain(int argc, char** argv)
     {
-        rl.rlim_cur = rl.rlim_max;
-        if (setrlimit(RLIMIT_CORE, &rl) == -1)
-            printf("setrlimit failed. Server may not save core.dump files.\n");
+        rlimit rl;
+        if (getrlimit(RLIMIT_CORE, &rl) == -1)
+            printf("getrlimit failed. This could be problem.\n");
+        else
+        {
+            rl.rlim_cur = rl.rlim_max;
+            if (setrlimit(RLIMIT_CORE, &rl) == -1)
+                printf("setrlimit failed. Server may not save core.dump files.\n");
+        }
+
+        // Return directly to allow proper stack unwinding instead of hard exit()
+        return sMaster().Run(argc, argv) ? 0 : -1;
     }
-
-    if (!sMaster.Run(argc, argv))
-        exit(-1);
-    else
-        exit(0);
-
-    return 0; // shouldn't be reached
-}
 
 #else
 
-int win32_main(int argc, char** argv)
-{
-    SetThreadName("Main Thread");
 
-    StartCrashHandler();
+    int win32Main(int argc, char** argv)
+    {
+        SetThreadName("Main Thread");
 
-    //Andy: windows only, helps fight heap allocation on allocations lower then 16KB
-    unsigned long arg = 2;
-    HeapSetInformation(GetProcessHeap(), HeapCompatibilityInformation, &arg, sizeof(arg));
+        // This sets up the global unhandled exception filter
+        StartCrashHandler();
 
-    THREAD_TRY_EXECUTION
-        sMaster.Run(argc, argv);
-    THREAD_HANDLE_CRASH
+        int exitCode = 1;
 
-        exit(0);
-}
+        try
+        {
+            exitCode = sMaster().Run(argc, argv) ? 0 : 1;
+        }
+        catch (const std::exception& e)
+        {
+            printf("Fatal C++ exception: %s\n", e.what());
+        }
+        catch (...)
+        {
+            printf("Unknown C++ exception in main.\n");
+        }
 
+        return exitCode;
+    }
 #endif
+}
 
 int main(int argc, char** argv)
 {
     // Init this asap to set initTime correctly
     ServerState::instance();
 
-#ifdef WIN32
-    win32_main(argc, argv);
+#ifdef _WIN32
+    return win32Main(argc, argv);
 #else
-    unix_main(argc, argv);
+    return unixMain(argc, argv);
 #endif
 }

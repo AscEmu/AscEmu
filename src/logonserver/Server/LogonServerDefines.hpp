@@ -16,8 +16,7 @@ struct AllowedIP
 class SERVER_DECL ConfigMgr
 {
 public:
-
     ConfigFile MainConfig;
 };
 
-extern SERVER_DECL ConfigMgr Config;
+inline ConfigMgr Config;

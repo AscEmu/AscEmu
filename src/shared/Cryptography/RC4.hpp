@@ -27,15 +27,15 @@ namespace AscEmu
             uint8_t j = 0;
 
             // Initialize the state with the identity permutation
-            for (int i = 0; i < keyLength; i++)
+            for (size_t i = 0; i < keyLength; i++)
             {
-                state[i] = i;
+                state[i] = static_cast<uint8_t>(i);
             }
 
             // Key-scheduling algorithm (KSA)
-            for (int i = 0; i < keyLength; i++)
+            for (size_t i = 0; i < keyLength; i++)
             {
-                j = (j + state[i] + _data[i % _len]) % keyLength;
+                j = static_cast<uint8_t>((j + state[i] + _data[i % _len]) % keyLength);
                 std::swap(state[i], state[j]);
             }
 

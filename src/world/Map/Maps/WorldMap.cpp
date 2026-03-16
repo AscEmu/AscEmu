@@ -46,8 +46,6 @@ This file is released under the MIT license. See README-MIT for more information
 using namespace AscEmu::Packets;
 using namespace AscEmu::Threading;
 
-extern bool bServerShutdown;
-
 WorldMap::WorldMap(BaseMap* baseMap, uint32_t id, uint32_t expiry, uint32_t InstanceId, uint8_t SpawnMode) : CellHandler<MapCell>(baseMap), eventHolder(InstanceId), worldstateshandler(id),
     _terrain(std::make_unique<TerrainHolder>(id)), m_unloadTimer(expiry), m_baseMap(baseMap)
 {
@@ -193,10 +191,20 @@ void WorldMap::startMapThread()
 
 void WorldMap::runThread()
 {
-    THREAD_TRY_EXECUTION
+    try
+    {
         Do();
-    THREAD_HANDLE_CRASH
-        return;
+    }
+    catch (const std::exception& e)
+    {
+        // Log the standard C++ error so we know why the thread stopped
+        sLogger.failure("WorldMap thread stopped due to C++ exception: {}", e.what());
+    }
+    catch (...)
+    {
+        // Catch everything else
+        sLogger.failure("WorldMap thread stopped due to an unknown C++ exception.");
+    }
 }
 
 void WorldMap::shutdownMapThread()
@@ -543,7 +551,7 @@ void WorldMap::removeAllPlayers()
             Player* player = itr->second;
             ++itr;
 
-            if (!bServerShutdown)
+            if (!sMaster().isShutdownActive())
             {
                 player->ejectFromInstance();
             }
