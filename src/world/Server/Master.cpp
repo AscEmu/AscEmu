@@ -77,7 +77,6 @@
 #include <ctime>
 #include <utility>
 #include <atomic>
-#include <Windows.h>
 
 namespace {
     // DB version
@@ -340,7 +339,7 @@ struct Addr
     unsigned long unusedB;
 };
 
-bool Master::Run(int /*argc*/, char** /*argv*/)
+bool Master::run(int /*argc*/, char** /*argv*/)
 {
     std::string config_file = CONFDIR "/world.conf";
 

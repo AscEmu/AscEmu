@@ -8,6 +8,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "World.h"
 #include <thread>
 #include <chrono>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 #ifdef _WIN32
 
