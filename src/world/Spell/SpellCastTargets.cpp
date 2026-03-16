@@ -16,8 +16,8 @@ void SpellCastTargets::reset()
     m_gameObjectTargetGuid = 0;
     m_unitTargetGuid = 0;
     m_itemTargetGuid = 0;
-    unkuint64_1 = 0;
-    unkuint64_2 = 0;
+    m_transportSourceGuid = 0;
+    m_transportDestinationGuid = 0;
     m_source = LocationVector();
     m_destination = LocationVector();
     m_strTarget = std::string();
@@ -41,8 +41,8 @@ SpellCastTargets& SpellCastTargets::operator=(const SpellCastTargets& target)
 
     m_targetMask = target.getTargetMask();
 
-    unkuint64_1 = target.unkuint64_1;
-    unkuint64_2 = target.unkuint64_2;
+    m_transportSourceGuid = target.m_transportSourceGuid;
+    m_transportDestinationGuid = target.m_transportDestinationGuid;
     return *this;
 }
 
@@ -86,7 +86,7 @@ void SpellCastTargets::read(WorldPacket& data)
         WoWGuid sourceGuid;
 
         data >> sourceGuid;
-        unkuint64_1 = sourceGuid.getRawGuid();
+        m_transportSourceGuid = sourceGuid.getRawGuid();
 
         LocationVector lv;
         data >> lv.x;
@@ -100,7 +100,7 @@ void SpellCastTargets::read(WorldPacket& data)
     {
         WoWGuid destinationGuid;
         data >> destinationGuid;
-        unkuint64_2 = destinationGuid.getRawGuid();
+        m_transportDestinationGuid = destinationGuid.getRawGuid();
 
         auto transporter = sTransportHandler.getTransporter(destinationGuid.getGuidLow());
 
@@ -144,13 +144,13 @@ void SpellCastTargets::write(WorldPacket& data) const
 
     if (m_targetMask & TARGET_FLAG_SOURCE_LOCATION)
     {
-        data << WoWGuid(unkuint64_1);
+        data << WoWGuid(m_transportSourceGuid);
         data << m_source;
     }
 
     if (m_targetMask & TARGET_FLAG_DEST_LOCATION)
     {
-        data << WoWGuid(unkuint64_2);
+        data << WoWGuid(m_transportDestinationGuid);
         data << m_destination;
     }
 
@@ -162,8 +162,8 @@ void SpellCastTargets::write(WorldPacket& data) const
 
 bool SpellCastTargets::isEmpty() const
 {
-    return m_gameObjectTargetGuid == 0 && m_unitTargetGuid == 0 && m_itemTargetGuid == 0 && unkuint64_1 == 0 &&
-        unkuint64_2 == 0 && !hasSource() && !hasDestination();
+    return m_gameObjectTargetGuid == 0 && m_unitTargetGuid == 0 && m_itemTargetGuid == 0 && m_transportSourceGuid == 0 &&
+        m_transportDestinationGuid == 0 && !hasSource() && !hasDestination();
 }
 
 bool SpellCastTargets::hasSource() const
@@ -196,6 +196,17 @@ void SpellCastTargets::addTargetMask(uint32_t mask)
     setTargetMask(getTargetMask() | mask);
 }
 
+void SpellCastTargets::setStringTarget(const std::string& str)
+{
+    m_strTarget = str;
+    addTargetMask(TARGET_FLAG_STRING);
+}
+
+std::string SpellCastTargets::getStringTarget() const
+{
+    return m_strTarget;
+}
+
 uint64_t SpellCastTargets::getGameObjectTargetGuid() const
 {
     return m_gameObjectTargetGuid;
@@ -211,9 +222,19 @@ uint64_t SpellCastTargets::getItemTargetGuid() const
     return m_itemTargetGuid;
 }
 
+uint64_t SpellCastTargets::getTransportSourceGuid() const
+{
+    return m_transportSourceGuid;
+}
+
 LocationVector SpellCastTargets::getSource() const
 {
     return LocationVector(m_source);
+}
+
+uint64_t SpellCastTargets::getTransportDestinationGuid() const
+{
+    return m_transportDestinationGuid;
 }
 
 LocationVector SpellCastTargets::getDestination() const
@@ -239,10 +260,22 @@ void SpellCastTargets::setItemTarget(uint64_t guid)
     addTargetMask(TARGET_FLAG_ITEM);
 }
 
+void SpellCastTargets::setTransportSourceGuid(uint64_t guid)
+{
+    m_transportDestinationGuid = guid;
+    addTargetMask(TARGET_FLAG_SOURCE_LOCATION);
+}
+
 void SpellCastTargets::setSource(LocationVector source)
 {
     m_source = LocationVector(source);
     addTargetMask(TARGET_FLAG_SOURCE_LOCATION);
+}
+
+void SpellCastTargets::setTransportDestinationGuid(uint64_t guid)
+{
+    m_transportDestinationGuid = guid;
+    addTargetMask(TARGET_FLAG_DEST_LOCATION);
 }
 
 void SpellCastTargets::setDestination(LocationVector destination)
