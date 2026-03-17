@@ -7,12 +7,14 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Server/Console/BaseConsole.h"
 #include "Server/Console/ConsoleThread.h"
-#include "Logging/Log.hpp"
 #include "Logging/Logger.hpp"
 #include "Threading/LegacyThreadPool.h"
 
-#ifndef WIN32
-    #include <poll.h>
+#include <chrono>
+#include <thread>
+
+#ifndef _WIN32
+#include <poll.h>
 #endif
 
 bool ConsoleThread::runThread()
@@ -21,7 +23,7 @@ bool ConsoleThread::runThread()
 
     LocalConsole g_localConsole;
 
-#ifndef WIN32
+#ifndef _WIN32
     struct pollfd pollInput;
     pollInput.fd = 0;
     pollInput.events = POLLIN | POLLPRI;
@@ -55,7 +57,7 @@ void ConsoleThread::stopThread()
 {
     mStopConsoleThread = true;
 
-#ifdef WIN32
+#ifdef _WIN32
     /* write the return keydown/keyup event */
     DWORD tempDWORD;
     INPUT_RECORD inputRecord[2];

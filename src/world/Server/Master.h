@@ -11,6 +11,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include <string>
 #include <iostream>
 #include <cstdio>
+#include <atomic>
+#include <memory>
 
 // Forward Declarations
 class SessionLog;
@@ -37,11 +39,10 @@ public:
     bool isShutdownActive() const { return m_ShutdownEvent; }
     bool isRestartActive() const { return m_restartEvent; }
 
-    void initialize();
     bool run(int argc, char** argv);
 
-    void openCheatLogFiles();    
-    void ShutdownThreadPools(bool listenerSockCreate);
+    void openCheatLogFiles();
+    void shutdownThreadPools(bool listenerSockCreate);
     void triggerShutdown(uint32_t timerMs, bool restart);
     void cancelShutdown();
 
@@ -66,23 +67,23 @@ private:
     Master() = default;
     ~Master();
 
-    static bool _StartDB();
-    static void _StopDB();
-    static bool _CheckDBVersion();
-    static void _OnSignal(int s);
-    static void _UnhookSignals();
-    static void _HookSignals();
+    static void onSignal(int s);
+    static void unhookSignals();
+    static void hookSignals();
 
+    bool checkDBVersion();
+    bool startDB();
+    void stopDB();
     void updatePeriodicStats(uint32_t currentLoop) const;
     void updateServerTime() const;
-    bool processShutdownSequence(long long diff, uint32_t& next_printout, uint32_t& next_send);
+    bool processShutdownSequence(long long diff, uint32_t& nextPrintout, uint32_t& nextSend);
 
-    bool m_ShutdownEvent{ false };
+    bool m_ShutdownEvent{false};
     uint32_t m_ShutdownTimer{0};
     bool m_restartEvent{false};
 
     std::atomic<bool> stopEvent{false};
-    std::atomic<bool> serverShutdown{ false };
+    std::atomic<bool> serverShutdown{false};
 
     std::unique_ptr<WorldRunnable> worldRunnable;
 

@@ -26,6 +26,11 @@
 #include <cstdarg>
 #include <atomic>
 
+#ifdef _WIN32
+#include <Windows.h>
+#include <crtdbg.h>
+#endif
+
 #include "Threading/Mutex.hpp"
 
 #ifdef _WIN32
@@ -37,19 +42,21 @@ Mutex m_crashLock;
    for later bug fixing.
 */
 
-std::atomic<bool> hasDied{ false }; // Thread-safe crash flag
-bool ON_CRASH_BREAK_DEBUGGER = false;
+namespace {
+    std::atomic<bool> hasDied{false}; // Thread-safe crash flag
+    bool isDebuggerAttached{false};
+}
 
-void StartCrashHandler()
+void startCrashHandler()
 {
-    ON_CRASH_BREAK_DEBUGGER = (IsDebuggerPresent() != FALSE);
+    isDebuggerAttached = IsDebuggerPresent();
 
-    if(!ON_CRASH_BREAK_DEBUGGER)
+    if (!isDebuggerAttached)
     {
-        _CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_FILE );
-        _CrtSetReportFile( _CRT_ERROR, _CRTDBG_FILE_STDERR );
-        _CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_FILE );
-        _CrtSetReportFile( _CRT_ASSERT, _CRTDBG_FILE_STDERR );
+        _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);
+        _CrtSetReportFile(_CRT_ERROR, _CRTDBG_FILE_STDERR);
+        _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
+        _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);
 
         SetUnhandledExceptionFilter(HandleCrash);
     }
@@ -197,7 +204,7 @@ LONG WINAPI HandleCrash(PEXCEPTION_POINTERS exceptionPointers)
     }
 
     SetPriorityClass(GetCurrentProcess(), BELOW_NORMAL_PRIORITY_CLASS);
-    OnCrash(!ON_CRASH_BREAK_DEBUGGER);
+    OnCrash(!isDebuggerAttached);
     sLogger.finalize();
 
     return EXCEPTION_EXECUTE_HANDLER;

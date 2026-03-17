@@ -225,7 +225,7 @@ bool ChatCommandHandler::HandleServerCancelShutdownCommand(const char* /*args*/,
         teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->getName().c_str();
         teamAnnounce << "|h[" << m_session->GetPlayer()->getName().c_str() << "]|h:" << MSG_COLOR_YELLOW << " canceled server shutdown!";
     }
-    
+
     sWorld.sendMessageToOnlineGms(teamAnnounce.str());
     sGMLog.writefromsession(m_session, "canceled server shutdown");
 

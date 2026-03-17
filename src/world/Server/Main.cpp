@@ -22,6 +22,8 @@
 #include "Debugging/CrashHandler.h"
 #include "ServerState.h"
 #include "Threading/LegacyThreadPool.h"
+#include <cstdio>
+#include <exception>
 
 #ifndef _WIN32
 #include <sys/resource.h>
@@ -53,7 +55,7 @@ namespace {
         SetThreadName("Main Thread");
 
         // This sets up the global unhandled exception filter
-        StartCrashHandler();
+        startCrashHandler();
 
         int exitCode = 1;
 

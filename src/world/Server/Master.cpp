@@ -130,7 +130,7 @@ namespace {
 
     void writePidFile()
     {
-        if (std::ofstream pidFile{ "worldserver.pid" })
+        if (std::ofstream pidFile{"worldserver.pid"})
         {
             uint32_t processId;
 
@@ -288,7 +288,7 @@ namespace {
     /////////////////////////////////////////////////////////////////////////////
 }
 
-void Master::_OnSignal(int s)
+void Master::onSignal(int s)
 {
     switch (s)
     {
@@ -310,7 +310,7 @@ void Master::_OnSignal(int s)
             break;
     }
 
-    (void)signal(s, _OnSignal);
+    (void)std::signal(s, onSignal);
 }
 
 Master& Master::getInstance()
@@ -321,13 +321,6 @@ Master& Master::getInstance()
 }
 
 Master::~Master() = default;
-
-void Master::initialize()
-{
-    m_ShutdownTimer = 0;
-    m_ShutdownEvent = false;
-    m_restartEvent = false;
-}
 
 struct Addr
 {
@@ -341,7 +334,7 @@ struct Addr
 
 bool Master::run(int /*argc*/, char** /*argv*/)
 {
-    std::string config_file = CONFDIR "/world.conf";
+    std::string configFile = CONFDIR "/world.conf";
 
     // Thread-safe time initialization
     const auto now = std::chrono::system_clock::now();
@@ -371,7 +364,7 @@ bool Master::run(int /*argc*/, char** /*argv*/)
         sLogger.warning("You are running AscEmu as root. This is not needed, and may be a possible security risk. It is advised to hit CTRL+C now and start as a non-privileged user.");
 #endif
 
-    if (!loadWorldConfiguration(config_file))
+    if (!loadWorldConfiguration(configFile))
         return false;
 
     sWorld.initialize();
@@ -390,7 +383,7 @@ bool Master::run(int /*argc*/, char** /*argv*/)
     checkAdditionalDirs();
     openCheatLogFiles();
 
-    if (!_StartDB())
+    if (!startDB())
     {
         Database::CleanupLibs();
         sLogger.finalize();
@@ -405,17 +398,17 @@ bool Master::run(int /*argc*/, char** /*argv*/)
     sEventMgr;
 
     const std::string charDbName = worldConfig.charDb.dbName;
-    DatabaseUpdater::initBaseIfNeeded(charDbName, "character", CharacterDatabase);
-    DatabaseUpdater::checkAndApplyDBUpdatesIfNeeded("character", CharacterDatabase);
+    DatabaseUpdater::initBaseIfNeeded(charDbName, "character", *databaseCharacter);
+    DatabaseUpdater::checkAndApplyDBUpdatesIfNeeded("character", *databaseCharacter);
 
     const std::string worldDbName = worldConfig.worldDb.dbName;
-    DatabaseUpdater::initBaseIfNeeded(worldDbName, "world", WorldDatabase);
-    DatabaseUpdater::checkAndApplyDBUpdatesIfNeeded("world", WorldDatabase);
+    DatabaseUpdater::initBaseIfNeeded(worldDbName, "world", *databaseWorld);
+    DatabaseUpdater::checkAndApplyDBUpdatesIfNeeded("world", *databaseWorld);
 
-    if (!_CheckDBVersion())
+    if (!checkDBVersion())
     {
         ThreadPool.Shutdown(); // Prevent thread leak
-        _StopDB();
+        stopDB();
         sLogger.finalize();
         return false;
     }
@@ -427,7 +420,7 @@ bool Master::run(int /*argc*/, char** /*argv*/)
     {
         sLogger.failure("SetInitialWorldSettings() failed. Something went wrong? Exiting.");
         ThreadPool.Shutdown(); // Prevent thread leak
-        _StopDB();
+        stopDB();
         sLogger.finalize();
         return false;
     }
@@ -435,7 +428,7 @@ bool Master::run(int /*argc*/, char** /*argv*/)
     sWorld.setWorldStartTime(static_cast<uint32_t>(UNIXTIME));
 
     worldRunnable = std::make_unique<WorldRunnable>();
-    _HookSignals();
+    hookSignals();
 
     auto console = std::make_unique<ConsoleThread>();
     ThreadPool.ExecuteTask(console.get());
@@ -493,13 +486,13 @@ bool Master::run(int /*argc*/, char** /*argv*/)
         ThreadPool.ExecuteTask(listenSocket.get());
 #endif
 
-    ShutdownThreadPools(isListenerOpen);
+    shutdownThreadPools(isListenerOpen);
 
     // Begin server shutdown
-    _UnhookSignals();
+    unhookSignals();
 
     worldRunnable->threadShutdown();
-    worldRunnable = nullptr;
+    worldRunnable.reset();
 
     ThreadPool.ShowStats();
     console->stopThread();
@@ -507,8 +500,8 @@ bool Master::run(int /*argc*/, char** /*argv*/)
     shutdownLootSystem();
 
     sLogger.info("Database : Clearing all pending queries...");
-    CharacterDatabase.EndThreads();
-    WorldDatabase.EndThreads();
+    databaseCharacter->EndThreads();
+    databaseWorld->EndThreads();
 
     listenSocket->Close();
     CloseConsoleListener();
@@ -547,17 +540,17 @@ bool Master::run(int /*argc*/, char** /*argv*/)
     sScriptMgr.UnloadScripts();
 
     sLogger.info("Database : Closing Connections...");
-    _StopDB();
+    stopDB();
 
     sLogger.info("Network : Deleting Network Subsystem...");
     sSocketMgr.finalize();
     sSocketGarbageCollector.finalize();
 
-    sMaster().gmCommandLog = nullptr;
-    sMaster().anticheatLog = nullptr;
-    sMaster().playerLog= nullptr;
+    gmCommandLog = nullptr;
+    anticheatLog = nullptr;
+    playerLog = nullptr;
 
-    if (remove("worldserver.pid") != 0)
+    if (std::remove("worldserver.pid") != 0)
     {
         sLogger.failure("Error deleting file worldserver.pid");
     }
@@ -576,10 +569,10 @@ bool Master::run(int /*argc*/, char** /*argv*/)
     return true;
 }
 
-bool Master::_CheckDBVersion()
+bool Master::checkDBVersion()
 {
-    auto worldQueryResult = WorldDatabase.QueryNA("SELECT LastUpdate FROM world_db_version ORDER BY id DESC LIMIT 1;");
-    if (worldQueryResult == nullptr)
+    auto worldQueryResult = databaseWorld->QueryNA("SELECT LastUpdate FROM world_db_version ORDER BY id DESC LIMIT 1;");
+    if (!worldQueryResult)
     {
         sLogger.fatal("Database : World database is missing the table `world_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
         sLogger.fatal("Database : You may need to update your database");
@@ -590,12 +583,12 @@ bool Master::_CheckDBVersion()
     std::string_view worldDbVersion = worldField->asCString();
 
     sLogger.info("Database : Last world database update: {}", worldDbVersion);
-    int worldResult = worldDbVersion.compare(REQUIRED_WORLD_DB_VERSION);
-    if (worldResult != 0)
+
+    if (worldDbVersion != REQUIRED_WORLD_DB_VERSION)
     {
         sLogger.fatal("Database : Last world database update doesn't match the required one which is {}.", REQUIRED_WORLD_DB_VERSION);
 
-        if (worldResult < 0)
+        if (worldDbVersion < REQUIRED_WORLD_DB_VERSION)
         {
             sLogger.fatal("Database : You need to apply the world update queries that are newer than {}. Exiting.", worldDbVersion);
             sLogger.fatal("Database : You can find the world update queries in the sql/world_updates sub-directory of your AscEmu source directory.");
@@ -608,8 +601,8 @@ bool Master::_CheckDBVersion()
         return false;
     }
 
-    auto charQueryResult = CharacterDatabase.QueryNA("SELECT LastUpdate FROM character_db_version ORDER BY id DESC LIMIT 1;");
-    if (charQueryResult == nullptr)
+    auto charQueryResult = databaseCharacter->QueryNA("SELECT LastUpdate FROM character_db_version ORDER BY id DESC LIMIT 1;");
+    if (!charQueryResult)
     {
         sLogger.fatal("Database : Character database is missing the table `character_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
         sLogger.fatal("Database : You may need to update your database");
@@ -620,11 +613,11 @@ bool Master::_CheckDBVersion()
     std::string_view charDbVersion = charField->asCString();
 
     sLogger.info("Database : Last character database update: {}", charDbVersion);
-    int charResult = charDbVersion.compare(REQUIRED_CHAR_DB_VERSION);
-    if (charResult != 0)
+
+    if (charDbVersion != REQUIRED_CHAR_DB_VERSION)
     {
         sLogger.fatal("Database : Last character database update doesn't match the required one which is {}.", REQUIRED_CHAR_DB_VERSION);
-        if (charResult < 0)
+        if (charDbVersion < REQUIRED_CHAR_DB_VERSION)
         {
             sLogger.fatal("Database : You need to apply the character update queries that are newer than {}. Exiting.", charDbVersion);
             sLogger.fatal("Database : You can find the character update queries in the sql/character_updates sub-directory of your AscEmu source directory.");
@@ -640,50 +633,58 @@ bool Master::_CheckDBVersion()
     return true;
 }
 
-bool Master::_StartDB()
+bool Master::startDB()
 {
-    sMaster().databaseWorld = nullptr;
-    sMaster().databaseCharacter = nullptr;
+    databaseWorld.reset();
+    databaseCharacter.reset();
 
-    bool wdb_result = !worldConfig.worldDb.user.empty();
-    wdb_result = !wdb_result ? wdb_result : !worldConfig.worldDb.password.empty();
-    wdb_result = !wdb_result ? wdb_result : !worldConfig.worldDb.host.empty();
-    wdb_result = !wdb_result ? wdb_result : !worldConfig.worldDb.dbName.empty();
-    wdb_result = !wdb_result ? wdb_result : worldConfig.worldDb.port != 0;
+    auto isValidConfig = [](const auto& dbConfig) -> bool
+    {
+        return !dbConfig.user.empty() &&
+            !dbConfig.password.empty() &&
+            !dbConfig.host.empty() &&
+            !dbConfig.dbName.empty() &&
+            dbConfig.port != 0;
+    };
 
-    sMaster().databaseWorld = Database::CreateDatabaseInterface();
-
-    if (wdb_result == false)
+    if (!isValidConfig(worldConfig.worldDb))
     {
         sLogger.fatal("Configs : One or more parameters were missing for WorldDatabase connection.");
         return false;
     }
 
+    databaseWorld = Database::CreateDatabaseInterface();
+
     // Initialize it
-    if (!WorldDatabase.Initialize(worldConfig.worldDb.host.c_str(), (unsigned int)worldConfig.worldDb.port, worldConfig.worldDb.user.c_str(),
-                                             worldConfig.worldDb.password.c_str(), worldConfig.worldDb.dbName.c_str(), worldConfig.worldDb.connections, 16384, worldConfig.worldDb.isLegacyAuth))
+    if (!databaseWorld->Initialize(worldConfig.worldDb.host.c_str(),
+                                   static_cast<uint32_t>(worldConfig.worldDb.port),
+                                   worldConfig.worldDb.user.c_str(),
+                                   worldConfig.worldDb.password.c_str(),
+                                   worldConfig.worldDb.dbName.c_str(),
+                                   worldConfig.worldDb.connections,
+                                   16384,
+                                   worldConfig.worldDb.isLegacyAuth))
     {
         sLogger.fatal("Configs : Connection to WorldDatabase failed. Check your database configurations!");
         return false;
     }
 
-    bool cdb_result = !worldConfig.charDb.user.empty();
-    cdb_result = !cdb_result ? cdb_result : !worldConfig.charDb.password.empty();
-    cdb_result = !cdb_result ? cdb_result : !worldConfig.charDb.host.empty();
-    cdb_result = !cdb_result ? cdb_result : !worldConfig.charDb.dbName.empty();
-    cdb_result = !cdb_result ? cdb_result : worldConfig.charDb.port != 0;
-
-    sMaster().databaseCharacter = Database::CreateDatabaseInterface();
-
-    if (cdb_result == false)
+    if (!isValidConfig(worldConfig.charDb))
     {
-        sLogger.fatal("Configs : Connection to CharacterDatabase failed. Check your database configurations!");
+        sLogger.fatal("Configs : One or more parameters were missing for CharacterDatabase connection.");
         return false;
     }
 
-    // Initialize it
-    if (!CharacterDatabase.Initialize(worldConfig.charDb.host.c_str(), (unsigned int)worldConfig.charDb.port, worldConfig.charDb.user.c_str(),
-                                                 worldConfig.charDb.password.c_str(), worldConfig.charDb.dbName.c_str(), worldConfig.charDb.connections, 16384, worldConfig.charDb.isLegacyAuth))
+    databaseCharacter = Database::CreateDatabaseInterface();
+
+    if (!databaseCharacter->Initialize(worldConfig.charDb.host.c_str(),
+                                       static_cast<uint32_t>(worldConfig.charDb.port),
+                                       worldConfig.charDb.user.c_str(),
+                                       worldConfig.charDb.password.c_str(),
+                                       worldConfig.charDb.dbName.c_str(),
+                                       worldConfig.charDb.connections,
+                                       16384,
+                                       worldConfig.charDb.isLegacyAuth))
     {
         sLogger.fatal("Configs : Connection to CharacterDatabase failed. Check your database configurations!");
         return false;
@@ -692,35 +693,35 @@ bool Master::_StartDB()
     return true;
 }
 
-void Master::_StopDB()
+void Master::stopDB()
 {
-    sMaster().databaseWorld = nullptr;
-    sMaster().databaseCharacter = nullptr;
+    databaseWorld.reset();
+    databaseCharacter.reset();
     Database::CleanupLibs();
 }
 
-void Master::_HookSignals()
+void Master::hookSignals()
 {
-    (void)signal(SIGINT, _OnSignal);
-    (void)signal(SIGTERM, _OnSignal);
-    (void)signal(SIGABRT, _OnSignal);
+    (void)std::signal(SIGINT, onSignal);
+    (void)std::signal(SIGTERM, onSignal);
+    (void)std::signal(SIGABRT, onSignal);
 #ifdef _WIN32
-    (void)signal(SIGBREAK, _OnSignal);
+    (void)std::signal(SIGBREAK, onSignal);
 #else
-    (void)signal(SIGHUP, _OnSignal);
-    (void)signal(SIGUSR1, _OnSignal);
+    (void)std::signal(SIGHUP, onSignal);
+    (void)std::signal(SIGUSR1, onSignal);
 #endif
 }
 
-void Master::_UnhookSignals()
+void Master::unhookSignals()
 {
-    (void)signal(SIGINT, SIG_DFL);
-    (void)signal(SIGTERM, SIG_DFL);
-    (void)signal(SIGABRT, SIG_DFL);
+    (void)std::signal(SIGINT, SIG_DFL);
+    (void)std::signal(SIGTERM, SIG_DFL);
+    (void)std::signal(SIGABRT, SIG_DFL);
 #ifdef _WIN32
-    (void)signal(SIGBREAK, SIG_DFL);
+    (void)std::signal(SIGBREAK, SIG_DFL);
 #else
-    (void)signal(SIGHUP, SIG_DFL);
+    (void)std::signal(SIGHUP, SIG_DFL);
 #endif
 }
 
@@ -751,7 +752,7 @@ void Master::openCheatLogFiles()
     toggleLog(playerLog, worldConfig.logger.enablePlayerLog);
 }
 
-void Master::ShutdownThreadPools(bool listenerSockCreate)
+void Master::shutdownThreadPools(bool listenerSockCreate)
 {
     uint32_t loopCounter = 0;
     auto lastTime = Util::TimeNow();
@@ -779,7 +780,7 @@ void Master::ShutdownThreadPools(bool listenerSockCreate)
 
         if (50 > elapsedTime)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(50 - elapsedTime)); 
+            std::this_thread::sleep_for(std::chrono::milliseconds(50 - elapsedTime));
         }
     }
 }
@@ -792,7 +793,7 @@ void Master::updatePeriodicStats(uint32_t currentLoop) const
     ThreadPool.IntegrityCheck();
 
 #if !defined(_WIN32) && defined(__DEBUG__)
-    if (std::ofstream uptimeFile{ "worldserver.uptime" })
+    if (std::ofstream uptimeFile{"worldserver.uptime"})
     {
         uptimeFile << sWorld.GetUptime() << " "
             << sWorld.GetSessionCount() << " "
@@ -818,7 +819,7 @@ void Master::updateServerTime() const
     }
 }
 
-bool Master::processShutdownSequence(long long diff, uint32_t& next_printout, uint32_t& next_send)
+bool Master::processShutdownSequence(long long diff, uint32_t& next_printout, uint32_t& nextSend)
 {
     if (!m_ShutdownEvent) return false;
 
@@ -836,10 +837,10 @@ bool Master::processShutdownSequence(long long diff, uint32_t& next_printout, ui
     }
 
     // Broadcasting
-    if (currentMsTime >= next_send)
+    if (currentMsTime >= nextSend)
     {
         uint32_t timeLeft = m_ShutdownTimer / 1000U;
-        if ((timeLeft % 30U == 0) || timeLeft < 10U)
+        if (timeLeft % 30U == 0 || timeLeft < 10U)
         {
             uint32_t messageType = m_restartEvent ? SERVER_MSG_RESTART_TIME : SERVER_MSG_SHUTDOWN_TIME;
 
@@ -852,7 +853,7 @@ bool Master::processShutdownSequence(long long diff, uint32_t& next_printout, ui
                 sWorld.sendGlobalMessage(AscEmu::Packets::SmsgServerMessage(messageType, timeStr).serialise().get());
             }
         }
-        next_send = currentMsTime + 1000U;
+        nextSend = currentMsTime + 1000U;
     }
 
     // Timer Logic

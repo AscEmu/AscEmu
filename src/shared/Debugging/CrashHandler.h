@@ -43,7 +43,7 @@ public:
     void OnDbgHelpErr(LPCSTR szFuncName, DWORD gle, DWORD64 addr) override;
 };
 
-void StartCrashHandler();
+void startCrashHandler();
 void OnCrash(bool terminate);
 
 typedef struct _EXCEPTION_POINTERS EXCEPTION_POINTERS, *PEXCEPTION_POINTERS;
