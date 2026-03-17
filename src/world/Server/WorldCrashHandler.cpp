@@ -3,13 +3,14 @@ Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "Master.h"
 #include "DatabaseDefinition.hpp"
+#include "Logging/Logger.hpp"
 #include "World.h"
+#include <atomic>
 #include <thread>
 #include <chrono>
 #ifdef _WIN32
-#include <windows.h>
+#include <Windows.h>
 #endif
 
 #ifdef _WIN32

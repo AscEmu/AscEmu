@@ -82,10 +82,10 @@ bool SocketWorkerThread::runThread()
 void HandleReadComplete(Socket* s, uint32_t len)
 {
     //s->m_readEvent= NULL;
-    if(!s->IsDeleted())
+    if (!s->IsDeleted())
     {
         s->m_readEvent.Unmark();
-        if(len)
+        if (len)
         {
             s->readBuffer.IncrementWritten(len);
             s->OnRead();
