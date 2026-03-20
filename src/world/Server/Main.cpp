@@ -29,7 +29,8 @@
 #include <sys/resource.h>
 #endif
 
-namespace {
+namespace
+{
 #ifndef _WIN32
     int unixMain(int argc, char** argv)
     {

@@ -15,7 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #ifdef _WIN32
 
-void OnCrash(bool terminate)
+void onCrash(bool terminate)
 {
     sLogger.failure("Crash Handler : Advanced crash handler initialized.");
 

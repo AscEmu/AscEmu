@@ -95,7 +95,8 @@ private:
     std::unique_ptr<SessionLog> playerLog;
 };
 
-inline Master& sMaster() {
+inline Master& sMaster()
+{
     return Master::getInstance();
 }
 

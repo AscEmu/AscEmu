@@ -137,143 +137,144 @@ class SERVER_DECL EventMgr
 {
     friend class MiniEventMgr;
 
-    private:
-        EventMgr() = default;
-        ~EventMgr() = default;
+private:
+    EventMgr() = default;
+    ~EventMgr() = default;
 
-    public:
-        static EventMgr& getInstance();
+public:
+    static EventMgr& getInstance();
 
-        EventMgr(EventMgr&&) = delete;
-        EventMgr(EventMgr const&) = delete;
-        EventMgr& operator=(EventMgr&&) = delete;
-        EventMgr& operator=(EventMgr const&) = delete;
+    EventMgr(EventMgr&&) = delete;
+    EventMgr(EventMgr const&) = delete;
+    EventMgr& operator=(EventMgr&&) = delete;
+    EventMgr& operator=(EventMgr const&) = delete;
 
-        template <class Class>
-        void AddEvent(Class* obj, void (Class::*method)(), uint32_t type, time_t time, uint32_t repeats, uint32_t flags)
+    template <class Class>
+    void AddEvent(Class* obj, void (Class::*method)(), uint32_t type, time_t time, uint32_t repeats, uint32_t flags)
+    {
+        // create a timed event
+        auto event = std::make_shared<TimedEvent>(obj, std::make_unique<CallbackP0<Class>>(obj, method), type, time, repeats, flags);
+
+        // add this to the object's list, updating will all be done later on...
+        obj->event_AddEvent(std::move(event));
+    }
+
+    template <class Class, typename P1>
+    void AddEvent(Class* obj, void (Class::*method)(P1), P1 p1, uint32_t type, time_t time, uint32_t repeats, uint32_t flags)
+    {
+        // create a timed event
+        auto event = std::make_shared<TimedEvent>(obj, std::make_unique<CallbackP1<Class, P1>>(obj, method, p1), type, time, repeats, flags);
+
+        // add this to the object's list, updating will all be done later on...
+        obj->event_AddEvent(std::move(event));
+    }
+
+    template <class Class, typename P1, typename P2>
+    void AddEvent(Class* obj, void (Class::*method)(P1, P2), P1 p1, P2 p2, uint32_t type, time_t time, uint32_t repeats, uint32_t flags)
+    {
+        // create a timed event
+        auto event = std::make_shared<TimedEvent>(obj, std::make_unique<CallbackP2<Class, P1, P2>>(obj, method, p1, p2), type, time, repeats, flags);
+
+        // add this to the object's list, updating will all be done later on...
+        obj->event_AddEvent(std::move(event));
+    }
+
+    template <class Class, typename P1, typename P2, typename P3>
+    void AddEvent(Class* obj, void (Class::*method)(P1, P2, P3), P1 p1, P2 p2, P3 p3, uint32_t type, time_t time, uint32_t repeats, uint32_t flags)
+    {
+        // create a timed event
+        auto event = std::make_shared<TimedEvent>(obj, std::make_unique<CallbackP3<Class, P1, P2, P3>>(obj, method, p1, p2, p3), type, time, repeats, flags);
+
+        // add this to the object's list, updating will all be done later on...
+        obj->event_AddEvent(std::move(event));
+    }
+
+    template <class Class, typename P1, typename P2, typename P3, typename P4>
+    void AddEvent(Class* obj, void (Class::*method)(P1, P2, P3, P4), P1 p1, P2 p2, P3 p3, P4 p4, uint32_t type, time_t time, uint32_t repeats, uint32_t flags)
+    {
+        // create a timed event
+        auto event = std::make_shared<TimedEvent>(obj, std::make_unique<CallbackP4<Class, P1, P2, P3, P4>>(obj, method, p1, p2, p3, p4), type, time, repeats, flags);
+
+        // add this to the object's list, updating will all be done later on...
+        obj->event_AddEvent(std::move(event));
+    }
+
+    /// \note Please remember the Aura class will call remove events!
+    /// Example: Aura::Virtual_Destructor calls: EventableObject::Virtual_Destructor & sEventMgr.RemoveEvents(this);
+
+    template <class Class> void RemoveEvents(Class* obj) { obj->event_RemoveEvents(static_cast<uint32_t>(-1)); }
+
+    template <class Class> void RemoveEvents(Class* obj, int32_t type)
+    {
+        obj->event_RemoveEvents(type);
+    }
+
+    template <class Class> void ModifyEventTimeLeft(Class* obj, uint32_t type, time_t time, bool unconditioned = true)
+    {
+        obj->event_ModifyTimeLeft(type, time, unconditioned);
+    }
+
+    template <class Class> void ModifyEventTimeAndTimeLeft(Class* obj, uint32_t type, time_t time)
+    {
+        obj->event_ModifyTimeAndTimeLeft(type, time);
+    }
+
+    template <class Class> void ModifyEventTime(Class* obj, uint32_t type, time_t time)
+    {
+        obj->event_ModifyTime(type, time);
+    }
+
+    template <class Class> bool HasEvent(Class* obj, uint32_t type)
+    {
+        return obj->event_HasEvent(type);
+    }
+
+    EventableObjectHolder* GetEventHolder(int32_t InstanceId)
+    {
+        std::lock_guard<std::mutex> guard(holderLock);
+
+        HolderMap::iterator itr = mHolders.find(InstanceId);
+
+        if (itr == mHolders.end())
         {
-            // create a timed event
-            auto event = std::make_shared<TimedEvent>(obj, std::make_unique<CallbackP0<Class>>(obj, method), type, time, repeats, flags);
-
-            // add this to the object's list, updating will all be done later on...
-            obj->event_AddEvent(std::move(event));
+            return nullptr;
         }
 
-        template <class Class, typename P1>
-        void AddEvent(Class* obj, void (Class::*method)(P1), P1 p1, uint32_t type, time_t time, uint32_t repeats, uint32_t flags)
+        return itr->second;
+    }
+
+    void AddEventHolder(EventableObjectHolder* holder, int32_t InstanceId)
+    {
+        std::lock_guard<std::mutex> guard(holderLock);
+
+        mHolders.insert(HolderMap::value_type(InstanceId, holder));
+    }
+
+    void RemoveEventHolder(int32_t InstanceId)
+    {
+        std::lock_guard<std::mutex> guard(holderLock);
+
+        mHolders.erase(InstanceId);
+    }
+
+    void RemoveEventHolder(EventableObjectHolder* holder)
+    {
+        std::lock_guard<std::mutex> guard(holderLock);
+
+        HolderMap::iterator itr = mHolders.begin();
+        for (; itr != mHolders.end(); ++itr)
         {
-            // create a timed event
-            auto event = std::make_shared<TimedEvent>(obj, std::make_unique<CallbackP1<Class, P1>>(obj, method, p1), type, time, repeats, flags);
-
-            // add this to the object's list, updating will all be done later on...
-            obj->event_AddEvent(std::move(event));
-        }
-
-        template <class Class, typename P1, typename P2>
-        void AddEvent(Class* obj, void (Class::*method)(P1, P2), P1 p1, P2 p2, uint32_t type, time_t time, uint32_t repeats, uint32_t flags)
-        {
-            // create a timed event
-            auto event = std::make_shared<TimedEvent>(obj, std::make_unique<CallbackP2<Class, P1, P2>>(obj, method, p1, p2), type, time, repeats, flags);
-
-            // add this to the object's list, updating will all be done later on...
-            obj->event_AddEvent(std::move(event));
-        }
-
-        template <class Class, typename P1, typename P2, typename P3>
-        void AddEvent(Class* obj, void (Class::*method)(P1, P2, P3), P1 p1, P2 p2, P3 p3, uint32_t type, time_t time, uint32_t repeats, uint32_t flags)
-        {
-            // create a timed event
-            auto event = std::make_shared<TimedEvent>(obj, std::make_unique<CallbackP3<Class, P1, P2, P3>>(obj, method, p1, p2, p3), type, time, repeats, flags);
-
-            // add this to the object's list, updating will all be done later on...
-            obj->event_AddEvent(std::move(event));
-        }
-
-        template <class Class, typename P1, typename P2, typename P3, typename P4>
-        void AddEvent(Class* obj, void (Class::*method)(P1, P2, P3, P4), P1 p1, P2 p2, P3 p3, P4 p4, uint32_t type, time_t time, uint32_t repeats, uint32_t flags)
-        {
-            // create a timed event
-            auto event = std::make_shared<TimedEvent>(obj, std::make_unique<CallbackP4<Class, P1, P2, P3, P4>>(obj, method, p1, p2, p3, p4), type, time, repeats, flags);
-
-            // add this to the object's list, updating will all be done later on...
-            obj->event_AddEvent(std::move(event));
-        }
-
-        /// \note Please remember the Aura class will call remove events!
-        /// Example: Aura::Virtual_Destructor calls: EventableObject::Virtual_Destructor & sEventMgr.RemoveEvents(this);
-
-        template <class Class> void RemoveEvents(Class* obj) { obj->event_RemoveEvents(static_cast<uint32_t>(-1)); }
-        template <class Class> void RemoveEvents(Class* obj, int32_t type)
-        {
-            obj->event_RemoveEvents(type);
-        }
-
-        template <class Class> void ModifyEventTimeLeft(Class* obj, uint32_t type, time_t time, bool unconditioned = true)
-        {
-            obj->event_ModifyTimeLeft(type, time, unconditioned);
-        }
-
-        template <class Class> void ModifyEventTimeAndTimeLeft(Class* obj, uint32_t type, time_t time)
-        {
-            obj->event_ModifyTimeAndTimeLeft(type, time);
-        }
-
-        template <class Class> void ModifyEventTime(Class* obj, uint32_t type, time_t time)
-        {
-            obj->event_ModifyTime(type, time);
-        }
-
-        template <class Class> bool HasEvent(Class* obj, uint32_t type)
-        {
-            return obj->event_HasEvent(type);
-        }
-
-        EventableObjectHolder* GetEventHolder(int32_t InstanceId)
-        {
-            std::lock_guard<std::mutex> guard(holderLock);
-
-            HolderMap::iterator itr = mHolders.find(InstanceId);
-
-            if (itr == mHolders.end())
+            if (itr->second == holder)
             {
-                return nullptr;
-            }
-
-            return itr->second;
-        }
-
-        void AddEventHolder(EventableObjectHolder* holder, int32_t InstanceId)
-        {
-            std::lock_guard<std::mutex> guard(holderLock);
-
-            mHolders.insert(HolderMap::value_type(InstanceId, holder));
-        }
-
-        void RemoveEventHolder(int32_t InstanceId)
-        {
-            std::lock_guard<std::mutex> guard(holderLock);
-
-            mHolders.erase(InstanceId);
-        }
-
-        void RemoveEventHolder(EventableObjectHolder* holder)
-        {
-            std::lock_guard<std::mutex> guard(holderLock);
-
-            HolderMap::iterator itr = mHolders.begin();
-            for (; itr != mHolders.end(); ++itr)
-            {
-                if (itr->second == holder)
-                {
-                    mHolders.erase(itr);
-                    return;
-                }
+                mHolders.erase(itr);
+                return;
             }
         }
+    }
 
-    protected:
-        HolderMap mHolders;
-        std::mutex holderLock;
+protected:
+    HolderMap mHolders;
+    std::mutex holderLock;
 };
 
 #define sEventMgr EventMgr::getInstance()
