@@ -44,10 +44,10 @@ public:
 };
 
 void startCrashHandler();
-void OnCrash(bool terminate);
+void onCrash(bool terminate);
 
 typedef struct _EXCEPTION_POINTERS EXCEPTION_POINTERS, *PEXCEPTION_POINTERS;
-LONG WINAPI HandleCrash(PEXCEPTION_POINTERS pExceptPtrs);
+LONG WINAPI handleCrash(PEXCEPTION_POINTERS pExceptPtrs);
 
 #endif
 

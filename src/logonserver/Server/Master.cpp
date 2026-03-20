@@ -186,7 +186,7 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
     sLogger.finalize();
 }
 
-void OnCrash(bool /*Terminate*/)
+void onCrash(bool /*Terminate*/)
 {
 
 }

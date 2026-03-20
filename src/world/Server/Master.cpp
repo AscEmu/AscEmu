@@ -18,67 +18,85 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "WorldConf.h"
-#include "AEVersion.hpp"
-#include "Logging/Log.hpp"
-#include "Database/Database.h"
-#include "Server/LogonCommClient/LogonCommHandler.h"
-#include "Server/Console/ConsoleListener.h"
-#include "Storage/MySQLDataStore.hpp"
-#include "WorldRunnable.h"
-#include "Server/Console/ConsoleThread.h"
-#include "Server/Console/ConsoleAuthMgr.h"
 #include "Server/Master.h"
-#include "Server/EventMgr.h"
+
+#include "AEVersion.hpp"
+#include "Common.hpp"
 #include "ConfigMgr.hpp"
 #include "DatabaseDefinition.hpp"
-#include "Server/BroadcastMgr.h"
-#include "Storage/DayWatcherThread.h"
-#include "Chat/Channel.hpp"
-#include "Chat/ChannelMgr.hpp"
-#include "Management/AddonMgr.h"
-#include "Management/AuctionMgr.hpp"
-#include "Utilities/Util.hpp"
-#include "Database/DatabaseUpdater.hpp"
-#include "Packets/SmsgServerMessage.h"
+#include "git_version.hpp"
 #include "OpcodeTable.hpp"
 #include "World.h"
+#include "WorldConf.h"
+#include "WorldRunnable.h"
 #include "WorldSession.h"
+#include "Chat/Channel.hpp"
+#include "Chat/ChannelMgr.hpp"
 #include "Chat/ChatCommandHandler.hpp"
+#include "Database/Database.h"
+#include "Database/DatabaseUpdater.hpp"
+#include "Database/Field.hpp"
+#include "Logging/Log.hpp"
+#include "Logging/Logger.hpp"
+#include "Logging/MessageType.hpp"
+#include "Logging/Severity.hpp"
+#include "Management/AddonMgr.h"
+#include "Management/AuctionMgr.hpp"
+#include "Management/GameEventMgr.hpp"
+#include "Management/MailMgr.h"
+#include "Management/Loot/LootMgr.hpp"
+#include "Network/Network.h"
+#include "Packets/SmsgServerMessage.h"
+#include "Script/ScriptMgr.hpp"
+#include "Server/BroadcastMgr.h"
+#include "Server/EventMgr.h"
+#include "Server/WorldSocket.h"
+#include "Server/Console/ConsoleAuthMgr.h"
+#include "Server/Console/ConsoleListener.h"
+#include "Server/Console/ConsoleThread.h"
+#include "Server/LogonCommClient/LogonCommHandler.h"
+#include "Spell/SpellMgr.hpp"
+#include "Storage/DayWatcherThread.h"
+#include "Storage/MySQLDataStore.hpp"
+#include "Threading/LegacyThreading.h"
+#include "Utilities/Benchmark.hpp"
+#include "Utilities/Util.hpp"
 
 #if VERSION_STRING == Mop
 #include "Data/WoWDynamicObject.hpp"
 #include "Data/WoWGameObject.hpp"
 #include "Data/WoWItem.hpp"
+#include "Data/WoWObject.hpp"
 #include "Data/WoWPlayer.hpp"
 #include "Data/WoWUnit.hpp"
 #endif
 
-#include "Network/Network.h"
-#include "Server/WorldSocket.h"
-#include "Management/GameEventMgr.hpp"
-#include "Management/Loot/LootMgr.hpp"
-#include "Management/MailMgr.h"
-#include "Script/ScriptMgr.hpp"
-#include "Spell/SpellMgr.hpp"
-#include "CommonFilesystem.hpp"
-#include "git_version.hpp"
-#include "Logging/Logger.hpp"
-#include <cstdarg>
-#include <iostream>
-#include <csignal>
-#include <string_view>
 
-#include "Common.hpp"
-#include "Threading/LegacyThreading.h"
-#include "Utilities/Benchmark.hpp"
-#include <fstream>
-#include <string>
-#include <ctime>
-#include <utility>
 #include <atomic>
+#include <chrono>
+#include <csignal>
+#include <cstdarg>
+#include <cstdio>
+#include <ctime>
+#include <filesystem>
+#include <format>
+#include <fstream>
+#include <iostream>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <thread>
+#include <utility>
+#include <vector>
 
-namespace {
+#ifdef _WIN32
+#include <Windows.h>
+#include <WinSock2.h>
+#include <Threading/LegacyThreadPool.h>
+#endif
+
+namespace
+{
     // DB version
     constexpr std::string_view REQUIRED_CHAR_DB_VERSION = "20250921-00_playerpets";
     constexpr std::string_view REQUIRED_WORLD_DB_VERSION = "20260203-00_pandaren_playercreateinfo";
@@ -390,7 +408,7 @@ bool Master::run(int /*argc*/, char** /*argv*/)
         return false;
     }
 
-    // From here on, if we return false, we MUST clea nup DB and ThreadPool!
+    // From here on, if we return false, we MUST clean up DB and ThreadPool!
     ThreadPool.Startup();
     auto startTime = Util::TimeNow();
 

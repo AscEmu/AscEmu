@@ -48,7 +48,7 @@ bool SocketWorkerThread::runThread()
         ULONG_PTR completionKey = 0;
         LPOVERLAPPED overlappedPtr = nullptr;
 
-        while(true)
+        while (true)
         {
             // ULONG_PTR handles both 32-bit and 64-bit architectures automatically
             if (!GetQueuedCompletionStatus(completionPort, &bytesTransferred, &completionKey, &overlappedPtr, 10000))
@@ -57,13 +57,13 @@ bool SocketWorkerThread::runThread()
             Socket* socket = reinterpret_cast<Socket*>(completionKey);
             OverlappedStruct* overlapped = CONTAINING_RECORD(overlappedPtr, OverlappedStruct, m_overlap);
 
-            if(overlapped->m_event == SOCKET_IO_THREAD_SHUTDOWN)
+            if (overlapped->m_event == SOCKET_IO_THREAD_SHUTDOWN)
             {
                 delete overlapped; // Clean up the shutdown signal object
                 return true;
             }
 
-            if(overlapped->m_event < NUM_SOCKET_IO_EVENTS)
+            if (overlapped->m_event < NUM_SOCKET_IO_EVENTS)
                 ophandlers[overlapped->m_event](socket, bytesTransferred);
         }
     }
@@ -103,7 +103,7 @@ void HandleWriteComplete(Socket* s, uint32_t len)
         s->m_writeEvent.Unmark();
         s->BurstBegin(); // Lock
         s->writeBuffer.Remove(len);
-        if(s->writeBuffer.GetContiguiousBytes() > 0)
+        if (s->writeBuffer.GetContiguiousBytes() > 0)
             s->WriteCallback();
         else
             s->DecSendLock();
@@ -113,7 +113,6 @@ void HandleWriteComplete(Socket* s, uint32_t len)
 
 void HandleShutdown(Socket* /*s*/, uint32_t /*len*/)
 {
-
 }
 
 void SocketMgr::CloseAll()
@@ -121,11 +120,11 @@ void SocketMgr::CloseAll()
     std::vector<Socket*> tokill;
 
     socketLock.acquire();
-    for(std::set<Socket*>::iterator itr = _sockets.begin(); itr != _sockets.end(); ++itr)
+    for (std::set<Socket*>::iterator itr = _sockets.begin(); itr != _sockets.end(); ++itr)
         tokill.push_back(*itr);
     socketLock.release();
 
-    for(std::vector<Socket*>::iterator itr = tokill.begin(); itr != tokill.end(); ++itr)
+    for (std::vector<Socket*>::iterator itr = tokill.begin(); itr != tokill.end(); ++itr)
         (*itr)->Disconnect();
 
     size_t size;
@@ -140,7 +139,7 @@ void SocketMgr::CloseAll()
 
 void SocketMgr::ShutdownThreads()
 {
-    for(int i = 0; i < threadcount; ++i)
+    for (int i = 0; i < threadcount; ++i)
     {
         OverlappedStruct* ov = new OverlappedStruct(SOCKET_IO_THREAD_SHUTDOWN);
         PostQueuedCompletionStatus(m_completionPort, 0, (ULONG_PTR)0, &ov->m_overlap);

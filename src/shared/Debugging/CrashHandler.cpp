@@ -42,7 +42,8 @@ Mutex m_crashLock;
    for later bug fixing.
 */
 
-namespace {
+namespace
+{
     std::atomic<bool> hasDied{false}; // Thread-safe crash flag
     bool isDebuggerAttached{false};
 }
@@ -58,7 +59,7 @@ void startCrashHandler()
         _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
         _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);
 
-        SetUnhandledExceptionFilter(HandleCrash);
+        SetUnhandledExceptionFilter(handleCrash);
     }
 }
 
@@ -69,7 +70,7 @@ void echo(const char* format, ...)
     vprintf(format, ap);
     std::string s = AscEmu::Logging::getFormattedFileName("logs", "CrashLog", false);
     FILE* m_file = fopen(s.c_str(), "a");
-    if(!m_file)
+    if (!m_file)
     {
         va_end(ap);
         return;
@@ -95,24 +96,24 @@ void CStackWalker::OnDbgHelpErr(LPCSTR /*szFuncName*/, DWORD /*gle*/, DWORD64 /*
 void CStackWalker::OnCallstackEntry(CallstackEntryType eType, CallstackEntry & entry)
 {
     CHAR buffer[STACKWALK_MAX_NAMELEN];
-    if((eType != lastEntry) && (entry.offset != 0))
+    if ((eType != lastEntry) && (entry.offset != 0))
     {
-        if(entry.name[0] == 0)
+        if (entry.name[0] == 0)
             strcpy(entry.name, "(function-name not available)");
-        if(entry.undName[0] != 0)
+        if (entry.undName[0] != 0)
             strcpy(entry.name, entry.undName);
-        if(entry.undFullName[0] != 0)
+        if (entry.undFullName[0] != 0)
             strcpy(entry.name, entry.undFullName);
 
         char* p = strrchr(entry.loadedImageName, '\\');
-        if(!p)
+        if (!p)
             p = entry.loadedImageName;
         else
             ++p;
 
-        if(entry.lineFileName[0] == 0)
+        if (entry.lineFileName[0] == 0)
         {
-            if(entry.name[0] == 0)
+            if (entry.name[0] == 0)
                 sprintf(entry.name, "%lld", entry.offset);
 
             sprintf(buffer, "%s!%s Line %u\n", p, entry.name, entry.lineNumber);
@@ -128,16 +129,16 @@ void CStackWalker::OnOutput(LPCSTR szText)
 {
     std::string s = AscEmu::Logging::getFormattedFileName("logs", "CrashLog", false);
     FILE* m_file = fopen(s.c_str(), "a");
-    if(!m_file) return;
+    if (!m_file) return;
 
     sLogger.failure("   {}", szText);
     fprintf(m_file, "   %s", szText);
     fclose(m_file);
 }
 
-LONG WINAPI HandleCrash(PEXCEPTION_POINTERS exceptionPointers)
+LONG WINAPI handleCrash(PEXCEPTION_POINTERS exceptionPointers)
 {
-    if(exceptionPointers == nullptr)
+    if (exceptionPointers == nullptr)
         return EXCEPTION_CONTINUE_SEARCH;
 
     // Only allow one thread to crash at a time
@@ -172,12 +173,11 @@ LONG WINAPI HandleCrash(PEXCEPTION_POINTERS exceptionPointers)
 
     char filename[MAX_PATH];
     snprintf(filename, sizeof(filename),
-        "CrashDumps\\dump-%s-%s-%04u-%02u-%02u-%02u-%02u-%02u-%u.dmp",
-        shortName, AE_BUILD_HASH,
-        systemTime.wYear, systemTime.wMonth, systemTime.wDay,
-        systemTime.wHour, systemTime.wMinute, systemTime.wSecond,
-        GetCurrentThreadId());
-
+             "CrashDumps\\dump-%s-%s-%04u-%02u-%02u-%02u-%02u-%02u-%u.dmp",
+             shortName, AE_BUILD_HASH,
+             systemTime.wYear, systemTime.wMonth, systemTime.wDay,
+             systemTime.wHour, systemTime.wMinute, systemTime.wSecond,
+             GetCurrentThreadId());
 
     CreateDirectoryA("CrashDumps", nullptr);
     HANDLE dumpFile = CreateFileA(filename, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
@@ -192,9 +192,9 @@ LONG WINAPI HandleCrash(PEXCEPTION_POINTERS exceptionPointers)
         info.ExceptionPointers = exceptionPointers;
         info.ThreadId = GetCurrentThreadId();
 
-        // Write the dump 
+        // Write the dump
         MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(),
-            dumpFile, MiniDumpWithIndirectlyReferencedMemory, &info, nullptr, nullptr);
+                          dumpFile, MiniDumpWithIndirectlyReferencedMemory, &info, nullptr, nullptr);
 
         CloseHandle(dumpFile);
     }
@@ -204,7 +204,7 @@ LONG WINAPI HandleCrash(PEXCEPTION_POINTERS exceptionPointers)
     }
 
     SetPriorityClass(GetCurrentProcess(), BELOW_NORMAL_PRIORITY_CLASS);
-    OnCrash(!isDebuggerAttached);
+    onCrash(!isDebuggerAttached);
     sLogger.finalize();
 
     return EXCEPTION_EXECUTE_HANDLER;
