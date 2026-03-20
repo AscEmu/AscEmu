@@ -385,6 +385,9 @@ bool Master::run(int /*argc*/, char** /*argv*/)
     if (!loadWorldConfiguration(configFile))
         return false;
 
+    // Force early instantiation to ensure correct destruction order
+    (void)EventMgr::getInstance();
+
     sWorld.initialize();
     sWorld.loadWorldConfigValues();
 
@@ -411,9 +414,6 @@ bool Master::run(int /*argc*/, char** /*argv*/)
     // From here on, if we return false, we MUST clean up DB and ThreadPool!
     ThreadPool.Startup();
     auto startTime = Util::TimeNow();
-
-    // Call once to initialize EventMgr and to prevent crash on possible startup error - Appled
-    sEventMgr;
 
     const std::string charDbName = worldConfig.charDb.dbName;
     DatabaseUpdater::initBaseIfNeeded(charDbName, "character", *databaseCharacter);
