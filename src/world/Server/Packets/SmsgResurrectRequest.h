@@ -19,7 +19,7 @@ namespace AscEmu::Packets
         std::string casterName;
         uint8_t isSicknessAffected;
         uint8_t overrideTimer;
-        //4.3.4
+        // 4.3.4
         uint32_t spellId;
 
         SmsgResurrectRequest() : SmsgResurrectRequest(0, "", 0, 0)

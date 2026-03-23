@@ -69,6 +69,7 @@ namespace AscEmu::Packets
             packet.WriteByteSeq(guid[5]);
             packet.WriteByteSeq(guid[7]);
 #else // TODO: Mop
+
 #endif
             return true;
         }

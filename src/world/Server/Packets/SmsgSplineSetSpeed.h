@@ -227,6 +227,7 @@ namespace AscEmu::Packets
             }
 
 #else // TODO: Mop
+
 #endif
             return true;
         }

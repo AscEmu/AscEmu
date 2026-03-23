@@ -53,7 +53,7 @@ namespace AscEmu::Packets
                     packet << guid << uint32_t(0);
                 } break;
             }
-#else //Cata and Mop
+#else // Cata and Mop
             switch (opcode)
             {
                 case SMSG_MOVE_UNSET_CAN_FLY:
@@ -76,7 +76,7 @@ namespace AscEmu::Packets
                     packet.WriteByteSeq(guid[3]);
                     packet.WriteByteSeq(guid[5]);
                     packet.WriteByteSeq(guid[7]);
-#else //Mop
+#else // Mop
                     packet.writeBit(guid[6]);
                     packet.writeBit(guid[5]);
                     packet.writeBit(guid[0]);

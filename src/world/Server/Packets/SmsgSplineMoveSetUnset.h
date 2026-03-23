@@ -39,7 +39,7 @@ namespace AscEmu::Packets
         {
 #if VERSION_STRING < Cata
             packet << guid;
-#else //Cata and Mop
+#else // Cata and Mop
             switch (opcode)
             {
                 case SMSG_SPLINE_MOVE_WATER_WALK:

@@ -140,6 +140,7 @@ namespace AscEmu::Packets
             if (mi.status_info.hasPitch)
                 packet << float(mi.pitch_rate);
 #else // TODO: Mop
+
 #endif
             return true;
         }

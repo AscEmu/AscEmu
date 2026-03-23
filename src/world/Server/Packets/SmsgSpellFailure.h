@@ -36,7 +36,6 @@ namespace AscEmu::Packets
         bool internalSerialise(WorldPacket& packet) override
         {
 #if VERSION_STRING == Mop
-
             WoWGuid guid = casterGuid.getRawGuid();
             packet.writeBit(guid[7]);
             packet.writeBit(guid[3]);

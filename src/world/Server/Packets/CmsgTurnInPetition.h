@@ -17,7 +17,7 @@ namespace AscEmu::Packets
     public:
         uint64_t itemGuid;
 
-        //arena fields
+        // arena fields
         uint32_t iconColor = 0;
         uint32_t icon = 0;
         uint32_t borderColor = 0;

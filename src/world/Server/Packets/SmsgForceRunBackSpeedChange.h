@@ -137,6 +137,7 @@ namespace AscEmu::Packets
             packet.WriteByteSeq(guid[6]);
             packet << float(mi.position.z);
 #else // TODO: Mop
+
 #endif
             return true;
         }

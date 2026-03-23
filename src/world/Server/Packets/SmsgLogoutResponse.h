@@ -43,12 +43,12 @@ namespace AscEmu::Packets
 #endif
 
 #if VERSION_STRING == Mop
-        SmsgLogoutResponse(uint32_t logoutResult, bool instantLogout)
-            : ManagedPacket(SMSG_LOGOUT_RESPONSE, 5)
-            , logout_denied(logoutResult != 0)
-            , fail_reason(logoutResult)
-            , result(0)
-            , instant(instantLogout)
+        SmsgLogoutResponse(uint32_t logoutResult, bool instantLogout) :
+            ManagedPacket(SMSG_LOGOUT_RESPONSE, 5),
+            logout_denied(logoutResult != 0),
+            fail_reason(logoutResult),
+            result(0),
+            instant(instantLogout)
         {
         }
 #endif

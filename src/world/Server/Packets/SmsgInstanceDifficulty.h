@@ -40,6 +40,7 @@ namespace AscEmu::Packets
 #if VERSION_STRING < Mop
             packet << difficulty << isHeroic;
 #else
+
 #endif
             return true;
         }

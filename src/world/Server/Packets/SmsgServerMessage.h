@@ -35,7 +35,7 @@ namespace AscEmu::Packets
         {
             packet << type;
 
-            if (type <= 3)   // > msg type
+            if (type <= 3) // > msg type
                 packet << text.c_str();
 
             return true;

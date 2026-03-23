@@ -74,10 +74,10 @@ namespace AscEmu::Packets
                 packet << auras.level;
                 packet << auras.stackCount;
 
-                if (!(auras.flags & 0x08))  // AFLAG_NOT_CASTER
+                if (!(auras.flags & 0x08)) // AFLAG_NOT_CASTER
                     packet << auras.casterGuid;
 
-                if (auras.flags & 0x20)         // AFLAG_DURATION
+                if (auras.flags & 0x20) // AFLAG_DURATION
                 {
                     packet << auras.duration;
                     packet << auras.timeLeft;
@@ -101,8 +101,8 @@ namespace AscEmu::Packets
             for (const auto& auras : aura_updates)
 
             packet.writeBit(targetGuid[7]);
-            packet.writeBit(1);                                   // Is AURA_UPDATE_ALL
-            packet.writeBits(aura_updates.size(), 24);           // Aura Count
+            packet.writeBit(1); // Is AURA_UPDATE_ALL
+            packet.writeBits(aura_updates.size(), 24); // Aura Count
             packet.writeBit(targetGuid[6]);
             packet.writeBit(targetGuid[1]);
             packet.writeBit(targetGuid[3]);
@@ -113,7 +113,7 @@ namespace AscEmu::Packets
 
             for (const auto& auras : aura_updates)
             {
-                packet.writeBit(1);                               // Not remove
+                packet.writeBit(1); // Not remove
 
                 if (auras.flags & AFLAG_SEND_EFFECT_AMOUNT)
                 {
@@ -127,12 +127,12 @@ namespace AscEmu::Packets
                     if (auras.flags & 0x04) // AFLAG_EFFECT_3
                             effCount++;
 
-                    packet.writeBits(effCount, 22);               // Effect Count
+                    packet.writeBits(effCount, 22); // Effect Count
                 }
                 else
-                    packet.writeBits(0, 22);                      // Effect Count
+                    packet.writeBits(0, 22); // Effect Count
 
-                packet.writeBit(!(auras.flags & AFLAG_IS_CASTER));         // HasCasterGuid
+                packet.writeBit(!(auras.flags & AFLAG_IS_CASTER)); // HasCasterGuid
 
                 if (!(auras.flags & AFLAG_IS_CASTER))
                 {
@@ -147,9 +147,9 @@ namespace AscEmu::Packets
                     packet.writeBit(casterGuid[7]);
                 }
 
-                packet.writeBits(0, 22);                          // Unk effect count
-                packet.writeBit(auras.flags & AFLAG_DURATION);          // HasDuration
-                packet.writeBit(auras.flags & AFLAG_DURATION);          // HasMaxDuration
+                packet.writeBits(0, 22); // Unk effect count
+                packet.writeBit(auras.flags & AFLAG_DURATION); // HasDuration
+                packet.writeBit(auras.flags & AFLAG_DURATION); // HasMaxDuration
             }
 
             packet.flushBits();
@@ -175,7 +175,7 @@ namespace AscEmu::Packets
 
                 if (auras.flags & AFLAG_DURATION)
                 {
-                    packet << uint32_t(auras.duration);   //maxduration
+                    packet << uint32_t(auras.duration); // maxduration
                     packet << uint32_t(auras.duration);
                 }
 

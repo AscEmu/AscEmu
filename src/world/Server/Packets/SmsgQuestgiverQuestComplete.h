@@ -20,7 +20,7 @@ namespace AscEmu::Packets
         uint32_t bonusHonor;
         uint32_t bonusTalent;
 
-        //wotlk specific
+        // wotlk specific
         uint32_t bonusArenaPoints;
 
         SmsgQuestgiverQuestComplete() : SmsgQuestgiverQuestComplete(0, 0, 0, 0, 0, 0)
@@ -36,7 +36,7 @@ namespace AscEmu::Packets
     protected:
         size_t expectedSize() const override
         {
-            return 24;  //guessed, 4 * 8 + 4 missing for now
+            return 24; // guessed, 4 * 8 + 4 missing for now
         }
 
         bool internalSerialise(WorldPacket& packet) override
