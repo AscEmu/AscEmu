@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Config/Config.h"
+#include "CommonTypes.hpp"
 
 struct AllowedIP
 {
@@ -16,8 +17,7 @@ struct AllowedIP
 class SERVER_DECL ConfigMgr
 {
 public:
-
     ConfigFile MainConfig;
 };
 
-extern SERVER_DECL ConfigMgr Config;
+inline ConfigMgr Config;

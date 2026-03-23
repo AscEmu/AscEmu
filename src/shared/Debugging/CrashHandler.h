@@ -24,9 +24,8 @@
 #include "Threading/ConditionVariable.h"
 
 bool HookCrashReporter(bool logon);
-void OutputCrashLogLine(const char* format, ...);
 
-#ifdef WIN32
+#ifdef _WIN32
 
 #include <DbgHelp.h>
 #include "StackWalker.h"
@@ -44,19 +43,11 @@ public:
     void OnDbgHelpErr(LPCSTR szFuncName, DWORD gle, DWORD64 addr) override;
 };
 
-void StartCrashHandler();
-void OnCrash(bool Terminate);
+void startCrashHandler();
+void onCrash(bool terminate);
 
 typedef struct _EXCEPTION_POINTERS EXCEPTION_POINTERS, *PEXCEPTION_POINTERS;
-int __cdecl HandleCrash(PEXCEPTION_POINTERS pExceptPtrs);
-
-#define THREAD_TRY_EXECUTION __try{
-#define THREAD_HANDLE_CRASH  }__except(HandleCrash(GetExceptionInformation())) {}
-
-#else
-
-#define THREAD_TRY_EXECUTION
-#define THREAD_HANDLE_CRASH
+LONG WINAPI handleCrash(PEXCEPTION_POINTERS pExceptPtrs);
 
 #endif
 

@@ -147,6 +147,41 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
 #endif
 
     // Some spell cast packets include more data
+#if VERSION_STRING == Mop
+    if (!srlPacket.hasSrcLocation)
+    {
+        if (_player->getTransGuid())
+            srlPacket.targets.setSource({ _player->GetTransOffsetX(), _player->GetTransOffsetY(), _player->GetTransOffsetZ() });
+        else
+            srlPacket.targets.setSource(_player->GetPosition());
+    }
+
+    if (!srlPacket.hasDestLocation)
+    {
+        if (_player->getTransGuid())
+            srlPacket.targets.setDestination({ _player->GetTransOffsetX(), _player->GetTransOffsetY(), _player->GetTransOffsetZ() });
+        else
+            srlPacket.targets.setDestination(_player->GetPosition());
+    }
+
+    if (srlPacket.hasDestLocation)
+    {
+        LocationVector const spellDestination = srlPacket.targets.getDestination();
+        LocationVector const spellSource = srlPacket.targets.getSource();
+        float const deltaX = spellDestination.x - spellSource.x; // Calculate change of x position
+        float const deltaY = spellDestination.y - spellSource.y; // Calculate change of y position
+
+        uint32_t travelTime = 0;
+        if ((srlPacket.projectilePitch != M_PI / 4) && (srlPacket.projectilePitch != -M_PI / 4)) // No division by zero
+        {
+            // Calculate projectile's travel time by using Pythagorean theorem to get distance from delta X and delta Y, and divide that with the projectile's velocity
+            travelTime = static_cast<uint32_t>((sqrtf(deltaX * deltaX + deltaY * deltaY) / (cosf(srlPacket.projectilePitch) * srlPacket.projectileSpeed)) * 1000);
+        }
+
+        spell->m_missilePitch = srlPacket.projectilePitch;
+        spell->m_missileTravelTime = travelTime;
+    }
+#else   // < Mop
     if (srlPacket.hasAdditionalData)
     {
         LocationVector const spellDestination = srlPacket.targets.getDestination();
@@ -171,6 +206,7 @@ void WorldSession::handleCastSpellOpcode(WorldPacket& recvPacket)
         spell->m_missilePitch = srlPacket.projectilePitch;
         spell->m_missileTravelTime = travelTime;
     }
+#endif
 
     spell->prepare(&srlPacket.targets);
 }

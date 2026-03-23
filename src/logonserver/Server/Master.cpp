@@ -33,8 +33,6 @@ using std::chrono::milliseconds;
 std::unique_ptr<Database> sLogonSQL;
 std::atomic<bool> mrunning(true);
 
-ConfigMgr Config;
-
 static const char* REQUIRED_LOGON_DB_VERSION = "20250119-00_logon_db_version";
 
 MasterLogon& MasterLogon::getInstance()
@@ -188,7 +186,7 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
     sLogger.finalize();
 }
 
-void OnCrash(bool /*Terminate*/)
+void onCrash(bool /*Terminate*/)
 {
 
 }
