@@ -13,11 +13,11 @@ This file is released under the MIT license. See README-MIT for more information
 void SpellCastTargets::reset()
 {
     m_targetMask = 0;
-    m_gameObjectTargetGuid = 0;
-    m_unitTargetGuid = 0;
-    m_itemTargetGuid = 0;
-    m_transportSourceGuid = 0;
-    m_transportDestinationGuid = 0;
+    m_gameObjectTargetGuid = WoWGuid();
+    m_unitTargetGuid = WoWGuid();
+    m_itemTargetGuid = WoWGuid();
+    m_transportSourceGuid = WoWGuid();
+    m_transportDestinationGuid = WoWGuid();
     m_source = LocationVector();
     m_destination = LocationVector();
     m_strTarget = std::string();
@@ -62,59 +62,36 @@ void SpellCastTargets::read(WorldPacket& data)
 
     if (m_targetMask & (TARGET_FLAG_OBJECT | TARGET_FLAG_OPEN_LOCK))
     {
-        WoWGuid guid;
-        data >> guid;
-        m_gameObjectTargetGuid = guid.getRawGuid();
+        data >> m_gameObjectTargetGuid;
     }
 
     if (m_targetMask & (TARGET_FLAG_UNIT | TARGET_FLAG_CORPSE | TARGET_FLAG_CORPSE2 | TARGET_FLAG_UNK17))
     {
-        WoWGuid guid;
-        data >> guid;
-        m_unitTargetGuid = guid.getRawGuid();
+        data >> m_unitTargetGuid;
     }
 
     if (m_targetMask & (TARGET_FLAG_ITEM | TARGET_FLAG_TRADE_ITEM))
     {
-        WoWGuid guid;
-        data >> guid;
-        m_itemTargetGuid = guid.getRawGuid();
+        data >> m_itemTargetGuid;
     }
 
     if (m_targetMask & TARGET_FLAG_SOURCE_LOCATION)
     {
-        WoWGuid sourceGuid;
-
-        data >> sourceGuid;
-        m_transportSourceGuid = sourceGuid.getRawGuid();
-
-        LocationVector lv;
-        data >> lv.x;
-        data >> lv.y;
-        data >> lv.z;
-
-        setSource(lv);
+        data >> m_transportSourceGuid;
+        data >> m_source.x;
+        data >> m_source.y;
+        data >> m_source.z;
     }
 
     if (m_targetMask & TARGET_FLAG_DEST_LOCATION)
     {
-        WoWGuid destinationGuid;
-        data >> destinationGuid;
-        m_transportDestinationGuid = destinationGuid.getRawGuid();
+        data >> m_transportDestinationGuid;
+        data >> m_destination.x;
+        data >> m_destination.y;
+        data >> m_destination.z;
 
-        auto transporter = sTransportHandler.getTransporter(destinationGuid.getGuidLow());
-
-        LocationVector lv;
-        data >> lv.x;
-        data >> lv.y;
-        data >> lv.z;
-
-        if (transporter)
-        {
-            transporter->calculatePassengerPosition(lv.x, lv.y, lv.z);
-        }
-
-        setDestination(lv);
+        if (auto transporter = sTransportHandler.getTransporter(m_transportDestinationGuid.getGuidLow()))
+            transporter->calculatePassengerPosition(m_destination.x, m_destination.y, m_destination.z);
     }
 
     if (m_targetMask & TARGET_FLAG_STRING)
@@ -144,13 +121,13 @@ void SpellCastTargets::write(WorldPacket& data) const
 
     if (m_targetMask & TARGET_FLAG_SOURCE_LOCATION)
     {
-        data << WoWGuid(m_transportSourceGuid);
+        data << m_transportSourceGuid;
         data << m_source;
     }
 
     if (m_targetMask & TARGET_FLAG_DEST_LOCATION)
     {
-        data << WoWGuid(m_transportDestinationGuid);
+        data << m_transportDestinationGuid;
         data << m_destination;
     }
 
@@ -162,8 +139,8 @@ void SpellCastTargets::write(WorldPacket& data) const
 
 bool SpellCastTargets::isEmpty() const
 {
-    return m_gameObjectTargetGuid == 0 && m_unitTargetGuid == 0 && m_itemTargetGuid == 0 && m_transportSourceGuid == 0 &&
-        m_transportDestinationGuid == 0 && !hasSource() && !hasDestination();
+    return m_gameObjectTargetGuid.isEmpty() && m_unitTargetGuid.isEmpty() && m_itemTargetGuid.isEmpty() &&
+        m_transportSourceGuid.isEmpty() && m_transportDestinationGuid.isEmpty() && !hasSource() && !hasDestination();
 }
 
 bool SpellCastTargets::hasSource() const
@@ -209,27 +186,27 @@ std::string SpellCastTargets::getStringTarget() const
 
 uint64_t SpellCastTargets::getGameObjectTargetGuid() const
 {
-    return m_gameObjectTargetGuid;
+    return m_gameObjectTargetGuid.getRawGuid();
 }
 
 uint64_t SpellCastTargets::getUnitTargetGuid() const
 {
-    return m_unitTargetGuid;
+    return m_unitTargetGuid.getRawGuid();
 }
 
 uint64_t SpellCastTargets::getItemTargetGuid() const
 {
-    return m_itemTargetGuid;
+    return m_itemTargetGuid.getRawGuid();
 }
 
 uint64_t SpellCastTargets::getTransportSourceGuid() const
 {
-    return m_transportSourceGuid;
+    return m_transportSourceGuid.getRawGuid();
 }
 
 LocationVector SpellCastTargets::getSource() const
 {
-    return LocationVector(m_source);
+    return m_source;
 }
 
 uint64_t SpellCastTargets::getTransportDestinationGuid() const
@@ -239,7 +216,7 @@ uint64_t SpellCastTargets::getTransportDestinationGuid() const
 
 LocationVector SpellCastTargets::getDestination() const
 {
-    return LocationVector(m_destination);
+    return m_destination;
 }
 
 void SpellCastTargets::setGameObjectTarget(uint64_t guid)

@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "LocationVector.h"
+#include "WoWGuid.hpp"
 
 #include <cstdint>
 #include <string>
@@ -17,11 +18,11 @@ class SpellCastTargets
 private:
     uint32_t m_targetMask = 0;
 
-    uint64_t m_gameObjectTargetGuid = 0;
-    uint64_t m_unitTargetGuid = 0;
-    uint64_t m_itemTargetGuid = 0;
-    uint64_t m_transportSourceGuid = 0;
-    uint64_t m_transportDestinationGuid = 0;
+    WoWGuid m_gameObjectTargetGuid = WoWGuid();
+    WoWGuid m_unitTargetGuid = WoWGuid();
+    WoWGuid m_itemTargetGuid = WoWGuid();
+    WoWGuid m_transportSourceGuid = WoWGuid();
+    WoWGuid m_transportDestinationGuid = WoWGuid();
 
     LocationVector m_source = LocationVector();
     LocationVector m_destination = LocationVector();
