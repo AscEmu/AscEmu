@@ -68,12 +68,10 @@ namespace AscEmu::Packets
 #endif
 #if VERSION_STRING == WotLK
             packet >> containerIndex >> inventorySlot >> castCount >> spellId >> itemGuidRaw >> glyphIndex >> castFlags;
-            //packet >> projectilePitch >> projectileSpeed >> hasMovementData; <- in handleUseItemOpcode;
             itemGuid.init(itemGuidRaw);
 #endif
 #if VERSION_STRING == Cata
             packet >> containerIndex >> inventorySlot >> castCount >> spellId >> itemGuidRaw >> glyphIndex >> castFlags;
-            //packet >> projectilePitch >> projectileSpeed >> hasMovementData; <- in handleUseItemOpcode;
             itemGuid.init(itemGuidRaw);
 #endif
             targets.read(packet);
@@ -86,8 +84,6 @@ namespace AscEmu::Packets
 
 #else // Mop
             packet >> containerIndex >> inventorySlot >> castCount >> spellId >> itemGuidRaw >> glyphIndex >> castFlags;
-            //packet >> SpellCastTargets; <- in handleUseItemOpcode;
-            //packet >> projectilePitch >> projectileSpeed >> hasMovementData; <- in handleUseItemOpcode;
             itemGuid.init(itemGuidRaw);
 #endif
             return true;

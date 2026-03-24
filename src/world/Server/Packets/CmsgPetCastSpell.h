@@ -49,6 +49,7 @@ namespace AscEmu::Packets
 
         bool internalDeserialise(WorldPacket& packet) override
         {
+#if VERSION_STRING < Mop
             packet >> petGuid >> castCount >> spellId >> castFlags;
 
             targets.read(packet);
@@ -58,6 +59,7 @@ namespace AscEmu::Packets
                 hasAdditionalData = true;
                 packet >> projectilePitch >> projectileSpeed >> hasMovementData;
             }
+#endif
 
             return true;
         }
