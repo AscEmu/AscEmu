@@ -28,6 +28,9 @@ namespace AscEmu::Packets
 
         bool hasMovementData = false;
 
+        bool hasSrcLocation = false;    // since 184141
+        bool hasDestLocation = false;   // since 184141
+
         CmsgPetCastSpell() : CmsgPetCastSpell(0, 0, 0, 0)
         {
         }
@@ -59,6 +62,8 @@ namespace AscEmu::Packets
                 hasAdditionalData = true;
                 packet >> projectilePitch >> projectileSpeed >> hasMovementData;
             }
+#else // Mop
+
 #endif
 
             return true;

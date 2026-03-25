@@ -342,6 +342,24 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
 #if VERSION_STRING >= WotLK
     spell->m_glyphslot = srlPacket.glyphIndex;
 
+#if VERSION_STRING == Mop
+    if (!srlPacket.hasSrcLocation)
+    {
+        if (_player->getTransGuid())
+            srlPacket.targets.setSource({ _player->GetTransOffsetX(), _player->GetTransOffsetY(), _player->GetTransOffsetZ() });
+        else
+            srlPacket.targets.setSource(_player->GetPosition());
+    }
+
+    if (!srlPacket.hasDestLocation)
+    {
+        if (_player->getTransGuid())
+            srlPacket.targets.setDestination({ _player->GetTransOffsetX(), _player->GetTransOffsetY(), _player->GetTransOffsetZ() });
+        else
+            srlPacket.targets.setDestination(_player->GetPosition());
+    }
+#endif
+
     // Some spell cast packets include more data
     if (srlPacket.hasAdditionalData)
     {
@@ -357,11 +375,13 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
             travelTime = static_cast<uint32_t>((sqrtf(deltaX * deltaX + deltaY * deltaY) / (cosf(srlPacket.projectilePitch) * srlPacket.projectileSpeed)) * 1000);
         }
 
+#if VERSION_STRING < Mop
         if (srlPacket.hasMovementData)
         {
             recvPacket.SetOpcode(recvPacket.read<uint16_t>()); // MSG_MOVE_STOP
             handleMovementOpcodes(recvPacket);
         }
+#endif
 
         spell->m_missilePitch = srlPacket.projectilePitch;
         spell->m_missileTravelTime = travelTime;

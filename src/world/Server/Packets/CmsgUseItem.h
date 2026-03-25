@@ -39,6 +39,9 @@ namespace AscEmu::Packets
 
         bool hasMovementData = false;
 
+        bool hasSrcLocation = false;    // since 184141
+        bool hasDestLocation = false;   // since 184141
+
         CmsgUseItem() : CmsgUseItem(0, 0)
         {
         }
@@ -83,8 +86,319 @@ namespace AscEmu::Packets
             }
 
 #else // Mop
-            packet >> containerIndex >> inventorySlot >> castCount >> spellId >> itemGuidRaw >> glyphIndex >> castFlags;
-            itemGuid.init(itemGuidRaw);
+            uint32_t targetStringLength = 0;
+            
+            WoWGuid targetGuid = 0;
+            WoWGuid itemTargetGuid = 0;
+            WoWGuid destTransGuid = 0;
+            WoWGuid srcTransGuid = 0;
+            WoWGuid moveTransGuid = 0;
+            WoWGuid moveGuid = 0;
+
+            MovementInfo movementInfo;
+
+            bool hasTransport = false;
+            bool hasUnkField = false;
+            uint32_t unkCounter = 0;
+            uint32_t unkMoveCounter = 0;
+            bool hasPitch = false;
+            bool hasTimestamp = false;
+
+            packet >> containerIndex >> inventorySlot;
+
+            bool hasElevation = !packet.readBit();
+            itemGuid[6] = packet.readBit();
+            bool hasTargetString = !packet.readBit();
+            itemGuid[1] = packet.readBit();
+            bool hasCastFlags = !packet.readBit();
+            bool hasDestLocation = packet.readBit();
+            itemGuid[2] = packet.readBit();
+            itemGuid[7] = packet.readBit();
+            itemGuid[0] = packet.readBit();
+            bool hasTargetMask = !packet.readBit();
+            bool hasMissileSpeed = !packet.readBit();
+            bool hasMovement = packet.readBit();
+            bool hasCastCount = !packet.readBit();
+            bool hasSpellId = !packet.readBit();
+            packet.readBit();
+            bool hasGlyphIndex = !packet.readBit();
+            packet.readBit();
+            itemGuid[4] = packet.readBit();
+            bool hasSrcLocation = packet.readBit();
+            itemGuid[3] = packet.readBit();
+            itemGuid[5] = packet.readBit();
+
+            uint8_t researchCount = packet.readBits(2);
+            for (uint8_t i = 0; i < researchCount; ++i)
+                packet.readBits(2);
+
+            if (hasMovement)
+            {
+                movementInfo.status_info.hasPitch = !packet.readBit();
+                hasTransport = packet.readBit();
+                packet.readBit();
+
+                if (hasTransport)
+                {
+                    moveTransGuid[7] = packet.readBit();
+                    moveTransGuid[2] = packet.readBit();
+                    moveTransGuid[4] = packet.readBit();
+                    moveTransGuid[5] = packet.readBit();
+                    moveTransGuid[6] = packet.readBit();
+                    moveTransGuid[0] = packet.readBit();
+                    moveTransGuid[1] = packet.readBit();
+                    movementInfo.status_info.hasTransportTime3 = packet.readBit();
+                    moveTransGuid[4] = packet.readBit();
+                    movementInfo.status_info.hasTransportTime2 = packet.readBit();
+                }
+
+                moveGuid[6] = packet.readBit();
+                moveGuid[2] = packet.readBit();
+                moveGuid[1] = packet.readBit();
+                unkCounter = packet.readBits(22);
+                packet.readBit();
+                bool hasMovementFlags2 = !packet.readBit();
+                movementInfo.status_info.hasFallData = packet.readBit();
+                moveGuid[5] = packet.readBit();
+                movementInfo.status_info.hasSplineElevation = !packet.readBit();
+                packet.readBit();
+                moveGuid[7] = packet.readBit();
+                moveGuid[0] = packet.readBit();
+
+                if (movementInfo.status_info.hasFallData)
+                    movementInfo.status_info.hasFallDirection = packet.readBit();
+
+                movementInfo.status_info.hasOrientation = !packet.readBit();
+                moveGuid[4] = packet.readBit();
+                moveGuid[3] = packet.readBit();
+                hasTimestamp = !packet.readBit();
+                unkMoveCounter = !packet.readBit();
+                bool hasMovementFlags = !packet.readBit();
+
+                if (hasMovementFlags2)
+                    movementInfo.flags2 = packet.readBits(13);
+
+                if (hasMovement)
+                    movementInfo.flags = packet.readBits(30);
+            }
+
+            if (hasSrcLocation)
+            {
+                srcTransGuid[3] = packet.readBit();
+                srcTransGuid[1] = packet.readBit();
+                srcTransGuid[7] = packet.readBit();
+                srcTransGuid[4] = packet.readBit();
+                srcTransGuid[2] = packet.readBit();
+                srcTransGuid[0] = packet.readBit();
+                srcTransGuid[6] = packet.readBit();
+                srcTransGuid[5] = packet.readBit();
+            }
+
+            if (hasDestLocation)
+            {
+                destTransGuid[2] = packet.readBit();
+                destTransGuid[4] = packet.readBit();
+                destTransGuid[1] = packet.readBit();
+                destTransGuid[7] = packet.readBit();
+                destTransGuid[6] = packet.readBit();
+                destTransGuid[0] = packet.readBit();
+                destTransGuid[3] = packet.readBit();
+                destTransGuid[5] = packet.readBit();
+            }
+
+            if (hasTargetString)
+                targetStringLength = packet.readBits(7);
+
+            targetGuid[1] = packet.readBit();
+            targetGuid[0] = packet.readBit();
+            targetGuid[5] = packet.readBit();
+            targetGuid[3] = packet.readBit();
+            targetGuid[6] = packet.readBit();
+            targetGuid[4] = packet.readBit();
+            targetGuid[7] = packet.readBit();
+            targetGuid[2] = packet.readBit();
+
+            itemTargetGuid[4] = packet.readBit();
+            itemTargetGuid[5] = packet.readBit();
+            itemTargetGuid[0] = packet.readBit();
+            itemTargetGuid[1] = packet.readBit();
+            itemTargetGuid[3] = packet.readBit();
+            itemTargetGuid[7] = packet.readBit();
+            itemTargetGuid[6] = packet.readBit();
+            itemTargetGuid[2] = packet.readBit();
+
+            if (hasCastFlags)
+                castFlags = packet.readBits(5);
+
+            if (hasTargetMask)
+                targets.setTargetMask(packet.readBits(20));
+
+            packet.ReadByteSeq(itemGuid[0]);
+            packet.ReadByteSeq(itemGuid[5]);
+            packet.ReadByteSeq(itemGuid[6]);
+            packet.ReadByteSeq(itemGuid[3]);
+            packet.ReadByteSeq(itemGuid[4]);
+            packet.ReadByteSeq(itemGuid[2]);
+            packet.ReadByteSeq(itemGuid[1]);
+
+            for (uint8_t i = 0; i < researchCount; ++i)
+            {
+                packet.read_skip<uint32_t>();
+                packet.read_skip<uint32_t>();
+            }
+
+            packet.ReadByteSeq(itemGuid[7]);
+
+            if (hasMovement)
+            {
+                for (uint8_t i = 0; i != unkCounter; i++)
+                    packet.read_skip<uint32_t>();
+
+                if (hasTransport)
+                {
+                    packet >> movementInfo.transport_position.y;
+                    packet >> movementInfo.transport_position.z;
+                    packet.ReadByteSeq(moveTransGuid[1]);
+
+                    if (movementInfo.status_info.hasTransportTime3)
+                        packet >> movementInfo.transport_time3;
+
+                    packet.ReadByteSeq(moveTransGuid[7]);
+                    packet.ReadByteSeq(moveTransGuid[5]);
+                    packet.ReadByteSeq(moveTransGuid[2]);
+                    packet.ReadByteSeq(moveTransGuid[4]);
+                    packet >> movementInfo.transport_position.x;
+                    packet >> movementInfo.transport_position.o;
+                    packet.ReadByteSeq(moveTransGuid[0]);
+                    packet >> movementInfo.transport_seat;
+                    packet >> movementInfo.transport_time;
+                    packet.ReadByteSeq(moveTransGuid[6]);
+                    packet.ReadByteSeq(moveTransGuid[3]);
+
+                    if (movementInfo.status_info.hasTransportTime2)
+                        packet >> movementInfo.transport_time2;
+                }
+
+                if (movementInfo.status_info.hasFallData)
+                {
+                    packet >> movementInfo.jump_info.velocity;
+
+                    if (movementInfo.status_info.hasFallDirection)
+                    {
+                        packet >> movementInfo.jump_info.sinAngle;
+                        packet >> movementInfo.jump_info.cosAngle;
+                        packet >> movementInfo.jump_info.xyspeed;
+                    }
+
+                    packet >> movementInfo.fall_time;
+                }
+
+                packet.ReadByteSeq(moveTransGuid[3]);
+                packet.ReadByteSeq(moveTransGuid[7]);
+                packet.ReadByteSeq(moveTransGuid[6]);
+                packet.ReadByteSeq(moveTransGuid[1]);
+                packet >> movementInfo.position.y;
+
+                if (movementInfo.status_info.hasSplineElevation)
+                    packet >> movementInfo.spline_elevation;
+
+                if (hasUnkField)
+                    packet.read_skip<uint32_t>();
+
+                if (movementInfo.status_info.hasOrientation)
+                    packet >> movementInfo.position.o;
+
+                packet.ReadByteSeq(moveTransGuid[2]);
+                packet >> movementInfo.position.z;
+
+                if (hasTimestamp)
+                    packet >> movementInfo.update_time;
+
+                packet >> movementInfo.position.x;
+                packet.ReadByteSeq(moveTransGuid[5]);
+                packet.ReadByteSeq(moveTransGuid[0]);
+
+                if (movementInfo.status_info.hasPitch)
+                    movementInfo.pitch_rate = G3D::wrap(packet.read<float>(), float(-M_PI), float(M_PI));
+
+                packet.ReadByteSeq(moveTransGuid[4]);
+            }
+
+            if (hasDestLocation)
+            {
+                float x, y, z;
+
+                packet.ReadByteSeq(destTransGuid[7]);
+                packet >> x;
+                packet.ReadByteSeq(destTransGuid[0]);
+                packet.ReadByteSeq(destTransGuid[6]);
+                packet.ReadByteSeq(destTransGuid[1]);
+                packet.ReadByteSeq(destTransGuid[3]);
+                packet >> y;
+                packet.ReadByteSeq(destTransGuid[5]);
+                packet >> z;
+                packet.ReadByteSeq(destTransGuid[4]);
+                packet.ReadByteSeq(destTransGuid[2]);
+
+                targets.setDestination({x, y, z});
+                targets.setTransportDestinationGuid(destTransGuid);
+            }
+
+            packet.ReadByteSeq(itemTargetGuid[6]);
+            packet.ReadByteSeq(itemTargetGuid[7]);
+            packet.ReadByteSeq(itemTargetGuid[2]);
+            packet.ReadByteSeq(itemTargetGuid[0]);
+            packet.ReadByteSeq(itemTargetGuid[3]);
+            packet.ReadByteSeq(itemTargetGuid[4]);
+            packet.ReadByteSeq(itemTargetGuid[1]);
+            packet.ReadByteSeq(itemTargetGuid[5]);
+
+            if (hasSrcLocation)
+            {
+                float x, y, z;
+
+                packet.ReadByteSeq(srcTransGuid[7]);
+                packet >> x;
+                packet.ReadByteSeq(srcTransGuid[1]);
+                packet.ReadByteSeq(srcTransGuid[5]);
+                packet.ReadByteSeq(srcTransGuid[4]);
+                packet >> z;
+                packet.ReadByteSeq(srcTransGuid[6]);
+                packet.ReadByteSeq(srcTransGuid[0]);
+                packet.ReadByteSeq(srcTransGuid[3]);
+                packet >> y;
+                packet.ReadByteSeq(srcTransGuid[2]);
+
+                targets.setSource({x, y, z});
+                targets.setUnitTarget(srcTransGuid);
+            }
+
+            if (hasSpellId)
+                packet >> spellId;
+
+            packet.ReadByteSeq(targetGuid[1]);
+            packet.ReadByteSeq(targetGuid[4]);
+            packet.ReadByteSeq(targetGuid[3]);
+            packet.ReadByteSeq(targetGuid[6]);
+            packet.ReadByteSeq(targetGuid[2]);
+            packet.ReadByteSeq(targetGuid[0]);
+            packet.ReadByteSeq(targetGuid[7]);
+            packet.ReadByteSeq(targetGuid[5]);
+
+            if (hasTargetString)
+                targets.setStringTarget(packet.ReadString(targetStringLength));
+
+            if (hasElevation)
+                packet >> projectilePitch;
+
+            if (hasGlyphIndex)
+                packet >> glyphIndex;
+
+            if (hasMissileSpeed)
+                packet >> projectileSpeed;
+
+            if (hasCastCount)
+                packet >> castCount;
 #endif
             return true;
         }
