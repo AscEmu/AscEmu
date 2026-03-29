@@ -113,7 +113,12 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
 
     WorldPacket data;
     data.SetOpcode(SMSG_WHO);
+
+#if VERSION_STRING < Mop
     data << uint64_t(0);
+#else
+    std::vector<Player*> result;
+#endif
 
     sObjectMgr.m_playerLock.lock();
 
@@ -130,7 +135,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
             continue;
         }
 
-        // Team check
+        // team check
         if (!HasGMPermissions() && player->getTeam() != team && !player->getSession()->HasGMPermissions() && !worldConfig.player.isInterfactionMiscEnabled)
         {
             continue;
@@ -138,26 +143,26 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
 
         ++total_count;
 
-        // Chat name
+        // chat name
         if (hasCharName && srlPacket.player_name.compare(player->getName()) != 0)
         {
             continue;
         }
 
-        // Guild name
+        // guild name
         if (hasGuildName && (!player->getGuild() || srlPacket.guild_name.compare(player->getGuild()->getName()) != 0))
         {
             continue;
         }
 
-        // Level check
+        // level check
         // skip players outside of level range
         if (srlPacket.min_level > 0 && srlPacket.max_level > 0 && player->getLevel() < srlPacket.min_level || player->getLevel() > srlPacket.max_level)
         {
             continue;
         }
 
-        // Zone id compare
+        // zone id compare
         if (srlPacket.zone_count > 0)
         {
             // people that fail the zone check don't get added
@@ -201,6 +206,7 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
             }
         }
 
+#if VERSION_STRING < Mop
         // if we're here, it means we've passed all tests
         data << player->getName().c_str();
 
@@ -224,13 +230,55 @@ void WorldSession::handleWhoOpcode(WorldPacket& recvPacket)
         {
             break;
         }
+#else
+        result.push_back(player);
+
+        if (result.size() >= 49)
+        {
+            break;
+        }
+#endif
     }
 
     sObjectMgr.m_playerLock.unlock();
+
+#if VERSION_STRING < Mop
     data.wpos(0);
     data << sent_count;
     data << sent_count;
+#else
+    uint32_t count = static_cast<uint32_t>(result.size());
 
+    data << uint32_t(count);
+    data << uint32_t(count);
+
+    for (auto* player : result)
+    {
+        std::string const& name = player->getName();
+        std::string guildName = player->getGuild() ? player->getGuild()->getName() : "";
+
+        data.writeBits(name.length(), 6);
+        data.writeBits(guildName.length(), 6);
+    }
+
+    data.flushBits();
+
+    for (auto* player : result)
+    {
+        data << player->getName().c_str();
+
+        if (player->getGuild())
+            data << player->getGuild()->getName().c_str();
+        else
+            data << uint8_t(0);
+
+        data << player->getLevel();
+        data << uint32_t(player->getClass());
+        data << uint32_t(player->getRace());
+        data << player->getGender();
+        data << uint32_t(player->getZoneId());
+    }
+#endif
     SendPacket(&data);
 }
 
@@ -1881,7 +1929,14 @@ void WorldSession::handleWhoIsOpcode(WorldPacket& recvPacket)
     + acctName + ", Permissions: " + acctPerms + ", E-Mail: " + acctEmail + ", lastIP: " + acctIP + ", Muted: " + acctMuted;
 
     WorldPacket data(SMSG_WHOIS, msg.size() + 1);
+#if VERSION_STRING < Mop
     data << msg;
+#else
+    data.writeBits(msg.size(), 11);
+    data.flushBits();
+    if (msg.size())
+        data.WriteString(msg);
+#endif
     SendPacket(&data);
 }
 
