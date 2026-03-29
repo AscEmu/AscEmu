@@ -851,8 +851,8 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_LOOT_MASTER_GIVE, &WorldSession::handleLootMasterGiveOpcode, true, true, true, true, false);
 
     // Player Interaction
-    registry.registerOpcode(CMSG_WHO, &WorldSession::handleWhoOpcode, true, true, true, true, false);
-    registry.registerOpcode(CMSG_WHOIS, &WorldSession::handleWhoIsOpcode, true, false, true, true, false);
+    registry.registerOpcode(CMSG_WHO, &WorldSession::handleWhoOpcode, true, true, true, true, true);
+    registry.registerOpcode(CMSG_WHOIS, &WorldSession::handleWhoIsOpcode, true, false, true, true, true);
     registry.registerOpcode(CMSG_LOGOUT_REQUEST, &WorldSession::handleLogoutRequestOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_PLAYER_LOGOUT, &WorldSession::handlePlayerLogoutOpcode, true, true, true, false, true);
     registry.registerOpcode(CMSG_LOGOUT_CANCEL, &WorldSession::handleLogoutCancelOpcode, true, true, true, true, true);
@@ -865,7 +865,7 @@ void WorldSession::registerOpcodeHandler()
     registry.registerOpcode(CMSG_CANCEL_MOUNT_AURA, &WorldSession::handleDismountOpcode, true, true, true, false, false);
 
     // Friends
-    registry.registerOpcode(CMSG_CONTACT_LIST, &WorldSession::handleFriendListOpcode, true, true, true, true, false);
+    registry.registerOpcode(CMSG_CONTACT_LIST, &WorldSession::handleFriendListOpcode, true, true, true, true, true);
     registry.registerOpcode(CMSG_ADD_FRIEND, &WorldSession::handleAddFriendOpcode, true, true, true, false, false);
     registry.registerOpcode(CMSG_DEL_FRIEND, &WorldSession::handleDelFriendOpcode, true, true, true, false, false);
     registry.registerOpcode(CMSG_ADD_IGNORE, &WorldSession::handleAddIgnoreOpcode, true, true, true, false, false);
