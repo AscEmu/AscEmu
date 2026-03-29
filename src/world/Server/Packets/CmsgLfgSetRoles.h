@@ -18,10 +18,10 @@ namespace AscEmu::Packets
     public:
 #if VERSION_STRING < Mop
         using RolesType = uint8_t;
-        static constexpr uint16_t PacketSize = 1;
+        static constexpr uint16_t packetSize = 1;
 #else
         using RolesType = uint32_t;
-        static constexpr uint16_t PacketSize = 5;
+        static constexpr uint16_t packetSize = 5;
 #endif
         RolesType roles;
 
@@ -30,7 +30,7 @@ namespace AscEmu::Packets
         }
 
         CmsgLfgSetRoles(RolesType roles) :
-            ManagedPacket(CMSG_LFG_SET_ROLES, PacketSize),
+            ManagedPacket(CMSG_LFG_SET_ROLES, packetSize),
             roles(roles)
         {
         }
