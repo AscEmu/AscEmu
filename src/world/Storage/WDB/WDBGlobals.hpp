@@ -30,8 +30,9 @@ namespace WDB
         LOCALE_esMX = 10,
         LOCALE_ruRU = 11,
         LOCALE_ptBR = 12,
-        LOCALE_ptPT = 13,
-        LOCALE_itIT = 14,
+        LOCALE_itIT = 13,
+        LOCALE_ptPT = 14,
+        LOCALE_none = 15
     };
 
     struct LocaleNameStr
@@ -55,13 +56,14 @@ namespace WDB
            { "esMX", LOCALE_esMX },
            { "ruRU", LOCALE_ruRU },
            { "ptBR", LOCALE_ptBR },
-           { "ptPT", LOCALE_ptPT },
            { "itIT", LOCALE_itIT },
+           { "ptPT", LOCALE_ptPT },
+           { "none", LOCALE_none }
     };
 
     namespace
     {
-        const uint8_t C_TOTAL_LOCALES = 15;
+        const uint8_t C_TOTAL_LOCALES = 16;
         char const* C_LOCALE_NAMES[C_TOTAL_LOCALES] =
         {
             "enGB",
@@ -77,8 +79,9 @@ namespace WDB
             "esMX",
             "ruRU",
             "ptBR",
-            "ptPT",
             "itIT"
+            "ptPT",
+            "none"
         };
 
         uint32_t g_dbc_file_count = 0;
