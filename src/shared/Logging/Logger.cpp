@@ -42,8 +42,6 @@ namespace AscEmu::Logging
     {
 #ifdef _WIN32
         handle_stdout = GetStdHandle(STD_OUTPUT_HANDLE);
-#endif
-#if defined(_MSC_VER)
         SetConsoleOutputCP(65001);
 #endif
         std::string normal_filename = file_prefix + "-normal.log";
