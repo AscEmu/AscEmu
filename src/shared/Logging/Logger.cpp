@@ -7,12 +7,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "LoggerDefines.hpp"
 #include "Utilities/Util.hpp"
 #include "Config/Config.h"
-#include <iostream>
-#include <cstdarg>
+
 #include <string>
 #include <algorithm>
-#include <fmt/core.h>
-
+#include <fmt/format.h>
 #include "CThreads.h"
 
 namespace AscEmu::Logging
@@ -45,26 +43,39 @@ namespace AscEmu::Logging
 #ifdef _WIN32
         handle_stdout = GetStdHandle(STD_OUTPUT_HANDLE);
 #endif
-
+#if defined(_MSC_VER)
+        SetConsoleOutputCP(65001);
+#endif
         std::string normal_filename = file_prefix + "-normal.log";
         std::string error_filename = file_prefix + "-error.log";
 
         std::string current_date_time = Util::GetCurrentDateTimeString();
 
-        char logMessage[32768];
-        sprintf(logMessage, "=================[%s]=================", current_date_time.c_str());
+        auto logMessage = fmt::format("=================[{}]=================", current_date_time);
 
         this->normalLogFile = fopen(normal_filename.c_str(), "a");
         if (this->normalLogFile == nullptr)
-            std::cerr << __FUNCTION__ << " : Error opening file " << normal_filename << std::endl;
+        {
+            setConsoleColor(CONSOLE_COLOR_RED);
+            fmt::println("{} : Error opening file {}", __FUNCTION__, normal_filename);
+            setConsoleColor(CONSOLE_COLOR_NORMAL);
+        }
         else
+        {
             writeFile(this->normalLogFile, logMessage);
+        }
 
         this->errorLogFile = fopen(error_filename.c_str(), "a");
         if (this->errorLogFile == nullptr)
-            std::cerr << __FUNCTION__ << " : Error opening file " << error_filename << std::endl;
+        {
+            setConsoleColor(CONSOLE_COLOR_RED);
+            fmt::println("{} : Error opening file {}", __FUNCTION__, error_filename);
+            setConsoleColor(CONSOLE_COLOR_NORMAL);
+        }
         else
+        {
             writeFile(this->errorLogFile, logMessage);
+        }
     }
 
     void Logger::setMinimumMessageType(MessageType _minimumMessageType)
@@ -79,32 +90,27 @@ namespace AscEmu::Logging
 
     void Logger::log(Severity severity, MessageType messageType, std::string_view message)
     {
-#if defined(_MSC_VER)
-        SetConsoleOutputCP(65001);
-#endif
         if (this->minimumMessageType > messageType)
             return;
 
         auto logMessage = fmt::format("{} {}{}: {}", Util::GetCurrentTimeString(), getSeverityText(severity), getMessageTypeText(messageType), message);
-  
+
         setSeverityConsoleColor(severity);
-        std::cout << logMessage << "\n";
+        fmt::println("{}", logMessage);
         setConsoleColor(CONSOLE_COLOR_NORMAL);
 
+        writeFile(this->normalLogFile, logMessage);
         if (severity >= Severity::FAILURE)
             writeFile(this->errorLogFile, logMessage);
-
-        writeFile(this->normalLogFile, logMessage);
     }
 
     void Logger::file(Severity severity, MessageType messageType, std::string_view message)
     {
         auto logMessage = fmt::format("{} {}{}: {}", Util::GetCurrentTimeString(), getSeverityText(severity), getMessageTypeText(messageType), message);
 
+        writeFile(this->normalLogFile, logMessage);
         if (severity >= Severity::FAILURE)
             writeFile(this->errorLogFile, logMessage);
-
-        writeFile(this->normalLogFile, logMessage);
     }
 
     std::string Logger::getMessageTypeText(MessageType messageType)
@@ -143,7 +149,7 @@ namespace AscEmu::Logging
         if (file == nullptr || msg.empty())
             return;
 
-        fmt::print(file, "{}\n", msg);
+        fmt::println(file, "{}", msg);
         fflush(file);
     }
 
@@ -211,21 +217,16 @@ namespace AscEmu::Logging
 
     std::string getFormattedFileName(const std::string& path_prefix, const std::string& file_prefix, bool use_date_time)
     {
-        std::stringstream path_name;
-        path_name << path_prefix;
-
         if (use_date_time)
         {
             std::string current_date_time = Util::GetCurrentDateTimeString();
-            //replace time seperator with valid character for file name
+            // replace time seperator with valid character for file name
             std::replace(current_date_time.begin(), current_date_time.end(), ':', '-');
             std::replace(current_date_time.begin(), current_date_time.end(), ' ', '_');
 
-            path_name << current_date_time << "_";
+            return fmt::format("{}{}_{}.log", path_prefix, current_date_time, file_prefix);
         }
 
-        path_name << file_prefix << ".log";
-
-        return path_name.str();
+        return fmt::format("{}{}.log", path_prefix, file_prefix);
     }
 }
