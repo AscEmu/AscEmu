@@ -363,7 +363,7 @@ bool Master::run(int /*argc*/, char** /*argv*/)
     (void)localtime_r(&UNIXTIME, &g_localTime);
 #endif
 
-    sLogger.initalizeLogger("world");
+    sLogger.initializeLogger("world");
     printBanner();
 
 #if VERSION_STRING == Mop

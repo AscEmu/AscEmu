@@ -46,7 +46,7 @@ namespace AscEmu::Logging
 
         void finalize();
 
-        void initalizeLogger(std::string file_prefix);
+        void initializeLogger(std::string file_prefix);
 
         void setMinimumMessageType(MessageType messsageType);
 

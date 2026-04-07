@@ -46,7 +46,7 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
     UNIXTIME = time(nullptr);
     g_localTime = *localtime(&UNIXTIME);
 
-    sLogger.initalizeLogger("logon");
+    sLogger.initializeLogger("logon");
 
     PrintBanner();
 
