@@ -38,7 +38,7 @@ namespace AscEmu::Logging
         }
     }
 
-    void Logger::initalizeLogger(std::string file_prefix)
+    void Logger::initializeLogger(std::string file_prefix)
     {
 #ifdef _WIN32
         handle_stdout = GetStdHandle(STD_OUTPUT_HANDLE);
