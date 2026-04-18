@@ -105,7 +105,7 @@ void WinterReveler(Player* pPlayer, Unit* pUnit)
             const auto [item_add_result, returnedItem] = pPlayer->getItemInterface()->SafeAddItem(std::move(item), slotresult.ContainerSlot, slotresult.Slot);
             if (!item_add_result)
             {
-                DLLLogDetail("Error while adding item %u to player %s", returnedItem->getEntry(), pPlayer->getName().c_str());
+                DLLLogDetail("Error while adding item {} to player {}", returnedItem->getEntry(), pPlayer->getName().c_str());
             }
             else
             {

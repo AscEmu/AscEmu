@@ -635,7 +635,7 @@ int LuaUnit::SpawnGameObject(lua_State* L, Unit* ptr)
         GameObjectProperties const* info = sMySQLStore.getGameObjectProperties(entry_id);
         if (info == nullptr)
         {
-            DLLLogDetail("Lua script tried to spawn a gameobject that doesn't exist ( %u ). Aborting.", entry_id);
+            DLLLogDetail("Lua script tried to spawn a gameobject that doesn't exist ({}). Aborting.", entry_id);
             lua_pushnil(L);
             return 1;
         }
@@ -1649,7 +1649,7 @@ int LuaUnit::TeleportUnit(lua_State* L, Unit* ptr)
 
     if (!posX || !posY || !posZ)
     {
-        DLLLogDetail("LuaEngineMgr : LUATeleporter ERROR - Wrong Coordinates given (Map, X, Y, Z) :: Map%f%s%f%s%f%s%f", mapId, " X", posX, " Y", posY, " Z", posZ);
+        DLLLogDetail("LuaEngineMgr : LUATeleporter ERROR - Wrong Coordinates given (Map, X, Y, Z) :: Map {} X {} Y {} Z {}", mapId, posX, posY, posZ);
         return 0;
     }
 

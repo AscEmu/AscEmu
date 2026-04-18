@@ -906,7 +906,7 @@ void IsleOfConquest::AssaultControlPoint(Player *player, uint32_t id)
 
     if (state > IOC_SPAWN_TYPE_HORDE_CONTROLLED)
     {
-        DLLLogDetail("IOC control point %u is in an invalid state, cannot be assaulted.", id);
+        DLLLogDetail("IOC control point {} is in an invalid state, cannot be assaulted.", id);
         return;
     }
 

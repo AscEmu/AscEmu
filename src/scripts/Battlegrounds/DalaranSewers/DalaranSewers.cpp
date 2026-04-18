@@ -55,7 +55,7 @@ void DalaranSewers::HookOnAreaTrigger(Player* plr, uint32_t trigger)
         plr->removeAllAurasById(48018); // Demonic Circle
         break;
     default:
-        DLLLogDetail("Encountered unhandled areatrigger id %u", trigger);
+        DLLLogDetail("Encountered unhandled areatrigger id {}", trigger);
         return;
         break;
     }

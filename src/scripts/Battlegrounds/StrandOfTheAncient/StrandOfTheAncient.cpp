@@ -581,7 +581,7 @@ bool StrandOfTheAncient::HookSlowLockOpen(GameObject* go, Player* /*player*/, Sp
         }
         default:
         {
-            DLLLogDetail("HookSlowLockOpen called for invalid go entry: %u", goentry);
+            DLLLogDetail("HookSlowLockOpen called for invalid go entry: {}", goentry);
             return true;
         }
     }

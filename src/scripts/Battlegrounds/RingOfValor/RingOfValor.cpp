@@ -79,7 +79,7 @@ void RingOfValor::HookOnAreaTrigger(Player* /*plr*/, uint32_t trigger)
         case 5474:
             break;
         default:
-            DLLLogDetail("Encountered unhandled areatrigger id %u", trigger);
+            DLLLogDetail("Encountered unhandled areatrigger id {}", trigger);
             break;
     }
 }
