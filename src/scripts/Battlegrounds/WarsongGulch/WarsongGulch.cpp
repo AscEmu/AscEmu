@@ -162,7 +162,7 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32_t id)
         case AREATRIGGER_WSG_H_SPAWN:
             break;
         default:
-            DLLLogDetail("Encountered unhandled areatrigger id %u", id);
+            DLLLogDetail("Encountered unhandled areatrigger id {}", id);
             return;
             break;
     }

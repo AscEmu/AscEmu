@@ -585,7 +585,7 @@ public:
                     const auto [result, returnedItem] = plr->getItemInterface()->SafeAddItem(std::move(item), slotresult.ContainerSlot, slotresult.Slot);
                     if (!result)
                     {
-                        DLLLogDetail("Error while adding item %u to player %s", returnedItem->getEntry(), plr->getName().c_str());
+                        DLLLogDetail("Error while adding item {} to player {}", returnedItem->getEntry(), plr->getName().c_str());
                         return;
                     }
                 }

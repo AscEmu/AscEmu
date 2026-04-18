@@ -7,9 +7,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "CommonTypes.hpp"
 #include "WorldRunnable.h"
+#include <fmt/format.h>
+
 #include <cstdint>
 #include <string>
-#include <iostream>
 #include <cstdio>
 #include <atomic>
 #include <memory>
@@ -47,20 +48,9 @@ public:
     void cancelShutdown();
 
     template <typename... Args>
-    static void libLog(const char* format, Args... args)
+    static void libLog(fmt::format_string<Args...> format, Args&&... args)
     {
-        // Suppress the format literal warning since this is a dynamic wrapper
-        // NOLINTNEXTLINE(format-nonliteral)
-        int size = std::snprintf(nullptr, 0, format, args...);
-
-        if (size > 0)
-        {
-            std::string message(size, '\0');
-            // NOLINTNEXTLINE(format-nonliteral)
-            std::snprintf(message.data(), size + 1, format, args...);
-
-            std::cout << message << '\n';
-        }
+        fmt::println(format, std::forward<Args>(args)...);
     }
 
 private:
