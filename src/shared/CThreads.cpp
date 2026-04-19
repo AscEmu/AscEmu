@@ -18,9 +18,7 @@
  *
  */
 
-// Class CThread - Base class for all threads in the
-// server, and allows for easy management by ThreadMgr.
-
+//\brief Class CThread - Base class for all threads in the server, and allows for easy management by ThreadMgr.
 
 #include "CThreads.h"
 
@@ -33,7 +31,6 @@ CThread::CThread() : ThreadBase()
 
 CThread::~CThread()
 {
-
 }
 
 bool CThread::run()

@@ -382,7 +382,6 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
             handleMovementOpcodes(recvPacket);
         }
 #endif
-
         spell->m_missilePitch = srlPacket.projectilePitch;
         spell->m_missileTravelTime = travelTime;
     }

@@ -615,6 +615,7 @@ public:
         {
             uint32_t j = 1, k = 1;
             printf("STORAGE_SIZE: %u\n", static_cast<unsigned int>(size()));
+            
             for (uint32_t i = 0; i < size(); i++)
             {
                 if ((i == (j * 8)) && ((i != (k * 16))))

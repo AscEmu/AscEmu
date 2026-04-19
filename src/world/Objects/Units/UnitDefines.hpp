@@ -669,6 +669,7 @@ enum EmoteType : uint32_t
     EMOTE_STATE_CUSTOM_SPELL_05                         = 421,
     EMOTE_STATE_SPELLEFFECT_HOLD                        = 422,
     EMOTE_STATE_EAT_NO_SHEATHE                          = 423,
+    // 3.3.5 12340
     EMOTE_STATE_MOUNT                                   = 424,
     EMOTE_STATE_READY2HL                                = 425,
     EMOTE_STATE_SIT_CHAIR_HIGH                          = 426,
