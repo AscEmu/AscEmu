@@ -19,8 +19,7 @@
 
 //\brief Class CThread - Base class for all threads in the server, and allows for easy management by ThreadMgr.
 
-#ifndef _C_THREADS_H
-#define _C_THREADS_H
+#pragma once
 
 #include "Threading/LegacyThreadBase.h"
 #include "CommonTypes.hpp"
@@ -45,35 +44,31 @@ struct NameTableEntry;
 
 class SERVER_DECL CThread : public ThreadBase
 {
-    public:
+public:
+    CThread();
+    ~CThread();
 
-        CThread();
-        ~CThread();
+    inline void SetThreadState(CThreadState thread_state) { ThreadState = thread_state; }
+    inline CThreadState GetThreadState()
+    {
+        unsigned long val = ThreadState;
+        return static_cast<CThreadState>(val);
+    }
+    int GetThreadId() { return ThreadId; }
+    time_t GetStartTime() { return start_time; }
+    virtual bool run();
+    virtual void onShutdown();
 
-        inline void SetThreadState(CThreadState thread_state) { ThreadState = thread_state; }
-        inline CThreadState GetThreadState()
-        {
-            unsigned long val = ThreadState;
-            return static_cast<CThreadState>(val);
-        }
-        int GetThreadId() { return ThreadId; }
-        time_t GetStartTime() { return start_time; }
-        virtual bool run();
-        virtual void onShutdown();
+protected:
+    CThread & operator=(CThread & other)
+    {
+        this->start_time = other.start_time;
+        this->ThreadId = other.ThreadId;
+        this->ThreadState = other.ThreadState.load();
+        return *this;
+    }
 
-    protected:
-
-        CThread & operator=(CThread & other)
-        {
-            this->start_time = other.start_time;
-            this->ThreadId = other.ThreadId;
-            this->ThreadState = other.ThreadState.load();
-            return *this;
-        }
-
-        std::atomic<unsigned long> ThreadState;
-        time_t start_time;
-        int ThreadId;
+    std::atomic<unsigned long> ThreadState;
+    time_t start_time;
+    int ThreadId;
 };
-
-#endif  //_C_THREADS_H
