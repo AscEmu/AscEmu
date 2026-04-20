@@ -31,17 +31,17 @@ Char Enum         | ✔️         | ✔️         | ✔️         | ✔️   
 Log into world    | ✔️         | ✔️         | ✔️         | ✔️         | ✔️
 
 > [!NOTE]
-> Learn more on the page, see [Contributing](CONTRIBUTING.md).
+> **Learn more on the page, see [Contributing](CONTRIBUTING.md).**
 
 ## Opening new issues
 > [!TIP]
-> Before opening a new issue, please review the guidelines in [Contributing](CONTRIBUTING.md).
+> **Before opening a new issue, please review the guidelines in [Contributing](CONTRIBUTING.md).**
 
 To help us process your request efficiently.
 
 ## Contributing
 > [!IMPORTANT]
-> For full contribution guidelines and issue reporting instructions, see [Contributing](CONTRIBUTING.md).
+> **For full contribution guidelines and issue reporting instructions, see [Contributing](CONTRIBUTING.md).**
 
 Please make sure your changes are useful, tested, and aligned with the project goals.
 
@@ -68,7 +68,7 @@ HowTo install - detailed guides on our wiki.
 
 ## What’s next?
 > [!IMPORTANT]
-> We’re always happy to get your feedback and contributions – whether it’s a bug report, a feature idea, or a pull request. 
+> **We’re always happy to get your feedback and contributions – whether it’s a bug report, a feature idea, or a pull request.**
 
 Feel free to join our [Discord server](https://discord.com/invite/CBdgrh7).
 
