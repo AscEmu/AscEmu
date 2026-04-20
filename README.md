@@ -66,7 +66,7 @@ HowTo install - detailed guides on our wiki.
 * [JetBrains](https://www.jetbrains.com/) - For supporting Open Source projects.
 * [PVS-Studio](https://pvs-studio.com/en/pvs-studio/?utm_source=website&utm_medium=github&utm_campaign=open_source) - Static analyzer for C, C++, C#, and Java code.
 
-## 🚀 What’s next?
+## What’s next?
 > [!IMPORTANT]
 > We’re always happy to get your feedback and contributions – whether it’s a bug report, a feature idea, or a pull request. 
 
