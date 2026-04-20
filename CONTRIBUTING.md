@@ -18,6 +18,9 @@ What are "useful" commits?
 
 We strive to make all in-game content to be blizzlike!
 
+> [!IMPORTANT]
+> **If you want to contribute to the project, you will find a lot of resources that will guide you in our [wiki](https://ascemu.github.io/Wiki/).**
+
 ## Roadmap
 Description       | Classic    | TBC        | WotLK      | Cata       | MoP
 :---------------: | :--------: | :--------: | :--------: | :--------: | :--------:
@@ -48,9 +51,3 @@ Talents           | -          | -          | -          | -          | -
 Calendar          | -          | -          | -          | -          | -
 Mail              | -          | -          | -          | -          | -
 Pet               | -          | -          | -          | -          | -
-
-## Useful links
-* [Web](http://www.ascemu.org)
-* [Forums](https://github.com/AscEmu/AscEmu/discussions)
-* [Wiki](https://ascemu.github.io/Wiki/)
-* [World DB](https://github.com/AscEmu/OneDB)
