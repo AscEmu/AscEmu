@@ -68,13 +68,11 @@ HowTo install - detailed guides on our wiki.
 
 ## What’s next?
 > [!IMPORTANT]
-> **We’re always happy to get your feedback and contributions<br>**
-> **- whether it’s a bug report, a feature idea, or a pull request.**.
+> **Click on the "⭐ Star" button to help us gain more visibility on Github!**.
 
+We’re always happy to get your feedback and contributions - whether it’s a bug report, a feature idea, or a pull request.
 
 Feel free to join our [Discord server](https://discord.com/invite/CBdgrh7).
-
-Click on the "⭐ Star" button to help us gain more visibility on Github!
 
 <!-- Undercover:start:status -->
 [AscEmuClangMasterMacOSBadge]: https://github.com/AscEmu/AscEmu/actions/workflows/clang-macos-test-x64.yml/badge.svg?branch=master
