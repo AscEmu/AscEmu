@@ -19,36 +19,35 @@ What are "useful" commits?
 We strive to make all in-game content to be blizzlike!
 
 ## Roadmap
-
 Description       | Classic    | TBC        | WotLK      | Cata       | MoP
 :---------------: | :--------: | :--------: | :--------: | :--------: | :--------:
-Authentification  | ✔️         | ✔️         | ✔️         | ✔️         | ✔️
-Worldsocket       | ✔️         | ✔️         | ✔️         | ✔️         | ✔️
-Char Enum         | ✔️         | ✔️         | ✔️         | ✔️         | ✔️
-Log into world    | ✔️         | ✔️         | ✔️         | ✔️         | ✔️
-Chat              | ❌️         | ❌         | ❌         | ❌         | ❌
-Guild             | ❌️         | ❌         | ❌         | ❌         | ❌
-Mail              | ❌️         | ❌         | ❌         | ❌         | ❌
-Auction house     | ❌️         | ❌         | ❌         | ❌         | ❌
-Vendors           | ❌️         | ❌         | ❌         | ❌         | ❌
-Trade             | ❌️         | ❌         | ❌         | ❌         | ❌
-Object updates    | ❌️         | ❌         | ❌         | ❌         | ❌
-Movement          | ❌️         | ❌         | ❌         | ❌         | ❌
-Spells / auras    | ❌️         | ❌         | ❌         | ❌         | ❌
-Combat log        | ❌️         | ❌         | ❌         | ❌         | ❌
-Loot              | ❌️         | ❌         | ❌         | ❌         | ❌
-Items/inventory   | ❌️         | ❌         | ❌         | ❌         | ❌
-Quests            | ❌️         | ❌         | ❌         | ❌         | ❌
-Trainers          | ❌️         | ❌         | ❌         | ❌         | ❌
-Taxi              | ❌️         | ❌         | ❌         | ❌         | ❌
-Instances         | ❌️         | ❌         | ❌         | ❌         | ❌
-Dungeons          | ❌️         | ❌         | ❌         | ❌         | ❌
-Battlegrounds     | ❌️         | ❌         | ❌         | ❌         | ❌
-Arena             | ❌️         | ❌         | ❌         | ❌         | ❌
-Achievements      | ❌️         | ❌         | ❌         | ❌         | ❌
-Talents           | ❌️         | ❌         | ❌         | ❌         | ❌
-Calendar          | ❌️         | ❌         | ❌         | ❌         | ❌
-Pet               | ❌️         | ❌         | ❌         | ❌         | ❌
+Authentification  | +️          | +️          | +️          | +️          | +️
+Worldsocket       | +️          | +️          | +️          | +️          | +️
+Char Enum         | +️          | +️          | +️          | +️          | +️
+Log into world    | +️          | +️          | +️          | +️          | +️
+Movement          | -          | -          | -          | -          | -
+Object updates    | -          | -          | -          | -          | -
+Chat              | -          | -          | -          | -          | -
+Items/inventory   | -          | -          | -          | -          | -
+Loot              | -          | -          | -          | -          | -
+Spells / Auras    | -          | -          | -          | -          | -
+Combat log        | -          | -          | -          | -          | -
+Trade             | -          | -          | -          | -          | -
+Vendors           | -          | -          | -          | -          | -
+Quests            | -          | -          | -          | -          | -
+Trainers          | -          | -          | -          | -          | -
+Taxi              | -          | -          | -          | -          | -
+Guild             | -          | -          | -          | -          | -
+Auction house     | -          | -          | -          | -          | -
+Instances         | -          | -          | -          | -          | -
+Dungeons          | -          | -          | -          | -          | -
+Battlegrounds     | -          | -          | -          | -          | -
+Arena             | -          | -          | -          | -          | -
+Achievements      | -          | -          | -          | -          | -
+Talents           | -          | -          | -          | -          | -
+Calendar          | -          | -          | -          | -          | -
+Mail              | -          | -          | -          | -          | -
+Pet               | -          | -          | -          | -          | -
 
 ## Useful links
 * [Web](http://www.ascemu.org)
