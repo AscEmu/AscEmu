@@ -30,8 +30,7 @@ Worldsocket       | ✔️         | ✔️         | ✔️         | ✔️   
 Char Enum         | ✔️         | ✔️         | ✔️         | ✔️         | ✔️
 Log into world    | ✔️         | ✔️         | ✔️         | ✔️         | ✔️
 
-> [!NOTE]
-> **Learn more on the page, see [Contributing](CONTRIBUTING.md).**
+Learn more on the page, see [Contributing](CONTRIBUTING.md).
 
 ## Opening new issues
 > [!TIP]
@@ -68,7 +67,7 @@ HowTo install - detailed guides on our wiki.
 
 ## What’s next?
 > [!IMPORTANT]
-> **Click on the "⭐ Star" button to help us gain more visibility on Github!**.
+> **Click on the "⭐ Star" button to help us gain more visibility on Github!**
 
 We’re always happy to get your feedback and contributions whether it’s a bug report, a feature idea, or a pull request.
 
