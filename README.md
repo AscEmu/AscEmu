@@ -68,7 +68,9 @@ HowTo install - detailed guides on our wiki.
 
 ## What’s next?
 > [!IMPORTANT]
-> **We’re always happy to get your feedback and contributions – whether it’s a bug report, a feature idea, or a pull request.**
+> **We’re always happy to get your feedback and contributions<br>**
+> **- whether it’s a bug report, a feature idea, or a pull request.**.
+
 
 Feel free to join our [Discord server](https://discord.com/invite/CBdgrh7).
 
