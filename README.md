@@ -70,7 +70,7 @@ HowTo install - detailed guides on our wiki.
 > [!IMPORTANT]
 > **Click on the "⭐ Star" button to help us gain more visibility on Github!**.
 
-We’re always happy to get your feedback and contributions - whether it’s a bug report, a feature idea, or a pull request.
+We’re always happy to get your feedback and contributions whether it’s a bug report, a feature idea, or a pull request.
 
 Feel free to join our [Discord server](https://discord.com/invite/CBdgrh7).
 
