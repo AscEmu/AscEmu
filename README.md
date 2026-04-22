@@ -33,7 +33,7 @@ Log into world    | ✔️         | ✔️         | ✔️         | ✔️   
 Learn more on the page, see [Contributing](CONTRIBUTING.md).
 
 ## Opening new issues
-> [!TIP]
+> [!IMPORTANT]
 > **Before opening a new issue, please review the guidelines in [Contributing](CONTRIBUTING.md).**
 
 To help us process your request efficiently.
