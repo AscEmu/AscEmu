@@ -24,7 +24,7 @@ We strive to make all in-game content to be blizzlike!
 > [!IMPORTANT]
 > **If you want to contribute to the project, you will find a lot of resources that will guide you in our [wiki](https://ascemu.github.io/Wiki/).**
 
-## Roadmap
+### Roadmap
 Description       | Classic    | TBC        | WotLK      | Cata       | MoP
 :---------------: | :--------: | :--------: | :--------: | :--------: | :--------:
 Authentification  | ✔️         | ✔️         | ✔️        | ✔️         | ✔️
