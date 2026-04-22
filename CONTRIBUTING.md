@@ -1,13 +1,16 @@
 ﻿# ![logo](http://ascemu.org/images/logo.png)
 
-## Opening new issues
+## I'm in! What now?
+
+
+### Opening new issues
 Be patient with us and give us details.
 
 1. How to reproduce the issue  
 2. How it should work  
 3. Images (very helpful)
 
-## Contributing
+### Contributing
 Feel free to contribute any corrections but make sure it is useful and tested before opening PRs.
 
 What are "useful" commits?
