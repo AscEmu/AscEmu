@@ -40,7 +40,7 @@ To help us process your request efficiently.
 
 ## Contributing
 > [!IMPORTANT]
-> **For full contribution guidelines and issue reporting instructions, see [Contributing](CONTRIBUTING.md).**
+> **For full contribution guidelines and issue reporting instructions, see [Contributing](https://github.com/schnek/AscEmu/tree/include_?tab=contributing-ov-file#contributing).**
 
 Please make sure your changes are useful, tested, and aligned with the project goals.
 
