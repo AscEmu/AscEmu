@@ -30,27 +30,19 @@ Worldsocket       | ✔️         | ✔️         | ✔️         | ✔️   
 Char Enum         | ✔️         | ✔️         | ✔️         | ✔️         | ✔️
 Log into world    | ✔️         | ✔️         | ✔️         | ✔️         | ✔️
 
-
-## Contributing
-Feel free to contribute any corrections but make sure it is useful and tested before opening PRs.
-
-What are "useful" commits?
- 1. Fixing an [open issue](https://github.com/AscEmu/AscEmu/issues).
- 2. Related to the milestones.
- 3. Making the Framework stable/safer
- 4. Adding blizzlike related functions
-
-We strive to make all in-game content to be blizzlike!
-
-Feel free to join our [Discord server](https://discord.com/invite/CBdgrh7).
-
-Click on the "🌟 Star" button to help us gain more visibility on Github!
+Learn more on the page, see [Contributing](CONTRIBUTING.md).
 
 ## Opening new issues
-Be patient with us and give us details.
- 1. How to reproduce the issue
- 2. How should it work
- 3. Images will help us a lot
+> [!IMPORTANT]
+> **Before opening a new issue, please review the guidelines in [Contributing](CONTRIBUTING.md).**
+
+To help us process your request efficiently.
+
+## Contributing
+> [!IMPORTANT]
+> **For full contribution guidelines and issue reporting instructions, see [Contributing](CONTRIBUTING.md).**
+
+Please make sure your changes are useful, tested, and aligned with the project goals.
 
 ## Install
 HowTo install - detailed guides on our wiki.
@@ -58,7 +50,7 @@ HowTo install - detailed guides on our wiki.
 * [macOS](https://ascemu.github.io/Wiki/docs/installation/macOS/)
 * [Windows](https://ascemu.github.io/Wiki/docs/installation/windows/)
 
-## Links
+## Useful links
 * [Web](http://www.ascemu.org)
 * [Forums](https://github.com/AscEmu/AscEmu/discussions)
 * [Wiki](https://ascemu.github.io/Wiki/)
@@ -72,6 +64,14 @@ HowTo install - detailed guides on our wiki.
 ## Special Thanks
 * [JetBrains](https://www.jetbrains.com/) - For supporting Open Source projects.
 * [PVS-Studio](https://pvs-studio.com/en/pvs-studio/?utm_source=website&utm_medium=github&utm_campaign=open_source) - Static analyzer for C, C++, C#, and Java code.
+
+## What’s next?
+> [!IMPORTANT]
+> **Click on the "⭐ Star" button to help us gain more visibility on Github!**
+
+We’re always happy to get your feedback and contributions whether it’s a bug report, a feature idea, or a pull request.
+
+Feel free to join our [Discord server](https://discord.com/invite/CBdgrh7).
 
 <!-- Undercover:start:status -->
 [AscEmuClangMasterMacOSBadge]: https://github.com/AscEmu/AscEmu/actions/workflows/clang-macos-test-x64.yml/badge.svg?branch=master
@@ -103,4 +103,3 @@ HowTo install - detailed guides on our wiki.
 [CodefactorUrl]: https://www.codefactor.io/repository/github/ascemu/ascemu
 [OpenhubUrl]: https://www.openhub.net/p/AscEmu
 <!-- Undercover:end:community -->
-
