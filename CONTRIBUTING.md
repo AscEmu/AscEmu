@@ -1,16 +1,36 @@
 ﻿# ![logo](http://ascemu.org/images/logo.png)
 
-## I'm in! What now?
+# I'm in! What now?
 
+## What you’ll need
 
-### Opening new issues
+### 🖥 Operating System
+
+- Linux (Ubuntu 22.04+, Debian 13+)
+- macOS 13+
+- Windows 10 / 11
+
+### 🗂️ Database
+- MySQL 8.0+
+
+### 📃 Compiler
+- GCC 15+
+- Clang 21+
+- MSVC 2022
+
+### 📦 Build Tools
+- CMake 4.1+
+- OpenSSL 3.0+
+- Git
+
+## Opening new issues
 Be patient with us and give us details.
 
 1. How to reproduce the issue  
 2. How it should work  
 3. Images (very helpful)
 
-### Contributing
+## Contributing
 Feel free to contribute any corrections but make sure it is useful and tested before opening PRs.
 
 What are "useful" commits?
@@ -24,7 +44,7 @@ We strive to make all in-game content to be blizzlike!
 > [!IMPORTANT]
 > **If you want to contribute to the project, you will find a lot of resources that will guide you in our [wiki](https://ascemu.github.io/Wiki/).**
 
-### Roadmap
+## Roadmap
 Description       | Classic    | TBC        | WotLK      | Cata       | MoP
 :---------------: | :--------: | :--------: | :--------: | :--------: | :--------:
 Authentification  | ✔️         | ✔️         | ✔️        | ✔️         | ✔️
