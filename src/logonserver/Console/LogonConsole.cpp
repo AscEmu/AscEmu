@@ -21,7 +21,7 @@
 #include "Server/Logon.h"
 #include <Logging/Logger.hpp>
 #include <Server/Master.hpp>
-#include <iostream>
+
 #include <Server/AccountMgr.h>
 #include <Server/IpBanMgr.h>
 #include <Network/Network.h>
@@ -47,17 +47,17 @@ void LogonConsole::TranslateRehash(char* /*str*/)
 
 void LogonConsole::demoTicker(AscEmu::Threading::AEThread& /*thread*/)
 {
-    std::cout << "Thread ticker: " << m_demoCounter << std::endl;
+    fmt::println("Thread ticker: {}", m_demoCounter);
     ++m_demoCounter;
 }
 
 void LogonConsole::threadDemoCmd(char* /*str*/)
 {
-    std::cout << "Thread Demo init" << std::endl;
+    fmt::println("Thread Demo init");
 
     if (m_demoCounter != 0)
     {
-        std::cout << "Existing thread found, rebooting" << std::endl;
+        fmt::println("Existing thread found, rebooting");
         m_demoThread->reboot();
         return;
     }
@@ -150,17 +150,17 @@ bool LogonConsoleThread::runThread()
 ///////////////////////////////////////////////////////////////////////////////
 
 // Process one command
-#define MAX_CONSOLE_INPUT 80
 void LogonConsole::ProcessCmd(char* cmd)
 {
-    typedef void (LogonConsole::*PTranslater)(char * str);
+    using PTranslater = void (LogonConsole::*)(char*);
+
     struct SCmd
     {
-        const char* name;
+        std::string_view name;
         PTranslater tr;
     };
 
-    SCmd cmds[] =
+    static const SCmd cmds[] =
     {
         { "?", &LogonConsole::TranslateHelp },
         { "z", &LogonConsole::threadDemoCmd },
@@ -177,22 +177,24 @@ void LogonConsole::ProcessCmd(char* cmd)
         { "info", &LogonConsole::Info },
     };
 
-    char cmd2[MAX_CONSOLE_INPUT];
-    strncpy(cmd2, cmd, MAX_CONSOLE_INPUT);
-    cmd2[MAX_CONSOLE_INPUT - 1] = '\0';
+    if (!cmd)
+        return;
 
-    for (size_t i = 0; i < strlen(cmd); ++i)
-        cmd2[i] = static_cast<char>(tolower(cmd[i]));
+    std::string input(cmd);
+    std::transform(input.begin(), input.end(), input.begin(), [](unsigned char c) { return std::tolower(c); });
 
-    for (size_t i = 0; i < sizeof(cmds) / sizeof(SCmd); i++)
-        if (strncmp(cmd2, cmds[i].name, strlen(cmds[i].name)) == 0)
+    for (const auto& c : cmds)
+    {
+        if (input.starts_with(c.name))
         {
-            (this->*(cmds[i].tr))(cmd + strlen(cmds[i].name));
+            char* args = cmd + c.name.size();
+            (this->*(c.tr))(args);
             return;
         }
-
-    if (strncmp(cmd, "c", 1) == 0)
-        printf("Console: Unknown console command (use \"help\" for help).\n");
+    }
+    
+    if (strncmp(cmd, "c", 1) == 0) // sch: This is very old code. And it was considered perfectly normal.
+        fmt::println("Console: Unknown console command (use \"help\" for help).\n");
 }
 
 void LogonConsole::ReloadAccts(char* /*str*/)
@@ -231,26 +233,26 @@ void LogonConsole::TranslateHelp(char* /*str*/)
 
 void LogonConsole::ProcessHelp(char* /*command*/)
 {
-    std::cout << "Console::Help" << std::endl;
-    std::cout << "=============" << std::endl;
-    std::cout << "Help, ?                   : Prints this help text." << std::endl;
-    std::cout << "Account create            : Creates a new account." << std::endl;
-    std::cout << "Account delete            : Deletes an account." << std::endl;
-    std::cout << "Account set password      : Sets a new password for an account." << std::endl;
-    std::cout << "Account change password   : Change the current password for an account." << std::endl;
-    std::cout << "Info                      : Shows some information about the server." << std::endl;
-    std::cout << "Netstatus                 : Shows network status." << std::endl;
-    std::cout << "Rehash                    : Rehashing config file." << std::endl;
-    std::cout << "Reload                    : Reloads accounts." << std::endl;
-    std::cout << "Shutdown, Exit            : Closes the logonserver." << std::endl;
+    fmt::println("Console::Help");
+    fmt::println("=============");
+    fmt::println("Help, ?                   : Prints this help text.");
+    fmt::println("Account create            : Creates a new account.");
+    fmt::println("Account delete            : Deletes an account.");
+    fmt::println("Account set password      : Sets a new password for an account.");
+    fmt::println("Account change password   : Change the current password for an account.");
+    fmt::println("Info                      : Shows some information about the server.");
+    fmt::println("Netstatus                 : Shows network status.");
+    fmt::println("Rehash                    : Rehashing config file.");
+    fmt::println("Reload                    : Reloads accounts.");
+    fmt::println("Shutdown, Exit            : Closes the logonserver.");
 }
 
 void LogonConsole::Info(char* /*str*/)
 {
-    std::cout << "LogonServer information" << std::endl;
-    std::cout << "=======================" << std::endl;
-    std::cout << "CPU Usage : " << sLogon.getCPUUsage() << "%" << std::endl;
-    std::cout << "RAM Usage : " << sLogon.getRAMUsage() << "MB" << std::endl;
+    fmt::println("LogonServer information");
+    fmt::println("=======================");
+    fmt::println("CPU Usage : {}%", sLogon.getCPUUsage());
+    fmt::println("RAM Usage : {}MB", sLogon.getRAMUsage());
 }
 
 void LogonConsole::AccountCreate(char* str)
@@ -262,8 +264,8 @@ void LogonConsole::AccountCreate(char* str)
     int count = sscanf(str, "%s %s %s", name, password, email);
     if (count != 3)
     {
-        std::cout << "usage: account create <name> <password> <email>" << std::endl;
-        std::cout << "example: account create ghostcrawler Ih4t3p4l4dins greg.street@blizzard.com" << std::endl;
+        fmt::println("usage: account create <name> <password> <email>");
+        fmt::println("example: account create ghostcrawler Ih4t3p4l4dins greg.street@blizzard.com");
         return;
     }
 
@@ -283,13 +285,13 @@ void LogonConsole::AccountCreate(char* str)
 
     if (!sLogonSQL->WaitExecuteNA(query.str().c_str()))
     {
-        std::cout << "Couldn't save new account to database. Aborting." << std::endl;
+        fmt::println("Couldn't save new account to database. Aborting.");
         return;
     }
 
     sAccountMgr.reloadAccounts(true);
 
-    std::cout << "Account created." << std::endl;
+    fmt::println("Account created.");
 }
 
 void LogonConsole::AccountDelete(char* str)
@@ -299,8 +301,8 @@ void LogonConsole::AccountDelete(char* str)
     int count = sscanf(str, "%s", name);
     if (count != 1)
     {
-        std::cout << "usage: account delete <name>" << std::endl;
-        std::cout << "example: account delete ghostcrawler" << std::endl;
+        fmt::println("usage: account delete <name>");
+        fmt::println("example: account delete ghostcrawler");
         return;
     }
 
@@ -312,13 +314,13 @@ void LogonConsole::AccountDelete(char* str)
 
     if (!sLogonSQL->WaitExecuteNA(query.str().c_str()))
     {
-        std::cout << "Couldn't delete account. Aborting." << std::endl;
+        fmt::println("Couldn't delete account. Aborting.");
         return;
     }
 
     sAccountMgr.reloadAccounts(true);
 
-    std::cout << "Account deleted." << std::endl;
+    fmt::println("Account deleted.");
 }
 
 void LogonConsole::AccountSetPassword(char* str)
@@ -329,8 +331,8 @@ void LogonConsole::AccountSetPassword(char* str)
     int count = sscanf(str, "%s %s", name, password);
     if (count != 2)
     {
-        std::cout << "usage: account set password <name> <password>" << std::endl;
-        std::cout << "example: account set password ghostcrawler NewPassWoRd" << std::endl;
+        fmt::println("usage: account set password <name> <password>");
+        fmt::println("example: account set password ghostcrawler NewPassWoRd");
         return;
     }
 
@@ -348,13 +350,13 @@ void LogonConsole::AccountSetPassword(char* str)
 
     if (!sLogonSQL->WaitExecuteNA(query.str().c_str()))
     {
-        std::cout << "Couldn't update password in database. Aborting." << std::endl;
+        fmt::println("Couldn't update password in database. Aborting.");
         return;
     }
 
     sAccountMgr.reloadAccounts(true);
 
-    std::cout << "Account password updated." << std::endl;
+    fmt::println("Account password updated.");
 }
 
 void LogonConsole::AccountChangePassword(char* str)
@@ -367,8 +369,8 @@ void LogonConsole::AccountChangePassword(char* str)
     int count = sscanf(str, "%s %s %s %s", account_name, old_password, new_password_1, new_password_2);
     if (count != 4)
     {
-        std::cout << "usage: account change password <account> <old_password> <new_password> <new_password>" << std::endl;
-        std::cout << "example: account change password ghostcrawler OldPasSworD FreshNewPassword FreshNewPassword" << std::endl;
+        fmt::println("usage: account change password <account> <old_password> <new_password> <new_password>");
+        fmt::println("example: account change password ghostcrawler OldPasSworD FreshNewPassword FreshNewPassword");
         return;
     }
 
@@ -376,7 +378,7 @@ void LogonConsole::AccountChangePassword(char* str)
 
     if (std::string(new_password_1) != std::string(new_password_2))
     {
-        std::cout << "The new passwords doesn't match!" << std::endl;
+        fmt::println("The new passwords don't match!");
         return;
     }
 
@@ -389,7 +391,7 @@ void LogonConsole::AccountChangePassword(char* str)
 
     if (!check_oldpass_query)
     {
-        std::cout << "Your current password doesn't match with your input" << std::endl;
+        fmt::println("Your current password doesn't match your input.");
         return;
     }
     else
@@ -404,14 +406,14 @@ void LogonConsole::AccountChangePassword(char* str)
         if (!new_pass_query)
         {
             // The query is already done, don't know why we are here. \todo check sLogonSQL query handling.
-            // std::cout << "Can't update the password. Abort." << std::endl;
+            // fmt::println("Can't update the password. Abort.");
             return;
         }
     }
 
     sAccountMgr.reloadAccounts(true);
 
-    std::cout << "Account password changed." << std::endl;
+    fmt::println("Account password changed.");
 }
 
 void LogonConsole::checkAccountName(std::string name, uint8_t type)
@@ -426,7 +428,7 @@ void LogonConsole::checkAccountName(std::string name, uint8_t type)
         {
             if (sAccountMgr.getAccountByName(aname) == nullptr)
             {
-                std::cout << "There's no account with name " << name << std::endl;
+                fmt::println("There's no account with name {}", name);
             }
 
         } break;
@@ -434,7 +436,7 @@ void LogonConsole::checkAccountName(std::string name, uint8_t type)
         {
             if (sAccountMgr.getAccountByName(aname) != nullptr)
             {
-                std::cout << "There's already an account with name " << name << std::endl;
+                fmt::println("There's already an account with name {}", name);
             }
         } break;
     }

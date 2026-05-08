@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Benchmark.hpp"
-#include <iostream>
+#include <fmt/format.h>
 
 namespace Util
 {
@@ -29,6 +29,6 @@ namespace Util
         const auto duration = end - start;
         const double ms = duration * 0.001;
 
-        std::cout << "BenchmarkTime:" << (functionName.empty() ? "" : functionName) << duration << ": microseconds (" << ms << "ms)\n";
+        fmt::println("BenchmarkTime:{}{}{}: microseconds ({}ms)", functionName, functionName.empty() ? "" : " ", duration, ms);
     }
 }
