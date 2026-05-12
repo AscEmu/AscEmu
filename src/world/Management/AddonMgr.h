@@ -156,12 +156,12 @@ public:
     void SaveToDB();
 
     void SendAddonInfoPacket(WorldPacket* source, uint32_t pos, WorldSession* m_session);
-    bool AppendPublicKey(WorldPacket& data, std::string& AddonName, uint32_t CRC);
+    bool AppendPublicKey(WorldPacket& data, const std::string& addonName, uint32_t crc);
 
 private:
-    bool IsAddonBanned(uint64_t crc, std::string name = "");
-    bool IsAddonBanned(std::string name, uint64_t crc = 0);
-    bool ShouldShowInList(std::string name);
+    bool IsAddonBanned(uint64_t /*crc*/, const std::string& /*name*/);
+    bool IsAddonBanned(const std::string& name, uint64_t crc);
+    bool ShouldShowInList(const std::string& name);
 
     KnownAddons mKnownAddons;
     AddonData mAddonData;
