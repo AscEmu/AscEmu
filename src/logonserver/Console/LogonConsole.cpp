@@ -21,14 +21,12 @@
 #include "Server/Logon.h"
 #include <Logging/Logger.hpp>
 #include <Server/Master.hpp>
-
 #include <Server/AccountMgr.h>
 #include <Server/IpBanMgr.h>
 #include <Network/Network.h>
 #include <LogonConf.hpp>
 #include <sstream>
 #include <Utilities/Strings.hpp>
-
 #include "Database/Database.h"
 #include "Threading/LegacyThreading.h"
 

@@ -36,12 +36,12 @@ namespace
     {
         rlimit rl;
         if (getrlimit(RLIMIT_CORE, &rl) == -1)
-            printf("getrlimit failed. This could be problem.\n");
+            fmt::println("getrlimit failed. This could be problem.");
         else
         {
             rl.rlim_cur = rl.rlim_max;
             if (setrlimit(RLIMIT_CORE, &rl) == -1)
-                printf("setrlimit failed. Server may not save core.dump files.\n");
+                fmt::println("setrlimit failed. Server may not save core.dump files.");
         }
 
         // Return directly to allow proper stack unwinding instead of hard exit()
@@ -49,7 +49,6 @@ namespace
     }
 
 #else
-
 
     int win32Main(int argc, char** argv)
     {
@@ -66,11 +65,11 @@ namespace
         }
         catch (const std::exception& e)
         {
-            printf("Fatal C++ exception: %s\n", e.what());
+            fmt::println("Fatal C++ exception: {}", e.what());
         }
         catch (...)
         {
-            printf("Unknown C++ exception in main.\n");
+            fmt::println("Unknown C++ exception in main.");
         }
 
         return exitCode;
