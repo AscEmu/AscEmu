@@ -4442,7 +4442,7 @@ void Aura::SpellAuraSplitDamageFlat(AuraEffectModifier* aurEff, bool apply)
         ds->creator = (void*)this;
         ds->m_target = m_casterGuid;
         m_target->m_damageSplitTarget = std::move(ds);
-        //  printf("registering dmg split %u, amount= %u \n",ds->m_spellId, aurEff->getEffectDamage(), aurEff->getEffectMiscValue(), aurEff->getAuraEffect());
+        // printf("registering dmg split %u, amount= %u \n",ds->m_spellId, aurEff->getEffectDamage(), aurEff->getEffectMiscValue(), aurEff->getAuraEffect());
     }
 }
 
