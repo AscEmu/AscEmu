@@ -11,7 +11,6 @@
 
 #include "Threading/ConditionVariable.h"
 #include <cstring>
-#include <cstdio>
 
 /* Implementation Selection */
 #ifdef WIN32        // Easy

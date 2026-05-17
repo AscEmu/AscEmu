@@ -22,7 +22,7 @@
 #include "Debugging/CrashHandler.h"
 #include "ServerState.h"
 #include "Threading/LegacyThreadPool.h"
-#include <cstdio>
+
 #include <exception>
 
 #ifndef _WIN32

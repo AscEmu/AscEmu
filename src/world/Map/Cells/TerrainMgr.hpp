@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "CellHandlerDefines.hpp"
 
 #include <array>
-#include <cstdio>
 #include <memory>
 #include <atomic>
 #include <mutex>
