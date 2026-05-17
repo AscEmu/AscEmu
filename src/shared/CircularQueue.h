@@ -20,7 +20,7 @@
 #ifndef _CIRCULARQUEUE_H
 #define _CIRCULARQUEUE_H
 
-#include <cstdio>
+#include <fmt/format.h>
 
 template<class T, int ELEMENTCOUNT>
 class CircularQueue
@@ -47,12 +47,14 @@ class CircularQueue
         }
 
         /* assumes we're int-based */
-        void print()
+        void element_count_print()
         {
-            printf("Elements of CircularQueue[%u]: ", ELEMENTCOUNT);
-            for(int i = 0; i < ELEMENTCOUNT; ++i)
-                printf("%u ", (int)m_elements[i]);
-            printf("\n");
+            std::string output = fmt::format("Elements of CircularQueue[{}]: ", ELEMENTCOUNT);
+
+            for (int i = 0; i < ELEMENTCOUNT; ++i)
+                output += fmt::format("{} ", static_cast<int>(m_elements[i]));
+
+            fmt::println("{}", output);
         }
 };
 
