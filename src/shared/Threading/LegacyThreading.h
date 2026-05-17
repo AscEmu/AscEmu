@@ -22,7 +22,7 @@
 #define _THREADING_H
 
 // We need assertions.
-#include "Debugging/Errors.h"
+#include "Debugging/Errors.hpp"
 
 // Platform Specific Lock Implementation
 #include "Mutex.hpp"

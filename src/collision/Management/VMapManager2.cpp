@@ -23,7 +23,7 @@
 #include "WorldModel.h"
 #include <G3D/Vector3.h>
 #include "Logging/Logger.hpp"
-#include "Debugging/Errors.h"
+#include "Debugging/Errors.hpp"
 
 #include <iostream>
 #include <iomanip>
