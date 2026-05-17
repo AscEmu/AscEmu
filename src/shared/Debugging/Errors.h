@@ -25,8 +25,8 @@
 
 static void arcAssertFailed(const char* fname, int line, const char* expr)
 {
-    printf("Assertion Failed: (%s)\n", expr);
-    printf("Location: %s(%i)\n", fname, line);
+    sLogger.failure("Assertion Failed: ({})", expr);
+    sLogger.failure("Location: {}({})", fname, line);
 }
 
 ///\todo handle errors better
