@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "AIUtils.hpp"
-#include "Debugging/Errors.h"
+#include "Debugging/Errors.hpp"
 #include "Utilities/Random.hpp"
 
 std::chrono::milliseconds SchedulerArgs::randtime(std::chrono::milliseconds min, std::chrono::milliseconds max)

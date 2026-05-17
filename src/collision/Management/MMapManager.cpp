@@ -19,7 +19,7 @@
 
 #include "MMapManager.h"
 #include "MapDefines.h"
-#include "Debugging/Errors.h"
+#include "Debugging/Errors.hpp"
 #include "Logging/Logger.hpp"
 #include "Server/World.h"
 

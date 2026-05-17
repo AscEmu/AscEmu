@@ -24,7 +24,7 @@
 #include <G3D/Table.h>
 #include <G3D/PositionTrait.h>
 
-#include "Debugging/Errors.h"
+#include "Debugging/Errors.hpp"
 
 #include <array>
 

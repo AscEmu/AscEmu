@@ -41,7 +41,6 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2008 | Database/CreateInterface.cpp
 * 2008 | CThreads.h
 * 2008 | CThreads.cpp
-* 2008 | Debugging/Errors.h
 * 2008 | Debugging/CrashHandler.h
 * 2008 | Debugging/CrashHandler.cpp
 * 2008 | Config/Config.h
@@ -176,6 +175,9 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 ### Removed on 05 Oct 2025
 * 2008 | WoWGuid.h
 
+### Removed on 15 May 2026
+* 2008 | Debugging/Errors.h
+
 ### New files
 * 2015 | Exceptions/PlayerExceptions.hpp
 * 2015 | Exceptions/Exceptions.hpp
@@ -217,3 +219,4 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2024 | Threading/Mutex.hpp
 * 2024 | Threading/Mutex.cpp
 * 2025 | WoWGuid.hpp
+* 2026 | Debugging/Errors.hpp
