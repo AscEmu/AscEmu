@@ -20,8 +20,8 @@
 #ifndef _ERRORS_H
 #define _ERRORS_H
 
-#include <cstdio>
 #include <cstring>
+#include <Logging/Logger.hpp>
 
 static void arcAssertFailed(const char* fname, int line, const char* expr)
 {
@@ -44,4 +44,4 @@ static void arcAssertFailed(const char* fname, int line, const char* expr)
 
 #define ASSERT WPAssert
 
-#endif      //_ERRORS_H
+#endif //_ERRORS_H

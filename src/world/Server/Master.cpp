@@ -76,7 +76,6 @@
 #include <chrono>
 #include <csignal>
 #include <cstdarg>
-#include <cstdio>
 #include <ctime>
 #include <filesystem>
 #include <format>
