@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "LogonConfig.h"
-#include "PerformanceCounter.hpp"
+#include "System/PerformanceCounter.hpp"
 
 class SERVER_DECL Logon
 {

@@ -72,10 +72,6 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2007 | Network/Socket.h
 * 2007 | Network/SocketOps.h
 * 2007 | Cryptography/BigNumber.h
-* 2005 | SysInfo.hpp
-* 2005 | SysInfo.cpp
-* 2005 | PerformanceCounter.hpp
-* 2005 | PerformanceCounter.cpp
 * 2005 | Database/MySQLDatabase.cpp
 * 2005 | CircularQueue.h
 * 2005 | StackWalker.h
@@ -176,6 +172,12 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 ### Removed on 05 Oct 2025
 * 2008 | WoWGuid.h
 
+### Removed on 18 May 2026
+* 2005 | SysInfo.hpp
+* 2005 | SysInfo.cpp
+* 2005 | System/PerformanceCounter.hpp
+* 2005 | PerformanceCounter.cpp
+
 ### New files
 * 2015 | Exceptions/PlayerExceptions.hpp
 * 2015 | Exceptions/Exceptions.hpp
@@ -217,3 +219,7 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2024 | Threading/Mutex.hpp
 * 2024 | Threading/Mutex.cpp
 * 2025 | WoWGuid.hpp
+* 2026 | SysInfo.hpp
+* 2026 | SysInfo.cpp
+* 2026 | System/PerformanceCounter.hpp
+* 2026 | PerformanceCounter.cpp
