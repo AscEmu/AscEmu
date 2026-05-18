@@ -18,10 +18,10 @@ void Logon::loadLogonConfigValues(bool reload /*false*/)
 
 float Logon::getCPUUsage()
 {
-    return perfcounter.GetCurrentCPUUsage();
+    return perfcounter.getCurrentCPUUsage();
 }
 
 float Logon::getRAMUsage()
 {
-    return perfcounter.GetCurrentRAMUsage();
+    return perfcounter.getCurrentRAMUsage();
 }

@@ -5,262 +5,185 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "SysInfo.hpp"
 
-#ifdef WIN32
-#include <Windows.h>
-#include <psapi.h>
-#pragma comment(lib, "Psapi")
-#endif
-
-#if defined(linux) || defined(__linux)
-#include <sys/time.h>
-#include <sys/resource.h>
-#include <unistd.h>
+#include <chrono>
 #include <fstream>
-#include <sstream>
-#include <cstdlib>
+#include <string>
+
+#if defined(_WIN32)
+
+    #include <Windows.h>
+    #include <psapi.h>
+    #pragma comment(lib, "Psapi.lib")
+
+#elif defined(__linux__) || defined(__FreeBSD__) || defined(__APPLE__)
+
+    #include <sys/resource.h>
+    #include <unistd.h>
+
+    #if defined(__FreeBSD__) || defined(__APPLE__)
+        #include <sys/types.h>
+        #include <sys/sysctl.h>
+    #endif
+
+    #ifdef __APPLE__
+        #include <mach/mach.h>
+        #include <mach/task.h>
+    #endif
+
 #endif
 
-#if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
-#include <sys/time.h>
-#include <sys/resource.h>
-#include <sys/types.h>
-#include <sys/sysctl.h>
-
-#ifndef NULL
-#define NULL 0
-#endif
-#endif
-
-#ifdef __APPLE__
-#include <sys/time.h>
-#include <sys/resource.h>
-#include <sys/types.h>
-#include <sys/sysctl.h>
-#include <mach/task.h>
-#include <mach/mach.h>
-#endif
-
-
-namespace Ascemu
+namespace AscEmu
 {
-
-#ifdef WIN32
-
-    long SysInfo::GetCPUCount()
+    namespace
     {
-        SYSTEM_INFO info;
-        GetSystemInfo(&info);
-
-        return info.dwNumberOfProcessors;
+        constexpr uint64_t MicrosecondsPerSecond = 1'000'000ULL;
+        constexpr uint64_t KilobytesToBytes = 1024ULL;
     }
 
-    unsigned long long SysInfo::GetCPUUsage()
+#if defined(_WIN32)
+
+    std::uint32_t SysInfo::getCPUCount()
     {
-        FILETIME dummy;
-        FILETIME kerneltime;
-        FILETIME usertime;
+        SYSTEM_INFO systemInfo{};
+        GetSystemInfo(&systemInfo);
 
-        BOOL success = GetProcessTimes(GetCurrentProcess(), &dummy, &dummy, &kerneltime, &usertime);
-        if(success == 0)
-            return 0;
-
-        ULARGE_INTEGER ktime;
-        ULARGE_INTEGER utime;
-
-        ktime.HighPart = kerneltime.dwHighDateTime;
-        ktime.LowPart  = kerneltime.dwLowDateTime;
-        utime.HighPart = usertime.dwHighDateTime;
-        utime.LowPart  = usertime.dwLowDateTime;
-
-        double totaltime = static_cast< double >(ktime.QuadPart + utime.QuadPart);
-
-        // GetProcessTimes() returns the value in 100 nanosecond units and we need it in microseconds
-        totaltime /= 10;
-
-        return static_cast< unsigned long long >(totaltime);
+        return systemInfo.dwNumberOfProcessors;
     }
 
-    unsigned long long SysInfo::GetRAMUsage()
+    uint64_t SysInfo::getCPUUsage()
     {
-        PROCESS_MEMORY_COUNTERS pmcex;
-        GetProcessMemoryInfo(GetCurrentProcess(), &pmcex, sizeof(pmcex));
+        FILETIME creationTime{};
+        FILETIME exitTime{};
+        FILETIME kernelTime{};
+        FILETIME userTime{};
 
-        return pmcex.PagefileUsage;
-    }
-
-    unsigned long long SysInfo::GetTickCount()
-    {
-#ifndef _WIN64
-        return ::GetTickCount();
-#else
-        return ::GetTickCount64();
-#endif
-    }
-
-#endif
-
-#if defined(linux) || defined(__linux)
-
-    long SysInfo::GetCPUCount()
-    {
-        return sysconf(_SC_NPROCESSORS_ONLN);
-    }
-
-    unsigned long long SysInfo::GetCPUUsage()
-    {
-        rusage usage;
-
-        if(getrusage(RUSAGE_SELF, &usage) != 0)
-            return 0;
-
-        unsigned long long k = usage.ru_utime.tv_sec * 1000000 + usage.ru_utime.tv_usec;
-        unsigned long long u = usage.ru_stime.tv_sec * 1000000 + usage.ru_stime.tv_usec;
-
-        return (k + u);
-    }
-
-    unsigned long long SysInfo::GetRAMUsage()
-    {
-        std::ifstream memf;
-        std::string line;
-        std::string value;
-        std::stringstream fname;
-        char line2[100];
-        float memusage;
-        unsigned long pos = 0;
-        unsigned long pid = getpid();
-
-        fname << "/proc/" << pid << "/status";
-
-        memf.open(fname.str().c_str());
-
-        do
+        if (!GetProcessTimes(
+                GetCurrentProcess(),
+                &creationTime,
+                &exitTime,
+                &kernelTime,
+                &userTime))
         {
-            pos = std::string::npos;
-            memf.getline(line2, 100);
-            line.assign(line2);
-            pos = line.find("VmRSS");
+            return 0;
         }
-        while(pos == std::string::npos);
 
-        pos = line.find(" ");
-        ++pos;
+        ULARGE_INTEGER kernel{};
+        kernel.HighPart = kernelTime.dwHighDateTime;
+        kernel.LowPart = kernelTime.dwLowDateTime;
 
-        value = line.substr(pos, std::string::npos);
+        ULARGE_INTEGER user{};
+        user.HighPart = userTime.dwHighDateTime;
+        user.LowPart = userTime.dwLowDateTime;
 
-        memusage = static_cast<float>(atof(value.c_str()));
-
-        memf.close();
-
-        memusage *= 1024.0f;
-
-        return memusage;
+        // FILETIME = 100ns -> microseconds
+        return (kernel.QuadPart + user.QuadPart) / 10ULL;
     }
 
-    unsigned long long SysInfo::GetTickCount()
+    uint64_t SysInfo::getRAMUsage()
     {
-        timeval Time;
+        PROCESS_MEMORY_COUNTERS_EX memoryInfo{};
 
-        if(gettimeofday(&Time, NULL) != 0)
+        if (!GetProcessMemoryInfo(
+                GetCurrentProcess(),
+                reinterpret_cast<PROCESS_MEMORY_COUNTERS*>(&memoryInfo),
+                sizeof(memoryInfo)))
+        {
+            return 0;
+        }
+
+        return memoryInfo.WorkingSetSize;
+    }
+
+    uint64_t SysInfo::getTickCount()
+    {
+        return ::GetTickCount64();
+    }
+
+#elif defined(__linux__) || defined(__FreeBSD__) || defined(__APPLE__)
+
+    std::uint32_t SysInfo::getCPUCount()
+    {
+        return static_cast<std::uint32_t>(sysconf(_SC_NPROCESSORS_ONLN));
+
+    }
+
+    uint64_t SysInfo::getCPUUsage()
+    {
+        rusage usage{};
+
+        if (getrusage(RUSAGE_SELF, &usage) != 0)
             return 0;
 
-        return (Time.tv_sec * 1000) + (Time.tv_usec / 1000);
-    }
-#endif
+        const uint64_t userTime =
+            static_cast<uint64_t>(usage.ru_utime.tv_sec) *
+            MicrosecondsPerSecond +
+            static_cast<uint64_t>(usage.ru_utime.tv_usec);
 
-#if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
+        const uint64_t systemTime =
+            static_cast<uint64_t>(usage.ru_stime.tv_sec) *
+            MicrosecondsPerSecond +
+            static_cast<uint64_t>(usage.ru_stime.tv_usec);
 
-    long SysInfo::GetCPUCount()
-    {
-        int mib[4];
-        int ncpu;
-        size_t len = 4;
-
-        sysctlnametomib("hw.ncpu", mib, &len);
-        size_t len2 = sizeof(ncpu);
-        sysctl(mib, len, &ncpu, &len2, NULL, 0);
-
-        return ncpu;
+        return userTime + systemTime;
     }
 
-    unsigned long long SysInfo::GetCPUUsage()
+    uint64_t SysInfo::getRAMUsage()
     {
-        rusage usage;
+    #if defined(__linux__)
 
-        if(getrusage(RUSAGE_SELF, &usage) != 0)
+        std::ifstream file("/proc/self/status");
+
+        if (!file.is_open())
             return 0;
 
-        unsigned long long k = usage.ru_utime.tv_sec * 1000000 + usage.ru_utime.tv_usec;
-        unsigned long long u = usage.ru_stime.tv_sec * 1000000 + usage.ru_stime.tv_usec;
+        std::string line;
 
-        return (k + u);
-    }
+        while (std::getline(file, line))
+        {
+            if (line.starts_with("VmRSS:"))
+            {
+                const auto firstDigit = line.find_first_of("0123456789");
 
-    unsigned long long SysInfo::GetRAMUsage()
-    {
+                if (firstDigit == std::string::npos)
+                    return 0;
+
+                const auto kilobytes =
+                    std::stoull(line.substr(firstDigit));
+
+                return kilobytes * KilobytesToBytes;
+            }
+        }
+
         return 0;
-    }
 
-    unsigned long long SysInfo::GetTickCount()
-    {
-        timeval Time;
+    #elif defined(__APPLE__)
 
-        if(gettimeofday(&Time, NULL) != 0)
+        task_basic_info info{};
+        mach_msg_type_number_t count = TASK_BASIC_INFO_COUNT;
+
+        if (task_info(
+                mach_task_self(),
+                TASK_BASIC_INFO,
+                reinterpret_cast<task_info_t>(&info),
+                &count) != KERN_SUCCESS)
+        {
             return 0;
+        }
 
-        return (Time.tv_sec * 1000) + (Time.tv_usec / 1000);
+        return info.resident_size;
+
+    #else
+        return 0;
+    #endif
     }
 
-#endif
-
-#ifdef __APPLE__
-
-    long SysInfo::GetCPUCount()
+    uint64_t SysInfo::getTickCount()
     {
-        int mib[4];
-        int ncpu;
-        size_t len = 4;
+        using namespace std::chrono;
 
-        sysctlnametomib("hw.ncpu", mib, &len);
-        size_t len2 = sizeof(ncpu);
-        sysctl(mib, len, &ncpu, &len2, NULL, 0);
-
-        return ncpu;
-    }
-
-    unsigned long long SysInfo::GetCPUUsage()
-    {
-        rusage usage;
-
-        if(getrusage(RUSAGE_SELF, &usage) != 0)
-            return 0;
-
-        unsigned long long k = usage.ru_utime.tv_sec * 1000000 + usage.ru_utime.tv_usec;
-        unsigned long long u = usage.ru_stime.tv_sec * 1000000 + usage.ru_stime.tv_usec;
-
-        return (k + u);
-    }
-
-    unsigned long long SysInfo::GetRAMUsage()
-    {
-        task_t task = MACH_PORT_NULL;
-        task_basic_info t_info;
-        mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
-
-        if(KERN_SUCCESS != task_info(mach_task_self(), TASK_BASIC_INFO, (task_info_t)&t_info, &t_info_count))
-            return 0;
-
-        return t_info.resident_size;
-    }
-
-    unsigned long long SysInfo::GetTickCount()
-    {
-        timeval Time;
-
-        if(gettimeofday(&Time, NULL) != 0)
-            return 0;
-
-        return (Time.tv_sec * 1000) + (Time.tv_usec / 1000);
+        return duration_cast<milliseconds>(
+            steady_clock::now().time_since_epoch()
+        ).count();
     }
 
 #endif

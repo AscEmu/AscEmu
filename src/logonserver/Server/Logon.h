@@ -32,7 +32,7 @@ class SERVER_DECL Logon
     //////////////////////////////////////////////////////////////////////////////////////////
     // InfoCore
     private:
-        Ascemu::PerformanceCounter perfcounter;
+        AscEmu::PerformanceCounter perfcounter;
 
     public:
         float getCPUUsage();

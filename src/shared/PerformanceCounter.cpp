@@ -6,43 +6,50 @@ This file is released under the MIT license. See README-MIT for more information
 #include "PerformanceCounter.hpp"
 #include "SysInfo.hpp"
 
-namespace Ascemu
+namespace AscEmu
 {
+    namespace
+    {
+        constexpr double bytesToMegabytes = 1024.0 * 1024.0;
+        constexpr double millisecondsToMicroseconds = 1000.0;
+    }
+
     PerformanceCounter::PerformanceCounter()
+        : cpu_count(SysInfo::getCPUCount())
+        , last_update(SysInfo::getTickCount())
+        , last_cpu_usage(SysInfo::getCPUUsage())
     {
-        cpu_count = Ascemu::SysInfo::GetCPUCount();
-        last_update = Ascemu::SysInfo::GetTickCount();
-        last_cpu_usage = Ascemu::SysInfo::GetCPUUsage();
     }
 
-    float PerformanceCounter::GetCurrentRAMUsage()
+    float PerformanceCounter::getCurrentRAMUsage() const
     {
-        unsigned long long usage = Ascemu::SysInfo::GetRAMUsage();
+        const auto usage = SysInfo::getRAMUsage();
 
-        return static_cast< float >(usage / (1024.0 * 1024.0));
+        return static_cast<float>(usage / bytesToMegabytes);
     }
 
-    float PerformanceCounter::GetCurrentCPUUsage()
+    float PerformanceCounter::getCurrentCPUUsage()
     {
-        unsigned long long now = Ascemu::SysInfo::GetTickCount();
-        unsigned long long now_cpu_usage = Ascemu::SysInfo::GetCPUUsage();
-        unsigned long long cpu_usage = now_cpu_usage - last_cpu_usage; // micro seconds
-        unsigned long long time_elapsed = now - last_update; // milli seconds
+        const auto now = SysInfo::getTickCount();
+        const auto now_cpu_usage = SysInfo::getCPUUsage();
 
-        // converting to micro seconds
-        time_elapsed *= 1000;
-
-        float cpu_usage_percent = static_cast< float >(double(cpu_usage) / double(time_elapsed));
-
-        cpu_usage_percent *= 100;
-
-        // If we have more than 1 CPUs/cores,
-        // without dividing here we could get over 100%
-        cpu_usage_percent /= cpu_count;
+        const auto cpu_usage = now_cpu_usage - last_cpu_usage; // microseconds
+        const auto elapsed_ms = now - last_update; // milliseconds
 
         last_update = now;
         last_cpu_usage = now_cpu_usage;
 
-        return static_cast< float >(cpu_usage_percent);
+        if (elapsed_ms == 0 || cpu_count == 0)
+            return 0.0f;
+
+        const double elapsed_us =
+            static_cast<double>(elapsed_ms) * millisecondsToMicroseconds;
+
+        const double cpu_usage_percent =
+            (static_cast<double>(cpu_usage) / elapsed_us) *
+            100.0 /
+            static_cast<double>(cpu_count);
+
+        return static_cast<float>(cpu_usage_percent);
     }
 }

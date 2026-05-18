@@ -5,22 +5,20 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-namespace Ascemu
+namespace AscEmu
 {
-    class PerformanceCounter
+    class SERVER_DECL PerformanceCounter
     {
     public:
         PerformanceCounter();
         ~PerformanceCounter() = default;
 
-        float GetCurrentCPUUsage();
-
-        float GetCurrentRAMUsage();
+        [[nodiscard]] float getCurrentCPUUsage();
+        [[nodiscard]] float getCurrentRAMUsage() const;
 
     private:
-        unsigned long cpu_count;            // The number of CPUs in this system  ( CPU cores count as separate CPUs )
-        unsigned long long last_update;     // The time the last sample was created
-        unsigned long long last_cpu_usage;  // The last sample of CPU usage
+        unsigned long cpu_count{};              // the number of CPUs in this system  ( CPU cores count as separate CPUs )
+        unsigned long long last_update{};       // the time the last sample was created
+        unsigned long long last_cpu_usage{};    // the last sample of CPU usage
     };
-
 }

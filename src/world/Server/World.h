@@ -101,7 +101,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // InfoCore
 private:
-    Ascemu::PerformanceCounter perfcounter;
+    AscEmu::PerformanceCounter perfcounter;
 
     double mTotalTrafficInKB = 0;
     double mTotalTrafficOutKB = 0;

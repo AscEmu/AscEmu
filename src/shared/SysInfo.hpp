@@ -5,18 +5,16 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-namespace Ascemu
+#include <cstdint>
+
+namespace AscEmu
 {
     class SysInfo
     {
     public:
-        static long GetCPUCount();
-
-        static unsigned long long GetCPUUsage();
-
-        static unsigned long long GetRAMUsage();
-
-        static unsigned long long GetTickCount();
-
+        [[nodiscard]] static std::uint32_t getCPUCount();
+        [[nodiscard]] static std::uint64_t getCPUUsage();
+        [[nodiscard]] static std::uint64_t getRAMUsage();
+        [[nodiscard]] static std::uint64_t getTickCount();
     };
 }

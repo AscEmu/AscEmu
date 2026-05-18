@@ -281,12 +281,12 @@ void World::setLastTotalTraffic(double* totalin, double* totalout)
 
 float World::getCPUUsage()
 {
-    return perfcounter.GetCurrentCPUUsage();
+    return perfcounter.getCurrentCPUUsage();
 }
 
 float World::getRAMUsage()
 {
-    return perfcounter.GetCurrentRAMUsage();
+    return perfcounter.getCurrentRAMUsage();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
