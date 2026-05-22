@@ -219,7 +219,7 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2024 | Threading/Mutex.hpp
 * 2024 | Threading/Mutex.cpp
 * 2025 | WoWGuid.hpp
-* 2026 | SysInfo.hpp
-* 2026 | SysInfo.cpp
+* 2026 | System/SysInfo.hpp
+* 2026 | System/SysInfo.cpp
 * 2026 | System/PerformanceCounter.hpp
-* 2026 | PerformanceCounter.cpp
+* 2026 | System/PerformanceCounter.cpp
