@@ -156,9 +156,9 @@ typedef std::map<uint32_t, WDB::Structures::MapDifficulty> MapDifficultyMap;
 typedef std::vector<WDB::Structures::TaxiPathNodeEntry const*> TaxiPathNodeList;
 typedef std::vector<TaxiPathNodeList> TaxiPathNodesByPath;
 
-extern float SERVER_DECL GetRadius(WDB::Structures::SpellRadiusEntry const* radius);
-extern uint32_t SERVER_DECL GetCastTime(WDB::Structures::SpellCastTimesEntry const* time);
-extern uint32_t SERVER_DECL GetDuration(WDB::Structures::SpellDurationEntry const* dur);
+extern SERVER_DECL float GetRadius(WDB::Structures::SpellRadiusEntry const* radius);
+extern SERVER_DECL uint32_t GetCastTime(WDB::Structures::SpellCastTimesEntry const* time);
+extern SERVER_DECL uint32_t GetDuration(WDB::Structures::SpellDurationEntry const* dur);
 
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::AreaTableEntry> sAreaStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::AreaTriggerEntry> sAreaTriggerStore;
@@ -194,6 +194,7 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SkillLineEntry> sSkillLine
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellEntry> sSpellStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellCastTimesEntry> sSpellCastTimesStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellDurationEntry> sSpellDurationStore;
+
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellItemEnchantmentEntry> sSpellItemEnchantmentStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellRadiusEntry> sSpellRadiusStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::SpellRangeEntry> sSpellRangeStore;
@@ -204,7 +205,7 @@ extern SERVER_DECL WDB::WDBContainer<WDB::Structures::TaxiNodesEntry> sTaxiNodes
 extern TaxiPathSetBySource sTaxiPathSetBySource;
 
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::TaxiPathEntry> sTaxiPathStore;
-extern TaxiPathNodesByPath sTaxiPathNodesByPath;
+extern SERVER_DECL TaxiPathNodesByPath sTaxiPathNodesByPath;
 
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::TaxiPathNodeEntry> sTaxiPathNodeStore;
 extern SERVER_DECL WDB::WDBContainer<WDB::Structures::TransportAnimationEntry> sTransportAnimationStore;
