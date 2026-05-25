@@ -11,14 +11,17 @@ This file is released under the MIT license. See README-MIT for more information
 #include <pthread.h>
 #endif
 
-#ifdef _WIN32
-    #ifndef SCRIPTLIB
+#if defined(_WIN32)
+    #if defined(SERVER_EXPORTS)
         #define SERVER_DECL __declspec(dllexport)
-        #define SCRIPT_DECL __declspec(dllimport)
     #else
         #define SERVER_DECL __declspec(dllimport)
+    #endif
+    #if defined(SCRIPTLIB)
         #define SCRIPT_DECL __declspec(dllexport)
-    #endif // SCRIPTLIB
+    #else
+        #define SCRIPT_DECL __declspec(dllimport)
+    #endif
     #define DECL_LOCAL
 #elif defined(__GNUC__) || defined(__clang__)
     #define SERVER_DECL __attribute__((visibility ("default")))
@@ -28,4 +31,4 @@ This file is released under the MIT license. See README-MIT for more information
     #define SERVER_DECL
     #define SCRIPT_DECL
     #define DECL_LOCAL
-#endif  // _WIN32
+#endif

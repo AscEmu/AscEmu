@@ -10,11 +10,6 @@ set(LIBRARY_NAME QuestScripts)
 
 file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
 
-# required for linker.
-set(SRC_QUESTSCRIPTS
-    ../../world/Server/ServerState.cpp
-)
-
 set(QUESTSCRIPTS_SRCS
     ${SRC_QUESTSCRIPTS}
     ${SRC_LOCAL_DIR}
@@ -37,6 +32,13 @@ target_include_directories(${LIBRARY_NAME} PUBLIC
     ${CMAKE_SOURCE_DIR}/src/world
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${ZLIB_INCLUDE_DIRS}
+)
+
+# required for linker.
+target_compile_definitions(${LIBRARY_NAME}
+  PRIVATE
+    SCRIPTLIB
+    SERVER_EXPORTS
 )
 
 # include library dependencies.

@@ -55,6 +55,11 @@ include_directories(
     ${ZLIB_INCLUDE_DIRS}
 )
 
+target_compile_definitions(${EXECUTABLE_NAME}
+  PUBLIC
+    SERVER_EXPORTS
+)
+
 if (WIN32 AND NOT AE_USE_PCH)
     set_target_properties(${EXECUTABLE_NAME} PROPERTIES LINK_FLAGS "/INCREMENTAL:NO")
 endif ()

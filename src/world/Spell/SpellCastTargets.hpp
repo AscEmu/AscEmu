@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 class WorldPacket;
 
-class SpellCastTargets
+class SERVER_DECL SpellCastTargets
 {
 private:
     uint32_t m_targetMask = 0;

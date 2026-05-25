@@ -34,6 +34,11 @@ target_include_directories(${LIBRARY_NAME} PUBLIC
     ${ZLIB_INCLUDE_DIRS}
 )
 
+target_compile_definitions(${LIBRARY_NAME}
+  PRIVATE
+    SERVER_EXPORTS
+)
+
 # include library dependencies.
 target_link_libraries(${LIBRARY_NAME}
   PUBLIC

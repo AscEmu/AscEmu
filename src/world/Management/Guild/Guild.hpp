@@ -64,7 +64,7 @@ public:
 
     uint32_t getAccountCount() const { return mAccountsNumber; }
 
-    class GuildMember
+    class SERVER_DECL GuildMember
     {
     public:
         GuildMember(uint32_t guildId, uint64_t guid, uint8_t rankId);

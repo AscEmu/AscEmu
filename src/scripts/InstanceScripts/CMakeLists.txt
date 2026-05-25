@@ -96,12 +96,6 @@ if ("${ASCEMU_NUMBER}" GREATER_EQUAL 3) # Cata
 file(GLOB SRC_CATA_SCRIPTS_FILES Cata/*.cpp Cata/*.h Cata/*.hpp)
 endif ()
 
-# required for linker.
-set(SRC_INSTANCESCRIPTS
-    ../../world/Server/ServerState.cpp
-    ../../shared/Utilities/Util.cpp
-)
-
 set(INSTANCESCRIPTS_SRCS
     ${SRC_INSTANCESCRIPTS}
     ${SRC_CLASSIC_SCRIPTS_FILES}
@@ -204,6 +198,12 @@ target_include_directories(${LIBRARY_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${ZLIB_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/dep/utf8cpp
+)
+
+# required for linker.
+target_compile_definitions(${LIBRARY_NAME}
+  PRIVATE
+    SCRIPTLIB
 )
 
 # include library dependencies.

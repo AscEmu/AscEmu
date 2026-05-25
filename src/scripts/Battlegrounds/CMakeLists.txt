@@ -5,12 +5,6 @@ set(LIBRARY_NAME Battlegrounds)
 
 file(GLOB_RECURSE SRC_LOCAL_DIR *.cpp *.h *.hpp)
 
-# required for linker.
-set(SRC_BATTLEGROUNDS
-    ../../world/Server/ServerState.cpp
-    ../../world/Spell/SpellCastTargets.cpp
-)
-
 set(BATTLEGROUNDS_SRCS
     ${SRC_BATTLEGROUNDS}
     ${SRC_LOCAL_DIR}
@@ -37,6 +31,13 @@ set(BATTLEGROUNDS_INCLUDES
     ${ZLIB_INCLUDE_DIRS}
 )
 target_include_directories(${LIBRARY_NAME} PUBLIC ${BATTLEGROUNDS_INCLUDES})
+
+# required for linker.
+target_compile_definitions(${LIBRARY_NAME}
+  PRIVATE
+    SCRIPTLIB
+    SERVER_EXPORTS
+)
 
 # include library dependencies.
 target_link_libraries(${LIBRARY_NAME}

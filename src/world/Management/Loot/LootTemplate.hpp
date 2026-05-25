@@ -17,7 +17,7 @@ class Player;
 typedef std::vector<LootStoreItem> LootStoreItemList;
 typedef std::unordered_map<uint32_t, std::unique_ptr<LootTemplate>> LootTemplateMap;
 
-class LootTemplate
+class SERVER_DECL LootTemplate
 {
 public:
     LootTemplate();

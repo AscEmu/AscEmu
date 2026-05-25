@@ -10,13 +10,6 @@ set(LIBRARY_NAME LuaEngine)
 
 file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
 
-# required for linker.
-set(SRC_LUAENGINE
-    ../../world/Server/ServerState.cpp
-    ../../world/Spell/SpellCastTargets.cpp
-    ../../shared/Utilities/Util.cpp
-)
-
 set(LUAENGINE_SRCS
     ${SRC_LUAENGINE}
     ${SRC_LOCAL_DIR}
@@ -43,11 +36,19 @@ target_include_directories(${LIBRARY_NAME} PUBLIC
     ${CMAKE_SOURCE_DIR}/dep/utf8cpp
 )
 
+# required for linker.
+target_compile_definitions(${LIBRARY_NAME}
+  PRIVATE
+    SCRIPTLIB
+    SERVER_EXPORTS
+)
+
 # include library dependencies.
 target_link_libraries(${LIBRARY_NAME}
-  PUBLIC
-    world
+  PRIVATE
+    shared
     lualib
+    world
 )
 
 # generate precompiled header.

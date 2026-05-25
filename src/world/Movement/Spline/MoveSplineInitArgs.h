@@ -29,7 +29,7 @@ union FacingInfo
     FacingInfo() = default;
 };
 
-struct MoveSplineInitArgs
+struct SERVER_DECL MoveSplineInitArgs
 {
     MoveSplineInitArgs(size_t path_capacity = 16);
     MoveSplineInitArgs(MoveSplineInitArgs&& args);

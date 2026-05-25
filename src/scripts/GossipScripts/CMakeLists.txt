@@ -11,11 +11,6 @@ set(LIBRARY_NAME GossipScripts)
 
 file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
 
-# required for linker.
-set(SRC_GOSSIPSCRIPTS
-    ../../world/Server/ServerState.cpp
-)
-
 set(GOSSIPSCRIPTS_SRCS
     ${SRC_GOSSIPSCRIPTS}
     ${SRC_LOCAL_DIR}
@@ -40,6 +35,12 @@ target_include_directories(${LIBRARY_NAME} PUBLIC
     ${CMAKE_SOURCE_DIR}/src/world
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${ZLIB_INCLUDE_DIRS}
+)
+
+target_compile_definitions(${LIBRARY_NAME}
+  PRIVATE
+    SCRIPTLIB
+    SERVER_EXPORTS
 )
 
 # link required libraries.

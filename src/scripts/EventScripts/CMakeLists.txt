@@ -10,13 +10,6 @@ set(LIBRARY_NAME EventScripts)
 
 file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
 
-# required for linker.
-set(SRC_EVENTSCRIPTS
-    ../../world/Server/ServerState.cpp
-    ../../world/Spell/SpellCastTargets.cpp
-    ../../shared/Utilities/Util.cpp
-)
-
 set(EVENTSCRIPTS_SRCS
     ${SRC_EVENTSCRIPTS}
     ${SRC_LOCAL_DIR}
@@ -40,6 +33,12 @@ target_include_directories(${LIBRARY_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${ZLIB_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/dep/utf8cpp
+)
+
+# required for linker.
+target_compile_definitions(${LIBRARY_NAME}
+  PRIVATE
+    SCRIPTLIB
 )
 
 # include library dependencies.

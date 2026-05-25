@@ -12,10 +12,6 @@ set(sources
     ${SRC_SPELL_SCRIPTS_LEGACY_FILES}
 
     Setup.cpp
-    # required for linker
-    ../../world/Server/ServerState.cpp
-    ../../world/Spell/SpellCastTargets.cpp
-    ../../shared/Utilities/Util.cpp
 )
 
 set(headers
@@ -44,6 +40,13 @@ target_include_directories(${LIBRARY_NAME} PUBLIC
 )
 
 add_compile_options(-DSCRIPTLIB -DSKIP_ALLOCATOR_SHARING)
+
+# required for linker.
+target_compile_definitions(${LIBRARY_NAME}
+  PRIVATE
+    SCRIPTLIB
+    SERVER_EXPORTS
+)
 
 # include library dependencies.
 target_link_libraries(${LIBRARY_NAME}

@@ -7,7 +7,7 @@
 #include <chrono>
 #include <atomic>
 
-class ServerState
+class SERVER_DECL ServerState
 {
     friend class Master;
 

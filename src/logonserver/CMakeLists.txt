@@ -34,6 +34,11 @@ target_include_directories(${EXECUTABLE_NAME} PUBLIC
     ${OPENSSL_INCLUDE_DIR}
 )
 
+target_compile_definitions(${EXECUTABLE_NAME}
+  PRIVATE
+    SERVER_EXPORTS
+)
+
 # include library dependencies.
 target_link_libraries(${EXECUTABLE_NAME}
     shared

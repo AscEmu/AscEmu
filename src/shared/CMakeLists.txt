@@ -65,6 +65,11 @@ target_include_directories(${LIBRARY_NAME} PUBLIC
     ${CMAKE_SOURCE_DIR}/dep/utf8cpp
 )
 
+target_compile_definitions(${LIBRARY_NAME}
+  PRIVATE
+    SERVER_EXPORTS
+)
+
 # include library dependencies.
 target_link_libraries(${LIBRARY_NAME}
     ${ZLIB_LIBRARIES}
