@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <memory>
 #include <string>
 #include <vector>
+#include <cstdint>
 
 namespace WDB::Structures
 {

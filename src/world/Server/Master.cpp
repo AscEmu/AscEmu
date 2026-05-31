@@ -94,6 +94,8 @@
 #include <Threading/LegacyThreadPool.h>
 #endif
 
+namespace fs = std::filesystem;
+
 namespace
 {
     // DB version

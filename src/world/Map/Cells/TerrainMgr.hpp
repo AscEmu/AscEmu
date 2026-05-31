@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <memory>
 #include <atomic>
 #include <mutex>
+#include <cstdint>
 
 namespace G3D { class Plane; }
 namespace VMAP
