@@ -614,58 +614,60 @@ public:
         void hexlike()
         {
             uint32_t j = 1, k = 1;
-            printf("STORAGE_SIZE: %u\n", static_cast<unsigned int>(size()));
-            
+
+            fmt::println("STORAGE_SIZE: {}", static_cast<unsigned int>(size()));
+
             for (uint32_t i = 0; i < size(); i++)
             {
                 if ((i == (j * 8)) && ((i != (k * 16))))
                 {
                     if (read<uint8_t>(i) <= 0x0F)
                     {
-                        printf("| 0%X ", read<uint8_t>(i));
+                        fmt::print("| 0{:X} ", read<uint8_t>(i));
                     }
                     else
                     {
-                        printf("| %X ", read<uint8_t>(i));
+                        fmt::print("| {:X} ", read<uint8_t>(i));
                     }
 
-                    j++;
+                    ++j;
                 }
                 else if (i == (k * 16))
                 {
                     rpos(rpos() - 16);
-                    printf(" | ");
+                    fmt::print(" | ");
 
                     for (int x = 0; x < 16; x++)
                     {
-                        printf("%c", read<uint8_t>(i - 16 + x));
+                        fmt::print("{}", static_cast<char>(read<uint8_t>(i - 16 + x)));
                     }
 
                     if (read<uint8_t>(i) <= 0x0F)
                     {
-                        printf("\n0%X ", read<uint8_t>(i));
+                        fmt::print("\n0{:X} ", read<uint8_t>(i));
                     }
                     else
                     {
-                        printf("\n%X ", read<uint8_t>(i));
+                        fmt::print("\n{:X} ", read<uint8_t>(i));
                     }
 
-                    k++;
-                    j++;
+                    ++k;
+                    ++j;
                 }
                 else
                 {
                     if (read<uint8_t>(i) <= 0x0F)
                     {
-                        printf("0%X ", read<uint8_t>(i));
+                        fmt::print("0{:X} ", read<uint8_t>(i));
                     }
                     else
                     {
-                        printf("%X ", read<uint8_t>(i));
+                        fmt::print("{:X} ", read<uint8_t>(i));
                     }
                 }
             }
-            printf("\n");
+
+            fmt::println("");
         }
 
         inline void reverse()

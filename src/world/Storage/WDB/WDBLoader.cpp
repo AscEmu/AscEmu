@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "AEVersion.hpp"
 #include "WDBFormat.hpp"
-#include "Debugging/Errors.h"
+#include "Debugging/Errors.hpp"
 
 namespace WDB
 {

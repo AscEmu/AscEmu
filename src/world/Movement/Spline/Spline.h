@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <vector>
 
 #include "MovementTypedefs.h"
-#include "Debugging/Errors.h"
+#include "Debugging/Errors.hpp"
 #include <G3D/Vector3.h>
 
 namespace MovementMgr {

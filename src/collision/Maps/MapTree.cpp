@@ -22,7 +22,7 @@
 #include "VMapManager2.h"
 #include "VMapDefinitions.h"
 #include "Logging/Logger.hpp"
-#include "Debugging/Errors.h"
+#include "Debugging/Errors.hpp"
 
 #include <string>
 #include <sstream>

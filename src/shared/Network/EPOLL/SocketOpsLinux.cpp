@@ -80,8 +80,8 @@ namespace SocketOps
     void ReuseAddr(SOCKET fd)
     {
         uint32_t option = 1;
-        if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (const char*)&option, 4) < 0)
-            printf("SO_REUSEADDR setsockopt error\n");
+        if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&option), sizeof(option)) < 0)
+            fmt::println("SO_REUSEADDR setsockopt error");
     }
 }
 

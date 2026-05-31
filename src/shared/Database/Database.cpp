@@ -32,7 +32,7 @@
 #include <vector>
 #include <cstdarg>
 
-#include "Debugging/Errors.h"
+#include "Debugging/Errors.hpp"
 
 using AscEmu::Threading::AEThread;
 using std::unique_ptr;

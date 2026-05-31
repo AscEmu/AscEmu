@@ -11,7 +11,6 @@
 
 #include "Threading/ConditionVariable.h"
 #include <cstring>
-#include <cstdio>
 
 /* Implementation Selection */
 #ifdef WIN32        // Easy
@@ -87,7 +86,7 @@ class OverlappedStruct
         {
             long val = InterlockedCompareExchange(&m_inUse, 1, 0);
             if(val != 0)
-                printf("!!!! Network: Detected double use of read/write event! Previous event was %u.", m_event);
+                fmt::println("!!!! Network: Detected double use of read/write event! Previous event was {}.", m_event);
         }
 
         void Unmark()

@@ -1152,7 +1152,7 @@ void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* dat
 
                     fprintf(mPacketLogFile, "|");
 
-                    unsigned short print = 0;
+                    unsigned short _print = 0;
 
                     for (unsigned int a = line * 16 - 16; a < lenght; a++)
                     {
@@ -1165,10 +1165,10 @@ void WorldPacketLog::logPacket(uint32_t len, uint16_t opcode, const uint8_t* dat
                             fprintf(mPacketLogFile, "%c", data[a]);
                         }
 
-                        print++;
+                        _print++;
                     }
 
-                    for (unsigned int c = print; c < 16; c++)
+                    for (unsigned int c = _print; c < 16; c++)
                     {
                         fprintf(mPacketLogFile, " ");
                     }

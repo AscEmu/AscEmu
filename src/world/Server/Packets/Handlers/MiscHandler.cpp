@@ -1431,8 +1431,6 @@ void WorldSession::handleObjectUpdateFailedOpcode(WorldPacket& recvPacket)
 #endif
 }
 
-
-
 #define DB2_REPLY_SPARSE 2442913102
 #define DB2_REPLY_ITEM   1344507586
 

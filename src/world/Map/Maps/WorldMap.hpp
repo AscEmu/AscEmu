@@ -14,7 +14,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <algorithm>
 
 #include "InstanceDefines.hpp"
-#include "Debugging/Errors.h"
+#include "Debugging/Errors.hpp"
 #include "Map/SpawnGroups.hpp"
 
 namespace AscEmu::Threading
