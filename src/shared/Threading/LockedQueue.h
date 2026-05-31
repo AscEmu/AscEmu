@@ -20,8 +20,8 @@
 #ifndef _THREADING_LOCKEDQUEUE_H
 #define _THREADING_LOCKEDQUEUE_H
 
-#include "Mutex.hpp"
 #include <deque>
+#include <mutex>
 
 template<class TYPE>
 class LockedQueue
@@ -31,60 +31,60 @@ class LockedQueue
 
         inline void add(const TYPE & element)
         {
-            mutex.acquire();
+            std::lock_guard lock{mutex};
             queue.push_back(element);
-            mutex.release();
         }
 
         inline TYPE next()
         {
-            mutex.acquire();
+            std::lock_guard lock{mutex};
+
             assert(queue.size() > 0);
+
             TYPE t = queue.front();
             queue.pop_front();
-            mutex.release();
+
             return t;
         }
 
         inline size_t size()
         {
-            mutex.acquire();
-            size_t c = queue.size();
-            mutex.release();
-            return c;
+            std::lock_guard lock{mutex};
+
+            return queue.size();
         }
 
         inline TYPE get_first_element()
         {
-            mutex.acquire();
-            TYPE t;
-            if(queue.size() == 0)
-                t = reinterpret_cast<TYPE>(0);
-            else
-                t = queue.front();
-            mutex.release();
+            std::lock_guard lock{mutex};
+
+            if(queue.empty())
+                return TYPE{};
+
+            TYPE t = queue.front();
+
             return t;
         }
 
         inline void pop()
         {
-            mutex.acquire();
+            std::lock_guard lock{mutex};
+
             ASSERT(queue.size() > 0);
             queue.pop_front();
-            mutex.release();
         }
 
         inline void clear()
         {
-            mutex.acquire();
+            std::lock_guard lock{mutex};
+
             queue.resize(0);
-            mutex.release();
         }
 
     protected:
 
         std::deque<TYPE> queue;
-        Mutex mutex;
+        mutable std::mutex mutex;
 };
 
 #endif      //_THREADING_LOCKEDQUEUE_H
