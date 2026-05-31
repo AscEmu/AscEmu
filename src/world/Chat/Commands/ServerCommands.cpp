@@ -21,7 +21,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgServerMessage.h"
 #include "Server/Script/ScriptMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
-#include "Threading/LegacyThreading.h"
 #include "Utilities/Util.hpp"
 
 #include <openssl/opensslv.h>

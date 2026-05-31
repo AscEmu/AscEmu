@@ -58,7 +58,6 @@
 #include "Spell/SpellMgr.hpp"
 #include "Storage/DayWatcherThread.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Threading/LegacyThreading.h"
 #include "Utilities/Benchmark.hpp"
 #include "Utilities/Util.hpp"
 

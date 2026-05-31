@@ -25,7 +25,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "LogonConf.hpp"
 #include "Database/Database.h"
 #include "Utilities/Strings.hpp"
-#include "Threading/LegacyThreading.h"
 
 using std::chrono::milliseconds;
 

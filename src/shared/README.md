@@ -24,7 +24,6 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2008 | Threading/LegacyThreadPool.h
 * 2008 | Threading/LegacyThreadPool.cpp
 * 2008 | Threading/LegacyThreadBase.h
-* 2008 | Threading/LegacyThreading.h
 * 2008 | Threading/Queue.h
 * 2008 | Threading/LockedQueue.h
 * 2008 | Threading/ConditionVariable.h
@@ -179,6 +178,7 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 ### Removed on 31 May 2026
 * 2014 | CommonDefines.hpp
 * 2008 | LocationVector.h
+* 2008 | Threading/LegacyThreading.h
 
 ### New files
 * 2015 | Exceptions/PlayerExceptions.hpp
