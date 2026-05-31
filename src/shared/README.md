@@ -174,6 +174,12 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 ### Removed on 15 May 2026
 * 2008 | Debugging/Errors.h
 
+### Removed on 18 May 2026
+* 2005 | SysInfo.hpp
+* 2005 | SysInfo.cpp
+* 2005 | PerformanceCounter.hpp
+* 2005 | PerformanceCounter.cpp
+
 ### New files
 * 2015 | Exceptions/PlayerExceptions.hpp
 * 2015 | Exceptions/Exceptions.hpp
