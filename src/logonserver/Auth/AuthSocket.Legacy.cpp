@@ -18,7 +18,9 @@
  */
 
 
-#include <openssl/md5.h>
+// #include <openssl/md5.h>
+#include <openssl/evp.h>
+
 #include "Auth/AuthSocket.h"
 #include <Logging/Logger.hpp>
 #include "Server/IpBanMgr.h"
@@ -687,6 +689,7 @@ void AuthSocket::HandleReconnectChallenge()
      * just guessed the md5 because it was 16 byte blocks.
      */
 
+    /*
     MD5_CTX ctx;
     MD5_Init(&ctx);
     MD5_Update(&ctx, m_account->SessionKey.get(), 40);
@@ -696,6 +699,28 @@ void AuthSocket::HandleReconnectChallenge()
     ByteBuffer buf;
     buf << uint16_t(2);
     buf.append(buffer, 20);
+    buf << uint64_t(0);
+    buf << uint64_t(0);
+    Send(buf.contents(), 2);*/
+
+    EVP_MD_CTX* ctx = EVP_MD_CTX_new();
+
+    EVP_DigestInit_ex(ctx, EVP_md5(), nullptr);
+    EVP_DigestUpdate(ctx, m_account->SessionKey.get(), 40);
+
+    uint8_t buffer[EVP_MAX_MD_SIZE];
+    unsigned int len = 0;
+
+    EVP_DigestFinal_ex(ctx, buffer, &len);
+    EVP_MD_CTX_free(ctx);
+
+    ByteBuffer buf;
+    buf << uint16_t(2);
+    // sch: updated the code without changes; size 20
+    buf.append(buffer, 20); 
+    // sch: you can do it this way too =)
+    // buf.append(buffer, 16);
+    // buf.append(4, 0); // padding
     buf << uint64_t(0);
     buf << uint64_t(0);
     Send(buf.contents(), 2);
