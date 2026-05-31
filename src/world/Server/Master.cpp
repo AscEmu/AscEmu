@@ -60,6 +60,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Utilities/Benchmark.hpp"
 #include "Utilities/Util.hpp"
+#include "Threading/LegacyThreadPool.h"
 
 #if VERSION_STRING == Mop
 #include "Data/WoWDynamicObject.hpp"
