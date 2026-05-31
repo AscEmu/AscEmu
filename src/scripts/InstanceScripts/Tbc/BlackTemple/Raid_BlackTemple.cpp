@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/InstanceScript.hpp"
 #include "Spell/SpellAura.hpp"
 #include "Utilities/Random.hpp"
+#include "Utilities/MathConstants.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Illidan Encounter Event Options
@@ -3129,7 +3130,7 @@ public:
                             float IllidanZ = mIllidanAI->getCreature()->GetPositionZ();
                             float IllidanO = mIllidanAI->getCreature()->GetOrientation();
 
-                            float Angle = getCreature()->calcAngle(pAkama->GetPositionX(), pAkama->GetPositionY(), IllidanX, IllidanY) * M_PI_FLOAT / 180.0f;
+                            float Angle = getCreature()->calcAngle(pAkama->GetPositionX(), pAkama->GetPositionY(), IllidanX, IllidanY) * AscEmu::Math::PiF / 180.0f;
                             float X = 12.0f * cosf(Angle);
                             float Y = 12.0f * sinf(Angle);
 

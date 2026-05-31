@@ -20,7 +20,6 @@
 #include "Setup.h"
 #include "EyeOfTheStorm.h"
 
-#include "CommonDefines.hpp"
 #include "Chat/ChatDefines.hpp"
 #include "Management/HonorHandler.h"
 #include "Management/WorldStates.hpp"
@@ -39,6 +38,7 @@
 #include "CommonTime.hpp"
 #include "Utilities/Random.hpp"
 #include "Utilities/Util.hpp"
+#include "Utilities/MathConstants.hpp"
 
 static float EOTSBuffCoordinates[4][4] =
 {
@@ -107,7 +107,7 @@ const float EOTSStartLocations[2][4] =
 
 const float EOTSBubbleLocations[2][5] =
 {
-    { 184719, 1803.21f, 1539.49f, 1261.09f, M_PI_FLOAT },
+    { 184719, 1803.21f, 1539.49f, 1261.09f, AscEmu::Math::PiF },
     { 184720, 2527.6f, 1596.91f, 1262.13f, -3.12414f },
 };
 
@@ -264,7 +264,7 @@ bool EyeOfTheStorm::HookHandleRepop(Player* plr)
     float distcur;
     LocationVector dest;
 
-    dest.ChangeCoords({ EOTSStartLocations[t][0], EOTSStartLocations[t][1], EOTSStartLocations[t][2] });
+    dest.changeCoords({ EOTSStartLocations[t][0], EOTSStartLocations[t][1], EOTSStartLocations[t][2] });
 
     for (uint8_t i = 0; i < EOTS_TOWER_COUNT; ++i)
     {
@@ -272,11 +272,11 @@ bool EyeOfTheStorm::HookHandleRepop(Player* plr)
             (((m_CPBanner[i]->getEntry() == EOTS_BANNER_ALLIANCE) && (t == TEAM_ALLIANCE)) ||
                 ((m_CPBanner[i]->getEntry() == EOTS_BANNER_HORDE) && (t == TEAM_HORDE))))
         {
-            distcur = plr->GetPositionNC().Distance2DSq({ EOTSGraveyardLocations[i][0], EOTSGraveyardLocations[i][1] });
+            distcur = plr->GetPositionNC().distance2DSq({ EOTSGraveyardLocations[i][0], EOTSGraveyardLocations[i][1] });
             if (distcur < dist)
             {
                 dist = distcur;
-                dest.ChangeCoords({ EOTSGraveyardLocations[i][0], EOTSGraveyardLocations[i][1], EOTSGraveyardLocations[i][2] });
+                dest.changeCoords({ EOTSGraveyardLocations[i][0], EOTSGraveyardLocations[i][1], EOTSGraveyardLocations[i][2] });
             }
         }
     }

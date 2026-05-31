@@ -34,6 +34,7 @@
 #include "Objects/Units/Players/Player.hpp"
 #include "Server/EventMgr.h"
 #include "Spell/Spell.hpp"
+#include "Utilities/MathConstants.hpp"
 
 WarsongGulch::WarsongGulch(BattlegroundMap* mgr, uint32_t id, uint32_t lgroup, uint32_t t) : Battleground(mgr, id, lgroup, t)
 {
@@ -456,9 +457,9 @@ void WarsongGulch::OnRemovePlayer(Player* plr)
 LocationVector WarsongGulch::GetStartingCoords(uint32_t Team)
 {
     if (Team)        // Horde
-        return LocationVector(933.989685f, 1430.735840f, 345.537140f, M_PI_FLOAT);
+        return LocationVector(933.989685f, 1430.735840f, 345.537140f, AscEmu::Math::PiF);
     else            // Alliance
-        return LocationVector(1519.530273f, 1481.868408f, 352.023743f, M_PI_FLOAT);
+        return LocationVector(1519.530273f, 1481.868408f, 352.023743f, AscEmu::Math::PiF);
 }
 
 void WarsongGulch::HookOnPlayerDeath(Player* plr)
@@ -483,9 +484,9 @@ bool WarsongGulch::HookHandleRepop(Player* plr)
 {
     LocationVector dest;
     if (plr->isTeamHorde())
-        dest.ChangeCoords({ 1032.644775f, 1388.316040f, 340.559937f, 0.043200f });
+        dest.changeCoords({ 1032.644775f, 1388.316040f, 340.559937f, 0.043200f });
     else
-        dest.ChangeCoords({ 1423.218872f, 1554.663574f, 342.833801f, 3.124139f });
+        dest.changeCoords({ 1423.218872f, 1554.663574f, 342.833801f, 3.124139f });
     plr->safeTeleport(plr->GetMapId(), plr->GetInstanceID(), dest);
     return true;
 }

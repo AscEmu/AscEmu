@@ -1907,7 +1907,7 @@ int LuaUnit::GetDistanceYards(lua_State* L, Unit* ptr)
         return 0;
 
     LocationVector vec = ptr->GetPosition();
-    lua_pushnumber(L, (float)vec.Distance(target->GetPosition()));
+    lua_pushnumber(L, (float)vec.distance(target->GetPosition()));
     return 1;
 }
 

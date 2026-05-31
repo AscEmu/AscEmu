@@ -11,7 +11,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <map>
 #include <sstream>
 #include <string>
-#include <CommonDefines.hpp>
 #include <Common.hpp>
 #include <WorldPacket.h>
 #include <Logging/Log.hpp>

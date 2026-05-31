@@ -7,8 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "WorldPacket.h"
 #include "MovementDefines.hpp"
-#include "LocationVector.h"
-#include "CommonDefines.hpp"
+#include "LocationVector.hpp"
 #include "Map/Cells/CellHandlerDefines.hpp"
 
 struct MovementInfo
@@ -171,19 +170,6 @@ inline WorldPacket& operator>> (WorldPacket& buf, MovementInfo& mi)
 {
     mi.readMovementInfo(buf, buf.GetOpcode());
     return buf;
-}
-
-inline float normalizeOrientation(float orientation)
-{
-    if (orientation < 0)
-    {
-        float mod = orientation *-1;
-        mod = fmod(mod, 2.0f * static_cast<float>(M_PI));
-        mod = -mod + 2.0f * static_cast<float>(M_PI);
-        return mod;
-    }
-
-    return fmod(orientation, 2.0f * static_cast<float>(M_PI));
 }
 
 inline void normalizeMapCoord(float &c)

@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "AEVersion.hpp"
-#include "LocationVector.h"
+#include "LocationVector.hpp"
 
 // Do NOT extend the list, simply replace an unused value
 enum SpellImmunityMask : uint32_t

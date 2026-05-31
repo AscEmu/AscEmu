@@ -1745,7 +1745,7 @@ void Unit::setHoverHeight(float height) { write(unitData()->hover_height, height
 
 void Unit::setLocationWithoutUpdate(LocationVector& location)
 {
-    m_position.ChangeCoords({ location.x, location.y, location.z });
+    m_position.changeCoords({ location.x, location.y, location.z });
 }
 
 void Unit::setPhase(uint8_t command/* = PHASE_SET*/, uint32_t newPhase/* = 1*/)
@@ -2811,7 +2811,7 @@ void Unit::updateSplinePosition()
         pos.x = loc.x;
         pos.y = loc.y;
         pos.z = loc.z;
-        pos.o = normalizeOrientation(loc.orientation);
+        pos.o = LocationVector::normalizeOrientation(loc.orientation);
 
 #ifdef FT_VEHICLES
         if (TransportBase* vehicle = getVehicle())
@@ -7948,9 +7948,9 @@ void Unit::exitVehicle(LocationVector const* exitPosition)
         if (seatAddon)
         {
             if (seatAddon->exitParameter == VehicleExitParameters::Offset)
-                pos.ChangeCoordsOffset(seatAddon->exitLocation);
+                pos.changeCoordsOffset(seatAddon->exitLocation);
             else if (seatAddon->exitParameter == VehicleExitParameters::Destination)
-                pos.ChangeCoords(seatAddon->exitLocation);
+                pos.changeCoords(seatAddon->exitLocation);
         }
     }
 

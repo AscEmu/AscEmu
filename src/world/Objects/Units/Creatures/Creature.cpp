@@ -1730,8 +1730,8 @@ bool Creature::Load(MySQLStructure::CreatureSpawn* spawn, uint8_t mode, MySQLStr
 #endif
 
     // set position
-    m_position.ChangeCoords({ spawn->x, spawn->y, spawn->z, spawn->o });
-    m_spawnLocation.ChangeCoords({ spawn->x, spawn->y, spawn->z, spawn->o });
+    m_position.changeCoords({ spawn->x, spawn->y, spawn->z, spawn->o });
+    m_spawnLocation.changeCoords({ spawn->x, spawn->y, spawn->z, spawn->o });
     m_aiInterface->timed_emotes = sObjectMgr.getTimedEmoteList(spawn->id);
 
     // not a neutral creature
@@ -1969,8 +1969,8 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     original_emotestate = 0;
 
     // set position
-    m_position.ChangeCoords({ x, y, z, o });
-    m_spawnLocation.ChangeCoords({ x, y, z, o });
+    m_position.changeCoords({ x, y, z, o });
+    m_spawnLocation.changeCoords({ x, y, z, o });
 
     // not a neutral creature
     if (m_factionEntry && !(m_factionEntry->RepListId == -1 && m_factionTemplate->HostileMask == 0 && m_factionTemplate->FriendlyMask == 0))

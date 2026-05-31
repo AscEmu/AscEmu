@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Movement/AbstractFollower.h"
 #include "Movement/MovementDefines.h"
 #include "Movement/MovementGenerator.h"
-#include "LocationVector.h"
+#include "LocationVector.hpp"
 
 namespace Util
 {

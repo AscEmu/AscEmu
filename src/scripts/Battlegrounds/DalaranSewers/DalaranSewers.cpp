@@ -64,7 +64,7 @@ void DalaranSewers::HookOnAreaTrigger(Player* plr, uint32_t trigger)
 bool DalaranSewers::HookHandleRepop(Player* plr)
 {
     LocationVector dest;
-    dest.ChangeCoords({ 1292.51f, 792.05f, 9.34f });
+    dest.changeCoords({ 1292.51f, 792.05f, 9.34f });
     plr->safeTeleport(m_mapMgr->getBaseMap()->getMapId(), m_mapMgr->getInstanceId(), dest);
     return true;
 }

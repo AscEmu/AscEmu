@@ -63,6 +63,7 @@
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Narrow.hpp"
 #include "Utilities/Random.hpp"
+#include "Utilities/MathConstants.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -2912,7 +2913,7 @@ void Spell::SpellEffectJumpTarget(uint8_t effectIndex)
         float alpha = atanf(dy / dx);
         if (dx < 0)
         {
-            alpha += M_PI_FLOAT;
+            alpha += AscEmu::Math::PiF;
         }
 
         x = rad * cosf(alpha) + m_unitTarget->GetPositionX();

@@ -117,8 +117,8 @@ bool FollowMovementGenerator::update(Unit* owner, uint32_t diff)
                 tAngle = curAngle;
             else
             {
-                float const diffUpper = normalizeOrientation(curAngle - _angle.upperBound());
-                float const diffLower = normalizeOrientation(_angle.lowerBound() - curAngle);
+                float const diffUpper = LocationVector::normalizeOrientation(curAngle - _angle.upperBound());
+                float const diffLower = LocationVector::normalizeOrientation(_angle.lowerBound() - curAngle);
                 if (diffUpper < diffLower)
                     tAngle = _angle.upperBound();
                 else

@@ -2997,7 +2997,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
                 data << float(transport_position.z);
                 data.WriteByteSeq(transport_guid[1]);
                 data << float(transport_position.y);
-                data << float(normalizeOrientation(transport_position.o));
+                data << float(LocationVector::normalizeOrientation(transport_position.o));
                 data.WriteByteSeq(transport_guid[6]);
 
                 if (status_info.hasTransportTime3)
@@ -3011,7 +3011,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
                 data << Util::getMSTime();
 
             if (status_info.hasOrientation)
-                data << float(normalizeOrientation(position.o));
+                data << float(LocationVector::normalizeOrientation(position.o));
 
             data.WriteByteSeq(guid[3]);
             if (status_info.hasFallData)

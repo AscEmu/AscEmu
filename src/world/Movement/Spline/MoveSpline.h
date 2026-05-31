@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MoveSplineInitArgs.h"
 #include "Objects/Units/UnitDefines.hpp"
 #include <G3D/Vector3.h>
-#include "LocationVector.h"
+#include "LocationVector.hpp"
 
 namespace MovementMgr {
 

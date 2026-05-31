@@ -28,6 +28,7 @@
 #include "Spell/SpellInfo.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Spell/Definitions/DispelType.hpp"
+#include "Utilities/MathConstants.hpp"
 
 enum
 {
@@ -213,7 +214,7 @@ bool DeathGrip(uint8_t effectIndex, Spell* s)
         float alpha = atanf(deltaY / deltaX);
 
         if (deltaX < 0)
-            alpha += M_PI_FLOAT;
+            alpha += AscEmu::Math::PiF;
 
         posX = d * cosf(alpha) + unitTarget->GetPositionX();
         posY = d * sinf(alpha) + unitTarget->GetPositionY();

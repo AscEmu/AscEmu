@@ -91,6 +91,7 @@
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Narrow.hpp"
 #include "Utilities/Random.hpp"
+#include "Utilities/MathConstants.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -531,7 +532,7 @@ void Spell::spellEffectSummonTotem(uint8_t /*effIndex*/, WDB::Structures::Summon
 
     // Generate spawn point
     const float_t angle = totemSlot > SUMMON_SLOT_NONE && totemSlot < SUMMON_SLOT_MINIPET
-        ? M_PI_FLOAT / static_cast<float>(SUMMON_SLOT_TOTEM_AIR) - (totemSlot * 2 * M_PI_FLOAT / static_cast<float>(SUMMON_SLOT_TOTEM_AIR))
+        ? AscEmu::Math::PiF / static_cast<float>(SUMMON_SLOT_TOTEM_AIR) - (totemSlot * 2 * AscEmu::Math::PiF / static_cast<float>(SUMMON_SLOT_TOTEM_AIR))
         : 0.0f;
     u_caster->GetPoint(u_caster->GetOrientation() + angle, 3.5f, v.x, v.y, v.z, false);
 
@@ -1777,7 +1778,7 @@ void Spell::SpellEffectTeleportUnits(uint8_t effectIndex)    // Teleport Units
                 /* We're chasing a target. We have to calculate the angle to this target, this is our orientation. */
                 ang = m_caster->calcAngle(m_caster->GetPositionX(), m_caster->GetPositionY(), m_unitTarget->GetPositionX(), m_unitTarget->GetPositionY());
                 /* convert degree angle to radians */
-                ang = ang * M_PI_FLOAT / 180.0f;
+                ang = ang * AscEmu::Math::PiF / 180.0f;
             }
             else
             {
@@ -3007,7 +3008,7 @@ void Spell::SpellEffectSummonGuardian(uint32_t /*i*/, WDB::Structures::SummonPro
     if (u_caster == nullptr)
         return;
 
-    float angle_for_each_spawn = -M_PI_FLOAT * 2 / damage;
+    float angle_for_each_spawn = -AscEmu::Math::PiF * 2 / damage;
 
     for (int j = 0; j < damage; j++)
     {
@@ -3051,7 +3052,7 @@ void Spell::SpellEffectSummonTemporaryPet(uint32_t i, WDB::Structures::SummonPro
     // We know for sure that this will suceed because we checked in Spell::SpellEffectSummon
     CreatureProperties const* ci = sMySQLStore.getCreatureProperties(properties_->Id);
 
-    float angle_for_each_spawn = -M_PI_FLOAT * 2 / damage;
+    float angle_for_each_spawn = -AscEmu::Math::PiF * 2 / damage;
 
     for (int32_t i = 0; i < count; i++)
     {
@@ -3083,8 +3084,8 @@ void Spell::SpellEffectSummonPossessed(uint32_t /*i*/, WDB::Structures::SummonPr
     if (p_caster->getPet() != nullptr)
         p_caster->getPet()->unSummon();
 
-    v.x += (3 * cos(M_PI_FLOAT / 2 + v.o));
-    v.y += (3 * cos(M_PI_FLOAT / 2 + v.o));
+    v.x += (3 * cos(AscEmu::Math::PiF / 2 + v.o));
+    v.y += (3 * cos(AscEmu::Math::PiF / 2 + v.o));
 
     Summon* s = p_caster->getWorldMap()->summonCreature(properties_->Id, v, spe, static_cast<uint32_t>(getDuration()), p_caster, m_spellInfo->getId());
     if (s == nullptr)

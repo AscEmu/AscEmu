@@ -321,7 +321,7 @@ bool Vehicle::isControler(Unit* _unit)
     return false;
 }
 
-void Vehicle::setLastShootPos(LocationVector const& pos) { _lastShootPos.ChangeCoords(pos); }
+void Vehicle::setLastShootPos(LocationVector const& pos) { _lastShootPos.changeCoords(pos); }
 LocationVector const& Vehicle::getLastShootPos() const { return _lastShootPos; }
 
 VehicleSeatAddon const* Vehicle::getSeatAddonForSeatOfPassenger(Unit const* passenger) const

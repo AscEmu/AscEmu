@@ -48,6 +48,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Random.hpp"
 #include "Utilities/TimeTracker.hpp"
+#include "Utilities/MathConstants.hpp"
 
 // Random and guessed values for Internal Spell cast chance
 float spellChanceModifierDispell[12] =
@@ -3063,7 +3064,7 @@ void AIInterface::calcDestinationAndMove(Unit* target, float dist)
         m_lasttargetPosition.x = newx;
         m_lasttargetPosition.y = newy;
 
-        float angle = m_Unit->calcAngle(m_Unit->GetPositionX(), m_Unit->GetPositionY(), newx, newy) * M_PI_FLOAT / 180.0f;
+        float angle = m_Unit->calcAngle(m_Unit->GetPositionX(), m_Unit->GetPositionY(), newx, newy) * AscEmu::Math::PiF / 180.0f;
         float x = dist * cosf(angle);
         float y = dist * sinf(angle);
 
@@ -3692,7 +3693,7 @@ void AIInterface::UpdateAISpells()
                 if (mCurrentSpellTarget != nullptr && !mLastCastedSpell->mIsTriggered)
                 {
                     // interrupt spell if we are not in  required range
-                    const float targetDistance = getUnit()->GetPosition().Distance2DSq({ mCurrentSpellTarget->GetPositionX(), mCurrentSpellTarget->GetPositionY() });
+                    const float targetDistance = getUnit()->GetPosition().distance2DSq({ mCurrentSpellTarget->GetPositionX(), mCurrentSpellTarget->GetPositionY() });
                     if (!mLastCastedSpell->isDistanceInRange(targetDistance))
                     {
                         sLogger.debugFlag(AscEmu::Logging::LF_SCRIPT_MGR, "Target outside of spell range ({})! Min: {} Max: {}, distance to Target: {}", mLastCastedSpell->mSpellInfo->getId(), mLastCastedSpell->mMinPositionRangeToCast, mLastCastedSpell->mMaxPositionRangeToCast, targetDistance);

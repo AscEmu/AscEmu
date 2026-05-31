@@ -28,6 +28,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Utilities/Narrow.hpp"
 #include "Utilities/Util.hpp"
+#include "Utilities/MathConstants.hpp"
 #include "Storage/WDB/WDBStores.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
 
@@ -964,7 +965,7 @@ bool ChatCommandHandler::HandleFaceCommand(const char* args, WorldSession* m_ses
         Orentation = atoi(pOrentation);
 
     // Convert to Blizzards Format
-    float theOrientation = Orentation / (180.0f / M_PI_FLOAT);
+    float theOrientation = Orentation / (180.0f / AscEmu::Math::PiF);
 
     obj->SetPosition(obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), theOrientation, false);
 

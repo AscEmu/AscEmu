@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSessionLog.hpp"
 #include "Spell/SpellMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
+#include "Utilities/MathConstants.hpp"
 
 //.pet create
 bool ChatCommandHandler::HandlePetCreateCommand(const char* args, WorldSession* m_session)
@@ -49,7 +50,7 @@ bool ChatCommandHandler::HandlePetCreateCommand(const char* args, WorldSession* 
         return true;
     }
 
-    float followangle = -M_PI_FLOAT * 2;
+    float followangle = -AscEmu::Math::PiF * 2;
     LocationVector vector(selected_player->GetPosition());
     vector.x += (3 * (cosf(followangle + selected_player->GetOrientation())));
     vector.y += (3 * (sinf(followangle + selected_player->GetOrientation())));

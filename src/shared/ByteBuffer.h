@@ -23,7 +23,7 @@
 #include "CommonTypes.hpp"
 #include "CommonHelpers.hpp"
 #include "WoWGuid.hpp"
-#include "LocationVector.h"
+#include "LocationVector.hpp"
 
 #include <cstdlib>
 #include <memory>

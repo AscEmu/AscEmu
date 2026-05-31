@@ -86,7 +86,7 @@ LocationVector RingOfTrials::GetStartingCoords(uint32_t Team)
 bool RingOfTrials::HookHandleRepop(Player* plr)
 {
     LocationVector dest;
-    dest.ChangeCoords({ 4057.042725f, 2918.686523f, 13.051933f });
+    dest.changeCoords({ 4057.042725f, 2918.686523f, 13.051933f });
     plr->safeTeleport(m_mapMgr->getBaseMap()->getMapId(), m_mapMgr->getInstanceId(), dest);
     return true;
 }
