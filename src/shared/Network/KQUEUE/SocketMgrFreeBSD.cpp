@@ -7,6 +7,8 @@
  */
 
 #include "../Network.h"
+#include "Debugging/Errors.hpp"
+#include "LegacyThreadBase.h"
 #include "Threading/LegacyThreadPool.h"
 #include <cassert>
 
