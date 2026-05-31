@@ -24,6 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Strings.hpp"
 #include "Utilities/Util.hpp"
+#include "Threading/LegacyThreadPool.h"
 
 #include <openssl/opensslv.h>
 #include <openssl/crypto.h>

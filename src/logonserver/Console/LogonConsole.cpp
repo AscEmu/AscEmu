@@ -29,6 +29,7 @@
 #include <Utilities/Strings.hpp>
 #include "Database/Database.h"
 #include <algorithm>
+#include "Threading/LegacyThreadPool.h"
 
 LogonConsole& LogonConsole::getInstance()
 {
