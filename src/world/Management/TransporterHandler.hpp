@@ -168,9 +168,6 @@ public:
     // Spawns all continent transports, used at startup
     void spawnContinentTransports();
 
-    // constrain arbitrary radian orientation to interval [0,2*PI)
-    static float normalizeOrientation(float o);
-
     void addTransport(Transporter* transport);
 
     Transporter* getTransporter(uint32_t guid);

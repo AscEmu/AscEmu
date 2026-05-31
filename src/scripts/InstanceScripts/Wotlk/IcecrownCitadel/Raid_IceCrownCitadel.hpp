@@ -1115,8 +1115,8 @@ enum GunshipBattleTextIds
     GOSSIP_OPTION_JETPACK2                      = 612,  // You already have my jetpack!
 };
 
-LocationVector const SkybreakerAddsSpawnPos = { 15.91131f, 0.0f, 20.4628f, float(M_PI) };
-LocationVector const OrgrimsHammerAddsSpawnPos = { 60.728395f, 0.0f, 38.93467f, float(M_PI) };
+LocationVector const SkybreakerAddsSpawnPos = { 15.91131f, 0.0f, 20.4628f, AscEmu::Math::PiF };
+LocationVector const OrgrimsHammerAddsSpawnPos = { 60.728395f, 0.0f, 38.93467f, AscEmu::Math::PiF };
 
 // Horde encounter
 LocationVector const SkybreakerTeleportPortal = { 6.666975f, 0.013001f, 20.87888f, 0.0f };

@@ -835,7 +835,7 @@ int LuaGameObject::GetDistanceYards(lua_State* L, GameObject* ptr)
     else
     {
         LocationVector vec = ptr->GetPosition();
-        lua_pushnumber(L, (float)vec.Distance(target->GetPosition()));
+        lua_pushnumber(L, (float)vec.distance(target->GetPosition()));
     }
     return 1;
 }

@@ -96,7 +96,7 @@ namespace AscEmu::Packets
             {
                 packet.WriteByteSeq(mi.transport_guid[3]);
                 packet.WriteByteSeq(mi.transport_guid[4]);
-                packet << float(normalizeOrientation(mi.transport_position.o));
+                packet << float(LocationVector::normalizeOrientation(mi.transport_position.o));
 
                 if (mi.status_info.hasTransportTime3)
                     packet << uint32_t(mi.transport_time3);
@@ -125,7 +125,7 @@ namespace AscEmu::Packets
             if (mi.status_info.hasSplineElevation)
                 packet << float(mi.spline_elevation);
             if (mi.status_info.hasOrientation)
-                packet << float(normalizeOrientation(mi.position.o));
+                packet << float(LocationVector::normalizeOrientation(mi.position.o));
 
 
             packet.WriteByteSeq(guid[2]);

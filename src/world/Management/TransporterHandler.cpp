@@ -260,7 +260,7 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
                 KeyFrame k(node_i);
                 G3D::Vector3 h;
                 orientationSpline.evaluate_derivative(i + 1, 0.0f, h);
-                k.InitialOrientation = normalizeOrientation(std::atan2(h.y, h.x) + float(M_PI));
+                k.InitialOrientation = LocationVector::normalizeOrientation(std::atan2(h.y, h.x) + AscEmu::Math::PiF);
 
                 keyFrames.push_back(k);
                 splinePath.emplace_back(G3D::Vector3(node_i.x, node_i.y, node_i.z));
@@ -484,18 +484,6 @@ void TransportHandler::generatePath(GameObjectProperties const* goInfo, Transpor
 
     transport->pathTime = keyFrames.back().DepartureTime;
     sLogger.debugFlag(AscEmu::Logging::LF_MAP, "TransportHandler: total time {} at transport {} \n", transport->pathTime, transport->entry);
-}
-
-float TransportHandler::normalizeOrientation(float o)
-{
-    if (o < 0)
-    {
-        float mod = o * -1;
-        mod = std::fmod(mod, 2.0f * static_cast<float>(M_PI));
-        mod = -mod + 2.0f * static_cast<float>(M_PI);
-        return mod;
-    }
-    return std::fmod(o, 2.0f * static_cast<float>(M_PI));
 }
 
 Transporter* TransportHandler::getTransporter(uint32_t guid)

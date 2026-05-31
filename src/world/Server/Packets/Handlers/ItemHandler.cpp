@@ -369,7 +369,7 @@ void WorldSession::handleUseItemOpcode(WorldPacket& recvPacket)
         float const deltaY = spellDestination.y - spellSource.y; // Calculate change of y position
 
         uint32_t travelTime = 0;
-        if ((srlPacket.projectilePitch != M_PI / 4) && (srlPacket.projectilePitch != -M_PI / 4)) // No division by zero
+        if ((srlPacket.projectilePitch != AscEmu::Math::QuarterPiF) && (srlPacket.projectilePitch != -AscEmu::Math::QuarterPiF)) // No division by zero
         {
             // Calculate projectile's travel time by using Pythagorean theorem to get distance from delta X and delta Y, and divide that with the projectile's velocity
             travelTime = static_cast<uint32_t>((sqrtf(deltaX * deltaX + deltaY * deltaY) / (cosf(srlPacket.projectilePitch) * srlPacket.projectileSpeed)) * 1000);

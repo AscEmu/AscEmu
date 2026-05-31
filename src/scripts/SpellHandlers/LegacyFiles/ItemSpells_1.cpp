@@ -33,6 +33,7 @@
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Random.hpp"
 #include "Utilities/Util.hpp"
+#include "Utilities/MathConstants.hpp"
 
 /*
      How to add a new item spell to the dummy spell handler:
@@ -764,7 +765,7 @@ bool Spinning(uint8_t /*effectIndex*/, Spell* s)
     location.x = p_caster->GetPositionX();
     location.y = p_caster->GetPositionY();
     location.z= p_caster->GetPositionZ();
-    location.o = Util::getRandomFloat(M_PI_FLOAT * 2);
+    location.o = Util::getRandomFloat(AscEmu::Math::PiF * 2);
 
     uint32_t mapid = p_caster->GetMapId();
     uint32_t instanceid = p_caster->GetInstanceID();

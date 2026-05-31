@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/SmsgQueryPlayernameResponse.h"
 #include "Server/Packets/SmsgGameobjectQueryResponse.h"
 #include "Server/Packets/SmsgQueryTimeResponse.h"
-#include "LocationVector.h"
+#include "LocationVector.hpp"
 #include "Logging/Log.hpp"
 #include "Logging/Logger.hpp"
 #include <Logging/Severity.hpp>

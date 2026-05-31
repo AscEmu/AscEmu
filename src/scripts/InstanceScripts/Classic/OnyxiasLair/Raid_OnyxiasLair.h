@@ -5,7 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "LocationVector.h"
+#include "LocationVector.hpp"
+#include "Utilities/MathConstants.hpp"
 
 namespace OnyxiasLair
 {
@@ -42,7 +43,7 @@ namespace OnyxiasLair
         { -79.020f, -252.374f, -68.965f, 0.885179f },
         { -80.257f, -174.240f, -69.293f, 5.695741f },
         { 27.875f, -178.547f, -66.041f, 3.908957f },
-        { -4.868f, -217.171f, -86.710f, M_PI_FLOAT }
+        { -4.868f, -217.171f, -86.710f, AscEmu::Math::PiF }
     };
 
     static LocationVector whelpCoords[] =

@@ -87,7 +87,7 @@ void RingOfValor::HookOnAreaTrigger(Player* /*plr*/, uint32_t trigger)
 bool RingOfValor::HookHandleRepop(Player* plr)
 {
     LocationVector dest;
-    dest.ChangeCoords({ 762.91f, -284.28f, 28.28f });
+    dest.changeCoords({ 762.91f, -284.28f, 28.28f });
     plr->safeTeleport(m_mapMgr->getBaseMap()->getMapId(), m_mapMgr->getInstanceId(), dest);
     return true;
 }

@@ -20,7 +20,6 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2014 | Network/NetworkIncludes.hpp
 * 2014 | CommonTypes.hpp
 * 2014 | CommonHelpers.hpp
-* 2014 | CommonDefines.hpp
 * 2008 | WorldPacket.h
 * 2008 | Threading/LegacyThreadPool.h
 * 2008 | Threading/LegacyThreadPool.cpp
@@ -32,7 +31,6 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2008 | Threading/ConditionVariable.cpp
 * 2008 | PreallocatedQueue.h
 * 2008 | LocationVector.cpp
-* 2008 | LocationVector.h
 * 2008 | DynLib.hpp
 * 2008 | DynLib.cpp
 * 2008 | Database/MySQLDatabase.h
@@ -180,6 +178,10 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2005 | PerformanceCounter.hpp
 * 2005 | PerformanceCounter.cpp
 
+### Removed on 31 May 2026
+* 2014 | CommonDefines.hpp
+* 2008 | LocationVector.h
+
 ### New files
 * 2015 | Exceptions/PlayerExceptions.hpp
 * 2015 | Exceptions/Exceptions.hpp
@@ -226,3 +228,5 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2026 | System/SysInfo.cpp
 * 2026 | System/PerformanceCounter.hpp
 * 2026 | System/PerformanceCounter.cpp
+* 2026 | Utilities/MathConstants.hpp
+* 2026 | LocationVector.hpp

@@ -80,15 +80,15 @@ bool RotateMovementGenerator::update(Unit* owner, uint32_t diff)
     float angle = owner->GetOrientation();
     if (_direction == ROTATE_DIRECTION_LEFT)
     {
-        angle += float(diff) * float(M_PI) * 2.f / float(_maxDuration);
-        while (angle >= float(M_PI) * 2.f)
-            angle -= float(M_PI) * 2.f;
+        angle += float(diff) * AscEmu::Math::PiF * 2.f / float(_maxDuration);
+        while (angle >= AscEmu::Math::PiF * 2.f)
+            angle -= AscEmu::Math::PiF * 2.f;
     }
     else
     {
-        angle -= float(diff) * float(M_PI) * 2.f / float(_maxDuration);
+        angle -= float(diff) * AscEmu::Math::PiF * 2.f / float(_maxDuration);
         while (angle < 0.f)
-            angle += float(M_PI) * 2.f;
+            angle += AscEmu::Math::PiF * 2.f;
     }
 
     MovementMgr::MoveSplineInit init(owner);
@@ -112,7 +112,7 @@ bool RotateMovementGenerator::update(Unit* owner, uint32_t diff)
 bool RotateMovementGenerator::update(Unit* owner, uint32_t diff)
 {
     float angle = owner->GetOrientation();
-    angle += (float(diff) * static_cast<float>(M_PI * 2) / _maxDuration) * (_direction == ROTATE_DIRECTION_LEFT ? 1.0f : -1.0f);
+    angle += (float(diff) * (AscEmu::Math::PiF * 2) / _maxDuration) * (_direction == ROTATE_DIRECTION_LEFT ? 1.0f : -1.0f);
     angle = G3D::wrap(angle, 0.0f, float(G3D::twoPi()));
 
     owner->SetOrientation(angle);   // UpdateSplinePosition does not set orientation with UNIT_STATE_ROTATING

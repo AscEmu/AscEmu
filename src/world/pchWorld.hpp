@@ -16,7 +16,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <utility>
 #include <sstream>
 #include "AEVersion.hpp"
-#include "CommonDefines.hpp"
 #include "CommonTypes.hpp"
 #include "CommonTime.hpp"
 #include "CommonFilesystem.hpp"
@@ -26,7 +25,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Logging/Logger.hpp"
 #include "ByteBuffer.h"
 #include "Config/Config.h"
-#include "LocationVector.h"
+#include "LocationVector.hpp"
 #include "Utilities/Strings.hpp"
 #include "Utilities/Util.hpp"
 #include "Utilities/Narrow.hpp"

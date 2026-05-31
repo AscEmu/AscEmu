@@ -531,14 +531,14 @@ void WorldMap::outOfMapBoundariesTeleport(Object* object)
         }
         else
         {
-            object->GetPositionV()->ChangeCoords(player->getBindPosition());
+            object->GetPositionV()->changeCoords(player->getBindPosition());
             player->getSession()->SystemMessage("Teleported you to your hearthstone location as you were out of the map boundaries.");
             player->sendTeleportAckPacket(player->getBindPosition());
         }
     }
     else
     {
-        object->GetPositionV()->ChangeCoords({ 0, 0, 0, 0 });
+        object->GetPositionV()->changeCoords({ 0, 0, 0, 0 });
     }
 }
 

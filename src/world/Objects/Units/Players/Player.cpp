@@ -160,6 +160,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdarg>
 
 #include "Utilities/Narrow.hpp"
+#include "Utilities/MathConstants.hpp"
 
 #if VERSION_STRING > TBC
     #include "Management/AchievementMgr.h"
@@ -236,7 +237,7 @@ Player::Player(uint32_t guid) :
     setAttackPowerMultiplier(0.f);
     setRangedAttackPowerMultiplier(0.f);
 
-    m_sentTeleportPosition.ChangeCoords({ 999999.0f, 999999.0f, 999999.0f });
+    m_sentTeleportPosition.changeCoords({ 999999.0f, 999999.0f, 999999.0f });
 
     // Zyres: initialise here because ItemInterface needs the guid from object data
     m_itemInterface = std::make_unique<ItemInterface>(this);
@@ -1571,7 +1572,7 @@ void Player::handleKnockback(Object* object, float horizontal, float vertical)
 
     float angle = calcRadAngle(object->GetPositionX(), object->GetPositionY(), GetPositionX(), GetPositionY());
     if (object == this)
-        angle = static_cast<float>(M_PI + GetOrientation());
+        angle = (AscEmu::Math::PiF + GetOrientation());
 
     float sin = sinf(angle);
     float cos = cosf(angle);
@@ -2233,7 +2234,7 @@ bool Player::create(CharCreate& charCreateContent)
 
     m_mapId = m_playerCreateInfo->mapId;
     setZoneId(m_playerCreateInfo->zoneId);
-    m_position.ChangeCoords({ m_playerCreateInfo->positionX, m_playerCreateInfo->positionY, m_playerCreateInfo->positionZ, m_playerCreateInfo->orientation });
+    m_position.changeCoords({ m_playerCreateInfo->positionX, m_playerCreateInfo->positionY, m_playerCreateInfo->positionZ, m_playerCreateInfo->orientation });
 
     setBindPoint(m_playerCreateInfo->positionX, m_playerCreateInfo->positionY, m_playerCreateInfo->positionZ, m_playerCreateInfo->orientation, m_playerCreateInfo->mapId, m_playerCreateInfo->zoneId);
     m_isResting = 0;
@@ -7495,7 +7496,7 @@ void Player::repopAtGraveyard(float ox, float oy, float oz, uint32_t mapId)
             graveyard = sMySQLStore.getGraveyard(graveyardStore.second.id);
             if (graveyard->mapId == mapId && (graveyard->factionId == getTeam() || graveyard->factionId == 3))
             {
-                temp.ChangeCoords({ graveyard->position_x, graveyard->position_y, graveyard->position_z });
+                temp.changeCoords({ graveyard->position_x, graveyard->position_y, graveyard->position_z });
                 const float distance = currentLocation.distanceSquare(temp);
                 if (first || distance < closestDistance)
                 {
@@ -7508,7 +7509,7 @@ void Player::repopAtGraveyard(float ox, float oy, float oz, uint32_t mapId)
 
         if (first && graveyard)
         {
-            finalDestination.ChangeCoords({ graveyard->position_x, graveyard->position_y, graveyard->position_z });
+            finalDestination.changeCoords({ graveyard->position_x, graveyard->position_y, graveyard->position_z });
             first = false;
         }
     }
@@ -9264,12 +9265,12 @@ void Player::logIntoBattleground()
         {
             if (!IS_INSTANCE(getBGEntryMapId()))
             {
-                m_position.ChangeCoords(getBGEntryPosition());
+                m_position.changeCoords(getBGEntryPosition());
                 m_mapId = getBGEntryMapId();
             }
             else
             {
-                m_position.ChangeCoords(getBindPosition());
+                m_position.changeCoords(getBindPosition());
                 m_mapId = getBindMapId();
             }
         }
@@ -9319,7 +9320,7 @@ void Player::setLoginPosition()
     {
         // Set position to GM Island for GMs logging in for the first time if enabled in config
         m_mapId = 1;
-        m_position.ChangeCoords({ 16222.6f, 16265.9f, 14.2085f, 0.0f });
+        m_position.changeCoords({ 16222.6f, 16265.9f, 14.2085f, 0.0f });
 
         setBindPoint(GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation(), GetMapId(), getZoneId());
     }
@@ -11651,8 +11652,8 @@ void Player::requestDuel(Player* target)
 
     // flag position
     const float distance = CalcDistance(target) * 0.5f;
-    const float x = (GetPositionX() + target->GetPositionX() * distance) / (1 + distance) + cos(GetOrientation() + (M_PI_FLOAT / 2)) * 2;
-    const float y = (GetPositionY() + target->GetPositionY() * distance) / (1 + distance) + sin(GetOrientation() + (M_PI_FLOAT / 2)) * 2;
+    const float x = (GetPositionX() + target->GetPositionX() * distance) / (1 + distance) + cos(GetOrientation() + (AscEmu::Math::PiF / 2)) * 2;
+    const float y = (GetPositionY() + target->GetPositionY() * distance) / (1 + distance) + sin(GetOrientation() + (AscEmu::Math::PiF / 2)) * 2;
     const float z = (GetPositionZ() + target->GetPositionZ() * distance) / (1 + distance);
 
     // create flag

@@ -54,6 +54,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Creatures/Vehicle.hpp"
 #include "Units/Players/Player.hpp"
 #include "Utilities/Random.hpp"
+#include "Utilities/MathConstants.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -2360,9 +2361,9 @@ void Object::sendGameobjectDespawnAnim()
 void Object::_Create(uint32_t mapid, float x, float y, float z, float ang)
 {
     m_mapId = mapid;
-    m_position.ChangeCoords({ x, y, z, ang });
-    m_spawnLocation.ChangeCoords({ x, y, z, ang });
-    m_lastMapUpdatePosition.ChangeCoords({ x, y, z, ang });
+    m_position.changeCoords({ x, y, z, ang });
+    m_spawnLocation.changeCoords({ x, y, z, ang });
+    m_lastMapUpdatePosition.changeCoords({ x, y, z, ang });
 }
 
 void Object::BuildFieldUpdatePacket(Player* Target, uint32_t Index, uint32_t Value)
@@ -3119,7 +3120,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
             data->WriteByteSeq(tGuid[7]);
 
             *data << uint32_t(obj_movement_info.transport_time);
-            *data << float(normalizeOrientation(GetTransOffsetO()));
+            *data << float(LocationVector::normalizeOrientation(GetTransOffsetO()));
 
             if (hasTransportTime2)
                 *data << uint32_t(obj_movement_info.transport_time2);
@@ -3168,7 +3169,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         *data << float(unit->getSpeedRate(TYPE_FLY, true));
 
         if (!G3D::fuzzyEq(GetOrientation(), 0.0f))
-            *data << float(normalizeOrientation(GetOrientation()));
+            *data << float(LocationVector::normalizeOrientation(GetOrientation()));
 
         *data << unit->getSpeedRate(TYPE_RUN, true);
 
@@ -3192,7 +3193,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
                 vehicleid = static_cast<Player*>(this)->getMountVehicleId();
         }
 
-        *data << float(normalizeOrientation(GetOrientation()));
+        *data << float(LocationVector::normalizeOrientation(GetOrientation()));
         *data << uint32_t(vehicleid);
     }
 
@@ -3257,7 +3258,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
     if (updateFlags & UPDATEFLAG_HAS_POSITION)
     {
-        *data << float(normalizeOrientation(GetOrientation()));
+        *data << float(LocationVector::normalizeOrientation(GetOrientation()));
         *data << float(GetPositionX());
         *data << float(GetPositionY());
         *data << float(GetPositionZ());
@@ -3545,7 +3546,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
             *data << float(obj_movement_info.pitch_rate);
 
         if (!G3D::fuzzyEq(GetOrientation(), 0.0f))
-            *data << float(normalizeOrientation(GetOrientation()));
+            *data << float(LocationVector::normalizeOrientation(GetOrientation()));
 
         *data << float(unit->getSpeedRate(TYPE_WALK, true));
         *data << float(GetPositionY());
@@ -3625,7 +3626,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
     {
         *data << float(GetPositionY());
         *data << float(GetPositionZ());
-        *data << float(normalizeOrientation(GetOrientation()));
+        *data << float(LocationVector::normalizeOrientation(GetOrientation()));
         *data << float(GetPositionX());
     }
 
@@ -3940,10 +3941,10 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
 
         //if (m_position.x != newX || m_position.y != newY)
         //updateMap = true;
-        if (m_lastMapUpdatePosition.Distance2DSq({ newX, newY }) > 4.0f) /* 2.0f */
+        if (m_lastMapUpdatePosition.distance2DSq({ newX, newY }) > 4.0f) /* 2.0f */
             updateMap = true;
 
-        m_position.ChangeCoords({ newX, newY, newZ, newOrientation });
+        m_position.changeCoords({ newX, newY, newZ, newOrientation });
 
 #if VERSION_STRING < Cata
         if (!allowPorting && newZ < -500)
@@ -3957,10 +3958,10 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
 
         if (IsInWorld() && updateMap)
         {
-            m_lastMapUpdatePosition.ChangeCoords({ newX, newY, newZ, newOrientation });
+            m_lastMapUpdatePosition.changeCoords({ newX, newY, newZ, newOrientation });
             m_WorldMap->changeObjectLocation(this);
 
-            if (isPlayer() && dynamic_cast<Player*>(this)->getGroup() && dynamic_cast<Player*>(this)->getLastGroupPosition().Distance2DSq(m_position) > 25.0f)       // distance of 5.0
+            if (isPlayer() && dynamic_cast<Player*>(this)->getGroup() && dynamic_cast<Player*>(this)->getLastGroupPosition().distance2DSq(m_position) > 25.0f)       // distance of 5.0
             {
                 dynamic_cast<Player*>(this)->addGroupUpdateFlag(GROUP_UPDATE_FLAG_POSITION);
             }
@@ -4243,29 +4244,29 @@ float Object::calcAngle(float Position1X, float Position1Y, float Position2X, fl
         if (dy == 0.0)
             angle = 0.0;
         else if (dy > 0.0)
-            angle = M_PI * 0.5 /* / 2 */;
+            angle = AscEmu::Math::Pi * 0.5 /* / 2 */;
         else
-            angle = M_PI * 3.0 * 0.5/* / 2 */;
+            angle = AscEmu::Math::Pi * 3.0 * 0.5/* / 2 */;
     }
     else if (dy == 0.0)
     {
         if (dx > 0.0)
             angle = 0.0;
         else
-            angle = M_PI;
+            angle = AscEmu::Math::Pi;
     }
     else
     {
         if (dx < 0.0)
-            angle = atanf(dy / dx) + M_PI;
+            angle = atanf(dy / dx) + AscEmu::Math::Pi;
         else if (dy < 0.0)
-            angle = atanf(dy / dx) + (2 * M_PI);
+            angle = atanf(dy / dx) + (2 * AscEmu::Math::Pi);
         else
             angle = atanf(dy / dx);
     }
 
     // Convert to degrees
-    angle = angle * float(180 / M_PI);
+    angle = angle * float(180 / AscEmu::Math::Pi);
 
     // Return
     return float(angle);
@@ -4283,23 +4284,23 @@ float Object::calcRadAngle(float Position1X, float Position1Y, float Position2X,
         if (dy == 0.0)
             angle = 0.0;
         else if (dy > 0.0)
-            angle = M_PI * 0.5/*/ 2.0*/;
+            angle = AscEmu::Math::Pi * 0.5/*/ 2.0*/;
         else
-            angle = M_PI * 3.0 * 0.5/*/ 2.0*/;
+            angle = AscEmu::Math::Pi * 3.0 * 0.5/*/ 2.0*/;
     }
     else if (dy == 0.0)
     {
         if (dx > 0.0)
             angle = 0.0;
         else
-            angle = M_PI;
+            angle = AscEmu::Math::Pi;
     }
     else
     {
         if (dx < 0.0)
-            angle = atan(dy / dx) + M_PI;
+            angle = atan(dy / dx) + AscEmu::Math::Pi;
         else if (dy < 0.0)
-            angle = atan(dy / dx) + (2 * M_PI);
+            angle = atan(dy / dx) + (2 * AscEmu::Math::Pi);
         else
             angle = atan(dy / dx);
     }
@@ -4345,19 +4346,19 @@ bool Object::isInFront(Object const* target) const
     double y = target->GetPositionY() - m_position.y;
 
     double angle = atan2(y, x);
-    angle = (angle >= 0.0) ? angle : 2.0 * M_PI + angle;
+    angle = (angle >= 0.0) ? angle : 2.0 * AscEmu::Math::Pi + angle;
     angle -= m_position.o;
 
-    while (angle > M_PI)
-        angle -= 2.0 * M_PI;
+    while (angle > AscEmu::Math::Pi)
+        angle -= 2.0 * AscEmu::Math::Pi;
 
-    while (angle < -M_PI)
-        angle += 2.0 * M_PI;
+    while (angle < -AscEmu::Math::Pi)
+        angle += 2.0 * AscEmu::Math::Pi;
 
-    // replace M_PI in the two lines below to reduce or increase angle
+    // replace AscEmu::Math::Pi in the two lines below to reduce or increase angle
 
-    double left = -1.0 * (M_PI / 2.0);
-    double right = (M_PI / 2.0);
+    double left = -1.0 * (AscEmu::Math::Pi / 2.0);
+    double right = (AscEmu::Math::Pi / 2.0);
 
     return((angle >= left) && (angle <= right));
 }
@@ -4370,7 +4371,7 @@ bool Object::isInBack(Object* target)
     double y = m_position.y - target->GetPositionY();
 
     double angle = atan2(y, x);
-    angle = (angle >= 0.0) ? angle : 2.0 * M_PI + angle;
+    angle = (angle >= 0.0) ? angle : 2.0 * AscEmu::Math::Pi + angle;
 
     // if we are a creature and have a UNIT_FIELD_TARGET then we are always facing them
     if (isCreature() && static_cast<Creature*>(this)->getTargetGuid() != 0)
@@ -4384,16 +4385,16 @@ bool Object::isInBack(Object* target)
     else
         angle -= target->GetOrientation();
 
-    while (angle > M_PI)
-        angle -= 2.0 * M_PI;
+    while (angle > AscEmu::Math::Pi)
+        angle -= 2.0 * AscEmu::Math::Pi;
 
-    while (angle < -M_PI)
-        angle += 2.0 * M_PI;
+    while (angle < -AscEmu::Math::Pi)
+        angle += 2.0 * AscEmu::Math::Pi;
 
     // replace M_H_PI in the two lines below to reduce or increase angle
 
-    double left = -1.0 * (M_H_PI / 2.0);
-    double right = (M_H_PI / 2.0);
+    double left = -1.0 * (AscEmu::Math::HalfPi / 2.0);
+    double right = (AscEmu::Math::HalfPi / 2.0);
 
     return((angle <= left) && (angle >= right));
 }
@@ -4872,7 +4873,7 @@ void Object::getNearPoint(Object* searcher, float& x, float& y, float& z, float 
     float first_z = z;
 
     // loop in a circle to look for a point in LoS using small steps
-    for (float angle = float(M_PI) / 8; angle < float(M_PI) * 2; angle += float(M_PI) / 8)
+    for (float angle = AscEmu::Math::PiF / 8; angle < AscEmu::Math::PiF * 2; angle += AscEmu::Math::PiF / 8)
     {
         getNearPoint2D(searcher, x, y, distance2d, absAngle + angle);
         z = GetPositionZ();

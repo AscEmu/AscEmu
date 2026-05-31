@@ -4,8 +4,9 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "MovementDefines.h"
-#include "LocationVector.h"
+#include "LocationVector.hpp"
 #include "Objects/MovementInfo.hpp"
+#include "Utilities/MathConstants.hpp"
 
 #if VERSION_STRING >= Cata
 #include "Logging/Logger.hpp"
@@ -21,21 +22,21 @@ ChaseRange::ChaseRange(float _minRange, float _minTolerance, float _maxTolerance
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // ChaseAngle
-ChaseAngle::ChaseAngle(float angle, float _tolerance/* = M_PI_4*/) : RelativeAngle(normalizeOrientation(angle)), Tolerance(_tolerance) { }
+ChaseAngle::ChaseAngle(float angle, float _tolerance/* = AscEmu::Math::QuarterPi*/) : RelativeAngle(LocationVector::normalizeOrientation(angle)), Tolerance(_tolerance) { }
 
 float ChaseAngle::upperBound() const
 {
-    return normalizeOrientation(RelativeAngle + Tolerance);
+    return LocationVector::normalizeOrientation(RelativeAngle + Tolerance);
 }
 
 float ChaseAngle::lowerBound() const
 {
-    return normalizeOrientation(RelativeAngle - Tolerance);
+    return LocationVector::normalizeOrientation(RelativeAngle - Tolerance);
 }
 
 bool ChaseAngle::isAngleOkay(float relativeAngle) const
 {
     float const diff = std::abs(relativeAngle - RelativeAngle);
 
-    return (std::min(diff, float(2 * M_PI) - diff) <= Tolerance);
+    return (std::min(diff, float(2 * AscEmu::Math::PiF) - diff) <= Tolerance);
 }

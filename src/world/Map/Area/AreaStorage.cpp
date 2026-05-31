@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "MMapFactory.h"
 #include "Macros/MapsMacros.hpp"
 #include "AreaManagementGlobals.hpp"
-#include "LocationVector.h"
+#include "LocationVector.hpp"
 #include "Logging/Logger.hpp"
 #include "Map/Maps/WorldMap.hpp"
 #include "Movement/MovementDefines.h"

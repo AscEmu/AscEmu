@@ -93,7 +93,7 @@ bool FormationMovementGenerator::doUpdate(Creature* owner, uint32_t diff)
                 {
                     const auto currentWaypoint = leader->getCurrentWaypointInfo().first;
                     if (currentWaypoint == _point1 || currentWaypoint == _point2)
-                        _angle = float(M_PI) * 2 - _angle;
+                        _angle = AscEmu::Math::PiF * 2 - _angle;
                 }
             }
         }

@@ -89,7 +89,7 @@ namespace AscEmu::Packets
                 packet.WriteByteSeq(mi.transport_guid[2]);
                 packet << float(mi.transport_position.x);
                 packet.WriteByteSeq(mi.transport_guid[6]);
-                packet << float(normalizeOrientation(mi.transport_position.o));
+                packet << float(LocationVector::normalizeOrientation(mi.transport_position.o));
                 packet.WriteByteSeq(mi.transport_guid[0]);
                 packet.WriteByteSeq(mi.transport_guid[4]);
                 packet << float(mi.transport_position.y);
@@ -128,7 +128,7 @@ namespace AscEmu::Packets
             packet.WriteByteSeq(guid[4]);
 
             if (mi.status_info.hasOrientation)
-                packet << float(normalizeOrientation(mi.position.o));
+                packet << float(LocationVector::normalizeOrientation(mi.position.o));
 
             packet.WriteByteSeq(guid[2]);
             packet.WriteByteSeq(guid[3]);

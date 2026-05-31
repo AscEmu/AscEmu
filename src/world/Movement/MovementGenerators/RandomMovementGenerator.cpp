@@ -113,7 +113,7 @@ void RandomMovementGenerator<Creature>::setRandomLocation(Creature* owner)
 
     LocationVector position(_reference);
     float distance = Util::getRandomFloat(0.f, _maxWanderDistance);
-    float angle = Util::getRandomFloat(0.f, float(M_PI * 2));
+    float angle = Util::getRandomFloat(0.f, (AscEmu::Math::PiF * 2));
     owner->movePositionToFirstCollision(position, distance, angle);
 
     // Check if the destination is in LOS

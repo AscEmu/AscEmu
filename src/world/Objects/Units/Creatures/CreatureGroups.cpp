@@ -102,7 +102,7 @@ void FormationMgr::loadCreatureFormations()
         if (member.LeaderSpawnId != memberSpawnId)
         {
             member.FollowDist             = fields[2].asFloat();
-            member.FollowAngle            = fields[3].asFloat() * float(M_PI) / 180.0f;
+            member.FollowAngle            = fields[3].asFloat() * AscEmu::Math::PiF / 180.0f;
         }
 
         member.GroupAI                    = fields[4].asUint32();
@@ -269,7 +269,7 @@ void CreatureGroup::leaderStartedMoving()
         if (member == _leader || !member->isAlive() || member->getAIInterface()->isEngaged() || !(pair.second->GroupAI & FLAG_IDLE_IN_FORMATION))
             continue;
 
-        float angle = pair.second->FollowAngle + float(M_PI); // for some reason, someone thought it was a great idea to invert relativ angles...
+        float angle = pair.second->FollowAngle + AscEmu::Math::PiF; // for some reason, someone thought it was a great idea to invert relativ angles...
         float dist = pair.second->FollowDist;
 
         if (!member->hasUnitStateFlag(UNIT_STATE_FOLLOW_FORMATION))

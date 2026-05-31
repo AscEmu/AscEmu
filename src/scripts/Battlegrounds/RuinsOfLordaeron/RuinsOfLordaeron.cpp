@@ -92,7 +92,7 @@ void RuinsOfLordaeron::HookOnAreaTrigger(Player* /*plr*/, uint32_t trigger)
 bool RuinsOfLordaeron::HookHandleRepop(Player* plr)
 {
     LocationVector dest(0, 0, 0, 0);
-    dest.ChangeCoords({ 1286.112061f, 1668.334961f, 39.289127f });
+    dest.changeCoords({ 1286.112061f, 1668.334961f, 39.289127f });
     plr->safeTeleport(m_mapMgr->getBaseMap()->getMapId(), m_mapMgr->getInstanceId(), dest);
     return true;
 }

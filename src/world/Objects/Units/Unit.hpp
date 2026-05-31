@@ -31,6 +31,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Spell/SpellDefines.hpp"
 #include "Spell/Definitions/AuraRemoveMode.hpp"
+#include "Utilities/MathConstants.hpp"
 
 namespace WDB::Structures
 {
@@ -651,7 +652,7 @@ public:
     void followerAdded(AbstractFollower* f) { m_followingMe.insert(f); }
     void followerRemoved(AbstractFollower* f) { m_followingMe.erase(f); }
     void removeAllFollowers();
-    virtual float getFollowAngle() const { return static_cast<float>(M_PI / 2); }
+    virtual float getFollowAngle() const { return AscEmu::Math::HalfPiF; }
 
     MovementManager* getMovementManager() { return i_movementManager.get(); }
     MovementManager const* getMovementManager() const { return i_movementManager.get(); }

@@ -91,7 +91,7 @@ Location MoveSpline::ComputePosition() const
         }
 
         if (splineflags.backward)
-            c.orientation = c.orientation - float(M_PI);
+            c.orientation = c.orientation - AscEmu::Math::PiF;
     }
     return c;
 }

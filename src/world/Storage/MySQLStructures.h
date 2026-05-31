@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/Maps/InstanceDefines.hpp"
 #include "Map/SpawnGroups.hpp"
 #include "Objects/ObjectDefines.hpp"
-#include "LocationVector.h"
+#include "LocationVector.hpp"
 #include <G3D/Quat.h>
 
 // related to table areatriggers

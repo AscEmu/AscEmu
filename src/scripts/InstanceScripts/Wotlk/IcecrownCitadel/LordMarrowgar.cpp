@@ -15,6 +15,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellInfo.hpp"
 #include "Utilities/Narrow.hpp"
 #include "Utilities/Random.hpp"
+#include "Utilities/MathConstants.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Boss: Lord Marrowgar
@@ -309,14 +310,14 @@ void ColdflameAI::OnSummon(Unit* summoner)
         if (LordMarrowgarAI* marrowgarAI = static_cast<LordMarrowgarAI*>(static_cast<Creature*>(summoner)->GetScript()))
         {
             LocationVector const* ownerPos = marrowgarAI->GetLastColdflamePosition();
-            float angle = ownerPos->o / M_PI_FLOAT * 180.0f;
+            float angle = ownerPos->o / AscEmu::Math::PiF * 180.0f;
             MoveTeleport(ownerPos->x , ownerPos->y, ownerPos->z, ownerPos->o);
             // Store last Coldflame Position and add 90 degree to create x pattern
             LocationVector nextPos;
             nextPos.x = ownerPos->x;
             nextPos.y = ownerPos->y;
             nextPos.z = ownerPos->z;
-            nextPos.o = angle + 90 * M_PI_FLOAT / 180.0f;
+            nextPos.o = angle + 90 * AscEmu::Math::PiF / 180.0f;
 
             marrowgarAI->SetLastColdflamePosition(nextPos);
         }
@@ -332,7 +333,7 @@ void ColdflameAI::OnSummon(Unit* summoner)
         }        
         MoveTeleport(summoner->GetPosition());
 
-        getCreature()->SetOrientation(getCreature()->calcAngle(summoner->GetPositionX(), summoner->GetPositionY(), target->GetPositionX(), target->GetPositionY()) * M_PI_FLOAT / 180.0f);
+        getCreature()->SetOrientation(getCreature()->calcAngle(summoner->GetPositionX(), summoner->GetPositionY(), target->GetPositionX(), target->GetPositionY()) * AscEmu::Math::PiF / 180.0f);
     }        
     MoveTeleport(summoner->GetPositionX(), summoner->GetPositionY(),summoner->GetPositionZ(), getCreature()->GetOrientation());
     scriptEvents.addEvent(EVENT_COLDFLAME_TRIGGER, 500);

@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/UpdateMask.h"
 #include "CommonTypes.hpp"
 #include "Server/EventableObject.h"
-#include "CommonDefines.hpp"
 #include "Units/Creatures/CreatureDefines.hpp"
 #include "MovementInfo.hpp"
 #include "Macros/MapsMacros.hpp"
@@ -381,7 +380,7 @@ public:
         void SetOrientation(float o) { m_position.o = o; }
 
         void SetSpawnLocation(float newX, float newY, float newZ, float newOrientation) { m_spawnLocation.changeCoords(newX, newY, newZ, newOrientation); }
-        void SetSpawnLocation(LocationVector loc) { m_spawnLocation.ChangeCoords(loc); }
+        void SetSpawnLocation(LocationVector loc) { m_spawnLocation.changeCoords(loc); }
         const float & GetSpawnX() const { return m_spawnLocation.x; }
         const float & GetSpawnY() const { return m_spawnLocation.y; }
         const float & GetSpawnZ() const { return m_spawnLocation.z; }
@@ -537,15 +536,15 @@ public:
         {
             float dx = x - GetPositionX();
             float dy = y - GetPositionY();
-            return normalizeOrientation(std::atan2(dy, dx));
+            return LocationVector::normalizeOrientation(std::atan2(dy, dx));
             
         }
         float getAbsoluteAngle(LocationVector const& pos) { return getAbsoluteAngle(pos.x, pos.y); }
         float getAbsoluteAngle(Object const* obj) { return getAbsoluteAngle(obj->GetPosition()); }
         float getAbsoluteAngle(LocationVector const* pos) const { return getAbsoluteAngle(pos->x, pos->y); }
-        float toAbsoluteAngle(float relAngle) const { return normalizeOrientation(relAngle + GetOrientation()); }
+        float toAbsoluteAngle(float relAngle) const { return LocationVector::normalizeOrientation(relAngle + GetOrientation()); }
 
-        float toRelativeAngle(float absAngle) const { return normalizeOrientation(absAngle - GetOrientation()); }
+        float toRelativeAngle(float absAngle) const { return LocationVector::normalizeOrientation(absAngle - GetOrientation()); }
         float getRelativeAngle(Object const* obj) { return getRelativeAngle(obj->GetPosition()); }
         float getRelativeAngle(float x, float y) const { return toRelativeAngle(getAbsoluteAngle(x, y)); }
         float getRelativeAngle(LocationVector const& pos) const { return toRelativeAngle(getAbsoluteAngle(pos.x, pos.y)); }
@@ -584,14 +583,14 @@ public:
 
         float CalcDistance(LocationVector & comp)
         {
-            return comp.Distance(m_position);
+            return comp.distance(m_position);
         }
 
         float GetDistance2dSq(Object* obj)
         {
             if (obj->GetMapId() != m_mapId)
                 return 40000.0f;                        // enough for out of range
-            return m_position.Distance2DSq(obj->m_position);
+            return m_position.distance2DSq(obj->m_position);
         }
 
         virtual float getCollisionHeight() const { return 0.0f; }

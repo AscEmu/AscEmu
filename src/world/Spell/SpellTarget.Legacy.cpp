@@ -35,6 +35,7 @@
 #include "Objects/Units/Players/Player.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
 #include "Utilities/Random.hpp"
+#include "Utilities/MathConstants.hpp"
 
 void Spell::FillTargetMap(uint32_t i)
 {
@@ -578,7 +579,7 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
                     return false;
 
                 float r = Util::getRandomFloat(getEffectRadius(0));
-                float ang = Util::getRandomFloat(M_PI_FLOAT * 2);
+                float ang = Util::getRandomFloat(AscEmu::Math::PiF * 2);
                 auto lv = LocationVector();
                 lv.x = m_caster->GetPositionX() + (cosf(ang) * r);
                 lv.y = m_caster->GetPositionY() + (sinf(ang) * r);

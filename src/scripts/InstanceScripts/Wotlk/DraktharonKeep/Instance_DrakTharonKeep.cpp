@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Utilities/Random.hpp"
 #include "Utilities/Util.hpp"
+#include "Utilities/MathConstants.hpp"
 
 class DrakTharonKeepInstanceScript : public InstanceScript
 {
@@ -308,7 +309,7 @@ public:
                 x = -392.416f;
                 y = -724.865f;
                 z = 29.4156f;
-                o = M_PI_FLOAT;
+                o = AscEmu::Math::PiF;
             }
             break;
             case 1:
@@ -317,7 +318,7 @@ public:
                 x = -365.279f;
                 y = -751.087f;
                 z = 29.4156f;
-                o = M_PI_FLOAT;
+                o = AscEmu::Math::PiF;
             }
             break;
             case 2:
@@ -326,7 +327,7 @@ public:
                 x = -365.41f;
                 y = -724.865f;
                 z = 29.4156f;
-                o = M_PI_FLOAT;
+                o = AscEmu::Math::PiF;
             }
             break;
             case 3:
@@ -335,7 +336,7 @@ public:
                 x = -392.286f;
                 y = -751.087f;
                 z = 29.4156f;
-                o = M_PI_FLOAT;
+                o = AscEmu::Math::PiF;
             }
             break;
         }

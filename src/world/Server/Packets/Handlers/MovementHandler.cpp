@@ -28,6 +28,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSessionLog.hpp"
 #include "Spell/Spell.hpp"
 #include "Storage/WDB/WDBStructures.hpp"
+#include "Utilities/MathConstants.hpp"
 
 using namespace AscEmu::Packets;
 
@@ -122,12 +123,12 @@ bool WorldSession::isHackDetectedInMovementData(uint16_t opcode)
 
     // Teleport
     // implement worldConfig.antiHack.isTeleportHackCheckEnabled
-    if (_player->m_position.Distance2DSq({ sessionMovementInfo.position.x, sessionMovementInfo.position.y }) > 3025.0f &&
+    if (_player->m_position.distance2DSq({ sessionMovementInfo.position.x, sessionMovementInfo.position.y }) > 3025.0f &&
         _player->getSpeedRate(TYPE_RUN, true) < 50.0f && !_player->obj_movement_info.transport_guid)
     {
         sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f",
             _player->getSpeedRate(TYPE_RUN, true),
-            std::sqrt(_player->m_position.Distance2DSq({ sessionMovementInfo.position.x, sessionMovementInfo.position.y })));
+            std::sqrt(_player->m_position.distance2DSq({ sessionMovementInfo.position.x, sessionMovementInfo.position.y })));
 
         return true;
     }
@@ -625,7 +626,7 @@ void WorldSession::handleMoveTeleportAckOpcode(WorldPacket& recvPacket)
                 return;
             }
 
-            if (_player->m_position.Distance2DSq(_player->m_sentTeleportPosition) > 625.0f)
+            if (_player->m_position.distance2DSq(_player->m_sentTeleportPosition) > 625.0f)
             {
                 sCheatLog.writefromsession(this, "Used Teleporthack 2, disconnecting.");
                 Disconnect();
@@ -639,13 +640,13 @@ void WorldSession::handleMoveTeleportAckOpcode(WorldPacket& recvPacket)
         for (const auto& summon : _player->getSummonInterface()->getSummons())
         {
             if (!summon->isTotem())
-                summon->SetPosition(_player->GetPositionX() + 2, _player->GetPositionY() + 2, _player->GetPositionZ(), M_PI_FLOAT);
+                summon->SetPosition(_player->GetPositionX() + 2, _player->GetPositionY() + 2, _player->GetPositionZ(), AscEmu::Math::PiF);
         }
 
         if (_player->m_sentTeleportPosition.x != 999999.0f)
         {
             _player->m_position = _player->m_sentTeleportPosition;
-            _player->m_sentTeleportPosition.ChangeCoords({ 999999.0f, 999999.0f, 999999.0f });
+            _player->m_sentTeleportPosition.changeCoords({ 999999.0f, 999999.0f, 999999.0f });
         }
     }
 }

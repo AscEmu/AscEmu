@@ -1094,7 +1094,7 @@ void TrashAI::SetCreatureData(uint32_t type, uint32_t data)
                 addWaypoint(1, node);
             }
 
-            getCreature()->SetSpawnLocation(path[mlastWaypointId].getPositionX(), path[mlastWaypointId].getPositionY(), path[mlastWaypointId].getPositionZ(), float(M_PI));
+            getCreature()->SetSpawnLocation(path[mlastWaypointId].getPositionX(), path[mlastWaypointId].getPositionY(), path[mlastWaypointId].getPositionZ(), AscEmu::Math::PiF);
             
             // Make us Run
             getCreature()->setMoveWalk(false);
