@@ -35,7 +35,7 @@ This file is released under the MIT license. See README-MIT for more information
 #define CREATURE_SPELL_TO_DAZE 1604
 
 /// for the beginners this means 45 degrees
-#define CREATURE_DAZE_TRIGGER_ANGLE M_H_PI
+#define CREATURE_DAZE_TRIGGER_ANGLE AscEmu::Math::HalfPiF
 
 /// minimal level of the target player to daze, from 3.3.0
 #define CREATURE_DAZE_MIN_LEVEL 6

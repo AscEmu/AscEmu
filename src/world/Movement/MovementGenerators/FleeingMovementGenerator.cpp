@@ -180,29 +180,29 @@ void FleeingMovementGenerator<T>::getPoint(T* owner, LocationVector &position)
         if (casterDistance > 0.2f)
             casterAngle = fleeTarget->getAbsoluteAngle(owner);
         else
-            casterAngle = Util::getRandomFloat(0.0f, 2.0f * float(M_PI));
+            casterAngle = Util::getRandomFloat(0.0f, 2.0f * AscEmu::Math::PiF);
     }
     else
     {
         casterDistance = 0.0f;
-        casterAngle = Util::getRandomFloat(0.0f, 2.0f * float(M_PI));
+        casterAngle = Util::getRandomFloat(0.0f, 2.0f * AscEmu::Math::PiF);
     }
 
     float distance, angle;
     if (casterDistance < MIN_QUIET_DISTANCE)
     {
         distance = Util::getRandomFloat(0.4f, 1.3f) * (MIN_QUIET_DISTANCE - casterDistance);
-        angle = casterAngle + Util::getRandomFloat(-float(M_PI) / 8.0f, float(M_PI) / 8.0f);
+        angle = casterAngle + Util::getRandomFloat(-AscEmu::Math::PiF / 8.0f, AscEmu::Math::PiF / 8.0f);
     }
     else if (casterDistance > MAX_QUIET_DISTANCE)
     {
         distance = Util::getRandomFloat(0.4f, 1.0f) * (MAX_QUIET_DISTANCE - MIN_QUIET_DISTANCE);
-        angle = -casterAngle + Util::getRandomFloat(-float(M_PI) / 4.0f, float(M_PI) / 4.0f);
+        angle = -casterAngle + Util::getRandomFloat(-AscEmu::Math::PiF / 4.0f, AscEmu::Math::PiF / 4.0f);
     }
     else // we are inside quiet range
     {
         distance = Util::getRandomFloat(0.6f, 1.2f) * (MAX_QUIET_DISTANCE - MIN_QUIET_DISTANCE);
-        angle = Util::getRandomFloat(0.0f, 2.0f * float(M_PI));
+        angle = Util::getRandomFloat(0.0f, 2.0f * AscEmu::Math::PiF);
     }
 
     owner->movePositionToFirstCollision(position, distance, angle);

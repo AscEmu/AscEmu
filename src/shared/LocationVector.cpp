@@ -205,7 +205,7 @@ void LocationVector::changeCoords(const LocationVector& src)
 
 void LocationVector::changeCoordsOffset(const LocationVector& offset)
 {
-    x = getPositionX() + (offset.getPositionX() * std::cos(getOrientation()) + offset.getPositionY() * std::sin(getOrientation() + float(M_PI)));
+    x = getPositionX() + (offset.getPositionX() * std::cos(getOrientation()) + offset.getPositionY() * std::sin(getOrientation() + AscEmu::Math::PiF));
     y = getPositionY() + (offset.getPositionY() * std::cos(getOrientation()) + offset.getPositionX() * std::sin(getOrientation()));
     z = getPositionZ() + offset.getPositionZ();
     o = getOrientation() + offset.o;

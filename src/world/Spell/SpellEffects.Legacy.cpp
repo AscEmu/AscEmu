@@ -2964,7 +2964,7 @@ void Spell::SpellEffectSummonWild(uint8_t effectIndex)  // Summon Wild
     }
     for (int j = 0; j<damage; j++)
     {
-        float m_fallowAngle = -((float(M_PI) / 2) * j);
+        float m_fallowAngle = -((AscEmu::Math::PiF / 2) * j);
         float tempx = x + (getEffectRadius(effectIndex) * (cosf(m_fallowAngle + m_caster->GetOrientation())));
         float tempy = y + (getEffectRadius(effectIndex) * (sinf(m_fallowAngle + m_caster->GetOrientation())));
 
@@ -3950,7 +3950,7 @@ void Spell::SpellEffectSummonObject(uint8_t effectIndex)
         float posx = 0, posy = 0, posz = 0;
         float dist = Util::getRandomFloat(minDist, maxDist);
 
-        float angle = Util::getRandomFloat(0.0f, 1.0f) * static_cast<float>(M_PI * 35.0f / 180.0f) - static_cast<float>(M_PI * 17.5f / 180.0f);
+        float angle = Util::getRandomFloat(0.0f, 1.0f) * (AscEmu::Math::PiF * 35.0f / 180.0f) - (AscEmu::Math::PiF * 17.5f / 180.0f);
         m_caster->getClosePoint(posx, posy, posz, 0.388999998569489f, dist, angle);
 
         float liquidLevel = VMAP_INVALID_HEIGHT_VALUE;

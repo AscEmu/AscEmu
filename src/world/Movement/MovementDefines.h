@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <optional>
 #include <cstdint>
 #include "CommonTypes.hpp"
+#include "Utilities/MathConstants.hpp"
 
 //! Optional helper class to wrap optional values within.
 template <class T>
@@ -18,9 +19,8 @@ using Optional = std::optional<T>;
 #define INVALID_HEIGHT                  -100000.0f
 #define MAX_FALL_DISTANCE               250000.0f
 #define PET_FOLLOW_DIST                 1.0f
-#define PET_FOLLOW_ANGLE                float(M_PI/2)
+#define PET_FOLLOW_ANGLE                AscEmu::Math::HalfPiF
 #define SPEED_CHARGE                    42.0f // assume it is 25 yard per 0.6 second
-#define M_PI_4                          0.785398163397448309616  // pi/4
 
 enum EventId
 {
@@ -103,9 +103,9 @@ struct SERVER_DECL ChaseRange
 
 struct SERVER_DECL ChaseAngle
 {
-    ChaseAngle(float angle, float _tolerance = M_PI_4);
+    ChaseAngle(float angle, float _tolerance = AscEmu::Math::QuarterPi);
 
-    float RelativeAngle; // we want to be at this angle relative to the target (0 = front, M_PI = back)
+    float RelativeAngle; // we want to be at this angle relative to the target (0 = front, AscEmu::Math::Pi = back)
     float Tolerance;     // but we'll tolerate anything within +- this much
 
     float upperBound() const;

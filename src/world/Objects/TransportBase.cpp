@@ -7,23 +7,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cmath>
 
-float normalizeOrientationTB(float o)
-{
-    if (o < 0)
-    {
-        float mod = o * -1;
-        mod = std::fmod(mod, 2.0f * static_cast<float>(M_PI));
-        mod = -mod + 2.0f * static_cast<float>(M_PI);
-        return mod;
-    }
-    return std::fmod(o, 2.0f * static_cast<float>(M_PI));
-}
-
 void TransportBase::CalculatePassengerPosition(float& x, float& y, float& z, float* o, float transX, float transY, float transZ, float transO)
 {
     float inx = x, iny = y, inz = z;
     if (o)
-        *o = normalizeOrientationTB(transO + *o);
+        *o = LocationVector::normalizeOrientation(transO + *o);
 
     x = transX + inx * std::cos(transO) - iny * std::sin(transO);
     y = transY + iny * std::cos(transO) + inx * std::sin(transO);
@@ -33,7 +21,7 @@ void TransportBase::CalculatePassengerPosition(float& x, float& y, float& z, flo
 void TransportBase::CalculatePassengerOffset(float& x, float& y, float& z, float* o, float transX, float transY, float transZ, float transO)
 {
     if (o)
-        *o = normalizeOrientationTB(*o - transO);
+        *o = LocationVector::normalizeOrientation(*o - transO);
 
     z -= transZ;
     y -= transY;

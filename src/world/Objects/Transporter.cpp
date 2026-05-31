@@ -229,7 +229,7 @@ void Transporter::Update(unsigned long time_passed)
             G3D::Vector3 pos, dir;
             _currentFrame->Spline->evaluate_percent(_currentFrame->Index, t, pos);
             _currentFrame->Spline->evaluate_derivative(_currentFrame->Index, t, dir);
-            UpdatePosition(pos.x, pos.y, pos.z, std::atan2(dir.y, dir.x) + float(M_PI));
+            UpdatePosition(pos.x, pos.y, pos.z, std::atan2(dir.y, dir.x) + AscEmu::Math::PiF);
         }
         else if (justStopped)
         {

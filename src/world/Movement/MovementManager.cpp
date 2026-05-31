@@ -735,7 +735,7 @@ void MovementManager::moveKnockbackFrom(float srcX, float srcY, float speedXY, f
     float max_height = -MovementMgr::computeFallElevation(moveTimeHalf, false, -speedZ);
 
     // Use a mmap raycast to get a valid destination.
-    _owner->movePositionToFirstCollision(dest, dist, _owner->getRelativeAngle(srcX, srcY) + float(M_PI));
+    _owner->movePositionToFirstCollision(dest, dist, _owner->getRelativeAngle(srcX, srcY) + AscEmu::Math::PiF);
 
     MovementMgr::MoveSplineInit init(_owner);
     init.MoveTo(dest.getPositionX(), dest.getPositionY(), dest.getPositionZ(), false);
@@ -795,7 +795,7 @@ void MovementManager::moveJump(float x, float y, float z, float o, float speedXY
 
 void MovementManager::moveCirclePath(float x, float y, float z, float radius, bool clockwise, uint8_t stepCount)
 {
-    float step = 2 * float(M_PI) / stepCount * (clockwise ? -1.0f : 1.0f);
+    float step = 2 * AscEmu::Math::PiF / stepCount * (clockwise ? -1.0f : 1.0f);
     LocationVector const& pos = { x, y, z, 0.0f };
     float angle = pos.getAbsoluteAngle(_owner->GetPositionX(), _owner->GetPositionY());
 

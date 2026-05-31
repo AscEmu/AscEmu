@@ -1952,7 +1952,7 @@ uint8_t Spell::CanCast(bool /*tolerate*/)
                     float posx = 0, posy = 0, posz = 0;
                     float dist = Util::getRandomFloat(minDist, maxDist);
 
-                    float angle = Util::getRandomFloat(0.0f, 1.0f) * static_cast<float>(M_PI * 35.0f / 180.0f) - static_cast<float>(M_PI * 17.5f / 180.0f);
+                    float angle = Util::getRandomFloat(0.0f, 1.0f) * (AscEmu::Math::PiF * 35.0f / 180.0f) - (AscEmu::Math::PiF * 17.5f / 180.0f);
                     m_caster->getClosePoint(posx, posy, posz, 0.388999998569489f, dist, angle);
 
                     float ground = m_caster->getMapHeight(LocationVector(posx, posy, posz));
@@ -2992,7 +2992,7 @@ void Spell::SpellEffectJumpBehindTarget(uint8_t effectIndex)
             return;
         Unit* un = static_cast<Unit*>(uobj);
         float rad = un->getBoundingRadius() + u_caster->getBoundingRadius();
-        float angle = float(un->GetOrientation() + M_PI); //behind
+        float angle = un->GetOrientation() + AscEmu::Math::PiF; //behind
         float x = un->GetPositionX() + cosf(angle) * rad;
         float y = un->GetPositionY() + sinf(angle) * rad;
         float z = un->GetPositionZ();

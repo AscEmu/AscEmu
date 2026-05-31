@@ -2862,7 +2862,7 @@ bool Unit::isSplineEnabled() const
 
 void Unit::jumpTo(float speedXY, float speedZ, bool forward, Optional<LocationVector> dest)
 {
-    float angle = forward ? 0 : static_cast<float>(M_PI);
+    float angle = forward ? 0 : AscEmu::Math::PiF;
     if (dest)
         angle += getRelativeAngle(*dest);
 
@@ -2901,7 +2901,7 @@ void Unit::handleKnockback(Object* object, float horizontal, float vertical)
 
     float angle = calcRadAngle(object->GetPositionX(), object->GetPositionY(), GetPositionX(), GetPositionY());
     if (object == this)
-        angle = static_cast<float>(M_PI + GetOrientation());
+        angle = (AscEmu::Math::PiF + GetOrientation());
 
     float destx, desty, destz;
     if (GetPoint(angle, horizontal, destx, desty, destz, true))

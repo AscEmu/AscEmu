@@ -22,7 +22,7 @@ ChaseRange::ChaseRange(float _minRange, float _minTolerance, float _maxTolerance
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // ChaseAngle
-ChaseAngle::ChaseAngle(float angle, float _tolerance/* = M_PI_4*/) : RelativeAngle(LocationVector::normalizeOrientation(angle)), Tolerance(_tolerance) { }
+ChaseAngle::ChaseAngle(float angle, float _tolerance/* = AscEmu::Math::QuarterPi*/) : RelativeAngle(LocationVector::normalizeOrientation(angle)), Tolerance(_tolerance) { }
 
 float ChaseAngle::upperBound() const
 {

@@ -1572,7 +1572,7 @@ void Player::handleKnockback(Object* object, float horizontal, float vertical)
 
     float angle = calcRadAngle(object->GetPositionX(), object->GetPositionY(), GetPositionX(), GetPositionY());
     if (object == this)
-        angle = static_cast<float>(M_PI + GetOrientation());
+        angle = (AscEmu::Math::PiF + GetOrientation());
 
     float sin = sinf(angle);
     float cos = cosf(angle);

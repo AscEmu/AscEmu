@@ -319,7 +319,7 @@ namespace AscEmu::Packets
                 packet.ReadByteSeq(moveTransGuid[0]);
 
                 if (movementInfo.status_info.hasPitch)
-                    movementInfo.pitch_rate = G3D::wrap(packet.read<float>(), float(-M_PI), float(M_PI));
+                    movementInfo.pitch_rate = G3D::wrap(packet.read<float>(), -AscEmu::Math::PiF, AscEmu::Math::PiF);
 
                 packet.ReadByteSeq(moveTransGuid[4]);
             }

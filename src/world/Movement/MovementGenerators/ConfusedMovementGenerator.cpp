@@ -79,7 +79,7 @@ bool ConfusedMovementGenerator<T>::doUpdate(T* owner, uint32_t diff)
 
         LocationVector destination(_x, _y, _z);
         float distance = 4.0f * Util::getRandomFloat(0.0f, 1.0f) - 2.0f;
-        float angle = Util::getRandomFloat(0.0f, 1.0f) * float(M_PI) * 2.0f;
+        float angle = Util::getRandomFloat(0.0f, 1.0f) * AscEmu::Math::PiF * 2.0f;
         owner->movePositionToFirstCollision(destination, distance, angle);
 
         // Check if the destination is in LOS
