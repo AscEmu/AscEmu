@@ -267,7 +267,7 @@ void Database::destroyQueryBufferConnection()
 
 void Database::dbRunAllQueries()
 {
-    while (auto query = queries_queue.pop())
+    while (auto query = queries_queue.tryPop())
     {
         createDbConnection();
         _SendQuery(m_dbConnection, query.value().data(), false);
@@ -289,7 +289,7 @@ void Database::queryBufferThreadShutdown() {
 
 void Database::queryBufferRunAllQueries()
 {
-    while (auto query = query_buffer.pop())
+    while (auto query = query_buffer.tryPop())
     {
         createQueryBufferConnection();
         PerformQueryBuffer(query.value().get(), m_queryBufferConnection);

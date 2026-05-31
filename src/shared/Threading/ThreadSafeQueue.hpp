@@ -12,7 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <queue>
 #include <utility>
 
-template<class T>
+template <typename T>
 class ThreadSafeQueue
 {
 public:
@@ -28,21 +28,16 @@ public:
     void push(T element)
     {
         {
-            std::lock_guard lock{m_lock};
+            std::lock_guard lock{ m_lock };
             m_queue.push(std::move(element));
         }
 
         m_condition.notify_one();
     }
 
-    void pushWait(T element)
+    [[nodiscard]] std::optional<T> tryPop()
     {
-        push(std::move(element));
-    }
-
-    [[nodiscard]] std::optional<T> pop()
-    {
-        std::lock_guard lock{m_lock};
+        std::lock_guard lock{ m_lock };
 
         if (m_queue.empty())
             return std::nullopt;
@@ -53,14 +48,14 @@ public:
         return element;
     }
 
-    T popWait()
+    T waitPop()
     {
-        std::unique_lock lock{m_lock};
+        std::unique_lock lock{ m_lock };
 
         m_condition.wait(lock, [this]
-        {
-            return !m_queue.empty();
-        });
+            {
+                return !m_queue.empty();
+            });
 
         T element = std::move(m_queue.front());
         m_queue.pop();
@@ -68,9 +63,9 @@ public:
         return element;
     }
 
-    [[nodiscard]] std::optional<T> front() const
+    [[nodiscard]] std::optional<T> tryFront() const
     {
-        std::lock_guard lock{m_lock};
+        std::lock_guard lock{ m_lock };
 
         if (m_queue.empty())
             return std::nullopt;
@@ -78,68 +73,45 @@ public:
         return m_queue.front();
     }
 
+    bool discardFront()
+    {
+        std::lock_guard lock{ m_lock };
+
+        if (m_queue.empty())
+            return false;
+
+        m_queue.pop();
+        return true;
+    }
+
     void clear()
     {
-        std::lock_guard lock{m_lock};
+        std::lock_guard lock{ m_lock };
 
         std::queue<T> empty;
         m_queue.swap(empty);
     }
 
+    [[nodiscard]] bool empty() const
+    {
+        std::lock_guard lock{ m_lock };
+        return m_queue.empty();
+    }
+
     [[nodiscard]] bool hasItems() const
     {
-        std::lock_guard lock{m_lock};
-        return !m_queue.empty();
-    }
-
-    [[nodiscard]] std::size_t getSize() const
-    {
-        std::lock_guard lock{m_lock};
-        return m_queue.size();
-    }
-
-    // Compatibility helpers for old LockedQueue API.
-    void add(const T& element)
-    {
-        push(element);
-    }
-
-    void add(T&& element)
-    {
-        push(std::move(element));
-    }
-
-    [[nodiscard]] T next()
-    {
-        auto element = pop();
-
-        if (element)
-            return std::move(*element);
-
-        return T{};
+        return !empty();
     }
 
     [[nodiscard]] std::size_t size() const
     {
-        return getSize();
+        std::lock_guard lock{ m_lock };
+        return m_queue.size();
     }
 
-    [[nodiscard]] T get_first_element() const
+    [[nodiscard]] std::size_t getSize() const
     {
-        auto element = front();
-
-        if (element)
-            return *element;
-
-        return T{};
-    }
-
-    void pop_front()
-    {
-        std::lock_guard lock{m_lock};
-
-        if (!m_queue.empty())
-            m_queue.pop();
+        return size();
     }
 
 private:
