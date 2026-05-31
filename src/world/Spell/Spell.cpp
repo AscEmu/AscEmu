@@ -4621,14 +4621,25 @@ void Spell::sendSpellStart()
         getSpellInfo()->getSpellVisual(1) != 0 || (!m_triggeredSpell && m_triggeredByAura == nullptr)))
         return;
 
+    uint32_t castFlags = 0x02; //trajectory
+    if (((m_triggeredSpell && !getSpellInfo()->isRangedAutoRepeat() || m_triggeredByAura)))
+        castFlags |= 0x01; // pending
+
+    if ((m_caster->GetNewGUID().isPlayer()|| (m_caster->GetNewGUID().isUnit() && m_caster->GetNewGUID().isPet()))
+        && getSpellInfo()->getPowerType() != POWER_TYPE_HEALTH)
+        castFlags |= 0x800; // power left
+
+    if (getSpellInfo()->getRuneCostID() && getSpellInfo()->getPowerType() == POWER_TYPE_RUNES)
+        castFlags |= 0x40000;   // runes
+
     WoWGuid casterGuid = i_caster ? i_caster ->getGuid() : m_caster->getGuid();
     WoWGuid casterUnitGuid = m_caster->getGuid();
-    WoWGuid targetGuid = m_targets.getGameObjectTargetGuid();
+    WoWGuid targetGuid = m_targets.getUnitTargetGuid();
     WoWGuid itemTargetGuid = m_targets.getItemTargetGuid();
     WoWGuid unkGuid = 0;
     bool hasDestLocation = (m_targets.getTargetMask() & TARGET_FLAG_DEST_LOCATION) && m_targets.getDestination().isSet();
     bool hasSourceLocation = (m_targets.getTargetMask() & TARGET_FLAG_SOURCE_LOCATION) && m_targets.getDestination().isSet();
-    bool hasTargetString = false;// m_targets.getTargetMask()& TARGET_FLAG_STRING;
+    bool hasTargetString = m_targets.getTargetMask() & TARGET_FLAG_STRING;
     bool hasPredictedHeal = false;
     bool hasPredictedType = false;
     bool hasTargetMask = m_targets.getTargetMask() != 0;
@@ -4639,33 +4650,25 @@ void Spell::sendSpellStart()
     bool hasAmmoInventoryType = false;
     bool hasAmmoDisplayId = false;
     uint8_t runeCooldownPassedCount = 0;
-    uint8_t predictedPowerCount = 0;
+    uint8_t predictedPowerCount = castFlags & 0x800 ? 1 : 0;
 
     WorldPacket data(SMSG_SPELL_START, 25);
 
-    data.writeBits(0, 24); // Miss Count (not used currently in SMSG_SPELL_START)
+    data.writeBits(0, 24);
     data.writeBit(casterGuid[5]);
 
-    //for (uint32_t i = 0; i < missCount; ++i)
-    //{
-    //}
-
-    data.writeBit(1); // Unk read int8_t
+    data.writeBit(1); // Unk read
     data.writeBit(0); // Fake Bit
     data.writeBit(casterUnitGuid[4]);
     data.writeBit(casterGuid[2]);
-    data.writeBits(runeCooldownPassedCount, 3); // Rune Cooldown Passed Count
+    data.writeBits(runeCooldownPassedCount, 3);
     data.writeBit(casterUnitGuid[2]);
     data.writeBit(casterUnitGuid[6]);
-    data.writeBits(0, 25); // MissType Count (not used currently in SMSG_SPELL_START)
+    data.writeBits(0, 25);
     data.writeBits(0, 13); // Unknown Bits
     data.writeBit(casterGuid[4]);
-    data.writeBits(0, 24); // Hit Count (not used currently in SMSG_SPELL_START)
+    data.writeBits(0, 24); // Hit Count
     data.writeBit(casterUnitGuid[7]);
-
-    //for (uint32_t i = 0; i < hitCount; ++i)
-    //{
-    //}
 
     data.writeBit(hasSourceLocation);
     data.writeBits(predictedPowerCount, 21);
@@ -4811,14 +4814,19 @@ void Spell::sendSpellStart()
         data << uint32_t(0);
     }
 
+    if (predictedPowerCount > 0)
+    {
+        data << uint8_t(getSpellInfo()->getPowerType());
+        data << int32_t(u_caster ? u_caster->getPower(getSpellInfo()->getPowerType()) : 0);
+    }
 
-    data << uint32_t(0);
+    data << uint32_t(castFlags);
 
     data.WriteByteSeq(casterGuid[5]);
     data.WriteByteSeq(casterGuid[7]);
     data.WriteByteSeq(casterGuid[1]);
 
-    data << uint8_t(1);
+    data << uint8_t(extra_cast_number);
 
     data.WriteByteSeq(casterUnitGuid[7]);
     data.WriteByteSeq(casterUnitGuid[0]);
@@ -4844,6 +4852,8 @@ void Spell::sendSpellStart()
     data.WriteByteSeq(casterUnitGuid[5]);
     data.WriteByteSeq(casterUnitGuid[2]);
 
+    if (hasTargetString)
+        data.WriteString(m_targets.getStringTarget());
 
     if (hasPredictedType)
         data << uint8_t(0);
