@@ -98,7 +98,7 @@ namespace AscEmu::Packets
 
             if (hasTransportData)
             {
-                packet << float(normalizeOrientation(mi.transport_position.o));
+                packet << float(LocationVector::normalizeOrientation(mi.transport_position.o));
                 packet << uint32_t(mi.transport_time);
                 packet.WriteByteSeq(mi.transport_guid[5]);
                 packet.WriteByteSeq(mi.transport_guid[4]);
@@ -138,7 +138,7 @@ namespace AscEmu::Packets
             packet.WriteByteSeq(guid[4]);
 
             if (mi.status_info.hasOrientation)
-                packet << float(normalizeOrientation(mi.position.o));
+                packet << float(LocationVector::normalizeOrientation(mi.position.o));
 
             packet.WriteByteSeq(guid[3]);
 #else // TODO: Mop

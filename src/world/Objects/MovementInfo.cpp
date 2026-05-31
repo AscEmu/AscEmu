@@ -2771,7 +2771,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (status_info.hasFallData) data.writeBit(status_info.hasFallDirection);
             data.writeBit(!status_info.hasOrientation);
             if (flags2) data.writeBits(flags2, 12);
-            if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
+            if (status_info.hasOrientation) data << float(LocationVector::normalizeOrientation(position.o));
             if (status_info.hasFallData && status_info.hasFallDirection) data << float(jump_info.cosAngle);
             if (status_info.hasFallData && status_info.hasFallDirection) data << float(jump_info.xyspeed);
             if (status_info.hasFallData && status_info.hasFallDirection) data << float(jump_info.sinAngle);
@@ -2792,7 +2792,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData) data << float(transport_position.x);
             if (hasTransportData) data.WriteByteSeq(transport_guid[2]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[0]);
-            if (hasTransportData) data << float(normalizeOrientation(transport_position.o));
+            if (hasTransportData) data << float(LocationVector::normalizeOrientation(transport_position.o));
             if (hasTransportData) data << uint32_t(transport_time);
             if (hasTransportData) data.WriteByteSeq(transport_guid[4]);
             if (hasTransportData && status_info.hasTransportTime2) data << uint32_t(transport_time2);
@@ -2893,7 +2893,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
                 data.WriteByteSeq(transport_guid[5]);
                 data << float(transport_position.x);
                 data.WriteByteSeq(transport_guid[1]);
-                data << float(normalizeOrientation(transport_position.o));
+                data << float(LocationVector::normalizeOrientation(transport_position.o));
                 data.WriteByteSeq(transport_guid[2]);
 
                 if (status_info.hasTransportTime2)
@@ -2923,7 +2923,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             data.WriteByteSeq(guid[0]);
 
             if (status_info.hasOrientation)
-                data << float(normalizeOrientation(position.o));
+                data << float(LocationVector::normalizeOrientation(position.o));
 
             data.WriteByteSeq(guid[1]);
 #else // Mop
@@ -3098,7 +3098,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData) data << float(transport_position.x);
             if (hasTransportData && status_info.hasTransportTime2) data << uint32_t(transport_time2);
             if (hasTransportData) data.WriteByteSeq(transport_guid[4]);
-            if (hasTransportData) data << float(normalizeOrientation(transport_position.o));
+            if (hasTransportData) data << float(LocationVector::normalizeOrientation(transport_position.o));
             if (hasTransportData) data << int8_t(transport_seat);
             if (hasTransportData) data.WriteByteSeq(transport_guid[7]);
             if (hasTransportData) data << uint32_t(transport_time);
@@ -3111,7 +3111,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (status_info.hasFallData && status_info.hasFallDirection) data << float(jump_info.cosAngle);
             if (status_info.hasFallData) data << float(jump_info.velocity);
             if (status_info.hasFallData) data << uint32_t(fall_time);
-            if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
+            if (status_info.hasOrientation) data << float(LocationVector::normalizeOrientation(position.o));
             if (status_info.hasSplineElevation) data << float(spline_elevation);
 
         } break;
@@ -3170,7 +3170,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData) data.WriteByteSeq(transport_guid[1]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[4]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[7]);
-            if (hasTransportData) data << float(normalizeOrientation(transport_position.o));
+            if (hasTransportData) data << float(LocationVector::normalizeOrientation(transport_position.o));
             if (hasTransportData) data.WriteByteSeq(transport_guid[2]);
             if (hasTransportData) data << float(transport_position.x);
             if (hasTransportData) data.WriteByteSeq(transport_guid[5]);
@@ -3182,7 +3182,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData && status_info.hasTransportTime2) data << uint32_t(transport_time2);
             if (status_info.hasSplineElevation) data << float(spline_elevation);
             if (status_info.hasPitch) data << float(pitch_rate);
-            if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
+            if (status_info.hasOrientation) data << float(LocationVector::normalizeOrientation(position.o));
             if (status_info.hasTimeStamp) data << Util::getMSTime();
 
         } break;
@@ -3246,13 +3246,13 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData) data << float(transport_position.y);
             if (hasTransportData) data.WriteByteSeq(transport_guid[5]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[1]);
-            if (hasTransportData) data << float(normalizeOrientation(transport_position.o));
+            if (hasTransportData) data << float(LocationVector::normalizeOrientation(transport_position.o));
             if (hasTransportData) data << uint32_t(transport_time);
             if (hasTransportData) data.WriteByteSeq(transport_guid[6]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[4]);
             if (hasTransportData) data << float(transport_position.x);
             if (status_info.hasTimeStamp) data << Util::getMSTime();
-            if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
+            if (status_info.hasOrientation) data << float(LocationVector::normalizeOrientation(position.o));
             if (status_info.hasPitch) data << float(pitch_rate);
             if (status_info.hasSplineElevation) data << float(spline_elevation);
 
@@ -3305,7 +3305,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData) data.WriteByteSeq(transport_guid[1]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[6]);
             if (hasTransportData) data << float(transport_position.y);
-            if (hasTransportData) data << float(normalizeOrientation(transport_position.o));
+            if (hasTransportData) data << float(LocationVector::normalizeOrientation(transport_position.o));
             if (hasTransportData) data.WriteByteSeq(transport_guid[0]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[2]);
             if (hasTransportData) data << int8_t(transport_seat);
@@ -3318,7 +3318,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData) data << float(transport_position.z);
             if (hasTransportData) data.WriteByteSeq(transport_guid[3]);
             if (status_info.hasPitch) data << float(pitch_rate);
-            if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
+            if (status_info.hasOrientation) data << float(LocationVector::normalizeOrientation(position.o));
             if (status_info.hasFallData && status_info.hasFallDirection) data << float(jump_info.cosAngle);
             if (status_info.hasFallData && status_info.hasFallDirection) data << float(jump_info.sinAngle);
             if (status_info.hasFallData && status_info.hasFallDirection) data << float(jump_info.xyspeed);
@@ -3383,7 +3383,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData) data << int8_t(transport_seat);
             if (hasTransportData) data << float(transport_position.z);
             if (hasTransportData) data.WriteByteSeq(transport_guid[4]);
-            if (hasTransportData) data << float(normalizeOrientation(transport_position.o));
+            if (hasTransportData) data << float(LocationVector::normalizeOrientation(transport_position.o));
             if (hasTransportData) data.WriteByteSeq(transport_guid[2]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[6]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[1]);
@@ -3395,7 +3395,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData) data.WriteByteSeq(transport_guid[7]);
             if (status_info.hasTimeStamp) data << Util::getMSTime();
             if (status_info.hasPitch) data << float(pitch_rate);
-            if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
+            if (status_info.hasOrientation) data << float(LocationVector::normalizeOrientation(position.o));
             if (status_info.hasSplineElevation) data << float(spline_elevation);
 
         } break;
@@ -3450,7 +3450,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData) data.WriteByteSeq(transport_guid[6]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[2]);
             if (hasTransportData) data << int8_t(transport_seat);
-            if (hasTransportData) data << float(normalizeOrientation(transport_position.o));
+            if (hasTransportData) data << float(LocationVector::normalizeOrientation(transport_position.o));
             if (hasTransportData) data.WriteByteSeq(transport_guid[5]);
             if (hasTransportData && status_info.hasTransportTime3) data << uint32_t(transport_time3);
             if (hasTransportData) data << float(transport_position.z);
@@ -3465,7 +3465,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (status_info.hasFallData) data << uint32_t(fall_time);
             if (status_info.hasFallData) data << float(jump_info.velocity);
             if (status_info.hasPitch) data << float(pitch_rate);
-            if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
+            if (status_info.hasOrientation) data << float(LocationVector::normalizeOrientation(position.o));
             if (status_info.hasSplineElevation) data << float(spline_elevation);
             if (status_info.hasTimeStamp) data << Util::getMSTime();
 
@@ -3527,11 +3527,11 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData) data.WriteByteSeq(transport_guid[3]);
             if (hasTransportData && status_info.hasTransportTime2) data << uint32_t(transport_time2);
             if (hasTransportData) data << float(transport_position.x);
-            if (hasTransportData) data << float(normalizeOrientation(transport_position.o));
+            if (hasTransportData) data << float(LocationVector::normalizeOrientation(transport_position.o));
             if (hasTransportData) data.WriteByteSeq(transport_guid[5]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[6]);
             if (status_info.hasTimeStamp) data << Util::getMSTime();
-            if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
+            if (status_info.hasOrientation) data << float(LocationVector::normalizeOrientation(position.o));
             if (status_info.hasPitch) data << float(pitch_rate);
             if (status_info.hasSplineElevation) data << float(spline_elevation);
             if (status_info.hasFallData && status_info.hasFallDirection) data << float(jump_info.cosAngle);
@@ -3595,7 +3595,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData) data.WriteByteSeq(transport_guid[4]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[5]);
             if (hasTransportData) data << uint32_t(transport_time);
-            if (hasTransportData) data << float(normalizeOrientation(transport_position.o));
+            if (hasTransportData) data << float(LocationVector::normalizeOrientation(transport_position.o));
             if (hasTransportData) data << float(transport_position.x);
             if (hasTransportData) data.WriteByteSeq(transport_guid[0]);
             if (hasTransportData) data << float(transport_position.y);
@@ -3607,7 +3607,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (status_info.hasFallData) data << uint32_t(fall_time);
             if (status_info.hasFallData) data << float(jump_info.velocity);
             if (status_info.hasSplineElevation) data << float(spline_elevation);
-            if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
+            if (status_info.hasOrientation) data << float(LocationVector::normalizeOrientation(position.o));
             if (status_info.hasPitch) data << float(pitch_rate);
             if (status_info.hasTimeStamp) data << Util::getMSTime();
 
@@ -3662,7 +3662,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData) data << int8_t(transport_seat);
             if (hasTransportData) data.WriteByteSeq(transport_guid[2]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[3]);
-            if (hasTransportData) data << float(normalizeOrientation(transport_position.o));
+            if (hasTransportData) data << float(LocationVector::normalizeOrientation(transport_position.o));
             if (hasTransportData && status_info.hasTransportTime2) data << uint32_t(transport_time2);
             if (hasTransportData && status_info.hasTransportTime3) data << uint32_t(transport_time3);
             if (hasTransportData) data.WriteByteSeq(transport_guid[7]);
@@ -3680,7 +3680,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (status_info.hasFallData) data << float(jump_info.velocity);
             if (status_info.hasTimeStamp) data << Util::getMSTime();
             if (status_info.hasPitch) data << float(pitch_rate);
-            if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
+            if (status_info.hasOrientation) data << float(LocationVector::normalizeOrientation(position.o));
 
         } break;
         case MSG_MOVE_START_ASCEND:
@@ -3732,7 +3732,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData) data.WriteByteSeq(transport_guid[4]);
             if (hasTransportData) data << int8_t(transport_seat);
             if (hasTransportData) data.WriteByteSeq(transport_guid[2]);
-            if (hasTransportData) data << float(normalizeOrientation(transport_position.o));
+            if (hasTransportData) data << float(LocationVector::normalizeOrientation(transport_position.o));
             if (hasTransportData) data << float(transport_position.y);
             if (hasTransportData) data.WriteByteSeq(transport_guid[7]);
             if (hasTransportData && status_info.hasTransportTime2) data << uint32_t(transport_time2);
@@ -3748,7 +3748,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (status_info.hasFallData && status_info.hasFallDirection) data << float(jump_info.xyspeed);
             if (status_info.hasFallData) data << uint32_t(fall_time);
             if (status_info.hasFallData) data << float(jump_info.velocity);
-            if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
+            if (status_info.hasOrientation) data << float(LocationVector::normalizeOrientation(position.o));
             if (status_info.hasPitch) data << float(pitch_rate);
             if (status_info.hasTimeStamp) data << Util::getMSTime();
             if (status_info.hasSplineElevation) data << float(spline_elevation);
@@ -3813,7 +3813,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData) data.WriteByteSeq(transport_guid[3]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[5]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[2]);
-            if (hasTransportData) data << float(normalizeOrientation(transport_position.o));
+            if (hasTransportData) data << float(LocationVector::normalizeOrientation(transport_position.o));
             if (hasTransportData) data.WriteByteSeq(transport_guid[0]);
             if (status_info.hasFallData) data << uint32_t(fall_time);
             if (status_info.hasFallData && status_info.hasFallDirection) data << float(jump_info.sinAngle);
@@ -3821,7 +3821,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (status_info.hasFallData && status_info.hasFallDirection) data << float(jump_info.xyspeed);
             if (status_info.hasFallData) data << float(jump_info.velocity);
             if (status_info.hasTimeStamp) data << Util::getMSTime();
-            if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
+            if (status_info.hasOrientation) data << float(LocationVector::normalizeOrientation(position.o));
             if (status_info.hasSplineElevation) data << float(spline_elevation);
 
         } break;
@@ -3876,7 +3876,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData) data.WriteByteSeq(transport_guid[3]);
             if (hasTransportData) data << uint32_t(transport_time);
             if (hasTransportData) data << float(transport_position.x);
-            if (hasTransportData) data << float(normalizeOrientation(transport_position.o));
+            if (hasTransportData) data << float(LocationVector::normalizeOrientation(transport_position.o));
             if (hasTransportData && status_info.hasTransportTime3) data << uint32_t(transport_time3);
             if (hasTransportData) data.WriteByteSeq(transport_guid[6]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[5]);
@@ -3891,7 +3891,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (status_info.hasFallData && status_info.hasFallDirection) data << float(jump_info.sinAngle);
             if (status_info.hasFallData) data << float(jump_info.velocity);
             if (status_info.hasFallData) data << uint32_t(fall_time);
-            if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
+            if (status_info.hasOrientation) data << float(LocationVector::normalizeOrientation(position.o));
             if (status_info.hasTimeStamp) data << Util::getMSTime();
             if (status_info.hasSplineElevation) data << float(spline_elevation);
 
@@ -3955,7 +3955,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData && status_info.hasTransportTime2) data << uint32_t(transport_time2);
             if (hasTransportData) data << float(transport_position.x);
             if (hasTransportData) data.WriteByteSeq(transport_guid[0]);
-            if (hasTransportData) data << float(normalizeOrientation(transport_position.o));
+            if (hasTransportData) data << float(LocationVector::normalizeOrientation(transport_position.o));
             if (status_info.hasFallData) data << float(jump_info.velocity);
             if (status_info.hasFallData && status_info.hasFallDirection) data << float(jump_info.cosAngle);
             if (status_info.hasFallData && status_info.hasFallDirection) data << float(jump_info.xyspeed);
@@ -3963,7 +3963,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (status_info.hasFallData) data << uint32_t(fall_time);
             if (status_info.hasTimeStamp) data << Util::getMSTime();
             if (status_info.hasPitch) data << float(pitch_rate);
-            if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
+            if (status_info.hasOrientation) data << float(LocationVector::normalizeOrientation(position.o));
             if (status_info.hasSplineElevation) data << float(spline_elevation);
 
         } break;
@@ -4018,7 +4018,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData) data.WriteByteSeq(transport_guid[6]);
             if (hasTransportData && status_info.hasTransportTime2) data << uint32_t(transport_time2);
             if (hasTransportData && status_info.hasTransportTime3) data << uint32_t(transport_time3);
-            if (hasTransportData) data << float(normalizeOrientation(transport_position.o));
+            if (hasTransportData) data << float(LocationVector::normalizeOrientation(transport_position.o));
             if (hasTransportData) data.WriteByteSeq(transport_guid[3]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[4]);
             if (hasTransportData) data << int8_t(transport_seat);
@@ -4035,7 +4035,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (status_info.hasPitch) data << float(pitch_rate);
             if (status_info.hasSplineElevation) data << float(spline_elevation);
             if (status_info.hasTimeStamp) data << Util::getMSTime();
-            if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
+            if (status_info.hasOrientation) data << float(LocationVector::normalizeOrientation(position.o));
 
         } break;
 
@@ -4098,14 +4098,14 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData) data << int8_t(transport_seat);
             if (hasTransportData) data.WriteByteSeq(transport_guid[2]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[7]);
-            if (hasTransportData) data << float(normalizeOrientation(transport_position.o));
+            if (hasTransportData) data << float(LocationVector::normalizeOrientation(transport_position.o));
             if (status_info.hasFallData && status_info.hasFallDirection) data << float(jump_info.sinAngle);
             if (status_info.hasFallData && status_info.hasFallDirection) data << float(jump_info.xyspeed);
             if (status_info.hasFallData && status_info.hasFallDirection) data << float(jump_info.cosAngle);
             if (status_info.hasFallData) data << float(jump_info.velocity);
             if (status_info.hasFallData) data << uint32_t(fall_time);
             if (status_info.hasPitch) data << float(pitch_rate);
-            if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
+            if (status_info.hasOrientation) data << float(LocationVector::normalizeOrientation(position.o));
             if (status_info.hasSplineElevation) data << float(spline_elevation);
             if (status_info.hasTimeStamp) data << Util::getMSTime();
 
@@ -4161,7 +4161,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData) data.WriteByteSeq(transport_guid[0]);
             if (hasTransportData) data << uint32_t(transport_time);
             if (hasTransportData) data << float(transport_position.z);
-            if (hasTransportData) data << float(normalizeOrientation(transport_position.o));
+            if (hasTransportData) data << float(LocationVector::normalizeOrientation(transport_position.o));
             if (hasTransportData) data.WriteByteSeq(transport_guid[7]);
             if (hasTransportData && status_info.hasTransportTime2) data << uint32_t(transport_time2);
             if (hasTransportData) data << int8_t(transport_seat);
@@ -4175,7 +4175,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (status_info.hasFallData && status_info.hasFallDirection) data << float(jump_info.sinAngle);
             if (status_info.hasFallData && status_info.hasFallDirection) data << float(jump_info.xyspeed);
             if (status_info.hasFallData) data << float(jump_info.velocity);
-            if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
+            if (status_info.hasOrientation) data << float(LocationVector::normalizeOrientation(position.o));
             if (status_info.hasSplineElevation) data << float(spline_elevation);
             if (status_info.hasPitch) data << float(pitch_rate);
             if (status_info.hasTimeStamp) data << Util::getMSTime();
@@ -4235,7 +4235,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData) data.WriteByteSeq(transport_guid[2]);
             if (hasTransportData && status_info.hasTransportTime2) data << uint32_t(transport_time2);
             if (hasTransportData) data << float(transport_position.x);
-            if (hasTransportData) data << float(normalizeOrientation(transport_position.o));
+            if (hasTransportData) data << float(LocationVector::normalizeOrientation(transport_position.o));
             if (hasTransportData) data.WriteByteSeq(transport_guid[6]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[3]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[1]);
@@ -4248,7 +4248,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData) data << int8_t(transport_seat);
             if (hasTransportData) data.WriteByteSeq(transport_guid[7]);
             if (status_info.hasSplineElevation) data << float(spline_elevation);
-            if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
+            if (status_info.hasOrientation) data << float(LocationVector::normalizeOrientation(position.o));
             if (status_info.hasPitch) data << float(pitch_rate);
 
         } break;
@@ -4298,7 +4298,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             data.WriteByteSeq(guid[4]);
             if (hasTransportData) data << float(transport_position.z);
             if (hasTransportData) data << int8_t(transport_seat);
-            if (hasTransportData) data << float(normalizeOrientation(transport_position.o));
+            if (hasTransportData) data << float(LocationVector::normalizeOrientation(transport_position.o));
             if (hasTransportData) data.WriteByteSeq(transport_guid[4]);
             if (hasTransportData) data << float(transport_position.y);
             if (hasTransportData) data << uint32_t(transport_time);
@@ -4312,7 +4312,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData) data.WriteByteSeq(transport_guid[2]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[0]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[6]);
-            if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
+            if (status_info.hasOrientation) data << float(LocationVector::normalizeOrientation(position.o));
             if (status_info.hasFallData) data << float(jump_info.velocity);
             if (status_info.hasFallData) data << uint32_t(fall_time);
             if (status_info.hasFallData && status_info.hasFallDirection) data << float(jump_info.xyspeed);
@@ -4373,7 +4373,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData && status_info.hasTransportTime2) data << uint32_t(transport_time2);
             if (hasTransportData) data.WriteByteSeq(transport_guid[4]);
             if (hasTransportData) data << float(transport_position.z);
-            if (hasTransportData) data << float(normalizeOrientation(transport_position.o));
+            if (hasTransportData) data << float(LocationVector::normalizeOrientation(transport_position.o));
             if (hasTransportData) data.WriteByteSeq(transport_guid[2]);
             if (hasTransportData && status_info.hasTransportTime3) data << uint32_t(transport_time3);
             if (hasTransportData) data.WriteByteSeq(transport_guid[3]);
@@ -4389,7 +4389,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (status_info.hasFallData) data << uint32_t(fall_time);
             if (status_info.hasFallData) data << float(jump_info.velocity);
             if (status_info.hasSplineElevation) data << float(spline_elevation);
-            if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
+            if (status_info.hasOrientation) data << float(LocationVector::normalizeOrientation(position.o));
             if (status_info.hasTimeStamp) data << Util::getMSTime();
             if (status_info.hasPitch) data << float(pitch_rate);
 
@@ -4441,7 +4441,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData) data.WriteByteSeq(transport_guid[4]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[3]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[6]);
-            if (hasTransportData) data << float(normalizeOrientation(transport_position.o));
+            if (hasTransportData) data << float(LocationVector::normalizeOrientation(transport_position.o));
             if (hasTransportData) data.WriteByteSeq(transport_guid[1]);
             if (hasTransportData && status_info.hasTransportTime3) data << uint32_t(transport_time3);
             if (hasTransportData) data << uint32_t(transport_time);
@@ -4462,7 +4462,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (status_info.hasPitch) data << float(pitch_rate);
             if (status_info.hasSplineElevation) data << float(spline_elevation);
             if (status_info.hasTimeStamp) data << Util::getMSTime();
-            if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
+            if (status_info.hasOrientation) data << float(LocationVector::normalizeOrientation(position.o));
 
         } break;
         case MSG_MOVE_SET_RUN_MODE:
@@ -4519,7 +4519,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData) data << float(transport_position.z);
             if (hasTransportData) data.WriteByteSeq(transport_guid[2]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[7]);
-            if (hasTransportData) data << float(normalizeOrientation(transport_position.o));
+            if (hasTransportData) data << float(LocationVector::normalizeOrientation(transport_position.o));
             if (hasTransportData) data.WriteByteSeq(transport_guid[4]);
             if (hasTransportData) data << uint32_t(transport_time);
             if (hasTransportData && status_info.hasTransportTime3) data << uint32_t(transport_time3);
@@ -4533,7 +4533,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (status_info.hasFallData) data << float(jump_info.velocity);
             if (status_info.hasSplineElevation) data << float(spline_elevation);
             if (status_info.hasTimeStamp) data << Util::getMSTime();
-            if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
+            if (status_info.hasOrientation) data << float(LocationVector::normalizeOrientation(position.o));
 
         } break;
         case MSG_MOVE_SET_WALK_MODE:
@@ -4590,7 +4590,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData) data << uint32_t(transport_time);
             if (hasTransportData) data.WriteByteSeq(transport_guid[4]);
             if (hasTransportData && status_info.hasTransportTime2) data << uint32_t(transport_time2);
-            if (hasTransportData) data << float(normalizeOrientation(transport_position.o));
+            if (hasTransportData) data << float(LocationVector::normalizeOrientation(transport_position.o));
             if (hasTransportData) data << float(transport_position.x);
             if (hasTransportData && status_info.hasTransportTime3) data << uint32_t(transport_time3);
             if (hasTransportData) data.WriteByteSeq(transport_guid[7]);
@@ -4604,7 +4604,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (status_info.hasSplineElevation) data << float(spline_elevation);
             if (status_info.hasPitch) data << float(pitch_rate);
             if (status_info.hasTimeStamp) data << Util::getMSTime();
-            if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
+            if (status_info.hasOrientation) data << float(LocationVector::normalizeOrientation(position.o));
 
         } break;
         case MSG_MOVE_JUMP:
@@ -4657,7 +4657,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData) data.WriteByteSeq(transport_guid[4]);
             if (hasTransportData && status_info.hasTransportTime3) data << uint32_t(transport_time3);
             if (hasTransportData) data.WriteByteSeq(transport_guid[0]);
-            if (hasTransportData) data << float(normalizeOrientation(transport_position.o));
+            if (hasTransportData) data << float(LocationVector::normalizeOrientation(transport_position.o));
             if (hasTransportData && status_info.hasTransportTime2) data << uint32_t(transport_time2);
             if (hasTransportData) data << uint32_t(transport_time);
             if (hasTransportData) data.WriteByteSeq(transport_guid[6]);
@@ -4675,7 +4675,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (status_info.hasFallData) data << float(jump_info.velocity);
             if (status_info.hasFallData) data << uint32_t(fall_time);
             if (status_info.hasSplineElevation) data << float(spline_elevation);
-            if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
+            if (status_info.hasOrientation) data << float(LocationVector::normalizeOrientation(position.o));
 
         } break;
         case MSG_MOVE_FALL_LAND:
@@ -4732,7 +4732,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (hasTransportData) data << int8_t(transport_seat);
             if (hasTransportData && status_info.hasTransportTime2) data << uint32_t(transport_time2);
             if (hasTransportData) data.WriteByteSeq(transport_guid[4]);
-            if (hasTransportData) data << float(normalizeOrientation(transport_position.o));
+            if (hasTransportData) data << float(LocationVector::normalizeOrientation(transport_position.o));
             if (hasTransportData) data.WriteByteSeq(transport_guid[0]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[7]);
             if (hasTransportData) data.WriteByteSeq(transport_guid[3]);
@@ -4746,7 +4746,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint16_t opcode, bool wit
             if (status_info.hasSplineElevation) data << float(spline_elevation);
             if (status_info.hasTimeStamp) data << Util::getMSTime();
             if (status_info.hasPitch) data << float(pitch_rate);
-            if (status_info.hasOrientation) data << float(normalizeOrientation(position.o));
+            if (status_info.hasOrientation) data << float(LocationVector::normalizeOrientation(position.o));
 
         } break;
 #endif

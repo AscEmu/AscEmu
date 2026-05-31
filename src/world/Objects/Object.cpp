@@ -3120,7 +3120,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
             data->WriteByteSeq(tGuid[7]);
 
             *data << uint32_t(obj_movement_info.transport_time);
-            *data << float(normalizeOrientation(GetTransOffsetO()));
+            *data << float(LocationVector::normalizeOrientation(GetTransOffsetO()));
 
             if (hasTransportTime2)
                 *data << uint32_t(obj_movement_info.transport_time2);
@@ -3169,7 +3169,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
         *data << float(unit->getSpeedRate(TYPE_FLY, true));
 
         if (!G3D::fuzzyEq(GetOrientation(), 0.0f))
-            *data << float(normalizeOrientation(GetOrientation()));
+            *data << float(LocationVector::normalizeOrientation(GetOrientation()));
 
         *data << unit->getSpeedRate(TYPE_RUN, true);
 
@@ -3193,7 +3193,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
                 vehicleid = static_cast<Player*>(this)->getMountVehicleId();
         }
 
-        *data << float(normalizeOrientation(GetOrientation()));
+        *data << float(LocationVector::normalizeOrientation(GetOrientation()));
         *data << uint32_t(vehicleid);
     }
 
@@ -3258,7 +3258,7 @@ void Object::buildMovementUpdate(ByteBuffer* data, uint16_t updateFlags, Player*
 
     if (updateFlags & UPDATEFLAG_HAS_POSITION)
     {
-        *data << float(normalizeOrientation(GetOrientation()));
+        *data << float(LocationVector::normalizeOrientation(GetOrientation()));
         *data << float(GetPositionX());
         *data << float(GetPositionY());
         *data << float(GetPositionZ());
