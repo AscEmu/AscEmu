@@ -24,6 +24,8 @@
 
 #include "Logging/Logger.hpp"
 
+#include <mutex>
+
 MySQLDatabase::~MySQLDatabase()
 {
     for (const auto& conn : Connections)
@@ -114,15 +116,16 @@ std::string MySQLDatabase::EscapeString(std::string Escape)
     char a2[16384] = { 0 };
 
     DatabaseConnection* con = GetFreeConnection();
+
+    std::unique_lock connectionLock{con->Busy, std::adopt_lock};
+
     std::string ret;
-    if(mysql_real_escape_string(static_cast<MySQLDatabaseConnection*>(con)->MySql, a2, Escape.c_str(), (unsigned long)Escape.length()) == 0)
+    if(mysql_real_escape_string(static_cast<MySQLDatabaseConnection*>(con)->MySql, a2, Escape.c_str(), static_cast<unsigned long>(Escape.length())) == 0)
         ret = std::move(Escape);
     else
         ret = a2;
 
-    con->Busy.release();
-
-    return std::string(ret);
+    return ret;
 }
 
 void MySQLDatabase::EscapeLongString(const char* str, uint32_t len, std::stringstream & out)
@@ -130,14 +133,16 @@ void MySQLDatabase::EscapeLongString(const char* str, uint32_t len, std::strings
     char a2[65536 * 3] = { 0 };
 
     DatabaseConnection* con = GetFreeConnection();
+
+    std::unique_lock connectionLock{con->Busy, std::adopt_lock};
+
     const char* ret;
-    if(mysql_real_escape_string(static_cast<MySQLDatabaseConnection*>(con)->MySql, a2, str, (unsigned long)len) == 0)
+    if(mysql_real_escape_string(static_cast<MySQLDatabaseConnection*>(con)->MySql, a2, str, static_cast<unsigned long>(len)) == 0)
         ret = str;
     else
         ret = a2;
 
-    out.write(a2, (std::streamsize)strlen(a2));
-    con->Busy.release();
+    out.write(a2, static_cast<std::streamsize>(std::strlen(a2)));
 }
 
 std::string MySQLDatabase::EscapeString(const char* esc, DatabaseConnection* con)

@@ -31,10 +31,10 @@
 #include <crtdbg.h>
 #endif
 
-#include "Threading/Mutex.hpp"
+#include <mutex>
 
 #ifdef _WIN32
-Mutex m_crashLock;
+std::mutex m_crashLock;
 
 /* *
    @file CrashHandler.h
@@ -142,7 +142,7 @@ LONG WINAPI handleCrash(PEXCEPTION_POINTERS exceptionPointers)
         return EXCEPTION_CONTINUE_SEARCH;
 
     // Only allow one thread to crash at a time
-    if (!m_crashLock.attemptAcquire())
+    if (!m_crashLock.try_lock())
     {
         TerminateThread(GetCurrentThread(), static_cast<DWORD>(-1));
     }
