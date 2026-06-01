@@ -327,6 +327,12 @@ void runBipBufferComparison()
 {
     std::printf("[BipBufferComparison] Starting tests...\n");
 
+#ifdef ASCEMU_USE_BIPBUFFER
+    std::printf("[BipBufferComparison] Socket buffer selected by CMake: BipBuffer\n");
+#else
+    std::printf("[BipBufferComparison] Socket buffer selected by CMake: CircularBuffer\n");
+#endif
+
     const bool functionalOk = runFunctionalComparison();
     const bool directWriteOk = runDirectWriteComparison();
     const bool randomOk = runRandomComparison();

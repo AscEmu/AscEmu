@@ -226,3 +226,5 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2026 | Debugging/Errors.hpp
 * 2026 | Utilities/MathConstants.hpp
 * 2026 | LocationVector.hpp
+* 2026 | Network/BipBuffer.hpp
+* 2026 | Network/NetworkBuffer.hpp - temporarily

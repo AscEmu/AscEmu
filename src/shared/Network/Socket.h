@@ -11,7 +11,7 @@
 
 #include "SocketDefines.h"
 #include "NetworkIncludes.hpp"
-#include "CircularBuffer.h"
+#include "NetworkBuffer.hpp"
 #include "Logging/Log.hpp"
 #include <string>
 #include <mutex>
@@ -93,8 +93,8 @@ class SERVER_DECL Socket
         inline in_addr GetRemoteAddress() { return m_client.sin_addr; }
 
 
-        CircularBuffer readBuffer;
-        CircularBuffer writeBuffer;
+        AscEmu::NetworkBuffer readBuffer;
+        AscEmu::NetworkBuffer writeBuffer;
 
     protected:
 
