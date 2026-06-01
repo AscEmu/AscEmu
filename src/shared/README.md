@@ -59,8 +59,8 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2007 | Network/KQUEUE/SocketMgrFreeBSD.cpp
 * 2007 | Network/KQUEUE/SocketMgrFreeBSD.h
 * 2007 | Network/KQUEUE/SocketOpsFreeBSD.cpp
-* 2007 | Network/CircularBuffer.cpp
-* 2007 | Network/CircularBuffer.h
+* 2007 | Network/CircularBuffer.cpp           - wip
+* 2007 | Network/CircularBuffer.h             - wip
 * 2007 | Network/Network.h
 * 2007 | Network/Socket.cpp
 * 2007 | Network/Socket.h
@@ -71,7 +71,6 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2005 | PerformanceCounter.hpp
 * 2005 | PerformanceCounter.cpp
 * 2005 | Database/MySQLDatabase.cpp
-* 2005 | CircularQueue.h
 * 2005 | StackWalker.h
 * 2005 | StackWalker.cpp
 
@@ -183,6 +182,7 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 ### Removed on 1 April 2026
 * 2024 | Threading/Mutex.hpp
 * 2024 | Threading/Mutex.cpp
+* 2005 | CircularQueue.h
 
 ### New files
 * 2015 | Exceptions/PlayerExceptions.hpp
