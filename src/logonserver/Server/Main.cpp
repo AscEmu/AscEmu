@@ -19,6 +19,11 @@
 
 #include "Server/Master.hpp"
 
+#define ASCEMU_RUN_BIPBUFFER_COMPARISON
+#ifdef ASCEMU_RUN_BIPBUFFER_COMPARISON
+#include "BipBufferComparison.hpp"
+#endif
+
 #ifndef WIN32
 #include <sys/resource.h>
 #endif
@@ -37,5 +42,8 @@ int main(int argc, char** argv)
     }
 #endif
 
+#ifdef ASCEMU_RUN_BIPBUFFER_COMPARISON
+    runBipBufferComparison();
+#endif
     sMasterLogon.Run(argc, argv);
 }
