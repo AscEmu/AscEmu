@@ -21,7 +21,7 @@
 
 #include <set>
 #include "CThreads.h"
-#include "Mutex.hpp"
+#include <mutex>
 #include "Debugging/Errors.hpp"
 
 // This HAS to be called outside the threads __try / __except block!
@@ -184,7 +184,7 @@ struct SERVER_DECL Thread
 {
     ThreadBase* ExecutionTarget;
     ThreadController ControlInterface;
-    Mutex SetupMutex;
+    std::recursive_mutex SetupMutex;
     bool DeleteAfterExit;
 };
 
@@ -198,7 +198,7 @@ class SERVER_DECL CThreadPool
     uint32_t _threadsExitedSinceLastCheck;
     uint32_t _threadsToExit;
     int32_t _threadsEaten;
-    Mutex _mutex;
+    std::recursive_mutex _mutex;
 
     ThreadSet m_activeThreads;
     ThreadSet m_freeThreads;

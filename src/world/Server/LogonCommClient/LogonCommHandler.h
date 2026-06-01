@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <set>
 #include <unordered_map>
 #include <cstdint>
+#include <mutex>
 
 class WorldSocket;
 
@@ -67,8 +68,8 @@ class LogonCommHandler
     uint32_t idhigh;
     uint32_t next_request;
 
-    Mutex mapLock;
-    Mutex pendingLock;
+    std::recursive_mutex mapLock;
+    std::recursive_mutex pendingLock;
 
     bool pings;
 
@@ -141,7 +142,7 @@ public:
 
     WorldSocket* getWorldSocketForClientRequestId(uint32_t id);
 
-    Mutex & getPendingLock() { return pendingLock; }
+    std::recursive_mutex& getPendingLock() { return pendingLock; }
 
     void testConsoleLogon(std::string & username, std::string & password, uint32_t requestnum);
     std::string accountResult;
