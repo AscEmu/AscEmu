@@ -26,7 +26,6 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2008 | Threading/LegacyThreadBase.h
 * 2008 | Threading/ConditionVariable.h
 * 2008 | Threading/ConditionVariable.cpp
-* 2008 | PreallocatedQueue.h
 * 2008 | LocationVector.cpp
 * 2008 | DynLib.hpp
 * 2008 | DynLib.cpp
@@ -183,6 +182,7 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2024 | Threading/Mutex.hpp
 * 2024 | Threading/Mutex.cpp
 * 2005 | CircularQueue.h
+* 2008 | PreallocatedQueue.h
 
 ### New files
 * 2015 | Exceptions/PlayerExceptions.hpp
