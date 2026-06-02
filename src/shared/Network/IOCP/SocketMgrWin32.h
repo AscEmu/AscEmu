@@ -11,7 +11,7 @@
 #define SOCKETMGR_H_WIN32
 
 #ifdef CONFIG_USE_IOCP
-
+#include "Threading/LegacyThreadBase.h"
 #include <mutex>
 
 class Socket;

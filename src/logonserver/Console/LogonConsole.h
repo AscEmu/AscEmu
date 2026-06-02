@@ -20,8 +20,8 @@
 #ifndef __LOGONCONSOLE_H
 #define __LOGONCONSOLE_H
 
-#include "CThreads.h"
 #include <Threading/AEThread.h>
+#include "Threading/LegacyThreadBase.h"
 
 enum checkType
 {

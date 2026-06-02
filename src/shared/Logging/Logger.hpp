@@ -5,10 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "CThreads.h"
 #include "MessageType.hpp"
 #include "Severity.hpp"
 #include "StringFormat.hpp"
+#include "CommonTypes.hpp"
 
 // Required for fmt lib 10.0+ because enums are not formatted automatically anymore -Appled
 template <typename EnumType>

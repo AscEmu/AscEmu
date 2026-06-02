@@ -31,8 +31,6 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2008 | Database/Database.h
 * 2008 | Database/Database.cpp
 * 2008 | Database/CreateInterface.cpp
-* 2008 | CThreads.h
-* 2008 | CThreads.cpp
 * 2008 | Debugging/CrashHandler.h
 * 2008 | Debugging/CrashHandler.cpp
 * 2008 | Config/Config.h
@@ -186,6 +184,8 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2017 | Threading/ThreadState.h
 * 2008 | Threading/ConditionVariable.h
 * 2008 | Threading/ConditionVariable.cpp
+* 2008 | CThreads.h
+* 2008 | CThreads.cpp
 
 ### New files
 * 2015 | Exceptions/PlayerExceptions.hpp

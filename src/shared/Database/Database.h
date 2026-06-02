@@ -124,9 +124,6 @@ class SERVER_DECL Database
         virtual bool Execute(const char* QueryString, ...);
         virtual bool ExecuteNA(const char* QueryString);
 
-        // Initialized on load: Database::Database() : CThread()
-        //bool ThreadRunning;
-
         const std::string & GetHostName() { return mHostname; }
         const std::string & GetDatabaseName() { return mDatabaseName; }
         size_t GetQueueSize() { return queries_queue.getSize(); }

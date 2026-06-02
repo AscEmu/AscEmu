@@ -91,7 +91,6 @@ extern SERVER_DECL CThreadPool ThreadPool;
 #else
 
 #include <set>
-#include "CThreads.h"
 #include <mutex>
 #include "Debugging/Errors.hpp"
 
