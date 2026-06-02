@@ -10,6 +10,7 @@
 #define SOCKETMGR_LINUX_H
 
 #include "../SocketDefines.h"
+#include "../Threading/LegacyThreadBase.h"
 #include <atomic>
 
 #ifdef CONFIG_USE_EPOLL
