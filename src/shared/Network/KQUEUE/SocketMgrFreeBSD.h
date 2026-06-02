@@ -11,7 +11,7 @@
 #define SOCKETMGR_FREE_BSD_H
 
 #include "../SocketDefines.h"
-#include "../Threading/LegacyThreadBase.h"
+#include "Threading/LegacyThreadBase.h"
 
 #ifdef CONFIG_USE_KQUEUE
 
