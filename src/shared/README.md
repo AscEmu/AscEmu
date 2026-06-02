@@ -184,6 +184,9 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2005 | CircularQueue.h
 * 2008 | PreallocatedQueue.h
 
+### Removed on 2 April 2026
+* 2017 | Threading/ThreadState.h
+
 ### New files
 * 2015 | Exceptions/PlayerExceptions.hpp
 * 2015 | Exceptions/Exceptions.hpp
@@ -200,7 +203,6 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2017 | Cryptography/WowCrypt.hpp
 * 2017 | Threading/AEThread.cpp
 * 2017 | Threading/AEThread.h
-* 2017 | Threading/ThreadState.h
 * 2018 | Threading/AEThreadPool.cpp
 * 2018 | Threading/AEThreadPool.h
 * 2020 | Database/Field.hpp
