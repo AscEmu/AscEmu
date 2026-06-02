@@ -11,15 +11,13 @@
 
 #include "SocketDefines.h"
 #include "NetworkIncludes.hpp"
-#include "CircularBuffer.h"
+#include "NetworkBuffer.hpp"
 #include "Logging/Log.hpp"
 #include <string>
 #include <mutex>
 #include <atomic>
 #include <map>
 #include <set>
-
-#include "Threading/Mutex.hpp"
 
 class SERVER_DECL Socket
 {
@@ -56,7 +54,7 @@ class SERVER_DECL Socket
         bool Send(const uint8_t* Bytes, uint32_t Size);
 
         // Burst system - Locks the sending mutex.
-        inline void BurstBegin() { m_writeMutex.acquire(); }
+        inline void BurstBegin() { m_writeMutex.lock(); }
 
         // Burst system - Adds bytes to output buffer.
         bool BurstSend(const uint8_t* Bytes, uint32_t Size);
@@ -65,7 +63,7 @@ class SERVER_DECL Socket
         void BurstPush();
 
         // Burst system - Unlocks the sending mutex.
-        inline void BurstEnd() { m_writeMutex.release(); }
+        inline void BurstEnd() { m_writeMutex.unlock(); }
 
         /* Client Operations */
 
@@ -95,8 +93,8 @@ class SERVER_DECL Socket
         inline in_addr GetRemoteAddress() { return m_client.sin_addr; }
 
 
-        CircularBuffer readBuffer;
-        CircularBuffer writeBuffer;
+        AscEmu::NetworkBuffer readBuffer;
+        AscEmu::NetworkBuffer writeBuffer;
 
     protected:
 
@@ -105,8 +103,8 @@ class SERVER_DECL Socket
 
         SOCKET m_fd;
 
-        Mutex m_writeMutex;
-        Mutex m_readMutex;
+        std::recursive_mutex m_writeMutex;
+        std::recursive_mutex m_readMutex;
 
         // we are connected? stop from posting events.
         std::atomic<bool> m_connected;
@@ -190,14 +188,12 @@ class SERVER_DECL Socket
         // Polls and resets the traffic data
         void PollTraffic(unsigned long* sent, unsigned long* recieved)
         {
+            std::lock_guard lock{m_writeMutex};
 
-            m_writeMutex.acquire();
             *sent = m_BytesSent;
             *recieved = m_BytesRecieved;
             m_BytesSent = 0;
             m_BytesRecieved = 0;
-
-            m_writeMutex.release();
         }
 };
 
@@ -238,7 +234,7 @@ T* ConnectTCPSocket(const char* hostname, u_short port)
 class SocketGarbageCollector
 {
         std::map<Socket*, time_t> deletionQueue;
-        Mutex lock;
+        std::mutex lock;
     private:
         SocketGarbageCollector() = default;
         ~SocketGarbageCollector() = default;
@@ -266,7 +262,9 @@ class SocketGarbageCollector
         {
             std::map<Socket*, time_t>::iterator i, i2;
             time_t t = UNIXTIME;
-            lock.acquire();
+
+            std::lock_guard guard{lock};
+
             for(i = deletionQueue.begin(); i != deletionQueue.end();)
             {
                 i2 = i++;
@@ -276,14 +274,12 @@ class SocketGarbageCollector
                     deletionQueue.erase(i2);
                 }
             }
-            lock.release();
         }
 
         void QueueSocket(Socket* s)
         {
-            lock.acquire();
+            std::lock_guard guard{lock};
             deletionQueue.insert(std::map<Socket*, time_t>::value_type(s, UNIXTIME + SOCKET_GC_TIMEOUT));
-            lock.release();
         }
 };
 

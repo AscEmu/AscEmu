@@ -30,13 +30,13 @@ void Socket::ReadCallback(uint32_t len)
         return;
 
     // We have to lock here.
-    m_readMutex.acquire();
+    std::unique_lock lock{m_readMutex};
 
     size_t space = readBuffer.GetSpace();
     int bytes = recv(m_fd, readBuffer.GetBuffer(), space, 0);
     if(bytes <= 0)
     {
-        m_readMutex.release();
+        lock.unlock();
         Disconnect();
         return;
     }
@@ -48,8 +48,6 @@ void Socket::ReadCallback(uint32_t len)
         OnRead();
     }
     m_BytesRecieved += bytes;
-
-    m_readMutex.release();
 }
 
 void Socket::WriteCallback()

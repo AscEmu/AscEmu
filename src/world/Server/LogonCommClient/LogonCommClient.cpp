@@ -21,6 +21,7 @@
 #include <set>
 #include <map>
 #include <zlib.h>
+#include <mutex>
 
 #include "Utilities/Util.hpp"
 #include "LogonCommClient.h"
@@ -172,14 +173,12 @@ void LogonCommClientSocket::HandleSessionInfo(WorldPacket& recvData)
     uint32_t request_id;
     recvData >> request_id;
 
-    Mutex & m = sLogonCommHandler.getPendingLock();
-    m.acquire();
+    std::unique_lock lock{sLogonCommHandler.getPendingLock()};
 
     // find the socket with this request
     WorldSocket* sock = sLogonCommHandler.getWorldSocketForClientRequestId(request_id);
     if (sock == nullptr || sock->Authed || !sock->IsConnected())       // Expired/Client disconnected
     {
-        m.release();
         return;
     }
 
@@ -187,7 +186,6 @@ void LogonCommClientSocket::HandleSessionInfo(WorldPacket& recvData)
     sock->Authed = true;
     sLogonCommHandler.removeUnauthedClientSocket(request_id);
     sock->InformationRetreiveCallback(recvData, request_id);
-    m.release();
 }
 
 void LogonCommClientSocket::HandlePong(WorldPacket& /*recvData*/)

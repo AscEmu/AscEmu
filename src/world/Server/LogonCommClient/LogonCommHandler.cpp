@@ -6,6 +6,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/LogonCommClient/LogonCommHandler.h"
 
 #include <sstream>
+#include <atomic>
+#include <chrono>
+#include <condition_variable>
+#include <mutex>
 
 #include "WorldPacket.h"
 #include "Server/Master.h"
@@ -18,7 +22,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.h"
 #include "Threading/LegacyThreadPool.h"
 #include "Utilities/Strings.hpp"
-#include "Threading/LegacyThreading.h"
 
 LogonCommHandler& LogonCommHandler::getInstance()
 {
@@ -58,35 +61,57 @@ void LogonCommHandler::finalize()
 
 class LogonCommWatcherThread : public ThreadBase
 {
-    bool running;
-
-    Arcemu::Threading::ConditionVariable cond;
-
 public:
-    LogonCommWatcherThread()
+    LogonCommWatcherThread() = default;
+    ~LogonCommWatcherThread() override = default;
+
+    void onShutdown() override
     {
-        running = true;
+        {
+            std::lock_guard lock(m_mutex);
+            m_running = false;
+        }
+
+        m_condition.notify_one();
     }
 
-    ~LogonCommWatcherThread()
-    {}
-
-    void onShutdown()
-    {
-        running = false;
-        cond.Signal();
-    }
-
-    bool runThread()
+    bool runThread() override
     {
         sLogonCommHandler.connectToLogonServer();
-        while (running)
+
+        for (;;)
         {
+            {
+                std::lock_guard lock(m_mutex);
+
+                if (!m_running)
+                    break;
+            }
+
             sLogonCommHandler.updateLogonServerConnection();
-            cond.Wait(5000);
+
+            std::unique_lock lock(m_mutex);
+
+            m_condition.wait_for(
+                lock,
+                std::chrono::milliseconds(5000),
+                [this]
+                {
+                    return !m_running;
+                }
+            );
+
+            if (!m_running)
+                break;
         }
+
         return true;
     }
+
+private:
+    std::mutex m_mutex;
+    std::condition_variable m_condition;
+    bool m_running = true;
 };
 
 void LogonCommHandler::startLogonCommHandler()
@@ -288,7 +313,7 @@ float LogonCommHandler::getRealmPopulation()
 
 void LogonCommHandler::updateLogonServerConnection()
 {
-    mapLock.acquire();
+    std::lock_guard lock{mapLock};
 
     uint32_t time = (uint32_t)UNIXTIME;
 
@@ -334,13 +359,11 @@ void LogonCommHandler::updateLogonServerConnection()
             }
         }
     }
-
-    mapLock.release();
 }
 
 void LogonCommHandler::dropLogonServerConnection(uint32_t ID)
 {
-    mapLock.acquire();
+    std::lock_guard lock{mapLock};
 
     for (auto &itr : logons)
     {
@@ -351,8 +374,6 @@ void LogonCommHandler::dropLogonServerConnection(uint32_t ID)
             break;
         }
     }
-
-    mapLock.release();
 }
 
 uint32_t LogonCommHandler::clientConnectionId(std::string AccountName, WorldSocket* Socket)
@@ -374,25 +395,27 @@ uint32_t LogonCommHandler::clientConnectionId(std::string AccountName, WorldSock
         return (uint32_t)-1;
     }
 
-    pendingLock.acquire();
-
-    WorldPacket data(LRCMSG_ACC_SESSION_REQUEST, 100);
-    data << request_id;
-
-    // strip the shitty hash from it
-    const char* acct = AccountName.c_str();
-
-    size_t i = 0;
-    for (; acct[i] != '#' && acct[i] != '\0'; ++i)
+    // lock here for writing
     {
-        data.append(&acct[i], 1);
+        std::lock_guard lock{pendingLock};
+
+        WorldPacket data(LRCMSG_ACC_SESSION_REQUEST, 100);
+        data << request_id;
+
+        // strip the shitty hash from it
+        const char* acct = AccountName.c_str();
+
+        size_t i = 0;
+        for (; acct[i] != '#' && acct[i] != '\0'; ++i)
+        {
+            data.append(&acct[i], 1);
+        }
+
+        data.append("\0", 1);
+        logonCommSocket->SendPacket(&data, false);
+
+        pending_logons[request_id] = Socket;
     }
-
-    data.append("\0", 1);
-    logonCommSocket->SendPacket(&data, false);
-
-    pending_logons[request_id] = Socket;
-    pendingLock.release();
 
     updateRealmPopulation();
     return request_id;
@@ -400,13 +423,13 @@ uint32_t LogonCommHandler::clientConnectionId(std::string AccountName, WorldSock
 
 void LogonCommHandler::removeUnauthedClientSocketClose(uint32_t id)
 {
-    pendingLock.acquire();
+    std::lock_guard lock{pendingLock};
     pending_logons.erase(id);
-    pendingLock.release();
 }
 
 void LogonCommHandler::removeUnauthedClientSocket(uint32_t id)
 {
+    std::lock_guard lock{pendingLock};
     pending_logons.erase(id);
 }
 
@@ -667,6 +690,8 @@ LogonCommClientSocket* LogonCommHandler::getLogonServerSocket()
 
 WorldSocket* LogonCommHandler::getWorldSocketForClientRequestId(uint32_t id)
 {
+    std::lock_guard lock{pendingLock};
+
     WorldSocket* sock;
     std::map<uint32_t, WorldSocket*>::iterator itr = pending_logons.find(id);
     sock = (itr == pending_logons.end()) ? nullptr : itr->second;

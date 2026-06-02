@@ -5,52 +5,42 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <condition_variable>
+#include <cstddef>
 #include <mutex>
 #include <optional>
 #include <queue>
-#include <condition_variable>
+#include <utility>
 
-template<class T>
+template <typename T>
 class ThreadSafeQueue
 {
 public:
     ThreadSafeQueue() = default;
     ~ThreadSafeQueue() = default;
 
-    void push(T _element)
+    ThreadSafeQueue(const ThreadSafeQueue&) = delete;
+    ThreadSafeQueue& operator=(const ThreadSafeQueue&) = delete;
+
+    ThreadSafeQueue(ThreadSafeQueue&&) = delete;
+    ThreadSafeQueue& operator=(ThreadSafeQueue&&) = delete;
+
+    void push(T element)
     {
-        std::unique_lock lock(m_lock);
+        {
+            std::lock_guard lock{ m_lock };
+            m_queue.push(std::move(element));
+        }
 
-        m_queue.push(std::move(_element));
-    }
-
-    void pushWait(T _element)
-    {
-        std::unique_lock lock(m_lock);
-
-        m_queue.push(std::move(_element));
         m_condition.notify_one();
     }
 
-    std::optional<T> pop()
+    [[nodiscard]] std::optional<T> tryPop()
     {
-        std::unique_lock lock(m_lock);
+        std::lock_guard lock{ m_lock };
 
-        if (!m_queue.empty())
-        {
-            T element = std::move(m_queue.front());
-            m_queue.pop();
-            return element;
-        }
-
-        return std::nullopt;
-    }
-
-    T popWait()
-    {
-        std::unique_lock lock(m_lock);
-
-        m_condition.wait(lock, [this]() { return !m_queue.empty(); });
+        if (m_queue.empty())
+            return std::nullopt;
 
         T element = std::move(m_queue.front());
         m_queue.pop();
@@ -58,18 +48,74 @@ public:
         return element;
     }
 
-    bool hasItems() const
+    T waitPop()
     {
-        return !m_queue.empty();
+        std::unique_lock lock{ m_lock };
+
+        m_condition.wait(lock, [this]
+            {
+                return !m_queue.empty();
+            });
+
+        T element = std::move(m_queue.front());
+        m_queue.pop();
+
+        return element;
     }
 
-    size_t getSize() const
+    [[nodiscard]] std::optional<T> tryFront() const
     {
+        std::lock_guard lock{ m_lock };
+
+        if (m_queue.empty())
+            return std::nullopt;
+
+        return m_queue.front();
+    }
+
+    bool discardFront()
+    {
+        std::lock_guard lock{ m_lock };
+
+        if (m_queue.empty())
+            return false;
+
+        m_queue.pop();
+        return true;
+    }
+
+    void clear()
+    {
+        std::lock_guard lock{ m_lock };
+
+        std::queue<T> empty;
+        m_queue.swap(empty);
+    }
+
+    [[nodiscard]] bool empty() const
+    {
+        std::lock_guard lock{ m_lock };
+        return m_queue.empty();
+    }
+
+    [[nodiscard]] bool hasItems() const
+    {
+        return !empty();
+    }
+
+    [[nodiscard]] std::size_t size() const
+    {
+        std::lock_guard lock{ m_lock };
         return m_queue.size();
     }
 
+    [[nodiscard]] std::size_t getSize() const
+    {
+        return size();
+    }
+
 private:
-    std::queue<T> m_queue;
-    std::mutex m_lock;
+    mutable std::mutex m_lock;
     std::condition_variable m_condition;
+    std::queue<T> m_queue;
 };

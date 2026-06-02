@@ -159,7 +159,7 @@ WorldSocket::WorldSocket(SOCKET fd)
 
 WorldSocket::~WorldSocket()
 {
-    while (auto pck = _queue.pop())
+    while (auto pck = _queue.tryPop())
     {
     }
 
@@ -177,7 +177,7 @@ void WorldSocket::OnDisconnect()
     if (!_queue.hasItems())
         return;
 
-    while (auto pck = _queue.pop())
+    while (auto pck = _queue.tryPop())
     {
     }
 
@@ -232,7 +232,7 @@ void WorldSocket::UpdateQueuedPackets()
     if (!_queue.hasItems())
         return;
 
-    while (auto itr = _queue.pop())
+    while (auto itr = _queue.tryPop())
     {
         const auto& pck = itr.value();
         // try to push out as many as you can
@@ -248,7 +248,7 @@ void WorldSocket::UpdateQueuedPackets()
             // kill everything in the buffer
             default:
             {
-                while ((pck == _queue.pop()) != 0)
+                while (auto pck = _queue.tryPop())
                 {
                 }
                 return;

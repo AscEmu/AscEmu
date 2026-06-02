@@ -1,80 +1,110 @@
 /*
-Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
+Copyright (c) 2014-2026 AscEmu Team
 This file is released under the MIT license. See README-MIT for more information.
 */
 
 #pragma once
-#include <functional>
-#include <list>
-#include <map>
-#include <memory>
-#include <vector>
 
-#include "AEThread.h"
+#include <atomic>
+#include <chrono>
+#include <condition_variable>
+#include <cstddef>
+#include <cstdint>
+#include <deque>
+#include <functional>
+#include <memory>
+#include <mutex>
+#include <string>
+#include <thread>
+#include <vector>
 
 namespace AscEmu::Threading
 {
     class AEThreadPool
     {
-        typedef std::function<void(AEThread&)> ThreadFunc;
-        typedef std::chrono::time_point<std::chrono::steady_clock> TimePoint;
-
-        struct Task
-        {
-            ThreadFunc m_task;
-            std::string m_name;
-            std::chrono::milliseconds m_repeat;
-            TimePoint m_lastPulse;
-            bool m_done;
-            bool m_running;
-
-            Task(ThreadFunc task, std::string name, std::chrono::milliseconds repeat) :
-                m_task(task),
-                m_name(name),
-                m_repeat(repeat),
-                m_lastPulse(std::chrono::milliseconds(0)),
-                m_done(false),
-                m_running(false) {
-            }
-
-            bool isFireOnceTask() const { return m_repeat < std::chrono::milliseconds(0); }
-            bool canFire(const TimePoint& point) const { return !m_done && m_lastPulse + m_repeat < point; }
-        };
-
-        std::mutex m_mtx;
-        std::list<std::unique_ptr<AEThread>> m_threads;
-        std::list<std::unique_ptr<Task>> m_tasks;
-        std::list<std::unique_ptr<Task>> m_highPriorityTasks;
-        std::string m_poolName;
-        std::chrono::milliseconds m_pulseFrequency;
-        std::unique_ptr<AEThread> m_pulseThread;
-
-        std::atomic<uint16_t> m_threadCount;
-        std::atomic<uint32_t> m_totalThreadsEverCreated;
-        uint16_t m_minimumThreadCount;
-        uint16_t m_softMaximumThreadCount;
-        uint16_t m_hardMaximumThreadCount;
-
-        AEThread* spawnThread();
-
-        bool m_shutdownRequested;
-
-        void queueTask(ThreadFunc task, std::chrono::milliseconds repeatDelay, std::string taskName, bool highPriority = false);
-        void pulse(AEThread& thread);
     public:
+        using ThreadFunc = std::function<void()>;
+        using Clock = std::chrono::steady_clock;
+        using TimePoint = Clock::time_point;
+
+        AEThreadPool(
+            std::string poolName,
+            uint16_t minimumThreadCount,
+            uint16_t softMaximumThreadCount,
+            uint16_t hardMaximumThreadCount
+        );
+
+        AEThreadPool(
+            std::string poolName,
+            uint16_t minimumThreadCount,
+            uint16_t softMaximumThreadCount,
+            uint16_t hardMaximumThreadCount,
+            std::chrono::milliseconds pulseFrequency
+        );
+
+        ~AEThreadPool();
+
+        AEThreadPool(const AEThreadPool&) = delete;
+        AEThreadPool& operator=(const AEThreadPool&) = delete;
+
+        AEThreadPool(AEThreadPool&&) = delete;
+        AEThreadPool& operator=(AEThreadPool&&) = delete;
+
+        void start();
+        void shutdown();
+        void join();
+
         void queueRecurringTask(ThreadFunc task, std::chrono::milliseconds repeatDelay, std::string taskName);
         void queueFireOnceTask(ThreadFunc task, std::string taskName);
         void queueHighPriorityTask(ThreadFunc task, const std::string& taskName);
 
-        AEThreadPool(std::string poolName, uint16_t minimumThreadCount, uint16_t softMaximumThreadCount, uint16_t hardMaximumThreadCount);
-        AEThreadPool(std::string poolName, uint16_t minimumThreadCount, uint16_t softMaximumThreadCount, uint16_t hardMaximumThreadCount, std::chrono::milliseconds pulseFrequency);
+        [[nodiscard]] bool isStarted() const noexcept;
+        [[nodiscard]] bool isShutdownRequested() const noexcept;
+        [[nodiscard]] size_t queuedTaskCount() const;
+        [[nodiscard]] size_t workerCount() const noexcept;
+        [[nodiscard]] uint64_t completedTaskCount() const noexcept;
 
-#pragma region Singleton
+        bool hasPendingTasks() const;
+
+        static std::unique_ptr<AEThreadPool>& globalThreadPool();
+
+    private:
+        struct QueuedTask
+        {
+            ThreadFunc task;
+            std::string name;
+            std::chrono::milliseconds repeatDelay{ -1 };
+            TimePoint nextRun{};
+            bool recurring = false;
+        };
+
+        void queueTask(ThreadFunc task, std::chrono::milliseconds repeatDelay, std::string taskName, bool highPriority);
+        void workerLoop(size_t workerIndex);
+
+        [[nodiscard]] TimePoint nextTaskTimeLocked() const;
+        [[nodiscard]] bool tryPopRunnableTaskLocked(TimePoint now, QueuedTask& outTask);
+
+        void requeueRecurringTask(QueuedTask task);
+
+    private:
+        mutable std::mutex m_mutex;
+        std::condition_variable m_condition;
+
+        std::deque<QueuedTask> m_tasks;
+        std::vector<std::thread> m_workers;
+
+        std::string m_poolName;
+        std::chrono::milliseconds m_pulseFrequency;
+
+        std::atomic_bool m_started{ false };
+        std::atomic_bool m_shutdownRequested{ false };
+        std::atomic_uint64_t m_completedTaskCount{ 0 };
+
+        uint16_t m_minimumThreadCount = 1;
+        uint16_t m_softMaximumThreadCount = 1;
+        uint16_t m_hardMaximumThreadCount = 1;
+
     private:
         static std::unique_ptr<AEThreadPool> s_global_thread_pool;
-    public:
-        static std::unique_ptr<AEThreadPool>& globalThreadPool();
-    private:
-#pragma endregion
     };
 }

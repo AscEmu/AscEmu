@@ -34,6 +34,8 @@
 
 #include "Debugging/Errors.hpp"
 
+#include <mutex>
+
 using AscEmu::Threading::AEThread;
 using std::unique_ptr;
 using std::make_unique;
@@ -53,7 +55,7 @@ void Database::destroyDbConnection()
 {
     if (m_dbConnection)
     {
-        m_dbConnection->Busy.release();
+        m_dbConnection->Busy.unlock();
         m_dbConnection = nullptr;
     }
 }
@@ -115,7 +117,7 @@ DatabaseConnection* Database::GetFreeConnection()
     for (;;)
     {
         DatabaseConnection* con = Connections[((i++) % mConnectionCount)].get();
-        if (con->Busy.attemptAcquire())
+        if (con->Busy.try_lock())
             return con;
     }
 }
@@ -146,10 +148,11 @@ std::unique_ptr<QueryResult> Database::Query(const char* QueryString, ...)
     std::unique_ptr<QueryResult> qResult;
     DatabaseConnection* con = GetFreeConnection();
 
+    std::unique_lock connectionLock{con->Busy, std::adopt_lock};
+
     if (_SendQuery(con, sql.data(), false))
         qResult = _StoreQueryResult(con);
 
-    con->Busy.release();
     return qResult;
 }
 
@@ -179,6 +182,8 @@ std::unique_ptr<QueryResult> Database::Query(bool *success, const char* QueryStr
     std::unique_ptr<QueryResult> qResult;
     DatabaseConnection* con = GetFreeConnection();
 
+    std::unique_lock connectionLock{con->Busy, std::adopt_lock};
+
     if (_SendQuery(con, sql.data(), false))
     {
         qResult = _StoreQueryResult(con);
@@ -189,7 +194,6 @@ std::unique_ptr<QueryResult> Database::Query(bool *success, const char* QueryStr
         *success = false;
     }
 
-    con->Busy.release();
     return qResult;
 }
 
@@ -199,10 +203,11 @@ std::unique_ptr<QueryResult> Database::QueryNA(const char* QueryString)
     std::unique_ptr<QueryResult> qResult;
     DatabaseConnection* con = GetFreeConnection();
 
+    std::unique_lock connectionLock{con->Busy, std::adopt_lock};
+
     if (_SendQuery(con, QueryString, false))
         qResult = _StoreQueryResult(con);
 
-    con->Busy.release();
     return qResult;
 }
 
@@ -255,14 +260,14 @@ void Database::destroyQueryBufferConnection()
 {
     if (m_queryBufferConnection)
     {
-        m_queryBufferConnection->Busy.release();
+        m_queryBufferConnection->Busy.unlock();
         m_queryBufferConnection = nullptr;
     }
 }
 
 void Database::dbRunAllQueries()
 {
-    while (auto query = queries_queue.pop())
+    while (auto query = queries_queue.tryPop())
     {
         createDbConnection();
         _SendQuery(m_dbConnection, query.value().data(), false);
@@ -284,7 +289,7 @@ void Database::queryBufferThreadShutdown() {
 
 void Database::queryBufferRunAllQueries()
 {
-    while (auto query = query_buffer.pop())
+    while (auto query = query_buffer.tryPop())
     {
         createQueryBufferConnection();
         PerformQueryBuffer(query.value().get(), m_queryBufferConnection);
@@ -304,21 +309,23 @@ void Database::PerformQueryBuffer(QueryBuffer* b, DatabaseConnection* ccon)
         return;
 
     DatabaseConnection* con = ccon;
+
+    std::unique_lock<std::recursive_mutex> connectionLock;
+
     if (ccon == NULL)
+    {
         con = GetFreeConnection();
+        connectionLock = std::unique_lock{con->Busy, std::adopt_lock};
+    }
 
     _BeginTransaction(con);
 
-    for (auto itr = b->queries.begin(); itr != b->queries.end(); ++itr)
-    {
-        _SendQuery(con, (*itr).data(), false);
-    }
+    for (const auto& query : b->queries)
+        _SendQuery(con, query.data(), false);
 
     _EndTransaction(con);
-
-    if (ccon == NULL)
-        con->Busy.release();
 }
+
 // Use this when we do not have a result. ex: INSERT into SQL 1
 bool Database::Execute(const char* QueryString, ...)
 {
@@ -380,16 +387,22 @@ bool Database::WaitExecute(const char* QueryString, ...)
     va_end(vlist);
 
     DatabaseConnection* con = GetFreeConnection();
+
+    std::unique_lock connectionLock{con->Busy, std::adopt_lock};
+
     bool Result = _SendQuery(con, sql.data(), false);
-    con->Busy.release();
+
     return Result;
 }
 
 bool Database::WaitExecuteNA(const char* QueryString)
 {
     DatabaseConnection* con = GetFreeConnection();
+
+    std::unique_lock connectionLock{con->Busy, std::adopt_lock};
+
     bool Result = _SendQuery(con, QueryString, false);
-    con->Busy.release();
+
     return Result;
 }
 
@@ -420,10 +433,14 @@ void AsyncQuery::AddQuery(const char* format, ...)
 void AsyncQuery::Perform()
 {
     DatabaseConnection* conn = db->GetFreeConnection();
-    for (std::vector<AsyncQueryResult>::iterator itr = queries.begin(); itr != queries.end(); ++itr)
-        itr->result = db->FQuery(itr->query.data(), conn);
 
-    conn->Busy.release();
+    std::unique_lock connectionLock{conn->Busy, std::adopt_lock};
+
+    for (auto& query : queries)
+        query.result = db->FQuery(query.query.data(), conn);
+
+    connectionLock.unlock();
+
     func->run(queries);
 }
 

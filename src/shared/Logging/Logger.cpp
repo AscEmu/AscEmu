@@ -11,7 +11,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <string>
 #include <algorithm>
 #include <fmt/format.h>
-#include "CThreads.h"
 
 namespace AscEmu::Logging
 {

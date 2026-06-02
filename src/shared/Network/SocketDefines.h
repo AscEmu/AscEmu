@@ -9,17 +9,19 @@
 #ifndef SOCKET_DEFINES_H
 #define SOCKET_DEFINES_H
 
-#include "Threading/ConditionVariable.h"
+#include "fmt/format.h"
 #include <cstring>
 
 /* Implementation Selection */
 #ifdef WIN32        // Easy
 #define CONFIG_USE_IOCP
+#include <windows.h>
 #else
 
 // unix defines
 #define SOCKET int
 #define SD_BOTH SHUT_RDWR
+#include <pthread.h>
 
 #if __linux__
 

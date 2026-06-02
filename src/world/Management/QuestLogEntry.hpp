@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "CommonTypes.hpp"
 #include <set>
+#include <cstdint>
 
 class QueryBuffer;
 class Field;

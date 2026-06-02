@@ -58,9 +58,9 @@
 #include "Spell/SpellMgr.hpp"
 #include "Storage/DayWatcherThread.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Threading/LegacyThreading.h"
 #include "Utilities/Benchmark.hpp"
 #include "Utilities/Util.hpp"
+#include "Threading/LegacyThreadPool.h"
 
 #if VERSION_STRING == Mop
 #include "Data/WoWDynamicObject.hpp"
@@ -93,6 +93,8 @@
 #include <WinSock2.h>
 #include <Threading/LegacyThreadPool.h>
 #endif
+
+namespace fs = std::filesystem;
 
 namespace
 {

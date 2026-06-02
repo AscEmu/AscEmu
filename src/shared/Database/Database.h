@@ -22,10 +22,10 @@
 
 #include "Field.hpp"
 #include "Threading/ThreadSafeQueue.hpp"
-#include "Threading/Mutex.hpp"
 #include "Threading/AEThread.h"
 #include "CommonTypes.hpp"
 #include <string>
+#include <mutex>
 
 class QueryResult;
 class QueryThread;
@@ -35,7 +35,7 @@ class SQLCallbackBase;
 struct DatabaseConnection
 {
     virtual ~DatabaseConnection() = default;
-    Mutex Busy;
+    std::recursive_mutex Busy;
 };
 
 struct SERVER_DECL AsyncQueryResult
@@ -123,9 +123,6 @@ class SERVER_DECL Database
         virtual bool WaitExecuteNA(const char* QueryString);//Wait For Request Completion
         virtual bool Execute(const char* QueryString, ...);
         virtual bool ExecuteNA(const char* QueryString);
-
-        // Initialized on load: Database::Database() : CThread()
-        //bool ThreadRunning;
 
         const std::string & GetHostName() { return mHostname; }
         const std::string & GetDatabaseName() { return mDatabaseName; }

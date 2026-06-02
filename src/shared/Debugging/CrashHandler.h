@@ -21,17 +21,13 @@
 #define _CRASH_HANDLER_H
 
 #include <cstdint>
-#include "Threading/ConditionVariable.h"
-
+#include "Threading/LegacyThreadBase.h"
 bool HookCrashReporter(bool logon);
 
 #ifdef _WIN32
 
 #include <DbgHelp.h>
 #include "StackWalker.h"
-#include "CircularQueue.h"
-
-extern CircularQueue<uint32_t, 30> last_spells;
 
 class CStackWalker : public StackWalker
 {

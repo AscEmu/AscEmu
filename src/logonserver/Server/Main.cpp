@@ -19,6 +19,16 @@
 
 #include "Server/Master.hpp"
 
+#define ASCEMU_RUN_BIPBUFFER_COMPARISON
+#ifdef ASCEMU_RUN_BIPBUFFER_COMPARISON
+#include "BipBufferComparison.hpp"
+#endif
+
+#define ASCEMU_RUN_LEGACY_THREADPOOL_COMPARISON
+#ifdef ASCEMU_RUN_LEGACY_THREADPOOL_COMPARISON
+#include "AEThreadPoolComparison.hpp"
+#endif
+
 #ifndef WIN32
 #include <sys/resource.h>
 #endif
@@ -35,6 +45,14 @@ int main(int argc, char** argv)
         if (setrlimit(RLIMIT_CORE, &rl) == -1)
             fmt::println("setrlimit failed. Server may not save core.dump files.");
     }
+#endif
+
+#ifdef ASCEMU_RUN_BIPBUFFER_COMPARISON
+    runBipBufferComparison();
+#endif
+
+#ifdef ASCEMU_RUN_LEGACY_THREADPOOL_COMPARISON
+    runAEThreadPoolComparison();
 #endif
 
     sMasterLogon.Run(argc, argv);

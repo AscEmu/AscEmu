@@ -11,13 +11,15 @@
 #define SOCKETMGR_H_WIN32
 
 #ifdef CONFIG_USE_IOCP
+#include "Threading/LegacyThreadBase.h"
+#include <mutex>
 
 class Socket;
 class SERVER_DECL SocketMgr
 {
     HANDLE m_completionPort;
     std::set<Socket*> _sockets;
-    Mutex socketLock;
+    std::mutex socketLock;
     std::atomic<unsigned long> socket_count;
 
 private:
@@ -43,18 +45,18 @@ public:
 
     void AddSocket(Socket* s)
     {
-        socketLock.acquire();
+        std::lock_guard lock{socketLock};
+
         _sockets.insert(s);
         ++socket_count;
-        socketLock.release();
     }
 
     void RemoveSocket(Socket* s)
     {
-        socketLock.acquire();
+        std::lock_guard lock{socketLock};
+
         _sockets.erase(s);
         --socket_count;
-        socketLock.release();
     }
 
     void ShutdownThreads();

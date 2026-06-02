@@ -24,12 +24,6 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2008 | Threading/LegacyThreadPool.h
 * 2008 | Threading/LegacyThreadPool.cpp
 * 2008 | Threading/LegacyThreadBase.h
-* 2008 | Threading/LegacyThreading.h
-* 2008 | Threading/Queue.h
-* 2008 | Threading/LockedQueue.h
-* 2008 | Threading/ConditionVariable.h
-* 2008 | Threading/ConditionVariable.cpp
-* 2008 | PreallocatedQueue.h
 * 2008 | LocationVector.cpp
 * 2008 | DynLib.hpp
 * 2008 | DynLib.cpp
@@ -37,8 +31,6 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2008 | Database/Database.h
 * 2008 | Database/Database.cpp
 * 2008 | Database/CreateInterface.cpp
-* 2008 | CThreads.h
-* 2008 | CThreads.cpp
 * 2008 | Debugging/CrashHandler.h
 * 2008 | Debugging/CrashHandler.cpp
 * 2008 | Config/Config.h
@@ -62,15 +54,14 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2007 | Network/KQUEUE/SocketMgrFreeBSD.cpp
 * 2007 | Network/KQUEUE/SocketMgrFreeBSD.h
 * 2007 | Network/KQUEUE/SocketOpsFreeBSD.cpp
-* 2007 | Network/CircularBuffer.cpp
-* 2007 | Network/CircularBuffer.h
+* 2007 | Network/CircularBuffer.cpp           - wip
+* 2007 | Network/CircularBuffer.h             - wip
 * 2007 | Network/Network.h
 * 2007 | Network/Socket.cpp
 * 2007 | Network/Socket.h
 * 2007 | Network/SocketOps.h
 * 2007 | Cryptography/BigNumber.h
 * 2005 | Database/MySQLDatabase.cpp
-* 2005 | CircularQueue.h
 * 2005 | StackWalker.h
 * 2005 | StackWalker.cpp
 
@@ -181,6 +172,22 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 ### Removed on 31 May 2026
 * 2014 | CommonDefines.hpp
 * 2008 | LocationVector.h
+* 2008 | Threading/LegacyThreading.h
+* 2008 | Threading/LockedQueue.h
+* 2008 | Threading/Queue.h
+
+### Removed on 1 April 2026
+* 2024 | Threading/Mutex.hpp
+* 2024 | Threading/Mutex.cpp
+* 2005 | CircularQueue.h
+* 2008 | PreallocatedQueue.h
+
+### Removed on 2 April 2026
+* 2017 | Threading/ThreadState.h
+* 2008 | Threading/ConditionVariable.h
+* 2008 | Threading/ConditionVariable.cpp
+* 2008 | CThreads.h
+* 2008 | CThreads.cpp
 
 ### New files
 * 2015 | Exceptions/PlayerExceptions.hpp
@@ -198,7 +205,6 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2017 | Cryptography/WowCrypt.hpp
 * 2017 | Threading/AEThread.cpp
 * 2017 | Threading/AEThread.h
-* 2017 | Threading/ThreadState.h
 * 2018 | Threading/AEThreadPool.cpp
 * 2018 | Threading/AEThreadPool.h
 * 2020 | Database/Field.hpp
@@ -220,8 +226,6 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2024 | Cryptography/Sha1.hpp
 * 2024 | Cryptography/MD5.hpp
 * 2024 | Cryptography/RC4.hpp
-* 2024 | Threading/Mutex.hpp
-* 2024 | Threading/Mutex.cpp
 * 2025 | WoWGuid.hpp
 * 2026 | Debugging/Errors.hpp
 * 2026 | System/SysInfo.hpp
@@ -230,3 +234,5 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2026 | System/PerformanceCounter.cpp
 * 2026 | Utilities/MathConstants.hpp
 * 2026 | LocationVector.hpp
+* 2026 | Network/BipBuffer.hpp
+* 2026 | Network/NetworkBuffer.hpp - temporarily

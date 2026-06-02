@@ -28,7 +28,8 @@
 #include <sstream>
 #include <Utilities/Strings.hpp>
 #include "Database/Database.h"
-#include "Threading/LegacyThreading.h"
+#include <algorithm>
+#include "Threading/LegacyThreadPool.h"
 
 LogonConsole& LogonConsole::getInstance()
 {

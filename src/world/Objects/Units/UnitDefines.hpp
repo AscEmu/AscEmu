@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "AEVersion.hpp"
 #include "LocationVector.hpp"
+#include <string_view>
 
 // Do NOT extend the list, simply replace an unused value
 enum SpellImmunityMask : uint32_t

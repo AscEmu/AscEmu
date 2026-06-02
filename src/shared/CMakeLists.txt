@@ -3,6 +3,9 @@
 # set up our project name.
 set(LIBRARY_NAME shared)
 
+option(ASCEMU_USE_BIPBUFFER "Use the new BipBuffer implementation for network sockets" ON)
+option(ASCEMU_USE_AE_THREADPOOL_LEGACY_ADAPTER "Use AEThreadPool as backend for LegacyThreadPool" ON)
+
 file(GLOB SRC_CONFIG_FILES Config/*.cpp Config/*.h Config/*.hpp)
 file(GLOB SRC_CRYPTOGRAPHY_FILES Cryptography/*.cpp Cryptography/*.h Cryptography/*.hpp)
 file(GLOB SRC_DATABASE_FILES Database/*.cpp Database/*.h Database/*.hpp)
@@ -43,6 +46,20 @@ set(SHARED_SRCS
 ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_library(${LIBRARY_NAME} STATIC ${SHARED_SRCS})
+
+if (ASCEMU_USE_BIPBUFFER)
+    message(STATUS "Network buffer: BipBuffer")
+    target_compile_definitions(${LIBRARY_NAME} PUBLIC ASCEMU_USE_BIPBUFFER)
+else ()
+    message(STATUS "Network buffer: CircularBuffer")
+endif ()
+
+if (ASCEMU_USE_AE_THREADPOOL_LEGACY_ADAPTER)
+    message(STATUS "LegacyThreadPool backend: AEThreadPool adapter")
+    target_compile_definitions(${LIBRARY_NAME} PUBLIC ASCEMU_USE_AE_THREADPOOL_LEGACY_ADAPTER)
+else ()
+    message(STATUS "LegacyThreadPool backend: original legacy implementation")
+endif ()
 
 target_include_directories(${LIBRARY_NAME} PUBLIC 
     ${OPENSSL_INCLUDE_DIR}

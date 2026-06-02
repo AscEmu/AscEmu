@@ -101,7 +101,7 @@ WorldSession::~WorldSession()
         LogoutPlayer(true);
     }
 
-    while (auto packet = _recvQueue.pop())
+    while (auto packet = _recvQueue.tryPop())
     {
     }
 
@@ -143,7 +143,7 @@ uint8_t WorldSession::Update(uint32_t InstanceID)
             _logoutTime = m_currMsTime + PLAYER_LOGOUT_DELAY;
     }
 
-    while (auto packet = _recvQueue.pop())
+    while (auto packet = _recvQueue.tryPop())
     {
         if (packet.value() != nullptr)
         {
@@ -216,7 +216,7 @@ uint8_t WorldSession::processQueuedPackets(uint32_t InstanceID)
         return 2;
     uint32_t processed = 0;
     sLogger.info("WORLD: ProcessQueuedPackets called (InstanceID={}, instanceId={})", InstanceID, instanceId);
-    while (auto packet = _recvQueue.pop())
+    while (auto packet = _recvQueue.tryPop())
     {
         if (packet.value() != nullptr)
         {

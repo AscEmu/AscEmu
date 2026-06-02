@@ -15,9 +15,9 @@ void Socket::WriteCallback()
     if(IsDeleted() || !IsConnected())
         return;
 
-    //printf("\nSocket::Writecallback(): sendsize : %u\n", this->m_writeByteCount);
     // We don't want any writes going on while this is happening.
-    m_writeMutex.acquire();
+    std::lock_guard lock{m_writeMutex};
+
     if(writeBuffer.GetContiguiousBytes())
     {
         DWORD w_length = 0;
@@ -62,7 +62,6 @@ void Socket::WriteCallback()
         // Write operation is completed.
         DecSendLock();
     }
-    m_writeMutex.release();
 }
 
 void Socket::SetupReadEvent()
@@ -70,7 +69,8 @@ void Socket::SetupReadEvent()
     if(IsDeleted() || !IsConnected())
         return;
 
-    m_readMutex.acquire();
+    std::unique_lock lock{m_readMutex};
+
     DWORD r_length = 0;
     DWORD flags = 0;
     WSABUF buf;
@@ -93,12 +93,15 @@ void Socket::SetupReadEvent()
         if(WSAGetLastError() != WSA_IO_PENDING)
         {
             m_readEvent.Unmark();
+
+            lock.unlock();
+
             Disconnect();
+            return;
         }
     }
     m_BytesRecieved += r_length;
     //m_readEvent = ov;
-    m_readMutex.release();
 }
 
 void Socket::ReadCallback(uint32_t len)
