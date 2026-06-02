@@ -24,6 +24,7 @@
 #include "Threading/LegacyThreadBase.h"
 #include "CommonTypes.hpp"
 #include <atomic>
+#include <ctime>
 
 class MapMgr;
 class Player;
@@ -46,29 +47,39 @@ class SERVER_DECL CThread : public ThreadBase
 {
 public:
     CThread();
-    ~CThread();
+    ~CThread() override;
 
-    inline void SetThreadState(CThreadState thread_state) { ThreadState = thread_state; }
-    inline CThreadState GetThreadState()
+    void SetThreadState(CThreadState thread_state)
     {
-        unsigned long val = ThreadState;
-        return static_cast<CThreadState>(val);
+        ThreadState.store(thread_state);
     }
+
+    CThreadState GetThreadState() const
+    {
+        return ThreadState.load();
+    }
+
     int GetThreadId() { return ThreadId; }
     time_t GetStartTime() { return start_time; }
+
+    bool runThread() override
+    {
+        return run();
+    }
+
     virtual bool run();
-    virtual void onShutdown();
+    void onShutdown() override;
 
 protected:
-    CThread & operator=(CThread & other)
+    CThread& operator=(const CThread& other)
     {
-        this->start_time = other.start_time;
-        this->ThreadId = other.ThreadId;
-        this->ThreadState = other.ThreadState.load();
+        start_time = other.start_time;
+        ThreadId = other.ThreadId;
+        ThreadState.store(other.ThreadState.load());
         return *this;
     }
 
-    std::atomic<unsigned long> ThreadState;
-    time_t start_time;
-    int ThreadId;
+    std::atomic<CThreadState> ThreadState{ THREADSTATE_AWAITING };
+    time_t start_time = 0;
+    int ThreadId = 0;
 };

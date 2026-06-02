@@ -4,6 +4,7 @@
 set(LIBRARY_NAME shared)
 
 option(ASCEMU_USE_BIPBUFFER "Use the new BipBuffer implementation for network sockets" ON)
+option(ASCEMU_USE_AE_THREADPOOL_LEGACY_ADAPTER "Use AEThreadPool as backend for LegacyThreadPool" OFF)
 
 file(GLOB SRC_CONFIG_FILES Config/*.cpp Config/*.h Config/*.hpp)
 file(GLOB SRC_CRYPTOGRAPHY_FILES Cryptography/*.cpp Cryptography/*.h Cryptography/*.hpp)
@@ -49,6 +50,13 @@ if (ASCEMU_USE_BIPBUFFER)
     target_compile_definitions(${LIBRARY_NAME} PUBLIC ASCEMU_USE_BIPBUFFER)
 else ()
     message(STATUS "Network buffer: CircularBuffer")
+endif ()
+
+if (ASCEMU_USE_AE_THREADPOOL_LEGACY_ADAPTER)
+    message(STATUS "LegacyThreadPool backend: AEThreadPool adapter")
+    target_compile_definitions(${LIBRARY_NAME} PUBLIC ASCEMU_USE_AE_THREADPOOL_LEGACY_ADAPTER)
+else ()
+    message(STATUS "LegacyThreadPool backend: original legacy implementation")
 endif ()
 
 target_include_directories(${LIBRARY_NAME} PUBLIC 
