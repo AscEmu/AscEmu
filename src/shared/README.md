@@ -24,8 +24,6 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2008 | Threading/LegacyThreadPool.h
 * 2008 | Threading/LegacyThreadPool.cpp
 * 2008 | Threading/LegacyThreadBase.h
-* 2008 | Threading/ConditionVariable.h
-* 2008 | Threading/ConditionVariable.cpp
 * 2008 | LocationVector.cpp
 * 2008 | DynLib.hpp
 * 2008 | DynLib.cpp
@@ -186,6 +184,8 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 
 ### Removed on 2 April 2026
 * 2017 | Threading/ThreadState.h
+* 2008 | Threading/ConditionVariable.h
+* 2008 | Threading/ConditionVariable.cpp
 
 ### New files
 * 2015 | Exceptions/PlayerExceptions.hpp

@@ -21,8 +21,7 @@
 #define _CRASH_HANDLER_H
 
 #include <cstdint>
-#include "Threading/ConditionVariable.h"
-
+#include "Threading/LegacyThreadBase.h"
 bool HookCrashReporter(bool logon);
 
 #ifdef _WIN32

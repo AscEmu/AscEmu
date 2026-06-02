@@ -9,7 +9,6 @@
 #ifndef SOCKET_DEFINES_H
 #define SOCKET_DEFINES_H
 
-#include "Threading/ConditionVariable.h"
 #include "fmt/format.h"
 #include <cstring>
 

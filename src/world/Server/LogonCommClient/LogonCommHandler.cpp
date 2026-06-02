@@ -6,6 +6,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/LogonCommClient/LogonCommHandler.h"
 
 #include <sstream>
+#include <atomic>
+#include <chrono>
+#include <condition_variable>
 #include <mutex>
 
 #include "WorldPacket.h"
@@ -58,35 +61,57 @@ void LogonCommHandler::finalize()
 
 class LogonCommWatcherThread : public ThreadBase
 {
-    bool running;
-
-    Arcemu::Threading::ConditionVariable cond;
-
 public:
-    LogonCommWatcherThread()
+    LogonCommWatcherThread() = default;
+    ~LogonCommWatcherThread() override = default;
+
+    void onShutdown() override
     {
-        running = true;
+        {
+            std::lock_guard lock(m_mutex);
+            m_running = false;
+        }
+
+        m_condition.notify_one();
     }
 
-    ~LogonCommWatcherThread()
-    {}
-
-    void onShutdown()
-    {
-        running = false;
-        cond.Signal();
-    }
-
-    bool runThread()
+    bool runThread() override
     {
         sLogonCommHandler.connectToLogonServer();
-        while (running)
+
+        for (;;)
         {
+            {
+                std::lock_guard lock(m_mutex);
+
+                if (!m_running)
+                    break;
+            }
+
             sLogonCommHandler.updateLogonServerConnection();
-            cond.Wait(5000);
+
+            std::unique_lock lock(m_mutex);
+
+            m_condition.wait_for(
+                lock,
+                std::chrono::milliseconds(5000),
+                [this]
+                {
+                    return !m_running;
+                }
+            );
+
+            if (!m_running)
+                break;
         }
+
         return true;
     }
+
+private:
+    std::mutex m_mutex;
+    std::condition_variable m_condition;
+    bool m_running = true;
 };
 
 void LogonCommHandler::startLogonCommHandler()
