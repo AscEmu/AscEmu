@@ -22,6 +22,7 @@ else ()
     file(GLOB SRC_NETWORK_FILES_PLATFORM Network/EPOLL/*.cpp Network/EPOLL/*.h Network/EPOLL/*.hpp)
 endif ()
 
+file(GLOB SRC_REGISTRY_FILES Registry/*.cpp Registry/*.h Registry/*.hpp)
 file(GLOB SRC_THREADING_FILES Threading/*.cpp Threading/*.h Threading/*.hpp)
 file(GLOB SRC_UTILITIES_FILES Utilities/*.cpp Utilities/*.h Utilities/*.hpp)
 file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
@@ -35,6 +36,7 @@ set(SHARED_SRCS
     ${SRC_LOGGING_FILES}
     ${SRC_NETWORK_FILES}
     ${SRC_NETWORK_FILES_PLATFORM}
+	${SRC_REGISTRY_FILES}
     ${SRC_THREADING_FILES}
     ${SRC_UTILITIES_FILES}
     ${SRC_LOCAL_DIR}
