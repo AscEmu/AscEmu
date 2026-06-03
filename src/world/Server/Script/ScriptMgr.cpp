@@ -24,7 +24,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <git_version.hpp>
 
 #include "AchievementScript.hpp"
-#include "DynLib.hpp"
+#include "Platform/DynamicLibrary.hpp"
 #include "QuestScript.hpp"
 #include "Logging/Logger.hpp"
 #include "Management/GameEventMgr.hpp"
@@ -33,16 +33,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/ServerState.h"
 #include "Spell/Spell.hpp"
 #include "Spell/SpellInfo.hpp"
-
-#ifdef WIN32
-    #define LIBMASK ".dll";
-#else
-    #ifndef __APPLE__
-        #define LIBMASK ".so";
-    #else
-        #define LIBMASK ".dylib";
-    #endif
-#endif
 
 ScriptMgr::ScriptMgr() = default;
 ScriptMgr::~ScriptMgr() = default;
@@ -414,7 +404,7 @@ void ScriptMgr::_register_spell_script(uint32_t spellId, SpellScript* ss)
 
 struct ScriptingEngine_dl
 {
-    std::unique_ptr<Arcemu::DynLib> dl = nullptr;
+    std::unique_ptr<AscEmu::Platform::DynamicLibrary> dl = nullptr;
     exp_script_register InitializeCall = nullptr;
     uint32_t Type = 0;
 };
@@ -426,44 +416,42 @@ void ScriptMgr::LoadScripts()
     std::string modulePath = PREFIX;
     modulePath += '/';
 
-    std::string libMask = LIBMASK;
-
     std::vector<ScriptingEngine_dl> scriptingEngineDls;
 
     uint32_t dllCount = 0;
 
-    auto directoryContentMap = Util::getDirectoryContent(modulePath, libMask);
+    auto directoryContentMap = Util::getDirectoryContent(modulePath);
     for (const auto content : directoryContentMap)
     {
         std::stringstream loadMessageStream;
         auto fileName = modulePath + content.second;
-        auto dynLib = std::make_unique<Arcemu::DynLib>(fileName.c_str());
+        auto dynLib = std::make_unique<AscEmu::Platform::DynamicLibrary>(fileName.c_str());
 
-        loadMessageStream << dynLib->GetName() << " : ";
+        loadMessageStream << dynLib->path().filename().string() << " : ";
 
-        if (!dynLib->Load())
+        if (!dynLib->load())
         {
-            loadMessageStream << "ERROR: Cannot open library.";
+            loadMessageStream << "ERROR: Cannot open library: " << dynLib->lastError();
             sLogger.failure(loadMessageStream.str());
             continue;
         }
 
-        auto serverStateCall = reinterpret_cast<exp_set_serverstate_singleton>(dynLib->GetAddressForSymbol("_exp_set_serverstate_singleton"));
+        const auto serverStateCall = dynLib->symbol<exp_set_serverstate_singleton>("_exp_set_serverstate_singleton");
         if (!serverStateCall)
         {
-            loadMessageStream << "ERROR: Cannot find set_serverstate_call function.";
+            loadMessageStream << "ERROR: Cannot find set_serverstate_call function: " << dynLib->lastError();
             sLogger.failure(loadMessageStream.str());
             continue;
         }
 
         serverStateCall(ServerState::instance());
 
-        auto versionCall = reinterpret_cast<exp_get_version>(dynLib->GetAddressForSymbol("_exp_get_version"));
-        auto registerCall = reinterpret_cast<exp_script_register>(dynLib->GetAddressForSymbol("_exp_script_register"));
-        auto typeCall = reinterpret_cast<exp_get_script_type>(dynLib->GetAddressForSymbol("_exp_get_script_type"));
+        const auto versionCall = dynLib->symbol<exp_get_version>("_exp_get_version");
+        const auto registerCall = dynLib->symbol<exp_script_register>("_exp_script_register");
+        const auto typeCall = dynLib->symbol<exp_get_script_type>("_exp_get_script_type");
         if (!versionCall || !registerCall || !typeCall)
         {
-            loadMessageStream << "ERROR: Cannot find version functions.";
+            loadMessageStream << "ERROR: Cannot find required script export functions: " << dynLib->lastError();
             sLogger.failure(loadMessageStream.str());
             continue;
         }
@@ -473,12 +461,12 @@ void ScriptMgr::LoadScripts()
 
         if (dllVersion != AE_BUILD_HASH)
         {
-            loadMessageStream << "ERROR: Version mismatch.";
+            loadMessageStream << "ERROR: Version mismatch. Expected " << AE_BUILD_HASH << ", got " << dllVersion << ".";
             sLogger.failure(loadMessageStream.str());
             continue;
         }
 
-        loadMessageStream << std::string(AE_BUILD_HASH) << " : ";
+        loadMessageStream << dllVersion << " : ";
 
         if ((scriptType & SCRIPT_TYPE_SCRIPT_ENGINE) != 0)
         {
@@ -1006,46 +994,40 @@ GossipScript* ScriptMgr::get_item_gossip(uint32_t entry) const
 
 void ScriptMgr::ReloadScriptEngines()
 {
-    // for all scripting engines that allow reloading, assuming there will be new scripting engines.
-    exp_get_script_type version_function;
-    exp_engine_reload engine_reloadfunc;
-
-    for (DynamicLibraryMap::iterator itr = dynamiclibs.begin(); itr != dynamiclibs.end(); ++itr)
+    for (const auto& dl : dynamiclibs)
     {
-        const auto& dl = *itr;
-
-        version_function = reinterpret_cast<exp_get_script_type>(dl->GetAddressForSymbol("_exp_get_script_type"));
-        if (version_function == nullptr)
+        if (dl == nullptr || !dl->isLoaded())
             continue;
 
-        if ((version_function() & SCRIPT_TYPE_SCRIPT_ENGINE) != 0)
-        {
-            engine_reloadfunc = reinterpret_cast<exp_engine_reload>(dl->GetAddressForSymbol("_export_engine_reload"));
-            if (engine_reloadfunc != nullptr)
-                engine_reloadfunc();
-        }
+        const auto typeCall = dl->symbol<exp_get_script_type>("_exp_get_script_type");
+        if (typeCall == nullptr)
+            continue;
+
+        if ((typeCall() & SCRIPT_TYPE_SCRIPT_ENGINE) == 0)
+            continue;
+
+        const auto reloadCall = dl->symbol<exp_engine_reload>("_export_engine_reload");
+        if (reloadCall != nullptr)
+            reloadCall();
     }
 }
 
 void ScriptMgr::UnloadScriptEngines()
 {
-    // for all scripting engines that allow unloading, assuming there will be new scripting engines.
-    exp_get_script_type version_function;
-    exp_engine_unload engine_unloadfunc;
-
-    for (DynamicLibraryMap::iterator itr = dynamiclibs.begin(); itr != dynamiclibs.end(); ++itr)
+    for (const auto& dl : dynamiclibs)
     {
-        const auto& dl = *itr;
-
-        version_function = reinterpret_cast<exp_get_script_type>(dl->GetAddressForSymbol("_exp_get_script_type"));
-        if (version_function == nullptr)
+        if (dl == nullptr || !dl->isLoaded())
             continue;
 
-        if ((version_function() & SCRIPT_TYPE_SCRIPT_ENGINE) != 0)
-        {
-            engine_unloadfunc = reinterpret_cast<exp_engine_unload>(dl->GetAddressForSymbol("_exp_engine_unload"));
-            if (engine_unloadfunc != nullptr)
-                engine_unloadfunc();
-        }
+        const auto typeCall = dl->symbol<exp_get_script_type>("_exp_get_script_type");
+        if (typeCall == nullptr)
+            continue;
+
+        if ((typeCall() & SCRIPT_TYPE_SCRIPT_ENGINE) == 0)
+            continue;
+
+        const auto unloadCall = dl->symbol<exp_engine_unload>("_exp_engine_unload");
+        if (unloadCall != nullptr)
+            unloadCall();
     }
 }

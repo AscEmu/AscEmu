@@ -25,8 +25,6 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2008 | Threading/LegacyThreadPool.cpp
 * 2008 | Threading/LegacyThreadBase.h
 * 2008 | LocationVector.cpp
-* 2008 | DynLib.hpp
-* 2008 | DynLib.cpp
 * 2008 | Database/MySQLDatabase.h
 * 2008 | Database/Database.h
 * 2008 | Database/Database.cpp
@@ -186,6 +184,8 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2008 | Threading/ConditionVariable.cpp
 * 2008 | CThreads.h
 * 2008 | CThreads.cpp
+* 2008 | DynLib.hpp
+* 2008 | DynLib.cpp
 
 ### New files
 * 2015 | Exceptions/PlayerExceptions.hpp
@@ -230,3 +230,5 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2026 | LocationVector.hpp
 * 2026 | Network/BipBuffer.hpp
 * 2026 | Network/NetworkBuffer.hpp - temporarily
+* 2026 | Platform/DynamicLibrary.hpp
+* 2026 | Platform/DynamicLibrary.cpp

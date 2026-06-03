@@ -25,6 +25,7 @@ endif ()
 file(GLOB SRC_REGISTRY_FILES Registry/*.cpp Registry/*.h Registry/*.hpp)
 file(GLOB SRC_THREADING_FILES Threading/*.cpp Threading/*.h Threading/*.hpp)
 file(GLOB SRC_UTILITIES_FILES Utilities/*.cpp Utilities/*.h Utilities/*.hpp)
+file(GLOB SRC_PLATFORM_FILES Platform/*.cpp Platform/*.hpp)
 file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
 
 set(SHARED_SRCS
@@ -39,6 +40,7 @@ set(SHARED_SRCS
 	${SRC_REGISTRY_FILES}
     ${SRC_THREADING_FILES}
     ${SRC_UTILITIES_FILES}
+	${SRC_PLATFORM_FILES}
     ${SRC_LOCAL_DIR}
 )
 
