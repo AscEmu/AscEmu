@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu
 {
-    class SERVER_DECL PerformanceCounter
+    class PerformanceCounter
     {
     public:
         PerformanceCounter();
