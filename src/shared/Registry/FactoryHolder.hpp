@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "ObjectRegistry.h"
+#include "ObjectRegistry.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // FactoryHolder holds a factory object of a specific type

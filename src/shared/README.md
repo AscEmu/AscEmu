@@ -208,12 +208,12 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2020 | Database/Field.hpp
 * 2020 | Database/DatabaseUpdater.cpp
 * 2020 | Database/DatabaseUpdater.hpp
-* 2021 | Registry/FactoryHolder.h
+* 2021 | Registry/FactoryHolder.hpp
 * 2021 | Logging/Logger.cpp
 * 2021 | Logging/Logger.hpp
 * 2021 | Logging/MessageType.hpp
 * 2021 | Logging/Severity.hpp
-* 2021 | Registry/ObjectRegistry.h
+* 2021 | Registry/ObjectRegistry.hpp
 * 2021 | Utilities/Strings.cpp
 * 2021 | Utilities/Strings.hpp
 * 2022 | AEVersion.hpp

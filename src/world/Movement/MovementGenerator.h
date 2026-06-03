@@ -6,8 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "CommonTypes.hpp"
-#include "Registry/FactoryHolder.h"
-#include "Registry/ObjectRegistry.h"
+#include "Registry/FactoryHolder.hpp"
+#include "Registry/ObjectRegistry.hpp"
 
 class Creature;
 class Unit;
