@@ -5,6 +5,7 @@ set(LIBRARY_NAME shared)
 
 option(ASCEMU_USE_BIPBUFFER "Use the new BipBuffer implementation for network sockets" ON)
 option(ASCEMU_USE_AE_THREADPOOL_LEGACY_ADAPTER "Use AEThreadPool as backend for LegacyThreadPool" ON)
+option(ASCEMU_USE_AE_NETWORK_THREADPOOL "Use AEThreadPool/AEThread for platform socket worker threads" OFF)
 
 file(GLOB SRC_CONFIG_FILES Config/*.cpp Config/*.h Config/*.hpp)
 file(GLOB SRC_CRYPTOGRAPHY_FILES Cryptography/*.cpp Cryptography/*.h Cryptography/*.hpp)
