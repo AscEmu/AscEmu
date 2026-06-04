@@ -24,7 +24,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "LogonConf.hpp"
 #include "Database/Database.h"
 #include "Utilities/Strings.hpp"
+
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+#include "Threading/AEThreadPool.h"
+#else
 #include "Threading/LegacyThreadPool.h"
+#endif
 
 using std::chrono::milliseconds;
 
@@ -67,7 +72,18 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
     sLogger.setMinimumMessageType(static_cast<AscEmu::Logging::MessageType>(logonConfig.logger.minimumMessageType));
 
     sLogger.info("ThreadMgr : Starting...");
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    AscEmu::Threading::AEThreadPool threadPool(
+        "LogonServer",
+        2,   // min worker
+        8,   // soft max
+        16   // hard max
+    );
+
+    threadPool.start();
+#else
     ThreadPool.Startup();
+#endif
 
     if (!StartDb())
     {
@@ -98,7 +114,17 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
     m_clientMaxBuild = 15595;
 
     auto logonConsole = std::make_unique<LogonConsoleThread>();
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    threadPool.addDedicatedThread(
+        "LogonConsole",
+        [console = logonConsole.get()](AscEmu::Threading::AEThread&)
+        {
+            static_cast<void>(console->runThread());
+        }
+    );
+#else
     ThreadPool.ExecuteTask(logonConsole.get());
+#endif
 
     sSocketMgr.initialize();
 
@@ -114,8 +140,26 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
     if (isAuthsockCreated && isIntersockCreated)
     {
 #ifdef WIN32
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+        threadPool.addDedicatedThread(
+            "RealmListSocket",
+            [socket = realmlistSocket.get()](AscEmu::Threading::AEThread&)
+            {
+                static_cast<void>(socket->runThread());
+            }
+        );
+
+        threadPool.addDedicatedThread(
+            "LogonCommSocket",
+            [socket = logonServerSocket.get()](AscEmu::Threading::AEThread&)
+            {
+                static_cast<void>(socket->runThread());
+            }
+        );
+#else
         ThreadPool.ExecuteTask(realmlistSocket.get());
         ThreadPool.ExecuteTask(logonServerSocket.get());
+#endif
 #endif
         _HookSignals();
 
@@ -129,8 +173,21 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
             if (!(++loop_counter % 20))             // 20 seconds
                 CheckForDeadSockets();
 
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+            if (!(loop_counter % 300))
+            {
+                sLogger.debug(
+                    "ThreadPool: workers={}, dedicated={}, queued={}, completed={}",
+                    threadPool.workerCount(),
+                    threadPool.dedicatedThreadCount(),
+                    threadPool.queuedTaskCount(),
+                    threadPool.completedTaskCount()
+                );
+            }
+#else
             if (!(loop_counter % 300))              // 5mins
                 ThreadPool.IntegrityCheck();
+#endif
 
             if (!(loop_counter % 5))
             {
@@ -170,7 +227,12 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
     sLogonSQL->Shutdown();
     sLogonSQL = nullptr;
 
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    threadPool.shutdown();
+    threadPool.join();
+#else
     ThreadPool.Shutdown();
+#endif
 
     // delete pid file
     if (remove("logonserver.pid") != 0)
