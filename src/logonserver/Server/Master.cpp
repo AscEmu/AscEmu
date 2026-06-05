@@ -128,6 +128,10 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
 
     sSocketMgr.initialize();
 
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    sSocketMgr.SetThreadPool(threadPool);
+#endif
+
     auto realmlistSocket = std::make_unique<ListenSocket<AuthSocket>>(logonConfig.listen.host.c_str(), logonConfig.listen.realmListPort);
     auto logonServerSocket = std::make_unique<ListenSocket<LogonCommServerSocket>>(logonConfig.listen.interServerHost.c_str(), logonConfig.listen.port);
 
@@ -214,9 +218,15 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
     realmlistSocket->Close();
     logonServerSocket->Close();
     sSocketMgr.CloseAll();
-#ifdef WIN32
+
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
     sSocketMgr.ShutdownThreads();
+#else
+    #ifdef WIN32
+        sSocketMgr.ShutdownThreads();
+    #endif
 #endif
+
     sLogonConsole.Kill();
     sAccountMgr.finalize();
     sRealmManager.finalize();

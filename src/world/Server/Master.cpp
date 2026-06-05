@@ -60,7 +60,12 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Utilities/Benchmark.hpp"
 #include "Utilities/Util.hpp"
-#include "Threading/LegacyThreadPool.h"
+
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    #include "Threading/AEThreadPool.h"
+#else
+    #include "Threading/LegacyThreadPool.h"
+#endif
 
 #if VERSION_STRING == Mop
 #include "Data/WoWDynamicObject.hpp"
@@ -91,7 +96,6 @@
 #ifdef _WIN32
 #include <Windows.h>
 #include <WinSock2.h>
-#include <Threading/LegacyThreadPool.h>
 #endif
 
 namespace fs = std::filesystem;
@@ -108,13 +112,27 @@ namespace
         sLogger.info("========================================================");
     }
 
-    void startRemoteConsole()
+    void startRemoteConsole(
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+        AscEmu::Threading::AEThreadPool& threadPool
+#endif
+    )
     {
         sLogger.info("RemoteConsole : Starting...");
         if (StartConsoleListener())
         {
 #ifdef _WIN32
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+            threadPool.addDedicatedThread(
+                "RemoteConsoleListener",
+                [listener = GetConsoleListener()](AscEmu::Threading::AEThread&)
+                {
+                    static_cast<void>(listener->runThread());
+                }
+            );
+#else
             ThreadPool.ExecuteTask(GetConsoleListener());
+#endif
 #endif
             sLogger.info("RemoteConsole : Now open.");
         }
@@ -413,7 +431,17 @@ bool Master::run(int /*argc*/, char** /*argv*/)
     }
 
     // From here on, if we return false, we MUST clean up DB and ThreadPool!
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    AscEmu::Threading::AEThreadPool threadPool(
+        "WorldServer",
+        2,
+        8,
+        16
+    );
+    threadPool.start();
+#else
     ThreadPool.Startup();
+#endif
     auto startTime = Util::TimeNow();
 
     const std::string charDbName = worldConfig.charDb.dbName;
@@ -426,7 +454,12 @@ bool Master::run(int /*argc*/, char** /*argv*/)
 
     if (!checkDBVersion())
     {
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+        threadPool.shutdown();
+        threadPool.join();
+#else
         ThreadPool.Shutdown(); // Prevent thread leak
+#endif
         stopDB();
         sLogger.finalize();
         return false;
@@ -438,7 +471,12 @@ bool Master::run(int /*argc*/, char** /*argv*/)
     if (!sWorld.setInitialWorldSettings())
     {
         sLogger.failure("SetInitialWorldSettings() failed. Something went wrong? Exiting.");
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+        threadPool.shutdown();
+        threadPool.join();
+#else
         ThreadPool.Shutdown(); // Prevent thread leak
+#endif
         stopDB();
         sLogger.finalize();
         return false;
@@ -450,9 +488,24 @@ bool Master::run(int /*argc*/, char** /*argv*/)
     hookSignals();
 
     auto console = std::make_unique<ConsoleThread>();
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    threadPool.addDedicatedThread(
+        "WorldConsole",
+        [consoleThread = console.get()](AscEmu::Threading::AEThread&)
+        {
+            static_cast<void>(consoleThread->runThread());
+        }
+    );
+#else
     ThreadPool.ExecuteTask(console.get());
+#endif
 
     startNetworkSubsystem();
+
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    sSocketMgr.SetThreadPool(threadPool);
+#endif
+
     sSocketMgr.SpawnWorkerThreads();
     sScriptMgr.LoadScripts();
     sSpellMgr.loadSpellScripts();
@@ -463,7 +516,11 @@ bool Master::run(int /*argc*/, char** /*argv*/)
     sLogger.info("Server : Ready for connections. Startup time: {} ms", static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
     sGameEventMgrThread.initialize();
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    startRemoteConsole(threadPool);
+#else
     startRemoteConsole();
+#endif
     writePidFile();
 
     sChannelMgr.initialize();
@@ -502,7 +559,19 @@ bool Master::run(int /*argc*/, char** /*argv*/)
     bool isListenerOpen = listenSocket->IsOpen();
 #ifdef _WIN32
     if (isListenerOpen)
+    {
+    #ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+        threadPool.addDedicatedThread(
+            "WorldListenSocket",
+            [socket = listenSocket.get()](AscEmu::Threading::AEThread&)
+            {
+                static_cast<void>(socket->runThread());
+            }
+        );
+    #else
         ThreadPool.ExecuteTask(listenSocket.get());
+    #endif
+    }
 #endif
 
     shutdownThreadPools(isListenerOpen);
@@ -513,7 +582,19 @@ bool Master::run(int /*argc*/, char** /*argv*/)
     worldRunnable->threadShutdown();
     worldRunnable.reset();
 
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+
+    sLogger.debug(
+        "ThreadPool: workers={}, dedicated={}, queued={}, completed={}",
+        threadPool.workerCount(),
+        threadPool.dedicatedThreadCount(),
+        threadPool.queuedTaskCount(),
+        threadPool.completedTaskCount()
+    );
+
+#else
     ThreadPool.ShowStats();
+#endif
     console->stopThread();
 
     shutdownLootSystem();
@@ -527,13 +608,22 @@ bool Master::run(int /*argc*/, char** /*argv*/)
     sWorld.saveAllPlayersToDb();
 
     sLogger.info("Network : Shutting down network subsystem.");
-#ifdef _WIN32
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
     sSocketMgr.ShutdownThreads();
+#else
+    #ifdef _WIN32
+        sSocketMgr.ShutdownThreads();
+    #endif
 #endif
     sSocketMgr.CloseAll();
 
     serverShutdown.store(true);
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    threadPool.shutdown();
+    threadPool.join();
+#else
     ThreadPool.Shutdown();
+#endif
 
     sWorld.logoutAllPlayers();
     sLogonCommHandler.finalize();

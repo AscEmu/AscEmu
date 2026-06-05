@@ -12,6 +12,12 @@
 
 #ifdef CONFIG_USE_IOCP
 
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    #include "Threading/AEThreadPool.h"
+#else
+    #include "Threading/LegacyThreadPool.h"
+#endif
+
 #include "Debugging/CrashHandler.h"
 
 SocketMgr& SocketMgr::getInstance()
@@ -33,12 +39,102 @@ void SocketMgr::SpawnWorkerThreads()
     GetSystemInfo(&si);
 
     threadcount = si.dwNumberOfProcessors;
-
     sLogger.info("IOCP: Spawning {} worker threads.", threadcount);
-    for(long x = 0; x < threadcount; ++x)
+
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    if (m_threadPool == nullptr)
+    {
+        sLogger.failure("SocketMgr::SpawnWorkerThreads called without AEThreadPool.");
+        return;
+    }
+
+    if (!m_workerThreads.empty())
+        return;
+
+    m_workerThreads.reserve(static_cast<size_t>(threadcount));
+
+    for (long x = 0; x < threadcount; ++x)
+    {
+        auto& worker = m_threadPool->addDedicatedThread(
+            "IOCP Worker " + std::to_string(x),
+            [this](AscEmu::Threading::AEThread& self)
+            {
+                WorkerThreadLoop(self);
+            }
+        );
+
+        m_workerThreads.push_back(&worker);
+    }
+#else
+    for (long x = 0; x < threadcount; ++x)
         ThreadPool.ExecuteTask(new SocketWorkerThread());
+#endif
 }
 
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+void SocketMgr::ShutdownThreads()
+{
+    for (auto* worker : m_workerThreads)
+    {
+        if (worker != nullptr)
+            worker->requestKill();
+    }
+
+    for (int i = 0; i < threadcount; ++i)
+    {
+        OverlappedStruct* ov = new OverlappedStruct(SOCKET_IO_THREAD_SHUTDOWN);
+        PostQueuedCompletionStatus(m_completionPort, 0, (ULONG_PTR)0, &ov->m_overlap);
+    }
+
+    for (auto* worker : m_workerThreads)
+    {
+        if (worker != nullptr)
+            worker->join();
+    }
+
+    m_workerThreads.clear();
+}
+
+void SocketMgr::WorkerThreadLoop(AscEmu::Threading::AEThread& self)
+{
+    try
+    {
+        HANDLE completionPort = GetCompletionPort();
+        DWORD bytesTransferred = 0;
+        ULONG_PTR completionKey = 0;
+        LPOVERLAPPED overlappedPtr = nullptr;
+
+        while (!self.isKilled())
+        {
+            if (!GetQueuedCompletionStatus(completionPort, &bytesTransferred, &completionKey, &overlappedPtr, 1000))
+                continue;
+
+            if (overlappedPtr == nullptr)
+                continue;
+
+            Socket* socket = reinterpret_cast<Socket*>(completionKey);
+            OverlappedStruct* overlapped = CONTAINING_RECORD(overlappedPtr, OverlappedStruct, m_overlap);
+
+            if (overlapped->m_event == SOCKET_IO_THREAD_SHUTDOWN)
+            {
+                delete overlapped;
+                return;
+            }
+
+            if (overlapped->m_event < NUM_SOCKET_IO_EVENTS)
+                ophandlers[overlapped->m_event](socket, bytesTransferred);
+        }
+    }
+    catch (const std::exception& e)
+    {
+        sLogger.failure("IOCP worker stopped due to C++ exception: {}", e.what());
+    }
+    catch (...)
+    {
+        sLogger.failure("IOCP worker stopped due to an unknown C++ exception.");
+    }
+}
+#else
 bool SocketWorkerThread::runThread()
 {
     try
@@ -78,6 +174,7 @@ bool SocketWorkerThread::runThread()
 
     return true;
 }
+#endif
 
 void HandleReadComplete(Socket* s, uint32_t len)
 {

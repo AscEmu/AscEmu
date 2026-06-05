@@ -11,8 +11,21 @@
 #define SOCKETMGR_H_WIN32
 
 #ifdef CONFIG_USE_IOCP
-#include "Threading/LegacyThreadBase.h"
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    #include "../SocketDefines.h"
+    #include "Threading/AEThread.h"
+    #include <vector>
+#else
+    #include "Threading/LegacyThreadBase.h"
+#endif
 #include <mutex>
+
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+namespace AscEmu::Threading
+{
+    class AEThreadPool;
+}
+#endif
 
 class Socket;
 class SERVER_DECL SocketMgr
@@ -26,7 +39,22 @@ private:
     SocketMgr() = default;
     ~SocketMgr() = default;
 
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    AscEmu::Threading::AEThreadPool* m_threadPool = nullptr;
+    std::vector<AscEmu::Threading::AEThread*> m_workerThreads;
+
+    void WorkerThreadLoop(AscEmu::Threading::AEThread& self);
+#endif
+
 public:
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    void SetThreadPool(AscEmu::Threading::AEThreadPool& threadPool)
+    {
+        m_threadPool = &threadPool;
+    }
+
+    void ShutdownThreads();
+#endif
     static SocketMgr& getInstance();
     void initialize();
     // todo: empty on windows, should it be?
@@ -67,11 +95,13 @@ public:
 
 typedef void(*OperationHandler)(Socket* s, uint32_t len);
 
+#ifndef ASCEMU_USE_AE_NETWORK_THREADPOOL
 class SocketWorkerThread : public ThreadBase
 {
 public:
     bool runThread();
 };
+#endif
 
 void SERVER_DECL HandleReadComplete(Socket* s, uint32_t len);
 void SERVER_DECL HandleWriteComplete(Socket* s, uint32_t len);

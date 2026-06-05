@@ -8,8 +8,12 @@
 
 #include "../Network.h"
 #include "Debugging/Errors.hpp"
-#include "Threading/LegacyThreadBase.h"
-#include "Threading/LegacyThreadPool.h"
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    #include "Threading/AEThreadPool.h"
+#else
+    #include "Threading/LegacyThreadBase.h"
+    #include "Threading/LegacyThreadPool.h"
+#endif
 #include <cassert>
 
 #ifdef CONFIG_USE_KQUEUE
@@ -79,8 +83,34 @@ void SocketMgr::CloseAll()
 void SocketMgr::SpawnWorkerThreads()
 {
     uint32_t count = 1;
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    if (m_threadPool == nullptr)
+    {
+        sLogger.failure("SocketMgr::SpawnWorkerThreads called without AEThreadPool.");
+        return;
+    }
+
+    if (!m_workerThreads.empty())
+        return;
+
+    m_workerThreads.reserve(count);
+
+    for (uint32_t i = 0; i < count; ++i)
+    {
+        auto& worker = m_threadPool->addDedicatedThread(
+            "KQUEUE Worker " + std::to_string(i),
+            [this](AscEmu::Threading::AEThread& self)
+            {
+                WorkerThreadLoop(self);
+            }
+        );
+
+        m_workerThreads.push_back(&worker);
+    }
+#else
     for(uint32_t i = 0; i < count; ++i)
         ThreadPool.ExecuteTask(new SocketWorkerThread());
+#endif
 }
 
 uint32_t SocketMgr::GetSocketCount()
@@ -88,6 +118,103 @@ uint32_t SocketMgr::GetSocketCount()
     return socket_count.load();
 }
 
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+void SocketMgr::ShutdownThreads()
+{
+    for (auto* worker : m_workerThreads)
+    {
+        if (worker != nullptr)
+            worker->requestKill();
+    }
+
+    for (auto* worker : m_workerThreads)
+    {
+        if (worker != nullptr)
+            worker->join();
+    }
+
+    m_workerThreads.clear();
+}
+
+void SocketMgr::WorkerThreadLoop(AscEmu::Threading::AEThread& self)
+{
+    struct kevent events[THREAD_EVENT_SIZE];
+    struct timespec ts;
+    ts.tv_nsec = 0;
+    ts.tv_sec = 1;
+
+    const int local_kq = GetKq();
+
+    while (!self.isKilled())
+    {
+        const int fd_count = kevent(local_kq, nullptr, 0, &events[0], THREAD_EVENT_SIZE, &ts);
+
+        for (int i = 0; i < fd_count; ++i)
+        {
+            if (events[i].ident >= SOCKET_HOLDER_SIZE)
+            {
+                sLogger.warning("kqueue : Requested FD that is too high ({})", static_cast<int>(events[i].ident));
+                continue;
+            }
+
+            Socket* ptr = fds[events[i].ident];
+
+            if (ptr == nullptr)
+            {
+                if ((ptr = ((Socket*)listenfds[events[i].ident])) != nullptr)
+                {
+                    ((ListenSocketBase*)ptr)->OnAccept();
+                }
+                else
+                {
+                    struct kevent ev;
+                    struct kevent ev2;
+                    EV_SET(&ev, events[i].ident, EVFILT_WRITE, EV_DELETE, 0, 0, nullptr);
+                    EV_SET(&ev2, events[i].ident, EVFILT_READ, EV_DELETE, 0, 0, nullptr);
+                    kevent(local_kq, &ev, 1, 0, 0, nullptr);
+                    kevent(local_kq, &ev2, 1, 0, 0, nullptr);
+                }
+
+                continue;
+            }
+
+            if (events[i].flags & EV_EOF || events[i].flags & EV_ERROR)
+            {
+                ptr->Disconnect();
+                continue;
+            }
+
+            if (events[i].filter == EVFILT_WRITE)
+            {
+                ptr->BurstBegin();
+                ptr->WriteCallback();
+
+                if (ptr->writeBuffer.GetSize() > 0)
+                    ptr->PostEvent(EVFILT_WRITE, true);
+                else
+                {
+                    ptr->DecSendLock();
+                    ptr->PostEvent(EVFILT_READ, false);
+                }
+
+                ptr->BurstEnd();
+                continue;
+            }
+
+            if (events[i].filter == EVFILT_READ)
+            {
+                ptr->ReadCallback(0);
+
+                if (ptr->writeBuffer.GetSize() > 0 && ptr->IsConnected() && !ptr->HasSendLock())
+                {
+                    ptr->PostEvent(EVFILT_WRITE, true);
+                    ptr->IncSendLock();
+                }
+            }
+        }
+    }
+}
+#else
 bool SocketWorkerThread::runThread()
 {
     sLogger.info("Worker thread started.");
@@ -166,5 +293,6 @@ bool SocketWorkerThread::runThread()
     }
     return true;
 }
+#endif
 
 #endif
