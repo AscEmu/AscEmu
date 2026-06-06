@@ -3,7 +3,6 @@
 # set up our project name.
 set(LIBRARY_NAME shared)
 
-option(ASCEMU_USE_BIPBUFFER "Use the new BipBuffer implementation for network sockets" ON)
 option(ASCEMU_USE_AE_NETWORK_THREADPOOL "Use AEThreadPool/AEThread for platform socket worker threads" ON)
 
 file(GLOB SRC_CONFIG_FILES Config/*.cpp Config/*.h Config/*.hpp)
@@ -48,13 +47,6 @@ set(SHARED_SRCS
 ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_library(${LIBRARY_NAME} STATIC ${SHARED_SRCS})
-
-if (ASCEMU_USE_BIPBUFFER)
-    message(STATUS "Network buffer: BipBuffer")
-    target_compile_definitions(${LIBRARY_NAME} PUBLIC ASCEMU_USE_BIPBUFFER)
-else ()
-    message(STATUS "Network buffer: CircularBuffer")
-endif ()
 
 target_include_directories(${LIBRARY_NAME} PUBLIC 
     ${OPENSSL_INCLUDE_DIR}
