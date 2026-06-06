@@ -5,12 +5,23 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Threading/LegacyThreadBase.h"
+#ifndef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    #include "Threading/LegacyThreadBase.h"
+#else
+    template <class T>
+    class ListenSocket;
+
+    class ConsoleSocket;
+#endif
 
 bool StartConsoleListener();
 void CloseConsoleListener();
 
 #ifdef _WIN32
-    // Returns the console listener thread
-    ThreadBase* GetConsoleListener();
+    #ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+        ListenSocket<ConsoleSocket>* GetConsoleListener();
+    #else
+        // Returns the console listener thread
+        ThreadBase* GetConsoleListener();
+    #endif
 #endif

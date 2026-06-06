@@ -10,11 +10,40 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Logging/Logger.hpp"
 #include "Threading/LegacyThreadPool.h"
 
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    #include "Threading/AEThread.h"
+#endif
+
 #include <chrono>
 #include <thread>
 
 #ifndef _WIN32
 #include <poll.h>
+#endif
+
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+void ConsoleThread::run(AscEmu::Threading::AEThread& thread)
+{
+    LocalConsole localConsole;
+    mStopConsoleThread = false;
+    mIsConsoleThreadRunning = true;
+
+    while (!mStopConsoleThread && !thread.isKilled())
+    {
+        std::string cmd;
+        std::getline(std::cin, cmd);
+
+        if (mStopConsoleThread || thread.isKilled())
+            break;
+
+        if (cmd.empty())
+            continue;
+
+        processConsoleInput(&localConsole, cmd);
+    }
+
+    mIsConsoleThreadRunning = false;
+}
 #endif
 
 bool ConsoleThread::runThread()
