@@ -52,9 +52,8 @@ public:
     {
         m_threadPool = &threadPool;
     }
-
-    void ShutdownThreads();
 #endif
+
     static SocketMgr& getInstance();
     void initialize();
     // todo: empty on windows, should it be?

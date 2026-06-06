@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
     template <class T>
     class ListenSocket;
 
-    class ConsoleSocket;
+    #include "ConsoleSocket.h"
 #endif
 
 bool StartConsoleListener();

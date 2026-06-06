@@ -72,29 +72,6 @@ void SocketMgr::SpawnWorkerThreads()
 }
 
 #ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
-void SocketMgr::ShutdownThreads()
-{
-    for (auto* worker : m_workerThreads)
-    {
-        if (worker != nullptr)
-            worker->requestKill();
-    }
-
-    for (int i = 0; i < threadcount; ++i)
-    {
-        OverlappedStruct* ov = new OverlappedStruct(SOCKET_IO_THREAD_SHUTDOWN);
-        PostQueuedCompletionStatus(m_completionPort, 0, (ULONG_PTR)0, &ov->m_overlap);
-    }
-
-    for (auto* worker : m_workerThreads)
-    {
-        if (worker != nullptr)
-            worker->join();
-    }
-
-    m_workerThreads.clear();
-}
-
 void SocketMgr::WorkerThreadLoop(AscEmu::Threading::AEThread& self)
 {
     try
@@ -242,11 +219,29 @@ void SocketMgr::CloseAll()
 
 void SocketMgr::ShutdownThreads()
 {
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    for (auto* worker : m_workerThreads)
+    {
+        if (worker != nullptr)
+            worker->requestKill();
+    }
+#endif
+
     for (int i = 0; i < threadcount; ++i)
     {
         OverlappedStruct* ov = new OverlappedStruct(SOCKET_IO_THREAD_SHUTDOWN);
         PostQueuedCompletionStatus(m_completionPort, 0, (ULONG_PTR)0, &ov->m_overlap);
     }
+
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    for (auto* worker : m_workerThreads)
+    {
+        if (worker != nullptr)
+            worker->join();
+    }
+
+    m_workerThreads.clear();
+#endif
 }
 
 void SocketMgr::ShowStatus()

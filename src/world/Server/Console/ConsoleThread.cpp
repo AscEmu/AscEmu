@@ -44,8 +44,7 @@ void ConsoleThread::run(AscEmu::Threading::AEThread& thread)
 
     mIsConsoleThreadRunning = false;
 }
-#endif
-
+#else
 bool ConsoleThread::runThread()
 {
     SetThreadName("Console Interpreter");
@@ -81,6 +80,7 @@ bool ConsoleThread::runThread()
 
     return false;
 }
+#endif
 
 void ConsoleThread::stopThread()
 {

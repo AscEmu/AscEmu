@@ -48,6 +48,13 @@ ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_library(${LIBRARY_NAME} STATIC ${SHARED_SRCS})
 
+if (ASCEMU_USE_AE_NETWORK_THREADPOOL)
+    message(STATUS "Threading: AEThreadPool")
+    target_compile_definitions(${LIBRARY_NAME} PUBLIC ASCEMU_USE_AE_NETWORK_THREADPOOL)
+else ()
+    message(STATUS "Threading: LegacyThreadPool")
+endif ()
+
 target_include_directories(${LIBRARY_NAME} PUBLIC 
     ${OPENSSL_INCLUDE_DIR}
     ${ZLIB_INCLUDE_DIRS}
