@@ -24,11 +24,6 @@
 #include "BipBufferComparison.hpp"
 #endif
 
-#define ASCEMU_RUN_LEGACY_THREADPOOL_COMPARISON
-#ifdef ASCEMU_RUN_LEGACY_THREADPOOL_COMPARISON
-#include "AEThreadPoolComparison.hpp"
-#endif
-
 #ifndef WIN32
 #include <sys/resource.h>
 #endif
@@ -49,10 +44,6 @@ int main(int argc, char** argv)
 
 #ifdef ASCEMU_RUN_BIPBUFFER_COMPARISON
     runBipBufferComparison();
-#endif
-
-#ifdef ASCEMU_RUN_LEGACY_THREADPOOL_COMPARISON
-    runAEThreadPoolComparison();
 #endif
 
     sMasterLogon.Run(argc, argv);

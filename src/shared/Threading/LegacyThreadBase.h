@@ -7,12 +7,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "CommonTypes.hpp"
 
-#ifndef ASCEMU_USE_AE_THREADPOOL_LEGACY_ADAPTER
-    #ifdef WIN32
-        #include <windows.h>
-    #else
-        #include <pthread.h>
-    #endif
+#ifdef WIN32
+#include <windows.h>
+#else
+#include <pthread.h>
 #endif
 
 class SERVER_DECL ThreadBase
@@ -28,11 +26,9 @@ public:
     // Called during legacy pool shutdown for active tasks.
     virtual void onShutdown() {}
 
-#ifndef ASCEMU_USE_AE_THREADPOOL_LEGACY_ADAPTER
-    #ifdef WIN32
-        HANDLE THREAD_HANDLE;
-    #else
-        pthread_t THREAD_HANDLE;
-    #endif
+#ifdef WIN32
+    HANDLE THREAD_HANDLE;
+#else
+    pthread_t THREAD_HANDLE;
 #endif
 };
