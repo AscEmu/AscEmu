@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#ifndef ASCEMU_USE_AE_NETWORK_THREADPOOL
 #include "CommonTypes.hpp"
 
 #ifdef WIN32
@@ -32,3 +33,5 @@ public:
     pthread_t THREAD_HANDLE;
 #endif
 };
+
+#endif

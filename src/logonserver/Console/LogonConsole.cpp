@@ -30,7 +30,7 @@
 #include "Database/Database.h"
 #include <algorithm>
 #ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
-    #include "Threading/AEThread.h"
+    #include "Threading/AEThreadPool.h"
 #else
     #include "Threading/LegacyThreadPool.h"
 #endif
@@ -96,7 +96,11 @@ void LogonConsole::Kill()
     sLogger.info("Waiting for console thread to terminate....");
     while (_thread != nullptr)
     {
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+        AscEmu::Threading::sleep(100);
+#else
         Arcemu::Sleep(100);
+#endif
     }
     sLogger.info("Console shut down.");
 }

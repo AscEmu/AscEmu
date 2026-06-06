@@ -903,8 +903,10 @@ void Master::updatePeriodicStats(uint32_t currentLoop) const
 {
     if (currentLoop % 10000 != 0) return; // Only run every ~5 mins
 
+#ifndef ASCEMU_USE_AE_NETWORK_THREADPOOL
     ThreadPool.ShowStats();
     ThreadPool.IntegrityCheck();
+#endif
 
 #if !defined(_WIN32) && defined(__DEBUG__)
     if (std::ofstream uptimeFile{"worldserver.uptime"})

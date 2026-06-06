@@ -62,8 +62,10 @@ bool ChatCommandHandler::HandleServerInfoCommand(const char* /*args*/, WorldSess
     greenSystemMessage(m_session, "Active Sessions: |r{}", active_sessions);
     greenSystemMessage(m_session, "Current GMs: |r{} GMs", online_gm);
     greenSystemMessage(m_session, "Current Players: |r{} ({} Peak)", online_gm > 0 ? (online_count - online_gm) : online_count, sWorld.getPeakSessionCount());
+#ifndef ASCEMU_USE_AE_NETWORK_THREADPOOL
     greenSystemMessage(m_session, "Active Thread Count: |r{}", ThreadPool.GetActiveThreadCount());
     greenSystemMessage(m_session, "Free Thread Count: |r{}", ThreadPool.GetFreeThreadCount());
+#endif
     greenSystemMessage(m_session, "Average Latency: |r{}ms", online_count > 0 ? (latency_avg / online_count) : latency_avg);
     greenSystemMessage(m_session, "CPU Usage: {}%", sWorld.getCPUUsage());
     greenSystemMessage(m_session, "RAM Usage: {} MB", sWorld.getRAMUsage());

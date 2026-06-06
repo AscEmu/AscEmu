@@ -158,8 +158,10 @@ bool handleServerInfoCommand(BaseConsole* baseConsole, int /*argumentCount*/, st
         baseConsole->Write("Uptime: %s\r\n", sWorld.getWorldUptimeString().c_str());
         baseConsole->Write("Active Branch: %s\r\n", AE_BUILD_BRANCH);
         baseConsole->Write("Current Players: %d (%d GMs, %d queued)\r\n", clientsNum, gmCount, 0);
+#ifndef ASCEMU_USE_AE_NETWORK_THREADPOOL
         baseConsole->Write("Active Thread Count: %u\r\n", ThreadPool.GetActiveThreadCount());
         baseConsole->Write("Free Thread Count: %u\r\n", ThreadPool.GetFreeThreadCount());
+#endif
         baseConsole->Write("Average Latency: %.3fms\r\n", onlineCount ? (float)avgLatency / (float)onlineCount : 0.0f);
         baseConsole->Write("CPU Usage: %3.2f %%\r\n", sWorld.getCPUUsage());
         baseConsole->Write("RAM Usage: %4.2f MB\r\n", sWorld.getRAMUsage());

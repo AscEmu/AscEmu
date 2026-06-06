@@ -52,7 +52,9 @@ namespace
 
     int win32Main(int argc, char** argv)
     {
+#ifndef ASCEMU_USE_AE_NETWORK_THREADPOOL
         SetThreadName("Main Thread");
+#endif
 
         // This sets up the global unhandled exception filter
         startCrashHandler();

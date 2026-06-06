@@ -203,7 +203,11 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
             }
 
             PatchMgr::getInstance().UpdateJobs();
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+            AscEmu::Threading::sleep(1000);
+#else
             Arcemu::Sleep(1000);
+#endif
         }
 
         sLogger.info("Shutting down...");

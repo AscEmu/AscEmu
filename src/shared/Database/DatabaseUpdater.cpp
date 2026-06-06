@@ -12,8 +12,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include <iostream>
 #include <regex>
 #include <algorithm>
-
-#include "Threading/LegacyThreadPool.h"
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    #include "Threading/AEThreadPool.h"
+#else
+    #include "Threading/LegacyThreadPool.h"
+#endif
 
 void DatabaseUpdater::initBaseIfNeeded(const std::string& dbName, const std::string& dbBaseType, Database& dbPointer)
 {
@@ -61,7 +64,11 @@ void DatabaseUpdater::initBaseIfNeeded(const std::string& dbName, const std::str
             else
                 std::cout << " %\n";
 
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+            AscEmu::Threading::sleep(250);
+#else
             Arcemu::Sleep(250);
+#endif
         }
     }
 }
@@ -103,7 +110,12 @@ void DatabaseUpdater::checkAndApplyDBUpdatesIfNeeded(const std::string& database
     while (dbPointer.GetQueueSize() > 0)
     {
         sLogger.info("-- busy updating database \"{}\". Waiting for {} queries to be executed.", database, dbPointer.GetQueueSize());
+
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+        AscEmu::Threading::sleep(500);
+#else
         Arcemu::Sleep(500);
+#endif
     }
 }
 

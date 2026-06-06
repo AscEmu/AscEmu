@@ -19,6 +19,8 @@
 
 #pragma once
 
+#ifndef ASCEMU_USE_AE_NETWORK_THREADPOOL
+
 #include "CommonTypes.hpp"
 #include "Threading/LegacyThreadBase.h"
 
@@ -237,3 +239,5 @@ public:
 };
 
 extern SERVER_DECL CThreadPool ThreadPool;
+
+#endif

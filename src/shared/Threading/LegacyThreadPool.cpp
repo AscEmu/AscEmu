@@ -17,6 +17,8 @@
  *
  */
 
+#ifndef ASCEMU_USE_AE_NETWORK_THREADPOOL
+
 #include "LegacyThreadPool.h"
 #include <Logging/Logger.hpp>
 #include "Utilities/Util.hpp"
@@ -441,3 +443,5 @@ long Sync_Sub(volatile long* value)
     return __sync_sub_and_fetch(value, 1);
 #endif
 }
+
+#endif

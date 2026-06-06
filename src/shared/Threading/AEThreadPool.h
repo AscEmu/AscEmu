@@ -22,6 +22,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu::Threading
 {
+    static void sleep(unsigned long timems)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(timems));
+    }
+
     class AEThreadPool
     {
     public:
