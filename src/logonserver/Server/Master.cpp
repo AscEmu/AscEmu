@@ -117,9 +117,9 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
 #ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
     threadPool.addDedicatedThread(
         "LogonConsole",
-        [console = logonConsole.get()](AscEmu::Threading::AEThread&)
+        [console = logonConsole.get()](AscEmu::Threading::AEThread& thread)
         {
-            static_cast<void>(console->runThread());
+            console->run(thread);
         }
     );
 #else

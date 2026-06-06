@@ -491,9 +491,9 @@ bool Master::run(int /*argc*/, char** /*argv*/)
 #ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
     threadPool.addDedicatedThread(
         "WorldConsole",
-        [consoleThread = console.get()](AscEmu::Threading::AEThread&)
+        [consoleThread = console.get()](AscEmu::Threading::AEThread& thread)
         {
-            static_cast<void>(consoleThread->runThread());
+            consoleThread->run(thread);
         }
     );
 #else
@@ -552,7 +552,12 @@ bool Master::run(int /*argc*/, char** /*argv*/)
 
     /* Connect to realmlist servers / logon servers */
     sLogonCommHandler.initialize();
+
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    sLogonCommHandler.startLogonCommHandler(threadPool);
+#else
     sLogonCommHandler.startLogonCommHandler();
+#endif
 
     // Create listener
     auto listenSocket = std::make_unique<ListenSocket<WorldSocket>>(worldConfig.listen.listenHost.c_str(), worldConfig.listen.listenPort);

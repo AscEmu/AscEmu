@@ -29,7 +29,11 @@
 #include <Utilities/Strings.hpp>
 #include "Database/Database.h"
 #include <algorithm>
-#include "Threading/LegacyThreadPool.h"
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    #include "Threading/AEThread.h"
+#else
+    #include "Threading/LegacyThreadPool.h"
+#endif
 
 LogonConsole& LogonConsole::getInstance()
 {
@@ -97,6 +101,57 @@ void LogonConsole::Kill()
     sLogger.info("Console shut down.");
 }
 
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+void LogonConsoleThread::run(AscEmu::Threading::AEThread& thread)
+{
+    sLogonConsole._thread = this;
+    kill = false;
+
+    size_t i = 0;
+    size_t len = 0;
+    char cmd[96];
+
+#ifndef WIN32
+    fd_set fds;
+    struct timeval tv;
+#endif
+
+    while (!kill.load() && !thread.isKilled())
+    {
+#ifndef WIN32
+        tv.tv_sec = 1;
+        tv.tv_usec = 0;
+        FD_ZERO(&fds);
+        FD_SET(STDIN_FILENO, &fds);
+
+        if (select(1, &fds, NULL, NULL, &tv) <= 0)
+        {
+            if (!kill.load() && !thread.isKilled())
+                continue;
+            else
+                break;
+        }
+#endif
+
+        memset(cmd, 0, sizeof(cmd));
+        fgets(cmd, 80, stdin);
+
+        if (kill.load() || thread.isKilled())
+            break;
+
+        len = strlen(cmd);
+        for (i = 0; i < len; ++i)
+        {
+            if (cmd[i] == '\n' || cmd[i] == '\r')
+                cmd[i] = '\0';
+        }
+
+        sLogonConsole.ProcessCmd(cmd);
+    }
+
+    sLogonConsole._thread = nullptr;
+}
+#else
 bool LogonConsoleThread::runThread()
 {
     SetThreadName("Console Interpreter");
@@ -144,6 +199,7 @@ bool LogonConsoleThread::runThread()
     sLogonConsole._thread = nullptr;
     return true;
 }
+#endif
 ///////////////////////////////////////////////////////////////////////////////
 // Protected methods:
 ///////////////////////////////////////////////////////////////////////////////
