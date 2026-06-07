@@ -7,17 +7,11 @@
  */
 
 #include <vector>
-
 #include "../Network.h"
 
 #ifdef CONFIG_USE_IOCP
 
-#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
-    #include "Threading/AEThreadPool.h"
-#else
-    #include "Threading/LegacyThreadPool.h"
-#endif
-
+#include "Threading/ThreadPool.hpp"
 #include "Debugging/CrashHandler.h"
 
 SocketMgr& SocketMgr::getInstance()
@@ -41,7 +35,6 @@ void SocketMgr::SpawnWorkerThreads()
     threadcount = si.dwNumberOfProcessors;
     sLogger.info("IOCP: Spawning {} worker threads.", threadcount);
 
-#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
     if (m_threadPool == nullptr)
     {
         sLogger.failure("SocketMgr::SpawnWorkerThreads called without AEThreadPool.");
@@ -65,13 +58,8 @@ void SocketMgr::SpawnWorkerThreads()
 
         m_workerThreads.push_back(&worker);
     }
-#else
-    for (long x = 0; x < threadcount; ++x)
-        ThreadPool.ExecuteTask(new SocketWorkerThread());
-#endif
 }
 
-#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
 void SocketMgr::WorkerThreadLoop(AscEmu::Threading::AEThread& self)
 {
     try
@@ -111,47 +99,6 @@ void SocketMgr::WorkerThreadLoop(AscEmu::Threading::AEThread& self)
         sLogger.failure("IOCP worker stopped due to an unknown C++ exception.");
     }
 }
-#else
-bool SocketWorkerThread::runThread()
-{
-    try
-    {
-        HANDLE completionPort = sSocketMgr.GetCompletionPort();
-        DWORD bytesTransferred = 0;
-        ULONG_PTR completionKey = 0;
-        LPOVERLAPPED overlappedPtr = nullptr;
-
-        while (true)
-        {
-            // ULONG_PTR handles both 32-bit and 64-bit architectures automatically
-            if (!GetQueuedCompletionStatus(completionPort, &bytesTransferred, &completionKey, &overlappedPtr, 10000))
-                continue;
-
-            Socket* socket = reinterpret_cast<Socket*>(completionKey);
-            OverlappedStruct* overlapped = CONTAINING_RECORD(overlappedPtr, OverlappedStruct, m_overlap);
-
-            if (overlapped->m_event == SOCKET_IO_THREAD_SHUTDOWN)
-            {
-                delete overlapped; // Clean up the shutdown signal object
-                return true;
-            }
-
-            if (overlapped->m_event < NUM_SOCKET_IO_EVENTS)
-                ophandlers[overlapped->m_event](socket, bytesTransferred);
-        }
-    }
-    catch (const std::exception& e)
-    {
-        sLogger.failure("SocketWorkerThread stopped due to C++ exception: {}", e.what());
-    }
-    catch (...)
-    {
-        sLogger.failure("SocketWorkerThread stopped due to an unknown C++ exception.");
-    }
-
-    return true;
-}
-#endif
 
 void HandleReadComplete(Socket* s, uint32_t len)
 {
@@ -172,7 +119,7 @@ void HandleReadComplete(Socket* s, uint32_t len)
 
 void HandleWriteComplete(Socket* s, uint32_t len)
 {
-    if(!s->IsDeleted())
+    if (!s->IsDeleted())
     {
         s->m_writeEvent.Unmark();
         s->BurstBegin(); // Lock
@@ -186,8 +133,7 @@ void HandleWriteComplete(Socket* s, uint32_t len)
 }
 
 void HandleShutdown(Socket* /*s*/, uint32_t /*len*/)
-{
-}
+{}
 
 void SocketMgr::CloseAll()
 {
@@ -195,7 +141,7 @@ void SocketMgr::CloseAll()
 
     // Write toKill sockets is locked
     {
-        std::lock_guard lock{socketLock};
+        std::lock_guard lock{ socketLock };
 
         for (std::set<Socket*>::iterator itr = _sockets.begin(); itr != _sockets.end(); ++itr)
             tokill.push_back(*itr);
@@ -210,22 +156,19 @@ void SocketMgr::CloseAll()
     {
         // Read size of sockets is locked
         {
-            std::lock_guard lock{socketLock};
+            std::lock_guard lock{ socketLock };
             size = _sockets.size();
         }
-    }
-    while(size);
+    } while (size);
 }
 
 void SocketMgr::ShutdownThreads()
 {
-#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
     for (auto* worker : m_workerThreads)
     {
         if (worker != nullptr)
             worker->requestKill();
     }
-#endif
 
     for (int i = 0; i < threadcount; ++i)
     {
@@ -233,7 +176,6 @@ void SocketMgr::ShutdownThreads()
         PostQueuedCompletionStatus(m_completionPort, 0, (ULONG_PTR)0, &ov->m_overlap);
     }
 
-#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
     for (auto* worker : m_workerThreads)
     {
         if (worker != nullptr)
@@ -241,7 +183,6 @@ void SocketMgr::ShutdownThreads()
     }
 
     m_workerThreads.clear();
-#endif
 }
 
 void SocketMgr::ShowStatus()

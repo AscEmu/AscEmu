@@ -3,7 +3,7 @@ Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#include "AEThreadPool.h"
+#include "ThreadPool.hpp"
 
 #include <algorithm>
 #include <exception>
@@ -21,31 +21,25 @@ namespace AscEmu::Threading
 
         if (s_global_thread_pool == nullptr)
         {
-            s_global_thread_pool = std::make_unique<AEThreadPool>("Global Pool",
-                minimumThreadCount, softMaximumThreadCount, hardMaximumThreadCount);
-
+            s_global_thread_pool = std::make_unique<AEThreadPool>("Global Pool", minimumThreadCount, softMaximumThreadCount, hardMaximumThreadCount);
             s_global_thread_pool->start();
         }
 
         return s_global_thread_pool;
     }
 
-    AEThreadPool::AEThreadPool(std::string poolName,
-        uint16_t minimumThreadCount, uint16_t softMaximumThreadCount, uint16_t hardMaximumThreadCount)
-        : AEThreadPool(std::move(poolName), minimumThreadCount, softMaximumThreadCount, hardMaximumThreadCount,
-            std::chrono::milliseconds(64)
-        )
+    AEThreadPool::AEThreadPool(std::string poolName, uint16_t minimumThreadCount, uint16_t softMaximumThreadCount, uint16_t hardMaximumThreadCount)
+        : AEThreadPool(std::move(poolName), minimumThreadCount, softMaximumThreadCount, hardMaximumThreadCount, std::chrono::milliseconds(64))
     {}
 
-    AEThreadPool::AEThreadPool(std::string poolName,
-        uint16_t minimumThreadCount, uint16_t softMaximumThreadCount, uint16_t hardMaximumThreadCount,
+    AEThreadPool::AEThreadPool(std::string poolName, uint16_t minimumThreadCount, uint16_t softMaximumThreadCount, uint16_t hardMaximumThreadCount,
         std::chrono::milliseconds pulseFrequency
     )
-        : m_poolName(std::move(poolName)),
-        m_pulseFrequency(std::max(pulseFrequency, std::chrono::milliseconds(1))),
+        : m_poolName(std::move(poolName)), m_pulseFrequency(std::max(pulseFrequency, std::chrono::milliseconds(1))),
         m_minimumThreadCount(std::max<uint16_t>(1, minimumThreadCount)),
         m_softMaximumThreadCount(std::max<uint16_t>(std::max<uint16_t>(1, minimumThreadCount), softMaximumThreadCount)),
-        m_hardMaximumThreadCount(std::max<uint16_t>(std::max<uint16_t>(std::max<uint16_t>(1, minimumThreadCount), softMaximumThreadCount), hardMaximumThreadCount))
+        m_hardMaximumThreadCount(std::max<uint16_t>(std::max<uint16_t>(std::max<uint16_t>(1, minimumThreadCount), softMaximumThreadCount),
+            hardMaximumThreadCount))
     {}
 
     AEThreadPool::~AEThreadPool()
@@ -129,8 +123,7 @@ namespace AscEmu::Threading
         queueTask(std::move(task), std::chrono::milliseconds(-1), std::move(taskName), true);
     }
 
-    AEThread& AEThreadPool::addDedicatedThread(std::string threadName, DedicatedThreadFunc threadFunc,
-        std::chrono::milliseconds intervalMs, bool autostart)
+    AEThread& AEThreadPool::addDedicatedThread(std::string threadName, DedicatedThreadFunc threadFunc, std::chrono::milliseconds intervalMs, bool autostart)
     {
         auto dedicatedThread = std::make_unique<AEThread>(std::move(threadName));
         AEThread* threadPtr = dedicatedThread.get();

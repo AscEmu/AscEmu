@@ -23,10 +23,6 @@
 #include "EventMgr.h"
 #include "Logging/Logger.hpp"
 
-#ifndef ASCEMU_USE_AE_NETWORK_THREADPOOL
-    #include "Threading/LegacyThreadPool.h"
-#endif
-
 EventableObject::~EventableObject()
 {
     /* decrement event count on all events */
@@ -41,9 +37,6 @@ EventableObject::~EventableObject()
 
 EventableObject::EventableObject()
 {
-    /* commented, these will be allocated when the first event is added. */
-    //m_event_Instanceid = event_GetInstanceID();
-    //m_holder = sEventMgr.GetEventHolder(m_event_Instanceid);
     m_holder = 0;
     m_event_Instanceid = -1;
 
@@ -87,7 +80,7 @@ void EventableObject::event_AddEvent(std::shared_ptr<TimedEvent> ptr)
     m_events.emplace(ptr->eventType, ptr);
     m_lock.unlock();
 
-    /* Add to event manager */
+    // Add to event manager
     m_holder->AddEvent(std::move(ptr));
 }
 
@@ -110,8 +103,7 @@ void EventableObject::event_RemoveByPointer(TimedEvent* ev)
                 return;
             }
 
-        }
-        while (itr != m_events.upper_bound(ev->eventType));
+        } while (itr != m_events.upper_bound(ev->eventType));
     }
 }
 
@@ -144,8 +136,7 @@ void EventableObject::event_RemoveEvents(uint32_t EventType)
                 it2->second->deleted = true;
                 m_events.erase(it2);
 
-            }
-            while (itr != m_events.upper_bound(EventType));
+            } while (itr != m_events.upper_bound(EventType));
         }
     }
 }
@@ -171,8 +162,7 @@ void EventableObject::event_ModifyTimeLeft(uint32_t EventType, time_t TimeLeft, 
                 itr->second->currTime = TimeLeft;
             else itr->second->currTime = (TimeLeft > itr->second->msTime) ? itr->second->msTime : TimeLeft;
             ++itr;
-        }
-        while (itr != m_events.upper_bound(EventType));
+        } while (itr != m_events.upper_bound(EventType));
     }
 }
 
@@ -197,8 +187,7 @@ bool EventableObject::event_GetTimeLeft(uint32_t EventType, time_t* Time)
             *Time = (uint32_t)itr->second->currTime;
             return true;
 
-        }
-        while (itr != m_events.upper_bound(EventType));
+        } while (itr != m_events.upper_bound(EventType));
     }
 
     return false;
@@ -218,8 +207,7 @@ void EventableObject::event_ModifyTime(uint32_t EventType, time_t Time)
         {
             itr->second->msTime = Time;
             ++itr;
-        }
-        while (itr != m_events.upper_bound(EventType));
+        } while (itr != m_events.upper_bound(EventType));
     }
 }
 
@@ -237,8 +225,7 @@ void EventableObject::event_ModifyTimeAndTimeLeft(uint32_t EventType, time_t Tim
         {
             itr->second->currTime = itr->second->msTime = Time;
             ++itr;
-        }
-        while (itr != m_events.upper_bound(EventType));
+        } while (itr != m_events.upper_bound(EventType));
     }
 }
 
@@ -251,7 +238,6 @@ bool EventableObject::event_HasEvent(uint32_t EventType)
     if (!m_events.size())
         return false;
 
-    //ret = m_events.find(EventType) == m_events.end() ? false : true;
     EventMap::iterator itr = m_events.find(EventType);
     if (itr != m_events.end())
     {
@@ -263,8 +249,7 @@ bool EventableObject::event_HasEvent(uint32_t EventType)
                 break;
             }
             ++itr;
-        }
-        while (itr != m_events.upper_bound(EventType));
+        } while (itr != m_events.upper_bound(EventType));
     }
 
     return ret;
@@ -284,7 +269,6 @@ EventableObjectHolder::~EventableObjectHolder()
     m_insertPool.clear();
     m_insertPoolLock.unlock();
 
-    // decrement events reference count
     std::lock_guard lock(m_lock);
 
     m_events.clear();
@@ -344,13 +328,7 @@ void EventableObjectHolder::Update(time_t time_difference)
             // check if the event is expired now.
             if (ev->repeats && --ev->repeats == 0)
             {
-                // Event expired :>
-
-                /* remove the event from the object */
-                /*obj = (EventableObject*)ev->obj;
-                obj->event_RemoveByPointer(ev);*/
-
-                /* remove the event from here */
+                // Event expired
                 ev->deleted = true;
                 m_events.erase(it2);
 
@@ -381,10 +359,7 @@ void EventableObject::event_Relocate()
     EventableObjectHolder* nh = sEventMgr.GetEventHolder(event_GetInstanceID());
     if (nh != m_holder)
     {
-        // whee, we changed event holder :>
-        // doing this will change the instanceid on all the events, as well as add to the new holder.
-
-        //If nh is NULL then we were removed from world. There's no reason to be added to WORLD_INSTANCE EventMgr, let's just wait till something will add us again to world.
+        //If nh is NULL then we were removed from world.
         if (nh == NULL)
         {
             //set instaceId to 0 to each event of this EventableObject, so EventableObjectHolder::Update() will remove them from its EventList.
@@ -449,9 +424,6 @@ void EventableObjectHolder::AddObject(EventableObject* obj)
             // ignore deleted events (shouldn't be any in here, actually)
             if (itr->second->deleted)
             {
-                /*it2 = itr++;
-                itr->second->DecRef();
-                obj->m_events.erase(it2);*/
                 continue;
             }
 

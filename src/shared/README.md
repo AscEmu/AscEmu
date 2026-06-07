@@ -21,9 +21,6 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2014 | CommonTypes.hpp
 * 2014 | CommonHelpers.hpp
 * 2008 | WorldPacket.h
-* 2008 | Threading/LegacyThreadPool.h
-* 2008 | Threading/LegacyThreadPool.cpp
-* 2008 | Threading/LegacyThreadBase.h
 * 2008 | LocationVector.cpp
 * 2008 | Database/MySQLDatabase.h
 * 2008 | Database/Database.h
@@ -52,8 +49,6 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2007 | Network/KQUEUE/SocketMgrFreeBSD.cpp
 * 2007 | Network/KQUEUE/SocketMgrFreeBSD.h
 * 2007 | Network/KQUEUE/SocketOpsFreeBSD.cpp
-* 2007 | Network/CircularBuffer.cpp           - wip
-* 2007 | Network/CircularBuffer.h             - wip
 * 2007 | Network/Network.h
 * 2007 | Network/Socket.cpp
 * 2007 | Network/Socket.h
@@ -172,13 +167,13 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2008 | Threading/LockedQueue.h
 * 2008 | Threading/Queue.h
 
-### Removed on 1 April 2026
+### Removed on 1 June 2026
 * 2024 | Threading/Mutex.hpp
 * 2024 | Threading/Mutex.cpp
 * 2005 | CircularQueue.h
 * 2008 | PreallocatedQueue.h
 
-### Removed on 2 April 2026
+### Removed on 2 June 2026
 * 2017 | Threading/ThreadState.h
 * 2008 | Threading/ConditionVariable.h
 * 2008 | Threading/ConditionVariable.cpp
@@ -186,6 +181,15 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2008 | CThreads.cpp
 * 2008 | DynLib.hpp
 * 2008 | DynLib.cpp
+
+### Removed on 6 June 2026
+* 2007 | Network/CircularBuffer.cpp
+* 2007 | Network/CircularBuffer.h
+
+### Removed on 7 June 2026
+* 2008 | Threading/LegacyThreadPool.h
+* 2008 | Threading/LegacyThreadPool.cpp
+* 2008 | Threading/LegacyThreadBase.h
 
 ### New files
 * 2015 | Exceptions/PlayerExceptions.hpp
@@ -201,10 +205,10 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2017 | Cryptography/LogonCommDefines.h
 * 2017 | Cryptography/WowCrypt.cpp
 * 2017 | Cryptography/WowCrypt.hpp
-* 2017 | Threading/AEThread.cpp
-* 2017 | Threading/AEThread.h
-* 2018 | Threading/AEThreadPool.cpp
-* 2018 | Threading/AEThreadPool.h
+* 2017 | Threading/Thread.cpp
+* 2017 | Threading/Thread.hpp
+* 2018 | Threading/ThreadPool.cpp
+* 2018 | Threading/ThreadPool.hpp
 * 2020 | Database/Field.hpp
 * 2020 | Database/DatabaseUpdater.cpp
 * 2020 | Database/DatabaseUpdater.hpp

@@ -5,8 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 #include <map>
-#include <Database/Field.hpp>
-#include <Threading/AEThread.h>
+#include "Database/Field.hpp"
+#include "Threading/Thread.hpp"
 
 struct Account
 {

@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "AEThread.h"
+#include "Thread.hpp"
 
 #include <atomic>
 #include <chrono>
@@ -35,20 +35,10 @@ namespace AscEmu::Threading
         using Clock = std::chrono::steady_clock;
         using TimePoint = Clock::time_point;
 
-        AEThreadPool(
-            std::string poolName,
-            uint16_t minimumThreadCount,
-            uint16_t softMaximumThreadCount,
-            uint16_t hardMaximumThreadCount
-        );
+        AEThreadPool(std::string poolName, uint16_t minimumThreadCount, uint16_t softMaximumThreadCount, uint16_t hardMaximumThreadCount);
 
-        AEThreadPool(
-            std::string poolName,
-            uint16_t minimumThreadCount,
-            uint16_t softMaximumThreadCount,
-            uint16_t hardMaximumThreadCount,
-            std::chrono::milliseconds pulseFrequency
-        );
+        AEThreadPool(std::string poolName, uint16_t minimumThreadCount, uint16_t softMaximumThreadCount, uint16_t hardMaximumThreadCount,
+            std::chrono::milliseconds pulseFrequency);
 
         ~AEThreadPool();
 
@@ -65,12 +55,8 @@ namespace AscEmu::Threading
         void addTask(TaskFunc task, std::string taskName = {});
         void addRecurringTask(TaskFunc task, std::chrono::milliseconds repeatDelay, std::string taskName = {});
         void addHighPriorityTask(TaskFunc task, std::string taskName = {});
-        AEThread& addDedicatedThread(
-            std::string threadName,
-            DedicatedThreadFunc threadFunc,
-            std::chrono::milliseconds intervalMs = std::chrono::milliseconds(0),
-            bool autostart = true
-        );
+        AEThread& addDedicatedThread(std::string threadName, DedicatedThreadFunc threadFunc, std::chrono::milliseconds intervalMs = std::chrono::milliseconds(0),
+            bool autostart = true);
 
         void queueRecurringTask(TaskFunc task, std::chrono::milliseconds repeatDelay, std::string taskName);
         void queueFireOnceTask(TaskFunc task, std::string taskName);
@@ -138,4 +124,3 @@ namespace AscEmu::Threading
         static std::unique_ptr<AEThreadPool> s_global_thread_pool;
     };
 }
-

@@ -22,11 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Utilities/Util.hpp"
-#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
-    #include "Threading/AEThreadPool.h"
-#else
-    #include "Threading/LegacyThreadPool.h"
-#endif
+#include "Threading/ThreadPool.hpp"
 
 #include <openssl/opensslv.h>
 #include <openssl/crypto.h>
@@ -66,13 +62,8 @@ bool ChatCommandHandler::HandleServerInfoCommand(const char* /*args*/, WorldSess
     greenSystemMessage(m_session, "Active Sessions: |r{}", active_sessions);
     greenSystemMessage(m_session, "Current GMs: |r{} GMs", online_gm);
     greenSystemMessage(m_session, "Current Players: |r{} ({} Peak)", online_gm > 0 ? (online_count - online_gm) : online_count, sWorld.getPeakSessionCount());
-#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
     greenSystemMessage(m_session, "Active Thread Count: |r{}", sMaster().getThreadPool().activeWorkerCount());
     greenSystemMessage(m_session, "Queued Thread Count: |r{}", sMaster().getThreadPool().queuedTaskCount());
-#else
-    greenSystemMessage(m_session, "Active Thread Count: |r{}", ThreadPool.GetActiveThreadCount());
-    greenSystemMessage(m_session, "Free Thread Count: |r{}", ThreadPool.GetFreeThreadCount());
-#endif
     greenSystemMessage(m_session, "Average Latency: |r{}ms", online_count > 0 ? (latency_avg / online_count) : latency_avg);
     greenSystemMessage(m_session, "CPU Usage: {}%", sWorld.getCPUUsage());
     greenSystemMessage(m_session, "RAM Usage: {} MB", sWorld.getRAMUsage());
