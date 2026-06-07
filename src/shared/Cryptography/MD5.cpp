@@ -23,7 +23,7 @@ void MD5Hash::updateData(const uint8_t* _data, int _len) const
 
 void MD5Hash::initialize() const
 {
-    EVP_DigestInit(m_ctx, EVP_md5());
+    EVP_DigestInit_ex(m_ctx, EVP_md5(), nullptr);
 }
 
 void MD5Hash::finalize()

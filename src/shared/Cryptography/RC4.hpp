@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace AscEmu
 {
-    constexpr static int keyLength = 256;
+    inline constexpr size_t keyLength = 256;
 
     class RC4StreamCipher
     {
