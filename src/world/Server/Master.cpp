@@ -432,12 +432,13 @@ bool Master::run(int /*argc*/, char** /*argv*/)
 
     // From here on, if we return false, we MUST clean up DB and ThreadPool!
 #ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
-    AscEmu::Threading::AEThreadPool threadPool(
+    m_threadPool = std::make_unique<AscEmu::Threading::AEThreadPool>(
         "WorldServer",
         2,
         8,
         16
     );
+    auto& threadPool = *m_threadPool;
     threadPool.start();
 #else
     ThreadPool.Startup();
@@ -903,7 +904,15 @@ void Master::updatePeriodicStats(uint32_t currentLoop) const
 {
     if (currentLoop % 10000 != 0) return; // Only run every ~5 mins
 
-#ifndef ASCEMU_USE_AE_NETWORK_THREADPOOL
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    sLogger.debug(
+        "ThreadPool: workers={}, dedicated={}, queued={}, completed={}",
+        getThreadPool().workerCount(),
+        getThreadPool().dedicatedThreadCount(),
+        getThreadPool().queuedTaskCount(),
+        getThreadPool().completedTaskCount()
+    );
+#else
     ThreadPool.ShowStats();
     ThreadPool.IntegrityCheck();
 #endif

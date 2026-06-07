@@ -158,7 +158,10 @@ bool handleServerInfoCommand(BaseConsole* baseConsole, int /*argumentCount*/, st
         baseConsole->Write("Uptime: %s\r\n", sWorld.getWorldUptimeString().c_str());
         baseConsole->Write("Active Branch: %s\r\n", AE_BUILD_BRANCH);
         baseConsole->Write("Current Players: %d (%d GMs, %d queued)\r\n", clientsNum, gmCount, 0);
-#ifndef ASCEMU_USE_AE_NETWORK_THREADPOOL
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+        baseConsole->Write("Active Thread Count: %u\r\n", sMaster().getThreadPool().activeWorkerCount());
+        baseConsole->Write("Queued Thread Count: %u\r\n", sMaster().getThreadPool().queuedTaskCount());
+#else
         baseConsole->Write("Active Thread Count: %u\r\n", ThreadPool.GetActiveThreadCount());
         baseConsole->Write("Free Thread Count: %u\r\n", ThreadPool.GetFreeThreadCount());
 #endif

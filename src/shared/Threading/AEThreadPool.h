@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2026 AscEmu Team
+Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -78,6 +78,8 @@ namespace AscEmu::Threading
 
         [[nodiscard]] bool isStarted() const noexcept;
         [[nodiscard]] bool isShutdownRequested() const noexcept;
+        [[nodiscard]] size_t activeWorkerCount() const noexcept;
+        [[nodiscard]] size_t idleWorkerCount() const;
         [[nodiscard]] size_t queuedTaskCount() const;
         [[nodiscard]] size_t workerCount() const;
         [[nodiscard]] size_t dedicatedThreadCount() const;

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2026 AscEmu Team
+Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -174,6 +174,22 @@ namespace AscEmu::Threading
     {
         return m_shutdownRequested.load(std::memory_order_acquire);
     }
+
+    size_t AEThreadPool::activeWorkerCount() const noexcept
+    {
+        return m_activeWorkerCount.load(std::memory_order_relaxed);
+    }
+
+    size_t AEThreadPool::idleWorkerCount() const
+    {
+        std::lock_guard lock(m_mutex);
+
+        const size_t workers = m_workers.size();
+        const size_t active = m_activeWorkerCount.load(std::memory_order_relaxed);
+
+        return workers > active ? workers - active : 0;
+    }
+
 
     size_t AEThreadPool::queuedTaskCount() const
     {
