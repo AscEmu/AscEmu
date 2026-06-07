@@ -177,20 +177,22 @@ void SocketMgr::WorkerThreadLoop(AscEmu::Threading::AEThread& self)
 
         for (int i = 0; i < fd_count; ++i)
         {
+            const int fd = events[i].data.fd;
+
             if (events[i].data.fd >= SOCKET_HOLDER_SIZE)
             {
-                sLogger.failure("Requested FD that is too high ({})", ptr->GetFd());
+                sLogger.failure("Requested FD that is too high ({})", fd);
                 continue;
             }
 
-            Socket* ptr = fds[events[i].data.fd];
+            Socket* ptr = fds[fd];
 
             if (ptr == nullptr)
             {
                 if ((ptr = ((Socket*)listenfds[events[i].data.fd])) != nullptr)
                     ((ListenSocketBase*)ptr)->OnAccept();
                 else
-                    sLogger.failure("Returned invalid fd (no pointer) of FD {}", ptr->GetFd());
+                    sLogger.failure("Returned invalid fd (no pointer) of FD {}", fd);
 
                 continue;
             }
