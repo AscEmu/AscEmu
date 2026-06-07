@@ -151,13 +151,15 @@ void SocketMgr::WorkerThreadLoop(AscEmu::Threading::AEThread& self)
 
         for (int i = 0; i < fd_count; ++i)
         {
+            const int fd = events[i].ident;
+
             if (events[i].ident >= SOCKET_HOLDER_SIZE)
             {
-                sLogger.warning("kqueue : Requested FD that is too high ({})", static_cast<int>(events[i].ident));
+                sLogger.warning("kqueue : Requested FD that is too high ({})", fd);
                 continue;
             }
 
-            Socket* ptr = fds[events[i].ident];
+            Socket* ptr = fds[fd];
 
             if (ptr == nullptr)
             {
