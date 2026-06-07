@@ -21,6 +21,7 @@
 #define __LOGONCONSOLE_H
 
 #ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    #include <string>
     #include <atomic>
     #include <memory>
 

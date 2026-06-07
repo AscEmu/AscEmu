@@ -12,7 +12,9 @@
 
 #ifdef CONFIG_USE_IOCP
 
-#include <Threading/LegacyThreadPool.h>
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    #include "Threading/AEThreadPool.h"
+#endif
 
 //ignore warning for deprecated function gethostbyname
 #pragma warning ( disable: 4996 )

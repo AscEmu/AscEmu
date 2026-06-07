@@ -8,10 +8,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Console/BaseConsole.h"
 #include "Server/Console/ConsoleThread.h"
 #include "Logging/Logger.hpp"
-#include "Threading/LegacyThreadPool.h"
 
 #ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
     #include "Threading/AEThread.h"
+#else
+    #include "Threading/LegacyThreadPool.h"
 #endif
 
 #include <chrono>

@@ -30,7 +30,9 @@
 #include "Server/World.h"
 #include "ConsoleSocket.h"
 #include "ConsoleAuthMgr.h"
-#include "Threading/LegacyThreadBase.h"
+#ifndef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    #include "Threading/LegacyThreadBase.h"
+#endif
 
 std::unique_ptr<ListenSocket<ConsoleSocket>> g_pListenSocket = nullptr;
 

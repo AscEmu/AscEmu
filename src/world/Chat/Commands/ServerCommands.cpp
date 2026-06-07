@@ -22,7 +22,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Utilities/Util.hpp"
-#include "Threading/LegacyThreadPool.h"
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    #include "Threading/AEThreadPool.h"
+#else
+    #include "Threading/LegacyThreadPool.h"
+#endif
 
 #include <openssl/opensslv.h>
 #include <openssl/crypto.h>

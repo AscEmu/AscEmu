@@ -22,7 +22,10 @@
 #include "EventableObject.h"
 #include "EventMgr.h"
 #include "Logging/Logger.hpp"
-#include "Threading/LegacyThreadPool.h"
+
+#ifndef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    #include "Threading/LegacyThreadPool.h"
+#endif
 
 EventableObject::~EventableObject()
 {

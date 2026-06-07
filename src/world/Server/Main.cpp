@@ -21,7 +21,10 @@
 #include "Server/Master.h"
 #include "Debugging/CrashHandler.h"
 #include "ServerState.h"
-#include "Threading/LegacyThreadPool.h"
+
+#ifndef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    #include "Threading/LegacyThreadPool.h"
+#endif
 
 #include <exception>
 
