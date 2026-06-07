@@ -26,7 +26,7 @@ void SocketMgr::AddSocket(Socket* s)
     uint32_t saddr;
     int i, count;
 
-    // Check how many connections we already have from that ip
+    // check how many connections we already have from that ip
     saddr = s->GetRemoteAddress().s_addr;
     for(i = 0, count = 0; i <= max_fd; i++)
     {
@@ -36,7 +36,7 @@ void SocketMgr::AddSocket(Socket* s)
         }
     }
 
-    // More than 16 connections from the same ip? enough! xD
+    // more than 16 connections from the same ip? enough! xD
     if(count > 16)
     {
         s->Disconnect(false);
@@ -56,7 +56,7 @@ void SocketMgr::AddSocket(Socket* s)
     fds[s->GetFd()] = s;
     ++socket_count;
 
-    // Add epoll event based on socket activity.
+    // add epoll event based on socket activity.
     struct epoll_event ev;
     memset(&ev, 0, sizeof(epoll_event));
     ev.events = (s->writeBuffer.GetSize()) ? EPOLLOUT : EPOLLIN;
@@ -72,7 +72,7 @@ void SocketMgr::AddListenSocket(ListenSocketBase* s)
     assert(listenfds[s->GetFd()] == 0);
     listenfds[s->GetFd()] = s;
 
-    // Add epoll event based on socket activity.
+    // add epoll event based on socket activity.
     struct epoll_event ev;
     memset(&ev, 0, sizeof(epoll_event));
     ev.events = EPOLLIN;
@@ -94,7 +94,7 @@ void SocketMgr::RemoveSocket(Socket* s)
     fds[s->GetFd()] = NULL;
     --socket_count;
 
-    // Remove from epoll list.
+    // remove from epoll list.
     struct epoll_event ev;
     memset(&ev, 0, sizeof(epoll_event));
     ev.data.fd = s->GetFd();
@@ -128,8 +128,7 @@ void SocketMgr::SpawnWorkerThreads()
 
     for (uint32_t i = 0; i < count; ++i)
     {
-        auto& worker = m_threadPool->addDedicatedThread(
-            "EPOLL Worker " + std::to_string(i),
+        auto& worker = m_threadPool->addDedicatedThread("EPOLL Worker " + std::to_string(i),
             [this](AscEmu::Threading::AEThread& self)
             {
                 WorkerThreadLoop(self);
@@ -177,25 +176,31 @@ void SocketMgr::WorkerThreadLoop(AscEmu::Threading::AEThread& self)
 
         for (int i = 0; i < fd_count; ++i)
         {
-            if (events[i].data.fd >= SOCKET_HOLDER_SIZE)
+            const int fd = events[i].data.fd;
+
+            if (fd >= SOCKET_HOLDER_SIZE)
             {
-                sLogger.failure("Requested FD that is too high ({})", events[i].data.fd);
+                sLogger.failure("Requested FD that is too high ({})", fd);
                 continue;
             }
 
-            Socket* ptr = fds[events[i].data.fd];
+            Socket* ptr = fds[fd];
 
             if (ptr == nullptr)
             {
-                if ((ptr = ((Socket*)listenfds[events[i].data.fd])) != nullptr)
-                    ((ListenSocketBase*)ptr)->OnAccept();
+                if ((ptr = static_cast<Socket*>(listenfds[fd])) != nullptr)
+                {
+                    static_cast<ListenSocketBase*>(ptr)->OnAccept();
+                }
                 else
-                    sLogger.failure("Returned invalid fd (no pointer) of FD {}", events[i].data.fd);
+                {
+                    sLogger.failure("Returned invalid fd (no pointer) of FD {}", fd);
+                }
 
                 continue;
             }
 
-            if (events[i].events & EPOLLHUP || events[i].events & EPOLLERR)
+            if ((events[i].events & EPOLLHUP) || (events[i].events & EPOLLERR))
             {
                 ptr->Disconnect();
                 continue;
@@ -206,7 +211,9 @@ void SocketMgr::WorkerThreadLoop(AscEmu::Threading::AEThread& self)
                 ptr->ReadCallback(0);
 
                 if (ptr->writeBuffer.GetSize() > 0 && !ptr->HasSendLock() && ptr->IsConnected())
+                {
                     ptr->PostEvent(EPOLLOUT);
+                }
 
                 continue;
             }
@@ -230,62 +237,69 @@ void SocketMgr::WorkerThreadLoop(AscEmu::Threading::AEThread& self)
 #else
 bool SocketWorkerThread::runThread()
 {
-    int fd_count;
-    Socket* ptr;
-    int i;
     running = true;
-    // events[i].data.fd = ptr->GetFd();
 
-    while(running)
+    while (running)
     {
-        fd_count = epoll_wait(sSocketMgr.epoll_fd, events, THREAD_EVENT_SIZE, 5000);
-        for(i = 0; i < fd_count; ++i)
+        const int fd_count = epoll_wait(sSocketMgr.epoll_fd, events, THREAD_EVENT_SIZE, 5000);
+
+        for (int i = 0; i < fd_count; ++i)
         {
-            if(events[i].data.fd >= SOCKET_HOLDER_SIZE)
+            const int fd = events[i].data.fd;
+
+            if (fd >= SOCKET_HOLDER_SIZE)
             {
-                sLogger.failure("Requested FD that is too high ({})", ptr->GetFd());
+                sLogger.failure("Requested FD that is too high ({})", fd);
                 continue;
             }
 
-            ptr = sSocketMgr.fds[events[i].data.fd];
+            Socket* ptr = sSocketMgr.fds[fd];
 
-            if(ptr == NULL)
+            if (ptr == nullptr)
             {
-                if((ptr = ((Socket*)sSocketMgr.listenfds[events[i].data.fd])) != NULL)
-                    ((ListenSocketBase*)ptr)->OnAccept();
+                if ((ptr = static_cast<Socket*>(sSocketMgr.listenfds[fd])) != nullptr)
+                {
+                    static_cast<ListenSocketBase*>(ptr)->OnAccept();
+                }
                 else
-                    sLogger.failure("Returned invalid fd (no pointer) of FD {}", ptr->GetFd());
+                {
+                    sLogger.failure("Returned invalid fd (no pointer) of FD {}", fd);
+                }
+
                 continue;
             }
 
-            if(events[i].events & EPOLLHUP || events[i].events & EPOLLERR)
+            if ((events[i].events & EPOLLHUP) || (events[i].events & EPOLLERR))
             {
                 ptr->Disconnect();
                 continue;
             }
-            else if(events[i].events & EPOLLIN)
-            {
-                ptr->ReadCallback(0); // Len is unknown at this point.
 
-                /* changing to written state? */
-                if(ptr->writeBuffer.GetSize() && !ptr->HasSendLock() && ptr->IsConnected())
-                    ptr->PostEvent(EPOLLOUT);
-            }
-            else if(events[i].events & EPOLLOUT)
+            if (events[i].events & EPOLLIN)
             {
-                ptr->BurstBegin();      // Lock receive mutex
-                ptr->WriteCallback();   // Perform actual send()
-                if(ptr->writeBuffer.GetSize() > 0)
+                ptr->ReadCallback(0); // length is unknown at this point.
+
+                if (ptr->writeBuffer.GetSize() > 0 && !ptr->HasSendLock() && ptr->IsConnected())
                 {
-                    /* we don't have to do anything here. no more oneshots :) */
+                    ptr->PostEvent(EPOLLOUT);
                 }
-                else
+
+                continue;
+            }
+
+            if (events[i].events & EPOLLOUT)
+            {
+                ptr->BurstBegin();      // lock receive mutex
+                ptr->WriteCallback();   // perform actual send()
+
+                if (ptr->writeBuffer.GetSize() == 0)
                 {
-                    /* change back to a read event */
+                    //  change back to a read event
                     ptr->DecSendLock();
                     ptr->PostEvent(EPOLLIN);
                 }
-                ptr->BurstEnd(); // Unlock
+
+                ptr->BurstEnd(); // unlock
             }
         }
     }
