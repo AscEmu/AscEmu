@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2026 AscEmu Team
+Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
@@ -31,25 +31,22 @@ namespace AscEmu::Threading
     }
 
     AEThreadPool::AEThreadPool(std::string poolName,
-        uint16_t minimumThreadCount, uint16_t softMaximumThreadCount, uint16_t hardMaximumThreadCount
-    )
-        : AEThreadPool( std::move(poolName), minimumThreadCount, softMaximumThreadCount, hardMaximumThreadCount,
+        uint16_t minimumThreadCount, uint16_t softMaximumThreadCount, uint16_t hardMaximumThreadCount)
+        : AEThreadPool(std::move(poolName), minimumThreadCount, softMaximumThreadCount, hardMaximumThreadCount,
             std::chrono::milliseconds(64)
         )
-    {
-    }
+    {}
 
-    AEThreadPool::AEThreadPool( std::string poolName,
+    AEThreadPool::AEThreadPool(std::string poolName,
         uint16_t minimumThreadCount, uint16_t softMaximumThreadCount, uint16_t hardMaximumThreadCount,
         std::chrono::milliseconds pulseFrequency
     )
         : m_poolName(std::move(poolName)),
-          m_pulseFrequency(pulseFrequency),
-          m_minimumThreadCount(std::max<uint16_t>(1, minimumThreadCount)),
-          m_softMaximumThreadCount(std::max<uint16_t>(minimumThreadCount, softMaximumThreadCount)),
-          m_hardMaximumThreadCount(std::max<uint16_t>(softMaximumThreadCount, hardMaximumThreadCount))
-    {
-    }
+        m_pulseFrequency(std::max(pulseFrequency, std::chrono::milliseconds(1))),
+        m_minimumThreadCount(std::max<uint16_t>(1, minimumThreadCount)),
+        m_softMaximumThreadCount(std::max<uint16_t>(std::max<uint16_t>(1, minimumThreadCount), softMaximumThreadCount)),
+        m_hardMaximumThreadCount(std::max<uint16_t>(std::max<uint16_t>(std::max<uint16_t>(1, minimumThreadCount), softMaximumThreadCount), hardMaximumThreadCount))
+    {}
 
     AEThreadPool::~AEThreadPool()
     {
@@ -60,30 +57,26 @@ namespace AscEmu::Threading
     void AEThreadPool::start()
     {
         bool expected = false;
-
         if (!m_started.compare_exchange_strong(expected, true))
             return;
 
-        m_shutdownRequested.store(false);
+        m_shutdownRequested.store(false, std::memory_order_release);
 
-        const auto threadCount = static_cast<size_t>(std::max<uint16_t>(1, m_softMaximumThreadCount));
-
-        m_workers.reserve(threadCount);
-
-        for (size_t i = 0; i < threadCount; ++i)
-        {
-            m_workers.emplace_back([this, i]
-            {
-                workerLoop(i);
-            });
-        }
+        std::lock_guard lock(m_mutex);
+        spawnWorkersLocked(static_cast<size_t>(m_minimumThreadCount));
     }
 
     void AEThreadPool::shutdown()
     {
+        m_shutdownRequested.store(true, std::memory_order_release);
+
         {
             std::lock_guard lock(m_mutex);
-            m_shutdownRequested.store(true);
+            for (const auto& dedicatedThread : m_dedicatedThreads)
+            {
+                if (dedicatedThread != nullptr)
+                    dedicatedThread->requestKill();
+            }
         }
 
         m_condition.notify_all();
@@ -91,127 +84,191 @@ namespace AscEmu::Threading
 
     void AEThreadPool::join()
     {
-        for (auto& worker : m_workers)
+        std::vector<std::thread> workersToJoin;
+        std::vector<AEThread*> dedicatedThreadsToJoin;
+
+        {
+            std::lock_guard lock(m_mutex);
+            workersToJoin.swap(m_workers);
+
+            dedicatedThreadsToJoin.reserve(m_dedicatedThreads.size());
+            for (const auto& dedicatedThread : m_dedicatedThreads)
+            {
+                if (dedicatedThread != nullptr)
+                    dedicatedThreadsToJoin.push_back(dedicatedThread.get());
+            }
+        }
+
+        for (AEThread* dedicatedThread : dedicatedThreadsToJoin)
+            dedicatedThread->join();
+
+        for (auto& worker : workersToJoin)
         {
             if (worker.joinable())
                 worker.join();
         }
 
-        m_workers.clear();
-        m_started.store(false);
+        m_started.store(false, std::memory_order_release);
     }
 
-    void AEThreadPool::queueFireOnceTask(ThreadFunc task, std::string taskName)
+    void AEThreadPool::addTask(TaskFunc task, std::string taskName)
     {
         queueTask(std::move(task), std::chrono::milliseconds(-1), std::move(taskName), false);
     }
 
-    void AEThreadPool::queueHighPriorityTask(ThreadFunc task, const std::string& taskName)
+    void AEThreadPool::addRecurringTask(TaskFunc task, std::chrono::milliseconds repeatDelay, std::string taskName)
     {
-        queueTask(std::move(task), std::chrono::milliseconds(-1), taskName, true);
-    }
-
-    void AEThreadPool::queueRecurringTask(ThreadFunc task, std::chrono::milliseconds repeatDelay, std::string taskName)
-    {
-        if (repeatDelay <= std::chrono::milliseconds(0))
+        if (repeatDelay <= std::chrono::milliseconds::zero())
             repeatDelay = m_pulseFrequency;
 
         queueTask(std::move(task), repeatDelay, std::move(taskName), false);
     }
 
-    void AEThreadPool::queueTask(ThreadFunc task, std::chrono::milliseconds repeatDelay,
-        std::string taskName, bool highPriority)
+    void AEThreadPool::addHighPriorityTask(TaskFunc task, std::string taskName)
     {
-        if (!task)
-            return;
+        queueTask(std::move(task), std::chrono::milliseconds(-1), std::move(taskName), true);
+    }
 
-        if (!m_started.load())
-            start();
-
-        QueuedTask queuedTask;
-        queuedTask.task = std::move(task);
-        queuedTask.name = std::move(taskName);
-        queuedTask.repeatDelay = repeatDelay;
-        queuedTask.recurring = repeatDelay >= std::chrono::milliseconds(0);
-        queuedTask.nextRun = Clock::now();
+    AEThread& AEThreadPool::addDedicatedThread(std::string threadName, DedicatedThreadFunc threadFunc,
+        std::chrono::milliseconds intervalMs, bool autostart)
+    {
+        auto dedicatedThread = std::make_unique<AEThread>(std::move(threadName));
+        AEThread* threadPtr = dedicatedThread.get();
 
         {
             std::lock_guard lock(m_mutex);
-
-            if (m_shutdownRequested.load())
-                return;
-
-            if (highPriority)
-                m_tasks.emplace_front(std::move(queuedTask));
-            else
-                m_tasks.emplace_back(std::move(queuedTask));
+            m_dedicatedThreads.emplace_back(std::move(dedicatedThread));
         }
 
-        m_condition.notify_one();
+        const bool shouldAutostart = autostart && !m_shutdownRequested.load(std::memory_order_acquire);
+
+        if (intervalMs > std::chrono::milliseconds::zero())
+            threadPtr->addLoop(std::move(threadFunc), intervalMs, shouldAutostart);
+        else
+            threadPtr->addWork(std::move(threadFunc), shouldAutostart);
+
+        return *threadPtr;
+    }
+
+    void AEThreadPool::queueRecurringTask(TaskFunc task, std::chrono::milliseconds repeatDelay, std::string taskName)
+    {
+        addRecurringTask(std::move(task), repeatDelay, std::move(taskName));
+    }
+
+    void AEThreadPool::queueFireOnceTask(TaskFunc task, std::string taskName)
+    {
+        addTask(std::move(task), std::move(taskName));
+    }
+
+    void AEThreadPool::queueHighPriorityTask(TaskFunc task, const std::string& taskName)
+    {
+        addHighPriorityTask(std::move(task), taskName);
     }
 
     bool AEThreadPool::isStarted() const noexcept
     {
-        return m_started.load();
+        return m_started.load(std::memory_order_acquire);
     }
 
     bool AEThreadPool::isShutdownRequested() const noexcept
     {
-        return m_shutdownRequested.load();
+        return m_shutdownRequested.load(std::memory_order_acquire);
     }
+
+    size_t AEThreadPool::activeWorkerCount() const noexcept
+    {
+        return m_activeWorkerCount.load(std::memory_order_relaxed);
+    }
+
+    size_t AEThreadPool::idleWorkerCount() const
+    {
+        std::lock_guard lock(m_mutex);
+
+        const size_t workers = m_workers.size();
+        const size_t active = m_activeWorkerCount.load(std::memory_order_relaxed);
+
+        return workers > active ? workers - active : 0;
+    }
+
 
     size_t AEThreadPool::queuedTaskCount() const
     {
         std::lock_guard lock(m_mutex);
-        return m_tasks.size();
+        return m_highPriorityTasks.size() + m_tasks.size();
     }
 
-    size_t AEThreadPool::workerCount() const noexcept
+    size_t AEThreadPool::workerCount() const
     {
+        std::lock_guard lock(m_mutex);
         return m_workers.size();
+    }
+
+    size_t AEThreadPool::dedicatedThreadCount() const
+    {
+        std::lock_guard lock(m_mutex);
+        return m_dedicatedThreads.size();
     }
 
     uint64_t AEThreadPool::completedTaskCount() const noexcept
     {
-        return m_completedTaskCount.load();
+        return m_completedTaskCount.load(std::memory_order_relaxed);
     }
 
     bool AEThreadPool::hasPendingTasks() const
     {
         std::lock_guard lock(m_mutex);
-        return !m_tasks.empty();
+        return !queuesEmptyLocked();
+    }
+
+    bool AEThreadPool::queuesEmptyLocked() const
+    {
+        return m_highPriorityTasks.empty() && m_tasks.empty();
     }
 
     AEThreadPool::TimePoint AEThreadPool::nextTaskTimeLocked() const
     {
         TimePoint nextTime = TimePoint::max();
 
-        for (const auto& task : m_tasks)
-        {
-            if (task.nextRun < nextTime)
-                nextTime = task.nextRun;
-        }
+        const auto updateNextTime = [&nextTime](const std::deque<QueuedTask>& queue)
+            {
+                for (const auto& task : queue)
+                {
+                    if (task.nextRun < nextTime)
+                        nextTime = task.nextRun;
+                }
+            };
+
+        updateNextTime(m_highPriorityTasks);
+        updateNextTime(m_tasks);
 
         return nextTime;
     }
 
-    bool AEThreadPool::tryPopRunnableTaskLocked(TimePoint now, QueuedTask& outTask)
+    bool AEThreadPool::tryPopRunnableTaskFromQueueLocked(std::deque<QueuedTask>& queue, TimePoint now, QueuedTask& outTask)
     {
-        const auto itr = std::find_if(
-            m_tasks.begin(),
-            m_tasks.end(),
+        const auto taskItr = std::find_if(
+            queue.begin(),
+            queue.end(),
             [now](const QueuedTask& task)
             {
                 return task.nextRun <= now;
             }
         );
 
-        if (itr == m_tasks.end())
+        if (taskItr == queue.end())
             return false;
 
-        outTask = std::move(*itr);
-        m_tasks.erase(itr);
+        outTask = std::move(*taskItr);
+        queue.erase(taskItr);
         return true;
+    }
+
+    bool AEThreadPool::tryPopRunnableTaskLocked(TimePoint now, QueuedTask& outTask)
+    {
+        if (tryPopRunnableTaskFromQueueLocked(m_highPriorityTasks, now, outTask))
+            return true;
+
+        return tryPopRunnableTaskFromQueueLocked(m_tasks, now, outTask);
     }
 
     void AEThreadPool::requeueRecurringTask(QueuedTask task)
@@ -221,10 +278,73 @@ namespace AscEmu::Threading
         {
             std::lock_guard lock(m_mutex);
 
-            if (m_shutdownRequested.load())
+            if (m_shutdownRequested.load(std::memory_order_acquire))
                 return;
 
-            m_tasks.emplace_back(std::move(task));
+            if (task.highPriority)
+                m_highPriorityTasks.emplace_back(std::move(task));
+            else
+                m_tasks.emplace_back(std::move(task));
+
+            ensureWorkerCapacityLocked(task.highPriority);
+        }
+
+        m_condition.notify_one();
+    }
+
+    void AEThreadPool::spawnWorkersLocked(size_t desiredWorkerCount)
+    {
+        while (m_workers.size() < desiredWorkerCount)
+        {
+            const size_t workerIndex = m_workerIdCounter++;
+            m_workers.emplace_back([this, workerIndex]
+                {
+                    workerLoop(workerIndex);
+                });
+        }
+    }
+
+    void AEThreadPool::ensureWorkerCapacityLocked(bool highPriority)
+    {
+        const size_t queuedTasks = m_highPriorityTasks.size() + m_tasks.size();
+        const size_t activeWorkers = m_activeWorkerCount.load(std::memory_order_relaxed);
+        const size_t currentWorkers = m_workers.size();
+
+        const size_t upperBound = static_cast<size_t>(highPriority ? m_hardMaximumThreadCount : m_softMaximumThreadCount);
+        const size_t desiredWorkers = std::clamp(activeWorkers + queuedTasks, static_cast<size_t>(m_minimumThreadCount), upperBound);
+
+        if (currentWorkers < desiredWorkers)
+            spawnWorkersLocked(desiredWorkers);
+    }
+
+    void AEThreadPool::queueTask(TaskFunc task, std::chrono::milliseconds repeatDelay, std::string taskName, bool highPriority)
+    {
+        if (!task)
+            return;
+
+        if (!m_started.load(std::memory_order_acquire))
+            start();
+
+        QueuedTask queuedTask;
+        queuedTask.task = std::move(task);
+        queuedTask.name = std::move(taskName);
+        queuedTask.repeatDelay = repeatDelay;
+        queuedTask.recurring = repeatDelay >= std::chrono::milliseconds::zero();
+        queuedTask.nextRun = Clock::now();
+        queuedTask.highPriority = highPriority;
+
+        {
+            std::lock_guard lock(m_mutex);
+
+            if (m_shutdownRequested.load(std::memory_order_acquire))
+                return;
+
+            if (highPriority)
+                m_highPriorityTasks.emplace_back(std::move(queuedTask));
+            else
+                m_tasks.emplace_back(std::move(queuedTask));
+
+            ensureWorkerCapacityLocked(highPriority);
         }
 
         m_condition.notify_one();
@@ -243,15 +363,14 @@ namespace AscEmu::Threading
 
                 for (;;)
                 {
-                    if (m_shutdownRequested.load() && m_tasks.empty())
+                    if (m_shutdownRequested.load(std::memory_order_acquire) && queuesEmptyLocked())
                         return;
 
                     const auto now = Clock::now();
-
                     if (tryPopRunnableTaskLocked(now, task))
                         break;
 
-                    if (m_shutdownRequested.load())
+                    if (m_shutdownRequested.load(std::memory_order_acquire))
                         return;
 
                     const auto nextRun = nextTaskTimeLocked();
@@ -260,31 +379,30 @@ namespace AscEmu::Threading
                     {
                         m_condition.wait(lock, [this]
                         {
-                            return m_shutdownRequested.load() || !m_tasks.empty();
+                            return m_shutdownRequested.load(std::memory_order_acquire) || !queuesEmptyLocked();
                         });
                     }
                     else
                     {
-                        m_condition.wait_until(lock, nextRun, [this]
-                        {
-                            return m_shutdownRequested.load();
-                        });
+                        m_condition.wait_until(lock, nextRun);
                     }
                 }
             }
 
+            m_activeWorkerCount.fetch_add(1, std::memory_order_relaxed);
+
             try
             {
                 task.task();
-                m_completedTaskCount.fetch_add(1);
+                m_completedTaskCount.fetch_add(1, std::memory_order_relaxed);
             }
             catch (...)
             {
-                // Keep the worker alive even if a task throws.
-                // Logging can be wired in later if desired.
             }
 
-            if (task.recurring && !m_shutdownRequested.load())
+            m_activeWorkerCount.fetch_sub(1, std::memory_order_relaxed);
+
+            if (task.recurring && !m_shutdownRequested.load(std::memory_order_acquire))
                 requeueRecurringTask(std::move(task));
         }
     }

@@ -21,11 +21,11 @@
 #define _CRASH_HANDLER_H
 
 #include <cstdint>
-#include "Threading/LegacyThreadBase.h"
+
 bool HookCrashReporter(bool logon);
 
 #ifdef _WIN32
-
+#include <windows.h>
 #include <DbgHelp.h>
 #include "StackWalker.h"
 

@@ -8,8 +8,12 @@
 
 #include "../Network.h"
 #include "Debugging/Errors.hpp"
-#include "Threading/LegacyThreadBase.h"
-#include "Threading/LegacyThreadPool.h"
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    #include "Threading/AEThreadPool.h"
+#else
+    #include "Threading/LegacyThreadBase.h"
+    #include "Threading/LegacyThreadPool.h"
+#endif
 #include <cassert>
 
 #ifdef CONFIG_USE_EPOLL
@@ -110,8 +114,34 @@ void SocketMgr::CloseAll()
 void SocketMgr::SpawnWorkerThreads()
 {
     uint32_t count = 1;
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    if (m_threadPool == nullptr)
+    {
+        sLogger.failure("SocketMgr::SpawnWorkerThreads called without AEThreadPool.");
+        return;
+    }
+
+    if (!m_workerThreads.empty())
+        return;
+
+    m_workerThreads.reserve(count);
+
+    for (uint32_t i = 0; i < count; ++i)
+    {
+        auto& worker = m_threadPool->addDedicatedThread(
+            "EPOLL Worker " + std::to_string(i),
+            [this](AscEmu::Threading::AEThread& self)
+            {
+                WorkerThreadLoop(self);
+            }
+        );
+
+        m_workerThreads.push_back(&worker);
+    }
+#else
     for(uint32_t i = 0; i < count; ++i)
         ThreadPool.ExecuteTask(new SocketWorkerThread());
+#endif
 }
 
 void SocketMgr::ShowStatus()
@@ -119,6 +149,87 @@ void SocketMgr::ShowStatus()
     sLogger.info("sockets count = {}", static_cast<uint32_t>(socket_count.load()));
 }
 
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+void SocketMgr::ShutdownThreads()
+{
+    for (auto* worker : m_workerThreads)
+    {
+        if (worker != nullptr)
+            worker->requestKill();
+    }
+
+    for (auto* worker : m_workerThreads)
+    {
+        if (worker != nullptr)
+            worker->join();
+    }
+
+    m_workerThreads.clear();
+}
+
+void SocketMgr::WorkerThreadLoop(AscEmu::Threading::AEThread& self)
+{
+    struct epoll_event events[THREAD_EVENT_SIZE];
+
+    while (!self.isKilled())
+    {
+        const int fd_count = epoll_wait(epoll_fd, events, THREAD_EVENT_SIZE, 1000);
+
+        for (int i = 0; i < fd_count; ++i)
+        {
+            const int fd = events[i].data.fd;
+
+            if (events[i].data.fd >= SOCKET_HOLDER_SIZE)
+            {
+                sLogger.failure("Requested FD that is too high ({})", fd);
+                continue;
+            }
+
+            Socket* ptr = fds[fd];
+
+            if (ptr == nullptr)
+            {
+                if ((ptr = ((Socket*)listenfds[events[i].data.fd])) != nullptr)
+                    ((ListenSocketBase*)ptr)->OnAccept();
+                else
+                    sLogger.failure("Returned invalid fd (no pointer) of FD {}", fd);
+
+                continue;
+            }
+
+            if (events[i].events & EPOLLHUP || events[i].events & EPOLLERR)
+            {
+                ptr->Disconnect();
+                continue;
+            }
+
+            if (events[i].events & EPOLLIN)
+            {
+                ptr->ReadCallback(0);
+
+                if (ptr->writeBuffer.GetSize() > 0 && !ptr->HasSendLock() && ptr->IsConnected())
+                    ptr->PostEvent(EPOLLOUT);
+
+                continue;
+            }
+
+            if (events[i].events & EPOLLOUT)
+            {
+                ptr->BurstBegin();
+                ptr->WriteCallback();
+
+                if (ptr->writeBuffer.GetSize() == 0)
+                {
+                    ptr->DecSendLock();
+                    ptr->PostEvent(EPOLLIN);
+                }
+
+                ptr->BurstEnd();
+            }
+        }
+    }
+}
+#else
 bool SocketWorkerThread::runThread()
 {
     int fd_count;
@@ -182,5 +293,6 @@ bool SocketWorkerThread::runThread()
     }
     return true;
 }
+#endif
 
 #endif

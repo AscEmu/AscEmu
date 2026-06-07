@@ -30,7 +30,9 @@
 #include "Server/World.h"
 #include "ConsoleSocket.h"
 #include "ConsoleAuthMgr.h"
-#include "Threading/LegacyThreadBase.h"
+#ifndef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    #include "Threading/LegacyThreadBase.h"
+#endif
 
 std::unique_ptr<ListenSocket<ConsoleSocket>> g_pListenSocket = nullptr;
 
@@ -85,10 +87,17 @@ bool StartConsoleListener()
 }
 
 #ifdef _WIN32
-ThreadBase* GetConsoleListener()
-{
-    return static_cast<ThreadBase*>(g_pListenSocket.get());
-}
+    #ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+        ListenSocket<ConsoleSocket>* GetConsoleListener()
+        {
+            return g_pListenSocket.get();
+        }
+    #else
+        ThreadBase* GetConsoleListener()
+        {
+            return static_cast<ThreadBase*>(g_pListenSocket.get());
+        }
+    #endif
 #endif
 
 RemoteConsole::RemoteConsole(ConsoleSocket* pSocket)

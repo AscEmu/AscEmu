@@ -11,7 +11,12 @@
 #define SOCKETMGR_FREE_BSD_H
 
 #include "../SocketDefines.h"
-#include "Threading/LegacyThreadBase.h"
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    #include "Threading/AEThread.h"
+    #include <vector>
+#else
+    #include "Threading/LegacyThreadBase.h"
+#endif
 
 #ifdef CONFIG_USE_KQUEUE
 
@@ -25,6 +30,13 @@
 class Socket;
 class SocketWorkerThread;
 class ListenSocketBase;
+
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+namespace AscEmu::Threading
+{
+    class AEThreadPool;
+}
+#endif
 
 class SocketMgr
 {
@@ -42,6 +54,13 @@ private:
     SocketMgr() = default;
     ~SocketMgr() = default;
 
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    AscEmu::Threading::AEThreadPool* m_threadPool = nullptr;
+    std::vector<AscEmu::Threading::AEThread*> m_workerThreads;
+
+    void WorkerThreadLoop(AscEmu::Threading::AEThread& self);
+#endif
+
 public:
     /// friend class of the worker thread -> it has to access our private resources
     friend class SocketWorkerThread;
@@ -51,6 +70,15 @@ public:
         static SocketMgr mInstance;
         return mInstance;
     }
+
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    void SetThreadPool(AscEmu::Threading::AEThreadPool& threadPool)
+    {
+        m_threadPool = &threadPool;
+    }
+
+    void ShutdownThreads();
+#endif
 
     /// constructor > create epoll device handle + initialize event set
     void initialize()
@@ -100,6 +128,7 @@ public:
     void SpawnWorkerThreads();
 };
 
+#ifndef ASCEMU_USE_AE_NETWORK_THREADPOOL
 class SocketWorkerThread : public ThreadBase
 {
     /// epoll event struct
@@ -113,6 +142,7 @@ public:
         running = false;
     }
 };
+#endif
 
 #define sSocketMgr SocketMgr::getInstance()
 

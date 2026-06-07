@@ -12,13 +12,18 @@
 
 #ifdef CONFIG_USE_IOCP
 
-#include <Threading/LegacyThreadPool.h>
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    #include "Threading/AEThreadPool.h"
+#endif
 
 //ignore warning for deprecated function gethostbyname
 #pragma warning ( disable: 4996 )
 
 template<class T>
-class SERVER_DECL ListenSocket : public ThreadBase
+class SERVER_DECL ListenSocket
+#ifndef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    : public ThreadBase
+#endif
 {
 public:
     ListenSocket(const char* ListenAddress, uint32_t Port)

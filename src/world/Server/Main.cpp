@@ -21,7 +21,10 @@
 #include "Server/Master.h"
 #include "Debugging/CrashHandler.h"
 #include "ServerState.h"
-#include "Threading/LegacyThreadPool.h"
+
+#ifndef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    #include "Threading/LegacyThreadPool.h"
+#endif
 
 #include <exception>
 
@@ -52,7 +55,9 @@ namespace
 
     int win32Main(int argc, char** argv)
     {
+#ifndef ASCEMU_USE_AE_NETWORK_THREADPOOL
         SetThreadName("Main Thread");
+#endif
 
         // This sets up the global unhandled exception filter
         startCrashHandler();

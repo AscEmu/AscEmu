@@ -11,7 +11,6 @@
 #define _NETWORK_H
 
 #include <Logging/Logger.hpp>
-#include "NetworkBuffer.hpp"
 #include "SocketDefines.h"
 #include "SocketOps.h"
 #include "Socket.h"

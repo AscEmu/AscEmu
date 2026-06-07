@@ -16,6 +16,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include <atomic>
 #include <memory>
 
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    #include "Threading/AEThreadPool.h"
+#endif
+
 // Forward Declarations
 class SessionLog;
 class Database;
@@ -54,6 +58,18 @@ public:
         fmt::println(format, std::forward<Args>(args)...);
     }
 
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    AscEmu::Threading::AEThreadPool& getThreadPool()
+    {
+        return *m_threadPool;
+    }
+
+    const AscEmu::Threading::AEThreadPool& getThreadPool() const
+    {
+        return *m_threadPool;
+    }
+#endif
+
 private:
     Master() = default;
     ~Master();
@@ -84,6 +100,10 @@ private:
     std::unique_ptr<SessionLog> gmCommandLog;
     std::unique_ptr<SessionLog> anticheatLog;
     std::unique_ptr<SessionLog> playerLog;
+
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    std::unique_ptr<AscEmu::Threading::AEThreadPool> m_threadPool;
+#endif
 };
 
 inline Master& sMaster()

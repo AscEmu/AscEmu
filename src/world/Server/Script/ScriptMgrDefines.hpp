@@ -30,9 +30,9 @@ class GossipScript;
 class EventScript;
 class QuestScript;
 
-namespace Arcemu
+namespace AscEmu::Platform
 {
-    class DynLib;
+    class DynamicLibrary;
 }
 
 class CreatureAIScript;
@@ -77,7 +77,7 @@ typedef std::unordered_map<uint32_t, GossipScript*> GossipMap;
 typedef std::set<EventScript*> EventScripts;
 typedef std::set<QuestScript*> QuestScripts;
 
-typedef std::list<std::unique_ptr<Arcemu::DynLib>> DynamicLibraryMap;
+typedef std::list<std::unique_ptr<AscEmu::Platform::DynamicLibrary>> DynamicLibraryMap;
 
 enum RangeStatus
 {

@@ -20,7 +20,14 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/ConfigMgr.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/World.h"
-#include "Threading/LegacyThreadPool.h"
+
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+    #include "Threading/AEThread.h"
+    #include "Threading/AEThreadPool.h"
+#else
+    #include "Threading/LegacyThreadPool.h"
+#endif
+
 #include "Utilities/Strings.hpp"
 
 LogonCommHandler& LogonCommHandler::getInstance()
@@ -59,6 +66,60 @@ void LogonCommHandler::finalize()
     realms.clear();
 }
 
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+class LogonCommWatcherThread
+{
+public:
+    LogonCommWatcherThread() = default;
+    ~LogonCommWatcherThread() = default;
+
+    void run(AscEmu::Threading::AEThread& thread)
+    {
+        sLogonCommHandler.connectToLogonServer();
+
+        for (;;)
+        {
+            {
+                std::lock_guard lock(m_mutex);
+
+                if (!m_running || thread.isKilled())
+                    break;
+            }
+
+            sLogonCommHandler.updateLogonServerConnection();
+
+            std::unique_lock lock(m_mutex);
+
+            m_condition.wait_for(
+                lock,
+                std::chrono::milliseconds(5000),
+                [this, &thread]
+                {
+                    return !m_running || thread.isKilled();
+                }
+            );
+
+            if (!m_running || thread.isKilled())
+                break;
+        }
+    }
+
+    void stop()
+    {
+        {
+            std::lock_guard lock(m_mutex);
+            m_running = false;
+        }
+
+        m_condition.notify_one();
+    }
+
+private:
+    std::mutex m_mutex;
+    std::condition_variable m_condition;
+    bool m_running = true;
+};
+#else
 class LogonCommWatcherThread : public ThreadBase
 {
 public:
@@ -113,7 +174,24 @@ private:
     std::condition_variable m_condition;
     bool m_running = true;
 };
+#endif
 
+#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
+void LogonCommHandler::startLogonCommHandler(AscEmu::Threading::AEThreadPool& threadPool)
+{
+    loadRealmsConfiguration();
+    loadAccountPermissions();
+
+    threadPool.addDedicatedThread(
+        "LogonCommWatcher",
+        [](AscEmu::Threading::AEThread& thread)
+        {
+            LogonCommWatcherThread watcher;
+            watcher.run(thread);
+        }
+    );
+}
+#else
 void LogonCommHandler::startLogonCommHandler()
 {
     loadRealmsConfiguration();
@@ -121,6 +199,7 @@ void LogonCommHandler::startLogonCommHandler()
 
     ThreadPool.ExecuteTask(new LogonCommWatcherThread());
 }
+#endif
 
 void LogonCommHandler::loadAccountPermissions()
 {

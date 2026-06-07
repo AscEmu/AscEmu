@@ -3,8 +3,7 @@
 # set up our project name.
 set(LIBRARY_NAME shared)
 
-option(ASCEMU_USE_BIPBUFFER "Use the new BipBuffer implementation for network sockets" ON)
-option(ASCEMU_USE_AE_THREADPOOL_LEGACY_ADAPTER "Use AEThreadPool as backend for LegacyThreadPool" ON)
+option(ASCEMU_USE_AE_NETWORK_THREADPOOL "Use AEThreadPool/AEThread for platform socket worker threads" ON)
 
 file(GLOB SRC_CONFIG_FILES Config/*.cpp Config/*.h Config/*.hpp)
 file(GLOB SRC_CRYPTOGRAPHY_FILES Cryptography/*.cpp Cryptography/*.h Cryptography/*.hpp)
@@ -26,6 +25,7 @@ file(GLOB SRC_SYSTEM_FILES System/*.cpp System/*.h System/*.hpp)
 file(GLOB SRC_REGISTRY_FILES Registry/*.cpp Registry/*.h Registry/*.hpp)
 file(GLOB SRC_THREADING_FILES Threading/*.cpp Threading/*.h Threading/*.hpp)
 file(GLOB SRC_UTILITIES_FILES Utilities/*.cpp Utilities/*.h Utilities/*.hpp)
+file(GLOB SRC_PLATFORM_FILES Platform/*.cpp Platform/*.hpp)
 file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
 
 set(SHARED_SRCS
@@ -41,6 +41,7 @@ set(SHARED_SRCS
     ${SRC_REGISTRY_FILES}
     ${SRC_THREADING_FILES}
     ${SRC_UTILITIES_FILES}
+	${SRC_PLATFORM_FILES}
     ${SRC_LOCAL_DIR}
 )
 
@@ -49,18 +50,11 @@ ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_library(${LIBRARY_NAME} STATIC ${SHARED_SRCS})
 
-if (ASCEMU_USE_BIPBUFFER)
-    message(STATUS "Network buffer: BipBuffer")
-    target_compile_definitions(${LIBRARY_NAME} PUBLIC ASCEMU_USE_BIPBUFFER)
+if (ASCEMU_USE_AE_NETWORK_THREADPOOL)
+    message(STATUS "Threading: AEThreadPool")
+    target_compile_definitions(${LIBRARY_NAME} PUBLIC ASCEMU_USE_AE_NETWORK_THREADPOOL)
 else ()
-    message(STATUS "Network buffer: CircularBuffer")
-endif ()
-
-if (ASCEMU_USE_AE_THREADPOOL_LEGACY_ADAPTER)
-    message(STATUS "LegacyThreadPool backend: AEThreadPool adapter")
-    target_compile_definitions(${LIBRARY_NAME} PUBLIC ASCEMU_USE_AE_THREADPOOL_LEGACY_ADAPTER)
-else ()
-    message(STATUS "LegacyThreadPool backend: original legacy implementation")
+    message(STATUS "Threading: LegacyThreadPool")
 endif ()
 
 target_include_directories(${LIBRARY_NAME} PUBLIC 

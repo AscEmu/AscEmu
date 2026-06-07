@@ -19,6 +19,8 @@
 
 #pragma once
 
+#ifndef ASCEMU_USE_AE_NETWORK_THREADPOOL
+
 #include "CommonTypes.hpp"
 #include "Threading/LegacyThreadBase.h"
 
@@ -33,62 +35,6 @@ namespace Arcemu
 
 long Sync_Add(volatile long* value);
 long Sync_Sub(volatile long* value);
-
-#ifdef ASCEMU_USE_AE_THREADPOOL_LEGACY_ADAPTER
-
-#include "Threading/AEThreadPool.h"
-
-#include <atomic>
-#include <mutex>
-#include <set>
-
-struct SERVER_DECL Thread
-{
-    ThreadBase* ExecutionTarget = nullptr;
-    bool DeleteAfterExit = false;
-};
-
-class SERVER_DECL CThreadPool
-{
-public:
-    CThreadPool();
-
-    void Startup();
-    void Shutdown();
-
-    bool ThreadExit(Thread* t);
-
-    Thread* StartThread(ThreadBase* ExecutionTarget);
-    void ExecuteTask(ThreadBase* ExecutionTarget);
-
-    void ShowStats();
-    void IntegrityCheck();
-    void KillFreeThreads(uint32_t count);
-
-    inline void Gobble()
-    {
-    }
-
-    uint32_t GetActiveThreadCount();
-    uint32_t GetFreeThreadCount();
-
-private:
-    void registerActiveTask(ThreadBase* task);
-    void unregisterActiveTask(ThreadBase* task);
-
-private:
-    mutable std::mutex m_activeTasksMutex;
-    std::set<ThreadBase*> m_activeTasks;
-
-    std::atomic_uint32_t m_requestedTasks{ 0 };
-    std::atomic_uint32_t m_completedTasks{ 0 };
-    std::atomic_bool m_started{ false };
-    std::atomic_bool m_shutdownRequested{ false };
-};
-
-extern SERVER_DECL CThreadPool ThreadPool;
-
-#else
 
 #include <set>
 #include <mutex>
