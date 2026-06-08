@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "Threading/ThreadPool.hpp"
 #include <set>
 #include <atomic>
 #include <mutex>
@@ -51,6 +52,16 @@ public:
     void addAuthSocket(AuthSocket* _authSocket);
     void removeAuthSocket(AuthSocket* _authSocket);
 
+    AscEmu::Threading::AEThreadPool& getThreadPool()
+    {
+        return *m_threadPool;
+    }
+
+    const AscEmu::Threading::AEThreadPool& getThreadPool() const
+    {
+        return *m_threadPool;
+    }
+
 private:
     void _HookSignals();
     void _UnhookSignals();
@@ -60,6 +71,8 @@ private:
 
     std::set<AuthSocket*> m_authSockets;
     std::mutex m_authSocketLock;
+
+    std::unique_ptr<AscEmu::Threading::AEThreadPool> m_threadPool;
 };
 
 #define sMasterLogon MasterLogon::getInstance()

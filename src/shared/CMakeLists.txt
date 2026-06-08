@@ -3,8 +3,6 @@
 # set up our project name.
 set(LIBRARY_NAME shared)
 
-option(ASCEMU_USE_AE_NETWORK_THREADPOOL "Use AEThreadPool/AEThread for platform socket worker threads" ON)
-
 file(GLOB SRC_CONFIG_FILES Config/*.cpp Config/*.h Config/*.hpp)
 file(GLOB SRC_CRYPTOGRAPHY_FILES Cryptography/*.cpp Cryptography/*.h Cryptography/*.hpp)
 file(GLOB SRC_DATABASE_FILES Database/*.cpp Database/*.h Database/*.hpp)
@@ -49,13 +47,6 @@ set(SHARED_SRCS
 ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_library(${LIBRARY_NAME} STATIC ${SHARED_SRCS})
-
-if (ASCEMU_USE_AE_NETWORK_THREADPOOL)
-    message(STATUS "Threading: AEThreadPool")
-    target_compile_definitions(${LIBRARY_NAME} PUBLIC ASCEMU_USE_AE_NETWORK_THREADPOOL)
-else ()
-    message(STATUS "Threading: LegacyThreadPool")
-endif ()
 
 target_include_directories(${LIBRARY_NAME} PUBLIC 
     ${OPENSSL_INCLUDE_DIR}

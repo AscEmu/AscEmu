@@ -29,11 +29,7 @@
 #include <Utilities/Strings.hpp>
 #include "Database/Database.h"
 #include <algorithm>
-#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
-    #include "Threading/AEThreadPool.h"
-#else
-    #include "Threading/LegacyThreadPool.h"
-#endif
+#include "Threading/ThreadPool.hpp"
 
 LogonConsole& LogonConsole::getInstance()
 {
@@ -96,16 +92,11 @@ void LogonConsole::Kill()
     sLogger.info("Waiting for console thread to terminate....");
     while (_thread != nullptr)
     {
-#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
         AscEmu::Threading::sleep(100);
-#else
-        Arcemu::Sleep(100);
-#endif
     }
     sLogger.info("Console shut down.");
 }
 
-#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
 void LogonConsoleThread::run(AscEmu::Threading::AEThread& thread)
 {
     sLogonConsole._thread = this;
@@ -155,60 +146,8 @@ void LogonConsoleThread::run(AscEmu::Threading::AEThread& thread)
 
     sLogonConsole._thread = nullptr;
 }
-#else
-bool LogonConsoleThread::runThread()
-{
-    SetThreadName("Console Interpreter");
-    sLogonConsole._thread = this;
-    size_t i = 0, len = 0;
-    char cmd[96];
 
-#ifndef WIN32
-    fd_set fds;
-    struct timeval tv;
-#endif
 
-    while (!kill)
-    {
-#ifndef WIN32
-        tv.tv_sec = 1;
-        tv.tv_usec = 0;
-        FD_ZERO(&fds);
-        FD_SET(STDIN_FILENO, &fds);
-        if(select(1, &fds, NULL, NULL, &tv) <= 0)
-        {
-            if(!kill.load()) // timeout
-                continue;
-            else
-                break;
-        }
-#endif
-        // Make sure our buffer is clean to avoid Array bounds overflow
-        memset(cmd, 0, sizeof(cmd));
-        // Read in single line from "stdin"
-        fgets(cmd, 80, stdin);
-
-        if (kill)
-            break;
-
-        len = strlen(cmd);
-        for (i = 0; i < len; ++i)
-        {
-            if (cmd[i] == '\n' || cmd[i] == '\r')
-                cmd[i] = '\0';
-        }
-        sLogonConsole.ProcessCmd(cmd);
-    }
-
-    sLogonConsole._thread = nullptr;
-    return true;
-}
-#endif
-///////////////////////////////////////////////////////////////////////////////
-// Protected methods:
-///////////////////////////////////////////////////////////////////////////////
-
-// Process one command
 void LogonConsole::ProcessCmd(char* cmd)
 {
     using PTranslater = void (LogonConsole::*)(char*);
@@ -464,8 +403,6 @@ void LogonConsole::AccountChangePassword(char* str)
 
         if (!new_pass_query)
         {
-            // The query is already done, don't know why we are here. \todo check sLogonSQL query handling.
-            // fmt::println("Can't update the password. Abort.");
             return;
         }
     }

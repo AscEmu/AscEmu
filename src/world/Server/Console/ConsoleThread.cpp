@@ -8,12 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Console/BaseConsole.h"
 #include "Server/Console/ConsoleThread.h"
 #include "Logging/Logger.hpp"
-
-#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
-    #include "Threading/AEThread.h"
-#else
-    #include "Threading/LegacyThreadPool.h"
-#endif
+#include "Threading/Thread.hpp"
 
 #include <chrono>
 #include <thread>
@@ -22,7 +17,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include <poll.h>
 #endif
 
-#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
 void ConsoleThread::run(AscEmu::Threading::AEThread& thread)
 {
     LocalConsole localConsole;
@@ -45,50 +39,13 @@ void ConsoleThread::run(AscEmu::Threading::AEThread& thread)
 
     mIsConsoleThreadRunning = false;
 }
-#else
-bool ConsoleThread::runThread()
-{
-    SetThreadName("Console Interpreter");
-
-    LocalConsole g_localConsole;
-
-#ifndef _WIN32
-    struct pollfd pollInput;
-    pollInput.fd = 0;
-    pollInput.events = POLLIN | POLLPRI;
-    pollInput.revents = 0;
-#endif
-
-    mStopConsoleThread = false;
-    mIsConsoleThreadRunning = true;
-
-    while (mStopConsoleThread != true)
-    {
-        std::string cmdInputText;
-        if (!std::getline(std::cin, cmdInputText))
-            break;
-
-        if (cmdInputText.empty())
-            continue;
-
-        if (mStopConsoleThread)
-            break;
-
-        processConsoleInput(&g_localConsole, cmdInputText);
-    }
-
-    mIsConsoleThreadRunning = false;
-
-    return false;
-}
-#endif
 
 void ConsoleThread::stopThread()
 {
     mStopConsoleThread = true;
 
 #ifdef _WIN32
-    /* write the return keydown/keyup event */
+    // write the return keydown/keyup event
     DWORD tempDWORD;
     INPUT_RECORD inputRecord[2];
 

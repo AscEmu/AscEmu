@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <memory>
 
-#include "Threading/AEThread.h"
+#include "Threading/Thread.hpp"
 
 class BroadcastMgr
 {

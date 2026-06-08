@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Logon.h"
 #include "RealmManager.hpp"
 #include "Utilities/Util.hpp"
-#include <Threading/AEThreadPool.h>
+#include "Threading/ThreadPool.hpp"
 #include "Realm/RealmFlag.hpp"
 #include <Logging/Logger.hpp>
 #include "Server/Master.hpp"

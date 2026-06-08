@@ -8,12 +8,8 @@
 
 #include "../Network.h"
 #include "Debugging/Errors.hpp"
-#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
-    #include "Threading/AEThreadPool.h"
-#else
-    #include "Threading/LegacyThreadBase.h"
-    #include "Threading/LegacyThreadPool.h"
-#endif
+#include "Threading/ThreadPool.hpp"
+
 #include <cassert>
 
 #ifdef CONFIG_USE_EPOLL
@@ -114,7 +110,6 @@ void SocketMgr::CloseAll()
 void SocketMgr::SpawnWorkerThreads()
 {
     uint32_t count = 1;
-#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
     if (m_threadPool == nullptr)
     {
         sLogger.failure("SocketMgr::SpawnWorkerThreads called without AEThreadPool.");
@@ -138,10 +133,6 @@ void SocketMgr::SpawnWorkerThreads()
 
         m_workerThreads.push_back(&worker);
     }
-#else
-    for(uint32_t i = 0; i < count; ++i)
-        ThreadPool.ExecuteTask(new SocketWorkerThread());
-#endif
 }
 
 void SocketMgr::ShowStatus()
@@ -149,7 +140,6 @@ void SocketMgr::ShowStatus()
     sLogger.info("sockets count = {}", static_cast<uint32_t>(socket_count.load()));
 }
 
-#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
 void SocketMgr::ShutdownThreads()
 {
     for (auto* worker : m_workerThreads)
@@ -229,70 +219,5 @@ void SocketMgr::WorkerThreadLoop(AscEmu::Threading::AEThread& self)
         }
     }
 }
-#else
-bool SocketWorkerThread::runThread()
-{
-    int fd_count;
-    Socket* ptr;
-    int i;
-    running = true;
-    // events[i].data.fd = ptr->GetFd();
-
-    while(running)
-    {
-        fd_count = epoll_wait(sSocketMgr.epoll_fd, events, THREAD_EVENT_SIZE, 5000);
-        for(i = 0; i < fd_count; ++i)
-        {
-            if(events[i].data.fd >= SOCKET_HOLDER_SIZE)
-            {
-                sLogger.failure("Requested FD that is too high ({})", ptr->GetFd());
-                continue;
-            }
-
-            ptr = sSocketMgr.fds[events[i].data.fd];
-
-            if(ptr == NULL)
-            {
-                if((ptr = ((Socket*)sSocketMgr.listenfds[events[i].data.fd])) != NULL)
-                    ((ListenSocketBase*)ptr)->OnAccept();
-                else
-                    sLogger.failure("Returned invalid fd (no pointer) of FD {}", ptr->GetFd());
-                continue;
-            }
-
-            if(events[i].events & EPOLLHUP || events[i].events & EPOLLERR)
-            {
-                ptr->Disconnect();
-                continue;
-            }
-            else if(events[i].events & EPOLLIN)
-            {
-                ptr->ReadCallback(0); // Len is unknown at this point.
-
-                /* changing to written state? */
-                if(ptr->writeBuffer.GetSize() && !ptr->HasSendLock() && ptr->IsConnected())
-                    ptr->PostEvent(EPOLLOUT);
-            }
-            else if(events[i].events & EPOLLOUT)
-            {
-                ptr->BurstBegin();      // Lock receive mutex
-                ptr->WriteCallback();   // Perform actual send()
-                if(ptr->writeBuffer.GetSize() > 0)
-                {
-                    /* we don't have to do anything here. no more oneshots :) */
-                }
-                else
-                {
-                    /* change back to a read event */
-                    ptr->DecSendLock();
-                    ptr->PostEvent(EPOLLIN);
-                }
-                ptr->BurstEnd(); // Unlock
-            }
-        }
-    }
-    return true;
-}
-#endif
 
 #endif

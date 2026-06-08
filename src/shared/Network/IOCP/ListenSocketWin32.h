@@ -12,18 +12,13 @@
 
 #ifdef CONFIG_USE_IOCP
 
-#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
-    #include "Threading/AEThreadPool.h"
-#endif
+#include "Threading/ThreadPool.hpp"
 
 //ignore warning for deprecated function gethostbyname
 #pragma warning ( disable: 4996 )
 
 template<class T>
 class SERVER_DECL ListenSocket
-#ifndef ASCEMU_USE_AE_NETWORK_THREADPOOL
-    : public ThreadBase
-#endif
 {
 public:
     ListenSocket(const char* ListenAddress, uint32_t Port)
@@ -74,28 +69,19 @@ public:
     {
         while (m_opened)
         {
-            //aSocket = accept(m_socket, (sockaddr*)&m_tempAddress, (socklen_t*)&len);
             aSocket = WSAAccept(m_socket, (sockaddr*)&m_tempAddress, (socklen_t*)&len, NULL, NULL);
             if (aSocket == INVALID_SOCKET)
-                continue;        // shouldn't happen, we are blocking.
+                continue;
 
             socket = new T(aSocket);
             socket->SetCompletionPort(m_cp);
             socket->Accept(&m_tempAddress);
         }
         return false;
-        /*aSocket = WSAAccept(m_socket, (sockaddr*)&m_tempAddress, (socklen_t*)&len, NULL, NULL);
-        if (aSocket == INVALID_SOCKET)
-            return;
-
-        socket = new T(aSocket);
-        socket->SetCompletionPort(m_cp);
-        socket->Accept(&m_tempAddress);*/
     }
 
     void Close()
     {
-        // prevent a race condition here.
         bool mo = m_opened;
         m_opened = false;
 
@@ -117,4 +103,5 @@ private:
 };
 
 #endif
+
 #endif      //LISTEN_SOCKET_WIN32_H

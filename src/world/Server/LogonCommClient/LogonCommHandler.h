@@ -15,13 +15,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include <mutex>
 
 class WorldSocket;
-
-#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
-    namespace AscEmu::Threading
-    {
-        class AEThreadPool;
-    }
-#endif
+namespace AscEmu::Threading
+{
+    class AEThreadPool;
+}
 
 struct LogonServerStructure
 {
@@ -100,11 +97,7 @@ public:
 
     uint8_t sql_passhash[20];
 
-#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
     void startLogonCommHandler(AscEmu::Threading::AEThreadPool& threadPool);
-#else
-    void startLogonCommHandler();
-#endif
     void loadRealmsConfiguration();
     void loadAccountPermissions();
 

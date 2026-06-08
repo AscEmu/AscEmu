@@ -8,12 +8,7 @@
 
 #include "../Network.h"
 #include "Debugging/Errors.hpp"
-#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
-    #include "Threading/AEThreadPool.h"
-#else
-    #include "Threading/LegacyThreadBase.h"
-    #include "Threading/LegacyThreadPool.h"
-#endif
+#include "Threading/ThreadPool.hpp"
 #include <cassert>
 
 #ifdef CONFIG_USE_KQUEUE
@@ -83,7 +78,6 @@ void SocketMgr::CloseAll()
 void SocketMgr::SpawnWorkerThreads()
 {
     uint32_t count = 1;
-#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
     if (m_threadPool == nullptr)
     {
         sLogger.failure("SocketMgr::SpawnWorkerThreads called without AEThreadPool.");
@@ -107,10 +101,6 @@ void SocketMgr::SpawnWorkerThreads()
 
         m_workerThreads.push_back(&worker);
     }
-#else
-    for(uint32_t i = 0; i < count; ++i)
-        ThreadPool.ExecuteTask(new SocketWorkerThread());
-#endif
 }
 
 uint32_t SocketMgr::GetSocketCount()
@@ -118,7 +108,6 @@ uint32_t SocketMgr::GetSocketCount()
     return socket_count.load();
 }
 
-#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
 void SocketMgr::ShutdownThreads()
 {
     for (auto* worker : m_workerThreads)
@@ -216,85 +205,5 @@ void SocketMgr::WorkerThreadLoop(AscEmu::Threading::AEThread& self)
         }
     }
 }
-#else
-bool SocketWorkerThread::runThread()
-{
-    sLogger.info("Worker thread started.");
-    int fd_count;
-    running = true;
-    Socket* ptr;
-    int i;
-    struct kevent ev;
-    struct timespec ts;
-    ts.tv_nsec = 0;
-    ts.tv_sec = 5;
-    struct kevent ev2;
-
-    int kq = sSocketMgr.GetKq();
-
-    while(running)
-    {
-        fd_count = kevent(kq, NULL, 0, &events[0], THREAD_EVENT_SIZE, &ts);
-        for(i = 0; i < fd_count; ++i)
-        {
-            if(events[i].ident >= SOCKET_HOLDER_SIZE)
-            {
-                sLogger.warning("kqueue : Requested FD that is too high ({})", ptr->GetFd());
-                continue;
-            }
-
-            ptr = sSocketMgr.fds[events[i].ident];
-
-            if(ptr == NULL)
-            {
-                if((ptr = ((Socket*)sSocketMgr.listenfds[events[i].ident])) != NULL)
-                {
-                    ((ListenSocketBase*)ptr)->OnAccept();
-                }
-                else
-                {
-                    sLogger.warning("kqueue : Returned invalid fd (no pointer) of FD {}", ptr->GetFd());
-
-                    // make sure it removes so we don't go chasing it again.
-                    EV_SET(&ev, events[i].ident, EVFILT_WRITE, EV_DELETE, 0, 0, NULL);
-                    EV_SET(&ev2, events[i].ident, EVFILT_READ, EV_DELETE, 0, 0, NULL);
-                    kevent(kq, &ev, 1, 0, 0, NULL);
-                    kevent(kq, &ev2, 1, 0, 0, NULL);
-                }
-                continue;
-            }
-
-            if(events[i].flags & EV_EOF || events[i].flags & EV_ERROR)
-            {
-                ptr->Disconnect();
-                continue;
-            }
-            else if(events[i].filter == EVFILT_WRITE)
-            {
-                ptr->BurstBegin();                          // Lock receive mutex
-                ptr->WriteCallback();                       // Perform actual send()
-                if(ptr->writeBuffer.GetSize() > 0)
-                    ptr->PostEvent(EVFILT_WRITE, true);     // Still remaining data.
-                else
-                {
-                    ptr->DecSendLock();
-                    ptr->PostEvent(EVFILT_READ, false);
-                }
-                ptr->BurstEnd(); // Unlock
-            }
-            else if(events[i].filter == EVFILT_READ)
-            {
-                ptr->ReadCallback(0); // Len is unknown at this point.
-                if(ptr->writeBuffer.GetSize() > 0 && ptr->IsConnected() && !ptr->HasSendLock())
-                {
-                    ptr->PostEvent(EVFILT_WRITE, true);
-                    ptr->IncSendLock();
-                }
-            }
-        }
-    }
-    return true;
-}
-#endif
 
 #endif

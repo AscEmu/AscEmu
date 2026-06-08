@@ -20,18 +20,14 @@
 #ifndef __LOGONCONSOLE_H
 #define __LOGONCONSOLE_H
 
-#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
-    #include <string>
-    #include <atomic>
-    #include <memory>
+#include <string>
+#include <atomic>
+#include <memory>
 
-    namespace AscEmu::Threading
-    {
-        class AEThread;
-    }
-#else
-    #include "Threading/LegacyThreadBase.h"
-#endif
+namespace AscEmu::Threading
+{
+    class AEThread;
+}
 
 enum checkType
 {
@@ -41,20 +37,13 @@ enum checkType
 };
 
 class LogonConsoleThread
-#ifndef ASCEMU_USE_AE_NETWORK_THREADPOOL
-    : public ThreadBase
-#endif
 {
     public:
     std::atomic<bool> kill;
     LogonConsoleThread();
     ~LogonConsoleThread();
 
-#ifdef ASCEMU_USE_AE_NETWORK_THREADPOOL
     void run(AscEmu::Threading::AEThread& thread);
-#else
-    bool runThread() override;
-#endif
 };
 
 class LogonConsole
