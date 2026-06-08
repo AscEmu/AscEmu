@@ -202,6 +202,20 @@ class SERVER_DECL Socket
 * @param port Port to connect to
 * @return templated type if successful, otherwise null
 */
+#ifdef ASCEMU_USE_AE_NETWORK
+template<class T>
+T* ConnectTCPSocket(const char* hostname, u_short port)
+{
+    T* s = new T(0);
+    if (!s->Connect(hostname, port))
+    {
+        s->Delete();
+        return nullptr;
+    }
+
+    return s;
+}
+#else
 template<class T>
 T* ConnectTCPSocket(const char* hostname, u_short port)
 {
@@ -227,6 +241,7 @@ T* ConnectTCPSocket(const char* hostname, u_short port)
     }
     return s;
 }
+#endif
 
 /* Socket Garbage Collector */
 #define SOCKET_GC_TIMEOUT 15

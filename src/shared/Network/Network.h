@@ -1,14 +1,9 @@
 /*
- * Multiplatform Async Network Library
- * Copyright (c) 2007 Burlex
- *
- * Network.h - Include this file in your .cpp files to gain access
- *             to features offered by this library.
- *
- */
+Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-#ifndef _NETWORK_H
-#define _NETWORK_H
+#pragma once
 
 #include <Logging/Logger.hpp>
 #include "SocketDefines.h"
@@ -17,17 +12,27 @@
 
 #ifdef CONFIG_USE_IOCP
 #include "IOCP/SocketMgrWin32.h"
-#include "IOCP/ListenSocketWin32.h"
+    #ifdef ASCEMU_USE_AE_NETWORK
+        #include "AE/Backends/IOCP/ListenSocketWin32.hpp"
+    #else
+        #include "IOCP/ListenSocketWin32.h"
+    #endif
 #endif
 
 #ifdef CONFIG_USE_EPOLL
 #include "EPOLL/SocketMgrLinux.h"
-#include "EPOLL/ListenSocketLinux.h"
+    #ifdef ASCEMU_USE_AE_NETWORK
+        #include "AE/Core/PollListenSocket.hpp"
+    #else
+        #include "EPOLL/ListenSocketLinux.h"
+    #endif
 #endif
 
 #ifdef CONFIG_USE_KQUEUE
 #include "KQUEUE/SocketMgrFreeBSD.h"
-#include "KQUEUE/ListenSocketFreeBSD.h"
+    #ifdef ASCEMU_USE_AE_NETWORK
+        #include "AE/Core/PollListenSocket.hpp"
+    #else
+        #include "KQUEUE/ListenSocketFreeBSD.h"
+    #endif
 #endif
-
-#endif      // _NETWORK_H

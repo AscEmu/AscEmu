@@ -8,6 +8,10 @@
 
 #include "Network.h"
 
+#ifdef ASCEMU_USE_AE_NETWORK
+    #include "Network/AE/Core/ResolveIPv4.hpp"
+#endif
+
 //ignore warning for deprecated function gethostbyname
 #pragma warning ( disable: 4996 )
 
@@ -36,6 +40,24 @@ Socket::~Socket()
 {
 }
 
+#ifdef ASCEMU_USE_AE_NETWORK
+bool Socket::Connect(const char* Address, uint32_t Port)
+{
+    if (!AscEmu::Network::AE::resolveRemoteAddress(Address, static_cast<uint16_t>(Port), m_client))
+        return false;
+
+    SocketOps::Blocking(m_fd);
+    if (connect(m_fd, reinterpret_cast<const sockaddr*>(&m_client), sizeof(m_client)) == -1)
+        return false;
+
+#ifdef CONFIG_USE_IOCP
+    m_completionPort = sSocketMgr.GetCompletionPort();
+#endif
+
+    _OnConnect();
+    return true;
+}
+#else
 bool Socket::Connect(const char* Address, uint32_t Port)
 {
     struct hostent* ci = gethostbyname(Address);
@@ -57,6 +79,7 @@ bool Socket::Connect(const char* Address, uint32_t Port)
     _OnConnect();
     return true;
 }
+#endif
 
 void Socket::Accept(sockaddr_in* address)
 {
