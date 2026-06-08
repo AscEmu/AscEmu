@@ -15,6 +15,13 @@
 
 void SocketMgr::AddSocket(Socket* s)
 {
+#ifdef ASCEMU_USE_AE_NETWORK
+    if (m_backend != nullptr)
+    {
+        m_backend->addSocket(s);
+        return;
+    }
+#else
     assert(fds[s->GetFd()] == 0);
     fds[s->GetFd()] = s;
 
@@ -29,14 +36,30 @@ void SocketMgr::AddSocket(Socket* s)
         sLogger.failure("Could not add initial kevent for fd {}!", s->GetFd());
         return;
     }
+#endif
 }
 void SocketMgr::ShowStatus()
 {
+#ifdef ASCEMU_USE_AE_NETWORK
+    if (m_backend != nullptr)
+    {
+        m_backend->showStatus();
+        return;
+    }
+#else
     sLogger.info("Sockets: {}", 0);
+#endif
 }
 
 void SocketMgr::AddListenSocket(ListenSocketBase* s)
 {
+#ifdef ASCEMU_USE_AE_NETWORK
+    if (m_backend != nullptr)
+    {
+        m_backend->addListenSocket(s);
+        return;
+    }
+#else
     assert(listenfds[s->GetFd()] == 0);
     listenfds[s->GetFd()] = s;
 
@@ -48,10 +71,18 @@ void SocketMgr::AddListenSocket(ListenSocketBase* s)
         sLogger.failure("Could not add initial kevent for fd {}!", s->GetFd());
         return;
     }
+#endif
 }
 
 void SocketMgr::RemoveSocket(Socket* s)
 {
+#ifdef ASCEMU_USE_AE_NETWORK
+    if (m_backend != nullptr)
+    {
+        m_backend->removeSocket(s);
+        return;
+    }
+#else
     if(fds[s->GetFd()] != s)
     {
         // already removed.
@@ -66,13 +97,22 @@ void SocketMgr::RemoveSocket(Socket* s)
     EV_SET(&ev2, s->GetFd(), EVFILT_READ, EV_DELETE, 0, 0, NULL);
     if(kevent(kq, &ev, 1, 0, 0, NULL) && kevent(kq, &ev2, 1, 0, 0, NULL))
         sLogger.warning("kqueue : Could not remove from kqueue: fd {}", s->GetFd());
+#endif
 }
 
 void SocketMgr::CloseAll()
 {
+#ifdef ASCEMU_USE_AE_NETWORK
+    if (m_backend != nullptr)
+    {
+        m_backend->closeAll();
+        return;
+    }
+#else
     for(uint32_t i = 0; i < SOCKET_HOLDER_SIZE; ++i)
         if(fds[i] != NULL)
             fds[i]->Delete();
+#endif
 }
 
 void SocketMgr::SpawnWorkerThreads()
@@ -84,6 +124,13 @@ void SocketMgr::SpawnWorkerThreads()
         return;
     }
 
+#ifdef ASCEMU_USE_AE_NETWORK
+    if (m_backend != nullptr)
+    {
+        m_backend->spawnWorkers(*m_threadPool);
+        return;
+    }
+#else
     if (!m_workerThreads.empty())
         return;
 
@@ -101,15 +148,27 @@ void SocketMgr::SpawnWorkerThreads()
 
         m_workerThreads.push_back(&worker);
     }
+#endif
 }
 
 uint32_t SocketMgr::GetSocketCount()
 {
+#ifdef ASCEMU_USE_AE_NETWORK
+    return m_backend != nullptr ? m_backend->socketCount() : 0;
+#else
     return socket_count.load();
+#endif
 }
 
 void SocketMgr::ShutdownThreads()
 {
+#ifdef ASCEMU_USE_AE_NETWORK
+    if (m_backend != nullptr)
+    {
+        m_backend->shutdownWorkers();
+        return;
+    }
+#else
     for (auto* worker : m_workerThreads)
     {
         if (worker != nullptr)
@@ -123,8 +182,10 @@ void SocketMgr::ShutdownThreads()
     }
 
     m_workerThreads.clear();
+#endif
 }
 
+#ifndef ASCEMU_USE_AE_NETWORK
 void SocketMgr::WorkerThreadLoop(AscEmu::Threading::AEThread& self)
 {
     struct kevent events[THREAD_EVENT_SIZE];
@@ -205,5 +266,6 @@ void SocketMgr::WorkerThreadLoop(AscEmu::Threading::AEThread& self)
         }
     }
 }
+#endif
 
 #endif

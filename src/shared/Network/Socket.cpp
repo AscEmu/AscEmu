@@ -9,7 +9,8 @@
 #include "Network.h"
 
 #ifdef ASCEMU_USE_AE_NETWORK
-    #include "Network/AE/Core/ResolveIPv4.hpp"
+    #include "Network/AE/Core/Resolver.hpp"
+    #include "Network/AE/Core/SocketPlatformOps.hpp"
 #endif
 
 //ignore warning for deprecated function gethostbyname
@@ -43,10 +44,14 @@ Socket::~Socket()
 #ifdef ASCEMU_USE_AE_NETWORK
 bool Socket::Connect(const char* Address, uint32_t Port)
 {
-    if (!AscEmu::Network::AE::resolveRemoteAddress(Address, static_cast<uint16_t>(Port), m_client))
+    AscEmu::Network::AE::SocketAddressIPv4 resolvedAddress;
+    if (!AscEmu::Network::AE::Resolver::resolveRemoteIPv4(Address, static_cast<uint16_t>(Port), resolvedAddress))
         return false;
 
-    SocketOps::Blocking(m_fd);
+    m_client = resolvedAddress.native();
+
+    AscEmu::Network::AE::SocketPlatformOps::setBlocking(m_fd);
+
     if (connect(m_fd, reinterpret_cast<const sockaddr*>(&m_client), sizeof(m_client)) == -1)
         return false;
 

@@ -9,9 +9,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Network/IOCP/SocketMgrWin32.h"
 #include "Network/SocketDefines.h"
-#include "Network/SocketOps.h"
 #include "Network/NetworkIncludes.hpp"
 #include "Network/AE/Core/ListenCommon.hpp"
+#include "Network/AE/Core/SocketPlatformOps.hpp"
 
 template <class T>
 class SERVER_DECL ListenSocket
@@ -23,9 +23,9 @@ public:
         if (m_socket == INVALID_SOCKET)
             return;
 
-        SocketOps::ReuseAddr(m_socket);
-        SocketOps::Blocking(m_socket);
-        SocketOps::SetTimeout(m_socket, 60);
+        AscEmu::Network::AE::SocketPlatformOps::setReuseAddress(m_socket);
+        AscEmu::Network::AE::SocketPlatformOps::setBlocking(m_socket);
+        AscEmu::Network::AE::SocketPlatformOps::setTimeout(m_socket, 60);
 
         if (!AscEmu::Network::AE::resolveListenAddress(listenAddress, static_cast<uint16_t>(port), m_address))
             return;
@@ -49,8 +49,7 @@ public:
         {
             m_tempLength = sizeof(sockaddr_in);
 
-            SOCKET acceptedSocket = WSAAccept(m_socket, reinterpret_cast<sockaddr*>(&m_tempAddress),
-                &m_tempLength, nullptr,0);
+            SOCKET acceptedSocket = WSAAccept(m_socket, reinterpret_cast<sockaddr*>(&m_tempAddress), &m_tempLength, nullptr, 0);
 
             if (acceptedSocket == INVALID_SOCKET)
                 continue;
@@ -69,7 +68,7 @@ public:
         m_opened = false;
 
         if (wasOpened)
-            SocketOps::CloseSocket(m_socket);
+            AscEmu::Network::AE::SocketPlatformOps::closeSocket(m_socket);
     }
 
     bool IsOpen() const
@@ -79,7 +78,7 @@ public:
 
 private:
     SOCKET m_socket = INVALID_SOCKET;
-    sockaddr_in m_address{};
+    AscEmu::Network::AE::SocketAddressIPv4 m_address{};
     sockaddr_in m_tempAddress{};
     bool m_opened = false;
     int m_tempLength = 0;

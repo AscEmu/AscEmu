@@ -14,6 +14,11 @@
     #include <vector>
 #include <atomic>
 
+#ifdef ASCEMU_USE_AE_NETWORK
+    #include <memory>
+    #include "Network/AE/Backends/EPOLL/EpollBackend.hpp"
+#endif
+
 #ifdef CONFIG_USE_EPOLL
 
 #define SOCKET_HOLDER_SIZE 30000    // You don't want this number to be too big, otherwise you're gonna be eating
@@ -53,7 +58,13 @@ private:
     AscEmu::Threading::AEThreadPool* m_threadPool = nullptr;
     std::vector<AscEmu::Threading::AEThread*> m_workerThreads;
 
+#ifndef ASCEMU_USE_AE_NETWORK
     void WorkerThreadLoop(AscEmu::Threading::AEThread& self);
+#endif
+
+#ifdef ASCEMU_USE_AE_NETWORK
+    std::unique_ptr<AscEmu::Network::AE::EpollBackend> m_backend;
+#endif
 
 public:
     /// friend class of the worker thread -> it has to access our private resources
@@ -75,6 +86,10 @@ public:
     /// constructor > create epoll device handle + initialize event set
     void initialize()
     {
+#ifdef ASCEMU_USE_AE_NETWORK
+        m_backend = std::make_unique<AscEmu::Network::AE::EpollBackend>(*this);
+        m_backend->initialize();
+#else
         epoll_fd = epoll_create(SOCKET_HOLDER_SIZE);
         if(epoll_fd == -1)
         {
@@ -86,13 +101,22 @@ public:
         memset(fds, 0, sizeof(void*) * SOCKET_HOLDER_SIZE);
         memset(listenfds, 0, sizeof(void*) * SOCKET_HOLDER_SIZE);
         max_fd = 0;
+#endif
     }
 
     /// destructor > destroy epoll handle
     void finalize()
     {
+#ifdef ASCEMU_USE_AE_NETWORK
+        if (m_backend != nullptr)
+        {
+            m_backend->finalize();
+            m_backend.reset();
+        }
+#else
         // close epoll handle
         close(epoll_fd);
+#endif
     }
 
     SocketMgr(SocketMgr&&) = delete;
@@ -113,7 +137,14 @@ public:
     /// closes all sockets
     void CloseAll();
 
-    uint32_t GetSocketCount() { return socket_count.load(); }
+    uint32_t GetSocketCount()
+    {
+#ifdef ASCEMU_USE_AE_NETWORK
+    return m_backend != nullptr ? m_backend->socketCount() : 0;
+#else
+        return socket_count.load();
+#endif
+    }
 
     /// spawns worker threads
     void SpawnWorkerThreads();

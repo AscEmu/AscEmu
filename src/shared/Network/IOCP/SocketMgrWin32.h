@@ -16,6 +16,12 @@
 #include <vector>
 #include <mutex>
 
+#include <memory>
+
+#ifdef ASCEMU_USE_AE_NETWORK
+    #include "Network/AE/Backends/IOCP/IocpBackend.hpp"
+#endif
+
 namespace AscEmu::Threading
 {
     class AEThreadPool;
@@ -36,7 +42,13 @@ private:
     AscEmu::Threading::AEThreadPool* m_threadPool = nullptr;
     std::vector<AscEmu::Threading::AEThread*> m_workerThreads;
 
+#ifndef ASCEMU_USE_AE_NETWORK
     void WorkerThreadLoop(AscEmu::Threading::AEThread& self);
+#endif
+
+#ifdef ASCEMU_USE_AE_NETWORK
+    std::unique_ptr<AscEmu::Network::AE::IocpBackend> m_backend;
+#endif
 
 public:
     void SetThreadPool(AscEmu::Threading::AEThreadPool& threadPool)
@@ -47,33 +59,63 @@ public:
     static SocketMgr& getInstance();
     void initialize();
     // todo: empty on windows, should it be?
-    void finalize() { };
+    void finalize();
 
     SocketMgr(SocketMgr&&) = delete;
     SocketMgr(SocketMgr const&) = delete;
     SocketMgr& operator=(SocketMgr&&) = delete;
     SocketMgr& operator=(SocketMgr const&) = delete;
 
-    inline HANDLE GetCompletionPort() { return m_completionPort; }
+    inline HANDLE GetCompletionPort()
+    {
+#ifdef ASCEMU_USE_AE_NETWORK
+        return m_backend != nullptr ? m_backend->completionPort() : m_completionPort;
+#else
+        return m_completionPort;
+#endif
+    }
     void SpawnWorkerThreads();
     void CloseAll();
     void ShowStatus();
-    uint32_t GetSocketCount() { return socket_count; }
+    uint32_t GetSocketCount()
+    {
+#ifdef ASCEMU_USE_AE_NETWORK
+        return m_backend != nullptr ? m_backend->socketCount() : static_cast<uint32_t>(socket_count.load());
+#else
+        return socket_count;
+#endif
+    }
 
     void AddSocket(Socket* s)
     {
+#ifdef ASCEMU_USE_AE_NETWORK
+        if (m_backend != nullptr)
+        {
+            m_backend->addSocket(s);
+            return;
+        }
+#else
         std::lock_guard lock{socketLock};
 
         _sockets.insert(s);
         ++socket_count;
+#endif
     }
 
     void RemoveSocket(Socket* s)
     {
+#ifdef ASCEMU_USE_AE_NETWORK
+        if (m_backend != nullptr)
+        {
+            m_backend->removeSocket(s);
+            return;
+        }
+#else
         std::lock_guard lock{socketLock};
 
         _sockets.erase(s);
         --socket_count;
+#endif
     }
 
     void ShutdownThreads();

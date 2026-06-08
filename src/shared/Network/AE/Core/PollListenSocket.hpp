@@ -5,7 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "ListenCommon.hpp"
+#include "Network/AE/Core/ListenCommon.hpp"
+#include "Network/AE/Core/SocketPlatformOps.hpp"
+#include "Network/SocketDefines.h"
 
 #include <cerrno>
 
@@ -27,9 +29,9 @@ public:
         if (m_socket < 0)
             return;
 
-        SocketOps::ReuseAddr(m_socket);
-        SocketOps::Nonblocking(m_socket);
-        SocketOps::SetTimeout(m_socket, 60);
+        AscEmu::Network::AE::SocketPlatformOps::setReuseAddress(m_socket);
+        AscEmu::Network::AE::SocketPlatformOps::setBlocking(m_socket);
+        AscEmu::Network::AE::SocketPlatformOps::setTimeout(m_socket, 60);
 
         if (!AscEmu::Network::AE::resolveListenAddress(listenAddress, static_cast<uint16_t>(port), m_address))
             return;
@@ -37,7 +39,7 @@ public:
         if (!AscEmu::Network::AE::bindAndListenSocket(m_socket, m_address, port))
             return;
 
-        m_tempLength = sizeof(sockaddr_in);
+        m_tempLength = static_cast<socklen_t>(sizeof(sockaddr_in));
         m_opened = true;
         sSocketMgr.AddListenSocket(this);
     }
@@ -53,18 +55,16 @@ public:
         m_opened = false;
 
         if (wasOpened)
-            SocketOps::CloseSocket(m_socket);
+            AscEmu::Network::AE::SocketPlatformOps::closeSocket(m_socket);
     }
 
     void OnAccept() override
     {
         for (;;)
         {
-            SOCKET acceptedSocket = accept(
-                m_socket,
-                reinterpret_cast<sockaddr*>(&m_tempAddress),
-                reinterpret_cast<socklen_t*>(&m_tempLength)
-            );
+            m_tempLength = static_cast<socklen_t>(sizeof(sockaddr_in));
+
+            SOCKET acceptedSocket = accept(m_socket, reinterpret_cast<sockaddr*>(&m_tempAddress), &m_tempLength);
 
             if (acceptedSocket == -1)
             {
@@ -95,9 +95,8 @@ public:
 
 private:
     SOCKET m_socket = INVALID_SOCKET;
-    sockaddr_in m_address{};
+    AscEmu::Network::AE::SocketAddressIPv4 m_address{};
     sockaddr_in m_tempAddress{};
     bool m_opened = false;
-    uint32_t m_tempLength = 0;
+    socklen_t m_tempLength = 0;
 };
-
