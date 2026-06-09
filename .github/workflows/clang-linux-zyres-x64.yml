@@ -1,0 +1,51 @@
+name: AscEmu CI (Linux::clang)
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version: [Classic, TBC, WotLK, Cata, Mop]
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v5
+
+      - name: Setup Environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            zlib1g-dev \
+            libssl-dev \
+            libpcre3-dev \
+            libbz2-dev \
+            default-libmysqlclient-dev \
+            libmysql++-dev \
+            lld \
+            ninja-build
+
+      - name: AscEmu Build ${{ matrix.version }}
+        run: |
+          clang --version
+          cmake --version
+          ninja --version
+          build_dir="ascemu_build_${{ matrix.version }}"
+          mkdir "$build_dir"
+          cd "$build_dir"
+          cmake ../ \
+            -GNinja \
+            -DCMAKE_C_COMPILER=/usr/bin/clang \
+            -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_WITH_WARNINGS=0 \
+            -DBUILD_TOOLS=0 \
+            -DASCEMU_VERSION=${{ matrix.version }}
+          ninja -j"$(nproc)"
+          sudo ninja install
