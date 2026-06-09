@@ -12,12 +12,12 @@ Keep legacy code inside a AGPL file. Do NOT copy any legacy code to a MIT file!
 Keep in mind that legacy code was written mostly in C-style/c++98 and horrible outdated.
 
 ### New Code
-New code has to be placed inside a MIT file. The current standard is C++14 and newer.
+New code has to be placed inside a MIT file. The current standard is C++20 and newer.
 
 ## List of Legacy files
 ### Not rewritten - yet
-* 2014 | Network/SocketDefines.h               -wip
-* 2014 | Network/NetworkIncludes.hpp           -wip
+* 2014 | Network/SocketDefines.h               -remove after verifying
+* 2014 | Network/NetworkIncludes.hpp           -remove after verifying
 * 2014 | CommonTypes.hpp
 * 2014 | CommonHelpers.hpp
 * 2008 | WorldPacket.h
@@ -34,25 +34,25 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2008 | ByteBuffer.h
 * 2008 | Cryptography/AuthCodes.h
 * 2008 | Cryptography/BigNumber.cpp
-* 2007 | Network/EPOLL/ListenSocketLinux.h     -wip
-* 2007 | Network/EPOLL/SocketLinux.cpp         -wip
-* 2007 | Network/EPOLL/SocketMgrLinux.cpp      -wip
-* 2007 | Network/EPOLL/SocketMgrLinux.h        -wip
-* 2007 | Network/EPOLL/SocketOpsLinux.cpp      -wip
-* 2007 | Network/IOCP/ListenSocketWin32.h      -wip
-* 2007 | Network/IOCP/SocketMgrWin32.cpp       -wip
-* 2007 | Network/IOCP/SocketMgrWin32.h         -wip
-* 2007 | Network/IOCP/SocketOpsWin32.cpp       -wip
-* 2007 | Network/IOCP/SocketWin32.cpp          -wip
-* 2007 | Network/KQUEUE/ListenSocketFreeBSD.h  -wip
-* 2007 | Network/KQUEUE/SocketFreeBSD.cpp      -wip
-* 2007 | Network/KQUEUE/SocketMgrFreeBSD.cpp   -wip
-* 2007 | Network/KQUEUE/SocketMgrFreeBSD.h     -wip
-* 2007 | Network/KQUEUE/SocketOpsFreeBSD.cpp   -wip
-* 2007 | Network/Network.h                     -wip
-* 2007 | Network/Socket.cpp                    -wip
-* 2007 | Network/Socket.h                      -wip
-* 2007 | Network/SocketOps.h                   -wip
+* 2007 | Network/EPOLL/ListenSocketLinux.h     -remove after verifying
+* 2007 | Network/EPOLL/SocketLinux.cpp         -remove after verifying
+* 2007 | Network/EPOLL/SocketMgrLinux.cpp      -remove after verifying
+* 2007 | Network/EPOLL/SocketMgrLinux.h        -remove after verifying
+* 2007 | Network/EPOLL/SocketOpsLinux.cpp      -remove after verifying
+* 2007 | Network/IOCP/ListenSocketWin32.h      -remove after verifying
+* 2007 | Network/IOCP/SocketMgrWin32.cpp       -remove after verifying
+* 2007 | Network/IOCP/SocketMgrWin32.h         -remove after verifying
+* 2007 | Network/IOCP/SocketOpsWin32.cpp       -remove after verifying
+* 2007 | Network/IOCP/SocketWin32.cpp          -remove after verifying
+* 2007 | Network/KQUEUE/ListenSocketFreeBSD.h  -remove after verifying
+* 2007 | Network/KQUEUE/SocketFreeBSD.cpp      -remove after verifying
+* 2007 | Network/KQUEUE/SocketMgrFreeBSD.cpp   -remove after verifying
+* 2007 | Network/KQUEUE/SocketMgrFreeBSD.h     -remove after verifying
+* 2007 | Network/KQUEUE/SocketOpsFreeBSD.cpp   -remove after verifying
+* 2007 | Network/Network.h                     -remove after verifying
+* 2007 | Network/Socket.cpp                    -remove after verifying
+* 2007 | Network/Socket.h                      -remove after verifying
+* 2007 | Network/SocketOps.h                   -remove after verifying
 * 2007 | Cryptography/BigNumber.h
 * 2005 | SysInfo.hpp
 * 2005 | SysInfo.cpp
@@ -236,6 +236,8 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2026 | Network/NetworkBuffer.hpp - temporarily
 * 2026 | Platform/DynamicLibrary.hpp
 * 2026 | Platform/DynamicLibrary.cpp
+* 2026 | Network/AE/SocketMgr.cpp
+* 2026 | Network/AE/SocketMgr.hpp
 * 2026 | Network/AE/Backends/EPOLL/EpollBackend.hpp
 * 2026 | Network/AE/Backends/IOCP/IocpBackend.hpp
 * 2026 | Network/AE/Backends/IOCP/ListenSocketWin32.hpp
@@ -255,3 +257,7 @@ New code has to be placed inside a MIT file. The current standard is C++14 and n
 * 2026 | Network/AE/Core/SocketEventHandlers.hpp
 * 2026 | Network/AE/Core/SocketPlatformOps.hpp
 * 2026 | Network/AE/Core/SocketStateHelpers.hpp
+* 2026 | Network/AE/Platforms/Posix/SocketOpsPosix.cpp
+* 2026 | Network/AE/Platforms/Posix/SocketPosix.cpp
+* 2026 | Network/AE/Platforms/Win32/SocketOpsWin32.cpp
+* 2026 | Network/AE/Platforms/Win32/SocketWin32.cpp
