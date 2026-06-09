@@ -22,42 +22,17 @@ SocketMgr& SocketMgr::getInstance()
 
 void SocketMgr::initialize()
 {
-#ifdef ASCEMU_USE_AE_NETWORK
-    m_backend = std::make_unique<AscEmu::Network::AE::IocpBackend>(*this);
-    m_backend->initialize();
-#else
     WSADATA wsaData;
     WSAStartup(MAKEWORD(2, 0), &wsaData);
     m_completionPort = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, (ULONG_PTR)0, 0);
-#endif
 }
 
 void SocketMgr::finalize()
 {
-#ifdef ASCEMU_USE_AE_NETWORK
-    if (m_backend != nullptr)
-    {
-        m_backend->finalize();
-        m_backend.reset();
-    }
-#endif
 }
 
 void SocketMgr::SpawnWorkerThreads()
 {
-#ifdef ASCEMU_USE_AE_NETWORK
-    if (m_threadPool == nullptr)
-    {
-        sLogger.failure("SocketMgr::SpawnWorkerThreads called without AEThreadPool.");
-        return;
-    }
-
-    if (m_backend != nullptr)
-    {
-        m_backend->spawnWorkers(*m_threadPool);
-        return;
-    }
-#else
     SYSTEM_INFO si;
     GetSystemInfo(&si);
 
@@ -87,10 +62,8 @@ void SocketMgr::SpawnWorkerThreads()
 
         m_workerThreads.push_back(&worker);
     }
-#endif
 }
 
-#ifndef ASCEMU_USE_AE_NETWORK
 void SocketMgr::WorkerThreadLoop(AscEmu::Threading::AEThread& self)
 {
     try
@@ -130,7 +103,6 @@ void SocketMgr::WorkerThreadLoop(AscEmu::Threading::AEThread& self)
         sLogger.failure("IOCP worker stopped due to an unknown C++ exception.");
     }
 }
-#endif
 
 void HandleReadComplete(Socket* s, uint32_t len)
 {
@@ -169,13 +141,6 @@ void HandleShutdown(Socket* /*s*/, uint32_t /*len*/)
 
 void SocketMgr::CloseAll()
 {
-#ifdef ASCEMU_USE_AE_NETWORK
-    if (m_backend != nullptr)
-    {
-        m_backend->closeAll();
-        return;
-    }
-#else
     std::vector<Socket*> tokill;
 
     // Write toKill sockets is locked
@@ -199,18 +164,10 @@ void SocketMgr::CloseAll()
             size = _sockets.size();
         }
     } while (size);
-#endif
 }
 
 void SocketMgr::ShutdownThreads()
 {
-#ifdef ASCEMU_USE_AE_NETWORK
-    if (m_backend != nullptr)
-    {
-        m_backend->shutdownWorkers();
-        return;
-    }
-#else
     for (auto* worker : m_workerThreads)
     {
         if (worker != nullptr)
@@ -230,20 +187,11 @@ void SocketMgr::ShutdownThreads()
     }
 
     m_workerThreads.clear();
-#endif
 }
 
 void SocketMgr::ShowStatus()
 {
-#ifdef ASCEMU_USE_AE_NETWORK
-    if (m_backend != nullptr)
-    {
-        m_backend->showStatus();
-        return;
-    }
-#else
     sLogger.info("sockets count = {}", static_cast<uint32_t>(socket_count.load()));
-#endif
 }
 
 #endif

@@ -144,6 +144,11 @@ namespace AscEmu::Network::AE
             return m_socketCount.load();
         }
 
+        int kqueueFd() const
+        {
+            return m_kq;
+        }
+
     private:
         void workerLoop(AscEmu::Threading::AEThread& self)
         {

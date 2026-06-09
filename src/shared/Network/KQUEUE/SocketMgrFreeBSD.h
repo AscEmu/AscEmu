@@ -16,11 +16,6 @@
 
 #include <atomic>
 
-#ifdef ASCEMU_USE_AE_NETWORK
-    #include <memory>
-    #include "Network/AE/Backends/KQUEUE/KqueueBackend.hpp"
-#endif
-
 #ifdef CONFIG_USE_KQUEUE
 
 #define SOCKET_HOLDER_SIZE 30000    // You don't want this number to be too big, otherwise you're gonna be eating
@@ -58,13 +53,7 @@ private:
     AscEmu::Threading::AEThreadPool* m_threadPool = nullptr;
     std::vector<AscEmu::Threading::AEThread*> m_workerThreads;
 
-#ifndef ASCEMU_USE_AE_NETWORK
     void WorkerThreadLoop(AscEmu::Threading::AEThread& self);
-#endif
-
-#ifdef ASCEMU_USE_AE_NETWORK
-    std::unique_ptr<AscEmu::Network::AE::KqueueBackend> m_backend;
-#endif
 
 public:
     /// friend class of the worker thread -> it has to access our private resources
@@ -86,10 +75,6 @@ public:
     /// constructor > create epoll device handle + initialize event set
     void initialize()
     {
-#ifdef ASCEMU_USE_AE_NETWORK
-        m_backend = std::make_unique<AscEmu::Network::AE::KqueueBackend>(*this);
-        m_backend->initialize();
-#else
         kq = kqueue();
         if(kq == -1)
         {
@@ -100,22 +85,13 @@ public:
         // null out the pointer array
         memset(fds, 0, sizeof(Socket*) * SOCKET_HOLDER_SIZE);
         memset(listenfds, 0, sizeof(Socket*) * SOCKET_HOLDER_SIZE);
-#endif
     }
 
     /// destructor > destroy epoll handle
     void finalize()
     {
-#ifdef ASCEMU_USE_AE_NETWORK
-        if (m_backend != nullptr)
-        {
-            m_backend->finalize();
-            m_backend.reset();
-        }
-#else
         // close epoll handle
         close(kq);
-#endif
     }
 
     SocketMgr(SocketMgr&&) = delete;

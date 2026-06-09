@@ -5,37 +5,21 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "Network/SocketOps.h"
+#include "Network/NetworkIncludes.hpp"
+#include "Network/SocketDefines.h"
 
 #include <cstdint>
 
-namespace AscEmu::Network::AE
+namespace AscEmu::Network::AE::SocketPlatformOps
 {
-    namespace SocketPlatformOps
-    {
-        inline bool setNonBlocking(SOCKET socket)
-        {
-            return SocketOps::Nonblocking(socket);
-        }
-
-        inline bool setBlocking(SOCKET socket)
-        {
-            return SocketOps::Blocking(socket);
-        }
-
-        inline void setReuseAddress(SOCKET socket)
-        {
-            SocketOps::ReuseAddr(socket);
-        }
-
-        inline bool setTimeout(SOCKET socket, uint32_t seconds)
-        {
-            return SocketOps::SetTimeout(socket, seconds);
-        }
-
-        inline void closeSocket(SOCKET socket)
-        {
-            SocketOps::CloseSocket(socket);
-        }
-    }
+    SOCKET createTcpSocket();
+    bool setNonBlocking(SOCKET socket);
+    bool setBlocking(SOCKET socket);
+    bool disableBuffering(SOCKET socket);
+    bool enableBuffering(SOCKET socket);
+    bool setSendBufferSize(SOCKET socket, uint32_t size);
+    bool setRecvBufferSize(SOCKET socket, uint32_t size);
+    bool setTimeout(SOCKET socket, uint32_t seconds);
+    void closeSocket(SOCKET socket);
+    void setReuseAddress(SOCKET socket);
 }

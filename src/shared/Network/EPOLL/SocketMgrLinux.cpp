@@ -18,13 +18,6 @@
 
 void SocketMgr::AddSocket(Socket* s)
 {
-#ifdef ASCEMU_USE_AE_NETWORK
-    if (m_backend != nullptr)
-    {
-        m_backend->addSocket(s);
-        return;
-    }
-#else
 #ifdef ENABLE_ANTI_DOS
     uint32_t saddr;
     int i, count;
@@ -73,13 +66,6 @@ void SocketMgr::AddSocket(Socket* s)
 
 void SocketMgr::AddListenSocket(ListenSocketBase* s)
 {
-#ifdef ASCEMU_USE_AE_NETWORK
-    if (m_backend != nullptr)
-    {
-        m_backend->addListenSocket(s);
-        return;
-    }
-#else
     assert(listenfds[s->GetFd()] == 0);
     listenfds[s->GetFd()] = s;
 
@@ -92,18 +78,10 @@ void SocketMgr::AddListenSocket(ListenSocketBase* s)
 
     if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, ev.data.fd, &ev))
         sLogger.failure("Could not add event to epoll set on fd {}", s->GetFd());
-#endif
 }
 
 void SocketMgr::RemoveSocket(Socket* s)
 {
-#ifdef ASCEMU_USE_AE_NETWORK
-    if (m_backend != nullptr)
-    {
-        m_backend->removeSocket(s);
-        return;
-    }
-#else
     if(fds[s->GetFd()] != s)
     {
         sLogger.failure("Could not remove fd {} from the set due to it not existing?", s->GetFd());
@@ -121,22 +99,13 @@ void SocketMgr::RemoveSocket(Socket* s)
 
     if(epoll_ctl(epoll_fd, EPOLL_CTL_DEL, ev.data.fd, &ev))
         sLogger.failure("Could not remove fd {} from epoll set, errno {}", s->GetFd(), errno);
-#endif
 }
 
 void SocketMgr::CloseAll()
 {
-#ifdef ASCEMU_USE_AE_NETWORK
-    if (m_backend != nullptr)
-    {
-        m_backend->closeAll();
-        return;
-    }
-#else
     for(uint32_t i = 0; i < SOCKET_HOLDER_SIZE; ++i)
         if(fds[i] != NULL)
             fds[i]->Delete();
-#endif
 }
 
 void SocketMgr::SpawnWorkerThreads()
@@ -147,13 +116,7 @@ void SocketMgr::SpawnWorkerThreads()
         sLogger.failure("SocketMgr::SpawnWorkerThreads called without AEThreadPool.");
         return;
     }
-#ifdef ASCEMU_USE_AE_NETWORK
-    if (m_backend != nullptr)
-    {
-        m_backend->spawnWorkers(*m_threadPool);
-        return;
-    }
-#else
+
     if (!m_workerThreads.empty())
         return;
 
@@ -171,31 +134,15 @@ void SocketMgr::SpawnWorkerThreads()
 
         m_workerThreads.push_back(&worker);
     }
-#endif
 }
 
 void SocketMgr::ShowStatus()
 {
-#ifdef ASCEMU_USE_AE_NETWORK
-    if (m_backend != nullptr)
-    {
-        m_backend->showStatus();
-        return;
-    }
-#else
     sLogger.info("sockets count = {}", static_cast<uint32_t>(socket_count.load()));
-#endif
 }
 
 void SocketMgr::ShutdownThreads()
 {
-#ifdef ASCEMU_USE_AE_NETWORK
-    if (m_backend != nullptr)
-    {
-        m_backend->shutdownWorkers();
-        return;
-    }
-#else
     for (auto* worker : m_workerThreads)
     {
         if (worker != nullptr)
@@ -209,10 +156,8 @@ void SocketMgr::ShutdownThreads()
     }
 
     m_workerThreads.clear();
-#endif
 }
 
-#ifndef ASCEMU_USE_AE_NETWORK
 void SocketMgr::WorkerThreadLoop(AscEmu::Threading::AEThread& self)
 {
     struct epoll_event events[THREAD_EVENT_SIZE];
@@ -275,6 +220,5 @@ void SocketMgr::WorkerThreadLoop(AscEmu::Threading::AEThread& self)
         }
     }
 }
-#endif
 
 #endif

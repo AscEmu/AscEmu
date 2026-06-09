@@ -151,6 +151,11 @@ namespace AscEmu::Network::AE
             return m_socketCount.load();
         }
 
+        int epollFd() const
+        {
+            return m_epollFd;
+        }
+
     private:
         void workerLoop(AscEmu::Threading::AEThread& self)
         {

@@ -16,7 +16,8 @@
 //ignore warning for deprecated function gethostbyname
 #pragma warning ( disable: 4996 )
 
-Socket::Socket(SOCKET fd, uint32_t sendbuffersize, uint32_t recvbuffersize) : m_fd(fd), m_connected(false),    m_deleted(false), m_writeLock(0)
+Socket::Socket(SOCKET fd, uint32_t sendbuffersize, uint32_t recvbuffersize) 
+    : m_fd(fd), m_connected(false), m_deleted(false), m_writeLock(0)
 {
     // Allocate Buffers
     readBuffer.Allocate(recvbuffersize);
@@ -30,9 +31,14 @@ Socket::Socket(SOCKET fd, uint32_t sendbuffersize, uint32_t recvbuffersize) : m_
     m_completionPort = nullptr;
 #endif
 
+#ifdef ASCEMU_USE_AE_NETWORK
+    if (m_fd == 0)
+        m_fd = AscEmu::Network::AE::SocketPlatformOps::createTcpSocket();
+#else
     // Check for needed fd allocation.
     if(m_fd == 0)
         m_fd = SocketOps::CreateTCPFileDescriptor();
+#endif
 
     sLogger.debug("Created Socket {}", m_fd);
 }
@@ -94,11 +100,17 @@ void Socket::Accept(sockaddr_in* address)
 
 void Socket::_OnConnect()
 {
+#ifdef ASCEMU_USE_AE_NETWORK
+    AscEmu::Network::AE::SocketPlatformOps::setNonBlocking(m_fd);
+    AscEmu::Network::AE::SocketPlatformOps::disableBuffering(m_fd);
+#else
     // set common parameters on the file descriptor
     SocketOps::Nonblocking(m_fd);
     SocketOps::DisableBuffering(m_fd);
     /*    SocketOps::SetRecvBufferSize(m_fd, m_writeBufferSize);
         SocketOps::SetSendBufferSize(m_fd, m_writeBufferSize);*/
+#endif
+
     m_connected = true;
 
     // IOCP stuff
@@ -174,7 +186,11 @@ void Socket::Delete()
     if (IsConnected())
         Disconnect();
 
+#ifdef ASCEMU_USE_AE_NETWORK
+    AscEmu::Network::AE::SocketPlatformOps::closeSocket(m_fd);
+#else
     SocketOps::CloseSocket(m_fd);
+#endif
 
     sSocketGarbageCollector.QueueSocket(this);
 }

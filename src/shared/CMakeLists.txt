@@ -11,6 +11,7 @@ file(GLOB SRC_DATABASE_FILES Database/*.cpp Database/*.h Database/*.hpp)
 file(GLOB SRC_DEBUGGING_FILES Debugging/*.cpp Debugging/*.h Debugging/*.hpp)
 file(GLOB SRC_EXCEPTIONS_FILES Exceptions/*.cpp Exceptions/*.h Exceptions/*.hpp)
 file(GLOB SRC_LOGGING_FILES Logging/*.cpp Logging/*.h Logging/*.hpp)
+
 file(GLOB SRC_NETWORK_FILES Network/*.cpp Network/*.h Network/*.hpp)
 file(GLOB_RECURSE SRC_NETWORK_FILES_AE Network/AE/*.cpp Network/AE/*.hpp)
 
@@ -36,14 +37,18 @@ set(SHARED_SRCS
     ${SRC_EXCEPTIONS_FILES}
     ${SRC_LOGGING_FILES}
     ${SRC_NETWORK_FILES}
-    ${SRC_NETWORK_FILES_PLATFORM}
-	${SRC_NETWORK_FILES_AE}
 	${SRC_REGISTRY_FILES}
     ${SRC_THREADING_FILES}
     ${SRC_UTILITIES_FILES}
 	${SRC_PLATFORM_FILES}
     ${SRC_LOCAL_DIR}
 )
+
+if (ASCEMU_USE_AE_NETWORK)
+    list(APPEND SHARED_SRCS ${SRC_NETWORK_FILES_AE})
+else ()
+    list(APPEND SHARED_SRCS ${SRC_NETWORK_FILES_PLATFORM})
+endif ()
 
 # source group.
 ascemu_source_group(${CMAKE_CURRENT_SOURCE_DIR})

@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #ifdef CONFIG_USE_IOCP
 
-#include "Network/IOCP/SocketMgrWin32.h"
+#include "Network/AE/SocketMgr.hpp"
 #include "Network/SocketDefines.h"
 #include "Network/NetworkIncludes.hpp"
 #include "Network/AE/Core/ListenCommon.hpp"
@@ -19,7 +19,7 @@ class SERVER_DECL ListenSocket
 public:
     ListenSocket(const char* listenAddress, uint32_t port)
     {
-        m_socket = WSASocketW(AF_INET, SOCK_STREAM, 0, nullptr, 0, WSA_FLAG_OVERLAPPED);
+        m_socket = AscEmu::Network::AE::SocketPlatformOps::createTcpSocket();
         if (m_socket == INVALID_SOCKET)
             return;
 
@@ -48,9 +48,7 @@ public:
         while (m_opened)
         {
             m_tempLength = sizeof(sockaddr_in);
-
             SOCKET acceptedSocket = WSAAccept(m_socket, reinterpret_cast<sockaddr*>(&m_tempAddress), &m_tempLength, nullptr, 0);
-
             if (acceptedSocket == INVALID_SOCKET)
                 continue;
 
