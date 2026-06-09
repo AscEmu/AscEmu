@@ -61,7 +61,6 @@ void SocketMgr::AddSocket(Socket* s)
 
     if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, ev.data.fd, &ev))
         sLogger.failure("Could not add event to epoll set on fd {}", s->GetFd());
-#endif
 }
 
 void SocketMgr::AddListenSocket(ListenSocketBase* s)
