@@ -11,7 +11,6 @@ set(LIBRARY_NAME MiscScripts)
 file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
 
 set(MISCSCRIPTS_SRCS
-    ${SRC_MISCSCRIPTS}
     ${SRC_LOCAL_DIR}
 )
 

@@ -11,7 +11,6 @@ set(LIBRARY_NAME QuestScripts)
 file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
 
 set(QUESTSCRIPTS_SRCS
-    ${SRC_QUESTSCRIPTS}
     ${SRC_LOCAL_DIR}
 )
 

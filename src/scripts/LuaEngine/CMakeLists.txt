@@ -11,7 +11,6 @@ set(LIBRARY_NAME LuaEngine)
 file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
 
 set(LUAENGINE_SRCS
-    ${SRC_LUAENGINE}
     ${SRC_LOCAL_DIR}
 )
 

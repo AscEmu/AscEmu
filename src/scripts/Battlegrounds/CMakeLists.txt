@@ -6,7 +6,6 @@ set(LIBRARY_NAME Battlegrounds)
 file(GLOB_RECURSE SRC_LOCAL_DIR *.cpp *.h *.hpp)
 
 set(BATTLEGROUNDS_SRCS
-    ${SRC_BATTLEGROUNDS}
     ${SRC_LOCAL_DIR}
 )
 # source group.

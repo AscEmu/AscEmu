@@ -12,7 +12,6 @@ set(LIBRARY_NAME GossipScripts)
 file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
 
 set(GOSSIPSCRIPTS_SRCS
-    ${SRC_GOSSIPSCRIPTS}
     ${SRC_LOCAL_DIR}
 )
 

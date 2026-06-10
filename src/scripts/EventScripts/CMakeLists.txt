@@ -11,7 +11,6 @@ set(LIBRARY_NAME EventScripts)
 file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
 
 set(EVENTSCRIPTS_SRCS
-    ${SRC_EVENTSCRIPTS}
     ${SRC_LOCAL_DIR}
 )
 
