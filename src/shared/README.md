@@ -22,10 +22,10 @@ New code has to be placed inside a MIT file. The current standard is C++20 and n
 * 2014 | CommonHelpers.hpp
 * 2008 | WorldPacket.h
 * 2008 | LocationVector.cpp
-* 2008 | Database/MySQLDatabase.h
-* 2008 | Database/Database.h
-* 2008 | Database/Database.cpp
-* 2008 | Database/CreateInterface.cpp
+* 2008 | Database/MySQLDatabase.h              -wip
+* 2008 | Database/Database.h                   -wip
+* 2008 | Database/Database.cpp                 -wip
+* 2008 | Database/CreateInterface.cpp          -wip
 * 2008 | Debugging/CrashHandler.h
 * 2008 | Debugging/CrashHandler.cpp
 * 2008 | Config/Config.h
@@ -58,7 +58,7 @@ New code has to be placed inside a MIT file. The current standard is C++20 and n
 * 2005 | SysInfo.cpp
 * 2005 | PerformanceCounter.hpp
 * 2005 | PerformanceCounter.cpp
-* 2005 | Database/MySQLDatabase.cpp
+* 2005 | Database/MySQLDatabase.cpp            -wip
 * 2005 | StackWalker.h
 * 2005 | StackWalker.cpp
 
@@ -209,9 +209,9 @@ New code has to be placed inside a MIT file. The current standard is C++20 and n
 * 2017 | Threading/Thread.hpp
 * 2018 | Threading/ThreadPool.cpp
 * 2018 | Threading/ThreadPool.hpp
-* 2020 | Database/Field.hpp
-* 2020 | Database/DatabaseUpdater.cpp
-* 2020 | Database/DatabaseUpdater.hpp
+* 2020 | Database/Field.hpp                 -wip
+* 2020 | Database/DatabaseUpdater.cpp       -wip
+* 2020 | Database/DatabaseUpdater.hpp       -wip
 * 2021 | Registry/FactoryHolder.hpp
 * 2021 | Logging/Logger.cpp
 * 2021 | Logging/Logger.hpp
@@ -261,3 +261,10 @@ New code has to be placed inside a MIT file. The current standard is C++20 and n
 * 2026 | Network/AE/Platforms/Posix/SocketPosix.cpp
 * 2026 | Network/AE/Platforms/Win32/SocketOpsWin32.cpp
 * 2026 | Network/AE/Platforms/Win32/SocketWin32.cpp
+* 2026 | Database/AE/Database.cpp
+* 2026 | Database/AE/DatabaseRuntime.hpp
+* 2026 | Database/AE/DatabaseSelfTest.cpp
+* 2026 | Database/AE/DatabaseSelfTest.hpp
+* 2026 | Database/AE/Field.cpp
+* 2026 | Database/AE/MySQLDatabase.cpp
+* 2026 | Database/AE/RowView.hpp

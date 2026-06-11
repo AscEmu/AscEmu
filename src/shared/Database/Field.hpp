@@ -7,13 +7,24 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <cstdint>
 
+#ifdef ASCEMU_USE_AE_DATABASE
+    #include <string_view>
+    #include <cstddef>
+#endif
+
 class Field
 {
 public:
     bool isSet() const;
     void setValue(char* value);
+#ifdef ASCEMU_USE_AE_DATABASE
+    void setValue(const char* value, std::size_t length);
+#endif
 
     const char* asCString() const;
+#ifdef ASCEMU_USE_AE_DATABASE
+    std::string_view asStringView() const;
+#endif
 
     float asFloat() const;
     bool asBool() const;
@@ -31,5 +42,10 @@ public:
     int64_t asInt64() const;
 
 private:
+#ifdef ASCEMU_USE_AE_DATABASE
+    const char* m_value = nullptr;
+    std::size_t m_length = 0;
+#else
     char* m_value;
+#endif
 };

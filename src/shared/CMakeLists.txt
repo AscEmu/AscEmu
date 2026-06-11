@@ -4,10 +4,13 @@
 set(LIBRARY_NAME shared)
 
 option(ASCEMU_USE_AE_NETWORK "Use AE network implementation where available" OFF)
+option(ASCEMU_USE_AE_DATABASE "Use AE database implementation where available" OFF)
 
 file(GLOB SRC_CONFIG_FILES Config/*.cpp Config/*.h Config/*.hpp)
 file(GLOB SRC_CRYPTOGRAPHY_FILES Cryptography/*.cpp Cryptography/*.h Cryptography/*.hpp)
 file(GLOB SRC_DATABASE_FILES Database/*.cpp Database/*.h Database/*.hpp)
+file(GLOB_RECURSE SRC_DATABASE_FILES_AE Database/AE/*.cpp Database/AE/*.h Database/AE/*.hpp)
+
 file(GLOB SRC_DEBUGGING_FILES Debugging/*.cpp Debugging/*.h Debugging/*.hpp)
 file(GLOB SRC_EXCEPTIONS_FILES Exceptions/*.cpp Exceptions/*.h Exceptions/*.hpp)
 file(GLOB SRC_LOGGING_FILES Logging/*.cpp Logging/*.h Logging/*.hpp)
@@ -28,6 +31,17 @@ file(GLOB SRC_THREADING_FILES Threading/*.cpp Threading/*.h Threading/*.hpp)
 file(GLOB SRC_UTILITIES_FILES Utilities/*.cpp Utilities/*.h Utilities/*.hpp)
 file(GLOB SRC_PLATFORM_FILES Platform/*.cpp Platform/*.hpp)
 file(GLOB SRC_LOCAL_DIR *.cpp *.h *.hpp)
+
+if (ASCEMU_USE_AE_DATABASE)
+    list(REMOVE_ITEM SRC_DATABASE_FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/Database/Database.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Database/MySQLDatabase.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Database/Field.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Database/CreateInterface.cpp
+    )
+
+    list(APPEND SRC_DATABASE_FILES ${SRC_DATABASE_FILES_AE})
+endif ()
 
 set(SHARED_SRCS
     ${SRC_CONFIG_FILES}
@@ -60,6 +74,13 @@ if (ASCEMU_USE_AE_NETWORK)
     target_compile_definitions(${LIBRARY_NAME} PUBLIC ASCEMU_USE_AE_NETWORK)
 else ()
     message(STATUS "Network implementation: Legacy")
+endif ()
+
+if (ASCEMU_USE_AE_DATABASE)
+    message(STATUS "Database implementation: AE")
+    target_compile_definitions(${LIBRARY_NAME} PUBLIC ASCEMU_USE_AE_DATABASE)
+else ()
+    message(STATUS "Database implementation: Legacy")
 endif ()
 
 target_include_directories(${LIBRARY_NAME} PUBLIC 

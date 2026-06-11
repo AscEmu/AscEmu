@@ -93,6 +93,10 @@
 #include <WinSock2.h>
 #endif
 
+#ifdef ASCEMU_USE_AE_DATABASE
+    #include "Database/AE/DatabaseSelfTest.hpp"
+#endif
+
 namespace fs = std::filesystem;
 
 namespace
@@ -416,6 +420,15 @@ bool Master::run(int /*argc*/, char** /*argv*/)
         sLogger.finalize();
         return false;
     }
+
+#ifdef ASCEMU_USE_AE_DATABASE
+    const auto testResult = AscEmu::AE::DbSelfTest::run(WorldDatabase, "ae_db_world");
+    for (const auto& line : testResult.messages)
+        sLogger.info("{}", line);
+
+    if (!testResult.success)
+        sLogger.failure("AE_DB self-test failed");
+#endif
 
     // From here on, if we return false, we MUST clean up DB and ThreadPool!
     m_threadPool = std::make_unique<AscEmu::Threading::AEThreadPool>(

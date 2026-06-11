@@ -32,6 +32,10 @@ class QueryThread;
 class Database;
 class SQLCallbackBase;
 
+#ifdef ASCEMU_USE_AE_DATABASE
+class DatabaseRuntime;
+#endif
+
 struct DatabaseConnection
 {
     virtual ~DatabaseConnection() = default;
@@ -76,6 +80,10 @@ class SERVER_DECL Database
 {
     friend class QueryThread;
     friend class AsyncQuery;
+	
+#ifdef ASCEMU_USE_AE_DATABASE
+	friend class DatabaseRuntime;
+#endif
 
     DatabaseConnection* m_dbConnection;
     void createDbConnection();
@@ -99,6 +107,14 @@ class SERVER_DECL Database
 
         Database();
         virtual ~Database();
+
+#ifdef ASCEMU_USE_AE_DATABASE
+        std::unique_ptr<DatabaseRuntime> m_runtime; // protected:
+
+        [[nodiscard]] size_t GetAeQueuedTaskCount() const;
+        [[nodiscard]] size_t GetAeWorkerCount() const;
+        [[nodiscard]] uint64_t GetAeCompletedTaskCount() const;
+#endif
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Thread Stuff
