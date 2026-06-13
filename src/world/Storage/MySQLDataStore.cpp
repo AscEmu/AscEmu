@@ -25,6 +25,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WDB/WDBStructures.hpp"
 #include <cstdarg>
 
+#ifdef ASCEMU_USE_AE_DATABASE
+#include "Database/AE/RowView.hpp"
+#endif
+
 SERVER_DECL std::vector<MySQLAdditionalTable> MySQLAdditionalTables;
 
 MySQLDataStore& MySQLDataStore::getInstance()
@@ -242,6 +246,108 @@ void MySQLDataStore::loadItemPropertiesTable()
 
     do
     {
+#ifdef ASCEMU_USE_AE_DATABASE
+        const AscEmu::AE::Database::RowView row(item_result->Fetch(), item_result->GetFieldCount());
+
+        const uint32_t entry = row.get<uint32_t>(0);
+        ItemProperties& itemProperties = _itemPropertiesStore[entry];
+
+        itemProperties.ItemId = entry;
+        itemProperties.Class = row.get<uint32_t>(2);
+        itemProperties.SubClass = row.get<uint16_t>(3);
+        itemProperties.unknown_bc = row.get<int32_t>(4);
+        itemProperties.Name = row.get<std::string>(5);
+        itemProperties.DisplayInfoID = row.get<uint32_t>(6);
+        itemProperties.Quality = row.get<uint32_t>(7);
+        itemProperties.Flags = row.get<uint32_t>(8);
+        itemProperties.Flags2 = row.get<uint32_t>(9);
+        itemProperties.BuyPrice = row.get<uint32_t>(10);
+        itemProperties.SellPrice = row.get<uint32_t>(11);
+
+        itemProperties.InventoryType = row.get<uint32_t>(12);
+        itemProperties.AllowableClass = row.get<int32_t>(13);
+        itemProperties.AllowableRace = row.get<int32_t>(14);
+        itemProperties.ItemLevel = row.get<uint32_t>(15);
+        itemProperties.RequiredLevel = row.get<uint32_t>(16);
+        itemProperties.RequiredSkill = row.get<uint16_t>(17);
+        itemProperties.RequiredSkillRank = row.get<uint32_t>(18);
+        itemProperties.RequiredSpell = row.get<uint32_t>(19);
+        itemProperties.RequiredPlayerRank1 = row.get<uint32_t>(20);
+        itemProperties.RequiredPlayerRank2 = row.get<uint32_t>(21);
+        itemProperties.RequiredFaction = row.get<uint32_t>(22);
+        itemProperties.RequiredFactionStanding = row.get<uint32_t>(23);
+        itemProperties.Unique = row.get<uint32_t>(24);
+        itemProperties.MaxCount = row.get<uint32_t>(25);
+        itemProperties.ContainerSlots = row.get<uint32_t>(26);
+
+        itemProperties.ScalingStatsEntry = row.get<uint32_t>(27);
+        itemProperties.ScalingStatsFlag = row.get<uint32_t>(28);
+
+        for (uint8_t i = 0; i < MAX_ITEM_PROTO_DAMAGES; ++i)
+        {
+            itemProperties.Damage[i].Min = row.get<float>(29 + i * 3);
+            itemProperties.Damage[i].Max = row.get<float>(30 + i * 3);
+            itemProperties.Damage[i].Type = row.get<uint32_t>(31 + i * 3);
+        }
+
+        itemProperties.Armor = row.get<uint32_t>(35);
+        itemProperties.Delay = row.get<uint32_t>(36);
+        itemProperties.AmmoType = row.get<uint32_t>(37);
+        itemProperties.Range = row.get<float>(38);
+
+        itemProperties.Bonding = row.get<uint32_t>(39);
+        itemProperties.Description = row.get<std::string>(40);
+
+        const uint32_t page_id = row.get<uint32_t>(41);
+        if (page_id != 0)
+        {
+            MySQLStructure::ItemPage const* item_page = getItemPage(page_id);
+            if (item_page == nullptr)
+            {
+                sLogger.failure("Table `item_properties` entry: {} includes invalid pageId {}! pageId is set to 0.", entry, page_id);
+                itemProperties.PageId = 0;
+            }
+            else
+            {
+                itemProperties.PageId = page_id;
+            }
+        }
+        else
+        {
+            itemProperties.PageId = page_id;
+        }
+
+        itemProperties.PageLanguage = row.get<uint32_t>(42);
+        itemProperties.PageMaterial = row.get<uint32_t>(43);
+        itemProperties.QuestId = row.get<uint32_t>(44);
+        itemProperties.LockId = row.get<uint32_t>(45);
+        itemProperties.LockMaterial = row.get<int32_t>(46);
+        itemProperties.SheathID = row.get<uint32_t>(47);
+        itemProperties.RandomPropId = row.get<uint32_t>(48);
+        itemProperties.RandomSuffixId = row.get<uint32_t>(49);
+        itemProperties.Block = row.get<uint32_t>(50);
+        itemProperties.ItemSet = row.get<int32_t>(51);
+        itemProperties.MaxDurability = row.get<uint32_t>(52);
+        itemProperties.ZoneNameID = row.get<uint32_t>(53);
+        itemProperties.MapID = row.get<uint32_t>(54);
+        itemProperties.BagFamily = row.get<uint32_t>(55);
+        itemProperties.TotemCategory = row.get<uint32_t>(56);
+
+        for (uint8_t i = 0; i < MAX_ITEM_PROTO_SOCKETS; ++i)
+        {
+            itemProperties.Sockets[i].SocketColor = static_cast<uint32_t>(row.get<uint8_t>(57 + i * 2));
+            itemProperties.Sockets[i].Unk = row.get<uint32_t>(58 + i * 2);
+        }
+
+        itemProperties.SocketBonus = row.get<uint32_t>(63);
+        itemProperties.GemProperties = row.get<uint32_t>(64);
+        itemProperties.DisenchantReqSkill = row.get<int32_t>(65);
+        itemProperties.ArmorDamageModifier = row.get<float>(66);
+        itemProperties.ExistingDuration = row.get<uint32_t>(67);
+        itemProperties.ItemLimitCategory = row.get<uint32_t>(68);
+        itemProperties.HolidayId = row.get<uint32_t>(69);
+        itemProperties.FoodType = row.get<uint32_t>(70);
+#else
         Field* fields = item_result->Fetch();
 
         uint32_t entry = fields[0].asUint32();
@@ -342,7 +448,7 @@ void MySQLDataStore::loadItemPropertiesTable()
         itemProperties.ItemLimitCategory = fields[68].asUint32();
         itemProperties.HolidayId = fields[69].asUint32();
         itemProperties.FoodType = fields[70].asUint32();
-
+#endif
         //lowercase
         std::string lower_case_name = itemProperties.Name;
         AscEmu::Util::Strings::toLowerCase(lower_case_name);
