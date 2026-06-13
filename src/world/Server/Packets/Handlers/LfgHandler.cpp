@@ -31,7 +31,7 @@ using namespace AscEmu::Packets;
 
 void BuildPlayerLockDungeonBlock(WorldPacket& data, const LfgLockMap& lockMap)
 {
-    sLogger.debug("BUILD PLAYER LOCK DUNGEON BLOCK");
+    sLogger.debug("Build player lock dungeon block");
 
     data << uint32_t(lockMap.size());
     for (const auto& lock : lockMap)
@@ -43,7 +43,7 @@ void BuildPlayerLockDungeonBlock(WorldPacket& data, const LfgLockMap& lockMap)
 
 void BuildPartyLockDungeonBlock(WorldPacket& data, const LfgLockPartyMap& lockMap)
 {
-    sLogger.debug("BUILD PARTY LOCK DUNGEON BLOCK");
+    sLogger.debug("Build party lock dungeon block");
 
     data << uint8_t(lockMap.size());
     for (const auto&  lock : lockMap)

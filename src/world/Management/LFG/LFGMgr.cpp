@@ -711,7 +711,7 @@ void LfgMgr::Leave(Player* player, Group* _group /* = nullptr*/)
     uint64_t guid = _group ? _group->GetID() : player->getGuid();
     LfgState state = GetState(guid);
 
-    sLogger.debug("{}", guid);
+    sLogger.debug("Processing LFG leave request for guid {} (state {}).", guid, static_cast<uint8_t>(state));
     switch (state)
     {
         case LFG_STATE_QUEUED:
@@ -2072,7 +2072,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32_t dungeonId, Player* player)
     }
 
     // Give rewards
-    //Log.Debug("LfgMgr", "LfgMgr::RewardDungeonDoneFor: %u done dungeon %u, %s previously done.", player->GetGUID(), GetDungeon(gguid), index > 0 ? " " : " not");
+    //sLogger.debug("LfgMgr", "LfgMgr::RewardDungeonDoneFor: %u done dungeon %u, %s previously done.", player->GetGUID(), GetDungeon(gguid), index > 0 ? " " : " not");
     sLogger.debug("{} done dungeon {}, previously done.", player->getGuid(), GetDungeon(gguid));
     player->getSession()->sendLfgPlayerReward(dungeon->Entry(), GetDungeon(gguid, false), index, reward, qReward);
 #else
@@ -2146,7 +2146,7 @@ std::string LfgMgr::ConcatenateGuids(LfgGuidList check)
 
 LfgState LfgMgr::GetState(uint64_t guid)
 {
-    sLogger.debug("{}", guid);
+    sLogger.debug("Retrieved LFG state {} for guid {}.", static_cast<uint8_t>(state), guid);
     if (HIGHGUID_TYPE_GROUP == guid)
         return m_Groups[guid].GetState();
     else
@@ -2155,20 +2155,22 @@ LfgState LfgMgr::GetState(uint64_t guid)
 
 uint32_t LfgMgr::GetDungeon(uint64_t guid, bool asId /*= true*/)
 {
-    sLogger.debug("{} asId: {}", guid, asId);
+    sLogger.debug("Retrieving dungeon for guid {} (asId: {}).", guid, asId);
     return m_Groups[guid].GetDungeon(asId);
 }
 
 uint8_t LfgMgr::GetRoles(uint64_t guid)
 {
-    sLogger.debug("{}", guid);
-    return m_Players[guid].GetRoles();
+    uint8_t roles = m_Players[guid].GetRoles();
+    sLogger.debug("Retrieved LFG roles {} for guid {}.", roles, guid);
+    return roles;
 }
 
 const std::string& LfgMgr::GetComment(uint64_t guid)
 {
-    sLogger.debug("{}", guid);
-    return m_Players[guid].GetComment();
+    const auto& comment = m_Players[guid].GetComment();
+    sLogger.debug("Retrieved LFG comment for guid {}.", guid);
+    return comment;
 }
 
 bool LfgMgr::IsTeleported(uint64_t pguid)
@@ -2183,43 +2185,45 @@ bool LfgMgr::IsTeleported(uint64_t pguid)
 
 const LfgDungeonSet& LfgMgr::GetSelectedDungeons(uint64_t guid)
 {
-    sLogger.debug("{}", guid);
-    return m_Players[guid].GetSelectedDungeons();
+    const auto& dungeons = m_Players[guid].GetSelectedDungeons();
+    sLogger.debug("Retrieved {} selected dungeon(s) for guid {}.", dungeons.size(), guid);
+    return dungeons;
 }
 
 const LfgLockMap& LfgMgr::GetLockedDungeons(uint64_t guid)
 {
-    sLogger.debug("{}", guid);
-    return m_Players[guid].GetLockedDungeons();
+    const auto& locks = m_Players[guid].GetLockedDungeons();
+    sLogger.debug("Retrieved {} locked dungeon(s) for guid {}.", locks.size(), guid);
+    return locks;
 }
 
 uint8_t LfgMgr::GetKicksLeft(uint64_t guid)
 {
-    sLogger.debug("{}", guid);
+    sLogger.debug("Retrieving remaining vote kicks for guid {}.", guid);
     return m_Groups[guid].GetKicksLeft();
 }
 
 uint8_t LfgMgr::GetVotesNeeded(uint64_t guid)
 {
-    sLogger.debug("{}", guid);
+    sLogger.debug("Retrieving required vote count for guid {}.", guid);
     return m_Groups[guid].GetVotesNeeded();
 }
 
 void LfgMgr::RestoreState(uint64_t guid)
 {
-    sLogger.debug("{}", guid);
+    sLogger.debug("Restoring LFG state for guid {}.", guid);
     m_Groups[guid].RestoreState();
 }
 
 void LfgMgr::ClearState(uint64_t guid)
 {
-    sLogger.debug("{}", guid);
+    sLogger.debug("Clearing LFG state for guid {}.", guid);
     m_Players[guid].ClearState();
 }
 
 void LfgMgr::SetState(uint64_t guid, LfgState state)
 {
-    sLogger.debug("{} state {}", guid, state);
+    sLogger.debug("Setting LFG state {} for guid {}.", static_cast<uint8_t>(state), guid);
 
     WoWGuid wowGuid;
     wowGuid.init(guid);
@@ -2228,48 +2232,47 @@ void LfgMgr::SetState(uint64_t guid, LfgState state)
         m_Groups[guid].SetState(state);
     else
         m_Players[guid].SetState(state);
-
 }
 
 void LfgMgr::SetDungeon(uint64_t guid, uint32_t dungeon)
 {
-    sLogger.debug("{} dungeon {}", guid, dungeon);
+    sLogger.debug("Setting dungeon {} for guid {}.", dungeon, guid);
     m_Groups[guid].SetDungeon(dungeon);
 }
 
 void LfgMgr::SetRoles(uint64_t guid, uint8_t roles)
 {
-    sLogger.debug("{} roles: {}", guid, roles);
+    sLogger.debug("Setting roles {} for guid {}.", roles, guid);
     m_Players[guid].SetRoles(roles);
 }
 
 void LfgMgr::SetComment(uint64_t guid, const std::string& comment)
 {
-    sLogger.debug("{} comment: {}", guid, comment);
+    sLogger.debug("Setting LFG comment for guid {}.", guid);
     m_Players[guid].SetComment(comment);
 }
 
 void LfgMgr::SetSelectedDungeons(uint64_t guid, const LfgDungeonSet& dungeons)
 {
-    sLogger.debug("{}", guid);
+    sLogger.debug("Setting {} selected dungeon(s) for guid {}.", dungeons.size(), guid);
     m_Players[guid].SetSelectedDungeons(dungeons);
 }
 
 void LfgMgr::SetLockedDungeons(uint64_t guid, const LfgLockMap& lock)
 {
-    sLogger.debug("{}", guid);
+    sLogger.debug("Setting {} locked dungeon(s) for guid {}.", lock.size(), guid);
     m_Players[guid].SetLockedDungeons(lock);
 }
 
 void LfgMgr::DecreaseKicksLeft(uint64_t guid)
 {
-    sLogger.debug("{}", guid);
+    sLogger.debug("Decreasing remaining vote kicks for guid {}.", guid);
     m_Groups[guid].DecreaseKicksLeft();
 }
 
 void LfgMgr::RemovePlayerData(uint64_t guid)
 {
-    sLogger.debug("{}", guid);
+    sLogger.debug("Removing LFG player data for guid {}.", guid);
     LfgPlayerDataMap::iterator it = m_Players.find(guid);
     if (it != m_Players.end())
         m_Players.erase(it);
@@ -2277,7 +2280,7 @@ void LfgMgr::RemovePlayerData(uint64_t guid)
 
 void LfgMgr::RemoveGroupData(uint64_t guid)
 {
-    sLogger.debug("{}", guid);
+    sLogger.debug("Removing LFG group data for guid {}.", guid);
     LfgGroupDataMap::iterator it = m_Groups.find(guid);
     if (it != m_Groups.end())
         m_Groups.erase(it);

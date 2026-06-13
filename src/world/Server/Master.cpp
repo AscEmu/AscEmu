@@ -71,6 +71,7 @@
 #include "Data/WoWUnit.hpp"
 #endif
 
+#include <fmt/format.h>
 
 #include <atomic>
 #include <chrono>
@@ -78,7 +79,6 @@
 #include <cstdarg>
 #include <ctime>
 #include <filesystem>
-#include <format>
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -929,7 +929,7 @@ bool Master::processShutdownSequence(long long diff, uint32_t& next_printout, ui
             {
                 uint32_t mins = timeLeft / 60U;
                 uint32_t secs = timeLeft % 60U;
-                std::string timeStr = std::format("{:02}:{:02}", mins, secs);
+                std::string timeStr = fmt::format("{:02}:{:02}", mins, secs);
 
                 sWorld.sendGlobalMessage(AscEmu::Packets::SmsgServerMessage(messageType, timeStr).serialise().get());
             }

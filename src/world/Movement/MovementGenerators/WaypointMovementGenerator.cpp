@@ -233,7 +233,7 @@ void WaypointMovementGenerator<Creature>::onArrived(Creature* owner)
 
     if (waypoint.eventId && Util::getRandomUInt(0, 99) < waypoint.eventChance)
     {
-        sLogger.debug("Creature movement start script {} at point {} for {}.", waypoint.eventId, _currentNode, owner->getGuid());
+        sLogger.debug("Starting waypoint script {} at node {} for creature (0x{:X}).", waypoint.eventId, _currentNode, owner->getGuid());
         owner->removeUnitStateFlag(UNIT_STATE_ROAMING_MOVE);
         // add waypoint scripts
     }
