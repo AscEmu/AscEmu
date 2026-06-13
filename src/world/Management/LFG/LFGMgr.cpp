@@ -2146,7 +2146,11 @@ std::string LfgMgr::ConcatenateGuids(LfgGuidList check)
 
 LfgState LfgMgr::GetState(uint64_t guid)
 {
-    sLogger.debug("Retrieved LFG state {} for guid {}.", static_cast<uint8_t>(state), guid);
+    if (HIGHGUID_TYPE_GROUP == guid)
+        sLogger.debug("LfgMgr::GetState Group guid={}", guid);
+    else
+        sLogger.debug("LfgMgr::GetState Player guid={}", guid);
+
     if (HIGHGUID_TYPE_GROUP == guid)
         return m_Groups[guid].GetState();
     else
