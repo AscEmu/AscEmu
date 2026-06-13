@@ -8,16 +8,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Network/AE/Core/ListenCommon.hpp"
 #include "Network/AE/Core/SocketPlatformOps.hpp"
 #include "Network/SocketDefines.h"
+#include "Network/AE/Core/NetworkBackend.hpp"
 
 #include <cerrno>
-
-class ListenSocketBase
-{
-public:
-    virtual ~ListenSocketBase() = default;
-    virtual void OnAccept() = 0;
-    virtual int GetFd() = 0;
-};
 
 template <class T>
 class ListenSocket : public ListenSocketBase

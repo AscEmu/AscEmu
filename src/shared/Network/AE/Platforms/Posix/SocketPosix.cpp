@@ -3,6 +3,8 @@ Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "Logging/Logger.hpp"
+#include "Network/Socket.h"
 #include "Network/Network.h"
 
 #ifdef ASCEMU_USE_AE_NETWORK
@@ -61,10 +63,6 @@ void Socket::WriteCallback()
 }
 
 void Socket::SetupReadEvent()
-{
-}
-
-void Socket::AssignToCompletionPort()
 {
 }
 
@@ -130,10 +128,6 @@ void Socket::WriteCallback()
 }
 
 void Socket::SetupReadEvent()
-{
-}
-
-void Socket::AssignToCompletionPort()
 {
 }
 

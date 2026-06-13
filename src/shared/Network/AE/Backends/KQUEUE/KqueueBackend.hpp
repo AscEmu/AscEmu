@@ -5,14 +5,24 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "Logging/Logger.hpp"
 #include "Network/AE/Core/NetworkBackend.hpp"
 #include "Network/AE/Core/PollBackendLoop.hpp"
 #include "Network/AE/Core/PollWorkerHelpers.hpp"
 #include "Network/AE/Core/SocketEventHandlers.hpp"
-#include "Network/SocketDefines.h"
+#include "Network/AE/Core/NetworkBackendCommon.hpp"
+#include "Network/Socket.h"
 
 #include <atomic>
 #include <cstring>
+
+#ifndef SOCKET_HOLDER_SIZE
+    #define SOCKET_HOLDER_SIZE 30000
+#endif
+
+#ifndef THREAD_EVENT_SIZE
+    #define THREAD_EVENT_SIZE 4096
+#endif
 
 class SocketMgr;
 

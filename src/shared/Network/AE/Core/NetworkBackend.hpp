@@ -10,7 +10,14 @@ This file is released under the MIT license. See README-MIT for more information
 #include <cstdint>
 
 class Socket;
-class ListenSocketBase;
+
+class ListenSocketBase
+{
+public:
+    virtual ~ListenSocketBase() = default;
+    virtual void OnAccept() = 0;
+    virtual int GetFd() = 0;
+};
 
 namespace AscEmu::Network::AE
 {
