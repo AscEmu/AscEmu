@@ -198,7 +198,7 @@ explicitly specified to ensure that the find module reports an error if the
 #]=======================================================================]
 
 cmake_policy(PUSH)
-cmake_policy(SET CMP0159 NEW) # file(STRINGS) with REGEX updates CMAKE_MATCH_<n>
+#cmake_policy(SET CMP0159 NEW) # file(STRINGS) with REGEX updates CMAKE_MATCH_<n>
 
 macro(_OpenSSL_test_and_find_dependencies ssl_library crypto_library)
   unset(_OpenSSL_extra_static_deps)
