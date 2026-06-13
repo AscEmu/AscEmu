@@ -3,8 +3,8 @@
 # set up our project name.
 set(LIBRARY_NAME shared)
 
-option(ASCEMU_USE_AE_NETWORK "Use AE network implementation where available" OFF)
-option(ASCEMU_USE_AE_DATABASE "Use AE database implementation where available" OFF)
+option(ASCEMU_USE_AE_NETWORK "Use AE network implementation where available" ON)
+option(ASCEMU_USE_AE_DATABASE "Use AE database implementation where available" ON)
 
 file(GLOB SRC_CONFIG_FILES Config/*.cpp Config/*.h Config/*.hpp)
 file(GLOB SRC_CRYPTOGRAPHY_FILES Cryptography/*.cpp Cryptography/*.h Cryptography/*.hpp)
