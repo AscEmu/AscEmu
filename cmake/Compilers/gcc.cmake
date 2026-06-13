@@ -1,7 +1,7 @@
 # Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 
-# GCC >= 12.0.0
-set(GCC_SUPPORTS_VERSION 12.0.0)
+# GCC >= 12.2.0
+set(GCC_SUPPORTS_VERSION 12.2.0)
 # TODO change to 13 when Debian 13 is released
 
 if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS GCC_SUPPORTS_VERSION)
