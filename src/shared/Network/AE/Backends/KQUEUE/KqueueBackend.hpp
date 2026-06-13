@@ -168,14 +168,14 @@ namespace AscEmu::Network::AE
                 self,
                 events,
                 THREAD_EVENT_SIZE,
-                [this](kevent* eventStorage, int capacity)
+                [this](struct kevent* eventStorage, int capacity)
                 {
                     struct timespec ts;
                     ts.tv_nsec = 0;
                     ts.tv_sec = 1;
                     return kevent(m_kq, nullptr, 0, eventStorage, capacity, &ts);
                 },
-                [](const kevent& event)
+                [](const struct kevent& event)
                 {
                     return static_cast<int>(event.ident);
                 },
@@ -199,11 +199,11 @@ namespace AscEmu::Network::AE
                     kevent(m_kq, &evWrite, 1, nullptr, 0, nullptr);
                     kevent(m_kq, &evRead, 1, nullptr, 0, nullptr);
                 },
-                [](ListenSocketBase& listener, int, const kevent&)
+                [](ListenSocketBase& listener, int, const struct kevent&)
                 {
                     listener.OnAccept();
                 },
-                [](Socket& socket, int, const kevent& event)
+                [](Socket& socket, int, const struct kevent& event)
                 {
                     AscEmu::Network::AE::handlePollSocketEvent(
                         socket,
