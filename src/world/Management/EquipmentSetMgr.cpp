@@ -23,7 +23,7 @@
 #include <sstream>
 
 #include "Database/Field.hpp"
-#include "Database/Database.h"
+#include "Database/Database.hpp"
 #include "WoWGuid.hpp"
 #include "WorldPacket.h"
 #include "Logging/Logger.hpp"

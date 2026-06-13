@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "CommonTypes.hpp"
-#include "Database/Database.h"
+#include "Database/Database.hpp"
 #include <memory>
 #include "Master.h"
 

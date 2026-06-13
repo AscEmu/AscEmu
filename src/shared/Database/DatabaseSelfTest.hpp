@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "../Database.h"
+#include "Database.hpp"
 
 #include <string>
 #include <vector>

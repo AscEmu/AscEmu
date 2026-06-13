@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldRunnable.h"
 #include <fmt/format.h>
 #include "Logging/Log.hpp"
-#include "Database/Database.h"
+#include "Database/Database.hpp"
 
 #include <cstdint>
 #include <string>

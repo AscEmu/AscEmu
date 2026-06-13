@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "LuaHelpers.hpp"
 #include "LuaMacros.h"
 #include "LuaSpell.hpp"
-#include "Database/Database.h"
+#include "Database/Database.hpp"
 #include "Logging/Log.hpp"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/ItemInterface.h"

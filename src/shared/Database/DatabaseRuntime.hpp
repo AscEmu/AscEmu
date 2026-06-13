@@ -5,8 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "../Database.h"
-#include "../../Threading/ThreadPool.hpp"
+#include "Database.hpp"
+#include "../Threading/ThreadPool.hpp"
 
 #include <atomic>
 #include <condition_variable>
@@ -182,31 +182,20 @@ private:
     public:
         ConnectionLease() = default;
 
-        ConnectionLease(DatabaseRuntime* runtime, DatabaseConnection* connection) : m_runtime(runtime), m_connection(connection)
+        ConnectionLease(
+            DatabaseRuntime* runtime,
+            DatabaseConnection* connection,
+            std::unique_lock<std::recursive_mutex>&& busyLock)
+            : m_runtime(runtime),
+            m_connection(connection),
+            m_busyLock(std::move(busyLock))
         {}
 
         ConnectionLease(const ConnectionLease&) = delete;
         ConnectionLease& operator=(const ConnectionLease&) = delete;
 
-        ConnectionLease(ConnectionLease&& other) noexcept : m_runtime(other.m_runtime), m_connection(other.m_connection)
-        {
-            other.m_runtime = nullptr;
-            other.m_connection = nullptr;
-        }
-
-        ConnectionLease& operator=(ConnectionLease&& other) noexcept
-        {
-            if (this == &other)
-                return *this;
-
-            reset();
-
-            m_runtime = other.m_runtime;
-            m_connection = other.m_connection;
-            other.m_runtime = nullptr;
-            other.m_connection = nullptr;
-            return *this;
-        }
+        ConnectionLease(ConnectionLease&& other) noexcept = default;
+        ConnectionLease& operator=(ConnectionLease&& other) noexcept = default;
 
         ~ConnectionLease()
         {
@@ -226,7 +215,7 @@ private:
         void reset()
         {
             if (m_runtime != nullptr && m_connection != nullptr)
-                m_runtime->releaseConnection(m_connection);
+                m_runtime->releaseConnection(m_connection, std::move(m_busyLock));
 
             m_runtime = nullptr;
             m_connection = nullptr;
@@ -235,6 +224,7 @@ private:
     private:
         DatabaseRuntime* m_runtime = nullptr;
         DatabaseConnection* m_connection = nullptr;
+        std::unique_lock<std::recursive_mutex> m_busyLock;
     };
 
     static uint16_t sanitizeWorkerCount(uint16_t workerCount)
@@ -265,16 +255,17 @@ private:
         m_availableConnections.pop_front();
         lock.unlock();
 
-        connection->Busy.lock();
-        return ConnectionLease(this, connection);
+        std::unique_lock<std::recursive_mutex> busyLock(connection->Busy);
+        return ConnectionLease(this, connection, std::move(busyLock));
     }
 
-    void releaseConnection(DatabaseConnection* connection)
+    void releaseConnection(DatabaseConnection* connection, std::unique_lock<std::recursive_mutex> busyLock)
     {
         if (connection == nullptr)
             return;
 
-        connection->Busy.unlock();
+        if (busyLock.owns_lock())
+            busyLock.unlock();
 
         {
             std::scoped_lock lock(m_connectionMutex);

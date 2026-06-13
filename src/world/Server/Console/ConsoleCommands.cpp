@@ -163,8 +163,8 @@ bool handleServerInfoCommand(BaseConsole* baseConsole, int /*argumentCount*/, st
         baseConsole->Write("Average Latency: %.3fms\r\n", onlineCount ? (float)avgLatency / (float)onlineCount : 0.0f);
         baseConsole->Write("CPU Usage: %3.2f %%\r\n", sWorld.getCPUUsage());
         baseConsole->Write("RAM Usage: %4.2f MB\r\n", sWorld.getRAMUsage());
-        baseConsole->Write("SQL Query Cache Size (World): %u queries delayed\r\n", WorldDatabase.GetQueueSize());
-        baseConsole->Write("SQL Query Cache Size (Character): %u queries delayed\r\n", CharacterDatabase.GetQueueSize());
+        baseConsole->Write("SQL Query Cache Size (World): %u queries delayed\r\n", WorldDatabase.GetAeQueuedTaskCount());
+        baseConsole->Write("SQL Query Cache Size (Character): %u queries delayed\r\n", CharacterDatabase.GetAeQueuedTaskCount());
     }
 
     sSocketMgr.ShowStatus();

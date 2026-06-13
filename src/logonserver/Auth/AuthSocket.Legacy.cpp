@@ -29,7 +29,7 @@
 #include <Realm/RealmManager.hpp>
 
 #include "Cryptography/MD5.hpp"
-#include "Database/Database.h"
+#include "Database/Database.hpp"
 
 enum _errors
 {

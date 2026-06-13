@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "GuildBankRightsAndSlots.hpp"
 #include "GuildDefinitions.hpp"
 #include "Logging/Log.hpp"
-#include "Database/Database.h"
+#include "Database/Database.hpp"
 #include "Logging/Logger.hpp"
 #include "Server/DatabaseDefinition.hpp"
 

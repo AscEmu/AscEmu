@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "GuildEmblemInfo.hpp"
 
 #include "Server/DatabaseDefinition.hpp"
-#include "Database/Database.h"
+#include "Database/Database.hpp"
 #include "WorldPacket.h"
 
 

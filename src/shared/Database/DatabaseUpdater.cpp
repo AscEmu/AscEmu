@@ -4,11 +4,11 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "DatabaseUpdater.hpp"
-#include <Logging/Logger.hpp>
-#include "Database.h"
+#include "Logging/Logger.hpp"
+#include "Database.hpp"
 #include "Field.hpp"
 #include "CommonFilesystem.hpp"
-#include <Utilities/Util.hpp>
+#include "Utilities/Util.hpp"
 #include <iostream>
 #include <regex>
 #include <algorithm>
@@ -24,7 +24,7 @@ void DatabaseUpdater::initBaseIfNeeded(const std::string& dbName, const std::str
     }
 
     // save 100% (current queue)
-    if (auto const queue = dbPointer.GetQueueSize())
+    if (auto const queue = dbPointer.GetAeQueuedTaskCount())
     {
         // set up bar size
         const int barSize = 70;
@@ -36,7 +36,7 @@ void DatabaseUpdater::initBaseIfNeeded(const std::string& dbName, const std::str
         while (currentProgress < 1.0f)
         {
             // calc percentage
-            const size_t sendQueues = queue - dbPointer.GetQueueSize();
+            const size_t sendQueues = queue - dbPointer.GetAeQueuedTaskCount();
             currentProgress = static_cast<float>(sendQueues) / static_cast<float>(queue);
 
             std::cout << "Creating '" << dbName << "' : ";
@@ -99,9 +99,9 @@ void DatabaseUpdater::checkAndApplyDBUpdatesIfNeeded(const std::string& database
 {
     applyUpdatesForDatabase(database, dbPointer);
 
-    while (dbPointer.GetQueueSize() > 0)
+    while (dbPointer.GetAeQueuedTaskCount() > 0)
     {
-        sLogger.info("-- busy updating database \"{}\". Waiting for {} queries to be executed.", database, dbPointer.GetQueueSize());
+        sLogger.info("-- busy updating database \"{}\". Waiting for {} queries to be executed.", database, dbPointer.GetAeQueuedTaskCount());
 
         AscEmu::Threading::sleep(500);
     }

@@ -1,477 +1,282 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
- //////////////////////////////////////////////
- // Notes: .Execute is ASYNC! -
- // We should probably be using QueryBuffer for ASYNC and NONE-ASYNC queries to not lag the emu.
- // See: Player::_SavePetSpells for example of usage
- // updated: Tuesday, June 16th 2009 - Hasbro
- //////////////////////////////////////////////
+#include "Database.hpp"
 
-#include "Utilities/CallBack.h"
-#include "Database.h"
+#include "MySQLDatabase.hpp"
+#include "../Utilities/CallBack.h"
+#include "DatabaseRuntime.hpp"
 
-#include <string>
-#include <vector>
+#include <chrono>
 #include <cstdarg>
-
-#include "Debugging/Errors.hpp"
-
-#include <mutex>
+#include <cstdio>
+#include <memory>
+#include <optional>
+#include <thread>
 
 using AscEmu::Threading::AEThread;
-using std::unique_ptr;
 using std::make_unique;
+using std::unique_ptr;
 
-SQLCallbackBase::~SQLCallbackBase()
+namespace
 {
-
-}
-
-void Database::createDbConnection()
-{
-    if (m_dbConnection == nullptr)
-        m_dbConnection = GetFreeConnection();
-}
-
-void Database::destroyDbConnection()
-{
-    if (m_dbConnection)
+    std::optional<std::string> formatSql(const char* format, va_list args)
     {
-        m_dbConnection->Busy.unlock();
-        m_dbConnection = nullptr;
+        if (format == nullptr)
+            return std::nullopt;
+
+        va_list argsCopy;
+        va_copy(argsCopy, args);
+
+        const int required = std::vsnprintf(nullptr, 0, format, argsCopy);
+        va_end(argsCopy);
+
+        if (required < 0)
+            return std::nullopt;
+
+        std::string sql(static_cast<std::size_t>(required), '\0');
+        std::vsnprintf(sql.data(), sql.size() + 1, format, args);
+        return sql;
     }
 }
 
-void Database::createQueryBufferConnection()
-{
-    if (m_queryBufferConnection == nullptr)
-        m_queryBufferConnection = GetFreeConnection();
-}
-
-void Database::dbThreadRunner(AEThread& /*thread*/)
-{
-    dbRunAllQueries();
-}
-
-void Database::dbThreadShutdown()
-{
-    // Shut down thread
-    m_dbThread->killAndJoin();
-
-    // Execute remaining queries
-    dbRunAllQueries();
-    destroyDbConnection();
-}
+SQLCallbackBase::~SQLCallbackBase() = default;
 
 Database::Database()
 {
     _counter = 0;
-    mConnectionCount = -1;   // Not connected.
-    //ThreadRunning = true;
+    mConnectionCount = -1;
     mPort = 3306;
-    qt = nullptr;
-
-    m_dbConnection = nullptr;
-    m_queryBufferConnection = nullptr;
+    m_runtime = nullptr;
 }
 
-Database::~Database()
-{
-
-}
+Database::~Database() = default;
 
 void Database::_Initialize()
 {
-    if (m_dbThread == nullptr)
-        m_dbThread = std::make_unique<AEThread>("DatabaseThread", [this](AEThread& thread) { this->dbThreadRunner(thread); }, std::chrono::milliseconds(10));
-    else
-        m_dbThread->reboot();
-
-    if (m_queryBufferThread == nullptr)
-        m_queryBufferThread = std::make_unique<AEThread>("QueryBufferThread", [this](AEThread& thread) { this->queryBufferThreadRunner(thread); }, std::chrono::milliseconds(10));
-    else
-        m_queryBufferThread->reboot();
 }
 
-DatabaseConnection* Database::GetFreeConnection()
+std::unique_ptr<QueryResult> Database::Query(const char* queryString, ...)
 {
-    uint32_t i = 0;
-    for (;;)
-    {
-        DatabaseConnection* con = Connections[((i++) % mConnectionCount)].get();
-        if (con->Busy.try_lock())
-            return con;
-    }
-}
+    va_list args;
+    va_start(args, queryString);
+    const auto sql = formatSql(queryString, args);
+    va_end(args);
 
-// Use this when we request data that can return a value (not async)
-std::unique_ptr<QueryResult> Database::Query(const char* QueryString, ...)
-{
-    va_list vlist;
-    va_start(vlist, QueryString);
-
-    // Get buffer size
-    va_list vlist_copy;
-    va_copy(vlist_copy, vlist);
-    const auto size = vsnprintf(nullptr, 0, QueryString, vlist_copy);
-    va_end(vlist_copy);
-
-    if (size < 0)
-    {
-        va_end(vlist);
+    if (!sql || !m_runtime)
         return nullptr;
-    }
 
-    std::string sql(size, '\0');
-    vsnprintf(&sql[0], static_cast<size_t>(size) + 1, QueryString, vlist);
-    va_end(vlist);
-
-    // Send the query
-    std::unique_ptr<QueryResult> qResult;
-    DatabaseConnection* con = GetFreeConnection();
-
-    std::unique_lock connectionLock{con->Busy, std::adopt_lock};
-
-    if (_SendQuery(con, sql.data(), false))
-        qResult = _StoreQueryResult(con);
-
-    return qResult;
+    auto future = m_runtime->enqueueQuery(*sql);
+    auto outcome = future.get();
+    return std::move(outcome.result);
 }
 
-std::unique_ptr<QueryResult> Database::Query(bool *success, const char* QueryString, ...)
+std::unique_ptr<QueryResult> Database::Query(bool* success, const char* queryString, ...)
 {
-    va_list vlist;
-    va_start(vlist, QueryString);
+    if (success == nullptr)
+        return nullptr;
 
-    // Get buffer size
-    va_list vlist_copy;
-    va_copy(vlist_copy, vlist);
-    const auto size = vsnprintf(nullptr, 0, QueryString, vlist_copy);
-    va_end(vlist_copy);
+    va_list args;
+    va_start(args, queryString);
+    const auto sql = formatSql(queryString, args);
+    va_end(args);
 
-    if (size < 0)
+    if (!sql || !m_runtime)
     {
-        va_end(vlist);
         *success = false;
         return nullptr;
     }
 
-    std::string sql(size, '\0');
-    vsnprintf(&sql[0], static_cast<size_t>(size) + 1, QueryString, vlist);
-    va_end(vlist);
+    auto future = m_runtime->enqueueQuery(*sql);
+    auto outcome = future.get();
+    *success = outcome.success;
+    return std::move(outcome.result);
+}
 
-    // Send the query
-    std::unique_ptr<QueryResult> qResult;
-    DatabaseConnection* con = GetFreeConnection();
+std::unique_ptr<QueryResult> Database::QueryNA(const char* queryString)
+{
+    if (queryString == nullptr || !m_runtime)
+        return nullptr;
 
-    std::unique_lock connectionLock{con->Busy, std::adopt_lock};
+    auto future = m_runtime->enqueueQuery(std::string(queryString));
+    auto outcome = future.get();
+    return std::move(outcome.result);
+}
 
-    if (_SendQuery(con, sql.data(), false))
+std::unique_ptr<QueryResult> Database::FQuery(const char* queryString, DatabaseConnection* con)
+{
+    if (queryString == nullptr || con == nullptr)
+        return nullptr;
+
+    std::unique_ptr<QueryResult> result;
+    if (_SendQuery(con, queryString, false))
+        result = _StoreQueryResult(con);
+
+    return result;
+}
+
+void Database::FWaitExecute(const char* queryString, DatabaseConnection* con)
+{
+    if (queryString != nullptr && con != nullptr)
+        _SendQuery(con, queryString, false);
+}
+
+bool Database::Execute(const char* queryString, ...)
+{
+    va_list args;
+    va_start(args, queryString);
+    const auto sql = formatSql(queryString, args);
+    va_end(args);
+
+    if (!sql)
+        return false;
+
+    if (m_runtime)
     {
-        qResult = _StoreQueryResult(con);
-        *success = true;
+        [[maybe_unused]] auto future = m_runtime->enqueueExecute(*sql);
+        return true;
     }
-    else
+
+    return ExecuteNA(sql->c_str());
+}
+
+bool Database::ExecuteNA(const char* queryString)
+{
+    if (queryString == nullptr)
+        return false;
+
+    if (m_runtime)
     {
-        *success = false;
+        [[maybe_unused]] auto future = m_runtime->enqueueExecute(std::string(queryString));
+        return true;
     }
 
-    return qResult;
+    return WaitExecuteNA(queryString);
 }
 
-std::unique_ptr<QueryResult> Database::QueryNA(const char* QueryString)
+bool Database::WaitExecute(const char* queryString, ...)
 {
-    // Send the query
-    std::unique_ptr<QueryResult> qResult;
-    DatabaseConnection* con = GetFreeConnection();
+    va_list args;
+    va_start(args, queryString);
+    const auto sql = formatSql(queryString, args);
+    va_end(args);
 
-    std::unique_lock connectionLock{con->Busy, std::adopt_lock};
+    if (!sql)
+        return false;
 
-    if (_SendQuery(con, QueryString, false))
-        qResult = _StoreQueryResult(con);
+    if (m_runtime)
+    {
+        auto future = m_runtime->enqueueExecute(*sql);
+        return future.get();
+    }
 
-    return qResult;
+    return WaitExecuteNA(sql->c_str());
 }
 
-std::unique_ptr<QueryResult> Database::FQuery(const char* QueryString, DatabaseConnection* con)
+bool Database::WaitExecuteNA(const char* queryString)
 {
-    // Send the query
-    std::unique_ptr<QueryResult> qResult;
-    if (_SendQuery(con, QueryString, false))
-        qResult = _StoreQueryResult(con);
+    if (queryString == nullptr || !m_runtime)
+        return false;
 
-    return qResult;
-}
-
-void Database::FWaitExecute(const char* QueryString, DatabaseConnection* con)
-{
-    // Send the query
-    _SendQuery(con, QueryString, false);
+    auto future = m_runtime->enqueueExecute(std::string(queryString));
+    return future.get();
 }
 
 void QueryBuffer::AddQuery(const char* format, ...)
 {
-    va_list vlist;
-    va_start(vlist, format);
+    va_list args;
+    va_start(args, format);
+    const auto sql = formatSql(format, args);
+    va_end(args);
 
-    // Get buffer size
-    va_list vlist_copy;
-    va_copy(vlist_copy, vlist);
-    const auto size = vsnprintf(nullptr, 0, format, vlist_copy);
-    va_end(vlist_copy);
-
-    if (size < 0)
-    {
-        va_end(vlist);
-        return;
-    }
-
-    std::string queryBuf(size, '\0');
-    vsnprintf(&queryBuf[0], static_cast<size_t>(size) + 1, format, vlist);
-    va_end(vlist);
-
-    queries.push_back(std::move(queryBuf));
+    if (sql)
+        queries.push_back(*sql);
 }
 
 void QueryBuffer::AddQueryNA(const char* str)
 {
-    queries.emplace_back(str);
+    if (str != nullptr)
+        queries.emplace_back(str);
 }
 
-void Database::destroyQueryBufferConnection()
+void QueryBuffer::AddQueryStr(const std::string& str)
 {
-    if (m_queryBufferConnection)
-    {
-        m_queryBufferConnection->Busy.unlock();
-        m_queryBufferConnection = nullptr;
-    }
-}
-
-void Database::dbRunAllQueries()
-{
-    while (auto query = queries_queue.tryPop())
-    {
-        createDbConnection();
-        _SendQuery(m_dbConnection, query.value().data(), false);
-    }
-    // No more queries => free the connection in the thread and reconnect when there are new queries
-    destroyDbConnection();
-}
-
-void Database::queryBufferThreadRunner(AEThread& /*thread*/)
-{
-    queryBufferRunAllQueries();
-}
-
-void Database::queryBufferThreadShutdown() {
-    m_queryBufferThread->killAndJoin();
-    queryBufferRunAllQueries();
-    destroyQueryBufferConnection();
-}
-
-void Database::queryBufferRunAllQueries()
-{
-    while (auto query = query_buffer.tryPop())
-    {
-        createQueryBufferConnection();
-        PerformQueryBuffer(query.value().get(), m_queryBufferConnection);
-    }
-    // No more queries => free the connection in the thread and reconnect when there are new queries
-    destroyQueryBufferConnection();
-}
-
-void QueryBuffer::AddQueryStr(const std::string & str)
-{
-    queries.emplace_back(str);
-}
-
-void Database::PerformQueryBuffer(QueryBuffer* b, DatabaseConnection* ccon)
-{
-    if (!b->queries.size())
-        return;
-
-    DatabaseConnection* con = ccon;
-
-    std::unique_lock<std::recursive_mutex> connectionLock;
-
-    if (ccon == NULL)
-    {
-        con = GetFreeConnection();
-        connectionLock = std::unique_lock{con->Busy, std::adopt_lock};
-    }
-
-    _BeginTransaction(con);
-
-    for (const auto& query : b->queries)
-        _SendQuery(con, query.data(), false);
-
-    _EndTransaction(con);
-}
-
-// Use this when we do not have a result. ex: INSERT into SQL 1
-bool Database::Execute(const char* QueryString, ...)
-{
-    va_list vlist;
-    va_start(vlist, QueryString);
-
-    // Get buffer size
-    va_list vlist_copy;
-    va_copy(vlist_copy, vlist);
-    const auto size = vsnprintf(nullptr, 0, QueryString, vlist_copy);
-    va_end(vlist_copy);
-
-    if (size < 0)
-    {
-        va_end(vlist);
-        return false;
-    }
-
-    std::string queryBuf(size, '\0');
-    vsnprintf(&queryBuf[0], static_cast<size_t>(size) + 1, QueryString, vlist);
-    va_end(vlist);
-
-    if (m_dbThread->isKilled())
-        return WaitExecuteNA(queryBuf.data());
-
-    queries_queue.push(std::move(queryBuf));
-    return true;
-}
-
-bool Database::ExecuteNA(const char* QueryString)
-{
-    if (m_dbThread->isKilled())
-        return WaitExecuteNA(QueryString);
-
-    queries_queue.push(std::string(QueryString));
-    return true;
-}
-
-// Wait till the other queries are done, then execute
-bool Database::WaitExecute(const char* QueryString, ...)
-{
-    va_list vlist;
-    va_start(vlist, QueryString);
-
-    // Get buffer size
-    va_list vlist_copy;
-    va_copy(vlist_copy, vlist);
-    const auto size = vsnprintf(nullptr, 0, QueryString, vlist);
-    va_end(vlist_copy);
-
-    if (size < 0)
-    {
-        va_end(vlist);
-        return false;
-    }
-
-    std::string sql(size, '\0');
-    vsnprintf(&sql[0], static_cast<size_t>(size) + 1, QueryString, vlist);
-    va_end(vlist);
-
-    DatabaseConnection* con = GetFreeConnection();
-
-    std::unique_lock connectionLock{con->Busy, std::adopt_lock};
-
-    bool Result = _SendQuery(con, sql.data(), false);
-
-    return Result;
-}
-
-bool Database::WaitExecuteNA(const char* QueryString)
-{
-    DatabaseConnection* con = GetFreeConnection();
-
-    std::unique_lock connectionLock{con->Busy, std::adopt_lock};
-
-    bool Result = _SendQuery(con, QueryString, false);
-
-    return Result;
+    queries.push_back(str);
 }
 
 void AsyncQuery::AddQuery(const char* format, ...)
 {
-    va_list ap;
-    va_start(ap, format);
+    va_list args;
+    va_start(args, format);
+    const auto sql = formatSql(format, args);
+    va_end(args);
 
-    // Get buffer size
-    va_list ap_copy;
-    va_copy(ap_copy, ap);
-    const auto size = vsnprintf(nullptr, 0, format, ap_copy);
-    va_end(ap_copy);
-
-    if (size < 0)
-    {
-        va_end(ap);
-        return;
-    }
-
-    std::string queryBuf(size, '\0');
-    vsnprintf(&queryBuf[0], static_cast<size_t>(size) + 1, format, ap);
-    va_end(ap);
-
-    queries.emplace_back(nullptr, std::move(queryBuf));
-}
-
-void AsyncQuery::Perform()
-{
-    DatabaseConnection* conn = db->GetFreeConnection();
-
-    std::unique_lock connectionLock{conn->Busy, std::adopt_lock};
-
-    for (auto& query : queries)
-        query.result = db->FQuery(query.query.data(), conn);
-
-    connectionLock.unlock();
-
-    func->run(queries);
+    if (sql)
+        queries.emplace_back(AsyncQueryResult{ nullptr, *sql });
 }
 
 AsyncQuery::AsyncQuery(std::unique_ptr<SQLCallbackBase> f) : func(std::move(f)), db(nullptr)
-{}
+{
+}
 
 AsyncQuery::~AsyncQuery() = default;
 
-void Database::EndThreads()
-{
-    if (m_dbThread)
-        m_dbThread->requestKill();
-    if (m_queryBufferThread)
-        m_queryBufferThread->requestKill();
-
-    dbThreadShutdown();
-    queryBufferThreadShutdown();
-}
-
-
 void Database::QueueAsyncQuery(std::unique_ptr<AsyncQuery> query)
 {
+    if (query == nullptr || !m_runtime)
+        return;
+
     query->db = this;
-    query->Perform();
+    auto sharedQuery = std::shared_ptr<AsyncQuery>(query.release());
+
+    m_runtime->enqueueTask(
+        [this, sharedQuery](DatabaseConnection& connection)
+        {
+            for (auto& item : sharedQuery->queries)
+                item.result = FQuery(item.query.c_str(), &connection);
+
+            if (sharedQuery->func)
+                sharedQuery->func->run(sharedQuery->queries);
+        },
+        "db.async_query");
 }
 
-void Database::AddQueryBuffer(std::unique_ptr<QueryBuffer> b)
+void Database::AddQueryBuffer(std::unique_ptr<QueryBuffer> buffer)
 {
-    // TODO: qt is always nullptr
-    if (qt != NULL)
-        query_buffer.push(std::move(b));
-    else
-        PerformQueryBuffer(b.get(), NULL);
+    if (buffer == nullptr || !m_runtime)
+        return;
+
+    [[maybe_unused]] auto future = m_runtime->enqueueBatch(std::move(buffer->queries));
+}
+
+void Database::EndThreads()
+{
+    if (m_runtime)
+        m_runtime->stop();
+}
+
+std::unique_ptr<Database> Database::CreateDatabaseInterface()
+{
+    return make_unique<MySQLDatabase>();
+}
+
+void Database::CleanupLibs()
+{
+}
+
+size_t Database::GetAeQueuedTaskCount() const
+{
+    return m_runtime ? m_runtime->queuedTaskCount() : 0;
+}
+
+size_t Database::GetAeWorkerCount() const
+{
+    return m_runtime ? m_runtime->workerCount() : 0;
+}
+
+uint64_t Database::GetAeCompletedTaskCount() const
+{
+    return m_runtime ? m_runtime->completedTaskCount() : 0;
 }

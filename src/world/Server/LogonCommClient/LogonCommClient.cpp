@@ -27,7 +27,7 @@
 #include "LogonCommClient.h"
 #include "LogonCommHandler.h"
 #include "WorldPacket.h"
-#include "Database/Database.h"
+#include "Database/Database.hpp"
 #include "Server/World.h"
 #include "Cryptography/LogonCommDefines.h"
 #include "Logging/Logger.hpp"

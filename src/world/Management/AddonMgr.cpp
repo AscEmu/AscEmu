@@ -13,7 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Cryptography/MD5.hpp"
 #include "Database/Field.hpp"
-#include "Database/Database.h"
+#include "Database/Database.hpp"
 #include "Logging/Logger.hpp"
 #include "Server/DatabaseDefinition.hpp"
 #include "Server/Opcodes.hpp"

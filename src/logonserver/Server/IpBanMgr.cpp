@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "IpBanMgr.h"
 #include <utility>
 #include <Logging/Logger.hpp>
-#include <Database/Database.h>
+#include "Database/Database.hpp"
 #include "Server/Master.hpp"
 #include <Logging/Log.hpp>
 

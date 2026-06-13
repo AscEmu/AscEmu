@@ -21,7 +21,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "git_version.hpp"
 #include "Console/LogonConsole.h"
 #include "LogonConf.hpp"
-#include "Database/Database.h"
+#include "Database/Database.hpp"
 #include "Utilities/Strings.hpp"
 
 #include "Threading/ThreadPool.hpp"

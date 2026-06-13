@@ -22,7 +22,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Cryptography/BigNumber.h>
 #include <Cryptography/Sha1.hpp>
 #include <Cryptography/WowCrypt.hpp>
-#include <Database/Database.h>
+#include <Database/Database.hpp>
 #include <Network/Network.h>
 #include "LogonConf.hpp"
 #include "Console/LogonConsole.h"

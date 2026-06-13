@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Logging/Log.hpp>
 #include <Cryptography/BigNumber.h>
 #include <Utilities/Strings.hpp>
-#include <Database/Database.h>
+#include "Database/Database.hpp"
 #include "Master.hpp"
 
 AccountMgr& AccountMgr::getInstance()

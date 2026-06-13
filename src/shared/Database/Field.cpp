@@ -4,26 +4,133 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Field.hpp"
-#include "Utilities/Narrow.hpp"
-#include <cstdint>
+#include <charconv>
+#include <cstdlib>
+#include <limits>
+#include <string>
+#include <string_view>
 
-bool Field::isSet() const { return m_value ? true : false; }
-void Field::setValue(char* value) { m_value = value; }
+namespace
+{
+    template <typename T>
+    T parseUnsigned(std::string_view value, T fallback = 0)
+    {
+        if (value.empty())
+            return fallback;
 
-const char* Field::asCString() const { return m_value; }
+        std::uint64_t parsed = 0;
+        const auto [ptr, ec] = std::from_chars(value.data(), value.data() + value.size(), parsed);
+        if (ec != std::errc{} || ptr != value.data() + value.size())
+            return fallback;
 
-float Field::asFloat() const { return m_value ? Util::stringToFloat(m_value) : 0.0f; }
-bool Field::asBool() const { return m_value ? Util::stringToBool(m_value) : false; }
+        if (parsed > static_cast<std::uint64_t>(std::numeric_limits<T>::max()))
+            return fallback;
 
-uint8_t Field::asUint8(bool _silencedError) const { return m_value ? Util::stringToUint8(m_value, _silencedError) : 0U; }
-int8_t Field::asInt8() const { return m_value ? Util::stringToInt8(m_value) : 0; }
+        return static_cast<T>(parsed);
+    }
 
-uint16_t Field::asUint16(bool _silencedError) const { return m_value ? Util::stringToUint16(m_value, _silencedError) : 0U; }
-int16_t Field::asInt16() const { return m_value ? Util::stringToInt16(m_value) : 0; }
+    template <typename T>
+    T parseSigned(std::string_view value, T fallback = 0)
+    {
+        if (value.empty())
+            return fallback;
 
-uint32_t Field::asUint32(bool _silencedError) const { return m_value ? Util::stringToUint32(m_value, _silencedError) : 0U; }
-int32_t Field::asInt32() const { return m_value ? Util::stringToInt32(m_value) : 0; }
+        std::int64_t parsed = 0;
+        const auto [ptr, ec] = std::from_chars(value.data(), value.data() + value.size(), parsed);
+        if (ec != std::errc{} || ptr != value.data() + value.size())
+            return fallback;
 
-uint64_t Field::asUint64(bool _silencedError) const { return m_value ? Util::stringToUint64(m_value, _silencedError) : 0U; }
-int64_t Field::asInt64() const { return m_value ? Util::stringToInt64(m_value) : 0; }
+        if (parsed < static_cast<std::int64_t>(std::numeric_limits<T>::min()) ||
+            parsed > static_cast<std::int64_t>(std::numeric_limits<T>::max()))
+            return fallback;
+
+        return static_cast<T>(parsed);
+    }
+
+    float parseFloat(std::string_view value)
+    {
+        if (value.empty())
+            return 0.0f;
+
+        std::string owned(value);
+        char* end = nullptr;
+        const float parsed = std::strtof(owned.c_str(), &end);
+        if (end != owned.c_str() + owned.size())
+            return 0.0f;
+
+        return parsed;
+    }
+
+    bool iequals(std::string_view lhs, std::string_view rhs)
+    {
+        if (lhs.size() != rhs.size())
+            return false;
+
+        for (std::size_t i = 0; i < lhs.size(); ++i)
+        {
+            const unsigned char a = static_cast<unsigned char>(lhs[i]);
+            const unsigned char b = static_cast<unsigned char>(rhs[i]);
+            if (std::tolower(a) != std::tolower(b))
+                return false;
+        }
+
+        return true;
+    }
+}
+
+bool Field::isSet() const { return m_value != nullptr; }
+
+void Field::setValue(char* value)
+{
+    m_value = value;
+    m_length = 0;
+}
+
+void Field::setValue(const char* value, std::size_t length)
+{
+    m_value = value;
+    m_length = value != nullptr ? length : 0;
+}
+
+const char* Field::asCString() const { return m_value != nullptr ? m_value : ""; }
+
+std::string_view Field::asStringView() const
+{
+    if (m_value == nullptr)
+        return {};
+
+    if (m_length == 0)
+        return std::string_view(m_value);
+
+    return std::string_view(m_value, m_length);
+}
+
+float Field::asFloat() const { return parseFloat(asStringView()); }
+
+bool Field::asBool() const
+{
+    const auto value = asStringView();
+    if (value.empty())
+        return false;
+
+    if (iequals(value, "true") || iequals(value, "yes"))
+        return true;
+
+    if (iequals(value, "false") || iequals(value, "no"))
+        return false;
+
+    return asUint32(true) != 0U;
+}
+
+uint8_t Field::asUint8(bool) const { return parseUnsigned<uint8_t>(asStringView(), 0U); }
+int8_t Field::asInt8() const { return parseSigned<int8_t>(asStringView(), 0); }
+
+uint16_t Field::asUint16(bool) const { return parseUnsigned<uint16_t>(asStringView(), 0U); }
+int16_t Field::asInt16() const { return parseSigned<int16_t>(asStringView(), 0); }
+
+uint32_t Field::asUint32(bool) const { return parseUnsigned<uint32_t>(asStringView(), 0U); }
+int32_t Field::asInt32() const { return parseSigned<int32_t>(asStringView(), 0); }
+
+uint64_t Field::asUint64(bool) const { return parseUnsigned<uint64_t>(asStringView(), 0ULL); }
+int64_t Field::asInt64() const { return parseSigned<int64_t>(asStringView(), 0LL); }
 

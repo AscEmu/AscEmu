@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "LUAEngine.hpp"
 #include "LuaGlobal.hpp"
 #include "LuaMacros.h"
-#include "Database/Database.h"
+#include "Database/Database.hpp"
 #include <cstdint>
 
 //QueryResult methods

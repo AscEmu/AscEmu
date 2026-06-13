@@ -33,7 +33,7 @@
 #include "Chat/Channel.hpp"
 #include "Chat/ChannelMgr.hpp"
 #include "Chat/ChatCommandHandler.hpp"
-#include "Database/Database.h"
+#include "Database/Database.hpp"
 #include "Database/DatabaseUpdater.hpp"
 #include "Database/Field.hpp"
 #include "Logging/Log.hpp"
