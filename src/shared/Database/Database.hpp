@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <string>
 #include <mutex>
 #include <vector>
+#include <memory>
 
 class QueryResult;
 class Database;
@@ -136,7 +137,7 @@ class SERVER_DECL QueryResult
 {
     public:
 
-        QueryResult(uint32_t fields, uint32_t rows) : mFieldCount(fields), mRowCount(rows), mCurrentRow(NULL) {}
+        QueryResult(uint32_t fields, uint32_t rows) : mFieldCount(fields), mRowCount(rows), mCurrentRow(nullptr) {}
         virtual ~QueryResult() {}
 
         virtual bool NextRow() = 0;

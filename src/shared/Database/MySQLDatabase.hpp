@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Database.hpp"
 #include <string>
 #include <mysql.h>
+#include <memory>
 
 
 struct MySQLDatabaseConnection : public DatabaseConnection
