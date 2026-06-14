@@ -939,14 +939,13 @@ bool ChatCommandHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSe
     if (pcostid)
         costid = atoi(pcostid);
 
-#if VERSION_STRING > Classic
+    // sItemExtendedCostStore does not hava values for Classic (always returning nullptr)
     auto item_extended_cost = (costid > 0) ? sItemExtendedCostStore.lookupEntry(costid) : nullptr;
     if (costid > 0 && sItemExtendedCostStore.lookupEntry(costid) == nullptr)
     {
         systemMessage(m_session, "You've entered invalid extended cost id.");
         return true;
     }
-#endif
 
     ItemProperties const* tmpItem = sMySQLStore.getItemProperties(item);
     if (tmpItem)
