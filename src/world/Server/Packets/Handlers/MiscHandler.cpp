@@ -1070,10 +1070,10 @@ void WorldSession::handleBugOpcode(WorldPacket& recv_data)
     ss << accountId << "','";
     ss << timeStamp << "','";
     ss << srlPacket.suggestion << "','";
-    ss << CharacterDatabase.EscapeString(srlPacket.type) << "','";
-    ss << CharacterDatabase.EscapeString(srlPacket.content) << "')";
+    ss << CharacterDatabase.escapeString(srlPacket.type) << "','";
+    ss << CharacterDatabase.escapeString(srlPacket.content) << "')";
 
-    CharacterDatabase.ExecuteNA(ss.str().c_str());
+    CharacterDatabase.executeNA(ss.str().c_str());
 }
 #else
 void WorldSession::handleBugOpcode(WorldPacket& recv_data)

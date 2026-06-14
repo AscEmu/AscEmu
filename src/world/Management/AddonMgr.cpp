@@ -292,7 +292,7 @@ void AddonMgr::SaveToDB()
         CharacterDatabase.execute("REPLACE INTO clientaddons "
                                   "(name, crc, banned, showinlist) "
                                   "VALUES('%s', %u, %u, %u)", 
-                                  CharacterDatabase.EscapeString(addon->name).c_str(),
+                                  CharacterDatabase.escapeString(addon->name).c_str(),
                                   addon->crc,
                                   addon->banned,
                                   addon->showinlist);
