@@ -38,7 +38,7 @@ void Sha1Hash::updateBigNumbers(BigNumber* _bn0, ...) const
 
 void Sha1Hash::initialize() const
 {
-    EVP_DigestInit(m_ctx, EVP_sha1());
+    EVP_DigestInit_ex(m_ctx, EVP_sha1(), nullptr);
 }
 
 void Sha1Hash::finalize()
