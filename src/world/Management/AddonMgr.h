@@ -16,6 +16,40 @@ This file is released under the MIT license. See README-MIT for more information
 //\TODO handle it, if possible, the same way in all versions
 #define STANDARD_ADDON_CRC 0x4C1C776D
 
+struct AddonEntry
+{
+    AddonEntry(const std::string& _name, uint8_t _enabled, uint32_t _crc, uint8_t _state, bool _crcOrPubKey)
+        : name(_name), enabled(_enabled), crc(_crc), state(_state), usePublicKeyOrCRC(_crcOrPubKey) {}
+
+    std::string name;
+    uint8_t enabled;
+    uint32_t crc;
+    uint8_t state;
+    bool usePublicKeyOrCRC;
+};
+
+struct SavedAddon
+{
+    SavedAddon(std::string const& _name, uint32_t _crc) : name(_name)
+    {
+        crc = _crc;
+    }
+
+    std::string name;
+    uint32_t crc;
+};
+
+struct BannedAddon
+{
+    uint32_t id;
+    uint8_t nameMD5[16];
+    uint8_t versionMD5[16];
+    uint32_t timestamp;
+};
+
+typedef std::list<BannedAddon> BannedAddonList;
+typedef std::list<SavedAddon> SavedAddonsList;
+
 #if VERSION_STRING < Cata
 class ByteBuffer;
 class WorldSession;
@@ -40,24 +74,7 @@ static uint8_t PublicKey[265] =
     0x79, 0xC3, 0x9A, 0x0D, 0x36, 0xEA, 0x01, 0xE0, 0xAA, 0x91, 0x20, 0x54, 0xF0, 0x72, 0xD8, 0x1E,
     0xC7, 0x89, 0xD2, 0x00, 0x00, 0x00, 0x00, 0x00
 };
-
-struct AddonEntry
-{
-    uint64_t crc;
-    std::string name;
-    bool banned;
-    bool isNew;
-    bool showinlist;
-};
-
-typedef std::map<std::string, std::unique_ptr<AddonEntry>> KnownAddons;
-typedef KnownAddons::iterator KnownAddonsItr;
-
-typedef std::map<std::string, ByteBuffer> AddonData;
-typedef AddonData::iterator AddonDataItr;
-
 #else
-
 static uint8_t PublicKey[256] =
 {
     0xC3, 0x5B, 0x50, 0x84, 0xB9, 0x3E, 0x32, 0x42, 0x8C, 0xD0, 0xC7, 0x48, 0xFA, 0x0E, 0x5D, 0x54,
@@ -97,47 +114,10 @@ static uint8_t publicKeyOrder[256] =
     0x3A, 0xF2, 0xF8, 0x0D, 0xB8, 0xA3, 0x93, 0x4F, 0x5D, 0xE5, 0xE4, 0xBA, 0xCF, 0x01, 0x42, 0x21,
     0x79, 0x60, 0x7B, 0xB3, 0xEB, 0xF1, 0x6D, 0x8E, 0x2C, 0x56, 0xC3, 0xAE, 0x57, 0x69, 0x33, 0xDD,
 };
-
-struct AddonEntry
-{
-    AddonEntry(const std::string& _name, uint8_t _enabled, uint32_t _crc, uint8_t _state, bool _crcOrPubKey)
-        : name(_name), enabled(_enabled), crc(_crc), state(_state), usePublicKeyOrCRC(_crcOrPubKey)
-    { }
-
-    std::string name;
-    uint8_t enabled;
-    uint32_t crc;
-    uint8_t state;
-    bool usePublicKeyOrCRC;
-};
-
-struct SavedAddon
-{
-    SavedAddon(std::string const& _name, uint32_t _crc) : name(_name)
-    {
-        crc = _crc;
-    }
-
-    std::string name;
-    uint32_t crc;
-};
-
-struct BannedAddon
-{
-    uint32_t id;
-    uint8_t nameMD5[16];
-    uint8_t versionMD5[16];
-    uint32_t timestamp;
-};
-
-typedef std::list<BannedAddon> BannedAddonList;
-typedef std::list<SavedAddon> SavedAddonsList;
-
 #endif
 
 class AddonMgr
 {
-#if VERSION_STRING < Cata
 private:
     AddonMgr() = default;
     ~AddonMgr() = default;
@@ -153,45 +133,21 @@ public:
     AddonMgr& operator=(AddonMgr const&) = delete;
 
     void LoadFromDB();
-    void SaveToDB();
 
-    void SendAddonInfoPacket(WorldPacket* source, uint32_t pos, WorldSession* m_session);
-    bool AppendPublicKey(WorldPacket& data, const std::string& addonName, uint32_t crc);
-
-private:
-    bool IsAddonBanned(uint64_t /*crc*/, const std::string& /*name*/);
-    bool IsAddonBanned(const std::string& name, uint64_t crc);
-    bool ShouldShowInList(const std::string& name);
-
-    KnownAddons mKnownAddons;
-    AddonData mAddonData;
-
-#else
-
-private:
-    AddonMgr() = default;
-    ~AddonMgr() = default;
+#if VERSION_STRING >= Cata
+    void SaveAddon(AddonEntry const& addon);
+#endif
 
 public:
-    static AddonMgr& getInstance();
-    void initialize();
+#if VERSION_STRING < Cata
+    void SendAddonInfoPacket(WorldPacket* source, uint32_t pos, WorldSession* m_session);
+#endif
 
-    AddonMgr(AddonMgr&&) = delete;
-    AddonMgr(AddonMgr const&) = delete;
-    AddonMgr& operator=(AddonMgr&&) = delete;
-    AddonMgr& operator=(AddonMgr const&) = delete;
-
-    void LoadFromDB();
-    void SaveAddon(AddonEntry const& addon);
     SavedAddon const* getAddonInfoForAddonName(const std::string& name);
-
     BannedAddonList const* getBannedAddonsList();
 
     SavedAddonsList mKnownAddons;
-
     BannedAddonList mBannedAddons;
-
-#endif
 };
 
 #define sAddonMgr AddonMgr::getInstance()

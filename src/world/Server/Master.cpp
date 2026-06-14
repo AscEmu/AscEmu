@@ -595,11 +595,8 @@ bool Master::run(int /*argc*/, char** /*argv*/)
     sWorld.logoutAllPlayers();
     sLogonCommHandler.finalize();
 
-#if VERSION_STRING < Cata
     sLogger.info("AddonMgr : ~AddonMgr()");
-    sAddonMgr.SaveToDB();
     sAddonMgr.finalize();
-#endif
 
     sLogger.info("AuctionMgr : ~AuctionMgr()");
     sAuctionMgr.finalize();

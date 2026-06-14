@@ -2504,8 +2504,9 @@ void WorldSession::readAddonInfoPacket(ByteBuffer &recvPacket)
 
 void WorldSession::sendAddonInfo()
 {
-#if VERSION_STRING >= Cata
-#if VERSION_STRING < Mop
+#if VERSION_STRING < Cata
+
+#elif VERSION_STRING == Cata
     WorldPacket data(SMSG_ADDON_INFO, 4);
     for (auto itr : m_addonList)
     {
@@ -2545,7 +2546,7 @@ void WorldSession::sendAddonInfo()
     }
 
     SendPacket(&data);
-#else
+#else // Mop and later
     WorldPacket data(SMSG_ADDON_INFO, 1000);
 
     std::list<BannedAddon> const* bannedAddons = sAddonMgr.getBannedAddonsList();
@@ -2593,7 +2594,6 @@ void WorldSession::sendAddonInfo()
     }
 
     SendPacket(&data);
-#endif
 #endif
 }
 
