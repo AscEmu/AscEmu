@@ -244,7 +244,7 @@ void AddonMgr::LoadFromDB()
 {
     const char* loadClientAddons = "SELECT id, name, crc, banned, showinlist FROM clientaddons";
     bool success = false;
-    auto result = CharacterDatabase.Query(&success, loadClientAddons);
+    auto result = CharacterDatabase.query(&success, loadClientAddons);
     if (!success)
     {
         sLogger.failure("Query failed: {}", loadClientAddons);
@@ -260,7 +260,7 @@ void AddonMgr::LoadFromDB()
 
     do
     {
-        field = result->Fetch();
+        field = result->fetch();
         auto ent = std::make_unique<AddonEntry>();
 
         ent->name = field[1].asCString();
@@ -269,13 +269,13 @@ void AddonMgr::LoadFromDB()
         ent->isNew = false;
 
         // To avoid crashes for stilly nubs who don't update table :P
-        if (result->GetFieldCount() == 5)
+        if (result->getFieldCount() == 5)
             ent->showinlist = field[4].asUint32() > 0;
 
         mKnownAddons.try_emplace(ent->name, std::move(ent));
 
     }
-    while(result->NextRow());
+    while(result->nextRow());
 }
 
 void AddonMgr::SaveToDB()
@@ -289,7 +289,7 @@ void AddonMgr::SaveToDB()
 
         sLogger.info("Saving new addon {}", addon->name);
 
-        CharacterDatabase.Execute("REPLACE INTO clientaddons "
+        CharacterDatabase.execute("REPLACE INTO clientaddons "
                                   "(name, crc, banned, showinlist) "
                                   "VALUES('%s', %u, %u, %u)", 
                                   CharacterDatabase.EscapeString(addon->name).c_str(),
