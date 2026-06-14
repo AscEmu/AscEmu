@@ -711,7 +711,7 @@ void LfgMgr::Leave(Player* player, Group* _group /* = nullptr*/)
     uint64_t guid = _group ? _group->GetID() : player->getGuid();
     LfgState state = GetState(guid);
 
-    sLogger.debug("Processing LFG leave request for guid {} (state {}).", guid, static_cast<uint8_t>(state));
+    sLogger.debug("{}", guid);
     switch (state)
     {
         case LFG_STATE_QUEUED:
@@ -2146,11 +2146,7 @@ std::string LfgMgr::ConcatenateGuids(LfgGuidList check)
 
 LfgState LfgMgr::GetState(uint64_t guid)
 {
-    if (HIGHGUID_TYPE_GROUP == guid)
-        sLogger.debug("LfgMgr::GetState Group guid={}", guid);
-    else
-        sLogger.debug("LfgMgr::GetState Player guid={}", guid);
-
+    sLogger.debug("{}", guid);
     if (HIGHGUID_TYPE_GROUP == guid)
         return m_Groups[guid].GetState();
     else
@@ -2159,22 +2155,20 @@ LfgState LfgMgr::GetState(uint64_t guid)
 
 uint32_t LfgMgr::GetDungeon(uint64_t guid, bool asId /*= true*/)
 {
-    sLogger.debug("Retrieving dungeon for guid {} (asId: {}).", guid, asId);
+    sLogger.debug("{} asId: {}", guid, asId);
     return m_Groups[guid].GetDungeon(asId);
 }
 
 uint8_t LfgMgr::GetRoles(uint64_t guid)
 {
-    uint8_t roles = m_Players[guid].GetRoles();
-    sLogger.debug("Retrieved LFG roles {} for guid {}.", roles, guid);
-    return roles;
+    sLogger.debug("{}", guid);
+    return m_Players[guid].GetRoles();
 }
 
 const std::string& LfgMgr::GetComment(uint64_t guid)
 {
-    const auto& comment = m_Players[guid].GetComment();
-    sLogger.debug("Retrieved LFG comment for guid {}.", guid);
-    return comment;
+    sLogger.debug("{}", guid);
+    return m_Players[guid].GetComment();
 }
 
 bool LfgMgr::IsTeleported(uint64_t pguid)
@@ -2189,45 +2183,43 @@ bool LfgMgr::IsTeleported(uint64_t pguid)
 
 const LfgDungeonSet& LfgMgr::GetSelectedDungeons(uint64_t guid)
 {
-    const auto& dungeons = m_Players[guid].GetSelectedDungeons();
-    sLogger.debug("Retrieved {} selected dungeon(s) for guid {}.", dungeons.size(), guid);
-    return dungeons;
+    sLogger.debug("{}", guid);
+    return m_Players[guid].GetSelectedDungeons();
 }
 
 const LfgLockMap& LfgMgr::GetLockedDungeons(uint64_t guid)
 {
-    const auto& locks = m_Players[guid].GetLockedDungeons();
-    sLogger.debug("Retrieved {} locked dungeon(s) for guid {}.", locks.size(), guid);
-    return locks;
+    sLogger.debug("{}", guid);
+    return m_Players[guid].GetLockedDungeons();
 }
 
 uint8_t LfgMgr::GetKicksLeft(uint64_t guid)
 {
-    sLogger.debug("Retrieving remaining vote kicks for guid {}.", guid);
+    sLogger.debug("{}", guid);
     return m_Groups[guid].GetKicksLeft();
 }
 
 uint8_t LfgMgr::GetVotesNeeded(uint64_t guid)
 {
-    sLogger.debug("Retrieving required vote count for guid {}.", guid);
+    sLogger.debug("{}", guid);
     return m_Groups[guid].GetVotesNeeded();
 }
 
 void LfgMgr::RestoreState(uint64_t guid)
 {
-    sLogger.debug("Restoring LFG state for guid {}.", guid);
+    sLogger.debug("{}", guid);
     m_Groups[guid].RestoreState();
 }
 
 void LfgMgr::ClearState(uint64_t guid)
 {
-    sLogger.debug("Clearing LFG state for guid {}.", guid);
+    sLogger.debug("{}", guid);
     m_Players[guid].ClearState();
 }
 
 void LfgMgr::SetState(uint64_t guid, LfgState state)
 {
-    sLogger.debug("Setting LFG state {} for guid {}.", static_cast<uint8_t>(state), guid);
+    sLogger.debug("{} state {}", guid, state);
 
     WoWGuid wowGuid;
     wowGuid.init(guid);
@@ -2240,43 +2232,43 @@ void LfgMgr::SetState(uint64_t guid, LfgState state)
 
 void LfgMgr::SetDungeon(uint64_t guid, uint32_t dungeon)
 {
-    sLogger.debug("Setting dungeon {} for guid {}.", dungeon, guid);
+    sLogger.debug("{} dungeon {}", guid, dungeon);
     m_Groups[guid].SetDungeon(dungeon);
 }
 
 void LfgMgr::SetRoles(uint64_t guid, uint8_t roles)
 {
-    sLogger.debug("Setting roles {} for guid {}.", roles, guid);
+    sLogger.debug("{} roles: {}", guid, roles);
     m_Players[guid].SetRoles(roles);
 }
 
 void LfgMgr::SetComment(uint64_t guid, const std::string& comment)
 {
-    sLogger.debug("Setting LFG comment for guid {}.", guid);
+    sLogger.debug("{} comment: {}", guid, comment);
     m_Players[guid].SetComment(comment);
 }
 
 void LfgMgr::SetSelectedDungeons(uint64_t guid, const LfgDungeonSet& dungeons)
 {
-    sLogger.debug("Setting {} selected dungeon(s) for guid {}.", dungeons.size(), guid);
+    sLogger.debug("{}", guid);
     m_Players[guid].SetSelectedDungeons(dungeons);
 }
 
 void LfgMgr::SetLockedDungeons(uint64_t guid, const LfgLockMap& lock)
 {
-    sLogger.debug("Setting {} locked dungeon(s) for guid {}.", lock.size(), guid);
+    sLogger.debug("{}", guid);
     m_Players[guid].SetLockedDungeons(lock);
 }
 
 void LfgMgr::DecreaseKicksLeft(uint64_t guid)
 {
-    sLogger.debug("Decreasing remaining vote kicks for guid {}.", guid);
+    sLogger.debug("{}", guid);
     m_Groups[guid].DecreaseKicksLeft();
 }
 
 void LfgMgr::RemovePlayerData(uint64_t guid)
 {
-    sLogger.debug("Removing LFG player data for guid {}.", guid);
+    sLogger.debug("{}", guid);
     LfgPlayerDataMap::iterator it = m_Players.find(guid);
     if (it != m_Players.end())
         m_Players.erase(it);
@@ -2284,7 +2276,7 @@ void LfgMgr::RemovePlayerData(uint64_t guid)
 
 void LfgMgr::RemoveGroupData(uint64_t guid)
 {
-    sLogger.debug("Removing LFG group data for guid {}.", guid);
+    sLogger.debug("{}", guid);
     LfgGroupDataMap::iterator it = m_Groups.find(guid);
     if (it != m_Groups.end())
         m_Groups.erase(it);
