@@ -11,11 +11,9 @@
 - [] Server startup.
 - [] Log into world.
 
-<!--
-**Multiversion Ingame Tests Performed:**
+**Ingame Tests Performed (at least one):**
 - [] Classic
 - [] TBC
 - [] WotLK
 - [] Cata
 - [] Mop
--->
