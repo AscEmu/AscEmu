@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Script/ScriptMgr.hpp"
 #include <set>
 #include <sstream>
+#include <memory>
 
 
 #ifdef DEBUG
@@ -254,6 +255,7 @@ public:
     void PushSpell(Spell* sp, lua_State* L = nullptr);
     void PushSqlField(Field* field, lua_State* L = nullptr);
     void PushSqlResult(QueryResult* res, lua_State* L = nullptr);
+    void PushSqlResult(std::unique_ptr<QueryResult> res, lua_State* L = nullptr);
     void PushAura(Aura* aura, lua_State* L = nullptr);
 
     void PUSH_BOOL(bool bewl);

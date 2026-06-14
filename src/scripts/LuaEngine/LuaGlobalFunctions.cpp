@@ -141,55 +141,61 @@ int LuaGlobalFunctions::logcol(lua_State* L)
 
 int LuaGlobalFunctions::WorldDBQuery(lua_State* L)
 {
-    // TODO: possibly needs rewrite of LuaEngine to handle unique_ptr<T> -Appled
-
-    /*const char* qStr = luaL_checkstring(L, 1);
-    //uint32_t fID = static_cast<uint32_t>(luaL_optinteger(L, 2, 0)); //column
-    //uint32_t rID = static_cast<uint32_t>(luaL_optinteger(L, 3, 0)); //row
-    if (!qStr)
+    const char* qStr = luaL_checkstring(L, 1);
+    if (qStr == nullptr)
         return 0;
+
     auto result = WorldDatabase.query(qStr);
+    if (result == nullptr)
+        return 0;
+
     lua_settop(L, 0);
-    PUSH_SQLRESULT(L, result);*/
+    PUSH_SQLRESULT(L, std::move(result));
     return 1;
 }
 
 int LuaGlobalFunctions::CharDBQuery(lua_State* L)
 {
-    // TODO: possibly needs rewrite of LuaEngine to handle unique_ptr<T> -Appled
-
-    /*const char* qStr = luaL_checkstring(L, 1);
-    //uint32_t fID = static_cast<uint32_t>(luaL_optinteger(L, 2, 0)); //column
-    //uint32_t rID = static_cast<uint32_t>(luaL_optinteger(L, 3, 0)); //row
-    if (!qStr)
+    const char* qStr = luaL_checkstring(L, 1);
+    if (qStr == nullptr)
         return 0;
-    auto result = CharacterDatabase.Query(qStr);
+
+    auto result = CharacterDatabase.query(qStr);
+    if (result == nullptr)
+        return 0;
+
     lua_settop(L, 0);
-    PUSH_SQLRESULT(L, result);*/
+    PUSH_SQLRESULT(L, std::move(result));
     return 1;
 }
 
 int LuaGlobalFunctions::WorldDBQueryTable(lua_State* L)
 {
-    // TODO: possibly needs rewrite of LuaEngine to handle unique_ptr<T> -Appled
+    const char* qStr = luaL_checkstring(L, 1);
+    if (qStr == nullptr)
+        return 0;
 
-    /*const char* qStr = luaL_checkstring(L, 1);
-    lua_newtable(L);
-    if (!qStr) return 0;
     auto result = WorldDatabase.query(qStr);
-    PUSH_SQLRESULT(L, result);*/
+    if (result == nullptr)
+        return 0;
+
+    lua_newtable(L);
+    PUSH_SQLRESULT(L, std::move(result));
     return 1;
 }
 
 int LuaGlobalFunctions::CharDBQueryTable(lua_State* L)
 {
-    // TODO: possibly needs rewrite of LuaEngine to handle unique_ptr<T> -Appled
+    const char* qStr = luaL_checkstring(L, 1);
+    if (qStr == nullptr)
+        return 0;
 
-    /*const char* qStr = luaL_checkstring(L, 1);
+    auto result = CharacterDatabase.query(qStr);
+    if (result == nullptr)
+        return 0;
+
     lua_newtable(L);
-    if (!qStr) return 0;
-    auto result = CharacterDatabase.Query(qStr);
-    PUSH_SQLRESULT(L, result);*/
+    PUSH_SQLRESULT(L, std::move(result));
     return 1;
 }
 

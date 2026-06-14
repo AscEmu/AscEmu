@@ -339,6 +339,11 @@ void LuaEngine::PushSqlResult(QueryResult* res, lua_State* L)
         ArcLuna<QueryResult>::push(L, res, true);
 }
 
+void LuaEngine::PushSqlResult(std::unique_ptr<QueryResult> res, lua_State* L)
+{
+    PushSqlResult(res.release(), L);
+}
+
 void LuaEngine::PushAura(Aura* aura, lua_State* L)
 {
     if (L == nullptr)
