@@ -14,8 +14,8 @@
 - MySQL 8.0+
 
 ### 📃 Compiler
-- GCC 15+
-- Clang 21+
+- GCC 13+
+- Clang 17+
 - MSVC 2022
 
 ### 📦 Build Tools

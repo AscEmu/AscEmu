@@ -1,8 +1,7 @@
 # Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 
-# Clang >= 14.0.6
-set(CLANG_SUPPORTS_VERSION 14.0.6)
-# TODO change to 18 when Debian 13 is released
+# Clang >= 17.0.0
+set(CLANG_SUPPORTS_VERSION 17.0.0)
 
 if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS CLANG_SUPPORTS_VERSION)
     message(FATAL_ERROR "AscEmu requires version ${CLANG_SUPPORTS_VERSION} to build but found ${CMAKE_CXX_COMPILER_VERSION}")

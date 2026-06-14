@@ -1,8 +1,7 @@
 # Copyright (c) 2014-2026 AscEmu Team <http://www.ascemu.org>
 
-# GCC >= 12.2.0
-set(GCC_SUPPORTS_VERSION 12.2.0)
-# TODO change to 13 when Debian 13 is released
+# GCC >= 13.3.0
+set(GCC_SUPPORTS_VERSION 13.3.0)
 
 if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS GCC_SUPPORTS_VERSION)
     message(FATAL_ERROR "AscEmu requires version ${GCC_SUPPORTS_VERSION} to build but found ${CMAKE_CXX_COMPILER_VERSION}")
