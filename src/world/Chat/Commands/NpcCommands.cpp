@@ -950,7 +950,7 @@ bool ChatCommandHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSe
     ItemProperties const* tmpItem = sMySQLStore.getItemProperties(item);
     if (tmpItem)
     {
-        WorldDatabase.Execute("INSERT INTO vendors VALUES (%u, %u, %u, 0, 0, %u", selected_creature->getEntry(), item, amount, costid);
+        WorldDatabase.execute("INSERT INTO vendors VALUES (%u, %u, %u, 0, 0, %u", selected_creature->getEntry(), item, amount, costid);
 
         selected_creature->AddVendorItem(item, amount, item_extended_cost);
 
