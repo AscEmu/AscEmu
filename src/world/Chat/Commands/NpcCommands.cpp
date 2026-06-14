@@ -901,7 +901,6 @@ bool ChatCommandHandler::HandlePossessCommand(const char* /*args*/, WorldSession
 //.npc vendoradditem
 bool ChatCommandHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* m_session)
 {
-#if VERSION_STRING < Cata
     char* pitem = strtok(const_cast<char*>(args), " ");
     if (!pitem)
         return false;
@@ -940,12 +939,14 @@ bool ChatCommandHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSe
     if (pcostid)
         costid = atoi(pcostid);
 
+#if VERSION_STRING > Classic
     auto item_extended_cost = (costid > 0) ? sItemExtendedCostStore.lookupEntry(costid) : nullptr;
     if (costid > 0 && sItemExtendedCostStore.lookupEntry(costid) == nullptr)
     {
         systemMessage(m_session, "You've entered invalid extended cost id.");
         return true;
     }
+#endif
 
     ItemProperties const* tmpItem = sMySQLStore.getItemProperties(item);
     if (tmpItem)
@@ -965,18 +966,7 @@ bool ChatCommandHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSe
     }
 
     sGMLog.writefromsession(m_session, "added item %u to vendor %u", item, selected_creature->getEntry());
-#else
-    char* pitem = strtok((char*)args, " ");
-    if (!pitem)
-        return false;
 
-    uint64_t guid = m_session->GetPlayer()->getTargetGuid();
-    if (guid == 0)
-    {
-        systemMessage(m_session, "No selection.");
-        return true;
-    }
-#endif
     return true;
 }
 

@@ -169,6 +169,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include <Server/Packets/MsgMoveTeleport.h>
 #include <Server/Packets/MsgMoveTeleportAck.h>
 
+#include <sstream>
+#include <vector>
+
 using namespace AscEmu::Packets;
 using namespace MapManagement::AreaManagement;
 using namespace InstanceDifficulty;
@@ -2727,15 +2730,40 @@ void Player::changeLanguage(uint64_t guid, uint8_t race)
         return 0;
     };
 
-#if VERSION_STRING < TBC
-    CharacterDatabase.execute("DELETE FROM `playerspells` WHERE GUID = '%u' AND SpellID IN ('%u', '%u', '%u', '%u', '%u','%u', '%u', '%u', '%u');", static_cast<uint32_t>(guid), getSpellIdForLanguage(SKILL_LANG_ORCISH), getSpellIdForLanguage(SKILL_LANG_TAURAHE), getSpellIdForLanguage(SKILL_LANG_TROLL), getSpellIdForLanguage(SKILL_LANG_GUTTERSPEAK), getSpellIdForLanguage(SKILL_LANG_THALASSIAN), getSpellIdForLanguage(SKILL_LANG_COMMON), getSpellIdForLanguage(SKILL_LANG_DARNASSIAN), getSpellIdForLanguage(SKILL_LANG_DWARVEN), getSpellIdForLanguage(SKILL_LANG_GNOMISH));
-#elif VERSION_STRING < Cata
-    CharacterDatabase.execute("DELETE FROM `playerspells` WHERE GUID = '%u' AND SpellID IN ('%u', '%u', '%u', '%u', '%u','%u', '%u', '%u', '%u', '%u');", static_cast<uint32_t>(guid), getSpellIdForLanguage(SKILL_LANG_ORCISH), getSpellIdForLanguage(SKILL_LANG_TAURAHE), getSpellIdForLanguage(SKILL_LANG_TROLL), getSpellIdForLanguage(SKILL_LANG_GUTTERSPEAK), getSpellIdForLanguage(SKILL_LANG_THALASSIAN), getSpellIdForLanguage(SKILL_LANG_COMMON), getSpellIdForLanguage(SKILL_LANG_DARNASSIAN), getSpellIdForLanguage(SKILL_LANG_DRAENEI), getSpellIdForLanguage(SKILL_LANG_DWARVEN), getSpellIdForLanguage(SKILL_LANG_GNOMISH));
-#elif VERSION_STRING == Cata
-    CharacterDatabase.execute("DELETE FROM `playerspells` WHERE GUID = '%u' AND SpellID IN ('%u', '%u', '%u', '%u', '%u','%u', '%u', '%u', '%u', '%u');", static_cast<uint32_t>(guid), getSpellIdForLanguage(SKILL_LANG_ORCISH), getSpellIdForLanguage(SKILL_LANG_TAURAHE), getSpellIdForLanguage(SKILL_LANG_TROLL), getSpellIdForLanguage(SKILL_LANG_GUTTERSPEAK), getSpellIdForLanguage(SKILL_LANG_THALASSIAN), getSpellIdForLanguage(SKILL_LANG_COMMON), getSpellIdForLanguage(SKILL_LANG_DARNASSIAN), getSpellIdForLanguage(SKILL_LANG_DRAENEI), getSpellIdForLanguage(SKILL_LANG_DWARVEN), getSpellIdForLanguage(SKILL_LANG_GNOMISH), getSpellIdForLanguage(SKILL_LANG_GILNEAN), getSpellIdForLanguage(SKILL_LANG_GOBLIN));
-#elif VERSION_STRING == Mop
-    CharacterDatabase.execute("DELETE FROM `playerspells` WHERE GUID = '%u' AND SpellID IN ('%u', '%u', '%u', '%u', '%u','%u', '%u', '%u', '%u', '%u');", static_cast<uint32_t>(guid), getSpellIdForLanguage(SKILL_LANG_ORCISH), getSpellIdForLanguage(SKILL_LANG_TAURAHE), getSpellIdForLanguage(SKILL_LANG_TROLL), getSpellIdForLanguage(SKILL_LANG_GUTTERSPEAK), getSpellIdForLanguage(SKILL_LANG_THALASSIAN), getSpellIdForLanguage(SKILL_LANG_COMMON), getSpellIdForLanguage(SKILL_LANG_DARNASSIAN), getSpellIdForLanguage(SKILL_LANG_DRAENEI), getSpellIdForLanguage(SKILL_LANG_DWARVEN), getSpellIdForLanguage(SKILL_LANG_GNOMISH), getSpellIdForLanguage(SKILL_LANG_GILNEAN), getSpellIdForLanguage(SKILL_LANG_GOBLIN));
+    std::vector<uint32_t> languageSpellIds =
+    {
+        getSpellIdForLanguage(SKILL_LANG_ORCISH),
+        getSpellIdForLanguage(SKILL_LANG_TAURAHE),
+        getSpellIdForLanguage(SKILL_LANG_TROLL),
+        getSpellIdForLanguage(SKILL_LANG_GUTTERSPEAK),
+        getSpellIdForLanguage(SKILL_LANG_THALASSIAN),
+        getSpellIdForLanguage(SKILL_LANG_COMMON),
+        getSpellIdForLanguage(SKILL_LANG_DARNASSIAN),
+
+#if VERSION_STRING >= TBC
+        getSpellIdForLanguage(SKILL_LANG_DRAENEI),
 #endif
+
+        getSpellIdForLanguage(SKILL_LANG_DWARVEN),
+        getSpellIdForLanguage(SKILL_LANG_GNOMISH),
+
+#if VERSION_STRING >= Cata
+        getSpellIdForLanguage(SKILL_LANG_GILNEAN),
+        getSpellIdForLanguage(SKILL_LANG_GOBLIN),
+#endif
+    };
+
+    std::ostringstream spellIdList;
+    for (size_t i = 0; i < languageSpellIds.size(); ++i)
+    {
+        if (i != 0)
+            spellIdList << ", ";
+
+        spellIdList << languageSpellIds[i];
+    }
+
+    CharacterDatabase.execute("DELETE FROM `playerspells` WHERE GUID = '%u' AND SpellID IN (%s);", static_cast<uint32_t>(guid), spellIdList.str().c_str());
+    
     switch (race)
     {
         case RACE_DWARF:
