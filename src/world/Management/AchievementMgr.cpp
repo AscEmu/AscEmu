@@ -52,20 +52,20 @@ void AchievementMgr::loadFromDb(QueryResult* _achievementResult, QueryResult* _c
     {
         do
         {
-            Field* field = _achievementResult->Fetch();
+            Field* field = _achievementResult->fetch();
             uint32_t id = field[0].asUint32();
             if (m_completedAchievements[id] == 0)
                 m_completedAchievements[id] = field[1].asUint32();
             else
                 sLogger.failure("Duplicate completed achievement {} for player {}, skipping", id, m_player->getGuidLow());
-        } while (_achievementResult->NextRow());
+        } while (_achievementResult->nextRow());
     }
 
     if (_criteriaResult)
     {
         do
         {
-            Field* field = _criteriaResult->Fetch();
+            Field* field = _criteriaResult->fetch();
             uint32_t progress_id = field[0].asUint32();
             if (m_criteriaProgress[progress_id] == nullptr)
             {
@@ -74,7 +74,7 @@ void AchievementMgr::loadFromDb(QueryResult* _achievementResult, QueryResult* _c
             else
                 sLogger.failure("Duplicate criteria progress {} for player {}, skipping", progress_id, m_player->getGuidLow());
 
-        } while (_criteriaResult->NextRow());
+        } while (_criteriaResult->nextRow());
     }
 }
 
@@ -89,9 +89,9 @@ void AchievementMgr::saveToDb(QueryBuffer* _buffer)
         ss << ";";
 
         if (_buffer == nullptr)
-            CharacterDatabase.ExecuteNA(ss.str().c_str());
+            CharacterDatabase.executeNA(ss.str().c_str());
         else
-            _buffer->AddQueryNA(ss.str().c_str());
+            _buffer->addQueryNA(ss.str().c_str());
 
         ss.rdbuf()->str("");
 
@@ -103,9 +103,9 @@ void AchievementMgr::saveToDb(QueryBuffer* _buffer)
             {
                 // SQL query length is limited to 16384 characters
                 if (_buffer == nullptr)
-                    CharacterDatabase.ExecuteNA(ss.str().c_str());
+                    CharacterDatabase.executeNA(ss.str().c_str());
                 else
-                    _buffer->AddQueryNA(ss.str().c_str());
+                    _buffer->addQueryNA(ss.str().c_str());
 
                 ss.str("");
                 ss << "INSERT INTO character_achievement VALUES ";
@@ -121,9 +121,9 @@ void AchievementMgr::saveToDb(QueryBuffer* _buffer)
         }
 
         if (_buffer == nullptr)
-            CharacterDatabase.ExecuteNA(ss.str().c_str());
+            CharacterDatabase.executeNA(ss.str().c_str());
         else
-            _buffer->AddQueryNA(ss.str().c_str());
+            _buffer->addQueryNA(ss.str().c_str());
     }
 
     if (!m_criteriaProgress.empty())
@@ -135,9 +135,9 @@ void AchievementMgr::saveToDb(QueryBuffer* _buffer)
         ss << ";";
 
         if (_buffer == nullptr)
-            CharacterDatabase.ExecuteNA(ss.str().c_str());
+            CharacterDatabase.executeNA(ss.str().c_str());
         else
-            _buffer->AddQueryNA(ss.str().c_str());
+            _buffer->addQueryNA(ss.str().c_str());
 
         ss.rdbuf()->str("");
 
@@ -153,9 +153,9 @@ void AchievementMgr::saveToDb(QueryBuffer* _buffer)
                 {
                     // SQL query length is limited to 16384 characters
                     if (_buffer == nullptr)
-                        CharacterDatabase.ExecuteNA(ss.str().c_str());
+                        CharacterDatabase.executeNA(ss.str().c_str());
                     else
-                        _buffer->AddQueryNA(ss.str().c_str());
+                        _buffer->addQueryNA(ss.str().c_str());
                     ss.str("");
                     ss << "INSERT INTO character_achievement_progress VALUES ";
                     first = true;
@@ -174,9 +174,9 @@ void AchievementMgr::saveToDb(QueryBuffer* _buffer)
         {
             // don't execute query if there's no entries to save
             if (_buffer == nullptr)
-                CharacterDatabase.ExecuteNA(ss.str().c_str());
+                CharacterDatabase.executeNA(ss.str().c_str());
             else
-                _buffer->AddQueryNA(ss.str().c_str());
+                _buffer->addQueryNA(ss.str().c_str());
         }
     }
 }
@@ -1129,14 +1129,14 @@ void AchievementMgr::gmResetCriteria(uint32_t _criteriaId, bool _finishAll/* = f
         }
 
         m_criteriaProgress.clear();
-        CharacterDatabase.Execute("DELETE FROM character_achievement_progress WHERE guid = %u", m_player->getGuidLow());
+        CharacterDatabase.execute("DELETE FROM character_achievement_progress WHERE guid = %u", m_player->getGuidLow());
     }
     else
     {
         getPlayer()->sendPacket(SmsgCriteriaDeleted(_criteriaId).serialise().get());
 
         m_criteriaProgress.erase(_criteriaId);
-        CharacterDatabase.Execute("DELETE FROM character_achievement_progress WHERE guid = %u AND criteria = %u", m_player->getGuidLow(), static_cast<uint32_t>(_criteriaId));
+        CharacterDatabase.execute("DELETE FROM character_achievement_progress WHERE guid = %u AND criteria = %u", m_player->getGuidLow(), static_cast<uint32_t>(_criteriaId));
     }
 
     updateAllAchievementCriteria();
@@ -1759,14 +1759,14 @@ void AchievementMgr::gmResetAchievement(uint32_t _achievementId, bool _finishAll
             getPlayer()->sendPacket(SmsgAchievementDeleted(completedAchievement.first).serialise().get());
 
         m_completedAchievements.clear();
-        CharacterDatabase.Execute("DELETE FROM character_achievement WHERE guid = %u", m_player->getGuidLow());
+        CharacterDatabase.execute("DELETE FROM character_achievement WHERE guid = %u", m_player->getGuidLow());
     }
     else
     {
         getPlayer()->sendPacket(SmsgAchievementDeleted(_achievementId).serialise().get());
 
         m_completedAchievements.erase(_achievementId);
-        CharacterDatabase.Execute("DELETE FROM character_achievement WHERE guid = %u AND achievement = %u", m_player->getGuidLow(), static_cast<uint32_t>(_achievementId));
+        CharacterDatabase.execute("DELETE FROM character_achievement WHERE guid = %u AND achievement = %u", m_player->getGuidLow(), static_cast<uint32_t>(_achievementId));
     }
 }
 
@@ -1851,10 +1851,10 @@ bool AchievementMgr::showCompletedAchievement(uint32_t _achievementId, const Pla
         case 1427: // Realm First! Grand Master Tailor
         case 1463: // Realm First! Northrend Vanguard: First player on the realm to gain exalted reputation with the Argent Crusade, Wyrmrest Accord, Kirin Tor and Knights of the Ebon Blade.
         {
-            auto achievementResult = CharacterDatabase.Query("SELECT guid FROM character_achievement WHERE achievement=%u ORDER BY date LIMIT 1", _achievementId);
+            auto achievementResult = CharacterDatabase.query("SELECT guid FROM character_achievement WHERE achievement=%u ORDER BY date LIMIT 1", _achievementId);
             if (achievementResult != nullptr)
             {
-                Field* field = achievementResult->Fetch();
+                Field* field = achievementResult->fetch();
                 if (field != nullptr)
                 {
                     // somebody has this Realm First achievement... is it this player?

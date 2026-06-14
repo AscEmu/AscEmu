@@ -57,7 +57,7 @@ GameEventState GameEvent::OnStateChange(GameEventState pOldState, GameEventState
 
     // Save new state to DB before calling handler
     const char* updateQuery = "REPLACE INTO gameevent_save (event_entry, state, next_start) VALUES (%u, %u, %u)";
-    CharacterDatabase.Execute(updateQuery, event_id, pNewState, nextstart);
+    CharacterDatabase.execute(updateQuery, event_id, pNewState, nextstart);
 
     bool shouldStop = true;
     bool shouldStart = true;

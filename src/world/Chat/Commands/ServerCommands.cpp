@@ -67,8 +67,8 @@ bool ChatCommandHandler::HandleServerInfoCommand(const char* /*args*/, WorldSess
     greenSystemMessage(m_session, "Average Latency: |r{}ms", online_count > 0 ? (latency_avg / online_count) : latency_avg);
     greenSystemMessage(m_session, "CPU Usage: {}%", sWorld.getCPUUsage());
     greenSystemMessage(m_session, "RAM Usage: {} MB", sWorld.getRAMUsage());
-    greenSystemMessage(m_session, "SQL Query Cache Size (World): |r{} queries delayed", WorldDatabase.GetAeQueuedTaskCount());
-    greenSystemMessage(m_session, "SQL Query Cache Size (Character): |r{} queries delayed", CharacterDatabase.GetAeQueuedTaskCount());
+    greenSystemMessage(m_session, "SQL Query Cache Size (World): |r{} queries delayed", WorldDatabase.getQueuedTaskCount());
+    greenSystemMessage(m_session, "SQL Query Cache Size (Character): |r{} queries delayed", CharacterDatabase.getQueuedTaskCount());
     greenSystemMessage(m_session, "Socket Count: |r{}", sSocketMgr.GetSocketCount());
 
     return true;

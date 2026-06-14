@@ -62,18 +62,18 @@ void WorldSession::handleGMSurveySubmitOpcode(WorldPacket& recvPacket)
     if (!srlPacket.deserialise(recvPacket))
         return;
 
-    auto result = CharacterDatabase.Query("SELECT MAX(survey_id) FROM gm_survey");
+    auto result = CharacterDatabase.query("SELECT MAX(survey_id) FROM gm_survey");
     if (result == nullptr)
         return;
 
-    uint32_t next_survey_id = result->Fetch()[0].asUint32() + 1;
+    uint32_t next_survey_id = result->fetch()[0].asUint32() + 1;
 
     for (auto subSurvey : srlPacket.subSurvey)
-        CharacterDatabase.Execute("INSERT INTO gm_survey_answers VALUES(%u , %u , %u)",
+        CharacterDatabase.execute("INSERT INTO gm_survey_answers VALUES(%u , %u , %u)",
             next_survey_id, subSurvey.subSurveyId, subSurvey.answerId);
 
-    CharacterDatabase.Execute("INSERT INTO gm_survey VALUES (%u, %u, %u, \'%s\', UNIX_TIMESTAMP(NOW()))",
-        next_survey_id, _player->getGuidLow(), srlPacket.mainSurveyId, CharacterDatabase.EscapeString(srlPacket.mainComment).c_str());
+    CharacterDatabase.execute("INSERT INTO gm_survey VALUES (%u, %u, %u, \'%s\', UNIX_TIMESTAMP(NOW()))",
+        next_survey_id, _player->getGuidLow(), srlPacket.mainSurveyId, CharacterDatabase.escapeString(srlPacket.mainComment).c_str());
 
     sLogger.debug("Player {} has submitted the gm suvey {} successfully.",
         _player->getName(), next_survey_id);
@@ -88,7 +88,7 @@ void WorldSession::handleReportLag(WorldPacket& recvPacket)
 
     if (_player != nullptr)
     {
-        CharacterDatabase.Execute("INSERT INTO lag_reports (player, account, lag_type, map_id, position_x, position_y, position_z) VALUES(%u, %u, %u, %u, %f, %f, %f)",
+        CharacterDatabase.execute("INSERT INTO lag_reports (player, account, lag_type, map_id, position_x, position_y, position_z) VALUES(%u, %u, %u, %u, %f, %f, %f)",
             _player->getGuidLow(), _accountId, srlPacket.lagType, srlPacket.mapId, srlPacket.location.x, srlPacket.location.y, srlPacket.location.z);
 
         sLogger.debug("Player {} has reported a lagreport with Type: {} on Map: {}", _player->getName(), srlPacket.lagType, srlPacket.mapId);

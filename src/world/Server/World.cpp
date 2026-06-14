@@ -792,8 +792,8 @@ bool World::setInitialWorldSettings()
 
 void World::resetCharacterLoginBannState()
 {
-    CharacterDatabase.WaitExecute("UPDATE characters SET online = 0 WHERE online = 1");
-    CharacterDatabase.WaitExecute("UPDATE characters SET banned= 0,banReason='' WHERE banned > 100 AND banned < %u", UNIXTIME);
+    CharacterDatabase.waitExecute("UPDATE characters SET online = 0 WHERE online = 1");
+    CharacterDatabase.waitExecute("UPDATE characters SET banned= 0,banReason='' WHERE banned > 100 AND banned < %u", UNIXTIME);
 }
 
 bool World::loadDbcDb2Stores()

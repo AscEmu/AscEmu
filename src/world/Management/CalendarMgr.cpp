@@ -22,7 +22,7 @@ void CalendarMgr::loadFromDB()
     {
         const char* loadCalendarEvents = "SELECT entry, creator, title, description, type, dungeon, date, flags FROM calendar_events";
         bool success = false;
-        auto result = CharacterDatabase.Query(&success, loadCalendarEvents);
+        auto result = CharacterDatabase.query(&success, loadCalendarEvents);
         if (!success)
         {
             sLogger.failure("Query failed: {}", loadCalendarEvents);
@@ -33,7 +33,7 @@ void CalendarMgr::loadFromDB()
             uint32_t count = 0;
             do
             {
-                Field* fields = result->Fetch();
+                Field* fields = result->fetch();
 
                 uint64_t entry = fields[0].asUint32();
                 uint32_t creator = fields[1].asUint32();
@@ -50,7 +50,7 @@ void CalendarMgr::loadFromDB()
 
                 ++count;
             }
-            while (result->NextRow());
+            while (result->nextRow());
 
             sLogger.info("CalendarMgr : {} calendar events loaded from table calendar_events", count);
         }
@@ -60,7 +60,7 @@ void CalendarMgr::loadFromDB()
     {
         const char* loadCalendarInvites = "SELECT `id`, `event`, `invitee`, `sender`, `status`, `statustime`, `rank`, `text` FROM `calendar_invites`";
         bool success = false;
-        auto result = CharacterDatabase.Query(&success, loadCalendarInvites);
+        auto result = CharacterDatabase.query(&success, loadCalendarInvites);
         if (!success)
         {
             sLogger.failure("Query failed: {}", loadCalendarInvites);
@@ -71,7 +71,7 @@ void CalendarMgr::loadFromDB()
             uint32_t count = 0;
             do
             {
-                Field* fields = result->Fetch();
+                Field* fields = result->fetch();
 
                 uint32_t invite_id = fields[0].asUint32();       // unique invite id
                 uint32_t event = fields[1].asUint32();           // entry of the calendar event
@@ -86,7 +86,7 @@ void CalendarMgr::loadFromDB()
 
                 ++count;
             }
-            while (result->NextRow());
+            while (result->nextRow());
             sLogger.info("CalendarMgr : Loaded {} calendar invites", count);
         }
     }

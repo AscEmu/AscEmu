@@ -102,13 +102,13 @@ void GuildMgr::loadGuildDataFromDB()
 
 #if VERSION_STRING < Cata
     //                                                     0          1            2             3              4              5              6
-        auto result = CharacterDatabase.Query("SELECT g.guildId, g.guildName, g.leaderGuid, g.emblemStyle, g.emblemColor, g.borderStyle, g.borderColor, "
+        auto result = CharacterDatabase.query("SELECT g.guildId, g.guildName, g.leaderGuid, g.emblemStyle, g.emblemColor, g.borderStyle, g.borderColor, "
         //           7               8          9          10            11            12
         "g.backgroundColor, g.guildInfo, g.motd, g.createdate, g.bankBalance, COUNT(gbt.guildId) "
         "FROM guilds g LEFT JOIN guild_bank_tabs gbt ON g.guildId = gbt.guildId GROUP BY g.guildId ORDER BY g.guildId ASC");
 #else
     //                                                     0          1            2             3              4              5              6
-        auto result = CharacterDatabase.Query("SELECT g.guildId, g.guildName, g.leaderGuid, g.emblemStyle, g.emblemColor, g.borderStyle, g.borderColor, "
+        auto result = CharacterDatabase.query("SELECT g.guildId, g.guildName, g.leaderGuid, g.emblemStyle, g.emblemColor, g.borderStyle, g.borderColor, "
         //           7               8          9          10            11            12              13                 4                   15
         "g.backgroundColor, g.guildInfo, g.motd, g.createdate, g.bankBalance, g.guildLevel, g.guildExperience, g.todayExperience, COUNT(gbt.guildId) "
         "FROM guilds g LEFT JOIN guild_bank_tabs gbt ON g.guildId = gbt.guildId GROUP BY g.guildId ORDER BY g.guildId ASC");
@@ -122,7 +122,7 @@ void GuildMgr::loadGuildDataFromDB()
             uint32_t count = 0;
             do
             {
-                Field* fields = result->Fetch();
+                Field* fields = result->fetch();
                 auto guild = std::make_unique<Guild>();
 
                 if (!guild->loadGuildFromDB(fields))
@@ -133,7 +133,7 @@ void GuildMgr::loadGuildDataFromDB()
                 GuildStore.emplace(guild->getId(), std::move(guild));
 
                 ++count;
-            } while (result->NextRow());
+            } while (result->nextRow());
 
             sLogger.debug("Loaded {} guild definitions in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
@@ -145,10 +145,10 @@ void GuildMgr::loadGuildDataFromDB()
         auto startTime = Util::TimeNow();
 
         // Delete orphaned guild rank entries before loading the valid ones
-        CharacterDatabase.Execute("DELETE gr FROM guild_ranks gr LEFT JOIN guilds g ON gr.guildId = g.guildId WHERE g.guildId IS NULL");
+        CharacterDatabase.execute("DELETE gr FROM guild_ranks gr LEFT JOIN guilds g ON gr.guildId = g.guildId WHERE g.guildId IS NULL");
 
         //                                              0        1        2          3           4
-        auto result = CharacterDatabase.Query("SELECT guildId, rankId, rankName, rankRights, goldLimitPerDay FROM guild_ranks ORDER BY guildid ASC, rankId ASC");
+        auto result = CharacterDatabase.query("SELECT guildId, rankId, rankName, rankRights, goldLimitPerDay FROM guild_ranks ORDER BY guildid ASC, rankId ASC");
 
         if (result == nullptr)
         {
@@ -159,14 +159,14 @@ void GuildMgr::loadGuildDataFromDB()
             uint32_t count = 0;
             do
             {
-                Field* fields = result->Fetch();
+                Field* fields = result->fetch();
                 uint32_t guildId = fields[0].asUint32();
 
                 if (Guild* guild = getGuildById(guildId))
                     guild->loadRankFromDB(fields);
 
                 ++count;
-            } while (result->NextRow());
+            } while (result->nextRow());
 
             sLogger.debug("Loaded {} guild ranks in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
@@ -177,10 +177,10 @@ void GuildMgr::loadGuildDataFromDB()
     {
         auto startTime = Util::TimeNow();
 
-        CharacterDatabase.Execute("DELETE gm FROM guild_members gm LEFT JOIN guilds g ON gm.guildId = g.guildId WHERE g.guildId IS NULL");
+        CharacterDatabase.execute("DELETE gm FROM guild_members gm LEFT JOIN guilds g ON gm.guildId = g.guildId WHERE g.guildId IS NULL");
 
-        auto result = CharacterDatabase.Query("SELECT guildId, playerid, guildRank, publicNote, officerNote FROM guild_members");
-        auto result2 = CharacterDatabase.Query("SELECT guid, tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7, money FROM guild_members_withdraw");
+        auto result = CharacterDatabase.query("SELECT guildId, playerid, guildRank, publicNote, officerNote FROM guild_members");
+        auto result2 = CharacterDatabase.query("SELECT guid, tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7, money FROM guild_members_withdraw");
 
         if (result == nullptr || result2 == nullptr)
         {
@@ -192,15 +192,15 @@ void GuildMgr::loadGuildDataFromDB()
 
             do
             {
-                Field* fields = result->Fetch();
-                Field* fields2 = result2->Fetch();
+                Field* fields = result->fetch();
+                Field* fields2 = result2->fetch();
                 uint32_t guildId = fields[0].asUint32();
 
                 if (Guild* guild = getGuildById(guildId))
                     guild->loadMemberFromDB(fields, fields2);
 
                 ++count;
-            } while (result->NextRow() && result2->NextRow());
+            } while (result->nextRow() && result2->nextRow());
 
             sLogger.debug("Loaded {} guild members int {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
@@ -212,10 +212,10 @@ void GuildMgr::loadGuildDataFromDB()
         auto startTime = Util::TimeNow();
 
         // Delete orphaned guild bank right entries before loading the valid ones
-        CharacterDatabase.Execute("DELETE gbr FROM guild_bank_rights gbr LEFT JOIN guilds g ON gbr.guildId = g.guildId WHERE g.guildId IS NULL");
+        CharacterDatabase.execute("DELETE gbr FROM guild_bank_rights gbr LEFT JOIN guilds g ON gbr.guildId = g.guildId WHERE g.guildId IS NULL");
 
         //                                              0        1      2        3           4
-        auto result = CharacterDatabase.Query("SELECT guildId, tabId, rankId, bankRight, slotPerDay FROM guild_bank_rights ORDER BY guildId ASC, tabId ASC");
+        auto result = CharacterDatabase.query("SELECT guildId, tabId, rankId, bankRight, slotPerDay FROM guild_bank_rights ORDER BY guildId ASC, tabId ASC");
 
         if (result == nullptr)
         {
@@ -226,14 +226,14 @@ void GuildMgr::loadGuildDataFromDB()
             uint32_t count = 0;
             do
             {
-                Field* fields = result->Fetch();
+                Field* fields = result->fetch();
                 uint32_t guildId = fields[0].asUint32();
 
                 if (Guild* guild = getGuildById(guildId))
                     guild->loadBankRightFromDB(fields);
 
                 ++count;
-            } while (result->NextRow());
+            } while (result->nextRow());
 
             sLogger.debug("Loaded {} bank tab rights in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
@@ -244,11 +244,11 @@ void GuildMgr::loadGuildDataFromDB()
     {
         auto startTime = Util::TimeNow();
 
-        CharacterDatabase.Execute("DELETE FROM guild_logs WHERE logGuid > %u", 100);
-        CharacterDatabase.Execute("DELETE ge FROM guild_logs ge LEFT JOIN guilds g ON ge.guildId = g.guildId WHERE g.guildId IS NULL");
+        CharacterDatabase.execute("DELETE FROM guild_logs WHERE logGuid > %u", 100);
+        CharacterDatabase.execute("DELETE ge FROM guild_logs ge LEFT JOIN guilds g ON ge.guildId = g.guildId WHERE g.guildId IS NULL");
 
         //                                              0         1        2            3            4          5        6
-        auto result = CharacterDatabase.Query("SELECT guildId, logGuid, eventType, playerGuid1, playerGuid2, newRank, timeStamp FROM guild_logs ORDER BY timeStamp DESC, logGuid DESC");
+        auto result = CharacterDatabase.query("SELECT guildId, logGuid, eventType, playerGuid1, playerGuid2, newRank, timeStamp FROM guild_logs ORDER BY timeStamp DESC, logGuid DESC");
 
         if (result == nullptr)
         {
@@ -259,14 +259,14 @@ void GuildMgr::loadGuildDataFromDB()
             uint32_t count = 0;
             do
             {
-                Field* fields = result->Fetch();
+                Field* fields = result->fetch();
                 uint32_t guildId = fields[0].asUint32();
 
                 if (Guild* guild = getGuildById(guildId))
                     guild->loadEventLogFromDB(fields);
 
                 ++count;
-            } while (result->NextRow());
+            } while (result->nextRow());
 
             sLogger.debug("Loaded {} guild event logs in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
@@ -277,10 +277,10 @@ void GuildMgr::loadGuildDataFromDB()
     {
         auto startTime = Util::TimeNow();
 
-        CharacterDatabase.Execute("DELETE ge FROM guild_bank_logs ge LEFT JOIN guilds g ON ge.guildId = g.guildId WHERE g.guildId IS NULL");
+        CharacterDatabase.execute("DELETE ge FROM guild_bank_logs ge LEFT JOIN guilds g ON ge.guildId = g.guildId WHERE g.guildId IS NULL");
 
         //                                               0       1       2         3           4           5             6             7          8
-        auto result = CharacterDatabase.Query("SELECT guildId, tabId, logGuid, eventType, playerGuid, itemOrMoney, itemStackCount, destTabId, timeStamp FROM guild_bank_logs ORDER BY timeStamp DESC, logGuid DESC");
+        auto result = CharacterDatabase.query("SELECT guildId, tabId, logGuid, eventType, playerGuid, itemOrMoney, itemStackCount, destTabId, timeStamp FROM guild_bank_logs ORDER BY timeStamp DESC, logGuid DESC");
 
         if (result == nullptr)
         {
@@ -291,14 +291,14 @@ void GuildMgr::loadGuildDataFromDB()
             uint32_t count = 0;
             do
             {
-                Field* fields = result->Fetch();
+                Field* fields = result->fetch();
                 uint32_t guildId = fields[0].asUint32();
 
                 if (Guild* guild = getGuildById(guildId))
                     guild->loadBankEventLogFromDB(fields);
 
                 ++count;
-            } while (result->NextRow());
+            } while (result->nextRow());
 
             sLogger.debug("Loaded {} guild bank event logs in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
@@ -309,11 +309,11 @@ void GuildMgr::loadGuildDataFromDB()
     {
         auto startTime = Util::TimeNow();
 
-        CharacterDatabase.Execute("DELETE FROM guild_news_log WHERE logGuid > %u", 250);
-        CharacterDatabase.Execute("DELETE gn FROM guild_news_log gn LEFT JOIN guilds g ON gn.guildId = g.guildId WHERE g.guildId IS NULL");
+        CharacterDatabase.execute("DELETE FROM guild_news_log WHERE logGuid > %u", 250);
+        CharacterDatabase.execute("DELETE gn FROM guild_news_log gn LEFT JOIN guilds g ON gn.guildId = g.guildId WHERE g.guildId IS NULL");
 
         //                                               0        1         2          3         4      5        6
-        auto result = CharacterDatabase.Query("SELECT guildId, logGuid, eventType, playerGuid, flags, value, timeStamp FROM guild_news_log ORDER BY timeStamp DESC, logGuid DESC");
+        auto result = CharacterDatabase.query("SELECT guildId, logGuid, eventType, playerGuid, flags, value, timeStamp FROM guild_news_log ORDER BY timeStamp DESC, logGuid DESC");
 
         if (result == nullptr)
         {
@@ -324,14 +324,14 @@ void GuildMgr::loadGuildDataFromDB()
             uint32_t count = 0;
             do
             {
-                Field* fields = result->Fetch();
+                Field* fields = result->fetch();
                 uint32_t guildId = fields[0].asUint32();
 
                 if (Guild* guild = getGuildById(guildId))
                     guild->loadGuildNewsLogFromDB(fields);
 
                 ++count;
-            } while (result->NextRow());
+            } while (result->nextRow());
 
             sLogger.debug("Loaded {} guild new logs in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
@@ -343,10 +343,10 @@ void GuildMgr::loadGuildDataFromDB()
         auto startTime = Util::TimeNow();
 
         // Delete orphaned guild bank tab entries before loading the valid ones
-        CharacterDatabase.Execute("DELETE gbt FROM guild_bank_tabs gbt LEFT JOIN guilds g ON gbt.guildId = g.guildId WHERE g.guildId IS NULL");
+        CharacterDatabase.execute("DELETE gbt FROM guild_bank_tabs gbt LEFT JOIN guilds g ON gbt.guildId = g.guildId WHERE g.guildId IS NULL");
 
         //                                               0       1       2        3        4
-        auto result = CharacterDatabase.Query("SELECT guildId, tabId, tabName, tabIcon, tabInfo FROM guild_bank_tabs ORDER BY guildId ASC, tabId ASC");
+        auto result = CharacterDatabase.query("SELECT guildId, tabId, tabName, tabIcon, tabInfo FROM guild_bank_tabs ORDER BY guildId ASC, tabId ASC");
 
         if (result == nullptr)
         {
@@ -357,14 +357,14 @@ void GuildMgr::loadGuildDataFromDB()
             uint32_t count = 0;
             do
             {
-                Field* fields = result->Fetch();
+                Field* fields = result->fetch();
                 uint32_t guildId = fields[0].asUint32();
 
                 if (Guild* guild = getGuildById(guildId))
                     guild->loadBankTabFromDB(fields);
 
                 ++count;
-            } while (result->NextRow());
+            } while (result->nextRow());
 
             sLogger.debug("Loaded {} guild bank tabs in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
@@ -375,7 +375,7 @@ void GuildMgr::loadGuildDataFromDB()
     {
         auto startTime = Util::TimeNow();
 
-        auto result = CharacterDatabase.Query("SELECT guildId, tabId, slotId, itemGuid FROM guild_bank_items");
+        auto result = CharacterDatabase.query("SELECT guildId, tabId, slotId, itemGuid FROM guild_bank_items");
 
         if (result == nullptr)
         {
@@ -386,14 +386,14 @@ void GuildMgr::loadGuildDataFromDB()
             uint32_t count = 0;
             do
             {
-                Field* fields = result->Fetch();
+                Field* fields = result->fetch();
                 uint32_t guildId = fields[0].asUint32();
 
                 if (Guild* guild = getGuildById(guildId))
                     guild->loadBankItemFromDB(fields);
 
                 ++count;
-            } while (result->NextRow());
+            } while (result->nextRow());
 
             sLogger.info("Loaded {} guild bank items in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
         }
@@ -439,7 +439,7 @@ void GuildMgr::loadGuildXpForLevelFromDB()
         GuildXPperLevel[level] = 0;
 
     //                                         0         1
-    auto result = WorldDatabase.Query("SELECT lvl, xp_for_next_level FROM guild_xp_for_level");
+    auto result = WorldDatabase.query("SELECT lvl, xp_for_next_level FROM guild_xp_for_level");
     if (result == nullptr)
     {
         sLogger.debug("Loaded 0 xp for guild level definitions. DB table `guild_xp_for_level` is empty.");
@@ -450,7 +450,7 @@ void GuildMgr::loadGuildXpForLevelFromDB()
 
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
 
         uint32_t level = fields[0].asUint8();
         uint32_t requiredXP = static_cast<uint32_t>(fields[1].asUint64());
@@ -464,7 +464,7 @@ void GuildMgr::loadGuildXpForLevelFromDB()
         GuildXPperLevel[level] = requiredXP;
         ++count;
 
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     // fill level gaps
     for (uint8_t level = 1; level < worldConfig.guild.maxLevel; ++level)
@@ -484,7 +484,7 @@ void GuildMgr::loadGuildRewardsFromDB()
     auto startTime = Util::TimeNow();
 
     //                                          0       1         2        3         4
-    auto result = WorldDatabase.Query("SELECT entry, standing, racemask, price, achievement FROM guild_rewards");
+    auto result = WorldDatabase.query("SELECT entry, standing, racemask, price, achievement FROM guild_rewards");
     if (result == nullptr)
     {
         sLogger.debug("Loaded 0 guild reward definitions. DB table `guild_rewards` is empty.");
@@ -496,7 +496,7 @@ void GuildMgr::loadGuildRewardsFromDB()
     do
     {
         GuildReward reward;
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
         reward.entry = fields[0].asUint32();
         reward.standing = fields[1].asUint8();
         reward.racemask = fields[2].asInt32();
@@ -517,7 +517,7 @@ void GuildMgr::loadGuildRewardsFromDB()
 
         GuildRewards.push_back(reward);
         ++count;
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.debug("Loaded {} guild reward definitions in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }

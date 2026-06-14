@@ -135,7 +135,7 @@ void Corpse::saveToDB()
 
     ss << "', " << GetInstanceID() << ")";
 
-    CharacterDatabase.Execute(ss.str().c_str());
+    CharacterDatabase.execute(ss.str().c_str());
 }
 
 void Corpse::deleteFromDB()
@@ -143,7 +143,7 @@ void Corpse::deleteFromDB()
     std::stringstream ss;
     ss << "DELETE FROM corpses WHERE guid=" << getGuidLow();
 
-    CharacterDatabase.Execute(ss.str().c_str());
+    CharacterDatabase.execute(ss.str().c_str());
 }
 
 void Corpse::setLoadedFromDB(bool value) { _loadedfromdb = value; }

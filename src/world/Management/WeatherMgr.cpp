@@ -97,13 +97,13 @@ void WeatherMgr::finalize()
 void WeatherMgr::loadFromDB()
 {
     sLogger.info("Loading Weather...");
-    auto result = WorldDatabase.Query("SELECT zoneId,high_chance,high_type,med_chance,med_type,low_chance,low_type FROM weather");
+    auto result = WorldDatabase.query("SELECT zoneId,high_chance,high_type,med_chance,med_type,low_chance,low_type FROM weather");
     if (!result)
         return;
 
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
         auto weatherInfo = std::make_unique<WeatherInfo>();
         weatherInfo->m_zoneId = fields[0].asUint32();
         weatherInfo->m_effectValues[0] = fields[1].asUint32();  // high_chance
@@ -116,8 +116,8 @@ void WeatherMgr::loadFromDB()
 
         itr->second->_generateWeather();
     }
-    while (result->NextRow());
-    sLogger.info("WeatherMgr : Loaded weather information for {} zones.", result->GetRowCount());
+    while (result->nextRow());
+    sLogger.info("WeatherMgr : Loaded weather information for {} zones.", result->getRowCount());
 }
 
 void WeatherMgr::sendWeather(Player* plr)

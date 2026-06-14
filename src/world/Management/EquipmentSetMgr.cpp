@@ -89,7 +89,7 @@ namespace Arcemu
                 return true;
             }
 
-            Field* fields = result->Fetch();
+            Field* fields = result->fetch();
 
             EquipmentSets.try_emplace(fields[1].asUint32(), Util::LazyInstanceCreator([fields] {
                 return std::make_unique<EquipmentSet>(fields);
@@ -97,7 +97,7 @@ namespace Arcemu
 
             setcount++;
         }
-        while (result->NextRow());
+        while (result->nextRow());
 
         return true;
     }
@@ -111,7 +111,7 @@ namespace Arcemu
         ds << "DELETE FROM equipmentsets WHERE ownerguid = ";
         ds << ownerGUID;
 
-        buf->AddQueryNA(ds.str().c_str());
+        buf->addQueryNA(ds.str().c_str());
 
         for (EquipmentSetStorage::iterator itr = EquipmentSets.begin(); itr != EquipmentSets.end(); ++itr)
         {
@@ -123,7 +123,7 @@ namespace Arcemu
             ss << ownerGUID << "','";
             ss << set->SetGUID << "','";
             ss << set->SetID << "','";
-            ss << CharacterDatabase.EscapeString(set->SetName) << "','";
+            ss << CharacterDatabase.escapeString(set->SetName) << "','";
             ss << set->IconName << "'";
 
             for (uint32_t j = 0; j < set->ItemGUID.size(); ++j)
@@ -135,7 +135,7 @@ namespace Arcemu
 
             ss << ")";
 
-            buf->AddQueryNA(ss.str().c_str());
+            buf->addQueryNA(ss.str().c_str());
         }
 
         return true;

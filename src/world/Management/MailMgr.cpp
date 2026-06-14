@@ -63,7 +63,7 @@ void Mailbox::DeleteMessage(uint32_t MessageId, bool sql)
 {
     Messages.erase(MessageId);
     if (sql)
-        CharacterDatabase.WaitExecute("DELETE FROM mailbox WHERE message_id = %u", MessageId);
+        CharacterDatabase.waitExecute("DELETE FROM mailbox WHERE message_id = %u", MessageId);
 }
 
 void Mailbox::CleanupExpiredMessages()
@@ -89,7 +89,7 @@ void MailSystem::SaveMessageToSQL(MailMessage* message)
     ss << message->message_id;
     ss << ";";
 
-    CharacterDatabase.ExecuteNA(ss.str().c_str());
+    CharacterDatabase.executeNA(ss.str().c_str());
 
     ss.rdbuf()->str("");
 
@@ -99,8 +99,8 @@ void MailSystem::SaveMessageToSQL(MailMessage* message)
         << message->message_type << ","
         << message->player_guid << ","
         << message->sender_guid << ",\'"
-        << CharacterDatabase.EscapeString(message->subject) << "\',\'"
-        << CharacterDatabase.EscapeString(message->body) << "\',"
+        << CharacterDatabase.escapeString(message->subject) << "\',\'"
+        << CharacterDatabase.escapeString(message->body) << "\',"
         << message->money << ",'";
 
     for (itr = message->items.begin(); itr != message->items.end(); ++itr)
@@ -114,7 +114,7 @@ void MailSystem::SaveMessageToSQL(MailMessage* message)
         << message->checked_flag << ","
         << message->deleted_flag << ");";
 
-    CharacterDatabase.ExecuteNA(ss.str().c_str());
+    CharacterDatabase.executeNA(ss.str().c_str());
 }
 
 void MailSystem::RemoveMessageIfDeleted(uint32_t message_id, Player* plr)
@@ -191,7 +191,7 @@ void Mailbox::Load(QueryResult* result)
 
     do
     {
-        fields = result->Fetch();
+        fields = result->fetch();
         uint32_t expiry_time = fields[10].asUint32();
 
         // Do not load expired mails!
@@ -243,5 +243,5 @@ void Mailbox::Load(QueryResult* result)
         AddMessage(&msg);
 
     }
-    while (result->NextRow());
+    while (result->nextRow());
 }

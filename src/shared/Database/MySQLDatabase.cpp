@@ -47,20 +47,20 @@ MySQLDatabase::MySQLDatabase() : Database()
 
 MySQLDatabase::~MySQLDatabase()
 {
-    Shutdown();
+    shutdown();
 }
 
-void MySQLDatabase::_BeginTransaction(DatabaseConnection* conn)
+void MySQLDatabase::_beginTransaction(DatabaseConnection* conn)
 {
-    _SendQuery(conn, "START TRANSACTION", false);
+    _sendQuery(conn, "START TRANSACTION", false);
 }
 
-void MySQLDatabase::_EndTransaction(DatabaseConnection* conn)
+void MySQLDatabase::_endTransaction(DatabaseConnection* conn)
 {
-    _SendQuery(conn, "COMMIT", false);
+    _sendQuery(conn, "COMMIT", false);
 }
 
-bool MySQLDatabase::Initialize(const char* hostname, unsigned int port,
+bool MySQLDatabase::initialize(const char* hostname, unsigned int port,
                                const char* username, const char* password, const char* databaseName,
                                uint32_t connectionCount, uint32_t, bool useLegacyAuth)
 {
@@ -71,7 +71,7 @@ bool MySQLDatabase::Initialize(const char* hostname, unsigned int port,
 
     auto rollbackInit = [this]()
     {
-        for (const auto& conn : Connections)
+        for (const auto& conn : m_connections)
         {
             if (const auto* mysqlConn = dynamic_cast<const MySQLDatabaseConnection*>(conn.get()))
             {
@@ -80,20 +80,20 @@ bool MySQLDatabase::Initialize(const char* hostname, unsigned int port,
             }
         }
 
-        Connections.clear();
+        m_connections.clear();
         releaseMySqlClientLibrary();
     };
 
-    mHostname = hostname != nullptr ? hostname : "";
-    mPort = port;
-    mUsername = username != nullptr ? username : "";
-    mPassword = password != nullptr ? password : "";
-    mDatabaseName = databaseName != nullptr ? databaseName : "";
-    mConnectionCount = static_cast<int32_t>(connectionCount);
+    m_hostname = hostname != nullptr ? hostname : "";
+    m_port = port;
+    m_username = username != nullptr ? username : "";
+    m_password = password != nullptr ? password : "";
+    m_databaseName = databaseName != nullptr ? databaseName : "";
+    m_connectionCount = static_cast<int32_t>(connectionCount);
 
     bool reconnect = true;
-    Connections.clear();
-    Connections.reserve(connectionCount);
+    m_connections.clear();
+    m_connections.reserve(connectionCount);
 
     for (uint32_t i = 0; i < connectionCount; ++i)
     {
@@ -112,11 +112,11 @@ bool MySQLDatabase::Initialize(const char* hostname, unsigned int port,
 
         MYSQL* connected = mysql_real_connect(
             mysql,
-            mHostname.c_str(),
-            mUsername.c_str(),
-            mPassword.c_str(),
-            mDatabaseName.c_str(),
-            mPort,
+            m_hostname.c_str(),
+            m_username.c_str(),
+            m_password.c_str(),
+            m_databaseName.c_str(),
+            m_port,
             nullptr,
             0);
 
@@ -128,7 +128,7 @@ bool MySQLDatabase::Initialize(const char* hostname, unsigned int port,
             return false;
         }
 
-        Connections.emplace_back(std::make_unique<MySQLDatabaseConnection>(connected));
+        m_connections.emplace_back(std::make_unique<MySQLDatabaseConnection>(connected));
     }
 
     const auto hw = std::thread::hardware_concurrency();
@@ -136,13 +136,13 @@ bool MySQLDatabase::Initialize(const char* hostname, unsigned int port,
     const auto workerCount = static_cast<uint16_t>(std::max<uint32_t>(1U, maxWorkers));
 
     m_runtime = std::make_unique<DatabaseRuntime>(*this, workerCount);
-    m_runtime->primeConnections(Connections);
+    m_runtime->primeConnections(m_connections);
     m_runtime->start();
 
     return true;
 }
 
-void MySQLDatabase::Shutdown()
+void MySQLDatabase::shutdown()
 {
     if (m_runtime)
     {
@@ -150,9 +150,9 @@ void MySQLDatabase::Shutdown()
         m_runtime.reset();
     }
 
-    const bool hadConnections = !Connections.empty();
+    const bool hadConnections = !m_connections.empty();
 
-    for (const auto& conn : Connections)
+    for (const auto& conn : m_connections)
     {
         if (const auto* mysqlConn = dynamic_cast<const MySQLDatabaseConnection*>(conn.get()))
         {
@@ -161,24 +161,24 @@ void MySQLDatabase::Shutdown()
         }
     }
 
-    Connections.clear();
+    m_connections.clear();
 
     if (hadConnections)
         releaseMySqlClientLibrary();
 }
 
-std::string MySQLDatabase::EscapeString(std::string escape)
+std::string MySQLDatabase::escapeString(std::string escape)
 {
     if (escape.empty() || !m_runtime)
         return escape;
 
     return m_runtime->withConnection([&](DatabaseConnection& connection)
     {
-        return EscapeString(escape.c_str(), &connection);
+        return escapeString(escape.c_str(), &connection);
     });
 }
 
-void MySQLDatabase::EscapeLongString(const char* str, uint32_t len, std::stringstream& out)
+void MySQLDatabase::escapeLongString(const char* str, uint32_t len, std::stringstream& out)
 {
     if (str == nullptr || len == 0 || !m_runtime)
         return;
@@ -198,7 +198,7 @@ void MySQLDatabase::EscapeLongString(const char* str, uint32_t len, std::strings
     m_runtime->withConnection(writeEscaped);
 }
 
-std::string MySQLDatabase::EscapeString(const char* esc, DatabaseConnection* con)
+std::string MySQLDatabase::escapeString(const char* esc, DatabaseConnection* con)
 {
     if (esc == nullptr || con == nullptr)
         return {};
@@ -216,15 +216,15 @@ std::string MySQLDatabase::EscapeString(const char* esc, DatabaseConnection* con
     return escaped;
 }
 
-bool MySQLDatabase::_SendQuery(DatabaseConnection* con, const char* sql, bool self)
+bool MySQLDatabase::_sendQuery(DatabaseConnection* con, const char* sql, bool self)
 {
     auto* dbConnection = static_cast<MySQLDatabaseConnection*>(con);
     int result = mysql_query(dbConnection->MySql, sql);
 
     if (result > 0)
     {
-        if (!self && _HandleError(dbConnection, mysql_errno(dbConnection->MySql)))
-            result = _SendQuery(con, sql, true);
+        if (!self && _handleError(dbConnection, mysql_errno(dbConnection->MySql)))
+            result = _sendQuery(con, sql, true);
         else
             sLogger.failure("Sql query failed due to [{}], Query: [{}]", mysql_error(dbConnection->MySql), sql);
     }
@@ -232,7 +232,7 @@ bool MySQLDatabase::_SendQuery(DatabaseConnection* con, const char* sql, bool se
     return result == 0;
 }
 
-bool MySQLDatabase::_HandleError(MySQLDatabaseConnection* con, uint32_t errorNumber)
+bool MySQLDatabase::_handleError(MySQLDatabaseConnection* con, uint32_t errorNumber)
 {
     switch (errorNumber)
     {
@@ -240,13 +240,13 @@ bool MySQLDatabase::_HandleError(MySQLDatabaseConnection* con, uint32_t errorNum
         case 2008:
         case 2013:
         case 2055:
-            return _Reconnect(con);
+            return _reconnect(con);
         default:
             return false;
     }
 }
 
-bool MySQLDatabase::_Reconnect(MySQLDatabaseConnection* conn)
+bool MySQLDatabase::_reconnect(MySQLDatabaseConnection* conn)
 {
     MYSQL* mysql = mysql_init(nullptr);
     if (mysql == nullptr)
@@ -254,11 +254,11 @@ bool MySQLDatabase::_Reconnect(MySQLDatabaseConnection* conn)
 
     MYSQL* connected = mysql_real_connect(
         mysql,
-        mHostname.c_str(),
-        mUsername.c_str(),
-        mPassword.c_str(),
-        mDatabaseName.c_str(),
-        mPort,
+        m_hostname.c_str(),
+        m_username.c_str(),
+        m_password.c_str(),
+        m_databaseName.c_str(),
+        m_port,
         nullptr,
         0);
 
@@ -277,35 +277,35 @@ bool MySQLDatabase::_Reconnect(MySQLDatabaseConnection* conn)
 }
 
 MySQLQueryResult::MySQLQueryResult(MYSQL_RES* res, uint32_t fieldCount, uint32_t rowCount)
-    : QueryResult(fieldCount, rowCount), mResult(res)
+    : QueryResult(fieldCount, rowCount), m_result(res)
 {
-    mCurrentRow = std::make_unique<Field[]>(fieldCount);
+    m_currentRow = std::make_unique<Field[]>(fieldCount);
 }
 
 MySQLQueryResult::~MySQLQueryResult()
 {
-    if (mResult != nullptr)
-        mysql_free_result(mResult);
+    if (m_result != nullptr)
+        mysql_free_result(m_result);
 }
 
-bool MySQLQueryResult::NextRow()
+bool MySQLQueryResult::nextRow()
 {
-    MYSQL_ROW row = mysql_fetch_row(mResult);
+    MYSQL_ROW row = mysql_fetch_row(m_result);
     if (row == nullptr)
         return false;
 
-    unsigned long* lengths = mysql_fetch_lengths(mResult);
+    unsigned long* lengths = mysql_fetch_lengths(m_result);
 
-    for (uint32_t i = 0; i < mFieldCount; ++i)
+    for (uint32_t i = 0; i < m_fieldCount; ++i)
     {
         const std::size_t fieldLength = lengths != nullptr ? static_cast<std::size_t>(lengths[i]) : 0U;
-        mCurrentRow[i].setValue(row[i], fieldLength);
+        m_currentRow[i].setValue(row[i], fieldLength);
     }
 
     return true;
 }
 
-std::unique_ptr<QueryResult> MySQLDatabase::_StoreQueryResult(DatabaseConnection* con)
+std::unique_ptr<QueryResult> MySQLDatabase::_storeQueryResult(DatabaseConnection* con)
 {
     auto* db = static_cast<MySQLDatabaseConnection*>(con);
     MYSQL_RES* result = mysql_store_result(db->MySql);
@@ -327,6 +327,6 @@ std::unique_ptr<QueryResult> MySQLDatabase::_StoreQueryResult(DatabaseConnection
     }
 
     auto queryResult = std::make_unique<MySQLQueryResult>(result, fieldCount, rowCount);
-    queryResult->NextRow();
+    queryResult->nextRow();
     return queryResult;
 }

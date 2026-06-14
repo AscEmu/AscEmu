@@ -306,14 +306,14 @@ void AddonMgr::LoadFromDB()
 {
     auto startTime = Util::TimeNow();
 
-    auto clientAddonsResult = CharacterDatabase.Query("SELECT name, crc FROM clientaddons");
+    auto clientAddonsResult = CharacterDatabase.query("SELECT name, crc FROM clientaddons");
     if (clientAddonsResult)
     {
         uint32_t knownAddonsCount = 0;
 
         do
         {
-            Field* fields = clientAddonsResult->Fetch();
+            Field* fields = clientAddonsResult->fetch();
 
             std::string name = fields[0].asCString();
             uint32_t crc = fields[1].asUint32();
@@ -321,7 +321,7 @@ void AddonMgr::LoadFromDB()
             mKnownAddons.emplace_back(SavedAddon(name, crc));
 
             ++knownAddonsCount;
-        } while (clientAddonsResult->NextRow());
+        } while (clientAddonsResult->nextRow());
 
         sLogger.debug("Loaded {} known addons from table `clientaddons` in {} ms", knownAddonsCount, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)) );
     }
@@ -331,7 +331,7 @@ void AddonMgr::LoadFromDB()
     }
 
     startTime = Util::TimeNow();
-    clientAddonsResult = CharacterDatabase.Query("SELECT id, name, banned, UNIX_TIMESTAMP(timestamp), version FROM clientaddons WHERE banned = 1");
+    clientAddonsResult = CharacterDatabase.query("SELECT id, name, banned, UNIX_TIMESTAMP(timestamp), version FROM clientaddons WHERE banned = 1");
     if (clientAddonsResult)
     {
         uint32_t bannedAddonsCount = 0;
@@ -339,7 +339,7 @@ void AddonMgr::LoadFromDB()
 
         do
         {
-            Field* fields = clientAddonsResult->Fetch();
+            Field* fields = clientAddonsResult->fetch();
 
             BannedAddon addon;
             addon.id = fields[0].asUint32() + dbcMaxBannedAddon;
@@ -354,7 +354,7 @@ void AddonMgr::LoadFromDB()
             mBannedAddons.push_back(addon);
 
             ++bannedAddonsCount;
-        } while (clientAddonsResult->NextRow());
+        } while (clientAddonsResult->nextRow());
 
         sLogger.debug("Loaded {} banned addons from table `clientaddons` in {} ms", bannedAddonsCount, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     }
@@ -362,7 +362,7 @@ void AddonMgr::LoadFromDB()
 
 void AddonMgr::SaveAddon(AddonEntry const& addon)
 {
-    CharacterDatabase.Execute("REPLACE INTO clientaddons(name, crc) VALUES('%s', %u )", addon.name.c_str(), addon.crc);
+    CharacterDatabase.execute("REPLACE INTO clientaddons(name, crc) VALUES('%s', %u )", addon.name.c_str(), addon.crc);
 
     mKnownAddons.emplace_back(SavedAddon(addon.name, addon.crc));
 }

@@ -2062,13 +2062,13 @@ void WorldMap::callScriptUpdate()
 void WorldMap::loadRespawnTimes()
 {
     // Load Saved Respawns
-    auto result = CharacterDatabase.Query("SELECT type, spawnId, respawnTime FROM respawn WHERE mapId = %u AND instanceId = %u", getBaseMap()->getMapId(), getInstanceId());
+    auto result = CharacterDatabase.query("SELECT type, spawnId, respawnTime FROM respawn WHERE mapId = %u AND instanceId = %u", getBaseMap()->getMapId(), getInstanceId());
     if (!result)
         return;
 
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
         SpawnObjectType type = SpawnObjectType(fields[0].asUint16());
         uint32_t spawnId = fields[1].asUint32();
         uint64_t respawnTime = fields[2].asUint64();
@@ -2102,7 +2102,7 @@ void WorldMap::loadRespawnTimes()
             sLogger.debug("Loading saved respawn time of %" PRIu64 " for spawnid ({},{}) - invalid spawn type, ignoring", respawnTime, uint32_t(type), spawnId);
         }
 
-    } while (result->NextRow());
+    } while (result->nextRow());
 }
 
 RespawnInfoMap& WorldMap::getRespawnMapForType(SpawnObjectType type)
@@ -2160,7 +2160,7 @@ void WorldMap::saveRespawnTime(SpawnObjectType type, uint32_t spawnId, uint32_t 
 
 void WorldMap::saveRespawnDB(RespawnInfo const& info)
 {
-    CharacterDatabase.Execute("REPLACE INTO respawn (type, spawnId, respawnTime, mapId, instanceId) VALUES (%u, %u, %u, %u, %u)", info.type, info.spawnId, uint64_t(info.time), getBaseMap()->getMapId(), getInstanceId());
+    CharacterDatabase.execute("REPLACE INTO respawn (type, spawnId, respawnTime, mapId, instanceId) VALUES (%u, %u, %u, %u, %u)", info.type, info.spawnId, uint64_t(info.time), getBaseMap()->getMapId(), getInstanceId());
 }
 
 bool WorldMap::addRespawn(RespawnInfo const& info)
@@ -2241,12 +2241,12 @@ void WorldMap::deleteRespawn(RespawnInfo const* info)
 
 void WorldMap::deleteRespawnTimesInDB(uint32_t mapId, uint32_t instanceId)
 {
-    CharacterDatabase.Execute("DELETE FROM respawn WHERE mapId = %u AND instanceId = %u", mapId, instanceId);
+    CharacterDatabase.execute("DELETE FROM respawn WHERE mapId = %u AND instanceId = %u", mapId, instanceId);
 }
 
 void WorldMap::deleteRespawnFromDB(SpawnObjectType type, uint32_t spawnId)
 {
-    CharacterDatabase.Execute("DELETE FROM respawn WHERE type = %u AND spawnId = %u AND mapId = %u AND instanceId = %u", type, spawnId, getBaseMap()->getMapId(), getInstanceId());
+    CharacterDatabase.execute("DELETE FROM respawn WHERE type = %u AND spawnId = %u AND mapId = %u AND instanceId = %u", type, spawnId, getBaseMap()->getMapId(), getInstanceId());
 }
 
 bool WorldMap::checkRespawn(RespawnInfo* info)

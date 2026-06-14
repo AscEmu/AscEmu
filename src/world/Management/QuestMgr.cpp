@@ -2516,7 +2516,7 @@ void QuestMgr::LoadExtraQuestStuff()
     {
         do
         {
-            Field* data = pResult->Fetch();
+            Field* data = pResult->fetch();
             entry = data[0].asUint32();
             quest = data[1].asUint32();
 
@@ -2525,7 +2525,7 @@ void QuestMgr::LoadExtraQuestStuff()
             else
                 sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add starter to npc {} for non-existent quest {} in table creature_quest_starter.", entry, quest);
 
-        } while (pResult->NextRow());
+        } while (pResult->nextRow());
     }
 
     pResult = sMySQLStore.getWorldDBQuery("SELECT * FROM creature_quest_finisher WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
@@ -2533,7 +2533,7 @@ void QuestMgr::LoadExtraQuestStuff()
     {
         do
         {
-            Field* data = pResult->Fetch();
+            Field* data = pResult->fetch();
             entry = data[0].asUint32();
             quest = data[1].asUint32();
 
@@ -2542,7 +2542,7 @@ void QuestMgr::LoadExtraQuestStuff()
             else
                 sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add finisher to npc {} for non-existent quest {} in table creature_quest_finisher.", entry, quest);
 
-        } while (pResult->NextRow());
+        } while (pResult->nextRow());
     }
 
     pResult = sMySQLStore.getWorldDBQuery("SELECT * FROM gameobject_quest_starter WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
@@ -2550,7 +2550,7 @@ void QuestMgr::LoadExtraQuestStuff()
     {
         do
         {
-            Field* data = pResult->Fetch();
+            Field* data = pResult->fetch();
             entry = data[0].asUint32();
             quest = data[1].asUint32();
 
@@ -2559,7 +2559,7 @@ void QuestMgr::LoadExtraQuestStuff()
             else
                 sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add starter to go {} for non-existent quest {} in table gameobject_quest_starter.", entry, quest);
 
-        } while (pResult->NextRow());
+        } while (pResult->nextRow());
     }
 
     pResult = sMySQLStore.getWorldDBQuery("SELECT * FROM gameobject_quest_finisher WHERE min_build <= %u AND max_build >= %u", VERSION_STRING, VERSION_STRING);
@@ -2567,7 +2567,7 @@ void QuestMgr::LoadExtraQuestStuff()
     {
         do
         {
-            Field* data = pResult->Fetch();
+            Field* data = pResult->fetch();
             entry = data[0].asUint32();
             quest = data[1].asUint32();
 
@@ -2577,7 +2577,7 @@ void QuestMgr::LoadExtraQuestStuff()
             else
                 sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Tried to add finisher to go {} for non-existent quest {} in table gameobject_quest_finisher.", entry, quest);
 
-        } while (pResult->NextRow());
+        } while (pResult->nextRow());
     }
 
     //sObjectMgr.ProcessGameobjectQuests();
@@ -2586,12 +2586,12 @@ void QuestMgr::LoadExtraQuestStuff()
     uint32_t item;
     uint8_t item_count;
 
-    pResult = WorldDatabase.Query("SELECT * FROM item_quest_association");
+    pResult = WorldDatabase.query("SELECT * FROM item_quest_association");
     if (pResult != NULL)
     {
         do
         {
-            Field* data = pResult->Fetch();
+            Field* data = pResult->fetch();
             item = data[0].asUint32();
             quest = data[1].asUint32();
             item_count = data[2].asUint8();
@@ -2606,19 +2606,19 @@ void QuestMgr::LoadExtraQuestStuff()
                 AddItemQuestAssociation(item, qst, item_count);
             }
         }
-        while (pResult->NextRow());
+        while (pResult->nextRow());
     }
 
     m_QuestPOIMap.clear();
 
-    auto result = WorldDatabase.Query("SELECT questId, poiId, objIndex, mapId, mapAreaId, floorId, unk3, unk4 FROM quest_poi");
+    auto result = WorldDatabase.query("SELECT questId, poiId, objIndex, mapId, mapAreaId, floorId, unk3, unk4 FROM quest_poi");
     if (result != NULL)
     {
         uint32_t count = 0;
 
         do
         {
-            Field* fields = result->Fetch();
+            Field* fields = result->fetch();
 
             uint32_t questId = fields[0].asUint32();
             uint32_t poiId = fields[1].asUint32();
@@ -2634,17 +2634,17 @@ void QuestMgr::LoadExtraQuestStuff()
 
             count++;
         }
-        while (result->NextRow());
+        while (result->nextRow());
 
         sLogger.info("QuestMgr : Point Of Interest (POI) data loaded for {} quests.", count);
 
-        auto points = WorldDatabase.Query("SELECT questId, poiId, x, y FROM quest_poi_points");
+        auto points = WorldDatabase.query("SELECT questId, poiId, x, y FROM quest_poi_points");
         if (points != NULL)
         {
             count = 0;
             do
             {
-                Field* pointFields = points->Fetch();
+                Field* pointFields = points->fetch();
 
                 uint32_t questId = pointFields[0].asUint32();
                 uint32_t poiId = pointFields[1].asUint32();
@@ -2665,7 +2665,7 @@ void QuestMgr::LoadExtraQuestStuff()
 
                 count++;
             }
-            while (points->NextRow());
+            while (points->nextRow());
 
             sLogger.info("QuestMgr : {} quest Point Of Interest points loaded.", count);
         }

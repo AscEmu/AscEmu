@@ -78,7 +78,7 @@ void FormationMgr::loadCreatureFormations()
     auto oldMSTime = Util::TimeNow();
 
     //Get group data
-    auto result = WorldDatabase.Query("SELECT leaderGUID, memberGUID, dist, angle, groupAI, point_1, point_2 FROM creature_formations ORDER BY leaderGUID");
+    auto result = WorldDatabase.query("SELECT leaderGUID, memberGUID, dist, angle, groupAI, point_1, point_2 FROM creature_formations ORDER BY leaderGUID");
     if (!result)
     {
         sLogger.debug("FormationMgr : Loaded 0 creatures in formations. DB table `creature_formations` is empty!");
@@ -89,7 +89,7 @@ void FormationMgr::loadCreatureFormations()
     std::unordered_set<uint32_t> leaderSpawnIds;
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
 
         //Load group member data
         FormationInfo member;
@@ -111,7 +111,7 @@ void FormationMgr::loadCreatureFormations()
 
         // check data correctness
         {
-            auto spawnResult = WorldDatabase.Query("SELECT * FROM creature_spawns WHERE id = %u", member.LeaderSpawnId);
+            auto spawnResult = WorldDatabase.query("SELECT * FROM creature_spawns WHERE id = %u", member.LeaderSpawnId);
             if (spawnResult == nullptr)
             {
                 sLogger.failure("FormationMgr : creature_formations table leader guid {} incorrect (not exist)", member.LeaderSpawnId);
@@ -119,7 +119,7 @@ void FormationMgr::loadCreatureFormations()
             }
 
             spawnResult = nullptr;
-            spawnResult = WorldDatabase.Query("SELECT * FROM creature_spawns WHERE id = %u", memberSpawnId);
+            spawnResult = WorldDatabase.query("SELECT * FROM creature_spawns WHERE id = %u", memberSpawnId);
             if (spawnResult == nullptr)
             {
                 sLogger.failure("FormationMgr : creature_formations table member guid {} incorrect (not exist)", memberSpawnId);
@@ -131,7 +131,7 @@ void FormationMgr::loadCreatureFormations()
 
         _creatureGroupMap.emplace(memberSpawnId, std::move(member));
         ++count;
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     for (uint32_t leaderSpawnId : leaderSpawnIds)
     {

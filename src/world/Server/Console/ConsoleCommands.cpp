@@ -163,8 +163,8 @@ bool handleServerInfoCommand(BaseConsole* baseConsole, int /*argumentCount*/, st
         baseConsole->Write("Average Latency: %.3fms\r\n", onlineCount ? (float)avgLatency / (float)onlineCount : 0.0f);
         baseConsole->Write("CPU Usage: %3.2f %%\r\n", sWorld.getCPUUsage());
         baseConsole->Write("RAM Usage: %4.2f MB\r\n", sWorld.getRAMUsage());
-        baseConsole->Write("SQL Query Cache Size (World): %u queries delayed\r\n", WorldDatabase.GetAeQueuedTaskCount());
-        baseConsole->Write("SQL Query Cache Size (Character): %u queries delayed\r\n", CharacterDatabase.GetAeQueuedTaskCount());
+        baseConsole->Write("SQL Query Cache Size (World): %u queries delayed\r\n", WorldDatabase.getQueuedTaskCount());
+        baseConsole->Write("SQL Query Cache Size (Character): %u queries delayed\r\n", CharacterDatabase.getQueuedTaskCount());
     }
 
     sSocketMgr.ShowStatus();
@@ -468,9 +468,9 @@ bool handleSendMailGold(BaseConsole* baseConsole, int argumentCount, std::string
     std::cout << body << " check" << "\n";
     std::cout << gold << " check" << "\n";
 
-    if (auto result = CharacterDatabase.Query("SELECT guid FROM characters WHERE name = '%s'", charName.c_str()))
+    if (auto result = CharacterDatabase.query("SELECT guid FROM characters WHERE name = '%s'", charName.c_str()))
     {
-        uint64_t guid = result->Fetch()[0].asUint64();
+        uint64_t guid = result->fetch()[0].asUint64();
         sMailSystem.SendAutomatedMessage(MAIL_TYPE_NORMAL, guid, guid, subject, body, gold, 0, 0, MAIL_STATIONERY_GM);
     }
 

@@ -41,7 +41,7 @@ Charter::~Charter() = default;
 
 void Charter::saveToDB()
 {
-    CharacterDatabase.Execute("DELETE FROM charters WHERE charterId = %u;", m_charterId);
+    CharacterDatabase.execute("DELETE FROM charters WHERE charterId = %u;", m_charterId);
 
     std::stringstream ss;
     ss << "INSERT INTO charters VALUES(" << m_charterId << "," << m_charterType << "," << m_leaderGuid << ",'" << m_guildName << "'," << m_itemGuid;
@@ -53,12 +53,12 @@ void Charter::saveToDB()
         ss << ",0";
 
     ss << ")";
-    CharacterDatabase.Execute(ss.str().c_str());
+    CharacterDatabase.execute(ss.str().c_str());
 }
 
 void Charter::destroy()
 {
-    CharacterDatabase.Execute("DELETE FROM charters WHERE charterId = %u", m_charterId);
+    CharacterDatabase.execute("DELETE FROM charters WHERE charterId = %u", m_charterId);
 
     for (const auto playerGuid : m_signatures)
     {

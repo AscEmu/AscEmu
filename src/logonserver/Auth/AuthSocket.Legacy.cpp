@@ -449,7 +449,7 @@ void AuthSocket::HandleProof()
     m_authenticated = true;
 
     // Don't update when IP banned, but update anyway if it's an account ban
-    sLogonSQL->Execute("UPDATE accounts SET lastlogin=NOW(), lastip='%s' WHERE id = %u;", GetRemoteIP().c_str(), m_account->AccountId);
+    sLogonSQL->execute("UPDATE accounts SET lastlogin=NOW(), lastip='%s' WHERE id = %u;", GetRemoteIP().c_str(), m_account->AccountId);
 }
 
 void AuthSocket::SendChallengeError(uint8_t Error)
@@ -739,7 +739,7 @@ void AuthSocket::HandleReconnectProof()
         return;
 
     // Don't update when IP banned, but update anyway if it's an account ban
-    sLogonSQL->Execute("UPDATE accounts SET lastlogin = NOW(), lastip = '%s' WHERE id = %u;", GetRemoteIP().c_str(), m_account->AccountId);
+    sLogonSQL->execute("UPDATE accounts SET lastlogin = NOW(), lastip = '%s' WHERE id = %u;", GetRemoteIP().c_str(), m_account->AccountId);
     //RemoveReadBufferBytes(GetReadBufferSize(), true);
     readBuffer.Remove(readBuffer.GetSize());
 

@@ -57,9 +57,9 @@ void GuildNewsLogEntry::setSticky(bool isSticky)
 
 void GuildNewsLogEntry::saveGuildLogToDB() const
 {
-    CharacterDatabase.Execute("DELETE FROM guild_news_log WHERE guildId = %u AND logGuid = %u", mGuildId, getGUID());
+    CharacterDatabase.execute("DELETE FROM guild_news_log WHERE guildId = %u AND logGuid = %u", mGuildId, getGUID());
 
-    CharacterDatabase.Execute("INSERT INTO guild_news_log VALUES('%u', '%u', '%u', '%u', '%u', '%u', '%llu')",
+    CharacterDatabase.execute("INSERT INTO guild_news_log VALUES('%u', '%u', '%u', '%u', '%u', '%u', '%llu')",
         mGuildId, getGUID(), static_cast<uint32_t>(getType()), static_cast<uint32_t>(getPlayerGuid()), getFlags(), getValue(), getTimestamp());
 }
 

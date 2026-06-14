@@ -137,22 +137,22 @@ void ObjectMgr::finalize()
 // Arena Team
 void ObjectMgr::loadArenaTeams()
 {
-    auto result = CharacterDatabase.Query("SELECT * FROM arenateams");
+    auto result = CharacterDatabase.query("SELECT * FROM arenateams");
     if (result != nullptr)
     {
-        if (result->GetFieldCount() != 22)
+        if (result->getFieldCount() != 22)
         {
             sLogger.failure("arenateams table format is invalid. Please update your database.");
             return;
         }
         do
         {
-            const auto [arenaItr, _] = m_arenaTeams.emplace(result->Fetch()[0].asUint32(), std::make_unique<ArenaTeam>(result->Fetch()));
+            const auto [arenaItr, _] = m_arenaTeams.emplace(result->fetch()[0].asUint32(), std::make_unique<ArenaTeam>(result->fetch()));
             m_arenaTeamMap[arenaItr->second->m_type].emplace(arenaItr->second->m_id, arenaItr->second.get());
             if (arenaItr->second->m_id > static_cast<uint32_t>(m_hiArenaTeamId.load()))
                 m_hiArenaTeamId = static_cast<uint32_t>(arenaItr->second->m_id);
 
-        } while (result->NextRow());
+        } while (result->nextRow());
     }
 
     updateArenaTeamRankings();
@@ -316,11 +316,11 @@ void ObjectMgr::loadCharters()
 {
     m_hiCharterId = 0;
 
-    if (auto result = CharacterDatabase.Query("SELECT * FROM charters"))
+    if (auto result = CharacterDatabase.query("SELECT * FROM charters"))
     {
         do
         {
-            const auto* fields = result->Fetch();
+            const auto* fields = result->fetch();
             const auto id = fields[0].asUint32();
             const auto type = fields[1].asUint8();
             const auto [itr, _] = m_charters[type].try_emplace(id, Util::LazyInstanceCreator([fields] {
@@ -330,7 +330,7 @@ void ObjectMgr::loadCharters()
             if (itr->second->getId() > static_cast<int64_t>(m_hiCharterId.load()))
                 m_hiCharterId = itr->second->getId();
 
-        } while (result->NextRow());
+        } while (result->nextRow());
     }
     sLogger.info("ObjectMgr : {} charters loaded.", static_cast<uint32_t>(m_charters[0].size()));
 }
@@ -411,17 +411,17 @@ Charter* ObjectMgr::getCharterByItemGuid(const uint64_t _itemGuid) const
 // CachedCharacterInfo
 void ObjectMgr::loadCharacters()
 {
-    auto result = CharacterDatabase.Query("SELECT guid, name, race, class, level, gender, zoneid, timestamp, acct FROM characters");
+    auto result = CharacterDatabase.query("SELECT guid, name, race, class, level, gender, zoneid, timestamp, acct FROM characters");
     if (result)
     {
         do
         {
-            const auto* fields = result->Fetch();
+            const auto* fields = result->fetch();
             m_cachedCharacterInfo.try_emplace(fields[0].asUint32(), Util::LazyInstanceCreator([fields] {
                 return std::make_unique<CachedCharacterInfo>(fields);
             }));
 
-        } while (result->NextRow());
+        } while (result->nextRow());
     }
 
     sLogger.info("ObjectMgr : {} players loaded.", static_cast<uint32_t>(m_cachedCharacterInfo.size()));
@@ -491,11 +491,11 @@ void ObjectMgr::deleteCachedCharacterInfo(const uint32_t _playerGuid)
 // Corpse
 void ObjectMgr::loadCorpsesForInstance(WorldMap* _worldMap)
 {
-    if (auto result = CharacterDatabase.Query("SELECT * FROM corpses WHERE instanceid = %u", _worldMap->getInstanceId()))
+    if (auto result = CharacterDatabase.query("SELECT * FROM corpses WHERE instanceid = %u", _worldMap->getInstanceId()))
     {
         do
         {
-            Field* fields = result->Fetch();
+            Field* fields = result->fetch();
             auto corpse = std::make_unique<Corpse>(HIGHGUID_TYPE_CORPSE, fields[0].asUint32());
             corpse->SetPosition(fields[1].asFloat(), fields[2].asFloat(), fields[3].asFloat(), fields[4].asFloat());
             corpse->setZoneId(fields[5].asUint32());
@@ -509,15 +509,15 @@ void ObjectMgr::loadCorpsesForInstance(WorldMap* _worldMap)
             corpse->PushToWorld(_worldMap);
             std::lock_guard guard(m_corpseLock);
             m_corpses.try_emplace(corpse->getGuidLow(), std::move(corpse));
-        } while (result->NextRow());
+        } while (result->nextRow());
     }
 }
 
 Corpse* ObjectMgr::loadCorpseByGuid(const uint32_t _corpseGuid)
 {
-    if (auto result = CharacterDatabase.Query("SELECT * FROM corpses WHERE guid =%u ", _corpseGuid))
+    if (auto result = CharacterDatabase.query("SELECT * FROM corpses WHERE guid =%u ", _corpseGuid))
     {
-        Field* field = result->Fetch();
+        Field* field = result->fetch();
         auto corpse = std::make_unique<Corpse>(HIGHGUID_TYPE_CORPSE, field[0].asUint32());
         corpse->SetPosition(field[1].asFloat(), field[2].asFloat(), field[3].asFloat(), field[4].asFloat());
         corpse->setZoneId(field[5].asUint32());
@@ -616,15 +616,15 @@ void ObjectMgr::loadVendors()
     {
         std::vector<CreatureItem>* items = nullptr;
 
-        if (result->GetFieldCount() < 6 + 2)
+        if (result->getFieldCount() < 6 + 2)
         {
-            sLogger.failure("Invalid format in vendors ({}/8) columns, not enough data to proceed.", result->GetFieldCount());
+            sLogger.failure("Invalid format in vendors ({}/8) columns, not enough data to proceed.", result->getFieldCount());
             return;
         }
 
         do
         {
-            Field* fields = result->Fetch();
+            Field* fields = result->fetch();
             items = createVendorList(fields[0].asUint32());
 
             CreatureItem itm{};
@@ -644,7 +644,7 @@ void ObjectMgr::loadVendors()
             }
 
             items->push_back(itm);
-        } while (result->NextRow());
+        } while (result->nextRow());
     }
     sLogger.info("ObjectMgr : {} vendors loaded.", static_cast<uint32_t>(m_vendors.size()));
 }
@@ -688,7 +688,7 @@ void ObjectMgr::loadAchievementRewards()
 {
     m_achievementRewards.clear();
 
-    auto result = WorldDatabase.Query("SELECT entry, gender, title_A, title_H, item, sender, subject, text FROM achievement_reward");
+    auto result = WorldDatabase.query("SELECT entry, gender, title_A, title_H, item, sender, subject, text FROM achievement_reward");
     if (result == nullptr)
     {
         sLogger.info("Loaded 0 achievement rewards. DB table `achievement_reward` is empty.");
@@ -699,7 +699,7 @@ void ObjectMgr::loadAchievementRewards()
 
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
         uint32_t entry = fields[0].asUint32();
 
         if (sAchievementStore.lookupEntry(entry) == nullptr)
@@ -790,14 +790,14 @@ void ObjectMgr::loadAchievementRewards()
         m_achievementRewards.emplace(entry, reward);
         ++count;
 
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("ObjectMgr : Loaded {} achievement rewards", count);
 }
 
 void ObjectMgr::loadCompletedAchievements()
 {
-    auto result = CharacterDatabase.Query("SELECT achievement FROM character_achievement GROUP BY achievement");
+    auto result = CharacterDatabase.query("SELECT achievement FROM character_achievement GROUP BY achievement");
 
     if (!result)
     {
@@ -807,9 +807,9 @@ void ObjectMgr::loadCompletedAchievements()
 
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
         m_allCompletedAchievements.insert(fields[0].asUint32());
-    } while (result->NextRow());
+    } while (result->nextRow());
 }
 
 AchievementReward const* ObjectMgr::getAchievementReward(uint32_t _entry, uint8_t _gender)
@@ -853,12 +853,12 @@ void ObjectMgr::loadReputationModifiers()
 
 void ObjectMgr::loadReputationModifierTable(const char* _tableName, ReputationModMap& _reputationModMap)
 {
-    auto result = WorldDatabase.Query("SELECT * FROM %s", _tableName);
+    auto result = WorldDatabase.query("SELECT * FROM %s", _tableName);
     if (result)
     {
         do
         {
-            const auto entry = result->Fetch()[0].asUint32();
+            const auto entry = result->fetch()[0].asUint32();
 
             const auto [repModItr, createdNew] = _reputationModMap.try_emplace(entry, Util::LazyInstanceCreator([] {
                 return std::make_unique<ReputationModifier>();
@@ -869,33 +869,33 @@ void ObjectMgr::loadReputationModifierTable(const char* _tableName, ReputationMo
             const auto& reputationMod = repModItr->second->mods.emplace_back(std::make_unique<ReputationMod>());
             if (AscEmu::Util::Strings::isEqual(_tableName, "reputation_creature_onkill"))
             {
-                reputationMod->faction[TEAM_ALLIANCE] = result->Fetch()[1].asUint32();
-                reputationMod->faction[TEAM_HORDE] = result->Fetch()[2].asUint32();
-                reputationMod->value = result->Fetch()[3].asInt32();
-                reputationMod->replimit = result->Fetch()[4].asUint32();
+                reputationMod->faction[TEAM_ALLIANCE] = result->fetch()[1].asUint32();
+                reputationMod->faction[TEAM_HORDE] = result->fetch()[2].asUint32();
+                reputationMod->value = result->fetch()[3].asInt32();
+                reputationMod->replimit = result->fetch()[4].asUint32();
             }
 
             if (AscEmu::Util::Strings::isEqual(_tableName, "reputation_faction_onkill"))
             {
-                reputationMod->faction[TEAM_ALLIANCE] = result->Fetch()[1].asUint32();
-                reputationMod->faction[TEAM_HORDE] = result->Fetch()[4].asUint32();
-                reputationMod->value = result->Fetch()[2].asInt32();
-                reputationMod->replimit = result->Fetch()[3].asUint32();
+                reputationMod->faction[TEAM_ALLIANCE] = result->fetch()[1].asUint32();
+                reputationMod->faction[TEAM_HORDE] = result->fetch()[4].asUint32();
+                reputationMod->value = result->fetch()[2].asInt32();
+                reputationMod->replimit = result->fetch()[3].asUint32();
             }
 
-        } while (result->NextRow());
+        } while (result->nextRow());
     }
     sLogger.info("ObjectMgr : {} reputation modifiers on {}.", static_cast<uint32_t>(_reputationModMap.size()), _tableName);
 }
 
 void ObjectMgr::loadInstanceReputationModifiers()
 {
-    auto result = WorldDatabase.Query("SELECT * FROM reputation_instance_onkill");
+    auto result = WorldDatabase.query("SELECT * FROM reputation_instance_onkill");
     if (!result)
         return;
     do
     {
-        Field* field = result->Fetch();
+        Field* field = result->fetch();
 
         const auto mapId = field[0].asUint32();
         const auto [repInstanceItr, createdNew] = m_reputationInstance.try_emplace(mapId, Util::LazyInstanceCreator([] {
@@ -913,7 +913,7 @@ void ObjectMgr::loadInstanceReputationModifiers()
         reputationMod->faction[TEAM_ALLIANCE] = field[5].asUint32();
         reputationMod->faction[TEAM_HORDE] = field[6].asUint32();
 
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("ObjectMgr : {} instance reputation modifiers loaded.", static_cast<uint32_t>(m_reputationInstance.size()));
 }
@@ -979,10 +979,10 @@ bool ObjectMgr::handleInstanceReputationModifiers(Player* _player, Unit* _unitVi
 // Group
 void ObjectMgr::loadGroups()
 {
-    auto result = CharacterDatabase.Query("SELECT * FROM `groups`");
+    auto result = CharacterDatabase.query("SELECT * FROM `groups`");
     if (result)
     {
-        if (result->GetFieldCount() != 52)
+        if (result->getFieldCount() != 52)
         {
             sLogger.failure("groups table format is invalid. Please update your database.");
             return;
@@ -990,9 +990,9 @@ void ObjectMgr::loadGroups()
         do
         {
             auto group = std::make_unique<Group>(false);
-            group->LoadFromDB(result->Fetch());
+            group->LoadFromDB(result->fetch());
             m_groups.try_emplace(group->GetID(), std::move(group));
-        } while (result->NextRow());
+        } while (result->nextRow());
     }
 
     sLogger.info("ObjectMgr : {} groups loaded.", static_cast<uint32_t>(this->m_groups.size()));
@@ -1000,9 +1000,9 @@ void ObjectMgr::loadGroups()
 
 void ObjectMgr::loadGroupInstances()
 {
-    CharacterDatabase.Execute("DELETE FROM group_instance WHERE guid NOT IN (SELECT guid FROM `groups`)");
+    CharacterDatabase.execute("DELETE FROM group_instance WHERE guid NOT IN (SELECT guid FROM `groups`)");
 
-    auto result = CharacterDatabase.Query("SELECT gi.guid, i.map, gi.instance, gi.permanent, i.difficulty, i.resettime, (SELECT COUNT(1) FROM character_instance ci LEFT JOIN `groups` g ON ci.guid = g.group1member1 WHERE ci.instance = gi.instance AND ci.permanent = 1 LIMIT 1) FROM group_instance gi LEFT JOIN instance i ON gi.instance = i.id ORDER BY guid");
+    auto result = CharacterDatabase.query("SELECT gi.guid, i.map, gi.instance, gi.permanent, i.difficulty, i.resettime, (SELECT COUNT(1) FROM character_instance ci LEFT JOIN `groups` g ON ci.guid = g.group1member1 WHERE ci.instance = gi.instance AND ci.permanent = 1 LIMIT 1) FROM group_instance gi LEFT JOIN instance i ON gi.instance = i.id ORDER BY guid");
     if (!result)
     {
         sLogger.info("Loaded 0 group-instance saves. DB table `group_instance` is empty!");
@@ -1012,7 +1012,7 @@ void ObjectMgr::loadGroupInstances()
     uint32_t count = 0;
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
         auto* group = sObjectMgr.getGroupById(fields[0].asUint32());
 
         WDB::Structures::MapEntry const* mapEntry = sMapStore.lookupEntry(fields[1].asUint16());
@@ -1032,7 +1032,7 @@ void ObjectMgr::loadGroupInstances()
         InstanceSaved* save = sInstanceMgr.addInstanceSave(mapEntry->id, fields[2].asUint32(), InstanceDifficulty::Difficulties(diff), time_t(fields[5].asUint64()), fields[6].asUint64() == 0, true);
         group->bindToInstance(save, fields[3].asBool(), true);
         ++count;
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("Loaded {} group-instance saves", count);
 }
@@ -1201,12 +1201,12 @@ void ObjectMgr::loadVehicleAccessories()
 {
     m_vehicleAccessoryStore.clear();
 
-    auto result = WorldDatabase.Query("SELECT entry, accessory_entry, seat_id , minion, summontype, summontimer FROM vehicle_accessories;");
+    auto result = WorldDatabase.query("SELECT entry, accessory_entry, seat_id , minion, summontype, summontimer FROM vehicle_accessories;");
     if (result != nullptr)
     {
         do
         {
-            Field* fields = result->Fetch();
+            Field* fields = result->fetch();
 
             uint32_t entry = fields[0].asUint32();
             uint32_t accessory = fields[1].asUint32();
@@ -1236,7 +1236,7 @@ void ObjectMgr::loadVehicleAccessories()
 
             m_vehicleAccessoryStore[entry].push_back(VehicleAccessory(accessory, seatId, isMinion, summonType, summonTimer));
 
-        } while (result->NextRow());
+        } while (result->nextRow());
     }
 }
 
@@ -1253,12 +1253,12 @@ void ObjectMgr::loadVehicleSeatAddon()
 {
     m_vehicleSeatAddonStore.clear();
 
-    auto result = WorldDatabase.Query("SELECT SeatEntry, SeatOrientation, ExitParamX , ExitParamY, ExitParamZ, ExitParamO, ExitParamValue FROM vehicle_seat_addon;");
+    auto result = WorldDatabase.query("SELECT SeatEntry, SeatOrientation, ExitParamX , ExitParamY, ExitParamZ, ExitParamO, ExitParamValue FROM vehicle_seat_addon;");
     if (result != nullptr)
     {
         do
         {
-            Field* fields = result->Fetch();
+            Field* fields = result->fetch();
 
             uint32_t seatID = fields[0].asUint32();
             float orientation = fields[1].asFloat();
@@ -1270,7 +1270,7 @@ void ObjectMgr::loadVehicleSeatAddon()
 
             m_vehicleSeatAddonStore[seatID] = VehicleSeatAddon(orientation, { exitX, exitY, exitZ, exitO }, exitParam);
 
-        } while (result->NextRow());
+        } while (result->nextRow());
     }
 }
 
@@ -1292,7 +1292,7 @@ void ObjectMgr::loadEventScripts()
 
     bool success = false;
     const char* eventScriptsQuery = "SELECT `event_id`, `function`, `script_type`, `data_1`, `data_2`, `data_3`, `data_4`, `data_5`, `x`, `y`, `z`, `o`, `delay`, `next_event` FROM `event_scripts` WHERE `event_id` > 0 ORDER BY `event_id`";
-    const auto result = WorldDatabase.Query(&success, eventScriptsQuery);
+    const auto result = WorldDatabase.query(&success, eventScriptsQuery);
 
     if (!success)
     {
@@ -1309,7 +1309,7 @@ void ObjectMgr::loadEventScripts()
     uint32_t count = 0;
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
 
         uint32_t event_id = fields[0].asUint32();
         SimpleEventScript eventscript;
@@ -1336,7 +1336,7 @@ void ObjectMgr::loadEventScripts()
 
         ++count;
 
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("ObjectMgr : Loaded event_scripts for {} events...", count);
 }
@@ -1612,14 +1612,14 @@ void ObjectMgr::loadTrainerSpellSets()
 
         do
         {
-            Field* fields = spellSetResult->Fetch();
+            Field* fields = spellSetResult->fetch();
 
             const auto [spellSetItr, _] = m_trainerSpellSet.try_emplace(fields[0].asUint32(), Util::LazyInstanceCreator([] {
                 return std::make_unique<std::vector<TrainerSpell>>();
             }));
             trainerSpells = spellSetItr->second.get();
 
-            auto* const fields2 = spellSetResult->Fetch();
+            auto* const fields2 = spellSetResult->fetch();
 
             auto castSpellID = fields2[3].asUint32();
             auto learnSpellID = fields2[4].asUint32();
@@ -1692,7 +1692,7 @@ void ObjectMgr::loadTrainerSpellSets()
             }
 
             trainerSpells->push_back(ts);
-        } while (spellSetResult->NextRow());
+        } while (spellSetResult->nextRow());
 
         sLogger.info("LoadTrainers : {} TrainerSpellSet loaded", static_cast<uint32_t>(m_trainerSpellSet.size()));
     }
@@ -1713,7 +1713,7 @@ void ObjectMgr::loadTrainers()
     {
         do
         {
-            auto* const fields = trainerResult->Fetch();
+            auto* const fields = trainerResult->fetch();
             const auto entry = fields[0].asUint32();
             const auto spellCount = static_cast<uint32_t>(getTrainerSpellSetById(fields[12].asUint32())->size());
 
@@ -1752,7 +1752,7 @@ void ObjectMgr::loadTrainers()
 
             trainer->SpellCount = spellCount;
 
-        } while (trainerResult->NextRow());
+        } while (trainerResult->nextRow());
 
         sLogger.info("ObjectMgr : {} trainers loaded.", static_cast<uint32_t>(m_trainers.size()));
     }
@@ -1885,7 +1885,7 @@ void ObjectMgr::loadInstanceEncounters()
     const auto startTime = Util::TimeNow();
 
     //                                                 0         1            2                3               4       5
-    auto result = WorldDatabase.Query("SELECT entry, creditType, creditEntry, lastEncounterDungeon, comment, mapid FROM instance_encounters");
+    auto result = WorldDatabase.query("SELECT entry, creditType, creditEntry, lastEncounterDungeon, comment, mapid FROM instance_encounters");
     if (result == nullptr)
     {
         sLogger.debug(">> Loaded 0 instance encounters, table is empty!");
@@ -1899,7 +1899,7 @@ void ObjectMgr::loadInstanceEncounters()
     uint32_t count = 0;
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
         auto entry = fields[0].asUint32();
         auto creditType = fields[1].asUint8();
         auto creditEntry = fields[2].asUint32();
@@ -1985,7 +1985,7 @@ void ObjectMgr::loadInstanceEncounters()
         encounters.emplace_back(std::make_unique<DungeonEncounter>(dungeonEncounter, EncounterCreditType(creditType), creditEntry, lastEncounterDungeon));
 #endif
         ++count;
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("ObjectMgr : Loaded {} instance encounters in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -2009,7 +2009,7 @@ void ObjectMgr::loadCreatureMovementOverrides()
 
     m_creatureMovementOverrides.clear();
 
-    auto result = WorldDatabase.Query("SELECT SpawnId, Ground, Swim, Flight, Rooted, Chase, Random from creature_movement_override");
+    auto result = WorldDatabase.query("SELECT SpawnId, Ground, Swim, Flight, Rooted, Chase, Random from creature_movement_override");
     if (!result)
     {
         sLogger.info("CreatureMovementOverrides : Loaded 0 creature movement overrides. DB table `creature_movement_override` is empty!");
@@ -2018,10 +2018,10 @@ void ObjectMgr::loadCreatureMovementOverrides()
 
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
         uint32_t spawnId = fields[0].asUint32();
 
-        auto spawnResult = WorldDatabase.Query("SELECT * FROM creature_spawns WHERE id = %u", spawnId);
+        auto spawnResult = WorldDatabase.query("SELECT * FROM creature_spawns WHERE id = %u", spawnId);
         if (spawnResult == nullptr)
         {
             sLogger.failure("Creature (SpawnId: {}) does not exist but has a record in `creature_movement_override`", spawnId);
@@ -2039,7 +2039,7 @@ void ObjectMgr::loadCreatureMovementOverrides()
         checkCreatureMovement(spawnId, movement);
         ++count;
 
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("ObjectMgr :  Loaded {} movement overrides in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -2069,25 +2069,25 @@ CreatureMovementData const* ObjectMgr::getCreatureMovementOverride(uint32_t _spa
 
 void ObjectMgr::loadWorldStateTemplates()
 {
-    auto result = WorldDatabase.QueryNA("SELECT DISTINCT map FROM worldstate_templates ORDER BY map;");
+    auto result = WorldDatabase.queryNA("SELECT DISTINCT map FROM worldstate_templates ORDER BY map;");
     if (result == nullptr)
         return;
 
     do
     {
-        Field* field = result->Fetch();
+        Field* field = result->fetch();
         uint32_t mapId = field[0].asUint32();
 
         m_worldstateTemplates.emplace(mapId, std::make_unique<WorldStateMap>());
-    } while (result->NextRow());
+    } while (result->nextRow());
 
-    result = WorldDatabase.QueryNA("SELECT map, zone, field, value FROM worldstate_templates;");
+    result = WorldDatabase.queryNA("SELECT map, zone, field, value FROM worldstate_templates;");
     if (result == nullptr)
         return;
 
     do
     {
-        Field* field = result->Fetch();
+        Field* field = result->fetch();
         WorldState worldState;
 
         uint32_t mapId = field[0].asUint32();
@@ -2100,7 +2100,7 @@ void ObjectMgr::loadWorldStateTemplates()
             continue;
 
         itr->second->emplace(zone, worldState);
-    } while (result->NextRow());
+    } while (result->nextRow());
 }
 
 WorldStateMap const* ObjectMgr::getWorldStatesForMap(uint32_t _map) const
@@ -2113,14 +2113,14 @@ WorldStateMap const* ObjectMgr::getWorldStatesForMap(uint32_t _map) const
 
 void ObjectMgr::loadCreatureTimedEmotes()
 {
-    auto result = WorldDatabase.Query("SELECT * FROM creature_timed_emotes order by rowid asc");
+    auto result = WorldDatabase.query("SELECT * FROM creature_timed_emotes order by rowid asc");
     if (!result)
         return;
 
     uint32_t count = 0;
     do
     {
-        Field* field = result->Fetch();
+        Field* field = result->fetch();
         uint32_t spawnId = field[0].asUint32();
 
         const auto [timedEmoteItr, _] = m_timedEmotes.try_emplace(spawnId, Util::LazyInstanceCreator([] {
@@ -2136,7 +2136,7 @@ void ObjectMgr::loadCreatureTimedEmotes()
         timedEmotes->expire_after = field[7].asUint32();
 
         ++count;
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("ObjectMgr : {} timed emotes cached.", count);
 }
@@ -2421,22 +2421,22 @@ uint32_t ObjectMgr::getPetSpellCooldown(uint32_t _spellId)
 
 std::unique_ptr<Item> ObjectMgr::loadItem(uint32_t _lowGuid)
 {
-    auto result = CharacterDatabase.Query("SELECT * FROM playeritems WHERE guid = %u", _lowGuid);
+    auto result = CharacterDatabase.query("SELECT * FROM playeritems WHERE guid = %u", _lowGuid);
     std::unique_ptr<Item> item = nullptr;
     if (result)
     {
-        if (const auto itemProperties = sMySQLStore.getItemProperties(result->Fetch()[2].asUint32()))
+        if (const auto itemProperties = sMySQLStore.getItemProperties(result->fetch()[2].asUint32()))
         {
             if (itemProperties->InventoryType == INVTYPE_BAG)
             {
                 item = std::make_unique<Container>(HIGHGUID_TYPE_CONTAINER, _lowGuid);
-                dynamic_cast<Container*>(item.get())->loadFromDB(result->Fetch());
+                dynamic_cast<Container*>(item.get())->loadFromDB(result->fetch());
             }
             else
             {
                 item = std::make_unique<Item>();
                 item->init(HIGHGUID_TYPE_ITEM, _lowGuid);
-                item->loadFromDB(result->Fetch(), nullptr, false);
+                item->loadFromDB(result->fetch(), nullptr, false);
             }
         }
     }
@@ -2476,28 +2476,28 @@ std::unique_ptr<Item> ObjectMgr::createItem(uint32_t _entry, Player* _playerOwne
 
 void ObjectMgr::setHighestGuids()
 {
-    auto result = CharacterDatabase.Query("SELECT MAX(guid) FROM characters");
+    auto result = CharacterDatabase.query("SELECT MAX(guid) FROM characters");
     if (result)
     {
-        m_hiPlayerGuid = result->Fetch()[0].asUint32();
+        m_hiPlayerGuid = result->fetch()[0].asUint32();
     }
 
-    result = CharacterDatabase.Query("SELECT MAX(guid) FROM playeritems");
+    result = CharacterDatabase.query("SELECT MAX(guid) FROM playeritems");
     if (result)
     {
-        m_hiItemGuid = result->Fetch()[0].asUint32();
+        m_hiItemGuid = result->fetch()[0].asUint32();
     }
 
-    result = WorldDatabase.Query("SELECT MAX(entry) FROM item_pages");
+    result = WorldDatabase.query("SELECT MAX(entry) FROM item_pages");
     if (result)
     {
-        m_hiItemPageEntry = result->Fetch()[0].asUint32();
+        m_hiItemPageEntry = result->fetch()[0].asUint32();
     }
 
-    result = CharacterDatabase.Query("SELECT MAX(guid) FROM corpses");
+    result = CharacterDatabase.query("SELECT MAX(guid) FROM corpses");
     if (result)
     {
-        m_hiCorpseGuid = result->Fetch()[0].asUint32();
+        m_hiCorpseGuid = result->fetch()[0].asUint32();
     }
 
     result = sMySQLStore.getWorldDBQuery("SELECT MAX(id) FROM creature_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0", VERSION_STRING, VERSION_STRING);
@@ -2505,8 +2505,8 @@ void ObjectMgr::setHighestGuids()
     {
         do
         {
-            m_hiCreatureSpawnId = result->Fetch()[0].asUint32();
-        } while (result->NextRow());
+            m_hiCreatureSpawnId = result->fetch()[0].asUint32();
+        } while (result->nextRow());
     }
 
     result = sMySQLStore.getWorldDBQuery("SELECT MAX(id) FROM gameobject_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0", VERSION_STRING, VERSION_STRING);
@@ -2514,51 +2514,51 @@ void ObjectMgr::setHighestGuids()
     {
         do
         {
-            m_hiGameObjectSpawnId = result->Fetch()[0].asUint32();
-        } while (result->NextRow());
+            m_hiGameObjectSpawnId = result->fetch()[0].asUint32();
+        } while (result->nextRow());
     }
 
-    result = CharacterDatabase.Query("SELECT MAX(group_id) FROM `groups`");
+    result = CharacterDatabase.query("SELECT MAX(group_id) FROM `groups`");
     if (result)
     {
-        m_hiGroupId = result->Fetch()[0].asUint32();
+        m_hiGroupId = result->fetch()[0].asUint32();
     }
 
-    result = CharacterDatabase.Query("SELECT MAX(charterid) FROM charters");
+    result = CharacterDatabase.query("SELECT MAX(charterid) FROM charters");
     if (result)
     {
-        m_hiCharterId = result->Fetch()[0].asUint32();
+        m_hiCharterId = result->fetch()[0].asUint32();
     }
 
-    result = CharacterDatabase.Query("SELECT MAX(guildid) FROM guilds");
+    result = CharacterDatabase.query("SELECT MAX(guildid) FROM guilds");
     if (result)
     {
-        m_hiGuildId = result->Fetch()[0].asUint32();
+        m_hiGuildId = result->fetch()[0].asUint32();
     }
 
-    result = CharacterDatabase.Query("SELECT MAX(UID) FROM playerbugreports");
+    result = CharacterDatabase.query("SELECT MAX(UID) FROM playerbugreports");
     if (result != nullptr)
     {
-        m_reportId = result->Fetch()[0].asUint32() + 1;
+        m_reportId = result->fetch()[0].asUint32() + 1;
     }
 
-    result = CharacterDatabase.Query("SELECT MAX(message_id) FROM mailbox");
+    result = CharacterDatabase.query("SELECT MAX(message_id) FROM mailbox");
     if (result)
     {
-        m_mailId = result->Fetch()[0].asUint32() + 1;
+        m_mailId = result->fetch()[0].asUint32() + 1;
     }
 
-    result = CharacterDatabase.Query("SELECT MAX(setGUID) FROM equipmentsets");
+    result = CharacterDatabase.query("SELECT MAX(setGUID) FROM equipmentsets");
     if (result != nullptr)
     {
-        m_setGuid = result->Fetch()[0].asUint32() + 1;
+        m_setGuid = result->fetch()[0].asUint32() + 1;
     }
 
 #if VERSION_STRING > WotLK
-    result = CharacterDatabase.Query("SELECT MAX(itemId) FROM character_void_storage");
+    result = CharacterDatabase.query("SELECT MAX(itemId) FROM character_void_storage");
     if (result  != nullptr)
     {
-        m_voidItemId = uint64_t(result->Fetch()[0].asUint32() + 1);
+        m_voidItemId = uint64_t(result->fetch()[0].asUint32() + 1);
     }
 #endif
 

@@ -32,10 +32,10 @@ void GuildFinderMgr::loadGuildSettingsFromDB()
 {
     sLogger.info("Loading guild finder guild-related settings...");
 
-    CharacterDatabase.Execute("DELETE gfgs FROM guild_finder_guild_settings gfgs LEFT JOIN guilds g ON gfgs.guildId = g.guildId WHERE g.guildId IS NULL");
+    CharacterDatabase.execute("DELETE gfgs FROM guild_finder_guild_settings gfgs LEFT JOIN guilds g ON gfgs.guildId = g.guildId WHERE g.guildId IS NULL");
 
     //                                                  0                1               2                 3             4           5             6         7
-    auto result = CharacterDatabase.Query("SELECT gfgs.guildId, gfgs.availability, gfgs.classRoles, gfgs.interests, gfgs.level, gfgs.listed, gfgs.comment, c.race "
+    auto result = CharacterDatabase.query("SELECT gfgs.guildId, gfgs.availability, gfgs.classRoles, gfgs.interests, gfgs.level, gfgs.listed, gfgs.comment, c.race "
                                                  "FROM guild_finder_guild_settings gfgs "
                                                  "LEFT JOIN guild_members gm ON gm.guildId = gfgs.guildId "
                                                  "LEFT JOIN characters c ON c.guid = gm.playerid LIMIT 1");
@@ -50,7 +50,7 @@ void GuildFinderMgr::loadGuildSettingsFromDB()
     auto startTime = Util::TimeNow();
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
         uint32_t guildId = fields[0].asUint32();
         uint8_t availability = fields[1].asUint8();
         uint8_t classRoles = fields[2].asUint8();
@@ -72,7 +72,7 @@ void GuildFinderMgr::loadGuildSettingsFromDB()
         _lfgGuildStore[guildId] = settings;
 
         ++count;
-    } while(result->NextRow());
+    } while(result->nextRow());
 
     sLogger.info("Loaded {} guild finder guild-related settings in {} ms.", count, Util::GetTimeDifferenceToNow(startTime));
 }
@@ -81,9 +81,9 @@ void GuildFinderMgr::loadMembershipRequestsFromDB()
 {
     sLogger.info("Loading guild finder membership requests...");
 
-    CharacterDatabase.Execute("DELETE gfa FROM guild_finder_applicant gfa LEFT JOIN guilds g ON gfa.guildId = g.guildId WHERE g.guildId IS NULL");
+    CharacterDatabase.execute("DELETE gfa FROM guild_finder_applicant gfa LEFT JOIN guilds g ON gfa.guildId = g.guildId WHERE g.guildId IS NULL");
     //                                               0         1           2            3           4         5         6
-    auto result = CharacterDatabase.Query("SELECT guildId, playerGuid, availability, classRole, interests, comment, submitTime FROM guild_finder_applicant");
+    auto result = CharacterDatabase.query("SELECT guildId, playerGuid, availability, classRole, interests, comment, submitTime FROM guild_finder_applicant");
     if (result == nullptr)
     {
         sLogger.info("Loaded 0 guild finder membership requests. Table `guild_finder_applicant` is empty.");
@@ -94,7 +94,7 @@ void GuildFinderMgr::loadMembershipRequestsFromDB()
     auto startTime = Util::TimeNow();
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
         uint32_t guildId = fields[0].asUint32();
         uint32_t playerId = fields[1].asUint32();
         uint8_t availability = fields[2].asUint8();
@@ -108,7 +108,7 @@ void GuildFinderMgr::loadMembershipRequestsFromDB()
         _membershipRequestStore[guildId].push_back(request);
 
         ++count;
-    } while(result->NextRow());
+    } while(result->nextRow());
 
     sLogger.info("Loaded {} guild finder membership requests in {} ms.", count, Util::GetTimeDifferenceToNow(startTime));
 }
@@ -117,7 +117,7 @@ void GuildFinderMgr::addMembershipRequest(uint32_t guildGuid, MembershipRequest 
 {
     _membershipRequestStore[guildGuid].push_back(request);
 
-    CharacterDatabase.Execute("REPLACE INTO guild_finder_applicant VALUES(%u, %u, %u, %u, %u, '%s', %u)",
+    CharacterDatabase.execute("REPLACE INTO guild_finder_applicant VALUES(%u, %u, %u, %u, %u, '%s', %u)",
         request.getGuildId(), request.getPlayerGUID(), request.getAvailability(), request.getClassRoles(),
         request.getInterests(), request.getComment().c_str(),request.getSubmitTime());
   
@@ -150,7 +150,7 @@ void GuildFinderMgr::removeAllMembershipRequestsFromPlayer(uint32_t playerId)
             continue;
         }
 
-        CharacterDatabase.Execute("DELETE FROM guild_finder_applicant WHERE guildId = %u AND playerGuid = %u", itr2->getGuildId(), itr2->getPlayerGUID());
+        CharacterDatabase.execute("DELETE FROM guild_finder_applicant WHERE guildId = %u AND playerGuid = %u", itr2->getGuildId(), itr2->getPlayerGUID());
 
         itr->second.erase(itr2);
 
@@ -177,7 +177,7 @@ void GuildFinderMgr::removeMembershipRequest(uint32_t playerId, uint32_t guildId
         return;
     }
 
-    CharacterDatabase.Execute("DELETE FROM guild_finder_applicant WHERE guildId = %u AND playerGuid = %u", itr->getGuildId(), itr->getPlayerGUID());
+    CharacterDatabase.execute("DELETE FROM guild_finder_applicant WHERE guildId = %u AND playerGuid = %u", itr->getGuildId(), itr->getPlayerGUID());
 
     _membershipRequestStore[guildId].erase(itr);
 
@@ -284,7 +284,7 @@ void GuildFinderMgr::setGuildSettings(uint32_t guildGuid, LFGuildSettings const&
 {
     _lfgGuildStore[guildGuid] = settings;
     
-    CharacterDatabase.Execute("REPLACE INTO guild_finder_guild_settings VALUES(%u, %u, %u, %u, %u, %u, '%s')", 
+    CharacterDatabase.execute("REPLACE INTO guild_finder_guild_settings VALUES(%u, %u, %u, %u, %u, %u, '%s')", 
         settings.getGUID(), settings.getAvailability(), settings.getClassRoles(), settings.getInterests(),
         settings.getLevel(), settings.isListed(), settings.getComment().c_str());
 }
@@ -296,9 +296,9 @@ void GuildFinderMgr::deleteGuild(uint32_t guildId)
     {
         uint32_t applicant = itr->getPlayerGUID();
 
-        CharacterDatabase.Execute("DELETE FROM guild_finder_applicant WHERE guildId = %u AND playerGuid = %u", itr->getGuildId(), applicant);
+        CharacterDatabase.execute("DELETE FROM guild_finder_applicant WHERE guildId = %u AND playerGuid = %u", itr->getGuildId(), applicant);
 
-        CharacterDatabase.Execute("DELETE FROM guild_finder_guild_settings WHERE guildId = %u", itr->getGuildId());
+        CharacterDatabase.execute("DELETE FROM guild_finder_guild_settings WHERE guildId = %u", itr->getGuildId());
 
         if (Player* player = sObjectMgr.getPlayer(applicant))
         {

@@ -17,12 +17,12 @@ int LuaSqlApi::GetColumn(lua_State* L, QueryResult* res)
     if (res != nullptr)
     {
         const uint32_t column = CHECK_ULONG(L, 1);
-        const uint32_t fields = res->GetFieldCount();
+        const uint32_t fields = res->getFieldCount();
         if (column > fields)
-            luaL_error(L, "GetColumn, Column %d bigger than max column %d", column, res->GetFieldCount());
+            luaL_error(L, "GetColumn, Column %d bigger than max column %d", column, res->getFieldCount());
         else
         {
-            Field* field = &(res->Fetch()[column]);
+            Field* field = &(res->fetch()[column]);
             PUSH_SQLFIELD(L, field);
         }
     }
@@ -35,7 +35,7 @@ int LuaSqlApi::NextRow(lua_State* L, QueryResult* res)
 {
     if (res != nullptr)
     {
-        if (res->NextRow())
+        if (res->nextRow())
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -50,7 +50,7 @@ int LuaSqlApi::GetColumnCount(lua_State* L, QueryResult* res)
     if (res == nullptr)
         lua_pushnil(L);
     else
-        lua_pushnumber(L, res->GetFieldCount());
+        lua_pushnumber(L, res->getFieldCount());
     return 1;
 }
 
@@ -59,7 +59,7 @@ int LuaSqlApi::GetRowCount(lua_State* L, QueryResult* res)
     if (res == nullptr)
         lua_pushnil(L);
     else
-        lua_pushnumber(L, res->GetRowCount());
+        lua_pushnumber(L, res->getRowCount());
     return 1;
 }
 

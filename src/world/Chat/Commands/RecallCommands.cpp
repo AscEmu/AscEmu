@@ -71,7 +71,7 @@ bool ChatCommandHandler::HandleRecallAddCommand(const char* args, WorldSession* 
     std::stringstream ss;
 
     ss << "INSERT INTO recall (name, min_build, max_build, mapid, positionX, positionY, positionZ, Orientation) VALUES ('"
-        << WorldDatabase.EscapeString(args) << "' , "
+        << WorldDatabase.escapeString(args) << "' , "
         << getAEVersion() << ", "
         << getAEVersion() << ", "
         << player->GetMapId() << ", "
@@ -79,7 +79,7 @@ bool ChatCommandHandler::HandleRecallAddCommand(const char* args, WorldSession* 
         << player->GetPositionY() << ", "
         << player->GetPositionZ() << ", "
         << player->GetOrientation() << ");";
-    WorldDatabase.Execute(ss.str().c_str());
+    WorldDatabase.execute(ss.str().c_str());
 
     sMySQLStore.loadRecallTable();
 
@@ -99,7 +99,7 @@ bool ChatCommandHandler::HandleRecallDelCommand(const char* args, WorldSession* 
 
     if (const auto recall = sMySQLStore.getRecallByName(args))
     {
-        WorldDatabase.Execute("DELETE FROM recall WHERE name = %s;", recall->name.c_str());
+        WorldDatabase.execute("DELETE FROM recall WHERE name = %s;", recall->name.c_str());
 
         greenSystemMessage(m_session, "Recall location removed.");
         sGMLog.writefromsession(m_session, "used recall delete, removed \'%s\' location from database.", args);

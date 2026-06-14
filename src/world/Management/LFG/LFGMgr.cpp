@@ -92,7 +92,7 @@ void LfgMgr::LoadRewards()
     m_RewardMap.clear();
 
     // ORDER BY is very important for GetRandomDungeonReward!
-    auto result = WorldDatabase.Query("SELECT dungeon_id, max_level, quest_id_1, money_var_1, xp_var_1, quest_id_2, money_var_2, xp_var_2 FROM lfg_dungeon_rewards ORDER BY dungeon_id, max_level ASC");
+    auto result = WorldDatabase.query("SELECT dungeon_id, max_level, quest_id_1, money_var_1, xp_var_1, quest_id_2, money_var_2, xp_var_2 FROM lfg_dungeon_rewards ORDER BY dungeon_id, max_level ASC");
     if (result == nullptr)
     {
         sLogger.failure("Loaded 0 lfg dungeon rewards.DB table `lfg_dungeon_rewards` is empty!\n");
@@ -102,7 +102,7 @@ void LfgMgr::LoadRewards()
     uint32_t count = 0;
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
         uint32_t dungeonId = fields[0].asUint32();
         uint32_t maxLevel = fields[1].asUint8();
         uint32_t firstQuestId = fields[2].asUint32();
@@ -144,7 +144,7 @@ void LfgMgr::LoadRewards()
         m_RewardMap.emplace(dungeonId, std::make_unique<LfgReward>(maxLevel, firstQuestId, firstMoneyVar, firstXPVar, otherQuestId, otherMoneyVar, otherXPVar));
         ++count;
     }
-    while (result->NextRow());
+    while (result->nextRow());
 
     sLogger.info("LFGMgr : Loaded {} lfg dungeon rewards in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }

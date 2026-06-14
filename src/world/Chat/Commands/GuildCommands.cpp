@@ -177,7 +177,7 @@ bool ChatCommandHandler::HandleRenameGuildCommand(const char* args, WorldSession
         return true;
     }
     greenSystemMessage(m_session, "Changed guild name of {} to {}. This will take effect next restart.", selected_player->getGuild()->getName(), args);
-    CharacterDatabase.Execute("UPDATE guilds SET `guildName` = \'%s\' WHERE `guildId` = '%u'", CharacterDatabase.EscapeString(std::string(args)).c_str(), selected_player->getGuild()->getId());
+    CharacterDatabase.execute("UPDATE guilds SET `guildName` = \'%s\' WHERE `guildId` = '%u'", CharacterDatabase.escapeString(std::string(args)).c_str(), selected_player->getGuild()->getId());
     sGMLog.writefromsession(m_session, "Changed guild name of '%s' to '%s'", selected_player->getGuild()->getName().c_str(), args);
 
     return true;

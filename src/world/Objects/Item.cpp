@@ -1348,14 +1348,14 @@ void Item::saveToDB(int8_t containerslot, int8_t slot, bool firstsave, QueryBuff
 
     if (firstsave)
     {
-        CharacterDatabase.WaitExecute(ss.str().c_str());
+        CharacterDatabase.waitExecute(ss.str().c_str());
     }
     else
     {
         if (buf == nullptr)
-            CharacterDatabase.Execute(ss.str().c_str());
+            CharacterDatabase.execute(ss.str().c_str());
         else
-            buf->AddQueryNA(ss.str().c_str());
+            buf->addQueryNA(ss.str().c_str());
     }
 
 
@@ -1421,14 +1421,14 @@ void Item::saveToDB(int8_t containerslot, int8_t slot, bool firstsave, QueryBuff
 
     if (firstsave)
     {
-        CharacterDatabase.WaitExecute(ss.str().c_str());
+        CharacterDatabase.waitExecute(ss.str().c_str());
     }
     else
     {
         if (buf == nullptr)
-            CharacterDatabase.Execute(ss.str().c_str());
+            CharacterDatabase.execute(ss.str().c_str());
         else
-            buf->AddQueryNA(ss.str().c_str());
+            buf->addQueryNA(ss.str().c_str());
     }
 
     m_isDirty = false;
@@ -1445,7 +1445,7 @@ void Item::deleteFromDB()
         }
     }
 
-    CharacterDatabase.Execute("DELETE FROM playeritems WHERE guid = %u", getGuidLow());
+    CharacterDatabase.execute("DELETE FROM playeritems WHERE guid = %u", getGuidLow());
 }
 
 const static uint16_t arm_skills[7] =

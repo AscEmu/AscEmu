@@ -444,7 +444,7 @@ void LogonCommServerSocket::HandleTestConsoleLogin(WorldPacket & recvData)
     pass.assign(accountname);
     pass.push_back(':');
     pass.append(password);
-    auto checkPassQuery = sLogonSQL->Query("SELECT acc_name, encrypted_password FROM accounts WHERE encrypted_password = SHA(UPPER('%s')) AND acc_name = '%s'", pass.c_str(), accountname.c_str());
+    auto checkPassQuery = sLogonSQL->query("SELECT acc_name, encrypted_password FROM accounts WHERE encrypted_password = SHA(UPPER('%s')) AND acc_name = '%s'", pass.c_str(), accountname.c_str());
     if (!checkPassQuery)
     {
         data << uint32_t(0);
@@ -482,7 +482,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             pAccount->Banned = duration;
 
             // update it in the sql (duh)
-            sLogonSQL->Execute("UPDATE accounts SET banned = %u, banreason = '%s' WHERE acc_name = \"%s\"", duration, sLogonSQL->EscapeString(banreason).c_str(), sLogonSQL->EscapeString(account).c_str());
+            sLogonSQL->execute("UPDATE accounts SET banned = %u, banreason = '%s' WHERE acc_name = \"%s\"", duration, sLogonSQL->escapeString(banreason).c_str(), sLogonSQL->escapeString(account).c_str());
 
         }
         break;
@@ -526,7 +526,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             pAccount->Muted = duration;
 
             // update it in the sql (duh)
-            sLogonSQL->Execute("UPDATE accounts SET muted = %u WHERE acc_name = \"%s\"", duration, sLogonSQL->EscapeString(account).c_str());
+            sLogonSQL->execute("UPDATE accounts SET muted = %u WHERE acc_name = \"%s\"", duration, sLogonSQL->escapeString(account).c_str());
         }
         break;
 
@@ -541,7 +541,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             recvData >> banreason;
 
             if (sIpBanMgr.add(ip, duration))
-                sLogonSQL->Execute("INSERT INTO ipbans VALUES(\"%s\", %u, \"%s\")", sLogonSQL->EscapeString(ip).c_str(), duration, sLogonSQL->EscapeString(banreason).c_str());
+                sLogonSQL->execute("INSERT INTO ipbans VALUES(\"%s\", %u, \"%s\")", sLogonSQL->escapeString(ip).c_str(), duration, sLogonSQL->escapeString(banreason).c_str());
 
         }
         break;
@@ -552,7 +552,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             recvData >> ip;
 
             if (sIpBanMgr.remove(ip))
-                sLogonSQL->Execute("DELETE FROM ipbans WHERE ip = \"%s\"", sLogonSQL->EscapeString(ip).c_str());
+                sLogonSQL->execute("DELETE FROM ipbans WHERE ip = \"%s\"", sLogonSQL->escapeString(ip).c_str());
 
         }
         break;
@@ -574,7 +574,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             pass.assign(account_name);
             pass.push_back(':');
             pass.append(old_password);
-            auto check_oldpass_query = sLogonSQL->Query("SELECT acc_name, encrypted_password FROM accounts WHERE encrypted_password = SHA(UPPER('%s')) AND acc_name = '%s'", pass.c_str(), account_name.c_str());
+            auto check_oldpass_query = sLogonSQL->query("SELECT acc_name, encrypted_password FROM accounts WHERE encrypted_password = SHA(UPPER('%s')) AND acc_name = '%s'", pass.c_str(), account_name.c_str());
 
             if (!check_oldpass_query)
             {
@@ -645,7 +645,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
                 pass.push_back(':');
                 pass.append(password);
 
-                sLogonSQL->Query("INSERT INTO `accounts`(`acc_name`,`encrypted_password`,`banned`,`email`,`flags`,`banreason`) VALUES ('%s', SHA(UPPER('%s')),'0','','24','')", name_save.c_str(), pass.c_str());
+                sLogonSQL->query("INSERT INTO `accounts`(`acc_name`,`encrypted_password`,`banned`,`email`,`flags`,`banreason`) VALUES ('%s', SHA(UPPER('%s')),'0','','24','')", name_save.c_str(), pass.c_str());
 
                 result = Result_Account_Finished;
 

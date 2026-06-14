@@ -413,7 +413,7 @@ void TaxiMgr::loadTaxiNodeLevelData()
     auto oldMSTime = Util::TimeNow();
 
     //                                               0            1
-    auto result = WorldDatabase.Query("SELECT TaxiNodeId, `Level` FROM taxi_level_data ORDER BY TaxiNodeId ASC");
+    auto result = WorldDatabase.query("SELECT TaxiNodeId, `Level` FROM taxi_level_data ORDER BY TaxiNodeId ASC");
 
     if (!result)
     {
@@ -424,7 +424,7 @@ void TaxiMgr::loadTaxiNodeLevelData()
     uint32_t count = 0;
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
 
         uint32_t taxiNodeId = fields[0].asUint16();
         uint8_t level = fields[1].asUint8();
@@ -439,7 +439,7 @@ void TaxiMgr::loadTaxiNodeLevelData()
         _taxiNodeLevelDataStore.emplace(taxiNodeId, level);
 
         ++count;
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("TaxiMgr:: Loaded {} taxi node level definitions in {} ms", count, Util::GetTimeDifferenceToNow(oldMSTime));
 }

@@ -281,7 +281,7 @@ void LogonConsole::AccountCreate(char* str)
     query << email << "','";
     query << AE_EXPANSION_VERSION << "','' );";
 
-    if (!sLogonSQL->WaitExecuteNA(query.str().c_str()))
+    if (!sLogonSQL->waitExecuteNA(query.str().c_str()))
     {
         fmt::println("Couldn't save new account to database. Aborting.");
         return;
@@ -310,7 +310,7 @@ void LogonConsole::AccountDelete(char* str)
     query << "DELETE FROM `accounts` WHERE `acc_name` = '";
     query << name << "';";
 
-    if (!sLogonSQL->WaitExecuteNA(query.str().c_str()))
+    if (!sLogonSQL->waitExecuteNA(query.str().c_str()))
     {
         fmt::println("Couldn't delete account. Aborting.");
         return;
@@ -346,7 +346,7 @@ void LogonConsole::AccountSetPassword(char* str)
     query << "SHA( UPPER( '" << pass << "' ) ) WHERE `acc_name` = '";
     query << name << "'";
 
-    if (!sLogonSQL->WaitExecuteNA(query.str().c_str()))
+    if (!sLogonSQL->waitExecuteNA(query.str().c_str()))
     {
         fmt::println("Couldn't update password in database. Aborting.");
         return;
@@ -385,7 +385,7 @@ void LogonConsole::AccountChangePassword(char* str)
     pass.push_back(':');
     pass.append(old_password);
 
-    auto check_oldpass_query = sLogonSQL->Query("SELECT acc_name, encrypted_password FROM accounts WHERE encrypted_password = SHA(UPPER('%s')) AND acc_name = '%s'", pass.c_str(), std::string(account_name).c_str());
+    auto check_oldpass_query = sLogonSQL->query("SELECT acc_name, encrypted_password FROM accounts WHERE encrypted_password = SHA(UPPER('%s')) AND acc_name = '%s'", pass.c_str(), std::string(account_name).c_str());
 
     if (!check_oldpass_query)
     {
@@ -399,7 +399,7 @@ void LogonConsole::AccountChangePassword(char* str)
         new_pass.push_back(':');
         new_pass.append(new_password_1);
 
-        auto new_pass_query = sLogonSQL->Query("UPDATE accounts SET encrypted_password = SHA(UPPER('%s')) WHERE acc_name = '%s'", new_pass.c_str(), std::string(account_name).c_str());
+        auto new_pass_query = sLogonSQL->query("UPDATE accounts SET encrypted_password = SHA(UPPER('%s')) WHERE acc_name = '%s'", new_pass.c_str(), std::string(account_name).c_str());
 
         if (!new_pass_query)
         {

@@ -992,9 +992,9 @@ int LuaGameObject::AddLoot(lua_State* L, GameObject* ptr)
     bool perm = ((luaL_optinteger(L, 4, 0) == 1) ? true : false);
     if (perm)
     {
-        auto result = WorldDatabase.Query("SELECT * FROM loot_gameobjects WHERE entryid = %u, itemid = %u", ptr->getEntry(), itemid);
+        auto result = WorldDatabase.query("SELECT * FROM loot_gameobjects WHERE entryid = %u, itemid = %u", ptr->getEntry(), itemid);
         if (!result)
-        WorldDatabase.Execute("REPLACE INTO loot_gameobjects VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->getEntry(), itemid, chance, mincount, maxcount);
+        WorldDatabase.execute("REPLACE INTO loot_gameobjects VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->getEntry(), itemid, chance, mincount, maxcount);
     }
     sLootMgr.addLoot(&lt->loot, itemid, ichance, mincount, maxcount, ptr->getWorldMap()->getDifficulty());
     return 0;

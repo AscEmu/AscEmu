@@ -1246,7 +1246,7 @@ static constexpr uint8_t COEFF_DISABLE_LEVEL_20_PENALTY = 0x2;
 void SpellMgr::loadSpellCoefficientOverride()
 {
     //                                            0          1             2               3           4
-    auto result = WorldDatabase.Query("SELECT spell_id, effectIndex, sp_coefficient, ap_coefficient, flags "
+    auto result = WorldDatabase.query("SELECT spell_id, effectIndex, sp_coefficient, ap_coefficient, flags "
                                             "FROM spell_coefficient_override WHERE min_build <= %u AND max_build >= %u ORDER BY spell_id, effectIndex", VERSION_STRING, VERSION_STRING);
 
     if (result == nullptr)
@@ -1258,7 +1258,7 @@ void SpellMgr::loadSpellCoefficientOverride()
     auto overridenCoeffs = 0;
     do
     {
-        const auto fields = result->Fetch();
+        const auto fields = result->fetch();
         auto spellInfo = getMutableSpellInfo(fields[0].asUint32());
         if (spellInfo == nullptr)
         {
@@ -1354,7 +1354,7 @@ void SpellMgr::loadSpellCoefficientOverride()
         }
 
         ++overridenCoeffs;
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("SpellMgr : Loaded {} override values from `spell_coefficient_override` table", overridenCoeffs);
 }
@@ -1362,7 +1362,7 @@ void SpellMgr::loadSpellCoefficientOverride()
 void SpellMgr::loadSpellCustomOverride()
 {
     //                                                   0                1                         2                     3
-    const auto result = WorldDatabase.Query("SELECT `spell_id`, `assign_on_target_flag`, `assign_self_cast_only`, `assign_c_is_flag` FROM spell_custom_override");
+    const auto result = WorldDatabase.query("SELECT `spell_id`, `assign_on_target_flag`, `assign_self_cast_only`, `assign_c_is_flag` FROM spell_custom_override");
     if (result == nullptr)
     {
         sLogger.debug("SpellMgr::loadSpellCustomOverride : Your `spell_custom_override` table is empty!");
@@ -1372,7 +1372,7 @@ void SpellMgr::loadSpellCustomOverride()
     auto overridenSpells = 0;
     do
     {
-        const auto fields = result->Fetch();
+        const auto fields = result->fetch();
 
         auto spellInfo = getMutableSpellInfo(fields[0].asUint32());
         if (spellInfo == nullptr)
@@ -1448,14 +1448,14 @@ void SpellMgr::loadSpellCustomOverride()
         }*/
 
         ++overridenSpells;
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("SpellMgr : Loaded {} override values from `spell_custom_override` table", overridenSpells);
 }
 
 void SpellMgr::loadSpellAIThreat()
 {
-    const auto result = WorldDatabase.Query("SELECT * FROM ai_threattospellid");
+    const auto result = WorldDatabase.query("SELECT * FROM ai_threattospellid");
     if (result == nullptr)
     {
         sLogger.debug("SpellMgr::loadSpellAIThreat : Your `ai_threattospellid` table is empty!");
@@ -1465,7 +1465,7 @@ void SpellMgr::loadSpellAIThreat()
     auto threatCount = 0;
     do
     {
-        const auto fields = result->Fetch();
+        const auto fields = result->fetch();
         const auto spellId = fields[0].asUint32();
 
         auto spellInfo = getMutableSpellInfo(spellId);
@@ -1479,14 +1479,14 @@ void SpellMgr::loadSpellAIThreat()
         spellInfo->custom_ThreatForSpellCoef = fields[2].asFloat();
 
         ++threatCount;
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("SpellMgr : Loaded {} spell ai threat from `ai_threattospellid` table", threatCount);
 }
 
 void SpellMgr::loadSpellEffectOverride()
 {
-    const auto result = WorldDatabase.Query("SELECT * FROM spell_effects_override");
+    const auto result = WorldDatabase.query("SELECT * FROM spell_effects_override");
     if (result == nullptr)
     {
         sLogger.debug("SpellMgr::loadSpellEffectOverride : Your `spell_effects_override` table is empty!");
@@ -1496,7 +1496,7 @@ void SpellMgr::loadSpellEffectOverride()
     auto overridenEffects = 0;
     do
     {
-        const auto fields = result->Fetch();
+        const auto fields = result->fetch();
         uint32_t seo_SpellId = fields[0].asUint32();
         uint8_t seo_EffectId = fields[1].asUint8();
         uint32_t seo_Disable = fields[2].asUint32();
@@ -1548,7 +1548,7 @@ void SpellMgr::loadSpellEffectOverride()
             spellInfo->EffectCustomFlag[seo_Effect] = seo_EffectCustomFlag;
 
         ++overridenEffects;
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("SpellMgr : Loaded {} spell effect overrides from `spell_effects_override` table", overridenEffects);
 }
@@ -1562,7 +1562,7 @@ void SpellMgr::loadSpellAreas()
     mSpellAreaForAuraMap.clear();
 
     //                                                0     1         2              3               4           5          6        7        8
-    const auto result = WorldDatabase.Query("SELECT spell, area, quest_start, quest_start_active, quest_end, aura_spell, racemask, gender, autocast FROM spell_area");
+    const auto result = WorldDatabase.query("SELECT spell, area, quest_start, quest_start_active, quest_end, aura_spell, racemask, gender, autocast FROM spell_area");
     if (result == nullptr)
     {
         sLogger.debug("SpellMgr::loadSpellAreas : Your `spell_area` table is empty!");
@@ -1572,7 +1572,7 @@ void SpellMgr::loadSpellAreas()
     auto areaCount = 0;
     do
     {
-        const auto fields = result->Fetch();
+        const auto fields = result->fetch();
 
         uint32_t spellId = fields[0].asUint32();
 
@@ -1742,7 +1742,7 @@ void SpellMgr::loadSpellAreas()
             mSpellAreaForAuraMap.insert(SpellAreaForAuraMap::value_type(auraId, spellArea2));
 
         ++areaCount;
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("SpellMgr : Loaded {} spell area requirements from `spell_area` table", areaCount);
 }
@@ -1753,7 +1753,7 @@ void SpellMgr::loadSpellRequired()
     mSpellRequired.clear();
 
     //                                                   0         1
-    const auto result = WorldDatabase.Query("SELECT spell_id, req_spell FROM spell_required");
+    const auto result = WorldDatabase.query("SELECT spell_id, req_spell FROM spell_required");
     if (result == nullptr)
     {
         sLogger.debug("SpellMgr : Loaded 0 spell required records. DB table `spell_required` is empty.");
@@ -1763,7 +1763,7 @@ void SpellMgr::loadSpellRequired()
     uint32_t count = 0;
     do
     {
-        auto fields = result->Fetch();
+        auto fields = result->fetch();
 
         auto spell_id = fields[0].asUint32();
         auto spell_req = fields[1].asUint32();
@@ -1792,14 +1792,14 @@ void SpellMgr::loadSpellRequired()
         mSpellRequired.insert(std::pair<uint32_t, uint32_t>(spell_id, spell_req));
         mSpellsRequiringSpell.insert(std::pair<uint32_t, uint32_t>(spell_req, spell_id));
         ++count;
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("SpellMgr : Loaded {} spell required records from `spell_required` table", count);
 }
 
 void SpellMgr::loadSpellTargetConstraints()
 {
-    const auto result = WorldDatabase.Query("SELECT * FROM spelltargetconstraints WHERE SpellID > 0 ORDER BY SpellID");
+    const auto result = WorldDatabase.query("SELECT * FROM spelltargetconstraints WHERE SpellID > 0 ORDER BY SpellID");
     if (result != nullptr)
     {
         uint32_t oldspellId = 0;
@@ -1807,7 +1807,7 @@ void SpellMgr::loadSpellTargetConstraints()
 
         do
         {
-            auto fields = result->Fetch();
+            auto fields = result->fetch();
 
             if (fields != nullptr)
             {
@@ -1853,7 +1853,7 @@ void SpellMgr::loadSpellTargetConstraints()
 
                 oldspellId = spellId;
             }
-        } while (result->NextRow());
+        } while (result->nextRow());
     }
 
     sLogger.info("SpellMgr : Loaded {} spell target constraints from `spelltargetconstraints` table", static_cast<uint32_t>(mSpellTargetConstraintMap.size()));
@@ -1861,13 +1861,13 @@ void SpellMgr::loadSpellTargetConstraints()
 
 void SpellMgr::loadSpellDisabled()
 {
-    const auto result = WorldDatabase.Query("SELECT * FROM spell_disable");
+    const auto result = WorldDatabase.query("SELECT * FROM spell_disable");
     if (result != nullptr)
     {
         do
         {
-            mDisabledSpells.insert(result->Fetch()[0].asUint32());
-        } while (result->NextRow());
+            mDisabledSpells.insert(result->fetch()[0].asUint32());
+        } while (result->nextRow());
     }
 
     sLogger.info("SpellMgr : Loaded {} disabled spells from `spell_disable` table", static_cast<uint32_t>(mDisabledSpells.size()));
@@ -1881,7 +1881,7 @@ void SpellMgr::loadSpellRanks()
 #endif
 
     //                                                  0             1          2
-    const auto result = WorldDatabase.Query("SELECT `spell_id`, `first_spell`, `rank` "
+    const auto result = WorldDatabase.query("SELECT `spell_id`, `first_spell`, `rank` "
         "FROM spell_ranks WHERE `min_build` <= %u AND `max_build` >= %u ORDER BY `first_spell`, `rank`", VERSION_STRING, VERSION_STRING);
 
     if (result == nullptr)
@@ -2001,7 +2001,7 @@ void SpellMgr::loadSpellRanks()
     uint32_t lastFetchedSpellId = 0;
     do
     {
-        const auto fields = result->Fetch();
+        const auto fields = result->fetch();
         const auto spellId = fields[0].asUint32();
         const auto firstSpellId = fields[1].asUint32();
         const auto rank = fields[2].asUint8();
@@ -2017,7 +2017,7 @@ void SpellMgr::loadSpellRanks()
         }
 
         spellRankChain.insert({ rank, spellId });
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     // Remember to create a rank chain for last chain as well
     createSpellRankChain();

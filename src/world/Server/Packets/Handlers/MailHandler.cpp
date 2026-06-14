@@ -43,7 +43,7 @@ void WorldSession::handleMarkAsReadOpcode(WorldPacket& recvPacket)
     if (!sMailSystem.MailOption(MAIL_FLAG_NO_EXPIRY))
         mailMessage->expire_time = static_cast<uint32_t>(UNIXTIME) + (TimeVars::Day * 30);
 
-    CharacterDatabase.WaitExecute("UPDATE mailbox SET checked_flag = %u, expiry_time = %u WHERE message_id = %u",
+    CharacterDatabase.waitExecute("UPDATE mailbox SET checked_flag = %u, expiry_time = %u WHERE message_id = %u",
         mailMessage->checked_flag, mailMessage->expire_time, mailMessage->message_id);
 }
 
@@ -90,7 +90,7 @@ void WorldSession::handleTakeMoneyOpcode(WorldPacket& recvPacket)
     _player->modCoinage(mailMessage->money);
     mailMessage->money = 0;
 
-    CharacterDatabase.WaitExecute("UPDATE mailbox SET money = 0 WHERE message_id = %u", mailMessage->message_id);
+    CharacterDatabase.waitExecute("UPDATE mailbox SET money = 0 WHERE message_id = %u", mailMessage->message_id);
 
     SendPacket(SmsgSendMailResult(srlPacket.messageId, MAIL_RES_MONEY_TAKEN, MAIL_OK).serialise().get());
 }
@@ -436,7 +436,7 @@ void WorldSession::handleTakeItemOpcode(WorldPacket& recvPacket)
         sMailSystem.SendAutomatedMessage(MAIL_TYPE_NORMAL, answerSender, answerReceiver, subject, "", answerCodMoney, 0, 0, MAIL_STATIONERY_TEST1, MAIL_CHECK_MASK_COD_PAYMENT);
 
         mailMessage->cod = 0;
-        CharacterDatabase.Execute("UPDATE mailbox SET cod = 0 WHERE message_id = %u", mailMessage->message_id);
+        CharacterDatabase.execute("UPDATE mailbox SET cod = 0 WHERE message_id = %u", mailMessage->message_id);
     }
 }
 
@@ -568,7 +568,7 @@ void WorldSession::handleSendMailOpcode(WorldPacket& recvPacket)
     // charge and save gold
     _player->modCoinage(-static_cast<int32_t>(cost));
 
-    CharacterDatabase.Execute("UPDATE characters SET gold = %u WHERE guid = %u", _player->getCoinage(), _player->m_playerInfo->guid);
+    CharacterDatabase.execute("UPDATE characters SET gold = %u WHERE guid = %u", _player->getCoinage(), _player->m_playerInfo->guid);
 
     SendPacket(SmsgSendMailResult(0, MAIL_RES_MAIL_SENT, MAIL_OK).serialise().get());
 }

@@ -148,7 +148,7 @@ int LuaGlobalFunctions::WorldDBQuery(lua_State* L)
     //uint32_t rID = static_cast<uint32_t>(luaL_optinteger(L, 3, 0)); //row
     if (!qStr)
         return 0;
-    auto result = WorldDatabase.Query(qStr);
+    auto result = WorldDatabase.query(qStr);
     lua_settop(L, 0);
     PUSH_SQLRESULT(L, result);*/
     return 1;
@@ -176,7 +176,7 @@ int LuaGlobalFunctions::WorldDBQueryTable(lua_State* L)
     /*const char* qStr = luaL_checkstring(L, 1);
     lua_newtable(L);
     if (!qStr) return 0;
-    auto result = WorldDatabase.Query(qStr);
+    auto result = WorldDatabase.query(qStr);
     PUSH_SQLRESULT(L, result);*/
     return 1;
 }

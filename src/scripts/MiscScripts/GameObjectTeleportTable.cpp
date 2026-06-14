@@ -83,11 +83,11 @@ public:
 
 void InitializeGameObjectTeleportTable(ScriptMgr* mgr)
 {
-    auto result = WorldDatabase.Query("SELECT entry, mapid, x_pos, y_pos, z_pos, orientation, required_level, required_class, required_achievement FROM gameobject_teleports");
+    auto result = WorldDatabase.query("SELECT entry, mapid, x_pos, y_pos, z_pos, orientation, required_level, required_class, required_achievement FROM gameobject_teleports");
     if (result != NULL)
     {
         // Check if the SQL table is setup correctly
-        if (result->GetFieldCount() < 9)
+        if (result->getFieldCount() < 9)
         {
             DLLLogDetail("Error: Custom portals disabled, invalid 'gameobject_teleports' table.");
             return;
@@ -95,7 +95,7 @@ void InitializeGameObjectTeleportTable(ScriptMgr* mgr)
         do
         {
             GameobjectTeleport* gt = new GameobjectTeleport;
-            Field* fields = result->Fetch();
+            Field* fields = result->fetch();
             uint32_t entry = fields[0].asUint32();
             gt->mapid = fields[1].asUint32();
             gt->x = fields[2].asFloat();
@@ -107,6 +107,6 @@ void InitializeGameObjectTeleportTable(ScriptMgr* mgr)
             gt->req_achievement = fields[8].asUint32();
             m_teleStorage[entry] = gt;
             mgr->register_gameobject_script(entry, &CustomTeleport::Create);
-        } while (result->NextRow());
+        } while (result->nextRow());
     }
 }

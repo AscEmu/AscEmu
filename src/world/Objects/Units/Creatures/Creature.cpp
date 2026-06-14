@@ -1027,7 +1027,7 @@ void Creature::SaveToDB()
     ss << VERSION_STRING;
     ss << ";";
 
-    WorldDatabase.Execute(ss.str().c_str());
+    WorldDatabase.execute(ss.str().c_str());
 
     ss.rdbuf()->str("");
 
@@ -1074,7 +1074,7 @@ void Creature::SaveToDB()
         << ",0" // waypoint_group
         << ")";
 
-    WorldDatabase.Execute(ss.str().c_str());
+    WorldDatabase.execute(ss.str().c_str());
 }
 
 void Creature::LoadScript()
@@ -1087,7 +1087,7 @@ void Creature::DeleteFromDB()
     if (!GetSQL_id())
         return;
 
-    WorldDatabase.Execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u", m_spawn->origine.c_str(), GetSQL_id(), VERSION_STRING, VERSION_STRING);
+    WorldDatabase.execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u", m_spawn->origine.c_str(), GetSQL_id(), VERSION_STRING, VERSION_STRING);
 }
 
 

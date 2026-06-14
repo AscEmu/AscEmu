@@ -369,9 +369,9 @@ void GameObject::deleteFromDB()
         std::string tableExtra = tableOrigine + "_extra";
         std::string tableOverrides = tableOrigine + "_overrides";
 
-        WorldDatabase.Execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u ", tableOrigine.c_str(), m_spawn->id, VERSION_STRING, VERSION_STRING);
-        WorldDatabase.Execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u ", tableExtra.c_str(), m_spawn->id, VERSION_STRING, VERSION_STRING);
-        WorldDatabase.Execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u ", tableOverrides.c_str(), m_spawn->id, VERSION_STRING, VERSION_STRING);
+        WorldDatabase.execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u ", tableOrigine.c_str(), m_spawn->id, VERSION_STRING, VERSION_STRING);
+        WorldDatabase.execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u ", tableExtra.c_str(), m_spawn->id, VERSION_STRING, VERSION_STRING);
+        WorldDatabase.execute("DELETE FROM %s WHERE id = %u AND min_build <= %u AND max_build >= %u ", tableOverrides.c_str(), m_spawn->id, VERSION_STRING, VERSION_STRING);
     }
 }
 
@@ -440,7 +440,7 @@ void GameObject::saveToDB(bool newSpawn)
             << VERSION_STRING;
     }
 
-    WorldDatabase.Execute(ss.str().c_str());
+    WorldDatabase.execute(ss.str().c_str());
 }
 
 bool GameObject::create(uint32_t entry, WorldMap* map, uint32_t phase, LocationVector const& position, QuaternionData const& rotation, GameObject_State state, uint32_t spawnId)

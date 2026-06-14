@@ -32,8 +32,8 @@ void onCrash(bool terminate)
     try
     {
         sLogger.info("sql : Waiting for all database queries to finish...");
-        WorldDatabase.EndThreads();
-        CharacterDatabase.EndThreads();
+        WorldDatabase.endThreads();
+        CharacterDatabase.endThreads();
         sLogger.info("sql : All pending database operations cleared.");
         sWorld.saveAllPlayersToDb();
         sLogger.info("sql : Data saved.");

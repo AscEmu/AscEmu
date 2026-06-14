@@ -36,7 +36,7 @@ bool ChatCommandHandler::HandleMoveDBCItemSetsToDB(const char* args, WorldSessio
 {
 #if VERSION_STRING >= Cata
     std::string dumpTable = "CREATE TABLE IF NOT EXISTS `item_sets_dump` (`id` INT NOT NULL, `item1` INT NOT NULL, `item2` INT NOT NULL, `item3` INT NOT NULL, `item4` INT NOT NULL, `item5` INT NOT NULL, `item6` INT NOT NULL, `item7` INT NOT NULL, `item8` INT NOT NULL, `item9` INT NOT NULL, `item10` INT NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
-    auto result = WorldDatabase.Query(dumpTable.c_str());
+    auto result = WorldDatabase.query(dumpTable.c_str());
 
     for (uint32_t i = 0; i <= 960; ++i)
     {
@@ -45,7 +45,7 @@ bool ChatCommandHandler::HandleMoveDBCItemSetsToDB(const char* args, WorldSessio
             if (sMySQLStore.getItemProperties(i) == nullptr)
             {
                 std::string insertQuery = std::format("INSERT INTO `item_sets_dump` (`id`, `item1`, `item2`, `item3`, `item4`, `item5`, `item6`, `item7`, `item8`, `item9`, `item10`) VALUES ({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {});", item->id, item->itemid[0], item->itemid[1], item->itemid[2], item->itemid[3], item->itemid[4], item->itemid[5], item->itemid[6], item->itemid[7], item->itemid[8], item->itemid[9]);
-                WorldDatabase.Query(insertQuery.c_str());
+                WorldDatabase.query(insertQuery.c_str());
             }
         }
     }
@@ -58,7 +58,7 @@ bool ChatCommandHandler::HandleMoveDB2ItemsToDB(const char* args, WorldSession* 
 {
 #if VERSION_STRING >= Cata
     std::string dumpTable = "CREATE TABLE IF NOT EXISTS `item_dump` (`entry` INT NOT NULL, `class` INT NOT NULL, `subclass` INT NOT NULL, `material` INT NOT NULL, `displayId` INT NOT NULL, `inventoryType` INT NOT NULL, `sheath` INT NOT NULL, PRIMARY KEY (`entry`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
-    auto result = WorldDatabase.Query(dumpTable.c_str());
+    auto result = WorldDatabase.query(dumpTable.c_str());
 
     for (uint32_t i = 0; i <= 79999; ++i)
     {
@@ -67,7 +67,7 @@ bool ChatCommandHandler::HandleMoveDB2ItemsToDB(const char* args, WorldSession* 
             if (sMySQLStore.getItemProperties(i) == nullptr)
             {
                 std::string insertQuery = std::format("INSERT INTO `item_dump` (`entry`, `class`, `subclass`, `material`, `displayId`, `inventoryType`, `sheath`) VALUES ({}, {}, {}, {}, {}, {}, {});", item->ID, item->Class, item->SubClass, item->Material, item->DisplayId, item->InventoryType, item->Sheath);
-                WorldDatabase.Query(insertQuery.c_str());
+                WorldDatabase.query(insertQuery.c_str());
             }
         }
     }
@@ -84,16 +84,16 @@ bool ChatCommandHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args,
 
     std::vector<uint32_t> creatureEntries;
 
-    auto creature_spawn_result = WorldDatabase.Query("SELECT entry FROM creature_spawns WHERE map = %u GROUP BY(entry)", map);
+    auto creature_spawn_result = WorldDatabase.query("SELECT entry FROM creature_spawns WHERE map = %u GROUP BY(entry)", map);
     if (creature_spawn_result)
     {
         {
             do
             {
-                Field* fields = creature_spawn_result->Fetch();
+                Field* fields = creature_spawn_result->fetch();
                 creatureEntries.push_back(fields[0].asUint32());
 
-            } while (creature_spawn_result->NextRow());
+            } while (creature_spawn_result->nextRow());
         }
     }
 
@@ -106,7 +106,7 @@ bool ChatCommandHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args,
             `maxHealth` float NOT nullptr DEFAULT '100',`textId` int unsigned NOT nullptr DEFAULT '0',`misc1` int NOT nullptr DEFAULT '0',`comments` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,\
             UNIQUE KEY `entry` (`min_build`,`max_build`,`entry`,`difficulty`,`phase`,`spell`,`event`,`action`,`textId`) USING BTREE) ENGINE = MyISAM DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI System'", args);
 
-    WorldDatabase.Execute(my_table);
+    WorldDatabase.execute(my_table);
 
     uint32_t count = 0;
     for (auto entry : creatureEntries)
@@ -192,7 +192,7 @@ bool ChatCommandHandler::HandleMoveHardcodedScriptsToDBCommand(const char* args,
                 char my_insert1[700];
                 sprintf(my_insert1, "INSERT INTO creature_ai_scripts_%s VALUES (8606,12340,%u,4,0,5,1,0,%f,%u,%u,0,%u,%u,%u,0,100,0,0,'%s')", args, entry, chance, spell, spelltype, target, cooldown, cooldown, comment.c_str());
 
-                WorldDatabase.Execute(my_insert1);
+                WorldDatabase.execute(my_insert1);
                 ++count;
             }
 

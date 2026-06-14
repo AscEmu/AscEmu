@@ -28,38 +28,38 @@ void AuctionMgr::loadAuctionHouses()
 {
     sLogger.info("AuctionMgr : Loading Auction Houses...");
 
-    auto res = CharacterDatabase.Query("SELECT MAX(auctionId) FROM auctions");
+    auto res = CharacterDatabase.query("SELECT MAX(auctionId) FROM auctions");
     if (res)
     {
-        m_maxId = res->Fetch()[0].asUint32();
+        m_maxId = res->fetch()[0].asUint32();
     }
 
-    res = WorldDatabase.Query("SELECT DISTINCT ahgroup FROM auctionhouse");
+    res = WorldDatabase.query("SELECT DISTINCT ahgroup FROM auctionhouse");
     std::map<uint32_t, AuctionHouse*> tempmap;
     if (res)
     {
-        const uint32_t period = (res->GetRowCount() / 20) + 1;
+        const uint32_t period = (res->getRowCount() / 20) + 1;
         uint32_t c = 0;
         do
         {
-            const auto& ah = m_auctionHouses.emplace_back(std::make_unique<AuctionHouse>(res->Fetch()[0].asUint32()));
+            const auto& ah = m_auctionHouses.emplace_back(std::make_unique<AuctionHouse>(res->fetch()[0].asUint32()));
             ah->loadAuctionsFromDB();
-            tempmap.try_emplace(res->Fetch()[0].asUint32(), ah.get());
+            tempmap.try_emplace(res->fetch()[0].asUint32(), ah.get());
             if (!((++c) % period))
-                sLogger.info("AuctionHouse : Done {}/{}, {}% complete.", c, res->GetRowCount(), c * 100 / res->GetRowCount());
+                sLogger.info("AuctionHouse : Done {}/{}, {}% complete.", c, res->getRowCount(), c * 100 / res->getRowCount());
 
         }
-        while (res->NextRow());
+        while (res->nextRow());
     }
 
-    res = WorldDatabase.Query("SELECT creature_entry, ahgroup FROM auctionhouse");
+    res = WorldDatabase.query("SELECT creature_entry, ahgroup FROM auctionhouse");
     if (res)
     {
         do
         {
-            m_auctionHouseEntryMap.try_emplace(res->Fetch()[0].asUint32(), tempmap[res->Fetch()[1].asUint32()]);
+            m_auctionHouseEntryMap.try_emplace(res->fetch()[0].asUint32(), tempmap[res->fetch()[1].asUint32()]);
         }
-        while (res->NextRow());
+        while (res->nextRow());
     }
 }
 

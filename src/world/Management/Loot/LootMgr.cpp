@@ -133,14 +133,14 @@ void LootMgr::loadLoot()
 
 void LootMgr::loadLootProp()
 {
-    auto result = WorldDatabase.Query("SELECT * FROM item_randomprop_groups");
+    auto result = WorldDatabase.query("SELECT * FROM item_randomprop_groups");
     if (result != nullptr)
     {
         do
         {
-            uint32_t id = result->Fetch()[0].asUint32();
-            uint32_t eid = result->Fetch()[1].asUint32();
-            float ch = result->Fetch()[2].asFloat();
+            uint32_t id = result->fetch()[0].asUint32();
+            uint32_t eid = result->fetch()[1].asUint32();
+            float ch = result->fetch()[2].asFloat();
             auto item_random_properties = sItemRandomPropertiesStore.lookupEntry(eid);
             if (item_random_properties == nullptr)
             {
@@ -159,17 +159,17 @@ void LootMgr::loadLootProp()
             {
                 itr->second.push_back(std::make_pair(item_random_properties, ch));
             }
-        } while (result->NextRow());
+        } while (result->nextRow());
     }
 
-    result = WorldDatabase.Query("SELECT * FROM item_randomsuffix_groups");
+    result = WorldDatabase.query("SELECT * FROM item_randomsuffix_groups");
     if (result != nullptr)
     {
         do
         {
-            uint32_t id = result->Fetch()[0].asUint32();
-            uint32_t eid = result->Fetch()[1].asUint32();
-            float ch = result->Fetch()[2].asFloat();
+            uint32_t id = result->fetch()[0].asUint32();
+            uint32_t eid = result->fetch()[1].asUint32();
+            float ch = result->fetch()[2].asFloat();
             auto item_random_suffix = sItemRandomSuffixStore.lookupEntry(eid);
             if (item_random_suffix == nullptr)
             {
@@ -188,7 +188,7 @@ void LootMgr::loadLootProp()
             {
                 itr->second.push_back(std::make_pair(item_random_suffix, ch));
             }
-        } while (result->NextRow());
+        } while (result->nextRow());
     }
 }
 
@@ -205,7 +205,7 @@ void LootMgr::loadLootTables(std::string const& szTableName, LootTemplateMap* Lo
     uint32_t count = 0;
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
 
         std::vector<float> chance;
         chance.reserve(4);
@@ -241,7 +241,7 @@ void LootMgr::loadLootTables(std::string const& szTableName, LootTemplateMap* Lo
         // Add Item to our Tempelate
         tab->second->addEntry(storeitem);
         count++;
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("{} loot templates loaded from {}", count, szTableName);
 }

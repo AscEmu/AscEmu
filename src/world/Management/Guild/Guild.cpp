@@ -148,9 +148,9 @@ bool Guild::create(Player* pLeader, std::string const& name)
 
     sLogger.debug("GUILD: creating guild {} for leader {} ({})", name, pLeader->getName(), WoWGuid::getGuidLowPartFromUInt64(m_leaderGuid));
 
-    CharacterDatabase.Execute("DELETE FROM guild_members WHERE guildId = %u", m_id);
+    CharacterDatabase.execute("DELETE FROM guild_members WHERE guildId = %u", m_id);
 
-    CharacterDatabase.Execute("INSERT INTO guilds (guildId, guildName, leaderGuid, emblemStyle, emblemColor, borderStyle, borderColor, backgroundColor,"
+    CharacterDatabase.execute("INSERT INTO guilds (guildId, guildName, leaderGuid, emblemStyle, emblemColor, borderStyle, borderColor, backgroundColor,"
         "guildInfo, motd, createdate, bankBalance, guildLevel, guildExperience, todayExperience) "
         "VALUES('%u', '%s', '%u', '%u', '%u', '%u', '%u', '%u', '%s', '%s', '%u', '%u', '%u', '0', '0')",
         m_id, name.c_str(), m_leaderGuid, m_emblemInfo.getStyle(), m_emblemInfo.getColor(), m_emblemInfo.getBorderStyle(),
@@ -182,21 +182,21 @@ void Guild::disband()
         deleteMember(itr->second->getGUID(), true);
     }
 
-    CharacterDatabase.Execute("DELETE FROM guilds WHERE guildId = %u", m_id);
+    CharacterDatabase.execute("DELETE FROM guilds WHERE guildId = %u", m_id);
 
-    CharacterDatabase.Execute("DELETE FROM guild_ranks WHERE guildId = %u", m_id);
+    CharacterDatabase.execute("DELETE FROM guild_ranks WHERE guildId = %u", m_id);
 
-    CharacterDatabase.Execute("DELETE FROM guild_bank_tabs WHERE guildId = %u", m_id);
+    CharacterDatabase.execute("DELETE FROM guild_bank_tabs WHERE guildId = %u", m_id);
 
     deleteBankItems(true);
 
-    CharacterDatabase.Execute("DELETE FROM guild_bank_items WHERE guildId = %u", m_id);
+    CharacterDatabase.execute("DELETE FROM guild_bank_items WHERE guildId = %u", m_id);
 
-    CharacterDatabase.Execute("DELETE FROM guild_bank_rights WHERE guildId = %u", m_id);
+    CharacterDatabase.execute("DELETE FROM guild_bank_rights WHERE guildId = %u", m_id);
 
-    CharacterDatabase.Execute("DELETE FROM guild_logs WHERE guildId = %u", m_id);
+    CharacterDatabase.execute("DELETE FROM guild_logs WHERE guildId = %u", m_id);
 
-    CharacterDatabase.Execute("DELETE FROM guild_bank_logs WHERE guildId = %u", m_id);
+    CharacterDatabase.execute("DELETE FROM guild_bank_logs WHERE guildId = %u", m_id);
 #if VERSION_STRING >= Cata
     sGuildFinderMgr.deleteGuild(m_id);
 #endif
@@ -206,7 +206,7 @@ void Guild::disband()
 
 void Guild::saveGuildToDB()
 {
-    CharacterDatabase.Execute("UPDATE guilds SET guildLevel = '%u', guildExperience = '%llu', todayExperience = '%llu' WHERE guildId = %u",
+    CharacterDatabase.execute("UPDATE guilds SET guildLevel = '%u', guildExperience = '%llu', todayExperience = '%llu' WHERE guildId = %u",
         static_cast<uint32_t>(getLevel()), getExperience(), getTodayExperience(), getId());
 }
 
@@ -499,7 +499,7 @@ void Guild::handleSetMOTD(WorldSession* session, std::string const& motd)
     else
     {
         m_motd = motd;
-        CharacterDatabase.Execute("UPDATE guilds SET motd = '%s' WHERE guildId = %u", CharacterDatabase.EscapeString(motd).c_str(), m_id);
+        CharacterDatabase.execute("UPDATE guilds SET motd = '%s' WHERE guildId = %u", CharacterDatabase.escapeString(motd).c_str(), m_id);
         broadcastEvent(GE_MOTD, 0, { motd });
     }
 }
@@ -512,7 +512,7 @@ void Guild::handleSetInfo(WorldSession* session, std::string const& info)
     if (_hasRankRight(session->GetPlayer()->getGuid(), GR_RIGHT_MODIFY_GUILD_INFO))
     {
         m_info = info;
-        CharacterDatabase.Execute("UPDATE guilds SET guildInfo = '%s' WHERE guildId = %u", info.c_str(), m_id);
+        CharacterDatabase.execute("UPDATE guilds SET guildInfo = '%s' WHERE guildId = %u", CharacterDatabase.escapeString(info).c_str(), m_id);
     }
 }
 
@@ -838,9 +838,9 @@ void Guild::handleRemoveRank(WorldSession* session, uint8_t rankId)
     if (_getRanksSize() <= MIN_GUILD_RANKS || rankId >= _getRanksSize() || !isLeader(session->GetPlayer()))
         return;
 
-    CharacterDatabase.Execute("DELETE FROM guild_bank_rights WHERE rankId = %u AND guildId = %u", rankId, m_id);
+    CharacterDatabase.execute("DELETE FROM guild_bank_rights WHERE rankId = %u AND guildId = %u", rankId, m_id);
 
-    CharacterDatabase.Execute("DELETE FROM guild_ranks WHERE rankId = %u AND guildId = %u", rankId, m_id);
+    CharacterDatabase.execute("DELETE FROM guild_ranks WHERE rankId = %u AND guildId = %u", rankId, m_id);
 
     _guildRankInfoStore.erase(_guildRankInfoStore.begin() + rankId);
 
@@ -1172,7 +1172,7 @@ bool Guild::loadMemberFromDB(Field* fields, Field* fields2)
     auto member = std::make_unique<GuildMember>(m_id, WoWGuid(lowguid, 0, HIGHGUID_TYPE_PLAYER).getRawGuid(), fields[2].asUint8());
     if (!member->loadGuildMembersFromDB(fields, fields2))
     {
-        CharacterDatabase.Execute("DELETE FROM guild_members WHERE guildId = %u", lowguid);
+        CharacterDatabase.execute("DELETE FROM guild_members WHERE guildId = %u", lowguid);
         return false;
     }
 
@@ -1430,9 +1430,9 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
     }
     else
     {
-        if (auto result = CharacterDatabase.Query("SELECT guildId, playerGuid FROM guild_members WHERE playerid = %u", WoWGuid::getGuidLowPartFromUInt64(guid)))
+        if (auto result = CharacterDatabase.query("SELECT guildId, playerGuid FROM guild_members WHERE playerid = %u", WoWGuid::getGuidLowPartFromUInt64(guid)))
         {
-            Field* fields = result->Fetch();
+            Field* fields = result->fetch();
             if (fields[0].asUint32() != 0)
                 return false;
         }
@@ -1482,7 +1482,7 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
 
     memberPtr->saveGuildMembersToDB(false);
 
-    CharacterDatabase.Execute("INSERT INTO guild_members_withdraw VALUES(%u, 0, 0, 0, 0, 0, 0, 0, 0, 0)", m_id);
+    CharacterDatabase.execute("INSERT INTO guild_members_withdraw VALUES(%u, 0, 0, 0, 0, 0, 0, 0, 0, 0)", m_id);
 
     updateAccountsNumber();
 
@@ -1553,7 +1553,7 @@ void Guild::deleteMember(uint64_t guid, bool isDisbanding, bool /*isKicked*/)
 #endif
     }
 
-    CharacterDatabase.Execute("DELETE FROM guild_members WHERE guildId = %u", lowguid);
+    CharacterDatabase.execute("DELETE FROM guild_members WHERE guildId = %u", lowguid);
 
     if (!isDisbanding)
         updateAccountsNumber();
@@ -1602,9 +1602,9 @@ void Guild::createNewBankTab()
     uint8_t tabId = _getPurchasedTabsSize();
     _guildBankTabsStore.emplace_back(std::make_unique<GuildBankTab>(m_id, tabId));
 
-    CharacterDatabase.Execute("DELETE FROM guild_bank_tabs WHERE guildId = %u AND tabId = %u", m_id, static_cast<uint32_t>(tabId));
+    CharacterDatabase.execute("DELETE FROM guild_bank_tabs WHERE guildId = %u AND tabId = %u", m_id, static_cast<uint32_t>(tabId));
 
-    CharacterDatabase.Execute("INSERT INTO guild_bank_tabs VALUES(%u, %u, '', '', '')", m_id, static_cast<uint32_t>(tabId));
+    CharacterDatabase.execute("INSERT INTO guild_bank_tabs VALUES(%u, %u, '', '', '')", m_id, static_cast<uint32_t>(tabId));
 
     ++tabId;
     for (auto itr = _guildRankInfoStore.begin(); itr != _guildRankInfoStore.end(); ++itr)
@@ -1613,8 +1613,8 @@ void Guild::createNewBankTab()
 
 void Guild::createDefaultGuildRanks()
 {
-    CharacterDatabase.Execute("DELETE FROM guild_ranks WHERE guildId = %u", m_id);
-    CharacterDatabase.Execute("DELETE FROM guild_bank_rights WHERE guildId = %u", m_id);
+    CharacterDatabase.execute("DELETE FROM guild_ranks WHERE guildId = %u", m_id);
+    CharacterDatabase.execute("DELETE FROM guild_bank_rights WHERE guildId = %u", m_id);
 
     createRank("GuildMaster", GR_RIGHT_ALL);
     createRank("Officer", GR_RIGHT_ALL);
@@ -1682,7 +1682,7 @@ bool Guild::modifyBankMoney(uint64_t amount, bool add)
         m_bankMoney -= amount;
     }
 
-    CharacterDatabase.Execute("UPDATE guild SET bankBalance = %llu WHERE guildId = %u", m_bankMoney, m_id);
+    CharacterDatabase.execute("UPDATE guild SET bankBalance = %llu WHERE guildId = %u", m_bankMoney, m_id);
 
     return true;
 }
@@ -1695,7 +1695,7 @@ void Guild::setLeaderGuid(GuildMember* pLeader)
     m_leaderGuid = pLeader->getGUID();
     pLeader->changeRank(GR_GUILDMASTER);
 
-    CharacterDatabase.Execute("UPDATE guild SET leaderGuid = '%u' WHERE guildId = %u", WoWGuid::getGuidLowPartFromUInt64(m_leaderGuid), m_id);
+    CharacterDatabase.execute("UPDATE guild SET leaderGuid = '%u' WHERE guildId = %u", WoWGuid::getGuidLowPartFromUInt64(m_leaderGuid), m_id);
 }
 
 void Guild::setRankBankMoneyPerDay(uint8_t rankId, uint32_t moneyPerDay)
@@ -2627,7 +2627,7 @@ void Guild::GuildMember::setPublicNote(std::string const& publicNote)
 
     mPublicNote = publicNote;
 
-    CharacterDatabase.Execute("UPDATE guild_members SET publicNote = '%s' WHERE playerid = %u", publicNote.c_str(), WoWGuid::getGuidLowPartFromUInt64(mGuid));
+    CharacterDatabase.execute("UPDATE guild_members SET publicNote = '%s' WHERE playerid = %u", publicNote.c_str(), WoWGuid::getGuidLowPartFromUInt64(mGuid));
 }
 
 void Guild::GuildMember::setOfficerNote(std::string const& officerNote)
@@ -2637,7 +2637,7 @@ void Guild::GuildMember::setOfficerNote(std::string const& officerNote)
 
     mOfficerNote = officerNote;
 
-    CharacterDatabase.Execute("UPDATE guild_members SET officerNote = '%s' WHERE playerid = %u", officerNote.c_str(), WoWGuid::getGuidLowPartFromUInt64(mGuid));
+    CharacterDatabase.execute("UPDATE guild_members SET officerNote = '%s' WHERE playerid = %u", officerNote.c_str(), WoWGuid::getGuidLowPartFromUInt64(mGuid));
 }
 
 void Guild::GuildMember::setZoneId(uint32_t id)
@@ -2706,7 +2706,7 @@ bool Guild::GuildMember::loadGuildMembersFromDB(Field* fields, Field* fields2)
 
 void Guild::GuildMember::saveGuildMembersToDB(bool /*_delete*/) const
 {
-    CharacterDatabase.Execute("REPLACE INTO guild_members VALUES (%u, %u, %u, '%s', '%s')",
+    CharacterDatabase.execute("REPLACE INTO guild_members VALUES (%u, %u, %u, '%s', '%s')",
         mGuildId, WoWGuid::getGuidLowPartFromUInt64(mGuid), static_cast<uint32_t>(mRankId), mPublicNote.c_str(), mOfficerNote.c_str());
 }
 
@@ -2807,7 +2807,7 @@ void Guild::GuildMember::changeRank(uint8_t newRank)
     if (Player* player = sObjectMgr.getPlayer(WoWGuid::getGuidLowPartFromUInt64(mGuid)))
         player->setGuildRank(newRank);
 
-    CharacterDatabase.Execute("UPDATE guild_members SET guildRank = '%u' WHERE playerid = %u", static_cast<uint32_t>(newRank), WoWGuid::getGuidLowPartFromUInt64(mGuid));
+    CharacterDatabase.execute("UPDATE guild_members SET guildRank = '%u' WHERE playerid = %u", static_cast<uint32_t>(newRank), WoWGuid::getGuidLowPartFromUInt64(mGuid));
 }
 
 void Guild::GuildMember::updateLogoutTime()
@@ -2834,7 +2834,7 @@ void Guild::GuildMember::updateBankWithdrawValue(uint8_t tabId, uint32_t amount)
 {
     mBankWithdraw[tabId] += amount;
 
-    CharacterDatabase.Execute("REPLACE INTO guild_members_withdraw VALUES('%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u')",
+    CharacterDatabase.execute("REPLACE INTO guild_members_withdraw VALUES('%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u', '%u')",
         WoWGuid::getGuidLowPartFromUInt64(mGuid),
         mBankWithdraw[0], mBankWithdraw[1], mBankWithdraw[2], mBankWithdraw[3], mBankWithdraw[4],
         mBankWithdraw[5], mBankWithdraw[6], 0, 0);

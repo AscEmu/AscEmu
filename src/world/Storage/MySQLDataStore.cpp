@@ -73,9 +73,9 @@ void MySQLDataStore::loadAdditionalTableConfig()
                     {
                         if (myTable.mainTable == target_table)
                         {
-                            if (auto result = WorldDatabase.Query("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = \"%s\" AND table_name = \"%s\"", WorldDatabase.GetDatabaseName().c_str(), additional_table.c_str()))
+                            if (auto result = WorldDatabase.query("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = \"%s\" AND table_name = \"%s\"", WorldDatabase.getDatabaseName().c_str(), additional_table.c_str()))
                             {
-                                Field* fields = result->Fetch();
+                                Field* fields = result->fetch();
 
                                 uint32_t count = fields[0].asUint32();
                                 if (fields[0].asUint32())
@@ -161,39 +161,39 @@ std::unique_ptr<QueryResult> MySQLDataStore::getWorldDBQuery(const char* query, 
             }
 
             sLogger.debugFlag(AscEmu::Logging::DebugFlags::LF_DB_TABLES, "MySQLDataLoads : AdditionalTableLoading - Query: '{}'", completeQuery);
-            return WorldDatabase.Query(completeQuery.c_str());
+            return WorldDatabase.query(completeQuery.c_str());
         }
     }
 
     sLogger.debugFlag(AscEmu::Logging::DebugFlags::LF_DB_TABLES, "MySQLDataLoads : Query: '{}'", preparedQuery);
     // no additional tables defined, just send our query
-    return WorldDatabase.Query(preparedQuery.c_str());
+    return WorldDatabase.query(preparedQuery.c_str());
 }
 
 void MySQLDataStore::loadItemPagesTable()
 {
     auto startTime = Util::TimeNow();
 
-    auto itempages_result = WorldDatabase.Query("SELECT entry, text, next_page FROM item_pages");
+    auto itempages_result = WorldDatabase.query("SELECT entry, text, next_page FROM item_pages");
     if (itempages_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `item_pages` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `item_pages` has {} columns", itempages_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `item_pages` has {} columns", itempages_result->getFieldCount());
 
-    _itemPagesStore.rehash(itempages_result->GetRowCount());
+    _itemPagesStore.rehash(itempages_result->getRowCount());
 
     uint32_t itempages_count = 0;
     do
     {
-        Field* fields = itempages_result->Fetch();
+        Field* fields = itempages_result->fetch();
 
         addItemPage(fields[0].asUint32(), fields[1].asCString(), fields[2].asUint32());
 
         ++itempages_count;
-    } while (itempages_result->NextRow());
+    } while (itempages_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} pages from `item_pages` table in {} ms!", itempages_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -240,14 +240,14 @@ void MySQLDataStore::loadItemPropertiesTable()
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `item_properties` has {} columns", item_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `item_properties` has {} columns", item_result->getFieldCount());
 
-    _itemPropertiesStore.rehash(item_result->GetRowCount());
+    _itemPropertiesStore.rehash(item_result->getRowCount());
 
     do
     {
 #ifdef ASCEMU_USE_AE_DATABASE
-        const AscEmu::AE::Database::RowView row(item_result->Fetch(), item_result->GetFieldCount());
+        const AscEmu::AE::Database::RowView row(item_result->fetch(), item_result->getFieldCount());
 
         const uint32_t entry = row.get<uint32_t>(0);
         ItemProperties& itemProperties = _itemPropertiesStore[entry];
@@ -348,7 +348,7 @@ void MySQLDataStore::loadItemPropertiesTable()
         itemProperties.HolidayId = row.get<uint32_t>(69);
         itemProperties.FoodType = row.get<uint32_t>(70);
 #else
-        Field* fields = item_result->Fetch();
+        Field* fields = item_result->fetch();
 
         uint32_t entry = fields[0].asUint32();
 
@@ -578,7 +578,7 @@ void MySQLDataStore::loadItemPropertiesTable()
         // Check the data with itemdbc, spelldbc, factiondbc....
 
         ++item_count;
-    } while (item_result->NextRow());
+    } while (item_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} item_properties in {} ms!", item_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -598,7 +598,7 @@ void MySQLDataStore::loadItemPropertiesSpellsTable()
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `item_properties_spells` has {} columns", item_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `item_properties_spells` has {} columns", item_result->getFieldCount());
 
     struct LoadItemSpell
     {
@@ -612,7 +612,7 @@ void MySQLDataStore::loadItemPropertiesSpellsTable()
     std::map<uint32_t, std::unordered_map<uint32_t, LoadItemSpell>> tempSpellStore;
     do
     {
-        Field* fields = item_result->Fetch();
+        Field* fields = item_result->fetch();
 
         uint32_t entry = fields[0].asUint32();
         uint32_t spellid = fields[2].asUint32();
@@ -627,7 +627,7 @@ void MySQLDataStore::loadItemPropertiesSpellsTable()
         tempSpellStore[entry][spellid] = spellData;
 
         ++spell_count;
-    } while (item_result->NextRow());
+    } while (item_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} item_properties_spells in {} ms!", spell_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
@@ -676,12 +676,12 @@ void MySQLDataStore::loadItemPropertiesStatsTable()
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `item_properties_stats` has {} columns", item_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `item_properties_stats` has {} columns", item_result->getFieldCount());
 
     std::map<uint32_t, std::map<uint32_t, int32_t>> tempStatsStore;
     do
     {
-        Field* fields = item_result->Fetch();
+        Field* fields = item_result->fetch();
 
         uint32_t entry = fields[0].asUint32();
         uint32_t type = fields[2].asUint32();
@@ -690,7 +690,7 @@ void MySQLDataStore::loadItemPropertiesStatsTable()
         tempStatsStore[entry][type] = value;
 
         ++stat_count;
-    } while (item_result->NextRow());
+    } while (item_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} item_properties_stats in {} ms!", stat_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
@@ -803,13 +803,13 @@ void MySQLDataStore::loadCreaturePropertiesTable()
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table creature_properties has {} columns", creature_properties_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table creature_properties has {} columns", creature_properties_result->getFieldCount());
 
-    _creaturePropertiesStore.rehash(creature_properties_result->GetRowCount());
+    _creaturePropertiesStore.rehash(creature_properties_result->getRowCount());
 
     do
     {
-        Field* fields = creature_properties_result->Fetch();
+        Field* fields = creature_properties_result->fetch();
 
         uint32_t entry = fields[0].asUint32();
 
@@ -1076,7 +1076,7 @@ void MySQLDataStore::loadCreaturePropertiesTable()
         }*/
 
         ++creature_properties_count;
-    } while (creature_properties_result->NextRow());
+    } while (creature_properties_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} creature proto data in {} ms!", creature_properties_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -1087,7 +1087,7 @@ void MySQLDataStore::loadCreaturePropertiesMovementTable()
     uint32_t creature_properties_movement_count = 0;
 
     //                                                                      0          1           2             3                 4               5                  6
-    auto creature_properties_movement_result = WorldDatabase.Query("SELECT CreatureId, Ground, Swim, Flight, Rooted, Chase, Random, InteractionPauseTimer FROM creature_properties_movement");
+    auto creature_properties_movement_result = WorldDatabase.query("SELECT CreatureId, Ground, Swim, Flight, Rooted, Chase, Random, InteractionPauseTimer FROM creature_properties_movement");
 
     if (creature_properties_movement_result == nullptr)
     {
@@ -1098,12 +1098,12 @@ void MySQLDataStore::loadCreaturePropertiesMovementTable()
     uint32_t row_count = 0;   
     row_count = static_cast<uint32_t>(_creaturePropertiesMovementStore.size());
 
-    sLogger.info("MySQLDataLoads : Table creature_properties_movement has {} columns", creature_properties_movement_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table creature_properties_movement has {} columns", creature_properties_movement_result->getFieldCount());
 
-    _creaturePropertiesMovementStore.rehash(row_count + creature_properties_movement_result->GetRowCount());
+    _creaturePropertiesMovementStore.rehash(row_count + creature_properties_movement_result->getRowCount());
     do
     {
-        Field* fields = creature_properties_movement_result->Fetch();
+        Field* fields = creature_properties_movement_result->fetch();
 
         uint32_t entry = fields[0].asUint32();
 
@@ -1119,7 +1119,7 @@ void MySQLDataStore::loadCreaturePropertiesMovementTable()
         creaturePropertiesMovement.Movement.Random = static_cast<CreatureRandomMovementType>(fields[6].asUint8());
 
         ++creature_properties_movement_count;
-        } while (creature_properties_movement_result->NextRow());
+        } while (creature_properties_movement_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} creature movement data in {} ms!", creature_properties_movement_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -1165,13 +1165,13 @@ void MySQLDataStore::loadGameObjectPropertiesTable()
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `gameobject_properties` has {} columns", gameobject_properties_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `gameobject_properties` has {} columns", gameobject_properties_result->getFieldCount());
 
-    _gameobjectPropertiesStore.rehash(gameobject_properties_result->GetRowCount());
+    _gameobjectPropertiesStore.rehash(gameobject_properties_result->getRowCount());
 
     do
     {
-        Field* fields = gameobject_properties_result->Fetch();
+        Field* fields = gameobject_properties_result->fetch();
 
         uint32_t entry = fields[0].asUint32();
 
@@ -1232,7 +1232,7 @@ void MySQLDataStore::loadGameObjectPropertiesTable()
 
 
         ++gameobject_properties_count;
-    } while (gameobject_properties_result->NextRow());
+    } while (gameobject_properties_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} gameobject data in {} ms!", gameobject_properties_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -1262,7 +1262,7 @@ void MySQLDataStore::loadGameObjectSpawnsExtraTable()
     uint32_t count = 0;
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
 
         uint32_t spawnId = fields[0].asUint32();
 
@@ -1276,7 +1276,7 @@ void MySQLDataStore::loadGameObjectSpawnsExtraTable()
         }
 
         ++count;
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("Loaded {} gameobject overrides in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -1304,7 +1304,7 @@ void MySQLDataStore::loadGameObjectSpawnsOverrideTable()
     uint32_t count = 0;
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
 
         uint32_t spawnId = fields[0].asUint32();
 
@@ -1317,7 +1317,7 @@ void MySQLDataStore::loadGameObjectSpawnsOverrideTable()
             sLogger.failure("GameObject (SpawnId: {}) has invalid faction ({}) defined in `gameobject_spawns_overrides`.", spawnId, gameObjectOverride.faction);
 
         ++count;
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("Loaded {} gameobject overrides in {} ms", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -1383,13 +1383,13 @@ void MySQLDataStore::loadQuestPropertiesTable()
 
     uint32_t row_count = 0;
 
-    sLogger.info("MySQLDataLoads : Table `quest_properties` has {} columns", quest_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `quest_properties` has {} columns", quest_result->getFieldCount());
 
-    _questPropertiesStore.rehash(row_count + quest_result->GetRowCount());
+    _questPropertiesStore.rehash(row_count + quest_result->getRowCount());
 
     do
     {
-        Field* fields = quest_result->Fetch();
+        Field* fields = quest_result->fetch();
 
         uint32_t entry = fields[0].asUint32();
 
@@ -1554,7 +1554,7 @@ void MySQLDataStore::loadQuestPropertiesTable()
         questInfo.RewXPId = fields[147].asUint32();
 
         ++quest_count;
-    } while (quest_result->NextRow());
+    } while (quest_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} quest_properties data in {} ms!", quest_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -1575,7 +1575,7 @@ void MySQLDataStore::loadGameObjectQuestItemBindingTable()
     auto startTime = Util::TimeNow();
 
     //                                                                0      1     2        3
-    auto gameobject_quest_item_result = WorldDatabase.Query("SELECT entry, quest, item, item_count FROM gameobject_quest_item_binding");
+    auto gameobject_quest_item_result = WorldDatabase.query("SELECT entry, quest, item, item_count FROM gameobject_quest_item_binding");
 
     uint32_t gameobject_quest_item_count = 0;
 
@@ -1583,7 +1583,7 @@ void MySQLDataStore::loadGameObjectQuestItemBindingTable()
     {
         do
         {
-            Field* fields = gameobject_quest_item_result->Fetch();
+            Field* fields = gameobject_quest_item_result->fetch();
             uint32_t entry = fields[0].asUint32();
 
             GameObjectProperties const* gameobject_properties = sMySQLStore.getGameObjectProperties(entry);
@@ -1606,7 +1606,7 @@ void MySQLDataStore::loadGameObjectQuestItemBindingTable()
             }
 
             ++gameobject_quest_item_count;
-        } while (gameobject_quest_item_result->NextRow());
+        } while (gameobject_quest_item_result->nextRow());
     }
 
     sLogger.info("MySQLDataLoads : Loaded {} data from `gameobject_quest_item_binding` table in {} ms!", gameobject_quest_item_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
@@ -1617,7 +1617,7 @@ void MySQLDataStore::loadGameObjectQuestPickupBindingTable()
     auto startTime = Util::TimeNow();
 
     //                                                                  0      1           2
-    auto gameobject_quest_pickup_result = WorldDatabase.Query("SELECT entry, quest, required_count FROM gameobject_quest_pickup_binding");
+    auto gameobject_quest_pickup_result = WorldDatabase.query("SELECT entry, quest, required_count FROM gameobject_quest_pickup_binding");
 
     uint32_t gameobject_quest_pickup_count = 0;
 
@@ -1625,7 +1625,7 @@ void MySQLDataStore::loadGameObjectQuestPickupBindingTable()
     {
         do
         {
-            Field* fields = gameobject_quest_pickup_result->Fetch();
+            Field* fields = gameobject_quest_pickup_result->fetch();
             uint32_t entry = fields[0].asUint32();
 
             GameObjectProperties const* gameobject_properties = sMySQLStore.getGameObjectProperties(entry);
@@ -1650,7 +1650,7 @@ void MySQLDataStore::loadGameObjectQuestPickupBindingTable()
 
 
             ++gameobject_quest_pickup_count;
-        } while (gameobject_quest_pickup_result->NextRow());
+        } while (gameobject_quest_pickup_result->nextRow());
     }
 
     sLogger.info("MySQLDataLoads : Loaded {} data from `gameobject_quest_pickup_binding` table in {} ms!", gameobject_quest_pickup_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
@@ -1661,7 +1661,7 @@ void MySQLDataStore::loadCreatureDifficultyTable()
     auto startTime = Util::TimeNow();
 
     //                                                             0          1            2             3
-    auto creature_difficulty_result = WorldDatabase.Query("SELECT entry, difficulty_1, difficulty_2, difficulty_3 FROM creature_difficulty");
+    auto creature_difficulty_result = WorldDatabase.query("SELECT entry, difficulty_1, difficulty_2, difficulty_3 FROM creature_difficulty");
 
     if (creature_difficulty_result == nullptr)
     {
@@ -1669,14 +1669,14 @@ void MySQLDataStore::loadCreatureDifficultyTable()
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `creature_difficulty` has {} columns", creature_difficulty_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `creature_difficulty` has {} columns", creature_difficulty_result->getFieldCount());
 
-    _creatureDifficultyStore.rehash(creature_difficulty_result->GetRowCount());
+    _creatureDifficultyStore.rehash(creature_difficulty_result->getRowCount());
 
     uint32_t creature_difficulty_count = 0;
     do
     {
-        Field* fields = creature_difficulty_result->Fetch();
+        Field* fields = creature_difficulty_result->fetch();
 
         uint32_t entry = fields[0].asUint32();
 
@@ -1690,7 +1690,7 @@ void MySQLDataStore::loadCreatureDifficultyTable()
 
 
         ++creature_difficulty_count;
-    } while (creature_difficulty_result->NextRow());
+    } while (creature_difficulty_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} creature difficulties info from `creature_difficulty` table in {} ms!", creature_difficulty_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -1731,8 +1731,8 @@ void MySQLDataStore::loadDisplayBoundingBoxesTable()
     auto startTime = Util::TimeNow();
 
     //                                                                       0       1    2     3      4      5      6         7
-    //auto display_bounding_boxes_result = WorldDatabase.Query("SELECT displayid, lowx, lowy, lowz, highx, highy, highz, boundradius FROM display_bounding_boxes");
-    auto display_bounding_boxes_result = WorldDatabase.Query("SELECT displayid, highz FROM display_bounding_boxes");
+    //auto display_bounding_boxes_result = WorldDatabase.query("SELECT displayid, lowx, lowy, lowz, highx, highy, highz, boundradius FROM display_bounding_boxes");
+    auto display_bounding_boxes_result = WorldDatabase.query("SELECT displayid, highz FROM display_bounding_boxes");
 
     if (display_bounding_boxes_result == nullptr)
     {
@@ -1740,14 +1740,14 @@ void MySQLDataStore::loadDisplayBoundingBoxesTable()
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `display_bounding_boxes` has {} columns", display_bounding_boxes_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `display_bounding_boxes` has {} columns", display_bounding_boxes_result->getFieldCount());
 
-    _displayBoundingBoxesStore.rehash(display_bounding_boxes_result->GetRowCount());
+    _displayBoundingBoxesStore.rehash(display_bounding_boxes_result->getRowCount());
 
     uint32_t display_bounding_boxes_count = 0;
     do
     {
-        Field* fields = display_bounding_boxes_result->Fetch();
+        Field* fields = display_bounding_boxes_result->fetch();
 
         uint32_t entry = fields[0].asUint32();
 
@@ -1768,7 +1768,7 @@ void MySQLDataStore::loadDisplayBoundingBoxesTable()
 
 
         ++display_bounding_boxes_count;
-    } while (display_bounding_boxes_result->NextRow());
+    } while (display_bounding_boxes_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} display bounding info from `display_bounding_boxes` table in {} ms!", display_bounding_boxes_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -1787,7 +1787,7 @@ void MySQLDataStore::loadVendorRestrictionsTable()
     auto startTime = Util::TimeNow();
 
     //                                                              0       1          2            3              4
-    auto vendor_restricitons_result = WorldDatabase.Query("SELECT entry, racemask, classmask, reqrepfaction, reqrepfactionvalue, "
+    auto vendor_restricitons_result = WorldDatabase.query("SELECT entry, racemask, classmask, reqrepfaction, reqrepfactionvalue, "
     //                                                                    5                 6           7
                                                                   "canbuyattextid, cannotbuyattextid, flags FROM vendor_restrictions");
 
@@ -1797,14 +1797,14 @@ void MySQLDataStore::loadVendorRestrictionsTable()
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `vendor_restrictions` has {} columns", vendor_restricitons_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `vendor_restrictions` has {} columns", vendor_restricitons_result->getFieldCount());
 
-    _vendorRestrictionsStore.rehash(vendor_restricitons_result->GetRowCount());
+    _vendorRestrictionsStore.rehash(vendor_restricitons_result->getRowCount());
 
     uint32_t vendor_restricitons_count = 0;
     do
     {
-        Field* fields = vendor_restricitons_result->Fetch();
+        Field* fields = vendor_restricitons_result->fetch();
 
         uint32_t entry = fields[0].asUint32();
 
@@ -1820,7 +1820,7 @@ void MySQLDataStore::loadVendorRestrictionsTable()
         vendorRestriction.flags = fields[7].asUint32();
 
         ++vendor_restricitons_count;
-    } while (vendor_restricitons_result->NextRow());
+    } while (vendor_restricitons_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} restrictions from `vendor_restrictions` table in {} ms!", vendor_restricitons_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -1839,7 +1839,7 @@ void MySQLDataStore::loadNpcTextTable()
     auto startTime = Util::TimeNow();
 
     //                                                          0
-    auto npc_gossip_text_result = WorldDatabase.Query("SELECT entry, "
+    auto npc_gossip_text_result = WorldDatabase.query("SELECT entry, "
     //                                                     1       2        3       4          5           6            7           8            9           10
                                                         "prob0, text0_0, text0_1, lang0, EmoteDelay0_0, Emote0_0, EmoteDelay0_1, Emote0_1, EmoteDelay0_2, Emote0_2, "
     //                                                     11      12       13      14         15          16           17          18           19          20
@@ -1863,14 +1863,14 @@ void MySQLDataStore::loadNpcTextTable()
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `npc_gossip_texts` has {} columns", npc_gossip_text_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `npc_gossip_texts` has {} columns", npc_gossip_text_result->getFieldCount());
 
-    _npcGossipTextStore.rehash(npc_gossip_text_result->GetRowCount());
+    _npcGossipTextStore.rehash(npc_gossip_text_result->getRowCount());
 
     uint32_t npc_text_count = 0;
     do
     {
-        Field* fields = npc_gossip_text_result->Fetch();
+        Field* fields = npc_gossip_text_result->fetch();
 
         uint32_t entry = fields[0].asUint32();
 
@@ -1897,7 +1897,7 @@ void MySQLDataStore::loadNpcTextTable()
 
 
         ++npc_text_count;
-    } while (npc_gossip_text_result->NextRow());
+    } while (npc_gossip_text_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `npc_gossip_texts` table in {} ms!", npc_text_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -1918,7 +1918,7 @@ void MySQLDataStore::loadNpcScriptTextTable()
     auto startTime = Util::TimeNow();
 
     //                                                          0      1           2       3     4       5          6         7       8        9         10
-    auto npc_script_text_result = WorldDatabase.Query("SELECT entry, text, creature_entry, id, type, language, probability, emote, duration, sound, broadcast_id FROM npc_script_text");
+    auto npc_script_text_result = WorldDatabase.query("SELECT entry, text, creature_entry, id, type, language, probability, emote, duration, sound, broadcast_id FROM npc_script_text");
 
     if (npc_script_text_result == nullptr)
     {
@@ -1926,14 +1926,14 @@ void MySQLDataStore::loadNpcScriptTextTable()
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `npc_script_text` has {} columns", npc_script_text_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `npc_script_text` has {} columns", npc_script_text_result->getFieldCount());
 
-    _npcScriptTextStore.rehash(npc_script_text_result->GetRowCount());
+    _npcScriptTextStore.rehash(npc_script_text_result->getRowCount());
 
     uint32_t npc_script_text_count = 0;
     do
     {
-        Field* fields = npc_script_text_result->Fetch();
+        Field* fields = npc_script_text_result->fetch();
 
         uint32_t entry = fields[0].asUint32();
 
@@ -1955,7 +1955,7 @@ void MySQLDataStore::loadNpcScriptTextTable()
         _npcScriptTextStoreById[npcScriptText.creature_entry].push_back(npcScriptText);
 
         ++npc_script_text_count;
-    } while (npc_script_text_result->NextRow());
+    } while (npc_script_text_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `npc_script_text` table in {} ms!", npc_script_text_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -1993,7 +1993,7 @@ void MySQLDataStore::loadGossipMenuOptionTable()
     auto startTime = Util::TimeNow();
 
     //                                                              0         1
-    auto gossip_menu_optiont_result = WorldDatabase.Query("SELECT entry, option_text FROM gossip_menu_option");
+    auto gossip_menu_optiont_result = WorldDatabase.query("SELECT entry, option_text FROM gossip_menu_option");
 
     if (gossip_menu_optiont_result == nullptr)
     {
@@ -2001,14 +2001,14 @@ void MySQLDataStore::loadGossipMenuOptionTable()
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `gossip_menu_option` has {} columns", gossip_menu_optiont_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `gossip_menu_option` has {} columns", gossip_menu_optiont_result->getFieldCount());
 
-    _gossipMenuOptionStore.rehash(gossip_menu_optiont_result->GetRowCount());
+    _gossipMenuOptionStore.rehash(gossip_menu_optiont_result->getRowCount());
 
     uint32_t gossip_menu_optiont_count = 0;
     do
     {
-        Field* fields = gossip_menu_optiont_result->Fetch();
+        Field* fields = gossip_menu_optiont_result->fetch();
 
         uint32_t entry = fields[0].asUint32();
 
@@ -2018,7 +2018,7 @@ void MySQLDataStore::loadGossipMenuOptionTable()
         gossipMenuOptionText.text = fields[1].asCString();
 
         ++gossip_menu_optiont_count;
-    } while (gossip_menu_optiont_result->NextRow());
+    } while (gossip_menu_optiont_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `gossip_menu_option` table in {} ms!", gossip_menu_optiont_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -2037,21 +2037,21 @@ void MySQLDataStore::loadGraveyardsTable()
     auto startTime = Util::TimeNow();
 
     //                                                   0         1         2           3            4         5          6           7       8
-    auto graveyards_result = WorldDatabase.Query("SELECT id, position_x, position_y, position_z, orientation, zoneid, adjacentzoneid, mapid, faction FROM graveyards");
+    auto graveyards_result = WorldDatabase.query("SELECT id, position_x, position_y, position_z, orientation, zoneid, adjacentzoneid, mapid, faction FROM graveyards");
     if (graveyards_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `graveyards` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `graveyards` has {} columns", graveyards_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `graveyards` has {} columns", graveyards_result->getFieldCount());
 
-    _graveyardsStore.rehash(graveyards_result->GetRowCount());
+    _graveyardsStore.rehash(graveyards_result->getRowCount());
 
     uint32_t graveyards_count = 0;
     do
     {
-        Field* fields = graveyards_result->Fetch();
+        Field* fields = graveyards_result->fetch();
 
         uint32_t entry = fields[0].asUint32();
 
@@ -2068,7 +2068,7 @@ void MySQLDataStore::loadGraveyardsTable()
         graveyardTeleport.factionId = fields[8].asUint32();
 
         ++graveyards_count;
-    } while (graveyards_result->NextRow());
+    } while (graveyards_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `graveyards` table in {} ms!", graveyards_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -2087,21 +2087,21 @@ void MySQLDataStore::loadTeleportCoordsTable()
     auto startTime = Util::TimeNow();
 
     //                                                        0     1         2           3           4
-    auto teleport_coords_result = WorldDatabase.Query("SELECT id, mapId, position_x, position_y, position_z FROM spell_teleport_coords");
+    auto teleport_coords_result = WorldDatabase.query("SELECT id, mapId, position_x, position_y, position_z FROM spell_teleport_coords");
     if (teleport_coords_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `spell_teleport_coords` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `spell_teleport_coords` has {} columns", teleport_coords_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `spell_teleport_coords` has {} columns", teleport_coords_result->getFieldCount());
 
-    _teleportCoordsStore.rehash(teleport_coords_result->GetRowCount());
+    _teleportCoordsStore.rehash(teleport_coords_result->getRowCount());
 
     uint32_t teleport_coords_count = 0;
     do
     {
-        Field* fields = teleport_coords_result->Fetch();
+        Field* fields = teleport_coords_result->fetch();
 
         uint32_t entry = fields[0].asUint32();
 
@@ -2114,7 +2114,7 @@ void MySQLDataStore::loadTeleportCoordsTable()
         teleportCoords.z = fields[4].asFloat();
 
         ++teleport_coords_count;
-    } while (teleport_coords_result->NextRow());
+    } while (teleport_coords_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `spell_teleport_coords` table in {} ms!", teleport_coords_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -2133,21 +2133,21 @@ void MySQLDataStore::loadFishingTable()
     auto startTime = Util::TimeNow();
 
     //                                                  0      1         2
-    auto fishing_result = WorldDatabase.Query("SELECT zone, MinSkill, MaxSkill FROM fishing");
+    auto fishing_result = WorldDatabase.query("SELECT zone, MinSkill, MaxSkill FROM fishing");
     if (fishing_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `fishing` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `fishing` has {} columns", fishing_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `fishing` has {} columns", fishing_result->getFieldCount());
 
-    _fishingZonesStore.rehash(fishing_result->GetRowCount());
+    _fishingZonesStore.rehash(fishing_result->getRowCount());
 
     uint32_t fishing_count = 0;
     do
     {
-        Field* fields = fishing_result->Fetch();
+        Field* fields = fishing_result->fetch();
 
         uint32_t entry = fields[0].asUint32();
 
@@ -2158,7 +2158,7 @@ void MySQLDataStore::loadFishingTable()
         fishingZone.maxSkill = fields[2].asUint32();
 
         ++fishing_count;
-    } while (fishing_result->NextRow());
+    } while (fishing_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `fishing` table in {} ms!", fishing_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -2177,7 +2177,7 @@ void MySQLDataStore::loadWorldMapInfoTable()
     auto startTime = Util::TimeNow();
 
     //                                                       0        1       2       3           4             5          6        7      8          9
-    auto worldmap_info_result = WorldDatabase.Query("SELECT entry, screenid, type, maxplayers, minlevel, minlevel_heroic, repopx, repopy, repopz, repopentry, "
+    auto worldmap_info_result = WorldDatabase.query("SELECT entry, screenid, type, maxplayers, minlevel, minlevel_heroic, repopx, repopy, repopz, repopentry, "
     //                                                           10       11      12         13           14                15              16
                                                             "area_name, flags, cooldown, lvl_mod_a, required_quest_A, required_quest_H, required_item, "
     //                                                              17              18              19                20
@@ -2189,14 +2189,14 @@ void MySQLDataStore::loadWorldMapInfoTable()
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `worldmap_info` has {} columns", worldmap_info_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `worldmap_info` has {} columns", worldmap_info_result->getFieldCount());
 
-    _worldMapInfoStore.rehash(worldmap_info_result->GetRowCount());
+    _worldMapInfoStore.rehash(worldmap_info_result->getRowCount());
 
     uint32_t world_map_info_count = 0;
     do
     {
-        Field* fields = worldmap_info_result->Fetch();
+        Field* fields = worldmap_info_result->fetch();
 
         uint32_t entry = fields[0].asUint32();
 
@@ -2225,7 +2225,7 @@ void MySQLDataStore::loadWorldMapInfoTable()
         mapInfo.checkpoint_id = fields[20].asUint32();
 
         ++world_map_info_count;
-    } while (worldmap_info_result->NextRow());
+    } while (worldmap_info_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `worldmap_info` table in {} ms!", world_map_info_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -2244,21 +2244,21 @@ void MySQLDataStore::loadZoneGuardsTable()
     auto startTime = Util::TimeNow();
 
     //                                                     0         1              2
-    auto zone_guards_result = WorldDatabase.Query("SELECT zone, horde_entry, alliance_entry FROM zoneguards");
+    auto zone_guards_result = WorldDatabase.query("SELECT zone, horde_entry, alliance_entry FROM zoneguards");
     if (zone_guards_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `zoneguards` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `zoneguards` has {} columns", zone_guards_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `zoneguards` has {} columns", zone_guards_result->getFieldCount());
 
-    _zoneGuardsStore.rehash(zone_guards_result->GetRowCount());
+    _zoneGuardsStore.rehash(zone_guards_result->getRowCount());
 
     uint32_t zone_guards_count = 0;
     do
     {
-        Field* fields = zone_guards_result->Fetch();
+        Field* fields = zone_guards_result->fetch();
 
         uint32_t entry = fields[0].asUint32();
 
@@ -2269,7 +2269,7 @@ void MySQLDataStore::loadZoneGuardsTable()
         zoneGuard.allianceEntry = fields[2].asUint32();
 
         ++zone_guards_count;
-    } while (zone_guards_result->NextRow());
+    } while (zone_guards_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `zoneguards` table in {} ms!", zone_guards_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -2288,21 +2288,21 @@ void MySQLDataStore::loadBattleMastersTable()
     auto startTime = Util::TimeNow();
 
     //                                                            0                1
-    auto battlemasters_result = WorldDatabase.Query("SELECT creature_entry, battleground_id FROM battlemasters");
+    auto battlemasters_result = WorldDatabase.query("SELECT creature_entry, battleground_id FROM battlemasters");
     if (battlemasters_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `battlemasters` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `battlemasters` has {} columns", battlemasters_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `battlemasters` has {} columns", battlemasters_result->getFieldCount());
 
-    _battleMastersStore.rehash(battlemasters_result->GetRowCount());
+    _battleMastersStore.rehash(battlemasters_result->getRowCount());
 
     uint32_t battlemasters_count = 0;
     do
     {
-        Field* fields = battlemasters_result->Fetch();
+        Field* fields = battlemasters_result->fetch();
 
         uint32_t entry = fields[0].asUint32();
 
@@ -2312,7 +2312,7 @@ void MySQLDataStore::loadBattleMastersTable()
         bgMaster.battlegroundId = fields[1].asUint32();
 
         ++battlemasters_count;
-    } while (battlemasters_result->NextRow());
+    } while (battlemasters_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `battlemasters` table in {} ms!", battlemasters_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -2333,7 +2333,7 @@ void MySQLDataStore::loadTotemDisplayIdsTable()
     auto startTime = Util::TimeNow();
 
     //                                                          0     1        2
-    auto totemdisplayids_result = WorldDatabase.Query("SELECT race, totem, displayid FROM totemdisplayids base "
+    auto totemdisplayids_result = WorldDatabase.query("SELECT race, totem, displayid FROM totemdisplayids base "
         "WHERE build=(SELECT MAX(build) FROM totemdisplayids spec WHERE base.race = spec.race AND base.totem = spec.totem AND build <= %u)", VERSION_STRING);
 
     if (totemdisplayids_result == nullptr)
@@ -2342,12 +2342,12 @@ void MySQLDataStore::loadTotemDisplayIdsTable()
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `totemdisplayids` has {} columns", totemdisplayids_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `totemdisplayids` has {} columns", totemdisplayids_result->getFieldCount());
 
     uint32_t totemdisplayids_count = 0;
     do
     {
-        Field* fields = totemdisplayids_result->Fetch();
+        Field* fields = totemdisplayids_result->fetch();
 
         MySQLStructure::TotemDisplayIds totemDisplayId;
 
@@ -2358,7 +2358,7 @@ void MySQLDataStore::loadTotemDisplayIdsTable()
         _totemDisplayIdsStore.push_back(totemDisplayId);
 
         ++totemdisplayids_count;
-    } while (totemdisplayids_result->NextRow());
+    } while (totemdisplayids_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `totemdisplayids` table in {} ms!", static_cast<uint32_t>(_totemDisplayIdsStore.size()), static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -2379,19 +2379,19 @@ void MySQLDataStore::loadSpellClickSpellsTable()
     _spellClickInfoStore.clear();
 
     //                                                0          1         2            3
-    auto spellclickspells_result = WorldDatabase.Query("SELECT npc_entry, spell_id, cast_flags, user_type FROM npc_spellclick_spells");
+    auto spellclickspells_result = WorldDatabase.query("SELECT npc_entry, spell_id, cast_flags, user_type FROM npc_spellclick_spells");
     if (spellclickspells_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `spellclickspells` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `spellclickspells` has {} columns", spellclickspells_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `spellclickspells` has {} columns", spellclickspells_result->getFieldCount());
 
     uint32_t spellclickspells_count = 0;
     do
     {
-        Field* fields = spellclickspells_result->Fetch();
+        Field* fields = spellclickspells_result->fetch();
 
         uint32_t npc_entry = fields[0].asUint32();
         CreatureProperties const* cInfo = sMySQLStore.getCreatureProperties(npc_entry);
@@ -2422,7 +2422,7 @@ void MySQLDataStore::loadSpellClickSpellsTable()
         info.castFlags = castFlags;
         info.userType = SpellClickUserTypes(userType);
         _spellClickInfoStore.insert(SpellClickInfoContainer::value_type(npc_entry, info));
-    } while (spellclickspells_result->NextRow());
+    } while (spellclickspells_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `spellclickspells` table in {} ms!", spellclickspells_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -2444,21 +2444,21 @@ void MySQLDataStore::loadWorldStringsTable()
     auto startTime = Util::TimeNow();
 
     //                                                             0     1
-    auto worldstring_tables_result = WorldDatabase.Query("SELECT entry, text FROM worldstring_tables");
+    auto worldstring_tables_result = WorldDatabase.query("SELECT entry, text FROM worldstring_tables");
     if (worldstring_tables_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `worldstring_tables` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `worldstring_tables` has {} columns", worldstring_tables_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `worldstring_tables` has {} columns", worldstring_tables_result->getFieldCount());
 
-    _worldStringsStore.rehash(worldstring_tables_result->GetRowCount());
+    _worldStringsStore.rehash(worldstring_tables_result->getRowCount());
 
     uint32_t worldstring_tables_count = 0;
     do
     {
-        Field* fields = worldstring_tables_result->Fetch();
+        Field* fields = worldstring_tables_result->fetch();
 
         uint32_t entry = fields[0].asUint32();
 
@@ -2468,7 +2468,7 @@ void MySQLDataStore::loadWorldStringsTable()
         worldString.text = fields[1].asCString();
 
         ++worldstring_tables_count;
-    } while (worldstring_tables_result->NextRow());
+    } while (worldstring_tables_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `worldstring_tables` table in {} ms!", worldstring_tables_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -2487,21 +2487,21 @@ void MySQLDataStore::loadPointsOfInterestTable()
     auto startTime = Util::TimeNow();
 
     //                                                              0   1  2    3     4     5        6
-    auto points_of_interest_result = WorldDatabase.Query("SELECT entry, x, y, icon, flags, data, icon_name FROM points_of_interest");
+    auto points_of_interest_result = WorldDatabase.query("SELECT entry, x, y, icon, flags, data, icon_name FROM points_of_interest");
     if (points_of_interest_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `points_of_interest` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `points_of_interest` has {} columns", points_of_interest_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `points_of_interest` has {} columns", points_of_interest_result->getFieldCount());
 
-    _pointsOfInterestStore.rehash(points_of_interest_result->GetRowCount());
+    _pointsOfInterestStore.rehash(points_of_interest_result->getRowCount());
 
     uint32_t points_of_interest_count = 0;
     do
     {
-        Field* fields = points_of_interest_result->Fetch();
+        Field* fields = points_of_interest_result->fetch();
 
         uint32_t entry = fields[0].asUint32();
 
@@ -2516,7 +2516,7 @@ void MySQLDataStore::loadPointsOfInterestTable()
         pointOfInterest.iconName = fields[6].asCString();
 
         ++points_of_interest_count;
-    } while (points_of_interest_result->NextRow());
+    } while (points_of_interest_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `points_of_interest` table in {} ms!", points_of_interest_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -2535,21 +2535,21 @@ void MySQLDataStore::loadItemSetLinkedSetBonusTable()
     auto startTime = Util::TimeNow();
 
     //                                                           0            1
-    auto linked_set_bonus_result = WorldDatabase.Query("SELECT itemset, itemset_bonus FROM itemset_linked_itemsetbonus");
+    auto linked_set_bonus_result = WorldDatabase.query("SELECT itemset, itemset_bonus FROM itemset_linked_itemsetbonus");
     if (linked_set_bonus_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `itemset_linked_itemsetbonus` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `itemset_linked_itemsetbonus` has {} columns", linked_set_bonus_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `itemset_linked_itemsetbonus` has {} columns", linked_set_bonus_result->getFieldCount());
 
-    _definedItemSetBonusStore.rehash(linked_set_bonus_result->GetRowCount());
+    _definedItemSetBonusStore.rehash(linked_set_bonus_result->getRowCount());
 
     uint32_t linked_set_bonus_count = 0;
     do
     {
-        Field* fields = linked_set_bonus_result->Fetch();
+        Field* fields = linked_set_bonus_result->fetch();
 
         int32_t entry = fields[0].asInt32();
 
@@ -2560,7 +2560,7 @@ void MySQLDataStore::loadItemSetLinkedSetBonusTable()
 
         ++linked_set_bonus_count;
 
-    } while (linked_set_bonus_result->NextRow());
+    } while (linked_set_bonus_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `itemset_linked_itemsetbonus` table in {} ms!", linked_set_bonus_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -2583,19 +2583,19 @@ void MySQLDataStore::loadCreatureInitialEquipmentTable()
     auto startTime = Util::TimeNow();
 
     //                                                                0              1           2          3
-    auto initial_equipment_result = WorldDatabase.Query("SELECT creature_entry, itemslot_1, itemslot_2, itemslot_3 FROM creature_initial_equip;");
+    auto initial_equipment_result = WorldDatabase.query("SELECT creature_entry, itemslot_1, itemslot_2, itemslot_3 FROM creature_initial_equip;");
     if (initial_equipment_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `creature_initial_equip` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `creature_initial_equip` has {} columns", initial_equipment_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `creature_initial_equip` has {} columns", initial_equipment_result->getFieldCount());
 
     uint32_t initial_equipment_count = 0;
     do
     {
-        Field* fields = initial_equipment_result->Fetch();
+        Field* fields = initial_equipment_result->fetch();
         uint32_t entry = fields[0].asUint32();
         CreatureProperties const* creature_properties = sMySQLStore.getCreatureProperties(entry);
         if (creature_properties == nullptr)
@@ -2624,7 +2624,7 @@ void MySQLDataStore::loadCreatureInitialEquipmentTable()
 
         ++initial_equipment_count;
 
-    } while (initial_equipment_result->NextRow());
+    } while (initial_equipment_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `creature_initial_equip` table in {} ms!", initial_equipment_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -2634,7 +2634,7 @@ void MySQLDataStore::loadPlayerCreateInfoTable()
     auto startTime = Util::TimeNow();
 
     //                                                             1     2      3      4          5          6         7           8
-    auto player_create_info_result = WorldDatabase.Query("SELECT race, class, mapID, zoneID, positionX, positionY, positionZ, orientation FROM playercreateinfo pi "
+    auto player_create_info_result = WorldDatabase.query("SELECT race, class, mapID, zoneID, positionX, positionY, positionZ, orientation FROM playercreateinfo pi "
 
         "WHERE build=(SELECT MAX(build) FROM playercreateinfo buildspecific WHERE pi.race = buildspecific.race AND pi.class = buildspecific.class AND build <= %u)", VERSION_STRING);
     if (player_create_info_result == nullptr)
@@ -2643,12 +2643,12 @@ void MySQLDataStore::loadPlayerCreateInfoTable()
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `playercreateinfo` has {} columns", player_create_info_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `playercreateinfo` has {} columns", player_create_info_result->getFieldCount());
 
     uint32_t player_create_info_count = 0;
     do
     {
-        Field* fields = player_create_info_result->Fetch();
+        Field* fields = player_create_info_result->fetch();
 
         uint8_t _race = fields[0].asUint8();
         uint8_t _class = fields[1].asUint8();
@@ -2664,7 +2664,7 @@ void MySQLDataStore::loadPlayerCreateInfoTable()
 
         player_create_info_count++;
 
-    } while (player_create_info_result->NextRow());
+    } while (player_create_info_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `playercreateinfo` table in {} ms!", player_create_info_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -2674,7 +2674,7 @@ void MySQLDataStore::loadPlayerCreateInfoBars()
 {
 
     //                                                                 0     1      2        3      4     5
-    auto player_create_info_bars_result = WorldDatabase.Query("SELECT race, class, button, action, type, misc FROM playercreateinfo_bars WHERE build = %u", VERSION_STRING);
+    auto player_create_info_bars_result = WorldDatabase.query("SELECT race, class, button, action, type, misc FROM playercreateinfo_bars WHERE build = %u", VERSION_STRING);
 
     if (player_create_info_bars_result == nullptr)
     {
@@ -2685,7 +2685,7 @@ void MySQLDataStore::loadPlayerCreateInfoBars()
     uint32_t player_create_info_bars_count = 0;
     do
     {
-        Field* fields = player_create_info_bars_result->Fetch();
+        Field* fields = player_create_info_bars_result->fetch();
 
         uint8_t _race = fields[0].asUint8();
         uint8_t _class = fields[1].asUint8();
@@ -2703,7 +2703,7 @@ void MySQLDataStore::loadPlayerCreateInfoBars()
             ++player_create_info_bars_count;
         }
 
-    } while (player_create_info_bars_result->NextRow());
+    } while (player_create_info_bars_result->nextRow());
 }
 
 void MySQLDataStore::loadPlayerCreateInfoItems()
@@ -2711,7 +2711,7 @@ void MySQLDataStore::loadPlayerCreateInfoItems()
     auto startTime = Util::TimeNow();
 
     //                                                                   0     1       2       3       4
-    auto player_create_info_items_result = WorldDatabase.Query("SELECT race, class, protoid, slotid, amount FROM playercreateinfo_items WHERE build = %u", VERSION_STRING);
+    auto player_create_info_items_result = WorldDatabase.query("SELECT race, class, protoid, slotid, amount FROM playercreateinfo_items WHERE build = %u", VERSION_STRING);
 
     if (player_create_info_items_result == nullptr)
     {
@@ -2719,12 +2719,12 @@ void MySQLDataStore::loadPlayerCreateInfoItems()
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `playercreateinfo_items` has {} columns", player_create_info_items_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `playercreateinfo_items` has {} columns", player_create_info_items_result->getFieldCount());
 
     uint32_t player_create_info_items_count = 0;
     do
     {
-        Field* fields = player_create_info_items_result->Fetch();
+        Field* fields = player_create_info_items_result->fetch();
 
         uint8_t _race = fields[0].asUint8();
         uint8_t _class = fields[1].asUint8();
@@ -2753,7 +2753,7 @@ void MySQLDataStore::loadPlayerCreateInfoItems()
             ++player_create_info_items_count;
         }
 
-    } while (player_create_info_items_result->NextRow());
+    } while (player_create_info_items_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `playercreateinfo_items` table in {} ms!", player_create_info_items_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -2763,7 +2763,7 @@ void MySQLDataStore::loadPlayerCreateInfoSkills()
     auto startTime = Util::TimeNow();
 
     //                                                                      0         1         2       3
-    auto player_create_info_skills_result = WorldDatabase.Query("SELECT raceMask, classMask, skillid, level FROM playercreateinfo_skills WHERE min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
+    auto player_create_info_skills_result = WorldDatabase.query("SELECT raceMask, classMask, skillid, level FROM playercreateinfo_skills WHERE min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
 
     if (player_create_info_skills_result == nullptr)
     {
@@ -2771,12 +2771,12 @@ void MySQLDataStore::loadPlayerCreateInfoSkills()
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `playercreateinfo_skills` has {} columns", player_create_info_skills_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `playercreateinfo_skills` has {} columns", player_create_info_skills_result->getFieldCount());
 
     uint32_t player_create_info_skills_count = 0;
     do
     {
-        Field* fields = player_create_info_skills_result->Fetch();
+        Field* fields = player_create_info_skills_result->fetch();
 
         uint32_t raceMask = fields[0].asUint32();
         uint32_t classMask = fields[1].asUint32();
@@ -2811,7 +2811,7 @@ void MySQLDataStore::loadPlayerCreateInfoSkills()
             }
         }
 
-    } while (player_create_info_skills_result->NextRow());
+    } while (player_create_info_skills_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `playercreateinfo_skills` table in {} ms!", player_create_info_skills_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -2821,7 +2821,7 @@ void MySQLDataStore::loadPlayerCreateInfoSpellLearn()
     auto startTime = Util::TimeNow();
 
     //                                                                     0         1         2
-    auto player_create_info_spells_result = WorldDatabase.Query("SELECT raceMask, classMask, spellid FROM playercreateinfo_spell_learn WHERE min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
+    auto player_create_info_spells_result = WorldDatabase.query("SELECT raceMask, classMask, spellid FROM playercreateinfo_spell_learn WHERE min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
 
     if (player_create_info_spells_result == nullptr)
     {
@@ -2829,12 +2829,12 @@ void MySQLDataStore::loadPlayerCreateInfoSpellLearn()
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `playercreateinfo_spell_learn` has {} columns", player_create_info_spells_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `playercreateinfo_spell_learn` has {} columns", player_create_info_spells_result->getFieldCount());
 
     uint32_t player_create_info_spells_count = 0;
     do
     {
-        Field* fields = player_create_info_spells_result->Fetch();
+        Field* fields = player_create_info_spells_result->fetch();
 
         uint32_t raceMask = fields[0].asUint32();
         uint32_t classMask = fields[1].asUint32();
@@ -2865,7 +2865,7 @@ void MySQLDataStore::loadPlayerCreateInfoSpellLearn()
             }
         }
 
-    } while (player_create_info_spells_result->NextRow());
+    } while (player_create_info_spells_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `playercreateinfo_spell_learn` table in {} ms!", player_create_info_spells_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -2875,7 +2875,7 @@ void MySQLDataStore::loadPlayerCreateInfoSpellCast()
     auto startTime = Util::TimeNow();
 
     //                                                                      0         1         2
-    auto player_create_info_spells_result = WorldDatabase.Query("SELECT raceMask, classMask, spellid FROM playercreateinfo_spell_cast WHERE build = %u", VERSION_STRING);
+    auto player_create_info_spells_result = WorldDatabase.query("SELECT raceMask, classMask, spellid FROM playercreateinfo_spell_cast WHERE build = %u", VERSION_STRING);
 
     if (player_create_info_spells_result == nullptr)
     {
@@ -2883,12 +2883,12 @@ void MySQLDataStore::loadPlayerCreateInfoSpellCast()
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `playercreateinfo_spell_cast` has {} columns", player_create_info_spells_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `playercreateinfo_spell_cast` has {} columns", player_create_info_spells_result->getFieldCount());
 
     uint32_t player_create_info_spells_count = 0;
     do
     {
-        Field* fields = player_create_info_spells_result->Fetch();
+        Field* fields = player_create_info_spells_result->fetch();
 
         uint32_t raceMask = fields[0].asUint32();
         uint32_t classMask = fields[1].asUint32();
@@ -2919,7 +2919,7 @@ void MySQLDataStore::loadPlayerCreateInfoSpellCast()
             }
         }
 
-    } while (player_create_info_spells_result->NextRow());
+    } while (player_create_info_spells_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `playercreateinfo_spell_cast` table in {} ms!", player_create_info_spells_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -2929,7 +2929,7 @@ void MySQLDataStore::loadPlayerCreateInfoLevelstats()
     auto startTime = Util::TimeNow();
 
     //                                                           0     1      2          3           4            5             6             7
-    auto player_levelstats_result = WorldDatabase.Query("SELECT race, class, level, BaseStrength, BaseAgility, BaseStamina, BaseIntellect, BaseSpirit FROM player_levelstats WHERE build = %u", VERSION_STRING);
+    auto player_levelstats_result = WorldDatabase.query("SELECT race, class, level, BaseStrength, BaseAgility, BaseStamina, BaseIntellect, BaseSpirit FROM player_levelstats WHERE build = %u", VERSION_STRING);
 
     if (player_levelstats_result == nullptr)
     {
@@ -2937,12 +2937,12 @@ void MySQLDataStore::loadPlayerCreateInfoLevelstats()
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `player_levelstats` has {} columns", player_levelstats_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `player_levelstats` has {} columns", player_levelstats_result->getFieldCount());
 
     uint32_t player_levelstats_count = 0;
     do
     {
-        Field* fields = player_levelstats_result->Fetch();
+        Field* fields = player_levelstats_result->fetch();
 
         uint32_t _race = fields[0].asUint32();
         uint32_t _class = fields[1].asUint32();
@@ -2963,7 +2963,7 @@ void MySQLDataStore::loadPlayerCreateInfoLevelstats()
             ++player_levelstats_count;
         }
 
-    } while (player_levelstats_result->NextRow());
+    } while (player_levelstats_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `player_levelstats` table in {} ms!", player_levelstats_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
@@ -3000,17 +3000,17 @@ void MySQLDataStore::loadPlayerCreateInfoClassLevelstats()
 
     // Zyres: load highest gamebuild version from table, otherwise we will have dead new characters
     //                                                                 0      1        2          3
-    auto player_classlevelstats_result = WorldDatabase.Query("SELECT class, level, BaseHealth, BaseMana FROM player_classlevelstats base "
+    auto player_classlevelstats_result = WorldDatabase.query("SELECT class, level, BaseHealth, BaseMana FROM player_classlevelstats base "
         "WHERE build=(SELECT MAX(build) FROM player_classlevelstats buildspecific WHERE base.class = buildspecific.class AND base.level = buildspecific.level AND build <= %u)", VERSION_STRING);
 
     if (player_classlevelstats_result)
     {
-        sLogger.info("MySQLDataLoads : Table `player_classlevelstats` has {} columns", player_classlevelstats_result->GetFieldCount());
+        sLogger.info("MySQLDataLoads : Table `player_classlevelstats` has {} columns", player_classlevelstats_result->getFieldCount());
 
         uint32_t player_classlevelstats_count = 0;
         do
         {
-            Field* fields = player_classlevelstats_result->Fetch();
+            Field* fields = player_classlevelstats_result->fetch();
 
             uint32_t _class = fields[0].asUint32();
             uint32_t level = fields[1].asUint32();
@@ -3023,7 +3023,7 @@ void MySQLDataStore::loadPlayerCreateInfoClassLevelstats()
 
             ++player_classlevelstats_count;
 
-        } while (player_classlevelstats_result->NextRow());
+        } while (player_classlevelstats_result->nextRow());
 
         sLogger.info("MySQLDataLoads : Loaded {} rows from `player_classlevelstats` table in {} ms!", player_classlevelstats_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
     }
@@ -3104,7 +3104,7 @@ void MySQLDataStore::loadPlayerXpToLevelTable()
     for (uint32_t level = 0; level < worldConfig.player.playerLevelCap; ++level)
         _playerXPperLevelStore[level] = 0;
 
-    auto player_xp_to_level_result = WorldDatabase.Query("SELECT player_lvl, next_lvl_req_xp FROM player_xp_for_level base "
+    auto player_xp_to_level_result = WorldDatabase.query("SELECT player_lvl, next_lvl_req_xp FROM player_xp_for_level base "
         "WHERE build=(SELECT MAX(build) FROM player_xp_for_level spec WHERE base.player_lvl = spec.player_lvl AND build <= %u)", VERSION_STRING);
 
     if (player_xp_to_level_result == nullptr)
@@ -3113,12 +3113,12 @@ void MySQLDataStore::loadPlayerXpToLevelTable()
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `player_xp_for_level` has {} columns", player_xp_to_level_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `player_xp_for_level` has {} columns", player_xp_to_level_result->getFieldCount());
 
     uint32_t player_xp_to_level_count = 0;
     do
     {
-        Field* fields = player_xp_to_level_result->Fetch();
+        Field* fields = player_xp_to_level_result->fetch();
         uint32_t current_level = fields[0].asUint8();
         uint32_t current_xp = fields[1].asUint32();
 
@@ -3132,7 +3132,7 @@ void MySQLDataStore::loadPlayerXpToLevelTable()
 
         ++player_xp_to_level_count;
 
-    } while (player_xp_to_level_result->NextRow());
+    } while (player_xp_to_level_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `player_xp_for_level` table in {} ms!", player_xp_to_level_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
@@ -3152,7 +3152,7 @@ uint32_t MySQLDataStore::getPlayerXPForLevel(uint32_t level)
 
 void MySQLDataStore::loadSpellOverrideTable()
 {
-    auto spelloverride_result = WorldDatabase.Query("SELECT DISTINCT overrideId FROM spelloverride");
+    auto spelloverride_result = WorldDatabase.query("SELECT DISTINCT overrideId FROM spelloverride");
     if (spelloverride_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `spelloverride` is empty!");
@@ -3161,16 +3161,16 @@ void MySQLDataStore::loadSpellOverrideTable()
 
     do
     {
-        Field* fields = spelloverride_result->Fetch();
+        Field* fields = spelloverride_result->fetch();
         uint32_t distinct_override_id = fields[0].asUint32();
 
-        auto spellid_for_overrideid_result = WorldDatabase.Query("SELECT spellId FROM spelloverride WHERE overrideId = %u", distinct_override_id);
+        auto spellid_for_overrideid_result = WorldDatabase.query("SELECT spellId FROM spelloverride WHERE overrideId = %u", distinct_override_id);
         auto list = std::make_unique<std::list<SpellInfo const*>>();
         if (spellid_for_overrideid_result != nullptr)
         {
             do
             {
-                Field* fieldsIn = spellid_for_overrideid_result->Fetch();
+                Field* fieldsIn = spellid_for_overrideid_result->fetch();
                 uint32_t spellid = fieldsIn[0].asUint32();
                 SpellInfo const* spell = sSpellMgr.getSpellInfo(spellid);
                 if (spell == nullptr)
@@ -3181,7 +3181,7 @@ void MySQLDataStore::loadSpellOverrideTable()
 
                 list->push_back(spell);
 
-            } while (spellid_for_overrideid_result->NextRow());
+            } while (spellid_for_overrideid_result->nextRow());
         }
 
         if (!list->empty())
@@ -3189,7 +3189,7 @@ void MySQLDataStore::loadSpellOverrideTable()
             _spellOverrideIdStore.emplace(distinct_override_id, std::move(list));
         }
 
-    } while (spelloverride_result->NextRow());
+    } while (spelloverride_result->nextRow());
 
     sLogger.info("MySQLDataLoads : {} spell overrides loaded.", static_cast<uint32_t>(_spellOverrideIdStore.size()));
 }
@@ -3198,19 +3198,19 @@ void MySQLDataStore::loadNpcGossipTextIdTable()
 {
     auto startTime = Util::TimeNow();
     //                                                    0         1
-    auto npc_gossip_properties_result = WorldDatabase.Query("SELECT creatureid, textid FROM npc_gossip_properties");
+    auto npc_gossip_properties_result = WorldDatabase.query("SELECT creatureid, textid FROM npc_gossip_properties");
     if (npc_gossip_properties_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `npc_gossip_properties` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `npc_gossip_properties` has {} columns", npc_gossip_properties_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `npc_gossip_properties` has {} columns", npc_gossip_properties_result->getFieldCount());
 
     uint32_t npc_gossip_properties_count = 0;
     do
     {
-        Field* fields = npc_gossip_properties_result->Fetch();
+        Field* fields = npc_gossip_properties_result->fetch();
         uint32_t entry = fields[0].asUint32();
         auto creature_properties = sMySQLStore.getCreatureProperties(entry);
         if (creature_properties == nullptr)
@@ -3225,7 +3225,7 @@ void MySQLDataStore::loadNpcGossipTextIdTable()
 
         ++npc_gossip_properties_count;
 
-    } while (npc_gossip_properties_result->NextRow());
+    } while (npc_gossip_properties_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `npc_gossip_properties` table in {} ms!", npc_gossip_properties_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -3239,21 +3239,21 @@ void MySQLDataStore::loadPetLevelAbilitiesTable()
 {
     auto startTime = Util::TimeNow();
     //                                                              0       1      2        3        4        5         6         7
-    auto pet_level_abilities_result = WorldDatabase.Query("SELECT level, health, armor, strength, agility, stamina, intellect, spirit FROM pet_level_abilities");
+    auto pet_level_abilities_result = WorldDatabase.query("SELECT level, health, armor, strength, agility, stamina, intellect, spirit FROM pet_level_abilities");
     if (pet_level_abilities_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `pet_level_abilities` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `pet_level_abilities` has {} columns", pet_level_abilities_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `pet_level_abilities` has {} columns", pet_level_abilities_result->getFieldCount());
 
-    _petLevelAbilitiesStore.rehash(pet_level_abilities_result->GetRowCount());
+    _petLevelAbilitiesStore.rehash(pet_level_abilities_result->getRowCount());
 
     uint32_t pet_level_abilities_count = 0;
     do
     {
-        Field* fields = pet_level_abilities_result->Fetch();
+        Field* fields = pet_level_abilities_result->fetch();
 
         uint32_t entry = fields[0].asUint32();
 
@@ -3270,7 +3270,7 @@ void MySQLDataStore::loadPetLevelAbilitiesTable()
 
         ++pet_level_abilities_count;
 
-    } while (pet_level_abilities_result->NextRow());
+    } while (pet_level_abilities_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `pet_level_abilities` table in {} ms!", pet_level_abilities_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
@@ -3298,14 +3298,14 @@ void MySQLDataStore::loadBroadcastTable()
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `worldbroadcast` has {} columns", broadcast_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `worldbroadcast` has {} columns", broadcast_result->getFieldCount());
 
-    _worldBroadcastStore.rehash(broadcast_result->GetRowCount());
+    _worldBroadcastStore.rehash(broadcast_result->getRowCount());
 
     uint32_t broadcast_count = 0;
     do
     {
-        Field* fields = broadcast_result->Fetch();
+        Field* fields = broadcast_result->fetch();
 
         uint32_t entry = fields[0].asUint32();
 
@@ -3322,7 +3322,7 @@ void MySQLDataStore::loadBroadcastTable()
 
         ++broadcast_count;
 
-    } while (broadcast_result->NextRow());
+    } while (broadcast_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `worldbroadcast` table in {} ms!", broadcast_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -3340,21 +3340,21 @@ void MySQLDataStore::loadAreaTriggerTable()
 {
     auto startTime = Util::TimeNow();
     //                                                       0      1    2     3       4       5           6          7             8               9                  10
-    auto area_trigger_result = WorldDatabase.Query("SELECT entry, type, map, screen, name, position_x, position_y, position_z, orientation, required_honor_rank, required_level FROM areatriggers");
+    auto area_trigger_result = WorldDatabase.query("SELECT entry, type, map, screen, name, position_x, position_y, position_z, orientation, required_honor_rank, required_level FROM areatriggers");
     if (area_trigger_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `areatriggers` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `areatriggers` has {} columns", area_trigger_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `areatriggers` has {} columns", area_trigger_result->getFieldCount());
 
-    _areaTriggerStore.rehash(area_trigger_result->GetRowCount());
+    _areaTriggerStore.rehash(area_trigger_result->getRowCount());
 
     uint32_t areaTrigger_count = 0;
     do
     {
-        Field* fields = area_trigger_result->Fetch();
+        Field* fields = area_trigger_result->fetch();
 
         MySQLStructure::AreaTrigger areaTrigger;
         areaTrigger.id = fields[0].asUint32();
@@ -3392,7 +3392,7 @@ void MySQLDataStore::loadAreaTriggerTable()
         _areaTriggerStore[areaTrigger.id] = areaTrigger;
         ++areaTrigger_count;
 
-    } while (area_trigger_result->NextRow());
+    } while (area_trigger_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `areatriggers` table in {} ms!", areaTrigger_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -3490,21 +3490,21 @@ void MySQLDataStore::loadWordFilterCharacterNames()
 {
     auto startTime = Util::TimeNow();
 
-    auto filter_character_names_result = WorldDatabase.Query("SELECT * FROM wordfilter_character_names");
+    auto filter_character_names_result = WorldDatabase.query("SELECT * FROM wordfilter_character_names");
     if (filter_character_names_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `wordfilter_character_names` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `wordfilter_character_names` has {} columns", filter_character_names_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `wordfilter_character_names` has {} columns", filter_character_names_result->getFieldCount());
 
     _wordFilterCharacterNamesStore.clear();
 
     uint32_t filter_character_names_count = 0;
     do
     {
-        Field* fields = filter_character_names_result->Fetch();
+        Field* fields = filter_character_names_result->fetch();
 
         MySQLStructure::WordFilterCharacterNames wfCharacterNames;
         wfCharacterNames.name = fields[0].asCString();
@@ -3518,7 +3518,7 @@ void MySQLDataStore::loadWordFilterCharacterNames()
 
         ++filter_character_names_count;
 
-    } while (filter_character_names_result->NextRow());
+    } while (filter_character_names_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `wordfilter_character_names` table in {} ms!", filter_character_names_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -3542,21 +3542,21 @@ void MySQLDataStore::loadWordFilterChat()
 {
     auto startTime = Util::TimeNow();
 
-    auto filter_chat_result = WorldDatabase.Query("SELECT * FROM wordfilter_chat");
+    auto filter_chat_result = WorldDatabase.query("SELECT * FROM wordfilter_chat");
     if (filter_chat_result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `wordfilter_chat` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `wordfilter_chat` has {} columns", filter_chat_result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `wordfilter_chat` has {} columns", filter_chat_result->getFieldCount());
 
     _wordFilterChatStore.clear();
 
     uint32_t filter_chat_count = 0;
     do
     {
-        Field* fields = filter_chat_result->Fetch();
+        Field* fields = filter_chat_result->fetch();
 
         MySQLStructure::WordFilterChat wfChat;
         wfChat.word = fields[0].asCString();
@@ -3574,7 +3574,7 @@ void MySQLDataStore::loadWordFilterChat()
 
         ++filter_chat_count;
 
-    } while (filter_chat_result->NextRow());
+    } while (filter_chat_result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `wordfilter_chat` table in {} ms!", filter_chat_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -3586,21 +3586,21 @@ void MySQLDataStore::loadLocalesAchievementReward()
 {
     auto startTime = Util::TimeNow();
     //                                          0       1          2           3       4
-    auto result = WorldDatabase.Query("SELECT entry, gender, language_code, subject, text FROM locales_achievement_reward");
+    auto result = WorldDatabase.query("SELECT entry, gender, language_code, subject, text FROM locales_achievement_reward");
     if (result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `locales_achievement_reward` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `locales_achievement_reward` has {} columns", result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `locales_achievement_reward` has {} columns", result->getFieldCount());
 
     uint32_t load_count = 0;
     uint32_t i = 0;
     do
     {
         ++i;
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
 
         MySQLStructure::LocalesAchievementReward localAchievementReward;
 
@@ -3615,7 +3615,7 @@ void MySQLDataStore::loadLocalesAchievementReward()
 
         ++load_count;
 
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `locales_achievement_reward` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -3639,7 +3639,7 @@ void MySQLDataStore::loadLocalesCreature()
 {
     auto startTime = Util::TimeNow();
     //                                        0         1          2      3
-    auto result = WorldDatabase.Query("SELECT id, language_code, name, subname FROM locales_creature base "
+    auto result = WorldDatabase.query("SELECT id, language_code, name, subname FROM locales_creature base "
         "WHERE build=(SELECT MAX(build) FROM locales_creature buildspecific WHERE base.id = buildspecific.id AND build <= %u)", VERSION_STRING);
     if (result == nullptr)
     {
@@ -3647,16 +3647,16 @@ void MySQLDataStore::loadLocalesCreature()
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `locales_creature` has {} columns", result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `locales_creature` has {} columns", result->getFieldCount());
 
-    _localesCreatureStore.rehash(result->GetRowCount());
+    _localesCreatureStore.rehash(result->getRowCount());
 
     uint32_t load_count = 0;
     uint32_t i = 0;
     do
     {
         ++i;
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
 
         MySQLStructure::LocalesCreature& localCreature = _localesCreatureStore[i];
 
@@ -3668,7 +3668,7 @@ void MySQLDataStore::loadLocalesCreature()
 
         ++load_count;
 
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `locales_creature` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -3692,23 +3692,23 @@ void MySQLDataStore::loadLocalesGameobject()
 {
     auto startTime = Util::TimeNow();
     //                                          0         1          2
-    auto result = WorldDatabase.Query("SELECT entry, language_code, name FROM locales_gameobject");
+    auto result = WorldDatabase.query("SELECT entry, language_code, name FROM locales_gameobject");
     if (result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `locales_gameobject` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `locales_gameobject` has {} columns", result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `locales_gameobject` has {} columns", result->getFieldCount());
 
-    _localesGameobjectStore.rehash(result->GetRowCount());
+    _localesGameobjectStore.rehash(result->getRowCount());
 
     uint32_t load_count = 0;
     uint32_t i = 0;
     do
     {
         ++i;
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
 
         MySQLStructure::LocalesGameobject& localGameobject = _localesGameobjectStore[i];
 
@@ -3719,7 +3719,7 @@ void MySQLDataStore::loadLocalesGameobject()
 
         ++load_count;
 
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `locales_gameobject` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -3743,23 +3743,23 @@ void MySQLDataStore::loadLocalesGossipMenuOption()
 {
     auto startTime = Util::TimeNow();
     //                                          0         1             2
-    auto result = WorldDatabase.Query("SELECT entry, language_code, option_text FROM locales_gossip_menu_option");
+    auto result = WorldDatabase.query("SELECT entry, language_code, option_text FROM locales_gossip_menu_option");
     if (result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `locales_gossip_menu_option` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `locales_gossip_menu_option` has {} columns", result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `locales_gossip_menu_option` has {} columns", result->getFieldCount());
 
-    _localesGossipMenuOptionStore.rehash(result->GetRowCount());
+    _localesGossipMenuOptionStore.rehash(result->getRowCount());
 
     uint32_t load_count = 0;
     uint32_t i = 0;
     do
     {
         ++i;
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
 
         MySQLStructure::LocalesGossipMenuOption& localGossipMenuOption = _localesGossipMenuOptionStore[1];
 
@@ -3770,7 +3770,7 @@ void MySQLDataStore::loadLocalesGossipMenuOption()
 
         ++load_count;
 
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `locales_gossip_menu_option` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -3794,23 +3794,23 @@ void MySQLDataStore::loadLocalesItem()
 {
     auto startTime = Util::TimeNow();
     //                                          0         1          2         3
-    auto result = WorldDatabase.Query("SELECT entry, language_code, name, description FROM locales_item");
+    auto result = WorldDatabase.query("SELECT entry, language_code, name, description FROM locales_item");
     if (result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `locales_item` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `locales_item` has {} columns", result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `locales_item` has {} columns", result->getFieldCount());
 
-    _localesItemStore.rehash(result->GetRowCount());
+    _localesItemStore.rehash(result->getRowCount());
 
     uint32_t load_count = 0;
     uint32_t i = 0;
     do
     {
         ++i;
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
 
         MySQLStructure::LocalesItem& localItem = _localesItemStore[i];
 
@@ -3822,7 +3822,7 @@ void MySQLDataStore::loadLocalesItem()
 
         ++load_count;
 
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `locales_item` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -3867,23 +3867,23 @@ void MySQLDataStore::loadLocalesItemPages()
 {
     auto startTime = Util::TimeNow();
     //                                          0         1           2
-    auto result = WorldDatabase.Query("SELECT entry, language_code, text FROM locales_item_pages");
+    auto result = WorldDatabase.query("SELECT entry, language_code, text FROM locales_item_pages");
     if (result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `locales_item_pages` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `locales_item_pages` has {} columns", result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `locales_item_pages` has {} columns", result->getFieldCount());
 
-    _localesItemPagesStore.rehash(result->GetRowCount());
+    _localesItemPagesStore.rehash(result->getRowCount());
 
     uint32_t load_count = 0;
     uint32_t i = 0;
     do
     {
         ++i;
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
 
         MySQLStructure::LocalesItemPages& localesItemPages = _localesItemPagesStore[i];
 
@@ -3894,7 +3894,7 @@ void MySQLDataStore::loadLocalesItemPages()
 
         ++load_count;
 
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `locales_item_pages` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -3918,23 +3918,23 @@ void MySQLDataStore::loadLocalesNpcScriptText()
 {
     auto startTime = Util::TimeNow();
     //                                          0         1          2
-    auto result = WorldDatabase.Query("SELECT entry, language_code, text FROM locales_npc_script_text");
+    auto result = WorldDatabase.query("SELECT entry, language_code, text FROM locales_npc_script_text");
     if (result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `locales_npc_script_text` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `locales_npc_script_text` has {} columns", result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `locales_npc_script_text` has {} columns", result->getFieldCount());
 
-    _localesNpcScriptTextStore.rehash(result->GetRowCount());
+    _localesNpcScriptTextStore.rehash(result->getRowCount());
 
     uint32_t load_count = 0;
     uint32_t i = 0;
     do
     {
         ++i;
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
 
         MySQLStructure::LocalesNpcScriptText& localNpcScriptText = _localesNpcScriptTextStore[i];
 
@@ -3945,7 +3945,7 @@ void MySQLDataStore::loadLocalesNpcScriptText()
 
         ++load_count;
 
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `locales_npc_script_text` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -3969,23 +3969,23 @@ void MySQLDataStore::loadLocalesNpcText()
 {
     auto startTime = Util::TimeNow();
     //                                          0         1           2       3       4       5       6       7       8       9       10      11     12      13      14      15      16      17
-    auto result = WorldDatabase.Query("SELECT entry, language_code, text0, text0_1, text1, text1_1, text2, text2_1, text3, text3_1, text4, text4_1, text5, text5_1, text6, text6_1, text7, text7_1 FROM locales_npc_gossip_texts");
+    auto result = WorldDatabase.query("SELECT entry, language_code, text0, text0_1, text1, text1_1, text2, text2_1, text3, text3_1, text4, text4_1, text5, text5_1, text6, text6_1, text7, text7_1 FROM locales_npc_gossip_texts");
     if (result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `locales_npc_gossip_texts` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `locales_npc_gossip_texts` has {} columns", result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `locales_npc_gossip_texts` has {} columns", result->getFieldCount());
 
-    _localesNpcGossipTextStore.rehash(result->GetRowCount());
+    _localesNpcGossipTextStore.rehash(result->getRowCount());
 
     uint32_t load_count = 0;
     uint32_t i = 0;
     do
     {
         ++i;
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
 
         MySQLStructure::LocalesNpcGossipText& localNpcGossipText = _localesNpcGossipTextStore[i];
 
@@ -4001,7 +4001,7 @@ void MySQLDataStore::loadLocalesNpcText()
 
         ++load_count;
 
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `locales_npc_gossip_texts` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -4025,23 +4025,23 @@ void MySQLDataStore::loadLocalesPointsOfInterest()
 {
     auto startTime = Util::TimeNow();
     //                                          0         1             2
-    auto result = WorldDatabase.Query("SELECT entry, language_code, icon_name FROM locales_points_of_interest");
+    auto result = WorldDatabase.query("SELECT entry, language_code, icon_name FROM locales_points_of_interest");
     if (result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `locales_points_of_interest` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `locales_points_of_interest` has {} columns", result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `locales_points_of_interest` has {} columns", result->getFieldCount());
 
-    _localesPointsOfInterestStore.rehash(result->GetRowCount());
+    _localesPointsOfInterestStore.rehash(result->getRowCount());
 
     uint32_t load_count = 0;
     uint32_t i = 0;
     do
     {
         ++i;
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
 
         MySQLStructure::LocalesPointsOfInterest& localPointsOfInterest = _localesPointsOfInterestStore[i];
 
@@ -4052,7 +4052,7 @@ void MySQLDataStore::loadLocalesPointsOfInterest()
 
         ++load_count;
 
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `locales_points_of_interest` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -4076,23 +4076,23 @@ void MySQLDataStore::loadLocalesQuest()
 {
     auto startTime = Util::TimeNow();
     //                                          0         1           2       3         4            5                 6           7           8                9              10             11
-    auto result = WorldDatabase.Query("SELECT entry, language_code, Title, Details, Objectives, CompletionText, IncompleteText, EndText, ObjectiveText1, ObjectiveText2, ObjectiveText3, ObjectiveText4 FROM locales_quest");
+    auto result = WorldDatabase.query("SELECT entry, language_code, Title, Details, Objectives, CompletionText, IncompleteText, EndText, ObjectiveText1, ObjectiveText2, ObjectiveText3, ObjectiveText4 FROM locales_quest");
     if (result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `locales_quest` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `locales_quest` has {} columns", result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `locales_quest` has {} columns", result->getFieldCount());
 
-    _localesQuestStore.rehash(result->GetRowCount());
+    _localesQuestStore.rehash(result->getRowCount());
 
     uint32_t load_count = 0;
     uint32_t i = 0;
     do
     {
         ++i;
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
 
         MySQLStructure::LocalesQuest& localQuest = _localesQuestStore[i];
 
@@ -4112,7 +4112,7 @@ void MySQLDataStore::loadLocalesQuest()
 
         ++load_count;
 
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `locales_quest` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -4136,23 +4136,23 @@ void MySQLDataStore::loadLocalesWorldbroadcast()
 {
     auto startTime = Util::TimeNow();
     //                                          0         1          2
-    auto result = WorldDatabase.Query("SELECT entry, language_code, text FROM locales_worldbroadcast");
+    auto result = WorldDatabase.query("SELECT entry, language_code, text FROM locales_worldbroadcast");
     if (result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `locales_worldbroadcast` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `locales_worldbroadcast` has {} columns", result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `locales_worldbroadcast` has {} columns", result->getFieldCount());
 
-    _localesWorldbroadcastStore.rehash(result->GetRowCount());
+    _localesWorldbroadcastStore.rehash(result->getRowCount());
 
     uint32_t load_count = 0;
     uint32_t i = 0;
     do
     {
         ++i;
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
 
         MySQLStructure::LocalesWorldbroadcast& localWorldbroadcast = _localesWorldbroadcastStore[i];
 
@@ -4163,7 +4163,7 @@ void MySQLDataStore::loadLocalesWorldbroadcast()
 
         ++load_count;
 
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `locales_worldbroadcast` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -4187,23 +4187,23 @@ void MySQLDataStore::loadLocalesWorldmapInfo()
 {
     auto startTime = Util::TimeNow();
     //                                         0           1         2
-    auto result = WorldDatabase.Query("SELECT entry, language_code, text FROM locales_worldmap_info");
+    auto result = WorldDatabase.query("SELECT entry, language_code, text FROM locales_worldmap_info");
     if (result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `locales_worldmap_info` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `locales_worldmap_info` has {} columns", result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `locales_worldmap_info` has {} columns", result->getFieldCount());
 
-    _localesWorldmapInfoStore.rehash(result->GetRowCount());
+    _localesWorldmapInfoStore.rehash(result->getRowCount());
 
     uint32_t load_count = 0;
     uint32_t i = 0;
     do
     {
         ++i;
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
 
         MySQLStructure::LocalesWorldmapInfo& localWorldmapInfo = _localesWorldmapInfoStore[i];
 
@@ -4214,7 +4214,7 @@ void MySQLDataStore::loadLocalesWorldmapInfo()
 
         ++load_count;
 
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `locales_worldmap_info` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -4238,23 +4238,23 @@ void MySQLDataStore::loadLocalesWorldStringTable()
 {
     auto startTime = Util::TimeNow();
     //                                         0           1         2
-    auto result = WorldDatabase.Query("SELECT entry, language_code, text FROM locales_worldstring_table");
+    auto result = WorldDatabase.query("SELECT entry, language_code, text FROM locales_worldstring_table");
     if (result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `locales_worldstring_table` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `locales_worldstring_table` has {} columns", result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `locales_worldstring_table` has {} columns", result->getFieldCount());
 
-    _localesWorldStringTableStore.rehash(result->GetRowCount());
+    _localesWorldStringTableStore.rehash(result->getRowCount());
 
     uint32_t load_count = 0;
     uint32_t i = 0;
     do
     {
         ++i;
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
 
         MySQLStructure::LocalesWorldStringTable& localWorldStringTable = _localesWorldStringTableStore[i];
 
@@ -4265,7 +4265,7 @@ void MySQLDataStore::loadLocalesWorldStringTable()
 
         ++load_count;
 
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `locales_worldstring_table` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -4320,19 +4320,19 @@ std::string MySQLDataStore::getLocaleGossipTitleOrElse(uint32_t entry, uint32_t 
 //{
 //    auto startTime = Util::TimeNow();
 //    //                                          0      1
-//    auto result = WorldDatabase.Query("SELECT entry, spell FROM petdefaultspells");
+//    auto result = WorldDatabase.query("SELECT entry, spell FROM petdefaultspells");
 //    if (result == nullptr)
 //    {
 //        sLogger.info("MySQLDataLoads : Table `petdefaultspells` is empty!");
 //        return;
 //    }
 //
-//    sLogger.info("MySQLDataLoads : Table `petdefaultspells` has {} columns", result->GetFieldCount());
+//    sLogger.info("MySQLDataLoads : Table `petdefaultspells` has {} columns", result->getFieldCount());
 //
 //    uint32_t load_count = 0;
 //    do
 //    {
-//        Field* fields = result->Fetch();
+//        Field* fields = result->fetch();
 //        uint32_t entry = fields[0].GetUInt32();
 //        uint32_t spell = fields[1].GetUInt32();
 //        const auto spellInfo = sSpellMgr.getSpellInfo(spell);
@@ -4351,7 +4351,7 @@ std::string MySQLDataStore::getLocaleGossipTitleOrElse(uint32_t entry, uint32_t 
 //                _defaultPetSpellsStore[entry] = spellInfoSet;
 //            }
 //        }
-//    } while (result->NextRow());
+//    } while (result->nextRow());
 //
 //    sLogger.info("MySQLDataLoads : Loaded {} rows from `petdefaultspells` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 //}
@@ -4372,19 +4372,19 @@ void MySQLDataStore::loadProfessionDiscoveriesTable()
 {
     auto startTime = Util::TimeNow();
     //                                           0           1              2          3
-    auto result = WorldDatabase.Query("SELECT SpellId, SpellToDiscover, SkillValue, Chance FROM professiondiscoveries");
+    auto result = WorldDatabase.query("SELECT SpellId, SpellToDiscover, SkillValue, Chance FROM professiondiscoveries");
     if (result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `professiondiscoveries` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `professiondiscoveries` has {} columns", result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `professiondiscoveries` has {} columns", result->getFieldCount());
 
     uint32_t load_count = 0;
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
         auto* professionDiscovery = _professionDiscoveryStore.emplace(std::make_unique<MySQLStructure::ProfessionDiscovery>()).first->get();
         professionDiscovery->SpellId = fields[0].asUint32();
         professionDiscovery->SpellToDiscover = fields[1].asUint32();
@@ -4393,7 +4393,7 @@ void MySQLDataStore::loadProfessionDiscoveriesTable()
 
         ++load_count;
 
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `professiondiscoveries` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -4402,19 +4402,19 @@ void MySQLDataStore::loadTransportDataTable()
 {
     auto startTime = Util::TimeNow();
     //                                          0      1
-    auto result = WorldDatabase.Query("SELECT entry, name FROM transport_data WHERE min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
+    auto result = WorldDatabase.query("SELECT entry, name FROM transport_data WHERE min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
     if (result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `transport_data` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `transport_data` has {} columns", result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `transport_data` has {} columns", result->getFieldCount());
 
     uint32_t load_count = 0;
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
         uint32_t entry = fields[0].asUint32();
 
         GameObjectProperties const* gameobject_info = sMySQLStore.getGameObjectProperties(entry);
@@ -4436,7 +4436,7 @@ void MySQLDataStore::loadTransportDataTable()
 
         ++load_count;
 
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `transport_data` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -4445,7 +4445,7 @@ void MySQLDataStore::loadTransportEntrys()
 {
     auto startTime = Util::TimeNow();
     //                                                  
-    auto result = WorldDatabase.Query("SELECT entry FROM gameobject_properties WHERE type = 15 AND  build <= %u ORDER BY entry ASC", getAEVersion());
+    auto result = WorldDatabase.query("SELECT entry FROM gameobject_properties WHERE type = 15 AND  build <= %u ORDER BY entry ASC", getAEVersion());
     if (result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Loaded 0 transport templates. DB table `gameobject_properties` has no transports!");
@@ -4455,7 +4455,7 @@ void MySQLDataStore::loadTransportEntrys()
     uint32_t load_count = 0;
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
         uint32_t entry = fields[0].asUint32();
 
         MySQLStructure::TransportEntrys& transportEntrys = _transportEntryStore[entry];
@@ -4463,7 +4463,7 @@ void MySQLDataStore::loadTransportEntrys()
 
         ++load_count;
 
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `transport_entrys` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -4472,7 +4472,7 @@ void MySQLDataStore::loadTransportMaps()
 {
     auto startTime = Util::TimeNow();
     //                                                  
-    auto result = WorldDatabase.Query("SELECT parameter_6 FROM gameobject_properties WHERE type = 15 AND  build <= %u ORDER BY entry ASC", getAEVersion());
+    auto result = WorldDatabase.query("SELECT parameter_6 FROM gameobject_properties WHERE type = 15 AND  build <= %u ORDER BY entry ASC", getAEVersion());
     if (result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Loaded 0 transport maps. DB table `gameobject_properties` has no transports!");
@@ -4482,14 +4482,14 @@ void MySQLDataStore::loadTransportMaps()
     uint32_t load_count = 0;
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
         uint32_t mapId = fields[0].asUint32();
 
         _transportMapStore.push_back(mapId);
 
         ++load_count;
 
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} maps from `transport_maps` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -4499,19 +4499,19 @@ void MySQLDataStore::loadGossipMenuItemsTable()
     auto startTime = Util::TimeNow();
 
     //                                             0          1
-    auto result = WorldDatabase.Query("SELECT gossip_menu, text_id FROM gossip_menu ORDER BY gossip_menu");
+    auto result = WorldDatabase.query("SELECT gossip_menu, text_id FROM gossip_menu ORDER BY gossip_menu");
     if (result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `gossip_menu` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `gossip_menu` has {} columns", result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `gossip_menu` has {} columns", result->getFieldCount());
 
     uint32_t load_count = 0;
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
         uint32_t entry = fields[0].asUint32();
 
         MySQLStructure::GossipMenuInit& gMenuItem = _gossipMenuInitStore[entry];
@@ -4519,26 +4519,26 @@ void MySQLDataStore::loadGossipMenuItemsTable()
         gMenuItem.textId = fields[1].asUint32();
 
         ++load_count;
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `gossip_menu` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 
     _gossipMenuItemsStores.clear();
 
     //                                             0       1            2        3            4                5               6               7                 8                9                10                11                 12
-    auto resultItems = WorldDatabase.Query("SELECT id, item_order, menu_option, icon, on_choose_action, on_choose_data, on_choose_data2, on_choose_data3, on_choose_data4, next_gossip_menu, next_gossip_text, requirement_type, requirement_data FROM gossip_menu_items ORDER BY id, item_order");
+    auto resultItems = WorldDatabase.query("SELECT id, item_order, menu_option, icon, on_choose_action, on_choose_data, on_choose_data2, on_choose_data3, on_choose_data4, next_gossip_menu, next_gossip_text, requirement_type, requirement_data FROM gossip_menu_items ORDER BY id, item_order");
     if (resultItems == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `gossip_menu_items` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `gossip_menu_items` has {} columns", resultItems->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `gossip_menu_items` has {} columns", resultItems->getFieldCount());
 
     load_count = 0;
     do
     {
-        Field* fields = resultItems->Fetch();
+        Field* fields = resultItems->fetch();
 
         MySQLStructure::GossipMenuItems gMenuItem;
 
@@ -4558,7 +4558,7 @@ void MySQLDataStore::loadGossipMenuItemsTable()
 
         _gossipMenuItemsStores.emplace(GossipMenuItemsContainer::value_type(gMenuItem.gossipMenu, gMenuItem));
         ++load_count;
-    } while (resultItems->NextRow());
+    } while (resultItems->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `gossip_menu_items` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -4571,7 +4571,7 @@ void MySQLDataStore::loadCreatureSpawns()
     auto creature_spawn_result = getWorldDBQuery("SELECT * FROM creature_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0", getAEVersion(), getAEVersion());
     if (creature_spawn_result)
     {
-        uint32_t creature_spawn_fields = creature_spawn_result->GetFieldCount();
+        uint32_t creature_spawn_fields = creature_spawn_result->getFieldCount();
         if (creature_spawn_fields != CREATURE_SPAWNS_FIELDCOUNT + 1) // + 1 for additional table loading 'origin'
         {
             sLogger.failure("Table `creature_spawns` has {} columns, but needs {} columns! Skipped!", creature_spawn_fields, CREATURE_SPAWNS_FIELDCOUNT);
@@ -4581,7 +4581,7 @@ void MySQLDataStore::loadCreatureSpawns()
         {
             do
             {
-                Field* fields = creature_spawn_result->Fetch();
+                Field* fields = creature_spawn_result->fetch();
                 MySQLStructure::CreatureSpawn* cspawn = new MySQLStructure::CreatureSpawn;
                 cspawn->id = fields[0].asUint32();
 
@@ -4655,7 +4655,7 @@ void MySQLDataStore::loadCreatureSpawns()
                 _creatureSpawnsStore[cspawn->mapId].push_back(cspawn);
                 ++count;
 
-            } while (creature_spawn_result->NextRow());
+            } while (creature_spawn_result->nextRow());
         }
     }
 
@@ -4670,7 +4670,7 @@ void MySQLDataStore::loadGameobjectSpawns()
     auto gobject_spawn_result = getWorldDBQuery("SELECT * FROM gameobject_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry = 0", VERSION_STRING, VERSION_STRING);
     if (gobject_spawn_result)
     {
-        uint32_t gobject_spawn_fields = gobject_spawn_result->GetFieldCount();
+        uint32_t gobject_spawn_fields = gobject_spawn_result->getFieldCount();
         if (gobject_spawn_fields != GO_SPAWNS_FIELDCOUNT + 1) // + 1 for additional table loading 'origin'
         {
             sLogger.failure("Table `gameobject_spawns` has {} columns, but needs {} columns! Skipped!", gobject_spawn_fields, GO_SPAWNS_FIELDCOUNT);
@@ -4680,7 +4680,7 @@ void MySQLDataStore::loadGameobjectSpawns()
         {
             do
             {
-                Field* fields = gobject_spawn_result->Fetch();
+                Field* fields = gobject_spawn_result->fetch();
                 uint32_t spawnId = fields[0].asUint32();
                 uint32_t gameobject_entry = fields[3].asUint32();
                 
@@ -4711,7 +4711,7 @@ void MySQLDataStore::loadGameobjectSpawns()
 
                 _gameobjectSpawnsStore[go_spawn->map].push_back(go_spawn);
                 ++count;
-            } while (gobject_spawn_result->NextRow());
+            } while (gobject_spawn_result->nextRow());
         }
     }
 
@@ -4730,7 +4730,7 @@ void MySQLDataStore::loadRecallTable()
     {
         do
         {
-            Field* fields = recall_result->Fetch();
+            Field* fields = recall_result->fetch();
             const auto& teleCoords = _recallStore.emplace_back(std::make_unique<MySQLStructure::RecallStruct>());
 
             teleCoords->name = fields[1].asCString();
@@ -4741,7 +4741,7 @@ void MySQLDataStore::loadRecallTable()
             teleCoords->location.o = fields[6].asFloat();
 
             ++count;
-        } while (recall_result->NextRow());
+        } while (recall_result->nextRow());
     }
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `recall` table in {} ms!", count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
@@ -4753,19 +4753,19 @@ void MySQLDataStore::loadCreatureAIScriptsTable()
 
     _creatureAIScriptStore.clear();
 
-    auto result = WorldDatabase.Query("SELECT * FROM creature_ai_scripts WHERE min_build <= %u AND max_build >= %u ORDER BY entry, event", VERSION_STRING, VERSION_STRING);
+    auto result = WorldDatabase.query("SELECT * FROM creature_ai_scripts WHERE min_build <= %u AND max_build >= %u ORDER BY entry, event", VERSION_STRING, VERSION_STRING);
     if (result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `creature_ai_scripts` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `creature_ai_scripts` has {} columns", result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `creature_ai_scripts` has {} columns", result->getFieldCount());
 
     uint32_t load_count = 0;
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
 
         uint32_t creature_entry = fields[2].asUint32();
         uint32_t spellId = fields[9].asUint32();
@@ -4809,7 +4809,7 @@ void MySQLDataStore::loadCreatureAIScriptsTable()
         ai_script->misc1 = fields[18].asUint32();
 
         ++load_count;
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `creature_ai_scripts` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -4835,19 +4835,19 @@ void MySQLDataStore::loadSpawnGroupIds()
 
     _spawnGroupDataStore.clear();
 
-    auto result = WorldDatabase.Query("SELECT * FROM spawn_group_id ORDER BY groupId");
+    auto result = WorldDatabase.query("SELECT * FROM spawn_group_id ORDER BY groupId");
     if (result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `spawn_group_id` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `spawn_group_id` has {} columns", result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `spawn_group_id` has {} columns", result->getFieldCount());
 
     uint32_t load_count = 0;
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
         uint32_t groupId = fields[0].asUint8();
 
         SpawnGroupTemplateData& spawnGroup = _spawnGroupDataStore[groupId];
@@ -4871,7 +4871,7 @@ void MySQLDataStore::loadSpawnGroupIds()
         spawnGroup.bossId = fields[4].asUint32();
 
         ++load_count;
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `spawn_group_id` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -4882,19 +4882,19 @@ void MySQLDataStore::loadCreatureGroupSpawns()
 
     _spawnGroupMapStore.clear();
 
-    auto result = WorldDatabase.Query("SELECT * FROM creature_group_spawn ORDER BY groupId");
+    auto result = WorldDatabase.query("SELECT * FROM creature_group_spawn ORDER BY groupId");
     if (result == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `creature_group_spawn` is empty!");
         return;
     }
 
-    sLogger.info("MySQLDataLoads : Table `creature_group_spawn` has {} columns", result->GetFieldCount());
+    sLogger.info("MySQLDataLoads : Table `creature_group_spawn` has {} columns", result->getFieldCount());
 
     uint32_t load_count = 0;
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
         uint32_t groupId = fields[0].asUint8();
         uint32_t spawnId = fields[1].asUint32();
         bool data = false;
@@ -4937,7 +4937,7 @@ void MySQLDataStore::loadCreatureGroupSpawns()
             sLogger.debugFlag(AscEmu::Logging::LF_DB_TABLES, "Spawn data with ID ({}) not found, but is listed as a member of spawn group {}!", spawnId, groupId);
             continue;
         } 
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded {} rows from `creature_group_spawn` table in {} ms!", load_count, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }
@@ -4983,14 +4983,14 @@ void MySQLDataStore::loadCreatureSplineChains()
 
     _splineChainsStore.clear();
 
-    auto resultMeta = WorldDatabase.Query("SELECT entry, chainId, splineId, expectedDuration, msUntilNext, velocity FROM script_spline_chain_meta ORDER BY entry asc, chainId asc, splineId asc");
+    auto resultMeta = WorldDatabase.query("SELECT entry, chainId, splineId, expectedDuration, msUntilNext, velocity FROM script_spline_chain_meta ORDER BY entry asc, chainId asc, splineId asc");
     if (resultMeta == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `script_spline_chain_meta` is empty!");
         return;
     }
 
-    auto resultWp = WorldDatabase.Query("SELECT entry, chainId, splineId, wpId, x, y, z FROM script_spline_chain_waypoints ORDER BY entry asc, chainId asc, splineId asc, wpId asc");
+    auto resultWp = WorldDatabase.query("SELECT entry, chainId, splineId, wpId, x, y, z FROM script_spline_chain_waypoints ORDER BY entry asc, chainId asc, splineId asc, wpId asc");
     if (resultMeta == nullptr)
     {
         sLogger.info("MySQLDataLoads : Table `script_spline_chain_waypoints` is empty!");
@@ -5002,7 +5002,7 @@ void MySQLDataStore::loadCreatureSplineChains()
     uint32_t wpCount = 0;
     do
     {
-        Field* fieldsMeta = resultMeta->Fetch();
+        Field* fieldsMeta = resultMeta->fetch();
         uint32_t entry = fieldsMeta[0].asUint32();
         uint16_t chainId = fieldsMeta[1].asUint16();
         uint8_t splineId = fieldsMeta[2].asUint8();
@@ -5022,11 +5022,11 @@ void MySQLDataStore::loadCreatureSplineChains()
         if (splineId == 0)
             ++chainCount;
         ++splineCount;
-    } while (resultMeta->NextRow());
+    } while (resultMeta->nextRow());
 
     do
     {
-        Field* fieldsWP = resultWp->Fetch();
+        Field* fieldsWP = resultWp->fetch();
         uint32_t entry = fieldsWP[0].asUint32();
         uint16_t chainId = fieldsWP[1].asUint16();
         uint8_t splineId = fieldsWP[2].asUint8(), wpId = fieldsWP[3].asUint8();
@@ -5051,7 +5051,7 @@ void MySQLDataStore::loadCreatureSplineChains()
         }
         spline.Points.emplace_back(posX, posY, posZ);
         ++wpCount;
-    } while (resultWp->NextRow());
+    } while (resultWp->nextRow());
 
     sLogger.info("MySQLDataLoads : Loaded spline chain data for {} chains, consisting of {} splines with {} waypoints in {} ms!", chainCount, splineCount, wpCount, static_cast<uint32_t>(Util::GetTimeDifferenceToNow(startTime)));
 }

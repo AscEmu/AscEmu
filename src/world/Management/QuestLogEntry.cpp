@@ -106,9 +106,9 @@ void QuestLogEntry::saveToDB(QueryBuffer* queryBuffer)
     ss << "," << m_state << ");";
 
     if (queryBuffer == nullptr)
-        CharacterDatabase.Execute(ss.str().c_str());
+        CharacterDatabase.execute(ss.str().c_str());
     else
-        queryBuffer->AddQueryStr(ss.str());
+        queryBuffer->addQueryStr(ss.str());
 }
 
 uint8_t QuestLogEntry::getSlot() const { return m_slot; }

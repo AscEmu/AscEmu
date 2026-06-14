@@ -16,7 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 void DatabaseUpdater::initBaseIfNeeded(const std::string& dbName, const std::string& dbBaseType, Database& dbPointer)
 {
-    auto dbResult = dbPointer.Query("SHOW TABLES FROM %s", dbName.c_str());
+    auto dbResult = dbPointer.query("SHOW TABLES FROM %s", dbName.c_str());
     if (dbResult == nullptr)
     {
         sLogger.info("Database: Your Database {} has no tables. AE is setting up the database for you.", dbName);
@@ -24,7 +24,7 @@ void DatabaseUpdater::initBaseIfNeeded(const std::string& dbName, const std::str
     }
 
     // save 100% (current queue)
-    if (auto const queue = dbPointer.GetAeQueuedTaskCount())
+    if (auto const queue = dbPointer.getQueuedTaskCount())
     {
         // set up bar size
         const int barSize = 70;
@@ -36,7 +36,7 @@ void DatabaseUpdater::initBaseIfNeeded(const std::string& dbName, const std::str
         while (currentProgress < 1.0f)
         {
             // calc percentage
-            const size_t sendQueues = queue - dbPointer.GetAeQueuedTaskCount();
+            const size_t sendQueues = queue - dbPointer.getQueuedTaskCount();
             currentProgress = static_cast<float>(sendQueues) / static_cast<float>(queue);
 
             std::cout << "Creating '" << dbName << "' : ";
@@ -91,7 +91,7 @@ void DatabaseUpdater::setupDatabase(const std::string& database, Database& dbPoi
         }
 
         for (const auto& statements : seglist)
-            dbPointer.ExecuteNA(statements.c_str());
+            dbPointer.executeNA(statements.c_str());
     }
 }
 
@@ -99,9 +99,9 @@ void DatabaseUpdater::checkAndApplyDBUpdatesIfNeeded(const std::string& database
 {
     applyUpdatesForDatabase(database, dbPointer);
 
-    while (dbPointer.GetAeQueuedTaskCount() > 0)
+    while (dbPointer.getQueuedTaskCount() > 0)
     {
-        sLogger.info("-- busy updating database \"{}\". Waiting for {} queries to be executed.", database, dbPointer.GetAeQueuedTaskCount());
+        sLogger.info("-- busy updating database \"{}\". Waiting for {} queries to be executed.", database, dbPointer.getQueuedTaskCount());
 
         AscEmu::Threading::sleep(500);
     }
@@ -120,7 +120,7 @@ void DatabaseUpdater::applyUpdatesForDatabase(const std::string& database, Datab
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // 1. get current version
-    auto result = dbPointer.Query("SELECT LastUpdate FROM %s_db_version ORDER BY LastUpdate DESC LIMIT 1", database.c_str());
+    auto result = dbPointer.query("SELECT LastUpdate FROM %s_db_version ORDER BY LastUpdate DESC LIMIT 1", database.c_str());
 
     if (!result)
     {
@@ -128,7 +128,7 @@ void DatabaseUpdater::applyUpdatesForDatabase(const std::string& database, Datab
         return;
     }
 
-    Field* fields = result->Fetch();
+    Field* fields = result->fetch();
     const std::string dbLastUpdate = fields[0].asCString();
 
     sLogger.info("Database {} Version : {}", database, dbLastUpdate);
@@ -232,7 +232,7 @@ void DatabaseUpdater::applyUpdatesForDatabase(const std::string& database, Datab
 
                 for (const auto& statements : seglist)
                 {
-                    if (dbPointer.WaitExecuteNA(statements.c_str()))
+                    if (dbPointer.waitExecuteNA(statements.c_str()))
                         continue;
                 }
             }

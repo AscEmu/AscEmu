@@ -360,7 +360,7 @@ void Group::Disband()
 
     m_groupLock.unlock();
 
-    CharacterDatabase.Execute("DELETE FROM `groups` WHERE `group_id` = %u", m_Id);
+    CharacterDatabase.execute("DELETE FROM `groups` WHERE `group_id` = %u", m_Id);
     sObjectMgr.removeGroup(m_Id);    // destroy ourselves
 }
 
@@ -754,7 +754,7 @@ void Group::SaveToDB()
     ss << m_Id;
     ss << ";";
 
-    CharacterDatabase.Execute(ss.str().c_str());
+    CharacterDatabase.execute(ss.str().c_str());
 
     ss.rdbuf()->str("");
 
@@ -830,7 +830,7 @@ void Group::SaveToDB()
 
     ss << "')";
     /*printf("==%s==\n", ss.str().c_str());*/
-    CharacterDatabase.Execute(ss.str().c_str());
+    CharacterDatabase.execute(ss.str().c_str());
 }
 
 void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket* Packet)
@@ -1213,7 +1213,7 @@ void Group::resetInstances(uint8_t method, bool isRaid, Player* SendMsgTo)
             }
             else
             {
-                CharacterDatabase.Execute("DELETE FROM group_instance WHERE instance = %u", instanceSave->getInstanceId());
+                CharacterDatabase.execute("DELETE FROM group_instance WHERE instance = %u", instanceSave->getInstanceId());
             }
 
             // i don't know for sure if hash_map iterators
@@ -1280,7 +1280,7 @@ InstanceGroupBind* Group::bindToInstance(InstanceSaved* save, bool permanent, bo
     InstanceGroupBind& bind = m_boundInstances[save->getDifficulty()][save->getMapId()];
     if (!load && (!bind.save || permanent != bind.perm || save != bind.save))
     {
-        CharacterDatabase.Execute("REPLACE INTO group_instance (guid, instance, permanent) VALUES (%u, %u, %u)", GetID(), save->getInstanceId(), permanent);
+        CharacterDatabase.execute("REPLACE INTO group_instance (guid, instance, permanent) VALUES (%u, %u, %u)", GetID(), save->getInstanceId(), permanent);
     }
 
     if (bind.save != save)
@@ -1303,7 +1303,7 @@ void Group::unbindInstance(uint32_t mapid, uint8_t difficulty, bool unload)
     {
         if (!unload)
         {
-            CharacterDatabase.Execute("DELETE FROM group_instance WHERE guid = %u AND instance = %u", GetID(), itr->second.save->getInstanceId());
+            CharacterDatabase.execute("DELETE FROM group_instance WHERE guid = %u AND instance = %u", GetID(), itr->second.save->getInstanceId());
         }
 
         itr->second.save->removeGroup(this);

@@ -114,18 +114,18 @@ namespace AscEmu::AE::Database
     std::vector<T> queryMany(::Database& db, std::string_view sql, Mapper&& mapper)
     {
         std::string ownedSql(sql);
-        auto result = db.QueryNA(ownedSql.c_str());
+        auto result = db.queryNA(ownedSql.c_str());
 
         std::vector<T> out;
         if (!result)
             return out;
 
-        out.reserve(result->GetRowCount());
+        out.reserve(result->getRowCount());
 
         do
         {
-            out.push_back(std::forward<Mapper>(mapper)(RowView(result->Fetch(), result->GetFieldCount())));
-        } while (result->NextRow());
+            out.push_back(std::forward<Mapper>(mapper)(RowView(result->fetch(), result->getFieldCount())));
+        } while (result->nextRow());
 
         return out;
     }
@@ -134,10 +134,10 @@ namespace AscEmu::AE::Database
     std::optional<T> queryOne(::Database& db, std::string_view sql, Mapper&& mapper)
     {
         std::string ownedSql(sql);
-        auto result = db.QueryNA(ownedSql.c_str());
+        auto result = db.queryNA(ownedSql.c_str());
         if (!result)
             return std::nullopt;
 
-        return std::forward<Mapper>(mapper)(RowView(result->Fetch(), result->GetFieldCount()));
+        return std::forward<Mapper>(mapper)(RowView(result->fetch(), result->getFieldCount()));
     }
 }

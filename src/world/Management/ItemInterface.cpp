@@ -3447,7 +3447,7 @@ void ItemInterface::mLoadItemsFromDatabase(QueryResult* result)
     {
         do
         {
-            Field* fields = result->Fetch();
+            Field* fields = result->fetch();
 
             containerslot = fields[13].asInt8();
             slot = fields[14].asInt8();
@@ -3480,7 +3480,7 @@ void ItemInterface::mLoadItemsFromDatabase(QueryResult* result)
                 if (addResult)
                     itemPtr->m_isDirty = false;
             }
-        } while (result->NextRow());
+        } while (result->nextRow());
     }
 }
 

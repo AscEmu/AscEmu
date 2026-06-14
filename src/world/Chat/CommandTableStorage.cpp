@@ -512,16 +512,16 @@ CommandTableStorage& CommandTableStorage::getInstance()
 
 void CommandTableStorage::loadOverridePermission()
 {
-    auto result = CharacterDatabase.Query("SELECT command_name, access_level FROM command_overrides");
+    auto result = CharacterDatabase.query("SELECT command_name, access_level FROM command_overrides");
     if (!result)
         return;
 
     do
     {
-        const char* command = result->Fetch()[0].asCString();
-        const char* level = result->Fetch()[1].asCString();
+        const char* command = result->fetch()[0].asCString();
+        const char* level = result->fetch()[1].asCString();
         overridePermission(command, level);
-    } while (result->NextRow());
+    } while (result->nextRow());
 }
 
 void CommandTableStorage::overridePermission(const char* command, const char* level)

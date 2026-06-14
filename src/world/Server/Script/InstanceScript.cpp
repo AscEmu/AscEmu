@@ -227,7 +227,7 @@ void InstanceScript::saveToDB()
     if (data.empty())
         return;
 
-    CharacterDatabase.Execute("UPDATE instance SET completedEncounters=%u, data=\'%s\' WHERE id=%u", getCompletedEncounterMask(), data.c_str(), mInstance->getInstanceId());
+    CharacterDatabase.execute("UPDATE instance SET completedEncounters=%u, data=\'%s\' WHERE id=%u", getCompletedEncounterMask(), data.c_str(), mInstance->getInstanceId());
 }
 
 void InstanceScript::loadSavedInstanceData(char const* data)

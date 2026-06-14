@@ -1484,7 +1484,7 @@ bool ChatCommandHandler::HandleCharSetNameCommand(const char* args, WorldSession
     }
     else
     {
-        CharacterDatabase.Execute("UPDATE characters SET name = '%s' WHERE guid = %u", CharacterDatabase.EscapeString(new_name).c_str(), pi->guid);
+        CharacterDatabase.execute("UPDATE characters SET name = '%s' WHERE guid = %u", CharacterDatabase.escapeString(new_name).c_str(), pi->guid);
     }
 
     greenSystemMessage(m_session, "Changed name of '{}' to '{}'.", current_name, new_name);
@@ -1718,7 +1718,7 @@ bool ChatCommandHandler::HandleCharSetForceRenameCommand(const char* args, World
     Player* plr = sObjectMgr.getPlayer(pi->guid);
     if (plr == nullptr)
     {
-        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32_t)LOGIN_FORCED_RENAME, pi->guid);
+        CharacterDatabase.execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32_t)LOGIN_FORCED_RENAME, pi->guid);
     }
     else
     {
@@ -1727,7 +1727,7 @@ bool ChatCommandHandler::HandleCharSetForceRenameCommand(const char* args, World
         blueSystemMessage(plr->getSession(), "{} forced your character to be renamed next logon.", m_session->GetPlayer()->getName());
     }
 
-    CharacterDatabase.Execute("INSERT INTO banned_names VALUES('%s')", CharacterDatabase.EscapeString(pi->name).c_str());
+    CharacterDatabase.execute("INSERT INTO banned_names VALUES('%s')", CharacterDatabase.escapeString(pi->name).c_str());
     greenSystemMessage(m_session, "Forcing {} to rename his character next logon.", args);
     sGMLog.writefromsession(m_session, "forced %s to rename his charater (%u)", pi->name.c_str(), pi->guid);
     return true;
@@ -1751,7 +1751,7 @@ bool ChatCommandHandler::HandleCharSetCustomizeCommand(const char* args, WorldSe
     Player* plr = sObjectMgr.getPlayer(pi->guid);
     if (plr == nullptr)
     {
-        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32_t)LOGIN_CUSTOMIZE_LOOKS, pi->guid);
+        CharacterDatabase.execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32_t)LOGIN_CUSTOMIZE_LOOKS, pi->guid);
     }
     else
     {
@@ -1783,7 +1783,7 @@ bool ChatCommandHandler::HandleCharSetFactionChangeCommand(const char* args, Wor
     Player* plr = sObjectMgr.getPlayer(pi->guid);
     if (plr == nullptr)
     {
-        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32_t)LOGIN_CUSTOMIZE_FACTION, pi->guid);
+        CharacterDatabase.execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32_t)LOGIN_CUSTOMIZE_FACTION, pi->guid);
     }
     else
     {
@@ -1815,7 +1815,7 @@ bool ChatCommandHandler::HandleCharSetRaceChangeCommand(const char* args, WorldS
     Player* plr = sObjectMgr.getPlayer(pi->guid);
     if (plr == nullptr)
     {
-        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32_t)LOGIN_CUSTOMIZE_RACE, pi->guid);
+        CharacterDatabase.execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32_t)LOGIN_CUSTOMIZE_RACE, pi->guid);
     }
     else
     {

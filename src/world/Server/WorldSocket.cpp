@@ -784,14 +784,14 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32_t r
 
     if (worldConfig.server.useAccountData)
     {
-        auto pResult = CharacterDatabase.Query("SELECT * FROM account_data WHERE acct = %u", AccountID);
+        auto pResult = CharacterDatabase.query("SELECT * FROM account_data WHERE acct = %u", AccountID);
         if (pResult == nullptr)
         {
-            CharacterDatabase.Execute("INSERT INTO account_data VALUES(%u, '', '', '', '', '', '', '', '', '')", AccountID);
+            CharacterDatabase.execute("INSERT INTO account_data VALUES(%u, '', '', '', '', '', '', '', '', '')", AccountID);
         }
         else
         {
-            Field* fields = pResult->Fetch();
+            Field* fields = pResult->fetch();
             for (uint8_t i = 0; i < 8; ++i)
             {
                 const char* data = fields[1 + i].asCString();

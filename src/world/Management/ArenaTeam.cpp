@@ -110,7 +110,7 @@ void ArenaTeam::saveToDB()
     ss << m_id;
     ss << ";";
 
-    CharacterDatabase.ExecuteNA(ss.str().c_str());
+    CharacterDatabase.executeNA(ss.str().c_str());
 
     ss.rdbuf()->str("");
 
@@ -149,7 +149,7 @@ void ArenaTeam::saveToDB()
     }
 
     ss << ")";
-    CharacterDatabase.Execute(ss.str().c_str());
+    CharacterDatabase.execute(ss.str().c_str());
 }
 
 void ArenaTeam::destroy()

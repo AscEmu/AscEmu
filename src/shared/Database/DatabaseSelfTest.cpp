@@ -49,7 +49,7 @@ namespace AscEmu::AE::DbSelfTest
 
                 if (!result.empty() && result[0].result)
                 {
-                    Field* fields = result[0].result->Fetch();
+                    Field* fields = result[0].result->fetch();
                     ok = fields != nullptr && fields[0].asUint32() == 42U;
                 }
 
@@ -84,7 +84,7 @@ namespace AscEmu::AE::DbSelfTest
 
         bool exec(::Database& db, Result& result, const std::string& sql)
         {
-            const bool ok = db.WaitExecuteNA(sql.c_str());
+            const bool ok = db.waitExecuteNA(sql.c_str());
             if (!ok)
                 addMessage(result, "FAIL exec: " + sql);
 
@@ -93,14 +93,14 @@ namespace AscEmu::AE::DbSelfTest
 
         std::optional<uint64_t> queryUint64(::Database& db, Result& result, const std::string& sql)
         {
-            auto qr = db.QueryNA(sql.c_str());
+            auto qr = db.queryNA(sql.c_str());
             if (!qr)
             {
                 addMessage(result, "FAIL query: " + sql);
                 return std::nullopt;
             }
 
-            Field* fields = qr->Fetch();
+            Field* fields = qr->fetch();
             if (fields == nullptr)
             {
                 addMessage(result, "FAIL query returned no fields: " + sql);
@@ -191,9 +191,9 @@ namespace AscEmu::AE::DbSelfTest
             auto future = callback->getFuture();
 
             auto query = std::make_unique<AsyncQuery>(std::move(callback));
-            query->AddQuery("SELECT 42");
+            query->addQuery("SELECT 42");
 
-            db.QueueAsyncQuery(std::move(query));
+            db.queueAsyncQuery(std::move(query));
 
             if (future.wait_for(std::chrono::seconds(5)) != std::future_status::ready)
             {
@@ -213,19 +213,19 @@ namespace AscEmu::AE::DbSelfTest
 
         bool batchRollbackTest(::Database& db, Result& result, const std::string& tableName)
         {
-            const uint64_t completedBefore = db.GetAeCompletedTaskCount();
+            const uint64_t completedBefore = db.getCompletedTaskCount();
 
             auto buffer = std::make_unique<QueryBuffer>();
-            buffer->AddQueryNA(("INSERT INTO " + tableName + " (id, value, name) VALUES (100, 1000, 'buffer_a')").c_str());
-            buffer->AddQueryNA(("INSRT INTO " + tableName + " (id, value, name) VALUES (101, 1001, 'broken')").c_str());
-            buffer->AddQueryNA(("INSERT INTO " + tableName + " (id, value, name) VALUES (102, 1002, 'buffer_b')").c_str());
+            buffer->addQueryNA(("INSERT INTO " + tableName + " (id, value, name) VALUES (100, 1000, 'buffer_a')").c_str());
+            buffer->addQueryNA(("INSRT INTO " + tableName + " (id, value, name) VALUES (101, 1001, 'broken')").c_str());
+            buffer->addQueryNA(("INSERT INTO " + tableName + " (id, value, name) VALUES (102, 1002, 'buffer_b')").c_str());
 
-            db.AddQueryBuffer(std::move(buffer));
+            db.addQueryBuffer(std::move(buffer));
 
             const bool finished = waitUntil(
                 [&db, completedBefore]()
                 {
-                    return db.GetAeCompletedTaskCount() > completedBefore;
+                    return db.getCompletedTaskCount() > completedBefore;
                 },
                 std::chrono::seconds(5));
 
@@ -255,7 +255,7 @@ namespace AscEmu::AE::DbSelfTest
 
         bool parallelReadTest(::Database& db, Result& result)
         {
-            const size_t workers = db.GetAeWorkerCount();
+            const size_t workers = db.getWorkerCount();
             if (workers < 2)
             {
                 addMessage(result, "SKIP parallel test: workerCount < 2");
@@ -270,7 +270,7 @@ namespace AscEmu::AE::DbSelfTest
 
                     for (size_t i = 0; i < taskCount; ++i)
                     {
-                        auto qr = db.QueryNA("SELECT SLEEP(1)");
+                        auto qr = db.queryNA("SELECT SLEEP(1)");
                         (void)qr;
                     }
 
@@ -287,7 +287,7 @@ namespace AscEmu::AE::DbSelfTest
                     {
                         futures.emplace_back(std::async(std::launch::async, [&db]()
                             {
-                                auto qr = db.QueryNA("SELECT SLEEP(1)");
+                                auto qr = db.queryNA("SELECT SLEEP(1)");
                                 (void)qr;
                             }));
                     }
@@ -325,15 +325,15 @@ namespace AscEmu::AE::DbSelfTest
 
         addMessage(
             result,
-            "AE_DB metrics: workers=" + std::to_string(db.GetAeWorkerCount()) +
-            " queued=" + std::to_string(db.GetAeQueuedTaskCount()) +
-            " completed=" + std::to_string(db.GetAeCompletedTaskCount()));
+            "AE_DB metrics: workers=" + std::to_string(db.getWorkerCount()) +
+            " queued=" + std::to_string(db.getQueuedTaskCount()) +
+            " completed=" + std::to_string(db.getCompletedTaskCount()));
 
         const std::string tableName = makeTableName(tablePrefix);
 
         const auto cleanup = [&db, &tableName]()
             {
-                db.WaitExecuteNA(("DROP TABLE IF EXISTS " + tableName).c_str());
+                db.waitExecuteNA(("DROP TABLE IF EXISTS " + tableName).c_str());
             };
 
         cleanup();
@@ -358,9 +358,9 @@ namespace AscEmu::AE::DbSelfTest
 
         addMessage(
             result,
-            "AE_DB metrics after test: workers=" + std::to_string(db.GetAeWorkerCount()) +
-            " queued=" + std::to_string(db.GetAeQueuedTaskCount()) +
-            " completed=" + std::to_string(db.GetAeCompletedTaskCount()));
+            "AE_DB metrics after test: workers=" + std::to_string(db.getWorkerCount()) +
+            " queued=" + std::to_string(db.getQueuedTaskCount()) +
+            " completed=" + std::to_string(db.getCompletedTaskCount()));
 
         return result;
     }

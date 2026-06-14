@@ -2028,12 +2028,12 @@ int LuaUnit::QuestAddStarter(lua_State* L, Unit* ptr)
 
     char my_query1[200];
     sprintf(my_query1, "SELECT id FROM creature_quest_starter WHERE id = %d AND quest = %d AND min_build <= %u AND max_build >= %u", quest_giver, quest_id, VERSION_STRING, VERSION_STRING);
-    const auto selectResult1 = WorldDatabase.Query(my_query1);
+    const auto selectResult1 = WorldDatabase.query(my_query1);
     if (selectResult1 == nullptr)
     {
         char my_insert1[200];
         sprintf(my_insert1, "INSERT INTO creature_quest_starter (id, quest) VALUES (%d,%d,%u,%u)", quest_giver, quest_id, VERSION_STRING, VERSION_STRING);
-        WorldDatabase.Execute(my_insert1);
+        WorldDatabase.execute(my_insert1);
     }
 
     sQuestMgr.LoadExtraQuestStuff();
@@ -2073,12 +2073,12 @@ int LuaUnit::QuestAddFinisher(lua_State* L, Unit* ptr)
 
     char my_query1[200];
     sprintf(my_query1, "SELECT id FROM creature_quest_finisher WHERE id = %d AND quest = %d AND min_build <= %u AND max_build >= %u", quest_giver, quest_id, VERSION_STRING, VERSION_STRING);
-    const auto selectResult1 = WorldDatabase.Query(my_query1);
+    const auto selectResult1 = WorldDatabase.query(my_query1);
     if (selectResult1 == nullptr)
     {
         char my_insert1[200];
         sprintf(my_insert1, "INSERT INTO creature_quest_finisher (id, quest, min_build, max_build) VALUES (%d,%d,%u,%u)", quest_giver, quest_id, VERSION_STRING, VERSION_STRING);
-        WorldDatabase.Execute(my_insert1);
+        WorldDatabase.execute(my_insert1);
     }
 
     sQuestMgr.LoadExtraQuestStuff();
@@ -4629,9 +4629,9 @@ int LuaUnit::AddLoot(lua_State* L, Unit* ptr)
     const bool perm = ((luaL_optinteger(L, 4, 0) == 1) ? true : false);
     if (perm)
     {
-        const auto result = WorldDatabase.Query("SELECT * FROM loot_creatures WHERE entryid = %u, itemid = %u", ptr->getEntry(), itemid);
+        const auto result = WorldDatabase.query("SELECT * FROM loot_creatures WHERE entryid = %u, itemid = %u", ptr->getEntry(), itemid);
         if (!result)
-            WorldDatabase.Execute("REPLACE INTO loot_creatures VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->getEntry(), itemid, chance, mincount, maxcount);
+            WorldDatabase.execute("REPLACE INTO loot_creatures VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->getEntry(), itemid, chance, mincount, maxcount);
     }
     sLootMgr.addLoot(&ptr->loot, itemid, ichance, mincount, maxcount, ptr->getWorldMap()->getDifficulty());
     return 0;

@@ -32,13 +32,13 @@ void IpBanMgr::reload()
     std::lock_guard lock(ipBanMutex);
     _ipBanList.clear();
 
-    auto result = sLogonSQL->Query("SELECT ip, expire FROM ipbans");
+    auto result = sLogonSQL->query("SELECT ip, expire FROM ipbans");
     if (result)
     {
         do
         {
-            std::string ipString = result->Fetch()[0].asCString();
-            const uint32_t expireTime = result->Fetch()[1].asUint32();
+            std::string ipString = result->fetch()[0].asCString();
+            const uint32_t expireTime = result->fetch()[1].asUint32();
 
             std::string smask = "32";
             
@@ -64,7 +64,7 @@ void IpBanMgr::reload()
             ipBan.db_ip = ipString;
             _ipBanList.push_back(ipBan);
 
-        } while (result->NextRow());
+        } while (result->nextRow());
     }
 }
 
@@ -131,7 +131,7 @@ IpBanStatus IpBanMgr::getBanStatus(in_addr ip_address)
 
             if (static_cast<uint32_t>(UNIXTIME) >= bannedIp->Expire)
             {
-                sLogonSQL->Execute("DELETE FROM ipbans WHERE expire = %u AND ip = \"%s\"", bannedIp->Expire, sLogonSQL->EscapeString(bannedIp->db_ip).c_str());
+                sLogonSQL->execute("DELETE FROM ipbans WHERE expire = %u AND ip = \"%s\"", bannedIp->Expire, sLogonSQL->escapeString(bannedIp->db_ip).c_str());
                 _ipBanList.erase(bannedIp);
             }
             else

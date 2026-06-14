@@ -1105,9 +1105,9 @@ void WorldSession::handleBugOpcode(WorldPacket& recv_data)
     ss << timeStamp << "',";
     ss << "'0',";
     ss << "'0','";
-    ss << CharacterDatabase.EscapeString(bugMessage) << "')";
+    ss << CharacterDatabase.escapeString(bugMessage) << "')";
 
-    CharacterDatabase.ExecuteNA(ss.str().c_str());
+    CharacterDatabase.executeNA(ss.str().c_str());
 }
 #endif
 
@@ -1141,9 +1141,9 @@ void WorldSession::handleSuggestionOpcode(WorldPacket& recvPacket)
     ss << timeStamp << "',";
     ss << "'1',";
     ss << "'1','";
-    ss << CharacterDatabase.EscapeString(suggestionMessage) << "')";
+    ss << CharacterDatabase.escapeString(suggestionMessage) << "')";
 
-    CharacterDatabase.ExecuteNA(ss.str().c_str());
+    CharacterDatabase.executeNA(ss.str().c_str());
 #endif
 }
 
@@ -1727,35 +1727,35 @@ void WorldSession::handleRequestCemeteryListOpcode(WorldPacket& /*recvPacket*/)
     sLogger.debugFlag(AscEmu::Logging::LF_OPCODE, "Received CMSG_REQUEST_CEMETERY_LIST");
 
 #if VERSION_STRING == Cata
-    auto result = WorldDatabase.Query("SELECT id FROM graveyards WHERE faction = %u OR faction = 3;", _player->getTeam());
+    auto result = WorldDatabase.query("SELECT id FROM graveyards WHERE faction = %u OR faction = 3;", _player->getTeam());
     if (result)
     {
-        WorldPacket data(SMSG_REQUEST_CEMETERY_LIST_RESPONSE, 8 * result->GetRowCount());
+        WorldPacket data(SMSG_REQUEST_CEMETERY_LIST_RESPONSE, 8 * result->getRowCount());
         data.writeBit(false); // unk bit
         data.flushBits();
-        data.writeBits(result->GetRowCount(), 24);
+        data.writeBits(result->getRowCount(), 24);
         data.flushBits();
 
         do
         {
-            Field* field = result->Fetch();
+            Field* field = result->fetch();
             data << uint32_t(field[0].asUint32());
-        } while (result->NextRow());
+        } while (result->nextRow());
 
         SendPacket(&data);
     }
 #else // Mop
-    auto result = WorldDatabase.Query("SELECT id FROM graveyards WHERE faction = %u OR faction = 3;", _player->getTeam());
+    auto result = WorldDatabase.query("SELECT id FROM graveyards WHERE faction = %u OR faction = 3;", _player->getTeam());
     if (result)
     {
-        WorldPacket data(SMSG_REQUEST_CEMETERY_LIST_RESPONSE, 8 * result->GetRowCount());
-        data.writeBits(result->GetRowCount(), 22);
+        WorldPacket data(SMSG_REQUEST_CEMETERY_LIST_RESPONSE, 8 * result->getRowCount());
+        data.writeBits(result->getRowCount(), 22);
         data.writeBit(false); // triggered gossip
         do
         {
-            Field* field = result->Fetch();
+            Field* field = result->fetch();
             data << uint32_t(field[0].asUint32());
-        } while (result->NextRow());
+        } while (result->nextRow());
 
         SendPacket(&data);
     }
@@ -1909,25 +1909,25 @@ void WorldSession::handleWhoIsOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    auto resultAcctId = CharacterDatabase.Query("SELECT acct FROM characters WHERE name = '%s'", srlPacket.characterName.c_str());
+    auto resultAcctId = CharacterDatabase.query("SELECT acct FROM characters WHERE name = '%s'", srlPacket.characterName.c_str());
     if (!resultAcctId)
     {
         SendNotification("%s does not exit!", srlPacket.characterName.c_str());
         return;
     }
 
-    Field* fields_acctID = resultAcctId->Fetch();
+    Field* fields_acctID = resultAcctId->fetch();
     const uint32_t accId = fields_acctID[0].asUint32();
 
     //todo: this will not work! no table accounts in character_db!!!
-    auto accountInfoResult = CharacterDatabase.Query("SELECT acct, login, gm, email, lastip, muted FROM accounts WHERE acct = %u", accId);
+    auto accountInfoResult = CharacterDatabase.query("SELECT acct, login, gm, email, lastip, muted FROM accounts WHERE acct = %u", accId);
     if (!accountInfoResult)
     {
         SendNotification("Account information for %s not found!", srlPacket.characterName.c_str());
         return;
     }
 
-    Field* fields = accountInfoResult->Fetch();
+    Field* fields = accountInfoResult->fetch();
     std::string acctID = fields[0].asCString();
     if (acctID.empty())
         acctID = "Unknown";

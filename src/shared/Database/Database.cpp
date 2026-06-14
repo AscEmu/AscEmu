@@ -46,19 +46,16 @@ SQLCallbackBase::~SQLCallbackBase() = default;
 
 Database::Database()
 {
-    _counter = 0;
-    mConnectionCount = -1;
-    mPort = 3306;
     m_runtime = nullptr;
 }
 
 Database::~Database() = default;
 
-void Database::_Initialize()
+void Database::_initialize()
 {
 }
 
-std::unique_ptr<QueryResult> Database::Query(const char* queryString, ...)
+std::unique_ptr<QueryResult> Database::query(const char* queryString, ...)
 {
     va_list args;
     va_start(args, queryString);
@@ -73,7 +70,7 @@ std::unique_ptr<QueryResult> Database::Query(const char* queryString, ...)
     return std::move(outcome.result);
 }
 
-std::unique_ptr<QueryResult> Database::Query(bool* success, const char* queryString, ...)
+std::unique_ptr<QueryResult> Database::query(bool* success, const char* queryString, ...)
 {
     if (success == nullptr)
         return nullptr;
@@ -95,7 +92,7 @@ std::unique_ptr<QueryResult> Database::Query(bool* success, const char* queryStr
     return std::move(outcome.result);
 }
 
-std::unique_ptr<QueryResult> Database::QueryNA(const char* queryString)
+std::unique_ptr<QueryResult> Database::queryNA(const char* queryString)
 {
     if (queryString == nullptr || !m_runtime)
         return nullptr;
@@ -105,25 +102,25 @@ std::unique_ptr<QueryResult> Database::QueryNA(const char* queryString)
     return std::move(outcome.result);
 }
 
-std::unique_ptr<QueryResult> Database::FQuery(const char* queryString, DatabaseConnection* con)
+std::unique_ptr<QueryResult> Database::fQuery(const char* queryString, DatabaseConnection* con)
 {
     if (queryString == nullptr || con == nullptr)
         return nullptr;
 
     std::unique_ptr<QueryResult> result;
-    if (_SendQuery(con, queryString, false))
-        result = _StoreQueryResult(con);
+    if (_sendQuery(con, queryString, false))
+        result = _storeQueryResult(con);
 
     return result;
 }
 
-void Database::FWaitExecute(const char* queryString, DatabaseConnection* con)
+void Database::fWaitExecute(const char* queryString, DatabaseConnection* con)
 {
     if (queryString != nullptr && con != nullptr)
-        _SendQuery(con, queryString, false);
+        _sendQuery(con, queryString, false);
 }
 
-bool Database::Execute(const char* queryString, ...)
+bool Database::execute(const char* queryString, ...)
 {
     va_list args;
     va_start(args, queryString);
@@ -139,10 +136,10 @@ bool Database::Execute(const char* queryString, ...)
         return true;
     }
 
-    return ExecuteNA(sql->c_str());
+    return executeNA(sql->c_str());
 }
 
-bool Database::ExecuteNA(const char* queryString)
+bool Database::executeNA(const char* queryString)
 {
     if (queryString == nullptr)
         return false;
@@ -153,10 +150,10 @@ bool Database::ExecuteNA(const char* queryString)
         return true;
     }
 
-    return WaitExecuteNA(queryString);
+    return waitExecuteNA(queryString);
 }
 
-bool Database::WaitExecute(const char* queryString, ...)
+bool Database::waitExecute(const char* queryString, ...)
 {
     va_list args;
     va_start(args, queryString);
@@ -172,10 +169,10 @@ bool Database::WaitExecute(const char* queryString, ...)
         return future.get();
     }
 
-    return WaitExecuteNA(sql->c_str());
+    return waitExecuteNA(sql->c_str());
 }
 
-bool Database::WaitExecuteNA(const char* queryString)
+bool Database::waitExecuteNA(const char* queryString)
 {
     if (queryString == nullptr || !m_runtime)
         return false;
@@ -184,7 +181,7 @@ bool Database::WaitExecuteNA(const char* queryString)
     return future.get();
 }
 
-void QueryBuffer::AddQuery(const char* format, ...)
+void QueryBuffer::addQuery(const char* format, ...)
 {
     va_list args;
     va_start(args, format);
@@ -195,18 +192,18 @@ void QueryBuffer::AddQuery(const char* format, ...)
         queries.push_back(*sql);
 }
 
-void QueryBuffer::AddQueryNA(const char* str)
+void QueryBuffer::addQueryNA(const char* str)
 {
     if (str != nullptr)
         queries.emplace_back(str);
 }
 
-void QueryBuffer::AddQueryStr(const std::string& str)
+void QueryBuffer::addQueryStr(const std::string& str)
 {
     queries.push_back(str);
 }
 
-void AsyncQuery::AddQuery(const char* format, ...)
+void AsyncQuery::addQuery(const char* format, ...)
 {
     va_list args;
     va_start(args, format);
@@ -223,7 +220,7 @@ AsyncQuery::AsyncQuery(std::unique_ptr<SQLCallbackBase> f) : func(std::move(f)),
 
 AsyncQuery::~AsyncQuery() = default;
 
-void Database::QueueAsyncQuery(std::unique_ptr<AsyncQuery> query)
+void Database::queueAsyncQuery(std::unique_ptr<AsyncQuery> query)
 {
     if (query == nullptr || !m_runtime)
         return;
@@ -235,7 +232,7 @@ void Database::QueueAsyncQuery(std::unique_ptr<AsyncQuery> query)
         [this, sharedQuery](DatabaseConnection& connection)
         {
             for (auto& item : sharedQuery->queries)
-                item.result = FQuery(item.query.c_str(), &connection);
+                item.result = fQuery(item.query.c_str(), &connection);
 
             if (sharedQuery->func)
                 sharedQuery->func->run(sharedQuery->queries);
@@ -243,7 +240,7 @@ void Database::QueueAsyncQuery(std::unique_ptr<AsyncQuery> query)
         "db.async_query");
 }
 
-void Database::AddQueryBuffer(std::unique_ptr<QueryBuffer> buffer)
+void Database::addQueryBuffer(std::unique_ptr<QueryBuffer> buffer)
 {
     if (buffer == nullptr || !m_runtime)
         return;
@@ -251,32 +248,32 @@ void Database::AddQueryBuffer(std::unique_ptr<QueryBuffer> buffer)
     [[maybe_unused]] auto future = m_runtime->enqueueBatch(std::move(buffer->queries));
 }
 
-void Database::EndThreads()
+void Database::endThreads()
 {
     if (m_runtime)
         m_runtime->stop();
 }
 
-std::unique_ptr<Database> Database::CreateDatabaseInterface()
+std::unique_ptr<Database> Database::createDatabaseInterface()
 {
     return make_unique<MySQLDatabase>();
 }
 
-void Database::CleanupLibs()
+void Database::cleanupLibs()
 {
 }
 
-size_t Database::GetAeQueuedTaskCount() const
+size_t Database::getQueuedTaskCount() const
 {
     return m_runtime ? m_runtime->queuedTaskCount() : 0;
 }
 
-size_t Database::GetAeWorkerCount() const
+size_t Database::getWorkerCount() const
 {
     return m_runtime ? m_runtime->workerCount() : 0;
 }
 
-uint64_t Database::GetAeCompletedTaskCount() const
+uint64_t Database::getCompletedTaskCount() const
 {
     return m_runtime ? m_runtime->completedTaskCount() : 0;
 }

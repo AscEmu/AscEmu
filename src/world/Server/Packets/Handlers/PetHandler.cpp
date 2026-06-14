@@ -468,7 +468,7 @@ void WorldSession::handlePetRename(WorldPacket& recvPacket)
     if (pet == nullptr || pet->getGuid() != srlPacket.guid.getRawGuid())
         return;
 
-    const std::string newName = CharacterDatabase.EscapeString(srlPacket.name);
+    const std::string newName = CharacterDatabase.escapeString(srlPacket.name);
 
     pet->rename(newName);
 

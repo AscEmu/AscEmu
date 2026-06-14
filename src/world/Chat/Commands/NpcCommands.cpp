@@ -54,7 +54,7 @@ bool ChatCommandHandler::HandleNpcAddAgentCommand(const char* args, WorldSession
 
     systemMessage(m_session, "Added agent_type {} for spell {} to creature {} ({}).", ai_type, spellId, creature_target->GetCreatureProperties()->Name, creature_target->getEntry());
     sGMLog.writefromsession(m_session, "added agent_type %u for spell %u to creature %s (%u).", ai_type, spellId, creature_target->GetCreatureProperties()->Name.c_str(), creature_target->getEntry());
-    WorldDatabase.Execute("INSERT INTO ai_agents VALUES(%u, 4, %u, %u, %u, %u, %u, %u, %u, %u, %f, %u",
+    WorldDatabase.execute("INSERT INTO ai_agents VALUES(%u, 4, %u, %u, %u, %u, %u, %u, %u, %u, %f, %u",
         creature_target->getEntry(), ai_type, procEvent, procChance, maxcount, spellId, spellType, spelltargetType, spellCooldown, floatMisc1, Misc2);
 
     auto ai_spell = std::make_unique<AI_Spell>();
@@ -611,7 +611,7 @@ bool ChatCommandHandler::HandleNpcListAIAgentCommand(const char* /*args*/, World
     if (creature_target == nullptr)
         return true;
 
-    auto result = WorldDatabase.Query("SELECT * FROM ai_agents where entry=%u", creature_target->getEntry());
+    auto result = WorldDatabase.query("SELECT * FROM ai_agents where entry=%u", creature_target->getEntry());
     if (result == nullptr)
     {
         redSystemMessage(m_session, "Selected Creature {} ({}) has no entries in ai_agents table!", creature_target->GetCreatureProperties()->Name, creature_target->getEntry());
@@ -620,9 +620,9 @@ bool ChatCommandHandler::HandleNpcListAIAgentCommand(const char* /*args*/, World
     systemMessage(m_session, "Agent list for Creature {} ({})", creature_target->GetCreatureProperties()->Name, creature_target->getEntry());
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
         systemMessage(m_session, "-- agent: {} | spellId: {} | event: {} | chance: {} | maxcount: {}", fields[1].asUint32(), fields[5].asUint32(), fields[2].asUint32(), fields[3].asUint32(), fields[4].asUint32());
-    } while (result->NextRow());
+    } while (result->nextRow());
 
     return true;
 }
@@ -634,7 +634,7 @@ bool ChatCommandHandler::HandleNpcListLootCommand(const char* args, WorldSession
     if (creature_target == nullptr)
         return true;
 
-    auto loot_result = WorldDatabase.Query("SELECT itemid, normal10percentchance, heroic10percentchance, normal25percentchance, heroic25percentchance, mincount, maxcount FROM loot_creatures WHERE entryid=%u;", creature_target->getEntry());
+    auto loot_result = WorldDatabase.query("SELECT itemid, normal10percentchance, heroic10percentchance, normal25percentchance, heroic25percentchance, mincount, maxcount FROM loot_creatures WHERE entryid=%u;", creature_target->getEntry());
     if (loot_result != nullptr)
     {
         uint8_t numFound = 0;
@@ -647,7 +647,7 @@ bool ChatCommandHandler::HandleNpcListLootCommand(const char* args, WorldSession
 
         do
         {
-            Field* field = loot_result->Fetch();
+            Field* field = loot_result->fetch();
 
             auto item_proto = sMySQLStore.getItemProperties(field[0].asUint32());
             if (item_proto == nullptr || item_proto->Quality < minQuality)
@@ -657,7 +657,7 @@ bool ChatCommandHandler::HandleNpcListLootCommand(const char* args, WorldSession
             systemMessage(m_session, "-- N10 ({}) N25 ({}) H10 ({}) H25 ({}) min/max ({}/{})", field[1].asFloat(), field[3].asFloat(), field[2].asFloat(), field[4].asFloat(), field[5].asUint32(), field[6].asUint32());
 
             ++numFound;
-        } while (loot_result->NextRow() && (numFound <= 25));
+        } while (loot_result->nextRow() && (numFound <= 25));
 
         if (numFound > 25)
             redSystemMessage(m_session, "More than 25 results found. Use .npc listloot <min quality> to increase the results.");
@@ -1008,7 +1008,7 @@ bool ChatCommandHandler::HandleNpcVendorRemoveItemCommand(const char* args, Worl
     {
         uint32_t creatureId = selected_creature->getEntry();
 
-        WorldDatabase.Execute("DELETE FROM vendors WHERE entry = %u AND item = %u", creatureId, itemguid);
+        WorldDatabase.execute("DELETE FROM vendors WHERE entry = %u AND item = %u", creatureId, itemguid);
 
         selected_creature->RemoveVendorItem(itemguid);
 
@@ -1084,7 +1084,7 @@ bool ChatCommandHandler::HandleNpcSetCanFlyCommand(const char* /*args*/, WorldSe
         creature_target->setMoveCanFly(false);
 
         if (creature_target->m_spawn != nullptr)
-            WorldDatabase.Execute("UPDATE %s SET CanFly = 1 WHERE id = %u AND min_build <= %u AND max_build >= %u", creature_target->m_spawn->origine.c_str(), creature_target->spawnid, VERSION_STRING, VERSION_STRING);
+            WorldDatabase.execute("UPDATE %s SET CanFly = 1 WHERE id = %u AND min_build <= %u AND max_build >= %u", creature_target->m_spawn->origine.c_str(), creature_target->spawnid, VERSION_STRING, VERSION_STRING);
 
         greenSystemMessage(m_session, "CanFly permanent set from 0 to 1 for Creature {} ({}).", creature_target->GetCreatureProperties()->Name, creature_target->spawnid);
         sGMLog.writefromsession(m_session, "changed npc CanFly for creature_spawns ID: %u [%s] from 0 to 1", creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str());
@@ -1094,7 +1094,7 @@ bool ChatCommandHandler::HandleNpcSetCanFlyCommand(const char* /*args*/, WorldSe
         creature_target->setMoveCanFly(true);
 
         if (creature_target->m_spawn != nullptr)
-            WorldDatabase.Execute("UPDATE %s SET CanFly = 0 WHERE id = %u AND min_build <= %u AND max_build >= %u", creature_target->m_spawn->origine.c_str(), creature_target->spawnid, VERSION_STRING, VERSION_STRING);
+            WorldDatabase.execute("UPDATE %s SET CanFly = 0 WHERE id = %u AND min_build <= %u AND max_build >= %u", creature_target->m_spawn->origine.c_str(), creature_target->spawnid, VERSION_STRING, VERSION_STRING);
 
         greenSystemMessage(m_session, "CanFly permanent set from 1 to 0 for Creature {} ({}).", creature_target->GetCreatureProperties()->Name, creature_target->spawnid);
         sGMLog.writefromsession(m_session, "changed npc CanFly for creature_spawns ID: %u [%s] from 1 to 0", creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str());
@@ -1191,7 +1191,7 @@ bool ChatCommandHandler::HandleNpcSetEmoteCommand(const char* args, WorldSession
     creature_target->setEmoteState(emote);
 
     if (creature_target->m_spawn != nullptr)
-        WorldDatabase.Execute("UPDATE %s SET emote_state = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", creature_target->m_spawn->origine.c_str(), emote, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
+        WorldDatabase.execute("UPDATE %s SET emote_state = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", creature_target->m_spawn->origine.c_str(), emote, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
 
     greenSystemMessage(m_session, "Emote permanent set from {} to {} for spawn ID: {}.", old_emote, emote, creature_target->spawnid);
     sGMLog.writefromsession(m_session, "changed npc emote of %s ID: %u from %u to %u", creature_target->spawnid, creature_target->GetCreatureProperties()->Name.c_str(), old_emote, emote);
@@ -1245,7 +1245,7 @@ bool ChatCommandHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession
     creature_target->addNpcFlags(npc_flags);
 
     if (creature_target->m_spawn != nullptr)
-        WorldDatabase.Execute("UPDATE %s SET flags = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", creature_target->m_spawn->origine.c_str(), npc_flags, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
+        WorldDatabase.execute("UPDATE %s SET flags = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", creature_target->m_spawn->origine.c_str(), npc_flags, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
 
     greenSystemMessage(m_session, "Flags changed in spawns table from {} to {} for spawn ID: {}. You may need to clean your client cache.", old_npc_flags, npc_flags, creature_target->spawnid);
     sGMLog.writefromsession(m_session, "changed npc flags of %s ID: %u from %u to %u", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid, old_npc_flags, npc_flags);
@@ -1273,7 +1273,7 @@ bool ChatCommandHandler::HandleNpcSetPhaseCommand(const char* args, WorldSession
     creature_target->setPhase(PHASE_SET, npc_phase);
 
     if (creature_target->m_spawn != nullptr)
-        WorldDatabase.Execute("UPDATE %s SET phase = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", creature_target->m_spawn->origine.c_str(), npc_phase, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
+        WorldDatabase.execute("UPDATE %s SET phase = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", creature_target->m_spawn->origine.c_str(), npc_phase, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
 
 
     greenSystemMessage(m_session, "Phase changed in spawns table from {} to {} for spawn ID: {}.", old_npc_phase, npc_phase, creature_target->spawnid);
@@ -1302,7 +1302,7 @@ bool ChatCommandHandler::HandleNpcSetStandstateCommand(const char* args, WorldSe
     creature_target->setStandState(standstate);
 
     if (creature_target->m_spawn != nullptr)
-        WorldDatabase.Execute("UPDATE %s SET standstate = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", creature_target->m_spawn->origine.c_str(), standstate, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
+        WorldDatabase.execute("UPDATE %s SET standstate = '%lu' WHERE id = %lu AND min_build <= %u AND max_build >= %u", creature_target->m_spawn->origine.c_str(), standstate, creature_target->spawnid, VERSION_STRING, VERSION_STRING);
 
     greenSystemMessage(m_session, "Standstate changed in spawns table from {} to {} for spawn ID: {}.", old_standstate, standstate, creature_target->spawnid);
     sGMLog.writefromsession(m_session, "changed npc standstate of %s ID: %u from %u to %u", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid, old_standstate, standstate);

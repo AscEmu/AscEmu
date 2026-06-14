@@ -291,11 +291,11 @@ void InstanceMap::createInstanceData(bool load)
 
     if (load)
     {
-        auto result = CharacterDatabase.Query("SELECT data, completedEncounters FROM instance WHERE map = %u AND id = %u", getBaseMap()->getMapId(), getInstanceId());
+        auto result = CharacterDatabase.query("SELECT data, completedEncounters FROM instance WHERE map = %u AND id = %u", getBaseMap()->getMapId(), getInstanceId());
 
         if (result)
         {
-            Field* fields = result->Fetch();
+            Field* fields = result->fetch();
             std::string data = fields[0].asCString();
 
             getScript()->setCompletedEncountersMask(fields[1].asUint32());
@@ -360,7 +360,7 @@ bool InstanceMap::reset(uint8_t method)
 
 bool InstanceMap::hasPermBoundPlayers()
 {
-    auto result = CharacterDatabase.Query("SELECT guid FROM character_instance WHERE instance = %u and permanent = 1", getInstanceId());
+    auto result = CharacterDatabase.query("SELECT guid FROM character_instance WHERE instance = %u and permanent = 1", getInstanceId());
     if (result)
     {
         return true;

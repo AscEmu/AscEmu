@@ -287,10 +287,10 @@ private:
         try
         {
             QueryExecutionResult outcome;
-            outcome.success = m_owner._SendQuery(lease.get(), sql.c_str(), false);
+            outcome.success = m_owner._sendQuery(lease.get(), sql.c_str(), false);
 
             if (outcome.success)
-                outcome.result = m_owner._StoreQueryResult(lease.get());
+                outcome.result = m_owner._storeQueryResult(lease.get());
 
             promise.set_value(std::move(outcome));
         }
@@ -311,7 +311,7 @@ private:
 
         try
         {
-            promise.set_value(m_owner._SendQuery(lease.get(), sql.c_str(), false));
+            promise.set_value(m_owner._sendQuery(lease.get(), sql.c_str(), false));
         }
         catch (...)
         {
@@ -331,11 +331,11 @@ private:
         try
         {
             bool success = true;
-            m_owner._BeginTransaction(lease.get());
+            m_owner._beginTransaction(lease.get());
 
             for (const auto& sql : sqlBatch)
             {
-                if (!m_owner._SendQuery(lease.get(), sql.c_str(), false))
+                if (!m_owner._sendQuery(lease.get(), sql.c_str(), false))
                 {
                     success = false;
                     break;
@@ -343,9 +343,9 @@ private:
             }
 
             if (success)
-                m_owner._EndTransaction(lease.get());
+                m_owner._endTransaction(lease.get());
             else
-                m_owner._SendQuery(lease.get(), "ROLLBACK", false);
+                m_owner._sendQuery(lease.get(), "ROLLBACK", false);
 
             promise.set_value(success);
         }
@@ -353,7 +353,7 @@ private:
         {
             try
             {
-                m_owner._SendQuery(lease.get(), "ROLLBACK", false);
+                m_owner._sendQuery(lease.get(), "ROLLBACK", false);
             }
             catch (...)
             {

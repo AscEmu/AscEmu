@@ -202,8 +202,8 @@ void MasterLogon::Run(int /*argc*/, char** /*argv*/)
 
     // kill db
     sLogger.info("Waiting for database to close..");
-    sLogonSQL->EndThreads();
-    sLogonSQL->Shutdown();
+    sLogonSQL->endThreads();
+    sLogonSQL->shutdown();
     sLogonSQL = nullptr;
 
     threadPool.shutdown();
@@ -358,10 +358,10 @@ bool MasterLogon::StartDb()
         return false;
     }
 
-    sLogonSQL = Database::CreateDatabaseInterface();
+    sLogonSQL = Database::createDatabaseInterface();
 
     // Initialize it
-    if (!sLogonSQL->Initialize(dbHostname.c_str(), (unsigned int)dbPort, dbUsername.c_str(),
+    if (!sLogonSQL->initialize(dbHostname.c_str(), (unsigned int)dbPort, dbUsername.c_str(),
         dbPassword.c_str(), dbDatabase.c_str(), logonConfig.logonDb.connections,
         16384, logonConfig.logonDb.isLegacyAuth))
     {
@@ -374,7 +374,7 @@ bool MasterLogon::StartDb()
 
 bool MasterLogon::CheckDBVersion()
 {
-    auto cqr = sLogonSQL->QueryNA("SELECT LastUpdate FROM logon_db_version ORDER BY id DESC LIMIT 1;");
+    auto cqr = sLogonSQL->queryNA("SELECT LastUpdate FROM logon_db_version ORDER BY id DESC LIMIT 1;");
     if (cqr == nullptr)
     {
         sLogger.failure("Database : logon database is missing the table `logon_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
@@ -382,7 +382,7 @@ bool MasterLogon::CheckDBVersion()
         return false;
     }
 
-    Field* f = cqr->Fetch();
+    Field* f = cqr->fetch();
     const char *LogonDBVersion = f->asCString();
 
     sLogger.info("Database : Last logon database update: {}", LogonDBVersion);

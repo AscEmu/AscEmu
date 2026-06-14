@@ -47,19 +47,19 @@ Auction::Auction(Field const* fields, std::unique_ptr<Item> pItem)
 
 void Auction::deleteFromDB()
 {
-    CharacterDatabase.WaitExecute("DELETE FROM auctions WHERE auctionId = %u", Id);
+    CharacterDatabase.waitExecute("DELETE FROM auctions WHERE auctionId = %u", Id);
 }
 
 void Auction::saveToDB(uint32_t auctionHouseId)
 {
-    CharacterDatabase.Execute("INSERT INTO auctions VALUES(%u, %u, %u, %u, %u, %u, %u, %u, %u, %u)", 
+    CharacterDatabase.execute("INSERT INTO auctions VALUES(%u, %u, %u, %u, %u, %u, %u, %u, %u, %u)", 
         Id, auctionHouseId, auctionItem->getGuidLow(), ownerGuid.getGuidLow(), startPrice, buyoutPrice, expireTime, highestBidderGuid.getGuidLow(), 
         highestBid, depositAmount);
 }
 
 void Auction::updateInDB()
 {
-    CharacterDatabase.Execute("UPDATE auctions SET bidder = %u, bid = %u WHERE auctionId = %u", highestBidderGuid.getGuidLow(), highestBid, Id);
+    CharacterDatabase.execute("UPDATE auctions SET bidder = %u, bid = %u WHERE auctionId = %u", highestBidderGuid.getGuidLow(), highestBid, Id);
 }
 
 AuctionPacketList Auction::getListMember()
@@ -130,25 +130,25 @@ uint32_t AuctionHouse::getId() const { return auctionHouseEntryDbc ? auctionHous
 
 void AuctionHouse::loadAuctionsFromDB()
 {
-    auto result = CharacterDatabase.Query("SELECT * FROM auctions WHERE auctionhouse =%u", getId());
+    auto result = CharacterDatabase.query("SELECT * FROM auctions WHERE auctionhouse =%u", getId());
     if (!result)
         return;
 
     do
     {
-        Field* fields = result->Fetch();
+        Field* fields = result->fetch();
         const auto auctionId = fields[0].asUint32();
 
         auto pItem = sObjectMgr.loadItem(fields[2].asUint32());
         if (!pItem)
         {
-            CharacterDatabase.Execute("DELETE FROM auctions WHERE auctionId=%u", auctionId);
+            CharacterDatabase.execute("DELETE FROM auctions WHERE auctionId=%u", auctionId);
             continue;
         }
 
         auctions.try_emplace(auctionId, std::make_unique<Auction>(fields, std::move(pItem)));
     }
-    while (result->NextRow());
+    while (result->nextRow());
 }
 
 void AuctionHouse::updateAuctions()

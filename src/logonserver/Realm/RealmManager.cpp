@@ -44,13 +44,13 @@ namespace AscEmu::Realm
 
     void RealmManager::loadRealms()
     {
-        const auto result = sLogonSQL->Query("SELECT id, password, status FROM realms");
+        const auto result = sLogonSQL->query("SELECT id, password, status FROM realms");
         if (result != nullptr)
         {
             do
             {
-                const auto field = result->Fetch();
-                const uint32_t realmCount = result->GetRowCount();
+                const auto field = result->fetch();
+                const uint32_t realmCount = result->getRowCount();
                 this->realms.reserve(realmCount);
 
                 auto realm = std::make_unique<Realm>();
@@ -60,7 +60,7 @@ namespace AscEmu::Realm
                 realm->lastPing = ::Util::TimeNow();
 
                 this->realms.emplace_back(std::move(realm));
-            } while (result->NextRow());
+            } while (result->nextRow());
         }
         sLogger.info("[RealmManager] Loaded {} realms.", static_cast<uint32_t>(this->realms.size()));
     }
@@ -87,7 +87,7 @@ namespace AscEmu::Realm
 
             this->realms.push_back(std::move(realm));
 
-            sLogonSQL->Query("REPLACE INTO realms(id, status, status_change_time) VALUES(%u, %u, NOW())", status, uint32_t(realm_id));
+            sLogonSQL->query("REPLACE INTO realms(id, status, status_change_time) VALUES(%u, %u, NOW())", status, uint32_t(realm_id));
         }
         else
         {
@@ -97,7 +97,7 @@ namespace AscEmu::Realm
                     realm->status = status;
             }
 
-            sLogonSQL->Query("UPDATE realms SET status = %u WHERE id = %u", status, uint32_t(realm_id));
+            sLogonSQL->query("UPDATE realms SET status = %u WHERE id = %u", status, uint32_t(realm_id));
         }
     }
 
@@ -123,7 +123,7 @@ namespace AscEmu::Realm
             {
                 realm->status = 0;
                 sLogger.info("Realm {} status gets set to 0 (offline) since there was no ping the last 2 minutes ({}).", uint32_t(realm->id), ::Util::GetTimeDifferenceToNow(realm->lastPing));
-                sLogonSQL->Query("UPDATE realms SET status = 0 WHERE id = %u", uint32_t(realm->id));
+                sLogonSQL->query("UPDATE realms SET status = 0 WHERE id = %u", uint32_t(realm->id));
             }
         }
     }
@@ -284,7 +284,7 @@ namespace AscEmu::Realm
             realm->flags = RealmFlag::OFFLINE | RealmFlag::INVALID;
             realm->_characterMap.clear();
             sLogger.info("[RealmManager] Realm {} is now offline (socket close).", realm_id);
-            sLogonSQL->Query("UPDATE realms SET status = 0 WHERE id = %u", uint32_t(realm->id));
+            sLogonSQL->query("UPDATE realms SET status = 0 WHERE id = %u", uint32_t(realm->id));
         }
     }
 

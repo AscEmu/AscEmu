@@ -55,7 +55,7 @@ void AccountMgr::addAccount(Field* field)
     {
         account->Banned = 0;
         sLogger.debug("Account {}'s ban has expired.", accountName);
-        sLogonSQL->Execute("UPDATE accounts SET banned = 0 WHERE id = %u", account->AccountId);
+        sLogonSQL->execute("UPDATE accounts SET banned = 0 WHERE id = %u", account->AccountId);
     }
     
     if (account->forcedLanguage != "enUS")
@@ -67,7 +67,7 @@ void AccountMgr::addAccount(Field* field)
     {
         account->Muted = 0;
         sLogger.debug("Account {}'s mute has expired.", accountName);
-        sLogonSQL->Execute("UPDATE accounts SET muted = 0 WHERE id = %u", account->AccountId);
+        sLogonSQL->execute("UPDATE accounts SET muted = 0 WHERE id = %u", account->AccountId);
     }
 
     if (encryptedPassword.size() == 40)
@@ -117,7 +117,7 @@ void AccountMgr::updateAccount(Account* account, Field* field) const
     if (id != account->AccountId)
     {
         sLogger.failure("AccountMgr : deleting duplicate account {} [{}]...", id, accountName);
-        sLogonSQL->Execute("DELETE FROM accounts WHERE id = %u", id);
+        sLogonSQL->execute("DELETE FROM accounts WHERE id = %u", id);
         return;
     }
 
@@ -130,7 +130,7 @@ void AccountMgr::updateAccount(Account* account, Field* field) const
     {
         account->Banned = 0;
         sLogger.debug("Account {}'s ban has expired.", accountName);
-        sLogonSQL->Execute("UPDATE accounts SET banned = 0 WHERE id = %u", account->AccountId);
+        sLogonSQL->execute("UPDATE accounts SET banned = 0 WHERE id = %u", account->AccountId);
     }
 
     if (account->forcedLanguage != "enUS")
@@ -142,7 +142,7 @@ void AccountMgr::updateAccount(Account* account, Field* field) const
     {
         account->Muted = 0;
         sLogger.debug("Account {}'s mute has expired.", accountName);
-        sLogonSQL->Execute("UPDATE accounts SET muted = 0 WHERE id = %u", account->AccountId);
+        sLogonSQL->execute("UPDATE accounts SET muted = 0 WHERE id = %u", account->AccountId);
     }
 
     if (encryptedPassword.size() == 40)
@@ -179,12 +179,12 @@ void AccountMgr::reloadAccounts(bool silent)
 
     std::set<std::string> account_list;
 
-    auto result = sLogonSQL->Query("SELECT id, acc_name, encrypted_password, flags, banned, forceLanguage, muted FROM accounts");
+    auto result = sLogonSQL->query("SELECT id, acc_name, encrypted_password, flags, banned, forceLanguage, muted FROM accounts");
     if (result)
     {
         do
         {
-            Field* field = result->Fetch();
+            Field* field = result->fetch();
             std::string accountName = field[1].asCString();
 
             AscEmu::Util::Strings::toUpperCase(accountName);
@@ -197,7 +197,7 @@ void AccountMgr::reloadAccounts(bool silent)
 
             account_list.insert(accountName);
 
-        } while (result->NextRow());
+        } while (result->nextRow());
     }
 
     for (auto accounts = _accountMap.begin(); accounts != _accountMap.end();)

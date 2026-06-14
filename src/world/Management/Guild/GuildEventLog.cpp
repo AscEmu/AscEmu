@@ -24,8 +24,8 @@ GuildEventLogEntry::~GuildEventLogEntry()
 
 void GuildEventLogEntry::saveGuildLogToDB() const
 {
-    CharacterDatabase.Execute("DELETE FROM guild_logs WHERE guildId = %u AND logGuid = %u", mGuildId, mGuid);
-    CharacterDatabase.Execute("INSERT INTO guild_logs VALUES(%u, %u, %u, %u, %u, %u, %llu)",
+    CharacterDatabase.execute("DELETE FROM guild_logs WHERE guildId = %u AND logGuid = %u", mGuildId, mGuid);
+    CharacterDatabase.execute("INSERT INTO guild_logs VALUES(%u, %u, %u, %u, %u, %u, %llu)",
         mGuildId, mGuid, uint8_t(mEventType), mPlayerGuid1, mPlayerGuid2, (uint32_t)mNewRank, mTimestamp);
 }
 

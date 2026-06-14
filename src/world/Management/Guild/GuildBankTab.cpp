@@ -40,7 +40,7 @@ bool GuildBankTab::loadGuildBankTabItemFromDB(Field* fields)
     auto pItem = sObjectMgr.loadItem(fields[3].asUint32());
     if (pItem == nullptr)
     {
-        CharacterDatabase.Execute("DELETE FROM guild_bank_items WHERE itemGuid = %u AND guildId = %u AND tabId = %u",
+        CharacterDatabase.execute("DELETE FROM guild_bank_items WHERE itemGuid = %u AND guildId = %u AND tabId = %u",
             fields[3].asUint32(), mGuildId, static_cast<uint32_t>(fields[1].asUint8()));
     }
 
@@ -137,7 +137,7 @@ void GuildBankTab::setInfo(std::string const& name, std::string const& icon)
     mName = name;
     mIcon = icon;
 
-    CharacterDatabase.Execute("UPDATE guild_bank_tabs SET tabName = '%s' , tabIcon = '%s' WHERE guildId = '%u' AND tabId = '%u' ",
+    CharacterDatabase.execute("UPDATE guild_bank_tabs SET tabName = '%s' , tabIcon = '%s' WHERE guildId = '%u' AND tabId = '%u' ",
         mName.c_str(), mIcon.c_str(), mGuildId, static_cast<uint32_t>(mTabId));
 }
 
@@ -148,7 +148,7 @@ void GuildBankTab::setText(std::string const& text)
 
     mText = text;
 
-    CharacterDatabase.Execute("UPDATE guild_bank_tabs SET tabText = '%s' , tabIcon = '%s' WHERE guildId = %u AND tabId = %u ",
+    CharacterDatabase.execute("UPDATE guild_bank_tabs SET tabText = '%s' , tabIcon = '%s' WHERE guildId = %u AND tabId = %u ",
         mText.c_str(), mIcon.c_str(), mGuildId, static_cast<uint32_t>(mTabId));
 }
 
@@ -197,7 +197,7 @@ std::unique_ptr<Item> GuildBankTab::getItemHolder(uint8_t slotId)
     if (slotId >= MAX_GUILD_BANK_SLOTS)
         return nullptr;
 
-    CharacterDatabase.Execute("DELETE FROM guild_bank_items WHERE guildId = %u AND tabId = %u AND slotId = %u", mGuildId, static_cast<uint32_t>(mTabId), static_cast<uint32_t>(slotId));
+    CharacterDatabase.execute("DELETE FROM guild_bank_items WHERE guildId = %u AND tabId = %u AND slotId = %u", mGuildId, static_cast<uint32_t>(mTabId), static_cast<uint32_t>(slotId));
 
     std::unique_ptr<Item> tmpHolder = std::move(mItems[slotId]);
     return tmpHolder;
@@ -229,12 +229,12 @@ bool GuildBankTab::setItem(uint8_t slotId, std::unique_ptr<Item> item)
         }
 
         mItems[slot_id] = std::move(item);
-        CharacterDatabase.Execute("INSERT INTO guild_bank_items VALUES (%u, %u, %u, %u)", mGuildId, static_cast<uint32_t>(mTabId), slot_id, itemGuid);
+        CharacterDatabase.execute("INSERT INTO guild_bank_items VALUES (%u, %u, %u, %u)", mGuildId, static_cast<uint32_t>(mTabId), slot_id, itemGuid);
     }
     else
     {
         mItems[slotId] = nullptr;
-        CharacterDatabase.Execute("DELETE FROM guild_bank_items WHERE guildId = %u AND tabId = %u AND slotId = %u", mGuildId, static_cast<uint32_t>(mTabId), static_cast<uint32_t>(slotId));
+        CharacterDatabase.execute("DELETE FROM guild_bank_items WHERE guildId = %u AND tabId = %u AND slotId = %u", mGuildId, static_cast<uint32_t>(mTabId), static_cast<uint32_t>(slotId));
     }
 
     return true;

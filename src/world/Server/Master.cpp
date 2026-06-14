@@ -416,7 +416,7 @@ bool Master::run(int /*argc*/, char** /*argv*/)
 
     if (!startDB())
     {
-        Database::CleanupLibs();
+        Database::cleanupLibs();
         sLogger.finalize();
         return false;
     }
@@ -575,8 +575,8 @@ bool Master::run(int /*argc*/, char** /*argv*/)
     shutdownLootSystem();
 
     sLogger.info("Database : Clearing all pending queries...");
-    databaseCharacter->EndThreads();
-    databaseWorld->EndThreads();
+    databaseCharacter->endThreads();
+    databaseWorld->endThreads();
 
     listenSocket->Close();
     CloseConsoleListener();
@@ -647,7 +647,7 @@ bool Master::run(int /*argc*/, char** /*argv*/)
 
 bool Master::checkDBVersion()
 {
-    auto worldQueryResult = databaseWorld->QueryNA("SELECT LastUpdate FROM world_db_version ORDER BY id DESC LIMIT 1;");
+    auto worldQueryResult = databaseWorld->queryNA("SELECT LastUpdate FROM world_db_version ORDER BY id DESC LIMIT 1;");
     if (!worldQueryResult)
     {
         sLogger.fatal("Database : World database is missing the table `world_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
@@ -655,7 +655,7 @@ bool Master::checkDBVersion()
         return false;
     }
 
-    Field* worldField = worldQueryResult->Fetch();
+    Field* worldField = worldQueryResult->fetch();
     std::string_view worldDbVersion = worldField->asCString();
 
     sLogger.info("Database : Last world database update: {}", worldDbVersion);
@@ -677,7 +677,7 @@ bool Master::checkDBVersion()
         return false;
     }
 
-    auto charQueryResult = databaseCharacter->QueryNA("SELECT LastUpdate FROM character_db_version ORDER BY id DESC LIMIT 1;");
+    auto charQueryResult = databaseCharacter->queryNA("SELECT LastUpdate FROM character_db_version ORDER BY id DESC LIMIT 1;");
     if (!charQueryResult)
     {
         sLogger.fatal("Database : Character database is missing the table `character_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
@@ -685,7 +685,7 @@ bool Master::checkDBVersion()
         return false;
     }
 
-    Field* charField = charQueryResult->Fetch();
+    Field* charField = charQueryResult->fetch();
     std::string_view charDbVersion = charField->asCString();
 
     sLogger.info("Database : Last character database update: {}", charDbVersion);
@@ -729,10 +729,10 @@ bool Master::startDB()
         return false;
     }
 
-    databaseWorld = Database::CreateDatabaseInterface();
+    databaseWorld = Database::createDatabaseInterface();
 
     // Initialize it
-    if (!databaseWorld->Initialize(worldConfig.worldDb.host.c_str(),
+    if (!databaseWorld->initialize(worldConfig.worldDb.host.c_str(),
                                    static_cast<uint32_t>(worldConfig.worldDb.port),
                                    worldConfig.worldDb.user.c_str(),
                                    worldConfig.worldDb.password.c_str(),
@@ -751,9 +751,9 @@ bool Master::startDB()
         return false;
     }
 
-    databaseCharacter = Database::CreateDatabaseInterface();
+    databaseCharacter = Database::createDatabaseInterface();
 
-    if (!databaseCharacter->Initialize(worldConfig.charDb.host.c_str(),
+    if (!databaseCharacter->initialize(worldConfig.charDb.host.c_str(),
                                        static_cast<uint32_t>(worldConfig.charDb.port),
                                        worldConfig.charDb.user.c_str(),
                                        worldConfig.charDb.password.c_str(),
@@ -773,7 +773,7 @@ void Master::stopDB()
 {
     databaseWorld.reset();
     databaseCharacter.reset();
-    Database::CleanupLibs();
+    Database::cleanupLibs();
 }
 
 void Master::hookSignals()

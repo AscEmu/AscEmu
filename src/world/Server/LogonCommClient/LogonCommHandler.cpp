@@ -133,19 +133,19 @@ void LogonCommHandler::loadAccountPermissions()
 {
     sLogger.info("LogonCommClient : Loading account permissions...");
 
-    auto result = CharacterDatabase.Query("SELECT id, permissions FROM account_permissions");
+    auto result = CharacterDatabase.query("SELECT id, permissions FROM account_permissions");
     if (result != nullptr)
     {
         do
         {
-            uint32_t id = result->Fetch()[0].asUint32();
-            std::string dbPermission = result->Fetch()[1].asCString();
+            uint32_t id = result->fetch()[0].asUint32();
+            std::string dbPermission = result->fetch()[1].asCString();
             if (AscEmu::Util::Strings::isEqual(dbPermission, "az"))
                 dbPermission = "12stulfbvrjiqdmwcogenaz";
 
             accountPermissionsStore.insert(make_pair(id, dbPermission));
 
-        } while (result->NextRow());
+        } while (result->nextRow());
     }
 }
 

@@ -461,7 +461,7 @@ void Pet::rename(utf8_string const& newName)
     // Save summoned pet's new name to db (.pet renamepet)
     if (m_petType == PET_TYPE_SUMMON && !m_petExpires && m_unitOwner != nullptr)
     {
-        CharacterDatabase.Execute("UPDATE `playersummons` SET `name`='%s' WHERE `ownerguid`=%u AND `entry`=%u",
+        CharacterDatabase.execute("UPDATE `playersummons` SET `name`='%s' WHERE `ownerguid`=%u AND `entry`=%u",
             m_petName.data(), m_unitOwner->getGuidLow(), getEntry());
     }
 
@@ -799,14 +799,14 @@ bool Pet::_preparePetForPush(PetCache const* petCache)
     // Summon spells are loaded in updateSpellList
     if (!isNewSummon && m_petType == PET_TYPE_HUNTER)
     {
-        auto query = CharacterDatabase.Query("SELECT * FROM playerpetspells WHERE ownerguid = %u AND petnumber = %u", m_unitOwner->getGuidLow(), m_petId);
+        auto query = CharacterDatabase.query("SELECT * FROM playerpetspells WHERE ownerguid = %u AND petnumber = %u", m_unitOwner->getGuidLow(), m_petId);
         if (query != nullptr)
         {
             do
             {
-                auto* field = query->Fetch();
+                auto* field = query->fetch();
                 _addSpell(sSpellMgr.getSpellInfo(field[2].asUint32()), false, field[3].asUint8());
-            } while (query->NextRow());
+            } while (query->nextRow());
         }
     }
 
@@ -948,16 +948,16 @@ void Pet::_setNameForEntry(uint32_t entry, SpellInfo const* createdBySpell)
         case PET_FELHUNTER:
         case PET_FELGUARD:
         {
-            auto result = CharacterDatabase.Query("SELECT `name` FROM `playersummons` WHERE `ownerguid`=%u AND `entry`=%d", m_unitOwner->getGuidLow(), entry);
+            auto result = CharacterDatabase.query("SELECT `name` FROM `playersummons` WHERE `ownerguid`=%u AND `entry`=%d", m_unitOwner->getGuidLow(), entry);
             if (result != nullptr)
             {
-                m_petName.assign(result->Fetch()->asCString());
+                m_petName.assign(result->fetch()->asCString());
             }
             else
             {
                 // Pet name is not found, generate new name and save it
                 m_petName.assign(generateName());
-                CharacterDatabase.Execute("INSERT INTO playersummons VALUES(%u, %u, '%s')", m_unitOwner->getGuidLow(), entry, m_petName.data());
+                CharacterDatabase.execute("INSERT INTO playersummons VALUES(%u, %u, '%s')", m_unitOwner->getGuidLow(), entry, m_petName.data());
             }
         } break;
         case PET_GHOUL:

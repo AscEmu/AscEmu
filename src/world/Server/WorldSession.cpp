@@ -395,7 +395,7 @@ void WorldSession::LogoutPlayer(bool Save)
 
                     if (sAccountData[ui].data)
                     {
-                        CharacterDatabase.EscapeLongString(sAccountData[ui].data.get(), sAccountData[ui].sz, ss);
+                        CharacterDatabase.escapeLongString(sAccountData[ui].data.get(), sAccountData[ui].sz, ss);
                         // ss.write(sAccountData[ui].data,sAccountData[ui].sz);
                     }
                     ss << "\"";
@@ -406,7 +406,7 @@ void WorldSession::LogoutPlayer(bool Save)
             if (dirty)
             {
                 ss << " WHERE acct=" << _accountId << ";";
-                CharacterDatabase.ExecuteNA(ss.str().c_str());
+                CharacterDatabase.executeNA(ss.str().c_str());
             }
         }
 

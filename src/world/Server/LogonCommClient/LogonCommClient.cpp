@@ -304,20 +304,20 @@ void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket& recvData)
     recvData >> realm_id;
 
     // fetch the character mapping
-    auto result = CharacterDatabase.Query("SELECT acct FROM characters");
+    auto result = CharacterDatabase.query("SELECT acct FROM characters");
 
     if (result)
     {
         do
         {
-            account_id = result->Fetch()[0].asUint32();
+            account_id = result->fetch()[0].asUint32();
             itr = mapping_to_send.find(account_id);
             if (itr != mapping_to_send.end())
                 itr->second++;
             else
                 mapping_to_send.insert(std::make_pair(account_id, static_cast<uint8_t>(1)));
         }
-        while (result->NextRow());
+        while (result->nextRow());
     }
 
     if (!mapping_to_send.size())
@@ -571,7 +571,7 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
             if (gmlevel.compare("0") != 0)
             {
                 //Update account_permissions
-                CharacterDatabase.Execute("REPLACE INTO account_permissions (`id`, `permissions`, `name`) VALUES (%u, '%s', '%s')", accountId, gmlevel.c_str(), account_string);
+                CharacterDatabase.execute("REPLACE INTO account_permissions (`id`, `permissions`, `name`) VALUES (%u, '%s', '%s')", accountId, gmlevel.c_str(), account_string);
                 if (request_name.compare("none") != 0)
                     session_name->SystemMessage("Account permissions has been updated to '%s' for account '%s' (%u). The change will be effective immediately.", gmlevel.c_str(), account_string, accountId);
 
@@ -592,7 +592,7 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
             else
             {
                 //Update account_permissions
-                CharacterDatabase.Execute("DELETE FROM account_permissions WHERE id = %u", accountId);
+                CharacterDatabase.execute("DELETE FROM account_permissions WHERE id = %u", accountId);
                 if (request_name.compare("none") != 0)
                     session_name->SystemMessage("Account permissions removed for account '%s' (%u). The change will be effective immediately.", account_string, accountId);
 

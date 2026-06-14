@@ -57,11 +57,11 @@ void GameEventMgr::LoadFromDB()
     sLogger.info("GameEventMgr : Start cleaning gameevent_save");
     {
         const char* cleanEventSaveQuery = "DELETE FROM gameevent_save WHERE state<>4";
-        CharacterDatabase.Execute(cleanEventSaveQuery);
+        CharacterDatabase.execute(cleanEventSaveQuery);
     }
     // Loading event_properties
     {
-        auto result = WorldDatabase.Query("SELECT entry, UNIX_TIMESTAMP(start_time), UNIX_TIMESTAMP(end_time), occurence, "
+        auto result = WorldDatabase.query("SELECT entry, UNIX_TIMESTAMP(start_time), UNIX_TIMESTAMP(end_time), occurence, "
                                           "length, holiday, description, world_event, announce "
                                           "FROM gameevent_properties WHERE entry > 0 AND min_build <= %u AND max_build >= %u", getAEVersion(), getAEVersion());
         if (!result)
@@ -74,7 +74,7 @@ void GameEventMgr::LoadFromDB()
         uint32_t pCount = 0;
         do
         {
-            Field* field = result->Fetch();
+            Field* field = result->fetch();
 
             EventNamesQueryResult dbResult;
             dbResult.entry = field[0].asUint32();
@@ -97,7 +97,7 @@ void GameEventMgr::LoadFromDB()
             //{
             //    sLogger.debug("{} game event Entry: {} isn't a world event and has length = 0, thus it can't be used.", dbResult.description, dbResult.entry);
             //}
-        } while (result->NextRow());
+        } while (result->nextRow());
         sLogger.info("GameEventMgr : {} events loaded from table event_properties", pCount);
     }
     // Loading event_saves from CharacterDB
@@ -105,7 +105,7 @@ void GameEventMgr::LoadFromDB()
     {
         const char* loadEventSaveQuery = "SELECT event_entry, state, next_start FROM gameevent_save";
         bool success = false;
-        auto result = CharacterDatabase.Query(&success, loadEventSaveQuery);
+        auto result = CharacterDatabase.query(&success, loadEventSaveQuery);
 
         if (!success)
         {
@@ -118,13 +118,13 @@ void GameEventMgr::LoadFromDB()
         {
             do
             {
-                Field* field = result->Fetch();
+                Field* field = result->fetch();
                 uint32_t event_id = field[0].asUint8();
 
                 auto gameEvent = GetEventById(event_id);
                 if (gameEvent == nullptr)
                 {
-                    CharacterDatabase.Query("DELETE FROM gameevent_save WHERE event_entry=%u", event_id);
+                    CharacterDatabase.query("DELETE FROM gameevent_save WHERE event_entry=%u", event_id);
                     sLogger.info("Deleted invalid gameevent_save with entry {}", event_id);
                     continue;
                 }
@@ -134,7 +134,7 @@ void GameEventMgr::LoadFromDB()
 
                 ++pCount;
 
-            } while (result->NextRow());
+            } while (result->nextRow());
         }
 
         sLogger.info("GameEventMgr : Loaded {} saved events loaded from table gameevent_saves", pCount);
@@ -149,7 +149,7 @@ void GameEventMgr::LoadFromDB()
                                                     slot1item, slot2item, slot3item, CanFly, phase, waypoint_group, event_entry \
                                                     FROM creature_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry > 0";
         bool success = false;
-        auto result = WorldDatabase.Query(&success, loadEventCreatureSpawnsQuery, VERSION_STRING, VERSION_STRING);
+        auto result = WorldDatabase.query(&success, loadEventCreatureSpawnsQuery, VERSION_STRING, VERSION_STRING);
         if (!success)
         {
             sLogger.failure("Query failed: {}", loadEventCreatureSpawnsQuery);
@@ -161,7 +161,7 @@ void GameEventMgr::LoadFromDB()
         {
             do
             {
-                Field* field = result->Fetch();
+                Field* field = result->fetch();
 
                 uint32_t event_id = field[28].asUint32();
 
@@ -215,7 +215,7 @@ void GameEventMgr::LoadFromDB()
 
                 //mNPCGuidList.insert(NPCGuidList::value_type(event_id, id));
 
-            } while (result->NextRow());
+            } while (result->nextRow());
         }
         sLogger.info("GameEventMgr : {} creature spawns for {} events from table event_creature_spawns loaded.", pCount, static_cast<uint32_t>(mGameEvents.size()));
     }
@@ -227,7 +227,7 @@ void GameEventMgr::LoadFromDB()
                                                       rotation3, spawntimesecs, state, \
                                                       event_entry FROM gameobject_spawns WHERE min_build <= %u AND max_build >= %u AND event_entry > 0;";
         bool success = false;
-        auto result = WorldDatabase.Query(&success, loadEventGameobjectSpawnsQuery, VERSION_STRING, VERSION_STRING);
+        auto result = WorldDatabase.query(&success, loadEventGameobjectSpawnsQuery, VERSION_STRING, VERSION_STRING);
         if (!success)
         {
             sLogger.failure("Query failed: {}", loadEventGameobjectSpawnsQuery);
@@ -239,7 +239,7 @@ void GameEventMgr::LoadFromDB()
         {
             do
             {
-                Field* field = result->Fetch();
+                Field* field = result->fetch();
                 uint32_t event_id = field[14].asUint32();
 
                 auto gameEvent = GetEventById(event_id);
@@ -278,7 +278,7 @@ void GameEventMgr::LoadFromDB()
 
                 //mGOBGuidList.insert(GOBGuidList::value_type(event_id, id));
 
-            } while (result->NextRow());
+            } while (result->nextRow());
         }
         sLogger.info("GameEventMgr : {} gameobject spawns for {} events from table gameobject_spawns loaded.", pCount, mGameEvents.size());
     }
