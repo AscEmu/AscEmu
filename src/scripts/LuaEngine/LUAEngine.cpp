@@ -240,6 +240,7 @@ Aura* LuaEngine::CheckAura(lua_State* L, int narg)
         return ArcLuna<Aura>::check(lu, narg);
     return ArcLuna<Aura>::check(L, narg);
 }
+
 bool LuaEngine::CheckBool(lua_State* L, int narg)
 {
     // first try with bool type

@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <sstream>
 
 #include "Logging/Logger.hpp"
+#include <Utilities/MathConstants.hpp>
 
 namespace MovementMgr {
 

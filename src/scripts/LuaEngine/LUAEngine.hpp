@@ -527,7 +527,7 @@ public:
                 lua_getfield(L, -1, std::string(name).c_str());
                 if (lua_isnil(L, -1))
                 {
-                    delete obj;
+                    // delete obj;
                     obj = nullptr;
                 }
             }
